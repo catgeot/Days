@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Globe from 'react-globe.gl';
 import { Plane, Map, BookOpen, Settings, CloudSun } from 'lucide-react';
 import { Link } from 'react-router-dom'; // 페이지 이동을 위한 링크 기능 추가
+import TiketModal from './TiketModal';
+import Logo from './Logo';
 
 function Home() {
   // 지구본 제어를 위한 Ref
@@ -53,7 +55,7 @@ function Home() {
         <header className="flex justify-between items-start pointer-events-auto">
           <div className="flex flex-col">
             <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-              GATE 0
+              <Logo />
             </h1>
             <span className="text-xs text-gray-400 tracking-widest">DEPARTURE LOUNGE</span>
           </div>
@@ -93,7 +95,7 @@ function Home() {
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
             <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-lg">
               <Map size={20} />
-              여행 취향 설정하기
+              <TiketModal />
             </button>
           </div>
 
