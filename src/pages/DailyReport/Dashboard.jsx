@@ -35,7 +35,8 @@ const Dashboard = () => {
         const { data, error } = await supabase
           .from('reports')
           .select('*')
-          .order('date', { ascending: false });
+          .order('date', { ascending: false })
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
         const fetchedData = data || [];
