@@ -1,45 +1,34 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// 페이지 및 레이아웃 불러오기
-import Home from './pages/Travel/Home';
-import MainLayout from './components/Layout/MainLayout'; // 방금 만든 투명한 틀
-import AdminLayout from './components/Layout/AdminLayout'; // 업무용 틀
+// 페이지들
+import Home from './pages/Home/Home';
+import Login from './pages/Auth/Login';
+import Signup from './pages/Auth/Signup'; 
 import Dashboard from './pages/DailyReport/Dashboard';
 import Write from './pages/DailyReport/Write';
 import Detail from './pages/DailyReport/Detail';
-import Login from './pages/Auth/Login'; // ✨ 로그인 페이지 추가
-import SignUp from './pages/Auth/SignUp'; // ✨ 불러오기
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ✨ MainLayout 제거! 
+           이제 모든 페이지는 독립적이며, 하단 배너가 따라다니지 않습니다.
+        */}
+
+        {/* 1. 여행 홈 (지구본) - 100% 몰입형 */}
+        <Route path="/" element={<Home />} />
         
-        {/* 1. 여행 모드 (지구본) */}
-        {/* MainLayout이 감싸고 있으므로, 나중에 여행 페이지가 늘어나도 관리하기 편함 */}
-        <Route path="/" element={<MainLayout />}>
-           <Route index element={<Home />} />
-           {/* 나중에 <Route path="mars" element={<Mars />} /> 같은거 추가 가능 */}
-        </Route>
+        {/* 2. 일보 시스템 (독립된 페이지) */}
+        <Route path="/report" element={<Dashboard />} />
+        <Route path="/report/write" element={<Write />} />
+        <Route path="/report/edit/:id" element={<Write />} />
+        <Route path="/report/:id" element={<Detail />} />
 
-				{/* ✨ 로그인 페이지 (보호받지 않는 공개 페이지) */}
-        <Route path="/login" element={<Login />} />
-				{/* ✨ 회원가입 라우트 추가 */}
-        <Route path="/signup" element={<SignUp />} />
-
-        {/* 2. 업무 모드 (일보) */}
-        {/* AdminLayout이 감싸고 있어서 사이드바가 항상 유지됨 */}
-        <Route path="/report" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="write" element={<Write />} />
-          
-          {/* ✨ [추가] 수정 페이지 라우트 */}
-          {/* :id는 수정할 글의 번호입니다. Write 컴포넌트를 같이 씁니다. */}
-          <Route path="edit/:id" element={<Write />} />
-          
-          <Route path=":id" element={<Detail />} />
-        </Route>
+        {/* 3. 인증 관련 */}
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/signup" element={<Signup />} />
 
       </Routes>
     </BrowserRouter>

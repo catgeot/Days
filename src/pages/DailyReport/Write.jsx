@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { Save, ArrowLeft, MapPin, History, Loader2, Image as ImageIcon, X } from 'lucide-react';
-import imageCompression from 'browser-image-compression'; // 압축 라이브러리
+import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 
 const Write = () => {
   const navigate = useNavigate();
@@ -14,30 +14,27 @@ const Write = () => {
   const [location, setLocation] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   
-  // ✨ 여러 장 관리를 위한 상태 변경
-  const [imageFiles, setImageFiles] = useState([]); // 실제 파일들 (압축된)
-  const [previewUrls, setPreviewUrls] = useState([]); // 미리보기 URL들 (배열)
-  const [existingImages, setExistingImages] = useState([]); // 수정 시 기존 이미지들
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]); 
+  const [existingImages, setExistingImages] = useState([]); 
   const [uploading, setUploading] = useState(false);
-
   const [locationLoading, setLocationLoading] = useState(false);
   const [recentLocations, setRecentLocations] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
+    // ✨ [수정] 여기 있던 "로그인 안 했으면 쫓아내는 코드" 삭제함!
+    // 이제 누구나 들어올 수 있음.
+
     const loadInitialData = async () => {
       if (isEditMode) {
         const { data } = await supabase.from('reports').select('*').eq('id', id).single();
         if (data) {
-          setTitle(data.title);
-          setContent(data.content);
-          setLocation(data.location);
-          setDate(data.date);
-          // DB의 images 배열을 가져옴 (없으면 빈 배열)
+          setTitle(data.title); setContent(data.content); setLocation(data.location); setDate(data.date);
           setExistingImages(data.images || []); 
         }
       }
-      
+      // 최근 위치 등은 로그인 안 하면 안 나올 수 있으나 에러는 안 나게 처리됨
       const { data: historyData } = await supabase.from('reports').select('location').order('date', { ascending: false }).limit(20);
       if (historyData) {
         const uniqueLocs = [...new Set(historyData.map(item => item.location))].slice(0, 5);
@@ -47,7 +44,7 @@ const Write = () => {
     loadInitialData();
   }, [id, isEditMode]);
 
-  const handleGetCurrentLocation = () => { /* 기존과 동일 (생략 없이 그대로 두세요) */ 
+  const handleGetCurrentLocation = () => { /* 기존 코드 유지 (길어서 생략, 그대로 두세요) */ 
     if (!navigator.geolocation) return alert("위치 정보를 지원하지 않습니다.");
     setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -63,57 +60,45 @@ const Write = () => {
     );
   };
 
-  // ✨ 다중 이미지 선택 및 압축
-  const handleImageChange = async (e) => {
+  const handleImageChange = async (e) => { /* 기존 코드 유지 */
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-
-    // 개수 제한 (기존 것 포함 4장)
     const totalCount = existingImages.length + imageFiles.length + files.length;
-    if (totalCount > 4) {
-      alert("사진은 최대 4장까지만 업로드 가능합니다.");
-      return;
-    }
-
+    if (totalCount > 4) { alert("사진은 최대 4장까지만 업로드 가능합니다."); return; }
     const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
-
     try {
-      // 여러 장을 병렬로 압축
-      const compressedFiles = await Promise.all(
-        files.map(file => imageCompression(file, options))
-      );
-
-      // 상태 추가
+      const compressedFiles = await Promise.all(files.map(file => imageCompression(file, options)));
       setImageFiles(prev => [...prev, ...compressedFiles]);
-      
-      // 미리보기 URL 추가
       const newPreviews = compressedFiles.map(file => URL.createObjectURL(file));
       setPreviewUrls(prev => [...prev, ...newPreviews]);
-
-    } catch (error) {
-      console.error("이미지 압축 실패:", error);
-    }
+    } catch (error) { console.error("이미지 압축 실패:", error); }
   };
+  const removeNewImage = (index) => { setImageFiles(prev => prev.filter((_, i) => i !== index)); setPreviewUrls(prev => prev.filter((_, i) => i !== index)); };
+  const removeExistingImage = (index) => { setExistingImages(prev => prev.filter((_, i) => i !== index)); };
 
-  // ✨ 선택한 이미지 삭제 (미리보기에서 X버튼)
-  const removeNewImage = (index) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
-    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
-  };
-
-  // ✨ 기존 이미지 삭제 (수정 모드에서)
-  const removeExistingImage = (index) => {
-    setExistingImages(prev => prev.filter((_, i) => i !== index));
-  };
-
+  // ✨ [핵심] 저장 버튼 누를 때 로그인 체크!
   const handleSave = async () => {
     if (!title) return alert("제목을 입력해주세요!");
 
+    // 1. 여기서 로그인 체크를 합니다.
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 2. 로그인을 안 했다면? -> 회원가입으로 유도
+    if (!user) {
+      const wantToSignup = window.confirm(
+        "작성하신 내용을 저장하려면 로그인이 필요합니다.\n\n회원가입 페이지로 이동하시겠습니까?\n(가입 후 다시 작성해야 할 수 있습니다)"
+      );
+      if (wantToSignup) {
+        navigate('/auth/signup'); // 바로 회원가입으로 보냄
+      }
+      return; // 저장 로직 중단
+    }
+
+    // 3. 로그인 했다면? -> 저장 진행 (기존 로직)
     setUploading(true);
-    let finalImageUrls = [...existingImages]; // 기존 이미지는 그대로 유지
+    let finalImageUrls = [...existingImages];
 
     try {
-      // ✨ 새로 추가된 이미지들 업로드 (병렬 처리)
       const uploadPromises = imageFiles.map(async (file) => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
@@ -124,15 +109,12 @@ const Write = () => {
       });
 
       const newUrls = await Promise.all(uploadPromises);
-      finalImageUrls = [...finalImageUrls, ...newUrls]; // 기존 + 새 이미지 합치기
+      finalImageUrls = [...finalImageUrls, ...newUrls];
 
       const reportData = {
-        title,
-        content,
-        location: location || '위치 미지정',
-        date,
-        images: finalImageUrls, // ✨ 배열로 저장
-        weather: '맑음'
+        title, content, location: location || '위치 미지정', date,
+        images: finalImageUrls, weather: '맑음',
+        user_id: user.id 
       };
 
       if (isEditMode) {
@@ -140,11 +122,9 @@ const Write = () => {
       } else {
         await supabase.from('reports').insert([reportData]);
       }
-
       navigate(isEditMode ? `/report/${id}` : '/report');
-
     } catch (error) {
-      console.error("업로드/저장 실패:", error);
+      console.error("저장 실패:", error);
       alert("저장 중 오류가 발생했습니다.");
     } finally {
       setUploading(false);
@@ -153,14 +133,13 @@ const Write = () => {
 
   return (
     <div className="max-w-2xl mx-auto min-h-screen pb-20" onClick={() => setShowSuggestions(false)}>
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-6 pt-6 px-4">
         <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600"><ArrowLeft size={24} /></button>
         <h2 className="text-2xl font-bold text-gray-800">{isEditMode ? '📝 일보 수정하기' : '🖊️ 새 일보 작성'}</h2>
       </div>
 
-      <div className="bg-white p-6 sm:p-8 border border-gray-200 rounded-xl shadow-sm flex flex-col gap-6">
-        
-        {/* 날짜/위치 (기존 동일) */}
+      <div className="bg-white p-6 sm:p-8 border border-gray-200 rounded-xl shadow-sm flex flex-col gap-6 mx-4">
+        {/* 날짜/위치 */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <label className="block font-bold mb-2 text-sm text-gray-600">날짜</label>
@@ -184,43 +163,25 @@ const Write = () => {
           </div>
         </div>
 
-        {/* ✨ 사진 첨부 (여러 장 UI) */}
+        {/* 사진 첨부 (기존 UI 유지) */}
         <div>
           <div className="flex justify-between items-end mb-2">
             <label className="block font-bold text-sm text-gray-600">사진 첨부 (최대 4장)</label>
-            <span className="text-xs text-blue-600 font-bold">
-              {existingImages.length + previewUrls.length} / 4
-            </span>
+            <span className="text-xs text-blue-600 font-bold">{existingImages.length + previewUrls.length} / 4</span>
           </div>
-          
           <div className="grid grid-cols-4 gap-2 mb-2">
-            {/* 1. 기존 이미지 표시 (수정 모드) */}
-            {existingImages.map((url, idx) => (
-              <div key={`exist-${idx}`} className="relative aspect-square">
-                <img src={url} alt="existing" className="w-full h-full object-cover rounded-lg border border-gray-200" />
-                <button onClick={() => removeExistingImage(idx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 shadow-sm"><X size={12} /></button>
-              </div>
-            ))}
-            {/* 2. 새 이미지 미리보기 */}
-            {previewUrls.map((url, idx) => (
-              <div key={`new-${idx}`} className="relative aspect-square">
-                <img src={url} alt="new" className="w-full h-full object-cover rounded-lg border border-gray-200" />
-                <button onClick={() => removeNewImage(idx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 shadow-sm"><X size={12} /></button>
-              </div>
-            ))}
-            
-            {/* 3. 업로드 버튼 (4장 미만일 때만 보임) */}
+            {existingImages.map((url, idx) => ( <div key={`exist-${idx}`} className="relative aspect-square"><img src={url} className="w-full h-full object-cover rounded-lg border" /><button onClick={() => removeExistingImage(idx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"><X size={12} /></button></div> ))}
+            {previewUrls.map((url, idx) => ( <div key={`new-${idx}`} className="relative aspect-square"><img src={url} className="w-full h-full object-cover rounded-lg border" /><button onClick={() => removeNewImage(idx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"><X size={12} /></button></div> ))}
             {(existingImages.length + previewUrls.length) < 4 && (
-              <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors text-gray-400 hover:text-blue-500">
-                <ImageIcon size={20} />
-                <span className="text-[10px] font-bold mt-1">추가</span>
+              <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 text-gray-400 hover:text-blue-500">
+                <ImageIcon size={20} /><span className="text-[10px] font-bold mt-1">추가</span>
                 <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
               </label>
             )}
           </div>
         </div>
 
-        {/* 제목/내용 (기존 동일) */}
+        {/* 제목/내용 */}
         <div><label className="block font-bold mb-2 text-sm text-gray-600">제목</label><input type="text" className="w-full border p-3 rounded-lg bg-gray-50 text-lg font-bold" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
         <div><label className="block font-bold mb-2 text-sm text-gray-600">내용</label><textarea className="w-full border p-3 rounded-lg h-64 bg-gray-50 resize-none leading-relaxed" value={content} onChange={(e) => setContent(e.target.value)} /></div>
 

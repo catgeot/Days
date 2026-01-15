@@ -1,78 +1,78 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { PenTool } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PenTool, ArrowLeft, LogIn, LogOut } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
+// 컴포넌트들
 import StatsCard from '../../components/Dashboard/StatsCard';
 import GraphCard from '../../components/Dashboard/GraphCard';
 import CalendarCard from '../../components/Dashboard/CalendarCard';
 import RecentList from '../../components/Dashboard/RecentList';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null); 
   const [reports, setReports] = useState([]); 
   const [loading, setLoading] = useState(true); 
+
   const today = new Date();
-  
-  // 1. 기간 선택 상태
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [displayCount, setDisplayCount] = useState(0);
-
-  // 2. 그래프 상태 (모드: total, 6m, 12m)
   const [graphMode, setGraphMode] = useState('total'); 
   const [graphYear, setGraphYear] = useState(today.getFullYear());
-  const [trendData, setTrendData] = useState([]); // 그래프에 뿌릴 데이터
-
-  // 3. 달력 상태
+  const [trendData, setTrendData] = useState([]);
   const [calendarDays, setCalendarDays] = useState([]);
   const [availableYears, setAvailableYears] = useState([today.getFullYear()]);
 
-  // --- 데이터 불러오기 ---
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('reports')
-          .select('*')
-          .order('date', { ascending: false })
-          .order('created_at', { ascending: false });
+  // 데이터 불러오기 함수
+  const loadData = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
 
-        if (error) throw error;
-        const fetchedData = data || [];
-        setReports(fetchedData);
+    if (user) {
+      // 🅰️ 로그인 상태: 진짜 내 데이터 가져오기
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .order('date', { ascending: false })
+        .order('created_at', { ascending: false });
 
-        const dataYears = fetchedData.map(r => new Date(r.date).getFullYear());
-        const currentYear = new Date().getFullYear();
-        const baseYears = [currentYear, currentYear - 1, currentYear - 2];
-        const allYears = [...new Set([...dataYears, ...baseYears])];
-        setAvailableYears(allYears.sort((a, b) => b - a));
-
-      } catch (error) {
-        console.error('데이터 에러:', error);
-      } finally {
-        setLoading(false);
+      if (!error && data) {
+        setReports(data);
+        const dataYears = data.map(r => new Date(r.date).getFullYear());
+        const baseYears = [today.getFullYear(), today.getFullYear()-1];
+        setAvailableYears([...new Set([...dataYears, ...baseYears])].sort((a,b)=>b-a));
       }
-    };
-    fetchReports();
+    } else {
+      // 🅱️ 비로그인 상태: ✨ 가짜 데이터 삭제! 그냥 깨끗하게 비워둡니다.
+      setReports([]); 
+      setAvailableYears([today.getFullYear()]); // 연도 필터는 올해만 보여줌
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  // --- 통계 및 달력 계산 ---
+  const handleLogout = async () => {
+    if (window.confirm("로그아웃 하시겠습니까?")) {
+      await supabase.auth.signOut();
+      alert("정상적으로 로그아웃 되었습니다.");
+      loadData(); // 화면 갱신
+    }
+  };
+
+  // 통계 로직들 (데이터가 없으면 0으로 나옵니다)
   useEffect(() => {
     if (loading) return;
-
-    // 기간별 통계
-    const count = reports.filter(r => {
-      const d = new Date(r.date);
-      return d.getFullYear() === viewYear && d.getMonth() === viewMonth;
-    }).length;
+    const count = reports.filter(r => new Date(r.date).getFullYear() === viewYear && new Date(r.date).getMonth() === viewMonth).length;
     setDisplayCount(count);
-
-    // 달력 데이터 생성
     const firstDay = new Date(viewYear, viewMonth, 1).getDay();
     const lastDate = new Date(viewYear, viewMonth + 1, 0).getDate();
     const daysArr = [];
-
     for (let i = 0; i < firstDay; i++) daysArr.push({ day: null });
     for (let i = 1; i <= lastDate; i++) {
       const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
@@ -83,98 +83,78 @@ const Dashboard = () => {
     setCalendarDays(daysArr);
   }, [viewYear, viewMonth, reports, loading]);
 
-  // --- ✨ 그래프 데이터 계산 (모드에 따라 다르게) ---
   useEffect(() => {
     if (loading) return;
-    
     let trends = [];
-
     if (graphMode === '6m') {
-      // 최근 6개월 (Rolling)
       for (let i = 5; i >= 0; i--) {
         const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-        const y = d.getFullYear();
-        const m = d.getMonth();
-        const count = reports.filter(r => {
-          const rd = new Date(r.date);
-          return rd.getFullYear() === y && rd.getMonth() === m;
-        }).length;
-        trends.push({ label: `${m + 1}월`, count });
+        const count = reports.filter(r => new Date(r.date).getFullYear() === d.getFullYear() && new Date(r.date).getMonth() === d.getMonth()).length;
+        trends.push({ label: `${d.getMonth() + 1}월`, count });
       }
     } else if (graphMode === '12m') {
-      // 선택한 연도 1월~12월 (Yearly)
       for (let m = 0; m < 12; m++) {
-        const count = reports.filter(r => {
-          const d = new Date(r.date);
-          return d.getFullYear() === graphYear && d.getMonth() === m;
-        }).length;
+        const count = reports.filter(r => new Date(r.date).getFullYear() === graphYear && new Date(r.date).getMonth() === m).length;
         trends.push({ label: `${m + 1}월`, count });
       }
     }
-    
     setTrendData(trends);
   }, [graphMode, graphYear, reports, loading]);
-
+  
   const maxCount = Math.max(...trendData.map(t => t.count), 1);
+  const handlePrevMonth = () => { if (viewMonth === 0) { setViewMonth(11); setViewYear(viewYear - 1); } else { setViewMonth(viewMonth - 1); } };
+  const handleNextMonth = () => { if (viewMonth === 11) { setViewMonth(0); setViewYear(viewYear + 1); } else { setViewMonth(viewMonth + 1); } };
 
-  // --- ✨ 달력 이동 함수 ---
-  const handlePrevMonth = () => {
-    if (viewMonth === 0) { // 1월에서 뒤로 가면 작년 12월
-      setViewMonth(11);
-      setViewYear(viewYear - 1);
-    } else {
-      setViewMonth(viewMonth - 1);
-    }
-  };
-
-  const handleNextMonth = () => {
-    if (viewMonth === 11) { // 12월에서 앞으로 가면 내년 1월
-      setViewMonth(0);
-      setViewYear(viewYear + 1);
-    } else {
-      setViewMonth(viewMonth + 1);
-    }
-  };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="mb-8 flex justify-between items-end">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">안녕하세요, 사장님 👋</h2>
-          <p className="text-gray-500 mt-1">
-            {loading ? '로딩 중...' : `선택하신 기간에 총 ${displayCount}건의 기록이 있습니다.`}
-          </p>
+    <div className="fixed inset-0 w-full h-full bg-gray-50 overflow-y-auto z-0">
+      <div className="max-w-5xl mx-auto pt-10 px-4 pb-96 relative">
+        
+        {/* 탈출구 */}
+        <div className="absolute top-0 left-4">
+          <Link to="/" className="flex items-center gap-1 text-gray-400 hover:text-blue-600 transition-colors text-sm font-bold py-2">
+            <ArrowLeft size={16} /> 여행 홈으로
+          </Link>
         </div>
-        <Link to="/report/write" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm transition-all">
-          <PenTool size={18} />
-          새 일보 작성
-        </Link>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 items-stretch">
-        <StatsCard 
-          viewYear={viewYear} setViewYear={setViewYear}
-          viewMonth={viewMonth} setViewMonth={setViewMonth}
-          availableYears={availableYears} count={displayCount}
-        />
-        
-        <GraphCard 
-          graphMode={graphMode} setGraphMode={setGraphMode}
-          graphYear={graphYear} setGraphYear={setGraphYear}
-          availableYears={availableYears} 
-          trendData={trendData}
-          totalCount={reports.length} maxCount={maxCount}
-        />
-        
-        <CalendarCard 
-          viewYear={viewYear} viewMonth={viewMonth}
-          calendarDays={calendarDays}
-          onPrevMonth={handlePrevMonth} // 함수 전달
-          onNextMonth={handleNextMonth} // 함수 전달
-        />
-      </div>
+        {/* 헤더 */}
+        <div className="mb-8 flex justify-between items-end mt-4">
+          <div>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-gray-800">
+                {user ? '안녕하세요, 사장님 👋' : '방문자님, 환영합니다 👋'}
+              </h2>
+              {user ? (
+                <button onClick={handleLogout} className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-200 rounded-full px-3 py-1 transition-all">
+                  <LogOut size={12} /> 로그아웃
+                </button>
+              ) : (
+                <Link to="/auth/login" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 font-bold border border-blue-100 hover:border-blue-200 bg-blue-50 rounded-full px-3 py-1 transition-all">
+                  <LogIn size={12} /> 로그인
+                </Link>
+              )}
+            </div>
+            <p className="text-gray-500 mt-1">
+              {loading ? '로딩 중...' : `총 ${displayCount}건의 기록이 있습니다.`}
+            </p>
+          </div>
+          
+          <Link to="/report/write" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm transition-all">
+            <PenTool size={18} /> 새 일보 작성
+          </Link>
+        </div>
 
-      <RecentList reports={reports} loading={loading} />
+        {/* 카드 3형제 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 items-stretch">
+          <StatsCard viewYear={viewYear} setViewYear={setViewYear} viewMonth={viewMonth} setViewMonth={setViewMonth} availableYears={availableYears} count={displayCount} />
+          <GraphCard graphMode={graphMode} setGraphMode={setGraphMode} graphYear={graphYear} setGraphYear={setGraphYear} availableYears={availableYears} trendData={trendData} totalCount={reports.length} maxCount={maxCount} />
+          <CalendarCard viewYear={viewYear} viewMonth={viewMonth} calendarDays={calendarDays} onPrevMonth={handlePrevMonth} onNextMonth={handleNextMonth} />
+        </div>
+
+        {/* ✨ 여기가 중요합니다! */}
+        {/* reports가 빈 배열([])이므로, RecentList가 '아직 작성된 일보가 없습니다' 화면을 예쁘게 보여줄 겁니다. */}
+        <RecentList reports={reports} loading={loading} />
+      </div>
     </div>
   );
 };

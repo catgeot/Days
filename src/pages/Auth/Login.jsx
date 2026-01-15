@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, Home } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,7 +9,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
- const handleLogin = async (e) => {
+// ✨ [수정 1] 모호한 '뒤로가기(-1)' 대신 확실한 '홈으로(/)' 이동으로 변경!  const handleGoBack = () => {
+	const handleGoBack = () => {
+    navigate('/'); 
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault(); 
     setLoading(true);
 
@@ -21,10 +26,10 @@ const Login = () => {
     setLoading(false);
 
     if (error) {
-      // 💡 "Email not confirmed" 같은 정확한 에러 영어를 보여줍니다.
       alert("로그인 실패: " + error.message); 
     } else {
-      navigate('/report');
+      // ✨ [수정 포인트 2] 로그인이 성공하면 바로 '일보 대시보드'로 이동
+      navigate('/report'); 
     }
   };
 
@@ -45,6 +50,8 @@ const Login = () => {
               <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
               <input 
                 type="email" 
+                name="email" 
+                autoComplete="email" 
                 required
                 className="w-full pl-10 p-3 border rounded-lg focus:outline-blue-500 bg-gray-50"
                 placeholder="admin@example.com"
@@ -81,7 +88,8 @@ const Login = () => {
         <div className="mt-6 text-center text-sm">
           <p className="text-gray-500 mb-2">아직 계정이 없으신가요?</p>
           <button 
-            onClick={() => navigate('/signup')} // ✨ 회원가입 페이지로 이동
+            // ✨ 혹시 폴더 정리를 안 하셨다면 '/signup'으로 수정하세요
+            onClick={() => navigate('/auth/signup')} 
             className="text-blue-600 font-bold hover:underline"
           >
             회원가입 하기
@@ -89,13 +97,17 @@ const Login = () => {
         </div>
         
         <div className="mt-4 text-center border-t pt-4">
-          <button onClick={() => navigate('/')} className="text-xs text-gray-400 hover:text-gray-600">
-            ← 여행 페이지로 돌아가기
+          {/* ✨ [수정 2] 버튼 설명도 명확하게 바꿉니다 */}
+          <button 
+            onClick={handleGoBack} 
+            className="text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 mx-auto"
+          >
+            <Home size={12} /> 여행 홈으로 돌아가기
           </button>
         </div>
 
-      </div>			
-    </div>		
+      </div>      
+    </div>    
   );
 };
 

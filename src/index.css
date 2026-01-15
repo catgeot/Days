@@ -4,7 +4,6 @@
 
 /* 우주 배경색 강제 지정 */
 body {
-	background-color: #000000;
-	margin: 0;
-	overflow: hidden; /* 스크롤바 제거 */
+  background-color: #000000;
+  margin: 0; 
 }
