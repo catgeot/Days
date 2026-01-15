@@ -8,8 +8,8 @@ import AdminLayout from './components/Layout/AdminLayout'; // 업무용 틀
 import Dashboard from './pages/DailyReport/Dashboard';
 import Write from './pages/DailyReport/Write';
 import Detail from './pages/DailyReport/Detail';
-import Login from './pages/Login'; // ✨ 로그인 페이지 추가
-import SignUp from './pages/SignUp'; // ✨ 불러오기
+import Login from './pages/Auth/Login'; // ✨ 로그인 페이지 추가
+import SignUp from './pages/Auth/SignUp'; // ✨ 불러오기
 
 function App() {
   return (
