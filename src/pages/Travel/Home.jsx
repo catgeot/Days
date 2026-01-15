@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Globe from 'react-globe.gl';
 import { Plane, Map, BookOpen, Settings, CloudSun } from 'lucide-react';
-import { Link } from 'react-router-dom'; // 페이지 이동을 위한 링크 기능 추가
-import TiketModal from './TiketModal';
-import Logo from './Logo';
+import { Link } from 'react-router-dom';
+import TicketModal from './TicketModal'; // 경로가 맞는지 확인해주세요
+import Logo from './Logo'; // 경로가 맞는지 확인해주세요
 
 function Home() {
+  // 1. 모달의 열림/닫힘 상태를 관리하는 '스위치'를 만듭니다.
+  // 초기값은 false (닫힌 상태)입니다.
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // 지구본 제어를 위한 Ref
   const globeEl = useRef();
   
@@ -81,7 +85,7 @@ function Home() {
         {/* 하단 컨트롤 바 */}
         <footer className="flex justify-between items-end pointer-events-auto">
           
-          {/* [수정됨] 일보 작성 버튼 -> /report 페이지로 이동 */}
+          {/* 일보 작성 버튼 */}
           <Link to="/report" className="group flex items-center gap-3 bg-gray-900/80 hover:bg-gray-800 text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-all shadow-lg hover:shadow-blue-500/20">
             <div className="bg-gray-700 p-2 rounded-full group-hover:bg-blue-500 transition-colors">
               <BookOpen size={18} />
@@ -92,10 +96,16 @@ function Home() {
             </div>
           </Link>
 
+          {/* 중앙 티켓 발권 버튼 */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-lg">
+            <button 
+              /* 2. 버튼 클릭 시 스위치를 켭니다 (true로 변경) */
+              onClick={() => setIsModalOpen(true)}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-lg"
+            >
               <Map size={20} />
-              <TiketModal />
+              {/* 버튼 안에 있던 컴포넌트는 뺐습니다. 대신 글자를 넣습니다. */}
+              <span>티켓 발권</span> 
             </button>
           </div>
 
@@ -104,8 +114,18 @@ function Home() {
           </button>
         </footer>
       </div>
+
+      {/* 3. 모달 컴포넌트를 UI 레이어 밖, 가장 최상단에 배치합니다.
+         isOpen: 스위치 상태를 전달 (true면 보이고, false면 안 보임)
+         onClose: 모달 내부의 X 버튼을 눌렀을 때 스위치를 끄는 함수 전달
+      */}
+      <TicketModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+
     </div>
   );
 }
 
-export default Home; // 중요: 밖으로 내보내기
+export default Home;

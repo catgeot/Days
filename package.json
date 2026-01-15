@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
     "@supabase/supabase-js": "^2.89.0",
     "lucide-react": "^0.562.0",
     "openai": "^6.16.0",
