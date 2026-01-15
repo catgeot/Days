@@ -1,68 +1,111 @@
-import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PenTool, Globe, Settings, LogOut } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { LogOut, LayoutDashboard, PenTool, Globe, User } from 'lucide-react';
 
 const AdminLayout = () => {
-  const location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation(); // 현재 어디 페이지에 있는지 확인용
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // 현재 메뉴가 선택되었는지 확인하는 함수 (디자인용)
-  const isActive = (path) => location.pathname === path 
-    ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" 
-    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900";
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) return <div className="flex h-screen items-center justify-center bg-gray-100">로딩 중...</div>;
+
+  if (!session) {
+    window.location.href = '/login'; 
+    return null;
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
+
+  // 메뉴 아이템을 위한 공통 스타일 함수
+  const getMenuClass = (path) => {
+    const isActive = location.pathname === path;
+    return `flex items-center gap-3 p-3 rounded-xl transition-all duration-200 font-medium ${
+      isActive 
+        ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' // 활성 상태: 파란색 + 그림자
+        : 'text-gray-400 hover:bg-slate-800 hover:text-white'   // 비활성: 어두운 배경에 호버 효과
+    }`;
+  };
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans">
+    <div className="flex h-screen bg-gray-100">
       
-      {/* [좌측 사이드바] 고정된 메뉴 영역 */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between hidden md:flex">
-        <div>
-          {/* 로고 영역 */}
-          <div className="h-16 flex items-center px-6 border-b border-gray-100">
-            <h1 className="text-xl font-bold text-gray-800">Gate 0 <span className="text-xs text-blue-500">Logbook</span></h1>
+      {/* ✨ [업그레이드된 사이드바] */}
+      <aside className="w-72 bg-slate-900 text-white flex flex-col shadow-2xl z-10">
+        
+        {/* 1. 로고 영역 */}
+        <div className="p-8 pb-4">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center font-bold text-xl">D</div>
+            <h1 className="text-2xl font-bold tracking-tight">Days<span className="text-blue-500">.</span></h1>
           </div>
-
-          {/* 메뉴 리스트 */}
-          <nav className="mt-6 flex flex-col gap-1 px-3">
-            <Link to="/report" className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all ${isActive('/report')}`}>
-              <LayoutDashboard size={20} />
-              대시보드
-            </Link>
-            
-            <Link to="/report/write" className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all ${isActive('/report/write')}`}>
-              <PenTool size={20} />
-              일보 작성
-            </Link>
-
-            <Link to="/report/settings" className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all ${isActive('/report/settings')}`}>
-              <Settings size={20} />
-              설정
-            </Link>
-          </nav>
+          <p className="text-slate-500 text-xs pl-1">Daily Report System</p>
         </div>
 
-        {/* 하단: 지구본으로 돌아가기 */}
-        <div className="p-4 border-t border-gray-100">
-          <Link to="/" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
-            <Globe size={20} />
-            지구본으로 복귀
+        {/* 2. 메뉴 리스트 */}
+        <nav className="flex-1 px-4 py-6 flex flex-col gap-2">
+          <Link to="/report" className={getMenuClass('/report')}>
+            <LayoutDashboard size={20} />
+            <span>대시보드</span>
           </Link>
+          
+          <Link to="/report/write" className={getMenuClass('/report/write')}>
+            <PenTool size={20} />
+            <span>일보 작성</span>
+          </Link>
+        </nav>
+
+        {/* 3. 하단 프로필 영역 */}
+        <div className="p-4 m-4 bg-slate-800 rounded-2xl border border-slate-700">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
+              <User size={20} />
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-sm font-bold truncate">관리자</p>
+              <p className="text-xs text-slate-400 truncate w-32">{session.user.email}</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <Link to="/" className="flex-1 text-center py-2 text-xs bg-slate-700 rounded hover:bg-slate-600 text-slate-300 transition-colors flex items-center justify-center gap-1">
+              <Globe size={12} /> 여행홈
+            </Link>
+            <button 
+              onClick={handleLogout}
+              className="flex-1 py-2 text-xs bg-red-500/10 text-red-400 rounded hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-1"
+            >
+              <LogOut size={12} /> 로그아웃
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* [우측 콘텐츠 영역] 페이지마다 내용이 바뀌는 곳 */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* 모바일용 헤더 (PC에선 숨김) */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 md:hidden">
-          <span className="font-bold">Logbook</span>
-          <Link to="/" className="p-2"><Globe size={20} /></Link>
-        </header>
-
-        {/* 실제 페이지 내용이 들어가는 구멍 (Outlet) */}
-        <div className="flex-1 overflow-auto p-8">
-          <Outlet /> 
+      {/* 오른쪽 콘텐츠 영역 */}
+      <main className="flex-1 p-8 overflow-auto bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <Outlet />
         </div>
       </main>
-      
+
     </div>
   );
 };
