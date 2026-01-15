@@ -1,15 +1,40 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'; // 화살표 추가
 
-const CalendarCard = ({ viewYear, viewMonth, calendarDays }) => {
+const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth }) => {
   return (
     <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative transition-colors flex flex-col">
+      
+      {/* 헤더에 화살표 추가 */}
       <div className="flex items-center justify-between mb-3 border-b pb-2">
-        <span className="text-sm font-bold text-gray-700">
-          {viewYear}년 {viewMonth + 1}월 현황
-        </span>
-        <Calendar size={16} className="text-purple-600" />
+        <div className="flex items-center gap-2">
+           <span className="text-sm font-bold text-gray-700">
+            {viewYear}년 {viewMonth + 1}월
+          </span>
+        </div>
+
+        {/* ✨ 좌우 이동 버튼 그룹 */}
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={onPrevMonth}
+            className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 transition-colors"
+            title="이전 달"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          
+          <button 
+            onClick={onNextMonth}
+            className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 transition-colors"
+            title="다음 달"
+          >
+            <ChevronRight size={16} />
+          </button>
+          
+          <div className="w-px h-3 bg-gray-200 mx-1"></div>
+          <Calendar size={16} className="text-purple-600" />
+        </div>
       </div>
 
       <div className="grid grid-cols-7 gap-1 text-center text-xs flex-1">
