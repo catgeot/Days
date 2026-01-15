@@ -45,10 +45,17 @@ const Dashboard = () => {
         const fetchedData = data || [];
         setReports(fetchedData);
 
-        const years = [...new Set(fetchedData.map(r => new Date(r.date).getFullYear()))];
-        if (!years.includes(today.getFullYear())) years.push(today.getFullYear());
-        setAvailableYears(years.sort((a, b) => b - a));
-
+        // ✨ [수정됨] 데이터가 없어도 '올해'와 '최근 2년'은 무조건 나오게 설정
+        const dataYears = fetchedData.map(r => new Date(r.date).getFullYear());
+        const currentYear = new Date().getFullYear();
+        // 기본적으로 올해, 작년, 재작년은 포함시킴
+        const baseYears = [currentYear, currentYear - 1, currentYear - 2];
+        
+        // 데이터 연도와 기본 연도를 합치고 중복 제거
+        const allYears = [...new Set([...dataYears, ...baseYears])];
+        
+        // 내림차순 정렬 (2026 -> 2025 -> 2024)
+        setAvailableYears(allYears.sort((a, b) => b - a));
       } catch (error) {
         console.error('데이터 에러:', error);
       } finally {
