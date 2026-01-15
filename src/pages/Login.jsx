@@ -9,11 +9,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault(); // 새로고침 방지
+ const handleLogin = async (e) => {
+    e.preventDefault(); 
     setLoading(true);
 
-    // Supabase 로그인 요청
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
@@ -22,9 +21,9 @@ const Login = () => {
     setLoading(false);
 
     if (error) {
-      alert("로그인 실패! 이메일이나 비밀번호를 확인하세요.");
+      // 💡 "Email not confirmed" 같은 정확한 에러 영어를 보여줍니다.
+      alert("로그인 실패: " + error.message); 
     } else {
-      // 로그인 성공 시 대시보드로 이동
       navigate('/report');
     }
   };
@@ -95,8 +94,8 @@ const Login = () => {
           </button>
         </div>
 
-      </div>
-    </div>
+      </div>			
+    </div>		
   );
 };
 
