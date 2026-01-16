@@ -1,79 +1,72 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'; // 화살표 추가
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // ✨ 페이지 이동을 위해 추가
 
 const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth }) => {
-  return (
-    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative transition-colors flex flex-col">
-      
-      {/* 헤더에 화살표 추가 */}
-      <div className="flex items-center justify-between mb-3 border-b pb-2">
-        <div className="flex items-center gap-2">
-           <span className="text-sm font-bold text-gray-700">
-            {viewYear}년 {viewMonth + 1}월
-          </span>
-        </div>
+  const navigate = useNavigate(); // ✨ 이동 도구
 
-        {/* ✨ 좌우 이동 버튼 그룹 */}
-        <div className="flex items-center gap-1">
-          <button 
-            onClick={onPrevMonth}
-            className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 transition-colors"
-            title="이전 달"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          
-          <button 
-            onClick={onNextMonth}
-            className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 transition-colors"
-            title="다음 달"
-          >
-            <ChevronRight size={16} />
-          </button>
-          
-          <div className="w-px h-3 bg-gray-200 mx-1"></div>
-          <Calendar size={16} className="text-purple-600" />
+  // ✨ 날짜 클릭 시 실행될 함수
+  const handleDateClick = (dayItem) => {
+    if (!dayItem.day) return; // 빈 칸은 클릭 안 됨
+
+    // 1. 클릭한 날짜 문자열 만들기 (YYYY-MM-DD)
+    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(dayItem.day).padStart(2, '0')}`;
+
+    if (dayItem.active && dayItem.reportId) {
+      // 🅰️ 일보가 있으면 -> 수정 페이지로 이동
+      navigate(`/report/edit/${dayItem.reportId}`);
+    } else {
+      // 🅱️ 일보가 없으면 -> 작성 페이지로 이동 (날짜를 싸들고 감 🎁)
+      // state로 날짜를 전달하면 Write 페이지에서 받을 수 있습니다.
+      navigate('/report/write', { state: { preSelectedDate: dateStr } });
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col h-full">
+      
+      {/* 달력 헤더 */}
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
+          <Calendar className="text-blue-600" size={20} />
+          {viewYear}년 {viewMonth + 1}월
+        </h3>
+        <div className="flex gap-1">
+          <button onClick={onPrevMonth} className="p-1 hover:bg-gray-100 rounded-full transition-colors"><ChevronLeft size={20} /></button>
+          <button onClick={onNextMonth} className="p-1 hover:bg-gray-100 rounded-full transition-colors"><ChevronRight size={20} /></button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs flex-1">
-        {['일','월','화','수','목','금','토'].map(d => (
-          <div key={d} className="text-gray-400 mb-1">{d}</div>
-        ))}
+      {/* 요일 헤더 */}
+      <div className="grid grid-cols-7 text-center text-xs text-gray-400 font-bold mb-2">
+        <div className="text-red-400">일</div>
+        <div>월</div><div>화</div><div>수</div><div>목</div><div>금</div>
+        <div className="text-blue-400">토</div>
+      </div>
 
-        {calendarDays.map((item, index) => (
-          <div key={index} className="aspect-square flex items-center justify-center">
-            {item.day && (
-              <>
-                {item.active ? (
-                  <Link 
-                    to={`/report/${item.reportId}`}
-                    title={`${item.day}일 일보 보기`}
-                    className={`
-                      w-6 h-6 flex items-center justify-center rounded-full 
-                      bg-blue-600 text-white font-bold cursor-pointer hover:bg-blue-700 hover:scale-110 transition-all
-                      ${item.isToday ? 'ring-2 ring-blue-400 ring-offset-1' : ''}
-                    `}
-                  >
-                    {item.day}
-                  </Link>
-                ) : (
-                  <div 
-                    className={`
-                      w-6 h-6 flex items-center justify-center rounded-full 
-                      text-gray-400 bg-gray-50
-                      ${item.isToday ? 'ring-2 ring-gray-300 ring-offset-1 font-bold text-gray-600' : ''}
-                    `}
-                  >
-                    {item.day}
-                  </div>
-                )}
-              </>
+      {/* 날짜 그리드 */}
+      <div className="grid grid-cols-7 gap-1 flex-1 text-sm">
+        {calendarDays.map((d, i) => (
+          <div 
+            key={i} 
+            onClick={() => handleDateClick(d)} // ✨ 클릭 이벤트 연결
+            className={`
+              aspect-square flex items-center justify-center rounded-lg relative cursor-pointer transition-all
+              ${!d.day ? 'pointer-events-none' : 'hover:bg-blue-50 hover:scale-110 hover:z-10'} 
+              ${d.isToday ? 'font-bold ring-2 ring-blue-600 ring-offset-1 z-10' : ''}
+              ${d.active ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-600'}
+            `}
+          >
+            {d.day}
+            
+            {/* 작성된 일보가 있으면 파란 점 표시 */}
+            {d.active && (
+              <span className="absolute bottom-1.5 w-1 h-1 bg-blue-500 rounded-full"></span>
             )}
           </div>
         ))}
       </div>
+      
     </div>
   );
 };

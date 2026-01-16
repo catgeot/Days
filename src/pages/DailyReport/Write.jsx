@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 
 const Write = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // 달력에서 보낸 날짜 받기용
   const { id } = useParams();
   const isEditMode = Boolean(id);
 
+  // 1. 날짜 초기값 설정 (달력에서 선택한 날짜가 있으면 그것을, 없으면 오늘 날짜를 사용)
+  const [date, setDate] = useState(
+    location.state?.preSelectedDate || new Date().toISOString().split('T')[0]
+  );
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [location, setLocation] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [mapLocation, setMapLocation] = useState(''); // location 변수명 충돌 방지 위해 mapLocation으로 변경
   
   const [imageFiles, setImageFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]); 
@@ -23,28 +28,46 @@ const Write = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    // ✨ [수정] 여기 있던 "로그인 안 했으면 쫓아내는 코드" 삭제함!
-    // 이제 누구나 들어올 수 있음.
-
     const loadInitialData = async () => {
+      
+      // 1. ✨ 현재 로그인한 유저 정보부터 가져옵니다.
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // 수정 모드일 때 데이터 불러오기
       if (isEditMode) {
         const { data } = await supabase.from('reports').select('*').eq('id', id).single();
         if (data) {
-          setTitle(data.title); setContent(data.content); setLocation(data.location); setDate(data.date);
+          setTitle(data.title);
+          setContent(data.content);
+          setMapLocation(data.location);
+          setDate(data.date);
           setExistingImages(data.images || []); 
         }
       }
-      // 최근 위치 등은 로그인 안 하면 안 나올 수 있으나 에러는 안 나게 처리됨
-      const { data: historyData } = await supabase.from('reports').select('location').order('date', { ascending: false }).limit(20);
-      if (historyData) {
-        const uniqueLocs = [...new Set(historyData.map(item => item.location))].slice(0, 5);
-        setRecentLocations(uniqueLocs);
+      
+      // 2. ✨ 최근 위치 가져오기 (내 것만!)
+      // user가 있을 때만 쿼리를 날립니다.
+      if (user) {
+        const { data: historyData } = await supabase
+          .from('reports')
+          .select('location')
+          .eq('user_id', user.id) // 🔥 [핵심] 내 아이디랑 똑같은 것만 가져와!
+          .neq('location', null)   // (혹시 모를 빈 값 제외)
+          .neq('location', '')     // (빈 문자열 제외)
+          .order('date', { ascending: false })
+          .limit(20);
+
+        if (historyData) {
+          // 중복 제거
+          const uniqueLocs = [...new Set(historyData.map(item => item.location))].slice(0, 5);
+          setRecentLocations(uniqueLocs);
+        }
       }
     };
+
     loadInitialData();
   }, [id, isEditMode]);
-
-  const handleGetCurrentLocation = () => { /* 기존 코드 유지 (길어서 생략, 그대로 두세요) */ 
+  const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) return alert("위치 정보를 지원하지 않습니다.");
     setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -54,13 +77,13 @@ const Write = () => {
           const data = await response.json();
           const addr = data.address;
           const displayAddress = [addr.city || addr.province || '', addr.borough || addr.district || '', addr.quarter || addr.neighbourhood || addr.suburb || ''].filter(Boolean).join(' ');
-          setLocation(displayAddress || "위치 정보 없음");
-        } catch (e) { setLocation("위치 확인 실패"); } finally { setLocationLoading(false); }
+          setMapLocation(displayAddress || "위치 정보 없음");
+        } catch (e) { setMapLocation("위치 확인 실패"); } finally { setLocationLoading(false); }
       }, () => { setLocationLoading(false); alert("위치 권한을 확인해주세요."); }
     );
   };
 
-  const handleImageChange = async (e) => { /* 기존 코드 유지 */
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
     const totalCount = existingImages.length + imageFiles.length + files.length;
@@ -73,28 +96,26 @@ const Write = () => {
       setPreviewUrls(prev => [...prev, ...newPreviews]);
     } catch (error) { console.error("이미지 압축 실패:", error); }
   };
+
   const removeNewImage = (index) => { setImageFiles(prev => prev.filter((_, i) => i !== index)); setPreviewUrls(prev => prev.filter((_, i) => i !== index)); };
   const removeExistingImage = (index) => { setExistingImages(prev => prev.filter((_, i) => i !== index)); };
 
-  // ✨ [핵심] 저장 버튼 누를 때 로그인 체크!
   const handleSave = async () => {
     if (!title) return alert("제목을 입력해주세요!");
 
-    // 1. 여기서 로그인 체크를 합니다.
+    // 저장 시 로그인 체크
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 2. 로그인을 안 했다면? -> 회원가입으로 유도
     if (!user) {
       const wantToSignup = window.confirm(
         "작성하신 내용을 저장하려면 로그인이 필요합니다.\n\n회원가입 페이지로 이동하시겠습니까?\n(가입 후 다시 작성해야 할 수 있습니다)"
       );
       if (wantToSignup) {
-        navigate('/auth/signup'); // 바로 회원가입으로 보냄
+        navigate('/auth/signup');
       }
-      return; // 저장 로직 중단
+      return;
     }
 
-    // 3. 로그인 했다면? -> 저장 진행 (기존 로직)
     setUploading(true);
     let finalImageUrls = [...existingImages];
 
@@ -112,8 +133,12 @@ const Write = () => {
       finalImageUrls = [...finalImageUrls, ...newUrls];
 
       const reportData = {
-        title, content, location: location || '위치 미지정', date,
-        images: finalImageUrls, weather: '맑음',
+        title,
+        content,
+        location: mapLocation || '위치 미지정',
+        date,
+        images: finalImageUrls,
+        weather: '맑음',
         user_id: user.id 
       };
 
@@ -139,6 +164,7 @@ const Write = () => {
       </div>
 
       <div className="bg-white p-6 sm:p-8 border border-gray-200 rounded-xl shadow-sm flex flex-col gap-6 mx-4">
+        
         {/* 날짜/위치 */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
@@ -150,12 +176,19 @@ const Write = () => {
               위치 <button onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-xs text-blue-600 flex items-center gap-1 hover:underline disabled:opacity-50">{locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />}{locationLoading ? '찾는 중...' : '현재 위치 적용'}</button>
             </label>
             <div className="relative">
-              <input type="text" className="w-full border p-3 pl-10 rounded-lg bg-gray-50" value={location} onChange={(e) => setLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} />
+              <input type="text" 
+								className="w-full border p-3 pl-10 rounded-lg bg-gray-50" 
+								value={mapLocation} 
+								onChange={(e) => setMapLocation(e.target.value)} 
+								onFocus={() => setShowSuggestions(true)} 
+								// ✨ [추가] 브라우저야, 너는 끼어들지 마. 내가 만든 목록만 보여줄 거야.
+    						autoComplete="off"
+							/>
               <MapPin className="absolute left-3 top-3.5 text-gray-400" size={18} />
               {showSuggestions && recentLocations.length > 0 && (
                 <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-xl mt-1 overflow-hidden">
                    {recentLocations.map((loc, idx) => (
-                      <div key={idx} className="px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer flex items-center gap-2" onClick={() => { setLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="text-gray-400" />{loc}</div>
+                      <div key={idx} className="px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer flex items-center gap-2" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="text-gray-400" />{loc}</div>
                     ))}
                 </div>
               )}
@@ -163,7 +196,7 @@ const Write = () => {
           </div>
         </div>
 
-        {/* 사진 첨부 (기존 UI 유지) */}
+        {/* 사진 첨부 */}
         <div>
           <div className="flex justify-between items-end mb-2">
             <label className="block font-bold text-sm text-gray-600">사진 첨부 (최대 4장)</label>
