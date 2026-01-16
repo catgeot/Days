@@ -4,7 +4,7 @@ import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Searc
 
 const RecentList = ({ reports, loading }) => {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState('list');
+  const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredReports = reports.filter(report => 
