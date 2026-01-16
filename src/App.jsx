@@ -1,6 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+// 레이아웃
+import DashboardLayout from './components/Layout/DashboardLayout';
+
 // 페이지들
 import Home from './pages/Home/Home';
 import Login from './pages/Auth/Login';
@@ -13,22 +16,21 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✨ MainLayout 제거! 
-           이제 모든 페이지는 독립적이며, 하단 배너가 따라다니지 않습니다.
-        */}
-
-        {/* 1. 여행 홈 (지구본) - 100% 몰입형 */}
+        
+        {/* 1. 여행 홈 (전체화면) */}
         <Route path="/" element={<Home />} />
         
-        {/* 2. 일보 시스템 (독립된 페이지) */}
-        <Route path="/report" element={<Dashboard />} />
-        <Route path="/report/write" element={<Write />} />
-        <Route path="/report/edit/:id" element={<Write />} />
-        <Route path="/report/:id" element={<Detail />} />
-
-        {/* 3. 인증 관련 */}
+        {/* 2. 인증 페이지 (전체화면) */}
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/signup" element={<Signup />} />
+
+        {/* 3. ✨ 업무용 대시보드 영역 (사이드바 적용!) */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/report" element={<Dashboard />} />
+          <Route path="/report/write" element={<Write />} />
+          <Route path="/report/edit/:id" element={<Write />} />
+          <Route path="/report/:id" element={<Detail />} />
+        </Route>
 
       </Routes>
     </BrowserRouter>
