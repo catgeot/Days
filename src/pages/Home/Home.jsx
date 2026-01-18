@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Globe from 'react-globe.gl';
-import { Plane, Map, CloudSun, FileText, User, Sparkles, Search, Ticket } from 'lucide-react';
+import { FileText, User, Sparkles, Search, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TicketModal from './TicketModal'; 
 import ChatModal from '../../components/ChatModal'; 
+import TravelTicker from '../../components/TravelTicker'; 
 import Logo from './Logo'; 
 
 function Home() {
   const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [initialQuery, setInitialQuery] = useState('');
-
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
 
@@ -36,6 +36,11 @@ function Home() {
     }
   };
 
+  const handleTicketIssue = (prompt) => {
+    setInitialQuery(prompt);
+    setIsChatOpen(true);
+  };
+
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       
@@ -55,19 +60,20 @@ function Home() {
       {/* 2. UI 레이어 */}
       <div className="absolute inset-0 z-10 pointer-events-none p-6 flex flex-col justify-between">
         
-        {/* --- [상단] 헤더 (로고 - 검색 - 날씨) --- */}
-        <header className="grid grid-cols-12 items-center pointer-events-auto relative z-20 h-16">
+        {/* --- [상단] 헤더 --- */}
+        {/* ✨ [수정됨] items-center -> items-start : 우측 리스트가 길어져도 로고/채팅바는 상단 고정 */}
+        <header className="grid grid-cols-12 items-start pointer-events-auto relative z-20">
           
-          {/* [좌측] 로고 */}
-          <div className="col-span-3 flex flex-col justify-center animate-fade-in-down">
+          {/* [좌측] 로고 (상단 패딩 추가로 높이 맞춤) */}
+          <div className="col-span-3 flex flex-col justify-center animate-fade-in-down pt-2 pl-2">
             <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
               <Logo />
             </h1>
             <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1">DEPARTURE LOUNGE</span>
           </div>
 
-          {/* [중앙] 채팅/검색 바 (균형감 있게 배치) */}
-          <div className="col-span-6 flex justify-center animate-fade-in-down delay-100">
+          {/* [중앙] 채팅/검색 바 (상단 패딩 추가) */}
+          <div className="col-span-6 flex justify-center animate-fade-in-down delay-100 pt-2">
             <div className="relative group w-full max-w-md">
               <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
               <div className="relative flex items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-lg transition-all group-focus-within:bg-black/50 group-focus-within:border-blue-400/50 hover:bg-black/30 h-10">
@@ -83,19 +89,17 @@ function Home() {
             </div>
           </div>
           
-          {/* [우측] 날씨 */}
-          <div className="col-span-3 flex justify-end animate-fade-in-down">
-            <div className="bg-black/20 backdrop-blur-md border border-white/5 rounded-2xl p-2 px-4 flex flex-col gap-1 w-40 shadow-2xl">
-               <div className="text-[9px] text-gray-400 font-bold flex items-center gap-1 uppercase tracking-wider"><Plane size={10} /> Live Status</div>
-               <div className="flex justify-between items-center text-xs"><span className="font-bold text-white/90">Osaka</span><span className="flex items-center gap-1 text-yellow-400"><CloudSun size={12} /> 18°C</span></div>
-            </div>
+          {/* [우측] 여행 랭킹 리스트 (Top 10) */}
+          <div className="col-span-3 flex justify-end animate-fade-in-down pr-2">
+            <TravelTicker />
           </div>
+
         </header>
 
 
-        {/* --- [중앙 배경] WHERE TO? (기본 상태로 유지) --- */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none opacity-50 z-0 select-none">
-          <h2 className="text-[8vw] font-black tracking-[0.2em] text-white/10 blur-[2px] whitespace-nowrap">
+        {/* --- [중앙 배경] WHERE TO? --- */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none opacity-50 z-0 select-none mix-blend-overlay">
+          <h2 className="text-[12vw] font-black tracking-[0.05em] text-white/15 blur-[1px] whitespace-nowrap drop-shadow-2xl">
             WHERE TO?
           </h2>
         </div>
@@ -138,9 +142,17 @@ function Home() {
         </footer>
       </div>
 
-      {/* 모달들 */}
-      <TicketModal isOpen={isTicketOpen} onClose={() => setIsTicketOpen(false)} />
-      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} initialQuery={initialQuery} />
+      <TicketModal 
+        isOpen={isTicketOpen} 
+        onClose={() => setIsTicketOpen(false)} 
+        onIssue={handleTicketIssue}
+      />
+      
+      <ChatModal 
+        isOpen={isChatOpen} 
+        onClose={() => setIsChatOpen(false)} 
+        initialQuery={initialQuery} 
+      />
 
     </div>
   );

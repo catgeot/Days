@@ -1,56 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { X, Plane, QrCode, Sparkles, Check } from 'lucide-react'; 
+// src/pages/Home/TicketModal.jsx
 
-export default function TicketModal({ isOpen, onClose }) {
+import React, { useState } from 'react';
+import { X, Plane, QrCode, Sparkles, Check } from 'lucide-react';
+
+// ✨ [수정 1] onIssue prop을 받아옵니다.
+export default function TicketModal({ isOpen, onClose, onIssue }) {
   if (!isOpen) return null;
 
+  // ✨ [수정 2] 'activity' 항목 추가
   const [ticketData, setTicketData] = useState({
     seat: null,
     purpose: null,
     companion: null,
-    flightTime: null
+    flightTime: null,
+    activity: null 
   });
 
-  // 모든 항목이 선택되었는지 확인
+  // 5개 항목이 모두 선택되었는지 확인
   const isReady = Object.values(ticketData).every(val => val !== null);
 
   const handleSelect = (category, value) => {
     setTicketData((prev) => ({ ...prev, [category]: value }));
   };
 
-  // ✨ [핵심] 선택 데이터를 AI가 이해할 수 있는 프롬프트로 변환
   const generateAIPrompt = () => {
-    const { seat, purpose, companion, flightTime } = ticketData;
-    // 나중에 이 문장을 AI API에 보낼 것입니다.
-    return `나는 여행 경험이 '${seat}' 수준이고, 이번엔 '${companion}'와(과) 함께 '${purpose}'을(를) 즐기고 싶어. 비행 시간은 '${flightTime}' 정도가 적당해. 이 조건에 맞는 여행지 3곳과 각 여행지의 매력 포인트를 알려줘.`;
+    // ✨ [수정 3] 프롬프트에 'activity' 내용 반영
+    const { seat, purpose, companion, flightTime, activity } = ticketData;
+    return `나는 여행 레벨이 '${seat}'이고, 이번엔 '${companion}'와(과) 함께 '${purpose}'을(를) 느끼고 싶어. 비행 시간은 '${flightTime}' 정도가 좋고, 가서 '${activity}'을(를) 주로 하고 싶어. 이 조건에 딱 맞는 여행지 3곳을 추천해줘.`;
   };
 
   const handleIssueTicket = () => {
     if (!isReady) return;
     
     const prompt = generateAIPrompt();
-    console.log("생성된 AI 프롬프트:", prompt);
     
-    // TODO: 여기서 AI 검색 페이지로 이동하거나, 결과를 보여주는 로직 연결
-    alert(`[티켓 발권 완료!]\n\nAI에게 다음 질문을 던집니다:\n"${prompt}"`);
+    // ✨ [수정 4] alert 삭제 -> onIssue 호출 (채팅창으로 연결)
+    onIssue(prompt); 
     onClose();
   };
 
+  // ✨ [수정 5] 'activity' 질문 항목 추가
   const questions = [
-    { id: 'seat', title: 'LEVEL', desc: '나의 여행 레벨', options: ['첫 비행','여행 초보', '가끔 떠남', '프로 여행러'] },
-    { id: 'purpose', title: 'MOOD', desc: '여행의 목적', options: ['완벽한 휴식', '미친 액티비티', '식도락 탐방', '쇼핑/도시'] },
-    { id: 'companion', title: 'WITH', desc: '동행인', options: ['나 홀로', '연인과', '친구들과', '가족/아이'] },
-    { id: 'flightTime', title: 'TIME', desc: '비행 시간', options: ['단거리(4H↓)', '중거리(4~10H)', '어디든(10H↑)'] }
+    { id: 'seat', title: 'LEVEL', desc: '나의 여행 레벨', options: ['첫 비행(왕초보)', '이코노미(가끔)', '퍼스트(고수)'] },
+    { id: 'purpose', title: 'MOOD', desc: '여행의 목적', options: ['방전됨(휴식)', '영감 필요(자극)', '배고픔(미식)', '인생샷'] },
+    { id: 'companion', title: 'WITH', desc: '동행인', options: ['나 홀로', '연인과', '친구들과', '부모님'] },
+    { id: 'flightTime', title: 'TIME', desc: '비행 시간', options: ['가볍게(단거리)', '큰맘 먹고(장거리)', '상관없음'] },
+    { id: 'activity', title: 'ACT', desc: '주요 활동', options: ['보는 것(관광)', '하는 것(체험)', '사는 것(쇼핑)', '마시는 것(유흥)'] }
   ];
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm animate-fade-in">
       
-      {/* 티켓 전체 컨테이너 */}
       <div className="bg-white w-full max-w-md rounded-3xl shadow-[0_0_50px_rgba(255,255,255,0.2)] overflow-hidden relative flex flex-col max-h-[90vh]">
         
-        {/* 1. 티켓 헤더 (파란색) */}
-        <div className="bg-blue-600 p-6 text-white relative overflow-hidden">
+        {/* 헤더 */}
+        <div className="bg-blue-600 p-6 text-white relative overflow-hidden flex-shrink-0">
           <div className="absolute top-0 right-0 p-4 opacity-20"><Plane size={100} /></div>
           <div className="flex justify-between items-start relative z-10">
             <div>
@@ -61,10 +65,8 @@ export default function TicketModal({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* 2. 티켓 바디 (질문 영역) - 스크롤 가능 */}
+        {/* 바디 */}
         <div className="flex-1 overflow-y-auto p-6 bg-gray-50 custom-scrollbar">
-          
-          {/* 절취선 효과 */}
           <div className="w-full border-b-2 border-dashed border-gray-300 mb-6 relative">
             <div className="absolute -left-8 -bottom-3 w-6 h-6 bg-black/80 rounded-full"></div>
             <div className="absolute -right-8 -bottom-3 w-6 h-6 bg-black/80 rounded-full"></div>
@@ -83,7 +85,7 @@ export default function TicketModal({ isOpen, onClose }) {
                       key={option}
                       onClick={() => handleSelect(q.id, option)}
                       className={`
-                        py-3 px-2 rounded-xl text-sm font-bold transition-all duration-200 border-2 relative
+                        py-3 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 border-2 relative
                         ${ticketData[q.id] === option
                           ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-[1.02]' 
                           : 'bg-white text-gray-400 border-gray-200 hover:border-blue-300 hover:text-gray-600'
@@ -100,8 +102,8 @@ export default function TicketModal({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* 3. 티켓 푸터 (발권 버튼) */}
-        <div className="p-6 bg-white border-t border-gray-100">
+        {/* 푸터 */}
+        <div className="p-6 bg-white border-t border-gray-100 flex-shrink-0">
           <div className="flex justify-between items-center mb-4 opacity-50">
              <div className="flex flex-col">
                <span className="text-[10px] uppercase tracking-widest text-gray-400">Flight No.</span>
