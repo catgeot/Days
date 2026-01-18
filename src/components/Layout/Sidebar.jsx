@@ -1,34 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, FileText, LogOut, ArrowLeft, Camera, Loader2, FolderOpen, 
-  X, Image as ImageIcon, Play, Pause, ChevronLeft, ChevronRight, ExternalLink 
+  LogOut, Camera, X, Image as ImageIcon, 
+  ChevronLeft, ChevronRight, Globe, Plus, Trash2 
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import imageCompression from 'browser-image-compression';
 
 const Sidebar = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   
-  // 상태 관리
+  // --- 상태 관리 ---
   const [isUploading, setIsUploading] = useState(false);
-  const [isViewing, setIsViewing] = useState(false); // 뷰어 모드 ON/OFF
-  const [slides, setSlides] = useState([]); // 슬라이드 데이터
+  const [isViewing, setIsViewing] = useState(false);
+  const [slides, setSlides] = useState([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0); 
-  const [isPlaying, setIsPlaying] = useState(true); // 자동 재생 여부
+  const [isPlaying, setIsPlaying] = useState(true); 
+  
+  // ✨ [메모장 상태 변경] 문자열 하나가 아니라 '배열'로 관리
+  // 초기값: 저장된게 없으면 빈 메모 1장(['']) 시작
+  const [memos, setMemos] = useState(() => {
+    const saved = localStorage.getItem('post_it_memos');
+    return saved ? JSON.parse(saved) : [''];
+  });
+  const [currentMemoIndex, setCurrentMemoIndex] = useState(0);
+  const [isMemoSaved, setIsMemoSaved] = useState(true);
+  
   const fileInputRef = useRef(null);
 
-  // 1. 유저 정보 & 사진 데이터 가져오기
+  // 1. 데이터 로드
   useEffect(() => {
     const initData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
       if (user) {
-        // 일보(Reports)에서 사진 긁어오기 (최신순 50개)
         const { data: reportData } = await supabase
           .from('reports')
           .select('images')
@@ -62,28 +70,75 @@ const Sidebar = () => {
     if (isViewing && isPlaying && slides.length > 1) {
       interval = setInterval(() => {
         setCurrentSlideIndex((prev) => (prev + 1) % slides.length);
-      }, 4000); // 4초마다 변경
+      }, 4000); 
     }
     return () => clearInterval(interval);
   }, [isViewing, isPlaying, slides]);
 
 
-  // ✨ [핵심 기능] 이미지를 클릭했을 때: 멈추고 + 새 창 열기
-  const handleImageClick = (e) => {
-    e.stopPropagation(); // 배경 클릭(닫기) 이벤트 방지
+  // ✨ [메모장 로직] ---------------------------------------------
+
+  // 내용 변경 시
+  const handleMemoChange = (e) => {
+    const text = e.target.value;
+    const newMemos = [...memos];
+    newMemos[currentMemoIndex] = text;
     
-    // 1. 일단 멈춤!
-    setIsPlaying(false);
+    setMemos(newMemos);
+    setIsMemoSaved(false);
     
-    // 2. 현재 사진을 새 탭에서 열기
-    const currentImageUrl = slides[currentSlideIndex];
-    if (currentImageUrl) {
-      window.open(currentImageUrl, '_blank');
+    // 배열 전체를 JSON으로 저장
+    localStorage.setItem('post_it_memos', JSON.stringify(newMemos));
+    setTimeout(() => setIsMemoSaved(true), 800);
+  };
+
+  // 새 메모 추가 (+)
+  const addNewMemo = () => {
+    const newMemos = [...memos, '']; // 빈 메모 추가
+    setMemos(newMemos);
+    setCurrentMemoIndex(newMemos.length - 1); // 마지막 장으로 이동
+    localStorage.setItem('post_it_memos', JSON.stringify(newMemos));
+  };
+
+  // 현재 메모 삭제 (휴지통)
+  const deleteMemo = () => {
+    if (window.confirm('이 메모를 삭제하시겠습니까?')) {
+      const newMemos = memos.filter((_, index) => index !== currentMemoIndex);
+      
+      // 다 지워도 최소 1장은 남겨야 함
+      if (newMemos.length === 0) {
+        newMemos.push('');
+      }
+
+      setMemos(newMemos);
+      // 인덱스 조정 (마지막 장을 지웠으면 앞장으로, 아니면 그대로)
+      const nextIndex = currentMemoIndex >= newMemos.length ? newMemos.length - 1 : currentMemoIndex;
+      setCurrentMemoIndex(nextIndex);
+      
+      localStorage.setItem('post_it_memos', JSON.stringify(newMemos));
     }
   };
 
+  // 이전/다음 이동
+  const prevMemo = () => {
+    if (currentMemoIndex > 0) setCurrentMemoIndex(currentMemoIndex - 1);
+  };
+  const nextMemo = () => {
+    if (currentMemoIndex < memos.length - 1) setCurrentMemoIndex(currentMemoIndex + 1);
+  };
 
-  // 사진 업로드
+  // -----------------------------------------------------------
+
+
+  // 토글 기능
+  const togglePlay = (e) => {
+    e.stopPropagation();
+    if (!isPlaying) {
+        setCurrentSlideIndex((prev) => (prev + 1) % slides.length);
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -117,27 +172,88 @@ const Sidebar = () => {
   return (
     <>
       <div className="w-64 h-screen bg-[#1a1c23] text-gray-400 flex flex-col border-r border-gray-800 flex-shrink-0 transition-all duration-300">
-        <div className="p-6">
-          <Link to="/" className="flex items-center gap-2 text-white hover:text-blue-400 transition-colors group">
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="font-bold tracking-widest text-sm">TRAVEL HOME</span>
+        
+        {/* 상단: 심플한 홈 버튼 (지구본) */}
+        <div className="px-6 pt-5 pb-0 flex justify-between items-center">
+          <Link 
+            to="/" 
+            className="text-gray-500 hover:text-blue-400 transition-colors p-2 -ml-2 hover:bg-gray-800/50 rounded-full group" 
+            title="Go Home"
+          >
+            <Globe size={20} className="group-hover:rotate-180 transition-transform duration-700 ease-in-out"/>
           </Link>
-          <h1 className="text-2xl font-bold text-white mt-4 tracking-tighter">DEPARTURE<span className="text-blue-500">.</span></h1>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
-          <p className="text-xs font-bold text-gray-600 px-4 mb-2 mt-4">MAIN MENU</p>
-          <Link to="/report" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${location.pathname.startsWith('/report') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'hover:bg-gray-800 hover:text-gray-200'}`}>
-            <LayoutDashboard size={20} /> <span className="font-medium text-sm">일보 대시보드</span>
-          </Link>
-          <div className="group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 hover:text-gray-200 cursor-not-allowed opacity-50">
-            <FileText size={20} /> <span className="font-medium text-sm">견적서 관리</span><span className="text-[10px] border border-gray-600 px-1 rounded ml-auto">Soon</span>
-          </div>
-          <div className="group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 hover:text-gray-200 cursor-not-allowed opacity-50">
-            <FolderOpen size={20} /> <span className="font-medium text-sm">현장 문서함</span>
+        {/* 메인 영역: 포스트잇 메모장 */}
+        <nav className="flex-1 px-4 py-2 flex flex-col overflow-hidden">
+          
+          <div className="flex-1 flex flex-col h-full mt-2 relative">
+            
+            {/* 메모 헤더 (페이지 번호 및 저장 상태) */}
+            <div className="flex items-center justify-between px-2 mb-2 select-none">
+                <div className="flex items-center gap-2 text-[11px] font-bold text-gray-500 tracking-wider">
+                    <span className="text-blue-400">NOTE</span> {currentMemoIndex + 1} <span className="text-gray-700">/</span> {memos.length}
+                </div>
+                <span className={`text-[10px] font-mono transition-colors ${isMemoSaved ? 'text-gray-600' : 'text-blue-400 animate-pulse'}`}>
+                    {isMemoSaved ? 'Saved' : 'Saving...'}
+                </span>
+            </div>
+
+            {/* 메모장 본문 (카드 형태) */}
+            <div className="flex-1 bg-gray-800/40 border border-gray-700/30 rounded-xl p-1 flex flex-col transition-all hover:border-gray-600/50">
+                <textarea 
+                    className="flex-1 w-full bg-transparent border-0 p-3 text-sm text-gray-300 placeholder-gray-600 focus:outline-none resize-none custom-scrollbar leading-relaxed"
+                    placeholder="새로운 아이디어를 적어보세요..."
+                    value={memos[currentMemoIndex]}
+                    onChange={handleMemoChange}
+                    spellCheck="false"
+                />
+                
+                {/* 하단 컨트롤 바 (페이지 넘김, 삭제, 추가) */}
+                <div className="h-10 flex items-center justify-between px-2 border-t border-gray-700/30">
+                    
+                    {/* 왼쪽: 삭제 버튼 */}
+                    <button 
+                        onClick={deleteMemo}
+                        className="p-1.5 text-gray-600 hover:text-red-400 transition-colors rounded-md hover:bg-red-400/10"
+                        title="Delete this note"
+                    >
+                        <Trash2 size={14} />
+                    </button>
+
+                    {/* 중앙: 네비게이션 */}
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={prevMemo} 
+                            disabled={currentMemoIndex === 0}
+                            className={`p-1 transition-colors ${currentMemoIndex === 0 ? 'text-gray-700 cursor-not-allowed' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+                        <button 
+                            onClick={nextMemo} 
+                            disabled={currentMemoIndex === memos.length - 1}
+                            className={`p-1 transition-colors ${currentMemoIndex === memos.length - 1 ? 'text-gray-700 cursor-not-allowed' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+
+                    {/* 오른쪽: 추가 버튼 */}
+                    <button 
+                        onClick={addNewMemo}
+                        className="p-1.5 text-gray-500 hover:text-blue-400 transition-colors rounded-md hover:bg-blue-400/10"
+                        title="Add new note"
+                    >
+                        <Plus size={16} />
+                    </button>
+                </div>
+            </div>
+
           </div>
         </nav>
 
+        {/* 하단 프로필 영역 (유지) */}
         <div className="p-4 border-t border-gray-800">
           {user ? (
             <div className="bg-gray-800/50 rounded-2xl p-4">
@@ -166,68 +282,48 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* ✨ [디지털 액자 모드] */}
+      {/* 슬라이드 뷰어 모달 (유지) */}
       {isViewing && createPortal(
         <div className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center animate-fade-in group">
-          
-          {/* 배경 클릭 시 닫기 */}
           <div className="absolute inset-0" onClick={() => setIsViewing(false)}></div>
-
-          {/* 닫기 버튼 */}
           <button onClick={() => setIsViewing(false)} className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors z-20 bg-black/50 p-2 rounded-full"><X size={32} /></button>
 
-          {/* 메인 슬라이드 영역 */}
           <div className="relative w-full h-full flex items-center justify-center pointer-events-none p-4">
-            
             {slides.length > 0 ? (
-              <div className="relative pointer-events-auto shadow-2xl group/image">
-                {/* 현재 이미지 */}
+              <div className="relative pointer-events-auto shadow-2xl group/image max-h-[85vh] max-w-[95vw] flex items-center justify-center">
                 <img 
                   src={slides[currentSlideIndex]} 
                   alt="Memory Slide" 
-                  onClick={handleImageClick} // ✨ 클릭 이벤트 연결
-                  className="max-h-[85vh] max-w-[95vw] w-auto h-auto object-contain transition-opacity duration-500 cursor-pointer"
-                  title="클릭하여 새 창에서 열기 (자동 일시정지)"
+                  className="max-h-[85vh] max-w-[95vw] w-auto h-auto object-contain transition-opacity duration-500 select-none"
                 />
-                
-                {/* 이미지 위에 뜨는 '새창열기' 안내 아이콘 (호버 시) */}
-                <div className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity pointer-events-none">
-                  <ExternalLink size={20} />
-                </div>
-
-                {/* 좌우 화살표 */}
+                <div 
+                  className="absolute inset-0 z-0 cursor-pointer"
+                  onClick={togglePlay}
+                  title={isPlaying ? "클릭하여 일시정지" : "클릭하여 재생"} 
+                />
                 {slides.length > 1 && (
                   <>
-                    <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all"><ChevronLeft size={32} /></button>
-                    <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all"><ChevronRight size={32} /></button>
+                    <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm opacity-0 group-hover/image:opacity-100 transition-all z-10"><ChevronLeft size={32} /></button>
+                    <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/70 text-white p-3 rounded-full backdrop-blur-sm opacity-0 group-hover/image:opacity-100 transition-all z-10"><ChevronRight size={32} /></button>
                   </>
                 )}
               </div>
             ) : (
               <div className="text-gray-500 flex flex-col items-center"><ImageIcon size={64} /><p className="mt-4">표시할 사진이 없습니다.</p></div>
             )}
-
           </div>
 
-          {/* 하단 컨트롤 바 */}
           <div className="absolute bottom-8 z-20 flex items-center gap-6 pointer-events-auto bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 hover:bg-black/60 transition-all">
-            
-            {/* 재생/일시정지 토글 */}
-            {slides.length > 1 && (
-              <button onClick={() => setIsPlaying(!isPlaying)} className="text-white hover:text-blue-400 transition-colors" title={isPlaying ? "일시정지" : "자동재생 시작"}>
-                {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
-              </button>
-            )}
-
             <span className="text-white/80 font-mono text-sm border-r border-white/20 pr-6 mr-0">
               {currentSlideIndex + 1} / {slides.length || 0}
             </span>
-
-            <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-2 text-white/80 hover:text-white text-xs font-bold transition-colors">
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest">
+                {isPlaying ? "Playing" : "Paused"}
+            </span>
+            <button onClick={() => fileInputRef.current.click()} className="flex items-center gap-2 text-white/80 hover:text-white text-xs font-bold transition-colors ml-4">
               <Camera size={16} /> 프로필 변경
             </button>
           </div>
-          
           <input type="file" ref={fileInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
         </div>,
         document.body

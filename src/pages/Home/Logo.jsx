@@ -1,7 +1,7 @@
 function Logo() {
 	return (
 		<span>
-			Departure<span className="text-blue-400">.</span>Lounge
+			GATE<span className="text-blue-400">.</span>0
 		</span>
 	);
 }
