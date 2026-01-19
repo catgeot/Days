@@ -1,26 +1,39 @@
 import React from 'react';
 import { Plane, CloudSun, Sun, CloudRain, Cloud, Wind, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
-// ... (cities 데이터, WeatherIcon, RankChange 컴포넌트는 기존과 동일하므로 생략) ...
-// 기존 코드 유지해주세요 (cities 배열 등)
 const cities = [
-    { rank: 1, name: 'Osaka', temp: 18, weather: 'sun', change: 'up' },
-    { rank: 2, name: 'Da Nang', temp: 28, weather: 'cloud', change: 'same' },
-    { rank: 3, name: 'Bangkok', temp: 32, weather: 'rain', change: 'up' },
-    { rank: 4, name: 'Fukuoka', temp: 15, weather: 'sun', change: 'down' },
-    { rank: 5, name: 'Tokyo', temp: 16, weather: 'cloud', change: 'up' },
-    { rank: 6, name: 'Taipei', temp: 22, weather: 'rain', change: 'down' },
-    { rank: 7, name: 'Nha Trang', temp: 29, weather: 'sun', change: 'same' },
-    { rank: 8, name: 'Paris', temp: 12, weather: 'wind', change: 'up' },
-    { rank: 9, name: 'New York', temp: 10, weather: 'wind', change: 'down' },
-    { rank: 10, name: 'Sydney', temp: 24, weather: 'sun', change: 'up' },
-  ];
-  
-// ... (아이콘 컴포넌트 생략) ...
-const WeatherIcon = ({ type }) => { /* ... */ }; // 기존 코드 유지
-const RankChange = ({ type }) => { /* ... */ }; // 기존 코드 유지
+  { rank: 1, name: 'Osaka', temp: 18, weather: 'sun', change: 'up' },
+  { rank: 2, name: 'Da Nang', temp: 28, weather: 'cloud', change: 'same' },
+  { rank: 3, name: 'Bangkok', temp: 32, weather: 'rain', change: 'up' },
+  { rank: 4, name: 'Fukuoka', temp: 15, weather: 'sun', change: 'down' },
+  { rank: 5, name: 'Tokyo', temp: 16, weather: 'cloud', change: 'up' },
+  { rank: 6, name: 'Taipei', temp: 22, weather: 'rain', change: 'down' },
+  { rank: 7, name: 'Nha Trang', temp: 29, weather: 'sun', change: 'same' },
+  { rank: 8, name: 'Paris', temp: 12, weather: 'wind', change: 'up' },
+  { rank: 9, name: 'New York', temp: 10, weather: 'wind', change: 'down' },
+  { rank: 10, name: 'Sydney', temp: 24, weather: 'sun', change: 'up' },
+];
 
-// ✨ [수정] props로 onCityClick을 받습니다.
+// ✨ 날씨 아이콘 컴포넌트 (복구됨)
+const WeatherIcon = ({ type }) => {
+  switch (type) {
+    case 'sun': return <Sun size={12} className="text-yellow-400" />;
+    case 'rain': return <CloudRain size={12} className="text-blue-400" />;
+    case 'cloud': return <Cloud size={12} className="text-gray-300" />;
+    case 'wind': return <Wind size={12} className="text-gray-400" />;
+    default: return <CloudSun size={12} className="text-yellow-200" />;
+  }
+};
+
+// ✨ 순위 변동 아이콘 컴포넌트 (복구됨)
+const RankChange = ({ type }) => {
+  switch (type) {
+    case 'up': return <TrendingUp size={10} className="text-red-400" />;
+    case 'down': return <TrendingDown size={10} className="text-blue-400" />;
+    default: return <Minus size={10} className="text-gray-500" />;
+  }
+};
+
 export default function TravelTicker({ onCityClick }) {
   return (
     <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl p-4 w-60 shadow-2xl flex flex-col gap-3 transition-all hover:bg-black/30">
@@ -41,11 +54,11 @@ export default function TravelTicker({ onCityClick }) {
         {cities.map((city) => (
           <div 
             key={city.rank} 
-            // ✨ [핵심] 클릭 시 부모(Home)에게 도시 이름을 전달!
+            // 클릭 이벤트 연결
             onClick={() => onCityClick && onCityClick(city.name)}
             className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
-            {/* ... (내부 내용은 기존 디자인 유지) ... */}
+            {/* 좌측: 순위 + 도시명 */}
             <div className="flex items-center gap-3">
               <span className={`text-xs font-bold font-mono w-4 text-center ${city.rank <= 3 ? 'text-blue-400' : 'text-gray-500'}`}>
                 {city.rank}
@@ -64,6 +77,7 @@ export default function TravelTicker({ onCityClick }) {
               </div>
             </div>
 
+            {/* 우측: 날씨 + 온도 (✨ 아이콘이 잘 보이도록 배치) */}
             <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
               <WeatherIcon type={city.weather} />
               <span className="text-xs font-medium text-gray-300 group-hover:text-white font-mono">{city.temp}°</span>
@@ -72,7 +86,8 @@ export default function TravelTicker({ onCityClick }) {
         ))}
       </div>
 
-      <div className="text-[8px] text-center text-gray-600 font-mono tracking-[0.2em] border-t border-white/5 pt-2">
+      {/* 하단 장식 */}
+      <div className="text-[8px] text-center text-gray-600 font-mono tracking-[0.2em] border-t border-white/5 pt-2 group-hover:text-blue-400/50 transition-colors">
         CLICK TO BOOK
       </div>
     </div>
