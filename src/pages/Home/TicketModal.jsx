@@ -1,132 +1,182 @@
-// src/pages/Home/TicketModal.jsx
+import React, { useState, useEffect } from 'react';
+import { X, Plane, Ticket, MapPin, Search } from 'lucide-react';
 
-import React, { useState } from 'react';
-import { X, Plane, QrCode, Sparkles, Check } from 'lucide-react';
+// 5단계 선택지 데이터 (친근하고 감성적인 문구로 변환)
+const SELECTION_STEPS = [
+  {
+    id: 'level',
+    label: '🛫 여행 레벨',
+    options: ['두근두근 첫 비행', '아직은 초보', '가끔 떠나는 일탈', '프로 모험러']
+  },
+  {
+    id: 'companion',
+    label: '👨‍👩‍👧‍👦 누구와?',
+    options: ['나 혼자만의 시간', '사랑하는 연인과', '아이와 함께 추억', '부모님과 효도여행']
+  },
+  {
+    id: 'purpose',
+    label: '🎨 여행 목적',
+    options: ['아무것도 안 하기(멍)', '새로운 영감 충전', '미식 탐방', '인생샷 남기기']
+  },
+  {
+    id: 'flight',
+    label: '⏰ 비행 시간',
+    options: ['가볍게(단거리)', '적당히(중거리)', '멀리 떠날래(장거리)', '상관없음']
+  },
+  {
+    id: 'activity',
+    label: '🎡 하고 싶은 것',
+    options: ['눈에 담는 관광', '직접 해보는 체험', '쇼핑 플렉스', '현지의 밤 즐기기']
+  }
+];
 
-// ✨ [수정 1] onIssue prop을 받아옵니다.
-export default function TicketModal({ isOpen, onClose, onIssue }) {
-  if (!isOpen) return null;
-
-  // ✨ [수정 2] 'activity' 항목 추가
-  const [ticketData, setTicketData] = useState({
-    seat: null,
-    purpose: null,
-    companion: null,
-    flightTime: null,
-    activity: null 
+export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestination }) {
+  const [destination, setDestination] = useState('');
+  
+  // 사용자가 선택한 답변들을 저장하는 상태
+  const [selections, setSelections] = useState({
+    level: '',
+    companion: '',
+    purpose: '',
+    flight: '',
+    activity: ''
   });
 
-  // 5개 항목이 모두 선택되었는지 확인
-  const isReady = Object.values(ticketData).every(val => val !== null);
+  // 모달 열릴 때 초기화 및 목적지 자동 입력
+  useEffect(() => {
+    if (isOpen) {
+      setDestination(preFilledDestination || '');
+      setSelections({ level: '', companion: '', purpose: '', flight: '', activity: '' });
+    }
+  }, [isOpen, preFilledDestination]);
 
   const handleSelect = (category, value) => {
-    setTicketData((prev) => ({ ...prev, [category]: value }));
+    setSelections(prev => ({ ...prev, [category]: value }));
   };
 
-  const generateAIPrompt = () => {
-    // ✨ [수정 3] 프롬프트에 'activity' 내용 반영
-    const { seat, purpose, companion, flightTime, activity } = ticketData;
-    return `나는 여행 레벨이 '${seat}'이고, 이번엔 '${companion}'와(과) 함께 '${purpose}'을(를) 느끼고 싶어. 비행 시간은 '${flightTime}' 정도가 좋고, 가서 '${activity}'을(를) 주로 하고 싶어. 이 조건에 딱 맞는 여행지 3곳을 추천해줘.`;
-  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // 최소한의 선택 확인 (목적지나 선택지 중 하나라도 있어야 함)
+    const hasSelections = Object.values(selections).some(val => val !== '');
+    if (!destination && !hasSelections) {
+      alert("여행하고 싶은 기분이나 목적지를 하나라도 알려주세요!");
+      return;
+    }
 
-  const handleIssueTicket = () => {
-    if (!isReady) return;
+    // AI에게 보낼 풍성한 프롬프트 생성
+    const prompt = `여행 계획을 제안해줘.
+    - 목적지: ${destination ? destination : '아직 못 정했어, 아래 조건에 맞춰 추천해줘.'}
+    - 여행자 레벨: ${selections.level || '상관없음'}
+    - 동행인: ${selections.companion || '미정'}
+    - 여행의 주된 목적: ${selections.purpose || '자유롭게'}
+    - 선호 비행 시간: ${selections.flight || '상관없음'}
+    - 선호 활동: ${selections.activity || '다양하게'}
     
-    const prompt = generateAIPrompt();
-    
-    // ✨ [수정 4] alert 삭제 -> onIssue 호출 (채팅창으로 연결)
-    onIssue(prompt); 
+    위의 상황에 처한 여행자에게 가장 현실적이고 매력적인 여행 코스와 팁을 알려줘.`;
+
+    onIssue(prompt);
     onClose();
   };
 
-  // ✨ [수정 5] 'activity' 질문 항목 추가
-  const questions = [
-    { id: 'seat', title: 'LEVEL', desc: '나의 여행 레벨', options: ['첫 비행(왕초보)', '이코노미(가끔)', '퍼스트(고수)'] },
-    { id: 'purpose', title: 'MOOD', desc: '여행의 목적', options: ['방전됨(휴식)', '영감 필요(자극)', '배고픔(미식)', '인생샷'] },
-    { id: 'companion', title: 'WITH', desc: '동행인', options: ['나 홀로', '연인과', '친구들과', '부모님'] },
-    { id: 'flightTime', title: 'TIME', desc: '비행 시간', options: ['가볍게(단거리)', '큰맘 먹고(장거리)', '상관없음'] },
-    { id: 'activity', title: 'ACT', desc: '주요 활동', options: ['보는 것(관광)', '하는 것(체험)', '사는 것(쇼핑)', '마시는 것(유흥)'] }
-  ];
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
       
-      <div className="bg-white w-full max-w-md rounded-3xl shadow-[0_0_50px_rgba(255,255,255,0.2)] overflow-hidden relative flex flex-col max-h-[90vh]">
+      <div className="relative bg-gradient-to-br from-gray-900 to-black border border-white/20 w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row animate-fade-in-up max-h-[90vh]">
         
-        {/* 헤더 */}
-        <div className="bg-blue-600 p-6 text-white relative overflow-hidden flex-shrink-0">
-          <div className="absolute top-0 right-0 p-4 opacity-20"><Plane size={100} /></div>
-          <div className="flex justify-between items-start relative z-10">
-            <div>
-              <h2 className="text-2xl font-black tracking-widest">BOARDING PASS</h2>
-              <p className="text-blue-200 text-sm font-mono mt-1">AI TRAVELER TICKET</p>
-            </div>
-            <button onClick={onClose} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition"><X size={20} /></button>
-          </div>
+        {/* [좌측] 감성 영역 (좁게) */}
+        <div className="hidden md:flex w-1/4 bg-blue-900/20 p-6 flex-col justify-between border-r border-white/10 relative">
+           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
+           <div>
+             <span className="text-blue-400 text-xs font-bold tracking-[0.3em]">GATE 0</span>
+             <h2 className="text-2xl font-bold text-white mt-4 leading-normal">
+               꿈을<br/>현실로<br/>만드는<br/>티켓
+             </h2>
+           </div>
+           <div className="text-xs text-gray-400 leading-relaxed">
+             망설이지 마세요.<br/>
+             당신의 취향을 선택하면<br/>
+             여정이 시작됩니다.
+           </div>
         </div>
 
-        {/* 바디 */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gray-50 custom-scrollbar">
-          <div className="w-full border-b-2 border-dashed border-gray-300 mb-6 relative">
-            <div className="absolute -left-8 -bottom-3 w-6 h-6 bg-black/80 rounded-full"></div>
-            <div className="absolute -right-8 -bottom-3 w-6 h-6 bg-black/80 rounded-full"></div>
+        {/* [우측] 선택 영역 (넓게) */}
+        <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <Plane className="text-blue-400" size={20} />
+              Boarding Pass <span className="text-xs font-normal text-gray-500 ml-2">Preferences</span>
+            </h2>
+            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+              <X className="text-gray-400 hover:text-white" size={20} />
+            </button>
           </div>
 
-          <div className="space-y-8">
-            {questions.map((q) => (
-              <div key={q.id}>
-                <div className="flex items-end gap-2 mb-3">
-                  <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">{q.title}</span>
-                  <span className="text-sm text-gray-500">{q.desc}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {q.options.map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => handleSelect(q.id, option)}
-                      className={`
-                        py-3 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 border-2 relative
-                        ${ticketData[q.id] === option
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-[1.02]' 
-                          : 'bg-white text-gray-400 border-gray-200 hover:border-blue-300 hover:text-gray-600'
-                        }
-                      `}
-                    >
-                      {option}
-                      {ticketData[q.id] === option && <Check size={14} className="absolute top-2 right-2 opacity-50"/>}
-                    </button>
-                  ))}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* 1. 목적지 검색 (지구본/랭킹에서 안 골랐을 때 사용) */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <label className="text-[10px] font-bold text-gray-500 tracking-wider mb-2 block">DESTINATION (목적지)</label>
+              <div className="relative group">
+                <MapPin className="absolute left-3 top-2.5 text-gray-500 group-focus-within:text-blue-400 transition-colors" size={16} />
+                <input 
+                  type="text"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  placeholder="지구본을 클릭하거나, 직접 입력해서 검색하세요"
+                  className="w-full bg-black/50 border border-white/10 rounded-lg py-2 pl-10 pr-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder-gray-600"
+                />
+                {/* 검색 아이콘 장식 */}
+                <div className="absolute right-3 top-2.5 text-gray-600">
+                  <Search size={14} />
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+
+            {/* 2. 5단계 선택지 (한 줄에 하나씩) */}
+            <div className="space-y-5">
+              {SELECTION_STEPS.map((step) => (
+                <div key={step.id} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                  <label className="text-xs font-bold text-blue-200 mb-3 block flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                    {step.label}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {step.options.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleSelect(step.id, option)}
+                        className={`
+                          text-xs px-3 py-2 rounded-lg border transition-all duration-200
+                          ${selections[step.id] === option
+                            ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.4)] scale-105'
+                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/30'}
+                        `}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 발권 버튼 */}
+            <button 
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4 hover:shadow-blue-500/30 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+            >
+              <Ticket size={18} />
+              <span>
+                {destination ? `${destination}행 티켓 발권하기` : '나만의 여행지 추천받기'}
+              </span>
+            </button>
+          </form>
         </div>
-
-        {/* 푸터 */}
-        <div className="p-6 bg-white border-t border-gray-100 flex-shrink-0">
-          <div className="flex justify-between items-center mb-4 opacity-50">
-             <div className="flex flex-col">
-               <span className="text-[10px] uppercase tracking-widest text-gray-400">Flight No.</span>
-               <span className="font-mono font-bold text-lg">AI-808</span>
-             </div>
-             <QrCode size={40} />
-          </div>
-
-          <button 
-            onClick={handleIssueTicket}
-            disabled={!isReady}
-            className={`
-              w-full py-4 rounded-xl font-black text-lg flex items-center justify-center gap-2 transition-all shadow-xl
-              ${isReady 
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-[1.02] cursor-pointer' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }
-            `}
-          >
-            {isReady ? <><Sparkles size={20} /> 티켓 발권하기</> : '옵션을 모두 선택해주세요'}
-          </button>
-        </div>
-
       </div>
     </div>
   );
