@@ -15,23 +15,33 @@ const Signup = () => {
   };
 
   const handleSignup = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+		e.preventDefault();
+		setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
+		try {
+			const { data, error } = await supabase.auth.signUp({
+				email,
+				password,
+				// ✨ 중요: 이 옵션을 넣어야 메일 클릭 시 우리 사이트로 돌아옵니다.
+				options: {
+					emailRedirectTo: 'http://localhost:5173/', 
+				},
+			});
 
-    setLoading(false);
+			if (error) throw error;
 
-    if (error) {
-      alert("가입 실패: " + error.message);
-    } else {
-      alert("회원가입 성공! \n자동으로 로그인됩니다.");
-      navigate('/report'); // 가입 성공 시 대시보드로 이동
-    }
-  };
+			// ✨ [변경] 바로 로그인 페이지로 보내지 않고, 안내 메시지 띄우기 (alert 혹은 모달)
+			alert("회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다.");
+			
+			// 안내 후 로그인 페이지로 이동
+			navigate('/auth/login'); 
+
+		} catch (error) {
+			alert(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
   return (
     // ✨ bg-gray-100을 줘서 검은 배경을 덮어버립니다.

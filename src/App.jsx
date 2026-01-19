@@ -11,6 +11,8 @@ import Signup from './pages/Auth/Signup';
 import Dashboard from './pages/DailyReport/Dashboard';
 import Write from './pages/DailyReport/Write';
 import Detail from './pages/DailyReport/Detail';
+import ForgotPassword from './pages/Auth/ForgotPassword'; // ✨ 추가됨
+import UpdatePassword from './pages/Auth/UpdatePassword'; // ✨ 추가됨
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
           <Route path="/report/edit/:id" element={<Write />} />
           <Route path="/report/:id" element={<Detail />} />
         </Route>
+				<Route path="/auth/forgot-password" element={<ForgotPassword />} />
+				<Route path="/auth/update-password" element={<UpdatePassword />} />
 
       </Routes>
     </BrowserRouter>
