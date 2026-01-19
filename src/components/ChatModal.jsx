@@ -4,26 +4,31 @@ import { X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 const ChatModal = ({ isOpen, onClose, initialQuery }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // 시스템 프롬프트 (AI의 성격 부여)
-  const SYSTEM_PROMPT = `
-    당신은 'Gate 0'라는 여행 웹사이트의 AI 가이드입니다.
-    당신의 임무는 단순 정보 전달이 아니라, 여행을 주저하는 사용자에게 '동기 부여'와 '안심'을 주는 것입니다.
+  // API 키 가져오기
+  const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-    [대화 원칙]
-    1. 말투: 여행을 많이 다녀본 친절한 선배처럼 따뜻하고 격려하는 어조 (존댓말).
-    2. 공감: 사용자가 입력한 '여행 경험(초보/고수)'과 '현재 기분'을 최우선으로 고려해서 답변해.
-    3. 길이: 가독성을 위해 300자 이내로 핵심만 감성적으로 전달해. 구구절절한 역사 설명 금지.
-    4. 형식: 추천 여행지가 있다면 **굵게** 표시해줘.
-    5. 마지막엔 항상 사용자가 안심할 수 있는 한마디를 덧붙여줘.
+  // 🚨 [수정 1] 시스템 프롬프트 강력하게 업그레이드 (감성 주입)
+  const SYSTEM_PROMPT = `
+    당신은 'Gate 0'라는 여행 웹사이트의 전설적인 여행 가이드입니다.
+    
+    [핵심 역할]
+    단순한 정보 검색기가 아닙니다. 여행을 망설이는 사용자에게 '용기'와 '설렘'을 불어넣어 주는 따뜻한 멘토가 되어주세요.
+
+    [답변 가이드]
+    1. 톤앤매너: 친절하고 다정하게, 이모지(✈️, 🌊, ✨)를 적절히 섞어서 생동감 있게 표현하세요.
+    2. 공감하기: 사용자의 질문 뒤에 숨겨진 '걱정'이나 '기대'를 먼저 읽어주고 공감해주세요.
+    3. 추천방식: 장소만 툭 던지지 말고, "거기서 무엇을 느끼면 좋은지" 감성적인 팁을 덧붙여주세요.
+    4. 길이: 너무 길지 않게, 하지만 문장이 중간에 끊기지 않도록 완결된 문장으로 끝맺어주세요.
+    5. 강조: 중요한 여행지나 팁은 **굵게** 표시해주세요.
   `;
 
   useEffect(() => {
     if (isOpen) {
       if (messages.length === 0) {
-        setMessages([{ role: 'assistant', text: '반갑습니다! 여행 계획을 도와드릴까요? 막연한 생각이라도 좋으니 편하게 말씀해주세요. ✈️' }]);
+        setMessages([{ role: 'model', text: '반갑습니다! 떠나고 싶은 곳이 있나요? 아니면 막연한 기분만 들고 오셨나요? 무엇이든 들어드릴게요. ✈️' }]);
       }
       if (initialQuery) {
         handleSend(initialQuery);
@@ -38,44 +43,55 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
   const handleSend = async (text) => {
     if (!text.trim() || isLoading) return;
 
-    // 1. 사용자 메시지 화면에 추가
     const userMsg = { role: 'user', text };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
 
     try {
-      // 2. OpenAI API 호출
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini", // 가성비 모델 사용
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT }, // 페르소나 주입
-            ...messages.map(m => ({ role: m.role, content: m.text })), // 이전 대화 기록
-            { role: "user", content: text } // 현재 질문
-          ],
-          temperature: 0.7, // 창의성 조절 (0.7 정도가 감성적인 글쓰기에 적합)
-          max_tokens: 500   // 답변 길이 제한
-        })
-      });
+      // gemini-flash-latest 모델 사용 (연결 성공한 모델)
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: `${SYSTEM_PROMPT}\n\n사용자 질문: ${text}` }]
+              }
+            ],
+            generationConfig: {
+              // 🚨 [수정 2] 창의성(Temperature) 높이기: 0.7 -> 1.0 (감성적인 표현 증가)
+              temperature: 1.0, 
+              // 🚨 [수정 3] 답변 길이 제한 풀기: 800 -> 2500 (절대 안 끊김)
+              maxOutputTokens: 2500,
+            }
+          })
+        }
+      );
 
       const data = await response.json();
 
-      if (data.error) throw new Error(data.error.message);
+      if (!response.ok) {
+        console.error("Gemini API Error:", data);
+        const errorCode = data.error?.code || response.status;
+        
+        if (errorCode === 429) throw new Error("사용량이 많아 잠시 쉬고 있습니다. 10초 뒤에 다시 말해주세요! ☕");
+        
+        throw new Error(data.error?.message || "오류가 발생했습니다.");
+      }
 
-      const aiReply = data.choices[0].message.content;
+      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다. 답변을 생성하지 못했습니다.";
 
-      // 3. AI 응답 화면에 추가
-      setMessages(prev => [...prev, { role: 'assistant', text: aiReply }]);
+      setMessages(prev => [...prev, { role: 'model', text: aiReply }]);
 
     } catch (error) {
-      console.error("AI Error:", error);
-      setMessages(prev => [...prev, { role: 'assistant', text: "죄송합니다. 잠시 통신 장애가 발생했어요. 다시 한번 말씀해 주시겠어요? 😥" }]);
+      console.error("Chat Logic Error:", error);
+      setMessages(prev => [...prev, { role: 'model', text: error.message }]);
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +102,6 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
   return (
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-gray-900 w-full max-w-2xl h-[80vh] rounded-3xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden relative">
-        
-        {/* 헤더 */}
         <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
@@ -97,30 +111,24 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
               <span className="text-white font-bold block text-sm">Gate 0 가이드</span>
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                Online
+                Online (Gemini Flash)
               </span>
             </div>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white bg-gray-700/50 p-2 rounded-full transition-colors"><X size={18} /></button>
         </div>
 
-        {/* 채팅 영역 */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-gradient-to-b from-gray-900 to-black custom-scrollbar">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-fade-in-up`}>
-              
-              {/* 아이콘 */}
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
                 {msg.role === 'user' ? <User size={16} className="text-gray-300" /> : <Bot size={20} className="text-blue-400" />}
               </div>
-              
-              {/* 말풍선 */}
               <div className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-md ${
                 msg.role === 'user' 
                   ? 'bg-blue-600 text-white rounded-tr-none' 
                   : 'bg-gray-800 text-gray-200 border border-gray-700 rounded-tl-none'
               }`}>
-                {/* 마크다운 스타일 렌더링 (간단히 구현) */}
                 <div style={{ whiteSpace: 'pre-wrap' }}>
                   {msg.text.split('**').map((part, i) => 
                     i % 2 === 1 ? <span key={i} className="font-bold text-blue-300">{part}</span> : part
@@ -129,45 +137,38 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
               </div>
             </div>
           ))}
-          
-          {/* 로딩 인디케이터 */}
           {isLoading && (
             <div className="flex gap-3">
                <div className="w-8 h-8 flex-shrink-0"></div>
                <div className="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-tl-none flex items-center gap-2">
                  <Loader2 size={16} className="text-blue-400 animate-spin" />
-                 <span className="text-xs text-gray-400">답변을 생각하는 중...</span>
+                 <span className="text-xs text-gray-400">생각하는 중...</span>
                </div>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* 입력창 */}
         <div className="p-4 bg-gray-900 border-t border-gray-800">
-          <form 
-            onSubmit={(e) => { e.preventDefault(); handleSend(input); }}
-            className="relative flex items-center"
-          >
+          <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative flex items-center">
             <input 
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="여행에 대해 궁금한 점을 물어보세요..."
-              className="w-full bg-gray-800 text-white pl-5 pr-12 py-3.5 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-500 text-sm"
+              placeholder="궁금한 점을 물어보세요..."
+              className="w-full bg-gray-800 text-white pl-5 pr-12 py-3.5 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 text-sm"
               disabled={isLoading}
               autoFocus
             />
             <button 
               type="submit" 
               disabled={isLoading || !input.trim()}
-              className="absolute right-2 p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              className="absolute right-2 p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white shadow-lg disabled:opacity-50"
             >
               {isLoading ? <Sparkles size={18} className="animate-pulse" /> : <Send size={18} />}
             </button>
           </form>
         </div>
-
       </div>
     </div>
   );

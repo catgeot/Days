@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 // 분리된 컴포넌트 불러오기
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
-import TicketModal from './TicketModal'; 
+import TicketModal from './components/TicketModal'; 
 import ChatModal from '../../components/ChatModal'; 
 import { getAddressFromCoordinates } from '../../lib/geocoding';
 

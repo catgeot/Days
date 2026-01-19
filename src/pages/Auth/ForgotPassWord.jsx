@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Link } from 'react-router-dom';
 import { Mail, Loader2, ArrowLeft, Send } from 'lucide-react';
-import Logo from '../Home/Logo';
+import Logo from '../Home/components/Logo';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');

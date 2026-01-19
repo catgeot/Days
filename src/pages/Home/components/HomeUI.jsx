@@ -2,7 +2,7 @@ import React from 'react';
 import { FileText, User, Sparkles, Search, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TravelTicker from '../../../components/TravelTicker';
-import Logo from '../Logo';
+import Logo from './Logo';
 
 const HomeUI = ({ onSearch, onTickerClick, onTicketClick }) => {
   const handleKeyDown = (e) => {

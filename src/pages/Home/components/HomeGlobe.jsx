@@ -85,7 +85,7 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) 
         onZoom={handleZoom}
         htmlElementsData={visibleMarkers}
         htmlElement={renderWeatherMarker}
-        htmlTransitionDuration={500} 
+        htmlTransitionDuration={0} 
       />
     </div>
   );
