@@ -9,21 +9,24 @@ import { getAddressFromCoordinates } from '../../lib/geocoding';
 function Home() {
   const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [initialQuery, setInitialQuery] = useState(''); // 채팅창 자동 전송용
-  const [draftInput, setDraftInput] = useState('');     // 검색창 Draft용
-  const [selectedLocation, setSelectedLocation] = useState(null);
   
+  const [initialQuery, setInitialQuery] = useState(''); // 채팅창에 보낼 실제 질문
+  const [draftInput, setDraftInput] = useState('');     // UI에 보여줄 텍스트
+
+  // 🚨 [추가] 실제로 검색할 쿼리를 따로 저장할 상태 (화면엔 안보임)
+  const [hiddenSearchQuery, setHiddenSearchQuery] = useState('');
+
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const globeRef = useRef();
 
-  // 1. 지구본 빈 땅 클릭
+  // 1. 지구본 클릭
   const handleGlobeClick = async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
-    
-    // 일단 좌표로 저장 (즉시 반응)
     setSelectedLocation({ lat, lng, type: 'coordinates' });
-    setDraftInput("위치 정보를 확인하고 있습니다... 🛰️");
+    
+    // 1단계: 로딩 중 표시
+    setDraftInput("🛰️ 위치 데이터 수신 중...");
 
-    // 주소 변환
     const addressData = await getAddressFromCoordinates(lat, lng);
 
     if (addressData) {
@@ -31,50 +34,52 @@ function Home() {
       const city = addressData.city !== '알 수 없는 도시' ? addressData.city : '';
       const locationName = `${country} ${city}`.trim();
       
-      const displayText = locationName ? `${locationName} 여행에 대해 알려줘` : `위도 ${lat.toFixed(2)}, 경도 ${lng.toFixed(2)} 위치의 여행 정보 알려줘`;
-      setDraftInput(displayText);
-
-      // 🚨 [수정 핵심] 주소를 찾았으면 selectedLocation도 업데이트해준다!
-      // 그래야 티켓 모달에서 좌표가 아니라 "일본 오사카"라고 뜸
       if (locationName) {
+        // 🚨 [수정] 화면엔 '시스템 상태'처럼 보여줌
+        setDraftInput(`📍 [${locationName}] 여행 정보 분석 준비 완료`);
+        // 🚨 [수정] 실제 AI에게 보낼 질문은 따로 저장
+        setHiddenSearchQuery(`${locationName} 여행에 대해 감성적으로 알려줘`);
+        
         setSelectedLocation({ name: locationName, country: '', lat, lng });
+      } else {
+        setDraftInput(`📍 [${lat.toFixed(2)}, ${lng.toFixed(2)}] 좌표 식별됨`);
+        setHiddenSearchQuery(`위도 ${lat}, 경도 ${lng} 위치의 여행 정보 알려줘`);
       }
-
     } else {
-      setDraftInput(`위도 ${lat.toFixed(2)}, 경도 ${lng.toFixed(2)} 위치의 여행 정보 알려줘`);
+      setDraftInput(`📍 [${lat.toFixed(2)}, ${lng.toFixed(2)}] 좌표 식별됨`);
+      setHiddenSearchQuery(`위도 ${lat}, 경도 ${lng} 위치의 여행 정보 알려줘`);
     }
   };
 
-  // 2. 마커 / 랭킹 / 핀 클릭 핸들러
+  // 2. 마커/랭킹 클릭
   const handleLocationSelect = (locationData) => {
-    // 🚨 [수정] 핀(User-Pin) 클릭 시 데이터 처리 보강
-    // HomeGlobe에서 핀을 누르면 { lat, lng, type: 'user-pin', name: ... } 등이 넘어옴
-    
-    // Case A: TravelTicker (랭킹) 에서 옴
     if (locationData.country && locationData.rank) {
-       if (globeRef.current) {
-         globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
-       }
-       setDraftInput(`${locationData.country} ${locationData.name} 여행에 대해 알려줘`);
+       if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
+       
+       setDraftInput(`📍 [${locationData.country} ${locationData.name}] 여행 정보 분석 준비 완료`);
+       setHiddenSearchQuery(`${locationData.country} ${locationData.name} 여행에 대해 알려줘`);
+       
        setSelectedLocation(locationData);
-       // 랭킹 클릭은 탐험의 시작이므로 모달 바로 안 염
-    }
-    // Case B: 지도 위의 '핀(User Pin)'이나 '마커'를 직접 클릭함 -> 발권 의도!
-    else {
-      // 핀 데이터에 이름이 없거나 좌표만 있는 경우, 현재 draftInput의 내용을 참고할 수도 있음
-      // 여기서는 넘어온 데이터를 그대로 씁니다.
+    } else {
       setSelectedLocation(locationData);
-      setIsTicketOpen(true); // 🚨 핀 클릭하면 모달 열림!
+      setIsTicketOpen(true);
     }
   };
 
-  // 3. 검색 (엔터)
+  // 3. 검색 (엔터 입력 시)
+  // HomeUI에서 넘어온 query가 'draftInput'과 같다면 -> 'hiddenSearchQuery'를 사용
+  // 사용자가 직접 타이핑해서 바꿨다면 -> 그 타이핑한 내용('query')을 사용
   const handleSearch = (query) => {
-    setInitialQuery(query); 
+    if (query === draftInput && hiddenSearchQuery) {
+      // 사용자가 텍스트를 안 바꾸고 그대로 엔터 친 경우
+      setInitialQuery({ text: hiddenSearchQuery, display: query }); 
+    } else {
+      // 사용자가 직접 질문을 입력한 경우
+      setInitialQuery(query);
+    }
     setIsChatOpen(true);    
   };
 
-  // 4. 티켓 발권 완료 (모달에서 넘어옴)
   const handleTicketIssue = (prompt) => {
     setInitialQuery(prompt);
     setIsChatOpen(true);
@@ -90,7 +95,7 @@ function Home() {
       <HomeGlobe 
         ref={globeRef}
         onGlobeClick={handleGlobeClick}
-        onMarkerClick={handleLocationSelect} // 🚨 핀 클릭 연결됨
+        onMarkerClick={handleLocationSelect}
         isChatOpen={isChatOpen}
       />
 

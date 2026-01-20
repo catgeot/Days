@@ -7,9 +7,6 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   
-  // 🚨 [추가] 마지막 메시지 위치를 잡기 위한 Ref (스크롤 제어용)
-  const lastUserMessageRef = useRef(null);
-
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
   const SYSTEM_PROMPT = `
@@ -24,36 +21,32 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
 
   useEffect(() => {
     if (isOpen) {
-      if (messages.length === 0) {
-        setMessages([{ role: 'model', text: '반갑습니다! 떠나고 싶은 곳이 있나요? 아니면 막연한 기분만 들고 오셨나요? 무엇이든 들어드릴게요. ✈️' }]);
-      }
+      // 🚨 [수정 1] "반갑습니다..." 초기 인사말 삭제
+      // 대신 메시지가 아예 없으면 비워둠 (깔끔함)
       
-      // 🚨 [수정] 티켓 발권(긴 프롬프트)으로 들어왔으면 '즉시 전송'
-      // 일반 검색(짧은 질문)도 엔터치고 들어온 거니까 '즉시 전송'이 맞음.
-      // Home.jsx에서 'draftInput'은 UI에만 뿌리고, 'initialQuery'는 실행하라고 주는 것이므로
-      // 여기서는 무조건 실행합니다.
+      // 🚨 [유지] 외부 질문(initialQuery)이 있으면 즉시 실행
       if (initialQuery) {
-        handleSend(initialQuery);
+        if (typeof initialQuery === 'object') {
+          handleSend(initialQuery.text, initialQuery.display);
+        } else {
+          handleSend(initialQuery);
+        }
       }
     }
   }, [isOpen, initialQuery]);
 
-  // 🚨 [수정] 스크롤 로직 변경
-  // isLoading이 true가 되었다(사용자가 질문함) -> 맨 밑으로 내림
-  // isLoading이 false가 되었다(AI 답변 옴) -> 스크롤 유지 (혹은 사용자 질문 위치 유지)
+  // 스크롤 로직 (질문 시 바닥, 답변 시 유지)
   useEffect(() => {
     if (isLoading) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // AI 답변이 왔을 때는 스크롤을 강제로 내리지 않음으로써
-      // 사용자가 방금 보낸 질문과 답변의 시작 부분을 볼 수 있게 함.
     }
   }, [messages, isLoading]);
 
-  const handleSend = async (text) => {
+  const handleSend = async (text, displayText = null) => {
     if (!text.trim() || isLoading) return;
 
-    const userMsg = { role: 'user', text };
+    const visibleText = displayText || text;
+    const userMsg = { role: 'user', text: visibleText };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
@@ -90,27 +83,34 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
 
   return (
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-gray-900 w-full max-w-2xl h-[80vh] rounded-3xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden relative">
+      {/* 🚨 [수정 2] 모달 크기 대폭 확장 (w-[90vw], max-w-[1200px]) */}
+      <div className="bg-gray-900 w-[90vw] max-w-[1200px] h-[85vh] rounded-3xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden relative transition-all">
+        
+        {/* Header */}
         <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
               <Bot size={18} className="text-white" />
             </div>
             <div>
-              <span className="text-white font-bold block text-sm">Gate 0 가이드</span>
-              <span className="text-xs text-gray-400">Online</span>
+              <span className="text-white font-bold block text-sm">Gate 0 AI</span>
+              <span className="text-xs text-gray-400">Ambient Intelligence</span>
             </div>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white bg-gray-700/50 p-2 rounded-full transition-colors"><X size={18} /></button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-gradient-to-b from-gray-900 to-black custom-scrollbar">
+        {/* Chat Area */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gradient-to-b from-gray-900 to-black custom-scrollbar">
           {messages.map((msg, idx) => (
-            <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-fade-in-up`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
-                {msg.role === 'user' ? <User size={16} className="text-gray-300" /> : <Bot size={20} className="text-blue-400" />}
+            <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-fade-in-up`}>
+              {/* 아이콘 */}
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
+                {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : <Bot size={24} className="text-blue-400" />}
               </div>
-              <div className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-md ${
+              
+              {/* 말풍선 (너비 조정) */}
+              <div className={`max-w-[80%] p-4 rounded-2xl text-base leading-relaxed shadow-md ${
                 msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-gray-800 text-gray-200 border border-gray-700 rounded-tl-none'
               }`}>
                 <div style={{ whiteSpace: 'pre-wrap' }}>
@@ -120,31 +120,31 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
             </div>
           ))}
           {isLoading && (
-            <div className="flex gap-3">
-               <div className="w-8 h-8 flex-shrink-0"></div>
-               <div className="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-tl-none flex items-center gap-2">
-                 <Loader2 size={16} className="text-blue-400 animate-spin" />
-                 <span className="text-xs text-gray-400">생각하는 중...</span>
+            <div className="flex gap-4">
+               <div className="w-10 h-10 flex-shrink-0"></div>
+               <div className="bg-gray-800 border border-gray-700 p-4 rounded-2xl rounded-tl-none flex items-center gap-3">
+                 <Loader2 size={20} className="text-blue-400 animate-spin" />
+                 <span className="text-sm text-gray-400">Gate 0가 여행지를 분석하고 있습니다...</span>
                </div>
             </div>
           )}
-          {/* 🚨 [수정] 여기가 자동 스크롤의 타겟. 로딩이 끝났을 때는 여기로 강제 이동 안 함. */}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-4 bg-gray-900 border-t border-gray-800">
-          <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative flex items-center">
+        {/* Input Area */}
+        <div className="p-6 bg-gray-900 border-t border-gray-800">
+          <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative flex items-center max-w-4xl mx-auto">
             <input 
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="궁금한 점을 물어보세요..."
-              className="w-full bg-gray-800 text-white pl-5 pr-12 py-3.5 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 text-sm"
+              placeholder="추가로 궁금한 점을 물어보세요..."
+              className="w-full bg-gray-800 text-white pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 text-base"
               disabled={isLoading}
               autoFocus
             />
-            <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white shadow-lg disabled:opacity-50">
-              {isLoading ? <Sparkles size={18} className="animate-pulse" /> : <Send size={18} />}
+            <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white shadow-lg disabled:opacity-50">
+              {isLoading ? <Sparkles size={20} className="animate-pulse" /> : <Send size={20} />}
             </button>
           </form>
         </div>

@@ -6,47 +6,33 @@ import Logo from './Logo';
 
 const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
   const [inputValue, setInputValue] = useState('');
-  
-  // 🚨 [추가 1] 입력창에 접근하기 위한 Ref
   const inputRef = useRef(null);
 
-  // 외부(지구본)에서 텍스트가 들어오면 입력창 채우고 + 포커스 이동
   useEffect(() => {
     if (externalInput) {
       setInputValue(externalInput);
-      // 🚨 [추가 2] 약간의 딜레이 후 검색창으로 강제 포커스 이동
-      // (사용자가 바로 엔터를 칠 수 있게 함)
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
+      setTimeout(() => { inputRef.current?.focus(); }, 100);
     }
   }, [externalInput]);
 
-  // 🚨 [추가 3] 엔터키 핸들러 (한글 입력 버그 수정 포함)
   const handleKeyDown = (e) => {
-    // isComposing: 한글 조합 중인지 확인 (조합 중일 땐 엔터 이벤트 무시 or 처리)
     if (e.key === 'Enter') {
-      // 조합 중이 아닐 때만 실행
       if (!e.nativeEvent.isComposing) {
         if (inputValue.trim() !== '') {
           onSearch(inputValue);
           setInputValue('');
-          // 엔터 후 포커스 해제 (선택사항, 모달이 뜨니까 해제하는 게 깔끔)
           inputRef.current?.blur();
         }
       }
     }
   };
 
-  const handleChange = (e) => {
-    setInputValue(e.target.value);
-  };
+  const handleChange = (e) => { setInputValue(e.target.value); };
 
   return (
     <>
       {/* 1. 상단 헤더 */}
       <div className="absolute top-0 left-0 right-0 z-20 p-6 grid grid-cols-12 items-start pointer-events-none">
-        {/* 로고 */}
         <div className="col-span-3 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto">
           <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
             <Logo />
@@ -54,40 +40,31 @@ const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
           <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1">DEPARTURE LOUNGE</span>
         </div>
 
-        {/* 검색창 */}
         <div className="col-span-6 flex justify-center animate-fade-in-down delay-100 pt-2 pointer-events-auto">
           <div className="relative group w-full max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="relative flex items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-lg transition-all group-focus-within:bg-black/50 group-focus-within:border-blue-400/50 hover:bg-black/30 h-10">
               <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={16} /></div>
-              
               <input 
-                ref={inputRef} // 🚨 Ref 연결
+                ref={inputRef}
                 type="text" 
                 value={inputValue}
                 onChange={handleChange}
                 placeholder="AI에게 여행 계획 물어보기..." 
                 className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-500/80 font-medium"
-                onKeyDown={handleKeyDown} // 🚨 핸들러 연결
+                onKeyDown={handleKeyDown}
               />
-              
               <div className="pr-4"><Sparkles size={14} className="text-white/20 group-hover:text-purple-400 transition-colors" /></div>
             </div>
           </div>
         </div>
         
-        {/* 순위창 */}
         <div className="col-span-3 flex justify-end animate-fade-in-down pr-2 pointer-events-auto">
           <TravelTicker onCityClick={onTickerClick} />
         </div>
       </div>
 
-      {/* 2. 중앙 텍스트 */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-0 select-none mix-blend-overlay pointer-events-none">
-        <h2 className="text-[12vw] font-black tracking-[0.05em] text-white/15 blur-[1px] whitespace-nowrap drop-shadow-2xl">
-          WHERE TO?
-        </h2>
-      </div>
+      {/* 🚨 [삭제] 중앙 'WHERE TO?' 텍스트 제거 -> 클릭 방해 요소 제거됨 */}
 
       {/* 3. 하단 푸터 */}
       <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 flex items-end justify-between pointer-events-none">

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Ticket, MapPin, Search, QrCode } from 'lucide-react';
+import { X, Ticket, MapPin, Search, QrCode, Plane } from 'lucide-react';
 import { getAddressFromCoordinates } from '../../../lib/geocoding';
 
-// 5단계 선택지 (그대로 유지)
 const SELECTION_STEPS = [
   { id: 'level', label: '🛫 여행 레벨', options: ['두근두근 첫 비행', '아직은 초보', '가끔 떠나는 일탈', '프로 모험러'] },
   { id: 'companion', label: '👨‍👩‍👧‍👦 누구와?', options: ['나 혼자만의 시간', '사랑하는 연인과', '아이와 함께 추억', '부모님과 효도여행'] },
@@ -16,21 +15,28 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
   const [isLoadingAddr, setIsLoadingAddr] = useState(false);
   const [selections, setSelections] = useState({ level: '', companion: '', purpose: '', flight: '', activity: '' });
 
+  // 🚨 [추가] 좌측 티켓 디자인을 위한 짧은 코드/국가명 추출
+  const [ticketCode, setTicketCode] = useState('G0');
+
   useEffect(() => {
     if (isOpen) {
       setSelections({ level: '', companion: '', purpose: '', flight: '', activity: '' });
+      setTicketCode('G0'); // 초기화
       
       const resolveAddress = async () => {
         if (!preFilledDestination) { setDestination(''); return; }
-        if (typeof preFilledDestination === 'string') { setDestination(preFilledDestination); return; }
+        if (typeof preFilledDestination === 'string') { 
+            setDestination(preFilledDestination); 
+            setTicketCode(preFilledDestination.substring(0, 3).toUpperCase()); // 예: OSA
+            return; 
+        }
         
-        // 이름이 있으면 우선 사용 (Home.jsx 수정으로 이제 이름이 잘 들어옴)
         if (preFilledDestination.name && preFilledDestination.name !== 'My Pick') {
-           // 'My Pick'은 임시 이름이라 제외
            const locationName = preFilledDestination.country 
             ? `${preFilledDestination.country}, ${preFilledDestination.name}` 
             : preFilledDestination.name;
           setDestination(locationName);
+          setTicketCode(preFilledDestination.name.substring(0, 3).toUpperCase());
           return;
         }
 
@@ -41,8 +47,11 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
           if (addr) {
             const finalName = addr.country ? `${addr.country} ${addr.city}` : addr.fullAddress;
             setDestination(finalName);
+            // 도시 이름의 앞 3글자를 티켓 코드로 사용
+            const code = (addr.city || addr.country || "GPS").substring(0, 3).toUpperCase();
+            setTicketCode(code);
           } else {
-            setDestination(`위도 ${preFilledDestination.lat.toFixed(2)}, 경도 ${preFilledDestination.lng.toFixed(2)}`);
+            setDestination(`위도 ${preFilledDestination.lat.toFixed(2)}`);
           }
           setIsLoadingAddr(false);
         }
@@ -60,21 +69,21 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
     const hasSelections = Object.values(selections).some(val => val !== '');
     if (!destination && !hasSelections) { alert("여행하고 싶은 기분이나 목적지를 하나라도 알려주세요!"); return; }
 
-    // 🚨 [수정] 프롬프트: 스케줄 대신 '감성'과 '영감' 요청
-    const prompt = `
+    const promptText = `
     [역할] 당신은 여행지의 감성을 전하는 에세이스트이자 가이드입니다.
-    
     [사용자 요청]
     - 목적지: ${destination ? destination : '추천 필요'}
     - 분위기/상황: ${Object.values(selections).filter(v => v).join(', ')}
-    
-    [요청 사항]
-    딱딱한 시간표나 일정(Schedule)은 짜지 마세요.
-    대신 이 여행지에서 느낄 수 있는 '분위기', '감정', '꼭 가봐야 할 영감의 장소'를 에세이처럼 부드럽게 소개해 주세요.
-    읽는 순간 당장 떠나고 싶어지도록 매혹적으로 작성해 주세요.
+    [요청 사항] 딱딱한 일정 말고, 감성과 영감을 주는 분위기 위주로 추천해줘.
     `;
 
-    onIssue(prompt);
+    // 🚨 [수정] 채팅창에 보여줄 짧은 문구와 실제 프롬프트를 객체로 전달
+    const payload = {
+      text: promptText,
+      display: `🎫 [${destination || '여행지 추천'}] 감성 여행 계획을 요청했습니다.`
+    };
+
+    onIssue(payload);
     onClose();
   };
 
@@ -87,7 +96,7 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
       
       <div className="relative w-full max-w-5xl animate-fade-in-up flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(59,130,246,0.3)]">
         
-        {/* [좌측] 디자인 간소화 (항공권 느낌 제거) */}
+        {/* [좌측] Ticket Stub (Dynamic Destination Info) */}
         <div className="hidden md:flex w-72 bg-gradient-to-b from-blue-900 to-black p-8 flex-col justify-between relative border-r-2 border-dashed border-white/20">
            <div className="absolute -right-3 top-1/2 w-6 h-6 bg-black rounded-full z-10"></div>
            <div>
@@ -97,17 +106,19 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
              </div>
              
              <div className="space-y-8">
+               {/* 🚨 [수정] 현재 선택한 목적지 정보 표시 */}
                <div>
-                 <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">TRAVELER</p>
-                 <p className="text-lg font-bold text-white">YOU</p>
+                 <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">DESTINATION</p>
+                 <p className="text-3xl font-black text-white tracking-tighter">{ticketCode}</p>
+                 <p className="text-xs text-gray-400 mt-1 truncate">{destination || "SELECTING..."}</p>
                </div>
                <div>
                  <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">DATE</p>
                  <p className="text-md font-bold text-white">{today}</p>
                </div>
-               <div>
-                 <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">TYPE</p>
-                 <p className="text-md font-bold text-white">INSPIRATION</p>
+               <div className="pt-4 border-t border-white/10 flex items-center gap-2">
+                 <Plane size={14} className="text-blue-400" />
+                 <span className="text-[10px] text-white tracking-widest">BOARDING NOW</span>
                </div>
              </div>
            </div>
@@ -116,7 +127,7 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
            </div>
         </div>
 
-        {/* [우측] 폼 영역 (기존 유지) */}
+        {/* [우측] 폼 영역 */}
         <div className="flex-1 bg-gray-900/95 backdrop-blur-xl p-6 md:p-8 overflow-y-auto max-h-[85vh] custom-scrollbar">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
