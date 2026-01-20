@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // useState, useEffect 추가
 import { FileText, User, Sparkles, Search, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TravelTicker from '../../../components/TravelTicker';
 import Logo from './Logo';
 
-const HomeUI = ({ onSearch, onTickerClick, onTicketClick }) => {
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && e.target.value.trim() !== '') {
-      onSearch(e.target.value);
-      e.target.value = '';
+// 🚨 [수정 1] externalInput prop 추가
+const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
+  
+  // 🚨 [수정 2] 입력창 상태 관리 (직접 입력 + 외부 주입 모두 대응)
+  const [inputValue, setInputValue] = useState('');
+
+  // 🚨 [수정 3] 외부(지구본)에서 텍스트가 들어오면 입력창에 채워넣기
+  useEffect(() => {
+    if (externalInput) {
+      setInputValue(externalInput);
     }
+  }, [externalInput]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && inputValue.trim() !== '') {
+      onSearch(inputValue); // 상태값(inputValue)을 전달
+      setInputValue('');    // 입력창 초기화
+    }
+  };
+
+  // 사용자가 직접 타이핑할 때 상태 업데이트
+  const handleChange = (e) => {
+    setInputValue(e.target.value);
   };
 
   return (
@@ -30,12 +47,17 @@ const HomeUI = ({ onSearch, onTickerClick, onTicketClick }) => {
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="relative flex items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-lg transition-all group-focus-within:bg-black/50 group-focus-within:border-blue-400/50 hover:bg-black/30 h-10">
               <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={16} /></div>
+              
+              {/* 🚨 [수정 4] input 태그에 value와 onChange 연결 */}
               <input 
                 type="text" 
+                value={inputValue} // 상태값 연결
+                onChange={handleChange} // 입력 핸들러 연결
                 placeholder="AI에게 여행 계획 물어보기..." 
                 className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-500/80 font-medium"
                 onKeyDown={handleKeyDown}
               />
+              
               <div className="pr-4"><Sparkles size={14} className="text-white/20 group-hover:text-purple-400 transition-colors" /></div>
             </div>
           </div>

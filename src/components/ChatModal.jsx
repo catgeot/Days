@@ -10,7 +10,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
   // API 키 가져오기
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-  // 🚨 [수정 1] 시스템 프롬프트 강력하게 업그레이드 (감성 주입)
+  // 시스템 프롬프트 (감성 여행 가이드)
   const SYSTEM_PROMPT = `
     당신은 'Gate 0'라는 여행 웹사이트의 전설적인 여행 가이드입니다.
     
@@ -25,17 +25,24 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
     5. 강조: 중요한 여행지나 팁은 **굵게** 표시해주세요.
   `;
 
+  // 🚨 [수정된 useEffect]
+  // 모달이 열릴 때, initialQuery가 있으면 '전송'하지 않고 '입력창'에만 채워둡니다.
   useEffect(() => {
     if (isOpen) {
+      // 1. 첫 인사 메시지 (대화가 비어있을 때만)
       if (messages.length === 0) {
         setMessages([{ role: 'model', text: '반갑습니다! 떠나고 싶은 곳이 있나요? 아니면 막연한 기분만 들고 오셨나요? 무엇이든 들어드릴게요. ✈️' }]);
       }
+      
+      // 2. 외부에서 들어온 질문이 있다면? -> 입력창에 Draft(초안) 작성
       if (initialQuery) {
-        handleSend(initialQuery);
+        setInput(initialQuery);
+        // handleSend(initialQuery); // <--- 이 부분을 삭제하여 자동 전송 막음
       }
     }
-  }, [isOpen]);
+  }, [isOpen, initialQuery]);
 
+  // 스크롤 자동 이동
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -49,7 +56,6 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
     setIsLoading(true);
 
     try {
-      // gemini-flash-latest 모델 사용 (연결 성공한 모델)
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`,
         {
@@ -65,9 +71,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
               }
             ],
             generationConfig: {
-              // 🚨 [수정 2] 창의성(Temperature) 높이기: 0.7 -> 1.0 (감성적인 표현 증가)
               temperature: 1.0, 
-              // 🚨 [수정 3] 답변 길이 제한 풀기: 800 -> 2500 (절대 안 끊김)
               maxOutputTokens: 2500,
             }
           })
@@ -79,9 +83,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
       if (!response.ok) {
         console.error("Gemini API Error:", data);
         const errorCode = data.error?.code || response.status;
-        
         if (errorCode === 429) throw new Error("사용량이 많아 잠시 쉬고 있습니다. 10초 뒤에 다시 말해주세요! ☕");
-        
         throw new Error(data.error?.message || "오류가 발생했습니다.");
       }
 
@@ -102,6 +104,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
   return (
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-gray-900 w-full max-w-2xl h-[80vh] rounded-3xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden relative">
+        {/* Header */}
         <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
@@ -118,6 +121,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
           <button onClick={onClose} className="text-gray-400 hover:text-white bg-gray-700/50 p-2 rounded-full transition-colors"><X size={18} /></button>
         </div>
 
+        {/* Chat Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-gradient-to-b from-gray-900 to-black custom-scrollbar">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-fade-in-up`}>
@@ -149,6 +153,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Input Area */}
         <div className="p-4 bg-gray-900 border-t border-gray-800">
           <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative flex items-center">
             <input 
