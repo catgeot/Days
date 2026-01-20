@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
+import { X, Send, Bot, User, Loader2, Sparkles, AlertTriangle, RefreshCcw } from 'lucide-react';
 
 const ChatModal = ({ isOpen, onClose, initialQuery }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef(null);
   
+  const messagesEndRef = useRef(null);
+  const hasSentInitialRef = useRef(false);
+
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
   const SYSTEM_PROMPT = `
@@ -21,21 +23,19 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
 
   useEffect(() => {
     if (isOpen) {
-      // 🚨 [수정 1] "반갑습니다..." 초기 인사말 삭제
-      // 대신 메시지가 아예 없으면 비워둠 (깔끔함)
-      
-      // 🚨 [유지] 외부 질문(initialQuery)이 있으면 즉시 실행
-      if (initialQuery) {
+      if (initialQuery && !hasSentInitialRef.current) {
+        hasSentInitialRef.current = true; 
         if (typeof initialQuery === 'object') {
           handleSend(initialQuery.text, initialQuery.display);
         } else {
           handleSend(initialQuery);
         }
       }
+    } else {
+      hasSentInitialRef.current = false;
     }
   }, [isOpen, initialQuery]);
 
-  // 스크롤 로직 (질문 시 바닥, 답변 시 유지)
   useEffect(() => {
     if (isLoading) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -46,8 +46,14 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
     if (!text.trim() || isLoading) return;
 
     const visibleText = displayText || text;
-    const userMsg = { role: 'user', text: visibleText };
-    setMessages(prev => [...prev, userMsg]);
+    // 🚨 [수정] 재시도일 경우엔 사용자 메시지를 또 추가하지 않음
+    // 마지막 메시지가 '내'가 보낸 게 아닐 때만 추가 (일반적인 경우)
+    // 하지만 심플하게: displayText가 'RETRY'면 메시지 추가 안 함
+    if (displayText !== 'RETRY') {
+      const userMsg = { role: 'user', text: visibleText };
+      setMessages(prev => [...prev, userMsg]);
+    }
+    
     setInput('');
     setIsLoading(true);
 
@@ -67,23 +73,44 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
       );
 
       const data = await response.json();
-      if (!response.ok) throw new Error("Gemini API Error");
+
+      if (!response.ok) {
+        const status = response.status;
+        console.warn(`Gemini API Error: ${status}`, data);
+
+        if (status === 429) {
+           throw new Error("⏳ 사용량이 많아 잠시 쉬고 있습니다. (무료 한도 초과)");
+        } else if (status === 503) {
+           throw new Error("🔧 구글 서버가 점검 중이거나 혼잡합니다. (503)");
+        } else {
+           throw new Error(`오류가 발생했습니다. (Code: ${status})`);
+        }
+      }
 
       const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다. 답변을 생성하지 못했습니다.";
+      
+      // 성공하면 에러 메시지는 지우고 답변 추가 (선택사항이지만 여기선 그냥 추가)
       setMessages(prev => [...prev, { role: 'model', text: aiReply }]);
 
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'model', text: "오류가 발생했습니다. 잠시 후 다시 시도해주세요." }]);
+      // 🚨 [핵심] 에러 메시지와 함께 '원본 질문'을 저장해둠 (재시도를 위해)
+      setMessages(prev => [...prev, { role: 'error', text: error.message, originalText: text }]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // 🚨 [신규] 재시도 버튼 클릭 핸들러
+  const handleRetry = (originalText) => {
+    // 마지막 에러 메시지를 제거하고 다시 시도
+    setMessages(prev => prev.slice(0, -1)); 
+    handleSend(originalText, 'RETRY'); 
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
-      {/* 🚨 [수정 2] 모달 크기 대폭 확장 (w-[90vw], max-w-[1200px]) */}
       <div className="bg-gray-900 w-[90vw] max-w-[1200px] h-[85vh] rounded-3xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden relative transition-all">
         
         {/* Header */}
@@ -104,18 +131,33 @@ const ChatModal = ({ isOpen, onClose, initialQuery }) => {
         <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gradient-to-b from-gray-900 to-black custom-scrollbar">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-fade-in-up`}>
-              {/* 아이콘 */}
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
-                {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : <Bot size={24} className="text-blue-400" />}
+              
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ${
+                msg.role === 'user' ? 'bg-gray-700' : msg.role === 'error' ? 'bg-red-900/50' : 'bg-transparent'
+              }`}>
+                {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : 
+                 msg.role === 'error' ? <AlertTriangle size={20} className="text-red-400" /> :
+                 <Bot size={24} className="text-blue-400" />}
               </div>
               
-              {/* 말풍선 (너비 조정) */}
-              <div className={`max-w-[80%] p-4 rounded-2xl text-base leading-relaxed shadow-md ${
-                msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-gray-800 text-gray-200 border border-gray-700 rounded-tl-none'
+              <div className={`max-w-[80%] p-4 rounded-2xl text-base leading-relaxed shadow-md flex flex-col gap-3 ${
+                msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 
+                msg.role === 'error' ? 'bg-red-900/20 text-red-200 border border-red-500/30' :
+                'bg-gray-800 text-gray-200 border border-gray-700 rounded-tl-none'
               }`}>
                 <div style={{ whiteSpace: 'pre-wrap' }}>
-                  {msg.text.split('**').map((part, i) => i % 2 === 1 ? <span key={i} className="font-bold text-blue-300">{part}</span> : part)}
+                  {msg.text}
                 </div>
+                
+                {/* 🚨 [핵심] 에러일 때만 재시도 버튼 표시 */}
+                {msg.role === 'error' && (
+                  <button 
+                    onClick={() => handleRetry(msg.originalText)}
+                    className="flex items-center gap-2 bg-red-800/50 hover:bg-red-700/50 text-white text-xs px-3 py-2 rounded-lg w-fit transition-colors"
+                  >
+                    <RefreshCcw size={12} /> 다시 시도하기
+                  </button>
+                )}
               </div>
             </div>
           ))}

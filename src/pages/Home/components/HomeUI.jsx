@@ -1,10 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, User, Sparkles, Search, Ticket } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; 
 import TravelTicker from '../../../components/TravelTicker';
 import Logo from './Logo';
+import TripDock from './TripDock'; // 🚨 [추가]
 
-const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
+const HomeUI = ({ 
+  onSearch, 
+  onTickerClick, 
+  onTicketClick, 
+  externalInput, 
+  // 🚨 [추가] TripDock에 전달할 데이터와 함수들
+  savedTrips, 
+  onTripClick, 
+  onTripDelete 
+}) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
 
@@ -64,11 +74,11 @@ const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
         </div>
       </div>
 
-      {/* 🚨 [삭제] 중앙 'WHERE TO?' 텍스트 제거 -> 클릭 방해 요소 제거됨 */}
-
-      {/* 3. 하단 푸터 */}
+      {/* 2. 하단 푸터 */}
       <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 flex items-end justify-between pointer-events-none">
-        <Link to="/report" className="group flex items-center gap-2 pb-2 pl-2 pointer-events-auto">
+        
+        {/* 좌측: 리포트 이동 */}
+        <Link to="/report" className="group flex items-center gap-2 pb-2 pl-2 pointer-events-auto cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-blue-400/50 transition-all shadow-lg group-hover:scale-110">
             <FileText size={18} className="text-gray-400 group-hover:text-blue-300" />
           </div>
@@ -77,16 +87,25 @@ const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
           </span>
         </Link>
 
-        <div className="pointer-events-auto mb-2">
+        {/* 🚨 [중앙 핵심]: 티켓 버튼 + 여행 기록 도크(TripDock) */}
+        <div className="pointer-events-auto mb-2 flex items-center">
           <button 
             onClick={onTicketClick}
-            className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-xs border border-white/10 tracking-wide"
+            className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-xs border border-white/10 tracking-wide flex-shrink-0"
           >
             <Ticket size={16} />
             <span>티켓 발권하기</span> 
           </button>
+
+          {/* 🚨 여기에 도크 장착! */}
+          <TripDock 
+            savedTrips={savedTrips} 
+            onTripClick={onTripClick} 
+            onTripDelete={onTripDelete} 
+          />
         </div>
 
+        {/* 우측: 어드민 이동 */}
         <Link to="/auth/login" className="group flex items-center gap-2 flex-row-reverse pb-2 pr-2 pointer-events-auto">
           <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg group-hover:scale-110">
             <User size={18} className="text-gray-400 group-hover:text-purple-300" />
