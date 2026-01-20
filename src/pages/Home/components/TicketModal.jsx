@@ -1,52 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plane, Ticket, MapPin, Search } from 'lucide-react';
+import { X, Ticket, MapPin, Search, QrCode } from 'lucide-react';
+import { getAddressFromCoordinates } from '../../../lib/geocoding';
 
-// 5단계 선택지 데이터 (친근하고 감성적인 문구로 변환)
+// 5단계 선택지 (그대로 유지)
 const SELECTION_STEPS = [
-  {
-    id: 'level',
-    label: '🛫 여행 레벨',
-    options: ['두근두근 첫 비행', '아직은 초보', '가끔 떠나는 일탈', '프로 모험러']
-  },
-  {
-    id: 'companion',
-    label: '👨‍👩‍👧‍👦 누구와?',
-    options: ['나 혼자만의 시간', '사랑하는 연인과', '아이와 함께 추억', '부모님과 효도여행']
-  },
-  {
-    id: 'purpose',
-    label: '🎨 여행 목적',
-    options: ['아무것도 안 하기(멍)', '새로운 영감 충전', '미식 탐방', '인생샷 남기기']
-  },
-  {
-    id: 'flight',
-    label: '⏰ 비행 시간',
-    options: ['가볍게(단거리)', '적당히(중거리)', '멀리 떠날래(장거리)', '상관없음']
-  },
-  {
-    id: 'activity',
-    label: '🎡 하고 싶은 것',
-    options: ['눈에 담는 관광', '직접 해보는 체험', '쇼핑 플렉스', '현지의 밤 즐기기']
-  }
+  { id: 'level', label: '🛫 여행 레벨', options: ['두근두근 첫 비행', '아직은 초보', '가끔 떠나는 일탈', '프로 모험러'] },
+  { id: 'companion', label: '👨‍👩‍👧‍👦 누구와?', options: ['나 혼자만의 시간', '사랑하는 연인과', '아이와 함께 추억', '부모님과 효도여행'] },
+  { id: 'purpose', label: '🎨 여행 목적', options: ['아무것도 안 하기(멍)', '새로운 영감 충전', '미식 탐방', '인생샷 남기기'] },
+  { id: 'flight', label: '⏰ 비행 시간', options: ['가볍게(단거리)', '적당히(중거리)', '멀리 떠날래(장거리)', '상관없음'] },
+  { id: 'activity', label: '🎡 하고 싶은 것', options: ['눈에 담는 관광', '직접 해보는 체험', '쇼핑 플렉스', '현지의 밤 즐기기'] }
 ];
 
 export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestination }) {
   const [destination, setDestination] = useState('');
-  
-  // 사용자가 선택한 답변들을 저장하는 상태
-  const [selections, setSelections] = useState({
-    level: '',
-    companion: '',
-    purpose: '',
-    flight: '',
-    activity: ''
-  });
+  const [isLoadingAddr, setIsLoadingAddr] = useState(false);
+  const [selections, setSelections] = useState({ level: '', companion: '', purpose: '', flight: '', activity: '' });
 
-  // 모달 열릴 때 초기화 및 목적지 자동 입력
   useEffect(() => {
     if (isOpen) {
-      setDestination(preFilledDestination || '');
       setSelections({ level: '', companion: '', purpose: '', flight: '', activity: '' });
+      
+      const resolveAddress = async () => {
+        if (!preFilledDestination) { setDestination(''); return; }
+        if (typeof preFilledDestination === 'string') { setDestination(preFilledDestination); return; }
+        
+        // 이름이 있으면 우선 사용 (Home.jsx 수정으로 이제 이름이 잘 들어옴)
+        if (preFilledDestination.name && preFilledDestination.name !== 'My Pick') {
+           // 'My Pick'은 임시 이름이라 제외
+           const locationName = preFilledDestination.country 
+            ? `${preFilledDestination.country}, ${preFilledDestination.name}` 
+            : preFilledDestination.name;
+          setDestination(locationName);
+          return;
+        }
+
+        if (preFilledDestination.lat && preFilledDestination.lng) {
+          setIsLoadingAddr(true);
+          setDestination("위치 확인 중..."); 
+          const addr = await getAddressFromCoordinates(preFilledDestination.lat, preFilledDestination.lng);
+          if (addr) {
+            const finalName = addr.country ? `${addr.country} ${addr.city}` : addr.fullAddress;
+            setDestination(finalName);
+          } else {
+            setDestination(`위도 ${preFilledDestination.lat.toFixed(2)}, 경도 ${preFilledDestination.lng.toFixed(2)}`);
+          }
+          setIsLoadingAddr(false);
+        }
+      };
+      resolveAddress();
     }
   }, [isOpen, preFilledDestination]);
 
@@ -56,106 +57,108 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // 최소한의 선택 확인 (목적지나 선택지 중 하나라도 있어야 함)
     const hasSelections = Object.values(selections).some(val => val !== '');
-    if (!destination && !hasSelections) {
-      alert("여행하고 싶은 기분이나 목적지를 하나라도 알려주세요!");
-      return;
-    }
+    if (!destination && !hasSelections) { alert("여행하고 싶은 기분이나 목적지를 하나라도 알려주세요!"); return; }
 
-    // AI에게 보낼 풍성한 프롬프트 생성
-    const prompt = `여행 계획을 제안해줘.
-    - 목적지: ${destination ? destination : '아직 못 정했어, 아래 조건에 맞춰 추천해줘.'}
-    - 여행자 레벨: ${selections.level || '상관없음'}
-    - 동행인: ${selections.companion || '미정'}
-    - 여행의 주된 목적: ${selections.purpose || '자유롭게'}
-    - 선호 비행 시간: ${selections.flight || '상관없음'}
-    - 선호 활동: ${selections.activity || '다양하게'}
+    // 🚨 [수정] 프롬프트: 스케줄 대신 '감성'과 '영감' 요청
+    const prompt = `
+    [역할] 당신은 여행지의 감성을 전하는 에세이스트이자 가이드입니다.
     
-    위의 상황에 처한 여행자에게 가장 현실적이고 매력적인 여행 코스와 팁을 알려줘.`;
+    [사용자 요청]
+    - 목적지: ${destination ? destination : '추천 필요'}
+    - 분위기/상황: ${Object.values(selections).filter(v => v).join(', ')}
+    
+    [요청 사항]
+    딱딱한 시간표나 일정(Schedule)은 짜지 마세요.
+    대신 이 여행지에서 느낄 수 있는 '분위기', '감정', '꼭 가봐야 할 영감의 장소'를 에세이처럼 부드럽게 소개해 주세요.
+    읽는 순간 당장 떠나고 싶어지도록 매혹적으로 작성해 주세요.
+    `;
 
     onIssue(prompt);
     onClose();
   };
 
   if (!isOpen) return null;
+  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity" onClick={onClose}></div>
       
-      <div className="relative bg-gradient-to-br from-gray-900 to-black border border-white/20 w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row animate-fade-in-up max-h-[90vh]">
+      <div className="relative w-full max-w-5xl animate-fade-in-up flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(59,130,246,0.3)]">
         
-        {/* [좌측] 감성 영역 (좁게) */}
-        <div className="hidden md:flex w-1/4 bg-blue-900/20 p-6 flex-col justify-between border-r border-white/10 relative">
-           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
+        {/* [좌측] 디자인 간소화 (항공권 느낌 제거) */}
+        <div className="hidden md:flex w-72 bg-gradient-to-b from-blue-900 to-black p-8 flex-col justify-between relative border-r-2 border-dashed border-white/20">
+           <div className="absolute -right-3 top-1/2 w-6 h-6 bg-black rounded-full z-10"></div>
            <div>
-             <span className="text-blue-400 text-xs font-bold tracking-[0.3em]">GATE 0</span>
-             <h2 className="text-2xl font-bold text-white mt-4 leading-normal">
-               꿈을<br/>현실로<br/>만드는<br/>티켓
-             </h2>
+             <div className="flex justify-between items-center mb-10">
+               <span className="text-xl font-black text-white tracking-tighter">GATE 0</span>
+               <QrCode className="text-white/80" size={24} />
+             </div>
+             
+             <div className="space-y-8">
+               <div>
+                 <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">TRAVELER</p>
+                 <p className="text-lg font-bold text-white">YOU</p>
+               </div>
+               <div>
+                 <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">DATE</p>
+                 <p className="text-md font-bold text-white">{today}</p>
+               </div>
+               <div>
+                 <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">TYPE</p>
+                 <p className="text-md font-bold text-white">INSPIRATION</p>
+               </div>
+             </div>
            </div>
-           <div className="text-xs text-gray-400 leading-relaxed">
-             망설이지 마세요.<br/>
-             당신의 취향을 선택하면<br/>
-             여정이 시작됩니다.
+           <div className="mt-auto opacity-50 text-[10px] text-white tracking-widest text-center">
+             YOUR JOURNEY BEGINS
            </div>
         </div>
 
-        {/* [우측] 선택 영역 (넓게) */}
-        <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+        {/* [우측] 폼 영역 (기존 유지) */}
+        <div className="flex-1 bg-gray-900/95 backdrop-blur-xl p-6 md:p-8 overflow-y-auto max-h-[85vh] custom-scrollbar">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <Plane className="text-blue-400" size={20} />
-              Boarding Pass <span className="text-xs font-normal text-gray-500 ml-2">Preferences</span>
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
+              Where to next?
             </h2>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-              <X className="text-gray-400 hover:text-white" size={20} />
+            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors group">
+              <X className="text-gray-400 group-hover:text-red-400" size={24} />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* 1. 목적지 검색 (지구본/랭킹에서 안 골랐을 때 사용) */}
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-              <label className="text-[10px] font-bold text-gray-500 tracking-wider mb-2 block">DESTINATION (목적지)</label>
-              <div className="relative group">
-                <MapPin className="absolute left-3 top-2.5 text-gray-500 group-focus-within:text-blue-400 transition-colors" size={16} />
-                <input 
-                  type="text"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  placeholder="지구본을 클릭하거나, 직접 입력해서 검색하세요"
-                  className="w-full bg-black/50 border border-white/10 rounded-lg py-2 pl-10 pr-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder-gray-600"
-                />
-                {/* 검색 아이콘 장식 */}
-                <div className="absolute right-3 top-2.5 text-gray-600">
-                  <Search size={14} />
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className={`p-1 rounded-2xl bg-gradient-to-r ${destination ? 'from-blue-500/20 to-purple-500/20' : 'from-gray-800 to-gray-800'} transition-all duration-500`}>
+              <div className="bg-black/40 rounded-xl p-4 border border-white/10 backdrop-blur-sm">
+                <label className="text-[10px] font-bold text-blue-300 tracking-wider mb-2 block flex items-center gap-2">
+                  <MapPin size={12} /> DESTINATION
+                </label>
+                <div className="relative">
+                  <input 
+                    type="text"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    placeholder="어디로 떠나고 싶으신가요?"
+                    className={`w-full bg-transparent text-xl font-bold text-white placeholder-gray-600 focus:outline-none ${isLoadingAddr ? 'animate-pulse' : ''}`}
+                    disabled={isLoadingAddr} 
+                  />
+                  {isLoadingAddr && <div className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-blue-400">Searching...</div>}
                 </div>
               </div>
             </div>
 
-            {/* 2. 5단계 선택지 (한 줄에 하나씩) */}
-            <div className="space-y-5">
+            <div className="grid grid-cols-1 gap-6">
               {SELECTION_STEPS.map((step) => (
-                <div key={step.id} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                  <label className="text-xs font-bold text-blue-200 mb-3 block flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                    {step.label}
-                  </label>
+                <div key={step.id} className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                  <label className="text-xs font-bold text-gray-400 mb-3 block">{step.label}</label>
                   <div className="flex flex-wrap gap-2">
                     {step.options.map((option) => (
                       <button
                         key={option}
                         type="button"
                         onClick={() => handleSelect(step.id, option)}
-                        className={`
-                          text-xs px-3 py-2 rounded-lg border transition-all duration-200
-                          ${selections[step.id] === option
-                            ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.4)] scale-105'
-                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/30'}
-                        `}
+                        className={`text-sm px-4 py-2.5 rounded-full border transition-all duration-300 ease-out ${selections[step.id] === option ? 'bg-white text-black border-white font-bold scale-105' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}`}
                       >
                         {option}
                       </button>
@@ -165,14 +168,10 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
               ))}
             </div>
 
-            {/* 발권 버튼 */}
-            <button 
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4 hover:shadow-blue-500/30 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
-            >
-              <Ticket size={18} />
-              <span>
-                {destination ? `${destination}행 티켓 발권하기` : '나만의 여행지 추천받기'}
+            <button type="submit" className="group w-full relative overflow-hidden bg-white text-black font-black text-lg py-5 rounded-2xl shadow-xl transition-all hover:scale-[1.01] mt-6">
+              <span className="relative flex items-center justify-center gap-2">
+                <Ticket size={20} />
+                {destination ? 'ISSUE TICKET' : 'RECOMMEND ME'}
               </span>
             </button>
           </form>
