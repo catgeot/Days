@@ -1,88 +1,78 @@
 import React, { useState, useRef } from 'react';
 
-// 컴포넌트 불러오기
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
 import TicketModal from './components/TicketModal'; 
 import ChatModal from '../../components/ChatModal'; 
-
-// 🚨 [연결] 사장님이 작성하신 번역기 파일 가져오기
 import { getAddressFromCoordinates } from '../../lib/geocoding';
 
 function Home() {
-  // 상태 관리
   const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [initialQuery, setInitialQuery] = useState('');
-  
-  // 검색창에 채워넣을 텍스트 (Draft)
   const [draftInput, setDraftInput] = useState('');
-
   const [selectedLocation, setSelectedLocation] = useState(null);
   
-  // 지구본 제어 Ref
   const globeRef = useRef();
 
-  // --- 이벤트 핸들러 ---
-
-  // 1. 지구본 클릭 핸들러
+  // 1. 지구본 빈 땅 클릭 (기존과 동일)
   const handleGlobeClick = async ({ lat, lng }) => {
-    // 1) 회전 잠시 멈춤
     if (globeRef.current) globeRef.current.pauseRotation();
-
-    // 2) 좌표 저장
     setSelectedLocation({ lat, lng, type: 'coordinates' });
-    
-    // 3) 🚨 [UX] 주소 찾는 동안 사용자에게 피드백 ("잠시만요...")
     setDraftInput("위치 정보를 확인하고 있습니다... 🛰️");
 
-    // 4) 🚨 [번역] 좌표 -> 주소 변환 실행
     const addressData = await getAddressFromCoordinates(lat, lng);
 
-    // 5) 🚨 [결과 반영] 검색창 텍스트 업데이트
     if (addressData) {
-      // "국가"와 "도시" 정보를 조합
-      // 예: "대한민국 서울특별시", "일본 오사카"
-      // 만약 알 수 없는 지역이면 fallback 텍스트 사용
       const country = addressData.country !== '알 수 없는 국가' ? addressData.country : '';
       const city = addressData.city !== '알 수 없는 도시' ? addressData.city : '';
-      
       const locationName = `${country} ${city}`.trim();
-
-      if (locationName) {
-        setDraftInput(`${locationName} 여행에 대해 알려줘`);
-      } else {
-        // 바다 한가운데거나 정보가 없을 때
-        setDraftInput(`위도 ${lat.toFixed(2)}, 경도 ${lng.toFixed(2)} 위치의 여행 정보 알려줘`);
-      }
+      setDraftInput(locationName ? `${locationName} 여행에 대해 알려줘` : `위도 ${lat.toFixed(2)}, 경도 ${lng.toFixed(2)} 위치의 여행 정보 알려줘`);
     } else {
-      // 에러 등으로 데이터가 없을 때
       setDraftInput(`위도 ${lat.toFixed(2)}, 경도 ${lng.toFixed(2)} 위치의 여행 정보 알려줘`);
     }
-
-    console.log(`📍 Pin dropped at: ${lat}, ${lng}`);
   };
 
-  // 2. 마커(도시) 또는 랭킹 클릭
+  // 🚨 [수정] 마커(도시) 또는 랭킹(Ticker) 클릭 핸들러
+  // 이제는 locationData가 단순 이름이 아니라 { lat, lng, name, country } 객체로 들어올 수 있음
   const handleLocationSelect = (locationData) => {
-    setSelectedLocation(locationData);
-    setIsTicketOpen(true);
-    if (globeRef.current) globeRef.current.pauseRotation();
+    
+    // Case A: TravelTicker에서 넘어온 데이터 (좌표가 있음)
+    if (typeof locationData === 'object' && locationData.lat && locationData.lng) {
+      // 1. 지구본을 그 위치로 날려보냄 (Fly To) + 핀 꽂기
+      if (globeRef.current) {
+        globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
+      }
+
+      // 2. 검색창에 텍스트 자동 완성
+      setDraftInput(`${locationData.country} ${locationData.name} 여행에 대해 알려줘`);
+
+      // 3. 선택된 위치 저장 (모달 발권용)
+      setSelectedLocation(locationData);
+      
+      // *중요*: 티켓 모달은 바로 열지 않음! (탐험 우선)
+    } 
+    // Case B: 지구본 위 기존 마커(작은 점) 클릭 (좌표 없이 이름만 오는 경우 등)
+    else {
+      // 기존 로직 유지 (바로 티켓 창 열기 or 좌표 찾기)
+      // 만약 문자열로 오면 ("Japan, Osaka")
+      if (typeof locationData === 'string') {
+        setSelectedLocation(locationData); // 문자열 그대로 저장
+        setIsTicketOpen(true); // 명확한 마커 클릭은 발권 의도가 있다고 보고 열어줌
+      }
+    }
   };
 
-  // 3. 검색 (엔터 입력 시) -> 채팅 모달 오픈
   const handleSearch = (query) => {
     setInitialQuery(query); 
     setIsChatOpen(true);    
   };
 
-  // 4. 티켓 발권 완료 시
   const handleTicketIssue = (prompt) => {
     setInitialQuery(prompt);
     setIsChatOpen(true);
   };
 
-  // 5. 티켓 모달 닫기
   const handleCloseTicket = () => {
     setIsTicketOpen(false);
     if (globeRef.current) globeRef.current.resumeRotation();
@@ -94,13 +84,14 @@ function Home() {
       <HomeGlobe 
         ref={globeRef}
         onGlobeClick={handleGlobeClick}
+        // 🚨 순위표 클릭과 마커 클릭을 같은 핸들러로 연결
         onMarkerClick={handleLocationSelect}
         isChatOpen={isChatOpen}
       />
 
-      {/* Draft 텍스트 전달 */}
       <HomeUI 
         onSearch={handleSearch}
+        // 🚨 Ticker 클릭 시에도 같은 핸들러 사용
         onTickerClick={handleLocationSelect}
         onTicketClick={() => setIsTicketOpen(true)}
         externalInput={draftInput} 
@@ -117,7 +108,6 @@ function Home() {
         isOpen={isChatOpen} 
         onClose={() => {
           setIsChatOpen(false);
-          // 채팅창 닫으면 다시 회전 재개
           if (globeRef.current) globeRef.current.resumeRotation();
         }} 
         initialQuery={initialQuery} 

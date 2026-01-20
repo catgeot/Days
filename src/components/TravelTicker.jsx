@@ -1,20 +1,20 @@
 import React from 'react';
 import { Plane, CloudSun, Sun, CloudRain, Cloud, Wind, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
+// 🚨 [수정] 좌표(lat, lng)와 국가(country) 정보 추가
 const cities = [
-  { rank: 1, name: 'Osaka', temp: 18, weather: 'sun', change: 'up' },
-  { rank: 2, name: 'Da Nang', temp: 28, weather: 'cloud', change: 'same' },
-  { rank: 3, name: 'Bangkok', temp: 32, weather: 'rain', change: 'up' },
-  { rank: 4, name: 'Fukuoka', temp: 15, weather: 'sun', change: 'down' },
-  { rank: 5, name: 'Tokyo', temp: 16, weather: 'cloud', change: 'up' },
-  { rank: 6, name: 'Taipei', temp: 22, weather: 'rain', change: 'down' },
-  { rank: 7, name: 'Nha Trang', temp: 29, weather: 'sun', change: 'same' },
-  { rank: 8, name: 'Paris', temp: 12, weather: 'wind', change: 'up' },
-  { rank: 9, name: 'New York', temp: 10, weather: 'wind', change: 'down' },
-  { rank: 10, name: 'Sydney', temp: 24, weather: 'sun', change: 'up' },
+  { rank: 1, name: 'Osaka', country: 'Japan', lat: 34.6937, lng: 135.5023, temp: 18, weather: 'sun', change: 'up' },
+  { rank: 2, name: 'Da Nang', country: 'Vietnam', lat: 16.0544, lng: 108.2022, temp: 28, weather: 'cloud', change: 'same' },
+  { rank: 3, name: 'Bangkok', country: 'Thailand', lat: 13.7563, lng: 100.5018, temp: 32, weather: 'rain', change: 'up' },
+  { rank: 4, name: 'Fukuoka', country: 'Japan', lat: 33.5902, lng: 130.4017, temp: 15, weather: 'sun', change: 'down' },
+  { rank: 5, name: 'Tokyo', country: 'Japan', lat: 35.6762, lng: 139.6503, temp: 16, weather: 'cloud', change: 'up' },
+  { rank: 6, name: 'Taipei', country: 'Taiwan', lat: 25.0330, lng: 121.5654, temp: 22, weather: 'rain', change: 'down' },
+  { rank: 7, name: 'Nha Trang', country: 'Vietnam', lat: 12.2388, lng: 109.1967, temp: 29, weather: 'sun', change: 'same' },
+  { rank: 8, name: 'Paris', country: 'France', lat: 48.8566, lng: 2.3522, temp: 12, weather: 'wind', change: 'up' },
+  { rank: 9, name: 'New York', country: 'USA', lat: 40.7128, lng: -74.0060, temp: 10, weather: 'wind', change: 'down' },
+  { rank: 10, name: 'Sydney', country: 'Australia', lat: -33.8688, lng: 151.2093, temp: 24, weather: 'sun', change: 'up' },
 ];
 
-// ✨ 날씨 아이콘 컴포넌트 (복구됨)
 const WeatherIcon = ({ type }) => {
   switch (type) {
     case 'sun': return <Sun size={12} className="text-yellow-400" />;
@@ -25,7 +25,6 @@ const WeatherIcon = ({ type }) => {
   }
 };
 
-// ✨ 순위 변동 아이콘 컴포넌트 (복구됨)
 const RankChange = ({ type }) => {
   switch (type) {
     case 'up': return <TrendingUp size={10} className="text-red-400" />;
@@ -54,8 +53,8 @@ export default function TravelTicker({ onCityClick }) {
         {cities.map((city) => (
           <div 
             key={city.rank} 
-            // 클릭 이벤트 연결
-            onClick={() => onCityClick && onCityClick(city.name)}
+            // 🚨 [수정] 클릭 시 도시 이름만 주는 게 아니라, '전체 객체(좌표 포함)'를 줍니다.
+            onClick={() => onCityClick && onCityClick(city)}
             className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
             {/* 좌측: 순위 + 도시명 */}
@@ -77,7 +76,7 @@ export default function TravelTicker({ onCityClick }) {
               </div>
             </div>
 
-            {/* 우측: 날씨 + 온도 (✨ 아이콘이 잘 보이도록 배치) */}
+            {/* 우측: 날씨 + 온도 */}
             <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
               <WeatherIcon type={city.weather} />
               <span className="text-xs font-medium text-gray-300 group-hover:text-white font-mono">{city.temp}°</span>
@@ -88,7 +87,7 @@ export default function TravelTicker({ onCityClick }) {
 
       {/* 하단 장식 */}
       <div className="text-[8px] text-center text-gray-600 font-mono tracking-[0.2em] border-t border-white/5 pt-2 group-hover:text-blue-400/50 transition-colors">
-        CLICK TO BOOK
+        CLICK TO EXPLORE
       </div>
     </div>
   );
