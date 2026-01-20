@@ -1,30 +1,43 @@
-import React, { useState, useEffect } from 'react'; // useState, useEffect 추가
+import React, { useState, useEffect, useRef } from 'react';
 import { FileText, User, Sparkles, Search, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TravelTicker from '../../../components/TravelTicker';
 import Logo from './Logo';
 
-// 🚨 [수정 1] externalInput prop 추가
 const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
-  
-  // 🚨 [수정 2] 입력창 상태 관리 (직접 입력 + 외부 주입 모두 대응)
   const [inputValue, setInputValue] = useState('');
+  
+  // 🚨 [추가 1] 입력창에 접근하기 위한 Ref
+  const inputRef = useRef(null);
 
-  // 🚨 [수정 3] 외부(지구본)에서 텍스트가 들어오면 입력창에 채워넣기
+  // 외부(지구본)에서 텍스트가 들어오면 입력창 채우고 + 포커스 이동
   useEffect(() => {
     if (externalInput) {
       setInputValue(externalInput);
+      // 🚨 [추가 2] 약간의 딜레이 후 검색창으로 강제 포커스 이동
+      // (사용자가 바로 엔터를 칠 수 있게 함)
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [externalInput]);
 
+  // 🚨 [추가 3] 엔터키 핸들러 (한글 입력 버그 수정 포함)
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && inputValue.trim() !== '') {
-      onSearch(inputValue); // 상태값(inputValue)을 전달
-      setInputValue('');    // 입력창 초기화
+    // isComposing: 한글 조합 중인지 확인 (조합 중일 땐 엔터 이벤트 무시 or 처리)
+    if (e.key === 'Enter') {
+      // 조합 중이 아닐 때만 실행
+      if (!e.nativeEvent.isComposing) {
+        if (inputValue.trim() !== '') {
+          onSearch(inputValue);
+          setInputValue('');
+          // 엔터 후 포커스 해제 (선택사항, 모달이 뜨니까 해제하는 게 깔끔)
+          inputRef.current?.blur();
+        }
+      }
     }
   };
 
-  // 사용자가 직접 타이핑할 때 상태 업데이트
   const handleChange = (e) => {
     setInputValue(e.target.value);
   };
@@ -48,14 +61,14 @@ const HomeUI = ({ onSearch, onTickerClick, onTicketClick, externalInput }) => {
             <div className="relative flex items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-lg transition-all group-focus-within:bg-black/50 group-focus-within:border-blue-400/50 hover:bg-black/30 h-10">
               <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={16} /></div>
               
-              {/* 🚨 [수정 4] input 태그에 value와 onChange 연결 */}
               <input 
+                ref={inputRef} // 🚨 Ref 연결
                 type="text" 
-                value={inputValue} // 상태값 연결
-                onChange={handleChange} // 입력 핸들러 연결
+                value={inputValue}
+                onChange={handleChange}
                 placeholder="AI에게 여행 계획 물어보기..." 
                 className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-500/80 font-medium"
-                onKeyDown={handleKeyDown}
+                onKeyDown={handleKeyDown} // 🚨 핸들러 연결
               />
               
               <div className="pr-4"><Sparkles size={14} className="text-white/20 group-hover:text-purple-400 transition-colors" /></div>
