@@ -15,7 +15,6 @@ function Home() {
   const [hiddenSearchQuery, setHiddenSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   
-  // 🚨 저장된 여행지 목록 (Travel Dock에 표시됨)
   const [savedTrips, setSavedTrips] = useState([]);
 
   const globeRef = useRef();
@@ -36,7 +35,15 @@ function Home() {
       if (locationName) {
         setDraftInput(`📍 [${locationName}] 여행 정보 분석 준비 완료`);
         setHiddenSearchQuery(`${locationName} 여행에 대해 감성적으로 알려줘`);
-        setSelectedLocation({ name: locationName, country: '', lat, lng });
+        
+        // 🚨 [핵심] 핀 이름 업데이트 명령!!
+        if (globeRef.current) {
+          globeRef.current.updateLastPinName(locationName);
+        }
+        
+        // 티켓 모달용 데이터에도 이름 추가
+        setSelectedLocation({ name: locationName, country: '', lat, lng, type: 'user-pin' });
+
       } else {
         setDraftInput(`📍 [${lat.toFixed(2)}, ${lng.toFixed(2)}] 좌표 식별됨`);
         setHiddenSearchQuery(`위도 ${lat}, 경도 ${lng} 위치의 여행 정보 알려줘`);
@@ -47,20 +54,32 @@ function Home() {
     }
   };
 
-  // 2. 마커/랭킹 클릭
   const handleLocationSelect = (locationData) => {
-    if (locationData.country && locationData.rank) {
-       if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
-       setDraftInput(`📍 [${locationData.country} ${locationData.name}] 여행 정보 분석 준비 완료`);
-       setHiddenSearchQuery(`${locationData.country} ${locationData.name} 여행에 대해 알려줘`);
-       setSelectedLocation(locationData);
+    if (locationData.name) {
+       if (locationData.country && locationData.rank) {
+         if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
+         setDraftInput(`📍 [${locationData.country} ${locationData.name}] 여행 정보 분석 준비 완료`);
+         setHiddenSearchQuery(`${locationData.country} ${locationData.name} 여행에 대해 알려줘`);
+         setSelectedLocation(locationData);
+       } 
+       else if (locationData.lat && locationData.lng) {
+         if (locationData.type === 'user-pin') {
+           setSelectedLocation(locationData);
+           setIsTicketOpen(true);
+         } else {
+            if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
+            const countryName = locationData.country || '';
+            setDraftInput(`📍 [${countryName} ${locationData.name}] 여행 정보 분석 준비 완료`);
+            setHiddenSearchQuery(`${countryName} ${locationData.name} 여행에 대해 알려줘`);
+            setSelectedLocation(locationData);
+         }
+       }
     } else {
       setSelectedLocation(locationData);
       setIsTicketOpen(true);
     }
   };
 
-  // 3. 검색 (엔터)
   const handleSearch = (query) => {
     if (query === draftInput && hiddenSearchQuery) {
       setInitialQuery({ text: hiddenSearchQuery, display: query }); 
@@ -70,7 +89,6 @@ function Home() {
     setIsChatOpen(true);    
   };
 
-  // 4. 티켓 발권 완료 (데이터 저장)
   const handleTicketIssue = (payload) => {
     setInitialQuery(payload);
     setIsChatOpen(true);
@@ -78,21 +96,17 @@ function Home() {
     if (selectedLocation) {
       const newTrip = {
         id: Date.now(),
-        // 화면에 보여줄 이름 (이름이 없으면 좌표)
         destination: selectedLocation.name || `좌표 ${selectedLocation.lat?.toFixed(2)}`,
         lat: selectedLocation.lat,
         lng: selectedLocation.lng,
         date: new Date().toLocaleDateString(),
-        // 공항 코드 (3글자 대문자)
         code: (selectedLocation.name || "GPS").substring(0, 3).toUpperCase(),
         promptSummary: payload.display
       };
-      // 최신순으로 추가
       setSavedTrips(prev => [newTrip, ...prev]); 
     }
   };
 
-  // 🚨 [추가] TripDock에서 여행지 클릭 시
   const handleTripClick = (trip) => {
     if (trip.lat && trip.lng) {
       if (globeRef.current) globeRef.current.flyToAndPin(trip.lat, trip.lng, trip.destination);
@@ -102,7 +116,6 @@ function Home() {
     }
   };
 
-  // 🚨 [추가] TripDock에서 여행지 삭제 시
   const handleTripDelete = (id) => {
     setSavedTrips(prev => prev.filter(trip => trip.id !== id));
   };
@@ -126,7 +139,6 @@ function Home() {
         onTickerClick={handleLocationSelect}
         onTicketClick={() => setIsTicketOpen(true)}
         externalInput={draftInput}
-        // 🚨 Dock 연결
         savedTrips={savedTrips}
         onTripClick={handleTripClick}
         onTripDelete={handleTripDelete}
