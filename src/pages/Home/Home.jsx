@@ -15,14 +15,13 @@ function Home() {
   const [hiddenSearchQuery, setHiddenSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   
-  // 1. 발권된 티켓 (하단 도크용 - 영구 저장)
+  // 1. 발권된 티켓 (하단 도크용 & 채팅 히스토리용 - 영구 저장)
   const [savedTrips, setSavedTrips] = useState(() => {
     const saved = localStorage.getItem('gate0_trips');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // 2. 🚨 [신규] 탐색한 핀 기록 (모달 좌측용 - 세션 저장)
-  // 지구본을 클릭해서 '간'만 본 장소들입니다.
+  // 2. 탐색한 핀 기록 (모달 좌측용 - 세션 저장)
   const [scoutedPins, setScoutedPins] = useState([]);
 
   useEffect(() => {
@@ -49,7 +48,6 @@ function Home() {
     const newLocationData = { name: locationName, country: addressData?.country, lat, lng, type: 'user-pin' };
     setSelectedLocation(newLocationData);
 
-    // 🚨 [핵심] 핀을 찍으면 '탐색 기록(Scouted Pins)'에 추가
     const newPinRecord = {
       id: Date.now(),
       name: locationName,
@@ -57,7 +55,6 @@ function Home() {
       lat, lng,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
-    // 중복 방지 없이 최신순 추가 (같은 곳을 여러 번 고민할 수 있으므로)
     setScoutedPins(prev => [newPinRecord, ...prev]);
   };
 
@@ -93,7 +90,6 @@ function Home() {
       const isExist = savedTrips.some(t => t.lat === selectedLocation.lat && t.lng === selectedLocation.lng);
       if (isExist) return;
 
-      // 발권 시 '티켓 목록(Saved Trips)'에 저장
       const newTrip = {
         id: Date.now(),
         destination: selectedLocation.name || "Unknown",
@@ -112,7 +108,6 @@ function Home() {
     setSavedTrips(prev => prev.filter(trip => trip.id !== id));
   };
   
-  // 🚨 [신규] 탐색 기록 삭제 핸들러
   const handleScoutDelete = (id) => {
     setScoutedPins(prev => prev.filter(pin => pin.id !== id));
   };
@@ -137,7 +132,7 @@ function Home() {
         onTickerClick={handleLocationSelect}
         onTicketClick={() => setIsTicketOpen(true)}
         externalInput={draftInput}
-        savedTrips={savedTrips} // 하단 도크는 '발권된 티켓' 표시
+        savedTrips={savedTrips} 
         onTripClick={handleLocationSelect} 
         onTripDelete={handleTripDelete}
       />
@@ -147,8 +142,7 @@ function Home() {
         onClose={handleCloseTicket}
         onIssue={handleTicketIssue}
         preFilledDestination={selectedLocation} 
-        // 🚨 모달에는 '탐색 기록(Scouted Pins)' 전달
-        scoutedPins={scoutedPins}
+        scoutedPins={scoutedPins} // 탐색 기록
         onScoutDelete={handleScoutDelete}
       />
       
@@ -159,6 +153,7 @@ function Home() {
           if (globeRef.current) globeRef.current.resumeRotation();
         }} 
         initialQuery={initialQuery} 
+        chatHistory={savedTrips} // 🚨 지난 대화 기록 (Phase 1 연동)
       />
     </div>
   );

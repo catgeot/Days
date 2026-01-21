@@ -29,7 +29,7 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
 
         if (preFilledDestination.lat && preFilledDestination.lng) {
           setIsLoadingAddr(true);
-          setDestination("Locating..."); 
+          setDestination("위치 확인 중..."); 
           const addr = await getAddressFromCoordinates(preFilledDestination.lat, preFilledDestination.lng);
           
           if (addr && addr.city) {
@@ -60,7 +60,7 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
     if (!destination && !hasSelections) { alert("목적지나 취향을 하나라도 선택해주세요."); return; }
 
     const prompt = `[Request] Destination: ${destination}, Style: ${Object.values(selections).filter(Boolean).join(', ')}`;
-    const payload = { text: prompt, display: `🎫 [${destination}] 여행 계획 요청` };
+    const payload = { text: prompt, display: `🎫 [${destination}] 여행 정보 요청` };
     
     onIssue(payload);
     onClose();
@@ -74,9 +74,8 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
       
       <div className="relative w-full max-w-5xl h-[85vh] flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(59,130,246,0.3)] animate-fade-in-up bg-gray-900 border border-white/10">
         
-        {/* [좌측] SCOUTED LIST */}
+        {/* [좌측] 탐색 핀 리스트 (Exploration Pins) */}
         <div className="hidden md:flex w-80 bg-gradient-to-b from-blue-900 via-gray-900 to-black p-8 flex-col border-r-2 border-dashed border-white/10 relative">
-           
            <div className="absolute -right-3 top-1/2 w-6 h-6 bg-black rounded-full z-10 border border-white/20"></div>
 
            <div className="flex justify-between items-center mb-6 z-10">
@@ -86,7 +85,8 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
 
            <div className="z-10 mb-3 flex items-center gap-2">
              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-             <p className="text-xs text-blue-300 uppercase tracking-[0.2em] font-bold">SCOUTED LOCATIONS</p>
+             {/* 🚨 명칭 변경: 탐색 핀 리스트 */}
+             <p className="text-xs text-blue-300 uppercase tracking-[0.05em] font-bold">📍 탐색 핀 리스트</p>
            </div>
            
            <div className="flex-1 overflow-y-auto custom-scrollbar z-10 space-y-3 pr-2 mask-gradient-bottom">
@@ -101,16 +101,15 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
                      <div>
                        <div className="text-sm font-bold text-white truncate max-w-[120px]">{pin.name}</div>
                        <div className="text-[10px] text-gray-500 font-mono mt-1 flex items-center gap-1">
-                          <Map size={10} /> Checked at {pin.time}
+                          <Map size={10} /> {pin.time} 탐색됨
                        </div>
                      </div>
                      <span className="text-xl font-black text-white/20 group-hover:text-blue-400 transition-colors">{pin.code}</span>
                    </div>
                    
-                   {/* 🚨 [수정] 삭제 버튼: 카드 전체를 덮지 않고, 우측 상단에 작게 배치 */}
                    <button 
                     onClick={(e) => { 
-                      e.stopPropagation(); // 부모 클릭(선택) 방지
+                      e.stopPropagation(); 
                       onScoutDelete(pin.id); 
                     }}
                     className="absolute top-2 right-2 p-1.5 bg-red-500/20 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all"
@@ -122,13 +121,13 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
              ) : (
                <div className="h-32 flex flex-col items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-xl bg-white/5 mt-4">
                  <MapPin size={24} className="mb-2 opacity-50" />
-                 <span className="text-[10px] uppercase tracking-wider">No Scouted Pins</span>
+                 <span className="text-[10px] tracking-wider">탐색한 핀이 없습니다</span>
                </div>
              )}
            </div>
 
-           <div className="pt-6 border-t border-white/10 z-10 text-[10px] text-gray-500 text-center uppercase tracking-widest">
-             Click item to set destination
+           <div className="pt-6 border-t border-white/10 z-10 text-[10px] text-gray-500 text-center tracking-widest">
+             리스트를 클릭하여 목적지 설정
            </div>
         </div>
 
@@ -137,7 +136,7 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
           <div className="flex justify-between items-center mb-6 shrink-0">
             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
               <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
-              New Ticket
+              여행 정보 요청
               <span className="text-xs font-normal text-gray-500 ml-2">Preferences</span>
             </h2>
             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors group">
@@ -147,21 +146,20 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
 
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
             
-            {/* 목적지 입력 */}
             <div className="bg-black/40 rounded-2xl p-4 border border-white/10 mb-6 shrink-0">
               <label className="text-[10px] font-bold text-blue-400 tracking-wider mb-2 block flex items-center gap-2">
-                <MapPin size={12} /> DESTINATION
+                <MapPin size={12} /> 목적지 (DESTINATION)
               </label>
               <div className="relative">
                 <input 
                   type="text"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  placeholder="Where to?"
+                  placeholder="어디로 떠나시나요?"
                   className={`w-full bg-transparent text-2xl font-bold text-white placeholder-gray-600 focus:outline-none ${isLoadingAddr ? 'animate-pulse' : ''}`}
                   disabled={isLoadingAddr} 
                 />
-                {isLoadingAddr && <div className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-blue-400 font-mono">SCANNING...</div>}
+                {isLoadingAddr && <div className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-blue-400 font-mono">위치 확인 중...</div>}
               </div>
             </div>
 
@@ -188,12 +186,13 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
               ))}
             </div>
 
+            {/* 🚨 버튼 문구 변경: 상세 정보 알아보기 */}
             <button 
               type="submit"
               className="w-full shrink-0 bg-white text-black font-black text-lg py-4 rounded-xl shadow-xl hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all flex items-center justify-center gap-2 mt-auto"
             >
               <Ticket size={20} />
-              <span>ISSUE TICKET NOW</span>
+              <span>상세 정보 알아보기</span>
             </button>
           </form>
         </div>
