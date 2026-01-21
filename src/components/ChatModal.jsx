@@ -10,14 +10,13 @@ const ChatModal = ({
   onToggleBookmark, 
   activeChatId, 
   onSwitchChat,
-  onDeleteChat, // 🚨 추가
-  onClearChats // 🚨 추가
+  onDeleteChat,
+  onClearChats
 }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // 🚨 [Fix 2] 스크롤 제어를 위한 Ref 복구 (마지막 질문 위치 기억)
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const hasSentInitialRef = useRef(false);
@@ -29,25 +28,19 @@ const ChatModal = ({
     [가이드] 감성적 톤앤매너(✈️, 🌊), 스케줄 나열보다 분위기 묘사 위주, 3~4문단 핵심 요약.
   `;
 
-  // 🚨 [Fix 2] 스마트 스크롤 로직 (질문이 상단에 오도록)
   useEffect(() => {
     if (messages.length > 0) {
       const lastMsg = messages[messages.length - 1];
-      
-      // 사용자가 방금 질문을 던졌거나, AI 답변이 시작될 때 -> 질문을 상단으로
       if (lastQuestionRef.current) {
-         // 약간의 딜레이를 줘서 렌더링 후 스크롤
          setTimeout(() => {
             lastQuestionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
          }, 100);
       } else {
-         // 그 외의 경우엔 그냥 바닥으로
          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
     }
   }, [messages, isLoading]);
 
-  // ID 변경 시 메시지 로드 (기존 로직 유지)
   useEffect(() => {
     if (isOpen && activeChatId) {
       const targetTrip = chatHistory.find(t => t.id === activeChatId);
@@ -57,7 +50,6 @@ const ChatModal = ({
     }
   }, [activeChatId, isOpen, chatHistory]); 
 
-  // 초기 질문 처리 (기존 로직 유지)
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
       hasSentInitialRef.current = true;
@@ -126,12 +118,7 @@ const ChatModal = ({
               <MessageSquare size={18} className="text-blue-400" />
               <span className="font-bold text-gray-200 text-sm">대화 기록</span>
             </div>
-            {/* 🚨 [Fix 3] 전체 리셋 버튼 */}
-            <button 
-              onClick={onClearChats}
-              className="text-gray-500 hover:text-white transition-colors"
-              title="전체 삭제"
-            >
+            <button onClick={onClearChats} className="text-gray-500 hover:text-white transition-colors" title="전체 삭제">
               <RefreshCcw size={14} />
             </button>
           </div>
@@ -151,9 +138,9 @@ const ChatModal = ({
                   <span className="font-bold text-gray-300 text-sm truncate max-w-[140px]">{item.destination}</span>
                   <div className="flex gap-1">
                      <button onClick={(e) => { e.stopPropagation(); onToggleBookmark && onToggleBookmark(item.id); }}>
-                        <Star size={14} className={item.isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-600 hover:text-yellow-400"} />
+                        {/* 🚨 [Fix] isBookmarked -> is_bookmarked (DB 컬럼명 일치) */}
+                        <Star size={14} className={item.is_bookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-600 hover:text-yellow-400"} />
                      </button>
-                     {/* 🚨 [Fix 3] 개별 삭제 버튼 */}
                      <button onClick={(e) => { e.stopPropagation(); onDeleteChat && onDeleteChat(item.id); }}>
                         <Trash2 size={14} className="text-gray-600 hover:text-red-400" />
                      </button>
@@ -177,13 +164,11 @@ const ChatModal = ({
 
             <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
               {messages.map((msg, idx) => {
-                // 🚨 스크롤 타겟 설정: 사용자의 마지막 메시지
                 const isLastUser = msg.role === 'user' && idx >= messages.length - 2;
-                
                 return (
                   <div 
                     key={idx} 
-                    ref={isLastUser ? lastQuestionRef : null} // Ref 할당
+                    ref={isLastUser ? lastQuestionRef : null} 
                     className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
                   >
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
@@ -198,7 +183,6 @@ const ChatModal = ({
               {isLoading && (
                 <div className="flex gap-4"><Loader2 size={20} className="text-blue-400 animate-spin" /></div>
               )}
-              {/* 바닥 참조용 */}
               <div ref={messagesEndRef} />
             </div>
 

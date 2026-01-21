@@ -6,10 +6,21 @@ import ChatModal from '../../components/ChatModal';
 import { getAddressFromCoordinates } from '../../lib/geocoding';
 import { supabase } from '../../lib/supabase';
 
+// 🚨 [New] 신규 컴포넌트 Import
+import LogoPanel from './components/LogoPanel';
+import AmbientMode from './components/AmbientMode';
+
 function Home() {
   const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   
+  // 🚨 [New] 패널 & 앰비언트 모드 상태
+  const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
+  const [isAmbientMode, setIsAmbientMode] = useState(false);
+  
+  // 🚨 [New] 로그인 유저 상태
+  const [user, setUser] = useState(null);
+
   const [initialQuery, setInitialQuery] = useState('');
   const [draftInput, setDraftInput] = useState('');
   const [hiddenSearchQuery, setHiddenSearchQuery] = useState('');
@@ -21,7 +32,23 @@ function Home() {
 
   const globeRef = useRef();
 
-  useEffect(() => { fetchData(); }, []);
+  // 1. 데이터 및 로그인 상태 로드
+  useEffect(() => { 
+    fetchData(); 
+    checkUser();
+
+    // 🚨 실시간 로그인 상태 감지 (Logbook 등 다른 탭에서 로그인해도 반영됨)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+  };
 
   const fetchData = async () => {
     const { data: trips } = await supabase.from('saved_trips').select('*').order('created_at', { ascending: false });
@@ -30,6 +57,18 @@ function Home() {
     if (pins) setScoutedPins(pins);
   };
 
+  // 🚨 [New] 버킷 리스트 필터링 (별표 친 것만)
+  const bucketList = savedTrips.filter(trip => trip.is_bookmarked);
+
+  // 🚨 [New] 로그아웃 핸들러
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsLogoPanelOpen(false); // 로그아웃 시 패널 닫기
+    alert("로그아웃 되었습니다.");
+  };
+
+  // ... (이하 기존 핸들러들 동일) ...
   const handleGlobeClick = async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
     setSelectedLocation({ lat, lng, type: 'coordinates' });
@@ -48,55 +87,29 @@ function Home() {
 
   const handleLocationSelect = async (locationData, source = 'globe') => {
     if (!locationData.lat || !locationData.lng) return;
-
-    // 1. 지구본 이동 (1.5초 동안 이동함)
     if (globeRef.current) {
       globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name || "Selected");
     }
-
     const name = locationData.name || "Selected";
     setDraftInput(`📍 [${name}] Ready`);
     setHiddenSearchQuery(`${name} travel guide`);
     
-    // 2. 핀 저장 (DB)
     const isAlreadyScouted = scoutedPins.some(p => p.name === name);
     if (!isAlreadyScouted) {
-      const newPin = { 
-        name: name, 
-        code: name.substring(0, 3).toUpperCase(), 
-        lat: locationData.lat, 
-        lng: locationData.lng 
-      };
+      const newPin = { name: name, code: name.substring(0, 3).toUpperCase(), lat: locationData.lat, lng: locationData.lng };
       const { data, error } = await supabase.from('scout_pins').insert([newPin]).select();
-      if (!error && data) {
-        setScoutedPins(prev => [data[0], ...prev]);
-      }
+      if (!error && data) setScoutedPins(prev => [data[0], ...prev]);
     }
-
-    // 3. 상태 업데이트
-    const targetLocation = {
-      ...locationData,
-      type: 'user-pin', 
-      country: locationData.country || ''
-    };
+    const targetLocation = { ...locationData, type: 'user-pin', country: locationData.country || '' };
     setSelectedLocation(targetLocation);
 
-    // 🚨 [Fix] Cinematic Transition: 1.5초 딜레이 후 모달 오픈
-    // source가 'globe'일 때만 창을 여는데, 이동이 끝나는 시점에 맞춤
     if (source === 'globe') {
-      setTimeout(() => {
-        setIsTicketOpen(true);
-      }, 1500); // 1.5초 대기
+      setTimeout(() => { setIsTicketOpen(true); }, 1500); 
     }
   };
 
   const handleStartChat = async (destination, initialText, existingId = null) => {
-    if (existingId) {
-      setActiveChatId(existingId);
-      setInitialQuery(null); 
-      setIsChatOpen(true);
-      return;
-    }
+    if (existingId) { setActiveChatId(existingId); setInitialQuery(null); setIsChatOpen(true); return; }
     const newTrip = {
       destination: destination || "New Chat",
       lat: selectedLocation?.lat || 0,
@@ -104,8 +117,7 @@ function Home() {
       date: new Date().toLocaleDateString(),
       code: (destination || "TRP").substring(0, 3).toUpperCase(),
       prompt_summary: initialText || "여행 계획 시작",
-      messages: [], 
-      is_bookmarked: false
+      messages: [], is_bookmarked: false
     };
     const { data, error } = await supabase.from('saved_trips').insert([newTrip]).select();
     if (!error && data) {
@@ -178,6 +190,7 @@ function Home() {
         savedTrips={savedTrips} 
         tempPinsData={scoutedPins} 
       />
+      
       <HomeUI 
         onSearch={handleSearch}
         onTickerClick={handleLocationSelect}
@@ -187,7 +200,31 @@ function Home() {
         onTripClick={handleLocationSelect} 
         onTripDelete={handleDeleteChat} 
         onOpenChat={handleOpenChatHistory}
+        // 🚨 로고 클릭 시 패널 오픈
+        onLogoClick={() => setIsLogoPanelOpen(true)}
       />
+      
+      {/* 🚨 [New] 로고 패널 (슬라이드) */}
+      <LogoPanel 
+        isOpen={isLogoPanelOpen}
+        onClose={() => setIsLogoPanelOpen(false)}
+        user={user}
+        bucketList={bucketList}
+        onLogout={handleLogout}
+        onStartAmbient={() => {
+          setIsLogoPanelOpen(false);
+          setIsAmbientMode(true);
+        }}
+      />
+
+      {/* 🚨 [New] 앰비언트 모드 (전체화면 슬라이드) */}
+      {isAmbientMode && (
+        <AmbientMode 
+          bucketList={bucketList} 
+          onClose={() => setIsAmbientMode(false)} 
+        />
+      )}
+
       <TicketModal 
         isOpen={isTicketOpen} 
         onClose={handleCloseTicket}

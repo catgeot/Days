@@ -1,3 +1,4 @@
+// ... (imports)
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, User, Sparkles, Search, Ticket, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom'; 
@@ -13,8 +14,10 @@ const HomeUI = ({
   savedTrips, 
   onTripClick, 
   onTripDelete,
-  onOpenChat 
+  onOpenChat,
+  onLogoClick // 🚨 [New] 로고 클릭 핸들러 받기
 }) => {
+  // ... (기존 state 로직 동일)
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
 
@@ -40,15 +43,21 @@ const HomeUI = ({
   return (
     <>
       <div className="absolute top-0 left-0 right-0 z-20 p-6 grid grid-cols-12 items-start pointer-events-none">
-        <div className="col-span-3 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto">
-          <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+        
+        {/* 🚨 [수정] 로고 클릭 이벤트 추가 (pointer-events-auto 필수) */}
+        <div 
+          onClick={onLogoClick} 
+          className="col-span-3 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto cursor-pointer group"
+        >
+          <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left">
             <Logo />
           </h1>
-          <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1">DEPARTURE LOUNGE</span>
+          <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1 group-hover:text-blue-400 transition-colors">DEPARTURE LOUNGE</span>
         </div>
 
         <div className="col-span-6 flex justify-center animate-fade-in-down delay-100 pt-2 pointer-events-auto">
-          <div className="relative group w-full max-w-md">
+           {/* ... (검색창 기존 동일) ... */}
+           <div className="relative group w-full max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="relative flex items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-lg transition-all group-focus-within:bg-black/50 group-focus-within:border-blue-400/50 hover:bg-black/30 h-10">
               <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={16} /></div>
@@ -67,12 +76,12 @@ const HomeUI = ({
         </div>
         
         <div className="col-span-3 flex justify-end animate-fade-in-down pr-2 pointer-events-auto">
-          {/* 🚨 [수정] 클릭 시 'ticker'라는 출처를 명확히 전달 */}
           <TravelTicker onCityClick={(data) => onTickerClick(data, 'ticker')} />
         </div>
       </div>
 
       <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 flex items-end justify-between pointer-events-none">
+        {/* ... (푸터 기존 동일) ... */}
         <Link to="/report" className="group flex items-center gap-2 pb-2 pl-2 pointer-events-auto cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-blue-400/50 transition-all shadow-lg group-hover:scale-110">
             <FileText size={18} className="text-gray-400 group-hover:text-blue-300" />
@@ -118,5 +127,4 @@ const HomeUI = ({
     </>
   );
 };
-
 export default HomeUI;
