@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
 import TicketModal from './components/TicketModal'; 
 import ChatModal from '../../components/ChatModal'; 
 import { getAddressFromCoordinates } from '../../lib/geocoding';
+import { supabase } from '../../lib/supabase';
 
 function Home() {
   const [isTicketOpen, setIsTicketOpen] = useState(false);
@@ -14,135 +14,159 @@ function Home() {
   const [draftInput, setDraftInput] = useState('');
   const [hiddenSearchQuery, setHiddenSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
-  
-  // 1. 발권된 티켓 (채팅 기록 포함 - 영구 저장)
-  const [savedTrips, setSavedTrips] = useState(() => {
-    const saved = localStorage.getItem('gate0_trips');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [activeChatId, setActiveChatId] = useState(null);
 
-  // 2. 🚨 [수정] 탐색 핀 기록도 영구 저장 (새로고침 방어)
-  const [scoutedPins, setScoutedPins] = useState(() => {
-    const saved = localStorage.getItem('gate0_scouts');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // 저장소 동기화
-  useEffect(() => { localStorage.setItem('gate0_trips', JSON.stringify(savedTrips)); }, [savedTrips]);
-  useEffect(() => { localStorage.setItem('gate0_scouts', JSON.stringify(scoutedPins)); }, [scoutedPins]);
+  const [savedTrips, setSavedTrips] = useState([]);  
+  const [scoutedPins, setScoutedPins] = useState([]);
 
   const globeRef = useRef();
 
+  useEffect(() => { fetchData(); }, []);
+
+  const fetchData = async () => {
+    const { data: trips } = await supabase.from('saved_trips').select('*').order('created_at', { ascending: false });
+    if (trips) setSavedTrips(trips);
+    const { data: pins } = await supabase.from('scout_pins').select('*').order('created_at', { ascending: false });
+    if (pins) setScoutedPins(pins);
+  };
+
   const handleGlobeClick = async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
-    
     setSelectedLocation({ lat, lng, type: 'coordinates' });
     setDraftInput("Locating...");
-
     const addressData = await getAddressFromCoordinates(lat, lng);
     const locationName = addressData?.city || addressData?.country || "Unknown Point"; 
     const fullLabel = addressData?.country ? `${locationName}, ${addressData.country}` : locationName;
-
     setDraftInput(`📍 [${locationName}] Ready`);
-    setHiddenSearchQuery(`${fullLabel} travel guide`);
-    
+    setHiddenSearchQuery(`${locationName} travel guide`);
     if (globeRef.current) globeRef.current.updateLastPinName(locationName);
-    
-    const newLocationData = { name: locationName, country: addressData?.country, lat, lng, type: 'user-pin' };
-    setSelectedLocation(newLocationData);
-
-    // 탐색 기록 추가
-    const newPinRecord = {
-      id: Date.now(),
-      name: locationName,
-      code: locationName.substring(0, 3).toUpperCase(),
-      lat, lng,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    setScoutedPins(prev => [newPinRecord, ...prev]);
+    setSelectedLocation({ name: locationName, country: addressData?.country, lat, lng, type: 'user-pin' });
+    const newPin = { name: locationName, code: locationName.substring(0, 3).toUpperCase(), lat, lng };
+    const { data, error } = await supabase.from('scout_pins').insert([newPin]).select();
+    if (!error && data) setScoutedPins(prev => [data[0], ...prev]);
   };
 
-  const handleLocationSelect = (locationData) => {
-    if (locationData.lat && locationData.lng) {
-      if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name || "Selected");
-      
-      const name = locationData.name || "Selected";
-      setDraftInput(`📍 [${name}] Ready`);
-      setHiddenSearchQuery(`${name} travel guide`);
-      setSelectedLocation(locationData);
-      
-      if (locationData.type === 'user-pin' || locationData.type === 'saved-trip') {
-         setIsTicketOpen(true);
+  const handleLocationSelect = async (locationData, source = 'globe') => {
+    if (!locationData.lat || !locationData.lng) return;
+
+    // 1. 지구본 이동 (1.5초 동안 이동함)
+    if (globeRef.current) {
+      globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name || "Selected");
+    }
+
+    const name = locationData.name || "Selected";
+    setDraftInput(`📍 [${name}] Ready`);
+    setHiddenSearchQuery(`${name} travel guide`);
+    
+    // 2. 핀 저장 (DB)
+    const isAlreadyScouted = scoutedPins.some(p => p.name === name);
+    if (!isAlreadyScouted) {
+      const newPin = { 
+        name: name, 
+        code: name.substring(0, 3).toUpperCase(), 
+        lat: locationData.lat, 
+        lng: locationData.lng 
+      };
+      const { data, error } = await supabase.from('scout_pins').insert([newPin]).select();
+      if (!error && data) {
+        setScoutedPins(prev => [data[0], ...prev]);
       }
+    }
+
+    // 3. 상태 업데이트
+    const targetLocation = {
+      ...locationData,
+      type: 'user-pin', 
+      country: locationData.country || ''
+    };
+    setSelectedLocation(targetLocation);
+
+    // 🚨 [Fix] Cinematic Transition: 1.5초 딜레이 후 모달 오픈
+    // source가 'globe'일 때만 창을 여는데, 이동이 끝나는 시점에 맞춤
+    if (source === 'globe') {
+      setTimeout(() => {
+        setIsTicketOpen(true);
+      }, 1500); // 1.5초 대기
+    }
+  };
+
+  const handleStartChat = async (destination, initialText, existingId = null) => {
+    if (existingId) {
+      setActiveChatId(existingId);
+      setInitialQuery(null); 
+      setIsChatOpen(true);
+      return;
+    }
+    const newTrip = {
+      destination: destination || "New Chat",
+      lat: selectedLocation?.lat || 0,
+      lng: selectedLocation?.lng || 0,
+      date: new Date().toLocaleDateString(),
+      code: (destination || "TRP").substring(0, 3).toUpperCase(),
+      prompt_summary: initialText || "여행 계획 시작",
+      messages: [], 
+      is_bookmarked: false
+    };
+    const { data, error } = await supabase.from('saved_trips').insert([newTrip]).select();
+    if (!error && data) {
+      const createdTrip = data[0];
+      setSavedTrips(prev => [createdTrip, ...prev]); 
+      setActiveChatId(createdTrip.id);
+      if (initialText) setInitialQuery({ text: initialText, display: initialText });
+      else setInitialQuery(null);
+      setIsChatOpen(true);
     }
   };
 
   const handleSearch = (query) => {
-    if (query === draftInput && hiddenSearchQuery) {
-      setInitialQuery({ text: hiddenSearchQuery, display: query }); 
-    } else {
-      setInitialQuery(query);
-    }
-    setIsChatOpen(true);    
+    const targetName = selectedLocation?.name || "검색된 여행지";
+    let actualQuery = query;
+    if (query === draftInput && hiddenSearchQuery) actualQuery = hiddenSearchQuery;
+    handleStartChat(targetName, actualQuery);
   };
-
-  const handleTicketIssue = (payload) => {
-    setInitialQuery(payload);
-    setIsChatOpen(true);
-
-    if (selectedLocation) {
-      const isExist = savedTrips.some(t => t.lat === selectedLocation.lat && t.lng === selectedLocation.lng);
-      if (isExist) return;
-
-      const newTrip = {
-        id: Date.now(),
-        destination: selectedLocation.name || "Unknown",
-        lat: selectedLocation.lat,
-        lng: selectedLocation.lng,
-        date: new Date().toLocaleDateString(),
-        code: (selectedLocation.name || "GPS").substring(0, 3).toUpperCase(),
-        promptSummary: payload.display,
-        type: 'saved-trip',
-        messages: [], // 🚨 대화 내용 저장용 배열 초기화
-        isBookmarked: false // 🚨 버킷리스트용 플래그
-      };
-      setSavedTrips(prev => [newTrip, ...prev]); 
+  const handleTicketIssue = (payload) => { handleStartChat(selectedLocation?.name, payload.text); };
+  const handleUpdateChatHistory = async (tripId, newMessages) => {
+    setSavedTrips(prev => prev.map(trip => trip.id === tripId ? { ...trip, messages: newMessages } : trip));
+    await supabase.from('saved_trips').update({ messages: newMessages }).eq('id', tripId);
+  };
+  const handleToggleBookmark = async (tripId) => {
+    const targetTrip = savedTrips.find(t => t.id === tripId);
+    if (!targetTrip) return;
+    const newStatus = !targetTrip.is_bookmarked;
+    setSavedTrips(prev => prev.map(trip => trip.id === tripId ? { ...trip, is_bookmarked: newStatus } : trip));
+    await supabase.from('saved_trips').update({ is_bookmarked: newStatus }).eq('id', tripId);
+  };
+  const handleDeleteChat = async (id) => {
+    if (window.confirm("이 대화 기록을 삭제하시겠습니까?")) {
+      setSavedTrips(prev => prev.filter(trip => trip.id !== id));
+      await supabase.from('saved_trips').delete().eq('id', id);
+      if (activeChatId === id) { setActiveChatId(null); setIsChatOpen(false); }
     }
   };
-
-  // 🚨 [신규] 채팅 내용 업데이트 핸들러 (ChatModal에서 호출)
-  const handleUpdateChatHistory = (tripId, newMessages) => {
-    setSavedTrips(prev => prev.map(trip => 
-      trip.id === tripId ? { ...trip, messages: newMessages } : trip
-    ));
+  const handleClearChats = async () => {
+    if (window.confirm("모든 대화 기록을 초기화하시겠습니까?")) {
+      setSavedTrips([]);
+      await supabase.from('saved_trips').delete().neq('id', 0);
+      setActiveChatId(null);
+      setIsChatOpen(false);
+    }
   };
-
-  // 🚨 [신규] 버킷리스트 토글 핸들러
-  const handleToggleBookmark = (tripId) => {
-    setSavedTrips(prev => prev.map(trip => 
-      trip.id === tripId ? { ...trip, isBookmarked: !trip.isBookmarked } : trip
-    ));
-  };
-
-  const handleTripDelete = (id) => {
-    setSavedTrips(prev => prev.filter(trip => trip.id !== id));
-  };
-  
-  const handleScoutDelete = (id) => {
+  const handleScoutDelete = async (id) => {
     setScoutedPins(prev => prev.filter(pin => pin.id !== id));
+    await supabase.from('scout_pins').delete().eq('id', id);
   };
-
-  // 🚨 [신규] 탐색 핀 전체 리셋 (지구본 핀도 같이 사라짐)
-  const handleClearScouts = () => {
+  const handleClearScouts = async () => {
     if (window.confirm("모든 탐색 핀을 초기화하시겠습니까?")) {
-      setScoutedPins([]);
+      setScoutedPins([]); 
+      await supabase.from('scout_pins').delete().neq('id', 0); 
+      if (globeRef.current) globeRef.current.resetPins();
     }
   };
-
-  const handleCloseTicket = () => {
-    setIsTicketOpen(false);
-    if (globeRef.current) globeRef.current.resumeRotation();
+  const handleOpenChatHistory = () => {
+    if (savedTrips.length > 0) handleStartChat(null, null, savedTrips[0].id);
+    else alert("저장된 대화가 없습니다.");
   };
+  const handleCloseTicket = () => { setIsTicketOpen(false); if (globeRef.current) globeRef.current.resumeRotation(); };
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
@@ -152,10 +176,8 @@ function Home() {
         onMarkerClick={handleLocationSelect}
         isChatOpen={isChatOpen}
         savedTrips={savedTrips} 
-        // 🚨 탐색 핀도 지구본에 전달해야 새로고침 후에도 보임
         tempPinsData={scoutedPins} 
       />
-
       <HomeUI 
         onSearch={handleSearch}
         onTickerClick={handleLocationSelect}
@@ -163,9 +185,9 @@ function Home() {
         externalInput={draftInput}
         savedTrips={savedTrips} 
         onTripClick={handleLocationSelect} 
-        onTripDelete={handleTripDelete}
+        onTripDelete={handleDeleteChat} 
+        onOpenChat={handleOpenChatHistory}
       />
-
       <TicketModal 
         isOpen={isTicketOpen} 
         onClose={handleCloseTicket}
@@ -173,21 +195,19 @@ function Home() {
         preFilledDestination={selectedLocation} 
         scoutedPins={scoutedPins}
         onScoutDelete={handleScoutDelete}
-        // 🚨 리셋 기능 전달
         onClearScouts={handleClearScouts}
       />
-      
       <ChatModal 
         isOpen={isChatOpen} 
-        onClose={() => {
-          setIsChatOpen(false);
-          if (globeRef.current) globeRef.current.resumeRotation();
-        }} 
+        onClose={() => { setIsChatOpen(false); if (globeRef.current) globeRef.current.resumeRotation(); }} 
         initialQuery={initialQuery} 
         chatHistory={savedTrips}
-        // 🚨 업데이트 함수 전달
         onUpdateChat={handleUpdateChatHistory}
         onToggleBookmark={handleToggleBookmark}
+        activeChatId={activeChatId}
+        onSwitchChat={(id) => handleStartChat(null, null, id)}
+        onDeleteChat={handleDeleteChat}
+        onClearChats={handleClearChats}
       />
     </div>
   );
