@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
@@ -15,68 +15,64 @@ function Home() {
   const [hiddenSearchQuery, setHiddenSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   
-  const [savedTrips, setSavedTrips] = useState([]);
+  // 1. 발권된 티켓 (하단 도크용 - 영구 저장)
+  const [savedTrips, setSavedTrips] = useState(() => {
+    const saved = localStorage.getItem('gate0_trips');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // 2. 🚨 [신규] 탐색한 핀 기록 (모달 좌측용 - 세션 저장)
+  // 지구본을 클릭해서 '간'만 본 장소들입니다.
+  const [scoutedPins, setScoutedPins] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem('gate0_trips', JSON.stringify(savedTrips));
+  }, [savedTrips]);
 
   const globeRef = useRef();
 
-  // 1. 지구본 클릭
   const handleGlobeClick = async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
+    
     setSelectedLocation({ lat, lng, type: 'coordinates' });
-    setDraftInput("🛰️ 위치 데이터 수신 중...");
+    setDraftInput("Locating...");
 
     const addressData = await getAddressFromCoordinates(lat, lng);
+    const locationName = addressData?.city || addressData?.country || "Unknown Point"; 
+    const fullLabel = addressData?.country ? `${locationName}, ${addressData.country}` : locationName;
 
-    if (addressData) {
-      const country = addressData.country !== '알 수 없는 국가' ? addressData.country : '';
-      const city = addressData.city !== '알 수 없는 도시' ? addressData.city : '';
-      const locationName = `${country} ${city}`.trim();
-      
-      if (locationName) {
-        setDraftInput(`📍 [${locationName}] 여행 정보 분석 준비 완료`);
-        setHiddenSearchQuery(`${locationName} 여행에 대해 감성적으로 알려줘`);
-        
-        // 🚨 [핵심] 핀 이름 업데이트 명령!!
-        if (globeRef.current) {
-          globeRef.current.updateLastPinName(locationName);
-        }
-        
-        // 티켓 모달용 데이터에도 이름 추가
-        setSelectedLocation({ name: locationName, country: '', lat, lng, type: 'user-pin' });
+    setDraftInput(`📍 [${locationName}] Ready`);
+    setHiddenSearchQuery(`${fullLabel} travel guide`);
+    
+    if (globeRef.current) globeRef.current.updateLastPinName(locationName);
+    
+    const newLocationData = { name: locationName, country: addressData?.country, lat, lng, type: 'user-pin' };
+    setSelectedLocation(newLocationData);
 
-      } else {
-        setDraftInput(`📍 [${lat.toFixed(2)}, ${lng.toFixed(2)}] 좌표 식별됨`);
-        setHiddenSearchQuery(`위도 ${lat}, 경도 ${lng} 위치의 여행 정보 알려줘`);
-      }
-    } else {
-      setDraftInput(`📍 [${lat.toFixed(2)}, ${lng.toFixed(2)}] 좌표 식별됨`);
-      setHiddenSearchQuery(`위도 ${lat}, 경도 ${lng} 위치의 여행 정보 알려줘`);
-    }
+    // 🚨 [핵심] 핀을 찍으면 '탐색 기록(Scouted Pins)'에 추가
+    const newPinRecord = {
+      id: Date.now(),
+      name: locationName,
+      code: locationName.substring(0, 3).toUpperCase(),
+      lat, lng,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    // 중복 방지 없이 최신순 추가 (같은 곳을 여러 번 고민할 수 있으므로)
+    setScoutedPins(prev => [newPinRecord, ...prev]);
   };
 
   const handleLocationSelect = (locationData) => {
-    if (locationData.name) {
-       if (locationData.country && locationData.rank) {
-         if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
-         setDraftInput(`📍 [${locationData.country} ${locationData.name}] 여행 정보 분석 준비 완료`);
-         setHiddenSearchQuery(`${locationData.country} ${locationData.name} 여행에 대해 알려줘`);
-         setSelectedLocation(locationData);
-       } 
-       else if (locationData.lat && locationData.lng) {
-         if (locationData.type === 'user-pin') {
-           setSelectedLocation(locationData);
-           setIsTicketOpen(true);
-         } else {
-            if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name);
-            const countryName = locationData.country || '';
-            setDraftInput(`📍 [${countryName} ${locationData.name}] 여행 정보 분석 준비 완료`);
-            setHiddenSearchQuery(`${countryName} ${locationData.name} 여행에 대해 알려줘`);
-            setSelectedLocation(locationData);
-         }
-       }
-    } else {
+    if (locationData.lat && locationData.lng) {
+      if (globeRef.current) globeRef.current.flyToAndPin(locationData.lat, locationData.lng, locationData.name || "Selected");
+      
+      const name = locationData.name || "Selected";
+      setDraftInput(`📍 [${name}] Ready`);
+      setHiddenSearchQuery(`${name} travel guide`);
       setSelectedLocation(locationData);
-      setIsTicketOpen(true);
+      
+      if (locationData.type === 'user-pin' || locationData.type === 'saved-trip') {
+         setIsTicketOpen(true);
+      }
     }
   };
 
@@ -94,30 +90,31 @@ function Home() {
     setIsChatOpen(true);
 
     if (selectedLocation) {
+      const isExist = savedTrips.some(t => t.lat === selectedLocation.lat && t.lng === selectedLocation.lng);
+      if (isExist) return;
+
+      // 발권 시 '티켓 목록(Saved Trips)'에 저장
       const newTrip = {
         id: Date.now(),
-        destination: selectedLocation.name || `좌표 ${selectedLocation.lat?.toFixed(2)}`,
+        destination: selectedLocation.name || "Unknown",
         lat: selectedLocation.lat,
         lng: selectedLocation.lng,
         date: new Date().toLocaleDateString(),
         code: (selectedLocation.name || "GPS").substring(0, 3).toUpperCase(),
-        promptSummary: payload.display
+        promptSummary: payload.display,
+        type: 'saved-trip'
       };
       setSavedTrips(prev => [newTrip, ...prev]); 
     }
   };
 
-  const handleTripClick = (trip) => {
-    if (trip.lat && trip.lng) {
-      if (globeRef.current) globeRef.current.flyToAndPin(trip.lat, trip.lng, trip.destination);
-      setDraftInput(`📍 [${trip.destination}] 기록된 여정 불러오기 완료`);
-      setHiddenSearchQuery(`${trip.destination} 다시 여행하고 싶어`);
-      setSelectedLocation({ name: trip.destination, lat: trip.lat, lng: trip.lng });
-    }
-  };
-
   const handleTripDelete = (id) => {
     setSavedTrips(prev => prev.filter(trip => trip.id !== id));
+  };
+  
+  // 🚨 [신규] 탐색 기록 삭제 핸들러
+  const handleScoutDelete = (id) => {
+    setScoutedPins(prev => prev.filter(pin => pin.id !== id));
   };
 
   const handleCloseTicket = () => {
@@ -132,6 +129,7 @@ function Home() {
         onGlobeClick={handleGlobeClick}
         onMarkerClick={handleLocationSelect}
         isChatOpen={isChatOpen}
+        savedTrips={savedTrips} 
       />
 
       <HomeUI 
@@ -139,8 +137,8 @@ function Home() {
         onTickerClick={handleLocationSelect}
         onTicketClick={() => setIsTicketOpen(true)}
         externalInput={draftInput}
-        savedTrips={savedTrips}
-        onTripClick={handleTripClick}
+        savedTrips={savedTrips} // 하단 도크는 '발권된 티켓' 표시
+        onTripClick={handleLocationSelect} 
         onTripDelete={handleTripDelete}
       />
 
@@ -149,6 +147,9 @@ function Home() {
         onClose={handleCloseTicket}
         onIssue={handleTicketIssue}
         preFilledDestination={selectedLocation} 
+        // 🚨 모달에는 '탐색 기록(Scouted Pins)' 전달
+        scoutedPins={scoutedPins}
+        onScoutDelete={handleScoutDelete}
       />
       
       <ChatModal 

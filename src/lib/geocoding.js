@@ -1,37 +1,35 @@
-// OpenStreetMap(Nominatim) API를 사용하여 좌표 -> 주소 변환
+// src/lib/geocoding.js
+
 export const getAddressFromCoordinates = async (lat, lng) => {
   try {
-    // 줌 레벨 10은 '도시' 단위까지 식별하기 적당합니다.
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=ko`;
+    // 🚨 [수정] accept-language=en 추가 (영문 주소 강제)
+    // 🚨 [수정] zoom=10 (도시 단위까지만 가져오기 위해 줌 레벨 조정)
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`
+    );
     
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Gate0/1.0 (Project for Portfolio)' // API 사용 매너 (필수)
-      }
-    });
-
-    if (!response.ok) throw new Error('Network response was not ok');
-
+    if (!response.ok) throw new Error("Geocoding failed");
+    
     const data = await response.json();
-
-    if (data.error) {
-      return null; // 바다나 주소가 없는 곳을 클릭함
-    }
-
-    // 주소 정보 정제 (도시, 국가 위주)
-    const address = data.address;
-    const city = address.city || address.town || address.village || address.county || address.state;
-    const country = address.country;
     
-    // 전체 주소 반환
+    // 데이터가 없으면 null
+    if (!data.address) return null;
+
+    // 🚨 [수정] 복잡한 주소 대신 도시/국가만 깔끔하게 추출
+    const city = data.address.city || data.address.town || data.address.village || data.address.county || "";
+    const country = data.address.country || "";
+    
+    // 도시 이름이 없으면 국가 이름만이라도 반환
+    const cleanName = city ? city : country;
+
     return {
-      fullAddress: data.display_name,
-      city: city || '알 수 없는 도시',
-      country: country || '알 수 없는 국가'
+      fullAddress: data.display_name, // 디버깅용
+      city: cleanName,
+      country: country
     };
 
   } catch (error) {
-    console.error("Geocoding failed:", error);
+    console.error("Geocoding error:", error);
     return null;
   }
 };

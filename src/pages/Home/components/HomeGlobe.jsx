@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, us
 import Globe from 'react-globe.gl';
 import { MAJOR_CITIES, HIDDEN_GEMS } from '../../../date/travelSpots'; 
 
-// 거리 계산 함수 (km 단위)
+// 거리 계산 (중복 핀 방지용)
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   var R = 6371; 
   var dLat = deg2rad(lat2-lat1);  
@@ -14,17 +14,16 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   var d = R * c; 
   return d;
 }
+function deg2rad(deg) { return deg * (Math.PI/180) }
 
-function deg2rad(deg) {
-  return deg * (Math.PI/180)
-}
-
-const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) => {
+const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [] }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
   const [visibleMarkers, setVisibleMarkers] = useState(MAJOR_CITIES);
-  const [userPins, setUserPins] = useState([]);
+  
+  // 🚨 [수정] 단일 객체가 아니라 '배열'로 변경하여 흔적을 남김
+  const [tempPins, setTempPins] = useState([]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => { 
@@ -38,17 +37,16 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) 
     // 외부 명령 (FlyTo)
     flyToAndPin: (lat, lng, name = "Selected") => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
-
       if (globeEl.current) {
         globeEl.current.controls().autoRotate = false; 
         globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1500);
       }
-
-      const isDuplicate = userPins.some(pin => getDistanceFromLatLonInKm(pin.lat, pin.lng, lat, lng) < 50);
-
+      
+      // 🚨 [수정] 중복 체크 후 배열에 추가
+      const isDuplicate = tempPins.some(pin => getDistanceFromLatLonInKm(pin.lat, pin.lng, lat, lng) < 50);
       if (!isDuplicate) {
-        const newPin = { lat, lng, type: 'user-pin', name: name, weather: 'sun', altitude: 0, id: Date.now() };
-        setUserPins(prev => {
+        const newPin = { lat, lng, type: 'user-pin', name: name, weather: 'sun', id: Date.now() };
+        setTempPins(prev => {
           const updated = [...prev, newPin];
           return updated.length > 10 ? updated.slice(updated.length - 10) : updated;
         });
@@ -59,14 +57,13 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) 
       }, 3000);
     },
 
-    // 🚨 [신규] 방금 꽂은 핀의 이름 업데이트 (주소 변환 후 호출됨)
+    // 🚨 [수정] 마지막 핀(방금 찍은 핀)의 이름 업데이트
     updateLastPinName: (newName) => {
-      setUserPins(prev => {
+      setTempPins(prev => {
         if (prev.length === 0) return prev;
-        const pins = [...prev];
-        // 마지막 핀의 이름을 변경
-        pins[pins.length - 1] = { ...pins[pins.length - 1], name: newName };
-        return pins;
+        const updated = [...prev];
+        updated[updated.length - 1] = { ...updated[updated.length - 1], name: newName };
+        return updated;
       });
     }
   }));
@@ -74,10 +71,7 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) 
   useEffect(() => {
     const handleResize = () => setDimensions({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (rotationTimer.current) clearTimeout(rotationTimer.current);
-    };
+    return () => { window.removeEventListener('resize', handleResize); };
   }, []);
 
   useEffect(() => {
@@ -88,29 +82,20 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) 
     }
   }, []);
 
-  const handleZoom = ({ altitude }) => {
-    if (altitude < 1.2) {
-      setVisibleMarkers(prev => prev.length > MAJOR_CITIES.length ? prev : [...MAJOR_CITIES, ...HIDDEN_GEMS]);
-    } else {
-      setVisibleMarkers(prev => prev.length === MAJOR_CITIES.length ? prev : MAJOR_CITIES);
-    }
-  };
-
   const handleGlobeClickInternal = ({ lat, lng }) => {
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
     if (globeEl.current) globeEl.current.controls().autoRotate = false; 
     
     globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1000);
-
-    const isDuplicate = userPins.some(pin => getDistanceFromLatLonInKm(pin.lat, pin.lng, lat, lng) < 50);
-
+    
+    // 🚨 [수정] 클릭 시에도 배열에 추가
+    const isDuplicate = tempPins.some(pin => getDistanceFromLatLonInKm(pin.lat, pin.lng, lat, lng) < 50);
     if (!isDuplicate) {
-        // 🚨 처음엔 "New Journey"로 생성 (나중에 updateLastPinName으로 바뀜)
-        const newPin = { lat, lng, type: 'user-pin', name: 'New Journey', weather: 'sun', altitude: 0, id: Date.now() };
-        setUserPins(prev => {
-          const updated = [...prev, newPin];
-          return updated.length > 10 ? updated.slice(updated.length - 10) : updated;
-        });
+      const newPin = { lat, lng, type: 'user-pin', name: 'Selecting...', weather: 'sun', id: Date.now() };
+      setTempPins(prev => {
+        const updated = [...prev, newPin];
+        return updated.length > 10 ? updated.slice(updated.length - 10) : updated;
+      });
     }
 
     if (onGlobeClick) onGlobeClick({ lat, lng });
@@ -120,52 +105,55 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) 
     }, 3000);
   };
 
+  // 🚨 [수정] 렌더링할 마커 합치기 (기존 도시 + 저장된 여행 + 내가 찍은 흔적들)
+  const allMarkers = useMemo(() => {
+    // 저장된 여행지
+    const savedMarkers = savedTrips.map(trip => ({
+      lat: trip.lat, lng: trip.lng, name: trip.destination, weather: 'sun', type: 'saved-trip', id: trip.id
+    }));
+    
+    // 내가 찍은 핀들 (저장된 것과 겹치면 제외하는 로직을 넣을 수도 있지만, 일단 다 보여줌)
+    return [...visibleMarkers, ...savedMarkers, ...tempPins];
+  }, [visibleMarkers, savedTrips, tempPins]);
+
+
   const renderElement = (d) => {
     const el = document.createElement('div');
     el.style.width = '0px'; el.style.height = '0px'; el.style.position = 'absolute'; el.style.pointerEvents = 'auto';
 
-    const isUserPin = d.type === 'user-pin';
-    const colorClass = isUserPin ? '#60A5FA' : (d.weather === 'sun' ? '#FBBF24' : d.weather === 'rain' ? '#60A5FA' : '#E2E8F0'); 
+    const isMyPin = d.type === 'user-pin' || d.type === 'saved-trip';
+    const colorClass = isMyPin ? '#60A5FA' : (d.weather === 'rain' ? '#60A5FA' : '#FBBF24');
     
-    let iconSvg = ''; 
-    if (d.weather === 'sun' || isUserPin) iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${colorClass}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41-1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
-    else if (d.weather === 'rain') iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${colorClass}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>`;
-    else iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${colorClass}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/><path d="M14 14a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/><path d="M20 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/><path d="m20 12-2-2"/><path d="m14 14-2-2"/><path d="m8 16-2-2"/></svg>`;
+    let iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${colorClass}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41-1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
 
-    const scale = d.type === 'major' || isUserPin ? '1' : '0.85';
-    const borderStyle = isUserPin ? '1px solid #3b82f6' : `1px solid ${d.type === 'major' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.15)'}`;
-    const shadowStyle = isUserPin ? '0 0 15px rgba(59, 130, 246, 0.6)' : '0 0 15px rgba(0,0,0,0.6)';
-    const labelColor = isUserPin ? '#bfdbfe' : 'white'; 
-    const labelFontWeight = isUserPin ? '800' : (d.type === 'major' ? 'bold' : 'normal');
+    const borderStyle = isMyPin ? '1px solid #3b82f6' : '1px solid rgba(255, 255, 255, 0.3)';
+    const bgStyle = 'rgba(0, 0, 0, 0.7)';
+    const scale = d.type === 'major' ? '1' : '0.9';
 
     el.innerHTML = `
-      <div style="position: absolute; left: 0; top: 0; transform: translate(-50%, -50%) scale(${scale}); display: flex; align-items: center; gap: 5px; 
-          background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); 
-          border: ${borderStyle}; 
-          padding: 3px 6px; border-radius: 99px; cursor: pointer; 
-          box-shadow: ${shadowStyle}; 
-          transition: all 0.3s ease;">
+      <div style="
+        position: absolute; transform: translate(-50%, -50%) scale(${scale}); 
+        display: flex; align-items: center; gap: 4px; 
+        background: ${bgStyle}; backdrop-filter: blur(4px); 
+        border: ${borderStyle}; padding: 3px 8px; border-radius: 99px; 
+        cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.5); 
+        transition: all 0.2s ease;">
         ${iconSvg}
-        <span style="color: ${labelColor}; font-size: 10px; font-weight: ${labelFontWeight}; font-family: sans-serif; white-space: nowrap;">${d.name}</span>
-        <span style="color: #cbd5e1; font-size: 9px; font-family: sans-serif;">${d.temp}°</span>
+        <span style="color: white; font-size: 11px; font-weight: bold; font-family: sans-serif; white-space: nowrap;">${d.name}</span>
       </div>
-      <div style="width: 1px; height: ${d.type === 'major' || isUserPin ? '20px' : '10px'}; background: linear-gradient(to bottom, ${isUserPin ? '#3b82f6' : 'rgba(255,255,255,0.5)'}, transparent); margin: 0 auto; margin-top: -1px; transform: translateX(-50%);"></div>
+      <div style="width: 1px; height: 15px; background: linear-gradient(to bottom, ${isMyPin ? '#3b82f6' : 'rgba(255,255,255,0.5)'}, transparent); margin: 0 auto; margin-top: -1px; transform: translateX(-50%);"></div>
     `;
 
     el.onclick = (e) => {
       e.stopPropagation(); 
       if (onMarkerClick) onMarkerClick(d);
     };
-    
     el.onpointerdown = (e) => e.stopPropagation(); 
+    el.onmouseenter = () => { const box = el.querySelector('div'); if(box) box.style.transform = `translate(-50%, -50%) scale(1.1)`; };
+    el.onmouseleave = () => { const box = el.querySelector('div'); if(box) box.style.transform = `translate(-50%, -50%) scale(${scale})`; };
 
-    el.onmouseenter = () => { const box = el.querySelector('div'); if(box) { box.style.transform = `translate(-50%, -50%) scale(1.1)`; if(!isUserPin) box.style.borderColor = '#60A5FA'; }};
-    el.onmouseleave = () => { const box = el.querySelector('div'); if(box) { box.style.transform = `translate(-50%, -50%) scale(${scale})`; if(!isUserPin) box.style.borderColor = d.type === 'major' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.15)'; }};
-    
     return el;
   };
-
-  const allMarkers = useMemo(() => [...visibleMarkers, ...userPins], [visibleMarkers, userPins]);
 
   return (
     <div className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'}`}>
@@ -178,7 +166,6 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen }, ref) 
         atmosphereColor="#7caeea"
         atmosphereAltitude={0.15}
         onGlobeClick={handleGlobeClickInternal}
-        onZoom={handleZoom}
         htmlElementsData={allMarkers}
         htmlElement={renderElement}
         htmlTransitionDuration={0} 
