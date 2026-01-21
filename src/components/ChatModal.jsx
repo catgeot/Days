@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User, Loader2, Sparkles, AlertTriangle, RefreshCcw, MessageSquare, Star } from 'lucide-react';
 
-// 🚨 [신규] chatHistory prop 추가
-const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
+const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [], onUpdateChat, onToggleBookmark }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentTripId, setCurrentTripId] = useState(null); // 현재 대화 중인 여행 ID
   
   const messagesEndRef = useRef(null);
   const hasSentInitialRef = useRef(false);
@@ -22,26 +22,36 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
     4. 강조: 중요한 장소는 **굵게**.
   `;
 
+  // 메시지 변경 시 자동 스크롤 & 부모(Home) 데이터 업데이트
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    
+    // 메시지가 있고, 현재 여행 ID가 있다면 부모에게 저장 요청 (캐싱)
+    if (currentTripId && messages.length > 0 && onUpdateChat) {
+      onUpdateChat(currentTripId, messages);
+    }
+  }, [messages]);
+
   useEffect(() => {
     if (isOpen) {
-      if (initialQuery && !hasSentInitialRef.current) {
-        hasSentInitialRef.current = true; 
-        if (typeof initialQuery === 'object') {
-          handleSend(initialQuery.text, initialQuery.display);
-        } else {
-          handleSend(initialQuery);
+      // 1. 신규 발권 (initialQuery가 객체로 넘어옴)
+      if (initialQuery && typeof initialQuery === 'object' && !hasSentInitialRef.current) {
+        hasSentInitialRef.current = true;
+        // 새 여행이므로 ID는 아직 모름 (Home에서 생성된 마지막 Trip을 찾아야 하지만, 
+        // 여기서는 간단히 로직 처리를 위해 initialQuery를 통해 막 처리함. 
+        // 실제로는 Home에서 tripId를 넘겨주거나, 여기서 새로 생성된 Trip을 찾아야 함.)
+        // -> 간소화를 위해: 가장 최신 Trip(방금 생성된 것)을 현재 Trip으로 간주
+        if (chatHistory.length > 0) {
+           setCurrentTripId(chatHistory[0].id);
         }
+        handleSend(initialQuery.text, initialQuery.display);
       }
     } else {
       hasSentInitialRef.current = false;
+      setMessages([]);
+      setCurrentTripId(null);
     }
-  }, [isOpen, initialQuery]);
-
-  useEffect(() => {
-    if (isLoading) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isLoading]);
+  }, [isOpen, initialQuery, chatHistory]); // chatHistory 의존성 추가 (최신 ID 확보)
 
   const handleSend = async (text, displayText = null) => {
     if (!text.trim() || isLoading) return;
@@ -73,15 +83,10 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        const status = response.status;
-        console.warn(`Gemini API Error: ${status}`, data);
-
-        if (status === 429) throw new Error("⏳ 사용량이 많아 잠시 쉬고 있습니다. (무료 한도 초과)");
-        else if (status === 503) throw new Error("🔧 구글 서버가 점검 중입니다.");
-        else throw new Error(`오류가 발생했습니다. (Code: ${status})`);
+        throw new Error("AI 응답 오류");
       }
 
-      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다. 답변을 생성하지 못했습니다.";
+      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
       setMessages(prev => [...prev, { role: 'model', text: aiReply }]);
 
     } catch (error) {
@@ -96,21 +101,32 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
     handleSend(originalText, 'RETRY'); 
   };
 
-  // 🚨 사이드바의 리스트 클릭 시 (재질문/대화복구 등 추후 구현)
+  // 🚨 [핵심] 사이드바 클릭 시: 캐시된 메시지 불러오기 (API 호출 X)
   const handleHistoryClick = (item) => {
-    // Phase 2에서 대화 복구 로직 구현 예정
-    // 지금은 간단히 입력창에 텍스트 세팅
-    setInput(`${item.destination} 여행에 대해 다시 알려줘`);
+    setCurrentTripId(item.id);
+    
+    // 저장된 메시지가 있으면 불러오기
+    if (item.messages && item.messages.length > 0) {
+      setMessages(item.messages);
+    } else {
+      // 메시지가 없으면(예전 데이터) 새로 시작하는 척하지만 API는 안 부름 (또는 요약만 보여줌)
+      // 여기선 편의상 빈 화면 대신 요약이라도 보여줌
+      setMessages([{ role: 'model', text: `[${item.destination}] 기록을 불러왔습니다. 무엇을 도와드릴까요?` }]);
+    }
+  };
+
+  const handleStarClick = (e, id) => {
+    e.stopPropagation();
+    if(onToggleBookmark) onToggleBookmark(id);
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
-      {/* 🚨 [구조 변경] 좌측 사이드바 + 우측 채팅창 (Grid Layout) */}
       <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] rounded-3xl border border-gray-700 shadow-2xl flex overflow-hidden relative transition-all">
         
-        {/* [좌측 사이드바] 지난 대화 기록 */}
+        {/* 사이드바 */}
         <div className="hidden md:flex w-72 bg-gray-900 border-r border-gray-700 flex-col">
           <div className="p-5 border-b border-gray-800 flex items-center gap-2">
             <MessageSquare size={18} className="text-blue-400" />
@@ -123,15 +139,28 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
                 <div 
                   key={item.id} 
                   onClick={() => handleHistoryClick(item)}
-                  className="p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 hover:border-blue-500/30 cursor-pointer transition-all group"
+                  className={`p-3 rounded-xl border cursor-pointer transition-all group relative ${
+                    currentTripId === item.id 
+                    ? 'bg-gray-800 border-blue-500/50' 
+                    : 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800 hover:border-gray-600'
+                  }`}
                 >
                   <div className="flex justify-between items-start mb-1">
-                    <span className="font-bold text-gray-300 text-sm truncate">{item.destination}</span>
-                    <span className="text-[10px] text-gray-500">{item.date?.slice(5)}</span>
+                    <span className="font-bold text-gray-300 text-sm truncate max-w-[180px]">{item.destination}</span>
+                    
+                    {/* 🚨 [신규] 별표 버튼 */}
+                    <button 
+                      onClick={(e) => handleStarClick(e, item.id)}
+                      className="text-gray-600 hover:text-yellow-400 transition-colors"
+                    >
+                      <Star size={14} fill={item.isBookmarked ? "#FBBF24" : "none"} className={item.isBookmarked ? "text-yellow-400" : ""} />
+                    </button>
                   </div>
-                  <p className="text-[10px] text-gray-500 line-clamp-1 group-hover:text-gray-400">
-                    {item.promptSummary || "상세 정보 요청됨"}
-                  </p>
+                  <div className="flex justify-between items-end">
+                    <p className="text-[10px] text-gray-500 line-clamp-1 flex-1">
+                        {item.date}
+                    </p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -140,16 +169,11 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
               </div>
             )}
           </div>
-          
-          <div className="p-4 border-t border-gray-800 text-[10px] text-gray-500 text-center">
-            기록은 브라우저에 저장됩니다
-          </div>
         </div>
 
-        {/* [우측 메인] 채팅 영역 */}
+        {/* 채팅창 (우측) */}
         <div className="flex-1 flex flex-col bg-black/50 relative">
-            
-            {/* Header */}
+            {/* ... Header (동일) ... */}
             <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
@@ -157,7 +181,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
                 </div>
                 <div>
                   <span className="text-white font-bold block text-sm">Gate 0 AI</span>
-                  <span className="text-xs text-gray-400">Ambient Intelligence</span>
+                  <span className="text-xs text-gray-400">Travel Guide</span>
                 </div>
               </div>
               <button onClick={onClose} className="text-gray-400 hover:text-white bg-gray-700/50 p-2 rounded-full transition-colors"><X size={18} /></button>
@@ -168,24 +192,14 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} animate-fade-in-up`}>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ${
-                    msg.role === 'user' ? 'bg-gray-700' : msg.role === 'error' ? 'bg-red-900/50' : 'bg-transparent'
+                    msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'
                   }`}>
-                    {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : 
-                     msg.role === 'error' ? <AlertTriangle size={20} className="text-red-400" /> :
-                     <Bot size={24} className="text-blue-400" />}
+                    {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : <Bot size={24} className="text-blue-400" />}
                   </div>
-                  
-                  <div className={`max-w-[80%] p-4 rounded-2xl text-base leading-relaxed shadow-md flex flex-col gap-3 ${
-                    msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 
-                    msg.role === 'error' ? 'bg-red-900/20 text-red-200 border border-red-500/30' :
-                    'bg-gray-800 text-gray-200 border border-gray-700 rounded-tl-none'
+                  <div className={`max-w-[80%] p-4 rounded-2xl text-base leading-relaxed shadow-md ${
+                    msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-gray-800 text-gray-200 border border-gray-700 rounded-tl-none'
                   }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</div>
-                    {msg.role === 'error' && (
-                      <button onClick={() => handleRetry(msg.originalText)} className="flex items-center gap-2 bg-red-800/50 hover:bg-red-700/50 text-white text-xs px-3 py-2 rounded-lg w-fit transition-colors">
-                        <RefreshCcw size={12} /> 다시 시도하기
-                      </button>
-                    )}
                   </div>
                 </div>
               ))}
@@ -194,7 +208,7 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
                    <div className="w-10 h-10 flex-shrink-0"></div>
                    <div className="bg-gray-800 border border-gray-700 p-4 rounded-2xl rounded-tl-none flex items-center gap-3">
                      <Loader2 size={20} className="text-blue-400 animate-spin" />
-                     <span className="text-sm text-gray-400">Gate 0가 여행지를 분석하고 있습니다...</span>
+                     <span className="text-sm text-gray-400">작성 중...</span>
                    </div>
                 </div>
               )}
@@ -208,13 +222,13 @@ const ChatModal = ({ isOpen, onClose, initialQuery, chatHistory = [] }) => {
                   type="text" 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="추가로 궁금한 점을 물어보세요..."
-                  className="w-full bg-gray-800 text-white pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 text-base"
+                  placeholder="추가 질문을 입력하세요..."
+                  className="w-full bg-gray-800 text-white pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500"
                   disabled={isLoading}
                   autoFocus
                 />
-                <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white shadow-lg disabled:opacity-50">
-                  {isLoading ? <Sparkles size={20} className="animate-pulse" /> : <Send size={20} />}
+                <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white shadow-lg">
+                  <Send size={20} />
                 </button>
               </form>
             </div>

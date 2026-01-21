@@ -15,18 +15,21 @@ function Home() {
   const [hiddenSearchQuery, setHiddenSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   
-  // 1. 발권된 티켓 (하단 도크용 & 채팅 히스토리용 - 영구 저장)
+  // 1. 발권된 티켓 (채팅 기록 포함 - 영구 저장)
   const [savedTrips, setSavedTrips] = useState(() => {
     const saved = localStorage.getItem('gate0_trips');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // 2. 탐색한 핀 기록 (모달 좌측용 - 세션 저장)
-  const [scoutedPins, setScoutedPins] = useState([]);
+  // 2. 🚨 [수정] 탐색 핀 기록도 영구 저장 (새로고침 방어)
+  const [scoutedPins, setScoutedPins] = useState(() => {
+    const saved = localStorage.getItem('gate0_scouts');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  useEffect(() => {
-    localStorage.setItem('gate0_trips', JSON.stringify(savedTrips));
-  }, [savedTrips]);
+  // 저장소 동기화
+  useEffect(() => { localStorage.setItem('gate0_trips', JSON.stringify(savedTrips)); }, [savedTrips]);
+  useEffect(() => { localStorage.setItem('gate0_scouts', JSON.stringify(scoutedPins)); }, [scoutedPins]);
 
   const globeRef = useRef();
 
@@ -48,6 +51,7 @@ function Home() {
     const newLocationData = { name: locationName, country: addressData?.country, lat, lng, type: 'user-pin' };
     setSelectedLocation(newLocationData);
 
+    // 탐색 기록 추가
     const newPinRecord = {
       id: Date.now(),
       name: locationName,
@@ -98,10 +102,26 @@ function Home() {
         date: new Date().toLocaleDateString(),
         code: (selectedLocation.name || "GPS").substring(0, 3).toUpperCase(),
         promptSummary: payload.display,
-        type: 'saved-trip'
+        type: 'saved-trip',
+        messages: [], // 🚨 대화 내용 저장용 배열 초기화
+        isBookmarked: false // 🚨 버킷리스트용 플래그
       };
       setSavedTrips(prev => [newTrip, ...prev]); 
     }
+  };
+
+  // 🚨 [신규] 채팅 내용 업데이트 핸들러 (ChatModal에서 호출)
+  const handleUpdateChatHistory = (tripId, newMessages) => {
+    setSavedTrips(prev => prev.map(trip => 
+      trip.id === tripId ? { ...trip, messages: newMessages } : trip
+    ));
+  };
+
+  // 🚨 [신규] 버킷리스트 토글 핸들러
+  const handleToggleBookmark = (tripId) => {
+    setSavedTrips(prev => prev.map(trip => 
+      trip.id === tripId ? { ...trip, isBookmarked: !trip.isBookmarked } : trip
+    ));
   };
 
   const handleTripDelete = (id) => {
@@ -110,6 +130,13 @@ function Home() {
   
   const handleScoutDelete = (id) => {
     setScoutedPins(prev => prev.filter(pin => pin.id !== id));
+  };
+
+  // 🚨 [신규] 탐색 핀 전체 리셋 (지구본 핀도 같이 사라짐)
+  const handleClearScouts = () => {
+    if (window.confirm("모든 탐색 핀을 초기화하시겠습니까?")) {
+      setScoutedPins([]);
+    }
   };
 
   const handleCloseTicket = () => {
@@ -125,6 +152,8 @@ function Home() {
         onMarkerClick={handleLocationSelect}
         isChatOpen={isChatOpen}
         savedTrips={savedTrips} 
+        // 🚨 탐색 핀도 지구본에 전달해야 새로고침 후에도 보임
+        tempPinsData={scoutedPins} 
       />
 
       <HomeUI 
@@ -142,8 +171,10 @@ function Home() {
         onClose={handleCloseTicket}
         onIssue={handleTicketIssue}
         preFilledDestination={selectedLocation} 
-        scoutedPins={scoutedPins} // 탐색 기록
+        scoutedPins={scoutedPins}
         onScoutDelete={handleScoutDelete}
+        // 🚨 리셋 기능 전달
+        onClearScouts={handleClearScouts}
       />
       
       <ChatModal 
@@ -153,7 +184,10 @@ function Home() {
           if (globeRef.current) globeRef.current.resumeRotation();
         }} 
         initialQuery={initialQuery} 
-        chatHistory={savedTrips} // 🚨 지난 대화 기록 (Phase 1 연동)
+        chatHistory={savedTrips}
+        // 🚨 업데이트 함수 전달
+        onUpdateChat={handleUpdateChatHistory}
+        onToggleBookmark={handleToggleBookmark}
       />
     </div>
   );

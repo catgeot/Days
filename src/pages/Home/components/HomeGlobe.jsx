@@ -16,14 +16,28 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 }
 function deg2rad(deg) { return deg * (Math.PI/180) }
 
-const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [] }, ref) => {
+// 🚨 tempPinsData prop 추가 (부모로부터 탐색 핀 리스트 받음)
+const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], tempPinsData = [] }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
   const [visibleMarkers, setVisibleMarkers] = useState(MAJOR_CITIES);
   
-  // 🚨 [수정] 단일 객체가 아니라 '배열'로 변경하여 흔적을 남김
+  // 내부 핀 상태 (클릭 직후 반응용) + 부모 데이터 동기화
   const [tempPins, setTempPins] = useState([]);
+
+  // 🚨 [중요] 부모의 scoutedPins가 변경되면(새로고침, 리셋 등) 내부 상태도 동기화
+  useEffect(() => {
+    // 부모 데이터가 있으면 그것을 user-pin 포맷으로 변환하여 사용
+    if (tempPinsData) {
+      const formattedPins = tempPinsData.map(pin => ({
+        ...pin,
+        type: 'user-pin',
+        weather: 'sun'
+      }));
+      setTempPins(formattedPins);
+    }
+  }, [tempPinsData]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => { 
@@ -33,8 +47,6 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
     resumeRotation: () => { 
       if(globeEl.current) globeEl.current.controls().autoRotate = true; 
     },
-    
-    // 외부 명령 (FlyTo)
     flyToAndPin: (lat, lng, name = "Selected") => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
       if (globeEl.current) {
@@ -42,24 +54,17 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
         globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1500);
       }
       
-      // 🚨 [수정] 중복 체크 후 배열에 추가
-      const isDuplicate = tempPins.some(pin => getDistanceFromLatLonInKm(pin.lat, pin.lng, lat, lng) < 50);
-      if (!isDuplicate) {
-        const newPin = { lat, lng, type: 'user-pin', name: name, weather: 'sun', id: Date.now() };
-        setTempPins(prev => {
-          const updated = [...prev, newPin];
-          return updated.length > 10 ? updated.slice(updated.length - 10) : updated;
-        });
-      }
-
+      // flyToAndPin은 주로 외부(티켓 등)에서 호출되므로 여기서 추가하는 건 시각적 효과용
+      // 실제 데이터는 Home.jsx가 관리하므로 여기서는 시각적 처리만 해도 됨
+      
       rotationTimer.current = setTimeout(() => {
         if (globeEl.current) globeEl.current.controls().autoRotate = true;
       }, 3000);
     },
-
-    // 🚨 [수정] 마지막 핀(방금 찍은 핀)의 이름 업데이트
     updateLastPinName: (newName) => {
-      setTempPins(prev => {
+       // 부모 데이터가 업데이트되면 자동으로 반영되므로 여기선 생략 가능하지만
+       // 즉각적인 반응을 위해 로컬 상태 업데이트
+       setTempPins(prev => {
         if (prev.length === 0) return prev;
         const updated = [...prev];
         updated[updated.length - 1] = { ...updated[updated.length - 1], name: newName };
@@ -88,15 +93,10 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
     
     globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1000);
     
-    // 🚨 [수정] 클릭 시에도 배열에 추가
-    const isDuplicate = tempPins.some(pin => getDistanceFromLatLonInKm(pin.lat, pin.lng, lat, lng) < 50);
-    if (!isDuplicate) {
-      const newPin = { lat, lng, type: 'user-pin', name: 'Selecting...', weather: 'sun', id: Date.now() };
-      setTempPins(prev => {
-        const updated = [...prev, newPin];
-        return updated.length > 10 ? updated.slice(updated.length - 10) : updated;
-      });
-    }
+    // 클릭 즉시 내부적으로 핀 하나 추가 (시각적 피드백)
+    // 실제 저장은 Home.jsx에서 이루어지고, useEffect를 통해 다시 동기화됨
+    const newPin = { lat, lng, type: 'user-pin', name: 'Selecting...', weather: 'sun', id: Date.now() };
+    setTempPins(prev => [...prev, newPin]);
 
     if (onGlobeClick) onGlobeClick({ lat, lng });
 
@@ -105,14 +105,12 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
     }, 3000);
   };
 
-  // 🚨 [수정] 렌더링할 마커 합치기 (기존 도시 + 저장된 여행 + 내가 찍은 흔적들)
   const allMarkers = useMemo(() => {
-    // 저장된 여행지
     const savedMarkers = savedTrips.map(trip => ({
       lat: trip.lat, lng: trip.lng, name: trip.destination, weather: 'sun', type: 'saved-trip', id: trip.id
     }));
     
-    // 내가 찍은 핀들 (저장된 것과 겹치면 제외하는 로직을 넣을 수도 있지만, 일단 다 보여줌)
+    // 중복 제거 없이 렌더링 (단, Home.jsx에서 이미 거리 체크하므로 괜찮음)
     return [...visibleMarkers, ...savedMarkers, ...tempPins];
   }, [visibleMarkers, savedTrips, tempPins]);
 
@@ -144,10 +142,7 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
       <div style="width: 1px; height: 15px; background: linear-gradient(to bottom, ${isMyPin ? '#3b82f6' : 'rgba(255,255,255,0.5)'}, transparent); margin: 0 auto; margin-top: -1px; transform: translateX(-50%);"></div>
     `;
 
-    el.onclick = (e) => {
-      e.stopPropagation(); 
-      if (onMarkerClick) onMarkerClick(d);
-    };
+    el.onclick = (e) => { e.stopPropagation(); if (onMarkerClick) onMarkerClick(d); };
     el.onpointerdown = (e) => e.stopPropagation(); 
     el.onmouseenter = () => { const box = el.querySelector('div'); if(box) box.style.transform = `translate(-50%, -50%) scale(1.1)`; };
     el.onmouseleave = () => { const box = el.querySelector('div'); if(box) box.style.transform = `translate(-50%, -50%) scale(${scale})`; };

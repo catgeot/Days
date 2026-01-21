@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Ticket, MapPin, Trash2, Map, QrCode } from 'lucide-react';
+import { X, Ticket, MapPin, Trash2, Map, QrCode, RefreshCw } from 'lucide-react';
 import { getAddressFromCoordinates } from '../../../lib/geocoding';
 
+// ... SELECTION_STEPS 상수는 동일 ...
 const SELECTION_STEPS = [
   { id: 'level', label: '🛫 여행 레벨', options: ['첫 비행', '초보', '가끔 일탈', '프로'] },
   { id: 'companion', label: '👥 누구와?', options: ['혼자', '연인', '가족', '친구'] },
@@ -10,7 +11,8 @@ const SELECTION_STEPS = [
   { id: 'activity', label: '🎡 활동', options: ['관광', '체험', '쇼핑', '현지문화'] }
 ];
 
-export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestination, scoutedPins, onScoutDelete }) {
+export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestination, scoutedPins, onScoutDelete, onClearScouts }) {
+  // ... 내부 로직 동일 ...
   const [destination, setDestination] = useState('');
   const [isLoadingAddr, setIsLoadingAddr] = useState(false);
   const [selections, setSelections] = useState({ level: '', companion: '', purpose: '', flight: '', activity: '' });
@@ -18,27 +20,19 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
   useEffect(() => {
     if (isOpen) {
       setSelections({ level: '', companion: '', purpose: '', flight: '', activity: '' });
-      
       const resolveAddress = async () => {
         if (!preFilledDestination) { setDestination(''); return; }
-        
         if (preFilledDestination.name && preFilledDestination.name !== 'Selecting...') {
           setDestination(preFilledDestination.name);
           return;
         }
-
         if (preFilledDestination.lat && preFilledDestination.lng) {
           setIsLoadingAddr(true);
           setDestination("위치 확인 중..."); 
           const addr = await getAddressFromCoordinates(preFilledDestination.lat, preFilledDestination.lng);
-          
-          if (addr && addr.city) {
-            setDestination(addr.city);
-          } else if (addr && addr.country) {
-            setDestination(addr.country);
-          } else {
-            setDestination("Unknown Point");
-          }
+          if (addr && addr.city) setDestination(addr.city);
+          else if (addr && addr.country) setDestination(addr.country);
+          else setDestination("Unknown Point");
           setIsLoadingAddr(false);
         }
       };
@@ -46,22 +40,14 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
     }
   }, [isOpen, preFilledDestination]);
 
-  const handleSelect = (category, value) => {
-    setSelections(prev => ({ ...prev, [category]: value }));
-  };
-
-  const handleScoutClick = (name) => {
-    setDestination(name);
-  };
-
+  const handleSelect = (category, value) => { setSelections(prev => ({ ...prev, [category]: value })); };
+  const handleScoutClick = (name) => { setDestination(name); };
   const handleSubmit = (e) => {
     e.preventDefault();
     const hasSelections = Object.values(selections).some(val => val !== '');
-    if (!destination && !hasSelections) { alert("목적지나 취향을 하나라도 선택해주세요."); return; }
-
+    if (!destination && !hasSelections) { alert("목적지나 취향을 선택해주세요."); return; }
     const prompt = `[Request] Destination: ${destination}, Style: ${Object.values(selections).filter(Boolean).join(', ')}`;
     const payload = { text: prompt, display: `🎫 [${destination}] 여행 정보 요청` };
-    
     onIssue(payload);
     onClose();
   };
@@ -71,10 +57,9 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity" onClick={onClose}></div>
-      
       <div className="relative w-full max-w-5xl h-[85vh] flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(59,130,246,0.3)] animate-fade-in-up bg-gray-900 border border-white/10">
         
-        {/* [좌측] 탐색 핀 리스트 (Exploration Pins) */}
+        {/* [좌측] 탐색 핀 리스트 */}
         <div className="hidden md:flex w-80 bg-gradient-to-b from-blue-900 via-gray-900 to-black p-8 flex-col border-r-2 border-dashed border-white/10 relative">
            <div className="absolute -right-3 top-1/2 w-6 h-6 bg-black rounded-full z-10 border border-white/20"></div>
 
@@ -83,10 +68,20 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
              <QrCode className="text-white/70" size={24} />
            </div>
 
-           <div className="z-10 mb-3 flex items-center gap-2">
-             <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-             {/* 🚨 명칭 변경: 탐색 핀 리스트 */}
-             <p className="text-xs text-blue-300 uppercase tracking-[0.05em] font-bold">📍 탐색 핀 리스트</p>
+           {/* 🚨 [수정] 헤더에 RESET 버튼 추가 */}
+           <div className="z-10 mb-3 flex items-center justify-between">
+             <div className="flex items-center gap-2">
+               <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+               <p className="text-xs text-blue-300 uppercase tracking-[0.05em] font-bold">탐색 핀 리스트</p>
+             </div>
+             {/* RESET 버튼 */}
+             <button 
+               onClick={onClearScouts}
+               className="text-[10px] text-gray-500 hover:text-white flex items-center gap-1 transition-colors"
+               title="모두 지우기"
+             >
+               <RefreshCw size={10} /> RESET
+             </button>
            </div>
            
            <div className="flex-1 overflow-y-auto custom-scrollbar z-10 space-y-3 pr-2 mask-gradient-bottom">
@@ -101,17 +96,14 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
                      <div>
                        <div className="text-sm font-bold text-white truncate max-w-[120px]">{pin.name}</div>
                        <div className="text-[10px] text-gray-500 font-mono mt-1 flex items-center gap-1">
-                          <Map size={10} /> {pin.time} 탐색됨
+                          <Map size={10} /> {pin.time}
                        </div>
                      </div>
                      <span className="text-xl font-black text-white/20 group-hover:text-blue-400 transition-colors">{pin.code}</span>
                    </div>
                    
                    <button 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      onScoutDelete(pin.id); 
-                    }}
+                    onClick={(e) => { e.stopPropagation(); onScoutDelete(pin.id); }}
                     className="absolute top-2 right-2 p-1.5 bg-red-500/20 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all"
                    >
                      <Trash2 size={12} />
@@ -125,15 +117,16 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
                </div>
              )}
            </div>
-
+           
            <div className="pt-6 border-t border-white/10 z-10 text-[10px] text-gray-500 text-center tracking-widest">
              리스트를 클릭하여 목적지 설정
            </div>
         </div>
 
-        {/* [우측] 입력 폼 */}
+        {/* [우측] 입력 폼 (이전과 동일) */}
         <div className="flex-1 bg-gray-900/95 backdrop-blur-xl p-8 flex flex-col h-full">
-          <div className="flex justify-between items-center mb-6 shrink-0">
+           {/* ... (생략: 위 코드와 동일) ... */}
+           <div className="flex justify-between items-center mb-6 shrink-0">
             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
               <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
               여행 정보 요청
@@ -145,7 +138,7 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
           </div>
 
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
-            
+             {/* ... (생략: 위 코드와 동일) ... */}
             <div className="bg-black/40 rounded-2xl p-4 border border-white/10 mb-6 shrink-0">
               <label className="text-[10px] font-bold text-blue-400 tracking-wider mb-2 block flex items-center gap-2">
                 <MapPin size={12} /> 목적지 (DESTINATION)
@@ -186,7 +179,6 @@ export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestina
               ))}
             </div>
 
-            {/* 🚨 버튼 문구 변경: 상세 정보 알아보기 */}
             <button 
               type="submit"
               className="w-full shrink-0 bg-white text-black font-black text-lg py-4 rounded-xl shadow-xl hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all flex items-center justify-center gap-2 mt-auto"

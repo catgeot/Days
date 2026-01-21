@@ -1,20 +1,21 @@
+// ... (imports 동일)
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, User, Sparkles, Search, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom'; 
 import TravelTicker from '../../../components/TravelTicker';
 import Logo from './Logo';
-import TripDock from './TripDock'; // 🚨 [추가]
+import TripDock from './TripDock';
 
 const HomeUI = ({ 
   onSearch, 
   onTickerClick, 
   onTicketClick, 
   externalInput, 
-  // 🚨 [추가] TripDock에 전달할 데이터와 함수들
   savedTrips, 
   onTripClick, 
   onTripDelete 
 }) => {
+  // ... (상단 로직 동일)
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
 
@@ -27,12 +28,10 @@ const HomeUI = ({
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      if (!e.nativeEvent.isComposing) {
-        if (inputValue.trim() !== '') {
-          onSearch(inputValue);
-          setInputValue('');
-          inputRef.current?.blur();
-        }
+      if (!e.nativeEvent.isComposing && inputValue.trim() !== '') {
+        onSearch(inputValue);
+        setInputValue('');
+        inputRef.current?.blur();
       }
     }
   };
@@ -41,7 +40,7 @@ const HomeUI = ({
 
   return (
     <>
-      {/* 1. 상단 헤더 */}
+      {/* 1. 상단 헤더 (동일) */}
       <div className="absolute top-0 left-0 right-0 z-20 p-6 grid grid-cols-12 items-start pointer-events-none">
         <div className="col-span-3 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto">
           <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
@@ -87,17 +86,17 @@ const HomeUI = ({
           </span>
         </Link>
 
-        {/* 🚨 [중앙 핵심]: 티켓 버튼 + 여행 기록 도크(TripDock) */}
+        {/* 중앙: 여행 계획 시작 */}
         <div className="pointer-events-auto mb-2 flex items-center">
           <button 
             onClick={onTicketClick}
             className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-xs border border-white/10 tracking-wide flex-shrink-0"
           >
             <Ticket size={16} />
-            <span>티켓 발권하기</span> 
+            {/* 🚨 [수정] 문구 변경 */}
+            <span>여행 계획 시작하기</span> 
           </button>
 
-          {/* 🚨 여기에 도크 장착! */}
           <TripDock 
             savedTrips={savedTrips} 
             onTripClick={onTripClick} 
