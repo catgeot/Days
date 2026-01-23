@@ -1,6 +1,5 @@
-// ... (imports)
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, User, Sparkles, Search, Ticket, MessageSquare } from 'lucide-react';
+import { FileText, User, Sparkles, Search, Ticket, MessageSquare, MapPin, Loader2, X } from 'lucide-react';
 import { Link } from 'react-router-dom'; 
 import TravelTicker from '../../../components/TravelTicker';
 import Logo from './Logo';
@@ -15,16 +14,17 @@ const HomeUI = ({
   onTripClick, 
   onTripDelete,
   onOpenChat,
-  onLogoClick // 🚨 [New] 로고 클릭 핸들러 받기
+  onLogoClick,
+  relatedTags = [], 
+  isTagLoading = false,
+  onTagClick
 }) => {
-  // ... (기존 state 로직 동일)
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (externalInput) {
       setInputValue(externalInput);
-      setTimeout(() => { inputRef.current?.focus(); }, 100);
     }
   }, [externalInput]);
 
@@ -32,7 +32,6 @@ const HomeUI = ({
     if (e.key === 'Enter') {
       if (!e.nativeEvent.isComposing && inputValue.trim() !== '') {
         onSearch(inputValue);
-        setInputValue('');
         inputRef.current?.blur();
       }
     }
@@ -40,11 +39,17 @@ const HomeUI = ({
 
   const handleChange = (e) => { setInputValue(e.target.value); };
 
+  // 입력값 초기화 버튼 핸들러
+  const handleClear = () => {
+    setInputValue('');
+    inputRef.current?.focus(); 
+  };
+
   return (
     <>
       <div className="absolute top-0 left-0 right-0 z-20 p-6 grid grid-cols-12 items-start pointer-events-none">
         
-        {/* 🚨 [수정] 로고 클릭 이벤트 추가 (pointer-events-auto 필수) */}
+        {/* 로고 */}
         <div 
           onClick={onLogoClick} 
           className="col-span-3 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto cursor-pointer group"
@@ -55,73 +60,104 @@ const HomeUI = ({
           <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1 group-hover:text-blue-400 transition-colors">DEPARTURE LOUNGE</span>
         </div>
 
-        <div className="col-span-6 flex justify-center animate-fade-in-down delay-100 pt-2 pointer-events-auto">
-           {/* ... (검색창 기존 동일) ... */}
-           <div className="relative group w-full max-w-md">
+        {/* Omni-box (드롭다운 삭제됨) */}
+        <div className="col-span-6 flex flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative">
+           <div className="relative group w-full max-w-md z-50">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <div className="relative flex items-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full shadow-lg transition-all group-focus-within:bg-black/50 group-focus-within:border-blue-400/50 hover:bg-black/30 h-10">
-              <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={16} /></div>
+            
+            <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg transition-all h-12 rounded-full group-focus-within:bg-black/60 group-focus-within:border-blue-400/50 hover:bg-black/50">
+              <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={18} /></div>
+              
               <input 
                 ref={inputRef}
                 type="text" 
                 value={inputValue}
                 onChange={handleChange}
-                placeholder="AI에게 여행 계획 물어보기..." 
+                placeholder="어디로 떠나시나요?" 
                 className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-500/80 font-medium"
                 onKeyDown={handleKeyDown}
               />
-              <div className="pr-4"><Sparkles size={14} className="text-white/20 group-hover:text-purple-400 transition-colors" /></div>
+
+              {/* X 버튼: 입력값이 있을 때만 표시 */}
+              {inputValue && (
+                <button onClick={handleClear} className="p-1 mr-2 text-gray-400 hover:text-white transition-colors">
+                  <X size={16} />
+                </button>
+              )}
+
+              <div className="pr-4 border-l border-white/10 pl-3 ml-1 h-6 flex items-center">
+                  <Sparkles size={16} className="text-white/20 group-hover:text-purple-400 transition-colors" />
+              </div>
             </div>
           </div>
         </div>
         
+        {/* Ticker */}
         <div className="col-span-3 flex justify-end animate-fade-in-down pr-2 pointer-events-auto">
           <TravelTicker onCityClick={(data) => onTickerClick(data, 'ticker')} />
         </div>
       </div>
 
+      {/* 🚨 태그 리스트: 화면 좌측 중앙 (Vertical Layout) */}
+      {(isTagLoading || relatedTags.length > 0) && (
+        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 pointer-events-auto animate-fade-in-right">
+            <div className="flex items-center gap-2 mb-2 pl-1">
+              <div className="w-1 h-8 bg-blue-500 rounded-full"></div>
+              <div>
+                <p className="text-[10px] text-gray-400 tracking-widest uppercase">Related</p>
+                <p className="text-sm font-bold text-white leading-none">추천 여행지</p>
+              </div>
+            </div>
+
+            {isTagLoading && (
+              <div className="flex items-center gap-2 p-3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 animate-pulse">
+                <Loader2 size={16} className="text-blue-400 animate-spin" />
+                <span className="text-xs text-gray-300">AI 탐색 중...</span>
+              </div>
+            )}
+
+            {!isTagLoading && relatedTags.map((tag, idx) => (
+              <button
+                key={idx}
+                onClick={() => onTagClick(tag)}
+                className="group relative flex items-center justify-between w-40 p-3 bg-black/30 backdrop-blur-md border border-white/5 rounded-xl hover:bg-white/10 hover:border-blue-500/50 hover:w-44 transition-all duration-300 shadow-lg"
+              >
+                 <div className="flex items-center gap-2">
+                   <MapPin size={14} className="text-gray-400 group-hover:text-blue-400 transition-colors" />
+                   <span className="text-sm text-gray-200 font-medium group-hover:text-white">{tag}</span>
+                 </div>
+                 <div className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                    <Sparkles size={12} className="text-blue-300" />
+                 </div>
+              </button>
+            ))}
+        </div>
+      )}
+
+      {/* Footer */}
       <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 flex items-end justify-between pointer-events-none">
-        {/* ... (푸터 기존 동일) ... */}
         <Link to="/report" className="group flex items-center gap-2 pb-2 pl-2 pointer-events-auto cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-blue-400/50 transition-all shadow-lg group-hover:scale-110">
             <FileText size={18} className="text-gray-400 group-hover:text-blue-300" />
           </div>
-          <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity -ml-2 group-hover:ml-0">
-            LOGBOOK
-          </span>
+          <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity -ml-2 group-hover:ml-0">LOGBOOK</span>
         </Link>
 
         <div className="pointer-events-auto mb-2 flex items-center gap-3">
-          <button
-            onClick={onOpenChat}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all shadow-lg"
-            title="지난 대화 기록"
-          >
+          <button onClick={() => onOpenChat()} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all shadow-lg">
             <MessageSquare size={18} />
           </button>
-
-          <button 
-            onClick={onTicketClick}
-            className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-xs border border-white/10 tracking-wide flex-shrink-0"
-          >
-            <Ticket size={16} />
-            <span>여행 계획 시작하기</span> 
+          <button onClick={onTicketClick} className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] transition-all hover:scale-105 flex items-center gap-2 font-bold text-xs border border-white/10 tracking-wide flex-shrink-0">
+            <Ticket size={16} /> <span>여행 계획 시작하기</span> 
           </button>
-
-          <TripDock 
-            savedTrips={savedTrips} 
-            onTripClick={onTripClick} 
-            onTripDelete={onTripDelete} 
-          />
+          <TripDock savedTrips={savedTrips} onTripClick={onTripClick} onTripDelete={onTripDelete} />
         </div>
 
         <Link to="/auth/login" className="group flex items-center gap-2 flex-row-reverse pb-2 pr-2 pointer-events-auto">
           <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg group-hover:scale-110">
             <User size={18} className="text-gray-400 group-hover:text-purple-300" />
           </div>
-          <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity -mr-2 group-hover:mr-0">
-            ADMIN
-          </span>
+          <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity -mr-2 group-hover:mr-0">ADMIN</span>
         </Link>
       </footer>
     </>

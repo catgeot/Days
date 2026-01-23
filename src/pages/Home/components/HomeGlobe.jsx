@@ -1,28 +1,19 @@
+// src/pages/Home/components/HomeGlobe.jsx
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
-import { MAJOR_CITIES, HIDDEN_GEMS } from '../../../date/travelSpots'; 
-
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  var R = 6371; 
-  var dLat = deg2rad(lat2-lat1);  
-  var dLon = deg2rad(lon2-lon1); 
-  var a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  var d = R * c; 
-  return d;
-}
-function deg2rad(deg) { return deg * (Math.PI/180) }
+import { MAJOR_CITIES } from '../../../date/travelSpots'; // 🚨 경로 확인 필요 (date -> data 오타 수정 권장)
 
 const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], tempPinsData = [] }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
-  const [visibleMarkers, setVisibleMarkers] = useState(MAJOR_CITIES);
   
+  // 기본 마커들 (주요 도시)
+  const [visibleMarkers] = useState(MAJOR_CITIES); 
+  // 내부적으로 찍는 임시 핀 (시각적 피드백용)
   const [tempPins, setTempPins] = useState([]);
 
+  // 부모(Home)에서 tempPinsData가 바뀌면 반영
   useEffect(() => {
     if (tempPinsData) {
       const formattedPins = tempPinsData.map(pin => ({
@@ -34,6 +25,7 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
     }
   }, [tempPinsData]);
 
+  // 부모(Home)가 호출할 수 있는 함수들
   useImperativeHandle(ref, () => ({
     pauseRotation: () => { 
       if(globeEl.current) globeEl.current.controls().autoRotate = false; 
@@ -83,14 +75,17 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
     }
   }, []);
 
+  // 🚨 [핵심] 지도 클릭 시: 내부적으로 핀만 찍고, 부모에게 "클릭됨" 보고만 함
   const handleGlobeClickInternal = ({ lat, lng }) => {
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
     if (globeEl.current) globeEl.current.controls().autoRotate = false; 
     globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1000);
     
+    // "Selecting..." 이라는 핀을 시각적으로만 찍음 (부모가 나중에 이름을 업데이트 해줄 것임)
     const newPin = { lat, lng, type: 'user-pin', name: 'Selecting...', weather: 'sun', id: Date.now() };
     setTempPins(prev => [...prev, newPin]);
 
+    // 부모에게 보고
     if (onGlobeClick) onGlobeClick({ lat, lng });
 
     rotationTimer.current = setTimeout(() => {
@@ -102,7 +97,6 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
     const savedMarkers = savedTrips.map(trip => ({
       lat: trip.lat, lng: trip.lng, name: trip.destination, weather: 'sun', type: 'saved-trip', id: trip.id
     }));
-    // 🚨 렌더링 순서: 기존도시(Blue) -> 저장된핀(Red) -> 임시핀(Red)
     return [...visibleMarkers, ...savedMarkers, ...tempPins];
   }, [visibleMarkers, savedTrips, tempPins]);
 
@@ -110,29 +104,14 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
     const el = document.createElement('div');
     el.style.width = '0px'; el.style.height = '0px'; el.style.position = 'absolute'; el.style.pointerEvents = 'auto';
 
-    // 🚨 [Design Change] 핀 색상 로직 변경
-    // user-pin(내가 찍은거) or saved-trip(저장된거) => True
     const isUserAction = d.type === 'user-pin' || d.type === 'saved-trip';
-    
-    // 색상 팔레트 정의
-    // User Action: #EF4444 (Red)
-    // Hidden Gem: #FBBF24 (Gold)
-    // System(Major): #3B82F6 (Blue)
     const colorClass = isUserAction ? '#EF4444' : (d.type === 'hidden' ? '#FBBF24' : '#3B82F6');
-
-    // 테두리 스타일도 색상에 맞춤
-    const borderStyle = isUserAction 
-      ? '1px solid #EF4444' 
-      : (d.type === 'hidden' ? '1px solid rgba(251, 191, 36, 0.5)' : '1px solid rgba(59, 130, 246, 0.5)');
-
-    const bgStyle = 'rgba(0, 0, 0, 0.8)'; // 배경은 통일 (가독성)
+    const borderStyle = isUserAction ? '1px solid #EF4444' : (d.type === 'hidden' ? '1px solid rgba(251, 191, 36, 0.5)' : '1px solid rgba(59, 130, 246, 0.5)');
+    const bgStyle = 'rgba(0, 0, 0, 0.8)';
     const scale = d.type === 'major' ? '1' : '0.9';
-    
-    // Z-Index: 내 핀이 항상 위에 오도록
-    const zIndex = isUserAction ? '100' : '10';
+    const zIndex = isUserAction ? '100' : '10'; // 🚨 내 핀이 제일 위에 오도록
     el.style.zIndex = zIndex;
 
-    // SVG 아이콘은 동일하되 stroke 색상만 변경
     let iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${colorClass}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41-1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
 
     el.innerHTML = `
@@ -149,9 +128,10 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
       <div style="width: 1px; height: 15px; background: linear-gradient(to bottom, ${colorClass}, transparent); margin: 0 auto; margin-top: -1px; transform: translateX(-50%);"></div>
     `;
 
+    // 🚨 마커 클릭 시
     el.onclick = (e) => { 
-      e.stopPropagation(); 
-      if (onMarkerClick) onMarkerClick(d, 'globe'); 
+      e.stopPropagation(); // 지도 클릭 이벤트가 발생하지 않도록 막음
+      if (onMarkerClick) onMarkerClick(d, 'globe'); // 부모에게 "마커가 클릭됨" 보고
     };
     
     el.onpointerdown = (e) => e.stopPropagation(); 
@@ -159,7 +139,7 @@ const HomeGlobe = forwardRef(({ onGlobeClick, onMarkerClick, isChatOpen, savedTr
         const box = el.querySelector('div'); 
         if(box) {
             box.style.transform = `translate(-50%, -50%) scale(1.1)`;
-            box.style.background = isUserAction ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)'; // 호버 시 배경색 틴트
+            box.style.background = isUserAction ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)';
         }
     };
     el.onmouseleave = () => { 

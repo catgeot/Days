@@ -1,3 +1,4 @@
+// src/components/layout/ChatModal.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2, RefreshCcw } from 'lucide-react';
 
@@ -17,16 +18,58 @@ const ChatModal = ({
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
+  // 🚨 [New] 로딩 상태 텍스트 관리
+  const [loadingStatus, setLoadingStatus] = useState("AI가 답변을 준비 중입니다...");
+  
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const hasSentInitialRef = useRef(false);
 
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-  const SYSTEM_PROMPT = `
-    당신은 'Gate 0'의 여행 가이드입니다.
-    [가이드] 감성적 톤앤매너(✈️, 🌊), 스케줄 나열보다 분위기 묘사 위주, 3~4문단 핵심 요약.
-  `;
+  // 🚨 [Fix] 프롬프트 최적화 (답변 길이 제한)
+  const getSystemPrompt = (mode) => {
+    const BASE_PROMPT = `
+      당신은 'Gate 0'의 AI 여행 가이드입니다. 
+      [중요] 모든 답변은 모바일 환경을 고려하여 짧고 간결하게 작성하세요.
+      [중요] 3문장 이내의 핵심 요약과, 필요시 짧은 불렛 포인트 3개만 사용하세요.
+    `;
+    
+    switch (mode) {
+      case 'search_inquiry':
+        return `
+          ${BASE_PROMPT}
+          사용자의 검색어에 대한 핵심 여행 정보(날씨, 분위기, 팁)만 빠르게 브리핑하세요.
+          장황한 서론이나 인사는 생략하세요.
+        `;
+      default:
+        return `
+          ${BASE_PROMPT}
+          여행자의 친구처럼 친근하게 대화하되, 말은 짧게 하세요.
+          감성적인 분위기(✈️, 🌊)는 유지하세요.
+        `;
+    }
+  };
+
+  // 🚨 [New] 로딩 텍스트 애니메이션 효과
+  useEffect(() => {
+    let interval;
+    if (isLoading) {
+      const statuses = [
+        "🗺️ 여행지 정보를 스캔하고 있습니다...",
+        "🔍 현지 맛집과 명소를 찾는 중...",
+        "✈️ 여행 계획을 정리하고 있습니다...",
+        "✍️ 답변을 작성 중입니다..."
+      ];
+      let i = 0;
+      setLoadingStatus(statuses[0]);
+      interval = setInterval(() => {
+        i = (i + 1) % statuses.length;
+        setLoadingStatus(statuses[i]);
+      }, 2500); // 2.5초마다 텍스트 변경
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -53,14 +96,16 @@ const ChatModal = ({
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
       hasSentInitialRef.current = true;
-      handleSend(initialQuery.text || initialQuery.display || initialQuery);
+      const queryText = initialQuery.text || initialQuery.display || initialQuery;
+      const queryMode = initialQuery.mode || 'default'; 
+      handleSend(queryText, queryMode); 
     } else if (!isOpen) {
       hasSentInitialRef.current = false;
     }
   }, [isOpen, initialQuery]);
 
-  const handleSend = async (text) => {
-    if (!text.trim() || isLoading) return;
+  const handleSend = async (text, mode = 'default') => {
+    if (!text?.trim() || isLoading) return;
 
     const userMsg = { role: 'user', text };
     const newMessages = [...messages, userMsg];
@@ -73,19 +118,24 @@ const ChatModal = ({
     }
 
     try {
+      const systemInstruction = getSystemPrompt(mode); 
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: `${SYSTEM_PROMPT}\n\n사용자 질문: ${text}` }] }]
+            contents: [{ 
+                role: "user", 
+                parts: [{ text: `${systemInstruction}\n\n사용자 질문: ${text}` }] 
+            }]
           })
         }
       );
 
       const data = await response.json();
-      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
+      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다. 정보를 불러오지 못했습니다.";
       
       const finalMessages = [...newMessages, { role: 'model', text: aiReply }];
       setMessages(finalMessages); 
@@ -137,13 +187,12 @@ const ChatModal = ({
                 <div className="flex justify-between items-start mb-1">
                   <span className="font-bold text-gray-300 text-sm truncate max-w-[140px]">{item.destination}</span>
                   <div className="flex gap-1">
-                     <button onClick={(e) => { e.stopPropagation(); onToggleBookmark && onToggleBookmark(item.id); }}>
-                        {/* 🚨 [Fix] isBookmarked -> is_bookmarked (DB 컬럼명 일치) */}
+                      <button onClick={(e) => { e.stopPropagation(); onToggleBookmark && onToggleBookmark(item.id); }}>
                         <Star size={14} className={item.is_bookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-600 hover:text-yellow-400"} />
-                     </button>
-                     <button onClick={(e) => { e.stopPropagation(); onDeleteChat && onDeleteChat(item.id); }}>
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); onDeleteChat && onDeleteChat(item.id); }}>
                         <Trash2 size={14} className="text-gray-600 hover:text-red-400" />
-                     </button>
+                      </button>
                   </div>
                 </div>
                 <p className="text-[10px] text-gray-500">{item.date}</p>
@@ -180,9 +229,17 @@ const ChatModal = ({
                   </div>
                 );
               })}
+              
+              {/* 🚨 [New] 로딩 UI 개선: 텍스트 애니메이션 */}
               {isLoading && (
-                <div className="flex gap-4"><Loader2 size={20} className="text-blue-400 animate-spin" /></div>
+                <div className="flex gap-4 items-center">
+                  <Loader2 size={20} className="text-blue-400 animate-spin" />
+                  <span className="text-sm text-blue-300 animate-pulse font-medium tracking-wide">
+                    {loadingStatus}
+                  </span>
+                </div>
               )}
+              
               <div ref={messagesEndRef} />
             </div>
 
