@@ -1,194 +1,87 @@
+// src/pages/Home/components/TicketModal.jsx
 import React, { useState, useEffect } from 'react';
-import { X, Ticket, MapPin, Trash2, Map, QrCode, RefreshCw } from 'lucide-react';
-import { getAddressFromCoordinates } from '../../../lib/geocoding';
+// 🚨 [Fix] MessageSquare import 추가
+import { X, Calendar, MapPin, CreditCard, Ticket, Trash2, Plane, MessageSquare } from 'lucide-react';
 
-// ... SELECTION_STEPS 상수는 동일 ...
-const SELECTION_STEPS = [
-  { id: 'level', label: '🛫 여행 레벨', options: ['첫 비행', '초보', '가끔 일탈', '프로'] },
-  { id: 'companion', label: '👥 누구와?', options: ['혼자', '연인', '가족', '친구'] },
-  { id: 'purpose', label: '🎨 여행 목적', options: ['휴식(멍)', '영감', '미식', '사진'] },
-  { id: 'flight', label: '⏰ 비행 시간', options: ['단거리', '중거리', '장거리', '상관X'] },
-  { id: 'activity', label: '🎡 활동', options: ['관광', '체험', '쇼핑', '현지문화'] }
-];
-
-export default function TicketModal({ isOpen, onClose, onIssue, preFilledDestination, scoutedPins, onScoutDelete, onClearScouts }) {
-  // ... 내부 로직 동일 ...
+const TicketModal = ({ 
+  isOpen, onClose, onIssue, preFilledDestination, 
+  scoutedPins, 
+  savedTrips = [] // Home에서 전달받은 대화 이력
+}) => {
   const [destination, setDestination] = useState('');
-  const [isLoadingAddr, setIsLoadingAddr] = useState(false);
-  const [selections, setSelections] = useState({ level: '', companion: '', purpose: '', flight: '', activity: '' });
+  const [date, setDate] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      setSelections({ level: '', companion: '', purpose: '', flight: '', activity: '' });
-      const resolveAddress = async () => {
-        if (!preFilledDestination) { setDestination(''); return; }
-        if (preFilledDestination.name && preFilledDestination.name !== 'Selecting...') {
-          setDestination(preFilledDestination.name);
-          return;
-        }
-        if (preFilledDestination.lat && preFilledDestination.lng) {
-          setIsLoadingAddr(true);
-          setDestination("위치 확인 중..."); 
-          const addr = await getAddressFromCoordinates(preFilledDestination.lat, preFilledDestination.lng);
-          if (addr && addr.city) setDestination(addr.city);
-          else if (addr && addr.country) setDestination(addr.country);
-          else setDestination("Unknown Point");
-          setIsLoadingAddr(false);
-        }
-      };
-      resolveAddress();
+      if (preFilledDestination?.name) setDestination(preFilledDestination.name);
+      const today = new Date().toISOString().split('T')[0];
+      setDate(today);
     }
   }, [isOpen, preFilledDestination]);
-
-  const handleSelect = (category, value) => { setSelections(prev => ({ ...prev, [category]: value })); };
-  const handleScoutClick = (name) => { setDestination(name); };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const hasSelections = Object.values(selections).some(val => val !== '');
-    if (!destination && !hasSelections) { alert("목적지나 취향을 선택해주세요."); return; }
-    const prompt = `[Request] Destination: ${destination}, Style: ${Object.values(selections).filter(Boolean).join(', ')}`;
-    const payload = { text: prompt, display: `🎫 [${destination}] 여행 정보 요청` };
-    onIssue(payload);
-    onClose();
-  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity" onClick={onClose}></div>
-      <div className="relative w-full max-w-5xl h-[85vh] flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(59,130,246,0.3)] animate-fade-in-up bg-gray-900 border border-white/10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div className="bg-[#1a1a1a] border border-white/10 w-full max-w-4xl h-[600px] rounded-3xl shadow-2xl flex overflow-hidden">
         
-        {/* [좌측] 탐색 핀 리스트 */}
-        <div className="hidden md:flex w-80 bg-gradient-to-b from-blue-900 via-gray-900 to-black p-8 flex-col border-r-2 border-dashed border-white/10 relative">
-           <div className="absolute -right-3 top-1/2 w-6 h-6 bg-black rounded-full z-10 border border-white/20"></div>
-
-           <div className="flex justify-between items-center mb-6 z-10">
-             <span className="text-2xl font-black text-white tracking-tighter">GATE 0</span>
-             <QrCode className="text-white/70" size={24} />
-           </div>
-
-           {/* 🚨 [수정] 헤더에 RESET 버튼 추가 */}
-           <div className="z-10 mb-3 flex items-center justify-between">
-             <div className="flex items-center gap-2">
-               <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-               <p className="text-xs text-blue-300 uppercase tracking-[0.05em] font-bold">탐색 핀 리스트</p>
-             </div>
-             {/* RESET 버튼 */}
-             <button 
-               onClick={onClearScouts}
-               className="text-[10px] text-gray-500 hover:text-white flex items-center gap-1 transition-colors"
-               title="모두 지우기"
-             >
-               <RefreshCw size={10} /> RESET
-             </button>
-           </div>
-           
-           <div className="flex-1 overflow-y-auto custom-scrollbar z-10 space-y-3 pr-2 mask-gradient-bottom">
-             {scoutedPins && scoutedPins.length > 0 ? (
-               scoutedPins.map(pin => (
-                 <div 
-                   key={pin.id} 
-                   onClick={() => handleScoutClick(pin.name)}
-                   className="group relative bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 hover:border-blue-500/40 transition-all cursor-pointer"
-                 >
-                   <div className="flex justify-between items-start">
-                     <div>
-                       <div className="text-sm font-bold text-white truncate max-w-[120px]">{pin.name}</div>
-                       <div className="text-[10px] text-gray-500 font-mono mt-1 flex items-center gap-1">
-                          <Map size={10} /> {pin.time}
-                       </div>
-                     </div>
-                     <span className="text-xl font-black text-white/20 group-hover:text-blue-400 transition-colors">{pin.code}</span>
-                   </div>
-                   
-                   <button 
-                    onClick={(e) => { e.stopPropagation(); onScoutDelete(pin.id); }}
-                    className="absolute top-2 right-2 p-1.5 bg-red-500/20 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all"
-                   >
-                     <Trash2 size={12} />
-                   </button>
-                 </div>
-               ))
-             ) : (
-               <div className="h-32 flex flex-col items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-xl bg-white/5 mt-4">
-                 <MapPin size={24} className="mb-2 opacity-50" />
-                 <span className="text-[10px] tracking-wider">탐색한 핀이 없습니다</span>
-               </div>
-             )}
-           </div>
-           
-           <div className="pt-6 border-t border-white/10 z-10 text-[10px] text-gray-500 text-center tracking-widest">
-             리스트를 클릭하여 목적지 설정
-           </div>
+        {/* Left Panel: Chat History (Planning Candidates) */}
+        <div className="w-1/3 bg-black/30 border-r border-white/5 p-6 flex flex-col">
+          <h3 className="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2">
+            <MessageSquare size={14} /> RECENT CHATS
+          </h3>
+          
+          <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2">
+            {savedTrips.length === 0 ? (
+                <div className="text-center text-gray-600 text-xs py-10">대화 기록이 없습니다.</div>
+            ) : (
+                savedTrips.map((trip) => (
+                  <button 
+                    key={trip.id}
+                    onClick={() => setDestination(trip.destination)}
+                    className="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-blue-500/30 transition-all group"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-bold text-gray-200 group-hover:text-white">{trip.destination}</span>
+                      <span className="text-[10px] text-gray-500">{trip.date}</span>
+                    </div>
+                    <div className="text-[10px] text-gray-500 truncate">{trip.prompt_summary}</div>
+                  </button>
+                ))
+            )}
+          </div>
         </div>
 
-        {/* [우측] 입력 폼 (이전과 동일) */}
-        <div className="flex-1 bg-gray-900/95 backdrop-blur-xl p-8 flex flex-col h-full">
-           {/* ... (생략: 위 코드와 동일) ... */}
-           <div className="flex justify-between items-center mb-6 shrink-0">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-              <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
-              여행 정보 요청
-              <span className="text-xs font-normal text-gray-500 ml-2">Preferences</span>
-            </h2>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors group">
-              <X className="text-gray-400 group-hover:text-red-400" size={24} />
-            </button>
-          </div>
+        {/* Right Panel: Booking Form */}
+        <div className="w-2/3 p-8 relative">
+           <button onClick={onClose} className="absolute top-6 right-6 text-gray-500 hover:text-white"><X size={20}/></button>
+           <h2 className="text-3xl font-bold text-white mb-1">Boarding Pass</h2>
+           <p className="text-sm text-gray-400 mb-8">여행 계획을 확정하고 티켓을 발권하세요.</p>
+           
+           <div className="space-y-6">
+             <div className="space-y-2">
+               <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Destination</label>
+               <div className="flex items-center gap-3 bg-black/50 border border-white/10 p-4 rounded-xl">
+                 <MapPin className="text-blue-500" />
+                 <input type="text" value={destination} onChange={(e) => setDestination(e.target.value)} className="bg-transparent text-xl font-bold text-white w-full focus:outline-none" placeholder="Enter City" />
+               </div>
+             </div>
+             <div className="space-y-2">
+               <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Date</label>
+               <div className="flex items-center gap-3 bg-black/50 border border-white/10 p-4 rounded-xl">
+                 <Calendar className="text-purple-500" />
+                 <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-transparent text-xl font-bold text-white w-full focus:outline-none" />
+               </div>
+             </div>
+           </div>
 
-          <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
-             {/* ... (생략: 위 코드와 동일) ... */}
-            <div className="bg-black/40 rounded-2xl p-4 border border-white/10 mb-6 shrink-0">
-              <label className="text-[10px] font-bold text-blue-400 tracking-wider mb-2 block flex items-center gap-2">
-                <MapPin size={12} /> 목적지 (DESTINATION)
-              </label>
-              <div className="relative">
-                <input 
-                  type="text"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  placeholder="어디로 떠나시나요?"
-                  className={`w-full bg-transparent text-2xl font-bold text-white placeholder-gray-600 focus:outline-none ${isLoadingAddr ? 'animate-pulse' : ''}`}
-                  disabled={isLoadingAddr} 
-                />
-                {isLoadingAddr && <div className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-blue-400 font-mono">위치 확인 중...</div>}
-              </div>
-            </div>
-
-            <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-2 content-start overflow-y-auto custom-scrollbar pr-2 mb-4">
-              {SELECTION_STEPS.map((step) => (
-                <div key={step.id} className="py-2">
-                  <label className="text-xs font-bold text-gray-400 mb-2 block">{step.label}</label>
-                  <div className="flex flex-wrap gap-2">
-                    {step.options.map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        onClick={() => handleSelect(step.id, option)}
-                        className={`text-xs px-3 py-2 rounded-lg border transition-all duration-200
-                          ${selections[step.id] === option
-                            ? 'bg-blue-600 text-white border-blue-500 font-bold shadow-lg shadow-blue-900/50'
-                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'}`}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button 
-              type="submit"
-              className="w-full shrink-0 bg-white text-black font-black text-lg py-4 rounded-xl shadow-xl hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all flex items-center justify-center gap-2 mt-auto"
-            >
-              <Ticket size={20} />
-              <span>상세 정보 알아보기</span>
-            </button>
-          </form>
+           <button onClick={() => { onIssue({ text: `${destination} 여행 계획 세워줘` }); onClose(); }} className="absolute bottom-8 right-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
+             <Ticket size={18} /> 발권하기 (Issue Ticket)
+           </button>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default TicketModal;

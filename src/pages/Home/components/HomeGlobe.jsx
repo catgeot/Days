@@ -1,26 +1,17 @@
 // src/pages/Home/components/HomeGlobe.jsx
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
-// 🚨 내부 데이터 import 삭제됨 (Home에서 Props로 받음)
 
 const HomeGlobe = forwardRef(({ 
-  onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], tempPinsData = [],
-  // 🚨 [New Prop] 부모에게서 받는 여행지 데이터
-  travelSpots = [] 
+  onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], 
+  tempPinsData = [], 
+  travelSpots = [],
+  activePinId 
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
-  
-  // 사용자 임시 핀
-  const [tempPins, setTempPins] = useState([]);
-
-  useEffect(() => {
-    if (tempPinsData) {
-      const formattedPins = tempPinsData.map(pin => ({ ...pin, type: 'user-pin', weather: 'sun' }));
-      setTempPins(formattedPins);
-    }
-  }, [tempPinsData]);
+  const [ripples, setRipples] = useState([]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => { 
@@ -28,25 +19,22 @@ const HomeGlobe = forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     },
     resumeRotation: () => { if(globeEl.current) globeEl.current.controls().autoRotate = true; },
-    flyToAndPin: (lat, lng, name = "Selected") => {
+    
+    flyToAndPin: (lat, lng, name, category) => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
       if (globeEl.current) {
         globeEl.current.controls().autoRotate = false; 
-        globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1500);
+        globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1000);
       }
-      const visualPin = { lat, lng, type: 'user-pin', name: name, weather: 'sun', id: Date.now() };
-      setTempPins(prev => [...prev, visualPin]);
+      
+      const newRipple = { lat, lng, maxR: 8, propagationSpeed: 3, repeatPeriod: 800 };
+      setRipples(prev => [...prev, newRipple]);
+      setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 2000);
+
       rotationTimer.current = setTimeout(() => { if (globeEl.current) globeEl.current.controls().autoRotate = true; }, 3000);
     },
-    updateLastPinName: (newName) => {
-       setTempPins(prev => {
-        if (prev.length === 0) return prev;
-        const updated = [...prev];
-        updated[updated.length - 1] = { ...updated[updated.length - 1], name: newName };
-        return updated;
-      });
-    },
-    resetPins: () => { setTempPins([]); }
+    updateLastPinName: () => {}, 
+    resetPins: () => {}, 
   }));
 
   useEffect(() => {
@@ -64,90 +52,145 @@ const HomeGlobe = forwardRef(({
   }, []);
 
   const handleGlobeClickInternal = ({ lat, lng }) => {
-    if (rotationTimer.current) clearTimeout(rotationTimer.current);
-    if (globeEl.current) globeEl.current.controls().autoRotate = false; 
-    globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1000);
-    
-    const newPin = { lat, lng, type: 'user-pin', name: 'Selecting...', weather: 'sun', id: Date.now() };
-    setTempPins(prev => [...prev, newPin]);
     if (onGlobeClick) onGlobeClick({ lat, lng });
-
-    rotationTimer.current = setTimeout(() => { if (globeEl.current) globeEl.current.controls().autoRotate = true; }, 3000);
   };
 
-  // 🚨 [Memo] 모든 마커 통합 (저장된 여행 + 임시 핀 + 필터링된 주요 여행지)
+  // 🚨 [Logic] 핀 중복 제거 및 위계 설정
   const allMarkers = useMemo(() => {
-    const savedMarkers = savedTrips.map(trip => ({
-      lat: trip.lat, lng: trip.lng, name: trip.destination, weather: 'sun', type: 'saved-trip', id: trip.id
-    }));
+    // 1. Raw Data Collection
+    const rawSaved = savedTrips.map(trip => ({ ...trip, type: 'saved-trip', priority: 4 })); // ⭐️ Highest
+    const rawSpots = travelSpots.map(spot => ({ ...spot, type: 'major', priority: 0 })); // Seed
     
-    // travelSpots(부모가 준 데이터)를 마커 형식으로 변환
-    const spotMarkers = travelSpots.map(spot => ({
-      ...spot,
-      type: 'major', // 기본 마커 타입
-      weather: 'sun'
-    }));
+    const rawScouts = tempPinsData.map(pin => {
+      // Active Pin (The Cursor)
+      if (pin.id === activePinId) return { ...pin, type: 'active', priority: 2 };
+      // Chat Pin (The Talker)
+      if (pin.hasChat) return { ...pin, type: 'chat', priority: 3 };
+      // Ghost Pin (The Trail)
+      return { ...pin, type: 'ghost', priority: 1 };
+    });
 
-    return [...spotMarkers, ...savedMarkers, ...tempPins];
-  }, [travelSpots, savedTrips, tempPins]); // travelSpots가 바뀌면(필터링되면) 자동 갱신
+    const combined = [...rawSpots, ...rawSaved, ...rawScouts];
+
+    // 2. Deduplication (Merge by Coordinate)
+    const uniqueMarkers = [];
+    const threshold = 0.05; // 좌표 오차 범위 (겹침 판단)
+
+    combined.forEach(marker => {
+      // 이미 등록된 마커 중 아주 가까운 녀석이 있는지 확인
+      const existingIdx = uniqueMarkers.findIndex(m => 
+        Math.abs(m.lat - marker.lat) < threshold && 
+        Math.abs(m.lng - marker.lng) < threshold
+      );
+
+      if (existingIdx !== -1) {
+        // 있다면, 계급(Priority)이 높은 녀석으로 교체
+        if (marker.priority > uniqueMarkers[existingIdx].priority) {
+          uniqueMarkers[existingIdx] = marker;
+        }
+      } else {
+        uniqueMarkers.push(marker);
+      }
+    });
+
+    return uniqueMarkers;
+  }, [travelSpots, savedTrips, tempPinsData, activePinId]);
 
   const renderElement = (d) => {
     const el = document.createElement('div');
-    el.style.width = '0px'; el.style.height = '0px'; el.style.position = 'absolute'; el.style.pointerEvents = 'auto';
+    el.style.position = 'absolute'; el.style.pointerEvents = 'auto';
 
-    const isUserAction = d.type === 'user-pin' || d.type === 'saved-trip';
-    
-    // 🚨 색상 로직: 카테고리별 색상 적용 (데이터에 category가 있을 경우)
-    let colorClass = '#3B82F6'; // Default Blue
-    if (isUserAction) colorClass = '#EF4444'; // Red (User)
-    else if (d.category === 'paradise') colorClass = '#22d3ee'; // Cyan
-    else if (d.category === 'nature') colorClass = '#4ade80'; // Green
-    else if (d.category === 'urban') colorClass = '#c084fc'; // Purple
-    else if (d.category === 'nearby') colorClass = '#facc15'; // Yellow
-    else if (d.category === 'adventure') colorClass = '#f87171'; // Red-Orange
+    let iconContent = '';
+    let scale = '1';
+    let offsetY = '-50%'; 
+    let zIndex = '10';
 
-    const borderStyle = `1px solid ${colorClass}80`; // 50% opacity border
-    const bgStyle = 'rgba(0, 0, 0, 0.8)';
-    const scale = d.type === 'major' ? '1' : '0.9';
-    const zIndex = isUserAction ? '100' : '10';
-    el.style.zIndex = zIndex;
-
-    let iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${colorClass}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41-1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+    // --- 1. ⭐️ Saved (Priority 4) ---
+    if (d.type === 'saved-trip') {
+        zIndex = '100';
+        iconContent = `
+            <div style="filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fbbf24" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+            </div>`;
+    }
+    // --- 2. 💬 Chat (Priority 3) ---
+    else if (d.type === 'chat') {
+        zIndex = '150';
+        iconContent = `
+            <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#3b82f6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    <path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/>
+                </svg>
+            </div>`;
+    }
+    // --- 3. 📍 Active (Priority 2) ---
+    else if (d.type === 'active') {
+        zIndex = '200';
+        scale = '1.2';
+        offsetY = '-100%'; 
+        // 🚨 Animation: 1회만 (iteration-count: 1)
+        iconContent = `
+            <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); animation: pinBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="#991b1b"/>
+                </svg>
+            </div>`;
+    }
+    // --- 4. 👻 Ghost (Priority 1) ---
+    else if (d.type === 'ghost') {
+        zIndex = '50';
+        offsetY = '-100%';
+        // 🚨 Design: Active와 똑같지만 작고 투명하게
+        scale = '0.7'; 
+        iconContent = `
+            <div style="opacity: 0.7; filter: grayscale(40%);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="#991b1b"/>
+                </svg>
+            </div>`;
+    }
+    // --- 5. Major (Priority 0) ---
+    else {
+        // 기존 점(Dot) 스타일
+        let colorClass = '#94a3b8';
+        if (d.category === 'paradise') colorClass = '#22d3ee';
+        else if (d.category === 'nature') colorClass = '#4ade80';
+        else if (d.category === 'urban') colorClass = '#c084fc';
+        else if (d.category === 'nearby') colorClass = '#facc15';
+        else if (d.category === 'adventure') colorClass = '#f87171';
+        
+        iconContent = `
+           <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.7); backdrop-filter: blur(2px); border: 1px solid ${colorClass}80; padding: 3px 8px; border-radius: 99px;">
+             <div style="width: 8px; height: 8px; background: ${colorClass}; border-radius: 50%; box-shadow: 0 0 5px ${colorClass};"></div>
+             <span style="color: white; font-size: 10px; font-weight: bold; white-space: nowrap;">${d.name}</span>
+           </div>`;
+    }
 
     el.innerHTML = `
-      <div style="
-        position: absolute; transform: translate(-50%, -50%) scale(${scale}); 
-        display: flex; align-items: center; gap: 4px; 
-        background: ${bgStyle}; backdrop-filter: blur(4px); 
-        border: ${borderStyle}; padding: 3px 8px; border-radius: 99px; 
-        cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.6); 
-        transition: all 0.2s ease;">
-        ${iconSvg}
-        <span style="color: white; font-size: 11px; font-weight: bold; font-family: sans-serif; white-space: nowrap;">${d.name}</span>
+      <div style="position: absolute; transform: translate(-50%, ${offsetY}); cursor: pointer; transition: transform 0.2s ease;">
+        <div style="transform: scale(${scale});">${iconContent}</div>
       </div>
-      <div style="width: 1px; height: 15px; background: linear-gradient(to bottom, ${colorClass}, transparent); margin: 0 auto; margin-top: -1px; transform: translateX(-50%);"></div>
+      <style>
+        @keyframes pinBounce {
+          0% { transform: translateY(-50px); opacity: 0; }
+          60% { transform: translateY(10px); opacity: 1; }
+          80% { transform: translateY(-5px); }
+          100% { transform: translateY(0); }
+        }
+      </style>
     `;
 
     el.onclick = (e) => { 
-      e.stopPropagation(); 
+      e.stopPropagation(); // 🚨 재검색 방지
       if (onMarkerClick) onMarkerClick(d, 'globe'); 
     };
     
-    el.onpointerdown = (e) => e.stopPropagation(); 
-    el.onmouseenter = () => { 
-        const box = el.querySelector('div'); 
-        if(box) {
-            box.style.transform = `translate(-50%, -50%) scale(1.1)`;
-            box.style.background = isUserAction ? 'rgba(239, 68, 68, 0.2)' : `${colorClass}33`; // 20% opacity
-        }
-    };
-    el.onmouseleave = () => { 
-        const box = el.querySelector('div'); 
-        if(box) {
-            box.style.transform = `translate(-50%, -50%) scale(${scale})`;
-            box.style.background = bgStyle;
-        }
-    };
+    // Hover Scaling
+    el.onmouseenter = () => { el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1.5)`; };
+    el.onmouseleave = () => { el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1)`; };
 
     return el;
   };
@@ -163,6 +206,11 @@ const HomeGlobe = forwardRef(({
         atmosphereColor="#7caeea"
         atmosphereAltitude={0.15}
         onGlobeClick={handleGlobeClickInternal}
+        ringsData={ripples}
+        ringColor={() => '#60a5fa'}
+        ringMaxRadius="maxR"
+        ringPropagationSpeed="propagationSpeed"
+        ringRepeatPeriod="repeatPeriod"
         htmlElementsData={allMarkers}
         htmlElement={renderElement}
         htmlTransitionDuration={0} 
