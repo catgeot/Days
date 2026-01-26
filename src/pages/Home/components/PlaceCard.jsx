@@ -1,6 +1,8 @@
-// src/pages/Home/components/PlaceCard.jsx
+// 🚨 [Fix] 수정 이유: Home.jsx의 페르소냐 시스템(INSPIRER)과 연동되도록 onChat 호출 인자 수정
 import React from 'react';
 import { X, Globe, MessageSquare, Ticket, CloudSun } from 'lucide-react';
+// 🚨 [New] 페르소냐 타입을 직접 쓰거나 Home에서 넘겨받은 방식을 맞추기 위해 
+// 여기서는 Home.jsx에서 정의한 인터페이스에 맞춰 객체로 전달합니다.
 
 const PlaceCard = ({ 
   location, onClose, onChat, onTicket,
@@ -9,13 +11,12 @@ const PlaceCard = ({
   
   if (!location) return null;
 
-  // 정적 데이터
   const placeInfo = {
     temp: '24°C',
     weather: 'Sunny'
   };
 
-  // 1. [Yield Mode] 순위표 열림 (아주 작은 바)
+  // 1. [Yield Mode] (기존 유지)
   if (isCompactMode) {
     return (
       <div className="absolute bottom-6 right-8 w-80 z-40 animate-fade-in transition-all duration-300">
@@ -30,14 +31,11 @@ const PlaceCard = ({
     );
   }
 
-  // 2. [Compact Normal Mode] 이미지/설명글 제거된 초경량 버전
+  // 2. [Compact Normal Mode]
   return (
     <div className="absolute bottom-6 right-8 w-80 z-40 animate-fade-in-up transition-all duration-300">
-      
-      {/* Glass Box */}
       <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl p-5">
         
-        {/* Row 1: Top Info (Country, Weather, Close) */}
         <div className="flex items-start justify-between mb-2">
            <div className="flex flex-col">
              <div className="flex items-center gap-1.5 mb-1">
@@ -46,13 +44,11 @@ const PlaceCard = ({
                  {location.country || "GLOBAL DESTINATION"}
                </span>
              </div>
-             {/* City Name (Main Title) */}
              <h2 className="text-2xl font-bold text-white leading-none tracking-tight">
                {location.name}
              </h2>
            </div>
 
-           {/* Right Side: Weather & Close */}
            <div className="flex items-start gap-3">
               <div className="text-right">
                 <div className="flex items-center justify-end gap-1 text-yellow-400">
@@ -70,13 +66,15 @@ const PlaceCard = ({
            </div>
         </div>
 
-        {/* Divider */}
         <div className="h-px w-full bg-white/10 my-4"></div>
 
-        {/* Row 2: Action Buttons */}
         <div className="grid grid-cols-2 gap-3">
+           {/* 🚨 [Fix] AI 묻기 클릭 시 Home.jsx의 handleOpenChat이 기대하는 객체 형식으로 전달 */}
            <button 
-             onClick={() => onChat(location.name)}
+             onClick={() => onChat({ 
+               text: `${location.name}에 대해 여행 선배로서 가야할 이유를 알려줘!`, 
+               persona: 'INSPIRER' // Home.jsx에서 PERSONA_TYPES.INSPIRER와 매칭됨
+             })}
              className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-400/50 transition-all group"
            >
              <MessageSquare size={14} className="text-blue-400 group-hover:scale-110 transition-transform" />
@@ -91,7 +89,6 @@ const PlaceCard = ({
              <span className="text-xs font-bold text-white">여행 계획</span>
            </button>
         </div>
-
       </div>
     </div>
   );

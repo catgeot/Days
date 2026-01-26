@@ -1,6 +1,6 @@
 // src/pages/Home/components/markers.js
 
-// ✂️ 텍스트 길이 제한 유틸리티 (긴 이름 방지)
+// ✂️ 텍스트 길이 제한 유틸리티
 const truncate = (str, length = 8) => {
   if (!str) return '';
   return str.length > length ? str.substring(0, length) + '..' : str;
@@ -17,7 +17,7 @@ export const getMarkerDesign = (d) => {
   // A. Base Layer (The Labels)
   // ---------------------------------------------------------
   
-  // 1. Saved Base (유저 저장소) - 깔끔한 흰색/밝은 점
+  // 1. Saved Base (유저 저장소 - 영구) - 깔끔한 흰색 점
   if (d.type === 'saved-base') { 
       zIndex = '100';
       iconContent = `
@@ -26,7 +26,7 @@ export const getMarkerDesign = (d) => {
            <span style="color: white; font-size: 10px; font-weight: bold; white-space: nowrap;">${truncate(d.name, 10)}</span>
          </div>`;
   }
-  // 2. Temp Base (탐색 포인트) - 밋밋한 회색 점 (배경 역할)
+  // 2. Temp Base (탐색/대화 - 임시) - 밋밋한 회색 점
   else if (d.type === 'temp-base') { 
       zIndex = '50';
       iconContent = `
@@ -35,7 +35,7 @@ export const getMarkerDesign = (d) => {
            <span style="color: #cbd5e1; font-size: 9px; white-space: nowrap;">${truncate(d.name, 8)}</span>
          </div>`;
   }
-  // 3. Major (지명 아이콘) - 기존 화려한 디자인
+  // 3. Major (지명 아이콘) - 화려함
   else if (d.type === 'major') { 
       let colorClass = '#94a3b8';
       if (d.category === 'paradise') colorClass = '#22d3ee';
@@ -50,10 +50,16 @@ export const getMarkerDesign = (d) => {
            <span style="color: white; font-size: 10px; font-weight: bold; white-space: nowrap;">${truncate(d.name, 10)}</span>
          </div>`;
   }
-  // 그 외 (독립 핀 등)
-  else if (d.type === 'saved-trip') {
-      zIndex = '100';
-      iconContent = `<div style="filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));">...</div>`; // (독립 별표 - 코드 단축)
+  
+  // 독립 아이콘 처리 (예외적 상황)
+  else if (d.type === 'saved-trip' && !d.isActive && !d.isGhost) {
+      iconContent = `<div style="filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));">...</div>`;
+  }
+
+  // Active or Ghost Only (독립된 경우)
+  if ((d.type === 'active' || d.type === 'ghost') && iconContent === '') {
+      offsetY = '-100%';
+      iconContent = `<div style="width:1px; height:1px;"></div>`; 
   }
 
   // ---------------------------------------------------------
@@ -85,8 +91,9 @@ export const getMarkerDesign = (d) => {
       `;
   }
 
-  // 3. Status Badge
-  if (d.type === 'major' || d.type === 'saved-base') {
+  // 3. Status Badge (Major & Saved-Base & Temp-Base에 붙는 배지)
+  // 🚨 [Fix] Temp-Base(흐릿한 점) 위에도 배지가 달릴 수 있게 조건 추가
+  if (d.type === 'major' || d.type === 'saved-base' || d.type === 'temp-base') {
       if (d.isBookmarked) {
           overlay += `
               <div style="position: absolute; bottom: 18px; right: -10px; width: 18px; height: 18px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); animation: popIn 0.3s ease-out;">
@@ -104,31 +111,6 @@ export const getMarkerDesign = (d) => {
       }
   }
 
-  // 독립 아이콘 처리 (예외적 상황)
-  if (d.type === 'saved-trip' && !d.isActive && !d.isGhost) {
-      iconContent = `
-      <div style="filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fbbf24" stroke="#b45309" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-      </div>`;
-  } else if (d.type === 'chat' && !d.isActive && !d.isGhost) {
-      iconContent = `
-      <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#3b82f6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              <path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/>
-          </svg>
-      </div>`;
-  }
-
-  // Active or Ghost Only (독립된 경우)
-  if ((d.type === 'active' || d.type === 'ghost') && iconContent === '') {
-      offsetY = '-100%';
-      iconContent = `<div style="width:1px; height:1px;"></div>`; 
-  }
-
-  // HTML 조립
   const html = `
     <div style="position: absolute; transform: translate(-50%, ${offsetY}); cursor: pointer; transition: transform 0.2s ease;">
       ${overlay}

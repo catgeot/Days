@@ -1,7 +1,7 @@
 // src/pages/Home/components/HomeGlobe.jsx
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
-import { getMarkerDesign } from './markers'; // 🛡 디자인 분리 파일 임포트
+import { getMarkerDesign } from './markers'; 
 
 const HomeGlobe = forwardRef(({ 
   onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], 
@@ -14,7 +14,7 @@ const HomeGlobe = forwardRef(({
   const rotationTimer = useRef(null);
   const [ripples, setRipples] = useState([]);
 
-  // 🔒 호버 락(Hover Lock) 변수 (수정 금지)
+  // 🔒 호버 락(Hover Lock) 변수
   const isHoveringMarker = useRef(false);
 
   useImperativeHandle(ref, () => ({
@@ -56,11 +56,11 @@ const HomeGlobe = forwardRef(({
   }, []);
 
   const handleGlobeClickInternal = ({ lat, lng }) => {
-    if (isHoveringMarker.current) return; // 🔒 호버 락 작동
+    if (isHoveringMarker.current) return; 
     if (onGlobeClick) onGlobeClick({ lat, lng });
   };
 
-  // 🛡 [Protected Logic] 3단계 계급 시스템 및 데이터 병합
+  // 🛡 [Protected Logic] 3단계 계급 + 대화 수명 제한
   const allMarkers = useMemo(() => {
     let result = [];
     const threshold = 0.05; 
@@ -73,22 +73,34 @@ const HomeGlobe = forwardRef(({
         result.push({ ...spot, type: 'major', priority: 0, isBookmarked: false, hasChat: false });
     });
 
-    // 2. Level 2: Saved Trips
+    // 2. Level 2: Saved Trips (Bookmarks & Recent Chats)
+    let chatCount = 0; 
+
     savedTrips.forEach(trip => {
-        const idx = findMatchIndex(trip.lat, trip.lng);
         const isBookmarked = trip.is_bookmarked;
+
+        // 필터링: 북마크는 무조건 통과, 단순 채팅은 5개까지만
+        if (!isBookmarked) {
+            if (chatCount >= 5) return; 
+            chatCount++;
+        }
+
+        const idx = findMatchIndex(trip.lat, trip.lng);
         const fixedName = trip.name || trip.destination || "Saved Place";
         
         if (idx !== -1) {
+            // 지명과 겹침 -> 배지 추가
             if (isBookmarked) result[idx].isBookmarked = true;
             else result[idx].hasChat = true;
             result[idx].id = trip.id; 
         } else {
+            // 안 겹침 -> 독립 라벨 생성
+            // 🚨 [Logic Update] 유저가 찾은 곳은 북마크 여부와 상관없이 무조건 'temp-base'(잔상 디자인) 유지
             result.push({ 
                 ...trip, 
                 name: fixedName,
-                type: 'saved-base', 
-                priority: isBookmarked ? 4 : 3,
+                type: 'temp-base', // 👈 여기가 핵심 변경점! (saved-base 대신 무조건 temp-base)
+                priority: isBookmarked ? 4 : 3, // 우선순위는 유지 (북마크가 더 높음)
                 isBookmarked: isBookmarked,
                 hasChat: !isBookmarked
             });
@@ -120,24 +132,21 @@ const HomeGlobe = forwardRef(({
     return result;
   }, [travelSpots, savedTrips, tempPinsData, activePinId]);
 
-  // 🛡 [Protected Renderer] 디자인은 markers.js에서 가져옴
+  // 🛡 [Protected Renderer] 디자인 위임
   const renderElement = (d) => {
     const el = document.createElement('div');
     el.style.position = 'absolute'; el.style.pointerEvents = 'auto';
 
-    // 🎨 디자인 파일에서 HTML 및 스타일 가져오기
     const { html, zIndex, offsetY } = getMarkerDesign(d);
 
     el.innerHTML = html;
     el.style.zIndex = zIndex;
 
-    // ⚡️ 이벤트 핸들러 부착 (여기는 로직 영역)
     el.onclick = (e) => { 
       e.stopPropagation(); 
       if (onMarkerClick) onMarkerClick(d, 'globe'); 
     };
     
-    // 호버 락 및 스케일 효과
     el.onmouseenter = () => { 
       isHoveringMarker.current = true;
       el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1.5)`; 
