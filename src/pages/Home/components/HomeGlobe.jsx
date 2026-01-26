@@ -13,7 +13,7 @@ const HomeGlobe = forwardRef(({
   const rotationTimer = useRef(null);
   const [ripples, setRipples] = useState([]);
 
-  // 🚨 [Fix] 호버 락(Hover Lock) 변수: 마우스가 마커 위에 있는지 추적
+  // 호버 락(Hover Lock) 변수
   const isHoveringMarker = useRef(false);
 
   useImperativeHandle(ref, () => ({
@@ -54,54 +54,62 @@ const HomeGlobe = forwardRef(({
     }
   }, []);
 
-  // 🚨 [Fix] 지구본 클릭 핸들러: 마커 위에 있을 땐(Hover Lock) 클릭 무시
   const handleGlobeClickInternal = ({ lat, lng }) => {
-    if (isHoveringMarker.current) {
-      // console.log("Blocked: Clicked on a marker"); 
-      return; 
-    }
+    if (isHoveringMarker.current) return; // 호버 락 작동
     if (onGlobeClick) onGlobeClick({ lat, lng });
   };
 
-  // 🚨 [Logic] 핀 중복 제거 및 위계 설정
+  // 🚨 [Logic Upgrade] 상태 병합 (Merge State) & 핀 온 탑
   const allMarkers = useMemo(() => {
-    // 1. Raw Data Collection
-    const rawSaved = savedTrips.map(trip => ({ ...trip, type: 'saved-trip', priority: 4 })); // ⭐️ Highest
-    const rawSpots = travelSpots.map(spot => ({ ...spot, type: 'major', priority: 0 })); // Seed
-    
-    const rawScouts = tempPinsData.map(pin => {
-      // Active Pin (The Cursor)
-      if (pin.id === activePinId) return { ...pin, type: 'active', priority: 2 };
-      // Chat Pin (The Talker)
-      if (pin.hasChat) return { ...pin, type: 'chat', priority: 3 };
-      // Ghost Pin (The Trail)
-      return { ...pin, type: 'ghost', priority: 1 };
+    let result = [];
+    const threshold = 0.05; 
+
+    const findMatchIndex = (lat, lng) => 
+        result.findIndex(m => Math.abs(m.lat - lat) < threshold && Math.abs(m.lng - lng) < threshold);
+
+    // 1. Layer 1: Travel Spots (Major)
+    travelSpots.forEach(spot => {
+        result.push({ ...spot, type: 'major', priority: 0 });
     });
 
-    const combined = [...rawSpots, ...rawSaved, ...rawScouts];
-
-    // 2. Deduplication (Merge by Coordinate)
-    const uniqueMarkers = [];
-    const threshold = 0.05; // 좌표 오차 범위 (겹침 판단)
-
-    combined.forEach(marker => {
-      // 이미 등록된 마커 중 아주 가까운 녀석이 있는지 확인
-      const existingIdx = uniqueMarkers.findIndex(m => 
-        Math.abs(m.lat - marker.lat) < threshold && 
-        Math.abs(m.lng - marker.lng) < threshold
-      );
-
-      if (existingIdx !== -1) {
-        // 있다면, 계급(Priority)이 높은 녀석으로 교체
-        if (marker.priority > uniqueMarkers[existingIdx].priority) {
-          uniqueMarkers[existingIdx] = marker;
+    // 2. Layer 2: Saved Trips
+    savedTrips.forEach(trip => {
+        const idx = findMatchIndex(trip.lat, trip.lng);
+        if (idx !== -1) {
+            result[idx] = { ...trip, type: 'saved-trip', priority: 4 };
+        } else {
+            result.push({ ...trip, type: 'saved-trip', priority: 4 });
         }
-      } else {
-        uniqueMarkers.push(marker);
-      }
     });
 
-    return uniqueMarkers;
+    // 3. Layer 3: Temp Pins (Active & Ghosts)
+    tempPinsData.forEach(pin => {
+        const idx = findMatchIndex(pin.lat, pin.lng);
+        const isActive = (pin.id === activePinId);
+
+        if (idx !== -1) {
+            // 중첩 발생!
+            if (isActive) {
+                // 현재 선택된 녀석이면 Active 깃발 꽂기
+                result[idx].isActive = true;
+                result[idx].isGhost = false; // Active가 Ghost보다 우선
+            } else {
+                // 🚨 핵심: 선택된 건 아닌데 리스트에 있다? -> 방문했던 곳(Ghost)
+                // 기존 아이콘(Major/Saved)에 Ghost 속성 병합
+                result[idx].isGhost = true; 
+            }
+        } else {
+            // 겹치지 않는 빈 땅: 독립적인 핀 생성
+            result.push({ 
+                ...pin, 
+                type: isActive ? 'active' : 'ghost', 
+                isActive: isActive,
+                isGhost: !isActive // Active가 아니면 Ghost
+            });
+        }
+    });
+
+    return result;
   }, [travelSpots, savedTrips, tempPinsData, activePinId]);
 
   const renderElement = (d) => {
@@ -113,7 +121,7 @@ const HomeGlobe = forwardRef(({
     let offsetY = '-50%'; 
     let zIndex = '10';
 
-    // --- 1. ⭐️ Saved (Priority 4) ---
+    // --- 기본 아이콘 렌더링 ---
     if (d.type === 'saved-trip') {
         zIndex = '100';
         iconContent = `
@@ -123,7 +131,6 @@ const HomeGlobe = forwardRef(({
                 </svg>
             </div>`;
     }
-    // --- 2. 💬 Chat (Priority 3) ---
     else if (d.type === 'chat') {
         zIndex = '150';
         iconContent = `
@@ -134,32 +141,25 @@ const HomeGlobe = forwardRef(({
                 </svg>
             </div>`;
     }
-    // --- 3. 📍 Active (Priority 2) ---
-    else if (d.type === 'active') {
+    else if (d.type === 'active') { 
         zIndex = '200';
-        scale = '1.2';
+        scale = '1.0'; 
         offsetY = '-100%'; 
-        iconContent = `
-            <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); animation: pinBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="#991b1b"/>
-                </svg>
-            </div>`;
+        iconContent = `<div style="width:1px; height:1px;"></div>`; // 내용은 Overlay가 담당
     }
-    // --- 4. 👻 Ghost (Priority 1) ---
+    // 🚨 [Restore] 독립된 Ghost Pin (시인성 강화: Opacity 0.85, 붉은색 유지)
     else if (d.type === 'ghost') {
         zIndex = '50';
         offsetY = '-100%';
-        scale = '0.7'; 
+        scale = '0.9'; 
         iconContent = `
-            <div style="opacity: 0.7; filter: grayscale(40%);">
+            <div style="opacity: 0.85; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="#991b1b"/>
                 </svg>
             </div>`;
     }
-    // --- 5. Major (Priority 0) ---
-    else {
+    else { // Major
         let colorClass = '#94a3b8';
         if (d.category === 'paradise') colorClass = '#22d3ee';
         else if (d.category === 'nature') colorClass = '#4ade80';
@@ -174,16 +174,44 @@ const HomeGlobe = forwardRef(({
            </div>`;
     }
 
+    // --- Overlay (Pin on Top) ---
+    let overlay = '';
+    
+    // 1. 현재 선택된 핀 (Active): 통통 튀는 애니메이션, 제일 큼
+    if (d.isActive) {
+        zIndex = '999'; 
+        overlay = `
+            <div style="position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); animation: pinBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="#991b1b"/>
+                </svg>
+                <div style="position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid #7f1d1d;"></div>
+            </div>
+        `;
+    }
+    // 2. 🚨 [New] 기존 핀 위의 잔상 (Ghost Overlay): 정지됨, 약간 작음, 붉은색
+    else if (d.isGhost && (d.type === 'major' || d.type === 'saved-trip')) {
+        zIndex = '900'; // Active보단 아래, 텍스트보단 위
+        overlay = `
+            <div style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); width: 24px; height: 24px; opacity: 0.85; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3" fill="#991b1b"/>
+                </svg>
+            </div>
+        `;
+    }
+
     el.innerHTML = `
       <div style="position: absolute; transform: translate(-50%, ${offsetY}); cursor: pointer; transition: transform 0.2s ease;">
+        ${overlay}
         <div style="transform: scale(${scale});">${iconContent}</div>
       </div>
       <style>
         @keyframes pinBounce {
-          0% { transform: translateY(-50px); opacity: 0; }
-          60% { transform: translateY(10px); opacity: 1; }
-          80% { transform: translateY(-5px); }
-          100% { transform: translateY(0); }
+          0% { transform: translateX(-50%) translateY(-50px); opacity: 0; }
+          60% { transform: translateX(-50%) translateY(10px); opacity: 1; }
+          80% { transform: translateX(-50%) translateY(-5px); }
+          100% { transform: translateX(-50%) translateY(0); }
         }
       </style>
     `;
@@ -193,16 +221,17 @@ const HomeGlobe = forwardRef(({
       if (onMarkerClick) onMarkerClick(d, 'globe'); 
     };
     
-    // 🚨 [Fix] Hover Lock 활성화/비활성화
+    // 호버 스케일: 1.5배 유지
     el.onmouseenter = () => { 
-      isHoveringMarker.current = true; // 🔒 Lock: 지구본 클릭 차단
+      isHoveringMarker.current = true;
       el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1.5)`; 
     };
     el.onmouseleave = () => { 
-      isHoveringMarker.current = false; // 🔓 Unlock: 지구본 클릭 허용
+      isHoveringMarker.current = false;
       el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1)`; 
     };
 
+    el.style.zIndex = zIndex; 
     return el;
   };
 
