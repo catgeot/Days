@@ -13,6 +13,9 @@ const HomeGlobe = forwardRef(({
   const rotationTimer = useRef(null);
   const [ripples, setRipples] = useState([]);
 
+  // 🚨 [Fix] 호버 락(Hover Lock) 변수: 마우스가 마커 위에 있는지 추적
+  const isHoveringMarker = useRef(false);
+
   useImperativeHandle(ref, () => ({
     pauseRotation: () => { 
       if(globeEl.current) globeEl.current.controls().autoRotate = false; 
@@ -51,7 +54,12 @@ const HomeGlobe = forwardRef(({
     }
   }, []);
 
+  // 🚨 [Fix] 지구본 클릭 핸들러: 마커 위에 있을 땐(Hover Lock) 클릭 무시
   const handleGlobeClickInternal = ({ lat, lng }) => {
+    if (isHoveringMarker.current) {
+      // console.log("Blocked: Clicked on a marker"); 
+      return; 
+    }
     if (onGlobeClick) onGlobeClick({ lat, lng });
   };
 
@@ -131,7 +139,6 @@ const HomeGlobe = forwardRef(({
         zIndex = '200';
         scale = '1.2';
         offsetY = '-100%'; 
-        // 🚨 Animation: 1회만 (iteration-count: 1)
         iconContent = `
             <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); animation: pinBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -143,7 +150,6 @@ const HomeGlobe = forwardRef(({
     else if (d.type === 'ghost') {
         zIndex = '50';
         offsetY = '-100%';
-        // 🚨 Design: Active와 똑같지만 작고 투명하게
         scale = '0.7'; 
         iconContent = `
             <div style="opacity: 0.7; filter: grayscale(40%);">
@@ -154,7 +160,6 @@ const HomeGlobe = forwardRef(({
     }
     // --- 5. Major (Priority 0) ---
     else {
-        // 기존 점(Dot) 스타일
         let colorClass = '#94a3b8';
         if (d.category === 'paradise') colorClass = '#22d3ee';
         else if (d.category === 'nature') colorClass = '#4ade80';
@@ -184,13 +189,19 @@ const HomeGlobe = forwardRef(({
     `;
 
     el.onclick = (e) => { 
-      e.stopPropagation(); // 🚨 재검색 방지
+      e.stopPropagation(); 
       if (onMarkerClick) onMarkerClick(d, 'globe'); 
     };
     
-    // Hover Scaling
-    el.onmouseenter = () => { el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1.5)`; };
-    el.onmouseleave = () => { el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1)`; };
+    // 🚨 [Fix] Hover Lock 활성화/비활성화
+    el.onmouseenter = () => { 
+      isHoveringMarker.current = true; // 🔒 Lock: 지구본 클릭 차단
+      el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1.5)`; 
+    };
+    el.onmouseleave = () => { 
+      isHoveringMarker.current = false; // 🔓 Unlock: 지구본 클릭 허용
+      el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1)`; 
+    };
 
     return el;
   };
