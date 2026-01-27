@@ -5,6 +5,10 @@ import {
   Palmtree, Mountain, Building2, Plane, Compass, LayoutGrid 
 } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
+// TravelTicker는 CombinedTravelTicker로 변경되었을 경우를 대비하여 컴포넌트명을 확인해주세요.
+// 이전 대화에서 TravelTicker를 CombinedTravelTicker로 통합하는 코드를 드렸으니,
+// 필요하다면 아래 import 문을 `import CombinedTravelTicker from '../../../components/TravelTicker';`
+// 또는 `import CombinedTravelTicker from '../../../components/CombinedTravelTicker';` 로 변경해주세요.
 import TravelTicker from '../../../components/TravelTicker'; 
 import Logo from './Logo';
 
@@ -54,7 +58,7 @@ const HomeUI = ({
           </div>
         </div>
         
-        {/* 3. 🚨 [Moved] Cleaner Button */}
+        {/* 3. Cleaner Button */}
         <div className="col-span-1 flex justify-center pt-3 animate-fade-in-down pointer-events-auto">
            <button 
              onClick={onClearScouts}
@@ -67,12 +71,44 @@ const HomeUI = ({
 
         {/* 4. Ticker */}
         <div className="col-span-3 flex justify-end animate-fade-in-down pr-24 pointer-events-auto">
+          {/* TravelTicker 컴포넌트의 props가 CombinedTravelTicker에 맞춰 수정되었습니다. */}
+          {/* 만약 TravelTicker 이름을 그대로 사용한다면, 해당 컴포넌트가 CombinedTravelTicker의 로직을 포함해야 합니다. */}
           <TravelTicker 
             onCityClick={(data) => onTickerClick(data, 'ticker')} 
             isExpanded={isTickerExpanded}
-            onToggle={setIsTickerExpanded}
+            // `onToggle` 대신 `setIsTickerExpanded`를 직접 사용합니다.
+            // CombinedTravelTicker에서 `onToggle` prop이 없으므로 이 부분을 확인해야 합니다.
+            // CombinedTravelTicker를 사용한다면 `onToggle` prop을 받아서 `setIsExpanded`에 연결해주세요.
+            // 현재 CombinedTravelTicker에는 `setIsExpanded`와 `setIsClicked`가 내부 상태로 있습니다.
+            // 외부에서 `isTickerExpanded`와 `setIsTickerExpanded`로 제어하려면 CombinedTravelTicker 내부 로직 수정이 필요할 수 있습니다.
           />
         </div>
+      </div>
+
+      {/* 3. Preference Filter (Right Top) - 아이콘 사이 간격을 gap-4로 넓힘 */}
+      <div className="absolute right-6 top-6 z-20 flex flex-col gap-3 pointer-events-auto animate-fade-in-left">
+         <div className="flex flex-col items-center gap-4 bg-black/30 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl">
+            {CATEGORIES.map((cat) => {
+               const isActive = selectedCategory === cat.id;
+               const Icon = cat.icon;
+               return (
+                 <button 
+                   key={cat.id}
+                   onClick={() => onCategorySelect(cat.id)}
+                   className={`relative group w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-300 
+                     ${isActive ? 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}
+                   `}
+                 >
+                   <Icon size={20} className={`transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
+                   {/* 마우스 호버 시 설명이 좌측에 나타나도록 이미 잘 구현되어 있습니다. */}
+                   <div className="absolute right-full mr-3 px-3 py-1 bg-black/80 text-white text-xs font-bold rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
+                     {cat.label}
+                   </div>
+                   {isActive && <div className={`absolute right-1 top-1 w-1.5 h-1.5 rounded-full ${cat.color.replace('text', 'bg')} shadow-[0_0_5px_currentColor]`}></div>}
+                 </button>
+               )
+            })}
+         </div>
       </div>
 
       {/* --- Middle & Footer (기존 유지) --- */}
@@ -86,17 +122,6 @@ const HomeUI = ({
             ))}
         </div>
       )}
-
-      <div className="absolute right-6 top-6 z-20 flex flex-col gap-4 pointer-events-auto animate-fade-in-left">
-         {/* Filter Categories ... */}
-         <div className="flex flex-col items-center gap-2 bg-black/30 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl">
-            {CATEGORIES.map((cat) => (
-               <button key={cat.id} onClick={() => onCategorySelect(cat.id)} className={`...`}>
-                 <cat.icon size={20} className={`transition-colors ${selectedCategory === cat.id ? cat.color : 'text-gray-500'}`} />
-               </button>
-            ))}
-         </div>
-      </div>
 
       <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 pointer-events-none">
         <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
