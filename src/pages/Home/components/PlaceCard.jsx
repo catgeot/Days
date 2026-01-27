@@ -72,7 +72,7 @@ const PlaceCard = ({
            {/* 🚨 [Fix] AI 묻기 클릭 시 Home.jsx의 handleOpenChat이 기대하는 객체 형식으로 전달 */}
            <button 
              onClick={() => onChat({ 
-               text: `${location.name}에 대해 여행 선배로서 가야할 이유를 알려줘!`, 
+               text: `${location.name}에 대해 설명 부탁해!`, 
                persona: 'INSPIRER' // Home.jsx에서 PERSONA_TYPES.INSPIRER와 매칭됨
              })}
              className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-400/50 transition-all group"
