@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../src/shared/api/supabase';
+import { supabase } from '../api/supabase';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
-import Logo from '../Home/components/Logo';
+import Logo from '../../pages/Home/components/Logo';
 
 const Login = () => {
   const navigate = useNavigate();

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { supabase } from '../../../src/shared/api/supabase';
+import { supabase } from '../api/supabase';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Loader2, Check } from 'lucide-react';
-import Logo from '../Home/components/Logo';
+import Logo from '../../pages/Home/components/Logo';
 
 const UpdatePassword = () => {
   const navigate = useNavigate();

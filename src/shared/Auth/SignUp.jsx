@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../src/shared/api/supabase';
+import { supabase } from '../api/supabase';
 import { UserPlus, Mail, Lock, Home } from 'lucide-react';
 
 const Signup = () => {

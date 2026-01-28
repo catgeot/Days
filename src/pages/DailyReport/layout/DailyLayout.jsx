@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar'; // 🚨 [Fix] 같은 폴더 내의 Sidebar 참조
+import Sidebar from './Sidebar/'; // 🚨 [Fix] 같은 폴더 내의 Sidebar 참조
 
 const DailyLayout = () => {
   return (

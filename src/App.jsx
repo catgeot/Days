@@ -9,10 +9,10 @@ import DashboardLayout from '../src/pages/DailyReport/layout/DailyLayout';
 import Home from './pages/Home'; 
 
 // 🚨 [Fix] Auth 및 DailyReport 페이지들 (기존 위치 유지 혹은 추후 정리 예정)
-import Login from './pages/Auth/Login';
-import Signup from './pages/Auth/Signup'; 
-import ForgotPassword from './pages/Auth/ForgotPassword';
-import UpdatePassword from './pages/Auth/UpdatePassword';
+import Login from './shared/Auth/Login';
+import Signup from './shared/Auth/SignUp'; 
+import ForgotPassword from './shared/Auth/ForgotPassWord';
+import UpdatePassword from './shared/Auth/UpdatePassword';
 
 import Dashboard from './pages/DailyReport/Dashboard';
 import Write from './pages/DailyReport/Write';
