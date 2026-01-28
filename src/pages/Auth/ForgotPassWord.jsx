@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../src/shared/api/supabase';
 import { Link } from 'react-router-dom';
 import { Mail, Loader2, ArrowLeft, Send } from 'lucide-react';
 import Logo from '../Home/components/Logo';

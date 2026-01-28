@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Trash2, StickyNote } from 'lucide-react';
-import { supabase } from '../../../lib/supabase'; // 경로 주의
+import { supabase } from '../../../shared/api/supabase'; // 경로 주의
 
 const QuickMemo = ({ user }) => {
   const [memos, setMemos] = useState(['']);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../src/shared/api/supabase';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Loader2, Check } from 'lucide-react';
 import Logo from '../Home/components/Logo';

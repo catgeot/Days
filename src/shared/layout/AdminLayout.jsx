@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../api/supabase';
 import { LogOut, LayoutDashboard, PenTool, Globe, User } from 'lucide-react';
 
 const AdminLayout = () => {

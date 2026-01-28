@@ -1,7 +1,7 @@
 // src/pages/Home/components/HomeGlobe.jsx
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
-import { getMarkerDesign } from './markers'; 
+import { getMarkerDesign } from '../data/markers'; 
 
 const HomeGlobe = forwardRef(({ 
   onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], 

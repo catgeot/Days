@@ -5,21 +5,21 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
 import TicketModal from './components/TicketModal'; 
-import ChatModal from '../../components/ChatModal'; 
+import ChatModal from './components/ChatModal'; 
 import PlaceCard from './components/PlaceCard'; 
 import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
 // Libs & Utils
-import { getAddressFromCoordinates } from '../../lib/geocoding';
-import { supabase } from '../../lib/supabase';
-import { TRAVEL_SPOTS } from '../../../src/date/travelSpots';
-import { PERSONA_TYPES } from '../../lib/prompts';
+import { getAddressFromCoordinates } from './lib/geocoding';
+import { supabase } from '../../shared/api/supabase';
+import { TRAVEL_SPOTS } from './data/travelSpots';
+import { PERSONA_TYPES } from './lib/prompts';
 
 // Hooks
-import { useGlobeLogic } from '../../hooks/useGlobeLogic';
-import { useTravelData } from '../../hooks/useTravelData';
-import { useSearchEngine } from '../../hooks/useSearchEngine';
+import { useGlobeLogic } from './hooks/useGlobeLogic';
+import { useTravelData } from './hooks/useTravelData';
+import { useSearchEngine } from './hooks/useSearchEngine';
 
 function Home() {
   const globeRef = useRef();

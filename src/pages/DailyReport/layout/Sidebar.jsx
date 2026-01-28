@@ -1,8 +1,11 @@
+// 🚨 [Fix] Supabase 및 하위 부품들의 경로를 새로운 위치에 맞춰 수정했습니다.
+// 🛡️ [Maintain] 메모 및 슬라이드쇼 로직은 기존 기능을 그대로 유지합니다.
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../lib/supabase'; // 경로 주의
+import { supabase } from '../../../../src/shared/api/supabase'; // 🚨 [Fix] 경로 최적화
 
-// 🧩 부품 조립
+// 🧩 부품 조립 (상대 경로 유지)
 import HomeButton from './HomeButton';
 import QuickMemo from './QuickMemo';
 import UserProfile from './UserProfile';
@@ -14,14 +17,12 @@ const Sidebar = () => {
   const [slides, setSlides] = useState([]);
   const [isSlideOpen, setIsSlideOpen] = useState(false);
 
-  // 1. 유저 정보 & 슬라이드 이미지 로드 (데이터 페칭 로직만 여기에 남김)
   useEffect(() => {
     const initData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
       if (user) {
-        // 일보에서 이미지 긁어오기
         const { data: reportData } = await supabase
           .from('reports')
           .select('images')
@@ -56,13 +57,8 @@ const Sidebar = () => {
   return (
     <>
       <div className="w-64 h-screen bg-[#1a1c23] text-gray-400 flex flex-col border-r border-gray-800 flex-shrink-0 transition-all duration-300">
-        {/* 1. 홈 버튼 구역 */}
         <HomeButton />
-
-        {/* 2. 메모장 구역 (가변 높이) */}
         <QuickMemo user={user} />
-
-        {/* 3. 프로필 구역 (하단 고정) */}
         <UserProfile 
           user={user} 
           onLogout={handleLogout} 
@@ -70,7 +66,6 @@ const Sidebar = () => {
         />
       </div>
 
-      {/* 4. 슬라이드 뷰어 (모달) */}
       <SlideViewer 
         isOpen={isSlideOpen} 
         onClose={() => setIsSlideOpen(false)} 

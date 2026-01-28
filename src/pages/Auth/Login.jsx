@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../src/shared/api/supabase';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
 import Logo from '../Home/components/Logo';
@@ -100,7 +100,7 @@ const Login = () => {
             <div className="flex justify-between items-center">
               <label className="text-xs font-bold text-gray-500 ml-1">PASSWORD</label>
               {/* 비밀번호 찾기 링크 */}
-              <Link to="/auth/forgot-password" class="text-[10px] text-blue-400 hover:text-blue-300 transition-colors">
+              <Link to="/auth/forgot-password" className="text-[10px] text-blue-400 hover:text-blue-300 transition-colors">
                 비밀번호를 잊으셨나요?
               </Link>
             </div>

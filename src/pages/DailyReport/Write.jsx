@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../shared/api/supabase';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 

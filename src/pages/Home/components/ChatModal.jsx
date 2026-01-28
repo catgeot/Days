@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2, RefreshCcw } from 'lucide-react';
 // 🚨 [New] 프롬프트 엔진 임포트
-import { getSystemPrompt, PERSONA_TYPES } from '../../src/lib/prompts';
+import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 
 const ChatModal = ({ 
   isOpen, 

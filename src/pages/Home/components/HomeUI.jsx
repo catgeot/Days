@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 // 이전 대화에서 TravelTicker를 CombinedTravelTicker로 통합하는 코드를 드렸으니,
 // 필요하다면 아래 import 문을 `import CombinedTravelTicker from '../../../components/TravelTicker';`
 // 또는 `import CombinedTravelTicker from '../../../components/CombinedTravelTicker';` 로 변경해주세요.
-import TravelTicker from '../../../components/TravelTicker'; 
+import TravelTicker from './TravelTicker'; 
 import Logo from './Logo';
 
 const HomeUI = ({ 

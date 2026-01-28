@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Image as ImageIcon, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
-import { supabase } from '../../../lib/supabase'; // 경로 주의 (깊어졌으므로 ../ 추가)
+import { supabase } from '../../../shared/api/supabase'; // 경로 주의 (깊어졌으므로 ../ 추가)
 
 const SlideViewer = ({ isOpen, onClose, slides, user }) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
