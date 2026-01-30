@@ -1,4 +1,4 @@
-// 🚨 [Fix/New] 수정 이유: PlaceCard의 버튼 분리에 따른 '기록 보기'와 '새 대화' 로직 분기 처리
+// src/pages/Home/index.jsx
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
 // Components
@@ -11,7 +11,8 @@ import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
 // Libs & Utils
-import { getAddressFromCoordinates } from './lib/geocoding';
+// 🚨 [Fix/New] getCoordinatesFromAddress 추가 임포트
+import { getAddressFromCoordinates, getCoordinatesFromAddress } from './lib/geocoding';
 import { supabase } from '../../shared/api/supabase';
 import { TRAVEL_SPOTS } from './data/travelSpots';
 import { PERSONA_TYPES } from './lib/prompts';
@@ -89,10 +90,30 @@ function Home() {
     setIsPlaceCardOpen(true);
   };
 
+  // 🚨 [New] 문자열 검색 및 티커 클릭을 처리하는 통합 핸들러
+  const handleStringSearch = async (query) => {
+    if (!query) return;
+    setDraftInput(query);
+    
+    // 1. 내부 데이터(TRAVEL_SPOTS)에서 먼저 검색
+    const localSpot = TRAVEL_SPOTS.find(s => s.name.toLowerCase() === query.toLowerCase());
+    if (localSpot) {
+      handleLocationSelect(localSpot);
+      return;
+    }
+
+    // 2. 없으면 지오코딩 API 호출
+    const coords = await getCoordinatesFromAddress(query);
+    if (coords) {
+      handleLocationSelect({ ...coords, category: 'search' });
+    } else {
+      alert(`"${query}" 위치를 찾을 수 없습니다.`);
+    }
+  };
+
   const handleStartChat = async (dest, initPayload, existingId = null) => {
     if (globeRef.current) globeRef.current.pauseRotation();
 
-    // 🚨 [New] 기록 보기 분기 로직
     if (initPayload?.mode === 'view_history') {
       const matchedTrip = savedTrips.find(t => 
         (initPayload.id && t.id === initPayload.id) || 
@@ -104,7 +125,6 @@ function Home() {
         setIsChatOpen(true);
         return;
       }
-      // 기록이 없으면 일반 질문으로 전환 시도
       initPayload.persona = PERSONA_TYPES.INSPIRER;
     }
 
@@ -142,13 +162,16 @@ function Home() {
       />
       
       <HomeUI 
-        onSearch={(q) => { setDraftInput(q); processSearchKeywords(q); handleStartChat(null, q); }}
-        onTickerClick={handleLocationSelect} onTicketClick={() => setIsTicketOpen(true)}
+        // 🚨 [Fix] onSearch와 onTickerClick을 handleStringSearch로 연결
+        onSearch={handleStringSearch}
+        onTickerClick={(data) => handleStringSearch(data.name || data)} 
+        onTicketClick={() => setIsTicketOpen(true)}
         externalInput={draftInput} savedTrips={savedTrips} 
         onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
         onOpenChat={(p) => p?.text || p?.mode ? handleStartChat(selectedLocation?.name, p) : setIsChatOpen(true)}
         onLogoClick={() => setIsLogoPanelOpen(true)}
-        relatedTags={relatedTags} isTagLoading={isTagLoading} onTagClick={(t) => { setDraftInput(t); processSearchKeywords(t); handleStartChat(null, t); }}
+        relatedTags={relatedTags} isTagLoading={isTagLoading} 
+        onTagClick={(t) => handleStringSearch(t)}
         selectedCategory={category} onCategorySelect={setCategory}
         isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
         onClearScouts={() => { if(window.confirm("지도의 모든 핀을 정리하시겠습니까?")) clearScouts(); }}

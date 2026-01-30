@@ -1,5 +1,29 @@
 // src/lib/geocoding.js
 
+// 🚨 [Fix/New] 도시 이름으로 좌표를 찾는 Forward Geocoding 추가
+export const getCoordinatesFromAddress = async (query) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+    );
+
+    if (!response.ok) throw new Error("Geocoding failed");
+
+    const data = await response.json();
+
+    if (!data || data.length === 0) return null;
+
+    return {
+      lat: parseFloat(data[0].lat),
+      lng: parseFloat(data[0].lon),
+      name: data[0].display_name.split(',')[0] // 첫 번째 구역 이름만 사용 (예: Osaka)
+    };
+  } catch (error) {
+    console.error("Forward Geocoding error:", error);
+    return null;
+  }
+};
+
 export const getAddressFromCoordinates = async (lat, lng) => {
   try {
     // 🚨 [수정] accept-language=en 추가 (영문 주소 강제)
