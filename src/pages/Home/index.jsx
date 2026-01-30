@@ -1,4 +1,3 @@
-// src/pages/Home/index.jsx
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
 // Components
@@ -11,11 +10,10 @@ import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
 // Libs & Utils
-// 🚨 [Fix/New] getCoordinatesFromAddress 추가 임포트
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from './lib/geocoding';
 import { supabase } from '../../shared/api/supabase';
 import { TRAVEL_SPOTS } from './data/travelSpots';
-import { PERSONA_TYPES } from './lib/prompts';
+import { PERSONA_TYPES, getSystemPrompt } from './lib/prompts';
 
 // Hooks
 import { useGlobeLogic } from './hooks/useGlobeLogic';
@@ -26,7 +24,6 @@ function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
   
-  // 엔진 호출
   const { 
     scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, 
     moveToLocation, addScoutPin, clearScouts 
@@ -90,19 +87,14 @@ function Home() {
     setIsPlaceCardOpen(true);
   };
 
-  // 🚨 [New] 문자열 검색 및 티커 클릭을 처리하는 통합 핸들러
   const handleStringSearch = async (query) => {
     if (!query) return;
     setDraftInput(query);
-    
-    // 1. 내부 데이터(TRAVEL_SPOTS)에서 먼저 검색
     const localSpot = TRAVEL_SPOTS.find(s => s.name.toLowerCase() === query.toLowerCase());
     if (localSpot) {
       handleLocationSelect(localSpot);
       return;
     }
-
-    // 2. 없으면 지오코딩 API 호출
     const coords = await getCoordinatesFromAddress(query);
     if (coords) {
       handleLocationSelect({ ...coords, category: 'search' });
@@ -114,41 +106,33 @@ function Home() {
   const handleStartChat = async (dest, initPayload, existingId = null) => {
     if (globeRef.current) globeRef.current.pauseRotation();
 
-    if (initPayload?.mode === 'view_history') {
-      const matchedTrip = savedTrips.find(t => 
-        (initPayload.id && t.id === initPayload.id) || 
-        (dest && t.destination === dest)
-      );
-      if (matchedTrip) {
-        setActiveChatId(matchedTrip.id);
+    if (initPayload?.mode === 'view_history' || existingId) {
+      const targetId = existingId || savedTrips.find(t => (initPayload?.id && t.id === initPayload.id) || (dest && t.destination === dest))?.id;
+      if (targetId) {
+        setActiveChatId(targetId);
         setInitialQuery(null); 
         setIsChatOpen(true);
         return;
       }
-      initPayload.persona = PERSONA_TYPES.INSPIRER;
     }
 
-    if (existingId) { 
-      setActiveChatId(existingId); 
-      setInitialQuery(null); 
-      setIsChatOpen(true); 
-      return; 
-    }
-
+    // 🚨 [Fix/New] AI 맥락(Context) 강화: 페르소나와 장소 정보를 시스템 프롬프트에 주입
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
-    const payload = typeof initPayload === 'object' ? { ...initPayload, persona } : { text: initPayload, persona };
+    const locationName = dest || selectedLocation?.name || "New Session";
+    const systemPrompt = getSystemPrompt(persona, locationName);
 
     const newTrip = { 
-      destination: dest || selectedLocation?.name || "New Session", 
+      destination: locationName, 
       lat: selectedLocation?.lat || 0, lng: selectedLocation?.lng || 0, 
       date: new Date().toLocaleDateString(), code: "CHAT",
-      prompt_summary: payload.text || "대화 시작", messages: [], is_bookmarked: false, persona
+      prompt_summary: systemPrompt, // DB에 시스템 지침 저장
+      messages: [], is_bookmarked: false, persona
     };
     
     const created = await saveNewTrip(newTrip);
     if (created) { 
       setActiveChatId(created.id); 
-      setInitialQuery(payload); 
+      setInitialQuery({ text: initPayload?.text || `${locationName}에 대해 알려줘!`, persona }); 
       setIsChatOpen(true); 
     }
   };
@@ -162,13 +146,12 @@ function Home() {
       />
       
       <HomeUI 
-        // 🚨 [Fix] onSearch와 onTickerClick을 handleStringSearch로 연결
         onSearch={handleStringSearch}
         onTickerClick={(data) => handleStringSearch(data.name || data)} 
         onTicketClick={() => setIsTicketOpen(true)}
         externalInput={draftInput} savedTrips={savedTrips} 
         onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
-        onOpenChat={(p) => p?.text || p?.mode ? handleStartChat(selectedLocation?.name, p) : setIsChatOpen(true)}
+        onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
         onLogoClick={() => setIsLogoPanelOpen(true)}
         relatedTags={relatedTags} isTagLoading={isTagLoading} 
         onTagClick={(t) => handleStringSearch(t)}
