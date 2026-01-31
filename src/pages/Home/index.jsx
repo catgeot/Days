@@ -9,6 +9,11 @@ import PlaceCard from './components/PlaceCard';
 import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
+// 🚨 [Fix/New] 3개의 물리적 벤치 파일 Import
+import TestBenchA from './components/TestBenchA';
+import TestBenchB from './components/TestBenchB';
+import TestBenchC from './components/TestBenchC';
+
 // Libs & Utils
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from './lib/geocoding';
 import { supabase } from '../../shared/api/supabase';
@@ -46,6 +51,9 @@ function Home() {
   const [draftInput, setDraftInput] = useState('');
   const [category, setCategory] = useState('all');
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
+  
+  // 🚨 [Fix/New] 벤치 선택자 (null | 'A' | 'B' | 'C')
+  const [activeTestBench, setActiveTestBench] = useState(null);
 
   useEffect(() => { 
     fetchData(); 
@@ -116,7 +124,6 @@ function Home() {
       }
     }
 
-    // 🚨 [Fix/New] AI 맥락(Context) 강화: 페르소나와 장소 정보를 시스템 프롬프트에 주입
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
     const locationName = dest || selectedLocation?.name || "New Session";
     const systemPrompt = getSystemPrompt(persona, locationName);
@@ -125,7 +132,7 @@ function Home() {
       destination: locationName, 
       lat: selectedLocation?.lat || 0, lng: selectedLocation?.lng || 0, 
       date: new Date().toLocaleDateString(), code: "CHAT",
-      prompt_summary: systemPrompt, // DB에 시스템 지침 저장
+      prompt_summary: systemPrompt,
       messages: [], is_bookmarked: false, persona
     };
     
@@ -158,6 +165,10 @@ function Home() {
         selectedCategory={category} onCategorySelect={setCategory}
         isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
         onClearScouts={() => { if(window.confirm("지도의 모든 핀을 정리하시겠습니까?")) clearScouts(); }}
+        // 🚨 [Fix/New] A/B/C 버튼 핸들러 연결
+        onOpenTestBenchA={() => setActiveTestBench('A')}
+        onOpenTestBenchB={() => setActiveTestBench('B')}
+        onOpenTestBenchC={() => setActiveTestBench('C')}
       />
       
       <LogoPanel isOpen={isLogoPanelOpen} onClose={() => setIsLogoPanelOpen(false)} user={user} bucketList={bucketList} onLogout={() => supabase.auth.signOut()} onStartAmbient={() => { setIsLogoPanelOpen(false); setIsAmbientMode(true); }} />
@@ -171,6 +182,11 @@ function Home() {
           isCompactMode={isTickerExpanded}
         />
       )}
+
+      {/* 🚨 [Fix/New] 선택된 물리적 벤치 렌더링 */}
+      {activeTestBench === 'A' && <TestBenchA onClose={() => setActiveTestBench(null)} />}
+      {activeTestBench === 'B' && <TestBenchB onClose={() => setActiveTestBench(null)} />}
+      {activeTestBench === 'C' && <TestBenchC onClose={() => setActiveTestBench(null)} />}
 
       <TicketModal isOpen={isTicketOpen} onClose={() => { setIsTicketOpen(false); globeRef.current?.resumeRotation(); }} onIssue={(p) => handleStartChat(selectedLocation?.name, { text: p.text, persona: PERSONA_TYPES.PLANNER })} preFilledDestination={selectedLocation} scoutedPins={scoutedPins} savedTrips={savedTrips} />
 

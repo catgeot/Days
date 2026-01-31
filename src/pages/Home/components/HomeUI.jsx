@@ -1,11 +1,10 @@
-// src/pages/Home/components/HomeUI.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileText, User, Sparkles, Search, Ticket, MessageSquare, MapPin, Loader2, X, Trash2,
-  Palmtree, Mountain, Building2, Plane, Compass, LayoutGrid 
+  Palmtree, Mountain, Building2, Plane, Compass, LayoutGrid,
+  FlaskConical, TestTube2, Microscope // 🚨 [Fix/New] 실험실 아이콘 3종(플라스크, 시험관, 현미경) 추가
 } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
-// 🚨 [Check] CombinedTravelTicker를 사용한다고 가정하고 import 유지
 import TravelTicker from '../components/TravelTicker'; 
 import Logo from './Logo';
 
@@ -14,7 +13,11 @@ const HomeUI = ({
   relatedTags = [], isTagLoading = false, onTagClick,
   selectedCategory, onCategorySelect,
   isTickerExpanded, setIsTickerExpanded,
-  onClearScouts
+  onClearScouts,
+  // 🚨 [Fix/New] 3개의 개별 테스트 핸들러로 분리
+  onOpenTestBenchA,
+  onOpenTestBenchB,
+  onOpenTestBenchC
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
@@ -37,13 +40,43 @@ const HomeUI = ({
     <>
       {/* --- Header Area --- */}
       <div className="absolute top-0 left-0 right-0 z-20 p-6 grid grid-cols-12 items-start pointer-events-none">
-        {/* 1. Logo */}
-        <div onClick={onLogoClick} className="col-span-3 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto cursor-pointer group">
+        {/* 1. Logo (col-span-2) */}
+        <div onClick={onLogoClick} className="col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto cursor-pointer group">
           <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
           <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1 group-hover:text-blue-400 transition-colors">DEPARTURE LOUNGE</span>
         </div>
 
-        {/* 2. Omni-box */}
+        {/* 🚨 [Fix/New] 2. Triple TestBench Triggers (3 Buttons) */}
+        <div className="col-span-1 flex justify-center gap-1 pt-3 animate-fade-in-down delay-75 pointer-events-auto">
+            {/* Slot A: Blue Flask */}
+           <button 
+             onClick={onOpenTestBenchA}
+             className="w-8 h-8 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-500/20 flex items-center justify-center text-blue-400 hover:bg-blue-500 hover:text-white transition-all shadow-lg group"
+             title="TestBench A (Stable)"
+           >
+             <FlaskConical size={14} className="group-hover:rotate-12 transition-transform" />
+           </button>
+           
+           {/* Slot B: Purple Tube */}
+           <button 
+             onClick={onOpenTestBenchB}
+             className="w-8 h-8 rounded-full bg-purple-500/10 backdrop-blur-md border border-purple-500/20 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all shadow-lg group"
+             title="TestBench B (Experimental)"
+           >
+             <TestTube2 size={14} className="group-hover:-rotate-12 transition-transform" />
+           </button>
+
+           {/* Slot C: Rose Microscope */}
+           <button 
+             onClick={onOpenTestBenchC}
+             className="w-8 h-8 rounded-full bg-rose-500/10 backdrop-blur-md border border-rose-500/20 flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-lg group"
+             title="TestBench C (Debug)"
+           >
+             <Microscope size={14} className="group-hover:scale-110 transition-transform" />
+           </button>
+        </div>
+
+        {/* 3. Omni-box (col-span-5) */}
         <div className="col-span-5 flex flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative">
            <div className="relative group w-full max-w-md z-50">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -55,7 +88,7 @@ const HomeUI = ({
           </div>
         </div>
         
-        {/* 3. Cleaner Button */}
+        {/* 4. Cleaner Button (col-span-1) */}
         <div className="col-span-1 flex justify-center pt-3 animate-fade-in-down pointer-events-auto">
            <button 
              onClick={onClearScouts}
@@ -66,9 +99,8 @@ const HomeUI = ({
            </button>
         </div>
 
-        {/* 4. Ticker */}
+        {/* 5. Ticker (col-span-3) */}
         <div className="col-span-3 flex justify-end animate-fade-in-down pr-24 pointer-events-auto">
-          {/* 🚨 [Fix] TravelTicker 연결 수정 */}
           <TravelTicker 
             onCityClick={onTickerClick} 
             isExpanded={isTickerExpanded}
@@ -77,7 +109,7 @@ const HomeUI = ({
         </div>
       </div>
 
-      {/* 3. Preference Filter (Right Top) */}
+      {/* --- 이하 기존 필터 및 푸터 로직 동일 --- */}
       <div className="absolute right-6 top-6 z-20 flex flex-col gap-3 pointer-events-auto animate-fade-in-left">
          <div className="flex flex-col items-center gap-4 bg-black/30 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl">
             {CATEGORIES.map((cat) => {
@@ -102,7 +134,6 @@ const HomeUI = ({
          </div>
       </div>
 
-      {/* --- Middle & Footer (기존 유지) --- */}
       {(isTagLoading || relatedTags.length > 0) && (
         <div className="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 pointer-events-auto animate-fade-in-right">
              {!isTagLoading && relatedTags.map((tag, idx) => (
