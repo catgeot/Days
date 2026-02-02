@@ -2,19 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Plane, CloudSun, Sun, CloudRain, Cloud, Wind, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
-// 공통 도시 데이터
-const cities = [
-  { rank: 1, name: 'Osaka', temp: 18, weather: 'sun', change: 'up' },
-  { rank: 2, name: 'Da Nang', temp: 28, weather: 'cloud', change: 'same' },
-  { rank: 3, name: 'Bangkok', temp: 32, weather: 'rain', change: 'up' },
-  { rank: 4, name: 'Fukuoka', temp: 15, weather: 'sun', change: 'down' },
-  { rank: 5, name: 'Tokyo', temp: 16, weather: 'cloud', change: 'up' },
-  { rank: 6, name: 'Taipei', temp: 22, weather: 'rain', change: 'down' },
-  { rank: 7, name: 'Nha Trang', temp: 29, weather: 'sun', change: 'same' },
-  { rank: 8, name: 'Paris', temp: 12, weather: 'wind', change: 'up' },
-  { rank: 9, name: 'New York', temp: 10, weather: 'wind', change: 'down' },
-  { rank: 10, name: 'Sydney', temp: 24, weather: 'sun', change: 'up' },
-];
+// 🚨 [Fix/New] 하드코딩 데이터 삭제 -> 외부 데이터(trendingData) 연결
+// 파일 위치가 'src/pages/Home/data/trendingData.js'라고 가정했습니다.
+import { TRENDING_LIST } from '../data/trendingData';
+
+// 기존 변수명 'cities'를 그대로 사용하여 하위 로직 변경 최소화
+const cities = TRENDING_LIST;
 
 const WeatherIcon = ({ type, size = 14 }) => {
   switch (type) {
@@ -34,7 +27,6 @@ const RankChange = ({ type, size = 12 }) => {
   }
 };
 
-// 🚨 [Fix] onCityClick prop 추가
 export default function CombinedTravelTicker({ onCityClick, isExpanded: externalExpanded, onToggle }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
@@ -60,7 +52,8 @@ export default function CombinedTravelTicker({ onCityClick, isExpanded: external
     return () => clearInterval(interval);
   }, [isExpanded]);
 
-  const currentCity = cities[currentIndex];
+  // 데이터 안전장치 (데이터가 아직 로드 안됐을 경우 대비)
+  const currentCity = cities[currentIndex] || cities[0];
 
   const handleMouseLeave = () => {
     if (isExpanded) {
@@ -74,13 +67,15 @@ export default function CombinedTravelTicker({ onCityClick, isExpanded: external
     else setInternalExpanded(prev => !prev);
   };
 
-  // 🚨 [Fix/New] 도시 클릭 시 상위 컴포넌트로 데이터 전달
+  // 도시 클릭 시 상위 컴포넌트로 데이터 전달
   const handleCityClick = (e, city) => {
     e.stopPropagation(); // 부모의 toggle 이벤트 방지
     if (onCityClick) {
       onCityClick(city);
     }
   };
+
+  if (!currentCity) return null; // 데이터 로딩 중 에러 방지
 
   return (
     <div
@@ -110,7 +105,6 @@ export default function CombinedTravelTicker({ onCityClick, isExpanded: external
           {cities.map((city) => (
             <div
               key={city.rank}
-              // 🚨 [Fix] 클릭 이벤트 추가
               onClick={(e) => handleCityClick(e, city)}
               className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
             >
