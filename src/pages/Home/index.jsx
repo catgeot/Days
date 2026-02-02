@@ -1,6 +1,7 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix/New] Smart Search 엔진 완전 통합 (검색어 입력 시 즉시 태그 분석 + 장소 이동)
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+// 🚨 [Fix] 무한 루프 방지 및 데이터 흐름 안정화
+
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
 // Components
 import HomeGlobe from './components/HomeGlobe';
@@ -41,7 +42,7 @@ function Home() {
     saveNewTrip, updateMessages, toggleBookmark, deleteTrip 
   } = useTravelData();
 
-  // 🚨 [Fix] 고도화된 하이브리드 검색 엔진 장착
+  // 고도화된 하이브리드 검색 엔진 장착
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   // UI States
@@ -70,9 +71,10 @@ function Home() {
 
   // --- Handlers ---
 
-  const handleGlobeClick = async ({ lat, lng }) => {
+  const handleGlobeClick = useCallback(async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
     const tempId = Date.now();
+    
     // 클릭 시 'scout' 카테고리로 임시 핀 생성
     const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: 'scout' };
 
@@ -80,33 +82,48 @@ function Home() {
     setIsPlaceCardOpen(true);
     moveToLocation(lat, lng, "Scanning...", "scout");
 
-    const addressData = await getAddressFromCoordinates(lat, lng);
-    const name = addressData?.city || addressData?.country || `Point (${lat.toFixed(1)}, ${lng.toFixed(1)})`;
+    try {
+      const addressData = await getAddressFromCoordinates(lat, lng);
+      const name = addressData?.city || addressData?.country || `Point (${lat.toFixed(1)}, ${lng.toFixed(1)})`;
 
-    // 🚨 [Logic] 지오코딩 결과 이름으로 엔진 가동 -> 이웃 도시 추천
-    processSearchKeywords(name);
+      // 엔진 가동 -> 이웃 도시 추천
+      processSearchKeywords(name);
+      
+      const realPin = { ...tempPin, name, country: addressData?.country || "Unknown" };
+      
+      setScoutedPins(prev => prev.map(p => p.id === tempId ? realPin : p));
+      setSelectedLocation(realPin); // 상태 업데이트 1회
+      setDraftInput(`📍 ${name}`);
+    } catch (error) {
+      console.error("Geocoding Error:", error);
+    }
+  }, [addScoutPin, moveToLocation, processSearchKeywords, setScoutedPins, setSelectedLocation]);
+
+  // 🚨 [Fix] useCallback으로 감싸서 불필요한 함수 재생성 방지
+  const handleLocationSelect = useCallback((loc) => {
+    if (!loc) return;
     
-    const realPin = { ...tempPin, name, country: addressData?.country || "Unknown" };
-    setScoutedPins(prev => prev.map(p => p.id === tempId ? realPin : p));
-    setSelectedLocation(realPin);
-    setDraftInput(`📍 ${name}`);
-  };
-
-  const handleLocationSelect = (loc) => {
     const name = loc.name || "Selected";
-    // 이미 TRAVEL_SPOTS에 있는 데이터라면 videoId 등이 포함되어 있음
+    
+    // 1. 지도 이동
     moveToLocation(loc.lat, loc.lng, name, loc.category);
+    
+    // 2. 핀 추가 (이미 존재하는 ID라면 useGlobeLogic 내부에서 처리됨)
     addScoutPin({ ...loc, type: 'temp-base', id: loc.id || Date.now() });
     
+    // 3. 입력창 동기화
     setDraftInput(`📍 ${name}`);
     
-    // 🚨 [Logic] 장소 선택 시에도 엔진 가동 (태그 갱신)
+    // 4. 검색 엔진 태그 갱신
     processSearchKeywords(name); 
+    
+    // 5. 카드 열기 (selectedLocation은 useGlobeLogic 내부에서 moveToLocation 시 업데이트 될 수도 있지만, 명시적으로 함)
+    setSelectedLocation(loc); 
     setIsPlaceCardOpen(true);
-  };
 
-  // 🚨 [Fix/New] 개념 가드(Concept Guard) 장착
-  // "휴양", "비치" 같은 키워드 입력 시 엉뚱한 도로명 주소로 날아가는 것 방지
+  }, [moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation]);
+
+  // 개념 가드(Concept Guard) 장착
   const handleSmartSearch = async (input) => {
     if (!input) return;
 
@@ -116,17 +133,17 @@ function Home() {
       return;
     }
 
-    // Case 2: 문자열 검색 (검색창 입력)
+    // Case 2: 문자열 검색
     const query = input.trim(); 
     setDraftInput(query);
 
-    // [Engine Trigger] 태그 추천 시스템 가동
     processSearchKeywords(query);
 
-    // Step A: 로컬 데이터(TRAVEL_SPOTS)에서 '장소 이름' 매칭 확인
+    // Step A: 로컬 데이터 매칭 (대소문자 무시)
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
-      s.country.toLowerCase() === query.toLowerCase()
+      s.country.toLowerCase() === query.toLowerCase() ||
+      (s.name_en && s.name_en.toLowerCase() === query.toLowerCase()) // 🚨 [Fix] 영문명 검색 지원 추가
     );
 
     if (localSpot) {
@@ -134,27 +151,24 @@ function Home() {
       return;
     }
 
-    // 🚨 [Step B: Concept Guard] 키워드/카테고리인지 확인
-    // 입력한 단어가 우리 여행지의 '키워드'나 '카테고리'에 포함되어 있다면?
-    // -> 굳이 외부 API로 이상한 주소를 찾지 말고, 여기서 멈춘다. (태그만 보여줌)
+    // Step B: Concept Guard
     const isConcept = TRAVEL_SPOTS.some(spot => 
       spot.category === query || 
-      spot.keywords?.some(k => k.includes(query)) // "비치"가 포함된 키워드가 있는가?
+      spot.keywords?.some(k => k.includes(query))
     );
 
     if (isConcept) {
-      console.log(`🛡️ Concept Guard: "${query}"는 장소명이 아닌 키워드로 판단하여 이동을 보류합니다.`);
-      // 여기서 return하면 지도는 움직이지 않고, processSearchKeywords가 찾아준 태그만 뜹니다.
-      // 사용자는 그 태그(예: #보라카이)를 클릭해서 이동하면 됩니다.
+      console.log(`🛡️ Concept Guard: "${query}" - 키워드 매칭됨. 이동 보류.`);
       return;
     }
 
-    // Step C: 로컬에도 없고 키워드도 아니면 -> 외부 API(Nominatim) 검색
+    // Step C: 외부 API 검색
     const coords = await getCoordinatesFromAddress(query);
     if (coords) {
       handleLocationSelect({ ...coords, category: 'search' });
     } else {
       console.log(`"${query}" 위치를 찾을 수 없습니다.`);
+      alert(`'${query}' 위치를 찾을 수 없습니다. 정확한 도시 이름을 입력해주세요.`); // 사용자 피드백 추가
     }
   };
 
@@ -200,7 +214,6 @@ function Home() {
       />
       
       <HomeUI 
-        // 🚨 [Fix] 검색 로직 연결 완료
         onSearch={handleSmartSearch}
         onTickerClick={handleSmartSearch}
         onTagClick={handleSmartSearch} 
@@ -211,7 +224,6 @@ function Home() {
         onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
         onLogoClick={() => setIsLogoPanelOpen(true)}
         
-        // 🚨 [Search Engine State]
         relatedTags={relatedTags} isTagLoading={isTagLoading} 
         
         selectedCategory={category} onCategorySelect={setCategory}

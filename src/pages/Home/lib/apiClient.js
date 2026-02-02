@@ -1,7 +1,8 @@
-// 🚨 [New] API 통신을 전담하는 파일입니다. UI나 상태(State)를 포함하지 않습니다.
+// src/lib/apiClient.js
+// 🚨 [Fix] Orientation 필터 제거 -> 웹 검색 결과와 동일한 풀(Pool) 확보
 
 export const apiClient = {
-  // --- 1. Gemini AI 통신 ---
+  // Gemini 부분 유지...
   fetchGeminiResponse: async (apiKey, history, systemInstruction, userText) => {
     try {
       const response = await fetch(
@@ -17,33 +18,39 @@ export const apiClient = {
           })
         }
       );
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Gemini API Error: ${response.status}`);
       const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다. 답변을 생성하지 못했습니다.";
-
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
     } catch (error) {
       console.error("Gemini Fetch Error:", error);
-      throw error; // 에러를 호출한 쪽(Hook)으로 던짐
+      throw error;
     }
   },
 
   // --- 2. Unsplash 이미지 통신 ---
   fetchUnsplashImages: async (accessKey, query) => {
     try {
+      if (!query) return [];
+      
+      const encodedQuery = encodeURIComponent(query);
+      
+      // 🚨 [Change] 'orientation=landscape' 제거 & 'order_by=relevant' 명시
+      // 이제 세로 사진도 포함되며, Unsplash 웹의 기본 정렬(관련순)을 따릅니다.
       const response = await fetch(
-        `https://api.unsplash.com/search/photos?page=1&query=${query} travel&per_page=30&orientation=landscape`,
+        `https://api.unsplash.com/search/photos?page=1&query=${encodedQuery}&per_page=30&order_by=relevant`,
         { headers: { Authorization: `Client-ID ${accessKey}` } }
       );
+
+      if (!response.ok) {
+        console.error(`Unsplash API Error: ${response.status}`);
+        return [];
+      }
 
       const data = await response.json();
       return data.results || [];
     } catch (error) {
       console.error("Unsplash Fetch Error:", error);
-      return []; // 에러 발생 시 빈 배열 반환하여 UI 깨짐 방지
+      return []; 
     }
   }
 };
