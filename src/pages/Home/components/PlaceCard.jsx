@@ -1,3 +1,6 @@
+// src/pages/Home/components/PlaceCard.jsx
+// 🚨 [Fix] 상태 동기화 추가: 확대/축소 상태를 부모(Home)에게 실시간 보고
+
 import React, { useState, useEffect } from 'react';
 import { 
   X, MessageSquare, Ticket, Globe, Sparkles, Maximize2, 
@@ -5,14 +8,14 @@ import {
 } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 
-// 🚨 [New] 분리된 뇌(Logic)와 장기(UI)를 임포트
 import { usePlaceChat } from '../hooks/usePlaceChat';
 import { usePlaceGallery } from '../hooks/usePlaceGallery';
 import PlaceChatView from './PlaceChatView';
 import PlaceGalleryView from './PlaceGalleryView';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 
-const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
+// 🚨 [Fix] onExpandChange Props 추가
+const PlaceCard = ({ location, onClose, onTicket, isCompactMode, onExpandChange }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -21,7 +24,6 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
 
-  // 🚨 [Hook Connection] 커스텀 훅 연결
   const { chatHistory, isAiLoading, sendMessage, clearChat } = usePlaceChat();
   const { images, isImgLoading, selectedImg, setSelectedImg } = usePlaceGallery(location?.name);
 
@@ -42,6 +44,13 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
     }
   }, [isExpanded, location, clearChat]);
 
+  // 🚨 [New] 상태 동기화: 내부의 isExpanded 상태가 변할 때마다 부모에게 보고
+  useEffect(() => {
+    if (onExpandChange) {
+      onExpandChange(isExpanded);
+    }
+  }, [isExpanded, onExpandChange]);
+
   // Fullscreen Handlers
   const toggleFullScreen = (elementRef) => {
     if (!document.fullscreenElement && elementRef.current) {
@@ -61,7 +70,6 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
   }, []);
 
   const handleSendMessage = (text) => {
-     // 페르소나 주입
      const persona = PERSONA_TYPES.INSPIRER;
      const systemPrompt = getSystemPrompt(persona, location.name);
      sendMessage(text, systemPrompt);
@@ -69,7 +77,7 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
 
   if (!location) return null;
 
-  // --- [Mode 1] 상세 보기 (Deep Dive) - 조립 파트 ---
+  // --- [Mode 1] 상세 보기 (Deep Dive) ---
   if (isExpanded) {
     const matchedSpot = TRAVEL_SPOTS.find(s => s.name === location?.name);
     
@@ -125,7 +133,7 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
                  </div>
                </div>
             ) : isChatMode ? (
-               // [Case B] Chat View (Component 사용)
+               // [Case B] Chat View
                <PlaceChatView 
                   chatHistory={chatHistory}
                   isAiLoading={isAiLoading}
@@ -167,7 +175,7 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
     );
   }
 
-  // --- [Mode 2 & 3] Compact & Card Mode (기존 유지) ---
+  // --- [Mode 2] Compact Mode (Ticker Style) ---
   if (isCompactMode) {
     return (
       <div className="absolute bottom-6 right-8 w-80 z-40 animate-fade-in transition-all duration-300 pointer-events-none">
@@ -182,6 +190,7 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
     );
   }
 
+  // --- [Mode 3] Card Mode (Default) ---
   return (
     <div className="absolute bottom-6 right-8 w-80 z-40 animate-fade-in-up transition-all duration-300">
       <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-6 relative group">

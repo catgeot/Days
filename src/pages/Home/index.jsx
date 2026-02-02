@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] 무한 루프 방지 및 데이터 흐름 안정화
+// 🚨 [Fix] isCardExpanded 상태 추가 및 Focus Mode 공식 최종 수정
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
@@ -54,8 +54,11 @@ function Home() {
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
   const [category, setCategory] = useState('all');
-  const [isTickerExpanded, setIsTickerExpanded] = useState(false);
+  const [isTickerExpanded, setIsTickerExpanded] = useState(false); // 축소형(미니) 카드 모드 여부
   
+  // 🚨 [New] 자식(PlaceCard)이 실제로 '확장(Expanded)' 상태인지 추적하는 state
+  const [isCardExpanded, setIsCardExpanded] = useState(false);
+
   // 벤치 선택자
   const [activeTestBench, setActiveTestBench] = useState(null);
 
@@ -69,6 +72,22 @@ function Home() {
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
   const filteredSpots = useMemo(() => category === 'all' ? TRAVEL_SPOTS : TRAVEL_SPOTS.filter(s => s.category === category), [category]);
 
+  // 🚨 [Fix] Focus Mode Logic (Final Version)
+  const isFocusMode = useMemo(() => {
+    // 1. 화면 전체를 덮는 앰비언트 모드
+    if (isAmbientMode) return true;
+
+    // 2. 화면 전체를 덮는 로그북/티켓/테스트벤치
+    if (isTicketOpen || isChatOpen || activeTestBench) return true;
+
+    // 3. 장소 카드 최적화:
+    //    카드가 열려 있고(Open) && 자식이 '확장 상태(isCardExpanded)'라고 보고했을 때만 렌더링 중지
+    //    (축소 모드나 기본 모드일 때는 지구본이 보여야 하므로 false)
+    if (isPlaceCardOpen && isCardExpanded) return true;
+
+    return false;
+  }, [isAmbientMode, isTicketOpen, isChatOpen, activeTestBench, isPlaceCardOpen, isCardExpanded]);
+
   // --- Handlers ---
 
   const handleGlobeClick = useCallback(async ({ lat, lng }) => {
@@ -80,95 +99,74 @@ function Home() {
 
     addScoutPin(tempPin);
     setIsPlaceCardOpen(true);
+    // 🚨 [Fix] 새 카드를 열 때는 항상 '축소 안 됨(Expanded False)' 상태로 시작
+    setIsCardExpanded(false); 
+    
     moveToLocation(lat, lng, "Scanning...", "scout");
 
     try {
       const addressData = await getAddressFromCoordinates(lat, lng);
       const name = addressData?.city || addressData?.country || `Point (${lat.toFixed(1)}, ${lng.toFixed(1)})`;
 
-      // 엔진 가동 -> 이웃 도시 추천
       processSearchKeywords(name);
       
       const realPin = { ...tempPin, name, country: addressData?.country || "Unknown" };
       
       setScoutedPins(prev => prev.map(p => p.id === tempId ? realPin : p));
-      setSelectedLocation(realPin); // 상태 업데이트 1회
+      setSelectedLocation(realPin); 
       setDraftInput(`📍 ${name}`);
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
   }, [addScoutPin, moveToLocation, processSearchKeywords, setScoutedPins, setSelectedLocation]);
 
-  // 🚨 [Fix] useCallback으로 감싸서 불필요한 함수 재생성 방지
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
-    
     const name = loc.name || "Selected";
-    
-    // 1. 지도 이동
     moveToLocation(loc.lat, loc.lng, name, loc.category);
-    
-    // 2. 핀 추가 (이미 존재하는 ID라면 useGlobeLogic 내부에서 처리됨)
     addScoutPin({ ...loc, type: 'temp-base', id: loc.id || Date.now() });
-    
-    // 3. 입력창 동기화
     setDraftInput(`📍 ${name}`);
-    
-    // 4. 검색 엔진 태그 갱신
     processSearchKeywords(name); 
     
-    // 5. 카드 열기 (selectedLocation은 useGlobeLogic 내부에서 moveToLocation 시 업데이트 될 수도 있지만, 명시적으로 함)
     setSelectedLocation(loc); 
     setIsPlaceCardOpen(true);
+    // 🚨 [Fix] 새 카드를 열 때 확장 상태 초기화
+    setIsCardExpanded(false);
 
   }, [moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation]);
 
-  // 개념 가드(Concept Guard) 장착
   const handleSmartSearch = async (input) => {
     if (!input) return;
-
-    // Case 1: 객체가 들어온 경우 (티커/검색결과 클릭) -> 즉시 이동
     if (typeof input === 'object' && input.lat && input.lng) {
       handleLocationSelect(input);
       return;
     }
-
-    // Case 2: 문자열 검색
     const query = input.trim(); 
     setDraftInput(query);
-
     processSearchKeywords(query);
 
-    // Step A: 로컬 데이터 매칭 (대소문자 무시)
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
       s.country.toLowerCase() === query.toLowerCase() ||
-      (s.name_en && s.name_en.toLowerCase() === query.toLowerCase()) // 🚨 [Fix] 영문명 검색 지원 추가
+      (s.name_en && s.name_en.toLowerCase() === query.toLowerCase()) 
     );
-
     if (localSpot) {
       handleLocationSelect(localSpot);
       return;
     }
 
-    // Step B: Concept Guard
-    const isConcept = TRAVEL_SPOTS.some(spot => 
-      spot.category === query || 
-      spot.keywords?.some(k => k.includes(query))
-    );
-
+    const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
     if (isConcept) {
       console.log(`🛡️ Concept Guard: "${query}" - 키워드 매칭됨. 이동 보류.`);
       return;
     }
 
-    // Step C: 외부 API 검색
     const coords = await getCoordinatesFromAddress(query);
     if (coords) {
       handleLocationSelect({ ...coords, category: 'search' });
     } else {
       console.log(`"${query}" 위치를 찾을 수 없습니다.`);
-      alert(`'${query}' 위치를 찾을 수 없습니다. 정확한 도시 이름을 입력해주세요.`); // 사용자 피드백 추가
+      alert(`'${query}' 위치를 찾을 수 없습니다. 정확한 도시 이름을 입력해주세요.`); 
     }
   };
 
@@ -207,11 +205,30 @@ function Home() {
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
-      <HomeGlobe 
-        ref={globeRef} onGlobeClick={handleGlobeClick} onMarkerClick={handleLocationSelect} 
-        isChatOpen={isChatOpen} savedTrips={savedTrips} tempPinsData={scoutedPins} 
-        travelSpots={filteredSpots} activePinId={selectedLocation?.id}
-      />
+      
+      {/* 🚨 [Fix] Focus Mode Wrapper */}
+      <div 
+        style={{ 
+          contentVisibility: isFocusMode ? 'hidden' : 'visible',
+          contain: isFocusMode ? 'strict' : 'none',
+          containIntrinsicSize: '100vw 100vh',
+          pointerEvents: isFocusMode ? 'none' : 'auto',
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        <HomeGlobe 
+          ref={globeRef} 
+          onGlobeClick={handleGlobeClick} 
+          onMarkerClick={handleLocationSelect} 
+          isChatOpen={isChatOpen} 
+          savedTrips={savedTrips} 
+          tempPinsData={scoutedPins} 
+          travelSpots={filteredSpots} 
+          activePinId={selectedLocation?.id}
+          pauseRender={isFocusMode} 
+        />
+      </div>
       
       <HomeUI 
         onSearch={handleSmartSearch}
@@ -240,10 +257,14 @@ function Home() {
       
       {isPlaceCardOpen && (
         <PlaceCard 
-          location={selectedLocation} onClose={() => setIsPlaceCardOpen(false)}
+          location={selectedLocation} 
+          onClose={() => setIsPlaceCardOpen(false)}
           onChat={(p) => handleStartChat(selectedLocation?.name, p)}
           onTicket={() => { setIsPlaceCardOpen(false); setIsTicketOpen(true); }}
+          
           isCompactMode={isTickerExpanded}
+          // 🚨 [Fix] 자식 상태 변경 리스너 연결
+          onExpandChange={setIsCardExpanded}
         />
       )}
 

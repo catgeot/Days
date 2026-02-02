@@ -1,7 +1,9 @@
+// src/pages/Home/components/PlaceGalleryView.jsx
+// 🚨 [Fix] 점진적 로딩(Progressive Loading) 적용: Thumbnail(Blur) -> Regular(Fade-in)
+
 import React, { useRef, useState, useEffect } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon } from 'lucide-react';
 
-// 🚨 [New] 이미지 갤러리 UI 전담 (풀스크린 및 네비게이션 로직 포함)
 const PlaceGalleryView = ({ 
   images, 
   isImgLoading, 
@@ -16,6 +18,21 @@ const PlaceGalleryView = ({
   
   // 현재 선택된 이미지 인덱스 계산
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
+
+  // 🚨 [New] 고화질 이미지 로딩 상태 관리
+  const [isHighResLoaded, setIsHighResLoaded] = useState(false);
+
+  // 이미지가 변경될 때마다 로딩 상태 초기화
+  useEffect(() => {
+    setIsHighResLoaded(false);
+    
+    // 🚨 [New] Preload Logic
+    if (selectedImg?.urls?.regular) {
+      const img = new Image();
+      img.src = selectedImg.urls.regular; // Full 대신 Regular 사용 (속도 최적화)
+      img.onload = () => setIsHighResLoaded(true);
+    }
+  }, [selectedImg]);
 
   // 내부 네비게이션 핸들러
   const handlePrev = (e) => {
@@ -45,12 +62,36 @@ const PlaceGalleryView = ({
       className={`flex-1 h-full bg-[#05070a]/80 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
     >
       {selectedImg ? (
-        // [View 1] Single Image View
+        // [View 1] Single Image View with Progressive Loading
         <div className="w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-cover bg-center opacity-30 blur-3xl scale-110" style={{ backgroundImage: `url(${selectedImg.urls.regular})` }} />
+          
+          {/* 🚨 [Fix] 배경: Thumbnail 버전 (즉시 로드, Blur 처리) */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-30 blur-3xl scale-110 transition-all duration-700" 
+            style={{ 
+              backgroundImage: `url(${selectedImg.urls.thumb})` 
+            }} 
+          />
           
           <div className="relative w-full h-full flex items-center justify-center" onClick={(e) => { e.stopPropagation(); if(!isFullScreen) setSelectedImg(null); }}>
-             <img src={selectedImg.urls.full} className={`max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg transition-transform duration-700 select-none ${isFullScreen ? 'scale-105' : 'scale-100'}`} />
+              {/* 🚨 [Fix] Progressive Image Stacking 
+                  1. Placeholder (Thumb): 블러된 상태로 먼저 보여줌
+                  2. Main (Regular/Full): 로딩되면 Fade-in으로 덮어씀
+              */}
+              
+              {/* Layer 1: Thumbnail (Always visible initially, hidden after load to prevent artifact?) -> Actually keep it behind or fade out */}
+              <img 
+                src={selectedImg.urls.thumb} 
+                className={`absolute max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg transition-transform duration-700 select-none blur-lg scale-105 ${isFullScreen ? 'scale-110' : 'scale-100'} ${isHighResLoaded ? 'opacity-0' : 'opacity-100'}`}
+                alt="thumbnail"
+              />
+
+              {/* Layer 2: High Res (Regular) */}
+              <img 
+                src={selectedImg.urls.regular} // Full은 너무 무거움, Regular 권장
+                className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg transition-all duration-700 select-none ${isFullScreen ? 'scale-105' : 'scale-100'} ${isHighResLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`} 
+                alt="full-view"
+              />
           </div>
 
           {/* Controls */}
