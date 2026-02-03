@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] isCardExpanded 상태 추가 및 Focus Mode 공식 최종 수정
+// 🚨 [Fix] 외부 검색 데이터 정규화 및 무한 루프 방지 가드 적용
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
@@ -54,9 +54,9 @@ function Home() {
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
   const [category, setCategory] = useState('all');
-  const [isTickerExpanded, setIsTickerExpanded] = useState(false); // 축소형(미니) 카드 모드 여부
+  const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   
-  // 🚨 [New] 자식(PlaceCard)이 실제로 '확장(Expanded)' 상태인지 추적하는 state
+  // 자식(PlaceCard)이 실제로 '확장(Expanded)' 상태인지 추적하는 state
   const [isCardExpanded, setIsCardExpanded] = useState(false);
 
   // 벤치 선택자
@@ -72,19 +72,10 @@ function Home() {
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
   const filteredSpots = useMemo(() => category === 'all' ? TRAVEL_SPOTS : TRAVEL_SPOTS.filter(s => s.category === category), [category]);
 
-  // 🚨 [Fix] Focus Mode Logic (Final Version)
   const isFocusMode = useMemo(() => {
-    // 1. 화면 전체를 덮는 앰비언트 모드
     if (isAmbientMode) return true;
-
-    // 2. 화면 전체를 덮는 로그북/티켓/테스트벤치
     if (isTicketOpen || isChatOpen || activeTestBench) return true;
-
-    // 3. 장소 카드 최적화:
-    //    카드가 열려 있고(Open) && 자식이 '확장 상태(isCardExpanded)'라고 보고했을 때만 렌더링 중지
-    //    (축소 모드나 기본 모드일 때는 지구본이 보여야 하므로 false)
     if (isPlaceCardOpen && isCardExpanded) return true;
-
     return false;
   }, [isAmbientMode, isTicketOpen, isChatOpen, activeTestBench, isPlaceCardOpen, isCardExpanded]);
 
@@ -94,12 +85,10 @@ function Home() {
     if (globeRef.current) globeRef.current.pauseRotation();
     const tempId = Date.now();
     
-    // 클릭 시 'scout' 카테고리로 임시 핀 생성
     const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: 'scout' };
 
     addScoutPin(tempPin);
     setIsPlaceCardOpen(true);
-    // 🚨 [Fix] 새 카드를 열 때는 항상 '축소 안 됨(Expanded False)' 상태로 시작
     setIsCardExpanded(false); 
     
     moveToLocation(lat, lng, "Scanning...", "scout");
@@ -110,7 +99,12 @@ function Home() {
 
       processSearchKeywords(name);
       
-      const realPin = { ...tempPin, name, country: addressData?.country || "Unknown" };
+      const realPin = { 
+        ...tempPin, 
+        name, 
+        country: addressData?.country || "Unknown",
+        display_name: name // 🚨 [New] 일관된 표시를 위해 추가
+      };
       
       setScoutedPins(prev => prev.map(p => p.id === tempId ? realPin : p));
       setSelectedLocation(realPin); 
@@ -122,29 +116,49 @@ function Home() {
 
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
+
+    // 🚨 [New] 무한 루프 방지 가드: 동일 위치(좌표 기준)면 업데이트 스킵 (라로통가 이슈 해결)
+    if (selectedLocation && selectedLocation.lat === loc.lat && selectedLocation.lng === loc.lng) {
+      console.log("📍 Same location selected. Skipping update.");
+      setIsPlaceCardOpen(true); // 카드가 닫혀있었다면 열기만 수행
+      return;
+    }
+
     const name = loc.name || "Selected";
     moveToLocation(loc.lat, loc.lng, name, loc.category);
-    addScoutPin({ ...loc, type: 'temp-base', id: loc.id || Date.now() });
+    
+    // 🚨 [Fix] 고유 ID 보장
+    const finalLoc = { 
+      ...loc, 
+      type: loc.type || 'temp-base', 
+      id: loc.id || `loc-${loc.lat}-${loc.lng}`,
+      name: name
+    };
+
+    addScoutPin(finalLoc);
     setDraftInput(`📍 ${name}`);
     processSearchKeywords(name); 
     
-    setSelectedLocation(loc); 
+    setSelectedLocation(finalLoc); 
     setIsPlaceCardOpen(true);
-    // 🚨 [Fix] 새 카드를 열 때 확장 상태 초기화
     setIsCardExpanded(false);
 
-  }, [moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation]);
+  }, [moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, selectedLocation]);
 
   const handleSmartSearch = async (input) => {
     if (!input) return;
+    
+    // 1. 객체 형태로 들어온 경우 (티커 클릭 등)
     if (typeof input === 'object' && input.lat && input.lng) {
       handleLocationSelect(input);
       return;
     }
+
     const query = input.trim(); 
     setDraftInput(query);
     processSearchKeywords(query);
 
+    // 2. 내부 데이터(travelSpots) 탐색
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
       s.country.toLowerCase() === query.toLowerCase() ||
@@ -155,15 +169,28 @@ function Home() {
       return;
     }
 
+    // 3. 컨셉/카테고리 가드
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
     if (isConcept) {
       console.log(`🛡️ Concept Guard: "${query}" - 키워드 매칭됨. 이동 보류.`);
       return;
     }
 
+    // 4. 외부 API 검색 (길리메노, 파미르 고원 등)
     const coords = await getCoordinatesFromAddress(query);
     if (coords) {
-      handleLocationSelect({ ...coords, category: 'search' });
+      // 🚨 [Fix] 외부 검색 결과 정규화 (PlaceCard/Gallery가 깨지지 않도록 구조화)
+      const normalizedLoc = {
+        id: `search-${coords.lat}-${coords.lng}`,
+        name: query, // 검색한 지명 그대로 사용
+        country: coords.country || "Explore",
+        lat: coords.lat,
+        lng: coords.lng,
+        category: 'search',
+        description: `${query} 지역의 정보를 탐색 중입니다.`, // 기본 설명 부여
+        type: 'temp-base'
+      };
+      handleLocationSelect(normalizedLoc);
     } else {
       console.log(`"${query}" 위치를 찾을 수 없습니다.`);
       alert(`'${query}' 위치를 찾을 수 없습니다. 정확한 도시 이름을 입력해주세요.`); 
@@ -206,7 +233,6 @@ function Home() {
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       
-      {/* 🚨 [Fix] Focus Mode Wrapper */}
       <div 
         style={{ 
           contentVisibility: isFocusMode ? 'hidden' : 'visible',
@@ -255,7 +281,8 @@ function Home() {
       <LogoPanel isOpen={isLogoPanelOpen} onClose={() => setIsLogoPanelOpen(false)} user={user} bucketList={bucketList} onLogout={() => supabase.auth.signOut()} onStartAmbient={() => { setIsLogoPanelOpen(false); setIsAmbientMode(true); }} />
       {isAmbientMode && <AmbientMode bucketList={bucketList} onClose={() => setIsAmbientMode(false)} />}
       
-      {isPlaceCardOpen && (
+      {/* 🚨 [Fix] selectedLocation 존재 여부를 한 번 더 체크하여 안전성 강화 */}
+      {isPlaceCardOpen && selectedLocation && (
         <PlaceCard 
           location={selectedLocation} 
           onClose={() => setIsPlaceCardOpen(false)}
@@ -263,12 +290,10 @@ function Home() {
           onTicket={() => { setIsPlaceCardOpen(false); setIsTicketOpen(true); }}
           
           isCompactMode={isTickerExpanded}
-          // 🚨 [Fix] 자식 상태 변경 리스너 연결
           onExpandChange={setIsCardExpanded}
         />
       )}
 
-      {/* 테스트 벤치 영역 */}
       {activeTestBench === 'A' && <TestBenchA onClose={() => setActiveTestBench(null)} />}
       {activeTestBench === 'B' && <TestBenchB onClose={() => setActiveTestBench(null)} />}
       {activeTestBench === 'C' && <TestBenchC onClose={() => setActiveTestBench(null)} />}
