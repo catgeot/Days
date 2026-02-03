@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] 외부 검색 데이터 정규화 및 무한 루프 방지 가드 적용
+// 🚨 [Fix] 데이터 매핑 로직 수정: (UI: 한글) <-> (Logic: 영문) 이원화 적용
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
@@ -12,7 +12,7 @@ import PlaceCard from './components/PlaceCard';
 import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
-// 3개의 물리적 벤치 파일
+// Test Benches
 import TestBenchA from './components/TestBenchA';
 import TestBenchB from './components/TestBenchB';
 import TestBenchC from './components/TestBenchC';
@@ -42,7 +42,6 @@ function Home() {
     saveNewTrip, updateMessages, toggleBookmark, deleteTrip 
   } = useTravelData();
 
-  // 고도화된 하이브리드 검색 엔진 장착
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   // UI States
@@ -56,10 +55,7 @@ function Home() {
   const [category, setCategory] = useState('all');
   const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   
-  // 자식(PlaceCard)이 실제로 '확장(Expanded)' 상태인지 추적하는 state
   const [isCardExpanded, setIsCardExpanded] = useState(false);
-
-  // 벤치 선택자
   const [activeTestBench, setActiveTestBench] = useState(null);
 
   useEffect(() => { 
@@ -95,6 +91,8 @@ function Home() {
 
     try {
       const addressData = await getAddressFromCoordinates(lat, lng);
+      // 역지오코딩 결과도 이제 영문으로 옴 (geocoding.js 수정 덕분)
+      // 하지만 UI에는 영문을 보여주는게 더 세련될 수 있음.
       const name = addressData?.city || addressData?.country || `Point (${lat.toFixed(1)}, ${lng.toFixed(1)})`;
 
       processSearchKeywords(name);
@@ -102,8 +100,9 @@ function Home() {
       const realPin = { 
         ...tempPin, 
         name, 
+        name_en: name, // 좌표 찍기는 보통 영문/현지어 동일시
         country: addressData?.country || "Unknown",
-        display_name: name // 🚨 [New] 일관된 표시를 위해 추가
+        display_name: name 
       };
       
       setScoutedPins(prev => prev.map(p => p.id === tempId ? realPin : p));
@@ -117,17 +116,15 @@ function Home() {
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
 
-    // 🚨 [New] 무한 루프 방지 가드: 동일 위치(좌표 기준)면 업데이트 스킵 (라로통가 이슈 해결)
     if (selectedLocation && selectedLocation.lat === loc.lat && selectedLocation.lng === loc.lng) {
-      console.log("📍 Same location selected. Skipping update.");
-      setIsPlaceCardOpen(true); // 카드가 닫혀있었다면 열기만 수행
+      console.log("📍 Same location selected. Re-opening card.");
+      setIsPlaceCardOpen(true); 
       return;
     }
 
     const name = loc.name || "Selected";
     moveToLocation(loc.lat, loc.lng, name, loc.category);
     
-    // 🚨 [Fix] 고유 ID 보장
     const finalLoc = { 
       ...loc, 
       type: loc.type || 'temp-base', 
@@ -148,7 +145,6 @@ function Home() {
   const handleSmartSearch = async (input) => {
     if (!input) return;
     
-    // 1. 객체 형태로 들어온 경우 (티커 클릭 등)
     if (typeof input === 'object' && input.lat && input.lng) {
       handleLocationSelect(input);
       return;
@@ -158,7 +154,7 @@ function Home() {
     setDraftInput(query);
     processSearchKeywords(query);
 
-    // 2. 내부 데이터(travelSpots) 탐색
+    // 1. 내부 데이터(travelSpots) 탐색
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
       s.country.toLowerCase() === query.toLowerCase() ||
@@ -169,31 +165,41 @@ function Home() {
       return;
     }
 
-    // 3. 컨셉/카테고리 가드
+    // 2. 컨셉/카테고리 가드
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
     if (isConcept) {
       console.log(`🛡️ Concept Guard: "${query}" - 키워드 매칭됨. 이동 보류.`);
       return;
     }
 
-    // 4. 외부 API 검색 (길리메노, 파미르 고원 등)
+    // 3. 외부 API 검색 (Nominatim)
+    // 🚨 [Note] geocoding.js가 이제 영문 결과(coords.name)를 우선 반환합니다.
     const coords = await getCoordinatesFromAddress(query);
+    
     if (coords) {
-      // 🚨 [Fix] 외부 검색 결과 정규화 (PlaceCard/Gallery가 깨지지 않도록 구조화)
+      // 🚨 [Fix] 데이터 구조 정규화 (Normalization)
       const normalizedLoc = {
         id: `search-${coords.lat}-${coords.lng}`,
-        name: query, // 검색한 지명 그대로 사용
+        
+        // 🚨 중요: UI에는 사용자가 친 한글("롬복")을 보여줌
+        name: query, 
+        
+        // 🚨 중요: PlaceCard->GalleryHook에는 API가 준 영문("Lombok")을 전달
+        name_en: coords.name, 
+
         country: coords.country || "Explore",
         lat: coords.lat,
         lng: coords.lng,
         category: 'search',
-        description: `${query} 지역의 정보를 탐색 중입니다.`, // 기본 설명 부여
+        description: `${query} (${coords.country}) 지역을 탐색합니다.`,
         type: 'temp-base'
       };
+      
+      console.log(`🗺️ Search Mapped: Input[${query}] -> API[${coords.name}]`);
       handleLocationSelect(normalizedLoc);
     } else {
       console.log(`"${query}" 위치를 찾을 수 없습니다.`);
-      alert(`'${query}' 위치를 찾을 수 없습니다. 정확한 도시 이름을 입력해주세요.`); 
+      alert(`'${query}' 위치를 찾을 수 없습니다. (일시적 통신 오류일 수 있으니 잠시 후 다시 시도해주세요)`); 
     }
   };
 
@@ -281,7 +287,6 @@ function Home() {
       <LogoPanel isOpen={isLogoPanelOpen} onClose={() => setIsLogoPanelOpen(false)} user={user} bucketList={bucketList} onLogout={() => supabase.auth.signOut()} onStartAmbient={() => { setIsLogoPanelOpen(false); setIsAmbientMode(true); }} />
       {isAmbientMode && <AmbientMode bucketList={bucketList} onClose={() => setIsAmbientMode(false)} />}
       
-      {/* 🚨 [Fix] selectedLocation 존재 여부를 한 번 더 체크하여 안전성 강화 */}
       {isPlaceCardOpen && selectedLocation && (
         <PlaceCard 
           location={selectedLocation} 

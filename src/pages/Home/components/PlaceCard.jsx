@@ -1,3 +1,8 @@
+// src/components/PlaceCard.jsx
+// 🚨 [Fix] 데이터 흐름 수정
+// usePlaceGallery에 name(string) 대신 location(object) 전체를 전달하여
+// Hook 내부에서 풍부한 데이터(국가명, 영문명 등)를 활용할 수 있게 함.
+
 import React, { useState, useEffect } from 'react';
 import { 
   X, MessageSquare, Ticket, Globe, Sparkles, Maximize2, 
@@ -5,7 +10,6 @@ import {
 } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 
-// 🚨 [New] 분리된 뇌(Logic)와 장기(UI)를 임포트
 import { usePlaceChat } from '../hooks/usePlaceChat';
 import { usePlaceGallery } from '../hooks/usePlaceGallery';
 import PlaceChatView from './PlaceChatView';
@@ -21,9 +25,11 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
 
-  // 🚨 [Hook Connection] 커스텀 훅 연결
+  // 🚨 [Hook Connection] 커스텀 훅 연결 수정
+  // 기존: usePlaceGallery(location?.name) -> 문자열만 전달됨
+  // 수정: usePlaceGallery(location) -> 객체 전체 전달 (Unsplash 검색 정확도 향상)
   const { chatHistory, isAiLoading, sendMessage, clearChat } = usePlaceChat();
-  const { images, isImgLoading, selectedImg, setSelectedImg } = usePlaceGallery(location?.name);
+  const { images, isImgLoading, selectedImg, setSelectedImg } = usePlaceGallery(location);
 
   // Init
   useEffect(() => {
@@ -71,6 +77,7 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
 
   // --- [Mode 1] 상세 보기 (Deep Dive) - 조립 파트 ---
   if (isExpanded) {
+    // 🚨 [Note] 내부 데이터 매칭 확인 (UI 표시용, 필수는 아님)
     const matchedSpot = TRAVEL_SPOTS.find(s => s.name === location?.name);
     
     return (
@@ -95,7 +102,7 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
                   <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">{location.country || "Global"}</span>
                 </div>
                 <h1 className="font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-blue-100 to-blue-400 text-4xl truncate pr-2">
-                  {selectedImg ? 'AI FOCUS' : location.name.toUpperCase()}
+                  {selectedImg ? 'AI FOCUS' : location.name?.toUpperCase()}
                 </h1>
               </div>
               {(selectedImg || isChatMode) && (
@@ -127,10 +134,10 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
             ) : isChatMode ? (
                // [Case B] Chat View (Component 사용)
                <PlaceChatView 
-                  chatHistory={chatHistory}
-                  isAiLoading={isAiLoading}
-                  onSendMessage={handleSendMessage}
-                  locationName={location.name}
+                 chatHistory={chatHistory}
+                 isAiLoading={isAiLoading}
+                 onSendMessage={handleSendMessage}
+                 locationName={location.name}
                />
             ) : (
                // [Case C] Default Info
