@@ -1,6 +1,6 @@
 // src/data/travelSpots.js
-// 🚨 [Fix/New] 한글 데이터로 전면 교체 및 영어 검색(name_en) 호환성 추가
-// 이제 UI에는 한글이 뜨지만, 검색은 영어로도 가능합니다.
+// 🚨 [Fix/New] 여행사 기준 인기 도시 10곳 추가 (몰디브, 런던, 방콕, 싱가포르 등)
+// UI는 한글 전용이지만, name_en 필드를 유지하여 검색 호환성을 확보했습니다.
 
 export const TRAVEL_SPOTS = [
   // 1. 💎 Paradise (휴양)
@@ -33,6 +33,25 @@ export const TRAVEL_SPOTS = [
     country: "필리핀", country_en: "Philippines",
     lat: 11.96, lng: 121.92, category: "paradise", videoId: "Jd1wKqG8Fj0",
     keywords: ["화이트비치", "필리핀", "파티", "석양"]
+  },
+  // 🚨 [New] 몰디브, 괌, 칸쿤 추가
+  { 
+    id: 106, name: "몰디브", name_en: "Maldives", 
+    country: "몰디브", country_en: "Maldives",
+    lat: 3.20, lng: 73.22, category: "paradise", videoId: "bO8iIeK0yGY",
+    keywords: ["럭셔리", "신혼여행", "수중환경", "리조트"]
+  },
+  { 
+    id: 107, name: "괌", name_en: "Guam", 
+    country: "미국", country_en: "USA",
+    lat: 13.44, lng: 144.79, category: "paradise", videoId: "bO8iIeK0yGY",
+    keywords: ["가족여행", "쇼핑", "태교여행", "호캉스"]
+  },
+  { 
+    id: 108, name: "칸쿤", name_en: "Cancun", 
+    country: "멕시코", country_en: "Mexico",
+    lat: 21.16, lng: -86.85, category: "paradise", videoId: "bO8iIeK0yGY",
+    keywords: ["허니문", "올인클루시브", "카리브해", "액티비티"]
   },
 
   // 2. 🏔️ Nature (자연)
@@ -74,6 +93,31 @@ export const TRAVEL_SPOTS = [
     lat: 40.71, lng: -74.00, category: "urban", videoId: "h53g2rKxHhY",
     keywords: ["타임스퀘어", "미국", "빌딩", "자유의여신상"]
   },
+  // 🚨 [New] 런던, 방콕, 싱가포르, 로마 추가
+  { 
+    id: 305, name: "런던", name_en: "London", 
+    country: "영국", country_en: "UK",
+    lat: 51.50, lng: -0.12, category: "urban", videoId: "L_KyK85-r10",
+    keywords: ["빅벤", "해리포터", "뮤지컬", "유럽", "역사"]
+  },
+  { 
+    id: 306, name: "방콕", name_en: "Bangkok", 
+    country: "태국", country_en: "Thailand",
+    lat: 13.75, lng: 100.50, category: "urban", videoId: "Et7oMvNYGR0",
+    keywords: ["카오산로드", "왕궁", "마사지", "미식", "배낭여행"]
+  },
+  { 
+    id: 307, name: "싱가포르", name_en: "Singapore", 
+    country: "싱가포르", country_en: "Singapore",
+    lat: 1.35, lng: 103.81, category: "urban", videoId: "h53g2rKxHhY",
+    keywords: ["마리나베이", "깨끗함", "가든", "쇼핑", "야경"]
+  },
+  { 
+    id: 308, name: "로마", name_en: "Rome", 
+    country: "이탈리아", country_en: "Italy",
+    lat: 41.90, lng: 12.49, category: "urban", videoId: "L_KyK85-r10",
+    keywords: ["콜로세움", "바티칸", "역사", "유럽", "파스타"]
+  },
 
   // 4. ✈️ Nearby (근거리)
   { 
@@ -94,6 +138,19 @@ export const TRAVEL_SPOTS = [
     lat: 33.59, lng: 130.40, category: "nearby", videoId: "C9tY814tG48",
     keywords: ["온천", "라멘", "쇼핑", "가깝다"]
   },
+  // 🚨 [New] 타이베이, 홍콩 추가
+  { 
+    id: 406, name: "타이베이", name_en: "Taipei", 
+    country: "대만", country_en: "Taiwan",
+    lat: 25.03, lng: 121.56, category: "nearby", videoId: "C9tY814tG48",
+    keywords: ["야시장", "딤섬", "101타워", "근거리"]
+  },
+  { 
+    id: 407, name: "홍콩", name_en: "Hong Kong", 
+    country: "홍콩", country_en: "Hong Kong",
+    lat: 22.31, lng: 114.16, category: "nearby", videoId: "C9tY814tG48",
+    keywords: ["디즈니랜드", "쇼핑", "딤섬", "야경"]
+  },
 
   // 5. 🧗 Adventure (모험)
   { 
@@ -101,5 +158,12 @@ export const TRAVEL_SPOTS = [
     country: "탄자니아", country_en: "Tanzania",
     lat: -2.33, lng: 34.83, category: "adventure", videoId: "Hj7g5z9y8x0",
     keywords: ["사파리", "동물", "아프리카", "대자연"]
+  },
+  // 🚨 [New] 카이로 추가
+  { 
+    id: 502, name: "카이로", name_en: "Cairo", 
+    country: "이집트", country_en: "Egypt",
+    lat: 30.04, lng: 31.23, category: "adventure", videoId: "Hj7g5z9y8x0",
+    keywords: ["피라미드", "스핑크스", "사막", "역사"]
   }
 ];
