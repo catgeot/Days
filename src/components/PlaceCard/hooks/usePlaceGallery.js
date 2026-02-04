@@ -4,8 +4,8 @@
 // 2. 외부 데이터(External) 유입 시 검색어 조합 전략 개선
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { apiClient } from '../lib/apiClient';
-import { TRAVEL_SPOTS } from '../data/travelSpots'; 
+import { apiClient } from '../../../pages/Home/lib/apiClient';
+import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots'; 
 
 // ⚙️ 캐시 설정
 const CACHE_VERSION = 'v1.3'; // 🚨 [Version Up] 로직 변경으로 캐시 버전 갱신

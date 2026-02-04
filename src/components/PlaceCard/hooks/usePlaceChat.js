@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { apiClient } from '../lib/apiClient';
+import { apiClient } from '../../../pages/Home/lib/apiClient';
 
 // 🚨 [New] 채팅 로직을 분리하여 PlaceCard, TicketModal 등에서 재사용 가능하게 함
 export const usePlaceChat = (initialSystemPrompt = "") => {

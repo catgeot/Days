@@ -8,7 +8,7 @@ import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
 import TicketModal from './components/TicketModal'; 
 import ChatModal from './components/ChatModal'; 
-import PlaceCard from './components/PlaceCard'; 
+import PlaceCard from '../../components/PlaceCard/index'; 
 import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
