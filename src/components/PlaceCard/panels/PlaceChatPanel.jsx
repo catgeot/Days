@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, List, Camera, Heart, Calendar, MessageSquare, Video, Image as ImageIcon, Zap } from 'lucide-react';
+import { Sparkles, List, Camera, Heart, Calendar, MessageSquare, Play, Image as ImageIcon, Zap, ChevronRight } from 'lucide-react';
 import PlaceChatView from '../views/PlaceChatView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 
@@ -9,7 +9,7 @@ const PlaceChatPanel = ({ location, chatData, selectedImg, setSelectedImg, isFul
   useEffect(() => {
     if (selectedImg) {
         setIsChatMode(false);
-        setMediaMode('GALLERY'); // 이미지 선택 시 강제로 갤러리 모드로 유지
+        setMediaMode('GALLERY');
     }
   }, [selectedImg]);
 
@@ -22,8 +22,34 @@ const PlaceChatPanel = ({ location, chatData, selectedImg, setSelectedImg, isFul
   return (
     <div className={`w-[35%] h-full backdrop-blur-xl border border-white/10 rounded-[2rem] flex flex-col relative shadow-2xl overflow-hidden transition-all duration-500 ${isFullScreen ? 'opacity-0 translate-x-[-100%]' : 'opacity-100 translate-x-0'} ${selectedImg ? 'bg-[#020305]/95' : 'bg-[#05070a]/80'}`}>
       
-      {/* Header */}
-      <div className="pt-20 px-8 pb-4 flex flex-col gap-3 z-10 shrink-0">
+      {/* 🚨 [New] 행동 유도형 단일 액션 버튼 (Action-Oriented Button) */}
+      {!selectedImg && (
+        <div className="absolute top-8 right-8 z-20">
+            {mediaMode === 'GALLERY' ? (
+                // 📽️ 유튜브 보기 유도 (레드 포인트)
+                <button 
+                    onClick={() => setMediaMode('VIDEO')}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-full shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all hover:scale-105 active:scale-95 group"
+                >
+                    <Play size={14} fill="currentColor" className="group-hover:animate-pulse" />
+                    <span className="text-[10px] font-bold tracking-tight">시네마 뷰</span>
+                    <ChevronRight size={12} className="opacity-50" />
+                </button>
+            ) : (
+                // 🖼️ 사진으로 돌아가기 유도 (블루 포인트)
+                <button 
+                    onClick={() => setMediaMode('GALLERY')}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600 hover:text-white rounded-full transition-all hover:scale-105 active:scale-95 group"
+                >
+                    <ImageIcon size={14} />
+                    <span className="text-[10px] font-bold tracking-tight">사진 갤러리</span>
+                </button>
+            )}
+        </div>
+      )}
+
+      {/* Header Info Area */}
+      <div className="pt-24 px-8 pb-4 flex flex-col gap-3 z-10 shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 mb-1">
@@ -34,24 +60,6 @@ const PlaceChatPanel = ({ location, chatData, selectedImg, setSelectedImg, isFul
               {selectedImg ? 'AI FOCUS' : location.name?.toUpperCase()}
             </h1>
           </div>
-
-          {/* 🚨 [New] Photo/Video Toggle Switch */}
-          {!selectedImg && (
-            <div className="flex bg-black/40 p-1 rounded-full border border-white/10">
-                <button 
-                    onClick={() => setMediaMode('GALLERY')}
-                    className={`p-2 rounded-full transition-all ${mediaMode === 'GALLERY' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-                >
-                    <ImageIcon size={14} />
-                </button>
-                <button 
-                    onClick={() => setMediaMode('VIDEO')}
-                    className={`p-2 rounded-full transition-all ${mediaMode === 'VIDEO' ? 'bg-red-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-                >
-                    <Video size={14} />
-                </button>
-            </div>
-          )}
 
           {(selectedImg || isChatMode) && (
             <button onClick={() => { setIsChatMode(false); setSelectedImg(null); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-400 text-xs font-bold hover:bg-white/10 hover:text-white transition-all animate-fade-in shrink-0">
@@ -88,28 +96,26 @@ const PlaceChatPanel = ({ location, chatData, selectedImg, setSelectedImg, isFul
            />
         ) : (
            <div className="animate-fade-in h-full flex flex-col">
-              {/* 🚨 [Fix] VIDEO 모드 시 상단 Insight 카드 노출로 공간 활용 */}
               {mediaMode === 'VIDEO' ? (
                 <div className="space-y-4 mb-6">
                     <div className="p-5 bg-gradient-to-br from-red-500/10 to-transparent border border-red-500/20 rounded-[1.5rem] relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:rotate-12 transition-transform">
-                            <Video size={40} />
+                            <Play size={40} className="text-red-500" />
                         </div>
-                        <span className="text-[10px] text-red-400 font-bold uppercase tracking-tighter mb-2 block">AI Curation Video</span>
-                        <h3 className="text-white font-bold text-lg mb-2 leading-tight">이 영상의 핵심 포인트</h3>
+                        <span className="text-[10px] text-red-400 font-bold uppercase tracking-tighter mb-2 block">시네마 브리핑</span>
+                        <h3 className="text-white font-bold text-lg mb-2 leading-tight">{location.name}의 기록</h3>
                         <p className="text-gray-400 text-sm font-light leading-relaxed">
-                            {location.name}의 활기찬 분위기와 현지인들이 사랑하는 숨은 명소들을 4K 고화질 영상으로 확인해보세요.
+                            영상을 감상하며 궁금한 점이 생기면 AI에게 바로 물어보세요. 현지의 분위기를 데이터로 분석해드립니다.
                         </p>
                     </div>
-                    {/* Quick Action Buttons for Space Efficiency */}
                     <div className="grid grid-cols-2 gap-3">
                         <button onClick={() => setIsChatMode(true)} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all flex flex-col gap-2 items-center text-center group">
                             <Zap size={20} className="text-yellow-400 group-hover:scale-110 transition-transform" />
-                            <span className="text-[11px] text-gray-300 font-medium">영상 속 맛집 찾기</span>
+                            <span className="text-[11px] text-gray-300 font-medium">영상 속 명소 찾기</span>
                         </button>
                         <button onClick={() => setIsChatMode(true)} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all flex flex-col gap-2 items-center text-center group">
                             <MessageSquare size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                            <span className="text-[11px] text-gray-300 font-medium">AI에게 일정 묻기</span>
+                            <span className="text-[11px] text-gray-300 font-medium">AI 맛집 추천</span>
                         </button>
                     </div>
                 </div>
@@ -126,7 +132,7 @@ const PlaceChatPanel = ({ location, chatData, selectedImg, setSelectedImg, isFul
                 onClick={() => setIsChatMode(true)}
                 className={`w-full py-4 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2 mt-auto ${mediaMode === 'VIDEO' ? 'bg-red-600/20 border border-red-500/30 text-red-300 hover:bg-red-600 hover:text-white' : 'bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600 hover:text-white'}`}
               >
-                <MessageSquare size={16} /> AI 대화 시작하기
+                <MessageSquare size={16} /> {mediaMode === 'VIDEO' ? '이 장소에 대해 물어보기' : 'AI 대화 시작하기'}
               </button>
            </div>
         )}
