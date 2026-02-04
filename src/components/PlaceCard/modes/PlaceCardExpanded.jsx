@@ -36,7 +36,7 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
         </button>
       </div>
 
-      {/* Left Panel: Chat & Info (🚨 mediaMode 제어권 추가) */}
+      {/* Left Panel: Chat & Info */}
       <PlaceChatPanel 
         location={location}
         chatData={chatData}
@@ -47,7 +47,7 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
         setMediaMode={setMediaMode}
       />
 
-      {/* Right Panel: Media (🚨 mediaMode에 따라 뷰 전환) */}
+      {/* Right Panel: Media */}
       <div className={`flex-1 min-w-0 h-full transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200]' : 'relative'}`}>
         <PlaceMediaPanel 
             galleryData={galleryData}
@@ -55,7 +55,9 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
             toggleFullScreen={toggleFullScreen}
             showUI={showUI}
             mediaMode={mediaMode}
-            videoId={location.videoId}
+            // 🚨 [Fix] 데이터 파이프라인 연결! (videos 배열 전달)
+            videoId={location.videoId} 
+            videos={location.videos}
         />
       </div>
     </div>

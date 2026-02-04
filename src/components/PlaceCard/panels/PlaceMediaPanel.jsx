@@ -1,8 +1,9 @@
 import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
-import YouTubePlayerView from '../views/YouTubePlayerView'; // 🚨 신설 컴포넌트
+import YouTubePlayerView from '../views/YouTubePlayerView';
 
-const PlaceMediaPanel = ({ galleryData, isFullScreen, toggleFullScreen, showUI, mediaMode, videoId }) => {
+// 🚨 [Fix] videos prop 추가: 상위(PlaceCardExpanded)에서 내려오는 배열 데이터를 받습니다.
+const PlaceMediaPanel = ({ galleryData, isFullScreen, toggleFullScreen, showUI, mediaMode, videoId, videos }) => {
   return (
     <div className="w-full h-full">
         {mediaMode === 'GALLERY' ? (
@@ -18,7 +19,9 @@ const PlaceMediaPanel = ({ galleryData, isFullScreen, toggleFullScreen, showUI, 
             />
         ) : (
             <YouTubePlayerView 
-                videoId={videoId}
+                // 🚨 [Fix] Video Array 전달 및 기존 ID 호환성 유지
+                videos={videos}
+                videoId={videoId} 
                 isFullScreen={isFullScreen}
                 toggleFullScreen={toggleFullScreen}
                 showUI={showUI}
