@@ -2,13 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
+// 🚨 [Fix/New] 미디어 데이터 분리 원칙에 따라 유튜브 데이터 파일 추가 임포트
+import { TRAVEL_VIDEOS } from '../../../pages/Home/data/travelVideos'; 
 
 const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
-  // 🚨 [New] 미디어 모드 상태 관리 (기본값: GALLERY)
   const [mediaMode, setMediaMode] = useState('GALLERY'); 
   const containerRef = useRef(null);
+
+  // 🚨 [Fix/New] location.id를 사용하여 해당 장소의 영상 리스트를 실시간 매핑
+  // 만약 해당 ID의 영상이 없다면 빈 배열([])을 기본값으로 설정합니다.
+  const spotVideos = TRAVEL_VIDEOS[location.id] || [];
+  
+  // 🚨 [Fix/New] 재생할 기본 영상 ID를 추출 (리스트의 첫 번째 영상)
+  const defaultVideoId = spotVideos.length > 0 ? spotVideos[0].id : null;
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement && containerRef.current) {
@@ -55,9 +63,9 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
             toggleFullScreen={toggleFullScreen}
             showUI={showUI}
             mediaMode={mediaMode}
-            // 🚨 [Fix] 데이터 파이프라인 연결! (videos 배열 전달)
-            videoId={location.videoId} 
-            videos={location.videos}
+            // 🚨 [Fix/New] location 내부 데이터가 아닌, 외부에서 매핑한 분리된 데이터를 전달
+            videoId={defaultVideoId} 
+            videos={spotVideos}
         />
       </div>
     </div>
