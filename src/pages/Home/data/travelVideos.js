@@ -1,10 +1,44 @@
 // src/pages/Home/data/travelVideos.js
-// 🚨 [New] travelSpots의 ID를 기반으로 유튜브 영상 및 AI 분석 데이터를 매핑
 
 export const TRAVEL_VIDEOS = {
-  101: [{ id: "yHn4gzVCOyg", title: "Main Cinematic", type: "main" }],
+  // 101: 중복 제거 및 기본 구조 유지
+  101: [
+    { id: "yHn4gzVCOyg", title: "Main Cinematic", type: "main" }
+  ],
   102: [{ id: "KQwL4YigOD8", title: "Santorini View", type: "main" }],
-  103: [{ id: "r80KLRWB4B4", title: "Diving Paradise", type: "main" }],
+  
+  // 103: 상세 콘텐츠 확장 (AI 분석 및 썸네일 포함)
+  103: [
+    {
+      id: "8dPE59G11do",
+      title: "신비로운 젤리피쉬 레이크와 밀키웨이 투어",
+      type: "main",
+      thumbnail: "https://img.youtube.com/vi/8dPE59G11do/hqdefault.jpg",
+      ai_context: {
+        summary: "독이 없는 수백만 마리의 해파리와 함께 유영하는 몽환적인 영상이에요. 산호 가루가 깔린 밀키웨이 바다 입수는 그야말로 비현실적이죠. (3분)",
+        tags: ["#젤리피쉬", "#밀키웨이", "#인생샷", "#신비로움"],
+        best_moment: {
+          time: "00:45",
+          desc: "💡 황금빛 해파리 군무가 시작되는 순간"
+        }
+      }
+    },
+    {
+      id: "Drw1WJjEfqU",
+      title: "백만 마리 해파리와의 유영 (EBS)",
+      type: "youtube",
+      thumbnail: "https://img.youtube.com/vi/Drw1WJjEfqU/maxresdefault.jpg",
+      ai_context: {
+        summary: "팔라우가 왜 '신들의 정원'인지 증명하는 고퀄리티 영상입니다. 고요한 호수 속에서 자연과 하나가 되는 평화로움을 느껴보세요.",
+        tags: ["#힐링", "#ASMR", "#수중촬영"],
+        best_moment: {
+          time: "01:20",
+          desc: "💡 화면 가득 해파리가 차오르는 절정의 순간"
+        }
+      }
+    }
+  ],
+  
   104: [{ id: "IjW7ouLw0Ts", title: "Turtle Beach", type: "main" }],
   105: [{ id: "kxQYZyjkFCU", title: "White Beach Party", type: "main" }],
   106: [{ id: "t-hfCwbVnrM", title: "Luxury Resort", type: "main" }],
@@ -22,8 +56,8 @@ export const TRAVEL_VIDEOS = {
     { id: "jUHkARX-FgU", title: "Paris Walking Tour", type: "main" },
     { id: "NeTF-iw5BYU", title: "Midnight in Paris", type: "sub" }
   ],
-  304: [{ id: "x5-A9yyjVE4", title: "Tokyo Night", type: "main" }],
   303: [{ id: "8B6FSEGY6Ko", title: "NYC Times Square", type: "main" }],
+  304: [{ id: "x5-A9yyjVE4", title: "Tokyo Night", type: "main" }],
   305: [{ id: "EjZ5vUg1GtM", title: "London City", type: "main" }],
   306: [{ id: "HHl2Sd4s8Tk", title: "Bangkok Street", type: "main" }],
   307: [{ id: "lb58jbNw5mc", title: "Marina Bay", type: "main" }],

@@ -13,7 +13,10 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
 
   // 🚨 [Fix/New] location.id를 사용하여 해당 장소의 영상 리스트를 실시간 매핑
   // 만약 해당 ID의 영상이 없다면 빈 배열([])을 기본값으로 설정합니다.
+  const spotId = Number(location.id);
   const spotVideos = TRAVEL_VIDEOS[location.id] || [];
+  // 🔎 [디버깅] 이 코드를 추가하고 개발자 도구(F12) -> Console 탭을 확인해주세요.
+  console.log("현재 장소:", location.title, "ID:", location.id, "찾은 비디오:", spotVideos);
   
   // 🚨 [Fix/New] 재생할 기본 영상 ID를 추출 (리스트의 첫 번째 영상)
   const defaultVideoId = spotVideos.length > 0 ? spotVideos[0].id : null;
