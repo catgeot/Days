@@ -2,8 +2,8 @@ import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
 
-// 🚨 [Fix] onVideoSelect prop 추가: 비디오 변경 요청을 부모에게 전달
-const PlaceMediaPanel = ({ galleryData, isFullScreen, toggleFullScreen, showUI, mediaMode, videoId, videos, onVideoSelect }) => {
+// 🚨 [Fix/New] playerRef prop 추가
+const PlaceMediaPanel = ({ galleryData, isFullScreen, toggleFullScreen, showUI, mediaMode, videoId, videos, onVideoSelect, playerRef }) => {
   return (
     <div className="w-full h-full">
         {mediaMode === 'GALLERY' ? (
@@ -19,12 +19,13 @@ const PlaceMediaPanel = ({ galleryData, isFullScreen, toggleFullScreen, showUI, 
             />
         ) : (
             <YouTubePlayerView 
+                // 🚨 [Fix/New] Ref Forwarding
+                ref={playerRef}
                 videos={videos}
                 videoId={videoId} 
                 isFullScreen={isFullScreen}
                 toggleFullScreen={toggleFullScreen}
                 showUI={showUI}
-                // 🚨 [Fix] 비디오 선택 이벤트 연결
                 onVideoSelect={onVideoSelect}
             />
         )}
