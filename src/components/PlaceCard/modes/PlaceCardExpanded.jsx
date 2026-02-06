@@ -2,21 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
-// 🚨 [Fix/New] 미디어 데이터 분리 원칙에 따라 유튜브 데이터 파일 추가 임포트
+// 🚨 [Fix/New] 데이터 소스 연결
 import { TRAVEL_VIDEOS } from '../../../pages/Home/data/travelVideos'; 
 
 const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const [mediaMode, setMediaMode] = useState('GALLERY'); 
+  
+  // 🚨 [Fix/New] 비디오 선택 상태 관리 (초기값 null)
+  const [selectedVideoId, setSelectedVideoId] = useState(null);
+  
   const containerRef = useRef(null);
 
-  // 🚨 [Fix/New] location.id를 사용하여 해당 장소의 영상 리스트를 실시간 매핑
-  // 만약 해당 ID의 영상이 없다면 빈 배열([])을 기본값으로 설정합니다.
+  // 1. 데이터 조회 (비관적 기본값: 빈 배열)
   const spotVideos = TRAVEL_VIDEOS[location.id] || [];
   
-  // 🚨 [Fix/New] 재생할 기본 영상 ID를 추출 (리스트의 첫 번째 영상)
-  const defaultVideoId = spotVideos.length > 0 ? spotVideos[0].id : null;
+  // 2. 현재 활성화된 비디오 ID 계산 (선택된 것 우선, 없으면 첫 번째)
+  const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
+
+  // 3. 현재 활성화된 비디오 객체 추출 (AI 도슨트용 데이터)
+  const activeVideoData = spotVideos.find(v => v.id === activeVideoId) || null;
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement && containerRef.current) {
@@ -44,7 +50,7 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
         </button>
       </div>
 
-      {/* Left Panel: Chat & Info */}
+      {/* Left Panel: Chat & Info (AI Docent) */}
       <PlaceChatPanel 
         location={location}
         chatData={chatData}
@@ -53,6 +59,8 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
         isFullScreen={isFullScreen}
         mediaMode={mediaMode}
         setMediaMode={setMediaMode}
+        // 🚨 [Fix/New] 현재 재생 중인 비디오 데이터 전달
+        videoData={activeVideoData}
       />
 
       {/* Right Panel: Media */}
@@ -63,9 +71,11 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
             toggleFullScreen={toggleFullScreen}
             showUI={showUI}
             mediaMode={mediaMode}
-            // 🚨 [Fix/New] location 내부 데이터가 아닌, 외부에서 매핑한 분리된 데이터를 전달
-            videoId={defaultVideoId} 
+            // 🚨 [Fix/New] 비디오 ID 및 리스트 전달
+            videoId={activeVideoId} 
             videos={spotVideos}
+            // 🚨 [Fix/New] 비디오 선택 이벤트 핸들러 전달
+            onVideoSelect={setSelectedVideoId}
         />
       </div>
     </div>

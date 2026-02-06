@@ -1,32 +1,36 @@
-// src/components/PlaceCard/views/YouTubePlayerView.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Maximize2, Minimize2, Play, Sparkles } from 'lucide-react';
 
-const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, showUI }) => {
+// 🚨 [Fix] onVideoSelect prop 추가: 부모에게 클릭 신호를 보내기 위함
+const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, showUI, onVideoSelect }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   
-  // 🚨 [Fix] 초기값을 null이 아닌 '가장 안전한 이미지'로 설정할 준비
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
 
   const videoList = videos || (videoId ? [{ id: videoId, title: "Main Video" }] : []);
   const currentVideo = videoList[currentVideoIndex];
   
+  // 🚨 [Fix/Logic] 외부에서 videoId가 변경되면(부모가 시키면), 내부 인덱스를 그에 맞춰 동기화
   useEffect(() => {
     setIsPlaying(false);
-    setCurrentVideoIndex(0);
-  }, [videoId, videos]);
+    
+    if (videoId && videoList.length > 0) {
+        const targetIndex = videoList.findIndex(v => v.id === videoId);
+        // ID를 찾으면 해당 인덱스로, 못 찾으면 0번(메인)으로 안전하게 이동
+        setCurrentVideoIndex(targetIndex >= 0 ? targetIndex : 0);
+    } else {
+        setCurrentVideoIndex(0);
+    }
+  }, [videoId, videos]); // videos가 바뀌거나 ID가 바뀌면 실행
 
-  // 🚨 [Fix/Logic] 'maxresdefault(4K)' 욕심을 버리고 'hqdefault(480p)'로 시작합니다.
-  // hqdefault는 99.9% 존재하므로 404 에러와 깜빡임을 원천 차단합니다.
+  // hqdefault(480p)로 썸네일 설정 (비관적 설계 유지)
   useEffect(() => {
     if (currentVideo) {
       setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`);
     }
   }, [currentVideo]);
 
-  // 🚨 [Fix] 만약 hqdefault 조차 없다면? (극히 드묾) -> mqdefault(하단 리스트와 동일)로 방어
   const handleImageError = () => {
     if (currentVideo && thumbnailUrl && !thumbnailUrl.includes('mqdefault')) {
         setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/mqdefault.jpg`);
@@ -66,10 +70,6 @@ const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, sh
           />
           
           <div className="relative z-20 w-[80%] aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/20 group-hover:border-white/50 transition-all duration-300 transform group-hover:scale-105 bg-black/50">
-             {/* 🚨 [Check] 
-                하단 리스트가 나오는 이유가 바로 'mqdefault' 등의 확실한 경로 덕분입니다.
-                이제 메인 이미지도 'hqdefault'로 시작하므로 하단 리스트처럼 즉시 뜰 것입니다.
-             */}
              <img 
                key={thumbnailUrl} 
                src={thumbnailUrl}
@@ -99,10 +99,17 @@ const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, sh
                 {videoList.map((video, idx) => (
                     <button 
                         key={idx}
-                        onClick={(e) => { e.stopPropagation(); setCurrentVideoIndex(idx); setIsPlaying(false); }}
+                        // 🚨 [Fix/Critical] 클릭 시 부모(PlaceCardExpanded)에게 "이거 선택했어!"라고 알림
+                        onClick={(e) => { 
+                            e.stopPropagation(); 
+                            // 1. 부모에게 알림 (좌측 패널 업데이트용)
+                            if (onVideoSelect) onVideoSelect(video.id);
+                            // 2. 내부 UI 즉시 반응 (속도감 향상)
+                            setCurrentVideoIndex(idx); 
+                            setIsPlaying(false); 
+                        }}
                         className={`relative w-20 h-14 rounded-lg overflow-hidden border transition-all duration-300 ${currentVideoIndex === idx ? 'border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'}`}
                     >
-                        {/* 하단 리스트와 동일한 전략 사용 */}
                         <img 
                             src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} 
                             className="w-full h-full object-cover" 
