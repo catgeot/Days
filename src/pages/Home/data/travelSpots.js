@@ -4,7 +4,7 @@
 export const TRAVEL_SPOTS = [
   // 1. 💎 Paradise (휴양)
   { 
-    id: 101, name: "아이투타키", name_en: "Aitutaki", 
+    id: 101, name: "아이투타키", name_en: "Cook Islands", 
     country: "쿡 제도", country_en: "Cook Islands",
     lat: -18.85, lng: -159.78, category: "paradise", 
     keywords: ["휴양", "비치", "바다", "신혼여행", "아일랜드"]

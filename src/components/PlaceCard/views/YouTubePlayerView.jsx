@@ -1,12 +1,15 @@
+// src/components/PlaceCard/views/YouTubePlayerView.jsx
+
 import React, { useState, useEffect } from 'react';
 import { Maximize2, Minimize2, Play, Sparkles } from 'lucide-react';
 
 const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, showUI }) => {
-  // 1. 재생 상태 관리
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  
+  // 🚨 [Fix] 초기값을 null이 아닌 '가장 안전한 이미지'로 설정할 준비
+  const [thumbnailUrl, setThumbnailUrl] = useState(null);
 
-  // 2. 데이터 호환성 처리
   const videoList = videos || (videoId ? [{ id: videoId, title: "Main Video" }] : []);
   const currentVideo = videoList[currentVideoIndex];
   
@@ -15,12 +18,27 @@ const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, sh
     setCurrentVideoIndex(0);
   }, [videoId, videos]);
 
+  // 🚨 [Fix/Logic] 'maxresdefault(4K)' 욕심을 버리고 'hqdefault(480p)'로 시작합니다.
+  // hqdefault는 99.9% 존재하므로 404 에러와 깜빡임을 원천 차단합니다.
+  useEffect(() => {
+    if (currentVideo) {
+      setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`);
+    }
+  }, [currentVideo]);
+
+  // 🚨 [Fix] 만약 hqdefault 조차 없다면? (극히 드묾) -> mqdefault(하단 리스트와 동일)로 방어
+  const handleImageError = () => {
+    if (currentVideo && thumbnailUrl && !thumbnailUrl.includes('mqdefault')) {
+        setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/mqdefault.jpg`);
+    }
+  };
+
   if (!currentVideo) return null;
 
   return (
     <div className={`flex-1 h-full bg-[#05070a] rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}>
       
-      {/* --- [Screen 1: Play Mode (Iframe)] --- */}
+      {/* --- [Screen 1: Play Mode] --- */}
       {isPlaying ? (
         <div className="relative w-full h-full flex items-center justify-center bg-black">
           <div className={`w-full h-full transition-all duration-500 ${isFullScreen ? 'p-0' : 'max-w-[95%] max-h-[90%] rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5'}`}>
@@ -37,19 +55,29 @@ const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, sh
           </div>
         </div>
       ) : (
-        /* --- [Screen 2: Cover Mode (Thumbnail)] --- */
+        /* --- [Screen 2: Cover Mode] --- */
         <div className="absolute inset-0 z-10 flex items-center justify-center group cursor-pointer" onClick={() => setIsPlaying(true)}>
+          {/* 배경 블러 이미지 */}
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-40 blur-2xl scale-110 transition-transform duration-700 group-hover:scale-125" 
-            style={{ backgroundImage: `url(https://img.youtube.com/vi/${currentVideo.id}/maxresdefault.jpg)` }} 
+            style={{ 
+              backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : 'none' 
+            }} 
           />
           
-          <div className="relative z-20 w-[80%] aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/20 group-hover:border-white/50 transition-all duration-300 transform group-hover:scale-105">
+          <div className="relative z-20 w-[80%] aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/20 group-hover:border-white/50 transition-all duration-300 transform group-hover:scale-105 bg-black/50">
+             {/* 🚨 [Check] 
+                하단 리스트가 나오는 이유가 바로 'mqdefault' 등의 확실한 경로 덕분입니다.
+                이제 메인 이미지도 'hqdefault'로 시작하므로 하단 리스트처럼 즉시 뜰 것입니다.
+             */}
              <img 
-                src={`https://img.youtube.com/vi/${currentVideo.id}/maxresdefault.jpg`} 
-                alt="Video Thumbnail" 
-                className="w-full h-full object-cover"
+               key={thumbnailUrl} 
+               src={thumbnailUrl}
+               alt="Video Thumbnail" 
+               className="w-full h-full object-cover"
+               onError={handleImageError}
              />
+             
              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                 <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 shadow-[0_0_30px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform">
                     <Play size={32} className="text-white fill-white ml-2" />
@@ -74,7 +102,12 @@ const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, sh
                         onClick={(e) => { e.stopPropagation(); setCurrentVideoIndex(idx); setIsPlaying(false); }}
                         className={`relative w-20 h-14 rounded-lg overflow-hidden border transition-all duration-300 ${currentVideoIndex === idx ? 'border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'}`}
                     >
-                        <img src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} className="w-full h-full object-cover" alt="mini" />
+                        {/* 하단 리스트와 동일한 전략 사용 */}
+                        <img 
+                            src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} 
+                            className="w-full h-full object-cover" 
+                            alt="mini" 
+                        />
                         {currentVideoIndex === idx && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_#ef4444]" />
@@ -86,12 +119,11 @@ const YouTubePlayerView = ({ videoId, videos, isFullScreen, toggleFullScreen, sh
         </div>
       )}
 
-      {/* --- [Top Controls: Position Adjusted] --- */}
-      {/* 🚨 [Fix] top-8 -> top-4, right-8 -> right-5 로 위치 상향 조정 */}
-      <div className={`absolute top-2 right-10 flex items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
+      {/* --- [Top Controls] --- */}
+      <div className={`absolute top-4 right-5 flex items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
         <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2">
             <Sparkles size={14} className="text-red-500 animate-pulse" />
-            <span className="text-[10px] text-white font-bold tracking-widest uppercase">4K Cinema</span>
+            <span className="text-[10px] text-white font-bold tracking-widest uppercase">Cinema</span>
         </div>
         <button onClick={toggleFullScreen} className="p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-red-600 hover:text-white transition-all shadow-xl">
           {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20}/>}
