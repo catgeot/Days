@@ -66,6 +66,12 @@ export const TRAVEL_SPOTS = [
     keywords: ["오로라", "캐나다", "겨울", "눈"]
   },
   { 
+  id: 203, name: "갈라파고스", name_en: "Galápagos Islands", 
+  country: "에콰도르", country_en: "Ecuador",
+  lat: -0.7402, lng: -90.3134, category: "nature", desc: "살아있는 진화의 박물관, 야생동물의 낙원",
+  keywords: ["거북이", "스노클링", "다윈", "에콰도르", "자연"]
+  },
+  { 
     id: 205, name: "스위스 알프스", name_en: "Swiss Alps", 
     country: "스위스", country_en: "Switzerland",
     lat: 46.81, lng: 8.22, category: "nature", 
