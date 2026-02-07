@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, List, Camera, Heart, Calendar, MessageSquare, Play, Image as ImageIcon, Zap, ChevronRight } from 'lucide-react';
+import { Sparkles, List, Camera, Heart, Calendar, Play, Image as ImageIcon, ChevronRight, Hash, Clock, ArrowLeft, Send } from 'lucide-react';
 import PlaceChatView from '../views/PlaceChatView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 
-const PlaceChatPanel = ({ location, chatData, selectedImg, setSelectedImg, isFullScreen, mediaMode, setMediaMode }) => {
+const PlaceChatPanel = ({ location, onClose, chatData, selectedImg, setSelectedImg, isFullScreen, mediaMode, setMediaMode, videoData, onSeekTime }) => {
   const [isChatMode, setIsChatMode] = useState(false);
 
   useEffect(() => {
@@ -19,124 +19,156 @@ const PlaceChatPanel = ({ location, chatData, selectedImg, setSelectedImg, isFul
      chatData.sendMessage(text, systemPrompt);
   };
 
+  // 🚨 [Safe Path] 데이터가 없을 경우를 대비한 방어 코드
+  const aiContext = videoData?.ai_context || null;
+  // timestamps가 없으면 best_moment라도 배열로 만듦
+  const timeChapters = aiContext?.timestamps || (aiContext?.best_moment ? [aiContext.best_moment] : []);
+
   return (
     <div className={`w-[35%] h-full backdrop-blur-xl border border-white/10 rounded-[2rem] flex flex-col relative shadow-2xl overflow-hidden transition-all duration-500 ${isFullScreen ? 'opacity-0 translate-x-[-100%]' : 'opacity-100 translate-x-0'} ${selectedImg ? 'bg-[#020305]/95' : 'bg-[#05070a]/80'}`}>
       
-      {/* 🚨 [New] 행동 유도형 단일 액션 버튼 (Action-Oriented Button) */}
-      {!selectedImg && (
-        <div className="absolute top-8 right-8 z-20">
-            {mediaMode === 'GALLERY' ? (
-                // 📽️ 유튜브 보기 유도 (레드 포인트)
-                <button 
-                    onClick={() => setMediaMode('VIDEO')}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-full shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all hover:scale-105 active:scale-95 group"
-                >
-                    <Play size={14} fill="currentColor" className="group-hover:animate-pulse" />
-                    <span className="text-[10px] font-bold tracking-tight">시네마 뷰</span>
-                    <ChevronRight size={12} className="opacity-50" />
-                </button>
-            ) : (
-                // 🖼️ 사진으로 돌아가기 유도 (블루 포인트)
-                <button 
-                    onClick={() => setMediaMode('GALLERY')}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600 hover:text-white rounded-full transition-all hover:scale-105 active:scale-95 group"
-                >
-                    <ImageIcon size={14} />
-                    <span className="text-[10px] font-bold tracking-tight">사진 갤러리</span>
-                </button>
-            )}
-        </div>
-      )}
+      {/* 🎨 [Header]: Single Row Alignment (Back + Title + Toggle) */}
+      <div className="h-20 shrink-0 flex items-center justify-between px-6 border-b border-white/5 bg-white/0 z-20">
+         <div className="flex items-center gap-4 overflow-hidden">
+             {/* 1. Back Button */}
+             <button onClick={onClose} className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:bg-white/20 hover:text-white transition-all shrink-0">
+                 <ArrowLeft size={16} />
+             </button>
 
-      {/* Header Info Area */}
-      <div className="pt-24 px-8 pb-4 flex flex-col gap-3 z-10 shrink-0">
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Sparkles size={12} className="text-cyan-400" />
-              <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">{location.country || "Global"}</span>
-            </div>
-            <h1 className="font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-blue-100 to-blue-400 text-4xl truncate pr-2">
-              {selectedImg ? 'AI FOCUS' : location.name?.toUpperCase()}
-            </h1>
-          </div>
+             {/* 2. Title (Collapsed) */}
+             <div className="flex flex-col min-w-0">
+                 <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate">{location.country}</span>
+                 <h1 className="text-xl font-bold text-white truncate leading-none tracking-tight">{location.name}</h1>
+             </div>
+         </div>
 
-          {(selectedImg || isChatMode) && (
-            <button onClick={() => { setIsChatMode(false); setSelectedImg(null); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-gray-400 text-xs font-bold hover:bg-white/10 hover:text-white transition-all animate-fade-in shrink-0">
-              <List size={14} /> <span>Info</span>
+         {/* 3. Toggle Switch */}
+         <div className="flex bg-black/40 rounded-full p-1 border border-white/10 shrink-0">
+            <button 
+                onClick={() => setMediaMode('GALLERY')}
+                className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1.5 ${mediaMode === 'GALLERY' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+                <ImageIcon size={12} /> <span className="hidden xl:inline">GALLERY</span>
             </button>
-          )}
-        </div>
+            <button 
+                onClick={() => setMediaMode('VIDEO')}
+                className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all flex items-center gap-1.5 ${mediaMode === 'VIDEO' ? 'bg-red-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+                <Play size={12} fill="currentColor" /> <span className="hidden xl:inline">CINEMA</span>
+            </button>
+         </div>
       </div>
 
-      {/* Content Switcher */}
-      <div className="flex-1 px-6 pb-6 overflow-hidden relative">
+      {/* 🎨 [Body]: Content Area */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-hide relative">
         {selectedImg ? (
-           <div className="animate-fade-in space-y-6">
-             <div className="flex flex-wrap gap-2">
-               <span className="px-2 py-1 bg-blue-500/20 border border-blue-500/30 rounded text-[10px] text-blue-200 font-bold flex items-center gap-1"><Camera size={10}/> {selectedImg.width}x{selectedImg.height}</span>
-               <span className="px-2 py-1 bg-pink-500/20 border border-pink-500/30 rounded text-[10px] text-pink-200 font-bold flex items-center gap-1"><Heart size={10}/> {selectedImg.likes}</span>
-               <span className="px-2 py-1 bg-white/10 border border-white/10 rounded text-[10px] text-gray-300 font-bold flex items-center gap-1"><Calendar size={10}/> {new Date(selectedImg.created_at).getFullYear()}</span>
-             </div>
-             <div className="p-4 bg-gradient-to-br from-blue-900/10 to-transparent border-l-2 border-cyan-500/50 rounded-r-xl">
-                <p className="text-gray-300 text-sm leading-relaxed font-light">
-                  "<span className="text-white font-medium">{selectedImg.user.name}</span> 작가의 시선.<br/>
-                  {selectedImg.alt_description ? ` '${selectedImg.alt_description}'의 분위기가 느껴지는 ` : ''}
-                  이 장소에서 특별한 영감을 받아보세요."
-                </p>
-             </div>
-           </div>
+            /* Gallery Detail View */
+            <div className="animate-fade-in space-y-6">
+               {/* (기존 갤러리 상세 정보 코드 유지) */}
+               <div className="flex flex-wrap gap-2">
+                 <span className="px-2 py-1 bg-blue-500/20 border border-blue-500/30 rounded text-[10px] text-blue-200 font-bold flex items-center gap-1"><Camera size={10}/> {selectedImg.width}x{selectedImg.height}</span>
+                 <span className="px-2 py-1 bg-pink-500/20 border border-pink-500/30 rounded text-[10px] text-pink-200 font-bold flex items-center gap-1"><Heart size={10}/> {selectedImg.likes}</span>
+                 <span className="px-2 py-1 bg-white/10 border border-white/10 rounded text-[10px] text-gray-300 font-bold flex items-center gap-1"><Calendar size={10}/> {new Date(selectedImg.created_at).getFullYear()}</span>
+               </div>
+               <div className="p-4 bg-gradient-to-br from-blue-900/10 to-transparent border-l-2 border-cyan-500/50 rounded-r-xl">
+                  <p className="text-gray-300 text-sm leading-relaxed font-light">
+                    "<span className="text-white font-medium">{selectedImg.user.name}</span> 작가의 시선.<br/>
+                     이 장소에서 특별한 영감을 받아보세요."
+                  </p>
+               </div>
+               <button onClick={() => setSelectedImg(null)} className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs text-gray-300 font-bold transition-all">
+                   목록으로 돌아가기
+               </button>
+            </div>
         ) : isChatMode ? (
-           <PlaceChatView 
-             chatHistory={chatData.chatHistory}
-             isAiLoading={chatData.isAiLoading}
-             onSendMessage={handleSendMessage}
-             locationName={location.name}
-             mediaMode={mediaMode}
-           />
+           /* Chat View Overlay */
+           <div className="h-full flex flex-col">
+               <div className="flex items-center justify-between mb-2">
+                   <h3 className="text-sm font-bold text-white">AI Assistant</h3>
+                   <button onClick={() => setIsChatMode(false)} className="text-xs text-gray-500 hover:text-white">닫기</button>
+               </div>
+               <PlaceChatView 
+                 chatHistory={chatData.chatHistory}
+                 isAiLoading={chatData.isAiLoading}
+                 onSendMessage={handleSendMessage}
+                 locationName={location.name}
+                 mediaMode={mediaMode}
+               />
+           </div>
         ) : (
-           <div className="animate-fade-in h-full flex flex-col">
-              {mediaMode === 'VIDEO' ? (
-                <div className="space-y-4 mb-6">
-                    <div className="p-5 bg-gradient-to-br from-red-500/10 to-transparent border border-red-500/20 rounded-[1.5rem] relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:rotate-12 transition-transform">
-                            <Play size={40} className="text-red-500" />
-                        </div>
-                        <span className="text-[10px] text-red-400 font-bold uppercase tracking-tighter mb-2 block">시네마 브리핑</span>
-                        <h3 className="text-white font-bold text-lg mb-2 leading-tight">{location.name}의 기록</h3>
-                        <p className="text-gray-400 text-sm font-light leading-relaxed">
-                            영상을 감상하며 궁금한 점이 생기면 AI에게 바로 물어보세요. 현지의 분위기를 데이터로 분석해드립니다.
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <button onClick={() => setIsChatMode(true)} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all flex flex-col gap-2 items-center text-center group">
-                            <Zap size={20} className="text-yellow-400 group-hover:scale-110 transition-transform" />
-                            <span className="text-[11px] text-gray-300 font-medium">영상 속 명소 찾기</span>
-                        </button>
-                        <button onClick={() => setIsChatMode(true)} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all flex flex-col gap-2 items-center text-center group">
-                            <MessageSquare size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                            <span className="text-[11px] text-gray-300 font-medium">AI 맛집 추천</span>
-                        </button>
-                    </div>
-                </div>
-              ) : (
-                <div className="p-4 bg-white/5 rounded-2xl border border-white/5 mb-4">
-                    <p className="text-gray-300 text-sm leading-relaxed font-light">
-                    {location.country}의 보석, <span className="text-blue-300 font-medium">{location.name}</span>.<br/>
-                    이곳의 숨겨진 매력을 발견하고 AI와 함께 완벽한 여행을 계획해보세요.
-                    </p>
-                </div>
-              )}
+           /* 🎨 [Main]: Docent Mode */
+           <div className="animate-fade-in flex flex-col gap-6">
               
-              <button 
-                onClick={() => setIsChatMode(true)}
-                className={`w-full py-4 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2 mt-auto ${mediaMode === 'VIDEO' ? 'bg-red-600/20 border border-red-500/30 text-red-300 hover:bg-red-600 hover:text-white' : 'bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600 hover:text-white'}`}
-              >
-                <MessageSquare size={16} /> {mediaMode === 'VIDEO' ? '이 장소에 대해 물어보기' : 'AI 대화 시작하기'}
-              </button>
+              {/* 1. AI Summary */}
+              {aiContext ? (
+                  <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                          <Sparkles size={12} className="text-indigo-400" />
+                          <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">AI Docent Briefing</span>
+                      </div>
+                      <p className="text-sm text-gray-200 leading-relaxed font-light">
+                          {aiContext.summary}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                          {aiContext.tags && aiContext.tags.map((tag, idx) => (
+                              <span key={idx} className="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400">#{tag.replace('#','')}</span>
+                          ))}
+                      </div>
+                  </div>
+              ) : (
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                      <p className="text-xs text-gray-400">영상 데이터 분석 중입니다...</p>
+                  </div>
+              )}
+
+              {/* 2. 🎨 Chapter List (Interactive Timestamps) */}
+              {mediaMode === 'VIDEO' && timeChapters.length > 0 && (
+                  <div className="space-y-3">
+                      <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest pl-1">Highlights</h3>
+                      <div className="flex flex-col gap-2">
+                          {timeChapters.map((chapter, idx) => (
+                              <button 
+                                key={idx}
+                                onClick={() => onSeekTime && onSeekTime(chapter.time)}
+                                className="group w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all text-left"
+                              >
+                                  {/* Time Badge */}
+                                  <div className="shrink-0 w-12 h-12 rounded-lg bg-[#0F1115] flex items-center justify-center group-hover:bg-red-600 transition-colors">
+                                      <span className="text-[11px] font-bold text-gray-400 group-hover:text-white group-hover:hidden">{chapter.time}</span>
+                                      <Play size={16} className="hidden group-hover:block text-white fill-current" />
+                                  </div>
+                                  
+                                  {/* Description */}
+                                  <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium text-gray-300 group-hover:text-white truncate transition-colors">{chapter.desc}</p>
+                                      <p className="text-[10px] text-gray-600 group-hover:text-gray-400 truncate">클릭하여 바로 이동</p>
+                                  </div>
+                              </button>
+                          ))}
+                      </div>
+                  </div>
+              )}
            </div>
         )}
       </div>
+
+      {/* 🎨 [Footer]: Minimal Input Bar (다이어트 완료) */}
+      {!selectedImg && !isChatMode && (
+          <div className="p-6 pt-2 bg-gradient-to-t from-[#05070a] to-transparent shrink-0 z-20">
+              <button 
+                onClick={() => setIsChatMode(true)}
+                className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-5 flex items-center gap-3 transition-all group"
+              >
+                  <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <Sparkles size={12} className="text-blue-400" />
+                  </div>
+                  <span className="text-sm text-gray-500 group-hover:text-gray-300 font-medium">이 장소에 대해 궁금한 점이 있나요?</span>
+                  <div className="ml-auto w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                      <Send size={12} />
+                  </div>
+              </button>
+          </div>
+      )}
     </div>
   );
 };
