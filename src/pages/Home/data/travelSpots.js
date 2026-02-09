@@ -3,12 +3,12 @@
 
 export const TRAVEL_SPOTS = [
   // 1. 💎 Paradise (휴양)
-  { 
-    id: 101, name: "아이투타키", name_en: "Cook Islands", 
-    country: "쿡 제도", country_en: "Cook Islands",
-    lat: -18.85, lng: -159.78, category: "paradise", 
-    keywords: ["휴양", "비치", "바다", "신혼여행", "아일랜드"]
-  },
+  {
+		id: 101,name: "라로통가",name_en: "Rarotonga",
+		country: "쿡 제도",country_en: "Cook Islands",
+		lat: -21.23,lng: -159.77,category: "paradise",
+		keywords: ["휴양", "비치", "바다", "신혼여행", "아일랜드"]
+	},
   { 
     id: 102, name: "산토리니", name_en: "Santorini", 
     country: "그리스", country_en: "Greece",
@@ -65,6 +65,12 @@ export const TRAVEL_SPOTS = [
     lat: 62.45, lng: -114.37, category: "nature", desc: "오로라 빌리지",
     keywords: ["오로라", "캐나다", "겨울", "눈"]
   },
+	{
+		id: 203, name: "갈라파고스", name_en: "Galápagos Islands",
+		country: "에콰도르", country_en: "Ecuador",
+		lat: -0.7402, lng: -90.3134, category: "nature", desc: "살아있는 진화의 박물관, 야생동물의 낙원",
+		keywords: ["거북이", "스노클링", "다윈", "에콰도르", "자연"]
+	},
   { 
     id: 205, name: "스위스 알프스", name_en: "Swiss Alps", 
     country: "스위스", country_en: "Switzerland",
@@ -79,18 +85,18 @@ export const TRAVEL_SPOTS = [
     lat: 48.85, lng: 2.35, category: "urban", 
     keywords: ["에펠탑", "쇼핑", "예술", "박물관", "카페"]
   },
-  { 
-    id: 304, name: "도쿄", name_en: "Tokyo", 
-    country: "일본", country_en: "Japan",
-    lat: 35.67, lng: 139.76, category: "urban", 
-    keywords: ["쇼핑", "애니메이션", "스시", "야경", "거리"]
-  },
-  { 
+	{ 
     id: 303, name: "뉴욕", name_en: "New York", 
     country: "미국", country_en: "USA",
     lat: 40.71, lng: -74.00, category: "urban", 
     keywords: ["타임스퀘어", "미국", "빌딩", "자유의여신상"]
   },
+  { 
+    id: 304, name: "도쿄", name_en: "Tokyo", 
+    country: "일본", country_en: "Japan",
+    lat: 35.67, lng: 139.76, category: "urban", 
+    keywords: ["쇼핑", "애니메이션", "스시", "야경", "거리"]
+  },  
   { 
     id: 305, name: "런던", name_en: "London", 
     country: "영국", country_en: "UK",
