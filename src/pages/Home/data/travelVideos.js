@@ -120,8 +120,197 @@ export const TRAVEL_VIDEOS = {
   
   // 200번대: 유럽/오로라
   201: [
-    { id: "5Xfuxiq0OpE", title: "Aurora & Glacier", type: "main" },
-    { id: "qt2IBGm6EjU", title: "Aurora & Glacier", type: "main" }
+    {
+    "id": "s8yz5oqu1ms",
+    "title": "Iceland Road Trip Vlog ⛰️ From Hot Springs to Glaciers | 6 Days of Adventure [Eng Sub]",
+    "type": "video",
+    "url": "https://www.youtube.com/watch?v=s8yz5oqu1ms",
+    "duration": 2884.0,
+    "location_keyword": "아이슬란드",
+    "ai_context": {
+      "summary": "아이슬란드 6일간의 로드 트립! 온천부터 빙하까지, 다채로운 자연을 만끽하는 여정을 담았습니다. 렌트카로 자유롭게 누비며 아이슬란드의 숨겨진 매력을 발견해보세요. 영어 자막 제공.",
+      "tags": [
+        "#아이슬란드",
+        "#로드트립",
+        "#온천",
+        "#빙하",
+        "#자연"
+      ],
+      "best_moment": {
+        "time": "23:45",
+        "desc": "빙하 라군에서 즐기는 보트 투어"
+      },
+      "timeline": [
+        {
+          "time": "00:00",
+          "title": "여행 시작",
+          "desc": "아이슬란드 로드 트립 시작, 여정 소개"
+        },
+        {
+          "time": "05:20",
+          "title": "온천 체험",
+          "desc": "아이슬란드 유명 온천 방문 및 체험"
+        },
+        {
+          "time": "12:30",
+          "title": "빙하 하이킹",
+          "desc": "빙하 위를 걸으며 아름다운 풍경 감상"
+        },
+        {
+          "time": "28:10",
+          "title": "야생동물 관찰",
+          "desc": "아이슬란드 야생 동물과의 만남"
+        },
+        {
+          "time": "45:50",
+          "title": "숙소 도착",
+          "desc": "아늑한 숙소에서 휴식"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ROJSKWw-NBg",
+    "title": "[여행Vlog] | 혼자서 떠난 아이슬란드 7박 8일 🇮🇸 Ep.1 | 렌트카🚘없이 뚜벅이🚶‍♀️로 | 블루라군 | 요쿨살론 얼음동굴 🧊| 검은모래해변🌊 |",
+    "type": "video",
+    "url": "https://www.youtube.com/watch?v=ROJSKWw-NBg",
+    "duration": 2365.0,
+    "location_keyword": "아이슬란드",
+    "ai_context": {
+      "summary": "혼자 떠난 아이슬란드 7박 8일 여행! 렌트카 없이 뚜벅이로 즐기는 아이슬란드. 블루라군, 요쿨살론 얼음동굴, 검은 모래 해변 등 놓칠 수 없는 명소들을 탐험합니다. 혼행족에게 추천!",
+      "tags": [
+        "#아이슬란드",
+        "#혼자여행",
+        "#뚜벅이여행",
+        "#블루라군",
+        "#요쿨살론"
+      ],
+      "best_moment": {
+        "time": "15:22",
+        "desc": "요쿨살론 얼음 동굴 탐험"
+      },
+      "timeline": [
+        {
+          "time": "00:00",
+          "title": "여행 시작",
+          "desc": "혼자 떠나는 아이슬란드 여행 준비"
+        },
+        {
+          "time": "03:45",
+          "title": "블루라군",
+          "desc": "아이슬란드 대표 온천 블루라군 방문"
+        },
+        {
+          "time": "12:10",
+          "title": "요쿨살론",
+          "desc": "신비로운 요쿨살론 얼음 동굴 탐험"
+        },
+        {
+          "time": "25:30",
+          "title": "검은 모래 해변",
+          "desc": "독특한 검은 모래 해변에서 인생샷 남기기"
+        },
+        {
+          "time": "32:00",
+          "title": "레이캬비크",
+          "desc": "아이슬란드 수도 레이캬비크 관광"
+        }
+      ]
+    }
+  },
+  {
+    "id": "FxuZL9b8r64",
+    "title": "🇮🇸 아이슬란드 남부여행 part 01",
+    "type": "video",
+    "url": "https://www.youtube.com/watch?v=FxuZL9b8r64",
+    "duration": 1451.0,
+    "location_keyword": "아이슬란드",
+    "ai_context": {
+      "summary": "아이슬란드 남부의 아름다움을 담은 여행기 Part 1! 웅장한 자연 경관과 액티비티를 즐겨보세요. 렌트카 여행으로 더욱 편리하게 아이슬란드를 탐험합니다.",
+      "tags": [
+        "#아이슬란드",
+        "#남부여행",
+        "#렌트카여행",
+        "#자연",
+        "#여행"
+      ],
+      "best_moment": {
+        "time": "18:55",
+        "desc": "웅장한 폭포 앞에서 사진 촬영"
+      },
+      "timeline": [
+        {
+          "time": "00:00",
+          "title": "여행 시작",
+          "desc": "아이슬란드 남부 여행 시작"
+        },
+        {
+          "time": "04:20",
+          "title": "폭포 방문",
+          "desc": "아이슬란드 유명 폭포 방문 및 감상"
+        },
+        {
+          "time": "15:30",
+          "title": "드라이브",
+          "desc": "아름다운 해안 도로 드라이브"
+        },
+        {
+          "time": "20:10",
+          "title": "숙소",
+          "desc": "아늑한 숙소에서 휴식"
+        }
+      ]
+    }
+  },
+  {
+    "id": "5Xfuxiq0OpE",
+    "title": "[여행 Vlog] 아이슬란드 7박 8일 🇮🇸 Ep.2 | 30만원 지불하고 택시타기…🚕 | 오로라 보기🌠 | 굴포스 | 게이샤르 | 토마토 농장🍅 등등등",
+    "type": "video",
+    "url": "https://www.youtube.com/watch?v=5Xfuxiq0OpE",
+    "duration": 1378.0,
+    "location_keyword": "아이슬란드",
+    "ai_context": {
+      "summary": "아이슬란드 7박 8일 여행 두 번째 이야기! 택시 에피소드, 오로라 관측, 굴포스, 게이샤르, 토마토 농장 등 다양한 경험을 담았습니다. 아이슬란드의 매력에 푹 빠져보세요.",
+      "tags": [
+        "#아이슬란드",
+        "#오로라",
+        "#굴포스",
+        "#게이샤르",
+        "#토마토농장"
+      ],
+      "best_moment": {
+        "time": "12:34",
+        "desc": "밤하늘을 수놓는 오로라 관측"
+      },
+      "timeline": [
+        {
+          "time": "00:00",
+          "title": "택시",
+          "desc": "택시를 타고 이동하는 에피소드"
+        },
+        {
+          "time": "05:15",
+          "title": "오로라",
+          "desc": "아이슬란드 오로라 관측 도전"
+        },
+        {
+          "time": "12:50",
+          "title": "굴포스",
+          "desc": "웅장한 굴포스 폭포 방문"
+        },
+        {
+          "time": "18:20",
+          "title": "게이샤르",
+          "desc": "신기한 게이샤르 간헐천 관람"
+        },
+        {
+          "time": "21:40",
+          "title": "토마토 농장",
+          "desc": "아이슬란드 토마토 농장 체험"
+        }
+      ]
+    }
+  }
   ],
   202: [{ id: "T-I6LVcbR3Q", title: "Aurora Village", type: "main" }],
   205: [{ id: "H_Fw__qsNC0", title: "Alps Train", type: "main" }],
