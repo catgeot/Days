@@ -1,205 +1,259 @@
 import os
-from dotenv import load_dotenv # 🚨 [New] 환경변수 로드 라이브러리
+import time
+import json
+import re
+import requests # 🚨 [New] 자막 데이터를 다운로드하기 위해 추가 (설치 필요: pip install requests)
+import yt_dlp
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-import yt_dlp  # 🚨 [Fix/New] 더 강력하고 안정적인 유튜브 데이터 수집 라이브러리
-import json
-import time
-import re
 
 # ==========================================
 # 1. 설정
 # ==========================================
-# 🚨 [중요] API 키를 입력하세요.
-# 🚨 [Fix] .env.local 파일에서 API 키 로드
-load_dotenv('.env.local') # .env가 아니라 .env.local을 명시적으로 지정
+load_dotenv('.env.local')
 API_KEY = os.getenv("VITE_GEMINI_API_KEY")
 
-# API 키가 제대로 안 불러와졌을 경우를 대비한 안전장치
 if not API_KEY:
-    raise ValueError("❌ API 키가 없습니다. .env.local 파일에 'VITE_GEMINI_API_KEY'가 있는지 확인해주세요.")
-LOCATIONS = ["케이프타운"]
-OUTPUT_FILE = "travel_video_data.json"
-MAX_RESULTS_PER_KEYWORD = 5  # 키워드 당 수집할 영상 개수
+    raise ValueError("❌ API 키가 없습니다. .env.local 파일을 확인해주세요.")
 
-# ==========================================
-# 2. 클라이언트 초기화
-# ==========================================
+# 🚨 분석하고 싶은 여행지로 변경하세요
+LOCATIONS = ["스위스 알프스"] 
+OUTPUT_FILE = "real_timeline_data.json"
+MAX_RESULTS = 5 
+
 client = genai.Client(api_key=API_KEY)
 
 # ==========================================
-# 3. [Step 1] yt-dlp를 이용한 실제 유튜브 데이터 수집 함수
+# 2. [Step 1] yt-dlp: 영상 검색 및 자막 URL 추출
 # ==========================================
-def get_real_youtube_data(keyword, limit=5):
-    """
-    yt-dlp를 사용하여 실제 존재하는 영상 메타데이터만 빠르게 가져옵니다.
-    영상을 다운로드하지 않고 정보만 추출하므로 속도가 빠릅니다.
-    """
-    print(f"🔍 [yt-dlp] '{keyword}' 검색 및 데이터 수집 중...")
-
-    # yt-dlp 옵션 설정
-    ydl_opts = {
-        'quiet': True,              # 불필요한 로그 출력 끄기
-        'extract_flat': True,       # 🚨 중요: 영상 다운로드 안 함 (메타데이터만 추출)
-        'force_generic_extractor': False,
-        'noplaylist': True,         # 플레이어 리스트 제외
-    }
-
-    real_data_list = []
+def get_video_data_with_subs(keyword, limit=5):
+    print(f"🔍 '{keyword}' 여행 브이로그 검색 및 분석 중...")
     
-    # 검색어 구성: "ytsearch5:검색어" -> 검색어당 5개만 가져오라는 명령어
-    search_query = f"ytsearch{limit}:{keyword} 브이로그"
+    ydl_opts = {
+        'quiet': True,
+        'extract_flat': False, # 🚨 자막 정보를 보려면 flat 모드를 꺼야 함 (속도는 약간 느려짐)
+        'noplaylist': True,
+        'writesubtitles': True,      # 자막 정보 요청
+        'writeautomaticsub': True,   # 자동 생성 자막 요청
+        'skip_download': True,       # 영상 다운로드는 생략
+    }
+    
+    # 쿼리: 검색어 + 여행 브이로그 + 숏츠 제외
+    query = f"ytsearch{limit * 2}:{keyword} 여행 브이로그 -shorts"
+    video_list = []
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            result = ydl.extract_info(search_query, download=False)
-            
-            if 'entries' in result:
-                for video in result['entries']:
-                    # yt-dlp가 주는 데이터에서 필요한 것만 뽑기
-                    video_info = {
-                        "id": video.get('id'),
-                        "title": video.get('title'),
-                        "url": video.get('url') or f"https://www.youtube.com/watch?v={video.get('id')}",
-                        "duration": video.get('duration'), # 초 단위 (예: 600)
-                        # extract_flat 모드에서는 썸네일이 없을 수 있어 기본 처리
-                        "thumbnail": video.get('thumbnails')[0]['url'] if video.get('thumbnails') else f"https://i.ytimg.com/vi/{video.get('id')}/hqdefault.jpg"
-                    }
-                    real_data_list.append(video_info)
-        
-        print(f"✅ [yt-dlp] 실존하는 영상 {len(real_data_list)}개 확보 완료.")
-        return real_data_list
+            # 검색 결과 가져오기 (flat=True로 빠르게 목록만 먼저 확보)
+            search_opts = {**ydl_opts, 'extract_flat': True}
+            with yt_dlp.YoutubeDL(search_opts) as search_ydl:
+                search_result = search_ydl.extract_info(query, download=False)
+
+            if 'entries' in search_result:
+                for entry in search_result['entries']:
+                    video_id = entry['id']
+                    title = entry['title']
+                    duration = entry.get('duration', 0)
+
+                    # 필터링 (5분 미만, 숏츠 제외)
+                    if duration < 300: continue
+                    if 'shorts' in title.lower(): continue
+
+                    print(f"\n🎥 상세 분석 중: {title}")
+                    
+                    # 🚨 [Core] 개별 영상의 자막 정보 추출
+                    try:
+                        # 자막 URL을 얻기 위해 상세 정보 로드
+                        info = ydl.extract_info(entry['url'], download=False)
+                        
+                        # 자막 텍스트 가져오기 (함수 호출)
+                        transcript_text = extract_transcript_from_info(info)
+                        
+                        if not transcript_text:
+                            print("   Pass: 자막을 찾을 수 없습니다.")
+                            continue
+                            
+                        print(f"   👉 자막 확보 완료 ({len(transcript_text)}자)")
+                        
+                        video_list.append({
+                            "info": {
+                                "id": video_id,
+                                "title": title,
+                                "url": entry['url'],
+                                "duration": duration,
+                                "thumbnail": entry.get('thumbnails', [{}])[0].get('url', '')
+                            },
+                            "transcript": transcript_text
+                        })
+
+                        if len(video_list) >= limit: break
+
+                    except Exception as e:
+                        print(f"   ⚠️ 상세 정보 로드 실패: {e}")
+                        continue
+                        
+        print(f"\n✅ 분석 가능한 영상 {len(video_list)}개 확보.")
+        return video_list
 
     except Exception as e:
-        print(f"❌ [yt-dlp] 검색 중 오류 발생: {e}")
+        print(f"❌ 검색 프로세스 실패: {e}")
         return []
 
 # ==========================================
-# 4. [Step 2] Gemini 프롬프트 생성 (데이터 주입)
+# 3. [Step 2] 자막 URL에서 텍스트 추출 (핵심)
 # ==========================================
-def create_analysis_prompt(location_name, real_video_list):
-    # Python 객체를 JSON 문자열로 변환하여 프롬프트에 삽입
-    video_json_str = json.dumps(real_video_list, ensure_ascii=False, indent=2)
-
-    return f"""
-    너는 여행 콘텐츠 전문 에디터야.
-    아래 제공된 `source_videos` JSON 데이터는 내가 이미 검증한 **실제 유튜브 영상 목록**이야.
-    
-    [작업 목표]
-    제공된 영상들의 `id`, `title`, `url`은 **절대 수정하지 말고 그대로 유지**해.
-    각 영상의 제목과 문맥(여행지: {location_name})을 분석하여 `ai_context` 필드를 완성해줘.
-
-    [소스 데이터 (절대 위조 금지)]
-    {video_json_str}
-
-    [작성 규칙]
-    1. `summary`: 영상의 제목과 길이를 보고 어떤 여행 정보가 있을지 3줄 내외로 매력적으로 요약.
-    2. `tags`: 관련 해시태그 3~5개.
-    3. `timeline`: 영상의 길이(`duration`초)를 고려하여 예상되는 타임라인 3~5개를 작성해줘.
-    4. 5분 미만의 너무 짧은 영상이 있다면 리스트에서 제외해도 좋아.
-
-    [출력 포맷 - JSON Array]
-    응답은 오직 아래 JSON 포맷을 따르는 코드 블록(```json ... ```)으로만 출력해.
-    
-    [
-      {{
-        "id": "소스데이터의_id_그대로_사용",
-        "title": "소스데이터의_title_그대로_사용",
-        "type": "video",
-        "url": "소스데이터의_url_그대로_사용",
-        "duration": "소스데이터의_duration",
-        "location_keyword": "{location_name}",
-        "ai_context": {{
-          "summary": "작성된 요약...",
-          "tags": ["#태그1", "#태그2"],
-          "best_moment": {{ "time": "00:00", "desc": "하이라이트 설명" }},
-          "timeline": [
-            {{ "time": "MM:SS", "title": "구간제목", "desc": "내용" }}
-          ]
-        }}
-      }}
-    ]
+def extract_transcript_from_info(info_dict):
     """
+    yt-dlp 정보 딕셔너리에서 한국어 > 영어 순으로 자막을 찾고 텍스트로 변환합니다.
+    """
+    # 1. 자막 후보군 통합 (수동 자막 + 자동 자막)
+    subs = info_dict.get('subtitles') or {}
+    auto_subs = info_dict.get('automatic_captions') or {}
+    
+    # 2. 우선순위: 한국어 수동 -> 한국어 자동 -> 영어 수동 -> 영어 자동
+    target_langs = ['ko', 'en']
+    selected_sub = None
+    
+    for lang in target_langs:
+        # 수동 자막 확인
+        if lang in subs:
+            selected_sub = subs[lang]
+            break
+        # 자동 자막 확인
+        if lang in auto_subs:
+            selected_sub = auto_subs[lang]
+            break
+            
+    if not selected_sub:
+        return None
 
-# ==========================================
-# 5. 유틸리티: JSON 추출
-# ==========================================
-def extract_json(text):
+    # 3. JSON3 포맷 URL 찾기 (가장 파싱하기 쉬움)
+    json_url = None
+    for fmt in selected_sub:
+        if fmt.get('ext') == 'json3':
+            json_url = fmt.get('url')
+            break
+    
+    # JSON3가 없으면 VTT나 다른 포맷일 수 있는데, 여기선 JSON3만 시도
+    if not json_url:
+        return None
+
+    # 4. 자막 데이터 다운로드 및 파싱
     try:
-        match = re.search(r"```json\s*(.*?)```", text, re.DOTALL)
-        if match: return json.loads(match.group(1))
-        match = re.search(r"```\s*(.*?)```", text, re.DOTALL)
-        if match: return json.loads(match.group(1))
-        return json.loads(text)
-    except Exception as e:
-        print(f"⚠️ JSON 파싱 경고: {e}")
-        return []
-
-# ==========================================
-# 6. 메인 실행 로직
-# ==========================================
-def main():
-    final_dataset = []
-    print(f"🚀 총 {len(LOCATIONS)}개의 여행지 분석을 시작합니다 (Strategy A: yt-dlp -> AI)...")
-
-    for location in LOCATIONS:
-        print(f"\n📍 Processing: {location}...")
+        response = requests.get(json_url)
+        response.raise_for_status()
+        json_data = response.json()
         
-        # 1. [Python] 실제 데이터 먼저 확보
-        real_videos = get_real_youtube_data(location, limit=MAX_RESULTS_PER_KEYWORD)
-        
-        if not real_videos:
-            print(f"⚠️ {location}: 검색 결과가 없어 건너뜁니다.")
-            continue
-
-        # 2. [Gemini] 데이터 주입 및 분석 요청
-        try:
-            print("🤖 [AI] 데이터 분석 및 요약 생성 중...")
-            prompt = create_analysis_prompt(location, real_videos)
-            
-            response = client.models.generate_content(
-                model='gemini-2.0-flash', # 혹은 gemini-2.5-flash
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0.2
-                )
-            )
-
-            if response.text:
-                analyzed_data = extract_json(response.text)
+        full_text = ""
+        if 'events' in json_data:
+            for event in json_data['events']:
+                # 시간 정보 (ms 단위 -> MM:SS)
+                start_ms = event.get('tStartMs', 0)
+                start_sec = start_ms // 1000
+                time_str = f"[{start_sec//60:02d}:{start_sec%60:02d}]"
                 
-                if analyzed_data:
-                    final_dataset.extend(analyzed_data)
-                    print(f"✅ {location}: {len(analyzed_data)}개 데이터 분석 완료.")
-                else:
-                    print(f"⚠️ {location}: AI 응답에서 JSON 추출 실패.")
-                    print(f"DEBUG: {response.text[:200]}...") # 디버깅용
-            else:
-                print(f"⚠️ {location}: AI 응답이 비어있습니다.")
+                # 텍스트 합치기
+                if 'segs' in event:
+                    seg_text = "".join([seg.get('utf8', '') for seg in event['segs']])
+                    seg_text = seg_text.replace('\n', ' ').strip()
+                    if seg_text:
+                        full_text += f"{time_str} {seg_text}\n"
+                        
+        return full_text[:25000] # Gemini 용량 제한 고려
 
-        except Exception as e:
-            print(f"❌ {location} AI 처리 중 오류 발생: {e}")
+    except Exception as e:
+        print(f"   (자막 다운로드 실패: {e})")
+        return None
+
+# ==========================================
+# 4. [Step 3] Gemini 분석
+# ==========================================
+def analyze_with_gemini(location, video_info, transcript):
+    prompt = f"""
+    너는 여행 콘텐츠 에디터야. 아래는 유튜브 영상의 **실제 자막**이야.
+    이 자막을 읽고, 시청자가 영상을 안 봐도 여행 코스를 알 수 있게 **타임라인**을 정리해줘.
+
+    [영상 정보]
+    - 제목: {video_info['title']}
+    - 자막 내용:
+    {transcript}
+
+    [필수 조건]
+    1. **거짓말 금지:** 자막에 없는 장소나 행동은 절대 적지 마.
+    2. **내용 판단:** 자막이 여행 정보가 너무 부실하면 빈 리스트 `[]`를 반환해.
+    3. **포맷:** 반드시 아래 JSON 형식으로만 출력해.
+
+    {{
+        "id": "{video_info['id']}",
+        "title": "{video_info['title']}",
+        "duration": {video_info['duration']},
+        "url": "{video_info['url']}",
+        "location_keyword": "{location}",
+        "ai_context": {{
+            "summary": "자막 기반 3줄 요약",
+            "tags": ["#태그1", "#태그2"],
+            "best_moment": {{ "time": "MM:SS", "desc": "가장 인상 깊은 순간" }},
+            "timeline": [
+                {{ "time": "MM:SS", "title": "장소/행동", "desc": "자막 내용 요약" }}
+            ]
+        }}
+    }}
+    """
+    
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(temperature=0.1)
+        )
+        return response.text
+    except Exception as e:
+        print(f"❌ Gemini 호출 실패: {e}")
+        return None
+
+# ==========================================
+# 5. 유틸리티 & 메인
+# ==========================================
+def parse_json(text):
+    if not text: return None
+    try:
+        clean_text = re.sub(r"```json|```", "", text).strip()
+        return json.loads(clean_text)
+    except:
+        return None
+
+def main():
+    print(f"🚀 '{LOCATIONS[0]}' 타임라인 추출 시작 (yt-dlp 단독 모드)...")
+    
+    # 1. 영상 및 자막 확보
+    video_datasets = get_video_data_with_subs(LOCATIONS[0], limit=MAX_RESULTS)
+    final_data = []
+
+    # 2. AI 분석
+    print(f"\n🤖 AI 분석 시작 (총 {len(video_datasets)}개)...")
+    for data in video_datasets:
+        info = data['info']
+        print(f"   Processing: {info['title']}...")
         
-        time.sleep(2)
+        result_text = analyze_with_gemini(LOCATIONS[0], info, data['transcript'])
+        result_json = parse_json(result_text)
 
-    # 3. 결과 저장
-    if final_dataset:
-        try:
-            with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-                json.dump(final_dataset, f, ensure_ascii=False, indent=2)
-            print(f"\n🎉 모든 작업 완료! 총 {len(final_dataset)}개 영상 저장됨.")
-            print(f"📂 파일 경로: {OUTPUT_FILE}")
-            
-            # 검증용 출력
-            if len(final_dataset) > 0:
-                print("\n[데이터 샘플 확인]")
-                print(f"ID: {final_dataset[0].get('id')} (실제 ID 확인)")
-                print(f"제목: {final_dataset[0].get('title')}")
+        if result_json and result_json.get('ai_context', {}).get('timeline'):
+            final_data.append(result_json)
+            print("     ✅ 타임라인 생성 성공!")
+        else:
+            print("     Pass: 유효한 정보 부족")
+        
+        time.sleep(1) 
 
-        except Exception as e:
-            print(f"❌ 파일 저장 중 오류 발생: {e}")
+    # 3. 저장
+    if final_data:
+        with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+            json.dump(final_data, f, ensure_ascii=False, indent=2)
+        print(f"\n🎉 성공! 총 {len(final_data)}개의 데이터가 {OUTPUT_FILE}에 저장되었습니다.")
     else:
-        print("\n⚠️ 저장할 데이터가 없습니다.")
+        print("\n⚠️ 저장된 데이터가 없습니다.")
 
 if __name__ == "__main__":
     main()
