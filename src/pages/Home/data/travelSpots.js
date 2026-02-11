@@ -166,5 +166,11 @@ export const TRAVEL_SPOTS = [
     country: "이집트", country_en: "Egypt",
     lat: 30.04, lng: 31.23, category: "adventure", 
     keywords: ["피라미드", "스핑크스", "사막", "역사"]
-  }
+  },
+	{ 
+    id: 503, name: "케이프타운", name_en: "Cape Town", 
+    country: "남아프리카 공화국", country_en: "South Africa",
+    lat: -33.92, lng: 18.42, category: "nature",
+    keywords: ["테이블 마운틴", "희망봉", "펭귄", "와이너리"]	
+	}	
 ];

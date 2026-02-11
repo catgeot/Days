@@ -95,7 +95,7 @@ def create_analysis_prompt(location_name, real_video_list):
     [작성 규칙]
     1. `summary`: 영상의 제목과 길이를 보고 어떤 여행 정보가 있을지 3줄 내외로 매력적으로 요약.
     2. `tags`: 관련 해시태그 3~5개.
-    3. `timeline`: 영상의 길이(`duration`초)를 고려하여 예상되는 타임라인 3~5개를 작성해줘. (가상의 타임라인이어도 되지만, 영상 길이를 초과하지 않도록 주의)
+    3. `timeline`: 영상의 길이(`duration`초)를 고려하여 예상되는 타임라인 3~5개를 작성해줘.
     4. 5분 미만의 너무 짧은 영상이 있다면 리스트에서 제외해도 좋아.
 
     [출력 포맷 - JSON Array]
