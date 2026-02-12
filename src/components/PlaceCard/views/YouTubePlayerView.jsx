@@ -62,7 +62,6 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
           }
           if (data?.event === 'infoDelivery' && data.info && data.info.playerState !== undefined) {
               const state = data.info.playerState;
-              // 🚨 [Fix] 재생 중(1)과 버퍼링(3) 이외의 모든 상태에서 UI를 노출하도록 원천 논리 복구
               const isActive = state === 1 || state === 3;
               setIsPaused(!isActive);
           }
@@ -101,7 +100,6 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
 
   if (!currentVideo) return null;
 
-  // 🚨 [Logic] 최초 코드의 안정적인 노출 로직으로 회귀
   const showPlaylistForce = !isPlaying || isPaused;
 
   return (
@@ -109,8 +107,8 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
       
       {isPlaying ? (
         <div className="relative w-full h-full flex items-center justify-center bg-black">
-          {/* 🚨 [Fix] 사용자 선호 디자인(98%/95%) 유지 */}
-          <div className={`transition-all duration-500 ${isFullScreen ? 'w-full h-full p-0' : 'w-[98%] h-[95%] rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5'}`}>
+          {/* 🚨 [Fix] 성능 방어를 위해 max-w-[1440px] 추가 및 중앙 정렬 적용 */}
+          <div className={`transition-all duration-500 mx-auto ${isFullScreen ? 'w-full h-full p-0 max-w-none' : 'w-[98%] h-[95%] max-w-[1440px] rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5'}`}>
             <iframe
               ref={iframeRef}
               width="100%"
@@ -130,7 +128,8 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
             className="absolute inset-0 bg-cover bg-center opacity-40 blur-2xl scale-110 transition-transform duration-700 group-hover:scale-125" 
             style={{ backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : 'none' }} 
           />
-          <div className="relative z-20 w-[80%] aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/20 group-hover:border-white/50 transition-all duration-300 transform group-hover:scale-105 bg-black/50">
+          {/* 🚨 [Fix] 썸네일 커버 모드에서도 동일하게 max-width 적용하여 통일감 부여 */}
+          <div className="relative z-20 w-[80%] max-w-[1200px] aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/20 group-hover:border-white/50 transition-all duration-300 transform group-hover:scale-105 bg-black/50">
              <img 
                key={thumbnailUrl} 
                src={thumbnailUrl}
@@ -151,14 +150,13 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
         </div>
       )}
 
-      {/* 🚨 [Fix] Playlist Section: 
-          1. pointer-events-none을 적용하여 리스트 배경이 재생바를 가로막지 않도록 수정
-          2. hover 시에만 노출되는 UI와 강제 노출 로직 통합 */}
+      {/* 🚨 [Fix] Playlist Section:
+          1. pointer-events-none을 부모에 적용하여 재생바 클릭이 관통되도록 함
+          2. 내부 div에 pointer-events-auto를 주어 리스트 버튼 기능 유지 */}
       {videoList.length > 1 && showUI && (
         <div className={`absolute bottom-24 left-0 w-full z-[210] flex justify-center transition-opacity duration-500 pointer-events-none 
             ${showPlaylistForce ? '!opacity-100' : 'opacity-0 hover:opacity-100'}`}
         >
-            {/* 🚨 [New] 실제 버튼 영역에만 pointer-events-auto를 주어 클릭 가능하게 설정 */}
             <div className="flex gap-4 p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl pointer-events-auto transform translate-y-0 transition-transform duration-300">
                 {videoList.map((video, idx) => (
                     <button 
