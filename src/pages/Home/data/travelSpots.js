@@ -3,12 +3,13 @@
 
 export const TRAVEL_SPOTS = [
   // 1. 💎 Paradise (휴양)
-  {
-		id: 101,name: "라로통가",name_en: "Rarotonga",
-		country: "쿡 제도",country_en: "Cook Islands",
-		lat: -21.23,lng: -159.77,category: "paradise",
-		keywords: ["휴양", "비치", "바다", "신혼여행", "아일랜드"]
-	},
+  { 
+    id: 101, 
+    name: "라로통가",name_en: "Rarotonga",
+    country: "쿡 제도",country_en: "Cook Islands",
+    lat: -21.23, lng: -159.77, category: "paradise", 
+    keywords: ["휴양", "비치", "바다", "신혼여행", "아일랜드"]
+  },
   { 
     id: 102, name: "산토리니", name_en: "Santorini", 
     country: "그리스", country_en: "Greece",
@@ -65,17 +66,53 @@ export const TRAVEL_SPOTS = [
     lat: 62.45, lng: -114.37, category: "nature", desc: "오로라 빌리지",
     keywords: ["오로라", "캐나다", "겨울", "눈"]
   },
-	{
-		id: 203, name: "갈라파고스", name_en: "Galápagos Islands",
-		country: "에콰도르", country_en: "Ecuador",
-		lat: -0.7402, lng: -90.3134, category: "nature", desc: "살아있는 진화의 박물관, 야생동물의 낙원",
-		keywords: ["거북이", "스노클링", "다윈", "에콰도르", "자연"]
-	},
+  { 
+    id: 203, name: "갈라파고스", name_en: "Galápagos Islands", 
+    country: "에콰도르", country_en: "Ecuador",
+    lat: -0.7402, lng: -90.3134, category: "nature", desc: "살아있는 진화의 박물관, 야생동물의 낙원",
+    keywords: ["거북이", "스노클링", "다윈", "에콰도르", "자연"]
+  },
+  { 
+    id: 204, name: "암스테르담", name_en: "Amsterdam", 
+    country: "네덜란드", country_en: "Netherlands",
+    lat: 52.3676, lng: 4.9041, category: "city", desc: "운하와 자전거, 예술이 어우러진 낭만의 도시",
+    keywords: ["운하", "자전거", "반고흐", "튤립", "풍차"]
+  },
   { 
     id: 205, name: "스위스 알프스", name_en: "Swiss Alps", 
     country: "스위스", country_en: "Switzerland",
     lat: 46.81, lng: 8.22, category: "nature", 
     keywords: ["알프스", "하이킹", "기차", "유럽", "산"]
+  },
+  { 
+    id: 206, name: "밴프 국립공원", name_en: "Banff National Park", 
+    country: "캐나다", country_en: "Canada",
+    lat: 51.1784, lng: -115.5708, category: "nature", 
+    keywords: ["로키산맥", "호수", "하이킹", "북미", "국립공원"]
+  },
+  { 
+  id: 207, name: "리스본", name_en: "Lisbon", 
+  country: "포르투갈", country_en: "Portugal",
+  lat: 38.7223, lng: -9.1393, category: "nature", 
+  keywords: ["유럽", "트램", "구시가지", "에그타르트", "항구도시"]
+  },
+  { 
+  id: 208, name: "바르셀로나", name_en: "Barcelona", 
+  country: "스페인", country_en: "Spain",
+  lat: 41.3851, lng: 2.1734, category: "nature", 
+  keywords: ["가우디", "건축", "지중해", "축구", "타파스"]
+  },
+  { 
+  id: 209, name: "프라하", name_en: "Prague", 
+  country: "체코", country_en: "Czech Republic",
+  lat: 50.0755, lng: 14.4378, category: "nature", 
+  keywords: ["야경", "맥주", "카렐교", "구시가지", "낭만"]
+  },
+  { 
+  id: 210, name: "부다페스트", name_en: "Budapest", 
+  country: "헝가리", country_en: "Hungary",
+  lat: 47.4979, lng: 19.0402, category: "nature", 
+  keywords: ["야경", "온천", "다뉴브강", "국회의사당", "동유럽"]
   },
 
   // 3. 🏙️ Urban (도시)
@@ -85,18 +122,18 @@ export const TRAVEL_SPOTS = [
     lat: 48.85, lng: 2.35, category: "urban", 
     keywords: ["에펠탑", "쇼핑", "예술", "박물관", "카페"]
   },
-	{ 
-    id: 303, name: "뉴욕", name_en: "New York", 
-    country: "미국", country_en: "USA",
-    lat: 40.71, lng: -74.00, category: "urban", 
-    keywords: ["타임스퀘어", "미국", "빌딩", "자유의여신상"]
-  },
   { 
     id: 304, name: "도쿄", name_en: "Tokyo", 
     country: "일본", country_en: "Japan",
     lat: 35.67, lng: 139.76, category: "urban", 
     keywords: ["쇼핑", "애니메이션", "스시", "야경", "거리"]
-  },  
+  },
+  { 
+    id: 303, name: "뉴욕", name_en: "New York", 
+    country: "미국", country_en: "USA",
+    lat: 40.71, lng: -74.00, category: "urban", 
+    keywords: ["타임스퀘어", "미국", "빌딩", "자유의여신상"]
+  },
   { 
     id: 305, name: "런던", name_en: "London", 
     country: "영국", country_en: "UK",
@@ -167,10 +204,10 @@ export const TRAVEL_SPOTS = [
     lat: 30.04, lng: 31.23, category: "adventure", 
     keywords: ["피라미드", "스핑크스", "사막", "역사"]
   },
-	{ 
-    id: 503, name: "케이프타운", name_en: "Cape Town", 
-    country: "남아프리카 공화국", country_en: "South Africa",
-    lat: -33.92, lng: 18.42, category: "nature",
-    keywords: ["테이블 마운틴", "희망봉", "펭귄", "와이너리"]	
-	}	
+  { 
+    id: 503, name: "마푸투", name_en: "Maputo", 
+    country: "모잠비크", country_en: "Mozambique",
+    lat: -25.97, lng: 32.57, category: "adventure", 
+    keywords: ["인도양 해변", "바자루토 제도", "해산물", "포르투갈 양식"]
+ }
 ];

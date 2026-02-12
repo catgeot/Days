@@ -17,7 +17,7 @@ API_KEY = os.getenv("VITE_GEMINI_API_KEY")
 if not API_KEY:
     raise ValueError("❌ API 키가 없습니다. .env.local 파일을 확인해주세요.")
 
-LOCATIONS = ["아이슬란드"] 
+LOCATIONS = ["라로통가"] 
 OUTPUT_FILE = "real_timeline_data.json"
 TARGET_SUCCESS_COUNT = 5  # 🚨 목표: 성공한 데이터 5개를 만들 때까지 멈추지 않음
 SEARCH_CANDIDATES = 30    # 🚨 후보군: 5개를 건지기 위해 넉넉하게 30개를 먼저 검색
@@ -161,12 +161,12 @@ def analyze_with_gemini(location, video_info, transcript):
     {transcript}
 
     [논리적 정합성 규칙 - 매우 중요]
-    1. **타임라인 우선 작성:** 전체 여정을 5~8개의 핵심 타임라인으로 먼저 구성해.(시간순 선택이 아니라 전체 자막에서 흥미로운 장소/행동을 뽑아)
+    1. **타임라인 우선 작성:** 전체 여정을 10개의 핵심 타임라인으로 먼저 구성해.(시간순 선택이 아니라 전체 자막에서 흥미로운 장소/행동을 뽑아)
     2. **베스트 모멘트 선정:** 작성된 **타임라인 항목 중에서** 가장 매력적인 하나를 골라 'best_moment'로 지정해.
     3. **데이터 일치:** 따라서 'best_moment'의 시간(time)과 장소(place)는 반드시 'timeline'에 있는 항목 중 하나와 **정확히 일치**해야 해.
 
     [필수 제약 사항]
-    - **타임라인 개수: ** 5개 이상, 8개 이하.
+    - **타임라인 개수: ** 5개 이상, 10개 이하.
     - **거짓말 금지:** 자막에 없는 장소나 행동은 절대 적지 마.
     - **설명 길이: **15자 이내로 간결하게.
     -	**포맷:** 반드시 아래 JSON 형식으로만 출력해.        
