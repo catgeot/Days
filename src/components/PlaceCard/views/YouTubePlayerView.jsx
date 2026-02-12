@@ -3,7 +3,6 @@ import { Maximize2, Minimize2, Play, Sparkles } from 'lucide-react';
 
 const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFullScreen, showUI, onVideoSelect }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  // 🚨 [Fix 1] 초기값을 false로 두거나, 재생 시작 시 false로 강제하여 '안 사라짐' 방지
   const [isPaused, setIsPaused] = useState(true); 
   
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -13,52 +12,73 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
   const videoList = videos || (videoId ? [{ id: videoId, title: "Main Video" }] : []);
   const currentVideo = videoList[currentVideoIndex];
 
+  // 🚨 [Fix] 외부 제어 메서드 확장 (playVideo 추가 및 seekTo 강화)
   useImperativeHandle(ref, () => ({
     seekTo: (seconds) => {
-      // 외부에서 seekTo 명령이 오면 재생 중인 것으로 간주
+      // 1. 커버 모드(정지 상태)인 경우 -> iframe 모드로 전환 후 지연 실행
       if (!isPlaying) {
           setIsPlaying(true);
-          setIsPaused(false); // 🚨 리스트 숨김
+          setIsPaused(false);
+          
+          // 🚨 iframe이 DOM에 그려질 때까지 0.5초 대기 후 명령 전송
+          setTimeout(() => {
+            if (iframeRef.current) {
+               iframeRef.current.contentWindow.postMessage(
+                   JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }), '*'
+               );
+               iframeRef.current.contentWindow.postMessage(
+                   JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'
+               );
+            }
+          }, 500);
+          return;
       }
+      
+      // 2. 이미 재생 모드(iframe 존재)인 경우 -> 즉시 실행
       if (iframeRef.current) {
-         iframeRef.current.contentWindow.postMessage(
-             JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }), '*'
-         );
+          iframeRef.current.contentWindow.postMessage(
+              JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }), '*'
+          );
+          // 🚨 이동 후 확실하게 재생하도록 playVideo 명령 추가 전송
+          iframeRef.current.contentWindow.postMessage(
+              JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'
+          );
       }
+    },
+    // 🚨 [New] 부모 컴포넌트(PlaceCardExpanded)가 호출할 playVideo 함수 노출
+    playVideo: () => {
+        if (!isPlaying) {
+            setIsPlaying(true);
+            setIsPaused(false);
+        }
+        // iframe이 있다면 재생 명령 전송
+        if (iframeRef.current) {
+            iframeRef.current.contentWindow.postMessage(
+                JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'
+            );
+        }
     }
   }));
 
-  // 🚨 [Fix 2] 강력해진 메시지 수신 로직 (Object/String 모두 처리)
+  // 메시지 수신 로직 (기존 유지)
   useEffect(() => {
       const handleMessage = (event) => {
-          // 1. 데이터가 없으면 무시
           if (!event.data) return;
-
           let data = event.data;
-
-          // 2. 문자열이면 파싱, 이미 객체면 그대로 사용
           if (typeof data === 'string') {
-              try {
-                  data = JSON.parse(data);
-              } catch (e) {
-                  return; // 파싱 실패 시 무시
-              }
+              try { data = JSON.parse(data); } catch (e) { return; }
           }
-
-          // 3. YouTube 신호 분석
           if (data?.event === 'infoDelivery' && data.info && data.info.playerState !== undefined) {
               const state = data.info.playerState;
-              // State: 1 (재생중), 3 (버퍼링) -> Paused = false (리스트 숨김)
-              // State: 2 (일시정지), 0 (종료) -> Paused = true (리스트 표시)
               const isActive = state === 1 || state === 3;
               setIsPaused(!isActive);
           }
       };
-
       window.addEventListener('message', handleMessage);
       return () => window.removeEventListener('message', handleMessage);
   }, []);
 
+  // 비디오 변경 시 초기화 (기존 유지)
   useEffect(() => {
     setIsPlaying(false);
     setIsPaused(true);
@@ -82,21 +102,18 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
     }
   };
 
-  // ▶️ 재생 핸들러 (커버 클릭 시)
   const handlePlay = () => {
       setIsPlaying(true);
-      setIsPaused(false); // 🚨 [Fix 3] 재생 버튼 누르자마자 리스트 즉시 숨김 (낙관적 업데이트)
+      setIsPaused(false);
   };
 
   if (!currentVideo) return null;
 
-  // Show Logic
   const showPlaylistForce = !isPlaying || isPaused;
 
   return (
     <div className={`flex-1 h-full bg-[#05070a] rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}>
       
-      {/* Screen 1: Play Mode */}
       {isPlaying ? (
         <div className="relative w-full h-full flex items-center justify-center bg-black">
           <div className={`w-full h-full transition-all duration-500 ${isFullScreen ? 'p-0' : 'max-w-[95%] max-h-[90%] rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5'}`}>
@@ -114,7 +131,6 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
           </div>
         </div>
       ) : (
-        /* Screen 2: Cover Mode */
         <div className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer group" onClick={handlePlay}>
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-40 blur-2xl scale-110 transition-transform duration-700 group-hover:scale-125" 
@@ -141,7 +157,7 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
         </div>
       )}
 
-      {/* Playlist Section */}
+      {/* Playlist Section (기존 유지) */}
       {videoList.length > 1 && showUI && (
         <div className={`absolute bottom-24 left-0 w-full z-[210] flex justify-center transition-opacity duration-500 pointer-events-none 
             ${showPlaylistForce ? '!opacity-100' : 'opacity-0 hover:opacity-100'}`}
@@ -154,7 +170,7 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
                             e.stopPropagation(); 
                             if (onVideoSelect) onVideoSelect(video.id);
                             setCurrentVideoIndex(idx); 
-                            handlePlay(); // 비디오 변경 시에도 즉시 숨김 적용
+                            handlePlay(); 
                         }}
                         className={`relative w-32 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 group/item ${currentVideoIndex === idx ? 'border-red-500 scale-110 shadow-[0_0_20px_rgba(220,38,38,0.5)] z-10' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-105 hover:border-white/50'}`}
                     >
@@ -181,7 +197,7 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
         </div>
       )}
 
-      {/* Top Controls */}
+      {/* Top Controls (기존 유지) */}
       <div className={`absolute top-6 right-6 flex items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
         <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2 shadow-lg">
             <Sparkles size={14} className="text-red-500 animate-pulse" />

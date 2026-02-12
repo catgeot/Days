@@ -17,7 +17,7 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = spotVideos.find(v => v.id === activeVideoId) || null;
 
-  // 🚨 [Logic] 통합 정보 객체 생성 (데이터 경로 수정됨)
+  // 통합 정보 객체 생성
   const getActiveInfo = () => {
     // Case A: 갤러리 모드 (사진)
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
@@ -30,19 +30,17 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
         };
     }
     
-    // Case B: 비디오 모드 (영상) -> 🚨 [Fix] JSON 포맷에 맞춰 경로 수정
+    // Case B: 비디오 모드 (영상)
     if (mediaMode === 'VIDEO' && activeVideoData) {
-        // travelVideos.js의 JSON 구조: root -> ai_context -> summary
         const aiSummary = activeVideoData.ai_context?.summary;
         const aiTags = activeVideoData.ai_context?.tags;
 
         return {
             mode: 'VIDEO',
             title: activeVideoData.title,
-            // 요약 정보가 없으면 제목이라도 보여주는 Fallback 적용
             summary: aiSummary || "영상 설명 데이터를 불러오는 중입니다...", 
             tags: aiTags || ['Video', 'Trip'],
-            ai_context: activeVideoData.ai_context // 타임라인용 전체 객체 전달
+            ai_context: activeVideoData.ai_context 
         };
     }
 
@@ -58,10 +56,11 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
 
   const activeInfo = getActiveInfo();
 
-  // 타임라인 이동 핸들러
+  // 🚨 [Fix] 타임라인 이동 핸들러 (즉시 재생 기능 추가)
   const handleSeekTime = (timeValue) => {
     if (!playerRef.current) return;
     setMediaMode('VIDEO'); 
+    
     let seconds = 0;
     if (typeof timeValue === 'number') {
         seconds = timeValue;
@@ -70,7 +69,15 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
         if (parts.length === 2) seconds = parts[0] * 60 + parts[1];
         else if (parts.length === 3) seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
     }
+    
+    // 1. 이동 (Seek)
     playerRef.current.seekTo(seconds, true);
+
+    // 2. 🚨 [New] 즉시 재생 (Play)
+    // 플레이어가 멈춰있거나 로딩 전일 때 강제로 재생을 시작합니다.
+    if (playerRef.current.playVideo && typeof playerRef.current.playVideo === 'function') {
+        playerRef.current.playVideo();
+    }
   };
 
   const toggleFullScreen = () => {

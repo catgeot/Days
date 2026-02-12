@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Sparkles, ArrowLeft, Send, Crown, Play, Image as ImageIcon, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react'; // 🚨 [Fix] Hooks 추가
+import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X } from 'lucide-react';
 import PlaceChatView from '../views/PlaceChatView';
+import VideoInfoView from '../views/VideoInfoView';
+import GalleryInfoView from '../views/GalleryInfoView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 
 const PlaceChatPanel = ({ 
@@ -14,29 +16,19 @@ const PlaceChatPanel = ({
     onSeekTime 
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
-  const [selectedChapterIdx, setSelectedChapterIdx] = useState(null); // 🚨 [New] 선택된 챕터 추적
+  const scrollRef = useRef(null); // 🚨 [Fix] 스크롤 컨테이너 제어용 Ref
+
+  // 🚨 [Fix] 콘텐츠(제목/모드)가 변경되면 스크롤을 최상단으로 초기화
+  useEffect(() => {
+    if (scrollRef.current) {
+        scrollRef.current.scrollTop = 0;
+    }
+  }, [activeInfo.title, activeInfo.mode, isChatMode]); 
 
   const handleSendMessage = (text) => {
-     const persona = PERSONA_TYPES.INSPIRER;
-     const systemPrompt = getSystemPrompt(persona, location.name);
-     chatData.sendMessage(text, systemPrompt);
-  };
-
-  const aiContext = activeInfo.ai_context || null;
-  const timeChapters = aiContext?.timeline || (aiContext?.best_moment ? [aiContext.best_moment] : []);
-  const bestMomentTime = aiContext?.best_moment?.time;
-
-  const parseTime = (timeStr) => {
-    if (!timeStr || typeof timeStr !== 'string') return 0;
-    const parts = timeStr.split(':').map(Number);
-    if (parts.length === 2) return parts[0] * 60 + parts[1];
-    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-    return 0;
-  };
-
-  const handleChapterClick = (idx, timeStr) => {
-      setSelectedChapterIdx(idx);
-      if (onSeekTime) onSeekTime(parseTime(timeStr));
+      const persona = PERSONA_TYPES.INSPIRER;
+      const systemPrompt = getSystemPrompt(persona, location.name);
+      chatData.sendMessage(text, systemPrompt);
   };
 
   return (
@@ -79,8 +71,11 @@ const PlaceChatPanel = ({
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto relative custom-scrollbar">
-        {/* 🚨 [Fix] 스크롤바 상시 노출 (hover 제거) & 디자인 개선 */}
+      {/* 🚨 [Fix] ref 연결하여 스크롤 제어 */}
+      <div 
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto relative custom-scrollbar"
+      >
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -89,119 +84,49 @@ const PlaceChatPanel = ({
         `}</style>
 
         {isChatMode ? (
-           /* Chat View Overlay */
-           <div className="h-full flex flex-col p-6">
-               <div className="flex items-center justify-between mb-2 shrink-0">
-                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                       <Sparkles size={14} className="text-blue-400"/> AI Assistant
-                   </h3>
-                   {/* 🚨 [Fix] 닫기 버튼 디자인 개선 (시인성 UP) */}
-                   <button 
+            /* Chat View Overlay */
+            <div className="h-full flex flex-col p-6">
+                <div className="flex items-center justify-between mb-2 shrink-0">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                        <Sparkles size={14} className="text-blue-400"/> AI Assistant
+                    </h3>
+                    <button 
                         onClick={() => setIsChatMode(false)} 
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/20 text-xs text-gray-300 hover:text-white transition-all border border-white/5"
                     >
-                       <span>닫기</span>
-                       <X size={12} />
-                   </button>
-               </div>
-               
-               <div className="flex-1 min-h-0"> 
-                   <PlaceChatView 
-                     chatHistory={chatData.chatHistory}
-                     isAiLoading={chatData.isAiLoading}
-                     onSendMessage={handleSendMessage}
-                     locationName={location.name}
-                     mediaMode={mediaMode}
-                   />
-               </div>
-           </div>
+                        <span>닫기</span>
+                        <X size={12} />
+                    </button>
+                </div>
+                
+                <div className="flex-1 min-h-0"> 
+                    <PlaceChatView 
+                      chatHistory={chatData.chatHistory}
+                      isAiLoading={chatData.isAiLoading}
+                      onSendMessage={handleSendMessage}
+                      locationName={location.name}
+                      mediaMode={mediaMode}
+                    />
+                </div>
+            </div>
         ) : (
-           /* Docent Mode (Unified Info View) */
-           <div className="animate-fade-in flex flex-col gap-6 p-8">
-             
-             {/* 🚨 [Fix] Header Design Restore (심플한 라벨 형태로 복구) */}
-             <div className="space-y-3">
-                 <div className="flex items-center gap-2 mb-1">
-                     <Sparkles size={12} className={activeInfo.mode === 'VIDEO' ? "text-amber-400" : "text-blue-400"} />
-                     <span className={`text-[10px] font-bold uppercase tracking-widest ${activeInfo.mode === 'VIDEO' ? "text-amber-300" : "text-blue-300"}`}>
-                        {activeInfo.mode === 'VIDEO' ? "VIDEO INSIGHTS" : "ABOUT THIS PLACE"}
-                     </span>
-                 </div>
-                 
-                 {/* 🚨 [Design] 설명글 스타일 조정 */}
-                 <p className="text-[15px] text-gray-200 leading-7 font-normal tracking-wide whitespace-pre-line">
-                    {activeInfo.summary}
-                 </p>
-                 
-                 <div className="flex flex-wrap gap-1.5 pt-2">
-                     {activeInfo.tags && activeInfo.tags.map((tag, idx) => (
-                         <span key={idx} className="px-2.5 py-1 bg-white/5 border border-white/5 rounded-lg text-[10px] text-gray-400 hover:text-white hover:border-white/20 transition-all cursor-default">
-                             #{tag.replace ? tag.replace('#','') : tag}
-                         </span>
-                     ))}
-                 </div>
-             </div>
-
-             {/* Timeline List */}
-             {activeInfo.mode === 'VIDEO' && timeChapters.length > 0 && (
-                 <div className="space-y-4 pt-4 border-t border-white/5">
-                     <div className="flex items-center justify-between pl-1">
-                       <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Moments</h3>
-                     </div>
-                     <div className="flex flex-col gap-2">
-                         {timeChapters.map((chapter, idx) => {
-                             const isBestMoment = bestMomentTime && chapter.time === bestMomentTime;
-                             const isSelected = selectedChapterIdx === idx; // 🚨 선택 여부 확인
-
-                             return (
-                               <button 
-                                   key={idx}
-                                   onClick={() => handleChapterClick(idx, chapter.time)}
-                                   // 🚨 [Fix] 타임라인 버튼 디자인 개선 (부드러운 호버, 명확한 선택 상태)
-                                   className={`group w-full flex items-center gap-4 p-3 rounded-xl border transition-all text-left relative overflow-hidden
-                                     ${isSelected 
-                                         ? 'bg-amber-500/10 border-amber-500/50' // 선택됨
-                                         : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/5' // 기본 & 호버(부드럽게)
-                                     }`}
-                               >
-                                   {isBestMoment && (
-                                       <div className="absolute top-0 right-0 bg-amber-500 text-[9px] text-black font-bold px-2 py-0.5 rounded-bl-lg z-10 shadow-lg">
-                                           BEST
-                                       </div>
-                                   )}
-                                   
-                                   {/* 시간 배지 & 아이콘 */}
-                                   <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors
-                                       ${isSelected || isBestMoment 
-                                            ? 'bg-amber-500/20 text-amber-400' 
-                                            : 'bg-[#0F1115] text-gray-400 group-hover:text-gray-200 group-hover:bg-[#1A1D21]'}`}>
-                                           <span className="text-[10px] font-bold group-hover:hidden">
-                                               {isBestMoment ? <Crown size={14} /> : idx + 1}
-                                           </span>
-                                           {/* 🚨 [Fix] 호버 시 붉고 거대한 아이콘 제거 -> 작고 깔끔한 아이콘 */}
-                                           <Play size={12} className="hidden group-hover:block fill-current opacity-80" />
-                                   </div>
-
-                                   <div className="flex-1 min-w-0">
-                                       <p className={`text-xs font-bold truncate transition-colors ${isSelected ? 'text-amber-200' : 'text-gray-300 group-hover:text-white'}`}>
-                                           {chapter.title || "Highlight"}
-                                       </p>
-                                       <div className="flex items-center gap-2 mt-0.5">
-                                            <span className="text-[10px] text-gray-500 font-mono bg-black/30 px-1 rounded group-hover:bg-black/50 transition-colors">{chapter.time}</span>
-                                            <p className="text-[10px] text-gray-500 truncate max-w-[150px] group-hover:text-gray-400">{chapter.desc}</p>
-                                       </div>
-                                   </div>
-                               </button>
-                             );
-                         })}
-                     </div>
-                 </div>
-             )}
-           </div>
+            /* Docent Mode (Unified Info View) */
+            <div className="animate-fade-in flex flex-col gap-6 p-8">
+                {activeInfo.mode === 'VIDEO' ? (
+                    <VideoInfoView 
+                        videoData={activeInfo} 
+                        onSeekTime={onSeekTime}
+                    />
+                ) : (
+                    <GalleryInfoView 
+                        infoData={activeInfo} 
+                    />
+                )}
+            </div>
         )}
       </div>
 
-      {/* Footer (Input Trigger) - 디자인 유지 */}
+      {/* Footer (Input Trigger) */}
       {!isChatMode && (
           <div className="p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
               <button 
