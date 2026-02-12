@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'; // 🚨 [Fix] Hooks 추가
+import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X } from 'lucide-react';
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
@@ -13,12 +13,15 @@ const PlaceChatPanel = ({
     isFullScreen, 
     mediaMode, 
     setMediaMode, 
-    onSeekTime 
+    onSeekTime,
+    // 🚨 [New] 부모로부터 받은 핵심 데이터
+    isAiMode,
+    selectedImg
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
-  const scrollRef = useRef(null); // 🚨 [Fix] 스크롤 컨테이너 제어용 Ref
+  const scrollRef = useRef(null);
 
-  // 🚨 [Fix] 콘텐츠(제목/모드)가 변경되면 스크롤을 최상단으로 초기화
+  // 콘텐츠 변경 시 스크롤 초기화
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
@@ -71,7 +74,6 @@ const PlaceChatPanel = ({
       </div>
 
       {/* Body */}
-      {/* 🚨 [Fix] ref 연결하여 스크롤 제어 */}
       <div 
         ref={scrollRef}
         className="flex-1 overflow-y-auto relative custom-scrollbar"
@@ -118,15 +120,18 @@ const PlaceChatPanel = ({
                         onSeekTime={onSeekTime}
                     />
                 ) : (
+                    // 🚨 [Fix] GalleryInfoView에 필요한 새로운 Props 주입 (기존 infoData 제거)
                     <GalleryInfoView 
-                        infoData={activeInfo} 
+                        selectedPlace={location} // 장소 기본 정보 (desc 등)
+                        selectedImg={selectedImg} // 선택된 이미지 (Exif, Location)
+                        isAiMode={isAiMode}       // AI 모드 활성화 여부
                     />
                 )}
             </div>
         )}
       </div>
 
-      {/* Footer (Input Trigger) */}
+      {/* Footer (Input Trigger) - Unchanged */}
       {!isChatMode && (
           <div className="p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
               <button 

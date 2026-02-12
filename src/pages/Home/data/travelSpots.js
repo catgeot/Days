@@ -68,7 +68,8 @@ export const TRAVEL_SPOTS = [
 	{
 		id: 203, name: "갈라파고스", name_en: "Galápagos Islands",
 		country: "에콰도르", country_en: "Ecuador",
-		lat: -0.7402, lng: -90.3134, category: "nature", desc: "살아있는 진화의 박물관, 야생동물의 낙원",
+		lat: -0.7402, lng: -90.3134, category: "nature", 
+		desc: "살아있는 진화의 박물관, 야생동물의 낙원.	이곳은 찰스 다윈의 진화론에 영감을 준 곳으로 유명합니다.다양한 고유종 생물들을 바로 눈앞에서 관찰할 수 있습니다.",
 		keywords: ["거북이", "스노클링", "다윈", "에콰도르", "자연"]
 	},
   { 
