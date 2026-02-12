@@ -10,48 +10,67 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   
   const containerRef = useRef(null);
-  
-  // 🕹️ [Control] 플레이어 제어용 Ref
   const playerRef = useRef(null);
 
-  // 1. 데이터 조회 (비관적 기본값: 빈 배열)
+  // 1. 데이터 조회
   const spotVideos = TRAVEL_VIDEOS[location.id] || [];
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = spotVideos.find(v => v.id === activeVideoId) || null;
 
-  // 🕹️ [Logic] 타임라인 이동 핸들러 (Hybrid: Number/String 지원)
-  const handleSeekTime = (timeValue) => {
-    // 🚨 [Safe Path] 플레이어가 준비되지 않았으면 중단
-    if (!playerRef.current) {
-        console.warn("YouTube Player is not ready yet.");
-        return;
+  // 🚨 [Logic] 통합 정보 객체 생성 (데이터 경로 수정됨)
+  const getActiveInfo = () => {
+    // Case A: 갤러리 모드 (사진)
+    if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
+        return {
+            mode: 'PHOTO',
+            title: '갤러리 상세 정보',
+            summary: galleryData.selectedImg.alt_description || galleryData.selectedImg.description || "사진에 대한 설명이 없습니다.",
+            tags: galleryData.selectedImg.tags ? galleryData.selectedImg.tags.map(t => t.title) : ['Photo'],
+            ai_context: null 
+        };
     }
     
-    // 1. 비디오 모드로 강제 전환 (갤러리 보고 있다가 클릭했을 경우 대비)
-    setMediaMode('VIDEO');
+    // Case B: 비디오 모드 (영상) -> 🚨 [Fix] JSON 포맷에 맞춰 경로 수정
+    if (mediaMode === 'VIDEO' && activeVideoData) {
+        // travelVideos.js의 JSON 구조: root -> ai_context -> summary
+        const aiSummary = activeVideoData.ai_context?.summary;
+        const aiTags = activeVideoData.ai_context?.tags;
 
+        return {
+            mode: 'VIDEO',
+            title: activeVideoData.title,
+            // 요약 정보가 없으면 제목이라도 보여주는 Fallback 적용
+            summary: aiSummary || "영상 설명 데이터를 불러오는 중입니다...", 
+            tags: aiTags || ['Video', 'Trip'],
+            ai_context: activeVideoData.ai_context // 타임라인용 전체 객체 전달
+        };
+    }
+
+    // Case C: 기본 장소 정보
+    return {
+        mode: 'LOCATION',
+        title: location.name,
+        summary: location.description || "이 장소에 대한 여행자들의 리뷰와 정보가 곧 업데이트될 예정입니다.",
+        tags: ['Travel', location.country, ...(location.tags || [])],
+        ai_context: null
+    };
+  };
+
+  const activeInfo = getActiveInfo();
+
+  // 타임라인 이동 핸들러
+  const handleSeekTime = (timeValue) => {
+    if (!playerRef.current) return;
+    setMediaMode('VIDEO'); 
     let seconds = 0;
-
-    // 2. 타입별 처리 (비관적 설계 적용)
     if (typeof timeValue === 'number') {
-        // 이미 초 단위 숫자라면 그대로 사용
         seconds = timeValue;
     } else if (typeof timeValue === 'string') {
-        // 문자열("01:30")이라면 파싱
         const parts = timeValue.split(':').map(Number);
         if (parts.length === 2) seconds = parts[0] * 60 + parts[1];
         else if (parts.length === 3) seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
-    } else {
-        console.error("Invalid time format:", timeValue);
-        return;
     }
-    
-    // 3. 플레이어 이동 및 재생
-    // seekTo(seconds, allowSeekAhead)
     playerRef.current.seekTo(seconds, true);
-    if (playerRef.current.playVideo) {
-        playerRef.current.playVideo();
-    }
   };
 
   const toggleFullScreen = () => {
@@ -73,22 +92,18 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-[100] bg-black/95 flex p-6 gap-6 animate-fade-in overflow-hidden font-sans">
-      
-      {/* Left Panel: Chat & Info (Navigation Center) */}
+      {/* Left Panel */}
       <PlaceChatPanel 
         location={location}
         onClose={onClose}
         chatData={chatData}
-        selectedImg={galleryData.selectedImg}
-        setSelectedImg={galleryData.setSelectedImg}
+        activeInfo={activeInfo}
         isFullScreen={isFullScreen}
         mediaMode={mediaMode}
         setMediaMode={setMediaMode}
-        videoData={activeVideoData}
-        onSeekTime={handleSeekTime} // 🚨 수정된 핸들러 전달
+        onSeekTime={handleSeekTime}
       />
-
-      {/* Right Panel: Media (Player) */}
+      {/* Right Panel */}
       <div className={`flex-1 min-w-0 h-full transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200]' : 'relative'}`}>
         <PlaceMediaPanel 
             galleryData={galleryData}
