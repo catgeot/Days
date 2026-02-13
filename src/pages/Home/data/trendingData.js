@@ -1,8 +1,10 @@
-// src/data/trendingData.js
-// 🚨 [New] 티커 전용 데이터 조립 파일
+// src/pages/Home/data/trendingData.js
+// 🚨 [Fix] 모듈 export 오류 해결: TRENDING_LIST를 명시적으로 내보냅니다.
+// 이 파일은 DB 연결이 실패하거나 데이터가 없을 때 사용하는 '안전장치(Fallback)'입니다.
+
 import { TRAVEL_SPOTS } from './travelSpots';
 
-// 관리자 설정 구역: 여기에 ID만 넣으면 순위가 결정됩니다.
+// 1. 순위 설정 (수동 관리 or 기본값)
 // 날씨와 등락폭(Change)은 매주 수동으로 업데이트한다고 가정합니다.
 const RANKING_CONFIG = [
   { id: 403, temp: 18, weather: 'sun', change: 'up' },    // 1위: Osaka
@@ -17,15 +19,15 @@ const RANKING_CONFIG = [
   { id: 201, temp: -2, weather: 'rain', change: 'up' },   // 10위: Iceland
 ];
 
-// 데이터 결합 로직 (자동화)
+// 2. 데이터 결합 및 내보내기 (Export)
 export const TRENDING_LIST = RANKING_CONFIG.map((config, index) => {
-  // 1. 원본 데이터 찾기
+  // travelSpots.js에서 ID로 데이터 찾기
   const spot = TRAVEL_SPOTS.find(s => s.id === config.id);
   
-  // 2. 데이터가 없으면 에러 방지를 위해 더미 리턴 (안전장치)
+  // 데이터가 없으면 에러 방지를 위해 더미 리턴 (안전장치)
   if (!spot) return null;
 
-  // 3. Ticker가 사용할 포맷으로 결합
+  // Ticker가 사용할 포맷으로 결합
   return {
     ...spot,        // name, country, lat, lng 등 원본 데이터 상속
     rank: index + 1, // 배열 순서대로 자동 랭킹 부여

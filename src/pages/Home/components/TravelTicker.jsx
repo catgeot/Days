@@ -1,13 +1,8 @@
-// src/components/TravelTicker.jsx
+// src/pages/Home/components/TravelTicker.jsx
+// 🚨 [Fix] Dumb Component화: 외부에서 데이터를 주입받도록 변경
+
 import React, { useState, useEffect } from 'react';
 import { Plane, CloudSun, Sun, CloudRain, Cloud, Wind, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-
-// 🚨 [Fix/New] 하드코딩 데이터 삭제 -> 외부 데이터(trendingData) 연결
-// 파일 위치가 'src/pages/Home/data/trendingData.js'라고 가정했습니다.
-import { TRENDING_LIST } from '../data/trendingData';
-
-// 기존 변수명 'cities'를 그대로 사용하여 하위 로직 변경 최소화
-const cities = TRENDING_LIST;
 
 const WeatherIcon = ({ type, size = 14 }) => {
   switch (type) {
@@ -27,16 +22,22 @@ const RankChange = ({ type, size = 12 }) => {
   }
 };
 
-export default function CombinedTravelTicker({ onCityClick, isExpanded: externalExpanded, onToggle }) {
+// 🚨 [Change] props에 'data' 추가 (기본값 빈 배열)
+export default function TravelTicker({ data = [], onCityClick, isExpanded: externalExpanded, onToggle }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
   
-  // 외부 제어 모드 지원 (HomeUI에서 제어)
+  // 외부 제어 모드 지원
   const isControlled = externalExpanded !== undefined;
   const [internalExpanded, setInternalExpanded] = useState(false);
   const isExpanded = isControlled ? externalExpanded : internalExpanded;
 
+  // 🚨 [Fix] 데이터가 바뀔 때 인덱스 초기화 방지 로직 필요하면 추가
+  const cities = data.length > 0 ? data : []; 
+
   useEffect(() => {
+    if (cities.length === 0) return; // 데이터 없으면 루프 안 돔
+
     let interval;
     if (!isExpanded) { 
       interval = setInterval(() => {
@@ -50,9 +51,9 @@ export default function CombinedTravelTicker({ onCityClick, isExpanded: external
       clearInterval(interval); 
     }
     return () => clearInterval(interval);
-  }, [isExpanded]);
+  }, [isExpanded, cities.length]); // cities.length 의존성 추가
 
-  // 데이터 안전장치 (데이터가 아직 로드 안됐을 경우 대비)
+  // 데이터 안전장치
   const currentCity = cities[currentIndex] || cities[0];
 
   const handleMouseLeave = () => {
@@ -67,15 +68,15 @@ export default function CombinedTravelTicker({ onCityClick, isExpanded: external
     else setInternalExpanded(prev => !prev);
   };
 
-  // 도시 클릭 시 상위 컴포넌트로 데이터 전달
   const handleCityClick = (e, city) => {
-    e.stopPropagation(); // 부모의 toggle 이벤트 방지
+    e.stopPropagation(); 
     if (onCityClick) {
       onCityClick(city);
     }
   };
 
-  if (!currentCity) return null; // 데이터 로딩 중 에러 방지
+  // 🚨 [Fix] 데이터가 아예 없을 때(로딩 전) 렌더링 방지
+  if (!currentCity) return null; 
 
   return (
     <div
@@ -85,7 +86,7 @@ export default function CombinedTravelTicker({ onCityClick, isExpanded: external
         group
       `}
       onMouseLeave={handleMouseLeave} 
-      onClick={!isExpanded ? handleToggle : undefined} // 접혀있을 때만 전체 클릭으로 확장
+      onClick={!isExpanded ? handleToggle : undefined} 
     >
 
       <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-2" onClick={isExpanded ? handleToggle : undefined}>
@@ -104,7 +105,7 @@ export default function CombinedTravelTicker({ onCityClick, isExpanded: external
         <div className="flex flex-col gap-1">
           {cities.map((city) => (
             <div
-              key={city.rank}
+              key={city.rank} // rank를 키로 사용
               onClick={(e) => handleCityClick(e, city)}
               className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
             >
