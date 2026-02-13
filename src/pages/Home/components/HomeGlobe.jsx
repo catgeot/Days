@@ -1,5 +1,5 @@
-// src/pages/Home/components/HomeGlobe.jsx
-// 🚨 [Fix] 레이어 단일화(고도 1.5) 및 별자리 분산 전략(샴페인 골드 색상/크기) 완벽 적용
+// src/components/HomeGlobe.jsx
+// 🚨 [Fix] ID Overwrite 방지: result[idx].id = trip.id 코드 삭제 -> tripId로 분리 저장
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
@@ -19,7 +19,7 @@ const HomeGlobe = forwardRef(({
   const [ripples, setRipples] = useState([]);
   const isHoveringMarker = useRef(false);
 
-  // 🚨 [Fix] 복잡한 LOD 상태 제거: 0(우주/마커 On), 1(탐험/라벨 On) 두 가지 상태로만 심플하게 관리
+  // LOD 상태
   const [lodLevel, setLodLevel] = useState(0);
   const lodLevelRef = useRef(0);
 
@@ -55,7 +55,17 @@ const HomeGlobe = forwardRef(({
       }, 3000);
     },
     updateLastPinName: () => {}, 
-    resetPins: () => {}, 
+    resetPins: () => {
+        setRipples([]); 
+        if (globeEl.current) {
+            globeEl.current.controls().autoRotate = true;
+            globeEl.current.pointOfView({ altitude: 2.5 }, 1500); 
+        }
+        if (rotationTimer.current) {
+            clearTimeout(rotationTimer.current);
+            rotationTimer.current = null;
+        }
+    }, 
   }));
 
   useEffect(() => {
@@ -73,10 +83,7 @@ const HomeGlobe = forwardRef(({
       const handleCameraChange = () => {
         if (!globeEl.current) return;
         const alt = globeEl.current.pointOfView().altitude;
-        
-        // 🚨 [Fix] 단일 고도 임계점: 1.5 미만이면 무조건 1(On) 상태로 전환하여 모든 지표를 켬
-        const newLevel = alt < 1.9 ? 1 : 0;
-
+        const newLevel = alt < 1.6 ? 1 : 0;
         if (newLevel !== lodLevelRef.current) {
           lodLevelRef.current = newLevel;
           setLodLevel(newLevel);
@@ -125,31 +132,49 @@ const HomeGlobe = forwardRef(({
         if (!isBookmarked) { if (chatCount >= 5) return; chatCount++; }
         const idx = findMatchIndex(trip.lat, trip.lng);
         const fixedName = trip.name || trip.destination || "Saved Place";
+        
         if (idx !== -1) {
             if (isBookmarked) result[idx].isBookmarked = true;
             else result[idx].hasChat = true;
-            result[idx].id = trip.id; 
+            
+            // 🚨 [Fix] 여기가 범인입니다! 원본 ID를 덮어쓰지 말고, tripId로 따로 저장합니다.
+            // result[idx].id = trip.id;  <-- 삭제된 코드
+            result[idx].tripId = trip.id; // <-- 추가된 코드
         } else {
-            result.push({ ...trip, name: fixedName, type: 'temp-base', priority: isBookmarked ? 4 : 3, isBookmarked: isBookmarked, hasChat: !isBookmarked });
+            // 저장된 여행이지만 travelSpots에 없는 경우 (임의의 좌표)
+            result.push({ 
+                ...trip, 
+                // id: trip.id, // trip 객체에 이미 id가 있으므로 유지되지만, 
+                // 만약 이 핀을 클릭해서 영상을 보고 싶다면 별도 매핑이 필요함. 
+                // 하지만 임의 좌표는 영상이 없으므로 OK.
+                name: fixedName, 
+                type: 'temp-base', 
+                priority: isBookmarked ? 4 : 3, 
+                isBookmarked: isBookmarked, 
+                hasChat: !isBookmarked 
+            });
         }
     });
 
     const activePin = tempPinsData.find(p => p.id === activePinId);
-    tempPinsData.forEach(pin => {
-        const isActive = (pin.id === activePinId);
-        if (!isActive && activePin) { if (Math.abs(pin.lat - activePin.lat) < threshold && Math.abs(pin.lng - activePin.lng) < threshold) return; }
-        const idx = findMatchIndex(pin.lat, pin.lng);
-        if (idx !== -1) {
-            if (isActive) { result[idx].isActive = true; result[idx].isGhost = false; }
-            else { result[idx].isGhost = true; }
-        } else {
-            result.push({ ...pin, type: 'temp-base', name: pin.name || "Searching...", isActive: isActive, isGhost: !isActive });
-        }
-    });
+    
+    if (tempPinsData && tempPinsData.length > 0) {
+        tempPinsData.forEach(pin => {
+            const isActive = (pin.id === activePinId);
+            if (!isActive && activePin) { if (Math.abs(pin.lat - activePin.lat) < threshold && Math.abs(pin.lng - activePin.lng) < threshold) return; }
+            const idx = findMatchIndex(pin.lat, pin.lng);
+            if (idx !== -1) {
+                if (isActive) { result[idx].isActive = true; result[idx].isGhost = false; }
+                else { result[idx].isGhost = true; }
+            } else {
+                result.push({ ...pin, type: 'temp-base', name: pin.name || "Searching...", isActive: isActive, isGhost: !isActive });
+            }
+        });
+    }
+    
     return result;
   }, [travelSpots, savedTrips, tempPinsData, activePinId]);
 
-  // 🚨 [Fix] 복잡한 필터링 제거: On(1) 상태면 citiesData 전체를 반환하여 렌더링 부하 최소화
   const visibleLabels = useMemo(() => {
     return lodLevel === 1 ? citiesData : [];
   }, [lodLevel]);
@@ -171,11 +196,13 @@ const HomeGlobe = forwardRef(({
     };
     el.onmouseenter = () => { 
       isHoveringMarker.current = true;
-      el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1.5)`; 
+      const innerDiv = el.querySelector('div');
+      if(innerDiv) innerDiv.style.transform = `translate(-50%, ${offsetY}) scale(1.5)`; 
     };
     el.onmouseleave = () => { 
       isHoveringMarker.current = false;
-      el.querySelector('div').style.transform = `translate(-50%, ${offsetY}) scale(1)`; 
+      const innerDiv = el.querySelector('div');
+      if(innerDiv) innerDiv.style.transform = `translate(-50%, ${offsetY}) scale(1)`; 
     };
     return el;
   };
@@ -216,21 +243,13 @@ const HomeGlobe = forwardRef(({
         labelLat={d => d.lat}
         labelLng={d => d.lng}
         labelText={d => d.name}
-        // 🚨 [Fix] 원근감과 공간감을 위한 사이즈 이원화 (대양/대륙 크게, 지역 작게)
         labelSize={d => d.priority === 1 ? 1.2 : 0.8}
         labelDotRadius={0.15}
-        // 🚨 [Fix] Option 1: 미래적인 네온 블루 (시인성 최상)
-				// labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
-
-				// 🚨 [Fix] Option 2: 강렬한 핫핑크/마젠타 (대비 효과 극대화)
-				// labelColor={d => d.priority === 1 ? 'rgba(255, 20, 147, 1)' : 'rgba(251, 113, 133, 0.85)'}
-
-				// 🚨 [Fix] Option 3: 테크니컬한 라임 그린 (매트릭스 스타일)
-				labelColor={d => d.priority === 1 ? 'rgba(57, 255, 20, 1)' : 'rgba(134, 239, 172, 0.85)'}
-
+        labelColor={d => d.priority === 1 ? 'rgba(57, 255, 20, 1)' : 'rgba(134, 239, 172, 0.85)'}
         labelResolution={2}
         labelAltitude={0.01}
-        onLabelClick={(d) => {
+        
+        onLabelClick={(d, event) => {
           if (onMarkerClick) onMarkerClick({ ...d, type: 'city-label' }, 'globe');
         }}
       />

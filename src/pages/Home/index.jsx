@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] 데이터 매핑 로직 수정: (UI: 한글) <-> (Logic: 영문) 이원화 적용
+// 🚨 [Fix] 휴지통 기능 통합(핀+말풍선 동시 삭제) 및 데이터 정제 로직(confirmPin) 적용 완료
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
@@ -32,19 +32,32 @@ function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
   
+  // 1. Auth 구독 (사용자 정보 실시간 동기화)
+  useEffect(() => { 
+    // fetchData(); // fetchData는 아래 useTravelData에서 가져온 뒤 호출하는 것이 안전함
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // 2. Hooks 초기화
+  // 🚨 [Fix] user.id 전달 -> 본인의 핀만 삭제 가능
   const { 
     scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, 
-    moveToLocation, addScoutPin, clearScouts 
-  } = useGlobeLogic(globeRef);
+    moveToLocation, addScoutPin, clearScouts,
+    confirmPin // 🚨 [New] 이모지 제거 및 점수 집계를 위한 핵심 함수
+  } = useGlobeLogic(globeRef, user?.id);
 
+  // 🚨 [Fix] clearTemporaryTrips 추가 (말풍선 삭제용)
   const { 
     savedTrips, activeChatId, setActiveChatId, fetchData, 
-    saveNewTrip, updateMessages, toggleBookmark, deleteTrip 
+    saveNewTrip, updateMessages, toggleBookmark, deleteTrip,
+    clearTemporaryTrips 
   } = useTravelData();
 
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
-  // UI States
+  // 3. UI States
   const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
@@ -58,16 +71,14 @@ function Home() {
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [activeTestBench, setActiveTestBench] = useState(null);
 
-  useEffect(() => { 
-    fetchData(); 
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
-    return () => subscription.unsubscribe();
-  }, [fetchData]);
+  // 데이터 로드
+  useEffect(() => { fetchData(); }, [fetchData]);
 
+  // 필터링 로직
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
   const filteredSpots = useMemo(() => category === 'all' ? TRAVEL_SPOTS : TRAVEL_SPOTS.filter(s => s.category === category), [category]);
 
+  // 포커스 모드 (배경 흐림 처리 등)
   const isFocusMode = useMemo(() => {
     if (isAmbientMode) return true;
     if (isTicketOpen || isChatOpen || activeTestBench) return true;
@@ -77,10 +88,12 @@ function Home() {
 
   // --- Handlers ---
 
+  // 4. 지구본 클릭 핸들러
   const handleGlobeClick = useCallback(async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
     const tempId = Date.now();
     
+    // 임시 핀 생성 (Scanning...)
     const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: 'scout' };
 
     addScoutPin(tempPin);
@@ -91,28 +104,28 @@ function Home() {
 
     try {
       const addressData = await getAddressFromCoordinates(lat, lng);
-      // 역지오코딩 결과도 이제 영문으로 옴 (geocoding.js 수정 덕분)
-      // 하지만 UI에는 영문을 보여주는게 더 세련될 수 있음.
       const name = addressData?.city || addressData?.country || `Point (${lat.toFixed(1)}, ${lng.toFixed(1)})`;
 
       processSearchKeywords(name);
       
       const realPin = { 
         ...tempPin, 
-        name, 
-        name_en: name, // 좌표 찍기는 보통 영문/현지어 동일시
+        name, // 🚨 confirmPin 내부에서 이모지 자동 제거됨
+        name_en: name, 
         country: addressData?.country || "Unknown",
         display_name: name 
       };
       
-      setScoutedPins(prev => prev.map(p => p.id === tempId ? realPin : p));
-      setSelectedLocation(realPin); 
-      setDraftInput(`📍 ${name}`);
+      // 🚨 [Fix] 핀 확정 및 점수 집계 (DB 저장)
+      confirmPin(tempId, realPin);
+      
+      setDraftInput(`📍 ${name}`); // UI에는 이모지 보여줌
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
-  }, [addScoutPin, moveToLocation, processSearchKeywords, setScoutedPins, setSelectedLocation]);
+  }, [addScoutPin, moveToLocation, processSearchKeywords, confirmPin, setDraftInput]);
 
+  // 5. 위치 선택 핸들러 (마커 클릭 등)
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
 
@@ -142,6 +155,7 @@ function Home() {
 
   }, [moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, selectedLocation]);
 
+  // 6. 스마트 검색 핸들러
   const handleSmartSearch = async (input) => {
     if (!input) return;
     
@@ -154,7 +168,7 @@ function Home() {
     setDraftInput(query);
     processSearchKeywords(query);
 
-    // 1. 내부 데이터(travelSpots) 탐색
+    // 내부 데이터 탐색
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
       s.country.toLowerCase() === query.toLowerCase() ||
@@ -165,28 +179,21 @@ function Home() {
       return;
     }
 
-    // 2. 컨셉/카테고리 가드
+    // 컨셉 가드
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
     if (isConcept) {
       console.log(`🛡️ Concept Guard: "${query}" - 키워드 매칭됨. 이동 보류.`);
       return;
     }
 
-    // 3. 외부 API 검색 (Nominatim)
-    // 🚨 [Note] geocoding.js가 이제 영문 결과(coords.name)를 우선 반환합니다.
+    // 외부 API 검색
     const coords = await getCoordinatesFromAddress(query);
     
     if (coords) {
-      // 🚨 [Fix] 데이터 구조 정규화 (Normalization)
       const normalizedLoc = {
         id: `search-${coords.lat}-${coords.lng}`,
-        
-        // 🚨 중요: UI에는 사용자가 친 한글("롬복")을 보여줌
         name: query, 
-        
-        // 🚨 중요: PlaceCard->GalleryHook에는 API가 준 영문("Lombok")을 전달
         name_en: coords.name, 
-
         country: coords.country || "Explore",
         lat: coords.lat,
         lng: coords.lng,
@@ -203,6 +210,7 @@ function Home() {
     }
   };
 
+  // 7. 채팅 시작 핸들러
   const handleStartChat = async (dest, initPayload, existingId = null) => {
     if (globeRef.current) globeRef.current.pauseRotation();
 
@@ -239,6 +247,7 @@ function Home() {
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       
+      {/* 1. 지구본 레이어 */}
       <div 
         style={{ 
           contentVisibility: isFocusMode ? 'hidden' : 'visible',
@@ -262,6 +271,7 @@ function Home() {
         />
       </div>
       
+      {/* 2. UI 레이어 */}
       <HomeUI 
         onSearch={handleSmartSearch}
         onTickerClick={handleSmartSearch}
@@ -277,13 +287,21 @@ function Home() {
         
         selectedCategory={category} onCategorySelect={setCategory}
         isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
-        onClearScouts={() => { if(window.confirm("지도의 모든 핀을 정리하시겠습니까?")) clearScouts(); }}
+        
+        // 🚨 [Fix] 휴지통 통합: 핀(Scouts) + 임시 말풍선(Chats) 동시 삭제
+        onClearScouts={() => { 
+            if(window.confirm("임시 핀과 북마크되지 않은 대화 기록을 모두 정리하시겠습니까?")) {
+                clearScouts();          // 핀 삭제 (화면+DB)
+                clearTemporaryTrips();  // 말풍선 삭제 (화면+DB)
+            } 
+        }}
         
         onOpenTestBenchA={() => setActiveTestBench('A')}
         onOpenTestBenchB={() => setActiveTestBench('B')}
         onOpenTestBenchC={() => setActiveTestBench('C')}
       />
       
+      {/* 3. 패널 및 모달 */}
       <LogoPanel isOpen={isLogoPanelOpen} onClose={() => setIsLogoPanelOpen(false)} user={user} bucketList={bucketList} onLogout={() => supabase.auth.signOut()} onStartAmbient={() => { setIsLogoPanelOpen(false); setIsAmbientMode(true); }} />
       {isAmbientMode && <AmbientMode bucketList={bucketList} onClose={() => setIsAmbientMode(false)} />}
       
