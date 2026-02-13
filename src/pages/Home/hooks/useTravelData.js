@@ -1,8 +1,7 @@
 // src/pages/Home/hooks/useTravelData.js
-// 🚨 [Fix] 랭킹 시스템 연동: 채팅(Chat) 및 저장(Save) 액션 발생 시 점수 집계
+// 🚨 [Fix] Memory First 전략 적용: 휴지통 비우기 로직 강화 및 랭킹 시스템 연동 최적화
 
 import { useState, useCallback } from 'react';
-// 🚨 [Fix] recordInteraction 추가 임포트
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
 
 export const useTravelData = () => {
@@ -10,16 +9,17 @@ export const useTravelData = () => {
   const [activeChatId, setActiveChatId] = useState(null);
 
   const fetchData = useCallback(async () => {
+    // 🚨 [Fix] is_bookmarked 순으로 정렬하여 즐겨찾기가 상단에 오도록 개선 가능하나, 일단 생성순 유지
     const { data } = await supabase.from('saved_trips').select('*').order('created_at', { ascending: false });
     if (data) setSavedTrips(data);
   }, []);
 
   const saveNewTrip = useCallback(async (newTrip) => {
+    // 🚨 [Info] 대화 시작 시점에 비로소 DB에 저장됨 (Ghost -> Bubble 승격)
     const { data, error } = await supabase.from('saved_trips').insert([newTrip]).select();
     
     if (!error && data) {
-      // 🚨 [New] 랭킹 집계: 채팅방 생성 성공 시 (+3점)
-      // Fire-and-Forget: 랭킹 집계 실패가 채팅 생성을 막으면 안 됨
+      // 📊 [Rank] Chat Start (+3)
       if (newTrip.destination) {
           recordInteraction(newTrip.destination, 'chat');
           console.log(`📊 [Rank] Chat Start (+3): ${newTrip.destination}`);
@@ -42,7 +42,7 @@ export const useTravelData = () => {
     
     const newStatus = !trip.is_bookmarked;
     
-    // 🚨 [New] 랭킹 집계: 북마크 활성화 시 (+5점)
+    // 📊 [Rank] Bookmark (+5) - 승격 시에만 점수 부여
     if (newStatus === true && trip.destination) {
         recordInteraction(trip.destination, 'save');
         console.log(`📊 [Rank] Bookmarked (+5): ${trip.destination}`);
@@ -56,19 +56,26 @@ export const useTravelData = () => {
     setSavedTrips(prev => prev.filter(t => t.id !== id));
     await supabase.from('saved_trips').delete().eq('id', id);
   }, []);
-	// 🚨 [New] 휴지통: 북마크 되지 않은(임시) 대화 기록 정리
+
+  // 🚨 [Fix] 휴지통: 화면과 DB의 '임시 데이터'를 완벽하게 분리하여 제거
   const clearTemporaryTrips = useCallback(async () => {
-    // 1. UI 즉시 반영: 북마크(is_bookmarked) 된 것만 남기고 다 지움
+    console.log("🧹 [Trash] Clearing temporary chats...");
+
+    // 1. UI Optimistic Update: 북마크 된 것만 남기고 즉시 삭제
     setSavedTrips(prev => prev.filter(trip => trip.is_bookmarked));
 
-    // 2. 서버 데이터 정리: 북마크가 false인 항목 삭제
-    const { error } = await supabase
+    // 2. Server Side Cleanup: 'is_bookmarked'가 false인 항목만 DB에서 제거
+    const { error, count } = await supabase
         .from('saved_trips')
-        .delete()
-        .eq('is_bookmarked', false); // 북마크 안 된 것만 골라서 삭제
+        .delete({ count: 'exact' }) // 삭제된 개수 확인용
+        .eq('is_bookmarked', false);
 
-    if (error) console.error("🚨 [Trash] Failed to clear chats:", error);
+    if (error) {
+        console.error("🚨 [Trash] DB Error:", error);
+    } else {
+        console.log(`🗑️ [Trash] Deleted ${count} temporary chats from DB.`);
+    }
   }, []);
 
-  return { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip };
+  return { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip, clearTemporaryTrips };
 };

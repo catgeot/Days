@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] 휴지통 기능 통합(핀+말풍선 동시 삭제) 및 데이터 정제 로직(confirmPin) 적용 완료
+// 🚨 [Fix] '유령(Ghost)' 데이터 격리: 클릭 시 DB 저장 차단, 랭킹 점수만 집계 (+1 View)
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
@@ -19,7 +19,8 @@ import TestBenchC from './components/TestBenchC';
 
 // Libs & Utils
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from './lib/geocoding';
-import { supabase } from '../../shared/api/supabase';
+// 🚨 [New] recordInteraction 추가 임포트 (클릭 시 랭킹 집계용)
+import { supabase, recordInteraction } from '../../shared/api/supabase';
 import { TRAVEL_SPOTS } from './data/travelSpots';
 import { PERSONA_TYPES, getSystemPrompt } from './lib/prompts';
 
@@ -32,27 +33,24 @@ function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
   
-  // 1. Auth 구독 (사용자 정보 실시간 동기화)
+  // 1. Auth 구독
   useEffect(() => { 
-    // fetchData(); // fetchData는 아래 useTravelData에서 가져온 뒤 호출하는 것이 안전함
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
     return () => subscription.unsubscribe();
   }, []);
 
   // 2. Hooks 초기화
-  // 🚨 [Fix] user.id 전달 -> 본인의 핀만 삭제 가능
   const { 
     scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, 
-    moveToLocation, addScoutPin, clearScouts,
-    confirmPin // 🚨 [New] 이모지 제거 및 점수 집계를 위한 핵심 함수
+    moveToLocation, addScoutPin, clearScouts
+    // confirmPin 제거: 더 이상 클릭 시 DB에 저장하지 않으므로 필요 없음
   } = useGlobeLogic(globeRef, user?.id);
 
-  // 🚨 [Fix] clearTemporaryTrips 추가 (말풍선 삭제용)
   const { 
     savedTrips, activeChatId, setActiveChatId, fetchData, 
     saveNewTrip, updateMessages, toggleBookmark, deleteTrip,
-    clearTemporaryTrips 
+    clearTemporaryTrips // 🚨 [Fix] 휴지통 기능 (DB 삭제용)
   } = useTravelData();
 
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
@@ -78,7 +76,7 @@ function Home() {
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
   const filteredSpots = useMemo(() => category === 'all' ? TRAVEL_SPOTS : TRAVEL_SPOTS.filter(s => s.category === category), [category]);
 
-  // 포커스 모드 (배경 흐림 처리 등)
+  // 포커스 모드
   const isFocusMode = useMemo(() => {
     if (isAmbientMode) return true;
     if (isTicketOpen || isChatOpen || activeTestBench) return true;
@@ -88,14 +86,15 @@ function Home() {
 
   // --- Handlers ---
 
-  // 4. 지구본 클릭 핸들러
+  // 4. 지구본 클릭 핸들러 (수정됨)
   const handleGlobeClick = useCallback(async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
     const tempId = Date.now();
     
-    // 임시 핀 생성 (Scanning...)
+    // 임시 핀 생성 (Visual Feedback)
     const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: 'scout' };
 
+    // 🚨 [Fix] Local State에만 추가 (DB 저장 X)
     addScoutPin(tempPin);
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false); 
@@ -110,22 +109,28 @@ function Home() {
       
       const realPin = { 
         ...tempPin, 
-        name, // 🚨 confirmPin 내부에서 이모지 자동 제거됨
+        name, 
         name_en: name, 
         country: addressData?.country || "Unknown",
         display_name: name 
       };
       
-      // 🚨 [Fix] 핀 확정 및 점수 집계 (DB 저장)
-      confirmPin(tempId, realPin);
+      // 🚨 [Fix] DB 저장(confirmPin) 제거 -> Local Update만 수행
+      // useGlobeLogic 내부의 addScoutPin이 이미 상태를 업데이트했을 것이므로,
+      // 여기서는 필요한 정보(이름 등)만 업데이트해주면 됨 (구현 여하에 따라 addScoutPin 다시 호출)
+      addScoutPin(realPin);
       
-      setDraftInput(`📍 ${name}`); // UI에는 이모지 보여줌
+      // 📊 [Rank] View Count (+1) - DB 저장은 안 하지만 랭킹 점수는 집계
+      recordInteraction(name, 'view'); 
+      console.log(`📊 [Rank] View Counted (+1): ${name}`);
+      
+      setDraftInput(`📍 ${name}`);
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
-  }, [addScoutPin, moveToLocation, processSearchKeywords, confirmPin, setDraftInput]);
+  }, [addScoutPin, moveToLocation, processSearchKeywords, setDraftInput]);
 
-  // 5. 위치 선택 핸들러 (마커 클릭 등)
+  // 5. 위치 선택 핸들러
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
 
@@ -145,6 +150,7 @@ function Home() {
       name: name
     };
 
+    // 🚨 [Fix] 여기도 DB 저장 없이 Local State만 업데이트
     addScoutPin(finalLoc);
     setDraftInput(`📍 ${name}`);
     processSearchKeywords(name); 
@@ -236,6 +242,7 @@ function Home() {
       messages: [], is_bookmarked: false, persona
     };
     
+    // 🚨 [Info] 대화가 시작되는 이 시점에 DB에 저장됩니다. (Bubble 승격)
     const created = await saveNewTrip(newTrip);
     if (created) { 
       setActiveChatId(created.id); 
@@ -288,11 +295,14 @@ function Home() {
         selectedCategory={category} onCategorySelect={setCategory}
         isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
         
-        // 🚨 [Fix] 휴지통 통합: 핀(Scouts) + 임시 말풍선(Chats) 동시 삭제
+        // 🚨 [Fix] 휴지통 통합: Local State(유령) + DB(임시 채팅) 동시 제거
         onClearScouts={() => { 
-            if(window.confirm("임시 핀과 북마크되지 않은 대화 기록을 모두 정리하시겠습니까?")) {
-                clearScouts();          // 핀 삭제 (화면+DB)
-                clearTemporaryTrips();  // 말풍선 삭제 (화면+DB)
+            if(window.confirm("임시 핀과 저장되지 않은 대화 기록을 모두 정리하시겠습니까?")) {
+                console.log("🗑️ Executing Full Cleanup...");
+                clearScouts();          // 1. 화면의 유령 핀 제거 (Local State)
+                clearTemporaryTrips();  // 2. DB의 임시 대화 제거 (Server)
+                setDraftInput('');      // 3. 입력창 초기화
+                setSelectedLocation(null); // 4. 선택 상태 초기화
             } 
         }}
         
