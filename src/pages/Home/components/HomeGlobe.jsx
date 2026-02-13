@@ -1,32 +1,33 @@
 // src/pages/Home/components/HomeGlobe.jsx
-// 🚨 [Fix] 자전 버그 수정(타이머 폭파) 및 렌더링 제어 로직
+// 🚨 [Fix] 레이어 단일화(고도 1.5) 및 별자리 분산 전략(샴페인 골드 색상/크기) 완벽 적용
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers'; 
+import { citiesData } from '../data/citiesData'; 
 
 const HomeGlobe = forwardRef(({ 
   onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], 
   tempPinsData = [], 
   travelSpots = [],
   activePinId,
-  pauseRender = false // 렌더링 중지 플래그
+  pauseRender = false 
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
   const [ripples, setRipples] = useState([]);
-
-  // 🔒 호버 락(Hover Lock) 변수
   const isHoveringMarker = useRef(false);
 
-  // 🚨 [Fix] 사용자 상호작용 감지 시 자전 타이머 즉시 폭파
+  // 🚨 [Fix] 복잡한 LOD 상태 제거: 0(우주/마커 On), 1(탐험/라벨 On) 두 가지 상태로만 심플하게 관리
+  const [lodLevel, setLodLevel] = useState(0);
+  const lodLevelRef = useRef(0);
+
   const handleInteraction = () => {
     if (rotationTimer.current) {
       clearTimeout(rotationTimer.current);
       rotationTimer.current = null;
     }
-    // 사용자가 만지면 자전 멈춤
     if (globeEl.current) globeEl.current.controls().autoRotate = false;
   };
 
@@ -36,28 +37,21 @@ const HomeGlobe = forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     },
     resumeRotation: () => { 
-      if (pauseRender) return; // Focus Mode일 때는 명령 무시
+      if (pauseRender) return; 
       if(globeEl.current) globeEl.current.controls().autoRotate = true; 
     },
-    
     flyToAndPin: (lat, lng, name, category) => {
-      // 기존 타이머 제거 (중복 실행 방지)
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
-      
       if (globeEl.current) {
         globeEl.current.controls().autoRotate = false; 
         globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1000);
       }
-      
       const newRipple = { lat, lng, maxR: 8, propagationSpeed: 3, repeatPeriod: 800 };
       setRipples(prev => [...prev, newRipple]);
       setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 2000);
 
-      // 🚨 [Fix] 3초 후 자전 재개 (단, 사용자가 건드리면 handleInteraction에서 취소됨)
       rotationTimer.current = setTimeout(() => { 
-        if (globeEl.current && !pauseRender) {
-          globeEl.current.controls().autoRotate = true; 
-        }
+        if (globeEl.current && !pauseRender) globeEl.current.controls().autoRotate = true; 
       }, 3000);
     },
     updateLastPinName: () => {}, 
@@ -70,20 +64,40 @@ const HomeGlobe = forwardRef(({
     return () => { window.removeEventListener('resize', handleResize); };
   }, []);
 
-  // 🚨 [Fix] pauseRender 상태에 반응하여 회전 제어
+  useEffect(() => {
+    const initCameraListener = () => {
+      if (!globeEl.current || !globeEl.current.controls) return;
+      const controls = globeEl.current.controls();
+      if (!controls) return;
+
+      const handleCameraChange = () => {
+        if (!globeEl.current) return;
+        const alt = globeEl.current.pointOfView().altitude;
+        
+        // 🚨 [Fix] 단일 고도 임계점: 1.5 미만이면 무조건 1(On) 상태로 전환하여 모든 지표를 켬
+        const newLevel = alt < 1.9 ? 1 : 0;
+
+        if (newLevel !== lodLevelRef.current) {
+          lodLevelRef.current = newLevel;
+          setLodLevel(newLevel);
+        }
+      };
+
+      controls.addEventListener('change', handleCameraChange);
+      return () => controls.removeEventListener('change', handleCameraChange);
+    };
+
+    const timeoutId = setTimeout(initCameraListener, 500);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   useEffect(() => {
     if (globeEl.current) {
-      if (pauseRender) {
-        globeEl.current.controls().autoRotate = false;
-        if (rotationTimer.current) clearTimeout(rotationTimer.current); // 타이머도 정리
-      } else {
-        // Focus Mode가 풀리면 다시 자전 시작 (선택 사항, 여기서는 켬)
-        globeEl.current.controls().autoRotate = true;
-      }
+      globeEl.current.controls().autoRotate = !pauseRender;
+      if (pauseRender && rotationTimer.current) clearTimeout(rotationTimer.current); 
     }
   }, [pauseRender]);
 
-  // 초기 로딩
   useEffect(() => {
     if (globeEl.current) {
       globeEl.current.controls().autoRotate = !pauseRender;
@@ -98,7 +112,6 @@ const HomeGlobe = forwardRef(({
     if (onGlobeClick) onGlobeClick({ lat, lng });
   };
 
-  // 🛡 [Protected Logic] (기존 마커 로직 유지)
   const allMarkers = useMemo(() => {
     let result = [];
     const threshold = 0.05; 
@@ -136,12 +149,22 @@ const HomeGlobe = forwardRef(({
     return result;
   }, [travelSpots, savedTrips, tempPinsData, activePinId]);
 
+  // 🚨 [Fix] 복잡한 필터링 제거: On(1) 상태면 citiesData 전체를 반환하여 렌더링 부하 최소화
+  const visibleLabels = useMemo(() => {
+    return lodLevel === 1 ? citiesData : [];
+  }, [lodLevel]);
+
   const renderElement = (d) => {
     const el = document.createElement('div');
-    el.style.position = 'absolute'; el.style.pointerEvents = 'auto';
+    el.className = 'globe-marker-wrapper'; 
+    el.style.position = 'absolute'; 
+    el.style.pointerEvents = 'auto';
+    el.style.transition = 'opacity 0.4s ease';
+
     const { html, zIndex, offsetY } = getMarkerDesign(d);
     el.innerHTML = html;
     el.style.zIndex = zIndex;
+    
     el.onclick = (e) => { 
       e.stopPropagation(); 
       if (onMarkerClick) onMarkerClick(d, 'globe'); 
@@ -158,11 +181,17 @@ const HomeGlobe = forwardRef(({
   };
 
   return (
-    // 🚨 [Fix] onPointerDown 이벤트로 상호작용 감지 -> 자전 재개 타이머 폭파
     <div 
-      className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'}`}
+      className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'} ${lodLevel > 0 ? 'hide-markers' : ''}`}
       onPointerDown={handleInteraction}
     >
+      <style>{`
+        .hide-markers .globe-marker-wrapper { 
+          opacity: 0 !important; 
+          pointer-events: none !important; 
+        }
+      `}</style>
+
       <Globe
         ref={globeEl}
         width={dimensions.width}
@@ -172,14 +201,38 @@ const HomeGlobe = forwardRef(({
         atmosphereColor="#7caeea"
         atmosphereAltitude={0.15}
         onGlobeClick={handleGlobeClickInternal}
+        
         ringsData={ripples}
         ringColor={() => '#60a5fa'}
         ringMaxRadius="maxR"
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"
+        
         htmlElementsData={allMarkers}
         htmlElement={renderElement}
         htmlTransitionDuration={0} 
+
+        labelsData={visibleLabels}
+        labelLat={d => d.lat}
+        labelLng={d => d.lng}
+        labelText={d => d.name}
+        // 🚨 [Fix] 원근감과 공간감을 위한 사이즈 이원화 (대양/대륙 크게, 지역 작게)
+        labelSize={d => d.priority === 1 ? 1.2 : 0.8}
+        labelDotRadius={0.15}
+        // 🚨 [Fix] Option 1: 미래적인 네온 블루 (시인성 최상)
+				// labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
+
+				// 🚨 [Fix] Option 2: 강렬한 핫핑크/마젠타 (대비 효과 극대화)
+				// labelColor={d => d.priority === 1 ? 'rgba(255, 20, 147, 1)' : 'rgba(251, 113, 133, 0.85)'}
+
+				// 🚨 [Fix] Option 3: 테크니컬한 라임 그린 (매트릭스 스타일)
+				labelColor={d => d.priority === 1 ? 'rgba(57, 255, 20, 1)' : 'rgba(134, 239, 172, 0.85)'}
+
+        labelResolution={2}
+        labelAltitude={0.01}
+        onLabelClick={(d) => {
+          if (onMarkerClick) onMarkerClick({ ...d, type: 'city-label' }, 'globe');
+        }}
       />
     </div>
   );
