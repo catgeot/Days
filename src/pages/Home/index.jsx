@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] '유령(Ghost)' 데이터 격리: 클릭 시 DB 저장 차단, 랭킹 점수만 집계 (+1 View)
+// 🚨 [Fix] TestBench 제거 & globeTheme(순환형 테마) 상태 추가
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
@@ -12,14 +12,13 @@ import PlaceCard from '../../components/PlaceCard/index';
 import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
-// Test Benches
+// Test Benches (UI에서는 뺐지만 나중을 위해 임포트는 유지)
 import TestBenchA from './components/TestBenchA';
 import TestBenchB from './components/TestBenchB';
 import TestBenchC from './components/TestBenchC';
 
 // Libs & Utils
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from './lib/geocoding';
-// 🚨 [New] recordInteraction 추가 임포트 (클릭 시 랭킹 집계용)
 import { supabase, recordInteraction } from '../../shared/api/supabase';
 import { TRAVEL_SPOTS } from './data/travelSpots';
 import { PERSONA_TYPES, getSystemPrompt } from './lib/prompts';
@@ -44,13 +43,12 @@ function Home() {
   const { 
     scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, 
     moveToLocation, addScoutPin, clearScouts
-    // confirmPin 제거: 더 이상 클릭 시 DB에 저장하지 않으므로 필요 없음
   } = useGlobeLogic(globeRef, user?.id);
 
   const { 
     savedTrips, activeChatId, setActiveChatId, fetchData, 
     saveNewTrip, updateMessages, toggleBookmark, deleteTrip,
-    clearTemporaryTrips // 🚨 [Fix] 휴지통 기능 (DB 삭제용)
+    clearTemporaryTrips 
   } = useTravelData();
 
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
@@ -63,11 +61,18 @@ function Home() {
   const [isPlaceCardOpen, setIsPlaceCardOpen] = useState(false); 
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
-  const [category, setCategory] = useState('all');
-  const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   
+  const [category, setCategory] = useState('paradise');
+  const [isPinVisible, setIsPinVisible] = useState(true);
+
+  // 🚨 [New] 지구본 테마 상태 (초기값: neon)
+  const [globeTheme, setGlobeTheme] = useState('neon');
+
+  const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
-  const [activeTestBench, setActiveTestBench] = useState(null);
+  
+  // 🚨 [Fix] TestBench 상태는 덜어냄 (뺄셈의 미학)
+  // const [activeTestBench, setActiveTestBench] = useState(null); 
 
   // 데이터 로드
   useEffect(() => { fetchData(); }, [fetchData]);
@@ -79,26 +84,26 @@ function Home() {
   // 포커스 모드
   const isFocusMode = useMemo(() => {
     if (isAmbientMode) return true;
-    if (isTicketOpen || isChatOpen || activeTestBench) return true;
+    if (isTicketOpen || isChatOpen) return true;
     if (isPlaceCardOpen && isCardExpanded) return true;
     return false;
-  }, [isAmbientMode, isTicketOpen, isChatOpen, activeTestBench, isPlaceCardOpen, isCardExpanded]);
+  }, [isAmbientMode, isTicketOpen, isChatOpen, isPlaceCardOpen, isCardExpanded]);
 
   // --- Handlers ---
 
-  // 4. 지구본 클릭 핸들러 (수정됨)
+  // 4. 지구본 클릭 핸들러
   const handleGlobeClick = useCallback(async ({ lat, lng }) => {
     if (globeRef.current) globeRef.current.pauseRotation();
     const tempId = Date.now();
     
-    // 임시 핀 생성 (Visual Feedback)
     const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: 'scout' };
 
-    // 🚨 [Fix] Local State에만 추가 (DB 저장 X)
     addScoutPin(tempPin);
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false); 
     
+    if (!isPinVisible) setIsPinVisible(true);
+
     moveToLocation(lat, lng, "Scanning...", "scout");
 
     try {
@@ -115,27 +120,19 @@ function Home() {
         display_name: name 
       };
       
-      // 🚨 [Fix] DB 저장(confirmPin) 제거 -> Local Update만 수행
-      // useGlobeLogic 내부의 addScoutPin이 이미 상태를 업데이트했을 것이므로,
-      // 여기서는 필요한 정보(이름 등)만 업데이트해주면 됨 (구현 여하에 따라 addScoutPin 다시 호출)
       addScoutPin(realPin);
-      
-      // 📊 [Rank] View Count (+1) - DB 저장은 안 하지만 랭킹 점수는 집계
       recordInteraction(name, 'view'); 
-      console.log(`📊 [Rank] View Counted (+1): ${name}`);
-      
       setDraftInput(`📍 ${name}`);
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
-  }, [addScoutPin, moveToLocation, processSearchKeywords, setDraftInput]);
+  }, [addScoutPin, moveToLocation, processSearchKeywords, setDraftInput, isPinVisible]);
 
   // 5. 위치 선택 핸들러
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
 
     if (selectedLocation && selectedLocation.lat === loc.lat && selectedLocation.lng === loc.lng) {
-      console.log("📍 Same location selected. Re-opening card.");
       setIsPlaceCardOpen(true); 
       return;
     }
@@ -150,7 +147,6 @@ function Home() {
       name: name
     };
 
-    // 🚨 [Fix] 여기도 DB 저장 없이 Local State만 업데이트
     addScoutPin(finalLoc);
     setDraftInput(`📍 ${name}`);
     processSearchKeywords(name); 
@@ -174,7 +170,6 @@ function Home() {
     setDraftInput(query);
     processSearchKeywords(query);
 
-    // 내부 데이터 탐색
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
       s.country.toLowerCase() === query.toLowerCase() ||
@@ -185,14 +180,9 @@ function Home() {
       return;
     }
 
-    // 컨셉 가드
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
-    if (isConcept) {
-      console.log(`🛡️ Concept Guard: "${query}" - 키워드 매칭됨. 이동 보류.`);
-      return;
-    }
+    if (isConcept) return;
 
-    // 외부 API 검색
     const coords = await getCoordinatesFromAddress(query);
     
     if (coords) {
@@ -207,12 +197,9 @@ function Home() {
         description: `${query} (${coords.country}) 지역을 탐색합니다.`,
         type: 'temp-base'
       };
-      
-      console.log(`🗺️ Search Mapped: Input[${query}] -> API[${coords.name}]`);
       handleLocationSelect(normalizedLoc);
     } else {
-      console.log(`"${query}" 위치를 찾을 수 없습니다.`);
-      alert(`'${query}' 위치를 찾을 수 없습니다. (일시적 통신 오류일 수 있으니 잠시 후 다시 시도해주세요)`); 
+      alert(`'${query}' 위치를 찾을 수 없습니다.`); 
     }
   };
 
@@ -242,13 +229,19 @@ function Home() {
       messages: [], is_bookmarked: false, persona
     };
     
-    // 🚨 [Info] 대화가 시작되는 이 시점에 DB에 저장됩니다. (Bubble 승격)
     const created = await saveNewTrip(newTrip);
     if (created) { 
       setActiveChatId(created.id); 
       setInitialQuery({ text: initPayload?.text || `${locationName}에 대해 알려줘!`, persona }); 
       setIsChatOpen(true); 
     }
+  };
+
+  // 🚨 [New] 테마 순환 로직
+  const handleThemeToggle = () => {
+    const themes = ['neon', 'bright', 'deep'];
+    const nextIndex = (themes.indexOf(globeTheme) + 1) % themes.length;
+    setGlobeTheme(themes[nextIndex]);
   };
 
   return (
@@ -270,11 +263,12 @@ function Home() {
           onGlobeClick={handleGlobeClick} 
           onMarkerClick={handleLocationSelect} 
           isChatOpen={isChatOpen} 
-          savedTrips={savedTrips} 
-          tempPinsData={scoutedPins} 
-          travelSpots={filteredSpots} 
+          savedTrips={isPinVisible ? savedTrips : []} 
+          tempPinsData={isPinVisible ? scoutedPins : []} 
+          travelSpots={isPinVisible ? filteredSpots : []} 
           activePinId={selectedLocation?.id}
           pauseRender={isFocusMode} 
+          globeTheme={globeTheme} // 🚨 [New] 테마 속성 전달
         />
       </div>
       
@@ -295,20 +289,20 @@ function Home() {
         selectedCategory={category} onCategorySelect={setCategory}
         isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
         
-        // 🚨 [Fix] 휴지통 통합: Local State(유령) + DB(임시 채팅) 동시 제거
+        isPinVisible={isPinVisible}
+        onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
+        
+        globeTheme={globeTheme} // 🚨 [New]
+        onThemeToggle={handleThemeToggle} // 🚨 [New]
+        
         onClearScouts={() => { 
             if(window.confirm("임시 핀과 저장되지 않은 대화 기록을 모두 정리하시겠습니까?")) {
-                console.log("🗑️ Executing Full Cleanup...");
-                clearScouts();          // 1. 화면의 유령 핀 제거 (Local State)
-                clearTemporaryTrips();  // 2. DB의 임시 대화 제거 (Server)
-                setDraftInput('');      // 3. 입력창 초기화
-                setSelectedLocation(null); // 4. 선택 상태 초기화
+                clearScouts();          
+                clearTemporaryTrips();  
+                setDraftInput('');      
+                setSelectedLocation(null); 
             } 
         }}
-        
-        onOpenTestBenchA={() => setActiveTestBench('A')}
-        onOpenTestBenchB={() => setActiveTestBench('B')}
-        onOpenTestBenchC={() => setActiveTestBench('C')}
       />
       
       {/* 3. 패널 및 모달 */}
@@ -321,15 +315,10 @@ function Home() {
           onClose={() => setIsPlaceCardOpen(false)}
           onChat={(p) => handleStartChat(selectedLocation?.name, p)}
           onTicket={() => { setIsPlaceCardOpen(false); setIsTicketOpen(true); }}
-          
           isCompactMode={isTickerExpanded}
           onExpandChange={setIsCardExpanded}
         />
       )}
-
-      {activeTestBench === 'A' && <TestBenchA onClose={() => setActiveTestBench(null)} />}
-      {activeTestBench === 'B' && <TestBenchB onClose={() => setActiveTestBench(null)} />}
-      {activeTestBench === 'C' && <TestBenchC onClose={() => setActiveTestBench(null)} />}
 
       <TicketModal isOpen={isTicketOpen} onClose={() => { setIsTicketOpen(false); globeRef.current?.resumeRotation(); }} onIssue={(p) => handleStartChat(selectedLocation?.name, { text: p.text, persona: PERSONA_TYPES.PLANNER })} preFilledDestination={selectedLocation} scoutedPins={scoutedPins} savedTrips={savedTrips} />
 

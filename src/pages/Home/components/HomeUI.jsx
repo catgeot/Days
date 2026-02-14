@@ -1,17 +1,15 @@
 // src/pages/Home/components/HomeUI.jsx
-// 🚨 [Fix] Ticker에 Live Data 주입
+// 🚨 [Fix] TestBench 버튼 제거 & Theme Toggle 아이콘 추가
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  FileText, User, Sparkles, Search, Ticket, MessageSquare, MapPin, Loader2, X, Trash2,
-  Palmtree, Mountain, Building2, Plane, Compass, LayoutGrid,
-  FlaskConical, TestTube2, Microscope 
+  User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
+  Palmtree, Mountain, Building2, Plane, Compass, 
+  Eye, EyeOff, Droplet, Sun, Moon // 🚨 [New] Theme Icons 추가
 } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
-import TravelTicker from '../components/TravelTicker'; // 경로 확인 필요
+import TravelTicker from '../components/TravelTicker'; 
 import Logo from './Logo';
-
-// 🚨 [New] Hook Import
 import { useTrendingData } from '../hooks/useTrendingData';
 
 const HomeUI = ({ 
@@ -20,14 +18,13 @@ const HomeUI = ({
   selectedCategory, onCategorySelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
-  onOpenTestBenchA,
-  onOpenTestBenchB,
-  onOpenTestBenchC
+  isPinVisible, 
+  onTogglePinVisibility,
+  globeTheme, // 🚨 [New]
+  onThemeToggle // 🚨 [New]
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
-
-  // 🚨 [New] 실시간 랭킹 데이터 가져오기
   const trendingData = useTrendingData();
 
   useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
@@ -36,7 +33,6 @@ const HomeUI = ({
   const handleClear = () => { setInputValue(''); inputRef.current?.focus(); };
 
   const CATEGORIES = [
-    { id: 'all', icon: LayoutGrid, label: 'All', color: 'text-gray-400' },
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
     { id: 'nature', icon: Mountain, label: 'Nature', color: 'text-green-400' },
     { id: 'urban', icon: Building2, label: 'Urban', color: 'text-purple-400' },
@@ -44,9 +40,19 @@ const HomeUI = ({
     { id: 'adventure', icon: Compass, label: 'Adventure', color: 'text-red-400' },
   ];
 
+  // 🚨 [New] 현재 테마에 맞는 아이콘과 색상 매핑
+  const getThemeConfig = () => {
+    switch(globeTheme) {
+      case 'neon': return { icon: Droplet, color: 'text-cyan-400', border: 'border-cyan-500/30' };
+      case 'bright': return { icon: Sun, color: 'text-yellow-400', border: 'border-yellow-500/30' };
+      case 'deep': return { icon: Moon, color: 'text-indigo-400', border: 'border-indigo-500/30' };
+      default: return { icon: Droplet, color: 'text-cyan-400', border: 'border-cyan-500/30' };
+    }
+  };
+  const ThemeIcon = getThemeConfig().icon;
+
   return (
     <>
-      {/* --- Header Area --- */}
       <div className="absolute top-0 left-0 right-0 z-20 p-6 grid grid-cols-12 items-start pointer-events-none">
         {/* 1. Logo */}
         <div onClick={onLogoClick} className="col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto cursor-pointer group">
@@ -54,11 +60,16 @@ const HomeUI = ({
           <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1 group-hover:text-blue-400 transition-colors">DEPARTURE LOUNGE</span>
         </div>
 
-        {/* 2. TestBench Triggers */}
-        <div className="col-span-1 flex justify-center gap-1 pt-3 animate-fade-in-down delay-75 pointer-events-auto">
-           <button onClick={onOpenTestBenchA} className="w-8 h-8 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-500/20 flex items-center justify-center text-blue-400 hover:bg-blue-500 hover:text-white transition-all shadow-lg group"><FlaskConical size={14} className="group-hover:rotate-12 transition-transform" /></button>
-           <button onClick={onOpenTestBenchB} className="w-8 h-8 rounded-full bg-purple-500/10 backdrop-blur-md border border-purple-500/20 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all shadow-lg group"><TestTube2 size={14} className="group-hover:-rotate-12 transition-transform" /></button>
-           <button onClick={onOpenTestBenchC} className="w-8 h-8 rounded-full bg-rose-500/10 backdrop-blur-md border border-rose-500/20 flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-lg group"><Microscope size={14} className="group-hover:scale-110 transition-transform" /></button>
+        {/* 2. Globe Theme Toggle (기존 TestBench 영역 대체) */}
+        {/* 🚨 [Fix] TestBench 버튼들을 지우고 하나의 테마 스위치로 통합 */}
+        <div className="col-span-1 flex justify-center pt-3 animate-fade-in-down delay-75 pointer-events-auto">
+           <button 
+             onClick={onThemeToggle} 
+             className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
+             title="지구본 무드 변경"
+           >
+              <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
+           </button>
         </div>
 
         {/* 3. Omni-box */}
@@ -73,15 +84,18 @@ const HomeUI = ({
           </div>
         </div>
         
-        {/* 4. Cleaner Button */}
-        <div className="col-span-1 flex justify-center pt-3 animate-fade-in-down pointer-events-auto">
+        {/* 4. Controls: Toggle + Cleaner */}
+        <div className="col-span-1 flex justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto">
+           <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
+              {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
+           </button>
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        {/* 5. Ticker (Updated) */}
+        {/* 5. Ticker */}
         <div className="col-span-3 flex justify-end animate-fade-in-down pr-24 pointer-events-auto">
           <TravelTicker 
-            data={trendingData} // 🚨 [Inject] 라이브 데이터 주입
+            data={trendingData} 
             onCityClick={onTickerClick} 
             isExpanded={isTickerExpanded}
             onToggle={setIsTickerExpanded}
@@ -89,7 +103,7 @@ const HomeUI = ({
         </div>
       </div>
 
-      {/* --- Rest of the UI (Filters, Footer) remains the same --- */}
+      {/* --- Filters & Footer --- */}
       <div className="absolute right-6 top-6 z-20 flex flex-col gap-3 pointer-events-auto animate-fade-in-left">
          <div className="flex flex-col items-center gap-4 bg-black/30 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl">
             {CATEGORIES.map((cat) => {

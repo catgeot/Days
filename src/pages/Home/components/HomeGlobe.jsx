@@ -1,5 +1,5 @@
 // src/components/HomeGlobe.jsx
-// 🚨 [Fix] ID Overwrite 방지: result[idx].id = trip.id 코드 삭제 -> tripId로 분리 저장
+// 🚨 [Fix] 테마 스위치 속성(globeTheme) 적용 및 비주얼 리터칭(텍스처, 대기권 컬러 동적 할당)
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
@@ -11,7 +11,8 @@ const HomeGlobe = forwardRef(({
   tempPinsData = [], 
   travelSpots = [],
   activePinId,
-  pauseRender = false 
+  pauseRender = false,
+  globeTheme = 'neon' // 🚨 [New] 테마 프롭스 수신
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
@@ -19,9 +20,38 @@ const HomeGlobe = forwardRef(({
   const [ripples, setRipples] = useState([]);
   const isHoveringMarker = useRef(false);
 
-  // LOD 상태
   const [lodLevel, setLodLevel] = useState(0);
   const lodLevelRef = useRef(0);
+
+  // 🚨 [New] 테마별 지구본 렌더링 설정 (Pessimistic: default 설정 마련)
+  const themeConfig = useMemo(() => {
+    switch(globeTheme) {
+      case 'neon': // 맑은 형광빛 바다
+        return {
+          imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+          atmColor: "#00ffff", // 투명한 시안
+          atmAlt: 0.20
+        };
+      case 'bright': // 수심이 맑게 보이는 Day 텍스처
+        return {
+          imageUrl: "//unpkg.com/three-globe/example/img/earth-day.jpg",
+          atmColor: "#87ceeb", // 밝은 스카이블루
+          atmAlt: 0.15
+        };
+      case 'deep': // 묵직하고 신비로운 딥 블루
+        return {
+          imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+          atmColor: "#4b6bfa", // 짙은 파랑
+          atmAlt: 0.15
+        };
+      default:
+        return {
+          imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+          atmColor: "#00ffff",
+          atmAlt: 0.20
+        };
+    }
+  }, [globeTheme]);
 
   const handleInteraction = () => {
     if (rotationTimer.current) {
@@ -136,17 +166,10 @@ const HomeGlobe = forwardRef(({
         if (idx !== -1) {
             if (isBookmarked) result[idx].isBookmarked = true;
             else result[idx].hasChat = true;
-            
-            // 🚨 [Fix] 여기가 범인입니다! 원본 ID를 덮어쓰지 말고, tripId로 따로 저장합니다.
-            // result[idx].id = trip.id;  <-- 삭제된 코드
-            result[idx].tripId = trip.id; // <-- 추가된 코드
+            result[idx].tripId = trip.id; 
         } else {
-            // 저장된 여행이지만 travelSpots에 없는 경우 (임의의 좌표)
             result.push({ 
                 ...trip, 
-                // id: trip.id, // trip 객체에 이미 id가 있으므로 유지되지만, 
-                // 만약 이 핀을 클릭해서 영상을 보고 싶다면 별도 매핑이 필요함. 
-                // 하지만 임의 좌표는 영상이 없으므로 OK.
                 name: fixedName, 
                 type: 'temp-base', 
                 priority: isBookmarked ? 4 : 3, 
@@ -223,10 +246,13 @@ const HomeGlobe = forwardRef(({
         ref={globeEl}
         width={dimensions.width}
         height={dimensions.height}
-        globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+        
+        // 🚨 [Fix] 테마 구성에 따른 동적 할당
+        globeImageUrl={themeConfig.imageUrl}
+        atmosphereColor={themeConfig.atmColor}
+        atmosphereAltitude={themeConfig.atmAlt}
+        
         backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-        atmosphereColor="#7caeea"
-        atmosphereAltitude={0.15}
         onGlobeClick={handleGlobeClickInternal}
         
         ringsData={ripples}
@@ -245,7 +271,14 @@ const HomeGlobe = forwardRef(({
         labelText={d => d.name}
         labelSize={d => d.priority === 1 ? 1.2 : 0.8}
         labelDotRadius={0.15}
-        labelColor={d => d.priority === 1 ? 'rgba(57, 255, 20, 1)' : 'rgba(134, 239, 172, 0.85)'}
+				 // 🚨 [Fix] Option 1: 미래적인 네온 블루 (시인성 최상)
+				// labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
+
+				// 🚨 [Fix] Option 2: 강렬한 핫핑크/마젠타 (대비 효과 극대화)
+				labelColor={d => d.priority === 1 ? 'rgba(255, 20, 147, 1)' : 'rgba(251, 113, 133, 0.85)'}
+
+				// 🚨 [Fix] Option 3: 테크니컬한 라임 그린 (매트릭스 스타일)
+				// labelColor={d => d.priority === 1 ? 'rgba(57, 255, 20, 1)' : 'rgba(134, 239, 172, 0.85)'}
         labelResolution={2}
         labelAltitude={0.01}
         
