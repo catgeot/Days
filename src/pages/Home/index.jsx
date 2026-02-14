@@ -1,5 +1,6 @@
 // src/pages/Home/index.jsx
 // 🚨 [Fix] TestBench 제거 & globeTheme(순환형 테마) 상태 추가
+// 🚨 [New] 카테고리(Context) 상속 및 비관적 필터링 로직 적용
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
@@ -59,22 +60,22 @@ function Home() {
   
   const [category, setCategory] = useState('paradise');
   const [isPinVisible, setIsPinVisible] = useState(true);
-
-  // 🚨 [New] 지구본 테마 상태 (초기값: neon)
   const [globeTheme, setGlobeTheme] = useState('neon');
-
   const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
-  
-  // 🚨 [Fix] TestBench 상태는 덜어냄 (뺄셈의 미학)
-  // const [activeTestBench, setActiveTestBench] = useState(null); 
 
   // 데이터 로드
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // 필터링 로직
+  // 🚨 [New] 필터링 거름망 (비관적 렌더링 적용)
+  // 기존 데이터에 카테고리가 없는 경우 현재 탭에 노출되지 않도록 차단
+  const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
+  const filteredScoutedPins = useMemo(() => scoutedPins.filter(p => p.category === category), [scoutedPins, category]);
+
+  // 🚨 [Fix] 'all' 옵션 삭제 반영
+  const filteredSpots = useMemo(() => TRAVEL_SPOTS.filter(s => s.category === category), [category]);
+
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
-  const filteredSpots = useMemo(() => category === 'all' ? TRAVEL_SPOTS : TRAVEL_SPOTS.filter(s => s.category === category), [category]);
 
   // 포커스 모드
   const isFocusMode = useMemo(() => {
@@ -91,7 +92,8 @@ function Home() {
     if (globeRef.current) globeRef.current.pauseRotation();
     const tempId = Date.now();
     
-    const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: 'scout' };
+    // 🚨 [Fix] Ghost Pin 생성 시 'scout' 대신 현재 선택된 탭(category)의 문맥 상속
+    const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: category };
 
     addScoutPin(tempPin);
     setIsPlaceCardOpen(true);
@@ -99,7 +101,7 @@ function Home() {
     
     if (!isPinVisible) setIsPinVisible(true);
 
-    moveToLocation(lat, lng, "Scanning...", "scout");
+    moveToLocation(lat, lng, "Scanning...", category);
 
     try {
       const addressData = await getAddressFromCoordinates(lat, lng);
@@ -121,7 +123,7 @@ function Home() {
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
-  }, [addScoutPin, moveToLocation, processSearchKeywords, setDraftInput, isPinVisible]);
+  }, [addScoutPin, moveToLocation, processSearchKeywords, setDraftInput, isPinVisible, category]);
 
   // 5. 위치 선택 핸들러
   const handleLocationSelect = useCallback((loc) => {
@@ -133,13 +135,14 @@ function Home() {
     }
 
     const name = loc.name || "Selected";
-    moveToLocation(loc.lat, loc.lng, name, loc.category);
+    moveToLocation(loc.lat, loc.lng, name, loc.category || category); // 🚨 [Fix] 안전한 이동
     
     const finalLoc = { 
       ...loc, 
       type: loc.type || 'temp-base', 
       id: loc.id || `loc-${loc.lat}-${loc.lng}`,
-      name: name
+      name: name,
+      category: loc.category || category // 🚨 [Fix] 기존 카테고리가 없으면 현재 카테고리 상속
     };
 
     addScoutPin(finalLoc);
@@ -150,7 +153,7 @@ function Home() {
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false);
 
-  }, [moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, selectedLocation]);
+  }, [moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, selectedLocation, category]);
 
   // 6. 스마트 검색 핸들러
   const handleSmartSearch = async (input) => {
@@ -188,7 +191,7 @@ function Home() {
         country: coords.country || "Explore",
         lat: coords.lat,
         lng: coords.lng,
-        category: 'search',
+        category: category, // 🚨 [Fix] 'search' 대신 현재 탭의 카테고리(category)를 강력 상속
         description: `${query} (${coords.country}) 지역을 탐색합니다.`,
         type: 'temp-base'
       };
@@ -221,7 +224,8 @@ function Home() {
       lat: selectedLocation?.lat || 0, lng: selectedLocation?.lng || 0, 
       date: new Date().toLocaleDateString(), code: "CHAT",
       prompt_summary: systemPrompt,
-      messages: [], is_bookmarked: false, persona
+      messages: [], is_bookmarked: false, persona,
+      category: category // 🚨 [New] DB 저장(승급)을 위해 현재 선택된 카테고리를 봇짐에 추가
     };
     
     const created = await saveNewTrip(newTrip);
@@ -232,7 +236,7 @@ function Home() {
     }
   };
 
-  // 🚨 [New] 테마 순환 로직
+  // 테마 순환 로직
   const handleThemeToggle = () => {
     const themes = ['neon', 'bright', 'deep'];
     const nextIndex = (themes.indexOf(globeTheme) + 1) % themes.length;
@@ -258,12 +262,12 @@ function Home() {
           onGlobeClick={handleGlobeClick} 
           onMarkerClick={handleLocationSelect} 
           isChatOpen={isChatOpen} 
-          savedTrips={isPinVisible ? savedTrips : []} 
-          tempPinsData={isPinVisible ? scoutedPins : []} 
+          savedTrips={isPinVisible ? filteredSavedTrips : []} // 🚨 [Fix] 필터링된 즐겨찾기만 전달
+          tempPinsData={isPinVisible ? filteredScoutedPins : []} // 🚨 [Fix] 필터링된 임시 핀만 전달
           travelSpots={isPinVisible ? filteredSpots : []} 
           activePinId={selectedLocation?.id}
           pauseRender={isFocusMode} 
-          globeTheme={globeTheme} // 🚨 [New] 테마 속성 전달
+          globeTheme={globeTheme} 
         />
       </div>
       
@@ -274,7 +278,8 @@ function Home() {
         onTagClick={handleSmartSearch} 
         
         onTicketClick={() => setIsTicketOpen(true)}
-        externalInput={draftInput} savedTrips={savedTrips} 
+        externalInput={draftInput} 
+        savedTrips={filteredSavedTrips} // 🚨 [Fix] UI 사이드바 등에도 현재 탭의 데이터만 렌더링
         onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
         onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
         onLogoClick={() => setIsLogoPanelOpen(true)}
@@ -287,8 +292,8 @@ function Home() {
         isPinVisible={isPinVisible}
         onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
         
-        globeTheme={globeTheme} // 🚨 [New]
-        onThemeToggle={handleThemeToggle} // 🚨 [New]
+        globeTheme={globeTheme} 
+        onThemeToggle={handleThemeToggle} 
         
         onClearScouts={() => { 
             if(window.confirm("임시 핀과 저장되지 않은 대화 기록을 모두 정리하시겠습니까?")) {
@@ -315,11 +320,11 @@ function Home() {
         />
       )}
 
-      <TicketModal isOpen={isTicketOpen} onClose={() => { setIsTicketOpen(false); globeRef.current?.resumeRotation(); }} onIssue={(p) => handleStartChat(selectedLocation?.name, { text: p.text, persona: PERSONA_TYPES.PLANNER })} preFilledDestination={selectedLocation} scoutedPins={scoutedPins} savedTrips={savedTrips} />
+      <TicketModal isOpen={isTicketOpen} onClose={() => { setIsTicketOpen(false); globeRef.current?.resumeRotation(); }} onIssue={(p) => handleStartChat(selectedLocation?.name, { text: p.text, persona: PERSONA_TYPES.PLANNER })} preFilledDestination={selectedLocation} scoutedPins={filteredScoutedPins} savedTrips={filteredSavedTrips} />
 
       <ChatModal 
         isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
-        initialQuery={initialQuery} chatHistory={savedTrips} 
+        initialQuery={initialQuery} chatHistory={filteredSavedTrips} // 🚨 [Fix] 채팅 모달에도 현재 문맥 데이터 전달
         onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
         activeChatId={activeChatId} onSwitchChat={(id) => handleStartChat(null, null, id)} 
         onDeleteChat={deleteTrip} onClearChats={() => {}}

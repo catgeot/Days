@@ -16,6 +16,7 @@ export const useTravelData = () => {
 
   const saveNewTrip = useCallback(async (newTrip) => {
     // 🚨 [Info] 대화 시작 시점에 비로소 DB에 저장됨 (Ghost -> Bubble 승격)
+    // 🚨 [New] index.jsx에서 newTrip 객체에 'category' 꼬리표를 담아 보내므로, 그대로 DB에 안착됩니다.
     const { data, error } = await supabase.from('saved_trips').insert([newTrip]).select();
     
     if (!error && data) {
