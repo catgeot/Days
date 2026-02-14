@@ -1,7 +1,10 @@
+// src/shared/Auth/SignUp.jsx
+// 🚨 [Fix] Login.jsx와 동일한 Dark & Glassmorphism 디자인으로 UI 통일 적용 및 z-50 나가기 버튼 구현
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../api/supabase';
-import { UserPlus, Mail, Lock, Home } from 'lucide-react';
+import { UserPlus, Mail, Lock, X, Loader2 } from 'lucide-react';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -9,60 +12,73 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // ✨ 홈으로 탈출하는 함수
   const handleGoHome = () => {
     navigate('/');
   };
 
   const handleSignup = async (e) => {
-		e.preventDefault();
-		setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-		try {
-			const { data, error } = await supabase.auth.signUp({
-				email,
-				password,
-				// ✨ 중요: 이 옵션을 넣어야 메일 클릭 시 우리 사이트로 돌아옵니다.
-				options: {
-					emailRedirectTo: 'http://localhost:5173/', 
-				},
-			});
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: 'http://localhost:5173/', 
+        },
+      });
 
-			if (error) throw error;
+      if (error) throw error;
 
-			// ✨ [변경] 바로 로그인 페이지로 보내지 않고, 안내 메시지 띄우기 (alert 혹은 모달)
-			alert("회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다.");
-			
-			// 안내 후 로그인 페이지로 이동
-			navigate('/auth/login'); 
+      alert("회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다.");
+      navigate('/auth/login'); 
 
-		} catch (error) {
-			alert(error.message);
-		} finally {
-			setLoading(false);
-		}
-	};
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    // ✨ bg-gray-100을 줘서 검은 배경을 덮어버립니다.
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full border border-gray-200">
+    // 🚨 [Fix] 배경 및 폰트 컬러를 다크/블랙 테마로 수정
+    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 font-sans relative overflow-hidden">
+      
+      {/* 🚨 [Fix] Login.jsx와 동일한 백그라운드 효과 삽입 */}
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+      {/* 🚨 [Fix] 글래스모피즘(Glassmorphism) 뼈대 적용 */}
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10">
         
+        {/* 🚨 [Fix] z-50 나가기(X) 버튼 추가 */}
+        <button 
+          onClick={handleGoHome} 
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
+          title="메인으로 돌아가기"
+        >
+          <X size={20} />
+        </button>
+
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">📝 회원가입</h1>
-          <p className="text-gray-500 mt-2">나만의 일보 작성을 시작해보세요.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white/90">📝 회원가입</h1>
+          <p className="text-sm text-gray-400 mt-2">나만의 일보 작성을 시작해보세요.</p>
         </div>
 
-        <form onSubmit={handleSignup} className="flex flex-col gap-4">
+        <form onSubmit={handleSignup} className="space-y-5">
           
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">이메일</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 ml-1">이메일</label>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Mail size={18} className="text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+              </div>
+              {/* 🚨 [Fix] 다크 테마 입력 폼 스타일 적용 */}
               <input 
                 type="email" 
                 required
-                className="w-full pl-10 p-3 border rounded-lg focus:outline-blue-500 bg-gray-50"
+                className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-all"
                 placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -70,14 +86,16 @@ const Signup = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 ml-1">비밀번호</label>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Lock size={18} className="text-gray-500 group-focus-within:text-purple-400 transition-colors" />
+              </div>
               <input 
                 type="password" 
                 required
-                className="w-full pl-10 p-3 border rounded-lg focus:outline-blue-500 bg-gray-50"
+                className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-all"
                 placeholder="6자리 이상 입력해주세요"
                 minLength={6}
                 value={password}
@@ -88,32 +106,18 @@ const Signup = () => {
 
           <button 
             disabled={loading}
-            className="bg-blue-600 text-white font-bold py-3 rounded-lg mt-4 hover:bg-blue-700 transition-colors disabled:bg-gray-400 flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
           >
-            <UserPlus size={20} />
-            {loading ? '가입 처리 중...' : '회원가입 완료'}
+            {loading ? <Loader2 size={20} className="animate-spin" /> : <><UserPlus size={18} /> 회원가입 완료</>}
           </button>
 
         </form>
 
-        <div className="mt-6 text-center text-sm">
-          <p className="text-gray-500 mb-2">이미 계정이 있으신가요?</p>
-          <button 
-            onClick={() => navigate('/auth/login')} 
-            className="text-blue-600 font-bold hover:underline"
-          >
+        <div className="mt-8 text-center text-sm text-gray-500">
+          이미 계정이 있으신가요?{' '}
+          <Link to="/auth/login" className="text-blue-400 hover:text-blue-300 font-bold hover:underline transition-colors">
             로그인 하러 가기
-          </button>
-        </div>
-        
-        {/* ✨ 탈출구 버튼 (Login.jsx와 동일하게 추가) */}
-        <div className="mt-4 text-center border-t pt-4">
-          <button 
-            onClick={handleGoHome} 
-            className="text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 mx-auto"
-          >
-            <Home size={12} /> 여행 홈으로 돌아가기
-          </button>
+          </Link>
         </div>
 
       </div>      

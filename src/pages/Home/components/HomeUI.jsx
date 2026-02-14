@@ -1,11 +1,11 @@
 // src/pages/Home/components/HomeUI.jsx
-// 🚨 [Fix] TestBench 버튼 제거 & Theme Toggle 아이콘 추가
+// 🚨 [Fix/New] 여행 계획(Ticket) 버튼 제거 및 'AI 대화하기' 단일 메인 버튼으로 UI 통합 (뺄셈의 미학)
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
   Palmtree, Mountain, Building2, Plane, Compass, 
-  Eye, EyeOff, Droplet, Sun, Moon // 🚨 [New] Theme Icons 추가
+  Eye, EyeOff, Droplet, Sun, Moon 
 } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
 import TravelTicker from '../components/TravelTicker'; 
@@ -13,15 +13,16 @@ import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
 
 const HomeUI = ({ 
-  onSearch, onTickerClick, onTicketClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick, 
+  onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick, 
   relatedTags = [], isTagLoading = false, onTagClick,
   selectedCategory, onCategorySelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible, 
   onTogglePinVisibility,
-  globeTheme, // 🚨 [New]
-  onThemeToggle // 🚨 [New]
+  globeTheme, 
+  onThemeToggle 
+  // 🚨 [Fix] onTicketClick Props 제거
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
@@ -40,7 +41,6 @@ const HomeUI = ({
     { id: 'adventure', icon: Compass, label: 'Adventure', color: 'text-red-400' },
   ];
 
-  // 🚨 [New] 현재 테마에 맞는 아이콘과 색상 매핑
   const getThemeConfig = () => {
     switch(globeTheme) {
       case 'neon': return { icon: Droplet, color: 'text-cyan-400', border: 'border-cyan-500/30' };
@@ -60,8 +60,7 @@ const HomeUI = ({
           <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1 group-hover:text-blue-400 transition-colors">DEPARTURE LOUNGE</span>
         </div>
 
-        {/* 2. Globe Theme Toggle (기존 TestBench 영역 대체) */}
-        {/* 🚨 [Fix] TestBench 버튼들을 지우고 하나의 테마 스위치로 통합 */}
+        {/* 2. Globe Theme Toggle */}
         <div className="col-span-1 flex justify-center pt-3 animate-fade-in-down delay-75 pointer-events-auto">
            <button 
              onClick={onThemeToggle} 
@@ -138,9 +137,14 @@ const HomeUI = ({
           </Link>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 pointer-events-auto">
-          <button onClick={() => onOpenChat()} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all shadow-lg"><MessageSquare size={18} /></button>
-          <button onClick={onTicketClick} className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10"><Ticket size={16} /> <span>여행 계획 시작하기</span></button>
+        {/* 🚨 [Fix] 중앙 하단 버튼 통합 (디자인 유지하면서 단일 메인 버튼으로 승격) */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center pointer-events-auto">
+          <button 
+            onClick={() => onOpenChat()} 
+            className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10 hover:scale-105 transition-transform"
+          >
+            <MessageSquare size={16} /> <span>AI와 대화하기</span>
+          </button>
         </div>
       </footer>
     </>

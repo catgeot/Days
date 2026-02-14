@@ -1,13 +1,11 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] TestBench 제거 & globeTheme(순환형 테마) 상태 추가
-// 🚨 [New] 카테고리(Context) 상속 및 비관적 필터링 로직 적용
+// 🚨 [Fix] 방어 1, 2, 3 적용: 검색 실패 시 이전 위치의 좌표를 도둑질하여 유령 핀을 생성하는 버그 해결
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 
 // Components
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
-import TicketModal from './components/TicketModal'; 
 import ChatModal from './components/ChatModal'; 
 import PlaceCard from '../../components/PlaceCard/index'; 
 import LogoPanel from './components/LogoPanel';
@@ -42,7 +40,7 @@ function Home() {
   } = useGlobeLogic(globeRef, user?.id);
 
   const { 
-    savedTrips, activeChatId, setActiveChatId, fetchData, 
+    savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData,
     saveNewTrip, updateMessages, toggleBookmark, deleteTrip,
     clearTemporaryTrips 
   } = useTravelData();
@@ -50,7 +48,6 @@ function Home() {
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   // 3. UI States
-  const [isTicketOpen, setIsTicketOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
   const [isAmbientMode, setIsAmbientMode] = useState(false);
@@ -67,23 +64,24 @@ function Home() {
   // 데이터 로드
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // 🚨 [New] 필터링 거름망 (비관적 렌더링 적용)
-  // 기존 데이터에 카테고리가 없는 경우 현재 탭에 노출되지 않도록 차단
+  // 필터링 거름망 (비관적 렌더링 적용)
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
   const filteredScoutedPins = useMemo(() => scoutedPins.filter(p => p.category === category), [scoutedPins, category]);
-
-  // 🚨 [Fix] 'all' 옵션 삭제 반영
   const filteredSpots = useMemo(() => TRAVEL_SPOTS.filter(s => s.category === category), [category]);
 
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
 
+  // 🚨 [Fix] 방어 3: 좌표가 (0,0)인 추상적 대화(예: 우주정거장)는 지구본 렌더링에서 원천 제외 
+  // (ChatModal에는 전달되어야 하므로 filteredSavedTrips와 분리하여 지구본 전용 변수 생성)
+  const globeRenderedTrips = useMemo(() => filteredSavedTrips.filter(t => t.lat !== 0 || t.lng !== 0), [filteredSavedTrips]);
+
   // 포커스 모드
   const isFocusMode = useMemo(() => {
     if (isAmbientMode) return true;
-    if (isTicketOpen || isChatOpen) return true;
+    if (isChatOpen) return true;
     if (isPlaceCardOpen && isCardExpanded) return true;
     return false;
-  }, [isAmbientMode, isTicketOpen, isChatOpen, isPlaceCardOpen, isCardExpanded]);
+  }, [isAmbientMode, isChatOpen, isPlaceCardOpen, isCardExpanded]);
 
   // --- Handlers ---
 
@@ -92,7 +90,6 @@ function Home() {
     if (globeRef.current) globeRef.current.pauseRotation();
     const tempId = Date.now();
     
-    // 🚨 [Fix] Ghost Pin 생성 시 'scout' 대신 현재 선택된 탭(category)의 문맥 상속
     const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: category };
 
     addScoutPin(tempPin);
@@ -119,11 +116,10 @@ function Home() {
       
       addScoutPin(realPin);
       recordInteraction(name, 'view'); 
-      setDraftInput(`📍 ${name}`);
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
-  }, [addScoutPin, moveToLocation, processSearchKeywords, setDraftInput, isPinVisible, category]);
+  }, [addScoutPin, moveToLocation, processSearchKeywords, isPinVisible, category]);
 
   // 5. 위치 선택 핸들러
   const handleLocationSelect = useCallback((loc) => {
@@ -135,18 +131,17 @@ function Home() {
     }
 
     const name = loc.name || "Selected";
-    moveToLocation(loc.lat, loc.lng, name, loc.category || category); // 🚨 [Fix] 안전한 이동
+    moveToLocation(loc.lat, loc.lng, name, loc.category || category);
     
     const finalLoc = { 
       ...loc, 
       type: loc.type || 'temp-base', 
       id: loc.id || `loc-${loc.lat}-${loc.lng}`,
       name: name,
-      category: loc.category || category // 🚨 [Fix] 기존 카테고리가 없으면 현재 카테고리 상속
+      category: loc.category || category 
     };
 
     addScoutPin(finalLoc);
-    setDraftInput(`📍 ${name}`);
     processSearchKeywords(name); 
     
     setSelectedLocation(finalLoc); 
@@ -191,13 +186,21 @@ function Home() {
         country: coords.country || "Explore",
         lat: coords.lat,
         lng: coords.lng,
-        category: category, // 🚨 [Fix] 'search' 대신 현재 탭의 카테고리(category)를 강력 상속
+        category: category,
         description: `${query} (${coords.country}) 지역을 탐색합니다.`,
         type: 'temp-base'
       };
       handleLocationSelect(normalizedLoc);
     } else {
-      alert(`'${query}' 위치를 찾을 수 없습니다.`); 
+      const wantsAiChat = window.confirm(
+        `정확한 지도 위치를 찾을 수 없습니다.\n대신 AI 가이드에게 '${query}'에 대해 물어보시겠습니까?`
+      );
+      if (wantsAiChat) {
+        // 🚨 [Fix] 방어 1: 실패 시 이전 장소(파미르 등)와의 연결 고리 강제 절단
+        setSelectedLocation(null); 
+        handleStartChat(query, { text: query, persona: PERSONA_TYPES.GENERAL });
+        setDraftInput(''); 
+      }
     }
   };
 
@@ -219,19 +222,25 @@ function Home() {
     const locationName = dest || selectedLocation?.name || "New Session";
     const systemPrompt = getSystemPrompt(persona, locationName);
 
+    // 🚨 [Fix] 방어 2: 입력된 이름(우주정거장)과 기존 핀(파미르) 이름이 불일치하면 좌표를 부여하지 않음 (0, 0 처리)
+    const isSameLocation = selectedLocation && (selectedLocation.name === locationName || selectedLocation.display_name === locationName);
+    const targetLat = isSameLocation ? (selectedLocation.lat || 0) : 0;
+    const targetLng = isSameLocation ? (selectedLocation.lng || 0) : 0;
+
     const newTrip = { 
       destination: locationName, 
-      lat: selectedLocation?.lat || 0, lng: selectedLocation?.lng || 0, 
+      lat: targetLat, 
+      lng: targetLng, 
       date: new Date().toLocaleDateString(), code: "CHAT",
       prompt_summary: systemPrompt,
       messages: [], is_bookmarked: false, persona,
-      category: category // 🚨 [New] DB 저장(승급)을 위해 현재 선택된 카테고리를 봇짐에 추가
+      category: category
     };
     
     const created = await saveNewTrip(newTrip);
     if (created) { 
       setActiveChatId(created.id); 
-      setInitialQuery({ text: initPayload?.text || `${locationName}에 대해 알려줘!`, persona }); 
+      setInitialQuery({ text: initPayload?.text || "", persona }); 
       setIsChatOpen(true); 
     }
   };
@@ -262,8 +271,9 @@ function Home() {
           onGlobeClick={handleGlobeClick} 
           onMarkerClick={handleLocationSelect} 
           isChatOpen={isChatOpen} 
-          savedTrips={isPinVisible ? filteredSavedTrips : []} // 🚨 [Fix] 필터링된 즐겨찾기만 전달
-          tempPinsData={isPinVisible ? filteredScoutedPins : []} // 🚨 [Fix] 필터링된 임시 핀만 전달
+          // 🚨 [Fix] 방어 3 적용: 유령 핀(0,0)을 뺀 리스트만 지구본으로 넘김
+          savedTrips={isPinVisible ? globeRenderedTrips : []} 
+          tempPinsData={isPinVisible ? filteredScoutedPins : []} 
           travelSpots={isPinVisible ? filteredSpots : []} 
           activePinId={selectedLocation?.id}
           pauseRender={isFocusMode} 
@@ -277,9 +287,8 @@ function Home() {
         onTickerClick={handleSmartSearch}
         onTagClick={handleSmartSearch} 
         
-        onTicketClick={() => setIsTicketOpen(true)}
         externalInput={draftInput} 
-        savedTrips={filteredSavedTrips} // 🚨 [Fix] UI 사이드바 등에도 현재 탭의 데이터만 렌더링
+        savedTrips={filteredSavedTrips} 
         onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
         onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
         onLogoClick={() => setIsLogoPanelOpen(true)}
@@ -314,20 +323,36 @@ function Home() {
           location={selectedLocation} 
           onClose={() => setIsPlaceCardOpen(false)}
           onChat={(p) => handleStartChat(selectedLocation?.name, p)}
-          onTicket={() => { setIsPlaceCardOpen(false); setIsTicketOpen(true); }}
+          onTicket={() => { setIsPlaceCardOpen(false); }}
           isCompactMode={isTickerExpanded}
           onExpandChange={setIsCardExpanded}
         />
       )}
 
-      <TicketModal isOpen={isTicketOpen} onClose={() => { setIsTicketOpen(false); globeRef.current?.resumeRotation(); }} onIssue={(p) => handleStartChat(selectedLocation?.name, { text: p.text, persona: PERSONA_TYPES.PLANNER })} preFilledDestination={selectedLocation} scoutedPins={filteredScoutedPins} savedTrips={filteredSavedTrips} />
-
       <ChatModal 
         isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
-        initialQuery={initialQuery} chatHistory={filteredSavedTrips} // 🚨 [Fix] 채팅 모달에도 현재 문맥 데이터 전달
+        initialQuery={initialQuery} 
+        chatHistory={filteredSavedTrips} 
         onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
         activeChatId={activeChatId} onSwitchChat={(id) => handleStartChat(null, null, id)} 
-        onDeleteChat={deleteTrip} onClearChats={() => {}}
+        onDeleteChat={deleteTrip} 
+        
+        onClearChats={() => {
+          const isConfirm = window.confirm(
+            user 
+              ? "서버에서 최신 대화 기록을 다시 불러오시겠습니까?" 
+              : "모든 임시 대화 기록을 삭제하시겠습니까?"
+          );
+          if (isConfirm) {
+            if (user) {
+              fetchData(); 
+            } else {
+              setSavedTrips([]); 
+              setActiveChatId(null);
+              setIsChatOpen(false); 
+            }
+          }
+        }}
       />
     </div>
   );

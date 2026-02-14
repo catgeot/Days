@@ -1,3 +1,6 @@
+// src/shared/Auth/Login.jsx
+// 🚨 [Fix] 나가기 버튼에 z-50 강제 부여로 마우스 호버 가로챔 버그 해결
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../api/supabase';
 import { useNavigate, Link } from 'react-router-dom';
@@ -11,7 +14,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [rememberEmail, setRememberEmail] = useState(false);
 
-  // 이메일 기억하기 불러오기
   useEffect(() => {
     const savedEmail = localStorage.getItem('savedEmail');
     if (savedEmail) {
@@ -25,7 +27,6 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // 이메일 기억하기 저장/삭제 로직
       if (rememberEmail) {
         localStorage.setItem('savedEmail', email);
       } else {
@@ -55,10 +56,10 @@ const Login = () => {
 
       <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10">
         
-        {/* 나가기 버튼 */}
+        {/* 🚨 [Fix] z-50 부여하여 다른 요소가 클릭을 방해하지 못하게 비관적 보호 */}
         <button 
           onClick={() => navigate('/')} 
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
           title="메인으로 돌아가기"
         >
           <X size={20} />
@@ -99,7 +100,6 @@ const Login = () => {
           <div className="space-y-1">
             <div className="flex justify-between items-center">
               <label className="text-xs font-bold text-gray-500 ml-1">PASSWORD</label>
-              {/* 비밀번호 찾기 링크 */}
               <Link to="/auth/forgot-password" className="text-[10px] text-blue-400 hover:text-blue-300 transition-colors">
                 비밀번호를 잊으셨나요?
               </Link>
@@ -139,7 +139,6 @@ const Login = () => {
             {loading ? <Loader2 size={20} className="animate-spin" /> : <>로그인 <ArrowRight size={18} /></>}
           </button>
         </form>
-        {/* 폼 끝 */}
 
         {/* 회원가입 링크 */}
         <div className="mt-8 text-center text-sm text-gray-500">

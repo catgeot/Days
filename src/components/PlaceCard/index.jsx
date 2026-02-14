@@ -1,18 +1,19 @@
 // src/components/PlaceCard/index.jsx
+// 🚨 [Fix] onChat Prop 연결 누락 수정 (Home에서 넘어온 채팅 시작 함수를 하위로 전달)
+
 import React, { useState, useEffect } from 'react';
-import { usePlaceChat } from './hooks/usePlaceChat'; // 🚨 경로 주의
+import { usePlaceChat } from './hooks/usePlaceChat'; 
 import { usePlaceGallery } from './hooks/usePlaceGallery';
 import PlaceCardExpanded from './modes/PlaceCardExpanded';
 import PlaceCardSummary from './modes/PlaceCardSummary';
 import PlaceCardCompact from './modes/PlaceCardCompact';
 
-// 🚨 [New] Container Component: 오직 로직과 상태만 관리합니다.
-const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
+// 🚨 [Fix] onChat 추가
+const PlaceCard = ({ location, onClose, onTicket, onChat, isCompactMode }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
-  // 🚨 [Fix] Hook Connection: 객체(location) 전체 전달로 데이터 활용도 증대
-  const chatData = usePlaceChat(); // { chatHistory, isAiLoading, sendMessage, clearChat }
-  const galleryData = usePlaceGallery(location); // { images, isImgLoading, selectedImg, setSelectedImg }
+  const chatData = usePlaceChat(); 
+  const galleryData = usePlaceGallery(location); 
 
   // Reset logic
   useEffect(() => {
@@ -51,7 +52,8 @@ const PlaceCard = ({ location, onClose, onTicket, isCompactMode }) => {
       location={location}
       onClose={onClose}
       onExpand={() => setIsExpanded(true)}
-      onTicket={onTicket}
+      // 🚨 [Fix] onTicket 제거 및 onChat 전달 (요구사항 3번에 따라 '여행 계획' 버튼 삭제를 위해)
+      onChat={onChat}
     />
   );
 };

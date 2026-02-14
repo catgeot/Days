@@ -1,8 +1,12 @@
-// src/components/PlaceCard/PlaceCardSummary.jsx
-import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, Ticket, Sparkles, Maximize2 } from 'lucide-react';
+// src/components/PlaceCard/modes/PlaceCardSummary.jsx
+// 🚨 [Fix] Ticket 버튼 삭제 및 'AI 묻기' 버튼 클릭 시 카드 펼쳐짐(이벤트 버블링) 방지
+// 🚨 [Fix] onChat 함수 실행 시 기본값(빈 텍스트) 전달로 채팅창만 열리게 연동
 
-const PlaceCardSummary = ({ location, onClose, onExpand, onTicket }) => {
+import React, { useState, useEffect } from 'react';
+import { X, MessageSquare, Sparkles, Maximize2 } from 'lucide-react';
+// 🚨 [Fix] Ticket 아이콘 Import 제거
+
+const PlaceCardSummary = ({ location, onClose, onExpand, onChat }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Card Appearance Effect
@@ -34,7 +38,7 @@ const PlaceCardSummary = ({ location, onClose, onExpand, onTicket }) => {
                <Maximize2 size={14} className="text-gray-500 group-hover:text-white transition-colors" />
              </h2>
            </div>
-           <button onClick={onClose} className="p-1 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors -mr-2 -mt-2">
+           <button onClick={onClose} className="p-1 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors -mr-2 -mt-2 z-10">
              <X size={18} />
            </button>
         </div>
@@ -59,15 +63,19 @@ const PlaceCardSummary = ({ location, onClose, onExpand, onTicket }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-           <button onClick={() => { onExpand(); /* Chat triggers inside expanded view */ }} className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+        {/* 🚨 [Fix] grid-cols-2에서 grid-cols-1로 변경하여 메인 버튼 하나만 렌더링 */}
+        <div className="grid grid-cols-1 gap-3">
+           <button 
+             onClick={(e) => { 
+               e.stopPropagation(); // 🚨 [Fix] 이벤트 버블링 차단 (onExpand 실행 방지)
+               if(onChat) onChat({ text: "" }); // 🚨 [Fix] 빈 텍스트를 넘겨서 채팅창만 열리게 트리거
+             }} 
+             className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all z-10 relative"
+           >
              <MessageSquare size={16} className="text-blue-400" />
-             <span className="text-xs font-bold text-gray-200">AI 묻기</span>
+             <span className="text-xs font-bold text-gray-200">AI에게 장소 묻기</span>
            </button>
-           <button onClick={onTicket} className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg hover:shadow-blue-500/20 hover:scale-[1.05] transition-all">
-             <Ticket size={16} className="text-white" />
-             <span className="text-xs font-bold text-white">여행 계획</span>
-           </button>
+           {/* 🚨 [Fix] Ticket 버튼 컴포넌트 완전 삭제 */}
         </div>
       </div>
     </div>

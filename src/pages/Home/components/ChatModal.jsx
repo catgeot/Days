@@ -1,4 +1,6 @@
 // 🚨 [Fix/New] 수정 이유: 객체 형태의 initialQuery에서 텍스트를 정확히 추출하고 페르소냐를 적용함
+// 🚨 [Fix] 빈 텍스트("")가 들어왔을 때 강제로 "여행지에 대해 알려줘"로 변환되어 전송되는 현상 차단
+
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2, RefreshCcw } from 'lucide-react';
 // 🚨 [New] 프롬프트 엔진 임포트
@@ -69,7 +71,7 @@ const ChatModal = ({
     }
   }, [activeChatId, isOpen, chatHistory]); 
 
-  // 🚨 [Fix] 초기 쿼리에서 [object Object] 방지 및 텍스트 추출
+  // 🚨 [Fix] 초기 쿼리에서 [object Object] 방지 및 '빈 텍스트' 전송 차단 로직
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
       hasSentInitialRef.current = true;
@@ -78,16 +80,18 @@ const ChatModal = ({
       if (typeof initialQuery === 'string') {
         queryText = initialQuery;
       } else if (typeof initialQuery === 'object') {
-        queryText = initialQuery.text || initialQuery.display || initialQuery.query || "";
+        // null이나 undefined 방어
+        queryText = initialQuery?.text || initialQuery?.display || initialQuery?.query || "";
       }
 
-      if (!queryText || typeof queryText === 'object') {
-        queryText = "여행지에 대해 알려줘"; 
-      }
-
-      const queryPersona = initialQuery.persona || PERSONA_TYPES.GENERAL;
+      const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
       setCurrentPersona(queryPersona);
-      handleSend(queryText, queryPersona); 
+
+      // 🚨 [Fix] queryText가 실질적으로 존재할 때만 자동 전송 실행. 비어있으면 창만 열림.
+      if (queryText.trim().length > 0) {
+        handleSend(queryText, queryPersona); 
+      }
+      
     } else if (!isOpen) {
       hasSentInitialRef.current = false;
     }
