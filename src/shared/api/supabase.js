@@ -21,7 +21,12 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
  * 랭킹 시스템: 사용자 인터랙션 기록 (Fire-and-Forget)
  */
 export const recordInteraction = async (placeId, type) => {
-  if (!placeId) return;
+  // 🚨 [Fix/New] 데이터 오염 방지: 추상적 대화(New Session)나 스캔 중인 상태가 랭킹 테이블에 진입하는 것을 원천 차단
+  if (!placeId || placeId === "New Session" || placeId === "Scanning...") {
+      console.log(`🛡️ [Rank Guard] Blocked invalid placeId: ${placeId}`);
+      return;
+  }
+  
   const { error } = await supabase.rpc('increment_place_stats', {
     p_id: placeId,
     i_type: type // 'view', 'chat', 'save'

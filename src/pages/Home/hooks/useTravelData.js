@@ -1,5 +1,5 @@
 // src/pages/Home/hooks/useTravelData.js
-// 🚨 [Fix] Memory First 전략 적용: 휴지통 비우기 로직 강화 및 랭킹 시스템 연동 최적화
+// 🚨 [Fix/New] 허수 데이터(False Positive) 방어: 방 생성 시점이 아닌 '첫 대화 발화' 시점에만 랭킹 점수 부여
 
 import { useState, useCallback } from 'react';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
@@ -9,23 +9,15 @@ export const useTravelData = () => {
   const [activeChatId, setActiveChatId] = useState(null);
 
   const fetchData = useCallback(async () => {
-    // 🚨 [Fix] is_bookmarked 순으로 정렬하여 즐겨찾기가 상단에 오도록 개선 가능하나, 일단 생성순 유지
     const { data } = await supabase.from('saved_trips').select('*').order('created_at', { ascending: false });
     if (data) setSavedTrips(data);
   }, []);
 
   const saveNewTrip = useCallback(async (newTrip) => {
-    // 🚨 [Info] 대화 시작 시점에 비로소 DB에 저장됨 (Ghost -> Bubble 승격)
-    // 🚨 [New] index.jsx에서 newTrip 객체에 'category' 꼬리표를 담아 보내므로, 그대로 DB에 안착됩니다.
     const { data, error } = await supabase.from('saved_trips').insert([newTrip]).select();
     
     if (!error && data) {
-      // 📊 [Rank] Chat Start (+3)
-      if (newTrip.destination) {
-          recordInteraction(newTrip.destination, 'chat');
-          console.log(`📊 [Rank] Chat Start (+3): ${newTrip.destination}`);
-      }
-
+      // 🚨 [Subtraction] 기존의 '방 생성 시점' 점수 펌프질 로직을 완전히 삭제했습니다. (허수 카운트 차단)
       setSavedTrips(prev => [data[0], ...prev]);
       return data[0];
     }
@@ -33,7 +25,19 @@ export const useTravelData = () => {
   }, []);
 
   const updateMessages = useCallback(async (id, messages) => {
-    setSavedTrips(prev => prev.map(t => t.id === id ? { ...t, messages } : t));
+    setSavedTrips(prev => {
+      const trip = prev.find(t => t.id === id);
+      
+      // 🚨 [Fact Check] 방어 로직: 기존 대화가 0개이고, 새 대화가 1개 이상 들어올 때(첫 발화) 단 1회만 점수 부여
+      if (trip && trip.messages.length === 0 && messages.length > 0) {
+          if (trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
+              recordInteraction(trip.destination, 'chat');
+              console.log(`📊 [Rank] First Chat Act (+3): ${trip.destination}`);
+          }
+      }
+      
+      return prev.map(t => t.id === id ? { ...t, messages } : t);
+    });
     await supabase.from('saved_trips').update({ messages }).eq('id', id);
   }, []);
 
@@ -43,8 +47,7 @@ export const useTravelData = () => {
     
     const newStatus = !trip.is_bookmarked;
     
-    // 📊 [Rank] Bookmark (+5) - 승격 시에만 점수 부여
-    if (newStatus === true && trip.destination) {
+    if (newStatus === true && trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
         recordInteraction(trip.destination, 'save');
         console.log(`📊 [Rank] Bookmarked (+5): ${trip.destination}`);
     }
@@ -58,24 +61,10 @@ export const useTravelData = () => {
     await supabase.from('saved_trips').delete().eq('id', id);
   }, []);
 
-  // 🚨 [Fix] 휴지통: 화면과 DB의 '임시 데이터'를 완벽하게 분리하여 제거
   const clearTemporaryTrips = useCallback(async () => {
-    console.log("🧹 [Trash] Clearing temporary chats...");
-
-    // 1. UI Optimistic Update: 북마크 된 것만 남기고 즉시 삭제
     setSavedTrips(prev => prev.filter(trip => trip.is_bookmarked));
-
-    // 2. Server Side Cleanup: 'is_bookmarked'가 false인 항목만 DB에서 제거
-    const { error, count } = await supabase
-        .from('saved_trips')
-        .delete({ count: 'exact' }) // 삭제된 개수 확인용
-        .eq('is_bookmarked', false);
-
-    if (error) {
-        console.error("🚨 [Trash] DB Error:", error);
-    } else {
-        console.log(`🗑️ [Trash] Deleted ${count} temporary chats from DB.`);
-    }
+    const { error } = await supabase.from('saved_trips').delete().eq('is_bookmarked', false);
+    if (error) console.error("🚨 [Trash] DB Error:", error);
   }, []);
 
   return { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip, clearTemporaryTrips };
