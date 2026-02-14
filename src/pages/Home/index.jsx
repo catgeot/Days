@@ -12,11 +12,6 @@ import PlaceCard from '../../components/PlaceCard/index';
 import LogoPanel from './components/LogoPanel';
 import AmbientMode from './components/AmbientMode';
 
-// Test Benches (UI에서는 뺐지만 나중을 위해 임포트는 유지)
-import TestBenchA from './components/TestBenchA';
-import TestBenchB from './components/TestBenchB';
-import TestBenchC from './components/TestBenchC';
-
 // Libs & Utils
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from './lib/geocoding';
 import { supabase, recordInteraction } from '../../shared/api/supabase';

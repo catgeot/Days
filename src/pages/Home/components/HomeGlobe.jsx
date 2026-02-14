@@ -30,19 +30,19 @@ const HomeGlobe = forwardRef(({
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
           atmColor: "#00ffff", // 투명한 시안
-          atmAlt: 0.20
+          atmAlt: 0.25
         };
       case 'bright': // 수심이 맑게 보이는 Day 텍스처
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-day.jpg",
-          atmColor: "#87ceeb", // 밝은 스카이블루
-          atmAlt: 0.15
+          atmColor: "#ffffff", // 밝은 스카이블루
+          atmAlt: 0.3
         };
       case 'deep': // 묵직하고 신비로운 딥 블루
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
           atmColor: "#4b6bfa", // 짙은 파랑
-          atmAlt: 0.15
+          atmAlt: 0.25
         };
       default:
         return {
@@ -74,7 +74,7 @@ const HomeGlobe = forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
       if (globeEl.current) {
         globeEl.current.controls().autoRotate = false; 
-        globeEl.current.pointOfView({ lat, lng, altitude: 2.0 }, 1000);
+        globeEl.current.pointOfView({ lat, lng, altitude: 2.5 }, 3000);
       }
       const newRipple = { lat, lng, maxR: 8, propagationSpeed: 3, repeatPeriod: 800 };
       setRipples(prev => [...prev, newRipple]);
@@ -113,7 +113,7 @@ const HomeGlobe = forwardRef(({
       const handleCameraChange = () => {
         if (!globeEl.current) return;
         const alt = globeEl.current.pointOfView().altitude;
-        const newLevel = alt < 1.6 ? 1 : 0;
+        const newLevel = alt < 1.7 ? 1 : 0;
         if (newLevel !== lodLevelRef.current) {
           lodLevelRef.current = newLevel;
           setLodLevel(newLevel);
@@ -272,10 +272,10 @@ const HomeGlobe = forwardRef(({
         labelSize={d => d.priority === 1 ? 1.2 : 0.8}
         labelDotRadius={0.15}
 				 // 🚨 [Fix] Option 1: 미래적인 네온 블루 (시인성 최상)
-				// labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
+				labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
 
 				// 🚨 [Fix] Option 2: 강렬한 핫핑크/마젠타 (대비 효과 극대화)
-				labelColor={d => d.priority === 1 ? 'rgba(255, 20, 147, 1)' : 'rgba(251, 113, 133, 0.85)'}
+				// labelColor={d => d.priority === 1 ? 'rgba(255, 20, 147, 1)' : 'rgba(251, 113, 133, 0.85)'}
 
 				// 🚨 [Fix] Option 3: 테크니컬한 라임 그린 (매트릭스 스타일)
 				// labelColor={d => d.priority === 1 ? 'rgba(57, 255, 20, 1)' : 'rgba(134, 239, 172, 0.85)'}
