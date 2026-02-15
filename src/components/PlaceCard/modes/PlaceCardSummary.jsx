@@ -1,27 +1,18 @@
 // src/components/PlaceCard/modes/PlaceCardSummary.jsx
-// 🚨 [Fix/New] 즐겨찾기(Star) 토글 버튼 추가 (사용자 UI 업데이트 유지)
+// 🚨 [Fix] 가짜 스위치를 제거하고 재사용 가능한 BookmarkButton 컴포넌트 이식
 
 import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, Sparkles, Maximize2, Star } from 'lucide-react'; // 🚨 Star 아이콘 추가
+import { X, MessageSquare, Sparkles, Maximize2 } from 'lucide-react'; 
+import BookmarkButton from '../common/BookmarkButton'; // 🚨 [New] 컴포넌트 임포트 (경로 주의)
 
-const PlaceCardSummary = ({ location, onClose, onExpand, onChat }) => {
+const PlaceCardSummary = ({ location, onClose, onExpand, onChat, onToggleBookmark }) => { // 🚨 Props 추가
   const [isLoading, setIsLoading] = useState(true);
   
-  // 🚨 [New] 로컬 토글 상태 (추후 DB 동기화 연동을 위해 상태 분리)
-  const [isStarred, setIsStarred] = useState(location.is_bookmarked || false);
-
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [location]);
-
-  // 🚨 별표 클릭 핸들러 (카드 확장 버블링 방지)
-  const handleStarClick = (e) => {
-    e.stopPropagation(); 
-    setIsStarred(!isStarred);
-    // TODO: 유령 핀의 DB 승격 및 onToggleBookmark 연동 로직은 컨트롤 타워(index.jsx) 업데이트 시 연결됩니다.
-  };
 
   return (
     <div className="absolute bottom-6 right-8 w-80 z-40 animate-fade-in-up transition-all duration-300">
@@ -44,11 +35,9 @@ const PlaceCardSummary = ({ location, onClose, onExpand, onChat }) => {
              </h2>
            </div>
            
-           {/* 🚨 [New] 즐겨찾기 별표 & 닫기 버튼 묶음 배치 */}
+           {/* 🚨 [Fix] BookmarkButton 컴포넌트로 교체 */}
            <div className="flex items-center gap-1 -mr-2 -mt-2 z-10">
-             <button onClick={handleStarClick} className="p-1.5 rounded-full hover:bg-white/10 transition-colors">
-               <Star size={18} className={isStarred ? "text-yellow-400 fill-yellow-400" : "text-gray-500 hover:text-yellow-400"} />
-             </button>
+             <BookmarkButton location={location} onToggle={onToggleBookmark} />
              <button onClick={onClose} className="p-1.5 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors">
                <X size={18} />
              </button>

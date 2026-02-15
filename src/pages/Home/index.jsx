@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix/New] 구조 개선: 모든 복잡한 로직을 useHomeHandlers.js로 이관하여 UI 렌더링 최적화
+// 🚨 [Fix] toggleBookmark 주입 및 handleToggleBookmark Props 하달
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -19,75 +19,57 @@ import { TRAVEL_SPOTS } from './data/travelSpots';
 import { useGlobeLogic } from './hooks/useGlobeLogic';
 import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
-import { useHomeHandlers } from './hooks/useHomeHandlers'; // 🚨 신규 훅 임포트
+import { useHomeHandlers } from './hooks/useHomeHandlers';
 
 function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
   
-  // 1. Auth 구독
   useEffect(() => { 
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
     return () => subscription.unsubscribe();
   }, []);
 
-  // 2. Base Hooks 초기화
-  const { 
-    scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, 
-    moveToLocation, addScoutPin, clearScouts
-  } = useGlobeLogic(globeRef, user?.id);
-
-  const { 
-    savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData,
-    saveNewTrip, updateMessages, toggleBookmark, deleteTrip,
-    clearTemporaryTrips 
-  } = useTravelData();
-
+  const { scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
+  const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip, clearTemporaryTrips } = useTravelData();
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
-  // 3. UI States
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
   const [isAmbientMode, setIsAmbientMode] = useState(false);
   const [isPlaceCardOpen, setIsPlaceCardOpen] = useState(false); 
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
-  
   const [category, setCategory] = useState('paradise');
   const [isPinVisible, setIsPinVisible] = useState(true);
   const [globeTheme, setGlobeTheme] = useState('neon');
   const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
 
-  // 🚨 4. Handlers 분리 적용 (의존성 주입)
   const {
     handleGlobeClick,
     handleLocationSelect,
     handleStartChat,
+    handleToggleBookmark, // 🚨 핸들러 추출
     handleSmartSearch,
-    handleClearChats // 🚨 영구 삭제 핸들러 추가됨
+    handleClearChats
   } = useHomeHandlers({
     globeRef, user, category, isPinVisible, selectedLocation, savedTrips,
     setSelectedLocation, addScoutPin, moveToLocation, processSearchKeywords,
     setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, setDraftInput,
-    setIsChatOpen, setInitialQuery, setActiveChatId, saveNewTrip, setSavedTrips, fetchData
+    setIsChatOpen, setInitialQuery, setActiveChatId, saveNewTrip, setSavedTrips, fetchData,
+    toggleBookmark // 🚨 [Fix] toggleBookmark 주입
   });
 
-  // 데이터 로드
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // 필터링 거름망
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
   const filteredScoutedPins = useMemo(() => scoutedPins.filter(p => p.category === category), [scoutedPins, category]);
   const filteredSpots = useMemo(() => TRAVEL_SPOTS.filter(s => s.category === category), [category]);
-
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
-
-  // 기존 방어 3 유지: 좌표가 (0,0)인 데이터 제외
   const globeRenderedTrips = useMemo(() => filteredSavedTrips.filter(t => t.lat !== 0 || t.lng !== 0), [filteredSavedTrips]);
 
-  // 포커스 모드
   const isFocusMode = useMemo(() => {
     if (isAmbientMode) return true;
     if (isChatOpen) return true;
@@ -95,7 +77,6 @@ function Home() {
     return false;
   }, [isAmbientMode, isChatOpen, isPlaceCardOpen, isCardExpanded]);
 
-  // 테마 순환 로직
   const handleThemeToggle = () => {
     const themes = ['neon', 'bright', 'deep'];
     const nextIndex = (themes.indexOf(globeTheme) + 1) % themes.length;
@@ -104,16 +85,13 @@ function Home() {
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
-      
-      {/* 1. 지구본 레이어 */}
       <div 
         style={{ 
           contentVisibility: isFocusMode ? 'hidden' : 'visible',
           contain: isFocusMode ? 'strict' : 'none',
           containIntrinsicSize: '100vw 100vh',
           pointerEvents: isFocusMode ? 'none' : 'auto',
-          width: '100%',
-          height: '100%'
+          width: '100%', height: '100%'
         }}
       >
         <HomeGlobe 
@@ -130,40 +108,24 @@ function Home() {
         />
       </div>
       
-      {/* 2. UI 레이어 */}
       <HomeUI 
-        onSearch={handleSmartSearch}
-        onTickerClick={handleSmartSearch}
-        onTagClick={handleSmartSearch} 
-        
-        externalInput={draftInput} 
-        savedTrips={filteredSavedTrips} 
+        onSearch={handleSmartSearch} onTickerClick={handleSmartSearch} onTagClick={handleSmartSearch} 
+        externalInput={draftInput} savedTrips={filteredSavedTrips} 
         onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
         onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
         onLogoClick={() => setIsLogoPanelOpen(true)}
-        
         relatedTags={relatedTags} isTagLoading={isTagLoading} 
-        
         selectedCategory={category} onCategorySelect={setCategory}
         isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
-        
-        isPinVisible={isPinVisible}
-        onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
-        
-        globeTheme={globeTheme} 
-        onThemeToggle={handleThemeToggle} 
-        
+        isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
+        globeTheme={globeTheme} onThemeToggle={handleThemeToggle} 
         onClearScouts={() => { 
             if(window.confirm("임시 핀과 저장되지 않은 대화 기록을 모두 정리하시겠습니까?")) {
-                clearScouts();          
-                clearTemporaryTrips();  
-                setDraftInput('');      
-                setSelectedLocation(null); 
+                clearScouts(); clearTemporaryTrips(); setDraftInput(''); setSelectedLocation(null); 
             } 
         }}
       />
       
-      {/* 3. 패널 및 모달 */}
       <LogoPanel isOpen={isLogoPanelOpen} onClose={() => setIsLogoPanelOpen(false)} user={user} bucketList={bucketList} onLogout={() => supabase.auth.signOut()} onStartAmbient={() => { setIsLogoPanelOpen(false); setIsAmbientMode(true); }} />
       {isAmbientMode && <AmbientMode bucketList={bucketList} onClose={() => setIsAmbientMode(false)} />}
       
@@ -172,6 +134,7 @@ function Home() {
           location={selectedLocation} 
           onClose={() => setIsPlaceCardOpen(false)}
           onChat={(p) => handleStartChat(selectedLocation?.name, p)}
+          onToggleBookmark={handleToggleBookmark} // 🚨 [Fix] 배선 연결
           onTicket={() => { setIsPlaceCardOpen(false); }}
           isCompactMode={isTickerExpanded}
           onExpandChange={setIsCardExpanded}
@@ -180,14 +143,10 @@ function Home() {
 
       <ChatModal 
         isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
-        initialQuery={initialQuery} 
-        chatHistory={filteredSavedTrips} 
+        initialQuery={initialQuery} chatHistory={filteredSavedTrips} 
         onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
         activeChatId={activeChatId} onSwitchChat={(id) => handleStartChat(null, null, id)} 
-        onDeleteChat={deleteTrip} 
-        
-        // 🚨 [Fix] 영구 삭제 핸들러 연결
-        onClearChats={handleClearChats}
+        onDeleteChat={deleteTrip} onClearChats={handleClearChats}
       />
     </div>
   );
