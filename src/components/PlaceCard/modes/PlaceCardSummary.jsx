@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { X, MessageSquare, Sparkles, Maximize2 } from 'lucide-react'; 
 import BookmarkButton from '../common/BookmarkButton'; // 🚨 [New] 컴포넌트 임포트 (경로 주의)
 
-const PlaceCardSummary = ({ location, onClose, onExpand, onChat, onToggleBookmark }) => { // 🚨 Props 추가
+const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark }) => { // 🚨 Props 추가
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
@@ -37,7 +37,7 @@ const PlaceCardSummary = ({ location, onClose, onExpand, onChat, onToggleBookmar
            
            {/* 🚨 [Fix] BookmarkButton 컴포넌트로 교체 */}
            <div className="flex items-center gap-1 -mr-2 -mt-2 z-10">
-             <BookmarkButton location={location} onToggle={onToggleBookmark} />
+             <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
              <button onClick={onClose} className="p-1.5 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors">
                <X size={18} />
              </button>

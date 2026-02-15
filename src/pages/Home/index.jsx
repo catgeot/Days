@@ -132,6 +132,8 @@ function Home() {
       {isPlaceCardOpen && selectedLocation && (
         <PlaceCard 
           location={selectedLocation} 
+					// 🚨 [핵심 배선 연결]: savedTrips(진실)에서 현재 장소의 별표 여부를 실시간으로 추적하여 주입!
+          isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
           onClose={() => setIsPlaceCardOpen(false)}
           onChat={(p) => handleStartChat(selectedLocation?.name, p)}
           onToggleBookmark={handleToggleBookmark} // 🚨 [Fix] 배선 연결

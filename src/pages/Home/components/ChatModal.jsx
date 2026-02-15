@@ -1,9 +1,11 @@
-// 🚨 [Fix/New] 수정 이유: 객체 형태의 initialQuery에서 텍스트를 정확히 추출하고 페르소냐를 적용함
-// 🚨 [Fix] 빈 텍스트("")가 들어왔을 때 강제로 "여행지에 대해 알려줘"로 변환되어 전송되는 현상 차단
+// 🚨 [Fix/New] 수정 이유: 
+// 1. 객체 형태의 initialQuery에서 텍스트를 정확히 추출하고 페르소나를 적용함 (기존 유지)
+// 2. 빈 텍스트("") 전송 차단 (기존 유지)
+// 3. 🚨 [UI Fix] 대화 기록 초기화 버튼을 직관적인 휴지통(Trash2) 아이콘으로 교체
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2, RefreshCcw } from 'lucide-react';
-// 🚨 [New] 프롬프트 엔진 임포트
+// 🚨 [Fix] RefreshCcw 제거, Trash2는 이미 임포트되어 있음
+import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2 } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 
 const ChatModal = ({ 
@@ -71,7 +73,7 @@ const ChatModal = ({
     }
   }, [activeChatId, isOpen, chatHistory]); 
 
-  // 🚨 [Fix] 초기 쿼리에서 [object Object] 방지 및 '빈 텍스트' 전송 차단 로직
+  // 초기 쿼리에서 [object Object] 방지 및 '빈 텍스트' 전송 차단 로직 (유지)
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
       hasSentInitialRef.current = true;
@@ -80,14 +82,12 @@ const ChatModal = ({
       if (typeof initialQuery === 'string') {
         queryText = initialQuery;
       } else if (typeof initialQuery === 'object') {
-        // null이나 undefined 방어
         queryText = initialQuery?.text || initialQuery?.display || initialQuery?.query || "";
       }
 
       const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
       setCurrentPersona(queryPersona);
 
-      // 🚨 [Fix] queryText가 실질적으로 존재할 때만 자동 전송 실행. 비어있으면 창만 열림.
       if (queryText.trim().length > 0) {
         handleSend(queryText, queryPersona); 
       }
@@ -100,7 +100,6 @@ const ChatModal = ({
   const handleSend = async (text, personaOverride = null) => {
     if (!text?.trim() || isLoading) return;
 
-    // 🚨 텍스트가 객체로 넘어오는 것을 방지
     const cleanText = typeof text === 'object' ? (text.text || "질문 내용 확인 불가") : text;
     const personaToUse = personaOverride || currentPersona;
 
@@ -158,7 +157,14 @@ const ChatModal = ({
               <MessageSquare size={18} className="text-blue-400" />
               <span className="font-bold text-gray-200 text-sm">대화 기록</span>
             </div>
-            <button onClick={onClearChats} className="text-gray-500 hover:text-white transition-colors"><RefreshCcw size={14} /></button>
+            {/* 🚨 [Fix] onClearChats 연결 아이콘을 Trash2(휴지통)로 교체 */}
+            <button 
+              onClick={onClearChats} 
+              className="text-gray-500 hover:text-red-400 transition-colors"
+              title="모든 대화 기록 지우기"
+            >
+              <Trash2 size={16} />
+            </button>
           </div>
           
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">

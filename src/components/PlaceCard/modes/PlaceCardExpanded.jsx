@@ -3,7 +3,7 @@ import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { TRAVEL_VIDEOS } from '../../../pages/Home/data/travelVideos'; 
 
-const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
+const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const [mediaMode, setMediaMode] = useState('GALLERY'); 
@@ -108,6 +108,7 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
       {/* Left Panel: Chat & Info */}
       <PlaceChatPanel 
         location={location}
+				isBookmarked={isBookmarked}
         onClose={onClose}
         chatData={chatData}
         activeInfo={activeInfo}
@@ -118,6 +119,7 @@ const PlaceCardExpanded = ({ location, onClose, chatData, galleryData }) => {
         // 🚨 [Fix] GalleryInfoView에 필요한 핵심 데이터 주입
         isAiMode={isAiMode}
         selectedImg={galleryData.selectedImg}
+				onToggleBookmark={onToggleBookmark}
       />
       
       {/* Right Panel: Media Gallery */}

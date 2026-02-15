@@ -1,7 +1,8 @@
 // src/pages/Home/hooks/useHomeHandlers.js
-// 🚨 [Fix/New] 연타 방어 락(Lock) 기능과 유령 핀 강제 승격 로직(handleToggleBookmark) 추가
+// 🚨 [Fix/New] 수정 이유: 
+// 1. handleClearChats: '전체 지우기' 클릭 시에도 개별 휴지통과 동일하게 조건부 삭제(A/B) 룰을 적용하여 DB 무결성 유지.
 
-import { useCallback, useRef } from 'react'; // 🚨 useRef 추가
+import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -28,13 +29,11 @@ export function useHomeHandlers({
   saveNewTrip,
   setSavedTrips,
   fetchData,
-  toggleBookmark // 🚨 [Fix] 파라미터로 toggleBookmark 수신 추가
+  toggleBookmark 
 }) {
 
-  // 🚨 [비관적 방어] 네트워크 지연 중 중복 클릭을 막기 위한 물리적 잠금장치
   const isTogglingRef = useRef(false);
 
-  // 1. 지구본 클릭 핸들러
   const handleGlobeClick = useCallback(async ({ lat, lng }) => {
     if (!lat || !lng) return;
     if (globeRef.current) globeRef.current.pauseRotation();
@@ -71,7 +70,6 @@ export function useHomeHandlers({
     }
   }, [globeRef, category, isPinVisible, addScoutPin, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
 
-  // 2. 위치 선택 핸들러
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
 
@@ -98,24 +96,25 @@ export function useHomeHandlers({
     setIsCardExpanded(false);
   }, [selectedLocation, category, moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded]);
 
-  // 3. 채팅 시작 핸들러
   const handleStartChat = useCallback(async (dest, initPayload, existingId = null) => {
     if (globeRef.current) globeRef.current.pauseRotation();
 
-    if (initPayload?.mode === 'view_history' || existingId) {
-      const targetId = existingId || savedTrips.find(t => (initPayload?.id && t.id === initPayload.id) || (dest && t.destination === dest))?.id;
-      if (targetId) {
-        setActiveChatId(targetId);
-        setInitialQuery(null); 
-        setIsChatOpen(true);
-        return;
-      }
+    const locationName = dest || selectedLocation?.name || "New Session";
+    const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
+
+    const existingTrip = savedTrips.find(t => 
+      (existingId && t.id === existingId) || 
+      (t.destination === locationName && t.category === category)
+    );
+
+    if (existingTrip) {
+      setActiveChatId(existingTrip.id);
+      setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null); 
+      setIsChatOpen(true);
+      return; 
     }
 
-    const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
-    const locationName = dest || selectedLocation?.name || "New Session";
     const systemPrompt = getSystemPrompt(persona, locationName);
-
     const isSameLocation = selectedLocation && (selectedLocation.name === locationName || selectedLocation.display_name === locationName);
     const targetLat = isSameLocation ? (selectedLocation.lat || 0) : 0;
     const targetLng = isSameLocation ? (selectedLocation.lng || 0) : 0;
@@ -141,20 +140,16 @@ export function useHomeHandlers({
     }
   }, [globeRef, savedTrips, selectedLocation, category, saveNewTrip, setActiveChatId, setInitialQuery, setIsChatOpen]);
 
-  // 🚨 [New] 4. 북마크(별표) 토글 핸들러 - 유령 핀 승격 핵심 로직
   const handleToggleBookmark = useCallback(async (loc) => {
     if (!loc || !loc.name || isTogglingRef.current) return;
 
-    isTogglingRef.current = true; // 락(Lock) 온
+    isTogglingRef.current = true;
     try {
-      // [Fact Check] DB에 존재하는 여행지인지 확인 (destination == name 기준)
       const existingTrip = savedTrips.find(t => t.destination === loc.name);
 
       if (existingTrip) {
-        // [Case A] 이미 방이 존재함 (DB 갱신만 수행)
         await toggleBookmark(existingTrip.id);
       } else {
-        // [Case B] 유령 핀 -> 강제 저장 (DB 승격 및 북마크 자동 활성화)
         const persona = PERSONA_TYPES.GENERAL;
         const systemPrompt = getSystemPrompt(persona, loc.name);
 
@@ -166,7 +161,7 @@ export function useHomeHandlers({
           code: "CHAT",
           prompt_summary: systemPrompt,
           messages: [],
-          is_bookmarked: true, // 🚨 저장과 동시에 별표 적용
+          is_bookmarked: true, 
           persona,
           category: category
         };
@@ -175,11 +170,10 @@ export function useHomeHandlers({
     } catch (error) {
       console.error("Bookmark Error:", error);
     } finally {
-      isTogglingRef.current = false; // 락(Lock) 오프
+      isTogglingRef.current = false; 
     }
   }, [savedTrips, toggleBookmark, saveNewTrip, category]);
 
-  // 5. 스마트 검색 핸들러
   const handleSmartSearch = useCallback(async (input) => {
     if (!input) return;
     
@@ -230,35 +224,35 @@ export function useHomeHandlers({
     }
   }, [category, processSearchKeywords, setDraftInput, handleLocationSelect, setSelectedLocation, handleStartChat]);
 
-  // 6. 대화 리스트 영구 삭제(Trash) 핸들러
+  // 🚨 [Fix] 전체 지우기 시에도 조건부 삭제(A/B) 룰을 완벽하게 적용
   const handleClearChats = useCallback(async () => {
-    if (user) {
-      const isConfirm = window.confirm("모든 대화 기록을 영구 삭제하시겠습니까? (복구 불가)");
-      if (isConfirm) {
-        const { error } = await supabase.from('saved_trips').delete().eq('code', 'CHAT').eq('user_id', user.id);
-        if (!error) {
-          fetchData();
-          setActiveChatId(null);
-          setIsChatOpen(false);
-        } else {
-          alert("삭제 중 오류가 발생했습니다.");
+    const isConfirm = window.confirm("모든 대화 기록을 지우시겠습니까? (즐겨찾기된 장소는 유지됩니다)");
+    if (isConfirm) {
+      // 1. 즐겨찾기 된 방: DB에서 messages 배열만 비움 (일괄 처리)
+      await supabase.from('saved_trips').update({ messages: [] }).eq('is_bookmarked', true).eq('category', category);
+
+      // 2. 즐겨찾기 안 된 방: DB에서 행 전체를 물리적 삭제 (일괄 처리)
+      await supabase.from('saved_trips').delete().eq('is_bookmarked', false).eq('category', category);
+
+      // 3. UI(Local State) 동기화
+      setSavedTrips(prev => prev.map(t => {
+        if (t.category === category) {
+          if (t.is_bookmarked) return { ...t, messages: [] };
+          return null; // 조건 B에 해당하여 삭제될 항목
         }
-      }
-    } else {
-      const isConfirm = window.confirm("모든 임시 대화 기록을 삭제하시겠습니까?");
-      if (isConfirm) {
-        setSavedTrips([]); 
-        setActiveChatId(null);
-        setIsChatOpen(false); 
-      }
+        return t; // 다른 카테고리는 건드리지 않음
+      }).filter(Boolean)); // null로 마킹된 항목 제거
+
+      setActiveChatId(null);
+      setIsChatOpen(false);
     }
-  }, [user, fetchData, setActiveChatId, setIsChatOpen, setSavedTrips]);
+  }, [category, setActiveChatId, setIsChatOpen, setSavedTrips]);
 
   return {
     handleGlobeClick,
     handleLocationSelect,
     handleStartChat,
-    handleToggleBookmark, // 🚨 외부 노출
+    handleToggleBookmark, 
     handleSmartSearch,
     handleClearChats
   };

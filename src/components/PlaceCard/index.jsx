@@ -1,5 +1,5 @@
 // src/components/PlaceCard/index.jsx
-// 🚨 [Fix] onToggleBookmark 하위 뷰로 전달 통로 개통
+// 🚨 [Fix/New] 수정 이유: Home 컨트롤 타워로부터 'isBookmarked(진실)'를 전달받아 하위 뷰로 수직 하달하는 통로 개통.
 
 import React, { useState, useEffect } from 'react';
 import { usePlaceChat } from './hooks/usePlaceChat'; 
@@ -8,8 +8,8 @@ import PlaceCardExpanded from './modes/PlaceCardExpanded';
 import PlaceCardSummary from './modes/PlaceCardSummary';
 import PlaceCardCompact from './modes/PlaceCardCompact';
 
-// 🚨 [Fix] onToggleBookmark 추가
-const PlaceCard = ({ location, onClose, onTicket, onChat, onToggleBookmark, isCompactMode }) => {
+// 🚨 [Fix] isBookmarked Props 추가 수신
+const PlaceCard = ({ location, isBookmarked, onClose, onTicket, onChat, onToggleBookmark, isCompactMode }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const chatData = usePlaceChat(); 
@@ -27,10 +27,11 @@ const PlaceCard = ({ location, onClose, onTicket, onChat, onToggleBookmark, isCo
     return (
       <PlaceCardExpanded
         location={location}
+        isBookmarked={isBookmarked} // 🚨 진실 데이터 하달
         onClose={() => setIsExpanded(false)}
         chatData={chatData}
         galleryData={galleryData}
-        onToggleBookmark={onToggleBookmark} // 🚨 연결
+        onToggleBookmark={onToggleBookmark} 
       />
     );
   }
@@ -39,8 +40,9 @@ const PlaceCard = ({ location, onClose, onTicket, onChat, onToggleBookmark, isCo
     return (
       <PlaceCardCompact 
         location={location} 
+        isBookmarked={isBookmarked} // 🚨 진실 데이터 하달
         onClose={onClose} 
-        onToggleBookmark={onToggleBookmark} // 🚨 연결
+        onToggleBookmark={onToggleBookmark} 
       />
     );
   }
@@ -48,10 +50,11 @@ const PlaceCard = ({ location, onClose, onTicket, onChat, onToggleBookmark, isCo
   return (
     <PlaceCardSummary
       location={location}
+      isBookmarked={isBookmarked} // 🚨 진실 데이터 하달
       onClose={onClose}
       onExpand={() => setIsExpanded(true)}
       onChat={onChat}
-      onToggleBookmark={onToggleBookmark} // 🚨 연결
+      onToggleBookmark={onToggleBookmark} 
     />
   );
 };

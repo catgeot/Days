@@ -1,12 +1,17 @@
+// src/components/PlaceCard/panels/PlaceChatPanel.jsx
+// 🚨 [Fix] 상위에서 전달된 onToggleBookmark Props를 수신하도록 매개변수 추가 (ReferenceError 해결)
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X } from 'lucide-react';
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
+import BookmarkButton from '../common/BookmarkButton';
 
 const PlaceChatPanel = ({ 
-    location, 
+    location,
+		isBookmarked, 
     onClose, 
     chatData, 
     activeInfo, 
@@ -14,9 +19,9 @@ const PlaceChatPanel = ({
     mediaMode, 
     setMediaMode, 
     onSeekTime,
-    // 🚨 [New] 부모로부터 받은 핵심 데이터
     isAiMode,
-    selectedImg
+    selectedImg,
+    onToggleBookmark // 🚨 [Fix] 이 부분이 누락되어 있던 플러그입니다. 추가 완료.
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
@@ -47,7 +52,11 @@ const PlaceChatPanel = ({
              </button>
              <div className="flex flex-col min-w-0">
                  <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate">{location.country}</span>
-                 <h1 className="text-xl font-bold text-white truncate leading-none tracking-tight">{location.name}</h1>
+                 {/* 🚨 [Fix] 이름과 별표를 가로로 나란히 배치하기 위해 flex 적용 */}
+                 <div className="flex items-center gap-2">
+                     <h1 className="text-xl font-bold text-white truncate leading-none tracking-tight">{location.name}</h1>
+                     <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
+                 </div>
              </div>
          </div>
 
@@ -120,18 +129,17 @@ const PlaceChatPanel = ({
                         onSeekTime={onSeekTime}
                     />
                 ) : (
-                    // 🚨 [Fix] GalleryInfoView에 필요한 새로운 Props 주입 (기존 infoData 제거)
                     <GalleryInfoView 
-                        selectedPlace={location} // 장소 기본 정보 (desc 등)
-                        selectedImg={selectedImg} // 선택된 이미지 (Exif, Location)
-                        isAiMode={isAiMode}       // AI 모드 활성화 여부
+                        selectedPlace={location}
+                        selectedImg={selectedImg}
+                        isAiMode={isAiMode}      
                     />
                 )}
             </div>
         )}
       </div>
 
-      {/* Footer (Input Trigger) - Unchanged */}
+      {/* Footer (Input Trigger) */}
       {!isChatMode && (
           <div className="p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
               <button 

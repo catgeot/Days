@@ -1,5 +1,7 @@
 // src/pages/Home/hooks/useTravelData.js
-// 🚨 [Fix/New] 허수 데이터(False Positive) 방어: 방 생성 시점이 아닌 '첫 대화 발화' 시점에만 랭킹 점수 부여
+// 🚨 [Fix/New] 수정 이유: 
+// 1. [Fact Check] React Strict Mode에 의한 더블 렌더링(점수 2배 누적) 버그를 막기 위해, 부작용(API 호출)을 상태 Setter(setSavedTrips) 외부로 분리함.
+// 2. [조건부 삭제] deleteTrip 및 clearTemporaryTrips 로직 유지 (이전 턴과 동일)
 
 import { useState, useCallback } from 'react';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
@@ -17,7 +19,6 @@ export const useTravelData = () => {
     const { data, error } = await supabase.from('saved_trips').insert([newTrip]).select();
     
     if (!error && data) {
-      // 🚨 [Subtraction] 기존의 '방 생성 시점' 점수 펌프질 로직을 완전히 삭제했습니다. (허수 카운트 차단)
       setSavedTrips(prev => [data[0], ...prev]);
       return data[0];
     }
@@ -25,19 +26,18 @@ export const useTravelData = () => {
   }, []);
 
   const updateMessages = useCallback(async (id, messages) => {
-    setSavedTrips(prev => {
-      const trip = prev.find(t => t.id === id);
-      
-      // 🚨 [Fact Check] 방어 로직: 기존 대화가 0개이고, 새 대화가 1개 이상 들어올 때(첫 발화) 단 1회만 점수 부여
-      if (trip && trip.messages.length === 0 && messages.length > 0) {
-          if (trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
-              recordInteraction(trip.destination, 'chat');
-              console.log(`📊 [Rank] First Chat Act (+3): ${trip.destination}`);
-          }
-      }
-      
-      return prev.map(t => t.id === id ? { ...t, messages } : t);
-    });
+    // 🚨 [Fix] 점수 부여 로직을 setter 밖으로 빼내어 중복 실행(Double Invoke) 원천 차단
+    if (messages.length === 1) {
+       // 첫 대화일 때만 DB에서 정확한 목적지를 조회하여 단 1회 점수 부여
+       const { data } = await supabase.from('saved_trips').select('destination').eq('id', id).single();
+       if (data && data.destination && data.destination !== "New Session" && data.destination !== "Scanning...") {
+           recordInteraction(data.destination, 'chat');
+           console.log(`📊 [Rank] First Chat Act (+3): ${data.destination}`);
+       }
+    }
+
+    // UI 상태와 DB는 순수하게 데이터만 업데이트
+    setSavedTrips(prev => prev.map(t => t.id === id ? { ...t, messages } : t));
     await supabase.from('saved_trips').update({ messages }).eq('id', id);
   }, []);
 
@@ -57,9 +57,17 @@ export const useTravelData = () => {
   }, [savedTrips]);
 
   const deleteTrip = useCallback(async (id) => {
-    setSavedTrips(prev => prev.filter(t => t.id !== id));
-    await supabase.from('saved_trips').delete().eq('id', id);
-  }, []);
+    const trip = savedTrips.find(t => t.id === id);
+    if (!trip) return;
+
+    if (trip.is_bookmarked) {
+      setSavedTrips(prev => prev.map(t => t.id === id ? { ...t, messages: [] } : t));
+      await supabase.from('saved_trips').update({ messages: [] }).eq('id', id);
+    } else {
+      setSavedTrips(prev => prev.filter(t => t.id !== id));
+      await supabase.from('saved_trips').delete().eq('id', id);
+    }
+  }, [savedTrips]);
 
   const clearTemporaryTrips = useCallback(async () => {
     setSavedTrips(prev => prev.filter(trip => trip.is_bookmarked));
