@@ -10,8 +10,14 @@ import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-re
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo'; 
 
+// 🚨 [New] 전역 일기장 패널을 열기 위한 훅 로드
+import { useReport } from '../../../context/ReportContext';
+
 const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookmark, onTripSelect }) => {
   const navigate = useNavigate();
+  
+  // 🚨 [New] 패널 조작 리모컨 가져오기
+  const { openReport } = useReport();
 
   return (
     <>
@@ -61,7 +67,11 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
               
               {/* 여행 일지(My Travel Log) 컴팩트 버튼 */}
               <button 
-                onClick={() => navigate('/report')}
+                // 🚨 [Fix] 페이지 이동(navigate) 대신 오버레이 패널(openReport)을 열고, 로고 패널은 깔끔하게 닫아줌
+                onClick={() => {
+                  openReport('dashboard');
+                  onClose(); 
+                }}
                 className="w-full group flex items-center justify-between py-3 px-5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 rounded-xl transition-all duration-300"
               >
                 <div className="flex items-center gap-3">

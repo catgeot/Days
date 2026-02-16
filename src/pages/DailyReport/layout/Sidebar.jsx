@@ -1,9 +1,9 @@
-// 🚨 [Fix] Supabase 및 하위 부품들의 경로를 새로운 위치에 맞춰 수정했습니다.
-// 🛡️ [Maintain] 메모 및 슬라이드쇼 로직은 기존 기능을 그대로 유지합니다.
-
+// 🚨 [Fix] useNavigate 제거, Supabase 로그아웃 시 패널 닫기 연동
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../../src/shared/api/supabase'; // 🚨 [Fix] 경로 최적화
+import { supabase } from '../../../shared/api/supabase'; 
+
+// 🚨 [New] 전역 리모컨 호출
+import { useReport } from '../../../context/ReportContext';
 
 // 🧩 부품 조립 (상대 경로 유지)
 import HomeButton from './HomeButton';
@@ -12,10 +12,12 @@ import UserProfile from './UserProfile';
 import SlideViewer from './SlideViewer';
 
 const Sidebar = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [slides, setSlides] = useState([]);
   const [isSlideOpen, setIsSlideOpen] = useState(false);
+  
+  // 🚨 [New] 로그아웃 후 지구본으로 돌아가기 위해 리모컨 획득
+  const { closeReport } = useReport();
 
   useEffect(() => {
     const initData = async () => {
@@ -50,7 +52,7 @@ const Sidebar = () => {
   const handleLogout = async () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       await supabase.auth.signOut();
-      navigate('/');
+      closeReport(); // 🚨 [Fix] 라우터 이동 대신 패널 닫기로 자연스럽게 복귀
     }
   };
 

@@ -2,8 +2,14 @@ import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Globe, FileText, User } from 'lucide-react';
 
+// 🚨 [New] 일기장 패널을 열기 위한 전역 상태 훅 로드
+import { useReport } from '../../context/ReportContext'; 
+
 const MainLayout = () => {
   const location = useLocation();
+  
+  // 🚨 [New] 패널 조작 리모컨(isOpen, openReport) 가져오기
+  const { isOpen, openReport } = useReport();
 
   return (
     <div className="w-full h-screen relative bg-black overflow-hidden flex flex-col">
@@ -21,19 +27,19 @@ const MainLayout = () => {
         shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
       >
         
-        {/* [좌측] 일보작성 */}
-        <Link 
-          to="/report" 
-          className={`flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 group ${location.pathname.startsWith('/report') ? 'text-blue-400' : 'text-gray-400 hover:text-white'}`}
+        {/* 🚨 [Fix] LOGBOOK 버튼: Link를 button으로 변경하고, 라우터(location) 대신 전역 상태(isOpen)로 활성화 여부 판단 */}
+        <button 
+          onClick={() => openReport('dashboard')} 
+          className={`flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 group ${isOpen ? 'text-blue-400' : 'text-gray-400 hover:text-white'}`}
         >
           {/* 아이콘에 은은한 광택 효과 추가 */}
-          <div className={`p-1 rounded-full ${location.pathname.startsWith('/report') ? 'bg-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.5)]' : ''}`}>
+          <div className={`p-1 rounded-full ${isOpen ? 'bg-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.5)]' : ''}`}>
             <FileText size={24} />
           </div>
           <span className="text-[10px] font-medium tracking-wider">LOGBOOK</span>
-        </Link>
+        </button>
 
-        {/* [중앙] 여행 홈 (떠있는 버튼) */}
+        {/* [중앙] 여행 홈 (떠있는 버튼) - 기존 유지 */}
         <Link 
           to="/" 
           className="relative -top-8 group"
@@ -50,7 +56,7 @@ const MainLayout = () => {
           </div>
         </Link>
 
-        {/* [우측] 관리자 */}
+        {/* [우측] 관리자 - 기존 유지 */}
         <Link 
           to="/auth/login" 
           className={`flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 group ${location.pathname.startsWith('/auth') ? 'text-blue-400' : 'text-gray-400 hover:text-white'}`}

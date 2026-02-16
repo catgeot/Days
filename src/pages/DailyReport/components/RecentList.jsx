@@ -1,9 +1,15 @@
+// 🚨 [Fix/New] 라우터 이동(navigate)을 모두 제거하고 Context API(useReport)의 화면 전환으로 교체 완료.
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle } from 'lucide-react';
 
+// 🚨 [New] 전역 리모컨 로드
+import { useReport } from '../../../context/ReportContext';
+
 const RecentList = ({ reports, loading }) => {
-  const navigate = useNavigate();
+  // 🚨 [Fix] useNavigate 제거, 패널 스위치 장착
+  const { setCurrentView, setSelectedId } = useReport();
+  
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -61,7 +67,13 @@ const RecentList = ({ reports, loading }) => {
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300"><ClipboardList size={40} /></div>
             <p className="text-gray-500 font-bold text-lg">아직 작성된 일보가 없습니다.</p>
             <p className="text-gray-400 text-sm mt-1 mb-6">오늘의 첫 번째 현장 기록을 남겨보세요!</p>
-            <button onClick={() => navigate('/report/write')} className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-6 py-3 rounded-full font-bold shadow-sm border border-blue-100"><PenTool size={18} /> 새 일보 작성하기</button>
+            {/* 🚨 [Fix] 새 일보 작성 파이프 교체 */}
+            <button 
+              onClick={() => { setCurrentView('write'); setSelectedId(null); }} 
+              className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-6 py-3 rounded-full font-bold shadow-sm border border-blue-100"
+            >
+              <PenTool size={18} /> 새 일보 작성하기
+            </button>
           </div>
         ) : filteredReports.length === 0 ? (
           <div className="text-center py-20 text-gray-400"><Search size={40} className="mx-auto mb-3 opacity-20" /><p>"{searchTerm}"에 대한 검색 결과가 없습니다.</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-2 hover:underline">전체 목록 보기</button></div>
@@ -76,7 +88,11 @@ const RecentList = ({ reports, loading }) => {
             {filteredReports.map((report) => (
               <div 
                 key={report.id}
-                onClick={() => navigate(`/report/${report.id}`)}
+                // 🚨 [Fix] 리스트 클릭 시 Detail 화면으로 전환하며 ID 전달
+                onClick={() => {
+                  setSelectedId(report.id);
+                  setCurrentView('detail');
+                }}
                 className={`
                   group border border-gray-100 bg-white rounded-xl hover:border-blue-300 hover:shadow-md transition-all cursor-pointer overflow-hidden
                   ${viewMode === 'grid' 

@@ -1,23 +1,30 @@
+// 🚨 [Fix] 달력에서 전달한 preSelectedDate를 최우선으로 받도록 날짜 로직 보강
+
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { supabase } from '../../shared/api/supabase';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 
+import { useReport } from '../../context/ReportContext';
+
 const Write = () => {
-  const navigate = useNavigate();
-  const location = useLocation(); // 달력에서 보낸 날짜 받기용
-  const { id } = useParams();
-  const isEditMode = Boolean(id);
+  // ✨ [Fix] preSelectedDate 수신 파이프 추가
+  const { setCurrentView, selectedId, setSelectedId, preSelectedDate, setPreSelectedDate } = useReport();
+  
+  const isEditMode = Boolean(selectedId);
 
-  // 1. 날짜 초기값 설정 (달력에서 선택한 날짜가 있으면 그것을, 없으면 오늘 날짜를 사용)
-  const [date, setDate] = useState(
-    location.state?.preSelectedDate || new Date().toISOString().split('T')[0]
-  );
+  // ✨ [Fix] 달력 날짜가 있으면 그것을, 없으면 KST 기준 오늘 날짜를 사용
+  const getLocalDate = () => {
+    if (preSelectedDate) return preSelectedDate;
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split('T')[0];
+  };
 
+  const [date, setDate] = useState(getLocalDate());
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [mapLocation, setMapLocation] = useState(''); // location 변수명 충돌 방지 위해 mapLocation으로 변경
+  const [mapLocation, setMapLocation] = useState(''); 
   
   const [imageFiles, setImageFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]); 
@@ -27,15 +34,17 @@ const Write = () => {
   const [recentLocations, setRecentLocations] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // ✨ [New] 컴포넌트를 떠날 때(언마운트) 날짜 캐시를 초기화하여 다음 번 '새 일보 작성' 시 꼬이지 않게 방지 (비관적 설계)
+  useEffect(() => {
+    return () => setPreSelectedDate(null);
+  }, [setPreSelectedDate]);
+
   useEffect(() => {
     const loadInitialData = async () => {
-      
-      // 1. ✨ 현재 로그인한 유저 정보부터 가져옵니다.
       const { data: { user } } = await supabase.auth.getUser();
 
-      // 수정 모드일 때 데이터 불러오기
-      if (isEditMode) {
-        const { data } = await supabase.from('reports').select('*').eq('id', id).single();
+      if (isEditMode && selectedId) {
+        const { data } = await supabase.from('reports').select('*').eq('id', selectedId).single();
         if (data) {
           setTitle(data.title);
           setContent(data.content);
@@ -45,20 +54,17 @@ const Write = () => {
         }
       }
       
-      // 2. ✨ 최근 위치 가져오기 (내 것만!)
-      // user가 있을 때만 쿼리를 날립니다.
       if (user) {
         const { data: historyData } = await supabase
           .from('reports')
           .select('location')
-          .eq('user_id', user.id) // 🔥 [핵심] 내 아이디랑 똑같은 것만 가져와!
-          .neq('location', null)   // (혹시 모를 빈 값 제외)
-          .neq('location', '')     // (빈 문자열 제외)
+          .eq('user_id', user.id) 
+          .neq('location', null)  
+          .neq('location', '')    
           .order('date', { ascending: false })
           .limit(20);
 
         if (historyData) {
-          // 중복 제거
           const uniqueLocs = [...new Set(historyData.map(item => item.location))].slice(0, 5);
           setRecentLocations(uniqueLocs);
         }
@@ -66,7 +72,8 @@ const Write = () => {
     };
 
     loadInitialData();
-  }, [id, isEditMode]);
+  }, [selectedId, isEditMode]);
+
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) return alert("위치 정보를 지원하지 않습니다.");
     setLocationLoading(true);
@@ -103,16 +110,10 @@ const Write = () => {
   const handleSave = async () => {
     if (!title) return alert("제목을 입력해주세요!");
 
-    // 저장 시 로그인 체크
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      const wantToSignup = window.confirm(
-        "작성하신 내용을 저장하려면 로그인이 필요합니다.\n\n회원가입 페이지로 이동하시겠습니까?\n(가입 후 다시 작성해야 할 수 있습니다)"
-      );
-      if (wantToSignup) {
-        navigate('/auth/signup');
-      }
+      alert("작성하신 내용을 저장하려면 로그인이 필요합니다.");
       return;
     }
 
@@ -143,11 +144,13 @@ const Write = () => {
       };
 
       if (isEditMode) {
-        await supabase.from('reports').update(reportData).eq('id', id);
+        await supabase.from('reports').update(reportData).eq('id', selectedId);
+        setCurrentView('detail');
       } else {
         await supabase.from('reports').insert([reportData]);
+        setCurrentView('dashboard');
+        setSelectedId(null);
       }
-      navigate(isEditMode ? `/report/${id}` : '/report');
     } catch (error) {
       console.error("저장 실패:", error);
       alert("저장 중 오류가 발생했습니다.");
@@ -159,7 +162,9 @@ const Write = () => {
   return (
     <div className="max-w-2xl mx-auto min-h-screen pb-20" onClick={() => setShowSuggestions(false)}>
       <div className="flex items-center gap-4 mb-6 pt-6 px-4">
-        <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600"><ArrowLeft size={24} /></button>
+        <button onClick={() => { setCurrentView('dashboard'); setSelectedId(null); setPreSelectedDate(null); }} className="text-gray-400 hover:text-gray-600">
+          <ArrowLeft size={24} />
+        </button>
         <h2 className="text-2xl font-bold text-gray-800">{isEditMode ? '📝 일보 수정하기' : '🖊️ 새 일보 작성'}</h2>
       </div>
 
@@ -169,21 +174,20 @@ const Write = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <label className="block font-bold mb-2 text-sm text-gray-600">날짜</label>
-            <input type="date" className="w-full border p-3 rounded-lg bg-gray-50" value={date} onChange={(e) => setDate(e.target.value)} />
+            <input type="date" className="w-full border p-3 rounded-lg bg-gray-50 text-gray-900" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div className="flex-1 relative" onClick={(e) => e.stopPropagation()}>
             <label className="block font-bold mb-2 text-sm text-gray-600 flex justify-between">
-              위치 <button onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-xs text-blue-600 flex items-center gap-1 hover:underline disabled:opacity-50">{locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />}{locationLoading ? '찾는 중...' : '현재 위치 적용'}</button>
+              위치 <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-xs text-blue-600 flex items-center gap-1 hover:underline disabled:opacity-50">{locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />}{locationLoading ? '찾는 중...' : '현재 위치 적용'}</button>
             </label>
             <div className="relative">
               <input type="text" 
-								className="w-full border p-3 pl-10 rounded-lg bg-gray-50" 
-								value={mapLocation} 
-								onChange={(e) => setMapLocation(e.target.value)} 
-								onFocus={() => setShowSuggestions(true)} 
-								// ✨ [추가] 브라우저야, 너는 끼어들지 마. 내가 만든 목록만 보여줄 거야.
-    						autoComplete="off"
-							/>
+                className="w-full border p-3 pl-10 rounded-lg bg-gray-50 text-gray-900" 
+                value={mapLocation} 
+                onChange={(e) => setMapLocation(e.target.value)} 
+                onFocus={() => setShowSuggestions(true)} 
+                autoComplete="off"
+              />
               <MapPin className="absolute left-3 top-3.5 text-gray-400" size={18} />
               {showSuggestions && recentLocations.length > 0 && (
                 <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-xl mt-1 overflow-hidden">
@@ -215,8 +219,8 @@ const Write = () => {
         </div>
 
         {/* 제목/내용 */}
-        <div><label className="block font-bold mb-2 text-sm text-gray-600">제목</label><input type="text" className="w-full border p-3 rounded-lg bg-gray-50 text-lg font-bold" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-        <div><label className="block font-bold mb-2 text-sm text-gray-600">내용</label><textarea className="w-full border p-3 rounded-lg h-64 bg-gray-50 resize-none leading-relaxed" value={content} onChange={(e) => setContent(e.target.value)} /></div>
+        <div><label className="block font-bold mb-2 text-sm text-gray-600">제목</label><input type="text" className="w-full border p-3 rounded-lg bg-gray-50 text-gray-900 text-lg font-bold" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+        <div><label className="block font-bold mb-2 text-sm text-gray-600">내용</label><textarea className="w-full border p-3 rounded-lg h-64 bg-gray-50 text-gray-900 resize-none leading-relaxed" value={content} onChange={(e) => setContent(e.target.value)} /></div>
 
         <button onClick={handleSave} disabled={uploading} className="bg-blue-600 text-white p-4 rounded-lg font-bold hover:bg-blue-700 flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 disabled:bg-gray-400">
           {uploading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}{uploading ? '사진 업로드 중...' : (isEditMode ? '수정 완료' : '저장하기')}

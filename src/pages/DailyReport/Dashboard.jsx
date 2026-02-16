@@ -1,21 +1,20 @@
-// 🚨 [Fix] 컴포넌트 경로를 ./components 내부로 수정했습니다.
-// 🚨 [New] 로직을 useDashboardData 훅으로 완전히 분리하여 UI 구조가 훨씬 간결해졌습니다.
-
+// 🚨 [Fix] react-router-dom의 Link 의존성 제거
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { PenTool } from 'lucide-react'; 
 
-// 🚨 [Fix] 이동된 위치에서 컴포넌트 로드
+// 🚨 [New] 일기장 모드 전환을 위한 전역 상태 훅 로드
+import { useReport } from '../../context/ReportContext';
+
 import StatsCard from './components/StatsCard';
 import GraphCard from './components/GraphCard';
 import CalendarCard from './components/CalendarCard';
 import RecentList from './components/RecentList';
-
-// 🚨 [New] 전용 훅 로드
 import { useDashboardData } from './hooks/useDashboardData';
 
 const Dashboard = () => {
-  // 훅에서 필요한 데이터와 함수를 가져옵니다.
+  // 🚨 [New] 뷰를 전환할 수 있는 함수 가져오기
+  const { setCurrentView } = useReport();
+
   const {
     loading, reports, viewYear, setViewYear, viewMonth, setViewMonth,
     displayCount, calendarDays, trendData, maxCount,
@@ -35,9 +34,13 @@ const Dashboard = () => {
           </p>
         </div>
         
-        <Link to="/report/write" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95">
+        {/* 🚨 [Fix] Link를 button으로 교체하여 패널 내부 뷰만 'write'로 전환 */}
+        <button 
+          onClick={() => { setCurrentView('write'); setSelectedId(null); }}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
+        >
           <PenTool size={18} /> 새 일보 작성
-        </Link>
+        </button>
       </div>
 
       {/* 통계 카드 섹션 */}

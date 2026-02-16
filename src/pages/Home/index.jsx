@@ -10,6 +10,9 @@ import ChatModal from './components/ChatModal';
 import PlaceCard from '../../components/PlaceCard/index'; 
 import LogoPanel from './components/LogoPanel';
 
+// 🚨 [New] 일기장 통합 오버레이 패널 컴포넌트 마운트
+import ReportPanel from './components/ReportPanel';
+
 // Libs & Utils
 import { supabase } from '../../shared/api/supabase';
 import { TRAVEL_SPOTS } from './data/travelSpots';
@@ -132,11 +135,8 @@ function Home() {
         onToggleBookmark={toggleBookmark} 
         onTripSelect={(trip) => { 
           setIsLogoPanelOpen(false);
-          
-          // 🚨 [Fix] 병합 순서 교체: 정적 데이터(realSpot)가 DB 데이터(trip)를 덮어써서 비디오 ID 등 고유 정보를 완벽히 보존
           const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
           const hydratedLocation = realSpot ? { ...trip, ...realSpot, name: trip.destination } : { ...trip, name: trip.destination };
-          
           handleLocationSelect(hydratedLocation); 
           setIsCardExpanded(true);
         }}
@@ -167,6 +167,9 @@ function Home() {
         onDeleteChat={deleteTrip} 
         onClearChats={handleClearChats}
       />
+
+      {/* 🚨 [New] 일기장 패널 마운트 (가장 높은 z-index로 화면을 덮습니다) */}
+      <ReportPanel />
     </div>
   );
 }

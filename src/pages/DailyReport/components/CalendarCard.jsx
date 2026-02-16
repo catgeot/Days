@@ -1,24 +1,29 @@
+// 🚨 [Fix] 라우터(useNavigate) 철거 및 Context(useReport) 화면 전환 도입 완료
+
 import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // ✨ 페이지 이동을 위해 추가
+
+// 🚨 [New] 전역 리모컨 로드
+import { useReport } from '../../../context/ReportContext';
 
 const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth }) => {
-  const navigate = useNavigate(); // ✨ 이동 도구
+  // 🚨 [Fix] 파이프 교체
+  const { setCurrentView, setSelectedId, setPreSelectedDate } = useReport(); 
 
-  // ✨ 날짜 클릭 시 실행될 함수
   const handleDateClick = (dayItem) => {
-    if (!dayItem.day) return; // 빈 칸은 클릭 안 됨
+    if (!dayItem.day) return; 
 
-    // 1. 클릭한 날짜 문자열 만들기 (YYYY-MM-DD)
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(dayItem.day).padStart(2, '0')}`;
 
     if (dayItem.active && dayItem.reportId) {
-      // 🅰️ 일보가 있으면 -> 수정 페이지로 이동
-      navigate(`/report/edit/${dayItem.reportId}`);
+      // 🅰️ 일보가 있으면 -> 수정 모드('write')로 뷰 전환 및 ID 전달
+      setSelectedId(dayItem.reportId);
+      setCurrentView('write');
     } else {
-      // 🅱️ 일보가 없으면 -> 작성 페이지로 이동 (날짜를 싸들고 감 🎁)
-      // state로 날짜를 전달하면 Write 페이지에서 받을 수 있습니다.
-      navigate('/report/write', { state: { preSelectedDate: dateStr } });
+      // 🅱️ 일보가 없으면 -> 작성 페이지로 이동하되, 날짜(preSelectedDate)를 Context에 임시 저장
+      setPreSelectedDate(dateStr);
+      setSelectedId(null);
+      setCurrentView('write');
     }
   };
 
@@ -49,7 +54,7 @@ const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMo
         {calendarDays.map((d, i) => (
           <div 
             key={i} 
-            onClick={() => handleDateClick(d)} // ✨ 클릭 이벤트 연결
+            onClick={() => handleDateClick(d)} 
             className={`
               aspect-square flex items-center justify-center rounded-lg relative cursor-pointer transition-all
               ${!d.day ? 'pointer-events-none' : 'hover:bg-blue-50 hover:scale-110 hover:z-10'} 
