@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] toggleBookmark 주입 및 handleToggleBookmark Props 하달
+// 🚨 [Fix] 앰비언트 모드(AmbientMode) 완전 폐기 - 관련 State, Import, 렌더링 로직 제거 (뺄셈의 미학 적용)
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -9,7 +9,7 @@ import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal'; 
 import PlaceCard from '../../components/PlaceCard/index'; 
 import LogoPanel from './components/LogoPanel';
-import AmbientMode from './components/AmbientMode';
+// 🚨 [Fix] AmbientMode import 제거
 
 // Libs & Utils
 import { supabase } from '../../shared/api/supabase';
@@ -37,7 +37,7 @@ function Home() {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
-  const [isAmbientMode, setIsAmbientMode] = useState(false);
+  // 🚨 [Fix] isAmbientMode 상태 제거
   const [isPlaceCardOpen, setIsPlaceCardOpen] = useState(false); 
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
@@ -51,7 +51,7 @@ function Home() {
     handleGlobeClick,
     handleLocationSelect,
     handleStartChat,
-    handleToggleBookmark, // 🚨 핸들러 추출
+    handleToggleBookmark, 
     handleSmartSearch,
     handleClearChats
   } = useHomeHandlers({
@@ -59,7 +59,7 @@ function Home() {
     setSelectedLocation, addScoutPin, moveToLocation, processSearchKeywords,
     setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, setDraftInput,
     setIsChatOpen, setInitialQuery, setActiveChatId, saveNewTrip, setSavedTrips, fetchData,
-    toggleBookmark // 🚨 [Fix] toggleBookmark 주입
+    toggleBookmark 
   });
 
   useEffect(() => { fetchData(); }, [fetchData]);
@@ -71,11 +71,11 @@ function Home() {
   const globeRenderedTrips = useMemo(() => filteredSavedTrips.filter(t => t.lat !== 0 || t.lng !== 0), [filteredSavedTrips]);
 
   const isFocusMode = useMemo(() => {
-    if (isAmbientMode) return true;
+    // 🚨 [Fix] isAmbientMode 체크 로직 제거
     if (isChatOpen) return true;
     if (isPlaceCardOpen && isCardExpanded) return true;
     return false;
-  }, [isAmbientMode, isChatOpen, isPlaceCardOpen, isCardExpanded]);
+  }, [isChatOpen, isPlaceCardOpen, isCardExpanded]); // 의존성 배열에서 isAmbientMode 제거
 
   const handleThemeToggle = () => {
     const themes = ['neon', 'bright', 'deep'];
@@ -126,17 +126,23 @@ function Home() {
         }}
       />
       
-      <LogoPanel isOpen={isLogoPanelOpen} onClose={() => setIsLogoPanelOpen(false)} user={user} bucketList={bucketList} onLogout={() => supabase.auth.signOut()} onStartAmbient={() => { setIsLogoPanelOpen(false); setIsAmbientMode(true); }} />
-      {isAmbientMode && <AmbientMode bucketList={bucketList} onClose={() => setIsAmbientMode(false)} />}
+      {/* 🚨 [Fix] onStartAmbient Props 제거 */}
+      <LogoPanel 
+        isOpen={isLogoPanelOpen} 
+        onClose={() => setIsLogoPanelOpen(false)} 
+        user={user} 
+        bucketList={bucketList} 
+        onLogout={() => supabase.auth.signOut()} 
+      />
+      {/* 🚨 [Fix] AmbientMode 컴포넌트 렌더링 제거 */}
       
       {isPlaceCardOpen && selectedLocation && (
         <PlaceCard 
           location={selectedLocation} 
-					// 🚨 [핵심 배선 연결]: savedTrips(진실)에서 현재 장소의 별표 여부를 실시간으로 추적하여 주입!
           isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
           onClose={() => setIsPlaceCardOpen(false)}
           onChat={(p) => handleStartChat(selectedLocation?.name, p)}
-          onToggleBookmark={handleToggleBookmark} // 🚨 [Fix] 배선 연결
+          onToggleBookmark={handleToggleBookmark} 
           onTicket={() => { setIsPlaceCardOpen(false); }}
           isCompactMode={isTickerExpanded}
           onExpandChange={setIsCardExpanded}

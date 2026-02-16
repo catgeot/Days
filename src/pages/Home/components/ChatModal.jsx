@@ -1,10 +1,10 @@
+// src/pages/Home/components/ChatModal.jsx
 // 🚨 [Fix/New] 수정 이유: 
 // 1. 객체 형태의 initialQuery에서 텍스트를 정확히 추출하고 페르소나를 적용함 (기존 유지)
 // 2. 빈 텍스트("") 전송 차단 (기존 유지)
-// 3. 🚨 [UI Fix] 대화 기록 초기화 버튼을 직관적인 휴지통(Trash2) 아이콘으로 교체
+// 3. 🚨 [UI Fix] 대량 데이터 소실(휴먼 에러)을 방지하기 위해 '전체 지우기' 휴지통 버튼 영구 삭제 (비관적 설계 적용)
 
 import React, { useState, useEffect, useRef } from 'react';
-// 🚨 [Fix] RefreshCcw 제거, Trash2는 이미 임포트되어 있음
 import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2 } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 
@@ -17,8 +17,8 @@ const ChatModal = ({
   onToggleBookmark, 
   activeChatId, 
   onSwitchChat,
-  onDeleteChat,
-  onClearChats
+  onDeleteChat
+  // 🚨 [Fix] onClearChats prop 제거 (전체 삭제 차단)
 }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -157,14 +157,7 @@ const ChatModal = ({
               <MessageSquare size={18} className="text-blue-400" />
               <span className="font-bold text-gray-200 text-sm">대화 기록</span>
             </div>
-            {/* 🚨 [Fix] onClearChats 연결 아이콘을 Trash2(휴지통)로 교체 */}
-            <button 
-              onClick={onClearChats} 
-              className="text-gray-500 hover:text-red-400 transition-colors"
-              title="모든 대화 기록 지우기"
-            >
-              <Trash2 size={16} />
-            </button>
+            {/* 🚨 [Fix] 전체 지우기 버튼 삭제 위치 (휴먼 에러 원천 차단) */}
           </div>
           
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
@@ -176,6 +169,7 @@ const ChatModal = ({
                       <button onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id); }}>
                         <Star size={14} className={item.is_bookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-600"} />
                       </button>
+                      {/* 개별 삭제 버튼은 유지 */}
                       <button onClick={(e) => { e.stopPropagation(); onDeleteChat(item.id); }}>
                         <Trash2 size={14} className="text-gray-600 hover:text-red-400" />
                       </button>
