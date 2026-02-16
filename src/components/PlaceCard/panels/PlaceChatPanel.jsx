@@ -1,17 +1,20 @@
 // src/components/PlaceCard/panels/PlaceChatPanel.jsx
 // 🚨 [Fix] 상위에서 전달된 onToggleBookmark Props를 수신하도록 매개변수 추가 (ReferenceError 해결)
+// 🚨 [Fix] LogBook 버튼 클릭 시 'write'(작성)가 아닌 'dashboard'(메인) 페이지로 연결되도록 파라미터 수정
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X } from 'lucide-react';
+import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool } from 'lucide-react';
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
 
+import { useReport } from '../../../context/ReportContext';
+
 const PlaceChatPanel = ({ 
     location,
-		isBookmarked, 
+    isBookmarked, 
     onClose, 
     chatData, 
     activeInfo, 
@@ -21,12 +24,13 @@ const PlaceChatPanel = ({
     onSeekTime,
     isAiMode,
     selectedImg,
-    onToggleBookmark // 🚨 [Fix] 이 부분이 누락되어 있던 플러그입니다. 추가 완료.
+    onToggleBookmark 
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
+  
+  const { openReport } = useReport();
 
-  // 콘텐츠 변경 시 스크롤 초기화
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
@@ -52,7 +56,6 @@ const PlaceChatPanel = ({
              </button>
              <div className="flex flex-col min-w-0">
                  <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate">{location.country}</span>
-                 {/* 🚨 [Fix] 이름과 별표를 가로로 나란히 배치하기 위해 flex 적용 */}
                  <div className="flex items-center gap-2">
                      <h1 className="text-xl font-bold text-white truncate leading-none tracking-tight">{location.name}</h1>
                      <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
@@ -60,8 +63,17 @@ const PlaceChatPanel = ({
              </div>
          </div>
 
-         {/* Mode Toggle Button */}
-         <div className="shrink-0">
+         <div className="shrink-0 flex items-center gap-2">
+            
+            {/* 🚨 [Fix] 파라미터를 'write' -> 'dashboard'로 수정하여 메인 화면으로 랜딩 */}
+            <button 
+                onClick={() => openReport('dashboard', location.id)}
+                className="px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 text-white shadow-lg border border-white/10 transition-all flex items-center gap-2 group"
+            >
+                <PenTool size={14} className="text-emerald-400 group-hover:scale-110 transition-transform"/> 
+                <span className="text-[11px] font-bold tracking-wider">LogBook</span>
+            </button>
+
             {mediaMode === 'VIDEO' ? (
                 <button 
                     onClick={() => setMediaMode('GALLERY')}
@@ -95,7 +107,6 @@ const PlaceChatPanel = ({
         `}</style>
 
         {isChatMode ? (
-            /* Chat View Overlay */
             <div className="h-full flex flex-col p-6">
                 <div className="flex items-center justify-between mb-2 shrink-0">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -121,7 +132,6 @@ const PlaceChatPanel = ({
                 </div>
             </div>
         ) : (
-            /* Docent Mode (Unified Info View) */
             <div className="animate-fade-in flex flex-col gap-6 p-8">
                 {activeInfo.mode === 'VIDEO' ? (
                     <VideoInfoView 

@@ -23,6 +23,9 @@ import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 
+// 🚨 [New] 일기장 전역 상태를 가져오기 위한 훅 추가 (Phase 2)
+import { useReport } from '../../context/ReportContext';
+
 function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
@@ -36,6 +39,9 @@ function Home() {
   const { scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
   const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip, clearTemporaryTrips } = useTravelData();
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
+
+  // 🚨 [New] ReportContext에서 일기장 오픈 상태(isOpen)를 가져와 isReportOpen으로 할당
+  const { isOpen: isReportOpen } = useReport();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
@@ -71,11 +77,13 @@ function Home() {
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
   const globeRenderedTrips = useMemo(() => filteredSavedTrips.filter(t => t.lat !== 0 || t.lng !== 0), [filteredSavedTrips]);
 
+  // 🚨 [Fix] isReportOpen 상태를 의존성 배열에 추가하고, 열려있을 때 렌더링을 차단하도록 뺄셈의 미학 적용
   const isFocusMode = useMemo(() => {
     if (isChatOpen) return true;
     if (isPlaceCardOpen && isCardExpanded) return true;
+    if (isReportOpen) return true; // 일기장이 열리면 지구본 멈춤
     return false;
-  }, [isChatOpen, isPlaceCardOpen, isCardExpanded]);
+  }, [isChatOpen, isPlaceCardOpen, isCardExpanded, isReportOpen]);
 
   const handleThemeToggle = () => {
     const themes = ['neon', 'bright', 'deep'];

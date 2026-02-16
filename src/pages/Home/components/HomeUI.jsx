@@ -1,16 +1,21 @@
 // src/pages/Home/components/HomeUI.jsx
 // 🚨 [Fix/New] 여행 계획(Ticket) 버튼 제거 및 'AI 대화하기' 단일 메인 버튼으로 UI 통합 (뺄셈의 미학)
+// 🚨 [New] 좌측 하단 Admin 버튼 옆에 LogBook 전용 다이렉트 진입 버튼 추가
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
   Palmtree, Mountain, Building2, Plane, Compass, 
-  Eye, EyeOff, Droplet, Sun, Moon 
+  Eye, EyeOff, Droplet, Sun, Moon,
+  PenTool // 🚨 [New] LogBook 아이콘 추가
 } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
 import TravelTicker from '../components/TravelTicker'; 
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
+
+// 🚨 [New] 일기장 전역 상태를 제어하기 위한 훅 로드
+import { useReport } from '../../../context/ReportContext';
 
 const HomeUI = ({ 
   onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick, 
@@ -22,11 +27,13 @@ const HomeUI = ({
   onTogglePinVisibility,
   globeTheme, 
   onThemeToggle 
-  // 🚨 [Fix] onTicketClick Props 제거
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
   const trendingData = useTrendingData();
+
+  // 🚨 [New] 일기장 오픈 함수 꺼내기
+  const { openReport } = useReport();
 
   useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
   const handleKeyDown = (e) => { if (e.key === 'Enter' && inputValue.trim() !== '') { onSearch(inputValue); inputRef.current?.blur(); } };
@@ -57,7 +64,6 @@ const HomeUI = ({
         {/* 1. Logo */}
         <div onClick={onLogoClick} className="col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto cursor-pointer group">
           <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
-          {/* <span className="text-[10px] text-gray-500 tracking-[0.3em] ml-1 group-hover:text-blue-400 transition-colors">DEPARTURE LOUNGE</span> */}
         </div>
 
         {/* 2. Globe Theme Toggle */}
@@ -130,14 +136,24 @@ const HomeUI = ({
       )}
 
       <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 pointer-events-none">
+        
+        {/* 🚨 [Fix] 좌측 하단 메뉴 영역: ADMIN 및 LOGBOOK 버튼 나란히 배치 */}
         <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
           <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg"><User size={18} /></div>
               <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">ADMIN</span>
           </Link>
+          
+          {/* 🚨 [New] LogBook 다이렉트 진입 버튼 신설 */}
+          <button onClick={() => openReport('dashboard')} className="group flex items-center gap-2 pb-2 cursor-pointer">
+              <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
+                  <PenTool size={18} className="text-white group-hover:text-emerald-400 transition-colors" />
+              </div>
+              <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">LOGBOOK</span>
+          </button>
         </div>
 
-        {/* 🚨 [Fix] 중앙 하단 버튼 통합 (디자인 유지하면서 단일 메인 버튼으로 승격) */}
+        {/* 🚨 중앙 하단 메인 버튼 */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center pointer-events-auto">
           <button 
             onClick={() => onOpenChat()} 
