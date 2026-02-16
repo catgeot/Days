@@ -1,5 +1,5 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] 앰비언트 모드(AmbientMode) 완전 폐기 - 관련 State, Import, 렌더링 로직 제거 (뺄셈의 미학 적용)
+// 🚨 [Fix] LogoPanel 다이렉트 오픈 버그 수정: 병합 순서를 { ...trip, ...realSpot }으로 교체하여 원본 ID(예: 203) 보존 (유튜브 정상화)
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -9,7 +9,6 @@ import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal'; 
 import PlaceCard from '../../components/PlaceCard/index'; 
 import LogoPanel from './components/LogoPanel';
-// 🚨 [Fix] AmbientMode import 제거
 
 // Libs & Utils
 import { supabase } from '../../shared/api/supabase';
@@ -37,7 +36,6 @@ function Home() {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
-  // 🚨 [Fix] isAmbientMode 상태 제거
   const [isPlaceCardOpen, setIsPlaceCardOpen] = useState(false); 
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
@@ -71,11 +69,10 @@ function Home() {
   const globeRenderedTrips = useMemo(() => filteredSavedTrips.filter(t => t.lat !== 0 || t.lng !== 0), [filteredSavedTrips]);
 
   const isFocusMode = useMemo(() => {
-    // 🚨 [Fix] isAmbientMode 체크 로직 제거
     if (isChatOpen) return true;
     if (isPlaceCardOpen && isCardExpanded) return true;
     return false;
-  }, [isChatOpen, isPlaceCardOpen, isCardExpanded]); // 의존성 배열에서 isAmbientMode 제거
+  }, [isChatOpen, isPlaceCardOpen, isCardExpanded]);
 
   const handleThemeToggle = () => {
     const themes = ['neon', 'bright', 'deep'];
@@ -126,26 +123,39 @@ function Home() {
         }}
       />
       
-      {/* 🚨 [Fix] onStartAmbient Props 제거 */}
       <LogoPanel 
         isOpen={isLogoPanelOpen} 
         onClose={() => setIsLogoPanelOpen(false)} 
         user={user} 
         bucketList={bucketList} 
         onLogout={() => supabase.auth.signOut()} 
+        onToggleBookmark={toggleBookmark} 
+        onTripSelect={(trip) => { 
+          setIsLogoPanelOpen(false);
+          
+          // 🚨 [Fix] 병합 순서 교체: 정적 데이터(realSpot)가 DB 데이터(trip)를 덮어써서 비디오 ID 등 고유 정보를 완벽히 보존
+          const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
+          const hydratedLocation = realSpot ? { ...trip, ...realSpot, name: trip.destination } : { ...trip, name: trip.destination };
+          
+          handleLocationSelect(hydratedLocation); 
+          setIsCardExpanded(true);
+        }}
       />
-      {/* 🚨 [Fix] AmbientMode 컴포넌트 렌더링 제거 */}
       
       {isPlaceCardOpen && selectedLocation && (
         <PlaceCard 
           location={selectedLocation} 
           isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
-          onClose={() => setIsPlaceCardOpen(false)}
+          onClose={() => { 
+            setIsPlaceCardOpen(false); 
+            setIsCardExpanded(false); 
+          }}
           onChat={(p) => handleStartChat(selectedLocation?.name, p)}
           onToggleBookmark={handleToggleBookmark} 
-          onTicket={() => { setIsPlaceCardOpen(false); }}
+          onTicket={() => { setIsPlaceCardOpen(false); setIsCardExpanded(false); }}
           isCompactMode={isTickerExpanded}
-          onExpandChange={setIsCardExpanded}
+          initialExpanded={isCardExpanded} 
+          onExpandChange={setIsCardExpanded} 
         />
       )}
 
@@ -154,7 +164,8 @@ function Home() {
         initialQuery={initialQuery} chatHistory={filteredSavedTrips} 
         onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
         activeChatId={activeChatId} onSwitchChat={(id) => handleStartChat(null, null, id)} 
-        onDeleteChat={deleteTrip} onClearChats={handleClearChats}
+        onDeleteChat={deleteTrip} 
+        onClearChats={handleClearChats}
       />
     </div>
   );
