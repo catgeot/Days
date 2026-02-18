@@ -18,9 +18,10 @@ import UpdatePassword from './shared/Auth/UpdatePassword';
 
 function App() {
   return (
-    // 🚨 [New] App 전체를 ReportProvider로 감싸 어디서든 패널을 열 수 있게 함
-    <ReportProvider>
-      <BrowserRouter>
+    // 🚨 [Fix] BrowserRouter를 최상위로 올림 (Router Context 확보)
+    <BrowserRouter>
+      {/* 🚨 [Fix] ReportProvider를 Router 내부로 이동 (useNavigate 사용 가능해짐) */}
+      <ReportProvider>
         <Routes>
           
           {/* 1. 여행 홈 (전체화면) - 일기장은 이 Home 내부의 팝업 패널로 작동합니다. */}
@@ -35,8 +36,8 @@ function App() {
           {/* 🚨 [Fix/Subtraction] 기존의 /report 관련 라우터 삭제 (앱 경량화 및 SPA 통합 완료) */}
           
         </Routes>
-      </BrowserRouter>
-    </ReportProvider>
+      </ReportProvider>
+    </BrowserRouter>
   );
 }
 

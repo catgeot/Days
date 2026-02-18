@@ -41,8 +41,8 @@ const HomeGlobe = forwardRef(({
       case 'deep': // 묵직하고 신비로운 딥 블루
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-          atmColor: "#4b6bfa", // 짙은 파랑
-          atmAlt: 0.25
+          atmColor: "#e2fb03", // 짙은 파랑
+          atmAlt: 0.20
         };
       default:
         return {
