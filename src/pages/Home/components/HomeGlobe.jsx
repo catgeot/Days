@@ -268,7 +268,7 @@ const HomeGlobe = forwardRef(({
         labelsData={visibleLabels}
         labelLat={d => d.lat}
         labelLng={d => d.lng}
-        labelText={d => d.name}
+        labelText={d => d.name_en}
         labelSize={d => d.priority === 1 ? 1.2 : 0.8}
         labelDotRadius={0.15}
 				 // 🚨 [Fix] Option 1: 미래적인 네온 블루 (시인성 최상)
