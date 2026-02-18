@@ -1,5 +1,9 @@
 // src/pages/Home/index.jsx
-// 🚨 [Fix] LogoPanel 다이렉트 오픈 버그 수정: 병합 순서를 { ...trip, ...realSpot }으로 교체하여 원본 ID(예: 203) 보존 (유튜브 정상화)
+// 🚨 [Fix/New] 수정 이유:
+// 1. [Subtraction] ChatModal의 대화 전환(onSwitchChat)을 복잡한 handleStartChat 함수 대신 순수 상태 변경 함수인 setActiveChatId로 다이렉트 연결하여 100% 확실한 동작 보장.
+// 2. [Dead Code 제거] 이전 세션에서 삭제했던 clearTemporaryTrips가 여전히 남아있어 발생할 수 있는 잠재적 크래시(시한폭탄) 원천 제거.
+// 3. [Dead Code 제거] ChatModal 컴포넌트에서 더 이상 받지 않는 onClearChats 프롭스 제거.
+// 4. LogoPanel 다이렉트 오픈 버그 수정 (기존 유지)
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -37,7 +41,10 @@ function Home() {
   }, []);
 
   const { scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
-  const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip, clearTemporaryTrips } = useTravelData();
+  
+  // 🚨 [Fix] 삭제된 clearTemporaryTrips 꺼내오기 시도 제거 (에러 방지)
+  const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip } = useTravelData();
+  
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   // 🚨 [New] ReportContext에서 일기장 오픈 상태(isOpen)를 가져와 isReportOpen으로 할당
@@ -77,11 +84,10 @@ function Home() {
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
   const globeRenderedTrips = useMemo(() => filteredSavedTrips.filter(t => t.lat !== 0 || t.lng !== 0), [filteredSavedTrips]);
 
-  // 🚨 [Fix] isReportOpen 상태를 의존성 배열에 추가하고, 열려있을 때 렌더링을 차단하도록 뺄셈의 미학 적용
   const isFocusMode = useMemo(() => {
     if (isChatOpen) return true;
     if (isPlaceCardOpen && isCardExpanded) return true;
-    if (isReportOpen) return true; // 일기장이 열리면 지구본 멈춤
+    if (isReportOpen) return true; 
     return false;
   }, [isChatOpen, isPlaceCardOpen, isCardExpanded, isReportOpen]);
 
@@ -128,8 +134,9 @@ function Home() {
         isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
         globeTheme={globeTheme} onThemeToggle={handleThemeToggle} 
         onClearScouts={() => { 
-            if(window.confirm("임시 핀과 저장되지 않은 대화 기록을 모두 정리하시겠습니까?")) {
-                clearScouts(); clearTemporaryTrips(); setDraftInput(''); setSelectedLocation(null); 
+            // 🚨 [Fix] clearTemporaryTrips 로직 삭제 완료
+            if(window.confirm("임시 핀을 모두 정리하시겠습니까?")) {
+                clearScouts(); setDraftInput(''); setSelectedLocation(null); 
             } 
         }}
       />
@@ -171,12 +178,13 @@ function Home() {
         isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
         initialQuery={initialQuery} chatHistory={filteredSavedTrips} 
         onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
-        activeChatId={activeChatId} onSwitchChat={(id) => handleStartChat(null, null, id)} 
+        activeChatId={activeChatId} 
+        onSwitchChat={setActiveChatId} // 🚨 [Fix] 다이렉트 상태 업데이트로 교체
         onDeleteChat={deleteTrip} 
-        onClearChats={handleClearChats}
+        // 🚨 [Fix] 쓰이지 않는 onClearChats 프롭스 제거
       />
 
-      {/* 🚨 [New] 일기장 패널 마운트 (가장 높은 z-index로 화면을 덮습니다) */}
+      {/* 🚨 [New] 일기장 패널 마운트 */}
       <ReportPanel />
     </div>
   );
