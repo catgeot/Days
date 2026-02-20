@@ -41,15 +41,15 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           <div className="flex items-center gap-3">
             {user && (
               <div className="flex items-center gap-2 bg-white/5 py-1.5 px-3 rounded-full border border-white/10 shadow-inner">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white">
-                  {user.email[0].toUpperCase()}
+                <div className="w-20 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white">
+                  {user.email.split('@')[0].toUpperCase()}
                 </div>
                 <button 
                   onClick={onLogout}
                   title="Sign Out"
-                  className="text-gray-500 hover:text-red-400 transition-colors ml-1"
+                  className="text-gray-400 hover:text-red-400 transition-colors ml-1"
                 >
-                  <LogOut size={14} />
+                  <LogOut size={15} />
                 </button>
               </div>
             )}

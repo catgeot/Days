@@ -39,7 +39,7 @@ const Dashboard = () => {
           onClick={() => { setCurrentView('write'); setSelectedId(null); }}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
         >
-          <PenTool size={18} /> 새 일보 작성
+          <PenTool size={18} /> NEW_LOG_BOOK
         </button>
       </div>
 
