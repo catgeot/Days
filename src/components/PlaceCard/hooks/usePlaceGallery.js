@@ -2,6 +2,7 @@
 // 🚨 [Fix/New] 수정 이유: 
 // 1. Unsplash API Rate Limit 방어를 위한 3단계 캐싱 파이프라인
 // 2. [아키텍처 확정] API 갱신 시 무거운 gallery_urls 배열과 초경량 썸네일용 image_url을 동시 업데이트 (성능 최적화)
+// 3. 🚨 [Fix] DB에 없는 특수 지명(한국어)이 Unsplash에서 0건 검색되는 것을 방어하기 위한 영문 매핑 사전 추가
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
@@ -10,6 +11,17 @@ import { supabase } from '../../../shared/api/supabase';
 
 const CACHE_VERSION = 'v1.4'; // 🚨 v1.4 유지
 const CACHE_TTL = 1000 * 60 * 60 * 24; 
+
+// 🚨 [Fix] 영문 매핑 사전 (Fallback Dictionary)
+const FALLBACK_DICTIONARY = {
+  "팔라완": "Palawan",
+  "라자 암팟": "Raja Ampat",
+  "레위니옹": "Reunion",
+  "메테오라": "Meteora",
+  "모오레아": "Moorea",
+  "아조레스 제도": "Azores",
+  "세인트 헬레나": "Saint Helena"
+};
 
 export const usePlaceGallery = (locationSource) => {
   const [images, setImages] = useState([]);
@@ -84,6 +96,11 @@ export const usePlaceGallery = (locationSource) => {
     primaryQuery = primaryQuery.trim();
     if (!primaryQuery) return;
 
+    // 🚨 [Fix] 검색어 교정: 사전에 등록된 한글 지명이면 영문으로 강제 변환
+    if (FALLBACK_DICTIONARY[primaryQuery]) {
+        primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
+    }
+
     if (lastQueryRef.current === primaryQuery) return;
     lastQueryRef.current = primaryQuery;
 
@@ -130,7 +147,6 @@ export const usePlaceGallery = (locationSource) => {
         setImages(results);
         saveToSmartCache(CACHE_KEY, results);
 
-        // 🚨 [Fix] 썸네일 전용 image_url 동시 업데이트 로직 보강
         if (koreanName) {
           const thumbnailToSave = results[0]?.urls?.small || results[0]?.urls?.regular || '';
           
@@ -139,7 +155,7 @@ export const usePlaceGallery = (locationSource) => {
             .upsert({ 
               place_id: koreanName, 
               gallery_urls: results,
-              image_url: thumbnailToSave // 🚨 LogoPanel을 위한 초경량 썸네일 단일 텍스트 저장
+              image_url: thumbnailToSave
             }, { onConflict: 'place_id' })
             .then(({ error }) => {
               if (error) console.error("⚠️ Supabase Update Error:", error);

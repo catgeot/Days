@@ -4,6 +4,7 @@
 // 2. [Dead Code 제거] 이전 세션에서 삭제했던 clearTemporaryTrips가 여전히 남아있어 발생할 수 있는 잠재적 크래시(시한폭탄) 원천 제거.
 // 3. [Dead Code 제거] ChatModal 컴포넌트에서 더 이상 받지 않는 onClearChats 프롭스 제거.
 // 4. LogoPanel 다이렉트 오픈 버그 수정 (기존 유지)
+// 5. 🚨 [Fix] 선택적 격벽 해제 (Smart Prison Break): 기존 카테고리 필터링 로직을 복구하여 지구본 과부하를 막고, '검색한 핀(scoutedPins)'과 '현재 활성화된 장소(VIP)'만 예외적으로 지구본에 통과시킴.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -14,7 +15,7 @@ import ChatModal from './components/ChatModal';
 import PlaceCard from '../../components/PlaceCard/index'; 
 import LogoPanel from './components/LogoPanel';
 
-// 🚨 [New] 일기장 통합 오버레이 패널 컴포넌트 마운트
+// 일기장 통합 오버레이 패널 컴포넌트 마운트
 import ReportPanel from './components/ReportPanel';
 
 // Libs & Utils
@@ -27,7 +28,7 @@ import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 
-// 🚨 [New] 일기장 전역 상태를 가져오기 위한 훅 추가 (Phase 2)
+// 일기장 전역 상태를 가져오기 위한 훅 추가 (Phase 2)
 import { useReport } from '../../context/ReportContext';
 
 function Home() {
@@ -42,12 +43,10 @@ function Home() {
 
   const { scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
   
-  // 🚨 [Fix] 삭제된 clearTemporaryTrips 꺼내오기 시도 제거 (에러 방지)
   const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip } = useTravelData();
   
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
-  // 🚨 [New] ReportContext에서 일기장 오픈 상태(isOpen)를 가져와 isReportOpen으로 할당
   const { isOpen: isReportOpen } = useReport();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -78,11 +77,20 @@ function Home() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // 🚨 [Fix] 기본 리스트/마커 필터링 복구 (지구본 과부하 방지)
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
-  const filteredScoutedPins = useMemo(() => scoutedPins.filter(p => p.category === category), [scoutedPins, category]);
   const filteredSpots = useMemo(() => TRAVEL_SPOTS.filter(s => s.category === category), [category]);
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
-  const globeRenderedTrips = useMemo(() => filteredSavedTrips.filter(t => t.lat !== 0 || t.lng !== 0), [filteredSavedTrips]);
+  
+  // 🚨 [Fix] VIP 프리패스 1: 저장된 여행지 중 '현재 활성화된 장소(selectedLocation)'는 카테고리가 달라도 무조건 렌더링
+  const globeRenderedTrips = useMemo(() => {
+    return savedTrips.filter(t => {
+      if (t.lat === 0 && t.lng === 0) return false;
+      const isCurrentCategory = t.category === category;
+      const isSelectedVIP = selectedLocation && (t.id === selectedLocation.id || t.destination === selectedLocation.name);
+      return isCurrentCategory || isSelectedVIP;
+    });
+  }, [savedTrips, category, selectedLocation]);
 
   const isFocusMode = useMemo(() => {
     if (isChatOpen) return true;
@@ -113,9 +121,13 @@ function Home() {
           onGlobeClick={handleGlobeClick} 
           onMarkerClick={handleLocationSelect} 
           isChatOpen={isChatOpen} 
+          
+          // 🚨 [Fix] 선택적 격벽 해제 적용
           savedTrips={isPinVisible ? globeRenderedTrips : []} 
-          tempPinsData={isPinVisible ? filteredScoutedPins : []} 
+          // VIP 프리패스 2: 방금 검색한 임시 핀(scoutedPins)은 필터링 없이 100% 통과 (관심사 최우선)
+          tempPinsData={isPinVisible ? scoutedPins : []} 
           travelSpots={isPinVisible ? filteredSpots : []} 
+          
           activePinId={selectedLocation?.id}
           pauseRender={isFocusMode} 
           globeTheme={globeTheme} 
@@ -124,7 +136,8 @@ function Home() {
       
       <HomeUI 
         onSearch={handleSmartSearch} onTickerClick={handleSmartSearch} onTagClick={handleSmartSearch} 
-        externalInput={draftInput} savedTrips={filteredSavedTrips} 
+        externalInput={draftInput} 
+        savedTrips={filteredSavedTrips} 
         onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
         onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
         onLogoClick={() => setIsLogoPanelOpen(true)}
@@ -134,7 +147,6 @@ function Home() {
         isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
         globeTheme={globeTheme} onThemeToggle={handleThemeToggle} 
         onClearScouts={() => { 
-            // 🚨 [Fix] clearTemporaryTrips 로직 삭제 완료
             if(window.confirm("임시 핀을 모두 정리하시겠습니까?")) {
                 clearScouts(); setDraftInput(''); setSelectedLocation(null); 
             } 
@@ -176,15 +188,14 @@ function Home() {
 
       <ChatModal 
         isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
-        initialQuery={initialQuery} chatHistory={filteredSavedTrips} 
+        initialQuery={initialQuery} 
+        chatHistory={filteredSavedTrips} 
         onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
         activeChatId={activeChatId} 
-        onSwitchChat={setActiveChatId} // 🚨 [Fix] 다이렉트 상태 업데이트로 교체
+        onSwitchChat={setActiveChatId} 
         onDeleteChat={deleteTrip} 
-        // 🚨 [Fix] 쓰이지 않는 onClearChats 프롭스 제거
       />
 
-      {/* 🚨 [New] 일기장 패널 마운트 */}
       <ReportPanel />
     </div>
   );

@@ -1,6 +1,7 @@
 // src/pages/Home/hooks/useHomeHandlers.js
 // 🚨 [Fix/New] 수정 이유: 
-// 1. handleClearChats: '전체 지우기' 클릭 시에도 개별 휴지통과 동일하게 조건부 삭제(A/B) 룰을 적용하여 DB 무결성 유지.
+// 1. handleClearChats: '전체 지우기' 클릭 시 개별 휴지통과 동일하게 조건부 삭제 룰 유지
+// 2. 🚨 [Fix] handleGlobeClick: 바다나 유효하지 않은 지형 클릭 시 'Point(x,y)' 등 쓰레기 데이터 생성을 막고, 데이터가 완벽할 때만 렌더링하도록 구조 변경 (Subtraction / Pessimistic)
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
@@ -38,32 +39,44 @@ export function useHomeHandlers({
     if (!lat || !lng) return;
     if (globeRef.current) globeRef.current.pauseRotation();
     
-    const tempId = Date.now();
-    const tempPin = { id: tempId, lat, lng, name: "Scanning...", type: 'temp-base', category: category };
-
-    addScoutPin(tempPin);
-    setIsPlaceCardOpen(true);
-    setIsCardExpanded(false); 
-    
-    if (!isPinVisible) setIsPinVisible(true);
-
-    moveToLocation(lat, lng, "Scanning...", category);
-
     try {
+      // 데이터 검증을 먼저 실행 (Pessimistic First)
       const addressData = await getAddressFromCoordinates(lat, lng);
-      const name = addressData?.city || addressData?.country || `Point (${lat.toFixed(1)}, ${lng.toFixed(1)})`;
-
-      processSearchKeywords(name);
       
+      // 🚨 [Fix] 억지스러운 'Point(x,y)' Fallback 제거. 유효한 지명이 없으면 즉시 종료
+      const name = addressData?.city || addressData?.country;
+      
+      if (!name) {
+         // 데이터가 없으면 UI를 그리지 않고 조용히 패스 (회전만 복구)
+         if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
+             globeRef.current.resumeRotation();
+         }
+         return;
+      }
+
+      // 데이터가 완벽히 존재할 때만 마커 생성 및 프로세스 진행
+      const tempId = Date.now();
       const realPin = { 
-        ...tempPin, 
-        name, 
+        id: tempId, 
+        lat, 
+        lng, 
+        name: name, 
         name_en: name, 
+        type: 'temp-base', 
+        category: category,
         country: addressData?.country || "Unknown",
         display_name: name 
       };
       
       addScoutPin(realPin);
+      setIsPlaceCardOpen(true);
+      setIsCardExpanded(false); 
+      
+      if (!isPinVisible) setIsPinVisible(true);
+
+      moveToLocation(lat, lng, name, category);
+      processSearchKeywords(name);
+      
       recordInteraction(name, 'view'); 
     } catch (error) {
       console.error("Geocoding Error:", error);
@@ -224,24 +237,19 @@ export function useHomeHandlers({
     }
   }, [category, processSearchKeywords, setDraftInput, handleLocationSelect, setSelectedLocation, handleStartChat]);
 
-  // 🚨 [Fix] 전체 지우기 시에도 조건부 삭제(A/B) 룰을 완벽하게 적용
   const handleClearChats = useCallback(async () => {
     const isConfirm = window.confirm("모든 대화 기록을 지우시겠습니까? (즐겨찾기된 장소는 유지됩니다)");
     if (isConfirm) {
-      // 1. 즐겨찾기 된 방: DB에서 messages 배열만 비움 (일괄 처리)
       await supabase.from('saved_trips').update({ messages: [] }).eq('is_bookmarked', true).eq('category', category);
-
-      // 2. 즐겨찾기 안 된 방: DB에서 행 전체를 물리적 삭제 (일괄 처리)
       await supabase.from('saved_trips').delete().eq('is_bookmarked', false).eq('category', category);
 
-      // 3. UI(Local State) 동기화
       setSavedTrips(prev => prev.map(t => {
         if (t.category === category) {
           if (t.is_bookmarked) return { ...t, messages: [] };
-          return null; // 조건 B에 해당하여 삭제될 항목
+          return null; 
         }
-        return t; // 다른 카테고리는 건드리지 않음
-      }).filter(Boolean)); // null로 마킹된 항목 제거
+        return t; 
+      }).filter(Boolean)); 
 
       setActiveChatId(null);
       setIsChatOpen(false);

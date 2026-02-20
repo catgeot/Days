@@ -62,6 +62,15 @@ export const getMarkerDesign = (d) => {
       iconContent = `<div style="width:1px; height:1px;"></div>`; 
   }
 
+  // 🚨 [Fix] 마커 증발 안전망 (Default Fallback): 위 어떤 조건에도 맞지 않아 빈 껍데기일 경우 렌더링
+  if (iconContent === '') {
+      zIndex = '10';
+      iconContent = `
+         <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.5); backdrop-filter: blur(1px); border: 1px dashed #ef4444; padding: 2px 6px; border-radius: 99px;">
+           <span style="color: #ef4444; font-size: 9px; white-space: nowrap;">${truncate(d.name || '?', 8)}</span>
+         </div>`;
+  }
+
   // ---------------------------------------------------------
   // B. Overlay Layer (Pins & Badges)
   // ---------------------------------------------------------
@@ -92,7 +101,6 @@ export const getMarkerDesign = (d) => {
   }
 
   // 3. Status Badge (Major & Saved-Base & Temp-Base에 붙는 배지)
-  // 🚨 [Fix] Temp-Base(흐릿한 점) 위에도 배지가 달릴 수 있게 조건 추가
   if (d.type === 'major' || d.type === 'saved-base' || d.type === 'temp-base') {
       if (d.isBookmarked) {
           overlay += `

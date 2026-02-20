@@ -82,7 +82,7 @@ export const useSearchEngine = () => {
       const validTags = Array.from(tempSet).filter(tag => masterValidNames.has(tag));
       
       // 개수 제한 (10개로 세팅 - 필요시 수정)
-      const finalTags = validTags.slice(0, 7);
+      const finalTags = validTags.slice(0, 5);
       
       setRelatedTags(finalTags);
       setIsTagLoading(false);
