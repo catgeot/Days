@@ -1,24 +1,21 @@
 // src/pages/Home/components/LogoPanel.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Fact Check] Unsplash 검색 언어(영어)와 Supabase DB 조회 언어(한국어) 불일치로 인한 DB 업데이트 누락 버그 해결.
-// 2. [Schema First] place_stats 테이블의 'place_id' 컬럼을 기준으로 image_url을 조회 및 업데이트하도록 수정.
-// 3. 변수명 충돌(query is not defined) 에러를 originName과 searchQuery로 명확히 분리하여 원천 차단.
+// 1. [싱크 해결] CACHE_VERSION을 v1.4로 동기화하여 usePlaceGallery.js와 로컬 캐시(Session Storage) 완벽 공유.
+// 2. [성능 확정] 리스트 렌더링 시 무거운 JSONB 대신 초경량 image_url만 Select하여 DB 부하 최소화 및 속도 극대화.
 
 import React, { useState, useEffect } from 'react';
 import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react'; 
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo'; 
 
-// 전역 훅 및 API 클라이언트
 import { useReport } from '../../../context/ReportContext';
 import { apiClient } from '../lib/apiClient';
 import { supabase } from '../../../shared/api/supabase';
-
-// 🚨 [New] 영어 검색어 변환을 위한 로컬 데이터 로드
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-const CACHE_VERSION = 'v1.3'; 
+// 🚨 [Fix] 버전 동기화: usePlaceGallery와 동일한 v1.4 사용
+const CACHE_VERSION = 'v1.4'; 
 
 const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
   const [thumbUrl, setThumbUrl] = useState('');
@@ -28,14 +25,13 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
     let isMounted = true;
 
     const fetchThumbnail = async () => {
-      // 🚨 [Fix] 역할 분리: DB 통신용(한국어) vs API/Cache 통신용(영어)
       const originName = trip.destination || 'travel';
       const realSpot = TRAVEL_SPOTS.find(s => s.name === originName);
       const searchQuery = realSpot ? (realSpot.name_en || realSpot.name) : originName;
 
       const CACHE_KEY = `days_gallery_${searchQuery}`;
 
-      // 1. Safe Path 1: 스마트 캐시 확인 (영어 키 사용)
+      // 1. Safe Path 1: 스마트 캐시 확인 (영어 키, v1.4 동기화 완료)
       try {
         const cachedItem = sessionStorage.getItem(CACHE_KEY);
         if (cachedItem) {
@@ -52,12 +48,12 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
         console.warn("Cache parse error", e);
       }
 
-      // 2. Safe Path 2: DB place_stats 확인 (한국어 이름 사용)
+      // 2. Safe Path 2: DB place_stats 확인 (초경량 image_url 단일 조회 유지)
       try {
         const { data: statsData, error: statsError } = await supabase
           .from('place_stats')
           .select('image_url')
-          .eq('place_id', originName) // 🚨 DB는 한국어로 기록되어 있음
+          .eq('place_id', originName) 
           .maybeSingle();
 
         if (statsData && statsData.image_url) {
@@ -68,21 +64,21 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
           return;
         }
 
-        // 3. Safe Path 3: Unsplash API 호출 후 DB 업데이트
+        // 3. Safe Path 3: Unsplash API 호출 후 DB 업데이트 (image_url 전용 보완)
         if (!ACCESS_KEY) return;
         
-        // 🚨 API는 영어로 검색해야 결과가 잘 나옴
         const results = await apiClient.fetchUnsplashImages(ACCESS_KEY, searchQuery);
         
         if (isMounted && results.length > 0) {
           const newImageUrl = results[0].urls.small || results[0].urls.regular;
           setThumbUrl(newImageUrl);
           
-          // 🚨 낙관적 DB 업데이트: 다시 한국어 이름(originName)으로 매칭해서 업데이트
           supabase
             .from('place_stats')
-            .update({ image_url: newImageUrl })
-            .eq('place_id', originName)
+            .upsert({ 
+              place_id: originName, 
+              image_url: newImageUrl 
+            }, { onConflict: 'place_id' })
             .then();
         }
       } catch (error) {

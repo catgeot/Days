@@ -1,8 +1,8 @@
 // src/pages/Home/components/ChatModal.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. 객체 형태의 initialQuery에서 텍스트를 정확히 추출하고 페르소나를 적용함 (기존 유지)
-// 2. 빈 텍스트("") 전송 차단 (기존 유지)
-// 3. 🚨 [UI Fix] 대량 데이터 소실(휴먼 에러)을 방지하기 위해 '전체 지우기' 휴지통 버튼 영구 삭제 (비관적 설계 적용)
+// 1. [Fact Check] Supabase에서 받아온 chatHistory 데이터를 정상적으로 로드하는 구조 확인 (유지)
+// 2. [UI Fix] 배열을 탐색하여 '마지막 사용자 질문'에 ref를 부착, 답변 생성 시 해당 질문이 항상 최상단에 고정되도록 스크롤 타겟팅 정밀화
+// 3. [UX Fix] AI 답변 말풍선의 가로 제약(max-w-80%)을 해제(flex-1, max-w-95%)하여 대형 화면에서 가독성을 극대화 (비대칭 디자인)
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2 } from 'lucide-react';
@@ -18,7 +18,6 @@ const ChatModal = ({
   activeChatId, 
   onSwitchChat,
   onDeleteChat
-  // 🚨 [Fix] onClearChats prop 제거 (전체 삭제 차단)
 }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -32,6 +31,7 @@ const ChatModal = ({
 
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
+  // 로딩 상태 텍스트 애니메이션
   useEffect(() => {
     let interval;
     if (isLoading) {
@@ -51,18 +51,20 @@ const ChatModal = ({
     return () => clearInterval(interval);
   }, [isLoading]);
 
+  // 🚨 [Fix] 스마트 타겟 스크롤: 메시지 변경이나 로딩 시 항상 "마지막 질문"을 화면 최상단에 고정
   useEffect(() => {
     if (messages.length > 0) {
-      if (lastQuestionRef.current) {
-         setTimeout(() => {
-            lastQuestionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-         }, 100);
-      } else {
-         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }
+      setTimeout(() => {
+        if (lastQuestionRef.current) {
+          lastQuestionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
     }
   }, [messages, isLoading]);
 
+  // 기존 채팅 내역 불러오기 (Fact Check: 정상 작동 확인)
   useEffect(() => {
     if (isOpen && activeChatId) {
       const targetTrip = chatHistory.find(t => t.id === activeChatId);
@@ -73,7 +75,7 @@ const ChatModal = ({
     }
   }, [activeChatId, isOpen, chatHistory]); 
 
-  // 초기 쿼리에서 [object Object] 방지 및 '빈 텍스트' 전송 차단 로직 (유지)
+  // 초기 쿼리 전송 로직
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
       hasSentInitialRef.current = true;
@@ -145,19 +147,22 @@ const ChatModal = ({
 
   const handleSidebarClick = (id) => { if (onSwitchChat) onSwitchChat(id); };
 
+  // 🚨 [Fix] 렌더링 전 마지막 사용자 메시지 인덱스 찾기
+  const lastUserIdx = messages.map(m => m.role).lastIndexOf('user');
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] rounded-3xl border border-gray-700 shadow-2xl flex overflow-hidden relative transition-all">
         
+        {/* 사이드바 영역 */}
         <div className="hidden md:flex w-72 bg-gray-900 border-r border-gray-700 flex-col">
           <div className="p-5 border-b border-gray-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare size={18} className="text-blue-400" />
               <span className="font-bold text-gray-200 text-sm">대화 기록</span>
             </div>
-            {/* 🚨 [Fix] 전체 지우기 버튼 삭제 위치 (휴먼 에러 원천 차단) */}
           </div>
           
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
@@ -169,7 +174,6 @@ const ChatModal = ({
                       <button onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id); }}>
                         <Star size={14} className={item.is_bookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-600"} />
                       </button>
-                      {/* 개별 삭제 버튼은 유지 */}
                       <button onClick={(e) => { e.stopPropagation(); onDeleteChat(item.id); }}>
                         <Trash2 size={14} className="text-gray-600 hover:text-red-400" />
                       </button>
@@ -184,6 +188,7 @@ const ChatModal = ({
           </div>
         </div>
 
+        {/* 채팅 본문 영역 */}
         <div className="flex-1 flex flex-col bg-black/50 relative">
             <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
                <div className="flex items-center gap-2">
@@ -195,11 +200,20 @@ const ChatModal = ({
 
             <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
               {messages.map((msg, idx) => (
-                <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                <div 
+                  key={idx} 
+                  ref={idx === lastUserIdx ? lastQuestionRef : null} // 🚨 여기에 ref를 부착하여 스크롤 타겟으로 삼음
+                  className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'w-full'}`}
+                >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
                     {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : <Bot size={24} className="text-blue-400" />}
                   </div>
-                  <div className={`max-w-[80%] p-4 rounded-2xl text-base shadow-md ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-gray-800 text-gray-200 rounded-tl-none'}`}>
+                  {/* 🚨 [Fix] 비대칭 디자인 적용: AI 답변은 넓게(flex-1, max-w-[95%]), 유저는 기존(max-w-[80%]) 유지 */}
+                  <div className={`p-4 rounded-2xl text-base shadow-md ${
+                    msg.role === 'user' 
+                      ? 'max-w-[80%] bg-blue-600 text-white rounded-tr-none' 
+                      : 'flex-1 max-w-[95%] bg-gray-800 text-gray-200 rounded-tl-none leading-relaxed'
+                  }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{typeof msg.text === 'object' ? (msg.text.text || "내용 없음") : msg.text}</div>
                   </div>
                 </div>
