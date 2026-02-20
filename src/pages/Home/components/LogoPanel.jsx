@@ -2,6 +2,7 @@
 // 🚨 [Fix/New] 수정 이유: 
 // 1. [싱크 해결] CACHE_VERSION을 v1.4로 동기화하여 usePlaceGallery.js와 로컬 캐시(Session Storage) 완벽 공유.
 // 2. [성능 확정] 리스트 렌더링 시 무거운 JSONB 대신 초경량 image_url만 Select하여 DB 부하 최소화 및 속도 극대화.
+// 3. 🚨 [New] FooterModal 연동 및 푸터 텍스트 버튼 클릭 이벤트 추가 (라우팅 방지)
 
 import React, { useState, useEffect } from 'react';
 import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react'; 
@@ -12,6 +13,7 @@ import { useReport } from '../../../context/ReportContext';
 import { apiClient } from '../lib/apiClient';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
+import FooterModal from './FooterModal'; // 🚨 [New] 모달 컴포넌트 임포트
 
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 // 🚨 [Fix] 버전 동기화: usePlaceGallery와 동일한 v1.4 사용
@@ -125,6 +127,15 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
   const navigate = useNavigate();
   const { openReport } = useReport();
 
+  // 🚨 [New] 푸터 모달 상태 관리
+  const [isFooterOpen, setIsFooterOpen] = useState(false);
+  const [activeFooterTab, setActiveFooterTab] = useState('about');
+
+  const handleOpenFooter = (tab) => {
+    setActiveFooterTab(tab);
+    setIsFooterOpen(true);
+  };
+
   return (
     <>
       <div 
@@ -236,15 +247,25 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
 
         <div className="p-5 border-t border-white/10 bg-black">
           <div className="flex justify-center items-center gap-4 text-[9px] text-gray-500 uppercase tracking-widest font-bold">
-            <button className="hover:text-white transition-colors">About Us</button>
+            {/* 🚨 [Fix] 라우팅 대신 모달 오픈 이벤트 연동 및 Terms 탭 추가 */}
+            <button onClick={() => handleOpenFooter('about')} className="hover:text-white transition-colors">About Us</button>
             <span className="text-gray-800">|</span>
-            <button className="hover:text-white transition-colors">Privacy Policy</button>
+            <button onClick={() => handleOpenFooter('terms')} className="hover:text-white transition-colors">Terms</button>
             <span className="text-gray-800">|</span>
-            <button className="hover:text-white transition-colors">Contact</button>
+            <button onClick={() => handleOpenFooter('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+            <span className="text-gray-800">|</span>
+            <button onClick={() => handleOpenFooter('contact')} className="hover:text-white transition-colors">Contact</button>
           </div>
           <p className="text-center text-[8px] text-gray-700 mt-3 tracking-widest">© 2026 PROJECT DAYS.</p>
         </div>
       </div>
+
+      {/* 🚨 [New] FooterModal 마운트 */}
+      <FooterModal 
+        isOpen={isFooterOpen} 
+        onClose={() => setIsFooterOpen(false)} 
+        initialTab={activeFooterTab} 
+      />
     </>
   );
 };
