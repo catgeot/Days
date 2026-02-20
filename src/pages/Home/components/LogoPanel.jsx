@@ -1,37 +1,144 @@
 // src/pages/Home/components/LogoPanel.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. 헤더 다이어트 (로고 축소, Passport Control 삭제, 프로필/로그아웃 상단 통합)
-// 2. 여행 일지(My Travel Log) 버튼 디자인 축소
-// 3. 🚨 스텔스 스크롤바 적용 및 다이렉트 오픈 파이프라인(onTripSelect) / 별표 토글(onToggleBookmark) 연결
-// 4. 하단 푸터 명확한 구획 분리(bg-black)
+// 1. [Fact Check] Unsplash 검색 언어(영어)와 Supabase DB 조회 언어(한국어) 불일치로 인한 DB 업데이트 누락 버그 해결.
+// 2. [Schema First] place_stats 테이블의 'place_id' 컬럼을 기준으로 image_url을 조회 및 업데이트하도록 수정.
+// 3. 변수명 충돌(query is not defined) 에러를 originName과 searchQuery로 명확히 분리하여 원천 차단.
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react'; 
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo'; 
 
-// 🚨 [New] 전역 일기장 패널을 열기 위한 훅 로드
+// 전역 훅 및 API 클라이언트
 import { useReport } from '../../../context/ReportContext';
+import { apiClient } from '../lib/apiClient';
+import { supabase } from '../../../shared/api/supabase';
+
+// 🚨 [New] 영어 검색어 변환을 위한 로컬 데이터 로드
+import { TRAVEL_SPOTS } from '../data/travelSpots';
+
+const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+const CACHE_VERSION = 'v1.3'; 
+
+const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
+  const [thumbUrl, setThumbUrl] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchThumbnail = async () => {
+      // 🚨 [Fix] 역할 분리: DB 통신용(한국어) vs API/Cache 통신용(영어)
+      const originName = trip.destination || 'travel';
+      const realSpot = TRAVEL_SPOTS.find(s => s.name === originName);
+      const searchQuery = realSpot ? (realSpot.name_en || realSpot.name) : originName;
+
+      const CACHE_KEY = `days_gallery_${searchQuery}`;
+
+      // 1. Safe Path 1: 스마트 캐시 확인 (영어 키 사용)
+      try {
+        const cachedItem = sessionStorage.getItem(CACHE_KEY);
+        if (cachedItem) {
+          const parsed = JSON.parse(cachedItem);
+          if (parsed.version === CACHE_VERSION && parsed.data && parsed.data.length > 0) {
+            if (isMounted) {
+              setThumbUrl(parsed.data[0].urls.small || parsed.data[0].urls.regular);
+              setIsLoaded(true);
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Cache parse error", e);
+      }
+
+      // 2. Safe Path 2: DB place_stats 확인 (한국어 이름 사용)
+      try {
+        const { data: statsData, error: statsError } = await supabase
+          .from('place_stats')
+          .select('image_url')
+          .eq('place_id', originName) // 🚨 DB는 한국어로 기록되어 있음
+          .maybeSingle();
+
+        if (statsData && statsData.image_url) {
+          if (isMounted) {
+            setThumbUrl(statsData.image_url);
+            setIsLoaded(true);
+          }
+          return;
+        }
+
+        // 3. Safe Path 3: Unsplash API 호출 후 DB 업데이트
+        if (!ACCESS_KEY) return;
+        
+        // 🚨 API는 영어로 검색해야 결과가 잘 나옴
+        const results = await apiClient.fetchUnsplashImages(ACCESS_KEY, searchQuery);
+        
+        if (isMounted && results.length > 0) {
+          const newImageUrl = results[0].urls.small || results[0].urls.regular;
+          setThumbUrl(newImageUrl);
+          
+          // 🚨 낙관적 DB 업데이트: 다시 한국어 이름(originName)으로 매칭해서 업데이트
+          supabase
+            .from('place_stats')
+            .update({ image_url: newImageUrl })
+            .eq('place_id', originName)
+            .then();
+        }
+      } catch (error) {
+        console.error("Thumbnail Fetch Error in LogoPanel:", error);
+      } finally {
+        if (isMounted) setIsLoaded(true);
+      }
+    };
+
+    fetchThumbnail();
+    return () => { isMounted = false; };
+  }, [trip.destination]);
+
+  const finalImgSrc = thumbUrl || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
+
+  return (
+    <div 
+      onClick={() => onTripSelect(trip)} 
+      className="group relative aspect-square rounded-xl overflow-hidden bg-gray-800 border border-white/5 hover:border-blue-500/50 transition-all cursor-pointer"
+    >
+      <img 
+        src={finalImgSrc} 
+        alt={trip.destination}
+        className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100 ${isLoaded ? 'blur-0' : 'blur-sm grayscale'}`}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
+      
+      <button 
+        onClick={(e) => { e.stopPropagation(); onToggleBookmark(trip.id); }}
+        className="absolute top-2 right-2 p-1.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full hover:bg-black/80 transition-all z-10"
+      >
+        <Star size={12} className={trip.is_bookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-400"} />
+      </button>
+
+      <div className="absolute bottom-3 left-3 right-3">
+        <p className="text-xs font-bold text-white leading-tight mb-1 truncate">{trip.destination}</p>
+        <p className="text-[9px] text-blue-400 tracking-wider font-mono uppercase">{trip.code}</p>
+      </div>
+    </div>
+  );
+};
 
 const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookmark, onTripSelect }) => {
   const navigate = useNavigate();
-  
-  // 🚨 [New] 패널 조작 리모컨 가져오기
   const { openReport } = useReport();
 
   return (
     <>
-      {/* 배경 오버레이 */}
       <div 
         className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={onClose}
       ></div>
 
-      {/* 사이드 패널 */}
       <div 
         className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-50 transform transition-transform duration-500 ease-out shadow-2xl flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        {/* 1. 헤더 영역 (다이어트 & 컴팩트 통합) */}
         <div className="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-black/50 backdrop-blur-md">
           <div className="scale-75 origin-left">
             <h2 className="text-3xl font-black text-white tracking-tighter">
@@ -59,15 +166,11 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           </div>
         </div>
 
-        {/* 2. 메인 컨텐츠 영역 (스텔스 스크롤바 적용: 얇은 투명 선) */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
           
           {user ? (
             <div className="space-y-8 animate-fade-in">
-              
-              {/* 여행 일지(My Travel Log) 컴팩트 버튼 */}
               <button 
-                // 🚨 [Fix] 페이지 이동(navigate) 대신 오버레이 패널(openReport)을 열고, 로고 패널은 깔끔하게 닫아줌
                 onClick={() => {
                   openReport('dashboard');
                   onClose(); 
@@ -81,7 +184,6 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                 <ChevronRight size={16} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
               </button>
 
-              {/* 버킷리스트 영역 */}
               <div>
                 <div className="flex justify-between items-end mb-4 px-1">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -93,38 +195,14 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
 
                 {bucketList.length > 0 ? (
                   <div className="grid grid-cols-2 gap-3">
-                    {bucketList.map((trip) => {
-                      const keyword = encodeURIComponent(trip.destination || 'travel');
-                      const thumbUrl = `https://picsum.photos/seed/${keyword}/400/400`;
-
-                      return (
-                        <div 
-                          key={trip.id} 
-                          onClick={() => onTripSelect(trip)} // 🚨 [New] 다이렉트 오픈 핸들러 연결
-                          className="group relative aspect-square rounded-xl overflow-hidden bg-gray-800 border border-white/5 hover:border-blue-500/50 transition-all cursor-pointer"
-                        >
-                          <img 
-                            src={thumbUrl} 
-                            alt={trip.destination}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
-                          
-                          {/* 🚨 [New] 별표 토글 버튼 (이벤트 버블링 차단) */}
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); onToggleBookmark(trip.id); }}
-                            className="absolute top-2 right-2 p-1.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full hover:bg-black/80 transition-all z-10"
-                          >
-                            <Star size={12} className={trip.is_bookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-400"} />
-                          </button>
-
-                          <div className="absolute bottom-3 left-3 right-3">
-                            <p className="text-xs font-bold text-white leading-tight mb-1 truncate">{trip.destination}</p>
-                            <p className="text-[9px] text-blue-400 tracking-wider font-mono uppercase">{trip.code}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {bucketList.map((trip) => (
+                      <BucketListCard 
+                        key={trip.id} 
+                        trip={trip} 
+                        onTripSelect={onTripSelect} 
+                        onToggleBookmark={onToggleBookmark} 
+                      />
+                    ))}
                   </div>
                 ) : (
                   <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl bg-white/5">
@@ -136,7 +214,6 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
               </div>
             </div>
           ) : (
-            /* 비로그인 상태 */
             <div className="h-full flex flex-col justify-center items-center text-center space-y-8 animate-fade-in pb-10">
               <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2 border border-white/10">
                 <BookOpen size={28} className="text-gray-600" />
@@ -161,7 +238,6 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
           )}
         </div>
 
-        {/* 3. 푸터 영역 (명확한 구획 분리) */}
         <div className="p-5 border-t border-white/10 bg-black">
           <div className="flex justify-center items-center gap-4 text-[9px] text-gray-500 uppercase tracking-widest font-bold">
             <button className="hover:text-white transition-colors">About Us</button>
