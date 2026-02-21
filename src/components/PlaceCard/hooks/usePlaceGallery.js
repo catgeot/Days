@@ -1,27 +1,16 @@
 // src/components/PlaceCard/hooks/usePlaceGallery.js
 // 🚨 [Fix/New] 수정 이유: 
-// 1. Unsplash API Rate Limit 방어를 위한 3단계 캐싱 파이프라인
-// 2. [아키텍처 확정] API 갱신 시 무거운 gallery_urls 배열과 초경량 썸네일용 image_url을 동시 업데이트 (성능 최적화)
-// 3. 🚨 [Fix] DB에 없는 특수 지명(한국어)이 Unsplash에서 0건 검색되는 것을 방어하기 위한 영문 매핑 사전 추가
+// 1. [Maintain] saveToSmartCache 내 QuotaExceededError 예외 처리 및 자동 청소(Auto-Purge) 로직 '유지' (앱 크래시 완벽 방어)
+// 2. [Maintain] Unsplash API 최종 실패 시 기본 대체 이미지를 제공하는 3차 방어막(Fallback) '유지'
+// 3. 🚨 [Subtraction] 영문 매핑 사전(FALLBACK_DICTIONARY) '제거' -> 기형적인 로직을 버리고 citiesData.js의 원본 데이터(name_en)를 직접 참조하도록 아키텍처 원복
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots'; 
 import { supabase } from '../../../shared/api/supabase'; 
 
-const CACHE_VERSION = 'v1.4'; // 🚨 v1.4 유지
+const CACHE_VERSION = 'v1.4';
 const CACHE_TTL = 1000 * 60 * 60 * 24; 
-
-// 🚨 [Fix] 영문 매핑 사전 (Fallback Dictionary)
-const FALLBACK_DICTIONARY = {
-  "팔라완": "Palawan",
-  "라자 암팟": "Raja Ampat",
-  "레위니옹": "Reunion",
-  "메테오라": "Meteora",
-  "모오레아": "Moorea",
-  "아조레스 제도": "Azores",
-  "세인트 헬레나": "Saint Helena"
-};
 
 export const usePlaceGallery = (locationSource) => {
   const [images, setImages] = useState([]);
@@ -54,9 +43,33 @@ export const usePlaceGallery = (locationSource) => {
     }
   };
 
+  // 🚨 [Maintain] 안전망: 저장 실패 시 앱 크래시 방지 및 원시적 캐시 청소
   const saveToSmartCache = (key, data) => {
     const payload = { version: CACHE_VERSION, timestamp: Date.now(), data: data };
-    sessionStorage.setItem(key, JSON.stringify(payload));
+    try {
+      sessionStorage.setItem(key, JSON.stringify(payload));
+    } catch (e) {
+      if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
+        console.warn('⚠️ SessionStorage full. Auto-Purging gallery caches...');
+        
+        const keysToRemove = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const k = sessionStorage.key(i);
+          if (k && k.startsWith('days_gallery_')) {
+            keysToRemove.push(k);
+          }
+        }
+        keysToRemove.forEach(k => sessionStorage.removeItem(k));
+        
+        try {
+          sessionStorage.setItem(key, JSON.stringify(payload));
+        } catch (retryError) {
+          console.error('🚨 Cache save failed post-purge. Skipping cache.', retryError);
+        }
+      } else {
+        console.error('🚨 Unexpected Cache Error:', e);
+      }
+    }
   };
 
   const fetchImages = useCallback(async () => {
@@ -81,6 +94,7 @@ export const usePlaceGallery = (locationSource) => {
     let koreanName = ''; 
 
     if (typeof targetSpot === 'object') {
+        // 🚨 핵심: 여기서 citiesData.js에 작성될 완벽한 name_en("Meteora, Greece")을 1순위로 가져옴
         primaryQuery = targetSpot.name_en || targetSpot.name || '';
         koreanName = targetSpot.name || ''; 
         
@@ -95,11 +109,6 @@ export const usePlaceGallery = (locationSource) => {
 
     primaryQuery = primaryQuery.trim();
     if (!primaryQuery) return;
-
-    // 🚨 [Fix] 검색어 교정: 사전에 등록된 한글 지명이면 영문으로 강제 변환
-    if (FALLBACK_DICTIONARY[primaryQuery]) {
-        primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
-    }
 
     if (lastQueryRef.current === primaryQuery) return;
     lastQueryRef.current = primaryQuery;
@@ -162,7 +171,12 @@ export const usePlaceGallery = (locationSource) => {
             });
         }
       } else {
-        setImages([]);
+        // 🚨 [Maintain] 3차 방어막: 검색 결과가 아예 없을 때 기본 Fallback 이미지 제공
+        console.warn(`⚠️ Unsplash 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
+        setImages([
+          { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } },
+          { id: 'fallback-2', urls: { regular: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } }
+        ]);
       }
     } catch (error) {
       console.error("Gallery API Error:", error);

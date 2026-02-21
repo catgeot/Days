@@ -1,12 +1,16 @@
 // src/pages/Home/hooks/useHomeHandlers.js
 // 🚨 [Fix/New] 수정 이유: 
-// 1. handleClearChats: '전체 지우기' 클릭 시 개별 휴지통과 동일하게 조건부 삭제 룰 유지
-// 2. 🚨 [Fix] handleGlobeClick: 바다나 유효하지 않은 지형 클릭 시 'Point(x,y)' 등 쓰레기 데이터 생성을 막고, 데이터가 완벽할 때만 렌더링하도록 구조 변경 (Subtraction / Pessimistic)
+// 1. [Maintain] handleGlobeClick: 바다나 유효하지 않은 지형 클릭 시 쓰레기 데이터 생성을 막는 로직 '유지' (Pessimistic)
+// 2. [Maintain] handleClearChats: '전체 지우기' 룰 '유지'
+// 3. [Subtraction] SEARCH_MAP 인터셉터 '제거' -> 검색어는 TRAVEL_SPOTS를 먼저 타게 되므로, citiesData.js만 완벽하면 Geocoding API의 오작동을 원천 회피함.
+// 4. [Fix/New] handleSmartSearch 내 citiesData 검색 파이프라인 추가
+// 5. 🚨 [Fix/New] Schema First 위반 수정: description 키값을 기존 데이터 스키마에 맞게 desc로 원복하여 상세 카드에 정상 렌더링되도록 함.
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
+import { citiesData } from '../data/citiesData'; 
 import { PERSONA_TYPES, getSystemPrompt } from '../lib/prompts';
 
 export function useHomeHandlers({
@@ -40,21 +44,17 @@ export function useHomeHandlers({
     if (globeRef.current) globeRef.current.pauseRotation();
     
     try {
-      // 데이터 검증을 먼저 실행 (Pessimistic First)
       const addressData = await getAddressFromCoordinates(lat, lng);
-      
-      // 🚨 [Fix] 억지스러운 'Point(x,y)' Fallback 제거. 유효한 지명이 없으면 즉시 종료
       const name = addressData?.city || addressData?.country;
       
+      // 🚨 [Maintain] 데이터가 없으면 UI를 그리지 않고 조용히 패스
       if (!name) {
-         // 데이터가 없으면 UI를 그리지 않고 조용히 패스 (회전만 복구)
          if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
              globeRef.current.resumeRotation();
          }
          return;
       }
 
-      // 데이터가 완벽히 존재할 때만 마커 생성 및 프로세스 진행
       const tempId = Date.now();
       const realPin = { 
         id: tempId, 
@@ -199,6 +199,7 @@ export function useHomeHandlers({
     setDraftInput(query);
     processSearchKeywords(query);
 
+    // 1순위: TRAVEL_SPOTS 검색
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
       s.country.toLowerCase() === query.toLowerCase() ||
@@ -209,9 +210,33 @@ export function useHomeHandlers({
       return;
     }
 
+    // 2순위: citiesData 검색
+    const citySpot = citiesData.find(c =>
+      c.name.toLowerCase() === query.toLowerCase() ||
+      (c.name_en && c.name_en.toLowerCase() === query.toLowerCase())
+    );
+    
+    if (citySpot) {
+      const normalizedCity = {
+        id: `city-${citySpot.lat}-${citySpot.lng}`,
+        name: citySpot.name,
+        name_en: citySpot.name_en || citySpot.name,
+        country: "Explore", 
+        lat: citySpot.lat,
+        lng: citySpot.lng,
+        category: category,
+        desc: citySpot.desc, // 🚨 [Fix/New] description -> desc 로 원복 (스키마 일치)
+        type: 'temp-base'
+      };
+      handleLocationSelect(normalizedCity);
+      return;
+    }
+
+    // 3순위: 카테고리/컨셉 검색
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
     if (isConcept) return;
 
+    // 4순위: 지오코딩 API Fallback
     const coords = await getCoordinatesFromAddress(query);
     
     if (coords) {
@@ -223,7 +248,7 @@ export function useHomeHandlers({
         lat: coords.lat,
         lng: coords.lng,
         category: category,
-        description: `${query} (${coords.country}) 지역을 탐색합니다.`,
+        desc: `${query} (${coords.country}) 지역을 탐색합니다.`, // 🚨 [Fix/New] 여기도 desc 로 통일
         type: 'temp-base'
       };
       handleLocationSelect(normalizedLoc);

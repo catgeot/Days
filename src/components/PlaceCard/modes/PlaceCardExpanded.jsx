@@ -1,3 +1,7 @@
+// src/components/PlaceCard/expanded/PlaceCardExpanded.jsx
+// 🚨 [Fix/New] 수정 이유:
+// 1. [Schema Update] Case C의 summary 속성에서 citiesData.js의 'desc' 키를 최우선으로 인식하도록 스키마 통합 완료 (Fact Check 방어)
+
 import React, { useState, useEffect, useRef } from 'react';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
@@ -27,7 +31,7 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
         return {
             mode: 'PHOTO',
             title: '갤러리 상세 정보',
-            // 🚨 [Fix] AI 모드일 때 요약 정보를 AI 분석 텍스트로 대체 가능하도록 데이터 보강
+            // AI 모드일 때 요약 정보를 AI 분석 텍스트로 대체 가능하도록 데이터 보강
             summary: galleryData.selectedImg.alt_description || galleryData.selectedImg.description || "사진에 대한 설명이 없습니다.",
             tags: galleryData.selectedImg.tags ? galleryData.selectedImg.tags.map(t => t.title) : ['Photo'],
             ai_context: null 
@@ -52,12 +56,13 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
     return {
         mode: 'LOCATION',
         title: location.name,
-        summary: location.description || "이 장소에 대한 여행자들의 리뷰와 정보가 곧 업데이트될 예정입니다.",
-        tags: ['Travel', location.country, ...(location.keywords || [])],
+        // 🚨 [Fix] 핵심 수정: citiesData.js의 'desc'가 1순위, 기존 'description'이 2순위
+        summary: location.desc || location.description || "이 장소에 대한 여행자들의 리뷰와 정보가 곧 업데이트될 예정입니다.",
+        tags: ['Travel', location.country || 'Unknown', ...(location.keywords || [])],
         ai_context: null
     };
   };
-
+console.log("현재 넘어온 장소 데이터:", location);
   const activeInfo = getActiveInfo();
 
   // 타임라인 이동 핸들러
@@ -108,7 +113,7 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
       {/* Left Panel: Chat & Info */}
       <PlaceChatPanel 
         location={location}
-				isBookmarked={isBookmarked}
+        isBookmarked={isBookmarked}
         onClose={onClose}
         chatData={chatData}
         activeInfo={activeInfo}
@@ -116,10 +121,10 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
         mediaMode={mediaMode}
         setMediaMode={setMediaMode}
         onSeekTime={handleSeekTime}
-        // 🚨 [Fix] GalleryInfoView에 필요한 핵심 데이터 주입
+        // GalleryInfoView에 필요한 핵심 데이터 주입
         isAiMode={isAiMode}
         selectedImg={galleryData.selectedImg}
-				onToggleBookmark={onToggleBookmark}
+        onToggleBookmark={onToggleBookmark}
       />
       
       {/* Right Panel: Media Gallery */}
@@ -134,7 +139,7 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
             videos={spotVideos}
             onVideoSelect={setSelectedVideoId}
             playerRef={playerRef}
-            // 🚨 [Fix] 갤러리(View) -> 미디어패널(Panel) -> 이곳(Expanded)으로 신호 연결
+            // 갤러리(View) -> 미디어패널(Panel) -> 이곳(Expanded)으로 신호 연결
             onAiModeChange={setIsAiMode}
         />
       </div>
