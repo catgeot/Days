@@ -1,9 +1,10 @@
 // src/components/HomeGlobe.jsx
 // 🚨 [Fix] 테마 스위치 속성(globeTheme) 적용 및 비주얼 리터칭(텍스처, 대기권 컬러 동적 할당)
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Maintainability] 'GLOBE_CAMERA_CONFIG' 통제실을 신설하여 흩어져 있던 매직 넘버(고도, 시간, 속도, 해상도)를 한 곳에서 관리 가능하도록 아키텍처 개선.
-// 2. [UX & Performance] 확대(탐색 모드) 상태에서 flyTo 시 자전을 영구 정지하여 브라우저 연산 부하(프레임 저하)를 막고 독서 UX를 극대화. (옵션 1)
-// 3. [UX] 기본 고도(우주 모드)에서는 비행 완료 후 4초의 인지 대기 시간을 거친 뒤 부드럽게 자전을 재개하도록 수정. (옵션 2)
+// 1. [Maintainability] 'GLOBE_CAMERA_CONFIG' 통제실 신설 및 확대/자전 정지 임계값(Threshold) 세분화.
+// 2. [UX & Performance] 지정 고도(FLY_DISABLE_ALT) 이하로 확대 시 flyTo(카메라 이동) 및 물방울(Ripple) 생성을 완전 생략(Bypass)하여 프레임 드랍 원천 차단. (Subtraction over Addition 적용)
+// 3. [UX & Motion] 지정 고도(AUTO_ROTATE_DISABLE_ALT) 이하 진입 시 실시간으로 자전을 즉시 정지하여 3D 멀미 방지 및 시선 분산 방지.
+// 4. [UX/New] 라벨 렌더링 시 offLat, offLng 속성을 참조하여 겹침 방지 (Pessimistic First 원칙 적용: 값 없을 시 0 기본값)
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
@@ -11,14 +12,16 @@ import { getMarkerDesign } from '../data/markers';
 import { citiesData } from '../data/citiesData'; 
 
 // 🚨 [Fix/New] 수석님 전용 환경 설정(Config) 통제실
-// 이제 코드를 뜯어볼 필요 없이 여기서 모든 카메라 및 애니메이션 수치를 튜닝하십시오.
+// 고도에 따른 애니메이션 차단/정지 수치를 여기서 미세 조정하십시오.
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,                 // 기본 우주 고도
-  ZOOM_THRESHOLD: 2.2,              // 탐색/확대 모드 진입 기준 고도 (이보다 낮으면 확대된 것으로 간주)
+  ZOOM_THRESHOLD: 2.2,              // 탐색 모드 진입 기준 고도 (기본적인 로직 분기점)
+  AUTO_ROTATE_DISABLE_ALT: 2.2,     // 🚨 [New] 이 고도 이하면 마우스 휠만 굴려도 자전이 즉시 정지됨 (멀미 방지)
+  FLY_DISABLE_ALT: 1.8,             // 🚨 [New] 이 고도 이하면 클릭 시 카메라 이동(flyTo)과 물방울 이펙트 완전 생략 (프레임 드랍 방지)
   FLY_DURATION: 3000,               // 목적지 비행 시간 (ms)
   IDLE_DELAY_ZOOMED_OUT: 4000,      // 기본 고도 도착 후 자전 재개 전 감상/대기 시간 (ms)
   AUTO_ROTATE_SPEED: 0.5,           // 평상시 자전 속도
-  LABEL_RESOLUTION: 2               // 텍스트 해상도 (기기가 버벅일 경우 1~1.5로 하향 조절하여 메모리 확보)
+  LABEL_RESOLUTION: 2               // 텍스트 해상도
 };
 
 const HomeGlobe = forwardRef(({ 
@@ -88,10 +91,18 @@ const HomeGlobe = forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
       
       if (globeEl.current) {
+        const currentAlt = globeEl.current.pointOfView().altitude;
+
+        // 🚨 [Fix/New] 확대 상태 시 애니메이션 원천 차단 (Subtraction over Addition)
+        // 현재 고도가 FLY_DISABLE_ALT 이하라면 카메라 이동과 물방울 이펙트를 생략합니다.
+        if (currentAlt <= GLOBE_CAMERA_CONFIG.FLY_DISABLE_ALT) {
+          globeEl.current.controls().autoRotate = false;
+          // 카메라 이동 없이 즉시 함수 종료. (클릭 이벤트 자체는 상위로 전달되어 패널은 정상 작동함)
+          return; 
+        }
+
         globeEl.current.controls().autoRotate = false; 
         
-        // 🚨 [Fix/New] Config 통제실 변수 적용
-        const currentAlt = globeEl.current.pointOfView().altitude;
         const isZoomedIn = currentAlt < GLOBE_CAMERA_CONFIG.ZOOM_THRESHOLD;
         const targetAlt = isZoomedIn ? currentAlt : GLOBE_CAMERA_CONFIG.DEFAULT_ALT; 
 
@@ -101,14 +112,17 @@ const HomeGlobe = forwardRef(({
         setRipples(prev => [...prev, newRipple]);
         setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 2000);
 
-        // 🚨 [Fix/New] 자전 재개 분기 로직 (옵션 1 & 2 결합)
         if (isZoomedIn) {
-          // 탐색 모드: 자전을 재개하는 타이머를 세팅하지 않고 완전히 정지시킵니다. (성능 확보 및 편안한 UX)
+          // 탐색 모드: 자전을 재개하는 타이머를 세팅하지 않고 완전히 정지시킵니다.
         } else {
           // 우주 모드: 비행 완료 후 설정된 대기 시간(4초)을 거친 뒤 부드럽게 자전을 시작합니다.
           const totalWaitTime = GLOBE_CAMERA_CONFIG.FLY_DURATION + GLOBE_CAMERA_CONFIG.IDLE_DELAY_ZOOMED_OUT;
           rotationTimer.current = setTimeout(() => { 
-            if (globeEl.current && !pauseRender) globeEl.current.controls().autoRotate = true; 
+            // 🚨 [Safe Check] 대기 시간이 끝난 시점의 고도를 다시 측정하여 안전하게 자전 재개 여부 결정
+            const checkAlt = globeEl.current ? globeEl.current.pointOfView().altitude : 99;
+            if (globeEl.current && !pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
+               globeEl.current.controls().autoRotate = true; 
+            }
           }, totalWaitTime);
         }
       }
@@ -118,7 +132,7 @@ const HomeGlobe = forwardRef(({
         setRipples([]); 
         if (globeEl.current) {
             globeEl.current.controls().autoRotate = true;
-            globeEl.current.pointOfView({ altitude: GLOBE_CAMERA_CONFIG.DEFAULT_ALT }, 1500); // 🚨 Config 적용
+            globeEl.current.pointOfView({ altitude: GLOBE_CAMERA_CONFIG.DEFAULT_ALT }, 1500); 
         }
         if (rotationTimer.current) {
             clearTimeout(rotationTimer.current);
@@ -142,10 +156,21 @@ const HomeGlobe = forwardRef(({
       const handleCameraChange = () => {
         if (!globeEl.current) return;
         const alt = globeEl.current.pointOfView().altitude;
+        
+        // 1. LOD(디테일 수준) 계산
         const newLevel = alt < 1.7 ? 1 : 0;
         if (newLevel !== lodLevelRef.current) {
           lodLevelRef.current = newLevel;
           setLodLevel(newLevel);
+        }
+
+        // 2. 🚨 [New] 실시간 자전 차단/재개 로직 (멀미 방지)
+        if (!pauseRender && globeEl.current.controls) {
+          if (alt <= GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
+            globeEl.current.controls().autoRotate = false; // 진입 시 즉시 정지
+          } else {
+            globeEl.current.controls().autoRotate = true;  // 우주로 멀어지면 자동 재개
+          }
         }
       };
 
@@ -155,7 +180,7 @@ const HomeGlobe = forwardRef(({
 
     const timeoutId = setTimeout(initCameraListener, 500);
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [pauseRender]);
 
   useEffect(() => {
     if (globeEl.current) {
@@ -167,8 +192,8 @@ const HomeGlobe = forwardRef(({
   useEffect(() => {
     if (globeEl.current) {
       globeEl.current.controls().autoRotate = !pauseRender;
-      globeEl.current.controls().autoRotateSpeed = GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED; // 🚨 Config 적용
-      globeEl.current.pointOfView({ altitude: GLOBE_CAMERA_CONFIG.DEFAULT_ALT }); // 🚨 Config 적용
+      globeEl.current.controls().autoRotateSpeed = GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED; 
+      globeEl.current.pointOfView({ altitude: GLOBE_CAMERA_CONFIG.DEFAULT_ALT }); 
     }
   }, []); 
 
@@ -294,16 +319,18 @@ const HomeGlobe = forwardRef(({
         htmlTransitionDuration={0} 
 
         labelsData={visibleLabels}
-        labelLat={d => d.lat}
-        labelLng={d => d.lng}
+        // 🚨 [Fix/New] 수정 이유: Pessimistic First 설계 적용. offLat/offLng가 없을 확률을 고려해 `|| 0` 기본값을 할당하여 에러를 원천 차단하고 오프셋 적용.
+        labelLat={d => d.lat + (d.offLat || 0)}
+        labelLng={d => d.lng + (d.offLng || 0)}
         labelText={d => d.name_en}
-        labelSize={d => d.priority === 1 ? 1.2 : 0.8}
+        labelSize={d => d.priority === 1 ? 1.2 : 0.5}
         labelDotRadius={0.15}
         labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
-        labelResolution={GLOBE_CAMERA_CONFIG.LABEL_RESOLUTION} // 🚨 Config 적용
+        labelResolution={GLOBE_CAMERA_CONFIG.LABEL_RESOLUTION} 
         labelAltitude={0.01}
         
         onLabelClick={(d, event) => {
+          // 🚨 [Fact Check] 렌더링용 좌표(labelLat/labelLng)만 변경했을 뿐, 원본 객체 'd'의 실제 lat, lng는 오염되지 않았으므로 그대로 전달합니다.
           if (onMarkerClick) onMarkerClick({ ...d, type: 'city-label' }, 'globe');
         }}
       />
