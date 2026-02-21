@@ -90,28 +90,28 @@ export const TRAVEL_SPOTS = [
     keywords: ["거북이", "스노클링", "다윈", "에콰도르", "자연"]
   },
   { 
-    id: 205, name: "스위스 알프스", name_en: "Swiss Alps", 
+    id: 204, name: "스위스 알프스", name_en: "Swiss Alps", 
     country: "스위스", country_en: "Switzerland",
     lat: 46.81, lng: 8.22, category: "nature", 
     desc: "만년설이 덮인 거대한 영봉들과 그 아래 펼쳐진 초록빛 목초지가 한 폭의 그림을 완성합니다. 산악 열차를 타고 구름 위를 달리는 낭만적인 경험을 할 수 있습니다. 융프라우, 마테호른 등 이름만 들어도 가슴 뛰는 하이킹 코스들이 즐비합니다.",
     keywords: ["알프스", "하이킹", "기차", "유럽", "산"]
   },
   { 
-    id: 206, name: "밴프 국립공원", name_en: "Banff National Park", 
+    id: 205, name: "밴프 국립공원", name_en: "Banff National Park", 
     country: "캐나다", country_en: "Canada",
     lat: 51.1784, lng: -115.5708, category: "nature", 
     desc: "캐나다 로키산맥의 심장부로, 에메랄드빛 호수와 웅장한 빙하가 장관을 이룹니다. 특히 루이스 호수의 영롱한 물빛은 전 세계 사진가들을 매혹시킵니다. 대자연 속에서 야생동물과 조우하며 하이킹, 카누 등 다양한 아웃도어 활동을 즐기기에 최적입니다.",
     keywords: ["로키산맥", "호수", "하이킹", "북미", "국립공원"]
   },
   { 
-    id: 211, name: "우유니 소금사막", name_en: "Salar de Uyuni", 
+    id: 206, name: "우유니 소금사막", name_en: "Salar de Uyuni", 
     country: "볼리비아", country_en: "Bolivia",
     lat: -20.1338, lng: -67.4891, category: "nature", 
     desc: "우기에 물이 차오르면 세상에서 가장 거대한 거울로 변신하는 남미 최고의 비경입니다. 하늘과 땅의 경계가 사라진 초현실적인 풍경 한가운데 서 있는 듯한 착각을 불러일으킵니다. 밤이 되면 머리 위로 쏟아지는 경이로운 은하수를 마주할 수 있습니다.",
     keywords: ["남미", "소금사막", "거울", "은하수", "비경"]
   },
   { 
-    id: 212, name: "로포텐 제도", name_en: "Lofoten Islands", 
+    id: 207, name: "로포텐 제도", name_en: "Lofoten Islands", 
     country: "노르웨이", country_en: "Norway",
     lat: 68.2086, lng: 13.5520, category: "nature", 
     desc: "노르웨이 북서부 해안에 위치한 뾰족한 산봉우리와 깊은 피오르드가 빚어낸 극지방의 보석입니다. 그림 같은 전통 빨간 어부의 집(Rorbu)들이 바다를 배경으로 서 있습니다. 여름에는 백야를, 겨울에는 웅장한 오로라를 감상할 수 있는 신비로운 장소입니다.",
@@ -171,35 +171,35 @@ export const TRAVEL_SPOTS = [
     keywords: ["콜로세움", "바티칸", "역사", "유럽", "파스타"]
   },
   { 
-    id: 204, name: "암스테르담", name_en: "Amsterdam", 
+    id: 308, name: "암스테르담", name_en: "Amsterdam", 
     country: "네덜란드", country_en: "Netherlands",
     lat: 52.3676, lng: 4.9041, category: "urban", 
     desc: "거미줄처럼 얽힌 운하를 따라 자전거를 탄 사람들이 오가는 동화 같은 도시입니다. 반 고흐 미술관과 안네 프랑크의 집 등 깊이 있는 문화 유산을 간직하고 있습니다. 봄이 되면 튤립이 만개하여 도시 전체가 한 폭의 엽서처럼 변합니다.",
     keywords: ["운하", "자전거", "반고흐", "튤립", "풍차"]
   },
   { 
-    id: 207, name: "리스본", name_en: "Lisbon", 
+    id: 309, name: "리스본", name_en: "Lisbon", 
     country: "포르투갈", country_en: "Portugal",
     lat: 38.7223, lng: -9.1393, category: "urban", 
     desc: "일곱 개의 언덕 위로 노란 트램이 위태롭게 오르내리는 빈티지한 매력의 항구 도시입니다. 구시가지 알파마 지구의 좁은 골목에서는 포르투갈 전통 음악 파두의 선율이 흐릅니다. 갓 구워낸 바삭하고 달콤한 원조 에그타르트는 필수 코스입니다.",
     keywords: ["유럽", "트램", "구시가지", "에그타르트", "항구도시"]
   },
   { 
-    id: 208, name: "바르셀로나", name_en: "Barcelona", 
+    id: 310, name: "바르셀로나", name_en: "Barcelona", 
     country: "스페인", country_en: "Spain",
     lat: 41.3851, lng: 2.1734, category: "urban", 
     desc: "천재 건축가 가우디의 독창적인 건축물들이 도시 전체를 미술관으로 만든 곳입니다. 아직도 건축 중인 사그라다 파밀리아 성당의 경이로움은 말로 다 할 수 없습니다. 지중해의 햇살 아래 타파스와 샹그리아를 즐기며 스페인 특유의 여유를 느껴보세요.",
     keywords: ["가우디", "건축", "지중해", "축구", "타파스"]
   },
   { 
-    id: 209, name: "프라하", name_en: "Prague", 
+    id: 311, name: "프라하", name_en: "Prague", 
     country: "체코", country_en: "Czech Republic",
     lat: 50.0755, lng: 14.4378, category: "urban", 
     desc: "붉은 지붕들과 블타바 강이 어우러진 동유럽 최고의 낭만 도시입니다. 해 질 녘 카렐교 위에서 바라보는 프라하 성의 야경은 세상에서 가장 로맨틱한 풍경을 선사합니다. 세계 최고 수준의 체코 맥주와 함께 중세 시대로의 시간 여행을 떠나보세요.",
     keywords: ["야경", "맥주", "카렐교", "구시가지", "낭만"]
   },
   { 
-    id: 210, name: "부다페스트", name_en: "Budapest", 
+    id: 312, name: "부다페스트", name_en: "Budapest", 
     country: "헝가리", country_en: "Hungary",
     lat: 47.4979, lng: 19.0402, category: "urban", 
     desc: "다뉴브 강을 사이에 두고 부다 지역과 페스트 지역이 마주보는 '동유럽의 진주'입니다. 황금빛으로 빛나는 웅장한 국회의사당의 야경은 유럽 전체를 통틀어 가장 아름답기로 유명합니다. 고풍스러운 세체니 온천에서 노천욕을 즐기며 여독을 풀어보세요.",
@@ -217,28 +217,28 @@ export const TRAVEL_SPOTS = [
     keywords: ["가성비", "리조트", "가족여행", "베트남"]
   },
   { 
-    id: 403, name: "오사카", name_en: "Osaka", 
+    id: 402, name: "오사카", name_en: "Osaka", 
     country: "일본", country_en: "Japan",
     lat: 34.69, lng: 135.50, category: "nearby", 
     desc: "'먹다가 망한다'는 말이 있을 정도로 타코야키, 오코노미야키 등 길거리 음식의 본고장입니다. 밤낮없이 활기찬 도톤보리의 네온사인과 유니버설 스튜디오 재팬의 짜릿함이 기다립니다. 교토, 고베 등 간사이 지역 여행의 훌륭한 베이스캠프입니다.",
     keywords: ["먹방", "유니버셜", "오사카성", "도톤보리"]
   },
   { 
-    id: 405, name: "후쿠오카", name_en: "Fukuoka", 
+    id: 403, name: "후쿠오카", name_en: "Fukuoka", 
     country: "일본", country_en: "Japan",
     lat: 33.59, lng: 130.40, category: "nearby", 
     desc: "한국에서 가장 빨리 닿을 수 있는 해외 여행지 중 하나로 가벼운 주말여행에 제격입니다. 진한 국물의 돈코츠 라멘 원조이며, 밤이 되면 나카스 강변에 늘어선 야타이(포장마차)에서 정겨운 시간을 보낼 수 있습니다. 근교 유후인으로의 온천 여행도 인기가 높습니다.",
     keywords: ["온천", "라멘", "쇼핑", "가깝다"]
   },
   { 
-    id: 406, name: "타이베이", name_en: "Taipei", 
+    id: 404, name: "타이베이", name_en: "Taipei", 
     country: "대만", country_en: "Taiwan",
     lat: 25.03, lng: 121.56, category: "nearby", 
     desc: "현대적인 타이베이 101 빌딩과 전통적인 사원들이 조화롭게 섞인 매력적인 도시입니다. 스린 야시장 등 끊임없이 이어지는 야시장에서 우육면과 버블티 등 다채로운 미식을 즐길 수 있습니다. 영화 '센과 치히로의 행방불명'의 모티브가 된 지우펀 방문도 놓치지 마세요.",
     keywords: ["야시장", "딤섬", "101타워", "근거리"]
   },
   { 
-    id: 407, name: "홍콩", name_en: "Hong Kong", 
+    id: 405, name: "홍콩", name_en: "Hong Kong", 
     country: "홍콩", country_en: "Hong Kong",
     lat: 22.31, lng: 114.16, category: "nearby", 
     desc: "동양과 서양의 문화가 교차하는 화려한 쇼핑과 미식의 메카입니다. 빅토리아 피크에서 내려다보는 수많은 마천루들의 야경인 '심포니 오브 라이트'는 홍콩 여행의 하이라이트입니다. 골목길에 숨겨진 미슐랭 딤섬 맛집을 찾는 재미도 쏠쏠합니다.",
@@ -282,5 +282,12 @@ export const TRAVEL_SPOTS = [
     lat: 30.3285, lng: 35.4444, category: "adventure", 
     desc: "거대한 붉은 사암 절벽을 정교하게 깎아 만든 고대 나바테아인의 잃어버린 도시입니다. 좁고 깊은 협곡인 시크(Siq)를 따라 걸어 들어가면 마주하게 되는 알 카즈네 신전의 웅장함에 숨이 멎습니다. 영화 '인디아나 존스'의 한 장면 속으로 걸어 들어가는 듯한 착각을 줍니다.",
     keywords: ["고대도시", "인디아나존스", "사막", "중동", "유적"]
-  }
+  },
+	{ 
+    id: 506, name: "케이프타운", name_en: "Cape Town", 
+    country: "남아프리카공화국", country_en: "South Africa",
+    lat: -33.9249, lng: 18.4241, category: "adventure", 
+    desc: "구름이 식탁보처럼 내려앉는 신비로운 테이블 마운틴과 아프리카 대륙의 끝단인 희망봉을 품은 도시입니다. 대서양의 푸른 파도가 치는 해변에서 귀여운 자카스 펭귄들을 만날 수 있으며, 웅장한 자연경관과 세련된 도시 문화가 공존하는 독특한 매력을 자랑합니다. 대자연의 경이로움과 아드레날린이 솟구치는 탐험을 동시에 경험할 수 있는 낙원입니다.",
+    keywords: ["테이블마운틴", "희망봉", "펭귄", "아프리카", "대자연"]
+	}
 ];

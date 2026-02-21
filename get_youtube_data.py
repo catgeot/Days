@@ -3,7 +3,7 @@ import time
 import json
 import re
 import requests
-import random # 🚨 [New] 랜덤 지연을 위한 모듈 추가
+import random 
 import yt_dlp
 from dotenv import load_dotenv
 from google import genai
@@ -18,23 +18,20 @@ API_KEY = os.getenv("VITE_GEMINI_API_KEY")
 if not API_KEY:
     raise ValueError("❌ API 키가 없습니다. .env.local 파일을 확인해주세요.")
 
-LOCATIONS = ["옐로나이프"] 
+# 🚨 [Fix/New] 타겟 지역 변경 (후쿠오카)
+LOCATIONS = ["페트라"] 
 OUTPUT_FILE = "real_timeline_data.json"
 TARGET_SUCCESS_COUNT = 5
 SEARCH_CANDIDATES = 30
 
-# 🚨 [New] 봇 감지 우회를 위한 브라우저 위장 헤더
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
-# 🚨 [New] 건너뛸 유튜브 ID 목록 (여기에 막히는 ID를 추가하세요)
 EXCLUDE_VIDEO_IDS = [
-    # "AbCdEfGhIjK", 
-    # "1234567890a"
+    # "막히는_영상_ID_여기에_추가"
 ]
 
 client = genai.Client(api_key=API_KEY)
 
-# 🚨 [New] 중간 저장을 위한 함수 분리 (데이터 유실 방지)
 def save_checkpoint(data):
     if not data: return
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
@@ -60,7 +57,7 @@ def get_video_candidates(keyword, limit=30):
         'writesubtitles': True,
         'writeautomaticsub': True,
         'skip_download': True,
-        'http_headers': {'User-Agent': USER_AGENT} # 🚨 [Fix] 봇 감지 방지용 헤더 추가
+        'http_headers': {'User-Agent': USER_AGENT}
     }
     
     query = f"ytsearch{limit}:{keyword} 여행 브이로그 -shorts"
@@ -82,13 +79,19 @@ def get_video_candidates(keyword, limit=30):
                 print(f"📋 검색된 {len(entries)}개의 후보를 최신순으로 정렬했습니다.")
 
                 for entry in entries:
-                    video_id = entry['id']
-                    duration = entry.get('duration', 0)
+                    if not entry: continue # 안전 장치: entry 자체가 None인 경우 방어
+                    
+                    video_id = entry.get('id')
+                    if not video_id: continue # 안전 장치: ID가 없는 쓰레기 데이터 방어
+
                     title = entry.get('title', '')
                     
-                    # 🚨 [Fix] 예외 ID 및 기본 필터링 처리
+                    # 🚨 [Fix/New] 에러 해결: duration이 None으로 넘어올 경우(라이브 등) 무조건 0으로 안전하게 치환
+                    raw_duration = entry.get('duration')
+                    duration = raw_duration if raw_duration is not None else 0
+                    
                     if video_id in EXCLUDE_VIDEO_IDS: continue
-                    if duration < 300: continue
+                    if duration < 300: continue # 이제 None 타입 에러 없이 정상적으로 300(5분) 미만 필터링 작동
                     if 'shorts' in title.lower(): continue
 
                     candidates.append({
@@ -115,7 +118,7 @@ def get_transcript_text(video_url):
         'skip_download': True,
         'writesubtitles': True,
         'writeautomaticsub': True,
-        'http_headers': {'User-Agent': USER_AGENT} # 🚨 [Fix] 봇 감지 방지용 헤더 추가
+        'http_headers': {'User-Agent': USER_AGENT} 
     }
 
     try:
@@ -141,7 +144,6 @@ def get_transcript_text(video_url):
             json_url = next((fmt['url'] for fmt in selected_sub if fmt.get('ext') == 'json3'), None)
             if not json_url: return None
 
-            # 🚨 [Fix] requests에도 헤더 추가
             response = requests.get(json_url, headers={'User-Agent': USER_AGENT})
             response.raise_for_status()
             json_data = response.json()
@@ -165,7 +167,7 @@ def get_transcript_text(video_url):
         return None
 
 # ==========================================
-# 4. [Step 3] Gemini 분석 (🚨 원본 프롬프트 완벽 유지)
+# 4. [Step 3] Gemini 분석
 # ==========================================
 def analyze_with_gemini(location, video_info, transcript):
     prompt = f"""
@@ -244,25 +246,21 @@ def main():
 
         print(f"\n[{i+1}/{len(candidates)}] 분석 중: {video['title']}")
         
-        # 자막 추출
         transcript = get_transcript_text(video['url'])
         if not transcript:
             print("  Pass: 자막 없음 또는 접근 차단 ❌")
             continue
         
-        # AI 분석
         result_text = analyze_with_gemini(LOCATIONS[0], video, transcript)
         result_json = parse_json(result_text)
 
-        # 결과 검증 및 저장
         if result_json and result_json.get('ai_context', {}).get('timeline'):
             final_data.append(result_json)
-            save_checkpoint(final_data) # 🚨 [Fix] 데이터 하나 건질 때마다 즉시 파일로 덮어쓰기 저장 (안전성 확보)
+            save_checkpoint(final_data) 
             print(f"  ✅ 타임라인 확보 성공 및 저장 완료! (현재 {len(final_data)}/{TARGET_SUCCESS_COUNT})")
         else:
             print("  Pass: 여행 정보 부족 또는 분석 실패 ⚠️")
         
-        # 🚨 [Fix] 유튜브 봇 감지 우회를 위한 랜덤 딜레이 적용 (3초 ~ 7초 사이 무작위 대기)
         sleep_time = random.uniform(3.0, 7.0)
         print(f"  ⏳ 봇 감지 우회 중... ({sleep_time:.1f}초 대기)")
         time.sleep(sleep_time)
