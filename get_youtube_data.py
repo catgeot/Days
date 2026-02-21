@@ -3,6 +3,7 @@ import time
 import json
 import re
 import requests
+import random # 🚨 [New] 랜덤 지연을 위한 모듈 추가
 import yt_dlp
 from dotenv import load_dotenv
 from google import genai
@@ -17,12 +18,34 @@ API_KEY = os.getenv("VITE_GEMINI_API_KEY")
 if not API_KEY:
     raise ValueError("❌ API 키가 없습니다. .env.local 파일을 확인해주세요.")
 
-LOCATIONS = ["라로통가"] 
+LOCATIONS = ["옐로나이프"] 
 OUTPUT_FILE = "real_timeline_data.json"
-TARGET_SUCCESS_COUNT = 5  # 🚨 목표: 성공한 데이터 5개를 만들 때까지 멈추지 않음
-SEARCH_CANDIDATES = 30    # 🚨 후보군: 5개를 건지기 위해 넉넉하게 30개를 먼저 검색
+TARGET_SUCCESS_COUNT = 5
+SEARCH_CANDIDATES = 30
+
+# 🚨 [New] 봇 감지 우회를 위한 브라우저 위장 헤더
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+
+# 🚨 [New] 건너뛸 유튜브 ID 목록 (여기에 막히는 ID를 추가하세요)
+EXCLUDE_VIDEO_IDS = [
+    # "AbCdEfGhIjK", 
+    # "1234567890a"
+]
 
 client = genai.Client(api_key=API_KEY)
+
+# 🚨 [New] 중간 저장을 위한 함수 분리 (데이터 유실 방지)
+def save_checkpoint(data):
+    if not data: return
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        f.write("[\n")
+        for i, item in enumerate(data):
+            line = json.dumps(item, ensure_ascii=False)
+            if i < len(data) - 1:
+                f.write("  " + line + ",\n")
+            else:
+                f.write("  " + line + "\n")
+        f.write("]")
 
 # ==========================================
 # 2. [Step 1] 영상 후보군 검색 (최신순 정렬)
@@ -32,50 +55,48 @@ def get_video_candidates(keyword, limit=30):
     
     ydl_opts = {
         'quiet': True,
-        'extract_flat': False, # 자막 유무 확인을 위해 상세 정보 필요
+        'extract_flat': False,
         'noplaylist': True,
         'writesubtitles': True,
         'writeautomaticsub': True,
         'skip_download': True,
+        'http_headers': {'User-Agent': USER_AGENT} # 🚨 [Fix] 봇 감지 방지용 헤더 추가
     }
     
-    # 쿼리: 검색어 + 여행 브이로그 + 숏츠 제외
     query = f"ytsearch{limit}:{keyword} 여행 브이로그 -shorts"
     candidates = []
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # 1. 빠르게 목록만 먼저 확보 (extract_flat=True)
             flat_opts = {**ydl_opts, 'extract_flat': True}
             with yt_dlp.YoutubeDL(flat_opts) as search_ydl:
                 search_result = search_ydl.extract_info(query, download=False)
 
             if 'entries' in search_result:
-                # 2. Python 내부에서 '최신순(날짜)'으로 정렬
-                # (yt-dlp 검색 결과는 관련도 순이므로, 여기서 강제로 날짜 정렬)
                 entries = sorted(
                     search_result['entries'], 
                     key=lambda x: x.get('upload_date', '00000000'), 
-                    reverse=True # 내림차순 (최신 날짜가 위로)
+                    reverse=True
                 )
 
                 print(f"📋 검색된 {len(entries)}개의 후보를 최신순으로 정렬했습니다.")
 
                 for entry in entries:
+                    video_id = entry['id']
                     duration = entry.get('duration', 0)
                     title = entry.get('title', '')
                     
-                    # 3. 기본 필터링 (5분 미만, 숏츠 제외)
+                    # 🚨 [Fix] 예외 ID 및 기본 필터링 처리
+                    if video_id in EXCLUDE_VIDEO_IDS: continue
                     if duration < 300: continue
                     if 'shorts' in title.lower(): continue
 
-                    # 후보 리스트에 추가
                     candidates.append({
-                        "id": entry['id'],
+                        "id": video_id,
                         "title": title,
                         "url": entry.get('url'),
                         "duration": duration,
-                        "upload_date": entry.get('upload_date'), # 날짜 정보
+                        "upload_date": entry.get('upload_date'),
                         "thumbnail": entry.get('thumbnails', [{}])[0].get('url', '')
                     })
                     
@@ -86,17 +107,15 @@ def get_video_candidates(keyword, limit=30):
         return []
 
 # ==========================================
-# 3. [Step 2] 자막 추출 (이전과 동일한 강력한 로직)
+# 3. [Step 2] 자막 추출
 # ==========================================
 def get_transcript_text(video_url):
-    """
-    영상 URL을 받아 자막 텍스트를 추출합니다.
-    """
     ydl_opts = {
         'quiet': True,
         'skip_download': True,
         'writesubtitles': True,
         'writeautomaticsub': True,
+        'http_headers': {'User-Agent': USER_AGENT} # 🚨 [Fix] 봇 감지 방지용 헤더 추가
     }
 
     try:
@@ -106,7 +125,6 @@ def get_transcript_text(video_url):
             subs = info.get('subtitles') or {}
             auto_subs = info.get('automatic_captions') or {}
             
-            # 한국어 > 영어 순서로 자막 찾기
             target_langs = ['ko', 'en']
             selected_sub = None
             
@@ -120,12 +138,11 @@ def get_transcript_text(video_url):
             
             if not selected_sub: return None
 
-            # JSON3 포맷 URL 찾기
             json_url = next((fmt['url'] for fmt in selected_sub if fmt.get('ext') == 'json3'), None)
             if not json_url: return None
 
-            # 다운로드 및 파싱
-            response = requests.get(json_url)
+            # 🚨 [Fix] requests에도 헤더 추가
+            response = requests.get(json_url, headers={'User-Agent': USER_AGENT})
             response.raise_for_status()
             json_data = response.json()
             
@@ -148,7 +165,7 @@ def get_transcript_text(video_url):
         return None
 
 # ==========================================
-# 4. [Step 3] Gemini 분석
+# 4. [Step 3] Gemini 분석 (🚨 원본 프롬프트 완벽 유지)
 # ==========================================
 def analyze_with_gemini(location, video_info, transcript):
     prompt = f"""
@@ -169,9 +186,9 @@ def analyze_with_gemini(location, video_info, transcript):
     - **타임라인 개수: ** 5개 이상, 10개 이하.
     - **거짓말 금지:** 자막에 없는 장소나 행동은 절대 적지 마.
     - **설명 길이: **15자 이내로 간결하게.
-    -	**포맷:** 반드시 아래 JSON 형식으로만 출력해.        
+    - **포맷:** 반드시 아래 JSON 형식으로만 출력해.        
     
-		[JSON 포맷]
+    [JSON 포맷]
     {{
         "id": "{video_info['id']}",
         "title": "{video_info['title']}",
@@ -209,70 +226,52 @@ def parse_json(text):
         return None
 
 # ==========================================
-# 5. 메인 실행 (목표 달성 로직 적용)
+# 5. 메인 실행 
 # ==========================================
 def main():
     print(f"🚀 '{LOCATIONS[0]}' 타임라인 데이터 확보 시작")
     print(f"🎯 목표: 유효한 데이터 {TARGET_SUCCESS_COUNT}개 수집")
     
-    # 1. 후보군 확보
     candidates = get_video_candidates(LOCATIONS[0], limit=SEARCH_CANDIDATES)
     final_data = []
 
     print(f"\n🏃 검증 및 분석 시작 (총 {len(candidates)}개 후보)...")
     
-    # 2. 목표 개수를 채울 때까지 반복
     for i, video in enumerate(candidates):
-        # 목표 달성 시 즉시 종료
         if len(final_data) >= TARGET_SUCCESS_COUNT:
             print(f"\n✨ 목표 달성! ({len(final_data)}/{TARGET_SUCCESS_COUNT})")
             break
 
-        print(f"\n[{i+1}/{len(candidates)}] 분석 중: {video['title']} ({video.get('upload_date', '날짜모름')})")
+        print(f"\n[{i+1}/{len(candidates)}] 분석 중: {video['title']}")
         
         # 자막 추출
         transcript = get_transcript_text(video['url'])
         if not transcript:
-            print("   Pass: 자막 없음 ❌")
+            print("  Pass: 자막 없음 또는 접근 차단 ❌")
             continue
         
         # AI 분석
         result_text = analyze_with_gemini(LOCATIONS[0], video, transcript)
         result_json = parse_json(result_text)
 
-        # 결과 검증
+        # 결과 검증 및 저장
         if result_json and result_json.get('ai_context', {}).get('timeline'):
             final_data.append(result_json)
-            print(f"   ✅ 타임라인 확보 성공! (현재 {len(final_data)}/{TARGET_SUCCESS_COUNT})")
+            save_checkpoint(final_data) # 🚨 [Fix] 데이터 하나 건질 때마다 즉시 파일로 덮어쓰기 저장 (안전성 확보)
+            print(f"  ✅ 타임라인 확보 성공 및 저장 완료! (현재 {len(final_data)}/{TARGET_SUCCESS_COUNT})")
         else:
-            print("   Pass: 여행 정보 부족 또는 분석 실패 ⚠️")
+            print("  Pass: 여행 정보 부족 또는 분석 실패 ⚠️")
         
-        time.sleep(1) # API 부하 조절
+        # 🚨 [Fix] 유튜브 봇 감지 우회를 위한 랜덤 딜레이 적용 (3초 ~ 7초 사이 무작위 대기)
+        sleep_time = random.uniform(3.0, 7.0)
+        print(f"  ⏳ 봇 감지 우회 중... ({sleep_time:.1f}초 대기)")
+        time.sleep(sleep_time)
 
-    # 3. 결과 저장
-    if final_data:
-        with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-            f.write("[\n") # 배열 시작
-            
-            for i, item in enumerate(final_data):
-                # 1. 객체 하나를 문자열로 변환 (indent 없음 -> 한 줄로 압축됨)
-                line = json.dumps(item, ensure_ascii=False)
-                
-                # 2. 마지막 항목이 아니면 쉼표(,) 추가
-                if i < len(final_data) - 1:
-                    f.write("  " + line + ",\n")
-                else:
-                    f.write("  " + line + "\n") # 마지막 항목은 쉼표 없음
-            
-            f.write("]") # 배열 종료
-        print(f"\n🎉 최종 결과: 총 {len(final_data)}개의 데이터가 저장되었습니다.")
-        print(f"📂 파일 경로: {OUTPUT_FILE}")
-        
-        # 부족할 경우 경고
-        if len(final_data) < TARGET_SUCCESS_COUNT:
-            print(f"⚠️ 경고: 후보군({SEARCH_CANDIDATES}개)을 모두 검색했으나 목표({TARGET_SUCCESS_COUNT}개)를 채우지 못했습니다.")
-    else:
-        print("\n😭 저장된 데이터가 없습니다.")
+    print(f"\n🎉 최종 결과: 총 {len(final_data)}개의 데이터가 저장되었습니다.")
+    print(f"📂 파일 경로: {OUTPUT_FILE}")
+    
+    if len(final_data) < TARGET_SUCCESS_COUNT:
+        print(f"⚠️ 경고: 후보군을 모두 검색했으나 목표({TARGET_SUCCESS_COUNT}개)를 채우지 못했습니다.")
 
 if __name__ == "__main__":
     main()
