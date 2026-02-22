@@ -1,3 +1,4 @@
+# 🚨 [Fix/New] Project Days 배포 최적화: 로그 및 환경 설정
 # Logs
 logs
 *.log
@@ -12,6 +13,13 @@ dist
 dist-ssr
 *.local
 
+# 🚨 [Fix/New] 보안: 환경 변수 파일 (Vercel 설정으로 대체)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +30,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 🚨 [Fix/New] Python 데이터 수집 도구 및 원시 데이터 격리
+# 시스템 구동과 무관한 스크립트 및 환경 제외
+get_youtube_data.py
+check_models.py
+real_timeline_data.json
+
+# Python 가상 환경 및 캐시
+venv/
+env/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# 🚨 [Fix/New] 기타 임시 파일
+.temp/
