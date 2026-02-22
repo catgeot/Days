@@ -1,13 +1,15 @@
 // src/pages/Home/components/HomeUI.jsx
 // 🚨 [Fix/New] 여행 계획(Ticket) 버튼 제거 및 'AI 대화하기' 단일 메인 버튼으로 UI 통합 (뺄셈의 미학)
 // 🚨 [New] 좌측 하단 Admin 버튼 옆에 LogBook 전용 다이렉트 진입 버튼 추가
+// 🚨 [New] 좌측 상단 테마 버튼 옆에 Zen Mode (Leaf) 버튼 추가 및 연동 완료.
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
   Palmtree, Mountain, Building2, Plane, Compass, 
   Eye, EyeOff, Droplet, Sun, Moon,
-  PenTool // 🚨 [New] LogBook 아이콘 추가
+  PenTool, // 🚨 [New] LogBook 아이콘 추가
+  Leaf // 🚨 [New] 힐링 모드(Zen) 아이콘 추가
 } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
 import TravelTicker from '../components/TravelTicker'; 
@@ -26,7 +28,9 @@ const HomeUI = ({
   isPinVisible, 
   onTogglePinVisibility,
   globeTheme, 
-  onThemeToggle 
+  onThemeToggle,
+  isZenMode, // 🚨 [New] Zen Mode 상태 수신
+  onToggleZenMode // 🚨 [New] Zen Mode 토글 함수 수신
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
@@ -66,14 +70,23 @@ const HomeUI = ({
           <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
         </div>
 
-        {/* 2. Globe Theme Toggle */}
-        <div className="col-span-1 flex justify-center pt-3 animate-fade-in-down delay-75 pointer-events-auto">
+        {/* 2. Globe Theme & Zen Mode Toggle (🚨 합본으로 묶음) */}
+        <div className="col-span-1 flex justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto">
            <button 
              onClick={onThemeToggle} 
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
              title="지구본 무드 변경"
            >
               <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
+           </button>
+           
+           {/* 🚨 [New] Zen Mode (Leaf) 토글 버튼 */}
+           <button 
+             onClick={onToggleZenMode} 
+             className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
+             title="Zen Mode (전체화면 힐링)"
+           >
+              <Leaf size={16} className="group-hover:scale-110 transition-transform" />
            </button>
         </div>
 

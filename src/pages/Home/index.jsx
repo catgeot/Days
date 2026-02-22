@@ -5,6 +5,8 @@
 // 3. [Dead Code 제거] ChatModal 컴포넌트에서 더 이상 받지 않는 onClearChats 프롭스 제거.
 // 4. LogoPanel 다이렉트 오픈 버그 수정 (기존 유지)
 // 5. 🚨 [Fix] 선택적 격벽 해제 (Smart Prison Break): 기존 카테고리 필터링 로직을 복구하여 지구본 과부하를 막고, '검색한 핀(scoutedPins)'과 '현재 활성화된 장소(VIP)'만 예외적으로 지구본에 통과시킴.
+// 6. 🚨 [New] Zen Mode(힐링 모드) 상태 및 브라우저 Fullscreen API 연동. ESC 키를 통한 네이티브 해제 시에도 안전하게 상태를 동기화(Pessimistic First).
+// 7. 🚨 [New] UI Ghosting: isZenMode 활성화 시 모든 UI 레이어를 투명화 및 이벤트 차단하여 지구본 감상에 집중.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -60,6 +62,9 @@ function Home() {
   const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
 
+  // 🚨 [New] Zen Mode (전체화면 힐링 모드) 상태 추가
+  const [isZenMode, setIsZenMode] = useState(false);
+
   const {
     handleGlobeClick,
     handleLocationSelect,
@@ -76,6 +81,33 @@ function Home() {
   });
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  // 🚨 [New] Zen Mode 전체화면 동기화 (Pessimistic First: ESC 키 감지 시 무조건 false로 덮어씌움)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsZenMode(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleZenMode = async () => {
+    if (!document.fullscreenElement) {
+      try {
+        await document.documentElement.requestFullscreen();
+        setIsZenMode(true);
+      } catch (err) {
+        console.error("Fullscreen API Error:", err);
+      }
+    } else {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+        // exitFullscreen 호출 시 fullscreenchange 이벤트가 발생하여 setIsZenMode(false)가 자동 처리됩니다.
+      }
+    }
+  };
 
   // 🚨 [Fix] 기본 리스트/마커 필터링 복구 (지구본 과부하 방지)
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
@@ -131,72 +163,77 @@ function Home() {
           activePinId={selectedLocation?.id}
           pauseRender={isFocusMode} 
           globeTheme={globeTheme} 
+          isZenMode={isZenMode} // 🚨 [New] Zen Mode 프롭 전달
         />
       </div>
       
-      <HomeUI 
-        onSearch={handleSmartSearch} onTickerClick={handleSmartSearch} onTagClick={handleSmartSearch} 
-        externalInput={draftInput} 
-        savedTrips={filteredSavedTrips} 
-        onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
-        onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
-        onLogoClick={() => setIsLogoPanelOpen(true)}
-        relatedTags={relatedTags} isTagLoading={isTagLoading} 
-        selectedCategory={category} onCategorySelect={setCategory}
-        isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
-        isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
-        globeTheme={globeTheme} onThemeToggle={handleThemeToggle} 
-        onClearScouts={() => { 
-            if(window.confirm("임시 핀을 모두 정리하시겠습니까?")) {
-                clearScouts(); setDraftInput(''); setSelectedLocation(null); 
-            } 
-        }}
-      />
-      
-      <LogoPanel 
-        isOpen={isLogoPanelOpen} 
-        onClose={() => setIsLogoPanelOpen(false)} 
-        user={user} 
-        bucketList={bucketList} 
-        onLogout={() => supabase.auth.signOut()} 
-        onToggleBookmark={toggleBookmark} 
-        onTripSelect={(trip) => { 
-          setIsLogoPanelOpen(false);
-          const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
-          const hydratedLocation = realSpot ? { ...trip, ...realSpot, name: trip.destination } : { ...trip, name: trip.destination };
-          handleLocationSelect(hydratedLocation); 
-          setIsCardExpanded(true);
-        }}
-      />
-      
-      {isPlaceCardOpen && selectedLocation && (
-        <PlaceCard 
-          location={selectedLocation} 
-          isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
-          onClose={() => { 
-            setIsPlaceCardOpen(false); 
-            setIsCardExpanded(false); 
+      {/* 🚨 [New] UI Ghosting Wrapper: Zen Mode 시 모든 UI 투명화 및 클릭 차단 (뺄셈의 미학) */}
+      <div className={`transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <HomeUI 
+          onSearch={handleSmartSearch} onTickerClick={handleSmartSearch} onTagClick={handleSmartSearch} 
+          externalInput={draftInput} 
+          savedTrips={filteredSavedTrips} 
+          onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
+          onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
+          onLogoClick={() => setIsLogoPanelOpen(true)}
+          relatedTags={relatedTags} isTagLoading={isTagLoading} 
+          selectedCategory={category} onCategorySelect={setCategory}
+          isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
+          isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
+          globeTheme={globeTheme} onThemeToggle={handleThemeToggle} 
+          isZenMode={isZenMode} onToggleZenMode={toggleZenMode} // 🚨 [New] 프롭 전달
+          onClearScouts={() => { 
+              if(window.confirm("임시 핀을 모두 정리하시겠습니까?")) {
+                  clearScouts(); setDraftInput(''); setSelectedLocation(null); 
+              } 
           }}
-          onChat={(p) => handleStartChat(selectedLocation?.name, p)}
-          onToggleBookmark={handleToggleBookmark} 
-          onTicket={() => { setIsPlaceCardOpen(false); setIsCardExpanded(false); }}
-          isCompactMode={isTickerExpanded}
-          initialExpanded={isCardExpanded} 
-          onExpandChange={setIsCardExpanded} 
         />
-      )}
+        
+        <LogoPanel 
+          isOpen={isLogoPanelOpen} 
+          onClose={() => setIsLogoPanelOpen(false)} 
+          user={user} 
+          bucketList={bucketList} 
+          onLogout={() => supabase.auth.signOut()} 
+          onToggleBookmark={toggleBookmark} 
+          onTripSelect={(trip) => { 
+            setIsLogoPanelOpen(false);
+            const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
+            const hydratedLocation = realSpot ? { ...trip, ...realSpot, name: trip.destination } : { ...trip, name: trip.destination };
+            handleLocationSelect(hydratedLocation); 
+            setIsCardExpanded(true);
+          }}
+        />
+        
+        {isPlaceCardOpen && selectedLocation && (
+          <PlaceCard 
+            location={selectedLocation} 
+            isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
+            onClose={() => { 
+              setIsPlaceCardOpen(false); 
+              setIsCardExpanded(false); 
+            }}
+            onChat={(p) => handleStartChat(selectedLocation?.name, p)}
+            onToggleBookmark={handleToggleBookmark} 
+            onTicket={() => { setIsPlaceCardOpen(false); setIsCardExpanded(false); }}
+            isCompactMode={isTickerExpanded}
+            initialExpanded={isCardExpanded} 
+            onExpandChange={setIsCardExpanded} 
+          />
+        )}
 
-      <ChatModal 
-        isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
-        initialQuery={initialQuery} 
-        chatHistory={filteredSavedTrips} 
-        onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
-        activeChatId={activeChatId} 
-        onSwitchChat={setActiveChatId} 
-        onDeleteChat={deleteTrip} 
-      />
+        <ChatModal 
+          isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
+          initialQuery={initialQuery} 
+          chatHistory={filteredSavedTrips} 
+          onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
+          activeChatId={activeChatId} 
+          onSwitchChat={setActiveChatId} 
+          onDeleteChat={deleteTrip} 
+        />
 
-      <ReportPanel />
+        <ReportPanel />
+      </div>
     </div>
   );
 }

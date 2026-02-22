@@ -5,6 +5,8 @@
 // 2. [UX & Performance] 지정 고도(FLY_DISABLE_ALT) 이하로 확대 시 flyTo(카메라 이동) 및 물방울(Ripple) 생성을 완전 생략(Bypass)하여 프레임 드랍 원천 차단. (Subtraction over Addition 적용)
 // 3. [UX & Motion] 지정 고도(AUTO_ROTATE_DISABLE_ALT) 이하 진입 시 실시간으로 자전을 즉시 정지하여 3D 멀미 방지 및 시선 분산 방지.
 // 4. [UX/New] 라벨 렌더링 시 offLat, offLng 속성을 참조하여 겹침 방지 (Pessimistic First 원칙 적용: 값 없을 시 0 기본값)
+// 5. 🚨 [New] Zen Mode 감속 로직 추가: isZenMode 활성화 시 자전 속도를 0.15로 대폭 감속하여 힐링 극대화.
+// 6. 🚨 [Fix] Zen Mode 시 기능 완벽 통제(Subtraction): 클릭 이벤트 조기 종료(return)로 핀 생성 방지 및 마커/라벨 데이터 빈 배열([]) 처리로 완전 은닉.
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
@@ -30,7 +32,8 @@ const HomeGlobe = forwardRef(({
   travelSpots = [],
   activePinId,
   pauseRender = false,
-  globeTheme = 'neon' 
+  globeTheme = 'neon',
+  isZenMode = false // 🚨 [New] Zen Mode 상태 수신
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
@@ -164,7 +167,7 @@ const HomeGlobe = forwardRef(({
           setLodLevel(newLevel);
         }
 
-        // 2. 🚨 [New] 실시간 자전 차단/재개 로직 (멀미 방지)
+        // 2. 실시간 자전 차단/재개 로직 (멀미 방지)
         if (!pauseRender && globeEl.current.controls) {
           if (alt <= GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
             globeEl.current.controls().autoRotate = false; // 진입 시 즉시 정지
@@ -182,12 +185,14 @@ const HomeGlobe = forwardRef(({
     return () => clearTimeout(timeoutId);
   }, [pauseRender]);
 
+  // Zen Mode 자전 속도 컨트롤 (의존성에 isZenMode 추가)
   useEffect(() => {
     if (globeEl.current) {
       globeEl.current.controls().autoRotate = !pauseRender;
+      globeEl.current.controls().autoRotateSpeed = isZenMode ? 0.15 : GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED; 
       if (pauseRender && rotationTimer.current) clearTimeout(rotationTimer.current); 
     }
-  }, [pauseRender]);
+  }, [pauseRender, isZenMode]);
 
   useEffect(() => {
     if (globeEl.current) {
@@ -198,6 +203,9 @@ const HomeGlobe = forwardRef(({
   }, []); 
 
   const handleGlobeClickInternal = ({ lat, lng }) => {
+    // 🚨 [Fix] 뺄셈의 미학: Zen Mode 상태일 경우 하위 로직 실행 및 상위로의 이벤트 전달을 즉시 차단합니다.
+    if (isZenMode) return; 
+
     if (isHoveringMarker.current) return; 
     if (pauseRender) return; 
     if (onGlobeClick) onGlobeClick({ lat, lng });
@@ -314,12 +322,13 @@ const HomeGlobe = forwardRef(({
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"
         
-        htmlElementsData={allMarkers}
+        // {/* 🚨 [Fix] 뺄셈의 미학: Zen Mode 시 복잡한 계산식(allMarkers)을 렌더링 파이프라인에 넣지 않고 빈 배열로 덮어버립니다. */}
+        htmlElementsData={isZenMode ? [] : allMarkers}
         htmlElement={renderElement}
         htmlTransitionDuration={0} 
 
-        labelsData={visibleLabels}
-        // 🚨 [Fix/New] 수정 이유: Pessimistic First 설계 적용. offLat/offLng가 없을 확률을 고려해 `|| 0` 기본값을 할당하여 에러를 원천 차단하고 오프셋 적용.
+        // {/* 🚨 [Fix] 동일하게 라벨도 빈 배열로 처리하여 완전히 숨깁니다. */}
+        labelsData={isZenMode ? [] : visibleLabels}
         labelLat={d => d.lat + (d.offLat || 0)}
         labelLng={d => d.lng + (d.offLng || 0)}
         labelText={d => d.name_en}
@@ -330,7 +339,6 @@ const HomeGlobe = forwardRef(({
         labelAltitude={0.01}
         
         onLabelClick={(d, event) => {
-          // 🚨 [Fact Check] 렌더링용 좌표(labelLat/labelLng)만 변경했을 뿐, 원본 객체 'd'의 실제 lat, lng는 오염되지 않았으므로 그대로 전달합니다.
           if (onMarkerClick) onMarkerClick({ ...d, type: 'city-label' }, 'globe');
         }}
       />
