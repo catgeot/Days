@@ -7,23 +7,22 @@
 // 4. [UX/New] 라벨 렌더링 시 offLat, offLng 속성을 참조하여 겹침 방지 (Pessimistic First 원칙 적용: 값 없을 시 0 기본값)
 // 5. 🚨 [New] Zen Mode 감속 로직 추가: isZenMode 활성화 시 자전 속도를 0.15로 대폭 감속하여 힐링 극대화.
 // 6. 🚨 [Fix] Zen Mode 시 기능 완벽 통제(Subtraction): 클릭 이벤트 조기 종료(return)로 핀 생성 방지 및 마커/라벨 데이터 빈 배열([]) 처리로 완전 은닉.
+// 7. 🚨 [Fix/New] 모바일 터치 관통 방어: PC 환경(마우스)은 100% 보존하고, 모바일의 '터치' 이벤트에서만 캔버스로의 전파를 차단하여 이중 클릭 버그 해결.
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers'; 
 import { citiesData } from '../data/citiesData'; 
 
-// 🚨 [Fix/New] 수석님 전용 환경 설정(Config) 통제실
-// 고도에 따른 애니메이션 차단/정지 수치를 여기서 미세 조정하십시오.
 const GLOBE_CAMERA_CONFIG = {
-  DEFAULT_ALT: 2.5,                 // 기본 우주 고도
-  ZOOM_THRESHOLD: 2.2,              // 탐색 모드 진입 기준 고도 (기본적인 로직 분기점)
-  AUTO_ROTATE_DISABLE_ALT: 2.2,     // 🚨 [New] 이 고도 이하면 마우스 휠만 굴려도 자전이 즉시 정지됨 (멀미 방지)
-  FLY_DISABLE_ALT: 1.8,             // 🚨 [New] 이 고도 이하면 클릭 시 카메라 이동(flyTo)과 물방울 이펙트 완전 생략 (프레임 드랍 방지)
-  FLY_DURATION: 3000,               // 목적지 비행 시간 (ms)
-  IDLE_DELAY_ZOOMED_OUT: 4000,      // 기본 고도 도착 후 자전 재개 전 감상/대기 시간 (ms)
-  AUTO_ROTATE_SPEED: 0.5,           // 평상시 자전 속도
-  LABEL_RESOLUTION: 2               // 텍스트 해상도
+  DEFAULT_ALT: 2.5,                 
+  ZOOM_THRESHOLD: 2.2,              
+  AUTO_ROTATE_DISABLE_ALT: 2.2,     
+  FLY_DISABLE_ALT: 1.8,             
+  FLY_DURATION: 3000,               
+  IDLE_DELAY_ZOOMED_OUT: 4000,      
+  AUTO_ROTATE_SPEED: 0.5,           
+  LABEL_RESOLUTION: 2               
 };
 
 const HomeGlobe = forwardRef(({ 
@@ -33,12 +32,14 @@ const HomeGlobe = forwardRef(({
   activePinId,
   pauseRender = false,
   globeTheme = 'neon',
-  isZenMode = false // 🚨 [New] Zen Mode 상태 수신
+  isZenMode = false 
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
   const [ripples, setRipples] = useState([]);
+  
+  // 🚨 [Restore] PC 마우스 환경을 위한 호버 방어막 원상 복구 (기존 로직 100% 보존)
   const isHoveringMarker = useRef(false);
 
   const [lodLevel, setLodLevel] = useState(0);
@@ -96,11 +97,8 @@ const HomeGlobe = forwardRef(({
       if (globeEl.current) {
         const currentAlt = globeEl.current.pointOfView().altitude;
 
-        // 🚨 [Fix/New] 확대 상태 시 애니메이션 원천 차단 (Subtraction over Addition)
-        // 현재 고도가 FLY_DISABLE_ALT 이하라면 카메라 이동과 물방울 이펙트를 생략합니다.
         if (currentAlt <= GLOBE_CAMERA_CONFIG.FLY_DISABLE_ALT) {
           globeEl.current.controls().autoRotate = false;
-          // 카메라 이동 없이 즉시 함수 종료. (클릭 이벤트 자체는 상위로 전달되어 패널은 정상 작동함)
           return; 
         }
 
@@ -116,12 +114,10 @@ const HomeGlobe = forwardRef(({
         setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 2000);
 
         if (isZoomedIn) {
-          // 탐색 모드: 자전을 재개하는 타이머를 세팅하지 않고 완전히 정지시킵니다.
+          // 탐색 모드: 완전히 정지
         } else {
-          // 우주 모드: 비행 완료 후 설정된 대기 시간(4초)을 거친 뒤 부드럽게 자전을 시작합니다.
           const totalWaitTime = GLOBE_CAMERA_CONFIG.FLY_DURATION + GLOBE_CAMERA_CONFIG.IDLE_DELAY_ZOOMED_OUT;
           rotationTimer.current = setTimeout(() => { 
-            // 🚨 [Safe Check] 대기 시간이 끝난 시점의 고도를 다시 측정하여 안전하게 자전 재개 여부 결정
             const checkAlt = globeEl.current ? globeEl.current.pointOfView().altitude : 99;
             if (globeEl.current && !pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
                globeEl.current.controls().autoRotate = true; 
@@ -160,19 +156,17 @@ const HomeGlobe = forwardRef(({
         if (!globeEl.current) return;
         const alt = globeEl.current.pointOfView().altitude;
         
-        // 1. LOD(디테일 수준) 계산
         const newLevel = alt < 1.7 ? 1 : 0;
         if (newLevel !== lodLevelRef.current) {
           lodLevelRef.current = newLevel;
           setLodLevel(newLevel);
         }
 
-        // 2. 실시간 자전 차단/재개 로직 (멀미 방지)
         if (!pauseRender && globeEl.current.controls) {
           if (alt <= GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
-            globeEl.current.controls().autoRotate = false; // 진입 시 즉시 정지
+            globeEl.current.controls().autoRotate = false; 
           } else {
-            globeEl.current.controls().autoRotate = true;  // 우주로 멀어지면 자동 재개
+            globeEl.current.controls().autoRotate = true;  
           }
         }
       };
@@ -185,7 +179,6 @@ const HomeGlobe = forwardRef(({
     return () => clearTimeout(timeoutId);
   }, [pauseRender]);
 
-  // Zen Mode 자전 속도 컨트롤 (의존성에 isZenMode 추가)
   useEffect(() => {
     if (globeEl.current) {
       globeEl.current.controls().autoRotate = !pauseRender;
@@ -203,10 +196,11 @@ const HomeGlobe = forwardRef(({
   }, []); 
 
   const handleGlobeClickInternal = ({ lat, lng }) => {
-    // 🚨 [Fix] 뺄셈의 미학: Zen Mode 상태일 경우 하위 로직 실행 및 상위로의 이벤트 전달을 즉시 차단합니다.
     if (isZenMode) return; 
-
+    
+    // 🚨 [Restore] PC 마우스 방어 로직 (기존 코드 100% 보존)
     if (isHoveringMarker.current) return; 
+    
     if (pauseRender) return; 
     if (onGlobeClick) onGlobeClick({ lat, lng });
   };
@@ -275,10 +269,25 @@ const HomeGlobe = forwardRef(({
     el.innerHTML = html;
     el.style.zIndex = zIndex;
     
+    // 🚨 [New] 모바일 터치 관통 방어벽 (PC 영향 X)
+    // 1. 순수 모바일 터치 시작 이벤트 흡수
+    el.ontouchstart = (e) => {
+      e.stopPropagation();
+    };
+    
+    // 2. 포인터 다운 시, 입력 장치가 '터치(손가락)'인 경우에만 흡수 (마우스 클릭은 통과)
+    el.onpointerdown = (e) => {
+      if (e.pointerType === 'touch') {
+        e.stopPropagation();
+      }
+    };
+
     el.onclick = (e) => { 
       e.stopPropagation(); 
       if (onMarkerClick) onMarkerClick(d, 'globe'); 
     };
+    
+    // 🚨 [Restore] PC 호버 방어 로직 및 애니메이션 100% 보존
     el.onmouseenter = () => { 
       isHoveringMarker.current = true;
       const innerDiv = el.querySelector('div');
@@ -322,17 +331,15 @@ const HomeGlobe = forwardRef(({
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"
         
-        // {/* 🚨 [Fix] 뺄셈의 미학: Zen Mode 시 복잡한 계산식(allMarkers)을 렌더링 파이프라인에 넣지 않고 빈 배열로 덮어버립니다. */}
         htmlElementsData={isZenMode ? [] : allMarkers}
         htmlElement={renderElement}
         htmlTransitionDuration={0} 
 
-        // {/* 🚨 [Fix] 동일하게 라벨도 빈 배열로 처리하여 완전히 숨깁니다. */}
         labelsData={isZenMode ? [] : visibleLabels}
         labelLat={d => d.lat + (d.offLat || 0)}
         labelLng={d => d.lng + (d.offLng || 0)}
         labelText={d => d.name_en}
-        labelSize={d => d.priority === 1 ? 1.2 : 0.5}
+        labelSize={d => d.priority === 1 ? 1.2 : 0.7}
         labelDotRadius={0.15}
         labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
         labelResolution={GLOBE_CAMERA_CONFIG.LABEL_RESOLUTION} 
