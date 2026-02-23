@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// 🚨 [New] Vercel Web Analytics 연동을 위한 컴포넌트 추가
+import { Analytics } from '@vercel/analytics/react';
 
 // 🚨 [Fix] shared/layout 폴더로 이동된 레이아웃 컴포넌트들
 import DashboardLayout from '../src/pages/DailyReport/layout/DailyLayout';
@@ -22,8 +24,11 @@ function App() {
     <BrowserRouter>
       {/* 🚨 [Fix] ReportProvider를 Router 내부로 이동 (useNavigate 사용 가능해짐) */}
       <ReportProvider>
+        {/* 🚨 [New] 실시간 트래픽 분석을 위한 신호기(Analytics) 배치 */}
+        {/* 이 컴포넌트는 모든 Route의 방문자 데이터를 Vercel 대시보드로 전송합니다. */}
+        <Analytics />
+
         <Routes>
-          
           {/* 1. 여행 홈 (전체화면) - 일기장은 이 Home 내부의 팝업 패널로 작동합니다. */}
           <Route path="/" element={<Home />} />
           
@@ -34,7 +39,6 @@ function App() {
           <Route path="/auth/update-password" element={<UpdatePassword />} />
 
           {/* 🚨 [Fix/Subtraction] 기존의 /report 관련 라우터 삭제 (앱 경량화 및 SPA 통합 완료) */}
-          
         </Routes>
       </ReportProvider>
     </BrowserRouter>
