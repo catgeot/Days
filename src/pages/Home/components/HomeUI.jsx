@@ -2,21 +2,20 @@
 // 🚨 [Fix/New] 여행 계획(Ticket) 버튼 제거 및 'AI 대화하기' 단일 메인 버튼으로 UI 통합 (뺄셈의 미학)
 // 🚨 [New] 좌측 하단 Admin 버튼 옆에 LogBook 전용 다이렉트 진입 버튼 추가
 // 🚨 [New] 좌측 상단 테마 버튼 옆에 Zen Mode (Leaf) 버튼 추가 및 연동 완료.
+// 🚨 [Fix] 모바일 대응: 검색바, Ticker, View 컨트롤 모바일 숨김 / 카테고리 하단 이동 / 주요 기능 우측 상단 묶음
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
   Palmtree, Mountain, Building2, Plane, Compass, 
   Eye, EyeOff, Droplet, Sun, Moon,
-  PenTool, // 🚨 [New] LogBook 아이콘 추가
-  Leaf // 🚨 [New] 힐링 모드(Zen) 아이콘 추가
+  PenTool,
+  Leaf
 } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
 import TravelTicker from '../components/TravelTicker'; 
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
-
-// 🚨 [New] 일기장 전역 상태를 제어하기 위한 훅 로드
 import { useReport } from '../../../context/ReportContext';
 
 const HomeUI = ({ 
@@ -29,14 +28,12 @@ const HomeUI = ({
   onTogglePinVisibility,
   globeTheme, 
   onThemeToggle,
-  isZenMode, // 🚨 [New] Zen Mode 상태 수신
-  onToggleZenMode // 🚨 [New] Zen Mode 토글 함수 수신
+  isZenMode, 
+  onToggleZenMode 
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
   const trendingData = useTrendingData();
-
-  // 🚨 [New] 일기장 오픈 함수 꺼내기
   const { openReport } = useReport();
 
   useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
@@ -64,14 +61,33 @@ const HomeUI = ({
 
   return (
     <>
-      <div className="absolute top-0 left-0 right-0 z-20 p-6 grid grid-cols-12 items-start pointer-events-none">
+      {/* 🚨 [Fix] 상단 헤더 영역: 모바일에서는 flex-row, 데스크탑에서는 grid 유지 */}
+      <div className="absolute top-0 left-0 right-0 z-20 p-4 md:p-6 flex justify-between md:grid md:grid-cols-12 items-start pointer-events-none w-full">
+        
         {/* 1. Logo */}
-        <div onClick={onLogoClick} className="col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 pl-2 pointer-events-auto cursor-pointer group">
-          <h1 className="text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
+        <div onClick={onLogoClick} className="md:col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group">
+          {/* 🚨 [Fix] 모바일 폰트 크기 축소 (text-2xl) */}
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
         </div>
 
-        {/* 2. Globe Theme & Zen Mode Toggle (🚨 합본으로 묶음) */}
-        <div className="col-span-1 flex justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto">
+        {/* 🚨 [New] 모바일 전용 상단 우측 버튼 그룹 (Admin, LogBook, AI, Theme) */}
+        <div className="flex md:hidden items-center gap-2 pt-2 pointer-events-auto animate-fade-in-down delay-75">
+            <button onClick={onThemeToggle} className={`w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg ${getThemeConfig().color} ${getThemeConfig().border}`}>
+              <ThemeIcon size={14} />
+            </button>
+            <button onClick={() => openReport('dashboard')} className="w-9 h-9 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg">
+              <PenTool size={14} className="text-emerald-400" />
+            </button>
+            <button onClick={() => onOpenChat()} className="w-9 h-9 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-500/30 flex items-center justify-center shadow-lg">
+              <MessageSquare size={14} className="text-blue-400" />
+            </button>
+            <Link to="/auth/login" className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
+              <User size={14} className="text-white" />
+            </Link>
+        </div>
+
+        {/* 2. Globe Theme & Zen Mode Toggle (데스크탑 전용 렌더링) */}
+        <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto">
            <button 
              onClick={onThemeToggle} 
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
@@ -80,7 +96,6 @@ const HomeUI = ({
               <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
            </button>
            
-           {/* 🚨 [New] Zen Mode (Leaf) 토글 버튼 */}
            <button 
              onClick={onToggleZenMode} 
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
@@ -90,8 +105,8 @@ const HomeUI = ({
            </button>
         </div>
 
-        {/* 3. Omni-box */}
-        <div className="col-span-5 flex flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative">
+        {/* 3. Omni-box (🚨 모바일 숨김: hidden md:flex) */}
+        <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative">
            <div className="relative group w-full max-w-md z-50">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg transition-all h-12 rounded-full group-focus-within:bg-black/60 group-focus-within:border-blue-400/50 hover:bg-black/50">
@@ -102,16 +117,16 @@ const HomeUI = ({
           </div>
         </div>
         
-        {/* 4. Controls: Toggle + Cleaner */}
-        <div className="col-span-1 flex justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto">
+        {/* 4. Controls: Toggle + Cleaner (🚨 모바일 숨김: hidden md:flex) */}
+        <div className="hidden md:flex md:col-span-1 justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto">
            <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
            </button>
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        {/* 5. Ticker */}
-        <div className="col-span-3 flex justify-end animate-fade-in-down pr-24 pointer-events-auto">
+        {/* 5. Ticker (🚨 모바일 숨김: hidden md:flex) */}
+        <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-auto">
           <TravelTicker 
             data={trendingData} 
             onCityClick={onTickerClick} 
@@ -121,16 +136,22 @@ const HomeUI = ({
         </div>
       </div>
 
-      {/* --- Filters & Footer --- */}
-      <div className="absolute right-6 top-6 z-20 flex flex-col gap-3 pointer-events-auto animate-fade-in-left">
-         <div className="flex flex-col items-center gap-4 bg-black/30 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl">
+      {/* --- Filters (Category) --- */}
+      {/* 🚨 [Fix] 모바일: 하단 가로 배치 / 데스크탑: 기존 우측 세로 배치 유지 */}
+      <div className="absolute z-20 pointer-events-auto animate-fade-in-left
+         bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] flex justify-center
+         md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:translate-x-0 md:flex-col md:max-w-none">
+         <div className="flex items-center gap-2 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl
+            flex-row w-full justify-between overflow-x-auto
+            md:flex-col md:gap-4 md:w-auto md:overflow-visible">
             {CATEGORIES.map((cat) => {
                const isActive = selectedCategory === cat.id;
                const Icon = cat.icon;
                return (
-                 <button key={cat.id} onClick={() => onCategorySelect(cat.id)} className={`relative group w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}`}>
-                   <Icon size={20} className={`transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
-                   <div className="absolute right-full mr-3 px-3 py-1 bg-black/80 text-white text-xs font-bold rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">{cat.label}</div>
+                 <button key={cat.id} onClick={() => onCategorySelect(cat.id)} className={`relative group w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}`}>
+                   <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
+                   {/* 모바일 툴팁 숨김 */}
+                   <div className="hidden md:block absolute right-full mr-3 px-3 py-1 bg-black/80 text-white text-xs font-bold rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">{cat.label}</div>
                    {isActive && <div className={`absolute right-1 top-1 w-1.5 h-1.5 rounded-full ${cat.color.replace('text', 'bg')} shadow-[0_0_5px_currentColor]`}></div>}
                  </button>
                )
@@ -138,8 +159,9 @@ const HomeUI = ({
          </div>
       </div>
 
+      {/* 🚨 [Fix] 태그 리스트: 모바일 화면 혼잡 방지를 위해 데스크탑만 표시 */}
       {(isTagLoading || relatedTags.length > 0) && (
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 pointer-events-auto animate-fade-in-right">
+        <div className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-20 flex-col gap-3 pointer-events-auto animate-fade-in-right">
               {!isTagLoading && relatedTags.map((tag, idx) => (
               <button key={idx} onClick={() => onTagClick(tag)} className="group relative flex items-center justify-between w-40 p-3 bg-black/30 backdrop-blur-md border border-white/5 rounded-xl hover:bg-white/10 hover:border-blue-500/50 hover:w-44 transition-all duration-300 shadow-lg">
                   <div className="flex items-center gap-2"><MapPin size={14} className="text-gray-400 group-hover:text-blue-400 transition-colors" /><span className="text-sm text-gray-200 font-medium group-hover:text-white">{tag}</span></div>
@@ -148,16 +170,15 @@ const HomeUI = ({
         </div>
       )}
 
-      <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 pointer-events-none">
-        
-        {/* 🚨 [Fix] 좌측 하단 메뉴 영역: ADMIN 및 LOGBOOK 버튼 나란히 배치 */}
+      {/* --- Footer Controls --- */}
+      {/* 🚨 [Fix] 하단 기능 버튼: 모바일에서는 이미 상단에 배치했으므로 데스크탑 전용(hidden md:block)으로 전환 */}
+      <footer className="absolute bottom-0 left-0 right-0 p-6 z-20 pointer-events-none hidden md:block">
         <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
           <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg"><User size={18} /></div>
               <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">ADMIN</span>
           </Link>
           
-          {/* 🚨 [New] LogBook 다이렉트 진입 버튼 신설 */}
           <button onClick={() => openReport('dashboard')} className="group flex items-center gap-2 pb-2 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
                   <PenTool size={18} className="text-white group-hover:text-emerald-400 transition-colors" />
@@ -166,7 +187,6 @@ const HomeUI = ({
           </button>
         </div>
 
-        {/* 🚨 중앙 하단 메인 버튼 */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center pointer-events-auto">
           <button 
             onClick={() => onOpenChat()} 
