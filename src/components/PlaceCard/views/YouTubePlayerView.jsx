@@ -1,7 +1,7 @@
 // src/components/PlaceCard/views/YouTubePlayerView.jsx
-// 🚨 [Fix] 모바일 전용 재생목록 버튼을 '유리알(Glassmorphism)' 디자인으로 전면 교체 (bg-white/10, backdrop-blur)
-// 🚨 [Fix] 불확실한 자동 숨김 로직을 제거하고, 직관적인 showUI 상태에 따라 노출되도록 정리
-// 🚨 [New] 유리알 버튼에 호버/액티브 효과를 추가하여 터치 피드백 강화
+// 🚨 [Fix/New] 모바일 재생목록 버튼 위치 상향 조정 (bottom-24 -> bottom-40)하여 유튜브 컨트롤러 간섭 제거
+// 🚨 [Fix] 모바일에서 버튼이 사라지는 유령 현상을 방지하기 위해 완전 숨김 대신 투명도(opacity-30) 로직 적용
+// 🚨 [Fix] 터치 피드백 강화를 위해 버튼 크기 및 액티브 스케일 조정
 
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Maximize2, Minimize2, Play, Sparkles, List, X } from 'lucide-react';
@@ -154,7 +154,7 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
         </div>
       )}
 
-      {/* 데스크탑용 가로 재생 리스트 (숨김 로직 유지) */}
+      {/* 데스크탑용 가로 재생 리스트 (기존 로직 유지) */}
       {videoList.length > 1 && showUI && (
         <div className={`hidden md:flex absolute bottom-24 left-0 w-full z-[210] justify-center transition-opacity duration-500 pointer-events-none 
             ${showPlaylistForce ? '!opacity-100' : 'opacity-0 hover:opacity-100'}`}
@@ -190,19 +190,23 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
         </div>
       )}
 
-      {/* 🚨 [Fix] 모바일 전용 유리알 플로팅 버튼 (Red에서 변경) */}
+      {/* 🚨 [Fix] 모바일 전용 유리알 플로팅 버튼 위치 및 가시성 개선 */}
       {videoList.length > 1 && (
-        <div className={`md:hidden absolute bottom-24 right-4 z-[210] transition-all duration-300 ${showUI || showPlaylistForce ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+        <div className={`md:hidden absolute bottom-32 right-1 z-[210] transition-all duration-300 
+            ${(showUI || showPlaylistForce) ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}>
             <button 
-                onClick={() => setIsMobileListOpen(true)}
-                className="p-3 bg-white/10 text-white/80 rounded-full shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md border border-white/20 active:scale-90 active:bg-white/20 transition-all"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMobileListOpen(true);
+                }}
+                className="p-4 bg-white/10 text-white rounded-full shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md border border-white/20 active:scale-90 active:bg-white/20 transition-all"
             >
-                <List size={22} strokeWidth={2.5} />
+                <List size={24} strokeWidth={2.5} />
             </button>
         </div>
       )}
 
-      {/* 모바일 전용 투명 방어막 & 세로 재생 리스트 모달 (생략 없이 유지) */}
+      {/* 모바일 전용 세로 재생 리스트 모달 (생략 없이 유지) */}
       {isMobileListOpen && videoList.length > 1 && (
         <div 
             className="md:hidden fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in"
@@ -252,7 +256,7 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
         </div>
       )}
 
-      {/* Top Controls (모바일 숨김 유지) */}
+      {/* Top Controls (데스크탑 전용 유지) */}
       <div className={`hidden md:flex absolute top-6 right-6 items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
         <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2 shadow-lg">
             <Sparkles size={14} className="text-red-500 animate-pulse" />
