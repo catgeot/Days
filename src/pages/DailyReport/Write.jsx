@@ -1,4 +1,6 @@
+// src/components/Write.jsx (경로에 맞게 확인)
 // 🚨 [Fix] 달력에서 전달한 preSelectedDate를 최우선으로 받도록 날짜 로직 보강
+// 🚨 [Fix/Subtraction] 비관적 설계: iOS 및 인앱 브라우저에서 잦은 오류(Silent Fail)를 일으키는 '현재 위치 적용' 기능을 모바일 환경(md 미만)에서 완전히 렌더링 제외(hidden)하여 Safe Path 확보.
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
@@ -178,7 +180,12 @@ const Write = () => {
           </div>
           <div className="flex-1 relative" onClick={(e) => e.stopPropagation()}>
             <label className="block font-bold mb-2 text-sm text-gray-600 flex justify-between">
-              위치 <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-xs text-blue-600 flex items-center gap-1 hover:underline disabled:opacity-50">{locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />}{locationLoading ? '찾는 중...' : '현재 위치 적용'}</button>
+              위치 
+              {/* 🚨 [Fix/Subtraction] 비관적 설계: 모바일(md 미만)에서는 숨기고 PC(md 이상)에서만 노출하여 아이폰 등에서의 오류를 원천 차단 */}
+              <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="hidden md:flex text-xs text-blue-600 items-center gap-1 hover:underline disabled:opacity-50">
+                {locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />}
+                {locationLoading ? '찾는 중...' : '현재 위치 적용'}
+              </button>
             </label>
             <div className="relative">
               <input type="text" 
