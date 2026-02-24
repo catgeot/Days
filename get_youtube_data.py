@@ -19,7 +19,7 @@ if not API_KEY:
     raise ValueError("❌ API 키가 없습니다. .env.local 파일을 확인해주세요.")
 
 # 🚨 [Fix/New] 타겟 지역 변경 (후쿠오카)
-LOCATIONS = ["페트라"] 
+LOCATIONS = ["방콕"] 
 OUTPUT_FILE = "real_timeline_data.json"
 TARGET_SUCCESS_COUNT = 5
 SEARCH_CANDIDATES = 30
@@ -28,6 +28,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 
 EXCLUDE_VIDEO_IDS = [
     # "막히는_영상_ID_여기에_추가"
+    "FjzMNciAg7I", "TG7NoDzmvc0", "9l0SqdXcR5E", "a3k0i3Fh77o", "KE4AcKEB-nU"  
 ]
 
 client = genai.Client(api_key=API_KEY)
