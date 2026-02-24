@@ -5,11 +5,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import Sitemap from 'vite-plugin-sitemap'
+import basicSsl from '@vitejs/plugin-basic-ssl' // 🚨 [추가] HTTPS 강제 적용 플러그인
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    basicSsl(), // 🚨 [추가] 모바일/IP 접속 시 WebGL 에러 방지를 위한 임시 SSL 적용
     // 🚨 [New] 사이트맵 생성 설정
     Sitemap({
       hostname: 'https://gateo.kr',

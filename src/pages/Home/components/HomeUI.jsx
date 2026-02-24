@@ -4,6 +4,7 @@
 // 🚨 [New] 좌측 상단 테마 버튼 옆에 Zen Mode (Leaf) 버튼 추가 및 연동 완료.
 // 🚨 [Fix] 모바일 대응: 검색바, Ticker, View 컨트롤 모바일 숨김 / 카테고리 하단 이동 / 주요 기능 우측 상단 묶음
 // 🚨 [Fix] 모바일 UI 증발(Z-index) 및 레이아웃 붕괴 방지: fixed 포지션 변경, 하단 안전 여백(bottom-8) 추가, 아이콘 순서 변경(테마->AI->로그북)
+// 🚨 [Fix] 모바일 검색 안전 설계 도입: Overlay 구조(DOM 붕괴 차단), 투명 방어막(Backdrop) 클릭 시 닫힘 처리, Ref 분리
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
@@ -33,14 +34,40 @@ const HomeUI = ({
   onToggleZenMode 
 }) => {
   const [inputValue, setInputValue] = useState('');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  
+  // 🚨 [Fix] 데스크탑과 모바일 Input의 Ref를 분리하여 포커스 충돌 방지
   const inputRef = useRef(null);
+  const mobileInputRef = useRef(null);
+  
   const trendingData = useTrendingData();
   const { openReport } = useReport();
 
   useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
-  const handleKeyDown = (e) => { if (e.key === 'Enter' && inputValue.trim() !== '') { onSearch(inputValue); inputRef.current?.blur(); } };
+  
+  // 모바일 검색창 열릴 때 자동 포커스
+  useEffect(() => {
+    if (isMobileSearchOpen && mobileInputRef.current) {
+      mobileInputRef.current.focus();
+    }
+  }, [isMobileSearchOpen]);
+
+  const handleKeyDown = (e) => { 
+    if (e.key === 'Enter' && inputValue.trim() !== '') { 
+      onSearch(inputValue); 
+      inputRef.current?.blur(); 
+      mobileInputRef.current?.blur();
+      setIsMobileSearchOpen(false); 
+    } 
+  };
+  
   const handleChange = (e) => { setInputValue(e.target.value); };
-  const handleClear = () => { setInputValue(''); inputRef.current?.focus(); };
+  
+  const handleClear = () => { 
+    setInputValue(''); 
+    inputRef.current?.focus(); 
+    mobileInputRef.current?.focus();
+  };
 
   const CATEGORIES = [
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
@@ -62,32 +89,60 @@ const HomeUI = ({
 
   return (
     <>
-      {/* 🚨 [Fix] 상단 헤더 영역: absolute -> fixed 변경 및 z-50 격상으로 레이어 증발 방지 */}
+      {/* 🚨 [New] 투명 방어막: 모바일 검색창 활성화 시 바탕 화면 터치 감지 후 닫기 */}
+      {isMobileSearchOpen && (
+        <div 
+          className="fixed inset-0 z-[45] pointer-events-auto touch-none" 
+          onClick={() => setIsMobileSearchOpen(false)} 
+        />
+      )}
+
       <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between md:grid md:grid-cols-12 items-start pointer-events-none w-full">
         
         {/* 1. Logo */}
-        <div onClick={onLogoClick} className="md:col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group">
+        <div onClick={onLogoClick} className="md:col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
         </div>
 
-        {/* 🚨 [Fix] 모바일 우측 상단 버튼: Admin 제거, 순서 재배치 (테마 -> AI대화 -> 로그북) */}
-        <div className="flex md:hidden items-center gap-2 pt-2 pointer-events-auto animate-fade-in-down delay-75">
-            {/* 1. 테마 (Theme) */}
-            <button onClick={onThemeToggle} className={`w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg ${getThemeConfig().color} ${getThemeConfig().border}`}>
+        {/* 🚨 [Fix] 모바일 우측 상단 버튼 그룹: Overlay 방식으로 레이아웃 붕괴 원천 차단 */}
+        <div className="flex md:hidden items-center gap-2 pt-2 pointer-events-auto animate-fade-in-down delay-75 h-10 relative">
+            
+            {/* 기본 우측 상단 아이콘들은 숨기거나 DOM에서 지우지 않음 (Safe Path) */}
+            <button onClick={() => setIsMobileSearchOpen(true)} className="w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors shadow-lg">
+              <Search size={14} />
+            </button>
+            <button onClick={onThemeToggle} className={`w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg ${getThemeConfig().color} ${getThemeConfig().border}`}>
               <ThemeIcon size={14} />
             </button>
-            {/* 2. AI 대화 (Chat) */}
-            <button onClick={() => onOpenChat()} className="w-9 h-9 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-500/30 flex items-center justify-center shadow-lg">
+            <button onClick={() => onOpenChat()} className="w-9 h-9 flex-shrink-0 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-500/30 flex items-center justify-center shadow-lg">
               <MessageSquare size={14} className="text-blue-400" />
             </button>
-            {/* 3. 로그북 (LogBook) */}
-            <button onClick={() => openReport('dashboard')} className="w-9 h-9 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg">
+            <button onClick={() => openReport('dashboard')} className="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg">
               <PenTool size={14} className="text-emerald-400" />
             </button>
+
+            {/* 🚨 [New] 오버레이 확장형 검색바 (기존 버튼 위를 절대 좌표로 덮음) */}
+            <div className={`absolute right-0 top-2 flex items-center bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-300 overflow-hidden shadow-2xl z-50 origin-right ${isMobileSearchOpen ? 'w-[75vw] opacity-100 h-9 px-2' : 'w-0 opacity-0 h-9 px-0 pointer-events-none'}`}>
+              <Search size={14} className="text-blue-400 flex-shrink-0 ml-1" />
+              <input 
+                ref={mobileInputRef}
+                type="text" 
+                value={inputValue} 
+                onChange={handleChange} 
+                onKeyDown={handleKeyDown} 
+                placeholder="어디로 떠나시나요?" 
+                className="w-full bg-transparent text-white text-xs focus:outline-none ml-2 placeholder-gray-500/80"
+              />
+              {inputValue && (
+                <button onClick={handleClear} className="p-1 mr-1 text-gray-400 hover:text-white transition-colors flex-shrink-0">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
         </div>
 
         {/* 2. Globe Theme & Zen Mode Toggle (데스크탑 전용 렌더링) */}
-        <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto">
+        <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
            <button 
              onClick={onThemeToggle} 
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
@@ -105,9 +160,9 @@ const HomeUI = ({
            </button>
         </div>
 
-        {/* 3. Omni-box (모바일 숨김) */}
-        <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative">
-           <div className="relative group w-full max-w-md z-50">
+        {/* 3. Omni-box (데스크탑 전용 렌더링) */}
+        <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative z-50">
+           <div className="relative group w-full max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg transition-all h-12 rounded-full group-focus-within:bg-black/60 group-focus-within:border-blue-400/50 hover:bg-black/50">
               <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={18} /></div>
@@ -118,7 +173,7 @@ const HomeUI = ({
         </div>
         
         {/* 4. Controls: Toggle + Cleaner (모바일 숨김) */}
-        <div className="hidden md:flex md:col-span-1 justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto">
+        <div className="hidden md:flex md:col-span-1 justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto relative z-50">
            <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
            </button>
@@ -126,7 +181,7 @@ const HomeUI = ({
         </div>
 
         {/* 5. Ticker (모바일 숨김) */}
-        <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-auto">
+        <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-auto relative z-50">
           <TravelTicker 
             data={trendingData} 
             onCityClick={onTickerClick} 
@@ -137,7 +192,6 @@ const HomeUI = ({
       </div>
 
       {/* --- Filters (Category) --- */}
-      {/* 🚨 [Fix] 취향 선택바: fixed + z-50 고정, 하단 간격(bottom-8) 및 유연한 너비(max-w-[95vw]) 확보 */}
       <div className="fixed z-50 pointer-events-auto animate-fade-in-left
          bottom-8 left-1/2 -translate-x-1/2 w-auto max-w-[95vw] flex justify-center
          md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:translate-x-0 md:flex-col md:max-w-none">
@@ -158,19 +212,21 @@ const HomeUI = ({
          </div>
       </div>
 
-      {/* 태그 리스트: 모바일 숨김 유지 */}
+      {/* 태그 리스트: 모바일 활성화 및 컴팩트화 */}
       {(isTagLoading || relatedTags.length > 0) && (
-        <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-3 pointer-events-auto animate-fade-in-right">
+        <div className="flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">
               {!isTagLoading && relatedTags.map((tag, idx) => (
-              <button key={idx} onClick={() => onTagClick(tag)} className="group relative flex items-center justify-between w-40 p-3 bg-black/30 backdrop-blur-md border border-white/5 rounded-xl hover:bg-white/10 hover:border-blue-500/50 hover:w-44 transition-all duration-300 shadow-lg">
-                  <div className="flex items-center gap-2"><MapPin size={14} className="text-gray-400 group-hover:text-blue-400 transition-colors" /><span className="text-sm text-gray-200 font-medium group-hover:text-white">{tag}</span></div>
+              <button key={idx} onClick={() => onTagClick(tag)} className="group relative flex items-center justify-between w-28 p-2 md:w-40 md:p-3 bg-black/30 backdrop-blur-md border border-white/5 rounded-xl hover:bg-white/10 hover:border-blue-500/50 md:hover:w-44 transition-all duration-300 shadow-lg">
+                  <div className="flex items-center gap-1.5 md:gap-2 overflow-hidden">
+                    <MapPin size={12} className="flex-shrink-0 text-gray-400 group-hover:text-blue-400 transition-colors md:w-[14px] md:h-[14px]" />
+                    <span className="text-[10px] md:text-sm text-gray-200 font-medium group-hover:text-white truncate">{tag}</span>
+                  </div>
               </button>
             ))}
         </div>
       )}
 
       {/* --- Footer Controls --- */}
-      {/* 🚨 [Fix] 하단 영역도 fixed + z-50으로 격상 (데스크탑 전용 유지) */}
       <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
           <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
