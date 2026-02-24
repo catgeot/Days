@@ -15,7 +15,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
   }, [location]);
 
   return (
-    <div className="absolute bottom-6 right-8 w-80 z-40 animate-fade-in-up transition-all duration-300">
+    <div className="absolute bottom-6 right-8 w-80 z-[60] animate-fade-in-up transition-all duration-300">
       <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-6 relative group">
         
         <div 

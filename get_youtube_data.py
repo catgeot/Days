@@ -28,8 +28,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 
 EXCLUDE_VIDEO_IDS = [
     # "막히는_영상_ID_여기에_추가"
-    "FjzMNciAg7I", "TG7NoDzmvc0", "9l0SqdXcR5E", "a3k0i3Fh77o", "KE4AcKEB-nU"  
-]
+   ]
 
 client = genai.Client(api_key=API_KEY)
 
