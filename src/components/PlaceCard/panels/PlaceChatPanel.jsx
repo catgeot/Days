@@ -1,7 +1,8 @@
 // src/components/PlaceCard/panels/PlaceChatPanel.jsx
-// 🚨 [Fix] 상위에서 전달된 onToggleBookmark Props를 수신하도록 매개변수 추가 (ReferenceError 해결)
-// 🚨 [Fix] LogBook 버튼 클릭 시 'write'(작성)가 아닌 'dashboard'(메인) 페이지로 연결되도록 파라미터 수정
-// 🚨 [Fix] 모바일 대응 (Shape-Shifting): 모바일에서는 absolute 속성을 가진 얇은 투명 Top-Bar로 변신. Body와 Footer는 모바일에서 숨김 처리 (뺄셈의 미학)
+// 🚨 [Fix] 상위에서 전달된 onToggleBookmark Props를 수신하도록 매개변수 추가
+// 🚨 [Fix] LogBook 버튼 클릭 시 'dashboard'(메인) 페이지로 연결되도록 파라미터 수정
+// 🚨 [Fix] 아이패드 레이아웃 붕괴 방지: 타이틀 영역에 flex-1 min-w-0 적용하여 여행지명이 길 때 버튼을 밀어내지 않고 자연스럽게 잘리도록(truncate) 방어선 구축. 불필요한 글자/패딩 축소 코드는 전부 원복(삭제)함.
+// 🚨 [Fix/New] 모바일 갤러리 헤더 숨김: 모바일 환경이면서 갤러리 단일 이미지를 감상 중일 때(`mediaMode === 'GALLERY' && selectedImg`), 상단 헤더 영역 자체를 숨김(`hidden md:flex`) 처리하여 사진 감상 몰입도 극대화. (뺄셈의 미학)
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool } from 'lucide-react';
@@ -43,28 +44,32 @@ const PlaceChatPanel = ({
   };
 
   return (
-    // 🚨 [Fix] 모바일: absolute로 상단 덮어쓰기 & 배경 투명 그라데이션 / 데스크탑: 기존 w-[35%]의 solid 패널 유지
     <div className={`flex flex-col transition-all duration-500
         ${isFullScreen ? 'opacity-0 md:translate-x-[-100%]' : 'opacity-100 translate-x-0'} 
         absolute top-0 left-0 w-full z-[150] h-auto bg-gradient-to-b from-black/80 via-black/40 to-transparent pb-4 border-none rounded-none
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:pb-0 md:z-auto`}> 
       
       {/* Header */}
-      {/* 🚨 [Fix] 모바일: 간격 최적화(h-16, mt-2) / 데스크탑: 기존 h-20 유지 */}
-      <div className="h-16 md:h-20 shrink-0 flex items-center justify-between px-4 md:px-6 md:border-b md:border-white/5 bg-transparent z-20 mt-2 md:mt-0">
-         <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
+      {/* 🚨 [Fix] 모바일 갤러리 감상 중(selectedImg 존재)일 때 헤더 숨김 (hidden md:flex). 패딩 및 갭은 원본 사이즈로 완벽히 복구. */}
+      <div className={`h-16 md:h-20 shrink-0 items-center justify-between px-4 md:px-6 md:border-b md:border-white/5 bg-transparent z-20 mt-2 md:mt-0 gap-3 md:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
+         
+         {/* 🚨 [Fix] flex-1 min-w-0 적용으로 타이틀 영역 잘림 방어. 불필요한 md: 텍스트 축소 클래스 전면 삭제 */}
+         <div className="flex items-center gap-3 md:gap-4 overflow-hidden flex-1 min-w-0">
              <button onClick={onClose} className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
                  <ArrowLeft size={16} />
              </button>
-             <div className="flex flex-col min-w-0">
+             <div className="flex flex-col flex-1 min-w-0">
                  <span className="text-[9px] md:text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location.country}</span>
-                 <div className="flex items-center gap-2">
+                 <div className="flex items-center gap-2 min-w-0">
                      <h1 className="text-lg md:text-xl font-bold text-white truncate leading-none tracking-tight drop-shadow-md">{location.name}</h1>
-                     <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
+                     <div className="shrink-0">
+                         <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
+                     </div>
                  </div>
              </div>
          </div>
 
+         {/* Buttons Area - 🚨 [Fix] 데스크탑 및 아이패드의 버튼 디자인, 텍스트 원본으로 완벽 복구 */}
          <div className="shrink-0 flex items-center gap-2">
             <button 
                 onClick={() => openReport('dashboard', location.id)}
