@@ -3,9 +3,10 @@
 // 🚨 [Fix/New] 모바일 터치 스와이프 기능 추가 (네이티브 감각 존중). 복잡한 Toggle UI 코드는 모두 삭제함(원복).
 // 🚨 [Fix] PC/아이패드 환경 완벽 복구: 사진 영역 클릭 시 window.innerWidth >= 768 조건에서만 그리드로 복귀(`setSelectedImg(null)`).
 // 🚨 [Fix] 닫기/전체보기 버튼: 모바일에서는 전체화면 버튼 숨김(`hidden md:block`), 닫기 버튼은 위치 변경 없이 원본 상단 배치 유지.
+// 🚨 [New] lucide-react에서 Download 아이콘 임포트. 하단 좌/우측에 Unsplash 저작권 표기 및 다운로드 버튼 추가.
 
 import React, { useRef, useState, useEffect } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download } from 'lucide-react';
 
 const PlaceGalleryView = ({ 
   images, 
@@ -15,13 +16,13 @@ const PlaceGalleryView = ({
   isFullScreen,
   toggleFullScreen,
   closeImageKeepFullscreen,
-  showUI
+  showUI,
+  handleDownload // 🚨 [New] 트래킹 및 다운로드 로직을 실행할 Prop 추가
 }) => {
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
   const [isHighResLoaded, setIsHighResLoaded] = useState(false);
   
-  // 🚨 [New] 모바일 터치 스와이프 전용 상태
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const minSwipeDistance = 50;
@@ -35,7 +36,6 @@ const PlaceGalleryView = ({
     }
   }, [selectedImg]);
 
-  // 내부 네비게이션 핸들러
   const handlePrev = (e) => {
     e?.stopPropagation();
     if (currentIndex > 0) setSelectedImg(images[currentIndex - 1]);
@@ -46,7 +46,6 @@ const PlaceGalleryView = ({
     if (currentIndex < images.length - 1) setSelectedImg(images[currentIndex + 1]);
   };
 
-  // 🚨 [New] 모바일 스와이프 로직
   const onTouchStart = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
@@ -61,7 +60,6 @@ const PlaceGalleryView = ({
     if (isRightSwipe && currentIndex > 0) handlePrev();
   };
 
-  // 키보드 네비게이션
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedImg) return;
@@ -78,8 +76,6 @@ const PlaceGalleryView = ({
       className={`flex-1 h-full bg-[#05070a]/80 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
     >
       {selectedImg ? (
-        // [View 1] Single Image View
-        // 🚨 [Fix] 모바일 토글 UI 관련 클래스 모두 제거하고 원본의 깔끔한 구조로 원복. 스와이프 이벤트만 부착.
         <div 
           className="w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden"
           onTouchStart={onTouchStart}
@@ -92,7 +88,6 @@ const PlaceGalleryView = ({
             style={{ backgroundImage: `url(${selectedImg.urls.thumb})` }} 
           />
           
-          {/* 🚨 [Fix] 사진 영역 클릭: 데스크탑/아이패드(768px 이상)일 때만 원본 기능인 그리드 복귀 실행. 모바일은 무반응(오직 닫기 버튼과 스와이프 사용). */}
           <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => { 
               e.stopPropagation(); 
               if (window.innerWidth >= 768 && !isFullScreen) setSelectedImg(null); 
@@ -109,7 +104,6 @@ const PlaceGalleryView = ({
               />
           </div>
 
-          {/* Controls - 🚨 [Fix] 데스크탑 전용 화살표 (hidden md:block) */}
           <button onClick={handlePrev} disabled={currentIndex <= 0} className={`hidden md:block absolute left-8 top-1/2 -translate-y-1/2 p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${(!showUI && isFullScreen) || currentIndex <= 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <ChevronLeft size={32} />
           </button>
@@ -117,20 +111,45 @@ const PlaceGalleryView = ({
             <ChevronRight size={32} />
           </button>
 
-          {/* 🚨 [Fix] 닫기/확대 버튼 영역. 절대 좌표 위치는 원본으로 복구(top-4 right-4 md:top-8 md:right-8). 모바일에서는 전체보기 버튼만 숨김. */}
           <div className={`absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-3 z-[220] transition-opacity duration-300 ${(!showUI && isFullScreen) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
-            {/* 전체화면 버튼: 데스크탑, 아이패드에서만 렌더링 */}
             <button onClick={() => toggleFullScreen(fullScreenContainerRef)} className="hidden md:block p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl">
               {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20}/>}
             </button>
-            {/* 닫기 버튼: 모든 환경에서 명시적인 그리드 복귀 역할 수행 */}
             <button onClick={isFullScreen ? closeImageKeepFullscreen : () => setSelectedImg(null)} className="p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-xl">
               <X size={20} />
             </button>
           </div>
+
+          {/* 🚨 [New] 좌측 하단: Unsplash 저작권자 표기 (Attribution Guideline) */}
+          {selectedImg.user && (
+            <div className={`absolute bottom-4 left-4 md:bottom-8 md:left-8 z-[220] transition-opacity duration-300 ${(!showUI && isFullScreen) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
+              <a 
+                href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 text-xs md:text-sm rounded-full hover:bg-white/20 hover:text-white transition-all shadow-xl"
+              >
+                <span>Photo by</span>
+                <span className="font-semibold text-white truncate max-w-[100px] md:max-w-[200px]">{selectedImg.user.name || 'Unknown'}</span>
+                <span>on Unsplash</span>
+              </a>
+            </div>
+          )}
+
+          {/* 🚨 [New] 우측 하단: 다운로드 버튼 (Tracking Trigger) */}
+          <div className={`absolute bottom-4 right-4 md:bottom-8 md:right-8 z-[220] transition-opacity duration-300 ${(!showUI && isFullScreen) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={() => handleDownload && handleDownload(selectedImg)} 
+              className="flex items-center gap-2 p-3 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl"
+              title="이미지 다운로드"
+            >
+              <Download size={20} />
+              <span className="hidden md:block text-sm font-medium pr-1">다운로드</span>
+            </button>
+          </div>
+
         </div>
       ) : (
-        // [View 2] Grid View
         <div className="w-full h-full p-6 overflow-y-auto custom-scrollbar-blue relative">
           <div className="grid grid-cols-4 grid-rows-3 gap-4 min-h-[600px] mb-4">
             <div onClick={() => !isImgLoading && images[0] && setSelectedImg(images[0])} className="col-span-2 row-span-2 bg-white/5 rounded-[2rem] border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-500 group relative overflow-hidden">

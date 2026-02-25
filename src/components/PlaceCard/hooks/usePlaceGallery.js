@@ -3,6 +3,7 @@
 // 1. [Maintain] saveToSmartCache 내 QuotaExceededError 예외 처리 및 자동 청소(Auto-Purge) 로직 '유지' (앱 크래시 완벽 방어)
 // 2. [Maintain] Unsplash API 최종 실패 시 기본 대체 이미지를 제공하는 3차 방어막(Fallback) '유지'
 // 3. 🚨 [Subtraction] 영문 매핑 사전(FALLBACK_DICTIONARY) '제거' -> 기형적인 로직을 버리고 citiesData.js의 원본 데이터(name_en)를 직접 참조하도록 아키텍처 원복
+// 4. 🚨 [New] Unsplash 프로덕션 승인 요건: 다운로드 트래킹(download_location) 호출 및 실제 파일 다운로드 로직(handleDownload) 추가
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
@@ -43,7 +44,6 @@ export const usePlaceGallery = (locationSource) => {
     }
   };
 
-  // 🚨 [Maintain] 안전망: 저장 실패 시 앱 크래시 방지 및 원시적 캐시 청소
   const saveToSmartCache = (key, data) => {
     const payload = { version: CACHE_VERSION, timestamp: Date.now(), data: data };
     try {
@@ -94,7 +94,6 @@ export const usePlaceGallery = (locationSource) => {
     let koreanName = ''; 
 
     if (typeof targetSpot === 'object') {
-        // 🚨 핵심: 여기서 citiesData.js에 작성될 완벽한 name_en("Meteora, Greece")을 1순위로 가져옴
         primaryQuery = targetSpot.name_en || targetSpot.name || '';
         koreanName = targetSpot.name || ''; 
         
@@ -171,7 +170,6 @@ export const usePlaceGallery = (locationSource) => {
             });
         }
       } else {
-        // 🚨 [Maintain] 3차 방어막: 검색 결과가 아예 없을 때 기본 Fallback 이미지 제공
         console.warn(`⚠️ Unsplash 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
         setImages([
           { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } },
@@ -192,5 +190,47 @@ export const usePlaceGallery = (locationSource) => {
     return () => setSelectedImg(null);
   }, [fetchImages]);
 
-  return { images, isImgLoading, selectedImg, setSelectedImg };
+  // 🚨 [New] 트래킹 API 호출 및 안전한 다운로드(Blob 방식) 핸들러 구현 (Fire & Forget 구조)
+  const handleDownload = useCallback(async (imageObj) => {
+    if (!imageObj || !ACCESS_KEY) return;
+    
+    // 1. Unsplash 가이드라인: download_location 엔드포인트 호출 (조회수/다운로드수 반영)
+    if (imageObj.links?.download_location) {
+      try {
+        fetch(imageObj.links.download_location, {
+          headers: { Authorization: `Client-ID ${ACCESS_KEY}` }
+        }).catch(e => console.error("⚠️ Tracking API silently failed:", e));
+      } catch (e) {
+        // 비관적 설계: 트래킹 실패가 사용자 다운로드를 막지 않도록 방치
+      }
+    }
+
+    // 2. 실제 파일 다운로드 (CORS 문제 방지를 위한 Blob 변환 후 강제 다운로드)
+    try {
+      const imageUrl = imageObj.urls?.full || imageObj.urls?.regular;
+      if (!imageUrl) return;
+      
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      
+      const authorName = imageObj.user?.name ? imageObj.user.name.replace(/\s+/g, '_') : 'Project_Days';
+      a.download = `${authorName}_unsplash.jpg`;
+      
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("🚨 Image download failed. Falling back to new tab.", error);
+      // Fallback: Blob 다운로드 실패 시 새 창으로 열기
+      if (imageObj.urls?.full) window.open(imageObj.urls.full, '_blank');
+    }
+  }, [ACCESS_KEY]);
+
+  // 🚨 [Fix] handleDownload 반환 객체에 추가
+  return { images, isImgLoading, selectedImg, setSelectedImg, handleDownload };
 };
