@@ -1,8 +1,8 @@
 // src/pages/Home/hooks/useTravelData.js
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Guest Mode 개방] 비회원도 UI가 멈추지 않도록 낙관적 업데이트(Optimistic Update) 적용.
-// 2. [Subtraction] updateMessages 내부의 불필요한 DB SELECT 쿼리 제거 및 상태(State) 직접 참조로 변경.
-// 3. [비관적 우선] DB의 실제 ID(number)일 때만 update 쿼리를 날려 RLS 에러 원천 차단.
+// 1. [Fact Check] Supabase 쿼리 빌더에는 .catch() 체이닝을 사용할 수 없으므로(TypeError 방지), 전부 제거하고 { error } 객체 확인 방식으로 변경.
+// 2. [Fact Check] toggleBookmark: 입력값이 '장소 객체(PlaceCard)'인지 'ID(ChatModal)'인지 다형성(Polymorphism)으로 구분하여 처리. 신규 즐겨찾기 시 즉시 Insert.
+// 3. [Fact Check] deleteTrip: 북마크 여부와 상관없이 삭제(휴지통) 버튼을 누르면 무조건 화면에서 즉시 제거(filter)하고 DB에서는 is_hidden: true로 처리.
 
 import { useState, useCallback } from 'react';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
@@ -20,7 +20,7 @@ export const useTravelData = () => {
   }, []);
 
   const saveNewTrip = useCallback(async (newTrip) => {
-    // 🚨 [New] 낙관적 업데이트를 위한 임시 ID 발급
+    // 낙관적 업데이트를 위한 임시 ID 발급
     const tempId = `temp_${Date.now()}`;
     const optimisticTrip = { ...newTrip, id: tempId };
     
@@ -41,7 +41,7 @@ export const useTravelData = () => {
   }, []);
 
   const updateMessages = useCallback(async (id, messages) => {
-    // 🚨 [Fix] DB 조회 대신, 현재 화면에 띄워진 프론트엔드 상태에서 목적지를 바로 찾음 (Subtraction)
+    // 프론트엔드 상태에서 목적지를 바로 찾음 (Subtraction)
     const trip = savedTrips.find(t => t.id === id);
     
     if (messages.length === 1 && trip && trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
@@ -51,44 +51,105 @@ export const useTravelData = () => {
 
     setSavedTrips(prev => prev.map(t => t.id === id ? { ...t, messages } : t));
     
-    // 🚨 [Fix] 진짜 DB ID(숫자)일 때만 DB 업데이트 시도. 비회원(temp_ 문자열)은 무시.
+    // 진짜 DB ID(숫자)일 때만 DB 업데이트 시도. 비회원(temp_ 문자열)은 무시.
+    // 🚨 [Fix] .catch() 제거, 일반 await 문법으로 변경
     if (typeof id === 'number') {
-        await supabase.from('saved_trips').update({ messages }).eq('id', id).catch(() => {});
+        const { error } = await supabase.from('saved_trips').update({ messages }).eq('id', id);
+        if (error) console.warn("🚨 [DB Error] updateMessages:", error);
     }
   }, [savedTrips]);
 
-  const toggleBookmark = useCallback(async (id) => {
-    const trip = savedTrips.find(t => t.id === id);
-    if (!trip) return;
-    
-    const newStatus = !trip.is_bookmarked;
-    
-    if (newStatus === true && trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
-        recordInteraction(trip.destination, 'save');
-        console.log(`📊 [Rank] Bookmarked (+5): ${trip.destination}`);
+  // 다형성 적용: id(숫자/문자열) 또는 location(객체) 모두 처리 가능하도록 안전망 구축
+  const toggleBookmark = useCallback(async (target) => {
+    if (!target) return;
+
+    let targetId = null;
+    let locationObj = null;
+    let destinationName = "";
+
+    // 1. 입력값이 객체(PlaceCard에서 호출)인지, ID(ChatModal에서 호출)인지 판별
+    if (typeof target === 'object' && target.name) {
+        locationObj = target;
+        destinationName = target.name;
+        // 이미 이 장소가 savedTrips에 존재하는지 확인
+        const existingTrip = savedTrips.find(t => t.destination === destinationName);
+        if (existingTrip) {
+            targetId = existingTrip.id;
+        }
+    } else {
+        targetId = target;
+        const existingTrip = savedTrips.find(t => t.id === targetId);
+        if (existingTrip) {
+            destinationName = existingTrip.destination;
+        }
     }
 
-    setSavedTrips(prev => prev.map(t => t.id === id ? { ...t, is_bookmarked: newStatus } : t));
-    
-    if (typeof id === 'number') {
-        await supabase.from('saved_trips').update({ is_bookmarked: newStatus }).eq('id', id).catch(() => {});
+    // 2-A. 기존에 존재하는 여행/채팅 기록인 경우 (상태 반전)
+    if (targetId) {
+        const trip = savedTrips.find(t => t.id === targetId);
+        if (!trip) return;
+        
+        const newStatus = !trip.is_bookmarked;
+        
+        if (newStatus === true && trip.destination && trip.destination !== "New Session" && trip.destination !== "Scanning...") {
+            recordInteraction(trip.destination, 'save');
+            console.log(`📊 [Rank] Bookmarked (+5): ${trip.destination}`);
+        }
+
+        setSavedTrips(prev => prev.map(t => t.id === targetId ? { ...t, is_bookmarked: newStatus } : t));
+        
+        // 🚨 [Fix] .catch() 제거
+        if (typeof targetId === 'number') {
+            const { error } = await supabase.from('saved_trips').update({ is_bookmarked: newStatus }).eq('id', targetId);
+            if (error) console.warn("🚨 [DB Error] toggleBookmark (update):", error);
+        }
+    } 
+    // 2-B. [새로운 로직] 기존 기록이 없고 장소카드에서 신규 즐겨찾기를 누른 경우 (Insert 필요)
+    else if (locationObj) {
+        const newTrip = {
+            destination: locationObj.name,
+            lat: locationObj.lat,
+            lng: locationObj.lng,
+            date: new Date().toLocaleDateString(),
+            messages: [], 
+            is_bookmarked: true,
+            is_hidden: false, 
+            category: locationObj.category || 'general'
+        };
+
+        // 낙관적 업데이트 UI 반영
+        const tempId = `temp_bm_${Date.now()}`;
+        const optimisticTrip = { ...newTrip, id: tempId };
+        setSavedTrips(prev => [optimisticTrip, ...prev]);
+
+        // 통계 점수 즉시 반영
+        recordInteraction(locationObj.name, 'save');
+        console.log(`📊 [Rank] Bookmarked (+5): ${locationObj.name}`);
+
+        // DB Insert 시도
+        const { data, error } = await supabase.from('saved_trips').insert([newTrip]).select();
+        
+        if (!error && data) {
+            setSavedTrips(prev => prev.map(t => t.id === tempId ? data[0] : t));
+        } else if (error) {
+            console.warn("🚨 [DB Error] toggleBookmark (insert):", error);
+        }
     }
   }, [savedTrips]);
 
+  // 삭제 버그 수정: 즐겨찾기 여부와 상관없이 채팅 리스트에서 삭제하면 화면에서 지우고 is_hidden 처리.
   const deleteTrip = useCallback(async (id) => {
     const trip = savedTrips.find(t => t.id === id);
     if (!trip) return;
 
-    if (trip.is_bookmarked) {
-      setSavedTrips(prev => prev.map(t => t.id === id ? { ...t, messages: [] } : t));
-      if (typeof id === 'number') {
-          await supabase.from('saved_trips').update({ messages: [] }).eq('id', id).catch(() => {});
-      }
-    } else {
-      setSavedTrips(prev => prev.filter(t => t.id !== id));
-      if (typeof id === 'number') {
-          await supabase.from('saved_trips').update({ is_hidden: true }).eq('id', id).catch(() => {});
-      }
+    // 화면에서 즉시 제거 (Optimistic UI)
+    setSavedTrips(prev => prev.filter(t => t.id !== id));
+    
+    // DB에서 보이지 않게 처리 (Soft Delete)
+    // 🚨 [Fix] .catch() 제거
+    if (typeof id === 'number') {
+        const { error } = await supabase.from('saved_trips').update({ is_hidden: true }).eq('id', id);
+        if (error) console.warn("🚨 [DB Error] deleteTrip:", error);
     }
   }, [savedTrips]);
 
