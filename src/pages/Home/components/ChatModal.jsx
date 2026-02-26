@@ -1,11 +1,10 @@
 // src/pages/Home/components/ChatModal.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Fact Check] Supabase에서 받아온 chatHistory 데이터를 정상적으로 로드하는 구조 확인 (유지)
-// 2. [UI Fix] 배열을 탐색하여 '마지막 사용자 질문'에 ref를 부착, 답변 생성 시 해당 질문이 항상 최상단에 고정되도록 스크롤 타겟팅 정밀화
-// 3. [UX Fix] AI 답변 말풍선의 가로 제약(max-w-80%)을 해제(flex-1, max-w-95%)하여 대형 화면에서 가독성을 극대화 (비대칭 디자인)
+// 1. [Subtraction] 1차 방어선 철거: 휴지통 버튼에서 즐겨찾기 종속성(disabled)을 완전히 제거.
+// 2. [Single Responsibility] 이제 리스트의 휴지통은 대화방을 리스트에서 안 보이게 숨기는(is_hidden: true) 역할만 순수하게 수행함.
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Bot, User, Loader2, MessageSquare, Star, Trash2 } from 'lucide-react';
+import { X, Send, Bot, User, Loader2, MessageSquare, Trash2 } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 
 const ChatModal = ({ 
@@ -14,7 +13,6 @@ const ChatModal = ({
   initialQuery, 
   chatHistory = [], 
   onUpdateChat, 
-  onToggleBookmark, 
   activeChatId, 
   onSwitchChat,
   onDeleteChat
@@ -31,7 +29,6 @@ const ChatModal = ({
 
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-  // 로딩 상태 텍스트 애니메이션
   useEffect(() => {
     let interval;
     if (isLoading) {
@@ -51,7 +48,6 @@ const ChatModal = ({
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  // 🚨 [Fix] 스마트 타겟 스크롤: 메시지 변경이나 로딩 시 항상 "마지막 질문"을 화면 최상단에 고정
   useEffect(() => {
     if (messages.length > 0) {
       setTimeout(() => {
@@ -64,7 +60,6 @@ const ChatModal = ({
     }
   }, [messages, isLoading]);
 
-  // 기존 채팅 내역 불러오기 (Fact Check: 정상 작동 확인)
   useEffect(() => {
     if (isOpen && activeChatId) {
       const targetTrip = chatHistory.find(t => t.id === activeChatId);
@@ -75,7 +70,6 @@ const ChatModal = ({
     }
   }, [activeChatId, isOpen, chatHistory]); 
 
-  // 초기 쿼리 전송 로직
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
       hasSentInitialRef.current = true;
@@ -147,7 +141,6 @@ const ChatModal = ({
 
   const handleSidebarClick = (id) => { if (onSwitchChat) onSwitchChat(id); };
 
-  // 🚨 [Fix] 렌더링 전 마지막 사용자 메시지 인덱스 찾기
   const lastUserIdx = messages.map(m => m.role).lastIndexOf('user');
 
   if (!isOpen) return null;
@@ -166,16 +159,21 @@ const ChatModal = ({
           </div>
           
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-            {chatHistory.map((item) => (
+            {chatHistory.filter(item => !item.is_hidden).map((item) => (
               <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? 'bg-gray-800 border-blue-500/50' : 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800'}`}>
                 <div className="flex justify-between items-start mb-1">
                   <span className="font-bold text-gray-300 text-sm truncate max-w-[140px]">{item.destination}</span>
                   <div className="flex gap-1">
-                      <button onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id); }}>
-                        <Star size={14} className={item.is_bookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-600"} />
-                      </button>
-                      <button onClick={(e) => { e.stopPropagation(); onDeleteChat(item.id); }}>
-                        <Trash2 size={14} className="text-gray-600 hover:text-red-400" />
+                      {/* 🚨 [Fix] 1차 방어선 완전 철거: 즐겨찾기 유무와 관계없이 무조건 삭제(숨김) 가능 */}
+                      <button 
+                        onClick={(e) => { 
+                            e.stopPropagation(); 
+                            onDeleteChat(item.id); 
+                        }}
+                        className="text-gray-600 hover:text-red-400"
+                        title="대화방 숨기기"
+                      >
+                        <Trash2 size={14} />
                       </button>
                   </div>
                 </div>
@@ -202,13 +200,12 @@ const ChatModal = ({
               {messages.map((msg, idx) => (
                 <div 
                   key={idx} 
-                  ref={idx === lastUserIdx ? lastQuestionRef : null} // 🚨 여기에 ref를 부착하여 스크롤 타겟으로 삼음
+                  ref={idx === lastUserIdx ? lastQuestionRef : null} 
                   className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'w-full'}`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
                     {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : <Bot size={24} className="text-blue-400" />}
                   </div>
-                  {/* 🚨 [Fix] 비대칭 디자인 적용: AI 답변은 넓게(flex-1, max-w-[95%]), 유저는 기존(max-w-[80%]) 유지 */}
                   <div className={`p-4 rounded-2xl text-base shadow-md ${
                     msg.role === 'user' 
                       ? 'max-w-[80%] bg-blue-600 text-white rounded-tr-none' 

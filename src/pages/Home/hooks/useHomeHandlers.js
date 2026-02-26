@@ -1,12 +1,8 @@
 // src/pages/Home/hooks/useHomeHandlers.js
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Maintain] handleGlobeClick: 바다나 유효하지 않은 지형 클릭 시 쓰레기 데이터 생성을 막는 로직 '유지' (Pessimistic)
-// 2. [Maintain] handleClearChats: '전체 지우기' 룰 '유지'
-// 3. [Subtraction] SEARCH_MAP 인터셉터 '제거' -> 검색어는 TRAVEL_SPOTS를 먼저 타게 되므로, citiesData.js만 완벽하면 Geocoding API의 오작동을 원천 회피함.
-// 4. [Fix/New] handleSmartSearch 내 citiesData 검색 파이프라인 추가
-// 5. [Fix/New] Schema First 위반 수정: description 키값을 기존 데이터 스키마에 맞게 desc로 원복.
-// 6. 🚨 [Fix] 중복 생성 방지 및 부활 로직 (handleStartChat): 카테고리 검사를 완화하고, 로컬(savedTrips)에 없으면 DB에서 숨겨진 방(is_hidden: true)을 찾아내어 화면에 다시 띄우는 예토전생(Resurrection) 로직 적용.
-// 7. 🚨 [Subtraction] 중복 코드 제거 (handleToggleBookmark): 이전에 다형성을 적용해둔 useTravelData의 toggleBookmark에게 100% 위임하여 충돌 방지.
+// 1. [Fix/New] handleStartChat 로컬 부활 로직 유지: is_hidden이 true라면, false로 변경(부활) 후 채팅창 노출.
+// 2. [Subtraction] handleClearChats의 분기 로직 제거 유지: 일괄적으로 'is_hidden: true' 처리.
+// 3. [Subtraction] handleStartChat 내 불필요한 상태값(code: "CHAT") 전면 제거. 데이터의 실체(messages 배열)만을 Single Source of Truth로 삼음.
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
@@ -116,13 +112,25 @@ export function useHomeHandlers({
     const locationName = dest || selectedLocation?.name || "New Session";
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
 
-    // 🚨 1. 프론트엔드 상태(savedTrips)에서 탐색 (카테고리 제약 완화)
+    // 🚨 1. 프론트엔드 상태(savedTrips)에서 탐색
     let targetTrip = savedTrips.find(t => 
       (existingId && t.id === existingId) || 
       (t.destination === locationName) 
     );
 
-    // 🚨 2. 화면에 없다면, DB에 숨겨져(is_hidden: true) 있는지 비관적 탐색 (부활 로직)
+    // 🚨 1-2. 로컬 부활 로직
+    if (targetTrip && targetTrip.is_hidden) {
+        targetTrip = { ...targetTrip, is_hidden: false };
+        setSavedTrips(prev => prev.map(t => t.id === targetTrip.id ? targetTrip : t));
+        
+        if (!String(targetTrip.id).startsWith('temp_')) {
+            supabase.from('saved_trips').update({ is_hidden: false }).eq('id', targetTrip.id).then(({error}) => {
+                if(error) console.warn("🚨 [DB Error] Local Resurrection:", error);
+            });
+        }
+    }
+
+    // 🚨 2. DB에 숨겨져(is_hidden: true) 있는지 비관적 탐색 (부활 로직)
     if (!targetTrip) {
         const { data } = await supabase
             .from('saved_trips')
@@ -133,17 +141,15 @@ export function useHomeHandlers({
 
         if (data && data.length > 0) {
             targetTrip = data[0];
-            // DB에 숨겨져 있었다면 화면으로 부활시킴
             if (targetTrip.is_hidden) {
                 await supabase.from('saved_trips').update({ is_hidden: false }).eq('id', targetTrip.id);
                 targetTrip.is_hidden = false;
-                
-                // 프론트엔드 배열에 다시 추가 (중복 방지 처리)
-                setSavedTrips(prev => {
-                    if (!prev.find(p => p.id === targetTrip.id)) return [targetTrip, ...prev];
-                    return prev;
-                });
             }
+            
+            setSavedTrips(prev => {
+                if (!prev.find(p => p.id === targetTrip.id)) return [targetTrip, ...prev];
+                return prev.map(p => p.id === targetTrip.id ? targetTrip : p); 
+            });
         }
     }
 
@@ -166,7 +172,7 @@ export function useHomeHandlers({
       lat: targetLat, 
       lng: targetLng, 
       date: new Date().toLocaleDateString(), 
-      code: "CHAT",
+      // 🚨 [Fix] Subtraction: 불필요한 상태값 code 제거 (messages 데이터 실체로만 채팅 여부 판단)
       prompt_summary: systemPrompt,
       messages: [], 
       is_bookmarked: false, 
@@ -188,7 +194,6 @@ export function useHomeHandlers({
     
     isTogglingRef.current = true;
     try {
-      // 🚨 [Subtraction] useTravelData의 toggleBookmark에 장소 객체를 통째로 던져 완벽히 위임.
       await toggleBookmark(loc);
     } catch (error) {
       console.error("Bookmark Error:", error);
@@ -269,19 +274,14 @@ export function useHomeHandlers({
   }, [category, processSearchKeywords, setDraftInput, handleLocationSelect, setSelectedLocation, handleStartChat]);
 
   const handleClearChats = useCallback(async () => {
-    const isConfirm = window.confirm("모든 대화 기록을 지우시겠습니까? (즐겨찾기된 장소는 유지됩니다)");
+    const isConfirm = window.confirm("채팅 목록을 모두 비우시겠습니까? (기록은 보존되며 동일 장소 채팅 시 복구됩니다.)");
     if (isConfirm) {
-      await supabase.from('saved_trips').update({ messages: [] }).eq('is_bookmarked', true).eq('category', category);
-      // 🚨 [Fix] 일관성 유지: 일괄 삭제 시에도 delete() 대신 is_hidden: true 처리
-      await supabase.from('saved_trips').update({ is_hidden: true }).eq('is_bookmarked', false).eq('category', category);
+      await supabase.from('saved_trips').update({ is_hidden: true }).eq('category', category);
 
       setSavedTrips(prev => prev.map(t => {
-        if (t.category === category) {
-          if (t.is_bookmarked) return { ...t, messages: [] };
-          return null; 
-        }
+        if (t.category === category) return { ...t, is_hidden: true };
         return t; 
-      }).filter(Boolean)); 
+      })); 
 
       setActiveChatId(null);
       setIsChatOpen(false);
