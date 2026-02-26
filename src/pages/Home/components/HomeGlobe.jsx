@@ -5,9 +5,11 @@
 // 2. [UX & Performance] 지정 고도(FLY_DISABLE_ALT) 이하로 확대 시 flyTo(카메라 이동) 및 물방울(Ripple) 생성을 완전 생략(Bypass)하여 프레임 드랍 원천 차단. (Subtraction over Addition 적용)
 // 3. [UX & Motion] 지정 고도(AUTO_ROTATE_DISABLE_ALT) 이하 진입 시 실시간으로 자전을 즉시 정지하여 3D 멀미 방지 및 시선 분산 방지.
 // 4. [UX/New] 라벨 렌더링 시 offLat, offLng 속성을 참조하여 겹침 방지 (Pessimistic First 원칙 적용: 값 없을 시 0 기본값)
-// 5. 🚨 [New] Zen Mode 감속 로직 추가: isZenMode 활성화 시 자전 속도를 0.15로 대폭 감속하여 힐링 극대화.
-// 6. 🚨 [Fix] Zen Mode 시 기능 완벽 통제(Subtraction): 클릭 이벤트 조기 종료(return)로 핀 생성 방지 및 마커/라벨 데이터 빈 배열([]) 처리로 완전 은닉.
-// 7. 🚨 [Fix/New] 모바일 터치 관통 방어: PC 환경(마우스)은 100% 보존하고, 모바일의 '터치' 이벤트에서만 캔버스로의 전파를 차단하여 이중 클릭 버그 해결.
+// 5. [New] Zen Mode 감속 로직 추가: isZenMode 활성화 시 자전 속도를 0.15로 대폭 감속하여 힐링 극대화.
+// 6. [Fix] Zen Mode 시 기능 완벽 통제(Subtraction): 클릭 이벤트 조기 종료(return)로 핀 생성 방지 및 마커/라벨 데이터 빈 배열([]) 처리로 완전 은닉.
+// 7. [Fix/New] 모바일 터치 관통 방어: PC 환경(마우스)은 100% 보존하고, 모바일의 '터치' 이벤트에서만 캔버스로의 전파를 차단하여 이중 클릭 버그 해결.
+// 8. 🚨 [New] 모바일 줌(Zoom) 물리적 제한: 모바일(width < 768) 환경에서 텍스트 노출 고도(1.7) 이하로의 확대를 원천 차단하여 렌더링 병목(터치 지연) 현상 해결.
+// 9. 🚨 [Fix] 모바일 라벨 해상도 저하: 모바일 환경 진입 시 LABEL_RESOLUTION을 2에서 1로 강제 다운그레이드하여 GPU 텍스처 메모리 소모 방어.
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
@@ -39,7 +41,6 @@ const HomeGlobe = forwardRef(({
   const rotationTimer = useRef(null);
   const [ripples, setRipples] = useState([]);
   
-  // 🚨 [Restore] PC 마우스 환경을 위한 호버 방어막 원상 복구 (기존 로직 100% 보존)
   const isHoveringMarker = useRef(false);
 
   const [lodLevel, setLodLevel] = useState(0);
@@ -146,6 +147,23 @@ const HomeGlobe = forwardRef(({
     return () => { window.removeEventListener('resize', handleResize); };
   }, []);
 
+  // 🚨 [Fix/New] 해상도 및 디바이스(모바일/PC) 변경 감지 시 물리적 줌 락(Lock) 갱신
+  useEffect(() => {
+    if (!globeEl.current || !globeEl.current.controls) return;
+    const controls = globeEl.current.controls();
+    if (!controls) return;
+
+    const isMobile = dimensions.width < 768;
+    try {
+      // getGlobeRadius()로 동적 계산: 모바일은 고도 1.7에서 물리적 차단, PC는 기존 1.01(거의 지표면) 유지
+      const R = globeEl.current.getGlobeRadius();
+      controls.minDistance = isMobile ? R * (1 + 1.7) : R * 1.01;
+    } catch (e) {
+      // Fallback: 계산 실패 시 안전 장치
+      controls.minDistance = isMobile ? 270 : 101; 
+    }
+  }, [dimensions.width, pauseRender]); 
+
   useEffect(() => {
     const initCameraListener = () => {
       if (!globeEl.current || !globeEl.current.controls) return;
@@ -156,7 +174,8 @@ const HomeGlobe = forwardRef(({
         if (!globeEl.current) return;
         const alt = globeEl.current.pointOfView().altitude;
         
-        const newLevel = alt < 1.7 ? 1 : 0;
+        // 🚨 [Fix] 모바일 락 지점(1.7)에 도달했을 때 라벨이 렌더링되도록 <= 1.7 로 보정
+        const newLevel = alt <= 1.7 ? 1 : 0;
         if (newLevel !== lodLevelRef.current) {
           lodLevelRef.current = newLevel;
           setLodLevel(newLevel);
@@ -198,7 +217,6 @@ const HomeGlobe = forwardRef(({
   const handleGlobeClickInternal = ({ lat, lng }) => {
     if (isZenMode) return; 
     
-    // 🚨 [Restore] PC 마우스 방어 로직 (기존 코드 100% 보존)
     if (isHoveringMarker.current) return; 
     
     if (pauseRender) return; 
@@ -269,13 +287,10 @@ const HomeGlobe = forwardRef(({
     el.innerHTML = html;
     el.style.zIndex = zIndex;
     
-    // 🚨 [New] 모바일 터치 관통 방어벽 (PC 영향 X)
-    // 1. 순수 모바일 터치 시작 이벤트 흡수
     el.ontouchstart = (e) => {
       e.stopPropagation();
     };
     
-    // 2. 포인터 다운 시, 입력 장치가 '터치(손가락)'인 경우에만 흡수 (마우스 클릭은 통과)
     el.onpointerdown = (e) => {
       if (e.pointerType === 'touch') {
         e.stopPropagation();
@@ -287,7 +302,6 @@ const HomeGlobe = forwardRef(({
       if (onMarkerClick) onMarkerClick(d, 'globe'); 
     };
     
-    // 🚨 [Restore] PC 호버 방어 로직 및 애니메이션 100% 보존
     el.onmouseenter = () => { 
       isHoveringMarker.current = true;
       const innerDiv = el.querySelector('div');
@@ -342,7 +356,8 @@ const HomeGlobe = forwardRef(({
         labelSize={d => d.priority === 1 ? 1.2 : 0.7}
         labelDotRadius={0.15}
         labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
-        labelResolution={GLOBE_CAMERA_CONFIG.LABEL_RESOLUTION} 
+        // 🚨 [Fix/New] 모바일 렌더링 부하 50% 절감 (PC는 2, 모바일은 1)
+        labelResolution={dimensions.width < 768 ? 1 : GLOBE_CAMERA_CONFIG.LABEL_RESOLUTION} 
         labelAltitude={0.01}
         
         onLabelClick={(d, event) => {
