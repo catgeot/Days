@@ -3,8 +3,10 @@
 // 1. [Subtraction] 모바일 Safari 메모리 누수(정지 현상)의 핵심 원인인 3중 CSS 필터(blur-3xl) 배경과 트랜지션 애니메이션 완전 제거.
 // 2. [Subtraction] 썸네일과 고해상도 이미지를 겹쳐 그리는 이중 렌더링(DOM 과부하) 제거. 불필요해진 isHighResLoaded 상태도 함께 제거.
 // 3. [Performance] 단일 이미지(urls.regular)만 즉각 렌더링하도록 경량화하여 모바일 GPU 메모리 해제(Garbage Collection)를 극대화함.
+// 4. 🚨 [New] 모바일 몰입형 감상 모드: 모바일(width < 768)에서 사진 터치 시 UI(버튼 등)를 토글(숨김/표시)하는 isMobileUIHidden 상태 추가.
+// 5. 🚨 [Fix] 부작용 방어(Pessimistic First): 사진 변경 시 또는 화면이 768px 이상으로 커질 시 UI 숨김 상태를 강제 초기화(false)하여 갇힘 현상 방지.
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download } from 'lucide-react';
 
 const PlaceGalleryView = ({ 
@@ -21,7 +23,22 @@ const PlaceGalleryView = ({
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
   
-  // 🚨 [Subtraction] isHighResLoaded 상태 및 Image onload 프리로딩 로직 완전 제거 (메모리 다이어트)
+  // 🚨 [New] 모바일 전용 UI 숨김 상태
+  const [isMobileUIHidden, setIsMobileUIHidden] = useState(false);
+
+  // 🚨 [Fix] 부작용 방어 1: 사진이 바뀌면 무조건 UI 다시 표시
+  useEffect(() => {
+    setIsMobileUIHidden(false);
+  }, [selectedImg]);
+
+  // 🚨 [Fix] 부작용 방어 2: 화면을 돌리거나 늘려서 768px 이상이 되면 강제로 UI 복구
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setIsMobileUIHidden(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handlePrev = (e) => {
     e?.stopPropagation();
@@ -43,6 +60,9 @@ const PlaceGalleryView = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedImg, currentIndex, images]);
 
+  // 🚨 [New] 전체 UI 숨김 여부를 결정하는 통합 변수 (기존 showUI 로직 + 모바일 터치 숨김 로직)
+  const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden;
+
   return (
     <div 
       ref={fullScreenContainerRef}
@@ -53,15 +73,16 @@ const PlaceGalleryView = ({
           className="w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden"
         >
           
-          {/* 🚨 [Subtraction] 메모리 파괴 주범: 백그라운드 blur-3xl 이미지 div 완전 삭제 */}
-          
           <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => { 
               e.stopPropagation(); 
-              if (window.innerWidth >= 768 && !isFullScreen) setSelectedImg(null); 
+              if (window.innerWidth >= 768 && !isFullScreen) {
+                // PC 환경: 기존처럼 그리드로 복귀
+                setSelectedImg(null); 
+              } else if (window.innerWidth < 768) {
+                // 🚨 [New] 모바일 환경: 터치 시 UI 토글
+                setIsMobileUIHidden(prev => !prev);
+              }
           }}>
-              {/* 🚨 [Subtraction] 썸네일(blur) 이미지 img 태그 완전 삭제 */}
-              
-              {/* 🚨 [Fix] 단일 이미지 렌더링 및 트랜지션(duration-700) 제거로 즉각적인 가비지 컬렉션 유도 */}
               <img 
                 src={selectedImg.urls.regular} 
                 className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`} 
@@ -69,15 +90,15 @@ const PlaceGalleryView = ({
               />
           </div>
 
-          <button onClick={handlePrev} disabled={currentIndex <= 0} className={`absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${(!showUI && isFullScreen) || currentIndex <= 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <button onClick={handlePrev} disabled={currentIndex <= 0} className={`absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${isUIHidden || currentIndex <= 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
           </button>
           
-          <button onClick={handleNext} disabled={currentIndex >= images.length - 1} className={`absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${(!showUI && isFullScreen) || currentIndex >= images.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <button onClick={handleNext} disabled={currentIndex >= images.length - 1} className={`absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${isUIHidden || currentIndex >= images.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </button>
 
-          <div className={`absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-3 z-[220] transition-opacity duration-300 ${(!showUI && isFullScreen) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
+          <div className={`absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-3 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
             <button onClick={() => toggleFullScreen(fullScreenContainerRef)} className="hidden md:block p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl">
               {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20}/>}
             </button>
@@ -87,7 +108,7 @@ const PlaceGalleryView = ({
           </div>
 
           {selectedImg.user && (
-            <div className={`absolute bottom-4 left-4 md:bottom-8 md:left-8 z-[220] transition-opacity duration-300 ${(!showUI && isFullScreen) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`absolute bottom-4 left-4 md:bottom-8 md:left-8 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
               <a 
                 href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`} 
                 target="_blank" 
@@ -101,7 +122,7 @@ const PlaceGalleryView = ({
             </div>
           )}
 
-          <div className={`absolute bottom-4 right-4 md:bottom-8 md:right-8 z-[220] transition-opacity duration-300 ${(!showUI && isFullScreen) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
+          <div className={`absolute bottom-4 right-4 md:bottom-8 md:right-8 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
             <button 
               onClick={() => handleDownload && handleDownload(selectedImg)} 
               className="flex items-center gap-2 p-3 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl"
