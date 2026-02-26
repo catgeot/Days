@@ -1,10 +1,10 @@
 // src/components/PlaceCard/views/PlaceGalleryView.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Subtraction] 모바일 Safari 메모리 누수 및 멈춤 현상(Dead End) 해결을 위해 터치/스와이프 로직(touchStart/End) 전면 제거.
-// 2. [Fix] 모바일 버튼식 복구: 좌/우 넘기기 버튼의 `hidden md:block` 제거 및 모바일 터치 최적화(크기/여백 조정).
-// 3. [Keep] 모바일 전체화면 버튼 숨김 유지, 닫기 버튼 유지. UI 숨김 로직(`showUI` 연동) 완벽 유지.
+// 1. [Subtraction] 모바일 Safari 메모리 누수(정지 현상)의 핵심 원인인 3중 CSS 필터(blur-3xl) 배경과 트랜지션 애니메이션 완전 제거.
+// 2. [Subtraction] 썸네일과 고해상도 이미지를 겹쳐 그리는 이중 렌더링(DOM 과부하) 제거. 불필요해진 isHighResLoaded 상태도 함께 제거.
+// 3. [Performance] 단일 이미지(urls.regular)만 즉각 렌더링하도록 경량화하여 모바일 GPU 메모리 해제(Garbage Collection)를 극대화함.
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download } from 'lucide-react';
 
 const PlaceGalleryView = ({ 
@@ -20,18 +20,8 @@ const PlaceGalleryView = ({
 }) => {
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
-  const [isHighResLoaded, setIsHighResLoaded] = useState(false);
   
-  // 🚨 [Subtraction] touchStart, touchEnd 상태 제거 완료
-
-  useEffect(() => {
-    setIsHighResLoaded(false);
-    if (selectedImg?.urls?.regular) {
-      const img = new Image();
-      img.src = selectedImg.urls.regular;
-      img.onload = () => setIsHighResLoaded(true);
-    }
-  }, [selectedImg]);
+  // 🚨 [Subtraction] isHighResLoaded 상태 및 Image onload 프리로딩 로직 완전 제거 (메모리 다이어트)
 
   const handlePrev = (e) => {
     e?.stopPropagation();
@@ -42,8 +32,6 @@ const PlaceGalleryView = ({
     e?.stopPropagation();
     if (currentIndex < images.length - 1) setSelectedImg(images[currentIndex + 1]);
   };
-
-  // 🚨 [Subtraction] onTouchStart, onTouchMove, onTouchEndHandler 함수 제거 완료
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -63,31 +51,24 @@ const PlaceGalleryView = ({
       {selectedImg ? (
         <div 
           className="w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden"
-          // 🚨 [Subtraction] onTouch... 이벤트 바인딩 제거 완료
         >
           
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-30 blur-3xl scale-110 transition-all duration-700" 
-            style={{ backgroundImage: `url(${selectedImg.urls.thumb})` }} 
-          />
+          {/* 🚨 [Subtraction] 메모리 파괴 주범: 백그라운드 blur-3xl 이미지 div 완전 삭제 */}
           
           <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => { 
               e.stopPropagation(); 
               if (window.innerWidth >= 768 && !isFullScreen) setSelectedImg(null); 
           }}>
-              <img 
-                src={selectedImg.urls.thumb} 
-                className={`absolute max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg transition-transform duration-700 select-none blur-lg scale-105 ${isFullScreen ? 'scale-110' : 'scale-100'} ${isHighResLoaded ? 'opacity-0' : 'opacity-100'}`}
-                alt="thumbnail"
-              />
+              {/* 🚨 [Subtraction] 썸네일(blur) 이미지 img 태그 완전 삭제 */}
+              
+              {/* 🚨 [Fix] 단일 이미지 렌더링 및 트랜지션(duration-700) 제거로 즉각적인 가비지 컬렉션 유도 */}
               <img 
                 src={selectedImg.urls.regular} 
-                className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg transition-all duration-700 select-none ${isFullScreen ? 'scale-105' : 'scale-100'} ${isHighResLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`} 
+                className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`} 
                 alt="full-view"
               />
           </div>
 
-          {/* 🚨 [Fix] 모바일 버튼 활성화: hidden md:block 제거, 모바일 패딩(p-2) 적용 */}
           <button onClick={handlePrev} disabled={currentIndex <= 0} className={`absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${(!showUI && isFullScreen) || currentIndex <= 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
           </button>
@@ -96,13 +77,10 @@ const PlaceGalleryView = ({
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </button>
 
-          {/* 🚨 [Keep] showUI 연동 숨김 로직 유지 */}
           <div className={`absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-3 z-[220] transition-opacity duration-300 ${(!showUI && isFullScreen) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
-            {/* 🚨 [Keep] 전체 확대 버튼: 모바일에서 숨김 (hidden md:block 유지) */}
             <button onClick={() => toggleFullScreen(fullScreenContainerRef)} className="hidden md:block p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl">
               {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20}/>}
             </button>
-            {/* 🚨 [Keep] 닫기 버튼: 항상 유지 */}
             <button onClick={isFullScreen ? closeImageKeepFullscreen : () => setSelectedImg(null)} className="p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-xl">
               <X size={20} />
             </button>
