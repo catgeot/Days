@@ -4,7 +4,9 @@
 // 2. [Maintain] handleClearChats: '전체 지우기' 룰 '유지'
 // 3. [Subtraction] SEARCH_MAP 인터셉터 '제거' -> 검색어는 TRAVEL_SPOTS를 먼저 타게 되므로, citiesData.js만 완벽하면 Geocoding API의 오작동을 원천 회피함.
 // 4. [Fix/New] handleSmartSearch 내 citiesData 검색 파이프라인 추가
-// 5. 🚨 [Fix/New] Schema First 위반 수정: description 키값을 기존 데이터 스키마에 맞게 desc로 원복하여 상세 카드에 정상 렌더링되도록 함.
+// 5. [Fix/New] Schema First 위반 수정: description 키값을 기존 데이터 스키마에 맞게 desc로 원복.
+// 6. 🚨 [Fix] 중복 생성 방지 및 부활 로직 (handleStartChat): 카테고리 검사를 완화하고, 로컬(savedTrips)에 없으면 DB에서 숨겨진 방(is_hidden: true)을 찾아내어 화면에 다시 띄우는 예토전생(Resurrection) 로직 적용.
+// 7. 🚨 [Subtraction] 중복 코드 제거 (handleToggleBookmark): 이전에 다형성을 적용해둔 useTravelData의 toggleBookmark에게 100% 위임하여 충돌 방지.
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
@@ -47,7 +49,6 @@ export function useHomeHandlers({
       const addressData = await getAddressFromCoordinates(lat, lng);
       const name = addressData?.city || addressData?.country;
       
-      // 🚨 [Maintain] 데이터가 없으면 UI를 그리지 않고 조용히 패스
       if (!name) {
          if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
              globeRef.current.resumeRotation();
@@ -115,18 +116,46 @@ export function useHomeHandlers({
     const locationName = dest || selectedLocation?.name || "New Session";
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
 
-    const existingTrip = savedTrips.find(t => 
+    // 🚨 1. 프론트엔드 상태(savedTrips)에서 탐색 (카테고리 제약 완화)
+    let targetTrip = savedTrips.find(t => 
       (existingId && t.id === existingId) || 
-      (t.destination === locationName && t.category === category)
+      (t.destination === locationName) 
     );
 
-    if (existingTrip) {
-      setActiveChatId(existingTrip.id);
+    // 🚨 2. 화면에 없다면, DB에 숨겨져(is_hidden: true) 있는지 비관적 탐색 (부활 로직)
+    if (!targetTrip) {
+        const { data } = await supabase
+            .from('saved_trips')
+            .select('*')
+            .eq('destination', locationName)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        if (data && data.length > 0) {
+            targetTrip = data[0];
+            // DB에 숨겨져 있었다면 화면으로 부활시킴
+            if (targetTrip.is_hidden) {
+                await supabase.from('saved_trips').update({ is_hidden: false }).eq('id', targetTrip.id);
+                targetTrip.is_hidden = false;
+                
+                // 프론트엔드 배열에 다시 추가 (중복 방지 처리)
+                setSavedTrips(prev => {
+                    if (!prev.find(p => p.id === targetTrip.id)) return [targetTrip, ...prev];
+                    return prev;
+                });
+            }
+        }
+    }
+
+    // 🚨 3. 찾았거나 부활시켰다면 해당 방으로 입장
+    if (targetTrip) {
+      setActiveChatId(targetTrip.id);
       setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null); 
       setIsChatOpen(true);
       return; 
     }
 
+    // 🚨 4. DB에도 진짜 없다면 새롭게 생성 (Insert)
     const systemPrompt = getSystemPrompt(persona, locationName);
     const isSameLocation = selectedLocation && (selectedLocation.name === locationName || selectedLocation.display_name === locationName);
     const targetLat = isSameLocation ? (selectedLocation.lat || 0) : 0;
@@ -141,6 +170,7 @@ export function useHomeHandlers({
       prompt_summary: systemPrompt,
       messages: [], 
       is_bookmarked: false, 
+      is_hidden: false,
       persona,
       category: category
     };
@@ -151,41 +181,21 @@ export function useHomeHandlers({
       setInitialQuery({ text: initPayload?.text || "", persona }); 
       setIsChatOpen(true); 
     }
-  }, [globeRef, savedTrips, selectedLocation, category, saveNewTrip, setActiveChatId, setInitialQuery, setIsChatOpen]);
+  }, [globeRef, savedTrips, selectedLocation, category, saveNewTrip, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips]);
 
   const handleToggleBookmark = useCallback(async (loc) => {
     if (!loc || !loc.name || isTogglingRef.current) return;
-
+    
     isTogglingRef.current = true;
     try {
-      const existingTrip = savedTrips.find(t => t.destination === loc.name);
-
-      if (existingTrip) {
-        await toggleBookmark(existingTrip.id);
-      } else {
-        const persona = PERSONA_TYPES.GENERAL;
-        const systemPrompt = getSystemPrompt(persona, loc.name);
-
-        const newTrip = {
-          destination: loc.name,
-          lat: loc.lat || 0,
-          lng: loc.lng || 0,
-          date: new Date().toLocaleDateString(),
-          code: "CHAT",
-          prompt_summary: systemPrompt,
-          messages: [],
-          is_bookmarked: true, 
-          persona,
-          category: category
-        };
-        await saveNewTrip(newTrip);
-      }
+      // 🚨 [Subtraction] useTravelData의 toggleBookmark에 장소 객체를 통째로 던져 완벽히 위임.
+      await toggleBookmark(loc);
     } catch (error) {
       console.error("Bookmark Error:", error);
     } finally {
       isTogglingRef.current = false; 
     }
-  }, [savedTrips, toggleBookmark, saveNewTrip, category]);
+  }, [toggleBookmark]);
 
   const handleSmartSearch = useCallback(async (input) => {
     if (!input) return;
@@ -199,7 +209,6 @@ export function useHomeHandlers({
     setDraftInput(query);
     processSearchKeywords(query);
 
-    // 1순위: TRAVEL_SPOTS 검색
     const localSpot = TRAVEL_SPOTS.find(s => 
       s.name.toLowerCase() === query.toLowerCase() || 
       s.country.toLowerCase() === query.toLowerCase() ||
@@ -210,7 +219,6 @@ export function useHomeHandlers({
       return;
     }
 
-    // 2순위: citiesData 검색
     const citySpot = citiesData.find(c =>
       c.name.toLowerCase() === query.toLowerCase() ||
       (c.name_en && c.name_en.toLowerCase() === query.toLowerCase())
@@ -225,18 +233,16 @@ export function useHomeHandlers({
         lat: citySpot.lat,
         lng: citySpot.lng,
         category: category,
-        desc: citySpot.desc, // 🚨 [Fix/New] description -> desc 로 원복 (스키마 일치)
+        desc: citySpot.desc, 
         type: 'temp-base'
       };
       handleLocationSelect(normalizedCity);
       return;
     }
 
-    // 3순위: 카테고리/컨셉 검색
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
     if (isConcept) return;
 
-    // 4순위: 지오코딩 API Fallback
     const coords = await getCoordinatesFromAddress(query);
     
     if (coords) {
@@ -248,7 +254,7 @@ export function useHomeHandlers({
         lat: coords.lat,
         lng: coords.lng,
         category: category,
-        desc: `${query} (${coords.country}) 지역을 탐색합니다.`, // 🚨 [Fix/New] 여기도 desc 로 통일
+        desc: `${query} (${coords.country}) 지역을 탐색합니다.`, 
         type: 'temp-base'
       };
       handleLocationSelect(normalizedLoc);
@@ -266,7 +272,8 @@ export function useHomeHandlers({
     const isConfirm = window.confirm("모든 대화 기록을 지우시겠습니까? (즐겨찾기된 장소는 유지됩니다)");
     if (isConfirm) {
       await supabase.from('saved_trips').update({ messages: [] }).eq('is_bookmarked', true).eq('category', category);
-      await supabase.from('saved_trips').delete().eq('is_bookmarked', false).eq('category', category);
+      // 🚨 [Fix] 일관성 유지: 일괄 삭제 시에도 delete() 대신 is_hidden: true 처리
+      await supabase.from('saved_trips').update({ is_hidden: true }).eq('is_bookmarked', false).eq('category', category);
 
       setSavedTrips(prev => prev.map(t => {
         if (t.category === category) {

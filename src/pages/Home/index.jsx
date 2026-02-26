@@ -225,7 +225,8 @@ function Home() {
         <ChatModal 
           isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }} 
           initialQuery={initialQuery} 
-          chatHistory={filteredSavedTrips} 
+          // 🚨 [Fix] 카테고리 의존성 탈피: 채팅 기록은 항상 원본 전체(savedTrips) 데이터 사용
+          chatHistory={savedTrips} 
           onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark} 
           activeChatId={activeChatId} 
           onSwitchChat={setActiveChatId} 
