@@ -90,3 +90,20 @@ export const clearTemporaryData = async (userId) => {
     
   if (error) console.error("🚨 [Trash] Clean failed:", error);
 };
+
+// 🚨 [New] 유저 프로필 조회 함수 (Schema First: profiles 테이블 연동)
+// 용도: 로그인 성공 후 UI에 닉네임, 프로필 사진을 뿌려주기 위함
+export const fetchUserProfile = async (userId) => {
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single(); // 본인 프로필 1개만 안전하게 가져옴
+
+  if (error) {
+    console.warn("🚨 [Auth] Profile fetch failed:", error);
+    return null;
+  }
+  return data;
+};

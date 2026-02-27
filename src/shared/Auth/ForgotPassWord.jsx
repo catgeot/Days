@@ -7,7 +7,7 @@ import Logo from '../../pages/Home/components/Logo';
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null); // 성공/실패 메시지
+  const [message, setMessage] = useState(null); 
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -15,9 +15,9 @@ const ForgotPassword = () => {
     setMessage(null);
 
     try {
-      // Supabase 비밀번호 재설정 이메일 발송 요청
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'http://localhost:5173/auth/update-password', // 이메일 클릭 시 이동할 주소
+        // 🚨 [Fix] localhost 하드코딩 제거 (실서버 배포 시 치명적 버그 방지)
+        redirectTo: `${window.location.origin}/auth/update-password`, 
       });
 
       if (error) throw error;
@@ -31,7 +31,6 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 font-sans relative overflow-hidden">
-      {/* 배경 효과 */}
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10">
@@ -66,13 +65,14 @@ const ForgotPassword = () => {
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-white text-black font-bold py-4 rounded-xl shadow-lg hover:bg-gray-200 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {loading ? <Loader2 size={20} className="animate-spin" /> : <>링크 보내기 <Send size={18} /></>}
-          </button>
+          {/* 🚨 [Fix] 눈부신 흰색 배경 제거. '다크 글래스 + 블루 네온 호버' 테마 적용. */}
+					<button
+						type="submit"
+						disabled={loading}
+						className="w-full bg-black/40 border border-white/10 text-white font-bold py-4 rounded-xl backdrop-blur-md hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:bg-white/5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+						>
+						{loading ? <Loader2 size={20} className="animate-spin" /> : <>링크 보내기 <Send size={18} className="group-hover:translate-x-1 transition-transform" /></>}
+					</button>
         </form>
 
         <div className="mt-8 text-center">
