@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react'; // 🚨 [Fix] 세정 로직을 위한 useEffect 추가
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // 🚨 [New] Vercel Web Analytics 연동을 위한 컴포넌트 추가
 import { Analytics } from '@vercel/analytics/react';
@@ -19,13 +19,25 @@ import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 
 function App() {
+  // 🚨 [New] URL 세정 로직 (Cleanup Logic)
+  // 로그인이 성공하거나 에러가 발생하여 리다이렉트 되었을 때, 주소창의 지저분한 파라미터를 즉시 제거합니다.
+  useEffect(() => {
+    const { pathname, search, hash } = window.location;
+
+    // URL에 에러 메시지나 인증 토큰 해시가 포함되어 있는지 확인 (Fact Check)
+    if (search.includes('error') || hash.includes('access_token') || search.includes('code=')) {
+      // 🚨 [Fix] 리액트 상태를 변경하지 않고 브라우저 히스토리만 교체하여 성능 저하 방지
+      window.history.replaceState(null, '', pathname);
+      console.log("🛠️ URL Cleanup: 지저분한 인증 파라미터가 제거되었습니다.");
+    }
+  }, []); // 의존성 배열을 비워 앱 마운트 시 최초 1회만 실행 (성능 최적화)
+
   return (
     // 🚨 [Fix] BrowserRouter를 최상위로 올림 (Router Context 확보)
     <BrowserRouter>
       {/* 🚨 [Fix] ReportProvider를 Router 내부로 이동 (useNavigate 사용 가능해짐) */}
       <ReportProvider>
         {/* 🚨 [New] 실시간 트래픽 분석을 위한 신호기(Analytics) 배치 */}
-        {/* 이 컴포넌트는 모든 Route의 방문자 데이터를 Vercel 대시보드로 전송합니다. */}
         <Analytics />
 
         <Routes>
