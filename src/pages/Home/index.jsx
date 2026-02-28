@@ -1,12 +1,13 @@
 // src/pages/Home/index.jsx
 // 🚨 [Fix/New] 수정 이유:
-// 1. [Subtraction] ChatModal의 대화 전환(onSwitchChat)을 복잡한 handleStartChat 함수 대신 순수 상태 변경 함수인 setActiveChatId로 다이렉트 연결하여 100% 확실한 동작 보장.
-// 2. [Dead Code 제거] 이전 세션에서 삭제했던 clearTemporaryTrips가 여전히 남아있어 발생할 수 있는 잠재적 크래시(시한폭탄) 원천 제거.
-// 3. [Dead Code 제거] ChatModal 컴포넌트에서 더 이상 받지 않는 onClearChats 프롭스 제거.
-// 4. LogoPanel 다이렉트 오픈 버그 수정 (기존 유지)
-// 5. 🚨 [Fix] 선택적 격벽 해제 (Smart Prison Break): 기존 카테고리 필터링 로직을 복구하여 지구본 과부하를 막고, '검색한 핀(scoutedPins)'과 '현재 활성화된 장소(VIP)'만 예외적으로 지구본에 통과시킴.
-// 6. 🚨 [New] Zen Mode(힐링 모드) 상태 및 브라우저 Fullscreen API 연동. ESC 키를 통한 네이티브 해제 시에도 안전하게 상태를 동기화(Pessimistic First).
-// 7. 🚨 [New] UI Ghosting: isZenMode 활성화 시 모든 UI 레이어를 투명화 및 이벤트 차단하여 지구본 감상에 집중.
+// 1. [Subtraction] ChatModal 대화 전환 다이렉트 연결 유지.
+// 2. [Dead Code 제거] 잠재적 크래시 원천 제거 유지.
+// 3. [Dead Code 제거] ChatModal 미사용 프롭스 제거 유지.
+// 4. LogoPanel 다이렉트 오픈 버그 수정 유지.
+// 5. 🚨 [Fix] 선택적 격벽 해제 (Smart Prison Break) 유지.
+// 6. 🚨 [New] Zen Mode(힐링 모드) 유지.
+// 7. 🚨 [New] UI Ghosting 유지.
+// 8. 🚨 [Fix] Auth 연동: useTravelData 훅에 user 객체를 주입(Dependency Injection)하여, 로그인 상태에 따라 DB와 로컬 스토리지를 분기할 수 있도록 연결.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -45,7 +46,8 @@ function Home() {
 
   const { scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
   
-  const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip } = useTravelData();
+  // 🚨 [Fix] user 객체를 useTravelData에 주입하여 Data Lake 분리 제어권 부여
+  const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip } = useTravelData(user);
   
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
@@ -80,6 +82,7 @@ function Home() {
     toggleBookmark 
   });
 
+  // 🚨 fetchData는 useTravelData 내부에서 user 의존성을 가지므로, 로그인 상태가 변경될 때 자동 재호출됨
   useEffect(() => { fetchData(); }, [fetchData]);
 
   // 🚨 [New] Zen Mode 전체화면 동기화 (Pessimistic First: ESC 키 감지 시 무조건 false로 덮어씌움)
@@ -217,7 +220,7 @@ function Home() {
             onToggleBookmark={handleToggleBookmark} 
             onTicket={() => { setIsPlaceCardOpen(false); setIsCardExpanded(false); }}
             
-            // 🚨 [Fix/New] 수정 이유: 컴팩트 모드를 폐지하고, 트래블 티커가 열렸는지(isTickerExpanded)의 여부를 전달하여 내부에서 디자인 여백만 줄이도록 동적 회피 기동 적용.
+            // 🚨 [Fix/New] 트래블 티커 여백 동적 회피 기동
             isTickerExpanded={isTickerExpanded} 
             
             initialExpanded={isCardExpanded} 
