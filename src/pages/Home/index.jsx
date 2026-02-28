@@ -216,7 +216,10 @@ function Home() {
             onChat={(p) => handleStartChat(selectedLocation?.name, p)}
             onToggleBookmark={handleToggleBookmark} 
             onTicket={() => { setIsPlaceCardOpen(false); setIsCardExpanded(false); }}
-            isCompactMode={isTickerExpanded}
+            
+            // 🚨 [Fix/New] 수정 이유: 컴팩트 모드를 폐지하고, 트래블 티커가 열렸는지(isTickerExpanded)의 여부를 전달하여 내부에서 디자인 여백만 줄이도록 동적 회피 기동 적용.
+            isTickerExpanded={isTickerExpanded} 
+            
             initialExpanded={isCardExpanded} 
             onExpandChange={setIsCardExpanded} 
           />
