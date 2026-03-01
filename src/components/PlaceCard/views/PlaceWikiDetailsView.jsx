@@ -34,7 +34,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading }) => {
                 </div>
             ) : wikiData ? (
                 <div className="space-y-8 animate-fade-in">
-                    <p className="text-gray-300 leading-relaxed text-lg bg-white/5 p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line">
+                    <p className="text-gray-300 leading-relaxed text-2xl bg-white/5 p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line">
                         {wikiData.summary}
                     </p>
                     
