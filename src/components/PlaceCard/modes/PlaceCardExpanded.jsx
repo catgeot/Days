@@ -1,12 +1,12 @@
 // src/components/PlaceCard/expanded/PlaceCardExpanded.jsx
 // 🚨 [Fix/New] 수정 이유:
-// 1. [Schema Update] Case C의 summary 속성에서 citiesData.js의 'desc' 키를 최우선으로 인식하도록 스키마 통합 완료 (Fact Check 방어)
-// 🚨 [Fix] 모바일 대응: 부모 컨테이너의 하드코딩된 패딩/간격(p-6 gap-6)을 데스크탑(md:) 전용으로 변경하여 모바일 전체화면 확보
+// 1. [Fix] useWikiData에서 추출한 isWikiLoading 상태를 좌/우 패널에 Props로 전달하여 스켈레톤 UI를 트리거할 수 있도록 연결
 
 import React, { useState, useEffect, useRef } from 'react';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { TRAVEL_VIDEOS } from '../../../pages/Home/data/travelVideos'; 
+import { useWikiData } from '../hooks/useWikiData'; 
 
 const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -22,6 +22,10 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
   const spotVideos = TRAVEL_VIDEOS[location.id] || [];
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = spotVideos.find(v => v.id === activeVideoId) || null;
+
+  // 변경: 위키 데이터의 매칭 키를 범용적인 '장소 이름'으로 완벽히 통일합니다.
+  const queryKey = location.name; 
+  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey);
 
   const getActiveInfo = () => {
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
@@ -100,10 +104,7 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
   }, [galleryData.selectedImg]);
 
   return (
-    // 🚨 [Fix] 모바일에서는 p-0 (여백 없음)으로 설정하여 꽉 찬 화면 유지. 데스크탑은 기존 p-6 유지.
     <div ref={containerRef} className="fixed inset-0 z-[100] bg-black/95 flex flex-col md:flex-row p-0 md:p-6 gap-0 md:gap-6 animate-fade-in overflow-hidden font-sans">
-      
-      {/* Left Panel: Chat & Info */}
       <PlaceChatPanel 
         location={location}
         isBookmarked={isBookmarked}
@@ -117,10 +118,10 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
         isAiMode={isAiMode}
         selectedImg={galleryData.selectedImg}
         onToggleBookmark={onToggleBookmark}
+        wikiData={currentWikiData}
+        isWikiLoading={isWikiLoading} // 🚨 [Fix] 상태 추가 전달
       />
       
-      {/* Right Panel: Media Gallery */}
-      {/* 🚨 [Fix] 모바일 환경에서도 미디어가 100% 채워지도록 z-index와 relative 속성 방어 */}
       <div className={`flex-1 w-full min-w-0 h-full transition-all duration-500 z-10 ${isFullScreen ? 'fixed inset-0 z-[200]' : 'relative'}`}>
         <PlaceMediaPanel 
             galleryData={galleryData}
@@ -133,6 +134,8 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
             onVideoSelect={setSelectedVideoId}
             playerRef={playerRef}
             onAiModeChange={setIsAiMode}
+            wikiData={currentWikiData}
+            isWikiLoading={isWikiLoading} // 🚨 [Fix] 상태 추가 전달
         />
       </div>
     </div>

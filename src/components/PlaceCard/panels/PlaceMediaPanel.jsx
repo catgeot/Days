@@ -1,11 +1,11 @@
 // src/components/PlaceCard/panels/PlaceMediaPanel.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [New] galleryData에 탑재된 handleDownload 함수를 PlaceGalleryView로 브릿지 연결
-// 2. [Subtraction] PlaceGalleryView에서 더 이상 사용하지 않는 onAiModeChange 프롭 전달 제거 (불필요한 의존성 제거)
+// 1. [Fix] isWikiLoading Props를 추가 수신하여 PlaceWikiDetailsView에 전달
 
 import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
+import PlaceWikiDetailsView from '../views/PlaceWikiDetailsView';
 
 const PlaceMediaPanel = ({ 
     galleryData, 
@@ -17,10 +17,12 @@ const PlaceMediaPanel = ({
     videos, 
     onVideoSelect, 
     playerRef,
-    onAiModeChange 
+    onAiModeChange,
+    wikiData,
+    isWikiLoading // 🚨 [Fix] 상태 수신
 }) => {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
         {mediaMode === 'GALLERY' ? (
             <PlaceGalleryView 
                 images={galleryData.images}
@@ -31,10 +33,9 @@ const PlaceMediaPanel = ({
                 toggleFullScreen={toggleFullScreen}
                 closeImageKeepFullscreen={(e) => { e.stopPropagation(); galleryData.setSelectedImg(null); }}
                 showUI={showUI}
-                // 🚨 [New] 트래킹 및 다운로드 실행 로직 연결
                 handleDownload={galleryData.handleDownload}
             />
-        ) : (
+        ) : mediaMode === 'VIDEO' ? (
             <YouTubePlayerView 
                 ref={playerRef}
                 videos={videos}
@@ -43,6 +44,11 @@ const PlaceMediaPanel = ({
                 toggleFullScreen={toggleFullScreen}
                 showUI={showUI}
                 onVideoSelect={onVideoSelect}
+            />
+        ) : (
+            <PlaceWikiDetailsView 
+                wikiData={wikiData} 
+                isWikiLoading={isWikiLoading} // 🚨 [Fix] 상태 전달
             />
         )}
     </div>
