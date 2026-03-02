@@ -96,8 +96,8 @@ const PlaceChatPanel = ({
                     ${mediaMode === 'WIKI' ? 'bg-amber-600/90 text-white shadow-amber-900/20' : 'bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10'}`}
             >
                 <BookOpen size={12} className="md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/> 
-                <span className="hidden md:inline text-[11px] font-bold">{mediaMode === 'WIKI' ? '닫기' : '위키'}</span>
-                <span className="inline md:hidden text-[10px] font-bold">위키</span>
+                <span className="hidden md:inline text-[11px] font-bold">{mediaMode === 'WIKI' ? '닫기' : '백과'}</span>
+                <span className="inline md:hidden text-[10px] font-bold">백과</span>
             </button>
 
             {mediaMode === 'VIDEO' ? (

@@ -19,7 +19,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading }) => {
         <div className="max-w-3xl mx-auto w-full pt-16 md:pt-0 pb-20">
             <h1 className="text-3xl font-bold mb-6 flex items-center gap-3 tracking-tight">
                 <BookOpen size={28} className="text-amber-500" />
-                위키백과
+                GATEO 백과
             </h1>
             
             {isWikiLoading ? (
@@ -38,7 +38,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading }) => {
             ) : wikiData ? (
                 <div className="space-y-8 animate-fade-in">
                     {/* 🚨 [Fix] text-lg 제거, leading-[1.8] 및 tracking-wide 적용으로 매거진 핏 완성 */}
-                    <p className="text-base md:text-lg text-gray-300 leading-[1.8] tracking-wide bg-white/5 p-5 md:p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line">
+                    <p className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide bg-white/5 p-5 md:p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line break-keep">
                         {wikiData.summary}
                     </p>
                     
@@ -46,7 +46,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading }) => {
                         <section key={idx} id={`wiki-section-${idx}`} className="pt-8 border-t border-white/10 scroll-mt-8">
                             <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-amber-100 tracking-tight">{sec.title}</h3>
                             {/* 🚨 [Fix] 본문 항목과 개요의 폰트 사이즈 및 행간 통일 */}
-                            <p className="text-sm md:text-base text-gray-400 leading-[1.8] tracking-wide whitespace-pre-line">{sec.content}</p>
+                            <p className="text-sm md:text-base text-gray-400 leading-[1.8] tracking-wide whitespace-pre-line break-keep">{sec.content}</p>
                         </section>
                     ))}
                     
