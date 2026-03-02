@@ -1,10 +1,6 @@
 // src/components/PlaceCard/views/PlaceGalleryView.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Subtraction] 모바일 Safari 메모리 누수(정지 현상)의 핵심 원인인 3중 CSS 필터(blur-3xl) 배경과 트랜지션 애니메이션 완전 제거.
-// 2. [Subtraction] 썸네일과 고해상도 이미지를 겹쳐 그리는 이중 렌더링(DOM 과부하) 제거. 불필요해진 isHighResLoaded 상태도 함께 제거.
-// 3. [Performance] 단일 이미지(urls.regular)만 즉각 렌더링하도록 경량화하여 모바일 GPU 메모리 해제(Garbage Collection)를 극대화함.
-// 4. 🚨 [New] 모바일 몰입형 감상 모드: 모바일(width < 768)에서 사진 터치 시 UI(버튼 등)를 토글(숨김/표시)하는 isMobileUIHidden 상태 추가.
-// 5. 🚨 [Fix] 부작용 방어(Pessimistic First): 사진 변경 시 또는 화면이 768px 이상으로 커질 시 UI 숨김 상태를 강제 초기화(false)하여 갇힘 현상 방지.
+// 1. [Fix] 갤러리 겹침 방지 (Pessimistic First): PlaceChatPanel 헤더에 불투명한 솔리드/블러 처리가 적용됨에 따라 모바일 그리드 뷰(썸네일 목록) 상단이 가려지는 문제를 막기 위해 패딩(pt-24) 추가. PC에서는 기존 패딩(md:pt-6) 유지.
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download } from 'lucide-react';
@@ -23,15 +19,12 @@ const PlaceGalleryView = ({
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
   
-  // 🚨 [New] 모바일 전용 UI 숨김 상태
   const [isMobileUIHidden, setIsMobileUIHidden] = useState(false);
 
-  // 🚨 [Fix] 부작용 방어 1: 사진이 바뀌면 무조건 UI 다시 표시
   useEffect(() => {
     setIsMobileUIHidden(false);
   }, [selectedImg]);
 
-  // 🚨 [Fix] 부작용 방어 2: 화면을 돌리거나 늘려서 768px 이상이 되면 강제로 UI 복구
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) setIsMobileUIHidden(false);
@@ -60,7 +53,6 @@ const PlaceGalleryView = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedImg, currentIndex, images]);
 
-  // 🚨 [New] 전체 UI 숨김 여부를 결정하는 통합 변수 (기존 showUI 로직 + 모바일 터치 숨김 로직)
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden;
 
   return (
@@ -76,10 +68,8 @@ const PlaceGalleryView = ({
           <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => { 
               e.stopPropagation(); 
               if (window.innerWidth >= 768 && !isFullScreen) {
-                // PC 환경: 기존처럼 그리드로 복귀
                 setSelectedImg(null); 
               } else if (window.innerWidth < 768) {
-                // 🚨 [New] 모바일 환경: 터치 시 UI 토글
                 setIsMobileUIHidden(prev => !prev);
               }
           }}>
@@ -135,7 +125,8 @@ const PlaceGalleryView = ({
 
         </div>
       ) : (
-        <div className="w-full h-full p-6 overflow-y-auto custom-scrollbar-blue relative">
+        // 🚨 [Fix] 모바일 헤더 높이에 맞춰 pt-24 적용하여 갤러리 썸네일 잘림 방지 (PC는 기존 pt-6 유지)
+        <div className="w-full h-full p-6 pt-24 md:pt-6 overflow-y-auto custom-scrollbar-blue relative">
           <div className="grid grid-cols-4 grid-rows-3 gap-4 min-h-[600px] mb-4">
             <div onClick={() => !isImgLoading && images[0] && setSelectedImg(images[0])} className="col-span-2 row-span-2 bg-white/5 rounded-[2rem] border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-500 group relative overflow-hidden">
               {isImgLoading ? (<div className="w-full h-full animate-pulse flex items-center justify-center"><ImageIcon className="text-white/20" size={48} /></div>) : images[0] ? (<><img src={images[0].urls.regular} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" /><div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" /><Maximize2 className="absolute top-6 right-6 text-white/80 opacity-0 group-hover:opacity-100 transition-all" size={24}/></>) : null}
