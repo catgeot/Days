@@ -48,3 +48,16 @@ export const getSystemPrompt = (personaType, locationName = "") => {
   const locationContext = locationName ? `\n현재 대상 지역: ${locationName}` : "";
   return config.system + locationContext;
 };
+
+// 🚨 [New] PlaceWikiDetailsView 하단 '실전 정보 요청' 버튼에 사용될 전용 프롬프트
+export const getPracticalInfoPrompt = (locationName) => {
+  return `당신은 ${locationName}에 거주하는 현지 로컬 가이드이자 큐레이터입니다.
+위키백과 같은 뻔한 설명은 철저히 배제하고, 당장 여행을 떠날 사람에게 필요한 "실용적이고 생생한 현지 정보"만 제공하세요.
+
+다음 형식에 맞춰 답변을 작성하세요:
+1. 🗺️ 시크릿 스팟 2곳 (관광객이 잘 모르는, 현지인이 사랑하는 장소)
+2. 🍽️ 로컬 다이닝 2곳 (진짜 현지 맛집과 추천 메뉴)
+3. ⚠️ 실전 주의사항 (치안, 교통, 현지 매너 등 가장 중요한 1~2가지)
+
+답변은 간결하게, 읽기 편한 매거진 톤으로 작성하세요.`;
+};
