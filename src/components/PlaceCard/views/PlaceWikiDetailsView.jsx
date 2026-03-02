@@ -1,5 +1,8 @@
-// 파일 2: src/components/PlaceCard/views/PlaceWikiDetailsView.jsx
-// 🚨 [Fix] isWikiLoading 상태에 따른 스켈레톤 UI 추가
+// src/components/PlaceCard/views/PlaceWikiDetailsView.jsx
+// 🚨 [Fix/New] 수정 이유: 
+// 1. [Fix] 모바일 환경에서 개요(Summary) 텍스트가 너무 커서 화면을 덮는 문제 해결 (text-lg -> 기본 텍스트 크기로 통일 및 md:text-lg 반응형 적용).
+// 2. [Feature] 로드맵 Phase 2의 '매거진 규격'에 맞춰 자간(tracking-wide)과 행간(leading-[1.8])을 전체적으로 적용하여 가독성 및 시각적 즐거움 극대화.
+
 import React from 'react';
 import { BookOpen } from 'lucide-react';
 
@@ -14,7 +17,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading }) => {
         `}</style>
 
         <div className="max-w-3xl mx-auto w-full pt-16 md:pt-0 pb-20">
-            <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
+            <h1 className="text-3xl font-bold mb-6 flex items-center gap-3 tracking-tight">
                 <BookOpen size={28} className="text-amber-500" />
                 위키백과
             </h1>
@@ -34,14 +37,16 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading }) => {
                 </div>
             ) : wikiData ? (
                 <div className="space-y-8 animate-fade-in">
-                    <p className="text-gray-300 leading-relaxed text-lg bg-white/5 p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line">
+                    {/* 🚨 [Fix] text-lg 제거, leading-[1.8] 및 tracking-wide 적용으로 매거진 핏 완성 */}
+                    <p className="text-base md:text-lg text-gray-300 leading-[1.8] tracking-wide bg-white/5 p-5 md:p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line">
                         {wikiData.summary}
                     </p>
                     
                     {wikiData.sections && wikiData.sections.map((sec, idx) => (
                         <section key={idx} id={`wiki-section-${idx}`} className="pt-8 border-t border-white/10 scroll-mt-8">
-                            <h3 className="text-2xl font-bold mb-4 text-amber-100">{sec.title}</h3>
-                            <p className="text-gray-400 leading-relaxed whitespace-pre-line">{sec.content}</p>
+                            <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-amber-100 tracking-tight">{sec.title}</h3>
+                            {/* 🚨 [Fix] 본문 항목과 개요의 폰트 사이즈 및 행간 통일 */}
+                            <p className="text-sm md:text-base text-gray-400 leading-[1.8] tracking-wide whitespace-pre-line">{sec.content}</p>
                         </section>
                     ))}
                     
@@ -51,7 +56,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading }) => {
                                 href={wikiData.source_url} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                className="text-sm text-blue-400 hover:text-blue-300 transition-colors tracking-wide"
                             >
                                 위키백과 원문 보기 ↗
                             </a>

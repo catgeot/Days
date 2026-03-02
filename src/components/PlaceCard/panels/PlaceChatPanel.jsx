@@ -1,6 +1,8 @@
 // src/components/PlaceCard/panels/PlaceChatPanel.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Fix] isWikiLoading Props를 추가 수신하여 PlaceWikiNavView에 전달
+// 1. [Fix] isWikiLoading Props를 추가 수신하여 PlaceWikiNavView에 전달 유지
+// 2. [Fix] 로드맵 Phase 2 적용: 모바일 헤더 영역의 간격(gap)과 패딩(padding)을 압축하여 여행지명 노출 폭 최대화 (Subtraction over Addition).
+// 3. [Fix] 타이틀(h1)에 중복 적용되어 있던 tracking 클래스 정리 및 시인성(font-black) 강화.
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react'; 
@@ -26,7 +28,7 @@ const PlaceChatPanel = ({
     selectedImg,
     onToggleBookmark,
     wikiData,
-    isWikiLoading // 🚨 [Fix] 상태 수신
+    isWikiLoading 
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
@@ -58,16 +60,18 @@ const PlaceChatPanel = ({
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:pb-0 md:z-auto`}> 
       
       {/* Header */}
-      <div className={`h-16 md:h-20 shrink-0 items-center justify-between px-2.5 md:px-3 md:border-b md:border-white/5 bg-transparent z-20 mt-2 md:mt-0 gap-3 md:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
+      {/* 🚨 [Fix] px-2.5 -> px-2, gap-3 -> gap-2 로 모바일 공간 최적화 */}
+      <div className={`h-16 md:h-20 shrink-0 items-center justify-between px-2 md:px-3 md:border-b md:border-white/5 bg-transparent z-20 mt-2 md:mt-0 gap-2 md:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
          
-         <div className="flex items-center gap-3 md:gap-4 overflow-hidden flex-1 min-w-0">
+         <div className="flex items-center gap-2 md:gap-4 overflow-hidden flex-1 min-w-0">
              <button onClick={onClose} className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
                  <ArrowLeft size={16} />
              </button>
              <div className="flex flex-col flex-1 min-w-0">
                  <span className="text-[9px] md:text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location.country}</span>
                  <div className="flex items-center gap-2 min-w-0">
-                     <h1 className="text-base md:text-xl font-black tracking-tighter text-white truncate leading-none tracking-tight drop-shadow-md">{location.name}</h1>
+                     {/* 🚨 [Fix] 중복된 tracking-tight 제거, tracking-tighter만 남겨 시인성 확보 */}
+                     <h1 className="text-base md:text-xl font-black tracking-tighter text-white truncate leading-none drop-shadow-md">{location.name}</h1>
                      <div className="shrink-0">
                          <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
                      </div>
@@ -76,10 +80,11 @@ const PlaceChatPanel = ({
          </div>
 
          {/* Buttons Area */}
-         <div className="shrink-0 flex items-center gap-1.5">
+         {/* 🚨 [Fix] 버튼 gap 압축 및 모바일 px, py 최소화 */}
+         <div className="shrink-0 flex items-center gap-1 md:gap-1.5">
             <button 
                 onClick={() => openReport('dashboard', location.id)}
-                className="px-2 py-1.5 md:px-4 md:py-2 rounded-full bg-white/10 md:bg-white/5 hover:bg-white/20 text-white shadow-lg border border-white/20 md:border-white/10 transition-all flex items-center gap-1.5 md:gap-2 group"
+                className="px-1.5 py-1 md:px-4 md:py-2 rounded-full bg-white/10 md:bg-white/5 hover:bg-white/20 text-white shadow-lg border border-white/20 md:border-white/10 transition-all flex items-center gap-1 md:gap-2 group"
             >
                 <PenTool size={12} className="md:w-3.5 md:h-3.5 text-emerald-400 group-hover:scale-110 transition-transform"/> 
                 <span className="hidden md:inline text-[11px] font-bold tracking-wider">Log</span>
@@ -87,7 +92,7 @@ const PlaceChatPanel = ({
 
             <button 
                 onClick={() => setMediaMode(mediaMode === 'WIKI' ? 'GALLERY' : 'WIKI')}
-                className={`px-2 py-1.5 md:px-4 md:py-2 rounded-full transition-all flex items-center gap-1.5 md:gap-2 group shadow-lg 
+                className={`px-1.5 py-1 md:px-4 md:py-2 rounded-full transition-all flex items-center gap-1 md:gap-2 group shadow-lg 
                     ${mediaMode === 'WIKI' ? 'bg-amber-600/90 text-white shadow-amber-900/20' : 'bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10'}`}
             >
                 <BookOpen size={12} className="md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/> 
@@ -98,7 +103,7 @@ const PlaceChatPanel = ({
             {mediaMode === 'VIDEO' ? (
                 <button 
                     onClick={() => setMediaMode('GALLERY')}
-                    className="px-2 py-1.5 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 md:gap-2 group"
+                    className="px-1.5 py-1 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1 md:gap-2 group"
                 >
                     <ImageIcon size={12} className="md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/> 
                     <span className="hidden md:inline text-[11px] font-bold">갤러리</span>
@@ -106,7 +111,7 @@ const PlaceChatPanel = ({
             ) : (
                 <button 
                     onClick={() => setMediaMode('VIDEO')}
-                    className="px-2 py-1.5 md:px-4 md:py-2 rounded-full bg-red-600/90 hover:bg-red-500 text-white shadow-lg shadow-red-900/20 transition-all flex items-center gap-1.5 md:gap-2 group"
+                    className="px-1.5 py-1 md:px-4 md:py-2 rounded-full bg-red-600/90 hover:bg-red-500 text-white shadow-lg shadow-red-900/20 transition-all flex items-center gap-1 md:gap-2 group"
                 >
                     <Play size={12} fill="currentColor" className="md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/> 
                     <span className="hidden md:inline text-[11px] font-bold">영상</span>
@@ -155,7 +160,7 @@ const PlaceChatPanel = ({
         ) : mediaMode === 'WIKI' ? ( 
             <PlaceWikiNavView 
                 wikiData={wikiData} 
-                isWikiLoading={isWikiLoading} // 🚨 [Fix] 상태 전달
+                isWikiLoading={isWikiLoading} 
                 onNavClick={handleWikiNavClick} 
             />
         ) : (
