@@ -1,7 +1,3 @@
-// src/components/PlaceCard/panels/PlaceMediaPanel.jsx
-// 🚨 [Fix/New] 수정 이유: 
-// 1. [Fix] isWikiLoading Props를 추가 수신하여 PlaceWikiDetailsView에 전달
-
 import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
@@ -19,7 +15,8 @@ const PlaceMediaPanel = ({
     playerRef,
     onAiModeChange,
     wikiData,
-    isWikiLoading // 🚨 [Fix] 상태 수신
+    isWikiLoading,
+    location // 🚨 [Fix] location 객체 수신 추가
 }) => {
   return (
     <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
@@ -48,7 +45,8 @@ const PlaceMediaPanel = ({
         ) : (
             <PlaceWikiDetailsView 
                 wikiData={wikiData} 
-                isWikiLoading={isWikiLoading} // 🚨 [Fix] 상태 전달
+                isWikiLoading={isWikiLoading}
+                placeName={location?.name} // 🚨 [Fix] 정확한 지명을 하위 뷰로 전달
             />
         )}
     </div>

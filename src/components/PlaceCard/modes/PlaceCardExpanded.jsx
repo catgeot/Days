@@ -1,7 +1,3 @@
-// src/components/PlaceCard/expanded/PlaceCardExpanded.jsx
-// 🚨 [Fix/New] 수정 이유:
-// 1. [Fix] useWikiData에서 추출한 isWikiLoading 상태를 좌/우 패널에 Props로 전달하여 스켈레톤 UI를 트리거할 수 있도록 연결
-
 import React, { useState, useEffect, useRef } from 'react';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
@@ -23,7 +19,6 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = spotVideos.find(v => v.id === activeVideoId) || null;
 
-  // 변경: 위키 데이터의 매칭 키를 범용적인 '장소 이름'으로 완벽히 통일합니다.
   const queryKey = location.name; 
   const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey);
 
@@ -119,11 +114,12 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
         selectedImg={galleryData.selectedImg}
         onToggleBookmark={onToggleBookmark}
         wikiData={currentWikiData}
-        isWikiLoading={isWikiLoading} // 🚨 [Fix] 상태 추가 전달
+        isWikiLoading={isWikiLoading} 
       />
       
       <div className={`flex-1 w-full min-w-0 h-full transition-all duration-500 z-10 ${isFullScreen ? 'fixed inset-0 z-[200]' : 'relative'}`}>
         <PlaceMediaPanel 
+            location={location} // 🚨 [Fix] 이곳에 location 데이터를 넘겨주는 파이프라인 연결 완료
             galleryData={galleryData}
             isFullScreen={isFullScreen}
             toggleFullScreen={toggleFullScreen}
@@ -135,7 +131,7 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
             playerRef={playerRef}
             onAiModeChange={setIsAiMode}
             wikiData={currentWikiData}
-            isWikiLoading={isWikiLoading} // 🚨 [Fix] 상태 추가 전달
+            isWikiLoading={isWikiLoading} 
         />
       </div>
     </div>
