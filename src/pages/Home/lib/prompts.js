@@ -1,3 +1,6 @@
+// src/pages/Home/lib/prompts.js
+// 🚨 [New] AI LogBook 기능(에세이/SNS 모드)을 위한 프롬프트 생성기 추가
+
 const BASE_RULES = `
 - 모든 답변은 한국어로 한다.
 - 사용자의 질문에 친절하고 정중하게 답한다.
@@ -47,10 +50,9 @@ export const getSystemPrompt = (personaType, locationName = "") => {
   return config.system + locationContext;
 };
 
-// 🚨 [New] PlaceWikiDetailsView 상단 '실전 정보 요청' 버튼 전용 프롬프트
 export const getPracticalInfoPrompt = (locationName) => {
   return `당신은 제미나이의 강력한 웹 검색 능력을 활용하는 [${locationName}]의 베테랑 로컬 가이드입니다.
-위키백과 같은 뻔한 역사나 지리적 설명은 철저히 배제하고, 당장 내일 이곳으로 여행을 떠날 사람에게 필요한 "가장 최신의 실용적이고 생생한 현지 정보"만 제공하세요.
+위키백과 같은 뻔한 역사나 지리적 설명은 철저히 배제하고, 당장 내일 이곳으로 여행을 떠날 시크릿 꿀팁 등 "가장 최신의 실용적이고 생생한 현지 정보"만 제공하세요.
 
 반드시 아래 5가지 항목을 포함하여 마크다운(Markdown) 형식으로 가독성 좋고 깔끔하게 정리해주세요:
 
@@ -74,4 +76,39 @@ export const getPracticalInfoPrompt = (locationName) => {
 - 교통권 구매, 환전 팁, 혹은 특정 명소에 방문하기 가장 좋은 비밀 시간대 등 실전 꿀팁 1가지
 
 답변은 간결하고 현실적이며, 여행자의 가슴을 뛰게 하는 세련된 매거진 톤으로 작성하세요.`;
+};
+
+// 🚨 [New] AI LogBook 전용 프롬프트 생성 함수
+export const getLogbookPrompt = (mode, date, location, content) => {
+  const safeDate = date || '날짜 미상';
+  const safeLocation = location || '장소 미상';
+  const safeContent = content || '(내용 없음)';
+
+  const baseContext = `
+다음은 사용자가 흩어진 생각들을 대략적으로 기록한 파편화된 메모입니다.
+- 여행 날짜: ${safeDate}
+- 여행 장소: ${safeLocation}
+- 사용자의 원본 메모: "${safeContent}"
+`;
+
+  if (mode === 'essay') {
+    return `당신은 사람들의 마음을 울리는 감성적인 여행 에세이 작가입니다.${baseContext}
+이 투박한 메모를 바탕으로, 한 편의 서정적이고 감동적인 여행 수필을 작성해주세요.
+- 문체는 정중하고 차분한 독백체(~했습니다, ~였습니다, ~더군요)를 사용하세요.
+- 메모에 담긴 날짜와 장소의 분위기를 풍부한 묘사로 살려주세요.
+- 원본 메모의 사실관계와 감정선은 절대 훼손하지 말고, 문맥을 부드럽게 이어주며 살을 붙여주세요.
+- 불필요한 인사말이나 서론 없이, 곧바로 본문만 출력하세요.`;
+  }
+
+  if (mode === 'sns') {
+    return `당신은 팔로워들의 이목을 끄는 트렌디한 인스타그램/틱톡 여행 인플루언서입니다.${baseContext}
+이 메모를 바탕으로, 즉시 SNS 피드나 숏폼 캡션으로 업로드할 수 있는 매력적인 글을 작성해주세요.
+- 문체는 발랄하고 톡톡 튀며, 모바일에서 읽기 편하게 짧은 문장과 줄바꿈을 적극 활용하세요.
+- 시각적으로 지루하지 않게 이모지(✨, 🌴, ✈️, 📸 등)를 적절히 배치하세요.
+- 원본 메모의 핵심 정보를 트렌디한 화법으로 포장하세요.
+- 글의 맨 마지막에는 장소와 분위기에 어울리는 센스 있는 해시태그 5~7개를 덧붙여주세요.
+- 불필요한 인사말이나 서론 없이, 곧바로 캡션 본문만 출력하세요.`;
+  }
+
+  return "";
 };

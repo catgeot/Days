@@ -1,15 +1,9 @@
-// 🚨 [Fix/New] 라우터 이동(navigate)을 모두 제거하고 Context API(useReport)의 화면 전환으로 교체 완료.
-
 import React, { useState } from 'react';
 import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle } from 'lucide-react';
-
-// 🚨 [New] 전역 리모컨 로드
 import { useReport } from '../../../context/ReportContext';
 
 const RecentList = ({ reports, loading }) => {
-  // 🚨 [Fix] useNavigate 제거, 패널 스위치 장착
   const { setCurrentView, setSelectedId } = useReport();
-  
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -19,144 +13,123 @@ const RecentList = ({ reports, loading }) => {
     report.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // ✨ [핵심 변경 1] 뷰 모드 상관없이 갯수가 많으면 무조건 '압축 모드' 발동!
   const isCompact = filteredReports.length > 5;
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm min-h-[500px]">
+      <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 shadow-2xl min-h-[500px]">
         <div className="flex justify-between items-center mb-6">
-          <div className="h-6 w-32 bg-gray-100 rounded animate-pulse" />
-          <div className="h-8 w-48 bg-gray-100 rounded animate-pulse" />
+          <div className="h-6 w-32 bg-slate-800 rounded animate-pulse" />
+          <div className="h-8 w-48 bg-slate-800 rounded animate-pulse" />
         </div>
         <div className="space-y-4">
-          {[1, 2, 3].map((i) => <div key={i} className="h-28 bg-gray-100 rounded-xl animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-28 bg-slate-800/50 rounded-2xl animate-pulse border border-slate-700/30" />)}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col transition-all">
+    <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-2xl overflow-hidden min-h-[500px] flex flex-col transition-all">
       
       {/* 헤더 */}
-      <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white sticky top-0 z-10">
-        <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2 self-start sm:self-center">
-          <ClipboardList className="text-blue-600" size={20} />
-          {isCompact ? '최근 일보 (요약 보기)' : '최근 작성된 일보'}
+      <div className="p-5 sm:p-6 border-b border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-4 bg-transparent sticky top-0 z-10">
+        <h3 className="font-bold text-lg text-white flex items-center gap-2 self-start sm:self-center tracking-tight">
+          <ClipboardList className="text-blue-400" size={20} />
+          {isCompact ? '기록 저장소 (요약)' : '최근 기록 저장소'}
         </h3>
         
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-48 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={16} />
-            <input type="text" placeholder="검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 transition-all" />
-            {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"><XCircle size={14} /></button>}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-56 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors" size={16} />
+            <input type="text" placeholder="기억 검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-8 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+            {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"><XCircle size={14} /></button>}
           </div>
 
-          <div className="flex bg-gray-100 p-1 rounded-lg border border-gray-200 flex-shrink-0">
-            <button onClick={() => setViewMode('list')} className={`p-1.5 rounded-md ${viewMode === 'list' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}><ListIcon size={18} /></button>
-            <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded-md ${viewMode === 'grid' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}><LayoutGrid size={18} /></button>
+          <div className="flex bg-slate-800/80 p-1 rounded-xl border border-slate-700 flex-shrink-0">
+            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-slate-700 text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}><ListIcon size={16} /></button>
+            <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-slate-700 text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}><LayoutGrid size={16} /></button>
           </div>
         </div>
       </div>
 
       {/* 리스트 영역 */}
-      <div className="p-4 sm:p-6 flex-1 bg-gray-50/30">
+      <div className="p-5 sm:p-6 flex-1 bg-transparent">
         {reports.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center pb-10 mt-10">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300"><ClipboardList size={40} /></div>
-            <p className="text-gray-500 font-bold text-lg">아직 작성된 일보가 없습니다.</p>
-            <p className="text-gray-400 text-sm mt-1 mb-6">오늘의 첫 번째 현장 기록을 남겨보세요!</p>
-            {/* 🚨 [Fix] 새 일보 작성 파이프 교체 */}
+            <div className="w-24 h-24 bg-slate-800/50 rounded-full flex items-center justify-center mb-6 text-slate-600 border border-slate-700/50"><ClipboardList size={40} /></div>
+            <p className="text-slate-300 font-bold text-xl mb-2">기록된 우주가 없습니다.</p>
+            <p className="text-slate-500 text-sm mb-8 font-medium">당신만의 첫 번째 이야기를 남겨보세요.</p>
             <button 
               onClick={() => { setCurrentView('write'); setSelectedId(null); }} 
-              className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-6 py-3 rounded-full font-bold shadow-sm border border-blue-100"
+              className="flex items-center gap-2 bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-8 py-4 rounded-full font-bold border border-blue-500/30 transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)] hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
             >
               <PenTool size={18} /> 새 일보 작성하기
             </button>
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="text-center py-20 text-gray-400"><Search size={40} className="mx-auto mb-3 opacity-20" /><p>"{searchTerm}"에 대한 검색 결과가 없습니다.</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-2 hover:underline">전체 목록 보기</button></div>
+          <div className="text-center py-20 text-slate-500"><Search size={40} className="mx-auto mb-4 opacity-30" /><p className="text-lg">"{searchTerm}"에 대한 기억을 찾을 수 없습니다.</p><button onClick={() => setSearchTerm('')} className="text-blue-400 text-sm mt-3 hover:text-blue-300 underline underline-offset-4 transition-colors">전체 목록 보기</button></div>
         ) : (
-          
-          /* ✨ [핵심 변경 2] 바둑판 모드일 때, isCompact면 더 촘촘하게 배치 */
           <div className={viewMode === 'grid' 
-            ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3' : 'grid grid-cols-1 sm:grid-cols-2 gap-4') 
-            : `flex flex-col ${isCompact ? 'gap-2' : 'gap-4'}`
+            ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5') 
+            : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
           }>
             
             {filteredReports.map((report) => (
               <div 
                 key={report.id}
-                // 🚨 [Fix] 리스트 클릭 시 Detail 화면으로 전환하며 ID 전달
-                onClick={() => {
-                  setSelectedId(report.id);
-                  setCurrentView('detail');
-                }}
+                onClick={() => { setSelectedId(report.id); setCurrentView('detail'); }}
                 className={`
-                  group border border-gray-100 bg-white rounded-xl hover:border-blue-300 hover:shadow-md transition-all cursor-pointer overflow-hidden
-                  ${viewMode === 'grid' 
-                    /* ✨ [핵심 변경 3] 그리드 내용 여백 축소 (p-4 -> p-3) */
-                    ? (isCompact ? 'flex flex-col h-full' : 'flex flex-col h-full') 
-                    : (isCompact ? 'p-3 flex gap-3 items-center' : 'p-4 flex gap-4 items-start')
-                  }
+                  group bg-slate-800/40 border border-slate-700 rounded-2xl hover:border-blue-500/50 hover:bg-slate-800 transition-all cursor-pointer overflow-hidden hover:shadow-[0_0_20px_rgba(59,130,246,0.1)]
+                  ${viewMode === 'grid' ? 'flex flex-col h-full' : (isCompact ? 'p-3 flex gap-4 items-center' : 'p-5 flex gap-5 items-start')}
                 `}
               >
-                {/* 썸네일 영역 */}
                 <div className={`
-                  bg-gray-100 flex-shrink-0 overflow-hidden relative
-                  ${viewMode === 'grid' ? 'w-full aspect-video border-b border-gray-100' : (isCompact ? 'w-12 h-12 rounded-md border border-gray-100' : 'w-20 h-20 rounded-lg border border-gray-100')}
+                  bg-slate-900 flex-shrink-0 overflow-hidden relative
+                  ${viewMode === 'grid' ? 'w-full aspect-video border-b border-slate-700/50' : (isCompact ? 'w-16 h-16 rounded-xl border border-slate-700/50' : 'w-24 h-24 rounded-2xl border border-slate-700/50')}
                 `}>
                   {report.images && report.images.length > 0 ? (
-                    <img src={report.images[0]} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={report.images[0]} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
-                      <ImageIcon size={viewMode === 'grid' ? (isCompact ? 24 : 32) : (isCompact ? 16 : 20)} />
+                    <div className="w-full h-full flex items-center justify-center text-slate-600 bg-slate-800/50">
+                      <ImageIcon size={viewMode === 'grid' ? (isCompact ? 24 : 32) : (isCompact ? 16 : 24)} />
                     </div>
                   )}
-                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded backdrop-blur-sm ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{report.date}</div>}
+                  {viewMode === 'grid' && <div className={`absolute top-2 right-2 bg-black/70 backdrop-blur-md text-slate-200 px-2.5 py-1 rounded-md border border-slate-700/50 font-medium tracking-wide ${isCompact ? 'text-[10px]' : 'text-xs'}`}>{report.date}</div>}
                 </div>
 
-                {/* 텍스트 내용 영역 */}
-                <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-3 flex flex-col h-full' : 'p-4 flex flex-col h-full') : ''}`}>
-                  
-                  {/* 제목 & 날짜 */}
-                  <div className={`flex justify-between ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-1'}`}>
-                    {/* ✨ [핵심 변경 4] 그리드 제목 크기 축소 (text-lg -> text-sm) */}
-                    <h4 className={`font-bold text-gray-800 truncate pr-2 group-hover:text-blue-600 transition-colors ${viewMode === 'grid' ? (isCompact ? 'text-sm' : 'text-lg') : (isCompact ? 'text-sm' : 'text-lg')}`}>
+                <div className={`flex-1 min-w-0 ${viewMode === 'grid' ? (isCompact ? 'p-4 flex flex-col h-full' : 'p-5 flex flex-col h-full') : ''}`}>
+                  <div className={`flex justify-between ${isCompact && viewMode === 'list' ? 'items-center' : 'items-start mb-2'}`}>
+                    <h4 className={`font-bold text-slate-100 truncate pr-3 group-hover:text-blue-400 transition-colors tracking-tight ${viewMode === 'grid' ? (isCompact ? 'text-base' : 'text-xl') : (isCompact ? 'text-base' : 'text-xl')}`}>
                       {report.title}
                     </h4>
                     {viewMode === 'list' && (
-                      <span className={`text-xs text-gray-500 whitespace-nowrap bg-gray-50 px-2 rounded border border-gray-100 ${isCompact ? 'py-0.5' : 'py-1'}`}>
+                      <span className={`text-xs text-slate-400 whitespace-nowrap bg-slate-900/50 px-2.5 rounded-md border border-slate-700/50 font-medium tracking-wide ${isCompact ? 'py-1' : 'py-1.5'}`}>
                         {report.date}
                       </span>
                     )}
                   </div>
                   
-                  {/* 본문 미리보기 (리스트 압축일 땐 숨김 / 그리드 압축일 땐 1줄만) */}
                   {!(isCompact && viewMode === 'list') && (
-                    // ✨ [핵심 변경 5] 그리드 본문 줄 수 축소 (line-clamp-3 -> line-clamp-1)
-                    <p className={`text-sm text-gray-500 leading-relaxed ${viewMode === 'grid' ? (isCompact ? 'line-clamp-1 mb-2 text-xs flex-1' : 'line-clamp-3 mb-4 flex-1') : 'line-clamp-2 h-10'}`}>
+                    <p className={`text-sm text-slate-400 leading-relaxed font-light ${viewMode === 'grid' ? (isCompact ? 'line-clamp-2 mb-3 text-xs flex-1' : 'line-clamp-3 mb-4 flex-1') : 'line-clamp-2 h-10'}`}>
                       {report.content}
                     </p>
                   )}
                   
-                  {/* 하단 정보 */}
-                  <div className={`flex items-center gap-4 text-xs text-gray-400 ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-3') : (isCompact ? 'mt-auto pt-2 border-t border-gray-50' : 'mt-auto pt-3 border-t border-gray-50')}`}>
-                    <span className="flex items-center gap-1 truncate max-w-[150px]">
-                      <MapPin size={12} /> {report.location}
+                  <div className={`flex items-center gap-4 text-xs text-slate-500 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-slate-700/50' : 'mt-auto pt-4 border-t border-slate-700/50')}`}>
+                    <span className="flex items-center gap-1.5 truncate max-w-[150px]">
+                      <MapPin size={12} className="text-slate-600" /> {report.location}
                     </span>
                     {report.images && report.images.length > 1 && (
-                      <span className="flex items-center gap-1 text-blue-500 font-bold bg-blue-50 px-1.5 py-0.5 rounded ml-auto sm:ml-0">
+                      <span className="flex items-center gap-1 text-blue-400 font-bold bg-blue-900/30 border border-blue-800/30 px-2 py-0.5 rounded-md ml-auto sm:ml-0">
                         <ImageIcon size={10} /> +{report.images.length - 1}
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* 화살표 (리스트 모드 전용) */}
                 {viewMode === 'list' && !isCompact && (
-                  <div className="self-center text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all hidden sm:block">
+                  <div className="self-center text-slate-600 group-hover:text-blue-400 group-hover:translate-x-1.5 transition-all hidden sm:block pr-2">
                     <ChevronRight size={20} />
                   </div>
                 )}
@@ -167,11 +140,10 @@ const RecentList = ({ reports, loading }) => {
       </div>
 
       {filteredReports.length > 0 && (
-        <div className="bg-gray-50 border-t border-gray-100 p-3 text-center flex-shrink-0 text-xs text-gray-400">
-          총 {filteredReports.length}개의 기록 {isCompact && '(요약 보기 적용됨)'}
+        <div className="bg-slate-900 border-t border-slate-800/80 p-3.5 text-center flex-shrink-0 text-xs text-slate-500 font-medium tracking-wide">
+          총 {filteredReports.length}개의 기록 {isCompact && <span className="text-slate-600 ml-1">(요약 뷰)</span>}
         </div>
       )}
-
     </div>
   );
 };

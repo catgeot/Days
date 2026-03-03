@@ -52,43 +52,11 @@ export const recordInteraction = async (placeId, type) => {
   
   if (error) {
       console.warn("🚨 [Rank] Update failed:", error);
+      // 🚨 [Fix/Safe Path] DB 업데이트 실패 시, 다음 번에 다시 시도할 수 있도록 영수증(방어벽) 폐기
+      storage.removeItem(storageKey);
   } else {
       console.log(`📊 [Rank] Successfully added '${type}' score for ${placeId}.`);
   }
-};
-
-/**
- * 24시간 이내의 활성 핀 조회 (Safe-Start)
- */
-export const fetchActivePins = async () => {
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  
-  const { data, error } = await supabase
-    .from('scout_pins') 
-    .select('*')
-    .gt('created_at', oneDayAgo)
-    .order('created_at', { ascending: false })
-    .limit(5);
-
-  if (error) {
-    console.warn("🚨 [Pins] Fetch failed:", error);
-    return [];
-  }
-  return data;
-};
-
-/**
- * 휴지통: 임시 데이터 삭제
- */
-export const clearTemporaryData = async (userId) => {
-  if (!userId) return;
-  const { error } = await supabase
-    .from('scout_pins')
-    .delete()
-    .eq('user_id', userId)
-    .eq('category', 'scout'); 
-    
-  if (error) console.error("🚨 [Trash] Clean failed:", error);
 };
 
 // 🚨 [New] 유저 프로필 조회 함수 (Schema First: profiles 테이블 연동)

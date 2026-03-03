@@ -1,15 +1,7 @@
 import React from 'react';
 import { TrendingUp, BarChart2, ChevronDown } from 'lucide-react';
 
-const GraphCard = ({ 
-  graphMode, setGraphMode, 
-  graphYear, setGraphYear, 
-  availableYears, 
-  trendData, 
-  totalCount, 
-  maxCount 
-}) => {
-
+const GraphCard = ({ graphMode, setGraphMode, graphYear, setGraphYear, availableYears, trendData, totalCount, maxCount }) => {
   const handleToggle = () => {
     if (graphMode === 'total') setGraphMode('6m');
     else if (graphMode === '6m') setGraphMode('12m');
@@ -27,12 +19,13 @@ const GraphCard = ({
   const { title, icon } = getHeaderInfo();
 
   return (
+    // 🚨 [Fix] 높이 고정 및 테마 적용
     <div 
       onClick={handleToggle}
-      className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col relative overflow-hidden cursor-pointer hover:border-blue-400 transition-colors group"
+      className="bg-slate-900/60 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-2xl flex flex-col justify-between relative overflow-hidden cursor-pointer hover:border-blue-500/50 transition-colors group h-full min-h-[350px]"
     >
       <div className="flex items-center justify-between mb-2 z-10">
-        <span className="text-gray-500 text-sm flex items-center gap-1">
+        <span className="text-slate-400 text-sm flex items-center gap-1 font-medium">
           {icon} {title}
         </span>
         
@@ -41,40 +34,36 @@ const GraphCard = ({
             <select 
               value={graphYear}
               onChange={(e) => setGraphYear(Number(e.target.value))}
-              className="appearance-none bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 pl-2 pr-6 rounded-lg text-xs font-bold focus:outline-blue-500 cursor-pointer transition-colors"
+              className="appearance-none bg-slate-800 hover:bg-slate-700 text-slate-200 py-1.5 pl-3 pr-7 border border-slate-600 rounded-lg text-xs font-bold focus:outline-none transition-colors cursor-pointer"
             >
-              {availableYears.map(year => (
-                <option key={year} value={year}>{year}년</option>
-              ))}
+              {availableYears.map(year => <option key={year} value={year}>{year}년</option>)}
             </select>
-            <ChevronDown className="absolute right-1.5 top-1.5 text-gray-500 pointer-events-none" size={12} />
+            <ChevronDown className="absolute right-2 top-2 text-slate-400 pointer-events-none" size={12} />
           </div>
         )}
       </div>
 
-      <div className="flex-1 flex flex-col justify-end min-h-[120px]">
+      <div className="flex-1 flex flex-col justify-end min-h-[160px]">
         {graphMode !== 'total' ? (
-          /* 그래프 모드 (6m or 12m) */
           <div className="flex items-end justify-between w-full h-full gap-1 pt-4 animate-in fade-in duration-300">
             {trendData.map((item, idx) => (
-              <div key={idx} className="flex flex-col items-center gap-1 flex-1 h-full justify-end group/bar">
+              <div key={idx} className="flex flex-col items-center gap-2 flex-1 h-full justify-end group/bar">
                 
-                {/* 막대 영역 Container */}
                 <div className="w-full relative flex items-end justify-center h-full">
-                   {/* ✨ 실제 막대 (날씬해짐: w-2/3, 둥글게: rounded-t-md) */}
                    <div 
                     style={{ height: `${(item.count / maxCount) * 100}%` }}
-                    className={`w-2/3 rounded-t-md transition-all duration-500 ${item.count > 0 ? 'bg-blue-400 group-hover/bar:bg-blue-500' : 'bg-gray-100'}`}
-                  ></div>
+                    className={`w-2/3 rounded-t-lg transition-all duration-500 relative overflow-hidden ${item.count > 0 ? 'bg-blue-500/70 group-hover/bar:bg-blue-400 group-hover/bar:shadow-[0_0_15px_rgba(96,165,250,0.6)]' : 'bg-slate-800/50'}`}
+                  >
+                    {/* 네온 효과를 위한 내부 그라데이션 */}
+                    {item.count > 0 && <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20"></div>}
+                  </div>
                   
-                  {/* 툴팁 (숫자) */}
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-600 text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover/bar:opacity-100 group-hover/bar:-translate-y-1 transition-all whitespace-nowrap z-20 pointer-events-none shadow-lg">
                     {item.count}건
                   </div>
                 </div>
 
-                {/* 라벨 표시 */}
-                <span className="text-[10px] text-gray-400 font-medium whitespace-nowrap overflow-hidden">
+                <span className="text-[10px] text-slate-500 font-medium whitespace-nowrap overflow-hidden group-hover/bar:text-slate-300 transition-colors">
                   {graphMode === '12m' ? item.label.replace('월', '') : item.label}
                 </span>
 
@@ -82,20 +71,18 @@ const GraphCard = ({
             ))}
           </div>
         ) : (
-          /* 기본 모드: 전체 숫자 */
-          <div className="flex items-baseline justify-between w-full animate-in fade-in duration-300">
-            <div>
-               <p className="text-4xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
+          <div className="flex items-baseline justify-between w-full animate-in fade-in duration-300 h-full pb-4">
+            <div className="mt-auto">
+               <p className="text-6xl font-extrabold text-white tracking-tighter group-hover:text-blue-400 group-hover:drop-shadow-[0_0_15px_rgba(96,165,250,0.5)] transition-all">
                  {totalCount}
                </p>
-               <span className="text-gray-500 text-sm">Total Reports</span>
+               <span className="text-slate-500 text-sm font-medium tracking-widest uppercase mt-2 block">Total Reports</span>
             </div>
-            {/* 배경 미니바도 같이 날씬하게 */}
-            <div className="flex items-end gap-2 opacity-20 grayscale group-hover:grayscale-0 transition-all">
-               <div className="w-1.5 h-4 bg-blue-500 rounded-t"></div>
-               <div className="w-1.5 h-6 bg-blue-500 rounded-t"></div>
-               <div className="w-1.5 h-3 bg-blue-500 rounded-t"></div>
-               <div className="w-1.5 h-8 bg-blue-500 rounded-t"></div>
+            <div className="flex items-end gap-2 opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all mt-auto mb-2">
+               <div className="w-2 h-6 bg-blue-500 rounded-t-md shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
+               <div className="w-2 h-10 bg-purple-500 rounded-t-md shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
+               <div className="w-2 h-4 bg-pink-500 rounded-t-md shadow-[0_0_10px_rgba(236,72,153,0.8)]"></div>
+               <div className="w-2 h-14 bg-blue-400 rounded-t-md shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
             </div>
           </div>
         )}
