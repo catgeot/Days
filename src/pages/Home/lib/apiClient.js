@@ -1,23 +1,46 @@
-// src/lib/apiClient.js
+// src/pages/Home/lib/apiClient.js
 // 🚨 [Fix] Orientation 필터 제거 -> 웹 검색 결과와 동일한 풀(Pool) 확보
+// 🚨 [New] 멀티모달(Vision) 지원을 위해 images 매개변수 추가 및 parts 배열 동적 생성
+// 🚨 [Fix] 404 에러 해결 및 모델 티어 라우팅을 위해 엔드포인트를 gemini-2.0-flash로 전면 교체 (안정성 확보)
 
 export const apiClient = {
-  // Gemini 부분 유지...
-  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText) => {
+  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = []) => {
     try {
+      // 🚨 [Pessimistic First] 이미지가 없어도 안전하게 텍스트만 전송되도록 기본 배열 셋팅 (Safe Path)
+      const parts = [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }];
+
+      // 🚨 [New] Base64 이미지 데이터가 존재할 경우 Vision AI 처리를 위해 parts에 추가
+      if (images && images.length > 0) {
+        images.forEach((imgBase64) => {
+          // data URI 스킴(data:image/jpeg;base64,...)에서 mimeType과 순수 base64 데이터를 분리
+          const mimeTypeMatch = imgBase64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,/);
+          const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
+          const base64Data = imgBase64.replace(/^data:image\/\w+;base64,/, "");
+          
+          parts.push({
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
+            }
+          });
+        });
+      }
+
+      // 🚨 [Fix] gemini-1.5-flash-latest -> gemini-2.0-flash 교체
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{
               role: "user",
-              parts: [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }]
+              parts: parts
             }]
           })
         }
       );
+      
       if (!response.ok) throw new Error(`Gemini API Error: ${response.status}`);
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
@@ -34,8 +57,7 @@ export const apiClient = {
       
       const encodedQuery = encodeURIComponent(query);
       
-      // 🚨 [Change] 'orientation=landscape' 제거 & 'order_by=relevant' 명시
-      // 이제 세로 사진도 포함되며, Unsplash 웹의 기본 정렬(관련순)을 따릅니다.
+      // 'orientation=landscape' 제거 & 'order_by=relevant' 명시
       const response = await fetch(
         `https://api.unsplash.com/search/photos?page=1&query=${encodedQuery}&per_page=30&order_by=relevant`,
         { headers: { Authorization: `Client-ID ${accessKey}` } }

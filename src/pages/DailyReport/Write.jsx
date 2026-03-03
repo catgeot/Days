@@ -1,7 +1,9 @@
-// src/pages/DailyReport/Write.jsx (경로에 맞게 확인)
+// src/pages/DailyReport/Write.jsx
 // 🚨 [Fix] 달력에서 전달한 preSelectedDate를 최우선으로 받도록 날짜 로직 보강
 // 🚨 [Fix/Subtraction] 비관적 설계: 모바일 환경 '현재 위치 적용' 렌더링 제외 (Safe Path)
 // 🚨 [New] GATEO 정체성 반영: 'Midnight Canvas' 다크/글래스모피즘 UI 전면 적용
+// 🚨 [New] Vision AI 연동: 이미지 Base64 변환 및 멀티모달 프롬프트 전송 로직 추가
+// 🚨 [Fix] 클로저 함정 극복: 지역 변수를 활용한 100% 안전한 롤백(Safe Path) 보장
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
@@ -11,6 +13,16 @@ import imageCompression from 'browser-image-compression';
 import { useReport } from '../../context/ReportContext';
 import { getLogbookPrompt } from '../Home/lib/prompts'; 
 import { apiClient } from '../../pages/Home/lib/apiClient';
+
+// 파일 객체를 Base64 문자열로 변환하는 유틸리티 함수
+const convertToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+};
 
 const Write = () => {
   const { setCurrentView, selectedId, setSelectedId, preSelectedDate, setPreSelectedDate } = useReport();
@@ -112,15 +124,18 @@ const Write = () => {
   const removeNewImage = (index) => { setImageFiles(prev => prev.filter((_, i) => i !== index)); setPreviewUrls(prev => prev.filter((_, i) => i !== index)); };
   const removeExistingImage = (index) => { setExistingImages(prev => prev.filter((_, i) => i !== index)); };
 
-  // 🚨 [Fix] 시뮬레이터 제거 및 실제 Gemini API 클라이언트 연결
   const handleAIPolish = async (mode) => {
-    if (!content.trim()) {
-      alert("AI가 변환할 내용이 없습니다. 키워드나 짧은 메모라도 먼저 작성해주세요.");
+    if (!content.trim() && imageFiles.length === 0) {
+      alert("AI가 분석할 내용이나 사진이 없습니다. 짧은 메모나 사진을 먼저 추가해주세요.");
       return;
     }
 
-    // 비관적 설계: 통신 전 원본 데이터 백업
-    setBackupData({ title, content });
+    // 🚨 [Fix] 클로저(Closure) 함정 방지: 통신 실패 시 즉각 롤백을 위해 동기적 지역 변수에 원본 데이터 캡처
+    const originalTitle = title;
+    const originalContent = content;
+
+    // UI 복원 버튼 노출용 상태 업데이트
+    setBackupData({ title: originalTitle, content: originalContent });
     setIsAILoading(true);
 
     try {
@@ -132,29 +147,39 @@ const Write = () => {
         return;
       }
 
-      // 2. 프롬프트 생성
-      const prompt = getLogbookPrompt(mode, date, mapLocation, content);
+      // 2. 이미지 Base64 인코딩
+      let base64Images = [];
+      if (imageFiles.length > 0) {
+        try {
+          base64Images = await Promise.all(imageFiles.map(file => convertToBase64(file)));
+        } catch (imgError) {
+          console.warn("이미지 변환 중 일부 오류가 발생했습니다. 변환된 이미지만 전송합니다.", imgError);
+        }
+      }
+
+      // 3. 프롬프트 생성 (사진 갯수 기반 치환자 전략 가동)
+      const prompt = getLogbookPrompt(mode, date, mapLocation, content, imageFiles.length);
       
-      // 3. API 호출
-      // getLogbookPrompt에서 이미 페르소나와 지시사항이 완결된 형태로 나오므로, 
-      // systemInstruction은 기본값으로 두고 userText에 통합된 프롬프트를 전달합니다.
+      // 4. API 호출 (gemini-2.0-flash 로 라우팅됨)
       const resultText = await apiClient.fetchGeminiResponse(
         apiKey,
-        [], // history (단발성 요청이므로 빈 배열)
-        "다음 사용자의 메모를 지시사항에 맞게 변환해주세요.", // systemInstruction
-        prompt // userText
+        [], 
+        "다음 사용자의 메모와 첨부된 사진을 분석하여 지시사항에 맞게 변환해주세요.", 
+        prompt,
+        base64Images 
       );
 
-      // 4. 결과 적용
+      // 5. 결과 적용
       setContent(resultText); 
       if (!title) setTitle(`${mapLocation ? mapLocation : '어느 멋진 곳'}에서의 기록`);
       
     } catch (error) {
       console.error("AI 변환 실패:", error);
       alert("AI 변환 통신 중 오류가 발생했습니다. 원본을 안전하게 유지합니다.");
-      // 실패 시 즉각 롤백
-      setTitle(backupData.title);
-      setContent(backupData.content);
+      
+      // 🚨 [Fix/Subtraction] 상태 변수(backupData)에 의존하지 않고, 동기적인 지역 변수로 즉시 롤백 (안전 보장)
+      setTitle(originalTitle);
+      setContent(originalContent);
       setBackupData(null);
     } finally {
       setIsAILoading(false);
@@ -220,13 +245,11 @@ const Write = () => {
     }
   };
 
-  // 🚨 [New] Hero 배경 이미지 결정 로직 (업로드된 첫 번째 사진)
   const heroImageUrl = previewUrls[0] || existingImages[0] || null;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden pb-20 font-sans" onClick={() => setShowSuggestions(false)}>
       
-      {/* 🚨 [New] Hero Background (Glassmorphism & Blur Effect) */}
       {heroImageUrl && (
         <div className="absolute inset-0 z-0 opacity-20 transition-opacity duration-700">
           <img src={heroImageUrl} alt="Hero Background" className="w-full h-full object-cover blur-3xl scale-110" />
@@ -235,7 +258,6 @@ const Write = () => {
       )}
 
       <div className="relative z-10 max-w-3xl mx-auto pt-8 px-4 sm:px-6">
-        {/* 헤더 */}
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => { setCurrentView('dashboard'); setSelectedId(null); setPreSelectedDate(null); }} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full backdrop-blur-md">
             <ArrowLeft size={24} />
@@ -245,10 +267,8 @@ const Write = () => {
           </h2>
         </div>
 
-        {/* 🚨 [New] Glassmorphism 메인 캔버스 */}
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col gap-8">
           
-          {/* 날짜/위치 입력 (Borderless) */}
           <div className="flex flex-col sm:flex-row gap-8 sm:gap-6">
             <div className="flex-1">
               <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Date</label>
@@ -275,7 +295,6 @@ const Write = () => {
                 />
                 <MapPin className="absolute left-0 top-2.5 text-slate-500" size={18} />
                 
-                {/* 🚨 [New] 드롭다운 다크 테마 적용 */}
                 {showSuggestions && recentLocations.length > 0 && (
                   <div className="absolute z-50 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl mt-2 overflow-hidden backdrop-blur-lg">
                      {recentLocations.map((loc, idx) => (
@@ -287,12 +306,10 @@ const Write = () => {
             </div>
           </div>
 
-          {/* 제목 입력 (타이포그래피 강조) */}
           <div>
             <input type="text" className="w-full bg-transparent border-none outline-none text-3xl sm:text-4xl font-bold text-white placeholder-slate-700 tracking-tight" placeholder="제목을 입력하세요" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading} />
           </div>
 
-          {/* 사진 첨부 영역 */}
           <div>
             <div className="flex justify-between items-end mb-4">
               <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Memories</label>
@@ -312,12 +329,10 @@ const Write = () => {
 
           <div className="w-full h-px bg-slate-800/80 my-2"></div>
           
-          {/* 내용 및 AI 다듬기 영역 */}
           <div className="flex flex-col gap-4">
             <div className="flex items-end justify-between">
               <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Story</label>
               
-              {/* 🚨 [New] AI 컨트롤 영역 (Neon Glow) */}
               {!backupData ? (
                 <div className="flex gap-2">
                   <button onClick={() => handleAIPolish('essay')} disabled={isAILoading} className="group relative flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-purple-200 bg-purple-900/40 border border-purple-500/30 rounded-full hover:bg-purple-800/60 disabled:opacity-50 transition-all overflow-hidden shadow-[0_0_15px_rgba(168,85,247,0.2)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]">
@@ -342,13 +357,12 @@ const Write = () => {
               value={content} 
               onChange={(e) => setContent(e.target.value)} 
               disabled={isAILoading} 
-              placeholder={isAILoading ? "AI가 영감을 불어넣고 있습니다..." : "머릿속에 맴도는 단어나 짧은 문장들을 툭툭 던져보세요. AI가 완벽한 이야기로 다듬어 드립니다."} 
+              placeholder={isAILoading ? "AI가 위성 사진을 분석하며 영감을 불어넣고 있습니다..." : "머릿속에 맴도는 단어나 짧은 문장, 혹은 사진을 먼저 추가해보세요. AI가 완벽한 이야기로 다듬어 드립니다."} 
             />
           </div>
 
         </div>
 
-        {/* 저장 버튼 (플로팅 스타일) */}
         <div className="mt-8 flex justify-end">
           <button onClick={handleSave} disabled={uploading || isAILoading} className="bg-blue-600/90 backdrop-blur-md text-white px-8 py-4 rounded-full font-bold hover:bg-blue-500 flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] active:scale-95 disabled:bg-slate-700 disabled:shadow-none">
             {uploading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
