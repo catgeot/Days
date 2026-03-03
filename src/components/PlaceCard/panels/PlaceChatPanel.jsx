@@ -1,9 +1,3 @@
-// src/components/PlaceCard/panels/PlaceChatPanel.jsx
-// 🚨 [Fix/New] 수정 이유: 
-// 1. [Fix] 모바일 시인성 개선 (Subtraction): 복잡한 투명 그라데이션 배경을 제거하고, 불투명한 블러 배경(bg-[#05070a]/90)과 하단 테두리를 추가하여 갤러리와 헤더 영역을 시각적/구조적으로 완벽히 분리.
-// 2. [Fix] 터치 환경 최적화: 뒤로가기 버튼(w-10 h-10) 및 우측 메뉴 버튼들의 패딩(px-2.5 py-1.5)과 간격(gap-2)을 모바일 권장 규격으로 확대하여 오터치 방지 및 클릭 환경 개선.
-// 3. [Fix] 기존 isWikiLoading 로직 및 중복 폰트 제거 로직 유지.
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react'; 
 import PlaceChatView from '../views/PlaceChatView';
@@ -54,18 +48,14 @@ const PlaceChatPanel = ({
   };
 
   return (
-    // 🚨 [Fix] 그라데이션(bg-gradient-to-b) 제거 -> 솔리드 블러(bg-[#05070a]/90 backdrop-blur-md) 배경 교체
     <div className={`flex flex-col transition-all duration-500
         ${isFullScreen ? 'opacity-0 md:translate-x-[-100%]' : 'opacity-100 translate-x-0'} 
         absolute top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-2 md:pb-0 md:border-none md:rounded-none
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}> 
       
       {/* Header */}
-      {/* 🚨 [Fix] h-16 -> h-[72px], px-2 -> px-3 적용으로 헤더 여유 공간 확보 */}
       <div className={`h-[72px] md:h-20 shrink-0 items-center justify-between px-3 md:px-3 md:border-b md:border-white/5 bg-transparent z-20 mt-1 md:mt-0 gap-3 md:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
-         
          <div className="flex items-center gap-3 md:gap-4 overflow-hidden flex-1 min-w-0">
-             {/* 🚨 [Fix] 모바일 뒤로가기 버튼 w-10 h-10 규격 확대 */}
              <button onClick={onClose} className="flex items-center justify-center w-10 h-10 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
                  <ArrowLeft className="w-5 h-5 md:w-4 md:h-4" />
              </button>
@@ -81,7 +71,6 @@ const PlaceChatPanel = ({
          </div>
 
          {/* Buttons Area */}
-         {/* 🚨 [Fix] 버튼 gap-2 확대, 모바일 px-2.5 py-1.5 적용으로 터치 영역 충분히 확보 */}
          <div className="shrink-0 flex items-center gap-2 md:gap-1.5">
             <button 
                 onClick={() => openReport('dashboard', location.id)}
@@ -163,6 +152,7 @@ const PlaceChatPanel = ({
                 wikiData={wikiData} 
                 isWikiLoading={isWikiLoading} 
                 onNavClick={handleWikiNavClick} 
+                placeName={location.name} 
             />
         ) : (
             <div className="animate-fade-in flex flex-col gap-6 p-8">
@@ -182,8 +172,8 @@ const PlaceChatPanel = ({
         )}
       </div>
 
-      {/* Footer */}
-      {!isChatMode && (
+      {/* Footer - 🚨 [Fix] 백과(WIKI) 모드일 때는 하단 채팅창을 숨김 처리 */}
+      {!isChatMode && mediaMode !== 'WIKI' && (
           <div className="hidden md:block p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
               <button 
                 onClick={() => setIsChatMode(true)} 

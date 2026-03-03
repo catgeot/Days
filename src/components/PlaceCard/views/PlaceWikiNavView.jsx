@@ -1,53 +1,78 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookOpen, Sparkles } from 'lucide-react';
 
-const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick }) => {
-  // 🚨 [New] 원격 트리거 핸들러
+const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName }) => {
+  const [activeSection, setActiveSection] = useState(null); // 🚨 [New] 활성화 상태
+
   const handleRemoteAiRequest = () => {
-      window.dispatchEvent(new CustomEvent('request-ai-info'));
+      setActiveSection('ai');
+      window.dispatchEvent(new CustomEvent('request-ai-info', { 
+          detail: { placeName: placeName } 
+      }));
+  };
+
+  const handleSectionClick = (idx) => {
+      setActiveSection(idx);
+      onNavClick(`wiki-section-${idx}`);
   };
 
   return (
-    <div className="animate-fade-in flex flex-col gap-4 p-8">
-      <h2 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
+    // 🚨 [Fix] 전체 컨테이너를 h-full flex flex-col로 변경하여 하단 고정 기반 마련
+    <div className="animate-fade-in flex flex-col h-full p-8 pb-6">
+      <h2 className="text-white font-bold text-lg mb-4 flex items-center gap-2 shrink-0">
         <BookOpen size={18} className="text-amber-400" />
         문서 목차
       </h2>
       
       {isWikiLoading ? (
-        <div className="flex flex-col gap-3 animate-pulse">
+        <div className="flex flex-col gap-3 animate-pulse flex-1">
             {[1, 2, 3, 4].map(i => (
                 <div key={i} className="h-10 bg-white/5 border border-white/5 rounded-xl w-full"></div>
             ))}
         </div>
       ) : wikiData && wikiData.sections && wikiData.sections.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          {wikiData.sections.map((sec, idx) => (
-            <button 
-              key={idx} 
-              onClick={() => onNavClick(`wiki-section-${idx}`)}
-              className="text-left px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white transition-all text-sm border border-white/5 group"
-            >
-              <span className="text-amber-500/50 group-hover:text-amber-400 mr-2">{idx + 1}.</span> 
-              {sec.title}
-            </button>
-          ))}
-          
-          {/* 🚨 [New] 제미나이 원격 요청 버튼 (Nav용) */}
-          <div className="mt-4 pt-4 border-t border-white/10">
-              <button 
-                  onClick={handleRemoteAiRequest}
-                  className="w-full group flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-xl transition-all duration-300 shadow-lg"
-              >
-                  <Sparkles size={16} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-bold text-gray-200 tracking-wide">
-                      제미나이에게 최신 정보 받기
-                  </span>
-              </button>
-          </div>
-        </div>
+        <>
+            {/* 🚨 [Fix] 목차 영역: 내용이 넘치면 자체 스크롤 (flex-1 overflow-y-auto) */}
+            <div className="flex flex-col gap-2 flex-1 overflow-y-auto custom-scrollbar pr-2 pb-4">
+              {wikiData.sections.map((sec, idx) => (
+                <button 
+                  key={idx} 
+                  onClick={() => handleSectionClick(idx)}
+                  className={`text-left px-4 py-3 rounded-xl transition-all text-sm border group
+                      ${activeSection === idx 
+                          ? 'bg-white/10 border-white/20 text-white font-medium shadow-md' 
+                          : 'bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border-white/5'
+                      }
+                  `}
+                >
+                  <span className={`${activeSection === idx ? 'text-amber-400' : 'text-amber-500/50 group-hover:text-amber-400'} mr-2`}>
+                      {idx + 1}.
+                  </span> 
+                  {sec.title}
+                </button>
+              ))}
+            </div>
+            
+            {/* 🚨 [Fix] 하단 고정 영역 (mt-auto shrink-0) */}
+            <div className="mt-auto pt-4 border-t border-white/10 shrink-0">
+                <button 
+                    onClick={handleRemoteAiRequest}
+                    className={`w-full group flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 shadow-lg border
+                        ${activeSection === 'ai'
+                            ? 'bg-gradient-to-r from-blue-600/40 to-purple-600/40 border-blue-400/50 ring-2 ring-blue-500/30'
+                            : 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border-blue-500/30'
+                        }
+                    `}
+                >
+                    <Sparkles size={16} className={`group-hover:scale-110 transition-transform ${activeSection === 'ai' ? 'text-white' : 'text-blue-400'}`} />
+                    <span className={`text-sm font-bold tracking-wide ${activeSection === 'ai' ? 'text-white' : 'text-gray-200'}`}>
+                        제미나이에게 최신 정보 받기
+                    </span>
+                </button>
+            </div>
+        </>
       ) : (
-        <p className="text-gray-400 text-sm">등록된 목차가 없습니다.</p>
+        <p className="text-gray-400 text-sm flex-1">등록된 목차가 없습니다.</p>
       )}
     </div>
   );

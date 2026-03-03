@@ -49,7 +49,7 @@ export const getSystemPrompt = (personaType, locationName = "") => {
 
 // 🚨 [New] PlaceWikiDetailsView 상단 '실전 정보 요청' 버튼 전용 프롬프트
 export const getPracticalInfoPrompt = (locationName) => {
-  return `당신은 제미나이 2.0의 강력한 웹 검색 능력을 활용하는 [${locationName}]의 베테랑 로컬 가이드입니다.
+  return `당신은 제미나이의 강력한 웹 검색 능력을 활용하는 [${locationName}]의 베테랑 로컬 가이드입니다.
 위키백과 같은 뻔한 역사나 지리적 설명은 철저히 배제하고, 당장 내일 이곳으로 여행을 떠날 사람에게 필요한 "가장 최신의 실용적이고 생생한 현지 정보"만 제공하세요.
 
 반드시 아래 5가지 항목을 포함하여 마크다운(Markdown) 형식으로 가독성 좋고 깔끔하게 정리해주세요:

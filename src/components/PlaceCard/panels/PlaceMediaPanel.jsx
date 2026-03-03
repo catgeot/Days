@@ -16,11 +16,13 @@ const PlaceMediaPanel = ({
     onAiModeChange,
     wikiData,
     isWikiLoading,
-    location // 🚨 [Fix] location 객체 수신 추가
+    location
 }) => {
   return (
     <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
-        {mediaMode === 'GALLERY' ? (
+        
+        {/* 🚨 [Fix] 컴포넌트를 삭제하지 않고 CSS로 숨겨서 상태(State) 보존 */}
+        <div className={`w-full h-full ${mediaMode === 'GALLERY' ? 'block' : 'hidden'}`}>
             <PlaceGalleryView 
                 images={galleryData.images}
                 isImgLoading={galleryData.isImgLoading}
@@ -32,7 +34,9 @@ const PlaceMediaPanel = ({
                 showUI={showUI}
                 handleDownload={galleryData.handleDownload}
             />
-        ) : mediaMode === 'VIDEO' ? (
+        </div>
+
+        <div className={`w-full h-full ${mediaMode === 'VIDEO' ? 'block' : 'hidden'}`}>
             <YouTubePlayerView 
                 ref={playerRef}
                 videos={videos}
@@ -42,13 +46,16 @@ const PlaceMediaPanel = ({
                 showUI={showUI}
                 onVideoSelect={onVideoSelect}
             />
-        ) : (
+        </div>
+
+        <div className={`w-full h-full ${mediaMode === 'WIKI' ? 'block' : 'hidden'}`}>
             <PlaceWikiDetailsView 
                 wikiData={wikiData} 
                 isWikiLoading={isWikiLoading}
-                placeName={location?.name} // 🚨 [Fix] 정확한 지명을 하위 뷰로 전달
+                placeName={location?.name} 
             />
-        )}
+        </div>
+
     </div>
   );
 };
