@@ -2,7 +2,7 @@
 // 🚨 [Fix] 라우터 의존성(useParams, useNavigate) 제거 및 Context 연결 유지
 // 🚨 [New] Midnight Canvas 테마 적용 (다크모드, 글래스모피즘, Hero 배경)
 // 🚨 [New] [사진N] 치환자를 실제 이미지로 파싱하는 블로그식 렌더링 로직 추가
-// 🚨 [New] 외부 블로그(네이버, 티스토리) 복사/붙여넣기(Rich Text) 지원 기능 추가
+// 🚨 [Fix/Subtraction] 복잡한 <a> 태그 제거 및 순수 URL 텍스트(https://gateo.kr) 노출로 외부 블로그 자동 링크 유도
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
@@ -26,7 +26,7 @@ const Detail = () => {
 
   const handleDelete = async () => {
     if (window.confirm("이 기록을 삭제하시겠습니까? (안전하게 숨김 처리됩니다)")) {
-      // 🚨 [Fix/Safe Path] 데이터 영구 유실 방지 원칙에 따라 delete() 대신 Soft Delete (업데이트) 적용
+      // 데이터 영구 유실 방지 원칙에 따라 delete() 대신 Soft Delete (업데이트) 적용
       const { error } = await supabase.from('reports').update({ is_deleted: true }).eq('id', selectedId);
       
       if(error) {
@@ -39,7 +39,7 @@ const Detail = () => {
     }
   };
 
-  // 🚨 [New] HTML Rich Text 클립보드 복사 로직 (블로그 내보내기용)
+  // HTML Rich Text 클립보드 복사 로직 
   const handleExportBlog = async () => {
     if (!report) return;
 
@@ -63,10 +63,13 @@ const Detail = () => {
         }
       });
 
-      const footerHtml = `<br/><blockquote style="border-left: 4px solid #3b82f6; padding-left: 14px; margin-top: 40px; color: #888; font-style: italic; background: #f8fafc; padding: 16px; border-radius: 0 8px 8px 0;">이 글은 <strong>Project Days (GATEO)</strong>의 AI LogBook을 통해 작성되었습니다.</blockquote>`;
+      // 🚨 [Fix/Subtraction] 에디터 보안 필터링 우회를 위해 순수 URL 노출 방식으로 변경
+      const footerHtml = `<br/><blockquote style="border-left: 4px solid #3b82f6; padding-left: 14px; margin-top: 40px; color: #888; font-style: italic; background: #f8fafc; padding: 16px; border-radius: 0 8px 8px 0;">이 글은 <strong>GATEO</strong>의 AI LogBook을 통해 작성되었습니다.<br/>🌐 https://gateo.kr</blockquote>`;
 
       const finalHtml = `<div style="font-family: sans-serif; max-width: 800px; margin: 0 auto;">${titleHtml}${metaHtml}${bodyHtml}${footerHtml}</div>`;
-      const plainText = `${report.title}\n일자: ${report.date} | 위치: ${report.location}\n\n${report.content}\n\n> 이 글은 Project Days (GATEO)의 AI LogBook을 통해 작성되었습니다.`;
+      
+      // Plain Text 환경 Fallback
+      const plainText = `${report.title}\n일자: ${report.date} | 위치: ${report.location}\n\n${report.content}\n\n> 이 글은 GATEO의 AI LogBook을 통해 작성되었습니다.\n> https://gateo.kr`;
 
       if (window.ClipboardItem) {
         const blobHtml = new Blob([finalHtml], { type: 'text/html' });
@@ -88,18 +91,15 @@ const Detail = () => {
     }
   };
 
-  // 🚨 [New] 블로그식 동적 렌더링 파서
   const renderBlogContent = (content, images) => {
     if (!content) return null;
     
-    // 치환자를 기준으로 텍스트를 분리
     const regex = /(\[사진\s*\d+\])/g;
     const parts = content.split(regex);
 
     return parts.map((part, index) => {
       const match = part.match(/\[사진\s*(\d+)\]/);
       
-      // 1. 치환자일 경우 이미지 컴포넌트로 변환
       if (match) {
         const imgIndex = parseInt(match[1], 10) - 1;
         if (images[imgIndex]) {
@@ -115,10 +115,9 @@ const Detail = () => {
             </div>
           );
         }
-        return null; // 이미지가 매칭되지 않으면 렌더링하지 않음 (Safe Path)
+        return null; 
       }
       
-      // 2. 일반 텍스트 렌더링
       if (part.trim() !== '') {
         return (
           <p key={index} className="text-lg leading-[1.8] text-slate-300 whitespace-pre-wrap font-light mb-6">
@@ -134,14 +133,13 @@ const Detail = () => {
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
-  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content); // 치환자 존재 여부 검사
+  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content); 
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden pb-20 font-sans">
       
-      {/* Hero Background */}
       {heroImageUrl && (
-        <div className="absolute inset-0 z-0 opacity-20 transition-opacity duration-700">
+        <div className="absolute inset-0 z-0 opacity-20 transition-opacity duration-700 pointer-events-none">
           <img src={heroImageUrl} alt="Hero" className="w-full h-full object-cover blur-3xl scale-110" />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/80 to-slate-950"></div>
         </div>
@@ -149,14 +147,12 @@ const Detail = () => {
 
       <div className="relative z-10 max-w-3xl mx-auto pt-8 px-4 sm:px-6">
         
-        {/* 헤더 컨트롤 */}
         <div className="flex justify-between items-center mb-8">
           <button onClick={() => { setCurrentView('dashboard'); setSelectedId(null); }} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full backdrop-blur-md">
             <ArrowLeft size={24} />
           </button>
           
           <div className="flex gap-2 sm:gap-3">
-            {/* 🚨 [New] 블로그 내보내기 버튼 */}
             <button 
               onClick={handleExportBlog} 
               className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full transition-all border text-sm font-medium backdrop-blur-md
@@ -170,7 +166,7 @@ const Detail = () => {
               <span className="sm:hidden">{isCopied ? '완료' : '내보내기'}</span>
             </button>
 
-            <div className="w-px h-6 bg-slate-700/50 my-auto mx-1"></div>
+            <div className="w-px h-6 bg-slate-700/50 my-auto mx-1 hidden sm:block"></div>
 
             <button onClick={() => setCurrentView('write')} className="flex items-center gap-1.5 bg-slate-800/60 backdrop-blur-md text-slate-300 px-3 sm:px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-colors border border-slate-700/50 text-sm font-medium">
               <Edit size={16} /> <span className="hidden sm:inline">수정</span>
@@ -181,7 +177,6 @@ const Detail = () => {
           </div>
         </div>
 
-        {/* Glassmorphism 메인 캔버스 */}
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 p-6 sm:p-10 rounded-3xl shadow-2xl">
           
           <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -191,14 +186,12 @@ const Detail = () => {
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-10 tracking-tight leading-tight">{report.title}</h1>
 
-          {/* 🚨 [Subtraction] 기존의 상단 갤러리 렌더링 방어 로직 */}
-          {/* 본문에 [사진1] 등의 치환자가 없다면(과거에 작성된 글 등) 기존처럼 상단에 모아서 보여줌 */}
           {!hasPlaceholders && images.length > 0 && (
             <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden
               ${images.length === 1 ? 'grid-cols-1' : ''} 
               ${images.length === 2 ? 'grid-cols-2' : ''} 
               ${images.length === 3 ? 'grid-cols-3' : ''} 
-              ${images.length === 4 ? 'grid-cols-2' : ''} 
+              ${images.length >= 4 ? 'grid-cols-2' : ''} 
             `}>
               {images.map((img, idx) => (
                 <div key={idx} className={`relative group ${images.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
@@ -214,7 +207,6 @@ const Detail = () => {
             </div>
           )}
 
-          {/* 🚨 [New] 블로그식 본문 렌더링 (치환자 파싱) */}
           <div className="mt-8">
             {hasPlaceholders ? renderBlogContent(report.content, images) : (
               <div className="text-lg leading-relaxed text-slate-300 whitespace-pre-wrap font-light">

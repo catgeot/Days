@@ -1,32 +1,18 @@
 // src/pages/DailyReport/Write.jsx
-// 🚨 [Fix] 달력에서 전달한 preSelectedDate를 최우선으로 받도록 날짜 로직 보강
-// 🚨 [Fix/Subtraction] 비관적 설계: 모바일 환경 '현재 위치 적용' 렌더링 제외 (Safe Path)
-// 🚨 [New] GATEO 정체성 반영: 'Midnight Canvas' 다크/글래스모피즘 UI 전면 적용
-// 🚨 [New] Vision AI 연동: 이미지 Base64 변환 및 멀티모달 프롬프트 전송 로직 추가
-// 🚨 [Fix] 클로저 함정 극복: 지역 변수를 활용한 100% 안전한 롤백(Safe Path) 보장
+// 🚨 [Fix] UI 고도화: 스티키 헤더 구축 및 저장/생성 버튼의 명확한 디자인 분리
+// 🚨 [Fix] 레이어드 구조: 각 입력 섹션(날짜, 제목, 사진, 본문)을 독립된 카드로 분리
+// 🚨 [New] 상태 피드백 강화: 10장 일괄 압축 진행률 및 AI 생성 단계별 텍스트 애니메이션 추가
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2 } from 'lucide-react';
-import imageCompression from 'browser-image-compression';
 
 import { useReport } from '../../context/ReportContext';
-import { getLogbookPrompt } from '../Home/lib/prompts'; 
-import { apiClient } from '../../pages/Home/lib/apiClient';
-
-// 파일 객체를 Base64 문자열로 변환하는 유틸리티 함수
-const convertToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-};
+import { useLogbookMedia } from './hooks/useLogbookMedia';
+import { useLogbookAI } from './hooks/useLogbookAI';
 
 const Write = () => {
   const { setCurrentView, selectedId, setSelectedId, preSelectedDate, setPreSelectedDate } = useReport();
-  
   const isEditMode = Boolean(selectedId);
 
   const getLocalDate = () => {
@@ -40,18 +26,25 @@ const Write = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [mapLocation, setMapLocation] = useState(''); 
-  
-  const [imageFiles, setImageFiles] = useState([]);
-  const [previewUrls, setPreviewUrls] = useState([]); 
-  const [existingImages, setExistingImages] = useState([]); 
   const [uploading, setUploading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [recentLocations, setRecentLocations] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const [isAILoading, setIsAILoading] = useState(false);
-  const [backupData, setBackupData] = useState(null);
+  // 🚨 [New] AI 생성 진행 상태 텍스트 (지루함 방지용)
+  const [aiLoadingMsg, setAiLoadingMsg] = useState('');
 
+  const { 
+    imageFiles, previewUrls, existingImages, setExistingImages, 
+    handleImageChange, removeNewImage, removeExistingImage, heroImageUrl,
+    isCompressing, compressProgress // 추가된 상태
+  } = useLogbookMedia();
+
+  const { 
+    isAILoading, backupData, handleAIPolish, handleRestoreBackup 
+  } = useLogbookAI(title, setTitle, content, setContent, date, mapLocation);
+
+  // 초기 데이터 로드
   useEffect(() => {
     return () => setPreSelectedDate(null);
   }, [setPreSelectedDate]);
@@ -72,24 +65,29 @@ const Write = () => {
       }
       
       if (user) {
-        const { data: historyData } = await supabase
-          .from('reports')
-          .select('location')
-          .eq('user_id', user.id) 
-          .neq('location', null)  
-          .neq('location', '')    
-          .order('date', { ascending: false })
-          .limit(20);
-
+        const { data: historyData } = await supabase.from('reports').select('location').eq('user_id', user.id).neq('location', null).neq('location', '').order('date', { ascending: false }).limit(20);
         if (historyData) {
           const uniqueLocs = [...new Set(historyData.map(item => item.location))].slice(0, 5);
           setRecentLocations(uniqueLocs);
         }
       }
     };
-
     loadInitialData();
-  }, [selectedId, isEditMode]);
+  }, [selectedId, isEditMode, setExistingImages]);
+
+  // 🚨 [New] AI 로딩 시 동적 메시지 변경 로직 (인내심 보완)
+  useEffect(() => {
+    if (isAILoading) {
+      const msgs = ["위성 통신망 연결 중...", "사진 속 감성을 읽어내는 중...", "문장의 맥락을 조율하는 중...", "마지막 퇴고를 진행 중입니다..."];
+      let i = 0;
+      setAiLoadingMsg(msgs[0]);
+      const timer = setInterval(() => {
+        i = (i + 1) % msgs.length;
+        setAiLoadingMsg(msgs[i]);
+      }, 3000);
+      return () => clearInterval(timer);
+    }
+  }, [isAILoading]);
 
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) return alert("위치 정보를 지원하지 않습니다.");
@@ -107,101 +105,10 @@ const Write = () => {
     );
   };
 
-  const handleImageChange = async (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-    const totalCount = existingImages.length + imageFiles.length + files.length;
-    if (totalCount > 4) { alert("사진은 최대 4장까지만 업로드 가능합니다."); return; }
-    const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
-    try {
-      const compressedFiles = await Promise.all(files.map(file => imageCompression(file, options)));
-      setImageFiles(prev => [...prev, ...compressedFiles]);
-      const newPreviews = compressedFiles.map(file => URL.createObjectURL(file));
-      setPreviewUrls(prev => [...prev, ...newPreviews]);
-    } catch (error) { console.error("이미지 압축 실패:", error); }
-  };
-
-  const removeNewImage = (index) => { setImageFiles(prev => prev.filter((_, i) => i !== index)); setPreviewUrls(prev => prev.filter((_, i) => i !== index)); };
-  const removeExistingImage = (index) => { setExistingImages(prev => prev.filter((_, i) => i !== index)); };
-
-  const handleAIPolish = async (mode) => {
-    if (!content.trim() && imageFiles.length === 0) {
-      alert("AI가 분석할 내용이나 사진이 없습니다. 짧은 메모나 사진을 먼저 추가해주세요.");
-      return;
-    }
-
-    // 🚨 [Fix] 클로저(Closure) 함정 방지: 통신 실패 시 즉각 롤백을 위해 동기적 지역 변수에 원본 데이터 캡처
-    const originalTitle = title;
-    const originalContent = content;
-
-    // UI 복원 버튼 노출용 상태 업데이트
-    setBackupData({ title: originalTitle, content: originalContent });
-    setIsAILoading(true);
-
-    try {
-      // 1. 환경 변수 검증 (Safe Path)
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) {
-        alert("시스템 오류: AI 통신 키가 존재하지 않습니다.");
-        setIsAILoading(false);
-        return;
-      }
-
-      // 2. 이미지 Base64 인코딩
-      let base64Images = [];
-      if (imageFiles.length > 0) {
-        try {
-          base64Images = await Promise.all(imageFiles.map(file => convertToBase64(file)));
-        } catch (imgError) {
-          console.warn("이미지 변환 중 일부 오류가 발생했습니다. 변환된 이미지만 전송합니다.", imgError);
-        }
-      }
-
-      // 3. 프롬프트 생성 (사진 갯수 기반 치환자 전략 가동)
-      const prompt = getLogbookPrompt(mode, date, mapLocation, content, imageFiles.length);
-      
-      // 4. API 호출 (gemini-2.0-flash 로 라우팅됨)
-      const resultText = await apiClient.fetchGeminiResponse(
-        apiKey,
-        [], 
-        "다음 사용자의 메모와 첨부된 사진을 분석하여 지시사항에 맞게 변환해주세요.", 
-        prompt,
-        base64Images 
-      );
-
-      // 5. 결과 적용
-      setContent(resultText); 
-      if (!title) setTitle(`${mapLocation ? mapLocation : '어느 멋진 곳'}에서의 기록`);
-      
-    } catch (error) {
-      console.error("AI 변환 실패:", error);
-      alert("AI 변환 통신 중 오류가 발생했습니다. 원본을 안전하게 유지합니다.");
-      
-      // 🚨 [Fix/Subtraction] 상태 변수(backupData)에 의존하지 않고, 동기적인 지역 변수로 즉시 롤백 (안전 보장)
-      setTitle(originalTitle);
-      setContent(originalContent);
-      setBackupData(null);
-    } finally {
-      setIsAILoading(false);
-    }
-  };
-
-  const handleRestoreBackup = () => {
-    if (!backupData) return;
-    setTitle(backupData.title);
-    setContent(backupData.content);
-    setBackupData(null);
-  };
-
   const handleSave = async () => {
     if (!title) return alert("제목을 입력해주세요!");
-
     const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      alert("작성하신 내용을 저장하려면 로그인이 필요합니다.");
-      return;
-    }
+    if (!user) return alert("로그인이 필요합니다.");
 
     setUploading(true);
     let finalImageUrls = [...existingImages];
@@ -219,15 +126,7 @@ const Write = () => {
       const newUrls = await Promise.all(uploadPromises);
       finalImageUrls = [...finalImageUrls, ...newUrls];
 
-      const reportData = {
-        title,
-        content,
-        location: mapLocation || '위치 미지정',
-        date,
-        images: finalImageUrls,
-        weather: '맑음',
-        user_id: user.id 
-      };
+      const reportData = { title, content, location: mapLocation || '위치 미지정', date, images: finalImageUrls, weather: '맑음', user_id: user.id };
 
       if (isEditMode) {
         await supabase.from('reports').update(reportData).eq('id', selectedId);
@@ -245,132 +144,149 @@ const Write = () => {
     }
   };
 
-  const heroImageUrl = previewUrls[0] || existingImages[0] || null;
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden pb-20 font-sans" onClick={() => setShowSuggestions(false)}>
+    <div className="min-h-screen bg-slate-950 text-slate-100 relative font-sans" onClick={() => setShowSuggestions(false)}>
       
+      {/* Hero Background */}
       {heroImageUrl && (
-        <div className="absolute inset-0 z-0 opacity-20 transition-opacity duration-700">
+        <div className="fixed inset-0 z-0 opacity-20 transition-opacity duration-1000 pointer-events-none">
           <img src={heroImageUrl} alt="Hero Background" className="w-full h-full object-cover blur-3xl scale-110" />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/80 to-slate-950"></div>
         </div>
       )}
 
-      <div className="relative z-10 max-w-3xl mx-auto pt-8 px-4 sm:px-6">
-        <div className="flex items-center gap-4 mb-8">
-          <button onClick={() => { setCurrentView('dashboard'); setSelectedId(null); setPreSelectedDate(null); }} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full backdrop-blur-md">
-            <ArrowLeft size={24} />
+      {/* 🚨 [New] 스티키 헤더 (컨트롤 타워) */}
+      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl px-4 sm:px-6 py-3 flex items-center justify-between">
+        
+        {/* 헤더 좌측: 네비게이션 */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          <button onClick={() => { setCurrentView('dashboard'); setSelectedId(null); setPreSelectedDate(null); }} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full">
+            <ArrowLeft size={20} />
           </button>
-          <h2 className="text-2xl font-semibold tracking-tight text-white/90">
+          <h2 className="text-lg font-semibold text-white/90 hidden sm:block">
             {isEditMode ? 'LogBook 수정' : '새로운 LogBook'}
           </h2>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col gap-8">
+        {/* 헤더 우측: 액션 버튼들 (명확한 디자인 분리) */}
+        <div className="flex items-center gap-2 sm:gap-4">
           
-          <div className="flex flex-col sm:flex-row gap-8 sm:gap-6">
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Date</label>
-              <input type="date" className="w-full bg-transparent border-b border-slate-700 focus:border-blue-500 outline-none py-2 text-slate-100 transition-colors" value={date} onChange={(e) => setDate(e.target.value)} disabled={isAILoading} />
+          {/* AI 창작 구역 (글래스모피즘 + 네온) */}
+          {!backupData ? (
+            <div className="flex gap-1 sm:gap-2 bg-slate-900/50 p-1 rounded-full border border-slate-700/50">
+              <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 text-xs font-bold text-purple-200 bg-purple-900/20 border border-purple-500/30 rounded-full hover:bg-purple-800/40 disabled:opacity-50 transition-all">
+                {isAILoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} className="text-purple-400" />}
+                <span className="hidden sm:inline">감성 에세이</span>
+                <span className="sm:hidden">에세이</span>
+              </button>
+              <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 text-xs font-bold text-pink-200 bg-pink-900/20 border border-pink-500/30 rounded-full hover:bg-pink-800/40 disabled:opacity-50 transition-all">
+                {isAILoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} className="text-pink-400" />}
+                <span className="hidden sm:inline">SNS 숏폼</span>
+                <span className="sm:hidden">숏폼</span>
+              </button>
             </div>
-            
-            <div className="flex-1 relative" onClick={(e) => e.stopPropagation()}>
-              <label className="flex justify-between text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">
-                Location
-                <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading || isAILoading} className="hidden md:flex text-blue-400 items-center gap-1 hover:text-blue-300 transition-colors disabled:opacity-50">
-                  {locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />}
-                  현재 위치
-                </button>
-              </label>
-              <div className="relative">
-                <input type="text" 
-                  className="w-full bg-transparent border-b border-slate-700 focus:border-blue-500 outline-none py-2 pl-8 text-slate-100 placeholder-slate-600 transition-colors" 
-                  value={mapLocation} 
-                  onChange={(e) => setMapLocation(e.target.value)} 
-                  onFocus={() => setShowSuggestions(true)} 
-                  placeholder="어디에 다녀오셨나요?"
-                  autoComplete="off"
-                  disabled={isAILoading}
-                />
-                <MapPin className="absolute left-0 top-2.5 text-slate-500" size={18} />
-                
-                {showSuggestions && recentLocations.length > 0 && (
-                  <div className="absolute z-50 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl mt-2 overflow-hidden backdrop-blur-lg">
-                     {recentLocations.map((loc, idx) => (
-                        <div key={idx} className="px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer flex items-center gap-3 transition-colors" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="text-slate-500" />{loc}</div>
-                      ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          ) : (
+            <button onClick={handleRestoreBackup} disabled={isAILoading || isCompressing} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-300 bg-slate-800 rounded-full hover:bg-slate-700 border border-slate-600 transition-colors">
+              <Undo2 size={14} /> 원본 복구
+            </button>
+          )}
 
-          <div>
-            <input type="text" className="w-full bg-transparent border-none outline-none text-3xl sm:text-4xl font-bold text-white placeholder-slate-700 tracking-tight" placeholder="제목을 입력하세요" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading} />
-          </div>
+          <div className="w-px h-6 bg-slate-700/50 hidden sm:block"></div>
 
-          <div>
-            <div className="flex justify-between items-end mb-4">
-              <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Memories</label>
-              <span className="text-xs text-slate-500 font-medium">{existingImages.length + previewUrls.length} / 4</span>
-            </div>
-            <div className="grid grid-cols-4 gap-3 sm:gap-4">
-              {existingImages.map((url, idx) => ( <div key={`exist-${idx}`} className="relative aspect-square group"><img src={url} className="w-full h-full object-cover rounded-2xl border border-slate-700/50" /><button onClick={() => removeExistingImage(idx)} disabled={isAILoading} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"><X size={14} /></button></div> ))}
-              {previewUrls.map((url, idx) => ( <div key={`new-${idx}`} className="relative aspect-square group"><img src={url} className="w-full h-full object-cover rounded-2xl border border-slate-700/50" /><button onClick={() => removeNewImage(idx)} disabled={isAILoading} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"><X size={14} /></button></div> ))}
-              {(existingImages.length + previewUrls.length) < 4 && (
-                <label className={`aspect-square border border-dashed border-slate-700 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-slate-500 hover:bg-slate-800/50 text-slate-500 hover:text-slate-300 transition-all ${isAILoading ? 'opacity-50 pointer-events-none' : ''}`}>
-                  <ImageIcon size={24} className="mb-2" /><span className="text-xs font-medium">사진 추가</span>
-                  <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" disabled={isAILoading} />
-                </label>
-              )}
-            </div>
-          </div>
-
-          <div className="w-full h-px bg-slate-800/80 my-2"></div>
-          
-          <div className="flex flex-col gap-4">
-            <div className="flex items-end justify-between">
-              <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Story</label>
-              
-              {!backupData ? (
-                <div className="flex gap-2">
-                  <button onClick={() => handleAIPolish('essay')} disabled={isAILoading} className="group relative flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-purple-200 bg-purple-900/40 border border-purple-500/30 rounded-full hover:bg-purple-800/60 disabled:opacity-50 transition-all overflow-hidden shadow-[0_0_15px_rgba(168,85,247,0.2)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)]">
-                    {isAILoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} className="text-purple-400 group-hover:animate-pulse" />}
-                    감성 에세이
-                  </button>
-                  <button onClick={() => handleAIPolish('sns')} disabled={isAILoading} className="group relative flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-pink-200 bg-pink-900/40 border border-pink-500/30 rounded-full hover:bg-pink-800/60 disabled:opacity-50 transition-all shadow-[0_0_15px_rgba(236,72,153,0.2)] hover:shadow-[0_0_20px_rgba(236,72,153,0.5)]">
-                    {isAILoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} className="text-pink-400 group-hover:animate-pulse" />}
-                    SNS 숏폼
-                  </button>
-                </div>
-              ) : (
-                <button onClick={handleRestoreBackup} disabled={isAILoading} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-300 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors border border-slate-600">
-                  <Undo2 size={14} />
-                  원본 복구
-                </button>
-              )}
-            </div>
-
-            <textarea 
-              className={`w-full bg-transparent border-none resize-none outline-none text-lg leading-relaxed text-slate-200 placeholder-slate-700 min-h-[300px] ${isAILoading ? 'opacity-50' : ''}`} 
-              value={content} 
-              onChange={(e) => setContent(e.target.value)} 
-              disabled={isAILoading} 
-              placeholder={isAILoading ? "AI가 위성 사진을 분석하며 영감을 불어넣고 있습니다..." : "머릿속에 맴도는 단어나 짧은 문장, 혹은 사진을 먼저 추가해보세요. AI가 완벽한 이야기로 다듬어 드립니다."} 
-            />
-          </div>
-
-        </div>
-
-        <div className="mt-8 flex justify-end">
-          <button onClick={handleSave} disabled={uploading || isAILoading} className="bg-blue-600/90 backdrop-blur-md text-white px-8 py-4 rounded-full font-bold hover:bg-blue-500 flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] active:scale-95 disabled:bg-slate-700 disabled:shadow-none">
-            {uploading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
-            {uploading ? '위성 업로드 중...' : (isEditMode ? '수정 완료' : 'GATEO에 기록하기')}
+          {/* 최종 저장 구역 (솔리드 블루) */}
+          <button onClick={handleSave} disabled={uploading || isAILoading || isCompressing} className="bg-blue-600 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 rounded-full font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-[0_0_15px_rgba(37,99,235,0.4)] disabled:bg-slate-700 disabled:shadow-none transition-all">
+            {uploading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            <span className="hidden sm:inline">{isEditMode ? '수정 완료' : 'GATEO에 기록하기'}</span>
+            <span className="sm:hidden">저장</span>
           </button>
         </div>
 
-      </div>
+      </header>
+
+      {/* 🚨 [New] 메인 캔버스: 레이어드 섹션 구조 */}
+      <main className="relative z-10 max-w-3xl mx-auto pt-8 pb-24 px-4 sm:px-6 flex flex-col gap-6">
+        
+        {/* 섹션 1: 날짜 & 위치 카드 */}
+        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 shadow-lg flex flex-col sm:flex-row gap-6">
+          <div className="flex-1">
+            <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Date</label>
+            <input type="date" className="w-full bg-transparent border-b border-slate-700 focus:border-blue-500 outline-none py-2 text-slate-100 transition-colors" value={date} onChange={(e) => setDate(e.target.value)} disabled={isAILoading || isCompressing} />
+          </div>
+          <div className="flex-1 relative" onClick={(e) => e.stopPropagation()}>
+            <label className="flex justify-between text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">
+              Location 
+              <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading || isAILoading || isCompressing} className="text-blue-400 items-center gap-1 hover:text-blue-300 transition-colors disabled:opacity-50 hidden md:flex">
+                {locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />} 현재 위치
+              </button>
+            </label>
+            <div className="relative">
+              <input type="text" className="w-full bg-transparent border-b border-slate-700 focus:border-blue-500 outline-none py-2 pl-8 text-slate-100 placeholder-slate-600 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="어디에 다녀오셨나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
+              <MapPin className="absolute left-0 top-2.5 text-slate-500" size={18} />
+              {showSuggestions && recentLocations.length > 0 && (
+                <div className="absolute z-50 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl mt-2 overflow-hidden backdrop-blur-lg">
+                   {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer flex items-center gap-3 transition-colors" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="text-slate-500" />{loc}</div>))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* 섹션 2: 제목 카드 */}
+        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg">
+          <input type="text" className="w-full bg-transparent border-none outline-none text-3xl sm:text-4xl font-bold text-white placeholder-slate-700 tracking-tight" placeholder="제목을 입력하세요" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
+        </section>
+
+        {/* 섹션 3: 사진 카드 (10장 지원 및 압축 피드백) */}
+        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+          
+          {/* 🚨 [New] 압축 로딩 오버레이 */}
+          {isCompressing && (
+            <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-400">
+              <Loader2 size={36} className="animate-spin mb-4" />
+              <p className="font-semibold text-sm">위성 통신망으로 사진을 압축 중입니다...</p>
+              <p className="text-xs text-blue-300 mt-2 font-mono">Processing: {compressProgress.current} / {compressProgress.total}</p>
+            </div>
+          )}
+
+          <div className="flex justify-between items-end mb-4">
+            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Memories</label>
+            <span className="text-xs text-slate-500 font-medium">{existingImages.length + previewUrls.length} / 10</span>
+          </div>
+          
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
+            {existingImages.map((url, idx) => ( <div key={`exist-${idx}`} className="relative aspect-square group"><img src={url} className="w-full h-full object-cover rounded-2xl border border-slate-700/50" /><button onClick={() => removeExistingImage(idx)} disabled={isAILoading || isCompressing} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"><X size={14} /></button></div> ))}
+            {previewUrls.map((url, idx) => ( <div key={`new-${idx}`} className="relative aspect-square group"><img src={url} className="w-full h-full object-cover rounded-2xl border border-slate-700/50" /><button onClick={() => removeNewImage(idx)} disabled={isAILoading || isCompressing} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"><X size={14} /></button></div> ))}
+            {(existingImages.length + previewUrls.length) < 10 && (
+              <label className={`aspect-square border border-dashed border-slate-700 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-slate-500 hover:bg-slate-800/50 text-slate-500 hover:text-slate-300 transition-all ${isAILoading || isCompressing ? 'opacity-50 pointer-events-none' : ''}`}>
+                <ImageIcon size={24} className="mb-2" /><span className="text-xs font-medium text-center px-1">사진 추가<br/>(일괄 선택)</span>
+                <input type="file" accept="image/*" multiple onChange={(e) => handleImageChange(e, isAILoading)} className="hidden" disabled={isAILoading || isCompressing} />
+              </label>
+            )}
+          </div>
+        </section>
+
+        {/* 섹션 4: 스토리 본문 카드 */}
+        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden min-h-[400px]">
+          
+          {/* 🚨 [New] AI 생성 로딩 오버레이 (동적 메시지) */}
+          {isAILoading && (
+            <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-purple-400">
+              <Loader2 size={36} className="animate-spin mb-4" />
+              <p className="font-semibold text-sm animate-pulse text-center px-4">{aiLoadingMsg}</p>
+            </div>
+          )}
+
+          <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-4">Story</label>
+          <textarea 
+            className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[1.8] text-slate-200 placeholder-slate-700 h-full min-h-[350px]" 
+            value={content} 
+            onChange={(e) => setContent(e.target.value)} 
+            disabled={isAILoading || isCompressing} 
+            placeholder="사진을 여러 장 선택해 올린 뒤, 상단의 [감성 에세이] 버튼을 눌러보세요. AI가 멋진 블로그 글을 작성해 줍니다." 
+          />
+        </section>
+
+      </main>
     </div>
   );
 };
