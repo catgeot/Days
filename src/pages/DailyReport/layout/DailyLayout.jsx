@@ -1,18 +1,20 @@
-// 🚨 [Fix] text-gray-900 추가: Home(지구본)의 text-white 저주가 하위로 상속되어 입력창 글씨가 투명해지는 스텔스 버그 완벽 차단!
-// 🚨 [Fix/New] 모바일 대응: 좌우 분할(flex-row)을 모바일에서 상하 분할(flex-col)로 변경. 
-// 모바일 전용 얇은 Top Bar를 신설하여 홈(지구본) 복귀 및 로그아웃 기능 이식.
+// src/pages/DailyReport/layout/DailyLayout.jsx
+// 🚨 [Fix/New] 수정 이유:
+// 1. [Routing] {children} 렌더링 방식을 React Router v6의 <Outlet />으로 교체하여 중첩 라우팅 정상화.
+// 2. [Subtraction] useReport 전역 상태 의존성(closeReport) 완전 제거.
+// 3. [Safe Path] 상태 변경 대신 useNavigate를 사용하여 홈('/')으로 강제 회군(Deep Linking).
 
 import React, { useState, useEffect } from 'react';
-import Sidebar from './Sidebar';
+import Sidebar from './Sidebar'; // 기존 사이드바 컴포넌트 유지
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase'; 
-import { useReport } from '../../../context/ReportContext';
+// 🚨 [New] 라우터 제어용 훅 임포트
+import { Outlet, useNavigate } from 'react-router-dom';
 
-const DailyLayout = ({ children }) => {
-  const { closeReport } = useReport();
+const DailyLayout = () => {
+  const navigate = useNavigate(); // 🚨 [New] URL 네비게이션 훅
   const [user, setUser] = useState(null);
 
-  // 🚨 [Safe Path] 모바일 헤더용 유저 상태 독립적 확보 (사이드바 의존성 탈피)
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
@@ -24,18 +26,20 @@ const DailyLayout = ({ children }) => {
   const handleLogout = async () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       await supabase.auth.signOut();
-      closeReport();
+      navigate('/'); // 🚨 [Fix] 로그아웃 시 closeReport() 대신 홈 URL로 라우팅
     }
   };
 
+  const handleGoHome = () => {
+    navigate('/'); // 🚨 [Fix] 홈 버튼 클릭 시 closeReport() 대신 홈 URL로 라우팅
+  };
+
   return (
-    // 🚨 모바일에서는 세로 배치(flex-col), PC(md 이상)에서는 기존 가로 배치(flex-row) 유지
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
       
-      {/* 🚨 [New] 모바일 전용 헤더 (PC에서는 hidden으로 완벽 은닉) */}
       <div className="md:hidden w-full h-14 bg-[#1a1c23] flex items-center justify-between px-4 shrink-0 border-b border-gray-800 z-50">
         <button 
-          onClick={closeReport} 
+          onClick={handleGoHome} // 🚨 [Fix] 함수 교체
           className="text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
         >
           <Globe size={20} />
@@ -45,7 +49,7 @@ const DailyLayout = ({ children }) => {
         {user && (
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-400 truncate max-w-[120px]">
-              {user.email.split('@')[0]}
+              {user?.email?.split('@')[0]}
             </span>
             <button 
               onClick={handleLogout} 
@@ -57,12 +61,13 @@ const DailyLayout = ({ children }) => {
         )}
       </div>
 
-      {/* 1. 왼쪽 고정 사이드바 (DailyReport 전용) - 내부에 md:flex로 PC에서만 렌더링되도록 처리됨 */}
+      {/* 1. 왼쪽 고정 사이드바 (DailyReport 전용) */}
       <Sidebar />
 
       {/* 2. 오른쪽 컨텐츠 영역 */}
       <div className="flex-1 h-full overflow-y-auto relative">
-        {children}
+        {/* 🚨 [Fix] {children}에서 <Outlet />으로 전면 교체 (자식 라우트 렌더링 공간) */}
+        <Outlet />
       </div>
 
     </div>

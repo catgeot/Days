@@ -1,12 +1,18 @@
+// 🚨 [Fix/New] 수정 이유:
+// 1. [Subtraction] useReport 전역 상태 의존성 완전 제거.
+// 2. [Routing] Log 버튼을 <button>에서 <Link to="/report">로 전면 교체하여 딥링킹 통합.
+// 3. [Safe Path] 기존 openReport로 전달하던 location.id는 Router의 state={{ placeId: location.id }}로 안전하게 이관.
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react'; 
+import { Link } from 'react-router-dom'; // 🚨 [New] 라우터 훅 추가
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import PlaceWikiNavView from '../views/PlaceWikiNavView'; 
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
-import { useReport } from '../../../context/ReportContext';
+// 🚨 [Fix] useReport 임포트 제거
 
 const PlaceChatPanel = ({ 
     location,
@@ -26,7 +32,6 @@ const PlaceChatPanel = ({
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
-  const { openReport } = useReport();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -72,13 +77,15 @@ const PlaceChatPanel = ({
 
          {/* Buttons Area */}
          <div className="shrink-0 flex items-center gap-2 md:gap-1.5">
-            <button 
-                onClick={() => openReport('dashboard', location.id)}
+            {/* 🚨 [Fix] <button>을 <Link>로 변경하고 state로 데이터 전달 */}
+            <Link 
+                to="/report"
+                state={{ placeId: location.id }} 
                 className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-white/10 md:bg-white/5 hover:bg-white/20 text-white shadow-lg border border-white/20 md:border-white/10 transition-all flex items-center gap-1.5 md:gap-2 group"
             >
                 <PenTool className="w-3.5 h-3.5 md:w-3.5 md:h-3.5 text-emerald-400 group-hover:scale-110 transition-transform"/> 
                 <span className="hidden md:inline text-[11px] font-bold tracking-wider">Log</span>
-            </button>
+            </Link>
 
             <button 
                 onClick={() => setMediaMode(mediaMode === 'WIKI' ? 'GALLERY' : 'WIKI')}
@@ -172,7 +179,7 @@ const PlaceChatPanel = ({
         )}
       </div>
 
-      {/* Footer - 🚨 [Fix] 백과(WIKI) 모드일 때는 하단 채팅창을 숨김 처리 */}
+      {/* Footer */}
       {!isChatMode && mediaMode !== 'WIKI' && (
           <div className="hidden md:block p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
               <button 

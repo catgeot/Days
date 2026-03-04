@@ -1,10 +1,7 @@
 // src/pages/Home/components/HomeUI.jsx
-// 🚨 [Fix/New] 여행 계획(Ticket) 버튼 제거 및 'AI 대화하기' 단일 메인 버튼으로 UI 통합 (뺄셈의 미학)
-// 🚨 [New] 좌측 하단 Admin 버튼 옆에 LogBook 전용 다이렉트 진입 버튼 추가
-// 🚨 [New] 좌측 상단 테마 버튼 옆에 Zen Mode (Leaf) 버튼 추가 및 연동 완료.
-// 🚨 [Fix] 모바일 대응: 검색바, Ticker, View 컨트롤 모바일 숨김 / 카테고리 하단 이동 / 주요 기능 우측 상단 묶음
-// 🚨 [Fix] 모바일 UI 증발(Z-index) 및 레이아웃 붕괴 방지: fixed 포지션 변경, 하단 안전 여백(bottom-8) 추가, 아이콘 순서 변경(테마->AI->로그북)
-// 🚨 [Fix] 모바일 검색 안전 설계 도입: Overlay 구조(DOM 붕괴 차단), 투명 방어막(Backdrop) 클릭 시 닫힘 처리, Ref 분리
+// 🚨 [Fix/New] 수정 이유:
+// 1. [Subtraction] useReport 전역 상태 의존성(openReport) 완전 제거 (좀비 코드 청산).
+// 2. [Routing] 모바일 및 데스크탑의 Logbook 버튼을 <button>에서 <Link to="/report">로 교체하여 Deep Linking 완성.
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
@@ -18,7 +15,7 @@ import { Link } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker'; 
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
-import { useReport } from '../../../context/ReportContext';
+// 🚨 [Fix] useReport 임포트 완전 제거 (뺄셈)
 
 const HomeUI = ({ 
   onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick, 
@@ -36,16 +33,13 @@ const HomeUI = ({
   const [inputValue, setInputValue] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   
-  // 🚨 [Fix] 데스크탑과 모바일 Input의 Ref를 분리하여 포커스 충돌 방지
   const inputRef = useRef(null);
   const mobileInputRef = useRef(null);
   
   const trendingData = useTrendingData();
-  const { openReport } = useReport();
 
   useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
   
-  // 모바일 검색창 열릴 때 자동 포커스
   useEffect(() => {
     if (isMobileSearchOpen && mobileInputRef.current) {
       mobileInputRef.current.focus();
@@ -89,7 +83,6 @@ const HomeUI = ({
 
   return (
     <>
-      {/* 🚨 [New] 투명 방어막: 모바일 검색창 활성화 시 바탕 화면 터치 감지 후 닫기 */}
       {isMobileSearchOpen && (
         <div 
           className="fixed inset-0 z-[45] pointer-events-auto touch-none" 
@@ -104,10 +97,7 @@ const HomeUI = ({
           <h1 className="text-2xl md:text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
         </div>
 
-        {/* 🚨 [Fix] 모바일 우측 상단 버튼 그룹: Overlay 방식으로 레이아웃 붕괴 원천 차단 */}
         <div className="flex md:hidden items-center gap-2 pt-2 pointer-events-auto animate-fade-in-down delay-75 h-10 relative">
-            
-            {/* 기본 우측 상단 아이콘들은 숨기거나 DOM에서 지우지 않음 (Safe Path) */}
             <button onClick={() => setIsMobileSearchOpen(true)} className="w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors shadow-lg">
               <Search size={14} />
             </button>
@@ -117,11 +107,12 @@ const HomeUI = ({
             <button onClick={() => onOpenChat()} className="w-9 h-9 flex-shrink-0 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-500/30 flex items-center justify-center shadow-lg">
               <MessageSquare size={14} className="text-blue-400" />
             </button>
-            <button onClick={() => openReport('dashboard')} className="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg">
+            
+            {/* 🚨 [Fix] 모바일 Logbook 버튼 <Link>로 전환 */}
+            <Link to="/report" className="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg hover:bg-emerald-500/30 transition-colors">
               <PenTool size={14} className="text-emerald-400" />
-            </button>
+            </Link>
 
-            {/* 🚨 [New] 오버레이 확장형 검색바 (기존 버튼 위를 절대 좌표로 덮음) */}
             <div className={`absolute right-0 top-2 flex items-center bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-300 overflow-hidden shadow-2xl z-50 origin-right ${isMobileSearchOpen ? 'w-[75vw] opacity-100 h-9 px-2' : 'w-0 opacity-0 h-9 px-0 pointer-events-none'}`}>
               <Search size={14} className="text-blue-400 flex-shrink-0 ml-1" />
               <input 
@@ -141,7 +132,7 @@ const HomeUI = ({
             </div>
         </div>
 
-        {/* 2. Globe Theme & Zen Mode Toggle (데스크탑 전용 렌더링) */}
+        {/* 2. Globe Theme & Zen Mode Toggle */}
         <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
            <button 
              onClick={onThemeToggle} 
@@ -160,7 +151,7 @@ const HomeUI = ({
            </button>
         </div>
 
-        {/* 3. Omni-box (데스크탑 전용 렌더링) */}
+        {/* 3. Omni-box */}
         <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative z-50">
            <div className="relative group w-full max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -172,7 +163,7 @@ const HomeUI = ({
           </div>
         </div>
         
-        {/* 4. Controls: Toggle + Cleaner (모바일 숨김) */}
+        {/* 4. Controls */}
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto relative z-50">
            <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
@@ -180,7 +171,7 @@ const HomeUI = ({
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        {/* 5. Ticker (모바일 숨김) */}
+        {/* 5. Ticker */}
         <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-auto relative z-50">
           <TravelTicker 
             data={trendingData} 
@@ -212,7 +203,7 @@ const HomeUI = ({
          </div>
       </div>
 
-      {/* 태그 리스트: 모바일 활성화 및 컴팩트화 */}
+      {/* 태그 리스트 */}
       {(isTagLoading || relatedTags.length > 0) && (
         <div className="flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">
               {!isTagLoading && relatedTags.map((tag, idx) => (
@@ -234,12 +225,13 @@ const HomeUI = ({
               <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">ADMIN</span>
           </Link>
           
-          <button onClick={() => openReport('dashboard')} className="group flex items-center gap-2 pb-2 cursor-pointer">
+          {/* 🚨 [Fix] 데스크탑 Logbook 버튼 <Link>로 전환 */}
+          <Link to="/report" className="group flex items-center gap-2 pb-2 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
                   <PenTool size={18} className="text-white group-hover:text-emerald-400 transition-colors" />
               </div>
               <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">LOGBOOK</span>
-          </button>
+          </Link>
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center pointer-events-auto">

@@ -1,9 +1,11 @@
-// 🚨 [Fix] useNavigate 제거, Supabase 로그아웃 시 패널 닫기 연동
+// src/pages/DailyReport/layout/Sidebar.jsx
+// 🚨 [Fix/New] 수정 이유:
+// 1. [Subtraction] useReport 전역 상태 완전 제거 (좀비 코드 청산).
+// 2. [Routing] 로그아웃 시 closeReport() 대신 useNavigate()를 사용하여 홈('/')으로 강제 이동(Deep Linking).
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase'; 
-
-// 🚨 [New] 전역 리모컨 호출
-import { useReport } from '../../../context/ReportContext';
+import { useNavigate } from 'react-router-dom'; // 🚨 [New] 라우터 훅 추가
 
 // 🧩 부품 조립 (상대 경로 유지)
 import HomeButton from './HomeButton';
@@ -16,8 +18,7 @@ const Sidebar = () => {
   const [slides, setSlides] = useState([]);
   const [isSlideOpen, setIsSlideOpen] = useState(false);
   
-  // 🚨 [New] 로그아웃 후 지구본으로 돌아가기 위해 리모컨 획득
-  const { closeReport } = useReport();
+  const navigate = useNavigate(); // 🚨 [New] 네비게이션 인스턴스 생성
 
   useEffect(() => {
     const initData = async () => {
@@ -52,7 +53,7 @@ const Sidebar = () => {
   const handleLogout = async () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       await supabase.auth.signOut();
-      closeReport(); // 🚨 [Fix] 라우터 이동 대신 패널 닫기로 자연스럽게 복귀
+      navigate('/'); // 🚨 [Fix] closeReport() 대신 URL 기반 라우팅으로 복귀
     }
   };
 
