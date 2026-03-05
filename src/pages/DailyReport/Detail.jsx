@@ -1,9 +1,11 @@
 // src/pages/DailyReport/Detail.jsx
-// 🚨 [Fix] 수정 페이지 진입 시 Deep Linking 라우팅 규격(/report/write/:id)에 완벽 대응
+// 🚨 [Fix/Subtraction] 수동 URL 복사 및 복잡한 토글 로직 제거
+// 🚨 [New] Web Share API (navigator.share) 전면 도입으로 모바일 네이티브 공유 경험(카카오톡/인스타 연동) 최적화
+// 🚨 [Safe Path] Web Share 미지원 환경(PC 등)을 위한 Clipboard Fallback(대비책) 구축
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Detail = () => {
@@ -12,6 +14,7 @@ const Detail = () => {
   
   const [report, setReport] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [isPublic, setIsPublic] = useState(false);
 
   useEffect(() => {
     const getOneReport = async () => {
@@ -23,10 +26,11 @@ const Detail = () => {
       const { data, error } = await supabase.from('reports').select('*').eq('id', id).single();
       
       if (error || !data) {
-        console.warn("[Safe Path] 존재하지 않거나 삭제된 기록입니다. 대시보드로 회귀합니다.", error);
+        console.warn("[Safe Path] 존재하지 않거나 삭제된 기록입니다.");
         navigate('/report', { replace: true });
       } else {
         setReport(data);
+        setIsPublic(data.is_public || false);
       }
     };
     getOneReport();
@@ -35,12 +39,66 @@ const Detail = () => {
   const handleDelete = async () => {
     if (window.confirm("이 기록을 삭제하시겠습니까? (안전하게 숨김 처리됩니다)")) {
       const { error } = await supabase.from('reports').update({ is_deleted: true }).eq('id', id);
-      
       if(error) {
          console.warn("Soft Delete 실패, 영구 삭제로 대체합니다 (임시 롤백)");
          await supabase.from('reports').delete().eq('id', id);
       }
       navigate('/report', { replace: true });
+    }
+  };
+
+  // 🚨 [New] 비공개(Lock) 강제 전환 핸들러
+  const handleMakePrivate = async () => {
+    if (window.confirm("이 글을 비공개로 전환하시겠습니까? (기존 공유 링크 접속 차단)")) {
+      const { error } = await supabase.from('reports').update({ is_public: false }).eq('id', id);
+      if (!error) {
+        setIsPublic(false);
+      } else {
+        alert("비공개 전환에 실패했습니다.");
+      }
+    }
+  };
+
+  // 🚨 [New] 스마트 공유 핸들러 (Web Share API + Fallback)
+  const handleSmartShare = async () => {
+    // 1. [Pessimistic First] 비공개 상태면 DB부터 공개로 업데이트
+    if (!isPublic) {
+      const { error } = await supabase.from('reports').update({ is_public: true }).eq('id', id);
+      if (error) return alert("공유 상태 전환에 실패했습니다.");
+      setIsPublic(true);
+    }
+
+    const shareUrl = `${window.location.origin}/p/${id}`;
+    const shareData = {
+      title: `GATEO LogBook: ${report.title}`,
+      text: '지구본에서 나의 특별한 여행 기록을 확인해보세요.',
+      url: shareUrl,
+    };
+
+    // 2. [Fact Check] 브라우저가 Web Share API를 지원하는가? (주로 모바일 환경)
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        // 공유 모달이 성공적으로 닫힘
+      } catch (error) {
+        // 사용자가 모달을 띄웠다가 그냥 닫은 경우(AbortError)는 에러창을 띄우지 않음 (UX 배려)
+        if (error.name !== 'AbortError') {
+          fallbackCopy(shareUrl);
+        }
+      }
+    } else {
+      // 3. 지원하지 않는 환경 (PC 브라우저 등) -> 클립보드 강제 복사
+      fallbackCopy(shareUrl);
+    }
+  };
+
+  // 🚨 [Safe Path] 복사 우회 로직
+  const fallbackCopy = async (url) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      alert(`공유 링크가 클립보드에 복사되었습니다.\n(카카오톡 등 원하는 곳에 붙여넣기 하세요!)\n\n${url}`);
+    } catch (err) {
+      alert("URL 복사에 실패했습니다. 브라우저 주소창의 /p/아이디 경로를 확인해주세요.");
     }
   };
 
@@ -67,19 +125,16 @@ const Detail = () => {
         }
       });
 
-      const footerHtml = `<br/><blockquote style="border-left: 4px solid #3b82f6; padding-left: 14px; margin-top: 40px; color: #888; font-style: italic; background: #f8fafc; padding: 16px; border-radius: 0 8px 8px 0;">이 글은 <strong>GATEO</strong>의 AI LogBook을 통해 작성되었습니다.<br/>🌐 https://gateo.kr</blockquote>`;
+      const publicLinkHtml = isPublic ? `<p style="margin-top: 10px;"><a href="${window.location.origin}/p/${id}" style="color: #3b82f6; text-decoration: none;">🔗 웹에서 원본 보기</a></p>` : '';
+      const footerHtml = `<br/><blockquote style="border-left: 4px solid #3b82f6; padding-left: 14px; margin-top: 40px; color: #888; font-style: italic; background: #f8fafc; padding: 16px; border-radius: 0 8px 8px 0;">이 글은 <strong>GATEO</strong>의 AI LogBook을 통해 작성되었습니다.<br/>🌐 https://gateo.kr${publicLinkHtml}</blockquote>`;
 
       const finalHtml = `<div style="font-family: sans-serif; max-width: 800px; margin: 0 auto;">${titleHtml}${metaHtml}${bodyHtml}${footerHtml}</div>`;
-      
       const plainText = `${report.title}\n일자: ${report.date} | 위치: ${report.location}\n\n${report.content}\n\n> 이 글은 GATEO의 AI LogBook을 통해 작성되었습니다.\n> https://gateo.kr`;
 
       if (window.ClipboardItem) {
         const blobHtml = new Blob([finalHtml], { type: 'text/html' });
         const blobText = new Blob([plainText], { type: 'text/plain' });
-        const clipboardItem = new window.ClipboardItem({
-          'text/html': blobHtml,
-          'text/plain': blobText,
-        });
+        const clipboardItem = new window.ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText });
         await navigator.clipboard.write([clipboardItem]);
       } else {
         await navigator.clipboard.writeText(plainText); 
@@ -95,37 +150,25 @@ const Detail = () => {
 
   const renderBlogContent = (content, images) => {
     if (!content) return null;
-    
     const regex = /(\[사진\s*\d+\])/g;
     const parts = content.split(regex);
 
     return parts.map((part, index) => {
       const match = part.match(/\[사진\s*(\d+)\]/);
-      
       if (match) {
         const imgIndex = parseInt(match[1], 10) - 1;
         if (images[imgIndex]) {
           return (
             <div key={index} className="my-10 group relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50">
-              <img 
-                src={images[imgIndex]} 
-                alt={`첨부 ${imgIndex + 1}`} 
-                className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer"
-                onClick={() => window.open(images[imgIndex], '_blank')} 
-              />
+              <img src={images[imgIndex]} alt={`첨부 ${imgIndex + 1}`} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => window.open(images[imgIndex], '_blank')} />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
             </div>
           );
         }
         return null; 
       }
-      
       if (part.trim() !== '') {
-        return (
-          <p key={index} className="text-lg leading-[1.8] text-slate-300 whitespace-pre-wrap font-light mb-6">
-            {part}
-          </p>
-        );
+        return <p key={index} className="text-lg leading-[1.8] text-slate-300 whitespace-pre-wrap font-light mb-6">{part}</p>;
       }
       return null;
     });
@@ -149,35 +192,50 @@ const Detail = () => {
 
       <div className="relative z-10 max-w-3xl mx-auto pt-8 px-4 sm:px-6">
         
-        <div className="flex justify-between items-center mb-8">
-          <button 
-            onClick={() => navigate('/report')} 
-            className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full backdrop-blur-md"
-          >
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+          <button onClick={() => navigate('/report')} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full backdrop-blur-md">
             <ArrowLeft size={24} />
           </button>
           
-          <div className="flex gap-2 sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 ml-auto">
+            
+            {/* 🚨 [New] 직관적인 공유하기 버튼 (가장 돋보이게 처리) */}
+            <button 
+              onClick={handleSmartShare}
+              className="flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full transition-all border text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border-transparent"
+            >
+              <Share2 size={16} />
+              <span className="hidden sm:inline">외부로 공유하기</span>
+              <span className="sm:hidden">공유</span>
+            </button>
+
+            {/* 🚨 [New] 비공개 전환 버튼 (공개 상태일 때만 슬쩍 나타나는 Safe Path) */}
+            {isPublic && (
+              <button 
+                onClick={handleMakePrivate}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full transition-all text-xs font-medium text-slate-400 hover:text-red-400 hover:bg-red-900/20"
+                title="클릭 시 외부 접속이 차단됩니다"
+              >
+                <Lock size={14} />
+                <span className="hidden sm:inline">비공개로 숨기기</span>
+              </button>
+            )}
+
+            <div className="w-px h-6 bg-slate-700/50 my-auto mx-1 hidden md:block"></div>
+
             <button 
               onClick={handleExportBlog} 
               className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full transition-all border text-sm font-medium backdrop-blur-md
                 ${isCopied 
                   ? 'bg-green-900/40 text-green-300 border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
-                  : 'bg-blue-900/30 text-blue-300 border-blue-800/50 hover:bg-blue-800/50 hover:text-blue-100'}
+                  : 'bg-slate-800/60 text-slate-300 border-slate-700/50 hover:bg-slate-700 hover:text-white'}
               `}
             >
               {isCopied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
-              <span className="hidden sm:inline">{isCopied ? '복사 완료!' : '블로그로 내보내기'}</span>
-              <span className="sm:hidden">{isCopied ? '완료' : '내보내기'}</span>
+              <span className="hidden sm:inline">{isCopied ? '복사 완료!' : '블로그 내보내기'}</span>
             </button>
 
-            <div className="w-px h-6 bg-slate-700/50 my-auto mx-1 hidden sm:block"></div>
-
-            <button 
-              // 🚨 [Fix] state 넘김 방식 버리고, URL에 직접 id를 박아넣어 Deep Link 규격 준수
-              onClick={() => navigate(`/report/write/${id}`)} 
-              className="flex items-center gap-1.5 bg-slate-800/60 backdrop-blur-md text-slate-300 px-3 sm:px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-colors border border-slate-700/50 text-sm font-medium"
-            >
+            <button onClick={() => navigate(`/report/write/${id}`)} className="flex items-center gap-1.5 bg-slate-800/60 backdrop-blur-md text-slate-300 px-3 sm:px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-colors border border-slate-700/50 text-sm font-medium">
               <Edit size={16} /> <span className="hidden sm:inline">수정</span>
             </button>
             <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-900/20 backdrop-blur-md text-red-400 px-3 sm:px-4 py-2 rounded-full hover:bg-red-900/40 transition-colors border border-red-900/50 text-sm font-medium">
@@ -187,7 +245,6 @@ const Detail = () => {
         </div>
 
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 p-6 sm:p-10 rounded-3xl shadow-2xl">
-          
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-xs font-bold text-blue-300 bg-blue-900/30 border border-blue-800/50 px-3 py-1.5 rounded-full uppercase tracking-wider">{report.date}</span>
             <span className="text-slate-400 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-slate-500"/> {report.location}</span>
@@ -204,12 +261,7 @@ const Detail = () => {
             `}>
               {images.map((img, idx) => (
                 <div key={idx} className={`relative group ${images.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
-                  <img 
-                    src={img} 
-                    alt={`첨부 ${idx+1}`} 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer border border-slate-700/50"
-                    onClick={() => window.open(img, '_blank')} 
-                  />
+                  <img src={img} alt={`첨부 ${idx+1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer border border-slate-700/50" onClick={() => window.open(img, '_blank')} />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
                 </div>
               ))}
@@ -218,12 +270,9 @@ const Detail = () => {
 
           <div className="mt-8">
             {hasPlaceholders ? renderBlogContent(report.content, images) : (
-              <div className="text-lg leading-relaxed text-slate-300 whitespace-pre-wrap font-light">
-                {report.content}
-              </div>
+              <div className="text-lg leading-relaxed text-slate-300 whitespace-pre-wrap font-light">{report.content}</div>
             )}
           </div>
-          
         </div>
 
       </div>
