@@ -1,25 +1,30 @@
+// src/pages/DailyReport/components/CalendarCard.jsx
+// 🚨 [Fix/Subtraction] useReport 의존성 완전 제거 및 useNavigate 도입
+// 🚨 [New] Query Parameter를 통한 작성 페이지 날짜 전달 (?date=YYYY-MM-DD)
+// 🚨 [Safe Path] 데이터 존재 여부에 따른 명확한 라우팅 분기
+
 import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { useReport } from '../../../context/ReportContext';
+import { useNavigate } from 'react-router-dom'; // 🚨 [New] 라우터 훅 도입
 
 const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth }) => {
-  const { setCurrentView, setSelectedId, setPreSelectedDate } = useReport(); 
+  const navigate = useNavigate(); // 🚨 [New]
 
   const handleDateClick = (dayItem) => {
     if (!dayItem.day) return; 
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(dayItem.day).padStart(2, '0')}`;
+    
+    // 🚨 [Fix] Context 상태 변경 대신 URL 기반 강제 이동
     if (dayItem.active && dayItem.reportId) {
-      setSelectedId(dayItem.reportId);
-      setCurrentView('write');
+      // 기록이 있으면 상세 페이지(Detail)로 직행
+      navigate(`/report/${dayItem.reportId}`);
     } else {
-      setPreSelectedDate(dateStr);
-      setSelectedId(null);
-      setCurrentView('write');
+      // 빈 날짜면 작성 페이지(Write)로 가되 URL 파라미터로 날짜 전달
+      navigate(`/report/write?date=${dateStr}`);
     }
   };
 
   return (
-    // 🚨 [Fix] 높이 고정 및 테마 적용
     <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 shadow-2xl flex flex-col h-full min-h-[350px]">
       
       <div className="flex justify-between items-center mb-6">

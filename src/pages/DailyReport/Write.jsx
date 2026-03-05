@@ -1,22 +1,29 @@
 // src/pages/DailyReport/Write.jsx
-// 🚨 [Fix] UI 고도화: 스티키 헤더 구축 및 저장/생성 버튼의 명확한 디자인 분리
-// 🚨 [Fix] 레이어드 구조: 각 입력 섹션(날짜, 제목, 사진, 본문)을 독립된 카드로 분리
-// 🚨 [New] 상태 피드백 강화: 10장 일괄 압축 진행률 및 AI 생성 단계별 텍스트 애니메이션 추가
+// 🚨 [Fix/Subtraction] useReport 등 전역 상태 의존성 전면 제거
+// 🚨 [Safe Path] useParams(id)와 useSearchParams(?date)를 통한 순수 URL 기반 데이터 복원
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2 } from 'lucide-react';
+// 🚨 [New] 라우터 파라미터 훅 임포트
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useReport } from '../../context/ReportContext';
 import { useLogbookMedia } from './hooks/useLogbookMedia';
 import { useLogbookAI } from './hooks/useLogbookAI';
 
 const Write = () => {
-  const { setCurrentView, selectedId, setSelectedId, preSelectedDate, setPreSelectedDate } = useReport();
-  const isEditMode = Boolean(selectedId);
+  // 🚨 [Fix] URL 파라미터를 Source of Truth로 사용
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  const isEditMode = Boolean(id);
 
   const getLocalDate = () => {
-    if (preSelectedDate) return preSelectedDate;
+    // 🚨 [Fix] 달력에서 쏜 쿼리 파라미터(?date=) 최우선 적용
+    const dateParam = searchParams.get('date');
+    if (dateParam) return dateParam;
+    
     const d = new Date();
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     return d.toISOString().split('T')[0];
@@ -30,37 +37,34 @@ const Write = () => {
   const [locationLoading, setLocationLoading] = useState(false);
   const [recentLocations, setRecentLocations] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-
-  // 🚨 [New] AI 생성 진행 상태 텍스트 (지루함 방지용)
   const [aiLoadingMsg, setAiLoadingMsg] = useState('');
 
   const { 
     imageFiles, previewUrls, existingImages, setExistingImages, 
     handleImageChange, removeNewImage, removeExistingImage, heroImageUrl,
-    isCompressing, compressProgress // 추가된 상태
+    isCompressing, compressProgress 
   } = useLogbookMedia();
 
   const { 
     isAILoading, backupData, handleAIPolish, handleRestoreBackup 
   } = useLogbookAI(title, setTitle, content, setContent, date, mapLocation);
 
-  // 초기 데이터 로드
-  useEffect(() => {
-    return () => setPreSelectedDate(null);
-  }, [setPreSelectedDate]);
-
   useEffect(() => {
     const loadInitialData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
 
-      if (isEditMode && selectedId) {
-        const { data } = await supabase.from('reports').select('*').eq('id', selectedId).single();
+      if (isEditMode && id) {
+        const { data } = await supabase.from('reports').select('*').eq('id', id).single();
         if (data) {
           setTitle(data.title);
           setContent(data.content);
           setMapLocation(data.location);
           setDate(data.date);
           setExistingImages(data.images || []); 
+        } else {
+          // 🚨 [Pessimistic First] 유효하지 않은 ID 접속 방어
+          alert('존재하지 않는 기록입니다.');
+          navigate('/report', { replace: true });
         }
       }
       
@@ -73,9 +77,8 @@ const Write = () => {
       }
     };
     loadInitialData();
-  }, [selectedId, isEditMode, setExistingImages]);
+  }, [id, isEditMode, setExistingImages, navigate]);
 
-  // 🚨 [New] AI 로딩 시 동적 메시지 변경 로직 (인내심 보완)
   useEffect(() => {
     if (isAILoading) {
       const msgs = ["위성 통신망 연결 중...", "사진 속 감성을 읽어내는 중...", "문장의 맥락을 조율하는 중...", "마지막 퇴고를 진행 중입니다..."];
@@ -129,12 +132,13 @@ const Write = () => {
       const reportData = { title, content, location: mapLocation || '위치 미지정', date, images: finalImageUrls, weather: '맑음', user_id: user.id };
 
       if (isEditMode) {
-        await supabase.from('reports').update(reportData).eq('id', selectedId);
-        setCurrentView('detail');
+        await supabase.from('reports').update(reportData).eq('id', id);
+        // 🚨 [Fix] 저장 완료 시 상세 페이지로 이동
+        navigate(`/report/${id}`);
       } else {
         await supabase.from('reports').insert([reportData]);
-        setCurrentView('dashboard');
-        setSelectedId(null);
+        // 🚨 [Fix] 새 글 작성 후 대시보드로 이동
+        navigate('/report');
       }
     } catch (error) {
       console.error("저장 실패:", error);
@@ -147,7 +151,6 @@ const Write = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 relative font-sans" onClick={() => setShowSuggestions(false)}>
       
-      {/* Hero Background */}
       {heroImageUrl && (
         <div className="fixed inset-0 z-0 opacity-20 transition-opacity duration-1000 pointer-events-none">
           <img src={heroImageUrl} alt="Hero Background" className="w-full h-full object-cover blur-3xl scale-110" />
@@ -155,12 +158,11 @@ const Write = () => {
         </div>
       )}
 
-      {/* 🚨 [New] 스티키 헤더 (컨트롤 타워) */}
       <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl px-4 sm:px-6 py-3 flex items-center justify-between">
         
-        {/* 헤더 좌측: 네비게이션 */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <button onClick={() => { setCurrentView('dashboard'); setSelectedId(null); setPreSelectedDate(null); }} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full">
+          {/* 🚨 [Fix] 백버튼 누를 시 URL 기반 뒤로가기 또는 대시보드 회귀 */}
+          <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full">
             <ArrowLeft size={20} />
           </button>
           <h2 className="text-lg font-semibold text-white/90 hidden sm:block">
@@ -168,10 +170,8 @@ const Write = () => {
           </h2>
         </div>
 
-        {/* 헤더 우측: 액션 버튼들 (명확한 디자인 분리) */}
         <div className="flex items-center gap-2 sm:gap-4">
           
-          {/* AI 창작 구역 (글래스모피즘 + 네온) */}
           {!backupData ? (
             <div className="flex gap-1 sm:gap-2 bg-slate-900/50 p-1 rounded-full border border-slate-700/50">
               <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 text-xs font-bold text-purple-200 bg-purple-900/20 border border-purple-500/30 rounded-full hover:bg-purple-800/40 disabled:opacity-50 transition-all">
@@ -193,7 +193,6 @@ const Write = () => {
 
           <div className="w-px h-6 bg-slate-700/50 hidden sm:block"></div>
 
-          {/* 최종 저장 구역 (솔리드 블루) */}
           <button onClick={handleSave} disabled={uploading || isAILoading || isCompressing} className="bg-blue-600 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 rounded-full font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-[0_0_15px_rgba(37,99,235,0.4)] disabled:bg-slate-700 disabled:shadow-none transition-all">
             {uploading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
             <span className="hidden sm:inline">{isEditMode ? '수정 완료' : 'GATEO에 기록하기'}</span>
@@ -203,10 +202,8 @@ const Write = () => {
 
       </header>
 
-      {/* 🚨 [New] 메인 캔버스: 레이어드 섹션 구조 */}
       <main className="relative z-10 max-w-3xl mx-auto pt-8 pb-24 px-4 sm:px-6 flex flex-col gap-6">
         
-        {/* 섹션 1: 날짜 & 위치 카드 */}
         <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 shadow-lg flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
             <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Date</label>
@@ -231,15 +228,12 @@ const Write = () => {
           </div>
         </section>
 
-        {/* 섹션 2: 제목 카드 */}
         <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg">
           <input type="text" className="w-full bg-transparent border-none outline-none text-3xl sm:text-4xl font-bold text-white placeholder-slate-700 tracking-tight" placeholder="제목을 입력하세요" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
         </section>
 
-        {/* 섹션 3: 사진 카드 (10장 지원 및 압축 피드백) */}
         <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
           
-          {/* 🚨 [New] 압축 로딩 오버레이 */}
           {isCompressing && (
             <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-400">
               <Loader2 size={36} className="animate-spin mb-4" />
@@ -265,10 +259,8 @@ const Write = () => {
           </div>
         </section>
 
-        {/* 섹션 4: 스토리 본문 카드 */}
         <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden min-h-[400px]">
           
-          {/* 🚨 [New] AI 생성 로딩 오버레이 (동적 메시지) */}
           {isAILoading && (
             <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-purple-400">
               <Loader2 size={36} className="animate-spin mb-4" />

@@ -1,18 +1,12 @@
 // src/pages/DailyReport/Detail.jsx
-// 🚨 [Fix] 라우터 의존성(useParams, useNavigate) 도입 및 useReport 의존성 완전 제거
-// 🚨 [New] Midnight Canvas 테마 적용 (다크모드, 글래스모피즘, Hero 배경)
-// 🚨 [New] [사진N] 치환자를 실제 이미지로 파싱하는 블로그식 렌더링 로직 추가
-// 🚨 [Fix/Subtraction] 복잡한 <a> 태그 제거 및 순수 URL 텍스트(https://gateo.kr) 노출로 외부 블로그 자동 링크 유도
-// 🚨 [Safe Path] 데이터 검증 및 404 강제 튕겨내기 방어막 구축 (Pessimistic First)
+// 🚨 [Fix] 수정 페이지 진입 시 Deep Linking 라우팅 규격(/report/write/:id)에 완벽 대응
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2 } from 'lucide-react';
-// 🚨 [New] 라우터 훅 임포트
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Detail = () => {
-  // 🚨 [Fix] 전역 상태(useReport)를 폐기하고 URL 파라미터를 절대적인 진실(Source of Truth)로 신뢰
   const { id } = useParams();
   const navigate = useNavigate();
   
@@ -21,7 +15,6 @@ const Detail = () => {
 
   useEffect(() => {
     const getOneReport = async () => {
-      // 🚨 [Safe Path] ID가 유실되었거나 없으면 즉시 목록으로 회군
       if (!id) {
         navigate('/report', { replace: true });
         return; 
@@ -29,7 +22,6 @@ const Detail = () => {
       
       const { data, error } = await supabase.from('reports').select('*').eq('id', id).single();
       
-      // 🚨 [Pessimistic First] DB에 없는 삭제된 기록이거나 에러 발생 시 방어
       if (error || !data) {
         console.warn("[Safe Path] 존재하지 않거나 삭제된 기록입니다. 대시보드로 회귀합니다.", error);
         navigate('/report', { replace: true });
@@ -42,15 +34,12 @@ const Detail = () => {
 
   const handleDelete = async () => {
     if (window.confirm("이 기록을 삭제하시겠습니까? (안전하게 숨김 처리됩니다)")) {
-      // 데이터 영구 유실 방지 원칙에 따라 delete() 대신 Soft Delete (업데이트) 적용
       const { error } = await supabase.from('reports').update({ is_deleted: true }).eq('id', id);
       
       if(error) {
          console.warn("Soft Delete 실패, 영구 삭제로 대체합니다 (임시 롤백)");
          await supabase.from('reports').delete().eq('id', id);
       }
-      
-      // 🚨 [Fix] 삭제 완료 후 URL 기반 회귀
       navigate('/report', { replace: true });
     }
   };
@@ -162,7 +151,7 @@ const Detail = () => {
         
         <div className="flex justify-between items-center mb-8">
           <button 
-            onClick={() => navigate('/report')} // 🚨 [Fix] 목록으로 회귀
+            onClick={() => navigate('/report')} 
             className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full backdrop-blur-md"
           >
             <ArrowLeft size={24} />
@@ -185,7 +174,8 @@ const Detail = () => {
             <div className="w-px h-6 bg-slate-700/50 my-auto mx-1 hidden sm:block"></div>
 
             <button 
-              onClick={() => navigate('/report/write', { state: { editId: id } })} // 🚨 [Fix] 수정 페이지로 이동 시 ID 전달
+              // 🚨 [Fix] state 넘김 방식 버리고, URL에 직접 id를 박아넣어 Deep Link 규격 준수
+              onClick={() => navigate(`/report/write/${id}`)} 
               className="flex items-center gap-1.5 bg-slate-800/60 backdrop-blur-md text-slate-300 px-3 sm:px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-colors border border-slate-700/50 text-sm font-medium"
             >
               <Edit size={16} /> <span className="hidden sm:inline">수정</span>

@@ -1,9 +1,15 @@
+// src/pages/DailyReport/components/RecentList.jsx
+// 🚨 [Fix/Subtraction] useReport 의존성 완전 제거 및 useNavigate 도입
+// 🚨 [Fix] 빈 상태(Empty State) 및 아이템 클릭 시 URL 기반 직접 라우팅으로 전환
+
 import React, { useState } from 'react';
 import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle } from 'lucide-react';
-import { useReport } from '../../../context/ReportContext';
+// 🚨 [New] 라우터 훅 임포트
+import { useNavigate } from 'react-router-dom';
 
 const RecentList = ({ reports, loading }) => {
-  const { setCurrentView, setSelectedId } = useReport();
+  // 🚨 [Fix] Context 대신 네비게이터 사용
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -61,7 +67,8 @@ const RecentList = ({ reports, loading }) => {
             <p className="text-slate-300 font-bold text-xl mb-2">기록된 우주가 없습니다.</p>
             <p className="text-slate-500 text-sm mb-8 font-medium">당신만의 첫 번째 이야기를 남겨보세요.</p>
             <button 
-              onClick={() => { setCurrentView('write'); setSelectedId(null); }} 
+              // 🚨 [Fix] URL 직접 이동
+              onClick={() => navigate('/report/write')} 
               className="flex items-center gap-2 bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-8 py-4 rounded-full font-bold border border-blue-500/30 transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)] hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
             >
               <PenTool size={18} /> 새 일보 작성하기
@@ -78,7 +85,8 @@ const RecentList = ({ reports, loading }) => {
             {filteredReports.map((report) => (
               <div 
                 key={report.id}
-                onClick={() => { setSelectedId(report.id); setCurrentView('detail'); }}
+                // 🚨 [Fix] URL 파라미터를 포함한 디테일 페이지 직접 이동
+                onClick={() => navigate(`/report/${report.id}`)}
                 className={`
                   group bg-slate-800/40 border border-slate-700 rounded-2xl hover:border-blue-500/50 hover:bg-slate-800 transition-all cursor-pointer overflow-hidden hover:shadow-[0_0_20px_rgba(59,130,246,0.1)]
                   ${viewMode === 'grid' ? 'flex flex-col h-full' : (isCompact ? 'p-3 flex gap-4 items-center' : 'p-5 flex gap-5 items-start')}
