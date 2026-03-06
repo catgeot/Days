@@ -4,6 +4,7 @@
 // 1. 부자연스러웠던 Grid 애니메이션을 삭제했습니다.
 // 2. '스무스 드롭' 적용: 버튼을 감싸는 Wrapper의 높이(max-h)가 줄어드는 동시에, 내부 버튼이 아래로 밀려 내려가며(translate-y) 사라지도록 하여 훨씬 자연스러운 UI 축소 효과를 구현했습니다.
 // 3. 💡 크기 조절 포인트 주석을 유지하여 직접 여백을 세밀하게 튜닝할 수 있도록 했습니다.
+// 4. [Fix/New] 닫기 버튼 클릭 시 이벤트 버블링을 차단(stopPropagation)하여 뒷배경의 onExpand가 터지는 레이스 컨디션을 방지했습니다.
 
 import React, { useState, useEffect } from 'react';
 import { X, MessageSquare, Sparkles, Maximize2 } from 'lucide-react'; 
@@ -44,7 +45,14 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
            
            <div className="flex items-center gap-1 -mr-2 -mt-2 z-10">
              <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
-             <button onClick={onClose} className="p-1.5 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors">
+             {/* 🚨 [Fix/New] 이벤트 버블링 차단: 닫기 버튼 클릭 시 부모의 onExpand가 트리거되는 레이스 컨디션 방지 */}
+             <button 
+               onClick={(e) => {
+                 e.stopPropagation();
+                 onClose();
+               }} 
+               className="p-1.5 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
+             >
                <X size={18} />
              </button>
            </div>

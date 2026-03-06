@@ -199,7 +199,7 @@ const HomeGlobe = forwardRef(({
   useEffect(() => {
     if (globeEl.current) {
       globeEl.current.controls().autoRotate = !pauseRender;
-      globeEl.current.controls().autoRotateSpeed = isZenMode ? 0.15 : GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED; 
+      globeEl.current.controls().autoRotateSpeed = isZenMode ? 0.3 : GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED; 
       if (pauseRender && rotationTimer.current) clearTimeout(rotationTimer.current); 
     }
   }, [pauseRender, isZenMode]);

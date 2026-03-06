@@ -2,18 +2,21 @@
 // 🚨 [Fix/New] 수정 이유:
 // 1. [Subtraction] ReportPanel 전역 상태 및 마운트 로직 완전 제거 (URL 라우팅으로 위임)
 // 2. [Routing] isPlaceCardOpen 상태를 제거하고 React Router의 <Outlet />과 Deep Linking 동기화 적용
-// 3. 기존의 Zen Mode, UI Ghosting, VIP 프리패스 로직 유지
+// 3. 🚨 [Fix/New] 마커 클릭 시의 강제 라우팅(Deep Linking 1)을 제거하고, Summary 카드를 Home의 모달로 복귀. 확장을 누를 때만 라우팅 이동(Soft Transition).
+// 4. 🚨 [Subtraction] 라우팅 분리에 따라 과거 단일 페이지 시절의 잔재인 '지구본 리소스 제한' CSS 족쇄 삭제.
+// 5. 🚨 [Fix] LogoPanel에서 버킷리스트 클릭 시 발생하는 써머리 깜빡임(Flickering) 해결.
+// 6. 🚨 [Fix/New] Clean Slate (유령 퇴치): 브라우저 뒤로가기를 통해 장소 카드에서 메인으로 돌아올 때 강제 초기화.
+// 7. 🚨 [Fix] Subtraction: 확장 카드 닫기 시 발생하는 '좀비 핀 꽂기' 및 '두 번 깜빡임'을 원천 차단하기 위해, URL 동기화 로직의 감시 카메라(의존성 배열)에서 selectedLocation을 삭제했습니다. 이제 오직 URL이 바뀔 때만 평화롭게 반응합니다.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-// 🚨 [Fix/New] 라우팅 제어를 위한 훅 추가
 import { Outlet, useNavigate, useLocation, matchPath } from 'react-router-dom';
 
 // Components
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal'; 
-// 🚨 [Fix] PlaceCard, ReportPanel 하드코딩 임포트 제거 (Outlet으로 대체)
 import LogoPanel from './components/LogoPanel';
+import PlaceCardSummary from '../../components/PlaceCard/modes/PlaceCardSummary';
 
 // Libs & Utils
 import { supabase } from '../../shared/api/supabase';
@@ -29,7 +32,6 @@ function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
   
-  // 🚨 [Fix/New] 라우터 훅 초기화
   const navigate = useNavigate();
   const routeLocation = useLocation();
 
@@ -46,10 +48,11 @@ function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
   
-  // 🚨 [Fix] isPlaceCardOpen 제거 완료. 
-  // 단, useHomeHandlers와의 호환성을 위해 닫기 액션 발생 시 URL을 Home으로 돌리는 함수로 대체
   const setIsPlaceCardOpen = (isOpen) => {
-    if (!isOpen) navigate('/');
+    if (!isOpen) {
+      setSelectedLocation(null);
+      navigate('/');
+    }
   };
 
   const [initialQuery, setInitialQuery] = useState(null);
@@ -76,18 +79,14 @@ function Home() {
     toggleBookmark 
   });
 
-  // 🚨 [New] Deep Linking 1: 지도에서 마커 선택 시 URL 변경
-  useEffect(() => {
-    if (selectedLocation && routeLocation.pathname === '/') {
-      navigate(`/place/${selectedLocation.id || selectedLocation.name}`);
-    }
-  }, [selectedLocation, routeLocation.pathname, navigate]);
-
-  // 🚨 [New] Deep Linking 2: URL 직접 입력 시 데이터(선택된 장소) 동기화
+  // 🚨 [Fix] Subtraction: 의존성 배열 다이어트 (좀비 부활 차단)
+  // 장소 데이터가 비워지는 순간 불필요하게 렌더링을 덮어씌우는 헛발질을 막기 위해 
+  // selectedLocation을 의존성 배열에서 완전히 제거했습니다. 오직 URL이 바뀔 때만 작동합니다.
   useEffect(() => {
     const match = matchPath({ path: "/place/:id" }, routeLocation.pathname);
-    if (match && match.params.id && !selectedLocation) {
+    if (match && match.params.id) {
       const targetId = match.params.id;
+      
       const target = TRAVEL_SPOTS.find(s => String(s.id) === targetId || s.name === targetId) 
                   || savedTrips.find(t => String(t.id) === targetId || t.name === targetId);
       
@@ -95,8 +94,28 @@ function Home() {
         setSelectedLocation(target);
         moveToLocation(target.lat, target.lng);
       }
+      setIsCardExpanded(true);
+    } else {
+      setIsCardExpanded(false);
     }
-  }, [routeLocation.pathname, savedTrips, selectedLocation, setSelectedLocation, moveToLocation]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeLocation.pathname]); // 🚨 완벽한 뺄셈: 오직 주소 변경시에만 작동
+
+  // Pessimistic Clean Slate: 브라우저 뒤로가기(Back) 대응
+  const prevPathRef = useRef(routeLocation.pathname);
+  useEffect(() => {
+    const currentPath = routeLocation.pathname;
+    const prevPath = prevPathRef.current;
+    prevPathRef.current = currentPath;
+
+    // 방금 전까지 /place/ 에 있다가 메인(/)으로 복귀한 경우에만 강제 초기화 실행
+    if (currentPath === '/' && prevPath.startsWith('/place/')) {
+      setSelectedLocation(null); 
+      if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
+        globeRef.current.resumeRotation();
+      }
+    }
+  }, [routeLocation.pathname, setSelectedLocation]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -134,13 +153,6 @@ function Home() {
     });
   }, [savedTrips, category, selectedLocation]);
 
-  // 🚨 [Fix] isFocusMode 계산 로직에서 isReportOpen, isPlaceCardOpen 제거. 라우터 기반으로 판단.
-  const isFocusMode = useMemo(() => {
-    if (isChatOpen) return true;
-    if (routeLocation.pathname.startsWith('/place') && isCardExpanded) return true;
-    return false;
-  }, [isChatOpen, routeLocation.pathname, isCardExpanded]);
-
   const handleThemeToggle = () => {
     const themes = ['neon', 'bright', 'deep'];
     const nextIndex = (themes.indexOf(globeTheme) + 1) % themes.length;
@@ -149,15 +161,7 @@ function Home() {
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
-      <div 
-        style={{ 
-          contentVisibility: isFocusMode ? 'hidden' : 'visible',
-          contain: isFocusMode ? 'strict' : 'none',
-          containIntrinsicSize: '100vw 100vh',
-          pointerEvents: isFocusMode ? 'none' : 'auto',
-          width: '100%', height: '100%'
-        }}
-      >
+      <div className="w-full h-full">
         <HomeGlobe 
           ref={globeRef} 
           onGlobeClick={handleGlobeClick} 
@@ -167,7 +171,7 @@ function Home() {
           tempPinsData={isPinVisible ? scoutedPins : []} 
           travelSpots={isPinVisible ? filteredSpots : []} 
           activePinId={selectedLocation?.id}
-          pauseRender={isFocusMode} 
+          pauseRender={false}
           globeTheme={globeTheme} 
           isZenMode={isZenMode}
         />
@@ -205,21 +209,54 @@ function Home() {
             setIsLogoPanelOpen(false);
             const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
             const hydratedLocation = realSpot ? { ...trip, ...realSpot, name: trip.destination } : { ...trip, name: trip.destination };
-            handleLocationSelect(hydratedLocation); 
-            setIsCardExpanded(true);
+            navigate(`/place/${hydratedLocation.id || hydratedLocation.name}`);
           }}
         />
+
+        {selectedLocation && routeLocation.pathname === '/' && (
+          <PlaceCardSummary
+            location={selectedLocation}
+            isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.isBookmarked)}
+            onClose={() => {
+              setIsCardExpanded(false);
+              setSelectedLocation(null); 
+              if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
+                globeRef.current.resumeRotation();
+              }
+            }}
+            onExpand={() => {
+              setIsCardExpanded(true);
+              navigate(`/place/${selectedLocation.id || selectedLocation.name}`);
+            }}
+            onChat={(p) => handleStartChat(selectedLocation?.name, p)}
+            onToggleBookmark={handleToggleBookmark}
+            isTickerExpanded={isTickerExpanded}
+          />
+        )}
         
-        {/* 🚨 [Fix/New] 하드코딩된 PlaceCard 대신 Outlet 마운트. 필요한 헬퍼 함수를 Context로 전달 */}
         <Outlet context={{ 
           location: selectedLocation, 
-          isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
-          onClose: () => { setIsCardExpanded(false); navigate('/'); },
+          isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.isBookmarked) : false,
+          onClose: () => { 
+            setIsCardExpanded(false); 
+            setSelectedLocation(null);
+            if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
+              globeRef.current.resumeRotation();
+            }
+            navigate('/'); 
+          },
           onChat: (p) => handleStartChat(selectedLocation?.name, p),
           onToggleBookmark: handleToggleBookmark,
-          onTicket: () => { setIsCardExpanded(false); navigate('/'); },
+          onTicket: () => { 
+            setIsCardExpanded(false); 
+            setSelectedLocation(null);
+            if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
+              globeRef.current.resumeRotation();
+            }
+            navigate('/'); 
+          },
           isTickerExpanded,
-          initialExpanded: isCardExpanded,
+          initialExpanded: true, 
           onExpandChange: setIsCardExpanded
         }} />
 
