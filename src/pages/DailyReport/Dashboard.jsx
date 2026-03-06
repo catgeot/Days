@@ -1,14 +1,8 @@
 // src/pages/DailyReport/Dashboard.jsx
-// 🚨 [Fix/Subtraction] 대제목 축소, 뭉툭한 버튼을 세련된 고스트(Ghost) 버튼으로 세공
-// 🚨 [New] 헤더의 광활한 여백에 트렌드 데이터를 활용한 '미니 스파크라인 그래프' 삽입
-// 🚨 [Fix] 1열 통계 카드를 완전 삭제하고, 큐레이션 카드가 2칸(col-span-2)을 차지하도록 그리드 개편
-// 🚨 [Fix/New] useReport 전역 상태 의존성을 제거하고 useNavigate를 이용한 URL 기반 라우팅으로 전환
+// 🚨 [Fix] Subtraction: 이전 단계에서 추가했던 URL 브릿지 로직(handleCurationSelect)을 깨끗하게 삭제하고 정적 카드로 복귀시켰습니다.
 
 import React from 'react';
 import { PenTool, BarChart3 } from 'lucide-react'; 
-// 🚨 [Fix] useReport 임포트 완전 제거
-// import { useReport } from '../../context/ReportContext';
-// 🚨 [New] 라우팅용 훅 임포트
 import { useNavigate } from 'react-router-dom';
 
 import AICurationCard from './components/AICurationCard';
@@ -17,7 +11,6 @@ import RecentList from './components/RecentList';
 import { useDashboardData } from './hooks/useDashboardData';
 
 const Dashboard = () => {
-  // 🚨 [Fix] 전역 상태 대신 URL 조작 함수 사용
   const navigate = useNavigate();
 
   const {
@@ -34,7 +27,7 @@ const Dashboard = () => {
           
           <div className="flex flex-col sm:flex-row sm:items-end gap-6 flex-1">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">LogBook 성좌</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">LogBook</h2>
               <p className="text-slate-400 mt-1.5 text-sm font-medium">
                  {loading ? '우주의 기록을 동기화하는 중...' : `총 ${displayCount}개의 기억이 빛나고 있습니다.`}
               </p>
@@ -58,19 +51,21 @@ const Dashboard = () => {
             )}
           </div>
           
-          <button 
-            // 🚨 [Fix] 상태 변경(setCurrentView) 대신 URL 변경으로 전환
-            onClick={() => navigate('/report/write')}
-            className="group relative flex items-center justify-center gap-2 px-6 py-2.5 bg-transparent border border-blue-500/40 text-blue-400 font-bold rounded-full hover:bg-blue-500/10 hover:border-blue-400 transition-all active:scale-95 w-full lg:w-auto overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <PenTool size={16} className="relative z-10" /> 
-            <span className="relative z-10 tracking-wide text-sm">기록 남기기</span>
-          </button>
+         	<button 
+						onClick={() => navigate('/report/write')}
+						className="group relative flex items-center justify-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white font-black rounded-full transition-all hover:scale-105 active:scale-95 w-full lg:w-auto overflow-hidden shadow-lg hover:shadow-blue-500/50"
+						>
+						{/* 🚨 [New] 광원 스위핑 효과: 호버 시 빛이 왼쪽에서 오른쪽으로 지나감 */}
+						<div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 transition-all duration-700 group-hover:left-full"></div>
+						
+						<PenTool size={18} className="relative z-10 drop-shadow-md" /> 
+						<span className="relative z-10 tracking-tight text-sm drop-shadow-md">새로운 기록 시작하기</span>
+					</button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-stretch">
           <div className="col-span-1 lg:col-span-2 h-full">
+             {/* 🚨 [Fix] 외부 라우팅 프롭스 완전히 제거, 본연의 감상용 카드로 복귀 */}
              <AICurationCard />
           </div>
 
@@ -83,7 +78,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* 최근 리스트 섹션 (🚨 내부에서 Link 처리 필요) */}
         <RecentList reports={reports} loading={loading} />
         
       </div>

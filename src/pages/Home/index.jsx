@@ -2,11 +2,12 @@
 // 🚨 [Fix/New] 수정 이유:
 // 1. [Subtraction] ReportPanel 전역 상태 및 마운트 로직 완전 제거 (URL 라우팅으로 위임)
 // 2. [Routing] isPlaceCardOpen 상태를 제거하고 React Router의 <Outlet />과 Deep Linking 동기화 적용
-// 3. 🚨 [Fix/New] 마커 클릭 시의 강제 라우팅(Deep Linking 1)을 제거하고, Summary 카드를 Home의 모달로 복귀. 확장을 누를 때만 라우팅 이동(Soft Transition).
-// 4. 🚨 [Subtraction] 라우팅 분리에 따라 과거 단일 페이지 시절의 잔재인 '지구본 리소스 제한' CSS 족쇄 삭제.
-// 5. 🚨 [Fix] LogoPanel에서 버킷리스트 클릭 시 발생하는 써머리 깜빡임(Flickering) 해결.
-// 6. 🚨 [Fix/New] Clean Slate (유령 퇴치): 브라우저 뒤로가기를 통해 장소 카드에서 메인으로 돌아올 때 강제 초기화.
-// 7. 🚨 [Fix] Subtraction: 확장 카드 닫기 시 발생하는 '좀비 핀 꽂기' 및 '두 번 깜빡임'을 원천 차단하기 위해, URL 동기화 로직의 감시 카메라(의존성 배열)에서 selectedLocation을 삭제했습니다. 이제 오직 URL이 바뀔 때만 평화롭게 반응합니다.
+// 3. [Fix/New] 마커 클릭 시의 강제 라우팅을 제거하고, Summary 카드를 Home의 모달로 복귀. 확장을 누를 때만 라우팅 이동.
+// 4. [Subtraction] 라우팅 분리에 따라 과거 단일 페이지 시절의 잔재인 '지구본 리소스 제한' CSS 족쇄 삭제.
+// 5. [Fix] LogoPanel에서 버킷리스트 클릭 시 발생하는 써머리 깜빡임 해결.
+// 6. [Fix/New] Clean Slate (유령 퇴치): 브라우저 뒤로가기를 통해 장소 카드에서 메인으로 돌아올 때 강제 초기화.
+// 7. [Fix] Subtraction: URL 동기화 로직의 의존성 배열에서 selectedLocation 삭제.
+// 8. 🚨 [Fix/New] URL Query Params(?search=) 브릿지 감지: 큐레이션 클릭 시 전달된 검색어를 기존 handleSmartSearch에 태우고 꼬리 자르기 적용.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation, matchPath } from 'react-router-dom';
@@ -79,9 +80,21 @@ function Home() {
     toggleBookmark 
   });
 
-  // 🚨 [Fix] Subtraction: 의존성 배열 다이어트 (좀비 부활 차단)
-  // 장소 데이터가 비워지는 순간 불필요하게 렌더링을 덮어씌우는 헛발질을 막기 위해 
-  // selectedLocation을 의존성 배열에서 완전히 제거했습니다. 오직 URL이 바뀔 때만 작동합니다.
+  // 🚨 [New] 외부 라우팅을 통한 검색 브릿지 (Pessimistic First: 꼬리 자르기)
+  useEffect(() => {
+    const searchParams = new URLSearchParams(routeLocation.search);
+    const searchQuery = searchParams.get('search');
+    
+    if (searchQuery) {
+      // 1. 기존 파이프라인에 검색어 탑승
+      handleSmartSearch(searchQuery);
+      // 2. 무한 루프나 새로고침 오류를 막기 위해 URL에서 쿼리 파라미터만 조용히 삭제 (replace)
+      navigate(routeLocation.pathname, { replace: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeLocation.search]); // URL의 search 파라미터가 변경될 때만 트리거
+
+  // 라우팅 기반 장소 선택 동기화 로직
   useEffect(() => {
     const match = matchPath({ path: "/place/:id" }, routeLocation.pathname);
     if (match && match.params.id) {
@@ -99,7 +112,7 @@ function Home() {
       setIsCardExpanded(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeLocation.pathname]); // 🚨 완벽한 뺄셈: 오직 주소 변경시에만 작동
+  }, [routeLocation.pathname]); 
 
   // Pessimistic Clean Slate: 브라우저 뒤로가기(Back) 대응
   const prevPathRef = useRef(routeLocation.pathname);
@@ -108,7 +121,6 @@ function Home() {
     const prevPath = prevPathRef.current;
     prevPathRef.current = currentPath;
 
-    // 방금 전까지 /place/ 에 있다가 메인(/)으로 복귀한 경우에만 강제 초기화 실행
     if (currentPath === '/' && prevPath.startsWith('/place/')) {
       setSelectedLocation(null); 
       if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {

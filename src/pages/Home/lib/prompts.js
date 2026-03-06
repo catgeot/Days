@@ -1,5 +1,6 @@
 // src/pages/Home/lib/prompts.js
-// 🚨 [New] AI LogBook 기능(에세이/SNS 모드)을 위한 프롬프트 생성기 추가
+// 🚨 [Fix/New] 수정 이유: 
+// 1. [Fix] AI 환각 방지(JSON Syntax Error 차단): JSON 문자열 내부에 물리적인 줄바꿈(Enter) 사용을 엄격히 금지하고 띄어쓰기로 대체하도록 프롬프트 규칙 추가.
 
 const BASE_RULES = `
 - 모든 답변은 한국어로 한다.
@@ -78,13 +79,12 @@ export const getPracticalInfoPrompt = (locationName) => {
 답변은 간결하고 현실적이며, 여행자의 가슴을 뛰게 하는 세련된 매거진 톤으로 작성하세요.`;
 };
 
-// 🚨 [Fix/New] AI LogBook 전용 프롬프트 생성 함수 (치환자 지시사항 및 imageCount 추가)
+// LogBook 전용 프롬프트 생성 함수 
 export const getLogbookPrompt = (mode, date, location, content, imageCount = 0) => {
   const safeDate = date || '날짜 미상';
   const safeLocation = location || '장소 미상';
   const safeContent = content || '(내용 없음)';
 
-  // 🚨 [New] 사진 갯수에 따른 동적 지시사항 (Vision AI용 Placeholder 전략)
   const imageInstruction = imageCount > 0 
     ? `\n[중요 지시사항: 블로그 사진 배치]\n사용자가 총 ${imageCount}장의 사진을 첨부했습니다. 당신은 사진의 내용을 시각적으로 분석할 수 있습니다. 글을 작성할 때, 문맥상 사진이 들어가야 할 최적의 위치에 반드시 '[사진1]', '[사진2]' (숫자는 사진 순서) 형식으로 치환자를 정확히 삽입하세요. (예: "눈앞에 펼쳐진 에메랄드빛 바다는 경이로웠습니다. [사진1] 그곳에서 마신 칵테일은...")` 
     : '';
@@ -115,4 +115,40 @@ export const getLogbookPrompt = (mode, date, location, content, imageCount = 0) 
   }
 
   return "";
+};
+
+// 🚨 [Fix/New] 큐레이션 전용 프롬프트 (excludeList 매개변수 추가 및 영문 검색어 강제)
+export const getCurationPrompt = (validReports, validSaved, excludeList = []) => {
+  const userDataText = `
+    [사용자의 과거 기록] ${validReports.map(r => `- ${r.location}`).join(', ')}
+    [사용자의 북마크] ${validSaved.map(s => `- ${s.destination}`).join(', ')}
+  `;
+
+  // 🚨 [New] 중복 추천 방지 제약 조건 생성
+  const excludeText = excludeList.length > 0 
+    ? `\n🚨 [강제 제외 장소]: ${excludeList.join(', ')} (이 장소들은 이번 세션에서 이미 추천했으므로 절대로 다시 추천하지 마세요.)` 
+    : '';
+
+  return `당신은 세계 곳곳의 숨겨진 명소를 잘 아는 GATEO의 수석 여행 큐레이터입니다. 
+대중에게 덜 알려졌으나, 사용자의 취향에 완벽히 맞는 숨겨진 낙원 딱 1곳을 추천하세요.
+
+[사용자 취향 데이터]
+${userDataText}${excludeText}
+
+🚨 [언어 및 데이터 정합성 엄수 규칙]
+1. "location": 구글 검색이 가능한 정확한 '한국어 지명' (예: 아이투타키).
+2. "locationEn": 정확한 '영문 고유 지명 (City, Country 형식)' (예: Aitutaki, Cook Islands).
+3. "title": 반드시 '한국어'로 작성. 공백 포함 15자 이내의 짧고 매혹적인 제목.
+4. "description": 반드시 '한국어'로 작성. 단순 요약이 아닌, 공간의 분위기와 감각이 느껴지는 300자 내외의 풍부하고 깊이 있는 스토리텔링.
+5. "searchKeyword": 🚨 반드시 '영어(English)'로만 작성. Unsplash API 이미지 검색용이므로 한국어가 단 한 글자라도 포함되면 절대 안 됩니다. (예: "Aitutaki tropical island pristine clear water").
+6. [치명적 시스템 에러 방지]: 응답을 생성할 때, JSON 문자열 내부에 절대로 실제 줄바꿈(Enter)이나 탭(Tab) 키를 치지 마세요. 문장이 길어도 반드시 띄어쓰기(Space)로만 구분하며 한 줄로 쭉 작성하세요.
+
+응답은 반드시 아래 JSON 형식으로만 출력하세요:
+{
+  "location": "한국어 지명 (예: 아이투타키)",
+  "locationEn": "영문 고유 지명 (예: Aitutaki, Cook Islands)",
+  "title": "한국어 제목 (15자 이내)",
+  "description": "한국어 스토리텔링 설명 (줄바꿈 없이 한 줄로 작성)",
+  "searchKeyword": "영문 확장 키워드"
+}`;
 };

@@ -1,12 +1,15 @@
 // src/pages/DailyReport/hooks/useLogbookAI.js
-// 🚨 [New] 관심사 분리: AI 통신, 롤백 로직, 백업 데이터 관리를 전담하는 커스텀 훅
-// 🚨 [Fix] 지역 변수 캐싱을 활용한 100% 안전한 데이터 롤백(Safe Path) 구현
+// 🚨 [Fix/New] 수정 이유: 
+// 1. [Fix] 비관적 파싱 방어(Safe Path): JSON 제어 문자 평탄화 유지.
+// 2. [New] 상태 유지(Persistence): sessionStorage를 사용하여 탭 이동 후에도 큐레이션 결과 유지.
+// 3. [New] 중복 방지(Anti-Duplicate): sessionStorage에 추천 히스토리를 배열로 누적하여 프롬프트에 주입.
 
 import { useState } from 'react';
-import { getLogbookPrompt } from '../../Home/lib/prompts';
+import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts'; 
 import { apiClient } from '../../Home/lib/apiClient';
 import { convertToBase64 } from './useLogbookMedia';
 
+// --- 기존 글쓰기 AI 훅 ---
 export const useLogbookAI = (title, setTitle, content, setContent, date, mapLocation) => {
   const [isAILoading, setIsAILoading] = useState(false);
   const [backupData, setBackupData] = useState(null);
@@ -17,7 +20,6 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
       return;
     }
 
-    // 🚨 [Fix] 비관적 설계: 통신 전 현재 상태를 지역 변수에 즉시 박제 (Safe Path)
     const originalTitle = title;
     const originalContent = content;
 
@@ -28,16 +30,13 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       if (!apiKey) throw new Error("API_KEY_MISSING");
 
-      // 1. 이미지 Base64 인코딩
       let base64Images = [];
       if (imageFiles.length > 0) {
         base64Images = await Promise.all(imageFiles.map(file => convertToBase64(file)));
       }
 
-      // 2. 프롬프트 생성 (2.0-flash 최적화)
       const prompt = getLogbookPrompt(mode, date, mapLocation, content, imageFiles.length);
       
-      // 3. API 호출
       const resultText = await apiClient.fetchGeminiResponse(
         apiKey,
         [], 
@@ -46,7 +45,6 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
         base64Images 
       );
 
-      // 4. 결과 적용
       setContent(resultText); 
       if (!title) setTitle(`${mapLocation ? mapLocation : '어느 멋진 곳'}에서의 기록`);
       
@@ -54,7 +52,6 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
       console.error("AI 변환 실패:", error);
       alert("AI 변환 중 오류가 발생했습니다. 원본을 안전하게 복구합니다.");
       
-      // 🚨 [Safe Path] 지역 변수를 활용한 즉각적인 롤백
       setTitle(originalTitle);
       setContent(originalContent);
       setBackupData(null);
@@ -70,10 +67,79 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
     setBackupData(null);
   };
 
-  return {
-    isAILoading,
-    backupData,
-    handleAIPolish,
-    handleRestoreBackup
+  return { isAILoading, backupData, handleAIPolish, handleRestoreBackup };
+};
+
+// 🚨 큐레이션 전용 커스텀 훅 (세션 스토리지 기반 상태 유지)
+export const useCurationAI = () => {
+  // 🚨 [New] 초기 마운트 시 sessionStorage 검사하여 상태 복원
+  const [status, setStatus] = useState(() => {
+    return sessionStorage.getItem('gateo_curation_data') ? 'result' : 'idle';
+  });
+  
+  const [curationData, setCurationData] = useState(() => {
+    const cached = sessionStorage.getItem('gateo_curation_data');
+    return cached ? JSON.parse(cached) : null;
+  });
+
+  const generateCuration = async (user, validReports, validSaved, fallbackData) => {
+    setStatus('loading');
+    
+    try {
+      if (!user) throw new Error("로그인이 필요합니다.");
+
+      // 🚨 [New] 세션 스토리지에서 이전 추천 기록(히스토리) 불러오기
+      let curationHistory = JSON.parse(sessionStorage.getItem('gateo_curation_history') || '[]');
+
+      const totalDataCount = validReports.length + validSaved.length;
+      if (totalDataCount < 3) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setCurationData(fallbackData);
+        sessionStorage.setItem('gateo_curation_data', JSON.stringify(fallbackData)); // Fallback도 저장
+        setStatus('result');
+        return;
+      }
+
+      // 🚨 [Fix] 제외 목록(curationHistory)을 프롬프트에 전달
+      const systemPrompt = getCurationPrompt(validReports, validSaved, curationHistory);
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      const resultText = await apiClient.fetchGeminiResponse(apiKey, [], systemPrompt, ""); 
+      
+      const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("JSON 파싱 실패: 형식을 찾을 수 없음");
+      
+      const safeJsonString = jsonMatch[0].replace(/[\n\r\t]+/g, ' ');
+      const parsedData = JSON.parse(safeJsonString);
+      
+      // 🚨 [New] 성공적으로 추천받은 장소는 히스토리에 누적 저장
+      if (parsedData.location && !curationHistory.includes(parsedData.location)) {
+        curationHistory.push(parsedData.location);
+        sessionStorage.setItem('gateo_curation_history', JSON.stringify(curationHistory));
+      }
+
+      const unsplashKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+      let finalImageUrl = fallbackData.imageUrl; 
+
+      if (unsplashKey && parsedData.searchKeyword) {
+        const images = await apiClient.fetchUnsplashImages(unsplashKey, parsedData.searchKeyword);
+        if (images && images.length > 0) finalImageUrl = images[0].urls.regular;
+      }
+
+      const finalData = { ...parsedData, imageUrl: finalImageUrl };
+      
+      setCurationData(finalData);
+      // 🚨 [New] 결과물 세션 스토리지에 캐싱 (탭 이동 시 유지)
+      sessionStorage.setItem('gateo_curation_data', JSON.stringify(finalData));
+      setStatus('result');
+
+    } catch (error) {
+      console.warn("🚨 큐레이션 에러:", error);
+      setCurationData(fallbackData);
+      sessionStorage.setItem('gateo_curation_data', JSON.stringify(fallbackData));
+      setStatus('result');
+    }
   };
+
+  return { status, setStatus, curationData, generateCuration };
 };
