@@ -1,6 +1,8 @@
 // src/components/PlaceCard/views/PlaceGalleryView.jsx
 // 🚨 [Fix/New] 수정 이유: 
-// 1. [Fix] 갤러리 겹침 방지 (Pessimistic First): PlaceChatPanel 헤더에 불투명한 솔리드/블러 처리가 적용됨에 따라 모바일 그리드 뷰(썸네일 목록) 상단이 가려지는 문제를 막기 위해 패딩(pt-24) 추가. PC에서는 기존 패딩(md:pt-6) 유지.
+// 1. [Fix] 핀터레스트 스타일(Masonry) 도입: 'columns-2'와 'break-inside-avoid'를 사용하여 이미지 본연의 비율을 살린 2열 그리드 구현.
+// 2. [Fix] 리얼 톤 복원: 기존의 opacity-60~80 레이어를 제거하여 사진 본연의 선명한 색감 노출.
+// 3. [Fix] 모바일 시인성 개선: 4열 기반에서 2열 기반으로 변경하여 모바일에서도 사진을 큼직하고 시원하게 확인 가능.
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download } from 'lucide-react';
@@ -64,7 +66,6 @@ const PlaceGalleryView = ({
         <div 
           className="w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden"
         >
-          
           <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => { 
               e.stopPropagation(); 
               if (window.innerWidth >= 768 && !isFullScreen) {
@@ -122,27 +123,43 @@ const PlaceGalleryView = ({
               <span className="hidden md:block text-sm font-medium pr-1">다운로드</span>
             </button>
           </div>
-
         </div>
       ) : (
-        // 🚨 [Fix] 모바일 헤더 높이에 맞춰 pt-24 적용하여 갤러리 썸네일 잘림 방지 (PC는 기존 pt-6 유지)
-        <div className="w-full h-full p-6 pt-24 md:pt-6 overflow-y-auto custom-scrollbar-blue relative">
-          <div className="grid grid-cols-4 grid-rows-3 gap-4 min-h-[600px] mb-4">
-            <div onClick={() => !isImgLoading && images[0] && setSelectedImg(images[0])} className="col-span-2 row-span-2 bg-white/5 rounded-[2rem] border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-500 group relative overflow-hidden">
-              {isImgLoading ? (<div className="w-full h-full animate-pulse flex items-center justify-center"><ImageIcon className="text-white/20" size={48} /></div>) : images[0] ? (<><img src={images[0].urls.regular} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" /><div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" /><Maximize2 className="absolute top-6 right-6 text-white/80 opacity-0 group-hover:opacity-100 transition-all" size={24}/></>) : null}
+        // 🚨 [Fix] 핀터레스트 스타일 2열 레이아웃 적용 (columns-2) 및 리얼 톤 유지 (opacity 제거)
+        <div className="w-full h-full p-6 pt-24 md:pt-10 overflow-y-auto custom-scrollbar-blue relative">
+          {isImgLoading ? (
+            <div className="grid grid-cols-2 gap-4">
+               {[...Array(6)].map((_, i) => (
+                 <div key={i} className="aspect-[3/4] animate-pulse bg-white/5 rounded-2xl border border-white/5" />
+               ))}
             </div>
-            {[...Array(7)].map((_, i) => {
-              const imgData = images[i + 1]; const gridIndex = i + 2; 
-              return (<div key={i} onClick={() => !isImgLoading && imgData && setSelectedImg(imgData)} className={`${gridIndex === 4 ? 'col-span-2' : 'col-span-1'} row-span-1 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all group relative overflow-hidden`}>{imgData ? (<img src={imgData.urls.small} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />) : <div className="w-full h-full animate-pulse bg-white/5" />}</div>);
-            })}
-          </div>
-          {!isImgLoading && images.length > 8 && (
-            <div className="grid grid-cols-4 gap-4 animate-fade-in-up">
-              {images.slice(8).map((img, i) => (
-                <div key={i + 8} onClick={() => setSelectedImg(img)} className="aspect-square bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all group relative overflow-hidden">
-                  <img src={img.urls.small} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-300" />
+          ) : (
+            <div className="columns-2 gap-4 space-y-4">
+              {images.map((img, i) => (
+                <div 
+                  key={img.id || i} 
+                  onClick={() => setSelectedImg(img)} 
+                  className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+                >
+                  {/* 🚨 [Fix] 원본 톤 유지를 위해 opacity-100 적용 */}
+                  <img 
+                    src={img.urls.small || img.urls.regular} 
+                    className="w-full h-auto object-cover opacity-100 group-hover:scale-105 transition-transform duration-500" 
+                    alt={`place-img-${i}`}
+                  />
+                  {/* 🚨 [Fix] 하단 가독성을 위한 최소한의 그라데이션만 유지 */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20}/>
                 </div>
               ))}
+            </div>
+          )}
+          
+          {/* 🚨 [Pessimistic First] 이미지가 없을 때의 Default 처리 */}
+          {!isImgLoading && images.length === 0 && (
+            <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
+              <ImageIcon size={48} />
+              <p className="text-sm">등록된 이미지가 없습니다.</p>
             </div>
           )}
         </div>
