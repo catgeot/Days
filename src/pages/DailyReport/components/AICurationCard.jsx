@@ -1,12 +1,16 @@
 // src/pages/DailyReport/components/AICurationCard.jsx
 // 🚨 [Fix/Subtraction] 수정 이유: 
 // 1. [Subtraction] onSelectPlace 및 handlePlaceClick 등 모든 라우팅 로직 완전 삭제.
-// 2. [UI] 이미지와 제목의 cursor-pointer, 확대 아이콘(Maximize2) 등 링크를 암시하는 모든 요소 제거. 철저한 '정적 매거진' UI로 탈바꿈.
+// 2. [UI] 이미지와 제목의 cursor-pointer, 확대 아이콘 등 링크를 암시하는 요소 제거. 정적 매거진 UI.
+// 3. [Fix/Subtraction] 직접적인 DB Insert 구문 삭제. useTravelData의 saveCurationData를 주입받아 단일 파이프라인 적용.
+// 4. [New/UI] 지명 표기 시 한국어 지명(location) 하단에 영문 고유 지명(locationEn)을 병기하여 홈 검색 시 정확도 향상.
+// 5. 🚨 [Fix/UI] UI 디테일 조정: AI CURATION 뱃지 상단 정렬, 시원한 여백(Padding) 확장, 저장하기 버튼 시인성 강화, 하단 Gateo v5.0 텍스트 가독성 향상, 다른 낙원 탐색 스파클 컬러 추가.
 
 import React, { useState, useEffect } from 'react';
 import { Sparkles, MapPin, Loader2, Compass, ArrowRight, Bookmark, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { useCurationAI } from '../hooks/useLogbookAI'; 
+import { useTravelData } from '../../Home/hooks/useTravelData'; 
 
 const FALLBACK_DATA = {
   title: "태평양의 순수한 숨결",
@@ -20,6 +24,12 @@ const FALLBACK_DATA = {
 const AICurationCard = () => {
   const { status, setStatus, curationData, generateCuration } = useCurationAI();
   
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
+  }, []);
+  const { saveCurationData } = useTravelData(user);
+
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [loadingText, setLoadingText] = useState("우주의 궤적을 분석 중...");
@@ -45,7 +55,6 @@ const AICurationCard = () => {
     setIsSaved(false);
     setIsTextExpanded(false); 
     
-    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       alert("로그인이 필요합니다.");
       return;
@@ -65,30 +74,15 @@ const AICurationCard = () => {
     setIsSaving(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const { data: existing } = await supabase
-        .from('saved_trips')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('destination', curationData.location) 
-        .single();
-
-      if (existing) {
-        setIsSaved(true);
+      if (!user) {
+        alert("로그인이 필요합니다.");
         return;
       }
-
-      const { error } = await supabase.from('saved_trips').insert([{
-        user_id: user.id,
-        destination: curationData.location, 
-        is_bookmarked: true,
-        curation_data: curationData,
-        prompt_summary: curationData.title
-      }]);
-
-      if (error) throw error;
-      setIsSaved(true);
+      
+      const savedTrip = await saveCurationData(curationData, user);
+      if (savedTrip) {
+        setIsSaved(true);
+      }
     } catch (error) {
       console.error("저장 실패:", error);
     } finally {
@@ -137,34 +131,44 @@ const AICurationCard = () => {
             />
           </div>
 
-          <div className="w-full md:w-7/12 p-6 md:p-8 flex flex-col relative z-10">
+          {/* 🚨 [Fix] padding 다이어트: 사진과의 간격(pl)은 유지하되 위, 아래, 우측 여백을 시원하게 확장 */}
+          <div className="w-full md:w-7/12 py-4 pr-4 pl-6 md:py-5 md:pr-5 md:pl-8 flex flex-col relative z-10">
             
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 text-[10px] font-bold rounded tracking-wider flex-shrink-0">
+            {/* 🚨 [Fix] items-center -> items-start 로 변경하여 상단 정렬 */}
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start gap-2">
+                {/* 🚨 [Fix] mt-0.5 추가로 뱃지와 텍스트의 수평선(Baseline) 시각적 보정 */}
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 text-[10px] font-bold rounded tracking-wider flex-shrink-0 mt-0.5">
                   <Sparkles size={10} /> AI CURATION
                 </span>
-                <p className="flex items-center gap-1 text-slate-400 text-xs font-medium truncate max-w-[150px]">
-                  <MapPin size={12} className="flex-shrink-0" /> <span className="truncate">{curationData.location}</span>
-                </p>
+                
+                <div className="flex flex-col justify-center ml-1">
+                  <p className="flex items-center gap-1 text-slate-300 text-sm font-bold truncate max-w-[180px]">
+                    <MapPin size={12} className="flex-shrink-0 text-blue-400" /> 
+                    <span className="truncate">{curationData.location}</span>
+                  </p>
+                  <p className="text-slate-400 text-[15px] ml-4 font-mono truncate max-w-[180px] mt-0.5 select-all" title="클릭하여 복사하기 쉽습니다">
+                    {curationData.locationEn}
+                  </p>
+                </div>
               </div>
               
+              {/* 🚨 [Fix] 저장 버튼 시인성 강화: 배경색, 보더, 그림자 추가 */}
               <button 
                 onClick={handleSaveCuration}
-                className={`p-2 rounded-full transition-all flex-shrink-0 z-20 ${isSaved ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'}`}
+                className={`p-2.5 rounded-full transition-all flex-shrink-0 z-20 border shadow-md ${isSaved ? 'bg-blue-600 text-white border-blue-500 shadow-blue-500/20' : 'bg-slate-700/80 text-slate-300 hover:text-white hover:bg-slate-600 border-slate-600 shadow-black/40'}`}
                 title={isSaved ? "저장됨" : "위시리스트에 저장"}
               >
                 {isSaving ? <Loader2 size={16} className="animate-spin" /> : isSaved ? <Check size={16} /> : <Bookmark size={16} />}
               </button>
             </div>
             
-            {/* 🚨 [Fix] 링크/호버 액션 및 커서 변경 완전 삭제 */}
-            <h2 className="text-lg md:text-xl font-bold text-white leading-tight mb-3 tracking-tight line-clamp-2">
+            <h2 className="text-lg md:text-xl font-bold text-white leading-tight mb-3 tracking-tight line-clamp-2 mt-1">
               {curationData.title}
             </h2>
             
             <div className="mb-6 flex-1">
-              <p className={`text-sm text-slate-300 leading-relaxed font-light transition-all duration-300 ${isTextExpanded ? '' : 'line-clamp-3'}`}>
+              <p className={`text-sm text-slate-300 leading-relaxed font-light transition-all duration-300 break-keep ${isTextExpanded ? '' : 'line-clamp-3'}`}>
                 {curationData.description}
               </p>
               {curationData.description.length > 80 && (
@@ -182,12 +186,14 @@ const AICurationCard = () => {
             </div>
 
             <div className="mt-auto pt-4 border-t border-slate-700/30 flex justify-between items-center">
-              <span className="text-[10px] text-slate-500 font-mono tracking-tighter uppercase">Gateo Intelligence v5.0</span>
+              {/* 🚨 [Fix] Gateo Intelligence 텍스트 사이즈업 및 자간 조정으로 또렷하게 */}
+              <span className="text-xs text-slate-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
               <button 
                 onClick={handleCuration}
                 className="group/btn flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-400 transition-colors z-20 relative"
               >
-                <Sparkles size={14} className="group-hover/btn:animate-pulse" />
+                {/* 🚨 [Fix] 스파클 아이콘에 블루 컬러 추가 */}
+                <Sparkles size={14} className="text-blue-400 group-hover/btn:animate-pulse" />
                 다른 낙원 탐색
                 <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
               </button>

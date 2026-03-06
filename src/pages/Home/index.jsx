@@ -8,6 +8,7 @@
 // 6. [Fix/New] Clean Slate (유령 퇴치): 브라우저 뒤로가기를 통해 장소 카드에서 메인으로 돌아올 때 강제 초기화.
 // 7. [Fix] Subtraction: URL 동기화 로직의 의존성 배열에서 selectedLocation 삭제.
 // 8. 🚨 [Fix/New] URL Query Params(?search=) 브릿지 감지: 큐레이션 클릭 시 전달된 검색어를 기존 handleSmartSearch에 태우고 꼬리 자르기 적용.
+// 9. 🚨 [Fix] 치명적 오타 수정: t.isBookmarked (undefined) -> DB 실제 컬럼명인 t.is_bookmarked 로 변경하여 즐겨찾기 마비 해결.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation, matchPath } from 'react-router-dom';
@@ -80,19 +81,17 @@ function Home() {
     toggleBookmark 
   });
 
-  // 🚨 [New] 외부 라우팅을 통한 검색 브릿지 (Pessimistic First: 꼬리 자르기)
+  // 외부 라우팅을 통한 검색 브릿지 (Pessimistic First: 꼬리 자르기)
   useEffect(() => {
     const searchParams = new URLSearchParams(routeLocation.search);
     const searchQuery = searchParams.get('search');
     
     if (searchQuery) {
-      // 1. 기존 파이프라인에 검색어 탑승
       handleSmartSearch(searchQuery);
-      // 2. 무한 루프나 새로고침 오류를 막기 위해 URL에서 쿼리 파라미터만 조용히 삭제 (replace)
       navigate(routeLocation.pathname, { replace: true });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeLocation.search]); // URL의 search 파라미터가 변경될 때만 트리거
+  }, [routeLocation.search]);
 
   // 라우팅 기반 장소 선택 동기화 로직
   useEffect(() => {
@@ -228,7 +227,8 @@ function Home() {
         {selectedLocation && routeLocation.pathname === '/' && (
           <PlaceCardSummary
             location={selectedLocation}
-            isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.isBookmarked)}
+            // 🚨 [Fix] isBookmarked 속성을 t.is_bookmarked로 수정
+            isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
             onClose={() => {
               setIsCardExpanded(false);
               setSelectedLocation(null); 
@@ -248,7 +248,8 @@ function Home() {
         
         <Outlet context={{ 
           location: selectedLocation, 
-          isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.isBookmarked) : false,
+          // 🚨 [Fix] isBookmarked 속성을 t.is_bookmarked로 수정
+          isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
           onClose: () => { 
             setIsCardExpanded(false); 
             setSelectedLocation(null);

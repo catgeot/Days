@@ -1,18 +1,19 @@
 // src/pages/DailyReport/Write.jsx
-// 🚨 [Fix/Subtraction] useReport 등 전역 상태 의존성 전면 제거
-// 🚨 [Safe Path] useParams(id)와 useSearchParams(?date)를 통한 순수 URL 기반 데이터 복원
+// 🚨 [Fix/New] 수정 이유: 
+// 1. [UX/UI] 시인성 개선을 위한 '번호 기반 단계별 레이아웃' 도입 ([01]~[03])
+// 2. [Affordance] 입력 영역에 명확한 테두리(Border)와 포커스 하이라이트 추가하여 입력 지점 명확화.
+// 3. [Contextual AI] AI 작가 기능을 본문 영역 바로 위로 전진 배치하여 접근성 강화.
+// 4. [Copywriting] 질문형 플레이스홀더를 통해 사용자의 작성 의도 가이드.
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2 } from 'lucide-react';
-// 🚨 [New] 라우터 파라미터 훅 임포트
+import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2, Calendar } from 'lucide-react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useLogbookMedia } from './hooks/useLogbookMedia';
 import { useLogbookAI } from './hooks/useLogbookAI';
 
 const Write = () => {
-  // 🚨 [Fix] URL 파라미터를 Source of Truth로 사용
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -20,7 +21,6 @@ const Write = () => {
   const isEditMode = Boolean(id);
 
   const getLocalDate = () => {
-    // 🚨 [Fix] 달력에서 쏜 쿼리 파라미터(?date=) 최우선 적용
     const dateParam = searchParams.get('date');
     if (dateParam) return dateParam;
     
@@ -62,7 +62,6 @@ const Write = () => {
           setDate(data.date);
           setExistingImages(data.images || []); 
         } else {
-          // 🚨 [Pessimistic First] 유효하지 않은 ID 접속 방어
           alert('존재하지 않는 기록입니다.');
           navigate('/report', { replace: true });
         }
@@ -133,11 +132,9 @@ const Write = () => {
 
       if (isEditMode) {
         await supabase.from('reports').update(reportData).eq('id', id);
-        // 🚨 [Fix] 저장 완료 시 상세 페이지로 이동
         navigate(`/report/${id}`);
       } else {
         await supabase.from('reports').insert([reportData]);
-        // 🚨 [Fix] 새 글 작성 후 대시보드로 이동
         navigate('/report');
       }
     } catch (error) {
@@ -158,124 +155,157 @@ const Write = () => {
         </div>
       )}
 
-      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl px-4 sm:px-6 py-3 flex items-center justify-between">
-        
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* 🚨 [Fix] 백버튼 누를 시 URL 기반 뒤로가기 또는 대시보드 회귀 */}
-          <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full">
+      {/* 🚨 [Fix] 헤더 디자인 보강 (시인성) */}
+      <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-2xl border-b border-white/5 px-4 sm:px-8 py-4 flex items-center justify-between shadow-2xl">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white transition-all p-2.5 bg-white/5 rounded-xl border border-white/5 hover:border-white/20">
             <ArrowLeft size={20} />
           </button>
-          <h2 className="text-lg font-semibold text-white/90 hidden sm:block">
-            {isEditMode ? 'LogBook 수정' : '새로운 LogBook'}
-          </h2>
+          <div>
+            <h2 className="text-lg font-bold text-white tracking-tight">
+              {isEditMode ? '기록 수정하기' : '새로운 여정 기록'}
+            </h2>
+            <p className="text-[10px] text-blue-400 font-mono uppercase tracking-widest mt-0.5">Logbook Terminal</p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
-          
-          {!backupData ? (
-            <div className="flex gap-1 sm:gap-2 bg-slate-900/50 p-1 rounded-full border border-slate-700/50">
-              <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 text-xs font-bold text-purple-200 bg-purple-900/20 border border-purple-500/30 rounded-full hover:bg-purple-800/40 disabled:opacity-50 transition-all">
-                {isAILoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} className="text-purple-400" />}
-                <span className="hidden sm:inline">감성 에세이</span>
-                <span className="sm:hidden">에세이</span>
-              </button>
-              <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 text-xs font-bold text-pink-200 bg-pink-900/20 border border-pink-500/30 rounded-full hover:bg-pink-800/40 disabled:opacity-50 transition-all">
-                {isAILoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} className="text-pink-400" />}
-                <span className="hidden sm:inline">SNS 숏폼</span>
-                <span className="sm:hidden">숏폼</span>
-              </button>
-            </div>
-          ) : (
-            <button onClick={handleRestoreBackup} disabled={isAILoading || isCompressing} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-300 bg-slate-800 rounded-full hover:bg-slate-700 border border-slate-600 transition-colors">
-              <Undo2 size={14} /> 원본 복구
+        <div className="flex items-center gap-3">
+          {backupData && (
+            <button onClick={handleRestoreBackup} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-300 bg-slate-800/80 rounded-full border border-white/10 hover:bg-slate-700 transition-all">
+              <Undo2 size={14} /> <span className="hidden sm:inline">원본 복구</span>
             </button>
           )}
-
-          <div className="w-px h-6 bg-slate-700/50 hidden sm:block"></div>
-
-          <button onClick={handleSave} disabled={uploading || isAILoading || isCompressing} className="bg-blue-600 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 rounded-full font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-[0_0_15px_rgba(37,99,235,0.4)] disabled:bg-slate-700 disabled:shadow-none transition-all">
+          <button onClick={handleSave} disabled={uploading || isAILoading || isCompressing} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-black text-xs sm:text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-blue-500/60 active:scale-95 transition-all disabled:opacity-50">
             {uploading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            <span className="hidden sm:inline">{isEditMode ? '수정 완료' : 'GATEO에 기록하기'}</span>
-            <span className="sm:hidden">저장</span>
+            <span>{isEditMode ? '기록 업데이트' : 'GATEO에 저장'}</span>
           </button>
         </div>
-
       </header>
 
-      <main className="relative z-10 max-w-3xl mx-auto pt-8 pb-24 px-4 sm:px-6 flex flex-col gap-6">
+      <main className="relative z-10 max-w-4xl mx-auto pt-10 pb-32 px-4 sm:px-8 flex flex-col gap-12">
         
-        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 shadow-lg flex flex-col sm:flex-row gap-6">
-          <div className="flex-1">
-            <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Date</label>
-            <input type="date" className="w-full bg-transparent border-b border-slate-700 focus:border-blue-500 outline-none py-2 text-slate-100 transition-colors" value={date} onChange={(e) => setDate(e.target.value)} disabled={isAILoading || isCompressing} />
+        {/* 🚨 [01] 여정 정보 섹션 */}
+        <section className="flex flex-col gap-6">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/40 text-[10px] font-black text-blue-400">01</span>
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">여정의 기본 정보</h3>
           </div>
-          <div className="flex-1 relative" onClick={(e) => e.stopPropagation()}>
-            <label className="flex justify-between text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">
-              Location 
-              <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading || isAILoading || isCompressing} className="text-blue-400 items-center gap-1 hover:text-blue-300 transition-colors disabled:opacity-50 hidden md:flex">
-                {locationLoading ? <Loader2 size={12} className="animate-spin" /> : <MapPin size={12} />} 현재 위치
-              </button>
-            </label>
-            <div className="relative">
-              <input type="text" className="w-full bg-transparent border-b border-slate-700 focus:border-blue-500 outline-none py-2 pl-8 text-slate-100 placeholder-slate-600 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="어디에 다녀오셨나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
-              <MapPin className="absolute left-0 top-2.5 text-slate-500" size={18} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 날짜 입력창 입체감 강화 */}
+            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-5 hover:border-white/20 transition-all focus-within:border-blue-500/50 focus-within:bg-blue-500/5">
+              <label className="flex items-center gap-2 text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-widest">
+                <Calendar size={12} /> Travel Date
+              </label>
+              <input type="date" className="w-full bg-transparent outline-none text-xl font-bold text-white transition-colors" value={date} onChange={(e) => setDate(e.target.value)} disabled={isAILoading || isCompressing} />
+            </div>
+
+            {/* 위치 입력창 입체감 강화 */}
+            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-5 hover:border-white/20 transition-all focus-within:border-blue-500/50 focus-within:bg-blue-500/5 relative" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-3">
+                <label className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  <MapPin size={12} /> Location
+                </label>
+                <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">
+                   {locationLoading ? <Loader2 size={10} className="animate-spin" /> : "현재 위치 찾기"}
+                </button>
+              </div>
+              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-white placeholder-slate-700 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="어디의 공기를 담아왔나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
               {showSuggestions && recentLocations.length > 0 && (
-                <div className="absolute z-50 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl mt-2 overflow-hidden backdrop-blur-lg">
-                   {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer flex items-center gap-3 transition-colors" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="text-slate-500" />{loc}</div>))}
+                <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
+                   {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-slate-300 hover:bg-blue-600 hover:text-white cursor-pointer flex items-center gap-3 transition-all" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="opacity-50" />{loc}</div>))}
                 </div>
               )}
             </div>
           </div>
         </section>
 
-        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg">
-          <input type="text" className="w-full bg-transparent border-none outline-none text-3xl sm:text-4xl font-bold text-white placeholder-slate-700 tracking-tight" placeholder="제목을 입력하세요" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
-        </section>
-
-        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
-          
-          {isCompressing && (
-            <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-400">
-              <Loader2 size={36} className="animate-spin mb-4" />
-              <p className="font-semibold text-sm">위성 통신망으로 사진을 압축 중입니다...</p>
-              <p className="text-xs text-blue-300 mt-2 font-mono">Processing: {compressProgress.current} / {compressProgress.total}</p>
-            </div>
-          )}
-
-          <div className="flex justify-between items-end mb-4">
-            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Memories</label>
-            <span className="text-xs text-slate-500 font-medium">{existingImages.length + previewUrls.length} / 10</span>
+        {/* 🚨 [02] 추억(사진) 섹션 */}
+        <section className="flex flex-col gap-6">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/40 text-[10px] font-black text-blue-400">02</span>
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">장면의 포착</h3>
           </div>
-          
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
-            {existingImages.map((url, idx) => ( <div key={`exist-${idx}`} className="relative aspect-square group"><img src={url} className="w-full h-full object-cover rounded-2xl border border-slate-700/50" /><button onClick={() => removeExistingImage(idx)} disabled={isAILoading || isCompressing} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"><X size={14} /></button></div> ))}
-            {previewUrls.map((url, idx) => ( <div key={`new-${idx}`} className="relative aspect-square group"><img src={url} className="w-full h-full object-cover rounded-2xl border border-slate-700/50" /><button onClick={() => removeNewImage(idx)} disabled={isAILoading || isCompressing} className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"><X size={14} /></button></div> ))}
-            {(existingImages.length + previewUrls.length) < 10 && (
-              <label className={`aspect-square border border-dashed border-slate-700 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-slate-500 hover:bg-slate-800/50 text-slate-500 hover:text-slate-300 transition-all ${isAILoading || isCompressing ? 'opacity-50 pointer-events-none' : ''}`}>
-                <ImageIcon size={24} className="mb-2" /><span className="text-xs font-medium text-center px-1">사진 추가<br/>(일괄 선택)</span>
-                <input type="file" accept="image/*" multiple onChange={(e) => handleImageChange(e, isAILoading)} className="hidden" disabled={isAILoading || isCompressing} />
-              </label>
+
+          <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 hover:border-white/10 transition-all relative">
+            {isCompressing && (
+              <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-400 rounded-3xl">
+                <Loader2 size={36} className="animate-spin mb-4" />
+                <p className="font-bold text-sm">기록의 용량을 최적화 중...</p>
+                <p className="text-[10px] text-blue-300 mt-2 font-mono">Progress: {compressProgress.current} / {compressProgress.total}</p>
+              </div>
             )}
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
+              {existingImages.map((url, idx) => ( 
+                <div key={`exist-${idx}`} className="relative aspect-square group">
+                  <img src={url} className="w-full h-full object-cover rounded-2xl border border-white/5 group-hover:border-white/20 transition-all" />
+                  <button onClick={() => removeExistingImage(idx)} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1.5 shadow-lg scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
+                </div> 
+              ))}
+              {previewUrls.map((url, idx) => ( 
+                <div key={`new-${idx}`} className="relative aspect-square group">
+                  <img src={url} className="w-full h-full object-cover rounded-2xl border border-blue-500/30 group-hover:border-blue-500/50 transition-all" />
+                  <button onClick={() => removeNewImage(idx)} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1.5 shadow-lg scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
+                </div> 
+              ))}
+              {(existingImages.length + previewUrls.length) < 10 && (
+                <label className="aspect-square border-2 border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 text-slate-600 hover:text-blue-400 transition-all group">
+                  <ImageIcon size={28} className="mb-2 group-hover:scale-110 transition-transform" />
+                  <span className="text-[10px] font-black uppercase tracking-wider text-center">Add Moment</span>
+                  <input type="file" accept="image/*" multiple onChange={(e) => handleImageChange(e, isAILoading)} className="hidden" disabled={isAILoading || isCompressing} />
+                </label>
+              )}
+            </div>
+            <p className="text-[10px] text-slate-600 mt-6 text-center font-bold tracking-widest uppercase">Max 10 images / High-Quality Compression Applied</p>
           </div>
         </section>
 
-        <section className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden min-h-[400px]">
-          
-          {isAILoading && (
-            <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-purple-400">
-              <Loader2 size={36} className="animate-spin mb-4" />
-              <p className="font-semibold text-sm animate-pulse text-center px-4">{aiLoadingMsg}</p>
-            </div>
-          )}
+        {/* 🚨 [03] 이야기 섹션 (가장 중요) */}
+        <section className="flex flex-col gap-6">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/40 text-[10px] font-black text-blue-400">03</span>
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">기록의 완성</h3>
+          </div>
 
-          <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-4">Story</label>
-          <textarea 
-            className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[1.8] text-slate-200 placeholder-slate-700 h-full min-h-[350px]" 
-            value={content} 
-            onChange={(e) => setContent(e.target.value)} 
-            disabled={isAILoading || isCompressing} 
-            placeholder="사진을 여러 장 선택해 올린 뒤, 상단의 [감성 에세이] 버튼을 눌러보세요. AI가 멋진 블로그 글을 작성해 줍니다." 
-          />
+          <div className="flex flex-col gap-4">
+            {/* 제목 섹션 */}
+            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 focus-within:border-blue-500/50 transition-all">
+              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-white placeholder-slate-800 tracking-tight" placeholder="이번 여정을 한 문장으로 정의한다면?" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
+            </div>
+
+            {/* 본문 및 AI 툴바 섹션 */}
+            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 focus-within:border-blue-500/50 transition-all relative min-h-[500px] flex flex-col">
+              
+              {/* 🚨 [New] Contextual AI Toolbar: 본문 바로 위에서 도움 받기 */}
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Storytelling</label>
+                <div className="flex gap-2">
+                  <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-600/10 border border-purple-500/30 text-purple-400 rounded-full text-[10px] font-black hover:bg-purple-600 hover:text-white transition-all">
+                    <Sparkles size={12} className="group-hover:animate-spin" /> AI 에세이 작가
+                  </button>
+                  <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-600/10 border border-pink-500/30 text-pink-400 rounded-full text-[10px] font-black hover:bg-pink-600 hover:text-white transition-all">
+                    <Sparkles size={12} className="group-hover:animate-pulse" /> AI SNS 인플루언서
+                  </button>
+                </div>
+              </div>
+
+              {isAILoading && (
+                <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center text-purple-400 rounded-3xl">
+                  <Loader2 size={40} className="animate-spin mb-6" />
+                  <p className="font-black text-sm animate-pulse text-center px-8 tracking-tight">{aiLoadingMsg}</p>
+                </div>
+              )}
+
+              <textarea 
+                className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-slate-200 placeholder-slate-800 flex-1 min-h-[400px]" 
+                value={content} 
+                onChange={(e) => setContent(e.target.value)} 
+                disabled={isAILoading || isCompressing} 
+                placeholder="떠오르는 파편화된 기억들을 자유롭게 적어보세요. 사진을 올리고 위쪽의 AI 버튼을 누르면 투박한 메모가 아름다운 기록으로 변합니다." 
+              />
+            </div>
+          </div>
         </section>
 
       </main>

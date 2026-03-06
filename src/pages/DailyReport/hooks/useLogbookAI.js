@@ -73,13 +73,25 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
 // 🚨 큐레이션 전용 커스텀 훅 (세션 스토리지 기반 상태 유지)
 export const useCurationAI = () => {
   // 🚨 [New] 초기 마운트 시 sessionStorage 검사하여 상태 복원
+ // 상태(status)도 데이터 파싱 성공 여부에 따라 안전하게 초기화
   const [status, setStatus] = useState(() => {
-    return sessionStorage.getItem('gateo_curation_data') ? 'result' : 'idle';
+    try {
+      const cached = sessionStorage.getItem('gateo_curation_data');
+      return cached && JSON.parse(cached) ? 'result' : 'idle';
+    } catch {
+      return 'idle';
+    }
   });
   
   const [curationData, setCurationData] = useState(() => {
-    const cached = sessionStorage.getItem('gateo_curation_data');
-    return cached ? JSON.parse(cached) : null;
+    try {
+      const cached = sessionStorage.getItem('gateo_curation_data');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      console.warn("🚨 [Safe Path] 세션 스토리지 데이터 손상. 초기화합니다.");
+      sessionStorage.removeItem('gateo_curation_data'); // 오염된 데이터 삭제
+      return null;
+    }
   });
 
   const generateCuration = async (user, validReports, validSaved, fallbackData) => {
