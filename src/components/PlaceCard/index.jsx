@@ -2,7 +2,7 @@
 // 🚨 [Fix/New] 수정 이유: 
 // 1. [Routing] useParams 및 Outlet Context 도입 (기존 설계 유지).
 // 2. [Safe Path] 레이스 컨디션 대기 + 영구적 404 방어막 구축 (유효하지 않은 주소일 경우 홈으로 강제 회귀).
-// 3. 🚨 [Subtraction] 써머리 뷰(Summary)가 Home 컴포넌트의 순수 모달로 편입됨에 따라, 더 이상 이 컴포넌트에서 isExpanded 상태를 관리할 필요가 없습니다. 관련 로직(토글, 렌더링 분기)을 전면 삭제하고 오직 PlaceCardExpanded만을 반환하는 깔끔한 라우팅 껍데기로 다이어트했습니다.
+// 3. [Subtraction] 써머리 뷰(Summary)가 Home 컴포넌트의 순수 모달로 편입됨에 따라, 더 이상 이 컴포넌트에서 isExpanded 상태를 관리할 필요가 없습니다. 관련 로직(토글, 렌더링 분기)을 전면 삭제하고 오직 PlaceCardExpanded만을 반환하는 깔끔한 라우팅 껍데기로 다이어트했습니다.
 
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
@@ -49,7 +49,7 @@ const PlaceCard = () => {
   // 부모가 데이터를 확정하기 전까지 렌더링 차단 (레이아웃 붕괴 방지)
   if (!contextLocation) return null;
 
-  // 🚨 [Subtraction] 더 이상 isExpanded를 묻지 않고 무조건 확장 카드를 렌더링합니다.
+  // 더 이상 isExpanded를 묻지 않고 무조건 확장 카드를 렌더링합니다.
   return (
     <PlaceCardExpanded
       location={contextLocation}

@@ -1,24 +1,61 @@
+// 🚨 [Fix/New] Pessimistic UI(비관적 설계) 적용: 영상 데이터가 없을 때 터지지 않고 Fallback UI 렌더링
+// 🚨 [Fix/New] Subtraction over Addition: 복잡한 에러 핸들러 추가 대신 Early Return으로 컴포넌트 보호
+
 import React, { useState, useEffect } from 'react';
-import { Play, Crown } from 'lucide-react';
+import { Play, Crown, AlertCircle, Sparkles } from 'lucide-react';
 
 const VideoInfoView = ({ videoData, onSeekTime }) => {
-    // 🚨 [State Separation] 타임라인 선택 상태를 독립적으로 관리
     const [selectedChapterIdx, setSelectedChapterIdx] = useState(null);
 
-    // 🚨 [Bug Fix] 영상 데이터(videoData)가 바뀌면 선택된 타임라인 초기화
-    // (부모 컴포넌트에서 객체를 새로 생성해서 내려주므로, 객체 변경 시 리셋됨)
     useEffect(() => {
         setSelectedChapterIdx(null);
     }, [videoData]);
 
+    // 🚨 [Pessimistic First] 안전 경로 탐색: 데이터 자체가 없으면 렌더링 중지
     if (!videoData) return null;
+
+    // 🚨 [Empty State] 로딩 중이거나 데이터가 없을 때의 방어선 렌더링
+    if (videoData.isLoading) {
+        return (
+            <div className="animate-pulse p-4 text-white/50 text-sm flex items-center gap-3">
+                <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
+                영상의 인사이트를 탐색하는 중입니다...
+            </div>
+        );
+    }
+
+    if (videoData.isEmpty || !videoData.ai_context) {
+        return (
+            <div className="animate-fade-in space-y-4 p-5 border border-white/5 rounded-2xl bg-white/5">
+                <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle size={18} className="text-white/40" />
+                    <h3 className="text-sm font-bold text-white/80">영상 인사이트 없음</h3>
+                </div>
+                <p className="text-xs text-white/40 leading-relaxed mb-4">
+                    현재 이 장소에 등록된 영상 정보가 부족합니다.<br/>
+                    멋진 영상을 알고 계시다면 우측 플레이어 패널을 통해<br/>
+                    첫 번째 추천자가 되어주세요!
+                </p>
+                {videoData.googleFormUrl && (
+                    <a 
+                        href={videoData.googleFormUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600/20 text-red-400 rounded-xl text-xs font-bold hover:bg-red-600 hover:text-white transition-all active:scale-95"
+                    >
+                        <Sparkles size={14} />
+                        영상 추천하기
+                    </a>
+                )}
+            </div>
+        );
+    }
 
     // 데이터 안전성 확보 (Safe Access)
     const aiContext = videoData.ai_context || null;
     const timeChapters = aiContext?.timeline || (aiContext?.best_moment ? [aiContext.best_moment] : []);
     const bestMomentTime = aiContext?.best_moment?.time;
 
-    // 시간 파싱 로직 (기존 로직 유지)
     const parseTime = (timeStr) => {
         if (!timeStr || typeof timeStr !== 'string') return 0;
         const parts = timeStr.split(':').map(Number);
@@ -34,7 +71,6 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
 
     return (
         <div className="animate-fade-in space-y-6">
-             {/* 1. Video Summary Section (기존 디자인 유지) */}
              <div className="space-y-3">
                  <div className="flex items-center gap-2 mb-1">
                      <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
@@ -55,7 +91,6 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
                  </div>
              </div>
 
-             {/* 2. Timeline Section (기존 로직 및 스타일 복제) */}
              {timeChapters.length > 0 && (
                  <div className="space-y-4 pt-4 border-t border-white/5">
                      <div className="flex items-center justify-between pl-1">

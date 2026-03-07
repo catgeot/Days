@@ -1,3 +1,6 @@
+// 🚨 [Fix/New] PlaceCardExpanded에서 내려준 비관적 UI 상태값(Loading, Error, FormUrl) Props 수용
+// 🚨 [Fix/New] 수용된 상태값들을 YouTubePlayerView로 전달(Props Drilling)하여 데이터 부재 시 Fallback UI가 작동하도록 연결
+
 import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
@@ -16,7 +19,11 @@ const PlaceMediaPanel = ({
     onAiModeChange,
     wikiData,
     isWikiLoading,
-    location
+    location,
+    // 🚨 [New] 상위 컴포넌트에서 주입받은 비디오 상태 Props 추가
+    isVideoLoading,
+    videoError,
+    googleFormUrl
 }) => {
   return (
     <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
@@ -45,6 +52,10 @@ const PlaceMediaPanel = ({
                 toggleFullScreen={toggleFullScreen}
                 showUI={showUI}
                 onVideoSelect={onVideoSelect}
+                // 🚨 [New] YouTubePlayerView로 비관적 UI 제어용 Props 전달 (Wiring 완료)
+                isLoading={isVideoLoading}
+                error={videoError}
+                googleFormUrl={googleFormUrl}
             />
         </div>
 

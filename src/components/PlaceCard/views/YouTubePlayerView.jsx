@@ -1,29 +1,47 @@
-// src/components/PlaceCard/views/YouTubePlayerView.jsx
-// 🚨 [Fix/New] 모바일 재생목록 버튼 위치 상향 조정 (bottom-24 -> bottom-40)하여 유튜브 컨트롤러 간섭 제거
-// 🚨 [Fix] 모바일에서 버튼이 사라지는 유령 현상을 방지하기 위해 완전 숨김 대신 투명도(opacity-30) 로직 적용
-// 🚨 [Fix] 터치 피드백 강화를 위해 버튼 크기 및 액티브 스케일 조정
+// 🚨 [Fix/New] Props 확장: isLoading, error, googleFormUrl 추가로 데이터 상태별 대응 가능
+// 🚨 [Fix/New] 비관적 설계: 영상 데이터가 없을 경우(Empty/Error) 구글 폼 유도 슬롯 렌더링
+// 🚨 [Fix/New] UX 개선: 데스크탑 재생목록에 가로 스크롤(Overflow) 및 좌/우 이동 화살표(Overlay Arrows) 추가
+// 🚨 [Fix] 모바일 리스트 버튼과 구글 폼 버튼의 레이아웃 간섭 방지 로직 적용
 
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
-import { Maximize2, Minimize2, Play, Sparkles, List, X } from 'lucide-react';
+import { Maximize2, Minimize2, Play, Sparkles, List, X, ChevronLeft, ChevronRight, AlertCircle, ExternalLink } from 'lucide-react';
 
-const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFullScreen, showUI, onVideoSelect }, ref) => {
+const YouTubePlayerView = forwardRef(({ 
+  videoId, 
+  videos, 
+  isFullScreen, 
+  toggleFullScreen, 
+  showUI, 
+  onVideoSelect,
+  isLoading = false, // 🚨 [New] 로딩 상태 추가
+  error = null,      // 🚨 [New] 에러 상태 추가
+  googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7" // 🚨 [New] 폴백 주소
+}, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true); 
-  
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [isMobileListOpen, setIsMobileListOpen] = useState(false);
+  
   const iframeRef = useRef(null);
+  const scrollContainerRef = useRef(null); // 🚨 [New] 가로 스크롤 제어용 Ref
 
-  const videoList = videos || (videoId ? [{ id: videoId, title: "Main Video" }] : []);
+  const videoList = videos || [];
   const currentVideo = videoList[currentVideoIndex];
+
+  // --- [Logic] 가로 스크롤 제어 ---
+  const scroll = (direction) => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -300 : 300;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   useImperativeHandle(ref, () => ({
     seekTo: (seconds) => {
       if (!isPlaying) {
           setIsPlaying(true);
           setIsPaused(false);
-          
           setTimeout(() => {
             if (iframeRef.current) {
                iframeRef.current.contentWindow.postMessage(
@@ -36,7 +54,6 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
           }, 500);
           return;
       }
-      
       if (iframeRef.current) {
           iframeRef.current.contentWindow.postMessage(
               JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }), '*'
@@ -100,25 +117,52 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
   };
 
   const handlePlay = () => {
+      if (!currentVideo) return;
       setIsPlaying(true);
       setIsPaused(false);
   };
 
-  if (!currentVideo) return null;
-
-  const showPlaylistForce = !isPlaying || isPaused;
+  // 🚨 [Pessimistic UI] 로딩 중이거나 영상 데이터가 아예 없을 때의 처리
+  const isEmpty = !isLoading && videoList.length === 0;
 
   return (
     <div className={`flex-1 w-full h-full bg-[#05070a] md:rounded-[2rem] md:border md:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}>
       
-      {isPlaying ? (
+      {/* 1. Main Content Area */}
+      {isLoading ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
+           <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
+           <p className="text-white/40 text-sm animate-pulse">낙원의 영상을 불러오는 중...</p>
+        </div>
+      ) : isEmpty ? (
+        // 🚨 [New] 영상 부재 시 구글 폼 유도 UI
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+            <AlertCircle size={40} className="text-white/20" />
+          </div>
+          <h3 className="text-white text-xl font-bold mb-2">아직 등록된 영상이 없습니다</h3>
+          <p className="text-white/50 text-sm max-w-xs mb-8">
+            이 장소의 멋진 영상을 알고 계신가요? <br/> 직접 추천해주시면 서비스에 반영됩니다.
+          </p>
+          <a 
+            href={googleFormUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]"
+          >
+            <Sparkles size={18} />
+            영상 추천하기
+            <ExternalLink size={14} className="opacity-50" />
+          </a>
+        </div>
+      ) : isPlaying ? (
         <div className="relative w-full h-full flex items-center justify-center bg-black">
           <div className={`transition-all duration-500 mx-auto ${isFullScreen ? 'w-full h-full p-0 max-w-none' : 'w-full md:w-[98%] h-[100%] md:h-[95%] max-w-[1440px] md:rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] md:border md:border-white/5'}`}>
             <iframe
               ref={iframeRef}
               width="100%"
               height="100%"
-              src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1&mute=0&modestbranding=1&rel=0&enablejsapi=1&origin=${window.location.origin}`}
+              src={`https://www.youtube.com/embed/${currentVideo?.id}?autoplay=1&mute=0&modestbranding=1&rel=0&enablejsapi=1&origin=${window.location.origin}`}
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -148,106 +192,140 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
              </div>
           </div>
           <div className="absolute bottom-12 text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{currentVideo.title}</p>
+             <p className="text-sm md:text-lg font-bold drop-shadow-lg px-4">{currentVideo?.title}</p>
              <p className="text-[10px] md:text-xs text-white/60 tracking-wider uppercase mt-1">Click to Play</p>
           </div>
         </div>
       )}
 
-      {/* 데스크탑용 가로 재생 리스트 (기존 로직 유지) */}
-      {videoList.length > 1 && showUI && (
-        <div className={`hidden md:flex absolute bottom-24 left-0 w-full z-[210] justify-center transition-opacity duration-500 pointer-events-none 
-            ${showPlaylistForce ? '!opacity-100' : 'opacity-0 hover:opacity-100'}`}
+      {/* 2. 데스크탑용 가로 스크롤 재생 리스트 (🚨 Overlay Arrows 적용) */}
+      {!isEmpty && videoList.length > 0 && showUI && (
+        <div className={`hidden md:block absolute bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-[1000px] z-[210] transition-opacity duration-500 
+            ${(!isPlaying || isPaused) ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
         >
-            <div className="flex gap-4 p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl pointer-events-auto transform translate-y-0 transition-transform duration-300">
-                {videoList.map((video, idx) => (
-                    <button 
-                        key={idx}
-                        onClick={(e) => { 
-                            e.stopPropagation(); 
-                            if (onVideoSelect) onVideoSelect(video.id);
-                            setCurrentVideoIndex(idx); 
-                            handlePlay(); 
-                        }}
-                        className={`relative w-32 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 group/item ${currentVideoIndex === idx ? 'border-red-500 scale-110 shadow-[0_0_20px_rgba(220,38,38,0.5)] z-10' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-105 hover:border-white/50'}`}
-                    >
-                        <img src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} className="w-full h-full object-cover" alt="mini" />
-                        {currentVideoIndex === idx && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                                <div className="flex gap-1 items-end h-3">
-                                   <div className="w-1 bg-red-500 animate-[bounce_1s_infinite] h-full" />
-                                   <div className="w-1 bg-red-500 animate-[bounce_1.2s_infinite] h-2/3" />
-                                   <div className="w-1 bg-red-500 animate-[bounce_0.8s_infinite] h-full" />
-                                </div>
-                            </div>
-                        )}
-                        <div className="absolute bottom-0 left-0 w-full bg-black/80 text-[9px] text-white p-1 truncate opacity-0 group-hover/item:opacity-100 transition-opacity">
-                            {video.title}
-                        </div>
-                    </button>
-                ))}
-            </div>
-        </div>
-      )}
-
-      {/* 🚨 [Fix] 모바일 전용 유리알 플로팅 버튼 위치 및 가시성 개선 */}
-      {videoList.length > 1 && (
-        <div className={`md:hidden absolute bottom-32 right-1 z-[210] transition-all duration-300 
-            ${(showUI || showPlaylistForce) ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}>
+          <div className="relative group/playlist">
+            {/* Left Arrow Overlay */}
             <button 
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setIsMobileListOpen(true);
-                }}
-                className="p-4 bg-white/10 text-white rounded-full shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md border border-white/20 active:scale-90 active:bg-white/20 transition-all"
+              onClick={(e) => { e.stopPropagation(); scroll('left'); }}
+              className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/playlist:opacity-100 transition-opacity hover:bg-red-600"
             >
-                <List size={24} strokeWidth={2.5} />
+              <ChevronLeft size={20} />
             </button>
+
+            {/* Scroll Container */}
+            <div 
+              ref={scrollContainerRef}
+              className="flex gap-4 p-4 overflow-x-auto scrollbar-hide snap-x no-scrollbar"
+              style={{ scrollBehavior: 'smooth' }}
+            >
+              {videoList.map((video, idx) => (
+                  <button 
+                      key={video.id + idx}
+                      onClick={(e) => { 
+                          e.stopPropagation(); 
+                          if (onVideoSelect) onVideoSelect(video.id);
+                          setCurrentVideoIndex(idx); 
+                          handlePlay(); 
+                      }}
+                      className={`relative flex-shrink-0 w-36 h-24 rounded-xl overflow-hidden border-2 transition-all duration-300 snap-center group/item ${currentVideoIndex === idx ? 'border-red-500 scale-105 shadow-[0_0_20px_rgba(220,38,38,0.5)] z-10' : 'border-transparent opacity-60 hover:opacity-100 hover:border-white/50'}`}
+                  >
+                      <img src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} className="w-full h-full object-cover" alt="mini" />
+                      {currentVideoIndex === idx && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                              <div className="flex gap-1 items-end h-3">
+                                 <div className="w-1 bg-red-500 animate-[bounce_1s_infinite] h-full" />
+                                 <div className="w-1 bg-red-500 animate-[bounce_1.2s_infinite] h-2/3" />
+                                 <div className="w-1 bg-red-500 animate-[bounce_0.8s_infinite] h-full" />
+                              </div>
+                          </div>
+                      )}
+                      <div className="absolute bottom-0 left-0 w-full bg-black/80 text-[9px] text-white p-1.5 truncate opacity-0 group-hover/item:opacity-100 transition-opacity font-medium">
+                          {video.title}
+                      </div>
+                  </button>
+              ))}
+            </div>
+
+            {/* Right Arrow Overlay */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); scroll('right'); }}
+              className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/playlist:opacity-100 transition-opacity hover:bg-red-600"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
         </div>
       )}
 
-      {/* 모바일 전용 세로 재생 리스트 모달 (생략 없이 유지) */}
+      {/* 3. 모바일용 플로팅 컨트롤 (재생목록 / 영상추천 선택적 노출) */}
+      {!isFullScreen && (
+        <div className={`md:hidden absolute bottom-32 right-4 z-[210] flex flex-col gap-3 transition-all duration-300 
+            ${(showUI || !isPlaying || isPaused) ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}>
+            
+            {/* 영상이 있을 때만 재생목록 버튼 노출 */}
+            {!isEmpty && videoList.length > 1 && (
+              <button 
+                  onClick={(e) => { e.stopPropagation(); setIsMobileListOpen(true); }}
+                  className="p-4 bg-white/10 text-white rounded-full shadow-2xl backdrop-blur-md border border-white/20 active:scale-90 transition-all"
+              >
+                  <List size={24} strokeWidth={2.5} />
+              </button>
+            )}
+
+            {/* 영상 유무와 관계없이 제보 버튼은 항상 작게 노출 가능 (옵션) */}
+            <a 
+              href={googleFormUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-4 bg-red-600/20 text-red-500 rounded-full shadow-2xl backdrop-blur-md border border-red-500/30 active:scale-90 transition-all"
+            >
+              <Sparkles size={24} strokeWidth={2.5} />
+            </a>
+        </div>
+      )}
+
+      {/* 4. 모바일 전용 세로 재생 리스트 모달 (생략 없이 유지) */}
       {isMobileListOpen && videoList.length > 1 && (
         <div 
             className="md:hidden fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in"
             onClick={() => setIsMobileListOpen(false)}
         >
             <div 
-                className="bg-[#05070a]/95 border border-white/10 rounded-2xl w-full max-w-sm max-h-[70vh] flex flex-col overflow-hidden shadow-2xl"
+                className="bg-[#05070a]/95 border border-white/10 rounded-3xl w-full max-w-sm max-h-[70vh] flex flex-col overflow-hidden shadow-2xl"
                 onClick={(e) => e.stopPropagation()} 
             >
-                <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0 bg-black/50">
+                <div className="flex items-center justify-between p-5 border-b border-white/10 shrink-0 bg-black/50">
                     <div className="flex items-center gap-2">
-                        <List size={16} className="text-red-500" />
-                        <h3 className="text-white font-bold text-sm">재생 목록 ({videoList.length})</h3>
+                        <List size={18} className="text-red-500" />
+                        <h3 className="text-white font-bold">재생 목록 ({videoList.length})</h3>
                     </div>
-                    <button onClick={() => setIsMobileListOpen(false)} className="p-1 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors">
-                        <X size={18} />
+                    <button onClick={() => setIsMobileListOpen(false)} className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors">
+                        <X size={20} />
                     </button>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
                     {videoList.map((video, idx) => (
                         <button 
-                            key={idx}
+                            key={video.id + idx}
                             onClick={() => {
                                 if (onVideoSelect) onVideoSelect(video.id);
                                 setCurrentVideoIndex(idx);
                                 handlePlay();
                                 setIsMobileListOpen(false); 
                             }}
-                            className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all mb-1 ${currentVideoIndex === idx ? 'bg-red-500/20 border border-red-500/50' : 'hover:bg-white/5 border border-transparent'}`}
+                            className={`w-full flex items-center gap-4 p-3 rounded-2xl transition-all mb-2 ${currentVideoIndex === idx ? 'bg-red-500/20 border border-red-500/50' : 'hover:bg-white/5 border border-transparent'}`}
                         >
-                            <div className="relative w-24 aspect-video rounded-lg overflow-hidden shrink-0 border border-white/10">
+                            <div className="relative w-28 aspect-video rounded-xl overflow-hidden shrink-0 border border-white/10">
                                 <img src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} className="w-full h-full object-cover" alt="thumb" />
                                 {currentVideoIndex === idx && (
                                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                        <Play size={12} className="text-red-500 fill-red-500" />
+                                        <Play size={14} className="text-red-500 fill-red-500" />
                                     </div>
                                 )}
                             </div>
-                            <div className="flex-1 text-left min-w-0 pr-2">
-                                <p className={`text-xs truncate ${currentVideoIndex === idx ? 'text-red-400 font-bold' : 'text-gray-300'}`}>{video.title}</p>
+                            <div className="flex-1 text-left min-w-0">
+                                <p className={`text-sm line-clamp-2 leading-snug ${currentVideoIndex === idx ? 'text-red-400 font-bold' : 'text-gray-300'}`}>{video.title}</p>
                             </div>
                         </button>
                     ))}
@@ -256,12 +334,14 @@ const YouTubePlayerView = forwardRef(({ videoId, videos, isFullScreen, toggleFul
         </div>
       )}
 
-      {/* Top Controls (데스크탑 전용 유지) */}
+      {/* 5. Top Controls (데스크탑 전용) */}
       <div className={`hidden md:flex absolute top-6 right-6 items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
-        <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2 shadow-lg">
-            <Sparkles size={14} className="text-red-500 animate-pulse" />
-            <span className="text-[10px] text-white font-bold tracking-widest uppercase">Cinema</span>
-        </div>
+        {!isEmpty && (
+          <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2 shadow-lg">
+              <Sparkles size={14} className="text-red-500 animate-pulse" />
+              <span className="text-[10px] text-white font-bold tracking-widest uppercase">Cinema Mode</span>
+          </div>
+        )}
         <button onClick={toggleFullScreen} className="p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-red-600 hover:text-white transition-all shadow-xl group">
           {isFullScreen ? <Minimize2 size={20} className="group-hover:scale-90 transition-transform"/> : <Maximize2 size={20} className="group-hover:scale-110 transition-transform"/>}
         </button>
