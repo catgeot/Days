@@ -3,6 +3,7 @@
 // 1. [Fix/New] handleStartChat 로컬 부활 로직 유지: is_hidden이 true라면, false로 변경(부활) 후 채팅창 노출.
 // 2. [Subtraction] handleClearChats의 분기 로직 제거 유지: 일괄적으로 'is_hidden: true' 처리.
 // 3. [Subtraction] handleStartChat 내 불필요한 상태값(code: "CHAT") 전면 제거. 데이터의 실체(messages 배열)만을 Single Source of Truth로 삼음.
+// 4. 🚨 [Fix/Sync] handleGlobeClick 내 누락된 상태 동기화 추가: 지구본 클릭 시 생성된 마커(realPin)를 setSelectedLocation으로 현재 상태에 명시적으로 주입하여 이전 데이터(케이프타운 등)가 렌더링되는 버그 원천 차단.
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
@@ -66,6 +67,10 @@ export function useHomeHandlers({
       };
       
       addScoutPin(realPin);
+      
+      // 🚨 [Fix/Sync] 누락되었던 상태 동기화 코드 추가 (진실의 공급원 업데이트)
+      setSelectedLocation(realPin);
+
       setIsPlaceCardOpen(true);
       setIsCardExpanded(false); 
       
@@ -78,7 +83,8 @@ export function useHomeHandlers({
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
-  }, [globeRef, category, isPinVisible, addScoutPin, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
+  // 🚨 [Fix] useCallback 의존성 배열에 setSelectedLocation 추가
+  }, [globeRef, category, isPinVisible, addScoutPin, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
 
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
@@ -172,7 +178,6 @@ export function useHomeHandlers({
       lat: targetLat, 
       lng: targetLng, 
       date: new Date().toLocaleDateString(), 
-      // 🚨 [Fix] Subtraction: 불필요한 상태값 code 제거 (messages 데이터 실체로만 채팅 여부 판단)
       prompt_summary: systemPrompt,
       messages: [], 
       is_bookmarked: false, 
