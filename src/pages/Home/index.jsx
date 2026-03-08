@@ -1,4 +1,3 @@
-// src/pages/Home/index.jsx
 // 🚨 [Fix/New] 수정 이유:
 // 1. [Subtraction] ReportPanel 전역 상태 및 마운트 로직 완전 제거 (URL 라우팅으로 위임)
 // 2. [Routing] isPlaceCardOpen 상태를 제거하고 React Router의 <Outlet />과 Deep Linking 동기화 적용
@@ -9,6 +8,8 @@
 // 7. [Fix] Subtraction: URL 동기화 로직의 의존성 배열에서 selectedLocation 삭제.
 // 8. 🚨 [Fix/New] URL Query Params(?search=) 브릿지 감지: 큐레이션 클릭 시 전달된 검색어를 기존 handleSmartSearch에 태우고 꼬리 자르기 적용.
 // 9. 🚨 [Fix] 치명적 오타 수정: t.isBookmarked (undefined) -> DB 실제 컬럼명인 t.is_bookmarked 로 변경하여 즐겨찾기 마비 해결.
+// 10. 🚨 [Fix/New] Safe Path 방어막 완화: 동적 URL 진입 및 새로고침 시 튕김을 막기 위한 1차/2차 상태 유지 방어 로직 추가.
+// 11. 🚨 [Fix/New] 큐레이션 데이터 정규화(Hydration): AI가 추천한 장소 객체가 PlaceCard를 빈 화면으로 만들지 않도록 스키마 동기화.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation, matchPath } from 'react-router-dom';
@@ -99,10 +100,39 @@ function Home() {
     if (match && match.params.id) {
       const targetId = match.params.id;
       
-      const target = TRAVEL_SPOTS.find(s => String(s.id) === targetId || s.name === targetId) 
-                  || savedTrips.find(t => String(t.id) === targetId || t.name === targetId);
+      let target = TRAVEL_SPOTS.find(s => String(s.id) === targetId || s.name === targetId) 
+                || savedTrips.find(t => String(t.id) === targetId || t.name === targetId);
       
+      // 🚨 [Fix/New] 1차 방어막: 물리적 DB에 없더라도, 현재 메모리(State)에 있는 선택지라면 그대로 승인
+      if (!target && selectedLocation && (String(selectedLocation.id) === targetId || selectedLocation.name === targetId)) {
+        target = selectedLocation;
+      }
+
+      // 🚨 [Fix/New] 2차 방어막: URL에서 직접 파싱 (새로고침 시 튕김 방지)
+      if (!target && (targetId.startsWith('city-') || targetId.startsWith('loc-') || targetId.startsWith('search-'))) {
+        const coordsMatch = targetId.match(/-(-?\d+\.?\d*)-(-?\d+\.?\d*)$/);
+        if (coordsMatch) {
+          target = {
+            id: targetId,
+            name: targetId.split('-')[0] === 'city' ? "탐색된 도시" : "탐색된 지역",
+            lat: parseFloat(coordsMatch[1]),
+            lng: parseFloat(coordsMatch[2])
+          };
+        }
+      }
+
       if (target) {
+        // 🚨 [Fix/New] 큐레이션 데이터 스키마 정규화 (Hydration)
+        // 하위 컴포넌트(위키, 유튜브)가 에러 없이 작동하도록 필수 메타데이터를 강제로 생성해 줍니다.
+        if (target.curation_data) {
+          target.name = target.destination || target.curation_data.location;
+          target.name_en = target.curation_data.locationEn || "";
+          target.ai_context = {
+            summary: target.curation_data.description || "",
+            tags: target.curation_data.searchKeyword ? target.curation_data.searchKeyword.split(" ") : []
+          };
+        }
+
         setSelectedLocation(target);
         moveToLocation(target.lat, target.lng);
       }
@@ -111,7 +141,7 @@ function Home() {
       setIsCardExpanded(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeLocation.pathname]); 
+  }, [routeLocation.pathname, savedTrips]); 
 
   // Pessimistic Clean Slate: 브라우저 뒤로가기(Back) 대응
   const prevPathRef = useRef(routeLocation.pathname);
@@ -219,7 +249,24 @@ function Home() {
           onTripSelect={(trip) => { 
             setIsLogoPanelOpen(false);
             const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
-            const hydratedLocation = realSpot ? { ...trip, ...realSpot, name: trip.destination } : { ...trip, name: trip.destination };
+            
+            // 🚨 [Fix/New] 큐레이션 데이터 브릿지 처리 (Schema 불일치 해결)
+            let hydratedLocation;
+            if (realSpot) {
+              hydratedLocation = { ...trip, ...realSpot, name: trip.destination };
+            } else {
+              hydratedLocation = { 
+                ...trip, 
+                name: trip.destination || trip.curation_data?.location || "알 수 없는 장소",
+                name_en: trip.curation_data?.locationEn || "",
+                lat: trip.lat || 0,
+                lng: trip.lng || 0,
+                ai_context: {
+                  summary: trip.curation_data?.description || "",
+                  tags: trip.curation_data?.searchKeyword ? trip.curation_data.searchKeyword.split(" ") : []
+                }
+              };
+            }
             navigate(`/place/${hydratedLocation.id || hydratedLocation.name}`);
           }}
         />

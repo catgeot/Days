@@ -1,4 +1,3 @@
-// src/lib/geocoding.js
 // 🚨 [Fix] 영문 강제 변환(For Unsplash) 및 재시도(Retry) 로직 추가
 // API 차단 방지 및 데이터 정확도 향상
 
@@ -119,9 +118,10 @@ export const getCoordinatesFromAddress = async (query) => {
 // 3. 주소 찾기 (Reverse)
 export const getAddressFromCoordinates = async (lat, lng) => {
   try {
-    // Reverse도 영문으로 받아야 Unsplash 검색에 유리함
+    // 🚨 [Fix/New] Pessimistic First: 역지오코딩 언어 타겟팅 변경
+    // accept-language를 'ko,en'으로 지정하여 한글을 최우선으로, 없으면 영문으로 반환하도록 수정
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`,
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=ko,en`,
       { 
         headers: { 
           'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)' 

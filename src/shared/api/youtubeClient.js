@@ -25,6 +25,7 @@ export const youtubeClient = {
         type: 'video',
         videoCaption: 'closedCaption', // 고품질 데이터 타겟팅
         relevanceLanguage: 'ko',
+        regionCode: 'KR', // 🚨 [Fix/New] Localization: 한국 지역 검색 결과 강제를 위해 파라미터 추가
         key: YOUTUBE_API_KEY,
       });
 
