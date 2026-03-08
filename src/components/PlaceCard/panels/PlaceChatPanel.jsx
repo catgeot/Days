@@ -82,14 +82,14 @@ const PlaceChatPanel = ({
       
       {/* Header */}
       <div className={`h-[72px] md:h-20 shrink-0 items-center justify-between px-3 md:px-3 md:border-b md:border-white/5 bg-transparent z-20 mt-1 md:mt-0 gap-3 md:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
-         <div className="flex items-center gap-3 md:gap-4 overflow-hidden flex-1 min-w-0">
+         <div className="flex items-center gap-3 md:gap-2 overflow-hidden flex-1 min-w-0">
              <button onClick={onClose} className="flex items-center justify-center w-10 h-10 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
                  <ArrowLeft className="w-5 h-5 md:w-4 md:h-4" />
              </button>
              <div className="flex flex-col flex-1 min-w-0">
                  <span className="text-[9px] md:text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location.country}</span>
                  <div className="flex items-center gap-2 min-w-0">
-                     <h1 className="text-base md:text-xl font-black tracking-tighter text-white truncate leading-none drop-shadow-md">{location.name}</h1>
+                     <h1 className="text-base md:text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md">{location.name}</h1>
                      <div className="shrink-0">
                          <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
                      </div>
