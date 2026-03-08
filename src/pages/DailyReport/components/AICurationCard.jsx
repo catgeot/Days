@@ -1,10 +1,10 @@
 // src/pages/DailyReport/components/AICurationCard.jsx
-// 🚨 [Fix/Subtraction] 수정 이유: 
+// 🚨 [Fix/New] 수정 이유: 
 // 1. [Subtraction] onSelectPlace 및 handlePlaceClick 등 모든 라우팅 로직 완전 삭제.
 // 2. [UI] 이미지와 제목의 cursor-pointer, 확대 아이콘 등 링크를 암시하는 요소 제거. 정적 매거진 UI.
 // 3. [Fix/Subtraction] 직접적인 DB Insert 구문 삭제. useTravelData의 saveCurationData를 주입받아 단일 파이프라인 적용.
 // 4. [New/UI] 지명 표기 시 한국어 지명(location) 하단에 영문 고유 지명(locationEn)을 병기하여 홈 검색 시 정확도 향상.
-// 5. 🚨 [Fix/UI] UI 디테일 조정: AI CURATION 뱃지 상단 정렬, 시원한 여백(Padding) 확장, 저장하기 버튼 시인성 강화, 하단 Gateo v5.0 텍스트 가독성 향상, 다른 낙원 탐색 스파클 컬러 추가.
+// 5. 🚨 [New/Sync] useTravelData에서 savedTrips를 가져와 렌더링 시점에 진실의 공급원(DB/Hook 상태)과 UI(저장 버튼 마크)를 즉시 동기화하는 로직 추가.
 
 import React, { useState, useEffect } from 'react';
 import { Sparkles, MapPin, Loader2, Compass, ArrowRight, Bookmark, Check, ChevronDown, ChevronUp } from 'lucide-react';
@@ -28,12 +28,24 @@ const AICurationCard = () => {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
   }, []);
-  const { saveCurationData } = useTravelData(user);
+  
+  // 🚨 [Fix] savedTrips 상태를 추출하여 동기화의 기준으로 삼음
+  const { saveCurationData, savedTrips } = useTravelData(user);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [loadingText, setLoadingText] = useState("우주의 궤적을 분석 중...");
   const [isTextExpanded, setIsTextExpanded] = useState(false);
+
+  // 🚨 [New/Sync] 상태 검증 (Fact Check): 결과가 렌더링될 때마다 DB(savedTrips)에 존재하는지 한글 지명 기준으로 검사
+  useEffect(() => {
+    if (status === 'result' && curationData) {
+      const isAlreadySaved = savedTrips.some(
+        trip => trip.destination === curationData.location && trip.is_bookmarked && !trip.is_hidden
+      );
+      setIsSaved(isAlreadySaved);
+    }
+  }, [status, curationData, savedTrips]);
 
   useEffect(() => {
     if (status !== 'loading') return;
@@ -131,13 +143,10 @@ const AICurationCard = () => {
             />
           </div>
 
-          {/* 🚨 [Fix] padding 다이어트: 사진과의 간격(pl)은 유지하되 위, 아래, 우측 여백을 시원하게 확장 */}
           <div className="w-full md:w-7/12 py-4 pr-4 pl-6 md:py-5 md:pr-5 md:pl-8 flex flex-col relative z-10">
             
-            {/* 🚨 [Fix] items-center -> items-start 로 변경하여 상단 정렬 */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-start gap-2">
-                {/* 🚨 [Fix] mt-0.5 추가로 뱃지와 텍스트의 수평선(Baseline) 시각적 보정 */}
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 text-[10px] font-bold rounded tracking-wider flex-shrink-0 mt-0.5">
                   <Sparkles size={10} /> AI CURATION
                 </span>
@@ -153,7 +162,6 @@ const AICurationCard = () => {
                 </div>
               </div>
               
-              {/* 🚨 [Fix] 저장 버튼 시인성 강화: 배경색, 보더, 그림자 추가 */}
               <button 
                 onClick={handleSaveCuration}
                 className={`p-2.5 rounded-full transition-all flex-shrink-0 z-20 border shadow-md ${isSaved ? 'bg-blue-600 text-white border-blue-500 shadow-blue-500/20' : 'bg-slate-700/80 text-slate-300 hover:text-white hover:bg-slate-600 border-slate-600 shadow-black/40'}`}
@@ -186,13 +194,11 @@ const AICurationCard = () => {
             </div>
 
             <div className="mt-auto pt-4 border-t border-slate-700/30 flex justify-between items-center">
-              {/* 🚨 [Fix] Gateo Intelligence 텍스트 사이즈업 및 자간 조정으로 또렷하게 */}
               <span className="text-xs text-slate-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
               <button 
                 onClick={handleCuration}
                 className="group/btn flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-400 transition-colors z-20 relative"
               >
-                {/* 🚨 [Fix] 스파클 아이콘에 블루 컬러 추가 */}
                 <Sparkles size={14} className="text-blue-400 group-hover/btn:animate-pulse" />
                 다른 낙원 탐색
                 <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />

@@ -3,6 +3,7 @@
 // 1. [Fix] 비관적 파싱 방어(Safe Path): JSON 제어 문자 평탄화 유지.
 // 2. [New] 상태 유지(Persistence): sessionStorage를 사용하여 탭 이동 후에도 큐레이션 결과 유지.
 // 3. [New] 중복 방지(Anti-Duplicate): sessionStorage에 추천 히스토리를 배열로 누적하여 프롬프트에 주입.
+// 4. 🚨 [Fix/Subtraction] 데이터 3개 미만 시 무조건 하드코딩된 Fallback(아이투타키)을 반환하던 조건문 완전히 제거. 데이터 부족 시에도 AI가 정상적으로 큐레이션을 수행하도록 제한 해제.
 
 import { useState } from 'react';
 import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts'; 
@@ -72,8 +73,6 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
 
 // 🚨 큐레이션 전용 커스텀 훅 (세션 스토리지 기반 상태 유지)
 export const useCurationAI = () => {
-  // 🚨 [New] 초기 마운트 시 sessionStorage 검사하여 상태 복원
- // 상태(status)도 데이터 파싱 성공 여부에 따라 안전하게 초기화
   const [status, setStatus] = useState(() => {
     try {
       const cached = sessionStorage.getItem('gateo_curation_data');
@@ -89,7 +88,7 @@ export const useCurationAI = () => {
       return cached ? JSON.parse(cached) : null;
     } catch (e) {
       console.warn("🚨 [Safe Path] 세션 스토리지 데이터 손상. 초기화합니다.");
-      sessionStorage.removeItem('gateo_curation_data'); // 오염된 데이터 삭제
+      sessionStorage.removeItem('gateo_curation_data'); 
       return null;
     }
   });
@@ -100,19 +99,10 @@ export const useCurationAI = () => {
     try {
       if (!user) throw new Error("로그인이 필요합니다.");
 
-      // 🚨 [New] 세션 스토리지에서 이전 추천 기록(히스토리) 불러오기
       let curationHistory = JSON.parse(sessionStorage.getItem('gateo_curation_history') || '[]');
 
-      const totalDataCount = validReports.length + validSaved.length;
-      if (totalDataCount < 3) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setCurationData(fallbackData);
-        sessionStorage.setItem('gateo_curation_data', JSON.stringify(fallbackData)); // Fallback도 저장
-        setStatus('result');
-        return;
-      }
+      // 🚨 [Subtraction] totalDataCount < 3 제한 로직 완전 삭제 (Fallback 무한 루프의 원인 제거)
 
-      // 🚨 [Fix] 제외 목록(curationHistory)을 프롬프트에 전달
       const systemPrompt = getCurationPrompt(validReports, validSaved, curationHistory);
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       
@@ -124,7 +114,6 @@ export const useCurationAI = () => {
       const safeJsonString = jsonMatch[0].replace(/[\n\r\t]+/g, ' ');
       const parsedData = JSON.parse(safeJsonString);
       
-      // 🚨 [New] 성공적으로 추천받은 장소는 히스토리에 누적 저장
       if (parsedData.location && !curationHistory.includes(parsedData.location)) {
         curationHistory.push(parsedData.location);
         sessionStorage.setItem('gateo_curation_history', JSON.stringify(curationHistory));
@@ -141,7 +130,6 @@ export const useCurationAI = () => {
       const finalData = { ...parsedData, imageUrl: finalImageUrl };
       
       setCurationData(finalData);
-      // 🚨 [New] 결과물 세션 스토리지에 캐싱 (탭 이동 시 유지)
       sessionStorage.setItem('gateo_curation_data', JSON.stringify(finalData));
       setStatus('result');
 

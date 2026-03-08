@@ -3,7 +3,8 @@
 // 1. [Fact Check] fetchData 쿼리 확장 유지: is_hidden이 false이거나 is_bookmarked가 true인 유효 데이터 Fetch.
 // 2. [Fix] Data Lake 분리 (로그인 vs 비로그인): 비로그인 시 DB를 호출하지 않고 로컬 스토리지(days_guest_trips)만 사용하도록 격리.
 // 3. [Fix] Auth 연동: 로그인 유저일 경우 saveNewTrip 시 명시적으로 user_id를 포함하여 RLS 정책 충돌 방지.
-// 4. 🚨 [New/Subtraction] saveCurationData 신설: 큐레이션 데이터 저장 시 영문 고유명사 강제 추출 및 Upsert 로직 적용하여 장소 파편화 및 다중 로우 에러 완벽 차단.
+// 4. [Fix/Subtraction] 큐레이션 데이터 저장 시 불필요한 영문 고유명사 추출 로직 제거. 일반 북마크와 동일하게 한글 지명(location)을 destination의 식별 키로 통일하여 상태 불일치 문제 원천 차단.
+// 5. 🚨 [Fix/Safe Path] DB 데이터 존재 확인 시 .single()로 인한 406 Not Acceptable 에러 방지를 위해 .maybeSingle()로 교체.
 
 import { useState, useCallback } from 'react';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
@@ -61,38 +62,32 @@ export const useTravelData = (user) => {
     }
   }, [user]);
 
-  // 🚨 [New] 큐레이션 전용 저장 함수 (Pessimistic First: 영문 지명 강제화 및 Upsert)
   const saveCurationData = useCallback(async (curationData, userObj) => {
     const targetUser = user || userObj;
     if (!targetUser) return null;
 
-    // 1. 영어 이름 강제 추출 (파편화 방지) - 예: "Aitutaki, Cook Islands" -> "Aitutaki"
-    const englishDest = curationData.locationEn 
-      ? curationData.locationEn.split(',')[0].trim() 
-      : curationData.location;
+    const targetDest = curationData.location;
 
-    // 2. 상태(savedTrips)에서 중복 체크 (안전한 경로 확보)
-    let existingTrip = savedTrips.find(t => t.destination === englishDest);
+    let existingTrip = savedTrips.find(t => t.destination === targetDest);
 
-    // 3. 상태에 없다면 DB에서 이중 체크
     if (!existingTrip) {
+      // 🚨 [Fix/Safe Path] .single() -> .maybeSingle() 변경: 결과가 0건일 때 406 에러 대신 null을 안전하게 반환
       const { data } = await supabase
         .from('saved_trips')
         .select('*')
         .eq('user_id', targetUser.id)
-        .eq('destination', englishDest)
-        .single();
+        .eq('destination', targetDest)
+        .maybeSingle(); 
       if (data) existingTrip = data;
     }
 
     if (existingTrip) {
-      // 🚨 이미 북마크/데이터가 존재한다면 추가하지 않고 덮어쓰기 (Upsert 개념)
       const { data, error } = await supabase
         .from('saved_trips')
         .update({ 
           curation_data: curationData,
           is_ai_curation: true,
-          is_bookmarked: true, // 큐레이션 저장 시 북마크 무조건 활성화
+          is_bookmarked: true,
           is_hidden: false,
           prompt_summary: curationData.title
         })
@@ -109,10 +104,9 @@ export const useTravelData = (user) => {
         return data;
       }
     } else {
-      // 🚨 완전 새로운 장소일 경우에만 Insert
       const newTrip = {
         user_id: targetUser.id,
-        destination: englishDest,
+        destination: targetDest,
         is_bookmarked: true,
         curation_data: curationData,
         is_ai_curation: true,
