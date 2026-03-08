@@ -1,6 +1,6 @@
-// 🚨 [Fix/New] 훅 파라미터 전달 오류 수정: useYouTubeSearch(location) 단일 객체 전달로 변경
-// 🚨 [Fix/New] 상태 구조 분해 할당 확장: isLoading, error, googleFormUrl 추가 확보
-// 🚨 [Fix/New] activeInfo 객체에 비관적 UI(Empty State) 대응용 데이터 추가 탑재 (Props 우회 전달)
+// src/components/PlaceCard/modes/PlaceCardExpanded.jsx
+// 🚨 [Fix/New] 수정 이유: 
+// 1. 🚨 [Fix] 훅 파라미터 전달: API 누수를 막기 위해 useYouTubeSearch와 useWikiData에 현재 탭 상태인 `mediaMode`를 주입하여 지연 호출(Lazy Fetching)을 유도.
 
 import React, { useState, useEffect, useRef } from 'react';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
@@ -19,19 +19,20 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
   const containerRef = useRef(null);
   const playerRef = useRef(null);
 
-  // 🚨 [Fix] 파라미터 버그 수정 (location 단일 객체 전달) 및 Props 확장
+  // 🚨 [Fix/New] Lazy Fetching 연결: mediaMode를 넘겨주어 탭이 열릴 때만 호출되도록 제어
   const { 
     videos: spotVideos, 
     isLoading: isVideoLoading, 
     error: videoError, 
     googleFormUrl 
-  } = useYouTubeSearch(location);
+  } = useYouTubeSearch(location, mediaMode);
 
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = spotVideos.find(v => v.id === activeVideoId) || (spotVideos.length > 0 ? spotVideos[0] : null);
 
   const queryKey = location.name; 
-  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey);
+  // 🚨 [Fix/New] 위키 데이터도 동일하게 지연 호출 적용 (훅 내부 수정 필요 시 동일한 로직 적용 요망)
+  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey, mediaMode);
 
   const getActiveInfo = () => {
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
@@ -45,7 +46,6 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
     }
     
     if (mediaMode === 'VIDEO') {
-        // 🚨 [Safe-Path] 데이터가 완벽하지 않을 때(Null)를 대비한 비관적 맵핑
         const isVideoEmpty = !isVideoLoading && spotVideos.length === 0;
         
         return {
@@ -54,7 +54,6 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
             summary: activeVideoData?.ai_context?.summary || null, 
             tags: activeVideoData?.ai_context?.tags || ['Travel', 'Video'],
             ai_context: activeVideoData?.ai_context || null,
-            // 🚨 [New] VideoInfoView에서 사용할 비관적 UI 상태값 추가 전달
             isLoading: isVideoLoading,
             isEmpty: isVideoEmpty,
             error: videoError,
@@ -121,7 +120,7 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
         isBookmarked={isBookmarked}
         onClose={onClose}
         chatData={chatData}
-        activeInfo={activeInfo} // 🚨 [Drilling] 비관적 상태값이 포함된 정보 전달
+        activeInfo={activeInfo} 
         isFullScreen={isFullScreen}
         mediaMode={mediaMode}
         setMediaMode={setMediaMode}
@@ -148,7 +147,6 @@ const PlaceCardExpanded = ({ location, isBookmarked, onClose, chatData, galleryD
             onAiModeChange={setIsAiMode}
             wikiData={currentWikiData}
             isWikiLoading={isWikiLoading}
-            // 🚨 [Drilling] YouTubePlayerView까지 전달될 수 있도록 Props 주입
             isVideoLoading={isVideoLoading}
             videoError={videoError}
             googleFormUrl={googleFormUrl}
