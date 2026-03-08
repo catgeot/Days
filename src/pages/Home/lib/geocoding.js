@@ -1,5 +1,8 @@
-// 🚨 [Fix] 영문 강제 변환(For Unsplash) 및 재시도(Retry) 로직 추가
-// API 차단 방지 및 데이터 정확도 향상
+// src/pages/Home/lib/geocoding.js
+// 🚨 [Fix/New] 수정 이유:
+// 1. [Fix] 영문 강제 변환(For Unsplash) 및 재시도(Retry) 로직 유지.
+// 2. 🚨 [Fix/New] 역지오코딩(Reverse Geocoding) 로케일 강제: accept-language를 'en,ko'로 변경하여 영문명을 최우선으로 확보.
+// 3. 🚨 [Fix/New] name_en 강제 추출: 라우팅에 사용할 수 있도록 응답 데이터에서 영문명을 명시적으로 파싱하여 반환 객체에 추가.
 
 import { KEYWORD_SYNONYMS } from '../data/keywordData';
 
@@ -29,7 +32,7 @@ export const getCoordinatesFromAddress = async (query) => {
   // 🚨 [Fix] Accept-Language를 'en'으로 강제하여 결과값을 영문으로 받음 (Unsplash 호환성)
   const fetchOptions = {
     headers: {
-      'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)', // 🚨 [Fix] 이메일 형식으로 신뢰도 상승
+      'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)', 
       'Accept-Language': 'en' 
     }
   };
@@ -119,9 +122,9 @@ export const getCoordinatesFromAddress = async (query) => {
 export const getAddressFromCoordinates = async (lat, lng) => {
   try {
     // 🚨 [Fix/New] Pessimistic First: 역지오코딩 언어 타겟팅 변경
-    // accept-language를 'ko,en'으로 지정하여 한글을 최우선으로, 없으면 영문으로 반환하도록 수정
+    // accept-language를 'en,ko'으로 지정하여 영문을 최우선으로 확보. (없으면 한글 Fallback)
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=ko,en`,
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en,ko`,
       { 
         headers: { 
           'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)' 
@@ -130,7 +133,9 @@ export const getAddressFromCoordinates = async (lat, lng) => {
     );
     if (!response.ok) throw new Error("Geocoding failed");
     const data = await response.json();
-    if (!data.address) return null;
+    
+    // 비관적 방어: 데이터가 없거나 바다 클릭 시
+    if (!data || !data.address) return null;
 
     const cityRaw = data.address.city || data.address.town || data.address.village || data.address.municipality || data.address.island || data.address.state || "";
     const countryRaw = data.address.country || "";
@@ -138,7 +143,8 @@ export const getAddressFromCoordinates = async (lat, lng) => {
     return {
       fullAddress: data.display_name,
       city: standardizeName(cityRaw) || standardizeName(countryRaw),
-      country: standardizeName(countryRaw)
+      country: standardizeName(countryRaw),
+      name_en: cityRaw || countryRaw // 🚨 [Fix/New] URL 정규화를 위한 영문명 적재
     };
   } catch (error) {
     console.error("Geocoding error:", error);

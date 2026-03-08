@@ -3,7 +3,8 @@
 // 1. [Fix/New] handleStartChat 로컬 부활 로직 유지: is_hidden이 true라면, false로 변경(부활) 후 채팅창 노출.
 // 2. [Subtraction] handleClearChats의 분기 로직 제거 유지: 일괄적으로 'is_hidden: true' 처리.
 // 3. [Subtraction] handleStartChat 내 불필요한 상태값(code: "CHAT") 전면 제거. 데이터의 실체(messages 배열)만을 Single Source of Truth로 삼음.
-// 4. 🚨 [Fix/Sync] handleGlobeClick 내 누락된 상태 동기화 추가: 지구본 클릭 시 생성된 마커(realPin)를 setSelectedLocation으로 현재 상태에 명시적으로 주입하여 이전 데이터(케이프타운 등)가 렌더링되는 버그 원천 차단.
+// 4. [Fix/Sync] handleGlobeClick 내 누락된 상태 동기화 추가: 지구본 클릭 시 생성된 마커(realPin)를 setSelectedLocation으로 현재 상태에 명시적으로 주입.
+// 5. 🚨 [Fix/New] 바다 클릭 방어막 (Pessimistic First): 영문명을 얻지 못했거나 바다를 클릭한 경우 `loc-${lat}-${lng}` 포맷을 ID로 강제 할당하여 튕김 방지.
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
@@ -44,31 +45,30 @@ export function useHomeHandlers({
     
     try {
       const addressData = await getAddressFromCoordinates(lat, lng);
-      const name = addressData?.city || addressData?.country;
       
-      if (!name) {
-         if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
-             globeRef.current.resumeRotation();
-         }
-         return;
-      }
+      // 🚨 [Fix/New] Pessimistic First: 바다 한가운데 등 데이터를 전혀 받지 못한 경우의 안전망
+      const isOcean = !addressData || (!addressData.city && !addressData.country);
+      const fallbackId = `loc-${lat}-${lng}`;
+      
+      const name_en = addressData?.name_en || "";
+      const display_name = isOcean ? "미지의 탐험지" : (addressData.city || addressData.country);
 
-      const tempId = Date.now();
       const realPin = { 
-        id: tempId, 
+        // 영문명이 없거나 바다인 경우, 라우터가 역추적할 수 있도록 좌표 기반 ID 부여
+        id: isOcean || !name_en ? fallbackId : Date.now(), 
         lat, 
         lng, 
-        name: name, 
-        name_en: name, 
+        name: display_name, 
+        name_en: name_en, 
         type: 'temp-base', 
         category: category,
-        country: addressData?.country || "Unknown",
-        display_name: name 
+        country: addressData?.country || "Ocean",
+        display_name: display_name 
       };
       
       addScoutPin(realPin);
       
-      // 🚨 [Fix/Sync] 누락되었던 상태 동기화 코드 추가 (진실의 공급원 업데이트)
+      // 상태 동기화 (진실의 공급원 업데이트)
       setSelectedLocation(realPin);
 
       setIsPlaceCardOpen(true);
@@ -76,14 +76,13 @@ export function useHomeHandlers({
       
       if (!isPinVisible) setIsPinVisible(true);
 
-      moveToLocation(lat, lng, name, category);
-      processSearchKeywords(name);
+      moveToLocation(lat, lng, display_name, category);
+      processSearchKeywords(display_name);
       
-      recordInteraction(name, 'view'); 
+      if (!isOcean) recordInteraction(display_name, 'view'); 
     } catch (error) {
       console.error("Geocoding Error:", error);
     }
-  // 🚨 [Fix] useCallback 의존성 배열에 setSelectedLocation 추가
   }, [globeRef, category, isPinVisible, addScoutPin, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
 
   const handleLocationSelect = useCallback((loc) => {
