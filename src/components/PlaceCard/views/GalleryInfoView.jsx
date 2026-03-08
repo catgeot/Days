@@ -1,11 +1,16 @@
-import React from 'react';
-import { Camera, MapPin } from 'lucide-react';
+// src/components/PlaceCard/views/GalleryInfoView.jsx
+// 🚨 [Fix/New] 수정 이유: 
+// 1. [Subtraction] 길고 장황한 서술형 꼬꼬무 버튼을 미니멀한 가로형 태그 리스트로 다이어트.
+// 2. [UI/UX] 사용자에게 다음 행동을 강요하지 않고, 기존 해시태그 디자인과 자연스럽게 어우러지도록 배치.
 
-const GalleryInfoView = ({ selectedPlace, selectedImg }) => {
+import React from 'react';
+import { Camera, MapPin, Compass } from 'lucide-react'; // 🚨 [New] 꼬꼬무 버튼용 나침반 아이콘 추가
+import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
+
+const GalleryInfoView = ({ selectedPlace, selectedImg, onRelatedClick }) => {
     
     const isPhotoMode = !!selectedImg;
 
-    // 날짜 포맷팅 유틸리티
     const formatDate = (dateString) => {
         if (!dateString) return 'SYSTEM_ARCHIVE';
         try {
@@ -16,10 +21,11 @@ const GalleryInfoView = ({ selectedPlace, selectedImg }) => {
         }
     };
 
-    // 사진 설명글
     const description = selectedImg?.alt_description 
         ? selectedImg.alt_description.charAt(0).toUpperCase() + selectedImg.alt_description.slice(1)
-        : `Visual data captured at ${selectedPlace.name}`;
+        : `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
+
+    const relatedPlaces = getRelatedPlaces(selectedPlace);
 
     return (
         <div className="animate-fade-in space-y-8 min-h-[200px] max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
@@ -62,31 +68,43 @@ const GalleryInfoView = ({ selectedPlace, selectedImg }) => {
                 ) : (
                     <div className="animate-fade-in space-y-10">
                         <p className="text-[15px] text-gray-300/90 leading-8 font-normal tracking-wide whitespace-pre-line">
-                            {selectedPlace.desc || "이 장소에 대한 정보가 업데이트 중입니다."}
+                            {selectedPlace?.desc || "이 장소에 대한 정보가 업데이트 중입니다."}
                         </p>
                         
-                        {/* 🚨 [Fix] 하단 태그 스타일 강화 (시인성 확보) */}
-                        {selectedPlace.keywords && (
-                            <div className="flex flex-wrap gap-2 pt-6 border-t border-white/5">
-                                {selectedPlace.keywords.map((tag, idx) => (
-                                    <span 
-                                        key={idx} 
-                                        className={`
-                                            px-2 py-0.5 rounded border transition-all duration-300 cursor-default font-medium text-[11px]
-                                            /* 🎨 개별 수정 가이드 */
-                                            bg-white/5             /* 배경 투명도 (배경색) */
-                                            border-white/10        /* 테두리 색상 */
-                                            text-gray-400          /* 글자 색상 (기존 gray-600에서 상향) */
-                                            hover:text-blue-400    /* 마우스 올렸을 때 글자색 */
-                                            hover:border-blue-400/30 /* 마우스 올렸을 때 테두리색 */
-                                            hover:bg-blue-400/5    /* 마우스 올렸을 때 배경색 */
-                                        `}
-                                    >
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
+                        <div className="pt-6 border-t border-white/5">
+                            {/* 1. 기존 장소의 범용 태그 */}
+                            {selectedPlace?.keywords && (
+                                <div className="flex flex-wrap gap-2 mb-5">
+                                    {selectedPlace.keywords.map((tag, idx) => (
+                                        <span 
+                                            key={`tag-${idx}`} 
+                                            className="px-2 py-0.5 rounded border transition-all duration-300 cursor-default font-medium text-[11px] bg-white/5 border-white/10 text-gray-400 hover:text-blue-400 hover:border-blue-400/30 hover:bg-blue-400/5"
+                                        >
+                                            #{tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* 🚨 [Fix/New] 2. 꼬꼬무 연관 장소 (미니멀 가로 버튼형) */}
+                            {relatedPlaces.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                    <div className="w-full text-[11px] text-gray-500/80 font-medium mb-1 tracking-wider uppercase">
+                                        연관 탐험지
+                                    </div>
+                                    {relatedPlaces.map((place, idx) => (
+                                        <button 
+                                            key={`rel-${idx}`} 
+                                            onClick={() => onRelatedClick && onRelatedClick(place.data)}
+                                            className="group px-3 py-1.5 rounded-lg border transition-all duration-300 font-medium text-[12px] bg-blue-500/5 border-blue-500/20 text-gray-300 hover:text-white hover:border-blue-400/50 hover:bg-blue-500/20 flex items-center gap-1.5"
+                                        >
+                                            <Compass size={13} className="text-blue-400 group-hover:animate-pulse" />
+                                            {place.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
              </div>

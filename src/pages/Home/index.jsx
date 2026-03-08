@@ -1,3 +1,4 @@
+// src/pages/Home/index.jsx
 // 🚨 [Fix/New] 수정 이유:
 // 1. [Subtraction] ReportPanel 전역 상태 및 마운트 로직 완전 제거 (URL 라우팅으로 위임)
 // 2. [Routing] isPlaceCardOpen 상태를 제거하고 React Router의 <Outlet />과 Deep Linking 동기화 적용
@@ -10,6 +11,7 @@
 // 9. 🚨 [Fix] 치명적 오타 수정: t.isBookmarked (undefined) -> DB 실제 컬럼명인 t.is_bookmarked 로 변경하여 즐겨찾기 마비 해결.
 // 10. 🚨 [Fix/New] Safe Path 방어막 완화: 동적 URL 진입 및 새로고침 시 튕김을 막기 위한 1차/2차 상태 유지 방어 로직 추가.
 // 11. 🚨 [Fix/New] 큐레이션 데이터 정규화(Hydration): AI가 추천한 장소 객체가 PlaceCard를 빈 화면으로 만들지 않도록 스키마 동기화.
+// 12. 🚨 [Fix/New] "탐색된 도시" 버그 해결: URL 좌표 파싱 시 citiesData를 순회하여 실제 이름과 태그 데이터를 완벽히 복원(Hydration)하는 로직 추가.
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation, matchPath } from 'react-router-dom';
@@ -24,6 +26,7 @@ import PlaceCardSummary from '../../components/PlaceCard/modes/PlaceCardSummary'
 // Libs & Utils
 import { supabase } from '../../shared/api/supabase';
 import { TRAVEL_SPOTS } from './data/travelSpots';
+import { citiesData } from './data/citiesData'; // 🚨 [Fix] 좌표 기반 이름 복원을 위해 citiesData 임포트 추가
 
 // Hooks
 import { useGlobeLogic } from './hooks/useGlobeLogic';
@@ -108,15 +111,26 @@ function Home() {
         target = selectedLocation;
       }
 
-      // 🚨 [Fix/New] 2차 방어막: URL에서 직접 파싱 (새로고침 시 튕김 방지)
+      // 🚨 [Fix/New] 2차 방어막: URL에서 직접 파싱 (새로고침 시 튕김 방지 및 Hydration)
       if (!target && (targetId.startsWith('city-') || targetId.startsWith('loc-') || targetId.startsWith('search-'))) {
         const coordsMatch = targetId.match(/-(-?\d+\.?\d*)-(-?\d+\.?\d*)$/);
         if (coordsMatch) {
+          const parsedLat = parseFloat(coordsMatch[1]);
+          const parsedLng = parseFloat(coordsMatch[2]);
+          
+          // 🚨 [Fix] 단순 "탐색된 도시" 하드코딩 제거. citiesData에서 실제 이름 복구 시도
+          const matchedCity = (citiesData || []).find(c => 
+            Math.abs(c.lat - parsedLat) < 0.001 && Math.abs(c.lng - parsedLng) < 0.001
+          );
+
           target = {
             id: targetId,
-            name: targetId.split('-')[0] === 'city' ? "탐색된 도시" : "탐색된 지역",
-            lat: parseFloat(coordsMatch[1]),
-            lng: parseFloat(coordsMatch[2])
+            name: matchedCity ? matchedCity.name : (targetId.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
+            name_en: matchedCity ? matchedCity.name_en : "",
+            lat: parsedLat,
+            lng: parsedLng,
+            tags: matchedCity ? matchedCity.tags : [], // 꼬꼬무 연동을 위한 태그 복원
+            desc: matchedCity ? matchedCity.desc : ""
           };
         }
       }

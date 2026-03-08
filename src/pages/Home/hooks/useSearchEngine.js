@@ -2,14 +2,58 @@
 // 🚨 [Fix/New] 수정 이유:
 // 1. [Subtraction] 지명 불일치 및 크래시를 유발하는 초성 검색 기능 완전 폐기 (가벼움 유지)
 // 2. [Fact Check] 핀(Icon) 누락 버그 해결: 지구본에 물리적 좌표(Pin)가 존재하는 실제 장소(masterValidNames)만 연관 검색어로 노출되도록 강력한 거름망 적용.
+// 3. [New / Pessimistic] THEME_DB를 활용한 꼬꼬무 장소 추출 순수 함수(getRelatedPlaces) 신설 (데이터 null 대응 완료)
 
 import { useState, useCallback } from 'react';
 import { TRAVEL_SPOTS } from '../data/travelSpots'; 
 import { citiesData } from '../data/citiesData'; 
-import { KEYWORD_SYNONYMS, KEYWORD_DB } from '../data/keywordData';
+import { KEYWORD_SYNONYMS, KEYWORD_DB, THEME_DB } from '../data/keywordData'; // 🚨 [Fix] THEME_DB 임포트 추가
 
 // ⚙️ [초경량 엔진] 1. 공백 제거기 (Zero-Space Rule)
 const removeSpaces = (str) => (str || '').replace(/\s+/g, '').toLowerCase();
+
+// 🚨 [New] 꼬꼬무 장소 추천 로직 (Safe Path 적용)
+export const getRelatedPlaces = (currentPlace) => {
+  // 🛡️ [Safe Path 1] 최악의 경우를 대비한 기본 방어 데이터 (travelSpots 최상단 5개)
+  const defaultPlaces = TRAVEL_SPOTS.slice(0, 5).map(spot => ({
+    name: spot.name,
+    theme: '추천',
+    data: spot
+  }));
+
+  // 🛡️ [Safe Path 2] 데이터가 아예 넘어오지 않으면 즉시 기본값 반환
+  if (!currentPlace) return defaultPlaces;
+
+  // 🚨 [Fix] 스키마 혼재 방어: citiesData(tags)와 travelSpots(keywords) 동시 대응
+  const tags = currentPlace.tags || currentPlace.keywords || [];
+  if (tags.length === 0) return defaultPlaces;
+
+  const mainTheme = tags[0]; // 메인 테마 추출 (예: '휴양', '대도시')
+  const relatedNames = THEME_DB[mainTheme] || [];
+
+  const allPlaces = [...TRAVEL_SPOTS, ...(citiesData || [])];
+  const results = [];
+
+  // 뺄셈의 미학: 복잡한 filter/map 체이닝 대신 가장 원시적이고 빠른 for문 사용
+  for (const name of relatedNames) {
+    if (name === currentPlace.name) continue; // 자기 자신 제외
+
+    const found = allPlaces.find(p => p.name === name);
+    if (found) {
+      results.push({
+        name: found.name,
+        theme: mainTheme,
+        data: found
+      });
+    }
+
+    // 최대 5개까지만 확보하면 즉시 루프 종료 (성능 최적화)
+    if (results.length >= 5) break;
+  }
+
+  // 추출된 데이터가 없다면 기본값 반환
+  return results.length > 0 ? results : defaultPlaces;
+};
 
 export const useSearchEngine = () => {
   const [relatedTags, setRelatedTags] = useState([]);
@@ -42,8 +86,8 @@ export const useSearchEngine = () => {
       const normChildren = children.map(removeSpaces);
 
       if (normParent.includes(normBase)) {
-        tempSet.add(parent); // 나중에 거름망에서 걸러짐
-        children.forEach(c => tempSet.add(c)); // 실제 도시들은 통과됨
+        tempSet.add(parent); 
+        children.forEach(c => tempSet.add(c)); 
       }
 
       if (normChildren.some(c => c.includes(normBase))) {
@@ -77,11 +121,9 @@ export const useSearchEngine = () => {
     });
 
     setTimeout(() => {
-      // 🚨 [Fix] 거름망 가동: tempSet에 모인 키워드 중, "실제 지구본에 존재하는(masterValidNames)" 장소만 필터링!
-      // 이제 "베트남", "휴양지" 같은 핀 없는 텍스트는 UI에 노출되지 않아 핀 누락 버그가 원천 차단됩니다.
+      // 🚨 [Fix] 거름망 가동: "실제 지구본에 존재하는(masterValidNames)" 장소만 필터링!
       const validTags = Array.from(tempSet).filter(tag => masterValidNames.has(tag));
       
-      // 개수 제한 (10개로 세팅 - 필요시 수정)
       const finalTags = validTags.slice(0, 5);
       
       setRelatedTags(finalTags);
