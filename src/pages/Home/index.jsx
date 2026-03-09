@@ -112,7 +112,11 @@ function Home() {
       
       // 🚨 [Fix/New] 1차 방어막: 영문명 정규화(name_en) 매칭을 최우선으로 적용 (Hydration)
       let target = TRAVEL_SPOTS.find(s => formatUrlName(s.name_en) === targetId || String(s.id) === targetId || s.name === targetId) 
-                || savedTrips.find(t => formatUrlName(t.name_en) === targetId || String(t.id) === targetId || t.name === targetId);
+                || savedTrips.find(t => {
+                     const nameEn = t.name_en || t.curation_data?.locationEn || "";
+                     const name = t.name || t.destination || t.curation_data?.location || "";
+                     return formatUrlName(nameEn) === targetId || String(t.id) === targetId || name === targetId;
+                   });
 
       // 🚨 [Fix/New] Data Lake(citiesData) 영문명 탐색 추가
       if (!target) {
