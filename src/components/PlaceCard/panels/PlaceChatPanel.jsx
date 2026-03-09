@@ -14,6 +14,7 @@ import GalleryInfoView from '../views/GalleryInfoView';
 import PlaceWikiNavView from '../views/PlaceWikiNavView'; 
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
+import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine'; // 🚨 [New] 꼬꼬무 연관 장소 로직 가져오기
 
 const PlaceChatPanel = ({ 
     location,
@@ -73,6 +74,8 @@ const PlaceChatPanel = ({
       // 3. 최악의 경우 (데이터 누락): 이동하지 않고 에러 방어
       console.warn("[Safe Path] 라우팅을 위한 식별자(ID 또는 좌표)가 없습니다.", targetPlace);
   };
+
+  const relatedPlaces = getRelatedPlaces(location); // 🚨 [New] 꼬꼬무 연관 장소 데이터
 
   return (
     <div className={`flex flex-col transition-all duration-500
@@ -216,6 +219,34 @@ const PlaceChatPanel = ({
                       <Send size={12} />
                   </div>
               </button>
+          </div>
+      )}
+
+      {/* 🚨 [New] 모바일 전용 꼬꼬무 연관 여행지 푸터 */}
+      {relatedPlaces.length > 0 && !isChatMode && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && (
+          <div className="md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+              <style>{`
+                  .no-scrollbar::-webkit-scrollbar { display: none; }
+                  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+              `}</style>
+              <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pl-1 pr-4">
+                  <span className="text-[10px] text-gray-500 font-bold whitespace-nowrap shrink-0 uppercase tracking-widest flex items-center gap-1">
+                      <Sparkles size={10} className="text-blue-400/80" /> 연관 탐험지
+                  </span>
+                  {relatedPlaces.map((place, idx) => (
+                      <button 
+                          key={`mob-rel-${idx}`}
+                          onClick={() => handleRelatedClick(place.data)}
+                          className={`shrink-0 px-3 py-1.5 rounded-full border text-[11px] font-medium transition-all active:scale-95 flex items-center gap-1.5 shadow-sm
+                              ${place.isBridge 
+                                ? 'bg-fuchsia-900/20 border-fuchsia-500/30 text-fuchsia-200 hover:bg-fuchsia-800/40 hover:border-fuchsia-400/50' 
+                                : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/20'}`}
+                      >
+                          {place.isBridge && <Sparkles size={10} className="text-fuchsia-400" />}
+                          {place.data.name}
+                      </button>
+                  ))}
+              </div>
           </div>
       )}
     </div>
