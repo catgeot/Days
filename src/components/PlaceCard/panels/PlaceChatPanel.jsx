@@ -85,9 +85,9 @@ const PlaceChatPanel = ({
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}> 
       
       {/* Header */}
-      <div className={`shrink-0 px-3 md:px-3 md:border-b md:border-white/5 bg-transparent z-20 py-3 2xl:py-0 2xl:h-20 flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-3 2xl:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`shrink-0 px-3 md:px-3 md:border-b md:border-white/5 bg-transparent z-20 py-3 xl:py-0 xl:h-20 flex flex-col xl:flex-row xl:items-center justify-between gap-3 xl:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
          {/* Top Tier: Home, Location Info */}
-         <div className="flex items-center gap-3 md:gap-2 overflow-hidden w-full 2xl:w-auto 2xl:flex-1 min-w-0">
+         <div className="flex items-center gap-3 md:gap-2 overflow-hidden w-full xl:w-auto xl:flex-1 min-w-0">
              <button onClick={onClose} className="flex items-center justify-center w-10 h-10 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
                  <ArrowLeft className="w-5 h-5 md:w-4 md:h-4" />
              </button>
@@ -103,7 +103,7 @@ const PlaceChatPanel = ({
          </div>
 
          {/* Bottom Tier: Buttons Area */}
-         <div className="shrink-0 flex items-center gap-2 md:gap-1.5 w-full 2xl:w-auto overflow-x-auto no-scrollbar">
+         <div className="shrink-0 flex items-center justify-center xl:justify-end gap-2 md:gap-1.5 w-full xl:w-auto overflow-x-auto no-scrollbar">
             <Link 
                 to="/report"
                 state={{ placeId: location.id }} 
