@@ -41,7 +41,7 @@ const GalleryInfoView = ({ selectedPlace, selectedImg, onRelatedClick }) => {
             `}</style>
 
              {/* Header */}
-             <div className="flex items-center justify-between border-b border-white/5 pb-4 sticky top-0 bg-[#1a1a1a]/40 backdrop-blur-md z-10">
+             <div className={`items-center justify-between border-b border-white/5 pb-4 sticky top-0 bg-[#1a1a1a]/40 backdrop-blur-md z-10 ${!isPhotoMode ? 'hidden 2xl:flex' : 'flex'}`}>
                  <span className={`text-[11px] font-semibold uppercase tracking-[0.25em] flex items-center gap-2.5 ${
                      isPhotoMode ? 'text-blue-400/90' : 'text-gray-500'
                  }`}>
