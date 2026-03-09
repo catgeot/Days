@@ -85,6 +85,8 @@ export const useTravelData = (user) => {
       const { data, error } = await supabase
         .from('saved_trips')
         .update({ 
+          lat: curationData.lat || existingTrip.lat || 0,
+          lng: curationData.lng || existingTrip.lng || 0,
           curation_data: curationData,
           is_ai_curation: true,
           is_bookmarked: true,
@@ -107,6 +109,8 @@ export const useTravelData = (user) => {
       const newTrip = {
         user_id: targetUser.id,
         destination: targetDest,
+        lat: curationData.lat || 0,
+        lng: curationData.lng || 0,
         is_bookmarked: true,
         curation_data: curationData,
         is_ai_curation: true,

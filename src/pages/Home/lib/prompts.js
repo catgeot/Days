@@ -140,7 +140,7 @@ ${userDataText}${excludeText}
 2. "locationEn": 정확한 '영문 고유 지명 (City, Country 형식)' (예: Aitutaki, Cook Islands).
 3. "title": 반드시 '한국어'로 작성. 공백 포함 15자 이내의 짧고 매혹적인 제목.
 4. "description": 반드시 '한국어'로 작성. 단순 요약이 아닌, 공간의 분위기와 감각이 느껴지는 300자 내외의 풍부하고 깊이 있는 스토리텔링.
-5. "searchKeyword": 🚨 반드시 '영어(English)'로만 작성. Unsplash API 이미지 검색용이므로 한국어가 단 한 글자라도 포함되면 절대 안 됩니다. (예: "Aitutaki tropical island pristine clear water").
+5. "searchKeyword": 🚨 반드시 '영어(English)'로만 작성. Unsplash API 이미지 검색용입니다. 특정 지명만 넣으면 사진이 안 나올 수 있으므로, 지명과 함께 그 장소의 시각적 특징을 나타내는 풍경 키워드(예: nature, landscape, city, beach 등)를 반드시 포함하세요. (예: "Aitutaki tropical island pristine beach clear water landscape").
 6. [치명적 시스템 에러 방지]: 응답을 생성할 때, JSON 문자열 내부에 절대로 실제 줄바꿈(Enter)이나 탭(Tab) 키를 치지 마세요. 문장이 길어도 반드시 띄어쓰기(Space)로만 구분하며 한 줄로 쭉 작성하세요.
 7. [침묵 규칙]: 사용자의 과거 방문지나 취향 데이터를 결과물에 절대 직접 언급하거나 비교하지 마세요. (예: "~를 다녀오신 당신에게" 같은 표현 엄금). 오직 새롭게 추천하는 장소 자체의 매력과 풍경 묘사에만 100% 집중하세요.
 

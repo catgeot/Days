@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts'; 
 import { apiClient } from '../../Home/lib/apiClient';
 import { convertToBase64 } from './useLogbookMedia';
+import { getCoordinatesFromAddress } from '../../Home/lib/geocoding';
 
 // --- 기존 글쓰기 AI 훅 ---
 export const useLogbookAI = (title, setTitle, content, setContent, date, mapLocation) => {
@@ -123,11 +124,29 @@ export const useCurationAI = () => {
       let finalImageUrl = fallbackData.imageUrl; 
 
       if (unsplashKey && parsedData.searchKeyword) {
-        const images = await apiClient.fetchUnsplashImages(unsplashKey, parsedData.searchKeyword);
+        let images = await apiClient.fetchUnsplashImages(unsplashKey, parsedData.searchKeyword);
+        
+        // 🚨 [Fallback] 첫 검색 실패 시 영문 지명과 풍경 키워드로 재검색하여 이미지 확보율 향상
+        if ((!images || images.length === 0) && parsedData.locationEn) {
+          const simpleLocation = parsedData.locationEn.split(',')[0].trim();
+          images = await apiClient.fetchUnsplashImages(unsplashKey, simpleLocation + " nature landscape");
+        }
+        
         if (images && images.length > 0) finalImageUrl = images[0].urls.regular;
       }
 
       const finalData = { ...parsedData, imageUrl: finalImageUrl };
+
+      // 🚨 [New] 큐레이션 데이터에 위도/경도(lat, lng) 좌표 강제 병합 (홈 지도 렌더링 목적)
+      const coords = await getCoordinatesFromAddress(parsedData.locationEn || parsedData.location);
+      if (coords) {
+        finalData.lat = coords.lat;
+        finalData.lng = coords.lng;
+      } else {
+        // Fallback: 좌표 획득 실패 시 기본값 부여 방지 (또는 임의의 초기값)
+        finalData.lat = 0;
+        finalData.lng = 0;
+      }
       
       setCurationData(finalData);
       sessionStorage.setItem('gateo_curation_data', JSON.stringify(finalData));
