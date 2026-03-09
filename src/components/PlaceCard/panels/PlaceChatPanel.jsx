@@ -6,6 +6,7 @@
 // 4. [New] 꼬꼬무 추천 장소 클릭 시 안전하게 이동하기 위한 handleRelatedClick 라우팅 어댑터 로직 추가.
 
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react'; 
 import { Link, useNavigate } from 'react-router-dom'; // 🚨 [Fix] useNavigate 훅 추가
 import PlaceChatView from '../views/PlaceChatView';
@@ -223,16 +224,13 @@ const PlaceChatPanel = ({
       )}
 
       {/* 🚨 [New] 모바일 전용 꼬꼬무 연관 여행지 푸터 */}
-      {relatedPlaces.length > 0 && !isChatMode && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && (
+      {relatedPlaces.length > 0 && !isChatMode && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(
           <div className="md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
               <style>{`
                   .no-scrollbar::-webkit-scrollbar { display: none; }
                   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
               `}</style>
-              <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pl-1 pr-4">
-                  <span className="text-[10px] text-gray-500 font-bold whitespace-nowrap shrink-0 uppercase tracking-widest flex items-center gap-1">
-                      <Sparkles size={10} className="text-blue-400/80" /> 연관 탐험지
-                  </span>
+              <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pl-3 pr-4">
                   {relatedPlaces.map((place, idx) => (
                       <button 
                           key={`mob-rel-${idx}`}
@@ -247,7 +245,8 @@ const PlaceChatPanel = ({
                       </button>
                   ))}
               </div>
-          </div>
+          </div>,
+          document.body
       )}
     </div>
   );
