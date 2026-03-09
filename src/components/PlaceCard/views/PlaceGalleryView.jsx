@@ -3,11 +3,12 @@
 // 1. [Fix] 핀터레스트 스타일(Masonry) 도입: 'columns-2'와 'break-inside-avoid'를 사용하여 이미지 본연의 비율을 살린 2열 그리드 구현.
 // 2. [Fix] 리얼 톤 복원: 기존의 opacity-60~80 레이어를 제거하여 사진 본연의 선명한 색감 노출.
 // 3. [Fix] 모바일 시인성 개선: 4열 기반에서 2열 기반으로 변경하여 모바일에서도 사진을 큼직하고 시원하게 확인 가능.
+// 4. [Performance] React.memo 및 loading="lazy" 적용하여 렌더링 성능 향상.
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download } from 'lucide-react';
 
-const PlaceGalleryView = ({ 
+const PlaceGalleryView = React.memo(({ 
   images, 
   isImgLoading, 
   selectedImg, 
@@ -85,7 +86,7 @@ const PlaceGalleryView = ({
             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
           </button>
           
-          <button onClick={handleNext} disabled={currentIndex >= images.length - 1} className={`absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${isUIHidden || currentIndex >= images.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <button onClick={handleNext} disabled={currentIndex >= images.length - 1} className={`absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${isUIHidden || currentIndex <= 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </button>
 
@@ -142,10 +143,12 @@ const PlaceGalleryView = ({
                   className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
                 >
                   {/* 🚨 [Fix] 원본 톤 유지를 위해 opacity-100 적용 */}
+                  {/* 🚨 [Performance] loading="lazy" 추가 */}
                   <img 
                     src={img.urls.small || img.urls.regular} 
                     className="w-full h-auto object-cover opacity-100 group-hover:scale-105 transition-transform duration-500" 
                     alt={`place-img-${i}`}
+                    loading="lazy"
                   />
                   {/* 🚨 [Fix] 하단 가독성을 위한 최소한의 그라데이션만 유지 */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -166,6 +169,6 @@ const PlaceGalleryView = ({
       )}
     </div>
   );
-};
+});
 
 export default PlaceGalleryView;

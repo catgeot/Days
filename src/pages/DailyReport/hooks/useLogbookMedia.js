@@ -1,8 +1,9 @@
 // src/pages/DailyReport/hooks/useLogbookMedia.js
 // 🚨 [New] 관심사 분리: Write.jsx에서 복잡한 미디어(이미지) 처리 로직을 완전히 독립시킴
 // 🚨 [Fix] 10장 한도 상향 및 일괄 업로드 진행률(Progress) 피드백 로직 추가
+// 🚨 [Performance] 메모리 누수 방지를 위해 URL.revokeObjectURL 추가
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import imageCompression from 'browser-image-compression';
 
 export const convertToBase64 = (file) => {
@@ -22,6 +23,17 @@ export const useLogbookMedia = () => {
   // 🚨 [New] 압축 진행 상태 관리
   const [isCompressing, setIsCompressing] = useState(false);
   const [compressProgress, setCompressProgress] = useState({ current: 0, total: 0 });
+
+  // 🚨 [Performance] 컴포넌트 언마운트 시 생성된 모든 Blob URL 해제
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [previewUrls]);
 
   const handleImageChange = async (e, isAILoading) => {
     if (isAILoading || isCompressing) return; // 작업 중 중복 실행 차단 (Safe Path)
@@ -63,6 +75,12 @@ export const useLogbookMedia = () => {
   };
 
   const removeNewImage = (index) => { 
+    // 삭제 시에도 URL 해제
+    const urlToRemove = previewUrls[index];
+    if (urlToRemove && urlToRemove.startsWith('blob:')) {
+      URL.revokeObjectURL(urlToRemove);
+    }
+    
     setImageFiles(prev => prev.filter((_, i) => i !== index)); 
     setPreviewUrls(prev => prev.filter((_, i) => i !== index)); 
   };
@@ -82,7 +100,7 @@ export const useLogbookMedia = () => {
     removeNewImage,
     removeExistingImage,
     heroImageUrl,
-    isCompressing,     // 🚨 Export 추가
-    compressProgress   // 🚨 Export 추가
+    isCompressing,
+    compressProgress
   };
 };

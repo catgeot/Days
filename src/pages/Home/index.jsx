@@ -255,7 +255,7 @@ function Home() {
           tempPinsData={isPinVisible ? scoutedPins : []} 
           travelSpots={isPinVisible ? filteredSpots : []} 
           activePinId={selectedLocation?.id}
-          pauseRender={false}
+          pauseRender={isCardExpanded}
           globeTheme={globeTheme} 
           isZenMode={isZenMode}
         />

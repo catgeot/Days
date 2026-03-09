@@ -1,4 +1,4 @@
-// src/components/HomeGlobe.jsx
+// src/pages/Home/components/HomeGlobe.jsx
 // 🚨 [Fix] 테마 스위치 속성(globeTheme) 적용 및 비주얼 리터칭(텍스처, 대기권 컬러 동적 할당)
 // 🚨 [Fix/New] 수정 이유: 
 // 1. [Maintainability] 'GLOBE_CAMERA_CONFIG' 통제실 신설 및 확대/자전 정지 임계값(Threshold) 세분화.
@@ -10,6 +10,7 @@
 // 7. [Fix/New] 모바일 터치 관통 방어: PC 환경(마우스)은 100% 보존하고, 모바일의 '터치' 이벤트에서만 캔버스로의 전파를 차단하여 이중 클릭 버그 해결.
 // 8. 🚨 [Fix/New] 모바일 줌(Zoom) 물리적 제한 및 깜박임(Flickering) 방지 마진 적용: 텍스트 노출(1.75)과 물리적 락(1.5) 사이의 여유 공간을 두어 부동소수점 오차 충돌 방어.
 // 9. 🚨 [Fix] 모바일 라벨 해상도 저하: 모바일 환경 진입 시 LABEL_RESOLUTION을 2에서 1로 강제 다운그레이드하여 GPU 텍스처 메모리 소모 방어.
+// 10. [Performance] React.memo를 적용하고 불필요한 렌더링을 억제.
 
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
@@ -27,7 +28,7 @@ const GLOBE_CAMERA_CONFIG = {
   LABEL_RESOLUTION: 2               
 };
 
-const HomeGlobe = forwardRef(({ 
+const HomeGlobe = React.memo(forwardRef(({ 
   onGlobeClick, onMarkerClick, isChatOpen, savedTrips = [], 
   tempPinsData = [], 
   travelSpots = [],
@@ -69,7 +70,7 @@ const HomeGlobe = forwardRef(({
       default:
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-          atmColor: "#00ffff",
+          atmColor: "#00ffff", 
           atmAlt: 0.20
         };
     }
@@ -317,6 +318,7 @@ const HomeGlobe = forwardRef(({
     <div 
       className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'} ${lodLevel > 0 ? 'hide-markers' : ''}`}
       onPointerDown={handleInteraction}
+      style={{ display: pauseRender ? 'none' : 'block' }}
     >
       <style>{`
         .hide-markers .globe-marker-wrapper { 
@@ -363,6 +365,6 @@ const HomeGlobe = forwardRef(({
       />
     </div>
   );
-});
+}));
 
 export default HomeGlobe;

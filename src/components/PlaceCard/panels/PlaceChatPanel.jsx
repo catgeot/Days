@@ -4,20 +4,21 @@
 // 2. [Routing] Log 버튼을 <button>에서 <Link to="/report">로 전면 교체하여 딥링킹 통합.
 // 3. [Safe Path] 기존 openReport로 전달하던 location.id는 Router의 state={{ placeId: location.id }}로 안전하게 이관.
 // 4. [New] 꼬꼬무 추천 장소 클릭 시 안전하게 이동하기 위한 handleRelatedClick 라우팅 어댑터 로직 추가.
+// 5. [Performance] React.memo를 적용하여 불필요한 리렌더링 방지.
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react'; 
-import { Link, useNavigate } from 'react-router-dom'; // 🚨 [Fix] useNavigate 훅 추가
+import { Link, useNavigate } from 'react-router-dom'; 
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import PlaceWikiNavView from '../views/PlaceWikiNavView'; 
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
-import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine'; // 🚨 [New] 꼬꼬무 연관 장소 로직 가져오기
+import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine'; 
 
-const PlaceChatPanel = ({ 
+const PlaceChatPanel = React.memo(({ 
     location,
     isBookmarked, 
     onClose, 
@@ -35,7 +36,7 @@ const PlaceChatPanel = ({
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
-  const navigate = useNavigate(); // 🚨 [New] 라우팅 객체 초기화
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,27 +57,23 @@ const PlaceChatPanel = ({
       }
   };
 
-  // 🚨 [New] 꼬꼬무 장소 클릭 시 안전한 라우팅을 위한 분기 처리기 (Pessimistic Adapter)
   const handleRelatedClick = (targetPlace) => {
       if (!targetPlace) return;
 
-      // 1. travelSpots 출신: 고유 ID가 존재하는 경우
       if (targetPlace.id) {
           navigate(`/place/${targetPlace.id}`);
           return;
       }
       
-      // 2. citiesData 출신: ID는 없지만 위경도가 존재하는 경우 (city-lat-lng 포맷 활용)
       if (targetPlace.lat && targetPlace.lng) {
           navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
           return;
       }
 
-      // 3. 최악의 경우 (데이터 누락): 이동하지 않고 에러 방어
       console.warn("[Safe Path] 라우팅을 위한 식별자(ID 또는 좌표)가 없습니다.", targetPlace);
   };
 
-  const relatedPlaces = getRelatedPlaces(location); // 🚨 [New] 꼬꼬무 연관 장소 데이터
+  const relatedPlaces = getRelatedPlaces(location); 
 
   return (
     <div className={`flex flex-col transition-all duration-500
@@ -158,7 +155,7 @@ const PlaceChatPanel = ({
             <div className="h-full flex flex-col p-6">
                 <div className="flex items-center justify-between mb-2 shrink-0">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                        <Sparkles size={14} className="text-blue-400"/> AI Assistant
+                        <span className="text-blue-400"><Sparkles size={14} /></span> AI Assistant
                     </h3>
                     <button 
                         onClick={() => setIsChatMode(false)} 
@@ -198,7 +195,7 @@ const PlaceChatPanel = ({
                         selectedPlace={location}
                         selectedImg={selectedImg}
                         isAiMode={isAiMode}      
-                        onRelatedClick={handleRelatedClick} // 🚨 [Fix] 이벤트를 하위 컴포넌트로 주입 완료
+                        onRelatedClick={handleRelatedClick} 
                     />
                 )}
             </div>
@@ -250,6 +247,6 @@ const PlaceChatPanel = ({
       )}
     </div>
   );
-};
+});
 
 export default PlaceChatPanel;

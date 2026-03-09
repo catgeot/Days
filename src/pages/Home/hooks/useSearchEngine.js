@@ -6,29 +6,35 @@
 // 4. 🚨 [Fix/New] 4:1 꼬꼬무 정밀 분할: 연관된 장소 4개와 완전히 다른 테마의 '교두보(Bridge)' 장소 1개를 추출하여 배열 생성.
 // 5. 🚨 [Fix/New] isBridge 플래그: 교두보 장소에 `isBridge: true` 마킹을 달아 UI에서 색상을 반전시킬 수 있도록 프론트엔드로 전달.
 // 6. [Fix/New] Pessimistic First (비관적 방어): 특정 풀(Pool)의 개수가 부족할 경우 앱 크래시를 막기 위해 상대 풀에서 부족분을 채우는 강력한 방어 로직 추가.
+// 7. [Performance] 정적 데이터 사전 계산 및 메모이제이션 강화.
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { TRAVEL_SPOTS } from '../data/travelSpots'; 
 import { citiesData } from '../data/citiesData'; 
 import { KEYWORD_SYNONYMS, KEYWORD_DB } from '../data/keywordData'; 
 
 const removeSpaces = (str) => (str || '').replace(/\s+/g, '').toLowerCase();
 
+// 사전 계산된 정적 데이터 (성능 최적화)
+const ALL_PLACES = [...TRAVEL_SPOTS, ...(citiesData || [])];
+const MASTER_VALID_NAMES = new Set([
+  ...TRAVEL_SPOTS.map(s => s.name),
+  ...(citiesData || []).map(c => c.name)
+]);
+
 // 🚨 [New] 꼬꼬무 장소 추천 로직 (4:1 유기적 셔플 & Safe Path 적용)
 export const getRelatedPlaces = (currentPlace) => {
-  const allPlaces = [...TRAVEL_SPOTS, ...(citiesData || [])];
-
   // 🛡️ [Safe Path 1] 데이터가 없으면 랜덤 5개 반환
   if (!currentPlace) {
-    return allPlaces.sort(() => 0.5 - Math.random()).slice(0, 5).map(spot => ({
+    return [...ALL_PLACES].sort(() => 0.5 - Math.random()).slice(0, 5).map(spot => ({
       name: spot.name,
       data: spot,
-      isBridge: false // 기본값
+      isBridge: false 
     }));
   }
 
   const currentTags = currentPlace.tags || currentPlace.keywords || [];
-  const otherPlaces = allPlaces.filter(p => p.name !== currentPlace.name && p.id !== currentPlace.id);
+  const otherPlaces = ALL_PLACES.filter(p => p.name !== currentPlace.name && p.id !== currentPlace.id);
 
   let relatedPool = []; // 교집합이 1개라도 있는 장소
   let bridgePool = [];  // 교집합이 전혀 없는 장소 (완전히 새로운 테마)
@@ -44,36 +50,29 @@ export const getRelatedPlaces = (currentPlace) => {
       }
     });
   } else {
-    // 🛡️ 비관적 방어: 태그가 아예 없는 장소라면 모두 관련 풀로 편입
     relatedPool = otherPlaces;
   }
 
-  // 각 풀을 무작위로 섞음 (Organic Discovery)
   relatedPool = relatedPool.sort(() => 0.5 - Math.random());
   bridgePool = bridgePool.sort(() => 0.5 - Math.random());
 
   let finalPlaces = [];
 
-  // 🚨 4(연관) : 1(교두보) 추출 및 방어 로직
   if (relatedPool.length >= 4 && bridgePool.length >= 1) {
-    // 가장 이상적인 상황
     finalPlaces = [
       ...relatedPool.slice(0, 4).map(p => ({ name: p.name, data: p, isBridge: false })),
       ...bridgePool.slice(0, 1).map(p => ({ name: p.name, data: p, isBridge: true }))
     ];
   } else if (relatedPool.length < 4) {
-    // 연관 장소가 부족하면 남은 자리를 교두보(새로운 테마)로 채움
     const neededBridge = 5 - relatedPool.length;
     finalPlaces = [
       ...relatedPool.map(p => ({ name: p.name, data: p, isBridge: false })),
-      ...bridgePool.slice(0, neededBridge).map((p, i) => ({ name: p.name, data: p, isBridge: i === 0 })) // 1개만 하이라이트 유지
+      ...bridgePool.slice(0, neededBridge).map((p, i) => ({ name: p.name, data: p, isBridge: i === 0 }))
     ];
   } else {
-    // 교두보 장소가 없으면 전부 연관 장소로 채움
     finalPlaces = relatedPool.slice(0, 5).map(p => ({ name: p.name, data: p, isBridge: false }));
   }
 
-  // 최종 셔플: 교두보(보라색 버튼)가 항상 끝에만 있으면 어색하므로 배열 전체를 다시 섞음
   return finalPlaces.sort(() => 0.5 - Math.random());
 };
 
@@ -92,11 +91,6 @@ export const useSearchEngine = () => {
     const cleanQuery = query.replace("📍", "").trim().toLowerCase();
     const baseKeyword = KEYWORD_SYNONYMS[cleanQuery] || cleanQuery;
     const normBase = removeSpaces(baseKeyword);
-
-    const masterValidNames = new Set([
-      ...TRAVEL_SPOTS.map(s => s.name),
-      ...(citiesData || []).map(c => c.name)
-    ]);
 
     const tempSet = new Set();
 
@@ -131,14 +125,15 @@ export const useSearchEngine = () => {
       }
     });
 
-    masterValidNames.forEach(name => {
+    MASTER_VALID_NAMES.forEach(name => {
       if (removeSpaces(name).includes(normBase)) {
         tempSet.add(name);
       }
     });
 
+    // 🚨 UI 블로킹 방지를 위한 짧은 딜레이 유지
     setTimeout(() => {
-      const validTags = Array.from(tempSet).filter(tag => masterValidNames.has(tag));
+      const validTags = Array.from(tempSet).filter(tag => MASTER_VALID_NAMES.has(tag));
       const finalTags = validTags.slice(0, 5);
       
       setRelatedTags(finalTags);

@@ -3,31 +3,25 @@
 // 1. [Subtraction] 길고 장황한 서술형 꼬꼬무 버튼을 미니멀한 가로형 태그 리스트로 다이어트 유지.
 // 2. 🚨 [Fix/New] 교두보(Bridge) 시각적 넛지 적용: useSearchEngine에서 넘어온 `isBridge: true` 플래그를 감지.
 // 3. 🚨 [Fix/New] UI 분기: 일반 장소는 파란색(Blue) + 나침반(Compass) / 교두보 장소는 신비로운 보라색(Fuchsia) + 반짝임(Sparkles) 아이콘으로 스타일을 반전시켜 클릭을 유도.
+// 4. [Performance] React.memo를 적용하고 관련 장소 계산 로직을 최적화.
 
-import React from 'react';
-import { Camera, MapPin, Compass, Sparkles } from 'lucide-react'; // 🚨 [New] 교두보용 Sparkles 아이콘 추가
+import React, { useMemo } from 'react';
+import { Camera, MapPin, Compass, Sparkles } from 'lucide-react'; 
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 
-const GalleryInfoView = ({ selectedPlace, selectedImg, onRelatedClick }) => {
+const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick }) => {
     
     const isPhotoMode = !!selectedImg;
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'SYSTEM_ARCHIVE';
-        try {
-            const date = new Date(dateString);
-            return date.toISOString().split('T')[0].replace(/-/g, '.');
-        } catch (e) {
-            return 'RECORD_NOT_FOUND';
+    const description = useMemo(() => {
+        if (selectedImg?.alt_description) {
+            return selectedImg.alt_description.charAt(0).toUpperCase() + selectedImg.alt_description.slice(1);
         }
-    };
-
-    const description = selectedImg?.alt_description 
-        ? selectedImg.alt_description.charAt(0).toUpperCase() + selectedImg.alt_description.slice(1)
-        : `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
+        return `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
+    }, [selectedImg, selectedPlace]);
 
     // 🚨 4:1 (연관:교두보) 로직이 적용된 결과값 5개를 가져옴
-    const relatedPlaces = getRelatedPlaces(selectedPlace);
+    const relatedPlaces = useMemo(() => getRelatedPlaces(selectedPlace), [selectedPlace]);
 
     return (
         <div className="animate-fade-in space-y-8 min-h-[200px] max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
@@ -99,7 +93,6 @@ const GalleryInfoView = ({ selectedPlace, selectedImg, onRelatedClick }) => {
                                             key={`rel-${idx}`} 
                                             onClick={() => onRelatedClick && onRelatedClick(place.data)}
                                             className={`group px-3 py-1.5 rounded-lg border transition-all duration-300 font-medium text-[12px] flex items-center gap-1.5 ${
-                                                // 🚨 UI 분기: 교두보(isBridge)면 보라색, 아니면 파란색
                                                 place.isBridge 
                                                 ? 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-300 hover:text-white hover:border-fuchsia-400/60 hover:bg-fuchsia-500/30'
                                                 : 'bg-blue-500/5 border-blue-500/20 text-gray-300 hover:text-white hover:border-blue-400/50 hover:bg-blue-500/20'
@@ -121,6 +114,6 @@ const GalleryInfoView = ({ selectedPlace, selectedImg, onRelatedClick }) => {
              </div>
         </div>
     );
-};
+});
 
 export default GalleryInfoView;

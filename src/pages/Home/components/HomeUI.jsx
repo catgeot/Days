@@ -2,6 +2,7 @@
 // 🚨 [Fix/New] 수정 이유:
 // 1. [Subtraction] useReport 전역 상태 의존성(openReport) 완전 제거 (좀비 코드 청산).
 // 2. [Routing] 모바일 및 데스크탑의 Logbook 버튼을 <button>에서 <Link to="/report">로 교체하여 Deep Linking 완성.
+// 3. [Performance] React.memo를 적용하여 불필요한 리렌더링 방지.
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
@@ -17,7 +18,7 @@ import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
 // 🚨 [Fix] useReport 임포트 완전 제거 (뺄셈)
 
-const HomeUI = ({ 
+const HomeUI = React.memo(({ 
   onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick, 
   relatedTags = [], isTagLoading = false, onTagClick,
   selectedCategory, onCategorySelect,
@@ -87,7 +88,7 @@ const HomeUI = ({
         <div 
           className="fixed inset-0 z-[45] pointer-events-auto touch-none" 
           onClick={() => setIsMobileSearchOpen(false)} 
-        />
+          />
       )}
 
       <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between md:grid md:grid-cols-12 items-start pointer-events-none w-full">
@@ -245,5 +246,6 @@ const HomeUI = ({
       </footer>
     </>
   );
-};
+});
+
 export default HomeUI;

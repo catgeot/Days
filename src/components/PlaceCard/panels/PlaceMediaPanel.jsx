@@ -1,12 +1,14 @@
+// src/components/PlaceCard/panels/PlaceMediaPanel.jsx
 // 🚨 [Fix/New] PlaceCardExpanded에서 내려준 비관적 UI 상태값(Loading, Error, FormUrl) Props 수용
 // 🚨 [Fix/New] 수용된 상태값들을 YouTubePlayerView로 전달(Props Drilling)하여 데이터 부재 시 Fallback UI가 작동하도록 연결
+// 🚨 [Performance] React.memo를 적용하여 불필요한 리렌더링 방지.
 
 import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
 import PlaceWikiDetailsView from '../views/PlaceWikiDetailsView';
 
-const PlaceMediaPanel = ({ 
+const PlaceMediaPanel = React.memo(({ 
     galleryData, 
     isFullScreen, 
     toggleFullScreen, 
@@ -62,13 +64,13 @@ const PlaceMediaPanel = ({
         <div className={`w-full h-full ${mediaMode === 'WIKI' ? 'block' : 'hidden'}`}>
             <PlaceWikiDetailsView 
                 wikiData={wikiData} 
-                isWikiLoading={isWikiLoading}
+                isWikiLoading={isWikiLoading} 
                 placeName={location?.name} 
             />
         </div>
 
     </div>
   );
-};
+});
 
 export default PlaceMediaPanel;
