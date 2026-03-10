@@ -130,8 +130,8 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
                                        <p className={`text-xs font-bold transition-colors ${isSelected ? 'text-amber-200' : 'text-gray-300 group-hover:text-white'}`}>
                                            {chapter.title || "Highlight"}
                                        </p>
-                                       <div className="flex flex-col gap-1 mt-1">
-                                            <span className="text-[10px] text-gray-500 font-mono bg-black/30 px-1 rounded group-hover:bg-black/50 transition-colors w-max">{chapter.time}</span>
+                                       <div className="flex items-start gap-2 mt-0.5">
+                                            <span className="shrink-0 text-[10px] text-gray-500 font-mono bg-black/30 px-1 rounded group-hover:bg-black/50 transition-colors mt-[2px]">{chapter.time}</span>
                                             <p className="text-[10px] text-gray-500 group-hover:text-gray-400 leading-relaxed">{chapter.desc}</p>
                                        </div>
                                    </div>
