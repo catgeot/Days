@@ -272,15 +272,17 @@ const YouTubePlayerView = forwardRef(({
               </button>
             )}
 
-            {/* 영상 유무와 관계없이 제보 버튼은 항상 작게 노출 가능 (옵션) */}
-            <a 
-              href={googleFormUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-4 bg-red-600/20 text-red-500 rounded-full shadow-2xl backdrop-blur-md border border-red-500/30 active:scale-90 transition-all"
-            >
-              <Sparkles size={24} strokeWidth={2.5} />
-            </a>
+            {/* 영상이 없을 때만 제보 버튼 노출 */}
+            {isEmpty && (
+              <a 
+                href={googleFormUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 bg-red-600/20 text-red-500 rounded-full shadow-2xl backdrop-blur-md border border-red-500/30 active:scale-90 transition-all"
+              >
+                <Sparkles size={24} strokeWidth={2.5} />
+              </a>
+            )}
         </div>
       )}
 
