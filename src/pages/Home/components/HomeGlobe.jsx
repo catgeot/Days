@@ -34,7 +34,7 @@ const HomeGlobe = React.memo(forwardRef(({
   travelSpots = [],
   activePinId,
   pauseRender = false,
-  globeTheme = 'neon',
+  globeTheme = 'deep',
   isZenMode = false 
 }, ref) => {
   const globeEl = useRef();
@@ -49,11 +49,11 @@ const HomeGlobe = React.memo(forwardRef(({
 
   const themeConfig = useMemo(() => {
     switch(globeTheme) {
-      case 'neon': 
+			case 'deep': 
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-          atmColor: "#00ffff", 
-          atmAlt: 0.25
+          atmColor: "#000000", 
+          atmAlt: 0.00
         };
       case 'bright': 
         return {
@@ -61,12 +61,12 @@ const HomeGlobe = React.memo(forwardRef(({
           atmColor: "#ffffff", 
           atmAlt: 0.3
         };
-      case 'deep': 
+			case 'neon': 
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-          atmColor: "#000000", 
-          atmAlt: 0.00
-        };
+          atmColor: "#00ffff", 
+          atmAlt: 0.25
+        };     
       default:
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",

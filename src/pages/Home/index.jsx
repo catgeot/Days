@@ -35,10 +35,17 @@ import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 
-// 🚨 [Fix/New] URL 영문명 정규화 유틸리티 (공백, 특수문자 치환 및 소문자화)
+// 🚨 [Fix/New] URL 영문명 정규화 유틸리티 (공백, 특수문자 치환 및 소문자화, 다국어 액센트 제거 등 견고성 향상)
 export const formatUrlName = (nameEn) => {
   if (!nameEn) return "";
-  return nameEn.toLowerCase().replace(/[\s_]+/g, '-').replace(/[^a-z0-9-]/g, '');
+  return nameEn
+    .normalize("NFD") // 유니코드 정규화 (액센트 분리)
+    .replace(/[\u0300-\u036f]/g, "") // 분리된 액센트 마크 제거 (예: é -> e)
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-') // 공백과 언더스코어를 하이픈으로 변경
+    .replace(/[^a-z0-9-]/g, '') // 알파벳 소문자, 숫자, 하이픈 이외 제거
+    .replace(/-+/g, '-') // 연속된 하이픈 단일화
+    .replace(/^-|-$/g, ''); // 문자열 앞뒤 하이픈 제거
 };
 
 function Home() {
@@ -70,9 +77,20 @@ function Home() {
 
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
-  const [category, setCategory] = useState('paradise');
+  // 🚨 [Fix/New] 기본값이 아닌 랜덤이나 순회하는 시스템을 구축 (초기 카테고리를 순회 방식으로 변경)
+  const CATEGORY_IDS = useMemo(() => ['paradise', 'nature', 'urban', 'nearby', 'adventure'], []);
+  const [category, setCategory] = useState(() => {
+    try {
+      const lastIndex = parseInt(localStorage.getItem('gateo_last_category_index') || '-1', 10);
+      const nextIndex = (lastIndex + 1) % 5; // CATEGORY_IDS.length
+      localStorage.setItem('gateo_last_category_index', nextIndex.toString());
+      return ['paradise', 'nature', 'urban', 'nearby', 'adventure'][nextIndex];
+    } catch (e) {
+      return 'paradise'; // Fallback
+    }
+  });
   const [isPinVisible, setIsPinVisible] = useState(true);
-  const [globeTheme, setGlobeTheme] = useState('neon');
+  const [globeTheme, setGlobeTheme] = useState('deep');
   const [isTickerExpanded, setIsTickerExpanded] = useState(false); 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
@@ -108,19 +126,24 @@ function Home() {
   useEffect(() => {
     const match = matchPath({ path: "/place/:id" }, routeLocation.pathname);
     if (match && match.params.id) {
-      const targetId = match.params.id;
+      let targetId = match.params.id;
+      try {
+        targetId = decodeURIComponent(targetId);
+      } catch (e) { /* ignore */ }
+      
+      const normalizedTargetId = targetId.toLowerCase(); // 대소문자 무시 비교용
       
       // 🚨 [Fix/New] 1차 방어막: 영문명 정규화(name_en) 매칭을 최우선으로 적용 (Hydration)
-      let target = TRAVEL_SPOTS.find(s => formatUrlName(s.name_en) === targetId || String(s.id) === targetId || s.name === targetId) 
+      let target = TRAVEL_SPOTS.find(s => formatUrlName(s.name_en) === normalizedTargetId || String(s.id) === targetId || s.name === targetId) 
                 || savedTrips.find(t => {
                      const nameEn = t.name_en || t.curation_data?.locationEn || "";
                      const name = t.name || t.destination || t.curation_data?.location || "";
-                     return formatUrlName(nameEn) === targetId || String(t.id) === targetId || name === targetId;
+                     return formatUrlName(nameEn) === normalizedTargetId || String(t.id) === targetId || name === targetId;
                    });
 
       // 🚨 [Fix/New] Data Lake(citiesData) 영문명 탐색 추가
       if (!target) {
-        const matchedCity = (citiesData || []).find(c => formatUrlName(c.name_en) === targetId);
+        const matchedCity = (citiesData || []).find(c => formatUrlName(c.name_en) === normalizedTargetId);
         if (matchedCity) {
           target = {
             id: `city-${matchedCity.lat}-${matchedCity.lng}`,
@@ -136,11 +159,11 @@ function Home() {
       
       // 기존 1차 방어막: 물리적 DB에 없더라도, 현재 메모리(State)에 있는 선택지라면 승인
       if (!target && selectedLocation && (
-          formatUrlName(selectedLocation.name_en) === targetId || 
+          formatUrlName(selectedLocation.name_en) === normalizedTargetId || 
           String(selectedLocation.id) === targetId || 
           selectedLocation.name === targetId
       )) {
-        target = selectedLocation;
+          target = selectedLocation;
       }
 
       // 🚨 [Fix/New] 2차 방어막: URL에서 직접 파싱 (새로고침 시 튕김 방지 및 Hydration Fallback)
