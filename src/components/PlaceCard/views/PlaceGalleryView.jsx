@@ -127,7 +127,7 @@ const PlaceGalleryView = React.memo(({
         </div>
       ) : (
         // 🚨 [Fix] 핀터레스트 스타일 2열 레이아웃 적용 (columns-2) 및 리얼 톤 유지 (opacity 제거)
-        <div className="w-full h-full p-6 pt-24 md:pt-10 overflow-y-auto custom-scrollbar-blue relative">
+        <div className="w-full h-full p-6 pt-24 pb-28 md:pt-10 md:pb-6 overflow-y-auto custom-scrollbar-blue relative">
           {isImgLoading ? (
             <div className="grid grid-cols-2 gap-4">
                {[...Array(6)].map((_, i) => (
