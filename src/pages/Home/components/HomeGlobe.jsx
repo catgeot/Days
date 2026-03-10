@@ -64,14 +64,14 @@ const HomeGlobe = React.memo(forwardRef(({
       case 'deep': 
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-          atmColor: "#e2fb03", 
-          atmAlt: 0.20
+          atmColor: "#000000", 
+          atmAlt: 0.00
         };
       default:
         return {
           imageUrl: "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-          atmColor: "#00ffff", 
-          atmAlt: 0.20
+          atmColor: "#000000", 
+          atmAlt: 0.00
         };
     }
   }, [globeTheme]);

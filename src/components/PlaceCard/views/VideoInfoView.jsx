@@ -73,7 +73,7 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
         <div className="animate-fade-in space-y-6">
              <div className="space-y-3">
                  <div className="flex items-center gap-2 mb-1">
-                     <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
+                     <span className="text-[12px] font-bold uppercase tracking-widest text-amber-300">
                         VIDEO INSIGHTS
                      </span>
                  </div>
@@ -84,7 +84,7 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
                  
                  <div className="flex flex-wrap gap-1.5 pt-2">
                      {videoData.tags && videoData.tags.map((tag, idx) => (
-                         <span key={idx} className="px-2.5 py-1 bg-white/5 border border-white/5 rounded-lg text-[10px] text-gray-400 hover:text-white hover:border-white/20 transition-all cursor-default">
+                         <span key={idx} className="px-2.5 py-1 bg-white/5 border border-white/5 rounded-lg text-[11px] text-gray-400 hover:text-white hover:border-white/20 transition-all cursor-default">
                              #{tag.replace ? tag.replace('#','') : tag}
                          </span>
                      ))}
@@ -120,7 +120,7 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
                                        ${isSelected || isBestMoment 
                                             ? 'bg-amber-500/20 text-amber-400' 
                                             : 'bg-[#0F1115] text-gray-400 group-hover:text-gray-200 group-hover:bg-[#1A1D21]'}`}>
-                                       <span className="text-[10px] font-bold group-hover:hidden">
+                                       <span className="text-[12px] font-bold group-hover:hidden">
                                             {isBestMoment ? <Crown size={14} /> : idx + 1}
                                        </span>
                                        <Play size={12} className="hidden group-hover:block fill-current opacity-80" />
@@ -130,9 +130,9 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
                                        <p className={`text-xs font-bold transition-colors ${isSelected ? 'text-amber-200' : 'text-gray-300 group-hover:text-white'}`}>
                                            {chapter.title || "Highlight"}
                                        </p>
-                                       <div className="flex items-start gap-2 mt-0.5">
-                                            <span className="shrink-0 text-[10px] text-gray-500 font-mono bg-black/30 px-1 rounded group-hover:bg-black/50 transition-colors mt-[2px]">{chapter.time}</span>
-                                            <p className="text-[10px] text-gray-500 group-hover:text-gray-400 leading-relaxed">{chapter.desc}</p>
+                                       <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-[12px] text-gray-500 font-mono bg-black/30 px-1 rounded group-hover:bg-black/50 transition-colors w-max">{chapter.time}</span>
+                                            <p className="text-[12px] text-gray-500 group-hover:text-gray-400 leading-relaxed truncate">{chapter.desc}</p>
                                        </div>
                                    </div>
                                </button>

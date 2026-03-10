@@ -35,7 +35,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick
             `}</style>
 
              {/* Header */}
-             <div className={`items-center justify-between border-b border-white/5 pb-4 sticky top-0 bg-[#1a1a1a]/40 backdrop-blur-md z-10 ${!isPhotoMode ? 'hidden xl:flex' : 'flex'}`}>
+             <div className={`items-center justify-between border-b border-white/5 pb-3 sticky top-0 bg-[#1a1a1a]/40 backdrop-blur-md z-10 ${!isPhotoMode ? 'hidden xl:flex' : 'flex'}`}>
                  <span className={`text-[11px] font-semibold uppercase tracking-[0.25em] flex items-center gap-2.5 ${
                      isPhotoMode ? 'text-blue-400/90' : 'text-gray-500'
                  }`}>
@@ -63,7 +63,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick
                     </div>
                 ) : (
                     <div className="animate-fade-in space-y-10">
-                        <p className="text-[15px] text-gray-300/90 leading-8 font-normal tracking-wide whitespace-pre-line">
+                        <p className="text-[14px] text-gray-300/90 leading-8 font-normal tracking-wide whitespace-pre-line">
                             {selectedPlace?.desc || "이 장소에 대한 정보가 업데이트 중입니다."}
                         </p>
                         
@@ -84,10 +84,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick
                             
                             {/* 🚨 [Fix/New] 2. 꼬꼬무 연관 장소 (4:1 시각적 넛지 적용) */}
                             {relatedPlaces.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                    <div className="w-full text-[11px] text-gray-500/80 font-medium mb-1 tracking-wider uppercase">
-                                        연관 탐험지
-                                    </div>
+                                <div className="flex flex-wrap gap-2">                                   
                                     {relatedPlaces.map((place, idx) => (
                                         <button 
                                             key={`rel-${idx}`} 
