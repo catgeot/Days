@@ -119,7 +119,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
   }, [chatHistory, localAiResponse, wikiData]);
 
   return (
-    <div className="w-full h-full flex flex-col p-6 pt-24 md:p-12 overflow-y-auto text-white custom-scrollbar relative">
+    <div className="w-full h-full flex flex-col p-6 pt-24 pb-32 md:p-12 overflow-y-auto text-white custom-scrollbar relative">
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -194,10 +194,10 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
                     ))}
                     
                     {!isAiExpanded && (
-                        <div className="pt-10 mt-10 border-t border-white/10 flex justify-center md:justify-start pb-8">
+                        <div className="fixed md:static bottom-0 left-0 w-full md:w-auto p-4 pb-8 md:p-0 md:pb-8 md:pt-10 md:mt-10 bg-[#05070a]/90 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 flex justify-center md:justify-start z-[160] md:z-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-none animate-fade-in-up md:animate-none">
                             <button 
                                 onClick={handleRequestAiInfo}
-                                className="group flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
+                                className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
                             >
                                 <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
                                 <span className="text-sm md:text-base font-bold text-gray-200 tracking-wide">
