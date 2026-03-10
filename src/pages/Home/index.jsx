@@ -78,13 +78,13 @@ function Home() {
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
   // 🚨 [Fix/New] 기본값이 아닌 랜덤이나 순회하는 시스템을 구축 (초기 카테고리를 순회 방식으로 변경)
-  const CATEGORY_IDS = useMemo(() => ['paradise', 'nature', 'urban', 'nearby', 'adventure'], []);
+  const CATEGORY_IDS = useMemo(() => ['paradise', 'nature', 'urban', 'culture', 'adventure'], []);
   const [category, setCategory] = useState(() => {
     try {
       const lastIndex = parseInt(localStorage.getItem('gateo_last_category_index') || '-1', 10);
       const nextIndex = (lastIndex + 1) % 5; // CATEGORY_IDS.length
       localStorage.setItem('gateo_last_category_index', nextIndex.toString());
-      return ['paradise', 'nature', 'urban', 'nearby', 'adventure'][nextIndex];
+      return ['paradise', 'nature', 'urban', 'culture', 'adventure'][nextIndex];
     } catch (e) {
       return 'paradise'; // Fallback
     }

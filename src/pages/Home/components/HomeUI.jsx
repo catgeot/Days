@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
-  Palmtree, Mountain, Building2, Plane, Compass, 
+  Palmtree, Mountain, Building2, Landmark, Compass, 
   Eye, EyeOff, Droplet, Sun, Moon,
   PenTool,
   Leaf
@@ -68,7 +68,7 @@ const HomeUI = React.memo(({
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
     { id: 'nature', icon: Mountain, label: 'Nature', color: 'text-green-400' },
     { id: 'urban', icon: Building2, label: 'Urban', color: 'text-purple-400' },
-    { id: 'nearby', icon: Plane, label: 'Nearby', color: 'text-yellow-400' },
+    { id: 'culture', icon: Landmark, label: 'Culture', color: 'text-yellow-400' },
     { id: 'adventure', icon: Compass, label: 'Adventure', color: 'text-red-400' },
   ];
 
