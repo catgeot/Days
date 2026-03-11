@@ -20,37 +20,39 @@ export const useTrendingData = () => {
           .from('place_stats')
           .select('place_id, total_score') 
           .order('total_score', { ascending: false }) // 점수 높은 순 정렬
-          .limit(10);
+          .limit(30); // 🚨 [Fix] 유효하지 않은 데이터 필터링을 고려해 여유있게 가져옴
 
         if (error) throw error;
 
         // 데이터가 없으면 Fallback 유지
-        if (!data || data.length < 3) {
+        if (!data || data.length === 0) {
             console.log("📊 [Ticker] Not enough data in DB. Using Fallback.");
             return;
         }
 
-        // 데이터 병합 로직
-        const liveList = data.map((row, index) => {
-          // 🚨 [Fix] DB의 'place_id' 컬럼에 있는 지명(Text)을 가져옴
-          const dbPlaceName = row.place_id; 
-          
-          // 로컬 데이터(TRAVEL_SPOTS)에서 해당 이름으로 상세 정보 찾기
-          const spot = TRAVEL_SPOTS.find(s => s.name === dbPlaceName);
-          
-          // 매칭되지 않는 데이터(유령)는 제외
-          if (!spot) return null;
+        // 🚨 [Fix] 유효한 데이터만 먼저 필터링한 후 순위(rank) 부여
+        const validSpots = data
+          .map(row => {
+            const dbPlaceName = row.place_id; 
+            const spot = TRAVEL_SPOTS.find(s => s.name === dbPlaceName);
+            if (!spot) return null;
+            return { ...spot, score: row.total_score };
+          })
+          .filter(Boolean);
 
-          return {
-            ...spot,
-            rank: index + 1, // 1~10위 순위 부여
-            score: row.total_score, // 🚨 [Fix] total_score 사용
-            // 시각적 요소 (Mock Data)
-            temp: 15 + Math.floor(Math.random() * 15), 
-            weather: ['sun', 'cloud', 'wind'][index % 3], 
-            change: index < 3 ? 'up' : 'same'
-          };
-        }).filter(Boolean); // null 제거
+        if (validSpots.length < 3) {
+            console.log("📊 [Ticker] Not enough valid data in DB. Using Fallback.");
+            return;
+        }
+
+        const liveList = validSpots.slice(0, 10).map((spot, index) => ({
+          ...spot,
+          rank: index + 1, // 1위부터 순차적으로 부여
+          // 시각적 요소 (Mock Data)
+          temp: 15 + Math.floor(Math.random() * 15), 
+          weather: ['sun', 'cloud', 'wind'][index % 3], 
+          change: index < 3 ? 'up' : 'same'
+        }));
 
         // 유효한 데이터가 있을 때만 상태 업데이트
         if (liveList.length > 0) {
