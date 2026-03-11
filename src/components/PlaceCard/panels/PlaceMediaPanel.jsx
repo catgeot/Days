@@ -66,6 +66,7 @@ const PlaceMediaPanel = React.memo(({
                 wikiData={wikiData} 
                 isWikiLoading={isWikiLoading} 
                 placeName={location?.name} 
+                countryName={location?.country}
             />
         </div>
 

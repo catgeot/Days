@@ -63,6 +63,7 @@ export function useHomeHandlers({
         type: 'temp-base', 
         category: category,
         country: addressData?.country || "Ocean",
+        country_en: addressData?.country_en || "Ocean",
         display_name: display_name 
       };
       
@@ -238,7 +239,8 @@ export function useHomeHandlers({
         id: `city-${citySpot.lat}-${citySpot.lng}`,
         name: citySpot.name,
         name_en: citySpot.name_en || citySpot.name,
-        country: "Explore", 
+        country: citySpot.country || "Explore", 
+        country_en: citySpot.country_en || "Explore",
         lat: citySpot.lat,
         lng: citySpot.lng,
         category: category,
@@ -258,12 +260,13 @@ export function useHomeHandlers({
       const normalizedLoc = {
         id: `search-${coords.lat}-${coords.lng}`,
         name: query, 
-        name_en: coords.name, 
+        name_en: coords.name_en || coords.name, 
         country: coords.country || "Explore",
+        country_en: coords.country_en || "Explore",
         lat: coords.lat,
         lng: coords.lng,
         category: category,
-        desc: `${query} (${coords.country}) 지역을 탐색합니다.`, 
+        desc: `${query} (${coords.country || "Explore"}) 지역을 탐색합니다.`, 
         type: 'temp-base'
       };
       handleLocationSelect(normalizedLoc);

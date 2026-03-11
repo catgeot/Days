@@ -110,6 +110,7 @@ export const getCoordinatesFromAddress = async (query) => {
       lng: parseFloat(topResult.lon),
       name: englishName, // 이제 여기가 "Lombok"이 됨
       country: countryName,
+      country_en: countryName,
       display_name: topResult.display_name
     };
   } catch (error) {
@@ -144,6 +145,7 @@ export const getAddressFromCoordinates = async (lat, lng) => {
       fullAddress: data.display_name,
       city: standardizeName(cityRaw) || standardizeName(countryRaw),
       country: standardizeName(countryRaw),
+      country_en: countryRaw,
       name_en: cityRaw || countryRaw // 🚨 [Fix/New] URL 정규화를 위한 영문명 적재
     };
   } catch (error) {

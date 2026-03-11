@@ -4,7 +4,7 @@ import { supabase } from '../../../shared/api/supabase'; // 🚨 DB 연동을 �
 
 const CACHE_VALID_DAYS = 14; // 캐시 유효 기간 설정
 
-const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
+const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
   
@@ -63,7 +63,13 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
     if (!isAiLoading) {
       const isClickEvent = eventOrRemoteName && typeof eventOrRemoteName === 'object' && 'type' in eventOrRemoteName;
       const remoteName = isClickEvent ? null : eventOrRemoteName;
-      const location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
+      let location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
+      
+      // 국가명이 유효하다면 검색 정확도를 위해 추가
+      if (countryName && countryName !== "Explore" && countryName !== "Ocean" && countryName !== "바다" && countryName !== "대륙" && !location.includes(countryName)) {
+          location = `${location} ${countryName}`;
+      }
+
       const placeId = requestInfoRef.current.placeId;
 
       if (!placeId) {

@@ -63,7 +63,7 @@ export const TRAVEL_SPOTS = [
   },
   { 
     id: 202, name: "이구아수 폭포", name_en: "Iguazu Falls", 
-    country: "아르헨티나/브라질", country_en: "Argentina/Brazil",
+    country: "아르헨티나", country_en: "Argentina",
     lat: -25.69, lng: -54.43, category: "nature", 
     desc: "남미 대륙을 가로지르며 엄청난 굉음과 함께 쏟아져 내리는 세계 최대의 폭포입니다. '악마의 목구멍'이라 불리는 하이라이트 구간에 서면 대자연의 압도적인 힘과 경외감을 온몸으로 느낄 수 있습니다.",
     keywords: ["남미", "폭포", "정글", "경이로움"]
@@ -77,7 +77,7 @@ export const TRAVEL_SPOTS = [
   },
   { 
     id: 204, name: "빅토리아 폭포", name_en: "Victoria Falls", 
-    country: "잠비아/짐바브웨", country_en: "Zambia/Zimbabwe",
+    country: "잠비아", country_en: "Zambia",
     lat: -17.92, lng: 25.85, category: "nature", 
     desc: "아프리카 대륙을 가르는 잠베지 강이 빚어낸 거대한 물보라의 기적입니다. 현지어로 '천둥 치는 연기'라 불리며, 폭포를 내려다보는 헬기 투어나 악마의 수영장에서의 아찔한 경험을 즐길 수 있습니다.",
     keywords: ["아프리카", "폭포", "무지개", "자연"]
@@ -221,7 +221,7 @@ export const TRAVEL_SPOTS = [
     keywords: ["아프리카", "사파리", "대자연", "초원"]
   },
   { 
-    id: 505, name: "울루루", name_en: "Uluru (Ayers Rock)", 
+    id: 505, name: "울루루", name_en: "Uluru", 
     country: "호주", country_en: "Australia",
     lat: -25.34, lng: 131.03, category: "adventure", 
     desc: "오세아니아 대륙의 붉은 심장, 아웃백 한가운데 솟아오른 거대한 단일 바위입니다. 시간과 햇빛에 따라 붉게 타오르는 듯 변하는 바위의 색조와 원주민의 신성한 에너지를 오프로드를 달리며 느껴보세요.",
