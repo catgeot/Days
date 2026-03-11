@@ -6,7 +6,6 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase'; 
-import { youtubeClient } from '../../../shared/api/youtubeClient'; 
 import { TRAVEL_VIDEOS } from '../data/travelVideos';
 
 const GOOGLE_FORM_URL = "https://forms.gle/QgofLDzzYD6NfWYN7";
@@ -65,16 +64,22 @@ export const useYouTubeSearch = (location, mediaMode) => {
 
         // --- [L3] YouTube API Call (신규 검색) ---
         console.log(`[L3] Calling YouTube API for: ${location.name}`);
-        const freshVideos = await youtubeClient.searchVideos(location.name);
-
-        const videosToCache = freshVideos || [];
-        setVideos(videosToCache);
         
-        await supabase.from('place_videos').upsert({
-          place_id: cacheKey, 
-          videos: videosToCache,
-          last_updated: new Date().toISOString()
+        // 🚨 [Security Fix] 클라이언트 단에서 YouTube API 직접 호출 & DB Upsert 하는 것을 방지하고 Edge Function으로 위임
+        const { data: edgeData, error: edgeError } = await supabase.functions.invoke('fetch-place-videos', {
+          body: { query: location.name, placeId: cacheKey }
         });
+
+        if (edgeError) {
+          console.error("Edge Function Error:", edgeError);
+          throw new Error("영상을 가져오는 데 실패했습니다.");
+        }
+
+        if (edgeData && edgeData.success) {
+          setVideos(edgeData.videos || []);
+        } else {
+          throw new Error(edgeData?.error || "YouTube 검색에 실패했습니다.");
+        }
 
       } catch (err) {
         console.error('[useYouTubeSearch] Error:', err);

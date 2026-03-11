@@ -1,31 +1,31 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BookOpen, Sparkles, Loader2, RefreshCw } from 'lucide-react';
-import { usePlaceChat } from '../hooks/usePlaceChat';
-import { getPracticalInfoPrompt, getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import { supabase } from '../../../shared/api/supabase'; // 🚨 DB 연동을 위한 Supabase import
 
 const CACHE_VALID_DAYS = 14; // 캐시 유효 기간 설정
 
 const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
-  const { chatHistory, isAiLoading, error, sendMessage } = usePlaceChat();
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   const [isAiExpanded, setIsAiExpanded] = useState(false);
-  const [localAiResponse, setLocalAiResponse] = useState(null); // 🚨 화면 렌더링용 독립 상태 (DB 또는 API 응답 저장)
+  const [localAiResponse, setLocalAiResponse] = useState(null); // 화면 렌더링용 독립 상태 (DB 또는 API 응답 저장)
   
   const aiSectionRef = useRef(null);
   
-  const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title });
+  const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id });
   useEffect(() => {
-      requestInfoRef.current = { placeName, wikiTitle: wikiData?.title };
+      requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id };
   }, [placeName, wikiData]);
 
   // 장소가 바뀌면 AI 확장 패널 상태 초기화
   useEffect(() => {
       setIsAiExpanded(false);
       setLocalAiResponse(null);
+      setError(null);
   }, [placeName]);
 
-  // 🚨 캐시 유효성 검사 (Pessimistic: 날짜 데이터가 이상하면 무조건 만료 처리)
+  // 캐시 유효성 검사 (Pessimistic: 날짜 데이터가 이상하면 무조건 만료 처리)
   const checkIsCacheValid = (updatedAt) => {
       if (!updatedAt) return false;
       try {
@@ -37,7 +37,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
       }
   };
 
-  const handleRequestAiInfo = useCallback((eventOrRemoteName) => {
+  const handleRequestAiInfo = useCallback(async (eventOrRemoteName) => {
     setIsAiExpanded(true);
     
     setTimeout(() => {
@@ -49,7 +49,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
     // 이미 화면에 렌더링된 응답이 있다면 추가 로직 스킵
     if (localAiResponse) return;
 
-    // 🚨 1. DB 캐시 확인 로직
+    // 1. DB 캐시 확인 로직
     const hasCachedInfo = wikiData?.ai_practical_info;
     const isCacheFresh = checkIsCacheValid(wikiData?.ai_info_updated_at);
 
@@ -59,18 +59,45 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
         return;
     }
 
-    // 🚨 2. API 호출 (캐시가 없거나 만료된 경우)
-    if (chatHistory.length === 0 && !isAiLoading) {
+    // 2. Edge Function 호출 (캐시가 없거나 만료된 경우)
+    if (!isAiLoading) {
       const isClickEvent = eventOrRemoteName && typeof eventOrRemoteName === 'object' && 'type' in eventOrRemoteName;
       const remoteName = isClickEvent ? null : eventOrRemoteName;
       const location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
-      
-      const userPrompt = getPracticalInfoPrompt(location);
-      const systemPrompt = getSystemPrompt(PERSONA_TYPES?.GENERAL || "GENERAL");
-      
-      sendMessage(userPrompt, systemPrompt);
+      const placeId = requestInfoRef.current.placeId;
+
+      if (!placeId) {
+          setError("장소 정보를 확인할 수 없습니다.");
+          return;
+      }
+
+      setIsAiLoading(true);
+      setError(null);
+
+      try {
+          // 🚨 Edge Function 호출
+          const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
+              body: { placeId, locationName: location }
+          });
+
+          if (functionError) {
+              console.error("Edge Function Error:", functionError);
+              throw new Error("정보를 가져오는 데 실패했습니다.");
+          }
+
+          if (data && data.success) {
+              setLocalAiResponse(data.aiResponse);
+          } else {
+              throw new Error(data?.error || "AI 응답을 생성하지 못했습니다.");
+          }
+      } catch (err) {
+          console.error('Request Error:', err);
+          setError(err.message || "오류가 발생했습니다.");
+      } finally {
+          setIsAiLoading(false);
+      }
     }
-  }, [localAiResponse, chatHistory.length, isAiLoading, sendMessage, wikiData]);
+  }, [localAiResponse, isAiLoading, wikiData]);
 
   // 원격 이벤트 수신
   useEffect(() => {
@@ -80,43 +107,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
       window.addEventListener('request-ai-info', handleRemoteRequest);
       return () => window.removeEventListener('request-ai-info', handleRemoteRequest);
   }, [handleRequestAiInfo]);
-
-  // 🚨 API 응답 감지 및 DB 백그라운드 업데이트 로직
-  useEffect(() => {
-      const latestModelMsg = chatHistory.find(m => m.role === 'model')?.text;
-      
-      // 제미나이로부터 새로운 응답이 도착했고, 그것이 현재 렌더링된 값과 다를 경우
-      if (latestModelMsg && latestModelMsg !== localAiResponse) {
-          setLocalAiResponse(latestModelMsg); // 화면 업데이트
-          
-          if (aiSectionRef.current) {
-              aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-
-          // 🚨 백그라운드 DB 저장 (Pessimistic: 실패해도 화면 동작에는 영향 없음)
-          const updateDbCache = async () => {
-              // 테이블 구조에 맞춰 place_id 추출 (없으면 무시)
-              const targetPlaceId = wikiData?.place_id; 
-              if (!targetPlaceId) return;
-
-              try {
-                  const { error } = await supabase
-                      .from('place_wiki')
-                      .update({
-                          ai_practical_info: latestModelMsg,
-                          ai_info_updated_at: new Date().toISOString()
-                      })
-                      .eq('place_id', String(targetPlaceId));
-                  
-                  if (error) console.warn("AI Info Cache Update Failed:", error);
-              } catch (e) {
-                  // DB에 컬럼이 아직 없거나 에러가 나더라도 무시 (서비스 정상 작동)
-              }
-          };
-          
-          updateDbCache();
-      }
-  }, [chatHistory, localAiResponse, wikiData]);
 
   return (
     <div className="w-full h-full flex flex-col p-6 pt-24 pb-32 md:p-12 overflow-y-auto text-white custom-scrollbar relative">
@@ -150,10 +140,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName }) => {
                         <div className="flex flex-col items-center justify-center py-8 space-y-4 text-gray-400">
                             <p className="text-sm">정보를 불러오는 중 문제가 발생했습니다.</p>
                             <button 
-                                onClick={() => {
-                                    const location = placeName || wikiData?.title || "이 장소";
-                                    sendMessage(getPracticalInfoPrompt(location), getSystemPrompt("GENERAL"));
-                                }}
+                                onClick={() => handleRequestAiInfo(placeName || wikiData?.title)}
                                 className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10"
                             >
                                 <RefreshCw size={16} />
