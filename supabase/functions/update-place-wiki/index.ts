@@ -48,8 +48,8 @@ serve(async (req) => {
 
 답변은 간결하고 현실적이며, 여행자의 가슴을 뛰게 하면서도 실질적인 "아하!"를 주는 세련된 가이드 톤으로 작성해줘.`;
 
-    // 2. Gemini API 직접 호출 (안정적인 최상위 모델 gemini-1.5-pro 사용 - 높은 신뢰도 및 최신정보 반영)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`, {
+    // 2. Gemini API 직접 호출 (안정적인 최상위 모델 gemini-2.5-pro 사용 - 높은 신뢰도 및 최신정보 반영)
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
