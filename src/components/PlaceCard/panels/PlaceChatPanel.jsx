@@ -65,7 +65,7 @@ const PlaceChatPanel = React.memo(({
           return;
       }
       
-      if (targetPlace.lat && targetPlace.lng) {
+      if (targetPlace.lat !== undefined && targetPlace.lng !== undefined) {
           navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
           return;
       }

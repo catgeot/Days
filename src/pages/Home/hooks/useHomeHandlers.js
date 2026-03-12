@@ -276,7 +276,7 @@ export function useHomeHandlers({
   const handleSmartSearch = useCallback(async (input) => {
     if (!input) return;
     
-    if (typeof input === 'object' && input.lat && input.lng) {
+    if (typeof input === 'object' && input.lat !== undefined && input.lng !== undefined) {
       handleLocationSelect(input);
       return;
     }
