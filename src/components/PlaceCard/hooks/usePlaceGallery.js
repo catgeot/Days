@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots'; 
+import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase'; 
 
 const CACHE_VERSION = 'v1.4';
@@ -78,13 +79,17 @@ export const usePlaceGallery = (locationSource) => {
     let targetSpot = locationSource;
 
     if (typeof locationSource === 'string') {
-        const found = TRAVEL_SPOTS.find(s => s.name === locationSource);
+        let found = TRAVEL_SPOTS.find(s => s.name === locationSource);
+        if (!found) found = citiesData.find(s => s.name === locationSource);
         if (found) targetSpot = found;
     } else if (typeof locationSource === 'object') {
       if (!locationSource.name_en) {
-        const foundInMaster = TRAVEL_SPOTS.find(s => 
+        let foundInMaster = TRAVEL_SPOTS.find(s => 
           s.name === sourceName || (sourceId && s.id === sourceId)
         );
+        if (!foundInMaster) {
+           foundInMaster = citiesData.find(s => s.name === sourceName);
+        }
         if (foundInMaster) targetSpot = foundInMaster;
       }
     }
@@ -149,6 +154,27 @@ export const usePlaceGallery = (locationSource) => {
       if (results.length === 0 && backupQuery) {
         console.warn(`⚠️ No results for "${primaryQuery}". Retry with: "${backupQuery}"`);
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery);
+      }
+
+      // 🚨 [New] 3차 방어막: Unsplash 검색 결과가 부족할 때(10개 이하) 구글 이미지 검색 병합 (Fallback & Merge)
+      if (results.length <= 10) {
+        console.warn(`⚠️ Unsplash 이미지 부족(${results.length}개). 구글 이미지 검색 병합을 시도합니다.`);
+        try {
+          const { data, error } = await supabase.functions.invoke('fetch-place-images', {
+            body: { query: primaryQuery }
+          });
+          
+          if (!error && data && data.images && data.images.length > 0) {
+            // 기존 결과와 구글 검색 결과 병합 및 중복(URL 기준) 제거
+            const existingUrls = new Set(results.map(img => img.urls?.regular));
+            const newImages = data.images.filter(img => !existingUrls.has(img.urls?.regular));
+            
+            results = [...results, ...newImages];
+            console.log(`✅ 구글 이미지 ${newImages.length}개 병합 완료. 총 ${results.length}개`);
+          }
+        } catch (edgeError) {
+          console.error("⚠️ Google Image Edge Function Error:", edgeError);
+        }
       }
 
       if (results.length > 0) {
