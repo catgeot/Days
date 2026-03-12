@@ -26,7 +26,9 @@ export const usePlaceChat = (initialSystemPrompt = "") => {
         API_KEY,
         chatHistory, // 이전 대화 맥락 전달
         currentSystemPrompt,
-        userText
+        userText,
+        [],
+        "gemini-2.5-flash" // 🚨 [Chat] 자연스러운 대화, 문맥 유지, 빠른 응답속도가 중요하므로 대화형 상위 모델 사용
       );
 
       // 3. AI 응답 반영

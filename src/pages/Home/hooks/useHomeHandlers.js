@@ -346,7 +346,14 @@ export function useHomeHandlers({
 이 단어와 가장 유사하거나, 사용자가 의도했을 만한 '실제 존재하는 정확한 지명'을 유추해주세요.
 응답은 반드시 다른 설명이나 부연 설명 없이 정확한 지명(한국어 또는 영어) 딱 하나만 텍스트로 출력하세요. (예: 삿포로, 뉴욕, Paris, 몰디브)`;
           
-          const correctedName = await apiClient.fetchGeminiResponse(apiKey, [], "당신은 지명 자동 교정 전문가입니다.", aiPrompt);
+          const correctedName = await apiClient.fetchGeminiResponse(
+            apiKey, 
+            [], 
+            "당신은 지명 자동 교정 전문가입니다.", 
+            aiPrompt, 
+            [], 
+            "gemini-1.5-flash-8b" // 🚨 초고속/저비용/고효율 (빠르고 거의 무제한에 가까운 Rate Limit 제공)
+          );
           const cleanName = correctedName.replace(/[\n\r\"\'\.]/g, '').trim();
 
           if (cleanName && cleanName !== query && cleanName.length > 0 && cleanName.length < 30) {

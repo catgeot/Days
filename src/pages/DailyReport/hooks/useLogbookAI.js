@@ -44,7 +44,8 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
         [], 
         "사용자의 메모와 사진을 분석하여 블로그 형식으로 변환하세요.", 
         prompt,
-        base64Images 
+        base64Images,
+        "gemini-2.5-pro" // 🚨 [Blog] 고차원적인 글쓰기 스킬이 필요하므로 상위 모델 선정
       );
 
       setContent(resultText); 

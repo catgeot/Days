@@ -54,8 +54,12 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
     const isCacheFresh = checkIsCacheValid(wikiData?.ai_info_updated_at);
 
     if (hasCachedInfo && isCacheFresh) {
-        // 캐시 데이터가 유효하면 API 호출 없이 즉시 렌더링
-        setLocalAiResponse(wikiData.ai_practical_info);
+        // 캐시 데이터가 유효하면 API 호출 없이 렌더링하되, 극적인 효과를 위해 1.5초 로딩 연출 (UX 개선)
+        setIsAiLoading(true);
+        setTimeout(() => {
+            setLocalAiResponse(wikiData.ai_practical_info);
+            setIsAiLoading(false);
+        }, 1500);
         return;
     }
 

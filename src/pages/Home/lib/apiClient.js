@@ -4,7 +4,7 @@
 // 🚨 [Fix] 404 에러 해결 및 모델 티어 라우팅을 위해 엔드포인트를 gemini-2.0-flash로 전면 교체 (안정성 확보)
 
 export const apiClient = {
-  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = []) => {
+  fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.0-flash") => {
     try {
       // 🚨 [Pessimistic First] 이미지가 없어도 안전하게 텍스트만 전송되도록 기본 배열 셋팅 (Safe Path)
       const parts = [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }];
@@ -26,9 +26,9 @@ export const apiClient = {
         });
       }
 
-      // 🚨 [Fix] gemini-1.5-flash-latest -> gemini-2.0-flash 교체
+      // 🚨 [Fix] 동적 모델 티어 라우팅 (기본값: gemini-2.0-flash, Fallback 등 초경량 작업은 gemini-2.0-flash-lite-preview-02-05 등 사용)
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
