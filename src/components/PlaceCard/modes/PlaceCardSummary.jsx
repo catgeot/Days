@@ -12,6 +12,7 @@ import BookmarkButton from '../common/BookmarkButton';
 
 const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark, isTickerExpanded }) => { 
   const [isLoading, setIsLoading] = useState(true);
+  const isScanning = location?.isScanning;
   
   useEffect(() => {
     setIsLoading(true);
@@ -27,24 +28,26 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
         
         <div 
           className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400 transition-all cursor-pointer"
-          onClick={onExpand}
+          onClick={!isScanning ? onExpand : undefined}
         ></div>
 
         {/* 💡 크기 조절 포인트 2: 헤더 하단 여백. 현재 mb-4 (16px). 줄이려면 mb-3 또는 mb-2로 수정 */}
         <div className="flex items-start justify-between mb-3">
-           <div className="flex flex-col cursor-pointer" onClick={onExpand}>
+           <div className={`flex flex-col ${!isScanning ? 'cursor-pointer' : ''}`} onClick={!isScanning ? onExpand : undefined}>
              <div className="flex items-center gap-1.5 mb-1">
-               <Sparkles size={12} className="text-yellow-400" />
-               <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">{location.country || "Global"}</span>
+               <Sparkles size={12} className={isScanning ? "text-blue-400 animate-pulse" : "text-yellow-400"} />
+               <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">
+                 {isScanning ? "SEARCHING..." : (location?.country || "Global")}
+               </span>
              </div>
-             <h2 className="text-2xl font-bold text-white leading-none tracking-tight flex items-center gap-2 group-hover:text-blue-200 transition-colors">
-               {location.name}
-               <Maximize2 size={14} className="text-gray-500 group-hover:text-white transition-colors" />
+             <h2 className={`text-2xl font-bold leading-none tracking-tight flex items-center gap-2 transition-colors ${isScanning ? "text-blue-300 animate-pulse" : "text-white group-hover:text-blue-200"}`}>
+               {location?.name}
+               {!isScanning && <Maximize2 size={14} className="text-gray-500 group-hover:text-white transition-colors" />}
              </h2>
            </div>
            
            <div className="flex items-center gap-1 -mr-2 -mt-2 z-10">
-             <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
+             {!isScanning && <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />}
              {/* 🚨 [Fix/New] 이벤트 버블링 차단: 닫기 버튼 클릭 시 부모의 onExpand가 트리거되는 레이스 컨디션 방지 */}
              <button 
                onClick={(e) => {
@@ -60,13 +63,13 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
 
         {/* 💡 크기 조절 포인트 3: 설명 박스 하단 여백. 기본 mb-6 (24px). (티커가 열리면 mb-0으로 축소됨) */}
         <div 
-          className={`cursor-pointer transition-all duration-300 ease-out ${
+          className={`transition-all duration-300 ease-out ${!isScanning ? 'cursor-pointer' : ''} ${
             isTickerExpanded ? 'mb-0' : 'mb-6'
           }`} 
-          onClick={onExpand}
+          onClick={!isScanning ? onExpand : undefined}
         > 
-          {isLoading ? (
-            <div className="w-full animate-pulse space-y-3 mt-1">
+          {isLoading || isScanning ? (
+            <div className="w-full animate-pulse space-y-3 mt-1 px-1">
               <div className="h-4 bg-white/10 rounded w-1/3"></div>
               <div className="space-y-2">
                 <div className="h-3 bg-white/10 rounded w-full"></div>
@@ -79,7 +82,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
               <p className={`text-xs text-gray-300 leading-relaxed font-light transition-all duration-300 ${
                 isTickerExpanded ? 'line-clamp-2' : 'line-clamp-3'
               }`}>
-                {location.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.
+                {location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.
               </p>
             </div>
           )}
@@ -88,7 +91,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
         {/* 🚨 [Fix] 스무스 드롭 애니메이션: Wrapper가 마스크 역할을 하고, 내부 버튼이 아래로 밀려 내려감 */}
         <div 
           className={`transition-all duration-300 ease-out overflow-hidden ${
-            isTickerExpanded ? 'max-h-0 opacity-0 mt-0' : 'max-h-[60px] opacity-100 mt-2'
+            isTickerExpanded || isScanning ? 'max-h-0 opacity-0 mt-0' : 'max-h-[60px] opacity-100 mt-2'
           }`}
         >
            <button 
@@ -97,7 +100,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
                if(onChat) onChat({ text: "" }); 
              }} 
              className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 z-10 relative ${
-               isTickerExpanded ? 'translate-y-4' : 'translate-y-0'
+               isTickerExpanded || isScanning ? 'translate-y-4' : 'translate-y-0'
              }`}
            >
              <MessageSquare size={16} className="text-blue-400" />

@@ -13,6 +13,19 @@ import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData'; 
 import { PERSONA_TYPES, getSystemPrompt } from '../lib/prompts';
 
+// Haversine 공식을 이용한 두 좌표 간의 거리 계산 (단위: km)
+const getDistanceKm = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; 
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c; 
+};
+
 export function useHomeHandlers({
   globeRef,
   user,
@@ -38,17 +51,66 @@ export function useHomeHandlers({
 }) {
 
   const isTogglingRef = useRef(false);
+  const isProcessingRef = useRef(false);
 
   const handleGlobeClick = useCallback(async ({ lat, lng }) => {
+    if (isProcessingRef.current) return;
     if (!lat || !lng) return;
+
+    // 🚨 [Fix/New] Radius Filter (오클릭 방지 방어막): 등록된 마커나 텍스트 근처가 아니면 무시
+    const currentAlt = globeRef.current ? globeRef.current.pointOfView().altitude : 2.5;
+    // 고도(Altitude)에 따라 클릭 허용 오차 반경을 동적으로 조절 (줌아웃 시 관대하게, 줌인 시 엄격하게)
+    const MAX_RADIUS_KM = currentAlt < 1.0 ? 150 : (currentAlt < 1.75 ? 300 : 600);
+    
+    const allKnownPoints = [...TRAVEL_SPOTS, ...citiesData, ...savedTrips];
+    let isNearKnownPoint = false;
+    
+    for (let pt of allKnownPoints) {
+      if (pt.lat === undefined || pt.lng === undefined) continue;
+      if (getDistanceKm(lat, lng, pt.lat, pt.lng) <= MAX_RADIUS_KM) {
+        isNearKnownPoint = true;
+        break;
+      }
+    }
+
+    if (!isNearKnownPoint) {
+      console.log(`[UX] 엉뚱한 공간 클릭 방지: 반경 ${MAX_RADIUS_KM}km 내에 등록된 데이터 없음.`);
+      return; 
+    }
+
     if (globeRef.current) globeRef.current.pauseRotation();
+    
+    // 🚨 즉각적인 시각적/상태적 피드백 제공 (로딩 UI)
+    isProcessingRef.current = true;
+    
+    if (globeRef.current && typeof globeRef.current.triggerRipple === 'function') {
+        globeRef.current.triggerRipple(lat, lng);
+    }
+    
+    const fallbackId = `loc-${lat}-${lng}`;
+    const scanPin = { 
+        id: fallbackId, 
+        lat, 
+        lng, 
+        name: "위치 탐색 중...", 
+        country: "SEARCHING", 
+        isScanning: true, 
+        type: 'temp-base',
+        category: category
+    };
+    
+    addScoutPin(scanPin);
+    setSelectedLocation(scanPin);
+    setIsPlaceCardOpen(true);
+    setIsCardExpanded(false); 
+    if (!isPinVisible) setIsPinVisible(true);
+    moveToLocation(lat, lng, "위치 탐색 중...", category);
     
     try {
       const addressData = await getAddressFromCoordinates(lat, lng);
       
       // 🚨 [Fix/New] Pessimistic First: 바다 한가운데 등 데이터를 전혀 받지 못한 경우의 안전망
       const isOcean = !addressData || (!addressData.city && !addressData.country);
-      const fallbackId = `loc-${lat}-${lng}`;
       
       const name_en = addressData?.name_en || "";
       const display_name = isOcean ? "미지의 탐험지" : (addressData.city || addressData.country);
@@ -72,17 +134,13 @@ export function useHomeHandlers({
       // 상태 동기화 (진실의 공급원 업데이트)
       setSelectedLocation(realPin);
 
-      setIsPlaceCardOpen(true);
-      setIsCardExpanded(false); 
-      
-      if (!isPinVisible) setIsPinVisible(true);
-
-      moveToLocation(lat, lng, display_name, category);
       processSearchKeywords(display_name);
       
       if (!isOcean) recordInteraction(display_name, 'view'); 
     } catch (error) {
       console.error("Geocoding Error:", error);
+    } finally {
+      isProcessingRef.current = false;
     }
   }, [globeRef, category, isPinVisible, addScoutPin, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
 

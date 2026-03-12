@@ -129,6 +129,11 @@ const HomeGlobe = React.memo(forwardRef(({
       }
     },
     updateLastPinName: () => {}, 
+    triggerRipple: (lat, lng) => {
+      const newRipple = { lat, lng, maxR: 5, propagationSpeed: 4, repeatPeriod: 500 };
+      setRipples(prev => [...prev, newRipple]);
+      setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 1500);
+    },
     resetPins: () => {
         setRipples([]); 
         if (globeEl.current) {
