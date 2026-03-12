@@ -37,7 +37,7 @@ serve(async (req: any) => {
 
     const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=${encodeURIComponent(
       query
-    )}&searchType=image&num=10&rights=cc_publicdomain,cc_attribute,cc_sharealike`;
+    )}&searchType=image&num=10`;
     
     console.log(`[DEBUG] Fetching URL: ${url.replace(GOOGLE_API_KEY, "REDACTED")}`);
 
