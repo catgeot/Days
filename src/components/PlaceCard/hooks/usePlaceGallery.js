@@ -20,6 +20,9 @@ export const usePlaceGallery = (locationSource) => {
   const [selectedImg, setSelectedImg] = useState(null);
   
   const lastQueryRef = useRef(null);
+  // 🚨 [New] 큐레이션(좋아요/숨김) 원본 데이터를 보존하기 위한 Ref
+  const allImagesRef = useRef([]);
+
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
 
@@ -74,6 +77,24 @@ export const usePlaceGallery = (locationSource) => {
     }
   };
 
+  // 🚨 [New] 큐레이션 정렬(좋아요 맨 앞, 숨김 제외) 및 상태 업데이트
+  const processAndSetImages = useCallback((rawImages) => {
+    if (!rawImages || rawImages.length === 0) {
+      setImages([]);
+      return;
+    }
+    allImagesRef.current = rawImages;
+    
+    // 숨겨진(hidden) 사진 필터링
+    const visibleImages = rawImages.filter(img => img.curation !== 'hidden');
+    
+    // 좋아요(liked) 사진 맨 앞으로 정렬
+    const liked = visibleImages.filter(img => img.curation === 'liked');
+    const normal = visibleImages.filter(img => img.curation !== 'liked');
+    
+    setImages([...liked, ...normal]);
+  }, []);
+
   const fetchImages = useCallback(async (forceRefresh = false) => {
     if (!ACCESS_KEY || !locationSource) return;
 
@@ -127,7 +148,7 @@ export const usePlaceGallery = (locationSource) => {
     if (!forceRefresh) {
       const validCache = loadFromSmartCache(CACHE_KEY);
       if (validCache && validCache.length > 0) {
-        setImages(validCache);
+        processAndSetImages(validCache);
         setIsImgLoading(false);
         return;
       }
@@ -141,7 +162,7 @@ export const usePlaceGallery = (locationSource) => {
             .single();
 
           if (!dbError && dbData && dbData.gallery_urls && dbData.gallery_urls.length > 0) {
-            setImages(dbData.gallery_urls);
+            processAndSetImages(dbData.gallery_urls);
             saveToSmartCache(CACHE_KEY, dbData.gallery_urls); 
             setIsImgLoading(false);
             return; 
@@ -151,7 +172,7 @@ export const usePlaceGallery = (locationSource) => {
         }
       }
     } else {
-      console.log(`🔄 강제 새로고침 실행: 기존 캐시 무시 (${primaryQuery})`);
+      console.log(`🔄 강제 새로고침 실행: 기존 캐시 유지한 채 새로운 데이터 가져오기 (${primaryQuery})`);
     }
 
     try {
@@ -162,14 +183,13 @@ export const usePlaceGallery = (locationSource) => {
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery);
       }
 
-      // 🚨 [New] 3차 방어막: Unsplash 검색 결과가 부족할 때(15개 이하) Pexels 이미지 검색 병합 (Fallback & Merge)
-      if (results.length <= 15 && PEXELS_KEY) {
+      // 🚨 [Fix] Unsplash 이미지가 적을 때 Pexels 결합 임계값을 3장으로 대폭 하향(옵션 1)
+      if (results.length <= 3 && PEXELS_KEY) {
         console.warn(`⚠️ Unsplash 이미지 부족(${results.length}개). Pexels 이미지 검색 병합을 시도합니다.`);
         try {
           const pexelsImages = await apiClient.fetchPexelsImages(PEXELS_KEY, primaryQuery);
           
           if (pexelsImages && pexelsImages.length > 0) {
-            // 기존 결과와 Pexels 검색 결과 병합
             results = [...results, ...pexelsImages];
             console.log(`✅ Pexels 이미지 ${pexelsImages.length}개 병합 완료. 총 ${results.length}개`);
           }
@@ -179,17 +199,29 @@ export const usePlaceGallery = (locationSource) => {
       }
 
       if (results.length > 0) {
-        setImages(results);
-        saveToSmartCache(CACHE_KEY, results);
+        // 🚨 [New] 새로고침(Refresh) 시 기존 큐레이션(좋아요/숨김) 기록 병합
+        let finalResults = results;
+        if (allImagesRef.current && allImagesRef.current.length > 0) {
+          const curatedImages = allImagesRef.current.filter(img => img.curation);
+          
+          // 기존 큐레이션(좋아요/숨김)된 이미지는 새 결과(results)에서 제외하고 다시 합침 (중복 방지)
+          const curatedIds = new Set(curatedImages.map(img => img.id));
+          const freshImages = results.filter(img => !curatedIds.has(img.id));
+          
+          finalResults = [...curatedImages, ...freshImages];
+        }
+
+        processAndSetImages(finalResults);
+        saveToSmartCache(CACHE_KEY, finalResults);
 
         if (koreanName) {
-          const thumbnailToSave = results[0]?.urls?.small || results[0]?.urls?.regular || '';
+          const thumbnailToSave = finalResults[0]?.urls?.small || finalResults[0]?.urls?.regular || '';
           
           supabase
             .from('place_stats')
             .upsert({ 
               place_id: koreanName, 
-              gallery_urls: results,
+              gallery_urls: finalResults,
               image_url: thumbnailToSave
             }, { onConflict: 'place_id' })
             .then(({ error }) => {
@@ -197,20 +229,21 @@ export const usePlaceGallery = (locationSource) => {
             });
         }
       } else {
-        console.warn(`⚠️ Unsplash 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
-        setImages([
+        console.warn(`⚠️ 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
+        const fallbackImgs = [
           { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } },
           { id: 'fallback-2', urls: { regular: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } }
-        ]);
+        ];
+        processAndSetImages(fallbackImgs);
       }
     } catch (error) {
       console.error("Gallery API Error:", error);
-      setImages([]);
+      processAndSetImages([]);
     } finally {
       setIsImgLoading(false);
     }
 
-  }, [ACCESS_KEY, PEXELS_KEY, sourceName, sourceId, locationSource]);
+  }, [ACCESS_KEY, PEXELS_KEY, sourceName, sourceId, locationSource, processAndSetImages]);
 
   useEffect(() => {
     fetchImages();
@@ -259,6 +292,79 @@ export const usePlaceGallery = (locationSource) => {
     }
   }, [ACCESS_KEY]);
 
+  // 🚨 [New] 큐레이션 액션 핸들러 (좋아요/숨김)
+  const handleCurateImage = useCallback(async (imageId, curationType) => {
+    if (!imageId) return;
+
+    // 전체 이미지 배열에서 해당 이미지 찾기 및 업데이트
+    const updatedRawImages = allImagesRef.current.map(img => {
+      if (img.id === imageId) {
+        // 이미 같은 상태면 취소(토글), 아니면 새 상태 적용
+        return { ...img, curation: img.curation === curationType ? null : curationType };
+      }
+      return img;
+    });
+
+    // 화면(상태) 즉시 업데이트 (Optimistic UI)
+    processAndSetImages(updatedRawImages);
+
+    // 1. 세션 캐시 업데이트
+    let primaryQuery = '';
+    let targetSpot = locationSource;
+    if (typeof locationSource === 'string') {
+        let found = TRAVEL_SPOTS.find(s => s.name === locationSource);
+        if (!found) found = citiesData.find(s => s.name === locationSource);
+        if (found) targetSpot = found;
+    } else if (typeof locationSource === 'object') {
+      if (!locationSource.name_en) {
+        let foundInMaster = TRAVEL_SPOTS.find(s => s.name === sourceName || (sourceId && s.id === sourceId));
+        if (!foundInMaster) foundInMaster = citiesData.find(s => s.name === sourceName);
+        if (foundInMaster) targetSpot = foundInMaster;
+      }
+    }
+    
+    let koreanName = '';
+    if (typeof targetSpot === 'object') {
+        primaryQuery = targetSpot.name_en || targetSpot.name || '';
+        koreanName = targetSpot.name || ''; 
+    } else {
+        primaryQuery = String(targetSpot);
+        koreanName = String(targetSpot);
+    }
+    primaryQuery = primaryQuery.trim();
+
+    if (primaryQuery) {
+      const CACHE_KEY = `days_gallery_${primaryQuery}`;
+      saveToSmartCache(CACHE_KEY, updatedRawImages);
+    }
+
+    // 2. Supabase DB 업데이트
+    if (koreanName) {
+      try {
+        const { error } = await supabase
+          .from('place_stats')
+          .update({ gallery_urls: updatedRawImages })
+          .eq('place_id', koreanName);
+          
+        if (error) {
+          console.error("⚠️ Failed to update image curation in DB:", error);
+        } else {
+          console.log(`✅ Image ${imageId} curation set to '${curationType}'`);
+        }
+      } catch (err) {
+        console.error("⚠️ Error saving curation:", err);
+      }
+    }
+  }, [locationSource, sourceId, sourceName, processAndSetImages]);
+
   // 🚨 [Fix] handleDownload 반환 객체에 추가 및 handleRefresh 추가
-  return { images, isImgLoading, selectedImg, setSelectedImg, handleDownload, handleRefresh: () => fetchImages(true) };
+  return { 
+    images, 
+    isImgLoading, 
+    selectedImg, 
+    setSelectedImg, 
+    handleDownload, 
+    handleRefresh: () => fetchImages(true),
+    handleCurateImage // 새 기능 내보내기
+  };
 };
