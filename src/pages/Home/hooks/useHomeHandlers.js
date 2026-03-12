@@ -59,41 +59,38 @@ export function useHomeHandlers({
 
     if (globeRef.current) globeRef.current.pauseRotation();
     
-    // 🚨 즉각적인 시각적/상태적 피드백 제공 (로딩 UI)
     isProcessingRef.current = true;
     
-    if (globeRef.current && typeof globeRef.current.triggerRipple === 'function') {
-        globeRef.current.triggerRipple(lat, lng);
-    }
-    
-    const fallbackId = `loc-${lat}-${lng}`;
-    const scanPin = { 
-        id: fallbackId, 
-        lat, 
-        lng, 
-        name: "위치 탐색 중...", 
-        country: "SEARCHING", 
-        isScanning: true, 
-        type: 'temp-base',
-        category: category
-    };
-    
-    addScoutPin(scanPin);
-    setSelectedLocation(scanPin);
-    setIsPlaceCardOpen(true);
-    setIsCardExpanded(false); 
-    if (!isPinVisible) setIsPinVisible(true);
-    moveToLocation(lat, lng, "위치 탐색 중...", category);
-    
     try {
+      // 🚨 시각적 피드백: 물방울 이펙트만 먼저 발생시킴 (카메라 비행은 최종 목적지에서만 1회 실행)
+      if (globeRef.current && typeof globeRef.current.triggerRipple === 'function') {
+          globeRef.current.triggerRipple(lat, lng);
+      }
+      
+      const fallbackId = `loc-${lat}-${lng}`;
+      const scanPin = { 
+          id: fallbackId, 
+          lat, 
+          lng, 
+          name: "위치 탐색 중...", 
+          country: "SEARCHING", 
+          isScanning: true, 
+          type: 'temp-base',
+          category: category
+      };
+      
+      addScoutPin(scanPin);
+      setSelectedLocation(scanPin);
+      setIsPlaceCardOpen(true);
+      setIsCardExpanded(false); 
+      if (!isPinVisible) setIsPinVisible(true);
+      // 🚨 여기서 미리 moveToLocation을 호출하지 않음으로써 모바일 GPU 과부하(리플 겹침/WebGL 마비) 방지
+      
       const addressData = await getAddressFromCoordinates(lat, lng);
       
-      // 🚨 [Fix/New] Pessimistic First: 바다 한가운데 등 데이터를 전혀 받지 못한 경우의 안전망
       const isOcean = !addressData || (!addressData.city && !addressData.country);
       
       if (isOcean) {
-        // 🚨 [Fix/New] 스마트 스냅 (Smart Snap) 로직
-        // 미지의 바다나 지명이 없는 오지 클릭 시, 가장 가까운 의미 있는 육지(도시/명소)로 끌어당깁니다.
         const allKnownPoints = [...TRAVEL_SPOTS, ...citiesData];
         let nearestPoint = null;
         let minDistance = Infinity;
@@ -115,7 +112,6 @@ export function useHomeHandlers({
                 category: nearestPoint.category || category
             };
             
-            // 기존 스캔 핀을 덮어씌우는 효과 (같은 ID 부여 시 교체되지만, 여기선 명시적으로 새 좌표와 이름으로 갱신)
             addScoutPin(finalLoc);
             setSelectedLocation(finalLoc);
             moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category);
@@ -129,7 +125,6 @@ export function useHomeHandlers({
       const display_name = addressData.city || addressData.country;
 
       const realPin = { 
-        // 영문명이 없는 경우, 라우터가 역추적할 수 있도록 좌표 기반 ID 부여
         id: !name_en ? fallbackId : Date.now(), 
         lat, 
         lng, 
@@ -143,16 +138,12 @@ export function useHomeHandlers({
       };
       
       addScoutPin(realPin);
-      
-      // 상태 동기화 (진실의 공급원 업데이트)
       setSelectedLocation(realPin);
-
+      moveToLocation(lat, lng, display_name, category);
       processSearchKeywords(display_name);
-      
       recordInteraction(display_name, 'view'); 
     } catch (error) {
       console.error("Geocoding Error:", error);
-      // 🚨 에러 발생 시 무한 로딩(위치 탐색 중...) 카드가 남지 않도록 초기화
       setSelectedLocation(null);
       setIsPlaceCardOpen(false);
     } finally {
