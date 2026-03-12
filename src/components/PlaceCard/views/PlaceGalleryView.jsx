@@ -6,7 +6,7 @@
 // 4. [Performance] React.memo 및 loading="lazy" 적용하여 렌더링 성능 향상.
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw } from 'lucide-react';
 
 const PlaceGalleryView = React.memo(({ 
   images, 
@@ -17,12 +17,22 @@ const PlaceGalleryView = React.memo(({
   toggleFullScreen,
   closeImageKeepFullscreen,
   showUI,
-  handleDownload 
+  handleDownload,
+  handleRefresh
 }) => {
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
   
   const [isMobileUIHidden, setIsMobileUIHidden] = useState(false);
+  const [isRefreshDisabled, setIsRefreshDisabled] = useState(false);
+
+  const onRefreshClick = () => {
+    if (isRefreshDisabled || isImgLoading || !handleRefresh) return;
+    setIsRefreshDisabled(true);
+    handleRefresh();
+    // 5초간 재클릭 방지 (스팸/DDoS 차단)
+    setTimeout(() => setIsRefreshDisabled(false), 5000);
+  };
 
   useEffect(() => {
     setIsMobileUIHidden(false);
@@ -128,6 +138,19 @@ const PlaceGalleryView = React.memo(({
       ) : (
         // 🚨 [Fix] 핀터레스트 스타일 2열 레이아웃 적용 (columns-2) 및 리얼 톤 유지 (opacity 제거)
         <div className="w-full h-full p-6 pt-24 pb-28 md:pt-10 md:pb-6 overflow-y-auto custom-scrollbar-blue relative">
+          
+          {/* 🚨 [New] 갤러리 강제 새로고침 (Refresh) 버튼 - 스팸 방지 및 애니메이션 적용 */}
+          <div className="absolute top-20 right-6 md:top-4 md:right-4 z-10">
+             <button
+                onClick={onRefreshClick}
+                disabled={isRefreshDisabled || isImgLoading}
+                className="flex items-center justify-center p-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/50 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed group shadow-lg"
+                title="이미지 새로고침 (DB/캐시 무시 강제 재검색)"
+             >
+                <RefreshCw size={18} className={`${isImgLoading || isRefreshDisabled ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+             </button>
+          </div>
+
           {isImgLoading ? (
             <div className="grid grid-cols-2 gap-4">
                {[...Array(6)].map((_, i) => (

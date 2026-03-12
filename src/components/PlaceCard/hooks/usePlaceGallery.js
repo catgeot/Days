@@ -73,7 +73,7 @@ export const usePlaceGallery = (locationSource) => {
     }
   };
 
-  const fetchImages = useCallback(async () => {
+  const fetchImages = useCallback(async (forceRefresh = false) => {
     if (!ACCESS_KEY || !locationSource) return;
 
     let targetSpot = locationSource;
@@ -114,7 +114,8 @@ export const usePlaceGallery = (locationSource) => {
     primaryQuery = primaryQuery.trim();
     if (!primaryQuery) return;
 
-    if (lastQueryRef.current === primaryQuery) return;
+    // 강제 새로고침이 아닐 때만 마지막 쿼리를 확인하여 중복 방지
+    if (!forceRefresh && lastQueryRef.current === primaryQuery) return;
     lastQueryRef.current = primaryQuery;
 
     setIsImgLoading(true);
@@ -122,30 +123,34 @@ export const usePlaceGallery = (locationSource) => {
 
     const CACHE_KEY = `days_gallery_${primaryQuery}`; 
 
-    const validCache = loadFromSmartCache(CACHE_KEY);
-    if (validCache && validCache.length > 0) {
-      setImages(validCache);
-      setIsImgLoading(false);
-      return;
-    }
-
-    if (koreanName) {
-      try {
-        const { data: dbData, error: dbError } = await supabase
-          .from('place_stats')
-          .select('gallery_urls')
-          .eq('place_id', koreanName)
-          .single();
-
-        if (!dbError && dbData && dbData.gallery_urls && dbData.gallery_urls.length > 0) {
-          setImages(dbData.gallery_urls);
-          saveToSmartCache(CACHE_KEY, dbData.gallery_urls); 
-          setIsImgLoading(false);
-          return; 
-        }
-      } catch (err) {
-        console.warn(`⚠️ Supabase Cache Miss or Error for ${koreanName}. Proceeding to Unsplash API.`);
+    if (!forceRefresh) {
+      const validCache = loadFromSmartCache(CACHE_KEY);
+      if (validCache && validCache.length > 0) {
+        setImages(validCache);
+        setIsImgLoading(false);
+        return;
       }
+
+      if (koreanName) {
+        try {
+          const { data: dbData, error: dbError } = await supabase
+            .from('place_stats')
+            .select('gallery_urls')
+            .eq('place_id', koreanName)
+            .single();
+
+          if (!dbError && dbData && dbData.gallery_urls && dbData.gallery_urls.length > 0) {
+            setImages(dbData.gallery_urls);
+            saveToSmartCache(CACHE_KEY, dbData.gallery_urls); 
+            setIsImgLoading(false);
+            return; 
+          }
+        } catch (err) {
+          console.warn(`⚠️ Supabase Cache Miss or Error for ${koreanName}. Proceeding to API.`);
+        }
+      }
+    } else {
+      console.log(`🔄 강제 새로고침 실행: 기존 캐시 무시 (${primaryQuery})`);
     }
 
     try {
@@ -257,6 +262,6 @@ export const usePlaceGallery = (locationSource) => {
     }
   }, [ACCESS_KEY]);
 
-  // 🚨 [Fix] handleDownload 반환 객체에 추가
-  return { images, isImgLoading, selectedImg, setSelectedImg, handleDownload };
+  // 🚨 [Fix] handleDownload 반환 객체에 추가 및 handleRefresh 추가
+  return { images, isImgLoading, selectedImg, setSelectedImg, handleDownload, handleRefresh: () => fetchImages(true) };
 };
