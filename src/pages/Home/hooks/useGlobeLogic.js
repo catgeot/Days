@@ -22,12 +22,13 @@ export const useGlobeLogic = (globeRef, userId) => {
     const cleanName = pin.name ? pin.name.replace(/📍\s?/g, '').trim() : "Unknown";
     const cleanPin = { ...pin, name: cleanName };
 
-    if (cleanName !== 'Scanning...' && cleanName !== 'Searching...') {
+    if (cleanName !== 'Scanning...' && cleanName !== 'Searching...' && cleanName !== '위치 탐색 중...' && !cleanPin.isScanning) {
         recordInteraction(cleanName, 'view');
     }
 
     setScoutedPins(prev => {
-      const filtered = prev.filter(p => p.id !== cleanPin.id && p.name !== cleanName);
+      // 🚨 기존 스캔 핀(위치 탐색 중...)을 배열에서 자동으로 제거 (isScanning === true)
+      const filtered = prev.filter(p => p.id !== cleanPin.id && p.name !== cleanName && p.isScanning !== true);
       return [cleanPin, ...filtered].slice(0, 5);
     });
     

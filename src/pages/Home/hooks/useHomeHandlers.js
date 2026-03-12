@@ -152,6 +152,9 @@ export function useHomeHandlers({
       recordInteraction(display_name, 'view'); 
     } catch (error) {
       console.error("Geocoding Error:", error);
+      // 🚨 에러 발생 시 무한 로딩(위치 탐색 중...) 카드가 남지 않도록 초기화
+      setSelectedLocation(null);
+      setIsPlaceCardOpen(false);
     } finally {
       isProcessingRef.current = false;
     }
