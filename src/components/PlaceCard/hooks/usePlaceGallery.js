@@ -21,6 +21,7 @@ export const usePlaceGallery = (locationSource) => {
   
   const lastQueryRef = useRef(null);
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+  const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
 
   const sourceName = locationSource && typeof locationSource === 'object' ? locationSource.name : locationSource;
   const sourceId = locationSource && typeof locationSource === 'object' ? locationSource.id : null;
@@ -161,24 +162,19 @@ export const usePlaceGallery = (locationSource) => {
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery);
       }
 
-      // 🚨 [New] 3차 방어막: Unsplash 검색 결과가 부족할 때(10개 이하) 구글 이미지 검색 병합 (Fallback & Merge)
-      if (results.length <= 10) {
-        console.warn(`⚠️ Unsplash 이미지 부족(${results.length}개). 구글 이미지 검색 병합을 시도합니다.`);
+      // 🚨 [New] 3차 방어막: Unsplash 검색 결과가 부족할 때(15개 이하) Pexels 이미지 검색 병합 (Fallback & Merge)
+      if (results.length <= 15 && PEXELS_KEY) {
+        console.warn(`⚠️ Unsplash 이미지 부족(${results.length}개). Pexels 이미지 검색 병합을 시도합니다.`);
         try {
-          const { data, error } = await supabase.functions.invoke('fetch-place-images', {
-            body: { query: primaryQuery }
-          });
+          const pexelsImages = await apiClient.fetchPexelsImages(PEXELS_KEY, primaryQuery);
           
-          if (!error && data && data.images && data.images.length > 0) {
-            // 기존 결과와 구글 검색 결과 병합 및 중복(URL 기준) 제거
-            const existingUrls = new Set(results.map(img => img.urls?.regular));
-            const newImages = data.images.filter(img => !existingUrls.has(img.urls?.regular));
-            
-            results = [...results, ...newImages];
-            console.log(`✅ 구글 이미지 ${newImages.length}개 병합 완료. 총 ${results.length}개`);
+          if (pexelsImages && pexelsImages.length > 0) {
+            // 기존 결과와 Pexels 검색 결과 병합
+            results = [...results, ...pexelsImages];
+            console.log(`✅ Pexels 이미지 ${pexelsImages.length}개 병합 완료. 총 ${results.length}개`);
           }
-        } catch (edgeError) {
-          console.error("⚠️ Google Image Edge Function Error:", edgeError);
+        } catch (pexelsError) {
+          console.error("⚠️ Pexels API Error:", pexelsError);
         }
       }
 
@@ -214,7 +210,7 @@ export const usePlaceGallery = (locationSource) => {
       setIsImgLoading(false);
     }
 
-  }, [ACCESS_KEY, sourceName, sourceId, locationSource]);
+  }, [ACCESS_KEY, PEXELS_KEY, sourceName, sourceId, locationSource]);
 
   useEffect(() => {
     fetchImages();
@@ -249,7 +245,8 @@ export const usePlaceGallery = (locationSource) => {
       a.href = blobUrl;
       
       const authorName = imageObj.user?.name ? imageObj.user.name.replace(/\s+/g, '_') : 'Project_Days';
-      a.download = `${authorName}_unsplash.jpg`;
+      const sourceSuffix = imageObj.id?.toString().startsWith('pexels') ? 'pexels' : 'unsplash';
+      a.download = `${authorName}_${sourceSuffix}.jpg`;
       
       document.body.appendChild(a);
       a.click();
