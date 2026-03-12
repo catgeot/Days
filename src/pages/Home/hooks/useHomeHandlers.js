@@ -57,27 +57,6 @@ export function useHomeHandlers({
     if (isProcessingRef.current) return;
     if (!lat || !lng) return;
 
-    // 🚨 [Fix/New] Radius Filter (오클릭 방지 방어막): 등록된 마커나 텍스트 근처가 아니면 무시
-    const currentAlt = globeRef.current ? globeRef.current.pointOfView().altitude : 2.5;
-    // 고도(Altitude)에 따라 클릭 허용 오차 반경을 동적으로 조절 (줌아웃 시 관대하게, 줌인 시 엄격하게)
-    const MAX_RADIUS_KM = currentAlt < 1.0 ? 150 : (currentAlt < 1.75 ? 300 : 600);
-    
-    const allKnownPoints = [...TRAVEL_SPOTS, ...citiesData, ...savedTrips];
-    let isNearKnownPoint = false;
-    
-    for (let pt of allKnownPoints) {
-      if (pt.lat === undefined || pt.lng === undefined) continue;
-      if (getDistanceKm(lat, lng, pt.lat, pt.lng) <= MAX_RADIUS_KM) {
-        isNearKnownPoint = true;
-        break;
-      }
-    }
-
-    if (!isNearKnownPoint) {
-      console.log(`[UX] 엉뚱한 공간 클릭 방지: 반경 ${MAX_RADIUS_KM}km 내에 등록된 데이터 없음.`);
-      return; 
-    }
-
     if (globeRef.current) globeRef.current.pauseRotation();
     
     // 🚨 즉각적인 시각적/상태적 피드백 제공 (로딩 UI)
