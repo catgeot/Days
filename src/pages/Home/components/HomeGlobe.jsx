@@ -345,7 +345,7 @@ const HomeGlobe = React.memo(forwardRef(({
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"
         
-        htmlElementsData={isZenMode ? [] : allMarkers}
+        htmlElementsData={lodLevel > 0 ? [] : (isZenMode ? [] : allMarkers)}
         htmlElement={renderElement}
         htmlTransitionDuration={0} 
 
