@@ -8,6 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
+import { formatUrlName } from '../index';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData'; 
@@ -127,6 +128,7 @@ export function useHomeHandlers({
 
       const realPin = { 
         id: !name_en ? fallbackId : Date.now(), 
+        slug: name_en ? formatUrlName(name_en) : fallbackId,
         lat, 
         lng, 
         name: display_name, 
@@ -303,6 +305,7 @@ export function useHomeHandlers({
     if (citySpot) {
       const normalizedCity = {
         id: `city-${citySpot.lat}-${citySpot.lng}`,
+        slug: citySpot.slug,
         name: citySpot.name,
         name_en: citySpot.name_en || citySpot.name,
         country: citySpot.country || "Explore", 
@@ -325,6 +328,7 @@ export function useHomeHandlers({
     if (coords) {
       const normalizedLoc = {
         id: `search-${coords.lat}-${coords.lng}`,
+        slug: formatUrlName(coords.name_en || coords.name),
         name: query, 
         name_en: coords.name_en || coords.name, 
         country: coords.country || "Explore",
@@ -365,6 +369,7 @@ export function useHomeHandlers({
             if (retryCoords) {
               const normalizedLoc = {
                 id: `search-${retryCoords.lat}-${retryCoords.lng}`,
+                slug: formatUrlName(retryCoords.name_en || retryCoords.name),
                 name: cleanName, 
                 name_en: retryCoords.name_en || retryCoords.name, 
                 country: retryCoords.country || "Explore",

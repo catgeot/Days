@@ -60,17 +60,25 @@ const PlaceChatPanel = React.memo(({
   const handleRelatedClick = (targetPlace) => {
       if (!targetPlace) return;
 
+      // 1. slug가 최우선
+      if (targetPlace.slug) {
+          navigate(`/place/${targetPlace.slug}`);
+          return;
+      }
+
+      // 2. slug가 없을 경우 id로 fallback
       if (targetPlace.id) {
           navigate(`/place/${targetPlace.id}`);
           return;
       }
       
+      // 3. id도 없을 경우 좌표로 fallback
       if (targetPlace.lat !== undefined && targetPlace.lng !== undefined) {
           navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
           return;
       }
 
-      console.warn("[Safe Path] 라우팅을 위한 식별자(ID 또는 좌표)가 없습니다.", targetPlace);
+      console.warn("[Safe Path] 라우팅을 위한 식별자(slug, ID 또는 좌표)가 없습니다.", targetPlace);
   };
 
   const relatedPlaces = getRelatedPlaces(location); 

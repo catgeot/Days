@@ -124,26 +124,25 @@ function Home() {
 
   // 라우팅 기반 장소 선택 동기화 로직
   useEffect(() => {
-    const match = matchPath({ path: "/place/:id" }, routeLocation.pathname);
-    if (match && match.params.id) {
-      let targetId = match.params.id;
+    const match = matchPath({ path: "/place/:slug" }, routeLocation.pathname);
+    if (match && match.params.slug) {
+      let targetSlug = match.params.slug;
       try {
-        targetId = decodeURIComponent(targetId);
+        targetSlug = decodeURIComponent(targetSlug);
       } catch (e) { /* ignore */ }
       
-      const normalizedTargetId = targetId.toLowerCase(); // 대소문자 무시 비교용
+      const normalizedTargetSlug = targetSlug.toLowerCase(); // 대소문자 무시 비교용
       
-      // 🚨 [Fix/New] 1차 방어막: 영문명 정규화(name_en) 매칭을 최우선으로 적용 (Hydration)
-      let target = TRAVEL_SPOTS.find(s => formatUrlName(s.name_en) === normalizedTargetId || String(s.id) === targetId || s.name === targetId) 
+      // 🚨 [Fix/New] 1차 방어막: slug를 최우선으로 매칭
+      let target = TRAVEL_SPOTS.find(s => s.slug === normalizedTargetSlug || String(s.id) === targetSlug) 
                 || savedTrips.find(t => {
                      const nameEn = t.name_en || t.curation_data?.locationEn || "";
-                     const name = t.name || t.destination || t.curation_data?.location || "";
-                     return formatUrlName(nameEn) === normalizedTargetId || String(t.id) === targetId || name === targetId;
+                     return t.slug === normalizedTargetSlug || formatUrlName(nameEn) === normalizedTargetSlug || String(t.id) === targetSlug;
                    });
 
-      // 🚨 [Fix/New] Data Lake(citiesData) 영문명 탐색 추가
+      // 🚨 [Fix/New] Data Lake(citiesData) slug 탐색 추가
       if (!target) {
-        const matchedCity = (citiesData || []).find(c => formatUrlName(c.name_en) === normalizedTargetId);
+        const matchedCity = (citiesData || []).find(c => c.slug === normalizedTargetSlug);
         if (matchedCity) {
           target = {
             id: `city-${matchedCity.lat}-${matchedCity.lng}`,
@@ -159,16 +158,16 @@ function Home() {
       
       // 기존 1차 방어막: 물리적 DB에 없더라도, 현재 메모리(State)에 있는 선택지라면 승인
       if (!target && selectedLocation && (
-          formatUrlName(selectedLocation.name_en) === normalizedTargetId || 
-          String(selectedLocation.id) === targetId || 
-          selectedLocation.name === targetId
+          selectedLocation.slug === normalizedTargetSlug ||
+          String(selectedLocation.id) === targetSlug || 
+          selectedLocation.name === targetSlug
       )) {
           target = selectedLocation;
       }
 
       // 🚨 [Fix/New] 2차 방어막: URL에서 직접 파싱 (새로고침 시 튕김 방지 및 Hydration Fallback)
-      if (!target && (targetId.startsWith('city-') || targetId.startsWith('loc-') || targetId.startsWith('search-'))) {
-        const coordsMatch = targetId.match(/-(-?\d+\.?\d*)-(-?\d+\.?\d*)$/);
+      if (!target && (targetSlug.startsWith('city-') || targetSlug.startsWith('loc-') || targetSlug.startsWith('search-'))) {
+        const coordsMatch = targetSlug.match(/-(-?\d+\.?\d*)-(-?\d+\.?\d*)$/);
         if (coordsMatch) {
           const parsedLat = parseFloat(coordsMatch[1]);
           const parsedLng = parseFloat(coordsMatch[2]);
@@ -178,8 +177,8 @@ function Home() {
           );
 
           target = {
-            id: targetId,
-            name: matchedCity ? matchedCity.name : (targetId.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
+            id: targetSlug,
+            name: matchedCity ? matchedCity.name : (targetSlug.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
             name_en: matchedCity ? matchedCity.name_en : "",
             lat: parsedLat,
             lng: parsedLng,
@@ -333,7 +332,7 @@ function Home() {
               };
             }
             // 🚨 [Fix/New] 영문명 URL 발사
-            const urlParam = hydratedLocation.name_en ? formatUrlName(hydratedLocation.name_en) : (hydratedLocation.id || hydratedLocation.name);
+            const urlParam = hydratedLocation.slug || (hydratedLocation.id || hydratedLocation.name);
             navigate(`/place/${urlParam}`);
           }}
         />
@@ -352,7 +351,7 @@ function Home() {
             onExpand={() => {
               setIsCardExpanded(true);
               // 🚨 [Fix/New] 영문명 URL 발사
-              const urlParam = selectedLocation.name_en ? formatUrlName(selectedLocation.name_en) : (selectedLocation.id || selectedLocation.name);
+              const urlParam = selectedLocation.slug || (selectedLocation.id || selectedLocation.name);
               navigate(`/place/${urlParam}`);
             }}
             onChat={(p) => handleStartChat(selectedLocation?.name, p)}

@@ -7,6 +7,7 @@
 export const TRAVEL_SPOTS = [
   {
     id: 101,
+    slug: "bora-bora",
     name: "보라보라",
     name_en: "Bora Bora",
     country: "프랑스령 폴리네시아",
@@ -24,6 +25,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 102,
+    slug: "santorini",
     name: "산토리니",
     name_en: "Santorini",
     country: "그리스",
@@ -41,6 +43,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 103,
+    slug: "cancun",
     name: "칸쿤",
     name_en: "Cancun",
     country: "멕시코",
@@ -58,6 +61,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 104,
+    slug: "maldives",
     name: "몰디브",
     name_en: "Maldives",
     country: "몰디브",
@@ -75,6 +79,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 105,
+    slug: "seychelles",
     name: "세이셸",
     name_en: "Seychelles",
     country: "세이셸",
@@ -92,6 +97,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 106,
+    slug: "fernando-de-noronha",
     name: "페르난두지노로냐",
     name_en: "Fernando de Noronha",
     country: "브라질",
@@ -109,6 +115,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 107,
+    slug: "bermuda",
     name: "버뮤다",
     name_en: "Bermuda",
     country: "버뮤다",
@@ -125,6 +132,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 108,
+    slug: "south-pacific",
     name: "남태평양",
     name_en: "South Pacific",
     country: "바다",
@@ -141,6 +149,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 109,
+    slug: "azores",
     name: "아조레스 제도",
     name_en: "Azores",
     country: "포르투갈",
@@ -157,6 +166,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 110,
+    slug: "zanzibar",
     name: "잔지바르",
     name_en: "Zanzibar",
     country: "탄자니아",
@@ -174,6 +184,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 111,
+    slug: "indian-ocean",
     name: "인도양",
     name_en: "Indian Ocean",
     country: "바다",
@@ -190,6 +201,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 112,
+    slug: "oceania",
     name: "오세아니아",
     name_en: "Oceania",
     country: "대륙",
@@ -206,6 +218,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 201,
+    slug: "banff-national-park",
     name: "밴프 국립공원",
     name_en: "Banff National Park",
     country: "캐나다",
@@ -223,6 +236,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 202,
+    slug: "iguazu-falls",
     name: "이구아수 폭포",
     name_en: "Iguazu Falls",
     country: "아르헨티나",
@@ -240,6 +254,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 203,
+    slug: "iceland",
     name: "아이슬란드",
     name_en: "Iceland",
     country: "아이슬란드",
@@ -257,6 +272,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 204,
+    slug: "victoria-falls",
     name: "빅토리아 폭포",
     name_en: "Victoria Falls",
     country: "잠비아",
@@ -274,6 +290,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 205,
+    slug: "mount-fuji",
     name: "후지산",
     name_en: "Mount Fuji",
     country: "일본",
@@ -291,6 +308,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 206,
+    slug: "great-barrier-reef",
     name: "그레이트 배리어 리프",
     name_en: "Great Barrier Reef",
     country: "호주",
@@ -308,6 +326,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 207,
+    slug: "north-pacific",
     name: "북태평양",
     name_en: "North Pacific",
     country: "바다",
@@ -323,6 +342,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 208,
+    slug: "pacific-ocean",
     name: "태평양",
     name_en: "Pacific Ocean",
     country: "바다",
@@ -338,6 +358,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 209,
+    slug: "arctic-ocean",
     name: "북극해",
     name_en: "Arctic Ocean",
     country: "바다",
@@ -353,6 +374,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 210,
+    slug: "south-atlantic",
     name: "남대서양",
     name_en: "South Atlantic",
     country: "바다",
@@ -368,6 +390,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 211,
+    slug: "andaman-islands",
     name: "안다만 제도",
     name_en: "Andaman Islands",
     country: "인도",
@@ -384,6 +407,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 212,
+    slug: "palau",
     name: "팔라우",
     name_en: "Palau",
     country: "팔라우",
@@ -401,6 +425,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 301,
+    slug: "new-york",
     name: "뉴욕",
     name_en: "New York",
     country: "미국",
@@ -418,6 +443,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 302,
+    slug: "rio-de-janeiro",
     name: "리우데자네이루",
     name_en: "Rio de Janeiro",
     country: "브라질",
@@ -435,6 +461,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 303,
+    slug: "london",
     name: "런던",
     name_en: "London",
     country: "영국",
@@ -452,6 +479,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 304,
+    slug: "cape-town",
     name: "케이프타운",
     name_en: "Cape Town",
     country: "남아프리카공화국",
@@ -469,6 +497,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 305,
+    slug: "tokyo",
     name: "도쿄",
     name_en: "Tokyo",
     country: "일본",
@@ -486,6 +515,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 306,
+    slug: "sydney",
     name: "시드니",
     name_en: "Sydney",
     country: "호주",
@@ -503,6 +533,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 307,
+    slug: "north-america",
     name: "북아메리카",
     name_en: "North America",
     country: "대륙",
@@ -519,6 +550,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 308,
+    slug: "ushuaia",
     name: "우수아이아",
     name_en: "Ushuaia",
     country: "아르헨티나",
@@ -535,6 +567,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 309,
+    slug: "moscow",
     name: "모스크바",
     name_en: "Moscow",
     country: "러시아",
@@ -551,6 +584,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 310,
+    slug: "cairo",
     name: "카이로",
     name_en: "Cairo",
     country: "이집트",
@@ -567,6 +601,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 311,
+    slug: "asia",
     name: "아시아",
     name_en: "Asia",
     country: "대륙",
@@ -583,6 +618,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 312,
+    slug: "new-caledonia",
     name: "뉴칼레도니아",
     name_en: "New Caledonia",
     country: "뉴칼레도니아",
@@ -600,6 +636,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 401,
+    slug: "chichen-itza",
     name: "치첸이트사",
     name_en: "Chichen Itza",
     country: "멕시코",
@@ -617,6 +654,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 402,
+    slug: "machu-picchu",
     name: "마추픽추",
     name_en: "Machu Picchu",
     country: "페루",
@@ -634,6 +672,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 403,
+    slug: "rome",
     name: "로마",
     name_en: "Rome",
     country: "이탈리아",
@@ -651,6 +690,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 404,
+    slug: "giza-pyramids",
     name: "기자 피라미드",
     name_en: "Giza Pyramids",
     country: "이집트",
@@ -668,6 +708,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 405,
+    slug: "angkor-wat",
     name: "앙코르 와트",
     name_en: "Angkor Wat",
     country: "캄보디아",
@@ -685,6 +726,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 406,
+    slug: "petra",
     name: "페트라",
     name_en: "Petra",
     country: "요르단",
@@ -702,6 +744,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 407,
+    slug: "midway-atoll",
     name: "미드웨이 환초",
     name_en: "Midway Atoll",
     country: "미국",
@@ -718,6 +761,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 408,
+    slug: "south-america",
     name: "남아메리카",
     name_en: "South America",
     country: "대륙",
@@ -734,6 +778,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 409,
+    slug: "europe",
     name: "유럽",
     name_en: "Europe",
     country: "대륙",
@@ -750,6 +795,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 410,
+    slug: "africa",
     name: "아프리카",
     name_en: "Africa",
     country: "대륙",
@@ -766,6 +812,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 411,
+    slug: "bagan",
     name: "바간",
     name_en: "Bagan",
     country: "미얀마",
@@ -782,6 +829,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 412,
+    slug: "fiji",
     name: "피지",
     name_en: "Fiji",
     country: "피지",
@@ -799,6 +847,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 501,
+    slug: "alaska",
     name: "알래스카",
     name_en: "Alaska",
     country: "미국",
@@ -816,6 +865,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 502,
+    slug: "amazon-rainforest",
     name: "아마존 열대우림",
     name_en: "Amazon Rainforest",
     country: "브라질",
@@ -833,6 +883,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 503,
+    slug: "svalbard",
     name: "스발바르 제도",
     name_en: "Svalbard",
     country: "노르웨이",
@@ -850,6 +901,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 504,
+    slug: "serengeti",
     name: "세렝게티",
     name_en: "Serengeti",
     country: "탄자니아",
@@ -867,6 +919,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 505,
+    slug: "uluru",
     name: "울루루",
     name_en: "Uluru",
     country: "호주",
@@ -884,6 +937,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 506,
+    slug: "antarctica",
     name: "남극 대륙",
     name_en: "Antarctica",
     country: "남극",
@@ -901,6 +955,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 507,
+    slug: "los-angeles",
     name: "로스앤젤레스",
     name_en: "Los Angeles",
     country: "미국",
@@ -918,6 +973,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 508,
+    slug: "tonga",
     name: "통가",
     name_en: "Tonga",
     country: "통가",
@@ -935,6 +991,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 509,
+    slug: "berlin",
     name: "베를린",
     name_en: "Berlin",
     country: "독일",
@@ -952,6 +1009,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 510,
+    slug: "la-reunion",
     name: "레위니옹",
     name_en: "La Reunion",
     country: "프랑스령 레위니옹",
@@ -968,6 +1026,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 511,
+    slug: "seoul",
     name: "서울",
     name_en: "Seoul",
     country: "한국",
@@ -985,6 +1044,7 @@ export const TRAVEL_SPOTS = [
   },
   {
     id: 512,
+    slug: "vanuatu",
     name: "바누아투",
     name_en: "Vanuatu",
     country: "바누아투",

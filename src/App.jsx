@@ -43,7 +43,7 @@ function App() {
           {/* 1. 글로벌 메인 레이아웃 (지구본 등) */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />}>
-              <Route path="place/:id" element={<PlaceCard />} />
+              <Route path="place/:slug" element={<PlaceCard />} />
             </Route>
           </Route>
 

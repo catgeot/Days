@@ -11,7 +11,7 @@ import { usePlaceGallery } from './hooks/usePlaceGallery';
 import PlaceCardExpanded from './modes/PlaceCardExpanded';
 
 const PlaceCard = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   
   const context = useOutletContext();
@@ -37,14 +37,14 @@ const PlaceCard = () => {
   // 일정 시간(1.5초)이 지나도 contextLocation이 내려오지 않는다면 존재하지 않는 장소로 간주하고 튕겨냅니다.
   useEffect(() => {
     let timeoutId;
-    if (!contextLocation && id) {
+    if (!contextLocation && slug) {
       timeoutId = setTimeout(() => {
-        console.warn(`[Safe Path] 유효하지 않은 장소 ID(${id}) 접근. 메인으로 회귀합니다.`);
+        console.warn(`[Safe Path] 유효하지 않은 장소 SLUG(${slug}) 접근. 메인으로 회귀합니다.`);
         navigate('/', { replace: true });
       }, 1500); 
     }
     return () => clearTimeout(timeoutId);
-  }, [contextLocation, id, navigate]);
+  }, [contextLocation, slug, navigate]);
 
   // 부모가 데이터를 확정하기 전까지 렌더링 차단 (레이아웃 붕괴 방지)
   if (!contextLocation) return null;

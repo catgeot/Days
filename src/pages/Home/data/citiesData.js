@@ -7,6 +7,7 @@ export const citiesData = [
   {
     name: "대서양",
     name_en: "Atlantic Ocean",
+slug: "atlantic-ocean",
     country: "바다",
     country_en: "Ocean",
     lat: 10,
@@ -21,6 +22,7 @@ export const citiesData = [
   {
     name: "북대서양",
     name_en: "North Atlantic",
+slug: "north-atlantic",
     country: "바다",
     country_en: "Ocean",
     lat: 45,
@@ -34,6 +36,7 @@ export const citiesData = [
   {
     name: "남극해",
     name_en: "Southern Ocean",
+slug: "southern-ocean",
     country: "바다",
     country_en: "Ocean",
     lat: -65,
@@ -47,6 +50,7 @@ export const citiesData = [
   {
     name: "라로통가",
     name_en: "Rarotonga",
+slug: "rarotonga",
     country: "쿡 제도",
     country_en: "Cook Islands",
     lat: -21.2292,
@@ -62,6 +66,7 @@ export const citiesData = [
   {
     name: "아이투타키",
     name_en: "Aitutaki",
+slug: "aitutaki",
     country: "쿡 제도",
     country_en: "Cook Islands",
     lat: -18.8579,
@@ -76,6 +81,7 @@ export const citiesData = [
   {
     name: "모오레아",
     name_en: "Moorea",
+slug: "moorea",
     country: "프랑스령 폴리네시아",
     country_en: "French Polynesia",
     lat: -17.5388,
@@ -90,6 +96,7 @@ export const citiesData = [
   {
     name: "사모아",
     name_en: "Samoa",
+slug: "samoa",
     country: "사모아",
     country_en: "Samoa",
     lat: -13.759,
@@ -104,6 +111,7 @@ export const citiesData = [
   {
     name: "솔로몬 제도",
     name_en: "Solomon Islands",
+slug: "solomon-islands",
     country: "솔로몬 제도",
     country_en: "Solomon Islands",
     lat: -9.6457,
@@ -119,6 +127,7 @@ export const citiesData = [
   {
     name: "투발루",
     name_en: "Tuvalu",
+slug: "tuvalu",
     country: "투발루",
     country_en: "Tuvalu",
     lat: -7.1095,
@@ -133,6 +142,7 @@ export const citiesData = [
   {
     name: "키리바시",
     name_en: "Kiribati",
+slug: "kiribati",
     country: "키리바시",
     country_en: "Kiribati",
     lat: 1.8709,
@@ -147,6 +157,7 @@ export const citiesData = [
   {
     name: "마셜 제도",
     name_en: "Marshall Islands",
+slug: "marshall-islands",
     country: "마셜 제도",
     country_en: "Marshall Islands",
     lat: 7.1315,
@@ -161,6 +172,7 @@ export const citiesData = [
   {
     name: "갈라파고스",
     name_en: "Galapagos",
+slug: "galapagos",
     country: "에콰도르",
     country_en: "Ecuador",
     lat: -0.9538,
@@ -176,6 +188,7 @@ export const citiesData = [
   {
     name: "이스터 섬",
     name_en: "Easter Island",
+slug: "easter-island",
     country: "칠레",
     country_en: "Chile",
     lat: -27.1127,
@@ -190,6 +203,7 @@ export const citiesData = [
   {
     name: "핏케언 제도",
     name_en: "Pitcairn Islands",
+slug: "pitcairn-islands",
     country: "영국령 핏케언 제도",
     country_en: "Pitcairn Islands",
     lat: -25.0667,
@@ -204,6 +218,7 @@ export const citiesData = [
   {
     name: "소코트라 섬",
     name_en: "Socotra",
+slug: "socotra",
     country: "예멘",
     country_en: "Yemen",
     lat: 12.4634,
@@ -217,6 +232,7 @@ export const citiesData = [
   {
     name: "모리셔스",
     name_en: "Mauritius",
+slug: "mauritius",
     country: "모리셔스",
     country_en: "Mauritius",
     lat: -20.3484,
@@ -232,6 +248,7 @@ export const citiesData = [
   {
     name: "라자암팟",
     name_en: "Raja Ampat",
+slug: "raja-ampat",
     country: "인도네시아",
     country_en: "Indonesia",
     lat: -0.2333,
@@ -246,6 +263,7 @@ export const citiesData = [
   {
     name: "코모도 섬",
     name_en: "Komodo",
+slug: "komodo",
     country: "인도네시아",
     country_en: "Indonesia",
     lat: -8.5569,
@@ -260,6 +278,7 @@ export const citiesData = [
   {
     name: "팔라완",
     name_en: "Palawan",
+slug: "palawan",
     country: "필리핀",
     country_en: "Philippines",
     lat: 9.8349,
@@ -275,6 +294,7 @@ export const citiesData = [
   {
     name: "크리스마스 섬",
     name_en: "Christmas Island",
+slug: "christmas-island",
     country: "호주",
     country_en: "Australia",
     lat: -10.4475,
@@ -288,6 +308,7 @@ export const citiesData = [
   {
     name: "디에고 가르시아",
     name_en: "Diego Garcia",
+slug: "diego-garcia",
     country: "영국령 인도양 지역",
     country_en: "Indian Ocean",
     lat: -7.3195,
@@ -301,6 +322,7 @@ export const citiesData = [
   {
     name: "마데이라",
     name_en: "Madeira",
+slug: "madeira",
     country: "포르투갈",
     country_en: "Portugal",
     lat: 32.7607,
@@ -315,6 +337,7 @@ export const citiesData = [
   {
     name: "카나리아 제도",
     name_en: "Canary Islands",
+slug: "canary-islands",
     country: "스페인",
     country_en: "Spain",
     lat: 28.2916,
@@ -329,6 +352,7 @@ export const citiesData = [
   {
     name: "카보베르데",
     name_en: "Cape Verde",
+slug: "cape-verde",
     country: "카보베르데",
     country_en: "Cape Verde",
     lat: 16.5388,
@@ -343,6 +367,7 @@ export const citiesData = [
   {
     name: "페르난두 지 노로냐",
     name_en: "Fernando de Noronha",
+slug: "fernando-de-noronha",
     country: "브라질",
     country_en: "Brazil",
     lat: -3.8577,
@@ -357,6 +382,7 @@ export const citiesData = [
   {
     name: "로포텐 제도",
     name_en: "Lofoten",
+slug: "lofoten",
     country: "노르웨이",
     country_en: "Norway",
     lat: 68.2086,
@@ -371,6 +397,7 @@ export const citiesData = [
   {
     name: "페로 제도",
     name_en: "Faroe Islands",
+slug: "faroe-islands",
     country: "페로 제도",
     country_en: "Faroe Islands",
     lat: 61.8926,
@@ -384,6 +411,7 @@ export const citiesData = [
   {
     name: "메테오라",
     name_en: "Meteora",
+slug: "meteora",
     country: "그리스",
     country_en: "Greece",
     lat: 39.7128,
@@ -398,6 +426,7 @@ export const citiesData = [
   {
     name: "파타고니아",
     name_en: "Patagonia",
+slug: "patagonia",
     country: "아르헨티나",
     country_en: "Argentina",
     lat: -41.8102,
@@ -412,6 +441,7 @@ export const citiesData = [
   {
     name: "그린란드",
     name_en: "Greenland",
+slug: "greenland",
     country: "그린란드",
     country_en: "Greenland",
     lat: 71.7069,
@@ -425,6 +455,7 @@ export const citiesData = [
   {
     name: "일룰리사트",
     name_en: "Ilulissat",
+slug: "ilulissat",
     country: "그린란드",
     country_en: "Greenland",
     lat: 69.2167,
@@ -439,6 +470,7 @@ export const citiesData = [
   {
     name: "남극점",
     name_en: "South Pole",
+slug: "south-pole",
     country: "남극",
     country_en: "Antarctica",
     lat: -90,
@@ -453,6 +485,7 @@ export const citiesData = [
   {
     name: "맥머도 기지",
     name_en: "McMurdo Station",
+slug: "mcmurdo-station",
     country: "남극",
     country_en: "Antarctica",
     lat: -77.8463,
@@ -466,6 +499,7 @@ export const citiesData = [
   {
     name: "케르겔렌 제도",
     name_en: "Kerguelen Islands",
+slug: "kerguelen-islands",
     country: "프랑스 남부 연방 영토",
     country_en: "French Southern and Antarctic Lands",
     lat: -49.3958,
@@ -479,6 +513,7 @@ export const citiesData = [
   {
     name: "어센션 섬",
     name_en: "Ascension",
+slug: "ascension",
     country: "영국령 어센션 섬",
     country_en: "Ascension Island",
     lat: -7.9467,
@@ -492,6 +527,7 @@ export const citiesData = [
   {
     name: "세인트 헬레나",
     name_en: "St. Helena",
+slug: "st-helena",
     country: "영국령 세인트 헬레나",
     country_en: "St. Helena",
     lat: -15.965,
@@ -506,6 +542,7 @@ export const citiesData = [
   {
     name: "트리스탄 다 쿠냐",
     name_en: "Tristan da Cunha",
+slug: "tristan-da-cunha",
     country: "영국령 트리스탄 다 쿠냐",
     country_en: "Tristan da Cunha",
     lat: -37.1052,
@@ -519,6 +556,7 @@ export const citiesData = [
   {
     name: "베이징",
     name_en: "Beijing",
+slug: "beijing",
     country: "중국",
     country_en: "China",
     lat: 39.9042,
@@ -533,6 +571,7 @@ export const citiesData = [
   {
     name: "상하이",
     name_en: "Shanghai",
+slug: "shanghai",
     country: "중국",
     country_en: "China",
     lat: 31.2304,
@@ -548,6 +587,7 @@ export const citiesData = [
   {
     name: "노보시비르스크",
     name_en: "Novosibirsk",
+slug: "novosibirsk",
     country: "러시아",
     country_en: "Russia",
     lat: 55.0084,
@@ -562,6 +602,7 @@ export const citiesData = [
   {
     name: "야쿠츠크",
     name_en: "Yakutsk",
+slug: "yakutsk",
     country: "러시아",
     country_en: "Russia",
     lat: 62.0355,
@@ -576,6 +617,7 @@ export const citiesData = [
   {
     name: "블라디보스토크",
     name_en: "Vladivostok",
+slug: "vladivostok",
     country: "러시아",
     country_en: "Russia",
     lat: 43.1198,
@@ -590,6 +632,7 @@ export const citiesData = [
   {
     name: "이르쿠츠크",
     name_en: "Irkutsk",
+slug: "irkutsk",
     country: "러시아",
     country_en: "Russia",
     lat: 52.287,
@@ -605,6 +648,7 @@ export const citiesData = [
   {
     name: "캄차카 반도",
     name_en: "Kamchatka Peninsula",
+slug: "kamchatka-peninsula",
     country: "러시아",
     country_en: "Russia",
     lat: 56.1327,
@@ -619,6 +663,7 @@ export const citiesData = [
   {
     name: "울란바토르",
     name_en: "Ulaanbaatar",
+slug: "ulaanbaatar",
     country: "몽골",
     country_en: "Mongolia",
     lat: 47.92,
@@ -634,6 +679,7 @@ export const citiesData = [
   {
     name: "아스타나",
     name_en: "Astana",
+slug: "astana",
     country: "카자흐스탄",
     country_en: "Kazakhstan",
     lat: 51.1694,
@@ -648,6 +694,7 @@ export const citiesData = [
   {
     name: "타슈켄트",
     name_en: "Tashkent",
+slug: "tashkent",
     country: "우즈베키스탄",
     country_en: "Uzbekistan",
     lat: 41.2995,
@@ -662,6 +709,7 @@ export const citiesData = [
   {
     name: "테헤란",
     name_en: "Tehran",
+slug: "tehran",
     country: "이란",
     country_en: "Iran",
     lat: 35.6892,
@@ -676,6 +724,7 @@ export const citiesData = [
   {
     name: "뭄바이",
     name_en: "Mumbai",
+slug: "mumbai",
     country: "인도",
     country_en: "India",
     lat: 19.076,
@@ -691,6 +740,7 @@ export const citiesData = [
   {
     name: "뉴델리",
     name_en: "New Delhi",
+slug: "new-delhi",
     country: "인도",
     country_en: "India",
     lat: 28.6139,
@@ -705,6 +755,7 @@ export const citiesData = [
   {
     name: "방콕",
     name_en: "Bangkok",
+slug: "bangkok",
     country: "태국",
     country_en: "Thailand",
     lat: 13.7563,
@@ -720,6 +771,7 @@ export const citiesData = [
   {
     name: "싱가포르",
     name_en: "Singapore",
+slug: "singapore",
     country: "싱가포르",
     country_en: "Singapore",
     lat: 1.3521,
@@ -735,6 +787,7 @@ export const citiesData = [
   {
     name: "자카르타",
     name_en: "Jakarta",
+slug: "jakarta",
     country: "인도네시아",
     country_en: "Indonesia",
     lat: -6.2088,
@@ -749,6 +802,7 @@ export const citiesData = [
   {
     name: "마닐라",
     name_en: "Manila",
+slug: "manila",
     country: "필리핀",
     country_en: "Philippines",
     lat: 14.5995,
@@ -764,6 +818,7 @@ export const citiesData = [
   {
     name: "두바이",
     name_en: "Dubai",
+slug: "dubai",
     country: "아랍에미리트",
     country_en: "UAE",
     lat: 25.2048,
@@ -779,6 +834,7 @@ export const citiesData = [
   {
     name: "사하라 사막",
     name_en: "Sahara Desert",
+slug: "sahara-desert",
     country: "사하라",
     country_en: "Sahara",
     lat: 23.4162,
@@ -793,6 +849,7 @@ export const citiesData = [
   {
     name: "팀북투",
     name_en: "Timbuktu",
+slug: "timbuktu",
     country: "말리",
     country_en: "Mali",
     lat: 16.7666,
@@ -807,6 +864,7 @@ export const citiesData = [
   {
     name: "다카르",
     name_en: "Dakar",
+slug: "dakar",
     country: "세네갈",
     country_en: "Senegal",
     lat: 14.7167,
@@ -822,6 +880,7 @@ export const citiesData = [
   {
     name: "라고스",
     name_en: "Lagos",
+slug: "lagos",
     country: "나이지리아",
     country_en: "Nigeria",
     lat: 6.5244,
@@ -836,6 +895,7 @@ export const citiesData = [
   {
     name: "아디스아바바",
     name_en: "Addis Ababa",
+slug: "addis-ababa",
     country: "에티오피아",
     country_en: "Ethiopia",
     lat: 9.0331,
@@ -850,6 +910,7 @@ export const citiesData = [
   {
     name: "나이로비",
     name_en: "Nairobi",
+slug: "nairobi",
     country: "케냐",
     country_en: "Kenya",
     lat: -1.2864,
@@ -865,6 +926,7 @@ export const citiesData = [
   {
     name: "킨샤사",
     name_en: "Kinshasa",
+slug: "kinshasa",
     country: "콩고민주공화국",
     country_en: "DR Congo",
     lat: -4.4419,
@@ -879,6 +941,7 @@ export const citiesData = [
   {
     name: "시카고",
     name_en: "Chicago",
+slug: "chicago",
     country: "미국",
     country_en: "USA",
     lat: 41.8781,
@@ -893,6 +956,7 @@ export const citiesData = [
   {
     name: "밴쿠버",
     name_en: "Vancouver",
+slug: "vancouver",
     country: "캐나다",
     country_en: "Canada",
     lat: 49.2827,
@@ -908,6 +972,7 @@ export const citiesData = [
   {
     name: "멕시코시티",
     name_en: "Mexico City",
+slug: "mexico-city",
     country: "멕시코",
     country_en: "Mexico",
     lat: 19.4326,
@@ -922,6 +987,7 @@ export const citiesData = [
   {
     name: "아바나",
     name_en: "Havana",
+slug: "havana",
     country: "쿠바",
     country_en: "Cuba",
     lat: 23.1136,
@@ -937,6 +1003,7 @@ export const citiesData = [
   {
     name: "보고타",
     name_en: "Bogota",
+slug: "bogota",
     country: "콜롬비아",
     country_en: "Colombia",
     lat: 4.711,
@@ -951,6 +1018,7 @@ export const citiesData = [
   {
     name: "아마존 분지",
     name_en: "Amazon Basin",
+slug: "amazon-basin",
     country: "브라질",
     country_en: "Brazil",
     lat: -3.4653,
@@ -965,6 +1033,7 @@ export const citiesData = [
   {
     name: "리마",
     name_en: "Lima",
+slug: "lima",
     country: "페루",
     country_en: "Peru",
     lat: -12.0464,
@@ -979,6 +1048,7 @@ export const citiesData = [
   {
     name: "산티아고",
     name_en: "Santiago",
+slug: "santiago",
     country: "칠레",
     country_en: "Chile",
     lat: -33.4489,
@@ -994,6 +1064,7 @@ export const citiesData = [
   {
     name: "부에노스아이레스",
     name_en: "Buenos Aires",
+slug: "buenos-aires",
     country: "아르헨티나",
     country_en: "Argentina",
     lat: -34.6037,
@@ -1009,6 +1080,7 @@ export const citiesData = [
   {
     name: "파리",
     name_en: "Paris",
+slug: "paris",
     country: "프랑스",
     country_en: "France",
     lat: 48.8566,
@@ -1024,6 +1096,7 @@ export const citiesData = [
   {
     name: "이스탄불",
     name_en: "Istanbul",
+slug: "istanbul",
     country: "튀르키예",
     country_en: "Turkey",
     lat: 41.0082,
@@ -1039,6 +1112,7 @@ export const citiesData = [
   {
     name: "오슬로",
     name_en: "Oslo",
+slug: "oslo",
     country: "노르웨이",
     country_en: "Norway",
     lat: 59.9139,
@@ -1054,6 +1128,7 @@ export const citiesData = [
   {
     name: "레이캬비크",
     name_en: "Reykjavik",
+slug: "reykjavik",
     country: "아이슬란드",
     country_en: "Iceland",
     lat: 64.1466,
@@ -1069,6 +1144,7 @@ export const citiesData = [
   {
     name: "멜버른",
     name_en: "Melbourne",
+slug: "melbourne",
     country: "호주",
     country_en: "Australia",
     lat: -37.8136,
@@ -1084,6 +1160,7 @@ export const citiesData = [
   {
     name: "앨리스스프링스",
     name_en: "Alice Springs",
+slug: "alice-springs",
     country: "호주",
     country_en: "Australia",
     lat: -23.698,
@@ -1098,6 +1175,7 @@ export const citiesData = [
   {
     name: "퍼스",
     name_en: "Perth",
+slug: "perth",
     country: "호주",
     country_en: "Australia",
     lat: -31.9505,
@@ -1113,6 +1191,7 @@ export const citiesData = [
   {
     name: "다윈",
     name_en: "Darwin",
+slug: "darwin",
     country: "호주",
     country_en: "Australia",
     lat: -12.4634,
@@ -1128,6 +1207,7 @@ export const citiesData = [
   {
     name: "오클랜드",
     name_en: "Auckland",
+slug: "auckland",
     country: "뉴질랜드",
     country_en: "New Zealand",
     lat: -36.8484,
@@ -1143,6 +1223,7 @@ export const citiesData = [
   {
     name: "크라이스트처치",
     name_en: "Christchurch",
+slug: "christchurch",
     country: "뉴질랜드",
     country_en: "New Zealand",
     lat: -43.5321,
@@ -1158,6 +1239,7 @@ export const citiesData = [
   {
     name: "발리",
     name_en: "Bali",
+slug: "bali",
     country: "인도네시아",
     country_en: "Indonesia",
     lat: -8.4095,
@@ -1175,6 +1257,7 @@ export const citiesData = [
   {
     name: "길리 메노",
     name_en: "Gili Meno",
+slug: "gili-meno",
     country: "인도네시아",
     country_en: "Indonesia",
     lat: -8.35,
@@ -1192,6 +1275,7 @@ export const citiesData = [
   {
     name: "세부",
     name_en: "Cebu",
+slug: "cebu",
     country: "필리핀",
     country_en: "Philippines",
     lat: 10.3157,
@@ -1207,6 +1291,7 @@ export const citiesData = [
   {
     name: "보라카이",
     name_en: "Boracay",
+slug: "boracay",
     country: "필리핀",
     country_en: "Philippines",
     lat: 11.9674,
@@ -1222,6 +1307,7 @@ export const citiesData = [
   {
     name: "보홀",
     name_en: "Bohol",
+slug: "bohol",
     country: "필리핀",
     country_en: "Philippines",
     lat: 9.85,
@@ -1239,6 +1325,7 @@ export const citiesData = [
   {
     name: "다낭",
     name_en: "Da Nang",
+slug: "da-nang",
     country: "베트남",
     country_en: "Vietnam",
     lat: 16.0544,
@@ -1254,6 +1341,7 @@ export const citiesData = [
   {
     name: "나트랑",
     name_en: "Nha Trang",
+slug: "nha-trang",
     country: "베트남",
     country_en: "Vietnam",
     lat: 12.2388,
@@ -1269,6 +1357,7 @@ export const citiesData = [
   {
     name: "푸꾸옥",
     name_en: "Phu Quoc",
+slug: "phu-quoc",
     country: "베트남",
     country_en: "Vietnam",
     lat: 10.2899,
@@ -1284,6 +1373,7 @@ export const citiesData = [
   {
     name: "치앙마이",
     name_en: "Chiang Mai",
+slug: "chiang-mai",
     country: "태국",
     country_en: "Thailand",
     lat: 18.7953,
@@ -1299,6 +1389,7 @@ export const citiesData = [
   {
     name: "푸켓",
     name_en: "Phuket",
+slug: "phuket",
     country: "태국",
     country_en: "Thailand",
     lat: 7.8804,
@@ -1314,6 +1405,7 @@ export const citiesData = [
   {
     name: "하와이",
     name_en: "Hawaii",
+slug: "hawaii",
     country: "미국",
     country_en: "USA",
     lat: 19.8968,
@@ -1329,6 +1421,7 @@ export const citiesData = [
   {
     name: "괌",
     name_en: "Guam",
+slug: "guam",
     country: "미국",
     country_en: "USA",
     lat: 13.4443,
@@ -1343,6 +1436,7 @@ export const citiesData = [
   {
     name: "사이판",
     name_en: "Saipan",
+slug: "saipan",
     country: "미국",
     country_en: "USA",
     lat: 15.19,
@@ -1358,6 +1452,7 @@ export const citiesData = [
   {
     name: "인터라켄",
     name_en: "Interlaken",
+slug: "interlaken",
     country: "스위스",
     country_en: "Switzerland",
     lat: 46.6863,
@@ -1375,6 +1470,7 @@ export const citiesData = [
   {
     name: "취리히",
     name_en: "Zurich",
+slug: "zurich",
     country: "스위스",
     country_en: "Switzerland",
     lat: 47.3769,
@@ -1392,6 +1488,7 @@ export const citiesData = [
   {
     name: "루체른",
     name_en: "Lucerne",
+slug: "lucerne",
     country: "스위스",
     country_en: "Switzerland",
     lat: 47.0502,
@@ -1409,6 +1506,7 @@ export const citiesData = [
   {
     name: "체르마트",
     name_en: "Zermatt",
+slug: "zermatt",
     country: "스위스",
     country_en: "Switzerland",
     lat: 46.0207,
@@ -1426,6 +1524,7 @@ export const citiesData = [
   {
     name: "밀라노",
     name_en: "Milan",
+slug: "milan",
     country: "이탈리아",
     country_en: "Italy",
     lat: 45.4642,
@@ -1443,6 +1542,7 @@ export const citiesData = [
   {
     name: "피렌체",
     name_en: "Florence",
+slug: "florence",
     country: "이탈리아",
     country_en: "Italy",
     lat: 43.7696,
@@ -1460,6 +1560,7 @@ export const citiesData = [
   {
     name: "베네치아",
     name_en: "Venice",
+slug: "venice",
     country: "이탈리아",
     country_en: "Italy",
     lat: 45.4408,
@@ -1475,6 +1576,7 @@ export const citiesData = [
   {
     name: "마드리드",
     name_en: "Madrid",
+slug: "madrid",
     country: "스페인",
     country_en: "Spain",
     lat: 40.4168,
@@ -1490,6 +1592,7 @@ export const citiesData = [
   {
     name: "바르셀로나",
     name_en: "Barcelona",
+slug: "barcelona",
     country: "스페인",
     country_en: "Spain",
     lat: 41.3851,
@@ -1505,6 +1608,7 @@ export const citiesData = [
   {
     name: "세비야",
     name_en: "Seville",
+slug: "seville",
     country: "스페인",
     country_en: "Spain",
     lat: 37.3891,
@@ -1520,6 +1624,7 @@ export const citiesData = [
   {
     name: "제주",
     name_en: "Jeju",
+slug: "jeju",
     country: "한국",
     country_en: "South Korea",
     lat: 33.4996,
@@ -1535,6 +1640,7 @@ export const citiesData = [
   {
     name: "부산",
     name_en: "Busan",
+slug: "busan",
     country: "한국",
     country_en: "South Korea",
     lat: 35.1796,
@@ -1550,6 +1656,7 @@ export const citiesData = [
   {
     name: "오사카",
     name_en: "Osaka",
+slug: "osaka",
     country: "일본",
     country_en: "Japan",
     lat: 34.6937,
@@ -1566,6 +1673,7 @@ export const citiesData = [
   {
     name: "후쿠오카",
     name_en: "Fukuoka",
+slug: "fukuoka",
     country: "일본",
     country_en: "Japan",
     lat: 33.5902,
@@ -1581,6 +1689,7 @@ export const citiesData = [
   {
     name: "삿포로",
     name_en: "Sapporo",
+slug: "sapporo",
     country: "일본",
     country_en: "Japan",
     lat: 43.0618,
@@ -1596,6 +1705,7 @@ export const citiesData = [
   {
     name: "오키나와",
     name_en: "Okinawa",
+slug: "okinawa",
     country: "일본",
     country_en: "Japan",
     lat: 26.2124,
@@ -1611,6 +1721,7 @@ export const citiesData = [
   {
     name: "교토",
     name_en: "Kyoto",
+slug: "kyoto",
     country: "일본",
     country_en: "Japan",
     lat: 35.0116,
@@ -1626,6 +1737,7 @@ export const citiesData = [
   {
     name: "타이베이",
     name_en: "Taipei",
+slug: "taipei",
     country: "대만",
     country_en: "Taiwan",
     lat: 25.033,
@@ -1641,6 +1753,7 @@ export const citiesData = [
   {
     name: "가오슝",
     name_en: "Kaohsiung",
+slug: "kaohsiung",
     country: "대만",
     country_en: "Taiwan",
     lat: 22.6273,
@@ -1656,6 +1769,7 @@ export const citiesData = [
   {
     name: "라스베이거스",
     name_en: "Las Vegas",
+slug: "las-vegas",
     country: "미국",
     country_en: "USA",
     lat: 36.1699,
@@ -1670,6 +1784,7 @@ export const citiesData = [
   {
     name: "샌프란시스코",
     name_en: "San Francisco",
+slug: "san-francisco",
     country: "미국",
     country_en: "USA",
     lat: 37.7749,
@@ -1685,6 +1800,7 @@ export const citiesData = [
   {
     name: "옐로나이프",
     name_en: "Yellowknife",
+slug: "yellowknife",
     country: "캐나다",
     country_en: "Canada",
     lat: 62.454,
@@ -1700,6 +1816,7 @@ export const citiesData = [
   {
     name: "우유니 소금사막",
     name_en: "Uyuni Salt Flat",
+slug: "uyuni-salt-flat",
     country: "볼리비아",
     country_en: "Bolivia",
     lat: -20.1338,
@@ -1715,6 +1832,7 @@ export const citiesData = [
   {
     name: "프라하",
     name_en: "Prague",
+slug: "prague",
     country: "체코",
     country_en: "Czech Republic",
     lat: 50.0755,
@@ -1730,6 +1848,7 @@ export const citiesData = [
   {
     name: "부다페스트",
     name_en: "Budapest",
+slug: "budapest",
     country: "헝가리",
     country_en: "Hungary",
     lat: 47.4979,
@@ -1745,6 +1864,7 @@ export const citiesData = [
   {
     name: "암스테르담",
     name_en: "Amsterdam",
+slug: "amsterdam",
     country: "네덜란드",
     country_en: "Netherlands",
     lat: 52.3676,
@@ -1760,6 +1880,7 @@ export const citiesData = [
   {
     name: "니스",
     name_en: "Nice",
+slug: "nice",
     country: "프랑스",
     country_en: "France",
     lat: 43.7102,
@@ -1775,6 +1896,7 @@ export const citiesData = [
   {
     name: "그라나다",
     name_en: "Granada",
+slug: "granada",
     country: "스페인",
     country_en: "Spain",
     lat: 37.1773,
@@ -1791,6 +1913,7 @@ export const citiesData = [
   {
     name: "골드코스트",
     name_en: "Gold Coast",
+slug: "gold-coast",
     country: "호주",
     country_en: "Australia",
     lat: -28.0167,
@@ -1806,6 +1929,7 @@ export const citiesData = [
   {
     name: "퀸스타운",
     name_en: "Queenstown",
+slug: "queenstown",
     country: "뉴질랜드",
     country_en: "New Zealand",
     lat: -45.0312,
@@ -1821,6 +1945,7 @@ export const citiesData = [
   {
     name: "마라케시",
     name_en: "Marrakech",
+slug: "marrakech",
     country: "모로코",
     country_en: "Morocco",
     lat: 31.6295,
