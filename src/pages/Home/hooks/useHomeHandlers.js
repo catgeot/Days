@@ -352,7 +352,7 @@ export function useHomeHandlers({
             "당신은 지명 자동 교정 전문가입니다.", 
             aiPrompt, 
             [], 
-            "gemini-1.5-flash-8b" // 🚨 초고속/저비용/고효율 (빠르고 거의 무제한에 가까운 Rate Limit 제공)
+            "gemini-2.5-flash-lite" // 🚨 초고속/저비용/고효율 (빠르고 거의 무제한에 가까운 Rate Limit 제공)
           );
           const cleanName = correctedName.replace(/[\n\r\"\'\.]/g, '').trim();
 
