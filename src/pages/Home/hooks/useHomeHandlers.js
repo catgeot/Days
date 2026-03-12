@@ -91,20 +91,54 @@ export function useHomeHandlers({
       // 🚨 [Fix/New] Pessimistic First: 바다 한가운데 등 데이터를 전혀 받지 못한 경우의 안전망
       const isOcean = !addressData || (!addressData.city && !addressData.country);
       
+      if (isOcean) {
+        // 🚨 [Fix/New] 스마트 스냅 (Smart Snap) 로직
+        // 미지의 바다나 지명이 없는 오지 클릭 시, 가장 가까운 의미 있는 육지(도시/명소)로 끌어당깁니다.
+        const allKnownPoints = [...TRAVEL_SPOTS, ...citiesData];
+        let nearestPoint = null;
+        let minDistance = Infinity;
+        
+        for (let pt of allKnownPoints) {
+          if (pt.lat === undefined || pt.lng === undefined) continue;
+          const dist = getDistanceKm(lat, lng, pt.lat, pt.lng);
+          if (dist < minDistance) {
+            minDistance = dist;
+            nearestPoint = pt;
+          }
+        }
+        
+        if (nearestPoint) {
+            const finalLoc = {
+                ...nearestPoint,
+                id: nearestPoint.id || `snap-${nearestPoint.lat}-${nearestPoint.lng}`,
+                type: nearestPoint.type || 'temp-base',
+                category: nearestPoint.category || category
+            };
+            
+            // 기존 스캔 핀을 덮어씌우는 효과 (같은 ID 부여 시 교체되지만, 여기선 명시적으로 새 좌표와 이름으로 갱신)
+            addScoutPin(finalLoc);
+            setSelectedLocation(finalLoc);
+            moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category);
+            processSearchKeywords(finalLoc.name);
+            recordInteraction(finalLoc.name, 'view');
+            return;
+        }
+      }
+
       const name_en = addressData?.name_en || "";
-      const display_name = isOcean ? "미지의 탐험지" : (addressData.city || addressData.country);
+      const display_name = addressData.city || addressData.country;
 
       const realPin = { 
-        // 영문명이 없거나 바다인 경우, 라우터가 역추적할 수 있도록 좌표 기반 ID 부여
-        id: isOcean || !name_en ? fallbackId : Date.now(), 
+        // 영문명이 없는 경우, 라우터가 역추적할 수 있도록 좌표 기반 ID 부여
+        id: !name_en ? fallbackId : Date.now(), 
         lat, 
         lng, 
         name: display_name, 
         name_en: name_en, 
         type: 'temp-base', 
         category: category,
-        country: addressData?.country || "Ocean",
-        country_en: addressData?.country_en || "Ocean",
+        country: addressData?.country || "Explore",
+        country_en: addressData?.country_en || "Explore",
         display_name: display_name 
       };
       
@@ -115,7 +149,7 @@ export function useHomeHandlers({
 
       processSearchKeywords(display_name);
       
-      if (!isOcean) recordInteraction(display_name, 'view'); 
+      recordInteraction(display_name, 'view'); 
     } catch (error) {
       console.error("Geocoding Error:", error);
     } finally {
