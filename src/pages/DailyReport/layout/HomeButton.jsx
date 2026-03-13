@@ -13,7 +13,7 @@ const HomeButton = () => {
       {/* 🚨 [Fix] button 태그와 onClick=closeReport를 <Link to="/"> 로 완벽 교체 */}
       <Link 
         to="/" 
-        className="text-gray-500 hover:text-blue-400 transition-colors p-2 -ml-2 hover:bg-gray-800/50 rounded-full group" 
+        className="text-gray-500 hover:text-blue-500 transition-colors p-2 -ml-2 hover:bg-gray-100 rounded-full group" 
         title="Go Home (Return to Globe)"
       >
         <Globe size={20} className="group-hover:rotate-180 transition-transform duration-700 ease-in-out"/>

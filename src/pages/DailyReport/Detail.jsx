@@ -168,32 +168,32 @@ const Detail = () => {
         return null; 
       }
       if (part.trim() !== '') {
-        return <p key={index} className="text-lg leading-[1.8] text-slate-300 whitespace-pre-wrap font-light mb-6">{part}</p>;
+        return <p key={index} className="text-lg leading-[1.8] text-gray-800 whitespace-pre-wrap font-medium mb-6">{part}</p>;
       }
       return null;
     });
   };
 
-  if (!report) return <div className="min-h-screen bg-slate-950 p-10 flex justify-center items-center text-slate-500 animate-pulse">우주의 기억을 동기화하는 중...</div>;
+  if (!report) return <div className="min-h-screen bg-white p-10 flex justify-center items-center text-gray-400 animate-pulse">우주의 기억을 동기화하는 중...</div>;
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
   const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content); 
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden pb-20 font-sans">
+    <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
       
       {heroImageUrl && (
-        <div className="absolute inset-0 z-0 opacity-20 transition-opacity duration-700 pointer-events-none">
+        <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none">
           <img src={heroImageUrl} alt="Hero" className="w-full h-full object-cover blur-3xl scale-110" />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/80 to-slate-950"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/80 to-white"></div>
         </div>
       )}
 
       <div className="relative z-10 max-w-3xl mx-auto pt-8 px-4 sm:px-6">
         
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-          <button onClick={() => navigate('/report')} className="text-slate-400 hover:text-white transition-colors p-2 bg-slate-800/50 rounded-full backdrop-blur-md">
+          <button onClick={() => navigate('/report')} className="text-gray-500 hover:text-gray-900 transition-colors p-2 bg-gray-100 rounded-full backdrop-blur-md border border-gray-200">
             <ArrowLeft size={24} />
           </button>
           
@@ -202,7 +202,7 @@ const Detail = () => {
             {/* 🚨 [New] 직관적인 공유하기 버튼 (가장 돋보이게 처리) */}
             <button 
               onClick={handleSmartShare}
-              className="flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full transition-all border text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border-transparent"
+              className="flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full transition-all border text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm hover:shadow-md border-transparent"
             >
               <Share2 size={16} />
               <span className="hidden sm:inline">외부로 공유하기</span>
@@ -213,7 +213,7 @@ const Detail = () => {
             {isPublic && (
               <button 
                 onClick={handleMakePrivate}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-full transition-all text-xs font-medium text-slate-400 hover:text-red-400 hover:bg-red-900/20"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full transition-all text-xs font-medium text-gray-500 hover:text-red-500 hover:bg-red-50"
                 title="클릭 시 외부 접속이 차단됩니다"
               >
                 <Lock size={14} />
@@ -221,36 +221,36 @@ const Detail = () => {
               </button>
             )}
 
-            <div className="w-px h-6 bg-slate-700/50 my-auto mx-1 hidden md:block"></div>
+            <div className="w-px h-6 bg-gray-200 my-auto mx-1 hidden md:block"></div>
 
             <button 
               onClick={handleExportBlog} 
               className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full transition-all border text-sm font-medium backdrop-blur-md
                 ${isCopied 
-                  ? 'bg-green-900/40 text-green-300 border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
-                  : 'bg-slate-800/60 text-slate-300 border-slate-700/50 hover:bg-slate-700 hover:text-white'}
+                  ? 'bg-green-50 text-green-600 border-green-200 shadow-sm' 
+                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'}
               `}
             >
               {isCopied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
               <span className="hidden sm:inline">{isCopied ? '복사 완료!' : '블로그 내보내기'}</span>
             </button>
 
-            <button onClick={() => navigate(`/report/write/${id}`)} className="flex items-center gap-1.5 bg-slate-800/60 backdrop-blur-md text-slate-300 px-3 sm:px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-colors border border-slate-700/50 text-sm font-medium">
+            <button onClick={() => navigate(`/report/write/${id}`)} className="flex items-center gap-1.5 bg-gray-50 backdrop-blur-md text-gray-600 px-3 sm:px-4 py-2 rounded-full hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200 text-sm font-medium">
               <Edit size={16} /> <span className="hidden sm:inline">수정</span>
             </button>
-            <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-900/20 backdrop-blur-md text-red-400 px-3 sm:px-4 py-2 rounded-full hover:bg-red-900/40 transition-colors border border-red-900/50 text-sm font-medium">
+            <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium">
               <Trash2 size={16} /> <span className="hidden sm:inline">삭제</span>
             </button>
           </div>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 p-6 sm:p-10 rounded-3xl shadow-2xl">
+        <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm">
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className="text-xs font-bold text-blue-300 bg-blue-900/30 border border-blue-800/50 px-3 py-1.5 rounded-full uppercase tracking-wider">{report.date}</span>
-            <span className="text-slate-400 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-slate-500"/> {report.location}</span>
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{report.date}</span>
+            <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-10 tracking-tight leading-tight">{report.title}</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-10 tracking-tight leading-tight">{report.title}</h1>
 
           {!hasPlaceholders && images.length > 0 && (
             <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden
@@ -261,8 +261,8 @@ const Detail = () => {
             `}>
               {images.map((img, idx) => (
                 <div key={idx} className={`relative group ${images.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
-                  <img src={img} alt={`첨부 ${idx+1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer border border-slate-700/50" onClick={() => window.open(img, '_blank')} />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
+                  <img src={img} alt={`첨부 ${idx+1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer border border-gray-200" onClick={() => window.open(img, '_blank')} />
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors pointer-events-none"></div>
                 </div>
               ))}
             </div>
@@ -270,7 +270,7 @@ const Detail = () => {
 
           <div className="mt-8">
             {hasPlaceholders ? renderBlogContent(report.content, images) : (
-              <div className="text-lg leading-relaxed text-slate-300 whitespace-pre-wrap font-light">{report.content}</div>
+              <div className="text-lg leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">{report.content}</div>
             )}
           </div>
         </div>

@@ -20,29 +20,29 @@ const Dashboard = () => {
   } = useDashboardData();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
+    <div className="min-h-screen bg-white text-gray-900 font-sans">
       <div className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 pb-20">
         
-        <div className="mb-8 flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-slate-800/60 pb-6">
+        <div className="mb-8 flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-200 pb-6">
           
           <div className="flex flex-col sm:flex-row sm:items-end gap-6 flex-1">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">LogBook</h2>
-              <p className="text-slate-400 mt-1.5 text-sm font-medium">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight drop-shadow-sm">LogBook</h2>
+              <p className="text-gray-500 mt-1.5 text-sm font-medium">
                  {loading ? '우주의 기록을 동기화하는 중...' : `총 ${displayCount}개의 기억이 빛나고 있습니다.`}
               </p>
             </div>
 
             {!loading && trendData && trendData.length > 0 && (
-              <div className="hidden sm:flex items-end gap-2 h-10 ml-4 pl-6 border-l border-slate-800/80">
-                <BarChart3 size={14} className="text-slate-600 mb-1 mr-1" />
+              <div className="hidden sm:flex items-end gap-2 h-10 ml-4 pl-6 border-l border-gray-200">
+                <BarChart3 size={14} className="text-gray-400 mb-1 mr-1" />
                 {trendData.slice(-6).map((item, idx) => (
                   <div key={idx} className="flex flex-col items-center justify-end h-full group relative cursor-default">
                     <div 
                       style={{ height: `${maxCount > 0 ? Math.max((item.count / maxCount) * 100, 15) : 15}%` }}
-                      className={`w-1.5 rounded-t-sm transition-all duration-500 ${item.count > 0 ? 'bg-blue-500/60 group-hover:bg-blue-400' : 'bg-slate-800'}`}
+                      className={`w-1.5 rounded-t-sm transition-all duration-500 ${item.count > 0 ? 'bg-blue-500/80 group-hover:bg-blue-400' : 'bg-gray-200'}`}
                     ></div>
-                    <span className="absolute -top-7 bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-slate-700 shadow-lg">
+                    <span className="absolute -top-7 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-gray-700 shadow-sm">
                       {item.count}건
                     </span>
                   </div>

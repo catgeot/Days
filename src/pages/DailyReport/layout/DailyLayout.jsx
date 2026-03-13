@@ -37,10 +37,10 @@ const DailyLayout = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
       
-      <div className="md:hidden w-full h-14 bg-[#1a1c23] flex items-center justify-between px-4 shrink-0 border-b border-gray-800 z-50">
+      <div className="md:hidden w-full h-14 bg-white flex items-center justify-between px-4 shrink-0 border-b border-gray-200 z-50">
         <button 
           onClick={handleGoHome} // 🚨 [Fix] 함수 교체
-          className="text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
+          className="text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors"
         >
           <Globe size={20} />
           <span className="text-sm font-bold tracking-wider">GATEO</span>
@@ -48,12 +48,12 @@ const DailyLayout = () => {
         
         {user && (
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400 truncate max-w-[120px]">
+            <span className="text-xs text-gray-500 truncate max-w-[120px]">
               {user?.email?.split('@')[0]}
             </span>
             <button 
               onClick={handleLogout} 
-              className="text-gray-400 hover:text-red-400 transition-colors p-1"
+              className="text-gray-500 hover:text-red-500 transition-colors p-1"
             >
               <LogOut size={16} />
             </button>

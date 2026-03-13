@@ -60,7 +60,7 @@ const Sidebar = () => {
   return (
     <>
       {/* 🚨 [Fix/Subtraction] 모바일(md 미만)에서는 사이드바 UI를 완전히 제거(hidden). PC에서는 flex로 유지 */}
-      <div className="hidden md:flex w-64 h-screen bg-[#1a1c23] text-gray-400 flex-col border-r border-gray-800 flex-shrink-0 transition-all duration-300">
+      <div className="hidden md:flex w-64 h-screen bg-white text-gray-700 flex-col border-r border-gray-200 flex-shrink-0 transition-all duration-300">
         <HomeButton />
         <QuickMemo user={user} />
         <UserProfile 

@@ -146,32 +146,32 @@ const Write = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative font-sans" onClick={() => setShowSuggestions(false)}>
+    <div className="min-h-screen bg-white text-gray-900 relative font-sans" onClick={() => setShowSuggestions(false)}>
       
       {heroImageUrl && (
-        <div className="fixed inset-0 z-0 opacity-20 transition-opacity duration-1000 pointer-events-none">
+        <div className="fixed inset-0 z-0 opacity-10 transition-opacity duration-1000 pointer-events-none">
           <img src={heroImageUrl} alt="Hero Background" className="w-full h-full object-cover blur-3xl scale-110" />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/80 to-slate-950"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/80 to-white"></div>
         </div>
       )}
 
       {/* 🚨 [Fix] 헤더 디자인 보강 (시인성) */}
-      <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-2xl border-b border-white/5 px-4 sm:px-8 py-4 flex items-center justify-between shadow-2xl">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-2xl border-b border-gray-200 px-4 sm:px-8 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white transition-all p-2.5 bg-white/5 rounded-xl border border-white/5 hover:border-white/20">
+          <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 transition-all p-2.5 bg-gray-100 rounded-xl border border-gray-200 hover:border-gray-300">
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h2 className="text-lg font-bold text-white tracking-tight">
+            <h2 className="text-lg font-bold text-gray-900 tracking-tight">
               {isEditMode ? '기록 수정하기' : '새로운 여정 기록'}
             </h2>
-            <p className="text-[10px] text-blue-400 font-mono uppercase tracking-widest mt-0.5">Logbook Terminal</p>
+            <p className="text-[10px] text-blue-500 font-mono uppercase tracking-widest mt-0.5">Logbook Terminal</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {backupData && (
-            <button onClick={handleRestoreBackup} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-300 bg-slate-800/80 rounded-full border border-white/10 hover:bg-slate-700 transition-all">
+            <button onClick={handleRestoreBackup} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100/80 rounded-full border border-gray-200 hover:bg-gray-200 transition-all">
               <Undo2 size={14} /> <span className="hidden sm:inline">원본 복구</span>
             </button>
           )}
@@ -187,33 +187,33 @@ const Write = () => {
         {/* 🚨 [01] 여정 정보 섹션 */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
-            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/40 text-[10px] font-black text-blue-400">01</span>
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">여정의 기본 정보</h3>
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">01</span>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">여정의 기본 정보</h3>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 날짜 입력창 입체감 강화 */}
-            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-5 hover:border-white/20 transition-all focus-within:border-blue-500/50 focus-within:bg-blue-500/5">
-              <label className="flex items-center gap-2 text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-widest">
+            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-all focus-within:border-blue-400 focus-within:bg-blue-50/50">
+              <label className="flex items-center gap-2 text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest">
                 <Calendar size={12} /> Travel Date
               </label>
-              <input type="date" className="w-full bg-transparent outline-none text-xl font-bold text-white transition-colors" value={date} onChange={(e) => setDate(e.target.value)} disabled={isAILoading || isCompressing} />
+              <input type="date" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 transition-colors" value={date} onChange={(e) => setDate(e.target.value)} disabled={isAILoading || isCompressing} />
             </div>
 
             {/* 위치 입력창 입체감 강화 */}
-            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-5 hover:border-white/20 transition-all focus-within:border-blue-500/50 focus-within:bg-blue-500/5 relative" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-all focus-within:border-blue-400 focus-within:bg-blue-50/50 relative" onClick={(e) => e.stopPropagation()}>
               <div className="flex justify-between items-center mb-3">
-                <label className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <label className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                   <MapPin size={12} /> Location
                 </label>
-                <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">
+                <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-[10px] font-bold text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1">
                    {locationLoading ? <Loader2 size={10} className="animate-spin" /> : "현재 위치 찾기"}
                 </button>
               </div>
-              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-white placeholder-slate-700 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="어디의 공기를 담아왔나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
+              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 placeholder-gray-400 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="어디의 공기를 담아왔나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
               {showSuggestions && recentLocations.length > 0 && (
-                <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl">
-                   {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-slate-300 hover:bg-blue-600 hover:text-white cursor-pointer flex items-center gap-3 transition-all" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="opacity-50" />{loc}</div>))}
+                <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl">
+                   {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center gap-3 transition-all" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="opacity-50" />{loc}</div>))}
                 </div>
               )}
             </div>
@@ -223,82 +223,82 @@ const Write = () => {
         {/* 🚨 [02] 추억(사진) 섹션 */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
-            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/40 text-[10px] font-black text-blue-400">02</span>
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">장면의 포착</h3>
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">02</span>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">장면의 포착</h3>
           </div>
 
-          <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 hover:border-white/10 transition-all relative">
+          <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 hover:border-gray-300 transition-all relative">
             {isCompressing && (
-              <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-400 rounded-3xl">
+              <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-600 rounded-3xl">
                 <Loader2 size={36} className="animate-spin mb-4" />
                 <p className="font-bold text-sm">기록의 용량을 최적화 중...</p>
-                <p className="text-[10px] text-blue-300 mt-2 font-mono">Progress: {compressProgress.current} / {compressProgress.total}</p>
+                <p className="text-[10px] text-blue-500 mt-2 font-mono">Progress: {compressProgress.current} / {compressProgress.total}</p>
               </div>
             )}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
               {existingImages.map((url, idx) => ( 
                 <div key={`exist-${idx}`} className="relative aspect-square group">
-                  <img src={url} className="w-full h-full object-cover rounded-2xl border border-white/5 group-hover:border-white/20 transition-all" />
-                  <button onClick={() => removeExistingImage(idx)} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1.5 shadow-lg scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
+                  <img src={url} className="w-full h-full object-cover rounded-2xl border border-gray-200 group-hover:border-gray-300 transition-all" />
+                  <button onClick={() => removeExistingImage(idx)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
                 </div> 
               ))}
               {previewUrls.map((url, idx) => ( 
                 <div key={`new-${idx}`} className="relative aspect-square group">
-                  <img src={url} className="w-full h-full object-cover rounded-2xl border border-blue-500/30 group-hover:border-blue-500/50 transition-all" />
-                  <button onClick={() => removeNewImage(idx)} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1.5 shadow-lg scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
+                  <img src={url} className="w-full h-full object-cover rounded-2xl border border-blue-300 group-hover:border-blue-400 transition-all" />
+                  <button onClick={() => removeNewImage(idx)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
                 </div> 
               ))}
               {(existingImages.length + previewUrls.length) < 10 && (
-                <label className="aspect-square border-2 border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 text-slate-600 hover:text-blue-400 transition-all group">
+                <label className="aspect-square border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 text-gray-400 hover:text-blue-500 transition-all group">
                   <ImageIcon size={28} className="mb-2 group-hover:scale-110 transition-transform" />
                   <span className="text-[10px] font-black uppercase tracking-wider text-center">Add Moment</span>
                   <input type="file" accept="image/*" multiple onChange={(e) => handleImageChange(e, isAILoading)} className="hidden" disabled={isAILoading || isCompressing} />
                 </label>
               )}
             </div>
-            <p className="text-[10px] text-slate-600 mt-6 text-center font-bold tracking-widest uppercase">Max 10 images / High-Quality Compression Applied</p>
+            <p className="text-[10px] text-gray-500 mt-6 text-center font-bold tracking-widest uppercase">Max 10 images / High-Quality Compression Applied</p>
           </div>
         </section>
 
         {/* 🚨 [03] 이야기 섹션 (가장 중요) */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
-            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/40 text-[10px] font-black text-blue-400">03</span>
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">기록의 완성</h3>
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">03</span>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">기록의 완성</h3>
           </div>
 
           <div className="flex flex-col gap-4">
             {/* 제목 섹션 */}
-            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 focus-within:border-blue-500/50 transition-all">
-              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-white placeholder-slate-800 tracking-tight" placeholder="이번 여정을 한 문장으로 정의한다면?" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
+            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all">
+              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-gray-900 placeholder-gray-400 tracking-tight" placeholder="이번 여정을 한 문장으로 정의한다면?" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
             </div>
 
             {/* 본문 및 AI 툴바 섹션 */}
-            <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 focus-within:border-blue-500/50 transition-all relative min-h-[500px] flex flex-col">
+            <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all relative min-h-[500px] flex flex-col">
               
               {/* 🚨 [New] Contextual AI Toolbar: 본문 바로 위에서 도움 받기 */}
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Storytelling</label>
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Storytelling</label>
                 <div className="flex gap-2">
-                  <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-600/10 border border-purple-500/30 text-purple-400 rounded-full text-[10px] font-black hover:bg-purple-600 hover:text-white transition-all">
+                  <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-600 rounded-full text-[10px] font-black hover:bg-purple-100 hover:text-purple-700 transition-all">
                     <Sparkles size={12} className="group-hover:animate-spin" /> AI 에세이 작가
                   </button>
-                  <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-600/10 border border-pink-500/30 text-pink-400 rounded-full text-[10px] font-black hover:bg-pink-600 hover:text-white transition-all">
+                  <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-200 text-pink-600 rounded-full text-[10px] font-black hover:bg-pink-100 hover:text-pink-700 transition-all">
                     <Sparkles size={12} className="group-hover:animate-pulse" /> AI SNS 인플루언서
                   </button>
                 </div>
               </div>
 
               {isAILoading && (
-                <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center text-purple-400 rounded-3xl">
+                <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center text-purple-600 rounded-3xl">
                   <Loader2 size={40} className="animate-spin mb-6" />
                   <p className="font-black text-sm animate-pulse text-center px-8 tracking-tight">{aiLoadingMsg}</p>
                 </div>
               )}
 
               <textarea 
-                className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-slate-200 placeholder-slate-800 flex-1 min-h-[400px]" 
+                className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-gray-800 placeholder-gray-400 flex-1 min-h-[400px]" 
                 value={content} 
                 onChange={(e) => setContent(e.target.value)} 
                 disabled={isAILoading || isCompressing} 

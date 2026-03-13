@@ -103,20 +103,20 @@ const AICurationCard = () => {
   };
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-2xl flex flex-col md:flex-row h-full min-h-[340px] relative overflow-hidden group">
+    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col md:flex-row h-full min-h-[340px] relative overflow-hidden group">
       
       {status === 'idle' && (
         <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
-          <div className="w-14 h-14 bg-blue-900/20 rounded-full flex items-center justify-center mb-5 border border-blue-500/20">
-            <Compass size={24} className="text-blue-400" />
+          <div className="w-14 h-14 bg-blue-50/80 rounded-full flex items-center justify-center mb-5 border border-blue-100">
+            <Compass size={24} className="text-blue-500" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">당신만을 위한 큐레이션</h3>
-          <p className="text-sm text-slate-400 mb-6 max-w-sm font-light">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">당신만을 위한 큐레이션</h3>
+          <p className="text-sm text-gray-500 mb-6 max-w-sm font-light">
             지금까지의 기록을 분석하여, 아직 발견하지 못한 완벽한 숨겨진 낙원을 찾아냅니다.
           </p>
           <button 
             onClick={handleCuration}
-            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full transition-all shadow-lg active:scale-95"
+            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full transition-all shadow-md hover:shadow-lg active:scale-95"
           >
             <Sparkles size={16} /> 낙원 탐색 시작
           </button>
@@ -126,8 +126,8 @@ const AICurationCard = () => {
       {status === 'loading' && (
         <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
           <Loader2 size={32} className="text-blue-500 animate-spin mb-4" />
-          <h3 className="text-lg font-bold text-white mb-1 animate-pulse">{loadingText}</h3>
-          <p className="text-xs text-slate-500">당신의 취향과 공명하는 별을 찾고 있습니다.</p>
+          <h3 className="text-lg font-bold text-gray-900 mb-1 animate-pulse">{loadingText}</h3>
+          <p className="text-xs text-gray-500">당신의 취향과 공명하는 별을 찾고 있습니다.</p>
         </div>
       )}
 
@@ -147,16 +147,16 @@ const AICurationCard = () => {
             
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-start gap-2">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 text-[10px] font-bold rounded tracking-wider flex-shrink-0 mt-0.5">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-600 text-[10px] font-bold rounded tracking-wider flex-shrink-0 mt-0.5">
                   <Sparkles size={10} /> AI CURATION
                 </span>
                 
                 <div className="flex flex-col justify-center ml-1">
-                  <p className="flex items-center gap-1 text-slate-300 text-sm font-bold truncate max-w-[180px]">
-                    <MapPin size={12} className="flex-shrink-0 text-blue-400" /> 
+                  <p className="flex items-center gap-1 text-gray-800 text-sm font-bold truncate max-w-[180px]">
+                    <MapPin size={12} className="flex-shrink-0 text-blue-500" /> 
                     <span className="truncate">{curationData.location}</span>
                   </p>
-                  <p className="text-slate-400 text-[15px] ml-4 font-mono truncate max-w-[180px] mt-0.5 select-all" title="클릭하여 복사하기 쉽습니다">
+                  <p className="text-gray-500 text-[15px] ml-4 font-mono truncate max-w-[180px] mt-0.5 select-all" title="클릭하여 복사하기 쉽습니다">
                     {curationData.locationEn}
                   </p>
                 </div>
@@ -164,25 +164,25 @@ const AICurationCard = () => {
               
               <button 
                 onClick={handleSaveCuration}
-                className={`p-2.5 rounded-full transition-all flex-shrink-0 z-20 border shadow-md ${isSaved ? 'bg-blue-600 text-white border-blue-500 shadow-blue-500/20' : 'bg-slate-700/80 text-slate-300 hover:text-white hover:bg-slate-600 border-slate-600 shadow-black/40'}`}
+                className={`p-2.5 rounded-full transition-all flex-shrink-0 z-20 border shadow-sm ${isSaved ? 'bg-blue-600 text-white border-blue-500 shadow-blue-500/20' : 'bg-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-200 border-gray-200'}`}
                 title={isSaved ? "저장됨" : "위시리스트에 저장"}
               >
                 {isSaving ? <Loader2 size={16} className="animate-spin" /> : isSaved ? <Check size={16} /> : <Bookmark size={16} />}
               </button>
             </div>
             
-            <h2 className="text-lg md:text-xl font-bold text-white leading-tight mb-3 tracking-tight line-clamp-2 mt-1">
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 leading-tight mb-3 tracking-tight line-clamp-2 mt-1">
               {curationData.title}
             </h2>
             
             <div className="mb-6 flex-1">
-              <p className={`text-sm text-slate-300 leading-relaxed font-light transition-all duration-300 break-keep ${isTextExpanded ? '' : 'line-clamp-3'}`}>
+              <p className={`text-sm text-gray-600 leading-relaxed font-light transition-all duration-300 break-keep ${isTextExpanded ? '' : 'line-clamp-3'}`}>
                 {curationData.description}
               </p>
               {curationData.description.length > 80 && (
                 <button 
                   onClick={() => setIsTextExpanded(!isTextExpanded)}
-                  className="mt-2 flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors z-20 relative"
+                  className="mt-2 flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors z-20 relative"
                 >
                   {isTextExpanded ? (
                     <><ChevronUp size={14} /> 간략히 보기</>
@@ -193,13 +193,13 @@ const AICurationCard = () => {
               )}
             </div>
 
-            <div className="mt-auto pt-4 border-t border-slate-700/30 flex justify-between items-center">
-              <span className="text-xs text-slate-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
+            <div className="mt-auto pt-4 border-t border-gray-200 flex justify-between items-center">
+              <span className="text-xs text-gray-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
               <button 
                 onClick={handleCuration}
-                className="group/btn flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-400 transition-colors z-20 relative"
+                className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative"
               >
-                <Sparkles size={14} className="text-blue-400 group-hover/btn:animate-pulse" />
+                <Sparkles size={14} className="text-blue-500 group-hover/btn:animate-pulse" />
                 다른 낙원 탐색
                 <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
               </button>

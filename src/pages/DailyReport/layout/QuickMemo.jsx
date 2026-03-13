@@ -77,16 +77,16 @@ const QuickMemo = ({ user }) => {
         </div>
 
         {/* 본문 */}
-        <div className="flex-1 bg-gray-800/40 border border-gray-700/30 rounded-xl p-1 flex flex-col transition-all hover:border-gray-600/50">
+        <div className="flex-1 bg-gray-100 border border-gray-200 rounded-xl p-1 flex flex-col transition-all hover:border-blue-400">
           <textarea 
-						className="flex-1 w-full bg-transparent border-0 p-3 text-sm text-white/90 placeholder-gray-400 focus:outline-none resize-none custom-scrollbar leading-relaxed font-medium selection:bg-blue-500/30"
+						className="flex-1 w-full bg-transparent border-0 p-3 text-sm text-gray-800 placeholder-gray-500 focus:outline-none resize-none custom-scrollbar leading-relaxed font-medium selection:bg-blue-500/30"
 						placeholder="새로운 아이디어를 적어보세요..."
 						value={memos[currentMemoIndex]}
 						onChange={handleChange}
 						spellCheck="false"
 					/>
           {/* 컨트롤 바 */}
-					<div className="h-12 flex items-center justify-between px-3 border-t border-white/10 bg-white/5">
+					<div className="h-12 flex items-center justify-between px-3 border-t border-gray-200 bg-white/5">
 						
 						{/* 1. 삭제 버튼: 평소엔 흐리게, 올리면 빨갛게 */}
 						<button 
@@ -98,11 +98,11 @@ const QuickMemo = ({ user }) => {
 						</button>
 
 						{/* 2. 네비게이션: 아이콘 밝기 UP, 비활성화 상태 명확히 */}
-						<div className="flex items-center gap-1 bg-black/20 rounded-lg p-0.5">
+						<div className="flex items-center gap-1 bg-gray-200/50 rounded-lg p-0.5">
 							<button 
 								onClick={() => setCurrentMemoIndex(Math.max(0, currentMemoIndex - 1))} 
 								disabled={currentMemoIndex === 0} 
-								className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded disabled:text-gray-700 disabled:bg-transparent disabled:cursor-not-allowed transition-all"
+								className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-300/50 rounded disabled:text-gray-400 disabled:bg-transparent disabled:cursor-not-allowed transition-all"
 							>
 								<ChevronLeft size={18} />
 							</button>
@@ -115,7 +115,7 @@ const QuickMemo = ({ user }) => {
 							<button 
 								onClick={() => setCurrentMemoIndex(Math.min(memos.length - 1, currentMemoIndex + 1))} 
 								disabled={currentMemoIndex === memos.length - 1} 
-								className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded disabled:text-gray-700 disabled:bg-transparent disabled:cursor-not-allowed transition-all"
+								className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-300/50 rounded disabled:text-gray-400 disabled:bg-transparent disabled:cursor-not-allowed transition-all"
 							>
 								<ChevronRight size={18} />
 							</button>
