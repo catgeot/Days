@@ -14,6 +14,32 @@ import { supabase } from '../../../shared/api/supabase';
 const CACHE_VERSION = 'v1.4';
 const CACHE_TTL = 1000 * 60 * 60 * 24; 
 
+// 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
+const FALLBACK_DICTIONARY = {
+  "에베레스트": "Mount Everest",
+  "에베레스트 베이스캠프": "Everest Base Camp",
+  "트리스탄 다 쿠냐": "Tristan da Cunha",
+  "칼라 타파르": "Kala Patthar",
+  "남극점": "South Pole",
+  "맥머도 기지": "McMurdo Station",
+  "세종과학기지": "King Sejong Station",
+  "장보고과학기지": "Jang Bogo Station",
+  "아문센-스콧 남극점 기지": "Amundsen-Scott South Pole Station",
+  "파타고니아": "Patagonia",
+  "우수아이아": "Ushuaia",
+  "사하라 사막": "Sahara Desert",
+  "아마존 분지": "Amazon Basin",
+  "갈라파고스": "Galapagos Islands",
+  "이스터 섬": "Easter Island",
+  "세렝게티": "Serengeti",
+  "통가": "Tonga Islands",
+  "투발루": "Tuvalu",
+  "키리바시": "Kiribati",
+  "팔라우": "Palau",
+  "바누아투": "Vanuatu",
+  "피지": "Fiji"
+};
+
 export const usePlaceGallery = (locationSource) => {
   const [images, setImages] = useState([]);
   const [isImgLoading, setIsImgLoading] = useState(false);
@@ -130,7 +156,7 @@ export const usePlaceGallery = (locationSource) => {
         koreanName = targetSpot.name || ''; 
         
         const country = targetSpot.country_en || targetSpot.country;
-        if (country && primaryQuery) {
+        if (country && primaryQuery && country !== primaryQuery) {
            backupQuery = `${primaryQuery} ${country}`;
         }
     } else {
@@ -140,6 +166,13 @@ export const usePlaceGallery = (locationSource) => {
 
     primaryQuery = primaryQuery.trim();
     if (!primaryQuery) return;
+
+    // 🚨 [Fix] 한글 검색어로 API 호출 시 결과가 희박하므로 Dictionary로 영문 강제 치환
+    if (FALLBACK_DICTIONARY[koreanName]) {
+      primaryQuery = FALLBACK_DICTIONARY[koreanName];
+    } else if (FALLBACK_DICTIONARY[primaryQuery]) {
+      primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
+    }
 
     // 강제 새로고침이 아닐 때만 마지막 쿼리를 확인하여 중복 방지
     if (!forceRefresh && lastQueryRef.current === primaryQuery) return;
@@ -190,15 +223,6 @@ export const usePlaceGallery = (locationSource) => {
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, pageRef.current);
       }
 
-      // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존
-      if (forceRefresh && results.length === 0) {
-        console.warn(`⚠️ 더 이상 가져올 이미지가 없습니다 (페이지 ${pageRef.current}). 이전 상태 유지.`);
-        pageRef.current -= 1; // 페이지 원복
-        setIsImgLoading(false);
-        processAndSetImages(allImagesRef.current); // UI 원복
-        return;
-      }
-
       // 🚨 [Fix] Unsplash 이미지가 적을 때(15장 이하) 또는 강제 새로고침 시 Pexels 결합 (더 풍성한 갤러리 제공)
       if ((results.length <= 15 || forceRefresh) && PEXELS_KEY) {
         console.warn(`⚠️ Unsplash 이미지 부족 또는 강제 새로고침. Pexels 이미지 검색 병합을 시도합니다.`);
@@ -214,17 +238,31 @@ export const usePlaceGallery = (locationSource) => {
         }
       }
 
+      // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존
+      if (forceRefresh && results.length === 0) {
+        console.warn(`⚠️ 더 이상 가져올 이미지가 없습니다 (페이지 ${pageRef.current}). 이전 상태 유지.`);
+        pageRef.current -= 1; // 페이지 원복
+        setIsImgLoading(false);
+        processAndSetImages(allImagesRef.current); // UI 원복
+        return;
+      }
+
       if (results.length > 0) {
-        // 🚨 [New] 새로고침(Refresh) 시 기존 큐레이션(좋아요/숨김) 기록 병합
+        // 🚨 [Fix] 새로고침(Refresh) 시 페이지네이션처럼 기존 데이터를 유지하며 병합 (Append)
         let finalResults = results;
         if (allImagesRef.current && allImagesRef.current.length > 0) {
-          const curatedImages = allImagesRef.current.filter(img => img.curation);
-          
-          // 기존 큐레이션(좋아요/숨김)된 이미지는 새 결과(results)에서 제외하고 다시 합침 (중복 방지)
-          const curatedIds = new Set(curatedImages.map(img => img.id));
-          const freshImages = results.filter(img => !curatedIds.has(img.id));
-          
-          finalResults = [...curatedImages, ...freshImages];
+          if (forceRefresh) {
+            // 강제 새로고침(더보기) 시: 이전 사진들을 보존하고 새 사진들을 이어 붙임 (빈약해지는 현상 방지)
+            const existingIds = new Set(allImagesRef.current.map(img => img.id));
+            const freshImages = results.filter(img => !existingIds.has(img.id));
+            finalResults = [...allImagesRef.current, ...freshImages];
+          } else {
+            // 일반 로드: 큐레이션(좋아요/숨김) 기록만 병합
+            const curatedImages = allImagesRef.current.filter(img => img.curation);
+            const curatedIds = new Set(curatedImages.map(img => img.id));
+            const freshImages = results.filter(img => !curatedIds.has(img.id));
+            finalResults = [...curatedImages, ...freshImages];
+          }
         }
 
         processAndSetImages(finalResults);
