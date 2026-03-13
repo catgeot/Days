@@ -51,7 +51,7 @@ export const apiClient = {
   },
 
   // --- 2. Unsplash 이미지 통신 ---
-  fetchUnsplashImages: async (accessKey, query) => {
+  fetchUnsplashImages: async (accessKey, query, page = 1) => {
     try {
       if (!query) return [];
       
@@ -59,7 +59,7 @@ export const apiClient = {
       
       // 'orientation=landscape' 제거 & 'order_by=relevant' 명시
       const response = await fetch(
-        `https://api.unsplash.com/search/photos?page=1&query=${encodedQuery}&per_page=30&order_by=relevant`,
+        `https://api.unsplash.com/search/photos?page=${page}&query=${encodedQuery}&per_page=30&order_by=relevant`,
         { headers: { Authorization: `Client-ID ${accessKey}` } }
       );
 
@@ -77,14 +77,14 @@ export const apiClient = {
   },
 
   // --- 3. Pexels 이미지 통신 (Fallback) ---
-  fetchPexelsImages: async (apiKey, query) => {
+  fetchPexelsImages: async (apiKey, query, page = 1) => {
     try {
       if (!query || !apiKey) return [];
       
       const encodedQuery = encodeURIComponent(query);
       
       const response = await fetch(
-        `https://api.pexels.com/v1/search?query=${encodedQuery}&per_page=30`,
+        `https://api.pexels.com/v1/search?query=${encodedQuery}&per_page=30&page=${page}`,
         { headers: { Authorization: apiKey } }
       );
 

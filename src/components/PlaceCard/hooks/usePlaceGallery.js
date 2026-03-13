@@ -22,6 +22,7 @@ export const usePlaceGallery = (locationSource) => {
   const lastQueryRef = useRef(null);
   // 🚨 [New] 큐레이션(좋아요/숨김) 원본 데이터를 보존하기 위한 Ref
   const allImagesRef = useRef([]);
+  const pageRef = useRef(1);
 
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
@@ -121,7 +122,11 @@ export const usePlaceGallery = (locationSource) => {
     let koreanName = ''; 
 
     if (typeof targetSpot === 'object') {
-        primaryQuery = targetSpot.name_en || targetSpot.name || '';
+        // 🚨 [Fix] 검색 정확도 향상을 위해 영어 지명에 쉼표가 있을 경우 첫 번째 구역(단어)만 추출
+        const rawNameEn = targetSpot.name_en || '';
+        const simpleNameEn = rawNameEn.split(',')[0].trim();
+        
+        primaryQuery = simpleNameEn || targetSpot.name || '';
         koreanName = targetSpot.name || ''; 
         
         const country = targetSpot.country_en || targetSpot.country;
@@ -141,11 +146,12 @@ export const usePlaceGallery = (locationSource) => {
     lastQueryRef.current = primaryQuery;
 
     setIsImgLoading(true);
-    setImages([]); 
+    if (!forceRefresh) setImages([]); 
 
     const CACHE_KEY = `days_gallery_${primaryQuery}`; 
 
     if (!forceRefresh) {
+      pageRef.current = 1; // 🚨 [Fix] 일반 로드 시 페이지 초기화
       const validCache = loadFromSmartCache(CACHE_KEY);
       if (validCache && validCache.length > 0) {
         processAndSetImages(validCache);
@@ -172,22 +178,32 @@ export const usePlaceGallery = (locationSource) => {
         }
       }
     } else {
-      console.log(`🔄 강제 새로고침 실행: 기존 캐시 유지한 채 새로운 데이터 가져오기 (${primaryQuery})`);
+      pageRef.current += 1;
+      console.log(`🔄 강제 새로고침 실행: 기존 캐시 유지한 채 새로운 데이터 가져오기 (${primaryQuery}, 페이지: ${pageRef.current})`);
     }
 
     try {
-      let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery);
+      let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, pageRef.current);
 
       if (results.length === 0 && backupQuery) {
         console.warn(`⚠️ No results for "${primaryQuery}". Retry with: "${backupQuery}"`);
-        results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery);
+        results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, pageRef.current);
       }
 
-      // 🚨 [Fix] Unsplash 이미지가 적을 때 Pexels 결합 임계값을 3장으로 대폭 하향(옵션 1)
-      if (results.length <= 3 && PEXELS_KEY) {
-        console.warn(`⚠️ Unsplash 이미지 부족(${results.length}개). Pexels 이미지 검색 병합을 시도합니다.`);
+      // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존
+      if (forceRefresh && results.length === 0) {
+        console.warn(`⚠️ 더 이상 가져올 이미지가 없습니다 (페이지 ${pageRef.current}). 이전 상태 유지.`);
+        pageRef.current -= 1; // 페이지 원복
+        setIsImgLoading(false);
+        processAndSetImages(allImagesRef.current); // UI 원복
+        return;
+      }
+
+      // 🚨 [Fix] Unsplash 이미지가 적을 때(15장 이하) 또는 강제 새로고침 시 Pexels 결합 (더 풍성한 갤러리 제공)
+      if ((results.length <= 15 || forceRefresh) && PEXELS_KEY) {
+        console.warn(`⚠️ Unsplash 이미지 부족 또는 강제 새로고침. Pexels 이미지 검색 병합을 시도합니다.`);
         try {
-          const pexelsImages = await apiClient.fetchPexelsImages(PEXELS_KEY, primaryQuery);
+          const pexelsImages = await apiClient.fetchPexelsImages(PEXELS_KEY, primaryQuery, pageRef.current);
           
           if (pexelsImages && pexelsImages.length > 0) {
             results = [...results, ...pexelsImages];
