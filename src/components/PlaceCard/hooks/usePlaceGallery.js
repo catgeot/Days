@@ -32,7 +32,7 @@ const FALLBACK_DICTIONARY = {
   "갈라파고스": "Galapagos Islands",
   "이스터 섬": "Easter Island",
   "세렝게티": "Serengeti",
-  "통가": "Tonga Islands",
+  "통가": "Tonga",
   "투발루": "Tuvalu",
   "키리바시": "Kiribati",
   "팔라우": "Palau",
