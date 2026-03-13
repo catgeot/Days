@@ -189,17 +189,27 @@ function Home() {
       }
 
       if (target) {
-        if (target.curation_data) {
-          target.name = target.destination || target.curation_data.location;
-          target.name_en = target.curation_data.locationEn || "";
-          target.ai_context = {
-            summary: target.curation_data.description || "",
-            tags: target.curation_data.searchKeyword ? target.curation_data.searchKeyword.split(" ") : []
-          };
+        // 🚨 [Fix/New] DB에서 온 객체는 name이 없고 destination만 있을 수 있으므로 깊은 복사 후 Hydration 수행
+        const hydratedTarget = { ...target };
+
+        if (!hydratedTarget.name && hydratedTarget.destination) {
+          hydratedTarget.name = hydratedTarget.destination;
         }
 
-        setSelectedLocation(target);
-        moveToLocation(target.lat, target.lng);
+        if (hydratedTarget.curation_data) {
+          hydratedTarget.name = hydratedTarget.name || hydratedTarget.curation_data.location;
+          hydratedTarget.name_en = hydratedTarget.name_en || hydratedTarget.curation_data.locationEn || "";
+          
+          if (!hydratedTarget.ai_context) {
+            hydratedTarget.ai_context = {
+              summary: hydratedTarget.curation_data.description || "",
+              tags: hydratedTarget.curation_data.searchKeyword ? hydratedTarget.curation_data.searchKeyword.split(" ") : []
+            };
+          }
+        }
+
+        setSelectedLocation(hydratedTarget);
+        moveToLocation(hydratedTarget.lat, hydratedTarget.lng);
       }
       setIsCardExpanded(true);
     } else {
