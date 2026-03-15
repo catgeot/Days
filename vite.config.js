@@ -15,6 +15,7 @@ export default defineConfig({
     // 🚨 [New] 사이트맵 생성 설정
     Sitemap({
       hostname: 'https://gateo.kr',
+      outDir: 'dist', // 배포 폴더 명시 (에러 방지용)
       // 구글이 수집해야 할 주요 경로들을 명시합니다.
       dynamicRoutes: [
         '/',
