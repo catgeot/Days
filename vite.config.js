@@ -12,20 +12,6 @@ export default defineConfig({
   plugins: [
     react(),
     basicSsl(), // 🚨 [추가] 모바일/IP 접속 시 WebGL 에러 방지를 위한 임시 SSL 적용
-    // 🚨 [New] 사이트맵 생성 설정
-    Sitemap({
-      hostname: 'https://gateo.kr',
-      outDir: 'dist', 
-      generateRobotsTxt: false, // 🚨 [Fix] 버셀 빌드 에러의 원인인 robots.txt 자동 생성을 꺼서 ENOENT 에러 원천 차단
-      // 구글이 수집해야 할 주요 경로들을 명시합니다.
-      dynamicRoutes: [
-        '/',
-        '/auth/login',
-        '/auth/signup',
-        '/auth/forgot-password',
-        '/auth/update-password'
-      ]
-    })
   ],
   server: {
     host: '0.0.0.0', // 핵심 : localhost만 고집하지 않고 모든 ip 접속을 허용함
