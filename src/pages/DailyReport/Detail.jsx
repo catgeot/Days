@@ -43,13 +43,16 @@ const Detail = () => {
   }, [id, navigate]);
 
   const handleDelete = async () => {
-    if (window.confirm("이 기록을 삭제하시겠습니까? (안전하게 숨김 처리됩니다)")) {
+    if (window.confirm("이 기록을 영구적으로 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)")) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { error } = await supabase.from('reports').update({ is_deleted: true }).eq('id', id).eq('user_id', user.id);
+      
+      const { error } = await supabase.from('reports').delete().eq('id', id).eq('user_id', user.id);
+      
       if(error) {
-         console.warn("Soft Delete 실패, 영구 삭제로 대체합니다 (임시 롤백)");
-         await supabase.from('reports').delete().eq('id', id).eq('user_id', user.id);
+         console.error("삭제 실패:", error);
+         alert("기록을 삭제하는 중 오류가 발생했습니다.");
+         return;
       }
       navigate('/report', { replace: true });
     }
