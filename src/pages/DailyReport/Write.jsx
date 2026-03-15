@@ -10,13 +10,13 @@ const Write = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
+
   const isEditMode = Boolean(id);
 
   const getLocalDate = () => {
     const dateParam = searchParams.get('date');
     if (dateParam) return dateParam;
-    
+
     const d = new Date();
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     return d.toISOString().split('T')[0];
@@ -25,21 +25,21 @@ const Write = () => {
   const [date, setDate] = useState(getLocalDate());
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [mapLocation, setMapLocation] = useState(''); 
+  const [mapLocation, setMapLocation] = useState('');
   const [uploading, setUploading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [recentLocations, setRecentLocations] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [aiLoadingMsg, setAiLoadingMsg] = useState('');
 
-  const { 
-    imageFiles, previewUrls, existingImages, setExistingImages, 
+  const {
+    imageFiles, previewUrls, existingImages, setExistingImages,
     handleImageChange, removeNewImage, removeExistingImage, heroImageUrl,
-    isCompressing, compressProgress 
+    isCompressing, compressProgress
   } = useLogbookMedia();
 
-  const { 
-    isAILoading, backupData, handleAIPolish, handleRestoreBackup 
+  const {
+    isAILoading, backupData, handleAIPolish, handleRestoreBackup
   } = useLogbookAI(title, setTitle, content, setContent, date, mapLocation);
 
   useEffect(() => {
@@ -58,13 +58,13 @@ const Write = () => {
           setContent(data.content);
           setMapLocation(data.location);
           setDate(data.date);
-          setExistingImages(data.images || []); 
+          setExistingImages(data.images || []);
         } else {
           alert('존재하지 않는 기록입니다.');
           navigate('/blog', { replace: true });
         }
       }
-      
+
       if (user) {
         const { data: historyData } = await supabase.from('reports').select('location').eq('user_id', user.id).neq('location', null).neq('location', '').order('date', { ascending: false }).limit(20);
         if (historyData) {
@@ -145,7 +145,7 @@ const Write = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative font-sans" onClick={() => setShowSuggestions(false)}>
-      
+
       {heroImageUrl && (
         <div className="fixed inset-0 z-0 opacity-10 transition-opacity duration-1000 pointer-events-none">
           <img src={heroImageUrl} alt="Hero Background" className="w-full h-full object-cover blur-3xl scale-110" />
@@ -155,7 +155,7 @@ const Write = () => {
 
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-2xl border-b border-gray-200 px-4 sm:px-8 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 transition-all p-2.5 bg-gray-100 rounded-xl border border-gray-200 hover:border-gray-300">
+          <button onClick={() => navigate(isEditMode ? `/blog/${id}` : '/blog')} className="text-gray-500 hover:text-gray-900 transition-all p-2.5 bg-gray-100 rounded-xl border border-gray-200 hover:border-gray-300">
             <ArrowLeft size={20} />
           </button>
           <div>
@@ -180,13 +180,13 @@ const Write = () => {
       </header>
 
       <main className="relative z-10 max-w-4xl mx-auto pt-10 pb-32 px-4 sm:px-8 flex flex-col gap-12">
-        
+
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">01</span>
             <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">여정의 기본 정보</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-all focus-within:border-blue-400 focus-within:bg-blue-50/50">
               <label className="flex items-center gap-2 text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest">
@@ -230,17 +230,17 @@ const Write = () => {
             )}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
-              {existingImages.map((url, idx) => ( 
+              {existingImages.map((url, idx) => (
                 <div key={`exist-${idx}`} className="relative aspect-square group">
                   <img src={url} className="w-full h-full object-cover rounded-2xl border border-gray-200 group-hover:border-gray-300 transition-all" />
                   <button onClick={() => removeExistingImage(idx)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
-                </div> 
+                </div>
               ))}
-              {previewUrls.map((url, idx) => ( 
+              {previewUrls.map((url, idx) => (
                 <div key={`new-${idx}`} className="relative aspect-square group">
                   <img src={url} className="w-full h-full object-cover rounded-2xl border border-blue-300 group-hover:border-blue-400 transition-all" />
                   <button onClick={() => removeNewImage(idx)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md scale-0 group-hover:scale-100 transition-transform"><X size={12} /></button>
-                </div> 
+                </div>
               ))}
               {(existingImages.length + previewUrls.length) < 10 && (
                 <label className="aspect-square border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 text-gray-400 hover:text-blue-500 transition-all group">
@@ -266,7 +266,7 @@ const Write = () => {
             </div>
 
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all relative min-h-[500px] flex flex-col">
-              
+
               <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Storytelling</label>
                 <div className="flex gap-2">
@@ -286,12 +286,12 @@ const Write = () => {
                 </div>
               )}
 
-              <textarea 
-                className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-gray-800 placeholder-gray-400 flex-1 min-h-[400px]" 
-                value={content} 
-                onChange={(e) => setContent(e.target.value)} 
-                disabled={isAILoading || isCompressing} 
-                placeholder="떠오르는 파편화된 기억들을 자유롭게 적어보세요. 사진을 올리고 위쪽의 AI 버튼을 누르면 투박한 메모가 아름다운 기록으로 변합니다." 
+              <textarea
+                className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-gray-800 placeholder-gray-400 flex-1 min-h-[400px]"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                disabled={isAILoading || isCompressing}
+                placeholder="떠오르는 파편화된 기억들을 자유롭게 적어보세요. 사진을 올리고 위쪽의 AI 버튼을 누르면 투박한 메모가 아름다운 기록으로 변합니다."
               />
             </div>
           </div>

@@ -11,7 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 const Detail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [report, setReport] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
@@ -19,10 +19,10 @@ const Detail = () => {
   useEffect(() => {
     const getOneReport = async () => {
       if (!id) {
-        navigate('/report', { replace: true });
-        return; 
+        navigate('/blog', { replace: true });
+        return;
       }
-      
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/', { replace: true });
@@ -30,10 +30,10 @@ const Detail = () => {
       }
 
       const { data, error } = await supabase.from('reports').select('*').eq('id', id).eq('user_id', user.id).single();
-      
+
       if (error || !data) {
         console.warn("[Safe Path] 존재하지 않거나 권한이 없는 기록입니다.");
-        navigate('/report', { replace: true });
+        navigate('/blog', { replace: true });
       } else {
         setReport(data);
         setIsPublic(data.is_public || false);
@@ -46,15 +46,15 @@ const Detail = () => {
     if (window.confirm("이 기록을 영구적으로 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)")) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      
+
       const { error } = await supabase.from('reports').delete().eq('id', id).eq('user_id', user.id);
-      
+
       if(error) {
          console.error("삭제 실패:", error);
          alert("기록을 삭제하는 중 오류가 발생했습니다.");
          return;
       }
-      navigate('/report', { replace: true });
+      navigate('/blog', { replace: true });
     }
   };
 
@@ -76,7 +76,7 @@ const Detail = () => {
   const handleSmartShare = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    
+
     // 1. [Pessimistic First] 비공개 상태면 DB부터 공개로 업데이트
     if (!isPublic) {
       const { error } = await supabase.from('reports').update({ is_public: true }).eq('id', id).eq('user_id', user.id);
@@ -125,7 +125,7 @@ const Detail = () => {
       const images = report.images || [];
       const titleHtml = `<h2 style="color: #333; font-size: 24px; font-weight: bold;">${report.title}</h2>`;
       const metaHtml = `<p style="color: #666; font-size: 14px; margin-bottom: 20px;"><strong>일자:</strong> ${report.date} | <strong>위치:</strong> ${report.location}</p><hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;" />`;
-      
+
       let bodyHtml = '';
       const parts = report.content.split(/(\[사진\s*\d+\])/g);
 
@@ -153,7 +153,7 @@ const Detail = () => {
         const clipboardItem = new window.ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText });
         await navigator.clipboard.write([clipboardItem]);
       } else {
-        await navigator.clipboard.writeText(plainText); 
+        await navigator.clipboard.writeText(plainText);
       }
 
       setIsCopied(true);
@@ -181,7 +181,7 @@ const Detail = () => {
             </div>
           );
         }
-        return null; 
+        return null;
       }
       if (part.trim() !== '') {
         return <p key={index} className="text-lg leading-[1.8] text-gray-800 whitespace-pre-wrap font-medium mb-6">{part}</p>;
@@ -194,11 +194,11 @@ const Detail = () => {
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
-  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content); 
+  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
-      
+
       {heroImageUrl && (
         <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none">
           <img src={heroImageUrl} alt="Hero" className="w-full h-full object-cover blur-3xl scale-110" />
@@ -207,16 +207,16 @@ const Detail = () => {
       )}
 
       <div className="relative z-10 max-w-3xl mx-auto pt-8 px-4 sm:px-6">
-        
+
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-          <button onClick={() => navigate('/report')} className="text-gray-500 hover:text-gray-900 transition-colors p-2 bg-gray-100 rounded-full backdrop-blur-md border border-gray-200">
+          <button onClick={() => navigate('/blog')} className="text-gray-500 hover:text-gray-900 transition-colors p-2 bg-gray-100 rounded-full backdrop-blur-md border border-gray-200">
             <ArrowLeft size={24} />
           </button>
-          
+
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 ml-auto">
-            
+
             {/* 🚨 [New] 직관적인 공유하기 버튼 (가장 돋보이게 처리) */}
-            <button 
+            <button
               onClick={handleSmartShare}
               className="flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full transition-all border text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm hover:shadow-md border-transparent"
             >
@@ -227,7 +227,7 @@ const Detail = () => {
 
             {/* 🚨 [New] 비공개 전환 버튼 (공개 상태일 때만 슬쩍 나타나는 Safe Path) */}
             {isPublic && (
-              <button 
+              <button
                 onClick={handleMakePrivate}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-full transition-all text-xs font-medium text-gray-500 hover:text-red-500 hover:bg-red-50"
                 title="클릭 시 외부 접속이 차단됩니다"
@@ -239,11 +239,11 @@ const Detail = () => {
 
             <div className="w-px h-6 bg-gray-200 my-auto mx-1 hidden md:block"></div>
 
-            <button 
-              onClick={handleExportBlog} 
+            <button
+              onClick={handleExportBlog}
               className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full transition-all border text-sm font-medium backdrop-blur-md
-                ${isCopied 
-                  ? 'bg-green-50 text-green-600 border-green-200 shadow-sm' 
+                ${isCopied
+                  ? 'bg-green-50 text-green-600 border-green-200 shadow-sm'
                   : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'}
               `}
             >
@@ -251,7 +251,7 @@ const Detail = () => {
               <span className="hidden sm:inline">{isCopied ? '복사 완료!' : '블로그 내보내기'}</span>
             </button>
 
-            <button onClick={() => navigate(`/report/write/${id}`)} className="flex items-center gap-1.5 bg-gray-50 backdrop-blur-md text-gray-600 px-3 sm:px-4 py-2 rounded-full hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200 text-sm font-medium">
+            <button onClick={() => navigate(`/blog/write/${id}`)} className="flex items-center gap-1.5 bg-gray-50 backdrop-blur-md text-gray-600 px-3 sm:px-4 py-2 rounded-full hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200 text-sm font-medium">
               <Edit size={16} /> <span className="hidden sm:inline">수정</span>
             </button>
             <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium">
@@ -270,10 +270,10 @@ const Detail = () => {
 
           {!hasPlaceholders && images.length > 0 && (
             <div className={`mb-10 grid gap-3 rounded-2xl overflow-hidden
-              ${images.length === 1 ? 'grid-cols-1' : ''} 
-              ${images.length === 2 ? 'grid-cols-2' : ''} 
-              ${images.length === 3 ? 'grid-cols-3' : ''} 
-              ${images.length >= 4 ? 'grid-cols-2' : ''} 
+              ${images.length === 1 ? 'grid-cols-1' : ''}
+              ${images.length === 2 ? 'grid-cols-2' : ''}
+              ${images.length === 3 ? 'grid-cols-3' : ''}
+              ${images.length >= 4 ? 'grid-cols-2' : ''}
             `}>
               {images.map((img, idx) => (
                 <div key={idx} className={`relative group ${images.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
