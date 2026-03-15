@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
@@ -24,13 +23,12 @@ import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 
 function App() {
-  // ?š¨ [Safe Path] URL ?¸ì • ë¡œì§
   useEffect(() => {
     supabase.auth.getSession().then(() => {
       const { pathname, search, hash } = window.location;
       if (search.includes('error') || hash.includes('access_token') || search.includes('code=')) {
         window.history.replaceState(null, '', pathname);
-        console.log("?› ï¸?URL Cleanup: Supabase ?¸ì¦ ?•ì¸ ??ì£¼ì†Œì°½ì´ ?•ë¦¬?˜ì—ˆ?µë‹ˆ??");
+        console.log("URL Cleanup: Supabase ì¸ì¦ í™•ì¸ í›„ ì£¼ì†Œì°½ì´ ì •ë¦¬ë˜ì—ˆìŠµë‹ˆë‹¤.");
       }
     });
   }, []); 
@@ -40,14 +38,12 @@ function App() {
       <ReportProvider>
         <Analytics />
         <Routes>
-          {/* 1. ê¸€ë¡œë²Œ ë©”ì¸ ?ˆì´?„ì›ƒ (ì§€êµ¬ë³¸ ?? */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />}>
               <Route path="place/:slug" element={<PlaceCard />} />
             </Route>
           </Route>
 
-          {/* 2. ê´€ë¦¬ì/?€?œë³´???ˆì´?„ì›ƒ (?¬ì´?œë°” ?¬í•¨) */}
           <Route element={<AdminLayout />}>
             <Route path="/blog" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
@@ -57,11 +53,8 @@ function App() {
             </Route>
           </Route>
 
-          {/* ?š¨ [Fix/Subtraction] 3. ?…ë¦½??ë·°ì–´ ?¼ìš°??(?ˆì´?„ì›ƒ ?ì† ?†ìŒ) */}
-          {/* MainLayoutê³?AdminLayout ë°–ìœ¼ë¡??„ì „??êº¼ë‚´?? ?´ë– ???¬ì´?œë°”???¤ë”???Œë”ë§ë˜ì§€ ?Šê²Œ ì°¨ë‹¨ */}
           <Route path="/p/:id" element={<PublicViewer />} />
 
-          {/* 4. ?¸ì¦ ?¼ìš°??*/}
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/signup" element={<Signup />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />

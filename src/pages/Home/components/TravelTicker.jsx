@@ -1,6 +1,3 @@
-// src/pages/Home/components/TravelTicker.jsx
-// ?š¨ [Fix] Dumb Component?? ?¸ë??ì„œ ?°ì´?°ë? ì£¼ì…ë°›ë„ë¡?ë³€ê²?
-
 import React, { useState, useEffect } from 'react';
 import { Plane, CloudSun, Sun, CloudRain, Cloud, Wind, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
@@ -22,21 +19,18 @@ const RankChange = ({ type, size = 12 }) => {
   }
 };
 
-// ?š¨ [Change] props??'data' ì¶”ê? (ê¸°ë³¸ê°?ë¹?ë°°ì—´)
 export default function TravelTicker({ data = [], onCityClick, isExpanded: externalExpanded, onToggle }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
   
-  // ?¸ë? ?œì–´ ëª¨ë“œ ì§€??
   const isControlled = externalExpanded !== undefined;
   const [internalExpanded, setInternalExpanded] = useState(false);
   const isExpanded = isControlled ? externalExpanded : internalExpanded;
 
-  // ?š¨ [Fix] ?°ì´?°ê? ë°”ë€????¸ë±??ì´ˆê¸°??ë°©ì? ë¡œì§ ?„ìš”?˜ë©´ ì¶”ê?
   const cities = data.length > 0 ? data : []; 
 
   useEffect(() => {
-    if (cities.length === 0) return; // ?°ì´???†ìœ¼ë©?ë£¨í”„ ????
+    if (cities.length === 0) return; 
 
     let interval;
     if (!isExpanded) { 
@@ -51,9 +45,8 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
       clearInterval(interval); 
     }
     return () => clearInterval(interval);
-  }, [isExpanded, cities.length]); // cities.length ?˜ì¡´??ì¶”ê?
+  }, [isExpanded, cities.length]); 
 
-  // ?°ì´???ˆì „?¥ì¹˜
   const currentCity = cities[currentIndex] || cities[0];
 
   const handleMouseLeave = () => {
@@ -75,7 +68,6 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
     }
   };
 
-  // ?š¨ [Fix] ?°ì´?°ê? ?„ì˜ˆ ?†ì„ ??ë¡œë”© ?? ?Œë”ë§?ë°©ì?
   if (!currentCity) return null; 
 
   return (
@@ -95,7 +87,7 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
           {isExpanded ? 'Live Ranking' : 'Live Trending'}
         </div>
         {isExpanded ? (
-          <span className="text-[8px] text-green-500 font-mono animate-pulse">??LIVE</span>
+          <span className="text-[8px] text-green-500 font-mono animate-pulse">â— LIVE</span>
         ) : (
           <span className="text-[8px] text-gray-600 font-mono">UPDATED</span>
         )}
@@ -105,7 +97,7 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
         <div className="flex flex-col gap-1">
           {cities.map((city) => (
             <div
-              key={city.rank} // rankë¥??¤ë¡œ ?¬ìš©
+              key={city.rank} 
               onClick={(e) => handleCityClick(e, city)}
               className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
             >

@@ -1,30 +1,44 @@
-// vite.config.js
-// 🚨 [New] 구글 로봇을 위한 사이트맵 자동 생성 플러그인 도입
-// 🚨 [Fix] 배포 시마다 최신 라우트 정보를 수집하여 sitemap.xml과 robots.txt를 자동 생성하도록 설정
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import Sitemap from 'vite-plugin-sitemap';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import Sitemap from 'vite-plugin-sitemap'
-import basicSsl from '@vitejs/plugin-basic-ssl' // 🚨 [추가] HTTPS 강제 적용 플러그인
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    basicSsl(), // 🚨 [추가] 모바일/IP 접속 시 WebGL 에러 방지를 위한 임시 SSL 적용
+    basicSsl(),
+    Sitemap(),
   ],
   server: {
-    host: '0.0.0.0', // 핵심 : localhost만 고집하지 않고 모든 ip 접속을 허용함
-    port: 5173,      // 포트 번호 고정(선택사항)
+    host: '0.0.0.0',
+    port: 5173,
   },
-  // 🚨 [Fix/New] 배포 시 정밀 로그 제거를 위한 esbuild 설정 추가
   esbuild: {
-    // console.log와 debugger만 제거하고, error/warn은 유지하여 비관적 설계(장애 대응)를 지원함
-    pure: ['console.log'], 
+    pure: ['console.log'],
     drop: ['debugger'],
   },
   build: {
-    // 빌드 결과물을 최적화함
     minify: 'esbuild',
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        // 🚨 [강화] 수동으로 이름표를 붙여주는 대신, 패키지 이름에 따라 자동으로 쪼개주는 함수 적용
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            // 가장 무거운 3D 라이브러리 분리
+            if (id.includes('three')) return 'three';
+            if (id.includes('globe')) return 'globe';
+            // 이미지 압축 라이브러리 분리
+            if (id.includes('browser-image-compression')) return 'image-compression';
+            // 기존 분리 항목들
+            if (id.includes('@supabase')) return 'supabase';
+            if (id.includes('lucide-react')) return 'icons';
+
+            // 그 외 자잘한 외부 라이브러리들은 모두 'vendor'로 묶음
+            return 'vendor';
+          }
+        }
+      }
+    }
   }
-})
+});

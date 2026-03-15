@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BookOpen, Sparkles, Loader2, RefreshCw } from 'lucide-react';
-import { supabase } from '../../../shared/api/supabase'; // ?�� DB ?�동???�한 Supabase import
+import { supabase } from '../../../shared/api/supabase'; 
 
-const CACHE_VALID_DAYS = 14; // 캐시 ?�효 기간 ?�정
+const CACHE_VALID_DAYS = 14; 
 
 const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
   
   const [isAiExpanded, setIsAiExpanded] = useState(false);
-  const [localAiResponse, setLocalAiResponse] = useState(null); // ?�면 ?�더링용 ?�립 ?�태 (DB ?�는 API ?�답 ?�??
+  const [localAiResponse, setLocalAiResponse] = useState(null); 
   
   const aiSectionRef = useRef(null);
   
@@ -18,14 +18,12 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
       requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id };
   }, [placeName, wikiData]);
 
-  // ?�소가 바뀌면 AI ?�장 ?�널 ?�태 초기??
   useEffect(() => {
       setIsAiExpanded(false);
       setLocalAiResponse(null);
       setError(null);
   }, [placeName]);
 
-  // 캐시 ?�효??검??(Pessimistic: ?�짜 ?�이?��? ?�상?�면 무조�?만료 처리)
   const checkIsCacheValid = (updatedAt) => {
       if (!updatedAt) return false;
       try {
@@ -46,15 +44,12 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
         }
     }, 100);
 
-    // ?��? ?�면???�더링된 ?�답???�다�?추�? 로직 ?�킵
     if (localAiResponse) return;
 
-    // 1. DB 캐시 ?�인 로직
     const hasCachedInfo = wikiData?.ai_practical_info;
     const isCacheFresh = checkIsCacheValid(wikiData?.ai_info_updated_at);
 
     if (hasCachedInfo && isCacheFresh) {
-        // 캐시 ?�이?��? ?�효?�면 API ?�출 ?�이 ?�더링하?? 극적???�과�??�해 1.5�?로딩 ?�출 (UX 개선)
         setIsAiLoading(true);
         setTimeout(() => {
             setLocalAiResponse(wikiData.ai_practical_info);
@@ -63,21 +58,19 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
         return;
     }
 
-    // 2. Edge Function ?�출 (캐시가 ?�거??만료??경우)
     if (!isAiLoading) {
       const isClickEvent = eventOrRemoteName && typeof eventOrRemoteName === 'object' && 'type' in eventOrRemoteName;
       const remoteName = isClickEvent ? null : eventOrRemoteName;
-      let location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "???�소";
+      let location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
       
-      // �??명이 ?�효?�다�?검???�확?��? ?�해 추�?
-      if (countryName && countryName !== "Explore" && countryName !== "Ocean" && countryName !== "바다" && countryName !== "?��? && !location.includes(countryName)) {
+      if (countryName && countryName !== "Explore" && countryName !== "Ocean" && countryName !== "바다" && countryName !== "해양" && !location.includes(countryName)) {
           location = `${location} ${countryName}`;
       }
 
       const placeId = requestInfoRef.current.placeId;
 
       if (!placeId) {
-          setError("?�소 ?�보�??�인?????�습?�다.");
+          setError("장소 정보를 확인할 수 없습니다.");
           return;
       }
 
@@ -85,31 +78,29 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
       setError(null);
 
       try {
-          // ?�� Edge Function ?�출
           const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
               body: { placeId, locationName: location }
           });
 
           if (functionError) {
               console.error("Edge Function Error:", functionError);
-              throw new Error("?�보�?가?�오?????�패?�습?�다.");
+              throw new Error("정보를 가져오는데 실패했습니다.");
           }
 
           if (data && data.success) {
               setLocalAiResponse(data.aiResponse);
           } else {
-              throw new Error(data?.error || "AI ?�답???�성?��? 못했?�니??");
+              throw new Error(data?.error || "AI 응답을 생성하지 못했습니다.");
           }
       } catch (err) {
           console.error('Request Error:', err);
-          setError(err.message || "?�류가 발생?�습?�다.");
+          setError(err.message || "오류가 발생했습니다.");
       } finally {
           setIsAiLoading(false);
       }
     }
-  }, [localAiResponse, isAiLoading, wikiData]);
+  }, [localAiResponse, isAiLoading, wikiData, countryName]); // countryName 추가 (의존성 경고 방지)
 
-  // ?�격 ?�벤???�신
   useEffect(() => {
       const handleRemoteRequest = (e) => {
           handleRequestAiInfo(e.detail?.placeName);
@@ -137,24 +128,23 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                 <div ref={aiSectionRef} className="mb-8 bg-[#0F1115]/90 border border-blue-500/30 rounded-2xl p-6 md:p-8 animate-fade-in-up shadow-2xl scroll-mt-6">
                     <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                         <Sparkles size={24} className="text-blue-400" />
-                        <h3 className="text-xl font-bold text-white tracking-tight">로컬 ?�슨?�의 ?�전 ?�행 ?�트</h3>
+                        <h3 className="text-xl font-bold text-white tracking-tight">로컬 왓슨의 안전 여행 노트</h3>
                     </div>
                     
-                    {/* 로컬 ?�태(localAiResponse)�?기�??�로 ?�더�?로직 ?�일 */}
                     {!localAiResponse && isAiLoading ? (
                         <div className="flex flex-col items-center justify-center py-10 space-y-4">
                             <Loader2 size={32} className="text-blue-400 animate-spin" />
-                            <p className="text-sm text-gray-400 animate-pulse">최신 ?�용 ?�보�??�캔 �?분석?�고 ?�습?�다...</p>
+                            <p className="text-sm text-gray-400 animate-pulse">최신 실용 정보를 스캔 및 분석하고 있습니다...</p>
                         </div>
                     ) : !localAiResponse && error ? (
                         <div className="flex flex-col items-center justify-center py-8 space-y-4 text-gray-400">
-                            <p className="text-sm">?�보�?불러?�는 �?문제가 발생?�습?�다.</p>
+                            <p className="text-sm">정보를 불러오는 중 문제가 발생했습니다.</p>
                             <button 
                                 onClick={() => handleRequestAiInfo(placeName || wikiData?.title)}
                                 className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10"
                             >
                                 <RefreshCw size={16} />
-                                <span>?�시 ?�도</span>
+                                <span>다시 시도</span>
                             </button>
                         </div>
                     ) : localAiResponse ? (
@@ -198,7 +188,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                             >
                                 <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
                                 <span className="text-sm md:text-base font-bold text-gray-200 tracking-wide">
-                                    ?��??�이?�게 ?�전 로컬 ?�보 묻기
+                                    AI에게 안전 로컬 정보 묻기
                                 </span>
                             </button>
                         </div>
@@ -207,7 +197,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
             ) : (
                 <div className="flex flex-col items-center justify-center h-[50vh] text-gray-500 gap-4 animate-fade-in">
                     <BookOpen size={48} className="opacity-20" />
-                    <p>?�직 ???�소??백과?�전 ?�보가 준비되지 ?�았?�니??</p>
+                    <p>아직 이 장소의 백과사전 정보가 준비되지 않았습니다.</p>
                 </div>
             )}
         </div>

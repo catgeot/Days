@@ -1,0 +1,20 @@
+# 이 파일이 프로젝트의 최상위 설정 파일임을 명시합니다.
+root = true
+
+# 모든 파일(*)에 적용되는 기본 설정입니다.
+[*]
+# 인코딩을 무조건 UTF-8로 강제하여 한글 깨짐을 완벽히 방지합니다.
+charset = utf-8
+# 줄바꿈 스타일을 Mac/Linux 표준인 LF로 통일합니다.
+end_of_line = lf
+# 파일의 맨 마지막에 항상 빈 줄을 하나 추가합니다. (Git 충돌 방지)
+insert_final_newline = true
+# 줄 끝에 불필요하게 남은 공백(스페이스바)을 자동 제거합니다.
+trim_trailing_whitespace = true
+# 들여쓰기를 스페이스바 2칸으로 통일합니다. (React/JS 표준)
+indent_style = space
+indent_size = 2
+
+# 마크다운(.md) 파일은 줄바꿈을 위해 줄 끝 공백이 필요할 수 있으므로 예외 처리합니다.
+[*.md]
+trim_trailing_whitespace = false

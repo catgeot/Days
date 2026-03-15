@@ -1,9 +1,3 @@
-// src/pages/Home/components/HomeUI.jsx
-// ?š¨ [Fix/New] ?˜ì • ?´ìœ :
-// 1. [Subtraction] useReport ?„ì—­ ?íƒœ ?˜ì¡´??openReport) ?„ì „ ?œê±° (ì¢€ë¹?ì½”ë“œ ì²?‚°).
-// 2. [Routing] ëª¨ë°”??ë°??°ìŠ¤?¬íƒ‘??Logbook ë²„íŠ¼??<button>?ì„œ <Link to="/blog">ë¡?êµì²´?˜ì—¬ Deep Linking ?„ì„±.
-// 3. [Performance] React.memoë¥??ìš©?˜ì—¬ ë¶ˆí•„?”í•œ ë¦¬ë Œ?”ë§ ë°©ì?.
-
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
@@ -16,7 +10,6 @@ import { Link } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker'; 
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
-// ?š¨ [Fix] useReport ?„í¬???„ì „ ?œê±° (ëº„ì…ˆ)
 
 const HomeUI = React.memo(({ 
   onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick, 
@@ -93,7 +86,6 @@ const HomeUI = React.memo(({
 
       <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between md:grid md:grid-cols-12 items-start pointer-events-none w-full">
         
-        {/* 1. Logo */}
         <div onClick={onLogoClick} className="md:col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
         </div>
@@ -109,7 +101,6 @@ const HomeUI = React.memo(({
               <MessageSquare size={14} className="text-blue-400" />
             </button>
             
-            {/* ?š¨ [Fix] ëª¨ë°”??Logbook ë²„íŠ¼ <Link>ë¡??„í™˜ */}
             <Link to="/blog" className="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg hover:bg-emerald-500/30 transition-colors">
               <PenTool size={14} className="text-emerald-400" />
             </Link>
@@ -122,7 +113,7 @@ const HomeUI = React.memo(({
                 value={inputValue} 
                 onChange={handleChange} 
                 onKeyDown={handleKeyDown} 
-                placeholder="?´ë””ë¡?? ë‚˜?œë‚˜??" 
+                placeholder="ì–´ë””ë¡œ ë– ë‚˜ë³¼ê¹Œ?" 
                 className="w-full bg-transparent text-white text-xs focus:outline-none ml-2 placeholder-gray-500/80"
               />
               {inputValue && (
@@ -133,12 +124,11 @@ const HomeUI = React.memo(({
             </div>
         </div>
 
-        {/* 2. Globe Theme & Zen Mode Toggle */}
         <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
            <button 
              onClick={onThemeToggle} 
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
-             title="ì§€êµ¬ë³¸ ë¬´ë“œ ë³€ê²?
+             title="ì§€êµ¬ë³¸ ë¬´ë“œ ë³€ê²½"
            >
               <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
            </button>
@@ -146,25 +136,23 @@ const HomeUI = React.memo(({
            <button 
              onClick={onToggleZenMode} 
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
-             title="Zen Mode (?„ì²´?”ë©´ ?ë§)"
+             title="Zen Mode (ì „ì²´í™”ë©´ íë§)"
            >
               <Leaf size={16} className="group-hover:scale-110 transition-transform" />
            </button>
         </div>
 
-        {/* 3. Omni-box */}
         <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative z-50">
            <div className="relative group w-full max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg transition-all h-12 rounded-full group-focus-within:bg-black/60 group-focus-within:border-blue-400/50 hover:bg-black/50">
               <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={18} /></div>
-              <input ref={inputRef} type="text" value={inputValue} onChange={handleChange} placeholder="?´ë””ë¡?? ë‚˜?œë‚˜??" className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-500/80 font-medium" onKeyDown={handleKeyDown} />
+              <input ref={inputRef} type="text" value={inputValue} onChange={handleChange} placeholder="ì–´ë””ë¡œ ë– ë‚˜ë³¼ê¹Œ?" className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-500/80 font-medium" onKeyDown={handleKeyDown} />
               {inputValue && (<button onClick={handleClear} className="p-1 mr-2 text-gray-400 hover:text-white transition-colors"><X size={16} /></button>)}
             </div>
           </div>
         </div>
         
-        {/* 4. Controls */}
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto relative z-50">
            <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
@@ -172,7 +160,6 @@ const HomeUI = React.memo(({
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        {/* 5. Ticker */}
         <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-auto relative z-50">
           <TravelTicker 
             data={trendingData} 
@@ -183,7 +170,6 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
-      {/* --- Filters (Category) --- */}
       <div className="fixed z-50 pointer-events-auto animate-fade-in-left
          bottom-8 left-1/2 -translate-x-1/2 w-auto max-w-[95vw] flex justify-center
          md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:translate-x-0 md:flex-col md:max-w-none">
@@ -204,7 +190,6 @@ const HomeUI = React.memo(({
          </div>
       </div>
 
-      {/* ?œê·¸ ë¦¬ìŠ¤??*/}
       {(isTagLoading || relatedTags.length > 0) && (
         <div className="flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">
               {!isTagLoading && relatedTags.map((tag, idx) => (
@@ -218,7 +203,6 @@ const HomeUI = React.memo(({
         </div>
       )}
 
-      {/* --- Footer Controls --- */}
       <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
           <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
@@ -226,7 +210,6 @@ const HomeUI = React.memo(({
               <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">ADMIN</span>
           </Link>
           
-          {/* ?š¨ [Fix] ?°ìŠ¤?¬íƒ‘ Logbook ë²„íŠ¼ <Link>ë¡??„í™˜ */}
           <Link to="/blog" className="group flex items-center gap-2 pb-2 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
                   <PenTool size={18} className="text-white group-hover:text-emerald-400 transition-colors" />
@@ -240,7 +223,7 @@ const HomeUI = React.memo(({
             onClick={() => onOpenChat()} 
             className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10 hover:scale-105 transition-transform"
           >
-            <MessageSquare size={16} /> <span>AI?€ ?€?”í•˜ê¸?/span>
+            <MessageSquare size={16} /> <span>AIì™€ ëŒ€í™”í•˜ê¸°</span>
           </button>
         </div>
       </footer>

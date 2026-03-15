@@ -1,48 +1,40 @@
-// src/components/PlaceCard/panels/PlaceChatPanel.jsx
-// ?š¨ [Fix/New] ?˜ì • ?´ìœ :
-// 1. [Subtraction] useReport ?„ì—­ ?íƒœ ?˜ì¡´???„ì „ ?œê±°.
-// 2. [Routing] Log ë²„íŠ¼??<button>?ì„œ <Link to="/blog">ë¡??„ë©´ êµì²´?˜ì—¬ ?¥ë§???µí•©.
-// 3. [Safe Path] ê¸°ì¡´ openReportë¡??„ë‹¬?˜ë˜ location.id??Router??state={{ placeId: location.id }}ë¡??ˆì „?˜ê²Œ ?´ê?.
-// 4. [New] ê¼¬ê¼¬ë¬?ì¶”ì²œ ?¥ì†Œ ?´ë¦­ ???ˆì „?˜ê²Œ ?´ë™?˜ê¸° ?„í•œ handleRelatedClick ?¼ìš°???´ëŒ‘??ë¡œì§ ì¶”ê?.
-// 5. [Performance] React.memoë¥??ìš©?˜ì—¬ ë¶ˆí•„?”í•œ ë¦¬ë Œ?”ë§ ë°©ì?.
-
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react'; 
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
-import PlaceWikiNavView from '../views/PlaceWikiNavView'; 
+import PlaceWikiNavView from '../views/PlaceWikiNavView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
-import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine'; 
+import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 
-const PlaceChatPanel = React.memo(({ 
+const PlaceChatPanel = React.memo(({
     location,
-    isBookmarked, 
-    onClose, 
-    chatData, 
-    activeInfo, 
-    isFullScreen, 
-    mediaMode, 
-    setMediaMode, 
+    isBookmarked,
+    onClose,
+    chatData,
+    activeInfo,
+    isFullScreen,
+    mediaMode,
+    setMediaMode,
     onSeekTime,
     isAiMode,
     selectedImg,
     onToggleBookmark,
     wikiData,
-    isWikiLoading 
+    isWikiLoading
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
     }
-  }, [activeInfo.title, activeInfo.mode, isChatMode, mediaMode]); 
+  }, [activeInfo.title, activeInfo.mode, isChatMode, mediaMode]);
 
   const handleSendMessage = (text) => {
       const persona = PERSONA_TYPES.INSPIRER;
@@ -60,35 +52,32 @@ const PlaceChatPanel = React.memo(({
   const handleRelatedClick = (targetPlace) => {
       if (!targetPlace) return;
 
-      // 1. slugê°€ ìµœìš°??
       if (targetPlace.slug) {
           navigate(`/place/${targetPlace.slug}`);
           return;
       }
 
-      // 2. slugê°€ ?†ì„ ê²½ìš° idë¡?fallback
       if (targetPlace.id) {
           navigate(`/place/${targetPlace.id}`);
           return;
       }
-      
-      // 3. id???†ì„ ê²½ìš° ì¢Œí‘œë¡?fallback
+
       if (targetPlace.lat !== undefined && targetPlace.lng !== undefined) {
           navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
           return;
       }
 
-      console.warn("[Safe Path] ?¼ìš°?…ì„ ?„í•œ ?ë³„??slug, ID ?ëŠ” ì¢Œí‘œ)ê°€ ?†ìŠµ?ˆë‹¤.", targetPlace);
+      console.warn("[Safe Path] ë¼ìš°íŒ…ì„ ìœ„í•œ ì‹ë³„ì(slug, ID ë˜ëŠ” ì¢Œí‘œ)ê°€ ì—†ìŠµë‹ˆë‹¤.", targetPlace);
   };
 
-  const relatedPlaces = getRelatedPlaces(location); 
+  const relatedPlaces = getRelatedPlaces(location);
 
   return (
     <div className={`flex flex-col transition-all duration-500
-        ${isFullScreen ? 'opacity-0 md:translate-x-[-100%]' : 'opacity-100 translate-x-0'} 
+        ${isFullScreen ? 'opacity-0 md:translate-x-[-100%]' : 'opacity-100 translate-x-0'}
         absolute top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-2 md:pb-0 md:border-none md:rounded-none
-        md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}> 
-      
+        md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
+
       {/* Header */}
       <div className={`shrink-0 px-2 md:px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 xl:py-0 xl:h-20 flex flex-row md:flex-col xl:flex-row items-center md:items-stretch xl:items-center justify-between gap-2 md:gap-3 xl:gap-4 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
          {/* Top Tier: Home, Location Info */}
@@ -109,46 +98,46 @@ const PlaceChatPanel = React.memo(({
 
          {/* Bottom Tier: Buttons Area */}
          <div className="shrink-0 flex items-center justify-end md:justify-center xl:justify-end gap-1.5 md:gap-1.5 w-auto md:w-full xl:w-auto overflow-x-auto no-scrollbar">
-            <Link 
+            <Link
                 to="/blog"
-                state={{ placeId: location.id }} 
+                state={{ placeId: location.id }}
                 className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-white/10 md:bg-white/5 hover:bg-white/20 text-white shadow-lg border border-white/20 md:border-white/10 transition-all flex items-center gap-1 md:gap-2 group shrink-0"
             >
-                <PenTool className="w-3 h-3 md:w-3.5 md:h-3.5 text-emerald-400 group-hover:scale-110 transition-transform"/> 
+                <PenTool className="w-3 h-3 md:w-3.5 md:h-3.5 text-emerald-400 group-hover:scale-110 transition-transform"/>
                 <span className="text-[10px] md:text-[11px] font-bold tracking-wider">Log</span>
             </Link>
 
-            <button 
+            <button
                 onClick={() => setMediaMode(mediaMode === 'WIKI' ? 'GALLERY' : 'WIKI')}
                 className={`px-2 py-1.5 md:px-3 md:py-2 rounded-full transition-all flex items-center gap-1 md:gap-2 group shadow-lg shrink-0
                     ${mediaMode === 'WIKI' ? 'bg-amber-600/90 text-white shadow-amber-900/20' : 'bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10'}`}
             >
-                <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/> 
-                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'WIKI' ? '?«ê¸°' : 'ë°±ê³¼'}</span>
+                <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'WIKI' ? 'ë‹«ê¸°' : 'ë°±ê³¼'}</span>
             </button>
 
             {mediaMode === 'VIDEO' ? (
-                <button 
+                <button
                     onClick={() => setMediaMode('GALLERY')}
                     className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1 md:gap-2 group shrink-0"
                 >
-                    <ImageIcon className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/> 
-                    <span className="text-[10px] md:text-[11px] font-bold">ê°¤ëŸ¬ë¦?/span>
+                    <ImageIcon className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">ê°¤ëŸ¬ë¦¬</span>
                 </button>
             ) : (
-                <button 
+                <button
                     onClick={() => setMediaMode('VIDEO')}
                     className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-red-600/90 hover:bg-red-500 text-white shadow-lg shadow-red-900/20 transition-all flex items-center gap-1 md:gap-2 group shrink-0"
                 >
-                    <Play fill="currentColor" className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/> 
-                    <span className="text-[10px] md:text-[11px] font-bold">?ìƒ</span>
+                    <Play fill="currentColor" className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">ì˜ìƒ</span>
                 </button>
             )}
          </div>
       </div>
 
       {/* Body */}
-      <div 
+      <div
         ref={scrollRef}
         className="hidden md:flex flex-col flex-1 overflow-y-auto relative custom-scrollbar"
       >
@@ -165,17 +154,17 @@ const PlaceChatPanel = React.memo(({
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                         <span className="text-blue-400"><Sparkles size={14} /></span> AI Assistant
                     </h3>
-                    <button 
-                        onClick={() => setIsChatMode(false)} 
+                    <button
+                        onClick={() => setIsChatMode(false)}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/20 text-xs text-gray-300 hover:text-white transition-all border border-white/5"
                     >
-                        <span>?«ê¸°</span>
+                        <span>ë‹«ê¸°</span>
                         <X size={12} />
                     </button>
                 </div>
-                
-                <div className="flex-1 min-h-0"> 
-                    <PlaceChatView 
+
+                <div className="flex-1 min-h-0">
+                    <PlaceChatView
                       chatHistory={chatData.chatHistory}
                       isAiLoading={chatData.isAiLoading}
                       onSendMessage={handleSendMessage}
@@ -184,26 +173,26 @@ const PlaceChatPanel = React.memo(({
                     />
                 </div>
             </div>
-        ) : mediaMode === 'WIKI' ? ( 
-            <PlaceWikiNavView 
-                wikiData={wikiData} 
-                isWikiLoading={isWikiLoading} 
-                onNavClick={handleWikiNavClick} 
-                placeName={location.name} 
+        ) : mediaMode === 'WIKI' ? (
+            <PlaceWikiNavView
+                wikiData={wikiData}
+                isWikiLoading={isWikiLoading}
+                onNavClick={handleWikiNavClick}
+                placeName={location.name}
             />
         ) : (
             <div className="animate-fade-in flex flex-col gap-6 p-6">
                 {activeInfo.mode === 'VIDEO' ? (
-                    <VideoInfoView 
-                        videoData={activeInfo} 
+                    <VideoInfoView
+                        videoData={activeInfo}
                         onSeekTime={onSeekTime}
                     />
                 ) : (
-                    <GalleryInfoView 
+                    <GalleryInfoView
                         selectedPlace={location}
                         selectedImg={selectedImg}
-                        isAiMode={isAiMode}      
-                        onRelatedClick={handleRelatedClick} 
+                        isAiMode={isAiMode}
+                        onRelatedClick={handleRelatedClick}
                     />
                 )}
             </div>
@@ -213,14 +202,14 @@ const PlaceChatPanel = React.memo(({
       {/* Footer */}
       {!isChatMode && mediaMode !== 'WIKI' && (
           <div className="hidden md:block p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
-              <button 
-                onClick={() => setIsChatMode(true)} 
+              <button
+                onClick={() => setIsChatMode(true)}
                 className="w-full h-12 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-full px-1 pl-2 flex items-center gap-3 transition-all group shadow-lg"
               >
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0">
                       <Sparkles size={14} className="text-blue-300 group-hover:scale-110 transition-transform" />
                   </div>
-                  <span className="text-sm text-gray-400 group-hover:text-gray-200 font-medium truncate">???¥ì†Œ???€????ë¬¼ì–´ë³´ì„¸??..</span>
+                  <span className="text-sm text-gray-400 group-hover:text-gray-200 font-medium truncate">AIì—ê²Œ ì¥ì†Œ ë¬»ê¸°</span>
                   <div className="ml-auto mr-2 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                       <Send size={12} />
                   </div>
@@ -228,7 +217,6 @@ const PlaceChatPanel = React.memo(({
           </div>
       )}
 
-      {/* ?š¨ [New] ëª¨ë°”???„ìš© ê¼¬ê¼¬ë¬??°ê? ?¬í–‰ì§€ ?¸í„° */}
       {relatedPlaces.length > 0 && !isChatMode && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(
           <div className="md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
               <style>{`
@@ -237,12 +225,12 @@ const PlaceChatPanel = React.memo(({
               `}</style>
               <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pl-3 pr-4">
                   {relatedPlaces.map((place, idx) => (
-                      <button 
+                      <button
                           key={`mob-rel-${idx}`}
                           onClick={() => handleRelatedClick(place.data)}
                           className={`shrink-0 px-3 py-1.5 rounded-full border text-[11px] font-medium transition-all active:scale-95 flex items-center gap-1.5 shadow-sm
-                              ${place.isBridge 
-                                ? 'bg-fuchsia-900/20 border-fuchsia-500/30 text-fuchsia-200 hover:bg-fuchsia-800/40 hover:border-fuchsia-400/50' 
+                              ${place.isBridge
+                                ? 'bg-fuchsia-900/20 border-fuchsia-500/30 text-fuchsia-200 hover:bg-fuchsia-800/40 hover:border-fuchsia-400/50'
                                 : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/20'}`}
                       >
                           {place.isBridge && <Sparkles size={10} className="text-fuchsia-400" />}

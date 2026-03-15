@@ -1,25 +1,17 @@
-// src/pages/DailyReport/components/CalendarCard.jsx
-// ?š¨ [Fix/Subtraction] useReport ?˜ì¡´???„ì „ ?œê±° ë°?useNavigate ?„ì…
-// ?š¨ [New] Query Parameterë¥??µí•œ ?‘ì„± ?˜ì´ì§€ ? ì§œ ?„ë‹¬ (?date=YYYY-MM-DD)
-// ?š¨ [Safe Path] ?°ì´??ì¡´ì¬ ?¬ë????°ë¥¸ ëª…í™•???¼ìš°??ë¶„ê¸°
-
 import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // ?š¨ [New] ?¼ìš°?????„ì…
+import { useNavigate } from 'react-router-dom';
 
 const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth }) => {
-  const navigate = useNavigate(); // ?š¨ [New]
+  const navigate = useNavigate(); 
 
   const handleDateClick = (dayItem) => {
     if (!dayItem.day) return; 
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(dayItem.day).padStart(2, '0')}`;
     
-    // ?š¨ [Fix] Context ?íƒœ ë³€ê²??€??URL ê¸°ë°˜ ê°•ì œ ?´ë™
     if (dayItem.active && dayItem.reportId) {
-      // ê¸°ë¡???ˆìœ¼ë©??ì„¸ ?˜ì´ì§€(Detail)ë¡?ì§í–‰
       navigate(`/blog/${dayItem.reportId}`);
     } else {
-      // ë¹?? ì§œë©??‘ì„± ?˜ì´ì§€(Write)ë¡?ê°€??URL ?Œë¼ë¯¸í„°ë¡?? ì§œ ?„ë‹¬
       navigate(`/blog/write?date=${dateStr}`);
     }
   };
@@ -30,7 +22,7 @@ const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMo
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
           <Calendar className="text-blue-500" size={20} />
-          {viewYear}??{viewMonth + 1}??
+          {viewYear}ë…„ {viewMonth + 1}ì›”
         </h3>
         <div className="flex gap-2">
           <button onClick={onPrevMonth} className="p-1.5 hover:bg-gray-100 text-gray-400 hover:text-gray-900 rounded-full transition-colors"><ChevronLeft size={20} /></button>
@@ -58,7 +50,6 @@ const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMo
           >
             {d.day}
             
-            {/* ?Œë? ??(?¤ì˜¨ ê¸€ë¡œìš°) */}
             {d.active && (
               <span className="absolute bottom-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-sm"></span>
             )}
