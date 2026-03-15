@@ -54,7 +54,12 @@ const Write = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (isEditMode && id) {
-        const { data } = await supabase.from('reports').select('*').eq('id', id).single();
+        if (!user) {
+          alert('로그인이 필요합니다.');
+          navigate('/login', { replace: true });
+          return;
+        }
+        const { data } = await supabase.from('reports').select('*').eq('id', id).eq('user_id', user.id).single();
         if (data) {
           setTitle(data.title);
           setContent(data.content);

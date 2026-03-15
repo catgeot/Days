@@ -20,6 +20,7 @@ export const useDashboardData = () => {
       const { data, error } = await supabase
         .from('reports')
         .select('*')
+        .eq('user_id', user.id)
         .order('date', { ascending: false });
 
       if (!error && data) {

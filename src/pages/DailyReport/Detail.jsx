@@ -23,10 +23,16 @@ const Detail = () => {
         return; 
       }
       
-      const { data, error } = await supabase.from('reports').select('*').eq('id', id).single();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/', { replace: true });
+        return;
+      }
+
+      const { data, error } = await supabase.from('reports').select('*').eq('id', id).eq('user_id', user.id).single();
       
       if (error || !data) {
-        console.warn("[Safe Path] 존재하지 않거나 삭제된 기록입니다.");
+        console.warn("[Safe Path] 존재하지 않거나 권한이 없는 기록입니다.");
         navigate('/report', { replace: true });
       } else {
         setReport(data);
@@ -38,10 +44,12 @@ const Detail = () => {
 
   const handleDelete = async () => {
     if (window.confirm("이 기록을 삭제하시겠습니까? (안전하게 숨김 처리됩니다)")) {
-      const { error } = await supabase.from('reports').update({ is_deleted: true }).eq('id', id);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { error } = await supabase.from('reports').update({ is_deleted: true }).eq('id', id).eq('user_id', user.id);
       if(error) {
          console.warn("Soft Delete 실패, 영구 삭제로 대체합니다 (임시 롤백)");
-         await supabase.from('reports').delete().eq('id', id);
+         await supabase.from('reports').delete().eq('id', id).eq('user_id', user.id);
       }
       navigate('/report', { replace: true });
     }
@@ -50,7 +58,9 @@ const Detail = () => {
   // 🚨 [New] 비공개(Lock) 강제 전환 핸들러
   const handleMakePrivate = async () => {
     if (window.confirm("이 글을 비공개로 전환하시겠습니까? (기존 공유 링크 접속 차단)")) {
-      const { error } = await supabase.from('reports').update({ is_public: false }).eq('id', id);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { error } = await supabase.from('reports').update({ is_public: false }).eq('id', id).eq('user_id', user.id);
       if (!error) {
         setIsPublic(false);
       } else {
@@ -61,9 +71,12 @@ const Detail = () => {
 
   // 🚨 [New] 스마트 공유 핸들러 (Web Share API + Fallback)
   const handleSmartShare = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
     // 1. [Pessimistic First] 비공개 상태면 DB부터 공개로 업데이트
     if (!isPublic) {
-      const { error } = await supabase.from('reports').update({ is_public: true }).eq('id', id);
+      const { error } = await supabase.from('reports').update({ is_public: true }).eq('id', id).eq('user_id', user.id);
       if (error) return alert("공유 상태 전환에 실패했습니다.");
       setIsPublic(true);
     }
