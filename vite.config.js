@@ -15,7 +15,8 @@ export default defineConfig({
     // 🚨 [New] 사이트맵 생성 설정
     Sitemap({
       hostname: 'https://gateo.kr',
-      outDir: './dist', // 배포 폴더 명시 (에러 방지용, 상대경로로 명시)
+      outDir: 'dist', 
+      generateRobotsTxt: false, // 🚨 [Fix] 버셀 빌드 에러의 원인인 robots.txt 자동 생성을 꺼서 ENOENT 에러 원천 차단
       // 구글이 수집해야 할 주요 경로들을 명시합니다.
       dynamicRoutes: [
         '/',
