@@ -21,6 +21,7 @@ export const useDashboardData = () => {
         .from('reports')
         .select('*')
         .eq('user_id', user.id)
+        .eq('is_deleted', false) // 🚨 [Fix] 삭제된(소프트 딜리트) 리포트는 대시보드/목록에서 보이지 않도록 필터링 추가
         .order('date', { ascending: false });
 
       if (!error && data) {
