@@ -1,5 +1,5 @@
 // src/shared/Auth/SignUp.jsx
-// 🚨 [Fix] Login.jsx와 동일한 Dark & Glassmorphism 디자인으로 UI 통일 적용 및 z-50 나가기 버튼 구현
+// 🚨 [Fix] Login.jsx와 동일한 Light & Glassmorphism 디자인으로 UI 통일 적용 및 z-50 나가기 버튼 구현
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -42,14 +42,14 @@ const Signup = () => {
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin, 
+          emailRedirectTo: window.location.origin,
         },
       });
 
       if (error) throw error;
 
       alert("회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다.");
-      navigate('/auth/login'); 
+      navigate('/auth/login');
 
     } catch (error) {
       alert(error.message);
@@ -59,38 +59,38 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 font-sans relative overflow-hidden">
-      
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center p-4 font-sans relative overflow-hidden">
 
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10">
-        
-        <button 
-          onClick={handleGoHome} 
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all z-50"
+      <div className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] bg-blue-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+      <div className="w-full max-w-sm bg-white/70 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-xl relative z-10">
+
+        <button
+          onClick={handleGoHome}
+          className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100/50 rounded-full transition-all z-50"
           title="메인으로 돌아가기"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-white/90">📝 회원가입</h1>
-          <p className="text-sm text-gray-400 mt-2">나만의 일보 작성을 시작해보세요.</p>
+        <div className="text-center mb-5">
+          <h1 className="text-xl font-bold tracking-tight text-gray-900">📝 회원가입</h1>
+          <p className="text-xs text-gray-500 mt-1">나만의 일보 작성을 시작해보세요.</p>
         </div>
 
-        <form onSubmit={handleSignup} className="space-y-5">
-          
+        <form onSubmit={handleSignup} className="space-y-3">
+
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 ml-1">이메일</label>
+            <label className="text-[10px] font-bold text-gray-500 ml-1">이메일</label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Mail size={18} className="text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail size={16} className="text-gray-400 group-focus-within:text-blue-500 transition-colors" />
               </div>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
-                className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:bg-black/60 transition-all"
+                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
                 placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -99,15 +99,15 @@ const Signup = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 ml-1">비밀번호</label>
+            <label className="text-[10px] font-bold text-gray-500 ml-1">비밀번호</label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock size={18} className="text-gray-500 group-focus-within:text-purple-400 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock size={16} className="text-gray-400 group-focus-within:text-purple-500 transition-colors" />
               </div>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 required
-                className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-all"
+                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all"
                 placeholder="6자리 이상 입력해주세요"
                 minLength={6}
                 value={password}
@@ -116,31 +116,29 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* 🚨 [Fix] 기본 버튼 디자인 리팩토링 (다크 글래스 + 퍼플 네온 호버) */}
-          <button 
+          <button
             disabled={loading}
-            className="w-full bg-black/40 border border-white/10 text-white font-bold py-4 rounded-xl backdrop-blur-md hover:border-purple-500/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:bg-white/5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-4 group"
+            className="w-full bg-purple-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed mt-2 group"
           >
-            {loading ? <Loader2 size={20} className="animate-spin" /> : <><UserPlus size={18} className="group-hover:scale-110 transition-transform" /> 회원가입 완료</>}
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <><UserPlus size={14} className="group-hover:scale-110 transition-transform" /> 회원가입 완료</>}
           </button>
 
         </form>
 
-        <div className="flex items-center gap-4 my-6 opacity-50">
-          <div className="flex-1 border-t border-white/10"></div>
-          <span className="text-xs text-gray-500 font-bold tracking-widest">OR</span>
-          <div className="flex-1 border-t border-white/10"></div>
+        <div className="flex items-center gap-3 my-4 opacity-60">
+          <div className="flex-1 border-t border-gray-300"></div>
+          <span className="text-[10px] text-gray-500 font-bold tracking-widest">OR</span>
+          <div className="flex-1 border-t border-gray-300"></div>
         </div>
 
-        {/* 🚨 [New] 소셜 가입 컴팩트 가로 배치 & 오리지널 로고 & 브랜드 글로우 */}
-        <div className="grid grid-cols-2 gap-3">
-          <button 
-            type="button" 
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
             onClick={() => handleSocialLogin('google')}
             disabled={loading}
-            className="w-full bg-black/40 border border-white/10 text-white text-sm font-bold py-3.5 rounded-xl backdrop-blur-md hover:border-white/40 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] hover:bg-white/5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full bg-white border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-lg hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50"
           >
-            <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -148,29 +146,29 @@ const Signup = () => {
             </svg>
             Google
           </button>
-          
-          <button 
-            type="button" 
+
+          <button
+            type="button"
             onClick={() => handleSocialLogin('kakao')}
             disabled={loading}
-            className="w-full bg-black/40 border border-white/10 text-white text-sm font-bold py-3.5 rounded-xl backdrop-blur-md hover:border-[#FEE500]/50 hover:shadow-[0_0_15px_rgba(254,229,0,0.2)] hover:bg-white/5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full bg-[#FEE500]/10 border border-[#FEE500]/50 text-gray-800 text-xs font-bold py-2.5 rounded-lg hover:bg-[#FEE500]/20 hover:shadow-sm transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50"
           >
-            <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3c-5.52 0-10 3.5-10 7.8 0 2.78 1.81 5.2 4.54 6.54L5.3 21.6c-.14.49.4.9.83.6l4.2-2.8c.54.08 1.1.13 1.67.13 5.52 0 10-3.5 10-7.8S17.52 3 12 3z" fill="#FEE500"/>
+            <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3c-5.52 0-10 3.5-10 7.8 0 2.78 1.81 5.2 4.54 6.54L5.3 21.6c-.14.49.4.9.83.6l4.2-2.8c.54.08 1.1.13 1.67.13 5.52 0 10-3.5 10-7.8S17.52 3 12 3z" fill="#3C1E1E"/>
             </svg>
             Kakao
           </button>
         </div>
 
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-5 text-center text-xs text-gray-500">
           이미 계정이 있으신가요?{' '}
-          <Link to="/auth/login" className="text-blue-400 hover:text-blue-300 font-bold hover:underline transition-colors">
+          <Link to="/auth/login" className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">
             로그인 하러 가기
           </Link>
         </div>
 
-      </div>      
-    </div>    
+      </div>
+    </div>
   );
 };
 

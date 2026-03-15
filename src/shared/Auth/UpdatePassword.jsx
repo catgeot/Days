@@ -28,28 +28,28 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 font-sans relative">
-      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center p-4 font-sans relative overflow-hidden">
+      <div className="absolute top-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-400/20 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4 scale-125"><Logo /></div>
-          <h2 className="text-2xl font-bold text-white/90">New Password</h2>
-          <p className="text-sm text-gray-400 mt-2">새로운 비밀번호를 입력해주세요.</p>
+      <div className="w-full max-w-sm bg-white/70 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-xl relative z-10">
+        <div className="text-center mb-5">
+          <div className="flex justify-center mb-2 scale-110"><Logo /></div>
+          <h2 className="text-xl font-bold text-gray-900">New Password</h2>
+          <p className="text-xs text-gray-500 mt-1">새로운 비밀번호를 입력해주세요.</p>
         </div>
 
-        <form onSubmit={handleUpdate} className="space-y-6">
+        <form onSubmit={handleUpdate} className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 ml-1">NEW PASSWORD</label>
+            <label className="text-[10px] font-bold text-gray-500 ml-1">NEW PASSWORD</label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock size={18} className="text-gray-500 group-focus-within:text-purple-400 transition-colors" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock size={16} className="text-gray-400 group-focus-within:text-purple-500 transition-colors" />
               </div>
               <input
                 type="password"
                 required
                 minLength={6}
-                className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-black/60 transition-all"
+                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all"
                 placeholder="새 비밀번호 입력"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -57,8 +57,8 @@ const UpdatePassword = () => {
             </div>
           </div>
 
-          <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
-            {loading ? <Loader2 size={20} className="animate-spin" /> : <>변경 완료 <Check size={18} /></>}
+          <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5 disabled:opacity-50">
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <>변경 완료 <Check size={14} /></>}
           </button>
         </form>
       </div>
