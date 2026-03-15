@@ -1,9 +1,9 @@
 // src/pages/DailyReport/Write.jsx
-// 🚨 [Fix/New] 수정 이유: 
-// 1. [UX/UI] 시인성 개선을 위한 '번호 기반 단계별 레이아웃' 도입 ([01]~[03])
-// 2. [Affordance] 입력 영역에 명확한 테두리(Border)와 포커스 하이라이트 추가하여 입력 지점 명확화.
-// 3. [Contextual AI] AI 작가 기능을 본문 영역 바로 위로 전진 배치하여 접근성 강화.
-// 4. [Copywriting] 질문형 플레이스홀더를 통해 사용자의 작성 의도 가이드.
+// ?�� [Fix/New] ?�정 ?�유: 
+// 1. [UX/UI] ?�인??개선???�한 '번호 기반 ?�계�??�이?�웃' ?�입 ([01]~[03])
+// 2. [Affordance] ?�력 ?�역??명확???�두�?Border)?� ?�커???�이?�이??추�??�여 ?�력 지??명확??
+// 3. [Contextual AI] AI ?��? 기능??본문 ?�역 바로 ?�로 ?�진 배치?�여 ?�근??강화.
+// 4. [Copywriting] 질문???�레?�스?�?��? ?�해 ?�용?�의 ?�성 ?�도 가?�드.
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
@@ -55,7 +55,7 @@ const Write = () => {
 
       if (isEditMode && id) {
         if (!user) {
-          alert('로그인이 필요합니다.');
+          alert('로그?�이 ?�요?�니??');
           navigate('/login', { replace: true });
           return;
         }
@@ -67,8 +67,8 @@ const Write = () => {
           setDate(data.date);
           setExistingImages(data.images || []); 
         } else {
-          alert('존재하지 않는 기록입니다.');
-          navigate('/report', { replace: true });
+          alert('존재?��? ?�는 기록?�니??');
+          navigate('/blog', { replace: true });
         }
       }
       
@@ -85,7 +85,7 @@ const Write = () => {
 
   useEffect(() => {
     if (isAILoading) {
-      const msgs = ["위성 통신망 연결 중...", "사진 속 감성을 읽어내는 중...", "문장의 맥락을 조율하는 중...", "마지막 퇴고를 진행 중입니다..."];
+      const msgs = ["?�성 ?�신�??�결 �?..", "?�진 ??감성???�어?�는 �?..", "문장??맥락??조율?�는 �?..", "마�?�??�고�?진행 중입?�다..."];
       let i = 0;
       setAiLoadingMsg(msgs[0]);
       const timer = setInterval(() => {
@@ -97,7 +97,7 @@ const Write = () => {
   }, [isAILoading]);
 
   const handleGetCurrentLocation = () => {
-    if (!navigator.geolocation) return alert("위치 정보를 지원하지 않습니다.");
+    if (!navigator.geolocation) return alert("?�치 ?�보�?지?�하지 ?�습?�다.");
     setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(async (position) => {
         try {
@@ -106,16 +106,16 @@ const Write = () => {
           const data = await response.json();
           const addr = data.address;
           const displayAddress = [addr.city || addr.province || '', addr.borough || addr.district || '', addr.quarter || addr.neighbourhood || addr.suburb || ''].filter(Boolean).join(' ');
-          setMapLocation(displayAddress || "위치 정보 없음");
-        } catch (e) { setMapLocation("위치 확인 실패"); } finally { setLocationLoading(false); }
-      }, () => { setLocationLoading(false); alert("위치 권한을 확인해주세요."); }
+          setMapLocation(displayAddress || "?�치 ?�보 ?�음");
+        } catch (e) { setMapLocation("?�치 ?�인 ?�패"); } finally { setLocationLoading(false); }
+      }, () => { setLocationLoading(false); alert("?�치 권한???�인?�주?�요."); }
     );
   };
 
   const handleSave = async () => {
-    if (!title) return alert("제목을 입력해주세요!");
+    if (!title) return alert("?�목???�력?�주?�요!");
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return alert("로그인이 필요합니다.");
+    if (!user) return alert("로그?�이 ?�요?�니??");
 
     setUploading(true);
     let finalImageUrls = [...existingImages];
@@ -133,18 +133,18 @@ const Write = () => {
       const newUrls = await Promise.all(uploadPromises);
       finalImageUrls = [...finalImageUrls, ...newUrls];
 
-      const reportData = { title, content, location: mapLocation || '위치 미지정', date, images: finalImageUrls, weather: '맑음', user_id: user.id };
+      const reportData = { title, content, location: mapLocation || '?�치 미�???, date, images: finalImageUrls, weather: '맑음', user_id: user.id };
 
       if (isEditMode) {
         await supabase.from('reports').update(reportData).eq('id', id);
-        navigate(`/report/${id}`);
+        navigate(`/blog/${id}`);
       } else {
         await supabase.from('reports').insert([reportData]);
-        navigate('/report');
+        navigate('/blog');
       }
     } catch (error) {
-      console.error("저장 실패:", error);
-      alert("저장 중 오류가 발생했습니다.");
+      console.error("?�???�패:", error);
+      alert("?�??�??�류가 발생?�습?�다.");
     } finally {
       setUploading(false);
     }
@@ -160,7 +160,7 @@ const Write = () => {
         </div>
       )}
 
-      {/* 🚨 [Fix] 헤더 디자인 보강 (시인성) */}
+      {/* ?�� [Fix] ?�더 ?�자??보강 (?�인?? */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-2xl border-b border-gray-200 px-4 sm:px-8 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 transition-all p-2.5 bg-gray-100 rounded-xl border border-gray-200 hover:border-gray-300">
@@ -168,7 +168,7 @@ const Write = () => {
           </button>
           <div>
             <h2 className="text-lg font-bold text-gray-900 tracking-tight">
-              {isEditMode ? '기록 수정하기' : '새로운 여정 기록'}
+              {isEditMode ? '기록 ?�정?�기' : '?�로???�정 기록'}
             </h2>
             <p className="text-[10px] text-blue-500 font-mono uppercase tracking-widest mt-0.5">Logbook Terminal</p>
           </div>
@@ -177,27 +177,27 @@ const Write = () => {
         <div className="flex items-center gap-3">
           {backupData && (
             <button onClick={handleRestoreBackup} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100/80 rounded-full border border-gray-200 hover:bg-gray-200 transition-all">
-              <Undo2 size={14} /> <span className="hidden sm:inline">원본 복구</span>
+              <Undo2 size={14} /> <span className="hidden sm:inline">?�본 복구</span>
             </button>
           )}
           <button onClick={handleSave} disabled={uploading || isAILoading || isCompressing} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-black text-xs sm:text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-blue-500/60 active:scale-95 transition-all disabled:opacity-50">
             {uploading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            <span>{isEditMode ? '기록 업데이트' : 'GATEO에 저장'}</span>
+            <span>{isEditMode ? '기록 ?�데?�트' : 'GATEO???�??}</span>
           </button>
         </div>
       </header>
 
       <main className="relative z-10 max-w-4xl mx-auto pt-10 pb-32 px-4 sm:px-8 flex flex-col gap-12">
         
-        {/* 🚨 [01] 여정 정보 섹션 */}
+        {/* ?�� [01] ?�정 ?�보 ?�션 */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">01</span>
-            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">여정의 기본 정보</h3>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">?�정??기본 ?�보</h3>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* 날짜 입력창 입체감 강화 */}
+            {/* ?�짜 ?�력�??�체�?강화 */}
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-all focus-within:border-blue-400 focus-within:bg-blue-50/50">
               <label className="flex items-center gap-2 text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-widest">
                 <Calendar size={12} /> Travel Date
@@ -205,17 +205,17 @@ const Write = () => {
               <input type="date" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 transition-colors" value={date} onChange={(e) => setDate(e.target.value)} disabled={isAILoading || isCompressing} />
             </div>
 
-            {/* 위치 입력창 입체감 강화 */}
+            {/* ?�치 ?�력�??�체�?강화 */}
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-all focus-within:border-blue-400 focus-within:bg-blue-50/50 relative" onClick={(e) => e.stopPropagation()}>
               <div className="flex justify-between items-center mb-3">
                 <label className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                   <MapPin size={12} /> Location
                 </label>
                 <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-[10px] font-bold text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1">
-                   {locationLoading ? <Loader2 size={10} className="animate-spin" /> : "현재 위치 찾기"}
+                   {locationLoading ? <Loader2 size={10} className="animate-spin" /> : "?�재 ?�치 찾기"}
                 </button>
               </div>
-              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 placeholder-gray-400 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="어디의 공기를 담아왔나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
+              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 placeholder-gray-400 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="?�디??공기�??�아?�나??" autoComplete="off" disabled={isAILoading || isCompressing} />
               {showSuggestions && recentLocations.length > 0 && (
                 <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl">
                    {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center gap-3 transition-all" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="opacity-50" />{loc}</div>))}
@@ -225,18 +225,18 @@ const Write = () => {
           </div>
         </section>
 
-        {/* 🚨 [02] 추억(사진) 섹션 */}
+        {/* ?�� [02] 추억(?�진) ?�션 */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">02</span>
-            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">장면의 포착</h3>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">?�면???�착</h3>
           </div>
 
           <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 hover:border-gray-300 transition-all relative">
             {isCompressing && (
               <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-600 rounded-3xl">
                 <Loader2 size={36} className="animate-spin mb-4" />
-                <p className="font-bold text-sm">기록의 용량을 최적화 중...</p>
+                <p className="font-bold text-sm">기록???�량??최적??�?..</p>
                 <p className="text-[10px] text-blue-500 mt-2 font-mono">Progress: {compressProgress.current} / {compressProgress.total}</p>
               </div>
             )}
@@ -266,31 +266,31 @@ const Write = () => {
           </div>
         </section>
 
-        {/* 🚨 [03] 이야기 섹션 (가장 중요) */}
+        {/* ?�� [03] ?�야�??�션 (가??중요) */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">03</span>
-            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">기록의 완성</h3>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">기록???�성</h3>
           </div>
 
           <div className="flex flex-col gap-4">
-            {/* 제목 섹션 */}
+            {/* ?�목 ?�션 */}
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all">
-              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-gray-900 placeholder-gray-400 tracking-tight" placeholder="이번 여정을 한 문장으로 정의한다면?" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
+              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-gray-900 placeholder-gray-400 tracking-tight" placeholder="?�번 ?�정????문장?�로 ?�의?�다�?" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
             </div>
 
-            {/* 본문 및 AI 툴바 섹션 */}
+            {/* 본문 �?AI ?�바 ?�션 */}
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all relative min-h-[500px] flex flex-col">
               
-              {/* 🚨 [New] Contextual AI Toolbar: 본문 바로 위에서 도움 받기 */}
+              {/* ?�� [New] Contextual AI Toolbar: 본문 바로 ?�에???��? 받기 */}
               <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Storytelling</label>
                 <div className="flex gap-2">
                   <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-600 rounded-full text-[10px] font-black hover:bg-purple-100 hover:text-purple-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-spin" /> AI 에세이 작가
+                    <Sparkles size={12} className="group-hover:animate-spin" /> AI ?�세???��?
                   </button>
                   <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-200 text-pink-600 rounded-full text-[10px] font-black hover:bg-pink-100 hover:text-pink-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-pulse" /> AI SNS 인플루언서
+                    <Sparkles size={12} className="group-hover:animate-pulse" /> AI SNS ?�플루언??
                   </button>
                 </div>
               </div>
@@ -307,7 +307,7 @@ const Write = () => {
                 value={content} 
                 onChange={(e) => setContent(e.target.value)} 
                 disabled={isAILoading || isCompressing} 
-                placeholder="떠오르는 파편화된 기억들을 자유롭게 적어보세요. 사진을 올리고 위쪽의 AI 버튼을 누르면 투박한 메모가 아름다운 기록으로 변합니다." 
+                placeholder="?�오르는 ?�편?�된 기억?�을 ?�유�?�� ?�어보세?? ?�진???�리�??�쪽??AI 버튼???�르�??�박??메모가 ?�름?�운 기록?�로 변?�니??" 
               />
             </div>
           </div>

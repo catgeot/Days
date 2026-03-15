@@ -1,18 +1,29 @@
 // src/components/PlaceCard/modes/PlaceCardExpanded.jsx
-// 🚨 [Fix/New] 수정 이유: 
-// 1. 🚨 [Fix] 훅 파라미터 전달: API 누수를 막기 위해 useYouTubeSearch와 useWikiData에 현재 탭 상태인 `mediaMode`를 주입하여 지연 호출(Lazy Fetching)을 유도.
-// 2. [Performance] React.memo를 적용하고 핸들러들을 최적화하여 리렌더링 억제.
+// ?�� [Fix/New] ?�정 ?�유: 
+// 1. ?�� [Fix] ???�라미터 ?�달: API ?�수�?막기 ?�해 useYouTubeSearch?� useWikiData???�재 ???�태??`mediaMode`�?주입?�여 지???�출(Lazy Fetching)???�도.
+// 2. [Performance] React.memo�??�용?�고 ?�들?�들??최적?�하??리렌?�링 ?�제.
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { useWikiData } from '../hooks/useWikiData'; 
 import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch'; 
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const mediaModeParam = searchParams.get('tab')?.toUpperCase();
+  const initialMode = ['GALLERY', 'VIDEO', 'WIKI'].includes(mediaModeParam) ? mediaModeParam : 'GALLERY';
+
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
-  const [mediaMode, setMediaMode] = useState('GALLERY'); 
+  
+  // 🚨 [SEO & UX] 탭(mediaMode) 상태를 Query Parameter와 동기화
+  const mediaMode = initialMode;
+  const setMediaMode = useCallback((newMode) => {
+      setSearchParams({ tab: newMode.toLowerCase() }, { replace: true });
+  }, [setSearchParams]);
+
   const [selectedVideoId, setSelectedVideoId] = useState(null);
   
   const [isAiMode, setIsAiMode] = useState(false);
@@ -20,7 +31,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
   const containerRef = useRef(null);
   const playerRef = useRef(null);
 
-  // 🚨 [Fix/New] Lazy Fetching 연결: mediaMode를 넘겨주어 탭이 열릴 때만 호출되도록 제어
+  // ?�� [Fix/New] Lazy Fetching ?�결: mediaMode�??�겨주어 ??�� ?�릴 ?�만 ?�출?�도�??�어
   const { 
     videos: spotVideos, 
     isLoading: isVideoLoading, 
@@ -32,15 +43,15 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
   const activeVideoData = useMemo(() => spotVideos.find(v => v.id === activeVideoId) || (spotVideos.length > 0 ? spotVideos[0] : null), [spotVideos, activeVideoId]);
 
   const queryKey = location.name; 
-  // 🚨 [Fix/New] 위키 데이터도 동일하게 지연 호출 적용
+  // ?�� [Fix/New] ?�키 ?�이?�도 ?�일?�게 지???�출 ?�용
   const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey, mediaMode);
 
   const activeInfo = useMemo(() => {
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
         return {
             mode: 'PHOTO',
-            title: '갤러리 상세 정보',
-            summary: galleryData.selectedImg.alt_description || galleryData.selectedImg.description || "사진에 대한 설명이 없습니다.",
+            title: '갤러�??�세 ?�보',
+            summary: galleryData.selectedImg.alt_description || galleryData.selectedImg.description || "?�진???�???�명???�습?�다.",
             tags: galleryData.selectedImg.tags ? galleryData.selectedImg.tags.map(t => t.title) : ['Photo'],
             ai_context: null 
         };
@@ -51,7 +62,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
         
         return {
             mode: 'VIDEO',
-            title: activeVideoData?.title || "영상 정보 없음",
+            title: activeVideoData?.title || "?�상 ?�보 ?�음",
             summary: activeVideoData?.ai_context?.summary || null, 
             tags: activeVideoData?.ai_context?.tags || ['Travel', 'Video'],
             ai_context: activeVideoData?.ai_context || null,
@@ -65,7 +76,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
     return {
         mode: 'LOCATION',
         title: location.name,
-        summary: location.desc || location.description || "이 장소에 대한 여행자들의 리뷰와 정보가 곧 업데이트될 예정입니다.",
+        summary: location.desc || location.description || "???�소???�???�행?�들??리뷰?� ?�보가 �??�데?�트???�정?�니??",
         tags: ['Travel', location.country || 'Unknown', ...(location.keywords || [])],
         ai_context: null
     };

@@ -1,12 +1,12 @@
 // src/pages/Home/components/TicketModal.jsx
 import React, { useState, useEffect } from 'react';
-// 🚨 [Fix] MessageSquare import 추가
+// ?�� [Fix] MessageSquare import 추�?
 import { X, Calendar, MapPin, CreditCard, Ticket, Trash2, Plane, MessageSquare } from 'lucide-react';
 
 const TicketModal = ({ 
   isOpen, onClose, onIssue, preFilledDestination, 
   scoutedPins, 
-  savedTrips = [] // Home에서 전달받은 대화 이력
+  savedTrips = [] // Home?�서 ?�달받�? ?�???�력
 }) => {
   const [destination, setDestination] = useState('');
   const [date, setDate] = useState('');
@@ -33,7 +33,7 @@ const TicketModal = ({
           
           <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2">
             {savedTrips.length === 0 ? (
-                <div className="text-center text-gray-600 text-xs py-10">대화 기록이 없습니다.</div>
+                <div className="text-center text-gray-600 text-xs py-10">?�??기록???�습?�다.</div>
             ) : (
                 savedTrips.map((trip) => (
                   <button 
@@ -56,7 +56,7 @@ const TicketModal = ({
         <div className="w-2/3 p-8 relative">
            <button onClick={onClose} className="absolute top-6 right-6 text-gray-500 hover:text-white"><X size={20}/></button>
            <h2 className="text-3xl font-bold text-white mb-1">Boarding Pass</h2>
-           <p className="text-sm text-gray-400 mb-8">여행 계획을 확정하고 티켓을 발권하세요.</p>
+           <p className="text-sm text-gray-400 mb-8">?�행 계획???�정?�고 ?�켓??발권?�세??</p>
            
            <div className="space-y-6">
              <div className="space-y-2">
@@ -75,8 +75,8 @@ const TicketModal = ({
              </div>
            </div>
 
-           <button onClick={() => { onIssue({ text: `${destination} 여행 계획 세워줘` }); onClose(); }} className="absolute bottom-8 right-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
-             <Ticket size={18} /> 발권하기 (Issue Ticket)
+           <button onClick={() => { onIssue({ text: `${destination} ?�행 계획 ?�워�? }); onClose(); }} className="absolute bottom-8 right-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
+             <Ticket size={18} /> 발권?�기 (Issue Ticket)
            </button>
         </div>
       </div>

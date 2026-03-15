@@ -12,14 +12,14 @@ const UserProfile = ({ user, onLogout, onOpenSlide }) => {
           <div 
             className="w-full aspect-[4/3] bg-gray-200 rounded-lg mb-3 overflow-hidden relative group cursor-pointer border border-gray-300"
             onClick={onOpenSlide}
-            title="추억 액자 열기"
+            title="추억 ?�자 ?�기"
           >
             {avatarUrl ? (
               <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
                 <ImageIcon size={24} className="mb-1" />
-                <span className="text-[10px]">사진 없음</span>
+                <span className="text-[10px]">?�진 ?�음</span>
               </div>
             )}
             <div className="absolute inset-0 bg-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -38,9 +38,9 @@ const UserProfile = ({ user, onLogout, onOpenSlide }) => {
         </div>
       ) : (
         <div className="bg-gray-100/50 rounded-2xl p-4 text-center">
-          <p className="text-gray-500 text-sm mb-3">로그인이 필요합니다</p>
+          <p className="text-gray-500 text-sm mb-3">로그?�이 ?�요?�니??/p>
           <Link to="/auth/login" className="block w-full bg-blue-600 text-white text-sm py-2 rounded-lg font-bold hover:bg-blue-500">
-            로그인 하기
+            로그???�기
           </Link>
         </div>
       )}

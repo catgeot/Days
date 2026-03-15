@@ -1,14 +1,14 @@
 // src/pages/DailyReport/components/RecentList.jsx
-// 🚨 [Fix/Subtraction] useReport 의존성 완전 제거 및 useNavigate 도입
-// 🚨 [Fix] 빈 상태(Empty State) 및 아이템 클릭 시 URL 기반 직접 라우팅으로 전환
+// ?�� [Fix/Subtraction] useReport ?�존???�전 ?�거 �?useNavigate ?�입
+// ?�� [Fix] �??�태(Empty State) �??�이???�릭 ??URL 기반 직접 ?�우?�으�??�환
 
 import React, { useState } from 'react';
 import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle } from 'lucide-react';
-// 🚨 [New] 라우터 훅 임포트
+// ?�� [New] ?�우?????�포??
 import { useNavigate } from 'react-router-dom';
 
 const RecentList = ({ reports, loading }) => {
-  // 🚨 [Fix] Context 대신 네비게이터 사용
+  // ?�� [Fix] Context ?�???�비게이???�용
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,17 +38,17 @@ const RecentList = ({ reports, loading }) => {
   return (
     <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col transition-all">
       
-      {/* 헤더 */}
+      {/* ?�더 */}
       <div className="p-5 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-transparent sticky top-0 z-10">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2 self-start sm:self-center tracking-tight">
           <ClipboardList className="text-blue-500" size={20} />
-          {isCompact ? '기록 저장소 (요약)' : '최근 기록 저장소'}
+          {isCompact ? '기록 ?�?�소 (?�약)' : '최근 기록 ?�?�소'}
         </h3>
         
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-56 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={16} />
-            <input type="text" placeholder="기억 검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all" />
+            <input type="text" placeholder="기억 검??.." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all" />
             {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><XCircle size={14} /></button>}
           </div>
 
@@ -59,23 +59,23 @@ const RecentList = ({ reports, loading }) => {
         </div>
       </div>
 
-      {/* 리스트 영역 */}
+      {/* 리스???�역 */}
       <div className="p-5 sm:p-6 flex-1 bg-transparent">
         {reports.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center pb-10 mt-10">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-400 border border-gray-200"><ClipboardList size={40} /></div>
-            <p className="text-gray-900 font-bold text-xl mb-2">기록된 우주가 없습니다.</p>
-            <p className="text-gray-500 text-sm mb-8 font-medium">당신만의 첫 번째 이야기를 남겨보세요.</p>
+            <p className="text-gray-900 font-bold text-xl mb-2">기록???�주가 ?�습?�다.</p>
+            <p className="text-gray-500 text-sm mb-8 font-medium">?�신만의 �?번째 ?�야기�? ?�겨보세??</p>
             <button 
-              // 🚨 [Fix] URL 직접 이동
-              onClick={() => navigate('/report/write')} 
+              // ?�� [Fix] URL 직접 ?�동
+              onClick={() => navigate('/blog/write')} 
               className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-8 py-4 rounded-full font-bold border border-blue-200 transition-all shadow-sm hover:shadow-md"
             >
-              <PenTool size={18} /> 새 일보 작성하기
+              <PenTool size={18} /> ???�보 ?�성?�기
             </button>
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="text-center py-20 text-gray-500"><Search size={40} className="mx-auto mb-4 opacity-30" /><p className="text-lg">"{searchTerm}"에 대한 기억을 찾을 수 없습니다.</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors">전체 목록 보기</button></div>
+          <div className="text-center py-20 text-gray-500"><Search size={40} className="mx-auto mb-4 opacity-30" /><p className="text-lg">"{searchTerm}"???�??기억??찾을 ???�습?�다.</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors">?�체 목록 보기</button></div>
         ) : (
           <div className={viewMode === 'grid' 
             ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5') 
@@ -85,8 +85,8 @@ const RecentList = ({ reports, loading }) => {
             {filteredReports.map((report) => (
               <div 
                 key={report.id}
-                // 🚨 [Fix] URL 파라미터를 포함한 디테일 페이지 직접 이동
-                onClick={() => navigate(`/report/${report.id}`)}
+                // ?�� [Fix] URL ?�라미터�??�함???�테???�이지 직접 ?�동
+                onClick={() => navigate(`/blog/${report.id}`)}
                 className={`
                   group bg-white border border-gray-200 rounded-2xl hover:border-blue-400 hover:bg-blue-50/30 transition-all cursor-pointer overflow-hidden hover:shadow-md
                   ${viewMode === 'grid' ? 'flex flex-col h-full' : (isCompact ? 'p-3 flex gap-4 items-center' : 'p-5 flex gap-5 items-start')}
@@ -149,7 +149,7 @@ const RecentList = ({ reports, loading }) => {
 
       {filteredReports.length > 0 && (
         <div className="bg-gray-50 border-t border-gray-200 p-3.5 text-center flex-shrink-0 text-xs text-gray-500 font-medium tracking-wide">
-          총 {filteredReports.length}개의 기록 {isCompact && <span className="text-gray-400 ml-1">(요약 뷰)</span>}
+          �?{filteredReports.length}개의 기록 {isCompact && <span className="text-gray-400 ml-1">(?�약 �?</span>}
         </div>
       )}
     </div>
