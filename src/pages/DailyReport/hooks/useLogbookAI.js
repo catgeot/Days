@@ -42,10 +42,10 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
       const resultText = await apiClient.fetchGeminiResponse(
         apiKey,
         [], 
-        "사용자의 메모와 사진을 분석하여 블로그 형식으로 변환하세요.", 
+        "사용자의 메모와 사진을 분석하여 블로그 형식으로 변환하세요. 팩트를 왜곡하지 않는 세련된 에세이를 지향합니다.", 
         prompt,
         base64Images,
-        "gemini-2.5-pro" // 🚨 [Blog] 고차원적인 글쓰기 스킬이 필요하므로 상위 모델 선정
+        "gemini-3.1-pro" // 🚨 [Blog] 인간다운 톤앤매너, 환각 방지, 미세한 감정선 표현력이 필수적이므로 최상위 3.1 모델로 업그레이드
       );
 
       setContent(resultText); 
