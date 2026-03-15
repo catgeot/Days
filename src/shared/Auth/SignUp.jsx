@@ -59,12 +59,12 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center p-4 font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-slate-800 flex items-center justify-center p-4 font-sans relative overflow-hidden">
 
-      <div className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] bg-blue-400/20 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <div className="w-full max-w-sm bg-white/70 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-xl relative z-10">
+      <div className="w-full max-w-sm bg-white/95 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-2xl relative z-10">
 
         <button
           onClick={handleGoHome}
@@ -120,7 +120,7 @@ const Signup = () => {
             disabled={loading}
             className="w-full bg-purple-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed mt-2 group"
           >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <><UserPlus size={14} className="group-hover:scale-110 transition-transform" /> 회원가입 완료</>}
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <><UserPlus size={14} className="group-hover:scale-110 transition-transform" /> 회원가입 하기</>}
           </button>
 
         </form>
