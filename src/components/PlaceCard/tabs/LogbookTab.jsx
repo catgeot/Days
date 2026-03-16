@@ -304,19 +304,19 @@ const LogbookTab = ({ location }) => {
       {/* Lightbox 갤러리 뷰어 모달 */}
       {viewerImages && viewerImages.length > 0 && (
         <div
-          className="fixed inset-0 z-[110] bg-black/95 flex flex-col items-center justify-center"
+          className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center"
           onClick={closeLightbox}
         >
           {/* 상단 닫기 버튼 및 카운터 */}
-          <div className="absolute top-0 left-0 w-full flex justify-between items-center p-5 text-white/90 z-[120] bg-gradient-to-b from-black/60 to-transparent">
-            <div className="text-sm font-bold tracking-widest pl-2">
+          <div className="absolute top-0 left-0 w-full flex justify-between items-center px-4 pt-10 pb-6 sm:pt-6 text-white z-[10000] bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+            <div className="text-base font-bold tracking-widest pl-2 mt-2">
               {viewerIndex + 1} / {viewerImages.length}
             </div>
             <button
               onClick={closeLightbox}
-              className="p-3 bg-white/10 hover:bg-white/20 rounded-full active:scale-95 transition-transform"
+              className="p-3 bg-white/20 hover:bg-white/30 rounded-full active:scale-95 transition-transform pointer-events-auto"
             >
-              <X className="w-6 h-6" />
+              <X className="w-7 h-7" />
             </button>
           </div>
 
