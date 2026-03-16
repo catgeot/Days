@@ -304,28 +304,28 @@ const LogbookTab = ({ location }) => {
       {/* Lightbox 갤러리 뷰어 모달 */}
       {viewerImages && viewerImages.length > 0 && (
         <div
-          className="fixed inset-0 z-[110] bg-black/95 flex flex-col items-center justify-center backdrop-blur-md transition-opacity"
+          className="fixed inset-0 z-[110] bg-black/95 flex flex-col items-center justify-center"
           onClick={closeLightbox}
         >
           {/* 상단 닫기 버튼 및 카운터 */}
-          <div className="absolute top-0 w-full flex justify-between items-center p-4 text-white/80 z-10">
-            <div className="text-sm font-medium tracking-widest">
+          <div className="absolute top-0 left-0 w-full flex justify-between items-center p-5 text-white/90 z-[120] bg-gradient-to-b from-black/60 to-transparent">
+            <div className="text-sm font-bold tracking-widest pl-2">
               {viewerIndex + 1} / {viewerImages.length}
             </div>
             <button
               onClick={closeLightbox}
-              className="p-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-colors"
+              className="p-3 bg-white/10 hover:bg-white/20 rounded-full active:scale-95 transition-transform"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
           {/* 메인 이미지 */}
-          <div className="relative w-full h-full flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <img
               src={viewerImages[viewerIndex].url || viewerImages[viewerIndex]}
               alt="갤러리 뷰어 이미지"
-              className="max-w-full max-h-[85vh] object-contain select-none shadow-2xl rounded-sm"
+              className="max-w-full max-h-full object-contain select-none"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://placehold.co/800x600?text=Error';
@@ -337,15 +337,15 @@ const LogbookTab = ({ location }) => {
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-4 md:left-8 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-colors"
+                  className="absolute left-2 md:left-8 p-3 bg-black/40 hover:bg-black/80 text-white rounded-full active:scale-95 transition-all"
                 >
-                  <ChevronLeft className="w-8 h-8" />
+                  <ChevronLeft className="w-7 h-7" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-4 md:right-8 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-colors"
+                  className="absolute right-2 md:right-8 p-3 bg-black/40 hover:bg-black/80 text-white rounded-full active:scale-95 transition-all"
                 >
-                  <ChevronRight className="w-8 h-8" />
+                  <ChevronRight className="w-7 h-7" />
                 </button>
               </>
             )}
