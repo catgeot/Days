@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { supabase } from '../../../shared/api/supabase';
@@ -302,7 +303,7 @@ const LogbookTab = ({ location }) => {
       )}
 
       {/* Lightbox 갤러리 뷰어 모달 */}
-      {viewerImages && viewerImages.length > 0 && (
+      {viewerImages && viewerImages.length > 0 && createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center"
           onClick={closeLightbox}
@@ -323,7 +324,7 @@ const LogbookTab = ({ location }) => {
           {/* 메인 이미지 */}
           <div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <img
-              src={viewerImages[viewerIndex].url || viewerImages[viewerIndex]}
+              src={viewerImages[viewerIndex]?.url || viewerImages[viewerIndex]}
               alt="갤러리 뷰어 이미지"
               className="max-w-full max-h-full object-contain select-none"
               onError={(e) => {
@@ -350,7 +351,8 @@ const LogbookTab = ({ location }) => {
               </>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Star, Upload, Sparkles, Loader2, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
@@ -158,9 +159,9 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
     }
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       <div
@@ -317,7 +318,8 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
