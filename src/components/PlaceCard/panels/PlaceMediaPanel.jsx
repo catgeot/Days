@@ -2,16 +2,17 @@ import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
 import PlaceWikiDetailsView from '../views/PlaceWikiDetailsView';
+import LogbookTab from '../tabs/LogbookTab';
 
-const PlaceMediaPanel = React.memo(({ 
-    galleryData, 
-    isFullScreen, 
-    toggleFullScreen, 
-    showUI, 
-    mediaMode, 
-    videoId, 
-    videos, 
-    onVideoSelect, 
+const PlaceMediaPanel = React.memo(({
+    galleryData,
+    isFullScreen,
+    toggleFullScreen,
+    showUI,
+    mediaMode,
+    videoId,
+    videos,
+    onVideoSelect,
     playerRef,
     onAiModeChange,
     wikiData,
@@ -23,9 +24,9 @@ const PlaceMediaPanel = React.memo(({
 }) => {
   return (
     <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
-        
+
         <div className={`w-full h-full ${mediaMode === 'GALLERY' ? 'block' : 'hidden'}`}>
-            <PlaceGalleryView 
+            <PlaceGalleryView
                 images={galleryData.images}
                 isImgLoading={galleryData.isImgLoading}
                 selectedImg={galleryData.selectedImg}
@@ -41,10 +42,10 @@ const PlaceMediaPanel = React.memo(({
         </div>
 
         <div className={`w-full h-full ${mediaMode === 'VIDEO' ? 'block' : 'hidden'}`}>
-            <YouTubePlayerView 
+            <YouTubePlayerView
                 ref={playerRef}
                 videos={videos}
-                videoId={videoId} 
+                videoId={videoId}
                 isFullScreen={isFullScreen}
                 toggleFullScreen={toggleFullScreen}
                 showUI={showUI}
@@ -56,12 +57,16 @@ const PlaceMediaPanel = React.memo(({
         </div>
 
         <div className={`w-full h-full ${mediaMode === 'WIKI' ? 'block' : 'hidden'}`}>
-            <PlaceWikiDetailsView 
-                wikiData={wikiData} 
-                isWikiLoading={isWikiLoading} 
-                placeName={location?.name} 
+            <PlaceWikiDetailsView
+                wikiData={wikiData}
+                isWikiLoading={isWikiLoading}
+                placeName={location?.name}
                 countryName={location?.country}
             />
+        </div>
+
+        <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'LOGBOOK' ? 'block' : 'hidden'}`}>
+            <LogbookTab location={location} />
         </div>
 
     </div>
