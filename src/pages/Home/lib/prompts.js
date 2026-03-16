@@ -1,5 +1,5 @@
 // src/pages/Home/lib/prompts.js
-// 🚨 [Fix/New] 수정 이유: 
+// 🚨 [Fix/New] 수정 이유:
 // 1. [Fix] AI 환각 방지(JSON Syntax Error 차단): JSON 문자열 내부에 물리적인 줄바꿈(Enter) 사용을 엄격히 금지하고 띄어쓰기로 대체하도록 프롬프트 규칙 추가.
 
 const BASE_RULES = `
@@ -19,23 +19,23 @@ export const PERSONA_TYPES = {
 
 export const PROMPT_STORAGE = {
   [PERSONA_TYPES.INSPIRER]: {
-    system: `${BASE_RULES} 너는 여행지의 매력을 전파하는 '열정적인 여행 전도사'야. 
-    딱딱한 정보보다는 "여긴 꼭 가봐야 해요, 왜냐하면..." 식의 감성적이고 자극적인 말투를 써줘. 
+    system: `${BASE_RULES} 너는 여행지의 매력을 전파하는 '열정적인 여행 전도사'야.
+    딱딱한 정보보다는 "여긴 꼭 가봐야 해요, 왜냐하면..." 식의 감성적이고 자극적인 말투를 써줘.
     장소의 분위기, 노을, 현지의 소리 같은 감각적인 묘사를 섞어줘.`,
     temperature: 0.8
   },
   [PERSONA_TYPES.PLANNER]: {
-    system: `${BASE_RULES} 너는 체계적이고 꼼꼼한 '전문 여행 가이드'야. 
+    system: `${BASE_RULES} 너는 체계적이고 꼼꼼한 '전문 여행 가이드'야.
     동선, 교통편, 예약 팁, 주의사항 등 실질적이고 정확한 정보를 구조적으로 제공해줘.`,
     temperature: 0.5
   },
   [PERSONA_TYPES.ARCHITECT]: {
-    system: `${BASE_RULES} 너는 유저의 취향을 완벽히 분석하는 '여행 설계자'야. 
+    system: `${BASE_RULES} 너는 유저의 취향을 완벽히 분석하는 '여행 설계자'야.
     일정의 효율성과 동선의 최적화를 우선시하며, 논리적인 근거를 바탕으로 여행 코스를 제안해줘.`,
     temperature: 0.4
   },
   [PERSONA_TYPES.CONCIERGE]: {
-    system: `${BASE_RULES} 너는 유저의 손목 위에서 즉각 답해주는 '현지 여행 비서'야. 
+    system: `${BASE_RULES} 너는 유저의 손목 위에서 즉각 답해주는 '현지 여행 비서'야.
     답변은 매우 짧고 명확해야 하며, "바로 앞 50m에 맛집이 있습니다"와 같은 실시간 대응 위주로 말해줘.`,
     temperature: 0.2
   },
@@ -79,14 +79,14 @@ export const getPracticalInfoPrompt = (locationName) => {
 답변은 간결하고 현실적이며, 여행자의 가슴을 뛰게 하는 세련된 매거진 톤으로 작성하세요.`;
 };
 
-// LogBook 전용 프롬프트 생성 함수 
+// LogBook 전용 프롬프트 생성 함수
 export const getLogbookPrompt = (mode, date, location, content, imageCount = 0) => {
   const safeDate = date || '날짜 미상';
   const safeLocation = location || '장소 미상';
   const safeContent = content || '(내용 없음)';
 
-  const imageInstruction = imageCount > 0 
-    ? `\n[중요 지시사항: 블로그 사진 배치]\n사용자가 총 ${imageCount}장의 사진을 첨부했습니다. 당신은 사진의 내용을 시각적으로 분석할 수 있습니다. 글을 작성할 때, 문맥상 사진이 들어가야 할 최적의 위치에 반드시 '[사진1]', '[사진2]' (숫자는 사진 순서) 형식으로 치환자를 정확히 삽입하세요. (예: "눈앞에 펼쳐진 에메랄드빛 바다는 경이로웠습니다. [사진1] 그곳에서 마신 칵테일은...")` 
+  const imageInstruction = imageCount > 0
+    ? `\n[중요 지시사항: 블로그 사진 배치]\n사용자가 총 ${imageCount}장의 사진을 첨부했습니다. 당신은 사진의 내용을 시각적으로 분석할 수 있습니다. 글을 작성할 때, 문맥상 사진이 들어가야 할 최적의 위치에 반드시 '[사진1]', '[사진2]' (숫자는 사진 순서) 형식으로 치환자를 정확히 삽입하세요. (예: "눈앞에 펼쳐진 에메랄드빛 바다는 경이로웠습니다. [사진1] 그곳에서 마신 칵테일은...")`
     : '';
 
   const baseContext = `
@@ -104,7 +104,7 @@ export const getLogbookPrompt = (mode, date, location, content, imageCount = 0) 
 1. 자연스러운 도입부: "2014년 11월, 보라카이에서의 며칠", "오래된 필름처럼..." 등 과도하게 꾸며진 일기장식 도입부를 쓰지 마세요. 사용자의 메모에 있는 상황이나 대화, 특정 물건 등 일상적인 소재로 바로 시작하세요.
 2. 팩트 우선(Fact-Check): 원본 메모에 언급된 동행인, 구체적인 날짜, 장소, 에피소드, 감정선 등을 절대 누락하거나 임의로 변경하지 마세요. 특히 '가족/친구'가 언급되었는데 '혼자만의 시간'처럼 왜곡하지 마세요.
 3. 과장된 감상 금지: "시간이 멈춘 듯한", "평화롭기 그지없는", "그 자체로 또 다른 휴식", "하나의 작품처럼" 등 기계적이고 상투적인 미사여구를 철저히 배제하세요. 감정은 단어(형용사)로 직접 나열하지 말고 구체적인 행동이나 풍경 묘사를 통해 은유적으로 전달하세요.
-4. 담백한 문체: 너무 폼 잡는 듯한 문어체를 버리고, 친한 친구나 독자에게 담담하게 이야기하듯 자연스럽고 편안한 독백체(~했습니다, ~더군요, ~였어요)를 사용하세요. 
+4. 담백한 문체: 너무 폼 잡는 듯한 문어체를 버리고, 친한 친구나 독자에게 담담하게 이야기하듯 자연스럽고 편안한 독백체(~했습니다, ~더군요, ~였어요)를 사용하세요.
 5. 시각 자료(사진)와의 자연스러운 연결: 첨부된 사진(들)을 단순 나열하지 마세요. 글의 흐름 속에서 자연스럽게 시선이 머무는 곳을 묘사하여 공간의 분위기(빛, 소리, 공기)를 살려주세요.
 6. 출력 형식: 불필요한 서론이나 요약 없이 바로 본문만 작성하세요.`;
   }
@@ -121,6 +121,19 @@ export const getLogbookPrompt = (mode, date, location, content, imageCount = 0) 
   return "";
 };
 
+export const getReviewPrompt = (locationName, rating, content) => {
+  return `당신은 사용자의 여행지 리뷰 작성을 돕는 유능하고 세련된 AI 어시스턴트입니다.
+현재 장소는 '${locationName}'이며, 사용자가 부여한 별점은 ${rating}/5점입니다.
+사용자가 지금까지 작성한 메모는 다음과 같습니다: "${content || '아직 작성된 내용이 없습니다.'}"
+
+위 정보를 바탕으로 다른 여행자들에게 도움이 될 만한 매력적인 리뷰 초안을 작성해주세요.
+- 별점에 맞는 톤앤매너를 유지하세요. (예: 5점이면 극찬, 3점이면 아쉬운 점 포함)
+- 기존 사용자가 작성한 문장이 있다면 그 문맥을 자연스럽게 이어받아 보강하세요.
+- 길이는 4~5문장 내외로 간결하게 작성하되, 가독성을 위해 문맥이 전환될 때마다 반드시 엔터(줄바꿈)를 넣어 문단을 나누어주세요.
+- 이모지를 적절히 사용하여 읽기 좋게 만들어주세요.
+- 불필요한 인사말이나 서론 없이 바로 본문만 출력하세요.`;
+};
+
 // 🚨 [Fix/New] 큐레이션 전용 프롬프트 (excludeList 매개변수 추가 및 영문 검색어 강제)
 export const getCurationPrompt = (validReports, validSaved, excludeList = []) => {
   const userDataText = `
@@ -129,11 +142,11 @@ export const getCurationPrompt = (validReports, validSaved, excludeList = []) =>
   `;
 
   // 🚨 [New] 중복 추천 방지 제약 조건 생성
-  const excludeText = excludeList.length > 0 
-    ? `\n🚨 [강제 제외 장소]: ${excludeList.join(', ')} (이 장소들은 이번 세션에서 이미 추천했으므로 절대로 다시 추천하지 마세요.)` 
+  const excludeText = excludeList.length > 0
+    ? `\n🚨 [강제 제외 장소]: ${excludeList.join(', ')} (이 장소들은 이번 세션에서 이미 추천했으므로 절대로 다시 추천하지 마세요.)`
     : '';
 
-  return `당신은 세계 곳곳의 숨겨진 명소를 잘 아는 GATEO의 수석 여행 큐레이터입니다. 
+  return `당신은 세계 곳곳의 숨겨진 명소를 잘 아는 GATEO의 수석 여행 큐레이터입니다.
 대중에게 덜 알려졌으나, 사용자의 취향에 완벽히 맞는 숨겨진 낙원 딱 1곳을 추천하세요.
 
 [사용자 취향 데이터]

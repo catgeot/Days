@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Star, Upload, Sparkles, Loader2, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
-// 필요한 경우 apiClient에서 generate text 로직을 가져올 수 있음 (AI 작성 시)
-// import { fetchGeminiResponse } from '../../../shared/utils/apiClient';
+import { apiClient } from '../../../pages/Home/lib/apiClient';
+import { getReviewPrompt } from '../../../pages/Home/lib/prompts';
 
 const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSuccess }) => {
   const [user, setUser] = useState(null);
@@ -45,41 +45,51 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   };
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
     if (!user) {
       alert("로그인이 필요합니다.");
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("이미지는 5MB 이하만 업로드 가능합니다.");
+    if (images.length + files.length > 10) {
+      alert("이미지는 최대 10장까지만 업로드 가능합니다.");
       return;
     }
 
     setUploadingImage(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
+      const uploadPromises = files.map(async (file) => {
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error(`${file.name} 이미지는 5MB 이하만 업로드 가능합니다.`);
+        }
 
-      const { error: uploadError } = await supabase.storage
-        .from('review_images')
-        .upload(filePath, file);
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
 
-      if (uploadError) throw uploadError;
+        const { error: uploadError } = await supabase.storage
+          .from('review_images')
+          .upload(filePath, file);
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('review_images')
-        .getPublicUrl(filePath);
+        if (uploadError) throw uploadError;
 
-      setImages(prev => [...prev, publicUrl]);
+        const { data: { publicUrl } } = supabase.storage
+          .from('review_images')
+          .getPublicUrl(filePath);
+
+        return publicUrl;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setImages(prev => [...prev, ...uploadedUrls]);
     } catch (error) {
       console.error('Error uploading image:', error);
       alert('이미지 업로드에 실패했습니다: ' + error.message);
     } finally {
       setUploadingImage(false);
+      e.target.value = ''; // input 초기화
     }
   };
 
@@ -88,16 +98,24 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   };
 
   const handleGenerateAI = async () => {
-    // TODO: AI 리뷰 자동 작성 로직 (예: fetchGeminiResponse 호출)
-    // 현재는 임시 텍스트로 대체
     setIsGenerating(true);
     try {
-      // 가상 지연
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const placeName = location?.name || location?.name_en || '이 곳';
-      const promptResult = `${placeName}에서의 시간은 정말 특별했습니다. 분위기도 너무 좋았고 꼭 다시 방문하고 싶은 곳이에요! 멋진 경험이었습니다.`;
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey) throw new Error("API 키가 없습니다.");
 
-      setContent(prev => prev + (prev ? '\n\n' : '') + promptResult);
+      const placeName = location?.name || location?.name_en || '이 곳';
+      const prompt = getReviewPrompt(placeName, rating, content);
+
+      const resultText = await apiClient.fetchGeminiResponse(
+        apiKey,
+        [],
+        "사용자의 입력을 바탕으로 자연스럽고 매력적인 리뷰 초안을 작성하세요. 팩트를 왜곡하지 않습니다.",
+        prompt,
+        [],
+        "gemini-2.5-flash"
+      );
+
+      setContent(prev => prev + (prev && !prev.endsWith('\n') ? '\n\n' : '') + resultText);
     } catch (error) {
       console.error(error);
       alert('AI 글 생성에 실패했습니다.');
@@ -190,12 +208,12 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
           </div>
 
           {/* 텍스트 에디터 */}
-          <div className="relative flex-1 min-h-[200px] flex flex-col">
+          <div className="relative flex-1 min-h-[120px] md:min-h-[200px] flex flex-col">
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="이 장소에서의 경험을 공유해주세요. 어떤 점이 좋았나요? (AI 아이콘을 눌러 추천 문구를 생성해보세요!)"
-              className="w-full h-full min-h-[200px] resize-none border-none bg-gray-50/50 rounded-xl p-4 text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors"
+              className="w-full h-full min-h-[120px] md:min-h-[200px] resize-none border-none bg-gray-50/50 rounded-xl p-4 text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors"
               disabled={isSubmitting || isGenerating}
             />
 
@@ -218,16 +236,17 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-bold text-gray-700">사진 첨부</label>
-              <span className="text-xs text-gray-400">{images.length}/5장</span>
+              <span className="text-xs text-gray-400">{images.length}/10장</span>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {/* 추가 버튼 */}
-              {images.length < 5 && (
+              {images.length < 10 && (
                 <label className="shrink-0 w-20 h-20 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl cursor-pointer transition-colors snap-start relative">
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={handleImageUpload}
                     className="hidden"
                     disabled={uploadingImage || isSubmitting}

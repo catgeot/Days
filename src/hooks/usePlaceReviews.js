@@ -17,7 +17,7 @@ export const usePlaceReviews = (placeSlug, user) => {
         .from('place_reviews')
         .select(`
           *,
-          user:user_id(
+          user:users(
             id,
             email,
             raw_user_meta_data
@@ -64,7 +64,7 @@ export const usePlaceReviews = (placeSlug, user) => {
         }])
         .select(`
           *,
-          user:user_id(
+          user:users(
             id,
             email,
             raw_user_meta_data
@@ -102,7 +102,7 @@ export const usePlaceReviews = (placeSlug, user) => {
         .eq('user_id', user.id) // 본인 글만 수정 가능
         .select(`
           *,
-          user:user_id(
+          user:users(
             id,
             email,
             raw_user_meta_data
