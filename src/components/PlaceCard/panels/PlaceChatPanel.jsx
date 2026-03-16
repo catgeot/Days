@@ -86,7 +86,7 @@ const PlaceChatPanel = React.memo(({
                  <ArrowLeft className="w-4 h-4 md:w-4 md:h-4" />
              </button>
              <div className="flex flex-col flex-1 min-w-0 justify-center">
-                 <span className="text-[9px] md:text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location.country}</span>
+                 <span className="text-[9px] md:text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location?.country || "Global"}</span>
                  <div className="flex items-center gap-1 md:gap-2 min-w-0">
                      <h1 className="text-sm md:text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md">{location.name}</h1>
                      <div className="shrink-0">

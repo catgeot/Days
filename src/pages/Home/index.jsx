@@ -125,6 +125,8 @@ function Home() {
             name_en: matchedCity.name_en,
             lat: matchedCity.lat,
             lng: matchedCity.lng,
+            country: matchedCity.country || "Explore",
+            country_en: matchedCity.country_en || "Explore",
             tags: matchedCity.tags || [],
             desc: matchedCity.desc || ""
           };
@@ -155,6 +157,8 @@ function Home() {
             name_en: matchedCity ? matchedCity.name_en : "",
             lat: parsedLat,
             lng: parsedLng,
+            country: matchedCity ? matchedCity.country : "Explore",
+            country_en: matchedCity ? matchedCity.country_en : "Explore",
             tags: matchedCity ? matchedCity.tags : [],
             desc: matchedCity ? matchedCity.desc : ""
           };
@@ -294,10 +298,13 @@ function Home() {
           onTripSelect={(trip) => {
             setIsLogoPanelOpen(false);
             const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
+            const realCity = !realSpot ? (citiesData || []).find(c => c.name === trip.destination || c.name_en === trip.destination) : null;
 
             let hydratedLocation;
             if (realSpot) {
               hydratedLocation = { ...trip, ...realSpot, name: trip.destination };
+            } else if (realCity) {
+              hydratedLocation = { ...trip, ...realCity, name: trip.destination };
             } else {
               hydratedLocation = {
                 ...trip,
@@ -305,6 +312,8 @@ function Home() {
                 name_en: trip.curation_data?.locationEn || "",
                 lat: trip.lat || 0,
                 lng: trip.lng || 0,
+                country: "Explore",
+                country_en: "Explore",
                 ai_context: {
                   summary: trip.curation_data?.description || "",
                   tags: trip.curation_data?.searchKeyword ? trip.curation_data.searchKeyword.split(" ") : []
