@@ -33,8 +33,12 @@ export const usePlaceReviews = (placeSlug, user) => {
       let filteredData = data || [];
 
       // 'mine' 필터 적용 시 내 글만 보기
-      if (filter === 'mine' && user) {
-        filteredData = filteredData.filter(review => review.user_id === user.id);
+      if (filter === 'mine') {
+        if (user) {
+          filteredData = filteredData.filter(review => review.user_id === user.id);
+        } else {
+          filteredData = [];
+        }
       }
 
       setReviews(filteredData);
