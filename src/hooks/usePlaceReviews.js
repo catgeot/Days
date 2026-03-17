@@ -17,10 +17,10 @@ export const usePlaceReviews = (placeSlug, user) => {
         .from('place_reviews')
         .select(`
           *,
-          user:users(
+          user:profiles(
             id,
-            email,
-            raw_user_meta_data
+            display_name,
+            avatar_url
           )
         `)
         .eq('place_slug', placeSlug)
@@ -64,10 +64,10 @@ export const usePlaceReviews = (placeSlug, user) => {
         }])
         .select(`
           *,
-          user:users(
+          user:profiles(
             id,
-            email,
-            raw_user_meta_data
+            display_name,
+            avatar_url
           )
         `)
         .single();
@@ -102,10 +102,10 @@ export const usePlaceReviews = (placeSlug, user) => {
         .eq('user_id', user.id) // 본인 글만 수정 가능
         .select(`
           *,
-          user:users(
+          user:profiles(
             id,
-            email,
-            raw_user_meta_data
+            display_name,
+            avatar_url
           )
         `)
         .single();

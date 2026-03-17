@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
@@ -29,15 +29,15 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick }) => {
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden">
-            {review.user?.raw_user_meta_data?.avatar_url ? (
-              <img src={review.user.raw_user_meta_data.avatar_url} alt="profile" className="w-full h-full object-cover" />
+            {review.user?.avatar_url ? (
+              <img src={review.user.avatar_url} alt="profile" className="w-full h-full object-cover" />
             ) : (
-              (review.user?.raw_user_meta_data?.full_name || review.user?.email || 'U')[0]
+              (review.user?.display_name || 'U')[0]
             )}
           </div>
           <div>
             <div className="font-medium text-gray-900 text-sm flex items-center gap-2">
-              {review.user?.raw_user_meta_data?.full_name || review.user?.email?.split('@')[0] || '익명 사용자'}
+              {review.user?.display_name || '익명 사용자'}
               {!review.is_public && (
                 <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">비공개</span>
               )}
@@ -83,25 +83,43 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick }) => {
       {/* 첨부 이미지 (있을 경우) */}
       {review.images && review.images.length > 0 && (
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {review.images.map((img, idx) => (
-            <div
-              key={idx}
-              onClick={() => onImageClick(review.images, idx)}
-              className="relative shrink-0 w-24 h-24 rounded-lg overflow-hidden snap-start bg-gray-100 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-            >
-              <img
-                src={img.url || img}
-                alt={`review img ${idx}`}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://placehold.co/100x100?text=Error';
-                }}
-              />
-            </div>
-          ))}
+          {review.images.map((img, idx) => {
+            const imgSrc = img?.url || img?.publicUrl || img;
+            if (!imgSrc || typeof imgSrc !== 'string') return null;
+
+            return (
+              <div
+                key={idx}
+                onClick={() => onImageClick(review.images, idx)}
+                className="relative shrink-0 w-24 h-24 min-w-[6rem] rounded-lg overflow-hidden snap-start bg-gray-100 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+              >
+                <img
+                  src={imgSrc}
+                  alt={`review img ${idx}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://placehold.co/100x100?text=Error';
+                  }}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
+
+      {/* 액션 및 통계 영역 (좋아요 / 조회수 가짜 UI) */}
+      <div className="mt-4 flex items-center justify-between border-t border-gray-50 pt-3">
+        <button className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors group">
+          <Heart className="w-4 h-4 group-hover:fill-red-500" />
+          <span className="text-xs font-medium">{Math.floor(Math.random() * 20) + 1}</span>
+        </button>
+        <div className="flex items-center gap-1 text-gray-400">
+          <Eye className="w-4 h-4" />
+          <span className="text-[10px] font-medium">{Math.floor(Math.random() * 200) + 50} 읽음</span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -109,8 +127,21 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick }) => {
 
 const LogbookTab = ({ location }) => {
   const [user, setUser] = useState(null);
+
   useEffect(() => {
+    // 초기 사용자 세션 확인
     supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
+
+    // PC 환경 등에서 세션 지연 로딩/변경 감지 (핵심 버그 픽스)
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      if (authListener && authListener.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+    };
   }, []);
 
   const placeSlug = location.slug || location.id; // slug 우선 사용, 없으면 id
@@ -191,7 +222,7 @@ const LogbookTab = ({ location }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out]">
       {/* 헤더 및 통계 영역 */}
       <div className="p-4 border-b border-gray-100 shrink-0">
         <div className="flex justify-between items-center mb-4">
@@ -323,10 +354,16 @@ const LogbookTab = ({ location }) => {
 
           {/* 메인 이미지 */}
           <div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            {/* 배경 로딩 스피너 (이미지가 로드되는 동안 검게 보이지 않게) */}
+            <div className="absolute inset-0 flex items-center justify-center -z-10">
+               <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+            </div>
             <img
-              src={viewerImages[viewerIndex]?.url || viewerImages[viewerIndex]}
+              key={viewerIndex} // 키를 변경하여 재렌더링 유도
+              src={viewerImages[viewerIndex]?.url || viewerImages[viewerIndex]?.publicUrl || viewerImages[viewerIndex]}
               alt="갤러리 뷰어 이미지"
               className="max-w-full max-h-full object-contain select-none"
+              loading="lazy"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://placehold.co/800x600?text=Error';
