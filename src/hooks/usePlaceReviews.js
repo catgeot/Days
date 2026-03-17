@@ -21,7 +21,8 @@ export const usePlaceReviews = (placeSlug, user) => {
             id,
             display_name,
             avatar_url
-          )
+          ),
+          likes:place_review_likes(user_id)
         `)
         .eq('place_slug', placeSlug)
         .order('created_at', { ascending: false });
@@ -30,7 +31,11 @@ export const usePlaceReviews = (placeSlug, user) => {
 
       if (fetchError) throw fetchError;
 
-      let filteredData = data || [];
+      let filteredData = (data || []).map(review => ({
+        ...review,
+        likes_count: review.likes ? review.likes.length : 0,
+        is_liked: user ? review.likes?.some(like => like.user_id === user.id) : false
+      }));
 
       // 'mine' 필터 적용 시 내 글만 보기
       if (filter === 'mine') {
@@ -78,11 +83,17 @@ export const usePlaceReviews = (placeSlug, user) => {
 
       if (insertError) throw insertError;
 
+      const newReview = {
+        ...data,
+        likes_count: 0,
+        is_liked: false
+      };
+
       // 새 리뷰를 목록 맨 앞에 추가
       if (filter === 'all' || (filter === 'mine' && data.user_id === user.id)) {
-        setReviews(prev => [data, ...prev]);
+        setReviews(prev => [newReview, ...prev]);
       }
-      return { data, error: null };
+      return { data: newReview, error: null };
     } catch (err) {
       console.error('Error adding review:', err);
       return { data: null, error: err.message };
@@ -116,7 +127,16 @@ export const usePlaceReviews = (placeSlug, user) => {
 
       if (updateError) throw updateError;
 
-      setReviews(prev => prev.map(r => r.id === reviewId ? data : r));
+      setReviews(prev => prev.map(r => {
+        if (r.id === reviewId) {
+          return {
+            ...data,
+            likes_count: r.likes_count,
+            is_liked: r.is_liked
+          };
+        }
+        return r;
+      }));
       return { data, error: null };
     } catch (err) {
       console.error('Error updating review:', err);
@@ -149,6 +169,77 @@ export const usePlaceReviews = (placeSlug, user) => {
     }
   };
 
+  const toggleLike = async (reviewId, isCurrentlyLiked) => {
+    if (!user) return { error: '로그인이 필요합니다.' };
+
+    // Optimistic Update
+    setReviews(prev => prev.map(r => {
+      if (r.id === reviewId) {
+        return {
+          ...r,
+          is_liked: !isCurrentlyLiked,
+          likes_count: isCurrentlyLiked ? Math.max(0, r.likes_count - 1) : r.likes_count + 1
+        };
+      }
+      return r;
+    }));
+
+    try {
+      if (isCurrentlyLiked) {
+        // Unlike
+        const { error } = await supabase
+          .from('place_review_likes')
+          .delete()
+          .eq('review_id', reviewId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      } else {
+        // Like
+        const { error } = await supabase
+          .from('place_review_likes')
+          .insert([{ review_id: reviewId, user_id: user.id }]);
+
+        if (error) throw error;
+      }
+      return { error: null };
+    } catch (err) {
+      console.error('Error toggling like:', err);
+      // Revert Optimistic Update on error
+      setReviews(prev => prev.map(r => {
+        if (r.id === reviewId) {
+          return {
+            ...r,
+            is_liked: isCurrentlyLiked,
+            likes_count: isCurrentlyLiked ? r.likes_count + 1 : Math.max(0, r.likes_count - 1)
+          };
+        }
+        return r;
+      }));
+      return { error: err.message };
+    }
+  };
+
+  const incrementView = async (reviewId) => {
+    // Only increment view if we haven't already done it in this session (optional logic, but simple enough to just call rpc)
+    try {
+      const { error } = await supabase.rpc('increment_review_view', {
+        review_id_param: reviewId
+      });
+      if (error) throw error;
+
+      // Update UI optimistically without re-fetching everything
+      setReviews(prev => prev.map(r => {
+        if (r.id === reviewId) {
+          return { ...r, views_count: (r.views_count || 0) + 1 };
+        }
+        return r;
+      }));
+    } catch (err) {
+      console.error('Error incrementing view count:', err);
+    }
+  };
+
   // 장소의 평균 별점 및 리뷰 수 계산
   const stats = {
     averageRating: reviews.length > 0
@@ -167,6 +258,8 @@ export const usePlaceReviews = (placeSlug, user) => {
     addReview,
     updateReview,
     deleteReview,
+    toggleLike,
+    incrementView,
     refetch: fetchReviews
   };
 };

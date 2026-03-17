@@ -6,8 +6,18 @@ import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
-const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick }) => {
+const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hasViewed, setHasViewed] = useState(false);
+
+  useEffect(() => {
+    // Simple way to trigger view: When the component mounts, consider it viewed
+    // In a real app, you might use IntersectionObserver to only count when visible on screen
+    if (!hasViewed && onVisible) {
+      onVisible(review.id);
+      setHasViewed(true);
+    }
+  }, [hasViewed, onVisible, review.id]);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -21,6 +31,16 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick }) => {
         className={`w-4 h-4 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
       />
     ));
+  };
+
+  const handleLikeClick = () => {
+    if (!user) {
+      alert('로그인 하고 리뷰에 참여하고 경험을 공유하세요.');
+      return;
+    }
+    if (onToggleLike) {
+      onToggleLike(review.id, review.is_liked);
+    }
   };
 
   return (
@@ -109,15 +129,18 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick }) => {
         </div>
       )}
 
-      {/* 액션 및 통계 영역 (좋아요 / 조회수 가짜 UI) */}
+      {/* 액션 및 통계 영역 (좋아요 / 조회수 실제 데이터 연동) */}
       <div className="mt-4 flex items-center justify-between border-t border-gray-50 pt-3">
-        <button className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors group">
-          <Heart className="w-4 h-4 group-hover:fill-red-500" />
-          <span className="text-xs font-medium">{Math.floor(Math.random() * 20) + 1}</span>
+        <button
+          onClick={handleLikeClick}
+          className={`flex items-center gap-1.5 transition-colors group ${review.is_liked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+        >
+          <Heart className={`w-4 h-4 ${review.is_liked ? 'fill-red-500' : 'group-hover:fill-red-500'}`} />
+          <span className="text-xs font-medium">{review.likes_count || 0}</span>
         </button>
         <div className="flex items-center gap-1 text-gray-400">
           <Eye className="w-4 h-4" />
-          <span className="text-[10px] font-medium">{Math.floor(Math.random() * 200) + 50} 읽음</span>
+          <span className="text-[10px] font-medium">{review.views_count || 0} 읽음</span>
         </div>
       </div>
     </div>
@@ -152,6 +175,8 @@ const LogbookTab = ({ location }) => {
     setFilter,
     stats,
     deleteReview,
+    toggleLike,
+    incrementView,
     refetch
   } = usePlaceReviews(placeSlug, user);
 
@@ -183,7 +208,7 @@ const LogbookTab = ({ location }) => {
 
   const handleWriteClick = () => {
     if (!user) {
-      alert('리뷰를 작성하려면 로그인이 필요합니다.');
+      alert('로그인 하고 리뷰에 참여하고 경험을 공유하세요.');
       // 필요한 경우 로그인 페이지로 리다이렉트하는 로직 추가
       return;
     }
@@ -313,6 +338,8 @@ const LogbookTab = ({ location }) => {
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
                 onImageClick={openLightbox}
+                onToggleLike={toggleLike}
+                onVisible={incrementView}
               />
             ))}
           </div>
