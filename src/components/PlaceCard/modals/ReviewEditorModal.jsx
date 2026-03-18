@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Star, Upload, Sparkles, Loader2, Image as ImageIcon } from 'lucide-react';
+import { X, Star, Upload, Sparkles, Loader2, Image as ImageIcon, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
@@ -23,8 +23,11 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   // AI 생성 상태
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const imageScrollRef = useRef(null);
 
   // 모달 닫기 방지용 효과
   useEffect(() => {
@@ -61,12 +64,14 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
     }
 
     setUploadingImage(true);
+    setUploadProgress({ current: 0, total: files.length });
     try {
       const uploadedUrls = [];
       const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true, fileType: 'image/jpeg' };
 
       // 순차 업로드 (모바일 메모리 및 네트워크 과부하 방지)
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         // 이미지 용량 최적화 (5MB 제한 문제 해결)
         const compressedFile = await imageCompression(file, options);
 
@@ -84,6 +89,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
           .getPublicUrl(filePath);
 
         uploadedUrls.push(publicUrl);
+        setUploadProgress({ current: i + 1, total: files.length });
       }
 
       setImages(prev => [...prev, ...uploadedUrls]);
@@ -92,12 +98,30 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       alert('이미지 업로드에 실패했습니다: ' + error.message);
     } finally {
       setUploadingImage(false);
+      setUploadProgress({ current: 0, total: 0 });
       e.target.value = ''; // input 초기화
     }
   };
 
   const removeImage = (indexToRemove) => {
     setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  const scrollImages = (direction) => {
+    if (imageScrollRef.current) {
+      const scrollAmount = 200;
+      if (direction === 'left') {
+        imageScrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      } else {
+        imageScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handleClearContent = () => {
+    if (window.confirm("작성 중인 내용을 모두 지우시겠습니까?")) {
+      setContent('');
+    }
   };
 
   const handleGenerateAI = async () => {
@@ -118,7 +142,8 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
         "gemini-2.5-flash"
       );
 
-      setContent(prev => prev + (prev && !prev.endsWith('\n') ? '\n\n' : '') + resultText);
+      // 덮어쓰기 방식으로 변경
+      setContent(resultText);
     } catch (error) {
       console.error(error);
       alert('AI 글 생성에 실패했습니다.');
@@ -167,7 +192,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       onClick={handleBackdropClick}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* 헤더 */}
@@ -211,38 +236,94 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
           </div>
 
           {/* 텍스트 에디터 */}
-          <div className="relative flex-1 min-h-[120px] md:min-h-[200px] flex flex-col">
+          <div className="relative flex-1 min-h-[150px] md:min-h-[250px] flex flex-col group">
+            {/* 초기화 버튼 */}
+            {content.trim().length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearContent}
+                className="absolute top-3 right-3 p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center gap-1"
+                title="내용 초기화"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="text-[10px] font-medium mr-1">지우기</span>
+              </button>
+            )}
+
             <textarea
               value={content}
+              maxLength={1000}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="이 장소에서의 경험을 공유해주세요. 어떤 점이 좋았나요? (AI 아이콘을 눌러 추천 문구를 생성해보세요!)"
-              className="w-full h-full min-h-[120px] md:min-h-[200px] resize-none border-none bg-gray-50/50 rounded-xl p-4 text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors"
+              placeholder="이 장소에서의 경험을 공유해주세요. 어떤 점이 좋았나요? (AI 아이콘을 눌러 추천 문구를 덮어써보세요!)"
+              className="w-full h-full min-h-[150px] md:min-h-[250px] pb-12 resize-none border border-gray-100 bg-gray-50/50 rounded-xl p-4 text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors"
               disabled={isSubmitting || isGenerating}
             />
 
-            {/* AI 어시스턴트 버튼 */}
-            <button
-              onClick={handleGenerateAI}
-              disabled={isGenerating || isSubmitting}
-              className="absolute bottom-4 right-4 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white rounded-lg text-xs font-medium shadow-md shadow-violet-500/20 transition-all active:scale-95 disabled:opacity-70"
-            >
-              {isGenerating ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Sparkles className="w-4 h-4" />
-              )}
-              {isGenerating ? 'AI가 작성 중...' : 'AI 초안 생성'}
-            </button>
+            {/* 하단 유틸 (글자 수, AI 버튼) */}
+            <div className="absolute bottom-3 left-4 right-3 flex items-center justify-between pointer-events-none">
+              <span className="text-xs text-gray-400 font-medium">
+                {content.length}/1000자
+              </span>
+
+              <button
+                onClick={handleGenerateAI}
+                disabled={isGenerating || isSubmitting}
+                className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white rounded-lg text-xs font-medium shadow-md shadow-violet-500/20 transition-all active:scale-95 disabled:opacity-70"
+              >
+                {isGenerating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
+                {isGenerating ? 'AI가 작성 중...' : 'AI 초안 생성 (덮어쓰기)'}
+              </button>
+            </div>
           </div>
 
           {/* 사진 첨부 영역 */}
-          <div>
+          <div className="relative group/gallery">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-bold text-gray-700">사진 첨부</label>
-              <span className="text-xs text-gray-400">{images.length}/10장</span>
+              <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                사진 첨부
+                {uploadingImage && (
+                  <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                    {uploadProgress.current}/{uploadProgress.total}장 최적화 업로드 중...
+                  </span>
+                )}
+              </label>
+              <span className="text-xs text-gray-400">
+                {images.length}/10장
+                {images.length > 0 && " (첫 번째 사진이 대표 이미지)"}
+              </span>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {/* 좌우 화살표 버튼 (PC 등 가로 스크롤 필요 시 표시) */}
+            {images.length > 4 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => scrollImages('left')}
+                  className="absolute left-0 top-[50%] -translate-y-[50%] w-8 h-8 flex items-center justify-center bg-white/90 shadow-md border border-gray-100 rounded-full z-10 opacity-0 group-hover/gallery:opacity-100 transition-opacity hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="이전 사진 보기"
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollImages('right')}
+                  className="absolute right-0 top-[50%] -translate-y-[50%] w-8 h-8 flex items-center justify-center bg-white/90 shadow-md border border-gray-100 rounded-full z-10 opacity-0 group-hover/gallery:opacity-100 transition-opacity hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="다음 사진 보기"
+                >
+                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                </button>
+              </>
+            )}
+
+            {/* 사진 리스트 가로 스크롤 (스크롤바 표시) */}
+            <div
+              ref={imageScrollRef}
+              className="flex gap-3 overflow-x-auto pb-3 snap-x custom-scrollbar scroll-smooth"
+            >
               {/* 추가 버튼 */}
               {images.length < 10 && (
                 <label className="shrink-0 w-20 h-20 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl cursor-pointer transition-colors snap-start relative">
