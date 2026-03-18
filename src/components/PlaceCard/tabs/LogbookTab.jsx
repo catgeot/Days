@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
-const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible }) => {
+const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasViewed, setHasViewed] = useState(false);
 
@@ -35,7 +36,11 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 
   const handleLikeClick = () => {
     if (!user) {
-      alert('로그인 하고 리뷰에 참여하고 경험을 공유하세요.');
+      if (onRequireLogin) {
+        onRequireLogin();
+      } else {
+        alert('로그인 하고 리뷰에 참여하고 경험을 공유하세요.');
+      }
       return;
     }
     if (onToggleLike) {
@@ -149,6 +154,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 // --------------------------------------------------------------------------
 
 const LogbookTab = ({ location }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -206,10 +212,15 @@ const LogbookTab = ({ location }) => {
     setViewerIndex(prev => (prev === viewerImages.length - 1 ? 0 : prev + 1));
   };
 
+  const handleRequireLogin = () => {
+    if (window.confirm('로그인이 필요한 기능입니다.\n로그인 페이지로 이동하시겠습니까?')) {
+      navigate('/auth/login');
+    }
+  };
+
   const handleWriteClick = () => {
     if (!user) {
-      alert('로그인 하고 리뷰에 참여하고 경험을 공유하세요.');
-      // 필요한 경우 로그인 페이지로 리다이렉트하는 로직 추가
+      handleRequireLogin();
       return;
     }
     setEditingReview(null);
@@ -301,6 +312,27 @@ const LogbookTab = ({ location }) => {
         </div>
       </div>
 
+      {/* 비로그인 안내 배너 */}
+      {!user && !isLoading && (
+        <div className="mx-4 mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+              <MessageSquare className="w-5 h-5 text-blue-500" />
+            </div>
+            <p className="text-sm text-gray-700">
+              <span className="font-bold text-blue-700">로그인</span>하고 첫 리뷰를 남겨보세요!<br/>
+              <span className="text-xs text-gray-500">다른 여행자들에게 큰 도움이 됩니다.</span>
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/auth/login')}
+            className="shrink-0 w-full sm:w-auto px-5 py-2 bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-lg transition-colors shadow-sm"
+          >
+            로그인 하기
+          </button>
+        </div>
+      )}
+
       {/* 리뷰 피드 목록 */}
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
         {isLoading ? (
@@ -340,6 +372,7 @@ const LogbookTab = ({ location }) => {
                 onImageClick={openLightbox}
                 onToggleLike={toggleLike}
                 onVisible={incrementView}
+                onRequireLogin={handleRequireLogin}
               />
             ))}
           </div>

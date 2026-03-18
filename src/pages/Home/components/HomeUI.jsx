@@ -1,59 +1,59 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
+import {
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
-  Palmtree, Mountain, Building2, Landmark, Compass, 
+  Palmtree, Mountain, Building2, Landmark, Compass,
   Eye, EyeOff, Droplet, Sun, Moon,
   PenTool,
   Leaf
-} from 'lucide-react'; 
-import { Link } from 'react-router-dom'; 
-import TravelTicker from '../components/TravelTicker'; 
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
 
-const HomeUI = React.memo(({ 
-  onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick, 
+const HomeUI = React.memo(({
+  onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick,
   relatedTags = [], isTagLoading = false, onTagClick,
   selectedCategory, onCategorySelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
-  isPinVisible, 
+  isPinVisible,
   onTogglePinVisibility,
-  globeTheme, 
+  globeTheme,
   onThemeToggle,
-  isZenMode, 
-  onToggleZenMode 
+  isZenMode,
+  onToggleZenMode
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  
+
   const inputRef = useRef(null);
   const mobileInputRef = useRef(null);
-  
+
   const trendingData = useTrendingData();
 
   useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
-  
+
   useEffect(() => {
     if (isMobileSearchOpen && mobileInputRef.current) {
       mobileInputRef.current.focus();
     }
   }, [isMobileSearchOpen]);
 
-  const handleKeyDown = (e) => { 
-    if (e.key === 'Enter' && inputValue.trim() !== '') { 
-      onSearch(inputValue); 
-      inputRef.current?.blur(); 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && inputValue.trim() !== '') {
+      onSearch(inputValue);
+      inputRef.current?.blur();
       mobileInputRef.current?.blur();
-      setIsMobileSearchOpen(false); 
-    } 
+      setIsMobileSearchOpen(false);
+    }
   };
-  
+
   const handleChange = (e) => { setInputValue(e.target.value); };
-  
-  const handleClear = () => { 
-    setInputValue(''); 
-    inputRef.current?.focus(); 
+
+  const handleClear = () => {
+    setInputValue('');
+    inputRef.current?.focus();
     mobileInputRef.current?.focus();
   };
 
@@ -78,14 +78,14 @@ const HomeUI = React.memo(({
   return (
     <>
       {isMobileSearchOpen && (
-        <div 
-          className="fixed inset-0 z-[45] pointer-events-auto touch-none" 
-          onClick={() => setIsMobileSearchOpen(false)} 
+        <div
+          className="fixed inset-0 z-[45] pointer-events-auto touch-none"
+          onClick={() => setIsMobileSearchOpen(false)}
           />
       )}
 
       <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between md:grid md:grid-cols-12 items-start pointer-events-none w-full">
-        
+
         <div onClick={onLogoClick} className="md:col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
         </div>
@@ -100,20 +100,20 @@ const HomeUI = React.memo(({
             <button onClick={() => onOpenChat()} className="w-9 h-9 flex-shrink-0 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-500/30 flex items-center justify-center shadow-lg">
               <MessageSquare size={14} className="text-blue-400" />
             </button>
-            
+
             <Link to="/blog" className="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg hover:bg-emerald-500/30 transition-colors">
               <PenTool size={14} className="text-emerald-400" />
             </Link>
 
             <div className={`absolute right-0 top-2 flex items-center bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-300 overflow-hidden shadow-2xl z-50 origin-right ${isMobileSearchOpen ? 'w-[75vw] opacity-100 h-9 px-2' : 'w-0 opacity-0 h-9 px-0 pointer-events-none'}`}>
               <Search size={14} className="text-blue-400 flex-shrink-0 ml-1" />
-              <input 
+              <input
                 ref={mobileInputRef}
-                type="text" 
-                value={inputValue} 
-                onChange={handleChange} 
-                onKeyDown={handleKeyDown} 
-                placeholder="어디로 떠나볼까?" 
+                type="text"
+                value={inputValue}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                placeholder="어디로 떠나볼까?"
                 className="w-full bg-transparent text-white text-xs focus:outline-none ml-2 placeholder-gray-500/80"
               />
               {inputValue && (
@@ -125,16 +125,16 @@ const HomeUI = React.memo(({
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
-           <button 
-             onClick={onThemeToggle} 
+           <button
+             onClick={onThemeToggle}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
              title="지구본 무드 변경"
            >
               <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
            </button>
-           
-           <button 
-             onClick={onToggleZenMode} 
+
+           <button
+             onClick={onToggleZenMode}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
              title="Zen Mode (전체화면 힐링)"
            >
@@ -152,7 +152,7 @@ const HomeUI = React.memo(({
             </div>
           </div>
         </div>
-        
+
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto relative z-50">
            <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
@@ -161,9 +161,9 @@ const HomeUI = React.memo(({
         </div>
 
         <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-auto relative z-50">
-          <TravelTicker 
-            data={trendingData} 
-            onCityClick={onTickerClick} 
+          <TravelTicker
+            data={trendingData}
+            onCityClick={onTickerClick}
             isExpanded={isTickerExpanded}
             onToggle={setIsTickerExpanded}
           />
@@ -206,21 +206,23 @@ const HomeUI = React.memo(({
       <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
           <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg"><User size={18} /></div>
-              <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">ADMIN</span>
+              <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
+                  <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
+              </div>
+              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
           </Link>
-          
+
           <Link to="/blog" className="group flex items-center gap-2 pb-2 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
-                  <PenTool size={18} className="text-white group-hover:text-emerald-400 transition-colors" />
+                  <PenTool size={18} className="text-gray-200 group-hover:text-emerald-400 transition-colors" />
               </div>
-              <span className="text-[10px] text-gray-500 font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">LOGBOOK</span>
+              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
           </Link>
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center pointer-events-auto">
-          <button 
-            onClick={() => onOpenChat()} 
+          <button
+            onClick={() => onOpenChat()}
             className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10 hover:scale-105 transition-transform"
           >
             <MessageSquare size={16} /> <span>AI와 대화하기</span>

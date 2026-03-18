@@ -220,9 +220,17 @@ export const usePlaceReviews = (placeSlug, user) => {
     }
   };
 
-  const incrementView = async (reviewId) => {
-    // Only increment view if we haven't already done it in this session (optional logic, but simple enough to just call rpc)
+  const incrementView = useCallback(async (reviewId) => {
+    // sessionStorage를 활용하여 중복 조회수 증가 방지
+    const viewedKey = `viewed_review_${reviewId}`;
+    if (sessionStorage.getItem(viewedKey)) {
+      return;
+    }
+
     try {
+      // API 호출 전 즉시 세션스토리지에 기록하여 Strict Mode 이중 호출 방지
+      sessionStorage.setItem(viewedKey, 'true');
+
       const { error } = await supabase.rpc('increment_review_view', {
         review_id_param: reviewId
       });
@@ -237,8 +245,9 @@ export const usePlaceReviews = (placeSlug, user) => {
       }));
     } catch (err) {
       console.error('Error incrementing view count:', err);
+      sessionStorage.removeItem(viewedKey); // 에러 시 롤백
     }
-  };
+  }, []);
 
   // 장소의 평균 별점 및 리뷰 수 계산
   const stats = {
