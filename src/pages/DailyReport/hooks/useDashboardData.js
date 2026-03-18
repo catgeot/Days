@@ -11,25 +11,29 @@ export const useDashboardData = () => {
   const [graphMode, setGraphMode] = useState('total');
   const [graphYear, setGraphYear] = useState(today.getFullYear());
   const [availableYears, setAvailableYears] = useState([today.getFullYear()]);
+  const [isPublicMode, setIsPublicMode] = useState(false);
 
   // 데이터 로드
   const loadData = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data, error } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_deleted', false) // 🚨 [Fix] 삭제된(소프트 딜리트) 리포트는 대시보드/목록에서 보이지 않도록 필터링 추가
-        .order('date', { ascending: false });
+    setIsPublicMode(!user);
 
-      if (!error && data) {
-        setReports(data);
-        const dataYears = data.map(r => new Date(r.date).getFullYear());
-        const baseYears = [today.getFullYear(), today.getFullYear() - 1];
-        setAvailableYears([...new Set([...dataYears, ...baseYears])].sort((a, b) => b - a));
-      }
+    let query = supabase.from('reports').select('*');
+
+    if (user) {
+      query = query.eq('user_id', user.id).eq('is_deleted', false);
+    } else {
+      query = query.eq('is_public', true).eq('is_deleted', false);
+    }
+
+    const { data, error } = await query.order('date', { ascending: false });
+
+    if (!error && data) {
+      setReports(data);
+      const dataYears = data.map(r => new Date(r.date).getFullYear());
+      const baseYears = [today.getFullYear(), today.getFullYear() - 1];
+      setAvailableYears([...new Set([...dataYears, ...baseYears])].sort((a, b) => b - a));
     }
     setLoading(false);
   };
@@ -37,8 +41,8 @@ export const useDashboardData = () => {
   useEffect(() => { loadData(); }, []);
 
   // 캘린더 및 통계 계산
-  const displayCount = reports.filter(r => 
-    new Date(r.date).getFullYear() === viewYear && 
+  const displayCount = reports.filter(r =>
+    new Date(r.date).getFullYear() === viewYear &&
     new Date(r.date).getMonth() === viewMonth
   ).length;
 
@@ -82,8 +86,8 @@ export const useDashboardData = () => {
 
   return {
     loading, reports, viewYear, setViewYear, viewMonth, setViewMonth,
-    displayCount, calendarDays, trendData, maxCount, 
+    displayCount, calendarDays, trendData, maxCount,
     graphMode, setGraphMode, graphYear, setGraphYear, availableYears,
-    handlePrevMonth, handleNextMonth
+    handlePrevMonth, handleNextMonth, isPublicMode
   };
 };

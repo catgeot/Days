@@ -1,6 +1,6 @@
 import React from 'react';
-import { PenTool, BarChart3 } from 'lucide-react'; 
-import { useNavigate } from 'react-router-dom';
+import { PenTool, BarChart3, LogIn, Globe } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import AICurationCard from './components/AICurationCard';
 import CalendarCard from './components/CalendarCard';
@@ -9,56 +9,93 @@ import { useDashboardData } from './hooks/useDashboardData';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const locationFilter = searchParams.get('location');
 
   const {
-    loading, reports, viewYear, viewMonth, 
+    loading, reports, viewYear, viewMonth,
     displayCount, calendarDays, trendData, maxCount,
-    handlePrevMonth, handleNextMonth
+    handlePrevMonth, handleNextMonth, isPublicMode
   } = useDashboardData();
 
+  // URL 파라미터가 있을 경우 리포트 필터링
+  const filteredReports = locationFilter
+    ? reports.filter(r => r.location && r.location.includes(locationFilter))
+    : reports;
+
+  const handleWriteClick = () => {
+    navigate('/blog/write');
+  };
+
+  const handleLoginClick = () => {
+    navigate('/auth/login', { state: { from: '/blog' } });
+  };
+
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans">
+    <div className="min-h-screen bg-white text-gray-900 font-sans relative">
+      {isPublicMode && (
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 flex items-center justify-center gap-3 shadow-md sticky top-0 z-40">
+          <span className="text-sm font-medium hidden sm:inline">로그인하고 나만의 우주 여행 기록을 남겨보세요!</span>
+          <span className="text-sm font-medium sm:hidden">로그인하고 여행 기록을 남겨보세요!</span>
+          <button
+            onClick={handleLoginClick}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm"
+          >
+            <LogIn size={14} /> 로그인하기
+          </button>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 pb-20">
-        
+
         <div className="mb-8 flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-200 pb-6">
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end gap-6 flex-1">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight drop-shadow-sm">LogBook</h2>
-              <p className="text-gray-500 mt-1.5 text-sm font-medium">
-                 {loading ? '우주의 기록을 동기화하는 중...' : `총 ${displayCount}개의 기억이 빛나고 있습니다.`}
-
+              <div className="flex items-center gap-2 mb-1">
+                {isPublicMode && <Globe className="text-blue-500" size={24} />}
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight drop-shadow-sm">
+                  {isPublicMode ? 'Public LogBook' : 'LogBook'}
+                </h2>
+              </div>
+              <p className="text-gray-500 mt-1.5 text-sm font-medium flex flex-wrap gap-2 items-center">
+                 {loading ? '우주의 기록을 동기화하는 중...' : (
+                   isPublicMode
+                    ? (locationFilter ? `'${locationFilter}' 지역의 공개된 기록 ${filteredReports.length}개` : `우주 여행자들의 ${reports.length}개 기록이 공유되고 있습니다.`)
+                    : `총 ${displayCount}개의 기억이 빛나고 있습니다.`
+                 )}
               </p>
             </div>
 
-            {!loading && trendData && trendData.length > 0 && (
+            {!loading && !isPublicMode && trendData && trendData.length > 0 && (
               <div className="hidden sm:flex items-end gap-2 h-10 ml-4 pl-6 border-l border-gray-200">
                 <BarChart3 size={14} className="text-gray-400 mb-1 mr-1" />
                 {trendData.slice(-6).map((item, idx) => (
                   <div key={idx} className="flex flex-col items-center justify-end h-full group relative cursor-default">
-                    <div 
+                    <div
                       style={{ height: `${maxCount > 0 ? Math.max((item.count / maxCount) * 100, 15) : 15}%` }}
                       className={`w-1.5 rounded-t-sm transition-all duration-500 ${item.count > 0 ? 'bg-blue-500/80 group-hover:bg-blue-400' : 'bg-gray-200'}`}
                     ></div>
                     <span className="absolute -top-7 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-gray-700 shadow-sm">
-                      {item.count}�?
+                      {item.count}개
                     </span>
                   </div>
                 ))}
               </div>
             )}
           </div>
-          
-         	<button 
-						onClick={() => navigate('/blog/write')}
-						className="group relative flex items-center justify-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white font-black rounded-full transition-all hover:scale-105 active:scale-95 w-full lg:w-auto overflow-hidden shadow-lg hover:shadow-blue-500/50"
-						>
-						<div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 transition-all duration-700 group-hover:left-full"></div>
-						
-						<PenTool size={18} className="relative z-10 drop-shadow-md" /> 
-						<span className="relative z-10 tracking-tight text-sm drop-shadow-md">새로운 기록 시작하기</span>
 
-					</button>
+          <button
+            onClick={handleWriteClick}
+            className="group relative flex items-center justify-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white font-black rounded-full transition-all hover:scale-105 active:scale-95 w-full lg:w-auto overflow-hidden shadow-lg hover:shadow-blue-500/50"
+          >
+            <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 transition-all duration-700 group-hover:left-full"></div>
+
+            <PenTool size={18} className="relative z-10 drop-shadow-md" />
+            <span className="relative z-10 tracking-tight text-sm drop-shadow-md">
+              새로운 기록 시작하기
+            </span>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-stretch">
@@ -67,16 +104,17 @@ const Dashboard = () => {
           </div>
 
           <div className="col-span-1 h-full">
-            <CalendarCard 
-              viewYear={viewYear} viewMonth={viewMonth} 
-              calendarDays={calendarDays} 
-              onPrevMonth={handlePrevMonth} onNextMonth={handleNextMonth} 
+            <CalendarCard
+              viewYear={viewYear} viewMonth={viewMonth}
+              calendarDays={calendarDays}
+              onPrevMonth={handlePrevMonth} onNextMonth={handleNextMonth}
+              isPublicMode={isPublicMode}
             />
           </div>
         </div>
 
-        <RecentList reports={reports} loading={loading} />
-        
+        <RecentList reports={filteredReports} loading={loading} isPublicMode={isPublicMode} />
+
       </div>
     </div>
   );

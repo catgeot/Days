@@ -46,12 +46,13 @@ const Write = () => {
     const loadInitialData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
 
+      if (!user) {
+        alert('로그인이 필요합니다.');
+        navigate('/auth/login', { replace: true, state: { from: window.location.pathname } });
+        return;
+      }
+
       if (isEditMode && id) {
-        if (!user) {
-          alert('로그인이 필요합니다.');
-          navigate('/login', { replace: true });
-          return;
-        }
         const { data } = await supabase.from('reports').select('*').eq('id', id).eq('user_id', user.id).single();
         if (data) {
           setTitle(data.title);

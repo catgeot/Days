@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../shared/api/supabase'; 
+import { supabase } from '../../../shared/api/supabase';
 import { useNavigate } from 'react-router-dom';
 
 import HomeButton from './HomeButton';
 import QuickMemo from './QuickMemo';
 import UserProfile from './UserProfile';
 import SlideViewer from './SlideViewer';
+import PublicNav from './PublicNav';
 
 const Sidebar = () => {
   const [user, setUser] = useState(null);
   const [slides, setSlides] = useState([]);
   const [isSlideOpen, setIsSlideOpen] = useState(false);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +48,7 @@ const Sidebar = () => {
   const handleLogout = async () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       await supabase.auth.signOut();
-      navigate('/'); 
+      navigate('/');
     }
   };
 
@@ -55,18 +56,24 @@ const Sidebar = () => {
     <>
       <div className="hidden md:flex w-64 h-screen bg-white text-gray-700 flex-col border-r border-gray-200 flex-shrink-0 transition-all duration-300">
         <HomeButton />
-        <QuickMemo user={user} />
-        <UserProfile 
-          user={user} 
-          onLogout={handleLogout} 
-          onOpenSlide={() => setIsSlideOpen(true)} 
-        />
+        {user ? (
+          <>
+            <QuickMemo user={user} />
+            <UserProfile
+              user={user}
+              onLogout={handleLogout}
+              onOpenSlide={() => setIsSlideOpen(true)}
+            />
+          </>
+        ) : (
+          <PublicNav />
+        )}
       </div>
 
-      <SlideViewer 
-        isOpen={isSlideOpen} 
-        onClose={() => setIsSlideOpen(false)} 
-        slides={slides} 
+      <SlideViewer
+        isOpen={isSlideOpen}
+        onClose={() => setIsSlideOpen(false)}
+        slides={slides}
         user={user}
       />
     </>

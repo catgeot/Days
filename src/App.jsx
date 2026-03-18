@@ -7,18 +7,18 @@ import { supabase } from './shared/api/supabase';
 import MainLayout from './shared/layout/MainLayout';
 import AdminLayout from './shared/layout/AdminLayout';
 import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
-import Home from './pages/Home'; 
+import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';
 
 import Dashboard from './pages/DailyReport/Dashboard';
 import Write from './pages/DailyReport/Write';
 import Detail from './pages/DailyReport/Detail';
-import PublicViewer from './pages/DailyReport/PublicViewer'; 
+import PublicViewer from './pages/DailyReport/PublicViewer';
 
-import { ReportProvider } from './context/ReportContext'; 
+import { ReportProvider } from './context/ReportContext';
 
 import Login from './shared/Auth/Login';
-import Signup from './shared/Auth/SignUp'; 
+import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 
@@ -31,7 +31,7 @@ function App() {
         console.log("URL Cleanup: Supabase 인증 확인 후 주소창이 정리되었습니다.");
       }
     });
-  }, []); 
+  }, []);
 
   return (
     <BrowserRouter>
@@ -44,13 +44,11 @@ function App() {
             </Route>
           </Route>
 
-          <Route element={<AdminLayout />}>
-            <Route path="/blog" element={<DashboardLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="write" element={<Write />} />
-              <Route path="write/:id" element={<Write />} /> 
-              <Route path=":id" element={<Detail />} />
-            </Route>
+          <Route path="/blog" element={<DashboardLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="write" element={<Write />} />
+            <Route path="write/:id" element={<Write />} />
+            <Route path=":id" element={<Detail />} />
           </Route>
 
           <Route path="/p/:id" element={<PublicViewer />} />

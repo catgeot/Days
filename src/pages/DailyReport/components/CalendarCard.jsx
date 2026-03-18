@@ -2,15 +2,15 @@ import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth }) => {
-  const navigate = useNavigate(); 
+const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth, isPublicMode }) => {
+  const navigate = useNavigate();
 
   const handleDateClick = (dayItem) => {
-    if (!dayItem.day) return; 
+    if (!dayItem.day) return;
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(dayItem.day).padStart(2, '0')}`;
-    
+
     if (dayItem.active && dayItem.reportId) {
-      navigate(`/blog/${dayItem.reportId}`);
+      navigate(isPublicMode ? `/p/${dayItem.reportId}` : `/blog/${dayItem.reportId}`);
     } else {
       navigate(`/blog/write?date=${dateStr}`);
     }
@@ -18,7 +18,7 @@ const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMo
 
   return (
     <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 p-6 shadow-sm flex flex-col h-full min-h-[350px]">
-      
+
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
           <Calendar className="text-blue-500" size={20} />
@@ -38,25 +38,25 @@ const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMo
 
       <div className="grid grid-cols-7 gap-1.5 flex-1 text-sm content-start">
         {calendarDays.map((d, i) => (
-          <div 
-            key={i} 
-            onClick={() => handleDateClick(d)} 
+          <div
+            key={i}
+            onClick={() => handleDateClick(d)}
             className={`
               aspect-square flex items-center justify-center rounded-xl relative cursor-pointer transition-all duration-300
-              ${!d.day ? 'pointer-events-none' : 'hover:bg-gray-100 hover:scale-110 hover:z-10 hover:shadow-md'} 
+              ${!d.day ? 'pointer-events-none' : 'hover:bg-gray-100 hover:scale-110 hover:z-10 hover:shadow-md'}
               ${d.isToday ? 'font-bold ring-1 ring-blue-500/50 bg-blue-50/50 z-10 text-blue-600' : ''}
               ${d.active ? 'bg-blue-50 text-blue-600 font-bold shadow-sm ring-1 ring-blue-200' : 'text-gray-500'}
             `}
           >
             {d.day}
-            
+
             {d.active && (
               <span className="absolute bottom-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-sm"></span>
             )}
           </div>
         ))}
       </div>
-      
+
     </div>
   );
 };
