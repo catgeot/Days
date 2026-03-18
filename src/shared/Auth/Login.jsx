@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../api/supabase';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +28,7 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: window.location.origin + from,
         }
       });
       if (error) throw error;
@@ -53,7 +56,7 @@ const Login = () => {
       });
 
       if (error) throw error;
-      navigate('/'); 
+      navigate(from);
     } catch (error) {
       alert(error.message);
     } finally {
@@ -63,16 +66,16 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-slate-800 flex items-center justify-center p-4 font-sans relative overflow-hidden">
-      
+
       <div className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[100px] pointer-events-none"></div>
 
       <div className="w-full max-w-sm bg-white/95 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-2xl relative z-10">
-        
-        <button 
-          onClick={() => navigate('/')} 
+
+        <button
+          onClick={() => navigate(from)}
           className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100/50 rounded-full transition-all z-50"
-          title="메인으로 돌아가기"
+          title="이전으로 돌아가기"
         >
           <X size={18} />
         </button>
@@ -86,7 +89,7 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-3">
-          
+
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-gray-500 ml-1">EMAIL</label>
             <div className="relative group">
@@ -153,8 +156,8 @@ const Login = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => handleSocialLogin('google')}
             disabled={loading}
             className="w-full bg-white border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-lg hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50"
@@ -167,9 +170,9 @@ const Login = () => {
             </svg>
             Google
           </button>
-          
-          <button 
-            type="button" 
+
+          <button
+            type="button"
             onClick={() => handleSocialLogin('kakao')}
             disabled={loading}
             className="w-full bg-[#FEE500]/10 border border-[#FEE500]/50 text-gray-800 text-xs font-bold py-2.5 rounded-lg hover:bg-[#FEE500]/20 hover:shadow-sm transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50"
@@ -183,7 +186,7 @@ const Login = () => {
 
         <div className="mt-5 text-center text-xs text-gray-500">
           아직 계정이 없으신가요?{' '}
-          <Link to="/auth/signup" className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">
+          <Link to="/auth/signup" state={{ from }} className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">
             회원가입
           </Link>
         </div>

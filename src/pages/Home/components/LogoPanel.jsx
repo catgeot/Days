@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react'; 
+import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Logo from './Logo'; 
+import Logo from './Logo';
 
 import { useReport } from '../../../context/ReportContext';
 import { apiClient } from '../lib/apiClient';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
-import FooterModal from './FooterModal'; 
+import FooterModal from './FooterModal';
 
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-const CACHE_VERSION = 'v1.4'; 
+const CACHE_VERSION = 'v1.4';
 
 const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
   const [thumbUrl, setThumbUrl] = useState('');
@@ -46,7 +46,7 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
         const { data: statsData, error: statsError } = await supabase
           .from('place_stats')
           .select('image_url')
-          .eq('place_id', originName) 
+          .eq('place_id', originName)
           .maybeSingle();
 
         if (statsData && statsData.image_url) {
@@ -58,18 +58,18 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
         }
 
         if (!ACCESS_KEY) return;
-        
+
         const results = await apiClient.fetchUnsplashImages(ACCESS_KEY, searchQuery);
-        
+
         if (isMounted && results.length > 0) {
           const newImageUrl = results[0].urls.small || results[0].urls.regular;
           setThumbUrl(newImageUrl);
-          
+
           supabase
             .from('place_stats')
-            .upsert({ 
-              place_id: originName, 
-              image_url: newImageUrl 
+            .upsert({
+              place_id: originName,
+              image_url: newImageUrl
             }, { onConflict: 'place_id' })
             .then();
         }
@@ -87,18 +87,18 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
   const finalImgSrc = thumbUrl || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
 
   return (
-    <div 
-      onClick={() => onTripSelect(trip)} 
+    <div
+      onClick={() => onTripSelect(trip)}
       className="group relative aspect-square rounded-xl overflow-hidden bg-gray-800 border border-white/5 hover:border-blue-500/50 transition-all cursor-pointer"
     >
-      <img 
-        src={finalImgSrc} 
+      <img
+        src={finalImgSrc}
         alt={trip.destination}
         className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100 ${isLoaded ? 'blur-0' : 'blur-sm grayscale'}`}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
-      
-      <button 
+
+      <button
         onClick={(e) => { e.stopPropagation(); onToggleBookmark(trip.id); }}
         className="absolute top-2 right-2 p-1.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full hover:bg-black/80 transition-all z-10"
       >
@@ -127,12 +127,12 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
 
   return (
     <>
-      <div 
+      <div
         className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={onClose}
       ></div>
 
-      <div 
+      <div
         className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-50 transform transition-transform duration-500 ease-out shadow-2xl flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-black/50 backdrop-blur-md">
@@ -147,7 +147,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                 <div className="w-20 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-[9px] font-bold text-white">
                   {user.email.split('@')[0].toUpperCase()}
                 </div>
-                <button 
+                <button
                   onClick={onLogout}
                   title="Sign Out"
                   className="text-gray-400 hover:text-red-400 transition-colors ml-1"
@@ -163,13 +163,13 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
-          
+
           {user ? (
             <div className="space-y-8 animate-fade-in">
-              <button 
+              <button
                 onClick={() => {
                   openReport('dashboard');
-                  onClose(); 
+                  onClose();
                 }}
                 className="w-full group flex items-center justify-between py-3 px-5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 rounded-xl transition-all duration-300"
               >
@@ -192,11 +192,11 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                 {bucketList.length > 0 ? (
                   <div className="grid grid-cols-2 gap-3">
                     {bucketList.map((trip) => (
-                      <BucketListCard 
-                        key={trip.id} 
-                        trip={trip} 
-                        onTripSelect={onTripSelect} 
-                        onToggleBookmark={onToggleBookmark} 
+                      <BucketListCard
+                        key={trip.id}
+                        trip={trip}
+                        onTripSelect={onTripSelect}
+                        onToggleBookmark={onToggleBookmark}
                       />
                     ))}
                   </div>
@@ -222,9 +222,9 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                   이용할 수 있습니다.
                 </p>
               </div>
-              
-              <button 
-                onClick={() => navigate('/auth/login')}
+
+              <button
+                onClick={() => navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } })}
                 className="w-full max-w-[180px] py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/30 transition-all flex items-center justify-center gap-2 group text-sm"
               >
                 <LogIn size={16} className="group-hover:-translate-x-1 transition-transform" />
@@ -248,10 +248,10 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
         </div>
       </div>
 
-      <FooterModal 
-        isOpen={isFooterOpen} 
-        onClose={() => setIsFooterOpen(false)} 
-        initialTab={activeFooterTab} 
+      <FooterModal
+        isOpen={isFooterOpen}
+        onClose={() => setIsFooterOpen(false)}
+        initialTab={activeFooterTab}
       />
     </>
   );

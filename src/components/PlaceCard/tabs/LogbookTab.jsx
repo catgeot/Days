@@ -214,7 +214,7 @@ const LogbookTab = ({ location }) => {
 
   const handleRequireLogin = () => {
     if (window.confirm('로그인이 필요한 기능입니다.\n로그인 페이지로 이동하시겠습니까?')) {
-      navigate('/auth/login');
+      navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } });
     }
   };
 
@@ -325,7 +325,7 @@ const LogbookTab = ({ location }) => {
             </p>
           </div>
           <button
-            onClick={() => navigate('/auth/login')}
+            onClick={() => navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } })}
             className="shrink-0 w-full sm:w-auto px-5 py-2 bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-lg transition-colors shadow-sm"
           >
             로그인 하기

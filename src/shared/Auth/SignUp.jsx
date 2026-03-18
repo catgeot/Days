@@ -2,18 +2,21 @@
 // 🚨 [Fix] Login.jsx와 동일한 Light & Glassmorphism 디자인으로 UI 통일 적용 및 z-50 나가기 버튼 구현
 
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../api/supabase';
 import { UserPlus, Mail, Lock, X, Loader2 } from 'lucide-react';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleGoHome = () => {
-    navigate('/');
+    navigate(from);
   };
 
   const handleSocialLogin = async (provider) => {
@@ -22,7 +25,7 @@ const Signup = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: window.location.origin + from,
         }
       });
       if (error) throw error;
@@ -49,7 +52,7 @@ const Signup = () => {
       if (error) throw error;
 
       alert("회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다.");
-      navigate('/auth/login');
+      navigate('/auth/login', { state: { from } });
 
     } catch (error) {
       alert(error.message);
@@ -162,7 +165,7 @@ const Signup = () => {
 
         <div className="mt-5 text-center text-xs text-gray-500">
           이미 계정이 있으신가요?{' '}
-          <Link to="/auth/login" className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">
+          <Link to="/auth/login" state={{ from }} className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">
             로그인 하러 가기
           </Link>
         </div>

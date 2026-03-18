@@ -217,7 +217,7 @@ const HomeUI = React.memo(({
                 <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
             </button>
           ) : (
-            <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
+            <Link to="/auth/login" state={{ from: window.location.pathname + window.location.search }} className="group flex items-center gap-2 pb-2 cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
                     <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
                 </div>
