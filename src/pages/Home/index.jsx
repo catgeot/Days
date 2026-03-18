@@ -281,6 +281,7 @@ function Home() {
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}
           isZenMode={isZenMode} onToggleZenMode={toggleZenMode}
+          user={user} onLogout={() => supabase.auth.signOut()}
           onClearScouts={() => {
               if(window.confirm("임시 핀을 모두 삭제하시겠습니까?")) {
                   clearScouts(); setDraftInput(''); setSelectedLocation(null);

@@ -4,9 +4,10 @@ import {
   Palmtree, Mountain, Building2, Landmark, Compass,
   Eye, EyeOff, Droplet, Sun, Moon,
   PenTool,
-  Leaf
+  Leaf,
+  LogOut
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
@@ -22,10 +23,13 @@ const HomeUI = React.memo(({
   globeTheme,
   onThemeToggle,
   isZenMode,
-  onToggleZenMode
+  onToggleZenMode,
+  user,
+  onLogout
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const navigate = useNavigate();
 
   const inputRef = useRef(null);
   const mobileInputRef = useRef(null);
@@ -205,12 +209,21 @@ const HomeUI = React.memo(({
 
       <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
-          <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
-                  <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
-              </div>
-              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
-          </Link>
+          {user ? (
+            <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">
+                <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-red-400/50 transition-all shadow-lg">
+                    <LogOut size={18} className="text-gray-200 group-hover:text-red-400 transition-colors" />
+                </div>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
+            </button>
+          ) : (
+            <Link to="/auth/login" className="group flex items-center gap-2 pb-2 cursor-pointer">
+                <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
+                    <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
+                </div>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
+            </Link>
+          )}
 
           <Link to="/blog" className="group flex items-center gap-2 pb-2 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
