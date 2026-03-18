@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Star, Upload, Sparkles, Loader2, Image as ImageIcon } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
@@ -61,18 +62,20 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
 
     setUploadingImage(true);
     try {
-      const uploadPromises = files.map(async (file) => {
-        if (file.size > 5 * 1024 * 1024) {
-          throw new Error(`${file.name} 이미지는 5MB 이하만 업로드 가능합니다.`);
-        }
+      const uploadedUrls = [];
+      const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true, fileType: 'image/jpeg' };
 
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      // 순차 업로드 (모바일 메모리 및 네트워크 과부하 방지)
+      for (const file of files) {
+        // 이미지 용량 최적화 (5MB 제한 문제 해결)
+        const compressedFile = await imageCompression(file, options);
+
+        const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.jpg`;
         const filePath = `${user.id}/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
           .from('review_images')
-          .upload(filePath, file);
+          .upload(filePath, compressedFile);
 
         if (uploadError) throw uploadError;
 
@@ -80,10 +83,9 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
           .from('review_images')
           .getPublicUrl(filePath);
 
-        return publicUrl;
-      });
+        uploadedUrls.push(publicUrl);
+      }
 
-      const uploadedUrls = await Promise.all(uploadPromises);
       setImages(prev => [...prev, ...uploadedUrls]);
     } catch (error) {
       console.error('Error uploading image:', error);

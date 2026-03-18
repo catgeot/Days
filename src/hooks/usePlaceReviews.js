@@ -3,12 +3,15 @@ import { supabase } from '../shared/api/supabase';
 
 export const usePlaceReviews = (placeSlug, user) => {
   const [reviews, setReviews] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all' | 'mine'
 
   const fetchReviews = useCallback(async () => {
-    if (!placeSlug) return;
+    if (!placeSlug) {
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
