@@ -181,6 +181,14 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                 </div>
             )}
 
+            {isAiExpanded && localAiResponse && (
+                <div className="flex items-center justify-center my-12 opacity-50">
+                    <div className="h-[1px] w-12 bg-gray-500"></div>
+                    <div className="px-4 text-gray-500"><BookOpen size={16} /></div>
+                    <div className="h-[1px] w-12 bg-gray-500"></div>
+                </div>
+            )}
+
             {isWikiLoading ? (
                 <div className="space-y-8 animate-pulse">
                     <div className="h-32 bg-white/5 rounded-2xl border border-white/10 w-full"></div>
@@ -194,8 +202,13 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                     </div>
                 </div>
             ) : wikiData ? (
-                <div className="space-y-8 animate-fade-in">
-                    <p className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide bg-white/5 p-5 md:p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line break-keep">
+                <div className="space-y-8 animate-fade-in bg-white/[0.02] p-6 md:p-8 rounded-3xl border border-white/5">
+                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                        <BookOpen size={22} className="text-gray-400" />
+                        <h2 className="text-lg md:text-xl font-bold text-gray-300 tracking-tight">위키백과 기본 정보</h2>
+                    </div>
+
+                    <p className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide whitespace-pre-line break-keep">
                         {wikiData.summary}
                     </p>
 

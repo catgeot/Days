@@ -98,23 +98,41 @@ const PlaceChatPanel = React.memo(({
 
          {/* Bottom Tier: Buttons Area */}
          <div className="shrink-0 flex items-center justify-end md:justify-center xl:justify-end gap-1.5 md:gap-1.5 w-auto md:w-full xl:w-auto overflow-x-auto no-scrollbar">
-            <button
-                onClick={() => setMediaMode(mediaMode === 'LOGBOOK' ? 'GALLERY' : 'LOGBOOK')}
-                className={`px-2 py-1.5 md:px-3 md:py-2 rounded-full transition-all flex items-center gap-1 md:gap-2 group shadow-lg shrink-0
-                    ${mediaMode === 'LOGBOOK' ? 'bg-emerald-600/90 text-white shadow-emerald-900/20' : 'bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10'}`}
-            >
-                <PenTool className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'LOGBOOK' ? '갤러리' : '리뷰'}</span>
-            </button>
+            {mediaMode === 'LOGBOOK' ? (
+                <button
+                    onClick={() => setMediaMode('GALLERY')}
+                    className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1 md:gap-2 group shrink-0"
+                >
+                    <ImageIcon className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">갤러리</span>
+                </button>
+            ) : (
+                <button
+                    onClick={() => setMediaMode('LOGBOOK')}
+                    className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10 transition-all flex items-center gap-1 md:gap-2 group shadow-lg shrink-0"
+                >
+                    <PenTool className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">리뷰</span>
+                </button>
+            )}
 
-            <button
-                onClick={() => setMediaMode(mediaMode === 'WIKI' ? 'GALLERY' : 'WIKI')}
-                className={`px-2 py-1.5 md:px-3 md:py-2 rounded-full transition-all flex items-center gap-1 md:gap-2 group shadow-lg shrink-0
-                    ${mediaMode === 'WIKI' ? 'bg-amber-600/90 text-white shadow-amber-900/20' : 'bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10'}`}
-            >
-                <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'WIKI' ? '갤러리' : '백과'}</span>
-            </button>
+            {mediaMode === 'WIKI' ? (
+                <button
+                    onClick={() => setMediaMode('GALLERY')}
+                    className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1 md:gap-2 group shrink-0"
+                >
+                    <ImageIcon className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">갤러리</span>
+                </button>
+            ) : (
+                <button
+                    onClick={() => setMediaMode('WIKI')}
+                    className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10 transition-all flex items-center gap-1 md:gap-2 group shadow-lg shrink-0"
+                >
+                    <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">백과</span>
+                </button>
+            )}
 
             {mediaMode === 'VIDEO' ? (
                 <button
