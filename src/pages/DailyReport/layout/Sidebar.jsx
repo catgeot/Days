@@ -60,17 +60,13 @@ const Sidebar = () => {
     <>
       <div className="hidden md:flex w-64 h-screen bg-white text-gray-700 flex-col border-r border-gray-200 flex-shrink-0 transition-all duration-300">
         <HomeButton />
-        {user ? (
-          <>
-            <PublicNav />
-            <UserProfile
-              user={user}
-              onLogout={handleLogout}
-              onOpenSlide={() => setIsSlideOpen(true)}
-            />
-          </>
-        ) : (
-          <PublicNav />
+        <PublicNav />
+        {user && (
+          <UserProfile
+            user={user}
+            onLogout={handleLogout}
+            onOpenSlide={() => setIsSlideOpen(true)}
+          />
         )}
       </div>
 

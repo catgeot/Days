@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { MapPin, Home, Compass } from 'lucide-react';
+import { MapPin, Home, Compass, PenTool } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const PublicViewer = () => {
@@ -50,7 +50,7 @@ const PublicViewer = () => {
             </div>
           );
         }
-        return null; 
+        return null;
       }
       if (part.trim() !== '') {
         return <p key={index} className="text-lg leading-[1.8] text-gray-800 whitespace-pre-wrap font-medium mb-6">{part}</p>;
@@ -75,7 +75,7 @@ const PublicViewer = () => {
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
-  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content); 
+  const hasPlaceholders = /\[사진\s*\d+\]/.test(report.content);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -111,11 +111,22 @@ const PublicViewer = () => {
             )}
           </div>
 
-          <div className="mt-16 pt-8 border-t border-gray-200 text-center">
-            <p className="text-gray-500 text-sm mb-4">이 멋진 기록은 GATEO의 LogBook을 통해 작성되었습니다.</p>
-            <button onClick={() => navigate('/')} className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors bg-gray-50 hover:bg-gray-100 px-6 py-2.5 rounded-full border border-gray-200">
-              <Compass size={16} /> 지구본에서 더 많은 곳 탐색하기
-            </button>
+          <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
+            <p className="text-gray-500 text-sm font-medium mb-6">GATEO에서 나만의 여행 기록을 남겨보세요.</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => navigate('/auth/login', { state: { from: '/blog/write' } })}
+                className="inline-flex items-center justify-center gap-2 text-sm font-bold text-white transition-all bg-blue-600 hover:bg-blue-700 px-6 py-2.5 rounded-full shadow-md hover:shadow-lg"
+              >
+                <PenTool size={16} /> ✍️ 나만의 기록 남기기
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="inline-flex items-center justify-center gap-2 text-sm text-gray-700 font-medium hover:text-gray-900 transition-colors bg-white hover:bg-gray-50 px-6 py-2.5 rounded-full border border-gray-300 shadow-sm"
+              >
+                <Compass size={16} /> 🌍 지구본 탐색하기
+              </button>
+            </div>
           </div>
         </div>
       </div>
