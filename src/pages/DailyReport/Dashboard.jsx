@@ -27,6 +27,9 @@ const Dashboard = () => {
     : (reports || []);
 
   const handleWriteClick = () => {
+    // !user 체크 시, Dashboard 마운트 초기에는 user가 null일 수 있으므로 localStorage의 토큰 등으로 교차 검증하거나
+    // 혹은 Dashboard의 user 객체가 완전히 로드될 때까지 대기하지 않는다면 단순히 /blog/write로 보내서 Write.jsx에서 처리하게 하는 것이 안전합니다.
+    // 기존에 user === null 이라서 두번 클릭해야 동작했을 수 있습니다.
     navigate('/blog/write');
   };
 
@@ -46,18 +49,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans relative">
-      {!user && isPublicMode && (
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 flex items-center justify-center gap-3 shadow-sm sticky top-0 z-40">
-          <span className="text-xs sm:text-sm font-medium">로그인하고 나만의 여행 기록을 남겨보세요!</span>
-          <button
-            onClick={handleLoginClick}
-            className="flex items-center gap-1.5 px-3 py-1 bg-white text-blue-600 rounded-full text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm"
-          >
-            <LogIn size={14} /> 로그인
-          </button>
-        </div>
-      )}
-
       <div className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 pb-20">
 
         <div className="mb-6 flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-100 pb-6">
@@ -96,41 +87,14 @@ const Dashboard = () => {
                   }`}
                 >
                   <span className="flex items-center gap-1">
-                    <Globe size={14} /> 탐험 피드
+                    탐험 피드
                   </span>
                 </button>
-              </div>
-            )}
-
-            {!loading && !isPublicMode && trendData && trendData.length > 0 && (
-              <div className="hidden sm:flex items-end gap-2 h-10 ml-4 pl-6 border-l border-gray-200">
-                <BarChart3 size={14} className="text-gray-400 mb-1 mr-1" />
-                {trendData.slice(-6).map((item, idx) => (
-                  <div key={idx} className="flex flex-col items-center justify-end h-full group relative cursor-default">
-                    <div
-                      style={{ height: `${maxCount > 0 ? Math.max((item.count / maxCount) * 100, 15) : 15}%` }}
-                      className={`w-1.5 rounded-t-sm transition-all duration-500 ${item.count > 0 ? 'bg-blue-500/80 group-hover:bg-blue-400' : 'bg-gray-200'}`}
-                    ></div>
-                    <span className="absolute -top-7 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-gray-700 shadow-sm">
-                      {item.count}개
-                    </span>
-                  </div>
-                ))}
               </div>
             )}
           </div>
 
           <div className="flex items-center gap-3">
-             <button
-               onClick={() => setShowTools(!showTools)}
-               className={`flex items-center gap-2 px-4 py-3 rounded-full font-medium transition-all ${
-                 showTools ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-               }`}
-             >
-               <Sparkles size={16} />
-               <span className="text-sm">인사이트 도구</span>
-             </button>
-
             <button
               onClick={handleWriteClick}
               className="group relative flex items-center justify-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white font-black rounded-full transition-all hover:scale-105 active:scale-95 w-full lg:w-auto overflow-hidden shadow-lg hover:shadow-blue-500/50"
@@ -140,6 +104,16 @@ const Dashboard = () => {
               <span className="relative z-10 tracking-tight text-sm drop-shadow-md">
                 기록 남기기
               </span>
+            </button>
+
+            <button
+              onClick={() => setShowTools(!showTools)}
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-full font-medium transition-all ${
+                showTools ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <Sparkles size={16} />
+              <span className="text-sm">인사이트</span>
             </button>
           </div>
         </div>

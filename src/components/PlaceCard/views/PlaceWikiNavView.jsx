@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { BookOpen, Sparkles } from 'lucide-react';
 
 const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName }) => {
-  const [activeSection, setActiveSection] = useState(null); 
+  const [activeSection, setActiveSection] = useState(null);
 
   const handleRemoteAiRequest = () => {
       setActiveSection('ai');
-      window.dispatchEvent(new CustomEvent('request-ai-info', { 
-          detail: { placeName: placeName } 
+      window.dispatchEvent(new CustomEvent('request-ai-info', {
+          detail: { placeName: placeName }
       }));
   };
 
@@ -22,7 +22,7 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName }) =>
         <BookOpen size={18} className="text-amber-400" />
         문서 목차
       </h2>
-      
+
       {isWikiLoading ? (
         <div className="flex flex-col gap-3 animate-pulse flex-1">
             {[1, 2, 3, 4].map(i => (
@@ -33,27 +33,26 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName }) =>
         <>
             <div className="flex flex-col gap-2 flex-1 overflow-y-auto custom-scrollbar pr-2 pb-4">
               {wikiData.sections.map((sec, idx) => (
-                <button 
-                  key={idx} 
+                <button
+                  key={idx}
                   onClick={() => handleSectionClick(idx)}
                   className={`text-left px-4 py-3 rounded-xl transition-all text-sm border group
-                      ${activeSection === idx 
-                          ? 'bg-white/10 border-white/20 text-white font-medium shadow-md' 
+                      ${activeSection === idx
+                          ? 'bg-white/10 border-white/20 text-white font-medium shadow-md'
                           : 'bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border-white/5'
                       }
                   `}
                 >
                   <span className={`${activeSection === idx ? 'text-amber-400' : 'text-amber-500/50 group-hover:text-amber-400'} mr-2`}>
                       {idx + 1}.
-                  </span> 
+                  </span>
                   {sec.title}
                 </button>
               ))}
             </div>
-            
-            {/* ?�� [Fix] ?�단 고정 ?�역 (mt-auto shrink-0) */}
+
             <div className="mt-auto pt-4 border-t border-white/10 shrink-0">
-                <button 
+                <button
                     onClick={handleRemoteAiRequest}
                     className={`w-full group flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 shadow-lg border
                         ${activeSection === 'ai'

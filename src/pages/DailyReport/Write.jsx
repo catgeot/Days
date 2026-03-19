@@ -48,7 +48,8 @@ const Write = () => {
 
       if (!user) {
         alert('로그인이 필요합니다.');
-        navigate('/auth/login', { replace: true, state: { from: window.location.pathname } });
+        // 무한루프 방지를 위해 from 경로가 현재 경로(/blog/write)인 경우 기본적으로 /blog 나 / 로 이동하도록 Fallback 추가
+        navigate('/auth/login', { replace: true, state: { from: '/blog' } });
         return;
       }
 

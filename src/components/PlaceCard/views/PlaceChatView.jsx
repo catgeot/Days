@@ -1,20 +1,20 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Send, Loader2, Sparkles } from 'lucide-react';
 
-const PlaceChatView = ({ 
-  chatHistory, 
-  isAiLoading, 
-  onSendMessage, 
-  locationName 
+const PlaceChatView = ({
+  chatHistory,
+  isAiLoading,
+  onSendMessage,
+  locationName
 }) => {
   const [inputStr, setInputStr] = useState("");
   const messagesEndRef = useRef(null);
-  
+
   useEffect(() => {
       if (chatHistory.length <= 1) {
           messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
-  }, []); 
+  }, []);
 
   const handleSend = () => {
     if (!inputStr.trim()) return;
@@ -34,10 +34,9 @@ const PlaceChatView = ({
 
   return (
     <div className="flex flex-col h-full animate-fade-in relative">
-      
+
       {/* 1. Message List Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 pb-4">
-         {/* ?�� [Fix] ?�크롤바 ?�시 ?�출 */}
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -58,14 +57,14 @@ const PlaceChatView = ({
         ) : (
           chatHistory.map((msg, idx) => (
             <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end mt-8' : 'items-start mt-2'} animate-fade-in-up w-full`}>
-              
+
               <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${msg.role === 'user' ? 'text-blue-400' : 'text-purple-400'}`}>
                   {msg.role === 'user' ? 'Me' : 'AI Docent'}
               </span>
 
               <div className={`relative px-5 py-4 rounded-2xl text-[13.5px] border leading-7 w-full shadow-sm transition-all
-                  ${msg.role === 'user' 
-                      ? 'bg-[#1A1D21]/80 border-blue-500/20 text-white rounded-tr-sm' 
+                  ${msg.role === 'user'
+                      ? 'bg-[#1A1D21]/80 border-blue-500/20 text-white rounded-tr-sm'
                       : 'bg-[#0F1115]/60 border-white/5 text-gray-200 rounded-tl-sm'
                   }`}>
                 <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}>
@@ -94,17 +93,17 @@ const PlaceChatView = ({
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0 ml-1">
               <Sparkles size={14} className="text-blue-300 group-hover:scale-110 transition-transform" />
           </div>
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={inputStr}
             onChange={(e) => setInputStr(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="궁금한 내용을 입력하세요..."
             disabled={isAiLoading}
-            className="flex-1 bg-transparent border-none h-full focus:outline-none text-sm text-white placeholder-gray-400 pl-3 pr-12 disabled:opacity-50" 
+            className="flex-1 bg-transparent border-none h-full focus:outline-none text-sm text-white placeholder-gray-400 pl-3 pr-12 disabled:opacity-50"
             autoComplete="off"
           />
-          <button 
+          <button
             onClick={handleSend}
             disabled={isAiLoading || !inputStr.trim()}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all disabled:bg-transparent disabled:opacity-30 disabled:cursor-not-allowed z-10"

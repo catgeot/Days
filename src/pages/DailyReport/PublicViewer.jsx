@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { MapPin, Home, Compass, PenTool } from 'lucide-react';
+import { MapPin, Home, Compass, PenTool, ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const PublicViewer = () => {
@@ -79,6 +79,15 @@ const PublicViewer = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
+      {/* 탈출 버튼(좌측 상단 고정 플로팅) 추가 */}
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-6 left-6 sm:top-8 sm:left-8 z-50 flex items-center justify-center w-12 h-12 bg-white/80 hover:bg-white text-gray-700 hover:text-gray-900 rounded-full shadow-md backdrop-blur-md transition-all hover:scale-105 border border-gray-200"
+        title="이전 화면으로 돌아가기"
+      >
+        <ArrowLeft size={24} strokeWidth={2.5} />
+      </button>
+
       {heroImageUrl && (
         <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none">
           <img src={heroImageUrl} alt="Hero" className="w-full h-full object-cover blur-3xl scale-110" />

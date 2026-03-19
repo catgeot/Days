@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Globe, Compass, ChevronRight } from 'lucide-react';
+import { MapPin, Compass, ChevronRight, Hash } from 'lucide-react';
 
 const PublicNav = () => {
   const navigate = useNavigate();
@@ -72,7 +72,7 @@ const PublicNav = () => {
           }`}
         >
           <div className="flex items-center gap-3">
-            <Globe size={18} className={!currentLoc ? 'text-blue-500' : 'text-gray-400'} />
+            <Hash size={18} className={!currentLoc ? 'text-blue-500' : 'text-gray-400'} />
             <span className="text-sm">전체 기록 보기</span>
           </div>
           {!currentLoc && <ChevronRight size={16} className="text-blue-500" />}
