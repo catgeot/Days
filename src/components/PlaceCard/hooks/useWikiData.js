@@ -1,5 +1,5 @@
 // src/components/PlaceCard/hooks/useWikiData.js
-// 🚨 [Fix/New] 수정 이유: 
+// 🚨 [Fix/New] 수정 이유:
 // 1. [Subtraction] .single() 대신 .maybeSingle()을 사용하여 데이터 부재 시 406 에러 차단 유지.
 // 2. 🚨 [Fix/New] Lazy Fetching (지연 호출): mediaMode를 감시하여 'WIKI' 탭이 활성화될 때만 Supabase 쿼리를 실행하도록 트래픽 누수 차단.
 // 3. 🚨 [Fix/New] Clean Slate (잔상 제거): 장소가 변경되었을 때 이전 장소의 위키 데이터가 남지 않도록 즉시 상태 초기화.
@@ -25,6 +25,32 @@ export const useWikiData = (placeId, mediaMode) => {
         return;
     }
 
+    let isSubscribed = true;
+    let pollInterval = null;
+
+    const startPolling = () => {
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(async () => {
+        try {
+          const { data } = await supabase
+            .from('place_wiki')
+            .select('*')
+            .eq('place_id', String(placeId))
+            .maybeSingle();
+
+          if (isSubscribed && data) {
+            setWikiData(data);
+            // '[[LOADING]]' 상태가 아니면 폴링 중단 (완료되었거나 에러로 인해 복구됨)
+            if (data.ai_practical_info !== '[[LOADING]]') {
+              clearInterval(pollInterval);
+            }
+          }
+        } catch (e) {
+          console.error('Wiki Polling Error:', e);
+        }
+      }, 3000); // 3초 간격
+    };
+
     const fetchWikiData = async () => {
       setIsWikiLoading(true);
       try {
@@ -32,22 +58,33 @@ export const useWikiData = (placeId, mediaMode) => {
           .from('place_wiki')
           .select('*')
           .eq('place_id', String(placeId))
-          .maybeSingle(); 
+          .maybeSingle();
 
         if (error) {
             console.error('Wiki Fetch Error:', error);
         }
-        
-        setWikiData(data || null); 
+
+        if (isSubscribed) {
+          setWikiData(data || null);
+          // 🚨 [New] 최초 조회 시 이미 AI가 백그라운드에서 작업 중(로딩 상태)이라면 폴링 시작
+          if (data && data.ai_practical_info === '[[LOADING]]') {
+            startPolling();
+          }
+        }
       } catch (err) {
         console.error('Wiki Unexpected Error:', err);
-        setWikiData(null);
+        if (isSubscribed) setWikiData(null);
       } finally {
-        setIsWikiLoading(false);
+        if (isSubscribed) setIsWikiLoading(false);
       }
     };
 
     fetchWikiData();
+
+    return () => {
+      isSubscribed = false;
+      if (pollInterval) clearInterval(pollInterval);
+    };
   }, [placeId, mediaMode]);
 
   return { wikiData, isWikiLoading };

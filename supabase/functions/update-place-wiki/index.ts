@@ -12,12 +12,28 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  let requestedPlaceId: string | null = null;
+
   try {
     const { placeId, locationName } = await req.json();
+    requestedPlaceId = placeId;
 
     if (!placeId || !locationName) {
       throw new Error('placeId and locationName are required');
     }
+
+    // 1. Supabase Admin Client 생성 (Service Role Key로 RLS 우회) - DB 선제 업데이트용
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // [추가] AI 작업 시작 전 DB를 '[[LOADING]]' 상태로 업데이트하여
+    // 사용자가 창을 닫거나 다른 페이지로 가더라도 상태가 유지되도록 함
+    await supabaseAdmin
+      .from('place_wiki')
+      .update({ ai_practical_info: '[[LOADING]]' })
+      .eq('place_id', String(placeId));
 
     // 서버의 환경변수에서 제미나이 키를 읽어옴. 프론트엔드 환경변수 이름과 동일하게 구성할 수 있음.
     const geminiApiKey = Deno.env.get('VITE_GEMINI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
@@ -25,10 +41,12 @@ serve(async (req) => {
       throw new Error('GEMINI_API_KEY is not configured on server');
     }
 
-    // 1. 프롬프트 구성
+    // 2. 프롬프트 구성
+    const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
     const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 로컬 가이드입니다. 여행자가 이곳에 대해 가진 "여긴 도대체 어떤 곳이고, 가면 뭘 할 수 있어?"라는 근본적인 궁금증을 속 시원하게 풀어주세요. 위키백과에 나오는 지루한 역사나 뻔한 소리는 철저히 배제하고, 가장 생생하고 실용적인 최신 현지 정보만 제공하세요.`;
-    
+
     const userPrompt = `"${locationName}"에 대해 아래 4가지 항목을 포함하여 마크다운(Markdown) 형식으로 가독성 좋고 깔끔하게 정리해줘.
+(작성 기준일: ${today} - 답변 서두에 이 기준일을 짧게 언급해줘.)
 
 1. 🌟 1분 요약: 이곳은 어떤 곳인가요?
 - 이곳의 정체성과 핵심 매력을 2~3문장으로 아주 쉽고 직관적으로 요약. ("아하! 이런 곳이구나!" 하고 바로 감이 오도록)
@@ -74,13 +92,7 @@ serve(async (req) => {
       throw new Error('No content generated from Gemini');
     }
 
-    // 3. Supabase Admin Client 생성 (Service Role Key로 RLS 우회)
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // 4. DB 테이블 업데이트
+    // 3. DB 테이블 업데이트
     const { error: dbError } = await supabaseAdmin
       .from('place_wiki')
       .update({
@@ -95,9 +107,9 @@ serve(async (req) => {
     }
 
     // 5. 성공 결과 및 생성된 텍스트 반환
-    return new Response(JSON.stringify({ 
-      success: true, 
-      aiResponse: generatedText 
+    return new Response(JSON.stringify({
+      success: true,
+      aiResponse: generatedText
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
@@ -106,10 +118,28 @@ serve(async (req) => {
   } catch (error) {
     const errObj = error as Error;
     console.error('Function Error:', errObj.message);
+
+    // 에러 발생 시 원래 상태(또는 null)로 복구하여 로딩 무한 루프 방지
+    if (requestedPlaceId) {
+      try {
+        const supabaseAdmin = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        );
+        await supabaseAdmin
+          .from('place_wiki')
+          .update({ ai_practical_info: null })
+          .eq('place_id', String(requestedPlaceId))
+          .eq('ai_practical_info', '[[LOADING]]'); // 로딩 상태일 때만 리셋
+      } catch (dbRestoreErr) {
+        console.error('Failed to restore DB state:', dbRestoreErr);
+      }
+    }
+
     // 프론트엔드에서 파싱 가능하도록 HTTP 상태는 200으로 내리고 응답 바디에 error를 담음
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: false,
-      error: errObj.message 
+      error: errObj.message
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,

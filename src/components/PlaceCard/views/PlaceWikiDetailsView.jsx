@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BookOpen, Sparkles, Loader2, RefreshCw } from 'lucide-react';
-import { supabase } from '../../../shared/api/supabase'; 
-
-const CACHE_VALID_DAYS = 14; 
+import { supabase } from '../../../shared/api/supabase';
 
 const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const [isAiExpanded, setIsAiExpanded] = useState(false);
-  const [localAiResponse, setLocalAiResponse] = useState(null); 
-  
+  const [localAiResponse, setLocalAiResponse] = useState(null);
+
   const aiSectionRef = useRef(null);
-  
+
   const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id });
   useEffect(() => {
       requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id };
@@ -24,45 +22,46 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
       setError(null);
   }, [placeName]);
 
-  const checkIsCacheValid = (updatedAt) => {
-      if (!updatedAt) return false;
-      try {
-          const diffTime = Math.abs(new Date() - new Date(updatedAt));
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          return diffDays <= CACHE_VALID_DAYS;
-      } catch (e) {
-          return false;
-      }
-  };
+  // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
+  useEffect(() => {
+    if (wikiData?.ai_practical_info === '[[LOADING]]') {
+      setIsAiExpanded(true);
+      setIsAiLoading(true);
+      setLocalAiResponse(null);
+      setError(null);
+    } else if (wikiData?.ai_practical_info && isAiLoading) {
+      // 로딩 중이었는데 데이터가 들어왔다면 반영
+      setLocalAiResponse(wikiData.ai_practical_info);
+      setIsAiLoading(false);
+    }
+  }, [wikiData?.ai_practical_info, isAiLoading]);
 
-  const handleRequestAiInfo = useCallback(async (eventOrRemoteName) => {
+  const handleRequestAiInfo = useCallback(async (eventOrRemoteName, forceUpdate = false) => {
     setIsAiExpanded(true);
-    
+
     setTimeout(() => {
         if (aiSectionRef.current) {
             aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 100);
 
-    if (localAiResponse) return;
+    // 수동 갱신이 아니고 이미 캐시된 정상 응답이 있다면 로컬 상태로 표시 (네트워크 호출 안 함)
+    const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
 
-    const hasCachedInfo = wikiData?.ai_practical_info;
-    const isCacheFresh = checkIsCacheValid(wikiData?.ai_info_updated_at);
-
-    if (hasCachedInfo && isCacheFresh) {
+    if (!forceUpdate && hasCachedInfo) {
         setIsAiLoading(true);
         setTimeout(() => {
             setLocalAiResponse(wikiData.ai_practical_info);
             setIsAiLoading(false);
-        }, 1500);
+        }, 800);
         return;
     }
 
-    if (!isAiLoading) {
+    if (!isAiLoading || forceUpdate) {
       const isClickEvent = eventOrRemoteName && typeof eventOrRemoteName === 'object' && 'type' in eventOrRemoteName;
       const remoteName = isClickEvent ? null : eventOrRemoteName;
       let location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
-      
+
       if (countryName && countryName !== "Explore" && countryName !== "Ocean" && countryName !== "바다" && countryName !== "해양" && !location.includes(countryName)) {
           location = `${location} ${countryName}`;
       }
@@ -76,6 +75,10 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
 
       setIsAiLoading(true);
       setError(null);
+      setLocalAiResponse(null);
+
+      // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌워 UI 즉각 동기화 및 폴링 트리거
+      await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
 
       try {
           const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
@@ -95,11 +98,13 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
       } catch (err) {
           console.error('Request Error:', err);
           setError(err.message || "오류가 발생했습니다.");
+          // 실패 시 로컬 및 DB 상태 롤백
+          await supabase.from('place_wiki').update({ ai_practical_info: null }).eq('place_id', placeId);
       } finally {
           setIsAiLoading(false);
       }
     }
-  }, [localAiResponse, isAiLoading, wikiData, countryName]); // countryName 추가 (의존성 경고 방지)
+  }, [isAiLoading, wikiData, countryName]); // countryName 추가 (의존성 경고 방지)
 
   useEffect(() => {
       const handleRemoteRequest = (e) => {
@@ -123,14 +128,14 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                 <BookOpen size={28} className="text-amber-500" />
                 GATEO 백과
             </h1>
-            
+
             {isAiExpanded && (
                 <div ref={aiSectionRef} className="mb-8 bg-[#0F1115]/90 border border-blue-500/30 rounded-2xl p-6 md:p-8 animate-fade-in-up shadow-2xl scroll-mt-6">
                     <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                         <Sparkles size={24} className="text-blue-400" />
                         <h3 className="text-xl font-bold text-white tracking-tight">로컬 왓슨의 안전 여행 노트</h3>
                     </div>
-                    
+
                     {!localAiResponse && isAiLoading ? (
                         <div className="flex flex-col items-center justify-center py-10 space-y-4">
                             <Loader2 size={32} className="text-blue-400 animate-spin" />
@@ -139,7 +144,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                     ) : !localAiResponse && error ? (
                         <div className="flex flex-col items-center justify-center py-8 space-y-4 text-gray-400">
                             <p className="text-sm">정보를 불러오는 중 문제가 발생했습니다.</p>
-                            <button 
+                            <button
                                 onClick={() => handleRequestAiInfo(placeName || wikiData?.title)}
                                 className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10"
                             >
@@ -148,8 +153,29 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                             </button>
                         </div>
                     ) : localAiResponse ? (
-                        <div className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide whitespace-pre-line break-keep font-light">
-                            {localAiResponse}
+                        <div className="flex flex-col gap-6">
+                            <div className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide whitespace-pre-line break-keep font-light">
+                                {localAiResponse}
+                            </div>
+                            <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                                <div className="text-xs text-gray-500">
+                                    {wikiData?.ai_info_updated_at && wikiData.ai_practical_info !== '[[LOADING]]' ?
+                                        `마지막 갱신: ${new Date(wikiData.ai_info_updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                                        : ''}
+                                </div>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleRequestAiInfo(placeName || wikiData?.title, true);
+                                    }}
+                                    className="group flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-white/10"
+                                >
+                                    <RefreshCw size={14} className="text-gray-400 group-hover:text-amber-400 transition-colors" />
+                                    <span className="text-xs font-medium text-gray-400 group-hover:text-gray-200 transition-colors">
+                                        최신 정보로 다시 묻기
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     ) : null}
                 </div>
@@ -172,17 +198,17 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
                     <p className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide bg-white/5 p-5 md:p-6 rounded-2xl border border-white/10 shadow-lg whitespace-pre-line break-keep">
                         {wikiData.summary}
                     </p>
-                    
+
                     {wikiData.sections && wikiData.sections.map((sec, idx) => (
                         <section key={idx} id={`wiki-section-${idx}`} className="pt-8 border-t border-white/10 scroll-mt-8">
                             <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-amber-100 tracking-tight">{sec.title}</h3>
                             <p className="text-sm md:text-base text-gray-400 leading-[1.8] tracking-wide whitespace-pre-line break-keep">{sec.content}</p>
                         </section>
                     ))}
-                    
+
                     {!isAiExpanded && (
                         <div className="fixed md:static bottom-0 left-0 w-full md:w-auto p-4 pb-8 md:p-0 md:pb-8 md:pt-10 md:mt-10 bg-[#05070a]/90 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 flex justify-center md:justify-start z-[160] md:z-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-none animate-fade-in-up md:animate-none">
-                            <button 
+                            <button
                                 onClick={handleRequestAiInfo}
                                 className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
                             >
