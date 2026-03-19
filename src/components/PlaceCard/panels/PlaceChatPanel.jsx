@@ -104,7 +104,7 @@ const PlaceChatPanel = React.memo(({
                     ${mediaMode === 'LOGBOOK' ? 'bg-emerald-600/90 text-white shadow-emerald-900/20' : 'bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10'}`}
             >
                 <PenTool className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'LOGBOOK' ? '닫기' : 'Log'}</span>
+                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'LOGBOOK' ? '갤러리' : '리뷰'}</span>
             </button>
 
             <button
@@ -113,7 +113,7 @@ const PlaceChatPanel = React.memo(({
                     ${mediaMode === 'WIKI' ? 'bg-amber-600/90 text-white shadow-amber-900/20' : 'bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10'}`}
             >
                 <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'WIKI' ? '닫기' : '백과'}</span>
+                <span className="text-[10px] md:text-[11px] font-bold">{mediaMode === 'WIKI' ? '갤러리' : '백과'}</span>
             </button>
 
             {mediaMode === 'VIDEO' ? (

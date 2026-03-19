@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye } from 'lucide-react';
+import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye, BookOpen } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
+import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 
@@ -186,6 +187,8 @@ const LogbookTab = ({ location }) => {
     refetch
   } = usePlaceReviews(placeSlug, user);
 
+  const { blogs, isLoading: blogsLoading } = useRelatedBlogs(location.name);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
 
@@ -335,6 +338,40 @@ const LogbookTab = ({ location }) => {
 
       {/* 리뷰 피드 목록 */}
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        {/* 관련 블로그 연동 영역 */}
+        {!blogsLoading && blogs.length > 0 && filter === 'all' && (
+          <div className="mb-6 border border-gray-100 rounded-xl bg-gray-50/50 p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen className="w-4 h-4 text-emerald-500" />
+              <h4 className="font-bold text-gray-800">이 장소의 여행기</h4>
+              <span className="text-[10px] text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">블로그</span>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x custom-scrollbar">
+              {blogs.map((blog) => (
+                <div
+                  key={blog.id}
+                  onClick={() => navigate(`/p/${blog.id}`)}
+                  className="shrink-0 w-56 bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group"
+                >
+                  {blog.images && blog.images.length > 0 ? (
+                    <div className="h-28 overflow-hidden bg-gray-100 relative">
+                      <img src={blog.images[0]} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                  ) : (
+                    <div className="h-28 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
+                      <BookOpen className="w-8 h-8 text-emerald-200" />
+                    </div>
+                  )}
+                  <div className="p-3 flex flex-col gap-1">
+                    <h5 className="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-emerald-600 transition-colors">{blog.title}</h5>
+                    <p className="text-[10px] text-gray-400 font-medium truncate">{blog.date} · {blog.location}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12 text-gray-500">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
