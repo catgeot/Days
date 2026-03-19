@@ -12,19 +12,30 @@ export const useDashboardData = () => {
   const [graphYear, setGraphYear] = useState(today.getFullYear());
   const [availableYears, setAvailableYears] = useState([today.getFullYear()]);
   const [isPublicMode, setIsPublicMode] = useState(false);
+  const [user, setUser] = useState(null);
 
   // 데이터 로드
   const loadData = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    setIsPublicMode(!user);
+    setUser(user);
+
+    // 로그인 상태라도 url 파라미터나 상태로 제어할 수 있게 됨
+    // 여기서는 기본적으로 user가 없거나 URL에 특정 플래그가 있으면 isPublicMode를 true로 설정
+    const searchParams = new URLSearchParams(window.location.search);
+    const isPublicParam = searchParams.get('tab') === 'public';
+
+    // 사용자가 로그인했지만 탭이 public이거나, 아예 로그인하지 않은 경우 publicMode
+    const shouldBePublic = !user || isPublicParam;
+
+    setIsPublicMode(shouldBePublic);
 
     let query = supabase.from('reports').select('*');
 
-    if (user) {
-      query = query.eq('user_id', user.id).eq('is_deleted', false);
-    } else {
+    if (shouldBePublic) {
       query = query.eq('is_public', true).eq('is_deleted', false);
+    } else {
+      query = query.eq('user_id', user.id).eq('is_deleted', false);
     }
 
     const { data, error } = await query.order('date', { ascending: false });
@@ -38,7 +49,7 @@ export const useDashboardData = () => {
     setLoading(false);
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [window.location.search]);
 
   // 캘린더 및 통계 계산
   const displayCount = reports.filter(r =>
@@ -88,6 +99,6 @@ export const useDashboardData = () => {
     loading, reports, viewYear, setViewYear, viewMonth, setViewMonth,
     displayCount, calendarDays, trendData, maxCount,
     graphMode, setGraphMode, graphYear, setGraphYear, availableYears,
-    handlePrevMonth, handleNextMonth, isPublicMode
+    handlePrevMonth, handleNextMonth, isPublicMode, user
   };
 };

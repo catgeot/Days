@@ -3,7 +3,6 @@ import { supabase } from '../../../shared/api/supabase';
 import { useNavigate } from 'react-router-dom';
 
 import HomeButton from './HomeButton';
-import QuickMemo from './QuickMemo';
 import UserProfile from './UserProfile';
 import SlideViewer from './SlideViewer';
 import PublicNav from './PublicNav';
@@ -30,15 +29,20 @@ const Sidebar = () => {
           .limit(20);
 
         let collectedImages = [];
+
+        // 1. 프로필 사진을 가장 먼저(index 0) 추가
+        if (user.user_metadata?.avatar_url) {
+          collectedImages.push(user.user_metadata.avatar_url);
+        }
+
         if (reportData) {
           reportData.forEach(item => {
             if (Array.isArray(item.images)) collectedImages.push(...item.images);
           });
         }
+
         if (collectedImages.length > 0) {
           setSlides(collectedImages.slice(0, 50));
-        } else if (user.user_metadata?.avatar_url) {
-          setSlides([user.user_metadata.avatar_url]);
         }
       }
     };
@@ -58,7 +62,7 @@ const Sidebar = () => {
         <HomeButton />
         {user ? (
           <>
-            <QuickMemo user={user} />
+            <PublicNav />
             <UserProfile
               user={user}
               onLogout={handleLogout}

@@ -9,19 +9,20 @@ import { useDashboardData } from './hooks/useDashboardData';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const locationFilter = searchParams.get('location');
+  const activeTab = searchParams.get('tab') || 'private';
 
   const {
     loading, reports, viewYear, viewMonth,
     displayCount, calendarDays, trendData, maxCount,
-    handlePrevMonth, handleNextMonth, isPublicMode
-  } = useDashboardData();
+    handlePrevMonth, handleNextMonth, isPublicMode, user
+  } = useDashboardData() || {};
 
   // URL 파라미터가 있을 경우 리포트 필터링
   const filteredReports = locationFilter
-    ? reports.filter(r => r.location && r.location.includes(locationFilter))
-    : reports;
+    ? (reports || []).filter(r => r.location && r.location.includes(locationFilter))
+    : (reports || []);
 
   const handleWriteClick = () => {
     navigate('/blog/write');
@@ -31,9 +32,19 @@ const Dashboard = () => {
     navigate('/auth/login', { state: { from: '/blog' } });
   };
 
+  const handleTabChange = (tab) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (tab === 'public') {
+      newParams.set('tab', 'public');
+    } else {
+      newParams.delete('tab');
+    }
+    setSearchParams(newParams);
+  };
+
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans relative">
-      {isPublicMode && (
+      {!user && isPublicMode && (
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 flex items-center justify-center gap-3 shadow-md sticky top-0 z-40">
           <span className="text-sm font-medium hidden sm:inline">로그인하고 나만의 우주 여행 기록을 남겨보세요!</span>
           <span className="text-sm font-medium sm:hidden">로그인하고 여행 기록을 남겨보세요!</span>
@@ -66,6 +77,29 @@ const Dashboard = () => {
                  )}
               </p>
             </div>
+
+            {user && (
+              <div className="flex bg-gray-100 p-1 rounded-lg ml-0 sm:ml-4">
+                <button
+                  onClick={() => handleTabChange('private')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    !isPublicMode ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  내 기록
+                </button>
+                <button
+                  onClick={() => handleTabChange('public')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isPublicMode ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-1">
+                    <Globe size={14} /> 탐험 피드
+                  </span>
+                </button>
+              </div>
+            )}
 
             {!loading && !isPublicMode && trendData && trendData.length > 0 && (
               <div className="hidden sm:flex items-end gap-2 h-10 ml-4 pl-6 border-l border-gray-200">
