@@ -22,19 +22,26 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
       setError(null);
   }, [placeName]);
 
+  const prevAiInfoRef = useRef(wikiData?.ai_practical_info);
+
   // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
   useEffect(() => {
-    if (wikiData?.ai_practical_info === '[[LOADING]]') {
+    const currentInfo = wikiData?.ai_practical_info;
+    const prevInfo = prevAiInfoRef.current;
+
+    if (currentInfo === '[[LOADING]]') {
       setIsAiExpanded(true);
       setIsAiLoading(true);
       setLocalAiResponse(null);
       setError(null);
-    } else if (wikiData?.ai_practical_info && isAiLoading) {
-      // 로딩 중이었는데 데이터가 들어왔다면 반영
-      setLocalAiResponse(wikiData.ai_practical_info);
+    } else if (prevInfo === '[[LOADING]]' && currentInfo && currentInfo !== '[[LOADING]]') {
+      // DB 폴링으로 로딩 중이었다가 실제 데이터가 들어온 경우에만 동기화
+      setLocalAiResponse(currentInfo);
       setIsAiLoading(false);
     }
-  }, [wikiData?.ai_practical_info, isAiLoading]);
+
+    prevAiInfoRef.current = currentInfo;
+  }, [wikiData?.ai_practical_info]);
 
   const handleRequestAiInfo = useCallback(async (eventOrRemoteName, forceUpdate = false) => {
     setIsAiExpanded(true);
@@ -50,10 +57,12 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName 
 
     if (!forceUpdate && hasCachedInfo) {
         setIsAiLoading(true);
+        // [조절가능] 이미 저장된 정보를 불러올 때도 AI가 '스캔 및 분석'하는 듯한 신뢰성 있는 대기 시간(텀)을 주는 곳
+        // 현재 2500ms(2.5초)로 설정되어 있으며, 필요에 따라 이 숫자를 변경하시면 됩니다.
         setTimeout(() => {
             setLocalAiResponse(wikiData.ai_practical_info);
             setIsAiLoading(false);
-        }, 800);
+        }, 3000);
         return;
     }
 
