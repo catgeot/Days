@@ -46,8 +46,13 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
           </div>
 
           <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200 flex-shrink-0">
-            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-blue-600 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-600'}`}><ListIcon size={16} /></button>
-            <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-blue-600 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-600'}`}><LayoutGrid size={16} /></button>
+            <button
+              onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
+              className="flex items-center gap-1.5 px-3 py-2 bg-white text-blue-600 shadow-sm border border-gray-100 rounded-lg transition-all hover:bg-gray-50"
+            >
+              {viewMode === 'list' ? <LayoutGrid size={16} /> : <ListIcon size={16} />}
+              <span className="text-xs font-medium hidden sm:block">{viewMode === 'list' ? '그리드' : '자세히'}</span>
+            </button>
           </div>
         </div>
       </div>

@@ -113,7 +113,7 @@ const Dashboard = () => {
               }`}
             >
               <Sparkles size={16} />
-              <span className="text-sm">인사이트</span>
+              <span className="text-sm">{showTools ? '도구 닫기' : '도구'}</span>
             </button>
           </div>
         </div>
