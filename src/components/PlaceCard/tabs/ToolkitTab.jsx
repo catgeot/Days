@@ -1,7 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
+import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Copy, Check } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
+
+const CopyableWord = ({ word }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigator.clipboard.writeText(word).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        });
+    };
+
+    return (
+        <span className="relative inline-flex items-center">
+            <button
+                onClick={handleCopy}
+                className={`inline-block px-1 mx-0.5 font-bold rounded border transition-colors focus:outline-none ${
+                    copied
+                    ? 'bg-green-50 text-green-700 border-green-200'
+                    : 'bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100 active:bg-blue-200'
+                }`}
+                title="클릭하여 명칭 복사"
+            >
+                {word}
+            </button>
+            {copied && (
+                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[9px] px-1.5 py-0.5 rounded flex items-center gap-1 shadow-sm whitespace-nowrap z-10 animate-fade-in-up pointer-events-none">
+                    <Check size={8} /> 복사됨
+                </span>
+            )}
+        </span>
+    );
+};
+
+const CopyableText = ({ text }) => {
+    if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
+
+    // 작은따옴표로 감싸진 텍스트를 파싱
+    const parts = text.split(/('[^']+')/g);
+
+    return (
+        <span className="select-text">
+            {parts.map((part, i) => {
+                if (part.startsWith("'") && part.endsWith("'")) {
+                    const word = part.slice(1, -1);
+                    return <CopyableWord key={i} word={word} />;
+                }
+                return <span key={i}>{part}</span>;
+            })}
+        </span>
+    );
+};
 
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location }) => {
     // Affiliate logic with Tracker
@@ -20,11 +73,11 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 provider = 'agoda';
                 break;
             case 'flight':
-                originalUrl = `https://www.skyscanner.co.kr/transport/flights/kr/${encodedQuery}`;
+                originalUrl = `https://www.skyscanner.co.kr`; // 메인 페이지로 우회 (캡차 방지)
                 provider = 'skyscanner';
                 break;
             case 'connectivity':
-                originalUrl = `https://www.airalo.com/search?q=${encodedQuery}`;
+                originalUrl = `https://www.airalo.com/`; // 메인 페이지로 우회 (검색 에러 방지)
                 provider = 'airalo';
                 break;
             case 'transport':
@@ -33,6 +86,13 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 break;
             case 'map_poi':
                 originalUrl = `https://www.google.com/maps/search/${encodedQuery}`;
+                break;
+            case 'safety':
+            case 'visa':
+                originalUrl = `https://www.0404.go.kr/dev/country_search.moa`; // 외교부 국가 검색 페이지 고정
+                break;
+            case 'apps':
+                originalUrl = `https://play.google.com/store/search?q=${encodedQuery}+travel+apps&c=apps`;
                 break;
             default:
                 originalUrl = `https://www.google.com/search?q=${encodedQuery}+여행팁`;
@@ -86,8 +146,8 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 <h3 className="font-bold text-gray-800 text-sm">{title}</h3>
             </div>
 
-            <p className="text-xs text-gray-600 leading-relaxed mb-4 flex-1">
-                {data?.advice || "관련 정보를 불러올 수 없습니다."}
+            <p className="text-xs text-gray-600 leading-relaxed mb-4 flex-1 select-text">
+                <CopyableText text={data?.advice} />
             </p>
 
             {type !== 'apps' && (type !== 'visa' && type !== 'safety' || !data?.official_url || data.official_url === 'null') && type !== 'safety' && (

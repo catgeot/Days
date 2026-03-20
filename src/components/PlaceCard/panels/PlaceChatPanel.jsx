@@ -80,14 +80,19 @@ const PlaceChatPanel = React.memo(({
 
       {/* Header */}
       <div className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-3 flex flex-col items-stretch justify-between gap-3 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
-         {/* Row 1: Home, Location Info, Toolkit (Killer Tab), Bookmark */}
+         {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div className="flex items-center gap-2.5 overflow-hidden w-full min-w-0">
              <button onClick={onClose} className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
                  <ArrowLeft className="w-4 h-4 md:w-4 md:h-4" />
              </button>
              <div className="flex flex-col flex-1 min-w-0 justify-center">
                  <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location?.country || "Global"}</span>
-                 <h1 className="text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md mt-0.5">{location.name}</h1>
+                 <div className="flex items-center gap-1.5 min-w-0 mt-0.5">
+                     <h1 className="text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md">{location.name}</h1>
+                     <div className="shrink-0 -mt-0.5">
+                         <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
+                     </div>
+                 </div>
              </div>
              <div className="shrink-0 flex items-center gap-2">
                  {mediaMode === 'TOOLKIT' ? (
@@ -107,9 +112,6 @@ const PlaceChatPanel = React.memo(({
                         <span className="text-xs font-bold whitespace-nowrap">스마트 툴킷</span>
                     </button>
                  )}
-                 <div className="shrink-0">
-                     <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
-                 </div>
              </div>
          </div>
 
