@@ -8,7 +8,7 @@ import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch';
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const mediaModeParam = searchParams.get('tab')?.toUpperCase();
-  const initialMode = ['GALLERY', 'VIDEO', 'WIKI', 'LOGBOOK'].includes(mediaModeParam) ? mediaModeParam : 'GALLERY';
+  const initialMode = ['GALLERY', 'VIDEO', 'WIKI', 'LOGBOOK', 'TOOLKIT'].includes(mediaModeParam) ? mediaModeParam : 'GALLERY';
 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);

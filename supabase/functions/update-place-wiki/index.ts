@@ -43,28 +43,29 @@ serve(async (req) => {
 
     // 2. 프롬프트 구성
     const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-    const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 로컬 가이드입니다. 여행자가 이곳에 대해 가진 "여긴 도대체 어떤 곳이고, 가면 뭘 할 수 있어?"라는 근본적인 궁금증을 속 시원하게 풀어주세요. 위키백과에 나오는 지루한 역사나 뻔한 소리는 철저히 배제하고, 가장 생생하고 실용적인 최신 현지 정보만 제공하세요.`;
+    const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 로컬 가이드입니다. 여행자가 이곳에 대해 가진 "여긴 도대체 어떤 곳이고, 가면 뭘 할 수 있어?"라는 근본적인 궁금증을 속 시원하게 풀어주세요. 위키백과에 나오는 지루한 역사나 뻔한 소리는 철저히 배제하고, 가장 생생하고 실용적인 최신 현지 정보만 제공하세요.
+또한 '여행자 생존 키트' 페르소나를 가지고 8가지 필수 정보를 JSON 형태로 함께 제공해야 합니다.
+수익화가 불가능한 항목(비자, 일반 앱, 지도)은 공식 정보만을, 수익화가 가능한 항목(숙박 위치, 유심, 교통 패스)은 실질적 조언(Advice)을 중심으로 작성하세요.`;
 
-    const userPrompt = `"${locationName}"에 대해 아래 4가지 항목을 포함하여 마크다운(Markdown) 형식으로 가독성 좋고 깔끔하게 정리해줘.
-(작성 기준일: ${today} - 답변 서두에 이 기준일을 짧게 언급해줘.)
+    const userPrompt = `"${locationName}"에 대해 아래 두 가지 데이터를 포함하여 JSON 형식으로 응답해줘.
 
-1. 🌟 1분 요약: 이곳은 어떤 곳인가요?
-- 이곳의 정체성과 핵심 매력을 2~3문장으로 아주 쉽고 직관적으로 요약. ("아하! 이런 곳이구나!" 하고 바로 감이 오도록)
-- 이곳에서 여행자가 얻을 수 있는 최고의 경험이 무엇인지 명확히 짚어줄 것.
+1. wiki_markdown: 마크다운(Markdown) 형식으로 가독성 좋고 깔끔하게 정리된 현지 가이드 (작성 기준일: ${today} - 답변 서두에 짧게 언급)
+- 🌟 1분 요약: 정체성과 핵심 매력을 2~3문장으로 요약
+- 🛂 입국/비용 & 이동 팁: 비자, 물가, 비행시간, 추천 이동수단
+- ⚠️ 실전 안전 & 에티켓: 치안, 금기사항
+- 💡 시크릿 꿀팁 & 맛집: 현지인 추천 핫플, 환전, 교통권 실전 팁
 
-2. 🛂 입국/비용 & 최적의 이동 팁
-- 한국인 기준 비자 및 물가 수준 (숨겨진 관광세 등)
-- 한국발 직항 여부 및 비행 시간, 현지에서의 추천 이동 수단
+2. essential_guide: 8가지 핵심 카테고리를 포함하는 JSON 객체
+- map_poi: { advice: "필수 명소/맛집 조언" }
+- visa: { advice: "비자 정보 및 관공서 안내", official_url: "공식 비자/K-ETA/입국신고서 사이트 URL (없으면 null)" }
+- transport: { advice: "교통 패스/렌터카 추천" }
+- apps: { advice: "국가별 특화 필수 앱" }
+- connectivity: { advice: "유심/eSIM/공항 픽업 조언" }
+- flight: { advice: "항공권 예약 시기/직항 팁" }
+- accommodation: { advice: "최적의 숙박 위치 및 동네 추천" }
+- safety: { advice: "치안 주의사항 및 긴급 연락처", official_url: "영사콜센터 등 공식 안전 정보 URL (없으면 null)" }
 
-3. ⚠️ 실전 안전 & 로컬 에티켓
-- 현지에서 특별히 주의해야 할 위험성 (치안, 소매치기 등)
-- 절대 하면 안 되는 금기사항이나 문화적 에티켓
-
-4. 💡 로컬 가이드의 시크릿 꿀팁 & 맛집
-- 관광객은 잘 모르는 진짜 현지인 추천 핫플이나 맛집 1~2곳 (상호명 포함 가능하면 포함)
-- 환전 팁, 교통권, 방문하기 가장 좋은 비밀 시간대 등 실전 팁
-
-답변은 간결하고 현실적이며, 여행자의 가슴을 뛰게 하면서도 실질적인 "아하!"를 주는 세련된 가이드 톤으로 작성해줘.`;
+반드시 유효한 JSON 문자열로만 응답해.`;
 
     // 2. Gemini API 직접 호출 (안정적인 최상위 모델 gemini-2.5-pro 사용 - 높은 신뢰도 및 최신정보 반영)
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${geminiApiKey}`, {
@@ -73,6 +74,9 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        generationConfig: {
+          responseMimeType: "application/json"
+        },
         contents: [
           { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
         ]
@@ -92,13 +96,30 @@ serve(async (req) => {
       throw new Error('No content generated from Gemini');
     }
 
+    let parsedResult;
+    try {
+      parsedResult = JSON.parse(generatedText);
+    } catch (e) {
+      console.error('Failed to parse Gemini JSON output:', generatedText);
+      throw new Error('Gemini did not return valid JSON');
+    }
+
+    const aiPracticalInfo = parsedResult.wiki_markdown || generatedText;
+    const essentialGuide = parsedResult.essential_guide || null;
+
     // 3. DB 테이블 업데이트
+    const updateData: any = {
+      ai_practical_info: aiPracticalInfo,
+      ai_info_updated_at: new Date().toISOString()
+    };
+
+    if (essentialGuide) {
+      updateData.essential_guide = essentialGuide;
+    }
+
     const { error: dbError } = await supabaseAdmin
       .from('place_wiki')
-      .update({
-        ai_practical_info: generatedText,
-        ai_info_updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('place_id', String(placeId));
 
     if (dbError) {
@@ -109,7 +130,8 @@ serve(async (req) => {
     // 5. 성공 결과 및 생성된 텍스트 반환
     return new Response(JSON.stringify({
       success: true,
-      aiResponse: generatedText
+      aiResponse: aiPracticalInfo,
+      essentialGuide: essentialGuide
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,

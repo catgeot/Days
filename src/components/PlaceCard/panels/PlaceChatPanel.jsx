@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen } from 'lucide-react';
+import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen, Briefcase } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
@@ -131,6 +131,24 @@ const PlaceChatPanel = React.memo(({
                 >
                     <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
                     <span className="text-[10px] md:text-[11px] font-bold">위키</span>
+                </button>
+            )}
+
+            {mediaMode === 'TOOLKIT' ? (
+                <button
+                    onClick={() => setMediaMode('GALLERY')}
+                    className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1 md:gap-2 group shrink-0"
+                >
+                    <ImageIcon className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">갤러리</span>
+                </button>
+            ) : (
+                <button
+                    onClick={() => setMediaMode('TOOLKIT')}
+                    className="px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-white/10 md:bg-white/5 hover:bg-white/20 text-white border border-white/20 md:border-white/10 transition-all flex items-center gap-1 md:gap-2 group shadow-lg shrink-0"
+                >
+                    <Briefcase className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover:scale-110 transition-transform"/>
+                    <span className="text-[10px] md:text-[11px] font-bold">툴킷</span>
                 </button>
             )}
 

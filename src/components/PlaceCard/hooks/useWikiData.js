@@ -20,8 +20,8 @@ export const useWikiData = (placeId, mediaMode) => {
     setWikiData(null);
     setIsWikiLoading(false);
 
-    // 🚨 [Fix/New] Lazy Fetching 방어막: 백과 탭이 아닐 경우 DB 조회를 하지 않고 리턴
-    if (mediaMode !== 'WIKI') {
+    // 🚨 [Fix/New] Lazy Fetching 방어막: 백과 탭이나 툴킷 탭이 아닐 경우 DB 조회를 하지 않고 리턴
+    if (mediaMode !== 'WIKI' && mediaMode !== 'TOOLKIT') {
         return;
     }
 
