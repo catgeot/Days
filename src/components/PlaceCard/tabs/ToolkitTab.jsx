@@ -1,20 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
+import { getAffiliateLink } from '../../../utils/affiliate';
 
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location }) => {
-    // Affiliate logic placeholders
+    // Affiliate logic with Tracker
     const getLink = () => {
         if (!data) return '#';
-        const query = encodeURIComponent(location?.name || '');
+
+        const searchQuery = location?.name || location?.country || '';
+        const encodedQuery = encodeURIComponent(searchQuery);
+
+        let originalUrl = '#';
+        let provider = null;
+
         switch (type) {
-            case 'accommodation': return `https://www.agoda.com/ko-kr/search?text=${query}`;
-            case 'flight': return `https://www.skyscanner.co.kr/transport/flights/kr/${query}`;
-            case 'connectivity': return `https://www.airalo.com/search?q=${query}`;
-            case 'transport': return `https://www.klook.com/ko/search/result/?query=${query}`;
-            case 'map_poi': return `https://www.google.com/maps/search/${query}`;
-            default: return '#'; // Provide generic search or specific if available
+            case 'accommodation':
+                originalUrl = `https://www.agoda.com/ko-kr/search?text=${encodedQuery}`;
+                provider = 'agoda';
+                break;
+            case 'flight':
+                originalUrl = `https://www.skyscanner.co.kr/transport/flights/kr/${encodedQuery}`;
+                provider = 'skyscanner';
+                break;
+            case 'connectivity':
+                originalUrl = `https://www.airalo.com/search?q=${encodedQuery}`;
+                provider = 'airalo';
+                break;
+            case 'transport':
+                originalUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}`;
+                provider = 'klook';
+                break;
+            case 'map_poi':
+                originalUrl = `https://www.google.com/maps/search/${encodedQuery}`;
+                break;
+            default:
+                originalUrl = `https://www.google.com/search?q=${encodedQuery}+여행팁`;
         }
+
+        if (provider) {
+             return getAffiliateLink(originalUrl, provider, {
+                 campaign: 'toolkit',
+                 locationName: location?.name
+             });
+        }
+
+        return originalUrl;
     };
 
     const getButtonConfig = () => {
