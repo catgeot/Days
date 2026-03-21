@@ -20,12 +20,12 @@ export const getAffiliateLink = (originalUrl, provider, options = {}) => {
   // Travelpayouts Programs 대시보드에서 각 제휴 프로그램 연결(Connect) 후 확인 가능한 프로그램 ID (PID)
   // 향후 대시보드에서 추가 프로그램 승인 시, 아래 목록에 ID를 추가하면 됩니다.
   const providerIds = {
-    agoda: '321',         // 아고다 (숙박)
-    booking: '123',       // 부킹닷컴 (숙박)
-    klook: '456',         // 클룩 (교통, 액티비티)
-    getyourguide: '111',  // 겟유어가이드 (교통, 액티비티 - 구미권)
+    agoda: '104',         // 아고다 (숙박)
+    booking: '84',       // 부킹닷컴 (숙박)
+    klook: '137',         // 클룩 (교통, 액티비티)
+    getyourguide: '108',  // 겟유어가이드 (교통, 액티비티 - 구미권)
     skyscanner: '789',    // 스카이스캐너 (항공권)
-    airalo: '101'         // 에어알로 (eSIM/유심)
+    airalo: '541'         // 에어알로 (eSIM/유심)
   };
 
   const pid = providerIds[provider];
