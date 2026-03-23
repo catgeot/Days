@@ -3,19 +3,29 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
 
-const CopyableWord = ({ word, locationName }) => {
+const CopyableWord = ({ word, locationName, type }) => {
     const handleSmartLink = (e) => {
         e.preventDefault();
         e.stopPropagation();
         const query = encodeURIComponent(`${word} ${locationName || ''}`.trim());
-        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+
+        // 카테고리(type)가 지도 검색용인지 판별
+        const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
+
+        const url = isMapSearch
+            ? `https://www.google.com/maps/search/?api=1&query=${query}`
+            : `https://www.google.com/search?q=${query}`;
+
+        window.open(url, '_blank');
     };
+
+    const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
 
     return (
         <button
             onClick={handleSmartLink}
             className="inline-flex items-center gap-0.5 mx-0.5 font-bold text-blue-600 hover:text-blue-800 underline decoration-blue-300 hover:decoration-blue-600 underline-offset-2 whitespace-nowrap transition-colors focus:outline-none"
-            title="구글 맵에서 검색하기"
+            title={isMapSearch ? "구글 맵에서 검색하기" : "구글 웹에서 검색하기"}
         >
             {word}
             <Search size={10} className="opacity-70" />
@@ -23,7 +33,7 @@ const CopyableWord = ({ word, locationName }) => {
     );
 };
 
-const CopyableText = ({ text, locationName }) => {
+const CopyableText = ({ text, locationName, type }) => {
     if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
 
     // 작은따옴표로 감싸진 텍스트를 파싱
@@ -34,7 +44,7 @@ const CopyableText = ({ text, locationName }) => {
             {parts.map((part, i) => {
                 if (part.startsWith("'") && part.endsWith("'")) {
                     const word = part.slice(1, -1);
-                    return <CopyableWord key={i} word={word} locationName={locationName} />;
+                    return <CopyableWord key={i} word={word} locationName={locationName} type={type} />;
                 }
                 return <span key={i}>{part}</span>;
             })}
@@ -162,7 +172,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             </div>
 
             <p className="text-sm text-gray-700 leading-relaxed mb-5 flex-1 select-text">
-                <CopyableText text={data?.advice} locationName={location?.name} />
+                <CopyableText text={data?.advice} locationName={location?.name} type={type} />
             </p>
 
             {links.length > 0 && (
