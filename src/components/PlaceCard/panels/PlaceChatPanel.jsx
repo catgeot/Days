@@ -30,6 +30,8 @@ const PlaceChatPanel = React.memo(({
   const scrollRef = useRef(null);
   const navigate = useNavigate();
 
+  const isOverlayMode = mediaMode === 'GALLERY' || mediaMode === 'VIDEO';
+
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
@@ -75,7 +77,7 @@ const PlaceChatPanel = React.memo(({
   return (
     <div className={`flex flex-col transition-all duration-500
         ${isFullScreen ? 'opacity-0 md:translate-x-[-100%]' : 'opacity-100 translate-x-0'}
-        absolute top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-2 md:pb-0 md:border-none md:rounded-none
+        ${isOverlayMode ? 'absolute' : 'relative shrink-0'} top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-2 md:pb-0 md:border-none md:rounded-none
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
 
       {/* Header */}

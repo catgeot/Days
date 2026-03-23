@@ -171,7 +171,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>
             </div>
 
-            <p className="text-sm text-gray-700 leading-relaxed mb-5 flex-1 select-text">
+            <p className="text-sm text-gray-700 leading-relaxed mb-5 flex-1 select-text break-keep">
                 <CopyableText text={data?.advice} locationName={location?.name} type={type} />
             </p>
 
