@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Heart, EyeOff, PenTool, BookOpen, Play } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Heart, EyeOff } from 'lucide-react';
 
 const PlaceGalleryView = React.memo(({
   images,
@@ -159,32 +159,7 @@ const PlaceGalleryView = React.memo(({
           </div>
         </div>
       ) : (
-        <div className="w-full h-full overflow-y-auto custom-scrollbar-blue relative overscroll-none touch-pan-y pt-[64px] md:pt-6 pb-28 md:pb-6">
-
-          {/* 모바일 전용 하이브리드 헤더 (네비게이션 탭) */}
-          <div className="md:hidden sticky top-[64px] z-[50] w-full px-6 py-2 flex items-center justify-start gap-2 overflow-x-auto no-scrollbar bg-[#0a0a0a]/90 backdrop-blur-md mb-4 -mt-2">
-             <button
-                 onClick={() => setMediaMode?.('LOGBOOK')}
-                 className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-all flex items-center gap-1.5 shrink-0 shadow-sm"
-             >
-                 <PenTool className="w-3.5 h-3.5" />
-                 <span className="text-[11px] font-medium">리뷰</span>
-             </button>
-             <button
-                 onClick={() => setMediaMode?.('WIKI')}
-                 className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-all flex items-center gap-1.5 shrink-0 shadow-sm"
-             >
-                 <BookOpen className="w-3.5 h-3.5" />
-                 <span className="text-[11px] font-medium">위키</span>
-             </button>
-             <button
-                 onClick={() => setMediaMode?.('VIDEO')}
-                 className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-all flex items-center gap-1.5 shrink-0 shadow-sm"
-             >
-                 <Play fill="currentColor" className="w-3.5 h-3.5" />
-                 <span className="text-[11px] font-medium">영상</span>
-             </button>
-          </div>
+        <div className="w-full h-full overflow-y-auto custom-scrollbar-blue relative overscroll-none touch-pan-y pt-[96px] md:pt-10 pb-28 md:pb-6">
 
           <div className="px-6 relative">
             <div className="absolute top-0 right-6 md:-top-4 md:right-0 z-10">

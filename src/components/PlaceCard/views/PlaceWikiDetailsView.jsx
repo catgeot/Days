@@ -124,34 +124,19 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   }, [handleRequestAiInfo]);
 
   return (
-    <div className="w-full h-full flex flex-col pt-[64px] md:pt-0 overflow-hidden relative text-white animate-fade-in">
-        {/* 모바일 전용 하이브리드 헤더 */}
-        <div className="md:hidden flex items-center gap-2 w-full px-4 py-3 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/5 sticky top-0 z-50 shrink-0 shadow-sm">
-            <button
-                onClick={() => setMediaMode?.('GALLERY')}
-                className="p-1.5 -ml-1.5 rounded-full hover:bg-white/10 text-gray-400 transition-colors"
-            >
-                <ChevronLeft className="w-5 h-5" />
-            </button>
-            <h2 className="text-sm font-bold text-gray-200 flex items-center gap-1.5">
-               <BookOpen className="w-4 h-4 text-amber-500" />
-               위키백과
-            </h2>
-        </div>
+    <div className="w-full h-full flex flex-col p-6 pt-[96px] pb-32 md:p-12 overflow-y-auto text-white custom-scrollbar relative overscroll-none touch-pan-y">
+        <style>{`
+            .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+        `}</style>
 
-        <div className="flex-1 w-full p-6 pb-32 md:p-12 overflow-y-auto custom-scrollbar overscroll-none touch-pan-y">
-            <style>{`
-                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-            `}</style>
-
-            <div className="max-w-3xl mx-auto w-full pt-2 md:pt-0 pb-20">
-                <h1 className="hidden md:flex text-3xl font-bold mb-6 items-center gap-3 tracking-tight">
-                    <BookOpen size={28} className="text-amber-500" />
-                    GATEO 백과
-                </h1>
+        <div className="max-w-3xl mx-auto w-full pt-4 md:pt-0 pb-20">
+            <h1 className="text-3xl font-bold mb-6 flex items-center gap-3 tracking-tight">
+                <BookOpen size={28} className="text-amber-500" />
+                GATEO 백과
+            </h1>
 
             {isAiExpanded && (
                 <div ref={aiSectionRef} className="mb-8 bg-[#0F1115]/90 border border-blue-500/30 rounded-2xl p-6 md:p-8 animate-fade-in-up shadow-2xl scroll-mt-6">
@@ -264,7 +249,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                 </div>
             )}
         </div>
-      </div>
     </div>
   );
 };
