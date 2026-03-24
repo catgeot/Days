@@ -154,7 +154,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 };
 // --------------------------------------------------------------------------
 
-const LogbookTab = ({ location }) => {
+const LogbookTab = ({ location, setMediaMode }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -261,9 +261,9 @@ const LogbookTab = ({ location }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out] pt-[96px] md:pt-0">
-      {/* 헤더 및 통계 영역 */}
-      <div className="p-4 border-b border-gray-100 shrink-0">
+    <div className="flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out] pt-[64px] md:pt-0 relative">
+      {/* PC 헤더 (기존 유지) */}
+      <div className="hidden md:block p-4 border-b border-gray-100 shrink-0">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
@@ -315,6 +315,56 @@ const LogbookTab = ({ location }) => {
         </div>
       </div>
 
+      {/* 모바일 전용 압축 헤더 (하이브리드) */}
+      <div className="md:hidden flex flex-col shrink-0 bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center justify-between px-3 py-2.5">
+          <div className="flex items-center gap-2">
+            <button
+                onClick={() => setMediaMode?.('GALLERY')}
+                className="p-1 -ml-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors shrink-0"
+            >
+                <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-1.5">
+              <MessageSquare className="w-3.5 h-3.5 text-blue-500" />
+              <h3 className="font-bold text-gray-900 text-sm">리뷰 <span className="text-gray-400 text-xs font-normal">({stats.totalReviews})</span></h3>
+              <div className="flex items-center gap-0.5 ml-1 bg-yellow-50 px-1.5 py-0.5 rounded">
+                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                <span className="font-bold text-yellow-700 text-xs">{stats.averageRating}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex bg-gray-100 rounded p-0.5 shrink-0">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-2.5 py-1 text-[11px] font-bold rounded transition-colors ${
+                filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+              }`}
+            >
+              전체
+            </button>
+            <button
+              onClick={() => setFilter('mine')}
+              className={`px-2.5 py-1 text-[11px] font-bold rounded transition-colors ${
+                filter === 'mine' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+              }`}
+            >
+              내 리뷰
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 모바일 우측 하단 FAB 작성 버튼 */}
+      <button
+        onClick={handleWriteClick}
+        className="md:hidden fixed bottom-6 right-4 z-50 flex items-center justify-center gap-1.5 px-4 py-3 bg-blue-600 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:bg-blue-700 active:scale-95 transition-all"
+      >
+        <PenSquare className="w-4 h-4" />
+        <span className="font-bold text-sm">작성</span>
+      </button>
+
       {/* 비로그인 안내 배너 */}
       {!user && !isLoading && (
         <div className="mx-4 mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -337,7 +387,7 @@ const LogbookTab = ({ location }) => {
       )}
 
       {/* 리뷰 피드 목록 */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar overscroll-contain touch-pan-y">
+      <div className="flex-1 overflow-y-auto p-4 pb-24 md:pb-4 custom-scrollbar overscroll-none touch-pan-y">
         {/* 관련 블로그 연동 영역 */}
         {!blogsLoading && blogs.length > 0 && filter === 'all' && (
           <div className="mb-6 border border-gray-100 rounded-xl bg-gray-50/50 p-4">

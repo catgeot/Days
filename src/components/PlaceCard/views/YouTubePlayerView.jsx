@@ -10,7 +10,8 @@ const YouTubePlayerView = forwardRef(({
   onVideoSelect,
   isLoading = false,
   error = null,
-  googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7"
+  googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7",
+  setMediaMode
 }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
@@ -120,6 +121,19 @@ const YouTubePlayerView = forwardRef(({
 
   return (
     <div className={`flex-1 w-full h-full bg-[#05070a] md:rounded-[2rem] md:border md:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}>
+
+      {/* Mobile Back Button */}
+      {!isFullScreen && (
+          <div className="md:hidden absolute top-[72px] left-4 z-[220] transition-opacity duration-300">
+              <button
+                  onClick={(e) => { e.stopPropagation(); setMediaMode?.('GALLERY'); }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white/80 hover:text-white hover:bg-black/80 shadow-lg"
+              >
+                  <ChevronLeft size={16} />
+                  <span className="text-xs font-bold">갤러리 복귀</span>
+              </button>
+          </div>
+      )}
 
       {/* 1. Main Content Area */}
       {isLoading ? (

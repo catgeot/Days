@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Heart, EyeOff } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Heart, EyeOff, PenTool, BookOpen, Play } from 'lucide-react';
 
 const PlaceGalleryView = React.memo(({
   images,
@@ -12,7 +12,8 @@ const PlaceGalleryView = React.memo(({
   showUI,
   handleDownload,
   handleRefresh,
-  handleCurateImage
+  handleCurateImage,
+  setMediaMode
 }) => {
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
@@ -158,56 +159,85 @@ const PlaceGalleryView = React.memo(({
           </div>
         </div>
       ) : (
-        <div className="w-full h-full p-6 pt-24 pb-28 md:pt-10 md:pb-6 overflow-y-auto custom-scrollbar-blue relative overscroll-contain touch-pan-y">
+        <div className="w-full h-full overflow-y-auto custom-scrollbar-blue relative overscroll-none touch-pan-y pt-[64px] md:pt-6 pb-28 md:pb-6">
 
-          <div className="absolute top-20 right-6 md:top-4 md:right-4 z-10">
+          {/* 모바일 전용 하이브리드 헤더 (네비게이션 탭) */}
+          <div className="md:hidden sticky top-[64px] z-[50] w-full px-6 py-2 flex items-center justify-start gap-2 overflow-x-auto no-scrollbar bg-[#0a0a0a]/90 backdrop-blur-md mb-4 -mt-2">
              <button
-                onClick={onRefreshClick}
-                disabled={isRefreshDisabled || isImgLoading}
-                className="flex items-center justify-center p-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/50 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed group shadow-lg"
-                title="이미지 새로고침 (DB/캐시 무시 강제 로딩)"
+                 onClick={() => setMediaMode?.('LOGBOOK')}
+                 className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-all flex items-center gap-1.5 shrink-0 shadow-sm"
              >
-                <RefreshCw size={18} className={`${isImgLoading || isRefreshDisabled ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                 <PenTool className="w-3.5 h-3.5" />
+                 <span className="text-[11px] font-medium">리뷰</span>
+             </button>
+             <button
+                 onClick={() => setMediaMode?.('WIKI')}
+                 className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-all flex items-center gap-1.5 shrink-0 shadow-sm"
+             >
+                 <BookOpen className="w-3.5 h-3.5" />
+                 <span className="text-[11px] font-medium">위키</span>
+             </button>
+             <button
+                 onClick={() => setMediaMode?.('VIDEO')}
+                 className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-all flex items-center gap-1.5 shrink-0 shadow-sm"
+             >
+                 <Play fill="currentColor" className="w-3.5 h-3.5" />
+                 <span className="text-[11px] font-medium">영상</span>
              </button>
           </div>
 
-          {isImgLoading ? (
-            <div className="grid grid-cols-2 gap-4">
-               {[...Array(6)].map((_, i) => (
-                 <div key={i} className="aspect-[3/4] animate-pulse bg-white/5 rounded-2xl border border-white/5" />
-               ))}
+          <div className="px-6 relative">
+            <div className="absolute top-0 right-6 md:-top-4 md:right-0 z-10">
+               <button
+                  onClick={onRefreshClick}
+                  disabled={isRefreshDisabled || isImgLoading}
+                  className="flex items-center justify-center p-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/50 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed group shadow-lg"
+                  title="이미지 새로고침 (DB/캐시 무시 강제 로딩)"
+               >
+                  <RefreshCw size={18} className={`${isImgLoading || isRefreshDisabled ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+               </button>
             </div>
-          ) : (
-            <div className="columns-2 gap-4 space-y-4">
-              {images.map((img, i) => (
-                <div
-                  key={img.id || i}
-                  onClick={() => setSelectedImg(img)}
-                  className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
-                >
 
-                  <img
-                    src={img.urls.small || img.urls.regular}
-                    className="w-full h-auto object-cover opacity-100 group-hover:scale-105 transition-transform duration-500"
-                    alt={`place-img-${i}`}
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20}/>
-                  {img.curation === 'liked' && (
-                    <Heart className="absolute top-4 left-4 text-red-500 fill-red-500" size={20} />
-                  )}
+            <div className="mt-12 md:mt-0">
+              {isImgLoading ? (
+                <div className="grid grid-cols-2 gap-4">
+                   {[...Array(6)].map((_, i) => (
+                     <div key={i} className="aspect-[3/4] animate-pulse bg-white/5 rounded-2xl border border-white/5" />
+                   ))}
                 </div>
-              ))}
-            </div>
-          )}
+              ) : (
+                <div className="columns-2 gap-4 space-y-4">
+                  {images.map((img, i) => (
+                    <div
+                      key={img.id || i}
+                      onClick={() => setSelectedImg(img)}
+                      className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+                    >
 
-          {!isImgLoading && images.length === 0 && (
-            <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
-              <ImageIcon size={48} />
-              <p className="text-sm">등록된 이미지가 없습니다.</p>
+                      <img
+                        src={img.urls.small || img.urls.regular}
+                        className="w-full h-auto object-cover opacity-100 group-hover:scale-105 transition-transform duration-500"
+                        alt={`place-img-${i}`}
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20}/>
+                      {img.curation === 'liked' && (
+                        <Heart className="absolute top-4 left-4 text-red-500 fill-red-500" size={20} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!isImgLoading && images.length === 0 && (
+                <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
+                  <ImageIcon size={48} />
+                  <p className="text-sm">등록된 이미지가 없습니다.</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>

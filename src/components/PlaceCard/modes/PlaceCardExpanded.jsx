@@ -142,6 +142,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
             toggleFullScreen={toggleFullScreen}
             showUI={showUI}
             mediaMode={mediaMode}
+            setMediaMode={setMediaMode}
             videoId={activeVideoId}
             videos={spotVideos}
             onVideoSelect={setSelectedVideoId}

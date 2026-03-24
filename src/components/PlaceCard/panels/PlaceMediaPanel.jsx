@@ -11,6 +11,7 @@ const PlaceMediaPanel = React.memo(({
     toggleFullScreen,
     showUI,
     mediaMode,
+    setMediaMode,
     videoId,
     videos,
     onVideoSelect,
@@ -39,6 +40,7 @@ const PlaceMediaPanel = React.memo(({
                 handleDownload={galleryData.handleDownload}
                 handleRefresh={galleryData.handleRefresh}
                 handleCurateImage={galleryData.handleCurateImage}
+                setMediaMode={setMediaMode}
             />
         </div>
 
@@ -54,6 +56,7 @@ const PlaceMediaPanel = React.memo(({
                 isLoading={isVideoLoading}
                 error={videoError}
                 googleFormUrl={googleFormUrl}
+                setMediaMode={setMediaMode}
             />
         </div>
 
@@ -63,15 +66,16 @@ const PlaceMediaPanel = React.memo(({
                 isWikiLoading={isWikiLoading}
                 placeName={location?.name}
                 countryName={location?.country}
+                setMediaMode={setMediaMode}
             />
         </div>
 
         <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'TOOLKIT' ? 'block' : 'hidden'}`}>
-            <ToolkitTab location={location} wikiData={wikiData} isWikiLoading={isWikiLoading} />
+            <ToolkitTab location={location} wikiData={wikiData} isWikiLoading={isWikiLoading} setMediaMode={setMediaMode} />
         </div>
 
         <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'LOGBOOK' ? 'block' : 'hidden'}`}>
-            <LogbookTab location={location} />
+            <LogbookTab location={location} setMediaMode={setMediaMode} />
         </div>
 
     </div>

@@ -116,7 +116,7 @@ const PlaceChatPanel = React.memo(({
          </div>
 
          {/* Row 2: Other Tabs Area (Gallery, Review, Wiki, Video) */}
-         <div className="shrink-0 flex items-center justify-start gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 pl-10 md:pl-0 overscroll-contain touch-pan-x">
+         <div className="shrink-0 hidden md:flex items-center justify-start gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 pl-10 md:pl-0 overscroll-contain touch-pan-x">
             <button
                 onClick={() => setMediaMode('GALLERY')}
                 className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'GALLERY' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
