@@ -261,7 +261,7 @@ const LogbookTab = ({ location }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out]">
+    <div className="flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out] pt-[96px] md:pt-0">
       {/* 헤더 및 통계 영역 */}
       <div className="p-4 border-b border-gray-100 shrink-0">
         <div className="flex justify-between items-center mb-4">
@@ -337,7 +337,7 @@ const LogbookTab = ({ location }) => {
       )}
 
       {/* 리뷰 피드 목록 */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar overscroll-contain touch-pan-y">
         {/* 관련 블로그 연동 영역 */}
         {!blogsLoading && blogs.length > 0 && filter === 'all' && (
           <div className="mb-6 border border-gray-100 rounded-xl bg-gray-50/50 p-4">

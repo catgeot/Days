@@ -342,7 +342,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] p-4 md:p-6">
+        <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[96px] pb-4 md:p-6 md:pt-6 overscroll-contain touch-pan-y">
             <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                     <div>

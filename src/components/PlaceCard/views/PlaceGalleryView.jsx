@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Heart, EyeOff } from 'lucide-react';
 
-const PlaceGalleryView = React.memo(({ 
-  images, 
-  isImgLoading, 
-  selectedImg, 
+const PlaceGalleryView = React.memo(({
+  images,
+  isImgLoading,
+  selectedImg,
   setSelectedImg,
   isFullScreen,
   toggleFullScreen,
@@ -16,7 +16,7 @@ const PlaceGalleryView = React.memo(({
 }) => {
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
-  
+
   const [isMobileUIHidden, setIsMobileUIHidden] = useState(false);
   const [isRefreshDisabled, setIsRefreshDisabled] = useState(false);
 
@@ -62,25 +62,25 @@ const PlaceGalleryView = React.memo(({
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden;
 
   return (
-    <div 
+    <div
       ref={fullScreenContainerRef}
       className={`flex-1 h-full bg-[#05070a]/80 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
     >
       {selectedImg ? (
-        <div 
+        <div
           className="w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden"
         >
-          <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => { 
-              e.stopPropagation(); 
+          <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => {
+              e.stopPropagation();
               if (window.innerWidth >= 768 && !isFullScreen) {
-                setSelectedImg(null); 
+                setSelectedImg(null);
               } else if (window.innerWidth < 768) {
                 setIsMobileUIHidden(prev => !prev);
               }
           }}>
-              <img 
-                src={selectedImg.urls.regular} 
-                className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`} 
+              <img
+                src={selectedImg.urls.regular}
+                className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`}
                 alt="full-view"
               />
           </div>
@@ -88,23 +88,23 @@ const PlaceGalleryView = React.memo(({
           <button onClick={handlePrev} disabled={currentIndex <= 0} className={`absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${isUIHidden || currentIndex <= 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
           </button>
-          
+
           <button onClick={handleNext} disabled={currentIndex >= images.length - 1} className={`absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-2 md:p-4 bg-black/40 border border-white/10 text-white rounded-full hover:bg-blue-600 transition-all z-[210] ${isUIHidden || currentIndex >= images.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </button>
 
           <div className={`absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-3 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
-            
+
             {handleCurateImage && (
               <div className="flex items-center gap-2 mr-2">
-                <button 
-                  onClick={() => handleCurateImage(selectedImg.id, 'liked')} 
+                <button
+                  onClick={() => handleCurateImage(selectedImg.id, 'liked')}
                   className={`p-3 border border-white/10 rounded-full transition-all shadow-xl ${selectedImg.curation === 'liked' ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30' : 'bg-black/50 text-white/50 hover:bg-red-500 hover:text-white'}`}
 									title="이 사진을 갤러리 상단에 영구 보존합니다."
                 >
                   <Heart size={20} className={selectedImg.curation === 'liked' ? 'fill-red-500' : ''} />
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     handleCurateImage(selectedImg.id, 'hidden');
                     if (images.length > 1) {
@@ -113,7 +113,7 @@ const PlaceGalleryView = React.memo(({
                     } else {
                       setSelectedImg(null);
                     }
-                  }} 
+                  }}
                   className="p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-gray-700 hover:text-white transition-all shadow-xl"
                   title="이 사진을 갤러리에서 영구히 숨깁니다."
                 >
@@ -133,10 +133,10 @@ const PlaceGalleryView = React.memo(({
 
           {selectedImg.user && (
             <div className={`absolute bottom-4 left-4 md:bottom-8 md:left-8 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
-              <a 
-                href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 text-xs md:text-sm rounded-full hover:bg-white/20 hover:text-white transition-all shadow-xl"
               >
                 <span>Photo by</span>
@@ -147,8 +147,8 @@ const PlaceGalleryView = React.memo(({
           )}
 
           <div className={`absolute bottom-4 right-4 md:bottom-8 md:right-8 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
-            <button 
-              onClick={() => handleDownload && handleDownload(selectedImg)} 
+            <button
+              onClick={() => handleDownload && handleDownload(selectedImg)}
               className="flex items-center gap-2 p-3 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl"
               title="이미지 다운로드"
             >
@@ -158,8 +158,8 @@ const PlaceGalleryView = React.memo(({
           </div>
         </div>
       ) : (
-        <div className="w-full h-full p-6 pt-24 pb-28 md:pt-10 md:pb-6 overflow-y-auto custom-scrollbar-blue relative">
-          
+        <div className="w-full h-full p-6 pt-24 pb-28 md:pt-10 md:pb-6 overflow-y-auto custom-scrollbar-blue relative overscroll-contain touch-pan-y">
+
           <div className="absolute top-20 right-6 md:top-4 md:right-4 z-10">
              <button
                 onClick={onRefreshClick}
@@ -180,15 +180,15 @@ const PlaceGalleryView = React.memo(({
           ) : (
             <div className="columns-2 gap-4 space-y-4">
               {images.map((img, i) => (
-                <div 
-                  key={img.id || i} 
-                  onClick={() => setSelectedImg(img)} 
+                <div
+                  key={img.id || i}
+                  onClick={() => setSelectedImg(img)}
                   className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
                 >
-          
-                  <img 
-                    src={img.urls.small || img.urls.regular} 
-                    className="w-full h-auto object-cover opacity-100 group-hover:scale-105 transition-transform duration-500" 
+
+                  <img
+                    src={img.urls.small || img.urls.regular}
+                    className="w-full h-auto object-cover opacity-100 group-hover:scale-105 transition-transform duration-500"
                     alt={`place-img-${i}`}
                     loading="lazy"
                   />
@@ -201,7 +201,7 @@ const PlaceGalleryView = React.memo(({
               ))}
             </div>
           )}
-          
+
           {!isImgLoading && images.length === 0 && (
             <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
               <ImageIcon size={48} />

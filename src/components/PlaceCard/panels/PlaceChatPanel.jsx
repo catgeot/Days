@@ -75,11 +75,11 @@ const PlaceChatPanel = React.memo(({
   return (
     <div className={`flex flex-col transition-all duration-500
         ${isFullScreen ? 'opacity-0 md:translate-x-[-100%]' : 'opacity-100 translate-x-0'}
-        absolute top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-2 md:pb-0 md:border-none md:rounded-none
+        absolute top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 md:pb-0 md:border-none md:rounded-none
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
 
       {/* Header */}
-      <div className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-3 flex flex-col items-stretch justify-between gap-3 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div className="flex items-center gap-2.5 overflow-hidden w-full min-w-0">
              <button onClick={onClose} className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
@@ -98,7 +98,7 @@ const PlaceChatPanel = React.memo(({
                  {mediaMode === 'TOOLKIT' ? (
                     <button
                         onClick={() => setMediaMode('GALLERY')}
-                        className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 group shrink-0"
+                        className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 group shrink-0"
                     >
                         <ImageIcon className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
                         <span className="text-xs font-bold">갤러리 복귀</span>
@@ -106,7 +106,7 @@ const PlaceChatPanel = React.memo(({
                  ) : (
                     <button
                         onClick={() => setMediaMode('TOOLKIT')}
-                        className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
+                        className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
                     >
                         <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
                         <span className="text-xs font-bold whitespace-nowrap">스마트 툴킷</span>
@@ -116,31 +116,31 @@ const PlaceChatPanel = React.memo(({
          </div>
 
          {/* Row 2: Other Tabs Area (Gallery, Review, Wiki, Video) */}
-         <div className="shrink-0 flex items-center justify-start gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 pl-10 md:pl-0">
+         <div className="shrink-0 flex items-center justify-start gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 pl-10 md:pl-0 overscroll-contain touch-pan-x">
             <button
                 onClick={() => setMediaMode('GALLERY')}
-                className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'GALLERY' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'GALLERY' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
                 <ImageIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
                 <span className="text-[11px] font-medium">갤러리</span>
             </button>
             <button
                 onClick={() => setMediaMode('LOGBOOK')}
-                className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'LOGBOOK' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'LOGBOOK' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
                 <PenTool className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
                 <span className="text-[11px] font-medium">리뷰</span>
             </button>
             <button
                 onClick={() => setMediaMode('WIKI')}
-                className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'WIKI' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'WIKI' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
                 <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
                 <span className="text-[11px] font-medium">위키</span>
             </button>
             <button
                 onClick={() => setMediaMode('VIDEO')}
-                className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'VIDEO' ? 'bg-white/20 text-red-400 font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'VIDEO' ? 'bg-white/20 text-red-400 font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
                 <Play fill="currentColor" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
                 <span className="text-[11px] font-medium">영상</span>
