@@ -1,5 +1,5 @@
 // src/components/PlaceCard/hooks/usePlaceGallery.js
-// 🚨 [Fix/New] 수정 이유: 
+// 🚨 [Fix/New] 수정 이유:
 // 1. [Maintain] saveToSmartCache 내 QuotaExceededError 예외 처리 및 자동 청소(Auto-Purge) 로직 '유지' (앱 크래시 완벽 방어)
 // 2. [Maintain] Unsplash API 최종 실패 시 기본 대체 이미지를 제공하는 3차 방어막(Fallback) '유지'
 // 3. 🚨 [Subtraction] 영문 매핑 사전(FALLBACK_DICTIONARY) '제거' -> 기형적인 로직을 버리고 citiesData.js의 원본 데이터(name_en)를 직접 참조하도록 아키텍처 원복
@@ -7,12 +7,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
-import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots'; 
+import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots';
 import { citiesData } from '../../../pages/Home/data/citiesData';
-import { supabase } from '../../../shared/api/supabase'; 
+import { supabase } from '../../../shared/api/supabase';
 
 const CACHE_VERSION = 'v1.4';
-const CACHE_TTL = 1000 * 60 * 60 * 24; 
+const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
 const FALLBACK_DICTIONARY = {
@@ -37,14 +37,17 @@ const FALLBACK_DICTIONARY = {
   "키리바시": "Kiribati",
   "팔라우": "Palau",
   "바누아투": "Vanuatu",
-  "피지": "Fiji"
+  "피지": "Fiji",
+  "나이아가라 폭포": "Niagara Falls",
+  "나이아가라": "Niagara Falls",
+  "나이야 가라": "Niagara Falls"
 };
 
 export const usePlaceGallery = (locationSource) => {
   const [images, setImages] = useState([]);
   const [isImgLoading, setIsImgLoading] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
-  
+
   const lastQueryRef = useRef(null);
   // 🚨 [New] 큐레이션(좋아요/숨김) 원본 데이터를 보존하기 위한 Ref
   const allImagesRef = useRef([]);
@@ -83,7 +86,7 @@ export const usePlaceGallery = (locationSource) => {
     } catch (e) {
       if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
         console.warn('⚠️ SessionStorage full. Auto-Purging gallery caches...');
-        
+
         const keysToRemove = [];
         for (let i = 0; i < sessionStorage.length; i++) {
           const k = sessionStorage.key(i);
@@ -92,7 +95,7 @@ export const usePlaceGallery = (locationSource) => {
           }
         }
         keysToRemove.forEach(k => sessionStorage.removeItem(k));
-        
+
         try {
           sessionStorage.setItem(key, JSON.stringify(payload));
         } catch (retryError) {
@@ -111,14 +114,14 @@ export const usePlaceGallery = (locationSource) => {
       return;
     }
     allImagesRef.current = rawImages;
-    
+
     // 숨겨진(hidden) 사진 필터링
     const visibleImages = rawImages.filter(img => img.curation !== 'hidden');
-    
+
     // 좋아요(liked) 사진 맨 앞으로 정렬
     const liked = visibleImages.filter(img => img.curation === 'liked');
     const normal = visibleImages.filter(img => img.curation !== 'liked');
-    
+
     setImages([...liked, ...normal]);
   }, []);
 
@@ -133,7 +136,7 @@ export const usePlaceGallery = (locationSource) => {
         if (found) targetSpot = found;
     } else if (typeof locationSource === 'object') {
       if (!locationSource.name_en) {
-        let foundInMaster = TRAVEL_SPOTS.find(s => 
+        let foundInMaster = TRAVEL_SPOTS.find(s =>
           s.name === sourceName || (sourceId && s.id === sourceId)
         );
         if (!foundInMaster) {
@@ -144,17 +147,17 @@ export const usePlaceGallery = (locationSource) => {
     }
 
     let primaryQuery = '';
-    let backupQuery = ''; 
-    let koreanName = ''; 
+    let backupQuery = '';
+    let koreanName = '';
 
     if (typeof targetSpot === 'object') {
         // 🚨 [Fix] 검색 정확도 향상을 위해 영어 지명에 쉼표가 있을 경우 첫 번째 구역(단어)만 추출
         const rawNameEn = targetSpot.name_en || '';
         const simpleNameEn = rawNameEn.split(',')[0].trim();
-        
+
         primaryQuery = simpleNameEn || targetSpot.name || '';
-        koreanName = targetSpot.name || ''; 
-        
+        koreanName = targetSpot.name || '';
+
         const country = targetSpot.country_en || targetSpot.country;
         if (country && primaryQuery && country !== primaryQuery) {
            backupQuery = `${primaryQuery} ${country}`;
@@ -179,9 +182,9 @@ export const usePlaceGallery = (locationSource) => {
     lastQueryRef.current = primaryQuery;
 
     setIsImgLoading(true);
-    if (!forceRefresh) setImages([]); 
+    if (!forceRefresh) setImages([]);
 
-    const CACHE_KEY = `days_gallery_${primaryQuery}`; 
+    const CACHE_KEY = `days_gallery_${primaryQuery}`;
 
     if (!forceRefresh) {
       pageRef.current = 1; // 🚨 [Fix] 일반 로드 시 페이지 초기화
@@ -202,9 +205,9 @@ export const usePlaceGallery = (locationSource) => {
 
           if (!dbError && dbData && dbData.gallery_urls && dbData.gallery_urls.length > 0) {
             processAndSetImages(dbData.gallery_urls);
-            saveToSmartCache(CACHE_KEY, dbData.gallery_urls); 
+            saveToSmartCache(CACHE_KEY, dbData.gallery_urls);
             setIsImgLoading(false);
-            return; 
+            return;
           }
         } catch (err) {
           console.warn(`⚠️ Supabase Cache Miss or Error for ${koreanName}. Proceeding to API.`);
@@ -228,7 +231,7 @@ export const usePlaceGallery = (locationSource) => {
         console.warn(`⚠️ Unsplash 이미지 부족 또는 강제 새로고침. Pexels 이미지 검색 병합을 시도합니다.`);
         try {
           const pexelsImages = await apiClient.fetchPexelsImages(PEXELS_KEY, primaryQuery, pageRef.current);
-          
+
           if (pexelsImages && pexelsImages.length > 0) {
             results = [...results, ...pexelsImages];
             console.log(`✅ Pexels 이미지 ${pexelsImages.length}개 병합 완료. 총 ${results.length}개`);
@@ -270,11 +273,11 @@ export const usePlaceGallery = (locationSource) => {
 
         if (koreanName) {
           const thumbnailToSave = finalResults[0]?.urls?.small || finalResults[0]?.urls?.regular || '';
-          
+
           supabase
             .from('place_stats')
-            .upsert({ 
-              place_id: koreanName, 
+            .upsert({
+              place_id: koreanName,
               gallery_urls: finalResults,
               image_url: thumbnailToSave
             }, { onConflict: 'place_id' })
@@ -307,7 +310,7 @@ export const usePlaceGallery = (locationSource) => {
   // 🚨 [New] 트래킹 API 호출 및 안전한 다운로드(Blob 방식) 핸들러 구현 (Fire & Forget 구조)
   const handleDownload = useCallback(async (imageObj) => {
     if (!imageObj || !ACCESS_KEY) return;
-    
+
     // 1. Unsplash 가이드라인: download_location 엔드포인트 호출 (조회수/다운로드수 반영)
     if (imageObj.links?.download_location) {
       try {
@@ -323,18 +326,18 @@ export const usePlaceGallery = (locationSource) => {
     try {
       const imageUrl = imageObj.urls?.full || imageObj.urls?.regular;
       if (!imageUrl) return;
-      
+
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      
+
       const a = document.createElement('a');
       a.href = blobUrl;
-      
+
       const authorName = imageObj.user?.name ? imageObj.user.name.replace(/\s+/g, '_') : 'Project_Days';
       const sourceSuffix = imageObj.id?.toString().startsWith('pexels') ? 'pexels' : 'unsplash';
       a.download = `${authorName}_${sourceSuffix}.jpg`;
-      
+
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -376,11 +379,11 @@ export const usePlaceGallery = (locationSource) => {
         if (foundInMaster) targetSpot = foundInMaster;
       }
     }
-    
+
     let koreanName = '';
     if (typeof targetSpot === 'object') {
         primaryQuery = targetSpot.name_en || targetSpot.name || '';
-        koreanName = targetSpot.name || ''; 
+        koreanName = targetSpot.name || '';
     } else {
         primaryQuery = String(targetSpot);
         koreanName = String(targetSpot);
@@ -399,7 +402,7 @@ export const usePlaceGallery = (locationSource) => {
           .from('place_stats')
           .update({ gallery_urls: updatedRawImages })
           .eq('place_id', koreanName);
-          
+
         if (error) {
           console.error("⚠️ Failed to update image curation in DB:", error);
         } else {
@@ -412,12 +415,12 @@ export const usePlaceGallery = (locationSource) => {
   }, [locationSource, sourceId, sourceName, processAndSetImages]);
 
   // 🚨 [Fix] handleDownload 반환 객체에 추가 및 handleRefresh 추가
-  return { 
-    images, 
-    isImgLoading, 
-    selectedImg, 
-    setSelectedImg, 
-    handleDownload, 
+  return {
+    images,
+    isImgLoading,
+    selectedImg,
+    setSelectedImg,
+    handleDownload,
     handleRefresh: () => fetchImages(true),
     handleCurateImage // 새 기능 내보내기
   };
