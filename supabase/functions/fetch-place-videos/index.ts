@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const { query, placeId } = await req.json();
+    const { query, fallbackQuery, placeId } = await req.json();
 
     if (!query || !placeId) {
       throw new Error('query and placeId are required');
@@ -47,11 +47,12 @@ serve(async (req) => {
 
     let data = await youtubeResponse.json();
 
-    // 결과가 없거나 적을 경우 2차 일반 검색 (travel vlog)
+    // 결과가 없거나 적을 경우 2차 일반 검색 (영문 fallbackQuery가 있으면 우선 사용)
     if (!data.items || data.items.length === 0) {
+      const secondQuery = fallbackQuery ? fallbackQuery : `${query} travel vlog`;
       params = new URLSearchParams({
         part: 'snippet',
-        q: `${query} travel vlog`,
+        q: secondQuery,
         maxResults: '5',
         type: 'video',
         key: youtubeApiKey,
