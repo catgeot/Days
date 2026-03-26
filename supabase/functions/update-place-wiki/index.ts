@@ -50,7 +50,7 @@ serve(async (req) => {
 
         const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-        // --- Defensor Model (gemini-2.5-flash) 판단 로직 ---
+        // --- Defensor Model (gemini-3.1-flash-lite-preview) 판단 로직 ---
         if (existingData && existingData.ai_practical_info && existingData.ai_practical_info !== '[[LOADING]]') {
             const defensorPrompt = `다음은 "${locationName}"에 대한 기존 여행 가이드 정보입니다. 오늘 날짜는 ${today}입니다.
 기존 정보가 완전히 파괴되었거나, 국가 부도/전쟁 등 극단적인 재난 상황이 발생하여 도저히 쓸 수 없는 지경이 아니라면, 무조건 'NO_CHANGES' 라고만 응답하세요.
@@ -62,7 +62,7 @@ ${existingData.ai_practical_info}
 ------------------`;
 
             try {
-                const defResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, {
+                const defResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${geminiApiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

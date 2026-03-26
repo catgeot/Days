@@ -289,8 +289,10 @@ export function useHomeHandlers({
 
     const localSpot = TRAVEL_SPOTS.find(s =>
       s.name.toLowerCase() === query.toLowerCase() ||
-      s.country.toLowerCase() === query.toLowerCase() ||
       (s.name_en && s.name_en.toLowerCase() === query.toLowerCase())
+    ) || TRAVEL_SPOTS.find(s =>
+      s.country.toLowerCase() === query.toLowerCase() ||
+      (s.country_en && s.country_en.toLowerCase() === query.toLowerCase())
     );
     if (localSpot) {
       handleLocationSelect(localSpot);
@@ -300,6 +302,9 @@ export function useHomeHandlers({
     const citySpot = citiesData.find(c =>
       c.name.toLowerCase() === query.toLowerCase() ||
       (c.name_en && c.name_en.toLowerCase() === query.toLowerCase())
+    ) || citiesData.find(c =>
+      (c.country && c.country.toLowerCase() === query.toLowerCase()) ||
+      (c.country_en && c.country_en.toLowerCase() === query.toLowerCase())
     );
 
     if (citySpot) {
@@ -348,45 +353,52 @@ export function useHomeHandlers({
         if (apiKey) {
           const aiPrompt = `사용자가 여행지 검색창에 "${query}"라고 입력했지만, 오타가 있거나 존재하지 않는 지명이라 검색에 실패했습니다.
 이 단어와 가장 유사하거나, 사용자가 의도했을 만한 '실제 존재하는 정확한 지명'을 유추해주세요.
-응답은 반드시 다른 설명이나 부연 설명 없이 정확한 지명(한국어 또는 영어) 딱 하나만 텍스트로 출력하세요. (예: 삿포로, 뉴욕, Paris, 몰디브)`;
+응답은 반드시 다른 설명이나 부연 설명 없이 아래 JSON 형식으로만 응답하세요.
+{
+  "name": "정확한 지명(한국어)",
+  "name_en": "정확한 지명(영어)",
+  "country": "소속 국가(한국어)",
+  "country_en": "소속 국가(영어)",
+  "lat": 위도(숫자),
+  "lng": 경도(숫자)
+}`;
 
-          const correctedName = await apiClient.fetchGeminiResponse(
+          const aiResponse = await apiClient.fetchGeminiResponse(
             apiKey,
             [],
-            "당신은 지명 자동 교정 전문가입니다.",
+            "당신은 지명 자동 교정 전문가입니다. 오직 유효한 JSON만 출력해야 합니다.",
             aiPrompt,
             [],
-            "gemini-2.5-flash" // 🚨 [Fix] gemini-2.5-flash-lite 503 에러 대비 안정적인 flash 모델로 교체
+            "gemini-3.1-flash-lite-preview" // 🚨 [Fix] gemini-2.5-flash-lite 대신 최신 3.1 flash-lite 도입
           );
-          const cleanName = correctedName.replace(/[\n\r\"\'\.]/g, '').trim();
+
+          const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+          const parsedData = JSON.parse(cleanJsonString);
+          const cleanName = parsedData.name;
 
           if (cleanName && cleanName !== query && cleanName.length > 0 && cleanName.length < 30) {
-            console.log(`[Smart Search] AI가 "${query}"를 "${cleanName}"(으)로 교정했습니다.`);
+            console.log(`[Smart Search] AI가 "${query}"를 "${cleanName}"(으)로 교정 및 좌표를 파싱했습니다.`, parsedData);
 
-            // 교정된 지명으로 다시 검색
-            const retryCoords = await getCoordinatesFromAddress(cleanName);
-
-            if (retryCoords) {
-              const normalizedLoc = {
-                id: `search-${retryCoords.lat}-${retryCoords.lng}`,
-                slug: formatUrlName(retryCoords.name_en || retryCoords.name),
-                name: cleanName,
-                name_en: retryCoords.name_en || retryCoords.name,
-                country: retryCoords.country || "Explore",
-                country_en: retryCoords.country_en || "Explore",
-                lat: retryCoords.lat,
-                lng: retryCoords.lng,
-                category: category,
-                desc: `"${query}" 검색에 실패하여 "${cleanName}"(으)로 교정하여 탐색합니다.`,
-                type: 'temp-base',
-                isCorrected: true,
-                originalQuery: query
-              };
-              handleLocationSelect(normalizedLoc);
-              setDraftInput(cleanName);
-              processSearchKeywords(cleanName);
-              isCorrected = true;
-            }
+            // AI가 파싱한 좌표를 우선 사용
+            const normalizedLoc = {
+              id: `search-${parsedData.lat}-${parsedData.lng}`,
+              slug: formatUrlName(parsedData.name_en || parsedData.name),
+              name: cleanName,
+              name_en: parsedData.name_en || parsedData.name,
+              country: parsedData.country || "Explore",
+              country_en: parsedData.country_en || "Explore",
+              lat: parsedData.lat,
+              lng: parsedData.lng,
+              category: category,
+              desc: `"${query}" 검색에 실패하여 "${cleanName}"(으)로 교정하여 탐색합니다.`,
+              type: 'temp-base',
+              isCorrected: true,
+              originalQuery: query
+            };
+            handleLocationSelect(normalizedLoc);
+            setDraftInput(cleanName);
+            processSearchKeywords(cleanName);
+            isCorrected = true;
           }
         }
       } catch (err) {

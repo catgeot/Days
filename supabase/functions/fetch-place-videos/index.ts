@@ -27,26 +27,43 @@ serve(async (req) => {
       throw new Error('YOUTUBE_API_KEY is not configured on server');
     }
 
-    // 1. YouTube API 호출
-    const params = new URLSearchParams({
+    // 1차 검색: 한국어 여행 브이로그 (CC 조건 제거)
+    let params = new URLSearchParams({
       part: 'snippet',
-      q: `${query} 여행 브이로그 travel vlog`,
+      q: `${query} 여행 브이로그`,
       maxResults: '5',
       type: 'video',
-      videoCaption: 'closedCaption',
       relevanceLanguage: 'ko',
       regionCode: 'KR',
       key: youtubeApiKey,
     });
 
-    const youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
+    let youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
 
     if (!youtubeResponse.ok) {
       const errorData = await youtubeResponse.json().catch(() => ({}));
       throw new Error(`YouTube API Error: ${youtubeResponse.status} - ${errorData.error?.message || 'Unknown Error'}`);
     }
 
-    const data = await youtubeResponse.json();
+    let data = await youtubeResponse.json();
+
+    // 결과가 없거나 적을 경우 2차 일반 검색 (travel vlog)
+    if (!data.items || data.items.length === 0) {
+      params = new URLSearchParams({
+        part: 'snippet',
+        q: `${query} travel vlog`,
+        maxResults: '5',
+        type: 'video',
+        key: youtubeApiKey,
+      });
+
+      youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
+      if (!youtubeResponse.ok) {
+        const errorData = await youtubeResponse.json().catch(() => ({}));
+        throw new Error(`YouTube API Error (Fallback): ${youtubeResponse.status} - ${errorData.error?.message || 'Unknown Error'}`);
+      }
+      data = await youtubeResponse.json();
+    }
 
     // API 응답 데이터를 프로젝트 표준 규격(TRAVEL_VIDEOS)으로 변환
     const videosToCache = data.items?.map((item: any) => ({
@@ -82,9 +99,9 @@ serve(async (req) => {
     }
 
     // 4. 성공 결과 반환
-    return new Response(JSON.stringify({ 
-      success: true, 
-      videos: videosToCache 
+    return new Response(JSON.stringify({
+      success: true,
+      videos: videosToCache
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
@@ -94,9 +111,9 @@ serve(async (req) => {
     const errObj = error as Error;
     console.error('Function Error:', errObj.message);
     // 프론트엔드에서 파싱 가능하도록 HTTP 상태는 200으로 내리고 응답 바디에 error를 담음
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: false,
-      error: errObj.message 
+      error: errObj.message
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,

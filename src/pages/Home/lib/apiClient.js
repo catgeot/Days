@@ -41,11 +41,11 @@ export const apiClient = {
         }
       );
 
-      // 🚨 [Fix] 503 에러 또는 모델 접근 실패 시, 가장 안정적인 2.5-flash로 자동 롤백 및 재시도
-      if (!response.ok && (response.status === 503 || response.status === 404) && modelId !== "gemini-2.5-flash") {
-        console.warn(`[API Fallback] ${modelId} failed with ${response.status}. Retrying with gemini-2.5-flash...`);
+      // 🚨 [Fix] 503 에러 또는 모델 접근 실패 시, 가장 안정적인 3.1-flash-lite로 자동 롤백 및 재시도
+      if (!response.ok && (response.status === 503 || response.status === 404) && modelId !== "gemini-3.1-flash-lite-preview") {
+        console.warn(`[API Fallback] ${modelId} failed with ${response.status}. Retrying with gemini-3.1-flash-lite-preview...`);
         response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

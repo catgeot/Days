@@ -124,7 +124,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   }, [handleRequestAiInfo]);
 
   return (
-    <div className="w-full h-full flex flex-col p-6 pt-[96px] pb-32 md:p-12 overflow-y-auto text-white custom-scrollbar relative overscroll-none touch-pan-y">
+    <div className="w-full h-full flex flex-col p-6 pt-[96px] pb-32 md:p-12 overflow-y-auto text-white custom-scrollbar relative">
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
