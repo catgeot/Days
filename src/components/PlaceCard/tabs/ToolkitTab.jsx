@@ -17,8 +17,14 @@ const CopyableWord = ({ word, displayText, locationName, type }) => {
         const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
 
         let queryStr = searchTarget;
-        if (locationName) {
-            // 구글 맵스의 경우 콤마(,) 결합으로 검색 정확도 향상. 웹 검색은 기존 띄어쓰기 결합.
+
+        // 카테고리별 아웃링크 검색어 고도화
+        if (['apps', 'connectivity'].includes(type)) {
+            // 앱 및 통신사(eSIM 등)는 글로벌 브랜드가 대부분이므로 지역명 결합 시 앱스토어 대신 SGE(AI 개요)가 뜨는 왜곡 방지
+            queryStr = searchTarget;
+        } else if (locationName) {
+            // 구글 맵스의 경우 콤마(,) 결합으로 위치/장소 검색 정확도 극대화
+            // 비자/안전 등 일반 웹 검색의 경우 지역명(예: 러시아 비자)이 필수적이므로 띄어쓰기 결합 유지
             queryStr = isMapSearch ? `${searchTarget}, ${locationName}` : `${searchTarget} ${locationName}`;
         }
 
