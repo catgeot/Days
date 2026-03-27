@@ -3,11 +3,24 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
 
+// 모바일 환경 감지 훅 또는 유틸
+const isMobileDevice = () => {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+};
+
 const CopyableWord = ({ word, locationName, type }) => {
     const handleSmartLink = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const query = encodeURIComponent(`${word} ${locationName || ''}`.trim());
+
+        // 정규식을 통해 괄호 안의 영문명 추출 (예: "센소지(Senso-ji)" -> "Senso-ji")
+        const englishMatch = word.match(/\(([A-Za-z\s-&,']+)\)/);
+        let searchTarget = word;
+        if (englishMatch && englishMatch[1]) {
+            searchTarget = englishMatch[1].trim();
+        }
+
+        const query = encodeURIComponent(`${searchTarget} ${locationName || ''}`.trim());
 
         // 카테고리(type)가 지도 검색용인지 판별
         const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
@@ -16,7 +29,7 @@ const CopyableWord = ({ word, locationName, type }) => {
             ? `https://www.google.com/maps/search/?api=1&query=${query}`
             : `https://www.google.com/search?q=${query}`;
 
-        window.open(url, '_blank');
+        window.open(url, isMobileDevice() ? '_self' : '_blank');
     };
 
     const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
@@ -181,7 +194,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                         <a
                             key={idx}
                             href={link.url}
-                            target="_blank"
+                            target={isMobileDevice() ? "_self" : "_blank"}
                             rel="noopener noreferrer"
                             className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-xs font-semibold transition-colors border ${link.colorClass} ${links.length === 1 ? 'col-span-2' : ''}`}
                         >
@@ -195,7 +208,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
     );
 };
 
-const LOADING_MESSAGES = [
+const LOADING_MESSAGES_NEW = [
     "지도 및 명소를 가져오는 중...",
     "비자 및 서류 정보를 확인하는 중...",
     "교통 패스 및 렌터카 정보를 찾는 중...",
@@ -207,11 +220,28 @@ const LOADING_MESSAGES = [
     "AI가 여행자 툴킷을 최종 완성하는 중..."
 ];
 
+const LOADING_MESSAGES_UPDATE = [
+    "기존 툴킷 정보를 불러오는 중...",
+    "최신 비자 및 출입국 규정 변동을 확인하는 중...",
+    "교통 및 환율 정보를 업데이트하는 중...",
+    "최적화된 앱 및 편의 정보를 점검하는 중...",
+    "현지 치안 및 안전 상황을 스캔하는 중...",
+    "스마트 가이드라인을 새롭게 구성하는 중...",
+    "기존 데이터와 변경점을 비교하는 중...",
+    "변경 사항을 반영하여 툴킷을 재조립하는 중...",
+    "AI가 최종 툴킷 검수를 마치는 중..."
+];
+
 const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [localGuideData, setLocalGuideData] = useState(null);
     const [loadingStep, setLoadingStep] = useState(0);
     const [cooldown, setCooldown] = useState(0);
+
+    // 로컬 상태가 있으면 우선 사용
+    const guideData = localGuideData || wikiData?.essential_guide;
+    const isUpdatingExisting = !!guideData;
+    const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
     // 로딩 메시지 순차적 변경 (주기 4초로 변경)
     useEffect(() => {
@@ -219,11 +249,11 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         if (isUpdating) {
             setLoadingStep(0);
             interval = setInterval(() => {
-                setLoadingStep((prev) => (prev < LOADING_MESSAGES.length - 1 ? prev + 1 : prev));
+                setLoadingStep((prev) => (prev < currentMessages.length - 1 ? prev + 1 : prev));
             }, 4000); // 4초마다 다음 메시지로
         }
         return () => clearInterval(interval);
-    }, [isUpdating]);
+    }, [isUpdating, currentMessages]);
 
     // 쿨타임 타이머
     useEffect(() => {
@@ -245,11 +275,15 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
 
         const startTime = Date.now();
 
+        // 기존 텍스트를 보존하여 Edge Function에 넘김
+        const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null;
+
         try {
+            // 프론트에서 [[LOADING]] 설정 시 기존 정보가 사라지므로 Edge에서 처리하게 하거나, oldAiInfo를 따로 보관해서 복구
             await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
 
             const { data, error } = await supabase.functions.invoke('update-place-wiki', {
-                body: { placeId: placeId, locationName: location?.name || placeId }
+                body: { placeId: placeId, locationName: location?.name || placeId, oldAiInfo: oldAiInfo }
             });
 
             if (error) throw error;
@@ -267,21 +301,19 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
             // 갱신 완료 후 1분(60초) 쿨타임 적용
             setCooldown(60);
 
-            // 부모 컴포넌트의 데이터 리프레시를 위해 이벤트를 발생시키거나 로컬에서 업데이트 타임 기록
             if (data?.noChanges) {
                 console.log('No changes detected by AI');
             }
         } catch (e) {
             console.error(e);
             alert('정보 업데이트에 실패했습니다.');
-            await supabase.from('place_wiki').update({ ai_practical_info: null }).eq('place_id', placeId);
+            // 실패 시 이전 데이터로 롤백 (null이 아님)
+            await supabase.from('place_wiki').update({ ai_practical_info: oldAiInfo || null }).eq('place_id', placeId);
         } finally {
             setIsUpdating(false);
         }
     };
 
-    // 로컬 상태가 있으면 우선 사용 (새로고침 없이 즉시 표시)
-    const guideData = localGuideData || wikiData?.essential_guide;
     const isLoading = isWikiLoading || isUpdating || (wikiData?.ai_practical_info === '[[LOADING]]' && !localGuideData);
 
     const formatDate = (isoString) => {
@@ -302,20 +334,20 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
 
                     <div className="w-full space-y-3">
                         <div className="flex justify-between items-center px-1">
-                            <span className="text-sm font-bold text-gray-700">AI 툴킷 생성 중</span>
-                            <span className="text-xs font-bold text-blue-600">{Math.round((loadingStep / (LOADING_MESSAGES.length - 1)) * 100)}%</span>
+                            <span className="text-sm font-bold text-gray-700">{isUpdatingExisting ? "AI 툴킷 점검 중" : "AI 툴킷 생성 중"}</span>
+                            <span className="text-xs font-bold text-blue-600">{Math.round((loadingStep / (currentMessages.length - 1)) * 100)}%</span>
                         </div>
                         <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-blue-600 transition-all duration-500 ease-out"
-                                style={{ width: `${(loadingStep / (LOADING_MESSAGES.length - 1)) * 100}%` }}
+                                style={{ width: `${(loadingStep / (currentMessages.length - 1)) * 100}%` }}
                             ></div>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 text-sm text-gray-600 font-medium h-6">
                         <Loader2 size={14} className="animate-spin text-blue-500" />
-                        <span className="animate-pulse">{LOADING_MESSAGES[loadingStep]}</span>
+                        <span className="animate-pulse">{currentMessages[loadingStep]}</span>
                     </div>
                 </div>
             </div>
@@ -342,7 +374,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[96px] pb-4 md:p-6 md:pt-6 overscroll-none touch-pan-y">
+        <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[104px] pb-4 md:p-6 md:pt-8 overscroll-none touch-pan-y">
             <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                     <div>

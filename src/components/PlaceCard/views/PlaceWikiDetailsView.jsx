@@ -86,12 +86,15 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       setError(null);
       setLocalAiResponse(null);
 
+      // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌우기 전, 기존 정보를 보관하여 복구 및 Defensor 용도로 활용
+      const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : localAiResponse;
+
       // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌워 UI 즉각 동기화 및 폴링 트리거
       await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
 
       try {
           const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
-              body: { placeId, locationName: location }
+              body: { placeId, locationName: location, oldAiInfo, forceUpdate }
           });
 
           if (functionError) {
@@ -107,8 +110,8 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       } catch (err) {
           console.error('Request Error:', err);
           setError(err.message || "오류가 발생했습니다.");
-          // 실패 시 로컬 및 DB 상태 롤백
-          await supabase.from('place_wiki').update({ ai_practical_info: null }).eq('place_id', placeId);
+          // 실패 시 기존 데이터로 상태 롤백
+          await supabase.from('place_wiki').update({ ai_practical_info: oldAiInfo || null }).eq('place_id', placeId);
       } finally {
           setIsAiLoading(false);
       }

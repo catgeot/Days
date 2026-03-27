@@ -13,9 +13,11 @@ serve(async (req) => {
   }
 
     let requestedPlaceId: string | null = null;
+    let reqBody: any = null;
 
     try {
-        const { placeId, locationName } = await req.json();
+        reqBody = await req.json();
+        const { placeId, locationName, oldAiInfo, forceUpdate } = reqBody;
         requestedPlaceId = placeId;
 
         if (!placeId || !locationName) {
@@ -50,15 +52,18 @@ serve(async (req) => {
 
         const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
+        // 기존 정보 복원 로직: 프론트엔드가 이미 '[[LOADING]]'으로 덮어씌웠으므로 oldAiInfo를 우선 사용
+        const infoToAnalyze = oldAiInfo || (existingData?.ai_practical_info !== '[[LOADING]]' ? existingData?.ai_practical_info : null);
+
         // --- Defensor Model (gemini-3.1-flash-lite-preview) 판단 로직 ---
-        if (existingData && existingData.ai_practical_info && existingData.ai_practical_info !== '[[LOADING]]') {
+        if (!forceUpdate && infoToAnalyze && infoToAnalyze !== '[[LOADING]]') {
             const defensorPrompt = `다음은 "${locationName}"에 대한 기존 여행 가이드 정보입니다. 오늘 날짜는 ${today}입니다.
 기존 정보가 완전히 파괴되었거나, 국가 부도/전쟁 등 극단적인 재난 상황이 발생하여 도저히 쓸 수 없는 지경이 아니라면, 무조건 'NO_CHANGES' 라고만 응답하세요.
 단순한 환율 변동, 날씨, 일반 식당 폐업 등 사소한 변화는 무시하십시오. 당신은 비용 절감을 위한 캐시 관리자입니다.
 크리티컬한 변화나 중대한 위험이 명백하다면 'UPDATE_REQUIRED'라고만 응답하고, 그렇지 않다면 무조건 'NO_CHANGES'라고만 응답하세요. 다른 부연 설명이나 인사말은 절대 하지 마세요.
 
 --- 기존 정보 ---
-${existingData.ai_practical_info}
+${infoToAnalyze}
 ------------------`;
 
             try {
@@ -76,11 +81,11 @@ ${existingData.ai_practical_info}
                     if (defText.includes('NO_CHANGES')) {
                         console.log(`[Defensor] No critical changes detected for ${locationName}. Reusing existing data.`);
 
-                        // 갱신 시간만 최신으로 업데이트
+                        // 갱신 시간만 최신으로 업데이트하고 기존 정보 복구
                         await supabaseAdmin
                             .from('place_wiki')
                             .update({
-                                ai_practical_info: existingData.ai_practical_info,
+                                ai_practical_info: infoToAnalyze,
                                 ai_info_updated_at: new Date().toISOString()
                             })
                             .eq('place_id', String(placeId));
@@ -88,8 +93,8 @@ ${existingData.ai_practical_info}
                         return new Response(JSON.stringify({
                             success: true,
                             noChanges: true,
-                            aiResponse: existingData.ai_practical_info,
-                            essentialGuide: existingData.essential_guide
+                            aiResponse: infoToAnalyze,
+                            essentialGuide: existingData?.essential_guide
                         }), {
                             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                             status: 200,
@@ -210,9 +215,10 @@ ${existingData.ai_practical_info}
           Deno.env.get('SUPABASE_URL') ?? '',
           Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
+        const resetValue = reqBody?.oldAiInfo || null;
         await supabaseAdmin
           .from('place_wiki')
-          .update({ ai_practical_info: null })
+          .update({ ai_practical_info: resetValue })
           .eq('place_id', String(requestedPlaceId))
           .eq('ai_practical_info', '[[LOADING]]'); // 로딩 상태일 때만 리셋
       } catch (dbRestoreErr) {
