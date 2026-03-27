@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Search } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
@@ -267,27 +267,9 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         return () => clearInterval(timer);
     }, [cooldown]);
 
-    const autoUpdateTriggered = React.useRef(false);
+    const autoUpdateTriggered = useRef(false);
 
-    useEffect(() => {
-        if (!autoUpdateTriggered.current && wikiData?.essential_guide && wikiData?.ai_practical_info !== '[[LOADING]]') {
-            const lastUpdated = wikiData.ai_info_updated_at;
-            if (lastUpdated) {
-                const lastDate = new Date(lastUpdated);
-                const now = new Date();
-                const diffTime = Math.abs(now.getTime() - lastDate.getTime());
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (diffDays > 14) {
-                    console.log(`[Lazy Update] ToolkitTab 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
-                    autoUpdateTriggered.current = true;
-                    handleUpdate();
-                }
-            }
-        }
-    }, [wikiData?.essential_guide, wikiData?.ai_info_updated_at, wikiData?.ai_practical_info]);
-
-    async function handleUpdate() {
+    const handleUpdate = async () => {
         if (cooldown > 0) return;
 
         const placeId = wikiData?.place_id || location?.name;
@@ -334,7 +316,25 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         } finally {
             setIsUpdating(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        if (!autoUpdateTriggered.current && wikiData?.essential_guide && wikiData?.ai_practical_info !== '[[LOADING]]') {
+            const lastUpdated = wikiData.ai_info_updated_at;
+            if (lastUpdated) {
+                const lastDate = new Date(lastUpdated);
+                const now = new Date();
+                const diffTime = Math.abs(now.getTime() - lastDate.getTime());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays > 14) {
+                    console.log(`[Lazy Update] ToolkitTab 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+                    autoUpdateTriggered.current = true;
+                    handleUpdate();
+                }
+            }
+        }
+    }, [wikiData?.essential_guide, wikiData?.ai_info_updated_at, wikiData?.ai_practical_info]);
 
     const isLoading = isWikiLoading || isUpdating || (wikiData?.ai_practical_info === '[[LOADING]]' && !localGuideData);
 
