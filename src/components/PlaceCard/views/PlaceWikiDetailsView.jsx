@@ -8,6 +8,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
   const [isAiExpanded, setIsAiExpanded] = useState(false);
   const [localAiResponse, setLocalAiResponse] = useState(null);
+  const [localUpdatedAt, setLocalUpdatedAt] = useState(null);
 
   const aiSectionRef = useRef(null);
 
@@ -19,6 +20,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   useEffect(() => {
       setIsAiExpanded(false);
       setLocalAiResponse(null);
+      setLocalUpdatedAt(null);
       setError(null);
   }, [placeName]);
 
@@ -37,11 +39,14 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
     } else if (prevInfo === '[[LOADING]]' && currentInfo && currentInfo !== '[[LOADING]]') {
       // DB 폴링으로 로딩 중이었다가 실제 데이터가 들어온 경우에만 동기화
       setLocalAiResponse(currentInfo);
+      if (wikiData?.ai_info_updated_at) {
+          setLocalUpdatedAt(wikiData.ai_info_updated_at);
+      }
       setIsAiLoading(false);
     }
 
     prevAiInfoRef.current = currentInfo;
-  }, [wikiData?.ai_practical_info]);
+  }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at]);
 
   const handleRequestAiInfo = useCallback(async (eventOrRemoteName, forceUpdate = false) => {
     setIsAiExpanded(true);
@@ -104,6 +109,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
           if (data && data.success) {
               setLocalAiResponse(data.aiResponse);
+              setLocalUpdatedAt(new Date().toISOString());
           } else {
               throw new Error(data?.error || "AI 응답을 생성하지 못했습니다.");
           }
@@ -171,8 +177,8 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                             </div>
                             <div className="flex items-center justify-between pt-4 border-t border-white/10">
                                 <div className="text-xs text-gray-500">
-                                    {wikiData?.ai_info_updated_at && wikiData.ai_practical_info !== '[[LOADING]]' ?
-                                        `마지막 갱신: ${new Date(wikiData.ai_info_updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                                    {(localUpdatedAt || wikiData?.ai_info_updated_at) && wikiData?.ai_practical_info !== '[[LOADING]]' ?
+                                        `마지막 갱신: ${new Date(localUpdatedAt || wikiData.ai_info_updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}`
                                         : ''}
                                 </div>
                                 <button

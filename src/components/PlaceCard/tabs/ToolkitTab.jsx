@@ -235,6 +235,7 @@ const LOADING_MESSAGES_UPDATE = [
 const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [localGuideData, setLocalGuideData] = useState(null);
+    const [localUpdatedAt, setLocalUpdatedAt] = useState(null);
     const [loadingStep, setLoadingStep] = useState(0);
     const [cooldown, setCooldown] = useState(0);
 
@@ -300,6 +301,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
 
             // 갱신 완료 후 1분(60초) 쿨타임 적용
             setCooldown(60);
+            setLocalUpdatedAt(new Date().toISOString());
 
             if (data?.noChanges) {
                 console.log('No changes detected by AI');
@@ -322,7 +324,8 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     };
 
-    const lastUpdated = wikiData?.ai_info_updated_at ? formatDate(wikiData.ai_info_updated_at) : '';
+    const targetDate = localUpdatedAt || wikiData?.ai_info_updated_at;
+    const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
     if (isLoading) {
         return (
@@ -374,8 +377,8 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[104px] pb-4 md:p-6 md:pt-8 overscroll-none touch-pan-y">
-            <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+        <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-4 md:p-6 md:pt-10 overscroll-none touch-pan-y">
+            <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                     <div>
                         <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
