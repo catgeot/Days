@@ -89,10 +89,10 @@ serve(async (req) => {
 
 --- [중요: 정보 갱신 검증 규칙] ---
 만약 사용자가 아래에 '기존 정보'를 제공했다면, 오늘 날짜(${today}) 기준으로 해당 지역에 국가 부도, 전쟁, 전염병, 심각한 자연재해 등 '치명적이고 여행에 즉각적인 영향을 미치는 중대 변동 사항'이 새로 발생했는지 스스로 판단하세요. (단순 환율 변동, 일반 식당 폐업, 날씨 등은 무시)
-만약 치명적인 변동이 전혀 없다면 기존 정보를 그대로 유지해야 하므로, 절대로 다른 내용을 쓰지 말고 오직 다음 JSON만 응답하세요:
+만약 기존 정보가 이미 존재하고 치명적인 변동이 전혀 없다면, 절대로 다른 내용을 쓰지 말고 오직 다음 JSON만 응답하세요:
 { "status": "NO_CHANGES" }
 
-변동이 있거나 기존 정보가 아예 없다면, 원래 지시대로 유효한 가이드 데이터를 아래 JSON 규격에 맞춰 응답하세요.`;
+🚨 [매우 중요]: 아래에 제공된 데이터가 '기존 정보 없음'이거나 비어 있다면, 변동 감지 규칙을 무시하고 무조건 전체 가이드 데이터를 처음부터 새롭게 생성해야 합니다. (이 경우 절대 NO_CHANGES를 응답하면 안 됩니다!)`;
 
         const userPrompt = `"${locationName}"에 대해 아래 두 가지 데이터를 포함하여 JSON 형식으로 응답해줘. JSON 파싱 에러가 발생하지 않도록 이스케이프 처리에 각별히 신경 써.
 
@@ -168,7 +168,12 @@ ${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
     }
 
     // [New] NO_CHANGES 감지 로직
-    if ((parsedResult?.status === "NO_CHANGES" || parsedResult === "NO_CHANGES") && infoToAnalyze) {
+    if (parsedResult?.status === "NO_CHANGES" || parsedResult === "NO_CHANGES") {
+        if (!infoToAnalyze || infoToAnalyze === "null" || infoToAnalyze === "기존 정보 없음") {
+            console.error('AI returned NO_CHANGES but there is no existing info to keep.');
+            throw new Error('AI failed to generate new information (Returned NO_CHANGES inappropriately).');
+        }
+
         console.log(`[Pro Model] No critical changes detected for ${locationName}. Reusing existing data.`);
 
         // 갱신 시간만 최신으로 업데이트하고 기존 정보 복구

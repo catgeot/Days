@@ -54,16 +54,22 @@ const CopyableWord = ({ word, displayText, locationName, type }) => {
 const CopyableText = ({ text, locationName, type }) => {
     if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
 
-    // 한글명('영문명') 패턴을 예쁘게 통째로 추출하는 정규식
-    // 띄어쓰기 최대 1번 포함된 단어(예: "아마조나스 극장")를 잡음
+    // AI의 변칙적인 따옴표 사용 패턴을 시스템 표준인 "한글명('영문명')"으로 전처리(Normalize)
+    // 1. 전체가 따옴표로 감싸진 경우: '한글명(영문명)' 또는 ‘한글명(영문명)’ -> 한글명('영문명')
+    let normalizedText = text.replace(/['"‘’“”]([^(\s]+(?:\s[^(\s]+)?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
+
+    // 2. 영문명에만 스마트 따옴표/쌍따옴표가 쓰인 경우: 한글명(‘영문명’) -> 한글명('영문명')
+    normalizedText = normalizedText.replace(/([^(\s]+(?:\s[^(\s]+)?)\(['"‘’“”](.+?)['"‘’“”]\)/g, "$1('$2')");
+
+    // 표준 패턴 추출 정규식
     const regex = /([^(\s]+(?:\s[^(\s]+)?)\('(.+?)'\)/g;
     const parts = [];
     let lastIndex = 0;
     let match;
 
-    while ((match = regex.exec(text)) !== null) {
+    while ((match = regex.exec(normalizedText)) !== null) {
         if (match.index > lastIndex) {
-            parts.push(text.substring(lastIndex, match.index));
+            parts.push(normalizedText.substring(lastIndex, match.index));
         }
 
         const koreanName = match[1].trim(); // 예: "마나우스", "아마조나스 극장"
@@ -82,15 +88,22 @@ const CopyableText = ({ text, locationName, type }) => {
         lastIndex = regex.lastIndex;
     }
 
-    if (lastIndex < text.length) {
-        parts.push(text.substring(lastIndex));
+    if (lastIndex < normalizedText.length) {
+        parts.push(normalizedText.substring(lastIndex));
     }
 
-    // 만약 정규식 매칭이 한 건도 없다면, 기존 Fallback (작은따옴표만 찾기) 적용
-    if (parts.length === 1 && parts[0] === text) {
-        const fallbackParts = text.split(/('[^']+')/g);
+    // 만약 정규식 매칭이 한 건도 없다면, 기존 Fallback (단일 따옴표 문자열 찾기) 적용
+    if (parts.length === 1 && parts[0] === normalizedText) {
+        // 모든 스마트/쌍따옴표를 일반 작은따옴표로 통일
+        const fallbackText = normalizedText.replace(/['"‘’“”]/g, "'");
+        const fallbackParts = fallbackText.split(/('[^']+')/g);
+
+        if (fallbackParts.length === 1) {
+             return <span className="select-text break-keep">{fallbackParts[0]}</span>;
+        }
+
         return (
-            <span className="select-text">
+            <span className="select-text break-keep">
                 {fallbackParts.map((part, i) => {
                     if (part.startsWith("'") && part.endsWith("'")) {
                         const word = part.slice(1, -1);
