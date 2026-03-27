@@ -267,7 +267,27 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         return () => clearInterval(timer);
     }, [cooldown]);
 
-    const handleUpdate = async () => {
+    const autoUpdateTriggered = React.useRef(false);
+
+    useEffect(() => {
+        if (!autoUpdateTriggered.current && wikiData?.essential_guide && wikiData?.ai_practical_info !== '[[LOADING]]') {
+            const lastUpdated = wikiData.ai_info_updated_at;
+            if (lastUpdated) {
+                const lastDate = new Date(lastUpdated);
+                const now = new Date();
+                const diffTime = Math.abs(now.getTime() - lastDate.getTime());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays > 14) {
+                    console.log(`[Lazy Update] ToolkitTab 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+                    autoUpdateTriggered.current = true;
+                    handleUpdate();
+                }
+            }
+        }
+    }, [wikiData?.essential_guide, wikiData?.ai_info_updated_at, wikiData?.ai_practical_info]);
+
+    async function handleUpdate() {
         if (cooldown > 0) return;
 
         const placeId = wikiData?.place_id || location?.name;
@@ -314,7 +334,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         } finally {
             setIsUpdating(false);
         }
-    };
+    }
 
     const isLoading = isWikiLoading || isUpdating || (wikiData?.ai_practical_info === '[[LOADING]]' && !localGuideData);
 
@@ -396,19 +416,6 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
                                 마지막 업데이트: {lastUpdated}
                             </span>
                         )}
-                        <button
-                            onClick={handleUpdate}
-                            disabled={isLoading || cooldown > 0}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 bg-white text-xs font-medium rounded-full border shadow-sm transition-colors self-start md:self-auto ${
-                                cooldown > 0
-                                ? 'text-gray-400 border-gray-100 cursor-not-allowed bg-gray-50'
-                                : 'text-gray-600 border-gray-200 hover:bg-gray-50'
-                            }`}
-                            title={cooldown > 0 ? `${cooldown}초 후 다시 갱신할 수 있습니다.` : '최신 정보로 갱신하기'}
-                        >
-                            <RefreshCw size={12} className={isLoading ? "animate-spin" : ""} />
-                            <span>{cooldown > 0 ? `${cooldown}초 후 갱신 가능` : '정보 갱신'}</span>
-                        </button>
                     </div>
                 </div>
 

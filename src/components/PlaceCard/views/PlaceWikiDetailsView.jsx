@@ -49,6 +49,26 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id };
   }, [placeName, wikiData]);
 
+  // --- 14일 경과 시 백그라운드 자동 갱신 (Lazy Update) ---
+  const autoUpdateTriggered = useRef(false);
+  useEffect(() => {
+      if (!autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
+          const lastUpdated = wikiData.ai_info_updated_at;
+          if (lastUpdated) {
+              const lastDate = new Date(lastUpdated);
+              const now = new Date();
+              const diffTime = Math.abs(now.getTime() - lastDate.getTime());
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+              if (diffDays > 14) {
+                  console.log(`[Lazy Update] 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+                  autoUpdateTriggered.current = true;
+                  handleRequestAiInfo(placeName || wikiData.title, true);
+              }
+          }
+      }
+  }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
+
   useEffect(() => {
       setIsAiExpanded(false);
       setLocalAiResponse(null);
@@ -231,18 +251,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                         `마지막 갱신: ${new Date(localUpdatedAt || wikiData.ai_info_updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}`
                                         : ''}
                                 </div>
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleRequestAiInfo(placeName || wikiData?.title, true);
-                                    }}
-                                    className="group flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-white/10"
-                                >
-                                    <RefreshCw size={14} className="text-gray-400 group-hover:text-amber-400 transition-colors" />
-                                    <span className="text-xs font-medium text-gray-400 group-hover:text-gray-200 transition-colors">
-                                        최신 정보로 다시 묻기
-                                    </span>
-                                </button>
                             </div>
                         </div>
                     ) : null}

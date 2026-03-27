@@ -56,58 +56,8 @@ serve(async (req) => {
         const infoToAnalyze = oldAiInfo || (existingData?.ai_practical_info !== '[[LOADING]]' ? existingData?.ai_practical_info : null);
         const hasEssentialGuide = existingData?.essential_guide != null;
 
-        // --- Defensor Model (gemini-3.1-flash-lite-preview) 판단 로직 ---
-        // 🚨 툴킷(essential_guide)이 한 번도 생성되지 않은 장소라면 Defensor를 거치지 않고 무조건 새로 생성
-        if (!forceUpdate && infoToAnalyze && infoToAnalyze !== '[[LOADING]]' && hasEssentialGuide) {
-            const defensorPrompt = `다음은 "${locationName}"에 대한 기존 여행 가이드 정보입니다. 오늘 날짜는 ${today}입니다.
-기존 정보가 완전히 파괴되었거나, 국가 부도/전쟁 등 극단적인 재난 상황이 발생하여 도저히 쓸 수 없는 지경이 아니라면, 무조건 'NO_CHANGES' 라고만 응답하세요.
-단순한 환율 변동, 날씨, 일반 식당 폐업 등 사소한 변화는 무시하십시오. 당신은 비용 절감을 위한 캐시 관리자입니다.
-크리티컬한 변화나 중대한 위험이 명백하다면 'UPDATE_REQUIRED'라고만 응답하고, 그렇지 않다면 무조건 'NO_CHANGES'라고만 응답하세요. 다른 부연 설명이나 인사말은 절대 하지 마세요.
-
---- 기존 정보 ---
-${infoToAnalyze}
-------------------`;
-
-            try {
-                const defResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${geminiApiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ role: 'user', parts: [{ text: defensorPrompt }] }]
-                    })
-                });
-
-                if (defResponse.ok) {
-                    const defData = await defResponse.json();
-                    const defText = defData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-                    if (defText.includes('NO_CHANGES')) {
-                        console.log(`[Defensor] No critical changes detected for ${locationName}. Reusing existing data.`);
-
-                        // 갱신 시간만 최신으로 업데이트하고 기존 정보 복구
-                        await supabaseAdmin
-                            .from('place_wiki')
-                            .update({
-                                ai_practical_info: infoToAnalyze,
-                                ai_info_updated_at: new Date().toISOString()
-                            })
-                            .eq('place_id', String(placeId));
-
-                        return new Response(JSON.stringify({
-                            success: true,
-                            noChanges: true,
-                            aiResponse: infoToAnalyze,
-                            essentialGuide: existingData?.essential_guide
-                        }), {
-                            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                            status: 200,
-                        });
-                    }
-                }
-            } catch (defError) {
-                console.warn('[Defensor] Error during execution, proceeding to main model:', defError);
-            }
-        }
-        // --- End of Defensor Logic ---
+        // --- Defensor Model (gemini-3.1-flash-lite-preview) 판단 로직 폐기 ---
+        // 기존의 디펜서 로직을 제거하고, 아래 메인 모델(Pro)에서 NO_CHANGES 여부를 함께 판단하도록 통합함.
 
         // 2. 프롬프트 구성 (메인 모델 호출)
         const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 로컬 가이드입니다. 여행자가 이곳에 대해 가진 "여긴 도대체 어떤 곳이고, 가면 뭘 할 수 있어?"라는 근본적인 궁금증을 속 시원하게 풀어주세요. 위키백과에 나오는 지루한 역사나 뻔한 소리는 철저히 배제하고, 가장 생생하고 실용적인 최신 현지 정보만 제공하세요.
@@ -115,7 +65,14 @@ ${infoToAnalyze}
 현지 명소(POI), 식당, 지역명, 구체적인 투어명 등 **지도에서 검색 가능한 물리적 장소나 고유명사**를 언급할 때는 **반드시 '한글명('현지 영문명')' 형식으로 표기하고, 영문명 부분만 작은따옴표로 감싸세요**.
 단, 지도 검색이 불가능한 항목(필수 앱 이름, 웹사이트, 통신사, 날씨, 단순 단어 등)에는 **절대 작은따옴표를 사용하지 마세요**. (예: 남부는 골든 서클('Golden Circle')과 요쿨살론('Jökulsárlón')이 필수입니다.)
 또한 '여행자 생존 키트' 페르소나를 가지고 8가지 필수 정보를 JSON 형태로 함께 제공해야 합니다.
-수익화가 불가능한 항목(비자, 일반 앱, 지도)은 공식 정보만을, 수익화가 가능한 항목(숙박 위치, 유심, 교통 패스)은 실질적 조언(Advice)을 중심으로 작성하세요.`;
+수익화가 불가능한 항목(비자, 일반 앱, 지도)은 공식 정보만을, 수익화가 가능한 항목(숙박 위치, 유심, 교통 패스)은 실질적 조언(Advice)을 중심으로 작성하세요.
+
+--- [중요: 정보 갱신 검증 규칙] ---
+만약 사용자가 아래에 '기존 정보'를 제공했다면, 오늘 날짜(${today}) 기준으로 해당 지역에 국가 부도, 전쟁, 전염병, 심각한 자연재해 등 '치명적이고 여행에 즉각적인 영향을 미치는 중대 변동 사항'이 새로 발생했는지 스스로 판단하세요. (단순 환율 변동, 일반 식당 폐업, 날씨 등은 무시)
+만약 치명적인 변동이 전혀 없다면 기존 정보를 그대로 유지해야 하므로, 절대로 다른 내용을 쓰지 말고 오직 다음 JSON만 응답하세요:
+{ "status": "NO_CHANGES" }
+
+변동이 있거나 기존 정보가 아예 없다면, 원래 지시대로 유효한 가이드 데이터를 아래 JSON 규격에 맞춰 응답하세요.`;
 
         const userPrompt = `"${locationName}"에 대해 아래 두 가지 데이터를 포함하여 JSON 형식으로 응답해줘.
 
@@ -134,6 +91,10 @@ ${infoToAnalyze}
 - flight: { advice: "항공권 예약 시기/직항 팁" }
 - accommodation: { advice: "최적의 숙박 위치 및 동네 추천" }
 - safety: { advice: "치안 주의사항 및 긴급 연락처", official_url: "영사콜센터 등 공식 안전 정보 URL (없으면 null)" }
+
+--- 기존 정보 (참고 및 변동 감지용) ---
+${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
+------------------------------------
 
 반드시 유효한 JSON 문자열로만 응답해.`;
 
@@ -172,6 +133,30 @@ ${infoToAnalyze}
     } catch (e) {
       console.error('Failed to parse Gemini JSON output:', generatedText);
       throw new Error('Gemini did not return valid JSON');
+    }
+
+    // [New] NO_CHANGES 감지 로직
+    if (parsedResult.status === "NO_CHANGES" && infoToAnalyze) {
+        console.log(`[Pro Model] No critical changes detected for ${locationName}. Reusing existing data.`);
+
+        // 갱신 시간만 최신으로 업데이트하고 기존 정보 복구
+        await supabaseAdmin
+            .from('place_wiki')
+            .update({
+                ai_practical_info: infoToAnalyze,
+                ai_info_updated_at: new Date().toISOString()
+            })
+            .eq('place_id', String(placeId));
+
+        return new Response(JSON.stringify({
+            success: true,
+            noChanges: true,
+            aiResponse: infoToAnalyze,
+            essentialGuide: existingData?.essential_guide
+        }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+        });
     }
 
     const aiPracticalInfo = parsedResult.wiki_markdown || generatedText;
