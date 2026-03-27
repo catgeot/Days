@@ -49,26 +49,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id };
   }, [placeName, wikiData]);
 
-  // --- 14일 경과 시 백그라운드 자동 갱신 (Lazy Update) ---
-  const autoUpdateTriggered = useRef(false);
-  useEffect(() => {
-      if (!autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
-          const lastUpdated = wikiData.ai_info_updated_at;
-          if (lastUpdated) {
-              const lastDate = new Date(lastUpdated);
-              const now = new Date();
-              const diffTime = Math.abs(now.getTime() - lastDate.getTime());
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-              if (diffDays > 14) {
-                  console.log(`[Lazy Update] 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
-                  autoUpdateTriggered.current = true;
-                  handleRequestAiInfo(placeName || wikiData.title, true);
-              }
-          }
-      }
-  }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
-
   useEffect(() => {
       setIsAiExpanded(false);
       setLocalAiResponse(null);
@@ -77,28 +57,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   }, [placeName]);
 
   const prevAiInfoRef = useRef(wikiData?.ai_practical_info);
-
-  // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
-  useEffect(() => {
-    const currentInfo = wikiData?.ai_practical_info;
-    const prevInfo = prevAiInfoRef.current;
-
-    if (currentInfo === '[[LOADING]]') {
-      setIsAiExpanded(true);
-      setIsAiLoading(true);
-      setLocalAiResponse(null);
-      setError(null);
-    } else if (prevInfo === '[[LOADING]]' && currentInfo && currentInfo !== '[[LOADING]]') {
-      // DB 폴링으로 로딩 중이었다가 실제 데이터가 들어온 경우에만 동기화
-      setLocalAiResponse(currentInfo);
-      if (wikiData?.ai_info_updated_at) {
-          setLocalUpdatedAt(wikiData.ai_info_updated_at);
-      }
-      setIsAiLoading(false);
-    }
-
-    prevAiInfoRef.current = currentInfo;
-  }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at]);
 
   const handleRequestAiInfo = useCallback(async (eventOrRemoteName, forceUpdate = false) => {
     setIsAiExpanded(true);
@@ -175,6 +133,48 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       }
     }
   }, [isAiLoading, wikiData, countryName]); // countryName 추가 (의존성 경고 방지)
+
+  // --- 14일 경과 시 백그라운드 자동 갱신 (Lazy Update) ---
+  const autoUpdateTriggered = useRef(false);
+  useEffect(() => {
+      if (!autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
+          const lastUpdated = wikiData.ai_info_updated_at;
+          if (lastUpdated) {
+              const lastDate = new Date(lastUpdated);
+              const now = new Date();
+              const diffTime = Math.abs(now.getTime() - lastDate.getTime());
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+              if (diffDays > 14) {
+                  console.log(`[Lazy Update] 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+                  autoUpdateTriggered.current = true;
+                  handleRequestAiInfo(placeName || wikiData.title, true);
+              }
+          }
+      }
+  }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
+
+  // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
+  useEffect(() => {
+    const currentInfo = wikiData?.ai_practical_info;
+    const prevInfo = prevAiInfoRef.current;
+
+    if (currentInfo === '[[LOADING]]') {
+      setIsAiExpanded(true);
+      setIsAiLoading(true);
+      setLocalAiResponse(null);
+      setError(null);
+    } else if (prevInfo === '[[LOADING]]' && currentInfo && currentInfo !== '[[LOADING]]') {
+      // DB 폴링으로 로딩 중이었다가 실제 데이터가 들어온 경우에만 동기화
+      setLocalAiResponse(currentInfo);
+      if (wikiData?.ai_info_updated_at) {
+          setLocalUpdatedAt(wikiData.ai_info_updated_at);
+      }
+      setIsAiLoading(false);
+    }
+
+    prevAiInfoRef.current = currentInfo;
+  }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at]);
 
   useEffect(() => {
       const handleRemoteRequest = (e) => {
