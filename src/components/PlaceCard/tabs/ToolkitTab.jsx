@@ -290,6 +290,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
             });
 
             if (error) throw error;
+            if (data && data.success === false) throw new Error(data.error || 'Edge Function failed');
 
             // Defensor가 NO_CHANGES를 뱉었더라도 신뢰도를 위해 최소 3초는 로딩 연출
             const elapsedTime = Date.now() - startTime;
