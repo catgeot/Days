@@ -2,6 +2,23 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
+const LOADING_MESSAGES_NEW = [
+    "지역 위키백과 정보 분석 및 연동 중...",
+    "핵심 랜드마크와 역사적 배경 스캔 중...",
+    "여행자를 위한 실용적인 로컬 팁 추출 중...",
+    "날씨, 문화, 예절 등 필수 지식 정리 중...",
+    "명소 주변 숨겨진 핫플레이스 탐색 중...",
+    "AI가 최종 로컬 왓슨 노트를 완성하는 중..."
+];
+
+const LOADING_MESSAGES_UPDATE = [
+    "기존 로컬 왓슨 노트를 불러오는 중...",
+    "최근 변경된 현지 이슈와 팁을 확인하는 중...",
+    "새로운 여행 트렌드를 기반으로 데이터 비교 중...",
+    "변경 사항을 반영하여 정보를 재조립하는 중...",
+    "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
+];
+
 const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, setMediaMode }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -9,8 +26,23 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   const [isAiExpanded, setIsAiExpanded] = useState(false);
   const [localAiResponse, setLocalAiResponse] = useState(null);
   const [localUpdatedAt, setLocalUpdatedAt] = useState(null);
+  const [loadingStep, setLoadingStep] = useState(0);
+
+  const isUpdatingExisting = !!wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
+  const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
   const aiSectionRef = useRef(null);
+
+  useEffect(() => {
+      let interval;
+      if (isAiLoading) {
+          setLoadingStep(0);
+          interval = setInterval(() => {
+              setLoadingStep((prev) => (prev < currentMessages.length - 1 ? prev + 1 : prev));
+          }, 4000);
+      }
+      return () => clearInterval(interval);
+  }, [isAiLoading, currentMessages]);
 
   const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id });
   useEffect(() => {
@@ -155,9 +187,27 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                     </div>
 
                     {!localAiResponse && isAiLoading ? (
-                        <div className="flex flex-col items-center justify-center py-10 space-y-4">
-                            <Loader2 size={32} className="text-blue-400 animate-spin" />
-                            <p className="text-sm text-gray-400 animate-pulse">최신 실용 정보를 스캔 및 분석하고 있습니다...</p>
+                        <div className="flex flex-col items-center justify-center py-10">
+                            <div className="w-full max-w-sm space-y-4">
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-sm font-bold text-gray-300">
+                                        {isUpdatingExisting ? "AI 정보 점검 중" : "AI 정보 생성 중"}
+                                    </span>
+                                    <span className="text-xs font-bold text-blue-400">
+                                        {Math.round((loadingStep / (currentMessages.length - 1)) * 100)}%
+                                    </span>
+                                </div>
+                                <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-blue-500 transition-all duration-500 ease-out"
+                                        style={{ width: `${(loadingStep / (currentMessages.length - 1)) * 100}%` }}
+                                    ></div>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-gray-400 font-medium h-6 justify-center mt-4">
+                                    <Loader2 size={14} className="animate-spin text-blue-400" />
+                                    <span className="animate-pulse">{currentMessages[loadingStep]}</span>
+                                </div>
+                            </div>
                         </div>
                     ) : !localAiResponse && error ? (
                         <div className="flex flex-col items-center justify-center py-8 space-y-4 text-gray-400">

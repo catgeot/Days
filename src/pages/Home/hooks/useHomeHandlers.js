@@ -349,9 +349,42 @@ export function useHomeHandlers({
       // 🚨 [New] Smart Search Fallback (AI 자동 교정 엔진)
       let isCorrected = false;
       try {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (apiKey) {
-          const aiPrompt = `사용자가 여행지 검색창에 "${query}"라고 입력했지만, 오타가 있거나 존재하지 않는 지명이라 검색에 실패했습니다.
+        const lowerQuery = query.toLowerCase();
+        // 1. 먼저 DB에서 캐시된 교정 결과가 있는지 확인 (Phase 1.5)
+        const { data: cachedDict } = await supabase
+          .from('search_dictionary')
+          .select('*')
+          .eq('original_query', lowerQuery)
+          .single();
+
+        if (cachedDict && cachedDict.location_data) {
+          console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);
+          const parsedData = cachedDict.location_data;
+
+          const normalizedLoc = {
+            id: `search-${parsedData.lat}-${parsedData.lng}`,
+            slug: formatUrlName(parsedData.name_en || parsedData.name),
+            name: parsedData.name,
+            name_en: parsedData.name_en || parsedData.name,
+            country: parsedData.country || "Explore",
+            country_en: parsedData.country_en || "Explore",
+            lat: parsedData.lat,
+            lng: parsedData.lng,
+            category: category,
+            desc: `"${query}" 검색에 실패하여 "${parsedData.name}"(으)로 교정하여 탐색합니다. (캐시 기반)`,
+            type: 'temp-base',
+            isCorrected: true,
+            originalQuery: query
+          };
+          handleLocationSelect(normalizedLoc);
+          setDraftInput(parsedData.name);
+          processSearchKeywords(parsedData.name);
+          isCorrected = true;
+        } else {
+          // 2. 캐시가 없으면 기존처럼 AI 호출
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+          if (apiKey) {
+            const aiPrompt = `사용자가 여행지 검색창에 "${query}"라고 입력했지만, 오타가 있거나 존재하지 않는 지명이라 검색에 실패했습니다.
 이 단어와 가장 유사하거나, 사용자가 의도했을 만한 '실제 존재하는 정확한 지명'을 유추해주세요.
 응답은 반드시 다른 설명이나 부연 설명 없이 아래 JSON 형식으로만 응답하세요.
 {
@@ -363,42 +396,52 @@ export function useHomeHandlers({
   "lng": 경도(숫자)
 }`;
 
-          const aiResponse = await apiClient.fetchGeminiResponse(
-            apiKey,
-            [],
-            "당신은 지명 자동 교정 전문가입니다. 오직 유효한 JSON만 출력해야 합니다.",
-            aiPrompt,
-            [],
-            "gemini-3.1-flash-lite-preview" // 🚨 [Fix] gemini-2.5-flash-lite 대신 최신 3.1 flash-lite 도입
-          );
+            const aiResponse = await apiClient.fetchGeminiResponse(
+              apiKey,
+              [],
+              "당신은 지명 자동 교정 전문가입니다. 오직 유효한 JSON만 출력해야 합니다.",
+              aiPrompt,
+              [],
+              "gemini-3.1-flash-lite-preview" // 🚨 [Fix] gemini-2.5-flash-lite 대신 최신 3.1 flash-lite 도입
+            );
 
-          const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsedData = JSON.parse(cleanJsonString);
-          const cleanName = parsedData.name;
+            const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+            const parsedData = JSON.parse(cleanJsonString);
+            const cleanName = parsedData.name;
 
-          if (cleanName && cleanName !== query && cleanName.length > 0 && cleanName.length < 30) {
-            console.log(`[Smart Search] AI가 "${query}"를 "${cleanName}"(으)로 교정 및 좌표를 파싱했습니다.`, parsedData);
+            if (cleanName && cleanName !== query && cleanName.length > 0 && cleanName.length < 30) {
+              console.log(`[Smart Search AI] AI가 "${query}"를 "${cleanName}"(으)로 교정 및 좌표를 파싱했습니다.`, parsedData);
 
-            // AI가 파싱한 좌표를 우선 사용
-            const normalizedLoc = {
-              id: `search-${parsedData.lat}-${parsedData.lng}`,
-              slug: formatUrlName(parsedData.name_en || parsedData.name),
-              name: cleanName,
-              name_en: parsedData.name_en || parsedData.name,
-              country: parsedData.country || "Explore",
-              country_en: parsedData.country_en || "Explore",
-              lat: parsedData.lat,
-              lng: parsedData.lng,
-              category: category,
-              desc: `"${query}" 검색에 실패하여 "${cleanName}"(으)로 교정하여 탐색합니다.`,
-              type: 'temp-base',
-              isCorrected: true,
-              originalQuery: query
-            };
-            handleLocationSelect(normalizedLoc);
-            setDraftInput(cleanName);
-            processSearchKeywords(cleanName);
-            isCorrected = true;
+              // 3. AI 교정 성공 시 DB에 결과 캐싱 (비동기 처리로 UI 블로킹 방지)
+              supabase.from('search_dictionary').insert({
+                original_query: lowerQuery,
+                corrected_query: cleanName,
+                location_data: parsedData
+              }).then(({ error }) => {
+                if (error) console.warn("[Smart Search Cache Insert Error]", error);
+              });
+
+              // AI가 파싱한 좌표를 우선 사용
+              const normalizedLoc = {
+                id: `search-${parsedData.lat}-${parsedData.lng}`,
+                slug: formatUrlName(parsedData.name_en || parsedData.name),
+                name: cleanName,
+                name_en: parsedData.name_en || parsedData.name,
+                country: parsedData.country || "Explore",
+                country_en: parsedData.country_en || "Explore",
+                lat: parsedData.lat,
+                lng: parsedData.lng,
+                category: category,
+                desc: `"${query}" 검색에 실패하여 "${cleanName}"(으)로 교정하여 탐색합니다.`,
+                type: 'temp-base',
+                isCorrected: true,
+                originalQuery: query
+              };
+              handleLocationSelect(normalizedLoc);
+              setDraftInput(cleanName);
+              processSearchKeywords(cleanName);
+              isCorrected = true;
+            }
           }
         }
       } catch (err) {
