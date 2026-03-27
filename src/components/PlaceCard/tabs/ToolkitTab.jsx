@@ -8,22 +8,21 @@ const isMobileDevice = () => {
     return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 };
 
-const CopyableWord = ({ word, locationName, type }) => {
+const CopyableWord = ({ word, displayText, locationName, type }) => {
     const handleSmartLink = (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        // 정규식을 통해 괄호 안의 영문명 추출 (예: "센소지(Senso-ji)" -> "Senso-ji")
-        const englishMatch = word.match(/\(([A-Za-z\s-&,']+)\)/);
-        let searchTarget = word;
-        if (englishMatch && englishMatch[1]) {
-            searchTarget = englishMatch[1].trim();
+        const searchTarget = word;
+        const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
+
+        let queryStr = searchTarget;
+        if (locationName) {
+            // 구글 맵스의 경우 콤마(,) 결합으로 검색 정확도 향상. 웹 검색은 기존 띄어쓰기 결합.
+            queryStr = isMapSearch ? `${searchTarget}, ${locationName}` : `${searchTarget} ${locationName}`;
         }
 
-        const query = encodeURIComponent(`${searchTarget} ${locationName || ''}`.trim());
-
-        // 카테고리(type)가 지도 검색용인지 판별
-        const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
+        const query = encodeURIComponent(queryStr);
 
         const url = isMapSearch
             ? `https://www.google.com/maps/search/?api=1&query=${query}`
@@ -40,7 +39,7 @@ const CopyableWord = ({ word, locationName, type }) => {
             className="inline-flex items-center gap-0.5 mx-0.5 font-bold text-blue-600 hover:text-blue-800 underline decoration-blue-300 hover:decoration-blue-600 underline-offset-2 whitespace-nowrap transition-colors focus:outline-none"
             title={isMapSearch ? "구글 맵에서 검색하기" : "구글 웹에서 검색하기"}
         >
-            {word}
+            {displayText || word}
             <Search size={10} className="opacity-70" />
         </button>
     );
@@ -49,18 +48,59 @@ const CopyableWord = ({ word, locationName, type }) => {
 const CopyableText = ({ text, locationName, type }) => {
     if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
 
-    // 작은따옴표로 감싸진 텍스트를 파싱
-    const parts = text.split(/('[^']+')/g);
+    // 한글명('영문명') 패턴을 예쁘게 통째로 추출하는 정규식
+    // 띄어쓰기 최대 1번 포함된 단어(예: "아마조나스 극장")를 잡음
+    const regex = /([^(\s]+(?:\s[^(\s]+)?)\('(.+?)'\)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+            parts.push(text.substring(lastIndex, match.index));
+        }
+
+        const koreanName = match[1].trim(); // 예: "마나우스", "아마조나스 극장"
+        const englishName = match[2].trim(); // 예: "Manaus", "Teatro Amazonas"
+
+        parts.push(
+            <CopyableWord
+                key={match.index}
+                word={englishName}
+                displayText={`${koreanName}(${englishName})`}
+                locationName={locationName}
+                type={type}
+            />
+        );
+
+        lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+        parts.push(text.substring(lastIndex));
+    }
+
+    // 만약 정규식 매칭이 한 건도 없다면, 기존 Fallback (작은따옴표만 찾기) 적용
+    if (parts.length === 1 && parts[0] === text) {
+        const fallbackParts = text.split(/('[^']+')/g);
+        return (
+            <span className="select-text">
+                {fallbackParts.map((part, i) => {
+                    if (part.startsWith("'") && part.endsWith("'")) {
+                        const word = part.slice(1, -1);
+                        return <CopyableWord key={i} word={word} displayText={word} locationName={locationName} type={type} />;
+                    }
+                    return <span key={i}>{part}</span>;
+                })}
+            </span>
+        );
+    }
 
     return (
-        <span className="select-text">
-            {parts.map((part, i) => {
-                if (part.startsWith("'") && part.endsWith("'")) {
-                    const word = part.slice(1, -1);
-                    return <CopyableWord key={i} word={word} locationName={locationName} type={type} />;
-                }
-                return <span key={i}>{part}</span>;
-            })}
+        <span className="select-text break-keep">
+            {parts.map((part, i) => (
+                <React.Fragment key={i}>{part}</React.Fragment>
+            ))}
         </span>
     );
 };
