@@ -115,35 +115,28 @@ const PlaceChatPanel = React.memo(({
              </div>
          </div>
 
-         {/* Row 2: Other Tabs Area (Gallery, Review, Wiki, Video) */}
+         {/* Row 2: Other Tabs Area (Review, Wiki, Video) */}
          <div className={`shrink-0 items-center justify-start gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 pl-10 md:pl-0 overscroll-contain touch-pan-x ${mediaMode === 'LOGBOOK' ? 'hidden md:flex' : 'flex'}`}>
             <button
-                onClick={() => setMediaMode('GALLERY')}
-                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'GALLERY' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                onClick={() => setMediaMode(mediaMode === 'LOGBOOK' ? 'GALLERY' : 'LOGBOOK')}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'LOGBOOK' ? 'bg-blue-600/90 text-white font-bold border border-blue-500/50 shadow-lg shadow-blue-900/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
-                <ImageIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[11px] font-medium">갤러리</span>
+                {mediaMode === 'LOGBOOK' ? <ImageIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/> : <PenTool className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>}
+                <span className="text-[11px] font-medium">{mediaMode === 'LOGBOOK' ? '갤러리 복귀' : '리뷰'}</span>
             </button>
             <button
-                onClick={() => setMediaMode('LOGBOOK')}
-                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'LOGBOOK' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                onClick={() => setMediaMode(mediaMode === 'WIKI' ? 'GALLERY' : 'WIKI')}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'WIKI' ? 'bg-blue-600/90 text-white font-bold border border-blue-500/50 shadow-lg shadow-blue-900/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
-                <PenTool className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[11px] font-medium">리뷰</span>
+                {mediaMode === 'WIKI' ? <ImageIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/> : <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>}
+                <span className="text-[11px] font-medium">{mediaMode === 'WIKI' ? '갤러리 복귀' : '위키'}</span>
             </button>
             <button
-                onClick={() => setMediaMode('WIKI')}
-                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'WIKI' ? 'bg-white/20 text-white font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                onClick={() => setMediaMode(mediaMode === 'VIDEO' ? 'GALLERY' : 'VIDEO')}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'VIDEO' ? 'bg-blue-600/90 text-white font-bold border border-blue-500/50 shadow-lg shadow-blue-900/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
-                <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[11px] font-medium">위키</span>
-            </button>
-            <button
-                onClick={() => setMediaMode('VIDEO')}
-                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'VIDEO' ? 'bg-white/20 text-red-400 font-bold border border-white/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
-            >
-                <Play fill="currentColor" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>
-                <span className="text-[11px] font-medium">영상</span>
+                {mediaMode === 'VIDEO' ? <ImageIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/> : <Play fill="currentColor" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>}
+                <span className="text-[11px] font-medium">{mediaMode === 'VIDEO' ? '갤러리 복귀' : '영상'}</span>
             </button>
          </div>
       </div>
