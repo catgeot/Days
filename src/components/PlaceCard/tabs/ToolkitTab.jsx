@@ -2,127 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Search } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
-
-// 모바일 환경 감지 훅 또는 유틸
-const isMobileDevice = () => {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-};
-
-const CopyableWord = ({ word, displayText, locationName, type }) => {
-    const handleSmartLink = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const searchTarget = word;
-        const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
-
-        let queryStr = searchTarget;
-
-        // 카테고리별 아웃링크 검색어 고도화
-        if (['apps', 'connectivity'].includes(type)) {
-            // 앱 및 통신사(eSIM 등)는 글로벌 브랜드가 대부분이므로 지역명 결합 시 앱스토어 대신 SGE(AI 개요)가 뜨는 왜곡 방지
-            queryStr = searchTarget;
-        } else if (locationName) {
-            // 구글 맵스의 경우 콤마(,) 결합으로 위치/장소 검색 정확도 극대화
-            // 비자/안전 등 일반 웹 검색의 경우 지역명(예: 러시아 비자)이 필수적이므로 띄어쓰기 결합 유지
-            queryStr = isMapSearch ? `${searchTarget}, ${locationName}` : `${searchTarget} ${locationName}`;
-        }
-
-        const query = encodeURIComponent(queryStr);
-
-        const url = isMapSearch
-            ? `https://www.google.com/maps/search/?api=1&query=${query}`
-            : `https://www.google.com/search?q=${query}`;
-
-        window.open(url, isMobileDevice() ? '_self' : '_blank');
-    };
-
-    const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
-
-    return (
-        <button
-            onClick={handleSmartLink}
-            className="inline-flex items-center gap-0.5 mx-0.5 font-bold text-blue-600 hover:text-blue-800 underline decoration-blue-300 hover:decoration-blue-600 underline-offset-2 whitespace-nowrap transition-colors focus:outline-none"
-            title={isMapSearch ? "구글 맵에서 검색하기" : "구글 웹에서 검색하기"}
-        >
-            {displayText || word}
-            <Search size={10} className="opacity-70" />
-        </button>
-    );
-};
-
-const CopyableText = ({ text, locationName, type }) => {
-    if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
-
-    // AI의 변칙적인 따옴표 사용 패턴을 시스템 표준인 "한글명('영문명')"으로 전처리(Normalize)
-    // 1. 전체가 따옴표로 감싸진 경우: '한글명(영문명)' 또는 ‘한글명(영문명)’ -> 한글명('영문명')
-    let normalizedText = text.replace(/['"‘’“”]([^(\s]+(?:\s[^(\s]+)?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
-
-    // 2. 영문명에만 스마트 따옴표/쌍따옴표가 쓰인 경우: 한글명(‘영문명’) -> 한글명('영문명')
-    normalizedText = normalizedText.replace(/([^(\s]+(?:\s[^(\s]+)?)\(['"‘’“”](.+?)['"‘’“”]\)/g, "$1('$2')");
-
-    // 표준 패턴 추출 정규식
-    const regex = /([^(\s]+(?:\s[^(\s]+)?)\('(.+?)'\)/g;
-    const parts = [];
-    let lastIndex = 0;
-    let match;
-
-    while ((match = regex.exec(normalizedText)) !== null) {
-        if (match.index > lastIndex) {
-            parts.push(normalizedText.substring(lastIndex, match.index));
-        }
-
-        const koreanName = match[1].trim(); // 예: "마나우스", "아마조나스 극장"
-        const englishName = match[2].trim(); // 예: "Manaus", "Teatro Amazonas"
-
-        parts.push(
-            <CopyableWord
-                key={match.index}
-                word={englishName}
-                displayText={`${koreanName}(${englishName})`}
-                locationName={locationName}
-                type={type}
-            />
-        );
-
-        lastIndex = regex.lastIndex;
-    }
-
-    if (lastIndex < normalizedText.length) {
-        parts.push(normalizedText.substring(lastIndex));
-    }
-
-    // 만약 정규식 매칭이 한 건도 없다면, 기존 Fallback (단일 따옴표 문자열 찾기) 적용
-    if (parts.length === 1 && parts[0] === normalizedText) {
-        // 모든 스마트/쌍따옴표를 일반 작은따옴표로 통일
-        const fallbackText = normalizedText.replace(/['"‘’“”]/g, "'");
-        const fallbackParts = fallbackText.split(/('[^']+')/g);
-
-        if (fallbackParts.length === 1) {
-             return <span className="select-text break-keep">{fallbackParts[0]}</span>;
-        }
-
-        return (
-            <span className="select-text break-keep">
-                {fallbackParts.map((part, i) => {
-                    if (part.startsWith("'") && part.endsWith("'")) {
-                        const word = part.slice(1, -1);
-                        return <CopyableWord key={i} word={word} displayText={word} locationName={locationName} type={type} />;
-                    }
-                    return <span key={i}>{part}</span>;
-                })}
-            </span>
-        );
-    }
-
-    return (
-        <span className="select-text break-keep">
-            {parts.map((part, i) => (
-                <React.Fragment key={i}>{part}</React.Fragment>
-            ))}
-        </span>
-    );
-};
+import CopyableText, { isMobileDevice } from '../common/CopyableText';
+import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location }) => {
     // Affiliate logic with Tracker
@@ -293,13 +174,17 @@ const LOADING_MESSAGES_UPDATE = [
 
 const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
     const [isUpdating, setIsUpdating] = useState(false);
-    const [localGuideData, setLocalGuideData] = useState(null);
+    const [localRawAiInfo, setLocalRawAiInfo] = useState(null);
+    const [localFallbackGuide, setLocalFallbackGuide] = useState(null);
     const [localUpdatedAt, setLocalUpdatedAt] = useState(null);
     const [loadingStep, setLoadingStep] = useState(0);
     const [cooldown, setCooldown] = useState(0);
 
-    // 로컬 상태가 있으면 우선 사용
-    const guideData = localGuideData || wikiData?.essential_guide;
+    const sourceAiInfo = localRawAiInfo || (wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null);
+    const { toolkitData } = parseAiPracticalInfo(sourceAiInfo);
+
+    // 파싱된 데이터가 있으면 최우선, 없으면 예전 JSON 형식(essential_guide)으로 Fallback
+    const guideData = toolkitData || localFallbackGuide || wikiData?.essential_guide;
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
@@ -357,8 +242,11 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
                 await new Promise(resolve => setTimeout(resolve, 3000 - elapsedTime));
             }
 
+            if (data?.aiResponse) {
+                setLocalRawAiInfo(data.aiResponse);
+            }
             if (data?.essentialGuide) {
-                setLocalGuideData(data.essentialGuide);
+                setLocalFallbackGuide(data.essentialGuide);
             }
 
             // 갱신 완료 후 1분(60초) 쿨타임 적용
@@ -396,7 +284,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         }
     }, [wikiData?.essential_guide, wikiData?.ai_info_updated_at, wikiData?.ai_practical_info]);
 
-    const isLoading = isWikiLoading || isUpdating || (wikiData?.ai_practical_info === '[[LOADING]]' && !localGuideData);
+    const isLoading = isWikiLoading || isUpdating || (wikiData?.ai_practical_info === '[[LOADING]]' && !localRawAiInfo && !localFallbackGuide);
 
     const formatDate = (isoString) => {
         if (!isoString) return '';
@@ -480,13 +368,13 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-5">
-                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.map_poi} location={location} />
                     <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.visa} isOfficial location={location} />
-                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.transport} isSponsored location={location} />
-                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.apps} location={location} />
-                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.connectivity} isSponsored location={location} />
                     <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.flight} isSponsored location={location} />
                     <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.accommodation} isSponsored location={location} />
+                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.connectivity} isSponsored location={location} />
+                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.transport} isSponsored location={location} />
+                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.apps} location={location} />
+                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.map_poi} location={location} />
                     <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.safety} isOfficial location={location} />
                 </div>
 

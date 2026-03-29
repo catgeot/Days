@@ -81,10 +81,10 @@ serve(async (req) => {
 1. **마크다운 헤딩(#, ##, ###) 절대 사용 금지**: 글씨가 지나치게 커지거나 레이아웃이 깨지므로 절대 사용하지 마세요.
 2. **리스트 형식 강제**: 가독성을 극대화하기 위해 각 항목은 반드시 불릿 포인트('*')를 사용해 깔끔하게 나열하세요. 줄글로 길게 늘여 쓰지 마세요.
 3. **여백 및 줄바꿈**:
-   - 각 카테고리(예: 🌟 1분 요약, 🛂 입국/비용 & 이동 팁 등) 사이에는 반드시 줄바꿈(Enter)을 두 번씩(\n\n) 넣어 넉넉한 여백을 만드세요.
-   - 불릿 포인트('*')로 나열되는 각 항목들 사이에도 가독성을 위해 반드시 줄바꿈(\n\n)을 한 번씩 더 넣어 시각적으로 분리되게 만드세요.
+   - 각 카테고리(예: 🌟 1분 요약, 🛂 입국/비용 & 이동 팁 등) 사이에는 반드시 줄바꿈(Enter)을 두 번씩(\\n\\n) 넣어 넉넉한 여백을 만드세요.
+   - 불릿 포인트('*')로 나열되는 각 항목들 사이에도 가독성을 위해 반드시 줄바꿈(\\n\\n)을 한 번씩 더 넣어 시각적으로 분리되게 만드세요.
 
-또한 '여행자 생존 키트' 페르소나를 가지고 8가지 필수 정보를 JSON 형태로 함께 제공해야 합니다.
+또한, 프론트엔드의 '스마트 툴킷' 구성을 위해 글의 최하단에 반드시 정해진 양식의 툴킷 블록을 첨부해야 합니다.
 수익화가 불가능한 항목(비자, 일반 앱, 지도)은 공식 정보만을, 수익화가 가능한 항목(숙박 위치, 유심, 교통 패스)은 실질적 조언(Advice)을 중심으로 작성하세요.
 
 --- [중요: 정보 갱신 검증 규칙] ---
@@ -94,23 +94,35 @@ serve(async (req) => {
 
 🚨 [매우 중요]: 아래에 제공된 데이터가 '기존 정보 없음'이거나 비어 있다면, 변동 감지 규칙을 무시하고 무조건 전체 가이드 데이터를 처음부터 새롭게 생성해야 합니다. (이 경우 절대 NO_CHANGES를 응답하면 안 됩니다!)`;
 
-        const userPrompt = `"${locationName}"에 대해 아래 두 가지 데이터를 포함하여 JSON 형식으로 응답해줘. JSON 파싱 에러가 발생하지 않도록 이스케이프 처리에 각별히 신경 써.
+        const userPrompt = `"${locationName}"에 대해 아래 조건을 만족하는 단일 JSON 형식으로 응답해줘. JSON 파싱 에러가 발생하지 않도록 이스케이프 처리에 각별히 신경 써.
 
-1. wiki_markdown: 마크다운(Markdown) 형식으로 가독성 좋고 깔끔하게 정리된 현지 가이드 (작성 기준일: ${today} - 답변 서두에 짧게 언급)
-- 🌟 1분 요약: 정체성과 핵심 매력을 2~3문장으로 요약
-- 🛂 입국/비용 & 이동 팁: 비자, 물가, 비행시간, 추천 이동수단 (반드시 '*' 불릿 포인트 리스트로 작성하고 각 항목마다 줄바꿈 추가)
-- ⚠️ 실전 안전 & 에티켓: 치안, 금기사항 (반드시 '*' 불릿 포인트 리스트로 작성하고 각 항목마다 줄바꿈 추가)
-- 💡 시크릿 꿀팁 & 맛집: 현지인 추천 핫플, 환전, 교통권 실전 팁 (반드시 '*' 불릿 포인트 리스트로 작성하고 각 항목마다 줄바꿈 추가, 고유명사는 '한글명('영문명')' 표기 엄수)
+반드시 다음의 두 필드를 포함하는 JSON으로 응답해:
+{
+  "status": "UPDATED",
+  "markdown": "위키 본문과 툴킷 데이터가 모두 포함된 전체 마크다운 텍스트"
+}
 
-2. essential_guide: 8가지 핵심 카테고리를 포함하는 JSON 객체
-- map_poi: { advice: "필수 명소/맛집 조언 (고유명사는 반드시 한글명('영문명') 표기 후 영문명만 작은따옴표로 감쌀 것)" }
-- visa: { advice: "비자 정보 및 관공서 안내", official_url: "공식 비자/K-ETA/입국신고서 사이트 URL (없으면 null)" }
-- transport: { advice: "교통 패스/렌터카 추천" }
-- apps: { advice: "국가별 특화 필수 앱 (앱 이름에는 절대 작은따옴표를 쓰지 말 것)" }
-- connectivity: { advice: "유심/eSIM/공항 픽업 조언 (통신사 이름에 절대 작은따옴표를 쓰지 말 것)" }
-- flight: { advice: "항공권 예약 시기/직항 팁" }
-- accommodation: { advice: "최적의 숙박 위치 및 동네 추천" }
-- safety: { advice: "치안 주의사항 및 긴급 연락처", official_url: "영사콜센터 등 공식 안전 정보 URL (없으면 null)" }
+[markdown 필드 작성 가이드]
+아래 순서와 형식을 정확히 지켜서 하나의 문자열(markdown) 안에 모두 작성해. (작성 기준일: ${today} - 1분 요약 상단에 짧게 언급)
+
+🌟 1분 요약: 정체성과 핵심 매력을 2~3문장으로 요약
+
+🛂 입국/비용 & 이동 팁: 비자, 물가, 비행시간, 추천 이동수단 (반드시 '*' 불릿 포인트 리스트로 작성)
+
+⚠️ 실전 안전 & 에티켓: 치안, 금기사항 (반드시 '*' 불릿 포인트 리스트로 작성)
+
+💡 시크릿 꿀팁 & 맛집: 현지인 추천 핫플, 환전, 교통권 실전 팁 (고유명사는 '한글명('영문명')' 표기 엄수)
+
+---[TOOLKIT_START]---
+[visa]: 비자 정보 및 관공서 안내 (공식사이트가 있다면 끝에 | URL: https://... 추가, 없으면 생략)
+[flight]: 항공권 예약 시기 및 직항 팁
+[accommodation]: 최적의 숙박 위치 및 동네 추천 (치안, 가성비 고려)
+[connectivity]: 유심/eSIM 및 공항 픽업 조언 (통신사 이름에 절대 작은따옴표 쓰지 말 것)
+[transport]: 대중교통 패스권 및 렌터카 추천
+[apps]: 국가별 특화 필수 앱 (앱 이름에 절대 작은따옴표 쓰지 말 것)
+[map_poi]: 핵심 명소/맛집 조언 (고유명사는 반드시 한글명('영문명') 표기 후 영문명만 작은따옴표로 감쌀 것)
+[safety]: 치안 주의사항 및 긴급 연락처 (영사콜센터 등 공식 정보가 있다면 끝에 | URL: https://... 추가, 없으면 생략)
+---[TOOLKIT_END]---
 
 --- 기존 정보 (참고 및 변동 감지용) ---
 ${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
@@ -196,18 +208,13 @@ ${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
         });
     }
 
-    const aiPracticalInfo = parsedResult.wiki_markdown || generatedText;
-    const essentialGuide = parsedResult.essential_guide || null;
+    const aiPracticalInfo = parsedResult.markdown || parsedResult.wiki_markdown || generatedText;
 
     // 3. DB 테이블 업데이트
     const updateData: any = {
       ai_practical_info: aiPracticalInfo,
       ai_info_updated_at: new Date().toISOString()
     };
-
-    if (essentialGuide) {
-      updateData.essential_guide = essentialGuide;
-    }
 
     const { error: dbError } = await supabaseAdmin
       .from('place_wiki')
@@ -223,7 +230,7 @@ ${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
     return new Response(JSON.stringify({
       success: true,
       aiResponse: aiPracticalInfo,
-      essentialGuide: essentialGuide
+      // essentialGuide는 더 이상 백엔드에서 생성하지 않으므로 반환하지 않음 (프론트에서 파싱)
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,

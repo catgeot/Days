@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
+import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
+import CopyableText from '../common/CopyableText';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -243,7 +245,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                     ) : localAiResponse ? (
                         <div className="flex flex-col gap-6">
                             <div className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide whitespace-pre-line break-keep font-light">
-                                {localAiResponse}
+                                <CopyableText text={parseAiPracticalInfo(localAiResponse).wikiContent || localAiResponse} locationName={placeName || wikiData?.title} type="wiki" />
                             </div>
                             <div className="flex items-center justify-between pt-4 border-t border-white/10">
                                 <div className="text-xs text-gray-500">
