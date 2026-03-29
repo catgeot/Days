@@ -54,6 +54,9 @@ export const parseAiPracticalInfo = (markdown) => {
             // 마크다운 잔재(** 등) 정리
             content = content.replace(/^\*\*\s*/, '').trim();
 
+            // 불필요한 메타 접두사 제거 방어 로직 (Advice:, Tip:, Note: 등)
+            content = content.replace(/^(Advice|Tip|Note):\s*/i, '').trim();
+
             toolkitData[key] = { advice: content, official_url };
         }
     });
