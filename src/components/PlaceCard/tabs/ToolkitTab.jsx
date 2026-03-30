@@ -6,7 +6,66 @@ import CopyableText, { isMobileDevice } from '../common/CopyableText';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 
-const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location }) => {
+// 🎨 [Phase 6-4] 카테고리별 색상 테마 정의
+const THEME_COLORS = {
+    emerald: {
+        bg: 'bg-emerald-50',
+        border: 'border-emerald-200',
+        icon: 'bg-emerald-100 text-emerald-700',
+        hover: 'hover:shadow-emerald-100/50'
+    },
+    blue: {
+        bg: 'bg-blue-50',
+        border: 'border-blue-200',
+        icon: 'bg-blue-100 text-blue-700',
+        hover: 'hover:shadow-blue-100/50'
+    },
+    sky: {
+        bg: 'bg-sky-50',
+        border: 'border-sky-200',
+        icon: 'bg-sky-100 text-sky-700',
+        hover: 'hover:shadow-sky-100/50'
+    },
+    purple: {
+        bg: 'bg-purple-50',
+        border: 'border-purple-200',
+        icon: 'bg-purple-100 text-purple-700',
+        hover: 'hover:shadow-purple-100/50'
+    },
+    teal: {
+        bg: 'bg-teal-50',
+        border: 'border-teal-200',
+        icon: 'bg-teal-100 text-teal-700',
+        hover: 'hover:shadow-teal-100/50'
+    },
+    green: {
+        bg: 'bg-green-50',
+        border: 'border-green-200',
+        icon: 'bg-green-100 text-green-700',
+        hover: 'hover:shadow-green-100/50'
+    },
+    amber: {
+        bg: 'bg-amber-50',
+        border: 'border-amber-200',
+        icon: 'bg-amber-100 text-amber-700',
+        hover: 'hover:shadow-amber-100/50'
+    },
+    red: {
+        bg: 'bg-red-50',
+        border: 'border-red-200',
+        icon: 'bg-red-100 text-red-700',
+        hover: 'hover:shadow-red-100/50'
+    },
+    gray: {
+        bg: 'bg-gray-50',
+        border: 'border-gray-200',
+        icon: 'bg-gray-100 text-gray-700',
+        hover: 'hover:shadow-gray-100/50'
+    }
+};
+
+const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
+    const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray;
     // Affiliate logic with Tracker
     const getMultiLinks = () => {
         const searchQuery = location?.name || location?.country || '';
@@ -103,7 +162,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
     const links = getMultiLinks();
 
     return (
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full relative group">
+        <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group`}>
             {/* Label */}
             <div className="absolute top-4 right-4 flex gap-1">
                 {isOfficial && (
@@ -119,7 +178,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             </div>
 
             <div className="flex items-center gap-2.5 mb-3">
-                <div className="p-2.5 bg-gray-50 text-gray-700 rounded-xl">
+                <div className={`p-2.5 ${theme.icon} rounded-xl`}>
                     <Icon size={20} />
                 </div>
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>
@@ -357,29 +416,29 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-5">
-                    {/* 1. 먼저 어디를 갈지 확인 */}
-                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.map_poi} location={location} />
+                    {/* 1. 먼저 어디를 갈지 확인 - 초록 (자연, 탐험) */}
+                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.map_poi} location={location} themeColor="emerald" />
 
-                    {/* 2. 출입국 준비 */}
-                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.visa} isOfficial location={location} />
+                    {/* 2. 출입국 준비 - 파랑 (공식, 신뢰) */}
+                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.visa} isOfficial location={location} themeColor="blue" />
 
-                    {/* 3. 이동 수단 */}
-                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.flight} isSponsored location={location} />
+                    {/* 3. 이동 수단 - 하늘 (비행, 자유) */}
+                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.flight} isSponsored location={location} themeColor="sky" />
 
-                    {/* 4. 숙소 */}
-                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.accommodation} isSponsored location={location} />
+                    {/* 4. 숙소 - 보라 (편안함, 휴식) */}
+                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.accommodation} isSponsored location={location} themeColor="purple" />
 
-                    {/* 5. 현지 연결 */}
-                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.connectivity} isSponsored location={location} />
+                    {/* 5. 현지 연결 - 청록 (통신, 기술) */}
+                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.connectivity} isSponsored location={location} themeColor="teal" />
 
-                    {/* 6. 현지 이동 */}
-                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.transport} isSponsored location={location} />
+                    {/* 6. 현지 이동 - 녹색 (Go, 진행) */}
+                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.transport} isSponsored location={location} themeColor="green" />
 
-                    {/* 7. 편의 도구 */}
-                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.apps} location={location} />
+                    {/* 7. 편의 도구 - 황금 (가치, 도구) */}
+                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.apps} location={location} themeColor="amber" />
 
-                    {/* 8. 안전 정보 */}
-                    <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.safety} isOfficial location={location} />
+                    {/* 8. 안전 정보 - 빨강 (주의, 중요) */}
+                    <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.safety} isOfficial location={location} themeColor="red" />
                 </div>
 
                 <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
