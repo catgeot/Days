@@ -196,7 +196,8 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                             href={link.url}
                             target={isMobileDevice() ? "_self" : "_blank"}
                             rel="noopener noreferrer"
-                            className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-xs font-semibold transition-colors border ${link.colorClass} ${links.length === 1 ? 'col-span-2' : ''}`}
+                            className={`flex items-center justify-center gap-1.5 w-full py-3 min-h-[44px] rounded-xl text-xs font-semibold transition-colors border ${link.colorClass} ${links.length === 1 ? 'col-span-2' : ''}`}
+                            aria-label={`${link.text}에서 검색하기`}
                         >
                             <span>{link.text}</span>
                             <ExternalLink size={12} />
@@ -208,28 +209,29 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
     );
 };
 
+// 🆕 [Phase 6-5] 로딩 메시지에 이모지 추가 및 카드 순서에 맞게 재배치
 const LOADING_MESSAGES_NEW = [
-    "지도 및 명소를 가져오는 중...",
-    "비자 및 서류 정보를 확인하는 중...",
-    "교통 패스 및 렌터카 정보를 찾는 중...",
-    "국가별 필수 앱을 선별하는 중...",
-    "유심 및 공항 픽업 정보를 정리하는 중...",
-    "최적의 항공권 및 직항 팁을 분석하는 중...",
-    "가장 위치가 좋은 숙박 지역을 선정하는 중...",
-    "안전 및 치안 정보를 스캔하는 중...",
-    "AI가 여행자 툴킷을 최종 완성하는 중..."
+    "🗺️ 지도 및 명소를 가져오는 중...",
+    "📄 비자 및 서류 정보를 확인하는 중...",
+    "✈️ 최적의 항공권 및 직항 팁을 분석하는 중...",
+    "🏨 가장 위치가 좋은 숙박 지역을 선정하는 중...",
+    "📱 유심 및 공항 픽업 정보를 정리하는 중...",
+    "🚇 교통 패스 및 렌터카 정보를 찾는 중...",
+    "📲 국가별 필수 앱을 선별하는 중...",
+    "🚨 안전 및 치안 정보를 스캔하는 중...",
+    "✨ AI가 여행자 툴킷을 최종 완성하는 중..."
 ];
 
 const LOADING_MESSAGES_UPDATE = [
-    "기존 툴킷 정보를 불러오는 중...",
-    "최신 비자 및 출입국 규정 변동을 확인하는 중...",
-    "교통 및 환율 정보를 업데이트하는 중...",
-    "최적화된 앱 및 편의 정보를 점검하는 중...",
-    "현지 치안 및 안전 상황을 스캔하는 중...",
-    "스마트 가이드라인을 새롭게 구성하는 중...",
-    "기존 데이터와 변경점을 비교하는 중...",
-    "변경 사항을 반영하여 툴킷을 재조립하는 중...",
-    "AI가 최종 툴킷 검수를 마치는 중..."
+    "📦 기존 툴킷 정보를 불러오는 중...",
+    "🔄 최신 비자 및 출입국 규정 변동을 확인하는 중...",
+    "🛫 항공 및 교통 정보를 업데이트하는 중...",
+    "🏠 숙박 및 편의 정보를 점검하는 중...",
+    "📡 통신 및 연결 정보를 갱신하는 중...",
+    "🛡️ 현지 치안 및 안전 상황을 스캔하는 중...",
+    "📊 기존 데이터와 변경점을 비교하는 중...",
+    "🔧 변경 사항을 반영하여 툴킷을 재조립하는 중...",
+    "✅ AI가 최종 툴킷 검수를 마치는 중..."
 ];
 
 const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
