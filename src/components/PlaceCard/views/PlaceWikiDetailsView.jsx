@@ -3,6 +3,7 @@ import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft } from 'lucide-reac
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
+import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -21,7 +22,7 @@ const LOADING_MESSAGES_UPDATE = [
     "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
 ];
 
-const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, setMediaMode }) => {
+const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, setMediaMode, isActive }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -73,6 +74,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
     const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
 
     if (!forceUpdate && hasCachedInfo) {
+        console.log("[PlaceWikiDetailsView] 기존 캐시된 응답 있음 - 네트워크 호출 생략");
         setIsAiLoading(true);
         // [조절가능] 이미 저장된 정보를 불러올 때도 AI가 '스캔 및 분석'하는 듯한 신뢰성 있는 대기 시간(텀)을 주는 곳
         // 현재 2500ms(2.5초)로 설정되어 있으며, 필요에 따라 이 숫자를 변경하시면 됩니다.
@@ -84,6 +86,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
     }
 
     if (!isAiLoading || forceUpdate) {
+      console.log(`[PlaceWikiDetailsView] API 요청 시작 (location: ${eventOrRemoteName}, forceUpdate: ${forceUpdate})`);
       const isClickEvent = eventOrRemoteName && typeof eventOrRemoteName === 'object' && 'type' in eventOrRemoteName;
       const remoteName = isClickEvent ? null : eventOrRemoteName;
       let location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
@@ -110,14 +113,17 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
 
       try {
+          console.log("[PlaceWikiDetailsView] Supabase Edge Function 호출 전 DB '[[LOADING]]' 상태 반영");
           const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
               body: { placeId, locationName: location, oldAiInfo, forceUpdate }
           });
 
           if (functionError) {
-              console.error("Edge Function Error:", functionError);
+              console.error("[PlaceWikiDetailsView] Edge Function Error:", functionError);
               throw new Error("정보를 가져오는데 실패했습니다.");
           }
+
+          console.log("[PlaceWikiDetailsView] Edge Function 호출 완료 - 응답 데이터:", data);
 
           if (data && data.success) {
               setLocalAiResponse(data.aiResponse);
@@ -139,7 +145,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   // --- 14일 경과 시 백그라운드 자동 갱신 (Lazy Update) ---
   const autoUpdateTriggered = useRef(false);
   useEffect(() => {
-      if (!autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
+      if (isActive && !autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
           const lastUpdated = wikiData.ai_info_updated_at;
           if (lastUpdated) {
               const lastDate = new Date(lastUpdated);
@@ -147,14 +153,14 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
               const diffTime = Math.abs(now.getTime() - lastDate.getTime());
               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-              if (diffDays > 14) {
-                  console.log(`[Lazy Update] 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+              if (diffDays > WIKI_AUTO_UPDATE_DAYS) {
+                  console.log(`[Wiki] ${WIKI_AUTO_UPDATE_DAYS}일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
                   autoUpdateTriggered.current = true;
                   handleRequestAiInfo(placeName || wikiData.title, true);
               }
           }
       }
-  }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
+  }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
 
   // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
   useEffect(() => {
@@ -180,7 +186,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
   useEffect(() => {
       const handleRemoteRequest = (e) => {
-          handleRequestAiInfo(e.detail?.placeName);
+          handleRequestAiInfo(e.detail?.placeName, e.detail?.forceUpdate);
       };
       window.addEventListener('request-ai-info', handleRemoteRequest);
       return () => window.removeEventListener('request-ai-info', handleRemoteRequest);
@@ -203,9 +209,21 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
             {isAiExpanded && (
                 <div ref={aiSectionRef} className="mb-8 bg-[#0F1115]/90 border border-blue-500/30 rounded-2xl p-6 md:p-8 animate-fade-in-up shadow-2xl scroll-mt-6">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                        <Sparkles size={24} className="text-blue-400" />
-                        <h3 className="text-xl font-bold text-white tracking-tight">로컬 왓슨의 안전 여행 노트</h3>
+                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                            <Sparkles size={24} className="text-blue-400" />
+                            <h3 className="text-xl font-bold text-white tracking-tight">로컬 왓슨의 안전 여행 노트</h3>
+                        </div>
+                        {(!isAiLoading && localAiResponse) && (
+                            <button
+                                onClick={() => handleRequestAiInfo(placeName || wikiData?.title, true)}
+                                className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-full transition-colors border border-blue-500/30 flex items-center gap-1.5 group"
+                                title="AI 툴킷 강제 최신화 (관리자/테스트용)"
+                            >
+                                <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
+                                <span className="text-[11px] font-bold hidden md:inline">강제 갱신</span>
+                            </button>
+                        )}
                     </div>
 
                     {!localAiResponse && isAiLoading ? (

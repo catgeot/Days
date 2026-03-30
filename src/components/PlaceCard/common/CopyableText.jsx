@@ -49,7 +49,7 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
                 className={`inline-flex items-center gap-0.5 font-bold ${type === 'wiki' ? 'text-amber-400 hover:text-amber-300' : 'text-blue-500 hover:text-blue-700'} transition-colors focus:outline-none bg-black/5 hover:bg-black/10 px-1 rounded-md whitespace-nowrap`}
                 title={isMapSearch ? "구글 맵에서 검색하기" : "구글 웹에서 검색하기"}
             >
-                ({word})
+                {word}
             </button>
         </span>
     );
@@ -58,15 +58,16 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
 const CopyableText = ({ text, locationName, type }) => {
     if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
 
-    // 잘못된 따옴표 위치 교정 전처리 (예: '우유니 소금사막(Salar de Uyuni)' -> 우유니 소금사막('Salar de Uyuni'))
+    // [하위 호환성 유지] 기존의 '우유니 소금사막(Salar de Uyuni)' 등 잘못된 따옴표 위치 교정 전처리
     let normalizedText = text.replace(/['"‘’“”]([가-힣a-zA-Z0-9\s]+?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
-    // 조사 등 띄어쓰기 없이 붙은 따옴표 예외 처리
     normalizedText = normalizedText.replace(/([가-힣a-zA-Z0-9\s]+?)\(['"‘’“”](.+?)['"‘’“”]\)/g, "$1('$2')");
 
-    // 개선된 정규식: 한글명 부분에 조사나 약간의 공백/줄바꿈이 섞이더라도 유연하게 잡아내기 위함.
-    // 기존: /([^(\s]+(?:\s[^(\s]+)?)\('(.+?)'\)/g
-    // 변경: 괄호 앞의 텍스트 덩어리를 더 여유롭게 잡음 (최대 3단어 정도)
-    const regex = /([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+){0,2})\('(.+?)'\)/g;
+    // [신규 로직 및 하위 호환]
+    // 한글명[@영문명@] 방식과 기존의 한글명('영문명') 방식을 모두 파싱하는 하이브리드 정규식
+    // 매칭 그룹 1: 한글명 (공백 포함 최대 3단어, 없을 수도 있음)
+    // 매칭 그룹 2: [@ @] 사이의 영문명
+    // 매칭 그룹 3: (' ') 사이의 영문명
+    const regex = /([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+){0,2})?(?:\[@([^@\]]+)@\]|\('([^']+)'\))/g;
     const parts = [];
     let lastIndex = 0;
     let match;
@@ -76,8 +77,8 @@ const CopyableText = ({ text, locationName, type }) => {
             parts.push(normalizedText.substring(lastIndex, match.index));
         }
 
-        const koreanName = match[1].trim();
-        const englishName = match[2].trim();
+        const koreanName = match[1] ? match[1].trim() : "";
+        const englishName = (match[2] || match[3]) ? (match[2] || match[3]).trim() : "";
 
         parts.push(
             <CopyableWord
@@ -96,31 +97,12 @@ const CopyableText = ({ text, locationName, type }) => {
         parts.push(normalizedText.substring(lastIndex));
     }
 
-    if (parts.length === 1 && parts[0] === normalizedText) {
-        const fallbackText = normalizedText.replace(/['"‘’“”]/g, "'");
-        const fallbackParts = fallbackText.split(/('[^']+')/g);
-
-        if (fallbackParts.length === 1) {
-             return <span className="select-text break-keep">{fallbackParts[0]}</span>;
-        }
-
-        return (
-            <span className="select-text break-keep">
-                {fallbackParts.map((part, i) => {
-                    if (part.startsWith("'") && part.endsWith("'")) {
-                        const word = part.slice(1, -1);
-                        return <CopyableWord key={i} word={word} koreanName="" locationName={locationName} type={type} />;
-                    }
-                    return <span key={i}>{part}</span>;
-                })}
-            </span>
-        );
-    }
-
     return (
         <span className="select-text break-keep">
             {parts.map((part, i) => (
-                <React.Fragment key={i}>{part}</React.Fragment>
+                <React.Fragment key={i}>
+                    {typeof part === 'string' ? renderWithLineBreaks(part) : part}
+                </React.Fragment>
             ))}
         </span>
     );

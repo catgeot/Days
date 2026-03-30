@@ -4,6 +4,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
 import CopyableText, { isMobileDevice } from '../common/CopyableText';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
+import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location }) => {
     // Affiliate logic with Tracker
@@ -172,102 +173,54 @@ const LOADING_MESSAGES_UPDATE = [
     "AI가 최종 툴킷 검수를 마치는 중..."
 ];
 
-const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
-    const [isUpdating, setIsUpdating] = useState(false);
-    const [localRawAiInfo, setLocalRawAiInfo] = useState(null);
-    const [localFallbackGuide, setLocalFallbackGuide] = useState(null);
-    const [localUpdatedAt, setLocalUpdatedAt] = useState(null);
+const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
+    // 위키의 단일 소스(ai_practical_info)를 사용하므로,
+    // ToolkitTab 자체의 독립적인 업데이트/디펜서 로직을 제거하고 상태만 참조합니다.
     const [loadingStep, setLoadingStep] = useState(0);
-    const [cooldown, setCooldown] = useState(0);
+    const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
-    const sourceAiInfo = localRawAiInfo || (wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null);
+    const sourceAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null;
     const { toolkitData } = parseAiPracticalInfo(sourceAiInfo);
 
     // 파싱된 데이터가 있으면 최우선, 없으면 예전 JSON 형식(essential_guide)으로 Fallback
-    const guideData = toolkitData || localFallbackGuide || wikiData?.essential_guide;
+    const guideData = toolkitData || wikiData?.essential_guide;
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
+
+    // isRemoteUpdating 플래그를 로딩 조건에 추가
+    const isLoading = isWikiLoading || (wikiData?.ai_practical_info === '[[LOADING]]') || isRemoteUpdating;
+
+    // 만약 상위에서 데이터가 들어와서 캐시되었거나 상태가 변경되었다면 로컬 업데이트 플래그 해제
+    useEffect(() => {
+        if (wikiData?.ai_practical_info !== '[[LOADING]]') {
+            setIsRemoteUpdating(false);
+        }
+    }, [wikiData?.ai_practical_info]);
 
     // 로딩 메시지 순차적 변경 (주기 4초로 변경)
     useEffect(() => {
         let interval;
-        if (isUpdating) {
+        if (isLoading) {
             setLoadingStep(0);
             interval = setInterval(() => {
                 setLoadingStep((prev) => (prev < currentMessages.length - 1 ? prev + 1 : prev));
             }, 4000); // 4초마다 다음 메시지로
         }
         return () => clearInterval(interval);
-    }, [isUpdating, currentMessages]);
+    }, [isLoading, currentMessages]);
 
-    // 쿨타임 타이머
-    useEffect(() => {
-        let timer;
-        if (cooldown > 0) {
-            timer = setInterval(() => {
-                setCooldown(prev => prev - 1);
-            }, 1000);
-        }
-        return () => clearInterval(timer);
-    }, [cooldown]);
-
-    const autoUpdateTriggered = useRef(false);
-
-    const handleUpdate = async () => {
-        if (cooldown > 0) return;
-
-        const placeId = wikiData?.place_id || location?.name;
-        if (!placeId) return;
-        setIsUpdating(true);
-
-        const startTime = Date.now();
-
-        // 기존 텍스트를 보존하여 Edge Function에 넘김
-        const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null;
-
-        try {
-            // 프론트에서 [[LOADING]] 설정 시 기존 정보가 사라지므로 Edge에서 처리하게 하거나, oldAiInfo를 따로 보관해서 복구
-            await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
-
-            const { data, error } = await supabase.functions.invoke('update-place-wiki', {
-                body: { placeId: placeId, locationName: location?.name || placeId, oldAiInfo: oldAiInfo }
-            });
-
-            if (error) throw error;
-            if (data && data.success === false) throw new Error(data.error || 'Edge Function failed');
-
-            // Defensor가 NO_CHANGES를 뱉었더라도 신뢰도를 위해 최소 3초는 로딩 연출
-            const elapsedTime = Date.now() - startTime;
-            if (elapsedTime < 3000) {
-                await new Promise(resolve => setTimeout(resolve, 3000 - elapsedTime));
-            }
-
-            if (data?.aiResponse) {
-                setLocalRawAiInfo(data.aiResponse);
-            }
-            if (data?.essentialGuide) {
-                setLocalFallbackGuide(data.essentialGuide);
-            }
-
-            // 갱신 완료 후 1분(60초) 쿨타임 적용
-            setCooldown(60);
-            setLocalUpdatedAt(new Date().toISOString());
-
-            if (data?.noChanges) {
-                console.log('No changes detected by AI');
-            }
-        } catch (e) {
-            console.error(e);
-            alert('정보 업데이트에 실패했습니다.');
-            // 실패 시 이전 데이터로 롤백 (null이 아님)
-            await supabase.from('place_wiki').update({ ai_practical_info: oldAiInfo || null }).eq('place_id', placeId);
-        } finally {
-            setIsUpdating(false);
-        }
+    // 위키 뷰로 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
+    const handleRemoteUpdate = () => {
+        console.log("[ToolkitTab] 수동 직권 갱신 버튼 클릭됨 - 위키 탭으로 강제 갱신 요청 발송");
+        setIsRemoteUpdating(true);
+        const event = new CustomEvent('request-ai-info', { detail: { placeName: location?.name, forceUpdate: true } });
+        window.dispatchEvent(event);
     };
 
+    // 툴킷 진입 시 14일 경과 자동 갱신 원격 트리거
+    const autoUpdateTriggered = useRef(false);
     useEffect(() => {
-        if (!autoUpdateTriggered.current && wikiData?.essential_guide && wikiData?.ai_practical_info !== '[[LOADING]]') {
+        if (isActive && !autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
             const lastUpdated = wikiData.ai_info_updated_at;
             if (lastUpdated) {
                 const lastDate = new Date(lastUpdated);
@@ -275,16 +228,16 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
                 const diffTime = Math.abs(now.getTime() - lastDate.getTime());
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                if (diffDays > 14) {
-                    console.log(`[Lazy Update] ToolkitTab 14일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+                if (diffDays > WIKI_AUTO_UPDATE_DAYS) {
+                    console.log(`[ToolkitTab] ${WIKI_AUTO_UPDATE_DAYS}일 경과 위키 자동 갱신 원격 요청 발송 (${diffDays}일 지남)`);
                     autoUpdateTriggered.current = true;
-                    handleUpdate();
+                    // 자동 갱신 시에는 툴킷 화면을 방해하지 않고 백그라운드로 처리할 수 있으나, 만약 로딩 화면이 필요하다면 setIsRemoteUpdating(true) 가능
+                    const event = new CustomEvent('request-ai-info', { detail: { placeName: location?.name, forceUpdate: true } });
+                    window.dispatchEvent(event);
                 }
             }
         }
-    }, [wikiData?.essential_guide, wikiData?.ai_info_updated_at, wikiData?.ai_practical_info]);
-
-    const isLoading = isWikiLoading || isUpdating || (wikiData?.ai_practical_info === '[[LOADING]]' && !localRawAiInfo && !localFallbackGuide);
+    }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, location?.name]);
 
     const formatDate = (isoString) => {
         if (!isoString) return '';
@@ -292,7 +245,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
         return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     };
 
-    const targetDate = localUpdatedAt || wikiData?.ai_info_updated_at;
+    const targetDate = wikiData?.ai_info_updated_at;
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
     if (isLoading) {
@@ -320,6 +273,17 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
                         <Loader2 size={14} className="animate-spin text-blue-500" />
                         <span className="animate-pulse">{currentMessages[loadingStep]}</span>
                     </div>
+
+                    {/* 타임아웃(100%) 시 멈췄을 때 강제 갱신 버튼 표시 */}
+                    {loadingStep >= currentMessages.length - 1 && (
+                        <button
+                            onClick={handleRemoteUpdate}
+                            className="mt-4 flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-500"
+                        >
+                            <RefreshCw size={14} />
+                            <span>로딩이 지연되나요? 강제 다시 시도</span>
+                        </button>
+                    )}
                 </div>
             </div>
         );
@@ -334,7 +298,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
                     AI가 분석한 이 지역의 필수 여행 정보(비자, 교통, 숙박, 유심 등) 가이드를 생성하시겠습니까?
                 </p>
                 <button
-                    onClick={handleUpdate}
+                    onClick={handleRemoteUpdate}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transition-colors text-sm"
                 >
                     <Sparkles size={16} />
@@ -360,9 +324,19 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading }) => {
 
                     <div className="flex flex-col items-start md:items-end gap-1 shrink-0">
                         {lastUpdated && (
-                            <span className="text-[11px] text-gray-400 font-medium px-1">
-                                마지막 업데이트: {lastUpdated}
-                            </span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[11px] text-gray-400 font-medium px-1">
+                                    마지막 업데이트: {lastUpdated}
+                                </span>
+                                <button
+                                    onClick={handleRemoteUpdate}
+                                    className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-full transition-colors border border-blue-100/50 flex items-center gap-1 bg-white shadow-sm group"
+                                    title="AI 툴킷 강제 최신화 (관리자/테스트용)"
+                                >
+                                    <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
+                                    <span className="text-[10px] font-bold">강제 갱신</span>
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

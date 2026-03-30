@@ -67,11 +67,12 @@ const PlaceMediaPanel = React.memo(({
                 placeName={location?.name}
                 countryName={location?.country}
                 setMediaMode={setMediaMode}
+                isActive={mediaMode === 'WIKI'}
             />
         </div>
 
         <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'TOOLKIT' ? 'block' : 'hidden'}`}>
-            <ToolkitTab location={location} wikiData={wikiData} isWikiLoading={isWikiLoading} setMediaMode={setMediaMode} />
+            <ToolkitTab location={location} wikiData={wikiData} isWikiLoading={isWikiLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'TOOLKIT'} />
         </div>
 
         <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'LOGBOOK' ? 'block' : 'hidden'}`}>

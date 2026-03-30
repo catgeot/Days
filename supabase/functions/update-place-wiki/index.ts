@@ -17,7 +17,7 @@ serve(async (req) => {
 
     try {
         reqBody = await req.json();
-        const { placeId, locationName, oldAiInfo, forceUpdate } = reqBody;
+        const { placeId, locationName, oldAiInfo } = reqBody; // forceUpdate 제거됨, 항상 강제 작성
         requestedPlaceId = placeId;
 
         if (!placeId || !locationName) {
@@ -30,14 +30,14 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        // 기존 데이터 조회 (Defensor 판단용)
+        // 기존 데이터 조회 (에러 발생 시 롤백용)
         const { data: existingData } = await supabaseAdmin
             .from('place_wiki')
-            .select('ai_practical_info, essential_guide')
+            .select('ai_practical_info')
             .eq('place_id', String(placeId))
             .single();
 
-        // [추가] AI 작업 시작 전 DB를 '[[LOADING]]' 상태로 업데이트하여
+        // AI 작업 시작 전 DB를 '[[LOADING]]' 상태로 업데이트하여
         // 사용자가 창을 닫거나 다른 페이지로 가더라도 상태가 유지되도록 함
         await supabaseAdmin
             .from('place_wiki')
@@ -54,81 +54,59 @@ serve(async (req) => {
 
         // 기존 정보 복원 로직: 프론트엔드가 이미 '[[LOADING]]'으로 덮어씌웠으므로 oldAiInfo를 우선 사용
         const infoToAnalyze = oldAiInfo || (existingData?.ai_practical_info !== '[[LOADING]]' ? existingData?.ai_practical_info : null);
-        const hasEssentialGuide = existingData?.essential_guide != null;
-
-        // --- Defensor Model (gemini-3.1-flash-lite-preview) 판단 로직 폐기 ---
-        // 기존의 디펜서 로직을 제거하고, 아래 메인 모델(Pro)에서 NO_CHANGES 여부를 함께 판단하도록 통합함.
 
         // 2. 프롬프트 구성 (메인 모델 호출)
-        const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 로컬 가이드입니다. 여행자가 이곳에 대해 가진 "여긴 도대체 어떤 곳이고, 가면 뭘 할 수 있어?"라는 근본적인 궁금증을 속 시원하게 풀어주세요. 위키백과에 나오는 지루한 역사나 뻔한 소리는 철저히 배제하고, 가장 생생하고 실용적인 최신 현지 정보만 제공하세요.
+        // [수정] 디펜서 로직(NO_CHANGES 감지) 및 기존 정보 비교 완전히 제거. 무조건 지정된 단일 소스 원칙에 맞게 새롭게 작성함.
+        const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 로컬 가이드입니다. 여행자가 이곳에 대해 가진 "여긴 도대체 어떤 곳이고, 가면 뭘 할 수 있어?"라는 근본적인 궁금증을 속 시원하게 풀어주세요. 위키백과에 나오는 지루한 역사나 뻔한 소리는 철저히 배제하고, 가장 생생하고 실용적인 최신 현지 정보만 자연스러운 대화형 경어체(해요체나 하십시오체)로 제공하세요.
 
-**[핵심: 한글명('영문명') 표기법의 당위성과 규칙]**
-우리의 웹 서비스(프론트엔드)는 당신이 작성한 텍스트에서 작은따옴표('') 안의 영문자를 정규식으로 추출하여, 즉각적으로 구글 맵스(Google Maps)나 웹 검색 아웃링크(스마트 링크) 버튼을 동적으로 생성하는 아주 중요한 시스템을 가지고 있습니다.
-따라서 여행자가 실제로 지도로 찾아가야 할 장소나 검색해 보아야 할 대상을 언급할 때는 **반드시 이 파싱 시스템이 인식할 수 있도록 "한글명('현지 영문명')" 형식을 취해야 합니다.**
+**[핵심: 고유명사 특수문자 표기법 - 절대 규칙]**
+우리의 웹 서비스는 당신이 작성한 텍스트에서 특정 기호([@영문명@]) 안의 영문자를 정규식으로 추출하여 지도 검색이나 웹 검색 아웃링크를 동적으로 생성합니다. 작은따옴표(') 중복으로 인한 파싱 오류를 막기 위해, 장소나 고유명사를 표기할 때는 **반드시 "한글명[@영문명@]" 형식**을 사용하세요.
 
-**[링크 파싱 기준 세분화 - 반드시 지킬 것]**
-1. **[지도 검색 대상 (POI)]** 명소, 유적지, 식당, 호텔, 역/공항, 시장 등
-  - 강제 사항: 반드시 \`한글명('영문명')\` 표기 (이 데이터는 구글 맵스 링크 생성에 쓰임)
-  - ✅ 올바른 예: "시카고 핫도그의 명가 포틸로스('Portillo's')에 방문해 보세요."
-  - ❌ 잘못된 예: "'포틸로스(Portillo's)'에 방문해 보세요." (바깥에 따옴표 금지)
-2. **[웹 검색 대상 (추상적 대상)]** 필수 앱(Uber, Ferryhopper 등), 지역 교통카드, 통신사 이름, 특정 투어 프로그램 등
-  - 강제 사항: 반드시 \`한글명('영문명')\` 표기 (이 데이터는 구글 일반/SGE 웹 검색 링크 생성에 쓰임)
-  - ✅ 올바른 예: "교통카드는 벤틀라('Ventra')를 구매하세요."
-3. **[절대 따옴표 금지 대상]** 단순 영단어, 분위기 묘사, 일반 명사(Wi-Fi, BBQ, 팁 문화 등)
-  - 강제 사항: 정규식이 엉뚱한 링크를 만들지 않도록 철저히 따옴표를 배제.
+1. **[지도 검색/웹 검색 대상]** 명소, 유적지, 식당, 호텔, 필수 앱, 지역 교통카드 등
+  - 강제 사항: 반드시 \`한글명[@영문명@]\` 표기
+  - ✅ 올바른 예: "시카고 핫도그의 명가 포틸로스[@Portillo's@]에 방문해 보세요.", "교통카드는 벤틀라[@Ventra@]를 구매하세요."
+  - ❌ 잘못된 예: "포틸로스('Portillo's')", "포틸로스(Portillo's)", "벤틀라['Ventra']"
+2. **[절대 기호 사용 금지 대상]** 단순 영단어, 분위기 묘사, 일반 명사(Wi-Fi, BBQ 등)에는 [@ @] 기호를 절대 쓰지 마세요.
 
-**[서식 및 스타일 규칙 - 절대 엄수]**
-1. **마크다운 헤딩(#, ##, ###) 절대 사용 금지**: 글씨가 지나치게 커지거나 레이아웃이 깨지므로 절대 사용하지 마세요.
-2. **풍부한 문장형 작성 강제**: 단답형이나 개조식, 끊어지는 단문을 쓰지 마세요. 여행자에게 직접 친절히 설명하듯 **자연스러운 대화형 경어체(해요체나 하십시오체)**의 상세한 문장으로 작성하세요.
-3. **불필요한 메타 단어 금지**: 문장 맨 앞에 'Advice:', 'Tip:', 'Note:' 같은 단어를 절대로 쓰지 마세요.
-4. **리스트 기호 금지 및 줄바꿈(\n\n)으로만 문단 분리**: 불릿 포인트(*, -) 등 불필요한 마크다운 기호를 쓰지 마세요. 정보가 길어질 경우 오직 줄바꿈(Enter 두 번, \n\n)만으로 문단을 명확하고 예쁘게 분리하여 가독성을 극대화하세요.
+**[서식 및 스타일 규칙]**
+1. 마크다운 헤딩(#, ##, ###) 절대 사용 금지: 레이아웃이 깨지므로 절대 쓰지 마세요.
+2. 가독성을 위해 불릿(*, -)은 꼭 필요한 나열에만 최소한으로 허용하며, 주로 줄바꿈(Enter 두 번, \\n\\n)과 굵게(**텍스트**)를 활용해 문단을 예쁘게 분리하세요.
+3. 문장 맨 앞에 'Advice:', 'Tip:' 같은 불필요한 메타 단어를 절대 쓰지 마세요.`;
 
-또한, 프론트엔드의 '스마트 툴킷' 구성을 위해 글의 최하단에 반드시 정해진 양식의 툴킷 블록을 첨부해야 합니다.
-수익화가 불가능한 항목(비자, 일반 앱, 지도)은 공식 정보만을, 수익화가 가능한 항목(숙박 위치, 유심, 교통 패스)은 실질적 조언을 중심으로 작성하되, **반드시 왜 그 지역을 추천하는지, 대략적인 소요 시간이나 성수기 예약 팁 등 디테일을 구체적이고 부드러운 문장으로 명시하세요.**
+        const userPrompt = `"${locationName}"에 대해 아래 조건을 만족하는 단일 JSON 형식으로 응답해 줘. JSON 파싱 에러가 없도록 이스케이프 처리에 각별히 신경 써.
 
---- [중요: 정보 갱신 검증 규칙] ---
-만약 사용자가 아래에 '기존 정보'를 제공했다면, 오늘 날짜(${today}) 기준으로 해당 지역에 국가 부도, 전쟁, 전염병, 심각한 자연재해 등 '치명적이고 여행에 즉각적인 영향을 미치는 중대 변동 사항'이 새로 발생했는지 스스로 판단하세요. (단순 환율 변동, 일반 식당 폐업, 날씨 등은 무시)
-만약 기존 정보가 이미 존재하고 치명적인 변동이 전혀 없다면, 절대로 다른 내용을 새로 창작하지 말고 오직 다음 JSON만 응답하세요:
-{ "status": "NO_CHANGES" }
-
-🚨 [매우 중요]: 아래에 제공된 데이터가 '기존 정보 없음'이거나 비어 있거나 포맷이 완전히 깨진 경우에만, 전체 가이드 데이터를 처음부터 새롭게 생성해야 합니다. (이 경우 절대 NO_CHANGES를 응답하면 안 됩니다!)`;
-
-        const userPrompt = `"${locationName}"에 대해 아래 조건을 만족하는 단일 JSON 형식으로 응답해줘. JSON 파싱 에러가 발생하지 않도록 이스케이프 처리에 각별히 신경 써.
-
-앞서 지시한 [중요: 정보 갱신 검증 규칙]에 따라 기존 정보가 없거나, 중대한 변동 사항이 발견되어 새롭게 전체 마크다운을 갱신해야 할 경우에만 반드시 아래 필드를 포함하는 JSON으로 응답해:
 {
   "status": "UPDATED",
   "markdown": "위키 본문과 툴킷 데이터가 모두 포함된 전체 마크다운 텍스트"
 }
 
-[markdown 필드 작성 가이드 (새로 갱신할 때 절대 엄수)]
-아래의 4개 지정된 섹션 제목(이모지 포함)은 토씨 하나 틀리지 말고 그대로 복사해서 단락의 제목으로 사용해. 절대 너의 마음대로 마크다운 헤딩(#)이나 새로운 제목을 만들지 마.
-(작성 기준일: ${today} - 1분 요약 상단에 짧게 언급)
+🚨 [중요: markdown 필드 작성 절대 규칙] 🚨
+AI인 당신은 아래 제시된 마크다운 템플릿의 '구조', '섹션 제목', '특수 구분자(---[TOOLKIT_START]--- 등)'를 토씨 하나 빼놓지 말고 100% 동일하게 출력해야 합니다. 구조를 임의로 변경하거나 구분자를 누락하면 시스템 에러가 발생합니다.
 
-🌟 1분 요약: 정체성과 핵심 매력을 2~3문장으로 요약
+▼▼▼ 템플릿 시작 ▼▼▼
+🌟 1분 요약
+(정체성과 핵심 매력을 2~3문장으로 요약. 첫 줄에 '작성 기준일: ${today}'를 짧게 표기)
 
-🛂 입국/비용 & 이동 팁: 비자, 물가, 비행시간, 추천 이동수단 (불릿 금지, 오직 줄바꿈으로만 단락 분리)
+🛂 입국/비용 & 이동 팁
+(비자, 물가, 비행시간, 추천 이동수단. 가독성 좋게 줄바꿈 활용)
 
-⚠️ 실전 안전 & 에티켓: 치안, 금기사항 (불릿 금지, 오직 줄바꿈으로만 단락 분리)
+⚠️ 실전 안전 & 에티켓
+(치안, 금기사항)
 
-💡 시크릿 꿀팁 & 맛집: 현지인 추천 핫플, 환전, 교통권 실전 팁 (불릿 금지, 외국어 고유명사는 반드시 한글명('영문명') 표기 엄수, 기울임꼴* 사용 금지)
+💡 시크릿 꿀팁 & 맛집
+(현지인 추천 핫플, 환전, 실전 팁. 고유명사는 반드시 한글명[@영문명@] 표기 엄수!)
 
 ---[TOOLKIT_START]---
-[visa]: 비자 정보 및 관공서 안내 (공식사이트가 있다면 끝에 | URL: https://... 추가, 없으면 생략)
-[flight]: 대략적인 경유/비행 소요 시간, 항공권 예약 시기(성수기 기준) 및 직항 팁
-[accommodation]: 각 국립공원/관광지별 베이스캠프 숙박 위치 추천 (반드시 1~2개 지역을 명시하고, 각 지역을 왜 추천하는지 차이점 기재)
-[connectivity]: 유심/eSIM 및 공항 픽업 조언 (통신사 이름에 절대 작은따옴표 쓰지 말 것)
-[transport]: 대중교통 패스권 및 렌터카 추천 (도시 간 이동 방법, 소요 시간 디테일 포함)
-[apps]: 국가별 특화 필수 앱 (앱 이름에 절대 작은따옴표 쓰지 말 것)
-[map_poi]: 핵심 명소/맛집 조언 (고유명사는 반드시 한글명('영문명') 표기 엄수, 영문명만 작은따옴표로 감쌀 것)
-[safety]: 치안 주의사항 및 긴급 연락처 (영사콜센터 등 공식 정보가 있다면 끝에 | URL: https://... 추가, 없으면 생략)
+[visa]: 비자 정보 및 관공서 안내 (공식사이트가 있다면 끝에 | URL: https://... 추가)
+[flight]: 대략적인 경유/비행 소요 시간, 항공권 예약 시기 및 직항 팁
+[accommodation]: 베이스캠프 숙박 위치 추천 1~2곳 및 추천 이유
+[connectivity]: 유심/eSIM 및 통신사 팁 (이름에 [@ @] 기호 금지)
+[transport]: 대중교통 패스권 및 렌터카 추천
+[apps]: 국가별 특화 필수 앱 (이름에 [@ @] 기호 금지)
+[map_poi]: 핵심 명소/맛집 조언 (반드시 한글명[@영문명@] 표기 엄수)
+[safety]: 치안 주의사항 및 긴급 연락처
 ---[TOOLKIT_END]---
-
---- 기존 정보 (참고 및 변동 감지용) ---
-${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
-------------------------------------
-
-반드시 유효한 JSON 문자열로만 응답해.`;
+▲▲▲ 템플릿 끝 ▲▲▲`;
 
     // 2. Gemini API 직접 호출 (안정적인 최상위 모델 gemini-2.5-pro 사용 - 높은 신뢰도 및 최신정보 반영)
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${geminiApiKey}`, {
@@ -179,35 +157,6 @@ ${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
       throw new Error('Gemini did not return valid JSON');
     }
 
-    // [New] NO_CHANGES 감지 로직
-    if (parsedResult?.status === "NO_CHANGES" || parsedResult === "NO_CHANGES") {
-        if (!infoToAnalyze || infoToAnalyze === "null" || infoToAnalyze === "기존 정보 없음") {
-            console.error('AI returned NO_CHANGES but there is no existing info to keep.');
-            throw new Error('AI failed to generate new information (Returned NO_CHANGES inappropriately).');
-        }
-
-        console.log(`[Pro Model] No critical changes detected for ${locationName}. Reusing existing data.`);
-
-        // 갱신 시간만 최신으로 업데이트하고 기존 정보 복구
-        await supabaseAdmin
-            .from('place_wiki')
-            .update({
-                ai_practical_info: infoToAnalyze,
-                ai_info_updated_at: new Date().toISOString()
-            })
-            .eq('place_id', String(placeId));
-
-        return new Response(JSON.stringify({
-            success: true,
-            noChanges: true,
-            aiResponse: infoToAnalyze,
-            essentialGuide: existingData?.essential_guide
-        }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-        });
-    }
-
     const aiPracticalInfo = parsedResult.markdown || parsedResult.wiki_markdown || generatedText;
 
     // 3. DB 테이블 업데이트
@@ -230,7 +179,6 @@ ${infoToAnalyze ? infoToAnalyze : '기존 정보 없음'}
     return new Response(JSON.stringify({
       success: true,
       aiResponse: aiPracticalInfo,
-      // essentialGuide는 더 이상 백엔드에서 생성하지 않으므로 반환하지 않음 (프론트에서 파싱)
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
