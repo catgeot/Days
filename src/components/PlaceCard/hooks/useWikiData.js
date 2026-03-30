@@ -114,5 +114,47 @@ export const useWikiData = (placeId, mediaMode) => {
     };
   }, [placeId, mediaMode]);
 
+  // 🆕 [Phase 9-1.5] 데이터가 [[LOADING]]으로 변경되면 폴링 시작 (수동 갱신 감지)
+  useEffect(() => {
+    let pollInterval = null;
+
+    if (wikiData?.ai_practical_info === '[[LOADING]]' && (mediaMode === 'WIKI' || mediaMode === 'TOOLKIT')) {
+      if (isDev) {
+        console.log('[useWikiData] [[LOADING]] 상태 변경 감지 - 폴링 시작');
+      }
+
+      pollInterval = setInterval(async () => {
+        try {
+          const { data } = await supabase
+            .from('place_wiki')
+            .select('*')
+            .eq('place_id', String(placeId))
+            .maybeSingle();
+
+          if (data) {
+            if (isDev) {
+              const statusPreview = data.ai_practical_info?.substring(0, 30) || 'null';
+              console.log(`[useWikiData] 폴링 응답 - 상태: ${statusPreview}...`);
+            }
+
+            setWikiData(data);
+            if (data.ai_practical_info !== '[[LOADING]]') {
+              if (isDev) {
+                console.log('[useWikiData] 폴링 완료 - 데이터 로드 성공');
+              }
+              clearInterval(pollInterval);
+            }
+          }
+        } catch (e) {
+          console.error('[useWikiData] 폴링 에러:', e);
+        }
+      }, 2000);
+    }
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+    };
+  }, [wikiData?.ai_practical_info, placeId, mediaMode]);
+
   return { wikiData, isWikiLoading };
 };

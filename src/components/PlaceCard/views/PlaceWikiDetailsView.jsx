@@ -162,6 +162,18 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       }
   }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
 
+  // 🆕 [Phase 9-1.5] 위키 탭 활성화 시 캐시된 데이터 자동 표시
+  useEffect(() => {
+    if (isActive && wikiData?.ai_practical_info &&
+        wikiData.ai_practical_info !== '[[LOADING]]' &&
+        !localAiResponse && !isAiLoading && !isAiExpanded) {
+      console.log("[PlaceWikiDetailsView] 캐시된 위키 데이터 자동 로드");
+      setLocalAiResponse(wikiData.ai_practical_info);
+      setLocalUpdatedAt(wikiData.ai_info_updated_at);
+      setIsAiExpanded(true);
+    }
+  }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, localAiResponse, isAiLoading, isAiExpanded]);
+
   // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
   useEffect(() => {
     const currentInfo = wikiData?.ai_practical_info;
