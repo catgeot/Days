@@ -107,22 +107,14 @@ export const usePlaceGallery = (locationSource) => {
     }
   };
 
-  // 🚨 [New] 큐레이션 정렬(좋아요 맨 앞, 숨김 제외) 및 상태 업데이트
+  // 이미지 상태 업데이트 (단순화됨)
   const processAndSetImages = useCallback((rawImages) => {
     if (!rawImages || rawImages.length === 0) {
       setImages([]);
       return;
     }
     allImagesRef.current = rawImages;
-
-    // 숨겨진(hidden) 사진 필터링
-    const visibleImages = rawImages.filter(img => img.curation !== 'hidden');
-
-    // 좋아요(liked) 사진 맨 앞으로 정렬
-    const liked = visibleImages.filter(img => img.curation === 'liked');
-    const normal = visibleImages.filter(img => img.curation !== 'liked');
-
-    setImages([...liked, ...normal]);
+    setImages(rawImages); // 단순하게 그대로 표시
   }, []);
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
@@ -251,21 +243,13 @@ export const usePlaceGallery = (locationSource) => {
       }
 
       if (results.length > 0) {
-        // 🚨 [Fix] 새로고침(Refresh) 시 페이지네이션처럼 기존 데이터를 유지하며 병합 (Append)
+        // 새로고침(Refresh) 시 페이지네이션처럼 기존 데이터를 유지하며 병합 (Append)
         let finalResults = results;
-        if (allImagesRef.current && allImagesRef.current.length > 0) {
-          if (forceRefresh) {
-            // 강제 새로고침(더보기) 시: 이전 사진들을 보존하고 새 사진들을 이어 붙임 (빈약해지는 현상 방지)
-            const existingIds = new Set(allImagesRef.current.map(img => img.id));
-            const freshImages = results.filter(img => !existingIds.has(img.id));
-            finalResults = [...allImagesRef.current, ...freshImages];
-          } else {
-            // 일반 로드: 큐레이션(좋아요/숨김) 기록만 병합
-            const curatedImages = allImagesRef.current.filter(img => img.curation);
-            const curatedIds = new Set(curatedImages.map(img => img.id));
-            const freshImages = results.filter(img => !curatedIds.has(img.id));
-            finalResults = [...curatedImages, ...freshImages];
-          }
+        if (forceRefresh && allImagesRef.current && allImagesRef.current.length > 0) {
+          // 강제 새로고침(더보기) 시: 이전 사진들을 보존하고 새 사진들을 이어 붙임
+          const existingIds = new Set(allImagesRef.current.map(img => img.id));
+          const freshImages = results.filter(img => !existingIds.has(img.id));
+          finalResults = [...allImagesRef.current, ...freshImages];
         }
 
         processAndSetImages(finalResults);
@@ -349,79 +333,13 @@ export const usePlaceGallery = (locationSource) => {
     }
   }, [ACCESS_KEY]);
 
-  // 🚨 [New] 큐레이션 액션 핸들러 (좋아요/숨김)
-  const handleCurateImage = useCallback(async (imageId, curationType) => {
-    if (!imageId) return;
-
-    // 전체 이미지 배열에서 해당 이미지 찾기 및 업데이트
-    const updatedRawImages = allImagesRef.current.map(img => {
-      if (img.id === imageId) {
-        // 이미 같은 상태면 취소(토글), 아니면 새 상태 적용
-        return { ...img, curation: img.curation === curationType ? null : curationType };
-      }
-      return img;
-    });
-
-    // 화면(상태) 즉시 업데이트 (Optimistic UI)
-    processAndSetImages(updatedRawImages);
-
-    // 1. 세션 캐시 업데이트
-    let primaryQuery = '';
-    let targetSpot = locationSource;
-    if (typeof locationSource === 'string') {
-        let found = TRAVEL_SPOTS.find(s => s.name === locationSource);
-        if (!found) found = citiesData.find(s => s.name === locationSource);
-        if (found) targetSpot = found;
-    } else if (typeof locationSource === 'object') {
-      if (!locationSource.name_en) {
-        let foundInMaster = TRAVEL_SPOTS.find(s => s.name === sourceName || (sourceId && s.id === sourceId));
-        if (!foundInMaster) foundInMaster = citiesData.find(s => s.name === sourceName);
-        if (foundInMaster) targetSpot = foundInMaster;
-      }
-    }
-
-    let koreanName = '';
-    if (typeof targetSpot === 'object') {
-        primaryQuery = targetSpot.name_en || targetSpot.name || '';
-        koreanName = targetSpot.name || '';
-    } else {
-        primaryQuery = String(targetSpot);
-        koreanName = String(targetSpot);
-    }
-    primaryQuery = primaryQuery.trim();
-
-    if (primaryQuery) {
-      const CACHE_KEY = `days_gallery_${primaryQuery}`;
-      saveToSmartCache(CACHE_KEY, updatedRawImages);
-    }
-
-    // 2. Supabase DB 업데이트
-    if (koreanName) {
-      try {
-        const { error } = await supabase
-          .from('place_stats')
-          .update({ gallery_urls: updatedRawImages })
-          .eq('place_id', koreanName);
-
-        if (error) {
-          console.error("⚠️ Failed to update image curation in DB:", error);
-        } else {
-          console.log(`✅ Image ${imageId} curation set to '${curationType}'`);
-        }
-      } catch (err) {
-        console.error("⚠️ Error saving curation:", err);
-      }
-    }
-  }, [locationSource, sourceId, sourceName, processAndSetImages]);
-
-  // 🚨 [Fix] handleDownload 반환 객체에 추가 및 handleRefresh 추가
+  // 반환 객체
   return {
     images,
     isImgLoading,
     selectedImg,
     setSelectedImg,
     handleDownload,
-    handleRefresh: () => fetchImages(true),
-    handleCurateImage // 새 기능 내보내기
+    handleRefresh: () => fetchImages(true)
   };
 };

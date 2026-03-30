@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Heart, EyeOff } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw } from 'lucide-react';
 
 const PlaceGalleryView = React.memo(({
   images,
@@ -12,7 +12,6 @@ const PlaceGalleryView = React.memo(({
   showUI,
   handleDownload,
   handleRefresh,
-  handleCurateImage,
   setMediaMode
 }) => {
   const fullScreenContainerRef = useRef(null);
@@ -95,35 +94,6 @@ const PlaceGalleryView = React.memo(({
           </button>
 
           <div className={`absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-3 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
-
-            {handleCurateImage && (
-              <div className="flex items-center gap-2 mr-2">
-                <button
-                  onClick={() => handleCurateImage(selectedImg.id, 'liked')}
-                  className={`p-3 border border-white/10 rounded-full transition-all shadow-xl ${selectedImg.curation === 'liked' ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30' : 'bg-black/50 text-white/50 hover:bg-red-500 hover:text-white'}`}
-									title="이 사진을 갤러리 상단에 영구 보존합니다."
-                >
-                  <Heart size={20} className={selectedImg.curation === 'liked' ? 'fill-red-500' : ''} />
-                </button>
-                <button
-                  onClick={() => {
-                    handleCurateImage(selectedImg.id, 'hidden');
-                    if (images.length > 1) {
-                      const nextIndex = currentIndex < images.length - 1 ? currentIndex + 1 : currentIndex - 1;
-                      setSelectedImg(images[nextIndex]);
-                    } else {
-                      setSelectedImg(null);
-                    }
-                  }}
-                  className="p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-gray-700 hover:text-white transition-all shadow-xl"
-                  title="이 사진을 갤러리에서 영구히 숨깁니다."
-                >
-                  <EyeOff size={20} />
-                </button>
-                <div className="w-px h-6 bg-white/20 mx-1"></div>
-              </div>
-            )}
-
             <button onClick={() => toggleFullScreen(fullScreenContainerRef)} className="hidden md:block p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl">
               {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20}/>}
             </button>
@@ -197,9 +167,6 @@ const PlaceGalleryView = React.memo(({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20}/>
-                      {img.curation === 'liked' && (
-                        <Heart className="absolute top-4 left-4 text-red-500 fill-red-500" size={20} />
-                      )}
                     </div>
                   ))}
                 </div>
