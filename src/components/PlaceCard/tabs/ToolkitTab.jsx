@@ -369,17 +369,6 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
                         <Loader2 size={14} className="animate-spin text-blue-500" />
                         <span className="animate-pulse">{currentMessages[loadingStep]}</span>
                     </div>
-
-                    {/* 타임아웃(100%) 시 멈췄을 때 강제 갱신 버튼 표시 */}
-                    {loadingStep >= currentMessages.length - 1 && (
-                        <button
-                            onClick={handleRemoteUpdate}
-                            className="mt-4 flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-500"
-                        >
-                            <RefreshCw size={14} />
-                            <span>로딩이 지연되나요? 강제 다시 시도</span>
-                        </button>
-                    )}
                 </div>
             </div>
         );
