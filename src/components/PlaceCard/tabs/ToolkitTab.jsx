@@ -66,6 +66,19 @@ const THEME_COLORS = {
 
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray;
+
+    // 🆕 [Phase 7-4] 텍스트 정제 함수 (마크다운 기호 제거, 줄바꿈 최적화)
+    const cleanAdviceText = (text) => {
+        if (!text) return text;
+
+        return text
+            .replace(/\*\*/g, '')           // 볼드 마크다운 제거
+            .replace(/\* /g, '• ')          // 리스트 기호 통일
+            .replace(/\n{3,}/g, '\n\n')     // 과도한 줄바꿈 제거
+            .replace(/^\s+|\s+$/gm, '')     // 각 줄 양끝 공백 제거
+            .trim();
+    };
+
     // Affiliate logic with Tracker
     const getMultiLinks = () => {
         const searchQuery = location?.name || location?.country || '';
@@ -184,8 +197,8 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>
             </div>
 
-            <p className="text-sm text-gray-700 leading-relaxed mb-5 flex-1 select-text break-keep">
-                <CopyableText text={data?.advice} locationName={location?.name} type={type} />
+            <p className="text-sm text-gray-700 leading-[1.7] mb-5 flex-1 select-text break-keep">
+                <CopyableText text={cleanAdviceText(data?.advice)} locationName={location?.name} type={type} />
             </p>
 
             {links.length > 0 && (
@@ -405,21 +418,12 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
                         </p>
                     </div>
 
+                    {/* 🆕 [Phase 7-3] 강제 갱신 버튼 제거 (위키 탭에는 유지, 툴킷은 제거) */}
                     <div className="flex flex-col items-start md:items-end gap-1 shrink-0">
                         {lastUpdated && (
-                            <div className="flex items-center gap-2">
-                                <span className="text-[11px] text-gray-400 font-medium px-1">
-                                    마지막 업데이트: {lastUpdated}
-                                </span>
-                                <button
-                                    onClick={handleRemoteUpdate}
-                                    className="p-1.5 hover:bg-blue-50 text-blue-500 rounded-full transition-colors border border-blue-100/50 flex items-center gap-1 bg-white shadow-sm group"
-                                    title="AI 툴킷 강제 최신화 (관리자/테스트용)"
-                                >
-                                    <RefreshCw size={12} className="group-hover:rotate-180 transition-transform duration-500" />
-                                    <span className="text-[10px] font-bold">강제 갱신</span>
-                                </button>
-                            </div>
+                            <span className="text-[11px] text-gray-400 font-medium px-1">
+                                마지막 업데이트: {lastUpdated}
+                            </span>
                         )}
                     </div>
                 </div>
