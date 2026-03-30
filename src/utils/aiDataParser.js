@@ -1,8 +1,14 @@
 /**
  * AI가 생성한 마크다운 정보에서 위키 본문과 스마트 툴킷 데이터를 분리합니다.
+ * 🆕 [Phase 7-2] 콘솔 로그 최적화: 경고 중복 제거, Production 필터링 적용
  * @param {string} markdown - DB에서 불러온 `ai_practical_info` (원본 마크다운 문자열)
  * @returns {Object} { wikiContent, toolkitData }
  */
+
+// 🆕 [Phase 7-2] 경고 중복 방지를 위한 캐시
+const warningCache = new Set();
+const isDev = import.meta.env.DEV;
+
 export const parseAiPracticalInfo = (markdown) => {
     if (!markdown || markdown === '[[LOADING]]') {
         return { wikiContent: null, toolkitData: null };
@@ -17,15 +23,29 @@ export const parseAiPracticalInfo = (markdown) => {
 
     // 툴킷 파싱용 구분자가 없는 구버전 데이터거나 오류인 경우, 원본을 그대로 위키로 반환
     if (!startMatch || !endMatch) {
-        console.warn("[aiDataParser] 툴킷 데이터 분리 구분자(---[TOOLKIT_START]---)를 찾을 수 없습니다. 원본 전체를 위키로 처리합니다.", {
-            startMatch: !!startMatch,
-            endMatch: !!endMatch,
-            preview: markdown.substring(0, 100) + '...'
-        });
+        // 🆕 [Phase 7-2] 경고 중복 제거: 동일한 마크다운에 대해 한 번만 경고
+        const cacheKey = markdown.substring(0, 50) || 'empty';
+        if (!warningCache.has(cacheKey)) {
+            console.warn("[aiDataParser] 툴킷 구분자 없음 - Fallback 모드 (구버전 데이터)");
+            warningCache.add(cacheKey);
+
+            // 🆕 [Phase 7-2] 상세 정보는 개발 환경에서만
+            if (isDev) {
+                console.warn("[aiDataParser] 상세:", {
+                    startMatch: !!startMatch,
+                    endMatch: !!endMatch,
+                    preview: markdown.substring(0, 100) + '...'
+                });
+            }
+        }
         return { wikiContent: markdown.trim(), toolkitData: null };
     }
 
-    console.log("[aiDataParser] 툴킷 구분자 매칭 성공, 파싱 시작...");
+    // 🆕 [Phase 7-2] 성공 로그는 개발 환경에서만
+    if (isDev) {
+        console.log("[aiDataParser] 툴킷 구분자 매칭 성공, 파싱 시작");
+    }
+
     const startIndex = startMatch.index;
     const endIndex = endMatch.index;
 
@@ -62,22 +82,30 @@ export const parseAiPracticalInfo = (markdown) => {
                  }
             }
 
-            // 마크다운 잔재(** 등) 정리
-            content = content.replace(/^\*\*\s*/, '').trim();
-
-            // 불필요한 메타 접두사 제거 방어 로직 (Advice:, Tip:, Note: 등)
-            content = content.replace(/^(Advice|Tip|Note):\s*/i, '').trim();
+            // 🆕 [Phase 7-2] 마크다운 잔재 정리 강화
+            content = content
+                .replace(/^\*\*\s*/, '')                    // 볼드 기호
+                .replace(/^(Advice|Tip|Note):\s*/i, '')     // 메타 접두사
+                .replace(/^[-•*]\s+/, '')                   // 리스트 기호
+                .replace(/\s+/g, ' ')                       // 연속 공백 정리
+                .trim();
 
             toolkitData[key] = { advice: content, official_url };
             parsedCount++;
         }
     });
 
-    console.log(`[aiDataParser] 툴킷 파싱 완료. (${parsedCount}개 항목 성공)`, toolkitData);
+    // 🆕 [Phase 7-2] 파싱 완료 로그는 개발 환경에서만
+    if (isDev) {
+        console.log(`[aiDataParser] 툴킷 파싱 완료 (${parsedCount}개 항목)`, toolkitData);
+    }
 
-    // 만약 파싱된 개수가 0개라면, 정규식에 걸리지 않은 포맷 불량임
+    // 🆕 [Phase 7-2] 에러는 항상 출력 (Production 포함)
     if (parsedCount === 0) {
-        console.error("[aiDataParser] 툴킷 섹션 내에서 파싱된 항목이 없습니다. AI 출력 형식을 확인하세요:\n", toolkitSection);
+        console.error("[aiDataParser] 툴킷 섹션 파싱 실패 - AI 출력 형식 확인 필요");
+        if (isDev) {
+            console.error("[aiDataParser] 툴킷 섹션 내용:\n", toolkitSection);
+        }
     }
 
     return { wikiContent, toolkitData };
