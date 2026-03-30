@@ -217,6 +217,21 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
         window.dispatchEvent(event);
     };
 
+    // 🆕 [Phase 6-2] 툴킷 진입 시 wikiData가 없으면 자동으로 데이터 요청 (로딩 동기화)
+    const initialDataRequested = useRef(false);
+    useEffect(() => {
+        // wikiData가 없고, 로딩 중도 아니고, 아직 요청하지 않았고, 탭이 활성화되어 있을 때
+        if (isActive && !wikiData && !isWikiLoading && !initialDataRequested.current && location?.name) {
+            console.log("[ToolkitTab] 위키 데이터 없음 - 자동 데이터 요청 발송");
+            initialDataRequested.current = true;
+            setIsRemoteUpdating(true);
+            const event = new CustomEvent('request-ai-info', {
+                detail: { placeName: location?.name, forceUpdate: false }
+            });
+            window.dispatchEvent(event);
+        }
+    }, [isActive, wikiData, isWikiLoading, location?.name]);
+
     // 툴킷 진입 시 14일 경과 자동 갱신 원격 트리거
     const autoUpdateTriggered = useRef(false);
     useEffect(() => {
