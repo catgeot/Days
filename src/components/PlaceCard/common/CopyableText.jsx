@@ -20,26 +20,26 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
         e.stopPropagation();
 
         const searchTarget = word;
-        const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
 
+        // 검색어 구성: 위치 컨텍스트 포함으로 정확도 향상
         let queryStr = searchTarget;
 
         if (['apps', 'connectivity'].includes(type)) {
+            // 앱이나 통신 관련은 검색어 그대로 사용
             queryStr = searchTarget;
         } else if (locationName) {
-            queryStr = isMapSearch ? `${searchTarget}, ${locationName}` : `${searchTarget} ${locationName}`;
+            // 지도 관련 타입은 쉼표로, 나머지는 공백으로 구분
+            const isMapRelated = ['map_poi', 'accommodation', 'transport'].includes(type);
+            queryStr = isMapRelated ? `${searchTarget}, ${locationName}` : `${searchTarget} ${locationName}`;
         }
 
         const query = encodeURIComponent(queryStr);
 
-        const url = isMapSearch
-            ? `https://www.google.com/maps/search/?api=1&query=${query}`
-            : `https://www.google.com/search?q=${query}`;
+        // 모든 타입에서 구글 검색 사용 (통합)
+        const url = `https://www.google.com/search?q=${query}`;
 
         window.open(url, isMobileDevice() ? '_self' : '_blank');
     };
-
-    const isMapSearch = ['map_poi', 'accommodation', 'transport'].includes(type);
 
     return (
         <span className="inline align-middle">
@@ -47,7 +47,7 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
             <button
                 onClick={handleSmartLink}
                 className={`inline-flex items-center gap-0.5 font-bold ${type === 'wiki' ? 'text-amber-400 hover:text-amber-300' : 'text-blue-500 hover:text-blue-700'} transition-colors focus:outline-none bg-black/5 hover:bg-black/10 px-1 rounded-md whitespace-nowrap`}
-                title={isMapSearch ? "구글 맵에서 검색하기" : "구글 웹에서 검색하기"}
+                title="구글에서 검색하기"
             >
                 {word}
             </button>
