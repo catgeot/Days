@@ -22,7 +22,7 @@ export const usePlaceChat = (initialSystemPrompt = "") => {
 
     try {
       // 2. API 호출
-      const aiReply = await apiClient.fetchGeminiResponse(
+      const aiReply = await apiClient.fetchProxyGemini(
         API_KEY,
         chatHistory, // 이전 대화 맥락 전달
         currentSystemPrompt,
