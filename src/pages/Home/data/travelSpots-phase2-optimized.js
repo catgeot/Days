@@ -1,13 +1,15 @@
 /**
- * Travel Spots Data - Europe Density Optimized
+ * Travel Spots Data - Phase 2 Optimized
  *
  * Total: 179개
- * Globe Display: 99개
+ * Globe Display: 100개 (56%)
+ * List Only: 79개 (44%)
  *
- * Europe Improvements:
- * - Florence: Hidden from globe (accessible via search/list)
- * - 5 Cities recategorized: Urban → Culture
- *   (Edinburgh, Amsterdam, Stockholm, Moscow, Berlin)
+ * Optimization Applied:
+ * - Tier 1: 무조건 표시
+ * - Paradise Theme: 우선 표시
+ * - Dense Regions: 최소화
+ * - Distance: 80-120km 간격 유지
  *
  * Last Updated: 2026-03-31
  */
@@ -1051,11 +1053,10 @@ export const TRAVEL_SPOTS = [
     "popularity": 86,
     "continent": "europe",
     "categories": [
-      "culture",
       "urban"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": null,
     "desc": "테트리스 성으로 유명한 성 바실리 대성당과 붉은 광장의 심장부입니다. 러시아 제국의 웅장한 건축 예술을 목격할 수 있습니다.",
@@ -1922,11 +1923,10 @@ export const TRAVEL_SPOTS = [
     "popularity": 78,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "adventure"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "adventure",
+    "category": "adventure",
     "showOnGlobe": false,
     "denseRegion": "western-europe",
     "desc": "분단의 아픔을 이겨내고 세계에서 가장 힙한 언더그라운드 클럽과 전위적인 예술가들이 모여드는 자유롭고 쿨한 독일의 수도입니다.",
@@ -2216,11 +2216,11 @@ export const TRAVEL_SPOTS = [
     "popularity": 90,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "urban",
+      "culture"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": "western-europe",
     "desc": "운하를 따라 펼쳐진 그림 같은 도시입니다. 안네 프랑크의 집과 반 고흐 미술관, 그리고 자유로운 분위기와 자전거 문화가 어우러진 독특한 매력을 지닌 곳입니다.",
@@ -2303,11 +2303,11 @@ export const TRAVEL_SPOTS = [
     "popularity": 87,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "urban",
+      "culture"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": "central-europe",
     "desc": "분단의 역사를 극복하고 예술과 자유의 도시로 거듭난 독일의 수도입니다. 베를린 장벽 기념관과 브란덴부르크 문, 그리고 세계적인 클럽과 갤러리가 공존하는 창의적인 도시입니다.",
@@ -2366,7 +2366,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": "southern-europe",
     "desc": "르네상스의 발상지이자 미켈란젤로와 다빈치의 도시입니다. 두오모 대성당과 우피치 미술관, 베키오 다리를 거닐며 예술과 역사가 살아 숨 쉬는 토스카나의 보석을 경험할 수 있습니다.",
     "keywords": [
@@ -3262,11 +3262,11 @@ export const TRAVEL_SPOTS = [
     "popularity": 81,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "urban",
+      "culture"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": null,
     "desc": "화산 위에 지어진 에딘버러 성과 중세 거리가 조화를 이룬 스코틀랜드의 보석입니다. 해리 포터가 탄생한 카페와 로열 마일의 역사적 건축물들이 매력적입니다. 여름의 프린지 페스티벌은 세계 최대 예술 축제입니다.",
@@ -3319,11 +3319,10 @@ export const TRAVEL_SPOTS = [
     "popularity": 78,
     "continent": "europe",
     "categories": [
-      "culture",
       "urban"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": null,
     "desc": "14개의 섬으로 이루어진 물 위의 도시입니다. 감라스탄 구시가지의 좁은 골목과 왕궁, 바사 박물관의 17세기 전함이 인상적입니다. 노벨상 시상식이 열리는 도시답게 교육과 혁신의 중심지입니다.",

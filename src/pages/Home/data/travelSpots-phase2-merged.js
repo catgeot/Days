@@ -1,13 +1,9 @@
 /**
- * Travel Spots Data - Europe Density Optimized
+ * Travel Spots Data - Phase 2 Merged
  *
+ * Phase 1: 100개 (ID 101-200)
+ * Phase 2: 79개 (ID 201-279)
  * Total: 179개
- * Globe Display: 99개
- *
- * Europe Improvements:
- * - Florence: Hidden from globe (accessible via search/list)
- * - 5 Cities recategorized: Urban → Culture
- *   (Edinburgh, Amsterdam, Stockholm, Moscow, Berlin)
  *
  * Last Updated: 2026-03-31
  */
@@ -322,7 +318,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": "southeast-asia",
     "desc": "필리핀 최후의 비경으로, 석회암 암벽과 지하 강, 투명한 라군이 환상적인 절경을 이룹니다. 엘니도 투어가 특히 유명합니다.",
     "keywords": [
@@ -450,7 +446,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "북미 로키산맥의 심장부로, 에메랄드빛 루이스 호수와 웅장한 빙하가 장관을 이룹니다. 대자연 속에서 엘크와 곰 같은 야생동물과 조우하며 하이킹, 카누 등 다양한 아웃도어 활동을 즐기기에 최적입니다.",
     "keywords": [
@@ -477,7 +473,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "남미 대륙을 가로지르며 엄청난 굉음과 함께 쏟아져 내리는 세계 최대의 폭포입니다. '악마의 목구멍'이라 불리는 하이라이트 구간에 서면 대자연의 압도적인 힘과 경외감을 온몸으로 느낄 수 있습니다.",
     "keywords": [
@@ -504,7 +500,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "불과 얼음의 나라로 불리며, 거대한 빙하와 활화산이 공존하는 유럽의 외딴섬입니다. 겨울에는 신비로운 오로라가 하늘을 수놓고, 여름에는 백야의 태양 아래 장엄한 폭포들이 빛을 발합니다.",
     "keywords": [
@@ -531,7 +527,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "아프리카 대륙을 가르는 잠베지 강이 빚어낸 거대한 물보라의 기적입니다. 현지어로 '천둥 치는 연기'라 불리며, 폭포를 내려다보는 헬기 투어나 악마의 수영장에서의 아찔한 경험을 즐길 수 있습니다.",
     "keywords": [
@@ -585,7 +581,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "오세아니아 우주에서도 보인다는 세계 최대의 산호초 군락입니다. 수만 종의 해양 생물이 살아 숨 쉬는 바닷속 생태계의 보고로, 스쿠버 다이빙과 스노클링을 통해 신비로운 수중 세계를 탐험할 수 있습니다.",
     "keywords": [
@@ -665,7 +661,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "찰스 다윈의 진화론을 탄생시킨 생물학적 기적의 섬들입니다. 사람을 피하지 않는 희귀 야생동물들과 함께 걷는 경이로운 경험을 제공합니다.",
     "keywords": [
@@ -717,7 +713,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "매년 수천만 마리의 붉은 대게가 숲에서 바다로 대이동을 하는 장관을 연출하는 호주령의 고립된 생태 섬입니다.",
     "keywords": [
@@ -741,7 +737,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "인도양 중앙에 위치한 영국령 환초로, 거대한 V자 모양의 섬입니다. 군사 구역으로 지정되어 일반인의 출입이 제한된 비밀스러운 곳입니다.",
     "keywords": [
@@ -790,7 +786,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "끝을 알 수 없는 황금빛 모래 언덕이 파도처럼 일렁이는 세상에서 가장 넓은 사막입니다. 밤하늘에 쏟아지는 은하수는 숨을 멎게 합니다.",
     "keywords": [
@@ -815,7 +811,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "미항공우주국(NASA)이 선정한 세계 최고의 오로라 관측지입니다. 쏟아지는 빛의 커튼 아래서 잊지 못할 밤을 맞이합니다.",
     "keywords": [
@@ -841,7 +837,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "우기가 되면 세상에서 가장 거대한 거울로 변신하는 볼리비아의 소금 사막입니다. 하늘과 땅의 경계가 무너지는 기적을 경험합니다.",
     "keywords": [
@@ -1051,11 +1047,10 @@ export const TRAVEL_SPOTS = [
     "popularity": 86,
     "continent": "europe",
     "categories": [
-      "culture",
       "urban"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": null,
     "desc": "테트리스 성으로 유명한 성 바실리 대성당과 붉은 광장의 심장부입니다. 러시아 제국의 웅장한 건축 예술을 목격할 수 있습니다.",
@@ -1108,7 +1103,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "태평양의 프렌치 리비에라로 불립니다. 프랑스의 세련미와 멜라네시아의 자연이 혼합된 우아한 휴양지입니다.",
     "keywords": [
@@ -1452,7 +1447,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "알바트로스 새들의 최대 서식지이자 제2차 세계대전의 주요 격전지였던 태평양 한가운데의 고립된 환초입니다.",
     "keywords": [
@@ -1504,7 +1499,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "300개가 넘는 섬으로 이루어진 다채로운 국가입니다. 원주민들의 친절한 미소와 다이내믹한 해양 스포츠가 기다립니다.",
     "keywords": [
@@ -1531,7 +1526,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "거대한 모아이 석상들이 수수께끼처럼 해안가를 지키고 있는 칠레령의 외딴 섬입니다. 미지의 웅장함이 압도합니다.",
     "keywords": [
@@ -1556,7 +1551,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "그리스 중부, 하늘에 기둥처럼 솟아오른 거대한 암벽 꼭대기에 아슬아슬하게 세워진 수도원들이 초현실적인 경관을 연출합니다.",
     "keywords": [
@@ -1606,7 +1601,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "끝없는 초원과 게르가 떠오르는 유목민의 심장입니다. 밤하늘에 쏟아지는 별빛 아래 말들이 달리는 몽골의 중심지입니다.",
     "keywords": [
@@ -1684,7 +1679,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "붉은 성벽으로 둘러싸인 모로코의 천일야화 도시입니다. 제마 엘 프나 광장의 혼돈과 아름다운 리아드(전통 가옥)가 강렬하게 대비됩니다.",
     "keywords": [
@@ -1710,7 +1705,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "북미 최북단의 야생이 살아 숨 쉬는 거대한 얼음의 땅입니다. 빙하가 무너져 내리는 장관을 목격하고, 고래와 불곰 등 거대한 야생동물들의 생태계를 관찰하는 진정한 탐험가의 목적지입니다.",
     "keywords": [
@@ -1737,7 +1732,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "남미 지구의 허파라 불리는 세계에서 가장 크고 깊은 미지의 정글입니다. 거대한 아마존 강을 따라 보트를 타며 핑크 돌고래와 희귀한 조류들을 관찰하는 날것 그대로의 생태 탐험을 떠나보세요.",
     "keywords": [
@@ -1764,7 +1759,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "유럽 대륙 북쪽, 북극점과 가장 가까운 인간의 거주지입니다. 끝없는 설원 위를 걷는 북극곰의 발자취를 쫓고, 영구 동토층의 빙동굴을 탐험하며 혹한이 빚어낸 순백의 고립을 경험할 수 있습니다.",
     "keywords": [
@@ -1791,7 +1786,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "아프리카의 끝없는 초원 위에서 펼쳐지는 야생동물들의 서사시를 직접 목격할 수 있습니다. 수백만 마리의 누떼가 이동하는 대자연의 스펙터클 한가운데로 사파리 지프를 타고 뛰어들어 보세요.",
     "keywords": [
@@ -1818,7 +1813,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "오세아니아 대륙의 붉은 심장, 아웃백 한가운데 솟아오른 거대한 단일 바위입니다. 시간과 햇빛에 따라 붉게 타오르는 듯 변하는 바위의 색조와 원주민의 신성한 에너지를 오프로드를 달리며 느껴보세요.",
     "keywords": [
@@ -1845,7 +1840,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "지구상에 남은 마지막 진정한 오지이자 빙하로 뒤덮인 극한의 대륙입니다. 쇄빙선을 타고 얼어붙은 바다를 가르며 펭귄 군락과 거대한 빙산들이 떠다니는 초현실적인 세계로 들어가는 궁극의 모험입니다.",
     "keywords": [
@@ -1899,7 +1894,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "남태평양 유일의 왕국입니다. 매년 혹등고래가 짝짓기를 위해 찾아오는 경이로운 생태의 현장을 목격할 수 있습니다.",
     "keywords": [
@@ -1922,11 +1917,10 @@ export const TRAVEL_SPOTS = [
     "popularity": 78,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "adventure"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "adventure",
+    "category": "adventure",
     "showOnGlobe": false,
     "denseRegion": "western-europe",
     "desc": "분단의 아픔을 이겨내고 세계에서 가장 힙한 언더그라운드 클럽과 전위적인 예술가들이 모여드는 자유롭고 쿨한 독일의 수도입니다.",
@@ -1954,7 +1948,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "인도양의 알프스라 불리는 프랑스령 화산섬입니다. 활화산 등반과 헬기 투어 등 스릴 넘치는 대자연의 경관을 뽐냅니다.",
     "keywords": [
@@ -2007,7 +2001,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "활화산을 가까이서 볼 수 있는 모험의 섬입니다. 원시 부족의 문화와 자연 그대로의 생태계가 매력적입니다.",
     "keywords": [
@@ -2034,7 +2028,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "남미 대륙의 최남단으로, 웅장한 빙하와 날카로운 화강암 봉우리들이 인간의 접근을 거부하는 듯한 태초의 야생을 간직하고 있습니다.",
     "keywords": [
@@ -2059,7 +2053,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "남인도양에 위치한 황량한 프랑스령 섬입니다. 황량함(Desolation)의 섬이라 불릴 만큼 극도로 고립되어 바람이 멈추지 않는 곳입니다.",
     "keywords": [
@@ -2083,7 +2077,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "겨울이면 영하 50도까지 떨어지는 세계에서 가장 추운 도시입니다. 영구동토층 위에 세워진 극한 환경 속 인류의 인내를 보여줍니다.",
     "keywords": [
@@ -2108,7 +2102,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "수백 개의 화산이 연기를 뿜어내고 곰들이 연어를 사냥하는 야생의 땅입니다. 불과 얼음이 공존하는 원시 자연을 간직하고 있습니다.",
     "keywords": [
@@ -2216,12 +2210,12 @@ export const TRAVEL_SPOTS = [
     "popularity": 90,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "urban",
+      "culture"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
-    "showOnGlobe": true,
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": false,
     "denseRegion": "western-europe",
     "desc": "운하를 따라 펼쳐진 그림 같은 도시입니다. 안네 프랑크의 집과 반 고흐 미술관, 그리고 자유로운 분위기와 자전거 문화가 어우러진 독특한 매력을 지닌 곳입니다.",
     "keywords": [
@@ -2303,11 +2297,11 @@ export const TRAVEL_SPOTS = [
     "popularity": 87,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "urban",
+      "culture"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": "central-europe",
     "desc": "분단의 역사를 극복하고 예술과 자유의 도시로 거듭난 독일의 수도입니다. 베를린 장벽 기념관과 브란덴부르크 문, 그리고 세계적인 클럽과 갤러리가 공존하는 창의적인 도시입니다.",
@@ -2762,7 +2756,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": "southeast-asia",
     "desc": "4km에 달하는 파우더처럼 고운 화이트 비치가 유명한 필리핀 최고의 휴양지입니다. 낮에는 카약과 카이트서핑을, 밤에는 해변의 파이어 댄스를 즐길 수 있습니다. 완벽히 복구된 자연환경이 더욱 빛납니다.",
     "keywords": [
@@ -2902,7 +2896,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "석회암 카르스트 지형이 만들어낸 자연의 걸작입니다. 라일레이 비치는 육로로 접근 불가능한 비밀 해변으로, 암벽 등반의 성지이기도 합니다. 에메랄드 풀과 온천이 있는 정글 트레킹도 즐길 수 있습니다.",
     "keywords": [
@@ -3098,7 +3092,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "16개의 호수가 계단식 폭포로 연결된 동화 같은 국립공원입니다. 에메랄드빛과 터콰이즈색이 교차하는 물빛은 석회암 지형이 만든 자연의 마술입니다. 나무 산책로를 따라 걷는 4시간은 마법 같은 경험입니다.",
     "keywords": [
@@ -3182,7 +3176,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": "southern-europe",
     "desc": "북부 이탈리아의 알프스 산맥으로, 독특한 담홍색 석회암이 만드는 '알펜글로우' 현상이 유명합니다. 세첼다와 트레치메 같은 봉우리들은 등반가들의 천국입니다. 겨울에는 스키, 여름에는 하이킹을 즐길 수 있습니다.",
     "keywords": [
@@ -3262,11 +3256,11 @@ export const TRAVEL_SPOTS = [
     "popularity": 81,
     "continent": "europe",
     "categories": [
-      "culture",
-      "urban"
+      "urban",
+      "culture"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": null,
     "desc": "화산 위에 지어진 에딘버러 성과 중세 거리가 조화를 이룬 스코틀랜드의 보석입니다. 해리 포터가 탄생한 카페와 로열 마일의 역사적 건축물들이 매력적입니다. 여름의 프린지 페스티벌은 세계 최대 예술 축제입니다.",
@@ -3319,11 +3313,10 @@ export const TRAVEL_SPOTS = [
     "popularity": 78,
     "continent": "europe",
     "categories": [
-      "culture",
       "urban"
     ],
-    "primaryCategory": "culture",
-    "category": "culture",
+    "primaryCategory": "urban",
+    "category": "urban",
     "showOnGlobe": true,
     "denseRegion": null,
     "desc": "14개의 섬으로 이루어진 물 위의 도시입니다. 감라스탄 구시가지의 좁은 골목과 왕궁, 바사 박물관의 17세기 전함이 인상적입니다. 노벨상 시상식이 열리는 도시답게 교육과 혁신의 중심지입니다.",
@@ -3465,7 +3458,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": "central-europe",
     "desc": "바이에른의 수도로, 맥주와 옥토버페스트의 도시입니다. 마리엔 광장의 신시청사와 님펜부르크 궁전이 화려한 바로크 양식을 자랑합니다. BMW 박물관과 알리안츠 아레나는 현대 독일의 기술력을 보여줍니다.",
     "keywords": [
@@ -3549,7 +3542,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "도루 강변의 알록달록한 건물들이 인상적인 포르투갈 제2의 도시입니다. 포트 와인의 본고장으로, 강 건너편 빌라노바 드 가이아의 와이너리 투어가 필수입니다. 동 루이스 1세 다리에서 바라보는 석양이 환상적입니다.",
     "keywords": [
@@ -3577,7 +3570,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": "southern-europe",
     "desc": "스페인의 열정적인 수도로, 프라도 미술관에는 고야와 벨라스케스의 명작이 가득합니다. 레티로 공원에서 여유를 즐기고, 밤늦게까지 타파스와 와인을 즐기는 마드리드의 밤문화는 특별합니다. 레알 마드리드의 산티아고 베르나베우 경기장도 방문할 가치가 있습니다.",
     "keywords": [
@@ -3662,7 +3655,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "피오르드와 숲으로 둘러싸인 노르웨이의 수도입니다. 비겔란 조각 공원의 독특한 인체 조각상과 오페라 하우스의 현대적인 건축이 인상적입니다. 바이킹 박물관에서는 실제 바이킹 선박을 볼 수 있습니다. 겨울에는 오슬로 인근에서 스키를 즐길 수 있습니다.",
     "keywords": [
@@ -3747,7 +3740,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "미국의 수도로, 백악관과 국회의사당, 링컨 기념관 등 상징적인 건물들이 모여 있습니다. 스미소니언 박물관군은 모두 무료로 입장할 수 있으며, 국립항공우주박물관과 자연사박물관이 특히 인기입니다. 벚꽃 시즌의 타이달 베이신이 아름답습니다.",
     "keywords": [
@@ -3775,7 +3768,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": "us-east-coast",
     "desc": "미국에서 가장 오래된 도시 중 하나로, 하버드와 MIT가 있는 교육의 중심지입니다. 프리덤 트레일을 따라 미국 독립혁명의 역사를 배우고, 펜웨이 파크에서 레드삭스 야구를 관람할 수 있습니다. 보스턴 크림 파이와 클램 차우더가 유명합니다.",
     "keywords": [
@@ -3832,7 +3825,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "북미의 파리로 불리는 프랑스어권 도시입니다. 올드 몬트리올의 자갈길과 노트르담 대성당이 유럽 같은 분위기를 자아냅니다. 몬트리올 재즈 페스티벌과 퓨티느(감자튀김에 그레이비 소스를 얹은 요리)가 유명합니다. 겨울에는 지하도시에서 쇼핑을 즐길 수 있습니다.",
     "keywords": [
@@ -3944,7 +3937,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "메콩 강변의 고대 수도로, 프랑스 식민지 시대 건축과 불교 사원이 조화를 이룹니다. 새벽 탁발 의식은 루앙프라방의 상징이며, 푸시 언덕에서 바라보는 일몰이 아름답습니다. 도시 전체가 유네스코 세계문화유산으로 지정되어 있습니다.",
     "keywords": [
@@ -4056,7 +4049,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "핑크빛 건물로 유명한 '핑크 시티'입니다. 언덕 위의 암베르 성에서 코끼리를 타고 올라가는 경험이 특별하며, 하와 마할(바람의 궁전)의 953개 창문이 인상적입니다. 보석과 직물 시장에서 전통 라자스탄 공예품을 구경할 수 있습니다.",
     "keywords": [
@@ -4084,7 +4077,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "3,000년 역사를 자랑하는 힌두교의 성지입니다. 갠지스 강변의 가트(계단)에서 매일 수천 명이 목욕하고 기도하며, 화장 의식도 이루어집니다. 새벽 보트 투어로 일출을 보며 성스러운 의식을 관찰하는 것은 평생 잊지 못할 경험입니다.",
     "keywords": [
@@ -4112,7 +4105,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "14세기 비자야나가르 제국의 수도 유적지로, 거대한 바위 사이에 흩어진 사원과 궁전이 장관입니다. 비투말라 사원의 음악 기둥을 두드리면 각기 다른 음이 울립니다. 바위산 정상에서 바라보는 일몰 풍경이 환상적입니다.",
     "keywords": [
@@ -4140,7 +4133,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": "east-asia",
     "desc": "총 길이 21,196km에 달하는 인류 역사상 가장 거대한 건축물입니다. 베이징 근처의 바다링과 무티안위 구간이 가장 인기 있으며, 산맥을 따라 구불구불 이어지는 성벽의 모습은 경이롭습니다. 가을 단풍 시즌이 가장 아름답습니다.",
     "keywords": [
@@ -4224,7 +4217,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "해발 3,650m에 위치한 티베트의 성지입니다. 포탈라 궁전은 달라이 라마의 겨울 궁전으로, 1,000개가 넘는 방과 13층 높이의 웅장한 건축물입니다. 조캉 사원 주변을 시계방향으로 도는 코라(순례길)에서 티베트 불교의 깊은 신앙심을 느낄 수 있습니다.",
     "keywords": [
@@ -4253,7 +4246,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "실크로드의 중요한 오아시스 도시로, 막고굴의 불교 벽화가 유명합니다. 492개 석굴에 그려진 1,000년에 걸친 벽화는 불교 예술의 보고입니다. 명사산(울음 모래 언덕)에서 낙타를 타고 월아천(초승달 샘)을 방문하는 사막 체험도 할 수 있습니다.",
     "keywords": [
@@ -4281,7 +4274,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "기원전 5세기 페르시아 제국의 수도 유적입니다. 아파다나 궁전의 계단에 새겨진 각국 사절단의 부조는 고대 페르시아의 위대함을 보여줍니다. 알렉산더 대왕이 불태웠지만, 여전히 남아있는 거대한 기둥과 문은 당시의 영광을 증언합니다.",
     "keywords": [
@@ -4394,7 +4387,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "람세스 2세가 세운 거대한 암굴 신전으로, 20m 높이의 파라오 좌상 4개가 입구를 지키고 있습니다. 아스완 댐 건설 시 유네스코가 신전 전체를 60m 위로 이동시킨 놀라운 역사가 있습니다. 연 2회 태양빛이 내부 성소까지 비추는 태양 축제가 유명합니다.",
     "keywords": [
@@ -4450,7 +4443,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "사하라 사막의 전설적인 도시로, 중세 시대 이슬람 학문과 금무역의 중심지였습니다. 흙 벽돌로 지어진 모스크와 수만 권의 고대 필사본이 보관된 도서관이 있습니다. '팀북투로 간다'는 표현이 '세상 끝으로 간다'는 의미로 쓰일 만큼 외진 곳입니다.",
     "keywords": [
@@ -4478,7 +4471,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "12세기에 암반을 깎아 만든 11개의 암굴 교회가 있는 에티오피아 정교회의 성지입니다. 가장 유명한 성 게오르기오스 교회는 십자가 모양으로 바위 속에 새겨져 있습니다. '아프리카의 페트라'로 불리며, 순례자들이 지금도 찾아오는 살아있는 유적지입니다.",
     "keywords": [
@@ -4506,7 +4499,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "잉카 제국의 수도로, 정교하게 맞춘 돌담이 도시 곳곳에 남아있습니다. 사크사이와만 요새의 거대한 석축은 현대 기술로도 재현하기 어려운 수준입니다. 마추픽추로 가는 관문이지만, 쿠스코 자체도 매력적인 역사 도시입니다. 해발 3,400m의 고산 지대이므로 고산병 주의가 필요합니다.",
     "keywords": [
@@ -4534,7 +4527,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "사막에 그려진 거대한 지상화로, 벌새, 원숭이, 거미 등 70개 이상의 그림이 있습니다. 가장 큰 것은 길이 370m에 달하며, 기원전 500년~서기 500년 사이에 제작되었습니다. 경비행기를 타고 상공에서 내려다봐야 전체 모습을 볼 수 있는 미스터리한 유적입니다.",
     "keywords": [
@@ -4562,7 +4555,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "정글 속에 숨겨진 마야 문명 최대 도시 유적입니다. 6개의 거대한 피라미드 신전이 열대우림 위로 솟아있으며, 4호 신전 꼭대기에서 바라보는 일출이 장관입니다. 원숭이와 앵무새의 울음소리가 들리는 가운데 고대 마야의 영광을 느낄 수 있습니다.",
     "keywords": [
@@ -4590,7 +4583,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "순례자의 길(카미노)의 종착지로, 사도 야고보의 유해가 안치된 대성당이 있습니다. 중세부터 지금까지 수백만 명의 순례자가 걸어온 유서 깊은 성지입니다. 구시가지 전체가 유네스코 세계문화유산이며, 순례자 여권에 찍는 도장이 특별한 기념이 됩니다.",
     "keywords": [
@@ -4702,7 +4695,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "서유럽 최고봉(4,810m)으로, 샤모니 계곡을 중심으로 한 알프스 최고의 등산 명소입니다. 투르 뒤 몽블랑(TMB) 트레킹은 프랑스, 이탈리아, 스위스를 거치는 170km의 환상적인 코스입니다. 에귀유 뒤 미디 케이블카로 해발 3,842m까지 올라가 빙하와 바위 봉우리를 가까이서 볼 수 있습니다.",
     "keywords": [
@@ -4731,7 +4724,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "세계 최대 도마뱀인 코모도 왕도마뱀(최대 3m)의 서식지입니다. 레인저와 함께 트레킹하며 야생 코모도 드래곤을 관찰하는 스릴 넘치는 경험을 할 수 있습니다. 핑크 비치의 독특한 분홍빛 모래와 주변 섬의 다이빙 포인트도 세계적입니다. 리브어보드 크루즈로 여러 섬을 탐험하는 것이 인기입니다.",
     "keywords": [
@@ -4789,7 +4782,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "세계에서 세 번째로 큰 섬으로, 1억 4천만 년 된 열대우림이 펼쳐집니다. 오랑우탄, 피그미코끼리, 코뿔새 등 희귀 동물의 보고이며, 키나발루 산(4,095m) 등반과 정글 트레킹을 즐길 수 있습니다. 세피록 오랑우탄 센터와 키나바탕안 강의 반딧불이 투어가 유명합니다.",
     "keywords": [
@@ -4818,7 +4811,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "8,800만 년 전 아프리카 대륙에서 분리된 섬으로, 동식물의 90%가 고유종입니다. 여우원숭이, 바오밥 나무, 카멜레온 등 독특한 생태계를 볼 수 있습니다. 칭기 데 베마라하의 바위 숲과 이살로 국립공원의 기암괴석이 장관입니다. 미개척 오지 탐험의 매력이 있습니다.",
     "keywords": [
@@ -4876,7 +4869,7 @@ export const TRAVEL_SPOTS = [
     ],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": false,
+    "showOnGlobe": true,
     "denseRegion": null,
     "desc": "마추픽추로 가는 고대 잉카의 돌길을 따라 걷는 4일 트레킹입니다. 해발 4,200m의 와르미와누스카(죽은 여인의 고개)를 넘고, 윈야이와이나 유적을 거쳐 새벽에 태양의 문으로 마추픽추에 입성하는 감동적인 여정입니다. 하루 500명으로 인원 제한되어 사전 예약이 필수입니다.",
     "keywords": [

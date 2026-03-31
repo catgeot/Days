@@ -1,0 +1,40 @@
+{
+  "hideFromGlobe": [],
+  "recategorize": [
+    {
+      "id": 140,
+      "name": "모스크바",
+      "name_en": "Moscow",
+      "from": "urban",
+      "to": "culture"
+    },
+    {
+      "id": 181,
+      "name": "파리",
+      "name_en": "Paris",
+      "from": "urban",
+      "to": "culture"
+    },
+    {
+      "id": 184,
+      "name": "암스테르담",
+      "name_en": "Amsterdam",
+      "from": "urban",
+      "to": "culture"
+    },
+    {
+      "id": 187,
+      "name": "베를린",
+      "name_en": "Berlin",
+      "from": "urban",
+      "to": "culture"
+    },
+    {
+      "id": 221,
+      "name": "에딘버러",
+      "name_en": "Edinburgh",
+      "from": "urban",
+      "to": "culture"
+    }
+  ]
+}

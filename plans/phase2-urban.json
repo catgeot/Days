@@ -361,26 +361,6 @@
   },
   {
     "id": 758,
-    "slug": "dubai",
-    "name": "두바이",
-    "name_en": "Dubai",
-    "country": "아랍에미리트",
-    "country_en": "UAE",
-    "lat": 25.2048,
-    "lng": 55.2708,
-    "tier": 2,
-    "popularity": 88,
-    "continent": "asia",
-    "categories": ["urban"],
-    "primaryCategory": "urban",
-    "category": "urban",
-    "showOnGlobe": true,
-    "denseRegion": null,
-    "desc": "사막 위에 세워진 미래 도시로, 세계에서 가장 높은 빌딩 부르즈 칼리파가 있습니다. 인공 섬 팜 주메이라와 세계 최대 쇼핑몰 두바이 몰이 화려함을 자랑합니다. 전통 수크에서 금과 향신료를 구경하고, 사막 사파리를 즐길 수 있습니다.",
-    "keywords": ["UAE","부르즈칼리파","쇼핑","사막","럭셔리"]
-  },
-  {
-    "id": 759,
     "slug": "washington-dc",
     "name": "워싱턴 DC",
     "name_en": "Washington DC",
@@ -400,7 +380,7 @@
     "keywords": ["미국","백악관","스미소니언","벚꽃","수도"]
   },
   {
-    "id": 760,
+    "id": 759,
     "slug": "boston",
     "name": "보스턴",
     "name_en": "Boston",
@@ -420,7 +400,7 @@
     "keywords": ["미국","하버드","MIT","프리덤트레일","야구"]
   },
   {
-    "id": 761,
+    "id": 760,
     "slug": "miami",
     "name": "마이애미",
     "name_en": "Miami",
@@ -440,7 +420,7 @@
     "keywords": ["미국","사우스비치","아르데코","쿠바","크루즈"]
   },
   {
-    "id": 762,
+    "id": 761,
     "slug": "montreal",
     "name": "몬트리올",
     "name_en": "Montreal",
