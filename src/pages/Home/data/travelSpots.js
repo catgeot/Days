@@ -48,7 +48,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "하얀 외벽과 파란 지붕이 코발트빛 지중해와 눈부신 대비를 이루는 낭만의 섬입니다. 절벽 위에서 바라보는 붉은 일몰은 전 세계 여행자들의 버킷리스트로 꼽힙니다. 골목골목 숨겨진 아름다운 카페와 상점들을 탐험해 보세요.",
     "keywords": ["유럽","지중해","일몰","화이트"]
@@ -248,7 +248,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": "southeast-asia",
     "desc": "필리핀 최후의 비경으로, 석회암 암벽과 지하 강, 투명한 라군이 환상적인 절경을 이룹니다. 엘니도 투어가 특히 유명합니다.",
     "keywords": ["휴양","자연/오지","액티비티"]
@@ -288,7 +288,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": "southeast-asia",
     "desc": "신들의 섬이라 불리는 전 세계 서퍼와 요기(Yogi)들의 안식처입니다. 힌두교 문화와 트렌디한 비치 클럽이 완벽하게 공존합니다.",
     "keywords": ["휴양","액티비티","낭만"]
@@ -1008,7 +1008,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["culture"],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "남미 안데스 산맥의 가파른 봉우리 위에 숨겨진 잉카 제국의 공중 도시입니다. 구름이 걷히며 서서히 드러나는 거대한 돌로 쌓은 고대 도시의 웅장함은 여행자들에게 형언할 수 없는 전율을 안겨줍니다.",
     "keywords": ["남미","잉카","안데스","잃어버린도시"]
@@ -1368,7 +1368,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["adventure"],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "아프리카의 끝없는 초원 위에서 펼쳐지는 야생동물들의 서사시를 직접 목격할 수 있습니다. 수백만 마리의 누떼가 이동하는 대자연의 스펙터클 한가운데로 사파리 지프를 타고 뛰어들어 보세요.",
     "keywords": ["아프리카","사파리","대자연","초원"]
@@ -1888,7 +1888,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["urban","culture"],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "인도의 수도이자 역사와 현대가 공존하는 거대 도시입니다. 타지마할로 가는 관문이며, 인도 문과 후마윤의 무덤, 그리고 활기찬 시장과 인도 음식의 진수를 경험할 수 있습니다.",
     "keywords": ["인도문","후마윤무덤","타지마할관문","인도음식","역사"]
@@ -2008,7 +2008,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["culture"],
     "primaryCategory": "culture",
     "category": "culture",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "세 종교의 성지이자 수천 년 역사가 살아있는 도시입니다. 통곡의 벽과 성묘 교회, 알 아크사 모스크를 방문하며 인류 역사에서 가장 중요한 도시 중 하나를 경험할 수 있습니다.",
     "keywords": ["통곡의벽","성지","구시가지","종교","역사"]
@@ -2048,7 +2048,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "필리핀 팔라완 북쪽 끝에 위치한 숨겨진 보석입니다. 석회암 절벽으로 둘러싸인 비밀 해변과 에메랄드빛 라군은 지구상에서 가장 아름다운 풍경을 자랑합니다. 아일랜드 호핑 투어는 필수 체험입니다.",
     "keywords": ["필리핀","라군","아일랜드호핑","석회암절벽","비밀해변"]
@@ -2108,7 +2108,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "영화 '더 비치'의 촬영지로 유명해진 천혜의 비경입니다. 마야 베이의 투명한 바다와 수직으로 솟은 석회암 절벽은 숨이 멎을 듯 아름답습니다. 스노클링하면 형형색색의 열대어 떼를 만날 수 있습니다.",
     "keywords": ["태국","더비치","마야베이","스노클링","석회암"]
@@ -2128,7 +2128,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "태국만에 위치한 코코넛 나무 가득한 열대 낙원입니다. 차웽 비치와 라마이 비치는 각각 다른 매력을 선사하며, 인근의 앙통 국립 해양공원은 카약 투어의 명소입니다. 럭셔리 리조트와 저렴한 방갈로가 공존합니다.",
     "keywords": ["태국","열대섬","럭셔리","방갈로","카약"]
@@ -2148,7 +2148,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "99개의 섬으로 이루어진 말레이시아의 면세 천국입니다. 스카이 브리지에서 바라보는 열대우림과 바다의 조화는 장관입니다. 맹그로브 숲 카약 투어와 독수리 먹이주기 체험이 인기입니다.",
     "keywords": ["말레이시아","면세","스카이브리지","맹그로브","독수리"]
@@ -2168,7 +2168,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "석회암 카르스트 지형이 만들어낸 자연의 걸작입니다. 라일레이 비치는 육로로 접근 불가능한 비밀 해변으로, 암벽 등반의 성지이기도 합니다. 에메랄드 풀과 온천이 있는 정글 트레킹도 즐길 수 있습니다.",
     "keywords": ["태국","석회암","라일레이","암벽등반","비밀해변"]
@@ -2188,7 +2188,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": "southeast-asia",
     "desc": "필리핀 중부의 섬으로, 고래상어와 함께 수영할 수 있는 오슬롭이 유명합니다. 가와산 폭포의 청록색 물과 캐녀닝 액티비티는 모험을 원하는 이들에게 완벽합니다. 막탄 섬의 리조트에서 편안한 휴식도 가능합니다.",
     "keywords": ["필리핀","고래상어","폭포","캐녀닝","다이빙"]
@@ -2368,7 +2368,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["nature"],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": "southern-europe",
     "desc": "북부 이탈리아의 알프스 산맥으로, 독특한 담홍색 석회암이 만드는 '알펜글로우' 현상이 유명합니다. 세첼다와 트레치메 같은 봉우리들은 등반가들의 천국입니다. 겨울에는 스키, 여름에는 하이킹을 즐길 수 있습니다.",
     "keywords": ["이탈리아","알프스","등반","스키","알펜글로우"]
@@ -2508,7 +2508,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["urban"],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": "southeast-asia",
     "desc": "페트로나스 트윈 타워로 상징되는 말레이시아의 수도입니다. 바투 동굴의 힌두 사원과 이슬람 사원, 중국 사원이 조화롭게 공존하는 다문화 도시입니다. 저렴한 쇼핑과 다양한 스트리트 푸드가 매력적입니다.",
     "keywords": ["말레이시아","페트로나스","바투동굴","다문화","쇼핑"]
@@ -2548,7 +2548,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["urban"],
     "primaryCategory": "urban",
     "category": "urban",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "스페이스 니들과 파이크 플레이스 마켓으로 유명한 태평양 연안의 도시입니다. 스타벅스와 아마존의 본사가 있는 혁신의 중심지이며, 그런지 록의 발상지이기도 합니다. 레이니어 산을 배경으로 한 도시 스카이라인이 아름답습니다.",
     "keywords": ["미국","스페이스니들","스타벅스","시애틀","IT"]
@@ -3408,7 +3408,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["adventure"],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "세계 10대 트레킹 코스로 꼽히는 160km의 순환 루트입니다. 5,416m의 토롱 라 고갯길을 넘어 열대부터 고산까지 다양한 기후대를 경험하며, 안나푸르나 봉우리들의 360도 파노라마를 감상할 수 있습니다. 15-20일이 소요되는 본격적인 고산 트레킹입니다.",
     "keywords": ["네팔","안나푸르나","트레킹","고갯길","히말라야"]
@@ -3708,7 +3708,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "에게해 연안의 터키 휴양지로 하얀 건물과 파란 바다가 아름답습니다. 고대 7대 불가사의 중 하나인 마우솔로스 영묘가 있던 곳입니다.",
     "keywords": ["에게해","리조트","역사","요트"]
@@ -3728,7 +3728,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["paradise"],
     "primaryCategory": "paradise",
     "category": "paradise",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "필리핀의 숨겨진 보석으로 초콜릿 힐스, 세계에서 가장 작은 원숭이 안경원숭이, 맑은 바닷속 다이빙 명소를 자랑합니다.",
     "keywords": ["초콜릿힐스","다이빙","원숭이","해변"]
@@ -3808,7 +3808,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["nature"],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "뉴질랜드 남섬 남서부의 피오르드 지역으로 밀포드 사운드를 포함합니다. 세계에서 가장 습한 지역 중 하나로 장엄한 폭포가 많습니다.",
     "keywords": ["피오르드","폭포","트레킹","자연"]
@@ -3888,7 +3888,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["adventure"],
     "primaryCategory": "adventure",
     "category": "adventure",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "북미 최고봉(6,190m)으로 매킨리 산으로도 불립니다. 극한의 추위와 고도로 에베레스트보다 등반 성공률이 낮은 험난한 산입니다.",
     "keywords": ["등반","최고봉","극한","알래스카"]
@@ -3988,7 +3988,7 @@ export const TRAVEL_SPOTS = [
     "categories": ["nature"],
     "primaryCategory": "nature",
     "category": "nature",
-    "showOnGlobe": true,
+    "showOnGlobe": false,
     "denseRegion": null,
     "desc": "이탈리아 리구리아 해안의 다섯 마을로 절벽 위에 세워진 형형색색의 집들이 지중해와 어우러져 그림 같은 풍경을 만듭니다. 해안 트레킹 코스가 유명합니다.",
     "keywords": ["해안","마을","트레킹","UNESCO"]

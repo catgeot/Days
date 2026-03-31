@@ -338,6 +338,18 @@ const HomeGlobe = React.memo(forwardRef(({
 
         htmlElementsData={lodLevel > 0 ? [] : (isZenMode ? [] : allMarkers)}
         htmlElement={renderElement}
+        htmlLat={d => {
+          const offset = d._offsetLat || 0;
+          const result = d.lat + offset;
+          if (offset !== 0) console.log(`📌 Render ${d.name || d.name_en}: lat ${d.lat} + ${offset} = ${result}`);
+          return result;
+        }}
+        htmlLng={d => {
+          const offset = d._offsetLng || 0;
+          const result = d.lng + offset;
+          if (offset !== 0) console.log(`📌 Render ${d.name || d.name_en}: lng ${d.lng} + ${offset} = ${result}`);
+          return result;
+        }}
         htmlTransitionDuration={0}
 
         labelsData={isZenMode ? [] : visibleLabels}
