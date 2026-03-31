@@ -169,4 +169,236 @@ npx supabase functions deploy update-place-wiki
 
 ---
 
-**최종 업데이트**: 2026-03-31 16:46 (KST)
+## 2026-03-31 (오후 세션 3) - 위키 DB 레코드 생성 버그 수정 ✅
+
+### 🐛 발견된 문제
+
+**원인**: 클라이언트 코드에서 DB 스키마와 불일치하는 컬럼 사용
+
+1. **DB 스키마 불일치 버그** (Critical)
+   - 위치: [`PlaceWikiDetailsView.jsx:112-117`](src/components/PlaceCard/views/PlaceWikiDetailsView.jsx:112)
+   - 문제: INSERT문에서 존재하지 않는 `title` 컬럼 사용
+   - 실제 스키마: `place_wiki` 테이블에 `title` 컬럼 없음
+   - 결과: DB INSERT 실패 → 레코드 생성 안됨 → AI 정보 저장 불가
+
+2. **Edge Function 미배포**
+   - 파일: [`supabase/functions/update-place-wiki/index.ts`](supabase/functions/update-place-wiki/index.ts)
+   - 상태: UPSERT 로직으로 수정 완료 (커밋 `fb475fa`)
+   - 문제: 서버에 배포되지 않음
+
+### ✅ 해결 작업
+
+1. **클라이언트 버그 수정**
+   ```javascript
+   // ❌ Before (버그)
+   await supabase.from('place_wiki').insert({
+       place_id: String(placeId),
+       title: location,  // title 컬럼 없음!
+       summary: '',
+       ai_practical_info: '[[LOADING]]'
+   });
+   
+   // ✅ After (수정)
+   await supabase.from('place_wiki').insert({
+       place_id: String(placeId),
+       summary: '',
+       ai_practical_info: '[[LOADING]]'
+   });
+   ```
+
+2. **Edge Function 재배포**
+   ```bash
+   npx supabase functions deploy update-place-wiki --project-ref phdjnbfitvmrguqzverm
+   ```
+   - 결과: 성공적으로 배포 완료 ✅
+   
+   **⚠️ 배포 시 주의사항**:
+   - Edge Function에서 환경변수 사용 시 **Supabase Dashboard에서 Secret 등록 필수**
+   - 로컬 `.env.local`에만 있으면 배포 후 작동 안 함!
+   
+   **환경변수 설정 방법**:
+   1. Supabase Dashboard 접속: https://supabase.com/dashboard/project/phdjnbfitvmrguqzverm
+   2. Settings → Edge Functions → Environment Variables
+   3. 필요한 환경변수 추가:
+      - `VITE_GEMINI_API_KEY` (또는 `GEMINI_API_KEY`)
+      - `SUPABASE_SERVICE_ROLE_KEY` (자동 제공됨)
+      - 기타 필요한 API 키
+   4. 배포 후 함수 재시작 (자동)
+   
+   **배포 전 체크리스트**:
+   - [ ] Dashboard에서 환경변수 등록 확인
+   - [ ] 로컬에서 함수 테스트 완료
+   - [ ] 배포 후 Dashboard Logs 확인
+   - [ ] 실제 API 호출 테스트
+
+### 📊 DB 스키마 확인 (place_wiki)
+```
+✅ 존재하는 컬럼:
+- id (bigint)
+- place_id (text) - Primary Key
+- summary (text)
+- sections (jsonb)
+- source_url (text)
+- created_at (timestamp)
+- ai_practical_info (text)
+- ai_info_updated_at (timestamp)
+- essential_guide (jsonb)
+
+❌ 존재하지 않는 컬럼:
+- title
+```
+
+### 🧪 테스트 방법
+
+1. **검색으로 신규 여행지 진입**
+   - 예: "발리" 또는 "몰디브" 검색
+   - Place Card 오픈
+
+2. **위키 탭 진입**
+   - "제미나이에게 최신 정보 요청" 버튼 클릭
+   - 로딩 애니메이션 확인
+   - 2초마다 폴링하여 데이터 자동 업데이트
+
+3. **DB 확인**
+   - Supabase 대시보드 → place_wiki 테이블
+   - 신규 레코드 생성 확인
+   - ai_practical_info 필드에 마크다운 데이터 저장 확인
+
+4. **툴킷 탭 확인**
+   - 툴킷 탭 진입
+   - 8개 카드(비자, 항공, 숙박 등) 정상 표시 확인
+
+### 📝 변경 파일
+- [`src/components/PlaceCard/views/PlaceWikiDetailsView.jsx`](src/components/PlaceCard/views/PlaceWikiDetailsView.jsx) - title 컬럼 제거
+- [`supabase/functions/update-place-wiki/index.ts`](supabase/functions/update-place-wiki/index.ts) - 재배포
+
+### 🎯 예상 효과
+- ✅ 검색으로 진입한 신규 여행지도 위키 정보 생성 가능
+- ✅ 지오코딩으로 추가된 여행지도 정보 생성 가능
+- ✅ DB 레코드 자동 생성으로 사용자 경험 개선
+- ✅ 툴킷 탭 정상 작동
+
+---
+
+---
+
+## 2026-03-31 (오후 세션 4) - RLS 정책 문제 해결 ✅
+
+### 🐛 추가 문제 발견
+
+**실제 원인**: RLS(Row Level Security) 정책으로 인한 클라이언트 권한 부족
+
+1. **클라이언트(anon 키) INSERT/UPDATE 실패**
+   - 문제: `place_wiki` 테이블에 RLS 정책 적용됨
+   - 결과: 클라이언트에서 INSERT/UPDATE 시도 시 권한 에러
+   - 현상: Edge Function은 200 OK이지만 DB 레코드 생성 안 됨
+
+2. **이전 세션 해결책의 한계**
+   - 클라이언트에서 INSERT 시도 → RLS에 의해 차단
+   - Edge Function UPSERT는 정상 작동 (Service Role 사용)
+
+### ✅ 최종 해결 방법
+
+**전략**: 모든 DB 작업을 Edge Function(Service Role)에서만 처리
+
+1. **클라이언트 코드 수정**
+   ```javascript
+   // ❌ Before (RLS 때문에 작동 안 함)
+   if (!wikiData) {
+       await supabase.from('place_wiki').insert({...});
+   } else {
+       await supabase.from('place_wiki').update({...});
+   }
+   
+   // ✅ After (Edge Function에 위임)
+   // Edge Function에서 UPSERT로 모든 처리
+   console.log("Edge Function에서 DB 레코드 생성/업데이트 처리");
+   ```
+
+2. **Edge Function 확인**
+   - 이미 UPSERT 로직 구현되어 있음 ✅
+   - Service Role 사용으로 RLS 우회 ✅
+   - 레코드 없으면 자동 생성, 있으면 업데이트 ✅
+
+### 📝 변경 파일
+- [`src/components/PlaceCard/views/PlaceWikiDetailsView.jsx`](src/components/PlaceCard/views/PlaceWikiDetailsView.jsx:109-113) - 클라이언트 INSERT/UPDATE 로직 제거
+- [`supabase/functions/update-place-wiki/index.ts`](supabase/functions/update-place-wiki/index.ts:162) - UPSERT 로직 (이미 구현됨)
+
+### 🧪 테스트 방법
+
+1. **카르스텐츠 피라미드 테스트**
+   - 검색: "카르스텐츠 피라미드"
+   - Place Card → 위키 탭
+   - "제미나이에게 최신 정보 요청" 버튼 클릭
+   - 브라우저 콘솔에서 "[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리" 확인
+   - 35초 대기 (Gemini API 응답 시간)
+   - 위키 정보 표시 확인
+
+2. **DB 확인**
+   - Supabase Dashboard → place_wiki 테이블
+   - `place_id = "카르스텐츠 피라미드"` 레코드 생성 확인
+   - `ai_practical_info` 필드에 마크다운 데이터 확인
+
+3. **툴킷 탭 확인**
+   - 툴킷 탭 진입
+   - 8개 카드 정상 표시 확인
+
+### 🎯 예상 효과
+- ✅ RLS 정책 우회 (Service Role 사용)
+- ✅ 신규 여행지 DB 레코드 자동 생성
+- ✅ 검색/지오코딩 진입 시 정상 작동
+- ✅ 클라이언트 코드 단순화 (DB 직접 조작 제거)
+
+### 📚 학습 포인트
+
+#### Supabase RLS 정책
+**현재 `place_wiki` 테이블 정책**:
+- ✅ SELECT: public 허용 (읽기 가능)
+- ❌ INSERT: 정책 없음 (클라이언트 차단)
+- ❌ UPDATE: 정책 없음 (클라이언트 차단)
+
+**권한 구분**:
+- **anon 키** (클라이언트): SELECT만 가능
+- **Service Role 키** (Edge Function): 모든 작업 가능 (RLS 우회)
+
+#### 왜 기존 여행지는 작동했는가?
+
+**이전 방식** (파이썬 스크립트):
+```
+1. 파이썬 스크립트로 수동 INSERT (Service Role/관리자 권한)
+   → DB 레코드 생성 ✅
+2. 웹에서 위키 정보 요청
+   → Edge Function이 UPDATE (Service Role)
+   → 작동 ✅
+```
+
+**신규 여행지 문제**:
+```
+1. 검색으로 진입 (DB 레코드 없음)
+2. 클라이언트가 INSERT 시도 (anon 키)
+   → RLS 차단 ❌
+3. Edge Function 실행 (Service Role)
+   → DB 레코드 없어서 UPDATE 실패 ❌
+```
+
+**해결 후**:
+```
+1. 검색으로 진입 (DB 레코드 없음)
+2. 클라이언트는 Edge Function만 호출
+3. Edge Function이 UPSERT (Service Role)
+   → 레코드 없으면 자동 생성
+   → 있으면 업데이트
+   → 모두 성공 ✅
+```
+
+#### 핵심 차이점
+
+| 상황 | 기존 방식 | 해결 후 |
+|------|-----------|---------|
+| 레코드 있음 | Edge Function UPDATE ✅ | Edge Function UPSERT ✅ |
+| 레코드 없음 | 클라이언트 INSERT 시도 ❌ | Edge Function UPSERT ✅ |
+| 수동 작업 | 파이썬 스크립트 필요 | 불필요 (자동 생성) |
+
+---
+
+**최종 업데이트**: 2026-03-31 17:12 (KST)

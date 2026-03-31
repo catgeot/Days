@@ -47,9 +47,10 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       return () => clearInterval(interval);
   }, [isAiLoading, currentMessages]);
 
-  const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id });
+  // 🔒 [Phase 9-3 Fix] placeId는 placeName(한글명) 사용 - wikiData 없어도 작동
+  const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName });
   useEffect(() => {
-      requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id };
+      requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName };
   }, [placeName, wikiData]);
 
   useEffect(() => {
@@ -106,28 +107,11 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       setError(null);
       setLocalAiResponse(null);
 
-      // 🆕 [Phase 9-3] DB 레코드 없으면 먼저 INSERT (검색/지오코딩 진입 대응)
-      if (!wikiData) {
-          console.log("[PlaceWikiDetailsView] DB 레코드 없음 - INSERT 먼저 실행");
-          const { error: insertError } = await supabase.from('place_wiki').insert({
-              place_id: String(placeId),
-              title: location,
-              summary: '',
-              ai_practical_info: '[[LOADING]]'
-          });
+      // 🔒 [Phase 9-3 Fix] RLS 정책으로 인해 클라이언트에서 DB 직접 조작 불가
+      // Edge Function(Service Role)에서 UPSERT로 모든 DB 작업 처리
+      console.log("[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리");
 
-          if (insertError && insertError.code !== '23505') { // 23505 = unique violation (이미 있음)
-              console.error("[PlaceWikiDetailsView] DB INSERT 에러:", insertError);
-              setError("DB 레코드 생성 실패");
-              setIsAiLoading(false);
-              return;
-          }
-      } else {
-          // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌워 UI 즉각 동기화 및 폴링 트리거
-          await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
-      }
-
-      // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌우기 전, 기존 정보를 보관하여 복구 및 Defensor 용도로 활용
+      // 기존 정보 보관 (에러 시 복구용)
       const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : localAiResponse;
 
       try {
@@ -152,8 +136,8 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       } catch (err) {
           console.error('Request Error:', err);
           setError(err.message || "오류가 발생했습니다.");
-          // 실패 시 기존 데이터로 상태 롤백
-          await supabase.from('place_wiki').update({ ai_practical_info: oldAiInfo || null }).eq('place_id', placeId);
+          // 🔒 [Phase 9-3 Fix] RLS 정책으로 클라이언트 롤백 불가
+          // Edge Function에서 에러 시 자동 롤백 처리됨 (index.ts:193-208)
       } finally {
           setIsAiLoading(false);
       }
