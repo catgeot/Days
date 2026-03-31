@@ -401,4 +401,144 @@ npx supabase functions deploy update-place-wiki
 
 ---
 
-**최종 업데이트**: 2026-03-31 17:12 (KST)
+## 2026-03-31 (오후 세션 5) - placeId 버그 발견 및 해결 ✅
+
+### 🐛 진짜 문제 발견!
+
+**실제 원인**: `requestInfoRef`의 `placeId`가 undefined
+
+```javascript
+// ❌ 문제 코드 (50-52줄)
+const requestInfoRef = useRef({
+    placeName,
+    wikiTitle: wikiData?.title,
+    placeId: wikiData?.place_id    // 신규 여행지는 wikiData 없음 → undefined!
+});
+
+// → placeId가 undefined → 100번째 줄에서 조기 return
+// → Edge Function 호출 안 됨!
+```
+
+**왜 발견하기 어려웠나?**
+1. 코드가 100번째 줄에서 조기 return
+2. "[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리" 로그 출력 안 됨
+3. "장소 정보를 확인할 수 없습니다" 에러도 UI에 표시 안 됨 (에러 상태 업데이트 전 return)
+
+### ✅ 해결 방법
+
+```javascript
+// ✅ 수정 코드
+const requestInfoRef = useRef({
+    placeName,
+    wikiTitle: wikiData?.title,
+    placeId: wikiData?.place_id || placeName    // fallback 추가!
+});
+
+useEffect(() => {
+    requestInfoRef.current = {
+        placeName,
+        wikiTitle: wikiData?.title,
+        placeId: wikiData?.place_id || placeName
+    };
+}, [placeName, wikiData]);
+```
+
+**효과**:
+- wikiData 없어도 placeName(한글명) 사용
+- Edge Function 정상 호출
+- DB 레코드 자동 생성 ✅
+
+### 🧪 테스트 결과
+
+**카르스텐츠 피라미드 테스트**:
+1. 검색 → Place Card → 위키 탭 ✅
+2. "다시 시도" 버튼 클릭 ✅
+3. 콘솔 로그 정상 출력 ✅
+   - "[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리"
+   - "[PlaceWikiDetailsView] Supabase Edge Function 호출"
+4. 35초 후 위키 정보 표시 ✅
+5. DB `place_wiki` 테이블에 레코드 자동 생성 ✅
+6. 툴킷 탭 8개 카드 정상 표시 ✅
+
+### 📝 최종 변경 사항
+
+1. **placeId fallback 추가** (50-53줄)
+   - `wikiData?.place_id || placeName`
+   - 신규 여행지도 placeName으로 작동
+
+2. **클라이언트 INSERT/UPDATE 제거** (109-114줄)
+   - RLS 정책으로 작동 안 함
+   - Edge Function에 모든 DB 작업 위임
+
+3. **에러 처리 롤백 제거** (138-139줄)
+   - RLS로 클라이언트 롤백 불가능
+   - Edge Function에서 자동 처리
+
+### 🎯 최종 효과
+
+- ✅ 신규 여행지 DB 레코드 자동 생성
+- ✅ 검색/지오코딩 진입 시 정상 작동
+- ✅ RLS 정책 우회 (Service Role)
+- ✅ 파이썬 스크립트 수동 작업 불필요
+- ✅ 툴킷 탭 정상 작동
+
+### 📚 교훈
+
+1. **디버깅 로그 중요성**: 조기 return 전에 에러 로그 필수
+2. **Fallback 패턴**: optional 데이터는 항상 fallback 제공
+3. **RLS 정책 이해**: 클라이언트(anon)와 서버(Service Role) 권한 구분
+
+---
+
+## 2026-03-31 (오후 세션 6) - AI 프록시 마이그레이션 및 방어 로직 구축 ✅
+
+### 🛡️ 목적
+- 4월 1일부터 변경되는 Gemini API 사용량 규제에 대비하여, 클라이언트 직접 호출 방식의 취약점을 보완하고 사이트 멈춤을 방지하기 위한 **서버 사이드 프록시 및 다중 방어 로직** 구축.
+
+### ✅ 구현 내용 (4단계 구간 진행)
+
+1. **[구간 1] Edge Function 뼈대 생성 및 배포**
+   - `supabase/functions/gemini-proxy` 생성
+   - CORS 처리 및 기본 응답 구조 작성
+   - Project Ref ID(`phdjnbfitvmrguqzverm`)로 배포 완료
+
+2. **[구간 2] 프록시 내부 Gemini API 호출 및 Fallback 방어 로직**
+   - 클라이언트 요청(`modelId`, `parts`)을 받아 Gemini API로 릴레이
+   - **서버 사이드 Fallback**: 503(Service Unavailable) 또는 404 에러 발생 시, 가장 안정적인 초경량 모델인 `gemini-3.1-flash-lite-preview`로 자동 재시도하는 로직 캡슐화
+
+3. **[구간 3] 클라이언트 연동 준비 및 자동 롤백(Fallback) 방안 추가**
+   - `src/pages/Home/lib/apiClient.js`에 `fetchProxyGemini` 함수 신설
+   - **클라이언트 사이드 롤백**: 만약 프록시 서버(Edge Function) 호출 자체가 실패하거나 에러를 반환할 경우, 기존의 클라이언트 직접 호출 방식(`fetchGeminiResponse`)으로 자동 롤백하도록 이중 방어 로직 구현
+   - 홈 화면 스마트 검색 AI 교정 기능(`useHomeHandlers.js`)에 우선 적용 및 테스트 완료
+
+4. **[구간 4] 전면 마이그레이션**
+   - 장소 챗봇 (`src/components/PlaceCard/hooks/usePlaceChat.js`) 전환 완료
+   - 리뷰 초안 작성 (`src/pages/DailyReport/hooks/useLogbookAI.js`) 전환 완료
+   - 기존 `fetchGeminiResponse`는 롤백 용도로 유지
+
+### 🎯 기대 효과
+- **안정성 극대화**: 프록시 서버 장애 시 클라이언트 직접 호출로 롤백, API 장애 시 경량 모델로 Fallback 되는 이중 방어막 구축.
+- **보안 강화**: 클라이언트(브라우저)에서 API 키 노출 위험 감소.
+- **중앙 통제**: 향후 로깅, 캐싱, Rate Limiting 등을 서버 단에서 일괄 관리할 수 있는 기반(Phase 1 & 2) 마련.
+
+---
+
+---
+
+## 2026-03-31 (야간 세션) - 위키 탭 매거진 레이아웃 고도화 계획 (진행 중)
+
+### 🎨 작업 내용
+- 장소 카드의 위키 탭(`PlaceWikiDetailsView`)에 미니맵과 갤러리 이미지를 추가하여 건조한 텍스트 위주의 화면을 개선했습니다.
+- `leaflet` 및 `react-leaflet`을 사용하여 다크 테마 기반의 `PlaceMiniMap` 컴포넌트를 구현했습니다.
+- `PlaceMediaPanel`을 통해 `galleryData`를 전달받아 위키 본문(sections) 사이사이에 이미지를 배치했습니다.
+
+### 💡 사용자 피드백
+- Leaflet 지도의 사용성과 디자인 한계로 인해 **Mapbox로 교체** 요청.
+- 단순한 이미지 반복 배치가 인위적이라고 느껴져, 제미나이와 논의했던 **'유기적인 매거진 레이아웃'** 적용 요청.
+
+### 🚀 다음 세션 계획 (`plans/wiki-magazine-layout-plan.md` 생성)
+- `leaflet` 제거 및 `react-map-gl`, `mapbox-gl` 설치.
+- Hero 이미지(패럴랙스 효과), 인용구(Pull Quotes), 풀와이드 중간 이미지, Sticky 사이드바 지도(PC), 하단 갤러리 그리드 등을 적용하여 하이엔드 여행 매거진 느낌으로 전면 개편 예정.
+
+**최종 업데이트**: 2026-03-31 23:10 (KST)
+**커밋 예정**: `feat(wiki): 위키 탭 미니맵 및 갤러리 이미지 추가 (매거진 레이아웃 초안)`

@@ -3,6 +3,7 @@ import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft } from 'lucide-reac
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
+import PlaceMiniMap from '../common/PlaceMiniMap';
 import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 
 const LOADING_MESSAGES_NEW = [
@@ -22,7 +23,7 @@ const LOADING_MESSAGES_UPDATE = [
     "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
 ];
 
-const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, setMediaMode, isActive }) => {
+const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, location, galleryData, setMediaMode, isActive }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -307,16 +308,43 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                         <h2 className="text-lg md:text-xl font-bold text-gray-300 tracking-tight">위키백과 기본 정보</h2>
                     </div>
 
+                    {location?.lat && location?.lng && (
+                        <PlaceMiniMap lat={location.lat} lng={location.lng} name={location.name} />
+                    )}
+
                     <p className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide whitespace-pre-line break-keep">
                         {wikiData.summary}
                     </p>
 
-                    {wikiData.sections && wikiData.sections.map((sec, idx) => (
-                        <section key={idx} id={`wiki-section-${idx}`} className="pt-8 border-t border-white/10 scroll-mt-8">
-                            <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-amber-100 tracking-tight">{sec.title}</h3>
-                            <p className="text-sm md:text-base text-gray-400 leading-[1.8] tracking-wide whitespace-pre-line break-keep">{sec.content}</p>
-                        </section>
-                    ))}
+                    {wikiData.sections && wikiData.sections.map((sec, idx) => {
+                        const images = galleryData?.images || [];
+                        // 첫 번째 이미지는 대표 이미지로 사용될 가능성이 높으므로 인덱스 1부터 시작
+                        const imageForSection = images.length > 0 ? images[(idx + 1) % images.length] : null;
+
+                        return (
+                            <section key={idx} id={`wiki-section-${idx}`} className="pt-8 border-t border-white/10 scroll-mt-8">
+                                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-amber-100 tracking-tight">{sec.title}</h3>
+                                <p className="text-sm md:text-base text-gray-400 leading-[1.8] tracking-wide whitespace-pre-line break-keep">{sec.content}</p>
+
+                                {/* 짝수 번째 섹션마다 이미지 추가하여 매거진 느낌 연출 */}
+                                {imageForSection && idx % 2 === 0 && (
+                                    <div className="mt-8 mb-2 rounded-2xl overflow-hidden border border-white/10 bg-white/5 relative group animate-fade-in">
+                                        <img
+                                            src={imageForSection.urls?.regular || imageForSection.urls?.small}
+                                            alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
+                                            className="w-full h-48 md:h-64 object-cover transition-transform duration-700 group-hover:scale-105"
+                                            loading="lazy"
+                                        />
+                                        <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <p className="text-xs text-gray-300 truncate font-medium">
+                                                {imageForSection.alt_description || imageForSection.description || 'Photo by ' + (imageForSection.user?.name || 'Unknown')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </section>
+                        );
+                    })}
 
                     {!isAiExpanded && (
                         <div className="fixed md:static bottom-0 left-0 w-full md:w-auto p-4 pb-8 md:p-0 md:pb-8 md:pt-10 md:mt-10 bg-[#05070a]/90 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 flex justify-center md:justify-start z-[160] md:z-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-none animate-fade-in-up md:animate-none">

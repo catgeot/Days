@@ -65,6 +65,8 @@ const PlaceMediaPanel = React.memo(({
                 isWikiLoading={isWikiLoading}
                 placeName={location?.name}
                 countryName={location?.country}
+                location={location}
+                galleryData={galleryData}
                 setMediaMode={setMediaMode}
                 isActive={mediaMode === 'WIKI'}
             />
