@@ -1,0 +1,902 @@
+[
+  {
+    "name": "보라보라",
+    "name_en": "Bora Bora",
+    "country": "프랑스령 폴리네시아",
+    "country_en": "French Polynesia",
+    "lat": -16.5,
+    "lng": -151.74,
+    "category": "paradise"
+  },
+  {
+    "name": "산토리니",
+    "name_en": "Santorini",
+    "country": "그리스",
+    "country_en": "Greece",
+    "lat": 36.39,
+    "lng": 25.46,
+    "category": "paradise"
+  },
+  {
+    "name": "칸쿤",
+    "name_en": "Cancun",
+    "country": "멕시코",
+    "country_en": "Mexico",
+    "lat": 21.16,
+    "lng": -86.85,
+    "category": "paradise"
+  },
+  {
+    "name": "몰디브",
+    "name_en": "Maldives",
+    "country": "몰디브",
+    "country_en": "Maldives",
+    "lat": 3.2,
+    "lng": 73.22,
+    "category": "paradise"
+  },
+  {
+    "name": "세이셸",
+    "name_en": "Seychelles",
+    "country": "세이셸",
+    "country_en": "Seychelles",
+    "lat": -4.67,
+    "lng": 55.49,
+    "category": "paradise"
+  },
+  {
+    "name": "페르난두지노로냐",
+    "name_en": "Fernando de Noronha",
+    "country": "브라질",
+    "country_en": "Brazil",
+    "lat": -3.84,
+    "lng": -32.42,
+    "category": "paradise"
+  },
+  {
+    "name": "버뮤다",
+    "name_en": "Bermuda",
+    "country": "버뮤다",
+    "country_en": "Bermuda",
+    "lat": 32.3078,
+    "lng": -64.7505,
+    "category": "paradise"
+  },
+  {
+    "name": "아조레스 제도",
+    "name_en": "Azores",
+    "country": "포르투갈",
+    "country_en": "Portugal",
+    "lat": 37.7412,
+    "lng": -25.6756,
+    "category": "paradise"
+  },
+  {
+    "name": "잔지바르",
+    "name_en": "Zanzibar",
+    "country": "탄자니아",
+    "country_en": "Tanzania",
+    "lat": -6.1659,
+    "lng": 39.2026,
+    "category": "paradise"
+  },
+  {
+    "name": "라로통가",
+    "name_en": "Rarotonga",
+    "country": "쿡 제도",
+    "country_en": "Cook Islands",
+    "lat": -21.2292,
+    "lng": -159.7764,
+    "category": "paradise"
+  },
+  {
+    "name": "사모아",
+    "name_en": "Samoa",
+    "country": "사모아",
+    "country_en": "Samoa",
+    "lat": -13.759,
+    "lng": -172.1046,
+    "category": "paradise"
+  },
+  {
+    "name": "팔라완",
+    "name_en": "Palawan",
+    "country": "필리핀",
+    "country_en": "Philippines",
+    "lat": 9.8349,
+    "lng": 118.7384,
+    "category": "paradise"
+  },
+  {
+    "name": "카나리아 제도",
+    "name_en": "Canary Islands",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 28.2916,
+    "lng": -16.6291,
+    "category": "paradise"
+  },
+  {
+    "name": "발리",
+    "name_en": "Bali",
+    "country": "인도네시아",
+    "country_en": "Indonesia",
+    "lat": -8.4095,
+    "lng": 115.1889,
+    "category": "paradise"
+  },
+  {
+    "name": "하와이",
+    "name_en": "Hawaii",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 19.8968,
+    "lng": -155.5828,
+    "category": "paradise"
+  },
+  {
+    "name": "괌",
+    "name_en": "Guam",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 13.4443,
+    "lng": 144.7937,
+    "category": "paradise"
+  },
+  {
+    "name": "밴프 국립공원",
+    "name_en": "Banff National Park",
+    "country": "캐나다",
+    "country_en": "Canada",
+    "lat": 51.17,
+    "lng": -115.57,
+    "category": "nature"
+  },
+  {
+    "name": "이구아수 폭포",
+    "name_en": "Iguazu Falls",
+    "country": "아르헨티나",
+    "country_en": "Argentina",
+    "lat": -25.69,
+    "lng": -54.43,
+    "category": "nature"
+  },
+  {
+    "name": "아이슬란드",
+    "name_en": "Iceland",
+    "country": "아이슬란드",
+    "country_en": "Iceland",
+    "lat": 64.96,
+    "lng": -19.02,
+    "category": "nature"
+  },
+  {
+    "name": "빅토리아 폭포",
+    "name_en": "Victoria Falls",
+    "country": "잠비아",
+    "country_en": "Zambia",
+    "lat": -17.92,
+    "lng": 25.85,
+    "category": "nature"
+  },
+  {
+    "name": "후지산",
+    "name_en": "Mount Fuji",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 35.36,
+    "lng": 138.72,
+    "category": "nature"
+  },
+  {
+    "name": "그레이트 배리어 리프",
+    "name_en": "Great Barrier Reef",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -18.28,
+    "lng": 147.69,
+    "category": "nature"
+  },
+  {
+    "name": "안다만 제도",
+    "name_en": "Andaman Islands",
+    "country": "인도",
+    "country_en": "India",
+    "lat": 11.7401,
+    "lng": 92.6586,
+    "category": "nature"
+  },
+  {
+    "name": "팔라우",
+    "name_en": "Palau",
+    "country": "팔라우",
+    "country_en": "Palau",
+    "lat": 7.515,
+    "lng": 134.5825,
+    "category": "nature"
+  },
+  {
+    "name": "갈라파고스",
+    "name_en": "Galapagos",
+    "country": "에콰도르",
+    "country_en": "Ecuador",
+    "lat": -0.9538,
+    "lng": -90.9656,
+    "category": "nature"
+  },
+  {
+    "name": "모리셔스",
+    "name_en": "Mauritius",
+    "country": "모리셔스",
+    "country_en": "Mauritius",
+    "lat": -20.3484,
+    "lng": 57.5522,
+    "category": "nature"
+  },
+  {
+    "name": "크리스마스 섬",
+    "name_en": "Christmas Island",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -10.4475,
+    "lng": 105.6904,
+    "category": "nature"
+  },
+  {
+    "name": "디에고 가르시아",
+    "name_en": "Diego Garcia",
+    "country": "영국령 인도양 지역",
+    "country_en": "Indian Ocean",
+    "lat": -7.3195,
+    "lng": 72.4229,
+    "category": "nature"
+  },
+  {
+    "name": "로포텐 제도",
+    "name_en": "Lofoten",
+    "country": "노르웨이",
+    "country_en": "Norway",
+    "lat": 68.2086,
+    "lng": 13.552,
+    "category": "nature"
+  },
+  {
+    "name": "사하라 사막",
+    "name_en": "Sahara Desert",
+    "country": "사하라",
+    "country_en": "Sahara",
+    "lat": 23.4162,
+    "lng": 25.6628,
+    "category": "nature"
+  },
+  {
+    "name": "옐로나이프",
+    "name_en": "Yellowknife",
+    "country": "캐나다",
+    "country_en": "Canada",
+    "lat": 62.454,
+    "lng": -114.3718,
+    "category": "nature"
+  },
+  {
+    "name": "우유니 소금사막",
+    "name_en": "Uyuni Salt Flat",
+    "country": "볼리비아",
+    "country_en": "Bolivia",
+    "lat": -20.1338,
+    "lng": -67.4891,
+    "category": "nature"
+  },
+  {
+    "name": "뉴욕",
+    "name_en": "New York",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 40.71,
+    "lng": -74,
+    "category": "urban"
+  },
+  {
+    "name": "리우데자네이루",
+    "name_en": "Rio de Janeiro",
+    "country": "브라질",
+    "country_en": "Brazil",
+    "lat": -22.9,
+    "lng": -43.17,
+    "category": "urban"
+  },
+  {
+    "name": "런던",
+    "name_en": "London",
+    "country": "영국",
+    "country_en": "UK",
+    "lat": 51.5,
+    "lng": -0.12,
+    "category": "urban"
+  },
+  {
+    "name": "케이프타운",
+    "name_en": "Cape Town",
+    "country": "남아프리카공화국",
+    "country_en": "South Africa",
+    "lat": -33.92,
+    "lng": 18.42,
+    "category": "urban"
+  },
+  {
+    "name": "도쿄",
+    "name_en": "Tokyo",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 35.67,
+    "lng": 139.76,
+    "category": "urban"
+  },
+  {
+    "name": "시드니",
+    "name_en": "Sydney",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -33.86,
+    "lng": 151.2,
+    "category": "urban"
+  },
+  {
+    "name": "우수아이아",
+    "name_en": "Ushuaia",
+    "country": "아르헨티나",
+    "country_en": "Argentina",
+    "lat": -54.8019,
+    "lng": -68.303,
+    "category": "urban"
+  },
+  {
+    "name": "모스크바",
+    "name_en": "Moscow",
+    "country": "러시아",
+    "country_en": "Russia",
+    "lat": 55.7558,
+    "lng": 37.6173,
+    "category": "urban"
+  },
+  {
+    "name": "카이로",
+    "name_en": "Cairo",
+    "country": "이집트",
+    "country_en": "Egypt",
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "category": "urban"
+  },
+  {
+    "name": "뉴칼레도니아",
+    "name_en": "New Caledonia",
+    "country": "뉴칼레도니아",
+    "country_en": "New Caledonia",
+    "lat": -20.9043,
+    "lng": 165.618,
+    "category": "urban"
+  },
+  {
+    "name": "싱가포르",
+    "name_en": "Singapore",
+    "country": "싱가포르",
+    "country_en": "Singapore",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "category": "urban"
+  },
+  {
+    "name": "두바이",
+    "name_en": "Dubai",
+    "country": "아랍에미리트",
+    "country_en": "UAE",
+    "lat": 25.2048,
+    "lng": 55.2707,
+    "category": "urban"
+  },
+  {
+    "name": "나이로비",
+    "name_en": "Nairobi",
+    "country": "케냐",
+    "country_en": "Kenya",
+    "lat": -1.2864,
+    "lng": 36.8172,
+    "category": "urban"
+  },
+  {
+    "name": "시카고",
+    "name_en": "Chicago",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 41.8781,
+    "lng": -87.6298,
+    "category": "urban"
+  },
+  {
+    "name": "부에노스아이레스",
+    "name_en": "Buenos Aires",
+    "country": "아르헨티나",
+    "country_en": "Argentina",
+    "lat": -34.6037,
+    "lng": -58.3816,
+    "category": "urban"
+  },
+  {
+    "name": "멜버른",
+    "name_en": "Melbourne",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -37.8136,
+    "lng": 144.9631,
+    "category": "urban"
+  },
+  {
+    "name": "치첸이트사",
+    "name_en": "Chichen Itza",
+    "country": "멕시코",
+    "country_en": "Mexico",
+    "lat": 20.68,
+    "lng": -88.56,
+    "category": "culture"
+  },
+  {
+    "name": "마추픽추",
+    "name_en": "Machu Picchu",
+    "country": "페루",
+    "country_en": "Peru",
+    "lat": -13.16,
+    "lng": -72.54,
+    "category": "culture"
+  },
+  {
+    "name": "로마",
+    "name_en": "Rome",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 41.9,
+    "lng": 12.49,
+    "category": "culture"
+  },
+  {
+    "name": "기자 피라미드",
+    "name_en": "Giza Pyramids",
+    "country": "이집트",
+    "country_en": "Egypt",
+    "lat": 29.97,
+    "lng": 31.13,
+    "category": "culture"
+  },
+  {
+    "name": "앙코르 와트",
+    "name_en": "Angkor Wat",
+    "country": "캄보디아",
+    "country_en": "Cambodia",
+    "lat": 13.41,
+    "lng": 103.86,
+    "category": "culture"
+  },
+  {
+    "name": "페트라",
+    "name_en": "Petra",
+    "country": "요르단",
+    "country_en": "Jordan",
+    "lat": 30.32,
+    "lng": 35.44,
+    "category": "culture"
+  },
+  {
+    "name": "미드웨이 환초",
+    "name_en": "Midway Atoll",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 28.2072,
+    "lng": -177.3735,
+    "category": "culture"
+  },
+  {
+    "name": "바간",
+    "name_en": "Bagan",
+    "country": "미얀마",
+    "country_en": "Myanmar",
+    "lat": 21.1717,
+    "lng": 94.8585,
+    "category": "culture"
+  },
+  {
+    "name": "피지",
+    "name_en": "Fiji",
+    "country": "피지",
+    "country_en": "Fiji",
+    "lat": -17.7134,
+    "lng": 178.065,
+    "category": "culture"
+  },
+  {
+    "name": "이스터 섬",
+    "name_en": "Easter Island",
+    "country": "칠레",
+    "country_en": "Chile",
+    "lat": -27.1127,
+    "lng": -109.3497,
+    "category": "culture"
+  },
+  {
+    "name": "메테오라",
+    "name_en": "Meteora",
+    "country": "그리스",
+    "country_en": "Greece",
+    "lat": 39.7128,
+    "lng": 21.6266,
+    "category": "culture"
+  },
+  {
+    "name": "세인트 헬레나",
+    "name_en": "St. Helena",
+    "country": "영국령 세인트 헬레나",
+    "country_en": "St. Helena",
+    "lat": -15.965,
+    "lng": -5.7089,
+    "category": "culture"
+  },
+  {
+    "name": "울란바토르",
+    "name_en": "Ulaanbaatar",
+    "country": "몽골",
+    "country_en": "Mongolia",
+    "lat": 47.92,
+    "lng": 106.92,
+    "category": "culture"
+  },
+  {
+    "name": "이스탄불",
+    "name_en": "Istanbul",
+    "country": "튀르키예",
+    "country_en": "Turkey",
+    "lat": 41.0082,
+    "lng": 28.9783,
+    "category": "culture"
+  },
+  {
+    "name": "프라하",
+    "name_en": "Prague",
+    "country": "체코",
+    "country_en": "Czech Republic",
+    "lat": 50.0755,
+    "lng": 14.4378,
+    "category": "culture"
+  },
+  {
+    "name": "마라케시",
+    "name_en": "Marrakech",
+    "country": "모로코",
+    "country_en": "Morocco",
+    "lat": 31.6295,
+    "lng": -7.9811,
+    "category": "culture"
+  },
+  {
+    "name": "알래스카",
+    "name_en": "Alaska",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 64.2,
+    "lng": -149.49,
+    "category": "adventure"
+  },
+  {
+    "name": "아마존 열대우림",
+    "name_en": "Amazon Rainforest",
+    "country": "브라질",
+    "country_en": "Brazil",
+    "lat": -3.46,
+    "lng": -62.21,
+    "category": "adventure"
+  },
+  {
+    "name": "스발바르 제도",
+    "name_en": "Svalbard",
+    "country": "노르웨이",
+    "country_en": "Norway",
+    "lat": 78.22,
+    "lng": 15.65,
+    "category": "adventure"
+  },
+  {
+    "name": "세렝게티",
+    "name_en": "Serengeti",
+    "country": "탄자니아",
+    "country_en": "Tanzania",
+    "lat": -2.33,
+    "lng": 34.83,
+    "category": "adventure"
+  },
+  {
+    "name": "울루루",
+    "name_en": "Uluru",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -25.34,
+    "lng": 131.03,
+    "category": "adventure"
+  },
+  {
+    "name": "남극 대륙",
+    "name_en": "Antarctica",
+    "country": "남극",
+    "country_en": "Antarctica",
+    "lat": -80,
+    "lng": 0,
+    "category": "adventure"
+  },
+  {
+    "name": "로스앤젤레스",
+    "name_en": "Los Angeles",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 34.0522,
+    "lng": -118.2437,
+    "category": "adventure"
+  },
+  {
+    "name": "통가",
+    "name_en": "Tonga",
+    "country": "통가",
+    "country_en": "Tonga",
+    "lat": -21.179,
+    "lng": -175.1982,
+    "category": "adventure"
+  },
+  {
+    "name": "베를린",
+    "name_en": "Berlin",
+    "country": "독일",
+    "country_en": "Germany",
+    "lat": 52.52,
+    "lng": 13.405,
+    "category": "adventure"
+  },
+  {
+    "name": "레위니옹",
+    "name_en": "La Reunion",
+    "country": "프랑스령 레위니옹",
+    "country_en": "La Reunion",
+    "lat": -21.1151,
+    "lng": 55.5364,
+    "category": "adventure"
+  },
+  {
+    "name": "서울",
+    "name_en": "Seoul",
+    "country": "한국",
+    "country_en": "South Korea",
+    "lat": 37.5665,
+    "lng": 126.978,
+    "category": "adventure"
+  },
+  {
+    "name": "바누아투",
+    "name_en": "Vanuatu",
+    "country": "바누아투",
+    "country_en": "Vanuatu",
+    "lat": -15.3767,
+    "lng": 166.9592,
+    "category": "adventure"
+  },
+  {
+    "name": "파타고니아",
+    "name_en": "Patagonia",
+    "country": "아르헨티나",
+    "country_en": "Argentina",
+    "lat": -41.8102,
+    "lng": -68.9063,
+    "category": "adventure"
+  },
+  {
+    "name": "케르겔렌 제도",
+    "name_en": "Kerguelen Islands",
+    "country": "프랑스 남부 연방 영토",
+    "country_en": "French Southern and Antarctic Lands",
+    "lat": -49.3958,
+    "lng": 70.2073,
+    "category": "adventure"
+  },
+  {
+    "name": "야쿠츠크",
+    "name_en": "Yakutsk",
+    "country": "러시아",
+    "country_en": "Russia",
+    "lat": 62.0355,
+    "lng": 129.6755,
+    "category": "adventure"
+  },
+  {
+    "name": "캄차카 반도",
+    "name_en": "Kamchatka Peninsula",
+    "country": "러시아",
+    "country_en": "Russia",
+    "lat": 56.1327,
+    "lng": 159.5314,
+    "category": "adventure"
+  },
+  {
+    "name": "파리",
+    "name_en": "Paris",
+    "country": "프랑스",
+    "country_en": "France",
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "category": "urban"
+  },
+  {
+    "name": "바르셀로나",
+    "name_en": "Barcelona",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 41.3851,
+    "lng": 2.1734,
+    "category": "urban"
+  },
+  {
+    "name": "방콕",
+    "name_en": "Bangkok",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 13.7563,
+    "lng": 100.5018,
+    "category": "urban"
+  },
+  {
+    "name": "암스테르담",
+    "name_en": "Amsterdam",
+    "country": "네덜란드",
+    "country_en": "Netherlands",
+    "lat": 52.3676,
+    "lng": 4.9041,
+    "category": "urban"
+  },
+  {
+    "name": "베니스",
+    "name_en": "Venice",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 45.4408,
+    "lng": 12.3155,
+    "category": "culture"
+  },
+  {
+    "name": "아테네",
+    "name_en": "Athens",
+    "country": "그리스",
+    "country_en": "Greece",
+    "lat": 37.9838,
+    "lng": 23.7275,
+    "category": "culture"
+  },
+  {
+    "name": "베를린",
+    "name_en": "Berlin",
+    "country": "독일",
+    "country_en": "Germany",
+    "lat": 52.52,
+    "lng": 13.405,
+    "category": "urban"
+  },
+  {
+    "name": "빈",
+    "name_en": "Vienna",
+    "country": "오스트리아",
+    "country_en": "Austria",
+    "lat": 48.2082,
+    "lng": 16.3738,
+    "category": "culture"
+  },
+  {
+    "name": "피렌체",
+    "name_en": "Florence",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 43.7696,
+    "lng": 11.2558,
+    "category": "culture"
+  },
+  {
+    "name": "홍콩",
+    "name_en": "Hong Kong",
+    "country": "중국",
+    "country_en": "China",
+    "lat": 22.3193,
+    "lng": 114.1694,
+    "category": "urban"
+  },
+  {
+    "name": "타이베이",
+    "name_en": "Taipei",
+    "country": "대만",
+    "country_en": "Taiwan",
+    "lat": 25.033,
+    "lng": 121.5654,
+    "category": "urban"
+  },
+  {
+    "name": "상하이",
+    "name_en": "Shanghai",
+    "country": "중국",
+    "country_en": "China",
+    "lat": 31.2304,
+    "lng": 121.4737,
+    "category": "urban"
+  },
+  {
+    "name": "교토",
+    "name_en": "Kyoto",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 35.0116,
+    "lng": 135.7681,
+    "category": "culture"
+  },
+  {
+    "name": "델리",
+    "name_en": "Delhi",
+    "country": "인도",
+    "country_en": "India",
+    "lat": 28.7041,
+    "lng": 77.1025,
+    "category": "urban"
+  },
+  {
+    "name": "샌프란시스코",
+    "name_en": "San Francisco",
+    "country": "미국",
+    "country_en": "United States",
+    "lat": 37.7749,
+    "lng": -122.4194,
+    "category": "urban"
+  },
+  {
+    "name": "라스베가스",
+    "name_en": "Las Vegas",
+    "country": "미국",
+    "country_en": "United States",
+    "lat": 36.1699,
+    "lng": -115.1398,
+    "category": "urban"
+  },
+  {
+    "name": "토론토",
+    "name_en": "Toronto",
+    "country": "캐나다",
+    "country_en": "Canada",
+    "lat": 43.6532,
+    "lng": -79.3832,
+    "category": "urban"
+  },
+  {
+    "name": "밴쿠버",
+    "name_en": "Vancouver",
+    "country": "캐나다",
+    "country_en": "Canada",
+    "lat": 49.2827,
+    "lng": -123.1207,
+    "category": "urban"
+  },
+  {
+    "name": "오클랜드",
+    "name_en": "Auckland",
+    "country": "뉴질랜드",
+    "country_en": "New Zealand",
+    "lat": -36.8485,
+    "lng": 174.7633,
+    "category": "urban"
+  },
+  {
+    "name": "예루살렘",
+    "name_en": "Jerusalem",
+    "country": "이스라엘",
+    "country_en": "Israel",
+    "lat": 31.7683,
+    "lng": 35.2137,
+    "category": "culture"
+  }
+]

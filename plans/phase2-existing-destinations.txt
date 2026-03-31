@@ -1,0 +1,100 @@
+보라보라 (Bora Bora) - 프랑스령 폴리네시아
+산토리니 (Santorini) - 그리스
+칸쿤 (Cancun) - 멕시코
+몰디브 (Maldives) - 몰디브
+세이셸 (Seychelles) - 세이셸
+페르난두지노로냐 (Fernando de Noronha) - 브라질
+버뮤다 (Bermuda) - 버뮤다
+아조레스 제도 (Azores) - 포르투갈
+잔지바르 (Zanzibar) - 탄자니아
+라로통가 (Rarotonga) - 쿡 제도
+사모아 (Samoa) - 사모아
+팔라완 (Palawan) - 필리핀
+카나리아 제도 (Canary Islands) - 스페인
+발리 (Bali) - 인도네시아
+하와이 (Hawaii) - 미국
+괌 (Guam) - 미국
+밴프 국립공원 (Banff National Park) - 캐나다
+이구아수 폭포 (Iguazu Falls) - 아르헨티나
+아이슬란드 (Iceland) - 아이슬란드
+빅토리아 폭포 (Victoria Falls) - 잠비아
+후지산 (Mount Fuji) - 일본
+그레이트 배리어 리프 (Great Barrier Reef) - 호주
+안다만 제도 (Andaman Islands) - 인도
+팔라우 (Palau) - 팔라우
+갈라파고스 (Galapagos) - 에콰도르
+모리셔스 (Mauritius) - 모리셔스
+크리스마스 섬 (Christmas Island) - 호주
+디에고 가르시아 (Diego Garcia) - 영국령 인도양 지역
+로포텐 제도 (Lofoten) - 노르웨이
+사하라 사막 (Sahara Desert) - 사하라
+옐로나이프 (Yellowknife) - 캐나다
+우유니 소금사막 (Uyuni Salt Flat) - 볼리비아
+뉴욕 (New York) - 미국
+리우데자네이루 (Rio de Janeiro) - 브라질
+런던 (London) - 영국
+케이프타운 (Cape Town) - 남아프리카공화국
+도쿄 (Tokyo) - 일본
+시드니 (Sydney) - 호주
+우수아이아 (Ushuaia) - 아르헨티나
+모스크바 (Moscow) - 러시아
+카이로 (Cairo) - 이집트
+뉴칼레도니아 (New Caledonia) - 뉴칼레도니아
+싱가포르 (Singapore) - 싱가포르
+두바이 (Dubai) - 아랍에미리트
+나이로비 (Nairobi) - 케냐
+시카고 (Chicago) - 미국
+부에노스아이레스 (Buenos Aires) - 아르헨티나
+멜버른 (Melbourne) - 호주
+치첸이트사 (Chichen Itza) - 멕시코
+마추픽추 (Machu Picchu) - 페루
+로마 (Rome) - 이탈리아
+기자 피라미드 (Giza Pyramids) - 이집트
+앙코르 와트 (Angkor Wat) - 캄보디아
+페트라 (Petra) - 요르단
+미드웨이 환초 (Midway Atoll) - 미국
+바간 (Bagan) - 미얀마
+피지 (Fiji) - 피지
+이스터 섬 (Easter Island) - 칠레
+메테오라 (Meteora) - 그리스
+세인트 헬레나 (St. Helena) - 영국령 세인트 헬레나
+울란바토르 (Ulaanbaatar) - 몽골
+이스탄불 (Istanbul) - 튀르키예
+프라하 (Prague) - 체코
+마라케시 (Marrakech) - 모로코
+알래스카 (Alaska) - 미국
+아마존 열대우림 (Amazon Rainforest) - 브라질
+스발바르 제도 (Svalbard) - 노르웨이
+세렝게티 (Serengeti) - 탄자니아
+울루루 (Uluru) - 호주
+남극 대륙 (Antarctica) - 남극
+로스앤젤레스 (Los Angeles) - 미국
+통가 (Tonga) - 통가
+베를린 (Berlin) - 독일
+레위니옹 (La Reunion) - 프랑스령 레위니옹
+서울 (Seoul) - 한국
+바누아투 (Vanuatu) - 바누아투
+파타고니아 (Patagonia) - 아르헨티나
+케르겔렌 제도 (Kerguelen Islands) - 프랑스 남부 연방 영토
+야쿠츠크 (Yakutsk) - 러시아
+캄차카 반도 (Kamchatka Peninsula) - 러시아
+파리 (Paris) - 프랑스
+바르셀로나 (Barcelona) - 스페인
+방콕 (Bangkok) - 태국
+암스테르담 (Amsterdam) - 네덜란드
+베니스 (Venice) - 이탈리아
+아테네 (Athens) - 그리스
+베를린 (Berlin) - 독일
+빈 (Vienna) - 오스트리아
+피렌체 (Florence) - 이탈리아
+홍콩 (Hong Kong) - 중국
+타이베이 (Taipei) - 대만
+상하이 (Shanghai) - 중국
+교토 (Kyoto) - 일본
+델리 (Delhi) - 인도
+샌프란시스코 (San Francisco) - 미국
+라스베가스 (Las Vegas) - 미국
+토론토 (Toronto) - 캐나다
+밴쿠버 (Vancouver) - 캐나다
+오클랜드 (Auckland) - 뉴질랜드
+예루살렘 (Jerusalem) - 이스라엘

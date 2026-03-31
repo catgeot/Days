@@ -120,17 +120,93 @@ console.log('Visible spots:', travelSpots.filter(s => s.showOnGlobe !== false).l
 
 ## 🎯 다음 세션: Phase 2 실행 계획
 
+### ⚠️ 중요 주의사항
+
+#### 1. 컨텍스트 관리 전략 🔄
+**문제**: 작업 중 리미트나 컨텍스트 한계로 작업을 완료하지 못할 수 있음
+
+**해결책**:
+- ✅ **카테고리별 순차 작업**: 한 번에 모든 카테고리를 처리하지 않고, 카테고리 단위로 추출 → 검증 → 커밋
+- ✅ **작업 구간별 체크포인트**: 각 카테고리 완료 후 커밋하여 작업 손실 방지
+- ✅ **컨텍스트 모니터링**: 각 단계 시작 전 현재 컨텍스트 상태 확인
+
+**작업 흐름**:
+```
+카테고리 1 (Paradise) 추출
+  → 검증
+  → 파일 저장
+  → Git 커밋
+  → 컨텍스트 확인
+  → 다음 진행 가능 판단
+
+카테고리 2 (Nature) 추출
+  → 검증
+  → 파일 저장
+  → Git 커밋
+  → 컨텍스트 확인
+  → ...
+
+(이하 반복)
+```
+
+#### 2. 별도 파일 생성 전략 📁
+**중요**: 현재 [`travelSpots.js`](../src/pages/Home/data/travelSpots.js)에 여행지를 추가하면, 기존 로직으로 인해 지구본에 자동으로 아이콘 생성
+
+**해결책**:
+- ✅ **새 파일 생성**: [`travelSpots-phase2.js`](../src/pages/Home/data/travelSpots-phase2.js) 별도 생성
+- ✅ **단계별 병합**: Phase 2 완료 후 showOnGlobe 설정 완료된 데이터만 메인 파일에 병합
+- ✅ **백업 유지**: 기존 100개는 [`travelSpots-phase1-backup.js`](../src/pages/Home/data/travelSpots-phase1-backup.js)로 백업
+
+**파일 구조**:
+```
+src/pages/Home/data/
+├── travelSpots.js                    (현재 사용 중 - 100개)
+├── travelSpots-phase1-backup.js      (백업 - 100개)
+├── travelSpots-phase2.js             (신규 생성 - 100개) ⭐
+└── travelSpots-final-200.js          (최종 병합 - 200개)
+```
+
+#### 3. 200개 여행지 관리 전략 🌍
+
+**최종 목표**:
+- 📍 **지구본 표시**: 100개 (카테고리별 중첩 없이 선별)
+- 📋 **홈화면 리스트**: 200개 전체 (카테고리별 분류)
+- 🔍 **검색**: 200개 전체 검색 가능
+
+**홈화면 표시 방식**:
+```
+홈화면 UI
+├── 지구본 (3D Globe)
+│   └── 100개 마커 표시 (showOnGlobe: true)
+│
+└── 카테고리 트리/리스트
+    ├── Paradise (26개 전체 표시)
+    ├── Nature (25개 전체 표시)
+    ├── Urban (53개 전체 표시)
+    ├── Culture (49개 전체 표시)
+    └── Adventure (27개 전체 표시)
+```
+
 ### 목표
 **나머지 100개 여행지 추가 → 총 200개 달성**
 
-### 예상 소요 시간
-**총 4-5시간**
+---
 
-### 단계별 작업
+## 📋 Phase 2 세부 실행 계획
 
-#### Step 1: 준비 (30분)
+### Step 1: 준비 및 환경 설정 (30분)
 
-**1.1 기존 100개 제외 리스트 생성**
+#### 1.1 백업 생성
+```bash
+# 현재 100개 백업
+cp src/pages/Home/data/travelSpots.js src/pages/Home/data/travelSpots-phase1-backup.js
+
+# Git 커밋
+git add src/pages/Home/data/travelSpots-phase1-backup.js
+git commit -m "backup: Phase 1 완료 시점 백업 (100개)"
+```
+
+#### 1.2 기존 100개 제외 리스트 생성
 ```javascript
 // scripts/generate-existing-list.js
 const { TRAVEL_SPOTS } = require('../src/pages/Home/data/travelSpots.js');
@@ -143,18 +219,28 @@ const existingCities = TRAVEL_SPOTS.map(spot => ({
     lng: spot.lng
 }));
 
-console.log('기존 여행지:', existingCities.length);
-// 출력 파일로 저장하여 AI 프롬프트에 첨부
+// JSON 파일로 저장
+const fs = require('fs');
+fs.writeFileSync(
+    'plans/phase2-existing-destinations.json',
+    JSON.stringify(existingCities, null, 2)
+);
+
+console.log('✅ 기존 여행지:', existingCities.length);
 ```
 
-**1.2 AI 프롬프트 준비**
+#### 1.3 AI 프롬프트 준비
 - Gemini 2.5 Pro API 키 확인
 - [`phase9-2-ai-prompts.md`](phase9-2-ai-prompts.md) 프롬프트 최종 점검
 - 기존 100개 제외 조건 추가
 
-#### Step 2: AI로 나머지 100개 추출 (1-2시간)
+---
 
-**카테고리별 할당**:
+### Step 2: 카테고리별 순차 추출 (2-3시간)
+
+**⚠️ 중요**: 한 번에 모든 카테고리를 처리하지 않고, **카테고리별로 추출 → 검증 → 커밋**
+
+#### 카테고리별 추가 수량
 ```
 Paradise (휴양):    +10개 → 총 26개
 Nature (자연):      +10개 → 총 25개
@@ -165,62 +251,295 @@ Adventure (모험):   +15개 → 총 27개
 합계:             +100개 → 총 200개
 ```
 
-**필수 포함 도시** (Tier 1 추가 8개):
-- 유럽: 더블린, 에딘버러, 코펜하겐, 스톡홀름
-- 아시아: 자카르타, 쿠알라룸푸르, 하노이
-- 북미: 시애틀
+#### 2.1 Paradise 카테고리 추출 (첫 번째)
 
-**실행 방법**:
+**필수 포함 여행지** (천국 테마):
+- 🏝️ 라로통가 (Rarotonga) - 쿡 제도
+- 🏝️ 길리 메노 (Gili Meno) - 인도네시아
+- 🏝️ 보라카이 (Boracay) - 필리핀 ⚠️ 이미 포함 확인 필요
+- 🏝️ 엘 니도 (El Nido) - 필리핀
+- 🏝️ 마푸티 (Maputu) - 모잠비크
+
+**실행**:
 ```bash
-# Gemini API 호출 스크립트
-node scripts/extract-phase2-cities.js
+# AI 프롬프트로 10개 추출
+node scripts/extract-category.js --category paradise --count 10
 
-# 또는 수동으로 Chat 사용
-# 프롬프트: plans/phase9-2-ai-prompts.md 참조
+# 결과 파일 생성: plans/phase2-paradise.json
 ```
 
-#### Step 3: 밀집도 분석 및 showOnGlobe 설정 (1시간)
+**검증**:
+- [ ] 10개 정확히 추출
+- [ ] 필수 여행지 포함 확인 (라로통가, 길리메노)
+- [ ] 기존 100개와 중복 없음
+- [ ] 좌표 유효성 확인
+
+**커밋**:
+```bash
+git add plans/phase2-paradise.json
+git commit -m "feat(phase2): Paradise 카테고리 10개 추출 완료"
+git push
+```
+
+**컨텍스트 확인**:
+- 현재 토큰 사용량 확인
+- 70% 미만이면 다음 카테고리 진행
+- 70% 이상이면 세션 종료 후 재개
+
+---
+
+#### 2.2 Nature 카테고리 추출 (두 번째)
+
+**실행**:
+```bash
+node scripts/extract-category.js --category nature --count 10
+# 결과: plans/phase2-nature.json
+```
+
+**검증 → 커밋 → 컨텍스트 확인** (동일 프로세스)
+
+---
+
+#### 2.3 Urban 카테고리 추출 (세 번째)
+
+**필수 포함 도시** (Tier 1 추가):
+- 🇮🇪 더블린 (Dublin)
+- 🏴󠁧󠁢󠁳󠁣󠁴󠁿 에딘버러 (Edinburgh)
+- 🇩🇰 코펜하겐 (Copenhagen)
+- 🇸🇪 스톡홀름 (Stockholm)
+- 🇮🇩 자카르타 (Jakarta)
+- 🇲🇾 쿠알라룸푸르 (Kuala Lumpur)
+- 🇻🇳 하노이 (Hanoi)
+- 🇺🇸 시애틀 (Seattle)
+
+**실행**:
+```bash
+node scripts/extract-category.js --category urban --count 35
+# 결과: plans/phase2-urban.json
+```
+
+**검증 → 커밋 → 컨텍스트 확인**
+
+---
+
+#### 2.4 Culture 카테고리 추출 (네 번째)
+
+**실행**:
+```bash
+node scripts/extract-category.js --category culture --count 30
+# 결과: plans/phase2-culture.json
+```
+
+**검증 → 커밋 → 컨텍스트 확인**
+
+---
+
+#### 2.5 Adventure 카테고리 추출 (다섯 번째)
+
+**실행**:
+```bash
+node scripts/extract-category.js --category adventure --count 15
+# 결과: plans/phase2-adventure.json
+```
+
+**검증 → 커밋 → 컨텍스트 확인**
+
+---
+
+### Step 3: 지구본 선별 전략 및 showOnGlobe 설정 (1-2시간)
+
+#### 3.1 지구본 표시 원칙 🎯
+
+**목표**: 200개 중 **100개만 지구본 표시** (50%)
+
+**우선순위 기준**:
+```
+1순위: Tier 1 여행지 (필수 표시) - 50개
+2순위: 천국 테마 여행지 - 라로통가, 길리메노, 보라카이 등
+3순위: 유럽 주요 도시 - 중첩 고려하여 선별
+4순위: 좌표 분산 고려 - 밀집도 최소화
+5순위: 나머지 Tier 2-3
+```
+
+#### 3.2 유럽 여행지 특별 관리 ⚠️
+
+**문제**: 유럽은 좁은 지역에 많은 여행지 밀집
+
+**해결책**:
+```javascript
+// 유럽 카테고리 세분화
+const europeanDestinations = {
+    // 필수 표시 (지구본)
+    tier1Cities: [
+        '런던', '파리', '로마', '바르셀로나', '암스테르담',
+        '프라하', '빈', '베를린', '취리히'
+    ], // 9개
+    
+    // 선택적 표시 (좌표 분산 고려)
+    tier2Cities: [
+        '에딘버러', '더블린', '코펜하겐', '스톡홀름',
+        '뮌헨', '피렌체', '베니스'
+    ], // 5-6개 선택
+    
+    // 숨김 (홈화면 리스트만)
+    hiddenCities: [
+        '밀라노', '나폴리', '세비야', '발렌시아', '포르투',
+        '부다페스트', '크라쿠프', '리스본'
+    ] // 홈화면에서만 접근
+};
+```
+
+**유럽 지구본 표시**: 총 15개 (전체 40개 중 37%)
+
+#### 3.3 밀집도 분석 및 자동 설정
 
 **밀집 지역별 표시 목표**:
 
-| 지역 | Phase 2 총 | 표시 | 숨김 | 비율 |
-|------|-----------|------|------|------|
-| western-europe | 40개 | 15개 | 25개 | 37% |
-| east-asia | 35개 | 12개 | 23개 | 34% |
-| southeast-asia | 30개 | 10개 | 20개 | 33% |
-| southern-europe | 20개 | 8개 | 12개 | 40% |
-| us-east-coast | 15개 | 8개 | 7개 | 53% |
-| central-europe | 15개 | 7개 | 8개 | 47% |
-| 기타 지역 | 45개 | 40개 | 5개 | 89% |
-| **합계** | **200개** | **100개** | **100개** | **50%** |
+| 지역 | Phase 2 총 | 표시 | 숨김 | 비율 | 비고 |
+|------|-----------|------|------|------|------|
+| western-europe | 40개 | 15개 | 25개 | 37% | 런던, 파리 필수 |
+| east-asia | 35개 | 12개 | 23개 | 34% | 도쿄, 서울, 교토 |
+| southeast-asia | 30개 | 10개 | 20개 | 33% | 방콕, 앙코르 와트 |
+| southern-europe | 20개 | 8개 | 12개 | 40% | 로마, 산토리니 |
+| us-east-coast | 15개 | 8개 | 7개 | 53% | 뉴욕, 보스턴 |
+| central-europe | 15개 | 7개 | 8개 | 47% | 프라하, 빈 |
+| **paradise-islands** | **30개** | **25개** | **5개** | **83%** | 🏝️ 천국 우선 표시 |
+| 기타 지역 | 15개 | 15개 | 0개 | 100% | 오지/특수 지역 |
+| **합계** | **200개** | **100개** | **100개** | **50%** | |
 
 **원칙**:
-- 밀집 지역: 30-40%만 표시
-- 오지/섬: 80-90% 표시
-- **Tier 1 여행지는 최우선 표시**
+- ✅ **Tier 1**: 무조건 표시 (50개)
+- ✅ **천국 테마**: 80% 이상 표시 (라로통가, 길리메노, 엘니도 등)
+- ✅ **밀집 지역**: 30-40%만 표시 (유럽, 동아시아, 동남아)
+- ✅ **오지/섬**: 90-100% 표시 (파타고니아, 갈라파고스 등)
+- ⚠️ **유럽 중첩 최소화**: 좌표 기반 거리 계산으로 최소 100km 간격 유지
 
 **스크립트**:
 ```javascript
 // scripts/analyze-density-phase2.js
-function assignShowOnGlobe(spots) {
-    const regions = groupBy(spots, 'denseRegion');
+
+// 우선순위 점수 계산
+function calculatePriorityScore(spot) {
+    let score = 0;
     
-    Object.entries(regions).forEach(([region, regionSpots]) => {
-        // Tier 우선순위로 정렬
-        const sorted = regionSpots.sort((a, b) => 
-            a.tier - b.tier || b.popularity - a.popularity
-        );
+    // Tier 1 최우선
+    if (spot.tier === 1) score += 1000;
+    
+    // 천국 테마 키워드
+    const paradiseKeywords = ['천국', '낙원', '라로통가', '길리메노', '엘니도', '보라보라'];
+    if (paradiseKeywords.some(kw => spot.desc?.includes(kw) || spot.name.includes(kw))) {
+        score += 500;
+    }
+    
+    // 인기도
+    score += spot.popularity || 0;
+    
+    // 밀집 지역은 감점
+    if (spot.denseRegion) score -= 100;
+    
+    return score;
+}
+
+// 좌표 거리 계산 (Haversine)
+function getDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
+// showOnGlobe 설정
+function assignShowOnGlobe(spots) {
+    // 1. 우선순위 점수로 정렬
+    const sorted = spots
+        .map(spot => ({
+            ...spot,
+            priorityScore: calculatePriorityScore(spot)
+        }))
+        .sort((a, b) => b.priorityScore - a.priorityScore);
+    
+    const selected = [];
+    const minDistance = 50; // 최소 거리 (km) - 유럽은 50km, 기타는 100km
+    
+    // 2. 거리 기반 선택
+    for (const spot of sorted) {
+        if (selected.length >= 100) break;
         
-        // 표시 개수 결정
-        const showCount = REGION_LIMITS[region] || Math.ceil(sorted.length * 0.7);
+        // Tier 1은 무조건 선택
+        if (spot.tier === 1) {
+            spot.showOnGlobe = true;
+            selected.push(spot);
+            continue;
+        }
         
-        sorted.forEach((spot, idx) => {
-            spot.showOnGlobe = idx < showCount;
+        // 거리 체크
+        const tooClose = selected.some(s => {
+            const dist = getDistance(spot.lat, spot.lng, s.lat, s.lng);
+            const threshold = spot.denseRegion ? minDistance : minDistance * 2;
+            return dist < threshold;
         });
+        
+        if (!tooClose) {
+            spot.showOnGlobe = true;
+            selected.push(spot);
+        } else {
+            spot.showOnGlobe = false;
+        }
+    }
+    
+    // 3. 나머지는 false
+    spots.forEach(spot => {
+        if (!selected.includes(spot)) {
+            spot.showOnGlobe = false;
+        }
     });
+    
+    console.log(`✅ 지구본 표시: ${selected.length}개`);
+    console.log(`📋 홈화면 전용: ${spots.length - selected.length}개`);
     
     return spots;
 }
+
+// 실행
+const allSpots = [
+    ...require('../src/pages/Home/data/travelSpots.js').TRAVEL_SPOTS, // Phase 1 - 100개
+    ...require('./phase2-paradise.json'),
+    ...require('./phase2-nature.json'),
+    ...require('./phase2-urban.json'),
+    ...require('./phase2-culture.json'),
+    ...require('./phase2-adventure.json')
+]; // Phase 2 - 100개
+
+const optimized = assignShowOnGlobe(allSpots);
+
+fs.writeFileSync(
+    'src/pages/Home/data/travelSpots-phase2.js',
+    `export const TRAVEL_SPOTS = ${JSON.stringify(optimized, null, 2)};`
+);
+```
+
+#### 3.4 수동 검증 및 조정
+
+**특별 확인 항목**:
+- [ ] 라로통가 (Rarotonga) - showOnGlobe: true 확인
+- [ ] 길리메노 (Gili Meno) - showOnGlobe: true 확인
+- [ ] 보라카이 (Boracay) - showOnGlobe 상태 확인
+- [ ] 유럽 주요 도시 (런던, 파리, 로마) - 모두 true
+- [ ] 유럽 밀집 지역 - 100km 간격 확인
+
+**조정 필요 시**:
+```javascript
+// 수동 조정 스크립트
+const adjustments = {
+    '라로통가': { showOnGlobe: true },  // 강제 표시
+    '길리메노': { showOnGlobe: true },  // 강제 표시
+    '밀라노': { showOnGlobe: false },   // 이탈리아 밀집으로 숨김
+    '제네바': { showOnGlobe: false }    // 스위스 밀집으로 숨김
+};
 ```
 
 #### Step 4: 데이터 병합 및 검증 (1시간)
