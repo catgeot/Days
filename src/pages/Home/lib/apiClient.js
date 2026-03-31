@@ -3,7 +3,50 @@
 // 🚨 [New] 멀티모달(Vision) 지원을 위해 images 매개변수 추가 및 parts 배열 동적 생성
 // 🚨 [Fix] 404 에러 해결 및 모델 티어 라우팅을 위해 엔드포인트를 gemini-2.5-flash로 전면 교체 (안정성 확보)
 
+import { supabase } from '../../../shared/api/supabase';
+
 export const apiClient = {
+  // --- 1. 프록시 기반 Gemini 통신 (New) ---
+  fetchProxyGemini: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.5-flash") => {
+    try {
+      // 1. parts 배열 생성 (기존과 동일)
+      const parts = [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }];
+
+      if (images && images.length > 0) {
+        images.forEach((imgBase64) => {
+          const mimeTypeMatch = imgBase64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,/);
+          const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
+          const base64Data = imgBase64.replace(/^data:image\/\w+;base64,/, "");
+
+          parts.push({
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
+            }
+          });
+        });
+      }
+
+      // 2. Edge Function 프록시 호출
+      console.log(`[API Proxy] Calling gemini-proxy with model: ${modelId}`);
+      const { data, error } = await supabase.functions.invoke('gemini-proxy', {
+        body: { modelId, parts }
+      });
+
+      if (error) throw error;
+      if (!data || !data.success) throw new Error(data?.error || "Proxy returned unsuccessful response");
+
+      // 3. 결과 파싱
+      return data.data?.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
+
+    } catch (error) {
+      console.error("[API Proxy] Fetch Error, falling back to direct call:", error);
+      // 🚨 [Fallback] 프록시 호출 실패 시 기존 클라이언트 직접 호출 방식으로 롤백
+      return await apiClient.fetchGeminiResponse(apiKey, history, systemInstruction, userText, images, modelId);
+    }
+  },
+
+  // --- 기존 클라이언트 직접 호출 (Fallback 용도로 유지) ---
   fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.5-flash") => {
     try {
       // 🚨 [Pessimistic First] 이미지가 없어도 안전하게 텍스트만 전송되도록 기본 배열 셋팅 (Safe Path)

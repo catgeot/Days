@@ -396,7 +396,7 @@ export function useHomeHandlers({
   "lng": 경도(숫자)
 }`;
 
-            const aiResponse = await apiClient.fetchGeminiResponse(
+            const aiResponse = await apiClient.fetchProxyGemini(
               apiKey,
               [],
               "당신은 지명 자동 교정 전문가입니다. 오직 유효한 JSON만 출력해야 합니다.",
