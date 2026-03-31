@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Trash2 } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
+import { apiClient } from '../lib/apiClient';
 
-const ChatModal = ({ 
-  isOpen, 
-  onClose, 
-  initialQuery, 
-  chatHistory = [], 
-  onUpdateChat, 
-  activeChatId, 
+const ChatModal = ({
+  isOpen,
+  onClose,
+  initialQuery,
+  chatHistory = [],
+  onUpdateChat,
+  activeChatId,
   onSwitchChat,
   onDeleteChat
 }) => {
@@ -17,7 +18,7 @@ const ChatModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [currentPersona, setCurrentPersona] = useState(PERSONA_TYPES.GENERAL);
   const [loadingStatus, setLoadingStatus] = useState("AI가 답변을 준비 중입니다...");
-  
+
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const hasSentInitialRef = useRef(false);
@@ -63,7 +64,7 @@ const ChatModal = ({
         if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
       }
     }
-  }, [activeChatId, isOpen, chatHistory]); 
+  }, [activeChatId, isOpen, chatHistory]);
 
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
@@ -80,9 +81,9 @@ const ChatModal = ({
       setCurrentPersona(queryPersona);
 
       if (queryText.trim().length > 0) {
-        handleSend(queryText, queryPersona); 
+        handleSend(queryText, queryPersona);
       }
-      
+
     } else if (!isOpen) {
       hasSentInitialRef.current = false;
     }
@@ -96,34 +97,26 @@ const ChatModal = ({
 
     const userMsg = { role: 'user', text: cleanText };
     const newMessages = [...messages, userMsg];
-    setMessages(newMessages); 
+    setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
     if (activeChatId) onUpdateChat(activeChatId, newMessages);
 
     try {
-      const systemInstruction = getSystemPrompt(personaToUse, activeChatId ? chatHistory.find(t => t.id === activeChatId)?.destination : ""); 
+      const systemInstruction = getSystemPrompt(personaToUse, activeChatId ? chatHistory.find(t => t.id === activeChatId)?.destination : "");
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ 
-                role: "user", 
-                parts: [{ text: `${systemInstruction}\n\n사용자 질문: ${cleanText}` }] 
-            }]
-          })
-        }
+      const aiReply = await apiClient.fetchProxyGemini(
+        API_KEY,
+        [], // history
+        systemInstruction,
+        cleanText,
+        [], // images
+        "gemini-flash-latest" // modelId
       );
 
-      const data = await response.json();
-      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다. 정보를 불러오지 못했습니다.";
-      
       const finalMessages = [...newMessages, { role: 'model', text: aiReply }];
-      setMessages(finalMessages); 
+      setMessages(finalMessages);
 
       if (activeChatId) onUpdateChat(activeChatId, finalMessages);
 
@@ -143,7 +136,7 @@ const ChatModal = ({
   return (
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] rounded-3xl border border-gray-700 shadow-2xl flex overflow-hidden relative transition-all">
-        
+
         <div className="hidden md:flex w-72 bg-gray-900 border-r border-gray-700 flex-col">
           <div className="p-5 border-b border-gray-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -151,17 +144,17 @@ const ChatModal = ({
               <span className="font-bold text-gray-200 text-sm">채팅 기록</span>
             </div>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
             {chatHistory.filter(item => !item.is_hidden).map((item) => (
               <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? 'bg-gray-800 border-blue-500/50' : 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800'}`}>
                 <div className="flex justify-between items-start mb-1">
                   <span className="font-bold text-gray-300 text-sm truncate max-w-[140px]">{item.destination}</span>
                   <div className="flex gap-1">
-                      <button 
-                        onClick={(e) => { 
-                            e.stopPropagation(); 
-                            onDeleteChat(item.id); 
+                      <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteChat(item.id);
                         }}
                         className="text-gray-600 hover:text-red-400"
                         title="채팅방 삭제"
@@ -190,17 +183,17 @@ const ChatModal = ({
 
             <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
               {messages.map((msg, idx) => (
-                <div 
-                  key={idx} 
-                  ref={idx === lastUserIdx ? lastQuestionRef : null} 
+                <div
+                  key={idx}
+                  ref={idx === lastUserIdx ? lastQuestionRef : null}
                   className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'w-full'}`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
                     {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : <Bot size={24} className="text-blue-400" />}
                   </div>
                   <div className={`p-4 rounded-2xl text-base shadow-md ${
-                    msg.role === 'user' 
-                      ? 'max-w-[80%] bg-blue-600 text-white rounded-tr-none' 
+                    msg.role === 'user'
+                      ? 'max-w-[80%] bg-blue-600 text-white rounded-tr-none'
                       : 'flex-1 max-w-[95%] bg-gray-800 text-gray-200 rounded-tl-none leading-relaxed'
                   }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{typeof msg.text === 'object' ? (msg.text.text || "내용 없음") : msg.text}</div>

@@ -145,7 +145,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       const placeName = location?.name || location?.name_en || '이 곳';
       const prompt = getReviewPrompt(placeName, rating, content);
 
-      const resultText = await apiClient.fetchGeminiResponse(
+      const resultText = await apiClient.fetchProxyGemini(
         apiKey,
         [],
         "사용자의 입력을 바탕으로 자연스럽고 매력적인 리뷰 초안을 작성하세요. 팩트를 왜곡하지 않습니다.",
