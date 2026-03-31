@@ -1,0 +1,515 @@
+[
+  {
+    "id": 180,
+    "slug": "ibiza",
+    "name": "이비사",
+    "name_en": "Ibiza",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 38.98,
+    "lng": 1.43,
+    "tier": 2,
+    "popularity": 78,
+    "desc": "지중해의 파티 아일랜드로 유명하지만 아름다운 해변과 고요한 만도 많습니다. 클럽 문화와 해변 휴양이 공존하는 독특한 섬입니다.",
+    "keywords": [
+      "파티",
+      "해변",
+      "클럽",
+      "지중해"
+    ],
+    "showOnGlobe": true,
+    "continent": "europe",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "denseRegion": null
+  },
+  {
+    "id": 181,
+    "slug": "crete",
+    "name": "크레타",
+    "name_en": "Crete",
+    "country": "그리스",
+    "country_en": "Greece",
+    "lat": 35.24,
+    "lng": 24.81,
+    "tier": 2,
+    "popularity": 76,
+    "desc": "그리스 최대의 섬으로 에게해의 아름다운 해변, 고대 미노아 문명 유적, 사마리아 협곡 등 다양한 볼거리를 자랑합니다.",
+    "keywords": [
+      "그리스",
+      "해변",
+      "역사",
+      "협곡"
+    ],
+    "showOnGlobe": false,
+    "continent": "europe",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "denseRegion": null
+  },
+  {
+    "id": 182,
+    "slug": "corsica",
+    "name": "코르시카",
+    "name_en": "Corsica",
+    "country": "프랑스",
+    "country_en": "France",
+    "lat": 42.04,
+    "lng": 9.01,
+    "tier": 2,
+    "popularity": 72,
+    "desc": "프랑스령 지중해 섬으로 험준한 산과 아름다운 해변이 조화를 이룹니다. GR20 트레킹 코스로 유명하며, 나폴레옹의 고향이기도 합니다.",
+    "keywords": [
+      "지중해",
+      "트레킹",
+      "해변",
+      "프랑스"
+    ],
+    "showOnGlobe": false,
+    "continent": "europe",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "denseRegion": null
+  },
+  {
+    "id": 183,
+    "slug": "sicily",
+    "name": "시칠리아",
+    "name_en": "Sicily",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 37.6,
+    "lng": 14.01,
+    "tier": 2,
+    "popularity": 80,
+    "desc": "이탈리아 최대의 섬으로 에트나 화산, 바로크 건축, 그리스 신전 유적이 공존합니다. 지중해 요리의 정수를 맛볼 수 있는 미식의 섬입니다.",
+    "keywords": [
+      "화산",
+      "역사",
+      "미식",
+      "지중해"
+    ],
+    "showOnGlobe": true,
+    "continent": "europe",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "denseRegion": null
+  },
+  {
+    "id": 184,
+    "slug": "hvar",
+    "name": "흐바르",
+    "name_en": "Hvar",
+    "country": "크로아티아",
+    "country_en": "Croatia",
+    "lat": 43.17,
+    "lng": 16.44,
+    "tier": 2,
+    "popularity": 74,
+    "desc": "크로아티아의 보석 같은 섬으로 라벤더 향기와 맑은 아드리아해가 어우러집니다. 유럽 부호들의 휴양지로 알려진 고급스러운 섬입니다.",
+    "keywords": [
+      "아드리아해",
+      "라벤더",
+      "럭셔리",
+      "항구"
+    ],
+    "showOnGlobe": false,
+    "continent": "europe",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "denseRegion": null
+  },
+  {
+    "id": 185,
+    "slug": "bodrum",
+    "name": "보드룸",
+    "name_en": "Bodrum",
+    "country": "터키",
+    "country_en": "Turkey",
+    "lat": 37.03,
+    "lng": 27.43,
+    "tier": 2,
+    "popularity": 75,
+    "desc": "에게해 연안의 터키 휴양지로 하얀 건물과 파란 바다가 아름답습니다. 고대 7대 불가사의 중 하나인 마우솔로스 영묘가 있던 곳입니다.",
+    "keywords": [
+      "에게해",
+      "리조트",
+      "역사",
+      "요트"
+    ],
+    "showOnGlobe": true,
+    "continent": "europe",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "denseRegion": null
+  },
+  {
+    "id": 186,
+    "slug": "bohol",
+    "name": "보홀",
+    "name_en": "Bohol",
+    "country": "필리핀",
+    "country_en": "Philippines",
+    "lat": 9.85,
+    "lng": 124.14,
+    "tier": 2,
+    "popularity": 73,
+    "desc": "필리핀의 숨겨진 보석으로 초콜릿 힐스, 세계에서 가장 작은 원숭이 안경원숭이, 맑은 바닷속 다이빙 명소를 자랑합니다.",
+    "keywords": [
+      "초콜릿힐스",
+      "다이빙",
+      "원숭이",
+      "해변"
+    ],
+    "showOnGlobe": true,
+    "continent": "asia",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "denseRegion": null
+  },
+  {
+    "id": 187,
+    "slug": "rocky-mountains",
+    "name": "로키 산맥",
+    "name_en": "Rocky Mountains",
+    "country": "미국",
+    "country_en": "United States",
+    "lat": 40.34,
+    "lng": -105.69,
+    "tier": 2,
+    "popularity": 80,
+    "desc": "북미 서부를 관통하는 거대한 산맥으로 웅장한 봉우리, 빙하호, 야생동물이 공존합니다. 로키 마운틴 국립공원은 하이킹의 천국입니다.",
+    "keywords": [
+      "국립공원",
+      "하이킹",
+      "야생동물",
+      "산맥"
+    ],
+    "showOnGlobe": true,
+    "continent": "north_america",
+    "categories": [
+      "nature"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "denseRegion": null
+  },
+  {
+    "id": 188,
+    "slug": "wadi-rum",
+    "name": "요르단 와디 럼",
+    "name_en": "Wadi Rum",
+    "country": "요르단",
+    "country_en": "Jordan",
+    "lat": 29.58,
+    "lng": 35.42,
+    "tier": 2,
+    "popularity": 72,
+    "desc": "영화 마션과 듄의 촬영지로 화성 같은 붉은 사막 풍경이 펼쳐집니다. 베두인 캠프에서의 사막 캠핑이 인기입니다.",
+    "keywords": [
+      "사막",
+      "캠핑",
+      "영화",
+      "베두인"
+    ],
+    "showOnGlobe": true,
+    "continent": "middle_east",
+    "categories": [
+      "nature"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "denseRegion": null
+  },
+  {
+    "id": 189,
+    "slug": "kamchatka",
+    "name": "캄차카",
+    "name_en": "Kamchatka",
+    "country": "러시아",
+    "country_en": "Russia",
+    "lat": 56,
+    "lng": 160,
+    "tier": 3,
+    "popularity": 58,
+    "desc": "러시아 극동의 화산 반도로 300개 이상의 화산과 간헐천, 온천이 있습니다. 곰과 연어가 공존하는 원시 자연의 보고입니다.",
+    "keywords": [
+      "화산",
+      "온천",
+      "곰",
+      "원시자연"
+    ],
+    "showOnGlobe": false,
+    "continent": "unknown",
+    "categories": [
+      "nature"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "denseRegion": null
+  },
+  {
+    "id": 190,
+    "slug": "fiordland",
+    "name": "피오르드랜드",
+    "name_en": "Fiordland",
+    "country": "뉴질랜드",
+    "country_en": "New Zealand",
+    "lat": -45.42,
+    "lng": 167.72,
+    "tier": 2,
+    "popularity": 75,
+    "desc": "뉴질랜드 남섬 남서부의 피오르드 지역으로 밀포드 사운드를 포함합니다. 세계에서 가장 습한 지역 중 하나로 장엄한 폭포가 많습니다.",
+    "keywords": [
+      "피오르드",
+      "폭포",
+      "트레킹",
+      "자연"
+    ],
+    "showOnGlobe": true,
+    "continent": "oceania",
+    "categories": [
+      "nature"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "denseRegion": null
+  },
+  {
+    "id": 191,
+    "slug": "tahiti",
+    "name": "타히티",
+    "name_en": "Tahiti",
+    "country": "프랑스령 폴리네시아",
+    "country_en": "French Polynesia",
+    "lat": -17.68,
+    "lng": -149.41,
+    "tier": 2,
+    "popularity": 78,
+    "desc": "프랑스령 폴리네시아의 중심 섬으로 화산 봉우리와 검은 모래 해변이 특징입니다. 폴 고갱이 사랑한 예술가들의 영감의 섬입니다.",
+    "keywords": [
+      "폴리네시아",
+      "화산",
+      "해변",
+      "예술"
+    ],
+    "showOnGlobe": false,
+    "continent": "oceania",
+    "categories": [
+      "nature"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "denseRegion": null
+  },
+  {
+    "id": 192,
+    "slug": "sapa",
+    "name": "사파",
+    "name_en": "Sapa",
+    "country": "베트남",
+    "country_en": "Vietnam",
+    "lat": 22.34,
+    "lng": 103.84,
+    "tier": 2,
+    "popularity": 74,
+    "desc": "베트남 북부 고산지대의 계단식 논밭이 장관을 이룹니다. 소수민족 마을을 방문하며 트레킹할 수 있는 베트남의 스위스입니다.",
+    "keywords": [
+      "계단식논",
+      "트레킹",
+      "소수민족",
+      "고산"
+    ],
+    "showOnGlobe": false,
+    "continent": "asia",
+    "categories": [
+      "nature"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "denseRegion": null
+  },
+  {
+    "id": 193,
+    "slug": "aconcagua",
+    "name": "아콩카과",
+    "name_en": "Aconcagua",
+    "country": "아르헨티나",
+    "country_en": "Argentina",
+    "lat": -32.65,
+    "lng": -70.01,
+    "tier": 3,
+    "popularity": 62,
+    "desc": "남미 최고봉(6,961m)이자 히말라야 밖 세계 최고봉입니다. 7대륙 최고봉 등반가들의 필수 코스로 기술 등반 없이 정상에 도전할 수 있습니다.",
+    "keywords": [
+      "등반",
+      "최고봉",
+      "7대륙",
+      "안데스"
+    ],
+    "showOnGlobe": false,
+    "continent": "unknown",
+    "categories": [
+      "adventure"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "denseRegion": null
+  },
+  {
+    "id": 194,
+    "slug": "denali",
+    "name": "데날리",
+    "name_en": "Denali",
+    "country": "미국",
+    "country_en": "United States",
+    "lat": 63.07,
+    "lng": -151.01,
+    "tier": 3,
+    "popularity": 64,
+    "desc": "북미 최고봉(6,190m)으로 매킨리 산으로도 불립니다. 극한의 추위와 고도로 에베레스트보다 등반 성공률이 낮은 험난한 산입니다.",
+    "keywords": [
+      "등반",
+      "최고봉",
+      "극한",
+      "알래스카"
+    ],
+    "showOnGlobe": false,
+    "continent": "north_america",
+    "categories": [
+      "adventure"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "denseRegion": null
+  },
+  {
+    "id": 195,
+    "slug": "carstensz-pyramid",
+    "name": "카르스텐츠 피라미드",
+    "name_en": "Carstensz Pyramid",
+    "country": "인도네시아",
+    "country_en": "Indonesia",
+    "lat": -4.08,
+    "lng": 137.18,
+    "tier": 3,
+    "popularity": 55,
+    "desc": "오세아니아 최고봉(4,884m)이자 7대륙 최고봉 중 하나입니다. 적도 부근의 빙하와 기술 등반이 필요한 도전적인 산입니다.",
+    "keywords": [
+      "등반",
+      "최고봉",
+      "7대륙",
+      "빙하"
+    ],
+    "showOnGlobe": false,
+    "continent": "asia",
+    "categories": [
+      "adventure"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "denseRegion": null
+  },
+  {
+    "id": 196,
+    "slug": "sequoia-national-park",
+    "name": "시퀘이아 국립공원",
+    "name_en": "Sequoia National Park",
+    "country": "미국",
+    "country_en": "United States",
+    "lat": 36.49,
+    "lng": -118.57,
+    "tier": 2,
+    "popularity": 76,
+    "desc": "세계에서 가장 거대한 나무인 자이언트 세쿼이아가 숲을 이루는 국립공원입니다. 3,000년 된 거대 나무 아래서 자연의 경이를 느낄 수 있습니다.",
+    "keywords": [
+      "세쿼이아",
+      "거대나무",
+      "국립공원",
+      "하이킹"
+    ],
+    "showOnGlobe": true,
+    "continent": "north_america",
+    "categories": [
+      "adventure"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "denseRegion": null
+  },
+  {
+    "id": 197,
+    "slug": "arequipa",
+    "name": "아레키파",
+    "name_en": "Arequipa",
+    "country": "페루",
+    "country_en": "Peru",
+    "lat": -16.41,
+    "lng": -71.54,
+    "tier": 2,
+    "popularity": 68,
+    "desc": "페루 남부의 화산 도시로 콜카 캐니언 트레킹의 출발점입니다. 흰색 화산암으로 지은 건축물로 '하얀 도시'로 불립니다.",
+    "keywords": [
+      "화산",
+      "협곡",
+      "트레킹",
+      "콘도르"
+    ],
+    "showOnGlobe": true,
+    "continent": "unknown",
+    "categories": [
+      "adventure"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "denseRegion": null
+  },
+  {
+    "id": 198,
+    "slug": "similan-islands",
+    "name": "시미란 제도",
+    "name_en": "Similan Islands",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 8.65,
+    "lng": 97.64,
+    "tier": 2,
+    "popularity": 72,
+    "desc": "태국의 다이빙 천국으로 세계 10대 다이빙 포인트 중 하나입니다. 만타 가오리와 고래상어를 볼 수 있는 맑고 투명한 바다를 자랑합니다.",
+    "keywords": [
+      "다이빙",
+      "스쿠버",
+      "해양",
+      "국립공원"
+    ],
+    "showOnGlobe": true,
+    "continent": "asia",
+    "categories": [
+      "adventure"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "denseRegion": null
+  }
+]
