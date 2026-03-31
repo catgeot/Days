@@ -159,20 +159,21 @@ AI인 당신은 아래 제시된 마크다운 템플릿의 '구조', '섹션 제
 
     const aiPracticalInfo = parsedResult.markdown || parsedResult.wiki_markdown || generatedText;
 
-    // 3. DB 테이블 업데이트
-    const updateData: any = {
+    // 🆕 [Phase 9-3] DB 테이블 UPSERT (레코드 없으면 생성, 있으면 업데이트)
+    // place_id와 ai 관련 필드만 업데이트 (title, summary 컬럼 없음)
+    const upsertData: any = {
+      place_id: String(placeId),
       ai_practical_info: aiPracticalInfo,
       ai_info_updated_at: new Date().toISOString()
     };
 
     const { error: dbError } = await supabaseAdmin
       .from('place_wiki')
-      .update(updateData)
-      .eq('place_id', String(placeId));
+      .upsert(upsertData, { onConflict: 'place_id' });
 
     if (dbError) {
-      console.error('DB Update Error:', dbError);
-      throw new Error('Failed to update place_wiki in database');
+      console.error('DB Upsert Error:', dbError);
+      throw new Error(`Failed to upsert place_wiki in database: ${dbError.message}`);
     }
 
     // 5. 성공 결과 및 생성된 텍스트 반환

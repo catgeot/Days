@@ -106,14 +106,32 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       setError(null);
       setLocalAiResponse(null);
 
+      // 🆕 [Phase 9-3] DB 레코드 없으면 먼저 INSERT (검색/지오코딩 진입 대응)
+      if (!wikiData) {
+          console.log("[PlaceWikiDetailsView] DB 레코드 없음 - INSERT 먼저 실행");
+          const { error: insertError } = await supabase.from('place_wiki').insert({
+              place_id: String(placeId),
+              title: location,
+              summary: '',
+              ai_practical_info: '[[LOADING]]'
+          });
+
+          if (insertError && insertError.code !== '23505') { // 23505 = unique violation (이미 있음)
+              console.error("[PlaceWikiDetailsView] DB INSERT 에러:", insertError);
+              setError("DB 레코드 생성 실패");
+              setIsAiLoading(false);
+              return;
+          }
+      } else {
+          // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌워 UI 즉각 동기화 및 폴링 트리거
+          await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
+      }
+
       // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌우기 전, 기존 정보를 보관하여 복구 및 Defensor 용도로 활용
       const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : localAiResponse;
 
-      // 클라이언트에서 먼저 [[LOADING]] 상태로 덮어씌워 UI 즉각 동기화 및 폴링 트리거
-      await supabase.from('place_wiki').update({ ai_practical_info: '[[LOADING]]' }).eq('place_id', placeId);
-
       try {
-          console.log("[PlaceWikiDetailsView] Supabase Edge Function 호출 전 DB '[[LOADING]]' 상태 반영");
+          console.log("[PlaceWikiDetailsView] Supabase Edge Function 호출");
           const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
               body: { placeId, locationName: location, oldAiInfo, forceUpdate }
           });
@@ -162,17 +180,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       }
   }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
 
-  // 🆕 [Phase 9-1.5] 위키 탭 활성화 시 캐시된 데이터 자동 표시
-  useEffect(() => {
-    if (isActive && wikiData?.ai_practical_info &&
-        wikiData.ai_practical_info !== '[[LOADING]]' &&
-        !localAiResponse && !isAiLoading && !isAiExpanded) {
-      console.log("[PlaceWikiDetailsView] 캐시된 위키 데이터 자동 로드");
-      setLocalAiResponse(wikiData.ai_practical_info);
-      setLocalUpdatedAt(wikiData.ai_info_updated_at);
-      setIsAiExpanded(true);
-    }
-  }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, localAiResponse, isAiLoading, isAiExpanded]);
 
   // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
   useEffect(() => {
@@ -342,10 +349,27 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                     )}
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center h-[50vh] text-gray-500 gap-4 animate-fade-in">
-                    <BookOpen size={48} className="opacity-20" />
-                    <p>아직 이 장소의 백과사전 정보가 준비되지 않았습니다.</p>
-                </div>
+                <>
+                    <div className="flex flex-col items-center justify-center h-[40vh] text-gray-500 gap-4 animate-fade-in">
+                        <BookOpen size={48} className="opacity-20" />
+                        <p className="text-center">아직 이 장소의 백과사전 정보가 준비되지 않았습니다.</p>
+                    </div>
+
+                    {/* 🆕 [Phase 9-3] wikiData 없을 때 모바일에서만 하단 버튼 표시 */}
+                    {!isAiExpanded && (
+                        <div className="fixed md:hidden bottom-0 left-0 w-full p-4 pb-8 bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 flex justify-center z-[160] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] animate-fade-in-up">
+                            <button
+                                onClick={handleRequestAiInfo}
+                                className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full"
+                            >
+                                <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-bold text-gray-200 tracking-wide">
+                                    AI에게 안전 로컬 정보 묻기
+                                </span>
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     </div>
