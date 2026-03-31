@@ -113,4 +113,60 @@
 
 ---
 
-**최종 업데이트**: 2026-03-31 16:03 (KST)
+## 2026-03-31 (오후 세션 2)
+
+### ✅ 위키 탭 DB 레코드 없는 경우 대응 완료
+
+**문제점**:
+- 검색/지오코딩으로 진입한 신규 여행지는 DB `place_wiki` 레코드가 없음
+- 레코드 없으면 "제미나이에게 최신 정보 요청" 버튼이 표시되지 않음
+- 버튼이 없어서 로컬 왓슨 정보를 생성할 방법이 없음
+- 툴킷도 파싱할 데이터가 없어서 작성 불가
+
+**해결 과정**:
+
+1. **UI 수정** - 레코드 없어도 버튼 표시
+   - PC: 좌측 패널에 버튼 항상 표시
+   - 모바일: 하단 푸터에 버튼 표시
+
+2. **클라이언트 로직 추가** - DB INSERT 처리
+   - 버튼 클릭 시 레코드 없으면 INSERT 먼저 실행
+   - unique violation 에러는 무시
+
+3. **Edge Function 수정** - UPDATE → UPSERT
+   - 레코드 없으면 자동 생성
+   - **title, summary 필드 제거** (테이블에 컬럼 없음)
+   - place_id, ai_practical_info, ai_info_updated_at만 저장
+
+**변경 파일**:
+- [`PlaceWikiDetailsView.jsx`](src/components/PlaceCard/views/PlaceWikiDetailsView.jsx)
+- [`PlaceWikiNavView.jsx`](src/components/PlaceCard/views/PlaceWikiNavView.jsx)
+- [`supabase/functions/update-place-wiki/index.ts`](supabase/functions/update-place-wiki/index.ts)
+
+**백그라운드 실행 로직**:
+- ✅ 이미 구현됨 - DB `[[LOADING]]` 저장 후 폴링
+- 다른 탭/사이트 이동해도 서버에서 계속 실행
+- [`useWikiData.js`](src/components/PlaceCard/hooks/useWikiData.js) 2초마다 폴링
+
+**배포 필요**:
+```bash
+npx supabase functions deploy update-place-wiki
+```
+
+**커밋**: `fb475fa`
+
+**효과**:
+- ✅ 검색으로 진입한 신규 여행지도 버튼 표시
+- ✅ 지오코딩으로 추가된 여행지도 정보 생성 가능
+- ✅ 툴킷 탭에서 파싱할 데이터 확보
+- ✅ PC/모바일 일관된 UX
+
+**다음 테스트**:
+1. Edge Function 재배포
+2. 검색으로 신규 여행지 진입 → 버튼 클릭
+3. 로컬 왓슨 정보 생성 확인
+4. 툴킷 탭 확인
+
+---
+
+**최종 업데이트**: 2026-03-31 16:46 (KST)
