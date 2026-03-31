@@ -215,7 +215,10 @@ const HomeGlobe = React.memo(forwardRef(({
     const threshold = 0.05;
     const findMatchIndex = (lat, lng) => result.findIndex(m => Math.abs(m.lat - lat) < threshold && Math.abs(m.lng - lng) < threshold);
 
-    travelSpots.forEach(spot => { result.push({ ...spot, type: 'major', priority: 0, isBookmarked: false, hasChat: false }); });
+    // ⭐ showOnGlobe 필터링 적용 (밀집 지역 최적화)
+    travelSpots
+      .filter(spot => spot.showOnGlobe !== false)
+      .forEach(spot => { result.push({ ...spot, type: 'major', priority: 0, isBookmarked: false, hasChat: false }); });
 
     let chatCount = 0;
     savedTrips.forEach(trip => {
