@@ -45,11 +45,11 @@ export const getMarkerDesign = (d) => {
       else if (d.category === 'adventure') colorClass = '#f87171';
       else if (d.category === 'culture') colorClass = '#a78bfa'; // 추가: culture 카테고리 색상
 
-      // 마커 크기 최적화: 모든 화면에서 약간 축소 (밀집도 개선)
+      // 마커 크기 최적화: 밀집도와 가독성 균형
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      const dotSize = isMobile ? '6px' : '7px'; // 모바일: 6px, 데스크톱: 7px (기존 8px에서 축소)
-      const fontSize = isMobile ? '8px' : '9px'; // 모바일: 8px, 데스크톱: 9px (기존 10px에서 축소)
-      const padding = isMobile ? '2px 6px' : '2px 7px'; // 패딩도 약간 축소
+      const dotSize = isMobile ? '7px' : '7px'; // 모바일: 7px (6px에서 증가), 데스크톱: 7px
+      const fontSize = isMobile ? '9px' : '9px'; // 모바일: 9px (8px에서 증가), 데스크톱: 9px
+      const padding = isMobile ? '2px 6px' : '2px 7px'; // 패딩 유지
 
       iconContent = `
          <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.7); backdrop-filter: blur(2px); border: 1px solid ${colorClass}80; padding: ${padding}; border-radius: 99px;">
