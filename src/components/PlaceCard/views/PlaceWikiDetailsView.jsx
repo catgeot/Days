@@ -43,6 +43,18 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   const containerRef = useRef(null);
   const [scrollY, setScrollY] = useState(0);
 
+  // 라이트박스 열렸을 때 스크롤 방지
+  useEffect(() => {
+      if (lightboxImg) {
+          document.body.style.overflow = 'hidden';
+      } else {
+          document.body.style.overflow = '';
+      }
+      return () => {
+          document.body.style.overflow = '';
+      };
+  }, [lightboxImg]);
+
   // 패럴랙스 효과를 위한 스크롤 이벤트 리스너
   useEffect(() => {
       const handleScroll = () => {
@@ -266,7 +278,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
         {/* Hero Section (Parallax) */}
         {heroImage && (
-            <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden flex-shrink-0">
+            <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden flex-shrink-0 pt-16 md:pt-0">
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-0"
                     style={{
@@ -337,7 +349,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
                         {/* 지도 (요약글 아래, 본문 진입 전) */}
                         {location?.lat && location?.lng && (
-                            <div className="bg-white/5 p-2 md:p-4 rounded-3xl border border-white/10 shadow-xl my-12 mx-4 md:mx-12">
+                            <div className="bg-white/5 p-2 md:p-4 rounded-3xl border border-white/10 shadow-xl my-12 md:mx-12">
                                 <PlaceMiniMap lat={location.lat} lng={location.lng} name={location.name} />
                             </div>
                         )}
