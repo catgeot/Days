@@ -380,7 +380,8 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                                     src={imageForSection.urls?.regular || imageForSection.urls?.small}
                                                     alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
                                                     className="w-full h-[30vh] md:h-[40vh] object-cover transition-transform duration-1000 group-hover:scale-105"
-                                                    loading="lazy"
+                                                    loading={idx === 0 ? "eager" : "lazy"}
+                                                    fetchpriority={idx === 0 ? "high" : "auto"}
                                                 />
                                                 <figcaption className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                                     <p className="text-sm text-gray-200 font-medium tracking-wide">
