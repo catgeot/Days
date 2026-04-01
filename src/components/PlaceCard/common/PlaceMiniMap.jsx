@@ -74,7 +74,7 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                 attributionControl={false}
                 terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
                 onLoad={onMapLoad}
-                scrollZoom={false}
+                scrollZoom={true}
                 doubleClickZoom={true}
                 touchZoomRotate={true}
                 dragPan={{
