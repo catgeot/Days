@@ -101,7 +101,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
   const handleRequestAiInfo = useCallback(async (eventOrRemoteName, forceUpdate = false) => {
     setIsAiExpanded(true);
-    // 스크롤은 useEffect에서 처리
+    // 스크롤은 isAiExpanded 변경 시 useEffect에서 처리됨
 
     const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
 
@@ -219,16 +219,14 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
     prevAiInfoRef.current = currentInfo;
   }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at]);
 
+  // 좌측 네비게이션과 AI 버튼 상태 동기화
   useEffect(() => {
       window.dispatchEvent(new CustomEvent('ai-expanded-state', { detail: isAiExpanded }));
   }, [isAiExpanded]);
 
   const scrollToAiSection = useCallback(() => {
       if (aiSectionRef.current) {
-          // 갤러리/본문 이미지들에 고정 종횡비(aspect-ratio)를 적용하여 레이아웃 시프트를 해결했으므로,
-          // scrollIntoView로 정확히 노트 최상단으로 이동 가능합니다.
           aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
           // 혹시 모를 미세 오차 보정
           setTimeout(() => {
               if (aiSectionRef.current) {
@@ -247,6 +245,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       }
   }, [isAiExpanded, scrollToAiSection]);
 
+  // 좌측 네비게이션에서 스크롤 요청 수신
   useEffect(() => {
       const handleScrollReq = () => {
           scrollToAiSection();
@@ -420,13 +419,18 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
                                         {/* 풀와이드 이미지 삽입 (모든 섹션 아래) */}
                                         {imageForSection && (
-                                            <figure className="mt-8 mb-4 -mx-6 md:mx-0 rounded-none md:rounded-3xl overflow-hidden bg-[#0a0c10] relative animate-fade-in aspect-[4/3] md:aspect-video flex items-center justify-center">
+                                            <figure
+                                                className="mt-8 mb-4 -mx-6 md:mx-0 rounded-none md:rounded-3xl overflow-hidden bg-white/5 relative animate-fade-in"
+                                                style={imageForSection.width && imageForSection.height ? { aspectRatio: `${imageForSection.width} / ${imageForSection.height}` } : {}}
+                                            >
                                                 <img
                                                     src={imageForSection.urls?.regular || imageForSection.urls?.small}
                                                     alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
-                                                    className="w-full h-full object-contain bg-black/30"
+                                                    className="w-full h-full max-h-[50vh] md:max-h-[60vh] object-contain bg-black/30"
                                                     loading={idx === 0 ? "eager" : "lazy"}
                                                     fetchPriority={idx === 0 ? "high" : "auto"}
+                                                    width={imageForSection.width}
+                                                    height={imageForSection.height}
                                                 />
                                             </figure>
                                         )}
@@ -446,7 +450,8 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                     {galleryImages.map((img, i) => (
                                         <div
                                             key={i}
-                                            className="rounded-2xl overflow-hidden relative cursor-pointer bg-white/5 aspect-[4/3]"
+                                            className="rounded-2xl overflow-hidden relative cursor-pointer bg-white/5"
+                                            style={img.width && img.height ? { aspectRatio: `${img.width} / ${img.height}` } : {}}
                                             onClick={() => {
                                                 setLightboxImg(img);
                                                 setLightboxIndex(i);
@@ -465,8 +470,10 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                             <img
                                                 src={img.urls?.small}
                                                 alt={img.alt_description || 'Gallery image'}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover absolute inset-0"
                                                 loading="lazy"
+                                                width={img.width}
+                                                height={img.height}
                                             />
                                         </div>
                                     ))}
@@ -587,7 +594,9 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                 <button
                     onClick={() => {
                         if (isAiExpanded) {
-                            scrollToAiSection();
+                            if (aiSectionRef.current) {
+                                aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
                         } else {
                             handleRequestAiInfo(placeName || wikiData?.title);
                         }
