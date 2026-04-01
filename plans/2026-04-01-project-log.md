@@ -493,6 +493,157 @@ git commit -m "perf(utils): aiDataParser 과도한 콘솔 로그 제거
 
 ---
 
+## 2026-04-01 (오후 세션 4차) - AI 버튼 푸터 복구 및 풀스크린 버튼 iOS 호환성 개선 ✅
+
+### 📋 문제 발견
+
+사용자 테스트 결과 2가지 문제 발견:
+
+1. **AI 버튼이 본문에 딸려있음** (원래는 푸터로 고정되어야 함)
+2. **맵박스 풀스크린 버튼 작동 안 함** (iOS Safari 호환성 문제)
+
+### ✅ 1. AI 버튼 푸터 복구
+
+**문제**:
+```jsx
+// 잘못된 수정 (3차 세션)
+<div className="mt-10 p-4 pb-16 md:pb-8 ...">  // static - 스크롤 시 사라짐
+```
+
+**원인**: "푸터 가림 해결"을 "AI 버튼을 static으로 변경"으로 잘못 해석
+
+**올바른 해결**:
+```jsx
+// 모바일: 화면 하단 고정 (푸터), PC: 본문 내부 (static)
+<div className="fixed md:static bottom-16 left-0 right-0 p-4 z-[160]
+     bg-[#05070a]/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none
+     border-t border-white/10 md:border-none">
+```
+
+**핵심 변경**:
+- `fixed md:static`: 모바일 고정, PC static
+- `bottom-16`: 하단 네비게이션(64px) 위에 배치
+- `bg-[#05070a]/95 backdrop-blur-xl`: 반투명 배경 + 블러 효과
+- `border-t border-white/10`: 상단 구분선
+
+**효과**:
+- ✅ 모바일에서 AI 버튼 항상 표시 (푸터 고정)
+- ✅ 하단 네비게이션과 겹치지 않음
+- ✅ PC에서는 본문 내부 자연스럽게 배치
+
+---
+
+### ✅ 2. 맵박스 풀스크린 버튼 iOS 호환성 개선
+
+**문제**:
+- iOS Safari는 `requestFullscreen()` API를 제한적으로만 지원
+- 버튼 클릭 시 아무 반응 없음
+
+**해결**:
+
+#### (1) Fullscreen API 지원 체크
+```jsx
+const [supportsFullscreen, setSupportsFullscreen] = useState(false);
+
+useEffect(() => {
+    const isSupported =
+        document.fullscreenEnabled ||
+        document.webkitFullscreenEnabled ||  // Safari
+        document.mozFullScreenEnabled ||      // Firefox
+        document.msFullscreenEnabled;         // IE/Edge
+    
+    setSupportsFullscreen(isSupported);
+}, []);
+```
+
+#### (2) 크로스 브라우저 Fullscreen API
+```jsx
+const toggleFullscreen = async () => {
+    const elem = mapContainerRef.current;
+    
+    // Enter fullscreen (크로스 브라우저)
+    if (elem.requestFullscreen) {
+        await elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+        await elem.webkitRequestFullscreen(); // Safari
+    } else if (elem.mozRequestFullScreen) {
+        await elem.mozRequestFullScreen(); // Firefox
+    }
+    
+    // Exit fullscreen (크로스 브라우저)
+    if (document.exitFullscreen) {
+        await document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        await document.webkitExitFullscreen(); // Safari
+    }
+};
+```
+
+#### (3) 조건부 렌더링
+```jsx
+{supportsFullscreen && (
+    <button onClick={toggleFullscreen}>...</button>
+)}
+```
+
+**효과**:
+- ✅ Safari/Chrome/Firefox 모든 브라우저 지원
+- ✅ Fullscreen API 미지원 시 버튼 숨김 (iOS 구형 기기)
+- ✅ 사용자 혼란 방지
+
+---
+
+### 📝 변경 파일
+
+1. [`PlaceWikiDetailsView.jsx`](../src/components/PlaceCard/views/PlaceWikiDetailsView.jsx)
+   - AI 버튼 `fixed md:static bottom-16` 복구
+   - 모바일 푸터 스타일 추가 (backdrop-blur, border)
+
+2. [`PlaceMiniMap.jsx`](../src/components/PlaceCard/common/PlaceMiniMap.jsx)
+   - Fullscreen API 지원 체크 로직 추가
+   - 크로스 브라우저 Fullscreen API 구현
+   - 조건부 렌더링 (지원 시에만 버튼 표시)
+
+---
+
+### 🎯 종합 효과
+
+**AI 버튼 (위키 탭 푸터)**:
+- ✅ 모바일: 화면 하단 고정 (스크롤 무관)
+- ✅ 하단 네비게이션과 16px 간격 유지
+- ✅ PC: 본문 내부 자연스럽게 배치
+
+**맵박스 풀스크린**:
+- ✅ Safari/Chrome/Firefox 호환
+- ✅ 미지원 기기에서 버튼 숨김
+- ✅ 크로스 브라우저 API 완벽 지원
+
+---
+
+### 📦 커밋 제안
+
+```bash
+# AI 버튼 푸터 복구
+git add src/components/PlaceCard/views/PlaceWikiDetailsView.jsx
+git commit -m "fix(wiki): AI 버튼 모바일 푸터 복구 (fixed bottom-16)
+
+- 모바일에서 화면 하단 고정 (푸터 형태)
+- PC에서는 본문 내부 static 배치
+- 하단 네비게이션과 16px 간격 유지
+- 반투명 배경 + backdrop-blur 효과"
+
+# 풀스크린 버튼 iOS 호환성
+git add src/components/PlaceCard/common/PlaceMiniMap.jsx
+git commit -m "fix(map): 풀스크린 버튼 크로스 브라우저 호환성 개선
+
+- Fullscreen API 지원 체크 로직 추가
+- Safari/Firefox/Edge 호환 API 구현
+- 미지원 기기에서 버튼 숨김 처리
+- webkit/moz/ms prefix 지원"
+```
+
+---
+
 ### 📋 다음 세션 작업 후보
 
 모든 이전 세션 미해결 문제가 해결되었습니다! ✅
