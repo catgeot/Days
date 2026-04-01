@@ -1,25 +1,52 @@
-import React, { useRef, useEffect } from 'react';
-import Map, { Marker, NavigationControl, FullscreenControl, ScaleControl, Source } from 'react-map-gl/mapbox';
+import React, { useRef, useEffect, useState } from 'react';
+import Map, { Marker, NavigationControl, FullscreenControl, Source } from 'react-map-gl/mapbox';
+import { Mountain, Map as MapIcon } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const PlaceMiniMap = ({ lat, lng, name }) => {
     const mapRef = useRef(null);
+    const [is3D, setIs3D] = useState(true);
 
     // Mapbox 토큰 (환경 변수에서 가져오기)
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
     useEffect(() => {
         if (mapRef.current) {
-            // 3D 입체감을 위해 pitch(기울기)와 bearing(회전) 설정
             mapRef.current.flyTo({
                 center: [lng, lat],
-                zoom: 12, // 지형이 잘 보이도록 줌 레벨을 조금 높임
-                pitch: 60, // 60도 기울임
-                bearing: -20, // 약간 회전
-                duration: 2000 // 부드러운 이동
+                zoom: 12,
+                pitch: is3D ? 60 : 0,
+                bearing: is3D ? -20 : 0,
+                duration: 2000
             });
         }
     }, [lat, lng]);
+
+    // 2D/3D 토글 함수 (카메라 각도만 변경, 지도 재호출 없음)
+    const toggle3D = () => {
+        if (mapRef.current) {
+            const new3D = !is3D;
+            setIs3D(new3D);
+            mapRef.current.flyTo({
+                pitch: new3D ? 60 : 0,
+                bearing: new3D ? -20 : 0,
+                duration: 800
+            });
+        }
+    };
+
+    // 지도 로드 후 라벨 레이어 숨기기
+    const onMapLoad = () => {
+        if (mapRef.current) {
+            const map = mapRef.current.getMap();
+            const layers = map.getStyle().layers;
+            layers.forEach((layer) => {
+                if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
+                    map.setLayoutProperty(layer.id, 'visibility', 'none');
+                }
+            });
+        }
+    };
 
     if (!lat || !lng) return null;
 
@@ -43,10 +70,11 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                     bearing: -20
                 }}
                 style={{ width: '100%', height: '100%' }}
-                mapStyle="mapbox://styles/mapbox/outdoors-v12" // 3D 지형이 돋보이는 아웃도어 테마 적용
+                mapStyle="mapbox://styles/mapbox/outdoors-v12"
                 mapboxAccessToken={MAPBOX_TOKEN}
                 attributionControl={false}
-                terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }} // 3D 지형 효과 활성화
+                terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
+                onLoad={onMapLoad}
             >
                 {/* 3D 지형(Terrain) 데이터 소스 */}
                 <Source
@@ -68,21 +96,35 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
 
                 {/* 편의 컨트롤들 */}
                 <FullscreenControl position="top-right" />
-                <NavigationControl position="bottom-right" showCompass={true} />
-                <ScaleControl position="bottom-left" />
+                <NavigationControl position="bottom-right" showCompass={true} showZoom={true} />
             </Map>
 
-            {/* 3D 뷰 안내 오버레이 (호버 시 사라짐) */}
-            <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white/90 text-xs px-3 py-2 rounded-xl pointer-events-none opacity-100 group-hover:opacity-0 transition-opacity duration-500 z-20 flex flex-col gap-1">
-                <div className="flex items-center gap-2 font-bold">
-                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    3D 지형 뷰 활성화됨
+            {/* 2D/3D 토글 버튼 */}
+            <button
+                onClick={toggle3D}
+                className="absolute top-4 left-4 bg-black/60 backdrop-blur-md hover:bg-black/80 text-white px-4 py-2.5 rounded-xl transition-all duration-300 z-20 flex items-center gap-2 border border-white/10 shadow-lg"
+                aria-label={is3D ? '2D 뷰로 전환' : '3D 뷰로 전환'}
+            >
+                {is3D ? (
+                    <>
+                        <Mountain size={18} className="text-emerald-400" />
+                        <span className="text-xs font-bold">3D</span>
+                    </>
+                ) : (
+                    <>
+                        <MapIcon size={18} className="text-blue-400" />
+                        <span className="text-xs font-bold">2D</span>
+                    </>
+                )}
+            </button>
+
+            {/* 지도 모드 안내 (3D 모드일 때만) */}
+            {is3D && (
+                <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm text-white/80 text-[10px] px-3 py-2 rounded-lg pointer-events-none opacity-100 group-hover:opacity-0 transition-opacity duration-500 z-10">
+                    <span className="hidden md:inline">우클릭 드래그로 각도 조절</span>
+                    <span className="inline md:hidden">두 손가락으로 각도 조절</span>
                 </div>
-                <div className="text-[10px] text-gray-300">
-                    <span className="hidden md:inline">PC: 우클릭 드래그로 기울기/회전</span>
-                    <span className="inline md:hidden">모바일: 두 손가락으로 드래그하여 기울기 조절</span>
-                </div>
-            </div>
+            )}
         </div>
     );
 };
