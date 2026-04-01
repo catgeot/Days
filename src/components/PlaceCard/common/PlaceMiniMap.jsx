@@ -1,15 +1,49 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Map, { Marker, NavigationControl, Source } from 'react-map-gl/mapbox';
-import { Mountain, Map as MapIcon } from 'lucide-react';
+import { Mountain, Map as MapIcon, Maximize2, Minimize2 } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const PlaceMiniMap = ({ lat, lng, name }) => {
     const mapRef = useRef(null);
     const mapContainerRef = useRef(null);
     const [is3D, setIs3D] = useState(true);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [supportsFullscreen, setSupportsFullscreen] = useState(false);
 
     // Mapbox 토큰 (환경 변수에서 가져오기)
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+    useEffect(() => {
+        // Fullscreen API 지원 여부 확인 (크로스 브라우저)
+        const isSupported =
+            document.fullscreenEnabled ||
+            document.webkitFullscreenEnabled ||
+            document.mozFullScreenEnabled ||
+            document.msFullscreenEnabled;
+
+        setSupportsFullscreen(!!isSupported);
+
+        const handleFullscreenChange = () => {
+            setIsFullscreen(
+                !!document.fullscreenElement ||
+                !!document.webkitFullscreenElement ||
+                !!document.mozFullScreenElement ||
+                !!document.msFullscreenElement
+            );
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+        };
+    }, []);
 
     useEffect(() => {
         if (mapRef.current) {
@@ -33,6 +67,36 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                 bearing: new3D ? -20 : 0,
                 duration: 800
             });
+        }
+    };
+
+    // 크로스 브라우저 풀스크린 토글
+    const toggleFullscreen = async () => {
+        try {
+            if (!isFullscreen) {
+                const elem = mapContainerRef.current;
+                if (elem.requestFullscreen) {
+                    await elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    await elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    await elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) {
+                    await elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    await document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    await document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    await document.msExitFullscreen();
+                }
+            }
+        } catch (err) {
+            console.error("풀스크린 전환 중 오류 발생:", err);
         }
     };
 
@@ -125,6 +189,21 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                         </>
                     )}
                 </button>
+
+                {/* 모바일 전용 풀스크린 토글 버튼 (PC는 맵박스 기본 컨트롤 사용) */}
+                {supportsFullscreen && (
+                    <button
+                        onClick={toggleFullscreen}
+                        className="md:hidden bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-2.5 rounded-xl transition-all duration-300 flex items-center justify-center border border-white/10 shadow-lg"
+                        aria-label={isFullscreen ? '전체화면 종료' : '전체화면 보기'}
+                    >
+                        {isFullscreen ? (
+                            <Minimize2 size={18} className="text-purple-400" />
+                        ) : (
+                            <Maximize2 size={18} className="text-purple-400" />
+                        )}
+                    </button>
+                )}
             </div>
 
             {/* 지도 모드 안내 (3D 모드일 때만) */}
