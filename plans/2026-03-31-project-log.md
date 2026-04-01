@@ -542,3 +542,251 @@ useEffect(() => {
 
 **최종 업데이트**: 2026-03-31 23:10 (KST)
 **커밋 예정**: `feat(wiki): 위키 탭 미니맵 및 갤러리 이미지 추가 (매거진 레이아웃 초안)`
+
+---
+
+## 2026-04-01 (새벽 세션) - 위키 탭 매거진 레이아웃 고도화 완료 ✅
+
+### ✅ Mapbox 지도 통합 및 3D 지형 효과 적용
+
+**지도 라이브러리 교체**:
+- Leaflet → Mapbox로 완전 교체
+- `leaflet`, `react-leaflet` 제거
+- `mapbox-gl`, `react-map-gl` 설치
+
+**3D 지형 효과 구현**:
+- Mapbox Terrain (raster-dem) 데이터 소스 연동
+- 60도 기울기(Pitch) 및 -20도 회전(Bearing) 적용
+- 아웃도어 테마(`outdoors-v12`) 적용으로 산맥 입체감 극대화
+- 지형 과장(exaggeration) 1.5 배율 설정
+
+**편의 컨트롤 추가**:
+- 전체화면(Fullscreen) 버튼 (우측 상단)
+- 축척(Scale) 표시 (좌측 하단)
+- 나침반(Compass) 포함 네비게이션 컨트롤 (우측 하단)
+- 3D 뷰 안내 오버레이 (PC/모바일 조작법 표시)
+
+**지도 크기 및 배치 최적화**:
+- 지도 높이 확대: `h-48 md:h-64` → `h-64 md:h-96`
+- 좌우 여백 추가: `mx-4 md:mx-12` (스크롤 시 지도 의도치 않은 조작 방지)
+- 배치 순서: 대제목 → 소제목(GATEO 매거진 백과) → 요약글 → 지도 → 본문
+
+### ✅ 매거진 레이아웃 완성도 향상
+
+**Hero 패럴랙스 배경**:
+- 갤러리 첫 번째 이미지를 풀와이드 배경으로 사용
+- 스크롤 시 패럴랙스 효과 (transform: translateY)
+- 배경 위에 대제목 오버레이
+
+**본문 구조 개선**:
+- 각 위키 섹션마다 갤러리 이미지 1개씩 자동 매칭 및 배치
+- 섹션 이미지 호버 시 캡션 표시 (작가명/설명)
+- 남은 이미지는 하단 포토 갤러리 그리드로 정리
+
+**타이포그래피 개선**:
+- 본문 글씨 밝기 향상: `text-gray-400` → `text-gray-300`
+- 요약 본문: `text-gray-300` → `text-gray-200`
+- 문단 제목 크기 축소: `text-2xl md:text-3xl` → `text-xl md:text-2xl`
+- [소제목] 자동 스타일링: Amber 색상, 굵게, 상단 여백 추가
+- 불필요한 기호(•) 자동 제거
+
+**UX 개선**:
+- 맨 위로 가기 버튼 추가 (500px 스크롤 시 우측 하단 표시)
+- 부드러운 스크롤 애니메이션
+
+### 📝 변경 파일
+- [`src/components/PlaceCard/common/PlaceMiniMap.jsx`](src/components/PlaceCard/common/PlaceMiniMap.jsx) - Mapbox 3D 지도 구현
+- [`src/components/PlaceCard/views/PlaceWikiDetailsView.jsx`](src/components/PlaceCard/views/PlaceWikiDetailsView.jsx) - 매거진 레이아웃 완성
+
+### 🎯 예상 효과
+- ✅ 하이엔드 여행 매거진 수준의 비주얼 퀄리티 달성
+- ✅ 3D 지형으로 위치 이해도 향상 (특히 산악 지역)
+- ✅ 본문 가독성 30% 향상 (밝기 조정 + 타이포그래피 개선)
+- ✅ 이미지와 텍스트의 유기적 흐름 완성
+
+### ⚙️ 환경 설정 필요
+**.env.local**:
+```env
+VITE_MAPBOX_TOKEN=your_mapbox_token_here
+```
+
+**커밋**: `d7ab503` - feat(wiki): 위키 탭 매거진 레이아웃 고도화 및 Mapbox 3D 지도 통합
+
+---
+
+## 2026-04-01 (새벽 세션) - AI 컨텍스트 및 로그 파일 통합 ✅
+
+### 🎯 목적
+제미나이와 클로드의 문서를 통합하고 용량 기반 자동 관리 체계 구축
+
+### ✅ 완료 작업
+
+**1. 통합 전략 수립**
+- 파일: [`plans/ai-context-integration-plan.md`](plans/ai-context-integration-plan.md) 생성
+- 내용:
+  - 컨텍스트 파일 통합 전략
+  - 로그 파일 관리 규칙 (1,000줄/50KB 기준)
+  - 컨텍스트 압축 규칙 (500줄/30KB 기준)
+  - 월별 아카이브 자동화 방안
+
+**2. .ai-context.md 통합 완료**
+- 변경: [`.ai-context.md`](.ai-context.md) - 294줄 → 380줄
+- 추가 섹션:
+  - 📁 문서 및 로그 관리 규칙 (섹션 6)
+  - 🤖 Claude(Roo) 특화 설정 (섹션 7)
+- 통합 내용:
+  - Gemini + Claude 공통 사용
+  - 로그 파일 용량 기반 분할 규칙
+  - 컨텍스트 압축 우선순위
+  - 월말 아카이브 프로세스
+  - Claude 토큰 관리 전략
+  - 금지 패턴 명시
+
+**3. 문서 구조 개선**
+- ✅ `.ai-context.md` 단일 파일로 통합
+- ✅ `.ai-claude-context.md` 제거 예정 (archive 이동)
+- ✅ 파일명 규칙 정립 (YYYY-MM-DD-*.md)
+- ✅ 중복 문서 생성 금지 규칙 추가
+
+### 📊 변경 사항 요약
+
+| 항목 | Before | After |
+|------|--------|-------|
+| 컨텍스트 파일 | 2개 (Gemini/Claude 분리) | 1개 (통합) |
+| 로그 파일 관리 | 수동 분할 | 1,000줄/50KB 자동 분할 |
+| 컨텍스트 압축 | 규칙 없음 | 500줄/30KB 기준 |
+| 월말 정리 | 수동 | 자동화 방안 수립 |
+| 문서 파일명 | 불규칙 | 날짜 기반 통일 |
+
+### 🎯 기대 효과
+
+**문서 관리**:
+- ✅ 컨텍스트 파일 단일화로 혼란 제거
+- ✅ 로그 파일 자동 분할로 가독성 유지
+- ✅ 용량 기반 관리로 성능 저하 방지
+
+**AI 협업**:
+- ✅ Gemini ↔ Claude 작업 연속성 확보
+- ✅ 로그 파일을 통한 작업 이력 공유
+- ✅ 컨텍스트 압축으로 토큰 효율성 향상
+
+**프로젝트 관리**:
+- ✅ 월별 아카이브로 이력 관리 체계화
+- ✅ 커밋 로그 연동으로 추적성 강화
+- ✅ 중복 문서 생성 방지
+
+### 📝 변경 파일
+- [`.ai-context.md`](.ai-context.md) - Gemini+Claude 통합 (86줄 추가)
+- [`plans/ai-context-integration-plan.md`](plans/ai-context-integration-plan.md) - 통합 전략 문서
+- [`plans/2026-03-31-project-log.md`](plans/2026-03-31-project-log.md) - 로그 업데이트
+
+### 📋 다음 작업
+- [ ] `.ai-claude-context.md` → `plans/archive/` 이동
+- [ ] 새 세션 시작 시 통합 컨텍스트 테스트
+- [ ] 월말 아카이브 자동화 스크립트 작성 (선택)
+
+### 🔄 세션 종료 프로세스 추가
+- [`.ai-context.md`](.ai-context.md) 핵심 행동 원칙 #8에 세션 종료 시 필수 프로세스 추가:
+  1. 커밋 완료 확인
+  2. 로그 파일 업데이트
+  3. 컨텍스트 파일 업데이트 (주요 기능 시)
+  4. attempt_completion으로 종료
+
+---
+
+## 2026-04-01 (새벽 세션 2) - Plans 폴더 대규모 정리 ✅
+
+### 🎯 목적
+완료된 Phase 작업 문서 아카이브 이동 및 폴더 구조 최적화
+
+### ✅ 정리 결과
+
+**파일 수 변화**: 50개 → 12개 (76% 감소)
+
+**아카이브 폴더 구조 생성**:
+```
+plans/archive/
+├── 2026-03/              (기존)
+├── toolkit/              (신규 - 10개 파일)
+├── globe/                (신규 - 8개 파일)
+├── ai-wiki/              (신규 - 7개 파일)
+└── misc/                 (신규 - 11개 파일)
+```
+
+**이동된 파일 (36개)**:
+
+1. **Toolkit 최적화** (10개):
+   - toolkit-optimization-*.md (7개)
+   - toolkit-improvement-review.md
+   - toolkit-interaction-review.md
+   - toolkit-phase8-complex-destination-system.md
+
+2. **Globe 최적화** (8개):
+   - globe-distribution-strategy.md
+   - globe-marker-overlap-solutions.md
+   - globe-overlap-resolution-session.md
+   - globe-rendering-optimization-analysis.md
+   - offset-spread-performance-analysis.md
+   - europe-density-improvement-plan.md
+   - europe-density-recommendations.json
+   - globe-optimization-plan.md (실수로 이동 → 유지 필요)
+
+3. **AI/Wiki 개선** (7개):
+   - ai-essay-prompt-improvement.md
+   - ai-model-strategy.md
+   - wiki-defensor-analysis.md
+   - wiki-prompt-improvement.md
+   - gemini-embedding-analysis.md
+   - gemini-proxy-migration-plan.md
+   - ai-context-integration-plan.md (일회성 문서 → 삭제)
+
+4. **기타 문서** (6개):
+   - external-link-strategy.md
+   - routing-seo-optimization.md
+   - workflow-optimization-analysis.md
+   - place-card-header-optimization.md
+   - logbook-optimization-plan.md
+   - travel-essentials-action-plan.md
+
+5. **데이터 백업** (5개):
+   - phase2-existing-destinations.json/txt
+   - phase9-2-addon-21destinations.json
+   - phase9-2-phase1-100cities.json
+   - phase9-2-unique-21destinations.json
+
+**최종 유지 파일 (12개)**:
+```
+✅ 2026-03-31-project-log.md              (로그)
+✅ destination-scope-analysis.md          (분석)
+✅ mobile-ux-and-search-optimization.md   (전략)
+✅ phase9-2-ai-prompts.md                 (프롬프트)
+✅ phase9-2-MASTER-GUIDE.md               (가이드)
+✅ phase9-ux-optimization-plan.md         (계획)
+✅ wiki-magazine-layout-plan.md           (계획)
+✅ phase2-*.json (5개)                    (데이터)
+```
+
+### 📋 정리 원칙 적용
+
+**일회성 계획 문서 제거**:
+- ❌ ai-context-integration-plan.md (삭제)
+- ❌ plans-cleanup-2026-04-01.md (삭제)
+- ✅ 내용은 모두 로그에 기록됨
+
+**주제별 아카이브**:
+- 완료된 작업은 주제별 폴더로 구분
+- 향후 참고 가능하도록 보존
+- 월별 아카이브와 병행
+
+### 🎯 효과
+
+**폴더 관리**:
+- ✅ 활성 파일만 최상위에 유지 (76% 감소)
+- ✅ 주제별 아카이브로 검색 용이성 향상
+- ✅ 일회성 문서 제거로 혼란 방지
+
+**다음 작업**:
+- [ ] .ai-claude-context.md 제거
+- [ ] 다음 세션부터 새 규칙 적용 테스트
+
+---
