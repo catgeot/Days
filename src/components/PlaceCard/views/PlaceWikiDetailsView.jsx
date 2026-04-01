@@ -276,22 +276,25 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
             .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
         `}</style>
 
-        {/* Hero Section (Parallax) */}
+        {/* Hero Section */}
         {heroImage && (
-            <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden flex-shrink-0 pt-16 md:pt-0">
-                <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-0"
-                    style={{
-                        backgroundImage: `url(${heroImage.urls?.regular || heroImage.urls?.full})`,
-                        transform: `translateY(${scrollY * 0.4}px)` // 패럴랙스 효과
-                    }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-[#05070a]/40 to-transparent" />
-                <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 pb-8">
-                    <div className="max-w-3xl mx-auto">
-                        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter drop-shadow-2xl">
-                            {placeName || wikiData?.title}
-                        </h1>
+            <div className="relative w-full overflow-hidden flex-shrink-0">
+                {/* 모바일 헤더 공간 확보 */}
+                <div className="h-16 md:h-0 bg-[#05070a]"></div>
+
+                <div className="relative w-full h-[40vh] md:h-[50vh]">
+                    <img
+                        src={heroImage.urls?.regular || heroImage.urls?.full}
+                        alt={heroImage.alt_description || placeName || 'Hero image'}
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-[#05070a]/40 to-transparent" />
+                    <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 pb-8">
+                        <div className="max-w-3xl mx-auto">
+                            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter drop-shadow-2xl">
+                                {placeName || wikiData?.title}
+                            </h1>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -391,6 +394,51 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                             })}
                         </div>
 
+                        {/* 하단 갤러리 그리드 (위키 섹션 직후) */}
+                        {contentImages.length > (wikiData?.sections?.length || 0) && (
+                            <div className="mt-24 pt-12 border-t border-white/10">
+                                <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white tracking-tight">
+                                    <Camera size={24} className="text-gray-400" />
+                                    <span>포토 갤러리</span>
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                                    {contentImages.slice(wikiData?.sections?.length || 0).map((img, i) => {
+                                        const actualIndex = (wikiData?.sections?.length || 0) + i;
+                                        return (
+                                            <div
+                                                key={i}
+                                                className="rounded-2xl overflow-hidden aspect-square relative group bg-white/5 cursor-pointer"
+                                                onClick={() => {
+                                                    setLightboxImg(img);
+                                                    setLightboxIndex(actualIndex);
+                                                }}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        setLightboxImg(img);
+                                                        setLightboxIndex(actualIndex);
+                                                    }
+                                                }}
+                                                aria-label={`${img.alt_description || '갤러리 이미지'} 확대하기`}
+                                            >
+                                                <img
+                                                    src={img.urls?.small}
+                                                    alt={img.alt_description || 'Gallery image'}
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                    loading="lazy"
+                                                />
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                                    <Camera size={24} className="text-white/70" />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-[40vh] text-gray-500 gap-4 animate-fade-in">
@@ -399,7 +447,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                     </div>
                 )}
 
-                {/* AI 로컬 왓슨 섹션 (본문 하단에 자연스럽게 이어짐) */}
+                {/* AI 로컬 왓슨 섹션 (갤러리 하단) */}
                 {isAiExpanded && (
                     <div ref={aiSectionRef} className="mt-16 bg-[#0F1115] border border-blue-500/20 rounded-3xl p-6 md:p-10 animate-fade-in-up shadow-2xl scroll-mt-6 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
@@ -473,51 +521,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                 </div>
                             </div>
                         ) : null}
-                    </div>
-                )}
-
-                {/* 하단 갤러리 그리드 (남은 이미지들) */}
-                {contentImages.length > (wikiData?.sections?.length || 0) && (
-                    <div className="mt-24 pt-12 border-t border-white/10">
-                        <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white tracking-tight">
-                            <Camera size={24} className="text-gray-400" />
-                            <span>포토 갤러리</span>
-                        </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                            {contentImages.slice(wikiData?.sections?.length || 0).map((img, i) => {
-                                const actualIndex = (wikiData?.sections?.length || 0) + i;
-                                return (
-                                    <div
-                                        key={i}
-                                        className="rounded-2xl overflow-hidden aspect-square relative group bg-white/5 cursor-pointer"
-                                        onClick={() => {
-                                            setLightboxImg(img);
-                                            setLightboxIndex(actualIndex);
-                                        }}
-                                        role="button"
-                                        tabIndex={0}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                setLightboxImg(img);
-                                                setLightboxIndex(actualIndex);
-                                            }
-                                        }}
-                                        aria-label={`${img.alt_description || '갤러리 이미지'} 확대하기`}
-                                    >
-                                        <img
-                                            src={img.urls?.small}
-                                            alt={img.alt_description || 'Gallery image'}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            loading="lazy"
-                                        />
-                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                            <Camera size={24} className="text-white/70" />
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
                     </div>
                 )}
 
