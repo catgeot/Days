@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp } from 'lucide-react';
+import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
@@ -31,6 +31,10 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   const [localAiResponse, setLocalAiResponse] = useState(null);
   const [localUpdatedAt, setLocalUpdatedAt] = useState(null);
   const [loadingStep, setLoadingStep] = useState(0);
+
+  // 라이트박스 상태
+  const [lightboxImg, setLightboxImg] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const isUpdatingExisting = !!wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
   const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
@@ -468,19 +472,39 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                             <span>포토 갤러리</span>
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                            {contentImages.slice(wikiData?.sections?.length || 0).map((img, i) => (
-                                <div key={i} className="rounded-2xl overflow-hidden aspect-square relative group bg-white/5">
-                                    <img
-                                        src={img.urls?.small}
-                                        alt={img.alt_description || 'Gallery image'}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        loading="lazy"
-                                    />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                        <Camera size={24} className="text-white/70" />
+                            {contentImages.slice(wikiData?.sections?.length || 0).map((img, i) => {
+                                const actualIndex = (wikiData?.sections?.length || 0) + i;
+                                return (
+                                    <div
+                                        key={i}
+                                        className="rounded-2xl overflow-hidden aspect-square relative group bg-white/5 cursor-pointer"
+                                        onClick={() => {
+                                            setLightboxImg(img);
+                                            setLightboxIndex(actualIndex);
+                                        }}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                setLightboxImg(img);
+                                                setLightboxIndex(actualIndex);
+                                            }
+                                        }}
+                                        aria-label={`${img.alt_description || '갤러리 이미지'} 확대하기`}
+                                    >
+                                        <img
+                                            src={img.urls?.small}
+                                            alt={img.alt_description || 'Gallery image'}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            loading="lazy"
+                                        />
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                            <Camera size={24} className="text-white/70" />
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -512,6 +536,119 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
             >
                 <ArrowUp size={24} className="group-hover:-translate-y-1 transition-transform" />
             </button>
+        )}
+
+        {/* 라이트박스 모달 */}
+        {lightboxImg && (
+            <div
+                className="fixed inset-0 z-[300] bg-black/95 flex items-center justify-center backdrop-blur-sm animate-fade-in"
+                onClick={() => setLightboxImg(null)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Escape') setLightboxImg(null);
+                    if (e.key === 'ArrowLeft') {
+                        const newIndex = lightboxIndex - 1;
+                        if (newIndex >= 0) {
+                            setLightboxIndex(newIndex);
+                            setLightboxImg(contentImages[newIndex]);
+                        }
+                    }
+                    if (e.key === 'ArrowRight') {
+                        const newIndex = lightboxIndex + 1;
+                        if (newIndex < contentImages.length) {
+                            setLightboxIndex(newIndex);
+                            setLightboxImg(contentImages[newIndex]);
+                        }
+                    }
+                }}
+                role="dialog"
+                aria-modal="true"
+                aria-label="이미지 확대 보기"
+            >
+                {/* 닫기 버튼 */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setLightboxImg(null);
+                    }}
+                    className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 z-10 group"
+                    aria-label="닫기"
+                >
+                    <X size={24} className="text-white group-hover:rotate-90 transition-transform" />
+                </button>
+
+                {/* 좌측 네비게이션 */}
+                {lightboxIndex > 0 && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            const newIndex = lightboxIndex - 1;
+                            setLightboxIndex(newIndex);
+                            setLightboxImg(contentImages[newIndex]);
+                        }}
+                        className="absolute left-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 z-10 group"
+                        aria-label="이전 이미지"
+                    >
+                        <ChevronLeftIcon size={32} className="text-white group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                )}
+
+                {/* 우측 네비게이션 */}
+                {lightboxIndex < contentImages.length - 1 && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            const newIndex = lightboxIndex + 1;
+                            setLightboxIndex(newIndex);
+                            setLightboxImg(contentImages[newIndex]);
+                        }}
+                        className="absolute right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 z-10 group"
+                        aria-label="다음 이미지"
+                    >
+                        <ChevronRight size={32} className="text-white group-hover:translate-x-1 transition-transform" />
+                    </button>
+                )}
+
+                {/* 이미지 */}
+                <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+                    <img
+                        src={lightboxImg.urls?.regular || lightboxImg.urls?.small}
+                        alt={lightboxImg.alt_description || 'Gallery image'}
+                        className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                    />
+
+                    {/* 이미지 정보 (하단) */}
+                    {(lightboxImg.user?.name || lightboxImg.alt_description) && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg">
+                            {lightboxImg.alt_description && (
+                                <p className="text-white/90 text-sm mb-1">{lightboxImg.alt_description}</p>
+                            )}
+                            {lightboxImg.user?.name && (
+                                <p className="text-white/60 text-xs">
+                                    Photo by {lightboxImg.user.name}
+                                    {lightboxImg.user.links?.html && (
+                                        <a
+                                            href={lightboxImg.user.links.html}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="ml-2 underline hover:text-white/80"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            on Unsplash
+                                        </a>
+                                    )}
+                                </p>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {/* 이미지 카운터 */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full">
+                    <p className="text-white/80 text-sm font-medium">
+                        {lightboxIndex + 1} / {contentImages.length}
+                    </p>
+                </div>
+            </div>
         )}
     </div>
   );
