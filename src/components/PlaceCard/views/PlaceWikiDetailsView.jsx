@@ -551,20 +551,27 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
             </div>
 
-            {/* 하단 AI 버튼 (모바일 푸터 고정, PC는 본문 내부) */}
-            {!isAiExpanded && (
-                <div className="fixed md:static bottom-16 left-0 right-0 p-4 md:p-0 md:mt-10 z-[160] bg-[#05070a]/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-none">
-                    <button
-                        onClick={handleRequestAiInfo}
-                        className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
-                    >
-                        <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm md:text-base font-bold text-gray-200 tracking-wide">
-                            AI에게 안전 로컬 정보 묻기
-                        </span>
-                    </button>
-                </div>
-            )}
+            {/* 하단 AI 버튼 (모바일 푸터 고정, PC는 본문 내부) - 항상 표시, 토글 방식 */}
+            <div className="fixed md:static bottom-0 left-0 right-0 p-4 md:p-0 md:mt-10 z-[160] bg-[#05070a]/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-none">
+                <button
+                    onClick={() => {
+                        if (isAiExpanded) {
+                            setIsAiExpanded(false);
+                            setLocalAiResponse(null);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        } else {
+                            handleRequestAiInfo(placeName || wikiData?.title);
+                        }
+                    }}
+                    className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto min-h-[56px]"
+                >
+                    <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm md:text-base font-bold text-gray-200 tracking-wide">
+                        {isAiExpanded ? '로컬 왓슨 닫기' : 'AI에게 안전 로컬 정보 묻기'}
+                    </span>
+                    {isAiExpanded && <ChevronDown size={20} className="text-blue-400" />}
+                </button>
+            </div>
         </div>
 
         {/* 맨 위로 가기 버튼 */}

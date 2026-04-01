@@ -1,37 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
-import Map, { Marker, NavigationControl, FullscreenControl, Source } from 'react-map-gl/mapbox';
-import { Mountain, Map as MapIcon, Maximize2, Minimize2 } from 'lucide-react';
+import Map, { Marker, NavigationControl, Source } from 'react-map-gl/mapbox';
+import { Mountain, Map as MapIcon } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const PlaceMiniMap = ({ lat, lng, name }) => {
     const mapRef = useRef(null);
     const mapContainerRef = useRef(null);
     const [is3D, setIs3D] = useState(true);
-    const [isFullscreen, setIsFullscreen] = useState(false);
-    const [supportsFullscreen, setSupportsFullscreen] = useState(false);
 
     // Mapbox 토큰 (환경 변수에서 가져오기)
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-
-    // Fullscreen API 지원 여부 체크
-    useEffect(() => {
-        const checkFullscreenSupport = () => {
-            // Fullscreen API 지원 확인
-            const isSupported =
-                document.fullscreenEnabled ||
-                document.webkitFullscreenEnabled ||
-                document.mozFullScreenEnabled ||
-                document.msFullscreenEnabled;
-
-            setSupportsFullscreen(isSupported);
-
-            if (import.meta.env.DEV) {
-                console.log('[PlaceMiniMap] Fullscreen API 지원:', isSupported);
-            }
-        };
-
-        checkFullscreenSupport();
-    }, []);
 
     useEffect(() => {
         if (mapRef.current) {
@@ -58,55 +36,6 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
         }
     };
 
-    // 모바일 풀스크린 토글 함수
-    const toggleFullscreen = async () => {
-        if (!mapContainerRef.current || !supportsFullscreen) return;
-
-        try {
-            const elem = mapContainerRef.current;
-
-            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                // 크로스 브라우저 fullscreen API
-                if (elem.requestFullscreen) {
-                    await elem.requestFullscreen();
-                } else if (elem.webkitRequestFullscreen) {
-                    await elem.webkitRequestFullscreen(); // Safari
-                } else if (elem.mozRequestFullScreen) {
-                    await elem.mozRequestFullScreen(); // Firefox
-                } else if (elem.msRequestFullscreen) {
-                    await elem.msRequestFullscreen(); // IE/Edge
-                }
-                setIsFullscreen(true);
-            } else {
-                // Exit fullscreen
-                if (document.exitFullscreen) {
-                    await document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    await document.webkitExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    await document.mozCancelFullScreen();
-                } else if (document.msExitFullscreen) {
-                    await document.msExitFullscreen();
-                }
-                setIsFullscreen(false);
-            }
-        } catch (error) {
-            if (import.meta.env.DEV) {
-                console.warn('[PlaceMiniMap] 풀스크린 전환 실패:', error);
-            }
-        }
-    };
-
-    // 풀스크린 상태 변경 감지
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
-        };
-
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    }, []);
-
     // 지도 로드 후 처리 (맵박스 자체 지명은 유지)
     const onMapLoad = () => {
         // 맵박스 기본 지명은 표시되도록 아무 작업도 하지 않음
@@ -128,7 +57,7 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
     return (
         <div
             ref={mapContainerRef}
-            className={`w-full h-64 md:h-96 rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-10 mb-8 animate-fade-in group ${isFullscreen ? 'fixed inset-0 w-screen h-screen rounded-none z-[300]' : ''}`}
+            className="w-full h-96 md:h-[500px] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-10 mb-8 animate-fade-in group"
         >
             <Map
                 ref={mapRef}
@@ -139,12 +68,21 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                     pitch: 60,
                     bearing: -20
                 }}
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '100%', height: '100%', touchAction: 'pan-y' }}
                 mapStyle="mapbox://styles/mapbox/outdoors-v12"
                 mapboxAccessToken={MAPBOX_TOKEN}
                 attributionControl={false}
                 terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
                 onLoad={onMapLoad}
+                scrollZoom={false}
+                doubleClickZoom={true}
+                touchZoomRotate={true}
+                dragPan={{
+                    linearity: 0.3,
+                    easing: (t) => t,
+                    deceleration: 2400,
+                    maxSpeed: 1400
+                }}
             >
                 {/* 3D 지형(Terrain) 데이터 소스 */}
                 <Source
@@ -163,10 +101,7 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                     </div>
                 </Marker>
 
-                {/* 편의 컨트롤들 */}
-                <div className="mapboxgl-ctrl-top-right">
-                    <FullscreenControl />
-                </div>
+                {/* 네비게이션 컨트롤 */}
                 <NavigationControl position="bottom-right" showCompass={true} showZoom={true} />
             </Map>
 
@@ -190,21 +125,6 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                         </>
                     )}
                 </button>
-
-                {/* 모바일 풀스크린 버튼 (Fullscreen API 지원 시에만 표시) */}
-                {supportsFullscreen && (
-                    <button
-                        onClick={toggleFullscreen}
-                        className="md:hidden bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-2.5 rounded-xl transition-all duration-300 border border-white/10 shadow-lg"
-                        aria-label={isFullscreen ? '풀스크린 종료' : '풀스크린'}
-                    >
-                        {isFullscreen ? (
-                            <Minimize2 size={18} className="text-purple-400" />
-                        ) : (
-                            <Maximize2 size={18} className="text-purple-400" />
-                        )}
-                    </button>
-                )}
             </div>
 
             {/* 지도 모드 안내 (3D 모드일 때만) */}
