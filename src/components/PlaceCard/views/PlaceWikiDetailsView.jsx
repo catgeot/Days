@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft } from 'lucide-react';
+import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
@@ -36,6 +36,27 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
   const aiSectionRef = useRef(null);
+  const containerRef = useRef(null);
+  const [scrollY, setScrollY] = useState(0);
+
+  // 패럴랙스 효과를 위한 스크롤 이벤트 리스너
+  useEffect(() => {
+      const handleScroll = () => {
+          if (containerRef.current) {
+              setScrollY(containerRef.current.scrollTop);
+          }
+      };
+
+      const container = containerRef.current;
+      if (container) {
+          container.addEventListener('scroll', handleScroll);
+      }
+      return () => {
+          if (container) {
+              container.removeEventListener('scroll', handleScroll);
+          }
+      };
+  }, []);
 
   useEffect(() => {
       let interval;
@@ -48,7 +69,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       return () => clearInterval(interval);
   }, [isAiLoading, currentMessages]);
 
-  // 🔒 [Phase 9-3 Fix] placeId는 placeName(한글명) 사용 - wikiData 없어도 작동
   const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName });
   useEffect(() => {
       requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName };
@@ -72,14 +92,11 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
         }
     }, 100);
 
-    // 수동 갱신이 아니고 이미 캐시된 정상 응답이 있다면 로컬 상태로 표시 (네트워크 호출 안 함)
     const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
 
     if (!forceUpdate && hasCachedInfo) {
         console.log("[PlaceWikiDetailsView] 기존 캐시된 응답 있음 - 네트워크 호출 생략");
         setIsAiLoading(true);
-        // [조절가능] 이미 저장된 정보를 불러올 때도 AI가 '스캔 및 분석'하는 듯한 신뢰성 있는 대기 시간(텀)을 주는 곳
-        // 현재 2500ms(2.5초)로 설정되어 있으며, 필요에 따라 이 숫자를 변경하시면 됩니다.
         setTimeout(() => {
             setLocalAiResponse(wikiData.ai_practical_info);
             setIsAiLoading(false);
@@ -108,11 +125,8 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       setError(null);
       setLocalAiResponse(null);
 
-      // 🔒 [Phase 9-3 Fix] RLS 정책으로 인해 클라이언트에서 DB 직접 조작 불가
-      // Edge Function(Service Role)에서 UPSERT로 모든 DB 작업 처리
       console.log("[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리");
 
-      // 기존 정보 보관 (에러 시 복구용)
       const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : localAiResponse;
 
       try {
@@ -137,15 +151,12 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       } catch (err) {
           console.error('Request Error:', err);
           setError(err.message || "오류가 발생했습니다.");
-          // 🔒 [Phase 9-3 Fix] RLS 정책으로 클라이언트 롤백 불가
-          // Edge Function에서 에러 시 자동 롤백 처리됨 (index.ts:193-208)
       } finally {
           setIsAiLoading(false);
       }
     }
-  }, [isAiLoading, wikiData, countryName]); // countryName 추가 (의존성 경고 방지)
+  }, [isAiLoading, wikiData, countryName]);
 
-  // --- 14일 경과 시 백그라운드 자동 갱신 (Lazy Update) ---
   const autoUpdateTriggered = useRef(false);
   useEffect(() => {
       if (isActive && !autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
@@ -165,8 +176,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       }
   }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
 
-
-  // DB에서 주기적으로 폴링된 데이터 상태 감지 (백그라운드 로딩 상태 동기화)
   useEffect(() => {
     const currentInfo = wikiData?.ai_practical_info;
     const prevInfo = prevAiInfoRef.current;
@@ -177,7 +186,6 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       setLocalAiResponse(null);
       setError(null);
     } else if (prevInfo === '[[LOADING]]' && currentInfo && currentInfo !== '[[LOADING]]') {
-      // DB 폴링으로 로딩 중이었다가 실제 데이터가 들어온 경우에만 동기화
       setLocalAiResponse(currentInfo);
       if (wikiData?.ai_info_updated_at) {
           setLocalUpdatedAt(wikiData.ai_info_updated_at);
@@ -196,8 +204,51 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       return () => window.removeEventListener('request-ai-info', handleRemoteRequest);
   }, [handleRequestAiInfo]);
 
+  // 매거진 레이아웃을 위한 데이터 가공
+  const images = galleryData?.images || [];
+  const heroImage = images.length > 0 ? images[0] : null;
+  const contentImages = images.slice(1); // 본문 및 하단 갤러리용
+
+  // 요약 텍스트에서 인용구(첫 문장) 추출
+  let pullQuote = "";
+  let remainingSummary = wikiData?.summary || "";
+  if (wikiData?.summary) {
+      const match = wikiData.summary.match(/^([^.!?]+[.!?]+)\s*(.*)$/);
+      if (match) {
+          pullQuote = match[1];
+          remainingSummary = match[2];
+      }
+  }
+
+  const scrollToTop = () => {
+      if (containerRef.current) {
+          containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+  };
+
+  // 본문 내 [소제목] 스타일링 및 불필요한 기호 제거 함수
+  const renderContentWithSubtitles = (content) => {
+      if (!content) return null;
+
+      // 불필요한 점(•) 기호 제거 (단독으로 줄을 차지하는 경우)
+      const cleanContent = content.replace(/^\s*•\s*$/gm, '');
+
+      const parts = cleanContent.split(/(\[[^\]]+\])/g);
+
+      return parts.map((part, index) => {
+          if (part.startsWith('[') && part.endsWith(']')) {
+              return (
+                  <span key={index} className="block text-amber-400/90 font-bold text-sm md:text-base mt-6 mb-1 tracking-wider">
+                      {part}
+                  </span>
+              );
+          }
+          return <React.Fragment key={index}>{part}</React.Fragment>;
+      });
+  };
+
   return (
-    <div className="w-full h-full flex flex-col p-6 pt-[96px] pb-32 md:p-12 overflow-y-auto text-white custom-scrollbar relative">
+    <div ref={containerRef} className="w-full h-full flex flex-col overflow-y-auto text-white custom-scrollbar relative bg-[#05070a]">
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -205,185 +256,259 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
             .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
         `}</style>
 
-        <div className="max-w-3xl mx-auto w-full pt-4 md:pt-0 pb-20">
-            <h1 className="text-3xl font-bold mb-6 flex items-center gap-3 tracking-tight">
-                <BookOpen size={28} className="text-amber-500" />
-                GATEO 백과
-            </h1>
+        {/* Hero Section (Parallax) */}
+        {heroImage && (
+            <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden flex-shrink-0">
+                <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-0"
+                    style={{
+                        backgroundImage: `url(${heroImage.urls?.regular || heroImage.urls?.full})`,
+                        transform: `translateY(${scrollY * 0.4}px)` // 패럴랙스 효과
+                    }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-[#05070a]/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 pb-8">
+                    <div className="max-w-3xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter drop-shadow-2xl">
+                            {placeName || wikiData?.title}
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        )}
 
-            {isAiExpanded && (
-                <div ref={aiSectionRef} className="mb-8 bg-[#0F1115]/90 border border-blue-500/30 rounded-2xl p-6 md:p-8 animate-fade-in-up shadow-2xl scroll-mt-6">
-                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-                        <div className="flex items-center gap-3">
-                            <Sparkles size={24} className="text-blue-400" />
-                            <h3 className="text-xl font-bold text-white tracking-tight">로컬 왓슨의 안전 여행 노트</h3>
+        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-32 ${!heroImage ? 'pt-[96px]' : 'pt-8'}`}>
+
+            {/* 타이틀이 Hero 이미지 없는 경우를 대비한 Fallback */}
+            {!heroImage && (
+                <h1 className="text-4xl md:text-6xl font-black text-white mb-8 tracking-tighter drop-shadow-2xl">
+                    {placeName || wikiData?.title}
+                </h1>
+            )}
+
+            {/* 소제목 */}
+            <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-8 pb-4 border-b border-white/10">
+                <BookOpen size={24} />
+                <span>GATEO 매거진 백과</span>
+            </div>
+
+            {/* 메인 레이아웃 (단일 컬럼) */}
+            <div className="space-y-12">
+
+                {isWikiLoading ? (
+                    <div className="space-y-8 animate-pulse">
+                        <div className="h-32 bg-white/5 rounded-2xl border border-white/10 w-full"></div>
+                        <div className="space-y-4 pt-8 border-t border-white/10">
+                            <div className="h-8 bg-white/10 rounded w-1/3"></div>
+                            <div className="space-y-2">
+                                <div className="h-4 bg-white/5 rounded w-full"></div>
+                                <div className="h-4 bg-white/5 rounded w-5/6"></div>
+                                <div className="h-4 bg-white/5 rounded w-4/6"></div>
+                            </div>
                         </div>
-                        {(!isAiLoading && localAiResponse) && (
-                            <button
-                                onClick={() => handleRequestAiInfo(placeName || wikiData?.title, true)}
-                                className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-full transition-colors border border-blue-500/30 flex items-center gap-1.5 group"
-                                title="AI 툴킷 강제 최신화 (관리자/테스트용)"
-                            >
-                                <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
-                                <span className="text-[11px] font-bold hidden md:inline">강제 갱신</span>
-                            </button>
+                    </div>
+                ) : wikiData ? (
+                    <div className="space-y-12 animate-fade-in">
+
+                        {/* 인용구 (Pull Quote) */}
+                        {pullQuote && (
+                            <div className="relative pl-8 md:pl-12 py-2">
+                                <Quote size={48} className="absolute left-0 top-0 text-amber-500/20 -translate-y-2" />
+                                <p className="text-xl md:text-2xl lg:text-3xl font-bold text-amber-50 leading-snug tracking-tight break-keep">
+                                    {pullQuote}
+                                </p>
+                            </div>
                         )}
-                    </div>
 
-                    {!localAiResponse && isAiLoading ? (
-                        <div className="flex flex-col items-center justify-center py-10">
-                            <div className="w-full max-w-sm space-y-4">
-                                <div className="flex justify-between items-center px-1">
-                                    <span className="text-sm font-bold text-gray-300">
-                                        {isUpdatingExisting ? "AI 정보 점검 중" : "AI 정보 생성 중"}
-                                    </span>
-                                    <span className="text-xs font-bold text-blue-400">
-                                        {Math.round((loadingStep / (currentMessages.length - 1)) * 100)}%
-                                    </span>
-                                </div>
-                                <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-blue-500 transition-all duration-500 ease-out"
-                                        style={{ width: `${(loadingStep / (currentMessages.length - 1)) * 100}%` }}
-                                    ></div>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-gray-400 font-medium h-6 justify-center mt-4">
-                                    <Loader2 size={14} className="animate-spin text-blue-400" />
-                                    <span className="animate-pulse">{currentMessages[loadingStep]}</span>
-                                </div>
+                        {/* 요약 본문 */}
+                        {remainingSummary && (
+                            <p className="text-base md:text-lg text-gray-200 leading-[1.8] tracking-wide whitespace-pre-line break-keep font-light">
+                                {remainingSummary}
+                            </p>
+                        )}
+
+                        {/* 지도 (요약글 아래, 본문 진입 전) */}
+                        {location?.lat && location?.lng && (
+                            <div className="bg-white/5 p-2 md:p-4 rounded-3xl border border-white/10 shadow-xl my-12 mx-4 md:mx-12">
+                                <PlaceMiniMap lat={location.lat} lng={location.lng} name={location.name} />
                             </div>
-                        </div>
-                    ) : !localAiResponse && error ? (
-                        <div className="flex flex-col items-center justify-center py-8 space-y-4 text-gray-400">
-                            <p className="text-sm">정보를 불러오는 중 문제가 발생했습니다.</p>
-                            <button
-                                onClick={() => handleRequestAiInfo(placeName || wikiData?.title)}
-                                className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10"
-                            >
-                                <RefreshCw size={16} />
-                                <span>다시 시도</span>
-                            </button>
-                        </div>
-                    ) : localAiResponse ? (
-                        <div className="flex flex-col gap-6">
-                            <div className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide whitespace-pre-line break-keep font-light">
-                                <CopyableText text={parseAiPracticalInfo(localAiResponse).wikiContent || localAiResponse} locationName={placeName || wikiData?.title} type="wiki" />
-                            </div>
-                            <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                                <div className="text-xs text-gray-500">
-                                    {(localUpdatedAt || wikiData?.ai_info_updated_at) && wikiData?.ai_practical_info !== '[[LOADING]]' ?
-                                        `마지막 갱신: ${new Date(localUpdatedAt || wikiData.ai_info_updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}`
-                                        : ''}
-                                </div>
-                            </div>
-                        </div>
-                    ) : null}
-                </div>
-            )}
+                        )}
 
-            {isAiExpanded && localAiResponse && (
-                <div className="flex items-center justify-center my-12 opacity-50">
-                    <div className="h-[1px] w-12 bg-gray-500"></div>
-                    <div className="px-4 text-gray-500"><BookOpen size={16} /></div>
-                    <div className="h-[1px] w-12 bg-gray-500"></div>
-                </div>
-            )}
+                        {/* 위키 섹션들 */}
+                        <div className="space-y-16 pt-8">
+                            {wikiData.sections && wikiData.sections.map((sec, idx) => {
+                                // 각 섹션마다 이미지 1개씩 매칭
+                                const imageForSection = idx < contentImages.length ? contentImages[idx] : null;
 
-            {isWikiLoading ? (
-                <div className="space-y-8 animate-pulse">
-                    <div className="h-32 bg-white/5 rounded-2xl border border-white/10 w-full"></div>
-                    <div className="space-y-4 pt-8 border-t border-white/10">
-                        <div className="h-8 bg-white/10 rounded w-1/3"></div>
-                        <div className="space-y-2">
-                            <div className="h-4 bg-white/5 rounded w-full"></div>
-                            <div className="h-4 bg-white/5 rounded w-5/6"></div>
-                            <div className="h-4 bg-white/5 rounded w-4/6"></div>
-                        </div>
-                    </div>
-                </div>
-            ) : wikiData ? (
-                <div className="space-y-8 animate-fade-in bg-white/[0.02] p-6 md:p-8 rounded-3xl border border-white/5">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                        <BookOpen size={22} className="text-gray-400" />
-                        <h2 className="text-lg md:text-xl font-bold text-gray-300 tracking-tight">위키백과 기본 정보</h2>
-                    </div>
-
-                    {location?.lat && location?.lng && (
-                        <PlaceMiniMap lat={location.lat} lng={location.lng} name={location.name} />
-                    )}
-
-                    <p className="text-sm md:text-base text-gray-300 leading-[1.8] tracking-wide whitespace-pre-line break-keep">
-                        {wikiData.summary}
-                    </p>
-
-                    {wikiData.sections && wikiData.sections.map((sec, idx) => {
-                        const images = galleryData?.images || [];
-                        // 첫 번째 이미지는 대표 이미지로 사용될 가능성이 높으므로 인덱스 1부터 시작
-                        const imageForSection = images.length > 0 ? images[(idx + 1) % images.length] : null;
-
-                        return (
-                            <section key={idx} id={`wiki-section-${idx}`} className="pt-8 border-t border-white/10 scroll-mt-8">
-                                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-amber-100 tracking-tight">{sec.title}</h3>
-                                <p className="text-sm md:text-base text-gray-400 leading-[1.8] tracking-wide whitespace-pre-line break-keep">{sec.content}</p>
-
-                                {/* 짝수 번째 섹션마다 이미지 추가하여 매거진 느낌 연출 */}
-                                {imageForSection && idx % 2 === 0 && (
-                                    <div className="mt-8 mb-2 rounded-2xl overflow-hidden border border-white/10 bg-white/5 relative group animate-fade-in">
-                                        <img
-                                            src={imageForSection.urls?.regular || imageForSection.urls?.small}
-                                            alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
-                                            className="w-full h-48 md:h-64 object-cover transition-transform duration-700 group-hover:scale-105"
-                                            loading="lazy"
-                                        />
-                                        <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <p className="text-xs text-gray-300 truncate font-medium">
-                                                {imageForSection.alt_description || imageForSection.description || 'Photo by ' + (imageForSection.user?.name || 'Unknown')}
-                                            </p>
+                                return (
+                                    <section key={idx} id={`wiki-section-${idx}`} className="scroll-mt-8">
+                                        <h3 className="text-xl md:text-2xl font-bold mb-4 text-white tracking-tight flex items-center gap-3">
+                                            <span className="w-6 h-[2px] bg-amber-500 rounded-full"></span>
+                                            {sec.title}
+                                        </h3>
+                                        <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light">
+                                            {renderContentWithSubtitles(sec.content)}
                                         </div>
-                                    </div>
-                                )}
-                            </section>
-                        );
-                    })}
 
-                    {!isAiExpanded && (
-                        <div className="fixed md:static bottom-0 left-0 w-full md:w-auto p-4 pb-8 md:p-0 md:pb-8 md:pt-10 md:mt-10 bg-[#05070a]/90 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 flex justify-center md:justify-start z-[160] md:z-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-none animate-fade-in-up md:animate-none">
-                            <button
-                                onClick={handleRequestAiInfo}
-                                className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
-                            >
-                                <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                                <span className="text-sm md:text-base font-bold text-gray-200 tracking-wide">
-                                    AI에게 안전 로컬 정보 묻기
-                                </span>
-                            </button>
+                                        {/* 풀와이드 이미지 삽입 (모든 섹션 아래) */}
+                                        {imageForSection && (
+                                            <figure className="mt-8 mb-4 -mx-6 md:mx-0 rounded-none md:rounded-3xl overflow-hidden bg-white/5 relative group animate-fade-in">
+                                                <img
+                                                    src={imageForSection.urls?.regular || imageForSection.urls?.small}
+                                                    alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
+                                                    className="w-full h-[30vh] md:h-[40vh] object-cover transition-transform duration-1000 group-hover:scale-105"
+                                                    loading="lazy"
+                                                />
+                                                <figcaption className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                                    <p className="text-sm text-gray-200 font-medium tracking-wide">
+                                                        {imageForSection.alt_description || imageForSection.description || 'Photo by ' + (imageForSection.user?.name || 'Unknown')}
+                                                    </p>
+                                                </figcaption>
+                                            </figure>
+                                        )}
+                                    </section>
+                                );
+                            })}
                         </div>
-                    )}
-                </div>
-            ) : (
-                <>
+
+                    </div>
+                ) : (
                     <div className="flex flex-col items-center justify-center h-[40vh] text-gray-500 gap-4 animate-fade-in">
                         <BookOpen size={48} className="opacity-20" />
-                        <p className="text-center">아직 이 장소의 백과사전 정보가 준비되지 않았습니다.</p>
+                        <p className="text-center">아직 이 장소의 매거진 정보가 준비되지 않았습니다.</p>
                     </div>
+                )}
 
-                    {/* 🆕 [Phase 9-3] wikiData 없을 때 모바일에서만 하단 버튼 표시 */}
-                    {!isAiExpanded && (
-                        <div className="fixed md:hidden bottom-0 left-0 w-full p-4 pb-8 bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 flex justify-center z-[160] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] animate-fade-in-up">
-                            <button
-                                onClick={handleRequestAiInfo}
-                                className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full"
-                            >
-                                <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                                <span className="text-sm font-bold text-gray-200 tracking-wide">
-                                    AI에게 안전 로컬 정보 묻기
-                                </span>
-                            </button>
+                {/* AI 로컬 왓슨 섹션 (본문 하단에 자연스럽게 이어짐) */}
+                {isAiExpanded && (
+                    <div ref={aiSectionRef} className="mt-16 bg-[#0F1115] border border-blue-500/20 rounded-3xl p-6 md:p-10 animate-fade-in-up shadow-2xl scroll-mt-6 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/5">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-blue-500/10 rounded-2xl">
+                                    <Sparkles size={28} className="text-blue-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-white tracking-tight">로컬 왓슨 노트</h3>
+                                    <p className="text-sm text-gray-400 mt-1">AI가 분석한 실전 여행 팁</p>
+                                </div>
+                            </div>
+                            {(!isAiLoading && localAiResponse) && (
+                                <button
+                                    onClick={() => handleRequestAiInfo(placeName || wikiData?.title, true)}
+                                    className="p-2.5 hover:bg-blue-500/10 text-blue-400/70 hover:text-blue-400 rounded-xl transition-all border border-transparent hover:border-blue-500/30 flex items-center gap-2 group"
+                                    title="AI 정보 강제 갱신"
+                                >
+                                    <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-700" />
+                                    <span className="text-xs font-bold hidden md:inline">최신화</span>
+                                </button>
+                            )}
                         </div>
-                    )}
-                </>
+
+                        {!localAiResponse && isAiLoading ? (
+                            <div className="flex flex-col items-center justify-center py-12">
+                                <div className="w-full max-w-md space-y-6">
+                                    <div className="flex justify-between items-end px-2">
+                                        <span className="text-base font-bold text-gray-300">
+                                            {isUpdatingExisting ? "AI 정보 점검 중" : "AI 정보 생성 중"}
+                                        </span>
+                                        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                                            {Math.round((loadingStep / (currentMessages.length - 1)) * 100)}%
+                                        </span>
+                                    </div>
+                                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+                                            style={{ width: `${(loadingStep / (currentMessages.length - 1)) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm text-gray-400 font-medium justify-center mt-6">
+                                        <Loader2 size={16} className="animate-spin text-blue-400" />
+                                        <span className="animate-pulse">{currentMessages[loadingStep]}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : !localAiResponse && error ? (
+                            <div className="flex flex-col items-center justify-center py-12 space-y-6 text-gray-400">
+                                <p className="text-base">정보를 불러오는 중 문제가 발생했습니다.</p>
+                                <button
+                                    onClick={() => handleRequestAiInfo(placeName || wikiData?.title)}
+                                    className="flex items-center gap-2 px-6 py-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-white/10 font-medium"
+                                >
+                                    <RefreshCw size={18} />
+                                    <span>다시 시도</span>
+                                </button>
+                            </div>
+                        ) : localAiResponse ? (
+                            <div className="flex flex-col gap-8">
+                                <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light">
+                                    <CopyableText text={parseAiPracticalInfo(localAiResponse).wikiContent || localAiResponse} locationName={placeName || wikiData?.title} type="wiki" />
+                                </div>
+                                <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                                    <div className="text-xs text-gray-500 font-medium">
+                                        {(localUpdatedAt || wikiData?.ai_info_updated_at) && wikiData?.ai_practical_info !== '[[LOADING]]' ?
+                                            `마지막 업데이트: ${new Date(localUpdatedAt || wikiData.ai_info_updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                                            : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                )}
+
+                {/* 하단 갤러리 그리드 (남은 이미지들) */}
+                {contentImages.length > (wikiData?.sections?.length || 0) && (
+                    <div className="mt-24 pt-12 border-t border-white/10">
+                        <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white tracking-tight">
+                            <Camera size={24} className="text-gray-400" />
+                            <span>포토 갤러리</span>
+                        </h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                            {contentImages.slice(wikiData?.sections?.length || 0).map((img, i) => (
+                                <div key={i} className="rounded-2xl overflow-hidden aspect-square relative group bg-white/5">
+                                    <img
+                                        src={img.urls?.small}
+                                        alt={img.alt_description || 'Gallery image'}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        loading="lazy"
+                                    />
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                        <Camera size={24} className="text-white/70" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+            </div>
+
+            {/* 하단 고정 AI 버튼 (PC/모바일 공통) */}
+            {!isAiExpanded && (
+                <div className="fixed md:static bottom-0 left-0 w-full md:w-auto p-4 pb-8 md:p-0 md:pb-8 md:pt-10 md:mt-10 bg-[#05070a]/90 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-none flex justify-center md:justify-start z-[160] md:z-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-none animate-fade-in-up md:animate-none">
+                    <button
+                        onClick={handleRequestAiInfo}
+                        className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
+                    >
+                        <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-sm md:text-base font-bold text-gray-200 tracking-wide">
+                            AI에게 안전 로컬 정보 묻기
+                        </span>
+                    </button>
+                </div>
             )}
         </div>
+
+        {/* 맨 위로 가기 버튼 */}
+        {scrollY > 500 && (
+            <button
+                onClick={scrollToTop}
+                className="fixed bottom-24 md:bottom-12 right-6 md:right-12 p-3.5 bg-blue-600/80 hover:bg-blue-500 text-white rounded-full shadow-2xl backdrop-blur-md transition-all duration-300 z-[170] group animate-fade-in"
+                aria-label="맨 위로 가기"
+            >
+                <ArrowUp size={24} className="group-hover:-translate-y-1 transition-transform" />
+            </button>
+        )}
     </div>
   );
 };
