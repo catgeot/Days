@@ -8,9 +8,30 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
     const mapContainerRef = useRef(null);
     const [is3D, setIs3D] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [supportsFullscreen, setSupportsFullscreen] = useState(false);
 
     // Mapbox 토큰 (환경 변수에서 가져오기)
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+    // Fullscreen API 지원 여부 체크
+    useEffect(() => {
+        const checkFullscreenSupport = () => {
+            // Fullscreen API 지원 확인
+            const isSupported =
+                document.fullscreenEnabled ||
+                document.webkitFullscreenEnabled ||
+                document.mozFullScreenEnabled ||
+                document.msFullscreenEnabled;
+
+            setSupportsFullscreen(isSupported);
+
+            if (import.meta.env.DEV) {
+                console.log('[PlaceMiniMap] Fullscreen API 지원:', isSupported);
+            }
+        };
+
+        checkFullscreenSupport();
+    }, []);
 
     useEffect(() => {
         if (mapRef.current) {
@@ -39,14 +60,34 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
 
     // 모바일 풀스크린 토글 함수
     const toggleFullscreen = async () => {
-        if (!mapContainerRef.current) return;
+        if (!mapContainerRef.current || !supportsFullscreen) return;
 
         try {
-            if (!document.fullscreenElement) {
-                await mapContainerRef.current.requestFullscreen();
+            const elem = mapContainerRef.current;
+
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                // 크로스 브라우저 fullscreen API
+                if (elem.requestFullscreen) {
+                    await elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    await elem.webkitRequestFullscreen(); // Safari
+                } else if (elem.mozRequestFullScreen) {
+                    await elem.mozRequestFullScreen(); // Firefox
+                } else if (elem.msRequestFullscreen) {
+                    await elem.msRequestFullscreen(); // IE/Edge
+                }
                 setIsFullscreen(true);
             } else {
-                await document.exitFullscreen();
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    await document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    await document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    await document.msExitFullscreen();
+                }
                 setIsFullscreen(false);
             }
         } catch (error) {
@@ -150,18 +191,20 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                     )}
                 </button>
 
-                {/* 모바일 풀스크린 버튼 */}
-                <button
-                    onClick={toggleFullscreen}
-                    className="md:hidden bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-2.5 rounded-xl transition-all duration-300 border border-white/10 shadow-lg"
-                    aria-label={isFullscreen ? '풀스크린 종료' : '풀스크린'}
-                >
-                    {isFullscreen ? (
-                        <Minimize2 size={18} className="text-purple-400" />
-                    ) : (
-                        <Maximize2 size={18} className="text-purple-400" />
-                    )}
-                </button>
+                {/* 모바일 풀스크린 버튼 (Fullscreen API 지원 시에만 표시) */}
+                {supportsFullscreen && (
+                    <button
+                        onClick={toggleFullscreen}
+                        className="md:hidden bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-2.5 rounded-xl transition-all duration-300 border border-white/10 shadow-lg"
+                        aria-label={isFullscreen ? '풀스크린 종료' : '풀스크린'}
+                    >
+                        {isFullscreen ? (
+                            <Minimize2 size={18} className="text-purple-400" />
+                        ) : (
+                            <Maximize2 size={18} className="text-purple-400" />
+                        )}
+                    </button>
+                )}
             </div>
 
             {/* 지도 모드 안내 (3D 모드일 때만) */}
