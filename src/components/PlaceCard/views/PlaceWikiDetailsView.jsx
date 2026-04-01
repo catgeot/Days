@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight } from 'lucide-react';
+import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
