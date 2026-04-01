@@ -41,10 +41,7 @@ export const parseAiPracticalInfo = (markdown) => {
         return { wikiContent: markdown.trim(), toolkitData: null };
     }
 
-    // 🆕 [Phase 7-2] 성공 로그는 개발 환경에서만
-    if (isDev) {
-        console.log("[aiDataParser] 툴킷 구분자 매칭 성공, 파싱 시작");
-    }
+    // 성공 로그 제거 (과도한 반복 방지)
 
     const startIndex = startMatch.index;
     const endIndex = endMatch.index;
@@ -95,10 +92,7 @@ export const parseAiPracticalInfo = (markdown) => {
         }
     });
 
-    // 🆕 [Phase 7-2] 파싱 완료 로그는 개발 환경에서만
-    if (isDev) {
-        console.log(`[aiDataParser] 툴킷 파싱 완료 (${parsedCount}개 항목)`, toolkitData);
-    }
+    // 파싱 완료 로그 제거 (과도한 반복 방지)
 
     // 🆕 [Phase 7-2] 에러는 항상 출력 (Production 포함)
     if (parsedCount === 0) {
