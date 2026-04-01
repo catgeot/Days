@@ -111,7 +111,9 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
     const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
 
     if (!forceUpdate && hasCachedInfo) {
-        console.log("[PlaceWikiDetailsView] 기존 캐시된 응답 있음 - 네트워크 호출 생략");
+        if (import.meta.env.DEV) {
+            console.log("[PlaceWikiDetailsView] 기존 캐시된 응답 있음 - 네트워크 호출 생략");
+        }
         setIsAiLoading(true);
         setTimeout(() => {
             setLocalAiResponse(wikiData.ai_practical_info);
@@ -121,7 +123,9 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
     }
 
     if (!isAiLoading || forceUpdate) {
-      console.log(`[PlaceWikiDetailsView] API 요청 시작 (location: ${eventOrRemoteName}, forceUpdate: ${forceUpdate})`);
+      if (import.meta.env.DEV) {
+          console.log(`[PlaceWikiDetailsView] API 요청 시작 (location: ${eventOrRemoteName}, forceUpdate: ${forceUpdate})`);
+      }
       const isClickEvent = eventOrRemoteName && typeof eventOrRemoteName === 'object' && 'type' in eventOrRemoteName;
       const remoteName = isClickEvent ? null : eventOrRemoteName;
       let location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
@@ -141,12 +145,16 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       setError(null);
       setLocalAiResponse(null);
 
-      console.log("[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리");
+      if (import.meta.env.DEV) {
+          console.log("[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리");
+      }
 
       const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : localAiResponse;
 
       try {
-          console.log("[PlaceWikiDetailsView] Supabase Edge Function 호출");
+          if (import.meta.env.DEV) {
+              console.log("[PlaceWikiDetailsView] Supabase Edge Function 호출");
+          }
           const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
               body: { placeId, locationName: location, oldAiInfo, forceUpdate }
           });
@@ -156,7 +164,9 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
               throw new Error("정보를 가져오는데 실패했습니다.");
           }
 
-          console.log("[PlaceWikiDetailsView] Edge Function 호출 완료 - 응답 데이터:", data);
+          if (import.meta.env.DEV) {
+              console.log("[PlaceWikiDetailsView] Edge Function 호출 완료 - 응답 데이터:", data);
+          }
 
           if (data && data.success) {
               setLocalAiResponse(data.aiResponse);
@@ -184,7 +194,9 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
               if (diffDays > WIKI_AUTO_UPDATE_DAYS) {
-                  console.log(`[Wiki] ${WIKI_AUTO_UPDATE_DAYS}일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+                  if (import.meta.env.DEV) {
+                      console.log(`[Wiki] ${WIKI_AUTO_UPDATE_DAYS}일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
+                  }
                   autoUpdateTriggered.current = true;
                   handleRequestAiInfo(placeName || wikiData.title, true);
               }
@@ -302,7 +314,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
             </div>
         )}
 
-        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-32 ${!heroImage ? 'pt-[96px]' : 'pt-8'}`}>
+        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-48 md:pb-32 ${!heroImage ? 'pt-[96px]' : 'pt-8'}`}>
 
             {/* 타이틀이 Hero 이미지 없는 경우를 대비한 Fallback */}
             {!heroImage && (
@@ -383,7 +395,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                                     alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
                                                     className="w-full max-h-[50vh] md:max-h-[60vh] object-contain bg-black/30"
                                                     loading={idx === 0 ? "eager" : "lazy"}
-                                                    fetchpriority={idx === 0 ? "high" : "auto"}
+                                                    fetchPriority={idx === 0 ? "high" : "auto"}
                                                 />
                                             </figure>
                                         )}
@@ -524,10 +536,11 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                             gallerySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                         }
                                     }}
-                                    className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all duration-300 group"
+                                    className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 rounded-2xl border border-purple-500/30 transition-all duration-300 group shadow-lg min-h-[44px] w-full md:w-auto"
+                                    aria-label="포토 갤러리로 이동"
                                 >
-                                    <Camera size={20} className="text-gray-400 group-hover:text-gray-300" />
-                                    <span className="text-sm font-medium text-gray-400 group-hover:text-gray-300">
+                                    <Camera size={22} className="text-purple-400 group-hover:text-purple-300 group-hover:scale-110 transition-transform" />
+                                    <span className="text-sm md:text-base font-bold text-purple-300 group-hover:text-purple-200 tracking-wide">
                                         포토 갤러리 보기 ({galleryImages.length}장)
                                     </span>
                                 </button>
@@ -540,7 +553,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
             {/* 하단 AI 버튼 (모바일도 static으로 변경 - 푸터 유지) */}
             {!isAiExpanded && (
-                <div className="mt-10 md:mt-10 p-4 md:p-0 pb-8 md:pb-8 flex justify-center md:justify-start">
+                <div className="mt-10 md:mt-10 p-4 md:p-0 pb-16 md:pb-8 flex justify-center md:justify-start">
                     <button
                         onClick={handleRequestAiInfo}
                         className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
