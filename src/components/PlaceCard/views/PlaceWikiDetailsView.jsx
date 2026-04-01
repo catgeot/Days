@@ -551,9 +551,9 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
             </div>
 
-            {/* 하단 AI 버튼 (모바일도 static으로 변경 - 푸터 유지) */}
+            {/* 하단 AI 버튼 (모바일 푸터 고정, PC는 본문 내부) */}
             {!isAiExpanded && (
-                <div className="mt-10 md:mt-10 p-4 md:p-0 pb-16 md:pb-8 flex justify-center md:justify-start">
+                <div className="fixed md:static bottom-16 left-0 right-0 p-4 md:p-0 md:mt-10 z-[160] bg-[#05070a]/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-none">
                     <button
                         onClick={handleRequestAiInfo}
                         className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"
