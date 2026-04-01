@@ -394,7 +394,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
                         {/* 하단 갤러리 그리드 (위키 섹션 직후) */}
                         {galleryImages.length > 0 && (
-                            <div className="mt-24 pt-12 border-t border-white/10">
+                            <div className="mt-24 pt-12 border-t border-white/10" data-gallery-section>
                                 <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white tracking-tight">
                                     <Camera size={24} className="text-gray-400" />
                                     <span>포토 갤러리</span>
@@ -513,14 +513,34 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                 </div>
                             </div>
                         ) : null}
+
+                        {/* 로컬 왓슨 하단 갤러리 힌트 버튼 */}
+                        {galleryImages.length > 0 && localAiResponse && !isAiLoading && (
+                            <div className="mt-8 pt-8 border-t border-white/5 flex justify-center" data-gallery-hint>
+                                <button
+                                    onClick={() => {
+                                        const gallerySection = document.querySelector('[data-gallery-section]');
+                                        if (gallerySection) {
+                                            gallerySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }
+                                    }}
+                                    className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all duration-300 group"
+                                >
+                                    <Camera size={20} className="text-gray-400 group-hover:text-gray-300" />
+                                    <span className="text-sm font-medium text-gray-400 group-hover:text-gray-300">
+                                        포토 갤러리 보기 ({galleryImages.length}장)
+                                    </span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
             </div>
 
-            {/* 하단 고정 AI 버튼 (PC/모바일 공통) */}
+            {/* 하단 AI 버튼 (모바일도 static으로 변경 - 푸터 유지) */}
             {!isAiExpanded && (
-                <div className="fixed md:static bottom-0 left-0 w-full md:w-auto p-4 pb-8 md:p-0 md:pb-8 md:pt-10 md:mt-10 bg-[#05070a]/90 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-none flex justify-center md:justify-start z-[160] md:z-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-none animate-fade-in-up md:animate-none">
+                <div className="mt-10 md:mt-10 p-4 md:p-0 pb-8 md:pb-8 flex justify-center md:justify-start">
                     <button
                         onClick={handleRequestAiInfo}
                         className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto"

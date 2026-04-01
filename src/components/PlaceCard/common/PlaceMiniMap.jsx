@@ -35,17 +35,26 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
         }
     };
 
-    // 지도 로드 후 라벨 레이어 숨기기
+    // 지도 로드 후 라벨 레이어 숨기기 (한글 포함 모든 텍스트)
     const onMapLoad = () => {
-        if (mapRef.current) {
-            const map = mapRef.current.getMap();
-            const layers = map.getStyle().layers;
-            layers.forEach((layer) => {
-                if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
-                    map.setLayoutProperty(layer.id, 'visibility', 'none');
+        setTimeout(() => {
+            if (mapRef.current) {
+                const map = mapRef.current.getMap();
+                const style = map.getStyle();
+                if (style && style.layers) {
+                    style.layers.forEach((layer) => {
+                        // symbol 타입의 모든 레이어 숨기기 (라벨, 아이콘 등)
+                        if (layer.type === 'symbol') {
+                            try {
+                                map.setLayoutProperty(layer.id, 'visibility', 'none');
+                            } catch (e) {
+                                console.warn(`레이어 ${layer.id} 숨기기 실패:`, e);
+                            }
+                        }
+                    });
                 }
-            });
-        }
+            }
+        }, 500); // 스타일 로드 후 실행
     };
 
     if (!lat || !lng) return null;
@@ -95,7 +104,9 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                 </Marker>
 
                 {/* 편의 컨트롤들 */}
-                <FullscreenControl position="top-right" />
+                <div className="mapboxgl-ctrl-top-right">
+                    <FullscreenControl />
+                </div>
                 <NavigationControl position="bottom-right" showCompass={true} showZoom={true} />
             </Map>
 
