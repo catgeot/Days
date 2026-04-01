@@ -230,8 +230,12 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   const renderContentWithSubtitles = (content) => {
       if (!content) return null;
 
-      // 불필요한 점(•) 기호 제거 (단독으로 줄을 차지하는 경우)
-      const cleanContent = content.replace(/^\s*•\s*$/gm, '');
+      // 모든 형태의 bullet point (•) 완전 제거
+      let cleanContent = content
+          .replace(/\n\s*•\s*\n/g, '\n\n')  // 줄바꿈 사이의 bullet
+          .replace(/^\s*•\s*$/gm, '')        // 단독 줄의 bullet
+          .replace(/•/g, '')                  // 남아있는 모든 bullet 제거
+          .replace(/\n{3,}/g, '\n\n');       // 과도한 줄바꿈 정리
 
       const parts = cleanContent.split(/(\[[^\]]+\])/g);
 
