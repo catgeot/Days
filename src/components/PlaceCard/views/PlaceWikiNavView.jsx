@@ -3,12 +3,30 @@ import { BookOpen, Sparkles } from 'lucide-react';
 
 const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName }) => {
   const [activeSection, setActiveSection] = useState(null);
+  const [isAiExpanded, setIsAiExpanded] = useState(false);
+
+  useEffect(() => {
+      const handleState = (e) => {
+          setIsAiExpanded(e.detail);
+          if (e.detail) {
+              setActiveSection('ai');
+          } else {
+              if (activeSection === 'ai') setActiveSection(null);
+          }
+      };
+      window.addEventListener('ai-expanded-state', handleState);
+      return () => window.removeEventListener('ai-expanded-state', handleState);
+  }, [activeSection]);
 
   const handleRemoteAiRequest = () => {
       setActiveSection('ai');
-      window.dispatchEvent(new CustomEvent('request-ai-info', {
-          detail: { placeName: placeName }
-      }));
+      if (isAiExpanded) {
+          window.dispatchEvent(new CustomEvent('scroll-to-ai-section'));
+      } else {
+          window.dispatchEvent(new CustomEvent('request-ai-info', {
+              detail: { placeName: placeName }
+          }));
+      }
   };
 
   const handleSectionClick = (idx) => {
@@ -68,7 +86,7 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName }) =>
                 >
                     <Sparkles size={16} className={`group-hover:scale-110 transition-transform ${activeSection === 'ai' ? 'text-white' : 'text-blue-400'}`} />
                     <span className={`text-sm font-bold tracking-wide ${activeSection === 'ai' ? 'text-white' : 'text-gray-200'}`}>
-                        제미나이에게 최신 정보 요청
+                        {isAiExpanded ? '로컬 왓슨 정보 보기' : '제미나이에게 최신 정보 요청'}
                     </span>
                 </button>
             </div>

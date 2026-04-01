@@ -101,12 +101,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
   const handleRequestAiInfo = useCallback(async (eventOrRemoteName, forceUpdate = false) => {
     setIsAiExpanded(true);
-
-    setTimeout(() => {
-        if (aiSectionRef.current) {
-            aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, 100);
+    // 스크롤은 useEffect에서 처리
 
     const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
 
@@ -223,6 +218,42 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
     prevAiInfoRef.current = currentInfo;
   }, [wikiData?.ai_practical_info, wikiData?.ai_info_updated_at]);
+
+  useEffect(() => {
+      window.dispatchEvent(new CustomEvent('ai-expanded-state', { detail: isAiExpanded }));
+  }, [isAiExpanded]);
+
+  const scrollToAiSection = useCallback(() => {
+      if (aiSectionRef.current) {
+          // 갤러리/본문 이미지들에 고정 종횡비(aspect-ratio)를 적용하여 레이아웃 시프트를 해결했으므로,
+          // scrollIntoView로 정확히 노트 최상단으로 이동 가능합니다.
+          aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          // 혹시 모를 미세 오차 보정
+          setTimeout(() => {
+              if (aiSectionRef.current) {
+                  aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+          }, 400);
+      }
+  }, []);
+
+  // 최초 오픈 시 자동 스크롤
+  useEffect(() => {
+      if (isAiExpanded) {
+          setTimeout(() => {
+              scrollToAiSection();
+          }, 100);
+      }
+  }, [isAiExpanded, scrollToAiSection]);
+
+  useEffect(() => {
+      const handleScrollReq = () => {
+          scrollToAiSection();
+      };
+      window.addEventListener('scroll-to-ai-section', handleScrollReq);
+      return () => window.removeEventListener('scroll-to-ai-section', handleScrollReq);
+  }, [scrollToAiSection]);
 
   useEffect(() => {
       const handleRemoteRequest = (e) => {
@@ -389,11 +420,11 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
                                         {/* 풀와이드 이미지 삽입 (모든 섹션 아래) */}
                                         {imageForSection && (
-                                            <figure className="mt-8 mb-4 -mx-6 md:mx-0 rounded-none md:rounded-3xl overflow-hidden bg-white/5 relative animate-fade-in">
+                                            <figure className="mt-8 mb-4 -mx-6 md:mx-0 rounded-none md:rounded-3xl overflow-hidden bg-[#0a0c10] relative animate-fade-in aspect-[4/3] md:aspect-video flex items-center justify-center">
                                                 <img
                                                     src={imageForSection.urls?.regular || imageForSection.urls?.small}
                                                     alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
-                                                    className="w-full max-h-[50vh] md:max-h-[60vh] object-contain bg-black/30"
+                                                    className="w-full h-full object-contain bg-black/30"
                                                     loading={idx === 0 ? "eager" : "lazy"}
                                                     fetchPriority={idx === 0 ? "high" : "auto"}
                                                 />
@@ -415,7 +446,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                     {galleryImages.map((img, i) => (
                                         <div
                                             key={i}
-                                            className="rounded-2xl overflow-hidden relative cursor-pointer bg-white/5"
+                                            className="rounded-2xl overflow-hidden relative cursor-pointer bg-white/5 aspect-[4/3]"
                                             onClick={() => {
                                                 setLightboxImg(img);
                                                 setLightboxIndex(i);
@@ -434,7 +465,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                             <img
                                                 src={img.urls?.small}
                                                 alt={img.alt_description || 'Gallery image'}
-                                                className="w-full h-auto object-cover"
+                                                className="w-full h-full object-cover"
                                                 loading="lazy"
                                             />
                                         </div>
@@ -551,25 +582,22 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
 
             </div>
 
-            {/* 하단 AI 버튼 (모바일 푸터 고정, PC는 본문 내부) - 항상 표시, 토글 방식 */}
-            <div className="fixed md:static bottom-0 left-0 right-0 p-4 md:p-0 md:mt-10 z-[160] bg-[#05070a]/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-none">
+            {/* 하단 AI 버튼 (모바일 전용 푸터 고정) */}
+            <div className="fixed md:hidden bottom-0 left-0 right-0 p-4 z-[160] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10">
                 <button
                     onClick={() => {
                         if (isAiExpanded) {
-                            setIsAiExpanded(false);
-                            setLocalAiResponse(null);
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            scrollToAiSection();
                         } else {
                             handleRequestAiInfo(placeName || wikiData?.title);
                         }
                     }}
-                    className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full md:w-auto min-h-[56px]"
+                    className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full min-h-[56px]"
                 >
                     <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm md:text-base font-bold text-gray-200 tracking-wide">
-                        {isAiExpanded ? '로컬 왓슨 닫기' : 'AI에게 안전 로컬 정보 묻기'}
+                    <span className="text-sm font-bold text-gray-200 tracking-wide">
+                        {isAiExpanded ? '로컬 왓슨 정보 보기' : 'AI에게 안전 로컬 정보 묻기'}
                     </span>
-                    {isAiExpanded && <ChevronDown size={20} className="text-blue-400" />}
                 </button>
             </div>
         </div>
