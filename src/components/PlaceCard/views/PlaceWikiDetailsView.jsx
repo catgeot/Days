@@ -408,32 +408,39 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                                 const imageForSection = idx < contentImages.length ? contentImages[idx] : null;
 
                                 return (
-                                    <section key={idx} id={`wiki-section-${idx}`} className="scroll-mt-8">
-                                        <h3 className="text-xl md:text-2xl font-bold mb-4 text-white tracking-tight flex items-center gap-3">
-                                            <span className="w-6 h-[2px] bg-amber-500 rounded-full"></span>
-                                            {sec.title}
-                                        </h3>
-                                        <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light">
-                                            {renderContentWithSubtitles(sec.content)}
-                                        </div>
-
-                                        {/* 풀와이드 이미지 삽입 (모든 섹션 아래) */}
-                                        {imageForSection && (
+                                    <section key={idx} id={`wiki-section-${idx}`} className="scroll-mt-8 group">
+                                        {/* 섹션 헤더 (이미지가 있으면 배경으로 오버랩, 없으면 텍스트만) */}
+                                        {imageForSection ? (
                                             <figure
-                                                className="mt-8 mb-4 -mx-6 md:mx-0 rounded-none md:rounded-3xl overflow-hidden bg-white/5 relative animate-fade-in"
+                                                className="mb-8 rounded-2xl md:rounded-3xl overflow-hidden relative animate-fade-in bg-[#05070a] max-h-[75vh] md:max-h-[85vh] shadow-xl border border-white/5"
                                                 style={imageForSection.width && imageForSection.height ? { aspectRatio: `${imageForSection.width} / ${imageForSection.height}` } : {}}
                                             >
                                                 <img
                                                     src={imageForSection.urls?.regular || imageForSection.urls?.small}
                                                     alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
-                                                    className="w-full h-full max-h-[50vh] md:max-h-[60vh] object-contain bg-black/30"
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                     loading={idx === 0 ? "eager" : "lazy"}
                                                     fetchPriority={idx === 0 ? "high" : "auto"}
-                                                    width={imageForSection.width}
-                                                    height={imageForSection.height}
                                                 />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-[#05070a]/30 to-transparent" />
+                                                <div className="absolute bottom-0 left-0 w-full p-5 md:p-8">
+                                                    <h3 className="text-xl md:text-3xl font-bold text-white tracking-tight flex items-center gap-3 drop-shadow-lg">
+                                                        <span className="w-5 md:w-6 h-[2px] md:h-[3px] bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
+                                                        {sec.title}
+                                                    </h3>
+                                                </div>
                                             </figure>
+                                        ) : (
+                                            <h3 className="text-xl md:text-2xl font-bold mb-6 text-white tracking-tight flex items-center gap-3">
+                                                <span className="w-6 h-[2px] bg-amber-500 rounded-full"></span>
+                                                {sec.title}
+                                            </h3>
                                         )}
+
+                                        {/* 본문 텍스트 */}
+                                        <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light md:px-2">
+                                            {renderContentWithSubtitles(sec.content)}
+                                        </div>
                                     </section>
                                 );
                             })}
