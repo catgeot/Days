@@ -1,7 +1,16 @@
 import React, { useRef, useEffect, useState } from 'react';
-import Map, { Marker, NavigationControl, Source, Layer } from 'react-map-gl/mapbox';
+import Map, { Marker, NavigationControl, Source, Layer, useControl } from 'react-map-gl/mapbox';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { Mountain, Map as MapIcon, Maximize2, Minimize2, Play, FastForward, Layers, Building2 } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+
+// 언어 플러그인 컴포넌트 (Map 자식으로 렌더링)
+function LanguageControl() {
+    useControl(() => new MapboxLanguage({
+        defaultLanguage: 'ko'
+    }));
+    return null;
+}
 
 // 3D 건물 레이어 속성
 const buildingLayer = {
@@ -221,41 +230,8 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
         }
     };
 
-    // 지명 한글화 함수
-    const setKoreanLabels = () => {
-        if (!mapRef.current) return;
-        const map = mapRef.current.getMap();
-        try {
-            const style = map.getStyle();
-            if (style && style.layers) {
-                style.layers.forEach((layer) => {
-                    // symbol 타입 중 텍스트를 렌더링하는 레이어의 경우 name_ko 우선 적용
-                    // 단, 폰트 설정을 강제로 변경하면 견출지 오류가 발생할 수 있으므로 text-field만 조심스럽게 업데이트
-                    if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
-                        const currentTextField = layer.layout['text-field'];
-
-                        // 이미 변경된 레이어인지 확인 (무한 루프 및 덮어쓰기 방지)
-                        if (Array.isArray(currentTextField) && currentTextField[0] === 'coalesce') {
-                            return;
-                        }
-
-                        map.setLayoutProperty(layer.id, 'text-field', [
-                            'coalesce',
-                            ['get', 'name_ko'],
-                            ['get', 'name_en'],
-                            ['get', 'name']
-                        ]);
-                    }
-                });
-            }
-        } catch (e) {
-            console.error("한글 지명 변환 중 오류:", e);
-        }
-    };
-
     // 지도 로드 후 처리
     const onMapLoad = () => {
-        setKoreanLabels();
         if (import.meta.env.DEV) {
             console.log('[PlaceMiniMap] 지도 로드 완료');
         }
@@ -312,6 +288,7 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                 style={{ width: '100%', height: '100%', touchAction: 'pan-y' }}
                 mapStyle={MAP_STYLES[currentStyle].url}
                 mapboxAccessToken={MAPBOX_TOKEN}
+                localIdeographFontFamily="sans-serif"
                 attributionControl={false}
                 projection="globe"
                 fog={{
@@ -324,7 +301,6 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                 }}
                 terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
                 onLoad={onMapLoad}
-                onStyleData={setKoreanLabels}
                 onMouseDown={handleMapInteraction}
                 onTouchStart={handleMapInteraction}
                 onWheel={handleMapInteraction}
@@ -338,6 +314,9 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                     maxSpeed: 1400
                 }}
             >
+                {/* 다국어(한글) 지원 컨트롤 */}
+                <LanguageControl />
+
                 {/* 3D 지형(Terrain) 데이터 소스 */}
                 <Source
                     id="mapbox-dem"
