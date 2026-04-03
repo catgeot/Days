@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, X, MapPin, Compass, Globe2, Layers, Map, Palmtree, TreePine, Building2, Landmark, Tent } from 'lucide-react';
+import { Search, X, MapPin, Compass, Globe2, Layers, Map, Palmtree, TreePine, Building2, Landmark, Tent, ChevronDown, ChevronRight } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
+import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
 
 const CONTINENTS = [
   { id: 'all', label: '전체' },
@@ -47,15 +48,136 @@ const CATEGORY_ICONS = {
   adventure: Tent,
 };
 
+// ==============================================================
+// 1. 개별 사진 카드 컴포넌트 (횡스크롤 큐레이션용)
+// ==============================================================
+const SpotThumbnailCard = ({ spot, onClick }) => {
+  const { images, isImgLoading } = usePlaceGallery(spot);
+  const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
+  const categoryLabel = CATEGORY_LABELS[spot.primaryCategory] || '기타';
+  const CategoryIcon = CATEGORY_ICONS[spot.primaryCategory] || Compass;
+
+  const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].url) : null;
+
+  return (
+    <div
+      onClick={() => onClick(spot)}
+      className="group relative flex-none w-[220px] md:w-[260px] h-[280px] md:h-[320px] flex flex-col bg-white/5 border border-white/10 rounded-2xl cursor-pointer transition-all duration-300 overflow-hidden snap-start hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 hover:border-white/20"
+    >
+      {/* 배경 사진 영역 */}
+      {bgImgUrl ? (
+        <img
+          src={bgImgUrl}
+          alt={spot.name}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+      ) : (
+        <div className={`absolute inset-0 bg-gradient-to-br from-white/10 to-transparent ${categoryStyle.split(' ')[0]}`}>
+           {isImgLoading ? (
+             <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-white/20 border-t-white/80 rounded-full animate-spin"></div>
+             </div>
+           ) : (
+             <CategoryIcon size={100} className="absolute -bottom-4 -right-4 opacity-20" />
+           )}
+        </div>
+      )}
+
+      {/* 그라디언트 오버레이 (가독성 향상) */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-[#05070a]/50 to-transparent opacity-90 transition-opacity" />
+
+      {/* 컨텐츠 (텍스트) */}
+      <div className="relative z-10 p-4 h-full flex flex-col">
+        {/* 상단 배지 */}
+        <div className="self-end mb-auto">
+          <span className={`flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold rounded-lg bg-black/60 backdrop-blur-md border border-white/10 ${categoryStyle.split(' ')[1]}`}>
+            <CategoryIcon size={12} />
+            {categoryLabel}
+          </span>
+        </div>
+
+        {/* 하단 텍스트 */}
+        <div className="mt-auto">
+          <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors line-clamp-1 break-keep">
+            {spot.name}
+          </h3>
+          <div className="flex items-center gap-1.5 text-xs text-gray-300 font-medium mt-1.5">
+            <MapPin size={12} className="text-gray-400" />
+            <span className="truncate">{spot.country} · {spot.name_en}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==============================================================
+// 2. 아코디언 그룹 컴포넌트 (대륙/테마 필터 결과용)
+// ==============================================================
+const AccordionGroup = ({ group, onSelectSpot, isExpanded, onToggle }) => {
+  return (
+    <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden transition-all duration-300">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-white/10 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg md:text-xl font-bold text-white">{group.label}</h2>
+          <span className="px-2.5 py-1 bg-white/10 rounded-full text-xs font-bold text-gray-400">
+            {group.spots.length}
+          </span>
+        </div>
+        <ChevronDown className={`text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+      </button>
+
+      {/* 리스트 본문 (애니메이션 적용) */}
+      <div
+        className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        <div className="px-2 pb-4 pt-1 border-t border-white/5 mx-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+          {group.spots.map(spot => {
+             const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
+             const CategoryIcon = CATEGORY_ICONS[spot.primaryCategory] || Compass;
+
+             return (
+              <div
+                key={spot.id}
+                onClick={() => onSelectSpot(spot)}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 cursor-pointer transition-colors group"
+              >
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border border-white/10 ${categoryStyle.split(' ')[0]} ${categoryStyle.split(' ')[1]}`}>
+                  <CategoryIcon size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold text-white truncate group-hover:text-blue-400 transition-colors">{spot.name}</h4>
+                  <p className="text-xs text-gray-500 truncate">{spot.country} · {spot.name_en}</p>
+                </div>
+                <ChevronRight size={16} className="text-gray-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+              </div>
+             );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// ==============================================================
+// 메인 모달 컴포넌트
+// ==============================================================
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) => {
-  // --- 상태 관리 ---
   const [query, setQuery] = useState(initialQuery);
-  const [filterMode, setFilterMode] = useState('continent'); // 'continent' | 'theme'
+  const [filterMode, setFilterMode] = useState('continent');
   const [selectedContinent, setSelectedContinent] = useState('all');
   const [selectedTheme, setSelectedTheme] = useState('all');
+
+  // 아코디언 상태 관리 (한 번에 하나만 열거나 여러 개 열 수 있게. 여기선 여러 개 허용)
+  const [expandedGroups, setExpandedGroups] = useState({});
+
   const inputRef = useRef(null);
 
-  // 파생 상태
   const isSearching = query.trim().length > 0;
   const isCurationMode = !isSearching && selectedContinent === 'all' && selectedTheme === 'all';
 
@@ -64,26 +186,39 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       setQuery(initialQuery);
       setTimeout(() => inputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
+      // 모달 열릴 때 아코디언 상태 초기화
+      setExpandedGroups({});
     } else {
       document.body.style.overflow = '';
-      // 초기화
       setFilterMode('continent');
       setSelectedContinent('all');
       setSelectedTheme('all');
+      setExpandedGroups({});
     }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen, initialQuery]);
 
-  // 대륙/테마 탭 전환 핸들러
   const handleFilterModeChange = (mode) => {
     setFilterMode(mode);
     setSelectedContinent('all');
     setSelectedTheme('all');
+    setExpandedGroups({});
+  };
+
+  const handleSpotSelect = (spot) => {
+    onSelect(spot);
+    onClose();
+  };
+
+  const toggleAccordion = (label) => {
+    setExpandedGroups(prev => ({
+      ...prev,
+      [label]: !prev[label]
+    }));
   };
 
   const filteredSpots = useMemo(() => {
     let result = TRAVEL_SPOTS;
-
     if (isSearching) {
       const lowerQuery = query.toLowerCase().trim();
       result = result.filter(spot =>
@@ -101,21 +236,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
         result = result.filter(spot => spot.primaryCategory === selectedTheme);
       }
     }
-
     return [...result].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   }, [query, filterMode, selectedContinent, selectedTheme, isSearching]);
 
-  // Curation 데이터 캐싱 (성능 최적화)
   const curationData = useMemo(() => {
     if (!isCurationMode) return null;
     return {
-      trending: filteredSpots.slice(0, 4),
-      healing: filteredSpots.filter(s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature').slice(0, 4),
-      city: filteredSpots.filter(s => s.primaryCategory === 'urban' || s.primaryCategory === 'culture').slice(0, 4)
+      trending: filteredSpots.slice(0, 6), // 횡스크롤이므로 6개 정도로 넉넉하게
+      healing: filteredSpots.filter(s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature').slice(0, 6),
+      city: filteredSpots.filter(s => s.primaryCategory === 'urban' || s.primaryCategory === 'culture').slice(0, 6)
     };
   }, [isCurationMode, filteredSpots]);
 
-  // 교차 필터 그룹 데이터 캐싱 (성능 최적화)
   const filterGroups = useMemo(() => {
     if (isSearching || isCurationMode) return null;
 
@@ -134,53 +266,50 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     return null;
   }, [isSearching, isCurationMode, filterMode, selectedContinent, selectedTheme, filteredSpots]);
 
-  // 장소 카드 렌더링 헬퍼
-  const renderSpotCard = (spot) => {
-    const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
-    const categoryLabel = CATEGORY_LABELS[spot.primaryCategory] || '기타';
-    const CategoryIcon = CATEGORY_ICONS[spot.primaryCategory] || Compass;
+  // 필터 그룹 변경 시 자동으로 첫 번째 아코디언 열기
+  useEffect(() => {
+    if (filterGroups && filterGroups.length > 0 && Object.keys(expandedGroups).length === 0) {
+      setExpandedGroups({ [filterGroups[0].label]: true });
+    }
+  }, [filterGroups]);
+
+
+  const renderCurationSection = (title, subtitle, icon, spots, delayClass) => {
+    if (!spots || spots.length === 0) return null;
 
     return (
-      <div
-        key={spot.id}
-        onClick={() => {
-          onSelect(spot);
-          onClose();
-        }}
-        className="group relative flex flex-col bg-white/5 border border-white/10 rounded-2xl cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden h-[240px]"
-      >
-        <div className="h-24 w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-white/5 to-white/0 border-b border-white/5">
-          <div className={`absolute inset-0 opacity-20 ${categoryStyle.split(' ')[0]}`} />
-          <CategoryIcon size={80} className={`absolute -bottom-6 -right-6 opacity-30 transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500 ${categoryStyle.split(' ')[1]}`} />
-
-          <div className="absolute top-3 right-3">
-            <span className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-black/40 backdrop-blur-md border border-white/10 ${categoryStyle.split(' ')[1]}`}>
-              <CategoryIcon size={12} />
-              {categoryLabel}
-            </span>
+      <div className={`animate-fade-in-up ${delayClass}`}>
+        <div className="flex items-center gap-3 mb-4 px-1">
+          {icon}
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
+            <p className="text-gray-400 text-xs md:text-sm mt-0.5">{subtitle}</p>
           </div>
         </div>
 
-        <div className="p-4 flex-1 flex flex-col">
-          <div className="mb-2">
-            <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1 break-keep">
-              {spot.name}
-            </h3>
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium mt-1">
-              <MapPin size={12} className="text-gray-500" />
-              <span className="truncate">{spot.country} · {spot.name_en}</span>
+        {/* 횡스크롤 컨테이너 */}
+        <div className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+          {spots.map(spot => (
+            <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} />
+          ))}
+
+          {/* 전체보기 모어 타일 */}
+          <div
+            onClick={() => handleFilterModeChange('continent')} // 대륙별 전체 리스트로 유도
+            className="group relative flex-none w-[120px] md:w-[150px] h-[280px] md:h-[320px] flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl cursor-pointer hover:bg-white/10 snap-start transition-colors"
+          >
+            <div className="flex flex-col items-center gap-3 text-gray-400 group-hover:text-blue-400 transition-colors">
+              <div className="w-12 h-12 rounded-full bg-white/5 group-hover:bg-blue-500/20 flex items-center justify-center transition-colors">
+                <ChevronRight size={24} />
+              </div>
+              <span className="text-sm font-bold">더 찾아보기</span>
             </div>
           </div>
-
-          <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed break-keep mt-auto">
-            {spot.desc}
-          </p>
         </div>
       </div>
     );
   };
 
-  // 콘텐츠 영역 렌더링 헬퍼
   const renderContent = () => {
     if (filteredSpots.length === 0) {
       return (
@@ -192,89 +321,74 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       );
     }
 
-    // Curation 모드 (기본 추천 뷰)
     if (isCurationMode && curationData) {
-      const { trending: trendingSpots, healing: healingSpots, city: citySpots } = curationData;
-
       return (
-        <div className="space-y-16 pb-10">
-          <div className="animate-fade-in-up">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-red-500/20 rounded-xl">
-                <Compass className="text-red-400" size={24} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">지금 가장 핫한 여행지</h2>
-                <p className="text-gray-400 text-sm mt-1">요즘 여행자들이 가장 많이 찾는 곳</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {trendingSpots.map(spot => renderSpotCard(spot))}
-            </div>
-          </div>
-
-          {healingSpots.length > 0 && (
-            <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-cyan-500/20 rounded-xl">
-                  <Palmtree className="text-cyan-400" size={24} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">일상의 탈출, 완벽한 휴양</h2>
-                  <p className="text-gray-400 text-sm mt-1">아무것도 하지 않을 자유가 있는 곳</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {healingSpots.map(spot => renderSpotCard(spot))}
-              </div>
-            </div>
+        <div className="space-y-12 pb-10">
+          {renderCurationSection(
+            "지금 가장 핫한 여행지",
+            "요즘 여행자들이 가장 많이 찾는 곳",
+            <div className="p-2 bg-red-500/20 rounded-xl"><Compass className="text-red-400" size={24} /></div>,
+            curationData.trending,
+            ""
           )}
-
-          {citySpots.length > 0 && (
-            <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-500/20 rounded-xl">
-                  <Building2 className="text-purple-400" size={24} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">영감을 주는 도시 탐험</h2>
-                  <p className="text-gray-400 text-sm mt-1">예술과 문화, 트렌드가 숨쉬는 매력적인 도심</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {citySpots.map(spot => renderSpotCard(spot))}
-              </div>
-            </div>
+          {renderCurationSection(
+            "일상의 탈출, 완벽한 휴양",
+            "아무것도 하지 않을 자유가 있는 곳",
+            <div className="p-2 bg-cyan-500/20 rounded-xl"><Palmtree className="text-cyan-400" size={24} /></div>,
+            curationData.healing,
+            "animation-delay-100"
+          )}
+          {renderCurationSection(
+            "영감을 주는 도시 탐험",
+            "예술과 문화, 트렌드가 숨쉬는 매력적인 도심",
+            <div className="p-2 bg-purple-500/20 rounded-xl"><Building2 className="text-purple-400" size={24} /></div>,
+            curationData.city,
+            "animation-delay-200"
           )}
         </div>
       );
     }
 
-    // 교차 필터 그룹화 뷰
+    // 교차 필터 그룹화 뷰 (아코디언 구조)
     if (!isSearching && filterGroups) {
       return (
-        <div className="space-y-12">
+        <div className="space-y-3 pb-20">
           {filterGroups.map((g, idx) => (
             <div key={g.label} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
-              <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-2xl font-bold text-white">{g.label}</h2>
-                <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-bold text-gray-400">
-                  {g.spots.length}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {g.spots.map(spot => renderSpotCard(spot))}
-              </div>
+              <AccordionGroup
+                group={g}
+                isExpanded={!!expandedGroups[g.label]}
+                onToggle={() => toggleAccordion(g.label)}
+                onSelectSpot={handleSpotSelect}
+              />
             </div>
           ))}
         </div>
       );
     }
 
-    // 기본 리스트 뷰 (전체 탭 혹은 검색 결과)
+    // 기본 리스트 뷰 (검색 결과) - 여기도 아코디언 리스트 스타일과 일관성 유지
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredSpots.map(spot => renderSpotCard(spot))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-20">
+        {filteredSpots.map(spot => {
+          const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
+          const CategoryIcon = CATEGORY_ICONS[spot.primaryCategory] || Compass;
+          return (
+            <div
+              key={spot.id}
+              onClick={() => handleSpotSelect(spot)}
+              className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 cursor-pointer transition-all group"
+            >
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-white/10 ${categoryStyle.split(' ')[0]} ${categoryStyle.split(' ')[1]}`}>
+                <CategoryIcon size={20} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-base font-bold text-white truncate group-hover:text-blue-400 transition-colors">{spot.name}</h4>
+                <p className="text-sm text-gray-500 truncate mt-0.5">{spot.country} · {spot.name_en}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -378,7 +492,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
           )}
 
           {/* Result Stats */}
-          {!isCurationMode && (
+          {(!isCurationMode || isSearching) && (
             <div className="mb-6 text-sm font-medium text-gray-400 flex items-center gap-2">
               <Globe2 size={16} />
               <span>{filteredSpots.length}개의 여행지 발견</span>
