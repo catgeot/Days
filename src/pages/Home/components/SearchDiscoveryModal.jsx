@@ -163,7 +163,65 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       );
     }
 
-    // Curation 모드 (Step 5에서 구현 예정) 일 때는 지금은 일단 전체 리스트
+    // Curation 모드 (기본 추천 뷰)
+    if (isCurationMode) {
+      const trendingSpots = filteredSpots.slice(0, 4);
+      const healingSpots = filteredSpots.filter(s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature').slice(0, 4);
+      const citySpots = filteredSpots.filter(s => s.primaryCategory === 'urban' || s.primaryCategory === 'culture').slice(0, 4);
+
+      return (
+        <div className="space-y-16 pb-10">
+          <div className="animate-fade-in-up">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-red-500/20 rounded-xl">
+                <Compass className="text-red-400" size={24} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">지금 가장 핫한 여행지</h2>
+                <p className="text-gray-400 text-sm mt-1">요즘 여행자들이 가장 많이 찾는 곳</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {trendingSpots.map(spot => renderSpotCard(spot))}
+            </div>
+          </div>
+
+          {healingSpots.length > 0 && (
+            <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-cyan-500/20 rounded-xl">
+                  <Palmtree className="text-cyan-400" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">일상의 탈출, 완벽한 휴양</h2>
+                  <p className="text-gray-400 text-sm mt-1">아무것도 하지 않을 자유가 있는 곳</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {healingSpots.map(spot => renderSpotCard(spot))}
+              </div>
+            </div>
+          )}
+
+          {citySpots.length > 0 && (
+            <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-purple-500/20 rounded-xl">
+                  <Building2 className="text-purple-400" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">영감을 주는 도시 탐험</h2>
+                  <p className="text-gray-400 text-sm mt-1">예술과 문화, 트렌드가 숨쉬는 매력적인 도심</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {citySpots.map(spot => renderSpotCard(spot))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
 
     // 교차 필터 그룹화 뷰
     if (!isSearching) {
