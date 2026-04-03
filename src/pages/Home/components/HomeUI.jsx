@@ -11,6 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
+import SearchDiscoveryModal from './SearchDiscoveryModal';
 
 const HomeUI = React.memo(({
   onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick,
@@ -28,38 +29,12 @@ const HomeUI = React.memo(({
   onLogout
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isDiscoveryModalOpen, setIsDiscoveryModalOpen] = useState(false);
   const navigate = useNavigate();
-
-  const inputRef = useRef(null);
-  const mobileInputRef = useRef(null);
 
   const trendingData = useTrendingData();
 
   useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
-
-  useEffect(() => {
-    if (isMobileSearchOpen && mobileInputRef.current) {
-      mobileInputRef.current.focus();
-    }
-  }, [isMobileSearchOpen]);
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && inputValue.trim() !== '') {
-      onSearch(inputValue);
-      inputRef.current?.blur();
-      mobileInputRef.current?.blur();
-      setIsMobileSearchOpen(false);
-    }
-  };
-
-  const handleChange = (e) => { setInputValue(e.target.value); };
-
-  const handleClear = () => {
-    setInputValue('');
-    inputRef.current?.focus();
-    mobileInputRef.current?.focus();
-  };
 
   const CATEGORIES = [
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
@@ -81,13 +56,6 @@ const HomeUI = React.memo(({
 
   return (
     <>
-      {isMobileSearchOpen && (
-        <div
-          className="fixed inset-0 z-[45] pointer-events-auto touch-none"
-          onClick={() => setIsMobileSearchOpen(false)}
-          />
-      )}
-
       <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between md:grid md:grid-cols-12 items-start pointer-events-none w-full">
 
         <div onClick={onLogoClick} className="md:col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
@@ -95,7 +63,7 @@ const HomeUI = React.memo(({
         </div>
 
         <div className="flex md:hidden items-center gap-2 pt-2 pointer-events-auto animate-fade-in-down delay-75 h-10 relative">
-            <button onClick={() => setIsMobileSearchOpen(true)} className="w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors shadow-lg">
+            <button onClick={() => setIsDiscoveryModalOpen(true)} className="w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors shadow-lg">
               <Search size={14} />
             </button>
             <button onClick={onThemeToggle} className={`w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg ${getThemeConfig().color} ${getThemeConfig().border}`}>
@@ -108,24 +76,6 @@ const HomeUI = React.memo(({
             <Link to="/blog" className="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg hover:bg-emerald-500/30 transition-colors">
               <PenTool size={14} className="text-emerald-400" />
             </Link>
-
-            <div className={`absolute right-0 top-2 flex items-center bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-300 overflow-hidden shadow-2xl z-50 origin-right ${isMobileSearchOpen ? 'w-[75vw] opacity-100 h-9 px-2' : 'w-0 opacity-0 h-9 px-0 pointer-events-none'}`}>
-              <Search size={14} className="text-blue-400 flex-shrink-0 ml-1" />
-              <input
-                ref={mobileInputRef}
-                type="text"
-                value={inputValue}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                placeholder="어디로 떠나볼까?"
-                className="w-full bg-transparent text-white text-xs focus:outline-none ml-2 placeholder-gray-500/80"
-              />
-              {inputValue && (
-                <button onClick={handleClear} className="p-1 mr-1 text-gray-400 hover:text-white transition-colors flex-shrink-0">
-                  <X size={14} />
-                </button>
-              )}
-            </div>
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
@@ -149,10 +99,18 @@ const HomeUI = React.memo(({
         <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative z-50">
            <div className="relative group w-full max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-12 rounded-full group-focus-within:bg-black/60 group-focus-within:border-blue-400/50 hover:bg-black/50">
-              <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={18} /></div>
-              <input ref={inputRef} type="text" value={inputValue} onChange={handleChange} placeholder="여행지 검색하세요!" className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-300/80 font-medium" onKeyDown={handleKeyDown} />
-              {inputValue && (<button onClick={handleClear} className="p-1 mr-2 text-gray-300 hover:text-white transition-colors"><X size={17} /></button>)}
+            <div
+              onClick={() => setIsDiscoveryModalOpen(true)}
+              className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"
+            >
+              <div className="pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={18} /></div>
+              <input
+                type="text"
+                value={inputValue}
+                readOnly
+                placeholder="어디로 떠나볼까? (검색 및 탐색)"
+                className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-300/80 font-medium cursor-pointer"
+              />
             </div>
           </div>
         </div>
@@ -242,6 +200,13 @@ const HomeUI = React.memo(({
           </button>
         </div>
       </footer>
+
+      <SearchDiscoveryModal
+        isOpen={isDiscoveryModalOpen}
+        onClose={() => setIsDiscoveryModalOpen(false)}
+        onSelect={(spot) => onTripClick(spot)}
+        initialQuery={inputValue}
+      />
     </>
   );
 });
