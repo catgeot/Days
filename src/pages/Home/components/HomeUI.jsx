@@ -149,10 +149,10 @@ const HomeUI = React.memo(({
         <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative z-50">
            <div className="relative group w-full max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg transition-all h-12 rounded-full group-focus-within:bg-black/60 group-focus-within:border-blue-400/50 hover:bg-black/50">
+            <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-12 rounded-full group-focus-within:bg-black/60 group-focus-within:border-blue-400/50 hover:bg-black/50">
               <div className="pl-4 text-gray-400 group-focus-within:text-blue-400 transition-colors"><Search size={18} /></div>
-              <input ref={inputRef} type="text" value={inputValue} onChange={handleChange} placeholder="어디로 떠나볼까?" className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-500/80 font-medium" onKeyDown={handleKeyDown} />
-              {inputValue && (<button onClick={handleClear} className="p-1 mr-2 text-gray-400 hover:text-white transition-colors"><X size={16} /></button>)}
+              <input ref={inputRef} type="text" value={inputValue} onChange={handleChange} placeholder="여행지 검색하세요!" className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-300/80 font-medium" onKeyDown={handleKeyDown} />
+              {inputValue && (<button onClick={handleClear} className="p-1 mr-2 text-gray-300 hover:text-white transition-colors"><X size={17} /></button>)}
             </div>
           </div>
         </div>
