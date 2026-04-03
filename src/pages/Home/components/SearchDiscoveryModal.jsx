@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, X, MapPin, Compass, Globe2 } from 'lucide-react';
+import { Search, X, MapPin, Compass, Globe2, Layers, Map } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 
 const CONTINENTS = [
@@ -12,6 +12,15 @@ const CONTINENTS = [
   { id: 'africa', label: '아프리카' },
   { id: 'middle_east', label: '중동' },
   { id: 'unknown', label: '특수 지역' },
+];
+
+const THEMES = [
+  { id: 'all', label: '전체' },
+  { id: 'paradise', label: '휴양' },
+  { id: 'nature', label: '자연' },
+  { id: 'urban', label: '도심' },
+  { id: 'culture', label: '문화' },
+  { id: 'adventure', label: '모험' },
 ];
 
 const CATEGORY_COLORS = {
@@ -31,45 +40,66 @@ const CATEGORY_LABELS = {
 };
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) => {
+  // --- 상태 관리 ---
   const [query, setQuery] = useState(initialQuery);
+  const [filterMode, setFilterMode] = useState('continent'); // 'continent' | 'theme'
   const [selectedContinent, setSelectedContinent] = useState('all');
+  const [selectedTheme, setSelectedTheme] = useState('all');
   const inputRef = useRef(null);
+
+  // 파생 상태
+  const isSearching = query.trim().length > 0;
+  const isCurationMode = !isSearching && selectedContinent === 'all' && selectedTheme === 'all';
+  const isFilterMode = !isSearching && !isCurationMode;
 
   useEffect(() => {
     if (isOpen) {
       setQuery(initialQuery);
-      // 모달이 열릴 때 input에 포커스를 줍니다.
       setTimeout(() => inputRef.current?.focus(), 100);
-      // 배경 스크롤 방지
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      // 초기화
+      setFilterMode('continent');
+      setSelectedContinent('all');
+      setSelectedTheme('all');
     }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen, initialQuery]);
+
+  // 대륙/테마 탭 전환 핸들러
+  const handleFilterModeChange = (mode) => {
+    setFilterMode(mode);
+    setSelectedContinent('all');
+    setSelectedTheme('all');
+  };
 
   const filteredSpots = useMemo(() => {
     let result = TRAVEL_SPOTS;
 
     // 검색어 필터링
-    if (query.trim()) {
+    if (isSearching) {
       const lowerQuery = query.toLowerCase().trim();
       result = result.filter(spot =>
         (spot.name || '').includes(lowerQuery) ||
         (spot.name_en || '').toLowerCase().includes(lowerQuery) ||
         (spot.country || '').includes(lowerQuery) ||
         (spot.country_en || '').toLowerCase().includes(lowerQuery) ||
-        (spot.keywords && spot.keywords.some(k => k.includes(lowerQuery)))
+        (spot.keywords && spot.keywords.some(k => k.includes(lowerQuery))) ||
+        (CATEGORY_LABELS[spot.primaryCategory] || '').includes(lowerQuery)
       );
     }
-    // 대륙 탭 필터링 (검색어가 없을 때만)
-    else if (selectedContinent !== 'all') {
-      result = result.filter(spot => spot.continent === selectedContinent);
+    // 탭 필터링
+    else {
+      if (filterMode === 'continent' && selectedContinent !== 'all') {
+        result = result.filter(spot => spot.continent === selectedContinent);
+      } else if (filterMode === 'theme' && selectedTheme !== 'all') {
+        result = result.filter(spot => spot.primaryCategory === selectedTheme);
+      }
     }
 
-    // 인기순 정렬 (popularity 높은 순)
     return [...result].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-  }, [query, selectedContinent]);
+  }, [query, filterMode, selectedContinent, selectedTheme, isSearching]);
 
   if (!isOpen) return null;
 
@@ -84,7 +114,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="어디로 떠나고 싶으신가요? (예: 파리, 바다, 유럽)"
+            placeholder="어디로 떠나고 싶으신가요? (예: 파리, 바다, 휴양)"
             className="w-full bg-transparent text-white px-4 h-full outline-none placeholder-gray-500 text-lg md:text-xl font-medium"
           />
           {query && (
@@ -109,22 +139,65 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="max-w-7xl mx-auto p-4 md:p-6 pb-24">
 
-          {/* Continent Tabs (검색어가 없을 때만 표시) */}
-          {!query && (
-            <div className="mb-6 overflow-x-auto pb-2 scrollbar-hide flex gap-2">
-              {CONTINENTS.map((cont) => (
+          {/* Filter Mode Toggle & Tabs (검색 중이 아닐 때만 표시) */}
+          {!isSearching && (
+            <div className="mb-8 space-y-4">
+              {/* Mode Toggle */}
+              <div className="flex bg-white/5 p-1 rounded-xl w-fit border border-white/10">
                 <button
-                  key={cont.id}
-                  onClick={() => setSelectedContinent(cont.id)}
-                  className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border ${
-                    selectedContinent === cont.id
-                      ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
-                      : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+                  onClick={() => handleFilterModeChange('continent')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                    filterMode === 'continent'
+                      ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
+                      : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  {cont.label}
+                  <Map size={16} /> 대륙별 탐색
                 </button>
-              ))}
+                <button
+                  onClick={() => handleFilterModeChange('theme')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                    filterMode === 'theme'
+                      ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.2)]'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Layers size={16} /> 테마별 탐색
+                </button>
+              </div>
+
+              {/* Sub Tabs */}
+              <div className="overflow-x-auto pb-2 scrollbar-hide flex gap-2">
+                {filterMode === 'continent' ? (
+                  CONTINENTS.map((cont) => (
+                    <button
+                      key={cont.id}
+                      onClick={() => setSelectedContinent(cont.id)}
+                      className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border ${
+                        selectedContinent === cont.id
+                          ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
+                          : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+                      }`}
+                    >
+                      {cont.label}
+                    </button>
+                  ))
+                ) : (
+                  THEMES.map((theme) => (
+                    <button
+                      key={theme.id}
+                      onClick={() => setSelectedTheme(theme.id)}
+                      className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border ${
+                        selectedTheme === theme.id
+                          ? 'bg-purple-600/20 text-purple-400 border-purple-500/30 shadow-[0_0_15px_rgba(147,51,234,0.2)]'
+                          : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10'
+                      }`}
+                    >
+                      {theme.label}
+                    </button>
+                  ))
+                )}
+              </div>
             </div>
           )}
 
@@ -134,7 +207,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
             <span>{filteredSpots.length}개의 여행지 발견</span>
           </div>
 
-          {/* Spot Grid */}
+          {/* Spot Grid (일단 기존 UI 유지, Step 2에서 카드 디자인 리팩토링, Step 3에서 그룹화 렌더링 예정) */}
           {filteredSpots.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredSpots.map(spot => {
@@ -150,7 +223,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
                     }}
                     className="group relative flex flex-col bg-white/5 border border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden"
                   >
-                    {/* Background Glow Effect */}
                     <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 ${categoryStyle.split(' ')[0]}`} />
 
                     <div className="relative z-10 flex justify-between items-start mb-3">
@@ -183,7 +255,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
             <div className="flex flex-col items-center justify-center py-20 text-center px-4">
               <Compass size={48} className="text-gray-600 mb-4" />
               <h3 className="text-xl font-bold text-gray-300 mb-2">검색 결과가 없습니다</h3>
-              <p className="text-gray-500 break-keep">다른 키워드로 검색하거나 대륙 탭을 확인해보세요.</p>
+              <p className="text-gray-500 break-keep">다른 키워드로 검색하거나 필터를 확인해보세요.</p>
             </div>
           )}
         </div>
