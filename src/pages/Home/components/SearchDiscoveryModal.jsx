@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, X, MapPin, Compass, Globe2, Layers, Map } from 'lucide-react';
+import { Search, X, MapPin, Compass, Globe2, Layers, Map, Palmtree, TreePine, Building2, Landmark, Tent } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 
 const CONTINENTS = [
@@ -37,6 +37,14 @@ const CATEGORY_LABELS = {
   urban: '도심',
   culture: '문화',
   adventure: '모험',
+};
+
+const CATEGORY_ICONS = {
+  paradise: Palmtree,
+  nature: TreePine,
+  urban: Building2,
+  culture: Landmark,
+  adventure: Tent,
 };
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) => {
@@ -207,12 +215,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
             <span>{filteredSpots.length}개의 여행지 발견</span>
           </div>
 
-          {/* Spot Grid (일단 기존 UI 유지, Step 2에서 카드 디자인 리팩토링, Step 3에서 그룹화 렌더링 예정) */}
+          {/* Spot Grid */}
           {filteredSpots.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredSpots.map(spot => {
                 const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
                 const categoryLabel = CATEGORY_LABELS[spot.primaryCategory] || '기타';
+                const CategoryIcon = CATEGORY_ICONS[spot.primaryCategory] || Compass;
 
                 return (
                   <div
@@ -221,32 +230,37 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
                       onSelect(spot);
                       onClose();
                     }}
-                    className="group relative flex flex-col bg-white/5 border border-white/10 rounded-2xl p-4 cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden"
+                    className="group relative flex flex-col bg-white/5 border border-white/10 rounded-2xl cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden h-[240px]"
                   >
-                    <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 ${categoryStyle.split(' ')[0]}`} />
+                    {/* 상단 비주얼 영역 (썸네일/아이콘) */}
+                    <div className="h-24 w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-white/5 to-white/0 border-b border-white/5">
+                      <div className={`absolute inset-0 opacity-20 ${categoryStyle.split(' ')[0]}`} />
+                      <CategoryIcon size={80} className={`absolute -bottom-6 -right-6 opacity-30 transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500 ${categoryStyle.split(' ')[1]}`} />
 
-                    <div className="relative z-10 flex justify-between items-start mb-3">
-                      <div>
+                      <div className="absolute top-3 right-3">
+                        <span className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-black/40 backdrop-blur-md border border-white/10 ${categoryStyle.split(' ')[1]}`}>
+                          <CategoryIcon size={12} />
+                          {categoryLabel}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* 하단 정보 영역 */}
+                    <div className="p-4 flex-1 flex flex-col">
+                      <div className="mb-2">
                         <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1 break-keep">
                           {spot.name}
                         </h3>
-                        <p className="text-sm text-gray-400 truncate mt-0.5">
-                          {spot.name_en}
-                        </p>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium mt-1">
+                          <MapPin size={12} className="text-gray-500" />
+                          <span className="truncate">{spot.country} · {spot.name_en}</span>
+                        </div>
                       </div>
-                      <span className={`px-2 py-1 text-[10px] font-bold rounded-md border ${categoryStyle} shrink-0`}>
-                        {categoryLabel}
-                      </span>
-                    </div>
 
-                    <div className="relative z-10 flex items-center gap-1.5 text-xs text-gray-300 font-medium mb-3">
-                      <MapPin size={12} className="text-gray-500" />
-                      <span>{spot.country}</span>
+                      <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed break-keep mt-auto">
+                        {spot.desc}
+                      </p>
                     </div>
-
-                    <p className="relative z-10 text-xs text-gray-500 line-clamp-2 leading-relaxed break-keep mt-auto">
-                      {spot.desc}
-                    </p>
                   </div>
                 );
               })}
