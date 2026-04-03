@@ -56,26 +56,10 @@ const HomeUI = React.memo(({
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between md:grid md:grid-cols-12 items-start pointer-events-none w-full">
+      <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
 
-        <div onClick={onLogoClick} className="md:col-span-2 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
+        <div onClick={onLogoClick} className="md:col-span-2 flex-shrink-0 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
-        </div>
-
-        <div className="flex md:hidden items-center gap-2 pt-2 pointer-events-auto animate-fade-in-down delay-75 h-10 relative">
-            <button onClick={() => setIsDiscoveryModalOpen(true)} className="w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors shadow-lg">
-              <Search size={14} />
-            </button>
-            <button onClick={onThemeToggle} className={`w-9 h-9 flex-shrink-0 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg ${getThemeConfig().color} ${getThemeConfig().border}`}>
-              <ThemeIcon size={14} />
-            </button>
-            <button onClick={() => onOpenChat()} className="w-9 h-9 flex-shrink-0 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-500/30 flex items-center justify-center shadow-lg">
-              <MessageSquare size={14} className="text-blue-400" />
-            </button>
-
-            <Link to="/blog" className="w-9 h-9 flex-shrink-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 flex items-center justify-center shadow-lg hover:bg-emerald-500/30 transition-colors">
-              <PenTool size={14} className="text-emerald-400" />
-            </Link>
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
@@ -96,20 +80,20 @@ const HomeUI = React.memo(({
            </button>
         </div>
 
-        <div className="hidden md:flex md:col-span-5 flex-col items-center animate-fade-in-down delay-100 pt-2 pointer-events-auto relative z-50">
-           <div className="relative group w-full max-w-md">
+        <div className="flex-1 md:col-span-5 flex flex-col items-end md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto relative z-50">
+           <div className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div
               onClick={() => setIsDiscoveryModalOpen(true)}
-              className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"
+              className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"
             >
-              <div className="pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={18} /></div>
+              <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={16} className="md:w-[18px] md:h-[18px]" /></div>
               <input
                 type="text"
                 value={inputValue}
                 readOnly
-                placeholder="어디로 떠나볼까? (검색 및 탐색)"
-                className="w-full bg-transparent text-white px-3 text-sm focus:outline-none placeholder-gray-300/80 font-medium cursor-pointer"
+                placeholder="검색 및 탐색"
+                className="w-full bg-transparent text-white px-2 md:px-3 text-xs md:text-sm focus:outline-none placeholder-gray-300/80 font-medium cursor-pointer"
               />
             </div>
           </div>
