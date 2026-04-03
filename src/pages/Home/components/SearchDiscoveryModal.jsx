@@ -230,6 +230,43 @@ const CurationSection = ({ title, subtitle, icon, spots, delayClass, onSelectSpo
 
 
 // ==============================================================
+// 2. 모바일 전용 아코디언 그룹 컴포넌트 (대륙/테마 필터 결과용)
+// ==============================================================
+const AccordionGroup = ({ group, onSelectSpot, isExpanded, onToggle }) => {
+  const Icon = group.icon || Compass;
+  return (
+    <div className="bg-white/[0.03] rounded-2xl border border-white/[0.08] overflow-hidden transition-all duration-300">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between p-4 hover:bg-white/[0.06] transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <Icon size={20} className={isExpanded ? 'text-blue-400' : 'text-gray-400'} />
+          <h2 className="text-lg font-bold text-white">{group.label}</h2>
+          <span className="px-2.5 py-1 bg-black/40 rounded-full text-xs font-bold text-gray-400 border border-white/10">
+            {group.spots.length}
+          </span>
+        </div>
+        <ChevronDown className={`text-gray-500 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-blue-400' : ''}`} />
+      </button>
+
+      {/* 모바일 2열 사진 카드 그리드 */}
+      <div
+        className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        <div className="px-3 pb-5 pt-1 border-t border-white/5">
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            {group.spots.map(spot => (
+              <SpotThumbnailCard key={spot.id} spot={spot} onClick={onSelectSpot} isGrid={true} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==============================================================
 // 메인 모달 컴포넌트
 // ==============================================================
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) => {
@@ -381,63 +418,80 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       );
     }
 
-    // 2. 사이드바 + 콘텐츠 모드 (대륙/테마 선택됨)
+    // 2. 교차 필터 뷰 (모바일: 아코디언, PC: 사이드바 + 콘텐츠)
     if (!isSearching && filterGroups) {
       const displaySpots = selectedSubGroup === 'all'
         ? filteredSpots
         : filterGroups.find(g => g.label === selectedSubGroup)?.spots || [];
 
       return (
-        <div className="flex flex-col md:flex-row gap-5 md:gap-6 pb-20 animate-fade-in-up">
-          {/* 좌측 사이드바 메뉴 (모바일: 가로 스크롤 메뉴) */}
-          <div className="w-full md:w-56 shrink-0 flex md:flex-col gap-2 overflow-x-auto md:overflow-visible custom-scrollbar pb-2 md:pb-0">
-            <button
-              onClick={() => setSelectedSubGroup('all')}
-              className={`shrink-0 flex items-center justify-between p-3.5 rounded-xl transition-all border ${
-                selectedSubGroup === 'all'
-                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 font-bold shadow-[0_0_15px_rgba(59,130,246,0.1)]'
-                  : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] text-gray-400'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Globe2 size={18} className={selectedSubGroup === 'all' ? 'text-blue-400' : 'text-gray-500'} />
-                <span className="text-sm">전체 보기</span>
-              </div>
-              <span className={`text-xs px-2.5 py-0.5 rounded-full border ${selectedSubGroup === 'all' ? 'bg-blue-500/20 border-blue-500/30 text-blue-300' : 'bg-black/40 border-white/10 text-gray-400'}`}>
-                {filteredSpots.length}
-              </span>
-            </button>
+        <div className="w-full animate-fade-in-up pb-20">
 
-            {filterGroups.map((g) => {
-              const Icon = g.icon || Compass;
-              return (
-                <button
-                  key={g.label}
-                  onClick={() => setSelectedSubGroup(g.label)}
-                  className={`shrink-0 flex items-center justify-between p-3.5 rounded-xl transition-all border ${
-                    selectedSubGroup === g.label
-                      ? 'bg-white/10 text-white border-white/20 font-bold shadow-lg'
-                      : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] text-gray-400'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Icon size={18} className={selectedSubGroup === g.label ? 'text-white' : 'text-gray-500'} />
-                    <span className="text-sm">{g.label}</span>
-                  </div>
-                  <span className={`text-xs px-2.5 py-0.5 rounded-full border ${selectedSubGroup === g.label ? 'bg-white/20 border-white/30 text-white' : 'bg-black/40 border-white/10 text-gray-400'}`}>
-                    {g.spots.length}
-                  </span>
-                </button>
-              )
-            })}
+          {/* [모바일 전용] 아코디언 리스트 구조 (선택 시 카드 펼쳐짐) */}
+          <div className="md:hidden space-y-3">
+            {filterGroups.map((g) => (
+              <AccordionGroup
+                key={g.label}
+                group={g}
+                isExpanded={selectedSubGroup === g.label}
+                onToggle={() => setSelectedSubGroup(selectedSubGroup === g.label ? 'all' : g.label)}
+                onSelectSpot={handleSpotSelect}
+              />
+            ))}
           </div>
 
-          {/* 우측 콘텐츠 (사진 카드 그리드) */}
-          <div className="flex-1 min-w-0">
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-              {displaySpots.map(spot => (
-                <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
-              ))}
+          {/* [PC 전용] 사이드바 + 그리드 콘텐츠 구조 */}
+          <div className="hidden md:flex flex-row gap-5 md:gap-6">
+            {/* 좌측 사이드바 메뉴 */}
+            <div className="w-56 lg:w-64 shrink-0 flex flex-col gap-2 custom-scrollbar pb-0">
+              <button
+                onClick={() => setSelectedSubGroup('all')}
+                className={`shrink-0 flex items-center justify-between p-3.5 rounded-xl transition-all border ${
+                  selectedSubGroup === 'all'
+                    ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 font-bold shadow-[0_0_15px_rgba(59,130,246,0.1)]'
+                    : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] text-gray-400'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Globe2 size={18} className={selectedSubGroup === 'all' ? 'text-blue-400' : 'text-gray-500'} />
+                  <span className="text-sm">전체 보기</span>
+                </div>
+                <span className={`text-xs px-2.5 py-0.5 rounded-full border ${selectedSubGroup === 'all' ? 'bg-blue-500/20 border-blue-500/30 text-blue-300' : 'bg-black/40 border-white/10 text-gray-400'}`}>
+                  {filteredSpots.length}
+                </span>
+              </button>
+
+              {filterGroups.map((g) => {
+                const Icon = g.icon || Compass;
+                return (
+                  <button
+                    key={g.label}
+                    onClick={() => setSelectedSubGroup(g.label)}
+                    className={`shrink-0 flex items-center justify-between p-3.5 rounded-xl transition-all border ${
+                      selectedSubGroup === g.label
+                        ? 'bg-white/10 text-white border-white/20 font-bold shadow-lg'
+                        : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] text-gray-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Icon size={18} className={selectedSubGroup === g.label ? 'text-white' : 'text-gray-500'} />
+                      <span className="text-sm">{g.label}</span>
+                    </div>
+                    <span className={`text-xs px-2.5 py-0.5 rounded-full border ${selectedSubGroup === g.label ? 'bg-white/20 border-white/30 text-white' : 'bg-black/40 border-white/10 text-gray-400'}`}>
+                      {g.spots.length}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* 우측 콘텐츠 (사진 카드 그리드) */}
+            <div className="flex-1 min-w-0">
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                {displaySpots.map(spot => (
+                  <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
