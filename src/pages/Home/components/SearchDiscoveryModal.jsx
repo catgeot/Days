@@ -105,6 +105,35 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     return [...result].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   }, [query, filterMode, selectedContinent, selectedTheme, isSearching]);
 
+  // Curation 데이터 캐싱 (성능 최적화)
+  const curationData = useMemo(() => {
+    if (!isCurationMode) return null;
+    return {
+      trending: filteredSpots.slice(0, 4),
+      healing: filteredSpots.filter(s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature').slice(0, 4),
+      city: filteredSpots.filter(s => s.primaryCategory === 'urban' || s.primaryCategory === 'culture').slice(0, 4)
+    };
+  }, [isCurationMode, filteredSpots]);
+
+  // 교차 필터 그룹 데이터 캐싱 (성능 최적화)
+  const filterGroups = useMemo(() => {
+    if (isSearching || isCurationMode) return null;
+
+    if (filterMode === 'continent' && selectedContinent !== 'all') {
+      return THEMES.filter(t => t.id !== 'all').map(t => ({
+        label: t.label,
+        spots: filteredSpots.filter(s => s.primaryCategory === t.id)
+      })).filter(g => g.spots.length > 0);
+    }
+    if (filterMode === 'theme' && selectedTheme !== 'all') {
+      return CONTINENTS.filter(c => c.id !== 'all').map(c => ({
+        label: c.label,
+        spots: filteredSpots.filter(s => s.continent === c.id)
+      })).filter(g => g.spots.length > 0);
+    }
+    return null;
+  }, [isSearching, isCurationMode, filterMode, selectedContinent, selectedTheme, filteredSpots]);
+
   // 장소 카드 렌더링 헬퍼
   const renderSpotCard = (spot) => {
     const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
@@ -164,10 +193,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     }
 
     // Curation 모드 (기본 추천 뷰)
-    if (isCurationMode) {
-      const trendingSpots = filteredSpots.slice(0, 4);
-      const healingSpots = filteredSpots.filter(s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature').slice(0, 4);
-      const citySpots = filteredSpots.filter(s => s.primaryCategory === 'urban' || s.primaryCategory === 'culture').slice(0, 4);
+    if (isCurationMode && curationData) {
+      const { trending: trendingSpots, healing: healingSpots, city: citySpots } = curationData;
 
       return (
         <div className="space-y-16 pb-10">
@@ -224,55 +251,24 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     }
 
     // 교차 필터 그룹화 뷰
-    if (!isSearching) {
-      if (filterMode === 'continent' && selectedContinent !== 'all') {
-        const groups = THEMES.filter(t => t.id !== 'all').map(t => ({
-          label: t.label,
-          spots: filteredSpots.filter(s => s.primaryCategory === t.id)
-        })).filter(g => g.spots.length > 0);
-
-        return (
-          <div className="space-y-12">
-            {groups.map(g => (
-              <div key={g.label} className="animate-fade-in-up">
-                <div className="flex items-center gap-3 mb-4">
-                  <h2 className="text-2xl font-bold text-white">{g.label}</h2>
-                  <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-bold text-gray-400">
-                    {g.spots.length}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {g.spots.map(spot => renderSpotCard(spot))}
-                </div>
+    if (!isSearching && filterGroups) {
+      return (
+        <div className="space-y-12">
+          {filterGroups.map((g, idx) => (
+            <div key={g.label} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-2xl font-bold text-white">{g.label}</h2>
+                <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-bold text-gray-400">
+                  {g.spots.length}
+                </span>
               </div>
-            ))}
-          </div>
-        );
-      }
-      else if (filterMode === 'theme' && selectedTheme !== 'all') {
-        const groups = CONTINENTS.filter(c => c.id !== 'all').map(c => ({
-          label: c.label,
-          spots: filteredSpots.filter(s => s.continent === c.id)
-        })).filter(g => g.spots.length > 0);
-
-        return (
-          <div className="space-y-12">
-            {groups.map(g => (
-              <div key={g.label} className="animate-fade-in-up">
-                <div className="flex items-center gap-3 mb-4">
-                  <h2 className="text-2xl font-bold text-white">{g.label}</h2>
-                  <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-bold text-gray-400">
-                    {g.spots.length}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {g.spots.map(spot => renderSpotCard(spot))}
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {g.spots.map(spot => renderSpotCard(spot))}
               </div>
-            ))}
-          </div>
-        );
-      }
+            </div>
+          ))}
+        </div>
+      );
     }
 
     // 기본 리스트 뷰 (전체 탭 혹은 검색 결과)
