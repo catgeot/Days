@@ -55,10 +55,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     if (query.trim()) {
       const lowerQuery = query.toLowerCase().trim();
       result = result.filter(spot =>
-        spot.name.includes(lowerQuery) ||
-        spot.name_en.toLowerCase().includes(lowerQuery) ||
-        spot.country.includes(lowerQuery) ||
-        spot.country_en.toLowerCase().includes(lowerQuery) ||
+        (spot.name || '').includes(lowerQuery) ||
+        (spot.name_en || '').toLowerCase().includes(lowerQuery) ||
+        (spot.country || '').includes(lowerQuery) ||
+        (spot.country_en || '').toLowerCase().includes(lowerQuery) ||
         (spot.keywords && spot.keywords.some(k => k.includes(lowerQuery)))
       );
     }
@@ -68,7 +68,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     }
 
     // 인기순 정렬 (popularity 높은 순)
-    return result.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+    return [...result].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   }, [query, selectedContinent]);
 
   if (!isOpen) return null;
