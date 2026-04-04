@@ -7,7 +7,6 @@ import { CONTINENTS, THEMES, CATEGORY_LABELS } from './SearchDiscovery/constants
 import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
-import AccordionGroup from './SearchDiscovery/AccordionGroup';
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) => {
   const [query, setQuery] = useState(initialQuery);
@@ -26,7 +25,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
   useEffect(() => {
     if (isOpen) {
       setQuery(initialQuery);
-      setTimeout(() => inputRef.current?.focus(), 100);
+      // 모바일 키보드 자동 올림 방지를 위해 focus() 제거
       document.body.style.overflow = 'hidden';
       setSelectedSubGroup(null);
     } else {
@@ -111,7 +110,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
   // 서브그룹 자동 선택 (전체보기 제거로 인한 로직)
   useEffect(() => {
     if (filterGroups && filterGroups.length > 0) {
-      // 기존 선택값이 그룹 안에 없거나 처음인 경우 첫번째 항목 자동 선택
       if (!selectedSubGroup || !filterGroups.find(g => g.label === selectedSubGroup)) {
         setSelectedSubGroup(filterGroups[0].label);
       }
@@ -142,7 +140,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     // 1. 큐레이션 모드 (검색어 없음, 전체 선택)
     if (isCurationMode && curationData) {
       return (
-        <div className="space-y-12 pb-10 w-full">
+        <div className="space-y-12 pb-10 w-full pt-4">
           <CurationSection
             title="지금 가장 핫한 여행지"
             subtitle="요즘 여행자들이 가장 많이 찾는 곳"
@@ -174,27 +172,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       );
     }
 
-    // 2. 교차 필터 뷰 (모바일: 아코디언, PC: 콘텐츠만 (사이드바는 레이아웃 밖으로 분리))
+    // 2. 교차 필터 뷰
     if (!isSearching && filterGroups) {
       const displaySpots = filterGroups.find(g => g.label === selectedSubGroup)?.spots || [];
 
       return (
         <div className="w-full animate-fade-in-up pb-20">
-          {/* [모바일 전용] 아코디언 리스트 구조 */}
-          <div className="md:hidden space-y-3">
-            {filterGroups.map((g) => (
-              <AccordionGroup
-                key={g.label}
-                group={g}
-                isExpanded={selectedSubGroup === g.label}
-                onToggle={() => setSelectedSubGroup(selectedSubGroup === g.label ? null : g.label)}
-                onSelectSpot={handleSpotSelect}
-              />
-            ))}
-          </div>
-
-          {/* [PC 전용] 우측 콘텐츠 (사진 카드 3열 그리드) */}
-          <div className="hidden md:block">
+          <div className="block">
             {/* Result Stats */}
             <div className="mb-6 text-sm font-medium text-gray-500 flex items-center gap-2">
               <Globe2 size={16} />
@@ -215,7 +199,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
 
     // 3. 검색 결과 (그리드 뷰)
     return (
-      <div className="w-full pb-20">
+      <div className="w-full pb-20 pt-4">
         <div className="mb-6 text-sm font-medium text-gray-500 flex items-center gap-2">
            <Search size={16} />
            <span>'{query}' 검색 결과 {filteredSpots.length}건</span>
@@ -229,103 +213,108 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
     );
   };
 
+  const headerContent = (isMobileView) => (
+    <div className={`flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-4 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md z-20 ${isMobileView ? 'md:hidden' : 'hidden md:flex'}`}>
+      {/* 상단 닫기(홈으로) 및 모바일용 필터 토글 */}
+      <div className="flex items-center justify-between md:justify-start gap-4">
+        <button onClick={onClose} className="flex items-center gap-2.5 text-gray-400 hover:text-white transition-colors group shrink-0">
+          <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/[0.08] group-hover:bg-white/[0.1] transition-all group-hover:scale-105 shadow-lg">
+            <X size={24} />
+          </div>
+          <span className="font-bold hidden md:block text-lg">홈으로</span>
+        </button>
+
+        {/* 모바일 전용: 필터 토글 탭 */}
+        {isMobileView && !isSearching && (
+          <div className="md:hidden flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.08]">
+            <button
+              onClick={() => handleFilterModeChange('continent')}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500'
+              }`}
+            >
+              <Map size={14} /> 대륙
+            </button>
+            <button
+              onClick={() => handleFilterModeChange('theme')}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500'
+              }`}
+            >
+              <Layers size={14} /> 테마
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* PC 전용: 필터 토글 탭 */}
+      {!isMobileView && !isSearching && (
+        <div className="hidden md:flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.08] ml-2 shrink-0">
+          <button
+            onClick={() => handleFilterModeChange('continent')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <Map size={16} /> 대륙별 탐색
+          </button>
+          <button
+            onClick={() => handleFilterModeChange('theme')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <Layers size={16} /> 테마별 탐색
+          </button>
+        </div>
+      )}
+
+      {/* Search Bar */}
+      <div className="flex-1 max-w-3xl relative flex items-center bg-white/[0.08] border border-white/[0.15] rounded-2xl h-12 md:h-14 overflow-hidden focus-within:border-blue-500/40 focus-within:bg-white/[0.1] focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all md:ml-auto">
+        <Search size={20} className="text-gray-400 ml-4 shrink-0" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="어디로 떠나고 싶으신가요?"
+          className="w-full bg-transparent text-white px-4 h-full outline-none placeholder-gray-600 text-base md:text-xl font-medium"
+        />
+        {query && (
+          <button
+             onClick={() => { setQuery(''); inputRef.current?.focus(); }}
+             className="p-3 text-gray-400 hover:text-white transition-colors"
+          >
+             <X size={20} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-[#0b101a]/95 backdrop-blur-3xl animate-fade-in overflow-hidden">
-      {/* 글로벌 스크롤바 상시 노출을 위한 인라인 스타일 (모달 전용) */}
+    <div className="fixed top-0 left-0 w-full h-[100dvh] z-[200] flex flex-col bg-[#0b101a]/95 backdrop-blur-3xl animate-fade-in overflow-hidden">
+      {/* 글로벌 스크롤바 상시 노출을 위한 인라인 스타일 */}
       <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { display: block; height: 6px; width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.25); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.5); }
-
+        .custom-scrollbar::-webkit-scrollbar { display: none; }
+        @media (min-width: 768px) {
+          .custom-scrollbar::-webkit-scrollbar { display: block; height: 6px; width: 6px; }
+          .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.25); border-radius: 10px; }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.5); }
+        }
         .modal-scroll-area::-webkit-scrollbar { display: block; width: 10px; }
         .modal-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-left: 1px solid rgba(255,255,255,0.05); }
         .modal-scroll-area::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
         .modal-scroll-area::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
       `}} />
 
-      {/* Header (Top Fixed Area) */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4 p-4 md:px-6 md:py-4 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md z-20">
+      {/* PC 전용 Header */}
+      {headerContent(false)}
 
-        {/* 상단 닫기(홈으로) 및 모바일용 필터 토글 */}
-        <div className="flex items-center justify-between md:justify-start gap-4">
-          <button onClick={onClose} className="flex items-center gap-2.5 text-gray-400 hover:text-white transition-colors group shrink-0">
-            <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/[0.08] group-hover:bg-white/[0.1] transition-all group-hover:scale-105 shadow-lg">
-              <X size={24} />
-            </div>
-            <span className="font-bold hidden md:block text-lg">홈으로</span>
-          </button>
-
-          {/* 모바일 전용: 필터 토글 탭 */}
-          {!isSearching && (
-            <div className="md:hidden flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.08]">
-              <button
-                onClick={() => handleFilterModeChange('continent')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500'
-                }`}
-              >
-                <Map size={14} /> 대륙
-              </button>
-              <button
-                onClick={() => handleFilterModeChange('theme')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500'
-                }`}
-              >
-                <Layers size={14} /> 테마
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* PC 전용: 필터 토글 탭 */}
-        {!isSearching && (
-          <div className="hidden md:flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.08] ml-2 shrink-0">
-            <button
-              onClick={() => handleFilterModeChange('continent')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              <Map size={16} /> 대륙별 탐색
-            </button>
-            <button
-              onClick={() => handleFilterModeChange('theme')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              <Layers size={16} /> 테마별 탐색
-            </button>
-          </div>
-        )}
-
-        {/* Search Bar */}
-        <div className="flex-1 max-w-3xl relative flex items-center bg-white/[0.05] border border-white/[0.1] rounded-2xl h-12 md:h-14 overflow-hidden focus-within:border-blue-500/40 focus-within:bg-white/[0.08] focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all md:ml-auto">
-          <Search size={20} className="text-gray-400 ml-4 shrink-0" />
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="어디로 떠나고 싶으신가요?"
-            className="w-full bg-transparent text-white px-4 h-full outline-none placeholder-gray-600 text-base md:text-xl font-medium"
-          />
-          {query && (
-            <button
-               onClick={() => { setQuery(''); inputRef.current?.focus(); }}
-               className="p-3 text-gray-400 hover:text-white transition-colors"
-            >
-               <X size={20} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Main Body (Split Layout for PC) */}
+      {/* Main Body */}
       <div className="flex-1 flex overflow-hidden w-full max-w-[1800px] mx-auto relative">
 
         {/* Left Sidebar (PC 전용 고정 스크롤 영역) */}
@@ -367,47 +356,78 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
           onScroll={handleScroll}
           className="flex-1 overflow-y-auto modal-scroll-area h-full relative bg-[#0b101a]/20"
         >
-          <div className="p-4 md:p-8 xl:p-10 pb-32">
+          {/* 모바일 전용 Header (스크롤 시 네이티브하게 자연스럽게 올라감) */}
+          {headerContent(true)}
 
-            {/* 가로 스크롤 대분류 탭 (모바일 및 PC 상시 노출, 단 검색중 아닐때만) - 이중 헤더 적용 */}
+          <div className="p-4 md:p-8 xl:p-10 pb-32">
+            {/* 이중 헤더 (2열 + 3열 탭) Sticky */}
             {!isSearching && (
-              <div className="mb-6 md:mb-8 pb-3 pt-2 overflow-x-auto custom-scrollbar flex gap-2 w-full sticky top-0 z-30 bg-[#0b101a]/90 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0">
-                {filterMode === 'continent' ? (
-                  CONTINENTS.map((cont) => {
-                    const Icon = cont.icon;
-                    return (
-                      <button
-                        key={cont.id}
-                        onClick={() => setSelectedContinent(cont.id)}
-                        className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-full whitespace-nowrap text-sm md:text-base font-bold transition-all border shrink-0 ${
-                          selectedContinent === cont.id
-                            ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
-                            : 'bg-white/[0.03] text-gray-400 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
-                        }`}
-                      >
-                        <Icon size={16} className={selectedContinent === cont.id ? 'text-blue-400' : 'text-gray-500'} />
-                        {cont.label}
-                      </button>
-                    )
-                  })
-                ) : (
-                  THEMES.map((theme) => {
-                    const Icon = theme.icon;
-                    return (
-                      <button
-                        key={theme.id}
-                        onClick={() => setSelectedTheme(theme.id)}
-                        className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-full whitespace-nowrap text-sm md:text-base font-bold transition-all border shrink-0 ${
-                          selectedTheme === theme.id
-                            ? 'bg-purple-600/20 text-purple-400 border-purple-500/30 shadow-[0_0_15px_rgba(147,51,234,0.15)]'
-                            : 'bg-white/[0.03] text-gray-400 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
-                        }`}
-                      >
-                        <Icon size={16} className={selectedTheme === theme.id ? 'text-purple-400' : 'text-gray-500'} />
-                        {theme.label}
-                      </button>
-                    )
-                  })
+              <div className="sticky top-0 z-30 bg-[#0b101a]/90 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0 pt-4 pb-3 mb-6 md:mb-8 border-b md:border-none border-white/[0.05]">
+                {/* 2열 탭: 대륙/테마 */}
+                <div className="overflow-x-auto custom-scrollbar flex gap-2 w-full pb-2">
+                  {filterMode === 'continent' ? (
+                    CONTINENTS.map((cont) => {
+                      const Icon = cont.icon;
+                      return (
+                        <button
+                          key={cont.id}
+                          onClick={() => setSelectedContinent(cont.id)}
+                          className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-full whitespace-nowrap text-sm md:text-base font-bold transition-all border shrink-0 ${
+                            selectedContinent === cont.id
+                              ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
+                              : 'bg-white/[0.03] text-gray-400 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
+                          }`}
+                        >
+                          <Icon size={16} className={selectedContinent === cont.id ? 'text-blue-400' : 'text-gray-500'} />
+                          {cont.label}
+                        </button>
+                      )
+                    })
+                  ) : (
+                    THEMES.map((theme) => {
+                      const Icon = theme.icon;
+                      return (
+                        <button
+                          key={theme.id}
+                          onClick={() => setSelectedTheme(theme.id)}
+                          className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-full whitespace-nowrap text-sm md:text-base font-bold transition-all border shrink-0 ${
+                            selectedTheme === theme.id
+                              ? 'bg-purple-600/20 text-purple-400 border-purple-500/30 shadow-[0_0_15px_rgba(147,51,234,0.15)]'
+                              : 'bg-white/[0.03] text-gray-400 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
+                          }`}
+                        >
+                          <Icon size={16} className={selectedTheme === theme.id ? 'text-purple-400' : 'text-gray-500'} />
+                          {theme.label}
+                        </button>
+                      )
+                    })
+                  )}
+                </div>
+
+                {/* 3열 탭: 세부 카테고리 (모바일 전용) */}
+                {filterGroups && (
+                  <div className="md:hidden mt-2 pt-3 border-t border-white/[0.08] overflow-x-auto custom-scrollbar flex gap-2 w-full pb-1">
+                    {filterGroups.map((g) => {
+                      const Icon = g.icon || Compass;
+                      return (
+                        <button
+                          key={g.label}
+                          onClick={() => setSelectedSubGroup(g.label)}
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded-full whitespace-nowrap text-xs font-bold transition-all border shrink-0 ${
+                            selectedSubGroup === g.label
+                              ? 'bg-white/10 text-white border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]'
+                              : 'bg-transparent text-gray-500 border-transparent hover:bg-white/[0.05]'
+                          }`}
+                        >
+                          <Icon size={14} className={selectedSubGroup === g.label ? 'text-white' : 'text-gray-600'} />
+                          {g.label}
+                          <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${selectedSubGroup === g.label ? 'bg-white/20 text-white' : 'bg-black/40 text-gray-500'}`}>
+                            {g.spots.length}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
                 )}
               </div>
             )}

@@ -40,19 +40,29 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
   const ref = useRef(null);
 
   useEffect(() => {
+    let timeoutId;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect(); // 한 번 로드되면 계속 유지
+          timeoutId = setTimeout(() => {
+            setInView(true);
+            observer.disconnect(); // 한 번 로드되면 계속 유지
+          }, 500); // 화면에 0.5초 이상 머물렀을 때만 로드 (API 방어)
+        } else {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
         }
       },
-      { rootMargin: '200px' } // 화면에 보이기 200px 전부터 로드
+      { rootMargin: '200px' } // 화면에 보이기 200px 전부터 감지
     );
     if (ref.current) {
       observer.observe(ref.current);
     }
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   // 횡스크롤용 고정 크기 vs 그리드용 반응형 비율 크기
@@ -73,8 +83,8 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
         <div className={`absolute inset-0 bg-gradient-to-br from-white/5 to-transparent ${categoryStyle.split(' ')[0]}`} />
       )}
 
-      {/* 그라디언트 오버레이 (가독성 향상) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0b101a] via-[#0b101a]/50 to-transparent opacity-90 transition-opacity" />
+      {/* 그라디언트 오버레이 (밝기 개선: 하단 50% 영역에만 강하게, 상단은 원본 사진 유지) */}
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity" />
 
       {/* 컨텐츠 (텍스트) */}
       <div className="relative z-10 p-4 h-full flex flex-col">
@@ -86,13 +96,13 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
           </span>
         </div>
 
-        {/* 하단 텍스트 */}
+        {/* 하단 텍스트 (그림자 효과 강화) */}
         <div className="mt-auto">
-          <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors line-clamp-1 break-keep drop-shadow-md">
+          <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors line-clamp-1 break-keep drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             {spot.name}
           </h3>
-          <div className="flex items-center gap-1.5 text-xs text-gray-300 font-medium mt-1.5 drop-shadow-md">
-            <MapPin size={12} className="text-gray-400" />
+          <div className="flex items-center gap-1.5 text-xs text-gray-200 font-medium mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+            <MapPin size={12} className="text-gray-300" />
             <span className="truncate">{spot.country} · {spot.name_en}</span>
           </div>
         </div>

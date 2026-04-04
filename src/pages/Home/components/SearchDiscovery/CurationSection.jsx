@@ -43,7 +43,7 @@ const CurationSection = ({ title, subtitle, icon, spots, delayClass, onSelectSpo
         {/* 왼쪽 스크롤 버튼 */}
         <button
           onClick={() => scroll('left')}
-          className={`flex absolute left-0 md:left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/70 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all shadow-2xl ${!showLeftBtn && 'opacity-0 pointer-events-none'}`}
+          className={`hidden md:flex absolute left-0 md:left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/70 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all shadow-2xl ${!showLeftBtn && 'opacity-0 pointer-events-none'}`}
         >
           <ChevronLeft size={20} className="mr-0.5" />
         </button>
@@ -75,7 +75,7 @@ const CurationSection = ({ title, subtitle, icon, spots, delayClass, onSelectSpo
         {/* 오른쪽 스크롤 버튼 */}
         <button
           onClick={() => scroll('right')}
-          className={`flex absolute right-0 md:right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/70 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all shadow-2xl ${!showRightBtn && 'opacity-0 pointer-events-none'}`}
+          className={`hidden md:flex absolute right-0 md:right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/70 backdrop-blur-md border border-white/20 items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all shadow-2xl ${!showRightBtn && 'opacity-0 pointer-events-none'}`}
         >
           <ChevronRight size={20} className="ml-0.5" />
         </button>
