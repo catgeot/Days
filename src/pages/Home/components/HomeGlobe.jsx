@@ -30,9 +30,6 @@ const HomeGlobe = React.memo(forwardRef(({
 
   const isHoveringMarker = useRef(false);
 
-  const [lodLevel, setLodLevel] = useState(0);
-  const lodLevelRef = useRef(0);
-
   const themeConfig = useMemo(() => {
     switch(globeTheme) {
       case 'deep':
@@ -143,12 +140,11 @@ const HomeGlobe = React.memo(forwardRef(({
     const controls = globeEl.current.controls();
     if (!controls) return;
 
-    const isMobile = dimensions.width < 768;
     try {
       const R = globeEl.current.getGlobeRadius();
-      controls.minDistance = isMobile ? R * (1 + 1.5) : R * 1.01;
+      controls.minDistance = R * 1.01;
     } catch (e) {
-      controls.minDistance = isMobile ? 250 : 101;
+      controls.minDistance = 101;
     }
   }, [dimensions.width, pauseRender]);
 
@@ -161,12 +157,6 @@ const HomeGlobe = React.memo(forwardRef(({
       const handleCameraChange = () => {
         if (!globeEl.current) return;
         const alt = globeEl.current.pointOfView().altitude;
-
-        const newLevel = alt <= 1.75 ? 1 : 0;
-        if (newLevel !== lodLevelRef.current) {
-          lodLevelRef.current = newLevel;
-          setLodLevel(newLevel);
-        }
 
         if (!pauseRender && globeEl.current.controls) {
           if (alt <= GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
@@ -262,10 +252,6 @@ const HomeGlobe = React.memo(forwardRef(({
     return result;
   }, [travelSpots, savedTrips, tempPinsData, activePinId]);
 
-  const visibleLabels = useMemo(() => {
-    return lodLevel === 1 ? citiesData : [];
-  }, [lodLevel]);
-
   const renderElement = (d) => {
     const el = document.createElement('div');
     el.className = 'globe-marker-wrapper';
@@ -307,17 +293,10 @@ const HomeGlobe = React.memo(forwardRef(({
 
   return (
     <div
-      className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'} ${lodLevel > 0 ? 'hide-markers' : ''}`}
+      className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'}`}
       onPointerDown={handleInteraction}
       style={{ display: pauseRender ? 'none' : 'block', touchAction: 'none' }}
     >
-      <style>{`
-        .hide-markers .globe-marker-wrapper {
-          opacity: 0 !important;
-          pointer-events: none !important;
-        }
-      `}</style>
-
       <Globe
         ref={globeEl}
         width={dimensions.width}
@@ -336,7 +315,7 @@ const HomeGlobe = React.memo(forwardRef(({
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"
 
-        htmlElementsData={lodLevel > 0 ? [] : (isZenMode ? [] : allMarkers)}
+        htmlElementsData={isZenMode ? [] : allMarkers}
         htmlElement={renderElement}
         htmlLat={d => {
           const offset = d._offsetLat || 0;
@@ -351,20 +330,6 @@ const HomeGlobe = React.memo(forwardRef(({
           return result;
         }}
         htmlTransitionDuration={0}
-
-        labelsData={isZenMode ? [] : visibleLabels}
-        labelLat={d => d.lat + (d.offLat || 0)}
-        labelLng={d => d.lng + (d.offLng || 0)}
-        labelText={d => d.name_en}
-        labelSize={d => d.priority === 1 ? 1.2 : 0.7}
-        labelDotRadius={0.15}
-        labelColor={d => d.priority === 1 ? 'rgba(0, 247, 255, 1)' : 'rgba(103, 232, 249, 0.85)'}
-        labelResolution={dimensions.width < 768 ? 1 : GLOBE_CAMERA_CONFIG.LABEL_RESOLUTION}
-        labelAltitude={0.01}
-
-        onLabelClick={(d, event) => {
-          if (onMarkerClick) onMarkerClick({ ...d, type: 'city-label' }, 'globe');
-        }}
       />
     </div>
   );
