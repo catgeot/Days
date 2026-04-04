@@ -13,7 +13,7 @@ const CardBackgroundImage = ({ spot, categoryStyle, CategoryIcon }) => {
         src={bgImgUrl}
         alt={spot.name}
         loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
       />
     );
   }
@@ -67,14 +67,14 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
 
   // 횡스크롤용 고정 크기 vs 그리드용 반응형 비율 크기
   const baseSize = isGrid
-    ? "w-full aspect-[3/4] md:aspect-[4/5]"
-    : "w-[220px] md:w-[260px] h-[280px] md:h-[320px] flex-none snap-start";
+    ? "w-full aspect-[3/4] md:aspect-[3/4]"
+    : "w-[240px] md:w-[280px] h-[320px] md:h-[380px] flex-none snap-start";
 
   return (
     <div
       ref={ref}
       onClick={() => onClick(spot)}
-      className={`group relative flex flex-col bg-white/[0.03] border border-white/[0.08] rounded-2xl cursor-pointer transition-all duration-300 overflow-hidden hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-white/20 ${baseSize}`}
+      className={`group relative flex flex-col bg-white/[0.02] border border-white/[0.05] rounded-[2rem] cursor-pointer transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-blue-500/20 hover:border-white/20 ${baseSize}`}
     >
       {/* 배경 사진 영역 (Lazy Load) */}
       {inView ? (
@@ -90,19 +90,19 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
       <div className="relative z-10 p-4 h-full flex flex-col">
         {/* 상단 배지 */}
         <div className="self-end mb-auto">
-          <span className={`flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold rounded-lg bg-black/40 backdrop-blur-md border border-white/10 ${categoryStyle.split(' ')[1]}`}>
+          <span className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-xl bg-black/40 backdrop-blur-md border border-white/10 ${categoryStyle.split(' ')[1]}`}>
             <CategoryIcon size={12} />
             {categoryLabel}
           </span>
         </div>
 
         {/* 하단 텍스트 (그림자 효과 강화) */}
-        <div className="mt-auto">
-          <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors line-clamp-1 break-keep drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        <div className="mt-auto p-1">
+          <h3 className="text-xl md:text-3xl font-extrabold text-white group-hover:text-blue-300 transition-colors line-clamp-1 break-keep drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
             {spot.name}
           </h3>
-          <div className="flex items-center gap-1.5 text-xs text-gray-200 font-medium mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-            <MapPin size={12} className="text-gray-300" />
+          <div className="flex items-center gap-1.5 text-xs md:text-sm text-gray-200 font-medium mt-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+            <MapPin size={14} className="text-gray-300" />
             <span className="truncate">{spot.country} · {spot.name_en}</span>
           </div>
         </div>

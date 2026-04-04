@@ -187,7 +187,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
               <span className="text-blue-400 font-bold">{selectedSubGroup}</span>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
               {displaySpots.map(spot => (
                 <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
               ))}
@@ -204,7 +204,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
            <Search size={16} />
            <span>'{query}' 검색 결과 {filteredSpots.length}건</span>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
           {filteredSpots.map(spot => (
             <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
           ))}
@@ -295,7 +295,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-0 w-full h-[100dvh] z-[200] flex flex-col bg-[#0b101a]/95 backdrop-blur-3xl animate-fade-in overflow-hidden">
+    <div className="fixed inset-0 z-[200] flex flex-col bg-[#0b101a]/95 backdrop-blur-3xl animate-fade-in overflow-hidden">
       {/* 글로벌 스크롤바 상시 노출을 위한 인라인 스타일 */}
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { display: none; }
@@ -317,35 +317,41 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       {/* Main Body */}
       <div className="flex-1 flex overflow-hidden w-full max-w-[1800px] mx-auto relative">
 
-        {/* Left Sidebar (PC 전용 고정 스크롤 영역) */}
+        {/* Left Sidebar (PC 전용 고정 스크롤 영역 - 플로팅 아일랜드 디자인 적용) */}
         {!isSearching && filterGroups && (
-          <div className="hidden md:flex flex-col w-64 xl:w-72 shrink-0 border-r border-white/[0.05] bg-[#0b101a]/30 h-full relative z-10">
-            <div className="p-6 overflow-y-auto custom-scrollbar h-full pb-24">
-               <h3 className="text-gray-500 font-bold text-xs mb-4 pl-2 uppercase tracking-wider">세부 카테고리</h3>
-               <div className="space-y-2">
-                 {filterGroups.map((g) => {
-                   const Icon = g.icon || Compass;
-                   return (
-                     <button
-                       key={g.label}
-                       onClick={() => setSelectedSubGroup(g.label)}
-                       className={`w-full shrink-0 flex items-center justify-between p-3.5 rounded-xl transition-all border ${
-                         selectedSubGroup === g.label
-                           ? 'bg-white/10 text-white border-white/20 font-bold shadow-[0_0_20px_rgba(255,255,255,0.05)] translate-x-1'
-                           : 'bg-white/[0.02] border-transparent hover:bg-white/[0.06] hover:border-white/[0.1] text-gray-400'
-                       }`}
-                     >
-                       <div className="flex items-center gap-3">
-                         <Icon size={18} className={selectedSubGroup === g.label ? 'text-white' : 'text-gray-500'} />
-                         <span className="text-sm">{g.label}</span>
-                       </div>
-                       <span className={`text-xs px-2.5 py-0.5 rounded-full border ${selectedSubGroup === g.label ? 'bg-white/20 border-white/30 text-white' : 'bg-black/40 border-white/10 text-gray-500'}`}>
-                         {g.spots.length}
-                       </span>
-                     </button>
-                   )
-                 })}
-               </div>
+          <div className="hidden md:flex flex-col w-64 xl:w-[320px] shrink-0 py-6 pl-6 z-10">
+            <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/[0.08] rounded-3xl h-full flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+              <div className="p-6 overflow-y-auto custom-scrollbar h-full pb-10">
+                 <h3 className="text-gray-400 font-bold text-xs mb-5 pl-1 uppercase tracking-widest flex items-center gap-2">
+                   <Layers size={14} className="text-blue-400"/> 세부 탐색
+                 </h3>
+                 <div className="space-y-2">
+                   {filterGroups.map((g) => {
+                     const Icon = g.icon || Compass;
+                     return (
+                       <button
+                         key={g.label}
+                         onClick={() => setSelectedSubGroup(g.label)}
+                         className={`w-full shrink-0 flex items-center justify-between p-3.5 rounded-2xl transition-all duration-300 ${
+                           selectedSubGroup === g.label
+                             ? 'bg-blue-600/20 text-white border border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)] translate-x-1'
+                             : 'bg-transparent border border-transparent hover:bg-white/[0.05] hover:border-white/[0.05] text-gray-400'
+                         }`}
+                       >
+                         <div className="flex items-center gap-3">
+                           <div className={`p-2 rounded-xl ${selectedSubGroup === g.label ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-500'}`}>
+                             <Icon size={16} />
+                           </div>
+                           <span className={`text-sm font-medium ${selectedSubGroup === g.label ? 'font-bold' : ''}`}>{g.label}</span>
+                         </div>
+                         <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${selectedSubGroup === g.label ? 'bg-blue-500/20 text-blue-300' : 'bg-white/5 text-gray-500'}`}>
+                           {g.spots.length}
+                         </span>
+                       </button>
+                     )
+                   })}
+                 </div>
+              </div>
             </div>
           </div>
         )}
@@ -354,17 +360,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto modal-scroll-area h-full relative bg-[#0b101a]/20"
+          className="flex-1 overflow-y-auto modal-scroll-area h-full relative"
         >
           {/* 모바일 전용 Header (스크롤 시 네이티브하게 자연스럽게 올라감) */}
           {headerContent(true)}
 
           <div className="p-4 md:p-8 xl:p-10 pb-32">
-            {/* 이중 헤더 (2열 + 3열 탭) Sticky */}
+            {/* 헤더 Sticky 영역: 모바일/PC 분리하여 직관성 극대화 */}
             {!isSearching && (
-              <div className="sticky top-0 z-30 bg-[#0b101a]/90 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0 pt-4 pb-3 mb-6 md:mb-8 border-b md:border-none border-white/[0.05]">
-                {/* 2열 탭: 대륙/테마 */}
-                <div className="overflow-x-auto custom-scrollbar flex gap-2 w-full pb-2">
+              <div className="sticky top-0 z-30 bg-[#0b101a]/90 backdrop-blur-xl -mx-4 px-4 md:mx-0 md:px-0 pt-4 pb-4 mb-6 md:mb-8 border-b md:border-none border-white/[0.05] md:bg-transparent md:backdrop-blur-none">
+
+                {/* 2열 탭: 대륙/테마 (모바일에서도 보이도록 복구, 단 시각적 비중은 낮춤) */}
+                <div className="flex overflow-x-auto custom-scrollbar gap-2 w-full pb-2 md:pb-0">
                   {filterMode === 'continent' ? (
                     CONTINENTS.map((cont) => {
                       const Icon = cont.icon;
@@ -372,13 +379,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
                         <button
                           key={cont.id}
                           onClick={() => setSelectedContinent(cont.id)}
-                          className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-full whitespace-nowrap text-sm md:text-base font-bold transition-all border shrink-0 ${
+                          className={`flex items-center gap-1.5 px-4 py-2 md:px-5 md:py-3 rounded-2xl whitespace-nowrap text-xs md:text-base transition-all border shrink-0 ${
                             selectedContinent === cont.id
-                              ? 'bg-blue-600/20 text-blue-400 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
-                              : 'bg-white/[0.03] text-gray-400 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
+                              ? 'bg-white/10 text-white border-white/20 font-bold'
+                              : 'bg-white/[0.02] text-gray-500 border-white/[0.05] hover:bg-white/[0.05] hover:text-gray-300'
                           }`}
                         >
-                          <Icon size={16} className={selectedContinent === cont.id ? 'text-blue-400' : 'text-gray-500'} />
+                          <Icon size={14} className={selectedContinent === cont.id ? 'text-white' : 'text-gray-600'} />
                           {cont.label}
                         </button>
                       )
@@ -390,13 +397,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
                         <button
                           key={theme.id}
                           onClick={() => setSelectedTheme(theme.id)}
-                          className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-full whitespace-nowrap text-sm md:text-base font-bold transition-all border shrink-0 ${
+                          className={`flex items-center gap-1.5 px-4 py-2 md:px-5 md:py-3 rounded-2xl whitespace-nowrap text-xs md:text-base transition-all border shrink-0 ${
                             selectedTheme === theme.id
-                              ? 'bg-purple-600/20 text-purple-400 border-purple-500/30 shadow-[0_0_15px_rgba(147,51,234,0.15)]'
-                              : 'bg-white/[0.03] text-gray-400 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
+                              ? 'bg-white/10 text-white border-white/20 font-bold'
+                              : 'bg-white/[0.02] text-gray-500 border-white/[0.05] hover:bg-white/[0.05] hover:text-gray-300'
                           }`}
                         >
-                          <Icon size={16} className={selectedTheme === theme.id ? 'text-purple-400' : 'text-gray-500'} />
+                          <Icon size={14} className={selectedTheme === theme.id ? 'text-white' : 'text-gray-600'} />
                           {theme.label}
                         </button>
                       )
@@ -404,26 +411,23 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
                   )}
                 </div>
 
-                {/* 3열 탭: 세부 카테고리 (모바일 전용) */}
+                {/* 모바일 전용 3열 탭: 세부 카테고리 (가장 눈에 띄는 화려한 메인 버튼 스타일로 부각) */}
                 {filterGroups && (
-                  <div className="md:hidden mt-2 pt-3 border-t border-white/[0.08] overflow-x-auto custom-scrollbar flex gap-2 w-full pb-1">
+                  <div className="flex md:hidden mt-3 pt-3 border-t border-white/[0.05] overflow-x-auto custom-scrollbar gap-3 w-full pb-2">
                     {filterGroups.map((g) => {
                       const Icon = g.icon || Compass;
                       return (
                         <button
                           key={g.label}
                           onClick={() => setSelectedSubGroup(g.label)}
-                          className={`flex items-center gap-1.5 px-3 py-2 rounded-full whitespace-nowrap text-xs font-bold transition-all border shrink-0 ${
+                          className={`flex items-center gap-2 px-5 py-3 rounded-2xl whitespace-nowrap text-sm font-extrabold transition-all shrink-0 ${
                             selectedSubGroup === g.label
-                              ? 'bg-white/10 text-white border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]'
-                              : 'bg-transparent text-gray-500 border-transparent hover:bg-white/[0.05]'
+                              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] border border-white/20 scale-105 origin-left'
+                              : 'bg-white/[0.05] text-gray-400 border border-white/[0.1] hover:bg-white/[0.1]'
                           }`}
                         >
-                          <Icon size={14} className={selectedSubGroup === g.label ? 'text-white' : 'text-gray-600'} />
+                          <Icon size={18} className={selectedSubGroup === g.label ? 'text-white drop-shadow-md' : 'text-gray-500'} />
                           {g.label}
-                          <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${selectedSubGroup === g.label ? 'bg-white/20 text-white' : 'bg-black/40 text-gray-500'}`}>
-                            {g.spots.length}
-                          </span>
                         </button>
                       )
                     })}
