@@ -369,9 +369,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
         >
           <div className="p-4 md:p-8 xl:p-10 pb-32">
 
-            {/* 가로 스크롤 대분류 탭 (모바일 및 PC 상시 노출, 단 검색중 아닐때만) */}
+            {/* 가로 스크롤 대분류 탭 (모바일 및 PC 상시 노출, 단 검색중 아닐때만) - 이중 헤더 적용 */}
             {!isSearching && (
-              <div className="mb-6 md:mb-8 pb-3 overflow-x-auto custom-scrollbar flex gap-2 w-full">
+              <div className="mb-6 md:mb-8 pb-3 pt-2 overflow-x-auto custom-scrollbar flex gap-2 w-full sticky top-0 z-30 bg-[#0b101a]/90 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0">
                 {filterMode === 'continent' ? (
                   CONTINENTS.map((cont) => {
                     const Icon = cont.icon;

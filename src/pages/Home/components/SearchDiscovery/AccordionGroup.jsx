@@ -20,14 +20,14 @@ const AccordionGroup = ({ group, onSelectSpot, isExpanded, onToggle }) => {
         <ChevronDown className={`text-gray-500 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-blue-400' : ''}`} />
       </button>
 
-      {/* 모바일 2열 사진 카드 그리드 */}
+      {/* 모바일 가로 스크롤 사진 카드 */}
       <div
         className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}`}
       >
-        <div className="px-3 pb-5 pt-1 border-t border-white/5">
-          <div className="grid grid-cols-2 gap-3 mt-3">
+        <div className="pt-3 pb-5 border-t border-white/5">
+          <div className="flex overflow-x-auto gap-3 snap-x custom-scrollbar px-3 pb-2">
             {group.spots.map(spot => (
-              <SpotThumbnailCard key={spot.id} spot={spot} onClick={onSelectSpot} isGrid={true} />
+              <SpotThumbnailCard key={spot.id} spot={spot} onClick={onSelectSpot} isGrid={false} />
             ))}
           </div>
         </div>

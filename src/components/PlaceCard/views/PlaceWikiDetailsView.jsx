@@ -91,11 +91,21 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   }, [placeName, wikiData]);
 
   useEffect(() => {
-      setIsAiExpanded(false);
-      setLocalAiResponse(null);
-      setLocalUpdatedAt(null);
-      setError(null);
-  }, [placeName]);
+      const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
+
+      if (hasCachedInfo) {
+          setIsAiExpanded(true);
+          setLocalAiResponse(wikiData.ai_practical_info);
+          if (wikiData.ai_info_updated_at) {
+              setLocalUpdatedAt(wikiData.ai_info_updated_at);
+          }
+      } else {
+          setIsAiExpanded(false);
+          setLocalAiResponse(null);
+          setLocalUpdatedAt(null);
+          setError(null);
+      }
+  }, [placeName, wikiData]);
 
   const prevAiInfoRef = useRef(wikiData?.ai_practical_info);
 
@@ -236,18 +246,10 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
       }
   }, []);
 
-  // 최초 오픈 시 자동 스크롤
-  useEffect(() => {
-      if (isAiExpanded) {
-          setTimeout(() => {
-              scrollToAiSection();
-          }, 100);
-      }
-  }, [isAiExpanded, scrollToAiSection]);
-
   // 좌측 네비게이션에서 스크롤 요청 수신
   useEffect(() => {
       const handleScrollReq = () => {
+          setIsAiExpanded(true); // 혹시 닫혀있다면 열기
           scrollToAiSection();
       };
       window.addEventListener('scroll-to-ai-section', handleScrollReq);
