@@ -137,7 +137,7 @@ const HomeUI = React.memo(({
       </div>
 
       {(isTagLoading || relatedTags.length > 0) && (
-        <div className="flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">
+        <div className="hidden md:flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">
               {!isTagLoading && relatedTags.map((tag, idx) => (
               <button key={idx} onClick={() => onTagClick(tag)} className="group relative flex items-center justify-between w-28 p-2 md:w-40 md:p-3 bg-black/30 backdrop-blur-md border border-white/5 rounded-xl hover:bg-white/10 hover:border-blue-500/50 md:hover:w-44 transition-all duration-300 shadow-lg">
                   <div className="flex items-center gap-1.5 md:gap-2 overflow-hidden">
