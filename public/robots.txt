@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /place/
+Allow: /blog
+Allow: /p/
+Disallow: /auth/
+Disallow: /*?tab=*
+
+Sitemap: https://www.gateo.kr/sitemap.xml

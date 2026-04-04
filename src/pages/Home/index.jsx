@@ -6,6 +6,7 @@ import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal';
 import LogoPanel from './components/LogoPanel';
 import PlaceCardSummary from '../../components/PlaceCard/modes/PlaceCardSummary';
+import SEO from '../../components/SEO';
 
 import { supabase } from '../../shared/api/supabase';
 import { TRAVEL_SPOTS } from './data/travelSpots';
@@ -251,6 +252,7 @@ function Home() {
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
+      <SEO />
       <div className="w-full h-full">
         <HomeGlobe
           ref={globeRef}

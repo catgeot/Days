@@ -3,11 +3,19 @@ import react from '@vitejs/plugin-react';
 import Sitemap from 'vite-plugin-sitemap';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 
+import { TRAVEL_SPOTS } from './src/pages/Home/data/travelSpots.js';
+
+const dynamicRoutes = TRAVEL_SPOTS.map(spot => `/place/${spot.slug}`);
+
 export default defineConfig({
   plugins: [
     react(),
     basicSsl(),
-    Sitemap(),
+    Sitemap({
+      hostname: 'https://www.gateo.kr',
+      dynamicRoutes,
+      generateRobotsTxt: false, // 별도로 생성할 예정
+    }),
   ],
   server: {
     host: '0.0.0.0',

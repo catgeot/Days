@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
+import { HelmetProvider } from 'react-helmet-async';
 
 import { supabase } from './shared/api/supabase';
 
@@ -34,32 +35,34 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <ReportProvider>
-        <Analytics />
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />}>
-              <Route path="place/:slug" element={<PlaceCard />} />
+    <HelmetProvider>
+      <BrowserRouter>
+        <ReportProvider>
+          <Analytics />
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />}>
+                <Route path="place/:slug" element={<PlaceCard />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="/blog" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="write" element={<Write />} />
-            <Route path="write/:id" element={<Write />} />
-            <Route path=":id" element={<Detail />} />
-          </Route>
+            <Route path="/blog" element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="write" element={<Write />} />
+              <Route path="write/:id" element={<Write />} />
+              <Route path=":id" element={<Detail />} />
+            </Route>
 
-          <Route path="/p/:id" element={<PublicViewer />} />
+            <Route path="/p/:id" element={<PublicViewer />} />
 
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/signup" element={<Signup />} />
-          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-          <Route path="/auth/update-password" element={<UpdatePassword />} />
-        </Routes>
-      </ReportProvider>
-    </BrowserRouter>
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/signup" element={<Signup />} />
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/update-password" element={<UpdatePassword />} />
+          </Routes>
+        </ReportProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 
