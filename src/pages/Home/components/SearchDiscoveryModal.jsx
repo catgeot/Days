@@ -8,7 +8,7 @@ import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
 
-const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) => {
+const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '' }) => {
   const [query, setQuery] = useState(initialQuery);
   const [filterMode, setFilterMode] = useState('continent');
   const [selectedContinent, setSelectedContinent] = useState('all');
@@ -24,7 +24,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
 
   useEffect(() => {
     if (isOpen) {
-      setQuery(initialQuery);
+      setQuery(''); // 모달 열릴 때마다 항상 검색어 초기화
       // 모바일 키보드 자동 올림 방지를 위해 focus() 제거
       document.body.style.overflow = 'hidden';
       setSelectedSubGroup(null);
@@ -36,7 +36,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
       setSelectedSubGroup(null);
     }
     return () => { document.body.style.overflow = ''; };
-  }, [isOpen, initialQuery]);
+  }, [isOpen]);
 
   const handleFilterModeChange = (mode) => {
     setFilterMode(mode);
@@ -129,10 +129,21 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
   const renderContent = () => {
     if (filteredSpots.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center py-20 text-center px-4 w-full">
-          <Compass size={48} className="text-gray-700 mb-4" />
-          <h3 className="text-xl font-bold text-gray-300 mb-2">검색 결과가 없습니다</h3>
-          <p className="text-gray-500 break-keep">다른 키워드로 검색하거나 필터를 확인해보세요.</p>
+        <div className="flex flex-col items-center justify-center py-20 text-center px-4 w-full animate-fade-in">
+          <div className="relative mb-6 group cursor-pointer" onClick={() => { if(onSearch) onSearch(query.trim()); }}>
+             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+             <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform">
+               <Globe2 size={32} className="text-blue-400" />
+             </div>
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
+             <span className="text-blue-400">'{query}'</span> AI 전 세계 탐색
+          </h3>
+          <p className="text-gray-400 break-keep max-w-md mx-auto text-sm md:text-base leading-relaxed">
+             기본 목록에 없는 장소입니다. <br/>
+             <strong className="text-gray-200">엔터(Enter) 키</strong>를 누르시거나 <strong className="text-gray-200 cursor-pointer hover:text-blue-400 transition-colors" onClick={() => { if(onSearch) onSearch(query.trim()); }}>위의 아이콘</strong>을 클릭하시면, <br/>
+             AI가 전 세계 지도를 검색하여 즉시 해당 위치로 비행합니다!
+          </p>
         </div>
       );
     }
@@ -277,6 +288,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, initialQuery = '' }) 
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && query.trim() !== '' && onSearch) {
+              onSearch(query.trim());
+            }
+          }}
           placeholder="어디로 떠나고 싶으신가요?"
           className="w-full bg-transparent text-white px-4 h-full outline-none placeholder-gray-600 text-base md:text-xl font-medium"
         />

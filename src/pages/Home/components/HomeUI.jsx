@@ -90,9 +90,9 @@ const HomeUI = React.memo(({
               <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={16} className="md:w-[18px] md:h-[18px]" /></div>
               <input
                 type="text"
-                value={inputValue}
+                value=""
                 readOnly
-                placeholder="검색 및 탐색"
+                placeholder="어디로 떠나고 싶으신가요?"
                 className="w-full bg-transparent text-white px-2 md:px-3 text-xs md:text-sm focus:outline-none placeholder-gray-300/80 font-medium cursor-pointer"
               />
             </div>
@@ -189,7 +189,11 @@ const HomeUI = React.memo(({
         isOpen={isDiscoveryModalOpen}
         onClose={() => setIsDiscoveryModalOpen(false)}
         onSelect={(spot) => onTripClick(spot)}
-        initialQuery={inputValue}
+        onSearch={(query) => {
+          setIsDiscoveryModalOpen(false);
+          onSearch(query);
+        }}
+        initialQuery=""
       />
     </>
   );
