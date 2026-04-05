@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Search } from 'lucide-react';
+import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Search, CheckCircle2, Clock, Car, Ship, Map } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
 import CopyableText, { isMobileDevice } from '../common/CopyableText';
@@ -61,7 +61,82 @@ const THEME_COLORS = {
         border: 'border-gray-200',
         icon: 'bg-gray-100 text-gray-700',
         hover: 'hover:shadow-gray-100/50'
+    },
+    indigo: {
+        bg: 'bg-indigo-50',
+        border: 'border-indigo-200',
+        icon: 'bg-indigo-100 text-indigo-700',
+        hover: 'hover:shadow-indigo-100/50'
+    },
+    cyan: {
+        bg: 'bg-cyan-50',
+        border: 'border-cyan-200',
+        icon: 'bg-cyan-100 text-cyan-700',
+        hover: 'hover:shadow-cyan-100/50'
     }
+};
+
+// 🆕 [Phase 8] 복잡한 여행지 특화 컴포넌트: 출발 전 필수 체크리스트
+const PreTravelChecklist = ({ items }) => {
+    if (!items || items.length === 0) return null;
+    return (
+        <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 mb-5 shadow-sm">
+            <h3 className="font-bold text-amber-900 mb-3 flex items-center gap-2 text-sm md:text-base">
+                <AlertCircle className="text-amber-600 shrink-0" size={18} />
+                출발 전 필수 준비사항
+            </h3>
+            <div className="space-y-3">
+                {items.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-white/60 p-3 rounded-xl border border-amber-100">
+                        <div className="flex items-center gap-3">
+                            <CheckCircle2 size={18} className="text-amber-500 shrink-0" />
+                            <div>
+                                <p className="text-xs md:text-sm font-bold text-gray-800">{item.title}</p>
+                                {item.cost && <p className="text-[10px] md:text-xs text-gray-500 font-medium">{item.cost}</p>}
+                            </div>
+                        </div>
+                        {item.url && (
+                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                                <span>바로가기</span>
+                                <ExternalLink size={12} />
+                            </a>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+// 🆕 [Phase 8] 복잡한 여행지 특화 컴포넌트: 여정 타임라인
+const JourneyTimeline = ({ timeline }) => {
+    if (!timeline || timeline.length === 0) return null;
+    return (
+        <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-5 mb-5 shadow-sm">
+            <h3 className="font-bold text-blue-900 mb-4 flex items-center gap-2 text-sm md:text-base">
+                <Map className="text-blue-600 shrink-0" size={18} />
+                상세 여정 플래너
+            </h3>
+            <div className="relative pl-6 space-y-6 before:absolute before:inset-y-2 before:left-[11px] before:w-[2px] before:bg-blue-200">
+                {timeline.map((step, idx) => (
+                    <div key={idx} className="relative">
+                        {/* 둥근 점 */}
+                        <div className="absolute -left-[30px] top-1 w-3 h-3 bg-blue-500 rounded-full border-[3px] border-blue-50 shadow-sm z-10" />
+                        <div className="flex flex-col">
+                            <span className="text-[11px] font-bold text-blue-500 tracking-wider uppercase mb-0.5">STEP {step.step || (idx + 1)}</span>
+                            <span className="text-sm font-bold text-gray-800 leading-tight">{step.title}</span>
+                            {step.duration && (
+                                <div className="flex items-center gap-1 text-[11px] text-gray-500 mt-1 font-medium bg-blue-100/50 w-fit px-1.5 py-0.5 rounded-md">
+                                    <Clock size={10} />
+                                    <span>{step.duration}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
@@ -256,8 +331,8 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
     const sourceAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null;
     const { toolkitData } = parseAiPracticalInfo(sourceAiInfo);
 
-    // 파싱된 데이터가 있으면 최우선, 없으면 예전 JSON 형식(essential_guide)으로 Fallback
-    const guideData = toolkitData || wikiData?.essential_guide;
+    // 🆕 [Phase 8] 분리된 아키텍처에 따라 essential_guide(JSON)를 최우선으로 사용하고, 없으면 과거 파싱본 사용
+    const guideData = wikiData?.essential_guide || toolkitData;
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
@@ -285,26 +360,22 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
 
     // 위키 뷰로 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
     const handleRemoteUpdate = () => {
-        console.log("[ToolkitTab] 수동 직권 갱신 버튼 클릭됨 - 위키 탭으로 강제 갱신 요청 발송");
+        console.log("[ToolkitTab] 수동 직권 갱신 버튼 클릭됨 - 툴킷 강제 갱신 요청 발송");
         setIsRemoteUpdating(true);
-        const event = new CustomEvent('request-ai-info', { detail: { placeName: location?.name, forceUpdate: true } });
-        window.dispatchEvent(event);
+        handleRequestToolkitInfo(location?.name, true);
     };
 
-    // 🆕 [Phase 6-2 + Phase 7-1] 툴킷 진입 시 wikiData가 없으면 자동으로 데이터 요청 (로딩 동기화)
+    // 🆕 [Phase 6-2 + Phase 7-1] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
     const initialDataRequested = useRef(false);
     useEffect(() => {
-        // wikiData가 없고, 로딩 중도 아니고, 아직 요청하지 않았고, 탭이 활성화되어 있을 때
-        if (isActive && !wikiData && !isWikiLoading && !initialDataRequested.current && location?.name) {
-            console.log("[ToolkitTab] 위키 데이터 없음 - 자동 데이터 요청 발송");
+        // essential_guide가 없고, 로딩 중도 아니고, 아직 요청하지 않았고, 탭이 활성화되어 있을 때
+        if (isActive && !guideData && !isWikiLoading && !initialDataRequested.current && location?.name) {
+            console.log("[ToolkitTab] 툴킷 데이터 없음 - 자동 데이터 요청 발송");
             initialDataRequested.current = true;
             setIsRemoteUpdating(true);
-            const event = new CustomEvent('request-ai-info', {
-                detail: { placeName: location?.name, forceUpdate: false }
-            });
-            window.dispatchEvent(event);
+            handleRequestToolkitInfo(location?.name, false);
         }
-    }, [isActive, wikiData, isWikiLoading, location?.name]);
+    }, [isActive, guideData, isWikiLoading, location?.name]);
 
     // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋 (로딩 동기화 개선)
     useEffect(() => {
@@ -313,11 +384,44 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
         };
     }, [location?.name]);
 
+    // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
+    const handleRequestToolkitInfo = async (placeName, forceUpdate = false) => {
+        const placeId = wikiData?.place_id || location?.name;
+        if (!placeId) return;
+
+        setIsRemoteUpdating(true);
+        try {
+            console.log("[ToolkitTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
+            const { data, error } = await supabase.functions.invoke('update-place-toolkit', {
+                body: { placeId, locationName: placeName || location?.name }
+            });
+
+            if (error) {
+                console.error("[ToolkitTab] Edge Function Error response:", error);
+                // 401 에러 방지를 위해 에러 상세 로깅
+                throw error;
+            }
+
+            console.log("[ToolkitTab] Edge Function 호출 완료 - 응답 데이터:", data);
+
+            // 데이터 갱신 시 화면 새로고침 (간단한 임시 해결책)
+            if (data?.success) {
+                // UI가 리액트 상태에 묶여있어 강제 새로고침이 가장 확실하게 최신 데이터를 보여줄 수 있습니다.
+                window.location.reload();
+            }
+
+        } catch (err) {
+            console.error('[ToolkitTab] Request Error catch:', err);
+        } finally {
+            setIsRemoteUpdating(false);
+        }
+    };
+
     // 툴킷 진입 시 14일 경과 자동 갱신 원격 트리거
     const autoUpdateTriggered = useRef(false);
     useEffect(() => {
-        if (isActive && !autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
-            const lastUpdated = wikiData.ai_info_updated_at;
+        if (isActive && !autoUpdateTriggered.current && guideData) {
+            const lastUpdated = wikiData?.ai_info_updated_at;
             if (lastUpdated) {
                 const lastDate = new Date(lastUpdated);
                 const now = new Date();
@@ -325,15 +429,13 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                 if (diffDays > WIKI_AUTO_UPDATE_DAYS) {
-                    console.log(`[ToolkitTab] ${WIKI_AUTO_UPDATE_DAYS}일 경과 위키 자동 갱신 원격 요청 발송 (${diffDays}일 지남)`);
+                    console.log(`[ToolkitTab] ${WIKI_AUTO_UPDATE_DAYS}일 경과 툴킷 자동 갱신 발송 (${diffDays}일 지남)`);
                     autoUpdateTriggered.current = true;
-                    // 자동 갱신 시에는 툴킷 화면을 방해하지 않고 백그라운드로 처리할 수 있으나, 만약 로딩 화면이 필요하다면 setIsRemoteUpdating(true) 가능
-                    const event = new CustomEvent('request-ai-info', { detail: { placeName: location?.name, forceUpdate: true } });
-                    window.dispatchEvent(event);
+                    handleRequestToolkitInfo(location?.name, true);
                 }
             }
         }
-    }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, location?.name]);
+    }, [isActive, guideData, wikiData?.ai_info_updated_at, location?.name]);
 
     const formatDate = (isoString) => {
         if (!isoString) return '';
@@ -417,30 +519,58 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
                     </div>
                 </div>
 
+                {/* 🆕 [Phase 8] 복잡한 여행지 배지 및 확장 컴포넌트 */}
+                {guideData?.is_complex && (
+                    <div className="mb-6 animate-fade-in">
+                        <div className="bg-red-50/80 border border-red-200 rounded-xl p-4 mb-5 flex items-start gap-3 shadow-sm">
+                            <AlertCircle size={20} className="text-red-600 mt-0.5 shrink-0" />
+                            <div>
+                                <h4 className="font-bold text-red-900 text-sm">이 여행지는 복잡한 준비가 필요합니다!</h4>
+                                <p className="text-[11px] md:text-xs text-red-700 mt-1 font-medium leading-relaxed">
+                                    인천 출발 기준 다단계 이동(페리 등)이나 E-비자, 관광세 사전 납부 등의 절차가 필수적입니다. 아래 가이드를 꼼꼼히 확인하세요. (복잡도: {guideData.complexity_score || 80}/100)
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 체크리스트 및 타임라인 */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-2">
+                            <PreTravelChecklist items={guideData.categories?.pre_travel || []} />
+                            <JourneyTimeline timeline={guideData.journey_timeline || []} />
+                        </div>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 gap-5">
+                    {/* 특화 예약: 공항 픽업 및 페리 (is_complex가 true일 때만 또는 해당 카테고리가 있을 때만 표시) */}
+                    {(guideData?.categories?.airport_transfer) && (
+                        <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} themeColor="indigo" />
+                    )}
+                    {(guideData?.categories?.ferry_booking) && (
+                        <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="cyan" />
+                    )}
                     {/* 1. 먼저 어디를 갈지 확인 - 초록 (자연, 탐험) */}
-                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.map_poi} location={location} themeColor="emerald" />
+                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="emerald" />
 
                     {/* 2. 출입국 준비 - 파랑 (공식, 신뢰) */}
-                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.visa} isOfficial location={location} themeColor="blue" />
+                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="blue" />
 
                     {/* 3. 이동 수단 - 하늘 (비행, 자유) */}
-                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.flight} isSponsored location={location} themeColor="sky" />
+                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="sky" />
 
                     {/* 4. 숙소 - 보라 (편안함, 휴식) */}
-                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.accommodation} isSponsored location={location} themeColor="purple" />
+                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="purple" />
 
                     {/* 5. 현지 연결 - 청록 (통신, 기술) */}
-                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.connectivity} isSponsored location={location} themeColor="teal" />
+                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="teal" />
 
                     {/* 6. 현지 이동 - 녹색 (Go, 진행) */}
-                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.transport} isSponsored location={location} themeColor="green" />
+                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="green" />
 
                     {/* 7. 편의 도구 - 황금 (가치, 도구) */}
-                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.apps} location={location} themeColor="amber" />
+                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="amber" />
 
                     {/* 8. 안전 정보 - 빨강 (주의, 중요) */}
-                    <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.safety} isOfficial location={location} themeColor="red" />
+                    <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} themeColor="red" />
                 </div>
 
                 <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
@@ -448,6 +578,17 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
                     <p className="text-[11px] md:text-xs text-gray-500 leading-relaxed">
                         <strong>하이브리드 정보 안내:</strong> 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴 링크(숙박, 유심 등)가 일부 포함되어 있습니다. 제휴 링크를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.
                     </p>
+                </div>
+
+                <div className="flex justify-end pb-4">
+                    <button
+                        onClick={() => handleRequestToolkitInfo(wikiData?.name, true)}
+                        disabled={isLoading}
+                        className="text-[10px] text-gray-300 hover:text-gray-500 transition-colors opacity-30 hover:opacity-100"
+                        title="기존 툴킷 강제 업데이트"
+                    >
+                        {isLoading ? 'Updating...' : 'Force Update Toolkit'}
+                    </button>
                 </div>
             </div>
         </div>
