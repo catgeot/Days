@@ -294,7 +294,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             }
           }}
           placeholder="어디로 떠나고 싶으신가요?"
-          className="w-full bg-transparent text-white px-4 h-full outline-none placeholder-gray-600 text-base md:text-xl font-medium"
+          className="w-full bg-transparent text-white px-4 h-full outline-none placeholder-gray-600 text-[16px] md:text-xl font-medium"
         />
         {query && (
           <button

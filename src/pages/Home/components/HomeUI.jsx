@@ -88,13 +88,11 @@ const HomeUI = React.memo(({
               className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"
             >
               <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={16} className="md:w-[18px] md:h-[18px]" /></div>
-              <input
-                type="text"
-                value=""
-                readOnly
-                placeholder="어디로 떠나고 싶으신가요?"
-                className="w-full bg-transparent text-white px-2 md:px-3 text-xs md:text-sm focus:outline-none placeholder-gray-300/80 font-medium cursor-pointer"
-              />
+              <span
+                className="w-full bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate"
+              >
+                어디로 떠나고 싶으신가요?
+              </span>
             </div>
           </div>
         </div>
