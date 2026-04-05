@@ -124,6 +124,23 @@
 *   **변경 파일**: [`src/components/PlaceCard/tabs/ToolkitTab.jsx`](src/components/PlaceCard/tabs/ToolkitTab.jsx:1-10,404-457)
 *   **관련 문서**: [`plans/phase8-toolkit-duplication-fix-plan.md`](plans/phase8-toolkit-duplication-fix-plan.md)
 
+### 2.8. Phase 8 긴급 버그 수정 - Map 네이밍 충돌 해결 (2026-04-05 오후) ✅
+*   **문제**: `ToolkitTab.jsx:10`에서 "Map is not a constructor" 런타임 에러 발생
+*   **근본 원인**:
+    *   lucide-react에서 `Map` 아이콘 컴포넌트를 import
+    *   동일 파일 라인 10에서 JavaScript 내장 `Map` 생성자 사용 (`new Map()`)
+    *   **네이밍 충돌**: import된 React 컴포넌트 `Map`이 JavaScript 내장 객체 `Map`을 override
+*   **해결책**:
+    *   **Import 별칭 사용**: `Map as MapIcon`으로 lucide-react 아이콘을 import
+    *   **컴포넌트 사용부 변경**: `<Map />` → `<MapIcon />`
+    *   JavaScript 내장 `Map` 객체는 정상적으로 사용 가능하도록 복원
+*   **영향 범위**: 단 2줄 수정으로 해결 (라인 2, 120)
+*   **예상 효과**:
+    *   ✅ 툴킷 탭 로딩 시 발생하던 런타임 에러 완전 제거
+    *   ✅ 전역 캐시 (`pendingToolkitRequests`) 정상 동작
+    *   ✅ 여정 타임라인 아이콘 정상 렌더링
+*   **변경 파일**: [`src/components/PlaceCard/tabs/ToolkitTab.jsx`](src/components/PlaceCard/tabs/ToolkitTab.jsx:2,120)
+
 ## 3. 다음 단계 (Next Steps)
 *   **Phase 8-3 (다음 세션)**: useToolkitData 훅 완전 분리 - 위키와 툴킷 시스템 독립 (~2시간)
 *   **검색 시스템 연동**: 검색 모달과 연동하여 복잡한 여행지 탐색 리스트 기획 및 구현.

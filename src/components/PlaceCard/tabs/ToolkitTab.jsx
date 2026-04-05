@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Search, CheckCircle2, Clock, Car, Ship, Map } from 'lucide-react';
+import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Search, CheckCircle2, Clock, Car, Ship, Map as MapIcon } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
 import CopyableText, { isMobileDevice } from '../common/CopyableText';
@@ -117,7 +117,7 @@ const JourneyTimeline = ({ timeline }) => {
     return (
         <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-5 mb-5 shadow-sm">
             <h3 className="font-bold text-blue-900 mb-4 flex items-center gap-2 text-sm md:text-base">
-                <Map className="text-blue-600 shrink-0" size={18} />
+                <MapIcon className="text-blue-600 shrink-0" size={18} />
                 상세 여정 플래너
             </h3>
             <div className="relative pl-6 space-y-6 before:absolute before:inset-y-2 before:left-[11px] before:w-[2px] before:bg-blue-200">
