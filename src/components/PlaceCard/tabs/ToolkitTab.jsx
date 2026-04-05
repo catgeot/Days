@@ -6,6 +6,9 @@ import CopyableText, { isMobileDevice } from '../common/CopyableText';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 
+// 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
+const pendingToolkitRequests = new Map(); // { placeId: Promise }
+
 // 🎨 [Phase 6-4] 카테고리별 색상 테마 정의
 const THEME_COLORS = {
     emerald: {
@@ -404,35 +407,54 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
         const placeId = wikiData?.place_id || location?.name;
         if (!placeId) return;
 
-        setIsRemoteUpdating(true);
-        try {
-            console.log("[ToolkitTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
-            const { data, error } = await supabase.functions.invoke('update-place-toolkit', {
-                body: { placeId, locationName: placeName || location?.name }
-            });
-
-            if (error) {
-                console.error("[ToolkitTab] Edge Function Error response:", error);
-                throw error;
-            }
-
-            console.log("[ToolkitTab] Edge Function 호출 완료 - 응답 데이터:", data);
-
-            // 🆕 [Phase 8 Fix] 이벤트 기반 즉시 반영으로 Race Condition 해결
-            if (data?.success) {
-                console.log(`[ToolkitTab] 업데이트 완료. 이벤트 발생 (forceUpdate: ${forceUpdate})`);
-                window.dispatchEvent(new CustomEvent('toolkit-updated', {
-                    detail: { placeId, essentialGuide: data.essentialGuide }
-                }));
-
-                // 이벤트가 즉시 처리되므로 로딩 상태를 바로 해제
-                setIsRemoteUpdating(false);
-            }
-
-        } catch (err) {
-            console.error('[ToolkitTab] Request Error catch:', err);
-            setIsRemoteUpdating(false);
+        // 🆕 [Phase 8 Fix] 중복 요청 방지 - 이미 요청 중이면 기존 Promise 재사용
+        if (pendingToolkitRequests.has(placeId)) {
+            console.log('[ToolkitTab] [DEV] 중복 요청 방지 - 기존 요청 재사용 (StrictMode 이중 렌더링)');
+            return pendingToolkitRequests.get(placeId);
         }
+
+        setIsRemoteUpdating(true);
+
+        // 새 요청 생성 및 전역 캐시 등록
+        const requestPromise = (async () => {
+            try {
+                console.log("[ToolkitTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
+                const { data, error } = await supabase.functions.invoke('update-place-toolkit', {
+                    body: { placeId, locationName: placeName || location?.name }
+                });
+
+                if (error) {
+                    console.error("[ToolkitTab] Edge Function Error response:", error);
+                    throw error;
+                }
+
+                console.log("[ToolkitTab] Edge Function 호출 완료 - 응답 데이터:", data);
+
+                // 🆕 [Phase 8 Fix] 이벤트 기반 즉시 반영으로 Race Condition 해결
+                if (data?.success) {
+                    console.log(`[ToolkitTab] 업데이트 완료. 이벤트 발생 (forceUpdate: ${forceUpdate})`);
+                    window.dispatchEvent(new CustomEvent('toolkit-updated', {
+                        detail: { placeId, essentialGuide: data.essentialGuide }
+                    }));
+
+                    // 이벤트가 즉시 처리되므로 로딩 상태를 바로 해제
+                    setIsRemoteUpdating(false);
+                }
+
+                return data;
+            } catch (err) {
+                console.error('[ToolkitTab] Request Error catch:', err);
+                setIsRemoteUpdating(false);
+                throw err;
+            } finally {
+                // 요청 완료 후 캐시에서 제거 (메모리 누수 방지)
+                pendingToolkitRequests.delete(placeId);
+            }
+        })();
+
+        // 전역 캐시에 등록
+        pendingToolkitRequests.set(placeId, requestPromise);
+        return requestPromise;
     };
 
     // 툴킷 진입 시 14일 경과 자동 갱신 원격 트리거
