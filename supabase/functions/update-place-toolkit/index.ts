@@ -88,27 +88,72 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
   }
 }`;
 
-    // 제미나이 2.5 Pro 모델 사용 (사용자가 3.1 Pro를 언급했으나 실제 모델명은 gemini-2.5-pro가 안정적임)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${geminiApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        generationConfig: {
-          responseMimeType: "application/json"
-        },
-        contents: [
-          { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
-        ]
-      })
-    });
+    // 🆕 [Phase 8 Fix] Gemini 모델 폴백 로직 추가 (3.1 Pro → 2.5 Pro)
+    const modelsToTry = [
+      'gemini-3.1-pro-preview',  // 최우선 시도
+      'gemini-2.5-pro'            // 폴백 모델
+    ];
 
-    if (!response.ok) {
-      const errText = await response.text();
-      // 만약 모델을 찾지 못했다면 fallback
-      console.error('Gemini API Error Details:', errText);
-      throw new Error(`Gemini API 호출 실패: ${response.status} - ${errText}`);
+    let response: Response | null = null;
+    let lastError: string = '';
+    let usedModel: string = '';
+
+    for (const model of modelsToTry) {
+      try {
+        console.log(`[update-place-toolkit] Trying model: ${model}`);
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+        response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            generationConfig: {
+              responseMimeType: "application/json"
+            },
+            contents: [
+              { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
+            ]
+          })
+        });
+
+        if (response.ok) {
+          usedModel = model;
+          console.log(`[update-place-toolkit] Success with model: ${model}`);
+          break; // 성공하면 루프 종료
+        }
+
+        const errText = await response.text();
+        lastError = `${response.status}: ${errText}`;
+
+        // 429 (Too Many Requests) 또는 RESOURCE_EXHAUSTED 에러면 다음 모델 시도
+        if (response.status === 429 || errText.includes('RESOURCE_EXHAUSTED') || errText.includes('quota')) {
+          console.log(`[update-place-toolkit] Model ${model} quota exceeded, trying fallback...`);
+          continue; // 다음 모델로
+        }
+
+        // 다른 에러는 즉시 중단
+        console.error(`[update-place-toolkit] Fatal error with ${model}:`, errText);
+        throw new Error(`Gemini API 호출 실패 (${model}): ${lastError}`);
+
+      } catch (fetchError) {
+        const err = fetchError as Error;
+        lastError = err.message;
+        console.error(`[update-place-toolkit] Error with ${model}:`, err);
+
+        // 마지막 모델이었으면 에러 throw
+        if (model === modelsToTry[modelsToTry.length - 1]) {
+          throw new Error(`모든 Gemini 모델 시도 실패: ${lastError}`);
+        }
+        // 아니면 다음 모델 시도
+        continue;
+      }
+    }
+
+    // 모든 모델이 실패했으면
+    if (!response || !response.ok) {
+      throw new Error(`Gemini API 호출 실패 - 모든 모델 시도 완료: ${lastError}`);
     }
 
     const data = await response.json();
@@ -130,7 +175,8 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
     const { error: dbError } = await supabaseAdmin
       .from('place_wiki')
       .update({
-        essential_guide: essentialGuideJson
+        essential_guide: essentialGuideJson,
+        ai_info_updated_at: new Date().toISOString()
       })
       .eq('place_id', String(placeId));
 

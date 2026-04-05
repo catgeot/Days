@@ -27,10 +27,16 @@ export const apiClient = {
         });
       }
 
+      // 제미나이 3.1 라우팅 지원 (modelId가 gemini-3.1-pro로 올 경우 gemini-3.1-pro-preview로 매핑)
+      let finalModelId = modelId;
+      if (modelId === "gemini-3.1-pro") {
+        finalModelId = "gemini-3.1-pro-preview";
+      }
+
       // 2. Edge Function 프록시 호출
-      console.log(`[API Proxy] Calling gemini-proxy with model: ${modelId}`);
+      console.log(`[API Proxy] Calling gemini-proxy with model: ${finalModelId}`);
       const { data, error } = await supabase.functions.invoke('gemini-proxy', {
-        body: { modelId, parts }
+        body: { modelId: finalModelId, parts }
       });
 
       if (error) throw error;
@@ -70,8 +76,13 @@ export const apiClient = {
       }
 
       // 🚨 [Fix] 동적 모델 티어 라우팅 (기본값: gemini-2.5-flash, Fallback 등 초경량 작업은 gemini-2.5-flash-lite 등 사용)
+      let finalModelId = modelId;
+      if (modelId === "gemini-3.1-pro") {
+        finalModelId = "gemini-3.1-pro-preview";
+      }
+
       let response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${finalModelId}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

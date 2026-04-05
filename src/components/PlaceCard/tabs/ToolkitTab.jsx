@@ -328,6 +328,9 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
+    // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
+    const scrollContainerRef = useRef(null);
+
     const sourceAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null;
     const { toolkitData } = parseAiPracticalInfo(sourceAiInfo);
 
@@ -368,21 +371,33 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
     // 🆕 [Phase 6-2 + Phase 7-1] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
     const initialDataRequested = useRef(false);
     useEffect(() => {
-        // essential_guide가 없고, 로딩 중도 아니고, 아직 요청하지 않았고, 탭이 활성화되어 있을 때
-        if (isActive && !guideData && !isWikiLoading && !initialDataRequested.current && location?.name) {
-            console.log("[ToolkitTab] 툴킷 데이터 없음 - 자동 데이터 요청 발송");
+        // essential_guide가 없고, 기존 툴킷 파싱본(toolkitData)도 없고, 아직 요청하지 않았을 때만 자동 호출
+        if (isActive && !guideData && !toolkitData && !isWikiLoading && !initialDataRequested.current && location?.name) {
+            console.log("[ToolkitTab] 툴킷 데이터 완전 없음 - 자동 데이터 요청 발송");
             initialDataRequested.current = true;
             setIsRemoteUpdating(true);
             handleRequestToolkitInfo(location?.name, false);
         }
-    }, [isActive, guideData, isWikiLoading, location?.name]);
+    }, [isActive, guideData, toolkitData, isWikiLoading, location?.name]);
 
     // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋 (로딩 동기화 개선)
     useEffect(() => {
-        return () => {
-            initialDataRequested.current = false;
-        };
+        initialDataRequested.current = false;
+        autoUpdateTriggered.current = false; // 장소 변경 시 자동 업데이트 플래그도 초기화
     }, [location?.name]);
+
+    // 🆕 [Phase 8 Fix] 툴킷 탭 재진입 시 및 데이터 갱신 시 스크롤 상단 리셋
+    useEffect(() => {
+        if (isActive && !isLoading && scrollContainerRef.current) {
+            // 로딩이 끝나고 데이터가 표시될 때 스크롤을 강제로 상단(0)으로
+            setTimeout(() => {
+                if (scrollContainerRef.current) {
+                    scrollContainerRef.current.scrollTop = 0;
+                    console.log('[ToolkitTab] 스크롤 상단으로 리셋 완료');
+                }
+            }, 150); // DOM 렌더링 완료 대기
+        }
+    }, [isActive, isLoading]);
 
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = async (placeName, forceUpdate = false) => {
@@ -398,21 +413,24 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
 
             if (error) {
                 console.error("[ToolkitTab] Edge Function Error response:", error);
-                // 401 에러 방지를 위해 에러 상세 로깅
                 throw error;
             }
 
             console.log("[ToolkitTab] Edge Function 호출 완료 - 응답 데이터:", data);
 
-            // 데이터 갱신 시 화면 새로고침 (간단한 임시 해결책)
+            // 🆕 [Phase 8 Fix] 이벤트 기반 즉시 반영으로 Race Condition 해결
             if (data?.success) {
-                // UI가 리액트 상태에 묶여있어 강제 새로고침이 가장 확실하게 최신 데이터를 보여줄 수 있습니다.
-                window.location.reload();
+                console.log(`[ToolkitTab] 업데이트 완료. 이벤트 발생 (forceUpdate: ${forceUpdate})`);
+                window.dispatchEvent(new CustomEvent('toolkit-updated', {
+                    detail: { placeId, essentialGuide: data.essentialGuide }
+                }));
+
+                // 이벤트가 즉시 처리되므로 로딩 상태를 바로 해제
+                setIsRemoteUpdating(false);
             }
 
         } catch (err) {
             console.error('[ToolkitTab] Request Error catch:', err);
-        } finally {
             setIsRemoteUpdating(false);
         }
     };
@@ -420,6 +438,9 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
     // 툴킷 진입 시 14일 경과 자동 갱신 원격 트리거
     const autoUpdateTriggered = useRef(false);
     useEffect(() => {
+        // 기존(Phase 7)에 있던 14일 경과 위키 통합 자동 갱신은
+        // 툴킷 전용 테이블 분리에 따라 일단 비활성화 (필요시 별도로 툴킷 전용 업데이트 날짜 컬럼을 사용해야 함)
+        /*
         if (isActive && !autoUpdateTriggered.current && guideData) {
             const lastUpdated = wikiData?.ai_info_updated_at;
             if (lastUpdated) {
@@ -431,10 +452,12 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
                 if (diffDays > WIKI_AUTO_UPDATE_DAYS) {
                     console.log(`[ToolkitTab] ${WIKI_AUTO_UPDATE_DAYS}일 경과 툴킷 자동 갱신 발송 (${diffDays}일 지남)`);
                     autoUpdateTriggered.current = true;
+                    // 여기서 forceUpdate=true로 넘기면 window.location.reload()를 유발함.
                     handleRequestToolkitInfo(location?.name, true);
                 }
             }
         }
+        */
     }, [isActive, guideData, wikiData?.ai_info_updated_at, location?.name]);
 
     const formatDate = (isoString) => {
@@ -496,7 +519,10 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-4 md:p-6 md:pt-10 overscroll-none touch-pan-y">
+        <div
+            ref={scrollContainerRef}
+            className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-4 md:p-6 md:pt-10 overscroll-none touch-pan-y"
+        >
             <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                     <div>

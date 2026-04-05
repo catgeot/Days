@@ -27,6 +27,10 @@ Deno.serve(async (req) => {
 
     // 1차 시도 (요청된 모델)
     let targetModel = modelId;
+    if (modelId === "gemini-3.1-pro") {
+      targetModel = "gemini-3.1-pro-preview";
+    }
+
     let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
 
     console.log(`[Proxy] Attempting to call model: ${targetModel}`);
