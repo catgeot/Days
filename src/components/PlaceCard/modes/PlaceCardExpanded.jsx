@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { useWikiData } from '../hooks/useWikiData';
+import { useToolkitData } from '../hooks/useToolkitData';
 import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark }) => {
@@ -37,6 +38,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
 
   const queryKey = location.name;
   const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey, mediaMode);
+  const { toolkitData: currentToolkitData, isToolkitLoading } = useToolkitData(queryKey, mediaMode);
 
   const activeInfo = useMemo(() => {
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
@@ -150,6 +152,8 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
             onAiModeChange={setIsAiMode}
             wikiData={currentWikiData}
             isWikiLoading={isWikiLoading}
+            toolkitData={currentToolkitData}
+            isToolkitLoading={isToolkitLoading}
             isVideoLoading={isVideoLoading}
             videoError={videoError}
             googleFormUrl={googleFormUrl}
@@ -160,3 +164,4 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
 });
 
 export default PlaceCardExpanded;
+

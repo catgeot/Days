@@ -6,8 +6,9 @@
 // 4. 🆕 [Phase 7-1] 폴링 간격 3초 → 2초로 단축하여 체감 로딩 속도 50% 개선
 // 5. 🆕 [Phase 7-1] 디버깅 로그 추가 (개발 환경에서만 출력)
 // 6. 🆕 [Phase 8 Fix] Race Condition 해결: 이벤트 리스너를 마운트 시 한 번만 등록하여 즉시 상태 반영 보장
+// 7. 🆕 [Phase 8-3] 툴킷 데이터 완전 분리: toolkit-updated 이벤트 리스너 제거 및 순수 위키 데이터만 관리
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 
 const isDev = import.meta.env.DEV;
@@ -17,16 +18,6 @@ export const useWikiData = (placeId, mediaMode) => {
   const [wikiData, setWikiData] = useState(null);
   const [isWikiLoading, setIsWikiLoading] = useState(false);
 
-  // 🆕 [Phase 8 Fix] 최신 상태를 참조하기 위한 Ref
-  const wikiDataRef = useRef(null);
-  const placeIdRef = useRef(placeId);
-
-  // wikiData와 placeId가 변경될 때마다 ref 업데이트
-  useEffect(() => {
-    wikiDataRef.current = wikiData;
-    placeIdRef.current = placeId;
-  }, [wikiData, placeId]);
-
   // 🚨 [Fix] 의존성 배열에 mediaMode 추가
   useEffect(() => {
     if (!placeId) return;
@@ -35,8 +26,8 @@ export const useWikiData = (placeId, mediaMode) => {
     setWikiData(null);
     setIsWikiLoading(false);
 
-    // 🚨 [Fix/New] Lazy Fetching 방어막: 백과 탭이나 툴킷 탭이 아닐 경우 DB 조회를 하지 않고 리턴
-    if (mediaMode !== 'WIKI' && mediaMode !== 'TOOLKIT') {
+    // 🚨 [Fix/New] Lazy Fetching 방어막: 백과 탭이 아닐 경우 DB 조회를 하지 않고 리턴
+    if (mediaMode !== 'WIKI') {
         return;
     }
 
@@ -125,75 +116,11 @@ export const useWikiData = (placeId, mediaMode) => {
     };
   }, [placeId, mediaMode]);
 
-  // 🆕 [Phase 8 Fix] Toolkit 업데이트 이벤트 리스너 - 마운트 시 한 번만 등록 (Race Condition 해결)
-  useEffect(() => {
-    const handleToolkitUpdated = (event) => {
-      const updatedPlaceId = event.detail?.placeId;
-      const essentialGuide = event.detail?.essentialGuide;
-
-      // ref를 통해 항상 최신 placeId 참조
-      if (updatedPlaceId === placeIdRef.current) {
-        console.log(`[useWikiData] Toolkit 업데이트 감지 - 데이터 즉시 반영 (${updatedPlaceId})`);
-
-        // Edge Function에서 리턴받은 최신 데이터를 로컬 상태에 즉시 반영 (Race condition 방지)
-        if (essentialGuide) {
-          setWikiData(prev => {
-            // prev가 없거나 다른 장소의 데이터면 업데이트하지 않음
-            if (!prev || prev.place_id !== updatedPlaceId) {
-              console.log('[useWikiData] 데이터 불일치로 업데이트 건너뜀');
-              return prev;
-            }
-
-            console.log('[useWikiData] 툴킷 데이터 즉시 반영 완료');
-            return {
-              ...prev,
-              essential_guide: essentialGuide,
-              ai_info_updated_at: new Date().toISOString()
-            };
-          });
-        }
-
-        // 혹시 모를 다른 컬럼 동기화를 위해 백그라운드 패치 (살짝 지연)
-        setTimeout(async () => {
-          try {
-            const { data } = await supabase
-              .from('place_wiki')
-              .select('*')
-              .eq('place_id', String(updatedPlaceId))
-              .maybeSingle();
-
-            if (data && placeIdRef.current === updatedPlaceId) {
-              setWikiData(data);
-              console.log('[useWikiData] 백그라운드 동기화 완료');
-            }
-          } catch (e) {
-            console.error('[useWikiData] 백그라운드 패치 에러:', e);
-          }
-        }, 1500);
-      }
-    };
-
-    // 이벤트 리스너 등록 (컴포넌트 마운트 시 한 번만)
-    window.addEventListener('toolkit-updated', handleToolkitUpdated);
-
-    if (isDev) {
-      console.log('[useWikiData] Toolkit 이벤트 리스너 등록 완료');
-    }
-
-    // 클린업: 언마운트 시에만 제거
-    return () => {
-      window.removeEventListener('toolkit-updated', handleToolkitUpdated);
-      if (isDev) {
-        console.log('[useWikiData] Toolkit 이벤트 리스너 제거');
-      }
-    };
-  }, []); // 빈 의존성 배열 - 마운트 시 한 번만 실행
-
   // 🆕 [Phase 9-1.5] 데이터가 [[LOADING]]으로 변경되면 폴링 시작 (수동 갱신 감지)
   useEffect(() => {
     let pollInterval = null;
 
-    if (wikiData?.ai_practical_info === '[[LOADING]]' && (mediaMode === 'WIKI' || mediaMode === 'TOOLKIT')) {
+    if (wikiData?.ai_practical_info === '[[LOADING]]' && mediaMode === 'WIKI') {
       if (isDev) {
         console.log('[useWikiData] [[LOADING]] 상태 변경 감지 - 폴링 시작');
       }

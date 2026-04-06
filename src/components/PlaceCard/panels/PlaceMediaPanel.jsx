@@ -19,6 +19,8 @@ const PlaceMediaPanel = React.memo(({
     onAiModeChange,
     wikiData,
     isWikiLoading,
+    toolkitData,
+    isToolkitLoading,
     location,
     isVideoLoading,
     videoError,
@@ -73,7 +75,7 @@ const PlaceMediaPanel = React.memo(({
         </div>
 
         <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'TOOLKIT' ? 'block' : 'hidden'}`}>
-            <ToolkitTab location={location} wikiData={wikiData} isWikiLoading={isWikiLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'TOOLKIT'} />
+            <ToolkitTab location={location} toolkitData={toolkitData} isToolkitLoading={isToolkitLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'TOOLKIT'} />
         </div>
 
         <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'LOGBOOK' ? 'block' : 'hidden'}`}>

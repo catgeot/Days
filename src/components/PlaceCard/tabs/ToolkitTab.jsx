@@ -3,8 +3,6 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
 import CopyableText, { isMobileDevice } from '../common/CopyableText';
-import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
-import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -325,32 +323,27 @@ const LOADING_MESSAGES_UPDATE = [
     "✅ AI가 최종 툴킷 검수를 마치는 중..."
 ];
 
-const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
-    // 위키의 단일 소스(ai_practical_info)를 사용하므로,
-    // ToolkitTab 자체의 독립적인 업데이트/디펜서 로직을 제거하고 상태만 참조합니다.
+const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
 
-    const sourceAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : null;
-    const { toolkitData } = parseAiPracticalInfo(sourceAiInfo);
-
-    // 🆕 [Phase 8] 분리된 아키텍처에 따라 essential_guide(JSON)를 최우선으로 사용하고, 없으면 과거 파싱본 사용
-    const guideData = wikiData?.essential_guide || toolkitData;
+    // 🆕 [Phase 8-3] 분리된 아키텍처에 따라 toolkitData.essential_guide 사용
+    const guideData = toolkitData?.essential_guide;
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
     // isRemoteUpdating 플래그를 로딩 조건에 추가
-    const isLoading = isWikiLoading || (wikiData?.ai_practical_info === '[[LOADING]]') || isRemoteUpdating;
+    const isLoading = isToolkitLoading || isRemoteUpdating;
 
     // 만약 상위에서 데이터가 들어와서 캐시되었거나 상태가 변경되었다면 로컬 업데이트 플래그 해제
     useEffect(() => {
-        if (wikiData?.ai_practical_info !== '[[LOADING]]') {
+        if (!isToolkitLoading) {
             setIsRemoteUpdating(false);
         }
-    }, [wikiData?.ai_practical_info]);
+    }, [isToolkitLoading]);
 
     // 로딩 메시지 순차적 변경 (주기 4초로 변경)
     useEffect(() => {
@@ -364,26 +357,26 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
         return () => clearInterval(interval);
     }, [isLoading, currentMessages]);
 
-    // 위키 뷰로 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
+    // 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
     const handleRemoteUpdate = () => {
         console.log("[ToolkitTab] 수동 직권 갱신 버튼 클릭됨 - 툴킷 강제 갱신 요청 발송");
         setIsRemoteUpdating(true);
         handleRequestToolkitInfo(location?.name, true);
     };
 
-    // 🆕 [Phase 6-2 + Phase 7-1] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
+    // 🆕 [Phase 6-2 + Phase 7-1 + Phase 8-3] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
     const initialDataRequested = useRef(false);
     useEffect(() => {
-        // essential_guide가 없고, 기존 툴킷 파싱본(toolkitData)도 없고, 아직 요청하지 않았을 때만 자동 호출
-        if (isActive && !guideData && !toolkitData && !isWikiLoading && !initialDataRequested.current && location?.name) {
+        // essential_guide가 없고, 아직 요청하지 않았을 때만 자동 호출
+        if (isActive && !guideData && !isToolkitLoading && !initialDataRequested.current && location?.name) {
             console.log("[ToolkitTab] 툴킷 데이터 완전 없음 - 자동 데이터 요청 발송");
             initialDataRequested.current = true;
             setIsRemoteUpdating(true);
             handleRequestToolkitInfo(location?.name, false);
         }
-    }, [isActive, guideData, toolkitData, isWikiLoading, location?.name]);
+    }, [isActive, guideData, isToolkitLoading, location?.name]);
 
-    // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋 (로딩 동기화 개선)
+    // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋
     useEffect(() => {
         initialDataRequested.current = false;
         autoUpdateTriggered.current = false; // 장소 변경 시 자동 업데이트 플래그도 초기화
@@ -404,7 +397,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
 
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = async (placeName, forceUpdate = false) => {
-        const placeId = wikiData?.place_id || location?.name;
+        const placeId = toolkitData?.place_id || location?.name;
         if (!placeId) return;
 
         // 🆕 [Phase 8 Fix] 중복 요청 방지 - 이미 요청 중이면 기존 Promise 재사용
@@ -464,7 +457,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
         // 툴킷 전용 테이블 분리에 따라 일단 비활성화 (필요시 별도로 툴킷 전용 업데이트 날짜 컬럼을 사용해야 함)
         /*
         if (isActive && !autoUpdateTriggered.current && guideData) {
-            const lastUpdated = wikiData?.ai_info_updated_at;
+            const lastUpdated = toolkitData?.toolkit_updated_at;
             if (lastUpdated) {
                 const lastDate = new Date(lastUpdated);
                 const now = new Date();
@@ -480,7 +473,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
             }
         }
         */
-    }, [isActive, guideData, wikiData?.ai_info_updated_at, location?.name]);
+    }, [isActive, guideData, toolkitData?.toolkit_updated_at, location?.name]);
 
     const formatDate = (isoString) => {
         if (!isoString) return '';
@@ -488,7 +481,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
         return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     };
 
-    const targetDate = wikiData?.ai_info_updated_at;
+    const targetDate = toolkitData?.toolkit_updated_at;
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
     if (isLoading) {
@@ -630,7 +623,7 @@ const ToolkitTab = ({ location, wikiData, isWikiLoading, isActive }) => {
 
                 <div className="flex justify-end pb-4">
                     <button
-                        onClick={() => handleRequestToolkitInfo(wikiData?.name, true)}
+                        onClick={() => handleRequestToolkitInfo(toolkitData?.place_id || location?.name, true)}
                         disabled={isLoading}
                         className="text-[10px] text-gray-300 hover:text-gray-500 transition-colors opacity-30 hover:opacity-100"
                         title="기존 툴킷 강제 업데이트"
