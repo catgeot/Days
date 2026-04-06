@@ -171,14 +171,14 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
       throw new Error('Gemini did not return valid JSON');
     }
 
-    // Upsert essential_guide without overwriting ai_practical_info
+    // Upsert essential_guide into place_toolkit table
     const { error: dbError } = await supabaseAdmin
-      .from('place_wiki')
-      .update({
+      .from('place_toolkit')
+      .upsert({
+        place_id: String(placeId),
         essential_guide: essentialGuideJson,
-        ai_info_updated_at: new Date().toISOString()
-      })
-      .eq('place_id', String(placeId));
+        toolkit_updated_at: new Date().toISOString()
+      }, { onConflict: 'place_id' });
 
     if (dbError) {
       console.error('DB Update Error:', dbError);
