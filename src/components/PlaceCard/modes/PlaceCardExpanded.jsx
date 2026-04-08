@@ -117,6 +117,18 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
     setIsAiMode(false);
   }, [galleryData.selectedImg]);
 
+  // 탭 전환 이벤트 추적
+  useEffect(() => {
+    if (window.gtag && location) {
+      const slug = location.slug || (location.id ? String(location.id).toLowerCase() : 'unknown');
+      window.gtag('event', 'tab_view', {
+        tab_name: mediaMode.toLowerCase(),
+        place_slug: slug,
+        place_name: location.name || 'Unknown',
+      });
+    }
+  }, [mediaMode, location]);
+
   return (
     <div ref={containerRef} className="fixed inset-0 z-[100] bg-black/95 flex flex-col md:flex-row p-0 md:p-6 gap-0 md:gap-6 animate-fade-in overflow-hidden font-sans overscroll-none">
       <PlaceChatPanel

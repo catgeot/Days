@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -23,6 +23,20 @@ import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 
+function RouteTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (window.gtag) {
+      window.gtag('config', 'G-7949KKNHRX', {
+        page_path: location.pathname + location.search,
+      });
+    }
+  }, [location]);
+
+  return null;
+}
+
 function App() {
   useEffect(() => {
     supabase.auth.getSession().then(() => {
@@ -37,6 +51,7 @@ function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
+        <RouteTracker />
         <ReportProvider>
           <Analytics />
           <Routes>

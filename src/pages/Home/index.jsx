@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Outlet, useNavigate, useLocation, matchPath } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, matchPath, Link } from 'react-router-dom';
 
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
@@ -385,6 +385,30 @@ function Home() {
           onSwitchChat={setActiveChatId}
           onDeleteChat={deleteTrip}
         />
+      </div>
+
+      {/* SEO를 위한 숨겨진 내부 링크 */}
+      <div style={{ display: 'none' }} aria-hidden="true">
+        {/* 여행지 링크 */}
+        {TRAVEL_SPOTS.map((spot, index) => (
+          <Link key={`${spot.slug || spot.id}-${index}`} to={`/place/${spot.slug || spot.id}`}>
+            {spot.name}
+          </Link>
+        ))}
+
+        {/* Explore 링크 */}
+        <Link to="/explore">여행지 탐색</Link>
+        <Link to="/explore/paradise">낙원</Link>
+        <Link to="/explore/nature">자연</Link>
+        <Link to="/explore/urban">도시</Link>
+        <Link to="/explore/culture">문화</Link>
+        <Link to="/explore/adventure">모험</Link>
+        <Link to="/explore/asia">아시아</Link>
+        <Link to="/explore/europe">유럽</Link>
+        <Link to="/explore/americas">아메리카</Link>
+        <Link to="/explore/oceania">오세아니아</Link>
+        <Link to="/explore/africa">아프리카</Link>
+        <Link to="/explore/middle-east">중동</Link>
       </div>
     </div>
   );
