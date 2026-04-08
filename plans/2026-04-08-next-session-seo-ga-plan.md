@@ -714,26 +714,26 @@ Sitemap: https://www.gateo.kr/sitemap.xml
 
 ### Week 3: 탭 네이밍 & Path 라우팅 (Phase 2.2-2.3)
 ```
-[ ] 네이밍 변경
-    [ ] LogbookTab.jsx → ReviewsTab.jsx
-    [ ] ToolkitTab.jsx → PlannerTab.jsx
-    [ ] useToolkitData.js → usePlannerData.js
-    [ ] PlaceCardExpanded.jsx 수정
-    [ ] 모든 'LOGBOOK' → 'REVIEWS'
-    [ ] 모든 'TOOLKIT' → 'PLANNER'
+[x] 네이밍 변경
+    [x] LogbookTab.jsx → ReviewsTab.jsx
+    [x] ToolkitTab.jsx → PlannerTab.jsx
+    [x] useToolkitData.js → usePlannerData.js
+    [x] PlaceCardExpanded.jsx 수정
+    [x] 모든 'LOGBOOK' → 'REVIEWS'
+    [x] 모든 'TOOLKIT' → 'PLANNER'
     
-[ ] Path 기반 라우팅
-    [ ] PlaceCardWithTab.jsx 생성
-    [ ] App.jsx 라우트 변경
-    [ ] PlaceCardExpanded.jsx handleTabChange 수정
-    [ ] Query parameter 리다이렉트 추가
-    [ ] 하위 호환성 테스트
+[x] Path 기반 라우팅
+    [x] PlaceCardWithTab.jsx 생성 (대신 기존 컴포넌트에 동적 렌더링으로 합침)
+    [x] App.jsx 라우트 변경
+    [x] PlaceCardExpanded.jsx handleTabChange 수정
+    [x] Query parameter 리다이렉트 추가 (제외 합의됨)
+    [x] 하위 호환성 테스트 (제외 합의됨)
     
-[ ] 통합 테스트
-    [ ] 모든 탭 전환 테스트
-    [ ] 뒤로가기/앞으로가기 테스트
-    [ ] 북마크 URL 테스트
-    [ ] GA 추적 확인
+[x] 통합 테스트
+    [x] 모든 탭 전환 테스트
+    [x] 뒤로가기/앞으로가기 테스트
+    [x] 북마크 URL 테스트
+    [x] GA 추적 확인
 ```
 
 ### Week 4: 배포 & 검증

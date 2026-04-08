@@ -9,6 +9,7 @@ export const usePlaceReviews = (placeSlug, user) => {
 
   const fetchReviews = useCallback(async () => {
     if (!placeSlug) {
+      setReviews([]);
       setIsLoading(false);
       return;
     }
@@ -59,6 +60,8 @@ export const usePlaceReviews = (placeSlug, user) => {
   }, [placeSlug, user, filter]);
 
   useEffect(() => {
+    // 장소가 변경될 때 즉시 이전 리뷰 초기화 (깜빡임 방지)
+    setReviews([]);
     fetchReviews();
   }, [fetchReviews]);
 
