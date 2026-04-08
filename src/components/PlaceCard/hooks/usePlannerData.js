@@ -5,9 +5,20 @@ const isDev = import.meta.env.DEV;
 
 export const usePlannerData = (placeId, mediaMode) => {
   const [plannerData, setToolkitData] = useState(null);
-  // ✅ placeId가 있으면 초기에 무조건 loading=true로 시작 (race condition 방지)
-  // TOOLKIT 모드가 아니면 useEffect에서 즉시 false로 변경됨
   const [isPlannerLoading, setIsToolkitLoading] = useState(Boolean(placeId));
+  const [prevMediaMode, setPrevMediaMode] = useState(mediaMode);
+
+  // ✅ 렌더링 중 상태 변경 패턴 (React 16.4+)
+  // 탭이 PLANNER로 전환될 때, useEffect가 실행되기 전에 동기적으로 로딩 상태를 true로 만듭니다.
+  // 이렇게 하면 PlannerTab이 첫 렌더링 시 "로딩이 끝났고 데이터가 없다"고 오판하여 AI를 자동 호출하는 것을 방지합니다.
+  if (mediaMode !== prevMediaMode) {
+      setPrevMediaMode(mediaMode);
+      if (mediaMode === 'PLANNER') {
+          setIsToolkitLoading(true);
+      } else {
+          setIsToolkitLoading(false);
+      }
+  }
 
   const plannerDataRef = useRef(null);
   const placeIdRef = useRef(placeId);
@@ -20,8 +31,8 @@ export const usePlannerData = (placeId, mediaMode) => {
   useEffect(() => {
     if (!placeId) return;
 
-    // ✅ TOOLKIT 모드가 아니면 loading 상태만 false로 설정하고 데이터는 유지
-    if (mediaMode !== 'TOOLKIT') {
+    // ✅ PLANNER 모드가 아니면 loading 상태만 false로 설정하고 데이터는 유지
+    if (mediaMode !== 'PLANNER') {
         setIsToolkitLoading(false);
         return;
     }

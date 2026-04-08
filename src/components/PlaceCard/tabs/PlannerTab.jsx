@@ -338,13 +338,6 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
     // isRemoteUpdating 플래그를 로딩 조건에 추가
     const isLoading = isPlannerLoading || isRemoteUpdating;
 
-    // 만약 상위에서 데이터가 들어와서 캐시되었거나 상태가 변경되었다면 로컬 업데이트 플래그 해제
-    useEffect(() => {
-        if (!isPlannerLoading) {
-            setIsRemoteUpdating(false);
-        }
-    }, [isPlannerLoading]);
-
     // 로딩 메시지 순차적 변경 (주기 4초로 변경)
     useEffect(() => {
         let interval;
@@ -429,10 +422,12 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                     window.dispatchEvent(new CustomEvent('toolkit-updated', {
                         detail: { placeId, essentialGuide: data.essentialGuide }
                     }));
-
-                    // 이벤트가 즉시 처리되므로 로딩 상태를 바로 해제
-                    setIsRemoteUpdating(false);
+                } else {
+                    console.error("[PlannerTab] 백엔드 응답 에러 (success: false):", data);
                 }
+
+                // 성공 여부와 상관없이 로딩 상태는 해제
+                setIsRemoteUpdating(false);
 
                 return data;
             } catch (err) {
