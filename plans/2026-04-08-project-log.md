@@ -38,9 +38,35 @@
   - 끊김 없이 3D 지도를 배경으로 부드럽게 열리는 모달 경험 복구.
   - 아시아 >> 휴양 등 세부 카테고리까지 고유의 URL을 가지게 되어 검색엔진 친화적 및 유저 공유가 용이함.
 
+### 4. PlaceCard 탭 네이밍 변경 및 Path 기반 라우팅 구현 (Phase 2.2-2.3)
+- **커밋**: `2e5be46` feat(seo): PlaceCard 탭 명칭 변경(reviews, planner) 및 URL Path 라우팅 구조 도입
+- **작업 내용**:
+  - `src/App.jsx` 라우트에 `<Route path="place/:slug/:tab" element={<PlaceCard />} />` 추가하여 탭별 고유 URL Path 제공.
+  - `src/components/PlaceCard/index.jsx`에서 `useParams`로 `tab`을 파싱하여 탭에 맞는 동적 SEO 태그 적용 로직 추가.
+  - 기존 쿼리 파라미터(`?tab=...`)를 제거하고 `react-router-dom`의 `navigate()`를 사용한 URL 변경 로직을 `PlaceCardExpanded.jsx`에 적용.
+  - 주요 탭 및 훅의 명칭과 파일명 변경 (`Logbook` -> `Reviews`, `Toolkit` -> `Planner`).
+  - `vite.config.js`에 각 여행지의 6개 탭(wiki, reviews, gallery, video, planner 등)을 조합한 1,200개 이상의 사이트맵 자동 생성 로직 반영.
+  - 프로필 이미지 렌더링 시 발생하는 `http://` 카카오 URL Mixed Content 경고 수정을 위해 강제 `https://` 변환 로직 추가 (`ReviewsTab.jsx`, `UserProfile.jsx`, `Sidebar.jsx`).
+- **예상 효과**:
+  - 각 탭 뷰(리뷰, 플래너 등)가 완전히 고립된 개별 URL을 가져 구글 검색 엔진에 색인 가능 (사이트맵 1200+개 제출 예정).
+  - 유저들이 특정 탭(예: "제주도 리뷰")의 URL을 복사하여 외부 공유 시 원활하게 목적 탭으로 랜딩.
+
+### 5. 여행 플래너 탭 데이터 무한 갱신 및 Race Condition 버그 수정
+- **커밋**: `20a5cfe` fix(planner): 탭 전환 시 플래너 데이터 무한 갱신 및 Race Condition 버그 완벽 수정
+- **작업 내용**:
+  - `src/components/PlaceCard/hooks/usePlannerData.js`에서 기존 `TOOLKIT` 모드 체크 로직을 최신 명칭인 `PLANNER` 로 변경.
+  - React 18의 렌더링 사이클에 대응하기 위해 `usePlannerData.js`에 렌더링 중 동기적 상태 업데이트 패턴(Render Phase State Update)을 도입하여, 탭 진입 시 `isPlannerLoading` 플래그가 비동기적 딜레이 없이 즉시 `true`가 되도록 보강.
+  - `src/components/PlaceCard/tabs/PlannerTab.jsx` 내부에서 `isPlannerLoading`이 `false`가 될 때 `isRemoteUpdating`을 강제로 해제해버리던 논리적 오류(악성 useEffect)를 제거하여 무한 자동 생성 트리거 원인을 차단.
+  - 백엔드 Edge Function 에러 반환 시에도 클라이언트의 로딩 상태(`isRemoteUpdating`)가 정상 해제되도록 `else` 예외 처리 보강.
+- **예상 효과**:
+  - DB에 이미 저장된 플래너 툴킷 데이터가 있을 경우 불필요한 AI 생성 재호출을 방지하여 API 비용을 절감하고, 사용자에게 불필요한 대기 시간을 없앰.
+  - 플래너 탭의 안정성과 사용성 대폭 개선.
+
 ---
 
-## 🚀 다음 세션 진행 가이드 (우선순위 변경)
-1. **PlaceCard 탭 네이밍 변경 및 Path 기반 라우팅 구현 (Phase 2.2-2.3)**:
-   - `logbook` → `reviews`, `toolkit` → `planner` 로 변경 및 관련 URL 구조 개선.
-   - 현재 `SearchDiscoveryModal`에 적용한 자식 라우트 방식과 동일하게, 특정 탭 진입 시 URL 동기화 로직 적용 고려.
+## 🚀 다음 세션 진행 가이드 (Next Steps)
+1. **[Phase 8-3] 복잡한 여행지 시스템 연동 고도화 (현재 진행 대기)**:
+   - 검색 시스템 모달과 연동하여 복잡한 여행지 탐색 리스트 기획 및 구현
+   - 생성된 툴킷에 파트너사(제휴) 예약 링크 자동 연동 고도화 (Phase 8-4)
+2. **[Phase 9-2] 여행지 데이터 100개 추가 (Phase 2 대기)**
+3. **[Phase 10] 백엔드 프롬프트 개선 및 A/B 테스트 검증**
