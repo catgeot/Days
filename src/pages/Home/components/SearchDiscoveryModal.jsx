@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Search, X, Compass, Globe2, Layers, Map, ArrowUp } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 
@@ -9,12 +10,56 @@ import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '' }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [query, setQuery] = useState(initialQuery);
   const [filterMode, setFilterMode] = useState('continent');
   const [selectedContinent, setSelectedContinent] = useState('all');
   const [selectedTheme, setSelectedTheme] = useState('all');
   const [selectedSubGroup, setSelectedSubGroup] = useState(null);
   const [showTopBtn, setShowTopBtn] = useState(false);
+
+  // URL Path 분석하여 상태 동기화
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const pathParts = location.pathname.split('/');
+    if (pathParts[1] === 'explore') {
+      const primaryParam = pathParts[2]; // /explore/:primaryParam
+      const secondaryParam = pathParts[3]; // /explore/:primaryParam/:secondaryParam
+
+      if (primaryParam) {
+        const isContinent = CONTINENTS.some(c => c.id === primaryParam);
+        const isTheme = THEMES.some(t => t.id === primaryParam);
+
+        if (isContinent) {
+          setFilterMode('continent');
+          setSelectedContinent(primaryParam);
+          setSelectedTheme('all');
+          if (secondaryParam && THEMES.some(t => t.id === secondaryParam)) {
+            setSelectedSubGroup(secondaryParam);
+          } else {
+            setSelectedSubGroup(null);
+          }
+        } else if (isTheme) {
+          setFilterMode('theme');
+          setSelectedTheme(primaryParam);
+          setSelectedContinent('all');
+          if (secondaryParam && CONTINENTS.some(c => c.id === secondaryParam)) {
+            setSelectedSubGroup(secondaryParam);
+          } else {
+            setSelectedSubGroup(null);
+          }
+        }
+      } else {
+        // 기본 /explore 접속 시
+        setSelectedContinent('all');
+        setSelectedTheme('all');
+        setSelectedSubGroup(null);
+      }
+    }
+  }, [location.pathname, isOpen]);
 
   const inputRef = useRef(null);
   const scrollContainerRef = useRef(null);
@@ -40,15 +85,28 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
   const handleFilterModeChange = (mode) => {
     setFilterMode(mode);
-    setSelectedContinent('all');
-    setSelectedTheme('all');
-    setSelectedSubGroup(null);
+    navigate('/explore'); // 필터 모드를 바꾸면 일단 전체보기로 초기화
     if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleContinentSelect = (id) => {
+    if (id === 'all') {
+      navigate('/explore');
+    } else {
+      navigate(`/explore/${id}`);
+    }
+  };
+
+  const handleThemeSelect = (id) => {
+    if (id === 'all') {
+      navigate('/explore');
+    } else {
+      navigate(`/explore/${id}`);
+    }
   };
 
   const handleSpotSelect = (spot) => {
     onSelect(spot);
-    onClose();
   };
 
   const filteredSpots = useMemo(() => {
@@ -92,6 +150,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
     if (filterMode === 'continent' && selectedContinent !== 'all') {
       return THEMES.filter(t => t.id !== 'all').map(t => ({
+        id: t.id,
         label: t.label,
         icon: t.icon,
         spots: filteredSpots.filter(s => s.primaryCategory === t.id)
@@ -99,6 +158,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
     if (filterMode === 'theme' && selectedTheme !== 'all') {
       return CONTINENTS.filter(c => c.id !== 'all').map(c => ({
+        id: c.id,
         label: c.label,
         icon: c.icon,
         spots: filteredSpots.filter(s => s.continent === c.id)
@@ -110,13 +170,24 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   // 서브그룹 자동 선택 (전체보기 제거로 인한 로직)
   useEffect(() => {
     if (filterGroups && filterGroups.length > 0) {
-      if (!selectedSubGroup || !filterGroups.find(g => g.label === selectedSubGroup)) {
-        setSelectedSubGroup(filterGroups[0].label);
+      if (!selectedSubGroup || !filterGroups.find(g => g.id === selectedSubGroup)) {
+        // 모달을 열거나 탭을 변경했을 때, URL 파라미터가 없으면 첫번째 그룹의 id로 자동 리다이렉트
+        const firstGroupId = filterGroups[0].id;
+        const currentPrimary = filterMode === 'continent' ? selectedContinent : selectedTheme;
+        if (currentPrimary !== 'all') {
+           navigate(`/explore/${currentPrimary}/${firstGroupId}`, { replace: true });
+        }
       }
-    } else {
-      setSelectedSubGroup(null);
+    } else if (!filterGroups) {
+      // 큐레이션 모드나 검색 모드일 때는 서브그룹 선택 해제
+      if (selectedSubGroup !== null) setSelectedSubGroup(null);
     }
-  }, [filterGroups, selectedSubGroup]);
+  }, [filterGroups, selectedSubGroup, filterMode, selectedContinent, selectedTheme, navigate]);
+
+  const handleSubGroupSelect = (id) => {
+    const currentPrimary = filterMode === 'continent' ? selectedContinent : selectedTheme;
+    navigate(`/explore/${currentPrimary}/${id}`);
+  };
 
   const handleScroll = (e) => {
     if (e.target.scrollTop > 300) {
@@ -168,7 +239,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             spots={curationData.healing}
             delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
-            onMoreClick={() => { handleFilterModeChange('theme'); setSelectedTheme('paradise'); }}
+            onMoreClick={() => handleThemeSelect('paradise')}
           />
           <CurationSection
             title="영감을 주는 도시 탐험"
@@ -177,7 +248,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             spots={curationData.city}
             delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
-            onMoreClick={() => { handleFilterModeChange('theme'); setSelectedTheme('urban'); }}
+            onMoreClick={() => handleThemeSelect('urban')}
           />
         </div>
       );
@@ -185,7 +256,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
     // 2. 교차 필터 뷰
     if (!isSearching && filterGroups) {
-      const displaySpots = filterGroups.find(g => g.label === selectedSubGroup)?.spots || [];
+      const activeGroup = filterGroups.find(g => g.id === selectedSubGroup) || filterGroups[0];
+      const displaySpots = activeGroup?.spots || [];
+      const currentLabel = activeGroup?.label || '';
 
       return (
         <div className="w-full animate-fade-in-up pb-20">
@@ -195,7 +268,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               <Globe2 size={16} />
               <span>{displaySpots.length}개의 여행지</span>
               <span className="text-gray-700">|</span>
-              <span className="text-blue-400 font-bold">{selectedSubGroup}</span>
+              <span className="text-blue-400 font-bold">{currentLabel}</span>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
@@ -346,21 +419,21 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                      const Icon = g.icon || Compass;
                      return (
                        <button
-                         key={g.label}
-                         onClick={() => setSelectedSubGroup(g.label)}
+                         key={g.id}
+                         onClick={() => handleSubGroupSelect(g.id)}
                          className={`w-full shrink-0 flex items-center justify-between p-3.5 rounded-2xl transition-all duration-300 ${
-                           selectedSubGroup === g.label
+                           selectedSubGroup === g.id
                              ? 'bg-blue-600/20 text-white border border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)] translate-x-1'
                              : 'bg-transparent border border-transparent hover:bg-white/[0.05] hover:border-white/[0.05] text-gray-400'
                          }`}
                        >
                          <div className="flex items-center gap-3">
-                           <div className={`p-2 rounded-xl ${selectedSubGroup === g.label ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-500'}`}>
+                           <div className={`p-2 rounded-xl ${selectedSubGroup === g.id ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-500'}`}>
                              <Icon size={16} />
                            </div>
-                           <span className={`text-sm font-medium ${selectedSubGroup === g.label ? 'font-bold' : ''}`}>{g.label}</span>
+                           <span className={`text-sm font-medium ${selectedSubGroup === g.id ? 'font-bold' : ''}`}>{g.label}</span>
                          </div>
-                         <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${selectedSubGroup === g.label ? 'bg-blue-500/20 text-blue-300' : 'bg-white/5 text-gray-500'}`}>
+                         <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${selectedSubGroup === g.id ? 'bg-blue-500/20 text-blue-300' : 'bg-white/5 text-gray-500'}`}>
                            {g.spots.length}
                          </span>
                        </button>
@@ -394,7 +467,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                       return (
                         <button
                           key={cont.id}
-                          onClick={() => setSelectedContinent(cont.id)}
+                          onClick={() => handleContinentSelect(cont.id)}
                           className={`flex items-center gap-1.5 px-4 py-2 md:px-5 md:py-3 rounded-2xl whitespace-nowrap text-xs md:text-base transition-all border shrink-0 ${
                             selectedContinent === cont.id
                               ? 'bg-white/10 text-white border-white/20 font-bold'
@@ -412,7 +485,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                       return (
                         <button
                           key={theme.id}
-                          onClick={() => setSelectedTheme(theme.id)}
+                          onClick={() => handleThemeSelect(theme.id)}
                           className={`flex items-center gap-1.5 px-4 py-2 md:px-5 md:py-3 rounded-2xl whitespace-nowrap text-xs md:text-base transition-all border shrink-0 ${
                             selectedTheme === theme.id
                               ? 'bg-white/10 text-white border-white/20 font-bold'
@@ -434,15 +507,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                       const Icon = g.icon || Compass;
                       return (
                         <button
-                          key={g.label}
-                          onClick={() => setSelectedSubGroup(g.label)}
+                          key={g.id}
+                          onClick={() => handleSubGroupSelect(g.id)}
                           className={`flex items-center gap-2 px-5 py-3 rounded-2xl whitespace-nowrap text-sm font-extrabold transition-all shrink-0 ${
-                            selectedSubGroup === g.label
+                            selectedSubGroup === g.id
                               ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] border border-white/20 scale-105 origin-left'
                               : 'bg-white/[0.05] text-gray-400 border border-white/[0.1] hover:bg-white/[0.1]'
                           }`}
                         >
-                          <Icon size={18} className={selectedSubGroup === g.label ? 'text-white drop-shadow-md' : 'text-gray-500'} />
+                          <Icon size={18} className={selectedSubGroup === g.id ? 'text-white drop-shadow-md' : 'text-gray-500'} />
                           {g.label}
                         </button>
                       )

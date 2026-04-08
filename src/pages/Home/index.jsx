@@ -4,6 +4,7 @@ import { Outlet, useNavigate, useLocation, matchPath, Link } from 'react-router-
 import HomeGlobe from './components/HomeGlobe';
 import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal';
+import SearchDiscoveryModal from './components/SearchDiscoveryModal';
 import LogoPanel from './components/LogoPanel';
 import PlaceCardSummary from '../../components/PlaceCard/modes/PlaceCardSummary';
 import SEO from '../../components/SEO';
@@ -384,6 +385,19 @@ function Home() {
           activeChatId={activeChatId}
           onSwitchChat={setActiveChatId}
           onDeleteChat={deleteTrip}
+        />
+
+        <SearchDiscoveryModal
+          isOpen={routeLocation.pathname.startsWith('/explore')}
+          onClose={() => navigate('/')}
+          onSelect={(spot) => {
+            const urlParam = spot.slug || (spot.id || spot.name);
+            navigate(`/place/${urlParam}`);
+          }}
+          onSearch={(query) => {
+            handleSmartSearch(query);
+            navigate(`/?search=${encodeURIComponent(query)}`);
+          }}
         />
       </div>
 

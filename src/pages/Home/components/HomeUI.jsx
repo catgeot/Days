@@ -11,7 +11,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
-import SearchDiscoveryModal from './SearchDiscoveryModal';
 
 const HomeUI = React.memo(({
   onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick,
@@ -29,7 +28,6 @@ const HomeUI = React.memo(({
   onLogout
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const [isDiscoveryModalOpen, setIsDiscoveryModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const trendingData = useTrendingData();
@@ -84,7 +82,7 @@ const HomeUI = React.memo(({
            <div className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div
-              onClick={() => setIsDiscoveryModalOpen(true)}
+              onClick={() => navigate('/explore')}
               className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"
             >
               <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={16} className="md:w-[18px] md:h-[18px]" /></div>
@@ -182,17 +180,6 @@ const HomeUI = React.memo(({
           </button>
         </div>
       </footer>
-
-      <SearchDiscoveryModal
-        isOpen={isDiscoveryModalOpen}
-        onClose={() => setIsDiscoveryModalOpen(false)}
-        onSelect={(spot) => onTripClick(spot)}
-        onSearch={(query) => {
-          setIsDiscoveryModalOpen(false);
-          onSearch(query);
-        }}
-        initialQuery=""
-      />
     </>
   );
 });
