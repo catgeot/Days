@@ -2,8 +2,8 @@ import React from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
 import PlaceWikiDetailsView from '../views/PlaceWikiDetailsView';
-import LogbookTab from '../tabs/LogbookTab';
-import ToolkitTab from '../tabs/ToolkitTab';
+import ReviewsTab from '../tabs/ReviewsTab';
+import PlannerTab from '../tabs/PlannerTab';
 
 const PlaceMediaPanel = React.memo(({
     galleryData,
@@ -19,8 +19,8 @@ const PlaceMediaPanel = React.memo(({
     onAiModeChange,
     wikiData,
     isWikiLoading,
-    toolkitData,
-    isToolkitLoading,
+    plannerData,
+    isPlannerLoading,
     location,
     isVideoLoading,
     videoError,
@@ -74,12 +74,12 @@ const PlaceMediaPanel = React.memo(({
             />
         </div>
 
-        <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'TOOLKIT' ? 'block' : 'hidden'}`}>
-            <ToolkitTab location={location} toolkitData={toolkitData} isToolkitLoading={isToolkitLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'TOOLKIT'} />
+        <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'PLANNER' ? 'block' : 'hidden'}`}>
+            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'PLANNER'} />
         </div>
 
-        <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'LOGBOOK' ? 'block' : 'hidden'}`}>
-            <LogbookTab location={location} setMediaMode={setMediaMode} />
+        <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'REVIEWS' ? 'block' : 'hidden'}`}>
+            <ReviewsTab location={location} setMediaMode={setMediaMode} />
         </div>
 
     </div>

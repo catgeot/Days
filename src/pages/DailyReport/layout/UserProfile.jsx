@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { LogOut, Image as ImageIcon } from 'lucide-react';
 
 const UserProfile = ({ user, onLogout, onOpenSlide }) => {
-  const avatarUrl = user?.user_metadata?.avatar_url;
+  const avatarUrl = user?.user_metadata?.avatar_url?.replace(/^http:\/\//i, 'https://');
 
   return (
     <div className="p-4 border-t border-gray-200">
       {user ? (
         <div className="bg-gray-100/50 rounded-2xl p-4">
-          <div 
+          <div
             className="w-full aspect-[4/3] bg-gray-200 rounded-lg mb-3 overflow-hidden relative group cursor-pointer border border-gray-300"
             onClick={onOpenSlide}
             title="추억 상자 열기"

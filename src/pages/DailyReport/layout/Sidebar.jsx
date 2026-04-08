@@ -32,7 +32,7 @@ const Sidebar = () => {
 
         // 1. 프로필 사진을 가장 먼저(index 0) 추가
         if (user.user_metadata?.avatar_url) {
-          collectedImages.push(user.user_metadata.avatar_url);
+          collectedImages.push(user.user_metadata.avatar_url.replace(/^http:\/\//i, 'https://'));
         }
 
         if (reportData) {

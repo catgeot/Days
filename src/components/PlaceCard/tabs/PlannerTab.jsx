@@ -323,27 +323,27 @@ const LOADING_MESSAGES_UPDATE = [
     "✅ AI가 최종 툴킷 검수를 마치는 중..."
 ];
 
-const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
+const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
 
-    // 🆕 [Phase 8-3] 분리된 아키텍처에 따라 toolkitData.essential_guide 사용
-    const guideData = toolkitData?.essential_guide;
+    // 🆕 [Phase 8-3] 분리된 아키텍처에 따라 plannerData.essential_guide 사용
+    const guideData = plannerData?.essential_guide;
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
     // isRemoteUpdating 플래그를 로딩 조건에 추가
-    const isLoading = isToolkitLoading || isRemoteUpdating;
+    const isLoading = isPlannerLoading || isRemoteUpdating;
 
     // 만약 상위에서 데이터가 들어와서 캐시되었거나 상태가 변경되었다면 로컬 업데이트 플래그 해제
     useEffect(() => {
-        if (!isToolkitLoading) {
+        if (!isPlannerLoading) {
             setIsRemoteUpdating(false);
         }
-    }, [isToolkitLoading]);
+    }, [isPlannerLoading]);
 
     // 로딩 메시지 순차적 변경 (주기 4초로 변경)
     useEffect(() => {
@@ -359,7 +359,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
 
     // 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
     const handleRemoteUpdate = () => {
-        console.log("[ToolkitTab] 수동 직권 갱신 버튼 클릭됨 - 툴킷 강제 갱신 요청 발송");
+        console.log("[PlannerTab] 수동 직권 갱신 버튼 클릭됨 - 툴킷 강제 갱신 요청 발송");
         setIsRemoteUpdating(true);
         handleRequestToolkitInfo(location?.name, true);
     };
@@ -368,13 +368,13 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
     const initialDataRequested = useRef(false);
     useEffect(() => {
         // essential_guide가 없고, 아직 요청하지 않았을 때만 자동 호출
-        if (isActive && !guideData && !isToolkitLoading && !initialDataRequested.current && location?.name) {
-            console.log("[ToolkitTab] 툴킷 데이터 완전 없음 - 자동 데이터 요청 발송");
+        if (isActive && !guideData && !isPlannerLoading && !initialDataRequested.current && location?.name) {
+            console.log("[PlannerTab] 툴킷 데이터 완전 없음 - 자동 데이터 요청 발송");
             initialDataRequested.current = true;
             setIsRemoteUpdating(true);
             handleRequestToolkitInfo(location?.name, false);
         }
-    }, [isActive, guideData, isToolkitLoading, location?.name]);
+    }, [isActive, guideData, isPlannerLoading, location?.name]);
 
     // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋
     useEffect(() => {
@@ -389,7 +389,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
             setTimeout(() => {
                 if (scrollContainerRef.current) {
                     scrollContainerRef.current.scrollTop = 0;
-                    console.log('[ToolkitTab] 스크롤 상단으로 리셋 완료');
+                    console.log('[PlannerTab] 스크롤 상단으로 리셋 완료');
                 }
             }, 150); // DOM 렌더링 완료 대기
         }
@@ -397,12 +397,12 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
 
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = async (placeName, forceUpdate = false) => {
-        const placeId = toolkitData?.place_id || location?.name;
+        const placeId = plannerData?.place_id || location?.name;
         if (!placeId) return;
 
         // 🆕 [Phase 8 Fix] 중복 요청 방지 - 이미 요청 중이면 기존 Promise 재사용
         if (pendingToolkitRequests.has(placeId)) {
-            console.log('[ToolkitTab] [DEV] 중복 요청 방지 - 기존 요청 재사용 (StrictMode 이중 렌더링)');
+            console.log('[PlannerTab] [DEV] 중복 요청 방지 - 기존 요청 재사용 (StrictMode 이중 렌더링)');
             return pendingToolkitRequests.get(placeId);
         }
 
@@ -411,21 +411,21 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
         // 새 요청 생성 및 전역 캐시 등록
         const requestPromise = (async () => {
             try {
-                console.log("[ToolkitTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
+                console.log("[PlannerTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
                 const { data, error } = await supabase.functions.invoke('update-place-toolkit', {
                     body: { placeId, locationName: placeName || location?.name }
                 });
 
                 if (error) {
-                    console.error("[ToolkitTab] Edge Function Error response:", error);
+                    console.error("[PlannerTab] Edge Function Error response:", error);
                     throw error;
                 }
 
-                console.log("[ToolkitTab] Edge Function 호출 완료 - 응답 데이터:", data);
+                console.log("[PlannerTab] Edge Function 호출 완료 - 응답 데이터:", data);
 
                 // 🆕 [Phase 8 Fix] 이벤트 기반 즉시 반영으로 Race Condition 해결
                 if (data?.success) {
-                    console.log(`[ToolkitTab] 업데이트 완료. 이벤트 발생 (forceUpdate: ${forceUpdate})`);
+                    console.log(`[PlannerTab] 업데이트 완료. 이벤트 발생 (forceUpdate: ${forceUpdate})`);
                     window.dispatchEvent(new CustomEvent('toolkit-updated', {
                         detail: { placeId, essentialGuide: data.essentialGuide }
                     }));
@@ -436,7 +436,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
 
                 return data;
             } catch (err) {
-                console.error('[ToolkitTab] Request Error catch:', err);
+                console.error('[PlannerTab] Request Error catch:', err);
                 setIsRemoteUpdating(false);
                 throw err;
             } finally {
@@ -457,7 +457,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
         // 툴킷 전용 테이블 분리에 따라 일단 비활성화 (필요시 별도로 툴킷 전용 업데이트 날짜 컬럼을 사용해야 함)
         /*
         if (isActive && !autoUpdateTriggered.current && guideData) {
-            const lastUpdated = toolkitData?.toolkit_updated_at;
+            const lastUpdated = plannerData?.toolkit_updated_at;
             if (lastUpdated) {
                 const lastDate = new Date(lastUpdated);
                 const now = new Date();
@@ -465,7 +465,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                 if (diffDays > WIKI_AUTO_UPDATE_DAYS) {
-                    console.log(`[ToolkitTab] ${WIKI_AUTO_UPDATE_DAYS}일 경과 툴킷 자동 갱신 발송 (${diffDays}일 지남)`);
+                    console.log(`[PlannerTab] ${WIKI_AUTO_UPDATE_DAYS}일 경과 툴킷 자동 갱신 발송 (${diffDays}일 지남)`);
                     autoUpdateTriggered.current = true;
                     // 여기서 forceUpdate=true로 넘기면 window.location.reload()를 유발함.
                     handleRequestToolkitInfo(location?.name, true);
@@ -473,7 +473,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
             }
         }
         */
-    }, [isActive, guideData, toolkitData?.toolkit_updated_at, location?.name]);
+    }, [isActive, guideData, plannerData?.toolkit_updated_at, location?.name]);
 
     const formatDate = (isoString) => {
         if (!isoString) return '';
@@ -481,7 +481,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
         return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     };
 
-    const targetDate = toolkitData?.toolkit_updated_at;
+    const targetDate = plannerData?.toolkit_updated_at;
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
     if (isLoading) {
@@ -623,7 +623,7 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
 
                 <div className="flex justify-end pb-4">
                     <button
-                        onClick={() => handleRequestToolkitInfo(toolkitData?.place_id || location?.name, true)}
+                        onClick={() => handleRequestToolkitInfo(plannerData?.place_id || location?.name, true)}
                         disabled={isLoading}
                         className="text-[10px] text-gray-300 hover:text-gray-500 transition-colors opacity-30 hover:opacity-100"
                         title="기존 툴킷 강제 업데이트"
@@ -636,4 +636,4 @@ const ToolkitTab = ({ location, toolkitData, isToolkitLoading, isActive }) => {
     );
 };
 
-export default ToolkitTab;
+export default PlannerTab;

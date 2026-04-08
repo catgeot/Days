@@ -58,6 +58,7 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />}>
                 <Route path="place/:slug" element={<PlaceCard />} />
+                <Route path="place/:slug/:tab" element={<PlaceCard />} />
                 {/* Explore Routes (Modal as a child of Home) */}
                 <Route path="explore" element={null} />
                 <Route path="explore/:filter1" element={null} />

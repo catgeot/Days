@@ -5,7 +5,33 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 import { TRAVEL_SPOTS } from './src/pages/Home/data/travelSpots.js';
 
-const dynamicRoutes = TRAVEL_SPOTS.map(spot => `/place/${spot.slug}`);
+// 여행지 페이지 (1,200개 이상 생성)
+const placeRoutes = TRAVEL_SPOTS.flatMap(spot => [
+  `/place/${spot.slug}`,
+  `/place/${spot.slug}/wiki`,
+  `/place/${spot.slug}/reviews`,
+  `/place/${spot.slug}/gallery`,
+  `/place/${spot.slug}/video`,
+  `/place/${spot.slug}/planner`,
+]);
+
+// Explore 페이지 (정적 라우트)
+const exploreRoutes = [
+  '/explore',
+  '/explore/paradise',
+  '/explore/nature',
+  '/explore/urban',
+  '/explore/culture',
+  '/explore/adventure',
+  '/explore/asia',
+  '/explore/europe',
+  '/explore/americas',
+  '/explore/oceania',
+  '/explore/africa',
+  '/explore/middle-east',
+];
+
+const dynamicRoutes = [...placeRoutes, ...exploreRoutes];
 
 export default defineConfig({
   plugins: [

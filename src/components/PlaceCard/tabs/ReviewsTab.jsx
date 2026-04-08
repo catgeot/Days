@@ -56,7 +56,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden">
             {review.user?.avatar_url ? (
-              <img src={review.user.avatar_url} alt="profile" className="w-full h-full object-cover" />
+              <img src={review.user.avatar_url.replace(/^http:\/\//i, 'https://')} alt="profile" className="w-full h-full object-cover" />
             ) : (
               (review.user?.display_name || 'U')[0]
             )}
@@ -154,7 +154,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 };
 // --------------------------------------------------------------------------
 
-const LogbookTab = ({ location, setMediaMode }) => {
+const ReviewsTab = ({ location, setMediaMode }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -542,4 +542,4 @@ const LogbookTab = ({ location, setMediaMode }) => {
   );
 };
 
-export default LogbookTab;
+export default ReviewsTab;

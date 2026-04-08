@@ -1,23 +1,35 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { useWikiData } from '../hooks/useWikiData';
-import { useToolkitData } from '../hooks/useToolkitData';
+import { usePlannerData } from '../hooks/usePlannerData';
 import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch';
 
-const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const mediaModeParam = searchParams.get('tab')?.toUpperCase();
-  const initialMode = ['GALLERY', 'VIDEO', 'WIKI', 'LOGBOOK', 'TOOLKIT'].includes(mediaModeParam) ? mediaModeParam : 'GALLERY';
+const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
+  const navigate = useNavigate();
+  const reactLocation = useLocation();
 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
 
-  const mediaMode = initialMode;
+  // 상위(PlaceCard)에서 전달받은 initialTab을 상태로 관리
+  const [mediaMode, setMediaModeState] = useState(initialTab);
+
+  // 탭 변경 시 URL 업데이트 로직
   const setMediaMode = useCallback((newMode) => {
-      setSearchParams({ tab: newMode.toLowerCase() }, { replace: true });
-  }, [setSearchParams]);
+      const slug = location?.slug || reactLocation.pathname.split('/')[2];
+      const tabPath = newMode === 'GALLERY' ? '' : `/${newMode.toLowerCase()}`;
+      navigate(`/place/${slug}${tabPath}`, { replace: true });
+      setMediaModeState(newMode);
+  }, [navigate, location?.slug, reactLocation.pathname]);
+
+  // props로 받은 initialTab이 변경되면 동기화
+  useEffect(() => {
+      if (['GALLERY', 'VIDEO', 'WIKI', 'REVIEWS', 'PLANNER'].includes(initialTab)) {
+          setMediaModeState(initialTab);
+      }
+  }, [initialTab]);
 
   const [selectedVideoId, setSelectedVideoId] = useState(null);
 
@@ -38,7 +50,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
 
   const queryKey = location.name;
   const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey, mediaMode);
-  const { toolkitData: currentToolkitData, isToolkitLoading } = useToolkitData(queryKey, mediaMode);
+  const { plannerData: currentPlannerData, isPlannerLoading } = usePlannerData(queryKey, mediaMode);
 
   const activeInfo = useMemo(() => {
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
@@ -94,7 +106,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
     if (playerRef.current.playVideo && typeof playerRef.current.playVideo === 'function') {
         playerRef.current.playVideo();
     }
-  }, []);
+  }, [setMediaMode]);
 
   const toggleFullScreen = useCallback(() => {
     if (!document.fullscreenElement && containerRef.current) {
@@ -164,8 +176,8 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
             onAiModeChange={setIsAiMode}
             wikiData={currentWikiData}
             isWikiLoading={isWikiLoading}
-            toolkitData={currentToolkitData}
-            isToolkitLoading={isToolkitLoading}
+            plannerData={currentPlannerData}
+            isPlannerLoading={isPlannerLoading}
             isVideoLoading={isVideoLoading}
             videoError={videoError}
             googleFormUrl={googleFormUrl}
@@ -176,4 +188,5 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
 });
 
 export default PlaceCardExpanded;
+
 

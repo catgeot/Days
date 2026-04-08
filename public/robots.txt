@@ -1,9 +1,11 @@
 User-agent: *
 Allow: /
 Allow: /place/
+Allow: /explore/
 Allow: /blog
 Allow: /p/
 Disallow: /auth/
-Disallow: /*?tab=*
+
+# Query parameter 차단 제거 (이제 Path 기반이므로 불필요)
 
 Sitemap: https://www.gateo.kr/sitemap.xml

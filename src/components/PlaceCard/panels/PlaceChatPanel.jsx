@@ -95,7 +95,7 @@ const PlaceChatPanel = React.memo(({
                  </div>
              </div>
              <div className="shrink-0 flex items-center gap-2">
-                 {mediaMode === 'TOOLKIT' ? (
+                 {mediaMode === 'PLANNER' ? (
                     <button
                         onClick={() => setMediaMode('GALLERY')}
                         className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 group shrink-0"
@@ -105,24 +105,24 @@ const PlaceChatPanel = React.memo(({
                     </button>
                  ) : (
                     <button
-                        onClick={() => setMediaMode('TOOLKIT')}
+                        onClick={() => setMediaMode('PLANNER')}
                         className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
                     >
                         <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
-                        <span className="text-xs font-bold whitespace-nowrap">스마트 툴킷</span>
+                        <span className="text-xs font-bold whitespace-nowrap">여행 플래너</span>
                     </button>
                  )}
              </div>
          </div>
 
          {/* Row 2: Other Tabs Area (Review, Wiki, Video) */}
-         <div className={`shrink-0 items-center justify-center md:justify-end gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 px-2 md:px-0 overscroll-contain touch-pan-x ${mediaMode === 'LOGBOOK' ? 'hidden md:flex' : 'flex'}`}>
+         <div className={`shrink-0 items-center justify-center md:justify-end gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 px-2 md:px-0 overscroll-contain touch-pan-x ${mediaMode === 'REVIEWS' ? 'hidden md:flex' : 'flex'}`}>
             <button
-                onClick={() => setMediaMode(mediaMode === 'LOGBOOK' ? 'GALLERY' : 'LOGBOOK')}
-                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'LOGBOOK' ? 'bg-blue-600/90 text-white font-bold border border-blue-500/50 shadow-lg shadow-blue-900/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
+                onClick={() => setMediaMode(mediaMode === 'REVIEWS' ? 'GALLERY' : 'REVIEWS')}
+                className={`px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full transition-all flex items-center gap-1.5 group shrink-0 ${mediaMode === 'REVIEWS' ? 'bg-blue-600/90 text-white font-bold border border-blue-500/50 shadow-lg shadow-blue-900/20' : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-transparent'}`}
             >
-                {mediaMode === 'LOGBOOK' ? <ImageIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/> : <PenTool className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>}
-                <span className="text-[11px] font-medium">{mediaMode === 'LOGBOOK' ? '갤러리 복귀' : '리뷰'}</span>
+                {mediaMode === 'REVIEWS' ? <ImageIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/> : <PenTool className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"/>}
+                <span className="text-[11px] font-medium">{mediaMode === 'REVIEWS' ? '갤러리 복귀' : '리뷰'}</span>
             </button>
             <button
                 onClick={() => setMediaMode(mediaMode === 'WIKI' ? 'GALLERY' : 'WIKI')}
