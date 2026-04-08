@@ -9,7 +9,7 @@ import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
 
-const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '' }) => {
+const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -384,7 +384,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-[#0b101a]/95 backdrop-blur-3xl animate-fade-in overflow-hidden">
+    <div className={`fixed inset-0 z-[200] flex flex-col bg-[#0b101a]/95 backdrop-blur-3xl overflow-hidden ${isFromPlaceCard ? '' : 'animate-fade-in'}`}>
       {/* 글로벌 스크롤바 상시 노출을 위한 인라인 스타일 */}
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { display: none; }

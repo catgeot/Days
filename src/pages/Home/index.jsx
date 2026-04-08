@@ -201,7 +201,8 @@ function Home() {
     const prevPath = prevPathRef.current;
     prevPathRef.current = currentPath;
 
-    if (currentPath === '/' && prevPath.startsWith('/place/')) {
+    if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
+      setIsCardExpanded(false);
       setSelectedLocation(null);
       if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
         globeRef.current.resumeRotation();
@@ -355,22 +356,12 @@ function Home() {
           location: selectedLocation,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
           onClose: () => {
-            setIsCardExpanded(false);
-            setSelectedLocation(null);
-            if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
-              globeRef.current.resumeRotation();
-            }
-            navigate('/');
+            navigate('/explore');
           },
           onChat: (p) => handleStartChat(selectedLocation?.name, p),
           onToggleBookmark: handleToggleBookmark,
           onTicket: () => {
-            setIsCardExpanded(false);
-            setSelectedLocation(null);
-            if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
-              globeRef.current.resumeRotation();
-            }
-            navigate('/');
+            navigate('/explore');
           },
           isTickerExpanded,
           initialExpanded: true,
@@ -389,6 +380,7 @@ function Home() {
 
         <SearchDiscoveryModal
           isOpen={routeLocation.pathname.startsWith('/explore')}
+          isFromPlaceCard={prevPathRef.current.startsWith('/place/')}
           onClose={() => navigate('/')}
           onSelect={(spot) => {
             const urlParam = spot.slug || (spot.id || spot.name);
