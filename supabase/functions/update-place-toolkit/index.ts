@@ -48,6 +48,7 @@ serve(async (req) => {
    - "airport_transfer" (object): 공항에서 메인 거점/항구까지의 추천 이동수단(예약 링크 필수). 해당 없으면 null.
    - "ferry_booking" (object): 페리 등 해상 교통이 필수일 경우 추천 업체와 예약 링크. 해당 없으면 null.
    - 기타 아래 항목들의 "advice"는 짧은 서술형을 피하고 **실용적이고 구체적인 마크다운 체크리스트 및 꿀팁 형태**로 작성하세요. 사용자가 읽고 즉시 예약/행동할 수 있어야 합니다.
+     - 🚨 **스마트 링크 필수 규칙**: 사용자가 검색하거나 예약해야 할 핵심 명소명, 업체명, 교통수단, 필수 앱 이름 등은 반드시 \`[@이름@]\` 형태로 감싸서 작성하세요. 프론트엔드에서 이를 감지하여 구글 검색 및 예약 버튼으로 자동 변환합니다. (예: \`- [@Eka Jaya@] 쾌속선을 이용하세요\`, \`- 핵심 명소: [@우붓 몽키 포레스트@]\`)
      - "visa" (object): 비자 규정 요약
      - "flight" (object): 직항 여부, 소요 시간, 주요 취항사 목록, 최적의 예약 시기 및 비용 절감 팁
      - "accommodation" (object): 타겟별 지역 추천 (예: '휴양/호캉스: A지역', '관광/이동편의: B지역', '가성비: C지역')
@@ -76,15 +77,15 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
     "pre_travel": [
       { "title": "인도네시아 E-비자 신청", "url": "https://molina.imigrasi.go.id/", "cost": "$35" }
     ],
-    "airport_transfer": { "advice": "Eka Jaya 공항 픽업 포함 추천", "url": "https://ekajayafastboat.com/" },
-    "ferry_booking": { "advice": "BlueWater Express", "url": "https://www.bluewaterexpress.com/" },
+    "airport_transfer": { "advice": "[@Eka Jaya@] 공항 픽업 포함 추천", "url": "https://ekajayafastboat.com/" },
+    "ferry_booking": { "advice": "[@BlueWater Express@]", "url": "https://www.bluewaterexpress.com/" },
     "visa": { "advice": "**필수 준비물**\\n- 6개월 이상 남은 여권\\n- 도착 비자 발급 비용($35)", "url": null },
-    "flight": { "advice": "**항공권 예약 팁**\\n- 직항 여부: X\\n- 소요 시간: 7시간\\n- 추천 항공사: 대한항공...", "url": null },
-    "accommodation": { "advice": "**타겟별 숙박 지역 추천**\\n- 휴양/호캉스: 누사두아\\n- 관광/이동편의: 스미냑...", "url": null },
-    "connectivity": { "advice": "**통신 꿀팁**\\n- 현지 eSIM (Telkomsel) 추천...", "url": null },
-    "transport": { "advice": "**시내 교통**\\n- 그랩(Grab), 고젝(Gojek) 필수...", "url": null },
-    "apps": { "advice": "- Grab: 택시 및 배달\\n- Gojek: 현지 특화...", "url": null },
-    "map_poi": { "advice": "**핵심 명소**\\n- 우붓 몽키 포레스트...", "url": null },
+    "flight": { "advice": "**항공권 예약 팁**\\n- 직항 여부: X\\n- 소요 시간: 7시간\\n- 추천 항공사: [@대한항공@]...", "url": null },
+    "accommodation": { "advice": "**타겟별 숙박 지역 추천**\\n- 휴양/호캉스: [@누사두아@]\\n- 관광/이동편의: [@스미냑@]...", "url": null },
+    "connectivity": { "advice": "**통신 꿀팁**\\n- 현지 eSIM ([@Telkomsel@]) 추천...", "url": null },
+    "transport": { "advice": "**시내 교통**\\n- [@Grab@], [@Gojek@] 필수...", "url": null },
+    "apps": { "advice": "- [@Grab@]: 택시 및 배달\\n- [@Gojek@]: 현지 특화...", "url": null },
+    "map_poi": { "advice": "**핵심 명소**\\n- [@우붓 몽키 포레스트@]...", "url": null },
     "safety": { "advice": "**치안 및 주의사항**\\n- 소매치기 주의...", "url": null }
   }
 }`;
