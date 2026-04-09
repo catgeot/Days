@@ -9,71 +9,23 @@ const pendingToolkitRequests = new Map(); // { placeId: Promise }
 
 // 🎨 [Phase 6-4] 카테고리별 색상 테마 정의
 const THEME_COLORS = {
-    emerald: {
-        bg: 'bg-emerald-50',
-        border: 'border-emerald-200',
-        icon: 'bg-emerald-100 text-emerald-700',
-        hover: 'hover:shadow-emerald-100/50'
+    default: {
+        bg: 'bg-white',
+        border: 'border-blue-100',
+        icon: 'bg-blue-50 text-blue-600',
+        hover: 'hover:border-blue-200 hover:shadow-blue-100/50'
     },
-    blue: {
-        bg: 'bg-blue-50',
-        border: 'border-blue-200',
-        icon: 'bg-blue-100 text-blue-700',
-        hover: 'hover:shadow-blue-100/50'
-    },
-    sky: {
-        bg: 'bg-sky-50',
-        border: 'border-sky-200',
-        icon: 'bg-sky-100 text-sky-700',
-        hover: 'hover:shadow-sky-100/50'
-    },
-    purple: {
-        bg: 'bg-purple-50',
-        border: 'border-purple-200',
-        icon: 'bg-purple-100 text-purple-700',
-        hover: 'hover:shadow-purple-100/50'
-    },
-    teal: {
-        bg: 'bg-teal-50',
-        border: 'border-teal-200',
-        icon: 'bg-teal-100 text-teal-700',
-        hover: 'hover:shadow-teal-100/50'
-    },
-    green: {
-        bg: 'bg-green-50',
-        border: 'border-green-200',
-        icon: 'bg-green-100 text-green-700',
-        hover: 'hover:shadow-green-100/50'
-    },
-    amber: {
-        bg: 'bg-amber-50',
+    warning: {
+        bg: 'bg-amber-50/30',
         border: 'border-amber-200',
         icon: 'bg-amber-100 text-amber-700',
-        hover: 'hover:shadow-amber-100/50'
+        hover: 'hover:border-amber-300 hover:shadow-amber-100/50'
     },
-    red: {
-        bg: 'bg-red-50',
+    danger: {
+        bg: 'bg-red-50/30',
         border: 'border-red-200',
         icon: 'bg-red-100 text-red-700',
-        hover: 'hover:shadow-red-100/50'
-    },
-    gray: {
-        bg: 'bg-gray-50',
-        border: 'border-gray-200',
-        icon: 'bg-gray-100 text-gray-700',
-        hover: 'hover:shadow-gray-100/50'
-    },
-    indigo: {
-        bg: 'bg-indigo-50',
-        border: 'border-indigo-200',
-        icon: 'bg-indigo-100 text-indigo-700',
-        hover: 'hover:shadow-indigo-100/50'
-    },
-    cyan: {
-        bg: 'bg-cyan-50',
-        border: 'border-cyan-200',
-        icon: 'bg-cyan-100 text-cyan-700',
-        hover: 'hover:shadow-cyan-100/50'
+        hover: 'hover:border-red-300 hover:shadow-red-100/50'
     }
 };
 
@@ -357,6 +309,11 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
         handleRequestToolkitInfo(location?.name, true);
     };
 
+    // 🆕 [Phase 8-3] 앱 연동 브릿지 UI 액션
+    const handleAppBridgeClick = () => {
+        alert("🚀 현재 gateo.kr 전용 스마트 플래너 앱을 열심히 준비 중입니다!\n\n앱이 출시되면 저장하신 여정을 모바일에서 곧바로 이어서 계획할 수 있습니다. 빠른 시일 내에 찾아뵙겠습니다.");
+    };
+
     // 🆕 [Phase 6-2 + Phase 7-1 + Phase 8-3] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
     const initialDataRequested = useRef(false);
     useEffect(() => {
@@ -529,31 +486,39 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
     }
 
     return (
-        <div
-            ref={scrollContainerRef}
-            className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-4 md:p-6 md:pt-10 overscroll-none touch-pan-y"
-        >
-            <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
-                    <div>
-                        <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
-                            <Briefcase className="text-blue-600" />
-                            스마트 트래블 툴킷
-                        </h2>
-                        <p className="text-sm text-gray-500 mt-1">
-                            {location?.name} 여행을 위한 생존 정보 및 핵심 큐레이션
-                        </p>
-                    </div>
+        <div className="w-full h-full relative">
+            <div
+                ref={scrollContainerRef}
+                className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-24 md:p-6 md:pt-10 overscroll-none touch-pan-y"
+            >
+                <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
+                                <Briefcase className="text-blue-600" />
+                                스마트 트래블 툴킷
+                            </h2>
+                            <p className="text-sm text-gray-500 mt-1">
+                                {location?.name} 여행을 위한 생존 정보 및 핵심 큐레이션
+                            </p>
+                        </div>
 
-                    {/* 🆕 [Phase 7-3] 강제 갱신 버튼 제거 (위키 탭에는 유지, 툴킷은 제거) */}
-                    <div className="flex flex-col items-start md:items-end gap-1 shrink-0">
-                        {lastUpdated && (
-                            <span className="text-[11px] text-gray-400 font-medium px-1">
-                                마지막 업데이트: {lastUpdated}
-                            </span>
-                        )}
+                        {/* 🆕 [Phase 7-3] 강제 갱신 버튼 제거 (위키 탭에는 유지, 툴킷은 제거) */}
+                        <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
+                            {/* 데스크탑: 상단 앱 연동 버튼 */}
+                            <div className="hidden md:flex items-center gap-2">
+                                <button onClick={handleAppBridgeClick} className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                                    <Smartphone size={14} />
+                                    <span>앱으로 여정 보내기</span>
+                                </button>
+                            </div>
+                            {lastUpdated && (
+                                <span className="text-[11px] text-gray-400 font-medium px-1">
+                                    마지막 업데이트: {lastUpdated}
+                                </span>
+                            )}
+                        </div>
                     </div>
-                </div>
 
                 {/* 🆕 [Phase 8] 복잡한 여행지 배지 및 확장 컴포넌트 */}
                 {guideData?.is_complex && (
@@ -579,34 +544,34 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                 <div className="grid grid-cols-1 gap-5">
                     {/* 특화 예약: 공항 픽업 및 페리 (is_complex가 true일 때만 또는 해당 카테고리가 있을 때만 표시) */}
                     {(guideData?.categories?.airport_transfer) && (
-                        <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} themeColor="indigo" />
+                        <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} themeColor="default" />
                     )}
                     {(guideData?.categories?.ferry_booking) && (
-                        <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="cyan" />
+                        <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="default" />
                     )}
                     {/* 1. 먼저 어디를 갈지 확인 - 초록 (자연, 탐험) */}
-                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="emerald" />
+                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
 
                     {/* 2. 출입국 준비 - 파랑 (공식, 신뢰) */}
-                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="blue" />
+                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="warning" />
 
                     {/* 3. 이동 수단 - 하늘 (비행, 자유) */}
-                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="sky" />
+                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="default" />
 
                     {/* 4. 숙소 - 보라 (편안함, 휴식) */}
-                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="purple" />
+                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="default" />
 
                     {/* 5. 현지 연결 - 청록 (통신, 기술) */}
-                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="teal" />
+                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="default" />
 
                     {/* 6. 현지 이동 - 녹색 (Go, 진행) */}
-                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="green" />
+                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="default" />
 
                     {/* 7. 편의 도구 - 황금 (가치, 도구) */}
-                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="amber" />
+                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="default" />
 
                     {/* 8. 안전 정보 - 빨강 (주의, 중요) */}
-                    <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} themeColor="red" />
+                    <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} themeColor="danger" />
                 </div>
 
                 <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
@@ -626,6 +591,15 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                         {isLoading ? 'Updating...' : 'Force Update Toolkit'}
                     </button>
                 </div>
+            </div>
+            </div>
+
+            {/* 🆕 모바일: 하단 고정 푸터 (md 미만에서만 표시) */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-gray-200 md:hidden z-10 pb-6">
+                <button onClick={handleAppBridgeClick} className="w-full bg-gray-900 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:bg-gray-800 transition-colors">
+                    <Smartphone size={18} />
+                    앱으로 전체 일정 보내기
+                </button>
             </div>
         </div>
     );
