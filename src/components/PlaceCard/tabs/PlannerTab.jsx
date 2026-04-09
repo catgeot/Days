@@ -100,7 +100,6 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
         if (!text) return text;
 
         return text
-            .replace(/\*\*/g, '')           // 볼드 마크다운 제거
             .replace(/\* /g, '• ')          // 리스트 기호 통일
             .replace(/\n{3,}/g, '\n\n')     // 과도한 줄바꿈 제거
             .replace(/^\s+|\s+$/gm, '')     // 각 줄 양끝 공백 제거
@@ -489,7 +488,7 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
         <div className="w-full h-full relative">
             <div
                 ref={scrollContainerRef}
-                className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-24 md:p-6 md:pt-10 overscroll-none touch-pan-y"
+                className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-6 md:p-6 md:pt-10 overscroll-none touch-pan-y"
             >
                 <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
@@ -592,14 +591,6 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                     </button>
                 </div>
             </div>
-            </div>
-
-            {/* 🆕 모바일: 하단 고정 푸터 (md 미만에서만 표시) */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-gray-200 md:hidden z-10 pb-6">
-                <button onClick={handleAppBridgeClick} className="w-full bg-gray-900 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:bg-gray-800 transition-colors">
-                    <Smartphone size={18} />
-                    앱으로 전체 일정 보내기
-                </button>
             </div>
         </div>
     );

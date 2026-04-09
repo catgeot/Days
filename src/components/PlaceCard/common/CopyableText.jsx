@@ -4,11 +4,27 @@ export const isMobileDevice = () => {
     return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 };
 
+const renderMarkdownInline = (text) => {
+    if (!text.includes('**')) return text;
+
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={index} className="font-bold text-gray-900">{part.slice(2, -2)}</strong>;
+        }
+        return part;
+    });
+};
+
 const renderWithLineBreaks = (text) => {
     if (typeof text !== 'string') return text;
     return text.split('\n').map((line, i, arr) => (
         <React.Fragment key={i}>
-            {line === '' ? <span className="block h-3 md:h-4" aria-hidden="true" /> : line}
+            {line === '' ? <span className="block h-3 md:h-4" aria-hidden="true" /> : (
+                <span className={line.trim().startsWith('•') ? "pl-[10px] -indent-[10px] block my-0.5" : ""}>
+                    {renderMarkdownInline(line)}
+                </span>
+            )}
             {i !== arr.length - 1 && line !== '' && <br />}
         </React.Fragment>
     ));

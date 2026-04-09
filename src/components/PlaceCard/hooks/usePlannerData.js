@@ -48,6 +48,7 @@ export const usePlannerData = (placeId, mediaMode) => {
       if (isDev) {
         console.log(`[usePlannerData] 기존 데이터 유지 - placeId: ${placeId}`);
       }
+      setIsToolkitLoading(false); // ✅ 여기서 로딩 상태를 해제해야 무한 로딩에 빠지지 않음
       return;
     }
 
