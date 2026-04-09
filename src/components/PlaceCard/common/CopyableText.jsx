@@ -10,9 +10,9 @@ const renderMarkdownInline = (text) => {
     const parts = text.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
         if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={index} className="font-bold text-gray-900">{part.slice(2, -2)}</strong>;
+            return <strong key={index} className="font-bold text-gray-900">{parseSmartLinks(part.slice(2, -2))}</strong>;
         }
-        return part;
+        return parseSmartLinks(part);
     });
 };
 
@@ -71,18 +71,13 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
     );
 };
 
-const CopyableText = ({ text, locationName, type }) => {
-    if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
+// parseSmartLinks 함수: 문자열을 받아 스마트 링크를 파싱하여 배열(문자열/컴포넌트)로 반환
+const parseSmartLinks = (text, locationName, type) => {
+    if (typeof text !== 'string') return text;
 
-    // [하위 호환성 유지] 기존의 '우유니 소금사막(Salar de Uyuni)' 등 잘못된 따옴표 위치 교정 전처리
     let normalizedText = text.replace(/['"‘’“”]([가-힣a-zA-Z0-9\s]+?)\((.+?)\)['"‘’“”]/g, "$1('$2')");
     normalizedText = normalizedText.replace(/([가-힣a-zA-Z0-9\s]+?)\(['"‘’“”](.+?)['"‘’“”]\)/g, "$1('$2')");
 
-    // [신규 로직 및 하위 호환]
-    // 한글명[@영문명@] 방식과 기존의 한글명('영문명') 방식을 모두 파싱하는 하이브리드 정규식
-    // 매칭 그룹 1: 한글명 (공백 포함 최대 3단어, 없을 수도 있음)
-    // 매칭 그룹 2: [@ @] 사이의 영문명
-    // 매칭 그룹 3: (' ') 사이의 영문명
     const regex = /([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+){0,2})?(?:\[@([^@\]]+)@\]|\('([^']+)'\))/g;
     const parts = [];
     let lastIndex = 0;
@@ -98,7 +93,7 @@ const CopyableText = ({ text, locationName, type }) => {
 
         parts.push(
             <CopyableWord
-                key={match.index}
+                key={`word-${match.index}`}
                 word={englishName}
                 koreanName={koreanName}
                 locationName={locationName}
@@ -113,13 +108,46 @@ const CopyableText = ({ text, locationName, type }) => {
         parts.push(normalizedText.substring(lastIndex));
     }
 
+    return parts.length === 1 ? parts[0] : parts;
+};
+
+const CopyableText = ({ text, locationName, type }) => {
+    if (!text) return <span>관련 정보를 불러올 수 없습니다.</span>;
+
+    // 전체 텍스트를 줄바꿈 기준으로 먼저 분리하고, 각 줄에서 볼드체 파싱 -> 그 안에서 스마트 링크 파싱 수행
     return (
         <span className="select-text break-keep">
-            {parts.map((part, i) => (
-                <React.Fragment key={i}>
-                    {typeof part === 'string' ? renderWithLineBreaks(part) : part}
-                </React.Fragment>
-            ))}
+            {text.split('\n').map((line, i, arr) => {
+                if (line === '') {
+                    return (
+                        <React.Fragment key={i}>
+                            <span className="block h-3 md:h-4" aria-hidden="true" />
+                            {i !== arr.length - 1 && <br />}
+                        </React.Fragment>
+                    );
+                }
+
+                // 1. 볼드체 파싱
+                const lineParts = line.includes('**') ? line.split(/(\*\*.*?\*\*)/g) : [line];
+
+                // 2. 각 파트 내에서 스마트 링크 파싱
+                const renderedParts = lineParts.map((part, index) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                        const content = part.slice(2, -2);
+                        return <strong key={index} className="font-bold text-gray-900">{parseSmartLinks(content, locationName, type)}</strong>;
+                    }
+                    return <React.Fragment key={index}>{parseSmartLinks(part, locationName, type)}</React.Fragment>;
+                });
+
+                return (
+                    <React.Fragment key={i}>
+                        <span className={line.trim().startsWith('•') ? "pl-[10px] -indent-[10px] block my-0.5" : ""}>
+                            {renderedParts}
+                        </span>
+                        {i !== arr.length - 1 && <br />}
+                    </React.Fragment>
+                );
+            })}
         </span>
     );
 };

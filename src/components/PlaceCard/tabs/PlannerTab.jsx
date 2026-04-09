@@ -115,10 +115,13 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             .replace(/([^*])\*[ \t]*$/gm, '$1')
             .replace(/•[ \t]*$/gm, '')
 
-            // 5. 과도한 줄바꿈 제거
+            // 5. 백틱(`) 기호 모두 제거 (AI가 남발하는 경우 방지)
+            .replace(/`/g, '')
+
+            // 6. 과도한 줄바꿈 제거
             .replace(/\n{3,}/g, '\n\n')
 
-            // 6. 각 줄 양끝 공백 제거
+            // 7. 각 줄 양끝 공백 제거
             .replace(/^\s+|\s+$/gm, '')
             .trim();
     };
@@ -182,6 +185,25 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                     url: getAffiliateLink(`https://12go.asia/ko`, '12go', { campaign: 'toolkit', locationName: location?.name }),
                     text: '12Go (아시아 교통)',
                     colorClass: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-200'
+                });
+                break;
+            case 'airport_transfer':
+                links.push({
+                    url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
+                    text: '클룩 공항 픽업',
+                    colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
+                });
+                break;
+            case 'ferry_booking':
+                links.push({
+                    url: getAffiliateLink(`https://12go.asia/ko`, '12go', { campaign: 'toolkit', locationName: location?.name }),
+                    text: '12Go (아시아 교통)',
+                    colorClass: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-200'
+                });
+                links.push({
+                    url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
+                    text: '클룩 (Klook)',
+                    colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
                 break;
             case 'map_poi':
