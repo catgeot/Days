@@ -95,14 +95,31 @@ const JourneyTimeline = ({ timeline }) => {
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray;
 
-    // 🆕 [Phase 7-4] 텍스트 정제 함수 (마크다운 기호 제거, 줄바꿈 최적화)
+    // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
     const cleanAdviceText = (text) => {
         if (!text) return text;
 
         return text
-            .replace(/\* /g, '• ')          // 리스트 기호 통일
-            .replace(/\n{3,}/g, '\n\n')     // 과도한 줄바꿈 제거
-            .replace(/^\s+|\s+$/gm, '')     // 각 줄 양끝 공백 제거
+            // 1. 콜론 뒤에 불필요하게 붙은 혼합 특수기호만 보수적으로 제거 (예: :*•, : •)
+            .replace(/:\s*\*\s*•/g, ':')
+            .replace(/:\s*•\s*/g, ': ')
+
+            // 2. 닫히지 않은 시작 ** 를 - 로 치환 (오류로 인해 한쪽만 남은 볼드체를 일반 리스트로 강등)
+            // (줄의 시작에 **가 있고, 같은 줄 안에 닫는 **가 없는 경우)
+            .replace(/^[ \t]*\*\*(?!(?:[^\n]*\*\*))/gm, '- ')
+
+            // 3. 모든 리스트 시작 기호(*, •)를 '-'로 통일 (볼드체 항목 앞에도 깔끔하게 - 기호 유지)
+            .replace(/^[ \t]*[•*]\s+/gm, '- ')
+
+            // 4. 문장 끝에 잉여 특수기호 단일 개체만 제거 (볼드체 종결인 **는 안전하게 보존)
+            .replace(/([^*])\*[ \t]*$/gm, '$1')
+            .replace(/•[ \t]*$/gm, '')
+
+            // 5. 과도한 줄바꿈 제거
+            .replace(/\n{3,}/g, '\n\n')
+
+            // 6. 각 줄 양끝 공백 제거
+            .replace(/^\s+|\s+$/gm, '')
             .trim();
     };
 
