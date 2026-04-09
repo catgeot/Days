@@ -47,14 +47,15 @@ serve(async (req) => {
    - "pre_travel" (array): 출발 전 챙겨야 할 온라인 비자, 관광세 납부, 허가증 등. (각 객체에 title, url, cost 필수). 해당 없으면 빈 배열 [].
    - "airport_transfer" (object): 공항에서 메인 거점/항구까지의 추천 이동수단(예약 링크 필수). 해당 없으면 null.
    - "ferry_booking" (object): 페리 등 해상 교통이 필수일 경우 추천 업체와 예약 링크. 해당 없으면 null.
-   - "visa" (object): 비자 규정 요약 (advice, url 포함)
-   - "flight" (object): 추천 비행 루트 및 경유/직항 정보
-   - "accommodation" (object): 숙박하기 좋은 지역 추천
-   - "connectivity" (object): 유심, eSIM 등 통신 팁
-   - "transport" (object): 시내 교통 및 패스 정보
-   - "apps" (object): 현지에서 유용한 필수 앱 (Uber, Grab 등)
-   - "map_poi" (object): 핵심 지역/맛집
-   - "safety" (object): 치안 및 긴급 연락처
+   - 기타 아래 항목들의 "advice"는 짧은 서술형을 피하고 **실용적이고 구체적인 마크다운 체크리스트 및 꿀팁 형태**로 작성하세요. 사용자가 읽고 즉시 예약/행동할 수 있어야 합니다.
+     - "visa" (object): 비자 규정 요약
+     - "flight" (object): 직항 여부, 소요 시간, 주요 취항사 목록, 최적의 예약 시기 및 비용 절감 팁
+     - "accommodation" (object): 타겟별 지역 추천 (예: '휴양/호캉스: A지역', '관광/이동편의: B지역', '가성비: C지역')
+     - "connectivity" (object): 현지 eSIM 사용 가능 여부, 대표 통신사 추천
+     - "transport" (object): 공항에서 시내 진입 시 선택 가능한 옵션(버스 vs 택시/픽업) 요금 및 소요시간 비교표 제공, 필수 교통 패스 안내
+     - "apps" (object): 현지에서 유용한 필수 앱 (Uber, Grab 등)
+     - "map_poi" (object): 핵심 지역/맛집
+     - "safety" (object): 치안 상황 및 여행자 대상 주요 범죄 패턴, 긴급 연락처
 
 URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나 정보 링크를 제공하세요.`;
 
@@ -77,14 +78,14 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
     ],
     "airport_transfer": { "advice": "Eka Jaya 공항 픽업 포함 추천", "url": "https://ekajayafastboat.com/" },
     "ferry_booking": { "advice": "BlueWater Express", "url": "https://www.bluewaterexpress.com/" },
-    "visa": { "advice": "도착비자 가능...", "url": null },
-    "flight": { "advice": "직항 7시간 소요...", "url": null },
-    "accommodation": { "advice": "...", "url": null },
-    "connectivity": { "advice": "...", "url": null },
-    "transport": { "advice": "...", "url": null },
-    "apps": { "advice": "...", "url": null },
-    "map_poi": { "advice": "...", "url": null },
-    "safety": { "advice": "...", "url": null }
+    "visa": { "advice": "**필수 준비물**\\n- 6개월 이상 남은 여권\\n- 도착 비자 발급 비용($35)", "url": null },
+    "flight": { "advice": "**항공권 예약 팁**\\n- 직항 여부: X\\n- 소요 시간: 7시간\\n- 추천 항공사: 대한항공...", "url": null },
+    "accommodation": { "advice": "**타겟별 숙박 지역 추천**\\n- 휴양/호캉스: 누사두아\\n- 관광/이동편의: 스미냑...", "url": null },
+    "connectivity": { "advice": "**통신 꿀팁**\\n- 현지 eSIM (Telkomsel) 추천...", "url": null },
+    "transport": { "advice": "**시내 교통**\\n- 그랩(Grab), 고젝(Gojek) 필수...", "url": null },
+    "apps": { "advice": "- Grab: 택시 및 배달\\n- Gojek: 현지 특화...", "url": null },
+    "map_poi": { "advice": "**핵심 명소**\\n- 우붓 몽키 포레스트...", "url": null },
+    "safety": { "advice": "**치안 및 주의사항**\\n- 소매치기 주의...", "url": null }
   }
 }`;
 
