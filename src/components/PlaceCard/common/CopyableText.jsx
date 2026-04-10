@@ -10,7 +10,8 @@ const renderMarkdownInline = (text) => {
     const parts = text.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
         if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={index} className="font-bold text-gray-900">{parseSmartLinks(part.slice(2, -2))}</strong>;
+            // 이 함수는 현재 사용되지 않으나 일관성을 위해 다크모드 대응을 추가 (기본적으로 위키에선 하얀색을 띄게 함)
+            return <strong key={index} className="font-bold text-gray-900 dark:text-white">{parseSmartLinks(part.slice(2, -2))}</strong>;
         }
         return parseSmartLinks(part);
     });
@@ -134,7 +135,8 @@ const CopyableText = ({ text, locationName, type }) => {
                 const renderedParts = lineParts.map((part, index) => {
                     if (part.startsWith('**') && part.endsWith('**')) {
                         const content = part.slice(2, -2);
-                        return <strong key={index} className="font-bold text-gray-900">{parseSmartLinks(content, locationName, type)}</strong>;
+                        const textColorClass = type === 'wiki' ? 'text-white' : 'text-gray-900';
+                        return <strong key={index} className={`font-bold ${textColorClass}`}>{parseSmartLinks(content, locationName, type)}</strong>;
                     }
                     return <React.Fragment key={index}>{parseSmartLinks(part, locationName, type)}</React.Fragment>;
                 });
