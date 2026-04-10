@@ -14,12 +14,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const location = useLocation();
 
   const [query, setQuery] = useState(initialQuery);
-  const [filterMode, setFilterMode] = useState('continent');
+  const [filterMode, setFilterMode] = useState('theme');
   const [selectedContinent, setSelectedContinent] = useState('all');
   const [selectedTheme, setSelectedTheme] = useState('all');
   const [selectedSubGroup, setSelectedSubGroup] = useState(null);
   const [showTopBtn, setShowTopBtn] = useState(false);
-  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
@@ -76,7 +75,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       setSelectedSubGroup(null);
     } else {
       document.body.style.overflow = '';
-      setFilterMode('continent');
+      setFilterMode('theme');
       setSelectedContinent('all');
       setSelectedTheme('all');
       setSelectedSubGroup(null);
@@ -193,13 +192,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const handleScroll = (e) => {
     const scrollTop = e.target.scrollTop;
 
-    // 1단 헤더 숨김 처리 (PC만 - 100px 스크롤 시)
-    if (scrollTop > 100) {
-      setIsHeaderHidden(true);
-    } else {
-      setIsHeaderHidden(false);
-    }
-
     // Top 버튼 표시 (기존 로직)
     if (scrollTop > 300) {
       setShowTopBtn(true);
@@ -312,7 +304,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     <div className={`flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md z-20 transition-all duration-300 overflow-hidden ${
       isMobileView
         ? 'md:hidden'
-        : `hidden md:flex ${isHeaderHidden ? 'md:max-h-0 md:py-0 md:opacity-0 md:pointer-events-none' : 'md:max-h-[100px] md:opacity-100'}`
+        : 'hidden md:flex md:max-h-[100px] md:opacity-100'
     }`}>
       {/* 상단 닫기(홈으로) 및 모바일용 필터 토글 */}
       <div className="flex items-center justify-between md:justify-start gap-4">
@@ -328,20 +320,20 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         {isMobileView && !isSearching && (
           <div className="md:hidden flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.08]">
             <button
-              onClick={() => handleFilterModeChange('continent')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500'
-              }`}
-            >
-              <Map size={14} /> 대륙
-            </button>
-            <button
               onClick={() => handleFilterModeChange('theme')}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
                 filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500'
               }`}
             >
               <Layers size={14} /> 테마
+            </button>
+            <button
+              onClick={() => handleFilterModeChange('continent')}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500'
+              }`}
+            >
+              <Map size={14} /> 대륙
             </button>
           </div>
         )}
@@ -351,20 +343,20 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       {!isMobileView && !isSearching && (
         <div className="hidden md:flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.08] ml-2 shrink-0">
           <button
-            onClick={() => handleFilterModeChange('continent')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
-              filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            <Map size={14} /> 대륙별
-          </button>
-          <button
             onClick={() => handleFilterModeChange('theme')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
               filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
             <Layers size={14} /> 테마별
+          </button>
+          <button
+            onClick={() => handleFilterModeChange('continent')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
+              filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <Map size={14} /> 대륙별
           </button>
         </div>
       )}
@@ -405,10 +397,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { display: none; }
         @media (min-width: 768px) {
-          .custom-scrollbar::-webkit-scrollbar { display: block; height: 6px; width: 6px; }
+          .custom-scrollbar::-webkit-scrollbar { display: block; height: 12px; width: 6px; }
           .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
-          .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.25); border-radius: 10px; }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.5); }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.3); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.5); border: 2px solid transparent; background-clip: padding-box; }
         }
         .modal-scroll-area::-webkit-scrollbar { display: block; width: 10px; }
         .modal-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-left: 1px solid rgba(255,255,255,0.05); }
@@ -440,16 +432,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                          className={`w-full shrink-0 flex items-center justify-between p-3.5 rounded-2xl transition-all duration-300 ${
                            selectedSubGroup === g.id
                              ? 'bg-blue-600/20 text-white border border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.15)] translate-x-1'
-                             : 'bg-transparent border border-transparent hover:bg-white/[0.05] hover:border-white/[0.05] text-gray-400'
+                             : 'bg-transparent border border-white/[0.1] hover:bg-white/[0.05] hover:border-white/[0.2] text-gray-300'
                          }`}
                        >
                          <div className="flex items-center gap-3">
-                           <div className={`p-2 rounded-xl ${selectedSubGroup === g.id ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-500'}`}>
+                           <div className={`p-2 rounded-xl ${selectedSubGroup === g.id ? 'bg-blue-500/20 text-blue-400' : 'bg-white/[0.08] text-gray-400'}`}>
                              <Icon size={16} />
                            </div>
                            <span className={`text-sm font-medium ${selectedSubGroup === g.id ? 'font-bold' : ''}`}>{g.label}</span>
                          </div>
-                         <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${selectedSubGroup === g.id ? 'bg-blue-500/20 text-blue-300' : 'bg-white/5 text-gray-500'}`}>
+                         <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${selectedSubGroup === g.id ? 'bg-blue-500/20 text-blue-300' : 'bg-white/[0.08] text-gray-400'}`}>
                            {g.spots.length}
                          </span>
                        </button>
@@ -471,13 +463,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           {headerContent(true)}
 
           <div className="p-4 md:p-8 xl:p-10 pb-32">
-            {/* 헤더 Sticky 영역: 모바일/PC 분리하여 직관성 극대화 */}
+            {/* 2단 분류 탭 영역 */}
             {!isSearching && (
-              <div className={`sticky top-0 z-30 transition-all duration-300 -mx-4 px-4 md:mx-0 md:px-0 pt-4 pb-4 mb-6 md:mb-8 border-b bg-[#0b101a]/90 backdrop-blur-xl md:bg-[#0b101a] md:backdrop-blur-none ${
-                isHeaderHidden
-                  ? 'border-white/[0.15] md:border-white/[0.2]'
-                  : 'border-white/[0.05] md:border-white/[0.08]'
-              }`}>
+              <div className="-mx-4 px-4 md:mx-0 md:px-0 pb-4 mb-6 md:mb-8 border-b border-white/[0.05] md:border-white/[0.08]">
 
                 {/* 2열 탭: 대륙/테마 (모바일에서도 보이도록 복구, 단 시각적 비중은 낮춤) */}
                 <div className="flex overflow-x-auto custom-scrollbar gap-2 w-full pb-2 md:pb-0">
@@ -491,10 +479,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           className={`flex items-center gap-1.5 px-4 py-2 md:px-5 md:py-3 rounded-2xl whitespace-nowrap text-xs md:text-base transition-all border shrink-0 ${
                             selectedContinent === cont.id
                               ? 'bg-white/10 text-white border-white/20 font-bold'
-                              : 'bg-white/[0.02] text-gray-500 border-white/[0.05] hover:bg-white/[0.05] hover:text-gray-300'
+                              : 'bg-white/[0.02] text-gray-300 border-white/[0.15] hover:bg-white/[0.08] hover:text-white'
                           }`}
                         >
-                          <Icon size={14} className={selectedContinent === cont.id ? 'text-white' : 'text-gray-600'} />
+                          <Icon size={14} className={selectedContinent === cont.id ? 'text-white' : 'text-gray-400'} />
                           {cont.label}
                         </button>
                       )
@@ -517,10 +505,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           className={`flex items-center gap-1.5 px-4 py-2 md:px-5 md:py-3 rounded-2xl whitespace-nowrap text-xs md:text-base transition-all border shrink-0 ${
                             isSelected
                               ? `${selectedStyle} font-bold`
-                              : 'bg-white/[0.02] text-gray-500 border-white/[0.05] hover:bg-white/[0.05] hover:text-gray-300'
+                              : 'bg-white/[0.02] text-gray-300 border-white/[0.15] hover:bg-white/[0.08] hover:text-white'
                           }`}
                         >
-                          <Icon size={14} className={isSelected && themeColors ? '' : isSelected ? 'text-white' : 'text-gray-600'} />
+                          <Icon size={14} className={isSelected && themeColors ? '' : isSelected ? 'text-white' : 'text-gray-400'} />
                           {theme.label}
                         </button>
                       )
@@ -540,10 +528,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                           className={`flex items-center gap-2 px-5 py-3 rounded-2xl whitespace-nowrap text-sm font-extrabold transition-all shrink-0 ${
                             selectedSubGroup === g.id
                               ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] border border-white/20 scale-105 origin-left'
-                              : 'bg-white/[0.05] text-gray-400 border border-white/[0.1] hover:bg-white/[0.1]'
+                              : 'bg-white/[0.05] text-gray-300 border border-white/[0.2] hover:bg-white/[0.1] hover:text-white'
                           }`}
                         >
-                          <Icon size={18} className={selectedSubGroup === g.id ? 'text-white drop-shadow-md' : 'text-gray-500'} />
+                          <Icon size={18} className={selectedSubGroup === g.id ? 'text-white drop-shadow-md' : 'text-gray-400'} />
                           {g.label}
                         </button>
                       )
