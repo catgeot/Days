@@ -4,7 +4,7 @@ import { Search, X, Compass, Globe2, Layers, Map, ArrowUp } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 
 // 분리된 컴포넌트 및 유틸리티 import
-import { CONTINENTS, THEMES, CATEGORY_LABELS } from './SearchDiscovery/constants';
+import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS } from './SearchDiscovery/constants';
 import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
@@ -19,6 +19,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [selectedTheme, setSelectedTheme] = useState('all');
   const [selectedSubGroup, setSelectedSubGroup] = useState(null);
   const [showTopBtn, setShowTopBtn] = useState(false);
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
@@ -190,7 +191,17 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   };
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop > 300) {
+    const scrollTop = e.target.scrollTop;
+
+    // 1단 헤더 숨김 처리 (PC만 - 100px 스크롤 시)
+    if (scrollTop > 100) {
+      setIsHeaderHidden(true);
+    } else {
+      setIsHeaderHidden(false);
+    }
+
+    // Top 버튼 표시 (기존 로직)
+    if (scrollTop > 300) {
       setShowTopBtn(true);
     } else {
       setShowTopBtn(false);
@@ -298,14 +309,19 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   };
 
   const headerContent = (isMobileView) => (
-    <div className={`flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-4 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md z-20 ${isMobileView ? 'md:hidden' : 'hidden md:flex'}`}>
+    <div className={`flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md z-20 transition-all duration-300 overflow-hidden ${
+      isMobileView
+        ? 'md:hidden'
+        : `hidden md:flex ${isHeaderHidden ? 'md:max-h-0 md:py-0 md:opacity-0 md:pointer-events-none' : 'md:max-h-[100px] md:opacity-100'}`
+    }`}>
       {/* 상단 닫기(홈으로) 및 모바일용 필터 토글 */}
       <div className="flex items-center justify-between md:justify-start gap-4">
         <button onClick={onClose} className="flex items-center gap-2.5 text-gray-400 hover:text-white transition-colors group shrink-0">
-          <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/[0.08] group-hover:bg-white/[0.1] transition-all group-hover:scale-105 shadow-lg">
-            <X size={24} />
+          <div className="w-12 h-12 md:w-9 md:h-9 flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/[0.08] group-hover:bg-white/[0.1] transition-all group-hover:scale-105 shadow-lg">
+            <X size={24} className="md:hidden" />
+            <X size={18} className="hidden md:block" />
           </div>
-          <span className="font-bold hidden md:block text-lg">홈으로</span>
+          <span className="font-bold hidden md:block text-base">홈으로</span>
         </button>
 
         {/* 모바일 전용: 필터 토글 탭 */}
@@ -336,26 +352,26 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         <div className="hidden md:flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.08] ml-2 shrink-0">
           <button
             onClick={() => handleFilterModeChange('continent')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
               filterMode === 'continent' ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
-            <Map size={16} /> 대륙별 탐색
+            <Map size={14} /> 대륙별
           </button>
           <button
             onClick={() => handleFilterModeChange('theme')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
               filterMode === 'theme' ? 'bg-purple-600/20 text-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.15)]' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
-            <Layers size={16} /> 테마별 탐색
+            <Layers size={14} /> 테마별
           </button>
         </div>
       )}
 
       {/* Search Bar */}
-      <div className="flex-1 max-w-3xl relative flex items-center bg-white/[0.08] border border-white/[0.15] rounded-2xl h-12 md:h-14 overflow-hidden focus-within:border-blue-500/40 focus-within:bg-white/[0.1] focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all md:ml-auto">
-        <Search size={20} className="text-gray-400 ml-4 shrink-0" />
+      <div className="flex-1 max-w-3xl relative flex items-center bg-white/[0.12] border border-white/[0.25] rounded-2xl h-12 md:h-10 overflow-hidden focus-within:border-blue-400/60 focus-within:bg-white/[0.15] focus-within:shadow-[0_0_25px_rgba(59,130,246,0.2)] transition-all md:ml-auto">
+        <Search size={20} className="text-gray-300 ml-4 md:ml-3 shrink-0 md:w-[18px] md:h-[18px]" />
         <input
           ref={inputRef}
           type="text"
@@ -367,14 +383,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             }
           }}
           placeholder="어디로 떠나고 싶으신가요?"
-          className="w-full bg-transparent text-white px-4 h-full outline-none placeholder-gray-600 text-[16px] md:text-xl font-medium"
+          className="w-full bg-transparent text-white px-4 md:px-3 h-full outline-none placeholder-gray-500 text-[16px] md:text-base font-medium"
         />
         {query && (
           <button
              onClick={() => { setQuery(''); inputRef.current?.focus(); }}
-             className="p-3 text-gray-400 hover:text-white transition-colors"
+             className="p-3 md:p-2 text-gray-400 hover:text-white transition-colors"
           >
-             <X size={20} />
+             <X size={20} className="md:w-[18px] md:h-[18px]" />
           </button>
         )}
       </div>
@@ -457,7 +473,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           <div className="p-4 md:p-8 xl:p-10 pb-32">
             {/* 헤더 Sticky 영역: 모바일/PC 분리하여 직관성 극대화 */}
             {!isSearching && (
-              <div className="sticky top-0 z-30 bg-[#0b101a]/90 backdrop-blur-xl -mx-4 px-4 md:mx-0 md:px-0 pt-4 pb-4 mb-6 md:mb-8 border-b md:border-none border-white/[0.05] md:bg-transparent md:backdrop-blur-none">
+              <div className={`sticky top-0 z-30 transition-all duration-300 -mx-4 px-4 md:mx-0 md:px-0 pt-4 pb-4 mb-6 md:mb-8 border-b bg-[#0b101a]/90 backdrop-blur-xl md:bg-[#0b101a] md:backdrop-blur-none ${
+                isHeaderHidden
+                  ? 'border-white/[0.15] md:border-white/[0.2]'
+                  : 'border-white/[0.05] md:border-white/[0.08]'
+              }`}>
 
                 {/* 2열 탭: 대륙/테마 (모바일에서도 보이도록 복구, 단 시각적 비중은 낮춤) */}
                 <div className="flex overflow-x-auto custom-scrollbar gap-2 w-full pb-2 md:pb-0">
@@ -482,17 +502,25 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                   ) : (
                     THEMES.map((theme) => {
                       const Icon = theme.icon;
+                      const themeColors = CATEGORY_COLORS[theme.id];
+                      const isSelected = selectedTheme === theme.id;
+
+                      // 선택된 버튼: 카테고리별 고유 색상 적용
+                      const selectedStyle = themeColors
+                        ? themeColors
+                        : 'bg-white/10 text-white border-white/20';
+
                       return (
                         <button
                           key={theme.id}
                           onClick={() => handleThemeSelect(theme.id)}
                           className={`flex items-center gap-1.5 px-4 py-2 md:px-5 md:py-3 rounded-2xl whitespace-nowrap text-xs md:text-base transition-all border shrink-0 ${
-                            selectedTheme === theme.id
-                              ? 'bg-white/10 text-white border-white/20 font-bold'
+                            isSelected
+                              ? `${selectedStyle} font-bold`
                               : 'bg-white/[0.02] text-gray-500 border-white/[0.05] hover:bg-white/[0.05] hover:text-gray-300'
                           }`}
                         >
-                          <Icon size={14} className={selectedTheme === theme.id ? 'text-white' : 'text-gray-600'} />
+                          <Icon size={14} className={isSelected && themeColors ? '' : isSelected ? 'text-white' : 'text-gray-600'} />
                           {theme.label}
                         </button>
                       )
