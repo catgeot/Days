@@ -3,6 +3,7 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 import { getAffiliateLink } from '../../../utils/affiliate';
 import CopyableText, { isMobileDevice } from '../common/CopyableText';
+import WhiteLabelWidget from '../common/WhiteLabelWidget';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -92,6 +93,24 @@ const JourneyTimeline = ({ timeline }) => {
     );
 };
 
+// 🆕 [Phase 8-4] 검증된 공식 비자/입국 서류 URL 매핑 (AI 할루시네이션 방지용)
+const OFFICIAL_VISA_LINKS = [
+    { keywords: ['ESTA', '미국', '하와이', '괌', '사이판'], url: 'https://esta.cbp.dhs.gov/', label: '미국 ESTA 공식 신청' },
+    { keywords: ['K-ETA', '한국', '대한민국'], url: 'https://www.k-eta.go.kr/', label: '한국 K-ETA 공식 신청' },
+    { keywords: ['NZeTA', '뉴질랜드'], url: 'https://nzeta.immigration.govt.nz/', label: '뉴질랜드 NZeTA 신청' },
+    { keywords: ['eTA', '캐나다'], url: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/eta.html', label: '캐나다 eTA 신청' },
+    { keywords: ['ETA', '호주', '시드니', '멜버른'], url: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/electronic-travel-authority-601', label: '호주 ETA 신청 앱 안내' },
+    { keywords: ['SG Arrival', 'SG카드', '싱가포르', '싱가폴'], url: 'https://eservices.ica.gov.sg/sgarrivalcard/', label: '싱가포르 입국 신고서' },
+    { keywords: ['MDAC', '말레이시아', '코타키나발루', '쿠알라룸푸르'], url: 'https://imigresen-online.imi.gov.my/mdac/main', label: '말레이시아 MDAC 등록' },
+    { keywords: ['Visit Japan', 'VJW', '일본', '도쿄', '오사카', '후쿠오카', '삿포로'], url: 'https://vjw-lp.digital.go.jp/ko/', label: 'Visit Japan Web (빠른 입국)' },
+    { keywords: ['e-Visa', '베트남', '다낭', '나트랑', '하노이'], url: 'https://evisa.xuatnhapcanh.gov.vn/', label: '베트남 e-Visa 공식 신청' },
+    { keywords: ['e-VOA', '인도네시아', '발리', '자카르타'], url: 'https://molina.imigresi.go.id/', label: '인도네시아 e-VOA 공식 신청' },
+    { keywords: ['eTravel', '이트래블', '필리핀', '세부', '보라카이', '마닐라'], url: 'https://etravel.gov.ph/', label: '필리핀 eTravel (필수)' },
+    { keywords: ['대만', '타이완', '타이베이', '가오슝', '온라인 입국신고서'], url: 'https://niaspeedy.immigration.gov.tw/webacard/', label: '대만 온라인 입국신고서' },
+    { keywords: ['e-Arrival', '캄보디아', '씨엠립', '프놈펜'], url: 'https://www.arrival.gov.kh/', label: '캄보디아 e-Arrival (도착비자)' },
+    { keywords: ['ETIAS', '유럽', '프랑스', '이탈리아', '스페인', '독일', '스위스', '영국'], url: 'https://travel-europe.europa.eu/etias_en', label: '유럽 ETIAS (시행 예정 확인)' }
+];
+
 const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray;
 
@@ -135,30 +154,10 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
         switch (type) {
             case 'accommodation':
-                links.push({
-                    url: getAffiliateLink(`https://www.agoda.com/ko-kr/search?text=${encodedQuery}`, 'agoda', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '아고다',
-                    colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
-                });
-                links.push({
-                    // 부킹닷컴은 searchresults.ko.html?ss= 형태를 많이 씀
-                    url: getAffiliateLink(`https://www.booking.com/searchresults.ko.html?ss=${encodedQuery}`, 'booking', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '부킹닷컴',
-                    colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
-                });
+                // 아고다, 부킹닷컴 파트너 반려로 임시 제거
                 break;
             case 'flight':
-                links.push({
-                    // 스카이스캐너는 deep link 시 에러(Promo not found)가 자주 나므로 안전하게 메인 홈페이지 연결
-                    url: getAffiliateLink(`https://www.skyscanner.co.kr/`, 'skyscanner', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '스카이스캐너',
-                    colorClass: 'bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200'
-                });
-                links.push({
-                    url: getAffiliateLink(`https://kr.trip.com/flights/`, 'tripcom', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '트립닷컴',
-                    colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
-                });
+                // 스카이스캐너, 트립닷컴 제거 (하단의 WhiteLabelWidget 통합 검색으로 완벽히 대체됨)
                 break;
             case 'connectivity':
                 links.push({
@@ -181,11 +180,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                     text: '클룩 (Klook)',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
-                links.push({
-                    url: getAffiliateLink(`https://12go.asia/ko`, '12go', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '12Go (아시아 교통)',
-                    colorClass: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-200'
-                });
+                // 12Go 반려로 제거
                 break;
             case 'airport_transfer':
                 links.push({
@@ -195,11 +190,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 });
                 break;
             case 'ferry_booking':
-                links.push({
-                    url: getAffiliateLink(`https://12go.asia/ko`, '12go', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '12Go (아시아 교통)',
-                    colorClass: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-200'
-                });
+                // 12Go 반려로 제거
                 links.push({
                     url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
                     text: '클룩 (Klook)',
@@ -214,14 +205,47 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 });
                 break;
             case 'safety':
-            case 'visa':
                 if (data?.official_url && data.official_url !== 'null') {
                      links.push({
                         url: data.official_url,
                         text: '공식 사이트 확인',
                         colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
                     });
-                } else if (type === 'safety' || type === 'visa') {
+                } else {
+                     links.push({
+                        url: `https://www.0404.go.kr/dev/country_search.moa`,
+                        text: '외교부 안전여행',
+                        colorClass: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200'
+                    });
+                }
+                break;
+            case 'visa':
+                // 1. 키워드 매칭 기반 검증된 링크 우선 탐색 (할루시네이션 방지)
+                let foundOfficialLink = null;
+                const searchTarget = ((data?.advice || '') + ' ' + (location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
+
+                for (const item of OFFICIAL_VISA_LINKS) {
+                    if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
+                        foundOfficialLink = item;
+                        break;
+                    }
+                }
+
+                if (foundOfficialLink) {
+                    links.push({
+                        url: foundOfficialLink.url,
+                        text: foundOfficialLink.label,
+                        colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                    });
+                } else if (data?.official_url && data.official_url !== 'null' && data.official_url.startsWith('http')) {
+                    // 2. 매칭된 정적 링크가 없고 AI가 반환한 URL이 유효할 때
+                     links.push({
+                        url: data.official_url,
+                        text: '비자/입국 정보 확인',
+                        colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                    });
+                } else {
+                    // 3. 둘 다 없으면 외교부 안전여행 (가장 보수적 접근)
                      links.push({
                         url: `https://www.0404.go.kr/dev/country_search.moa`,
                         text: '외교부 안전여행',
@@ -283,6 +307,11 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                         </a>
                     ))}
                 </div>
+            )}
+
+            {/* Travelpayouts 화이트 라벨 위젯 (통합 검색 폼이므로 한 곳(항공권)에만 표시하여 ID 충돌 방지) */}
+            {type === 'flight' && (
+                <WhiteLabelWidget locationName={location?.name} />
             )}
         </div>
     );
