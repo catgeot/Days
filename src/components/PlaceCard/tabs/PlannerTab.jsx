@@ -30,6 +30,30 @@ const THEME_COLORS = {
     }
 };
 
+// 🆕 [Phase 8-4] Intui.travel 공항 픽업 전용 위젯 컴포넌트
+const IntuiWidget = () => {
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        // 중복 렌더링 방지
+        if (containerRef.current && containerRef.current.children.length === 0) {
+            const script = document.createElement('script');
+            // 일단 locale=en 사용 (한국어 미지원 우려에 대한 안정성)
+            script.src = "https://tpscr.com/content?trs=510155&shmarker=712550&powered_by=true&locale=en&color_scheme=basic&pbi=0&ag=15&ap=124&re=1081&promo_id=3466&campaign_id=22";
+            script.async = true;
+            script.charset = "utf-8";
+
+            containerRef.current.appendChild(script);
+        }
+    }, []);
+
+    return (
+        <div className="w-full mt-3 bg-[#f8f9fa] rounded-xl overflow-hidden flex items-center justify-center min-h-[60px]">
+            <div ref={containerRef} className="w-full" />
+        </div>
+    );
+};
+
 // 🆕 [Phase 8] 복잡한 여행지 특화 컴포넌트: 출발 전 필수 체크리스트
 const PreTravelChecklist = ({ items }) => {
     if (!items || items.length === 0) return null;
@@ -167,7 +191,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                     colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
                 });
                 links.push({
-                    // 클룩의 경우 쿼리 파라미터가 포함된 복잡한 URL은 딥링크 변환 시 거부될 수 있으므로, 가장 안전한 기본 도메인(또는 단순 검색)으로 변경
+                    // 클룩 방화벽(WAF) 차단 이슈로 인해 딥링크 대신 안전한 기본 도메인(단축 링크)으로 롤백
                     url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
                     text: '클룩 유심/와이파이',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
@@ -175,7 +199,6 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 break;
             case 'transport':
                 links.push({
-                    // 클룩 기본 도메인으로 안전하게 우회
                     url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
                     text: '클룩 (Klook)',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
@@ -183,17 +206,23 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 // 12Go 반려로 제거
                 break;
             case 'airport_transfer':
+                // Intui.travel 동적 딥링크 생성 (사용자 Marker: 712550, Program ID: 657)
+                const intuiTargetUrl = 'https://en.intui.travel/';
+                const intuiEncodedUrl = encodeURIComponent(intuiTargetUrl);
+                // campaign 파라미터에 현재 도시 이름을 넣어 어떤 도시에서 클릭이 발생했는지 대시보드에서 추적 가능하게 함
+                const intuiDeepLink = `https://tp.media/r?campaign_id=22&marker=712550&p=657&trs=510155&campaign=${encodedQuery}&u=${intuiEncodedUrl}`;
+
                 links.push({
-                    url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '클룩 공항 픽업',
-                    colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
+                    url: intuiDeepLink,
+                    text: 'Intui 공항 픽업 (글로벌)',
+                    colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                 });
                 break;
             case 'ferry_booking':
                 // 12Go 반려로 제거
                 links.push({
                     url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
-                    text: '클룩 (Klook)',
+                    text: '클룩 페리 예약',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
                 break;
@@ -222,7 +251,8 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             case 'visa':
                 // 1. 키워드 매칭 기반 검증된 링크 우선 탐색 (할루시네이션 방지)
                 let foundOfficialLink = null;
-                const searchTarget = ((data?.advice || '') + ' ' + (location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
+                // data.advice에 "한국인 무비자" 등이 포함되어 K-ETA 등으로 오인 매칭되는 것을 방지하기 위해 목적지(이름/국가)로만 매칭
+                const searchTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
 
                 for (const item of OFFICIAL_VISA_LINKS) {
                     if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
@@ -309,9 +339,16 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 </div>
             )}
 
-            {/* Travelpayouts 화이트 라벨 위젯 (통합 검색 폼이므로 한 곳(항공권)에만 표시하여 ID 충돌 방지) */}
+            {/* Travelpayouts 화이트 라벨 위젯 (항공권 및 숙박 통합 검색) */}
             {type === 'flight' && (
-                <WhiteLabelWidget locationName={location?.name} />
+                <WhiteLabelWidget locationName={location?.name} type="flight" />
+            )}
+            {type === 'accommodation' && (
+                <WhiteLabelWidget locationName={location?.name} type="hotel" />
+            )}
+            {/* 🆕 [Phase 8-4] Intui 공항 픽업 검색 위젯 */}
+            {type === 'airport_transfer' && (
+                <IntuiWidget />
             )}
         </div>
     );

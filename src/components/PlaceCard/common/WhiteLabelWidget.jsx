@@ -1,16 +1,34 @@
 import React, { useState } from 'react';
-import { Loader2, Search, Plane, X, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Loader2, Search, Plane, Bed, X, ExternalLink, ShieldCheck } from 'lucide-react';
 
 /**
- * Travelpayouts 화이트 라벨(White Label) 검색 모달 연동 컴포넌트
- * 기존 위젯 방식의 스크롤 충돌을 해결하기 위해 모달 & iframe 방식으로 리팩토링됨.
+ * Travelpayouts 화이트 라벨(White Label) 통합 검색 모달 연동 컴포넌트
+ * @param {string} locationName - 목적지 이름
+ * @param {string} type - 'flight' (항공권) 또는 'hotel' (숙박)
  */
-const WhiteLabelWidget = ({ locationName }) => {
+const WhiteLabelWidget = ({ locationName, type = 'flight' }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isIframeLoading, setIsIframeLoading] = useState(true);
 
-    // CNAME으로 연결한 사용자 화이트라벨 전용 도메인
-    const WHITELABEL_URL = 'https://flights.gateo.kr';
+    const isHotel = type === 'hotel';
+
+    // CNAME으로 연결한 사용자 화이트라벨 전용 도메인 (호텔의 경우 /hotels 경로로 진입)
+    const BASE_URL = 'https://flights.gateo.kr';
+    const WHITELABEL_URL = isHotel ? `${BASE_URL}/hotels` : BASE_URL;
+
+    // UI 분기
+    const IconComponent = isHotel ? Bed : Plane;
+    const titleText = isHotel ? "글로벌 최저가 호텔 통합 검색" : "글로벌 최저가 항공권 통합 검색";
+    const highlightText = isHotel ? "숙소/호텔" : "항공권";
+    // 모달 아이콘 테마
+    const iconColor = isHotel ? "text-indigo-500" : "text-blue-500";
+    const iconBgColor = isHotel ? "bg-indigo-100" : "bg-blue-100";
+    const iconTextColor = isHotel ? "text-indigo-600" : "text-blue-600";
+
+    // 트리거 버튼 색상 (2안: 하늘색/보라색 파스텔톤)
+    const buttonColors = isHotel
+        ? "bg-violet-50 hover:bg-violet-100 text-violet-700 border-violet-200"
+        : "bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200";
 
     // body 스크롤 방지 (모달 오픈 시)
     React.useEffect(() => {
@@ -26,54 +44,31 @@ const WhiteLabelWidget = ({ locationName }) => {
 
     return (
         <>
-            {/* 트리거 버튼 디자인 (기존 카드 디자인 유지 및 클릭 유도) */}
+            {/* 트리거 버튼 디자인 (심플 파스텔 버튼) */}
             <button
                 onClick={() => {
                     setIsIframeLoading(true);
                     setIsModalOpen(true);
                 }}
-                className="w-full mt-5 bg-white border border-blue-200 hover:border-blue-400 rounded-2xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(59,130,246,0.1)] hover:shadow-blue-200/50 transition-all duration-300 relative group flex flex-col text-left"
+                className={`flex items-center justify-center gap-1.5 w-full mt-3 py-3 min-h-[44px] rounded-xl text-xs font-semibold transition-colors border ${buttonColors}`}
+                aria-label={titleText}
             >
-                {/* 상단 장식 헤더 바 */}
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2 text-white">
-                        <Plane size={18} className="animate-pulse" />
-                        <span className="text-sm font-bold tracking-wide">글로벌 최저가 항공권 통합 검색</span>
-                    </div>
-                    <ExternalLink size={16} className="text-white/80 group-hover:text-white transition-colors" />
-                </div>
-
-                {/* 본문 안내 영역 */}
-                <div className="p-5 flex flex-col items-center justify-center bg-blue-50/30 gap-3">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-blue-100 group-hover:scale-110 transition-transform">
-                        <Search size={24} className="text-blue-500" />
-                    </div>
-                    <div className="text-center">
-                        <h4 className="text-sm font-black text-gray-800 mb-1">
-                            여기를 눌러 {locationName ? <span className="text-blue-600">'{locationName}'행</span> : ''} 항공권 검색하기
-                        </h4>
-                        <p className="text-[11px] text-gray-500 font-medium">새 창에서 스크롤 꼬임 없이 쾌적하게 검색하세요</p>
-                    </div>
-                </div>
-
-                {/* 하단 신뢰도 문구 */}
-                <div className="bg-gray-50 border-t border-gray-100 px-4 py-2.5 flex flex-col sm:flex-row justify-between items-center text-[10px] text-gray-400 font-medium gap-1">
-                    <span className="flex items-center gap-1"><ShieldCheck size={12} className="text-green-500"/> 스카이스캐너, 아고다 등 전세계 예약망 연동</span>
-                    <span>실시간 가격 비교 시스템</span>
-                </div>
+                <IconComponent size={14} />
+                <span>{titleText}</span>
+                <Search size={12} className="ml-0.5 opacity-80" />
             </button>
 
-            {/* 전체 화면 항공권 검색 모달 (z-[100]으로 최상단 배치) */}
+            {/* 전체 화면 항공권/숙박 검색 모달 (z-[100]으로 최상단 배치) */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex flex-col bg-white animate-fade-in overscroll-none touch-pan-y">
                     {/* 모달 헤더 (닫기 버튼 포함) */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white shadow-sm z-20 shrink-0">
                         <div className="flex items-center gap-2">
-                            <div className="bg-blue-100 p-1.5 rounded-lg text-blue-600">
-                                <Plane size={18} />
+                            <div className={`${iconBgColor} p-1.5 rounded-lg ${iconTextColor}`}>
+                                <IconComponent size={18} />
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900 leading-tight text-sm">항공권 검색</h3>
+                                <h3 className="font-bold text-gray-900 leading-tight text-sm">{highlightText} 검색</h3>
                                 <p className="text-[10px] text-gray-500">flights.gateo.kr</p>
                             </div>
                         </div>
