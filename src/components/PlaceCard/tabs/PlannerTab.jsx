@@ -48,10 +48,15 @@ const IntuiWidget = () => {
     }, []);
 
     return (
-        <div className="w-full mt-3 bg-[#f8f9fa] rounded-xl overflow-hidden flex items-center justify-center min-h-[60px]">
+        <div className="w-full mt-3 bg-[#f8f9fa] rounded-xl flex items-center justify-center min-h-[60px] relative z-10">
             <div ref={containerRef} className="w-full" />
         </div>
     );
+};
+
+// 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 (Search Form) - 높이/이탈 이슈로 임시 비활성화
+const HotelWidget = ({ location }) => {
+    return null;
 };
 
 // 🆕 [Phase 8] 복잡한 여행지 특화 컴포넌트: 출발 전 필수 체크리스트
@@ -178,7 +183,12 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
         switch (type) {
             case 'accommodation':
-                // 아고다, 부킹닷컴 파트너 반려로 임시 제거
+                // TravelPayouts 위젯 보류로 인해 임시 구글 호텔 링크 복구
+                links.push({
+                    url: `https://www.google.com/travel/search?q=${encodedQuery}%20hotels`,
+                    text: '구글 호텔 최저가 검색',
+                    colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                });
                 break;
             case 'flight':
                 // 스카이스캐너, 트립닷컴 제거 (하단의 WhiteLabelWidget 통합 검색으로 완벽히 대체됨)
@@ -339,12 +349,13 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 </div>
             )}
 
-            {/* Travelpayouts 화이트 라벨 위젯 (항공권 및 숙박 통합 검색) */}
+            {/* Travelpayouts 화이트 라벨 위젯 (항공권 검색 전용) */}
             {type === 'flight' && (
                 <WhiteLabelWidget locationName={location?.name} type="flight" />
             )}
+            {/* 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 */}
             {type === 'accommodation' && (
-                <WhiteLabelWidget locationName={location?.name} type="hotel" />
+                <HotelWidget location={location} />
             )}
             {/* 🆕 [Phase 8-4] Intui 공항 픽업 검색 위젯 */}
             {type === 'airport_transfer' && (

@@ -12,9 +12,14 @@ const WhiteLabelWidget = ({ locationName, type = 'flight' }) => {
 
     const isHotel = type === 'hotel';
 
-    // CNAME으로 연결한 사용자 화이트라벨 전용 도메인 (호텔의 경우 /hotels 경로로 진입)
+    // CNAME으로 연결한 사용자 화이트라벨 전용 도메인
     const BASE_URL = 'https://flights.gateo.kr';
-    const WHITELABEL_URL = isHotel ? `${BASE_URL}/hotels` : BASE_URL;
+
+    // 404 방지: /hotels 대신 SPA 해시 라우팅(#/hotels) 및 목적지 파라미터 적용 (자연스러운 흐름)
+    const encodedLocation = locationName ? encodeURIComponent(locationName) : '';
+    const WHITELABEL_URL = isHotel
+        ? `${BASE_URL}/#hotels?destination=${encodedLocation}`
+        : `${BASE_URL}/?destination_name=${encodedLocation}`;
 
     // UI 분기
     const IconComponent = isHotel ? Bed : Plane;
@@ -109,7 +114,6 @@ const WhiteLabelWidget = ({ locationName, type = 'flight' }) => {
                             title="Travelpayouts White Label Search"
                             onLoad={() => setIsIframeLoading(false)}
                             allow="geolocation; clipboard-write"
-                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
                         />
                     </div>
                 </div>
