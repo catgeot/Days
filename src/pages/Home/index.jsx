@@ -103,7 +103,11 @@ function Home() {
   }, [routeLocation.search]);
 
   useEffect(() => {
-    const match = matchPath({ path: "/place/:slug" }, routeLocation.pathname);
+    let match = matchPath({ path: "/place/:slug" }, routeLocation.pathname);
+    if (!match) {
+      match = matchPath({ path: "/place/:slug/:tab" }, routeLocation.pathname);
+    }
+
     if (match && match.params.slug) {
       let targetSlug = match.params.slug;
       try {
