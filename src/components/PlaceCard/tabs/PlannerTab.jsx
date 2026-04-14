@@ -200,16 +200,23 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                     text: 'Airalo (eSIM)',
                     colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
                 });
+                const klookWifiTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20유심`;
+                const klookWifiDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookWifiTargetUrl)}`;
+
                 links.push({
-                    // 클룩 방화벽(WAF) 차단 이슈로 인해 딥링크 대신 안전한 기본 도메인(단축 링크)으로 롤백
-                    url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
+                    // 클룩 다이렉트 어필리에이트 동적 딥링크
+                    url: klookWifiDeepLink,
                     text: '클룩 유심/와이파이',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
                 break;
             case 'transport':
+                // 클룩 다이렉트 어필리에이트 동적 딥링크
+                const klookTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}`;
+                const klookDirectDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTargetUrl)}`;
+
                 links.push({
-                    url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
+                    url: klookDirectDeepLink,
                     text: '클룩 (Klook)',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
@@ -230,8 +237,11 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 break;
             case 'ferry_booking':
                 // 12Go 반려로 제거
+                const klookFerryTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20페리`;
+                const klookFerryDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookFerryTargetUrl)}`;
+
                 links.push({
-                    url: getAffiliateLink(`https://www.klook.com/ko/`, 'klook', { campaign: 'toolkit', locationName: location?.name }),
+                    url: klookFerryDeepLink,
                     text: '클룩 페리 예약',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
