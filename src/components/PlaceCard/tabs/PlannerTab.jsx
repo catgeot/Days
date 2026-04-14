@@ -30,30 +30,6 @@ const THEME_COLORS = {
     }
 };
 
-// 🆕 [Phase 8-4] Intui.travel 공항 픽업 전용 위젯 컴포넌트
-const IntuiWidget = () => {
-    const containerRef = useRef(null);
-
-    useEffect(() => {
-        // 중복 렌더링 방지
-        if (containerRef.current && containerRef.current.children.length === 0) {
-            const script = document.createElement('script');
-            // 일단 locale=en 사용 (한국어 미지원 우려에 대한 안정성)
-            script.src = "https://tpscr.com/content?trs=510155&shmarker=712550&powered_by=true&locale=en&color_scheme=basic&pbi=0&ag=15&ap=124&re=1081&promo_id=3466&campaign_id=22";
-            script.async = true;
-            script.charset = "utf-8";
-
-            containerRef.current.appendChild(script);
-        }
-    }, []);
-
-    return (
-        <div className="w-full mt-3 bg-[#f8f9fa] rounded-xl flex items-center justify-center min-h-[60px] relative z-10">
-            <div ref={containerRef} className="w-full" />
-        </div>
-    );
-};
-
 // 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 (Search Form) - 높이/이탈 이슈로 임시 비활성화
 const HotelWidget = ({ location }) => {
     return null;
@@ -223,16 +199,22 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 // 12Go 반려로 제거
                 break;
             case 'airport_transfer':
-                // Intui.travel 동적 딥링크 생성 (사용자 Marker: 712550, Program ID: 657)
-                const intuiTargetUrl = 'https://en.intui.travel/';
-                const intuiEncodedUrl = encodeURIComponent(intuiTargetUrl);
-                // campaign 파라미터에 현재 도시 이름을 넣어 어떤 도시에서 클릭이 발생했는지 대시보드에서 추적 가능하게 함
-                const intuiDeepLink = `https://tp.media/r?campaign_id=22&marker=712550&p=657&trs=510155&campaign=${encodedQuery}&u=${intuiEncodedUrl}`;
+                const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
+                const klookTransferDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTransferTargetUrl)}`;
+
+                const klookCarRentalTargetUrl = `https://www.klook.com/ko/car-rentals/`;
+                const klookCarRentalDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookCarRentalTargetUrl)}`;
 
                 links.push({
-                    url: intuiDeepLink,
-                    text: 'Intui 공항 픽업 (글로벌)',
+                    url: klookTransferDeepLink,
+                    text: '공항 픽업 예약',
                     colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                });
+
+                links.push({
+                    url: klookCarRentalDeepLink,
+                    text: '렌터카 검색',
+                    colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
                 });
                 break;
             case 'ferry_booking':
@@ -366,10 +348,6 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             {/* 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 */}
             {type === 'accommodation' && (
                 <HotelWidget location={location} />
-            )}
-            {/* 🆕 [Phase 8-4] Intui 공항 픽업 검색 위젯 */}
-            {type === 'airport_transfer' && (
-                <IntuiWidget />
             )}
         </div>
     );
