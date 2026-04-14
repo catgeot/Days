@@ -187,16 +187,36 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 });
                 break;
             case 'transport':
-                // 클룩 다이렉트 어필리에이트 동적 딥링크
-                const klookTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}`;
-                const klookDirectDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTargetUrl)}`;
-
+                // 1. 클룩 교통/레일 패스
+                const klookPassTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20교통%20패스`;
                 links.push({
-                    url: klookDirectDeepLink,
-                    text: '클룩 (Klook)',
+                    url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookPassTargetUrl)}`,
+                    text: '교통/레일 패스',
+                    colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                });
+
+                // 2. 클룩 렌터카 검색
+                const klookCarTargetUrl = `https://www.klook.com/ko/car-rentals/`;
+                links.push({
+                    url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookCarTargetUrl)}`,
+                    text: '렌터카 검색',
+                    colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                });
+
+                // 3. 투어 및 액티비티 검색
+                const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20투어`;
+                links.push({
+                    url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTourTargetUrl)}`,
+                    text: '일일 투어/액티비티',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
-                // 12Go 반려로 제거
+
+                // 4. 오토바이/스쿠터 대여 (BikesBooking 어필리에이트)
+                links.push({
+                    url: `https://bikesbooking.tp.st/HymHjnL8`,
+                    text: '오토바이/스쿠터 대여',
+                    colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
+                });
                 break;
             case 'airport_transfer':
                 const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
@@ -224,7 +244,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
                 links.push({
                     url: klookFerryDeepLink,
-                    text: '클룩 페리 예약',
+                    text: '페리/크루즈 예약',
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
                 break;
@@ -296,6 +316,13 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
     const links = getMultiLinks();
 
+    const getAdviceText = () => {
+        if (!data) return null;
+        if (typeof data === 'string') return data;
+        if (Array.isArray(data)) return data.join('\n- ');
+        return data.advice || data.text || data.description || null;
+    };
+
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group`}>
             {/* Label */}
@@ -320,7 +347,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             </div>
 
             <p className="text-sm text-gray-700 leading-[1.7] mb-5 flex-1 select-text break-keep">
-                <CopyableText text={cleanAdviceText(data?.advice)} locationName={location?.name} type={type} />
+                <CopyableText text={cleanAdviceText(getAdviceText())} locationName={location?.name} type={type} />
             </p>
 
             {links.length > 0 && (
@@ -647,35 +674,36 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                 )}
 
                 <div className="grid grid-cols-1 gap-5">
-                    {/* 특화 예약: 공항 픽업 및 페리 (is_complex가 true일 때만 또는 해당 카테고리가 있을 때만 표시) */}
+                    {/* 1. 출입국 준비 */}
+                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="warning" />
+
+                    {/* 2. 이동 수단 */}
+                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="default" />
+
+                    {/* 3. 숙소 */}
+                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="default" />
+
+                    {/* 4. 특화 예약: 공항 픽업 및 페리 */}
                     {(guideData?.categories?.airport_transfer) && (
                         <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} themeColor="default" />
                     )}
                     {(guideData?.categories?.ferry_booking) && (
                         <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="default" />
                     )}
-                    {/* 1. 먼저 어디를 갈지 확인 - 초록 (자연, 탐험) */}
-                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
 
-                    {/* 2. 출입국 준비 - 파랑 (공식, 신뢰) */}
-                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="warning" />
+                    {/* 5. 현지 연결 */}
+                    <ToolkitCard icon={Wifi} title="유심 및 와이파이" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="default" />
 
-                    {/* 3. 이동 수단 - 하늘 (비행, 자유) */}
-                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="default" />
-
-                    {/* 4. 숙소 - 보라 (편안함, 휴식) */}
-                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="default" />
-
-                    {/* 5. 현지 연결 - 청록 (통신, 기술) */}
-                    <ToolkitCard icon={Wifi} title="유심 및 공항픽업" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="default" />
-
-                    {/* 6. 현지 이동 - 녹색 (Go, 진행) */}
+                    {/* 6. 현지 이동 */}
                     <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="default" />
 
-                    {/* 7. 편의 도구 - 황금 (가치, 도구) */}
+                    {/* 7. 편의 도구 */}
                     <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="default" />
 
-                    {/* 8. 안전 정보 - 빨강 (주의, 중요) */}
+                    {/* 8. 지도 및 명소 */}
+                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
+
+                    {/* 9. 안전 정보 */}
                     <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} themeColor="danger" />
                 </div>
 
