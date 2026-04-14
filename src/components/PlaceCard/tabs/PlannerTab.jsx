@@ -626,7 +626,7 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                 {/* 🆕 [Phase 8] 복잡한 여행지 배지 및 확장 컴포넌트 */}
                 {guideData?.is_complex && (
                     <div className="mb-6 animate-fade-in">
-                        <div className="bg-red-50/80 border border-red-200 rounded-xl p-4 mb-5 flex items-start gap-3 shadow-sm">
+                        <div className="bg-red-50/80 border border-red-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
                             <AlertCircle size={20} className="text-red-600 mt-0.5 shrink-0" />
                             <div>
                                 <h4 className="font-bold text-red-900 text-sm">이 여행지는 복잡한 준비가 필요합니다!</h4>
@@ -635,12 +635,14 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                                 </p>
                             </div>
                         </div>
+                    </div>
+                )}
 
-                        {/* 체크리스트 및 타임라인 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-2">
-                            <PreTravelChecklist items={guideData.categories?.pre_travel || []} />
-                            <JourneyTimeline timeline={guideData.journey_timeline || []} />
-                        </div>
+                {/* 체크리스트 및 타임라인 (상시 렌더링) */}
+                {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <PreTravelChecklist items={guideData?.categories?.pre_travel || []} />
+                        <JourneyTimeline timeline={guideData?.journey_timeline || []} />
                     </div>
                 )}
 
