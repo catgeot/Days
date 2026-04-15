@@ -49,34 +49,55 @@ export const getMultiLinks = ({ type, data, location }) => {
 
     switch (type) {
         case 'accommodation':
-            // 1. 일반 숙소 검색 버튼 (마이리얼트립)
-            links.push({
-                isMrt: true,
-                mrtQuery: `${searchQuery} 숙소`,
-                text: `${location?.name || '현지'} 숙소 검색`,
-                colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
-            });
+            let regions = [];
 
-            // 2. AI 큐레이션 동적 지역명 파싱 (예: "웨스트랜즈 (Westlands) -" 형식에서 추출)
+            // 1. AI 큐레이션 동적 지역명 파싱 ([@명칭@] 형태에서 추출)
             if (data?.advice) {
-                const regionRegex = /([가-힣]+(?:\s[가-힣]+)*)\s*\([A-Za-z\s-]+\)(?=\s*(?:-|–|:))/g;
-                let match;
-                let regions = [];
-                while ((match = regionRegex.exec(data.advice)) !== null) {
-                    const koreanName = match[1].trim();
-                    // 너무 긴 텍스트(문장 전체 매칭 등) 방지 및 중복 방지
-                    if (koreanName.length <= 15 && !regions.includes(koreanName)) {
-                        regions.push(koreanName);
+                // advice 원본 텍스트에 cleanAdviceText를 거친 후 파싱
+                const cleanedAdvice = cleanAdviceText(data.advice);
+                const lines = cleanedAdvice.split('\n');
+
+                for (const line of lines) {
+                    // 부정적인 내용이 포함된 줄은 숙소 추천 검색 버튼에서 제외
+                    if (line.includes('피해') || line.includes('피할') || line.includes('비추천') || line.includes('주의') || line.includes('단점')) {
+                        continue;
+                    }
+
+                    // 각 줄에서 가장 첫 번째 등장하는 [@ ... @] 패턴만 추출 (과도한 버튼 생성 방지)
+                    const regionRegex = /\[@([^\]@]+)@\]/;
+                    const match = regionRegex.exec(line);
+
+                    if (match) {
+                        const extractedName = match[1].trim();
+                        // 너무 긴 텍스트(문장 전체 매칭 등) 방지 및 중복 방지
+                        if (extractedName.length <= 25 && !regions.includes(extractedName)) {
+                            regions.push(extractedName);
+                        }
                     }
                 }
 
                 regions.forEach(region => {
+                    // 상위 여행지명(searchQuery)과 겹치지 않으면 합쳐서 검색하여 마이리얼트립 검색 결과 퀄리티 상승
+                    // 예: "뮤리 해변" (region) + "라로통가" (searchQuery) => "뮤리 해변 라로통가 숙소"
+                    const isOverlapping = region.includes(searchQuery) || searchQuery.includes(region);
+                    const finalSearchTerm = isOverlapping ? region : `${region} ${searchQuery}`;
+
                     links.push({
                         isMrt: true,
-                        mrtQuery: `${region} 숙소`,
+                        mrtQuery: `${finalSearchTerm} 숙소`,
                         text: `[${region}] 숙박 찾기`,
                         colorClass: 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200'
                     });
+                });
+            }
+
+            // 2. 일반 숙소 검색 버튼 (마이리얼트립) - 세부 지역 추천이 하나도 추출되지 않았을 때만 폴백으로 노출
+            if (regions.length === 0) {
+                links.push({
+                    isMrt: true,
+                    mrtQuery: `${searchQuery} 숙소`,
+                    text: `${location?.name || '현지'} 숙소 검색`,
+                    colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                 });
             }
 
@@ -208,23 +229,25 @@ export const getMultiLinks = ({ type, data, location }) => {
             });
 
             // 3. 식당 예약 플랫폼 (지역별 동적 분기 및 수익화)
-            let diningUrl = `https://www.thefork.com/search?cityId=${encodedQuery}`;
+            let diningUrl = `https://www.thefork.com/`; // 기본값 홈으로 변경
             let diningText = `${location?.name || '현지'} 식당 예약`;
+            let isDiningMatched = false;
 
             for (const item of DINING_RESERVATION_LINKS) {
                 if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
                     diningUrl = item.type === 'query' ? `${item.url}${encodedQuery}` : item.url;
                     diningText = `${item.name} 식당 예약`;
+                    isDiningMatched = true;
                     break;
                 }
             }
 
             // Klook F&B (글로벌 범용/아시아 특화 수익화)
-            // 타베로그나 TheFork에 매핑되지 않은 기타 지역은 범용적으로 클룩 다이닝 딥링크 제공
-            if (diningText.includes('현지 식당 예약')) {
-                const klookDiningTargetUrl = `https://www.klook.com/ko/food-and-dining/`;
+            // 타베로그나 TheFork에 매핑되지 않은 기타 지역은 범용적으로 클룩 다이닝 검색 딥링크 제공
+            if (!isDiningMatched) {
+                const klookDiningTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20레스토랑`;
                 diningUrl = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookDiningTargetUrl)}`;
-                diningText = 'Klook 다이닝 예약';
+                diningText = 'Klook 레스토랑 검색';
             }
 
             links.push({

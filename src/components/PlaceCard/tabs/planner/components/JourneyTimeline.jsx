@@ -8,7 +8,10 @@ const getActionForStep = (title, locationName) => {
     const text = title.toLowerCase();
     const query = encodeURIComponent(locationName || '');
 
-    if (text.includes('공항') && (text.includes('도착') || text.includes('이동') || text.includes('픽업'))) {
+    // 경유/환승일 경우 공항 픽업 버튼 생성 방지
+    const isTransfer = text.includes('환승') || text.includes('경유');
+
+    if (!isTransfer && text.includes('공항') && (text.includes('도착') || text.includes('이동') || text.includes('픽업'))) {
         const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
         return {
             label: '공항 픽업',

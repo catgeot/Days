@@ -52,7 +52,7 @@ export const LUGGAGE_STORAGE_LINKS = [
 // 🆕 [Phase 8-7] 글로벌 식당 예약 서비스 매핑 (수익화 및 지역 커버리지)
 export const DINING_RESERVATION_LINKS = [
     { keywords: ['일본', '도쿄', '오사카', '후쿠오카', '삿포로', '교토', '오키나와'], url: 'https://tabelog.com/ko/', name: '타베로그(Tabelog)', type: 'direct' },
-    { keywords: ['유럽', '프랑스', '파리', '이탈리아', '로마', '스페인', '바르셀로나', '독일', '영국', '런던'], url: 'https://www.thefork.com/search?cityId=', name: 'TheFork', type: 'query' },
+    { keywords: ['유럽', '프랑스', '파리', '이탈리아', '로마', '스페인', '바르셀로나', '독일', '영국', '런던'], url: 'https://www.thefork.com/', name: 'TheFork', type: 'direct' },
 ];
 
 // 🆕 [Phase 6-5] 로딩 메시지에 이모지 추가 및 카드 순서에 맞게 재배치
