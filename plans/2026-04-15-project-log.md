@@ -24,7 +24,24 @@
   - 사용자는 여행 준비 단계별로 필요한 액션을 명확히 인지하게 되어 서비스 체류 시간과 제휴 수익 전환율(CTA)이 동반 상승할 것으로 기대.
   - 라로통가 같은 다단계 복잡한 여행지의 경우 타임라인 단계에서 바로 예약을 진행할 수 있어 UX가 극대화됨.
 
-## 2. 추가 진행 내용 (마이리얼트립 파트너스 연동)
+## 2. 추가 진행 내용 (마이리얼트립 파트너스 연동 및 리팩토링)
+
+### [Phase 8-7] 플래너 탭(PlannerTab) 전면 컴포넌트 리팩토링
+- **작업 목적**:
+  - `PlannerTab.jsx` 파일이 920줄 이상으로 비대해져 유지보수성이 저하됨에 따라, 컴포넌트/로직/상수를 철저하게 분리하는 전면 구조 개편 진행.
+- **주요 구현 사항 (`src/components/PlaceCard/tabs/planner/`)**:
+  - **상수 분리**: `constants.js` 생성 (`THEME_COLORS`, `LOADING_MESSAGES`, `OFFICIAL_VISA_LINKS` 등 분리)
+  - **비즈니스 로직 분리**: `utils.js` 생성 (`getMultiLinks` 등 복잡한 제휴 링크 발급 로직과 텍스트 정제 함수 분리)
+  - **서브 컴포넌트 분리**: `components/` 디렉토리를 신설하여 하위 UI 요소를 개별 파일로 분할
+    - `ToolkitCard.jsx`: 개별 카드 컴포넌트
+    - `JourneyTimeline.jsx`: 여정 타임라인 및 액션 버튼 로직 (`getActionForStep`)
+    - `PreTravelChecklist.jsx`: 준비사항 체크리스트
+    - `MrtDynamicLink.jsx` / `MrtTimelineAction.jsx`: 마이리얼트립 동적 링크 버튼
+    - `HotelWidget.jsx`: 임시 비활성 위젯
+  - **메인 래퍼 최적화**: 메인 파일 `PlannerTab.jsx`는 상태 관리와 전체 레이아웃 배치만 담당하도록 350줄 수준으로 대폭 축소.
+- **기대 효과**:
+  - 기능 추가나 디자인 수정 시 해당 파일만 찾아서 빠르고 안전하게 수정 가능.
+  - 전반적인 가독성과 코드 유지보수성이 획기적으로 향상됨.
 
 ### [Phase 8-6] 링크 전략 고도화 및 파트너사 전환 (마이리얼트립 도입)
 - **작업 목적**:
@@ -42,7 +59,11 @@
   - 동적 링크 생성 아키텍처가 검증되었으며, 다음 세션부터 투어, 패스, 항공권 등 다른 영역의 링크도 마이리얼트립으로 손쉽게 전환/확장 가능해짐.
 
 ## 3. 변경된 파일
-- `src/components/PlaceCard/tabs/PlannerTab.jsx`
+- `src/components/PlaceCard/tabs/PlannerTab.jsx` (경량화)
+- `src/components/PlaceCard/tabs/planner/` (신규 디렉토리)
+  - `constants.js`
+  - `utils.js`
+  - `components/*.jsx` (ToolkitCard, JourneyTimeline 등 6개 파일)
 - `src/utils/affiliate.js`
 - `supabase/functions/mrt-link-generator/index.ts`
 - `supabase/functions/mrt-link-generator/deno.json`
