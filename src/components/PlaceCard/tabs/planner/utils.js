@@ -1,5 +1,5 @@
 import { getAffiliateLink } from '../../../../utils/affiliate';
-import { OFFICIAL_VISA_LINKS } from './constants';
+import { OFFICIAL_VISA_LINKS, LUGGAGE_STORAGE_LINKS } from './constants';
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
 export const cleanAdviceText = (text) => {
@@ -101,12 +101,20 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
-            // 3. 투어 및 액티비티 검색
-            const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20투어`;
+            // 3. 투어 및 액티비티 검색 (클룩 - 어트랙션/패스 강점)
+            const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20어트랙션`;
             links.push({
                 url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTourTargetUrl)}`,
-                text: `${location?.name || '현지'} 인기 투어`,
+                text: '어트랙션/패스 (Klook)',
                 colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
+            });
+
+            // 3-1. 한국어 가이드 투어 (마이리얼트립 - 워킹투어/도슨트 강점)
+            links.push({
+                isMrt: true,
+                mrtQuery: `${searchQuery} 가이드 투어`,
+                text: '한국어 가이드 투어 (MRT)',
+                colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
             // 4. 오토바이/스쿠터 대여 (BikesBooking 어필리에이트)
@@ -116,10 +124,22 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
             });
 
-            // 5. 짐 보관 서비스 (Radical Storage 등)
+            // 5. 짐 보관 서비스 (지역별 동적 매핑)
+            let luggageStorageUrl = `https://usebounce.com/ko/city/${encodedQuery.toLowerCase()}`;
+            let luggageStorageName = 'Bounce (글로벌 짐 보관)';
+
+            const searchLocationTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
+            for (const item of LUGGAGE_STORAGE_LINKS) {
+                if (item.keywords.some(kw => searchLocationTarget.includes(kw.toLowerCase()))) {
+                    luggageStorageUrl = item.url;
+                    luggageStorageName = item.name;
+                    break;
+                }
+            }
+
             links.push({
-                url: `https://usebounce.com/ko/city/${encodedQuery.toLowerCase()}`,
-                text: '근처 짐 보관소',
+                url: luggageStorageUrl,
+                text: `${luggageStorageName} 찾기`,
                 colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
             });
             break;

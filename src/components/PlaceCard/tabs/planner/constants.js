@@ -37,7 +37,15 @@ export const OFFICIAL_VISA_LINKS = [
     { keywords: ['e-Arrival', '캄보디아', '씨엠립', '프놈펜'], url: 'https://www.arrival.gov.kh/', label: '캄보디아 e-Arrival (도착비자)' },
     { keywords: ['이집트', '카이로', '다합', '후르가다'], url: 'https://www.visa2egypt.gov.eg/eVisa/', label: '이집트 e-Visa 공식 포털' },
     { keywords: ['인도', '뉴델리', '뭄바이'], url: 'https://indianvisaonline.gov.in/evisa/', label: '인도 e-Visa 공식 신청' },
+    { keywords: ['eTA', '케냐', '나이로비'], url: 'https://www.etakenya.go.ke/', label: '케냐 eTA 공식 신청' },
     { keywords: ['ETIAS', '유럽', '프랑스', '이탈리아', '스페인', '독일', '스위스', '영국'], url: 'https://travel-europe.europa.eu/etias_en', label: '유럽 ETIAS (시행 예정 확인)' }
+];
+
+// 🆕 [Phase 8-7] 글로벌 짐 보관소 지역별 매핑
+export const LUGGAGE_STORAGE_LINKS = [
+    { keywords: ['일본', '도쿄', '오사카', '후쿠오카', '삿포로', '교토'], name: 'ecbo cloak', url: 'https://cloak.ecbo.io/ko' },
+    { keywords: ['프랑스', '파리', '이탈리아', '로마', '밀라노', '유럽', '스페인', '런던'], name: 'Nannybag', url: 'https://www.nannybag.com/ko' },
+    // default는 utils.js에서 Bounce로 처리
 ];
 
 // 🆕 [Phase 6-5] 로딩 메시지에 이모지 추가 및 카드 순서에 맞게 재배치

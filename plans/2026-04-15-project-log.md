@@ -61,17 +61,27 @@
 ## 3. 변경된 파일
 - `src/components/PlaceCard/tabs/PlannerTab.jsx` (경량화)
 - `src/components/PlaceCard/tabs/planner/` (신규 디렉토리)
-  - `constants.js`
-  - `utils.js`
+  - `constants.js` (케냐 eTA 및 짐 보관소 매핑 추가)
+  - `utils.js` (클룩/MRT 하이브리드 투어 버튼 및 짐 보관소 매핑 적용)
   - `components/*.jsx` (ToolkitCard, JourneyTimeline 등 6개 파일)
+- `src/components/PlaceCard/common/WhiteLabelWidget.jsx` (createPortal 적용)
 - `src/utils/affiliate.js`
 - `supabase/functions/mrt-link-generator/index.ts`
 - `supabase/functions/mrt-link-generator/deno.json`
 - `plans/phase8-6-mrt-integration-plan.md` (기획 문서 생성)
 - `plans/2026-04-15-project-log.md`
 
-## 4. Next Steps
-- [ ] **[Phase 8-7] 마이리얼트립 링크 적용 확대 및 툴킷 최적화**: 다음 세션에서는 숙박 외에 항공권, 짐 보관소 및 일부 버튼 이동 등 여러 세부 사항에 대한 최적화를 진행 예정.
+## 4. 추가 수정 사항 (버그 픽스 및 최적화)
+- **[Bug Fix] 플래너 탭 케냐 eTA 링크 매핑 오류 수정**: 
+  - `constants.js`의 `OFFICIAL_VISA_LINKS` 배열에 케냐 eTA 공식 웹사이트(`https://www.etakenya.go.ke/`) 매핑을 추가하여, AI 안내 문구에 맞춰 정확한 링크가 노출되도록 조치함.
+- **[UI Fix] 모바일 환경 항공권 검색 모달(Travelpayouts) 닫기 버튼 가림 현상 수정**:
+  - `WhiteLabelWidget.jsx`의 모달 렌더링 방식을 `createPortal`로 변경하여 부모 컨테이너의 stacking context 제약(z-index 함정)을 완벽히 탈피함 (`z-[9999]`).
+  - 모바일 OS의 Safe Area(상단 노치, 상태표시줄 등)를 고려해 헤더에 `paddingTop: 'max(1rem, env(safe-area-inset-top))'` 스타일을 적용하여 닫기 버튼 시인성 확보.
+- **[Phase 8-7] 마이리얼트립 링크 적용 확대 및 툴킷 최적화**:
+  - **투어 영역 하이브리드 배치**: 클룩(글로벌 어트랙션/패스 강점)과 마이리얼트립(한국어 가이드 워킹 투어 강점)의 버튼을 분리하고 나란히 배치하여 사용자의 선택권 보장 (`utils.js`).
+  - **글로벌 짐 보관소 동적 매핑**: 비자 링크 아키텍처를 응용하여 `constants.js`에 `LUGGAGE_STORAGE_LINKS` 매핑을 신설. 일본(ecbo cloak), 유럽(Nannybag) 등 지역 특화 짐 보관 서비스 업체를 우선 매칭하고, 그 외 지역은 글로벌 커버리지가 높은 Bounce로 폴백(Fallback) 연결하도록 `utils.js` 로직 고도화.
+
+## 5. Next Steps
 - [ ] [Phase 8-3 & 9] 복잡한 여행지 시스템 연동 (검색 모달 큐레이션)
 - [ ] [Phase 9-2] 여행지 데이터 100개 추가 (Phase 2 대기)
 - [ ] [Phase 10] 백엔드 프롬프트 개선 (DB 필드 구조 개선 등) 및 A/B 테스트 검증

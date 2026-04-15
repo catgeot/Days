@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Loader2, Search, Plane, Bed, X, ExternalLink, ShieldCheck } from 'lucide-react';
 
 /**
@@ -63,11 +64,14 @@ const WhiteLabelWidget = ({ locationName, type = 'flight' }) => {
                 <Search size={12} className="ml-0.5 opacity-80" />
             </button>
 
-            {/* 전체 화면 항공권/숙박 검색 모달 (z-[100]으로 최상단 배치) */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex flex-col bg-white animate-fade-in overscroll-none touch-pan-y">
-                    {/* 모달 헤더 (닫기 버튼 포함) */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white shadow-sm z-20 shrink-0">
+            {/* 전체 화면 항공권/숙박 검색 모달 (createPortal로 최상단 렌더링, z-[9999]) */}
+            {isModalOpen && createPortal(
+                <div className="fixed inset-0 z-[9999] flex flex-col bg-white animate-fade-in overscroll-none touch-pan-y">
+                    {/* 모달 헤더 (닫기 버튼 포함, 모바일 상단 노치/상태표시줄 고려 pt-safe) */}
+                    <div
+                        className="flex items-center justify-between px-4 pb-3 pt-4 border-b border-gray-200 bg-white shadow-sm z-20 shrink-0"
+                        style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+                    >
                         <div className="flex items-center gap-2">
                             <div className={`${iconBgColor} p-1.5 rounded-lg ${iconTextColor}`}>
                                 <IconComponent size={18} />
@@ -116,7 +120,8 @@ const WhiteLabelWidget = ({ locationName, type = 'flight' }) => {
                             allow="geolocation; clipboard-write"
                         />
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );
