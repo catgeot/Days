@@ -101,22 +101,6 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
-            // 3. 투어 및 액티비티 검색 (클룩 - 어트랙션/패스 강점)
-            const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20어트랙션`;
-            links.push({
-                url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTourTargetUrl)}`,
-                text: '어트랙션/패스 (Klook)',
-                colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
-            });
-
-            // 3-1. 한국어 가이드 투어 (마이리얼트립 - 워킹투어/도슨트 강점)
-            links.push({
-                isMrt: true,
-                mrtQuery: `${searchQuery} 가이드 투어`,
-                text: '한국어 가이드 투어 (MRT)',
-                colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
-            });
-
             // 4. 오토바이/스쿠터 대여 (BikesBooking 어필리에이트)
             links.push({
                 url: `https://bikesbooking.tp.st/HymHjnL8`,
@@ -183,7 +167,23 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
 
-            // 식당 예약 플랫폼
+            // 1. 투어 및 액티비티 검색 (클룩 - 어트랙션/패스 강점)
+            const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20어트랙션`;
+            links.push({
+                url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTourTargetUrl)}`,
+                text: '어트랙션/패스 (Klook)',
+                colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
+            });
+
+            // 2. 한국어 가이드 투어 (마이리얼트립 - 워킹투어/도슨트 강점)
+            links.push({
+                isMrt: true,
+                mrtQuery: `${searchQuery} 가이드 투어`,
+                text: '한국어 가이드 투어 (MRT)',
+                colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+            });
+
+            // 3. 식당 예약 플랫폼
             links.push({
                 url: `https://www.thefork.com/search?cityId=${encodedQuery}`,
                 text: `${location?.name || '현지'} 식당 예약`,

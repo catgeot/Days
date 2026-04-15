@@ -40,7 +40,7 @@ const getActionForStep = (title, locationName) => {
     if (text.includes('출발') || text.includes('항공') || text.includes('비행')) {
         return {
             label: '항공권 검색',
-            url: `https://search.kyte.travel/`,
+            url: `https://flights.gateo.kr/?destination_name=${query}`,
             icon: <Plane size={10} />,
             colorClass: 'bg-blue-50 text-blue-700 hover:bg-blue-100'
         };
