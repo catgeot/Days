@@ -82,6 +82,7 @@
   - **글로벌 짐 보관소 동적 매핑**: 비자 링크 아키텍처를 응용하여 `constants.js`에 `LUGGAGE_STORAGE_LINKS` 매핑을 신설. 일본(ecbo cloak), 유럽(Nannybag) 등 지역 특화 짐 보관 서비스 업체를 우선 매칭하고, 그 외 지역은 글로벌 커버리지가 높은 Bounce로 폴백(Fallback) 연결하도록 `utils.js` 로직 고도화.
 
 ## 5. Next Steps
+- [ ] **[Phase 8-8] 짐 보관소 세부 매핑 고도화**: 추후 Nannybag 어필리에이트 승인 완료 시, 프랑스 및 인접 지역 키워드 매핑을 Nannybag으로 분리 적용 예정.
 - [ ] [Phase 8-3 & 9] 복잡한 여행지 시스템 연동 (검색 모달 큐레이션)
 - [ ] [Phase 9-2] 여행지 데이터 100개 추가 (Phase 2 대기)
 - [ ] [Phase 10] 백엔드 프롬프트 개선 (DB 필드 구조 개선 등) 및 A/B 테스트 검증
