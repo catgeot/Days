@@ -1,5 +1,5 @@
 import { getAffiliateLink } from '../../../../utils/affiliate';
-import { OFFICIAL_VISA_LINKS, LUGGAGE_STORAGE_LINKS } from './constants';
+import { OFFICIAL_VISA_LINKS, LUGGAGE_STORAGE_LINKS, DINING_RESERVATION_LINKS } from './constants';
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
 export const cleanAdviceText = (text) => {
@@ -56,7 +56,30 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
-            // 2. 한인민박 검색 버튼 (마이리얼트립)
+            // 2. AI 큐레이션 동적 지역명 파싱 (예: "웨스트랜즈 (Westlands) -" 형식에서 추출)
+            if (data?.advice) {
+                const regionRegex = /([가-힣]+(?:\s[가-힣]+)*)\s*\([A-Za-z\s-]+\)(?=\s*(?:-|–|:))/g;
+                let match;
+                let regions = [];
+                while ((match = regionRegex.exec(data.advice)) !== null) {
+                    const koreanName = match[1].trim();
+                    // 너무 긴 텍스트(문장 전체 매칭 등) 방지 및 중복 방지
+                    if (koreanName.length <= 15 && !regions.includes(koreanName)) {
+                        regions.push(koreanName);
+                    }
+                }
+
+                regions.forEach(region => {
+                    links.push({
+                        isMrt: true,
+                        mrtQuery: `${region} 숙소`,
+                        text: `[${region}] 숙박 찾기`,
+                        colorClass: 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200'
+                    });
+                });
+            }
+
+            // 3. 한인민박 검색 버튼 (마이리얼트립)
             links.push({
                 isMrt: true,
                 mrtQuery: `${searchQuery} 한인민박`,
@@ -183,10 +206,29 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
-            // 3. 식당 예약 플랫폼
+            // 3. 식당 예약 플랫폼 (지역별 동적 분기 및 수익화)
+            let diningUrl = `https://www.thefork.com/search?cityId=${encodedQuery}`;
+            let diningText = `${location?.name || '현지'} 식당 예약`;
+
+            for (const item of DINING_RESERVATION_LINKS) {
+                if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
+                    diningUrl = item.type === 'query' ? `${item.url}${encodedQuery}` : item.url;
+                    diningText = `${item.name} 식당 예약`;
+                    break;
+                }
+            }
+
+            // Klook F&B (글로벌 범용/아시아 특화 수익화)
+            // 타베로그나 TheFork에 매핑되지 않은 기타 지역은 범용적으로 클룩 다이닝 딥링크 제공
+            if (diningText.includes('현지 식당 예약')) {
+                const klookDiningTargetUrl = `https://www.klook.com/ko/food-and-dining/`;
+                diningUrl = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookDiningTargetUrl)}`;
+                diningText = 'Klook 다이닝 예약';
+            }
+
             links.push({
-                url: `https://www.thefork.com/search?cityId=${encodedQuery}`,
-                text: `${location?.name || '현지'} 식당 예약`,
+                url: diningUrl,
+                text: diningText,
                 colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
             });
             break;
@@ -214,22 +256,41 @@ export const getMultiLinks = ({ type, data, location }) => {
             break;
         case 'visa':
             // 1. 키워드 매칭 기반 검증된 링크 우선 탐색 (할루시네이션 방지)
-            let foundOfficialLink = null;
-            // data.advice에 "한국인 무비자" 등이 포함되어 K-ETA 등으로 오인 매칭되는 것을 방지하기 위해 목적지(이름/국가)로만 매칭
+            const foundOfficialLinks = [];
+            // data.advice에 "한국인 무비자" 등이 포함되어 K-ETA 등으로 오인 매칭되는 것을 방지하기 위해 예외 처리 로직 추가
             const searchTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
+            const adviceTarget = (data?.advice || '').toLowerCase();
 
             for (const item of OFFICIAL_VISA_LINKS) {
-                if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
-                    foundOfficialLink = item;
-                    break;
+                // K-ETA의 경우 "한국인 무비자" 텍스트로 인한 오인식 방지: 목적지가 한국일 때만 허용
+                if (item.label.includes('K-ETA') && !(searchTarget.includes('한국') || searchTarget.includes('대한민국') || searchTarget.includes('서울'))) {
+                    continue;
+                }
+
+                // 첫 번째 키워드를 보통 '비자 종류(ESTA, eTA)'로 간주, 나머지를 '국가/도시명'으로 간주
+                const visaTypeKeyword = item.keywords[0].toLowerCase();
+                const locationKeywords = item.keywords.slice(1).map(kw => kw.toLowerCase());
+
+                // 1. 목적지 검색어(location.name 등)에 키워드 중 하나라도 매칭되는 경우 무조건 허용
+                const isLocationMatched = item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()));
+
+                // 2. advice 텍스트에 비자 종류 키워드와 해당 국가/도시 키워드가 '동시에' 존재하는지 확인 (엄격한 매칭)
+                const isAdviceMatched = adviceTarget.includes(visaTypeKeyword) && locationKeywords.some(kw => adviceTarget.includes(kw));
+
+                if (isLocationMatched || isAdviceMatched) {
+                    foundOfficialLinks.push(item);
                 }
             }
 
-            if (foundOfficialLink) {
-                links.push({
-                    url: foundOfficialLink.url,
-                    text: foundOfficialLink.label,
-                    colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+            if (foundOfficialLinks.length > 0) {
+                // 중복 제거 (라벨 기준)
+                const uniqueLinks = Array.from(new Map(foundOfficialLinks.map(item => [item.label, item])).values());
+                uniqueLinks.forEach(item => {
+                    links.push({
+                        url: item.url,
+                        text: item.label,
+                        colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                    });
                 });
             } else if (data?.official_url && data.official_url !== 'null' && data.official_url.startsWith('http')) {
                 // 2. 매칭된 정적 링크가 없고 AI가 반환한 URL이 유효할 때

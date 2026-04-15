@@ -19,9 +19,16 @@ const WhiteLabelWidget = ({ locationName, type = 'flight', customTrigger }) => {
 
     // 404 방지: /hotels 대신 SPA 해시 라우팅(#/hotels) 및 목적지 파라미터 적용 (자연스러운 흐름)
     const encodedLocation = locationName ? encodeURIComponent(locationName) : '';
+
+    // [Phase 8-3 & 9] Travelpayouts 예약 수집/추적용 Marker (Sub ID) 연동. 추후 비서앱 연동 시 auth user_id로 교체 가능.
+    // origin=SEL 파라미터를 추가하여 출발지를 한국으로 기본 세팅
+    const markerParams = `&marker=toolkit_session`;
+    const flightParams = `?origin=SEL&destination_name=${encodedLocation}${markerParams}`;
+    const hotelParams = `?destination=${encodedLocation}${markerParams}`;
+
     const WHITELABEL_URL = isHotel
-        ? `${BASE_URL}/#hotels?destination=${encodedLocation}`
-        : `${BASE_URL}/?destination_name=${encodedLocation}`;
+        ? `${BASE_URL}/#hotels${hotelParams}`
+        : `${BASE_URL}/flights/${flightParams}`;
 
     // UI 분기
     const IconComponent = isHotel ? Bed : Plane;
