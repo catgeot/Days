@@ -1,6 +1,7 @@
 import React from 'react';
 import { Clock, Map as MapIcon, Car, Ship, Bed, Plane } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
+import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 
 // 타임라인 내 동적 액션 버튼 생성 로직
 const getActionForStep = (title, locationName) => {
@@ -13,7 +14,7 @@ const getActionForStep = (title, locationName) => {
             label: '공항 픽업',
             url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTransferTargetUrl)}`,
             icon: <Car size={10} />,
-            colorClass: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+            colorClass: 'bg-rose-50 text-rose-700 hover:bg-rose-100'
         };
     }
     if (text.includes('페리') || text.includes('항구')) {
@@ -39,10 +40,11 @@ const getActionForStep = (title, locationName) => {
     }
     if (text.includes('출발') || text.includes('항공') || text.includes('비행')) {
         return {
+            type: 'flight_widget',
+            locationName: locationName,
             label: '항공권 검색',
-            url: `https://flights.gateo.kr/?destination_name=${query}`,
             icon: <Plane size={10} />,
-            colorClass: 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+            colorClass: 'bg-rose-50 text-rose-700 hover:bg-rose-100'
         };
     }
     return null;
@@ -75,6 +77,17 @@ const JourneyTimeline = ({ timeline, locationName }) => {
                                                 label={action.label}
                                                 icon={action.icon}
                                                 colorClass={action.colorClass}
+                                            />
+                                        ) : action.type === 'flight_widget' ? (
+                                            <WhiteLabelWidget
+                                                locationName={action.locationName}
+                                                type="flight"
+                                                customTrigger={
+                                                    <button className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors border border-transparent hover:border-current ${action.colorClass}`}>
+                                                        {action.icon}
+                                                        {action.label}
+                                                    </button>
+                                                }
                                             />
                                         ) : (
                                             <a href={action.url} target="_blank" rel="noopener noreferrer"

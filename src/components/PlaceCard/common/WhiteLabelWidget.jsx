@@ -6,8 +6,9 @@ import { Loader2, Search, Plane, Bed, X, ExternalLink, ShieldCheck } from 'lucid
  * Travelpayouts 화이트 라벨(White Label) 통합 검색 모달 연동 컴포넌트
  * @param {string} locationName - 목적지 이름
  * @param {string} type - 'flight' (항공권) 또는 'hotel' (숙박)
+ * @param {React.ReactNode} customTrigger - 커스텀 트리거 버튼 (선택 사항)
  */
-const WhiteLabelWidget = ({ locationName, type = 'flight' }) => {
+const WhiteLabelWidget = ({ locationName, type = 'flight', customTrigger }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isIframeLoading, setIsIframeLoading] = useState(true);
 
@@ -48,21 +49,27 @@ const WhiteLabelWidget = ({ locationName, type = 'flight' }) => {
         };
     }, [isModalOpen]);
 
+    const handleOpen = () => {
+        setIsIframeLoading(true);
+        setIsModalOpen(true);
+    };
+
     return (
         <>
             {/* 트리거 버튼 디자인 (심플 파스텔 버튼) */}
-            <button
-                onClick={() => {
-                    setIsIframeLoading(true);
-                    setIsModalOpen(true);
-                }}
-                className={`flex items-center justify-center gap-1.5 w-full mt-3 py-3 min-h-[44px] rounded-xl text-xs font-semibold transition-colors border ${buttonColors}`}
-                aria-label={titleText}
-            >
-                <IconComponent size={14} />
-                <span>{titleText}</span>
-                <Search size={12} className="ml-0.5 opacity-80" />
-            </button>
+            {customTrigger ? (
+                React.cloneElement(customTrigger, { onClick: handleOpen })
+            ) : (
+                <button
+                    onClick={handleOpen}
+                    className={`flex items-center justify-center gap-1.5 w-full mt-3 py-3 min-h-[44px] rounded-xl text-xs font-semibold transition-colors border ${buttonColors}`}
+                    aria-label={titleText}
+                >
+                    <IconComponent size={14} />
+                    <span>{titleText}</span>
+                    <Search size={12} className="ml-0.5 opacity-80" />
+                </button>
+            )}
 
             {/* 전체 화면 항공권/숙박 검색 모달 (createPortal로 최상단 렌더링, z-[9999]) */}
             {isModalOpen && createPortal(
