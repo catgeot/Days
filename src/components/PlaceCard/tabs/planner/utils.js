@@ -43,6 +43,7 @@ export const getAdviceText = (data) => {
 export const getMultiLinks = ({ type, data, location }) => {
     const searchQuery = location?.name || location?.country || '';
     const encodedQuery = encodeURIComponent(searchQuery);
+    const searchTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
 
     const links = [];
 
@@ -258,7 +259,6 @@ export const getMultiLinks = ({ type, data, location }) => {
             // 1. 키워드 매칭 기반 검증된 링크 우선 탐색 (할루시네이션 방지)
             const foundOfficialLinks = [];
             // data.advice에 "한국인 무비자" 등이 포함되어 K-ETA 등으로 오인 매칭되는 것을 방지하기 위해 예외 처리 로직 추가
-            const searchTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
             const adviceTarget = (data?.advice || '').toLowerCase();
 
             for (const item of OFFICIAL_VISA_LINKS) {
