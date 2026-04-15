@@ -68,8 +68,51 @@ const PreTravelChecklist = ({ items }) => {
 };
 
 // 🆕 [Phase 8] 복잡한 여행지 특화 컴포넌트: 여정 타임라인
-const JourneyTimeline = ({ timeline }) => {
+const JourneyTimeline = ({ timeline, locationName }) => {
     if (!timeline || timeline.length === 0) return null;
+
+    // 타임라인 내 동적 액션 버튼 생성 로직
+    const getActionForStep = (title, locationName) => {
+        const text = title.toLowerCase();
+        const query = encodeURIComponent(locationName || '');
+
+        if (text.includes('공항') && (text.includes('도착') || text.includes('이동') || text.includes('픽업'))) {
+            const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
+            return {
+                label: '공항 픽업',
+                url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTransferTargetUrl)}`,
+                icon: <Car size={10} />,
+                colorClass: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+            };
+        }
+        if (text.includes('페리') || text.includes('항구')) {
+            const klookFerryTargetUrl = `https://www.klook.com/ko/search/result/?query=${query}%20페리`;
+            return {
+                label: '페리 예약',
+                url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookFerryTargetUrl)}`,
+                icon: <Ship size={10} />,
+                colorClass: 'bg-orange-50 text-orange-700 hover:bg-orange-100'
+            };
+        }
+        if (text.includes('숙소') || text.includes('호텔') || text.includes('리조트')) {
+            return {
+                label: '숙소 검색',
+                url: `https://www.google.com/travel/search?q=${query}%20hotels`,
+                icon: <Bed size={10} />,
+                colorClass: 'bg-rose-50 text-rose-700 hover:bg-rose-100'
+            };
+        }
+        if (text.includes('출발') || text.includes('항공') || text.includes('비행')) {
+            return {
+                label: '항공권 검색',
+                url: `https://search.kyte.travel/`,
+                icon: <Plane size={10} />,
+                colorClass: 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+            };
+        }
+        return null;
+    };
+
     return (
         <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-5 mb-5 shadow-sm">
             <h3 className="font-bold text-blue-900 mb-4 flex items-center gap-2 text-sm md:text-base">
@@ -77,22 +120,34 @@ const JourneyTimeline = ({ timeline }) => {
                 상세 여정 플래너
             </h3>
             <div className="relative pl-6 space-y-6 before:absolute before:inset-y-2 before:left-[11px] before:w-[2px] before:bg-blue-200">
-                {timeline.map((step, idx) => (
-                    <div key={idx} className="relative">
-                        {/* 둥근 점 */}
-                        <div className="absolute -left-[30px] top-1 w-3 h-3 bg-blue-500 rounded-full border-[3px] border-blue-50 shadow-sm z-10" />
-                        <div className="flex flex-col">
-                            <span className="text-[11px] font-bold text-blue-500 tracking-wider uppercase mb-0.5">STEP {step.step || (idx + 1)}</span>
-                            <span className="text-sm font-bold text-gray-800 leading-tight">{step.title}</span>
-                            {step.duration && (
-                                <div className="flex items-center gap-1 text-[11px] text-gray-500 mt-1 font-medium bg-blue-100/50 w-fit px-1.5 py-0.5 rounded-md">
-                                    <Clock size={10} />
-                                    <span>{step.duration}</span>
+                {timeline.map((step, idx) => {
+                    const action = getActionForStep(step.title, locationName);
+                    return (
+                        <div key={idx} className="relative">
+                            {/* 둥근 점 */}
+                            <div className="absolute -left-[30px] top-1 w-3 h-3 bg-blue-500 rounded-full border-[3px] border-blue-50 shadow-sm z-10" />
+                            <div className="flex flex-col items-start">
+                                <span className="text-[11px] font-bold text-blue-500 tracking-wider uppercase mb-0.5">STEP {step.step || (idx + 1)}</span>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="text-sm font-bold text-gray-800 leading-tight">{step.title}</span>
+                                    {action && (
+                                        <a href={action.url} target="_blank" rel="noopener noreferrer"
+                                           className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors border border-transparent hover:border-current ${action.colorClass}`}>
+                                            {action.icon}
+                                            {action.label}
+                                        </a>
+                                    )}
                                 </div>
-                            )}
+                                {step.duration && (
+                                    <div className="flex items-center gap-1 text-[11px] text-gray-500 mt-1.5 font-medium bg-blue-100/50 w-fit px-1.5 py-0.5 rounded-md">
+                                        <Clock size={10} />
+                                        <span>{step.duration}</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );
@@ -113,6 +168,8 @@ const OFFICIAL_VISA_LINKS = [
     { keywords: ['eTravel', '이트래블', '필리핀', '세부', '보라카이', '마닐라'], url: 'https://etravel.gov.ph/', label: '필리핀 eTravel (필수)' },
     { keywords: ['대만', '타이완', '타이베이', '가오슝', '온라인 입국신고서'], url: 'https://niaspeedy.immigration.gov.tw/webacard/', label: '대만 온라인 입국신고서' },
     { keywords: ['e-Arrival', '캄보디아', '씨엠립', '프놈펜'], url: 'https://www.arrival.gov.kh/', label: '캄보디아 e-Arrival (도착비자)' },
+    { keywords: ['이집트', '카이로', '다합', '후르가다'], url: 'https://www.visa2egypt.gov.eg/eVisa/', label: '이집트 e-Visa 공식 포털' },
+    { keywords: ['인도', '뉴델리', '뭄바이'], url: 'https://indianvisaonline.gov.in/evisa/', label: '인도 e-Visa 공식 신청' },
     { keywords: ['ETIAS', '유럽', '프랑스', '이탈리아', '스페인', '독일', '스위스', '영국'], url: 'https://travel-europe.europa.eu/etias_en', label: '유럽 ETIAS (시행 예정 확인)' }
 ];
 
@@ -159,11 +216,17 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
         switch (type) {
             case 'accommodation':
-                // TravelPayouts 위젯 보류로 인해 임시 구글 호텔 링크 복구
+                // 구글 호텔 링크 (마이크로카피 적용 - 모바일 길이 고려 간소화)
                 links.push({
                     url: `https://www.google.com/travel/search?q=${encodedQuery}%20hotels`,
-                    text: '구글 호텔 최저가 검색',
+                    text: `${location?.name || '현지'} 숙소 검색`,
                     colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                });
+                // 에어비앤비 링크 추가
+                links.push({
+                    url: `https://www.airbnb.co.kr/s/${encodedQuery}/homes`,
+                    text: '에어비앤비 숙소',
+                    colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
                 });
                 break;
             case 'flight':
@@ -191,7 +254,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 const klookPassTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20교통%20패스`;
                 links.push({
                     url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookPassTargetUrl)}`,
-                    text: '교통/레일 패스',
+                    text: `${location?.name || '현지'} 교통 패스`,
                     colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
                 });
 
@@ -199,7 +262,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 const klookCarTargetUrl = `https://www.klook.com/ko/car-rentals/`;
                 links.push({
                     url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookCarTargetUrl)}`,
-                    text: '렌터카 검색',
+                    text: '글로벌 렌터카',
                     colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                 });
 
@@ -207,15 +270,22 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                 const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20투어`;
                 links.push({
                     url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTourTargetUrl)}`,
-                    text: '일일 투어/액티비티',
+                    text: `${location?.name || '현지'} 인기 투어`,
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
 
                 // 4. 오토바이/스쿠터 대여 (BikesBooking 어필리에이트)
                 links.push({
                     url: `https://bikesbooking.tp.st/HymHjnL8`,
-                    text: '오토바이/스쿠터 대여',
+                    text: '오토바이 대여',
                     colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
+                });
+
+                // 5. 짐 보관 서비스 (Radical Storage 등)
+                links.push({
+                    url: `https://usebounce.com/ko/city/${encodedQuery.toLowerCase()}`,
+                    text: '근처 짐 보관소',
+                    colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
                 });
                 break;
             case 'airport_transfer':
@@ -227,7 +297,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
                 links.push({
                     url: klookTransferDeepLink,
-                    text: '공항 픽업 예약',
+                    text: `${location?.name || '현지'} 픽업 예약`,
                     colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                 });
 
@@ -244,18 +314,32 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
                 links.push({
                     url: klookFerryDeepLink,
-                    text: '페리/크루즈 예약',
+                    text: `${location?.name || '현지'} 페리 예약`,
                     colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
                 });
                 break;
             case 'map_poi':
                 links.push({
                     url: `https://www.google.com/maps/search/${encodedQuery}`,
-                    text: '구글 맵에서 보기',
+                    text: '구글 맵 보기',
                     colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                });
+
+                // 식당 예약 플랫폼
+                links.push({
+                    url: `https://www.thefork.com/search?cityId=${encodedQuery}`,
+                    text: `${location?.name || '현지'} 식당 예약`,
+                    colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
                 });
                 break;
             case 'safety':
+                // 1. 보험 추가
+                links.push({
+                    url: `https://www.tourmoz.com/`,
+                    text: '해외 여행자 보험 비교',
+                    colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
+                });
+
                 if (data?.official_url && data.official_url !== 'null') {
                      links.push({
                         url: data.official_url,
@@ -358,11 +442,11 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                             href={link.url}
                             target={isMobileDevice() ? "_self" : "_blank"}
                             rel="noopener noreferrer"
-                            className={`flex items-center justify-center gap-1.5 w-full py-3 min-h-[44px] rounded-xl text-xs font-semibold transition-colors border ${link.colorClass} ${links.length === 1 ? 'col-span-2' : ''}`}
+                            className={`flex items-center justify-center gap-1 w-full py-3 px-1 min-h-[44px] rounded-xl text-[11px] md:text-xs font-semibold transition-colors border overflow-hidden ${link.colorClass} ${links.length === 1 ? 'col-span-2' : ''}`}
                             aria-label={`${link.text}에서 검색하기`}
                         >
-                            <span>{link.text}</span>
-                            <ExternalLink size={12} />
+                            <span className="truncate max-w-[85%]">{link.text}</span>
+                            <ExternalLink size={12} className="shrink-0" />
                         </a>
                     ))}
                 </div>
@@ -669,42 +753,54 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <PreTravelChecklist items={guideData?.categories?.pre_travel || []} />
-                        <JourneyTimeline timeline={guideData?.journey_timeline || []} />
+                        <JourneyTimeline timeline={guideData?.journey_timeline || []} locationName={location?.name} />
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 gap-5">
-                    {/* 1. 출입국 준비 */}
-                    <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="warning" />
+                {/* 3단계 시각적 그룹화(섹션화) 레이아웃 적용 */}
 
-                    {/* 2. 이동 수단 */}
-                    <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="default" />
+                {/* 섹션 1: 출발 전 필수 준비 */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
+                        <h3 className="text-lg font-bold text-gray-800">🛫 출발 전 필수 준비</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-5">
+                        <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="warning" />
+                        <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="default" />
+                        <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="default" />
+                        <ToolkitCard icon={ShieldAlert} title="안전 및 보험" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} themeColor="danger" />
+                    </div>
+                </div>
 
-                    {/* 3. 숙소 */}
-                    <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="default" />
+                {/* 섹션 2: 현지 도착 및 이동 */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-5 bg-teal-500 rounded-full"></div>
+                        <h3 className="text-lg font-bold text-gray-800">🛬 현지 도착 및 이동</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-5">
+                        {(guideData?.categories?.airport_transfer) && (
+                            <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} themeColor="default" />
+                        )}
+                        {(guideData?.categories?.ferry_booking) && (
+                            <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="default" />
+                        )}
+                        <ToolkitCard icon={Wifi} title="유심 및 와이파이" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="default" />
+                    </div>
+                </div>
 
-                    {/* 4. 특화 예약: 공항 픽업 및 페리 */}
-                    {(guideData?.categories?.airport_transfer) && (
-                        <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} themeColor="default" />
-                    )}
-                    {(guideData?.categories?.ferry_booking) && (
-                        <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="default" />
-                    )}
-
-                    {/* 5. 현지 연결 */}
-                    <ToolkitCard icon={Wifi} title="유심 및 와이파이" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="default" />
-
-                    {/* 6. 현지 이동 */}
-                    <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="default" />
-
-                    {/* 7. 편의 도구 */}
-                    <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="default" />
-
-                    {/* 8. 지도 및 명소 */}
-                    <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
-
-                    {/* 9. 안전 정보 */}
-                    <ToolkitCard icon={ShieldAlert} title="안전 및 비상" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} themeColor="danger" />
+                {/* 섹션 3: 현지 100% 즐기기 */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
+                        <h3 className="text-lg font-bold text-gray-800">🌴 현지 100% 즐기기</h3>
+                    </div>
+                    <div className="grid grid-cols-1 gap-5">
+                        <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="default" />
+                        <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="default" />
+                        <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
+                    </div>
                 </div>
 
                 <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
