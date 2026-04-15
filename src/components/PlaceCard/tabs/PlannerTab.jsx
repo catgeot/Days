@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, ExternalLink, RefreshCw, AlertCircle, Sparkles, Loader2, Search, CheckCircle2, Clock, Car, Ship, Map as MapIcon } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
-import { getAffiliateLink } from '../../../utils/affiliate';
+import { getAffiliateLink, generateMrtLink } from '../../../utils/affiliate';
 import CopyableText, { isMobileDevice } from '../common/CopyableText';
 import WhiteLabelWidget from '../common/WhiteLabelWidget';
 
@@ -33,6 +33,67 @@ const THEME_COLORS = {
 // 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 (Search Form) - 높이/이탈 이슈로 임시 비활성화
 const HotelWidget = ({ location }) => {
     return null;
+};
+
+// 🆕 [Phase 8-6] 마이리얼트립 동적 링크 버튼 컴포넌트 (비동기 발급 지원)
+const MrtDynamicLink = ({ mrtQuery, text, colorClass, isColSpan2 }) => {
+    const [url, setUrl] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchLink = async () => {
+            setLoading(true);
+            const link = await generateMrtLink(mrtQuery);
+            if (isMounted) {
+                setUrl(link);
+                setLoading(false);
+            }
+        };
+        fetchLink();
+        return () => { isMounted = false; };
+    }, [mrtQuery]);
+
+    return (
+        <a
+            href={url || '#'}
+            target={isMobileDevice() ? "_self" : "_blank"}
+            rel="noopener noreferrer"
+            onClick={(e) => {
+                if (loading || !url) e.preventDefault();
+            }}
+            className={`flex items-center justify-center gap-1 w-full py-3 px-1 min-h-[44px] rounded-xl text-[11px] md:text-xs font-semibold transition-colors border overflow-hidden ${colorClass} ${isColSpan2 ? 'col-span-2' : ''} ${loading ? 'opacity-70 cursor-wait' : ''}`}
+            aria-label={`${text} 검색`}
+        >
+            <span className="truncate max-w-[85%]">{loading ? '제휴 링크 생성 중...' : text}</span>
+            {!loading && <ExternalLink size={12} className="shrink-0" />}
+            {loading && <Loader2 size={12} className="shrink-0 animate-spin" />}
+        </a>
+    );
+};
+
+// 🆕 [Phase 8-6] 타임라인 내 마이리얼트립 동적 미니 버튼 컴포넌트
+const MrtTimelineAction = ({ mrtQuery, label, icon, colorClass }) => {
+    const [url, setUrl] = useState(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchLink = async () => {
+            const link = await generateMrtLink(mrtQuery);
+            if (isMounted) setUrl(link);
+        };
+        fetchLink();
+        return () => { isMounted = false; };
+    }, [mrtQuery]);
+
+    return (
+        <a href={url || '#'} target="_blank" rel="noopener noreferrer"
+           onClick={(e) => { if (!url) e.preventDefault(); }}
+           className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors border border-transparent hover:border-current ${colorClass} ${!url ? 'opacity-50 cursor-wait' : ''}`}>
+            {icon}
+            {label}
+        </a>
+    );
 };
 
 // 🆕 [Phase 8] 복잡한 여행지 특화 컴포넌트: 출발 전 필수 체크리스트
@@ -95,9 +156,13 @@ const JourneyTimeline = ({ timeline, locationName }) => {
             };
         }
         if (text.includes('숙소') || text.includes('호텔') || text.includes('리조트')) {
+            const isAsia = ['일본', '대만', '베트남', '태국', '필리핀', '인도네시아', '말레이시아', '싱가포르'].some(c => locationName?.includes(c));
+            const queryForMrt = isAsia ? `${locationName || ''} 한인민박` : `${locationName || ''} 숙소`;
+
             return {
+                isMrt: true,
+                mrtQuery: queryForMrt,
                 label: '숙소 검색',
-                url: `https://www.google.com/travel/search?q=${query}%20hotels`,
                 icon: <Bed size={10} />,
                 colorClass: 'bg-rose-50 text-rose-700 hover:bg-rose-100'
             };
@@ -131,11 +196,20 @@ const JourneyTimeline = ({ timeline, locationName }) => {
                                 <div className="flex flex-wrap items-center gap-2">
                                     <span className="text-sm font-bold text-gray-800 leading-tight">{step.title}</span>
                                     {action && (
-                                        <a href={action.url} target="_blank" rel="noopener noreferrer"
-                                           className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors border border-transparent hover:border-current ${action.colorClass}`}>
-                                            {action.icon}
-                                            {action.label}
-                                        </a>
+                                        action.isMrt ? (
+                                            <MrtTimelineAction
+                                                mrtQuery={action.mrtQuery}
+                                                label={action.label}
+                                                icon={action.icon}
+                                                colorClass={action.colorClass}
+                                            />
+                                        ) : (
+                                            <a href={action.url} target="_blank" rel="noopener noreferrer"
+                                               className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors border border-transparent hover:border-current ${action.colorClass}`}>
+                                                {action.icon}
+                                                {action.label}
+                                            </a>
+                                        )
                                     )}
                                 </div>
                                 {step.duration && (
@@ -216,16 +290,19 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
         switch (type) {
             case 'accommodation':
-                // 구글 호텔 링크 (마이크로카피 적용 - 모바일 길이 고려 간소화)
+                // 1. 일반 숙소 검색 버튼 (마이리얼트립)
                 links.push({
-                    url: `https://www.google.com/travel/search?q=${encodedQuery}%20hotels`,
+                    isMrt: true,
+                    mrtQuery: `${searchQuery} 숙소`,
                     text: `${location?.name || '현지'} 숙소 검색`,
                     colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                 });
-                // 에어비앤비 링크 추가
+
+                // 2. 한인민박 검색 버튼 (마이리얼트립)
                 links.push({
-                    url: `https://www.airbnb.co.kr/s/${encodedQuery}/homes`,
-                    text: '에어비앤비 숙소',
+                    isMrt: true,
+                    mrtQuery: `${searchQuery} 한인민박`,
+                    text: '한인민박 검색',
                     colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
                 });
                 break;
@@ -436,19 +513,33 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
             {links.length > 0 && (
                 <div className="mt-auto grid grid-cols-2 gap-2">
-                    {links.map((link, idx) => (
-                        <a
-                            key={idx}
-                            href={link.url}
-                            target={isMobileDevice() ? "_self" : "_blank"}
-                            rel="noopener noreferrer"
-                            className={`flex items-center justify-center gap-1 w-full py-3 px-1 min-h-[44px] rounded-xl text-[11px] md:text-xs font-semibold transition-colors border overflow-hidden ${link.colorClass} ${links.length === 1 ? 'col-span-2' : ''}`}
-                            aria-label={`${link.text}에서 검색하기`}
-                        >
-                            <span className="truncate max-w-[85%]">{link.text}</span>
-                            <ExternalLink size={12} className="shrink-0" />
-                        </a>
-                    ))}
+                    {links.map((link, idx) => {
+                        const isColSpan2 = links.length === 1;
+                        if (link.isMrt) {
+                            return (
+                                <MrtDynamicLink
+                                    key={idx}
+                                    mrtQuery={link.mrtQuery}
+                                    text={link.text}
+                                    colorClass={link.colorClass}
+                                    isColSpan2={isColSpan2}
+                                />
+                            );
+                        }
+                        return (
+                            <a
+                                key={idx}
+                                href={link.url}
+                                target={isMobileDevice() ? "_self" : "_blank"}
+                                rel="noopener noreferrer"
+                                className={`flex items-center justify-center gap-1 w-full py-3 px-1 min-h-[44px] rounded-xl text-[11px] md:text-xs font-semibold transition-colors border overflow-hidden ${link.colorClass} ${isColSpan2 ? 'col-span-2' : ''}`}
+                                aria-label={`${link.text}에서 검색하기`}
+                            >
+                                <span className="truncate max-w-[85%]">{link.text}</span>
+                                <ExternalLink size={12} className="shrink-0" />
+                            </a>
+                        );
+                    })}
                 </div>
             )}
 

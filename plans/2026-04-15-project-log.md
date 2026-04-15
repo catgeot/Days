@@ -24,12 +24,33 @@
   - 사용자는 여행 준비 단계별로 필요한 액션을 명확히 인지하게 되어 서비스 체류 시간과 제휴 수익 전환율(CTA)이 동반 상승할 것으로 기대.
   - 라로통가 같은 다단계 복잡한 여행지의 경우 타임라인 단계에서 바로 예약을 진행할 수 있어 UX가 극대화됨.
 
-## 2. 변경된 파일
-- `src/components/PlaceCard/tabs/PlannerTab.jsx`
-- `plans/toolkit-ux-and-service-proposal.md` (UX 기획안 생성)
+## 2. 추가 진행 내용 (마이리얼트립 파트너스 연동)
 
-## 3. Next Steps (Carry-over)
-- [ ] **[Phase 8-6] 링크 전략 고도화 및 파트너사 전환**: 다음 세션에서는 작동하지 않거나 파트너십이 없는 링크(예: 에어비앤비, 기타 거절된 플랫폼)를 파악하고, 트립닷컴/익스피디아 등으로 대체하거나 UX를 보존하는 방향으로 전략적 수정 예정.
+### [Phase 8-6] 링크 전략 고도화 및 파트너사 전환 (마이리얼트립 도입)
+- **작업 목적**:
+  - 전환율이 낮거나 수익이 발생하지 않는 기존 링크(에어비앤비 등)를 제거하고, 전 세계 강력한 인프라를 갖춘 **마이리얼트립(MyRealTrip) 제휴 링크**로 교체함.
+  - 마이리얼트립 파트너스 API(`MYLINK:WRITE`)를 활용하여 동적 여행지별 제휴 링크를 자동 발급받는 시스템(PoC) 구축.
+- **주요 구현 사항**:
+  - `supabase/functions/mrt-link-generator/index.ts` Edge Function 생성: 
+    - 브라우저에서 직접 API를 호출하지 않고 백엔드를 통해 마이리얼트립 파트너스 API를 호출하여 단축 제휴 링크를 발급받음.
+    - API 인증 실패나 서버 장애 시 서비스가 크래시되지 않도록, 원본 마이리얼트립 검색 결과 URL로 자동 Fallback 되도록 견고하게 구현.
+  - `src/utils/affiliate.js`: `generateMrtLink(query)` 유틸리티 함수 추가 (비동기 처리).
+  - `src/components/PlaceCard/tabs/PlannerTab.jsx` 고도화:
+    - 비동기로 링크를 발급받아 상태를 업데이트하는 `<MrtDynamicLink />` 및 `<MrtTimelineAction />` 컴포넌트 신규 도입.
+    - 숙박(`accommodation`) 파트의 **구글 호텔 검색**과 **에어비앤비** 링크를 삭제하고, **[숙소 검색]**과 **[한인민박 검색]** 두 개의 마이리얼트립 전용 버튼으로 분리 대체함.
+- **기대 효과**:
+  - 동적 링크 생성 아키텍처가 검증되었으며, 다음 세션부터 투어, 패스, 항공권 등 다른 영역의 링크도 마이리얼트립으로 손쉽게 전환/확장 가능해짐.
+
+## 3. 변경된 파일
+- `src/components/PlaceCard/tabs/PlannerTab.jsx`
+- `src/utils/affiliate.js`
+- `supabase/functions/mrt-link-generator/index.ts`
+- `supabase/functions/mrt-link-generator/deno.json`
+- `plans/phase8-6-mrt-integration-plan.md` (기획 문서 생성)
+- `plans/2026-04-15-project-log.md`
+
+## 4. Next Steps
+- [ ] **[Phase 8-7] 마이리얼트립 링크 적용 확대 및 툴킷 최적화**: 다음 세션에서는 숙박 외에 항공권, 짐 보관소 및 일부 버튼 이동 등 여러 세부 사항에 대한 최적화를 진행 예정.
 - [ ] [Phase 8-3 & 9] 복잡한 여행지 시스템 연동 (검색 모달 큐레이션)
 - [ ] [Phase 9-2] 여행지 데이터 100개 추가 (Phase 2 대기)
 - [ ] [Phase 10] 백엔드 프롬프트 개선 (DB 필드 구조 개선 등) 및 A/B 테스트 검증

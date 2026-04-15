@@ -1,5 +1,7 @@
 // src/utils/affiliate.js
 
+import { supabase } from '../shared/api/supabase';
+
 /**
  * Travelpayouts 제휴 링크 생성기 (Short Link 방식)
  * 대시보드에서 직접 생성한 단축 링크(`tp.st`)를 기반으로,
@@ -54,3 +56,34 @@ export const getAffiliateLink = (originalUrl, provider, options = {}) => {
   // 승인되지 않은 제휴사이거나 링크가 없으면 원본 URL을 그대로 반환 (사용자 불편 방지)
   return originalUrl;
 };
+
+/**
+ * 마이리얼트립 검색 결과 페이지에 대한 동적 제휴 링크(Short URL)를 발급받습니다.
+ * Edge Function(mrt-link-generator)을 경유하여 발급하며, 실패 시 원본 검색 URL을 그대로 반환합니다.
+ *
+ * @param {string} query - 검색어 (예: '로마 한인민박', '파리 교통패스')
+ * @returns {Promise<string>} - 마이리얼트립 제휴 단축 URL 또는 원본 URL
+ */
+export const generateMrtLink = async (query) => {
+  if (!query) return 'https://www.myrealtrip.com';
+
+  const encodedQuery = encodeURIComponent(query);
+  const originalUrl = `https://www.myrealtrip.com/search?q=${encodedQuery}`;
+
+  try {
+    const { data, error } = await supabase.functions.invoke('mrt-link-generator', {
+      body: { originalUrl }
+    });
+
+    if (error) {
+      console.warn('[MRT Link] Edge Function 오류로 원본 URL을 반환합니다.', error);
+      return originalUrl;
+    }
+
+    return data?.shortLink || originalUrl;
+  } catch (err) {
+    console.error('[MRT Link] 네트워크/서버 오류로 원본 URL을 반환합니다.', err);
+    return originalUrl;
+  }
+};
+
