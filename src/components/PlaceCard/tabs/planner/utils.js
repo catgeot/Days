@@ -125,14 +125,16 @@ export const getMultiLinks = ({ type, data, location }) => {
             });
 
             // 5. 짐 보관 서비스 (지역별 동적 매핑)
-            let luggageStorageUrl = `https://usebounce.com/ko/city/${encodedQuery.toLowerCase()}`;
+            let luggageStorageUrl = `https://go.bounce.com/GATEO951904439302671`;
             let luggageStorageName = 'Bounce (글로벌 짐 보관)';
+            let isBounce = true;
 
             const searchLocationTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
             for (const item of LUGGAGE_STORAGE_LINKS) {
                 if (item.keywords.some(kw => searchLocationTarget.includes(kw.toLowerCase()))) {
                     luggageStorageUrl = item.url;
                     luggageStorageName = item.name;
+                    isBounce = false;
                     break;
                 }
             }
@@ -140,7 +142,9 @@ export const getMultiLinks = ({ type, data, location }) => {
             links.push({
                 url: luggageStorageUrl,
                 text: `${luggageStorageName} 찾기`,
-                colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200',
+                isBanner: isBounce,
+                bannerSrc: isBounce ? '/278x90.png' : null
             });
             break;
         case 'airport_transfer':

@@ -44,8 +44,8 @@ export const OFFICIAL_VISA_LINKS = [
 // 🆕 [Phase 8-7] 글로벌 짐 보관소 지역별 매핑
 export const LUGGAGE_STORAGE_LINKS = [
     { keywords: ['일본', '도쿄', '오사카', '후쿠오카', '삿포로', '교토'], name: 'ecbo cloak', url: 'https://cloak.ecbo.io/ko' },
-    { keywords: ['프랑스', '파리', '이탈리아', '로마', '밀라노', '유럽', '스페인', '런던'], name: 'Nannybag', url: 'https://www.nannybag.com/ko' },
-    // default는 utils.js에서 Bounce로 처리
+    { keywords: ['프랑스', '파리', '이탈리아', '로마', '밀라노', '유럽', '스페인', '런던'], name: 'Radical Storage', url: 'https://radicalstorage.tp.st/PcdkpYln' },
+    // default는 utils.js에서 Bounce 배너 연동으로 처리
 ];
 
 // 🆕 [Phase 6-5] 로딩 메시지에 이모지 추가 및 카드 순서에 맞게 재배치

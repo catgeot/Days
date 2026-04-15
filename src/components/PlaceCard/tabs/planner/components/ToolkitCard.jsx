@@ -42,7 +42,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             {links.length > 0 && (
                 <div className="mt-auto grid grid-cols-2 gap-2">
                     {links.map((link, idx) => {
-                        const isColSpan2 = links.length === 1;
+                        const isColSpan2 = links.length === 1 || link.isBanner;
                         if (link.isMrt) {
                             return (
                                 <MrtDynamicLink
@@ -52,6 +52,19 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                                     colorClass={link.colorClass}
                                     isColSpan2={isColSpan2}
                                 />
+                            );
+                        }
+                        if (link.isBanner && link.bannerSrc) {
+                            return (
+                                <a
+                                    key={idx}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`w-full overflow-hidden rounded-xl transition-transform hover:scale-[1.02] border border-gray-200 shadow-sm col-span-2`}
+                                >
+                                    <img src={link.bannerSrc} alt={link.text} className="w-full h-auto object-cover" />
+                                </a>
                             );
                         }
                         return (
