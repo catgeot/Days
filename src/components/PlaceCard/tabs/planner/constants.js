@@ -49,8 +49,9 @@ export const OFFICIAL_VISA_LINKS = [
     { keywords: ['영국', '런던', '에든버러', 'ETA', '맨체스터', '코츠월드', '옥스퍼드', '스코틀랜드'], url: 'https://www.gov.uk/eta', label: '영국 UK ETA 공식 신청' },
     { keywords: ['사우디', '사우디아라비아', '리야드', '제다', '메카', '메디나'], url: 'https://visa.visitsaudi.com/', label: '사우디아라비아 e-Visa 신청' },
     { keywords: ['라오스', '비엔티안', '루앙프라방', '방비엥'], url: 'https://laoevisa.gov.la/', label: '라오스 e-Visa 공식 신청' },
-    { keywords: ['네팔', '카트만두', '포카라', '안나푸르나', '히말라야', '룸비니'], url: 'https://nepaliport.immigration.gov.np/', label: '네팔 온라인 비자 사전 작성' },
-    { keywords: ['쿠바', '아바나', '바라데로', '트리니다드', '산티아고데쿠바'], url: 'https://evisacuba.cu/', label: '쿠바 e-Visa(투어리스트 카드) 신청' }
+    { keywords: ['네팔', '카트만두', '포카라', '안나푸르나', '히말라야', '룸비니', '에베레스트', 'EBC', '베이스캠프'], url: 'https://nepaliport.immigration.gov.np/', label: '네팔 온라인 비자 사전 작성' },
+    { keywords: ['쿠바', '아바나', '바라데로', '트리니다드', '산티아고데쿠바'], url: 'https://evisacuba.cu/', label: '쿠바 e-Visa(투어리스트 카드) 신청' },
+    { keywords: ['마다가스카르', '안타나나리보', '노시베', '이파티', '모론다바'], url: 'https://evisamada.gov.mg/', label: '마다가스카르 e-Visa 공식 신청' }
 ];
 
 // 🆕 [Phase 8-7] 글로벌 짐 보관소 지역별 매핑
