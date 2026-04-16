@@ -23,7 +23,8 @@ const ChatModal = ({
   const messagesEndRef = useRef(null);
   const hasSentInitialRef = useRef(false);
 
-  const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+  // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
+  // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
   useEffect(() => {
     let interval;
@@ -107,12 +108,12 @@ const ChatModal = ({
       const systemInstruction = getSystemPrompt(personaToUse, activeChatId ? chatHistory.find(t => t.id === activeChatId)?.destination : "");
 
       const aiReply = await apiClient.fetchProxyGemini(
-        API_KEY,
+        null, // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
         [], // history
         systemInstruction,
         cleanText,
         [], // images
-        "gemini-flash-latest" // modelId
+        "gemini-2.5-flash" // modelId
       );
 
       const finalMessages = [...newMessages, { role: 'model', text: aiReply }];

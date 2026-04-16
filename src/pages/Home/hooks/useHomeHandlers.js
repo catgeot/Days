@@ -381,9 +381,8 @@ export function useHomeHandlers({
           processSearchKeywords(parsedData.name);
           isCorrected = true;
         } else {
-          // 2. 캐시가 없으면 기존처럼 AI 호출
-          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-          if (apiKey) {
+          // 2. 캐시가 없으면 Proxy를 통해 AI 호출
+          try {
             const aiPrompt = `사용자가 여행지 검색창에 "${query}"라고 입력했지만, 오타가 있거나 존재하지 않는 지명이라 검색에 실패했습니다.
 이 단어와 가장 유사하거나, 사용자가 의도했을 만한 '실제 존재하는 정확한 지명'을 유추해주세요.
 응답은 반드시 다른 설명이나 부연 설명 없이 아래 JSON 형식으로만 응답하세요.
@@ -397,12 +396,12 @@ export function useHomeHandlers({
 }`;
 
             const aiResponse = await apiClient.fetchProxyGemini(
-              apiKey,
+              null, // 🚨 더 이상 클라이언트에서 API 키를 넘기지 않습니다. 서버에서 처리합니다.
               [],
               "당신은 지명 자동 교정 전문가입니다. 오직 유효한 JSON만 출력해야 합니다.",
               aiPrompt,
               [],
-              "gemini-3.1-flash-lite-preview" // 🚨 [Fix] gemini-2.5-flash-lite 대신 최신 3.1 flash-lite 도입
+              "gemini-3.1-flash-lite-preview"
             );
 
             const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -442,6 +441,8 @@ export function useHomeHandlers({
               processSearchKeywords(cleanName);
               isCorrected = true;
             }
+          } catch (aiErr) {
+            console.warn("Smart Search AI Proxy Error:", aiErr);
           }
         }
       } catch (err) {

@@ -139,14 +139,13 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   const handleGenerateAI = async () => {
     setIsGenerating(true);
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) throw new Error("API 키가 없습니다.");
+      // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
 
       const placeName = location?.name || location?.name_en || '이 곳';
       const prompt = getReviewPrompt(placeName, rating, content);
 
       const resultText = await apiClient.fetchProxyGemini(
-        apiKey,
+        null,
         [],
         "사용자의 입력을 바탕으로 자연스럽고 매력적인 리뷰 초안을 작성하세요. 팩트를 왜곡하지 않습니다.",
         prompt,

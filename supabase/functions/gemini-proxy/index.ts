@@ -5,6 +5,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// 허용된 Gemini 모델 리스트 (tts 모델 등 미허용 모델 원천 차단)
+const ALLOWED_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.5-pro",
+  "gemini-3.1-flash-lite-preview",
+  "gemini-3.1-pro-preview",
+  "gemini-3.1-pro"
+];
+
 Deno.serve(async (req) => {
   // CORS preflight 요청 처리
   if (req.method === 'OPTIONS') {
@@ -18,18 +27,20 @@ Deno.serve(async (req) => {
       throw new Error("Invalid request: 'parts' array is required.");
     }
 
-    // 환경 변수에서 API 키 가져오기 (우선순위: GEMINI_API_KEY -> VITE_GEMINI_API_KEY)
-    const apiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('VITE_GEMINI_API_KEY');
-
-    if (!apiKey) {
-      throw new Error("API key not configured on the server.");
-    }
-
     // 1차 시도 (요청된 모델)
     let targetModel = modelId;
     if (modelId === "gemini-3.1-pro") {
       targetModel = "gemini-3.1-pro-preview";
     }
+
+    // 🚨 보안 정책: 허용된 모델이 아니면 즉시 차단
+    if (!ALLOWED_MODELS.includes(targetModel)) {
+      console.warn(`[Proxy Blocked] Unauthorized model requested: ${targetModel}`);
+      throw new Error(`Unauthorized model: ${targetModel} is not allowed.`);
+    }
+
+    // 환경 변수에서 API 키 가져오기 (우선순위: GEMINI_API_KEY -> VITE_GEMINI_API_KEY)
+    const apiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('VITE_GEMINI_API_KEY');
 
     let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
 

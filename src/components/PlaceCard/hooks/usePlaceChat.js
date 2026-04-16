@@ -7,8 +7,6 @@ export const usePlaceChat = (initialSystemPrompt = "") => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
   // 메시지 전송 함수
   const sendMessage = useCallback(async (userText, currentSystemPrompt = initialSystemPrompt) => {
     if (!userText.trim() || isAiLoading) return;
@@ -22,8 +20,9 @@ export const usePlaceChat = (initialSystemPrompt = "") => {
 
     try {
       // 2. API 호출
+      // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
       const aiReply = await apiClient.fetchProxyGemini(
-        API_KEY,
+        null,
         chatHistory, // 이전 대화 맥락 전달
         currentSystemPrompt,
         userText,
@@ -40,7 +39,7 @@ export const usePlaceChat = (initialSystemPrompt = "") => {
     } finally {
       setIsAiLoading(false);
     }
-  }, [chatHistory, isAiLoading, initialSystemPrompt, API_KEY]);
+  }, [chatHistory, isAiLoading, initialSystemPrompt]);
 
   // 대화 초기화
   const clearChat = useCallback(() => {

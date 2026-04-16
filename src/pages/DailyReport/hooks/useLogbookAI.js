@@ -29,9 +29,7 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
     setIsAILoading(true);
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) throw new Error("API_KEY_MISSING");
-
+      // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
       let base64Images = [];
       if (imageFiles.length > 0) {
         base64Images = await Promise.all(imageFiles.map(file => convertToBase64(file)));
@@ -40,7 +38,7 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
       const prompt = getLogbookPrompt(mode, date, mapLocation, content, imageFiles.length);
 
       const resultText = await apiClient.fetchProxyGemini(
-        apiKey,
+        null,
         [],
         "사용자의 메모와 사진을 분석하여 블로그 형식으로 변환하세요. 팩트를 왜곡하지 않는 세련된 에세이를 지향합니다.",
         prompt,
@@ -106,9 +104,9 @@ export const useCurationAI = () => {
       // 🚨 [Subtraction] totalDataCount < 3 제한 로직 완전 삭제 (Fallback 무한 루프의 원인 제거)
 
       const systemPrompt = getCurationPrompt(validReports, validSaved, curationHistory);
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
 
-      const resultText = await apiClient.fetchProxyGemini(apiKey, [], systemPrompt, "");
+      const resultText = await apiClient.fetchProxyGemini(null, [], systemPrompt, "");
 
       const jsonMatch = resultText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("JSON 파싱 실패: 형식을 찾을 수 없음");

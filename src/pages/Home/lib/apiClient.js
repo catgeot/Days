@@ -46,80 +46,19 @@ export const apiClient = {
       return data.data?.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
 
     } catch (error) {
-      console.error("[API Proxy] Fetch Error, falling back to direct call:", error);
-      // 🚨 [Fallback] 프록시 호출 실패 시 기존 클라이언트 직접 호출 방식으로 롤백
-      return await apiClient.fetchGeminiResponse(apiKey, history, systemInstruction, userText, images, modelId);
+      console.error("[API Proxy] Fetch Error:", error);
+      // 클라이언트 측 직접 API 호출(Fallback)을 보안상 전면 제거합니다.
+      // 프록시 실패 시 에러를 반환하여 상위에서 처리하도록 합니다.
+      throw new Error("AI 서버와의 통신에 실패했습니다. 잠시 후 다시 시도해주세요.");
     }
   },
 
   // --- 기존 클라이언트 직접 호출 (Fallback 용도로 유지) ---
   fetchGeminiResponse: async (apiKey, history, systemInstruction, userText, images = [], modelId = "gemini-2.5-flash") => {
-    try {
-      // 🚨 [Pessimistic First] 이미지가 없어도 안전하게 텍스트만 전송되도록 기본 배열 셋팅 (Safe Path)
-      const parts = [{ text: `${systemInstruction}\n\n[이전 대화 내역]\n${JSON.stringify(history)}\n\n사용자 질문: ${userText}` }];
-
-      // 🚨 [New] Base64 이미지 데이터가 존재할 경우 Vision AI 처리를 위해 parts에 추가
-      if (images && images.length > 0) {
-        images.forEach((imgBase64) => {
-          // data URI 스킴(data:image/jpeg;base64,...)에서 mimeType과 순수 base64 데이터를 분리
-          const mimeTypeMatch = imgBase64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,/);
-          const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
-          const base64Data = imgBase64.replace(/^data:image\/\w+;base64,/, "");
-
-          parts.push({
-            inlineData: {
-              mimeType: mimeType,
-              data: base64Data
-            }
-          });
-        });
-      }
-
-      // 🚨 [Fix] 동적 모델 티어 라우팅 (기본값: gemini-2.5-flash, Fallback 등 초경량 작업은 gemini-2.5-flash-lite 등 사용)
-      let finalModelId = modelId;
-      if (modelId === "gemini-3.1-pro") {
-        finalModelId = "gemini-3.1-pro-preview";
-      }
-
-      let response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${finalModelId}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              role: "user",
-              parts: parts
-            }]
-          })
-        }
-      );
-
-      // 🚨 [Fix] 503 에러 또는 모델 접근 실패 시, 가장 안정적인 3.1-flash-lite로 자동 롤백 및 재시도
-      if (!response.ok && (response.status === 503 || response.status === 404) && modelId !== "gemini-3.1-flash-lite-preview") {
-        console.warn(`[API Fallback] ${modelId} failed with ${response.status}. Retrying with gemini-3.1-flash-lite-preview...`);
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                role: "user",
-                parts: parts
-              }]
-            })
-          }
-        );
-      }
-
-      if (!response.ok) throw new Error(`Gemini API Error: ${response.status}`);
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
-    } catch (error) {
-      console.error("Gemini Fetch Error:", error);
-      throw error;
-    }
+    // 🚨 보안 수정: 더 이상 클라이언트에서 직접 구글 API를 호출하지 않습니다.
+    // 기존에 fetchGeminiResponse를 사용하던 모든 호출은 프록시를 통하도록 리다이렉트합니다.
+    console.warn("[API Deprecated] fetchGeminiResponse is deprecated. Redirecting to fetchProxyGemini.");
+    return await apiClient.fetchProxyGemini(null, history, systemInstruction, userText, images, modelId);
   },
 
   // --- 2. Unsplash 이미지 통신 ---
