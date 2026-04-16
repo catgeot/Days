@@ -295,10 +295,22 @@ export const getMultiLinks = ({ type, data, location }) => {
                 const locationKeywords = item.keywords.slice(1).map(kw => kw.toLowerCase());
 
                 // 1. 목적지 검색어(location.name 등)에 키워드 중 하나라도 매칭되는 경우 무조건 허용
-                const isLocationMatched = item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()));
+                const isLocationMatched = item.keywords.some(kw => {
+                    const kwLower = kw.toLowerCase();
+                    if (!searchTarget.includes(kwLower)) return false;
+                    // '인도' 키워드 매칭 시, '인도네시아'의 일부로 매칭된 경우 방지
+                    if (kwLower === '인도' && searchTarget.includes('인도네시아')) return false;
+                    return true;
+                });
 
                 // 2. advice 텍스트에 비자 종류 키워드와 해당 국가/도시 키워드가 '동시에' 존재하는지 확인 (엄격한 매칭)
-                const isAdviceMatched = adviceTarget.includes(visaTypeKeyword) && locationKeywords.some(kw => adviceTarget.includes(kw));
+                const isAdviceMatched = adviceTarget.includes(visaTypeKeyword) && locationKeywords.some(kw => {
+                    const kwLower = kw.toLowerCase();
+                    if (!adviceTarget.includes(kwLower)) return false;
+                    // '인도' 키워드 매칭 시, '인도네시아'의 일부로 매칭된 경우 방지
+                    if (kwLower === '인도' && adviceTarget.includes('인도네시아')) return false;
+                    return true;
+                });
 
                 if (isLocationMatched || isAdviceMatched) {
                     foundOfficialLinks.push(item);
