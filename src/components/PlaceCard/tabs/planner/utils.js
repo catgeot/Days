@@ -1,5 +1,5 @@
 import { getAffiliateLink } from '../../../../utils/affiliate';
-import { OFFICIAL_VISA_LINKS, LUGGAGE_STORAGE_LINKS, DINING_RESERVATION_LINKS } from './constants';
+import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS } from './constants';
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
 export const cleanAdviceText = (text) => {
@@ -153,27 +153,13 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
             });
 
-            // 5. 짐 보관 서비스 (지역별 동적 매핑)
-            let luggageStorageUrl = `https://go.bounce.com/GATEO951904439302671`;
-            let luggageStorageName = 'Bounce (글로벌 짐 보관)';
-            let isBounce = true;
-
-            const searchLocationTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
-            for (const item of LUGGAGE_STORAGE_LINKS) {
-                if (item.keywords.some(kw => searchLocationTarget.includes(kw.toLowerCase()))) {
-                    luggageStorageUrl = item.url;
-                    luggageStorageName = item.name;
-                    isBounce = false;
-                    break;
-                }
-            }
-
+            // 5. 짐 보관 서비스 (바운스 배너로 통일)
             links.push({
-                url: luggageStorageUrl,
-                text: `${luggageStorageName} 찾기`,
+                url: 'https://go.bounce.com/GATEO951904439302671',
+                text: 'Bounce (글로벌 짐 보관) 찾기',
                 colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200',
-                isBanner: isBounce,
-                bannerSrc: isBounce ? '/278x90.png' : null
+                isBanner: true,
+                bannerSrc: '/278x90.png'
             });
             break;
         case 'airport_transfer':

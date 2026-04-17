@@ -54,13 +54,6 @@ export const OFFICIAL_VISA_LINKS = [
     { keywords: ['마다가스카르', '안타나나리보', '노시베', '이파티', '모론다바'], url: 'https://evisamada.gov.mg/', label: '마다가스카르 e-Visa 공식 신청' }
 ];
 
-// 🆕 [Phase 8-7] 글로벌 짐 보관소 지역별 매핑
-export const LUGGAGE_STORAGE_LINKS = [
-    { keywords: ['일본', '도쿄', '오사카', '후쿠오카', '삿포로', '교토'], name: 'ecbo cloak', url: 'https://cloak.ecbo.io/ko' },
-    { keywords: ['프랑스', '파리', '이탈리아', '로마', '밀라노', '유럽', '스페인', '런던'], name: 'Radical Storage', url: 'https://radicalstorage.tp.st/PcdkpYln' },
-    // default는 utils.js에서 Bounce 배너 연동으로 처리
-];
-
 // 🆕 [Phase 8-7] 글로벌 식당 예약 서비스 매핑 (수익화 및 지역 커버리지)
 export const DINING_RESERVATION_LINKS = [
     { keywords: ['일본', '도쿄', '오사카', '후쿠오카', '삿포로', '교토', '오키나와'], url: 'https://tabelog.com/ko/', name: '타베로그(Tabelog)', type: 'direct' },
