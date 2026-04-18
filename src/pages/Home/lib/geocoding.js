@@ -26,14 +26,35 @@ const findEnglishKey = (koreanName) => {
 // 🚨 [New] 딜레이 유틸리티 (API 차단 방지용)
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+// 🚨 [New] 여행지 목적에 맞는 우선순위 스코어링 함수
+const calculatePlaceScore = (place) => {
+  let score = 0;
+  if (!place) return 0;
+  const type = place.type || "";
+  const category = place.category || "";
+  const address = place.address || {};
+
+  // 여행지로 선호되는 키워드에 높은 점수 부여
+  if (address.island) score += 50;
+  if (address.city || address.town || address.village) score += 30;
+  if (category === "tourism") score += 40;
+
+  // 단순 행정구역(특히 대도시의 구/동)이나 역 등은 점수를 낮춤
+  if (address.suburb || address.borough || address.quarter || address.city_district) score -= 30;
+  if (type === "station" || category === "railway") score -= 40;
+  if (type === "administrative" && address.borough) score -= 20;
+
+  return score;
+};
+
 // 2. 좌표 찾기 (Forward)
 export const getCoordinatesFromAddress = async (query) => {
-  
+
   // 🚨 [Fix] Accept-Language를 'en'으로 강제하여 결과값을 영문으로 받음 (Unsplash 호환성)
   const fetchOptions = {
     headers: {
-      'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)', 
-      'Accept-Language': 'en' 
+      'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)',
+      'Accept-Language': 'en'
     }
   };
 
@@ -41,9 +62,9 @@ export const getCoordinatesFromAddress = async (query) => {
   const fetchCoords = async (searchQuery, attempt = 1) => {
     try {
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=3&addressdetails=1`;
-      
+
       const response = await fetch(url, fetchOptions);
-      
+
       if (!response.ok) {
         // 429(Too Many Requests)나 5xx 에러 시 재시도
         if (attempt < 3) {
@@ -57,20 +78,20 @@ export const getCoordinatesFromAddress = async (query) => {
       const data = await response.json();
       return (data && data.length > 0) ? data : null;
 
-    } catch (e) { 
+    } catch (e) {
       // 네트워크 끊김(ERR_INTERNET_DISCONNECTED) 등 잡기
       console.warn(`⚠️ Connection failed. Retrying... (${attempt}/3)`);
       if (attempt < 3) {
         await delay(1000 * attempt);
         return fetchCoords(searchQuery, attempt + 1);
       }
-      return null; 
+      return null;
     }
   };
 
   try {
-    const cleanQuery = standardizeName(query); 
-    
+    const cleanQuery = standardizeName(query);
+
     // 1차 패스
     let data = await fetchCoords(cleanQuery);
 
@@ -97,9 +118,11 @@ export const getCoordinatesFromAddress = async (query) => {
 
     if (!data) return null;
 
-    const topResult = data[0];
+    // 🚨 [New] 반환된 결과 중 여행지에 적합한 것을 우선순위로 정렬 (예: '구'보다 '섬'을 우선)
+    const sortedData = [...data].sort((a, b) => calculatePlaceScore(b) - calculatePlaceScore(a));
+    const topResult = sortedData[0];
     const address = topResult.address || {};
-    
+
     // 🚨 [Fix] 영문 우선 추출 로직
     // Nominatim이 'en' 헤더 덕분에 영문 데이터를 주지만, 확실하게 city/town/village 등에서 가져옴
     const englishName = address.city || address.town || address.village || address.island || address.state || address.country || cleanQuery;
@@ -126,21 +149,21 @@ export const getAddressFromCoordinates = async (lat, lng) => {
     // accept-language를 'en,ko'으로 지정하여 영문을 최우선으로 확보. (없으면 한글 Fallback)
     const response = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en,ko`,
-      { 
-        headers: { 
-          'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)' 
-        } 
+      {
+        headers: {
+          'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)'
+        }
       }
     );
     if (!response.ok) throw new Error("Geocoding failed");
     const data = await response.json();
-    
+
     // 비관적 방어: 데이터가 없거나 바다 클릭 시
     if (!data || !data.address) return null;
 
     const cityRaw = data.address.city || data.address.town || data.address.village || data.address.municipality || data.address.island || data.address.state || "";
     const countryRaw = data.address.country || "";
-    
+
     return {
       fullAddress: data.display_name,
       city: standardizeName(cityRaw) || standardizeName(countryRaw),

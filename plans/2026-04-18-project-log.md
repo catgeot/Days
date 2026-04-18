@@ -26,6 +26,13 @@
     *   트립링크 링크 방식(단축 URL, iframe, 이미지 링크) 분석 후, UI 반응형과 디자인 일관성을 위해 단축 URL 방식을 메인으로 채택하는 `triplink-hotdeal-plan.md` 기획서 작성.
     *   우측 상단 팝업 컴포넌트(`HotDealBanner.jsx`)를 구현하고 로컬 스토리지 기반 '오늘 하루 보지 않기' 기능을 완성했으나, **사용자의 피드백("홈 화면에서는 조용한 탐색 컨셉 훼손 우려로 링크 팝업 제거")을 수용하여 최종적으로 롤백 및 삭제 처리**함.
 
+### 4. 지오코딩 검색 결과 우선순위 필터링 (스코어링) 도입
+*   **변경 배경**: "미야 코지마"와 같이 지오코딩 API (Nominatim) 검색 시, 관광 목적의 섬/도시보다 대도시의 행정구(예: 오사카 미야코지마 구)가 우선적으로 반환되어 장소 카드 확장 시 엉뚱한 정보가 노출되는 이슈 해결.
+*   **작업 내용**:
+    *   `src/pages/Home/lib/geocoding.js` 파일의 `getCoordinatesFromAddress` 함수 내에 Nominatim API 응답 결과를 분석하는 `calculatePlaceScore` 함수 신설.
+    *   `island`, `city`, `town`, `tourism` 속성에는 가점을, `suburb`, `borough`, `station` 속성에는 감점을 부여.
+    *   동일 검색어(예: 미야코지마)에 대해 행정 구역(오사카 구)보다 실제 여행지(오키나와 섬)가 최우선으로 선택되도록 재정렬(Sorting) 로직 적용 및 안정성(null 방어) 확보.
+
 ## 변경된 파일 목록
 *   `src/pages/Home/components/SearchDiscoveryModal.jsx` (테마 변경 및 타겟팅 로직)
 *   `src/pages/Home/components/SearchDiscovery/CurationSection.jsx` (인피드 광고 삽입 로직)
@@ -33,6 +40,7 @@
 *   `src/pages/Home/data/tripLinkPackages.js` (신규 파일)
 *   `src/pages/Home/data/travelSpots.js` (신규 목적지 10개 추가)
 *   `plans/triplink-hotdeal-plan.md` (핫딜 배너 팝업 기획 문서 추가)
+*   `src/pages/Home/lib/geocoding.js` (지오코딩 검색 결과 스코어링 로직 추가)
 
 ## Next Steps (다음 세션 작업)
 *   [x] **완료**: 금일 제안된 테마별 타겟 여행지 중 `travelSpots.js`에 누락된 목적지(10개: 다낭, 삿포로, 오사카, 후쿠오카, 칭다오, 두브로브니크, 사이판, 푸꾸옥, 코타키나발루, 호놀룰루) 파악 및 신규 데이터 추가.
