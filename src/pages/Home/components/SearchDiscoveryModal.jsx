@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { Search, X, Compass, Globe2, Layers, Map, ArrowUp } from 'lucide-react';
+import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
+import { TRIPLINK_PACKAGES } from '../data/tripLinkPackages';
 
 // 분리된 컴포넌트 및 유틸리티 import
 import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS } from './SearchDiscovery/constants';
@@ -137,10 +138,25 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (!isCurationMode) return null;
     const seed = getDailySeed();
     const shuffled = shuffleWithSeed(filteredSpots, seed);
+
+    // 테마별 우선 노출 여행지 목록 (기획서 기반)
+    const familyTargets = ['다낭', '방콕', '삿포로', '오사카', '후쿠오카', '타이베이', '나트랑', '장가계', '칭다오', '청도', '싱가포르'];
+    const longhaulTargets = ['파리', '런던', '프라하', '바르셀로나', '마드리드', '이스탄불', '두브로브니크', '로마', '밀라노', '로스앤젤레스', '샌프란시스코', '시드니', '오클랜드', '두바이'];
+    const resortTargets = ['괌', '사이판', '몰디브', '호놀룰루', '하와이', '세부', '보라카이', '발리', '칸쿤', '푸꾸옥', '코타키나발루'];
+
+    const getSpotsByTargets = (targets, fallbackFilter) => {
+      const matched = shuffled.filter(s => targets.some(t => (s.name || '').includes(t) || (s.keywords && s.keywords.includes(t))));
+      if (matched.length < 10) {
+        const fallbacks = shuffled.filter(fallbackFilter).filter(s => !matched.find(m => m.id === s.id));
+        return [...matched, ...fallbacks].slice(0, 10);
+      }
+      return matched.slice(0, 10);
+    };
+
     return {
-      trending: shuffled.slice(0, 10),
-      healing: shuffled.filter(s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature').slice(0, 10),
-      city: shuffled.filter(s => s.primaryCategory === 'urban' || s.primaryCategory === 'culture').slice(0, 10)
+      trending: getSpotsByTargets(familyTargets, s => s.continent === 'asia' || s.continent === 'oceania'),
+      city: getSpotsByTargets(longhaulTargets, s => s.continent === 'europe' || s.continent === 'americas' || s.continent === 'middle-east'),
+      healing: getSpotsByTargets(resortTargets, s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature')
     };
   }, [isCurationMode, filteredSpots]);
 
@@ -227,31 +243,34 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       return (
         <div className="space-y-12 pb-10 w-full pt-4">
           <CurationSection
-            title="지금 가장 핫한 여행지"
-            subtitle="요즘 여행자들이 가장 많이 찾는 곳"
-            icon={<div className="p-2 bg-red-500/10 rounded-xl border border-red-500/20"><Compass className="text-red-400" size={24} /></div>}
+            title="가볍고 가까운, 완벽한 가족 여행"
+            subtitle="가이드와 함께 걷기 편하고 케어가 확실한 아시아 단거리 패키지 추천"
+            icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
+            promotedPackages={TRIPLINK_PACKAGES.family}
             delayClass=""
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
           />
           <CurationSection
-            title="일상의 탈출, 완벽한 휴양"
-            subtitle="아무것도 하지 않을 자유가 있는 곳"
-            icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Layers className="text-cyan-400" size={24} /></div>}
-            spots={curationData.healing}
+            title="전문가와 함께하는, 유럽 & 장거리 일주"
+            subtitle="교통, 언어, 치안 우려를 해소하는 안전하고 편안한 장거리 패키지 추천"
+            icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
+            spots={curationData.city}
+            promotedPackages={TRIPLINK_PACKAGES.longhaul}
             delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
-            onMoreClick={() => handleThemeSelect('paradise')}
+            onMoreClick={() => handleThemeSelect('urban')}
           />
           <CurationSection
-            title="영감을 주는 도시 탐험"
-            subtitle="예술과 문화, 트렌드가 숨쉬는 매력적인 도심"
-            icon={<div className="p-2 bg-purple-500/10 rounded-xl border border-purple-500/20"><Map className="text-purple-400" size={24} /></div>}
-            spots={curationData.city}
+            title="일상의 탈출, 완벽한 에어텔/올인클루시브"
+            subtitle="비행기, 숙소, 픽업만 해결하고 자유롭게 즐기는 휴양 패키지 추천"
+            icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
+            spots={curationData.healing}
+            promotedPackages={TRIPLINK_PACKAGES.resort}
             delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
-            onMoreClick={() => handleThemeSelect('urban')}
+            onMoreClick={() => handleThemeSelect('paradise')}
           />
         </div>
       );

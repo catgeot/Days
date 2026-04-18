@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import SpotThumbnailCard from './SpotThumbnailCard';
+import PackageThumbnailCard from './PackageThumbnailCard';
 
-const CurationSection = ({ title, subtitle, icon, spots, delayClass, onSelectSpot, onMoreClick }) => {
+const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delayClass, onSelectSpot, onMoreClick }) => {
   const scrollRef = useRef(null);
   const [showLeftBtn, setShowLeftBtn] = useState(false);
   const [showRightBtn, setShowRightBtn] = useState(true);
@@ -54,9 +55,23 @@ const CurationSection = ({ title, subtitle, icon, spots, delayClass, onSelectSpo
           onScroll={handleScroll}
           className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0"
         >
-          {spots.map(spot => (
-            <SpotThumbnailCard key={spot.id} spot={spot} onClick={onSelectSpot} />
-          ))}
+          {spots.map((spot, index) => {
+            // 네이티브 인피드 광고 삽입 로직: 2번째 카드 앞(index === 1), 6번째 카드 앞(index === 5)
+            const isFirstAdPosition = index === 1 && promotedPackages && promotedPackages[0];
+            const isSecondAdPosition = index === 5 && promotedPackages && promotedPackages[1];
+
+            return (
+              <React.Fragment key={spot.id}>
+                {isFirstAdPosition && (
+                  <PackageThumbnailCard key={promotedPackages[0].id} pkg={promotedPackages[0]} />
+                )}
+                {isSecondAdPosition && (
+                  <PackageThumbnailCard key={promotedPackages[1].id} pkg={promotedPackages[1]} />
+                )}
+                <SpotThumbnailCard spot={spot} onClick={onSelectSpot} />
+              </React.Fragment>
+            );
+          })}
 
           {/* 전체보기 모어 타일 */}
           <div
