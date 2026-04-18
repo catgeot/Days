@@ -20,6 +20,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [selectedTheme, setSelectedTheme] = useState('all');
   const [selectedSubGroup, setSelectedSubGroup] = useState(null);
   const [showTopBtn, setShowTopBtn] = useState(false);
+  const [isAILoading, setIsAILoading] = useState(false);
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
@@ -108,6 +109,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
   const handleSpotSelect = (spot) => {
     onSelect(spot);
+  };
+
+  const handleSearchSubmit = async () => {
+    if (query.trim() === '' || !onSearch) return;
+    setIsAILoading(true);
+    try {
+      await onSearch(query.trim());
+    } finally {
+      setIsAILoading(false);
+    }
   };
 
   const filteredSpots = useMemo(() => {
@@ -220,7 +231,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (filteredSpots.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center py-20 text-center px-4 w-full animate-fade-in">
-          <div className="relative mb-6 group cursor-pointer" onClick={() => { if(onSearch) onSearch(query.trim()); }}>
+          <div className="relative mb-6 group cursor-pointer" onClick={handleSearchSubmit}>
              <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
              <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform">
                <Globe2 size={32} className="text-blue-400" />
@@ -231,7 +242,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           </h3>
           <p className="text-gray-400 break-keep max-w-md mx-auto text-sm md:text-base leading-relaxed">
              기본 목록에 없는 장소입니다. <br/>
-             <strong className="text-gray-200">엔터(Enter) 키</strong>를 누르시거나 <strong className="text-gray-200 cursor-pointer hover:text-blue-400 transition-colors" onClick={() => { if(onSearch) onSearch(query.trim()); }}>위의 아이콘</strong>을 클릭하시면, <br/>
+             <strong className="text-gray-200">엔터(Enter) 키</strong>를 누르시거나 <strong className="text-gray-200 cursor-pointer hover:text-blue-400 transition-colors" onClick={handleSearchSubmit}>위의 아이콘</strong>을 클릭하시면, <br/>
              AI가 전 세계 지도를 검색하여 즉시 해당 위치로 비행합니다!
           </p>
         </div>
@@ -389,8 +400,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && query.trim() !== '' && onSearch) {
-              onSearch(query.trim());
+            if (e.key === 'Enter') {
+              handleSearchSubmit();
             }
           }}
           placeholder="어디로 떠나고 싶으신가요?"
@@ -576,6 +587,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         </div>
 
       </div>
+
+      {/* 검색 진행 로딩 오버레이 */}
+      {isAILoading && (
+        <div className="absolute inset-0 z-[300] bg-[#0b101a]/80 backdrop-blur-sm flex items-center justify-center animate-fade-in">
+           <div className="flex flex-col items-center">
+             <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+             <h3 className="text-xl font-bold text-white mb-2">AI가 목적지를 탐색하고 있습니다</h3>
+             <p className="text-gray-400 text-sm">유사 지명 및 오타를 검증 중입니다...</p>
+           </div>
+        </div>
+      )}
+
     </div>
   );
 };

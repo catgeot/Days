@@ -206,6 +206,9 @@ function Home() {
     prevPathRef.current = currentPath;
 
     if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
+      if (routeLocation.state?.fromSearch) {
+        return;
+      }
       setIsCardExpanded(false);
       setSelectedLocation(null);
       if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
@@ -390,9 +393,9 @@ function Home() {
             const urlParam = spot.slug || (spot.id || spot.name);
             navigate(`/place/${urlParam}`);
           }}
-          onSearch={(query) => {
-            handleSmartSearch(query);
-            navigate(`/?search=${encodeURIComponent(query)}`);
+          onSearch={async (query) => {
+            await handleSmartSearch(query);
+            navigate('/', { state: { fromSearch: true } });
           }}
         />
       </div>

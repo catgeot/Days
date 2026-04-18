@@ -33,8 +33,16 @@
     *   `island`, `city`, `town`, `tourism` 속성에는 가점을, `suburb`, `borough`, `station` 속성에는 감점을 부여.
     *   동일 검색어(예: 미야코지마)에 대해 행정 구역(오사카 구)보다 실제 여행지(오키나와 섬)가 최우선으로 선택되도록 재정렬(Sorting) 로직 적용 및 안정성(null 방어) 확보.
 
+### 5. 탐색창(SearchDiscoveryModal) 검색 오타 검증 로딩 스피너 구현 및 라우팅 안정화
+*   **변경 배경**: 사용자가 존재하지 않는 지명이나 오타를 입력했을 때, 지오코딩 API 실패 후 AI 교정 프록시를 타는 동안 지연 시간(1~3초)이 발생함. 대기 시간 동안 아무런 피드백이 없어 멈춘 것으로 오인할 수 있는 UX 문제를 해결.
+*   **작업 내용**:
+    *   `SearchDiscoveryModal.jsx` 내부에 `isAILoading` 상태를 신설하고, 검색 트리거(Enter 및 아이콘 클릭) 발생 시 비동기 대기(`await onSearch`)를 하며 모달 내부에 풀스크린 로딩 스피너("AI가 목적지를 탐색하고 있습니다...") 오버레이를 노출.
+    *   비동기 적용 후 발생한 버그(로딩 후 장소 카드가 뜨자마자 모달 닫힘과 동시에 `index.jsx`의 `useEffect` 초기화 로직이 동작해 카드가 바로 닫히는 현상) 해결.
+    *   `navigate` 시 기존 URL Query Parameter를 이용한 방식 대신 `state: { fromSearch: true }`를 넘기는 방식으로 변경하고, 초기화 훅에서 이를 예외 처리하도록 구조를 개선하여 안정적인 장소 카드 진입 UX 구축.
+
 ## 변경된 파일 목록
-*   `src/pages/Home/components/SearchDiscoveryModal.jsx` (테마 변경 및 타겟팅 로직)
+*   `src/pages/Home/components/SearchDiscoveryModal.jsx` (로딩 스피너 UI 및 비동기 처리 추가)
+*   `src/pages/Home/index.jsx` (onSearch 비동기 로직 적용 및 예외 라우팅 처리 추가)
 *   `src/pages/Home/components/SearchDiscovery/CurationSection.jsx` (인피드 광고 삽입 로직)
 *   `src/pages/Home/components/SearchDiscovery/PackageThumbnailCard.jsx` (신규 파일)
 *   `src/pages/Home/data/tripLinkPackages.js` (신규 파일)

@@ -41,6 +41,7 @@ const PlaceMediaPanel = React.memo(({
                 showUI={showUI}
                 handleDownload={galleryData.handleDownload}
                 handleRefresh={galleryData.handleRefresh}
+                handleRemoveImage={galleryData.handleRemoveImage}
                 setMediaMode={setMediaMode}
             />
         </div>

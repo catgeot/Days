@@ -12,6 +12,7 @@ const PlaceGalleryView = React.memo(({
   showUI,
   handleDownload,
   handleRefresh,
+  handleRemoveImage,
   setMediaMode
 }) => {
   const fullScreenContainerRef = useRef(null);
@@ -72,10 +73,20 @@ const PlaceGalleryView = React.memo(({
         >
           <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => {
               e.stopPropagation();
+              if (e.ctrlKey || e.metaKey) return; // 더블클릭을 위해 단일 클릭 방지
               if (window.innerWidth >= 768 && !isFullScreen) {
                 setSelectedImg(null);
               } else if (window.innerWidth < 768) {
                 setIsMobileUIHidden(prev => !prev);
+              }
+          }}
+          onDoubleClick={(e) => {
+              if (e.ctrlKey || e.metaKey) {
+                  e.stopPropagation();
+                  if (handleRemoveImage && selectedImg) {
+                      handleRemoveImage(selectedImg);
+                      setSelectedImg(null);
+                  }
               }
           }}>
               <img
@@ -155,7 +166,16 @@ const PlaceGalleryView = React.memo(({
                   {images.map((img, i) => (
                     <div
                       key={img.id || i}
-                      onClick={() => setSelectedImg(img)}
+                      onClick={(e) => {
+                         if (e.ctrlKey || e.metaKey) return;
+                         setSelectedImg(img);
+                      }}
+                      onDoubleClick={(e) => {
+                         if (e.ctrlKey || e.metaKey) {
+                             e.stopPropagation();
+                             if (handleRemoveImage) handleRemoveImage(img);
+                         }
+                      }}
                       className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
                     >
 

@@ -4,6 +4,7 @@
 // 2. [Maintain] Unsplash API 최종 실패 시 기본 대체 이미지를 제공하는 3차 방어막(Fallback) '유지'
 // 3. 🚨 [Subtraction] 영문 매핑 사전(FALLBACK_DICTIONARY) '제거' -> 기형적인 로직을 버리고 citiesData.js의 원본 데이터(name_en)를 직접 참조하도록 아키텍처 원복
 // 4. 🚨 [New] Unsplash 프로덕션 승인 요건: 다운로드 트래킹(download_location) 호출 및 실제 파일 다운로드 로직(handleDownload) 추가
+// 5. 🚨 [New] 갤러리 이미지 영구 삭제 기능(Ctrl + 더블클릭) 지원을 위한 handleRemoveImage 추가 및 쿼리/이름 Ref 추가
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
@@ -52,6 +53,8 @@ export const usePlaceGallery = (locationSource) => {
   // 🚨 [New] 큐레이션(좋아요/숨김) 원본 데이터를 보존하기 위한 Ref
   const allImagesRef = useRef([]);
   const pageRef = useRef(1);
+  const currentKoreanNameRef = useRef('');
+  const currentQueryRef = useRef('');
 
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
@@ -168,6 +171,10 @@ export const usePlaceGallery = (locationSource) => {
     } else if (FALLBACK_DICTIONARY[primaryQuery]) {
       primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
     }
+
+    // 상태 저장을 통한 삭제 시 활용
+    currentKoreanNameRef.current = koreanName;
+    currentQueryRef.current = primaryQuery;
 
     // 강제 새로고침이 아닐 때만 마지막 쿼리를 확인하여 중복 방지
     if (!forceRefresh && lastQueryRef.current === primaryQuery) return;
@@ -333,6 +340,45 @@ export const usePlaceGallery = (locationSource) => {
     }
   }, [ACCESS_KEY]);
 
+  // 🚨 [New] 특정 이미지 영구 삭제 처리 (DB, 캐시, 상태 업데이트)
+  const handleRemoveImage = useCallback(async (imageToRemove) => {
+    if (!imageToRemove) return;
+
+    // 1. 상태 업데이트
+    const newImages = allImagesRef.current.filter(img => img.id !== imageToRemove.id);
+    allImagesRef.current = newImages;
+    setImages(newImages);
+
+    const koreanName = currentKoreanNameRef.current;
+    const primaryQuery = currentQueryRef.current;
+    const CACHE_KEY = `days_gallery_${primaryQuery}`;
+
+    // 2. 캐시 업데이트
+    saveToSmartCache(CACHE_KEY, newImages);
+
+    // 3. DB 업데이트
+    if (koreanName) {
+      const thumbnailToSave = newImages[0]?.urls?.small || newImages[0]?.urls?.regular || '';
+      try {
+        const { error } = await supabase
+          .from('place_stats')
+          .update({
+            gallery_urls: newImages,
+            image_url: thumbnailToSave
+          })
+          .eq('place_id', koreanName);
+
+        if (error) {
+          console.error("🚨 이미지 삭제 후 DB 업데이트 실패:", error);
+        } else {
+          console.log(`✅ 이미지 삭제 완료 (DB 영구반영): ${imageToRemove.id}`);
+        }
+      } catch (err) {
+        console.error("🚨 이미지 삭제 중 예외 발생:", err);
+      }
+    }
+  }, []);
+
   // 반환 객체
   return {
     images,
@@ -340,6 +386,7 @@ export const usePlaceGallery = (locationSource) => {
     selectedImg,
     setSelectedImg,
     handleDownload,
-    handleRefresh: () => fetchImages(true)
+    handleRefresh: () => fetchImages(true),
+    handleRemoveImage
   };
 };
