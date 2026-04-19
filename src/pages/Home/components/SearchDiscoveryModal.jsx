@@ -5,10 +5,11 @@ import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { TRIPLINK_PACKAGES } from '../data/tripLinkPackages';
 
 // 분리된 컴포넌트 및 유틸리티 import
-import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS } from './SearchDiscovery/constants';
+import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS, TRIPLINK_DYNAMIC_BANNERS } from './SearchDiscovery/constants';
 import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
+import TripLinkDynamicBanner from './SearchDiscovery/TripLinkDynamicBanner';
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
   const navigate = useNavigate();
@@ -211,6 +212,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
   }, [filterGroups, selectedSubGroup, filterMode, selectedContinent, selectedTheme, navigate]);
 
+  // 동적 배너 노출용 adKey 판별 로직
+  const bannerAdKey = useMemo(() => {
+    if (isSearching) {
+       const q = query.toLowerCase();
+       if (q.includes('베트남') || q.includes('다낭') || q.includes('나트랑') || q.includes('푸꾸옥')) return TRIPLINK_DYNAMIC_BANNERS.vietnam;
+       if (q.includes('일본') || q.includes('북해도') || q.includes('삿포로') || q.includes('홋카이도')) return TRIPLINK_DYNAMIC_BANNERS.hokkaido;
+    } else {
+       if (selectedContinent === 'asia' || selectedSubGroup === 'asia') return TRIPLINK_DYNAMIC_BANNERS.vietnam;
+    }
+    return TRIPLINK_DYNAMIC_BANNERS.default;
+  }, [query, isSearching, selectedContinent, selectedSubGroup]);
+
   const handleSubGroupSelect = (id) => {
     const currentPrimary = filterMode === 'continent' ? selectedContinent : selectedTheme;
     navigate(`/explore/${currentPrimary}/${id}`);
@@ -248,6 +261,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         </div>
       );
     }
+
+    const renderDynamicBanner = () => (
+      <div className="mb-8 w-full flex justify-center animate-fade-in-up">
+        {/* PC: 728x90 */}
+        <TripLinkDynamicBanner adKey={bannerAdKey} width={728} height={90} className="rounded-xl shadow-lg border border-white/10 hidden md:flex hover:shadow-blue-500/20 hover:border-blue-500/30 transition-all cursor-pointer bg-white/5" />
+        {/* Mobile: 320x50 */}
+        <TripLinkDynamicBanner adKey={bannerAdKey} width={320} height={50} className="rounded-xl shadow-lg border border-white/10 md:hidden hover:shadow-blue-500/20 hover:border-blue-500/30 transition-all cursor-pointer bg-white/5" />
+      </div>
+    );
 
     // 1. 큐레이션 모드 (검색어 없음, 전체 선택)
     if (isCurationMode && curationData) {
@@ -294,7 +316,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       const currentLabel = activeGroup?.label || '';
 
       return (
-        <div className="w-full animate-fade-in-up pb-20">
+        <div className="w-full animate-fade-in-up pb-20 pt-4">
+          {/* 사용자 피드백: 상단 배너 노출 보류 */}
+          {/* renderDynamicBanner() */}
           <div className="block">
             {/* Result Stats */}
             <div className="mb-6 text-sm font-medium text-gray-500 flex items-center gap-2">
@@ -317,6 +341,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     // 3. 검색 결과 (그리드 뷰)
     return (
       <div className="w-full pb-20 pt-4">
+        {/* 사용자 피드백: 상단 배너 노출 보류 */}
+        {/* renderDynamicBanner() */}
         <div className="mb-6 text-sm font-medium text-gray-500 flex items-center gap-2">
            <Search size={16} />
            <span>'{query}' 검색 결과 {filteredSpots.length}건</span>

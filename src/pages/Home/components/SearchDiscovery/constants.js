@@ -44,3 +44,9 @@ export const CATEGORY_ICONS = {
   culture: Landmark,
   adventure: Tent,
 };
+
+export const TRIPLINK_DYNAMIC_BANNERS = {
+  vietnam: 'hbxakj', // 하노이/다낭/나트랑/푸꾸옥
+  hokkaido: 'iosw2r', // 홋카이도/북해도
+  default: 'hbxakj', // 임시로 베트남 배너를 기본으로 사용 (추후 변경 가능)
+};
