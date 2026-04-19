@@ -157,8 +157,21 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     const resortTargets = ['괌', '사이판', '보라카이', '세부', '발리', '푸꾸옥', '코타키나발루', '하와이', '호놀룰루', '몰디브', '칸쿤'];
 
     const getSpotsByTargets = (targets, fallbackFilter) => {
-      const matched = shuffled.filter(s => targets.some(t => (s.name || '').includes(t) || (s.keywords && s.keywords.includes(t))));
+      // 1. 기획서에 명시된 타겟(인기도/접근성) 순서대로 먼저 스팟을 추출하여 순서를 강제 보장
+      const exactMatches = [];
+      targets.forEach(t => {
+        const founds = shuffled.filter(s => (s.name || '').includes(t) || (s.keywords && s.keywords.includes(t)));
+        founds.forEach(found => {
+          if (!exactMatches.find(m => m.id === found.id)) {
+            exactMatches.push(found);
+          }
+        });
+      });
+
+      const matched = exactMatches;
+
       if (matched.length < 10) {
+        // 2. 10개가 안 될 경우, 셔플된 나머지 후보군으로 채움
         const fallbacks = shuffled.filter(fallbackFilter).filter(s => !matched.find(m => m.id === s.id));
         return [...matched, ...fallbacks].slice(0, 10);
       }
