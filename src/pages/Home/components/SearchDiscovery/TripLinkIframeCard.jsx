@@ -9,10 +9,16 @@ const TripLinkIframeCard = ({ pkg }) => {
 
   return (
     <div
-      className={`group relative flex flex-col bg-white/[0.02] border border-white/[0.05] rounded-[2rem] transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-blue-500/20 hover:border-blue-400/50 ${baseSize}`}
+      className={`group relative flex flex-col rounded-[2rem] transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-sky-500/30 hover:border-sky-300/60 ${baseSize}`}
     >
-      {/* 백그라운드 장식 효과 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-900/10 to-black/40 pointer-events-none" />
+      {/* 백그라운드 장식 효과: 하늘색에서 모래/흙(amber/orange) 색상으로 부드럽게 떨어지는 여행지 사진 느낌의 그라데이션 */}
+      <div className="absolute inset-0 bg-gradient-to-b from-sky-400 via-sky-200/80 to-[#d4a373] pointer-events-none opacity-90" />
+
+      {/* 텍스처 느낌을 위한 약간의 어두운 오버레이 */}
+      <div className="absolute inset-0 bg-black/10 pointer-events-none mix-blend-overlay" />
+
+      {/* 테두리 (사진 카드와 비슷한 느낌을 주기 위해 살짝 밝은 테두리) */}
+      <div className="absolute inset-0 border border-white/20 rounded-[2rem] pointer-events-none" />
 
       {/* 상단 뱃지 */}
       <div className="absolute top-4 left-4 z-20 pointer-events-none">
@@ -23,7 +29,7 @@ const TripLinkIframeCard = ({ pkg }) => {
 
       {/* iframe 래퍼 (카드 너비에 맞춰 scale 축소: 336x280 기준 0.7 적용 시 235.2px) */}
       <div className="w-full h-full flex flex-col items-center justify-center relative z-10 pt-8 pointer-events-auto">
-        <div className="transform scale-[0.7] md:scale-[0.8] origin-center flex items-center justify-center rounded-xl overflow-hidden shadow-2xl bg-white/5 transition-transform duration-500 group-hover:scale-[0.75] md:group-hover:scale-[0.85]">
+        <div className="transform scale-[0.7] md:scale-[0.8] origin-center flex items-center justify-center rounded-xl overflow-hidden shadow-2xl bg-white transition-transform duration-500 group-hover:scale-[0.75] md:group-hover:scale-[0.85]">
           <iframe
             src={`https://info.triplink.kr/d/${pkg.adKey}`}
             width={adWidth}
@@ -41,7 +47,7 @@ const TripLinkIframeCard = ({ pkg }) => {
 
       {/* 하단 텍스트 영역 (시각적 균형) */}
       <div className="absolute bottom-4 left-4 right-4 z-20 pointer-events-none text-center">
-        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 text-yellow-400 border border-yellow-400/30">
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/40 text-white/90 backdrop-blur-md border border-white/20 shadow-sm">
           AD
         </span>
       </div>

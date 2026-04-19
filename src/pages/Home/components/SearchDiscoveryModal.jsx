@@ -466,15 +466,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { display: none; }
         @media (min-width: 768px) {
-          .custom-scrollbar::-webkit-scrollbar { display: block; height: 12px; width: 6px; }
-          .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
-          .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.3); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.5); border: 2px solid transparent; background-clip: padding-box; }
+          .custom-scrollbar::-webkit-scrollbar { display: block; height: 16px; width: 6px; }
+          .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 12px; }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.6); border-radius: 12px; border: 4px solid transparent; background-clip: padding-box; }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.9); border: 3px solid transparent; background-clip: padding-box; }
         }
-        .modal-scroll-area::-webkit-scrollbar { display: block; width: 10px; }
-        .modal-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-left: 1px solid rgba(255,255,255,0.05); }
-        .modal-scroll-area::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
-        .modal-scroll-area::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
+        .modal-scroll-area::-webkit-scrollbar { display: block; width: 12px; }
+        .modal-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-left: 1px solid rgba(255,255,255,0.08); }
+        .modal-scroll-area::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.4); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+        .modal-scroll-area::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.7); }
       `}} />
 
       {/* PC 전용 Header */}
