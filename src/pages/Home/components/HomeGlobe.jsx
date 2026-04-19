@@ -6,7 +6,8 @@ import { citiesData } from '../data/citiesData';
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,
   ZOOM_THRESHOLD: 2.2,
-  AUTO_ROTATE_DISABLE_ALT: 2.2,
+  AUTO_ROTATE_DISABLE_ALT: 2.0,
+  FLY_TARGET_ALT: 2.1,
   FLY_DISABLE_ALT: 1.8,
   FLY_DURATION: 3000,
   IDLE_DELAY_ZOOMED_OUT: 4000,
@@ -80,17 +81,9 @@ const HomeGlobe = React.memo(forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
       if (globeEl.current) {
-        const currentAlt = globeEl.current.pointOfView().altitude;
-
-        if (currentAlt <= GLOBE_CAMERA_CONFIG.FLY_DISABLE_ALT) {
-          globeEl.current.controls().autoRotate = false;
-          return;
-        }
-
         globeEl.current.controls().autoRotate = false;
 
-        const isZoomedIn = currentAlt < GLOBE_CAMERA_CONFIG.ZOOM_THRESHOLD;
-        const targetAlt = isZoomedIn ? currentAlt : GLOBE_CAMERA_CONFIG.DEFAULT_ALT;
+        const targetAlt = GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT;
 
         globeEl.current.pointOfView({ lat, lng, altitude: targetAlt }, GLOBE_CAMERA_CONFIG.FLY_DURATION);
 
@@ -98,16 +91,13 @@ const HomeGlobe = React.memo(forwardRef(({
         setRipples(prev => [...prev, newRipple]);
         setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 2000);
 
-        if (isZoomedIn) {
-        } else {
-          const totalWaitTime = GLOBE_CAMERA_CONFIG.FLY_DURATION + GLOBE_CAMERA_CONFIG.IDLE_DELAY_ZOOMED_OUT;
-          rotationTimer.current = setTimeout(() => {
-            const checkAlt = globeEl.current ? globeEl.current.pointOfView().altitude : 99;
-            if (globeEl.current && !pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
-               globeEl.current.controls().autoRotate = true;
-            }
-          }, totalWaitTime);
-        }
+        const totalWaitTime = GLOBE_CAMERA_CONFIG.FLY_DURATION + GLOBE_CAMERA_CONFIG.IDLE_DELAY_ZOOMED_OUT;
+        rotationTimer.current = setTimeout(() => {
+          const checkAlt = globeEl.current ? globeEl.current.pointOfView().altitude : 99;
+          if (globeEl.current && !pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
+             globeEl.current.controls().autoRotate = true;
+          }
+        }, totalWaitTime);
       }
     },
     updateLastPinName: () => {},
