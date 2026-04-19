@@ -38,16 +38,16 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-resort-1",
       type: "iframe",
-      adKey: "hbxakj", // 휴양지 배너 코드 대체
-      width: 300,
-      height: 250
+      adKey: "1c4mmw", // 남태평양 (괌/사이판 등)
+      width: 336,
+      height: 280
     },
     {
       id: "dyn-banner-resort-2",
       type: "iframe",
-      adKey: "hbxakj",
-      width: 300,
-      height: 250
+      adKey: "nnpyr1", // 코타키나발루/쿠알라룸푸르
+      width: 336,
+      height: 280
     }
   ]
 };
