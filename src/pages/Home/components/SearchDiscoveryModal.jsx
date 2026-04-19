@@ -151,10 +151,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     const seed = getDailySeed();
     const shuffled = shuffleWithSeed(filteredSpots, seed);
 
-    // 테마별 우선 노출 여행지 목록 (기획서 기반)
-    const familyTargets = ['다낭', '방콕', '삿포로', '오사카', '후쿠오카', '타이베이', '나트랑', '장가계', '칭다오', '청도', '싱가포르'];
-    const longhaulTargets = ['파리', '런던', '프라하', '바르셀로나', '마드리드', '이스탄불', '두브로브니크', '로마', '밀라노', '로스앤젤레스', '샌프란시스코', '시드니', '오클랜드', '두바이'];
-    const resortTargets = ['괌', '사이판', '몰디브', '호놀룰루', '하와이', '세부', '보라카이', '발리', '칸쿤', '푸꾸옥', '코타키나발루'];
+    // 테마별 우선 노출 여행지 목록 (기획서 기반, 인기도 및 접근성 순 재정렬)
+    const familyTargets = ['오사카', '후쿠오카', '삿포로', '다낭', '나트랑', '방콕', '타이베이', '싱가포르', '장가계', '칭다오', '청도'];
+    const longhaulTargets = ['파리', '로마', '인터라켄', '런던', '프라하', '부다페스트', '두브로브니크', '바르셀로나', '마드리드', '밀라노', '이스탄불', '로스앤젤레스', '샌프란시스코', '시드니', '오클랜드', '두바이'];
+    const resortTargets = ['괌', '사이판', '보라카이', '세부', '발리', '푸꾸옥', '코타키나발루', '하와이', '호놀룰루', '몰디브', '칸쿤'];
 
     const getSpotsByTargets = (targets, fallbackFilter) => {
       const matched = shuffled.filter(s => targets.some(t => (s.name || '').includes(t) || (s.keywords && s.keywords.includes(t))));

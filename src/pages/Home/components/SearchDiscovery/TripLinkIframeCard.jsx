@@ -51,9 +51,9 @@ const TripLinkIframeCard = ({ pkg }) => {
          </span>
       </div>
 
-      {/* iframe 래퍼 (카드 너비에 맞춰 scale 축소) */}
+      {/* iframe 래퍼 (카드 너비에 맞춰 scale 축소: 336x280 기준 0.7 적용 시 235.2px) */}
       <div className="w-full h-full flex flex-col items-center justify-center relative z-10 pt-8 pointer-events-auto">
-        <div className="transform scale-[0.75] md:scale-[0.9] origin-center flex items-center justify-center rounded-xl overflow-hidden shadow-2xl bg-white/5 transition-transform duration-500 group-hover:scale-[0.8] md:group-hover:scale-[0.95]">
+        <div className="transform scale-[0.7] md:scale-[0.8] origin-center flex items-center justify-center rounded-xl overflow-hidden shadow-2xl bg-white/5 transition-transform duration-500 group-hover:scale-[0.75] md:group-hover:scale-[0.85]">
           {inView ? (
             <iframe
               src={`https://info.triplink.kr/d/${pkg.adKey}`}

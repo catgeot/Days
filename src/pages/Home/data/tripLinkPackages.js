@@ -21,16 +21,16 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-longhaul-1",
       type: "iframe",
-      adKey: "hbxakj", // 유럽 전용 배너 코드가 추가되기 전까지 임시 사용
-      width: 300,
-      height: 250
+      adKey: "wx9egs", // 서유럽
+      width: 336,
+      height: 280
     },
     {
       id: "dyn-banner-longhaul-2",
       type: "iframe",
-      adKey: "iosw2r", // 장거리 전용 배너 코드가 추가되기 전까지 임시 사용
-      width: 300,
-      height: 250
+      adKey: "8zfodz", // 동유럽/발칸3국
+      width: 336,
+      height: 280
     }
   ],
   // 테마 3: 일상의 탈출, 완벽한 에어텔/올인클루시브

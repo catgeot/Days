@@ -57,21 +57,24 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
           className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0"
         >
           {spots.map((spot, index) => {
-            // 네이티브 인피드 광고 삽입 로직: 2번째 카드 앞(index === 1), 6번째 카드 앞(index === 5)
-            const isFirstAdPosition = index === 1 && promotedPackages && promotedPackages[0];
-            const isSecondAdPosition = index === 5 && promotedPackages && promotedPackages[1];
+            // 네이티브 인피드 광고 삽입 로직: 우리 카드 5개(index 0~4) 이후 연속으로 6,7번째에 배치 (index 5 카드 렌더링 직전)
+            const isAdPosition = index === 5 && promotedPackages && promotedPackages.length > 0;
 
             return (
               <React.Fragment key={spot.id}>
-                {isFirstAdPosition && (
-                  promotedPackages[0].type === 'iframe'
-                    ? <TripLinkIframeCard key={promotedPackages[0].id} pkg={promotedPackages[0]} />
-                    : <PackageThumbnailCard key={promotedPackages[0].id} pkg={promotedPackages[0]} />
-                )}
-                {isSecondAdPosition && (
-                  promotedPackages[1].type === 'iframe'
-                    ? <TripLinkIframeCard key={promotedPackages[1].id} pkg={promotedPackages[1]} />
-                    : <PackageThumbnailCard key={promotedPackages[1].id} pkg={promotedPackages[1]} />
+                {isAdPosition && (
+                  <>
+                    {promotedPackages[0] && (
+                      promotedPackages[0].type === 'iframe'
+                        ? <TripLinkIframeCard key={`iframe-ad-1-${promotedPackages[0].id}`} pkg={promotedPackages[0]} />
+                        : <PackageThumbnailCard key={`pkg-ad-1-${promotedPackages[0].id}`} pkg={promotedPackages[0]} />
+                    )}
+                    {promotedPackages[1] && (
+                      promotedPackages[1].type === 'iframe'
+                        ? <TripLinkIframeCard key={`iframe-ad-2-${promotedPackages[1].id}`} pkg={promotedPackages[1]} />
+                        : <PackageThumbnailCard key={`pkg-ad-2-${promotedPackages[1].id}`} pkg={promotedPackages[1]} />
+                    )}
+                  </>
                 )}
                 <SpotThumbnailCard spot={spot} onClick={onSelectSpot} />
               </React.Fragment>
