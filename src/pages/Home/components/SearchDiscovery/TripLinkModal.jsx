@@ -20,8 +20,8 @@ const TripLinkModal = ({ pkg, onClose }) => {
         onClick={onClose}
       />
 
-      {/* 모달 컨텐츠 */}
-      <div className="relative w-full max-w-[1024px] bg-[#0b101a] rounded-2xl md:rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col animate-scale-up">
+      {/* 모달 컨텐츠 - 좁은 폭으로 중앙 정렬 */}
+      <div className="relative w-full max-w-[1040px] bg-[#0b101a] rounded-2xl md:rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col animate-scale-up" style={{ maxHeight: '90vh' }}>
         {/* 상단 헤더 영역 */}
         <div className="flex items-center justify-between p-4 md:px-6 border-b border-white/10 bg-gradient-to-r from-blue-900/40 to-purple-900/40">
           <div className="flex items-center gap-3">
@@ -30,7 +30,7 @@ const TripLinkModal = ({ pkg, onClose }) => {
             </div>
             <div>
               <h3 className="text-white font-bold text-base md:text-lg">
-                gateo x 노랑풍선 특가 패키지
+                gateo x 트립링크 특가 패키지
               </h3>
               <p className="text-xs text-gray-400 hidden md:block">
                 안전하고 편안한 여행을 위한 검증된 파트너 상품입니다
@@ -55,7 +55,7 @@ const TripLinkModal = ({ pkg, onClose }) => {
         </div>
 
         {/* iframe 영역 */}
-        <div className="relative w-full bg-white flex items-center justify-center overflow-hidden" style={{ height: '768px', maxHeight: '70vh' }}>
+        <div className="relative w-full bg-white flex items-center justify-center overflow-auto" style={{ height: '700px' }}>
           {/* 로딩 표시 (iframe 로드 전까지) */}
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-0">
             <div className="flex flex-col items-center gap-3">
