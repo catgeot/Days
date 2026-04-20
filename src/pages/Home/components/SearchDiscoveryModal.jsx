@@ -10,6 +10,7 @@ import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
 import TripLinkDynamicBanner from './SearchDiscovery/TripLinkDynamicBanner';
+import TripLinkModal from './SearchDiscovery/TripLinkModal';
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [selectedSubGroup, setSelectedSubGroup] = useState(null);
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [isAILoading, setIsAILoading] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState(null);
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
@@ -76,12 +78,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       // 모바일 키보드 자동 올림 방지를 위해 focus() 제거
       document.body.style.overflow = 'hidden';
       setSelectedSubGroup(null);
+      setSelectedPackage(null);
     } else {
       document.body.style.overflow = '';
       setFilterMode('theme');
       setSelectedContinent('all');
       setSelectedTheme('all');
       setSelectedSubGroup(null);
+      setSelectedPackage(null);
     }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
@@ -110,6 +114,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
   const handleSpotSelect = (spot) => {
     onSelect(spot);
+  };
+
+  const handlePackageSelect = (pkg) => {
+    setSelectedPackage(pkg);
   };
 
   const handleSearchSubmit = async () => {
@@ -297,6 +305,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             delayClass=""
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
+            onSelectPackage={handlePackageSelect}
           />
           <CurationSection
             title="전문가와 함께하는, 유럽 & 장거리 일주"
@@ -307,6 +316,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('urban')}
+            onSelectPackage={handlePackageSelect}
           />
           <CurationSection
             title="일상의 탈출, 완벽한 에어텔/올인클루시브"
@@ -317,6 +327,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('paradise')}
+            onSelectPackage={handlePackageSelect}
           />
         </div>
       );
@@ -638,6 +649,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         </div>
       )}
 
+      {/* 트립링크 대화면 모달 */}
+      {selectedPackage && (
+        <TripLinkModal
+          pkg={selectedPackage}
+          onClose={() => setSelectedPackage(null)}
+        />
+      )}
     </div>
   );
 };

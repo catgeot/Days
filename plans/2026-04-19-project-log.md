@@ -41,7 +41,43 @@
   * **스크롤 시인성 강화:** `SearchDiscoveryModal.jsx`의 글로벌 `.custom-scrollbar` 두께를 16px로 키우고 밝기를 0.6~0.9로 대폭 상향하여 시인성 확보. `CurationSection.jsx`의 좌우 화살표 버튼을 눈에 띄는 화이트/글래스톤(`bg-white/90`)으로 변경하고, 크기 확대 및 위치 조정을 통해 배경 카드와 혼동되지 않도록 개선.
   * *(보류/제거)*: 카드 사이에 추가하려던 `PackageGuideCard`는 디자인 재검토를 위해 렌더링을 보류하고 광고 배너 위치를 기존(index 5)으로 환원.
 
-## 다음 목표
-* **트립링크 배너 모달 팝업:** 1024x768 사이즈 등 큰 비율의 배너를 제공하기 위해, 썸네일 형태의 인피드 카드를 클릭하면 화면 중앙에 풀사이즈 배너(iframe 팝업)가 뜨도록 구현할 예정.
+## 2026.04.20 작업 내역 (Session 1)
+
+### 5. 트립링크 네이티브 썸네일 카드 및 대화면 모달 팝업 구현
+* **요구 사항:** 기존 iframe을 작은 카드에 넣는 방식 대신, 여행지 카드와 동일한 디자인의 썸네일을 만들고 클릭 시 대화면 모달을 띄우는 방식으로 전환.
+* **작업 내용:**
+  * **TripLinkSectionCard.jsx 신규 개발:**
+    * 패키지의 대표 키워드(예: Da Nang, Paris)를 이용해 `usePlaceGallery` 훅으로 Unsplash 사진을 배경으로 불러옴.
+    * `SpotThumbnailCard`와 동일한 디자인 구조(둥근 테두리, 그라데이션 오버레이, 하단 텍스트 영역) 적용.
+    * 상단에 "특가 패키지" 뱃지, 우측 상단에 "AD" 표시로 광고임을 명확히 표시.
+    * `IntersectionObserver`를 이용한 지연 로딩 적용으로 성능 최적화.
+  * **TripLinkModal.jsx 신규 개발:**
+    * 썸네일 카드 클릭 시 화면 중앙에 띄워지는 대화면 모달 (최대 90vh, max-width 1024px).
+    * 상단 헤더에 "gateo x 트립링크 특가 패키지" 제목 및 "새 창으로 보기" 버튼 배치.
+    * iframe 영역에 충분한 여유 공간(p-6~p-16) 확보하여 답답함 해소.
+    * 배경 클릭 또는 X 버튼으로 모달 닫기 기능 구현.
+    * `document.body.style.overflow` 제어로 모달 열릴 때 배경 스크롤 방지.
+  * **tripLinkPackages.js 데이터 구조 확장:**
+    * 각 패키지에 `targetKeyword` (Unsplash 검색용), `title` (카드 제목), `description` (카드 설명) 속성 추가.
+    * 배너 크기를 모두 1024x768로 통일하여 모달에서 최적 렌더링.
+  * **CurationSection.jsx 수정:**
+    * `TripLinkIframeCard` import를 `TripLinkSectionCard`로 교체.
+    * `onSelectPackage` prop 추가 및 카드 클릭 시 콜백 연결.
+  * **SearchDiscoveryModal.jsx 수정:**
+    * `TripLinkModal` import 추가.
+    * `selectedPackage` state 추가 및 `handlePackageSelect` 핸들러 구현.
+    * 3개 큐레이션 섹션(`family`, `longhaul`, `resort`)에 모두 `onSelectPackage` prop 전달.
+    * 모달 오픈 시 `selectedPackage` 초기화 로직 추가.
+    * 하단에 `{selectedPackage && <TripLinkModal ... />}` 조건부 렌더링 추가.
+  * **제휴 주체 수정:**
+    * 기존 "gateo x 노랑풍선"을 "gateo x 트립링크"로 수정하여 정확한 어필리에이트 파트너 명시.
+
+## 다음 목표 및 확장 기획 (2026.04.20 Session 2 이후)
+* **[Phase 1] 트립링크 배너 네이티브 썸네일화 및 대화면 모달 팝업 구현:**
+  * **섹션 카드 도입:** 좁은 카드 안에 `iframe`을 구겨 넣는 기존 방식(`TripLinkIframeCard`) 대신, 패키지 대표 키워드(예: 나트랑)의 사진을 불러오는 네이티브 썸네일 형태의 섹션 카드로 전환. 주변 여행지 카드와 디자인 이질감 완벽 해소.
+  * **대화면 팝업:** 카드를 클릭하면 1024x768 사이즈 등 넓은 비율의 트립링크 배너를 중앙 모달(`TripLinkModal`)로 띄워 쾌적한 상품 탐색 경험 제공.
+* **[Phase 2] 장소 카드(PlaceCard) 연동 및 맥락형 확장:**
+  * 트립링크의 '동적 배너 자동 관리(추천순/인기순 자동 정렬 등)' 이점을 살려 모달 컴포넌트를 범용적으로 재활용.
+  * 장소 카드(`PlaceCard`)의 상단 헤더 영역이나, 플래너 탭(PlannerTab)의 '여행 전 준비사항' 직후에 "패키지로 간편하게 준비하기" 등의 문맥형 버튼/섹션 노출. (정보 전달 사이트에서 부담 없이 패키지 제안 가능)
 * 지속적인 UX 모니터링 및 개선
 * 사용자 로그/피드백 기반 추가 기획 발굴

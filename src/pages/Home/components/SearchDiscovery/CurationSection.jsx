@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react';
 import SpotThumbnailCard from './SpotThumbnailCard';
-import TripLinkIframeCard from './TripLinkIframeCard';
+import TripLinkSectionCard from './TripLinkSectionCard';
 import PackageThumbnailCard from './PackageThumbnailCard';
 
-const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delayClass, onSelectSpot, onMoreClick }) => {
+const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delayClass, onSelectSpot, onMoreClick, onSelectPackage }) => {
   const scrollRef = useRef(null);
   const [showLeftBtn, setShowLeftBtn] = useState(false);
   const [showRightBtn, setShowRightBtn] = useState(true);
@@ -99,12 +99,12 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
                   <>
                     {promotedPackages[0] && (
                       promotedPackages[0].type === 'iframe'
-                        ? <TripLinkIframeCard key={`iframe-ad-1-${promotedPackages[0].id}`} pkg={promotedPackages[0]} />
+                        ? <TripLinkSectionCard key={`iframe-ad-1-${promotedPackages[0].id}`} pkg={promotedPackages[0]} onClick={onSelectPackage} />
                         : <PackageThumbnailCard key={`pkg-ad-1-${promotedPackages[0].id}`} pkg={promotedPackages[0]} />
                     )}
                     {promotedPackages[1] && (
                       promotedPackages[1].type === 'iframe'
-                        ? <TripLinkIframeCard key={`iframe-ad-2-${promotedPackages[1].id}`} pkg={promotedPackages[1]} />
+                        ? <TripLinkSectionCard key={`iframe-ad-2-${promotedPackages[1].id}`} pkg={promotedPackages[1]} onClick={onSelectPackage} />
                         : <PackageThumbnailCard key={`pkg-ad-2-${promotedPackages[1].id}`} pkg={promotedPackages[1]} />
                     )}
                   </>
