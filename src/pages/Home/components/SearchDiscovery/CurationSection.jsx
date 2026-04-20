@@ -8,6 +8,9 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
   const scrollRef = useRef(null);
   const [showLeftBtn, setShowLeftBtn] = useState(false);
   const [showRightBtn, setShowRightBtn] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -28,6 +31,37 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
     const isMobile = window.innerWidth <= 768;
     const cardWidth = isMobile ? 256 : 296; // card width + gap(16px)
     scrollRef.current.scrollTo({ left: cardWidth * 5, behavior: 'smooth' });
+  };
+
+  // 마우스 드래그 스크롤 핸들러
+  const handleMouseDown = (e) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+    scrollRef.current.style.cursor = 'grabbing';
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging && scrollRef.current) {
+      setIsDragging(false);
+      scrollRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (scrollRef.current) {
+      setIsDragging(false);
+      scrollRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // 스크롤 속도 조절
+    scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
   useEffect(() => {
@@ -87,7 +121,11 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0"
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing select-none"
         >
           {spots.map((spot, index) => {
             // 네이티브 인피드 광고 삽입 로직: 우리 카드 5개(index 0~4) 이후 연속으로 6,7번째에 배치 (index 5 카드 렌더링 직전)

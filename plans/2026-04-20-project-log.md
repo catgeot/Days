@@ -130,16 +130,68 @@
 
 ---
 
-## 이번 세션 특이사항
+## Session 2: 모바일 버그 분석 및 Phase 2 실행 계획 수립
 
-**사용자 요청사항**:
-- 이전 세션의 모달 형식을 전체 화면으로 변경하는 것 검토 → 현재는 대화면 모달(최대 90vh)로 충분하다고 판단. 필요 시 추후 조정 가능
-- 여행지 키워드 동적 매핑을 우선 작업: 사용자가 트립링크에서 각 지역별 iframe 링크를 수집 예정
-- 상세 계획은 로그 파일과 컨텍스트 파일에 기록
+### 2.1 모바일 모달 버그 원인 파악 ✅
 
-**다음 단계**:
-- 사용자가 트립링크 데이터를 수집하면 매핑 데이터 구조에 입력
-- 코드 모드로 전환하여 실제 구현 진행
+**증상**: 모바일에서 트립링크 모달 첫 진입 시 사진이 줄로 보임, 재진입하면 정상
+
+**원인**:
+- `TripLinkSectionCard.jsx`의 IntersectionObserver 500ms 딜레이
+- `usePlaceGallery` 비동기 이미지 로딩과 타이밍 불일치
+- 첫 로드: 딜레이 후 이미지가 아직 도착 안함 → 그라디언트만 표시
+- 재진입: 캐시에서 즉시 로드 → 정상 표시
+
+**해결**: IntersectionObserver 딜레이 제거 (500ms → 0ms)
+
+### 2.2 Phase 2 구현 계획 수립 ✅
+
+**핵심 작업**:
+1. 모바일 버그 수정 (우선)
+2. 여행지→패키지 매핑 데이터 구조 (`tripLinkDestinationMap.js`)
+3. 매칭 유틸리티 함수 (`tripLinkMatcher.js`)
+4. PlaceCard 모달 통합
+5. 위키탭 버튼 추가 (제미나이 옆)
+6. 플래너탭 버튼 추가 (앱 전송 버튼 제거)
+
+**상세 문서**:
+- [`triplink-phase2-mobile-bug-analysis.md`](./triplink-phase2-mobile-bug-analysis.md)
+- [`triplink-phase2-implementation-plan.md`](./triplink-phase2-implementation-plan.md)
+
+### 2.3 다음 작업
+
+**즉시 진행**:
+- 코드 모드로 전환하여 모바일 버그 수정
+- 매핑 데이터 구조 파일 생성
+- 단계별 구현 진행
+
+---
+
+## Session 3: 모바일 버그 수정 및 UX 개선 ✅
+
+### 3.1 완료 작업
+
+1. **모바일 트립링크 모달 이미지 로딩 버그 수정** ✅
+   - [`TripLinkSectionCard.jsx`](../src/pages/Home/components/SearchDiscovery/TripLinkSectionCard.jsx:19) IntersectionObserver 500ms 딜레이 제거
+   - 카드가 뷰포트 진입 시 즉시 이미지 로딩 시작
+   - 모바일 테스트 완료 및 검증
+
+2. **PC 큐레이션 카드 마우스 드래그 스크롤 기능 추가** ✅
+   - [`CurationSection.jsx`](../src/pages/Home/components/SearchDiscovery/CurationSection.jsx:7) 마우스 드래그 핸들러 구현
+   - 클릭 & 드래그로 카드 영역 좌우 이동 가능
+   - 커서 변경 (`grab` / `grabbing`)
+
+3. **모바일 모달 레이아웃 개선** ✅
+   - [`TripLinkModal.jsx`](../src/pages/Home/components/SearchDiscovery/TripLinkModal.jsx:15) 모바일 전체 화면 적용
+   - iframe 원본 크기(1024x768) 유지 및 스크롤 가능
+   - PC는 기존 디자인 유지
+
+### 3.2 다음 세션 작업
+
+**Phase 2 구현**:
+1. 여행지→패키지 매핑 데이터 구조 생성 (`tripLinkDestinationMap.js`)
+2. 매칭 유틸리티 함수 개발 (`tripLinkMatcher.js`)
+3. PlaceCard 위키탭/플래너탭 패키지 버튼 통합
 
 ---
 

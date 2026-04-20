@@ -17,18 +17,11 @@ const TripLinkSectionCard = ({ pkg, onClick }) => {
   const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].url) : null;
 
   useEffect(() => {
-    let timeoutId;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          timeoutId = setTimeout(() => {
-            setInView(true);
-            observer.disconnect();
-          }, 500);
-        } else {
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-          }
+          setInView(true);
+          observer.disconnect();
         }
       },
       { rootMargin: '200px' }
@@ -38,7 +31,6 @@ const TripLinkSectionCard = ({ pkg, onClick }) => {
     }
     return () => {
       observer.disconnect();
-      if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
 
