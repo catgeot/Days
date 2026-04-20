@@ -40,7 +40,7 @@ const TripLinkModal = ({ pkg, onClose }) => {
               <ShieldCheck size={20} />
             </div>
             <div>
-              <h3 className="text-white font-bold text-base md:text-lg">
+              <h3 className="text-white font-bold text-base md:text-lg break-keep">
                 gateo x 트립링크 특가 패키지
               </h3>
               <p className="text-xs text-gray-400 hidden md:block">

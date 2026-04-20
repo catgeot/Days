@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown } from 'lucide-react';
+import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
@@ -23,7 +23,7 @@ const LOADING_MESSAGES_UPDATE = [
     "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
 ];
 
-const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, location, galleryData, setMediaMode, isActive }) => {
+const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, location, galleryData, setMediaMode, isActive, matchedPackage, onOpenPackage }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -599,7 +599,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
             </div>
 
             {/* 하단 AI 버튼 (모바일 전용 푸터 고정) */}
-            <div className="fixed md:hidden bottom-0 left-0 right-0 p-4 z-[160] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10">
+            <div className="fixed md:hidden bottom-0 left-0 right-0 p-3 z-[160] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10 flex gap-2">
                 <button
                     onClick={() => {
                         if (isAiExpanded) {
@@ -610,13 +610,25 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                             handleRequestAiInfo(placeName || wikiData?.title);
                         }
                     }}
-                    className="group flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-2xl transition-all duration-300 shadow-lg w-full min-h-[56px]"
+                    className={`group flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-xl transition-all duration-300 shadow-sm min-h-[44px] ${matchedPackage ? 'flex-1' : 'w-full'}`}
                 >
-                    <Sparkles size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-bold text-gray-200 tracking-wide">
-                        {isAiExpanded ? '로컬 왓슨 정보 보기' : 'AI에게 안전 로컬 정보 묻기'}
+                    <Sparkles size={16} className="text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
+                    <span className="text-[11px] sm:text-xs font-medium text-gray-200 tracking-wide truncate">
+                        {isAiExpanded ? '로컬 왓슨' : '제미나이 묻기'}
                     </span>
                 </button>
+
+                {matchedPackage && (
+                    <button
+                        onClick={onOpenPackage}
+                        className="flex-1 group flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl transition-all duration-300 shadow-sm border bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border-purple-400/50 min-h-[44px]"
+                    >
+                        <Briefcase size={16} className="text-purple-100 group-hover:scale-110 transition-transform shrink-0" />
+                        <span className="text-[11px] sm:text-xs font-medium text-white tracking-wide truncate">
+                            패키지 보기
+                        </span>
+                    </button>
+                )}
             </div>
         </div>
 

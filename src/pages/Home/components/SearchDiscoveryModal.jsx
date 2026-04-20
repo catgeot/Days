@@ -308,7 +308,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             onSelectPackage={handlePackageSelect}
           />
           <CurationSection
-            title="전문가와 함께하는, 유럽 & 장거리 일주"
+            title="유럽 & 장거리 일주"
             subtitle="교통, 언어, 치안 우려를 해소하는 안전하고 편안한 장거리 패키지 추천"
             icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
             spots={curationData.city}
@@ -319,7 +319,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             onSelectPackage={handlePackageSelect}
           />
           <CurationSection
-            title="일상의 탈출, 완벽한 에어텔/올인클루시브"
+            title="일상의 탈출, 에어텔/올인클루시브"
             subtitle="비행기, 숙소, 픽업만 해결하고 자유롭게 즐기는 휴양 패키지 추천"
             icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
             spots={curationData.healing}

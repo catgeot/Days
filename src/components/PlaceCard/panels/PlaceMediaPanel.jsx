@@ -74,6 +74,8 @@ const PlaceMediaPanel = React.memo(({
                 galleryData={galleryData}
                 setMediaMode={setMediaMode}
                 isActive={mediaMode === 'WIKI'}
+                matchedPackage={matchedPackage}
+                onOpenPackage={onOpenPackage}
             />
         </div>
 

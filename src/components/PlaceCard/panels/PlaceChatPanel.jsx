@@ -123,14 +123,14 @@ const PlaceChatPanel = React.memo(({
 
          {/* Row 2: Other Tabs Area (Wiki, Video, Review) */}
          {mediaMode === 'PLANNER' ? (
-             <div className="shrink-0 flex items-center justify-center md:justify-end w-full pb-0.5 px-2 md:px-0">
+             <div className="shrink-0 flex items-center justify-center w-full pb-0.5 px-2 md:hidden">
                  {matchedPackage ? (
-                     <button onClick={onOpenPackage} className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:from-purple-500 hover:to-blue-500 transition-colors">
+                     <button onClick={onOpenPackage} className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:from-purple-500 hover:to-blue-500 transition-colors">
                          <Briefcase size={14} />
                          패키지로 간편하게 준비하기
                      </button>
                  ) : (
-                     <button onClick={handleAppBridgeClick} className="w-full md:w-auto bg-gray-900 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-gray-800 transition-colors">
+                     <button onClick={handleAppBridgeClick} className="w-full bg-gray-900 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-gray-800 transition-colors">
                          <Smartphone size={14} />
                          앱으로 전체 일정 보내기
                      </button>

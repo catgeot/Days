@@ -77,15 +77,15 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
             <div className="mt-auto pt-4 border-t border-white/10 shrink-0 flex flex-col md:flex-row gap-2">
                 <button
                     onClick={handleRemoteAiRequest}
-                    className={`flex-1 group flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 shadow-lg border
+                    className={`flex-1 group flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 shadow-sm border
                         ${activeSection === 'ai'
                             ? 'bg-gradient-to-r from-blue-600/40 to-purple-600/40 border-blue-400/50 ring-2 ring-blue-500/30'
                             : 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border-blue-500/30'
                         }
                     `}
                 >
-                    <Sparkles size={16} className={`group-hover:scale-110 transition-transform ${activeSection === 'ai' ? 'text-white' : 'text-blue-400'}`} />
-                    <span className={`text-xs md:text-sm font-bold tracking-wide ${activeSection === 'ai' ? 'text-white' : 'text-gray-200'}`}>
+                    <Sparkles size={15} className={`group-hover:scale-110 transition-transform ${activeSection === 'ai' ? 'text-white' : 'text-blue-400'}`} />
+                    <span className={`text-xs font-medium tracking-wide ${activeSection === 'ai' ? 'text-white' : 'text-gray-200'}`}>
                         {isAiExpanded ? '로컬 왓슨 정보 보기' : '제미나이 최신 정보'}
                     </span>
                 </button>
@@ -93,10 +93,10 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
                 {matchedPackage && (
                     <button
                         onClick={onOpenPackage}
-                        className="flex-1 group flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 shadow-lg border bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border-purple-400/50"
+                        className="flex-1 group flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 shadow-sm border bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border-purple-400/50"
                     >
-                        <Briefcase size={16} className="group-hover:scale-110 transition-transform text-purple-100" />
-                        <span className="text-xs md:text-sm font-bold tracking-wide text-white">
+                        <Briefcase size={15} className="group-hover:scale-110 transition-transform text-purple-100" />
+                        <span className="text-xs font-medium tracking-wide text-white">
                             패키지 상품 보기
                         </span>
                     </button>
