@@ -4,7 +4,8 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-family-1",
       type: "iframe",
-      adKey: "hbxakj", // 다낭/호이안/나트랑/푸꾸옥
+      adKey: "hbxakj", // 모달 (1024x768)
+      bannerAdKey: "s6pbrw", // 배너 (728x90)
       targetKeyword: "Da Nang",
       title: "베트남 다낭/나트랑",
       description: "가족 휴양 특가 패키지",
@@ -14,7 +15,8 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-family-2",
       type: "iframe",
-      adKey: "iosw2r", // 홋카이도/북해도
+      adKey: "iosw2r", // 모달 (1024x768)
+      bannerAdKey: "pivql1", // 배너 (728x90)
       targetKeyword: "Hokkaido",
       title: "일본 홋카이도",
       description: "감성 가득한 온천/가족 여행",
@@ -71,7 +73,8 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-longhaul-1",
       type: "iframe",
-      adKey: "wx9egs", // 서유럽
+      adKey: "wx9egs", // 모달 (1024x768)
+      bannerAdKey: "nvhmyl", // 배너 (728x90)
       targetKeyword: "Paris",
       title: "서유럽 핵심 일주",
       description: "전문가 동행 프리미엄 패키지",
@@ -81,7 +84,8 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-longhaul-2",
       type: "iframe",
-      adKey: "8zfodz", // 동유럽/발칸3국
+      adKey: "8zfodz", // 모달 (1024x768)
+      bannerAdKey: "q5ejk8", // 배너 (728x90)
       targetKeyword: "Prague",
       title: "동유럽/발칸 3국",
       description: "낭만 가득한 장거리 추천 패키지",
@@ -105,7 +109,8 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-resort-1",
       type: "iframe",
-      adKey: "1c4mmw", // 남태평양 (괌/사이판 등)
+      adKey: "1c4mmw", // 모달 (1024x768)
+      bannerAdKey: "13ts11", // 배너 (728x90)
       targetKeyword: "Guam",
       title: "남태평양 괌/사이판",
       description: "완벽한 에어텔/올인클루시브",
@@ -115,7 +120,8 @@ export const TRIPLINK_PACKAGES = {
     {
       id: "dyn-banner-resort-2",
       type: "iframe",
-      adKey: "nnpyr1", // 코타키나발루/쿠알라룸푸르
+      adKey: "nnpyr1", // 모달 (1024x768)
+      bannerAdKey: "azeut8", // 배너 (728x90)
       targetKeyword: "Kota Kinabalu",
       title: "말레이시아 코타키나발루",
       description: "노을이 아름다운 특가 에어텔",
