@@ -31,6 +31,39 @@ export const TRIPLINK_PACKAGES = {
       description: "다채로운 매력의 도시 여행",
       width: 1024,
       height: 768
+    },
+    {
+      id: "dyn-banner-family-4",
+      type: "iframe",
+      adKey: "g5oxsm", // 모달
+      bannerAdKey: "qi88tt", // 배너
+      targetKeyword: "Cebu",
+      title: "필리핀",
+      description: "세부/보홀/보라카이/마닐라 특가",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-family-5",
+      type: "iframe",
+      adKey: "tg0yjf", // 모달
+      bannerAdKey: "ynrf5y", // 배너
+      targetKeyword: "Bangkok",
+      title: "태국",
+      description: "방콕/푸켓/치앙마이 다채로운 여행",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-family-6",
+      type: "iframe",
+      adKey: "qfjpib", // 모달
+      bannerAdKey: "1c9qfq", // 배너
+      targetKeyword: "Beijing",
+      title: "중국 북경",
+      description: "역사와 문화가 살아 숨쉬는 곳",
+      width: 1024,
+      height: 768
     }
   ],
   // 테마 2: 전문가와 함께하는, 유럽 & 장거리 일주
@@ -54,6 +87,17 @@ export const TRIPLINK_PACKAGES = {
       description: "낭만 가득한 장거리 추천 패키지",
       width: 1024,
       height: 768
+    },
+    {
+      id: "dyn-banner-longhaul-3",
+      type: "iframe",
+      adKey: "kxkydb", // 모달
+      bannerAdKey: "ja02dx", // 배너
+      targetKeyword: "India",
+      title: "인도",
+      description: "신비로운 매력의 인도 여행",
+      width: 1024,
+      height: 768
     }
   ],
   // 테마 3: 일상의 탈출, 완벽한 에어텔/올인클루시브
@@ -75,6 +119,28 @@ export const TRIPLINK_PACKAGES = {
       targetKeyword: "Kota Kinabalu",
       title: "말레이시아 코타키나발루",
       description: "노을이 아름다운 특가 에어텔",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-resort-3",
+      type: "iframe",
+      adKey: "ekqgqe", // 모달
+      bannerAdKey: "4uxv69", // 배너
+      targetKeyword: "Bali",
+      title: "인도네시아 발리",
+      description: "신들의 섬, 완벽한 휴양",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-resort-4",
+      type: "iframe",
+      adKey: "zfxob1", // 모달
+      bannerAdKey: "jd3bcv", // 배너
+      targetKeyword: "Laos",
+      title: "라오스",
+      description: "순수하고 평화로운 힐링 여행",
       width: 1024,
       height: 768
     }
