@@ -10,7 +10,7 @@ import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
 import TripLinkDynamicBanner from './SearchDiscovery/TripLinkDynamicBanner';
-import TripLinkModal from './SearchDiscovery/TripLinkModal';
+import TripLinkModal from '../../../components/PlaceCard/modals/TripLinkModal';
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
   const navigate = useNavigate();

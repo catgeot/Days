@@ -24,7 +24,9 @@ const PlaceMediaPanel = React.memo(({
     location,
     isVideoLoading,
     videoError,
-    googleFormUrl
+    googleFormUrl,
+    matchedPackage,
+    onOpenPackage
 }) => {
   return (
     <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
@@ -76,7 +78,7 @@ const PlaceMediaPanel = React.memo(({
         </div>
 
         <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'PLANNER' ? 'block' : 'hidden'}`}>
-            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'PLANNER'} />
+            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'PLANNER'} matchedPackage={matchedPackage} onOpenPackage={onOpenPackage} />
         </div>
 
         <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'REVIEWS' ? 'block' : 'hidden'}`}>

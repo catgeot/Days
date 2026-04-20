@@ -5,6 +5,8 @@ import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { useWikiData } from '../hooks/useWikiData';
 import { usePlannerData } from '../hooks/usePlannerData';
 import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch';
+import { getMatchedPackage } from '../../../utils/tripLinkMatcher';
+import TripLinkModal from '../modals/TripLinkModal';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
+  const [tripLinkModalPkg, setTripLinkModalPkg] = useState(null);
 
   // 상위(PlaceCard)에서 전달받은 initialTab을 상태로 관리
   const [mediaMode, setMediaModeState] = useState(initialTab);
@@ -51,6 +54,8 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
   const queryKey = location.name;
   const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey, mediaMode);
   const { plannerData: currentPlannerData, isPlannerLoading } = usePlannerData(queryKey, mediaMode);
+
+  const matchedPackage = useMemo(() => getMatchedPackage(location), [location]);
 
   const activeInfo = useMemo(() => {
     if (mediaMode === 'GALLERY' && galleryData.selectedImg) {
@@ -158,6 +163,8 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
         onToggleBookmark={onToggleBookmark}
         wikiData={currentWikiData}
         isWikiLoading={isWikiLoading}
+        matchedPackage={matchedPackage}
+        onOpenPackage={() => setTripLinkModalPkg(matchedPackage)}
       />
 
       <div className={`flex-1 w-full min-w-0 h-full transition-all duration-500 z-10 ${isFullScreen ? 'fixed inset-0 z-[200]' : 'relative'}`}>
@@ -181,8 +188,17 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
             isVideoLoading={isVideoLoading}
             videoError={videoError}
             googleFormUrl={googleFormUrl}
+            matchedPackage={matchedPackage}
+            onOpenPackage={() => setTripLinkModalPkg(matchedPackage)}
         />
       </div>
+
+      {tripLinkModalPkg && (
+        <TripLinkModal
+          pkg={tripLinkModalPkg}
+          onClose={() => setTripLinkModalPkg(null)}
+        />
+      )}
     </div>
   );
 });

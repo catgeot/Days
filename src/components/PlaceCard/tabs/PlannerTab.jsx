@@ -10,7 +10,7 @@ import ToolkitCard from './planner/components/ToolkitCard';
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
 
-const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
+const PlannerTab = ({ location, plannerData, isPlannerLoading, setMediaMode, isActive, matchedPackage, onOpenPackage }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
@@ -216,12 +216,19 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive }) => {
 
                         {/* 🆕 [Phase 7-3] 강제 갱신 버튼 제거 (위키 탭에는 유지, 툴킷은 제거) */}
                         <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-                            {/* 데스크탑: 상단 앱 연동 버튼 */}
+                            {/* 데스크탑: 상단 앱 연동 버튼 / 패키지 연동 버튼 */}
                             <div className="hidden md:flex items-center gap-2">
-                                <button onClick={handleAppBridgeClick} className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
-                                    <Smartphone size={14} />
-                                    <span>앱으로 여정 보내기</span>
-                                </button>
+                                {matchedPackage ? (
+                                    <button onClick={onOpenPackage} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                                        <Briefcase size={14} />
+                                        <span>패키지로 간편하게 준비하기</span>
+                                    </button>
+                                ) : (
+                                    <button onClick={handleAppBridgeClick} className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                                        <Smartphone size={14} />
+                                        <span>앱으로 여정 보내기</span>
+                                    </button>
+                                )}
                             </div>
                             {lastUpdated && (
                                 <span className="text-[11px] text-gray-400 font-medium px-1">

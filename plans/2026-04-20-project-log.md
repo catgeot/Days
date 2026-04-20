@@ -195,8 +195,25 @@
 
 ---
 
-## 참고 링크
+## Session 4: 트립링크 Phase 2 매핑 시스템 구현 및 모달 안정화 ✅
 
-- [트립링크 통합 마스터 플랜](./triplink-integration-master-plan.md)
-- [Phase 2 상세 계획](./triplink-phase2-placecard-integration.md)
-- [Phase 1 완료 로그](./2026-04-19-project-log.md#2026-04-20-작업-내역-session-1)
+### 4.1 완료 작업
+
+1. **트립링크 모바일 최초 진입 버그 완벽 해결 (`TripLinkModal.jsx`)**
+   - iframe의 `isIframeLoading` 렌더링 무한 루프 버그 수정
+   - 상단 헤더 배너 가림 해결을 위해 `flex-shrink-0` 적용 및 래퍼 크기 `flex-auto` 조정
+   - 모바일 최초 진입 시 `animate-scale-up` 애니메이션 중 iframe 반응형 로직 충돌로 인해 배너가 찌그러지는 현상을 파악하여 **`setTimeout`을 이용한 400ms 렌더링 지연 로직** 도입. 완전히 렌더링된 후 `src`가 주입되어 배너 크기가 정상 동작하도록 안정화 완료.
+
+2. **Phase 2 여행지-패키지 맵핑 데이터 구축**
+   - `src/pages/Home/data/tripLinkDestinationMap.js` 생성: 장소 키워드 배열에 따른 패키지 ID 맵핑 및 대륙/국가 폴백(Fallback) 구조 세팅 완료.
+   - `src/utils/tripLinkMatcher.js` 생성: 장소 객체(`location`) 기반으로 최적의 패키지를 매칭하여 반환하는 유틸리티 함수 작성.
+
+3. **PlaceCard 통합 (맥락형 패키지 버튼 연동)**
+   - `TripLinkModal.jsx`를 PlaceCard 하위 공통 컴포넌트 폴더(`src/components/PlaceCard/modals/`)로 완전히 분리 이동.
+   - `PlaceCardExpanded`에서 `matchedPackage`를 계산하고 전역 상태로 모달을 관리하도록 아키텍처 개편.
+   - **위키 탭 하단(`PlaceWikiNavView`)**: 제미나이 AI 요청 버튼과 패키지 상품 보기 버튼을 5:5 배분하여 추가.
+   - **플래너 탭 상단(`PlannerTab`)**: 매칭된 패키지가 있을 경우 "앱으로 여정 보내기" 버튼을 "패키지로 간편하게 준비하기" 버튼으로 다이내믹 교체 노출.
+
+### 4.2 다음 세션 작업
+- `tripLinkDestinationMap.js` 내 상세 지역 및 키워드 데이터 보강 (트립링크 실제 데이터 기반 매칭률 점검)
+- 위키/플래너 외 추가적인 터치 포인트 분석 및 제휴 파트너 확장 검토

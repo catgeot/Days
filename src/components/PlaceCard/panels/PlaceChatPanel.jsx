@@ -24,7 +24,9 @@ const PlaceChatPanel = React.memo(({
     selectedImg,
     onToggleBookmark,
     wikiData,
-    isWikiLoading
+    isWikiLoading,
+    matchedPackage,
+    onOpenPackage
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
@@ -122,10 +124,17 @@ const PlaceChatPanel = React.memo(({
          {/* Row 2: Other Tabs Area (Wiki, Video, Review) */}
          {mediaMode === 'PLANNER' ? (
              <div className="shrink-0 flex items-center justify-center md:justify-end w-full pb-0.5 px-2 md:px-0">
-                 <button onClick={handleAppBridgeClick} className="w-full md:w-auto bg-gray-900 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-gray-800 transition-colors">
-                     <Smartphone size={14} />
-                     앱으로 전체 일정 보내기
-                 </button>
+                 {matchedPackage ? (
+                     <button onClick={onOpenPackage} className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:from-purple-500 hover:to-blue-500 transition-colors">
+                         <Briefcase size={14} />
+                         패키지로 간편하게 준비하기
+                     </button>
+                 ) : (
+                     <button onClick={handleAppBridgeClick} className="w-full md:w-auto bg-gray-900 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-gray-800 transition-colors">
+                         <Smartphone size={14} />
+                         앱으로 전체 일정 보내기
+                     </button>
+                 )}
              </div>
          ) : (
              <div className={`shrink-0 items-center justify-center md:justify-end gap-2 w-full overflow-x-auto no-scrollbar pb-0.5 px-2 md:px-0 overscroll-contain touch-pan-x ${mediaMode === 'REVIEWS' ? 'hidden md:flex' : 'flex'}`}>
@@ -197,6 +206,8 @@ const PlaceChatPanel = React.memo(({
                 isWikiLoading={isWikiLoading}
                 onNavClick={handleWikiNavClick}
                 placeName={location.name}
+                matchedPackage={matchedPackage}
+                onOpenPackage={onOpenPackage}
             />
         ) : (
             <div className="animate-fade-in flex flex-col gap-6 p-6">
