@@ -4,6 +4,7 @@ import { TRIPLINK_PACKAGES } from './tripLinkPackages';
 const PACKAGE_MAP = {
   'vietnam': TRIPLINK_PACKAGES.family[0], // 베트남 다낭/나트랑 (hbxakj)
   'hokkaido': TRIPLINK_PACKAGES.family[1], // 일본 홋카이도 (iosw2r)
+  'singapore': TRIPLINK_PACKAGES.family[2], // 싱가포르 (op19uq)
   'westeurope': TRIPLINK_PACKAGES.longhaul[0], // 서유럽 (wx9egs)
   'easteurope': TRIPLINK_PACKAGES.longhaul[1], // 동유럽 (8zfodz)
   'guam': TRIPLINK_PACKAGES.resort[0], // 괌/사이판 (1c4mmw)
@@ -27,6 +28,10 @@ export const DESTINATION_PACKAGE_MAP = {
   '북해도': PACKAGE_MAP['hokkaido'],
   'sapporo': PACKAGE_MAP['hokkaido'],
   'hokkaido': PACKAGE_MAP['hokkaido'],
+
+  // 싱가포르
+  '싱가포르': PACKAGE_MAP['singapore'],
+  'singapore': PACKAGE_MAP['singapore'],
 
   // 서유럽
   '파리': PACKAGE_MAP['westeurope'],

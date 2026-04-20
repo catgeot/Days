@@ -216,19 +216,12 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, setMediaMode, isA
 
                         {/* 🆕 [Phase 7-3] 강제 갱신 버튼 제거 (위키 탭에는 유지, 툴킷은 제거) */}
                         <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-                            {/* 데스크탑: 상단 앱 연동 버튼 / 패키지 연동 버튼 */}
+                            {/* 데스크탑: 상단 앱 연동 버튼 (패키지 버튼은 배너로 대체) */}
                             <div className="hidden md:flex items-center gap-2">
-                                {matchedPackage ? (
-                                    <button onClick={onOpenPackage} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
-                                        <Briefcase size={14} />
-                                        <span>패키지로 간편하게 준비하기</span>
-                                    </button>
-                                ) : (
-                                    <button onClick={handleAppBridgeClick} className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
-                                        <Smartphone size={14} />
-                                        <span>앱으로 여정 보내기</span>
-                                    </button>
-                                )}
+                                <button onClick={handleAppBridgeClick} className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                                    <Smartphone size={14} />
+                                    <span>앱으로 여정 보내기</span>
+                                </button>
                             </div>
                             {lastUpdated && (
                                 <span className="text-[11px] text-gray-400 font-medium px-1">
@@ -237,6 +230,36 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, setMediaMode, isA
                             )}
                         </div>
                     </div>
+
+                    {/* 🆕 [Phase 8-8] 트립링크 패키지 배너 노출 영역 (데스크탑 전용) */}
+                    {matchedPackage && (
+                        <div className="hidden md:flex w-full mb-6 rounded-2xl overflow-hidden bg-gray-100 items-center justify-center relative border border-gray-200 shadow-sm" style={{ minHeight: '90px' }}>
+                            {/* 상단 뱃지 */}
+                            <div className="absolute top-0 left-0 z-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg">
+                                AD
+                            </div>
+
+                            {/* 데스크탑 배너 (728x90) */}
+                            <div className="w-full overflow-hidden flex justify-center items-center py-2 md:py-0">
+                                <div className="origin-center md:scale-100 w-[728px] h-[90px] flex items-center justify-center my-0">
+                                    <iframe
+                                        src={`https://info.triplink.kr/d/${matchedPackage.bannerAdKey || matchedPackage.adKey}`}
+                                        width="728"
+                                        height="90"
+                                        frameBorder="0"
+                                        scrolling="no"
+                                        marginHeight="0"
+                                        marginWidth="0"
+                                        title={`${location?.name} 패키지 추천`}
+                                        className="pointer-events-auto"
+                                    ></iframe>
+                                </div>
+                            </div>
+
+                            {/* 클릭 인터셉트용 오버레이 (클릭 시 모달을 띄우거나, 배너 자체 링크를 타도록 할지 결정. 여기서는 배너 자체 링크 허용을 위해 pointer-events-none 적용) */}
+                            <div className="absolute inset-0 pointer-events-none hover:bg-black/5 transition-colors"></div>
+                        </div>
+                    )}
 
                 {/* 🆕 [Phase 8] 복잡한 여행지 배지 및 확장 컴포넌트 */}
                 {guideData?.is_complex && (

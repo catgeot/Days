@@ -20,6 +20,17 @@ export const TRIPLINK_PACKAGES = {
       description: "감성 가득한 온천/가족 여행",
       width: 1024,
       height: 768
+    },
+    {
+      id: "dyn-banner-family-3",
+      type: "iframe",
+      adKey: "s74kc3", // 모달용 (1024x768)
+      bannerAdKey: "op19uq", // 데스크탑 상단 인라인 배너용 (728x90)
+      targetKeyword: "Singapore",
+      title: "싱가포르",
+      description: "다채로운 매력의 도시 여행",
+      width: 1024,
+      height: 768
     }
   ],
   // 테마 2: 전문가와 함께하는, 유럽 & 장거리 일주
