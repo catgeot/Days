@@ -25,15 +25,6 @@ const DirectFerriesWidget = ({ location }) => {
                 </div>
             )}
 
-            {/* 구분선 */}
-            <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Direct Ferries 페리 검색
-                </span>
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-            </div>
-
             {/* Direct Ferries 홈 배너 버튼 */}
             <a
                 href={DIRECT_FERRIES_HOME_URL}

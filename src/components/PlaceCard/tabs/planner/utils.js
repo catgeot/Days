@@ -182,12 +182,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             });
             break;
         case 'ferry_booking':
-            // Direct Ferries 홈으로 연결 (실제 항구명은 추천 노선 참고)
-            links.push({
-                url: DIRECT_FERRIES_HOME_URL,
-                text: 'Direct Ferries 페리 검색',
-                colorClass: 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border-cyan-200'
-            });
+            // Direct Ferries는 위젯 내부에서 배너로 처리하므로 별도 버튼 불필요
             break;
         case 'map_poi':
             links.push({
