@@ -426,6 +426,90 @@ export const DIRECT_FERRIES_BASE_URL =
 
 ---
 
+## Session 4: 플래너 탭 배너 시스템 UI/UX 개선 ✅
+
+### 4.1 페리 키워드 감지 확장 ✅
+
+**배경**: 발리→길리 메노 등의 여정에서 "쾌속선(Fast Boat)", "보트" 키워드 누락
+
+**수정 파일**: [`JourneyTimeline.jsx:24`](../src/components/PlaceCard/tabs/planner/components/JourneyTimeline.jsx:24)
+
+**추가된 키워드**:
+- `쾌속선`
+- `보트`
+- `선박`
+- `배`
+- `유람선`
+- `fast boat`
+
+### 4.2 단일 버튼을 배너 형식으로 개선 ✅
+
+**요구사항**: 타임라인의 작은 버튼들을 배너로 변경하되, 정보 흐름을 방해하지 않게
+
+**디자인 방향**:
+- 강렬한 그라데이션 배경 → **흰색 배경 + 색상 테두리**
+- 흰색 텍스트 → **회색 텍스트 (가독성 향상)**
+- `shadow-md` → `shadow-sm` (그림자 감소)
+
+**적용된 배너**:
+
+1. **항공권 배너** (`flight_banner`)
+   - 테두리: `border-indigo-300`
+   - 아이콘: `bg-indigo-100 text-indigo-600`
+   - 제목: "항공권 실시간 검색"
+   - 설명: "전 세계 항공편 비교 및 최저가 예약"
+
+2. **공항 픽업 배너** (`banner`)
+   - 테두리: `border-amber-300`
+   - 아이콘: `bg-amber-100 text-amber-600`
+   - 제목: "공항 픽업 예약"
+   - 설명: "편리한 공항 ↔ 숙소 직행 서비스"
+
+3. **페리 배너** (`banner`)
+   - 테두리: `border-cyan-300`
+   - 아이콘: `bg-cyan-100 text-cyan-600`
+   - 제목: "페리 실시간 검색"
+   - 설명: "전 세계 페리 노선 비교 및 예약"
+
+4. **숙소 배너** (`accommodation_banner`)
+   - 테두리: `border-emerald-300`
+   - 아이콘: `bg-emerald-100 text-emerald-600`
+   - 제목: "숙소 실시간 검색"
+   - 설명: 아시아 - "한인민박 및 현지 숙소 비교" / 기타 - "전 세계 숙소 최저가 비교"
+
+### 4.3 중복 제거 로직 추가 ✅
+
+**문제**: 타임라인에 같은 타입의 배너가 여러 번 표시됨
+
+**해결**: [`JourneyTimeline.jsx:68`](../src/components/PlaceCard/tabs/planner/components/JourneyTimeline.jsx:68)
+- `Set`을 사용한 중복 체크
+- 각 배너 타입별로 첫 번째만 표시
+- 타입: `airport_pickup`, `ferry`, `flight`, `accommodation`
+
+### 4.4 항공권 파트 배너 강조 ✅
+
+**요구사항**: 항공권 섹션의 버튼을 눈에 띄게 만들어 파트 구분 역할
+
+**수정 파일**: [`ToolkitCard.jsx:88`](../src/components/PlaceCard/tabs/planner/components/ToolkitCard.jsx:88)
+
+**디자인**:
+- 배경: `bg-gradient-to-r from-indigo-500 to-purple-500` (강렬한 그라데이션)
+- 아이콘: 큰 비행기 아이콘 (20px)
+- 그림자: `shadow-lg` (강한 그림자)
+- 효과: 호버 시 그라데이션 진하게 + 그림자 강화
+
+**목적**: 섹션 구분의 시각적 경계
+
+### 4.5 MrtTimelineAction 개선 ✅
+
+**파일**: [`MrtTimelineAction.jsx:4`](../src/components/PlaceCard/tabs/planner/components/MrtTimelineAction.jsx:4)
+
+**추가 기능**: `customTrigger` prop 지원
+- customTrigger가 있으면 배너 형식으로 렌더링
+- customTrigger가 없으면 기존 작은 버튼 형식 유지 (하위 호환성)
+
+---
+
 ## 다음 세션 계획
 
 ### Phase 2: 추천 노선 데이터 확장 (향후)
@@ -437,11 +521,10 @@ export const DIRECT_FERRIES_BASE_URL =
 
 ## 기술 스택
 
-- **React 컴포넌트**: DirectFerriesWidget.jsx
-- **데이터 관리**: constants.js (DIRECT_FERRIES_ROUTES)
-- **유틸리티**: utils.js (getDirectFerriesUrl)
-- **통합**: ToolkitCard.jsx (조건부 렌더링)
-- **스타일링**: TailwindCSS (반응형, 둥근 테두리, 그림자)
+- **React 컴포넌트**: DirectFerriesWidget.jsx, JourneyTimeline.jsx, ToolkitCard.jsx, MrtTimelineAction.jsx
+- **데이터 관리**: constants.js (DIRECT_FERRIES_RECOMMENDATIONS)
+- **통합**: 키워드 감지 → 자동 배너 생성
+- **스타일링**: TailwindCSS (흰색 배경 + 색상 테두리, 차분한 디자인)
 
 ---
 
@@ -453,5 +536,5 @@ export const DIRECT_FERRIES_BASE_URL =
 
 ---
 
-**작성자**: Roo (Architect Mode)  
-**다음 세션**: Code 모드로 전환하여 구현 시작
+**작성자**: Roo (Code Mode)
+**완료일**: 2026-04-21

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateMrtLink } from '../../../../../utils/affiliate';
 
-const MrtTimelineAction = ({ mrtQuery, label, icon, colorClass }) => {
+const MrtTimelineAction = ({ mrtQuery, label, icon, colorClass, customTrigger }) => {
     const [url, setUrl] = useState(null);
 
     useEffect(() => {
@@ -14,6 +14,18 @@ const MrtTimelineAction = ({ mrtQuery, label, icon, colorClass }) => {
         return () => { isMounted = false; };
     }, [mrtQuery]);
 
+    // customTrigger가 있으면 그것을 사용
+    if (customTrigger) {
+        return (
+            <a href={url || '#'} target="_blank" rel="noopener noreferrer"
+               onClick={(e) => { if (!url) e.preventDefault(); }}
+               className={!url ? 'opacity-50 cursor-wait' : ''}>
+                {customTrigger}
+            </a>
+        );
+    }
+
+    // 기본 버튼
     return (
         <a href={url || '#'} target="_blank" rel="noopener noreferrer"
            onClick={(e) => { if (!url) e.preventDefault(); }}

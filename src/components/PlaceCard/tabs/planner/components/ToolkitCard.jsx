@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Plane } from 'lucide-react';
 import CopyableText, { isMobileDevice } from '../../../common/CopyableText';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtDynamicLink from './MrtDynamicLink';
@@ -87,7 +87,22 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
 
             {/* Travelpayouts 화이트 라벨 위젯 (항공권 검색 전용) */}
             {type === 'flight' && (
-                <WhiteLabelWidget locationName={location?.name} type="flight" />
+                <WhiteLabelWidget
+                    locationName={location?.name}
+                    type="flight"
+                    customTrigger={
+                        <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-xl px-5 py-4 flex items-center gap-3 shadow-lg hover:shadow-xl transition-all group mt-3">
+                            <div className="bg-white/20 p-2.5 rounded-lg shrink-0">
+                                <Plane size={20} />
+                            </div>
+                            <div className="flex-1 text-left">
+                                <div className="font-bold text-base">항공권 실시간 검색</div>
+                                <div className="text-sm opacity-90">전 세계 항공편 비교 및 최저가 예약</div>
+                            </div>
+                            <div className="text-white/80 group-hover:text-white transition-colors text-xl">→</div>
+                        </button>
+                    }
+                />
             )}
             {/* 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 */}
             {type === 'accommodation' && (
