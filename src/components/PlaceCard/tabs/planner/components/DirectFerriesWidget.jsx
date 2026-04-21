@@ -1,5 +1,6 @@
 import React from 'react';
-import { DIRECT_FERRIES_BASE_URL, DIRECT_FERRIES_RECOMMENDATIONS } from '../constants';
+import { Ship } from 'lucide-react';
+import { DIRECT_FERRIES_HOME_URL, DIRECT_FERRIES_RECOMMENDATIONS } from '../constants';
 
 const DirectFerriesWidget = ({ location }) => {
     const recommendations = location?.slug ? DIRECT_FERRIES_RECOMMENDATIONS[location.slug] : null;
@@ -28,24 +29,42 @@ const DirectFerriesWidget = ({ location }) => {
             <div className="flex items-center gap-3 my-4">
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
                 <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Direct Ferries 실시간 검색
+                    Direct Ferries 페리 검색
                 </span>
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
             </div>
 
-            {/* Direct Ferries iframe 위젯 */}
-            <div className="w-full overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-                <iframe
-                    src={DIRECT_FERRIES_BASE_URL}
-                    width="100%"
-                    height="285"
-                    frameBorder="0"
-                    scrolling="no"
-                    title="Direct Ferries 페리 검색"
-                    className="w-full"
-                    style={{ minHeight: '285px' }}
-                />
-            </div>
+            {/* Direct Ferries 홈 배너 버튼 */}
+            <a
+                href={DIRECT_FERRIES_HOME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full"
+            >
+                <div className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all group">
+                    <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="bg-white/20 p-2 rounded-lg">
+                                    <Ship className="text-white" size={24} />
+                                </div>
+                                <h3 className="text-white font-bold text-lg">Direct Ferries</h3>
+                            </div>
+                            <p className="text-white/90 text-sm font-medium break-keep">
+                                전 세계 페리 노선 실시간 검색 및 예약
+                            </p>
+                            <p className="text-white/70 text-xs mt-1 break-keep">
+                                자동완성 지원 · 최저가 보장 · 즉시 예약 확정
+                            </p>
+                        </div>
+                        <div className="flex-shrink-0 ml-4">
+                            <div className="bg-white text-cyan-600 px-4 py-2 rounded-lg font-bold text-sm group-hover:bg-cyan-50 transition-colors">
+                                검색하기 →
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
 
             {/* 제휴 안내 문구 */}
             <p className="text-[10px] text-gray-500 text-center leading-relaxed break-keep">

@@ -115,7 +115,7 @@ export const DIRECT_FERRIES_RECOMMENDATIONS = {
 
     // 그리스 (출발: Greece 선택)
     'santorini': [
-        '티라(산토리니:Santorini/Thira) - 피레우스(Piraeus, 아테네) (약 5-8시간)',
+        '피레우스(Piraeus, 아테네) - 티라(산토리니:Santorini/Thira) (약 5-8시간)',
         '티라(산토리니:Santorini/Thira) - 미코노스(Mykonos) (약 2-3시간)',
         '티라(산토리니:Santorini/Thira) - 이라클리오(Heraklion, 크레타) (약 2시간)'
     ],
