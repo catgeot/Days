@@ -4,6 +4,7 @@ import CopyableText, { isMobileDevice } from '../../../common/CopyableText';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtDynamicLink from './MrtDynamicLink';
 import HotelWidget from './HotelWidget';
+import DirectFerriesWidget from './DirectFerriesWidget';
 import { THEME_COLORS } from '../constants';
 import { cleanAdviceText, getAdviceText, getMultiLinks } from '../utils';
 
@@ -91,6 +92,10 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
             {/* 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 */}
             {type === 'accommodation' && (
                 <HotelWidget location={location} />
+            )}
+            {/* 🆕 [Phase 8-8] Direct Ferries 페리 예약 위젯 (2026.04.21) */}
+            {type === 'ferry_booking' && (
+                <DirectFerriesWidget location={location} />
             )}
         </div>
     );

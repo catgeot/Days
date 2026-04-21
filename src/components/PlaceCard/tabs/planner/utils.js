@@ -1,5 +1,5 @@
 import { getAffiliateLink } from '../../../../utils/affiliate';
-import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS } from './constants';
+import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
 export const cleanAdviceText = (text) => {
@@ -182,13 +182,11 @@ export const getMultiLinks = ({ type, data, location }) => {
             });
             break;
         case 'ferry_booking':
-            const klookFerryTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20페리`;
-            const klookFerryDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookFerryTargetUrl)}`;
-
+            // Direct Ferries 홈으로 연결 (실제 항구명은 추천 노선 참고)
             links.push({
-                url: klookFerryDeepLink,
-                text: `${location?.name || '현지'} 페리 예약`,
-                colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
+                url: DIRECT_FERRIES_HOME_URL,
+                text: 'Direct Ferries 페리 검색',
+                colorClass: 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border-cyan-200'
             });
             break;
         case 'map_poi':

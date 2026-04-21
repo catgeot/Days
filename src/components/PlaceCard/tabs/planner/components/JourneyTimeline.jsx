@@ -2,6 +2,7 @@ import React from 'react';
 import { Clock, Map as MapIcon, Car, Ship, Bed, Plane } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
+import { DIRECT_FERRIES_HOME_URL } from '../constants';
 
 // 타임라인 내 동적 액션 버튼 생성 로직
 const getActionForStep = (title, locationName) => {
@@ -20,13 +21,13 @@ const getActionForStep = (title, locationName) => {
             colorClass: 'bg-rose-50 text-rose-700 hover:bg-rose-100'
         };
     }
-    if (text.includes('페리') || text.includes('항구')) {
-        const klookFerryTargetUrl = `https://www.klook.com/ko/search/result/?query=${query}%20페리`;
+    if (text.includes('페리') || text.includes('항구') || text.includes('크루즈')) {
+        // Direct Ferries 홈으로 연결 (dfpid=7263: 파트너 ID, affid=1001: Affiliate ID)
         return {
-            label: '페리 예약',
-            url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookFerryTargetUrl)}`,
+            label: '페리 검색',
+            url: DIRECT_FERRIES_HOME_URL,
             icon: <Ship size={10} />,
-            colorClass: 'bg-orange-50 text-orange-700 hover:bg-orange-100'
+            colorClass: 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100'
         };
     }
     if (text.includes('숙소') || text.includes('호텔') || text.includes('리조트')) {

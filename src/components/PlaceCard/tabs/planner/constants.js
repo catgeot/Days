@@ -84,3 +84,138 @@ export const LOADING_MESSAGES_UPDATE = [
     "🔧 변경 사항을 반영하여 툴킷을 재조립하는 중...",
     "✅ AI가 최종 툴킷 검수를 마치는 중..."
 ];
+
+// 🆕 [Phase 8-8] Direct Ferries 어필리에이트 통합 (2026.04.21)
+// URL 파라미터(oprt, rprt, ctry)가 작동하지 않아 기본 URL만 사용
+// targ=1: 검색 결과를 새 창에서 열기
+export const DIRECT_FERRIES_BASE_URL =
+    'https://wiz.directferries.com/partners/deal_finder_iframe.aspx?stdc=F8350KR&cult=ko-KR&btn=47a347&btnh=168b16&btnt=FFFFFF&tclr=000001&lclr=000001&lbld=400&pclr=64b6e6&sclr=64b6e6&targ=1';
+
+// Direct Ferries 한국어 홈 (JourneyTimeline 버튼용)
+export const DIRECT_FERRIES_HOME_URL = 'https://www.directferries.co.kr/?dfpid=7263&affid=1001&rurl=';
+
+// 여행지별 추천 페리 노선 텍스트 매핑 (Direct Ferries 리스트 형식)
+export const DIRECT_FERRIES_RECOMMENDATIONS = {
+    // 크로아티아 (출발: Croatia 선택)
+    'dubrovnik': [
+        '두브로브니크(Dubrovnik) - 스플리트(Split) (약 2시간)',
+        '두브로브니크(Dubrovnik) - 스타리 그라드(Stari Grad, 흐바르섬) (약 4시간)',
+        '두브로브니크(Dubrovnik) - 코르출라(Korcula) (약 3시간)'
+    ],
+    'split': [
+        '스플리트(Split) - 스타리 그라드(Stari Grad, 흐바르섬) (약 1시간)',
+        '스플리트(Split) - 수페타르(Supetar, 브라츠섬) (약 50분)',
+        '스플리트(Split) - 비스(Vis) (약 2.5시간)'
+    ],
+    'hvar': [
+        '스타리 그라드(Stari Grad, 흐바르섬) - 스플리트(Split) (약 1시간)',
+        '스타리 그라드(Stari Grad) - 두브로브니크(Dubrovnik) (약 4시간)',
+        '흐바르(Hvar) - 코르출라(Korcula) (약 2시간)'
+    ],
+
+    // 그리스 (출발: Greece 선택)
+    'santorini': [
+        '티라(산토리니:Santorini/Thira) - 피레우스(Piraeus, 아테네) (약 5-8시간)',
+        '티라(산토리니:Santorini/Thira) - 미코노스(Mykonos) (약 2-3시간)',
+        '티라(산토리니:Santorini/Thira) - 이라클리오(Heraklion, 크레타) (약 2시간)'
+    ],
+    'mykonos': [
+        '미코노스(Mykonos) - 피레우스(Piraeus, 아테네) (약 2.5-5시간)',
+        '미코노스(Mykonos) - 티라(산토리니:Santorini/Thira) (약 2-3시간)',
+        '미코노스(Mykonos) - 파로스(Paros) (약 30-40분)'
+    ],
+    'athens': [
+        '피레우스(Piraeus, 아테네) - 티라(산토리니:Santorini/Thira) (약 5-8시간)',
+        '피레우스(Piraeus, 아테네) - 미코노스(Mykonos) (약 2.5-5시간)',
+        '피레우스(Piraeus, 아테네) - 이라클리오(Heraklion, 크레타) (약 9시간)'
+    ],
+    'crete': [
+        '이라클리오(Heraklion, 크레타) - 티라(산토리니:Santorini/Thira) (약 2시간)',
+        '하니아(Chania, 크레타 서부) - 피레우스(Piraeus, 아테네) (약 9시간)'
+    ],
+
+    // 한국-일본 페리 (출발: South Korea 선택)
+    'busan': [
+        '부산(Busan) - 하카타(Hakata, 후쿠오카) (약 3시간)',
+        '부산(Busan) - 히타카쓰(Hitakatsu, 쓰시마) (약 1시간 10분)',
+        '※ JR Beetle/카멜리아 라인 운항'
+    ],
+    'fukuoka': [
+        '하카타(Hakata, 후쿠오카) - 부산(Busan) (약 3시간)',
+        '※ JR Beetle 운항'
+    ],
+
+    // 이탈리아 남부 (출발: Italy 선택)
+    'naples': [
+        '나폴리(Napoli/Naples) - 카프리(Capri) (약 50분)',
+        '나폴리(Napoli) - 이스키아(Ischia) (약 1시간)',
+        '나폴리(Napoli) - 소렌토(Sorrento) (약 40분)'
+    ],
+    'capri': [
+        '카프리(Capri) - 나폴리(Napoli/Naples) (약 50분)',
+        '카프리(Capri) - 소렌토(Sorrento) (약 25분)'
+    ],
+    'sorrento': [
+        '소렌토(Sorrento) - 카프리(Capri) (약 25분)',
+        '소렌토(Sorrento) - 나폴리(Napoli) (약 40분)'
+    ],
+
+    // 태국 (출발: Thailand 선택)
+    'phuket': [
+        '푸켓(Phuket) - 피피 제도(Phi Phi Islands) (약 2시간)',
+        '푸켓(Phuket) - 크라비(Krabi) (약 2시간)',
+        '푸켓(Phuket) - 코 란타(Koh Lanta) (약 3시간)'
+    ],
+    'krabi': [
+        '크라비(Krabi) - 코 란타(Koh Lanta) (약 2시간)',
+        '크라비(Krabi) - 피피 제도(Phi Phi Islands) (약 1.5시간)'
+    ],
+
+    // 스페인 (출발: Spain 선택)
+    'barcelona': [
+        '바르셀로나(Barcelona) - 이비자(Ibiza) (약 8-9시간)',
+        '바르셀로나(Barcelona) - 팔마(Palma, 마요르카) (약 7-8시간)',
+        '바르셀로나(Barcelona) - 마온(Mahon, 메노르카) (약 9시간)'
+    ],
+    'ibiza': [
+        '이비자(Ibiza) - 바르셀로나(Barcelona) (약 8-9시간)',
+        '이비자(Ibiza) - 팔마(Palma, 마요르카) (약 2시간)',
+        '이비자(Ibiza) - 포르멘테라(Formentera) (약 30분)'
+    ],
+    'palma': [
+        '팔마(Palma, 마요르카) - 바르셀로나(Barcelona) (약 7-8시간)',
+        '팔마(Palma) - 이비자(Ibiza) (약 2시간)'
+    ],
+
+    // 인도네시아 (출발: Indonesia 선택)
+    'bali': [
+        '파당 바이(Padang Bai, 발리) - 렘바르(Lembar, 롬복) (약 1.5-4시간)',
+        '사누르(Sanur, 발리) - 길리 제도(Gili Islands) (약 2시간)',
+        '사누르(Sanur, 발리) - 누사 페니다(Nusa Penida) (약 45분)'
+    ],
+    'lombok': [
+        '렘바르(Lembar, 롬복) - 파당 바이(Padang Bai, 발리) (약 1.5-4시간)',
+        '롬복(Lombok) - 길리 제도(Gili Islands) (약 30분)'
+    ],
+
+    // 필리핀 (출발: Philippines 선택)
+    'cebu': [
+        '세부(Cebu) - 타그빌라란(Tagbilaran, 보홀) (약 2시간)',
+        '세부(Cebu) - 시키호르(Siquijor) (약 5시간)',
+        '세부(Cebu) - 오르모크(Ormoc, 레이테) (약 3시간)'
+    ],
+    'bohol': [
+        '타그빌라란(Tagbilaran, 보홀) - 세부(Cebu) (약 2시간)',
+        '타그빌라란(Tagbilaran) - 시키호르(Siquijor) (약 1.5시간)'
+    ],
+
+    // 영국 (출발: United Kingdom 선택)
+    'dover': [
+        '도버(Dover) - 칼레(Calais, 프랑스) (약 1.5시간)',
+        '도버(Dover) - 던커크(Dunkirk, 프랑스) (약 2시간)'
+    ],
+    'portsmouth': [
+        '포츠머스(Portsmouth) - 생말로(St Malo, 프랑스) (약 11시간)',
+        '포츠머스(Portsmouth) - 빌바오(Bilbao, 스페인) (약 24시간)'
+    ]
+};
