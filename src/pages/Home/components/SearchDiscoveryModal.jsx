@@ -335,7 +335,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         <div className="space-y-12 pb-10 w-full pt-4">
           <CurationSection
             title="가볍고 가까운, 완벽한 가족 여행"
-            subtitle="가이드와 함께 걷기 편하고 케어가 확실한 아시아 단거리 패키지 추천"
+            subtitle="가이드와 함께하는 아시아 단거리 패키지 여행"
             icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
             promotedPackages={curationData.familyPackages}
@@ -346,7 +346,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           />
           <CurationSection
             title="유럽 & 장거리 일주"
-            subtitle="교통, 언어, 치안 우려를 해소하는 안전하고 편안한 장거리 패키지 추천"
+            subtitle="교통, 언어 걱정 없는 장거리 패키지 여행"
             icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
             spots={curationData.city}
             promotedPackages={curationData.longhaulPackages}
@@ -357,7 +357,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           />
           <CurationSection
             title="일상의 탈출, 에어텔/올인클루시브"
-            subtitle="비행기, 숙소, 픽업만 해결하고 자유롭게 즐기는 휴양 패키지 추천"
+            subtitle="비행기, 숙소, 픽업이 포함된 휴양 패키지 여행"
             icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
             spots={curationData.healing}
             promotedPackages={curationData.resortPackages}
