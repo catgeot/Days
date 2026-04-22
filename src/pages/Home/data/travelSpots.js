@@ -6061,5 +6061,730 @@ export const TRAVEL_SPOTS = [
       "성벽도시",
       "유네스코"
     ]
+  },
+  {
+    "id": 341,
+    "slug": "jeju",
+    "name": "제주",
+    "name_en": "Jeju",
+    "country": "한국",
+    "country_en": "South Korea",
+    "lat": 33.4996,
+    "lng": 126.5312,
+    "tier": 1,
+    "popularity": 95,
+    "continent": "asia",
+    "categories": [
+      "nature",
+      "paradise"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "한국이 자랑하는 세계자연유산의 섬으로 화산이 빚어낸 경이로운 풍경과 에메랄드빛 바다가 어우러진 천혜의 자연을 간직하고 있습니다. 한라산 등반, 만장굴 탐험, 올레길 트레킹, 성산일출봉의 장엄한 일출까지 사계절 내내 특별한 경험을 선사합니다.",
+    "keywords": [
+      "아시아",
+      "국내여행",
+      "한라산",
+      "올레길",
+      "성산일출봉"
+    ]
+  },
+  {
+    "id": 342,
+    "slug": "seogwipo",
+    "name": "서귀포",
+    "name_en": "Seogwipo",
+    "country": "한국",
+    "country_en": "South Korea",
+    "lat": 33.2541,
+    "lng": 126.5601,
+    "tier": 2,
+    "popularity": 82,
+    "continent": "asia",
+    "categories": [
+      "nature",
+      "paradise"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "showOnGlobe": false,
+    "denseRegion": null,
+    "desc": "제주도 남부의 중심 도시로 천지연폭포, 정방폭포 등 아름다운 폭포와 주상절리대, 섭지코지 등 화산이 만든 독특한 지형을 감상할 수 있습니다. 따뜻한 기후 덕분에 감귤 농장이 가득하며, 올레길의 여러 코스가 이곳을 지나갑니다.",
+    "keywords": [
+      "아시아",
+      "국내여행",
+      "폭포",
+      "주상절리",
+      "감귤"
+    ]
+  },
+  {
+    "id": 343,
+    "slug": "manila",
+    "name": "마닐라",
+    "name_en": "Manila",
+    "country": "필리핀",
+    "country_en": "Philippines",
+    "lat": 14.5995,
+    "lng": 120.9842,
+    "tier": 1,
+    "popularity": 85,
+    "continent": "asia",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "필리핀의 수도이자 정치·경제·문화의 중심지로 스페인 식민지 시대의 흔적이 남아있는 역사적인 도시입니다. 인트라무로스 성곽 도시, 마닐라 대성당, 산티아고 요새 등 문화유산과 함께 현대적인 쇼핑몰과 활기찬 나이트라이프를 즐길 수 있습니다.",
+    "keywords": [
+      "아시아",
+      "동남아",
+      "인트라무로스",
+      "역사도시",
+      "쇼핑"
+    ]
+  },
+  {
+    "id": 344,
+    "slug": "chiang-mai",
+    "name": "치앙마이",
+    "name_en": "Chiang Mai",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 18.7883,
+    "lng": 98.9853,
+    "tier": 1,
+    "popularity": 90,
+    "continent": "asia",
+    "categories": [
+      "culture",
+      "nature"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "태국 북부의 문화 수도로 300개 이상의 아름다운 불교 사원과 전통 공예가 살아 숨쉬는 고즈넉한 도시입니다. 코끼리 보호 센터 방문, 정글 트레킹, 이산족 마을 체험 등 다양한 액티비티와 함께 매력적인 나이트 바자와 요리 교실로 유명합니다.",
+    "keywords": [
+      "아시아",
+      "동남아",
+      "사원",
+      "코끼리",
+      "전통문화"
+    ]
+  },
+  {
+    "id": 345,
+    "slug": "macau",
+    "name": "마카오",
+    "name_en": "Macau",
+    "country": "중국",
+    "country_en": "China",
+    "lat": 22.1987,
+    "lng": 113.5439,
+    "tier": 1,
+    "popularity": 88,
+    "continent": "asia",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "동양의 라스베가스로 불리는 마카오는 포르투갈 식민지 시대의 유산과 현대적인 카지노 리조트가 공존하는 독특한 매력의 도시입니다. 세계문화유산으로 지정된 역사 지구를 산책하며 에그타르트와 포르투갈-중국 퓨전 요리를 즐겨보세요.",
+    "keywords": [
+      "아시아",
+      "카지노",
+      "세계유산",
+      "에그타르트",
+      "포르투갈문화"
+    ]
+  },
+  {
+    "id": 346,
+    "slug": "budapest",
+    "name": "부다페스트",
+    "name_en": "Budapest",
+    "country": "헝가리",
+    "country_en": "Hungary",
+    "lat": 47.4979,
+    "lng": 19.0402,
+    "tier": 1,
+    "popularity": 92,
+    "continent": "europe",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": false,
+    "denseRegion": "europe",
+    "desc": "다뉴브 강을 사이에 두고 부다와 페스트로 나뉜 '다뉴브의 진주' 부다페스트는 웅장한 국회의사당과 세체니 다리의 야경, 그리고 100년 넘은 온천 문화로 유명합니다. 어부의 요새에서 바라보는 도시 전경과 루인 바의 독특한 분위기는 잊을 수 없는 추억을 선사합니다.",
+    "keywords": [
+      "유럽",
+      "동유럽",
+      "다뉴브강",
+      "온천",
+      "야경"
+    ]
+  },
+  {
+    "id": 347,
+    "slug": "helsinki",
+    "name": "헬싱키",
+    "name_en": "Helsinki",
+    "country": "핀란드",
+    "country_en": "Finland",
+    "lat": 60.1699,
+    "lng": 24.9384,
+    "tier": 1,
+    "popularity": 80,
+    "continent": "europe",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "발트해 연안에 자리한 북유럽 디자인의 수도 헬싱키는 깔끔하고 세련된 건축물과 아늑한 카페 문화로 유명합니다. 템펠리아우키오 암석 교회, 수오멘린나 해상 요새 등 독특한 명소와 함께 사우나 문화를 체험하고 현지인들의 여유로운 라이프스타일을 느껴보세요.",
+    "keywords": [
+      "유럽",
+      "북유럽",
+      "디자인",
+      "사우나",
+      "발트해"
+    ]
+  },
+  {
+    "id": 348,
+    "slug": "reykjavik",
+    "name": "레이캬비크",
+    "name_en": "Reykjavik",
+    "country": "아이슬란드",
+    "country_en": "Iceland",
+    "lat": 64.1466,
+    "lng": -21.9426,
+    "tier": 1,
+    "popularity": 85,
+    "continent": "europe",
+    "categories": [
+      "nature",
+      "adventure"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "세계 최북단의 수도 레이캬비크는 오로라, 빙하, 온천, 화산 등 극적인 자연 경관으로 향하는 관문입니다. 컬러풀한 북유럽 건축물이 늘어선 구시가지를 거닐고, 블루라군 온천에서 휴식을 취한 뒤, 골든 서클 투어로 아이슬란드의 경이로운 자연을 만나보세요.",
+    "keywords": [
+      "유럽",
+      "북유럽",
+      "오로라",
+      "온천",
+      "빙하"
+    ]
+  },
+  {
+    "id": 349,
+    "slug": "brisbane",
+    "name": "브리즈번",
+    "name_en": "Brisbane",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -27.4698,
+    "lng": 153.0251,
+    "tier": 1,
+    "popularity": 78,
+    "continent": "oceania",
+    "categories": [
+      "urban",
+      "nature"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "호주 제3의 도시이자 퀸즐랜드 주의 주도인 브리즈번은 연중 따뜻한 기후와 여유로운 분위기를 자랑합니다. 브리즈번 강변의 사우스뱅크 파크랜드에서 휴식을 취하고, 론 파인 코알라 보호구역에서 코알라를 안아보며, 골드코스트와 선샤인 코스트로 향하는 관문 역할을 합니다.",
+    "keywords": [
+      "오세아니아",
+      "호주",
+      "코알라",
+      "강변",
+      "따뜻한기후"
+    ]
+  },
+  {
+    "id": 350,
+    "slug": "nara",
+    "name": "나라",
+    "name_en": "Nara",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 34.6851,
+    "lng": 135.8048,
+    "tier": 2,
+    "popularity": 82,
+    "continent": "asia",
+    "categories": [
+      "culture",
+      "nature"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": false,
+    "denseRegion": "asia",
+    "desc": "일본 고대 문화의 중심지로 1,000마리가 넘는 사슴이 자유롭게 노니는 나라 공원과 세계 최대의 목조 건축물인 도다이지 대불전이 유명합니다. 8세기 나라 시대의 문화재가 잘 보존되어 있으며, 사슴과 교감하며 고즈넉한 일본 전통 문화를 체험할 수 있습니다.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "사슴",
+      "세계유산",
+      "대불"
+    ]
+  },
+  {
+    "id": 351,
+    "slug": "kobe",
+    "name": "고베",
+    "name_en": "Kobe",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 34.6901,
+    "lng": 135.1955,
+    "tier": 2,
+    "popularity": 80,
+    "continent": "asia",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": false,
+    "denseRegion": "asia",
+    "desc": "세계적으로 유명한 고베규의 본고장이자 일본 3대 야경을 자랑하는 항구 도시입니다. 로코산에서 바라보는 반짝이는 야경, 이국적인 분위기의 기타노 이진관 거리, 난킨마치 차이나타운의 활기찬 먹거리까지 다채로운 매력을 간직하고 있습니다.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "고베규",
+      "야경",
+      "항구도시"
+    ]
+  },
+  {
+    "id": 352,
+    "slug": "nagasaki",
+    "name": "나가사키",
+    "name_en": "Nagasaki",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 32.7503,
+    "lng": 129.8779,
+    "tier": 2,
+    "popularity": 78,
+    "continent": "asia",
+    "categories": [
+      "culture",
+      "urban"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": false,
+    "denseRegion": "asia",
+    "desc": "일본의 서쪽 끝 규슈에 위치한 역사와 평화의 도시입니다. 평화공원과 원폭 자료관에서 평화의 메시지를 되새기고, 네덜란드 풍의 하우스텐보스 테마파크와 이나사야마 전망대에서 일본 3대 야경을 감상할 수 있습니다. 짬뽕과 카스테라 등 독특한 나가사키 음식도 놓치지 마세요.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "평화공원",
+      "야경",
+      "하우스텐보스"
+    ]
+  },
+  {
+    "id": 353,
+    "slug": "kanazawa",
+    "name": "가나자와",
+    "name_en": "Kanazawa",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 36.5619,
+    "lng": 136.6562,
+    "tier": 2,
+    "popularity": 75,
+    "continent": "asia",
+    "categories": [
+      "culture",
+      "urban"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": false,
+    "denseRegion": "asia",
+    "desc": "전통과 예술이 살아 숨쉬는 작은 교토로 불리는 도시입니다. 일본 3대 정원 중 하나인 겐로쿠엔, 전통 게이샤 거리인 히가시차야가이, 금박 공예로 유명한 가나자와는 에도 시대의 정취를 고스란히 간직하고 있습니다. 신선한 해산물이 가득한 오미초 시장도 필수 코스입니다.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "겐로쿠엔",
+      "금박",
+      "전통문화"
+    ]
+  },
+  {
+    "id": 354,
+    "slug": "yokohama",
+    "name": "요코하마",
+    "name_en": "Yokohama",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 35.4437,
+    "lng": 139.638,
+    "tier": 2,
+    "popularity": 77,
+    "continent": "asia",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": false,
+    "denseRegion": "asia",
+    "desc": "도쿄에서 30분 거리에 위치한 일본 제2의 도시이자 최대 항구 도시입니다. 미나토미라이 21의 미래적인 스카이라인과 역사 깊은 야마시타 공원, 일본 최대 차이나타운의 활기찬 분위기가 어우러져 있습니다. 컵라면 박물관과 산케이엔 정원도 인기 명소입니다.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "미나토미라이",
+      "차이나타운",
+      "항구도시"
+    ]
+  },
+  {
+    "id": 355,
+    "slug": "tsushima",
+    "name": "대마도",
+    "name_en": "Tsushima",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 34.2048,
+    "lng": 129.2887,
+    "tier": 2,
+    "popularity": 72,
+    "continent": "asia",
+    "categories": [
+      "nature",
+      "culture"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "showOnGlobe": false,
+    "denseRegion": null,
+    "desc": "한국과 일본 사이 대한해협에 위치한 국경의 섬으로 부산에서 쾌속선으로 1시간이면 도착하는 가까운 해외여행지입니다. 맑고 투명한 바다와 원시림이 우거진 산, 한국과 얽힌 역사 유적지가 공존하며, 면세 쇼핑과 온천, 신선한 해산물 요리를 즐길 수 있습니다.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "국경의섬",
+      "부산페리",
+      "면세쇼핑"
+    ]
+  },
+  {
+    "id": 356,
+    "slug": "kumamoto",
+    "name": "구마모토",
+    "name_en": "Kumamoto",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 32.8031,
+    "lng": 130.7079,
+    "tier": 2,
+    "popularity": 70,
+    "continent": "asia",
+    "categories": [
+      "culture",
+      "nature"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": false,
+    "denseRegion": "asia",
+    "desc": "규슈 중앙부에 위치한 역사와 자연이 어우러진 도시입니다. 일본 3대 성 중 하나인 구마모토성과 세계 최대급 칼데라 화산인 아소산, 검은색 온천수가 특징인 구로카와 온천이 유명합니다. 마스코트 캐릭터 구마몬의 고향으로도 잘 알려져 있습니다.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "구마모토성",
+      "아소산",
+      "구마몬"
+    ]
+  },
+  {
+    "id": 357,
+    "slug": "ishigaki",
+    "name": "이시가키",
+    "name_en": "Ishigaki",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 24.3364,
+    "lng": 124.1559,
+    "tier": 3,
+    "popularity": 68,
+    "continent": "asia",
+    "categories": [
+      "paradise",
+      "nature"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": false,
+    "denseRegion": null,
+    "desc": "오키나와 현 남서부 야에야마 제도의 중심 섬으로 에메랄드빛 바다와 산호초로 둘러싸인 열대 낙원입니다. 가비라 만의 투명한 바다에서 스노클링과 다이빙을 즐기고, 별이 쏟아지는 남십자성 관측으로 유명합니다. 인근의 다케토미 섬과 이리오모테 섬으로의 당일 여행도 가능합니다.",
+    "keywords": [
+      "아시아",
+      "일본",
+      "오키나와",
+      "스노클링",
+      "산호초"
+    ]
+  },
+  {
+    "id": 358,
+    "slug": "lombok",
+    "name": "롬복",
+    "name_en": "Lombok",
+    "country": "인도네시아",
+    "country_en": "Indonesia",
+    "lat": -8.65,
+    "lng": 116.3242,
+    "tier": 2,
+    "popularity": 76,
+    "continent": "asia",
+    "categories": [
+      "paradise",
+      "adventure"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "발리 동쪽에 위치한 순수하고 평화로운 열대 섬으로 과도한 개발을 피해 조용한 휴양을 원하는 여행자들에게 인기입니다. 3,726m 높이의 린자니 화산 트레킹, 핑크 비치에서의 스노클링, 길리 3섬의 맑은 바다와 파티 분위기까지 다채로운 즐거움을 선사합니다.",
+    "keywords": [
+      "아시아",
+      "동남아",
+      "린자니화산",
+      "길리섬",
+      "서핑"
+    ]
+  },
+  {
+    "id": 359,
+    "slug": "vientiane",
+    "name": "비엔티안",
+    "name_en": "Vientiane",
+    "country": "라오스",
+    "country_en": "Laos",
+    "lat": 17.9757,
+    "lng": 102.6331,
+    "tier": 2,
+    "popularity": 73,
+    "continent": "asia",
+    "categories": [
+      "culture",
+      "urban"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "메콩강변에 자리한 라오스의 수도로 동남아에서 가장 여유롭고 조용한 수도 중 하나입니다. 황금빛 파툭사이 개선문, 타트루앙 불탑 등 불교 사원과 프랑스 식민지 시대의 건축물이 공존하며, 메콩강 석양을 바라보며 비어라오 맥주를 즐기는 여유로운 시간이 매력적입니다.",
+    "keywords": [
+      "아시아",
+      "동남아",
+      "메콩강",
+      "불교사원",
+      "여유"
+    ]
+  },
+  {
+    "id": 360,
+    "slug": "vang-vieng",
+    "name": "방비엥",
+    "name_en": "Vang Vieng",
+    "country": "라오스",
+    "country_en": "Laos",
+    "lat": 18.9333,
+    "lng": 102.4481,
+    "tier": 3,
+    "popularity": 70,
+    "continent": "asia",
+    "categories": [
+      "adventure",
+      "nature"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "showOnGlobe": false,
+    "denseRegion": null,
+    "desc": "석회암 카르스트 지형이 빚어낸 장엄한 풍경 속에 자리한 배낭여행자들의 천국입니다. 송강에서 튜빙을 즐기고, 블루 라군과 탐 창 동굴을 탐험하며, 열기구를 타고 하늘에서 바라보는 일몰 풍경은 잊을 수 없는 추억을 선사합니다. 최근에는 편안한 리조트도 많이 생겨났습니다.",
+    "keywords": [
+      "아시아",
+      "동남아",
+      "튜빙",
+      "동굴",
+      "배낭여행"
+    ]
+  },
+  {
+    "id": 361,
+    "slug": "zagreb",
+    "name": "자그레브",
+    "name_en": "Zagreb",
+    "country": "크로아티아",
+    "country_en": "Croatia",
+    "lat": 45.815,
+    "lng": 15.9819,
+    "tier": 2,
+    "popularity": 74,
+    "continent": "europe",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": false,
+    "denseRegion": "europe",
+    "desc": "크로아티아의 수도이자 문화의 중심지로 오스트리아-헝가리 제국 시대의 우아한 건축물과 활기찬 카페 문화가 어우러진 매력적인 도시입니다. 고르니그라드 구시가지의 돌로츠 시장, 성 마르코 교회의 화려한 타일 지붕, 그리고 독특한 실연 박물관이 인기 명소입니다.",
+    "keywords": [
+      "유럽",
+      "동유럽",
+      "구시가지",
+      "카페문화",
+      "발칸"
+    ]
+  },
+  {
+    "id": 362,
+    "slug": "warsaw",
+    "name": "바르샤바",
+    "name_en": "Warsaw",
+    "country": "폴란드",
+    "country_en": "Poland",
+    "lat": 52.2297,
+    "lng": 21.0122,
+    "tier": 1,
+    "popularity": 77,
+    "continent": "europe",
+    "categories": [
+      "culture",
+      "urban"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": false,
+    "denseRegion": "europe",
+    "desc": "폴란드의 수도로 제2차 세계대전 당시 85%가 파괴되었지만 시민들의 노력으로 완벽하게 재건된 불사조의 도시입니다. 세계문화유산으로 지정된 구시가지 광장, 쇼팽의 유산이 살아 숨쉬는 와지엔키 공원, 그리고 바르샤바 봉기 박물관에서 역사의 교훈을 되새길 수 있습니다.",
+    "keywords": [
+      "유럽",
+      "동유럽",
+      "구시가지",
+      "쇼팽",
+      "역사"
+    ]
+  },
+  {
+    "id": 363,
+    "slug": "philadelphia",
+    "name": "필라델피아",
+    "name_en": "Philadelphia",
+    "country": "미국",
+    "country_en": "United States",
+    "lat": 39.9526,
+    "lng": -75.1652,
+    "tier": 1,
+    "popularity": 75,
+    "continent": "north_america",
+    "categories": [
+      "culture",
+      "urban"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "미국 독립의 요람이자 역사적으로 가장 중요한 도시 중 하나입니다. 자유의 종과 독립기념관에서 미국 건국의 역사를 체험하고, 필라델피아 미술관의 계단을 뛰어 올라 록키의 기분을 느껴보세요. 유명한 필리 치즈스테이크와 다양한 문화 명소도 매력적입니다.",
+    "keywords": [
+      "북미",
+      "미국",
+      "독립기념관",
+      "자유의종",
+      "역사도시"
+    ]
+  },
+  {
+    "id": 364,
+    "slug": "san-diego",
+    "name": "샌디에이고",
+    "name_en": "San Diego",
+    "country": "미국",
+    "country_en": "United States",
+    "lat": 32.7157,
+    "lng": -117.1611,
+    "tier": 1,
+    "popularity": 80,
+    "continent": "north_america",
+    "categories": [
+      "paradise",
+      "urban"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "캘리포니아 남부의 햇살 가득한 해변 도시로 연중 완벽한 날씨와 70마일에 달하는 아름다운 해안선을 자랑합니다. 세계적인 샌디에이고 동물원, 발보아 공원의 박물관들, 역사적인 개스램프 쿼터와 라호야 코브의 물개들, 그리고 맥주 양조장 투어까지 다채로운 즐길거리가 가득합니다.",
+    "keywords": [
+      "북미",
+      "미국",
+      "해변",
+      "동물원",
+      "서핑"
+    ]
+  },
+  {
+    "id": 365,
+    "slug": "gold-coast",
+    "name": "골드코스트",
+    "name_en": "Gold Coast",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -28.0167,
+    "lng": 153.4,
+    "tier": 2,
+    "popularity": 82,
+    "continent": "oceania",
+    "categories": [
+      "paradise",
+      "adventure"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "호주 동부 해안의 대표적인 휴양 도시로 57km에 달하는 황금빛 해변과 세계적인 서핑 포인트로 유명합니다. 서퍼스 파라다이스의 활기찬 분위기, 드림월드와 무비월드 같은 테마파크, 그리고 내륙의 열대우림 국립공원까지 가족 여행객과 서퍼들에게 완벽한 목적지입니다.",
+    "keywords": [
+      "오세아니아",
+      "호주",
+      "서핑",
+      "해변",
+      "테마파크"
+    ]
   }
 ];
