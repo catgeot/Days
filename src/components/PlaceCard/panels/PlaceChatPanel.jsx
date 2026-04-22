@@ -127,7 +127,7 @@ const PlaceChatPanel = React.memo(({
                  {matchedPackage ? (
                      <button onClick={onOpenPackage} className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:from-purple-500 hover:to-blue-500 transition-colors">
                          <Briefcase size={14} />
-                         패키지로 간편하게 준비하기
+                         패키지 여행 둘러보기
                      </button>
                  ) : (
                      <button onClick={handleAppBridgeClick} className="w-full bg-gray-900 text-white py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-gray-800 transition-colors">

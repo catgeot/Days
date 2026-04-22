@@ -45,7 +45,7 @@ const DirectFerriesWidget = ({ location }) => {
                                 전 세계 페리 노선 실시간 검색 및 예약
                             </p>
                             <p className="text-white/70 text-xs mt-1 break-keep">
-                                자동완성 지원 · 최저가 보장 · 즉시 예약 확정
+                                자동완성 지원 · 실시간 선박 추적 · 즉시 예약 확정
                             </p>
                         </div>
                         <div className="flex-shrink-0 ml-4">

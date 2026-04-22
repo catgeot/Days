@@ -97,7 +97,7 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
                     >
                         <Briefcase size={15} className="group-hover:scale-110 transition-transform text-purple-100" />
                         <span className="text-xs font-medium tracking-wide text-white">
-                            패키지 상품 보기
+                            패키지 여행
                         </span>
                     </button>
                 )}

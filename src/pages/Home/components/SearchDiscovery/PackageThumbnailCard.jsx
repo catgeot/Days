@@ -52,7 +52,7 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
         <div className="mt-auto p-1">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 text-yellow-400 border border-yellow-400/30">
-              TRIPLINK
+              제휴광고 · TRIPLINK
             </span>
           </div>
           <h3 className="text-lg md:text-xl font-extrabold text-white group-hover:text-blue-300 transition-colors line-clamp-2 break-keep drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">

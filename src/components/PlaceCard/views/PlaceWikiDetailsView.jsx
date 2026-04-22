@@ -625,7 +625,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
                     >
                         <Briefcase size={16} className="text-purple-100 group-hover:scale-110 transition-transform shrink-0" />
                         <span className="text-[11px] sm:text-xs font-medium text-white tracking-wide truncate">
-                            패키지 보기
+                            패키지 여행
                         </span>
                     </button>
                 )}

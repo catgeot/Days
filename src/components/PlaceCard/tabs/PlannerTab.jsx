@@ -236,7 +236,7 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, setMediaMode, isA
                         <div className="hidden md:flex w-full mb-6 rounded-2xl overflow-hidden bg-gray-100 items-center justify-center relative border border-gray-200 shadow-sm" style={{ minHeight: '90px' }}>
                             {/* 상단 뱃지 */}
                             <div className="absolute top-0 left-0 z-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg">
-                                AD
+                                제휴광고
                             </div>
 
                             {/* 데스크탑 배너 (728x90) */}
@@ -250,7 +250,7 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, setMediaMode, isA
                                         scrolling="no"
                                         marginHeight="0"
                                         marginWidth="0"
-                                        title={`${location?.name} 패키지 추천`}
+                                        title={`${location?.name} 패키지 여행 상품`}
                                         className="pointer-events-auto"
                                     ></iframe>
                                 </div>
