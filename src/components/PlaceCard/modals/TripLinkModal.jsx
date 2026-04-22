@@ -43,8 +43,8 @@ const TripLinkModal = ({ pkg, onClose }) => {
               <h3 className="text-white font-bold text-base md:text-lg break-keep">
                 트립링크 패키지 여행 둘러보기
               </h3>
-              <p className="text-xs text-gray-400 hidden md:block break-keep">
-                제휴사(트립링크)의 상품이며, 예약 및 여행 서비스는 제휴사가 제공합니다
+              <p className="text-[11px] text-gray-300 mt-1 leading-relaxed break-keep max-w-2xl">
+                본 상품은 제휴사(트립링크/노랑풍선)가 제공하며, 예약·결제·환불 등 모든 거래는 제휴사와 직접 이루어집니다. gateo는 정보 제공 목적의 중개 서비스만 제공합니다.
               </p>
             </div>
           </div>
@@ -67,10 +67,6 @@ const TripLinkModal = ({ pkg, onClose }) => {
 
         {/* iframe 영역: flex-auto를 사용하여 90vh에 맞게 자동 축소되도록 하되, 기본 높이를 700px로 설정 */}
         <div className="relative w-full bg-white flex-auto overflow-auto" style={{ height: '700px', minHeight: '50vh' }}>
-          {/* 상단 면책 문구 (iframe 위에 고정) */}
-          <div className="sticky top-0 left-0 right-0 bg-amber-50 border-b border-amber-200 px-3 py-2 z-30 text-[10px] text-amber-800 leading-relaxed break-keep">
-            본 상품은 제휴사(트립링크/노랑풍선)가 제공하며, 예약·결제·환불 등 모든 거래는 제휴사와 직접 이루어집니다. gateo는 정보 제공 목적의 중개 서비스만 제공합니다.
-          </div>
           {/* 로딩 표시 (iframe이 완전히 로드되기 전까지 표시) */}
           {!isIframeLoaded && (
             <div className="absolute inset-0 flex items-center justify-center bg-white z-20">
