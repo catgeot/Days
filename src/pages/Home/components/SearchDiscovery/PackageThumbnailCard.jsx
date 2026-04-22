@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExternalLink, Tag } from 'lucide-react';
+import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
 const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
   // 횡스크롤용 고정 크기 vs 그리드용 반응형 비율 크기
@@ -7,16 +8,26 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
     ? "w-full aspect-[3/4] md:aspect-[3/4]"
     : "w-[240px] md:w-[280px] h-[320px] md:h-[380px] flex-none snap-start";
 
-  const handleCardClick = (e) => {
+  const handleCardClick = () => {
     if (pkg.url) {
-      e.preventDefault();
       window.open(pkg.url, '_blank', 'noopener,noreferrer');
     }
   };
 
+  // 드래그와 클릭 구분 로직 (의도치 않은 클릭 방지)
+  const { handleStart, handleMove, handleEnd, handleCancel } = useClickWithDragPrevention(handleCardClick, {
+    threshold: 5,
+    timeThreshold: 500,
+    minTime: 50
+  });
+
   return (
     <div
-      onClick={handleCardClick}
+      onPointerDown={handleStart}
+      onPointerMove={handleMove}
+      onPointerUp={(e) => handleEnd(e, null)}
+      onPointerLeave={handleCancel}
+      onPointerCancel={handleCancel}
       className={`group relative flex flex-col bg-white/[0.02] border border-white/[0.05] rounded-[2rem] cursor-pointer transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-blue-500/20 hover:border-blue-400/50 ${baseSize}`}
     >
       {/* 배경 이미지 영역 */}

@@ -253,21 +253,79 @@ const HomeGlobe = React.memo(forwardRef(({
     el.innerHTML = html;
     el.style.zIndex = zIndex;
 
-    el.ontouchstart = (e) => {
-      e.stopPropagation();
-    };
+    // 드래그와 클릭 구분 로직 (의도치 않은 클릭 방지)
+    let startPos = null;
+    let startTime = null;
+    let moved = false;
 
-    el.onpointerdown = (e) => {
-      if (e.pointerType === 'touch') {
-        e.stopPropagation();
+    const handlePointerDown = (e) => {
+      e.stopPropagation();
+      const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+      const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+
+      if (clientX !== undefined && clientY !== undefined) {
+        startPos = { x: clientX, y: clientY };
+        startTime = Date.now();
+        moved = false;
       }
     };
 
-    el.onclick = (e) => {
-      e.stopPropagation();
-      if (onMarkerClick) onMarkerClick(d, 'globe');
+    const handlePointerMove = (e) => {
+      if (!startPos) return;
+
+      const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+      const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+
+      if (clientX !== undefined && clientY !== undefined) {
+        const distance = Math.sqrt(
+          Math.pow(clientX - startPos.x, 2) +
+          Math.pow(clientY - startPos.y, 2)
+        );
+
+        // 5px 이상 이동 시 드래그로 간주
+        if (distance > 5) {
+          moved = true;
+        }
+      }
     };
 
+    const handlePointerUp = (e) => {
+      e.stopPropagation();
+
+      if (!startPos || !startTime) {
+        startPos = null;
+        startTime = null;
+        moved = false;
+        return;
+      }
+
+      const duration = Date.now() - startTime;
+
+      // 클릭 조건: 이동하지 않았고, 50-500ms 범위 내
+      if (!moved && duration >= 50 && duration < 500) {
+        if (onMarkerClick) onMarkerClick(d, 'globe');
+      }
+
+      // 초기화
+      startPos = null;
+      startTime = null;
+      moved = false;
+    };
+
+    const handlePointerCancel = () => {
+      startPos = null;
+      startTime = null;
+      moved = false;
+    };
+
+    // 이벤트 리스너 등록
+    el.onpointerdown = handlePointerDown;
+    el.onpointermove = handlePointerMove;
+    el.onpointerup = handlePointerUp;
+    el.onpointercancel = handlePointerCancel;
+    el.onpointerleave = handlePointerCancel;
+
+    // 호버 효과
     el.onmouseenter = () => {
       isHoveringMarker.current = true;
       const innerDiv = el.querySelector('div');
@@ -278,6 +336,7 @@ const HomeGlobe = React.memo(forwardRef(({
       const innerDiv = el.querySelector('div');
       if(innerDiv) innerDiv.style.transform = `translate(-50%, ${offsetY}) scale(1)`;
     };
+
     return el;
   };
 

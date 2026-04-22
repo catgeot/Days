@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Compass } from 'lucide-react';
 import { usePlaceGallery } from '../../../../components/PlaceCard/hooks/usePlaceGallery';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from './constants';
+import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
 const CardBackgroundImage = ({ spot, categoryStyle, CategoryIcon }) => {
   const { images, isImgLoading } = usePlaceGallery(spot);
@@ -39,6 +40,13 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
   const [inView, setInView] = useState(false);
   const ref = useRef(null);
 
+  // 드래그와 클릭 구분 로직 (의도치 않은 클릭 방지)
+  const { handleStart, handleMove, handleEnd, handleCancel } = useClickWithDragPrevention(onClick, {
+    threshold: 5,      // 5px 이상 이동 시 드래그로 간주
+    timeThreshold: 500, // 500ms 이상은 롱프레스로 간주
+    minTime: 50        // 50ms 미만은 오작동으로 간주
+  });
+
   useEffect(() => {
     let timeoutId;
     const observer = new IntersectionObserver(
@@ -73,7 +81,11 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
   return (
     <div
       ref={ref}
-      onClick={() => onClick(spot)}
+      onPointerDown={handleStart}
+      onPointerMove={handleMove}
+      onPointerUp={(e) => handleEnd(e, spot)}
+      onPointerLeave={handleCancel}
+      onPointerCancel={handleCancel}
       className={`group relative flex flex-col bg-white/[0.02] border border-white/[0.05] rounded-[2rem] cursor-pointer transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-blue-500/20 hover:border-white/20 ${baseSize}`}
     >
       {/* 배경 사진 영역 (Lazy Load) */}

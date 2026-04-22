@@ -40,19 +40,26 @@ const TripLinkModal = ({ pkg, onClose }) => {
               <ShieldCheck size={20} />
             </div>
             <div>
+              {/* 모바일: 짧은 제목 / 데스크톱: 상세 제목 */}
               <h3 className="text-white font-bold text-base md:text-lg break-keep">
-                트립링크 패키지 여행 둘러보기
+                <span className="md:hidden">트립링크 패키지</span>
+                <span className="hidden md:inline">트립링크 패키지 여행 둘러보기</span>
               </h3>
-              <p className="text-[11px] text-gray-300 mt-1 leading-relaxed break-keep max-w-2xl">
+              {/* 모바일: 간결한 문구 / 데스크톱: 상세 문구 */}
+              <p className="md:hidden text-[11px] text-gray-300 mt-1 leading-relaxed break-keep">
+                제휴사 제공 상품 · 거래는 제휴사와 직접 진행
+              </p>
+              <p className="hidden md:block text-[11px] text-gray-300 mt-1 leading-relaxed break-keep max-w-2xl">
                 본 상품은 제휴사(트립링크/노랑풍선)가 제공하며, 예약·결제·환불 등 모든 거래는 제휴사와 직접 이루어집니다. gateo는 정보 제공 목적의 중개 서비스만 제공합니다.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* 새 창 버튼: 데스크톱에서만 표시 */}
             <button
               onClick={() => window.open(`https://info.triplink.kr/d/${pkg.adKey}`, '_blank')}
-              className="flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
             >
               새 창으로 보기 <ExternalLink size={16} />
             </button>

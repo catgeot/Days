@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Package, MapPin } from 'lucide-react';
 import { usePlaceGallery } from '../../../../components/PlaceCard/hooks/usePlaceGallery';
+import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
 const TripLinkSectionCard = ({ pkg, onClick }) => {
   const [inView, setInView] = useState(false);
   const ref = useRef(null);
+
+  // 드래그와 클릭 구분 로직 (의도치 않은 클릭 방지)
+  const { handleStart, handleMove, handleEnd, handleCancel } = useClickWithDragPrevention(onClick, {
+    threshold: 5,
+    timeThreshold: 500,
+    minTime: 50
+  });
 
   // usePlaceGallery는 spot 객체를 받으므로, pkg 데이터를 이용해 가짜 spot 객체를 생성
   const dummySpot = {
@@ -39,7 +47,11 @@ const TripLinkSectionCard = ({ pkg, onClick }) => {
   return (
     <div
       ref={ref}
-      onClick={() => onClick(pkg)}
+      onPointerDown={handleStart}
+      onPointerMove={handleMove}
+      onPointerUp={(e) => handleEnd(e, pkg)}
+      onPointerLeave={handleCancel}
+      onPointerCancel={handleCancel}
       className={`group relative flex flex-col bg-white/[0.02] border border-white/[0.05] rounded-[2rem] cursor-pointer transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-sky-500/30 hover:border-sky-300/60 ${baseSize}`}
     >
       {/* 배경 사진 영역 */}
