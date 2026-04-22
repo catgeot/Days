@@ -128,7 +128,7 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
           className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing select-none"
         >
           {spots.map((spot, index) => {
-            // 네이티브 인피드 광고 삽입 로직: 우리 카드 5개(index 0~4) 이후 연속으로 6,7번째에 배치 (index 5 카드 렌더링 직전)
+            // 네이티브 인피드 광고 삽입 로직: 우리 카드 5개(index 0~4) 이후 연속으로 4개 배치 (index 5 카드 렌더링 직전)
             const isAdPosition = index === 5 && promotedPackages && promotedPackages.length > 0;
 
             return (
@@ -144,6 +144,16 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
                       promotedPackages[1].type === 'iframe'
                         ? <TripLinkSectionCard key={`iframe-ad-2-${promotedPackages[1].id}`} pkg={promotedPackages[1]} onClick={onSelectPackage} />
                         : <PackageThumbnailCard key={`pkg-ad-2-${promotedPackages[1].id}`} pkg={promotedPackages[1]} />
+                    )}
+                    {promotedPackages[2] && (
+                      promotedPackages[2].type === 'iframe'
+                        ? <TripLinkSectionCard key={`iframe-ad-3-${promotedPackages[2].id}`} pkg={promotedPackages[2]} onClick={onSelectPackage} />
+                        : <PackageThumbnailCard key={`pkg-ad-3-${promotedPackages[2].id}`} pkg={promotedPackages[2]} />
+                    )}
+                    {promotedPackages[3] && (
+                      promotedPackages[3].type === 'iframe'
+                        ? <TripLinkSectionCard key={`iframe-ad-4-${promotedPackages[3].id}`} pkg={promotedPackages[3]} onClick={onSelectPackage} />
+                        : <PackageThumbnailCard key={`pkg-ad-4-${promotedPackages[3].id}`} pkg={promotedPackages[3]} />
                     )}
                   </>
                 )}

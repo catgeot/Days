@@ -159,6 +159,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     const seed = getDailySeed();
     const shuffled = shuffleWithSeed(filteredSpots, seed);
 
+    // 🎯 트립링크 패키지 일일 셔플 (여행지와 동일한 seed 사용)
+    const shuffledFamilyPackages = shuffleWithSeed([
+      ...TRIPLINK_PACKAGES.domestic, // 제주도 포함
+      ...TRIPLINK_PACKAGES.family
+    ], seed);
+    const shuffledLonghaulPackages = shuffleWithSeed([...TRIPLINK_PACKAGES.longhaul], seed);
+    const shuffledResortPackages = shuffleWithSeed([...TRIPLINK_PACKAGES.resort], seed);
+
     // 테마별 우선 노출 여행지 목록 (2026-04-22: 신규 25개 여행지 반영하여 대폭 확장)
     // 가족/효도 테마: 아시아 중심, 가까운 거리, 가족 친화적 (38개)
     const familyTargets = [
@@ -214,7 +222,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     return {
       trending: getSpotsByTargets(familyTargets, s => s.continent === 'asia' || s.continent === 'oceania'),
       city: getSpotsByTargets(longhaulTargets, s => s.continent === 'europe' || s.continent === 'americas' || s.continent === 'middle-east'),
-      healing: getSpotsByTargets(resortTargets, s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature')
+      healing: getSpotsByTargets(resortTargets, s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature'),
+      // 패키지 데이터 추가 (셔플된 배열에서 4개씩 추출)
+      familyPackages: shuffledFamilyPackages.slice(0, 4),
+      longhaulPackages: shuffledLonghaulPackages.slice(0, 4),
+      resortPackages: shuffledResortPackages.slice(0, 4)
     };
   }, [isCurationMode, filteredSpots]);
 
@@ -326,7 +338,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             subtitle="가이드와 함께 걷기 편하고 케어가 확실한 아시아 단거리 패키지 추천"
             icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
-            promotedPackages={TRIPLINK_PACKAGES.family}
+            promotedPackages={curationData.familyPackages}
             delayClass=""
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
@@ -337,7 +349,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             subtitle="교통, 언어, 치안 우려를 해소하는 안전하고 편안한 장거리 패키지 추천"
             icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
             spots={curationData.city}
-            promotedPackages={TRIPLINK_PACKAGES.longhaul}
+            promotedPackages={curationData.longhaulPackages}
             delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('urban')}
@@ -348,7 +360,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             subtitle="비행기, 숙소, 픽업만 해결하고 자유롭게 즐기는 휴양 패키지 추천"
             icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
             spots={curationData.healing}
-            promotedPackages={TRIPLINK_PACKAGES.resort}
+            promotedPackages={curationData.resortPackages}
             delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('paradise')}
