@@ -67,7 +67,7 @@ const TripLinkSectionCard = ({ pkg, onClick }) => {
         <div className="self-start mb-auto">
           <span className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] border border-white/20">
             <Package size={12} />
-            특가 패키지
+            패키지 여행
           </span>
         </div>
 
@@ -85,7 +85,7 @@ const TripLinkSectionCard = ({ pkg, onClick }) => {
         {/* AD 뱃지 */}
         <div className="absolute top-4 right-4">
           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/40 text-white/90 backdrop-blur-md border border-white/20">
-            AD
+            제휴광고
           </span>
         </div>
       </div>

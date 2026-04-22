@@ -23,7 +23,7 @@ const TripLinkIframeCard = ({ pkg }) => {
       {/* 상단 뱃지 */}
       <div className="absolute top-4 left-4 z-20 pointer-events-none">
          <span className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-            트립링크 특가
+            트립링크 제휴
          </span>
       </div>
 
@@ -48,7 +48,7 @@ const TripLinkIframeCard = ({ pkg }) => {
       {/* 하단 텍스트 영역 (시각적 균형) */}
       <div className="absolute bottom-4 left-4 right-4 z-20 pointer-events-none text-center">
         <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/40 text-white/90 backdrop-blur-md border border-white/20 shadow-sm">
-          AD
+          제휴광고
         </span>
       </div>
     </div>
