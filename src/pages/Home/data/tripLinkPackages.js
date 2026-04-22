@@ -22,7 +22,7 @@ export const TRIPLINK_PACKAGES = {
       bannerAdKey: "s6pbrw", // 배너 (728x90)
       targetKeyword: "Da Nang",
       title: "베트남 다낭/나트랑",
-      description: "가족 휴양 특가 패키지",
+      description: "가족 휴양 패키지 여행",
       width: 1024,
       height: 768
     },
@@ -55,7 +55,7 @@ export const TRIPLINK_PACKAGES = {
       bannerAdKey: "qi88tt", // 배너
       targetKeyword: "Cebu",
       title: "필리핀",
-      description: "세부/보홀/보라카이/마닐라 특가",
+      description: "세부/보홀/보라카이/마닐라",
       width: 1024,
       height: 768
     },
@@ -303,7 +303,7 @@ export const TRIPLINK_PACKAGES = {
       bannerAdKey: "azeut8", // 배너 (728x90)
       targetKeyword: "Kota Kinabalu",
       title: "말레이시아 코타키나발루",
-      description: "노을이 아름다운 특가 에어텔",
+      description: "노을이 아름다운 에어텔 휴양",
       width: 1024,
       height: 768
     },
