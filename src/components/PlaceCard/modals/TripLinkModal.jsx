@@ -50,7 +50,7 @@ const TripLinkModal = ({ pkg, onClose }) => {
                 제휴사 제공 상품 · 거래는 제휴사와 직접 진행
               </p>
               <p className="hidden md:block text-[11px] text-gray-300 mt-1 leading-relaxed break-keep max-w-2xl">
-                본 상품은 제휴사(트립링크/노랑풍선)가 제공하며, 예약·결제·환불 등 모든 거래는 제휴사와 직접 이루어집니다. gateo는 정보 제공 목적의 중개 서비스만 제공합니다.
+                본 상품은 제휴사(트립링크/노랑풍선)가 제공하며, 예약·결제·환불 등 모든 거래는 제휴사와 직접 이루어집니다. <br />gateo는 정보 제공 목적의 중개 서비스만 제공합니다.
               </p>
             </div>
           </div>
