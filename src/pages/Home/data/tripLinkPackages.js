@@ -1,4 +1,18 @@
 export const TRIPLINK_PACKAGES = {
+  // 테마 0: 국내여행 (제주도)
+  domestic: [
+    {
+      id: "dyn-banner-domestic-1",
+      type: "iframe",
+      adKey: "012nec", // 모달 (1024x768)
+      bannerAdKey: "nkfs0s", // 배너 (728x90)
+      targetKeyword: "Jeju",
+      title: "제주도",
+      description: "국내 최고의 힐링 여행지",
+      width: 1024,
+      height: 768
+    }
+  ],
   // 테마 1: 가볍고 가까운, 완벽한 가족 여행 (가족/효도/단거리)
   family: [
     {
@@ -212,6 +226,61 @@ export const TRIPLINK_PACKAGES = {
       description: "광활한 초원과 유목 문화",
       width: 1024,
       height: 768
+    },
+    {
+      id: "dyn-banner-longhaul-7",
+      type: "iframe",
+      adKey: "xy0ko4", // 모달 (1024x768)
+      bannerAdKey: "p4wogp", // 배너 (728x90)
+      targetKeyword: "North America",
+      title: "북미",
+      description: "미국/캐나다 대륙 횡단",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-longhaul-8",
+      type: "iframe",
+      adKey: "z3lrma", // 모달 (1024x768)
+      bannerAdKey: "yjbw7f", // 배너 (728x90)
+      targetKeyword: "East Coast",
+      title: "미동부",
+      description: "뉴욕/워싱턴/보스턴 핵심 일주",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-longhaul-9",
+      type: "iframe",
+      adKey: "75wl18", // 모달 (1024x768)
+      bannerAdKey: "qvmsh3", // 배너 (728x90)
+      targetKeyword: "West Coast",
+      title: "미서부",
+      description: "LA/샌프란시스코/라스베가스",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-longhaul-10",
+      type: "iframe",
+      adKey: "w154cc", // 모달 (1024x768)
+      bannerAdKey: "j96p3n", // 배너 (728x90)
+      targetKeyword: "Australia",
+      title: "호주",
+      description: "시드니/멜버른 대자연 탐험",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-longhaul-11",
+      type: "iframe",
+      adKey: "jknahu", // 모달 (1024x768)
+      bannerAdKey: "jqv9y0", // 배너 (728x90)
+      targetKeyword: "Latin America",
+      title: "중남미",
+      description: "페루/브라질/아르헨티나 일주",
+      width: 1024,
+      height: 768
     }
   ],
   // 테마 3: 일상의 탈출, 완벽한 에어텔/올인클루시브
@@ -268,6 +337,39 @@ export const TRIPLINK_PACKAGES = {
       targetKeyword: "Okinawa",
       title: "오키나와",
       description: "일본의 열대 휴양 천국",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-resort-6",
+      type: "iframe",
+      adKey: "buliqr", // 모달 (1024x768)
+      bannerAdKey: "40vksq", // 배너 (728x90)
+      targetKeyword: "Hawaii",
+      title: "하와이",
+      description: "태평양의 낙원, 알로하 정신",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-resort-7",
+      type: "iframe",
+      adKey: "e4xgws", // 모달 (1024x768)
+      bannerAdKey: "bpi60w", // 배너 (728x90)
+      targetKeyword: "Guam",
+      title: "괌",
+      description: "가까운 미국령 휴양지",
+      width: 1024,
+      height: 768
+    },
+    {
+      id: "dyn-banner-resort-8",
+      type: "iframe",
+      adKey: "58ipjw", // 모달 (1024x768)
+      bannerAdKey: "dt5e5e", // 배너 (728x90)
+      targetKeyword: "Saipan",
+      title: "사이판",
+      description: "에메랄드빛 바다의 천국",
       width: 1024,
       height: 768
     }

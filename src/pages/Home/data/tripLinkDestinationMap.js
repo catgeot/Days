@@ -2,6 +2,7 @@ import { TRIPLINK_PACKAGES } from './tripLinkPackages';
 
 // 패키지 ID로 패키지 객체를 쉽게 찾기 위한 맵
 const PACKAGE_MAP = {
+  'jeju': TRIPLINK_PACKAGES.domestic[0], // 제주도 (012nec)
   'vietnam': TRIPLINK_PACKAGES.family[0], // 베트남 다낭/나트랑 (hbxakj)
   'hokkaido': TRIPLINK_PACKAGES.family[1], // 일본 홋카이도 (iosw2r)
   'singapore': TRIPLINK_PACKAGES.family[2], // 싱가포르 (op19uq)
@@ -21,14 +22,30 @@ const PACKAGE_MAP = {
   'northeurope': TRIPLINK_PACKAGES.longhaul[3], // 북유럽 (rpc4cq)
   'africa': TRIPLINK_PACKAGES.longhaul[4], // 아프리카 (3k2cki)
   'mongolia': TRIPLINK_PACKAGES.longhaul[5], // 몽골/내몽골 (23krvj)
-  'guam': TRIPLINK_PACKAGES.resort[0], // 괌/사이판 (1c4mmw)
+  'northamerica': TRIPLINK_PACKAGES.longhaul[6], // 북미 (xy0ko4)
+  'useast': TRIPLINK_PACKAGES.longhaul[7], // 미동부 (z3lrma)
+  'uswest': TRIPLINK_PACKAGES.longhaul[8], // 미서부 (75wl18)
+  'australia': TRIPLINK_PACKAGES.longhaul[9], // 호주 (w154cc)
+  'latinamerica': TRIPLINK_PACKAGES.longhaul[10], // 중남미 (jknahu)
   'malaysia': TRIPLINK_PACKAGES.resort[1], // 코타키나발루 (nnpyr1)
   'indonesia': TRIPLINK_PACKAGES.resort[2], // 발리/인도네시아 (4uxv69)
   'laos': TRIPLINK_PACKAGES.resort[3], // 라오스 (jd3bcv)
   'okinawa': TRIPLINK_PACKAGES.resort[4], // 오키나와 (561up2)
+  'hawaii': TRIPLINK_PACKAGES.resort[5], // 하와이 (buliqr)
+  'guam': TRIPLINK_PACKAGES.resort[6], // 괌 (e4xgws)
+  'saipan': TRIPLINK_PACKAGES.resort[7], // 사이판 (58ipjw)
 };
 
 export const DESTINATION_PACKAGE_MAP = {
+  // 국내 - 제주도
+  '제주': PACKAGE_MAP['jeju'],
+  '제주도': PACKAGE_MAP['jeju'],
+  '제주시': PACKAGE_MAP['jeju'],
+  '서귀포': PACKAGE_MAP['jeju'],
+  'jeju': PACKAGE_MAP['jeju'],
+  'jejudo': PACKAGE_MAP['jeju'],
+  'seogwipo': PACKAGE_MAP['jeju'],
+
   // 베트남
   '다낭': PACKAGE_MAP['vietnam'],
   '나트랑': PACKAGE_MAP['vietnam'],
@@ -252,11 +269,87 @@ export const DESTINATION_PACKAGE_MAP = {
   'ulaanbaatar': PACKAGE_MAP['mongolia'],
   'inner mongolia': PACKAGE_MAP['mongolia'],
 
-  // 남태평양
+  // 북미
+  '미국': PACKAGE_MAP['northamerica'],
+  '캐나다': PACKAGE_MAP['northamerica'],
+  '토론토': PACKAGE_MAP['northamerica'],
+  '밴쿠버': PACKAGE_MAP['northamerica'],
+  'usa': PACKAGE_MAP['northamerica'],
+  'united states': PACKAGE_MAP['northamerica'],
+  'canada': PACKAGE_MAP['northamerica'],
+  'toronto': PACKAGE_MAP['northamerica'],
+  'vancouver': PACKAGE_MAP['northamerica'],
+
+  // 미동부
+  '뉴욕': PACKAGE_MAP['useast'],
+  '워싱턴': PACKAGE_MAP['useast'],
+  '보스턴': PACKAGE_MAP['useast'],
+  '필라델피아': PACKAGE_MAP['useast'],
+  'new york': PACKAGE_MAP['useast'],
+  'washington': PACKAGE_MAP['useast'],
+  'boston': PACKAGE_MAP['useast'],
+  'philadelphia': PACKAGE_MAP['useast'],
+  'washington dc': PACKAGE_MAP['useast'],
+
+  // 미서부
+  '로스앤젤레스': PACKAGE_MAP['uswest'],
+  '샌프란시스코': PACKAGE_MAP['uswest'],
+  '라스베가스': PACKAGE_MAP['uswest'],
+  '시애틀': PACKAGE_MAP['uswest'],
+  '샌디에이고': PACKAGE_MAP['uswest'],
+  'los angeles': PACKAGE_MAP['uswest'],
+  'san francisco': PACKAGE_MAP['uswest'],
+  'las vegas': PACKAGE_MAP['uswest'],
+  'seattle': PACKAGE_MAP['uswest'],
+  'san diego': PACKAGE_MAP['uswest'],
+
+  // 하와이
+  '하와이': PACKAGE_MAP['hawaii'],
+  '호놀룰루': PACKAGE_MAP['hawaii'],
+  '와이키키': PACKAGE_MAP['hawaii'],
+  '마우이': PACKAGE_MAP['hawaii'],
+  'hawaii': PACKAGE_MAP['hawaii'],
+  'honolulu': PACKAGE_MAP['hawaii'],
+  'waikiki': PACKAGE_MAP['hawaii'],
+  'maui': PACKAGE_MAP['hawaii'],
+
+  // 호주
+  '호주': PACKAGE_MAP['australia'],
+  '시드니': PACKAGE_MAP['australia'],
+  '멜버른': PACKAGE_MAP['australia'],
+  '브리즈번': PACKAGE_MAP['australia'],
+  '골드코스트': PACKAGE_MAP['australia'],
+  'australia': PACKAGE_MAP['australia'],
+  'sydney': PACKAGE_MAP['australia'],
+  'melbourne': PACKAGE_MAP['australia'],
+  'brisbane': PACKAGE_MAP['australia'],
+  'gold coast': PACKAGE_MAP['australia'],
+
+  // 중남미
+  '페루': PACKAGE_MAP['latinamerica'],
+  '브라질': PACKAGE_MAP['latinamerica'],
+  '아르헨티나': PACKAGE_MAP['latinamerica'],
+  '칠레': PACKAGE_MAP['latinamerica'],
+  '멕시코': PACKAGE_MAP['latinamerica'],
+  '리마': PACKAGE_MAP['latinamerica'],
+  '리우데자네이루': PACKAGE_MAP['latinamerica'],
+  '부에노스아이레스': PACKAGE_MAP['latinamerica'],
+  'peru': PACKAGE_MAP['latinamerica'],
+  'brazil': PACKAGE_MAP['latinamerica'],
+  'argentina': PACKAGE_MAP['latinamerica'],
+  'chile': PACKAGE_MAP['latinamerica'],
+  'mexico': PACKAGE_MAP['latinamerica'],
+  'lima': PACKAGE_MAP['latinamerica'],
+  'rio de janeiro': PACKAGE_MAP['latinamerica'],
+  'buenos aires': PACKAGE_MAP['latinamerica'],
+
+  // 괌
   '괌': PACKAGE_MAP['guam'],
-  '사이판': PACKAGE_MAP['guam'],
   'guam': PACKAGE_MAP['guam'],
-  'saipan': PACKAGE_MAP['guam'],
+
+  // 사이판
+  '사이판': PACKAGE_MAP['saipan'],
+  'saipan': PACKAGE_MAP['saipan'],
 
   // 말레이시아
   '코타키나발루': PACKAGE_MAP['malaysia'],
@@ -267,6 +360,9 @@ export const DESTINATION_PACKAGE_MAP = {
 
 // 지역별/국가별 폴백 (매핑이 없을 때 대륙/국가 정보로 추천)
 export const FALLBACK_PACKAGE_MAP = {
+  '한국': PACKAGE_MAP['jeju'],
+  'korea': PACKAGE_MAP['jeju'],
+  'south korea': PACKAGE_MAP['jeju'],
   '유럽': PACKAGE_MAP['westeurope'],
   'europe': PACKAGE_MAP['westeurope'],
   '베트남': PACKAGE_MAP['vietnam'],
@@ -288,5 +384,7 @@ export const FALLBACK_PACKAGE_MAP = {
   '라오스': PACKAGE_MAP['laos'],
   'laos': PACKAGE_MAP['laos'],
   '아프리카': PACKAGE_MAP['africa'],
-  'africa': PACKAGE_MAP['africa']
+  'africa': PACKAGE_MAP['africa'],
+  '오세아니아': PACKAGE_MAP['australia'],
+  'oceania': PACKAGE_MAP['australia']
 };
