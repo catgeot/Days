@@ -19,7 +19,7 @@ if (!travelSpotsMatch) {
 
 const travelSpotsData = JSON.parse(`[${travelSpotsMatch[1]}]`);
 
-const baseUrl = 'https://www.gateo.kr';
+const baseUrl = 'https://gateo.kr';
 const today = new Date().toISOString().split('T')[0];
 
 // Sitemap 생성
@@ -156,8 +156,8 @@ try {
   console.log('   - 최근 50개 여행지 포함');
   console.log('');
   console.log('📌 네이버 서치어드바이저 제출 정보:');
-  console.log('   - Sitemap URL: https://www.gateo.kr/sitemap.xml');
-  console.log('   - RSS URL: https://www.gateo.kr/rss.xml');
+  console.log(`   - Sitemap URL: ${baseUrl}/sitemap.xml`);
+  console.log(`   - RSS URL: ${baseUrl}/rss.xml`);
 } catch (error) {
   console.error('❌ 파일 생성 실패:', error.message);
   process.exit(1);
