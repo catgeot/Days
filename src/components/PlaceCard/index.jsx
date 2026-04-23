@@ -77,6 +77,7 @@ const PlaceCard = () => {
         description={locationDesc}
         url={`/place/${slug}${tab ? `/${tab}` : ''}`}
         image={locationImage}
+        location={contextLocation}
       />
       <PlaceCardExpanded
         location={contextLocation}
