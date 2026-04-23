@@ -99,6 +99,9 @@ function generateRSS() {
     .filter(spot => spot.tier <= 2)
     .slice(0, 50); // 최근 50개
 
+  // 현재 날짜 사용
+  const currentDate = new Date();
+
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
@@ -106,17 +109,23 @@ function generateRSS() {
     <link>${baseUrl}</link>
     <description>당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트제로)</description>
     <language>ko</language>
-    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <lastBuildDate>${currentDate.toUTCString()}</lastBuildDate>
     <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />
 
-${recentSpots.map(spot => `    <item>
+${recentSpots.map((spot, index) => {
+      // 각 항목마다 며칠씩 뒤로 날짜를 설정 (최신 순)
+      const itemDate = new Date(currentDate);
+      itemDate.setDate(itemDate.getDate() - index);
+
+      return `    <item>
       <title>${spot.name} (${spot.name_en}) - ${spot.country} 여행 가이드</title>
       <link>${baseUrl}/place/${spot.slug}</link>
       <description>${spot.desc || `${spot.name} 여행 정보, 관광지, 액티비티, 교통편, 숙박 정보를 확인하세요.`}</description>
       <category>${spot.primaryCategory || spot.category}</category>
-      <pubDate>${new Date().toUTCString()}</pubDate>
+      <pubDate>${itemDate.toUTCString()}</pubDate>
       <guid>${baseUrl}/place/${spot.slug}</guid>
-    </item>`).join('\n')}
+    </item>`;
+    }).join('\n')}
   </channel>
 </rss>`;
 
