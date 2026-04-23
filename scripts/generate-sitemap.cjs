@@ -19,7 +19,7 @@ if (!travelSpotsMatch) {
 
 const travelSpotsData = JSON.parse(`[${travelSpotsMatch[1]}]`);
 
-const baseUrl = 'https://www.gateo.kr';
+const baseUrl = 'https://gateo.kr';
 const today = new Date().toISOString().split('T')[0];
 
 // Sitemap 생성
@@ -117,13 +117,23 @@ ${recentSpots.map((spot, index) => {
       const itemDate = new Date(currentDate);
       itemDate.setDate(itemDate.getDate() - index);
 
+      // 네이버 권장: 본문 전체 제공
+      const fullDescription = `
+        <h2>${spot.name} (${spot.name_en})</h2>
+        <p><strong>국가:</strong> ${spot.country} (${spot.country_en})</p>
+        <p><strong>카테고리:</strong> ${spot.primaryCategory || spot.category}</p>
+        <p>${spot.desc || `${spot.name} 여행 정보, 관광지, 액티비티, 교통편, 숙박 정보를 확인하세요.`}</p>
+        ${spot.keywords ? `<p><strong>키워드:</strong> ${spot.keywords.join(', ')}</p>` : ''}
+        <p><a href="${baseUrl}/place/${spot.slug}">자세히 보기 →</a></p>
+      `.trim().replace(/\s+/g, ' ');
+
       return `    <item>
       <title>${spot.name} (${spot.name_en}) - ${spot.country} 여행 가이드</title>
       <link>${baseUrl}/place/${spot.slug}</link>
-      <description>${spot.desc || `${spot.name} 여행 정보, 관광지, 액티비티, 교통편, 숙박 정보를 확인하세요.`}</description>
+      <description><![CDATA[${fullDescription}]]></description>
       <category>${spot.primaryCategory || spot.category}</category>
       <pubDate>${itemDate.toUTCString()}</pubDate>
-      <guid>${baseUrl}/place/${spot.slug}</guid>
+      <guid isPermaLink="true">${baseUrl}/place/${spot.slug}</guid>
     </item>`;
     }).join('\n')}
   </channel>
@@ -146,8 +156,8 @@ try {
   console.log('   - 최근 50개 여행지 포함');
   console.log('');
   console.log('📌 네이버 서치어드바이저 제출 정보:');
-  console.log('   - Sitemap URL: https://www.gateo.kr/sitemap.xml');
-  console.log('   - RSS URL: https://www.gateo.kr/rss.xml');
+  console.log('   - Sitemap URL: https://gateo.kr/sitemap.xml');
+  console.log('   - RSS URL: https://gateo.kr/rss.xml');
 } catch (error) {
   console.error('❌ 파일 생성 실패:', error.message);
   process.exit(1);
