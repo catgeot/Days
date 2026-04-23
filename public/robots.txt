@@ -2,10 +2,16 @@ User-agent: *
 Allow: /
 Allow: /place/
 Allow: /explore/
-Allow: /blog
+Allow: /logbook
 Allow: /p/
 Disallow: /auth/
 
-# Query parameter 차단 제거 (이제 Path 기반이므로 불필요)
+# 네이버 검색 봇
+User-agent: Yeti
+Allow:/
+
+# 구글 검색 봇
+User-agent: Googlebot
+Allow: /
 
 Sitemap: https://www.gateo.kr/sitemap.xml
