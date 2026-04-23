@@ -97,7 +97,7 @@ const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, l
                             </div>
                             <div className="flex-1 text-left">
                                 <div className="font-bold text-base">항공권 실시간 검색</div>
-                                <div className="text-sm opacity-90">전 세계 항공편 비교 및 최저가 예약</div>
+                                <div className="text-sm opacity-90">전 세계 항공편 비교 및 예약</div>
                             </div>
                             <div className="text-white/80 group-hover:text-white transition-colors text-xl">→</div>
                         </button>
