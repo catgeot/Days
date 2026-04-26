@@ -57,6 +57,12 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
     }
   }, [threshold]);
 
+  const reset = useCallback(() => {
+    startPos.current = null;
+    startTime.current = null;
+    moved.current = false;
+  }, []);
+
   const handleEnd = useCallback((e, data) => {
     if (!startPos.current || !startTime.current) {
       reset();
@@ -76,13 +82,7 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
     }
 
     reset();
-  }, [onClick, minTime, timeThreshold]);
-
-  const reset = useCallback(() => {
-    startPos.current = null;
-    startTime.current = null;
-    moved.current = false;
-  }, []);
+  }, [onClick, minTime, timeThreshold, reset]);
 
   const handleCancel = useCallback(() => {
     reset();

@@ -76,6 +76,7 @@ function Home() {
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
+  const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
 
   const {
     handleGlobeClick,
@@ -203,6 +204,13 @@ function Home() {
   useEffect(() => {
     const currentPath = routeLocation.pathname;
     const prevPath = prevPathRef.current;
+
+    if (currentPath.startsWith('/explore') && prevPath.startsWith('/place/')) {
+      setIsExploreFromPlace(true);
+    } else if (!currentPath.startsWith('/explore')) {
+      setIsExploreFromPlace(false);
+    }
+
     prevPathRef.current = currentPath;
 
     if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
@@ -215,7 +223,7 @@ function Home() {
         globeRef.current.resumeRotation();
       }
     }
-  }, [routeLocation.pathname, setSelectedLocation]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, setSelectedLocation]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -387,7 +395,7 @@ function Home() {
 
         <SearchDiscoveryModal
           isOpen={routeLocation.pathname.startsWith('/explore')}
-          isFromPlaceCard={prevPathRef.current.startsWith('/place/')}
+          isFromPlaceCard={isExploreFromPlace}
           onClose={() => navigate('/')}
           onSelect={(spot) => {
             const urlParam = spot.slug || (spot.id || spot.name);

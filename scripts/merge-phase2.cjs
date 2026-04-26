@@ -11,8 +11,12 @@ const path = require('path');
  * - 스키마 검증
  */
 
-// Phase 1 데이터 로드 (백업 파일에서)
-const phase1Path = path.join(__dirname, '../src/pages/Home/data/travelSpots-phase1-backup.js');
+// Phase 1: `create-phase1-100cities.js` → `scripts/outputs/travelSpots-phase1.js` 필요
+const phase1Path = path.join(__dirname, 'outputs', 'travelSpots-phase1.js');
+if (!fs.existsSync(phase1Path)) {
+  console.error('❌ 먼저: node scripts/create-phase1-100cities.js (또는 outputs에 phase1 스냅샷 배치)');
+  process.exit(1);
+}
 const phase1Content = fs.readFileSync(phase1Path, 'utf8');
 
 // export const TRAVEL_SPOTS = [...] 형식에서 배열 추출
@@ -25,24 +29,24 @@ if (!phase1Match) {
 const phase1Data = eval(phase1Match[1]);
 console.log(`✅ Phase 1 로드: ${phase1Data.length}개`);
 
-// Phase 2 카테고리별 데이터 로드
+// Phase 2 JSON (2026-04: `plans/archive/legacy-2026-04-root/`로 이동)
+const phase2dir = path.join(__dirname, '..', 'plans', 'archive', 'legacy-2026-04-root');
 const phase2Files = [
-    'plans/phase2-paradise.json',
-    'plans/phase2-nature.json',
-    'plans/phase2-urban.json',
-    'plans/phase2-culture.json',
-    'plans/phase2-adventure.json'
-];
+  'phase2-paradise.json',
+  'phase2-nature.json',
+  'phase2-urban.json',
+  'phase2-culture.json',
+  'phase2-adventure.json',
+].map((f) => path.join(phase2dir, f));
 
 let phase2Data = [];
-phase2Files.forEach(file => {
-    const filePath = path.join(__dirname, '..', file);
+phase2Files.forEach((filePath) => {
     if (fs.existsSync(filePath)) {
         const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         phase2Data = phase2Data.concat(data);
-        console.log(`✅ ${file}: ${data.length}개`);
+        console.log(`✅ ${path.basename(filePath)}: ${data.length}개`);
     } else {
-        console.warn(`⚠️ ${file} 파일이 없습니다.`);
+        console.warn(`⚠️ ${path.basename(filePath)} 파일이 없습니다.`);
     }
 });
 
@@ -194,7 +198,9 @@ console.log('');
 // 5. 파일 저장
 // ============================================
 
-const outputPath = path.join(__dirname, '../src/pages/Home/data/travelSpots-phase2-merged.js');
+const scriptOutputs = path.join(__dirname, 'outputs');
+fs.mkdirSync(scriptOutputs, { recursive: true });
+const outputPath = path.join(scriptOutputs, 'travelSpots-phase2-merged.js');
 const outputContent = `/**
  * Travel Spots Data - Phase 2 Merged
  *

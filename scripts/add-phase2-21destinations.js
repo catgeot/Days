@@ -3,6 +3,11 @@
 // Paradise 7개, Nature 8개, Adventure 6개
 
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const scriptOutputs = path.join(__dirname, 'outputs');
 
 console.log('🚀 Phase 9-2: 21개 여행지 추가 시작\n');
 
@@ -457,8 +462,9 @@ finalSpots.forEach((dest, index) => {
 
 content += `];\n`;
 
-// 백업 파일 생성
-const backupPath = 'src/pages/Home/data/travelSpots-phase2-before-addon.js';
+// 백업(소스 외 `scripts/outputs/`, .gitignore)
+fs.mkdirSync(scriptOutputs, { recursive: true });
+const backupPath = path.join(scriptOutputs, 'travelSpots-phase2-before-addon.js');
 fs.writeFileSync(backupPath, rawData, 'utf-8');
 console.log(`💾 백업 파일 생성: ${backupPath}\n`);
 
@@ -466,13 +472,14 @@ console.log(`💾 백업 파일 생성: ${backupPath}\n`);
 fs.writeFileSync('src/pages/Home/data/travelSpots.js', content, 'utf-8');
 console.log('✅ travelSpots.js 업데이트 완료\n');
 
-// JSON 파일도 저장 (참조용)
+// JSON(아카이브, 기존 `plans/archive/misc`와 동일)
+const jsonOut = path.join(__dirname, '..', 'plans', 'archive', 'misc', 'phase9-2-addon-21destinations.json');
 fs.writeFileSync(
-  'plans/phase9-2-addon-21destinations.json',
+  jsonOut,
   JSON.stringify(enhancedDestinations, null, 2),
   'utf-8'
 );
-console.log('✅ JSON 저장: plans/phase9-2-addon-21destinations.json\n');
+console.log('✅ JSON 저장: plans/archive/misc/phase9-2-addon-21destinations.json\n');
 
 console.log('🎉 Phase 2 완료! 179개 → 200개 여행지 달성');
 console.log('\n📌 다음 단계: 브라우저에서 테스트 확인');

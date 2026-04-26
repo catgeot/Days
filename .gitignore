@@ -46,3 +46,6 @@ __pycache__/
 
 # 🚨 [Fix/New] 기타 임시 파일
 .temp/
+
+# scripts가 생성하는 스냅샷 백업(데이터 절감)
+scripts/outputs/

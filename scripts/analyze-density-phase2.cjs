@@ -13,8 +13,12 @@ const path = require('path');
  * 4. 좌표 기반 거리 유지 (50-100km)
  */
 
-// 병합된 데이터 로드
-const mergedPath = path.join(__dirname, '../src/pages/Home/data/travelSpots-phase2-merged.js');
+// 병합된 데이터(`merge-phase2.cjs` → scripts/outputs/)
+const mergedPath = path.join(__dirname, 'outputs', 'travelSpots-phase2-merged.js');
+if (!fs.existsSync(mergedPath)) {
+  console.error('❌ 먼저: node scripts/merge-phase2.cjs');
+  process.exit(1);
+}
 const mergedContent = fs.readFileSync(mergedPath, 'utf8');
 const mergedMatch = mergedContent.match(/export\s+const\s+TRAVEL_SPOTS\s*=\s*(\[[\s\S]*\]);/);
 
@@ -277,7 +281,9 @@ const outputContent = `/**
 export const TRAVEL_SPOTS = ${JSON.stringify(finalSpots, null, 2)};
 `;
 
-const outputPath = path.join(__dirname, '../src/pages/Home/data/travelSpots-phase2-optimized.js');
+const scriptOutputs = path.join(__dirname, 'outputs');
+fs.mkdirSync(scriptOutputs, { recursive: true });
+const outputPath = path.join(scriptOutputs, 'travelSpots-phase2-optimized.js');
 fs.writeFileSync(outputPath, outputContent, 'utf8');
 
 console.log(`✅ 최적화 파일 생성: ${outputPath}`);
@@ -294,7 +300,7 @@ console.log(`지구본 표시: ${selected.length}개 (${Math.round(selected.leng
 console.log(`홈화면 전용: ${finalSpots.length - selected.length}개 (${Math.round((finalSpots.length - selected.length) / finalSpots.length * 100)}%)`);
 console.log('');
 console.log('🎯 다음 단계:');
-console.log('1. 결과 확인: src/pages/Home/data/travelSpots-phase2-optimized.js');
-console.log('2. 개발 서버 테스트: npm run dev');
-console.log('3. 메인 파일 업데이트: cp travelSpots-phase2-optimized.js travelSpots.js');
+console.log('1. 결과 확인: scripts/outputs/travelSpots-phase2-optimized.js');
+console.log('2. prod 반영: 내용을 src/pages/Home/data/travelSpots.js에 병합(수동)');
+console.log('3. npm run dev 로 검증');
 console.log('');

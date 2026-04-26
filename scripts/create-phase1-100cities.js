@@ -2,7 +2,12 @@
 // Phase 9-2 Step 4a: 기존 80개 + 누락 20개 = 100개 생성
 
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { TIER1_MISSING_CITIES } from './add-tier1-missing-cities.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const scriptOutputs = path.join(__dirname, 'outputs');
 
 // 기존 80개 데이터 로드
 const rawData = fs.readFileSync('src/pages/Home/data/travelSpots.js', 'utf-8');
@@ -223,16 +228,22 @@ content += `// Tier 3: ${finalTier3}개\n`;
 content += `// 지구본 표시: ${showOnGlobeCount}개\n`;
 content += `// 총 여행지: ${allDestinations.length}개\n`;
 
-fs.writeFileSync('src/pages/Home/data/travelSpots-phase1.js', content, 'utf-8');
+fs.mkdirSync(scriptOutputs, { recursive: true });
+const phase1Path = path.join(scriptOutputs, 'travelSpots-phase1.js');
+fs.writeFileSync(phase1Path, content, 'utf-8');
 
-console.log('✅ 파일 생성 완료: src/pages/Home/data/travelSpots-phase1.js\n');
+console.log(`✅ 파일 생성 완료: ${phase1Path}\n`);
 
-// JSON 파일도 저장 (Phase 2에서 사용)
-fs.writeFileSync(
-  'plans/phase9-2-phase1-100cities.json',
-  JSON.stringify(allDestinations, null, 2),
-  'utf-8'
+// JSON(기존 `plans/archive/misc`에 동일)
+const jsonPath = path.join(
+  __dirname,
+  '..',
+  'plans',
+  'archive',
+  'misc',
+  'phase9-2-phase1-100cities.json'
 );
+fs.writeFileSync(jsonPath, JSON.stringify(allDestinations, null, 2), 'utf-8');
 
-console.log('✅ JSON 저장 완료: plans/phase9-2-phase1-100cities.json\n');
+console.log('✅ JSON 저장 완료: plans/archive/misc/phase9-2-phase1-100cities.json\n');
 console.log('🎉 Phase 1 완료! 다음은 AI로 나머지 100개 추출 (Phase 2)');

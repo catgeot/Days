@@ -6,7 +6,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import { supabase } from './shared/api/supabase';
 
 import MainLayout from './shared/layout/MainLayout';
-import AdminLayout from './shared/layout/AdminLayout';
 import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
 import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';

@@ -2,6 +2,11 @@
 // 지구본 표시 재조정: "특별한 여행지" 중심 전략
 
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const scriptOutputs = path.join(__dirname, 'outputs');
 
 console.log('🎯 지구본 표시 재조정: "특별한 여행지" 중심 전략\n');
 
@@ -202,8 +207,9 @@ rebalanced.forEach((dest, index) => {
 
 content += `];\n`;
 
-// 백업
-const backupPath = 'src/pages/Home/data/travelSpots-before-rebalance.js';
+// 백업(소스 외 `scripts/outputs/`, .gitignore)
+fs.mkdirSync(scriptOutputs, { recursive: true });
+const backupPath = path.join(scriptOutputs, 'travelSpots-before-rebalance.js');
 fs.writeFileSync(backupPath, rawData, 'utf-8');
 console.log(`💾 백업 생성: ${backupPath}\n`);
 
