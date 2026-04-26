@@ -13,12 +13,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
   const [hasViewed, setHasViewed] = useState(false);
 
   useEffect(() => {
-    // Simple way to trigger view: When the component mounts, consider it viewed
-    // In a real app, you might use IntersectionObserver to only count when visible on screen
-    if (!hasViewed && onVisible) {
-      onVisible(review.id);
+    if (hasViewed || !onVisible) return;
+    const id = review.id;
+    queueMicrotask(() => {
+      onVisible(id);
       setHasViewed(true);
-    }
+    });
   }, [hasViewed, onVisible, review.id]);
 
   const formatDate = (dateString) => {
@@ -244,20 +244,6 @@ const ReviewsTab = ({ location, setMediaMode }) => {
         alert('리뷰가 삭제되었습니다.');
       }
     }
-  };
-
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('ko-KR', options);
-  };
-
-  const renderStars = (rating) => {
-    return Array(5).fill(0).map((_, i) => (
-      <Star
-        key={i}
-        className={`w-4 h-4 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-      />
-    ));
   };
 
   return (

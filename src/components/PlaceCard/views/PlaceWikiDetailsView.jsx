@@ -23,7 +23,7 @@ const LOADING_MESSAGES_UPDATE = [
     "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
 ];
 
-const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, location, galleryData, setMediaMode, isActive, matchedPackage, onOpenPackage }) => {
+const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, location, galleryData, isActive, matchedPackage, onOpenPackage }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 

@@ -190,7 +190,7 @@ const tier1Overlaps = overlaps150.filter(({ spot1, spot2, distance }) =>
 );
 
 const hideCandidates = new Map();
-tier1Overlaps.forEach(({ spot1, spot2, distance }) => {
+tier1Overlaps.forEach(({ spot1, spot2 }) => {
     // 더 낮은 인기도 또는 Tier 2를 숨김
     const hide = (spot1.tier > spot2.tier || (spot1.tier === spot2.tier && (spot1.popularity || 0) < (spot2.popularity || 0))) ? spot1 : spot2;
     if (!hideCandidates.has(hide.id)) {

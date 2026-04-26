@@ -50,7 +50,7 @@ const MAP_STYLES = {
     streets: { label: '도심', url: 'mapbox://styles/mapbox/navigation-night-v1' }
 };
 
-const PlaceMiniMap = ({ lat, lng, name }) => {
+const PlaceMiniMap = ({ lat, lng }) => {
     const mapRef = useRef(null);
     const mapContainerRef = useRef(null);
     const spinReqRef = useRef(null);
@@ -78,7 +78,9 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
             document.mozFullScreenEnabled ||
             document.msFullscreenEnabled;
 
-        setSupportsFullscreen(!!isSupported);
+        queueMicrotask(() => {
+            setSupportsFullscreen(!!isSupported);
+        });
 
         const handleFullscreenChange = () => {
             setIsFullscreen(
@@ -113,7 +115,9 @@ const PlaceMiniMap = ({ lat, lng, name }) => {
                 bearing: 0
             });
         }
-        setMapState('idle');
+        queueMicrotask(() => {
+            setMapState('idle');
+        });
     }, [lat, lng]);
 
     // 대기 상태(idle)일 때 지구 자전 효과

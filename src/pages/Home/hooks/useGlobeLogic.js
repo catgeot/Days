@@ -6,7 +6,7 @@
 import { useState, useCallback } from 'react';
 import { recordInteraction } from '../../../shared/api/supabase';
 
-export const useGlobeLogic = (globeRef, userId) => {
+export const useGlobeLogic = (globeRef, _userId) => {
   const [scoutedPins, setScoutedPins] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
 

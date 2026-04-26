@@ -1,35 +1,5 @@
 import React from 'react';
-
-export const isMobileDevice = () => {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-};
-
-const renderMarkdownInline = (text) => {
-    if (!text.includes('**')) return text;
-
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, index) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-            // 이 함수는 현재 사용되지 않으나 일관성을 위해 다크모드 대응을 추가 (기본적으로 위키에선 하얀색을 띄게 함)
-            return <strong key={index} className="font-bold text-gray-900 dark:text-white">{parseSmartLinks(part.slice(2, -2))}</strong>;
-        }
-        return parseSmartLinks(part);
-    });
-};
-
-const renderWithLineBreaks = (text) => {
-    if (typeof text !== 'string') return text;
-    return text.split('\n').map((line, i, arr) => (
-        <React.Fragment key={i}>
-            {line === '' ? <span className="block h-3 md:h-4" aria-hidden="true" /> : (
-                <span className={line.trim().startsWith('•') ? "pl-[10px] -indent-[10px] block my-0.5" : ""}>
-                    {renderMarkdownInline(line)}
-                </span>
-            )}
-            {i !== arr.length - 1 && line !== '' && <br />}
-        </React.Fragment>
-    ));
-};
+import { isMobileDevice } from './device';
 
 export const CopyableWord = ({ word, koreanName, locationName, type }) => {
     const handleSmartLink = (e) => {

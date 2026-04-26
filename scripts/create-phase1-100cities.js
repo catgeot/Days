@@ -115,7 +115,7 @@ function getDenseRegion(lat, lng) {
 }
 
 // Tier 판정
-function getTier(nameEn, category) {
+function getTier(nameEn) {
   // Tier 1: 주요 대도시 및 필수 랜드마크
   if (tier1Cities.some(city => nameEn.includes(city))) {
     return 1;
@@ -133,7 +133,7 @@ function getTier(nameEn, category) {
 }
 
 // 인기도 계산
-function calculatePopularity(tier, category) {
+function calculatePopularity(tier) {
   if (tier === 1) return Math.floor(85 + Math.random() * 10); // 85-95
   if (tier === 2) return Math.floor(65 + Math.random() * 15); // 65-80
   return Math.floor(45 + Math.random() * 15); // 45-60
@@ -142,8 +142,8 @@ function calculatePopularity(tier, category) {
 // 기존 80개에 메타데이터 추가
 const enhanced80 = existing80.map((spot) => {
   const continent = continentMap[spot.country_en] || "unknown";
-  const tier = getTier(spot.name_en, spot.category);
-  const popularity = calculatePopularity(tier, spot.category);
+  const tier = getTier(spot.name_en);
+  const popularity = calculatePopularity(tier);
   const denseRegion = getDenseRegion(spot.lat, spot.lng);
 
   // 밀집 지역이 아니거나 Tier 1이면 지구본 표시

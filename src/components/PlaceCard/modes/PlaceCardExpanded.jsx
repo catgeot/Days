@@ -25,12 +25,12 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
       const tabPath = newMode === 'GALLERY' ? '' : `/${newMode.toLowerCase()}`;
       navigate(`/place/${slug}${tabPath}`, { replace: true });
       setMediaModeState(newMode);
-  }, [navigate, location?.slug, reactLocation.pathname]);
+  }, [navigate, location, reactLocation.pathname]);
 
   // props로 받은 initialTab이 변경되면 동기화
   useEffect(() => {
       if (['GALLERY', 'VIDEO', 'WIKI', 'REVIEWS', 'PLANNER'].includes(initialTab)) {
-          setMediaModeState(initialTab);
+          queueMicrotask(() => setMediaModeState(initialTab));
       }
   }, [initialTab]);
 
@@ -131,7 +131,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
   }, []);
 
   useEffect(() => {
-    setIsAiMode(false);
+    queueMicrotask(() => setIsAiMode(false));
   }, [galleryData.selectedImg]);
 
   // 탭 전환 이벤트 추적

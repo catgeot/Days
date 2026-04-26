@@ -49,7 +49,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
         }
 
         // --- [L2] Supabase Cache (공유 캐시 확인) ---
-        const { data: cachedData, error: dbError } = await supabase
+        const { data: cachedData, error: _dbError } = await supabase
           .from('place_videos')
           .select('videos')
           .eq('place_id', cacheKey)

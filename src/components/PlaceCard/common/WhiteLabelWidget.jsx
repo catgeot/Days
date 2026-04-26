@@ -35,7 +35,6 @@ const WhiteLabelWidget = ({ locationName, type = 'flight', customTrigger }) => {
     const titleText = isHotel ? "글로벌 최저가 호텔 통합 검색" : "글로벌 최저가 항공권 통합 검색";
     const highlightText = isHotel ? "숙소/호텔" : "항공권";
     // 모달 아이콘 테마
-    const iconColor = isHotel ? "text-indigo-500" : "text-blue-500";
     const iconBgColor = isHotel ? "bg-indigo-100" : "bg-blue-100";
     const iconTextColor = isHotel ? "text-indigo-600" : "text-blue-600";
 

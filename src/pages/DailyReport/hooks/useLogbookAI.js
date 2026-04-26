@@ -86,7 +86,7 @@ export const useCurationAI = () => {
     try {
       const cached = sessionStorage.getItem('gateo_curation_data');
       return cached ? JSON.parse(cached) : null;
-    } catch (e) {
+    } catch {
       console.warn("🚨 [Safe Path] 세션 스토리지 데이터 손상. 초기화합니다.");
       sessionStorage.removeItem('gateo_curation_data');
       return null;

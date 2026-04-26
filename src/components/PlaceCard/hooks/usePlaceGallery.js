@@ -76,7 +76,7 @@ export const usePlaceGallery = (locationSource) => {
         return null;
       }
       return parsed.data;
-    } catch (e) {
+    } catch {
       sessionStorage.removeItem(key);
       return null;
     }
@@ -208,7 +208,7 @@ export const usePlaceGallery = (locationSource) => {
             setIsImgLoading(false);
             return;
           }
-        } catch (err) {
+        } catch {
           console.warn(`⚠️ Supabase Cache Miss or Error for ${koreanName}. Proceeding to API.`);
         }
       }
@@ -308,7 +308,7 @@ export const usePlaceGallery = (locationSource) => {
         fetch(imageObj.links.download_location, {
           headers: { Authorization: `Client-ID ${ACCESS_KEY}` }
         }).catch(e => console.error("⚠️ Tracking API silently failed:", e));
-      } catch (e) {
+      } catch {
         // 비관적 설계: 트래킹 실패가 사용자 다운로드를 막지 않도록 방치
       }
     }

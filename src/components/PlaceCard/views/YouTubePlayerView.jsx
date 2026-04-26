@@ -9,9 +9,7 @@ const YouTubePlayerView = forwardRef(({
   showUI,
   onVideoSelect,
   isLoading = false,
-  error = null,
-  googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7",
-  setMediaMode
+  googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7"
 }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
@@ -76,7 +74,7 @@ const YouTubePlayerView = forwardRef(({
           if (!event.data) return;
           let data = event.data;
           if (typeof data === 'string') {
-              try { data = JSON.parse(data); } catch (e) { return; }
+              try { data = JSON.parse(data); } catch { return; }
           }
           if (data?.event === 'infoDelivery' && data.info && data.info.playerState !== undefined) {
               const state = data.info.playerState;
@@ -89,19 +87,23 @@ const YouTubePlayerView = forwardRef(({
   }, []);
 
   useEffect(() => {
-    setIsPlaying(false);
-    setIsPaused(true);
-    if (videoId && videoList.length > 0) {
-      const targetIndex = videoList.findIndex(v => v.id === videoId);
-      setCurrentVideoIndex(targetIndex >= 0 ? targetIndex : 0);
-    } else {
-      setCurrentVideoIndex(0);
-    }
+    queueMicrotask(() => {
+      setIsPlaying(false);
+      setIsPaused(true);
+      if (videoId && videoList.length > 0) {
+        const targetIndex = videoList.findIndex(v => v.id === videoId);
+        setCurrentVideoIndex(targetIndex >= 0 ? targetIndex : 0);
+      } else {
+        setCurrentVideoIndex(0);
+      }
+    });
   }, [videoId, videos]);
 
   useEffect(() => {
     if (currentVideo) {
-      setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`);
+      queueMicrotask(() => {
+        setThumbnailUrl(`https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`);
+      });
     }
   }, [currentVideo]);
 

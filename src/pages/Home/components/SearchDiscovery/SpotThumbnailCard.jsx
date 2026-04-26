@@ -4,7 +4,8 @@ import { usePlaceGallery } from '../../../../components/PlaceCard/hooks/usePlace
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from './constants';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
-const CardBackgroundImage = ({ spot, categoryStyle, CategoryIcon }) => {
+const CardBackgroundImage = ({ spot, categoryStyle, icon }) => {
+  const CategoryIcon = icon;
   const { images, isImgLoading } = usePlaceGallery(spot);
   const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].url) : null;
 
@@ -90,7 +91,7 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
     >
       {/* 배경 사진 영역 (Lazy Load) */}
       {inView ? (
-        <CardBackgroundImage spot={spot} categoryStyle={categoryStyle} CategoryIcon={CategoryIcon} />
+        <CardBackgroundImage spot={spot} categoryStyle={categoryStyle} icon={CategoryIcon} />
       ) : (
         <div className={`absolute inset-0 bg-gradient-to-br from-white/5 to-transparent ${categoryStyle.split(' ')[0]}`} />
       )}

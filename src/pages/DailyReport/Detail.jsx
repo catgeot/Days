@@ -113,7 +113,7 @@ const Detail = () => {
     try {
       await navigator.clipboard.writeText(url);
       alert(`공유 링크가 클립보드에 복사되었습니다.\n(카카오톡 등 원하는 곳에 붙여넣기 하세요!)\n\n${url}`);
-    } catch (err) {
+    } catch {
       alert("URL 복사에 실패했습니다. 브라우저 주소창의 /p/아이디 경로를 확인해주세요.");
     }
   };

@@ -10,7 +10,7 @@ import ToolkitCard from './planner/components/ToolkitCard';
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
 
-const PlannerTab = ({ location, plannerData, isPlannerLoading, setMediaMode, isActive, matchedPackage, onOpenPackage }) => {
+const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matchedPackage }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 

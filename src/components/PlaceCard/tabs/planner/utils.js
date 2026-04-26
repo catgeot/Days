@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
 import { getAffiliateLink } from '../../../../utils/affiliate';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 

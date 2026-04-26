@@ -12,8 +12,7 @@ const PlaceGalleryView = React.memo(({
   showUI,
   handleDownload,
   handleRefresh,
-  handleRemoveImage,
-  setMediaMode
+  handleRemoveImage
 }) => {
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
@@ -29,7 +28,7 @@ const PlaceGalleryView = React.memo(({
   };
 
   useEffect(() => {
-    setIsMobileUIHidden(false);
+    queueMicrotask(() => setIsMobileUIHidden(false));
   }, [selectedImg]);
 
   useEffect(() => {

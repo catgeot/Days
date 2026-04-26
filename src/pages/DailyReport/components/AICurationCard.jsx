@@ -14,7 +14,7 @@ const FALLBACK_DATA = {
 };
 
 const AICurationCard = () => {
-  const { status, setStatus, curationData, generateCuration } = useCurationAI();
+  const { status, curationData, generateCuration } = useCurationAI();
   
   const [user, setUser] = useState(null);
   useEffect(() => {

@@ -19,7 +19,7 @@ const standardizeName = (rawName) => {
 
 // 한국어 입력 -> 사전에서 영어 Key 찾아내기 (역추적)
 const findEnglishKey = (koreanName) => {
-  const entry = Object.entries(KEYWORD_SYNONYMS).find(([en, ko]) => ko === koreanName);
+  const entry = Object.entries(KEYWORD_SYNONYMS).find(([, ko]) => ko === koreanName);
   return entry ? entry[0] : null;
 };
 
@@ -78,7 +78,7 @@ export const getCoordinatesFromAddress = async (query) => {
       const data = await response.json();
       return (data && data.length > 0) ? data : null;
 
-    } catch (e) {
+    } catch {
       // 네트워크 끊김(ERR_INTERNET_DISCONNECTED) 등 잡기
       console.warn(`⚠️ Connection failed. Retrying... (${attempt}/3)`);
       if (attempt < 3) {

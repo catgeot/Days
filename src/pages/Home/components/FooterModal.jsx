@@ -8,8 +8,10 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
 
   useEffect(() => {
     if (isOpen) {
-      setActiveTab(initialTab);
-      setIsCopied(false);
+      queueMicrotask(() => {
+        setActiveTab(initialTab);
+        setIsCopied(false);
+      });
     }
   }, [isOpen, initialTab]);
 

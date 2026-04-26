@@ -5,9 +5,6 @@
  * @returns {Object} { wikiContent, toolkitData }
  */
 
-const warningCache = new Set();
-const isDev = import.meta.env.DEV;
-
 export const parseAiPracticalInfo = (markdown) => {
     if (!markdown || markdown === '[[LOADING]]') {
         return { wikiContent: null, toolkitData: null };

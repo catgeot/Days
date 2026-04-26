@@ -102,7 +102,7 @@ const Write = () => {
           const addr = data.address;
           const displayAddress = [addr.city || addr.province || '', addr.borough || addr.district || '', addr.quarter || addr.neighbourhood || addr.suburb || ''].filter(Boolean).join(' ');
           setMapLocation(displayAddress || "위치 정보 없음");
-        } catch (e) { setMapLocation("위치 확인 실패"); } finally { setLocationLoading(false); }
+        } catch { setMapLocation("위치 확인 실패"); } finally { setLocationLoading(false); }
       }, () => { setLocationLoading(false); alert("위치 권한을 확인해주세요."); }
     );
   };

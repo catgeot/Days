@@ -7,7 +7,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
   const isScanning = location?.isScanning;
 
   useEffect(() => {
-    setIsLoading(true);
+    queueMicrotask(() => setIsLoading(true));
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [location]);

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink, Plane } from 'lucide-react';
-import CopyableText, { isMobileDevice } from '../../../common/CopyableText';
+import CopyableText from '../../../common/CopyableText';
+import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtDynamicLink from './MrtDynamicLink';
 import HotelWidget from './HotelWidget';
@@ -8,7 +9,8 @@ import DirectFerriesWidget from './DirectFerriesWidget';
 import { THEME_COLORS } from '../constants';
 import { cleanAdviceText, getAdviceText, getMultiLinks } from '../utils';
 
-const ToolkitCard = ({ icon: Icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
+const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
+    const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
     const links = getMultiLinks({ type, data, location });

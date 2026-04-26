@@ -162,8 +162,6 @@ denseRegions.forEach(([region, data]) => {
 console.log('\n5️⃣  권장 조치');
 console.log('='.repeat(80));
 
-const totalOverlaps = overlaps.critical.length + overlaps.warning.length;
-
 if (overlaps.critical.length === 0) {
   console.log('✅ 치명적 겹침 없음 - 현재 분포 양호');
 } else if (overlaps.critical.length < 5) {

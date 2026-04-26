@@ -17,18 +17,7 @@ import { useGlobeLogic } from './hooks/useGlobeLogic';
 import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
-
-export const formatUrlName = (nameEn) => {
-  if (!nameEn) return "";
-  return nameEn
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[\s_]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-};
+import { formatUrlName } from './lib/formatUrlName';
 
 function Home() {
   const globeRef = useRef();
@@ -43,7 +32,7 @@ function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const { scoutedPins, setScoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
+  const { scoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
   const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip } = useTravelData(user);
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
@@ -67,7 +56,7 @@ function Home() {
       const nextIndex = (lastIndex + 1) % 5;
       localStorage.setItem('gateo_last_category_index', nextIndex.toString());
       return ['paradise', 'nature', 'urban', 'culture', 'adventure'][nextIndex];
-    } catch (e) {
+    } catch {
       return 'paradise';
     }
   });
@@ -83,8 +72,7 @@ function Home() {
     handleLocationSelect,
     handleStartChat,
     handleToggleBookmark,
-    handleSmartSearch,
-    handleClearChats
+    handleSmartSearch
   } = useHomeHandlers({
     globeRef, user, category, isPinVisible, selectedLocation, savedTrips,
     setSelectedLocation, addScoutPin, moveToLocation, processSearchKeywords,
@@ -113,7 +101,9 @@ function Home() {
       let targetSlug = match.params.slug;
       try {
         targetSlug = decodeURIComponent(targetSlug);
-      } catch (e) { }
+      } catch {
+        // ignore malformed percent-encoding in slug
+      }
 
       const normalizedTargetSlug = targetSlug.toLowerCase();
 
@@ -191,12 +181,18 @@ function Home() {
           }
         }
 
-        setSelectedLocation(hydratedTarget);
-        moveToLocation(hydratedTarget.lat, hydratedTarget.lng);
+        queueMicrotask(() => {
+          setSelectedLocation(hydratedTarget);
+          moveToLocation(hydratedTarget.lat, hydratedTarget.lng);
+        });
       }
-      setIsCardExpanded(true);
+      queueMicrotask(() => {
+        setIsCardExpanded(true);
+      });
     } else {
-      setIsCardExpanded(false);
+      queueMicrotask(() => {
+        setIsCardExpanded(false);
+      });
     }
   }, [routeLocation.pathname, savedTrips]);
 
@@ -205,11 +201,13 @@ function Home() {
     const currentPath = routeLocation.pathname;
     const prevPath = prevPathRef.current;
 
-    if (currentPath.startsWith('/explore') && prevPath.startsWith('/place/')) {
-      setIsExploreFromPlace(true);
-    } else if (!currentPath.startsWith('/explore')) {
-      setIsExploreFromPlace(false);
-    }
+    queueMicrotask(() => {
+      if (currentPath.startsWith('/explore') && prevPath.startsWith('/place/')) {
+        setIsExploreFromPlace(true);
+      } else if (!currentPath.startsWith('/explore')) {
+        setIsExploreFromPlace(false);
+      }
+    });
 
     prevPathRef.current = currentPath;
 
@@ -217,8 +215,10 @@ function Home() {
       if (routeLocation.state?.fromSearch) {
         return;
       }
-      setIsCardExpanded(false);
-      setSelectedLocation(null);
+      queueMicrotask(() => {
+        setIsCardExpanded(false);
+        setSelectedLocation(null);
+      });
       if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
         globeRef.current.resumeRotation();
       }

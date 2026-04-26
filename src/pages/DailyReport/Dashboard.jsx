@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PenTool, BarChart3, LogIn, Globe, Calendar as CalendarIcon, Sparkles } from 'lucide-react';
+import { PenTool, Globe, Sparkles } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import AICurationCard from './components/AICurationCard';
@@ -11,13 +11,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const locationFilter = searchParams.get('location');
-  const activeTab = searchParams.get('tab') || 'private';
 
   const [showTools, setShowTools] = useState(false);
 
   const {
     loading, reports, viewYear, viewMonth,
-    displayCount, calendarDays, trendData, maxCount,
+    displayCount, calendarDays,
     handlePrevMonth, handleNextMonth, isPublicMode, user
   } = useDashboardData() || {};
 
@@ -31,10 +30,6 @@ const Dashboard = () => {
     // 혹은 Dashboard의 user 객체가 완전히 로드될 때까지 대기하지 않는다면 단순히 /blog/write로 보내서 Write.jsx에서 처리하게 하는 것이 안전합니다.
     // 기존에 user === null 이라서 두번 클릭해야 동작했을 수 있습니다.
     navigate('/blog/write');
-  };
-
-  const handleLoginClick = () => {
-    navigate('/auth/login', { state: { from: '/blog' } });
   };
 
   const handleTabChange = (tab) => {

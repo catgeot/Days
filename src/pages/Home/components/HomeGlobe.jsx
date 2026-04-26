@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers';
-import { citiesData } from '../data/citiesData';
 
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,
@@ -77,7 +76,7 @@ const HomeGlobe = React.memo(forwardRef(({
       if (pauseRender) return;
       if(globeEl.current) globeEl.current.controls().autoRotate = true;
     },
-    flyToAndPin: (lat, lng, name, category) => {
+    flyToAndPin: (lat, lng, _name, _category) => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
       if (globeEl.current) {
@@ -133,7 +132,7 @@ const HomeGlobe = React.memo(forwardRef(({
     try {
       const R = globeEl.current.getGlobeRadius();
       controls.minDistance = R * 1.01;
-    } catch (e) {
+    } catch {
       controls.minDistance = 101;
     }
   }, [dimensions.width, pauseRender]);

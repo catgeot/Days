@@ -43,7 +43,7 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
       }
 
       try {
-        const { data: statsData, error: statsError } = await supabase
+        const { data: statsData, error: _statsError } = await supabase
           .from('place_stats')
           .select('image_url')
           .eq('place_id', originName)

@@ -8,7 +8,7 @@
 // 6. [Fix/New] Pessimistic First (비관적 방어): 특정 풀(Pool)의 개수가 부족할 경우 앱 크래시를 막기 위해 상대 풀에서 부족분을 채우는 강력한 방어 로직 추가.
 // 7. [Performance] 정적 데이터 사전 계산 및 메모이제이션 강화.
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { TRAVEL_SPOTS } from '../data/travelSpots'; 
 import { citiesData } from '../data/citiesData'; 
 import { KEYWORD_SYNONYMS, KEYWORD_DB } from '../data/keywordData'; 

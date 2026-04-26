@@ -39,7 +39,7 @@ for (const match of nameEnMatches) {
   spotsInFile.add(match[1].toLowerCase());
 }
 const slugMatches = travelSpotsContent.matchAll(/"slug":\s*"([^"]+)"/g);
-for (const match of nameEnMatches) {
+for (const match of slugMatches) {
   spotsInFile.add(match[1].toLowerCase().replace(/-/g, ' '));
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import { generateMrtLink } from '../../../../../utils/affiliate';
-import { isMobileDevice } from '../../../common/CopyableText';
+import { isMobileDevice } from '../../../common/device';
 
 const MrtDynamicLink = ({ mrtQuery, text, colorClass, isColSpan2 }) => {
     const [url, setUrl] = useState(null);

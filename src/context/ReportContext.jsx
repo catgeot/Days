@@ -34,4 +34,6 @@ export const ReportProvider = ({ children }) => {
   );
 };
 
+// useContext hook is a valid companion export; fast refresh only applies to default component export patterns.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useReport = () => useContext(ReportContext);

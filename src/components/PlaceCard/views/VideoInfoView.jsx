@@ -5,7 +5,7 @@ const VideoInfoView = ({ videoData, onSeekTime }) => {
     const [selectedChapterIdx, setSelectedChapterIdx] = useState(null);
 
     useEffect(() => {
-        setSelectedChapterIdx(null);
+        queueMicrotask(() => setSelectedChapterIdx(null));
     }, [videoData]);
 
     if (!videoData) return null;

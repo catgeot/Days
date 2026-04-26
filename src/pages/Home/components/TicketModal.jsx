@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, MapPin, CreditCard, Ticket, Trash2, Plane, MessageSquare } from 'lucide-react';
 
-const TicketModal = ({ 
-  isOpen, onClose, onIssue, preFilledDestination, 
-  scoutedPins, 
-  savedTrips = [] 
+const TicketModal = ({
+  isOpen, onClose, onIssue, preFilledDestination,
+  savedTrips = []
 }) => {
   const [destination, setDestination] = useState('');
   const [date, setDate] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      if (preFilledDestination?.name) setDestination(preFilledDestination.name);
-      const today = new Date().toISOString().split('T')[0];
-      setDate(today);
+      queueMicrotask(() => {
+        if (preFilledDestination?.name) setDestination(preFilledDestination.name);
+        const today = new Date().toISOString().split('T')[0];
+        setDate(today);
+      });
     }
   }, [isOpen, preFilledDestination]);
 

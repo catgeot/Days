@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
-import { formatUrlName } from '../index';
+import { formatUrlName } from '../lib/formatUrlName';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
@@ -30,7 +30,7 @@ const getDistanceKm = (lat1, lon1, lat2, lon2) => {
 
 export function useHomeHandlers({
   globeRef,
-  user,
+  user: _user,
   category,
   isPinVisible,
   selectedLocation,
@@ -48,7 +48,7 @@ export function useHomeHandlers({
   setActiveChatId,
   saveNewTrip,
   setSavedTrips,
-  fetchData,
+  fetchData: _fetchData,
   toggleBookmark
 }) {
 

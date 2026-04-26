@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
@@ -13,7 +13,7 @@ import Logo from './Logo';
 import { useTrendingData } from '../hooks/useTrendingData';
 
 const HomeUI = React.memo(({
-  onSearch, onTickerClick, externalInput, savedTrips, onTripClick, onTripDelete, onOpenChat, onLogoClick,
+  onSearch: _onSearch, onTickerClick, externalInput, savedTrips: _savedTrips, onTripClick: _onTripClick, onTripDelete: _onTripDelete, onOpenChat, onLogoClick,
   relatedTags = [], isTagLoading = false, onTagClick,
   selectedCategory, onCategorySelect,
   isTickerExpanded, setIsTickerExpanded,
@@ -27,12 +27,16 @@ const HomeUI = React.memo(({
   user,
   onLogout
 }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [, setInputValue] = useState('');
   const navigate = useNavigate();
 
   const trendingData = useTrendingData();
 
-  useEffect(() => { if (externalInput) setInputValue(externalInput); }, [externalInput]);
+  useEffect(() => {
+    if (externalInput) {
+      queueMicrotask(() => setInputValue(externalInput));
+    }
+  }, [externalInput]);
 
   const CATEGORIES = [
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },

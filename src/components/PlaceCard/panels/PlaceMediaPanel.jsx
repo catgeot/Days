@@ -16,14 +16,14 @@ const PlaceMediaPanel = React.memo(({
     videos,
     onVideoSelect,
     playerRef,
-    onAiModeChange,
+    onAiModeChange: _onAiModeChange,
     wikiData,
     isWikiLoading,
     plannerData,
     isPlannerLoading,
     location,
     isVideoLoading,
-    videoError,
+    videoError: _videoError,
     googleFormUrl,
     matchedPackage,
     onOpenPackage
@@ -44,7 +44,6 @@ const PlaceMediaPanel = React.memo(({
                 handleDownload={galleryData.handleDownload}
                 handleRefresh={galleryData.handleRefresh}
                 handleRemoveImage={galleryData.handleRemoveImage}
-                setMediaMode={setMediaMode}
             />
         </div>
 
@@ -58,9 +57,7 @@ const PlaceMediaPanel = React.memo(({
                 showUI={showUI}
                 onVideoSelect={onVideoSelect}
                 isLoading={isVideoLoading}
-                error={videoError}
                 googleFormUrl={googleFormUrl}
-                setMediaMode={setMediaMode}
             />
         </div>
 
@@ -72,7 +69,6 @@ const PlaceMediaPanel = React.memo(({
                 countryName={location?.country}
                 location={location}
                 galleryData={galleryData}
-                setMediaMode={setMediaMode}
                 isActive={mediaMode === 'WIKI'}
                 matchedPackage={matchedPackage}
                 onOpenPackage={onOpenPackage}
@@ -80,7 +76,7 @@ const PlaceMediaPanel = React.memo(({
         </div>
 
         <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'PLANNER' ? 'block' : 'hidden'}`}>
-            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} setMediaMode={setMediaMode} isActive={mediaMode === 'PLANNER'} matchedPackage={matchedPackage} onOpenPackage={onOpenPackage} />
+            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} isActive={mediaMode === 'PLANNER'} matchedPackage={matchedPackage} onOpenPackage={onOpenPackage} />
         </div>
 
         <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'REVIEWS' ? 'block' : 'hidden'}`}>

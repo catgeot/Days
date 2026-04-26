@@ -257,7 +257,7 @@ console.log('');
 // ============================================
 
 // priorityScore 제거 (출력용이었음)
-const finalSpots = spots.map(({ priorityScore, ...spot }) => spot);
+const finalSpots = spots.map(({ priorityScore: _p, ...spot }) => spot);
 
 // ID 순서로 다시 정렬
 finalSpots.sort((a, b) => a.id - b.id);
