@@ -89,7 +89,7 @@ function Home() {
       handleSmartSearch(searchQuery);
       navigate(routeLocation.pathname, { replace: true });
     }
-  }, [routeLocation.search]);
+  }, [routeLocation.search, routeLocation.pathname, handleSmartSearch, navigate]);
 
   useEffect(() => {
     let match = matchPath({ path: "/place/:slug" }, routeLocation.pathname);
@@ -194,6 +194,7 @@ function Home() {
         setIsCardExpanded(false);
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- /place/ URL sync: only path + savedTrips; add selectedLocation/set/move would loop with microtask hydration
   }, [routeLocation.pathname, savedTrips]);
 
   const prevPathRef = useRef(routeLocation.pathname);

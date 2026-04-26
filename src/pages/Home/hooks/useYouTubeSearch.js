@@ -101,7 +101,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     };
 
     fetchAllSources();
-  }, [location?.id, location?.name, mediaMode]);
+  }, [location?.id, location?.name, location?.country, location?.name_en, mediaMode]);
 
   return {
     videos,

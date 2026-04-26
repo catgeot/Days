@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw } from 'lucide-react';
 
 const PlaceGalleryView = React.memo(({
@@ -39,15 +39,15 @@ const PlaceGalleryView = React.memo(({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handlePrev = (e) => {
+  const handlePrev = useCallback((e) => {
     e?.stopPropagation();
     if (currentIndex > 0) setSelectedImg(images[currentIndex - 1]);
-  };
+  }, [currentIndex, images, setSelectedImg]);
 
-  const handleNext = (e) => {
+  const handleNext = useCallback((e) => {
     e?.stopPropagation();
     if (currentIndex < images.length - 1) setSelectedImg(images[currentIndex + 1]);
-  };
+  }, [currentIndex, images, setSelectedImg]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -57,7 +57,7 @@ const PlaceGalleryView = React.memo(({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedImg, currentIndex, images]);
+  }, [selectedImg, handlePrev, handleNext]);
 
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden;
 

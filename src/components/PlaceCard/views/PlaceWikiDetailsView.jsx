@@ -186,7 +186,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
           setIsAiLoading(false);
       }
     }
-  }, [isAiLoading, wikiData, countryName]);
+  }, [isAiLoading, wikiData, countryName, localAiResponse]);
 
   const autoUpdateTriggered = useRef(false);
   useEffect(() => {
@@ -207,7 +207,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
               }
           }
       }
-  }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, placeName, handleRequestAiInfo]);
+  }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, wikiData?.title, placeName, handleRequestAiInfo]);
 
   useEffect(() => {
     const currentInfo = wikiData?.ai_practical_info;

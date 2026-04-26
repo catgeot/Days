@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Trash2 } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
@@ -67,30 +67,7 @@ const ChatModal = ({
     }
   }, [activeChatId, isOpen, chatHistory]);
 
-  useEffect(() => {
-    if (isOpen && initialQuery && !hasSentInitialRef.current) {
-      hasSentInitialRef.current = true;
-
-      let queryText = "";
-      if (typeof initialQuery === 'string') {
-        queryText = initialQuery;
-      } else if (typeof initialQuery === 'object') {
-        queryText = initialQuery?.text || initialQuery?.display || initialQuery?.query || "";
-      }
-
-      const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
-      setCurrentPersona(queryPersona);
-
-      if (queryText.trim().length > 0) {
-        handleSend(queryText, queryPersona);
-      }
-
-    } else if (!isOpen) {
-      hasSentInitialRef.current = false;
-    }
-  }, [isOpen, initialQuery]);
-
-  const handleSend = async (text, personaOverride = null) => {
+  const handleSend = useCallback(async (text, personaOverride = null) => {
     if (!text?.trim() || isLoading) return;
 
     const cleanText = typeof text === 'object' ? (text.text || "질문 내용 확인 불가") : text;
@@ -126,7 +103,30 @@ const ChatModal = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isLoading, currentPersona, messages, activeChatId, onUpdateChat, chatHistory]);
+
+  useEffect(() => {
+    if (isOpen && initialQuery && !hasSentInitialRef.current) {
+      hasSentInitialRef.current = true;
+
+      let queryText = "";
+      if (typeof initialQuery === 'string') {
+        queryText = initialQuery;
+      } else if (typeof initialQuery === 'object') {
+        queryText = initialQuery?.text || initialQuery?.display || initialQuery?.query || "";
+      }
+
+      const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
+      setCurrentPersona(queryPersona);
+
+      if (queryText.trim().length > 0) {
+        handleSend(queryText, queryPersona);
+      }
+
+    } else if (!isOpen) {
+      hasSentInitialRef.current = false;
+    }
+  }, [isOpen, initialQuery, handleSend]);
 
   const handleSidebarClick = (id) => { if (onSwitchChat) onSwitchChat(id); };
 

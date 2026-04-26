@@ -14,7 +14,7 @@ const PlaceChatView = ({
       if (chatHistory.length <= 1) {
           messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
-  }, []);
+  }, [chatHistory.length]);
 
   const handleSend = () => {
     if (!inputStr.trim()) return;

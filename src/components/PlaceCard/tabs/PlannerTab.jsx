@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
@@ -37,52 +37,8 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
         return () => clearInterval(interval);
     }, [isLoading, currentMessages]);
 
-    // 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
-    const handleRemoteUpdate = () => {
-        console.log("[PlannerTab] 수동 직권 갱신 버튼 클릭됨 - 툴킷 강제 갱신 요청 발송");
-        setIsRemoteUpdating(true);
-        handleRequestToolkitInfo(location?.name, true);
-    };
-
-    // 🆕 [Phase 8-3] 앱 연동 브릿지 UI 액션
-    const handleAppBridgeClick = () => {
-        alert("🚀 현재 gateo.kr 전용 스마트 플래너 앱을 열심히 준비 중입니다!\n\n앱이 출시되면 저장하신 여정을 모바일에서 곧바로 이어서 계획할 수 있습니다. 빠른 시일 내에 찾아뵙겠습니다.");
-    };
-
-    // 🆕 [Phase 6-2 + Phase 7-1 + Phase 8-3] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
-    const initialDataRequested = useRef(false);
-    useEffect(() => {
-        // essential_guide가 없고, 아직 요청하지 않았을 때만 자동 호출
-        if (isActive && !guideData && !isPlannerLoading && !initialDataRequested.current && location?.name) {
-            console.log("[PlannerTab] 툴킷 데이터 완전 없음 - 자동 데이터 요청 발송");
-            initialDataRequested.current = true;
-            setIsRemoteUpdating(true);
-            handleRequestToolkitInfo(location?.name, false);
-        }
-    }, [isActive, guideData, isPlannerLoading, location?.name]);
-
-    // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋
-    const autoUpdateTriggered = useRef(false);
-    useEffect(() => {
-        initialDataRequested.current = false;
-        autoUpdateTriggered.current = false; // 장소 변경 시 자동 업데이트 플래그도 초기화
-    }, [location?.name]);
-
-    // 🆕 [Phase 8 Fix] 툴킷 탭 재진입 시 및 데이터 갱신 시 스크롤 상단 리셋
-    useEffect(() => {
-        if (isActive && !isLoading && scrollContainerRef.current) {
-            // 로딩이 끝나고 데이터가 표시될 때 스크롤을 강제로 상단(0)으로
-            setTimeout(() => {
-                if (scrollContainerRef.current) {
-                    scrollContainerRef.current.scrollTop = 0;
-                    console.log('[PlannerTab] 스크롤 상단으로 리셋 완료');
-                }
-            }, 150); // DOM 렌더링 완료 대기
-        }
-    }, [isActive, isLoading]);
-
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
-    const handleRequestToolkitInfo = async (placeName, forceUpdate = false) => {
+    const handleRequestToolkitInfo = useCallback(async (placeName, forceUpdate = false) => {
         const placeId = plannerData?.place_id || location?.name;
         if (!placeId) return;
 
@@ -136,7 +92,51 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
         // 전역 캐시에 등록
         pendingToolkitRequests.set(placeId, requestPromise);
         return requestPromise;
+    }, [plannerData, location]);
+
+    // 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
+    const handleRemoteUpdate = () => {
+        console.log("[PlannerTab] 수동 직권 갱신 버튼 클릭됨 - 툴킷 강제 갱신 요청 발송");
+        setIsRemoteUpdating(true);
+        handleRequestToolkitInfo(location?.name, true);
     };
+
+    // 🆕 [Phase 8-3] 앱 연동 브릿지 UI 액션
+    const handleAppBridgeClick = () => {
+        alert("🚀 현재 gateo.kr 전용 스마트 플래너 앱을 열심히 준비 중입니다!\n\n앱이 출시되면 저장하신 여정을 모바일에서 곧바로 이어서 계획할 수 있습니다. 빠른 시일 내에 찾아뵙겠습니다.");
+    };
+
+    // 🆕 [Phase 6-2 + Phase 7-1 + Phase 8-3] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
+    const initialDataRequested = useRef(false);
+    useEffect(() => {
+        // essential_guide가 없고, 아직 요청하지 않았을 때만 자동 호출
+        if (isActive && !guideData && !isPlannerLoading && !initialDataRequested.current && location?.name) {
+            console.log("[PlannerTab] 툴킷 데이터 완전 없음 - 자동 데이터 요청 발송");
+            initialDataRequested.current = true;
+            setIsRemoteUpdating(true);
+            handleRequestToolkitInfo(location?.name, false);
+        }
+    }, [isActive, guideData, isPlannerLoading, location?.name, handleRequestToolkitInfo]);
+
+    // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋
+    const autoUpdateTriggered = useRef(false);
+    useEffect(() => {
+        initialDataRequested.current = false;
+        autoUpdateTriggered.current = false; // 장소 변경 시 자동 업데이트 플래그도 초기화
+    }, [location?.name]);
+
+    // 🆕 [Phase 8 Fix] 툴킷 탭 재진입 시 및 데이터 갱신 시 스크롤 상단 리셋
+    useEffect(() => {
+        if (isActive && !isLoading && scrollContainerRef.current) {
+            // 로딩이 끝나고 데이터가 표시될 때 스크롤을 강제로 상단(0)으로
+            setTimeout(() => {
+                if (scrollContainerRef.current) {
+                    scrollContainerRef.current.scrollTop = 0;
+                    console.log('[PlannerTab] 스크롤 상단으로 리셋 완료');
+                }
+            }, 150); // DOM 렌더링 완료 대기
+        }
+    }, [isActive, isLoading]);
 
     const formatDate = (isoString) => {
         if (!isoString) return '';

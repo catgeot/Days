@@ -1,8 +1,10 @@
 // 🚨 [New] Dashboard의 뇌(Logic)만 따로 떼어낸 Custom Hook입니다.
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '../../../shared/api/supabase';
 
 export const useDashboardData = () => {
+  const location = useLocation();
   const today = new Date();
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState([]);
@@ -15,14 +17,14 @@ export const useDashboardData = () => {
   const [user, setUser] = useState(null);
 
   // 데이터 로드
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
 
     // 로그인 상태라도 url 파라미터나 상태로 제어할 수 있게 됨
     // 여기서는 기본적으로 user가 없거나 URL에 특정 플래그가 있으면 isPublicMode를 true로 설정
-    const searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(location.search);
     const isPublicParam = searchParams.get('tab') === 'public';
 
     // 사용자가 로그인했지만 탭이 public이거나, 아예 로그인하지 않은 경우 publicMode
@@ -43,13 +45,14 @@ export const useDashboardData = () => {
     if (!error && data) {
       setReports(data);
       const dataYears = data.map(r => new Date(r.date).getFullYear());
-      const baseYears = [today.getFullYear(), today.getFullYear() - 1];
+      const now = new Date();
+      const baseYears = [now.getFullYear(), now.getFullYear() - 1];
       setAvailableYears([...new Set([...dataYears, ...baseYears])].sort((a, b) => b - a));
     }
     setLoading(false);
-  };
+  }, [location.search]);
 
-  useEffect(() => { loadData(); }, [window.location.search]);
+  useEffect(() => { void loadData(); }, [loadData]);
 
   // 캘린더 및 통계 계산
   const displayCount = reports.filter(r =>

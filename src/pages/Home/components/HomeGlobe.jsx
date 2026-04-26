@@ -178,6 +178,7 @@ const HomeGlobe = React.memo(forwardRef(({
       globeEl.current.controls().autoRotateSpeed = GLOBE_CAMERA_CONFIG.AUTO_ROTATE_SPEED;
       globeEl.current.pointOfView({ altitude: GLOBE_CAMERA_CONFIG.DEFAULT_ALT });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only default POV; pauseRender/zen use separate effects
   }, []);
 
   const handleGlobeClickInternal = ({ lat, lng }) => {

@@ -90,8 +90,9 @@ const YouTubePlayerView = forwardRef(({
     queueMicrotask(() => {
       setIsPlaying(false);
       setIsPaused(true);
-      if (videoId && videoList.length > 0) {
-        const targetIndex = videoList.findIndex(v => v.id === videoId);
+      const list = videos || [];
+      if (videoId && list.length > 0) {
+        const targetIndex = list.findIndex(v => v.id === videoId);
         setCurrentVideoIndex(targetIndex >= 0 ? targetIndex : 0);
       } else {
         setCurrentVideoIndex(0);
