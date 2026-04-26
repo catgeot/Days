@@ -12,7 +12,7 @@ import { formatUrlName } from '../lib/formatUrlName';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
-import { PERSONA_TYPES, getSystemPrompt } from '../lib/prompts';
+import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 
 // Haversine 공식을 이용한 두 좌표 간의 거리 계산 (단위: km)
@@ -46,7 +46,7 @@ export function useHomeHandlers({
   setIsChatOpen,
   setInitialQuery,
   setActiveChatId,
-  saveNewTrip,
+  setChatDraft,
   setSavedTrips,
   fetchData: _fetchData,
   toggleBookmark
@@ -229,38 +229,29 @@ export function useHomeHandlers({
 
     // 🚨 3. 찾았거나 부활시켰다면 해당 방으로 입장
     if (targetTrip) {
+      setChatDraft(null);
       setActiveChatId(targetTrip.id);
       setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
       setIsChatOpen(true);
       return;
     }
 
-    // 🚨 4. DB에도 진짜 없다면 새롭게 생성 (Insert)
-    const systemPrompt = getSystemPrompt(persona, locationName);
+    // 4. DB에 행이 없으면: 빈 saved_trips 를 만들지 않고, 첫 메시지 전송 시 insert (setChatDraft + 모달만 오픈)
     const isSameLocation = selectedLocation && (selectedLocation.name === locationName || selectedLocation.display_name === locationName);
     const targetLat = isSameLocation ? (selectedLocation.lat || 0) : 0;
     const targetLng = isSameLocation ? (selectedLocation.lng || 0) : 0;
 
-    const newTrip = {
+    setChatDraft({
       destination: locationName,
       lat: targetLat,
       lng: targetLng,
-      date: new Date().toLocaleDateString(),
-      prompt_summary: systemPrompt,
-      messages: [],
-      is_bookmarked: false,
-      is_hidden: false,
       persona,
       category: category
-    };
-
-    const created = await saveNewTrip(newTrip);
-    if (created) {
-      setActiveChatId(created.id);
-      setInitialQuery({ text: initPayload?.text || "", persona });
-      setIsChatOpen(true);
-    }
-  }, [globeRef, savedTrips, selectedLocation, category, saveNewTrip, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips]);
+    });
+    setActiveChatId(null);
+    setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+    setIsChatOpen(true);
+  }, [globeRef, savedTrips, selectedLocation, category, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft]);
 
   const handleToggleBookmark = useCallback(async (loc) => {
     if (!loc || !loc.name || isTogglingRef.current) return;

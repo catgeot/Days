@@ -20,7 +20,16 @@
 
 - **`react-hooks/exhaustive-deps`**: 12건만 잔여였던 항목을 `useCallback`/`useRef` 안정화, `useDashboardData`는 `useLocation`+`loadData` `useCallback`, `Home` `/place/` 동기·`HomeGlobe` 마운트 이펙트는 **의도적** deps이므로 `eslint-disable-next-line` + 한 줄 근거. `npm run lint` **warning 0** (동작·UX 의도적 비변경).
 
+### 추가 (같은 날 · Home AI 채팅 / `saved_trips` 정합)
+
+- **문제**: `handleStartChat`이 destination당 **빈 `messages: []` row를 선 insert**해, 방문·모달 오픈만으로도 채팅 목록·지구본 말풍선이 쌓임.
+- **해결**: DB에 해당 destination이 없을 때는 `setChatDraft`만 두고 모달 오픈; **첫 사용자 메시지**에서 `saveNewTrip`(첫 메시지 포함) + `setActiveChatId`. `ChatModal`에 `onCreateTripOnFirstUserMessage` 연동.
+- **표시**: `tripChatUtils.js`의 `tripHasPersistedDialogue`로 사이드바·`HomeGlobe` 말풍선 필터(실제 user/model 텍스트 있는 trip만).
+- **기타**: `PlaceCardSummary` 요약 문구에서 지명 뒤 **하드코딩된「울루루」** 제거 → `{location?.name}의 숨겨진 매력…`.
+- **빌드**: `npm run build` 통과.
+
 ## 커밋
 
 - `chore(lint): ESLint error 0, scripts/node overrides, PlaceCard/Home fixes` — 이 일지·`.ai-context` 갱신 포함. (해시는 `git log -1 --oneline`로 확인)
 - `chore(lint): exhaustive-deps warning 0, context log` — PlaceCard/Home/DailyReport 훅 정리, `.ai-context`·`2026-04-26-project-log` 반영. (이후 `git log -1 --oneline`으로 확인)
+- `fix(home): defer saved_trips until first chat message` — 채팅 목록·지구본 말풍선은 저장된 대화만; `.ai-context`·일지 갱신. (`git log -1 --oneline`으로 확인)

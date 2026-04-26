@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Trash2 } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
+import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 
 const ChatModal = ({
   isOpen,
   onClose,
   initialQuery,
   chatHistory = [],
+  chatDraft = null,
+  onCreateTripOnFirstUserMessage,
   onUpdateChat,
   activeChatId,
   onSwitchChat,
@@ -58,14 +61,23 @@ const ChatModal = ({
   }, [messages, isLoading]);
 
   useEffect(() => {
-    if (isOpen && activeChatId) {
+    if (!isOpen) {
+      setMessages([]);
+      return;
+    }
+    if (activeChatId) {
       const targetTrip = chatHistory.find(t => t.id === activeChatId);
       if (targetTrip) {
         setMessages(targetTrip.messages || []);
         if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
       }
+      return;
     }
-  }, [activeChatId, isOpen, chatHistory]);
+    if (chatDraft) {
+      setMessages([]);
+      if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
+    }
+  }, [activeChatId, isOpen, chatHistory, chatDraft]);
 
   const handleSend = useCallback(async (text, personaOverride = null) => {
     if (!text?.trim() || isLoading) return;
@@ -73,37 +85,59 @@ const ChatModal = ({
     const cleanText = typeof text === 'object' ? (text.text || "질문 내용 확인 불가") : text;
     const personaToUse = personaOverride || currentPersona;
 
+    if (!activeChatId && !chatDraft) {
+      return;
+    }
+
     const userMsg = { role: 'user', text: cleanText };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
-    if (activeChatId) onUpdateChat(activeChatId, newMessages);
+    let effectiveChatId = activeChatId;
+    if (!effectiveChatId) {
+      const created = await onCreateTripOnFirstUserMessage({
+        destination: chatDraft.destination,
+        lat: chatDraft.lat,
+        lng: chatDraft.lng,
+        persona: personaToUse,
+        firstUserText: cleanText
+      });
+      if (!created?.id) {
+        setIsLoading(false);
+        setMessages((prev) => (prev.length > 0 ? prev.slice(0, -1) : []));
+        return;
+      }
+      effectiveChatId = created.id;
+    }
+
+    onUpdateChat(effectiveChatId, newMessages);
 
     try {
-      const systemInstruction = getSystemPrompt(personaToUse, activeChatId ? chatHistory.find(t => t.id === activeChatId)?.destination : "");
+      const destForPrompt =
+        chatHistory.find(t => t.id === effectiveChatId)?.destination || chatDraft?.destination || "";
+      const systemInstruction = getSystemPrompt(personaToUse, destForPrompt);
 
       const aiReply = await apiClient.fetchProxyGemini(
-        null, // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
-        [], // history
+        null,
+        [],
         systemInstruction,
         cleanText,
-        [], // images
-        "gemini-2.5-flash" // modelId
+        [],
+        "gemini-2.5-flash"
       );
 
       const finalMessages = [...newMessages, { role: 'model', text: aiReply }];
       setMessages(finalMessages);
 
-      if (activeChatId) onUpdateChat(activeChatId, finalMessages);
-
+      onUpdateChat(effectiveChatId, finalMessages);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'error', text: "Error: " + error.message }]);
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, currentPersona, messages, activeChatId, onUpdateChat, chatHistory]);
+  }, [isLoading, currentPersona, messages, activeChatId, chatDraft, onUpdateChat, onCreateTripOnFirstUserMessage, chatHistory]);
 
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
@@ -147,7 +181,9 @@ const ChatModal = ({
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-            {chatHistory.filter(item => !item.is_hidden).map((item) => (
+            {chatHistory
+              .filter((item) => !item.is_hidden && tripHasPersistedDialogue(item))
+              .map((item) => (
               <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? 'bg-gray-800 border-blue-500/50' : 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800'}`}>
                 <div className="flex justify-between items-start mb-1">
                   <span className="font-bold text-gray-300 text-sm truncate max-w-[140px]">{item.destination}</span>

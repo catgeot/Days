@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Outlet, useNavigate, useLocation, matchPath, Link } from 'react-router-dom';
 
 import HomeGlobe from './components/HomeGlobe';
@@ -18,6 +18,7 @@ import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName } from './lib/formatUrlName';
+import { getSystemPrompt } from './lib/prompts';
 
 function Home() {
   const globeRef = useRef();
@@ -37,6 +38,7 @@ function Home() {
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatDraft, setChatDraft] = useState(null);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
 
   const setIsPlaceCardOpen = (isOpen) => {
@@ -77,9 +79,31 @@ function Home() {
     globeRef, user, category, isPinVisible, selectedLocation, savedTrips,
     setSelectedLocation, addScoutPin, moveToLocation, processSearchKeywords,
     setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, setDraftInput,
-    setIsChatOpen, setInitialQuery, setActiveChatId, saveNewTrip, setSavedTrips, fetchData,
+    setIsChatOpen, setInitialQuery, setActiveChatId, setChatDraft, setSavedTrips, fetchData,
     toggleBookmark
   });
+
+  const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
+    const systemPrompt = getSystemPrompt(persona, destination);
+    const newTrip = {
+      destination,
+      lat: lat ?? 0,
+      lng: lng ?? 0,
+      date: new Date().toLocaleDateString(),
+      prompt_summary: systemPrompt,
+      messages: [{ role: 'user', text: firstUserText }],
+      is_bookmarked: false,
+      is_hidden: false,
+      persona,
+      category: category
+    };
+    const created = await saveNewTrip(newTrip);
+    if (created) {
+      setChatDraft(null);
+      setActiveChatId(created.id);
+    }
+    return created;
+  }, [category, saveNewTrip]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(routeLocation.search);
@@ -385,12 +409,24 @@ function Home() {
         }} />
 
         <ChatModal
-          isOpen={isChatOpen} onClose={() => { setIsChatOpen(false); globeRef.current?.resumeRotation(); }}
+          isOpen={isChatOpen}
+          onClose={() => {
+            setIsChatOpen(false);
+            setChatDraft(null);
+            setActiveChatId(null);
+            setInitialQuery(null);
+            globeRef.current?.resumeRotation();
+          }}
           initialQuery={initialQuery}
           chatHistory={savedTrips}
+          chatDraft={chatDraft}
+          onCreateTripOnFirstUserMessage={createTripOnFirstUserMessage}
           onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark}
           activeChatId={activeChatId}
-          onSwitchChat={setActiveChatId}
+          onSwitchChat={(id) => {
+            setChatDraft(null);
+            setActiveChatId(id);
+          }}
           onDeleteChat={deleteTrip}
         />
 

@@ -69,7 +69,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
               <p className={`text-xs text-gray-300 leading-relaxed font-light transition-all duration-300 ${
                 isTickerExpanded ? 'line-clamp-2' : 'line-clamp-3'
               }`}>
-                {location?.name}울루루의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.
+                {location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.
               </p>
             </div>
           )}

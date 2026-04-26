@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers';
+import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,
@@ -203,13 +204,18 @@ const HomeGlobe = React.memo(forwardRef(({
     let chatCount = 0;
     savedTrips.forEach(trip => {
         const isBookmarked = trip.is_bookmarked;
-        if (!isBookmarked) { if (chatCount >= 5) return; chatCount++; }
+        const hasMessageChat = tripHasPersistedDialogue(trip);
+        if (!isBookmarked && !hasMessageChat) return;
+        if (hasMessageChat && !isBookmarked) {
+          if (chatCount >= 5) return;
+          chatCount++;
+        }
         const idx = findMatchIndex(trip.lat, trip.lng);
         const fixedName = trip.name || trip.destination || "Saved Place";
 
         if (idx !== -1) {
             if (isBookmarked) result[idx].isBookmarked = true;
-            else result[idx].hasChat = true;
+            if (hasMessageChat) result[idx].hasChat = true;
             result[idx].tripId = trip.id;
         } else {
             result.push({
@@ -218,7 +224,7 @@ const HomeGlobe = React.memo(forwardRef(({
                 type: 'temp-base',
                 priority: isBookmarked ? 4 : 3,
                 isBookmarked: isBookmarked,
-                hasChat: !isBookmarked
+                hasChat: hasMessageChat
             });
         }
     });
