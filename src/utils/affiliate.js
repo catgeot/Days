@@ -2,13 +2,29 @@
 
 import { supabase } from '../shared/api/supabase';
 
+// Klook direct affiliate parameters (managed in one place)
+export const KLOOK_AID = '118544';
+export const KLOOK_DEFAULT_AD_ID = '1256120';
+export const KLOOK_RENTAL_AD_ID = '1256121';
+// true면 /ko/car-rentals 경로, false면 /car-rentals 경로 사용
+export const USE_KLOOK_LOCALE_PATH = true;
+export const KLOOK_HK_RENTAL_AD_ID = '1265776';
+export const KLOOK_MACAU_RENTAL_AD_ID = '1265778';
+export const KLOOK_TAIPEI_RENTAL_AD_ID = '1265784';
+export const KLOOK_IRAN_RENTAL_AD_ID = '1265785';
+export const KLOOK_TOKYO_RENTAL_AD_ID = '1256101';
+export const KLOOK_OSAKA_RENTAL_AD_ID = '1265791';
+export const KLOOK_KYOTO_RENTAL_AD_ID = '1265792';
+export const KLOOK_HOKKAIDO_RENTAL_AD_ID = '1265795';
+export const KLOOK_KYUSHU_RENTAL_AD_ID = '1265796';
+
 /**
  * Travelpayouts 제휴 링크 생성기 (Short Link 방식)
  * 대시보드에서 직접 생성한 단축 링크(`tp.st`)를 기반으로,
  * 클릭 발생 위치 등을 추적하기 위한 파라미터(`sub1`, `sub2`)만 덧붙여 반환합니다.
  *
  * @param {string} originalUrl - 원래 이동하고자 하는 URL (미승인 제휴사 대비 폴백 용도)
- * @param {string} provider - 제휴사 식별자 (예: 'agoda', 'klook')
+ * @param {string} provider - 제휴사 식별자 (예: 'agoda', 'airalo')
  * @param {object} options - 추가 추적 파라미터 { campaign, locationName }
  * @returns {string} - 제휴 코드가 포함된 최종 단축 URL 또는 원본 URL
  */
@@ -19,12 +35,12 @@ export const getAffiliateLink = (originalUrl, provider, options = {}) => {
     agoda: '',
     booking: '',
     tripcom: '',
-    klook: 'https://klook.tp.st/aXUEEWaI',
     '12go': '',
     getyourguide: '',
     tiqets: 'https://tiqets.tp.st/U8nE2ydu',
     skyscanner: '',
-    airalo: 'https://airalo.tp.st/xh8K1qLE'
+    airalo: 'https://airalo.tp.st/kx3SEbJQ',
+    holafly: 'https://holafly.sjv.io/KBq1zv'
   };
 
   const shortUrl = shortLinks[provider];
@@ -55,6 +71,92 @@ export const getAffiliateLink = (originalUrl, provider, options = {}) => {
 
   // 승인되지 않은 제휴사이거나 링크가 없으면 원본 URL을 그대로 반환 (사용자 불편 방지)
   return originalUrl;
+};
+
+/**
+ * Klook 직접 제휴 딥링크 생성기
+ *
+ * @param {string} targetUrl - 클룩 내 최종 이동 URL
+ * @param {string} adId - 클룩 광고 ID (기본값: KLOOK_DEFAULT_AD_ID)
+ * @returns {string}
+ */
+export const getKlookAffiliateUrl = (targetUrl, adId = KLOOK_DEFAULT_AD_ID) => {
+  if (!targetUrl) return '';
+  return `https://affiliate.klook.com/redirect?aid=${KLOOK_AID}&aff_adid=${adId}&k_site=${encodeURIComponent(targetUrl)}`;
+};
+
+/**
+ * 도시별 클룩 렌터카 딥링크 생성기
+ * - 홍콩/마카오는 사용자 제공 adid와 city_id를 사용
+ * - 그 외 지역은 글로벌 렌터카 페이지로 폴백
+ *
+ * @param {string} locationName - 장소명(한글/영문)
+ * @returns {string}
+ */
+export const getKlookRentalUrlByLocation = (locationName) => {
+  const normalized = (locationName || '').toLowerCase();
+  const rentalPath = USE_KLOOK_LOCALE_PATH ? 'ko/car-rentals' : 'car-rentals';
+
+  const cityRentalConfigs = [
+    {
+      keywords: ['홍콩', 'hong kong'],
+      cityId: '2',
+      adId: KLOOK_HK_RENTAL_AD_ID
+    },
+    {
+      keywords: ['마카오', 'macau'],
+      cityId: '3',
+      adId: KLOOK_MACAU_RENTAL_AD_ID
+    },
+    {
+      keywords: ['타이베이', 'taipei'],
+      cityId: '19',
+      adId: KLOOK_TAIPEI_RENTAL_AD_ID
+    },
+    {
+      keywords: ['이란', 'yilan'],
+      cityId: '42',
+      adId: KLOOK_IRAN_RENTAL_AD_ID
+    },
+    {
+      keywords: ['도쿄', 'tokyo'],
+      cityId: '28',
+      adId: KLOOK_TOKYO_RENTAL_AD_ID
+    },
+    {
+      keywords: ['오사카', 'osaka'],
+      cityId: '29',
+      adId: KLOOK_OSAKA_RENTAL_AD_ID
+    },
+    {
+      keywords: ['교토', 'kyoto'],
+      cityId: '30',
+      adId: KLOOK_KYOTO_RENTAL_AD_ID
+    },
+    {
+      keywords: ['홋카이도', '훗카이도', '북해도', 'hokkaido'],
+      cityId: '32',
+      adId: KLOOK_HOKKAIDO_RENTAL_AD_ID
+    },
+    {
+      keywords: ['규슈', '후쿠오카', '구마모토', 'kyushu', 'fukuoka', 'kumamoto'],
+      cityId: '10000006',
+      adId: KLOOK_KYUSHU_RENTAL_AD_ID
+    }
+  ];
+
+  const matched = cityRentalConfigs.find((config) =>
+    config.keywords.some((keyword) => normalized.includes(keyword))
+  );
+
+  if (matched) {
+    return getKlookAffiliateUrl(
+      `https://www.klook.com/${rentalPath}/?city_id=${matched.cityId}`,
+      matched.adId
+    );
+  }
+
+  return getKlookAffiliateUrl(`https://www.klook.com/${rentalPath}/`, KLOOK_RENTAL_AD_ID);
 };
 
 /**

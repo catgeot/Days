@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtTimelineAction from './MrtTimelineAction';
+import { getKlookAffiliateUrl } from '../../../../../utils/affiliate';
 
 const PreTravelChecklist = ({ items, locationName }) => {
     // 모든 여행지 동일하게 마이 리얼 트립 검색
@@ -92,7 +93,7 @@ const PreTravelChecklist = ({ items, locationName }) => {
 
                 {/* 3. 공항 픽업 예약 */}
                 <a
-                    href={`https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent('https://www.klook.com/ko/airport-transfers/')}`}
+                    href={getKlookAffiliateUrl('https://www.klook.com/ko/airport-transfers/')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-white border-2 border-amber-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full block"

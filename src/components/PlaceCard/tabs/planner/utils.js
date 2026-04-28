@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
-import { getAffiliateLink } from '../../../../utils/affiliate';
+import { getAffiliateLink, getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../utils/affiliate';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
@@ -120,31 +120,21 @@ export const getMultiLinks = ({ type, data, location }) => {
                 text: 'Airalo (eSIM)',
                 colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
             });
-            const klookWifiTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20유심`;
-            const klookWifiDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookWifiTargetUrl)}`;
 
             links.push({
-                // 클룩 다이렉트 어필리에이트 동적 딥링크
-                url: klookWifiDeepLink,
-                text: '클룩 유심/와이파이',
-                colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
+                // Holafly eSIM 연결 (shortLink 미등록 시 원본 URL 폴백)
+                url: getAffiliateLink('https://esim.holafly.com/ko/', 'holafly', { campaign: 'toolkit', locationName: location?.name }),
+                text: 'Holafly (eSIM)',
+                colorClass: 'bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200'
             });
             break;
         case 'transport':
             // 1. 클룩 교통/레일 패스
             const klookPassTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20교통%20패스`;
             links.push({
-                url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookPassTargetUrl)}`,
+                url: getKlookAffiliateUrl(klookPassTargetUrl),
                 text: `${location?.name || '현지'} 교통 패스`,
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
-            });
-
-            // 2. 클룩 렌터카 검색
-            const klookCarTargetUrl = `https://www.klook.com/ko/car-rentals/`;
-            links.push({
-                url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookCarTargetUrl)}`,
-                text: '글로벌 렌터카',
-                colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
             // 4. 오토바이/스쿠터 대여 (BikesBooking 어필리에이트)
@@ -165,10 +155,9 @@ export const getMultiLinks = ({ type, data, location }) => {
             break;
         case 'airport_transfer':
             const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
-            const klookTransferDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTransferTargetUrl)}`;
+            const klookTransferDeepLink = getKlookAffiliateUrl(klookTransferTargetUrl);
 
-            const klookCarRentalTargetUrl = `https://www.klook.com/ko/car-rentals/`;
-            const klookCarRentalDeepLink = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookCarRentalTargetUrl)}`;
+            const klookCarRentalDeepLink = getKlookRentalUrlByLocation(location?.name);
 
             links.push({
                 url: klookTransferDeepLink,
@@ -195,7 +184,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             // 1. 투어 및 액티비티 검색 (클룩 - 어트랙션/패스 강점)
             const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20어트랙션`;
             links.push({
-                url: `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookTourTargetUrl)}`,
+                url: getKlookAffiliateUrl(klookTourTargetUrl),
                 text: '어트랙션/패스 (Klook)',
                 colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
             });
@@ -226,7 +215,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             // 타베로그나 TheFork에 매핑되지 않은 기타 지역은 범용적으로 클룩 다이닝 검색 딥링크 제공
             if (!isDiningMatched) {
                 const klookDiningTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20레스토랑`;
-                diningUrl = `https://affiliate.klook.com/redirect?aid=118544&aff_adid=1256120&k_site=${encodeURIComponent(klookDiningTargetUrl)}`;
+                diningUrl = getKlookAffiliateUrl(klookDiningTargetUrl);
                 diningText = 'Klook 레스토랑 검색';
             }
 

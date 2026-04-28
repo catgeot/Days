@@ -280,7 +280,7 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <PreTravelChecklist items={guideData?.categories?.pre_travel || []} locationName={location?.name} />
-                        <JourneyTimeline timeline={guideData?.journey_timeline || []} />
+                        <JourneyTimeline timeline={guideData?.journey_timeline || []} locationName={location?.name} />
                     </div>
                 )}
 

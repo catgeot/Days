@@ -6,6 +6,7 @@ import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtDynamicLink from './MrtDynamicLink';
 import HotelWidget from './HotelWidget';
 import DirectFerriesWidget from './DirectFerriesWidget';
+import KlookCarBannerWidget from './KlookCarBannerWidget';
 import { THEME_COLORS } from '../constants';
 import { cleanAdviceText, getAdviceText, getMultiLinks } from '../utils';
 
@@ -113,6 +114,12 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
             {/* 🆕 [Phase 8-8] Direct Ferries 페리 예약 위젯 (2026.04.21) */}
             {type === 'ferry_booking' && (
                 <DirectFerriesWidget location={location} />
+            )}
+            {type === 'transport' && (
+                <KlookCarBannerWidget />
+            )}
+            {type === 'airport_transfer' && (
+                <KlookCarBannerWidget />
             )}
         </div>
     );
