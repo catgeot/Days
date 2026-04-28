@@ -1,25 +1,68 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 const KLOOK_WIDGET_SCRIPT_SRC = 'https://affiliate.klook.com/widget/fetch-iframe-init.js';
+const KLOOK_IFRAME_INIT_SCRIPT_KEYWORD = '/widget/iframe/iframe-init-';
 
-const ensureKlookWidgetScript = () => {
-    if (document.querySelector(`script[src="${KLOOK_WIDGET_SCRIPT_SRC}"]`)) {
-        return;
-    }
+const resetKlookWidgetScripts = () => {
+    const scripts = Array.from(document.querySelectorAll('script[src]'));
+    scripts.forEach((scriptEl) => {
+        const src = scriptEl.getAttribute('src') || '';
+        if (src === KLOOK_WIDGET_SCRIPT_SRC || src.includes(KLOOK_IFRAME_INIT_SCRIPT_KEYWORD)) {
+            scriptEl.remove();
+        }
+    });
+};
 
+const loadKlookWidgetScript = () => {
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.async = true;
     script.src = KLOOK_WIDGET_SCRIPT_SRC;
-    document.body.appendChild(script);
+    return new Promise((resolve, reject) => {
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to load Klook widget script'));
+        document.body.appendChild(script);
+    });
 };
 
 const KlookCarBannerWidget = ({ width = 728, height = 90, className = 'mt-3' }) => {
     const containerRef = useRef(null);
+    const hasRetriedRef = useRef(false);
     const [scale, setScale] = useState(1);
 
     useEffect(() => {
-        ensureKlookWidgetScript();
+        let disposed = false;
+
+        const mountWidget = async () => {
+            resetKlookWidgetScripts();
+            try {
+                await loadKlookWidgetScript();
+            } catch (error) {
+                console.error('[KlookCarBannerWidget] Script load failed:', error);
+                return;
+            }
+
+            // 첫 진입 시 iframe이 늦게 생성되는 케이스를 1회 보정
+            setTimeout(async () => {
+                if (disposed || !containerRef.current || hasRetriedRef.current) return;
+                const hasRenderedIframe = !!containerRef.current.querySelector('iframe');
+                if (hasRenderedIframe) return;
+
+                hasRetriedRef.current = true;
+                resetKlookWidgetScripts();
+                try {
+                    await loadKlookWidgetScript();
+                } catch (error) {
+                    console.error('[KlookCarBannerWidget] Retry load failed:', error);
+                }
+            }, 1200);
+        };
+
+        mountWidget();
+
+        return () => {
+            disposed = true;
+        };
     }, []);
 
     useEffect(() => {
