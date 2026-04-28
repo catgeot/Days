@@ -6,6 +6,8 @@ import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constan
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
+import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
+import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -314,6 +316,10 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
                             <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="default" />
                         )}
                         <ToolkitCard icon={Wifi} title="유심 및 와이파이" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="default" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AiraloBannerWidget />
+                            <HolaflyBannerWidget />
+                        </div>
                     </div>
                 </div>
 

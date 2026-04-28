@@ -14,3 +14,10 @@
 
 - 모든 수정 파일 lint 확인 완료(`No linter errors found`).
 - Klook이 Travelpayouts에서 분리된 뒤 실제 운영 URL 파라미터 유지 상태는 추가 모니터링 필요.
+
+## 추가 반영 (야간 UI 조정)
+
+- 플래너 `현지 도착 및 이동` 섹션에 Airalo/Holafly 이미지 배너 컴포넌트(`AiraloBannerWidget`, `HolaflyBannerWidget`)를 추가하고, 배너 2종을 `유심 및 와이파이` 카드 **하단**으로 재배치.
+- Airalo 배너는 Airalo Press Kit 2페이지 이미지를 추출해 배경으로 적용(`public/airalo-page2.png`), Holafly는 제공받은 리더보드 이미지를 정적 자산으로 반영(`public/holafly-asia-banner.png`).
+- 배너 카피는 한국어 기준으로 정리하고 모바일 가독성을 위해 `break-keep`을 적용, Airalo 브랜드 칩 및 `200+ 지원 지역` 배지 대비를 소폭 개선.
+- 렌터카 배너 중복 노출을 정리해 `ToolkitCard`에서 `airport_transfer` 카드에만 `KlookCarBannerWidget`을 유지하고 `transport` 노출은 제거.

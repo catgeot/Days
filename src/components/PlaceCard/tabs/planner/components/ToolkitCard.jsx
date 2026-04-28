@@ -115,9 +115,6 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
             {type === 'ferry_booking' && (
                 <DirectFerriesWidget location={location} />
             )}
-            {type === 'transport' && (
-                <KlookCarBannerWidget />
-            )}
             {type === 'airport_transfer' && (
                 <KlookCarBannerWidget />
             )}

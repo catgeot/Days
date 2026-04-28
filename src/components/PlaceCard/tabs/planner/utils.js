@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
-import { getAffiliateLink, getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../utils/affiliate';
+import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../utils/affiliate';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
@@ -114,19 +114,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             // 스카이스캐너, 트립닷컴 제거 (하단의 WhiteLabelWidget 통합 검색으로 완벽히 대체됨)
             break;
         case 'connectivity':
-            links.push({
-                // Airalo 메인 연결
-                url: getAffiliateLink(`https://www.airalo.com/ko/`, 'airalo', { campaign: 'toolkit', locationName: location?.name }),
-                text: 'Airalo (eSIM)',
-                colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
-            });
-
-            links.push({
-                // Holafly eSIM 연결 (shortLink 미등록 시 원본 URL 폴백)
-                url: getAffiliateLink('https://esim.holafly.com/ko/', 'holafly', { campaign: 'toolkit', locationName: location?.name }),
-                text: 'Holafly (eSIM)',
-                colorClass: 'bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200'
-            });
+            // 유심 카드의 제휴 버튼은 별도 Airalo 배너로 대체
             break;
         case 'transport':
             // 1. 클룩 교통/레일 패스
