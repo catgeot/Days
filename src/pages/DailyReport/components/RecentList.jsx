@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle } from 'lucide-react';
+import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const RecentList = ({ reports, loading, isPublicMode }) => {
@@ -119,7 +119,13 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                     </p>
                   )}
 
-                  <div className={`flex items-center gap-4 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
+                  <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
+                    {isPublicMode && report.author_label && (
+                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-500" title="작성자">
+                        <User size={12} className="text-gray-400 shrink-0" />
+                        <span className="truncate">{report.author_label}</span>
+                      </span>
+                    )}
                     <span className="flex items-center gap-1.5 truncate max-w-[150px]">
                       <MapPin size={12} className="text-gray-400" /> {report.location}
                     </span>

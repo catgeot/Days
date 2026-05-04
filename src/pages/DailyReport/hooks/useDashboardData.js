@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../../../shared/api/supabase';
+import { attachAuthorLabels } from '../utils/reportAuthor';
 
 export const useDashboardData = () => {
   const location = useLocation();
@@ -42,9 +43,14 @@ export const useDashboardData = () => {
 
     const { data, error } = await query.order('date', { ascending: false });
 
-    if (!error && data) {
-      setReports(data);
-      const dataYears = data.map(r => new Date(r.date).getFullYear());
+    let rows = data || [];
+    if (!error && shouldBePublic && rows.length) {
+      rows = await attachAuthorLabels(rows);
+    }
+
+    if (!error && rows) {
+      setReports(rows);
+      const dataYears = rows.map(r => new Date(r.date).getFullYear());
       const now = new Date();
       const baseYears = [now.getFullYear(), now.getFullYear() - 1];
       setAvailableYears([...new Set([...dataYears, ...baseYears])].sort((a, b) => b - a));

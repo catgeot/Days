@@ -400,7 +400,10 @@ const ReviewsTab = ({ location, setMediaMode }) => {
                   )}
                   <div className="p-3 flex flex-col gap-1">
                     <h5 className="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-emerald-600 transition-colors">{blog.title}</h5>
-                    <p className="text-[10px] text-gray-400 font-medium truncate">{blog.date} · {blog.location}</p>
+                    <p className="text-[10px] text-gray-400 font-medium truncate">
+                      {blog.author_label && <span className="text-gray-500">{blog.author_label} · </span>}
+                      {blog.date} · {blog.location}
+                    </p>
                   </div>
                 </div>
               ))}

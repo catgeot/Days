@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
+import { attachAuthorLabels } from '../../../pages/DailyReport/utils/reportAuthor';
 
 export const useRelatedBlogs = (locationName) => {
   const [blogs, setBlogs] = useState([]);
@@ -33,7 +34,8 @@ export const useRelatedBlogs = (locationName) => {
           .limit(5);
 
         if (error) throw error;
-        setBlogs(data || []);
+        const rows = await attachAuthorLabels(data || []);
+        setBlogs(rows);
       } catch (error) {
         console.error('Error fetching related blogs:', error);
         setBlogs([]);

@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { PenNameProvider } from '../context/PenNameContext';
 
 const DailyLayout = () => {
   const navigate = useNavigate();
@@ -54,11 +55,13 @@ const DailyLayout = () => {
         )}
       </div>
 
-      <Sidebar />
+      <PenNameProvider user={user}>
+        <Sidebar user={user} />
 
-      <div className="flex-1 h-full overflow-y-auto relative">
-        <Outlet />
-      </div>
+        <div className="flex-1 h-full overflow-y-auto relative">
+          <Outlet />
+        </div>
+      </PenNameProvider>
 
     </div>
   );

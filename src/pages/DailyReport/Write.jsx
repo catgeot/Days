@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2, Calendar } from 'lucide-react';
+import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2, Calendar, UserRoundPen } from 'lucide-react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useLogbookMedia } from './hooks/useLogbookMedia';
 import { useLogbookAI } from './hooks/useLogbookAI';
+import { usePenNameContext } from './context/PenNameContext';
 
 const Write = () => {
   const { id } = useParams();
@@ -31,6 +32,8 @@ const Write = () => {
   const [recentLocations, setRecentLocations] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [aiLoadingMsg, setAiLoadingMsg] = useState('');
+  const { displayName: penName, setDisplayName: setPenName, loading: penLoading, saving: penSaving, save: savePenName, maxLen: penMaxLen, user: penUser } = usePenNameContext();
+  const [penSaveHint, setPenSaveHint] = useState('');
 
   const {
     imageFiles, previewUrls, existingImages, setExistingImages,
@@ -90,6 +93,16 @@ const Write = () => {
       return () => clearInterval(timer);
     }
   }, [isAILoading]);
+
+  const handlePenNameSave = async () => {
+    const { ok } = await savePenName();
+    if (ok) {
+      setPenSaveHint('필명이 저장되었습니다.');
+      setTimeout(() => setPenSaveHint(''), 2500);
+      return;
+    }
+    alert('필명 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  };
 
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) return alert("위치 정보를 지원하지 않습니다.");
@@ -213,6 +226,39 @@ const Write = () => {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-2xl p-5 hover:border-gray-300 transition-all focus-within:border-blue-400 focus-within:bg-blue-50/50">
+            <div className="flex items-center gap-2 mb-3">
+              <UserRoundPen size={14} className="text-blue-500 shrink-0" />
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                공개 피드에 표시할 이름 (필명)
+              </label>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+              <input
+                type="text"
+                value={penName}
+                onChange={(e) => setPenName(e.target.value.slice(0, penMaxLen))}
+                disabled={penLoading}
+                placeholder={penUser?.email ? `${penUser.email.split('@')[0]} (비우면 계정 기준 표시)` : '닉네임'}
+                className="flex-1 min-w-0 text-base font-semibold text-gray-900 bg-transparent outline-none border border-gray-200 rounded-xl px-3 py-2 focus:border-blue-400 focus:ring-1 focus:ring-blue-200"
+                maxLength={penMaxLen}
+                autoComplete="nickname"
+              />
+              <button
+                type="button"
+                onClick={handlePenNameSave}
+                disabled={penLoading || penSaving}
+                className="shrink-0 px-4 py-2 text-xs font-black bg-blue-600 text-white rounded-xl hover:bg-blue-500 disabled:opacity-50"
+              >
+                {penSaving ? '저장 중…' : '프로필에 저장'}
+              </button>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-2 leading-relaxed break-keep">
+              명소 여행기·공개 로그북 카드에 동일하게 적용됩니다. 사이드바에서도 바꿀 수 있습니다.
+            </p>
+            {penSaveHint && <p className="text-[10px] font-bold text-emerald-600 mt-1.5">{penSaveHint}</p>}
           </div>
         </section>
 

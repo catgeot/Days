@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { MapPin, Home, Compass, PenTool, ArrowLeft } from 'lucide-react';
+import { MapPin, Home, Compass, PenTool, ArrowLeft, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { reportAuthorLabel } from './utils/reportAuthor';
 
 const PublicViewer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
+  const [authorLabel, setAuthorLabel] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -27,8 +29,19 @@ const PublicViewer = () => {
       if (error || !data) {
         console.warn("[Safe Path] 비공개되었거나 존재하지 않는 기록 접근 차단");
         setErrorMsg("비공개되었거나 존재하지 않는 기록입니다.");
+        setAuthorLabel('');
       } else {
         setReport(data);
+        let displayName = '';
+        if (data.user_id) {
+          const { data: prof } = await supabase
+            .from('profiles')
+            .select('display_name')
+            .eq('id', data.user_id)
+            .maybeSingle();
+          displayName = prof?.display_name || '';
+        }
+        setAuthorLabel(reportAuthorLabel(data.user_id, displayName));
       }
     };
     fetchPublicReport();
@@ -100,6 +113,12 @@ const PublicViewer = () => {
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{report.date}</span>
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
+            {authorLabel && (
+              <span className="text-gray-500 text-sm flex items-center gap-1.5 font-medium">
+                <User size={14} className="text-gray-400 shrink-0" />
+                <span className="truncate max-w-[min(100%,220px)]" title={report.user_id || ''}>{authorLabel}</span>
+              </span>
+            )}
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-10 tracking-tight leading-tight">{report.title}</h1>
