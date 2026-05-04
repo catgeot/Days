@@ -2,10 +2,10 @@ import React from 'react';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtTimelineAction from './MrtTimelineAction';
-import { getKlookAffiliateUrl } from '../../../../../utils/affiliate';
+import { getKlookAffiliateUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
 
-const PreTravelChecklist = ({ items, locationName }) => {
-    // 모든 여행지 동일하게 마이 리얼 트립 검색
+const PreTravelChecklist = ({ items, locationName, location }) => {
+    const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = `${locationName || ''} 숙소`;
 
     return (
@@ -71,24 +71,44 @@ const PreTravelChecklist = ({ items, locationName }) => {
                     />
                 </div>
 
-                {/* 2. 숙소 검색 */}
+                {/* 2. 숙소 검색 — 기본 마이리얼트립 / PLANNER_TRIPCOM_HOTEL_OVERRIDES 등록 시 트립닷컴 */}
                 <div className="mb-3">
-                    <MrtTimelineAction
-                        mrtQuery={mrtQuery}
-                        label="숙소 실시간 검색"
-                        customTrigger={
-                            <button className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full">
-                                <div className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0">
+                    {tripcomHotelOverride ? (
+                        <a
+                            href={tripcomHotelOverride}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                        >
+                            <span className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full cursor-pointer">
+                                <span className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0 inline-flex">
                                     <Bed size={16} />
-                                </div>
-                                <div className="flex-1 text-left">
-                                    <div className="font-bold text-sm text-gray-800">숙소 실시간 검색</div>
-                                    <div className="text-xs text-gray-600">전 세계 숙소 검색 및 예약</div>
-                                </div>
-                                <div className="text-gray-400 group-hover:text-gray-600 transition-colors">→</div>
-                            </button>
-                        }
-                    />
+                                </span>
+                                <span className="flex-1 text-left">
+                                    <span className="font-bold text-sm text-gray-800 block">호텔 예약 (Trip.com)</span>
+                                    <span className="text-xs text-gray-600">이 여행지는 트립닷컴 제휴 링크로 연결됩니다</span>
+                                </span>
+                                <span className="text-gray-400 group-hover:text-gray-600 transition-colors">→</span>
+                            </span>
+                        </a>
+                    ) : (
+                        <MrtTimelineAction
+                            mrtQuery={mrtQuery}
+                            label="숙소 실시간 검색"
+                            customTrigger={
+                                <button type="button" className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full">
+                                    <span className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0 inline-flex">
+                                        <Bed size={16} />
+                                    </span>
+                                    <span className="flex-1 text-left">
+                                        <span className="font-bold text-sm text-gray-800 block">숙소 실시간 검색</span>
+                                        <span className="text-xs text-gray-600">전 세계 숙소 검색 및 예약</span>
+                                    </span>
+                                    <span className="text-gray-400 group-hover:text-gray-600 transition-colors">→</span>
+                                </button>
+                            }
+                        />
+                    )}
                 </div>
 
                 {/* 3. 공항 픽업 예약 */}

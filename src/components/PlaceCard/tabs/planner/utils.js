@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
-import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../utils/affiliate';
+import { getKlookAffiliateUrl, getKlookRentalUrlByLocation, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
@@ -49,8 +49,9 @@ export const getMultiLinks = ({ type, data, location }) => {
     const links = [];
 
     switch (type) {
-        case 'accommodation':
+        case 'accommodation': {
             let regions = [];
+            const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
 
             // 1. AI 큐레이션 동적 지역명 파싱 ([@명칭@] 형태에서 추출)
             if (data?.advice) {
@@ -78,8 +79,7 @@ export const getMultiLinks = ({ type, data, location }) => {
                 }
 
                 regions.forEach(region => {
-                    // 상위 여행지명(searchQuery)과 겹치지 않으면 합쳐서 검색하여 마이리얼트립 검색 결과 퀄리티 상승
-                    // 예: "뮤리 해변" (region) + "라로통가" (searchQuery) => "뮤리 해변 라로통가 숙소"
+                    // 상위 여행지명(searchQuery)과 겹치지 않으면 합쳐서 검색하여 결과 퀄리티 상승
                     const isOverlapping = region.includes(searchQuery) || searchQuery.includes(region);
                     const finalSearchTerm = isOverlapping ? region : `${region} ${searchQuery}`;
 
@@ -92,14 +92,22 @@ export const getMultiLinks = ({ type, data, location }) => {
                 });
             }
 
-            // 2. 일반 숙소 검색 버튼 (마이리얼트립) - 세부 지역 추천이 하나도 추출되지 않았을 때만 폴백으로 노출
+            // 2. 일반 숙소 검색 — 기본 마이리얼트립 / 등록 여행지만 트립닷컴 전체 URL (PLANNER_TRIPCOM_HOTEL_OVERRIDES)
             if (regions.length === 0) {
-                links.push({
-                    isMrt: true,
-                    mrtQuery: `${searchQuery} 숙소`,
-                    text: `${location?.name || '현지'} 숙소 검색`,
-                    colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
-                });
+                if (tripcomHotelOverride) {
+                    links.push({
+                        url: tripcomHotelOverride,
+                        text: `${location?.name || '현지'} 호텔 (Trip.com)`,
+                        colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                    });
+                } else {
+                    links.push({
+                        isMrt: true,
+                        mrtQuery: `${searchQuery} 숙소`,
+                        text: `${location?.name || '현지'} 숙소 검색`,
+                        colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                    });
+                }
             }
 
             // 3. 한인민박 검색 버튼 (마이리얼트립)
@@ -110,6 +118,7 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
             });
             break;
+        }
         case 'flight':
             // 스카이스캐너, 트립닷컴 제거 (하단의 WhiteLabelWidget 통합 검색으로 완벽히 대체됨)
             break;

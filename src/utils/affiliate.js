@@ -189,3 +189,41 @@ export const generateMrtLink = async (query) => {
   }
 };
 
+/**
+ * 플래너 호텔 버튼 기본값은 마이리얼트립 동적 검색(`generateMrtLink`).
+ * 마이리얼트립에서 호텔 검색이 빈약한 여행지만 여기에 제휴에서 받은 트립닷컴 호텔 목록 URL 전체를 등록한다.
+ *
+ * 키: `travelSpots`의 `slug`(소문자) 또는 한글 `name`과 정확히 일치.
+ *
+ * @example
+ * PLANNER_TRIPCOM_HOTEL_OVERRIDES.fukuoka = 'https://kr.trip.com/hotels/list?city=248&…';
+ */
+export const PLANNER_TRIPCOM_HOTEL_OVERRIDES = {
+  // fukuoka: 'https://kr.trip.com/hotels/list?...',
+  // '가나자와': 'https://kr.trip.com/hotels/list?...',
+};
+
+/**
+ * 등록된 여행지만 트립닷컴 호텔 목록으로 연결. 없으면 null → 마이리얼트립 사용.
+ *
+ * @param {{ slug?: string, name?: string } | null | undefined} location
+ * @returns {string | null}
+ */
+export function getTripcomHotelOverrideUrlForLocation(location) {
+  if (!location) return null;
+
+  const slug = (location.slug || '').toLowerCase();
+  if (slug && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_OVERRIDES, slug)) {
+    const u = PLANNER_TRIPCOM_HOTEL_OVERRIDES[slug];
+    return typeof u === 'string' && u.startsWith('http') ? u : null;
+  }
+
+  const name = (location.name || '').trim();
+  if (name && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_OVERRIDES, name)) {
+    const u = PLANNER_TRIPCOM_HOTEL_OVERRIDES[name];
+    return typeof u === 'string' && u.startsWith('http') ? u : null;
+  }
+
+  return null;
+}
+
