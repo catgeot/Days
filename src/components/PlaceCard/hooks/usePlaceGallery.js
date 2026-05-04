@@ -49,12 +49,15 @@ export const usePlaceGallery = (locationSource) => {
   const [isImgLoading, setIsImgLoading] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const lastQueryRef = useRef(null);
+  /** 같은 영문 쿼리를 쓰는 서로 다른 장소 구분 + in-flight 요청 무효화 */
+  const lastFetchKeyRef = useRef(null);
+  const galleryLoadSeqRef = useRef(0);
   // 🚨 [New] 큐레이션(좋아요/숨김) 원본 데이터를 보존하기 위한 Ref
   const allImagesRef = useRef([]);
   const pageRef = useRef(1);
   const currentKoreanNameRef = useRef('');
   const currentQueryRef = useRef('');
+  const currentPlaceKeyRef = useRef('');
 
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
@@ -172,25 +175,36 @@ export const usePlaceGallery = (locationSource) => {
       primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
     }
 
+    const placeKey =
+      typeof targetSpot === 'object' && targetSpot
+        ? String(targetSpot.slug || targetSpot.id || targetSpot.name || '').trim()
+        : String(koreanName || primaryQuery).trim();
+    const stablePlaceKey = placeKey || koreanName || primaryQuery;
+    const fetchKey = `${stablePlaceKey}|${primaryQuery}`;
+
     // 상태 저장을 통한 삭제 시 활용
     currentKoreanNameRef.current = koreanName;
     currentQueryRef.current = primaryQuery;
+    currentPlaceKeyRef.current = stablePlaceKey;
 
-    // 강제 새로고침이 아닐 때만 마지막 쿼리를 확인하여 중복 방지
-    if (!forceRefresh && lastQueryRef.current === primaryQuery) return;
-    lastQueryRef.current = primaryQuery;
+    // 같은 장소+쿼리로의 중복 요청만 스킵 (영문 쿼리만 보고 판단하면 다른 장소가 묶임)
+    if (!forceRefresh && lastFetchKeyRef.current === fetchKey) return;
+    lastFetchKeyRef.current = fetchKey;
+
+    const runId = ++galleryLoadSeqRef.current;
 
     setIsImgLoading(true);
     if (!forceRefresh) setImages([]);
 
-    const CACHE_KEY = `days_gallery_${primaryQuery}`;
+    const CACHE_KEY = `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
 
     if (!forceRefresh) {
       pageRef.current = 1; // 🚨 [Fix] 일반 로드 시 페이지 초기화
       const validCache = loadFromSmartCache(CACHE_KEY);
       if (validCache && validCache.length > 0) {
+        if (runId !== galleryLoadSeqRef.current) return;
         processAndSetImages(validCache);
-        setIsImgLoading(false);
+        if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
         return;
       }
 
@@ -202,10 +216,12 @@ export const usePlaceGallery = (locationSource) => {
             .eq('place_id', koreanName)
             .single();
 
+          if (runId !== galleryLoadSeqRef.current) return;
+
           if (!dbError && dbData && dbData.gallery_urls && dbData.gallery_urls.length > 0) {
             processAndSetImages(dbData.gallery_urls);
             saveToSmartCache(CACHE_KEY, dbData.gallery_urls);
-            setIsImgLoading(false);
+            if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
             return;
           }
         } catch {
@@ -220,10 +236,14 @@ export const usePlaceGallery = (locationSource) => {
     try {
       let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, pageRef.current);
 
+      if (runId !== galleryLoadSeqRef.current) return;
+
       if (results.length === 0 && backupQuery) {
         console.warn(`⚠️ No results for "${primaryQuery}". Retry with: "${backupQuery}"`);
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, pageRef.current);
       }
+
+      if (runId !== galleryLoadSeqRef.current) return;
 
       // 🚨 [Fix] Unsplash 이미지가 적을 때(15장 이하) 또는 강제 새로고침 시 Pexels 결합 (더 풍성한 갤러리 제공)
       if ((results.length <= 15 || forceRefresh) && PEXELS_KEY) {
@@ -240,12 +260,16 @@ export const usePlaceGallery = (locationSource) => {
         }
       }
 
+      if (runId !== galleryLoadSeqRef.current) return;
+
       // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존
       if (forceRefresh && results.length === 0) {
         console.warn(`⚠️ 더 이상 가져올 이미지가 없습니다 (페이지 ${pageRef.current}). 이전 상태 유지.`);
         pageRef.current -= 1; // 페이지 원복
-        setIsImgLoading(false);
-        processAndSetImages(allImagesRef.current); // UI 원복
+        if (runId === galleryLoadSeqRef.current) {
+          setIsImgLoading(false);
+          processAndSetImages(allImagesRef.current); // UI 원복
+        }
         return;
       }
 
@@ -258,6 +282,8 @@ export const usePlaceGallery = (locationSource) => {
           const freshImages = results.filter(img => !existingIds.has(img.id));
           finalResults = [...allImagesRef.current, ...freshImages];
         }
+
+        if (runId !== galleryLoadSeqRef.current) return;
 
         processAndSetImages(finalResults);
         saveToSmartCache(CACHE_KEY, finalResults);
@@ -282,13 +308,13 @@ export const usePlaceGallery = (locationSource) => {
           { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } },
           { id: 'fallback-2', urls: { regular: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } }
         ];
-        processAndSetImages(fallbackImgs);
+        if (runId === galleryLoadSeqRef.current) processAndSetImages(fallbackImgs);
       }
     } catch (error) {
       console.error("Gallery API Error:", error);
-      processAndSetImages([]);
+      if (runId === galleryLoadSeqRef.current) processAndSetImages([]);
     } finally {
-      setIsImgLoading(false);
+      if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
     }
 
   }, [ACCESS_KEY, PEXELS_KEY, sourceName, sourceId, locationSource, processAndSetImages]);
@@ -351,7 +377,8 @@ export const usePlaceGallery = (locationSource) => {
 
     const koreanName = currentKoreanNameRef.current;
     const primaryQuery = currentQueryRef.current;
-    const CACHE_KEY = `days_gallery_${primaryQuery}`;
+    const placeKeyPart = currentPlaceKeyRef.current || koreanName || primaryQuery;
+    const CACHE_KEY = `days_gallery_${encodeURIComponent(placeKeyPart)}_${primaryQuery}`;
 
     // 2. 캐시 업데이트
     saveToSmartCache(CACHE_KEY, newImages);
