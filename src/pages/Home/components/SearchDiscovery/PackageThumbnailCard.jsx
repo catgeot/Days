@@ -3,10 +3,15 @@ import { ExternalLink, Tag } from 'lucide-react';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
 const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
+  /** 원본 종횡비 유지(너비만 카드와 맞추고 높이는 이미지에 맡김) — 가로 배너 등 */
+  const intrinsic = !isGrid && pkg.image && pkg.imageLayout === 'intrinsic';
+
   // 횡스크롤용 고정 크기 vs 그리드용 반응형 비율 크기
   const baseSize = isGrid
     ? "w-full aspect-[3/4] md:aspect-[3/4]"
-    : "w-[240px] md:w-[280px] h-[320px] md:h-[380px] flex-none snap-start";
+    : intrinsic
+      ? "w-[240px] md:w-[280px] flex-none snap-start"
+      : "w-[240px] md:w-[280px] h-[320px] md:h-[380px] flex-none snap-start";
 
   const handleCardClick = () => {
     if (pkg.url) {
@@ -21,6 +26,62 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
     minTime: 50
   });
 
+  const imageCover = pkg.imageFit !== 'contain';
+
+  if (intrinsic) {
+    return (
+      <div
+        onPointerDown={handleStart}
+        onPointerMove={handleMove}
+        onPointerUp={(e) => handleEnd(e, null)}
+        onPointerLeave={handleCancel}
+        onPointerCancel={handleCancel}
+        className={`group relative isolate cursor-pointer overflow-hidden rounded-[2rem] border border-white/[0.05] bg-white/[0.02] transition-all duration-500 ease-out hover:-translate-y-2 hover:border-blue-400/50 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-blue-500/20 ${baseSize}`}
+      >
+        <div className="relative">
+          <img
+            src={pkg.image}
+            alt={pkg.imageAlt || pkg.title}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            className="pointer-events-none block h-auto w-full max-w-full select-none"
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col p-3 md:p-4">
+            {pkg.badge && (
+              <div className="mb-2 flex justify-end">
+                <span className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                  {pkg.badge}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="rounded border border-yellow-400/30 bg-black/60 px-2 py-0.5 text-[10px] font-bold text-yellow-400">
+                제휴광고 · {pkg.affiliateSource || 'TRIPLINK'}
+              </span>
+              <div className="ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-black/50 opacity-0 backdrop-blur-md transition-opacity duration-300 group-hover:opacity-100">
+                <ExternalLink size={14} className="text-white" />
+              </div>
+            </div>
+            {!pkg.omitOverlayTitles && (
+              <div className="mt-2">
+                <h3 className="text-lg font-extrabold text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] line-clamp-2 break-keep group-hover:text-blue-300 md:text-xl">
+                  {pkg.title}
+                </h3>
+                {pkg.subtitle && (
+                  <p className="mt-1 line-clamp-2 break-keep text-xs font-medium text-gray-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] md:text-sm">
+                    {pkg.subtitle}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       onPointerDown={handleStart}
@@ -28,18 +89,28 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
       onPointerUp={(e) => handleEnd(e, null)}
       onPointerLeave={handleCancel}
       onPointerCancel={handleCancel}
-      className={`group relative flex flex-col bg-white/[0.02] border border-white/[0.05] rounded-[2rem] cursor-pointer transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-blue-500/20 hover:border-blue-400/50 ${baseSize}`}
+      className={`group relative isolate flex flex-col bg-white/[0.02] border border-white/[0.05] rounded-[2rem] cursor-pointer transition-all duration-500 ease-out overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-blue-500/20 hover:border-blue-400/50 ${baseSize}`}
     >
-      {/* 배경 이미지 영역 */}
+      {/* 배경 이미지: 카드 고정 높이 안에서 absolute 채움 (SpotThumbnailCard와 동일 패턴) */}
       {pkg.image ? (
-        <img
-          src={pkg.image}
-          alt={pkg.title}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
-        />
+        <div
+          className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${pkg.imageBackdropClass ?? 'bg-neutral-900'}`}
+        >
+          <img
+            src={pkg.image}
+            alt={pkg.imageAlt || pkg.title}
+            loading="lazy"
+            decoding="async"
+            style={pkg.imageObjectPosition ? { objectPosition: pkg.imageObjectPosition } : undefined}
+            className={`h-full w-full transition-transform duration-1000 ease-out ${
+              imageCover
+                ? `min-h-full min-w-full object-cover group-hover:scale-110 ${pkg.imageObjectPosition ? '' : 'object-center'}`
+                : 'object-contain object-center group-hover:scale-[1.02]'
+            }`}
+          />
+        </div>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-black/80 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-blue-900/40 to-black/80 flex items-center justify-center">
           <Tag size={40} className="text-white/20" />
         </div>
       )}
@@ -63,16 +134,20 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
         <div className="mt-auto p-1">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 text-yellow-400 border border-yellow-400/30">
-              제휴광고 · TRIPLINK
+              제휴광고 · {pkg.affiliateSource || 'TRIPLINK'}
             </span>
           </div>
-          <h3 className="text-lg md:text-xl font-extrabold text-white group-hover:text-blue-300 transition-colors line-clamp-2 break-keep drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-            {pkg.title}
-          </h3>
-          {pkg.subtitle && (
-            <p className="text-xs md:text-sm text-gray-200 font-medium mt-1 md:mt-1.5 line-clamp-1 break-keep drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-              {pkg.subtitle}
-            </p>
+          {!pkg.omitOverlayTitles && (
+            <>
+              <h3 className="text-lg md:text-xl font-extrabold text-white group-hover:text-blue-300 transition-colors line-clamp-2 break-keep drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                {pkg.title}
+              </h3>
+              {pkg.subtitle && (
+                <p className="text-xs md:text-sm text-gray-200 font-medium mt-1 md:mt-1.5 line-clamp-2 break-keep drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+                  {pkg.subtitle}
+                </p>
+              )}
+            </>
           )}
         </div>
       </div>

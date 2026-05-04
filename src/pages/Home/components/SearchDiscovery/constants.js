@@ -50,3 +50,17 @@ export const TRIPLINK_DYNAMIC_BANNERS = {
   hokkaido: 'iosw2r', // 홋카이도/북해도
   default: 'hbxakj', // 임시로 베트남 배너를 기본으로 사용 (추후 변경 가능)
 };
+
+/** 탐색 첫 큐레이션 맨 앞 썸네일 — 트립닷컴 문구 + 제휴 링크(Unsplash 세로·호텔 톤 이미지) */
+export const TRIPCOM_EXPLORE_LEADING_CARD = {
+  id: 'tripcom-explore-hotel-sale',
+  title: '단기 여행',
+  subtitle: '호텔 최대 80% 할인',
+  image:
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=560&h=746&fit=crop&q=80',
+  imageAlt: '호텔·리조트 풀 — Trip.com 프로모션',
+  imageObjectPosition: 'center center',
+  badge: '호텔 세일',
+  affiliateSource: '트립닷컴',
+  url: 'https://kr.trip.com/sale/w/28065/everydayescape.html?locale=ko-KR&promo_referer=3364_28065_1&Allianceid=8182427&SID=309563143&trip_sub1=%ED%83%90%EC%83%89%ED%8E%98%EC%9D%B4%EC%A7%80&trip_sub3=P16551334',
+};

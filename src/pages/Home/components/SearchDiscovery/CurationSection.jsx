@@ -4,7 +4,7 @@ import SpotThumbnailCard from './SpotThumbnailCard';
 import TripLinkSectionCard from './TripLinkSectionCard';
 import PackageThumbnailCard from './PackageThumbnailCard';
 
-const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delayClass, onSelectSpot, onMoreClick, onSelectPackage }) => {
+const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, leadingPackage, delayClass, onSelectSpot, onMoreClick, onSelectPackage }) => {
   const scrollRef = useRef(null);
   const [showLeftBtn, setShowLeftBtn] = useState(false);
   const [showRightBtn, setShowRightBtn] = useState(true);
@@ -125,8 +125,11 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, delay
           onMouseLeave={handleMouseLeave}
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
-          className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing select-none"
+          className="flex items-start overflow-x-auto gap-4 pb-6 pt-2 snap-x custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0 cursor-grab active:cursor-grabbing select-none"
         >
+          {leadingPackage?.url && (
+            <PackageThumbnailCard key={leadingPackage.id} pkg={leadingPackage} />
+          )}
           {spots.map((spot, index) => {
             // 네이티브 인피드 광고 삽입 로직: 우리 카드 5개(index 0~4) 이후 연속으로 4개 배치 (index 5 카드 렌더링 직전)
             const isAdPosition = index === 5 && promotedPackages && promotedPackages.length > 0;

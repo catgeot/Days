@@ -5,7 +5,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { TRIPLINK_PACKAGES } from '../data/tripLinkPackages';
 
 // 분리된 컴포넌트 및 유틸리티 import
-import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS } from './SearchDiscovery/constants';
+import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS, TRIPCOM_EXPLORE_LEADING_CARD } from './SearchDiscovery/constants';
 import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
@@ -317,6 +317,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
             promotedPackages={curationData.familyPackages}
+            leadingPackage={TRIPCOM_EXPLORE_LEADING_CARD}
             delayClass=""
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
@@ -562,7 +563,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             {!isSearching && (
               <div className="-mx-4 px-4 md:mx-0 md:px-0 pb-4 mb-6 md:mb-8 border-b border-white/[0.05] md:border-white/[0.08]">
 
-                {/* 2열 탭: 대륙/테마 (모바일에서도 보이도록 복구, 단 시각적 비중은 낮춤) */}
                 <div className="flex overflow-x-auto custom-scrollbar gap-2 w-full pb-2 md:pb-0">
                   {filterMode === 'continent' ? (
                     CONTINENTS.map((cont) => {
