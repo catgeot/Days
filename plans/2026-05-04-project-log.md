@@ -1,13 +1,76 @@
-# 2026-05-04 프로젝트 일지
+# 2026-05-04 Project Log
 
-이전: [`plans/2026-04-28-project-log.md`](2026-04-28-project-log.md)
+이전 일지: [`plans/2026-04-28-project-log.md`](./2026-04-28-project-log.md)
 
-- 탐색(SearchDiscovery) **첫 번째 큐레이션**(가족 여행) 횡스크롤 **맨 앞 슬롯**에 트립닷컴 호텔 세일 제휴 카드(`TRIPCOM_EXPLORE_LEADING_CARD`) 연결. 카피는 트립닷컴 제공 문구(단기 여행·호텔 최대 80% 할인 등), 배경 이미지는 Unsplash 세로 크롭(URL, `constants.js`).
-- `PackageThumbnailCard`에 제휴 라벨(`affiliateSource`)·`imageFit`/`imageObjectPosition`/`omitOverlayTitles`/intrinsic 분기 등 반영. 상단 탭 옆 배너 실험은 제거하고 썸네일 방식으로 확정.
-- PlaceCard **플래너 호텔 링크**: 트립닷컴 동적 생성은 롤백하고 기본을 다시 **마이리얼트립** 동적 검색(`generateMrtLink` / `MrtDynamicLink`, 출발 전 체크리스트는 `MrtTimelineAction`)으로 통일. 트립닷컴은 `city` ID·제휴 파라미터 조합이 여행지마다 달라 유지보수 부담이 커서, **예외 여행지만** `src/utils/affiliate.js`의 `PLANNER_TRIPCOM_HOTEL_OVERRIDES`(slug 또는 한글 `name` → 제휴에서 받은 **호텔 목록 전체 URL**)로 연결하는 방식으로 정리. `getTripcomHotelOverrideUrlForLocation`이 있을 때만 Trip.com 직링크, 메인 숙소 폴백·체크리스트에 반영. `PreTravelChecklist`는 `location` prop으로 slug 매칭.
-- 문서: `.ai-context.md` 5절·본 일지 갱신.
-- PlaceCard **갤러리 탭**: 여러 여행지를 빠르게 이동할 때 **여행지는 바뀌는데 갤러리만 이전 장소 사진이 유지**되던 문제 수정. `src/components/PlaceCard/hooks/usePlaceGallery.js` — (1) 중복 요청 스킵을 `primaryQuery`만이 아니라 **장소 식별자+쿼리(`fetchKey`)** 로 판단, (2) Unsplash/Supabase/Pexels **비동기 경합** 시 오래된 응답 무시(`galleryLoadSeqRef` / `runId`), (3) `sessionStorage` 갤러리 캐시 키에 장소 키 포함. 사용자 동작 확인 후 반영.
-- **LogBook 공개 피드·작성자**: 대시보드 탐험 모드·공개 뷰어·명소 리뷰탭 **관련 블로그**에 작성자 라벨 — `utils/reportAuthor.js`에서 `profiles` 배치 조회 후 `author_label`, 미설정 시 `user_id` 앞 8자.
-- **필명(프로필)**: `usePenName` 훅으로 `profiles.display_name` 등록·저장(사이드바 `UserProfile`, `/blog/write`). 처음에는 `updated_at` 미존재·RLS INSERT 부족으로 저장 오류 가능 → DB에 `updated_at` 추가, INSERT 정책 `WITH CHECK (auth.uid() = id)` 권장(운영에서 적용).
-- **필명 UI 동기화**: 사이드바와 글쓰기가 각각 `usePenName`을 쓰면 상태가 갈라져 **`PenNameProvider`를 `DailyLayout`에 두고 `usePenNameContext`로 통합**. `Sidebar`는 레이아웃에서 받은 `user`만 사용(중복 `getUser` 제거).
-- 문서: `.ai-context.md` 3·5절·본 일지 갱신.
+## 오늘 세션 맥락 (요약)
+
+- **데이터 역할**: `TRAVEL_SPOTS` = 주요 여행지 카드(직접 큐레이션), `citiesData` = 지구본 권역 커버용(전수 여행지 목록 아님), `place_stats` = 방문/채팅/저장 집계 + Unsplash(등) 갤러리 캐시.
+- **이슈**: 검색·좌표로 연 장소(`search-…` / `loc-…`)는 URL만으로 표시명을 복구하기 어렵고, `place_stats`는 현재 `place_id`에 **한글 표시명**을 쓰는 경향이 있어 **안정 키**와 어긋날 수 있음.
+- **이미 반영된 프론트**: `getPlaceUrlParam`·`placeLocationCache`(sessionStorage)로 써머리/뒤로가기 복원 보완, `ReviewsTab`의 `place_slug`는 `search-`/`loc-`일 때 `id` 우선.
+
+## 실행 예정일
+
+**2026-05-05** — 아래 계획을 순서대로 진행하면 됨.
+
+---
+
+## 내일 실행 계획: `place_stats` 정체성 정렬 (stable key + 메타)
+
+### 목표
+
+1. **단일 불변 키**로 갤러리 upsert, `increment_place_stats` RPC, (선택) 티커 조회가 같은 장소를 가리키게 한다.
+2. **표시명·좌표**를 DB에 두어, 세션 밖(재방문·로그인 후·다른 기기)에서도 복구 가능한 기반을 마련한다.
+3. 기존 **한글 `place_id` 행**과 병행 가능한 **마이그레이션 경로**를 둔다.
+
+### Phase A — Supabase 스키마 설계·마이그레이션 (우선)
+
+| 단계 | 내용 |
+|------|------|
+| A1 | **`place_id` 의미 확정**: 새 행부터는 **안정 식별자**만 저장 (`travelSpots.slug`, `city-{lat}-{lng}` 문자열, `search-{lat}-{lng}`, 또는 신규 UUID). 기존 한글 전용 행은 유지 기간 동안 읽기 호환. |
+| A2 | **컬럼 추가 (제안)** | `name_ko` (text, nullable), `name_en` (text, nullable), `lat` (double precision, nullable), `lng` (double precision, nullable), `source` (text, nullable; 예: `travel_spot` / `city` / `globe_search` / `globe_click`). 필요 시 `slug` (text, nullable) — 큐레이션 카드 조인용. |
+| A3 | **인덱스**: `place_id` PK 또는 unique 유지. 선택적으로 `(lat, lng)` 부분 인덱스(근접 검색은 나중 단계). |
+| A4 | **데이터 백필 스크립트 (일회성)**: 기존 `place_id`가 한글만인 행에 대해, 가능하면 `TRAVEL_SPOTS.name` 매칭으로 `slug`·좌표·영문명 채우기. 매칭 불가 행은 그대로 두고 신규 키 전략만 이후 행에 적용. |
+| A5 | **`increment_place_stats` RPC 검토**: `p_id`가 한글인지 stable key인지 문서화하고, 클라이언트가 넘기는 값을 **갤러리 upsert와 동일한 키**로 통일. RPC 내부는 `upsert` on conflict `place_id` 유지 가정. |
+
+**산출물**: `supabase/migrations/` SQL 파일, README 한 줄(새 `place_id` 규칙).
+
+### Phase B — 클라이언트 읽기·쓰기 정렬
+
+| 파일 / 영역 | 변경 방향 |
+|-------------|-----------|
+| `src/components/PlaceCard/hooks/usePlaceGallery.js` | `select`/`upsert`/`update` 시 **`place_id` = stable key** (예: `search-…` 우선, 없으면 slug, 최후 name). `name_ko`/`name_en`은 location 객체에서 채워 upsert. 기존 한글-only 행 조회는 **이중 조회(신 키 실패 시 레거시 한글)** 또는 마이그레이션 완료 후 단일화. |
+| `src/shared/api/supabase.js` — `recordInteraction` | `placeId`를 **갤러리와 동일한 stable key 생성 규칙**으로 통일 (헬퍼 함수 한 곳에서 생성 권장). |
+| `src/pages/Home/hooks/useTrendingData.js` | 티커는 계속 `TRAVEL_SPOTS`와 조인할지 명시. DB의 `place_id`가 slug가 되면 **`s.slug === row.place_id`** 매칭으로 변경 검토. 한글-only 레거시는 fallback 유지 기간만 두기. |
+| `src/pages/Home/lib/getPlaceStatsId.js` (신규 권장) | `location` → `{ placeId, nameKo, nameEn, lat, lng, source }` 한 번에 계산하는 순수 함수로 중복 제거. |
+
+### Phase C — 정책·품질
+
+| 항목 | 메모 |
+|------|------|
+| RLS | anon `upsert`/`update` 범위 재확인; 악의적 대용량 `gallery_urls` 삽입 완화. |
+| `gallery_urls` 크기 | 장기적으로 URL·id 위주 슬림 구조 검토 (별도 이슈 가능). |
+| Unsplash | 다운로드/저장 정책은 기존 가이드라인과 충돌 없는지 유지. |
+
+### Phase D — 검증 체크리스트 (출시 전)
+
+- [ ] 검색으로 춘천 등 **미큐레이션 도시** 열기 → 갤러리 로드 후 `place_stats`에 **stable `place_id`** + `name_ko` 저장 확인.
+- [ ] 동일 장소 재방문 시 갤러리 **DB 히트** (불필요한 Unsplash 재호출 감소).
+- [ ] `recordInteraction('view')` 집계가 동일 행 갱신되는지 확인.
+- [ ] 블로그 `/p/…` 후 뒤로가기 + 리뷰 탭: 기존 sessionStorage 캐시와 **충돌 없음** (키 일관성).
+- [ ] 티커: 큐레이션 스팟만 노출 정책 유지 시 **slug 매칭** 후 목록 정상.
+
+### 의존성·순서
+
+1. 마이그레이션(A) → 2. 헬퍼·갤러리·interaction(B) → 3. 티커 매칭(B) → 4. RLS·체크리스트(D).  
+   RPC 변경이 필요하면 A5와 B를 같은 배포에 묶는 것이 안전함.
+
+### 세션 캐시(`placeLocationCache`)와의 관계
+
+- 단기 복구는 계속 sessionStorage로 가능.
+- DB 메타가 채워지면 **장기적으로** `/place/…` 복원 시 서버에서 이름 조회하는 옵션을 열 수 있음 (후속 작업).
+
+---
+
+## 오늘 작업 요약 (코드 변경 없음 본 로그만)
+
+- 위 계획을 내일 실행할 수 있도록 정리함.

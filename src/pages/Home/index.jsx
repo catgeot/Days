@@ -17,7 +17,8 @@ import { useGlobeLogic } from './hooks/useGlobeLogic';
 import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
-import { formatUrlName } from './lib/formatUrlName';
+import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
+import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { getSystemPrompt } from './lib/prompts';
 
 function Home() {
@@ -116,6 +117,10 @@ function Home() {
   }, [routeLocation.search, routeLocation.pathname, handleSmartSearch, navigate]);
 
   useEffect(() => {
+    cachePlaceLocation(selectedLocation);
+  }, [selectedLocation]);
+
+  useEffect(() => {
     let match = matchPath({ path: "/place/:slug" }, routeLocation.pathname);
     if (!match) {
       match = matchPath({ path: "/place/:slug/:tab" }, routeLocation.pathname);
@@ -168,21 +173,26 @@ function Home() {
           const parsedLat = parseFloat(coordsMatch[1]);
           const parsedLng = parseFloat(coordsMatch[2]);
 
-          const matchedCity = (citiesData || []).find(c =>
-            Math.abs(c.lat - parsedLat) < 0.001 && Math.abs(c.lng - parsedLng) < 0.001
-          );
+          const fromSession = mergeCachedPlaceIfCoordsMatch(targetSlug, parsedLat, parsedLng);
+          if (fromSession) {
+            target = fromSession;
+          } else {
+            const matchedCity = (citiesData || []).find(c =>
+              Math.abs(c.lat - parsedLat) < 0.001 && Math.abs(c.lng - parsedLng) < 0.001
+            );
 
-          target = {
-            id: targetSlug,
-            name: matchedCity ? matchedCity.name : (targetSlug.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
-            name_en: matchedCity ? matchedCity.name_en : "",
-            lat: parsedLat,
-            lng: parsedLng,
-            country: matchedCity ? matchedCity.country : "Explore",
-            country_en: matchedCity ? matchedCity.country_en : "Explore",
-            tags: matchedCity ? matchedCity.tags : [],
-            desc: matchedCity ? matchedCity.desc : ""
-          };
+            target = {
+              id: targetSlug,
+              name: matchedCity ? matchedCity.name : (targetSlug.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
+              name_en: matchedCity ? matchedCity.name_en : "",
+              lat: parsedLat,
+              lng: parsedLng,
+              country: matchedCity ? matchedCity.country : "Explore",
+              country_en: matchedCity ? matchedCity.country_en : "Explore",
+              tags: matchedCity ? matchedCity.tags : [],
+              desc: matchedCity ? matchedCity.desc : ""
+            };
+          }
         }
       }
 
@@ -365,8 +375,7 @@ function Home() {
                 }
               };
             }
-            const urlParam = hydratedLocation.slug || (hydratedLocation.id || hydratedLocation.name);
-            navigate(`/place/${urlParam}`);
+            navigate(`/place/${getPlaceUrlParam(hydratedLocation)}`);
           }}
         />
 
@@ -383,8 +392,7 @@ function Home() {
             }}
             onExpand={() => {
               setIsCardExpanded(true);
-              const urlParam = selectedLocation.slug || (selectedLocation.id || selectedLocation.name);
-              navigate(`/place/${urlParam}`);
+              navigate(`/place/${getPlaceUrlParam(selectedLocation)}`);
             }}
             onChat={(p) => handleStartChat(selectedLocation?.name, p)}
             onToggleBookmark={handleToggleBookmark}
@@ -435,8 +443,7 @@ function Home() {
           isFromPlaceCard={isExploreFromPlace}
           onClose={() => navigate('/')}
           onSelect={(spot) => {
-            const urlParam = spot.slug || (spot.id || spot.name);
-            navigate(`/place/${urlParam}`);
+            navigate(`/place/${getPlaceUrlParam(spot)}`);
           }}
           onSearch={async (query) => {
             await handleSmartSearch(query);

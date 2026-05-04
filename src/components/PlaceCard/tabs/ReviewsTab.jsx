@@ -174,7 +174,12 @@ const ReviewsTab = ({ location, setMediaMode }) => {
     };
   }, []);
 
-  const placeSlug = location.slug || location.id; // slug 우선 사용, 없으면 id
+  // 좌표·검색 기반 장소는 id(search-/loc-)가 리뷰·URL의 단일 키. 지오코딩 slug가 유명 도시와 겹칠 수 있어 id 우선.
+  const idStr = location?.id != null ? String(location.id) : '';
+  const placeSlug =
+    idStr.startsWith('search-') || idStr.startsWith('loc-')
+      ? idStr
+      : (location.slug || idStr);
   const {
     reviews,
     isLoading,

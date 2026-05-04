@@ -21,11 +21,12 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
 
   // 탭 변경 시 URL 업데이트 로직
   const setMediaMode = useCallback((newMode) => {
-      const slug = location?.slug || reactLocation.pathname.split('/')[2];
+      const routeSlug = reactLocation.pathname.split('/')[2];
+      const slug = routeSlug || location?.slug;
       const tabPath = newMode === 'GALLERY' ? '' : `/${newMode.toLowerCase()}`;
       navigate(`/place/${slug}${tabPath}`, { replace: true });
       setMediaModeState(newMode);
-  }, [navigate, location, reactLocation.pathname]);
+  }, [navigate, location?.slug, reactLocation.pathname]);
 
   // props로 받은 initialTab이 변경되면 동기화
   useEffect(() => {
