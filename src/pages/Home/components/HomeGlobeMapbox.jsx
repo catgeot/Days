@@ -15,48 +15,72 @@ import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const MAP_STYLES = {
+  // Deep now uses the previous neon globe style as default.
   deep: 'mapbox://styles/mapbox/satellite-streets-v12',
-  bright: 'mapbox://styles/mapbox/light-v11',
-  neon: 'mapbox://styles/mapbox/navigation-night-v1'
+  bright: 'mapbox://styles/mapbox/standard',
+  neon: 'mapbox://styles/mapbox/satellite-streets-v12'
 };
 
-const FOG_BY_THEME = {
+const GLOBE_SPACE_FOG_BASE = {
+  range: [0.8, 8],
+  'space-color': '#01030a',
+  'star-intensity': 0.32
+};
+
+const ATMOSPHERE_BY_THEME = {
   deep: {
-    range: [0.8, 8],
-    color: '#142043',
-    'horizon-blend': 0.1,
-    'high-color': '#1a2e63',
-    'space-color': '#01030a',
-    'star-intensity': 0.32
+    // Subtle blue outline, weaker than neon.
+    color: '#1b2f52',
+    'high-color': '#2a4a78',
+    'horizon-blend': 0.012
   },
   bright: {
-    range: [0.9, 8.5],
-    color: '#9fc4ff',
-    'horizon-blend': 0.24,
-    'high-color': '#dbeafe',
-    'space-color': '#0f172a',
-    'star-intensity': 0.35
+    // Legacy HomeGlobe: atmColor "#ffffff", atmAlt 0.3
+    color: '#3f4b63',
+    'high-color': '#5c6f93',
+    'horizon-blend': 0.02
   },
   neon: {
-    range: [0.7, 7.8],
-    color: '#2d2a66',
-    'horizon-blend': 0.12,
-    'high-color': '#4f46e5',
-    'space-color': '#030014',
-    'star-intensity': 0.95
+    // Legacy HomeGlobe: atmColor "#00ffff", atmAlt 0.25
+    color: '#245563',
+    'high-color': '#2f6f80',
+    'horizon-blend': 0.018
   }
 };
 
 const WATER_COLOR_BY_THEME = {
   deep: '#0b1f52',
-  bright: '#3b82f6',
   neon: '#1d4ed8'
 };
+
+const PLACE_LABEL_MIN_ZOOM = 3.5;
+const GLOBE_CLICK_TOLERANCE_PX = 3;
+const DRAG_CLICK_GUARD_MS = 180;
+const PLACE_LABEL_LAYER_HINTS = [
+  'place-label',
+  'settlement',
+  'country-label',
+  'state-label'
+];
+const HIDDEN_OVERLAY_LAYER_HINTS = [
+  'road',
+  'street',
+  'highway',
+  'motorway',
+  'admin',
+  'boundary',
+  'border',
+  'disputed',
+  'transit',
+  'rail',
+  'ferry'
+];
+const ADMIN_BOUNDARY_HINTS = ['admin', 'boundary', 'border', 'disputed'];
 
 const GLOBE_VIEW = {
   default: { longitude: 0, latitude: 20, zoom: 1.25, pitch: 0, bearing: 0 },
   flyZoom: 2.35,
-  maxZoom: 5,
+  maxZoom: 22,
   rotateZoomThreshold: 2.4,
   flyDuration: 3000
 };
@@ -81,13 +105,162 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   const isHoveringMarker = useRef(false);
   const hasRaisedFatalRef = useRef(false);
+  const suppressClickUntilRef = useRef(0);
+  const placeLabelLayerIdsRef = useRef([]);
+  const allSymbolLayerIdsRef = useRef([]);
+  const allLineLayerIdsRef = useRef([]);
+  const hiddenFillLayerIdsRef = useRef([]);
+  const adminBoundaryLayerIdsRef = useRef([]);
+  const lastPlaceLabelVisibleRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
-  const fogConfig = FOG_BY_THEME[globeTheme] || FOG_BY_THEME.deep;
+  const fogConfig = useMemo(() => {
+    const atmosphere = ATMOSPHERE_BY_THEME[globeTheme] || ATMOSPHERE_BY_THEME.deep;
+    return { ...GLOBE_SPACE_FOG_BASE, ...atmosphere };
+  }, [globeTheme]);
+
+  const refreshPlaceLabelLayers = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map?.getStyle) return;
+    const layers = map.getStyle()?.layers || [];
+    const symbolLayers = layers.filter((layer) => layer.type === 'symbol');
+
+    allSymbolLayerIdsRef.current = symbolLayers.map((layer) => layer.id);
+    allLineLayerIdsRef.current = layers
+      .filter((layer) => layer.type === 'line')
+      .map((layer) => layer.id);
+    hiddenFillLayerIdsRef.current = layers
+      .filter((layer) => layer.type === 'fill' || layer.type === 'fill-extrusion')
+      .filter((layer) => {
+        const id = layer.id || '';
+        const sourceLayer = layer['source-layer'] || '';
+        return HIDDEN_OVERLAY_LAYER_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint));
+      })
+      .map((layer) => layer.id);
+    adminBoundaryLayerIdsRef.current = layers
+      .filter((layer) => {
+        const id = layer.id || '';
+        const sourceLayer = layer['source-layer'] || '';
+        return ADMIN_BOUNDARY_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint));
+      })
+      .map((layer) => layer.id);
+
+    placeLabelLayerIdsRef.current = symbolLayers
+      .filter((layer) => Boolean(layer.layout && layer.layout['text-field']))
+      .filter((layer) => {
+        const id = layer.id || '';
+        const sourceLayer = layer['source-layer'] || '';
+        return PLACE_LABEL_LAYER_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint));
+      })
+      .map((layer) => layer.id);
+  }, []);
+
+  const ensureInteractionReady = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    try {
+      map.dragPan.enable();
+      map.scrollZoom.enable();
+      map.touchZoomRotate.enable();
+      map.doubleClickZoom.enable();
+      map.boxZoom.enable();
+      map.keyboard.enable();
+      map.resize();
+      requestAnimationFrame(() => map.resize());
+    } catch {
+      // Ignore interaction bootstrap errors.
+    }
+  }, []);
+
+  const applyBasemapConfig = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || typeof map.setConfigProperty !== 'function') return;
+    const shouldShowPlaceLabels = map.getZoom() >= PLACE_LABEL_MIN_ZOOM;
+    const configEntries = [
+      ['showPointOfInterestLabels', false],
+      ['showRoadLabels', false],
+      ['showTransitLabels', false],
+      ['showRoadsAndTransit', false],
+      // "Administrative boundaries" key on Mapbox Standard family.
+      ['showAdminBoundaries', false],
+      // Backward compatibility for previously attempted key.
+      ['showAdministrativeBoundaries', false],
+      ['showPlaceLabels', shouldShowPlaceLabels]
+    ];
+
+    configEntries.forEach(([key, value]) => {
+      try {
+        map.setConfigProperty('basemap', key, value);
+      } catch {
+        // Ignore unsupported style config keys per-style.
+      }
+    });
+  }, []);
+
+  const applyPlaceLabelVisibility = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    const shouldShowPlaceLabels = map.getZoom() >= PLACE_LABEL_MIN_ZOOM;
+    if (lastPlaceLabelVisibleRef.current === shouldShowPlaceLabels) return;
+
+    allSymbolLayerIdsRef.current.forEach((layerId) => {
+      if (!map.getLayer(layerId)) return;
+      try {
+        map.setLayoutProperty(layerId, 'visibility', 'none');
+      } catch {
+        // Ignore layer visibility update failures.
+      }
+    });
+
+    allLineLayerIdsRef.current.forEach((layerId) => {
+      if (!map.getLayer(layerId)) return;
+      try {
+        map.setLayoutProperty(layerId, 'visibility', 'none');
+      } catch {
+        // Ignore layer visibility update failures.
+      }
+    });
+
+    hiddenFillLayerIdsRef.current.forEach((layerId) => {
+      if (!map.getLayer(layerId)) return;
+      try {
+        map.setLayoutProperty(layerId, 'visibility', 'none');
+      } catch {
+        // Ignore layer visibility update failures.
+      }
+    });
+
+    adminBoundaryLayerIdsRef.current.forEach((layerId) => {
+      if (!map.getLayer(layerId)) return;
+      try {
+        map.setLayoutProperty(layerId, 'visibility', 'none');
+      } catch {
+        // Ignore layer visibility update failures.
+      }
+    });
+
+    placeLabelLayerIdsRef.current.forEach((layerId) => {
+      if (!map.getLayer(layerId)) return;
+      try {
+        map.setLayoutProperty(layerId, 'visibility', shouldShowPlaceLabels ? 'visible' : 'none');
+      } catch {
+        // Ignore layer visibility update failures.
+      }
+    });
+    applyBasemapConfig();
+    lastPlaceLabelVisibleRef.current = shouldShowPlaceLabels;
+  }, [applyBasemapConfig]);
+
+  const resetAndApplyPlaceLabelVisibility = useCallback(() => {
+    lastPlaceLabelVisibleRef.current = null;
+    applyPlaceLabelVisibility();
+  }, [applyPlaceLabelVisibility]);
 
   const applyWaterPaint = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
+    if (globeTheme !== 'deep' && globeTheme !== 'neon') return;
 
     const waterColor = WATER_COLOR_BY_THEME[globeTheme] || WATER_COLOR_BY_THEME.deep;
     const layerIds = ['water', 'water-shadow', 'waterway'];
@@ -292,10 +465,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [isZenMode, pauseRender]);
 
   const handleGlobeClickInternal = useCallback((event) => {
+    if (Date.now() < suppressClickUntilRef.current) return;
     if (isZenMode || isHoveringMarker.current || pauseRender) return;
     if (!onGlobeClick || !event?.lngLat) return;
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng });
   }, [isZenMode, onGlobeClick, pauseRender]);
+
+  const handleInteractionStart = useCallback(() => {
+    interactionRef.current = true;
+    autoRotateRef.current = false;
+  }, []);
+
+  const handleInteractionEnd = useCallback(() => {
+    interactionRef.current = false;
+  }, []);
 
   if (!MAPBOX_TOKEN) {
     return null;
@@ -304,7 +487,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   return (
     <div
       className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'}`}
-      style={{ display: pauseRender ? 'none' : 'block', touchAction: 'none' }}
+      style={{ display: pauseRender ? 'none' : 'block' }}
+      onPointerDown={handleInteractionStart}
+      onPointerUp={handleInteractionEnd}
+      onPointerCancel={handleInteractionEnd}
+      onPointerLeave={handleInteractionEnd}
+      onWheel={handleInteractionStart}
     >
       <Map
         ref={mapRef}
@@ -314,14 +502,30 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         mapStyle={MAP_STYLES[globeTheme] || MAP_STYLES.deep}
         onClick={handleGlobeClickInternal}
         onError={(evt) => raiseFatal(evt?.error || new Error('Mapbox render error'))}
-        onLoad={() => applyWaterPaint()}
-        onStyleData={() => applyWaterPaint()}
+        onLoad={() => {
+          ensureInteractionReady();
+          applyWaterPaint();
+          refreshPlaceLabelLayers();
+          resetAndApplyPlaceLabelVisibility();
+        }}
+        onStyleData={() => {
+          ensureInteractionReady();
+          applyWaterPaint();
+          refreshPlaceLabelLayers();
+          resetAndApplyPlaceLabelVisibility();
+        }}
+        onIdle={() => {
+          refreshPlaceLabelLayers();
+          resetAndApplyPlaceLabelVisibility();
+        }}
         onDragStart={() => {
           interactionRef.current = true;
           autoRotateRef.current = false;
+          suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
         }}
         onDragEnd={() => {
           interactionRef.current = false;
+          suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
         }}
         onZoomStart={() => {
           interactionRef.current = true;
@@ -330,9 +534,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onZoomEnd={() => {
           interactionRef.current = false;
         }}
+        onZoom={() => {
+          applyPlaceLabelVisibility();
+        }}
         style={{ width: dimensions.width, height: dimensions.height }}
         minZoom={1}
         maxZoom={GLOBE_VIEW.maxZoom}
+        clickTolerance={GLOBE_CLICK_TOLERANCE_PX}
+        dragPan
+        touchZoomRotate
         attributionControl={false}
         fog={fogConfig}
       >

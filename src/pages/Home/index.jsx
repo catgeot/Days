@@ -21,6 +21,8 @@ import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { getSystemPrompt } from './lib/prompts';
 
+const DEFAULT_GLOBE_THEME = 'deep';
+
 function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
@@ -64,7 +66,7 @@ function Home() {
     }
   });
   const [isPinVisible, setIsPinVisible] = useState(true);
-  const [globeTheme, setGlobeTheme] = useState('deep');
+  const [globeTheme, setGlobeTheme] = useState(DEFAULT_GLOBE_THEME);
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
