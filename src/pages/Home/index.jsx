@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Outlet, useNavigate, useLocation, matchPath, Link } from 'react-router-dom';
 
-import HomeGlobe from './components/HomeGlobe';
+import HomeGlobe from './components/HomeGlobeAdapter';
 import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal';
 import SearchDiscoveryModal from './components/SearchDiscoveryModal';
