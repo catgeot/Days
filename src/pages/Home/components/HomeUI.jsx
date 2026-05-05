@@ -64,7 +64,7 @@ const HomeUI = React.memo(({
           <h1 className="text-2xl md:text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
         </div>
 
-        <div className="hidden md:flex md:col-span-1 justify-center gap-2 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
+        <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
            <button
              onClick={onThemeToggle}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
@@ -80,6 +80,11 @@ const HomeUI = React.memo(({
            >
               <Leaf size={16} className="group-hover:scale-110 transition-transform" />
            </button>
+
+           <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
+              {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
+           </button>
+           <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
         <div className="flex-1 md:col-span-5 flex flex-col items-end md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto relative z-50">
@@ -99,20 +104,17 @@ const HomeUI = React.memo(({
           </div>
         </div>
 
-        <div className="hidden md:flex md:col-span-1 justify-center gap-3 pt-3 animate-fade-in-down pointer-events-auto relative z-50">
-           <button onClick={onTogglePinVisibility} className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}>
-              {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
-           </button>
-           <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
-        </div>
+        <div className="hidden md:block md:col-span-1" />
 
-        <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-auto relative z-50">
-          <TravelTicker
-            data={trendingData}
-            onCityClick={onTickerClick}
-            isExpanded={isTickerExpanded}
-            onToggle={setIsTickerExpanded}
-          />
+        <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-none relative z-50">
+          <div className="pointer-events-auto">
+            <TravelTicker
+              data={trendingData}
+              onCityClick={onTickerClick}
+              isExpanded={isTickerExpanded}
+              onToggle={setIsTickerExpanded}
+            />
+          </div>
         </div>
       </div>
 

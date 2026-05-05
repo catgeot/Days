@@ -148,7 +148,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
   }, [mediaMode, location]);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[100] bg-black/95 flex flex-col md:flex-row p-0 md:p-6 gap-0 md:gap-6 animate-fade-in overflow-hidden font-sans overscroll-none">
+    <div ref={containerRef} className="fixed inset-0 z-[100] bg-black/95 flex flex-col lg:flex-row p-0 lg:p-6 gap-0 lg:gap-6 animate-fade-in overflow-hidden font-sans overscroll-none">
       <PlaceChatPanel
         location={location}
         isBookmarked={isBookmarked}

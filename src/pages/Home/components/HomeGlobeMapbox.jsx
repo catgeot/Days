@@ -114,6 +114,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const lastPlaceLabelVisibleRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
+  const [mobileActionMessage, setMobileActionMessage] = useState('');
   const fogConfig = useMemo(() => {
     const atmosphere = ATMOSPHERE_BY_THEME[globeTheme] || ATMOSPHERE_BY_THEME.deep;
     return { ...GLOBE_SPACE_FOG_BASE, ...atmosphere };
@@ -295,8 +296,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [raiseFatal]);
 
   useEffect(() => {
-    const handleResize = () => setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    const handleResize = () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    };
     window.addEventListener('resize', handleResize);
+    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -384,6 +388,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
     autoRotateRef.current = false;
+    // Keep the user's current zoomed context stable on all devices.
+    addRipple(lat, lng, 2000);
+    return;
     map.flyTo({
       center: [lng, lat],
       zoom: GLOBE_VIEW.flyZoom,
@@ -399,6 +406,89 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
     }, GLOBE_VIEW.flyDuration + 4000);
   }, [addRipple, pauseRender]);
+
+  const showMobileActionMessage = useCallback((message) => {
+    setMobileActionMessage(message);
+    window.setTimeout(() => {
+      setMobileActionMessage((prev) => (prev === message ? '' : prev));
+    }, 1800);
+  }, []);
+
+  const handleShareCurrentView = useCallback(async () => {
+    const map = mapRef.current?.getMap();
+    const center = map?.getCenter();
+    const zoom = map?.getZoom();
+    const url = new URL(window.location.href);
+    if (center && typeof zoom === 'number') {
+      url.searchParams.set('lng', center.lng.toFixed(5));
+      url.searchParams.set('lat', center.lat.toFixed(5));
+      url.searchParams.set('zoom', zoom.toFixed(2));
+    }
+    const shareData = {
+      title: 'GateO Globe',
+      text: '지금 보고 있는 지구본 위치를 공유합니다.',
+      url: url.toString()
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareData.url);
+        showMobileActionMessage('링크를 복사했어요.');
+      }
+    } catch {
+      // User may cancel the share sheet or browser may block.
+    }
+  }, [showMobileActionMessage]);
+
+  const handleGoToCurrentLocation = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || !navigator.geolocation) {
+      showMobileActionMessage('현재 위치를 찾을 수 없어요.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        autoRotateRef.current = false;
+        map.flyTo({
+          center: [longitude, latitude],
+          zoom: Math.max(map.getZoom(), 11),
+          duration: 900,
+          essential: true
+        });
+      },
+      () => showMobileActionMessage('위치 권한을 확인해 주세요.'),
+      { enableHighAccuracy: true, timeout: 6000 }
+    );
+  }, [showMobileActionMessage]);
+
+  const handleReturnToSpace = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    try {
+      map.stop();
+      map.flyTo({
+        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
+        zoom: GLOBE_VIEW.default.zoom,
+        pitch: GLOBE_VIEW.default.pitch,
+        bearing: GLOBE_VIEW.default.bearing,
+        duration: 1200,
+        essential: true
+      });
+    } catch {
+      // Fallback for edge cases where camera animation is rejected.
+      map.jumpTo({
+        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
+        zoom: GLOBE_VIEW.default.zoom,
+        pitch: GLOBE_VIEW.default.pitch,
+        bearing: GLOBE_VIEW.default.bearing
+      });
+    }
+    interactionRef.current = false;
+    autoRotateRef.current = !pauseRender;
+    setRipples([]);
+  }, [pauseRender]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
@@ -587,6 +677,52 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           </Marker>
         ))}
       </Map>
+
+      {!isZenMode && (
+        <div className="absolute z-[70] pointer-events-auto flex flex-col gap-2 right-3 top-1/2 -translate-y-1/2 md:top-8 md:right-[24.8%] md:translate-y-0 md:flex-row">
+          <button
+            type="button"
+            onClick={handleShareCurrentView}
+            className="h-11 w-11 rounded-full bg-black/55 border border-white/20 text-gray-100 shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95"
+            aria-label="현재 위치 공유"
+            title="현재 위치 공유"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3.2v10.1" />
+              <path d="m8.3 7.1 3.7-3.7 3.7 3.7" />
+              <path d="M4.9 10.5v8.4A2.1 2.1 0 0 0 7 21h10a2.1 2.1 0 0 0 2.1-2.1v-8.4" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={handleGoToCurrentLocation}
+            className="h-11 w-11 rounded-full bg-black/55 border border-emerald-400/35 text-emerald-400 shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95"
+            aria-label="현재 위치로 이동"
+            title="현재 위치로 이동"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+              <path d="M21.2 2.8 3.9 10.3c-.8.3-.8 1.4 0 1.7l6.9 2.3 2.3 6.9c.3.8 1.4.8 1.7 0l7.5-17.3c.3-.8-.5-1.6-1.3-1.2Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={handleReturnToSpace}
+            className="h-11 w-11 rounded-full bg-black/55 border border-blue-400/35 text-blue-400 shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95"
+            aria-label="우주로 복귀"
+            title="우주로 복귀"
+          >
+            <svg viewBox="0 0 24 24" className="h-[30px] w-[30px] fill-none stroke-current" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="6.2" />
+              <path d="M5.8 12h12.4M12 5.8c2 1.9 3.1 4 3.1 6.2S14 16.3 12 18.2M12 5.8c-2 1.9-3.1 4-3.1 6.2s1.1 4.3 3.1 6.2" />
+            </svg>
+          </button>
+        </div>
+      )}
+      {mobileActionMessage && !isZenMode && (
+        <div className="absolute right-3 top-[calc(50%+8.5rem)] z-[70] pointer-events-none rounded-full bg-black/70 px-3 py-1 text-xs text-white border border-white/15 backdrop-blur-sm">
+          {mobileActionMessage}
+        </div>
+      )}
     </div>
   );
 }));

@@ -13,7 +13,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
   }, [location]);
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] md:translate-x-0 md:left-auto md:right-8 md:w-80 z-[60] animate-fade-in-up transition-all duration-300">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:translate-x-0 lg:left-auto lg:right-8 lg:w-80 z-[60] animate-fade-in-up transition-all duration-300">
 
       <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-4 relative group">
 
