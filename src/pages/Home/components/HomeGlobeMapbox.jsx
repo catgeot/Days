@@ -679,7 +679,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       </Map>
 
       {!isZenMode && (
-        <div className="absolute z-[70] pointer-events-auto flex flex-col gap-2 right-3 top-3 md:top-8 md:right-[24.8%] md:flex-row">
+        <div className="absolute z-[70] pointer-events-auto flex flex-col gap-1 right-3 top-14 md:top-8 md:right-[24.8%] md:gap-2 md:flex-row">
           <button
             type="button"
             onClick={handleShareCurrentView}
