@@ -6,11 +6,19 @@ const truncate = (str, length = 8) => {
   return str.length > length ? str.substring(0, length) + '..' : str;
 };
 
+const escapeHtml = (value = '') =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 // 🎨 마커 디자인 및 HTML 생성 함수
 export const getMarkerDesign = (d) => {
   let iconContent = '';
   let scale = '1';
-  let offsetY = '-50%';
+  let offsetY = '-100%';
   let zIndex = '10';
 
   // ---------------------------------------------------------
@@ -21,40 +29,35 @@ export const getMarkerDesign = (d) => {
   if (d.type === 'saved-base') {
       zIndex = '100';
       iconContent = `
-         <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); border: 1px solid #f8fafc; padding: 3px 8px; border-radius: 99px;">
-           <div style="width: 6px; height: 6px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 5px #ffffff;"></div>
-           <span style="color: white; font-size: 10px; font-weight: bold; white-space: nowrap;">${truncate(d.name, 10)}</span>
+         <div style="display:flex; align-items:center; gap:4px;">
+           <span style="color:#e2e8f0; font-size:10px; font-weight:700; line-height:1; text-shadow:0 0 1px rgba(2,6,23,0.95), 0 0 4px rgba(2,6,23,0.8); white-space:nowrap;">•</span>
+           <span style="color:#ffffff; font-size:11px; font-weight:650; letter-spacing:0.15px; line-height:1.1; text-shadow:0 0 1px rgba(2,6,23,0.95), 0 0 5px rgba(2,6,23,0.85); white-space:nowrap;">${escapeHtml(truncate(d.name, 11))}</span>
          </div>`;
   }
   // 2. Temp Base (탐색/대화 - 임시) - 밋밋한 회색 점
   else if (d.type === 'temp-base') {
       zIndex = '50';
       iconContent = `
-         <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.4); backdrop-filter: blur(1px); border: 1px solid #64748b; padding: 2px 6px; border-radius: 99px;">
-           <div style="width: 4px; height: 4px; background: #cbd5e1; border-radius: 50%;"></div>
-           <span style="color: #cbd5e1; font-size: 9px; white-space: nowrap;">${truncate(d.name, 8)}</span>
+         <div style="display:flex; align-items:center; gap:4px; opacity:0.96;">
+           <span style="color:#94a3b8; font-size:9px; font-weight:600; line-height:1; text-shadow:0 0 1px rgba(2,6,23,0.95), 0 0 4px rgba(2,6,23,0.75); white-space:nowrap;">·</span>
+           <span style="color:#cbd5e1; font-size:10px; font-weight:520; letter-spacing:0.1px; line-height:1.1; text-shadow:0 0 1px rgba(2,6,23,0.95), 0 0 4px rgba(2,6,23,0.8); white-space:nowrap;">${escapeHtml(truncate(d.name, 10))}</span>
          </div>`;
   }
   // 3. Major (지명 아이콘) - 화려함
   else if (d.type === 'major') {
-      let colorClass = '#94a3b8';
-      if (d.category === 'paradise') colorClass = '#22d3ee';
-      else if (d.category === 'nature') colorClass = '#4ade80';
-      else if (d.category === 'urban') colorClass = '#c084fc';
-      else if (d.category === 'nearby') colorClass = '#facc15';
-      else if (d.category === 'adventure') colorClass = '#f87171';
-      else if (d.category === 'culture') colorClass = '#a78bfa'; // 추가: culture 카테고리 색상
-
-      // 마커 크기 최적화: 밀집도와 가독성 균형
-      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      const dotSize = isMobile ? '7px' : '7px'; // 모바일: 7px (6px에서 증가), 데스크톱: 7px
-      const fontSize = isMobile ? '9px' : '9px'; // 모바일: 9px (8px에서 증가), 데스크톱: 9px
-      const padding = isMobile ? '2px 6px' : '2px 7px'; // 패딩 유지
+      let accentColor = '#b7c7db';
+      if (d.category === 'paradise') accentColor = '#67d6ff';
+      else if (d.category === 'nature') accentColor = '#6ee7a6';
+      else if (d.category === 'urban') accentColor = '#7ab6ff';
+      else if (d.category === 'nearby') accentColor = '#ffd76a';
+      else if (d.category === 'adventure') accentColor = '#ff9b8f';
+      else if (d.category === 'culture') accentColor = '#b89cff';
+      const labelColor = '#e6edf7';
 
       iconContent = `
-         <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.7); backdrop-filter: blur(2px); border: 1px solid ${colorClass}80; padding: ${padding}; border-radius: 99px;">
-           <div style="width: ${dotSize}; height: ${dotSize}; background: ${colorClass}; border-radius: 50%; box-shadow: 0 0 5px ${colorClass};"></div>
-           <span style="color: white; font-size: ${fontSize}; font-weight: bold; white-space: nowrap;">${truncate(d.name, 10)}</span>
+         <div style="display:flex; align-items:center; gap:4px;">
+           <span style="color:${accentColor}; font-size:22px; font-weight:800; line-height:0.6; text-shadow:0 0 1px rgba(2,6,23,0.98), 0 0 2px rgba(2,6,23,0.75); white-space:nowrap;">•</span>
+           <span style="color:${labelColor}; font-size:11px; font-weight:610; letter-spacing:0.12px; line-height:1.1; text-shadow:0 0 1px rgba(2,6,23,1), 0 0 2px rgba(2,6,23,0.98), 0 0 7px rgba(2,6,23,0.9); white-space:nowrap;">${escapeHtml(truncate(d.name, 12))}</span>
          </div>`;
   }
 
@@ -73,8 +76,8 @@ export const getMarkerDesign = (d) => {
   if (iconContent === '') {
       zIndex = '10';
       iconContent = `
-         <div style="display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.5); backdrop-filter: blur(1px); border: 1px dashed #ef4444; padding: 2px 6px; border-radius: 99px;">
-           <span style="color: #ef4444; font-size: 9px; white-space: nowrap;">${truncate(d.name || '?', 8)}</span>
+         <div style="display:flex; align-items:center;">
+           <span style="color:#fca5a5; font-size:10px; font-weight:580; line-height:1.1; text-shadow:0 0 1px rgba(2,6,23,0.95), 0 0 6px rgba(127,29,29,0.65); white-space:nowrap;">${escapeHtml(truncate(d.name || '?', 10))}</span>
          </div>`;
   }
 
@@ -127,7 +130,7 @@ export const getMarkerDesign = (d) => {
   }
 
   const html = `
-    <div style="position: absolute; transform: translate(-50%, ${offsetY}); cursor: pointer; transition: transform 0.2s ease;">
+    <div style="position: absolute; transform: translate3d(-50%, ${offsetY}, 0); cursor: pointer; will-change: transform;">
       ${overlay}
       <div style="transform: scale(${scale});">${iconContent}</div>
     </div>

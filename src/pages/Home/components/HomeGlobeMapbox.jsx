@@ -54,6 +54,8 @@ const WATER_COLOR_BY_THEME = {
 };
 
 const PLACE_LABEL_MIN_ZOOM = 3.5;
+const HIDDEN_SPOTS_REVEAL_ZOOM_MID = 2.35;
+const HIDDEN_SPOTS_REVEAL_ZOOM_ALL = 3.15;
 const GLOBE_CLICK_TOLERANCE_PX = 3;
 const DRAG_CLICK_GUARD_MS = 180;
 const PLACE_LABEL_LAYER_HINTS = [
@@ -115,6 +117,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
+  const [cameraZoom, setCameraZoom] = useState(GLOBE_VIEW.default.zoom);
   const fogConfig = useMemo(() => {
     const atmosphere = ATMOSPHERE_BY_THEME[globeTheme] || ATMOSPHERE_BY_THEME.deep;
     return { ...GLOBE_SPACE_FOG_BASE, ...atmosphere };
@@ -310,12 +313,29 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const findMatchIndex = (lat, lng) => result.findIndex(
       m => Math.abs(m.lat - lat) < threshold && Math.abs(m.lng - lng) < threshold
     );
+    const currentZoom = Number.isFinite(cameraZoom) ? cameraZoom : GLOBE_VIEW.default.zoom;
+    const isMidZoom = currentZoom >= HIDDEN_SPOTS_REVEAL_ZOOM_MID;
+    const isHighZoom = currentZoom >= HIDDEN_SPOTS_REVEAL_ZOOM_ALL;
 
-    travelSpots
-      .filter(spot => spot.showOnGlobe !== false)
-      .forEach(spot => {
-        result.push({ ...spot, type: 'major', priority: 0, isBookmarked: false, hasChat: false });
-      });
+    const majorCandidates = travelSpots
+      .filter((spot) => {
+        if (spot.showOnGlobe !== false) return true;
+        if (isHighZoom) return true;
+        if (!isMidZoom) return false;
+        const popularity = Number(spot.popularity) || 0;
+        const tier = Number(spot.tier) || 3;
+        // Mid zoom: reveal major hidden destinations first.
+        return tier <= 1 || popularity >= 90;
+      })
+      .map((spot) => ({
+        ...spot,
+        type: 'major',
+        priority: 0,
+        isBookmarked: false,
+        hasChat: false
+      }));
+
+    majorCandidates.forEach((spot) => result.push(spot));
 
     let chatCount = 0;
     savedTrips.forEach(trip => {
@@ -372,7 +392,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     });
 
     return result;
-  }, [travelSpots, savedTrips, tempPinsData, activePinId]);
+  }, [travelSpots, savedTrips, tempPinsData, activePinId, cameraZoom]);
 
   const addRipple = useCallback((lat, lng, ttl = 1600) => {
     const ripple = { id: `${Date.now()}-${Math.random()}`, lat, lng };
@@ -626,6 +646,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         }}
         onZoom={() => {
           applyPlaceLabelVisibility();
+        }}
+        onMove={(evt) => {
+          const nextView = evt?.viewState;
+          if (!nextView) return;
+          setCameraZoom((prev) => (Math.abs(prev - nextView.zoom) < 0.01 ? prev : nextView.zoom));
         }}
         style={{ width: dimensions.width, height: dimensions.height }}
         minZoom={1}
