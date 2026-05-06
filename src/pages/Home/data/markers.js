@@ -60,22 +60,6 @@ export const getMarkerDesign = (d) => {
            <span style="color:${labelColor}; font-size:11px; font-weight:610; letter-spacing:0.12px; line-height:1.1; text-shadow:0 0 1px rgba(2,6,23,1), 0 0 2px rgba(2,6,23,0.98), 0 0 7px rgba(2,6,23,0.9); white-space:nowrap;">${escapeHtml(truncate(d.name, 12))}</span>
          </div>`;
   }
-  // 4. User Pin (사용자 직접 생성 핀)
-  else if (d.type === 'user-pin' || d.isUserPin) {
-      zIndex = '180';
-      offsetY = '-100%';
-      iconContent = `
-         <div style="display:flex; align-items:center; gap:4px;">
-           <div style="width:18px; height:24px; filter:drop-shadow(0 1px 2px rgba(2,6,23,0.85));">
-             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 24 24" fill="none" stroke="none">
-               <path d="M12 1.9c-4.03 0-7.3 3.27-7.3 7.3 0 5.05 5.77 10.51 6.96 11.58a.5.5 0 0 0 .68 0c1.19-1.07 6.96-6.53 6.96-11.58 0-4.03-3.27-7.3-7.3-7.3Z" fill="#ea4335"/>
-               <circle cx="12" cy="9.2" r="3.1" fill="#ffffff"/>
-               <path d="M12 17.7 9.9 20.5h4.2L12 17.7Z" fill="#9f1f17" opacity="0.9"/>
-             </svg>
-           </div>
-           <span style="color:#ffe7dc; font-size:10px; font-weight:620; letter-spacing:0.1px; line-height:1.05; text-shadow:0 0 1px rgba(2,6,23,1), 0 0 4px rgba(2,6,23,0.9); white-space:nowrap;">${escapeHtml(truncate(d.name, 12))}</span>
-         </div>`;
-  }
 
   // 독립 아이콘 처리 (예외적 상황)
   else if (d.type === 'saved-trip' && !d.isActive && !d.isGhost) {
@@ -103,7 +87,7 @@ export const getMarkerDesign = (d) => {
   let overlay = '';
 
   // 1. Active Pin
-  if (d.isActive && !d.isUserPin && d.type !== 'user-pin') {
+  if (d.isActive) {
       zIndex = '999';
       overlay += `
           <div style="position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); animation: pinBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1;">
@@ -127,7 +111,7 @@ export const getMarkerDesign = (d) => {
   }
 
   // 3. Status Badge (Major & Saved-Base & Temp-Base에 붙는 배지)
-  if (d.type === 'major' || d.type === 'saved-base' || d.type === 'temp-base' || d.type === 'user-pin' || d.isUserPin) {
+  if (d.type === 'major' || d.type === 'saved-base' || d.type === 'temp-base') {
       if (d.isBookmarked) {
           overlay += `
               <div style="position: absolute; bottom: 18px; right: -10px; width: 18px; height: 18px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); animation: popIn 0.3s ease-out;">
