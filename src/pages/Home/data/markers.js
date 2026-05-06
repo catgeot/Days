@@ -112,6 +112,12 @@ export const getMarkerDesign = (d) => {
 
   // 3. Status Badge (Major & Saved-Base & Temp-Base에 붙는 배지)
   if (d.type === 'major' || d.type === 'saved-base' || d.type === 'temp-base') {
+      if (d.type === 'major' && Number(d.hiddenClusterCount) > 0) {
+          overlay += `
+              <div style="position: absolute; bottom: 18px; right: -12px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px; background: rgba(15,23,42,0.88); border: 1px solid rgba(148,163,184,0.55); color: #e2e8f0; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; filter: drop-shadow(0 2px 3px rgba(2,6,23,0.55));">
+                  +${Number(d.hiddenClusterCount)}
+              </div>`;
+      }
       if (d.isBookmarked) {
           overlay += `
               <div style="position: absolute; bottom: 18px; right: -10px; width: 18px; height: 18px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); animation: popIn 0.3s ease-out;">

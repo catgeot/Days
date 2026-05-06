@@ -22,3 +22,12 @@
 
 - 수정 파일 lint 점검 완료: 오류 없음.
 - 개발 서버(`npm run dev`)에서 사용자 피드백 기준으로 단계별 시각/노출 동작 확인.
+
+## Home Mapbox 마커 최적화 후속 튜닝 (야간 세션)
+
+- 사용자 핀 로직은 즐겨찾기 중심 운영으로 정리하고, 핀 생성 커밋(`fc7eb76`)을 `git revert`로 되돌림.
+- `HomeGlobeMapbox` 마커 노출을 **tier + 근접 병합 + 2차 충돌 완화** 구조로 재편, 밀집 구간에서 겹침을 줄이면서 기본 화면 가독성을 확보.
+- 테마/카테고리 경계는 **초기·중간 줌에서는 유지**, `HIGH_ZOOM_FULL_REVEAL = 3.0` 이상에서만 전체 여행지(`allTravelSpots`)를 개방하도록 분리.
+- 기본 지명 임계값은 `PLACE_LABEL_MIN_ZOOM = 4.0`으로 상향해, 지명 과밀 전 마커 탐색 시간을 확보.
+- 고줌 전체 개방 구간에서는 `showOnGlobe` 제한과 병합 강도를 풀어 원본 여행지 노출을 우선하고, 중저줌에서는 병합/충돌 완화로 시야를 정리.
+- 다음 데이터 증설 대응 포인트: `TIER_STAGE_ZOOM_LEVELS`, `HIGH_ZOOM_FULL_REVEAL`, `getMajorMergeThreshold()`, `getMarkerCollisionThreshold()` 4개 임계값만 우선 조정하면 빠르게 균형 복구 가능.

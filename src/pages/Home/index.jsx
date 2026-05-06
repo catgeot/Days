@@ -287,6 +287,7 @@ function Home() {
 
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
   const filteredSpots = useMemo(() => TRAVEL_SPOTS.filter(s => s.category === category), [category]);
+  const globeSpots = useMemo(() => TRAVEL_SPOTS, []);
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
 
   const globeRenderedTrips = useMemo(() => {
@@ -316,6 +317,7 @@ function Home() {
           savedTrips={isPinVisible ? globeRenderedTrips : []}
           tempPinsData={isPinVisible ? scoutedPins : []}
           travelSpots={isPinVisible ? filteredSpots : []}
+          allTravelSpots={isPinVisible ? globeSpots : []}
           activePinId={selectedLocation?.id}
           pauseRender={isCardExpanded}
           globeTheme={globeTheme}

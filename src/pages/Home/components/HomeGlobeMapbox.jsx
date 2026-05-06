@@ -53,11 +53,15 @@ const WATER_COLOR_BY_THEME = {
   neon: '#1d4ed8'
 };
 
-const PLACE_LABEL_MIN_ZOOM = 3.5;
-const HIDDEN_SPOTS_REVEAL_ZOOM_MID = 2.35;
-const HIDDEN_SPOTS_REVEAL_ZOOM_ALL = 3.15;
+const PLACE_LABEL_MIN_ZOOM = 4.0;
 const GLOBE_CLICK_TOLERANCE_PX = 3;
 const DRAG_CLICK_GUARD_MS = 180;
+const TIER_STAGE_ZOOM_LEVELS = {
+  // Keep initial globe concise, then gradually reveal.
+  tier1: 1.1,
+  tier2: 2.45
+};
+const HIGH_ZOOM_FULL_REVEAL = 3.0;
 const PLACE_LABEL_LAYER_HINTS = [
   'place-label',
   'settlement',
@@ -87,6 +91,37 @@ const GLOBE_VIEW = {
   flyDuration: 3000
 };
 
+const normalizeLngDelta = (a, b) => {
+  const diff = Math.abs(a - b) % 360;
+  return diff > 180 ? 360 - diff : diff;
+};
+
+const areCoordsNear = (a, b, thresholdDeg) => {
+  const latDiff = Math.abs(a.lat - b.lat);
+  const lngDiff = normalizeLngDelta(a.lng, b.lng);
+  return latDiff <= thresholdDeg && lngDiff <= thresholdDeg;
+};
+
+const getMaxTierForZoom = (zoom) => {
+  if (zoom < TIER_STAGE_ZOOM_LEVELS.tier1) return 1;
+  if (zoom < TIER_STAGE_ZOOM_LEVELS.tier2) return 2;
+  return 3;
+};
+
+const getMajorMergeThreshold = (zoom) => {
+  if (zoom >= HIGH_ZOOM_FULL_REVEAL) return 0.12;
+  if (zoom < 1.7) return 1.75;
+  if (zoom < 2.5) return 1.1;
+  return 0.55;
+};
+
+const getMarkerCollisionThreshold = (zoom) => {
+  if (zoom >= HIGH_ZOOM_FULL_REVEAL) return 0.06;
+  if (zoom < 1.7) return 1.2;
+  if (zoom < 2.5) return 0.82;
+  return 0.42;
+};
+
 const HomeGlobeMapbox = React.memo(forwardRef(({
   onGlobeClick,
   onMarkerClick,
@@ -94,6 +129,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   savedTrips = [],
   tempPinsData = [],
   travelSpots = [],
+  allTravelSpots = [],
   activePinId,
   pauseRender = false,
   globeTheme = 'deep',
@@ -114,10 +150,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const hiddenFillLayerIdsRef = useRef([]);
   const adminBoundaryLayerIdsRef = useRef([]);
   const lastPlaceLabelVisibleRef = useRef(null);
+  const waitingThemeSettleRef = useRef(false);
+  const pendingThemeCameraRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
-  const [cameraZoom, setCameraZoom] = useState(GLOBE_VIEW.default.zoom);
+  const [isStyleTransitioning, setIsStyleTransitioning] = useState(false);
+  const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
   const fogConfig = useMemo(() => {
     const atmosphere = ATMOSPHERE_BY_THEME[globeTheme] || ATMOSPHERE_BY_THEME.deep;
     return { ...GLOBE_SPACE_FOG_BASE, ...atmosphere };
@@ -256,6 +295,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     lastPlaceLabelVisibleRef.current = shouldShowPlaceLabels;
   }, [applyBasemapConfig]);
 
+  const syncMapZoom = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const zoom = map.getZoom();
+    if (!Number.isFinite(zoom)) return;
+    setMapZoom((prev) => (Math.abs(prev - zoom) < 0.01 ? prev : zoom));
+  }, []);
+
   const resetAndApplyPlaceLabelVisibility = useCallback(() => {
     lastPlaceLabelVisibleRef.current = null;
     applyPlaceLabelVisibility();
@@ -307,26 +354,36 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    // During style/theme swap, briefly freeze marker rendering to avoid visual stacking/flicker.
+    const map = mapRef.current?.getMap();
+    if (map) {
+      const center = map.getCenter();
+      pendingThemeCameraRef.current = {
+        center: [center.lng, center.lat],
+        zoom: map.getZoom(),
+        pitch: map.getPitch(),
+        bearing: map.getBearing()
+      };
+    } else {
+      pendingThemeCameraRef.current = null;
+    }
+    waitingThemeSettleRef.current = true;
+    setIsStyleTransitioning(true);
+  }, [globeTheme]);
+
   const allMarkers = useMemo(() => {
     let result = [];
     const threshold = 0.05;
     const findMatchIndex = (lat, lng) => result.findIndex(
       m => Math.abs(m.lat - lat) < threshold && Math.abs(m.lng - lng) < threshold
     );
-    const currentZoom = Number.isFinite(cameraZoom) ? cameraZoom : GLOBE_VIEW.default.zoom;
-    const isMidZoom = currentZoom >= HIDDEN_SPOTS_REVEAL_ZOOM_MID;
-    const isHighZoom = currentZoom >= HIDDEN_SPOTS_REVEAL_ZOOM_ALL;
-
-    const majorCandidates = travelSpots
-      .filter((spot) => {
-        if (spot.showOnGlobe !== false) return true;
-        if (isHighZoom) return true;
-        if (!isMidZoom) return false;
-        const popularity = Number(spot.popularity) || 0;
-        const tier = Number(spot.tier) || 3;
-        // Mid zoom: reveal major hidden destinations first.
-        return tier <= 1 || popularity >= 90;
-      })
+    const maxTier = getMaxTierForZoom(mapZoom);
+    const isHighZoomFullReveal = mapZoom >= HIGH_ZOOM_FULL_REVEAL;
+    const sourceSpots = isHighZoomFullReveal && allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
+    const majorCandidates = sourceSpots
+      .filter((spot) => isHighZoomFullReveal || spot.showOnGlobe !== false)
+      .filter((spot) => (Number(spot.tier) || 3) <= maxTier)
       .map((spot) => ({
         ...spot,
         type: 'major',
@@ -334,8 +391,49 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         isBookmarked: false,
         hasChat: false
       }));
-
-    majorCandidates.forEach((spot) => result.push(spot));
+    const sortedMajors = [...majorCandidates].sort((a, b) => {
+      const tierA = Number(a.tier) || 3;
+      const tierB = Number(b.tier) || 3;
+      if (tierA !== tierB) return tierA - tierB;
+      return (Number(b.popularity) || 0) - (Number(a.popularity) || 0);
+    });
+    if (isHighZoomFullReveal) {
+      sortedMajors.forEach((spot) => {
+        const idx = findMatchIndex(spot.lat, spot.lng);
+        if (idx !== -1) return;
+        result.push({
+          ...spot,
+          clusterCount: 1,
+          hiddenClusterCount: 0
+        });
+      });
+    } else {
+      const mergeThreshold = getMajorMergeThreshold(mapZoom);
+      const majorClusters = [];
+      sortedMajors.forEach((spot) => {
+        const existingCluster = majorClusters.find((cluster) =>
+          areCoordsNear(cluster.anchor, { lat: spot.lat, lng: spot.lng }, mergeThreshold)
+        );
+        if (existingCluster) {
+          existingCluster.items.push(spot);
+          return;
+        }
+        majorClusters.push({
+          anchor: { lat: spot.lat, lng: spot.lng },
+          items: [spot]
+        });
+      });
+      majorClusters.forEach((cluster) => {
+        const [representative, ...hidden] = cluster.items;
+        const idx = findMatchIndex(representative.lat, representative.lng);
+        if (idx !== -1) return;
+        result.push({
+          ...representative,
+          clusterCount: cluster.items.length,
+          hiddenClusterCount: hidden.length
+        });
+      });
+    }
 
     let chatCount = 0;
     savedTrips.forEach(trip => {
@@ -391,8 +489,44 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
     });
 
-    return result;
-  }, [travelSpots, savedTrips, tempPinsData, activePinId, cameraZoom]);
+    const collisionThreshold = getMarkerCollisionThreshold(mapZoom);
+    const markerWeight = (marker) => {
+      if (marker.isActive) return 100;
+      if (marker.isBookmarked) return 90;
+      if (marker.hasChat) return 80;
+      if (marker.type === 'temp-base') return 70;
+      const tier = Number(marker.tier) || 3;
+      const popularity = Number(marker.popularity) || 0;
+      // Lower tier + higher popularity should survive when collisions occur.
+      return 50 - tier * 5 + popularity / 100;
+    };
+    const keptMarkers = [];
+    const sortedByWeight = isHighZoomFullReveal
+      ? [...result]
+      : [...result].sort((a, b) => markerWeight(b) - markerWeight(a));
+    sortedByWeight.forEach((marker) => {
+      if (isHighZoomFullReveal) {
+        keptMarkers.push(marker);
+        return;
+      }
+      const existing = keptMarkers.find((kept) =>
+        areCoordsNear(
+          { lat: kept.lat, lng: kept.lng },
+          { lat: marker.lat, lng: marker.lng },
+          collisionThreshold
+        )
+      );
+      if (!existing) {
+        keptMarkers.push(marker);
+        return;
+      }
+      // At high zoom, only collapse truly overlapping markers.
+      existing.hiddenClusterCount = (Number(existing.hiddenClusterCount) || 0) + 1;
+      existing.clusterCount = (Number(existing.clusterCount) || 1) + 1;
+    });
+
+    return keptMarkers;
+  }, [travelSpots, allTravelSpots, savedTrips, tempPinsData, activePinId, mapZoom]);
 
   const addRipple = useCallback((lat, lng, ttl = 1600) => {
     const ripple = { id: `${Date.now()}-${Math.random()}`, lat, lng };
@@ -613,10 +747,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onClick={handleGlobeClickInternal}
         onError={(evt) => raiseFatal(evt?.error || new Error('Mapbox render error'))}
         onLoad={() => {
+          syncMapZoom();
           ensureInteractionReady();
           applyWaterPaint();
           refreshPlaceLabelLayers();
           resetAndApplyPlaceLabelVisibility();
+          waitingThemeSettleRef.current = false;
+          setIsStyleTransitioning(false);
         }}
         onStyleData={() => {
           ensureInteractionReady();
@@ -625,8 +762,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           resetAndApplyPlaceLabelVisibility();
         }}
         onIdle={() => {
+          syncMapZoom();
           refreshPlaceLabelLayers();
           resetAndApplyPlaceLabelVisibility();
+          if (waitingThemeSettleRef.current) {
+            const map = mapRef.current?.getMap();
+            const pendingCamera = pendingThemeCameraRef.current;
+            if (map && pendingCamera) {
+              try {
+                map.jumpTo(pendingCamera);
+              } catch {
+                // Ignore camera restore failures on style transitions.
+              }
+            }
+            pendingThemeCameraRef.current = null;
+            waitingThemeSettleRef.current = false;
+            setIsStyleTransitioning(false);
+          }
         }}
         onDragStart={() => {
           interactionRef.current = true;
@@ -645,12 +797,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           interactionRef.current = false;
         }}
         onZoom={() => {
+          syncMapZoom();
           applyPlaceLabelVisibility();
-        }}
-        onMove={(evt) => {
-          const nextView = evt?.viewState;
-          if (!nextView) return;
-          setCameraZoom((prev) => (Math.abs(prev - nextView.zoom) < 0.01 ? prev : nextView.zoom));
         }}
         style={{ width: dimensions.width, height: dimensions.height }}
         minZoom={1}
@@ -661,11 +809,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         attributionControl={false}
         fog={fogConfig}
       >
-        {!isZenMode && allMarkers.map((d, idx) => {
+        {!isZenMode && !isStyleTransitioning && allMarkers.map((d, idx) => {
           const offsetLat = d._offsetLat || 0;
           const offsetLng = d._offsetLng || 0;
           const { html, zIndex } = getMarkerDesign(d);
-          const key = d.id || d.tripId || `${d.lat}-${d.lng}-${idx}`;
+          const key = d.id || d.tripId || `${d.type || 'marker'}-${d.lat}-${d.lng}-${d.name || idx}`;
           return (
             <Marker
               key={key}
