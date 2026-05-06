@@ -22,6 +22,59 @@ import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLo
 import { getSystemPrompt } from './lib/prompts';
 
 const DEFAULT_GLOBE_THEME = 'deep';
+const USER_PINS_STORAGE_KEY = 'days_user_pins_v1';
+
+const UserPinNameModal = React.memo(function UserPinNameModal({
+  pendingUserPin,
+  onConfirm,
+  onCancel
+}) {
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    if (pendingUserPin) setName('');
+  }, [pendingUserPin]);
+
+  if (!pendingUserPin) return null;
+
+  return (
+    <div className="absolute inset-0 z-[120] flex items-center justify-center bg-black/55 px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-white/15 bg-slate-950/95 p-4 shadow-2xl backdrop-blur-sm">
+        <p className="text-sm font-semibold text-white">핀 이름을 입력해 주세요</p>
+        <p className="mt-1 text-xs text-slate-300">
+          좌표: {pendingUserPin.lat.toFixed(4)}, {pendingUserPin.lng.toFixed(4)}
+        </p>
+        <input
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') onConfirm(name);
+            if (e.key === 'Escape') onCancel();
+          }}
+          placeholder="예: 우리집, 다음 여행 숙소"
+          className="mt-3 w-full rounded-lg border border-white/15 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder:text-slate-400 focus:border-blue-400/60 focus:outline-none"
+        />
+        <div className="mt-3 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-lg border border-white/20 px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10"
+          >
+            취소
+          </button>
+          <button
+            type="button"
+            onClick={() => onConfirm(name)}
+            className="rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-400"
+          >
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 function Home() {
   const globeRef = useRef();
@@ -71,6 +124,8 @@ function Home() {
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
+  const [userPins, setUserPins] = useState([]);
+  const [pendingUserPin, setPendingUserPin] = useState(null);
 
   const {
     handleGlobeClick,
@@ -265,6 +320,24 @@ function Home() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem(USER_PINS_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) setUserPins(parsed);
+    } catch {
+      setUserPins([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(USER_PINS_STORAGE_KEY, JSON.stringify(userPins));
+    } catch {
+      // Ignore storage quota / private mode issues.
+    }
+  }, [userPins]);
+
+  useEffect(() => {
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) setIsZenMode(false);
     };
@@ -304,6 +377,41 @@ function Home() {
     setGlobeTheme(themes[nextIndex]);
   };
 
+  const handleCreateUserPin = useCallback(({ lat, lng }) => {
+    setPendingUserPin({ lat, lng });
+  }, []);
+
+  const handleConfirmCreateUserPin = useCallback((rawName) => {
+    if (!pendingUserPin) return;
+    const label = (rawName || '').trim() || '내 핀';
+    const pin = {
+      id: `user-pin-${Date.now()}`,
+      slug: `user-pin-${pendingUserPin.lat.toFixed(5)}-${pendingUserPin.lng.toFixed(5)}`,
+      name: label,
+      name_en: label,
+      lat: pendingUserPin.lat,
+      lng: pendingUserPin.lng,
+      type: 'user-pin',
+      category,
+      country: 'MY PIN',
+      country_en: 'MY PIN',
+      isUserPin: true
+    };
+
+    setUserPins((prev) => [pin, ...prev].slice(0, 200));
+    addScoutPin(pin);
+    setSelectedLocation(pin);
+    setIsCardExpanded(false);
+    if (!isPinVisible) setIsPinVisible(true);
+    setPendingUserPin(null);
+  }, [addScoutPin, category, isPinVisible, pendingUserPin, setSelectedLocation]);
+
+  const handleCancelCreateUserPin = useCallback(() => {
+    setPendingUserPin(null);
+  }, []);
+
+  const renderedTempPins = useMemo(() => [...userPins, ...scoutedPins], [userPins, scoutedPins]);
+
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       <SEO />
@@ -312,12 +420,13 @@ function Home() {
           ref={globeRef}
           onGlobeClick={handleGlobeClick}
           onMarkerClick={handleLocationSelect}
+          onCreateUserPin={handleCreateUserPin}
           isChatOpen={isChatOpen}
           savedTrips={isPinVisible ? globeRenderedTrips : []}
-          tempPinsData={isPinVisible ? scoutedPins : []}
+          tempPinsData={isPinVisible ? renderedTempPins : []}
           travelSpots={isPinVisible ? filteredSpots : []}
           activePinId={selectedLocation?.id}
-          pauseRender={isCardExpanded}
+          pauseRender={isCardExpanded || Boolean(pendingUserPin)}
           globeTheme={globeTheme}
           isZenMode={isZenMode}
         />
@@ -451,6 +560,12 @@ function Home() {
             await handleSmartSearch(query);
             navigate('/', { state: { fromSearch: true } });
           }}
+        />
+
+        <UserPinNameModal
+          pendingUserPin={pendingUserPin}
+          onConfirm={handleConfirmCreateUserPin}
+          onCancel={handleCancelCreateUserPin}
         />
       </div>
 

@@ -90,6 +90,7 @@ const GLOBE_VIEW = {
 const HomeGlobeMapbox = React.memo(forwardRef(({
   onGlobeClick,
   onMarkerClick,
+  onCreateUserPin,
   isChatOpen,
   savedTrips = [],
   tempPinsData = [],
@@ -108,6 +109,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const isHoveringMarker = useRef(false);
   const hasRaisedFatalRef = useRef(false);
   const suppressClickUntilRef = useRef(0);
+  const longPressTimerRef = useRef(null);
+  const longPressTriggeredRef = useRef(false);
   const placeLabelLayerIdsRef = useRef([]);
   const allSymbolLayerIdsRef = useRef([]);
   const allLineLayerIdsRef = useRef([]);
@@ -368,13 +371,21 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const activePin = tempPinsData.find(p => p.id === activePinId);
     tempPinsData.forEach(pin => {
       const isActive = pin.id === activePinId;
+      const isUserPin = pin.type === 'user-pin' || pin.isUserPin;
       if (!isActive && activePin) {
         if (Math.abs(pin.lat - activePin.lat) < threshold && Math.abs(pin.lng - activePin.lng) < threshold) return;
       }
 
       const idx = findMatchIndex(pin.lat, pin.lng);
       if (idx !== -1) {
-        if (isActive) {
+        if (isUserPin) {
+          result[idx] = {
+            ...result[idx],
+            ...pin,
+            type: 'user-pin',
+            isUserPin: true
+          };
+        } else if (isActive) {
           result[idx].isActive = true;
           result[idx].isGhost = false;
         } else {
@@ -383,10 +394,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       } else {
         result.push({
           ...pin,
-          type: 'temp-base',
+          type: isUserPin ? 'user-pin' : (pin.type || 'temp-base'),
           name: pin.name || 'Searching...',
           isActive,
-          isGhost: !isActive
+          isGhost: isUserPin ? false : !isActive,
+          isUserPin
         });
       }
     });
@@ -574,12 +586,60 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     };
   }, [isZenMode, pauseRender]);
 
+  useEffect(() => () => {
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }, []);
+
   const handleGlobeClickInternal = useCallback((event) => {
     if (Date.now() < suppressClickUntilRef.current) return;
     if (isZenMode || isHoveringMarker.current || pauseRender) return;
     if (!onGlobeClick || !event?.lngLat) return;
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng });
   }, [isZenMode, onGlobeClick, pauseRender]);
+
+  const createUserPinFromLngLat = useCallback((lng, lat) => {
+    if (typeof onCreateUserPin !== 'function') return;
+    onCreateUserPin({ lat, lng });
+    suppressClickUntilRef.current = Date.now() + 450;
+    longPressTriggeredRef.current = true;
+  }, [onCreateUserPin]);
+
+  const clearLongPressTimer = useCallback(() => {
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }, []);
+
+  const handleTouchStart = useCallback((event) => {
+    if (isZenMode || pauseRender) return;
+    if (event.touches?.length !== 1) return;
+    clearLongPressTimer();
+    longPressTriggeredRef.current = false;
+
+    const touch = event.touches[0];
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const rect = map.getContainer().getBoundingClientRect();
+    const px = touch.clientX - rect.left;
+    const py = touch.clientY - rect.top;
+
+    longPressTimerRef.current = window.setTimeout(() => {
+      try {
+        const lngLat = map.unproject([px, py]);
+        createUserPinFromLngLat(lngLat.lng, lngLat.lat);
+      } catch {
+        // Ignore conversion failures.
+      }
+    }, 520);
+  }, [clearLongPressTimer, createUserPinFromLngLat, isZenMode, pauseRender]);
+
+  const handleTouchEndOrCancel = useCallback(() => {
+    clearLongPressTimer();
+  }, [clearLongPressTimer]);
 
   const handleInteractionStart = useCallback(() => {
     interactionRef.current = true;
@@ -603,6 +663,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       onPointerCancel={handleInteractionEnd}
       onPointerLeave={handleInteractionEnd}
       onWheel={handleInteractionStart}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEndOrCancel}
+      onTouchCancel={handleTouchEndOrCancel}
     >
       <Map
         ref={mapRef}
@@ -611,6 +674,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle={MAP_STYLES[globeTheme] || MAP_STYLES.deep}
         onClick={handleGlobeClickInternal}
+        onContextMenu={(event) => {
+          if (isZenMode || pauseRender) return;
+          if (!event?.lngLat) return;
+          event.originalEvent?.preventDefault?.();
+          createUserPinFromLngLat(event.lngLat.lng, event.lngLat.lat);
+        }}
         onError={(evt) => raiseFatal(evt?.error || new Error('Mapbox render error'))}
         onLoad={() => {
           ensureInteractionReady();
@@ -629,6 +698,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           resetAndApplyPlaceLabelVisibility();
         }}
         onDragStart={() => {
+          clearLongPressTimer();
           interactionRef.current = true;
           autoRotateRef.current = false;
           suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
@@ -679,6 +749,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
                 onMouseEnter={() => { isHoveringMarker.current = true; }}
                 onMouseLeave={() => { isHoveringMarker.current = false; }}
                 onClick={(e) => {
+                  if (longPressTriggeredRef.current) {
+                    longPressTriggeredRef.current = false;
+                    return;
+                  }
                   e.stopPropagation();
                   if (onMarkerClick) onMarkerClick(d, 'globe');
                 }}
