@@ -679,6 +679,37 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [pauseRender]);
 
   useEffect(() => {
+    if (pauseRender) return;
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    let raf2 = null;
+
+    // 카드/탭 전환 후 display:none -> block 복귀 시 캔버스가 축소된 채 남는 경우가 있어
+    // 프레임 경계에서 resize를 두 번 보정한다.
+    const raf1 = requestAnimationFrame(() => {
+      try {
+        map.resize();
+      } catch {
+        // Ignore resize failures during rapid route transitions.
+      }
+      raf2 = requestAnimationFrame(() => {
+        try {
+          map.resize();
+          syncMapZoom();
+          applyPlaceLabelVisibility();
+        } catch {
+          // Ignore resize failures during rapid route transitions.
+        }
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+    };
+  }, [pauseRender, syncMapZoom, applyPlaceLabelVisibility]);
+
+  useEffect(() => {
     const tick = (ts) => {
       const map = mapRef.current?.getMap();
       if (!map || pauseRender) {

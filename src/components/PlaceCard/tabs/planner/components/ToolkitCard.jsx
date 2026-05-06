@@ -7,6 +7,7 @@ import MrtDynamicLink from './MrtDynamicLink';
 import HotelWidget from './HotelWidget';
 import DirectFerriesWidget from './DirectFerriesWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
+import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
 import { cleanAdviceText, getAdviceText, getMultiLinks } from '../utils';
 
@@ -117,6 +118,9 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
             )}
             {type === 'airport_transfer' && (
                 <KlookCarBannerWidget />
+            )}
+            {type === 'map_poi' && (
+                <GetYourGuideCityWidget location={location} />
             )}
         </div>
     );

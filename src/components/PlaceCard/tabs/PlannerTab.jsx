@@ -330,9 +330,9 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
                         <h3 className="text-lg font-bold text-gray-800">🌴 현지 100% 즐기기</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
+                        <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
                         <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="default" />
                         <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="default" />
-                        <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
                     </div>
                 </div>
 

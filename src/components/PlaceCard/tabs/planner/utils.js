@@ -2,6 +2,32 @@
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 
+// 지도/명소 카드에서 외부 링크를 숨기고 GYG 위젯만 노출할 여행지.
+// 정책: GYG 위젯을 사용하는 여행지는 map_poi 링크 버튼을 모두 제거한다.
+const MAP_POI_GYG_ONLY_LOCATION_KEYS = [
+    'mount-everest',
+    '에베레스트',
+    'everest',
+    'costa-rica',
+    '코스타리카',
+    'costa rica',
+    'galapagos',
+    'galápagos',
+    '갈라파고스',
+    'patagonia',
+    '파타고니아'
+];
+
+const isMapPoiGygOnlyLocation = (location) => {
+    const slug = (location?.slug || '').toLowerCase();
+    const nameKo = (location?.name || '').toLowerCase();
+    const nameEn = (location?.name_en || location?.curation_data?.locationEn || '').toLowerCase();
+
+    return MAP_POI_GYG_ONLY_LOCATION_KEYS.some((key) =>
+        slug.includes(key) || nameKo.includes(key) || nameEn.includes(key)
+    );
+};
+
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
 export const cleanAdviceText = (text) => {
     if (!text) return text;
@@ -172,6 +198,11 @@ export const getMultiLinks = ({ type, data, location }) => {
             // Direct Ferries는 위젯 내부에서 배너로 처리하므로 별도 버튼 불필요
             break;
         case 'map_poi':
+            // 특정 여행지는 GYG 위젯만 노출하고 기타 외부 링크 버튼은 숨긴다.
+            if (isMapPoiGygOnlyLocation(location)) {
+                break;
+            }
+
             links.push({
                 url: `https://www.google.com/maps/search/${encodedQuery}`,
                 text: '구글 맵 보기',

@@ -5,6 +5,7 @@ import BookmarkButton from '../common/BookmarkButton';
 const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark, isTickerExpanded }) => {
   const [isLoading, setIsLoading] = useState(true);
   const isScanning = location?.isScanning;
+  const locationNameEn = location?.name_en || location?.curation_data?.locationEn || '';
 
   useEffect(() => {
     queueMicrotask(() => setIsLoading(true));
@@ -34,6 +35,11 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
                {location?.name}
                {!isScanning && <Maximize2 size={14} className="text-gray-500 group-hover:text-white transition-colors" />}
              </h2>
+             {!isScanning && locationNameEn && (
+               <p className="mt-1 text-[11px] leading-none text-gray-400 font-medium tracking-wide">
+                 ({locationNameEn})
+               </p>
+             )}
            </div>
 
            <div className="flex items-center gap-1 -mr-2 -mt-2 z-10">

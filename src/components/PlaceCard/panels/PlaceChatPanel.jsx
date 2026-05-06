@@ -31,6 +31,7 @@ const PlaceChatPanel = React.memo(({
   const [isChatMode, setIsChatMode] = useState(false);
   const scrollRef = useRef(null);
   const navigate = useNavigate();
+  const locationNameEn = location?.name_en || location?.curation_data?.locationEn || '';
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -99,6 +100,11 @@ const PlaceChatPanel = React.memo(({
                          <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
                      </div>
                  </div>
+                 {locationNameEn && (
+                     <p className="mt-1 text-[11px] leading-none text-gray-400 font-medium tracking-wide truncate">
+                         ({locationNameEn})
+                     </p>
+                 )}
              </div>
              <div className="shrink-0 flex items-center gap-2">
                  {mediaMode === 'PLANNER' ? (

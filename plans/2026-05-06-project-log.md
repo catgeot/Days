@@ -31,3 +31,11 @@
 - 기본 지명 임계값은 `PLACE_LABEL_MIN_ZOOM = 4.0`으로 상향해, 지명 과밀 전 마커 탐색 시간을 확보.
 - 고줌 전체 개방 구간에서는 `showOnGlobe` 제한과 병합 강도를 풀어 원본 여행지 노출을 우선하고, 중저줌에서는 병합/충돌 완화로 시야를 정리.
 - 다음 데이터 증설 대응 포인트: `TIER_STAGE_ZOOM_LEVELS`, `HIGH_ZOOM_FULL_REVEAL`, `getMajorMergeThreshold()`, `getMarkerCollisionThreshold()` 4개 임계값만 우선 조정하면 빠르게 균형 복구 가능.
+
+## PlaceCard 영문명 + GetYourGuide 위젯 운영 반영 (심야 세션)
+
+- 요약 카드(`PlaceCardSummary`)와 확장 카드 헤더(`PlaceChatPanel`)에 여행지 영문명(`name_en`/`curation_data.locationEn`)을 제목 하단 보조 라인으로 노출.
+- `index.html` `<head>`에 GetYourGuide Analytics 스크립트(`pa.umd.production.min.js`, `partner-id=LRKVVU4`)를 추가해 위젯 유입 추적 기반을 활성화.
+- 플래너 `map_poi` 카드에 `GetYourGuideCityWidget`을 추가하고, 지역별 `location-id` 매핑(에베레스트/코스타리카/갈라파고스/파타고니아)을 구성.
+- 운영 정책: GYG 위젯 대상 여행지는 `map_poi`의 기타 링크 버튼(구글맵/Klook/MRT/다이닝)을 숨기고 위젯만 노출.
+- 홈 복귀 시 지구본이 좌상단에 축소되는 이슈를 `HomeGlobeMapbox`의 `pauseRender` 복귀 타이밍 `map.resize()` 이중 보정으로 수정.
