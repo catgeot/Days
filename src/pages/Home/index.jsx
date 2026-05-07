@@ -71,6 +71,9 @@ function Home() {
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
+  const shouldPauseGlobe = isCardExpanded
+    || routeLocation.pathname.startsWith('/place/')
+    || routeLocation.pathname.startsWith('/explore');
 
   const {
     handleGlobeClick,
@@ -218,8 +221,15 @@ function Home() {
         }
 
         queueMicrotask(() => {
-          setSelectedLocation(hydratedTarget);
-          moveToLocation(hydratedTarget.lat, hydratedTarget.lng);
+          const focusTarget = {
+            ...hydratedTarget,
+            id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
+            type: hydratedTarget.type || 'temp-base',
+            category: hydratedTarget.category || category
+          };
+          setSelectedLocation(focusTarget);
+          addScoutPin(focusTarget);
+          moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
         });
       }
       queueMicrotask(() => {
@@ -319,7 +329,7 @@ function Home() {
           travelSpots={isPinVisible ? filteredSpots : []}
           allTravelSpots={isPinVisible ? globeSpots : []}
           activePinId={selectedLocation?.id}
-          pauseRender={isCardExpanded}
+          pauseRender={shouldPauseGlobe}
           globeTheme={globeTheme}
           isZenMode={isZenMode}
         />

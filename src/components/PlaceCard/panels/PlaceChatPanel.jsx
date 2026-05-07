@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen, Briefcase, Smartphone } from 'lucide-react';
+import { Sparkles, ArrowLeft, Send, Image as ImageIcon, Play, X, PenTool, BookOpen, Briefcase, Smartphone, Globe } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import PlaceChatView from '../views/PlaceChatView';
 import VideoInfoView from '../views/VideoInfoView';
@@ -80,6 +80,10 @@ const PlaceChatPanel = React.memo(({
       alert("🚀 현재 gateo.kr 전용 스마트 플래너 앱을 열심히 준비 중입니다!\n\n앱이 출시되면 저장하신 여정을 모바일에서 곧바로 이어서 계획할 수 있습니다. 빠른 시일 내에 찾아뵙겠습니다.");
   };
 
+  const handleGoHomeClick = () => {
+      navigate('/');
+  };
+
   const handleCopyName = async (event, text, type) => {
       event.preventDefault();
       event.stopPropagation();
@@ -103,8 +107,21 @@ const PlaceChatPanel = React.memo(({
       <div className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div className="flex items-center gap-2.5 overflow-hidden w-full min-w-0">
-             <button onClick={onClose} className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-400 hover:bg-white/20 transition-all shrink-0 shadow-lg">
+             <button
+                onClick={onClose}
+                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/15 md:bg-white/10 text-white border border-white/25 hover:bg-white/25 transition-all shrink-0 shadow-lg"
+                title="뒤로가기"
+                aria-label="뒤로가기"
+             >
                  <ArrowLeft className="w-4 h-4 md:w-4 md:h-4" />
+             </button>
+             <button
+                onClick={handleGoHomeClick}
+                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-300 hover:bg-white/20 transition-all shrink-0 shadow-lg"
+                title="홈으로 이동"
+                aria-label="홈으로 이동"
+             >
+                <Globe className="w-4 h-4 md:w-4 md:h-4" />
              </button>
              <div className="flex flex-col flex-1 min-w-0 justify-center">
                  <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location?.country || "Global"}</span>

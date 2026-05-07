@@ -114,7 +114,7 @@ export function useHomeHandlers({
 
         addScoutPin(labelPin);
         setSelectedLocation(labelPin);
-        moveToLocation(lat, lng, clickedLabel, category);
+        moveToLocation(lat, lng, clickedLabel, category, { focus: false });
         processSearchKeywords(clickedLabel);
         recordInteraction(clickedLabel, 'view');
         return;
@@ -148,7 +148,7 @@ export function useHomeHandlers({
 
             addScoutPin(finalLoc);
             setSelectedLocation(finalLoc);
-            moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category);
+            moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category, { focus: false });
             processSearchKeywords(finalLoc.name);
             recordInteraction(finalLoc.name, 'view');
             return;
@@ -175,7 +175,7 @@ export function useHomeHandlers({
 
       addScoutPin(realPin);
       setSelectedLocation(realPin);
-      moveToLocation(lat, lng, display_name, category);
+      moveToLocation(lat, lng, display_name, category, { focus: false });
       processSearchKeywords(display_name);
       recordInteraction(display_name, 'view');
     } catch (error) {

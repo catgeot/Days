@@ -35,7 +35,7 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     pauseRotation: () => childRef.current?.pauseRotation?.(),
     resumeRotation: () => childRef.current?.resumeRotation?.(),
-    flyToAndPin: (lat, lng, name, category) => childRef.current?.flyToAndPin?.(lat, lng, name, category),
+    flyToAndPin: (lat, lng, name, category, options) => childRef.current?.flyToAndPin?.(lat, lng, name, category, options),
     updateLastPinName: (...args) => childRef.current?.updateLastPinName?.(...args),
     triggerRipple: (lat, lng) => childRef.current?.triggerRipple?.(lat, lng),
     resetPins: () => childRef.current?.resetPins?.()

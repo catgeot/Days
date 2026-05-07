@@ -77,7 +77,7 @@ const HomeGlobe = React.memo(forwardRef(({
       if (pauseRender) return;
       if(globeEl.current) globeEl.current.controls().autoRotate = true;
     },
-    flyToAndPin: (lat, lng, _name, _category) => {
+    flyToAndPin: (lat, lng, _name, _category, _options) => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
       if (globeEl.current) {

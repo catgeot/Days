@@ -163,6 +163,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const lastPlaceLabelVisibleRef = useRef(null);
   const waitingThemeSettleRef = useRef(false);
   const pendingThemeCameraRef = useRef(null);
+  const pendingFocusRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
@@ -547,30 +548,51 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, ttl);
   }, []);
 
-  const flyToAndPin = useCallback((lat, lng) => {
+  const executeFocus = useCallback((lat, lng) => {
     const map = mapRef.current?.getMap();
-    if (!map) return;
-    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    if (!map || pauseRender) return false;
 
-    autoRotateRef.current = false;
-    // Keep the user's current zoomed context stable on all devices.
-    addRipple(lat, lng, 2000);
-    return;
+    const currentCenter = map.getCenter();
+    const currentZoom = map.getZoom();
+    const lngDelta = normalizeLngDelta(currentCenter.lng, lng);
+    const latDelta = Math.abs(currentCenter.lat - lat);
+    const isAlreadyNearTarget = lngDelta < 0.2 && latDelta < 0.2;
+    if (isAlreadyNearTarget) return true;
+
     map.flyTo({
       center: [lng, lat],
-      zoom: GLOBE_VIEW.flyZoom,
-      duration: GLOBE_VIEW.flyDuration,
+      zoom: Math.max(currentZoom, GLOBE_VIEW.flyZoom),
+      duration: 900,
       essential: true
     });
-    addRipple(lat, lng, 2000);
 
     rotationTimer.current = setTimeout(() => {
       const currentZoom = map.getZoom();
       if (!pauseRender && currentZoom <= GLOBE_VIEW.rotateZoomThreshold) {
         autoRotateRef.current = true;
       }
-    }, GLOBE_VIEW.flyDuration + 4000);
-  }, [addRipple, pauseRender]);
+    }, 1200);
+    return true;
+  }, [pauseRender]);
+
+  const flyToAndPin = useCallback((lat, lng, _name, _category, options = {}) => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+
+    autoRotateRef.current = false;
+    addRipple(lat, lng, 2000);
+    const shouldFocus = options?.focus !== false;
+    if (!shouldFocus) {
+      pendingFocusRef.current = null;
+      return;
+    }
+
+    const applied = executeFocus(lat, lng);
+    if (!applied) {
+      pendingFocusRef.current = { lat, lng };
+    }
+  }, [addRipple, executeFocus]);
 
   const showMobileActionMessage = useCallback((message) => {
     setMobileActionMessage(message);
@@ -653,6 +675,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     interactionRef.current = false;
     autoRotateRef.current = !pauseRender;
     setRipples([]);
+    pendingFocusRef.current = null;
   }, [pauseRender]);
 
   useImperativeHandle(ref, () => ({
@@ -719,6 +742,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (raf2) cancelAnimationFrame(raf2);
     };
   }, [pauseRender, syncMapZoom, applyPlaceLabelVisibility]);
+
+  useEffect(() => {
+    if (pauseRender) return;
+    if (!pendingFocusRef.current) return;
+
+    const pending = pendingFocusRef.current;
+    const applyPendingFocus = () => {
+      const applied = executeFocus(pending.lat, pending.lng);
+      if (applied) {
+        pendingFocusRef.current = null;
+      }
+    };
+
+    // Defer until map container is visible/resized.
+    const timer = window.setTimeout(applyPendingFocus, 80);
+    return () => window.clearTimeout(timer);
+  }, [pauseRender, executeFocus]);
 
   useEffect(() => {
     const tick = (ts) => {
@@ -846,8 +886,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         }}
         onIdle={() => {
           syncMapZoom();
-          refreshPlaceLabelLayers();
-          resetAndApplyPlaceLabelVisibility();
+          // onIdle fires frequently during/after camera changes.
+          // Re-scanning all style layers here caused avoidable UI sluggishness,
+          // so keep only lightweight visibility sync.
+          applyPlaceLabelVisibility();
           if (waitingThemeSettleRef.current) {
             const map = mapRef.current?.getMap();
             const pendingCamera = pendingThemeCameraRef.current;

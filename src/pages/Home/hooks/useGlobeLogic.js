@@ -12,9 +12,9 @@ export const useGlobeLogic = (globeRef, _userId) => {
 
   // 🚨 [Fix] fetchActivePins() 호출 로직 제거 (DB 종속성 탈피)
 
-  const moveToLocation = useCallback((lat, lng, name, category = 'scout') => {
+  const moveToLocation = useCallback((lat, lng, name, category = 'scout', options = {}) => {
     if (globeRef.current) {
-      globeRef.current.flyToAndPin(lat, lng, name, category);
+      globeRef.current.flyToAndPin(lat, lng, name, category, options);
     }
   }, [globeRef]);
 
