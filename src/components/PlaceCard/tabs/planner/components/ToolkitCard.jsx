@@ -3,19 +3,25 @@ import { ExternalLink, Plane } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
+import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
 import MrtDynamicLink from './MrtDynamicLink';
 import HotelWidget from './HotelWidget';
 import DirectFerriesWidget from './DirectFerriesWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
+import KlookTourBannerWidget from './KlookTourBannerWidget';
 import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
-import { cleanAdviceText, getAdviceText, getMultiLinks } from '../utils';
+import { cleanAdviceText, getAdviceText, getMultiLinks, isMapPoiGygOnlyLocation } from '../utils';
 
 const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
     const links = getMultiLinks({ type, data, location });
+    const isGygFallbackLocation = type === 'map_poi' && isMapPoiGygOnlyLocation(location);
+    const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodeURIComponent(location?.name || location?.country || '')}%20어트랙션`;
+    const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
+    const klookCarDeepLink = getKlookRentalUrlByLocation(location?.name);
 
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group`}>
@@ -117,10 +123,12 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                 <DirectFerriesWidget location={location} />
             )}
             {type === 'airport_transfer' && (
-                <KlookCarBannerWidget />
+                <KlookCarBannerWidget targetUrl={klookCarDeepLink} />
             )}
             {type === 'map_poi' && (
-                <GetYourGuideCityWidget location={location} />
+                isGygFallbackLocation
+                    ? <GetYourGuideCityWidget location={location} />
+                    : <KlookTourBannerWidget targetUrl={klookTourDeepLink} />
             )}
         </div>
     );

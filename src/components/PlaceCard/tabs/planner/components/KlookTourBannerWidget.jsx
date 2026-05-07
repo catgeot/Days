@@ -26,7 +26,7 @@ const loadKlookWidgetScript = () => {
     });
 };
 
-const KlookCarBannerWidget = ({ width = 728, height = 90, className = 'mt-3', targetUrl = 'https://www.klook.com/?aid=118544' }) => {
+const KlookTourBannerWidget = ({ width = 728, height = 90, className = 'mt-3', targetUrl = 'https://www.klook.com/?aid=118544' }) => {
     const containerRef = useRef(null);
     const hasRetriedRef = useRef(false);
     const [scale, setScale] = useState(1);
@@ -39,11 +39,10 @@ const KlookCarBannerWidget = ({ width = 728, height = 90, className = 'mt-3', ta
             try {
                 await loadKlookWidgetScript();
             } catch (error) {
-                console.error('[KlookCarBannerWidget] Script load failed:', error);
+                console.error('[KlookTourBannerWidget] Script load failed:', error);
                 return;
             }
 
-            // 첫 진입 시 iframe이 늦게 생성되는 케이스를 1회 보정
             setTimeout(async () => {
                 if (disposed || !containerRef.current || hasRetriedRef.current) return;
                 const hasRenderedIframe = !!containerRef.current.querySelector('iframe');
@@ -54,7 +53,7 @@ const KlookCarBannerWidget = ({ width = 728, height = 90, className = 'mt-3', ta
                 try {
                     await loadKlookWidgetScript();
                 } catch (error) {
-                    console.error('[KlookCarBannerWidget] Retry load failed:', error);
+                    console.error('[KlookTourBannerWidget] Retry load failed:', error);
                 }
             }, 1200);
         };
@@ -69,7 +68,7 @@ const KlookCarBannerWidget = ({ width = 728, height = 90, className = 'mt-3', ta
     useEffect(() => {
         const updateScale = () => {
             if (!containerRef.current) return;
-            const containerWidth = containerRef.current.clientWidth - 8; // padding 보정
+            const containerWidth = containerRef.current.clientWidth - 8;
             const nextScale = Math.min(1, containerWidth / width);
             setScale(nextScale > 0 ? nextScale : 1);
         };
@@ -85,37 +84,37 @@ const KlookCarBannerWidget = ({ width = 728, height = 90, className = 'mt-3', ta
     return (
         <div ref={containerRef} className={`${className} relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm`}>
             <div style={{ height: `${height * scale}px` }}>
-            <div
-                className="origin-top-left"
-                style={{
-                    width: `${width}px`,
-                    height: `${height}px`,
-                    transform: `scale(${scale})`,
-                }}
-            >
-                <ins
-                    className="klk-aff-widget"
-                    data-wid="118544"
-                    data-bgtype="Car"
-                    data-adid="1265731"
-                    data-lang="ko"
-                    data-prod="banner"
-                    data-width={String(width)}
-                    data-height={String(height)}
+                <div
+                    className="origin-top-left"
+                    style={{
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        transform: `scale(${scale})`,
+                    }}
                 >
-                    <a href={targetUrl}>Klook.com</a>
-                </ins>
-            </div>
+                    <ins
+                        className="klk-aff-widget"
+                        data-wid="118544"
+                        data-bgtype="Play"
+                        data-adid="1272015"
+                        data-lang="ko"
+                        data-prod="banner"
+                        data-width={String(width)}
+                        data-height={String(height)}
+                    >
+                        <a href={targetUrl}>Klook.com</a>
+                    </ins>
+                </div>
             </div>
             <a
                 href={targetUrl}
                 target={isMobileDevice() ? '_self' : '_blank'}
                 rel="noopener noreferrer"
-                aria-label="Klook 렌터카 페이지 열기"
+                aria-label="Klook 투어 페이지 열기"
                 className="absolute inset-0 z-10"
             />
         </div>
     );
 };
 
-export default KlookCarBannerWidget;
+export default KlookTourBannerWidget;

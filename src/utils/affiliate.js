@@ -88,7 +88,7 @@ export const getKlookAffiliateUrl = (targetUrl, adId = KLOOK_DEFAULT_AD_ID) => {
 /**
  * 도시별 클룩 렌터카 딥링크 생성기
  * - 홍콩/마카오는 사용자 제공 adid와 city_id를 사용
- * - 그 외 지역은 글로벌 렌터카 페이지로 폴백
+ * - 그 외 지역은 "여행지명 + 렌터카" 검색 결과로 폴백
  *
  * @param {string} locationName - 장소명(한글/영문)
  * @returns {string}
@@ -156,7 +156,8 @@ export const getKlookRentalUrlByLocation = (locationName) => {
     );
   }
 
-  return getKlookAffiliateUrl(`https://www.klook.com/${rentalPath}/`, KLOOK_RENTAL_AD_ID);
+  const query = encodeURIComponent(`${locationName || ''} 렌터카`.trim());
+  return getKlookAffiliateUrl(`https://www.klook.com/ko/search/result/?query=${query}`, KLOOK_RENTAL_AD_ID);
 };
 
 /**

@@ -2,8 +2,7 @@
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 
-// 지도/명소 카드에서 외부 링크를 숨기고 GYG 위젯만 노출할 여행지.
-// 정책: GYG 위젯을 사용하는 여행지는 map_poi 링크 버튼을 모두 제거한다.
+// 지도/명소 카드에서 Klook 커버리지가 약해 GYG를 우선 노출할 여행지.
 const MAP_POI_GYG_ONLY_LOCATION_KEYS = [
     'mount-everest',
     '에베레스트',
@@ -17,10 +16,19 @@ const MAP_POI_GYG_ONLY_LOCATION_KEYS = [
     'patagonia',
     '파타고니아',
     'arequipa',
-    '아레키파'
+    '아레키파',
+    'canary-islands',
+    'canary islands',
+    '카나리아 제도',
+    '카나리아제도',
+    'corsica',
+    '코르시카',
+    'fiordland',
+    'fjordland',
+    '피오르드랜드'
 ];
 
-const isMapPoiGygOnlyLocation = (location) => {
+export const isMapPoiGygOnlyLocation = (location) => {
     const slug = (location?.slug || '').toLowerCase();
     const nameKo = (location?.name || '').toLowerCase();
     const nameEn = (location?.name_en || location?.curation_data?.locationEn || '').toLowerCase();
@@ -29,6 +37,7 @@ const isMapPoiGygOnlyLocation = (location) => {
         slug.includes(key) || nameKo.includes(key) || nameEn.includes(key)
     );
 };
+
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
 export const cleanAdviceText = (text) => {
@@ -200,10 +209,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             // Direct Ferries는 위젯 내부에서 배너로 처리하므로 별도 버튼 불필요
             break;
         case 'map_poi':
-            // 특정 여행지는 GYG 위젯만 노출하고 기타 외부 링크 버튼은 숨긴다.
-            if (isMapPoiGygOnlyLocation(location)) {
-                break;
-            }
+            const isGygFallbackLocation = isMapPoiGygOnlyLocation(location);
 
             links.push({
                 url: `https://www.google.com/maps/search/${encodedQuery}`,
@@ -211,23 +217,17 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
 
-            // 1. 투어 및 액티비티 검색 (클룩 - 어트랙션/패스 강점)
-            const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20어트랙션`;
-            links.push({
-                url: getKlookAffiliateUrl(klookTourTargetUrl),
-                text: '어트랙션/패스 (Klook)',
-                colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
-            });
+            // 투어 상품 기본 전략: Klook 우선, 특정 목적지만 GetYourGuide로 폴백
+            if (!isGygFallbackLocation) {
+                const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20어트랙션`;
+                links.push({
+                    url: getKlookAffiliateUrl(klookTourTargetUrl),
+                    text: '투어/액티비티 (Klook)',
+                    colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
+                });
+            }
 
-            // 2. 한국어 가이드 투어 (마이리얼트립 - 워킹투어/도슨트 강점)
-            links.push({
-                isMrt: true,
-                mrtQuery: `${searchQuery} 가이드 투어`,
-                text: '한국어 가이드 투어 (MRT)',
-                colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
-            });
-
-            // 3. 식당 예약 플랫폼 (지역별 동적 분기 및 수익화)
+            // 식당 예약 플랫폼 (지역별 동적 분기 및 수익화)
             let diningUrl = `https://www.thefork.com/`; // 기본값 홈으로 변경
             let diningText = `${location?.name || '현지'} 식당 예약`;
             let isDiningMatched = false;

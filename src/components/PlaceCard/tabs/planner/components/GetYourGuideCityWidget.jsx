@@ -10,6 +10,9 @@ const GYG_CITY_CONFIGS = [
   { locationId: '204933', keys: ['galapagos', 'galápagos', '갈라파고스'] },
   { locationId: '2794', keys: ['patagonia', '파타고니아'] },
   { locationId: '2859', keys: ['arequipa', '아레키파'] },
+  { locationId: '416', keys: ['canary-islands', 'canary islands', '카나리아 제도', '카나리아제도'] },
+  { locationId: '1534', keys: ['corsica', '코르시카'] },
+  { locationId: '32367', keys: ['fiordland', 'fjordland', '피오르드랜드'] },
 ];
 
 const GetYourGuideCityWidget = ({ location }) => {
