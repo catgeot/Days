@@ -70,6 +70,17 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
   const isSearching = query.trim().length > 0;
   const isCurationMode = !isSearching && selectedContinent === 'all' && selectedTheme === 'all';
+  const trimmedQuery = query.trim();
+
+  const searchGuideText = useMemo(() => {
+    if (!trimmedQuery) {
+      return '여행지를 몰라도 괜찮아요. 지금 감정, 분위기, 떠오르는 단어를 입력하면 AI가 어울리는 목적지를 찾아드립니다.';
+    }
+    if (trimmedQuery.length <= 2) {
+      return '조금만 더 길게 적어보세요. 예: "멍하니 쉬고 싶다", "설레는 밤바다", "도망가고 싶은 금요일"';
+    }
+    return `Enter를 누르면 "${trimmedQuery}" 감정을 바탕으로 AI가 실재 여행지를 매칭하고 이유와 함께 안내합니다.`;
+  }, [trimmedQuery]);
 
   useEffect(() => {
     if (isOpen) {
@@ -299,9 +310,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
              <span className="text-blue-400">'{query}'</span> AI 전 세계 탐색
           </h3>
           <p className="text-gray-400 break-keep max-w-md mx-auto text-sm md:text-base leading-relaxed">
-             기본 목록에 없는 장소입니다. <br/>
-             <strong className="text-gray-200">엔터(Enter) 키</strong>를 누르시거나 <strong className="text-gray-200 cursor-pointer hover:text-blue-400 transition-colors" onClick={handleSearchSubmit}>위의 아이콘</strong>을 클릭하시면, <br/>
-             AI가 전 세계 지도를 검색하여 즉시 해당 위치로 비행합니다!
+             현재 컬렉션에 없는 키워드입니다. <br/>
+             <strong className="text-gray-200">엔터(Enter) 키</strong>를 누르거나 <strong className="text-gray-200 cursor-pointer hover:text-blue-400 transition-colors" onClick={handleSearchSubmit}>위의 아이콘</strong>을 누르면, <br/>
+             AI가 오타/유사 지명을 보정해 전 세계 지도를 탐색하고 최적 위치로 즉시 이동합니다.
           </p>
         </div>
       );
@@ -457,30 +468,35 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         </div>
       )}
 
-      {/* Search Bar */}
-      <div className="flex-1 max-w-3xl relative flex items-center bg-white/[0.12] border border-white/[0.25] rounded-2xl h-12 md:h-10 overflow-hidden focus-within:border-blue-400/60 focus-within:bg-white/[0.15] focus-within:shadow-[0_0_25px_rgba(59,130,246,0.2)] transition-all md:ml-auto">
-        <Search size={20} className="text-gray-300 ml-4 md:ml-3 shrink-0 md:w-[18px] md:h-[18px]" />
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleSearchSubmit();
-            }
-          }}
-          placeholder="어디로 떠나고 싶으신가요?"
-          className="w-full bg-transparent text-white px-4 md:px-3 h-full outline-none placeholder-gray-500 text-[16px] md:text-base font-medium"
-        />
-        {query && (
-          <button
-             onClick={() => { setQuery(''); inputRef.current?.focus(); }}
-             className="p-3 md:p-2 text-gray-400 hover:text-white transition-colors"
-          >
-             <X size={20} className="md:w-[18px] md:h-[18px]" />
-          </button>
-        )}
+      {/* Search Bar + Guide Text */}
+      <div className="flex-1 md:max-w-3xl md:ml-auto flex flex-col">
+        <div className="relative flex items-center bg-white/[0.12] border border-white/[0.25] rounded-2xl h-12 md:h-10 overflow-hidden focus-within:border-blue-400/60 focus-within:bg-white/[0.15] focus-within:shadow-[0_0_25px_rgba(59,130,246,0.2)] transition-all">
+          <Search size={20} className="text-gray-300 ml-4 md:ml-3 shrink-0 md:w-[18px] md:h-[18px]" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearchSubmit();
+              }
+            }}
+            placeholder="예: 번아웃, 설레는 밤산책, 바람 쐬고 싶다"
+            className="w-full bg-transparent text-white px-4 md:px-3 h-full outline-none placeholder-gray-500 text-[16px] md:text-base font-medium"
+          />
+          {query && (
+            <button
+               onClick={() => { setQuery(''); inputRef.current?.focus(); }}
+               className="p-3 md:p-2 text-gray-400 hover:text-white transition-colors"
+            >
+               <X size={20} className="md:w-[18px] md:h-[18px]" />
+            </button>
+          )}
+        </div>
+        <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">
+          {searchGuideText}
+        </p>
       </div>
     </div>
   );

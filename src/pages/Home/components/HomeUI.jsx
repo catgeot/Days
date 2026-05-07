@@ -98,7 +98,7 @@ const HomeUI = React.memo(({
               <span
                 className="w-full bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate"
               >
-                어디로 떠나고 싶으신가요?
+                지금 기분, 느낌으로 검색해 보세요
               </span>
             </div>
           </div>

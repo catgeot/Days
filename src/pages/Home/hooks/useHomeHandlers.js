@@ -28,6 +28,24 @@ const getDistanceKm = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
+const SMART_SEARCH_COORD_TOLERANCE_KM = 120;
+const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
+const MOOD_HINT_KEYWORDS = [
+  '감정', '기분', '마음', '분위기', '무드',
+  '우울', '우울해', '울적', '침울', '슬픔', '슬퍼', '눈물',
+  '외로', '쓸쓸', '적적', '공허', '허무', '허전',
+  '번아웃', '지침', '지쳤', '피곤', '피폐', '무기력', '탈진', '현타', '현실자각',
+  '스트레스', '압박', '불안', '초조', '답답', '갑갑', '멘붕', '멘탈',
+  '화남', '화나', '짜증', '분노', '빡침',
+  '설렘', '설레', '두근', '흥분', '떨림', '신남', '행복',
+  '그리움', '향수', '추억', '보고싶', '회상',
+  '힐링', '위로', '치유', '회복', '휴식', '쉼', '충전', '리프레시',
+  '도망가고 싶다', '떠나고 싶다', '어디론가 가고 싶다', '바람 쐬고 싶다', '잠깐 쉬고 싶다',
+  '놀고 싶다', '재밌는 데', '감성', '센치', '낭만', '로맨틱',
+  'burnout', 'lonely', 'sad', 'angry', 'anxious', 'stressed', 'overwhelmed', 'tired',
+  'excited', 'nostalgic', 'healing', 'rest', 'calm', 'refresh', 'escape'
+];
+
 export function useHomeHandlers({
   globeRef,
   user: _user,
@@ -352,6 +370,80 @@ export function useHomeHandlers({
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
     if (isConcept) return;
 
+    const isLikelyMoodQuery = (text) => {
+      const normalized = (text || '').toLowerCase().trim();
+      if (!normalized) return false;
+      if (normalized.length >= 8) return true;
+      if (/[?!.]/.test(normalized)) return true;
+      return MOOD_HINT_KEYWORDS.some((keyword) => normalized.includes(keyword));
+    };
+
+    const pickMoodVariant = (variants = []) => {
+      if (!Array.isArray(variants) || variants.length === 0) return null;
+      const now = Date.now();
+      const weighted = variants.map((variant, index) => {
+        const servedCount = Number(variant?.served_count || 0);
+        const lastServedAt = variant?.last_served_at ? new Date(variant.last_served_at).getTime() : null;
+        const cooledDown = !lastServedAt || (now - lastServedAt) > (MOOD_VARIANT_RECENT_COOLDOWN_HOURS * 60 * 60 * 1000);
+        const recencyWeight = cooledDown ? 1 : 0.25;
+        const countWeight = 1 / (1 + servedCount);
+        const randomWeight = 0.8 + Math.random() * 0.4;
+        const score = recencyWeight * countWeight * randomWeight;
+        return { index, variant, score };
+      });
+
+      weighted.sort((a, b) => b.score - a.score);
+      return weighted[0];
+    };
+
+    const verifyAndNormalizeCandidate = async (candidate, originalQuery, sourceLabel = "AI") => {
+      const rawLat = Number(candidate?.lat);
+      const rawLng = Number(candidate?.lng);
+      const hasRawCoords =
+        Number.isFinite(rawLat) &&
+        Number.isFinite(rawLng) &&
+        Math.abs(rawLat) <= 90 &&
+        Math.abs(rawLng) <= 180;
+
+      if (!hasRawCoords) return null;
+
+      const nameForLookup = candidate?.name_en || candidate?.name || "";
+      if (!nameForLookup) return null;
+
+      const countryForLookup = candidate?.country_en || candidate?.country || "";
+      const verifiedByNameCountry = await getCoordinatesFromAddress(
+        countryForLookup ? `${nameForLookup}, ${countryForLookup}` : nameForLookup
+      );
+      const verifiedByNameOnly = verifiedByNameCountry || await getCoordinatesFromAddress(nameForLookup);
+      if (!verifiedByNameOnly) return null;
+
+      const distanceKm = getDistanceKm(rawLat, rawLng, verifiedByNameOnly.lat, verifiedByNameOnly.lng);
+      if (distanceKm > SMART_SEARCH_COORD_TOLERANCE_KM) {
+        console.warn(`[Smart Search ${sourceLabel}] 지명-좌표 불일치 차단: "${nameForLookup}" (${distanceKm.toFixed(1)}km)`);
+        return null;
+      }
+
+      const reasonText = typeof candidate?.reason === 'string' ? candidate.reason.trim() : '';
+      const baseDesc = `"${originalQuery}"의 분위기를 "${candidate?.name || nameForLookup}" 여정으로 연결해 탐색합니다.`;
+      const enrichedDesc = reasonText ? `${baseDesc} ${reasonText}` : baseDesc;
+
+      return {
+        id: `search-${verifiedByNameOnly.lat}-${verifiedByNameOnly.lng}`,
+        slug: formatUrlName(verifiedByNameOnly.name_en || verifiedByNameOnly.name || nameForLookup),
+        name: candidate?.name || verifiedByNameOnly.name || nameForLookup,
+        name_en: verifiedByNameOnly.name_en || candidate?.name_en || candidate?.name || nameForLookup,
+        country: verifiedByNameOnly.country || candidate?.country || "Explore",
+        country_en: verifiedByNameOnly.country_en || candidate?.country_en || "Explore",
+        lat: verifiedByNameOnly.lat,
+        lng: verifiedByNameOnly.lng,
+        category: category,
+        desc: enrichedDesc,
+        type: 'temp-base',
+        isCorrected: true,
+        originalQuery: originalQuery
+      };
+    };
+
     const coords = await getCoordinatesFromAddress(query);
 
     if (coords) {
@@ -374,6 +466,7 @@ export function useHomeHandlers({
       let isCorrected = false;
       try {
         const lowerQuery = query.toLowerCase();
+        const treatAsMoodQuery = isLikelyMoodQuery(query);
         // 1. 먼저 DB에서 캐시된 교정 결과가 있는지 확인 (Phase 1.5)
         const { data: cachedDict } = await supabase
           .from('search_dictionary')
@@ -384,45 +477,97 @@ export function useHomeHandlers({
         if (cachedDict && cachedDict.location_data) {
           console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);
           const parsedData = cachedDict.location_data;
+          const isMoodCache = parsedData?.intent_type === 'mood' && Array.isArray(parsedData?.variants);
 
-          const normalizedLoc = {
-            id: `search-${parsedData.lat}-${parsedData.lng}`,
-            slug: formatUrlName(parsedData.name_en || parsedData.name),
-            name: parsedData.name,
-            name_en: parsedData.name_en || parsedData.name,
-            country: parsedData.country || "Explore",
-            country_en: parsedData.country_en || "Explore",
-            lat: parsedData.lat,
-            lng: parsedData.lng,
-            category: category,
-            desc: `"${query}" 검색에 실패하여 "${parsedData.name}"(으)로 교정하여 탐색합니다. (캐시 기반)`,
-            type: 'temp-base',
-            isCorrected: true,
-            originalQuery: query
-          };
-          handleLocationSelect(normalizedLoc);
-          setDraftInput(parsedData.name);
-          processSearchKeywords(parsedData.name);
-          isCorrected = true;
-        } else {
+          if (isMoodCache) {
+            const picked = pickMoodVariant(parsedData.variants);
+            if (picked?.variant) {
+              const verifiedMoodLoc = await verifyAndNormalizeCandidate(picked.variant, query, "CacheMood");
+              if (verifiedMoodLoc) {
+                handleLocationSelect(verifiedMoodLoc);
+                setDraftInput(verifiedMoodLoc.name);
+                processSearchKeywords(verifiedMoodLoc.name);
+                isCorrected = true;
+
+                const nextVariants = [...parsedData.variants];
+                nextVariants[picked.index] = {
+                  ...nextVariants[picked.index],
+                  served_count: Number(nextVariants[picked.index]?.served_count || 0) + 1,
+                  last_served_at: new Date().toISOString()
+                };
+
+                supabase
+                  .from('search_dictionary')
+                  .update({
+                    corrected_query: verifiedMoodLoc.name,
+                    location_data: { ...parsedData, variants: nextVariants, last_pick_at: new Date().toISOString() }
+                  })
+                  .eq('id', cachedDict.id)
+                  .then(({ error }) => {
+                    if (error) console.warn("[Smart Search Mood Cache Update Error]", error);
+                  });
+              }
+            }
+          } else {
+            const verifiedCachedLoc = await verifyAndNormalizeCandidate(parsedData, query, "Cache");
+            if (verifiedCachedLoc) {
+              verifiedCachedLoc.desc = `"${query}" 검색에 실패하여 "${verifiedCachedLoc.name}"(으)로 교정하여 탐색합니다. (캐시 기반)`;
+              handleLocationSelect(verifiedCachedLoc);
+              setDraftInput(verifiedCachedLoc.name);
+              processSearchKeywords(verifiedCachedLoc.name);
+              isCorrected = true;
+            }
+          }
+        }
+
+        if (!isCorrected) {
           // 2. 캐시가 없으면 Proxy를 통해 AI 호출
           try {
-            const aiPrompt = `사용자가 여행지 검색창에 "${query}"라고 입력했지만, 오타가 있거나 존재하지 않는 지명이라 검색에 실패했습니다.
-이 단어와 가장 유사하거나, 사용자가 의도했을 만한 '실제 존재하는 정확한 지명'을 유추해주세요.
-응답은 반드시 다른 설명이나 부연 설명 없이 아래 JSON 형식으로만 응답하세요.
+            const aiPrompt = treatAsMoodQuery
+              ? `사용자가 여행 검색창에 "${query}"라고 입력했습니다.
+입력값은 오타일 수도 있고, 감정(예: 번아웃, 설렘, 흥분, 화남, 그리움), 분위기, 사물, 문장일 수도 있습니다.
+
+당신은 사용자의 마음을 여행 계획으로 연결하는 감성 여행 큐레이터입니다.
+다음 규칙을 반드시 지키세요.
+1) 실제로 존재하는 여행지 3곳을 제안합니다.
+2) 지명/국가/좌표가 실제로 일치해야 합니다. 추측 지명, 가상 지명, 별칭, 신조어는 금지합니다.
+3) 오타로 보이면 가장 가능성 높은 실제 지명으로 교정합니다.
+4) 감정/사물/상황 입력이면 그 감정을 환기하거나 확장하기 좋은 실제 여행지를 매칭합니다.
+5) 좌표는 해당 지명의 중심 좌표를 사용하세요.
+
+응답은 반드시 다른 설명 없이 아래 JSON 형식으로만 응답하세요.
 {
+  "intent_type": "mood",
+  "candidates": [
+    {
+      "name": "정확한 지명(한국어)",
+      "name_en": "정확한 지명(영어)",
+      "country": "소속 국가(한국어)",
+      "country_en": "소속 국가(영어)",
+      "lat": 위도(숫자),
+      "lng": 경도(숫자),
+      "reason": "이 목적지가 현재 입력 감정을 어떻게 다음 계획으로 연결하는지 1문장 (한국어, 40자 내외)"
+    }
+  ]
+}`
+              : `사용자가 여행 검색창에 "${query}"라고 입력했습니다.
+입력값은 오타일 가능성이 높습니다. 가장 가능성 높은 실제 지명 1곳으로 교정하세요.
+응답은 반드시 다른 설명 없이 아래 JSON 형식으로만 응답하세요.
+{
+  "intent_type": "typo",
   "name": "정확한 지명(한국어)",
   "name_en": "정확한 지명(영어)",
   "country": "소속 국가(한국어)",
   "country_en": "소속 국가(영어)",
   "lat": 위도(숫자),
-  "lng": 경도(숫자)
+  "lng": 경도(숫자),
+  "reason": "교정 이유 1문장 (한국어, 30자 내외)"
 }`;
 
             const aiResponse = await apiClient.fetchProxyGemini(
               null, // 🚨 더 이상 클라이언트에서 API 키를 넘기지 않습니다. 서버에서 처리합니다.
               [],
-              "당신은 지명 자동 교정 전문가입니다. 오직 유효한 JSON만 출력해야 합니다.",
+              "당신은 감정 기반 여행지 매칭 전문가입니다. 실재 지명만 사용하고 오직 유효한 JSON만 출력해야 합니다.",
               aiPrompt,
               [],
               "gemini-3.1-flash-lite-preview"
@@ -430,40 +575,97 @@ export function useHomeHandlers({
 
             const cleanJsonString = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsedData = JSON.parse(cleanJsonString);
-            const cleanName = parsedData.name;
+            if (treatAsMoodQuery) {
+              const rawCandidates = Array.isArray(parsedData?.candidates) ? parsedData.candidates : [];
+              const verifiedCandidates = [];
+              for (const candidate of rawCandidates) {
+                const verified = await verifyAndNormalizeCandidate(candidate, query, "AIMood");
+                if (verified && !verifiedCandidates.find((v) => v.name_en === verified.name_en)) {
+                  verifiedCandidates.push({
+                    name: verified.name,
+                    name_en: verified.name_en,
+                    country: verified.country,
+                    country_en: verified.country_en,
+                    lat: verified.lat,
+                    lng: verified.lng,
+                    reason: candidate?.reason || '',
+                    served_count: 0,
+                    last_served_at: null
+                  });
+                }
+              }
 
-            if (cleanName && cleanName !== query && cleanName.length > 0 && cleanName.length < 30) {
-              console.log(`[Smart Search AI] AI가 "${query}"를 "${cleanName}"(으)로 교정 및 좌표를 파싱했습니다.`, parsedData);
+              const picked = pickMoodVariant(verifiedCandidates);
+              if (picked?.variant) {
+                const chosen = picked.variant;
+                const chosenLoc = await verifyAndNormalizeCandidate(chosen, query, "AIMoodPicked");
+                if (chosenLoc) {
+                  handleLocationSelect(chosenLoc);
+                  setDraftInput(chosenLoc.name);
+                  processSearchKeywords(chosenLoc.name);
+                  isCorrected = true;
 
-              // 3. AI 교정 성공 시 DB에 결과 캐싱 (비동기 처리로 UI 블로킹 방지)
-              supabase.from('search_dictionary').insert({
-                original_query: lowerQuery,
-                corrected_query: cleanName,
-                location_data: parsedData
-              }).then(({ error }) => {
-                if (error) console.warn("[Smart Search Cache Insert Error]", error);
-              });
+                  const variantsForCache = verifiedCandidates.map((variant, idx) => ({
+                    ...variant,
+                    served_count: idx === picked.index ? 1 : 0,
+                    last_served_at: idx === picked.index ? new Date().toISOString() : null
+                  }));
 
-              // AI가 파싱한 좌표를 우선 사용
-              const normalizedLoc = {
-                id: `search-${parsedData.lat}-${parsedData.lng}`,
-                slug: formatUrlName(parsedData.name_en || parsedData.name),
-                name: cleanName,
-                name_en: parsedData.name_en || parsedData.name,
-                country: parsedData.country || "Explore",
-                country_en: parsedData.country_en || "Explore",
-                lat: parsedData.lat,
-                lng: parsedData.lng,
-                category: category,
-                desc: `"${query}" 검색에 실패하여 "${cleanName}"(으)로 교정하여 탐색합니다.`,
-                type: 'temp-base',
-                isCorrected: true,
-                originalQuery: query
-              };
-              handleLocationSelect(normalizedLoc);
-              setDraftInput(cleanName);
-              processSearchKeywords(cleanName);
-              isCorrected = true;
+                  const cachePayload = {
+                    corrected_query: chosenLoc.name,
+                    location_data: {
+                      intent_type: 'mood',
+                      source: 'ai',
+                      variants: variantsForCache,
+                      last_pick_at: new Date().toISOString()
+                    }
+                  };
+
+                  if (cachedDict?.id) {
+                    supabase.from('search_dictionary').update(cachePayload).eq('id', cachedDict.id).then(({ error }) => {
+                      if (error) console.warn("[Smart Search Mood Cache Upsert Error]", error);
+                    });
+                  } else {
+                    supabase.from('search_dictionary').insert({
+                      original_query: lowerQuery,
+                      ...cachePayload
+                    }).then(({ error }) => {
+                      if (error) console.warn("[Smart Search Mood Cache Insert Error]", error);
+                    });
+                  }
+                }
+              }
+            } else {
+              const cleanName = parsedData.name;
+              if (cleanName && cleanName !== query && cleanName.length > 0 && cleanName.length < 30) {
+                console.log(`[Smart Search AI] AI가 "${query}"를 "${cleanName}"(으)로 교정 및 좌표를 파싱했습니다.`, parsedData);
+                const verifiedAiLoc = await verifyAndNormalizeCandidate(parsedData, query, "AI");
+
+                if (verifiedAiLoc) {
+                  // 3. AI 교정 성공 + 실재 검증 성공 시에만 캐시 저장
+                  supabase.from('search_dictionary').insert({
+                    original_query: lowerQuery,
+                    corrected_query: verifiedAiLoc.name,
+                    location_data: {
+                      intent_type: 'typo',
+                      name: verifiedAiLoc.name,
+                      name_en: verifiedAiLoc.name_en,
+                      country: verifiedAiLoc.country,
+                      country_en: verifiedAiLoc.country_en,
+                      lat: verifiedAiLoc.lat,
+                      lng: verifiedAiLoc.lng,
+                      reason: parsedData.reason || ""
+                    }
+                  }).then(({ error }) => {
+                    if (error) console.warn("[Smart Search Cache Insert Error]", error);
+                  });
+
+                  handleLocationSelect(verifiedAiLoc);
+                  setDraftInput(verifiedAiLoc.name);
+                  processSearchKeywords(verifiedAiLoc.name);
+                  isCorrected = true;
+                }
+              }
             }
           } catch (aiErr) {
             console.warn("Smart Search AI Proxy Error:", aiErr);
