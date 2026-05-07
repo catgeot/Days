@@ -1,17 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { X, MessageSquare, Sparkles, Maximize2 } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
+import { getPlaceTitleLines } from '../common/locationDisplay';
+import { copyToClipboard } from '../common/copyToClipboard';
 
 const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark, isTickerExpanded }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [copiedType, setCopiedType] = useState('');
   const isScanning = location?.isScanning;
-  const locationNameEn = location?.name_en || location?.curation_data?.locationEn || '';
+  const { primaryName, secondaryName } = getPlaceTitleLines(location);
 
   useEffect(() => {
     queueMicrotask(() => setIsLoading(true));
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [location]);
+
+  const handleCopyName = async (event, text, type) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const copied = await copyToClipboard(text);
+    if (!copied) return;
+
+    setCopiedType(type);
+    setTimeout(() => setCopiedType(''), 1200);
+  };
 
   return (
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:translate-x-0 lg:left-auto lg:right-8 lg:w-80 z-[60] animate-fade-in-up transition-all duration-300">
@@ -31,14 +45,31 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
                  {isScanning ? "SEARCHING..." : (location?.country || "Global")}
                </span>
              </div>
-             <h2 className={`text-2xl font-bold leading-none tracking-tight flex items-center gap-2 transition-colors ${isScanning ? "text-blue-300 animate-pulse" : "text-white group-hover:text-blue-200"}`}>
-               {location?.name}
-               {!isScanning && <Maximize2 size={14} className="text-gray-500 group-hover:text-white transition-colors" />}
-             </h2>
-             {!isScanning && locationNameEn && (
-               <p className="mt-1 text-[11px] leading-none text-gray-400 font-medium tracking-wide">
-                 ({locationNameEn})
-               </p>
+             <div className="flex items-center gap-2 min-w-0">
+               <button
+                 type="button"
+                 onClick={(event) => handleCopyName(event, primaryName || location?.name, 'primary')}
+                 className={`text-left min-w-0 truncate text-2xl font-bold leading-none tracking-tight transition-colors ${isScanning ? "text-blue-300 animate-pulse" : "text-white hover:text-blue-200 active:scale-[0.99]"}`}
+                 title="여행지명 복사"
+               >
+                 {primaryName || location?.name}
+               </button>
+               {!isScanning && <Maximize2 size={14} className="text-gray-500 group-hover:text-white transition-colors shrink-0" />}
+             </div>
+             {!isScanning && secondaryName && (
+               <button
+                 type="button"
+                 onClick={(event) => handleCopyName(event, secondaryName, 'secondary')}
+                 className="mt-1 w-fit text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal hover:text-white"
+                 title="보조 지명 복사"
+               >
+                 ({secondaryName})
+               </button>
+             )}
+             {!isScanning && copiedType && (
+               <span className="mt-1 text-[10px] text-emerald-300 font-semibold">
+                 {copiedType === 'primary' ? '여행지명 복사됨' : '보조 지명 복사됨'}
+               </span>
              )}
            </div>
 

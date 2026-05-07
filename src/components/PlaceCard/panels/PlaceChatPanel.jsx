@@ -9,6 +9,8 @@ import PlaceWikiNavView from '../views/PlaceWikiNavView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
+import { getPlaceTitleLines } from '../common/locationDisplay';
+import { copyToClipboard } from '../common/copyToClipboard';
 
 const PlaceChatPanel = React.memo(({
     location,
@@ -29,9 +31,10 @@ const PlaceChatPanel = React.memo(({
     onOpenPackage
 }) => {
   const [isChatMode, setIsChatMode] = useState(false);
+  const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();
-  const locationNameEn = location?.name_en || location?.curation_data?.locationEn || '';
+  const { primaryName, secondaryName } = getPlaceTitleLines(location);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -77,6 +80,17 @@ const PlaceChatPanel = React.memo(({
       alert("🚀 현재 gateo.kr 전용 스마트 플래너 앱을 열심히 준비 중입니다!\n\n앱이 출시되면 저장하신 여정을 모바일에서 곧바로 이어서 계획할 수 있습니다. 빠른 시일 내에 찾아뵙겠습니다.");
   };
 
+  const handleCopyName = async (event, text, type) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const copied = await copyToClipboard(text);
+      if (!copied) return;
+
+      setCopiedType(type);
+      setTimeout(() => setCopiedType(''), 1200);
+  };
+
   const relatedPlaces = getRelatedPlaces(location);
 
   return (
@@ -95,15 +109,32 @@ const PlaceChatPanel = React.memo(({
              <div className="flex flex-col flex-1 min-w-0 justify-center">
                  <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location?.country || "Global"}</span>
                  <div className="flex items-center gap-1.5 min-w-0 mt-0.5">
-                     <h1 className="text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md">{location.name}</h1>
+                     <button
+                        type="button"
+                        onClick={(event) => handleCopyName(event, primaryName || location.name, 'primary')}
+                        className="text-left text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0"
+                        title="여행지명 복사"
+                     >
+                        {primaryName || location.name}
+                     </button>
                      <div className="shrink-0 -mt-0.5">
                          <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
                      </div>
                  </div>
-                 {locationNameEn && (
-                     <p className="mt-1 text-[11px] leading-none text-gray-400 font-medium tracking-wide truncate">
-                         ({locationNameEn})
-                     </p>
+                 {secondaryName && (
+                     <button
+                        type="button"
+                        onClick={(event) => handleCopyName(event, secondaryName, 'secondary')}
+                        className="mt-1 w-fit text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal truncate hover:text-white"
+                        title="보조 지명 복사"
+                     >
+                        ({secondaryName})
+                     </button>
+                 )}
+                 {copiedType && (
+                    <span className="mt-1 text-[10px] text-emerald-300 font-semibold">
+                        {copiedType === 'primary' ? '여행지명 복사됨' : '보조 지명 복사됨'}
+                    </span>
                  )}
              </div>
              <div className="shrink-0 flex items-center gap-2">

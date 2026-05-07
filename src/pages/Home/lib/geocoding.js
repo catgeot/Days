@@ -145,31 +145,44 @@ export const getCoordinatesFromAddress = async (query) => {
 // 3. 주소 찾기 (Reverse)
 export const getAddressFromCoordinates = async (lat, lng) => {
   try {
-    // 🚨 [Fix/New] Pessimistic First: 역지오코딩 언어 타겟팅 변경
-    // accept-language를 'en,ko'으로 지정하여 영문을 최우선으로 확보. (없으면 한글 Fallback)
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en,ko`,
-      {
-        headers: {
-          'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)'
-        }
-      }
-    );
-    if (!response.ok) throw new Error("Geocoding failed");
-    const data = await response.json();
+    const reverseBaseUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`;
+    const headers = {
+      'User-Agent': 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)'
+    };
+
+    const [responseEn, responseKo] = await Promise.all([
+      fetch(`${reverseBaseUrl}&accept-language=en`, { headers }),
+      fetch(`${reverseBaseUrl}&accept-language=ko`, { headers })
+    ]);
+
+    if (!responseEn.ok && !responseKo.ok) throw new Error("Geocoding failed");
+
+    const dataEn = responseEn.ok ? await responseEn.json() : null;
+    const dataKo = responseKo.ok ? await responseKo.json() : null;
+
+    const addressEn = dataEn?.address || null;
+    const addressKo = dataKo?.address || null;
 
     // 비관적 방어: 데이터가 없거나 바다 클릭 시
-    if (!data || !data.address) return null;
+    if (!addressEn && !addressKo) return null;
 
-    const cityRaw = data.address.city || data.address.town || data.address.village || data.address.municipality || data.address.island || data.address.state || "";
-    const countryRaw = data.address.country || "";
+    const cityRawEn = addressEn?.city || addressEn?.town || addressEn?.village || addressEn?.municipality || addressEn?.island || addressEn?.state || "";
+    const countryRawEn = addressEn?.country || "";
+
+    const cityRawKo = addressKo?.city || addressKo?.town || addressKo?.village || addressKo?.municipality || addressKo?.island || addressKo?.state || "";
+    const countryRawKo = addressKo?.country || "";
+
+    const resolvedCityEn = standardizeName(cityRawEn) || standardizeName(countryRawEn);
+    const resolvedCountryKo = standardizeName(countryRawKo);
+    const resolvedCityKo = standardizeName(cityRawKo) || resolvedCountryKo;
 
     return {
-      fullAddress: data.display_name,
-      city: standardizeName(cityRaw) || standardizeName(countryRaw),
-      country: standardizeName(countryRaw),
-      country_en: countryRaw,
-      name_en: cityRaw || countryRaw // 🚨 [Fix/New] URL 정규화를 위한 영문명 적재
+      fullAddress: dataEn?.display_name || dataKo?.display_name || '',
+      city: resolvedCityEn || resolvedCityKo,
+      country: resolvedCountryKo || standardizeName(countryRawEn),
+      country_en: countryRawEn || countryRawKo,
+      name_en: cityRawEn || countryRawEn || cityRawKo || countryRawKo,
+      name_ko: resolvedCityKo
     };
   } catch (error) {
     console.error("Geocoding error:", error);

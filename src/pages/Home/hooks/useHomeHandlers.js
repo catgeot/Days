@@ -133,6 +133,7 @@ export function useHomeHandlers({
         lng,
         name: display_name,
         name_en: name_en,
+        name_ko: addressData?.name_ko || "",
         type: 'temp-base',
         category: category,
         country: addressData?.country || "Explore",

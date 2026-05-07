@@ -15,7 +15,9 @@ const MAP_POI_GYG_ONLY_LOCATION_KEYS = [
     'galápagos',
     '갈라파고스',
     'patagonia',
-    '파타고니아'
+    '파타고니아',
+    'arequipa',
+    '아레키파'
 ];
 
 const isMapPoiGygOnlyLocation = (location) => {
