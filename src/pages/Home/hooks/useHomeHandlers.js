@@ -55,7 +55,7 @@ export function useHomeHandlers({
   const isTogglingRef = useRef(false);
   const isProcessingRef = useRef(false);
 
-  const handleGlobeClick = useCallback(async ({ lat, lng }) => {
+  const handleGlobeClick = useCallback(async ({ lat, lng, source, label, labelEn }) => {
     if (isProcessingRef.current) return;
     if (!lat || !lng) return;
 
@@ -87,6 +87,38 @@ export function useHomeHandlers({
       setIsCardExpanded(false);
       if (!isPinVisible) setIsPinVisible(true);
       // 🚨 여기서 미리 moveToLocation을 호출하지 않음으로써 모바일 GPU 과부하(리플 겹침/WebGL 마비) 방지
+
+      const clickedLabel = typeof label === 'string' ? label.trim() : '';
+      const clickedLabelEn = typeof labelEn === 'string' ? labelEn.trim() : '';
+      if (source === 'label' && clickedLabel) {
+        let slugBase = clickedLabelEn;
+        if (!slugBase) {
+          const addressFromLabelPoint = await getAddressFromCoordinates(lat, lng);
+          slugBase = addressFromLabelPoint?.name_en || '';
+        }
+
+        const labelPin = {
+          id: `label-${lat}-${lng}`,
+          slug: formatUrlName(slugBase || clickedLabel),
+          lat,
+          lng,
+          name: clickedLabel,
+          name_en: slugBase || clickedLabel,
+          name_ko: clickedLabel,
+          type: 'temp-base',
+          category: category,
+          country: 'Explore',
+          country_en: 'Explore',
+          display_name: clickedLabel
+        };
+
+        addScoutPin(labelPin);
+        setSelectedLocation(labelPin);
+        moveToLocation(lat, lng, clickedLabel, category);
+        processSearchKeywords(clickedLabel);
+        recordInteraction(clickedLabel, 'view');
+        return;
+      }
 
       const addressData = await getAddressFromCoordinates(lat, lng);
 

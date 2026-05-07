@@ -82,6 +82,17 @@ const HIDDEN_OVERLAY_LAYER_HINTS = [
   'ferry'
 ];
 const ADMIN_BOUNDARY_HINTS = ['admin', 'boundary', 'border', 'disputed'];
+const PLACE_LABEL_PROPERTY_KEYS = [
+  'name_ko',
+  'name',
+  'name_en',
+  'name_kr',
+  'name_local',
+  'name_int',
+  'text',
+  'title'
+];
+const PLACE_LABEL_ENGLISH_KEYS = ['name_en', 'name_int', 'name_latin', 'name:en', 'name'];
 
 const GLOBE_VIEW = {
   default: { longitude: 0, latitude: 20, zoom: 1.25, pitch: 0, bearing: 0 },
@@ -743,7 +754,48 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (Date.now() < suppressClickUntilRef.current) return;
     if (isZenMode || isHoveringMarker.current || pauseRender) return;
     if (!onGlobeClick || !event?.lngLat) return;
-    onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng });
+    const map = mapRef.current?.getMap();
+    const labelLayers = placeLabelLayerIdsRef.current || [];
+    const clickedLabels = map && labelLayers.length > 0
+      ? map.queryRenderedFeatures(event.point, { layers: labelLayers })
+      : [];
+    const topLabel = clickedLabels?.[0];
+    const props = topLabel?.properties || {};
+
+    let label = '';
+    for (const key of PLACE_LABEL_PROPERTY_KEYS) {
+      if (typeof props[key] === 'string' && props[key].trim()) {
+        label = props[key].trim();
+        break;
+      }
+    }
+    let labelEn = '';
+    for (const key of PLACE_LABEL_ENGLISH_KEYS) {
+      if (typeof props[key] === 'string' && props[key].trim()) {
+        labelEn = props[key].trim();
+        break;
+      }
+    }
+
+    if (label) {
+      onGlobeClick({
+        lat: event.lngLat.lat,
+        lng: event.lngLat.lng,
+        source: 'label',
+        label,
+        labelEn,
+        labelFeature: {
+          layerId: topLabel?.layer?.id || '',
+          sourceLayer: topLabel?.layer?.['source-layer'] || '',
+          placeType: Array.isArray(topLabel?.properties?.place_type)
+            ? topLabel.properties.place_type[0] || ''
+            : (topLabel?.properties?.place_type || '')
+        }
+      });
+      return;
+    }
+
+    onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
   }, [isZenMode, onGlobeClick, pauseRender]);
 
   const handleInteractionStart = useCallback(() => {
