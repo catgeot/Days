@@ -19,7 +19,8 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
 
     const links = getMultiLinks({ type, data, location });
     const isGygFallbackLocation = type === 'map_poi' && isMapPoiGygOnlyLocation(location);
-    const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodeURIComponent(location?.name || location?.country || '')}%20어트랙션`;
+    const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
+    const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
     const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
     const klookCarDeepLink = getKlookRentalUrlByLocation(location?.name);
 

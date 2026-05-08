@@ -1,42 +1,14 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
+import {
+    isMapPoiGygOnlyLocation,
+    isMapPoiDiningHiddenLocation,
+    isKlookDiningPriorityLocation,
+    isKlookDiningUnsupportedLocation
+} from './locationRules';
 
-// 지도/명소 카드에서 Klook 커버리지가 약해 GYG를 우선 노출할 여행지.
-const MAP_POI_GYG_ONLY_LOCATION_KEYS = [
-    'mount-everest',
-    '에베레스트',
-    'everest',
-    'costa-rica',
-    '코스타리카',
-    'costa rica',
-    'galapagos',
-    'galápagos',
-    '갈라파고스',
-    'patagonia',
-    '파타고니아',
-    'arequipa',
-    '아레키파',
-    'canary-islands',
-    'canary islands',
-    '카나리아 제도',
-    '카나리아제도',
-    'corsica',
-    '코르시카',
-    'fiordland',
-    'fjordland',
-    '피오르드랜드'
-];
-
-export const isMapPoiGygOnlyLocation = (location) => {
-    const slug = (location?.slug || '').toLowerCase();
-    const nameKo = (location?.name || '').toLowerCase();
-    const nameEn = (location?.name_en || location?.curation_data?.locationEn || '').toLowerCase();
-
-    return MAP_POI_GYG_ONLY_LOCATION_KEYS.some((key) =>
-        slug.includes(key) || nameKo.includes(key) || nameEn.includes(key)
-    );
-};
+export { isMapPoiGygOnlyLocation } from './locationRules';
 
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
@@ -217,43 +189,45 @@ export const getMultiLinks = ({ type, data, location }) => {
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
 
-            // 투어 상품 기본 전략: Klook 우선, 특정 목적지만 GetYourGuide로 폴백
-            if (!isGygFallbackLocation) {
-                const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20어트랙션`;
-                links.push({
-                    url: getKlookAffiliateUrl(klookTourTargetUrl),
-                    text: '투어/액티비티 (Klook)',
-                    colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200'
-                });
-            }
+            // 투어는 하단 위젯(Klook/GYG)으로만 노출하고 텍스트 링크는 제거.
 
-            // 식당 예약 플랫폼 (지역별 동적 분기 및 수익화)
-            let diningUrl = `https://www.thefork.com/`; // 기본값 홈으로 변경
-            let diningText = `${location?.name || '현지'} 식당 예약`;
-            let isDiningMatched = false;
+            // 식당 예약 노출 전략: Klook 전략 지역 → 대안 매핑(TheFork/Tabelog 등) → 미매칭 숨김
+            if (!isMapPoiDiningHiddenLocation(location)) {
+                let diningUrl = '';
+                let diningText = '';
 
-            for (const item of DINING_RESERVATION_LINKS) {
-                if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
-                    diningUrl = item.type === 'query' ? `${item.url}${encodedQuery}` : item.url;
-                    diningText = `${item.name} 식당 예약`;
-                    isDiningMatched = true;
+                const canUseKlookDining = isKlookDiningPriorityLocation(searchTarget) && !isKlookDiningUnsupportedLocation(location);
+
+                if (canUseKlookDining) {
+                    const klookDiningTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20레스토랑`;
+                    diningUrl = getKlookAffiliateUrl(klookDiningTargetUrl);
+                    diningText = 'Klook 레스토랑 검색';
+                } else {
+                    for (const item of DINING_RESERVATION_LINKS) {
+                        if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
+                            diningUrl = item.type === 'query' ? `${item.url}${encodedQuery}` : item.url;
+                            diningText = `${item.name} 식당 예약`;
+                            break;
+                        }
+                    }
+                }
+
+                // 플랫폼 미매칭이면 범용 대안으로 연결 (지원 공백 최소화)
+                if (!diningUrl) {
+                    diningUrl = `https://www.google.com/maps/search/${encodedQuery}%20restaurant`;
+                    diningText = '근처 레스토랑 찾기';
+                }
+
+                if (!diningUrl) {
                     break;
                 }
-            }
 
-            // Klook F&B (글로벌 범용/아시아 특화 수익화)
-            // 타베로그나 TheFork에 매핑되지 않은 기타 지역은 범용적으로 클룩 다이닝 검색 딥링크 제공
-            if (!isDiningMatched) {
-                const klookDiningTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20레스토랑`;
-                diningUrl = getKlookAffiliateUrl(klookDiningTargetUrl);
-                diningText = 'Klook 레스토랑 검색';
+                links.push({
+                    url: diningUrl,
+                    text: diningText,
+                    colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                });
             }
-
-            links.push({
-                url: diningUrl,
-                text: diningText,
-                colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
-            });
             break;
         case 'safety':
             // 1. 보험 추가

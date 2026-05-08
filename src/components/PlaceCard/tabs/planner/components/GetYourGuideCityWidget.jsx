@@ -1,34 +1,14 @@
 import React, { useMemo } from 'react';
+import { getGygLocationIdByLocation } from '../locationRules';
 
 const GYG_PARTNER_ID = 'LRKVVU4';
 const GYG_LOCALE = 'ko-KR';
 
-// 위젯 적용 + location-id 매핑을 한 곳에서 관리.
-const GYG_CITY_CONFIGS = [
-  { locationId: '2008', keys: ['mount-everest', '에베레스트', 'everest'] },
-  { locationId: '168995', keys: ['costa-rica', '코스타리카', 'costa rica'] },
-  { locationId: '204933', keys: ['galapagos', 'galápagos', '갈라파고스'] },
-  { locationId: '2794', keys: ['patagonia', '파타고니아'] },
-  { locationId: '2859', keys: ['arequipa', '아레키파'] },
-  { locationId: '416', keys: ['canary-islands', 'canary islands', '카나리아 제도', '카나리아제도'] },
-  { locationId: '1534', keys: ['corsica', '코르시카'] },
-  { locationId: '32367', keys: ['fiordland', 'fjordland', '피오르드랜드'] },
-];
-
 const GetYourGuideCityWidget = ({ location }) => {
-  const locationId = useMemo(() => {
-    const slug = (location?.slug || '').toLowerCase();
-    const nameKo = (location?.name || '').toLowerCase();
-    const nameEn = (location?.name_en || location?.curation_data?.locationEn || '').toLowerCase();
-
-    const matchedConfig = GYG_CITY_CONFIGS.find((config) =>
-      config.keys.some((key) =>
-        slug.includes(key) || nameKo.includes(key) || nameEn.includes(key)
-      )
-    );
-
-    return matchedConfig?.locationId || null;
-  }, [location?.slug, location?.name, location?.name_en, location?.curation_data?.locationEn]);
+  const locationId = useMemo(
+    () => getGygLocationIdByLocation(location),
+    [location?.slug, location?.name, location?.name_en, location?.curation_data?.locationEn]
+  );
 
   if (!locationId) return null;
 
