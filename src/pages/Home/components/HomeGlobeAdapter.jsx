@@ -3,34 +3,29 @@ import HomeGlobeLegacy from './HomeGlobe';
 import HomeGlobeMapbox from './HomeGlobeMapbox';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-const ENV_ENGINE = import.meta.env.VITE_HOME_GLOBE_ENGINE;
-
-const normalizeEngine = (value) => (value === 'mapbox' ? 'mapbox' : 'legacy');
-
-const resolvePreferredEngine = () => {
-  let preferred = ENV_ENGINE ? normalizeEngine(ENV_ENGINE) : 'mapbox';
-  try {
-    const urlEngine = new URLSearchParams(window.location.search).get('globeEngine');
-    const localEngine = window.localStorage.getItem('home_globe_engine');
-    if (localEngine) preferred = normalizeEngine(localEngine);
-    if (urlEngine) preferred = normalizeEngine(urlEngine);
-  } catch {
-    // keep env default only
-  }
-  return preferred;
-};
 
 const HomeGlobeAdapter = forwardRef((props, ref) => {
-  const preferred = useMemo(resolvePreferredEngine, []);
-  const initialEngine = preferred === 'mapbox' && MAPBOX_TOKEN ? 'mapbox' : 'legacy';
+  const initialEngine = useMemo(() => {
+    if (!MAPBOX_TOKEN) return 'legacy';
+    if (!import.meta.env.DEV) return 'mapbox';
+    try {
+      const ua = window.navigator?.userAgent || '';
+      const isMobile = /android|iphone|ipad|ipod|mobile/i.test(ua);
+      // For local-device QA, mobile dev sessions default to legacy globe.
+      if (isMobile) return 'legacy';
+    } catch {
+      // Keep mapbox default on detection failure.
+    }
+    return 'mapbox';
+  }, []);
   const [activeEngine, setActiveEngine] = useState(initialEngine);
   const childRef = useRef(null);
 
   useEffect(() => {
-    if (preferred === 'mapbox' && !MAPBOX_TOKEN && import.meta.env.DEV) {
-      console.warn('[HomeGlobeAdapter] mapbox requested but token missing. Falling back to legacy.');
+    if (!MAPBOX_TOKEN && import.meta.env.DEV) {
+      console.warn('[HomeGlobeAdapter] mapbox token missing. Falling back to legacy.');
     }
-  }, [preferred]);
+  }, []);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => childRef.current?.pauseRotation?.(),
@@ -46,8 +41,10 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
       <HomeGlobeMapbox
         ref={childRef}
         {...props}
-        onFatalError={() => {
-          setActiveEngine('legacy');
+        onFatalError={(error) => {
+          if (import.meta.env.DEV) {
+            console.warn('[HomeGlobeAdapter] mapbox fatal error:', error);
+          }
         }}
       />
     );

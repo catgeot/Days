@@ -24,3 +24,9 @@
 
 - 지역별 운영 규칙을 `src/components/PlaceCard/tabs/planner/locationRules.js` 단일 파일로 통합.
 - `GetYourGuideCityWidget`/`planner/utils`의 하드코딩 규칙을 제거하고 공통 규칙 파일을 참조하도록 정리.
+
+## Home 글로브 모바일 상호작용 안정화
+
+- 모바일 탭 환경에서 마커 클릭 이후 빈 지구본 클릭이 1회만 동작하던 문제를 `HomeGlobeMapbox`/`HomeGlobe` 클릭 가드 정리로 수정.
+- 현재 위치 버튼 동작을 지도 클릭과 동일한 흐름으로 연결해 `Mapbox`에서도 핀 생성이 일관되게 발생하도록 보정.
+- 로컬 모바일에서 Mapbox 토큰 URL 제한(403/429+CORS 노출) 이슈 확인 후, DEV 모바일 기본 엔진을 legacy로 두어 QA를 진행하고 배포 경로는 Mapbox 유지.

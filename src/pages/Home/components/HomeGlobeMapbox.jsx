@@ -644,11 +644,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           duration: 900,
           essential: true
         });
+        // Keep behavior consistent with globe taps: create/update pin via geocoding flow.
+        if (onGlobeClick) {
+          window.setTimeout(() => {
+            onGlobeClick({ lat: latitude, lng: longitude, source: 'map' });
+          }, 120);
+        }
       },
       () => showMobileActionMessage('위치 권한을 확인해 주세요.'),
       { enableHighAccuracy: true, timeout: 6000 }
     );
-  }, [showMobileActionMessage]);
+  }, [onGlobeClick, showMobileActionMessage]);
 
   const handleReturnToSpace = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -791,8 +797,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [isZenMode, pauseRender]);
 
   const handleGlobeClickInternal = useCallback((event) => {
+    isHoveringMarker.current = false;
     if (Date.now() < suppressClickUntilRef.current) return;
-    if (isZenMode || isHoveringMarker.current || pauseRender) return;
+    if (isZenMode || pauseRender) return;
     if (!onGlobeClick || !event?.lngLat) return;
     const map = mapRef.current?.getMap();
     const labelLayers = placeLabelLayerIdsRef.current || [];
@@ -847,9 +854,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     interactionRef.current = false;
   }, []);
 
-  if (!MAPBOX_TOKEN) {
-    return null;
-  }
+  if (!MAPBOX_TOKEN) return null;
 
   return (
     <div
@@ -949,10 +954,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
               <div
                 className="globe-marker-wrapper"
                 style={{ position: 'relative', zIndex, pointerEvents: 'auto', cursor: 'pointer' }}
-                onMouseEnter={() => { isHoveringMarker.current = true; }}
-                onMouseLeave={() => { isHoveringMarker.current = false; }}
+                onPointerEnter={(e) => {
+                  if (e.pointerType === 'mouse') isHoveringMarker.current = true;
+                }}
+                onPointerLeave={(e) => {
+                  if (e.pointerType === 'mouse') isHoveringMarker.current = false;
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
+                  isHoveringMarker.current = false;
                   if (onMarkerClick) onMarkerClick(d, 'globe');
                 }}
                 dangerouslySetInnerHTML={{ __html: html }}

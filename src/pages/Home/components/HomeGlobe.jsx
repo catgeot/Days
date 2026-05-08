@@ -183,10 +183,8 @@ const HomeGlobe = React.memo(forwardRef(({
   }, []);
 
   const handleGlobeClickInternal = ({ lat, lng }) => {
+    isHoveringMarker.current = false;
     if (isZenMode) return;
-
-    if (isHoveringMarker.current) return;
-
     if (pauseRender) return;
     if (onGlobeClick) onGlobeClick({ lat, lng });
   };
