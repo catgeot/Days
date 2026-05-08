@@ -169,6 +169,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [mobileActionMessage, setMobileActionMessage] = useState('');
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(false);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
+  const isMobileDevice = useMemo(() => {
+    try {
+      return /android|iphone|ipad|ipod|mobile/i.test(window.navigator?.userAgent || '');
+    } catch {
+      return false;
+    }
+  }, []);
   const fogConfig = useMemo(() => {
     const atmosphere = ATMOSPHERE_BY_THEME[globeTheme] || ATMOSPHERE_BY_THEME.deep;
     return { ...GLOBE_SPACE_FOG_BASE, ...atmosphere };
@@ -659,11 +666,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const handleReturnToSpace = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
+    const returnZoom = isMobileDevice ? 1 : GLOBE_VIEW.default.zoom;
     try {
       map.stop();
       map.flyTo({
         center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
-        zoom: GLOBE_VIEW.default.zoom,
+        zoom: returnZoom,
         pitch: GLOBE_VIEW.default.pitch,
         bearing: GLOBE_VIEW.default.bearing,
         duration: 1200,
@@ -673,7 +681,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       // Fallback for edge cases where camera animation is rejected.
       map.jumpTo({
         center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
-        zoom: GLOBE_VIEW.default.zoom,
+        zoom: returnZoom,
         pitch: GLOBE_VIEW.default.pitch,
         bearing: GLOBE_VIEW.default.bearing
       });
@@ -682,7 +690,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     autoRotateRef.current = !pauseRender;
     setRipples([]);
     pendingFocusRef.current = null;
-  }, [pauseRender]);
+  }, [isMobileDevice, pauseRender]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
