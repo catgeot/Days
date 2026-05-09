@@ -460,7 +460,52 @@ function Home() {
             navigate(`/place/${getPlaceUrlParam(spot)}`);
           }}
           onSearch={async (query) => {
-            await handleSmartSearch(query);
+            const selectedFromSearch = await handleSmartSearch(query);
+
+            if (selectedFromSearch?.name) {
+              try {
+                const key = 'gateo_recent_visited_destinations';
+                const current = JSON.parse(localStorage.getItem(key) || '[]');
+                const safeCurrent = Array.isArray(current) ? current : [];
+                const next = [
+                  selectedFromSearch.name,
+                  ...safeCurrent.filter((item) => item !== selectedFromSearch.name)
+                ].slice(0, 30);
+                localStorage.setItem(key, JSON.stringify(next));
+
+                const keywordVisitKey = 'gateo_recent_keyword_visits';
+                const rawKeywordVisits = JSON.parse(localStorage.getItem(keywordVisitKey) || '[]');
+                const keywordVisits = Array.isArray(rawKeywordVisits) ? rawKeywordVisits : [];
+                const normalizedKeyword = (query || '').trim();
+
+                if (normalizedKeyword) {
+                  const matched = keywordVisits.find((entry) => entry?.keyword === normalizedKeyword);
+                  let nextKeywordVisits;
+
+                  if (matched) {
+                    const updatedDestinations = [
+                      selectedFromSearch.name,
+                      ...(Array.isArray(matched.destinations) ? matched.destinations : []).filter((dest) => dest !== selectedFromSearch.name)
+                    ].slice(0, 5);
+
+                    nextKeywordVisits = [
+                      { ...matched, destinations: updatedDestinations, updatedAt: Date.now() },
+                      ...keywordVisits.filter((entry) => entry?.keyword !== normalizedKeyword)
+                    ];
+                  } else {
+                    nextKeywordVisits = [
+                      { keyword: normalizedKeyword, destinations: [selectedFromSearch.name], updatedAt: Date.now() },
+                      ...keywordVisits
+                    ];
+                  }
+
+                  localStorage.setItem(keywordVisitKey, JSON.stringify(nextKeywordVisits.slice(0, 30)));
+                }
+              } catch {
+                // Ignore localStorage errors in private mode, etc.
+              }
+            }
+
             navigate('/', { state: { fromSearch: true } });
           }}
         />

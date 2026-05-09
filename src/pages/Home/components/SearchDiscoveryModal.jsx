@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -10,6 +10,60 @@ import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
 import TripLinkModal from '../../../components/PlaceCard/modals/TripLinkModal';
+
+const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
+const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
+const RECENT_KEYWORD_VISITS_KEY = 'gateo_recent_keyword_visits';
+/** 로컬 최근 검색·방문 등 최대 보관 개수 (목록이 길어도 패널 높이로 스크롤 처리) */
+const MAX_RECENT_ITEMS = 30;
+
+const safeLoadRecentList = (key) => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string' && item.trim() !== '') : [];
+  } catch {
+    return [];
+  }
+};
+
+const pushRecentItem = (key, value) => {
+  const trimmed = (value || '').trim();
+  if (!trimmed) return [];
+
+  const nextItems = [trimmed, ...safeLoadRecentList(key).filter((item) => item !== trimmed)].slice(0, MAX_RECENT_ITEMS);
+  localStorage.setItem(key, JSON.stringify(nextItems));
+  return nextItems;
+};
+
+const removeRecentItem = (key, value) => {
+  const nextItems = safeLoadRecentList(key).filter((item) => item !== value);
+  localStorage.setItem(key, JSON.stringify(nextItems));
+  return nextItems;
+};
+
+const pickVisibleElementRect = (...refs) => {
+  for (const ref of refs) {
+    const el = ref?.current;
+    if (!el) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width >= 16 && r.height >= 8) return r;
+  }
+  return null;
+};
+
+const safeLoadKeywordVisits = () => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RECENT_KEYWORD_VISITS_KEY) || '[]');
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item) =>
+      item &&
+      typeof item.keyword === 'string' &&
+      Array.isArray(item.destinations)
+    );
+  } catch {
+    return [];
+  }
+};
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
   const navigate = useNavigate();
@@ -23,6 +77,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [isAILoading, setIsAILoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [recentVisitedDestinations, setRecentVisitedDestinations] = useState([]);
+  const [keywordVisitHistory, setKeywordVisitHistory] = useState([]);
+  const [activeQuickSection, setActiveQuickSection] = useState(null);
+  const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(false);
+  /** fixed 오버레이 위치 (페이지 레이아웃을 밀지 않음) */
+  const [popoverLayout, setPopoverLayout] = useState(null);
+
+  const searchBarRowRefPc = useRef(null);
+  const searchBarRowRefMobile = useRef(null);
+  const quickMenuRowRefPc = useRef(null);
+  const quickMenuRowRefMobile = useRef(null);
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
@@ -85,6 +151,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   useEffect(() => {
     if (isOpen) {
       setQuery(''); // 모달 열릴 때마다 항상 검색어 초기화
+      setRecentSearches(safeLoadRecentList(RECENT_SEARCH_KEY));
+      setRecentVisitedDestinations(safeLoadRecentList(RECENT_VISITED_KEY));
+      setKeywordVisitHistory(safeLoadKeywordVisits());
+      setActiveQuickSection(null);
+      setIsSearchHistoryOpen(false);
       // 모바일 키보드 자동 올림 방지를 위해 focus() 제거
       document.body.style.overflow = 'hidden';
       setSelectedSubGroup(null);
@@ -99,6 +170,83 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
+
+  /** 검색/섹션 확장 패널 바깥 클릭 시 닫기 (앵커·패널 내부는 유지) */
+  useEffect(() => {
+    if (!isOpen || (!isSearchHistoryOpen && !activeQuickSection)) return;
+
+    const handlePointerDown = (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest('[data-search-popover]') || target.closest('[data-quick-section-popover]')) return;
+      if (target.closest('[data-search-bar-anchor]') || target.closest('[data-quick-menu-root]')) return;
+      setIsSearchHistoryOpen(false);
+      setActiveQuickSection(null);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [isOpen, isSearchHistoryOpen, activeQuickSection]);
+
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      setPopoverLayout(null);
+      return;
+    }
+
+    const updateLayout = () => {
+      if (isSearchHistoryOpen && recentSearches.length > 0) {
+        const r = pickVisibleElementRect(searchBarRowRefPc, searchBarRowRefMobile);
+        if (!r) {
+          setIsSearchHistoryOpen(false);
+          setPopoverLayout(null);
+          return;
+        }
+        const gap = 8;
+        const top = r.bottom + gap;
+        const maxHeight = Math.max(160, window.innerHeight - top - 16);
+        const left = Math.min(Math.max(8, r.left), window.innerWidth - 24);
+        const width = Math.min(r.width, window.innerWidth - left - 8);
+        setPopoverLayout({ variant: 'search', top, left, width, maxHeight });
+        return;
+      }
+
+      if (activeQuickSection) {
+        const r = pickVisibleElementRect(quickMenuRowRefPc, quickMenuRowRefMobile);
+        if (!r) {
+          setActiveQuickSection(null);
+          setPopoverLayout(null);
+          return;
+        }
+        const gap = 8;
+        const top = r.bottom + gap;
+        const maxHeight = Math.max(160, window.innerHeight - top - 16);
+        const left = Math.min(Math.max(8, r.left), window.innerWidth - 24);
+        const width = Math.min(Math.max(r.width, 280), window.innerWidth - left - 8);
+        setPopoverLayout({ variant: 'quick', top, left, width, maxHeight });
+        return;
+      }
+
+      setPopoverLayout(null);
+    };
+
+    updateLayout();
+    const raf = requestAnimationFrame(updateLayout);
+
+    window.addEventListener('resize', updateLayout);
+    const scrollEl = scrollContainerRef.current;
+    scrollEl?.addEventListener('scroll', updateLayout, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', updateLayout);
+      scrollEl?.removeEventListener('scroll', updateLayout);
+    };
+  }, [isOpen, isSearchHistoryOpen, activeQuickSection, recentSearches.length, isSearching, query]);
 
   const handleFilterModeChange = (mode) => {
     setFilterMode(mode);
@@ -123,6 +271,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   };
 
   const handleSpotSelect = (spot) => {
+    setRecentVisitedDestinations(pushRecentItem(RECENT_VISITED_KEY, spot?.name));
     onSelect(spot);
   };
 
@@ -130,14 +279,44 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     setSelectedPackage(pkg);
   };
 
-  const handleSearchSubmit = async () => {
-    if (query.trim() === '' || !onSearch) return;
+  const handleSearchSubmit = async (submitQuery) => {
+    const finalQuery = (submitQuery ?? query).trim();
+    if (finalQuery === '' || !onSearch) return;
+    setQuery(finalQuery);
+    setRecentSearches(pushRecentItem(RECENT_SEARCH_KEY, finalQuery));
     setIsAILoading(true);
     try {
-      await onSearch(query.trim());
+      await onSearch(finalQuery);
     } finally {
       setIsAILoading(false);
+      setIsSearchHistoryOpen(false);
     }
+  };
+
+  const handleRemoveRecentSearch = (keyword) => {
+    const next = removeRecentItem(RECENT_SEARCH_KEY, keyword);
+    setRecentSearches(next);
+    if (next.length === 0) setIsSearchHistoryOpen(false);
+  };
+
+  const handleRemoveRecentVisited = (destination) => {
+    setRecentVisitedDestinations(removeRecentItem(RECENT_VISITED_KEY, destination));
+  };
+
+  const handleRemoveKeywordVisit = (keyword, destination = null) => {
+    const nextHistory = safeLoadKeywordVisits()
+      .map((entry) => {
+        if (entry.keyword !== keyword) return entry;
+        if (!destination) return null;
+        const nextDestinations = (entry.destinations || []).filter((item) => item !== destination);
+        if (nextDestinations.length === 0) return null;
+        return { ...entry, destinations: nextDestinations };
+      })
+      .filter(Boolean)
+      .slice(0, MAX_RECENT_ITEMS);
+
+    localStorage.setItem(RECENT_KEYWORD_VISITS_KEY, JSON.stringify(nextHistory));
+    setKeywordVisitHistory(nextHistory);
   };
 
   const filteredSpots = useMemo(() => {
@@ -407,11 +586,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     );
   };
 
+  const isSearchPopoverOpen = isSearchHistoryOpen || Boolean(activeQuickSection);
+
   const headerContent = (isMobileView) => (
-    <div className={`flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md z-20 transition-all duration-300 overflow-hidden ${
+    <div className={`relative flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md transition-all duration-300 overflow-visible ${
+      isSearchPopoverOpen ? 'z-[220]' : 'z-20'
+    } ${
       isMobileView
         ? 'md:hidden'
-        : 'hidden md:flex md:max-h-[100px] md:opacity-100'
+        : 'hidden md:flex md:opacity-100'
     }`}>
       {/* 상단 닫기(홈으로) 및 모바일용 필터 토글 */}
       <div className="flex items-center justify-between md:justify-start gap-4">
@@ -470,33 +653,124 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
       {/* Search Bar + Guide Text */}
       <div className="flex-1 md:max-w-3xl md:ml-auto flex flex-col">
-        <div className="relative flex items-center bg-white/[0.12] border border-white/[0.25] rounded-2xl h-12 md:h-10 overflow-hidden focus-within:border-blue-400/60 focus-within:bg-white/[0.15] focus-within:shadow-[0_0_25px_rgba(59,130,246,0.2)] transition-all">
-          <Search size={20} className="text-gray-300 ml-4 md:ml-3 shrink-0 md:w-[18px] md:h-[18px]" />
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSearchSubmit();
-              }
+        {/* 드롭다운은 바깥에 두고, 입력 줄만 overflow-hidden (아니면 목록이 잘림) */}
+        <div
+          data-search-history-root="true"
+          data-search-bar-anchor="true"
+          className="relative w-full rounded-2xl focus-within:border-blue-400/60 focus-within:shadow-[0_0_25px_rgba(59,130,246,0.2)] transition-all"
+        >
+          <div
+            ref={isMobileView ? searchBarRowRefMobile : searchBarRowRefPc}
+            onMouseDownCapture={(e) => {
+              if (e.button !== 0) return;
+              if (e.target instanceof Element && e.target.closest('[data-search-clear]')) return;
+              if (recentSearches.length === 0) return;
+              setActiveQuickSection(null);
+              setIsSearchHistoryOpen((prev) => !prev);
             }}
-            placeholder="예: 번아웃, 설레는 밤산책, 바람 쐬고 싶다"
-            className="w-full bg-transparent text-white px-4 md:px-3 h-full outline-none placeholder-gray-500 text-[16px] md:text-base font-medium"
-          />
-          {query && (
-            <button
-               onClick={() => { setQuery(''); inputRef.current?.focus(); }}
-               className="p-3 md:p-2 text-gray-400 hover:text-white transition-colors"
-            >
-               <X size={20} className="md:w-[18px] md:h-[18px]" />
-            </button>
-          )}
+            className="relative flex h-12 items-center overflow-hidden rounded-2xl border border-white/[0.25] bg-white/[0.12] focus-within:bg-white/[0.15] md:h-10"
+          >
+            <Search size={20} className="ml-4 shrink-0 text-gray-300 md:ml-3 md:h-[18px] md:w-[18px]" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                if (e.target.value.trim() !== '') {
+                  setIsSearchHistoryOpen(false);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchSubmit();
+                }
+              }}
+              placeholder="예: 번아웃, 설레는 밤산책, 바람 쐬고 싶다"
+              className="h-full w-full bg-transparent px-4 text-[16px] font-medium text-white outline-none placeholder-gray-500 md:px-3 md:text-base"
+            />
+            {query && (
+              <button
+                type="button"
+                data-search-clear
+                onClick={() => {
+                  setQuery('');
+                  setIsSearchHistoryOpen(false);
+                  inputRef.current?.focus();
+                }}
+                className="p-3 text-gray-400 transition-colors hover:text-white md:p-2"
+              >
+                <X size={20} className="md:h-[18px] md:w-[18px]" />
+              </button>
+            )}
+          </div>
         </div>
-        <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">
-          {searchGuideText}
-        </p>
+        {/* 드롭다운·섹션 패널 열림 시 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
+        {!isSearchHistoryOpen && !activeQuickSection && (
+          <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">
+            {searchGuideText}
+          </p>
+        )}
+
+        {/* 최근 검색 드롭다운이 열리면 동일 정보가 중복되므로 섹션 버튼 줄은 잠시 숨김 */}
+        {!isSearchHistoryOpen && (recentSearches.length > 0 || recentVisitedDestinations.length > 0 || keywordVisitHistory.length > 0) && (
+          <div
+            data-quick-menu-root="true"
+            ref={isMobileView ? quickMenuRowRefMobile : quickMenuRowRefPc}
+            className="relative mt-2 px-1"
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              {recentSearches.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSearchHistoryOpen(false);
+                    setActiveQuickSection((prev) => (prev === 'searches' ? null : 'searches'));
+                  }}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                    activeQuickSection === 'searches'
+                      ? 'border-white/[0.25] bg-white/[0.15] text-white'
+                      : 'border-white/[0.12] bg-white/[0.06] text-gray-200 hover:bg-white/[0.12]'
+                  }`}
+                >
+                  최근 검색어 {recentSearches.length}
+                </button>
+              )}
+              {recentVisitedDestinations.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSearchHistoryOpen(false);
+                    setActiveQuickSection((prev) => (prev === 'visited' ? null : 'visited'));
+                  }}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                    activeQuickSection === 'visited'
+                      ? 'border-blue-400/40 bg-blue-500/20 text-blue-100'
+                      : 'border-blue-500/30 bg-blue-500/10 text-blue-200 hover:bg-blue-500/20'
+                  }`}
+                >
+                  최근 방문지 {recentVisitedDestinations.length}
+                </button>
+              )}
+              {keywordVisitHistory.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSearchHistoryOpen(false);
+                    setActiveQuickSection((prev) => (prev === 'keywordVisits' ? null : 'keywordVisits'));
+                  }}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                    activeQuickSection === 'keywordVisits'
+                      ? 'border-purple-400/40 bg-purple-500/20 text-purple-100'
+                      : 'border-purple-500/30 bg-purple-500/10 text-purple-200 hover:bg-purple-500/20'
+                  }`}
+                >
+                  키워드 방문 기록 {keywordVisitHistory.length}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -668,6 +942,163 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         </div>
 
       </div>
+
+      {/* 검색·섹션 확장: fixed 오버레이 (본문 레이아웃을 밀지 않음, 구글 검색창과 유사) */}
+      {isSearchPopoverOpen && (
+        <div
+          className="fixed inset-0 z-[205] bg-black/45 backdrop-blur-[1px]"
+          aria-hidden
+          onMouseDown={() => {
+            setIsSearchHistoryOpen(false);
+            setActiveQuickSection(null);
+          }}
+        />
+      )}
+
+      {popoverLayout?.variant === 'search' && recentSearches.length > 0 && (
+        <div
+          data-search-popover
+          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.16] bg-[#0f1625]/98 shadow-[0_16px_44px_rgba(0,0,0,0.55)]"
+          style={{
+            top: popoverLayout.top,
+            left: popoverLayout.left,
+            width: popoverLayout.width,
+            maxHeight: popoverLayout.maxHeight,
+          }}
+        >
+          <div className="shrink-0 border-b border-white/[0.08] px-3 py-2 text-[11px] text-gray-400">최근 검색</div>
+          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-2">
+            <div className="space-y-1">
+              {recentSearches.map((keyword) => (
+                <div key={`popover-search-${keyword}`} className="flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 hover:bg-white/[0.06]">
+                  <button
+                    type="button"
+                    onClick={() => handleSearchSubmit(keyword)}
+                    className="truncate text-left text-sm text-gray-100 transition-colors hover:text-white"
+                  >
+                    {keyword}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveRecentSearch(keyword);
+                    }}
+                    className="shrink-0 text-gray-400 transition-colors hover:text-red-300"
+                    aria-label={`${keyword} 삭제`}
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {popoverLayout?.variant === 'quick' && activeQuickSection && (
+        <div
+          data-quick-section-popover
+          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.14] bg-[#0f1625]/95 shadow-[0_16px_44px_rgba(0,0,0,0.5)]"
+          style={{
+            top: popoverLayout.top,
+            left: popoverLayout.left,
+            width: popoverLayout.width,
+            maxHeight: popoverLayout.maxHeight,
+          }}
+        >
+          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-3">
+            {activeQuickSection === 'searches' && (
+              <div className="flex flex-wrap gap-2">
+                {recentSearches.map((keyword) => (
+                  <div key={`popover-quick-search-${keyword}`} className="inline-flex items-center gap-1 rounded-full border border-white/[0.16] bg-white/[0.08] py-1 pl-2.5 pr-1.5">
+                    <button type="button" onClick={() => handleSearchSubmit(keyword)} className="text-xs text-gray-100 transition-colors hover:text-white">
+                      {keyword}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveRecentSearch(keyword);
+                      }}
+                      className="text-gray-400 transition-colors hover:text-red-300"
+                      aria-label={`${keyword} 삭제`}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeQuickSection === 'visited' && (
+              <div className="flex flex-wrap gap-2">
+                {recentVisitedDestinations.map((destination) => (
+                  <div key={`popover-quick-visited-${destination}`} className="inline-flex items-center gap-1 rounded-full border border-blue-400/35 bg-blue-500/15 py-1 pl-2.5 pr-1.5">
+                    <button type="button" onClick={() => handleSearchSubmit(destination)} className="text-xs text-blue-100 transition-colors hover:text-white">
+                      {destination}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveRecentVisited(destination);
+                      }}
+                      className="text-blue-200/80 transition-colors hover:text-red-200"
+                      aria-label={`${destination} 삭제`}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeQuickSection === 'keywordVisits' && (
+              <div className="space-y-2">
+                {keywordVisitHistory.map((entry) => (
+                  <div key={`popover-quick-kw-${entry.keyword}`} className="flex flex-wrap items-center gap-1.5">
+                    <div className="inline-flex items-center gap-1 rounded-full border border-purple-400/35 bg-purple-500/15 py-1 pl-2.5 pr-1.5">
+                      <button type="button" onClick={() => handleSearchSubmit(entry.keyword)} className="text-[11px] text-purple-100 transition-colors hover:text-white">
+                        {entry.keyword}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveKeywordVisit(entry.keyword);
+                        }}
+                        className="text-purple-200/80 transition-colors hover:text-red-200"
+                        aria-label={`${entry.keyword} 기록 삭제`}
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                    {(entry.destinations || []).slice(0, 5).map((destination) => (
+                      <div key={`popover-quick-kw-d-${entry.keyword}-${destination}`} className="inline-flex items-center gap-1 rounded-full border border-white/[0.14] bg-white/[0.07] py-1 pl-2 pr-1.5">
+                        <button type="button" onClick={() => handleSearchSubmit(destination)} className="text-[11px] text-gray-100 transition-colors hover:text-white">
+                          {destination}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveKeywordVisit(entry.keyword, destination);
+                          }}
+                          className="text-gray-400 transition-colors hover:text-red-300"
+                          aria-label={`${destination} 삭제`}
+                        >
+                          <X size={11} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 검색 진행 로딩 오버레이 */}
       {isAILoading && (

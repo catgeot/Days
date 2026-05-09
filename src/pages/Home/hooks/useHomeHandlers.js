@@ -322,7 +322,7 @@ export function useHomeHandlers({
 
     if (typeof input === 'object' && input.lat !== undefined && input.lng !== undefined) {
       handleLocationSelect(input);
-      return;
+      return input;
     }
 
     const query = input.trim();
@@ -338,7 +338,7 @@ export function useHomeHandlers({
     );
     if (localSpot) {
       handleLocationSelect(localSpot);
-      return;
+      return localSpot;
     }
 
     const citySpot = citiesData.find(c =>
@@ -364,11 +364,11 @@ export function useHomeHandlers({
         type: 'temp-base'
       };
       handleLocationSelect(normalizedCity);
-      return;
+      return normalizedCity;
     }
 
     const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
-    if (isConcept) return;
+    if (isConcept) return null;
 
     const isLikelyMoodQuery = (text) => {
       const normalized = (text || '').toLowerCase().trim();
@@ -461,6 +461,7 @@ export function useHomeHandlers({
         type: 'temp-base'
       };
       handleLocationSelect(normalizedLoc);
+      return normalizedLoc;
     } else {
       // 🚨 [New] Smart Search Fallback (AI 자동 교정 엔진)
       let isCorrected = false;
@@ -488,6 +489,7 @@ export function useHomeHandlers({
                 setDraftInput(verifiedMoodLoc.name);
                 processSearchKeywords(verifiedMoodLoc.name);
                 isCorrected = true;
+                return verifiedMoodLoc;
 
                 const nextVariants = [...parsedData.variants];
                 nextVariants[picked.index] = {
@@ -516,6 +518,7 @@ export function useHomeHandlers({
               setDraftInput(verifiedCachedLoc.name);
               processSearchKeywords(verifiedCachedLoc.name);
               isCorrected = true;
+              return verifiedCachedLoc;
             }
           }
         }
@@ -604,6 +607,7 @@ export function useHomeHandlers({
                   setDraftInput(chosenLoc.name);
                   processSearchKeywords(chosenLoc.name);
                   isCorrected = true;
+                  return chosenLoc;
 
                   const variantsForCache = verifiedCandidates.map((variant, idx) => ({
                     ...variant,
@@ -664,6 +668,7 @@ export function useHomeHandlers({
                   setDraftInput(verifiedAiLoc.name);
                   processSearchKeywords(verifiedAiLoc.name);
                   isCorrected = true;
+                  return verifiedAiLoc;
                 }
               }
             }
@@ -682,8 +687,10 @@ export function useHomeHandlers({
           handleStartChat(query, { text: query, persona: PERSONA_TYPES.GENERAL });
           setDraftInput('');
         }
+        return null;
       }
     }
+    return null;
   }, [category, processSearchKeywords, setDraftInput, handleLocationSelect, setSelectedLocation, handleStartChat]);
 
   const handleClearChats = useCallback(async () => {
