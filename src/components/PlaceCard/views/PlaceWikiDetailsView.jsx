@@ -5,6 +5,7 @@ import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
 import PlaceMiniMap from '../common/PlaceMiniMap';
 import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
+import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -23,7 +24,18 @@ const LOADING_MESSAGES_UPDATE = [
     "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
 ];
 
-const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName, location, galleryData, isActive, matchedPackage, onOpenPackage }) => {
+const PlaceWikiDetailsView = ({
+  wikiData,
+  isWikiLoading,
+  placeName,
+  countryName,
+  location,
+  galleryData,
+  isActive,
+  matchedPackage,
+  onOpenPackage,
+  mobileSecondaryNav = null
+}) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -314,7 +326,10 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
   };
 
   return (
-    <div ref={containerRef} className="w-full h-full flex flex-col overflow-y-auto text-white custom-scrollbar relative bg-[#05070a]">
+    <div
+        ref={containerRef}
+        className={`w-full h-full flex flex-col overflow-y-auto text-white custom-scrollbar relative bg-[#05070a] ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
+    >
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -322,11 +337,16 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
             .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
         `}</style>
 
+        {mobileSecondaryNav && (
+            <div className="md:hidden shrink-0 border-b border-white/10 bg-[#05070a]">
+                {mobileSecondaryNav}
+            </div>
+        )}
+
         {/* Hero Section */}
         {heroImage && (
             <div className="relative w-full overflow-hidden flex-shrink-0">
-                {/* 모바일 헤더 공간 확보 */}
-                <div className="h-16 md:h-0 bg-[#05070a]"></div>
+                <div className={`${mobileSecondaryNav ? 'h-0' : 'h-16'} md:h-0 bg-[#05070a]`} />
 
                 <div className="relative w-full h-[40vh] md:h-[50vh]">
                     <img
@@ -346,7 +366,7 @@ const PlaceWikiDetailsView = ({ wikiData, isWikiLoading, placeName, countryName,
             </div>
         )}
 
-        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-48 md:pb-32 ${!heroImage ? 'pt-[96px]' : 'pt-8'}`}>
+        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-48 md:pb-32 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 md:pt-0' : 'pt-[96px]') : 'pt-8'}`}>
 
             {/* 타이틀이 Hero 이미지 없는 경우를 대비한 Fallback */}
             {!heroImage && (

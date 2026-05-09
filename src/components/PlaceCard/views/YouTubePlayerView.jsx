@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Maximize2, Minimize2, Play, Sparkles, List, X, ChevronLeft, ChevronRight, AlertCircle, ExternalLink } from 'lucide-react';
+import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 
 const YouTubePlayerView = forwardRef(({
   videoId,
@@ -9,7 +10,8 @@ const YouTubePlayerView = forwardRef(({
   showUI,
   onVideoSelect,
   isLoading = false,
-  googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7"
+  googleFormUrl = "https://forms.gle/QgofLDzzYD6NfWYN7",
+  mobileSecondaryNav = null
 }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
@@ -123,8 +125,16 @@ const YouTubePlayerView = forwardRef(({
   const isEmpty = !isLoading && videoList.length === 0;
 
   return (
-    <div className={`flex-1 w-full h-full bg-[#05070a] md:rounded-[2rem] md:border md:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}>
+    <div
+      className={`flex flex-col flex-1 w-full h-full bg-[#05070a] md:rounded-[2rem] md:border md:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''} ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
+    >
+      {mobileSecondaryNav && (
+        <div className="md:hidden shrink-0 z-[215] relative border-b border-white/10">
+          {mobileSecondaryNav}
+        </div>
+      )}
 
+      <div className="flex-1 min-h-0 relative overflow-hidden">
       {/* 1. Main Content Area */}
       {isLoading ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
@@ -337,6 +347,7 @@ const YouTubePlayerView = forwardRef(({
         <button onClick={toggleFullScreen} className="p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-red-600 hover:text-white transition-all shadow-xl group">
           {isFullScreen ? <Minimize2 size={20} className="group-hover:scale-90 transition-transform"/> : <Maximize2 size={20} className="group-hover:scale-110 transition-transform"/>}
         </button>
+      </div>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
+import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
 const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
@@ -252,7 +253,7 @@ const ReviewsTab = ({ location, setMediaMode }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out] pt-[64px] md:pt-0 relative">
+    <div className={`flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out] ${mobilePlaceHeaderScrollPadding} md:pt-0 relative`}>
       {/* PC 헤더 (기존 유지) */}
       <div className="hidden md:block p-4 border-b border-gray-100 shrink-0">
         <div className="flex justify-between items-center mb-4">

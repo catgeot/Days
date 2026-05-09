@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles } from 'lucide-react';
+import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 
 const PlaceGalleryView = React.memo(({
   location,
@@ -13,7 +14,8 @@ const PlaceGalleryView = React.memo(({
   showUI,
   handleDownload,
   handleRefresh,
-  handleRemoveImage
+  handleRemoveImage,
+  mobileSecondaryNav = null
 }) => {
   const fullScreenContainerRef = useRef(null);
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
@@ -167,7 +169,13 @@ const PlaceGalleryView = React.memo(({
           </div>
         </div>
       ) : (
-        <div className="w-full h-full overflow-y-auto custom-scrollbar-blue relative overscroll-none touch-pan-y pt-[96px] md:pt-10 pb-28 md:pb-6">
+        <div className={`w-full h-full overflow-y-auto custom-scrollbar-blue relative overscroll-none touch-pan-y ${mobilePlaceHeaderScrollPadding} md:pt-10 pb-28 md:pb-6`}>
+
+          {mobileSecondaryNav && (
+            <div className="md:hidden px-2 pb-2 shrink-0">
+              {mobileSecondaryNav}
+            </div>
+          )}
 
           <div className="px-6 relative">
             <div className="absolute top-0 right-6 md:-top-4 md:right-0 z-10">

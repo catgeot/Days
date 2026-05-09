@@ -3,6 +3,7 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
+import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
@@ -12,7 +13,7 @@ import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
 
-const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matchedPackage }) => {
+const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matchedPackage, mobileSecondaryNav = null }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
@@ -151,7 +152,13 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
 
     if (isLoading) {
         return (
-            <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-[#f8f9fa]">
+            <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
+                {mobileSecondaryNav && (
+                    <div className={`md:hidden shrink-0 border-b border-gray-200/90 bg-[#f8f9fa] px-2 pb-2 ${mobilePlaceHeaderScrollPadding}`}>
+                        {mobileSecondaryNav}
+                    </div>
+                )}
+                <div className="flex flex-1 flex-col items-center justify-center p-6 min-h-0">
                 <div className="flex flex-col items-center gap-6 max-w-sm w-full">
                     <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2 shadow-inner">
                         <Briefcase size={28} className="animate-bounce" />
@@ -175,13 +182,20 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
                         <span className="animate-pulse">{currentMessages[loadingStep]}</span>
                     </div>
                 </div>
+                </div>
             </div>
         );
     }
 
     if (!guideData && !isLoading) {
         return (
-            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[#f8f9fa]">
+            <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
+                {mobileSecondaryNav && (
+                    <div className={`md:hidden shrink-0 border-b border-gray-200/90 bg-[#f8f9fa] px-2 pb-2 ${mobilePlaceHeaderScrollPadding}`}>
+                        {mobileSecondaryNav}
+                    </div>
+                )}
+                <div className="flex flex-1 flex-col items-center justify-center p-6 text-center min-h-0">
                 <Briefcase size={48} className="text-gray-300 mb-4" />
                 <h3 className="text-lg font-bold text-gray-800 mb-2">여행자 필수 정보가 없습니다.</h3>
                 <p className="text-sm text-gray-500 mb-6 max-w-sm">
@@ -194,6 +208,7 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
                     <Sparkles size={16} />
                     <span>AI 툴킷 생성하기</span>
                 </button>
+                </div>
             </div>
         );
     }
@@ -202,8 +217,13 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
         <div className="w-full h-full relative">
             <div
                 ref={scrollContainerRef}
-                className="w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 pt-[116px] pb-6 md:p-6 md:pt-10 overscroll-none touch-pan-y"
+                className={`w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 ${mobilePlaceHeaderScrollPadding} pb-6 md:p-6 md:pt-10 overscroll-none touch-pan-y`}
             >
+                {mobileSecondaryNav && (
+                    <div className="md:hidden shrink-0 -mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa]">
+                        {mobileSecondaryNav}
+                    </div>
+                )}
                 <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                         <div>

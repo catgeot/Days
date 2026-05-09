@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
 import PlaceWikiDetailsView from '../views/PlaceWikiDetailsView';
 import ReviewsTab from '../tabs/ReviewsTab';
 import PlannerTab from '../tabs/PlannerTab';
+import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 
 const PlaceMediaPanel = React.memo(({
     galleryData,
@@ -28,6 +29,19 @@ const PlaceMediaPanel = React.memo(({
     matchedPackage,
     onOpenPackage
 }) => {
+  const mobileSecondaryNav = useMemo(() => {
+    if (mediaMode === 'REVIEWS') return null;
+    return (
+      <PlaceMobileSecondaryNav
+        placement="scroll"
+        mediaMode={mediaMode}
+        setMediaMode={setMediaMode}
+        matchedPackage={matchedPackage}
+        onOpenPackage={onOpenPackage}
+      />
+    );
+  }, [mediaMode, setMediaMode, matchedPackage, onOpenPackage]);
+
   return (
     <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
 
@@ -45,6 +59,7 @@ const PlaceMediaPanel = React.memo(({
                 handleDownload={galleryData.handleDownload}
                 handleRefresh={galleryData.handleRefresh}
                 handleRemoveImage={galleryData.handleRemoveImage}
+                mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>
 
@@ -59,6 +74,7 @@ const PlaceMediaPanel = React.memo(({
                 onVideoSelect={onVideoSelect}
                 isLoading={isVideoLoading}
                 googleFormUrl={googleFormUrl}
+                mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>
 
@@ -73,11 +89,12 @@ const PlaceMediaPanel = React.memo(({
                 isActive={mediaMode === 'WIKI'}
                 matchedPackage={matchedPackage}
                 onOpenPackage={onOpenPackage}
+                mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>
 
         <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'PLANNER' ? 'block' : 'hidden'}`}>
-            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} isActive={mediaMode === 'PLANNER'} matchedPackage={matchedPackage} onOpenPackage={onOpenPackage} />
+            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} isActive={mediaMode === 'PLANNER'} matchedPackage={matchedPackage} onOpenPackage={onOpenPackage} mobileSecondaryNav={mobileSecondaryNav} />
         </div>
 
         <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'REVIEWS' ? 'block' : 'hidden'}`}>
