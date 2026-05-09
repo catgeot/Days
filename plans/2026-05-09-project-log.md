@@ -51,7 +51,7 @@
 
 - **리뷰 탭**: `PlaceMediaPanel`에서 리뷰에도 `PlaceMobileSecondaryNav` 전달. 리뷰 화면은 흰 배경이므로 보조 탭은 다크 바 없이 pill만(`isLightScrollChrome`). 모바일 리뷰 헤더는 `sticky` 제거 후 스크롤 본문과 한 컬럼으로 스크롤. `mobilePlaceHeaderInset` 주석 보강.
 - **플래너**: 미구현 앱 전송 CTA 제거(`PlaceMobileSecondaryNav`·`PlannerTab`). `usePlannerData`에 **`refetchPlannerFromDb`** / **`isPlannerRefreshing`** 추가 후 `PlannerTab`에 「저장된 데이터 새로고침」(툴킷이 있을 때만). **플래너 탭 진입만으로는 `update-place-toolkit` 미호출**(지도 등 잦은 진입 대비); 빈 상태는 **「AI 툴킷 실행하기」** 단일 버튼. `placeId` 없을 때 `setIsRemoteUpdating(false)`로 로딩 고착 완화.
-- **갤러리**: 모바일 설명 카드 하단 `#키워드` 칩 제거(모바일 전용 블록이었음).
+- **갤러리**: 모바일 설명 카드 하단 `#키워드` 칩 제거(모바일 전용 블록이었음). 그리드 뷰에서 설명과 겹치던 **이미지 새로고침** 버튼 제거, `usePlaceGallery`의 `handleRefresh` 노출 중단.
 
 ---
 

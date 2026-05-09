@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, Sparkles } from 'lucide-react';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 
 const PlaceGalleryView = React.memo(({
@@ -13,7 +13,6 @@ const PlaceGalleryView = React.memo(({
   closeImageKeepFullscreen,
   showUI,
   handleDownload,
-  handleRefresh,
   handleRemoveImage,
   mobileSecondaryNav = null
 }) => {
@@ -21,14 +20,6 @@ const PlaceGalleryView = React.memo(({
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
 
   const [isMobileUIHidden, setIsMobileUIHidden] = useState(false);
-  const [isRefreshDisabled, setIsRefreshDisabled] = useState(false);
-
-  const onRefreshClick = () => {
-    if (isRefreshDisabled || isImgLoading || !handleRefresh) return;
-    setIsRefreshDisabled(true);
-    handleRefresh();
-    setTimeout(() => setIsRefreshDisabled(false), 5000);
-  };
 
   useEffect(() => {
     queueMicrotask(() => setIsMobileUIHidden(false));
@@ -177,20 +168,9 @@ const PlaceGalleryView = React.memo(({
             </div>
           )}
 
-          <div className="px-6 relative">
-            <div className="absolute top-0 right-6 md:-top-4 md:right-0 z-10">
-               <button
-                  onClick={onRefreshClick}
-                  disabled={isRefreshDisabled || isImgLoading}
-                  className="flex items-center justify-center p-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/50 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed group shadow-lg"
-                  title="이미지 새로고침 (DB/캐시 무시 강제 로딩)"
-               >
-                  <RefreshCw size={18} className={`${isImgLoading || isRefreshDisabled ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-               </button>
-            </div>
-
+          <div className="px-6">
             {placeOverviewText && (
-              <div className="md:hidden mb-4 pr-12">
+              <div className="md:hidden mb-4">
                 <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3.5 backdrop-blur-md shadow-inner">
                   {location?.originalQuery && (
                     <p className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-violet-200/95">

@@ -413,7 +413,6 @@ export const usePlaceGallery = (locationSource) => {
     selectedImg,
     setSelectedImg,
     handleDownload,
-    handleRefresh: () => fetchImages(true),
     handleRemoveImage
   };
 };
