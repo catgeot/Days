@@ -54,7 +54,12 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
 
   const queryKey = location.name;
   const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey, mediaMode);
-  const { plannerData: currentPlannerData, isPlannerLoading } = usePlannerData(queryKey, mediaMode);
+  const {
+    plannerData: currentPlannerData,
+    isPlannerLoading,
+    refetchPlannerFromDb,
+    isPlannerRefreshing,
+  } = usePlannerData(queryKey, mediaMode);
 
   const matchedPackage = useMemo(() => getMatchedPackage(location), [location]);
 
@@ -186,6 +191,8 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
             isWikiLoading={isWikiLoading}
             plannerData={currentPlannerData}
             isPlannerLoading={isPlannerLoading}
+            refetchPlannerFromDb={refetchPlannerFromDb}
+            isPlannerRefreshing={isPlannerRefreshing}
             isVideoLoading={isVideoLoading}
             videoError={videoError}
             googleFormUrl={googleFormUrl}

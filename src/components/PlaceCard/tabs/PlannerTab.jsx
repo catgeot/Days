@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship } from 'lucide-react';
+import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
@@ -13,7 +13,16 @@ import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
 
-const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matchedPackage, mobileSecondaryNav = null }) => {
+const PlannerTab = ({
+    location,
+    plannerData,
+    isPlannerLoading,
+    refetchPlannerFromDb,
+    isPlannerRefreshing = false,
+    isActive,
+    matchedPackage,
+    mobileSecondaryNav = null,
+}) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
@@ -43,7 +52,10 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = useCallback(async (placeName, forceUpdate = false) => {
         const placeId = plannerData?.place_id || location?.name;
-        if (!placeId) return;
+        if (!placeId) {
+            setIsRemoteUpdating(false);
+            return null;
+        }
 
         // 🆕 [Phase 8 Fix] 중복 요청 방지 - 이미 요청 중이면 기존 Promise 재사용
         if (pendingToolkitRequests.has(placeId)) {
@@ -103,30 +115,6 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
         setIsRemoteUpdating(true);
         handleRequestToolkitInfo(location?.name, true);
     };
-
-    // 🆕 [Phase 8-3] 앱 연동 브릿지 UI 액션
-    const handleAppBridgeClick = () => {
-        alert("🚀 현재 gateo.kr 전용 스마트 플래너 앱을 열심히 준비 중입니다!\n\n앱이 출시되면 저장하신 여정을 모바일에서 곧바로 이어서 계획할 수 있습니다. 빠른 시일 내에 찾아뵙겠습니다.");
-    };
-
-    // 🆕 [Phase 6-2 + Phase 7-1 + Phase 8-3] 툴킷 진입 시 essential_guide가 없으면 자동으로 데이터 요청
-    const initialDataRequested = useRef(false);
-    useEffect(() => {
-        // essential_guide가 없고, 아직 요청하지 않았을 때만 자동 호출
-        if (isActive && !guideData && !isPlannerLoading && !initialDataRequested.current && location?.name) {
-            console.log("[PlannerTab] 툴킷 데이터 완전 없음 - 자동 데이터 요청 발송");
-            initialDataRequested.current = true;
-            setIsRemoteUpdating(true);
-            handleRequestToolkitInfo(location?.name, false);
-        }
-    }, [isActive, guideData, isPlannerLoading, location?.name, handleRequestToolkitInfo]);
-
-    // 🆕 [Phase 7-1] 장소 변경 시 플래그 리셋
-    const autoUpdateTriggered = useRef(false);
-    useEffect(() => {
-        initialDataRequested.current = false;
-        autoUpdateTriggered.current = false; // 장소 변경 시 자동 업데이트 플래그도 초기화
-    }, [location?.name]);
 
     // 🆕 [Phase 8 Fix] 툴킷 탭 재진입 시 및 데이터 갱신 시 스크롤 상단 리셋
     useEffect(() => {
@@ -198,15 +186,19 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
                 <div className="flex flex-1 flex-col items-center justify-center p-6 text-center min-h-0">
                 <Briefcase size={48} className="text-gray-300 mb-4" />
                 <h3 className="text-lg font-bold text-gray-800 mb-2">여행자 필수 정보가 없습니다.</h3>
-                <p className="text-sm text-gray-500 mb-6 max-w-sm">
-                    AI가 분석한 이 지역의 필수 여행 정보(비자, 교통, 숙박, 유심 등) 가이드를 생성하시겠습니까?
+                <p className="text-sm text-gray-500 mb-2 max-w-sm">
+                    AI가 분석한 이 지역의 필수 여행 정보(비자, 교통, 숙박, 유심 등) 가이드를 실행할까요?
+                </p>
+                <p className="text-xs text-gray-400 mb-6 max-w-sm">
+                    버튼을 눌렀을 때만 AI 툴킷이 실행됩니다.
                 </p>
                 <button
+                    type="button"
                     onClick={handleRemoteUpdate}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transition-colors text-sm"
+                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transition-colors text-sm"
                 >
                     <Sparkles size={16} />
-                    <span>AI 툴킷 생성하기</span>
+                    <span>AI 툴킷 실행하기</span>
                 </button>
                 </div>
             </div>
@@ -236,20 +228,24 @@ const PlannerTab = ({ location, plannerData, isPlannerLoading, isActive, matched
                             </p>
                         </div>
 
-                        {/* 🆕 [Phase 7-3] 강제 갱신 버튼 제거 (위키 탭에는 유지, 툴킷은 제거) */}
                         <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-                            {/* 데스크탑: 상단 앱 연동 버튼 (패키지 버튼은 배너로 대체) */}
-                            <div className="hidden md:flex items-center gap-2">
-                                <button onClick={handleAppBridgeClick} className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
-                                    <Smartphone size={14} />
-                                    <span>앱으로 여정 보내기</span>
+                            <div className="flex flex-wrap items-center justify-end gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => refetchPlannerFromDb?.()}
+                                    disabled={isPlannerRefreshing || !refetchPlannerFromDb}
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[11px] font-bold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:pointer-events-none"
+                                    title="DB에 저장된 툴킷만 다시 불러옵니다 (AI 미호출)"
+                                >
+                                    <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin text-blue-600' : 'text-gray-500'} />
+                                    저장된 데이터 새로고침
                                 </button>
+                                {lastUpdated && (
+                                    <span className="text-[11px] text-gray-400 font-medium px-1">
+                                        마지막 업데이트: {lastUpdated}
+                                    </span>
+                                )}
                             </div>
-                            {lastUpdated && (
-                                <span className="text-[11px] text-gray-400 font-medium px-1">
-                                    마지막 업데이트: {lastUpdated}
-                                </span>
-                            )}
                         </div>
                     </div>
 

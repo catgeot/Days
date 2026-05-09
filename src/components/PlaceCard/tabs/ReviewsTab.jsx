@@ -155,7 +155,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 };
 // --------------------------------------------------------------------------
 
-const ReviewsTab = ({ location, setMediaMode }) => {
+const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -253,7 +253,7 @@ const ReviewsTab = ({ location, setMediaMode }) => {
   };
 
   return (
-    <div className={`flex flex-col h-full bg-white animate-[fadeIn_0.3s_ease-out] ${mobilePlaceHeaderScrollPadding} md:pt-0 relative`}>
+    <div className="flex flex-col h-full min-h-0 bg-white animate-[fadeIn_0.3s_ease-out] relative">
       {/* PC 헤더 (기존 유지) */}
       <div className="hidden md:block p-4 border-b border-gray-100 shrink-0">
         <div className="flex justify-between items-center mb-4">
@@ -307,47 +307,6 @@ const ReviewsTab = ({ location, setMediaMode }) => {
         </div>
       </div>
 
-      {/* 모바일 전용 압축 헤더 (하이브리드) */}
-      <div className="md:hidden flex flex-col shrink-0 bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center justify-between px-3 py-2.5">
-          <div className="flex items-center gap-2">
-            <button
-                onClick={() => setMediaMode?.('GALLERY')}
-                className="p-1 -ml-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors shrink-0"
-            >
-                <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-1.5">
-              <MessageSquare className="w-3.5 h-3.5 text-blue-500" />
-              <h3 className="font-bold text-gray-900 text-sm">리뷰 <span className="text-gray-400 text-xs font-normal">({stats.totalReviews})</span></h3>
-              <div className="flex items-center gap-0.5 ml-1 bg-yellow-50 px-1.5 py-0.5 rounded">
-                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                <span className="font-bold text-yellow-700 text-xs">{stats.averageRating}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex bg-gray-100 rounded p-0.5 shrink-0">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-2.5 py-1 text-[11px] font-bold rounded transition-colors ${
-                filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
-              }`}
-            >
-              전체
-            </button>
-            <button
-              onClick={() => setFilter('mine')}
-              className={`px-2.5 py-1 text-[11px] font-bold rounded transition-colors ${
-                filter === 'mine' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
-              }`}
-            >
-              내 리뷰
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* 모바일 우측 하단 FAB 작성 버튼 */}
       <button
         onClick={handleWriteClick}
@@ -357,108 +316,174 @@ const ReviewsTab = ({ location, setMediaMode }) => {
         <span className="font-bold text-sm">작성</span>
       </button>
 
-      {/* 비로그인 안내 배너 */}
-      {!user && !isLoading && (
-        <div className="mx-4 mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-              <MessageSquare className="w-5 h-5 text-blue-500" />
-            </div>
-            <p className="text-sm text-gray-700">
-              <span className="font-bold text-blue-700">로그인</span>하고 첫 리뷰를 남겨보세요!<br/>
-              <span className="text-xs text-gray-500">다른 여행자들에게 큰 도움이 됩니다.</span>
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } })}
-            className="shrink-0 w-full sm:w-auto px-5 py-2 bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-lg transition-colors shadow-sm"
-          >
-            로그인 하기
-          </button>
-        </div>
-      )}
+      {/* 모바일: 미디어 탭 + 리뷰 헤더 + 본문 단일 스크롤 / 데스크톱: 본문만 스크롤 */}
+      <div
+        className={`flex-1 min-h-0 overflow-y-auto custom-scrollbar overscroll-none touch-pan-y pb-24 md:pb-4 ${mobilePlaceHeaderScrollPadding} md:pt-0`}
+      >
+        {mobileSecondaryNav && (
+          <div className="md:hidden px-2 pb-2 shrink-0">{mobileSecondaryNav}</div>
+        )}
 
-      {/* 리뷰 피드 목록 */}
-      <div className="flex-1 overflow-y-auto p-4 pb-24 md:pb-4 custom-scrollbar overscroll-none touch-pan-y">
-        {/* 관련 블로그 연동 영역 */}
-        {!blogsLoading && blogs.length > 0 && filter === 'all' && (
-          <div className="mb-6 border border-gray-100 rounded-xl bg-gray-50/50 p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <BookOpen className="w-4 h-4 text-emerald-500" />
-              <h4 className="font-bold text-gray-800">이 장소의 여행기</h4>
-              <span className="text-[10px] text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">블로그</span>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x custom-scrollbar">
-              {blogs.map((blog) => (
-                <div
-                  key={blog.id}
-                  onClick={() => navigate(`/p/${blog.id}`)}
-                  className="shrink-0 w-56 bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group"
-                >
-                  {blog.images && blog.images.length > 0 ? (
-                    <div className="h-28 overflow-hidden bg-gray-100 relative">
-                      <img src={blog.images[0]} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    </div>
-                  ) : (
-                    <div className="h-28 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
-                      <BookOpen className="w-8 h-8 text-emerald-200" />
-                    </div>
-                  )}
-                  <div className="p-3 flex flex-col gap-1">
-                    <h5 className="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-emerald-600 transition-colors">{blog.title}</h5>
-                    <p className="text-[10px] text-gray-400 font-medium truncate">
-                      {blog.author_label && <span className="text-gray-500">{blog.author_label} · </span>}
-                      {blog.date} · {blog.location}
-                    </p>
-                  </div>
+        {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
+        <div className="md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm">
+          <div className="flex items-center justify-between px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setMediaMode?.('GALLERY')}
+                className="p-1 -ml-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors shrink-0"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <MessageSquare className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <h3 className="font-bold text-gray-900 text-sm truncate">
+                  리뷰 <span className="text-gray-400 text-xs font-normal">({stats.totalReviews})</span>
+                </h3>
+                <div className="flex items-center gap-0.5 ml-1 bg-yellow-50 px-1.5 py-0.5 rounded shrink-0">
+                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                  <span className="font-bold text-yellow-700 text-xs">{stats.averageRating}</span>
                 </div>
+              </div>
+            </div>
+
+            <div className="flex bg-gray-100 rounded p-0.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setFilter('all')}
+                className={`px-2.5 py-1 text-[11px] font-bold rounded transition-colors ${
+                  filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                }`}
+              >
+                전체
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilter('mine')}
+                className={`px-2.5 py-1 text-[11px] font-bold rounded transition-colors ${
+                  filter === 'mine' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                }`}
+              >
+                내 리뷰
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-4 pt-4">
+          {/* 비로그인 안내 배너 */}
+          {!user && !isLoading && (
+            <div className="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                  <MessageSquare className="w-5 h-5 text-blue-500" />
+                </div>
+                <p className="text-sm text-gray-700">
+                  <span className="font-bold text-blue-700">로그인</span>하고 첫 리뷰를 남겨보세요!<br />
+                  <span className="text-xs text-gray-500">다른 여행자들에게 큰 도움이 됩니다.</span>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate('/auth/login', {
+                    state: { from: window.location.pathname + window.location.search },
+                  })
+                }
+                className="shrink-0 w-full sm:w-auto px-5 py-2 bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-lg transition-colors shadow-sm"
+              >
+                로그인 하기
+              </button>
+            </div>
+          )}
+
+          {/* 관련 블로그 연동 영역 */}
+          {!blogsLoading && blogs.length > 0 && filter === 'all' && (
+            <div className="mb-6 border border-gray-100 rounded-xl bg-gray-50/50 p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <BookOpen className="w-4 h-4 text-emerald-500" />
+                <h4 className="font-bold text-gray-800">이 장소의 여행기</h4>
+                <span className="text-[10px] text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
+                  블로그
+                </span>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2 snap-x custom-scrollbar">
+                {blogs.map((blog) => (
+                  <div
+                    key={blog.id}
+                    onClick={() => navigate(`/p/${blog.id}`)}
+                    className="shrink-0 w-56 bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group"
+                  >
+                    {blog.images && blog.images.length > 0 ? (
+                      <div className="h-28 overflow-hidden bg-gray-100 relative">
+                        <img
+                          src={blog.images[0]}
+                          alt="thumbnail"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-28 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
+                        <BookOpen className="w-8 h-8 text-emerald-200" />
+                      </div>
+                    )}
+                    <div className="p-3 flex flex-col gap-1">
+                      <h5 className="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+                        {blog.title}
+                      </h5>
+                      <p className="text-[10px] text-gray-400 font-medium truncate">
+                        {blog.author_label && <span className="text-gray-500">{blog.author_label} · </span>}
+                        {blog.date} · {blog.location}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4" />
+              리뷰를 불러오는 중입니다...
+            </div>
+          ) : reviews.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                <MessageSquare className="w-8 h-8 text-gray-300" />
+              </div>
+              <p className="text-gray-600 font-medium mb-1">
+                {filter === 'mine' ? '작성한 리뷰가 없습니다.' : '아직 작성된 리뷰가 없습니다.'}
+              </p>
+              <p className="text-sm text-gray-400 mb-6">첫 번째 리뷰를 남겨보세요!</p>
+              {filter !== 'mine' && (
+                <button
+                  type="button"
+                  onClick={handleWriteClick}
+                  className="text-blue-600 text-sm font-medium hover:underline"
+                >
+                  리뷰 작성하기
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {reviews.map((review) => (
+                <ReviewItem
+                  key={review.id}
+                  review={review}
+                  user={user}
+                  onEdit={handleEditClick}
+                  onDelete={handleDeleteClick}
+                  onImageClick={openLightbox}
+                  onToggleLike={toggleLike}
+                  onVisible={incrementView}
+                  onRequireLogin={handleRequireLogin}
+                />
               ))}
             </div>
-          </div>
-        )}
-
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-            리뷰를 불러오는 중입니다...
-          </div>
-        ) : reviews.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-              <MessageSquare className="w-8 h-8 text-gray-300" />
-            </div>
-            <p className="text-gray-600 font-medium mb-1">
-              {filter === 'mine' ? '작성한 리뷰가 없습니다.' : '아직 작성된 리뷰가 없습니다.'}
-            </p>
-            <p className="text-sm text-gray-400 mb-6">
-              첫 번째 리뷰를 남겨보세요!
-            </p>
-            {filter !== 'mine' && (
-              <button
-                onClick={handleWriteClick}
-                className="text-blue-600 text-sm font-medium hover:underline"
-              >
-                리뷰 작성하기
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {reviews.map((review) => (
-              <ReviewItem
-                key={review.id}
-                review={review}
-                user={user}
-                onEdit={handleEditClick}
-                onDelete={handleDeleteClick}
-                onImageClick={openLightbox}
-                onToggleLike={toggleLike}
-                onVisible={incrementView}
-                onRequireLogin={handleRequireLogin}
-              />
-            ))}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* 에디터 모달 */}

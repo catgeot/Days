@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 
 const isDev = import.meta.env.DEV;
@@ -6,11 +6,11 @@ const isDev = import.meta.env.DEV;
 export const usePlannerData = (placeId, mediaMode) => {
   const [plannerData, setToolkitData] = useState(null);
   const [isPlannerLoading, setIsToolkitLoading] = useState(Boolean(placeId));
+  const [isPlannerRefreshing, setIsPlannerRefreshing] = useState(false);
   const [prevMediaMode, setPrevMediaMode] = useState(mediaMode);
 
   // ✅ 렌더링 중 상태 변경 패턴 (React 16.4+)
-  // 탭이 PLANNER로 전환될 때, useEffect가 실행되기 전에 동기적으로 로딩 상태를 true로 만듭니다.
-  // 이렇게 하면 PlannerTab이 첫 렌더링 시 "로딩이 끝났고 데이터가 없다"고 오판하여 AI를 자동 호출하는 것을 방지합니다.
+  // PLANNER 전환 직후 useEffect DB 조회 전에 로딩을 켜 두어, 빈 상태가 한 프레임이라도 먼저 보이는 것을 줄입니다.
   if (mediaMode !== prevMediaMode) {
       setPrevMediaMode(mediaMode);
       if (mediaMode === 'PLANNER') {
@@ -27,6 +27,30 @@ export const usePlannerData = (placeId, mediaMode) => {
     plannerDataRef.current = plannerData;
     placeIdRef.current = placeId;
   }, [plannerData, placeId]);
+
+  /** AI/Edge 호출 없이 DB `place_toolkit` 행만 다시 읽기 — 화면이 비었을 때 복구용 */
+  const refetchPlannerFromDb = useCallback(async () => {
+    if (!placeId) return;
+    setIsPlannerRefreshing(true);
+    try {
+      const { data, error } = await supabase
+        .from('place_toolkit')
+        .select('*')
+        .eq('place_id', String(placeId))
+        .maybeSingle();
+
+      if (error) {
+        console.error('[usePlannerData] refetch DB 조회 에러:', error);
+      }
+      if (placeIdRef.current === placeId) {
+        setToolkitData(data || null);
+      }
+    } catch (err) {
+      console.error('[usePlannerData] refetch 예외:', err);
+    } finally {
+      setIsPlannerRefreshing(false);
+    }
+  }, [placeId]);
 
   useEffect(() => {
     if (!placeId) return;
@@ -148,5 +172,5 @@ export const usePlannerData = (placeId, mediaMode) => {
     };
   }, []);
 
-  return { plannerData, isPlannerLoading };
+  return { plannerData, isPlannerLoading, refetchPlannerFromDb, isPlannerRefreshing };
 };

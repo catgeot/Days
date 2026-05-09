@@ -201,18 +201,6 @@ const PlaceGalleryView = React.memo(({
                     </p>
                   )}
                   <p className="text-[13px] leading-relaxed text-gray-100/95 whitespace-pre-line">{placeOverviewText}</p>
-                  {Array.isArray(location?.keywords) && location.keywords.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1.5 border-t border-white/10 pt-3">
-                      {location.keywords.map((tag, idx) => (
-                        <span
-                          key={`mob-gallery-tag-${idx}`}
-                          className="rounded-md border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-gray-400"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
             )}

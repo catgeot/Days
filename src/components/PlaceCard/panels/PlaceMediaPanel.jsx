@@ -22,6 +22,8 @@ const PlaceMediaPanel = React.memo(({
     isWikiLoading,
     plannerData,
     isPlannerLoading,
+    refetchPlannerFromDb,
+    isPlannerRefreshing,
     location,
     isVideoLoading,
     videoError: _videoError,
@@ -29,9 +31,8 @@ const PlaceMediaPanel = React.memo(({
     matchedPackage,
     onOpenPackage
 }) => {
-  const mobileSecondaryNav = useMemo(() => {
-    if (mediaMode === 'REVIEWS') return null;
-    return (
+  const mobileSecondaryNav = useMemo(
+    () => (
       <PlaceMobileSecondaryNav
         placement="scroll"
         mediaMode={mediaMode}
@@ -39,8 +40,9 @@ const PlaceMediaPanel = React.memo(({
         matchedPackage={matchedPackage}
         onOpenPackage={onOpenPackage}
       />
-    );
-  }, [mediaMode, setMediaMode, matchedPackage, onOpenPackage]);
+    ),
+    [mediaMode, setMediaMode, matchedPackage, onOpenPackage]
+  );
 
   return (
     <div className="w-full h-full relative bg-[#0a0a0a] rounded-none md:rounded-[2rem] overflow-hidden md:border md:border-white/10">
@@ -94,11 +96,25 @@ const PlaceMediaPanel = React.memo(({
         </div>
 
         <div className={`w-full h-full bg-[#f8f9fa] overflow-hidden ${mediaMode === 'PLANNER' ? 'block' : 'hidden'}`}>
-            <PlannerTab location={location} plannerData={plannerData} isPlannerLoading={isPlannerLoading} isActive={mediaMode === 'PLANNER'} matchedPackage={matchedPackage} onOpenPackage={onOpenPackage} mobileSecondaryNav={mobileSecondaryNav} />
+            <PlannerTab
+              location={location}
+              plannerData={plannerData}
+              isPlannerLoading={isPlannerLoading}
+              refetchPlannerFromDb={refetchPlannerFromDb}
+              isPlannerRefreshing={isPlannerRefreshing}
+              isActive={mediaMode === 'PLANNER'}
+              matchedPackage={matchedPackage}
+              onOpenPackage={onOpenPackage}
+              mobileSecondaryNav={mobileSecondaryNav}
+            />
         </div>
 
         <div className={`w-full h-full bg-white overflow-hidden ${mediaMode === 'REVIEWS' ? 'block' : 'hidden'}`}>
-            <ReviewsTab location={location} setMediaMode={setMediaMode} />
+            <ReviewsTab
+              location={location}
+              setMediaMode={setMediaMode}
+              mobileSecondaryNav={mobileSecondaryNav}
+            />
         </div>
 
     </div>
