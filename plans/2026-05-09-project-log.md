@@ -22,11 +22,35 @@
   - `isAnchorOnScreen()` 가드로 헤더 anchor가 viewport 밖으로 완전히 스크롤되면 popover를 자동 닫아 화면 위쪽에 어색하게 잘려 떠 있는 상태 방지.
   - `useLayoutEffect` 의존성에 `recentVisitedDestinations.length`, `keywordVisitHistory.length` 추가해 칩 가시성 변동 시 위치 재계산.
 
-## 로컬 모바일 테스트용 IP 고정 시도 (보류)
+## 탐색 모달 배경 톤 (갈색 계열)
 
-배경: `vite.config.js`의 `server.host: '0.0.0.0'`로 모든 어댑터에 바인딩되어 매 dev 시작 시 NordVPN(NordLynx 100.x.x.x)·WSL(172.22.208.1)·Wi-Fi(192.168.219.x) URL이 함께 표시됨. Wi-Fi DHCP가 매번 다른 IP를 할당해 모바일 QR 접속이 불안정.
+- `SearchDiscoveryModal`: 전체 오버레이·헤더·AI 로딩 딤·최근 검색/퀵 섹션 팝오버를 남색 계열(`#0b101a` / `#0f1625`)에서 따뜻한 우드·에스프레소 톤(`#1b1410`, `#261d16`)과 `amber-950` 계열 테두리로 통일해 탐색 UI 분위기만 조정 (카드·탭 포인트 색은 유지).
 
-- 진단: 현재 Wi-Fi `192.168.219.106`. 사용자는 직전 세션들에서 .103/.104일 때는 모바일 접속이 잘 되었으나 .106에서는 실패. 활성 NordVPN 터널의 split tunneling이 특정 LAN IP의 인바운드를 간섭할 가능성이 가장 유력.
-- 시도: 정적 IP를 PowerShell `netsh interface ip set address name="Wi-Fi" static 192.168.219.104 ...`로 시도 → IP 명령만 실행하면 DNS가 함께 깨져 컴퓨터 자체의 인터넷이 끊기는 위험을 확인. `netsh interface ip set address name="Wi-Fi" dhcp`로 즉시 원복해 복구.
-- **결정 (이번 세션)**: 로컬 IP 고정은 보류. Vite 설정은 그대로 두고, 모바일 검증은 **배포 환경에서 수행**.
-- 다음에 다시 시도하려면: (a) DNS 명령(`netsh interface ip set dns name="Wi-Fi" static <DNS>`)을 IP 명령과 **반드시 같이** 실행하거나, (b) Windows 설정 GUI(설정 → 네트워크 → Wi-Fi → IP 할당 편집 → 수동)에서 IP·게이트웨이·DNS를 함께 채우거나, (c) 공유기 DHCP 예약(MAC `D2-1D-1C-70-63-41` → `192.168.219.104`)으로 라우터 측에서 고정. NordVPN을 잠시 끄고 .106에서도 모바일 접속이 되는지 먼저 분리 테스트하는 것이 우선.
+## 장소카드 모바일 갤러리: 추천·설명 노출
+
+- 배경: PC에서는 `PlaceChatPanel` 본문에 `GalleryInfoView`가 있으나 `hidden md:flex`라 모바일에서 감성 검색으로 들어온 `desc`(추천 연결 문구)·키워드·사진 캡션을 읽기 어려움.
+- `PlaceGalleryView`에 `location` 전달(`PlaceMediaPanel`), **모바일 전용(`md:hidden`)** 블록 추가.
+  - 그리드 뷰: `desc`/`description`, `originalQuery`가 있을 때 「입력에서 이 여행지로」 뱃지, 키워드 칩.
+  - 사진 확대 뷰: `alt_description`/`description`을 상단 **사진 노트**로 스크롤 가능하게 표시.
+
+## 로컬 모바일 테스트 (맥락 정리 · 2026-05-09 후반)
+
+배경: `vite.config.js`의 `server.host: '0.0.0.0'`으로 LAN URL(NordVPN 100.x, WSL 172.22.x, Wi-Fi 192.168.219.x 등)이 함께 표시됨.
+
+- **서브넷 불일치**: 개발 PC가 `192.168.219.x`(예: `.106`)인데 휴대폰이 `192.168.105.x` 등 **세 번째 옥텟이 다른 대역**이면 같은 집 Wi-Fi처럼 보여도 라우팅 없이 dev 서버에 붙지 않음. Vite에 표시된 **PC와 동일한 `192.168.219.*` 망**으로 폰을 맞추는 것이 우선. (이전에 “105 이상에서 안 된다”로 오해하기 쉬운 케이스로 기록.)
+- **방화벽**: Windows 인바운드 TCP `5173` 허용 규칙이 없으면 LAN에서 타임아웃 가능. 관리자 PowerShell 예: `netsh advfirewall firewall add rule name="Vite Dev 5173 TCP" dir=in action=allow protocol=TCP localport=5173 profile=private,domain`
+- **HTTPS**: `@vitejs/plugin-basic-ssl` 자체 서명 → 폰 브라우저에서 경고 통과 필요.
+- **Vite 보강**: LAN에서 `https://<PC-IP>:5173` 접속 시 HMR WebSocket이 맞물리도록 `server.strictPort`, `server.hmr.protocol: 'wss'`, `port`/`clientPort`를 `5173`에 맞춤.
+- **검증 루트**: 로컬이 막힐 때 **푸시 후 배포 URL로 모바일 QA**를 반복하는 방식이 실제로 도움이 됨(사용자 피드백).
+
+## Home 지구본: 탐색·장소카드 전환 시 “새로고침” 체감 완화
+
+- `pauseRender` 시 래퍼에 `display: none`을 쓰면 Mapbox/WebGL 컨테이너가 접혔다 펴지며 깜빡임·재배치가 커짐. `HomeGlobeMapbox`·`HomeGlobe` 모두 **`invisible` + `pointer-events-none`**으로만 숨기도록 변경 (`touch-none`은 레거시 쪽에 유지).
+
+---
+
+## 로컬 모바일 테스트용 IP 고정 시도 (보류 · 참고만)
+
+- DHCP로 마지막 옥텟만 바뀌는 것은 여전히 QR/북마크 불편 요인.
+- 정적 IP를 PowerShell `netsh interface ip set address name="Wi-Fi" static ...`만 실행하면 DNS가 함께 깨질 수 있음 → `dhcp`로 원복한 전례 유지.
+- 재시도 시: DNS를 IP와 **함께** 설정하거나 Windows GUI 수동 IP, 또는 공유기 DHCP 예약. NordVPN 분리 테스트도 여전히 유효.

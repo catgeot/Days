@@ -44,8 +44,16 @@ export default defineConfig({
     }),
   ],
   server: {
+    // 모바일·다른 기기에서 LAN IP(예: 192.168.219.106)로 접속할 때 사용
     host: '0.0.0.0',
     port: 5173,
+    strictPort: true,
+    // basic-ssl(HTTPS) 사용 시, 폰에서 접속해도 HMR WebSocket이 같은 호스트·포트로 붙도록 맞춤
+    hmr: {
+      protocol: 'wss',
+      port: 5173,
+      clientPort: 5173,
+    },
   },
   esbuild: {
     pure: ['console.log'],

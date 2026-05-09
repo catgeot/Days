@@ -346,9 +346,10 @@ const HomeGlobe = React.memo(forwardRef(({
 
   return (
     <div
-      className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'}`}
+      className={`absolute inset-0 z-0 touch-none transition-opacity duration-500 ${
+        pauseRender ? 'pointer-events-none invisible' : isChatOpen ? 'opacity-30' : 'opacity-100'
+      }`}
       onPointerDown={handleInteraction}
-      style={{ display: pauseRender ? 'none' : 'block', touchAction: 'none' }}
     >
       <Globe
         ref={globeEl}

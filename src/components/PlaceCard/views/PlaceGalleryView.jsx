@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw } from 'lucide-react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles } from 'lucide-react';
 
 const PlaceGalleryView = React.memo(({
+  location,
   images,
   isImgLoading,
   selectedImg,
@@ -61,6 +62,18 @@ const PlaceGalleryView = React.memo(({
 
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden;
 
+  const placeOverviewText = useMemo(() => {
+    const t = (location?.desc || location?.description || '').trim();
+    return t;
+  }, [location?.desc, location?.description]);
+
+  const photoCaption = useMemo(() => {
+    if (!selectedImg) return '';
+    const raw = (selectedImg.alt_description || selectedImg.description || '').trim();
+    if (!raw) return '';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  }, [selectedImg]);
+
   return (
     <div
       ref={fullScreenContainerRef}
@@ -112,6 +125,21 @@ const PlaceGalleryView = React.memo(({
             </button>
           </div>
 
+          {photoCaption && (
+            <div
+              className={`md:hidden absolute left-0 right-0 top-16 z-[205] px-4 transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-300/90 mb-1.5 flex items-center gap-1.5">
+                  <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
+                  사진 노트
+                </p>
+                <p className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">{photoCaption}</p>
+              </div>
+            </div>
+          )}
+
           {selectedImg.user && (
             <div className={`absolute bottom-4 left-4 md:bottom-8 md:left-8 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
               <a
@@ -153,7 +181,35 @@ const PlaceGalleryView = React.memo(({
                </button>
             </div>
 
-            <div className="mt-12 md:mt-0">
+            {placeOverviewText && (
+              <div className="md:hidden mb-4 pr-12">
+                <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3.5 backdrop-blur-md shadow-inner">
+                  {location?.originalQuery && (
+                    <p className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-violet-200/95">
+                      <Sparkles size={12} className="shrink-0 text-violet-300" aria-hidden />
+                      <span className="min-w-0 line-clamp-2 normal-case font-semibold tracking-normal text-violet-100/90">
+                        「{location.originalQuery}」에서 이 여행지로
+                      </span>
+                    </p>
+                  )}
+                  <p className="text-[13px] leading-relaxed text-gray-100/95 whitespace-pre-line">{placeOverviewText}</p>
+                  {Array.isArray(location?.keywords) && location.keywords.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1.5 border-t border-white/10 pt-3">
+                      {location.keywords.map((tag, idx) => (
+                        <span
+                          key={`mob-gallery-tag-${idx}`}
+                          className="rounded-md border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-gray-400"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className={`${placeOverviewText ? 'mt-4' : 'mt-12'} md:mt-0`}>
               {isImgLoading ? (
                 <div className="grid grid-cols-2 gap-4">
                    {[...Array(6)].map((_, i) => (

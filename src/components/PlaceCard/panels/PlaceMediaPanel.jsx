@@ -33,6 +33,7 @@ const PlaceMediaPanel = React.memo(({
 
         <div className={`w-full h-full ${mediaMode === 'GALLERY' ? 'block' : 'hidden'}`}>
             <PlaceGalleryView
+                location={location}
                 images={galleryData.images}
                 isImgLoading={galleryData.isImgLoading}
                 selectedImg={galleryData.selectedImg}

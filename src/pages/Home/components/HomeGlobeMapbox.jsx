@@ -866,8 +866,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   return (
     <div
-      className={`absolute inset-0 z-0 transition-opacity duration-500 ${isChatOpen ? 'opacity-30' : 'opacity-100'}`}
-      style={{ display: pauseRender ? 'none' : 'block' }}
+      className={`absolute inset-0 z-0 transition-opacity duration-500 ${
+        pauseRender ? 'pointer-events-none invisible' : isChatOpen ? 'opacity-30' : 'opacity-100'
+      }`}
       onPointerDown={handleInteractionStart}
       onPointerUp={handleInteractionEnd}
       onPointerCancel={handleInteractionEnd}

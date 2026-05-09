@@ -611,7 +611,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   };
 
   const headerContent = (isMobileView) => (
-    <div className={`relative flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md transition-all duration-300 overflow-visible z-20 ${
+    <div className={`relative flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-amber-950/20 shrink-0 bg-[#1b1410]/85 backdrop-blur-md transition-all duration-300 overflow-visible z-20 ${
       isMobileView
         ? 'md:hidden'
         : 'hidden md:flex md:opacity-100'
@@ -798,7 +798,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 z-[200] flex flex-col bg-[#0b101a]/95 backdrop-blur-3xl overflow-hidden ${isFromPlaceCard ? '' : 'animate-fade-in'}`}>
+    <div className={`fixed inset-0 z-[200] flex flex-col bg-[#1b1410]/95 backdrop-blur-3xl overflow-hidden ${isFromPlaceCard ? '' : 'animate-fade-in'}`}>
       {/* 글로벌 스크롤바 상시 노출을 위한 인라인 스타일 */}
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { display: none; }
@@ -969,7 +969,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       {popoverLayout?.variant === 'search' && recentSearches.length > 0 && (
         <div
           data-search-popover
-          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.16] bg-[#0f1625] backdrop-blur-xl shadow-[0_16px_44px_rgba(0,0,0,0.55)]"
+          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-amber-950/25 bg-[#261d16] backdrop-blur-xl shadow-[0_16px_44px_rgba(0,0,0,0.55)]"
           style={{
             top: popoverLayout.top,
             left: popoverLayout.left,
@@ -1010,7 +1010,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       {popoverLayout?.variant === 'quick' && activeQuickSection && (
         <div
           data-quick-section-popover
-          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.14] bg-[#0f1625] backdrop-blur-xl shadow-[0_16px_44px_rgba(0,0,0,0.5)]"
+          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-amber-950/22 bg-[#261d16] backdrop-blur-xl shadow-[0_16px_44px_rgba(0,0,0,0.5)]"
           style={{
             top: popoverLayout.top,
             left: popoverLayout.left,
@@ -1113,7 +1113,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
       {/* 검색 진행 로딩 오버레이 */}
       {isAILoading && (
-        <div className="absolute inset-0 z-[300] bg-[#0b101a]/80 backdrop-blur-sm flex items-center justify-center animate-fade-in">
+        <div className="absolute inset-0 z-[300] bg-[#1b1410]/80 backdrop-blur-sm flex items-center justify-center animate-fade-in">
            <div className="flex flex-col items-center">
              <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
              <h3 className="text-xl font-bold text-white mb-2">AI가 목적지를 탐색하고 있습니다</h3>
