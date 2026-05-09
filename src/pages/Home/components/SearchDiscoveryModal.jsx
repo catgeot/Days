@@ -198,35 +198,54 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       return;
     }
 
+    // iOS Safari: 키보드가 올라와도 window.innerHeight가 줄지 않으므로
+    // visualViewport.height를 우선 사용해 popover maxHeight 계산
+    const getViewportSize = () => ({
+      width: window.visualViewport?.width ?? window.innerWidth,
+      height: window.visualViewport?.height ?? window.innerHeight,
+      offsetTop: window.visualViewport?.offsetTop ?? 0,
+    });
+
+    // anchor가 화면 밖으로 완전히 스크롤된 경우(top이 viewport 위로 사라짐)
+    // popover가 화면 위쪽에 어색하게 잘려 떠 있는 것을 방지
+    const isAnchorOnScreen = (rect, viewportHeight) => {
+      if (!rect) return false;
+      return rect.bottom > 0 && rect.top < viewportHeight;
+    };
+
     const updateLayout = () => {
+      const vp = getViewportSize();
       if (isSearchHistoryOpen && recentSearches.length > 0) {
         const r = pickVisibleElementRect(searchBarRowRefPc, searchBarRowRefMobile);
-        if (!r) {
+        if (!r || !isAnchorOnScreen(r, vp.height + vp.offsetTop)) {
           setIsSearchHistoryOpen(false);
           setPopoverLayout(null);
           return;
         }
+        // 칩 버튼 행이 보이는 경우 popover가 칩 위를 덮지 않도록 칩 행 바닥에 anchor
+        const chipRect = pickVisibleElementRect(quickMenuRowRefPc, quickMenuRowRefMobile);
+        const anchorBottom = chipRect ? Math.max(r.bottom, chipRect.bottom) : r.bottom;
         const gap = 8;
-        const top = r.bottom + gap;
-        const maxHeight = Math.max(160, window.innerHeight - top - 16);
-        const left = Math.min(Math.max(8, r.left), window.innerWidth - 24);
-        const width = Math.min(r.width, window.innerWidth - left - 8);
+        const top = anchorBottom + gap;
+        const maxHeight = Math.max(160, vp.height + vp.offsetTop - top - 16);
+        const left = Math.min(Math.max(8, r.left), vp.width - 24);
+        const width = Math.min(r.width, vp.width - left - 8);
         setPopoverLayout({ variant: 'search', top, left, width, maxHeight });
         return;
       }
 
       if (activeQuickSection) {
         const r = pickVisibleElementRect(quickMenuRowRefPc, quickMenuRowRefMobile);
-        if (!r) {
+        if (!r || !isAnchorOnScreen(r, vp.height + vp.offsetTop)) {
           setActiveQuickSection(null);
           setPopoverLayout(null);
           return;
         }
         const gap = 8;
         const top = r.bottom + gap;
-        const maxHeight = Math.max(160, window.innerHeight - top - 16);
-        const left = Math.min(Math.max(8, r.left), window.innerWidth - 24);
-        const width = Math.min(Math.max(r.width, 280), window.innerWidth - left - 8);
+        const maxHeight = Math.max(160, vp.height + vp.offsetTop - top - 16);
+        const left = Math.min(Math.max(8, r.left), vp.width - 24);
+        const width = Math.min(Math.max(r.width, 280), vp.width - left - 8);
         setPopoverLayout({ variant: 'quick', top, left, width, maxHeight });
         return;
       }
@@ -240,13 +259,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     window.addEventListener('resize', updateLayout);
     const scrollEl = scrollContainerRef.current;
     scrollEl?.addEventListener('scroll', updateLayout, { passive: true });
+    // iOS 키보드 토글/회전 시 visualViewport도 변하므로 동기화
+    window.visualViewport?.addEventListener('resize', updateLayout);
+    window.visualViewport?.addEventListener('scroll', updateLayout);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', updateLayout);
       scrollEl?.removeEventListener('scroll', updateLayout);
+      window.visualViewport?.removeEventListener('resize', updateLayout);
+      window.visualViewport?.removeEventListener('scroll', updateLayout);
     };
-  }, [isOpen, isSearchHistoryOpen, activeQuickSection, recentSearches.length, isSearching, query]);
+  }, [isOpen, isSearchHistoryOpen, activeQuickSection, recentSearches.length, recentVisitedDestinations.length, keywordVisitHistory.length, isSearching, query]);
 
   const handleFilterModeChange = (mode) => {
     setFilterMode(mode);
@@ -586,12 +610,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     );
   };
 
-  const isSearchPopoverOpen = isSearchHistoryOpen || Boolean(activeQuickSection);
-
   const headerContent = (isMobileView) => (
-    <div className={`relative flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md transition-all duration-300 overflow-visible ${
-      isSearchPopoverOpen ? 'z-[220]' : 'z-20'
-    } ${
+    <div className={`relative flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-6 py-4 md:py-3 border-b border-white/[0.08] shrink-0 bg-[#0b101a]/80 backdrop-blur-md transition-all duration-300 overflow-visible z-20 ${
       isMobileView
         ? 'md:hidden'
         : 'hidden md:flex md:opacity-100'
@@ -712,8 +732,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           </p>
         )}
 
-        {/* 최근 검색 드롭다운이 열리면 동일 정보가 중복되므로 섹션 버튼 줄은 잠시 숨김 */}
-        {!isSearchHistoryOpen && (recentSearches.length > 0 || recentVisitedDestinations.length > 0 || keywordVisitHistory.length > 0) && (
+        {/* 검색바 클릭 후에도 칩 버튼은 그대로 노출 (popover는 칩 행 아래로 anchor) */}
+        {(recentSearches.length > 0 || recentVisitedDestinations.length > 0 || keywordVisitHistory.length > 0) && (
           <div
             data-quick-menu-root="true"
             ref={isMobileView ? quickMenuRowRefMobile : quickMenuRowRefPc}
@@ -943,22 +963,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
       </div>
 
-      {/* 검색·섹션 확장: fixed 오버레이 (본문 레이아웃을 밀지 않음, 구글 검색창과 유사) */}
-      {isSearchPopoverOpen && (
-        <div
-          className="fixed inset-0 z-[205] bg-black/45 backdrop-blur-[1px]"
-          aria-hidden
-          onMouseDown={() => {
-            setIsSearchHistoryOpen(false);
-            setActiveQuickSection(null);
-          }}
-        />
-      )}
+      {/* 검색·섹션 확장 popover: 구글처럼 본문(탐색 화면)을 가리거나 어둡게 하지 않고
+          드롭다운만 띄움. 외부 클릭은 useEffect 내 handlePointerDown에서 닫음. */}
 
       {popoverLayout?.variant === 'search' && recentSearches.length > 0 && (
         <div
           data-search-popover
-          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.16] bg-[#0f1625]/98 shadow-[0_16px_44px_rgba(0,0,0,0.55)]"
+          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.16] bg-[#0f1625] backdrop-blur-xl shadow-[0_16px_44px_rgba(0,0,0,0.55)]"
           style={{
             top: popoverLayout.top,
             left: popoverLayout.left,
@@ -999,7 +1010,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       {popoverLayout?.variant === 'quick' && activeQuickSection && (
         <div
           data-quick-section-popover
-          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.14] bg-[#0f1625]/95 shadow-[0_16px_44px_rgba(0,0,0,0.5)]"
+          className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-white/[0.14] bg-[#0f1625] backdrop-blur-xl shadow-[0_16px_44px_rgba(0,0,0,0.5)]"
           style={{
             top: popoverLayout.top,
             left: popoverLayout.left,
