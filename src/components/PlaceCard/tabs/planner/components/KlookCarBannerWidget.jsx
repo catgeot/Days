@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { isMobileDevice } from '../../../common/device';
+import {
+    computeKlookBannerLayout,
+    KLOOK_CAR_AD_ID_DESKTOP,
+    KLOOK_CAR_AD_ID_MOBILE,
+    KLOOK_CAR_BANNER_MOBILE_HEIGHT,
+    KLOOK_CAR_BANNER_MOBILE_WIDTH,
+} from './klookBannerLayout';
+import { useKlookPlannerBannerDimensions } from './useKlookPlannerBannerDimensions';
 
 const KLOOK_WIDGET_SCRIPT_SRC = 'https://affiliate.klook.com/widget/fetch-iframe-init.js';
 const KLOOK_IFRAME_INIT_SCRIPT_KEYWORD = '/widget/iframe/iframe-init-';
@@ -26,20 +34,23 @@ const loadKlookWidgetScript = () => {
     });
 };
 
-// 명소 Klook 배너와 동일: IAB 468×60 + 카드 폭 맞춤 스케일
-const DEFAULT_BANNER_W = 468;
-const DEFAULT_BANNER_H = 60;
-const MAX_BANNER_SCALE = 2.35;
-
 const KlookCarBannerWidget = ({
-    width = DEFAULT_BANNER_W,
-    height = DEFAULT_BANNER_H,
+    width: widthProp,
+    height: heightProp,
     className = 'mt-3',
     targetUrl = 'https://www.klook.com/?aid=118544',
 }) => {
+    const responsiveDims = useKlookPlannerBannerDimensions('car');
+    const width = widthProp ?? responsiveDims.width;
+    const height = heightProp ?? responsiveDims.height;
+
     const containerRef = useRef(null);
     const hasRetriedRef = useRef(false);
-    const [scale, setScale] = useState(1);
+    const [layout, setLayout] = useState({ scale: 1, clipW: 320, clipH: height });
+
+    useEffect(() => {
+        hasRetriedRef.current = false;
+    }, [width, height]);
 
     useEffect(() => {
         let disposed = false;
@@ -53,7 +64,6 @@ const KlookCarBannerWidget = ({
                 return;
             }
 
-            // 첫 진입 시 iframe이 늦게 생성되는 케이스를 1회 보정
             setTimeout(async () => {
                 if (disposed || !containerRef.current || hasRetriedRef.current) return;
                 const hasRenderedIframe = !!containerRef.current.querySelector('iframe');
@@ -74,16 +84,12 @@ const KlookCarBannerWidget = ({
         return () => {
             disposed = true;
         };
-    }, []);
+    }, [width, height]);
 
     useEffect(() => {
         const updateScale = () => {
             if (!containerRef.current) return;
-            const horizontalPad = 8;
-            const available = containerRef.current.clientWidth - horizontalPad;
-            const raw = available / width;
-            const nextScale = Math.min(MAX_BANNER_SCALE, Math.max(0.2, raw));
-            setScale(nextScale);
+            setLayout(computeKlookBannerLayout(containerRef.current.clientWidth, 8, width, height));
         };
 
         updateScale();
@@ -96,36 +102,41 @@ const KlookCarBannerWidget = ({
             window.removeEventListener('resize', updateScale);
             ro?.disconnect();
         };
-    }, [width]);
+    }, [width, height]);
 
-    const clipW = Math.round(width * scale);
-    const clipH = Math.round(height * scale);
+    const { scale, clipH } = layout;
+
+    const isCarMobileSquare =
+        width === KLOOK_CAR_BANNER_MOBILE_WIDTH && height === KLOOK_CAR_BANNER_MOBILE_HEIGHT;
+    const carAdId = isCarMobileSquare ? KLOOK_CAR_AD_ID_MOBILE : KLOOK_CAR_AD_ID_DESKTOP;
 
     return (
         <div ref={containerRef} className={`${className} relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm`}>
-            <div className="mx-auto" style={{ width: clipW, height: clipH }}>
-                <div className="overflow-hidden rounded-md" style={{ width: clipW, height: clipH }}>
-                    <div
-                        style={{
-                            width: `${width}px`,
-                            height: `${height}px`,
-                            transform: `scale(${scale})`,
-                            transformOrigin: 'top left',
-                        }}
+            <div
+                className="flex w-full justify-center overflow-hidden rounded-md"
+                style={{ height: `${clipH}px` }}
+            >
+                <div
+                    key={`klook-car-scale-${carAdId}-${width}-${height}`}
+                    style={{
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        transform: `scale(${scale})`,
+                        transformOrigin: 'top center',
+                    }}
+                >
+                    <ins
+                        className="klk-aff-widget"
+                        data-wid="118544"
+                        data-bgtype="Car"
+                        data-adid={carAdId}
+                        data-lang="ko"
+                        data-prod="banner"
+                        data-width={String(width)}
+                        data-height={String(height)}
                     >
-                        <ins
-                            className="klk-aff-widget"
-                            data-wid="118544"
-                            data-bgtype="Car"
-                            data-adid="1265731"
-                            data-lang="ko"
-                            data-prod="banner"
-                            data-width={String(width)}
-                            data-height={String(height)}
-                        >
-                            <a href={targetUrl}>Klook.com</a>
-                        </ins>
-                    </div>
+                        <a href={targetUrl}>Klook.com</a>
+                    </ins>
                 </div>
             </div>
             <a

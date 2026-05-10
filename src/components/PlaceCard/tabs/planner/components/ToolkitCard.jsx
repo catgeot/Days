@@ -75,7 +75,14 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                                     rel="noopener noreferrer"
                                     className={`w-full overflow-hidden rounded-xl transition-transform hover:scale-[1.02] border border-gray-200 shadow-sm col-span-2`}
                                 >
-                                    <img src={link.bannerSrc} alt={link.text} className="w-full h-auto object-cover" />
+                                    {link.bannerSrcMobile ? (
+                                        <picture>
+                                            <source media="(min-width: 768px)" srcSet={link.bannerSrc} />
+                                            <img src={link.bannerSrcMobile} alt={link.text} className="w-full h-auto" />
+                                        </picture>
+                                    ) : (
+                                        <img src={link.bannerSrc} alt={link.text} className="w-full h-auto object-cover" />
+                                    )}
                                 </a>
                             );
                         }

@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { isMobileDevice } from '../../../common/device';
+import {
+    computeKlookBannerLayout,
+    KLOOK_BANNER_MOBILE_HEIGHT,
+    KLOOK_BANNER_MOBILE_WIDTH,
+    KLOOK_TOUR_AD_ID_DESKTOP,
+    KLOOK_TOUR_AD_ID_MOBILE,
+} from './klookBannerLayout';
+import { useKlookPlannerBannerDimensions } from './useKlookPlannerBannerDimensions';
 
 const KLOOK_WIDGET_SCRIPT_SRC = 'https://affiliate.klook.com/widget/fetch-iframe-init.js';
 const KLOOK_IFRAME_INIT_SCRIPT_KEYWORD = '/widget/iframe/iframe-init-';
@@ -26,20 +34,23 @@ const loadKlookWidgetScript = () => {
     });
 };
 
-// IAB 468×60 가로 배너: 카드 폭에 맞춰 비율 유지 스케일(300×250 대비 과한 세로 확대 완화)
-const DEFAULT_BANNER_W = 468;
-const DEFAULT_BANNER_H = 60;
-const MAX_BANNER_SCALE = 2.35; // 초대형 카드에서도 과도한 확대 방지
-
 const KlookTourBannerWidget = ({
-    width = DEFAULT_BANNER_W,
-    height = DEFAULT_BANNER_H,
+    width: widthProp,
+    height: heightProp,
     className = 'mt-3',
     targetUrl = 'https://www.klook.com/?aid=118544',
 }) => {
+    const responsiveDims = useKlookPlannerBannerDimensions('tour');
+    const width = widthProp ?? responsiveDims.width;
+    const height = heightProp ?? responsiveDims.height;
+
     const containerRef = useRef(null);
     const hasRetriedRef = useRef(false);
-    const [scale, setScale] = useState(1);
+    const [layout, setLayout] = useState({ scale: 1, clipW: 320, clipH: height });
+
+    useEffect(() => {
+        hasRetriedRef.current = false;
+    }, [width, height]);
 
     useEffect(() => {
         let disposed = false;
@@ -73,16 +84,12 @@ const KlookTourBannerWidget = ({
         return () => {
             disposed = true;
         };
-    }, []);
+    }, [width, height]);
 
     useEffect(() => {
         const updateScale = () => {
             if (!containerRef.current) return;
-            const horizontalPad = 8; // p-1 좌우 여유 (측정과 클립 일치)
-            const available = containerRef.current.clientWidth - horizontalPad;
-            const raw = available / width;
-            const nextScale = Math.min(MAX_BANNER_SCALE, Math.max(0.2, raw));
-            setScale(nextScale);
+            setLayout(computeKlookBannerLayout(containerRef.current.clientWidth, 8, width, height));
         };
 
         updateScale();
@@ -95,39 +102,42 @@ const KlookTourBannerWidget = ({
             window.removeEventListener('resize', updateScale);
             ro?.disconnect();
         };
-    }, [width]);
+    }, [width, height]);
 
-    const clipW = Math.round(width * scale);
-    const clipH = Math.round(height * scale);
+    const { scale, clipH } = layout;
+
+    const tourAdId =
+        width === KLOOK_BANNER_MOBILE_WIDTH && height === KLOOK_BANNER_MOBILE_HEIGHT
+            ? KLOOK_TOUR_AD_ID_MOBILE
+            : KLOOK_TOUR_AD_ID_DESKTOP;
 
     return (
         <div ref={containerRef} className={`${className} relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm`}>
-            <div className="mx-auto" style={{ width: clipW, height: clipH }}>
+            <div
+                className="flex w-full justify-center overflow-hidden rounded-md"
+                style={{ height: `${clipH}px` }}
+            >
                 <div
-                    className="overflow-hidden rounded-md"
-                    style={{ width: clipW, height: clipH }}
+                    key={`klook-tour-scale-${width}-${height}`}
+                    style={{
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        transform: `scale(${scale})`,
+                        transformOrigin: 'top center',
+                    }}
                 >
-                    <div
-                        style={{
-                            width: `${width}px`,
-                            height: `${height}px`,
-                            transform: `scale(${scale})`,
-                            transformOrigin: 'top left',
-                        }}
+                    <ins
+                        className="klk-aff-widget"
+                        data-wid="118544"
+                        data-bgtype="Play"
+                        data-adid={tourAdId}
+                        data-lang="ko"
+                        data-prod="banner"
+                        data-width={String(width)}
+                        data-height={String(height)}
                     >
-                        <ins
-                            className="klk-aff-widget"
-                            data-wid="118544"
-                            data-bgtype="Play"
-                            data-adid="1272015"
-                            data-lang="ko"
-                            data-prod="banner"
-                            data-width={String(width)}
-                            data-height={String(height)}
-                        >
-                            <a href={targetUrl}>Klook.com</a>
-                        </ins>
-                    </div>
+                        <a href={targetUrl}>Klook.com</a>
+                    </ins>
                 </div>
             </div>
             <a

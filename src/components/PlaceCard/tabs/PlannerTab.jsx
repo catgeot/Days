@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw } from 'lucide-react';
+import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
@@ -28,6 +28,11 @@ const PlannerTab = ({
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
+    const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+    const scrollPlannerToTop = useCallback(() => {
+        scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
 
     // 🆕 [Phase 8-3] 분리된 아키텍처에 따라 plannerData.essential_guide 사용
     const guideData = plannerData?.essential_guide;
@@ -128,6 +133,21 @@ const PlannerTab = ({
             }, 150); // DOM 렌더링 완료 대기
         }
     }, [isActive, isLoading]);
+
+    // 긴 툴킷·배너 스크롤 시 맨 위로 버튼
+    useEffect(() => {
+        if (!isActive || isLoading || !guideData) {
+            setShowScrollToTop(false);
+            return;
+        }
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        const threshold = 280;
+        const onScroll = () => setShowScrollToTop(el.scrollTop > threshold);
+        el.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+        return () => el.removeEventListener('scroll', onScroll);
+    }, [isActive, isLoading, guideData]);
 
     const formatDate = (isoString) => {
         if (!isoString) return '';
@@ -382,6 +402,17 @@ const PlannerTab = ({
                 </div>
             </div>
             </div>
+            {showScrollToTop && (
+                <button
+                    type="button"
+                    onClick={scrollPlannerToTop}
+                    className="fixed bottom-24 right-4 z-50 flex items-center gap-1.5 rounded-full border border-blue-200/80 bg-white/95 py-2.5 pl-3 pr-3.5 text-[11px] font-bold text-blue-700 shadow-lg backdrop-blur-sm transition-colors hover:bg-blue-50 md:bottom-10 md:right-8"
+                    aria-label="플래너 맨 위로"
+                >
+                    <ArrowUp size={18} className="shrink-0" />
+                    <span className="hidden min-[380px]:inline">맨 위</span>
+                </button>
+            )}
         </div>
     );
 };
