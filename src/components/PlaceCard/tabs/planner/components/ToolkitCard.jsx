@@ -13,7 +13,7 @@ import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
 import { cleanAdviceText, getAdviceText, getMultiLinks, isMapPoiGygOnlyLocation } from '../utils';
 
-const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray' }) => {
+const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray', className = '' }) => {
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
@@ -25,7 +25,7 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
     const klookCarDeepLink = getKlookRentalUrlByLocation(location?.name);
 
     return (
-        <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group`}>
+        <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group ${className}`.trim()}>
             {/* Label */}
             <div className="absolute top-4 right-4 flex gap-1">
                 {isOfficial && (

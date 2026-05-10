@@ -31,7 +31,8 @@ const DINING_KLOOK_PRIORITY_KEYS = [
     '베트남', '다낭', '하노이', '호치민', '나트랑',
     '싱가포르',
     '말레이시아', '쿠알라룸푸르', '페낭',
-    '인도네시아', '발리', '자카르타',
+    // 인도네시아는 국가명만으로 매칭하지 않음(자바·술라웨시 등 Klook 다이닝 약한 지역 오탐 방지). 발리·자카르타 허브 및 관광 소도시.
+    '발리', '자카르타', '우붓', 'ubud', '쿠타', 'kuta', '누사두아', 'nusa dua', '스미냑', 'seminyak',
     'philippines', 'manila', 'cebu', 'boracay',
     'japan', 'tokyo', 'osaka', 'kyoto', 'fukuoka', 'sapporo', 'okinawa',
     'korea', 'seoul', 'busan', 'jeju',
@@ -41,14 +42,16 @@ const DINING_KLOOK_PRIORITY_KEYS = [
     'vietnam', 'danang', 'hanoi', 'ho chi minh', 'nha trang',
     'singapore',
     'malaysia', 'kuala lumpur', 'penang',
-    'indonesia', 'bali', 'jakarta'
+    'bali', 'jakarta', 'seminyak', 'nusa dua'
 ];
 
 // Klook 다이닝 미지원(또는 전환 비효율) 지역 키워드
 const DINING_KLOOK_UNSUPPORTED_KEYS = [
     'zanzibar', '잔지바르',
     'fiordland', 'fjordland', '피오르드랜드',
-    'mount-everest', 'everest', '에베레스트'
+    'mount-everest', 'everest', '에베레스트',
+    // 중앙자바 권역: Klook 레스토랑 카테고리 커버리지 약함
+    'borobudur', '보로부두르', 'prambanan', '프람바난', 'yogyakarta', 'jogja', '조그자카르타', 'magelang', '마겔랑',
 ];
 
 const getLocationSearchFields = (location) => {

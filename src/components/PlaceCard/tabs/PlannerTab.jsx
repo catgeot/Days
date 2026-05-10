@@ -331,10 +331,21 @@ const PlannerTab = ({
                         {(guideData?.categories?.ferry_booking) && (
                             <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="default" />
                         )}
-                        <ToolkitCard icon={Wifi} title="유심 및 와이파이" type="connectivity" data={guideData?.categories?.connectivity || guideData?.connectivity} isSponsored location={location} themeColor="default" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <AiraloBannerWidget />
-                            <HolaflyBannerWidget />
+                        <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-b from-blue-50/45 via-white to-white p-3 shadow-sm ring-1 ring-blue-900/[0.06] md:p-4 flex flex-col gap-4">
+                            <ToolkitCard
+                                icon={Wifi}
+                                title="유심 및 와이파이"
+                                type="connectivity"
+                                data={guideData?.categories?.connectivity || guideData?.connectivity}
+                                isSponsored
+                                location={location}
+                                themeColor="default"
+                                className="!border-0 shadow-none bg-transparent hover:!shadow-none hover:!border-transparent"
+                            />
+                            <div className="grid grid-cols-1 gap-3 border-t border-blue-100/90 pt-4 md:grid-cols-2 md:gap-3">
+                                <AiraloBannerWidget />
+                                <HolaflyBannerWidget />
+                            </div>
                         </div>
                     </div>
                 </div>

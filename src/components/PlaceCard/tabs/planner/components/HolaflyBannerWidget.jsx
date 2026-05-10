@@ -1,9 +1,10 @@
 import React from 'react';
 import { getAffiliateLink } from '../../../../../utils/affiliate';
+import holaflyBannerImg from '../../../../../assets/Holafly.png';
 
 const HOLAFLY_URL = getAffiliateLink('https://esim.holafly.com/ko/', 'holafly', {
     campaign: 'planner_banner',
-    locationName: 'planner'
+    locationName: 'planner',
 });
 
 const HolaflyBannerWidget = ({ className = '' }) => {
@@ -12,42 +13,37 @@ const HolaflyBannerWidget = ({ className = '' }) => {
             href={HOLAFLY_URL}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className={`relative block w-full min-h-[148px] overflow-hidden rounded-2xl border border-rose-100 p-4 shadow-sm transition-all hover:shadow-md ${className}`}
-            aria-label="Holafly eSIM 제휴 배너"
+            className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-rose-300/90 bg-white shadow-sm ring-1 ring-rose-900/10 transition-all hover:border-rose-400 hover:shadow-md hover:ring-rose-900/15 ${className}`}
+            aria-label="Holafly eSIM 제휴 배너: 무제한 데이터 중심"
         >
-            <img
-                src="/holafly-asia-banner.png"
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-rose-700/35 via-black/20 to-rose-800/20" />
-
-            <div className="relative z-10 flex h-full flex-col justify-between">
-                <div className="flex items-start justify-between gap-3">
-                    <div className="inline-flex items-center rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-bold text-rose-700">
-                        제휴광고
-                    </div>
-                    <div className="rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-extrabold text-rose-700">
-                        Holafly eSIM
-                    </div>
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-rose-100/90 bg-gradient-to-r from-rose-50/90 to-white px-2.5 py-1.5 md:px-3">
+                <div className="flex min-w-0 flex-1 items-baseline gap-1.5">
+                    <span className="truncate text-sm font-black tracking-tight text-rose-800 md:text-base">Holafly</span>
+                    <span className="shrink-0 rounded-md bg-rose-600/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-800 md:text-[11px]">
+                        eSIM
+                    </span>
                 </div>
-
-                <div className="mt-3 flex items-end justify-between gap-3 rounded-xl bg-black/40 p-2.5 backdrop-blur-[1px]">
-                    <div className="max-w-[70%] break-keep">
-                        <h4 className="mt-1 text-base font-black tracking-tight text-white drop-shadow-sm md:text-lg">
-                            Holafly eSIM: 무제한 데이터 중심
-                        </h4>
-                        <p className="mt-1 text-[11px] text-white/95 drop-shadow-sm">
-                            데이터 걱정 줄이고 오래 쓰는 일정에 유리한 단순 플랜
-                        </p>
-                    </div>
-
-                    <div className="rounded-xl bg-white/80 px-2.5 py-2 text-center shrink-0">
-                        <div className="text-sm font-black text-rose-700">eSIM</div>
-                        <div className="text-[10px] text-rose-600">간편 개통</div>
-                    </div>
-                </div>
+                <span className="shrink-0 rounded-full bg-gray-800/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                    제휴광고
+                </span>
+            </div>
+            <div className="relative overflow-hidden">
+                <img
+                    src={holaflyBannerImg}
+                    alt="Holafly eSIM"
+                    className="h-auto w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </div>
+            <div className="border-t border-rose-100/90 bg-gradient-to-b from-rose-50/70 to-white px-2.5 py-2 md:px-3">
+                <p className="break-keep text-[10px] leading-snug text-gray-700 md:text-[11px]">
+                    <span className="font-bold text-rose-800">무제한 중심</span>
+                    <span className="mx-0.5 text-rose-700/70" aria-hidden="true">
+                        ·
+                    </span>
+                    데이터 걱정 줄이고, 장기·단순 플랜에 유리
+                </p>
             </div>
         </a>
     );

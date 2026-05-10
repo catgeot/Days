@@ -11,8 +11,11 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
         // 검색어 구성: 위치 컨텍스트 포함으로 정확도 향상
         let queryStr = searchTarget;
 
-        if (['apps', 'connectivity'].includes(type)) {
-            // 앱이나 통신 관련은 검색어 그대로 사용
+        if (type === 'apps') {
+            // 앱스토어/플레이 스토어가 상위에 오도록 검색어 끝에 APP 접미사 (중복 시 생략)
+            const trimmed = String(searchTarget).trim();
+            queryStr = /\bapp$/i.test(trimmed) ? trimmed : `${trimmed} APP`;
+        } else if (type === 'connectivity') {
             queryStr = searchTarget;
         } else if (locationName) {
             // 지도 관련 타입은 쉼표로, 나머지는 공백으로 구분

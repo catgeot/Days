@@ -26,7 +26,17 @@ const loadKlookWidgetScript = () => {
     });
 };
 
-const KlookTourBannerWidget = ({ width = 728, height = 90, className = 'mt-3', targetUrl = 'https://www.klook.com/?aid=118544' }) => {
+// IAB 468×60 가로 배너: 카드 폭에 맞춰 비율 유지 스케일(300×250 대비 과한 세로 확대 완화)
+const DEFAULT_BANNER_W = 468;
+const DEFAULT_BANNER_H = 60;
+const MAX_BANNER_SCALE = 2.35; // 초대형 카드에서도 과도한 확대 방지
+
+const KlookTourBannerWidget = ({
+    width = DEFAULT_BANNER_W,
+    height = DEFAULT_BANNER_H,
+    className = 'mt-3',
+    targetUrl = 'https://www.klook.com/?aid=118544',
+}) => {
     const containerRef = useRef(null);
     const hasRetriedRef = useRef(false);
     const [scale, setScale] = useState(1);
@@ -68,42 +78,56 @@ const KlookTourBannerWidget = ({ width = 728, height = 90, className = 'mt-3', t
     useEffect(() => {
         const updateScale = () => {
             if (!containerRef.current) return;
-            const containerWidth = containerRef.current.clientWidth - 8;
-            const nextScale = Math.min(1, containerWidth / width);
-            setScale(nextScale > 0 ? nextScale : 1);
+            const horizontalPad = 8; // p-1 좌우 여유 (측정과 클립 일치)
+            const available = containerRef.current.clientWidth - horizontalPad;
+            const raw = available / width;
+            const nextScale = Math.min(MAX_BANNER_SCALE, Math.max(0.2, raw));
+            setScale(nextScale);
         };
 
         updateScale();
         window.addEventListener('resize', updateScale);
+        const el = containerRef.current;
+        const ro = typeof ResizeObserver !== 'undefined' && el ? new ResizeObserver(updateScale) : null;
+        if (ro && el) ro.observe(el);
 
         return () => {
             window.removeEventListener('resize', updateScale);
+            ro?.disconnect();
         };
     }, [width]);
 
+    const clipW = Math.round(width * scale);
+    const clipH = Math.round(height * scale);
+
     return (
         <div ref={containerRef} className={`${className} relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm`}>
-            <div style={{ height: `${height * scale}px` }}>
+            <div className="mx-auto" style={{ width: clipW, height: clipH }}>
                 <div
-                    className="origin-top-left"
-                    style={{
-                        width: `${width}px`,
-                        height: `${height}px`,
-                        transform: `scale(${scale})`,
-                    }}
+                    className="overflow-hidden rounded-md"
+                    style={{ width: clipW, height: clipH }}
                 >
-                    <ins
-                        className="klk-aff-widget"
-                        data-wid="118544"
-                        data-bgtype="Play"
-                        data-adid="1272015"
-                        data-lang="ko"
-                        data-prod="banner"
-                        data-width={String(width)}
-                        data-height={String(height)}
+                    <div
+                        style={{
+                            width: `${width}px`,
+                            height: `${height}px`,
+                            transform: `scale(${scale})`,
+                            transformOrigin: 'top left',
+                        }}
                     >
-                        <a href={targetUrl}>Klook.com</a>
-                    </ins>
+                        <ins
+                            className="klk-aff-widget"
+                            data-wid="118544"
+                            data-bgtype="Play"
+                            data-adid="1272015"
+                            data-lang="ko"
+                            data-prod="banner"
+                            data-width={String(width)}
+                            data-height={String(height)}
+                        >
+                            <a href={targetUrl}>Klook.com</a>
+                        </ins>
+                    </div>
                 </div>
             </div>
             <a
