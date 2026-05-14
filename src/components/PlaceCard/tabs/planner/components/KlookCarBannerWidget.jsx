@@ -39,6 +39,7 @@ const KlookCarBannerWidget = ({
     height: heightProp,
     className = 'mt-3',
     targetUrl = 'https://www.klook.com/?aid=118544',
+    footerHint = '',
 }) => {
     const responsiveDims = useKlookPlannerBannerDimensions('car');
     const width = widthProp ?? responsiveDims.width;
@@ -111,41 +112,52 @@ const KlookCarBannerWidget = ({
     const carAdId = isCarMobileSquare ? KLOOK_CAR_AD_ID_MOBILE : KLOOK_CAR_AD_ID_DESKTOP;
 
     return (
-        <div ref={containerRef} className={`${className} relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm`}>
-            <div
-                className="flex w-full justify-center overflow-hidden rounded-md"
-                style={{ height: `${clipH}px` }}
-            >
+        <div className={className}>
+            <div ref={containerRef} className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm">
+                {/*
+                  iframe 배너가 클릭을 가로채면 klook.com 직링크(aid=4053 등)로 열려 제휴 리다이렉트(aid=118544)가 빗나감.
+                  시각은 위젯 유지, 클릭만 상단 앵커(targetUrl = affiliate.klook.com/redirect…)로 통일.
+                */}
                 <div
-                    key={`klook-car-scale-${carAdId}-${width}-${height}`}
-                    style={{
-                        width: `${width}px`,
-                        height: `${height}px`,
-                        transform: `scale(${scale})`,
-                        transformOrigin: 'top center',
-                    }}
+                    className="pointer-events-none flex w-full justify-center overflow-hidden rounded-md"
+                    style={{ height: `${clipH}px` }}
                 >
-                    <ins
-                        className="klk-aff-widget"
-                        data-wid="118544"
-                        data-bgtype="Car"
-                        data-adid={carAdId}
-                        data-lang="ko"
-                        data-prod="banner"
-                        data-width={String(width)}
-                        data-height={String(height)}
+                    <div
+                        key={`klook-car-scale-${carAdId}-${width}-${height}`}
+                        style={{
+                            width: `${width}px`,
+                            height: `${height}px`,
+                            transform: `scale(${scale})`,
+                            transformOrigin: 'top center',
+                        }}
                     >
-                        <a href={targetUrl}>Klook.com</a>
-                    </ins>
+                        <ins
+                            className="klk-aff-widget"
+                            data-wid="118544"
+                            data-bgtype="Car"
+                            data-adid={carAdId}
+                            data-lang="ko"
+                            data-prod="banner"
+                            data-width={String(width)}
+                            data-height={String(height)}
+                        >
+                            <a href={targetUrl}>Klook.com</a>
+                        </ins>
+                    </div>
                 </div>
+                <a
+                    href={targetUrl}
+                    target={isMobileDevice() ? '_self' : '_blank'}
+                    rel="noopener noreferrer"
+                    aria-label="Klook 렌터카 페이지 열기"
+                    className="pointer-events-auto absolute inset-0 z-20"
+                />
             </div>
-            <a
-                href={targetUrl}
-                target={isMobileDevice() ? '_self' : '_blank'}
-                rel="noopener noreferrer"
-                aria-label="Klook 렌터카 페이지 열기"
-                className="absolute inset-0 z-10"
-            />
+            {footerHint ? (
+                <p className="mt-2 px-1 text-center text-[10px] font-medium leading-snug text-gray-600 break-keep">
+                    {footerHint}
+                </p>
+            ) : null}
         </div>
     );
 };

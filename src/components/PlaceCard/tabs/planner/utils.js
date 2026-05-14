@@ -1,7 +1,8 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
 import bouncePlannerBannerDesktop from '../../../../assets/bounce_278x90.png';
 import bouncePlannerBannerMobile from '../../../../assets/bounce.png';
-import { getKlookAffiliateUrl, getKlookRentalUrlByLocation, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
+import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
+import { getRentalCarHomeSearchSubtext } from '../../../../utils/rentalAirportMatch.js';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 import {
     isMapPoiGygOnlyLocation,
@@ -166,7 +167,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
             const klookTransferDeepLink = getKlookAffiliateUrl(klookTransferTargetUrl);
 
-            const klookCarRentalDeepLink = getKlookRentalUrlByLocation(location);
+            const klookCarRentalHomeLink = getKlookRentalHomeUrl();
 
             links.push({
                 url: klookTransferDeepLink,
@@ -176,8 +177,9 @@ export const getMultiLinks = ({ type, data, location }) => {
             });
 
             links.push({
-                url: klookCarRentalDeepLink,
-                text: '렌터카 검색',
+                url: klookCarRentalHomeLink,
+                text: '렌터카 홈',
+                subtext: getRentalCarHomeSearchSubtext(location),
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
             break;

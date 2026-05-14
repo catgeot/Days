@@ -19,11 +19,18 @@ const MIN_ALIAS_LEN = 4;
  * 렌터카 링크와 별개로, 플래너 상단에 둘 이상의 도착 공항을 안내할 여행지.
  * `phrases` 중 하나가 slug·이름(한/영)에 부분 일치하면 적용됩니다. 더 구체적인 행을 위에 둡니다.
  *
- * @typedef {{ phrases: string[], iataCodes: string[], preferredLinkIata?: string }} RentalMultiAirportRow
+ * @typedef {{ phrases: string[], iataCodes: string[], preferredLinkIata?: string, bannerNote?: string }} RentalMultiAirportRow
  */
 
 /** @type {RentalMultiAirportRow[]} */
 export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
+  {
+    phrases: ['lofoten', '로포텐', 'lofoten islands', 'moskenes', '모스케네스', 'reine', '레이네', 'vesteralen', '베스테란'],
+    iataCodes: ['BOO', 'EVE', 'LKN', 'SVJ'],
+    preferredLinkIata: 'EVE',
+    bannerNote:
+      '로포텐으로 가는 항로는 공항마다 역할이 다릅니다. 레크네스(LKN)·스볼바어(SVJ)는 군도 위 공항이라, 국내선 등으로 섬에 직접 도착한 뒤 렌터카·이동을 이어가기 좋습니다. 이베네스(EVE)는 본토(하르스타드·나르비크) 쪽 관문으로 국제·국내 대형 노선이 많고, 차나 버스로 로포텐으로 들어오는 일정이 흔합니다. 보되(BOO)는 로포텐 남쪽 본토에서 페리(예: 보되–모스케네스)나 국내선으로 군도에 이어질 때 자주 쓰입니다. 실제 티켓·일정에 적힌 도착 공항(IATA)을 확인한 뒤, 아래 제휴 링크 검색어도 그 공항에 맞춰 바꿔 주세요.'
+  },
   {
     phrases: [
       'cappadocia',
@@ -83,6 +90,22 @@ function hubByIata(iata) {
   return RENTAL_AIRPORT_HUBS.find((h) => h.iata === iata) || null;
 }
 
+/** 좌표가 어떤 허브 반경 안에 있으면 그중 최근접 허브 */
+function nearestHubWithinRadius(lat, lng) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  let best = null;
+  let bestD = Infinity;
+  for (const hub of RENTAL_AIRPORT_HUBS) {
+    const maxR = hub.radiusKm ?? DEFAULT_HUB_RADIUS_KM;
+    const d = distanceKm(lat, lng, hub.lat, hub.lng);
+    if (d <= maxR && d < bestD) {
+      bestD = d;
+      best = { officialKo: hub.officialKo, iata: hub.iata };
+    }
+  }
+  return best;
+}
+
 function airportsFromIataCodes(iataCodes) {
   return iataCodes.map((code) => {
     const hub = hubByIata(code);
@@ -127,7 +150,7 @@ function resolveLinkHubWithinMulti(location, row, airports) {
  * 플래너 상단 「렌터카 · 픽업 기준」용: 단일 공항 또는 복수 도착 공항 안내.
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @returns {{ kind: 'single', officialKo: string, iata: string | null } | { kind: 'multi', airports: { officialKo: string, iata: string }[], linkHub: { officialKo: string, iata: string } } | null}
+ * @returns {{ kind: 'single', officialKo: string, iata: string | null } | { kind: 'multi', airports: { officialKo: string, iata: string }[], linkHub: { officialKo: string, iata: string }, bannerNote?: string } | null}
  */
 export function resolveRentalPickupBannerInfo(location) {
   if (!location || typeof location !== 'object') return null;
@@ -136,7 +159,7 @@ export function resolveRentalPickupBannerInfo(location) {
     if (!matchMultiAirportDestination(location, row)) continue;
     const airports = airportsFromIataCodes(row.iataCodes);
     const linkHub = resolveLinkHubWithinMulti(location, row, airports);
-    return { kind: 'multi', airports, linkHub };
+    return { kind: 'multi', airports, linkHub, bannerNote: row.bannerNote };
   }
 
   const single = resolveRentalAirport(location);
@@ -145,7 +168,7 @@ export function resolveRentalPickupBannerInfo(location) {
 }
 
 /**
- * 항공권 검색 위젯: 목적지 입력 시 도시명·공항 코드로 검색하는 편이 나을 때 짧게 안내합니다.
+ * 항공권 검색 위젯: 도착지명·정식 공항명은 위젯에서 잘 안 잡히는 경우가 많아 IATA 3자 코드 검색을 권장합니다.
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @returns {string}
@@ -156,22 +179,49 @@ export function getFlightDestinationSearchHint(location) {
   const info = resolveRentalPickupBannerInfo(location);
 
   if (!info) {
-    return `${place}(여행지명)만으로는 검색이 잘 안 될 때가 많습니다. 정해진 도착 공항의 도시명·공항명 또는 3자리 IATA(예: NRT, BKK)로 넣어 보세요.`;
+    return `${place}(여행지명)이나 공항 정식명만으로는 검색이 잘 안 될 때가 많습니다. 티켓·일정에 나온 도착 공항 3자리 IATA 코드(예: NRT, BKK)로 넣는 것을 권장합니다.`;
   }
 
   if (info.kind === 'multi') {
     const iatas = info.airports.map((a) => a.iata).filter(Boolean);
     const iataHint = iatas.length ? iatas.join(', ') : info.airports.map((a) => a.officialKo).join(' · ');
-    return `도착 공항의 도시명 또는 (${iataHint})로 검색해 보세요.`;
+    if (iatas.length) {
+      return `도착지명·정식 공항명은 잘 맞지 않는 경우가 많습니다. 목적지는 IATA 코드(${iataHint})로 검색해 보세요.`;
+    }
+    return `도착지명·정식 공항명은 잘 맞지 않는 경우가 많습니다. 해당 공항의 3자리 IATA 코드로 검색하는 편이 좋습니다.`;
   }
 
   const iata = info.iata;
   const officialKo = info.officialKo;
   if (iata) {
-    return `${place}(여행지명)이나 긴 정식 공항명보다, 공항이 있는 도시명·짧은 공항명·IATA(${iata})로 목적지를 넣는 편이 잘 나옵니다. (예: ${officialKo}만으로는 안 될 때 ${iata} 등)`;
+    return `도착지명·정식 공항명(예: ${officialKo})은 잘 안 될 때가 많습니다. 목적지는 ${iata}처럼 3자리 IATA 코드로 넣어 보세요.`;
   }
 
-  return `${place}(여행지명)만으로는 검색이 제한될 수 있습니다. 도착 공항의 도시명·공항명으로 바꿔 검색해 보세요.`;
+  return `${place}(여행지명)이나 공항명만으로는 검색이 제한될 수 있습니다. 알고 있다면 도착 공항 3자리 IATA 코드로 검색하는 편이 좋습니다.`;
+}
+
+/**
+ * 공항 이동 카드·렌터카 홈 버튼 하단: 클룩에서 직접 검색할 때 3자리 코드 입력 안내.
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @returns {string}
+ */
+export function getRentalCarHomeSearchSubtext(location) {
+  const info = resolveRentalPickupBannerInfo(location);
+  if (!info) {
+    return '렌터카 검색 시 세자리 공항 코드(예: PDL)로 입력해 주세요.';
+  }
+  if (info.kind === 'multi') {
+    const iatas = info.airports.map((a) => a.iata).filter(Boolean);
+    if (iatas.length) {
+      return `렌터카 검색 시 세자리 공항 코드(${iatas.join(', ')}) 중 하나로 입력해 주세요.`;
+    }
+    return '렌터카 검색 시 도착 공항 세자리 코드로 입력해 주세요.';
+  }
+  if (info.iata) {
+    return `렌터카 검색 시 세자리 공항 코드(${info.iata})로 입력해 주세요.`;
+  }
+  return '렌터카 검색 시 세자리 공항 코드(예: PDL)로 입력해 주세요.';
 }
 
 /**
@@ -185,12 +235,46 @@ export function getFlightDestinationSearchHint(location) {
 export function resolveRentalAirport(location, options = {}) {
   if (!location || typeof location !== 'object') return null;
 
+  const lat = typeof location.lat === 'number' ? location.lat : Number(location.lat);
+  const lng = typeof location.lng === 'number' ? location.lng : Number(location.lng);
+  const geoHub =
+    Number.isFinite(lat) && Number.isFinite(lng) ? nearestHubWithinRadius(lat, lng) : null;
+
   const ignoreStored = options.ignoreStoredRentalAirport === true;
   if (!ignoreStored && typeof location.rental_airport_official_ko === 'string' && location.rental_airport_official_ko.trim()) {
+    const storedOfficial = location.rental_airport_official_ko.trim();
+    const storedIataRaw =
+      typeof location.rental_airport_iata === 'string' && location.rental_airport_iata.trim()
+        ? location.rental_airport_iata.trim().toUpperCase()
+        : null;
+    const storedIata = storedIataRaw && /^[A-Z]{3}$/.test(storedIataRaw) ? storedIataRaw : null;
+
+    if (geoHub && storedIata) {
+      const sh = hubByIata(storedIata);
+      if (sh) {
+        const dStored = distanceKm(lat, lng, sh.lat, sh.lng);
+        const gh = hubByIata(geoHub.iata);
+        const dGeo = gh ? distanceKm(lat, lng, gh.lat, gh.lng) : Infinity;
+        if (dStored > 2000 && dGeo < 400 && dStored > dGeo + 500) {
+          return geoHub;
+        }
+      }
+    }
+
     return {
-      officialKo: location.rental_airport_official_ko.trim(),
+      officialKo: storedOfficial,
       iata: typeof location.rental_airport_iata === 'string' ? location.rental_airport_iata : null
     };
+  }
+
+  if (!ignoreStored && typeof location.rental_airport_iata === 'string' && location.rental_airport_iata.trim()) {
+    const iataUpper = location.rental_airport_iata.trim().toUpperCase();
+    if (/^[A-Z]{3}$/.test(iataUpper)) {
+      const hub = hubByIata(iataUpper);
+      if (hub?.officialKo) {
+        return { officialKo: hub.officialKo, iata: hub.iata };
+      }
+    }
   }
 
   const slug = String(location.slug || '').toLowerCase();
@@ -200,21 +284,7 @@ export function resolveRentalAirport(location, options = {}) {
   const countryEn = String(location.country_en || '').toLowerCase();
   const hay = `${slug} ${name} ${nameEn} ${country} ${countryEn}`.replace(/-/g, ' ');
 
-  const lat = typeof location.lat === 'number' ? location.lat : Number(location.lat);
-  const lng = typeof location.lng === 'number' ? location.lng : Number(location.lng);
-  if (Number.isFinite(lat) && Number.isFinite(lng)) {
-    let best = null;
-    let bestD = Infinity;
-    for (const hub of RENTAL_AIRPORT_HUBS) {
-      const maxR = hub.radiusKm ?? DEFAULT_HUB_RADIUS_KM;
-      const d = distanceKm(lat, lng, hub.lat, hub.lng);
-      if (d <= maxR && d < bestD) {
-        bestD = d;
-        best = { officialKo: hub.officialKo, iata: hub.iata };
-      }
-    }
-    if (best) return best;
-  }
+  if (geoHub) return geoHub;
 
   let bestAlias = null;
   let bestLen = 0;

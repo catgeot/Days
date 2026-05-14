@@ -6,7 +6,8 @@ import { resolveRentalAirport, resolveRentalPickupBannerInfo } from './rentalAir
 // Klook direct affiliate parameters (managed in one place)
 export const KLOOK_AID = '118544';
 export const KLOOK_DEFAULT_AD_ID = '1256120';
-export const KLOOK_RENTAL_AD_ID = '1256121';
+/** 렌터카 랜딩 홈(`/ko/car-rentals/`) 전용 aff_adid. 투어·렌터카 검색어 등 일반 검색은 {@link KLOOK_DEFAULT_AD_ID}. */
+export const KLOOK_RENTAL_HOME_AD_ID = '1277252';
 // true면 /ko/car-rentals 경로, false면 /car-rentals 경로 사용
 export const USE_KLOOK_LOCALE_PATH = true;
 export const KLOOK_HK_RENTAL_AD_ID = '1265776';
@@ -180,7 +181,17 @@ export const getKlookRentalUrlByLocation = (locationOrName) => {
 
   const searchLabel = (airportKo || loc.name || '').trim();
   const query = encodeURIComponent(`${searchLabel} 렌터카`.trim());
-  return getKlookAffiliateUrl(`https://www.klook.com/ko/search/result/?query=${query}`, KLOOK_RENTAL_AD_ID);
+  return getKlookAffiliateUrl(`https://www.klook.com/ko/search/result/?query=${query}`, KLOOK_DEFAULT_AD_ID);
+};
+
+/**
+ * 클룩 렌터카 섹션 홈(검색어 없음). 위젯·자동 검색어가 목적지와 맞지 않을 때 직접 검색용.
+ *
+ * @returns {string}
+ */
+export const getKlookRentalHomeUrl = () => {
+  const rentalPath = USE_KLOOK_LOCALE_PATH ? 'ko/car-rentals' : 'car-rentals';
+  return getKlookAffiliateUrl(`https://www.klook.com/${rentalPath}/`, KLOOK_RENTAL_HOME_AD_ID);
 };
 
 /**

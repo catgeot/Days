@@ -112,41 +112,47 @@ const KlookTourBannerWidget = ({
             : KLOOK_TOUR_AD_ID_DESKTOP;
 
     return (
-        <div ref={containerRef} className={`${className} relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm`}>
-            <div
-                className="flex w-full justify-center overflow-hidden rounded-md"
-                style={{ height: `${clipH}px` }}
-            >
+        <div className={className}>
+            <div ref={containerRef} className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm">
+                {/*
+                  렌터카 배너와 동일: iframe이 클릭을 가로채면 aid가 위젯 쪽으로 바뀔 수 있음.
+                  시각은 위젯 유지, 클릭은 affiliate 리다이렉트(targetUrl)로만 통과.
+                */}
                 <div
-                    key={`klook-tour-scale-${width}-${height}`}
-                    style={{
-                        width: `${width}px`,
-                        height: `${height}px`,
-                        transform: `scale(${scale})`,
-                        transformOrigin: 'top center',
-                    }}
+                    className="pointer-events-none flex w-full justify-center overflow-hidden rounded-md"
+                    style={{ height: `${clipH}px` }}
                 >
-                    <ins
-                        className="klk-aff-widget"
-                        data-wid="118544"
-                        data-bgtype="Play"
-                        data-adid={tourAdId}
-                        data-lang="ko"
-                        data-prod="banner"
-                        data-width={String(width)}
-                        data-height={String(height)}
+                    <div
+                        key={`klook-tour-scale-${width}-${height}`}
+                        style={{
+                            width: `${width}px`,
+                            height: `${height}px`,
+                            transform: `scale(${scale})`,
+                            transformOrigin: 'top center',
+                        }}
                     >
-                        <a href={targetUrl}>Klook.com</a>
-                    </ins>
+                        <ins
+                            className="klk-aff-widget"
+                            data-wid="118544"
+                            data-bgtype="Play"
+                            data-adid={tourAdId}
+                            data-lang="ko"
+                            data-prod="banner"
+                            data-width={String(width)}
+                            data-height={String(height)}
+                        >
+                            <a href={targetUrl}>Klook.com</a>
+                        </ins>
+                    </div>
                 </div>
+                <a
+                    href={targetUrl}
+                    target={isMobileDevice() ? '_self' : '_blank'}
+                    rel="noopener noreferrer"
+                    aria-label="Klook 투어 페이지 열기"
+                    className="pointer-events-auto absolute inset-0 z-20"
+                />
             </div>
-            <a
-                href={targetUrl}
-                target={isMobileDevice() ? '_self' : '_blank'}
-                rel="noopener noreferrer"
-                aria-label="Klook 투어 페이지 열기"
-                className="absolute inset-0 z-10"
-            />
         </div>
     );
 };

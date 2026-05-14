@@ -44,6 +44,15 @@
 - **`WhiteLabelWidget.jsx`**: 항공권(`flight`)은 기본 **새 탭**으로 화이트라벨 URL 열기(플래너 탭 유지). `openInNewTab`로 모달 유지 가능, 숙박(`hotel`)은 기존 전체 화면 모달.
 - **`JourneyTimeline.jsx`**: STEP 제목 문자열에서 `\(([A-Z]{3})\)`마다 앞쪽 **도착 지명 토큰**과 **IATA 코드**를 각각 클릭 복사(정식 공항명으로 치환하지 않음; 코드 버튼 표시는 `(ASR)`·클립보드는 `ASR`). 이름 없이 코드만 있으면 `copyCode` 단일 버튼.
 
+## 플래너 공항·클룩 제휴·로포텐 (2026-05-14 동일일 후속)
+
+- **`rentalAirportHubs.js`**: **PDL**(아조레스)·**FAE**(페로) 허브 추가. **DEN** 별칭 `den` 제거(덴마크·`denmark` 부분 문자열 오탐 방지). 노르웨이 북부 **BOO·EVE·LKN·SVJ** 추가.
+- **`rentalAirportMatch.js`**: DB `rental_airport_*`와 좌표 허브가 대륙 단위로 어긋나면 **좌표 허브 우선**. **IATA만** 저장된 경우 허브에서 정식 한글명 보강. **`getFlightDestinationSearchHint`**: IATA 코드 검색 우선 문구로 통일. **`getRentalCarHomeSearchSubtext`**: 클룩 홈에서 세자리 코드 입력 안내. **`RENTAL_MULTI_AIRPORT_DESTINATIONS`**: 로포텐(BOO·EVE·LKN·SVJ) + 선택 필드 **`bannerNote`**(지역 설명). **`resolveRentalPickupBannerInfo`**: `multi`일 때 `bannerNote` 전달.
+- **`affiliate.js`**: **`getKlookRentalHomeUrl()`** — 렌터카 `/ko/car-rentals/` 랜딩, **`KLOOK_RENTAL_HOME_AD_ID`(`1277252`)**. 검색 폴백 **`getKlookRentalUrlByLocation`** 의 일반 검색은 **`KLOOK_DEFAULT_AD_ID`(`1256120`)** 로 통일(대시보드에 없던 `1256121` 제거). 제휴 마크·`aid=118544` 정합.
+- **`planner/utils.js`** · **`ToolkitCard.jsx`** · **`KlookCarBannerWidget.jsx`**: 공항 이동 카드 **「렌터카 홈」**은 홈 딥링크 + `subtext` 안내; **배너**는 기존처럼 **공항명 검색 URL**(`getKlookRentalUrlByLocation`). 배너 영역 **`pointer-events-none`** + 오버레이 **`pointer-events-auto`·`z-20`** 으로 iframe이 클릭을 가로채지 않게 함.
+- **`KlookTourBannerWidget.jsx`**: 렌터카 배너와 동일한 **클릭 → 제휴 리다이렉트** 처리; 외곽 래퍼 구조 정리.
+- **`PlannerTab.jsx`**: 다중 공항이 **`bannerNote`** 를 가지면 공항 목록 아래 **왼쪽 세로 강조 + 긴 안내 문단**으로 표시(로포텐 전용 카피).
+
 ## 향후(선택)
 
 - 채팅 API에 **동일 요약을 system 컨텍스트로 주입**하면 대화 시발점으로 활용 가능(별도 작업).

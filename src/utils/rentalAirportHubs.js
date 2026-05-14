@@ -89,6 +89,25 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'BCN', officialKo: '조세프 타라델라 바르셀로나엘프라트공항', lat: 41.2971, lng: 2.0785, radiusKm: 200, aliases: ['barcelona', '바르셀로나', 'bcn'] },
   { iata: 'LIS', officialKo: '움베르토 델가도공항', lat: 38.7813, lng: -9.1357, radiusKm: 200, aliases: ['lisbon', '리스본', 'lis'] },
   { iata: 'OPO', officialKo: '프란시스코 사 카르네이루공항', lat: 41.2481, lng: -8.6814, radiusKm: 160, aliases: ['porto', '포르투', 'opo'] },
+  {
+    iata: 'PDL',
+    officialKo: '폰타델가다 주앙 파울루 2세 공항',
+    lat: 37.7412,
+    lng: -25.6979,
+    radiusKm: 280,
+    aliases: [
+      'ponta delgada',
+      '폰타델가다',
+      'azores',
+      'açores',
+      'acores',
+      '아조레스',
+      '아소르스',
+      'sao miguel',
+      'são miguel',
+      'pdl'
+    ]
+  },
   { iata: 'FCO', officialKo: '레오나르도 다 빈치국제공항', lat: 41.8003, lng: 12.2389, radiusKm: 220, aliases: ['rome', '로마', 'fco', 'roma'] },
   { iata: 'MXP', officialKo: '말펜사공항', lat: 45.6306, lng: 8.7281, radiusKm: 200, aliases: ['milan', '밀라노', 'mxp', 'malpensa'] },
   { iata: 'VCE', officialKo: '마르코폴로 베네치아공항', lat: 45.5053, lng: 12.3519, radiusKm: 140, aliases: ['venice', '베네치아', 'venezia', 'vce'] },
@@ -97,9 +116,60 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'ASR', officialKo: '카이세리 에르킬레트 국제공항', lat: 38.7704, lng: 35.4954, radiusKm: 200, aliases: ['kayseri', '카이세리', 'asr', 'erkilet'] },
   { iata: 'NAV', officialKo: '네브셰히르 카파도키아 공항', lat: 38.7719, lng: 34.5345, radiusKm: 200, aliases: ['nevsehir', '네브셰히르', 'nav', 'kapadokya airport'] },
   { iata: 'DUB', officialKo: '더블린공항', lat: 53.4213, lng: -6.2701, radiusKm: 180, aliases: ['dublin', '더블린', 'dub'] },
+  {
+    iata: 'FAE',
+    officialKo: '바가르 공항',
+    lat: 62.0636,
+    lng: -7.2772,
+    radiusKm: 120,
+    aliases: [
+      'faroe',
+      'faroes',
+      '페로',
+      '페로제도',
+      'torshavn',
+      '토르스하운',
+      'vagar',
+      'vágar',
+      '바가르',
+      'fae'
+    ]
+  },
   { iata: 'CPH', officialKo: '코펜하겐공항', lat: 55.6180, lng: 12.6560, radiusKm: 180, aliases: ['copenhagen', '코펜하겐', 'cph'] },
   { iata: 'ARN', officialKo: '스톡홀름알란다공항', lat: 59.6498, lng: 17.9238, radiusKm: 200, aliases: ['stockholm', '스톡홀름', 'arn'] },
   { iata: 'OSL', officialKo: '가르데르모엔공항', lat: 60.1975, lng: 11.1004, radiusKm: 200, aliases: ['oslo', '오슬로', 'osl'] },
+  {
+    iata: 'BOO',
+    officialKo: '보되 공항',
+    lat: 67.2692,
+    lng: 14.3653,
+    radiusKm: 180,
+    aliases: ['bodø', 'bodo', 'bodoe', '보되', 'boo', 'bodø airport']
+  },
+  {
+    iata: 'EVE',
+    officialKo: '하르스타드나르비크 이베네스 공항',
+    lat: 68.4913,
+    lng: 16.6781,
+    radiusKm: 220,
+    aliases: ['evenes', 'harstad', 'narvik', '에베네스', 'eve', 'harstad-narvik']
+  },
+  {
+    iata: 'LKN',
+    officialKo: '레크네스 공항',
+    lat: 68.1525,
+    lng: 13.6093,
+    radiusKm: 160,
+    aliases: ['leknes', '레크네스', 'lkn']
+  },
+  {
+    iata: 'SVJ',
+    officialKo: '스볼바어 헬레 공항',
+    lat: 68.2431,
+    lng: 14.6692,
+    radiusKm: 100,
+    aliases: ['svolvaer', 'svolvær', '스볼바어', 'svj', 'helle']
+  },
   { iata: 'HEL', officialKo: '헬싱키반타공항', lat: 60.3172, lng: 24.9633, radiusKm: 200, aliases: ['helsinki', '헬싱키', 'hel'] },
   { iata: 'KEF', officialKo: '케플라비크국제공항', lat: 63.9850, lng: -22.6056, radiusKm: 250, aliases: ['reykjavik', '레이캬비크', 'iceland', '아이슬란드', 'kef'] },
   { iata: 'EDI', officialKo: '에든버러공항', lat: 55.9500, lng: -3.3725, radiusKm: 160, aliases: ['edinburgh', '에든버러', 'edi'] },
@@ -115,7 +185,8 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'IAD', officialKo: '워싱턴 덜레스국제공항', lat: 38.9445, lng: -77.4558, radiusKm: 200, aliases: ['washington', '워싱턴', 'dulles', 'iad'] },
   { iata: 'PHX', officialKo: '피닉스 스카이하버국제공항', lat: 33.4343, lng: -112.0118, radiusKm: 220, aliases: ['phoenix', '피닉스', 'phx'] },
   { iata: 'SAN', officialKo: '샌디에이고국제공항', lat: 32.7338, lng: -117.1933, radiusKm: 180, aliases: ['san diego', '샌디에이고'] },
-  { iata: 'DEN', officialKo: '덴버국제공항', lat: 39.8561, lng: -104.6737, radiusKm: 220, aliases: ['denver', '덴버', 'den'] },
+  // `den` 별칭 제외: denmark·덴마크 등에 부분 일치해 덴버(DEN)로 오탐되던 문제 방지
+  { iata: 'DEN', officialKo: '덴버국제공항', lat: 39.8561, lng: -104.6737, radiusKm: 220, aliases: ['denver', '덴버'] },
   { iata: 'YVR', officialKo: '밴쿠버국제공항', lat: 49.1947, lng: -123.1792, radiusKm: 200, aliases: ['vancouver', '밴쿠버', 'yvr'] },
   { iata: 'YYZ', officialKo: '토론토 피어슨국제공항', lat: 43.6777, lng: -79.6248, radiusKm: 220, aliases: ['toronto', '토론토', 'yyz'] },
   { iata: 'YUL', officialKo: '트뤼도국제공항', lat: 45.4577, lng: -73.7497, radiusKm: 200, aliases: ['montreal', '몬트리올', 'yul'] },

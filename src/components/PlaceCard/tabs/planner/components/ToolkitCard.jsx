@@ -4,7 +4,7 @@ import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
-import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
+import { getFlightDestinationSearchHint, getRentalCarHomeSearchSubtext } from '../../../../../utils/rentalAirportMatch.js';
 import MrtDynamicLink from './MrtDynamicLink';
 import HotelWidget from './HotelWidget';
 import DirectFerriesWidget from './DirectFerriesWidget';
@@ -23,7 +23,8 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
     const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
     const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
     const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
-    const klookCarDeepLink = getKlookRentalUrlByLocation(location);
+    /** 배너 위젯: 공항명 등으로 구성된 검색 결과 페이지(기존 동작) */
+    const klookCarBannerSearchUrl = getKlookRentalUrlByLocation(location);
 
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group ${className}`.trim()}>
@@ -141,7 +142,7 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                 <DirectFerriesWidget location={location} />
             )}
             {type === 'airport_transfer' && (
-                <KlookCarBannerWidget targetUrl={klookCarDeepLink} />
+                <KlookCarBannerWidget targetUrl={klookCarBannerSearchUrl} footerHint={getRentalCarHomeSearchSubtext(location)} />
             )}
             {type === 'map_poi' && (
                 isGygFallbackLocation

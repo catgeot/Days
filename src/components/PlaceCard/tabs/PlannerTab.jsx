@@ -237,6 +237,11 @@ const PlannerTab = ({
                                 />
                             ))}
                         </div>
+                        {rentalPickupBannerInfo.bannerNote ? (
+                            <p className="mt-2 border-l-2 border-emerald-300/80 pl-2.5 text-[11px] font-medium leading-relaxed text-gray-800">
+                                {rentalPickupBannerInfo.bannerNote}
+                            </p>
+                        ) : null}
                         {rentalAirportCopyMessage ? (
                             <p
                                 className="mt-1.5 text-[11px] font-semibold leading-snug text-emerald-800"
