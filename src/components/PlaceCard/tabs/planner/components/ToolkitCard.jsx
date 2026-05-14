@@ -4,6 +4,7 @@ import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
+import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import MrtDynamicLink from './MrtDynamicLink';
 import HotelWidget from './HotelWidget';
 import DirectFerriesWidget from './DirectFerriesWidget';
@@ -113,9 +114,11 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                             <div className="bg-white/20 p-2.5 rounded-lg shrink-0">
                                 <Plane size={20} />
                             </div>
-                            <div className="flex-1 text-left">
+                            <div className="flex-1 text-left min-w-0">
                                 <div className="font-bold text-base">항공권 실시간 검색</div>
-                                <div className="text-sm opacity-90">전 세계 항공편 비교 및 예약</div>
+                                <div className="text-[11px] opacity-95 leading-snug mt-1">
+                                    {getFlightDestinationSearchHint(location)}
+                                </div>
                             </div>
                             <div className="text-white/80 group-hover:text-white transition-colors text-xl">→</div>
                         </button>
@@ -131,7 +134,12 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                 <DirectFerriesWidget location={location} />
             )}
             {type === 'airport_transfer' && (
-                <KlookCarBannerWidget targetUrl={klookCarDeepLink} />
+                <>
+                    <p className="-mt-2 mb-2 text-xs leading-snug text-gray-600">
+                        항공권 구매 후 항공편명으로 검색해 주세요.
+                    </p>
+                    <KlookCarBannerWidget targetUrl={klookCarDeepLink} />
+                </>
             )}
             {type === 'map_poi' && (
                 isGygFallbackLocation

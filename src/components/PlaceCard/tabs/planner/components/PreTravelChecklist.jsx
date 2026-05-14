@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtTimelineAction from './MrtTimelineAction';
 import { getKlookAffiliateUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
+import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 
 const PreTravelChecklist = ({ items, locationName, location }) => {
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
@@ -61,9 +62,11 @@ const PreTravelChecklist = ({ items, locationName, location }) => {
                                 <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
                                     <Plane size={16} />
                                 </div>
-                                <div className="flex-1 text-left">
+                                <div className="flex-1 text-left min-w-0">
                                     <div className="font-bold text-sm text-gray-800">항공권 실시간 검색</div>
-                                    <div className="text-xs text-gray-600">전 세계 항공편 비교 및 예약</div>
+                                    <div className="text-[11px] text-gray-600 leading-snug mt-0.5">
+                                        {getFlightDestinationSearchHint(location)}
+                                    </div>
                                 </div>
                                 <div className="text-gray-400 group-hover:text-gray-600 transition-colors">→</div>
                             </button>
@@ -123,7 +126,9 @@ const PreTravelChecklist = ({ items, locationName, location }) => {
                     </div>
                     <div className="flex-1 text-left">
                         <div className="font-bold text-sm text-gray-800">공항 픽업 예약</div>
-                        <div className="text-xs text-gray-600">편리한 공항 ↔ 목적지 직행 서비스</div>
+                        <div className="text-xs text-gray-600 leading-snug">
+                            항공권 구매 후 항공편명으로 검색해 주세요.
+                        </div>
                     </div>
                     <div className="text-gray-400 group-hover:text-gray-600 transition-colors">→</div>
                 </a>

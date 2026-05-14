@@ -170,7 +170,7 @@ export const getMultiLinks = ({ type, data, location }) => {
 
             links.push({
                 url: klookTransferDeepLink,
-                text: `${location?.name || '현지'} 픽업 예약`,
+                text: '공항 픽업 검색',
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 

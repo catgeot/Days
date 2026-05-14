@@ -9,10 +9,39 @@ import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
-import { resolveRentalAirport } from '../../../utils/rentalAirportMatch.js';
+import { resolveRentalPickupBannerInfo } from '../../../utils/rentalAirportMatch.js';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
+
+const airportCopyHitClass =
+    'cursor-pointer rounded border-0 bg-transparent px-0.5 py-1 text-left font-inherit transition-colors hover:bg-emerald-100/70 focus-visible:outline focus-visible:ring-2 focus-visible:ring-emerald-500/40';
+
+/** 렌터카 배너: 정식 공항명·IATA를 각각 클릭해 복사 */
+function RentalPickupAirportCopyRow({ officialKo, iata, onCopy }) {
+    return (
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm font-semibold leading-snug text-gray-900">
+            <button
+                type="button"
+                className={`${airportCopyHitClass} break-words text-gray-900`}
+                onClick={() => onCopy(officialKo, '정식 공항명이 복사되었습니다.')}
+                title="클릭하여 정식 공항명 복사"
+            >
+                {officialKo}
+            </button>
+            {iata ? (
+                <button
+                    type="button"
+                    className={`${airportCopyHitClass} shrink-0 font-mono text-xs font-medium text-emerald-800/90`}
+                    onClick={() => onCopy(iata, `IATA 코드 ${iata}가 복사되었습니다.`)}
+                    title="클릭하여 IATA 코드 복사"
+                >
+                    ({iata})
+                </button>
+            ) : null}
+        </div>
+    );
+}
 
 const PlannerTab = ({
     location,
@@ -26,6 +55,8 @@ const PlannerTab = ({
 }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
+    const [rentalAirportCopyMessage, setRentalAirportCopyMessage] = useState(null);
+    const rentalAirportCopyTimeoutRef = useRef(0);
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
@@ -159,26 +190,120 @@ const PlannerTab = ({
     const targetDate = plannerData?.toolkit_updated_at;
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
-    const rentalPickupInfo = useMemo(() => {
-        if (!location) return null;
-        const r = resolveRentalAirport(location);
-        return r?.officialKo ? r : null;
-    }, [location]);
+    const rentalPickupBannerInfo = useMemo(() => resolveRentalPickupBannerInfo(location), [location]);
 
-    const rentalPickupBanner = rentalPickupInfo ? (
+    const handleCopyAirportField = useCallback((text, message) => {
+        const run = async () => {
+            try {
+                await navigator.clipboard.writeText(text);
+                setRentalAirportCopyMessage(message);
+                window.clearTimeout(rentalAirportCopyTimeoutRef.current);
+                rentalAirportCopyTimeoutRef.current = window.setTimeout(() => {
+                    setRentalAirportCopyMessage(null);
+                }, 2500);
+            } catch (err) {
+                console.warn('[PlannerTab] 클립보드 복사 실패', err);
+                setRentalAirportCopyMessage('복사에 실패했습니다. 브라우저에서 클립보드 권한을 확인해 주세요.');
+                window.clearTimeout(rentalAirportCopyTimeoutRef.current);
+                rentalAirportCopyTimeoutRef.current = window.setTimeout(() => {
+                    setRentalAirportCopyMessage(null);
+                }, 3500);
+            }
+        };
+        void run();
+    }, []);
+
+    useEffect(() => {
+        return () => window.clearTimeout(rentalAirportCopyTimeoutRef.current);
+    }, []);
+
+    const rentalPickupBanner = rentalPickupBannerInfo ? (
         <div className="flex w-full max-w-md items-start gap-3 rounded-xl border border-emerald-200/90 bg-emerald-50/80 px-3.5 py-3 shadow-sm">
             <Car size={18} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden />
             <div className="min-w-0 text-left">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-800/85">렌터카 · 픽업 기준</p>
-                <p className="mt-0.5 text-sm font-semibold text-gray-900">
-                    {rentalPickupInfo.officialKo}
-                    {rentalPickupInfo.iata ? (
-                        <span className="ml-1.5 font-mono text-xs font-medium text-emerald-800/90">({rentalPickupInfo.iata})</span>
-                    ) : null}
+                <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-800/85">렌터카 · 픽업 · 항공권 기준</p>
+                <p className="mt-0.5 text-[10px] font-medium leading-snug text-gray-500">
+                    항공권은 아직 자동으로 채워지지 않을 수 있습니다. 예약하신 도착 공항·일정에 맞게 필요 시 직접 입력해 주세요.
                 </p>
-                <p className="mt-1 text-[11px] leading-snug text-gray-600">
-                    아래 렌터카 링크와 배너는 이 공항(허브)을 기준으로 검색·연결됩니다.
-                </p>
+                {rentalPickupBannerInfo.kind === 'multi' ? (
+                    <>
+                        <div className="mt-1.5 flex flex-col gap-2">
+                            {rentalPickupBannerInfo.airports.map((a) => (
+                                <RentalPickupAirportCopyRow
+                                    key={a.iata || a.officialKo}
+                                    officialKo={a.officialKo}
+                                    iata={a.iata}
+                                    onCopy={handleCopyAirportField}
+                                />
+                            ))}
+                        </div>
+                        {rentalAirportCopyMessage ? (
+                            <p
+                                className="mt-1.5 text-[11px] font-semibold leading-snug text-emerald-800"
+                                role="status"
+                                aria-live="polite"
+                            >
+                                {rentalAirportCopyMessage}
+                            </p>
+                        ) : null}
+                        <p className="mt-1 text-[11px] leading-snug text-gray-600">
+                            항공권에서 실제 도착 공항을 확인한 뒤 셔틀·렌터카를 맞추면 됩니다. 아래 렌터카 링크와 배너는{' '}
+                            <span className="inline-flex flex-wrap items-center gap-x-0.5 align-baseline">
+                                <button
+                                    type="button"
+                                    className={`${airportCopyHitClass} font-medium text-gray-800`}
+                                    onClick={() =>
+                                        handleCopyAirportField(
+                                            rentalPickupBannerInfo.linkHub.officialKo,
+                                            '정식 공항명이 복사되었습니다.'
+                                        )
+                                    }
+                                    title="클릭하여 정식 공항명 복사"
+                                >
+                                    {rentalPickupBannerInfo.linkHub.officialKo}
+                                </button>
+                                {rentalPickupBannerInfo.linkHub.iata ? (
+                                    <button
+                                        type="button"
+                                        className={`${airportCopyHitClass} font-mono font-medium text-emerald-800/85`}
+                                        onClick={() =>
+                                            handleCopyAirportField(
+                                                rentalPickupBannerInfo.linkHub.iata,
+                                                `IATA 코드 ${rentalPickupBannerInfo.linkHub.iata}가 복사되었습니다.`
+                                            )
+                                        }
+                                        title="클릭하여 IATA 코드 복사"
+                                    >
+                                        ({rentalPickupBannerInfo.linkHub.iata})
+                                    </button>
+                                ) : null}
+                            </span>{' '}
+                            기준으로 검색·연결됩니다. 도착이 다른 공항이면 해당 공항의 공식명·IATA 코드로 검색을 바꿔 주세요.
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <div className="mt-1.5">
+                            <RentalPickupAirportCopyRow
+                                officialKo={rentalPickupBannerInfo.officialKo}
+                                iata={rentalPickupBannerInfo.iata}
+                                onCopy={handleCopyAirportField}
+                            />
+                        </div>
+                        {rentalAirportCopyMessage ? (
+                            <p
+                                className="mt-1.5 text-[11px] font-semibold leading-snug text-emerald-800"
+                                role="status"
+                                aria-live="polite"
+                            >
+                                {rentalAirportCopyMessage}
+                            </p>
+                        ) : null}
+                        <p className="mt-1 text-[11px] leading-snug text-gray-600">
+                            아래 렌터카 링크와 배너는 이 공항(허브)을 기준으로 검색·연결됩니다.
+                        </p>
+                    </>
+                )}
             </div>
         </div>
     ) : null;
@@ -266,9 +391,20 @@ const PlannerTab = ({
                 <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                         <div>
-                            <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
-                                <Briefcase className="text-blue-600" />
-                                스마트 트래블 툴킷
+                            <h2 className="text-xl md:text-2xl font-black text-gray-900 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                <span className="inline-flex items-center gap-2">
+                                    <Briefcase className="text-blue-600" />
+                                    스마트 트래블 툴킷
+                                </span>
+                                {guideData?.is_complex ? (
+                                    <span className="text-base font-bold tabular-nums text-amber-800/90 md:text-lg md:font-black">
+                                        (복잡도{' '}
+                                        {Number.isFinite(Number(guideData.complexity_score))
+                                            ? Number(guideData.complexity_score)
+                                            : 80}
+                                        /100)
+                                    </span>
+                                ) : null}
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
                                 {location?.name} 여행을 위한 생존 정보 및 핵심 큐레이션
@@ -327,21 +463,6 @@ const PlannerTab = ({
                             <div className="absolute inset-0 pointer-events-none hover:bg-black/5 transition-colors"></div>
                         </div>
                     )}
-
-                {/* 🆕 [Phase 8] 복잡한 여행지 배지 및 확장 컴포넌트 */}
-                {guideData?.is_complex && (
-                    <div className="mb-6 animate-fade-in">
-                        <div className="bg-red-50/80 border border-red-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
-                            <AlertCircle size={20} className="text-red-600 mt-0.5 shrink-0" />
-                            <div>
-                                <h4 className="font-bold text-red-900 text-sm">이 여행지는 복잡한 준비가 필요합니다!</h4>
-                                <p className="text-[11px] md:text-xs text-red-700 mt-1 font-medium leading-relaxed">
-                                    인천 출발 기준 다단계 이동(페리 등)이나 E-비자, 관광세 사전 납부 등의 절차가 필수적입니다. 아래 가이드를 꼼꼼히 확인하세요. (복잡도: {guideData.complexity_score || 80}/100)
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* 체크리스트 및 타임라인 (상시 렌더링) */}
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (

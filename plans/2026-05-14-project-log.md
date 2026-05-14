@@ -28,6 +28,14 @@
 - **홈 진입**: `useHomeHandlers`(지구본·`handleLocationSelect`)·`Home/index.jsx`(`/place` URL 동기화·세션 `mergeCachedPlaceIfCoordsMatch` 복원 시)에서 enrich.
 - **플래너 UI**: `PlannerTab` 상단 **「렌터카 · 픽업 기준」** 배너(로딩·툴킷 없음·본문 공통, 매칭될 때만). `utils.js` `airport_transfer`, `ToolkitCard`, `JourneyTimeline`은 `getKlookRentalUrlByLocation(location)` 전달.
 
+## 플래너 툴킷 UX 보강 (렌터카·항공·픽업·복잡도, 동일일 후속)
+
+- **다중 도착 공항**: `rentalAirportMatch.js`의 `RENTAL_MULTI_AIRPORT_DESTINATIONS`·`resolveRentalPickupBannerInfo`로 카파도키아(ASR·NAV)·도쿄·방콕·파리 등 **공항을 줄바꿈** 나열, `resolveRentalAirport(..., { ignoreStoredRentalAirport })`로 링크 허브 보정. `affiliate.getKlookRentalUrlByLocation`은 배너 `linkHub`와 정합.
+- **상단 배너**: 「렌터카 · 픽업 · **항공권** 기준」+ 항공권 미자동 반영 안내. 공항 **정식명 / (IATA) 클릭 시 각각 복사**, `aria-live`로 복사 완료 문구 표시(별도 복사 아이콘 버튼 제거).
+- **복잡도**: 빨간 경고 단락 제거 → `PlannerTab` 제목 옆 `(복잡도 n/100)`만 (`is_complex`일 때).
+- **항공권 검색**: `getFlightDestinationSearchHint(location)` — 여행지명·긴 정식 공항명보다 **도시명·IATA** 권장, 다중 공항 시 코드 목록 표기. `PreTravelChecklist`·`ToolkitCard`(flight) 부제에 사용.
+- **공항 픽업**: `PreTravelChecklist`·`ToolkitCard` 안내를 **항공편명 검색**·`utils.js` 링크 텍스트 `공항 픽업 검색`으로 정리(여행지명 자동 매칭 기대 완화).
+
 ## 향후(선택)
 
 - 채팅 API에 **동일 요약을 system 컨텍스트로 주입**하면 대화 시발점으로 활용 가능(별도 작업).

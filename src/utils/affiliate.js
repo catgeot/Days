@@ -1,7 +1,7 @@
 // src/utils/affiliate.js
 
 import { supabase } from '../shared/api/supabase';
-import { resolveRentalAirport } from './rentalAirportMatch.js';
+import { resolveRentalAirport, resolveRentalPickupBannerInfo } from './rentalAirportMatch.js';
 
 // Klook direct affiliate parameters (managed in one place)
 export const KLOOK_AID = '118544';
@@ -104,7 +104,13 @@ function normalizeRentalLocationInput(locationOrName) {
  */
 export const getKlookRentalUrlByLocation = (locationOrName) => {
   const loc = normalizeRentalLocationInput(locationOrName);
-  const resolved = resolveRentalAirport(loc);
+  const pickupBanner = resolveRentalPickupBannerInfo(loc);
+  const resolved =
+    pickupBanner?.kind === 'multi'
+      ? pickupBanner.linkHub
+      : pickupBanner?.kind === 'single'
+        ? { officialKo: pickupBanner.officialKo, iata: pickupBanner.iata }
+        : resolveRentalAirport(loc);
   const airportKo = resolved?.officialKo || '';
 
   const normalized = [loc.rental_airport_official_ko, airportKo, loc.name, loc.name_en]

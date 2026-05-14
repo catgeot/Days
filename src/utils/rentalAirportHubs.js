@@ -94,6 +94,8 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'VCE', officialKo: '마르코폴로 베네치아공항', lat: 45.5053, lng: 12.3519, radiusKm: 140, aliases: ['venice', '베네치아', 'venezia', 'vce'] },
   { iata: 'ATH', officialKo: '아테네국제공항', lat: 37.9364, lng: 23.9445, radiusKm: 200, aliases: ['athens', '아테네', 'ath'] },
   { iata: 'IST', officialKo: '이스탄불공항', lat: 41.2753, lng: 28.7519, radiusKm: 220, aliases: ['istanbul', '이스탄불', 'ist'] },
+  { iata: 'ASR', officialKo: '카이세리 에르킬레트 국제공항', lat: 38.7704, lng: 35.4954, radiusKm: 200, aliases: ['kayseri', '카이세리', 'asr', 'erkilet'] },
+  { iata: 'NAV', officialKo: '네브셰히르 카파도키아 공항', lat: 38.7719, lng: 34.5345, radiusKm: 200, aliases: ['nevsehir', '네브셰히르', 'nav', 'kapadokya airport'] },
   { iata: 'DUB', officialKo: '더블린공항', lat: 53.4213, lng: -6.2701, radiusKm: 180, aliases: ['dublin', '더블린', 'dub'] },
   { iata: 'CPH', officialKo: '코펜하겐공항', lat: 55.6180, lng: 12.6560, radiusKm: 180, aliases: ['copenhagen', '코펜하겐', 'cph'] },
   { iata: 'ARN', officialKo: '스톡홀름알란다공항', lat: 59.6498, lng: 17.9238, radiusKm: 200, aliases: ['stockholm', '스톡홀름', 'arn'] },
