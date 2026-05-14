@@ -14,17 +14,28 @@ import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
 import { cleanAdviceText, getAdviceText, getMultiLinks, isMapPoiGygOnlyLocation } from '../utils';
 
-const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, location, themeColor = 'gray', className = '' }) => {
+const ToolkitCard = ({
+    icon,
+    title,
+    type,
+    data,
+    isSponsored,
+    isOfficial,
+    location,
+    essentialGuide,
+    themeColor = 'gray',
+    className = ''
+}) => {
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
-    const links = getMultiLinks({ type, data, location });
+    const links = getMultiLinks({ type, data, location, essentialGuide });
     const isGygFallbackLocation = type === 'map_poi' && isMapPoiGygOnlyLocation(location);
     const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
     const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
     const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
     /** 배너 위젯: 공항명 등으로 구성된 검색 결과 페이지(기존 동작) */
-    const klookCarBannerSearchUrl = getKlookRentalUrlByLocation(location);
+    const klookCarBannerSearchUrl = getKlookRentalUrlByLocation(location, { essentialGuide });
 
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group ${className}`.trim()}>
@@ -125,7 +136,7 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                             <div className="flex-1 text-left min-w-0">
                                 <div className="font-bold text-base">항공권 실시간 검색</div>
                                 <div className="text-[11px] opacity-95 leading-snug mt-1">
-                                    {getFlightDestinationSearchHint(location)}
+                                    {getFlightDestinationSearchHint(location, { essentialGuide })}
                                 </div>
                             </div>
                             <div className="text-white/80 group-hover:text-white transition-colors text-xl">→</div>
@@ -142,7 +153,10 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                 <DirectFerriesWidget location={location} />
             )}
             {type === 'airport_transfer' && (
-                <KlookCarBannerWidget targetUrl={klookCarBannerSearchUrl} footerHint={getRentalCarHomeSearchSubtext(location)} />
+                <KlookCarBannerWidget
+                    targetUrl={klookCarBannerSearchUrl}
+                    footerHint={getRentalCarHomeSearchSubtext(location, { essentialGuide })}
+                />
             )}
             {type === 'map_poi' && (
                 isGygFallbackLocation

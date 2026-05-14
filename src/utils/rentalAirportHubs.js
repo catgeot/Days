@@ -80,7 +80,15 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'AMS', officialKo: '스키폴공항', lat: 52.3105, lng: 4.7683, radiusKm: 200, aliases: ['amsterdam', '암스테르담', 'schiphol', 'ams'] },
   { iata: 'FRA', officialKo: '프랑크푸르트공항', lat: 50.0379, lng: 8.5622, radiusKm: 200, aliases: ['frankfurt', '프랑크푸르트', 'fra'] },
   { iata: 'MUC', officialKo: '뮌헨공항', lat: 48.3538, lng: 11.7861, radiusKm: 200, aliases: ['munich', '뮌헨', 'muc'] },
-  { iata: 'ZRH', officialKo: '취리히공항', lat: 47.4647, lng: 8.5492, radiusKm: 180, aliases: ['zurich', '취리히', 'zrh', 'zermatt', '체르마트'] },
+  { iata: 'ZRH', officialKo: '취리히공항', lat: 47.4647, lng: 8.5492, radiusKm: 180, aliases: ['zurich', '취리히', 'zrh'] },
+  {
+    iata: 'GVA',
+    officialKo: '제네바공항',
+    lat: 46.2380,
+    lng: 6.10895,
+    radiusKm: 180,
+    aliases: ['geneva', '제네바', 'genève', 'geneve', 'gva']
+  },
   { iata: 'VIE', officialKo: '빈국제공항', lat: 48.1103, lng: 16.5697, radiusKm: 200, aliases: ['vienna', '비엔나'] },
   { iata: 'PRG', officialKo: '바츨라프 하벨공항', lat: 50.1008, lng: 14.2600, radiusKm: 160, aliases: ['prague', '프라하', 'prg'] },
   { iata: 'BUD', officialKo: '리스트 페렌츠국제공항', lat: 47.4369, lng: 19.2556, radiusKm: 160, aliases: ['budapest', '부다페스트', 'bud'] },

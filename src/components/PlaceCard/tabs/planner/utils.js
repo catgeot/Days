@@ -53,7 +53,7 @@ export const getAdviceText = (data) => {
 };
 
 // 툴킷 카드 제휴 링크 생성 로직
-export const getMultiLinks = ({ type, data, location }) => {
+export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
     const searchQuery = location?.name || location?.country || '';
     const encodedQuery = encodeURIComponent(searchQuery);
     const searchTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
@@ -179,7 +179,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             links.push({
                 url: klookCarRentalHomeLink,
                 text: '렌터카 홈',
-                subtext: getRentalCarHomeSearchSubtext(location),
+                subtext: getRentalCarHomeSearchSubtext(location, { essentialGuide }),
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
             break;

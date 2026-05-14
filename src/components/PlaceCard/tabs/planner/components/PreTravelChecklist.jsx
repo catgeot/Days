@@ -5,7 +5,7 @@ import MrtTimelineAction from './MrtTimelineAction';
 import { getKlookAffiliateUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 
-const PreTravelChecklist = ({ items, locationName, location }) => {
+const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) => {
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = `${locationName || ''} 숙소`;
 
@@ -65,7 +65,7 @@ const PreTravelChecklist = ({ items, locationName, location }) => {
                                 <div className="flex-1 text-left min-w-0">
                                     <div className="font-bold text-sm text-gray-800">항공권 실시간 검색</div>
                                     <div className="text-[11px] text-gray-600 leading-snug mt-0.5">
-                                        {getFlightDestinationSearchHint(location)}
+                                        {getFlightDestinationSearchHint(location, { essentialGuide })}
                                     </div>
                                 </div>
                                 <div className="text-gray-400 group-hover:text-gray-600 transition-colors">→</div>

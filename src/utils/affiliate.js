@@ -101,11 +101,12 @@ function normalizeRentalLocationInput(locationOrName) {
  * - 미매칭 시 "여행지명 + 렌터카" 검색 폴백
  *
  * @param {string | { name?: string, name_en?: string, slug?: string, lat?: number, lng?: number, rental_airport_official_ko?: string, rental_airport_iata?: string }} locationOrName
+ * @param {{ essentialGuide?: Record<string, unknown> | null }} [options] 플래너 툴킷이 있으면 도착 공항을 AI 여정과 맞춤
  * @returns {string}
  */
-export const getKlookRentalUrlByLocation = (locationOrName) => {
+export const getKlookRentalUrlByLocation = (locationOrName, options = {}) => {
   const loc = normalizeRentalLocationInput(locationOrName);
-  const pickupBanner = resolveRentalPickupBannerInfo(loc);
+  const pickupBanner = resolveRentalPickupBannerInfo(loc, options);
   const resolved =
     pickupBanner?.kind === 'multi'
       ? pickupBanner.linkHub

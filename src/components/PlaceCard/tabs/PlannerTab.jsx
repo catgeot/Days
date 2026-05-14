@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
@@ -9,39 +9,9 @@ import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
-import { resolveRentalPickupBannerInfo } from '../../../utils/rentalAirportMatch.js';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
-
-const airportCopyHitClass =
-    'cursor-pointer rounded border-0 bg-transparent px-0.5 py-1 text-left font-inherit transition-colors hover:bg-emerald-100/70 focus-visible:outline focus-visible:ring-2 focus-visible:ring-emerald-500/40';
-
-/** 렌터카 배너: 정식 공항명·IATA를 각각 클릭해 복사 */
-function RentalPickupAirportCopyRow({ officialKo, iata, onCopy }) {
-    return (
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm font-semibold leading-snug text-gray-900">
-            <button
-                type="button"
-                className={`${airportCopyHitClass} break-words text-gray-900`}
-                onClick={() => onCopy(officialKo, '정식 공항명이 복사되었습니다.')}
-                title="클릭하여 정식 공항명 복사"
-            >
-                {officialKo}
-            </button>
-            {iata ? (
-                <button
-                    type="button"
-                    className={`${airportCopyHitClass} shrink-0 font-mono text-xs font-medium text-emerald-800/90`}
-                    onClick={() => onCopy(iata, `IATA 코드 ${iata}가 복사되었습니다.`)}
-                    title="클릭하여 IATA 코드 복사"
-                >
-                    ({iata})
-                </button>
-            ) : null}
-        </div>
-    );
-}
 
 const PlannerTab = ({
     location,
@@ -55,8 +25,6 @@ const PlannerTab = ({
 }) => {
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
-    const [rentalAirportCopyMessage, setRentalAirportCopyMessage] = useState(null);
-    const rentalAirportCopyTimeoutRef = useRef(0);
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
@@ -166,7 +134,7 @@ const PlannerTab = ({
         }
     }, [isActive, isLoading]);
 
-    // 긴 툴킷·배너 스크롤 시 맨 위로 버튼
+    // 긴 툴킷 스크롤 시 맨 위로 버튼
     useEffect(() => {
         if (!isActive || isLoading || !guideData) {
             setShowScrollToTop(false);
@@ -190,129 +158,6 @@ const PlannerTab = ({
     const targetDate = plannerData?.toolkit_updated_at;
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
-    const rentalPickupBannerInfo = useMemo(() => resolveRentalPickupBannerInfo(location), [location]);
-
-    const handleCopyAirportField = useCallback((text, message) => {
-        const run = async () => {
-            try {
-                await navigator.clipboard.writeText(text);
-                setRentalAirportCopyMessage(message);
-                window.clearTimeout(rentalAirportCopyTimeoutRef.current);
-                rentalAirportCopyTimeoutRef.current = window.setTimeout(() => {
-                    setRentalAirportCopyMessage(null);
-                }, 2500);
-            } catch (err) {
-                console.warn('[PlannerTab] 클립보드 복사 실패', err);
-                setRentalAirportCopyMessage('복사에 실패했습니다. 브라우저에서 클립보드 권한을 확인해 주세요.');
-                window.clearTimeout(rentalAirportCopyTimeoutRef.current);
-                rentalAirportCopyTimeoutRef.current = window.setTimeout(() => {
-                    setRentalAirportCopyMessage(null);
-                }, 3500);
-            }
-        };
-        void run();
-    }, []);
-
-    useEffect(() => {
-        return () => window.clearTimeout(rentalAirportCopyTimeoutRef.current);
-    }, []);
-
-    const rentalPickupBanner = rentalPickupBannerInfo ? (
-        <div className="flex w-full max-w-md items-start gap-3 rounded-xl border border-emerald-200/90 bg-emerald-50/80 px-3.5 py-3 shadow-sm">
-            <Car size={18} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden />
-            <div className="min-w-0 text-left">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-800/85">렌터카 · 픽업 · 항공권 기준</p>
-                <p className="mt-0.5 text-[10px] font-medium leading-snug text-gray-500">
-                    항공권·일정은 자동으로 맞지 않을 수 있습니다. 도착 공항을 확인해 입력해 주세요.
-                </p>
-                {rentalPickupBannerInfo.kind === 'multi' ? (
-                    <>
-                        <div className="mt-1.5 flex flex-col gap-2">
-                            {rentalPickupBannerInfo.airports.map((a) => (
-                                <RentalPickupAirportCopyRow
-                                    key={a.iata || a.officialKo}
-                                    officialKo={a.officialKo}
-                                    iata={a.iata}
-                                    onCopy={handleCopyAirportField}
-                                />
-                            ))}
-                        </div>
-                        {rentalPickupBannerInfo.bannerNote ? (
-                            <p className="mt-2 border-l-2 border-emerald-300/80 pl-2.5 text-[11px] font-medium leading-relaxed text-gray-800">
-                                {rentalPickupBannerInfo.bannerNote}
-                            </p>
-                        ) : null}
-                        {rentalAirportCopyMessage ? (
-                            <p
-                                className="mt-1.5 text-[11px] font-semibold leading-snug text-emerald-800"
-                                role="status"
-                                aria-live="polite"
-                            >
-                                {rentalAirportCopyMessage}
-                            </p>
-                        ) : null}
-                        <p className="mt-1 text-[11px] leading-snug text-gray-600">
-                            렌터카 링크·배너는{' '}
-                            <span className="inline-flex flex-wrap items-center gap-x-0.5 align-baseline">
-                                <button
-                                    type="button"
-                                    className={`${airportCopyHitClass} font-medium text-gray-800`}
-                                    onClick={() =>
-                                        handleCopyAirportField(
-                                            rentalPickupBannerInfo.linkHub.officialKo,
-                                            '정식 공항명이 복사되었습니다.'
-                                        )
-                                    }
-                                    title="클릭하여 정식 공항명 복사"
-                                >
-                                    {rentalPickupBannerInfo.linkHub.officialKo}
-                                </button>
-                                {rentalPickupBannerInfo.linkHub.iata ? (
-                                    <button
-                                        type="button"
-                                        className={`${airportCopyHitClass} font-mono font-medium text-emerald-800/85`}
-                                        onClick={() =>
-                                            handleCopyAirportField(
-                                                rentalPickupBannerInfo.linkHub.iata,
-                                                `IATA 코드 ${rentalPickupBannerInfo.linkHub.iata}가 복사되었습니다.`
-                                            )
-                                        }
-                                        title="클릭하여 IATA 코드 복사"
-                                    >
-                                        ({rentalPickupBannerInfo.linkHub.iata})
-                                    </button>
-                                ) : null}
-                            </span>{' '}
-                            기준입니다. 다른 공항에 도착하면 검색어만 바꿔 주세요.
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <div className="mt-1.5">
-                            <RentalPickupAirportCopyRow
-                                officialKo={rentalPickupBannerInfo.officialKo}
-                                iata={rentalPickupBannerInfo.iata}
-                                onCopy={handleCopyAirportField}
-                            />
-                        </div>
-                        {rentalAirportCopyMessage ? (
-                            <p
-                                className="mt-1.5 text-[11px] font-semibold leading-snug text-emerald-800"
-                                role="status"
-                                aria-live="polite"
-                            >
-                                {rentalAirportCopyMessage}
-                            </p>
-                        ) : null}
-                        <p className="mt-1 text-[11px] leading-snug text-gray-600">
-                            렌터카 링크·배너는 위 공항 기준입니다.
-                        </p>
-                    </>
-                )}
-            </div>
-        </div>
-    ) : null;
-
     if (isLoading) {
         return (
             <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
@@ -323,7 +168,6 @@ const PlannerTab = ({
                 )}
                 <div className="flex flex-1 flex-col items-center justify-center p-6 min-h-0">
                 <div className="flex flex-col items-center gap-6 max-w-sm w-full">
-                    {rentalPickupBanner && <div className="w-full">{rentalPickupBanner}</div>}
                     <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2 shadow-inner">
                         <Briefcase size={28} className="animate-bounce" />
                     </div>
@@ -368,7 +212,6 @@ const PlannerTab = ({
                 <p className="text-xs text-gray-400 mb-6 max-w-sm">
                     버튼을 눌렀을 때만 AI 툴킷이 실행됩니다.
                 </p>
-                {rentalPickupBanner && <div className="mb-6 w-full max-w-sm">{rentalPickupBanner}</div>}
                 <button
                     type="button"
                     onClick={handleRemoteUpdate}
@@ -437,8 +280,6 @@ const PlannerTab = ({
                         </div>
                     </div>
 
-                    {rentalPickupBanner && <div className="mb-5 w-full">{rentalPickupBanner}</div>}
-
                     {/* 🆕 [Phase 8-8] 트립링크 패키지 배너 노출 영역 (데스크탑 전용) */}
                     {matchedPackage && (
                         <div className="hidden md:flex w-full mb-6 rounded-2xl overflow-hidden bg-gray-100 items-center justify-center relative border border-gray-200 shadow-sm" style={{ minHeight: '90px' }}>
@@ -472,8 +313,17 @@ const PlannerTab = ({
                 {/* 체크리스트 및 타임라인 (상시 렌더링) */}
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                        <PreTravelChecklist items={guideData?.categories?.pre_travel || []} locationName={location?.name} location={location} />
-                        <JourneyTimeline timeline={guideData?.journey_timeline || []} location={location} />
+                        <PreTravelChecklist
+                            items={guideData?.categories?.pre_travel || []}
+                            locationName={location?.name}
+                            location={location}
+                            essentialGuide={guideData}
+                        />
+                        <JourneyTimeline
+                            timeline={guideData?.journey_timeline || []}
+                            location={location}
+                            essentialGuide={guideData}
+                        />
                     </div>
                 )}
 
@@ -486,10 +336,10 @@ const PlannerTab = ({
                         <h3 className="text-lg font-bold text-gray-800">🛫 출발 전 필수 준비</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
-                        <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} themeColor="warning" />
-                        <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} themeColor="default" />
-                        <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} themeColor="default" />
-                        <ToolkitCard icon={ShieldAlert} title="안전 및 보험" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} themeColor="danger" />
+                        <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
+                        <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={ShieldAlert} title="안전 및 보험" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
                     </div>
                 </div>
 
@@ -501,10 +351,10 @@ const PlannerTab = ({
                     </div>
                     <div className="grid grid-cols-1 gap-5">
                         {(guideData?.categories?.airport_transfer) && (
-                            <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} themeColor="default" />
+                            <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         )}
                         {(guideData?.categories?.ferry_booking) && (
-                            <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} themeColor="default" />
+                            <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         )}
                         <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-b from-blue-50/45 via-white to-white p-3 shadow-sm ring-1 ring-blue-900/[0.06] md:p-4 flex flex-col gap-4">
                             <ToolkitCard
@@ -514,6 +364,7 @@ const PlannerTab = ({
                                 data={guideData?.categories?.connectivity || guideData?.connectivity}
                                 isSponsored
                                 location={location}
+                                essentialGuide={guideData}
                                 themeColor="default"
                                 className="!border-0 shadow-none bg-transparent hover:!shadow-none hover:!border-transparent"
                             />
@@ -532,9 +383,9 @@ const PlannerTab = ({
                         <h3 className="text-lg font-bold text-gray-800">🌴 현지 100% 즐기기</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
-                        <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} themeColor="default" />
-                        <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} themeColor="default" />
-                        <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} themeColor="default" />
+                        <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
                     </div>
                 </div>
 

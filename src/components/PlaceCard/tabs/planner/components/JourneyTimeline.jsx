@@ -108,7 +108,7 @@ function TimelineStepTitleWithCopy({ title, stepIdx, onCopySegment }) {
 }
 
 // 🔧 타임라인 내 동적 액션 버튼 생성 로직 (페리, 렌터카만 키워드 매칭)
-const getActionForStep = (title, location) => {
+const getActionForStep = (title, location, essentialGuide) => {
     const text = title.toLowerCase();
 
     // 1. 페리 키워드 매칭
@@ -136,7 +136,7 @@ const getActionForStep = (title, location) => {
             type: 'banner',
             label: '렌터카 검색',
             description: '글로벌 렌터카 비교 및 예약',
-            url: getKlookRentalUrlByLocation(location || {}),
+            url: getKlookRentalUrlByLocation(location || {}, { essentialGuide }),
             icon: <Car size={16} />,
             bgClass: 'bg-white border-2 border-purple-300',
             iconBgClass: 'bg-purple-100',
@@ -149,7 +149,7 @@ const getActionForStep = (title, location) => {
     return null;
 };
 
-const JourneyTimeline = ({ timeline, location }) => {
+const JourneyTimeline = ({ timeline, location, essentialGuide }) => {
     const [copyFeedback, setCopyFeedback] = useState(null);
     const copyTimeoutRef = useRef(0);
 
@@ -191,7 +191,7 @@ const JourneyTimeline = ({ timeline, location }) => {
             </h3>
             <div className="relative pl-6 space-y-6 before:absolute before:inset-y-2 before:left-[11px] before:w-[2px] before:bg-blue-200">
                 {timeline.map((step, idx) => {
-                    const action = getActionForStep(step.title, location);
+                    const action = getActionForStep(step.title, location, essentialGuide);
 
                     // 액션 타입 식별 (중복 방지용)
                     let actionTypeKey = null;
