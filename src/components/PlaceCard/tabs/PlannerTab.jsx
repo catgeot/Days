@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
@@ -9,6 +9,7 @@ import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
+import { resolveRentalAirport } from '../../../utils/rentalAirportMatch.js';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -158,6 +159,30 @@ const PlannerTab = ({
     const targetDate = plannerData?.toolkit_updated_at;
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
+    const rentalPickupInfo = useMemo(() => {
+        if (!location) return null;
+        const r = resolveRentalAirport(location);
+        return r?.officialKo ? r : null;
+    }, [location]);
+
+    const rentalPickupBanner = rentalPickupInfo ? (
+        <div className="flex w-full max-w-md items-start gap-3 rounded-xl border border-emerald-200/90 bg-emerald-50/80 px-3.5 py-3 shadow-sm">
+            <Car size={18} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden />
+            <div className="min-w-0 text-left">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-800/85">렌터카 · 픽업 기준</p>
+                <p className="mt-0.5 text-sm font-semibold text-gray-900">
+                    {rentalPickupInfo.officialKo}
+                    {rentalPickupInfo.iata ? (
+                        <span className="ml-1.5 font-mono text-xs font-medium text-emerald-800/90">({rentalPickupInfo.iata})</span>
+                    ) : null}
+                </p>
+                <p className="mt-1 text-[11px] leading-snug text-gray-600">
+                    아래 렌터카 링크와 배너는 이 공항(허브)을 기준으로 검색·연결됩니다.
+                </p>
+            </div>
+        </div>
+    ) : null;
+
     if (isLoading) {
         return (
             <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
@@ -168,6 +193,7 @@ const PlannerTab = ({
                 )}
                 <div className="flex flex-1 flex-col items-center justify-center p-6 min-h-0">
                 <div className="flex flex-col items-center gap-6 max-w-sm w-full">
+                    {rentalPickupBanner && <div className="w-full">{rentalPickupBanner}</div>}
                     <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2 shadow-inner">
                         <Briefcase size={28} className="animate-bounce" />
                     </div>
@@ -212,6 +238,7 @@ const PlannerTab = ({
                 <p className="text-xs text-gray-400 mb-6 max-w-sm">
                     버튼을 눌렀을 때만 AI 툴킷이 실행됩니다.
                 </p>
+                {rentalPickupBanner && <div className="mb-6 w-full max-w-sm">{rentalPickupBanner}</div>}
                 <button
                     type="button"
                     onClick={handleRemoteUpdate}
@@ -269,6 +296,8 @@ const PlannerTab = ({
                         </div>
                     </div>
 
+                    {rentalPickupBanner && <div className="mb-5 w-full">{rentalPickupBanner}</div>}
+
                     {/* 🆕 [Phase 8-8] 트립링크 패키지 배너 노출 영역 (데스크탑 전용) */}
                     {matchedPackage && (
                         <div className="hidden md:flex w-full mb-6 rounded-2xl overflow-hidden bg-gray-100 items-center justify-center relative border border-gray-200 shadow-sm" style={{ minHeight: '90px' }}>
@@ -318,7 +347,7 @@ const PlannerTab = ({
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <PreTravelChecklist items={guideData?.categories?.pre_travel || []} locationName={location?.name} location={location} />
-                        <JourneyTimeline timeline={guideData?.journey_timeline || []} locationName={location?.name} />
+                        <JourneyTimeline timeline={guideData?.journey_timeline || []} location={location} />
                     </div>
                 )}
 

@@ -22,7 +22,7 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
     const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
     const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
     const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
-    const klookCarDeepLink = getKlookRentalUrlByLocation(location?.name);
+    const klookCarDeepLink = getKlookRentalUrlByLocation(location);
 
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group ${className}`.trim()}>

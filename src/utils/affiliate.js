@@ -1,6 +1,7 @@
 // src/utils/affiliate.js
 
 import { supabase } from '../shared/api/supabase';
+import { resolveRentalAirport } from './rentalAirportMatch.js';
 
 // Klook direct affiliate parameters (managed in one place)
 export const KLOOK_AID = '118544';
@@ -85,16 +86,31 @@ export const getKlookAffiliateUrl = (targetUrl, adId = KLOOK_DEFAULT_AD_ID) => {
   return `https://affiliate.klook.com/redirect?aid=${KLOOK_AID}&aff_adid=${adId}&k_site=${encodeURIComponent(targetUrl)}`;
 };
 
+function normalizeRentalLocationInput(locationOrName) {
+  if (locationOrName == null) return { name: '' };
+  if (typeof locationOrName === 'string') return { name: locationOrName };
+  if (typeof locationOrName === 'object') return locationOrName;
+  return { name: String(locationOrName) };
+}
+
 /**
  * 도시별 클룩 렌터카 딥링크 생성기
- * - 홍콩/마카오는 사용자 제공 adid와 city_id를 사용
- * - 그 외 지역은 "여행지명 + 렌터카" 검색 결과로 폴백
+ * - 홍콩/마카오 등은 기존처럼 city_id 딥링크
+ * - 공항 허브 매칭 시 공식 공항 한글명으로 검색어를 구성해 Klook 결과와의 정합성을 높임
+ * - 미매칭 시 "여행지명 + 렌터카" 검색 폴백
  *
- * @param {string} locationName - 장소명(한글/영문)
+ * @param {string | { name?: string, name_en?: string, slug?: string, lat?: number, lng?: number, rental_airport_official_ko?: string, rental_airport_iata?: string }} locationOrName
  * @returns {string}
  */
-export const getKlookRentalUrlByLocation = (locationName) => {
-  const normalized = (locationName || '').toLowerCase();
+export const getKlookRentalUrlByLocation = (locationOrName) => {
+  const loc = normalizeRentalLocationInput(locationOrName);
+  const resolved = resolveRentalAirport(loc);
+  const airportKo = resolved?.officialKo || '';
+
+  const normalized = [loc.rental_airport_official_ko, airportKo, loc.name, loc.name_en]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
   const rentalPath = USE_KLOOK_LOCALE_PATH ? 'ko/car-rentals' : 'car-rentals';
 
   const cityRentalConfigs = [
@@ -156,7 +172,8 @@ export const getKlookRentalUrlByLocation = (locationName) => {
     );
   }
 
-  const query = encodeURIComponent(`${locationName || ''} 렌터카`.trim());
+  const searchLabel = (airportKo || loc.name || '').trim();
+  const query = encodeURIComponent(`${searchLabel} 렌터카`.trim());
   return getKlookAffiliateUrl(`https://www.klook.com/ko/search/result/?query=${query}`, KLOOK_RENTAL_AD_ID);
 };
 

@@ -20,6 +20,7 @@ import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { getSystemPrompt } from './lib/prompts';
+import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -178,7 +179,8 @@ function Home() {
           const parsedLat = parseFloat(coordsMatch[1]);
           const parsedLng = parseFloat(coordsMatch[2]);
 
-          const fromSession = mergeCachedPlaceIfCoordsMatch(targetSlug, parsedLat, parsedLng);
+          const rawSession = mergeCachedPlaceIfCoordsMatch(targetSlug, parsedLat, parsedLng);
+          const fromSession = rawSession ? enrichLocationWithRentalAirport(rawSession) : null;
           if (fromSession) {
             target = fromSession;
           } else {
@@ -221,12 +223,12 @@ function Home() {
         }
 
         queueMicrotask(() => {
-          const focusTarget = {
+          const focusTarget = enrichLocationWithRentalAirport({
             ...hydratedTarget,
             id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
             type: hydratedTarget.type || 'temp-base',
             category: hydratedTarget.category || category
-          };
+          });
           setSelectedLocation(focusTarget);
           addScoutPin(focusTarget);
           moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);

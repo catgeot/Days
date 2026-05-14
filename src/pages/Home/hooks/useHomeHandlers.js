@@ -14,6 +14,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
+import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
 
 // Haversine 공식을 이용한 두 좌표 간의 거리 계산 (단위: km)
 const getDistanceKm = (lat1, lon1, lat2, lon2) => {
@@ -115,7 +116,7 @@ export function useHomeHandlers({
           slugBase = addressFromLabelPoint?.name_en || '';
         }
 
-        const labelPin = {
+        const labelPin = enrichLocationWithRentalAirport({
           id: `label-${lat}-${lng}`,
           slug: formatUrlName(slugBase || clickedLabel),
           lat,
@@ -128,7 +129,7 @@ export function useHomeHandlers({
           country: 'Explore',
           country_en: 'Explore',
           display_name: clickedLabel
-        };
+        });
 
         addScoutPin(labelPin);
         setSelectedLocation(labelPin);
@@ -157,12 +158,12 @@ export function useHomeHandlers({
         }
 
         if (nearestPoint) {
-            const finalLoc = {
+            const finalLoc = enrichLocationWithRentalAirport({
                 ...nearestPoint,
                 id: nearestPoint.id || `snap-${nearestPoint.lat}-${nearestPoint.lng}`,
                 type: nearestPoint.type || 'temp-base',
                 category: nearestPoint.category || category
-            };
+            });
 
             addScoutPin(finalLoc);
             setSelectedLocation(finalLoc);
@@ -176,7 +177,7 @@ export function useHomeHandlers({
       const name_en = addressData?.name_en || "";
       const display_name = addressData.city || addressData.country;
 
-      const realPin = {
+      const realPin = enrichLocationWithRentalAirport({
         id: !name_en ? fallbackId : Date.now(),
         slug: name_en ? formatUrlName(name_en) : fallbackId,
         lat,
@@ -189,7 +190,7 @@ export function useHomeHandlers({
         country: addressData?.country || "Explore",
         country_en: addressData?.country_en || "Explore",
         display_name: display_name
-      };
+      });
 
       addScoutPin(realPin);
       setSelectedLocation(realPin);
@@ -214,13 +215,13 @@ export function useHomeHandlers({
     }
 
     const name = loc.name || "Selected";
-    const finalLoc = {
+    const finalLoc = enrichLocationWithRentalAirport({
       ...loc,
       type: loc.type || 'temp-base',
       id: loc.id || `loc-${loc.lat}-${loc.lng}`,
       name: name,
       category: loc.category || category
-    };
+    });
 
     moveToLocation(loc.lat, loc.lng, name, loc.category || category);
     addScoutPin(finalLoc);

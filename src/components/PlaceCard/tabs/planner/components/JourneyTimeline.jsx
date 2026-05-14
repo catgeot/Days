@@ -4,7 +4,7 @@ import { DIRECT_FERRIES_HOME_URL } from '../constants';
 import { getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
 
 // 🔧 타임라인 내 동적 액션 버튼 생성 로직 (페리, 렌터카만 키워드 매칭)
-const getActionForStep = (title, locationName) => {
+const getActionForStep = (title, location) => {
     const text = title.toLowerCase();
 
     // 1. 페리 키워드 매칭
@@ -32,7 +32,7 @@ const getActionForStep = (title, locationName) => {
             type: 'banner',
             label: '렌터카 검색',
             description: '글로벌 렌터카 비교 및 예약',
-            url: getKlookRentalUrlByLocation(locationName),
+            url: getKlookRentalUrlByLocation(location || {}),
             icon: <Car size={16} />,
             bgClass: 'bg-white border-2 border-purple-300',
             iconBgClass: 'bg-purple-100',
@@ -45,7 +45,7 @@ const getActionForStep = (title, locationName) => {
     return null;
 };
 
-const JourneyTimeline = ({ timeline, locationName }) => {
+const JourneyTimeline = ({ timeline, location }) => {
     if (!timeline || timeline.length === 0) return null;
 
     // 각 액션 타입별로 첫 번째만 표시하기 위한 중복 제거
@@ -59,7 +59,7 @@ const JourneyTimeline = ({ timeline, locationName }) => {
             </h3>
             <div className="relative pl-6 space-y-6 before:absolute before:inset-y-2 before:left-[11px] before:w-[2px] before:bg-blue-200">
                 {timeline.map((step, idx) => {
-                    const action = getActionForStep(step.title, locationName);
+                    const action = getActionForStep(step.title, location);
 
                     // 액션 타입 식별 (중복 방지용)
                     let actionTypeKey = null;

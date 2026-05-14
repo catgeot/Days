@@ -166,7 +166,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
             const klookTransferDeepLink = getKlookAffiliateUrl(klookTransferTargetUrl);
 
-            const klookCarRentalDeepLink = getKlookRentalUrlByLocation(location?.name);
+            const klookCarRentalDeepLink = getKlookRentalUrlByLocation(location);
 
             links.push({
                 url: klookTransferDeepLink,

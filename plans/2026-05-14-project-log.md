@@ -19,6 +19,15 @@
 - **`supabase/migrations/20260514120000_place_chat_intro.sql`**: 테이블 `place_chat_intro`(`destination_key` UNIQUE, `summary`, 타임스탬프), RLS(select/insert/update, `anon`·`authenticated`), `DROP POLICY IF EXISTS`로 재실행 안전, `GRANT`로 PostgREST 접근.
 - **운영 확인**: SQL Editor 적용 후 테이블 생성·첫 AI 진입 저장·재진입 시 기존 요약 노출 확인됨.
 
+## 플래너 · 클룩 렌터카 공항 매칭
+
+- **목적**: “여행지명 + 렌터카” 검색만으로는 Klook 결과와 여행지가 잘 맞지 않던 문제를 줄이고, AI가 공항명을 명시하지 않아도 **공식 공항(한글 표기)** 기준으로 링크·배너를 맞춤.
+- **`src/utils/rentalAirportHubs.js`**: IATA, `officialKo`, 대략 좌표, `radiusKm`, `aliases`(짧은 별칭 오탐 주의). 이집트는 **룩소르 `LXR`** 별도 허브, **`CAI` 별칭에서 `luxor`/`룩소르` 제거**(룩소르 여행지가 카이로로 잡히던 버그 수정).
+- **`src/utils/rentalAirportMatch.js`**: `resolveRentalAirport`(좌표 최근접 → 별칭), `enrichLocationWithRentalAirport`로 `rental_airport_official_ko` / `rental_airport_iata` 주입.
+- **`src/utils/affiliate.js`**: `getKlookRentalUrlByLocation`이 **문자열 또는 `location` 객체**를 받음. 기존 홍콩·도쿄 등 **`city_id` 딥링크** 키워드 매칭은 유지, 그 외는 매칭된 **공항 한글명 + 「렌터카」** 검색 URL.
+- **홈 진입**: `useHomeHandlers`(지구본·`handleLocationSelect`)·`Home/index.jsx`(`/place` URL 동기화·세션 `mergeCachedPlaceIfCoordsMatch` 복원 시)에서 enrich.
+- **플래너 UI**: `PlannerTab` 상단 **「렌터카 · 픽업 기준」** 배너(로딩·툴킷 없음·본문 공통, 매칭될 때만). `utils.js` `airport_transfer`, `ToolkitCard`, `JourneyTimeline`은 `getKlookRentalUrlByLocation(location)` 전달.
+
 ## 향후(선택)
 
 - 채팅 API에 **동일 요약을 system 컨텍스트로 주입**하면 대화 시발점으로 활용 가능(별도 작업).
