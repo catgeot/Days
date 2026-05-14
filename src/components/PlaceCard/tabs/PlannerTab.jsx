@@ -223,7 +223,7 @@ const PlannerTab = ({
             <div className="min-w-0 text-left">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-800/85">렌터카 · 픽업 · 항공권 기준</p>
                 <p className="mt-0.5 text-[10px] font-medium leading-snug text-gray-500">
-                    항공권은 아직 자동으로 채워지지 않을 수 있습니다. 예약하신 도착 공항·일정에 맞게 필요 시 직접 입력해 주세요.
+                    항공권·일정은 자동으로 맞지 않을 수 있습니다. 도착 공항을 확인해 입력해 주세요.
                 </p>
                 {rentalPickupBannerInfo.kind === 'multi' ? (
                     <>
@@ -247,7 +247,7 @@ const PlannerTab = ({
                             </p>
                         ) : null}
                         <p className="mt-1 text-[11px] leading-snug text-gray-600">
-                            항공권에서 실제 도착 공항을 확인한 뒤 셔틀·렌터카를 맞추면 됩니다. 아래 렌터카 링크와 배너는{' '}
+                            렌터카 링크·배너는{' '}
                             <span className="inline-flex flex-wrap items-center gap-x-0.5 align-baseline">
                                 <button
                                     type="button"
@@ -278,7 +278,7 @@ const PlannerTab = ({
                                     </button>
                                 ) : null}
                             </span>{' '}
-                            기준으로 검색·연결됩니다. 도착이 다른 공항이면 해당 공항의 공식명·IATA 코드로 검색을 바꿔 주세요.
+                            기준입니다. 다른 공항에 도착하면 검색어만 바꿔 주세요.
                         </p>
                     </>
                 ) : (
@@ -300,7 +300,7 @@ const PlannerTab = ({
                             </p>
                         ) : null}
                         <p className="mt-1 text-[11px] leading-snug text-gray-600">
-                            아래 렌터카 링크와 배너는 이 공항(허브)을 기준으로 검색·연결됩니다.
+                            렌터카 링크·배너는 위 공항 기준입니다.
                         </p>
                     </>
                 )}

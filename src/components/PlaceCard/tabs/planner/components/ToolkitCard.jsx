@@ -93,11 +93,18 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                                 href={link.url}
                                 target={isMobileDevice() ? "_self" : "_blank"}
                                 rel="noopener noreferrer"
-                                className={`flex items-center justify-center gap-1 w-full py-3 px-1 min-h-[44px] rounded-xl text-[11px] md:text-xs font-semibold transition-colors border overflow-hidden ${link.colorClass} ${isColSpan2 ? 'col-span-2' : ''}`}
-                                aria-label={`${link.text}에서 검색하기`}
+                                className={`flex ${link.subtext ? 'flex-col gap-1' : 'flex-row items-center gap-1'} justify-center w-full py-3 px-1 min-h-[44px] rounded-xl text-[11px] md:text-xs font-semibold transition-colors border overflow-hidden ${link.colorClass} ${isColSpan2 ? 'col-span-2' : ''}`}
+                                aria-label={link.subtext ? `${link.text}. ${link.subtext}` : `${link.text}에서 검색하기`}
                             >
-                                <span className="truncate max-w-[85%]">{link.text}</span>
-                                <ExternalLink size={12} className="shrink-0" />
+                                <span className={`flex items-center justify-center gap-1 min-w-0 ${link.subtext ? '' : 'w-full'}`}>
+                                    <span className="truncate max-w-[85%]">{link.text}</span>
+                                    <ExternalLink size={12} className="shrink-0" />
+                                </span>
+                                {link.subtext && (
+                                    <span className="text-[10px] md:text-[11px] font-normal font-sans text-center leading-snug px-1 opacity-90 line-clamp-2 break-keep">
+                                        {link.subtext}
+                                    </span>
+                                )}
                             </a>
                         );
                     })}
@@ -134,12 +141,7 @@ const ToolkitCard = ({ icon, title, type, data, isSponsored, isOfficial, locatio
                 <DirectFerriesWidget location={location} />
             )}
             {type === 'airport_transfer' && (
-                <>
-                    <p className="-mt-2 mb-2 text-xs leading-snug text-gray-600">
-                        항공권 구매 후 항공편명으로 검색해 주세요.
-                    </p>
-                    <KlookCarBannerWidget targetUrl={klookCarDeepLink} />
-                </>
+                <KlookCarBannerWidget targetUrl={klookCarDeepLink} />
             )}
             {type === 'map_poi' && (
                 isGygFallbackLocation

@@ -3,16 +3,18 @@ import { createPortal } from 'react-dom';
 import { Loader2, Search, Plane, Bed, X, ExternalLink, ShieldCheck } from 'lucide-react';
 
 /**
- * Travelpayouts 화이트 라벨(White Label) 통합 검색 모달 연동 컴포넌트
+ * Travelpayouts 화이트 라벨(White Label) 통합 검색 연동 컴포넌트
  * @param {string} locationName - 목적지 이름
  * @param {string} type - 'flight' (항공권) 또는 'hotel' (숙박)
  * @param {React.ReactNode} customTrigger - 커스텀 트리거 버튼 (선택 사항)
+ * @param {boolean} [openInNewTab] - true면 새 탭, false면 모달. 생략 시 항공권은 새 탭, 숙박은 모달
  */
-const WhiteLabelWidget = ({ locationName, type = 'flight', customTrigger }) => {
+const WhiteLabelWidget = ({ locationName, type = 'flight', customTrigger, openInNewTab }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isIframeLoading, setIsIframeLoading] = useState(true);
 
     const isHotel = type === 'hotel';
+    const useNewTab = openInNewTab !== undefined ? openInNewTab : type === 'flight';
 
     // CNAME으로 연결한 사용자 화이트라벨 전용 도메인
     const BASE_URL = 'https://flights.gateo.kr';
@@ -56,6 +58,11 @@ const WhiteLabelWidget = ({ locationName, type = 'flight', customTrigger }) => {
     }, [isModalOpen]);
 
     const handleOpen = () => {
+        if (useNewTab) {
+            const tab = window.open(WHITELABEL_URL, '_blank');
+            if (tab) tab.opener = null;
+            return;
+        }
         setIsIframeLoading(true);
         setIsModalOpen(true);
     };
@@ -78,7 +85,7 @@ const WhiteLabelWidget = ({ locationName, type = 'flight', customTrigger }) => {
             )}
 
             {/* 전체 화면 항공권/숙박 검색 모달 (createPortal로 최상단 렌더링, z-[9999]) */}
-            {isModalOpen && createPortal(
+            {isModalOpen && !useNewTab && createPortal(
                 <div className="fixed inset-0 z-[9999] flex flex-col bg-white animate-fade-in overscroll-none touch-pan-y">
                     {/* 모달 헤더 (닫기 버튼 포함, 모바일 상단 노치/상태표시줄 고려 pt-safe) */}
                     <div

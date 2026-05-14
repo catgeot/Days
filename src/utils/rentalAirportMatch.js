@@ -145,7 +145,7 @@ export function resolveRentalPickupBannerInfo(location) {
 }
 
 /**
- * 항공권 검색 위젯: 목적지 입력 시 여행지명·긴 정식 공항명보다 도시명·IATA가 잘 통하는 경우를 안내합니다.
+ * 항공권 검색 위젯: 목적지 입력 시 도시명·공항 코드로 검색하는 편이 나을 때 짧게 안내합니다.
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @returns {string}
@@ -162,7 +162,7 @@ export function getFlightDestinationSearchHint(location) {
   if (info.kind === 'multi') {
     const iatas = info.airports.map((a) => a.iata).filter(Boolean);
     const iataHint = iatas.length ? iatas.join(', ') : info.airports.map((a) => a.officialKo).join(' · ');
-    return `${place} 같은 여행지명이나 긴 정식 공항명만으로는 잘 검색되지 않을 수 있습니다. 도착 공항의 도시명 또는 IATA(${iataHint})로 검색해 보세요.`;
+    return `도착 공항의 도시명 또는 (${iataHint})로 검색해 보세요.`;
   }
 
   const iata = info.iata;

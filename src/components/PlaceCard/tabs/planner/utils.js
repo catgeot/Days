@@ -171,6 +171,7 @@ export const getMultiLinks = ({ type, data, location }) => {
             links.push({
                 url: klookTransferDeepLink,
                 text: '공항 픽업 검색',
+                subtext: '항공권 구매 후 항공편명으로 검색해 주세요.',
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
