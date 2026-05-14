@@ -51,6 +51,14 @@ export const getSystemPrompt = (personaType, locationName = "") => {
   return config.system + locationContext;
 };
 
+/** 채팅 모달 최초 진입 시 보여줄 여행지 한줄 요약 (DB 캐시용) */
+export const getPlaceChatIntroSystemPrompt = () =>
+  `${BASE_RULES}
+너는 여행지를 한 번에 이해시키는 카피라이터다.
+- 출력은 한국어 본문만. 인사·메타 설명·따옴표로 장소명만 감싸기 금지.
+- 마크다운·목록·표·제목(#) 사용 금지. 일반 문장 2~4개로만 작성.
+- 350자 이내. 사실에 가깝게, 과장·확정 불가한 통계는 쓰지 않는다.`;
+
 export const getPracticalInfoPrompt = (locationName) => {
   return `당신은 제미나이의 강력한 웹 검색 능력을 활용하는 [${locationName}]의 베테랑 로컬 가이드입니다.
 위키백과 같은 뻔한 역사나 지리적 설명은 철저히 배제하고, 당장 내일 이곳으로 여행을 떠날 시크릿 꿀팁 등 "가장 최신의 실용적이고 생생한 현지 정보"만 제공하세요.

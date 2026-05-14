@@ -1,8 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Send, Bot, User, Loader2, MessageSquare, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { X, Send, Bot, User, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import {
+  fetchPlaceChatIntroSummary,
+  generatePlaceChatIntroWithAi,
+  persistPlaceChatIntroSummary
+} from '../lib/placeChatIntro';
 
 const ChatModal = ({
   isOpen,
@@ -21,10 +26,63 @@ const ChatModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [currentPersona, setCurrentPersona] = useState(PERSONA_TYPES.GENERAL);
   const [loadingStatus, setLoadingStatus] = useState("AI가 답변을 준비 중입니다...");
+  const [placeIntro, setPlaceIntro] = useState(null);
+  const [placeIntroLoading, setPlaceIntroLoading] = useState(false);
+  const [placeIntroError, setPlaceIntroError] = useState(null);
 
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const hasSentInitialRef = useRef(false);
+
+  const introDestinationRaw = useMemo(() => {
+    if (!isOpen) return '';
+    const fromDraft = (chatDraft?.destination || '').trim();
+    if (fromDraft) return fromDraft;
+    if (activeChatId && Array.isArray(chatHistory)) {
+      const trip = chatHistory.find((t) => t.id === activeChatId);
+      return (trip?.destination || '').trim();
+    }
+    return '';
+  }, [isOpen, chatDraft?.destination, activeChatId, chatHistory]);
+
+  useEffect(() => {
+    if (!isOpen || !introDestinationRaw) {
+      setPlaceIntro(null);
+      setPlaceIntroError(null);
+      setPlaceIntroLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setPlaceIntro(null);
+    setPlaceIntroError(null);
+    setPlaceIntroLoading(true);
+
+    (async () => {
+      try {
+        let text = await fetchPlaceChatIntroSummary(introDestinationRaw);
+        if (cancelled) return;
+        if (text) {
+          setPlaceIntro(text);
+          return;
+        }
+        text = await generatePlaceChatIntroWithAi(introDestinationRaw);
+        if (cancelled) return;
+        setPlaceIntro(text);
+        await persistPlaceChatIntroSummary(introDestinationRaw, text);
+      } catch (e) {
+        if (!cancelled) {
+          setPlaceIntroError(e?.message || '여행지 요약을 불러오지 못했습니다.');
+        }
+      } finally {
+        if (!cancelled) setPlaceIntroLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, introDestinationRaw]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -219,6 +277,26 @@ const ChatModal = ({
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+              {(placeIntro || placeIntroLoading || placeIntroError) && (
+                <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-gray-900/60 p-4 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2 text-emerald-300/90">
+                    <Sparkles size={16} className="shrink-0" />
+                    <span className="text-xs font-bold uppercase tracking-wide">이 장소 한눈에 보기</span>
+                  </div>
+                  {placeIntroLoading && !placeIntro && (
+                    <div className="flex items-center gap-2 text-gray-400 text-sm">
+                      <Loader2 className="animate-spin shrink-0" size={18} />
+                      <span>여행지 요약을 준비하고 있어요...</span>
+                    </div>
+                  )}
+                  {placeIntroError && (
+                    <p className="text-sm text-red-400">{placeIntroError}</p>
+                  )}
+                  {placeIntro && (
+                    <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">{placeIntro}</p>
+                  )}
+                </div>
+              )}
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
