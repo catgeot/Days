@@ -73,6 +73,43 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     phrases: ['paris', '파리'],
     iataCodes: ['CDG', 'ORY'],
     preferredLinkIata: 'CDG'
+  },
+  {
+    phrases: [
+      'canary',
+      '카나리아',
+      'canary islands',
+      '카나리아 제도',
+      '카나리아제도',
+      'tenerife',
+      '테네리페',
+      'gran canaria',
+      '그란카나리아',
+      'lanzarote',
+      '란사로테'
+    ],
+    iataCodes: ['TFS', 'LPA'],
+    preferredLinkIata: 'TFS'
+  },
+  {
+    phrases: [
+      'jordan',
+      '요르단',
+      'wadi rum',
+      'wadirum',
+      '와디 럼',
+      '와디럼',
+      'petra',
+      '페트라',
+      'amman',
+      '암만',
+      'wadi musa',
+      '와디무사'
+    ],
+    iataCodes: ['AMM'],
+    preferredLinkIata: 'AMM',
+    bannerNote:
+      '요르단 국제선은 대부분 암만 퀸 알리아(AMM)에 도착한 뒤 페트라·와디 럼으로 이동합니다. 티켓·일정의 도착 공항을 확인해 주세요.'
   }
 ];
 
@@ -116,10 +153,34 @@ function pushValidHubIata(ordered, seen, raw) {
   ordered.push(upper);
 }
 
+/** IATA 별칭·짧은 영문이 다른 단어 안쪽(jordan→ord 등)에 걸리지 않도록 단어 경계로만 매칭 */
+function aliasMatchesHay(hay, alias, hubIata) {
+  const al = alias.toLowerCase();
+  const isAscii = /^[\x00-\x7F]+$/.test(alias);
+  const isIataToken = al.length === 3 && /^[a-z]{3}$/.test(al) && al === hubIata.toLowerCase();
+  if (isAscii && (isIataToken || al.length <= 4)) {
+    const re = new RegExp(`\\b${al.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    return re.test(hay);
+  }
+  return hay.includes(al);
+}
+
+/** 타임라인 제목에 IATA는 없지만 공항·도시명만 있는 경우 (예: 암만 퀸 알리아 공항) */
+const TITLE_ARRIVAL_AIRPORT_PHRASES = [{ re: /암만|퀸\s*알리아|queen\s*alia/i, iata: 'AMM' }];
+
+function collectPhraseAirportFromTitle(ordered, seen, title, requireArrivalHint) {
+  if (typeof title !== 'string' || !title.trim()) return;
+  if (requireArrivalHint && !ARRIVAL_TIMELINE_HINT.test(title)) return;
+  for (const { re, iata } of TITLE_ARRIVAL_AIRPORT_PHRASES) {
+    if (re.test(title)) pushValidHubIata(ordered, seen, iata);
+  }
+}
+
 function collectIataFromTitle(ordered, seen, title, requireArrivalHint) {
   if (typeof title !== 'string' || !title.trim()) return;
   if (requireArrivalHint && !ARRIVAL_TIMELINE_HINT.test(title)) return;
-  const re = /\(([A-Z]{3})\)/g;
+  collectPhraseAirportFromTitle(ordered, seen, title, false);
+  const re = /\b([A-Z]{3})\b/g;
   let m;
   while ((m = re.exec(title)) !== null) {
     const code = m[1];
@@ -201,21 +262,56 @@ function linkHubNearestToLocation(location, airports) {
 }
 
 /**
+ * 여행지 좌표 기준 목적지 권역에 가까운 공항만 남깁니다. 타임라인에 섞인 환승·제3국 허브를 배너에서 제외합니다.
+ *
+ * @param {Record<string, unknown>} location
+ * @param {{ officialKo: string, iata: string }[]} airports
+ */
+function filterAirportsNearDestination(location, airports) {
+  if (!airports?.length) return airports;
+  const lat = typeof location.lat === 'number' ? location.lat : Number(location.lat);
+  const lng = typeof location.lng === 'number' ? location.lng : Number(location.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return airports;
+
+  const withDist = airports.map((a) => {
+    const hub = hubByIata(a.iata);
+    if (!hub) return { ...a, d: Infinity };
+    return { ...a, d: distanceKm(lat, lng, hub.lat, hub.lng) };
+  });
+
+  const finite = withDist.filter((a) => Number.isFinite(a.d));
+  if (finite.length === 0) return airports;
+
+  const minD = Math.min(...finite.map((a) => a.d));
+  const threshold = Math.max(minD * 2.5, Math.min(minD + 600, 900));
+  const near = finite.filter((a) => a.d <= threshold);
+  if (near.length === 0) return airports;
+  return near.map(({ officialKo, iata }) => ({ officialKo, iata }));
+}
+
+/**
  * @param {Record<string, unknown>} location
  * @param {string[]} iataCodes
  */
 function resolveRentalPickupBannerFromPlannerIatas(location, iataCodes) {
-  const airports = airportsFromIataCodes(iataCodes).filter((a) => hubByIata(a.iata));
+  let airports = airportsFromIataCodes(iataCodes).filter((a) => hubByIata(a.iata));
   if (airports.length === 0) return null;
+
+  airports = filterAirportsNearDestination(location, airports);
+  if (airports.length === 0) return null;
+
   if (airports.length === 1) {
-    return { kind: 'single', officialKo: airports[0].officialKo, iata: airports[0].iata };
+    return { kind: 'single', officialKo: airports[0].officialKo, iata: airports[0].iata, fromPlanner: true };
   }
+
   const linkHub = linkHubNearestToLocation(location, airports);
+  const others = airports.filter((a) => a.iata !== linkHub.iata);
   return {
     kind: 'multi',
-    airports,
+    airports: [linkHub, ...others],
     linkHub,
-    bannerNote: PLANNER_SOURCED_RENTAL_BANNER_NOTE
+    bannerNote: PLANNER_SOURCED_RENTAL_BANNER_NOTE,
+    fromPlanner: true
   };
 }
 
@@ -311,8 +407,22 @@ export function resolveRentalPickupBannerInfo(location, options = {}) {
   return { kind: 'single', officialKo: single.officialKo, iata: single.iata };
 }
 
+/** 항공권 검색 힌트용 짧은 지명 (예: 「카나리아 제도」→「카나리아」) */
+function flightHintPlaceLabel(place) {
+  return place.replace(/\s+제도\s*$/u, '').trim() || place;
+}
+
+/** IATA 코드 나열: 2개면 「A 또는 B」, 그 이상이면 「A, B 또는 C」 */
+function formatFlightHintIataCodes(iatas) {
+  const codes = iatas.filter(Boolean);
+  if (codes.length === 0) return null;
+  if (codes.length === 1) return codes[0];
+  if (codes.length === 2) return `${codes[0]} 또는 ${codes[1]}`;
+  return `${codes.slice(0, -1).join(', ')} 또는 ${codes[codes.length - 1]}`;
+}
+
 /**
- * 항공권 검색 위젯: 도착지명·정식 공항명은 위젯에서 잘 안 잡히는 경우가 많아 IATA 3자 코드 검색을 권장합니다.
+ * 항공권 검색 위젯: 도착지명·정식 공항명 대신 해당 여행지 IATA 코드 입력을 권장합니다.
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
@@ -321,28 +431,26 @@ export function resolveRentalPickupBannerInfo(location, options = {}) {
 export function getFlightDestinationSearchHint(location, options = {}) {
   const place =
     location && typeof location.name === 'string' && location.name.trim() ? location.name.trim() : '이 여행지';
+  const label = flightHintPlaceLabel(place);
   const info = resolveRentalPickupBannerInfo(location, options);
 
   if (!info) {
-    return `${place}(여행지명)이나 공항 정식명만으로는 검색이 잘 안 될 때가 많습니다. 티켓·일정에 나온 도착 공항 3자리 IATA 코드(예: NRT, BKK)로 넣는 것을 권장합니다.`;
+    return '정확한 항공권 검색을 위해 도착 공항 3자리 코드(IATA)를 입력해 주세요.';
   }
 
   if (info.kind === 'multi') {
-    const iatas = info.airports.map((a) => a.iata).filter(Boolean);
-    const iataHint = iatas.length ? iatas.join(', ') : info.airports.map((a) => a.officialKo).join(' · ');
-    if (iatas.length) {
-      return `도착지명·정식 공항명은 잘 맞지 않는 경우가 많습니다. 목적지는 IATA 코드(${iataHint})로 검색해 보세요.`;
+    const codes = formatFlightHintIataCodes(info.airports.map((a) => a.iata));
+    if (codes) {
+      return `정확한 항공권 검색을 위해 ${label} 도착 공항 코드(${codes})를 입력해 주세요.`;
     }
-    return `도착지명·정식 공항명은 잘 맞지 않는 경우가 많습니다. 해당 공항의 3자리 IATA 코드로 검색하는 편이 좋습니다.`;
+    return `정확한 항공권 검색을 위해 ${label} 도착 공항 3자리 코드(IATA)를 입력해 주세요.`;
   }
 
-  const iata = info.iata;
-  const officialKo = info.officialKo;
-  if (iata) {
-    return `도착지명·정식 공항명(예: ${officialKo})은 잘 안 될 때가 많습니다. 목적지는 ${iata}처럼 3자리 IATA 코드로 넣어 보세요.`;
+  if (info.iata) {
+    return `정확한 항공권 검색을 위해 ${label} 도착 공항 코드(${info.iata})를 입력해 주세요.`;
   }
 
-  return `${place}(여행지명)이나 공항명만으로는 검색이 제한될 수 있습니다. 알고 있다면 도착 공항 3자리 IATA 코드로 검색하는 편이 좋습니다.`;
+  return `정확한 항공권 검색을 위해 ${label} 도착 공항 3자리 코드(IATA)를 입력해 주세요.`;
 }
 
 /**
@@ -447,8 +555,11 @@ export function resolveRentalAirport(location, options = {}) {
     for (const raw of hub.aliases || []) {
       const al = raw.toLowerCase();
       const isIataToken = al.length === 3 && /^[a-z]{3}$/.test(al) && al === iataLower;
-      if (al.length < MIN_ALIAS_LEN && !isIataToken) continue;
-      if (hay.includes(al) && al.length > bestLen) {
+      const isKorean = /[가-힣]/.test(raw);
+      const minLen = isKorean ? 2 : MIN_ALIAS_LEN;
+      if (al.length < minLen && !isIataToken) continue;
+      if (!aliasMatchesHay(hay, raw, hub.iata)) continue;
+      if (al.length > bestLen) {
         bestLen = al.length;
         bestAlias = { officialKo: hub.officialKo, iata: hub.iata };
       }

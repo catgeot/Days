@@ -95,6 +95,22 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'WAW', officialKo: '쇼팽공항', lat: 52.1657, lng: 20.9671, radiusKm: 160, aliases: ['warsaw', '바르샤바', 'waw'] },
   { iata: 'MAD', officialKo: '아돌포 수아레스 마드리드바라하스공항', lat: 40.4719, lng: -3.5626, radiusKm: 200, aliases: ['madrid', '마드리드', 'barajas'] },
   { iata: 'BCN', officialKo: '조세프 타라델라 바르셀로나엘프라트공항', lat: 41.2971, lng: 2.0785, radiusKm: 200, aliases: ['barcelona', '바르셀로나', 'bcn'] },
+  {
+    iata: 'TFS',
+    officialKo: '테네리페 남부공항',
+    lat: 28.0445,
+    lng: -16.5725,
+    radiusKm: 200,
+    aliases: ['tenerife', '테네리페', 'tenerife sur', 'tfs', 'canary', '카나리아']
+  },
+  {
+    iata: 'LPA',
+    officialKo: '그란카나리아공항',
+    lat: 27.9319,
+    lng: -15.3866,
+    radiusKm: 200,
+    aliases: ['gran canaria', '그란카나리아', 'las palmas', 'lpa', 'canary', '카나리아']
+  },
   { iata: 'LIS', officialKo: '움베르토 델가도공항', lat: 38.7813, lng: -9.1357, radiusKm: 200, aliases: ['lisbon', '리스본', 'lis'] },
   { iata: 'OPO', officialKo: '프란시스코 사 카르네이루공항', lat: 41.2481, lng: -8.6814, radiusKm: 160, aliases: ['porto', '포르투', 'opo'] },
   {
@@ -121,6 +137,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'VCE', officialKo: '마르코폴로 베네치아공항', lat: 45.5053, lng: 12.3519, radiusKm: 140, aliases: ['venice', '베네치아', 'venezia', 'vce'] },
   { iata: 'ATH', officialKo: '아테네국제공항', lat: 37.9364, lng: 23.9445, radiusKm: 200, aliases: ['athens', '아테네', 'ath'] },
   { iata: 'IST', officialKo: '이스탄불공항', lat: 41.2753, lng: 28.7519, radiusKm: 220, aliases: ['istanbul', '이스탄불', 'ist'] },
+  {
+    iata: 'AMM',
+    officialKo: '퀸 알리아 국제공항',
+    lat: 31.7225,
+    lng: 35.9932,
+    radiusKm: 320,
+    aliases: ['amman', '암만', 'queen alia', '퀸 알리아', 'jordan', '요르단', 'wadi rum', '와디 럼', 'petra', '페트라']
+  },
   { iata: 'ASR', officialKo: '카이세리 에르킬레트 국제공항', lat: 38.7704, lng: 35.4954, radiusKm: 200, aliases: ['kayseri', '카이세리', 'asr', 'erkilet'] },
   { iata: 'NAV', officialKo: '네브셰히르 카파도키아 공항', lat: 38.7719, lng: 34.5345, radiusKm: 200, aliases: ['nevsehir', '네브셰히르', 'nav', 'kapadokya airport'] },
   { iata: 'DUB', officialKo: '더블린공항', lat: 53.4213, lng: -6.2701, radiusKm: 180, aliases: ['dublin', '더블린', 'dub'] },
@@ -187,7 +211,7 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'SFO', officialKo: '샌프란시스코국제공항', lat: 37.6213, lng: -122.3790, radiusKm: 200, aliases: ['san francisco', '샌프란시스코', 'sfo'] },
   { iata: 'LAS', officialKo: '해리리드국제공항', lat: 36.0840, lng: -115.1537, radiusKm: 200, aliases: ['las vegas', '라스베가스', 'las'] },
   { iata: 'SEA', officialKo: '시애틀터코마국제공항', lat: 47.4502, lng: -122.3088, radiusKm: 200, aliases: ['seattle', '시애틀', 'sea'] },
-  { iata: 'ORD', officialKo: "오헤어국제공항", lat: 41.9742, lng: -87.9073, radiusKm: 220, aliases: ['chicago', '시카고', 'ord'] },
+  { iata: 'ORD', officialKo: "오헤어국제공항", lat: 41.9742, lng: -87.9073, radiusKm: 220, aliases: ['chicago', '시카고', "o'hare", 'ohare'] },
   { iata: 'MIA', officialKo: '마이애미국제공항', lat: 25.7959, lng: -80.2870, radiusKm: 200, aliases: ['miami', '마이애미', 'mia'] },
   { iata: 'BOS', officialKo: '로건국제공항', lat: 42.3656, lng: -71.0096, radiusKm: 200, aliases: ['boston', '보스턴', 'bos'] },
   { iata: 'IAD', officialKo: '워싱턴 덜레스국제공항', lat: 38.9445, lng: -77.4558, radiusKm: 200, aliases: ['washington', '워싱턴', 'dulles', 'iad'] },

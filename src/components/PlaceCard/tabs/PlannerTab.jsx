@@ -9,6 +9,7 @@ import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
+import RentalPickupBanner from './planner/components/RentalPickupBanner';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -158,6 +159,10 @@ const PlannerTab = ({
     const targetDate = plannerData?.toolkit_updated_at;
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
+    const rentalPickupBanner = (
+        <RentalPickupBanner location={location} essentialGuide={guideData} className="max-w-md" />
+    );
+
     if (isLoading) {
         return (
             <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
@@ -168,6 +173,7 @@ const PlannerTab = ({
                 )}
                 <div className="flex flex-1 flex-col items-center justify-center p-6 min-h-0">
                 <div className="flex flex-col items-center gap-6 max-w-sm w-full">
+                    {isUpdatingExisting ? <div className="w-full">{rentalPickupBanner}</div> : null}
                     <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2 shadow-inner">
                         <Briefcase size={28} className="animate-bounce" />
                     </div>
@@ -212,6 +218,7 @@ const PlannerTab = ({
                 <p className="text-xs text-gray-400 mb-6 max-w-sm">
                     버튼을 눌렀을 때만 AI 툴킷이 실행됩니다.
                 </p>
+                <div className="mb-6 w-full max-w-sm">{rentalPickupBanner}</div>
                 <button
                     type="button"
                     onClick={handleRemoteUpdate}
@@ -279,6 +286,8 @@ const PlannerTab = ({
                             </div>
                         </div>
                     </div>
+
+                    <div className="mb-5 w-full">{rentalPickupBanner}</div>
 
                     {/* 🆕 [Phase 8-8] 트립링크 패키지 배너 노출 영역 (데스크탑 전용) */}
                     {matchedPackage && (

@@ -58,6 +58,20 @@
 - **`KlookTourBannerWidget.jsx`**: 렌터카 배너와 동일한 **클릭 → 제휴 리다이렉트** 처리; 외곽 래퍼 구조 정리.
 - **`PlannerTab.jsx`**: 다중 공항이 **`bannerNote`** 를 가지면 공항 목록 아래 **왼쪽 세로 강조 + 긴 안내 문단**으로 표시(로포텐 전용 카피).
 
+## 도착 공항 배너 재활성화 및 매칭 정확도 (2026-05-17)
+
+- **배경**: 2026-05-14에 비노출했던 상단 배너를, 매칭 로직 보강 후 **`essentialGuide` 연동**으로 다시 표시.
+- **`RentalPickupBanner.jsx`**: `resolveRentalPickupBannerInfo(location, { essentialGuide })` — **연동 도착 공항**(linkHub) 강조, 다중 시 나머지는 「다른 도착 후보」. 공항명·IATA 클릭 복사.
+- **`PlannerTab.jsx`**: 툴킷 본문·갱신 중·툴킷 없음 화면에 배너 배치.
+- **`rentalAirportMatch.js`**
+  - 별칭: 한글 **최소 2자**; 영문 IATA·짧은 별칭은 **`aliasMatchesHay` 단어 경계** (`jordan` 안의 `ord` → ORD 오탐 제거).
+  - 타임라인: `\b([A-Z]{3})\b` + 「암만/퀸 알리아」→ **AMM** (`TITLE_ARRIVAL_AIRPORT_PHRASES`).
+  - 툴킷 추출 공항: **`filterAirportsNearDestination`** 으로 경유·제3국 허브 제외 후 linkHub 선택.
+  - 다중 여행지: **카나리아(TFS·LPA)**, **요르단(AMM)** + `bannerNote`.
+  - **`getFlightDestinationSearchHint`**: 「정확한 항공권 검색을 위해 {지명} 도착 공항 코드(TFS 또는 LPA)…」 형태로 지역 IATA 주입.
+- **`rentalAirportHubs.js`**: **AMM**, **TFS**, **LPA** 허브. ORD 별칭에서 `ord` 제거(`o'hare` 등만).
+
 ## 향후(선택)
 
 - 채팅 API에 **동일 요약을 system 컨텍스트로 주입**하면 대화 시발점으로 활용 가능(별도 작업).
+- 타임라인 한글 공항명 → IATA 매핑은 현재 암만(AMM) 위주; 필요 시 지역별 `TITLE_ARRIVAL_AIRPORT_PHRASES` 확장.
