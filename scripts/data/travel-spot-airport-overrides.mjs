@@ -41,7 +41,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['SEA'],
     preferredLinkIata: 'SEA',
     confidence: 'high',
-    rationale: '시애틀터코마국제공항 — 툴킷 오생성 시 배너 보정',
+    rationale: '시애틀터코마국제공항(SEA)',
   },
   boracay: {
     primaryIatas: ['KLO', 'MPH'],

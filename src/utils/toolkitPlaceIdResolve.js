@@ -149,22 +149,6 @@ export function essentialGuideMatchesLocation(guide, location) {
     if (!known.some((c) => isIataPlausibleForLocation(c, location))) return false;
   }
 
-  const blob = JSON.stringify({
-    timeline: guide.journey_timeline,
-    flight: guide.categories?.flight?.advice ?? guide.flight?.advice,
-  }).toLowerCase();
-  const country = String(location.country || location.country_en || '').toLowerCase();
-  const isUs =
-    country.includes('미국') || country.includes('usa') || country.includes('united states');
-  if (
-    isUs &&
-    /티미카|카르스텐츠|센타니|파푸아|yellow valley|carstensz|옐로우 밸리|자카르타.*발리.*경유/i.test(
-      blob
-    )
-  ) {
-    return false;
-  }
-
   return true;
 }
 

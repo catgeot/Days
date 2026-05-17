@@ -39,10 +39,9 @@
 | 산티아고 데 콤포스텔라 | **SCQ** | 경유 **MAD** | SCQ 허브, SCQ+MAD multi, 「허브 경유」 타임라인 제외 |
 
 - **`rentalAirportMatch`**: 목적지에서 900km 초과 IATA는 planner 배너에서 제외(폴백). `confidence: medium` 오버라이드는 live `essential_guide`보다 후순위.
-- **`update-place-toolkit`**: 요청에 `lat`/`lng`/`slug` 전달, 저장 전 지명·IATA 검증(시애틀↔파푸아 등).
+- **`update-place-toolkit`**: 요청에 `lat`/`lng`/`slug` 전달, 저장 전 `primary_arrival_airports_iata`·좌표 거리 검증(범용). 시애틀 전용 키워드 차단은 제거(오해 정리).
 
 ## 후속
 
 - 툴킷 신규·갱신 시 `npm run sync:airports-from-toolkit` 루틴화.
 - `skippedNoIata`·`inferNearestMismatch` 샘플 검수; `berlin` slug 중복 정리.
-- Edge `update-place-toolkit` 재배포(좌표 검증·프롬프트 강화 반영).

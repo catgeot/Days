@@ -9,12 +9,15 @@ const corsHeaders = {
 const MAX_DESTINATION_AIRPORT_KM = 900;
 
 /** 주요 허브만 — 응답 IATA가 요청 좌표와 맞는지 서버에서 검증 */
+/** `primary_arrival_airports_iata` 거리 검증용 — 등록된 주요 허브만 */
 const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
-  SEA: { lat: 47.4502, lng: -122.3088 },
-  DJJ: { lat: -2.5769, lng: 140.5163 },
   TIM: { lat: -4.5283, lng: 136.8844 },
   CGK: { lat: -6.1256, lng: 106.6559 },
   DPS: { lat: -8.7482, lng: 115.1672 },
+  SCQ: { lat: 42.8963, lng: -8.4154 },
+  MAD: { lat: 40.4719, lng: -3.5626 },
+  HER: { lat: 35.3397, lng: 25.1803 },
+  CHQ: { lat: 35.5317, lng: 24.1497 },
   ICN: { lat: 37.4602, lng: 126.4407 },
 };
 
@@ -35,15 +38,6 @@ function validateEssentialGuideForLocation(
   lat?: number,
   lng?: number
 ): string | null {
-  const blob = JSON.stringify(guide).toLowerCase();
-  const name = String(locationName || '').toLowerCase();
-
-  if (/seattle|시애틀/.test(name)) {
-    if (/티미카|카르스텐츠|센타니|yellow valley|carstensz|옐로우 밸리|파푸아/.test(blob)) {
-      return '생성된 툴킷이 시애틀이 아닌 다른 여행지(파푸아·카르스텐츠 등) 내용입니다. 다시 시도해 주세요.';
-    }
-  }
-
   if (Number.isFinite(lat) && Number.isFinite(lng)) {
     const iatas = Array.isArray(guide.primary_arrival_airports_iata)
       ? (guide.primary_arrival_airports_iata as string[])
@@ -98,7 +92,7 @@ serve(async (req) => {
 
     const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 여행 플래너 및 로컬 예약 에이전트입니다. 여행자가 **오직 "${locationName}"${coordHint}** 한 곳에 가기 위해 필요한 모든 실용적인 예약 정보, 교통편, 비자, 그리고 도착까지의 상세 타임라인을 구조화된 JSON 데이터로 제공해야 합니다.
 
-🚨 **절대 규칙**: 다른 여행지·산악 원정·제3국 허브의 일반 템플릿을 복사하지 마세요. 요청 지명("${locationName}")과 무관한 도시·공항·국가(예: 시애틀 요청에 파푸아·티미카·카르스텐츠·DJJ)는 넣지 마세요. slug: ${slug ?? 'n/a'}
+🚨 **절대 규칙**: 요청 지명("${locationName}")과 무관한 다른 여행지·국가·도착 공항 내용을 넣지 마세요. primary_arrival_airports_iata·타임라인의 최종 도착 코드는 이 여행지에 맞아야 합니다.${slug ? ` (slug: ${slug})` : ''}
 
 **[핵심 분석: 복잡도 평가]**
 1. 이 장소가 인천(한국)에서 출발했을 때, 직항이 없고 배를 타야 하거나, 다단계 교통수단(비행기->버스->페리 등)을 거쳐야 한다면 "is_complex": true로 설정하세요. (예: 길리 메노, 보라카이 등)
