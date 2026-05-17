@@ -152,6 +152,32 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     preferredLinkIata: 'ZNZ',
     bannerNote:
       '잔지바르 섬 도착은 ZNZ(아베이드 아마니 카루메)입니다. 다르에스살람(DAR) 경유·페리·국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  {
+    phrases: ['santorini', '산토리니', 'thira', '티라'],
+    iataCodes: ['JTR', 'ATH'],
+    preferredLinkIata: 'JTR',
+    bannerNote:
+      '산토리니 직항은 티라(JTR)가 많고, 아테네(ATH) 경유·페리·국내선으로 이어지는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  {
+    phrases: ['galapagos', '갈라파고스', 'baltra', '발트라'],
+    iataCodes: ['GPS', 'GYE'],
+    preferredLinkIata: 'GPS',
+    bannerNote:
+      '갈라파고스 섬 도착은 발트라(GPS) 등이 많습니다. 본토 과야킬(GYE)·키토 경유 후 국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  {
+    phrases: ['crete', '크레타', 'heraklion', '이라클리온'],
+    iataCodes: ['HER', 'ATH'],
+    preferredLinkIata: 'HER'
+  },
+  {
+    phrases: ['palawan', '팔라완', 'puerto princesa', '푸에르토 프린세사'],
+    iataCodes: ['PPS', 'MNL'],
+    preferredLinkIata: 'PPS',
+    bannerNote:
+      '팔라완은 푸에르토프린세사(PPS)가 관문이고, 마닐라(MNL) 경유·국내선으로 이어지는 일정도 많습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   }
 ];
 
@@ -208,7 +234,38 @@ function aliasMatchesHay(hay, alias, hubIata) {
 }
 
 /** 타임라인 제목에 IATA는 없지만 공항·도시명만 있는 경우 (예: 암만 퀸 알리아 공항) */
+/** 타임라인에서 경유·입국 허브만 나열한 단계 — 최종 도착 공항 배너에서 제외 */
+function isTransitHubTimelineTitle(title) {
+  if (typeof title !== 'string' || !title.trim()) return false;
+  if (/[A-Z]{3}\s*\/\s*[A-Z]{3}/i.test(title)) return true;
+  if (/경유지|환승지|transit hub|connecting hub/i.test(title)) return true;
+  if (/(경유|환승|transfer|layover|connecting)/i.test(title) && /(등\)|예:|예\s|등\s)/.test(title)) return true;
+  return false;
+}
+
 const TITLE_ARRIVAL_AIRPORT_PHRASES = [
+  { re: /필라델피아|philadelphia|philly/i, iata: 'PHL' },
+  { re: /애틀랜타|atlanta/i, iata: 'ATL' },
+  { re: /디트로이트|detroit/i, iata: 'DTW' },
+  { re: /산토리니|santorini|티라|thira/i, iata: 'JTR' },
+  { re: /크레타|crete|이라클리온|heraklion/i, iata: 'HER' },
+  { re: /이비사|ibiza/i, iata: 'IBZ' },
+  { re: /세비야|seville|sevilla/i, iata: 'SVQ' },
+  { re: /베를린|berlin/i, iata: 'BER' },
+  { re: /브뤼셀|brussels|bruxelles/i, iata: 'BRU' },
+  { re: /피렌체|florence|firenze/i, iata: 'FLR' },
+  { re: /두브로브니크|dubrovnik/i, iata: 'DBV' },
+  { re: /마라케시|marrakech|marrakesh/i, iata: 'RAK' },
+  { re: /모스크바|moscow|moskva|셰레메티예보/i, iata: 'SVO' },
+  { re: /괌|guam|tumon|투몬/i, iata: 'GUM' },
+  { re: /사이판|saipan/i, iata: 'SPN' },
+  { re: /팔라우|palau|코로르|koror/i, iata: 'ROR' },
+  { re: /팔라완|palawan|푸에르토\s*프린세사/i, iata: 'PPS' },
+  { re: /갈라파고스|galapagos|발트라|baltra/i, iata: 'GPS' },
+  { re: /뉴칼레도니아|new caledonia|누메아|noumea/i, iata: 'NOU' },
+  { re: /통가|tonga|누쿠알로파|nukualofa/i, iata: 'TBU' },
+  { re: /바누아투|vanuatu|포트빌라|port vila/i, iata: 'VLI' },
+  { re: /골드코스트|gold coast/i, iata: 'OOL' },
   { re: /암만|퀸\s*알리아|queen\s*alia/i, iata: 'AMM' },
   { re: /버뮤다|bermuda/i, iata: 'BDA' },
   { re: /페르난두\s*지?\s*노로냐|페르난두지노로냐|fernando\s*de\s*noronha|noronha/i, iata: 'FEN' },
@@ -264,7 +321,9 @@ export function extractArrivalIataCodesFromEssentialGuide(guide) {
   if (Array.isArray(timeline)) {
     // 최종 도착 단계(뒤쪽 STEP)를 먼저 읽어 경유·제3국 허브가 연동 공항으로 잡히는 것을 줄임
     for (let i = timeline.length - 1; i >= 0; i--) {
-      collectIataFromTitle(ordered, seen, timeline[i]?.title, true);
+      const title = timeline[i]?.title;
+      if (isTransitHubTimelineTitle(title)) continue;
+      collectIataFromTitle(ordered, seen, title, true);
     }
     if (ordered.length === 0) {
       for (let i = timeline.length - 1; i >= 0; i--) {

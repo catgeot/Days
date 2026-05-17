@@ -82,7 +82,19 @@
 - **`rentalAirportHubs.js`**: 신규 IATA — **BDA**, **FEN**, **REC**, **NAT**, **GRU**, **RAR**, **APW**, **ZNZ**, **DAR** (기존 **BOB**·**PPT**·**AKL**·**NAN**과 조합).
 - **검증 사례**: 버뮤다(JFK 오탐→BDA), 보라보라(PPT→BOB), 라로통가(AKL→RAR), 사모아(NAN→APW), 잔지바르(배너 없음→ZNZ).
 
+## 렌터카 허브 확장·경유 제외·필라델피아 매칭 (2026-05-17 세션 마감)
+
+- **원인**: 툴킷 `journey_timeline`의 IATA는 **`RENTAL_AIRPORT_HUBS`에 등록된 코드만** 배너·제휴 링크에 반영. 미등록 코드(예: **PHL**)는 무시되고, 등록된 경유 허브(**JFK** 등)만 남을 수 있음.
+- **`rentalAirportHubs.js`**: 약 **35개** 허브 추가 — 미국 경유·도시(**PHL**, ATL, DTW, DFW, IAH, MCO, MSP, CLT, PDX, AUS, SLC, BNA, FLL, TPA 등), 유럽(**JTR**, HER, IBZ, SVQ, BER, BRU, FLR, DBV, ZAG, RAK, SVO), 태평양(**GUM**, SPN, ROR, PPS, NOU, TBU, VLI), 호주 **OOL**, 남미 **GPS**·**GYE**. 파일 상단에 허브 유지보수 안내 주석.
+- **`rentalAirportMatch.js`**
+  - **`isTransitHubTimelineTitle`**: `JFK/ATL/DTW`·「경유지」 등 **경유·입국 허브 단계**는 타임라인 IATA 추출에서 제외(최종 도착 STEP 우선).
+  - **`TITLE_ARRIVAL_AIRPORT_PHRASES`**: 필라델피아·괌·사이판·산토리니·베를린 등 도시명만 있는 제목 보강.
+  - **`RENTAL_MULTI_AIRPORT_DESTINATIONS`**: 산토리니(JTR·ATH), 갈라파고스(GPS·GYE), 크레타(HER·ATH), 팔라완(PPS·MNL) + `bannerNote`.
+- **`scripts/audit-rental-airports.mjs`**: `TRAVEL_SPOTS` 대비 허브 반경 밖·오매칭 후보를 출력하는 점검 스크립트(`node scripts/audit-rental-airports.mjs`).
+- **검증 사례**: 필라델피아 여정(PHL 도착 + JFK/ATL/DTW 경유) → 배너 **PHL** 단일 연동.
+
 ## 향후(선택)
 
 - 채팅 API에 **동일 요약을 system 컨텍스트로 주입**하면 대화 시발점으로 활용 가능(별도 작업).
-- 타임라인 한글 공항명 → IATA 매핑은 현재 암만(AMM) 위주; 필요 시 지역별 `TITLE_ARRIVAL_AIRPORT_PHRASES` 확장.
+- `audit-rental-airports.mjs` 실행 결과로 **아직 반경 밖인 여행지**(시칠리·발칸·일부 아프리카 등) 허브·다중공항 행을 **배치 추가**.
+- 타임라인 한글 공항명 → IATA는 `TITLE_ARRIVAL_AIRPORT_PHRASES`로 확장 중; 미등록 IATA는 여전히 배너에서 제외되므로 **허브 목록과 동기화**가 1차 대응.
