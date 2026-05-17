@@ -110,6 +110,48 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     preferredLinkIata: 'AMM',
     bannerNote:
       '요르단 국제선은 대부분 암만 퀸 알리아(AMM)에 도착한 뒤 페트라·와디 럼으로 이동합니다. 티켓·일정의 도착 공항을 확인해 주세요.'
+  },
+  {
+    phrases: [
+      'fernando-de-noronha',
+      'fernando de noronha',
+      'fernandodenoronha',
+      '페르난두지노로냐',
+      '페르난두 지 노로냐',
+      'noronha'
+    ],
+    iataCodes: ['FEN', 'REC', 'NAT'],
+    preferredLinkIata: 'FEN',
+    bannerNote:
+      '섬 공항은 페르난두지노로냐(FEN)뿐입니다. 본토에서는 레시피(REC)·나탈(NAT) 등으로 들어온 뒤 국내선·경비행으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  {
+    phrases: ['bora-bora', 'bora bora', '보라보라'],
+    iataCodes: ['BOB', 'PPT'],
+    preferredLinkIata: 'BOB',
+    bannerNote:
+      '보라보라 섬 공항은 BOB(모투무테)입니다. 국제선은 타히티 파아페테(PPT)에 먼저 도착한 뒤 국내선으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  {
+    phrases: ['rarotonga', '라로통가', 'cook islands', '쿡 제도'],
+    iataCodes: ['RAR', 'AKL'],
+    preferredLinkIata: 'RAR',
+    bannerNote:
+      '쿡 제도(라로통가) 최종 도착은 RAR입니다. 한국·아시아에서 오는 항공편은 오클랜드(AKL) 등 뉴질랜드·호주 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  {
+    phrases: ['samoa', '사모아', 'apia', '아피아'],
+    iataCodes: ['APW', 'NAN', 'AKL'],
+    preferredLinkIata: 'APW',
+    bannerNote:
+      '사모아(아피아) 최종 도착은 팔레올로(APW)입니다. 오클랜드(AKL)·피지 난디(NAN) 등 경유 후 국내선·연결편으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  {
+    phrases: ['zanzibar', '잔지바르'],
+    iataCodes: ['ZNZ', 'DAR'],
+    preferredLinkIata: 'ZNZ',
+    bannerNote:
+      '잔지바르 섬 도착은 ZNZ(아베이드 아마니 카루메)입니다. 다르에스살람(DAR) 경유·페리·국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   }
 ];
 
@@ -136,7 +178,7 @@ function hubByIata(iata) {
 
 /** `journey_timeline` 제목 등에서 도착·경유 맥락이 있을 때만 IATA 추출에 쓰는 힌트 */
 const ARRIVAL_TIMELINE_HINT =
-  /공항|도착|입국|경유|환승|airport|arrival|immigration|terminal|터미널|비행기/i;
+  /공항|도착|입국|경유|환승|국내선|domestic|airport|arrival|immigration|terminal|터미널|비행기|비행\b|탑승|->|→/i;
 
 function shouldSkipKoreaDepartureTimelineCode(title, code) {
   if (code !== 'ICN' && code !== 'GMP') return false;
@@ -166,7 +208,15 @@ function aliasMatchesHay(hay, alias, hubIata) {
 }
 
 /** 타임라인 제목에 IATA는 없지만 공항·도시명만 있는 경우 (예: 암만 퀸 알리아 공항) */
-const TITLE_ARRIVAL_AIRPORT_PHRASES = [{ re: /암만|퀸\s*알리아|queen\s*alia/i, iata: 'AMM' }];
+const TITLE_ARRIVAL_AIRPORT_PHRASES = [
+  { re: /암만|퀸\s*알리아|queen\s*alia/i, iata: 'AMM' },
+  { re: /버뮤다|bermuda/i, iata: 'BDA' },
+  { re: /페르난두\s*지?\s*노로냐|페르난두지노로냐|fernando\s*de\s*noronha|noronha/i, iata: 'FEN' },
+  { re: /보라보라|bora\s*bora|모투\s*무테|motu\s*mute/i, iata: 'BOB' },
+  { re: /라로통가|rarotonga|쿡\s*제도|cook\s*islands/i, iata: 'RAR' },
+  { re: /사모아|samoa|아피아|apia|팔레올로|faleolo/i, iata: 'APW' },
+  { re: /잔지바르|zanzibar|웅구자|unguja/i, iata: 'ZNZ' }
+];
 
 function collectPhraseAirportFromTitle(ordered, seen, title, requireArrivalHint) {
   if (typeof title !== 'string' || !title.trim()) return;
@@ -212,11 +262,12 @@ export function extractArrivalIataCodesFromEssentialGuide(guide) {
 
   const timeline = guide.journey_timeline;
   if (Array.isArray(timeline)) {
-    for (const step of timeline) {
-      collectIataFromTitle(ordered, seen, step?.title, true);
+    // 최종 도착 단계(뒤쪽 STEP)를 먼저 읽어 경유·제3국 허브가 연동 공항으로 잡히는 것을 줄임
+    for (let i = timeline.length - 1; i >= 0; i--) {
+      collectIataFromTitle(ordered, seen, timeline[i]?.title, true);
     }
     if (ordered.length === 0) {
-      for (let i = 1; i < timeline.length; i++) {
+      for (let i = timeline.length - 1; i >= 0; i--) {
         collectIataFromTitle(ordered, seen, timeline[i]?.title, false);
       }
     }
@@ -284,7 +335,13 @@ function filterAirportsNearDestination(location, airports) {
 
   const minD = Math.min(...finite.map((a) => a.d));
   const threshold = Math.max(minD * 2.5, Math.min(minD + 600, 900));
-  const near = finite.filter((a) => a.d <= threshold);
+  let near = finite.filter((a) => a.d <= threshold);
+  // 목적지 공항이 매우 가까우면(예: BDA) 먼 허브·경유지(JFK 등)는 제외
+  if (minD < 150) {
+    const strictThreshold = Math.max(minD + 80, 120);
+    const strictNear = near.filter((a) => a.d <= strictThreshold);
+    if (strictNear.length > 0) near = strictNear;
+  }
   if (near.length === 0) return airports;
   return near.map(({ officialKo, iata }) => ({ officialKo, iata }));
 }

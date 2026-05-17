@@ -287,17 +287,11 @@ const PlannerTab = ({
                         </div>
                     </div>
 
-                    <div className="mb-5 w-full">{rentalPickupBanner}</div>
-
-                    {/* 🆕 [Phase 8-8] 트립링크 패키지 배너 노출 영역 (데스크탑 전용) */}
                     {matchedPackage && (
-                        <div className="hidden md:flex w-full mb-6 rounded-2xl overflow-hidden bg-gray-100 items-center justify-center relative border border-gray-200 shadow-sm" style={{ minHeight: '90px' }}>
-                            {/* 상단 뱃지 */}
+                        <div className="hidden md:flex w-full mb-6 rounded-2xl overflow-hidden bg-gray-100 items-center justify-center relative border border-gray-200 shadow-sm shrink-0" style={{ minHeight: '90px' }}>
                             <div className="absolute top-0 left-0 z-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg">
                                 제휴광고
                             </div>
-
-                            {/* 데스크탑 배너 (728x90) */}
                             <div className="w-full overflow-hidden flex justify-center items-center py-2 md:py-0">
                                 <div className="origin-center md:scale-100 w-[728px] h-[90px] flex items-center justify-center my-0">
                                     <iframe
@@ -313,11 +307,11 @@ const PlannerTab = ({
                                     ></iframe>
                                 </div>
                             </div>
-
-                            {/* 클릭 인터셉트용 오버레이 (클릭 시 모달을 띄우거나, 배너 자체 링크를 타도록 할지 결정. 여기서는 배너 자체 링크 허용을 위해 pointer-events-none 적용) */}
                             <div className="absolute inset-0 pointer-events-none hover:bg-black/5 transition-colors"></div>
                         </div>
                     )}
+
+                    <div className="mb-5 w-full shrink-0">{rentalPickupBanner}</div>
 
                 {/* 체크리스트 및 타임라인 (상시 렌더링) */}
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (

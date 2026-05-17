@@ -70,8 +70,24 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'BNE', officialKo: '브리즈번공항', lat: -27.3842, lng: 153.1175, radiusKm: 200, aliases: ['brisbane', '브리즈번', 'bne'] },
   { iata: 'PER', officialKo: '퍼스공항', lat: -31.9403, lng: 115.9672, radiusKm: 200, aliases: ['perth', '퍼스'] },
   { iata: 'AKL', officialKo: '오클랜드공항', lat: -37.0082, lng: 174.7850, radiusKm: 200, aliases: ['auckland', '오클랜드', 'akl'] },
+  {
+    iata: 'RAR',
+    officialKo: '라로통가 국제공항',
+    lat: -21.2027,
+    lng: -159.8056,
+    radiusKm: 80,
+    aliases: ['rarotonga', '라로통가', 'rar', 'cook islands', '쿡 제도']
+  },
   { iata: 'CHC', officialKo: '크라이스트처치공항', lat: -43.4894, lng: 172.5324, radiusKm: 200, aliases: ['christchurch', '크라이스트처치', 'chc'] },
   { iata: 'NAN', officialKo: '난디국제공항', lat: -17.7554, lng: 177.4434, radiusKm: 250, aliases: ['fiji', '피지', 'nadi', 'nan'] },
+  {
+    iata: 'APW',
+    officialKo: '팔레올로 국제공항',
+    lat: -13.8296,
+    lng: -172.0083,
+    radiusKm: 80,
+    aliases: ['samoa', '사모아', 'apia', '아피아', 'faleolo', '팔레올로', 'apw']
+  },
   { iata: 'BOB', officialKo: '보라보라 모투무테공항', lat: -16.4444, lng: -151.7513, radiusKm: 80, aliases: ['bora bora', '보라보라', 'bob'] },
   { iata: 'PPT', officialKo: '파아페테 국제공항', lat: -17.5567, lng: -149.6114, radiusKm: 200, aliases: ['tahiti', '타히티', 'ppt'] },
   { iata: 'LHR', officialKo: '히스로공항', lat: 51.4700, lng: -0.4543, radiusKm: 200, aliases: ['london', '런던', 'heathrow', 'lhr'] },
@@ -213,6 +229,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'SEA', officialKo: '시애틀터코마국제공항', lat: 47.4502, lng: -122.3088, radiusKm: 200, aliases: ['seattle', '시애틀', 'sea'] },
   { iata: 'ORD', officialKo: "오헤어국제공항", lat: 41.9742, lng: -87.9073, radiusKm: 220, aliases: ['chicago', '시카고', "o'hare", 'ohare'] },
   { iata: 'MIA', officialKo: '마이애미국제공항', lat: 25.7959, lng: -80.2870, radiusKm: 200, aliases: ['miami', '마이애미', 'mia'] },
+  {
+    iata: 'BDA',
+    officialKo: '버뮤다 국제공항',
+    lat: 32.3640,
+    lng: -64.6787,
+    radiusKm: 80,
+    aliases: ['bermuda', '버뮤다', 'bda', 'hamilton', '해밀턴', 'lf wade']
+  },
   { iata: 'BOS', officialKo: '로건국제공항', lat: 42.3656, lng: -71.0096, radiusKm: 200, aliases: ['boston', '보스턴', 'bos'] },
   { iata: 'IAD', officialKo: '워싱턴 덜레스국제공항', lat: 38.9445, lng: -77.4558, radiusKm: 200, aliases: ['washington', '워싱턴', 'dulles', 'iad'] },
   { iata: 'PHX', officialKo: '피닉스 스카이하버국제공항', lat: 33.4343, lng: -112.0118, radiusKm: 220, aliases: ['phoenix', '피닉스', 'phx'] },
@@ -229,6 +253,38 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'LIM', officialKo: '호르헤 차베스국제공항', lat: -12.0219, lng: -77.1143, radiusKm: 200, aliases: ['lima', '리마'] },
   { iata: 'EZE', officialKo: '미니스트로 피스타리니국제공항', lat: -34.8222, lng: -58.5358, radiusKm: 220, aliases: ['buenos aires', '부에노스아이레스', 'eze'] },
   { iata: 'GIG', officialKo: '갈레앙국제공항', lat: -22.8099, lng: -43.2506, radiusKm: 200, aliases: ['rio de janeiro', '리우데자네이루', 'rio', 'gig'] },
+  {
+    iata: 'GRU',
+    officialKo: '상파울루구아룰류스국제공항',
+    lat: -23.4356,
+    lng: -46.4731,
+    radiusKm: 220,
+    aliases: ['sao paulo', 'são paulo', '상파울루', 'guarulhos', '구아룰류스', 'gru']
+  },
+  {
+    iata: 'REC',
+    officialKo: '레시피 게르마노 아란 국제공항',
+    lat: -8.1264,
+    lng: -34.9236,
+    radiusKm: 200,
+    aliases: ['recife', '레시피', '헤시피', 'rec']
+  },
+  {
+    iata: 'NAT',
+    officialKo: '나탈국제공항',
+    lat: -5.9114,
+    lng: -35.2477,
+    radiusKm: 180,
+    aliases: ['natal', '나탈', 'nat']
+  },
+  {
+    iata: 'FEN',
+    officialKo: '페르난두지노로냐 공항',
+    lat: -3.8549,
+    lng: -32.4233,
+    radiusKm: 80,
+    aliases: ['fernando de noronha', 'fernando-de-noronha', '페르난두지노로냐', '페르난두 지 노로냐', 'noronha', 'fen']
+  },
   { iata: 'SCL', officialKo: '아르투로 메리노 베니테스공항', lat: -33.3930, lng: -70.7858, radiusKm: 220, aliases: ['santiago de chile', '산티아고', 'scl'] },
   { iata: 'BOG', officialKo: '엘도라도국제공항', lat: 4.7016, lng: -74.1469, radiusKm: 200, aliases: ['bogota', '보고타'] },
   { iata: 'CUZ', officialKo: '알레한드로 벨라스코 아스테테국제공항', lat: -13.5357, lng: -71.9388, radiusKm: 200, aliases: ['cusco', '쿠스코', 'machu picchu', '마추픽추', 'cuz'] },
@@ -237,6 +293,22 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'CPT', officialKo: '케이프타운국제공항', lat: -33.9648, lng: 18.6017, radiusKm: 200, aliases: ['cape town', '케이프타운', 'cpt'] },
   { iata: 'JNB', officialKo: 'O.R. 탐보국제공항', lat: -26.1392, lng: 28.2460, radiusKm: 220, aliases: ['johannesburg', '요하네스버그', 'jnb', 'kruger', '크루거'] },
   { iata: 'NBO', officialKo: '조모 케냐타타국제공항', lat: -1.3192, lng: 36.9278, radiusKm: 200, aliases: ['nairobi', '나이로비', 'nbo', 'serengeti', '세렝게티', 'kilimanjaro', '킬리만자로'] },
+  {
+    iata: 'ZNZ',
+    officialKo: '잔지바르 국제공항',
+    lat: -6.2220,
+    lng: 39.2249,
+    radiusKm: 80,
+    aliases: ['zanzibar', '잔지바르', 'znz', 'unguja', '웅구자']
+  },
+  {
+    iata: 'DAR',
+    officialKo: '줄리어스 니에레레 국제공항',
+    lat: -6.8781,
+    lng: 39.2026,
+    radiusKm: 200,
+    aliases: ['dar es salaam', 'dar es salam', '다르에스살람', 'dar', 'tanzania', '탄자니아']
+  },
   { iata: 'SEZ', officialKo: '세이셸국제공항', lat: -4.6743, lng: 55.5218, radiusKm: 200, aliases: ['seychelles', '세이셸', 'sez', 'mahe'] },
   { iata: 'MRU', officialKo: '서기램 람굴람국제공항', lat: -20.4312, lng: 57.6836, radiusKm: 200, aliases: ['mauritius', '모리셔스', 'mru'] },
   { iata: 'DXB', officialKo: '두바이국제공항', lat: 25.2532, lng: 55.3657, radiusKm: 200, aliases: ['dubai', '두바이', 'dxb'] },

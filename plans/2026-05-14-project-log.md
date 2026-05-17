@@ -71,6 +71,17 @@
   - **`getFlightDestinationSearchHint`**: 「정확한 항공권 검색을 위해 {지명} 도착 공항 코드(TFS 또는 LPA)…」 형태로 지역 IATA 주입.
 - **`rentalAirportHubs.js`**: **AMM**, **TFS**, **LPA** 허브. ORD 별칭에서 `ord` 제거(`o'hare` 등만).
 
+## 플래너 배너 레이아웃·남태평양·아프리카 허브 보강 (2026-05-17 후속)
+
+- **`PlannerTab.jsx`**: 본문 순서를 **제목(툴킷 헤더) → 트립링크 제휴 배너 → 도착 공항 배너 → 체크리스트·툴킷**으로 정리. 제휴 광고가 공항명 배너·제목보다 위에 오던 문제 수정.
+- **`rentalAirportMatch.js`**
+  - 타임라인 추출: **뒤에서부터** 읽어 최종 도착 STEP 우선; 도착 힌트에 `국내선`·`비행`·`탑승`·`->` 추가.
+  - 목적지 공항이 좌표상 매우 가까우면(150km 미만) 경유 허브(JFK·NAN 등) **거리 필터**로 제외.
+  - `TITLE_ARRIVAL_AIRPORT_PHRASES`: 버뮤다→**BDA**, 페르난두지노로냐·보라보라·라로통가·사모아·잔지바르 등.
+  - `RENTAL_MULTI_AIRPORT_DESTINATIONS`: 페르난두지노로냐(FEN·REC·NAT), 보라보라(BOB·PPT), 라로통가(RAR·AKL), 사모아(APW·NAN·AKL), 잔지바르(ZNZ·DAR) + `bannerNote`.
+- **`rentalAirportHubs.js`**: 신규 IATA — **BDA**, **FEN**, **REC**, **NAT**, **GRU**, **RAR**, **APW**, **ZNZ**, **DAR** (기존 **BOB**·**PPT**·**AKL**·**NAN**과 조합).
+- **검증 사례**: 버뮤다(JFK 오탐→BDA), 보라보라(PPT→BOB), 라로통가(AKL→RAR), 사모아(NAN→APW), 잔지바르(배너 없음→ZNZ).
+
 ## 향후(선택)
 
 - 채팅 API에 **동일 요약을 system 컨텍스트로 주입**하면 대화 시발점으로 활용 가능(별도 작업).
