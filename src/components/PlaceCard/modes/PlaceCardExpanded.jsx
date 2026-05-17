@@ -59,7 +59,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
     isPlannerLoading,
     refetchPlannerFromDb,
     isPlannerRefreshing,
-  } = usePlannerData(queryKey, mediaMode);
+  } = usePlannerData(location, mediaMode);
 
   const matchedPackage = useMemo(() => getMatchedPackage(location), [location]);
 

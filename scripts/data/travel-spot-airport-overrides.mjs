@@ -14,11 +14,35 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   ephesus: { primaryIatas: ['ADB'], preferredLinkIata: 'ADB', confidence: 'high', rationale: '이즈미르 아드난 멘데레스' },
   sapa: { primaryIatas: ['HAN'], preferredLinkIata: 'HAN', confidence: 'high', rationale: '하노이 후 육로·기차' },
   corsica: { primaryIatas: ['AJA', 'BIA'], preferredLinkIata: 'AJA', kind: 'multi', confidence: 'high', rationale: '아작시오·바스티아 공항' },
+  crete: {
+    primaryIatas: ['HER', 'CHQ'],
+    preferredLinkIata: 'HER',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리',
+    bannerNote:
+      '크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  'santiago-de-compostela': {
+    primaryIatas: ['SCQ', 'MAD'],
+    preferredLinkIata: 'SCQ',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '순례 종착지 SCQ — 마드리드(MAD) 경유·국내선 루트도 흔함',
+    bannerNote:
+      '산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   'grand-canyon': { primaryIatas: ['LAS', 'FLG'], preferredLinkIata: 'LAS', kind: 'multi', confidence: 'medium', rationale: '라스베이거스·그랜드캐니언 공항' },
   hampi: { primaryIatas: ['BLR'], preferredLinkIata: 'BLR', confidence: 'medium', rationale: '방갈로르 후 장거리 육로' },
   meteora: { primaryIatas: ['SKG'], preferredLinkIata: 'SKG', confidence: 'high', rationale: '테살로니키 공항' },
   miyakojima: { primaryIatas: ['MMY'], preferredLinkIata: 'MMY', confidence: 'high', rationale: '미야코지마 공항' },
   borobudur: { primaryIatas: ['JOG'], preferredLinkIata: 'JOG', confidence: 'high', rationale: '욕야카르타 공항' },
+  seattle: {
+    primaryIatas: ['SEA'],
+    preferredLinkIata: 'SEA',
+    confidence: 'high',
+    rationale: '시애틀터코마국제공항 — 툴킷 오생성 시 배너 보정',
+  },
   boracay: {
     primaryIatas: ['KLO', 'MPH'],
     preferredLinkIata: 'KLO',
@@ -96,7 +120,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '디에고가르시아는 영국령 군사 기지로 일반 관광 출입이 불가합니다. 아래 링크는 인도양 권역(몰디브 등) 연결·일정 참고용이며, 실제 목적지와 다릅니다.'
   },
-  'carstensz-pyramid': { primaryIatas: ['DJJ'], preferredLinkIata: 'DJJ', confidence: 'medium', rationale: '자야푸라·티미카 관문' },
+  'carstensz-pyramid': {
+    primaryIatas: ['TIM', 'CGK', 'DPS'],
+    preferredLinkIata: 'TIM',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '국제선 CGK/DPS 후 파푸아 티미카(TIM) 국내선 — 카르스텐츠 원정 관문',
+    bannerNote:
+      '카르스텐츠 원정은 보통 자카르타(CGK) 또는 발리(DPS) 국제선 후 티미카(TIM) 국내선으로 들어옵니다. 센타니(DJJ)는 자야푸라 관문으로 흔하지 않습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   'cape-verde': { primaryIatas: ['SID'], preferredLinkIata: 'SID', confidence: 'high', rationale: '살 국제공항' },
   lalibela: { primaryIatas: ['ADD'], preferredLinkIata: 'ADD', confidence: 'medium', rationale: '아디스아바바 후 국내선' },
   yellowknife: { primaryIatas: ['YZF'], preferredLinkIata: 'YZF', confidence: 'high', rationale: '옐로나이프 공항' },

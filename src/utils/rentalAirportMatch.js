@@ -262,9 +262,11 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
       '갈라파고스 섬 도착은 발트라(GPS) 등이 많습니다. 본토 과야킬(GYE)·키토 경유 후 국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   {
-    phrases: ['crete', '크레타', 'heraklion', '이라클리온'],
-    iataCodes: ['HER', 'ATH'],
-    preferredLinkIata: 'HER'
+    phrases: ['crete', '크레타', 'heraklion', '이라클리온', 'chania', '하니아'],
+    iataCodes: ['HER', 'CHQ'],
+    preferredLinkIata: 'HER',
+    bannerNote:
+      '크레타는 동부 이라클리온(HER)·서부 하니아(CHQ) 등 도착 공항이 나뉩니다. 아테네(ATH) 경유 후 국내선·페리로 들어오는 일정이 흔하니, 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
   },
   {
     phrases: ['sicily', '시칠리아', 'sicilia', 'catania', '카타니아', 'palermo', '팔레르모', 'taormina', '타오르미나'],
@@ -341,6 +343,7 @@ function isTransitHubTimelineTitle(title) {
   if (/[A-Z]{3}\s*\/\s*[A-Z]{3}/i.test(title)) return true;
   if (/경유지|환승지|transit hub|connecting hub/i.test(title)) return true;
   if (/(경유|환승|transfer|layover|connecting)/i.test(title) && /(등\)|예:|예\s|등\s)/.test(title)) return true;
+  if (/(경유|환승|transfer|layover|connecting)/i.test(title) && /주요\s*허브|허브\s*공항/i.test(title)) return true;
   return false;
 }
 
@@ -350,6 +353,7 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /디트로이트|detroit/i, iata: 'DTW' },
   { re: /산토리니|santorini|티라|thira/i, iata: 'JTR' },
   { re: /크레타|crete|이라클리온|heraklion/i, iata: 'HER' },
+  { re: /하니아|chania/i, iata: 'CHQ' },
   { re: /카타니아|catania/i, iata: 'CTA' },
   { re: /팔레르모|palermo/i, iata: 'PMO' },
   { re: /시칠리아|sicily|sicilia/i, iata: 'CTA' },
@@ -376,7 +380,10 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /보라보라|bora\s*bora|모투\s*무테|motu\s*mute/i, iata: 'BOB' },
   { re: /라로통가|rarotonga|쿡\s*제도|cook\s*islands/i, iata: 'RAR' },
   { re: /사모아|samoa|아피아|apia|팔레올로|faleolo/i, iata: 'APW' },
-  { re: /잔지바르|zanzibar|웅구자|unguja/i, iata: 'ZNZ' }
+  { re: /잔지바르|zanzibar|웅구자|unguja/i, iata: 'ZNZ' },
+  { re: /티미카|timika/i, iata: 'TIM' },
+  { re: /카르스텐츠|carstensz/i, iata: 'TIM' },
+  { re: /콤포스텔라|compostela|산티아고\s*데\s*콤포스텔라/i, iata: 'SCQ' }
 ];
 
 function collectPhraseAirportFromTitle(ordered, seen, title, requireArrivalHint) {
@@ -497,6 +504,11 @@ function filterAirportsNearDestination(location, airports) {
   if (finite.length === 0) return airports;
 
   const minD = Math.min(...finite.map((a) => a.d));
+
+  // 툴킷이 다른 여행지(예: 시애틀에 DJJ)로 잘못 생성된 경우 — planner IATA 무시 후 좌표·JSON 폴백
+  const MAX_PLAUSIBLE_DESTINATION_AIRPORT_KM = 900;
+  if (minD > MAX_PLAUSIBLE_DESTINATION_AIRPORT_KM) return [];
+
   const threshold = Math.max(minD * 2.5, Math.min(minD + 600, 900));
   let near = finite.filter((a) => a.d <= threshold);
   // 목적지 공항이 매우 가까우면(예: BDA) 먼 허브·경유지(JFK 등)는 제외
@@ -505,7 +517,7 @@ function filterAirportsNearDestination(location, airports) {
     const strictNear = near.filter((a) => a.d <= strictThreshold);
     if (strictNear.length > 0) near = strictNear;
   }
-  if (near.length === 0) return airports;
+  if (near.length === 0) return [];
   return near.map(({ officialKo, iata }) => ({ officialKo, iata }));
 }
 
@@ -611,12 +623,24 @@ function resolveLinkHubWithinMulti(location, row, airports) {
 export function resolveRentalPickupBannerInfo(location, options = {}) {
   if (!location || typeof location !== 'object') return null;
 
+  const eg = options.essentialGuide;
+  const staticRow =
+    options.ignoreStaticAirportMap !== true ? getTravelSpotAirportRow(location) : null;
+
+  // medium 검수 오버라이드보다 실시간 툴킷(TIM 등) 우선 — 카르스텐츠·DJJ 오탐 보정
+  if (eg && typeof eg === 'object' && staticRow?.confidence === 'medium') {
+    const plannerCodes = extractArrivalIataCodesFromEssentialGuide(eg);
+    if (plannerCodes?.length) {
+      const fromPlanner = resolveRentalPickupBannerFromPlannerIatas(location, plannerCodes);
+      if (fromPlanner) return fromPlanner;
+    }
+  }
+
   if (options.ignoreStaticAirportMap !== true) {
     const fromCurated = resolveRentalPickupBannerFromStaticMap(location, { curatedOnly: true });
     if (fromCurated) return fromCurated;
   }
 
-  const eg = options.essentialGuide;
   if (eg && typeof eg === 'object') {
     const plannerCodes = extractArrivalIataCodesFromEssentialGuide(eg);
     if (plannerCodes?.length) {

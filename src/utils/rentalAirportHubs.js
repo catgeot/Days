@@ -161,6 +161,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'BUD', officialKo: '리스트 페렌츠국제공항', lat: 47.4369, lng: 19.2556, radiusKm: 160, aliases: ['budapest', '부다페스트', 'bud'] },
   { iata: 'WAW', officialKo: '쇼팽공항', lat: 52.1657, lng: 20.9671, radiusKm: 160, aliases: ['warsaw', '바르샤바', 'waw'] },
   { iata: 'MAD', officialKo: '아돌포 수아레스 마드리드바라하스공항', lat: 40.4719, lng: -3.5626, radiusKm: 200, aliases: ['madrid', '마드리드', 'barajas'] },
+  {
+    iata: 'SCQ',
+    officialKo: '산티아고 데 콤포스텔라 공항',
+    lat: 42.8963,
+    lng: -8.4154,
+    radiusKm: 120,
+    aliases: ['santiago de compostela', 'compostela', '콤포스텔라', 'scq', 'lavacolla', '카미노']
+  },
   { iata: 'BCN', officialKo: '조세프 타라델라 바르셀로나엘프라트공항', lat: 41.2971, lng: 2.0785, radiusKm: 200, aliases: ['barcelona', '바르셀로나', 'bcn'] },
   {
     iata: 'TFS',
@@ -218,6 +226,14 @@ export const RENTAL_AIRPORT_HUBS = [
     lng: 25.1803,
     radiusKm: 160,
     aliases: ['crete', '크레타', 'heraklion', '이라클리온', 'her']
+  },
+  {
+    iata: 'CHQ',
+    officialKo: '하니아 국제공항',
+    lat: 35.5317,
+    lng: 24.1497,
+    radiusKm: 160,
+    aliases: ['chania', '하니아', 'chq', 'crete west', '크레타서부']
   },
   {
     iata: 'CTA',
@@ -564,7 +580,8 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'LYR', officialKo: '스발바르 공항', lat: 78.2461, lng: 15.4656, radiusKm: 100, aliases: ['longyearbyen', '롱위어비엔', 'lyr', 'svalbard', '스발바르'] },
   { iata: 'TNR', officialKo: '이바토 국제공항', lat: -18.7969, lng: 47.4788, radiusKm: 200, aliases: ['antananarivo', '안타ananarivo', 'tnr', 'madagascar', '마다가스카르'] },
   { iata: 'UBN', officialKo: '칭기스칸 국제공항', lat: 47.6469, lng: 106.8198, radiusKm: 200, aliases: ['ulaanbaatar', '울란바토르', 'ubn', 'mongolia', '몽골'] },
-  { iata: 'DJJ', officialKo: '센타니 공항', lat: -2.5769, lng: 140.5163, radiusKm: 200, aliases: ['jayapura', '자야푸라', 'djj', 'papua', '파푸아'] },
+  { iata: 'TIM', officialKo: '모제스 킬랑긴 공항(티미카)', lat: -4.5283, lng: 136.8844, radiusKm: 200, aliases: ['timika', '티미카', 'tim', 'carstensz', '카르스텐츠'] },
+  { iata: 'DJJ', officialKo: '센타니 공항', lat: -2.5769, lng: 140.5163, radiusKm: 200, aliases: ['jayapura', '자야푸라', 'djj'] },
   { iata: 'SID', officialKo: '아밀카라 카브랄 국제공항', lat: 16.7414, lng: -22.9494, radiusKm: 120, aliases: ['sal', '살', 'sid', 'cape verde', '보베르데'] },
   { iata: 'ADD', officialKo: '볼레 국제공항', lat: 8.9779, lng: 38.7993, radiusKm: 220, aliases: ['addis ababa', '아디스아바바', 'add', 'lalibela', '랄리벨라'] },
   { iata: 'YZF', officialKo: '옐로나이프 공항', lat: 62.4628, lng: -114.4403, radiusKm: 120, aliases: ['yellowknife', '옐로나이프', 'yzf'] },

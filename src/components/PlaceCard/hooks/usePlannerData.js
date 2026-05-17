@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../../../shared/api/supabase';
+import {
+  fetchToolkitRow,
+  hasUsableToolkit,
+  hasUsableToolkitForLocation,
+  toolkitRowMatchesLocation,
+  toolkitUpdateMatchesLocation,
+  buildToolkitPlaceIdCandidates,
+} from '../../../utils/toolkitPlaceIdResolve';
 
 const isDev = import.meta.env.DEV;
 
-export const usePlannerData = (placeId, mediaMode) => {
+export const usePlannerData = (location, mediaMode) => {
+  const placeKey = typeof location === 'string' ? location : location?.name;
+
   const [plannerData, setToolkitData] = useState(null);
-  const [isPlannerLoading, setIsToolkitLoading] = useState(Boolean(placeId));
+  const [isPlannerLoading, setIsToolkitLoading] = useState(Boolean(placeKey));
   const [isPlannerRefreshing, setIsPlannerRefreshing] = useState(false);
   const [prevMediaMode, setPrevMediaMode] = useState(mediaMode);
 
@@ -21,28 +31,20 @@ export const usePlannerData = (placeId, mediaMode) => {
   }
 
   const plannerDataRef = useRef(null);
-  const placeIdRef = useRef(placeId);
+  const locationRef = useRef(location);
 
   useEffect(() => {
     plannerDataRef.current = plannerData;
-    placeIdRef.current = placeId;
-  }, [plannerData, placeId]);
+    locationRef.current = location;
+  }, [plannerData, location]);
 
   /** AI/Edge 호출 없이 DB `place_toolkit` 행만 다시 읽기 — 화면이 비었을 때 복구용 */
   const refetchPlannerFromDb = useCallback(async () => {
-    if (!placeId) return;
+    if (!placeKey) return;
     setIsPlannerRefreshing(true);
     try {
-      const { data, error } = await supabase
-        .from('place_toolkit')
-        .select('*')
-        .eq('place_id', String(placeId))
-        .maybeSingle();
-
-      if (error) {
-        console.error('[usePlannerData] refetch DB 조회 에러:', error);
-      }
-      if (placeIdRef.current === placeId) {
+      const data = await fetchToolkitRow(supabase, location);
+      if (locationRef.current === location || (typeof locationRef.current === 'object' && locationRef.current?.name === placeKey)) {
         setToolkitData(data || null);
       }
     } catch (err) {
@@ -50,10 +52,10 @@ export const usePlannerData = (placeId, mediaMode) => {
     } finally {
       setIsPlannerRefreshing(false);
     }
-  }, [placeId]);
+  }, [location, placeKey]);
 
   useEffect(() => {
-    if (!placeId) return;
+    if (!placeKey) return;
 
     // ✅ PLANNER 모드가 아니면 loading 상태만 false로 설정하고 데이터는 유지
     if (mediaMode !== 'PLANNER') {
@@ -61,47 +63,56 @@ export const usePlannerData = (placeId, mediaMode) => {
         return;
     }
 
-    // ✅ placeId가 변경되었을 때만 리셋 (동일 placeId면 기존 데이터 유지)
-    if (plannerDataRef.current?.place_id !== placeId) {
+    const cached = plannerDataRef.current;
+    const cacheMatchesPlace = toolkitRowMatchesLocation(cached, location);
+
+    // ✅ 장소가 바뀌었거나, 캐시가 현재 장소와 무관하면 리셋
+    if (!cacheMatchesPlace) {
       setToolkitData(null);
       setIsToolkitLoading(false);
     }
 
-    // ✅ 이미 동일한 placeId 데이터가 있으면 재로딩 안 함 (early return을 useEffect 레벨로 이동)
-    if (plannerDataRef.current?.place_id === placeId) {
+    // ✅ place_id만 맞고 essential_guide가 비어 있으면 캐시 무시 후 재조회
+    if (cacheMatchesPlace && !hasUsableToolkitForLocation(cached, location)) {
       if (isDev) {
-        console.log(`[usePlannerData] 기존 데이터 유지 - placeId: ${placeId}`);
+        console.log(`[usePlannerData] 빈/불일치 툴킷 무시 - placeKey: ${placeKey}, db place_id: ${cached?.place_id}`);
       }
-      setIsToolkitLoading(false); // ✅ 여기서 로딩 상태를 해제해야 무한 로딩에 빠지지 않음
+      setToolkitData(null);
+    }
+
+    // ✅ 동일 장소 + 실제 가이드 내용·지리 일치 시에만 재조회 생략
+    if (cacheMatchesPlace && hasUsableToolkitForLocation(cached, location)) {
+      if (isDev) {
+        console.log(`[usePlannerData] 기존 툴킷 유지 - placeKey: ${placeKey}, db place_id: ${cached.place_id}`);
+      }
+      setIsToolkitLoading(false);
       return;
     }
 
     let isSubscribed = true;
 
-    // ✅ fetchToolkitData 호출 전에 loading 상태를 true로 설정하여 race condition 방지
-    // 이렇게 하면 ToolkitTab이 체크할 때 이미 isPlannerLoading이 true가 되어 auto-request를 방지함
     setIsToolkitLoading(true);
 
     const fetchToolkitData = async () => {
+      const candidates = buildToolkitPlaceIdCandidates(location);
       if (isDev) {
-        console.log(`[usePlannerData] DB 조회 시작 - placeId: ${placeId}`);
+        console.log(`[usePlannerData] DB 조회 시작 - placeKey: ${placeKey}, candidates:`, candidates);
       }
 
       try {
-        const { data, error } = await supabase
-          .from('place_toolkit')
-          .select('*')
-          .eq('place_id', String(placeId))
-          .maybeSingle();
-
-        if (error) {
-            console.error('[usePlannerData] DB 조회 에러:', error);
-        }
+        const data = await fetchToolkitRow(supabase, location);
 
         if (isSubscribed) {
           setToolkitData(data || null);
-          if (isDev && data) {
-            console.log('[usePlannerData] 데이터 로드 완료');
+          if (isDev) {
+            if (data) {
+              console.log('[usePlannerData] 데이터 로드 완료', {
+                place_id: data.place_id,
+                hasGuide: hasUsableToolkitForLocation(data, location),
+              });
+            } else {
+              console.log('[usePlannerData] 매칭 행 없음');
+            }
           }
         }
       } catch (err) {
@@ -117,45 +128,41 @@ export const usePlannerData = (placeId, mediaMode) => {
     return () => {
       isSubscribed = false;
     };
-  }, [placeId, mediaMode]);
+  }, [placeKey, mediaMode, location]);
 
   useEffect(() => {
     const handleToolkitUpdated = (event) => {
       const updatedPlaceId = event.detail?.placeId;
       const essentialGuide = event.detail?.essentialGuide;
+      const loc = locationRef.current;
 
-      if (updatedPlaceId === placeIdRef.current) {
-        console.log(`[usePlannerData] Toolkit 업데이트 감지 - 데이터 즉시 반영 (${updatedPlaceId})`);
+      if (!toolkitUpdateMatchesLocation(updatedPlaceId, loc)) return;
 
-        if (essentialGuide) {
-          setToolkitData(prev => {
-            console.log('[usePlannerData] 툴킷 데이터 즉시 반영 완료');
-            return {
-              ...prev,
-              place_id: updatedPlaceId,
-              essential_guide: essentialGuide,
-              toolkit_updated_at: new Date().toISOString()
-            };
-          });
-        }
+      console.log(`[usePlannerData] Toolkit 업데이트 감지 - 데이터 즉시 반영 (${updatedPlaceId})`);
 
-        setTimeout(async () => {
-          try {
-            const { data } = await supabase
-              .from('place_toolkit')
-              .select('*')
-              .eq('place_id', String(updatedPlaceId))
-              .maybeSingle();
-
-            if (data && placeIdRef.current === updatedPlaceId) {
-              setToolkitData(data);
-              console.log('[usePlannerData] 백그라운드 동기화 완료');
-            }
-          } catch (e) {
-            console.error('[usePlannerData] 백그라운드 패치 에러:', e);
-          }
-        }, 1500);
+      if (essentialGuide) {
+        setToolkitData(prev => {
+          console.log('[usePlannerData] 툴킷 데이터 즉시 반영 완료');
+          return {
+            ...prev,
+            place_id: updatedPlaceId,
+            essential_guide: essentialGuide,
+            toolkit_updated_at: new Date().toISOString()
+          };
+        });
       }
+
+      setTimeout(async () => {
+        try {
+          const data = await fetchToolkitRow(supabase, loc);
+          if (data && toolkitUpdateMatchesLocation(data.place_id, loc)) {
+            setToolkitData(data);
+            console.log('[usePlannerData] 백그라운드 동기화 완료');
+          }
+        } catch (e) {
+          console.error('[usePlannerData] 백그라운드 패치 에러:', e);
+        }
+      }, 1500);
     };
 
     window.addEventListener('toolkit-updated', handleToolkitUpdated);

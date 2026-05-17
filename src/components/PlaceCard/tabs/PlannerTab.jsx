@@ -10,6 +10,7 @@ import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
+import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -35,8 +36,9 @@ const PlannerTab = ({
         scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
-    // 🆕 [Phase 8-3] 분리된 아키텍처에 따라 plannerData.essential_guide 사용
-    const guideData = plannerData?.essential_guide;
+    // essential_guide가 {} 등 빈 객체여도 UI에 내용이 없도록 정규화
+    const guideData = getEssentialGuide(plannerData, location);
+    const toolkitMismatch = isToolkitLocationMismatch(plannerData, location);
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
@@ -76,7 +78,14 @@ const PlannerTab = ({
             try {
                 console.log("[PlannerTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
                 const { data, error } = await supabase.functions.invoke('update-place-toolkit', {
-                    body: { placeId, locationName: placeName || location?.name }
+                    body: {
+                        placeId,
+                        locationName: placeName || location?.name,
+                        lat: location?.lat,
+                        lng: location?.lng,
+                        country: location?.country,
+                        slug: location?.slug,
+                    },
                 });
 
                 if (error) {
@@ -217,6 +226,16 @@ const PlannerTab = ({
                 </p>
                 <p className="text-xs text-gray-400 mb-6 max-w-sm">
                     버튼을 눌렀을 때만 AI 툴킷이 실행됩니다.
+                    {toolkitMismatch && (
+                        <span className="mt-2 block text-amber-800/95">
+                            저장된 툴킷이 「{location?.name}」와 다른 여행지 내용입니다. AI 툴킷을 다시 실행해 주세요.
+                        </span>
+                    )}
+                    {!toolkitMismatch && plannerData?.toolkit_updated_at && (
+                        <span className="mt-2 block text-amber-700/90">
+                            저장 기록은 있으나 가이드 본문이 비어 있습니다. 아래에서 다시 실행하거나 「저장된 데이터 새로고침」을 눌러 보세요.
+                        </span>
+                    )}
                 </p>
                 <div className="mb-6 w-full max-w-sm">{rentalPickupBanner}</div>
                 <button
@@ -227,6 +246,17 @@ const PlannerTab = ({
                     <Sparkles size={16} />
                     <span>AI 툴킷 실행하기</span>
                 </button>
+                {plannerData?.toolkit_updated_at && refetchPlannerFromDb ? (
+                    <button
+                        type="button"
+                        onClick={() => refetchPlannerFromDb()}
+                        disabled={isPlannerRefreshing}
+                        className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-blue-600 disabled:opacity-50"
+                    >
+                        <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin' : ''} />
+                        저장된 데이터 새로고침
+                    </button>
+                ) : null}
                 </div>
             </div>
         );

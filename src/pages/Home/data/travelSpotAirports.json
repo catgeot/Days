@@ -1711,13 +1711,15 @@
     },
     "santiago-de-compostela": {
       "primaryIatas": [
+        "SCQ",
         "MAD"
       ],
-      "preferredLinkIata": "MAD",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "SCQ",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "순례 종착지 SCQ — 마드리드(MAD) 경유·국내선 루트도 흔함",
+      "bannerNote": "산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요."
     },
     "everest-base-camp": {
       "primaryIatas": [
@@ -1845,13 +1847,15 @@
     },
     "crete": {
       "primaryIatas": [
-        "HER"
+        "HER",
+        "CHQ"
       ],
       "preferredLinkIata": "HER",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리",
+      "bannerNote": "크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요."
     },
     "corsica": {
       "primaryIatas": [
@@ -1989,13 +1993,16 @@
     },
     "carstensz-pyramid": {
       "primaryIatas": [
-        "DJJ"
+        "TIM",
+        "CGK",
+        "DPS"
       ],
-      "preferredLinkIata": "DJJ",
-      "kind": "single",
+      "preferredLinkIata": "TIM",
+      "kind": "multi",
       "source": "curated-override",
-      "confidence": "medium",
-      "rationale": "자야푸라·티미카 관문"
+      "confidence": "high",
+      "rationale": "국제선 CGK/DPS 후 파푸아 티미카(TIM) 국내선 — 카르스텐츠 원정 관문",
+      "bannerNote": "카르스텐츠 원정은 보통 자카르타(CGK) 또는 발리(DPS) 국제선 후 티미카(TIM) 국내선으로 들어옵니다. 센타니(DJJ)는 자야푸라 관문으로 흔하지 않습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요."
     },
     "sequoia-national-park": {
       "primaryIatas": [
@@ -3127,13 +3134,15 @@
     },
     "크레타": {
       "primaryIatas": [
-        "HER"
+        "HER",
+        "CHQ"
       ],
       "preferredLinkIata": "HER",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리",
+      "bannerNote": "크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
       "placeId": "크레타",
       "linkedSlug": "crete"
     },
@@ -4363,13 +4372,15 @@
     },
     "산티아고데콤포스텔라": {
       "primaryIatas": [
+        "SCQ",
         "MAD"
       ],
-      "preferredLinkIata": "MAD",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "SCQ",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "순례 종착지 SCQ — 마드리드(MAD) 경유·국내선 루트도 흔함",
+      "bannerNote": "산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
       "placeId": "산티아고 데 콤포스텔라",
       "linkedSlug": "santiago-de-compostela"
     },

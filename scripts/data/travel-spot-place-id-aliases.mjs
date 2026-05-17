@@ -47,6 +47,10 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '아디스아바바': 'lalibela',
   '보홀': 'bohol',
 
+  // —— 미국 서부 (DB에 영문 place_id로 저장된 경우) ——
+  'Seattle': 'seattle',
+  'seattle': 'seattle',
+
   // —— 영문·표기 변형 ——
   'Ilulissat': 'iceland',
   '일룰리사트': 'iceland',

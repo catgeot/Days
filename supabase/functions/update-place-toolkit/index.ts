@@ -6,6 +6,60 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const MAX_DESTINATION_AIRPORT_KM = 900;
+
+/** 주요 허브만 — 응답 IATA가 요청 좌표와 맞는지 서버에서 검증 */
+const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
+  SEA: { lat: 47.4502, lng: -122.3088 },
+  DJJ: { lat: -2.5769, lng: 140.5163 },
+  TIM: { lat: -4.5283, lng: 136.8844 },
+  CGK: { lat: -6.1256, lng: 106.6559 },
+  DPS: { lat: -8.7482, lng: 115.1672 },
+  ICN: { lat: 37.4602, lng: 126.4407 },
+};
+
+function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function validateEssentialGuideForLocation(
+  guide: Record<string, unknown>,
+  locationName: string,
+  lat?: number,
+  lng?: number
+): string | null {
+  const blob = JSON.stringify(guide).toLowerCase();
+  const name = String(locationName || '').toLowerCase();
+
+  if (/seattle|시애틀/.test(name)) {
+    if (/티미카|카르스텐츠|센타니|yellow valley|carstensz|옐로우 밸리|파푸아/.test(blob)) {
+      return '생성된 툴킷이 시애틀이 아닌 다른 여행지(파푸아·카르스텐츠 등) 내용입니다. 다시 시도해 주세요.';
+    }
+  }
+
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    const iatas = Array.isArray(guide.primary_arrival_airports_iata)
+      ? (guide.primary_arrival_airports_iata as string[])
+      : [];
+    for (const raw of iatas) {
+      const code = String(raw).trim().toUpperCase();
+      const hub = HUB_COORDS[code];
+      if (hub && distanceKm(lat as number, lng as number, hub.lat, hub.lng) > MAX_DESTINATION_AIRPORT_KM) {
+        return `도착 공항 ${code}이(가) 「${locationName}」 위치와 맞지 않습니다. AI 응답이 잘못되었을 수 있습니다.`;
+      }
+    }
+  }
+
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -16,12 +70,21 @@ serve(async (req) => {
 
   try {
     reqBody = await req.json();
-    const { placeId, locationName } = reqBody;
+    const { placeId, locationName, lat, lng, country, slug } = reqBody;
     requestedPlaceId = placeId;
 
     if (!placeId || !locationName) {
         throw new Error('placeId and locationName are required');
     }
+
+    const destLat = typeof lat === 'number' ? lat : Number(lat);
+    const destLng = typeof lng === 'number' ? lng : Number(lng);
+    const coordHint =
+      Number.isFinite(destLat) && Number.isFinite(destLng)
+        ? ` (위도 ${destLat}, 경도 ${destLng}${country ? `, ${country}` : ''})`
+        : country
+          ? ` (${country})`
+          : '';
 
     const supabaseAdmin = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
@@ -33,7 +96,9 @@ serve(async (req) => {
         throw new Error('GEMINI_API_KEY is not configured on server');
     }
 
-    const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 여행 플래너 및 로컬 예약 에이전트입니다. 여행자가 "${locationName}"에 가기 위해 필요한 모든 실용적인 예약 정보, 교통편, 비자, 그리고 도착까지의 상세 타임라인을 구조화된 JSON 데이터로 제공해야 합니다.
+    const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 여행 플래너 및 로컬 예약 에이전트입니다. 여행자가 **오직 "${locationName}"${coordHint}** 한 곳에 가기 위해 필요한 모든 실용적인 예약 정보, 교통편, 비자, 그리고 도착까지의 상세 타임라인을 구조화된 JSON 데이터로 제공해야 합니다.
+
+🚨 **절대 규칙**: 다른 여행지·산악 원정·제3국 허브의 일반 템플릿을 복사하지 마세요. 요청 지명("${locationName}")과 무관한 도시·공항·국가(예: 시애틀 요청에 파푸아·티미카·카르스텐츠·DJJ)는 넣지 마세요. slug: ${slug ?? 'n/a'}
 
 **[핵심 분석: 복잡도 평가]**
 1. 이 장소가 인천(한국)에서 출발했을 때, 직항이 없고 배를 타야 하거나, 다단계 교통수단(비행기->버스->페리 등)을 거쳐야 한다면 "is_complex": true로 설정하세요. (예: 길리 메노, 보라카이 등)
@@ -174,6 +239,20 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
     } catch (e) {
       console.error('Failed to parse Gemini JSON output:', generatedText);
       throw new Error('Gemini did not return valid JSON');
+    }
+
+    const validationError = validateEssentialGuideForLocation(
+      essentialGuideJson,
+      String(locationName),
+      Number.isFinite(destLat) ? destLat : undefined,
+      Number.isFinite(destLng) ? destLng : undefined
+    );
+    if (validationError) {
+      console.error('[update-place-toolkit] Validation failed:', validationError, { placeId, locationName });
+      return new Response(
+        JSON.stringify({ success: false, error: validationError }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
     }
 
     // Upsert essential_guide into place_toolkit table
