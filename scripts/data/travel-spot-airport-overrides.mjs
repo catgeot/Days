@@ -28,6 +28,12 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '보라카이는 칼리보(KLO) 국제선 후 버스·페리, 또는 카틱란(MPH) 직항·국내선으로 들어오는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
   },
+  'phi-phi-islands': {
+    primaryIatas: ['HKT'],
+    preferredLinkIata: 'HKT',
+    confidence: 'high',
+    rationale: '푸켓 국제공항 후 랏사다 항구 페리(툴킷 여정·직항 일정)'
+  },
   'el-nido': {
     primaryIatas: ['ENI', 'PPS', 'MNL'],
     preferredLinkIata: 'ENI',

@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
@@ -12,6 +12,7 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = join(__dirname, 'outputs');
 const OUTPUT_JSON = join(OUTPUT_DIR, 'rental-airport-audit.json');
+const STATIC_AIRPORTS_PATH = join(__dirname, '../src/pages/Home/data/travelSpotAirports.json');
 
 const hubByIata = new Map(RENTAL_AIRPORT_HUBS.map((h) => [h.iata, h]));
 const hubIatas = new Set(hubByIata.keys());
@@ -129,6 +130,39 @@ geoGaps.sort((a, b) => a.nearestKm - b.nearestKm);
 farMatch.sort((a, b) => a.nearestKm - b.nearestKm);
 noBanner.sort((a, b) => a.nearestKm - b.nearestKm);
 
+/** generate가 넣은 runtime-infer 등 — 최근접 허브와 다르면 툴킷·관문 공항 검수 후보 */
+const inferNearestMismatch = [];
+try {
+  const staticAirports = JSON.parse(readFileSync(STATIC_AIRPORTS_PATH, 'utf-8'));
+  const spotMap = staticAirports.spots ?? {};
+  for (const spot of TRAVEL_SPOTS) {
+    const row = spotMap[spot.slug];
+    if (!row?.primaryIatas?.length) continue;
+    if (row.source !== 'runtime-infer' && row.source !== 'geo-nearest') continue;
+    const nearest = nearestHubDist(spot.lat, spot.lng);
+    const primary = row.primaryIatas[0];
+    if (!primary || primary === nearest.iata) continue;
+    const primaryHub = hubByIata.get(primary);
+    const nearestHub = hubByIata.get(nearest.iata);
+    if (!primaryHub || !nearestHub) continue;
+    const primaryKm = distanceKm(spot.lat, spot.lng, primaryHub.lat, primaryHub.lng);
+    if (nearest.d + 25 < primaryKm) {
+      inferNearestMismatch.push({
+        slug: spot.slug,
+        name: spot.name,
+        staticPrimary: primary,
+        staticPrimaryKm: Math.round(primaryKm),
+        nearestHub: nearest.iata,
+        nearestKm: Math.round(nearest.d),
+        note: '툴킷 여정과 다를 수 있음 — overrides 검수 또는 툴킷 로드 시 자동 보정'
+      });
+    }
+  }
+  inferNearestMismatch.sort((a, b) => b.staticPrimaryKm - a.staticPrimaryKm);
+} catch (err) {
+  console.warn('[audit:airports] inferNearestMismatch skipped:', err.message);
+}
+
 const report = {
   generatedAt: new Date().toISOString(),
   hubCount: hubIatas.size,
@@ -140,12 +174,14 @@ const report = {
     multi: multiCount,
     geoGaps: geoGaps.length,
     farMatch: farMatch.length,
-    staticMapCandidates: staticMapCandidates.length
+    staticMapCandidates: staticMapCandidates.length,
+    inferNearestMismatch: inferNearestMismatch.length
   },
   noBanner,
   geoGaps,
   farMatch: farMatch.slice(0, 50),
-  staticMapCandidates: staticMapCandidates.slice(0, 80)
+  staticMapCandidates: staticMapCandidates.slice(0, 80),
+  inferNearestMismatch: inferNearestMismatch.slice(0, 80)
 };
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -156,6 +192,7 @@ console.log('Spots:', report.spotCount);
 console.log('Banner — single:', singleCount, 'multi:', multiCount, 'none:', noBanner.length);
 console.log('Geo gaps (no hub in radius, nearest <600km):', geoGaps.length);
 console.log('Far match (resolved >> nearest):', farMatch.length);
+console.log('Infer vs nearest (runtime-infer 검수 후보):', inferNearestMismatch.length);
 console.log('\nWrote', OUTPUT_JSON);
 
 console.log('\n--- No banner (first 25) ---');

@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
@@ -14,6 +14,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '../src/pages/Home/data/travelSpotAirports.json');
 
 const hubByIata = new Map(RENTAL_AIRPORT_HUBS.map((h) => [h.iata, h]));
+
+function loadExistingAirportMap() {
+  try {
+    return JSON.parse(readFileSync(OUTPUT_PATH, 'utf8'));
+  } catch {
+    return { spots: {}, placeIds: {} };
+  }
+}
 
 function nearestHub(lat, lng) {
   let best = null;
@@ -116,8 +124,15 @@ function rowFromNearest(spot) {
   };
 }
 
+const existingAirportMap = loadExistingAirportMap();
+const toolkitSyncPreserved = {};
+for (const [slug, row] of Object.entries(existingAirportMap.spots ?? {})) {
+  if (row?.source === 'toolkit-sync') toolkitSyncPreserved[slug] = row;
+}
+const preservedPlaceIds = existingAirportMap.placeIds ?? {};
+
 const map = {};
-const stats = { override: 0, runtime: 0, multiRule: 0, geo: 0, missing: 0 };
+const stats = { override: 0, toolkitSync: 0, runtime: 0, multiRule: 0, geo: 0, missing: 0 };
 const missingSlugs = [];
 const unregisteredIatas = new Set();
 
@@ -132,6 +147,11 @@ for (const spot of TRAVEL_SPOTS) {
     }
     row = rowFromOverride(override);
     if (row) stats.override += 1;
+  }
+
+  if (!row && toolkitSyncPreserved[slug]) {
+    row = toolkitSyncPreserved[slug];
+    stats.toolkitSync += 1;
   }
 
   if (!row) {
@@ -164,11 +184,15 @@ const output = {
     version: 1,
     generatedAt: new Date().toISOString(),
     spotCount: Object.keys(map).length,
+    placeIdCount: Object.keys(preservedPlaceIds).length,
     stats,
     missingSlugs,
-    unregisteredIatasInOverrides: [...unregisteredIatas].sort()
+    unregisteredIatasInOverrides: [...unregisteredIatas].sort(),
+    runtimePriorityNote:
+      '런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.'
   },
-  spots: map
+  spots: map,
+  placeIds: preservedPlaceIds
 };
 
 mkdirSync(dirname(OUTPUT_PATH), { recursive: true });

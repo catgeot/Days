@@ -6,15 +6,64 @@ const toRad = (d) => (d * Math.PI) / 180;
 /** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: string, bannerNote?: string }>} */
 const STATIC_SPOT_AIRPORT_MAP = travelSpotAirportsData.spots ?? {};
 
-function getTravelSpotAirportRow(location) {
-  const slug = String(location?.slug ?? '').toLowerCase();
-  if (!slug) return null;
-  return STATIC_SPOT_AIRPORT_MAP[slug] ?? null;
+/** DB place_toolkit.place_id·사용자 입력 지명 (공식 travelSpots slug 없음 포함) */
+const STATIC_PLACE_ID_AIRPORT_MAP = travelSpotAirportsData.placeIds ?? {};
+
+function normalizePlaceIdKey(s) {
+  return String(s ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
 }
 
-function resolveRentalPickupBannerFromStaticMap(location) {
+function placeIdLookupKeys(location) {
+  const keys = [];
+  for (const raw of [location?.place_id, location?.placeId, location?.name]) {
+    if (raw == null || raw === '') continue;
+    const s = String(raw).trim();
+    keys.push(s, normalizePlaceIdKey(s), s.toLowerCase());
+  }
+  return keys;
+}
+
+function getTravelSpotAirportRow(location) {
+  const slug = String(location?.slug ?? '').toLowerCase();
+  if (slug && STATIC_SPOT_AIRPORT_MAP[slug]) return STATIC_SPOT_AIRPORT_MAP[slug];
+
+  for (const k of placeIdLookupKeys(location)) {
+    const row = STATIC_PLACE_ID_AIRPORT_MAP[k] ?? STATIC_PLACE_ID_AIRPORT_MAP[normalizePlaceIdKey(k)];
+    if (row?.primaryIatas?.length) return row;
+  }
+  return null;
+}
+
+/** generate가 넣은 좌표·런타임 추론(`runtime-infer` 등) — 툴킷이 있으면 배너에서 양보 */
+function isInferredStaticAirportRow(row) {
+  if (!row) return false;
+  if (row.source === 'runtime-infer' || row.source === 'geo-nearest') return true;
+  if (row.confidence === 'low' || row.confidence === 'very-low') return true;
+  return false;
+}
+
+/** 수동 오버라이드·multi-rule·high confidence — 툴킷보다 우선 */
+function isCuratedStaticAirportRow(row) {
+  if (!row) return false;
+  return (
+    row.source === 'curated-override' ||
+    row.source === 'multi-rule' ||
+    row.confidence === 'high'
+  );
+}
+
+function resolveRentalPickupBannerFromStaticMap(
+  location,
+  { curatedOnly = false, toolkitSyncOnly = false, inferredOnly = false } = {}
+) {
   const row = getTravelSpotAirportRow(location);
   if (!row?.primaryIatas?.length) return null;
+  if (curatedOnly && !isCuratedStaticAirportRow(row)) return null;
+  if (toolkitSyncOnly && row.source !== 'toolkit-sync') return null;
+  if (inferredOnly && !isInferredStaticAirportRow(row)) return null;
 
   const codes = row.primaryIatas.filter((c) => hubByIata(c));
   if (!codes.length) return null;
@@ -548,18 +597,23 @@ function resolveLinkHubWithinMulti(location, row, airports) {
 /**
  * 플래너 상단 「렌터카 · 픽업 기준」용: 단일 공항 또는 복수 도착 공항 안내.
  *
- * `essentialGuide`가 있으면 툴킷 AI가 적은 도착 공항(IATA)을 **좌표 추론보다 우선**합니다.
+ * 우선순위:
+ * 1. `travelSpotAirports.json` 중 **수동 오버라이드**(curated-override / high)
+ * 2. `essentialGuide` — 툴킷 여정·항공 안내의 도착 IATA (실시간 DB)
+ * 3. JSON의 **toolkit-sync** (`npm run sync:airports-from-toolkit`로 박아 둔 스냅샷)
+ * 4. JSON의 **좌표·런타임 추론**(runtime-infer 등)
+ * 5. `RENTAL_MULTI_AIRPORT_DESTINATIONS` · 좌표 최근접
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
+ * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
  * @returns {{ kind: 'single', officialKo: string, iata: string | null } | { kind: 'multi', airports: { officialKo: string, iata: string }[], linkHub: { officialKo: string, iata: string }, bannerNote?: string } | null}
  */
 export function resolveRentalPickupBannerInfo(location, options = {}) {
   if (!location || typeof location !== 'object') return null;
 
   if (options.ignoreStaticAirportMap !== true) {
-    const fromStatic = resolveRentalPickupBannerFromStaticMap(location);
-    if (fromStatic) return fromStatic;
+    const fromCurated = resolveRentalPickupBannerFromStaticMap(location, { curatedOnly: true });
+    if (fromCurated) return fromCurated;
   }
 
   const eg = options.essentialGuide;
@@ -569,6 +623,16 @@ export function resolveRentalPickupBannerInfo(location, options = {}) {
       const fromPlanner = resolveRentalPickupBannerFromPlannerIatas(location, plannerCodes);
       if (fromPlanner) return fromPlanner;
     }
+  }
+
+  if (options.ignoreStaticAirportMap !== true) {
+    const fromToolkitSync = resolveRentalPickupBannerFromStaticMap(location, { toolkitSyncOnly: true });
+    if (fromToolkitSync) return fromToolkitSync;
+  }
+
+  if (options.ignoreStaticAirportMap !== true) {
+    const fromInferredStatic = resolveRentalPickupBannerFromStaticMap(location, { inferredOnly: true });
+    if (fromInferredStatic) return fromInferredStatic;
   }
 
   for (const row of RENTAL_MULTI_AIRPORT_DESTINATIONS) {

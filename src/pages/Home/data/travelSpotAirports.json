@@ -1,17 +1,20 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-17T11:45:40.286Z",
+    "generatedAt": "2026-05-17T11:59:26.777Z",
     "spotCount": 244,
     "stats": {
-      "override": 65,
-      "runtime": 180,
+      "override": 66,
+      "runtime": 179,
       "multiRule": 0,
       "geo": 0,
       "missing": 0
     },
     "missingSlugs": [],
-    "unregisteredIatasInOverrides": []
+    "unregisteredIatasInOverrides": [],
+    "lastToolkitSyncAt": "2026-05-17T12:32:55.511Z",
+    "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync.",
+    "placeIdCount": 286
   },
   "spots": {
     "bora-bora": {
@@ -21,9 +24,9 @@
       ],
       "preferredLinkIata": "BOB",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "보라보라 섬 공항은 BOB(모투무테)입니다. 국제선은 타히티 파아페테(PPT)에 먼저 도착한 뒤 국내선으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "santorini": {
       "primaryIatas": [
@@ -32,9 +35,9 @@
       ],
       "preferredLinkIata": "JTR",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "산토리니 직항은 티라(JTR)가 많고, 아테네(ATH) 경유·페리·국내선으로 이어지는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "cancun": {
       "primaryIatas": [
@@ -42,8 +45,9 @@
       ],
       "preferredLinkIata": "CUN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "maldives": {
       "primaryIatas": [
@@ -51,8 +55,9 @@
       ],
       "preferredLinkIata": "MLE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "seychelles": {
       "primaryIatas": [
@@ -60,8 +65,9 @@
       ],
       "preferredLinkIata": "SEZ",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "fernando-de-noronha": {
       "primaryIatas": [
@@ -71,9 +77,9 @@
       ],
       "preferredLinkIata": "FEN",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "섬 공항은 페르난두지노로냐(FEN)뿐입니다. 본토에서는 레시피(REC)·나탈(NAT) 등으로 들어온 뒤 국내선·경비행으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "bermuda": {
       "primaryIatas": [
@@ -81,8 +87,9 @@
       ],
       "preferredLinkIata": "BDA",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "azores": {
       "primaryIatas": [
@@ -90,42 +97,43 @@
       ],
       "preferredLinkIata": "PDL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "zanzibar": {
       "primaryIatas": [
-        "ZNZ",
-        "DAR"
+        "ZNZ"
       ],
       "preferredLinkIata": "ZNZ",
-      "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "잔지바르 섬 도착은 ZNZ(아베이드 아마니 카루메)입니다. 다르에스살람(DAR) 경유·페리·국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "rarotonga": {
       "primaryIatas": [
+        "TBU",
         "RAR",
         "AKL"
       ],
-      "preferredLinkIata": "RAR",
+      "preferredLinkIata": "TBU",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "쿡 제도(라로통가) 최종 도착은 RAR입니다. 한국·아시아에서 오는 항공편은 오클랜드(AKL) 등 뉴질랜드·호주 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "samoa": {
       "primaryIatas": [
         "APW",
-        "NAN",
-        "AKL"
+        "AKL",
+        "NAN"
       ],
       "preferredLinkIata": "APW",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "사모아(아피아) 최종 도착은 팔레올로(APW)입니다. 오클랜드(AKL)·피지 난디(NAN) 등 경유 후 국내선·연결편으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "palawan": {
       "primaryIatas": [
@@ -147,8 +155,9 @@
       ],
       "preferredLinkIata": "TFS",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "bali": {
       "primaryIatas": [
@@ -156,8 +165,9 @@
       ],
       "preferredLinkIata": "DPS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hawaii": {
       "primaryIatas": [
@@ -165,8 +175,9 @@
       ],
       "preferredLinkIata": "HNL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "guam": {
       "primaryIatas": [
@@ -174,8 +185,9 @@
       ],
       "preferredLinkIata": "GUM",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "banff-national-park": {
       "primaryIatas": [
@@ -199,12 +211,14 @@
     },
     "iceland": {
       "primaryIatas": [
+        "CPH",
         "KEF"
       ],
-      "preferredLinkIata": "KEF",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "CPH",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "victoria-falls": {
       "primaryIatas": [
@@ -218,12 +232,14 @@
     },
     "mount-fuji": {
       "primaryIatas": [
-        "FSZ"
+        "NRT",
+        "HND"
       ],
-      "preferredLinkIata": "FSZ",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "NRT",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "great-barrier-reef": {
       "primaryIatas": [
@@ -231,8 +247,9 @@
       ],
       "preferredLinkIata": "CNS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "andaman-islands": {
       "primaryIatas": [
@@ -250,19 +267,19 @@
       ],
       "preferredLinkIata": "ROR",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "galapagos": {
       "primaryIatas": [
-        "GPS",
-        "GYE"
+        "SIN"
       ],
-      "preferredLinkIata": "GPS",
-      "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "갈라파고스 섬 도착은 발트라(GPS) 등이 많습니다. 본토 과야킬(GYE)·키토 경유 후 국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+      "preferredLinkIata": "SIN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "mauritius": {
       "primaryIatas": [
@@ -270,8 +287,9 @@
       ],
       "preferredLinkIata": "MRU",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "christmas-island": {
       "primaryIatas": [
@@ -300,14 +318,13 @@
       "primaryIatas": [
         "BOO",
         "EVE",
-        "LKN",
-        "SVJ"
+        "OSL"
       ],
-      "preferredLinkIata": "LKN",
+      "preferredLinkIata": "BOO",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "로포텐으로 가는 항로는 공항마다 역할이 다릅니다. 레크네스(LKN)·스볼바어(SVJ)는 군도 위 공항이라, 국내선 등으로 섬에 직접 도착한 뒤 렌터카·이동을 이어가기 좋습니다. 이베네스(EVE)는 본토(하르스타드·나르비크) 쪽 관문으로 국제·국내 대형 노선이 많고, 차나 버스로 로포텐으로 들어오는 일정이 흔합니다. 보되(BOO)는 로포텐 남쪽 본토에서 페리(예: 보되–모스케네스)나 국내선으로 군도에 이어질 때 자주 쓰입니다. 실제 티켓·일정에 적힌 도착 공항(IATA)을 확인한 뒤, 아래 제휴 링크 검색어도 그 공항에 맞춰 바꿔 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "sahara-desert": {
       "primaryIatas": [
@@ -342,12 +359,14 @@
     },
     "new-york": {
       "primaryIatas": [
+        "JFK",
         "EWR"
       ],
-      "preferredLinkIata": "EWR",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "JFK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "rio-de-janeiro": {
       "primaryIatas": [
@@ -355,8 +374,9 @@
       ],
       "preferredLinkIata": "GIG",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "london": {
       "primaryIatas": [
@@ -383,8 +403,9 @@
       ],
       "preferredLinkIata": "HND",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "sydney": {
       "primaryIatas": [
@@ -392,17 +413,19 @@
       ],
       "preferredLinkIata": "SYD",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "ushuaia": {
       "primaryIatas": [
-        "USH"
+        "EZE"
       ],
-      "preferredLinkIata": "USH",
+      "preferredLinkIata": "EZE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "moscow": {
       "primaryIatas": [
@@ -410,8 +433,9 @@
       ],
       "preferredLinkIata": "SVO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "cairo": {
       "primaryIatas": [
@@ -419,8 +443,9 @@
       ],
       "preferredLinkIata": "CAI",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "new-caledonia": {
       "primaryIatas": [
@@ -428,8 +453,9 @@
       ],
       "preferredLinkIata": "NOU",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "singapore": {
       "primaryIatas": [
@@ -446,8 +472,9 @@
       ],
       "preferredLinkIata": "DXB",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "nairobi": {
       "primaryIatas": [
@@ -455,8 +482,9 @@
       ],
       "preferredLinkIata": "NBO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "chicago": {
       "primaryIatas": [
@@ -464,8 +492,9 @@
       ],
       "preferredLinkIata": "ORD",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "buenos-aires": {
       "primaryIatas": [
@@ -473,8 +502,9 @@
       ],
       "preferredLinkIata": "EZE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "melbourne": {
       "primaryIatas": [
@@ -482,8 +512,9 @@
       ],
       "preferredLinkIata": "MEL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "chichen-itza": {
       "primaryIatas": [
@@ -497,12 +528,14 @@
     },
     "machu-picchu": {
       "primaryIatas": [
-        "CUZ"
+        "CUZ",
+        "LIM"
       ],
       "preferredLinkIata": "CUZ",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "rome": {
       "primaryIatas": [
@@ -510,8 +543,9 @@
       ],
       "preferredLinkIata": "FCO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "giza-pyramids": {
       "primaryIatas": [
@@ -519,8 +553,9 @@
       ],
       "preferredLinkIata": "CAI",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "angkor-wat": {
       "primaryIatas": [
@@ -537,9 +572,9 @@
       ],
       "preferredLinkIata": "AMM",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "요르단 국제선은 대부분 암만 퀸 알리아(AMM)에 도착한 뒤 페트라·와디 럼으로 이동합니다. 티켓·일정의 도착 공항을 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "midway-atoll": {
       "primaryIatas": [
@@ -568,8 +603,9 @@
       ],
       "preferredLinkIata": "NAN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "easter-island": {
       "primaryIatas": [
@@ -619,8 +655,9 @@
       ],
       "preferredLinkIata": "IST",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "prague": {
       "primaryIatas": [
@@ -628,8 +665,9 @@
       ],
       "preferredLinkIata": "PRG",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "marrakech": {
       "primaryIatas": [
@@ -637,8 +675,9 @@
       ],
       "preferredLinkIata": "RAK",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "alaska": {
       "primaryIatas": [
@@ -656,8 +695,9 @@
       ],
       "preferredLinkIata": "MAO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "svalbard": {
       "primaryIatas": [
@@ -705,8 +745,9 @@
       ],
       "preferredLinkIata": "LAX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "tonga": {
       "primaryIatas": [
@@ -714,8 +755,9 @@
       ],
       "preferredLinkIata": "TBU",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "berlin": {
       "primaryIatas": [
@@ -723,8 +765,9 @@
       ],
       "preferredLinkIata": "BER",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "la-reunion": {
       "primaryIatas": [
@@ -751,17 +794,19 @@
       ],
       "preferredLinkIata": "VLI",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "patagonia": {
       "primaryIatas": [
-        "USH"
+        "EZE"
       ],
-      "preferredLinkIata": "USH",
+      "preferredLinkIata": "EZE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kerguelen-islands": {
       "primaryIatas": [
@@ -796,13 +841,13 @@
     },
     "paris": {
       "primaryIatas": [
-        "CDG",
-        "ORY"
+        "CDG"
       ],
-      "preferredLinkIata": "ORY",
-      "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "CDG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "barcelona": {
       "primaryIatas": [
@@ -810,18 +855,20 @@
       ],
       "preferredLinkIata": "BCN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "bangkok": {
       "primaryIatas": [
         "BKK",
         "DMK"
       ],
-      "preferredLinkIata": "DMK",
+      "preferredLinkIata": "BKK",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "amsterdam": {
       "primaryIatas": [
@@ -838,8 +885,9 @@
       ],
       "preferredLinkIata": "VCE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "athens": {
       "primaryIatas": [
@@ -847,8 +895,9 @@
       ],
       "preferredLinkIata": "ATH",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "vienna": {
       "primaryIatas": [
@@ -856,8 +905,9 @@
       ],
       "preferredLinkIata": "VIE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "florence": {
       "primaryIatas": [
@@ -865,8 +915,9 @@
       ],
       "preferredLinkIata": "FLR",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hong-kong": {
       "primaryIatas": [
@@ -874,8 +925,9 @@
       ],
       "preferredLinkIata": "HKG",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "taipei": {
       "primaryIatas": [
@@ -883,8 +935,9 @@
       ],
       "preferredLinkIata": "TPE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "shanghai": {
       "primaryIatas": [
@@ -892,8 +945,9 @@
       ],
       "preferredLinkIata": "PVG",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kyoto": {
       "primaryIatas": [
@@ -901,8 +955,9 @@
       ],
       "preferredLinkIata": "KIX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "delhi": {
       "primaryIatas": [
@@ -910,8 +965,9 @@
       ],
       "preferredLinkIata": "DEL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "san-francisco": {
       "primaryIatas": [
@@ -919,8 +975,9 @@
       ],
       "preferredLinkIata": "SFO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "las-vegas": {
       "primaryIatas": [
@@ -928,8 +985,9 @@
       ],
       "preferredLinkIata": "LAS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "toronto": {
       "primaryIatas": [
@@ -937,8 +995,9 @@
       ],
       "preferredLinkIata": "YYZ",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "vancouver": {
       "primaryIatas": [
@@ -946,8 +1005,9 @@
       ],
       "preferredLinkIata": "YVR",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "auckland": {
       "primaryIatas": [
@@ -955,8 +1015,9 @@
       ],
       "preferredLinkIata": "AKL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "jerusalem": {
       "primaryIatas": [
@@ -964,17 +1025,19 @@
       ],
       "preferredLinkIata": "TLV",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "gili-meno": {
       "primaryIatas": [
-        "LOP"
+        "DPS"
       ],
-      "preferredLinkIata": "LOP",
+      "preferredLinkIata": "DPS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "el-nido": {
       "primaryIatas": [
@@ -1003,39 +1066,45 @@
     },
     "phuket": {
       "primaryIatas": [
+        "BKK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
+    },
+    "phi-phi-islands": {
+      "primaryIatas": [
         "HKT"
       ],
       "preferredLinkIata": "HKT",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
-    },
-    "phi-phi-islands": {
-      "primaryIatas": [
-        "KBV"
-      ],
-      "preferredLinkIata": "KBV",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "푸켓 국제공항 후 랏사다 항구 페리(툴킷 여정·직항 일정)"
     },
     "koh-samui": {
       "primaryIatas": [
-        "USM"
+        "USM",
+        "BKK"
       ],
       "preferredLinkIata": "USM",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "langkawi": {
       "primaryIatas": [
-        "LGK"
+        "LGK",
+        "KUL"
       ],
       "preferredLinkIata": "LGK",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "krabi": {
       "primaryIatas": [
@@ -1043,8 +1112,9 @@
       ],
       "preferredLinkIata": "KBV",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "cebu": {
       "primaryIatas": [
@@ -1052,8 +1122,9 @@
       ],
       "preferredLinkIata": "CEB",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "nha-trang": {
       "primaryIatas": [
@@ -1061,17 +1132,19 @@
       ],
       "preferredLinkIata": "CXR",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "yosemite": {
       "primaryIatas": [
-        "FAT"
+        "SFO"
       ],
-      "preferredLinkIata": "FAT",
+      "preferredLinkIata": "SFO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "grand-canyon": {
       "primaryIatas": [
@@ -1110,8 +1183,9 @@
       ],
       "preferredLinkIata": "ZAG",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "zhangjiajie": {
       "primaryIatas": [
@@ -1129,8 +1203,9 @@
       ],
       "preferredLinkIata": "HAN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "dolomites": {
       "primaryIatas": [
@@ -1138,19 +1213,20 @@
       ],
       "preferredLinkIata": "VCE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "zermatt": {
       "primaryIatas": [
         "ZRH",
         "GVA"
       ],
-      "preferredLinkIata": "GVA",
+      "preferredLinkIata": "ZRH",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "체르마트는 차량 통제 구역이라 공항 도착 후 기차(취리히·제네바 공항역 → 비스프 등)로 이어지는 일정이 흔합니다. 지도상으로는 북이탈리아 공항이 가깝게 보일 수 있어도, 실제 티켓·입국·연결은 스위스 관문(ZRH·GVA)을 먼저 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "dublin": {
       "primaryIatas": [
@@ -1158,8 +1234,9 @@
       ],
       "preferredLinkIata": "DUB",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "edinburgh": {
       "primaryIatas": [
@@ -1167,8 +1244,9 @@
       ],
       "preferredLinkIata": "EDI",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "copenhagen": {
       "primaryIatas": [
@@ -1176,8 +1254,9 @@
       ],
       "preferredLinkIata": "CPH",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "stockholm": {
       "primaryIatas": [
@@ -1185,8 +1264,9 @@
       ],
       "preferredLinkIata": "ARN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "jakarta": {
       "primaryIatas": [
@@ -1194,8 +1274,9 @@
       ],
       "preferredLinkIata": "CGK",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kuala-lumpur": {
       "primaryIatas": [
@@ -1203,8 +1284,9 @@
       ],
       "preferredLinkIata": "KUL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hanoi": {
       "primaryIatas": [
@@ -1212,8 +1294,9 @@
       ],
       "preferredLinkIata": "HAN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "seattle": {
       "primaryIatas": [
@@ -1230,8 +1313,9 @@
       ],
       "preferredLinkIata": "MUC",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "milan": {
       "primaryIatas": [
@@ -1239,8 +1323,9 @@
       ],
       "preferredLinkIata": "MXP",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "lisbon": {
       "primaryIatas": [
@@ -1248,8 +1333,9 @@
       ],
       "preferredLinkIata": "LIS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "porto": {
       "primaryIatas": [
@@ -1257,8 +1343,9 @@
       ],
       "preferredLinkIata": "OPO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "madrid": {
       "primaryIatas": [
@@ -1266,8 +1353,9 @@
       ],
       "preferredLinkIata": "MAD",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "seville": {
       "primaryIatas": [
@@ -1275,8 +1363,9 @@
       ],
       "preferredLinkIata": "SVQ",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "brussels": {
       "primaryIatas": [
@@ -1284,8 +1373,9 @@
       ],
       "preferredLinkIata": "BRU",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "oslo": {
       "primaryIatas": [
@@ -1293,8 +1383,9 @@
       ],
       "preferredLinkIata": "OSL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "zurich": {
       "primaryIatas": [
@@ -1302,8 +1393,9 @@
       ],
       "preferredLinkIata": "ZRH",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "geneva": {
       "primaryIatas": [
@@ -1311,8 +1403,9 @@
       ],
       "preferredLinkIata": "GVA",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "washington-dc": {
       "primaryIatas": [
@@ -1320,8 +1413,9 @@
       ],
       "preferredLinkIata": "IAD",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "boston": {
       "primaryIatas": [
@@ -1329,8 +1423,9 @@
       ],
       "preferredLinkIata": "BOS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "miami": {
       "primaryIatas": [
@@ -1338,17 +1433,21 @@
       ],
       "preferredLinkIata": "MIA",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "montreal": {
       "primaryIatas": [
-        "YUL"
+        "YUL",
+        "YYZ",
+        "YVR"
       ],
       "preferredLinkIata": "YUL",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "angkor-thom": {
       "primaryIatas": [
@@ -1356,8 +1455,9 @@
       ],
       "preferredLinkIata": "REP",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "borobudur": {
       "primaryIatas": [
@@ -1371,12 +1471,14 @@
     },
     "ayutthaya": {
       "primaryIatas": [
+        "BKK",
         "DMK"
       ],
-      "preferredLinkIata": "DMK",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "BKK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "luang-prabang": {
       "primaryIatas": [
@@ -1393,8 +1495,9 @@
       ],
       "preferredLinkIata": "DAD",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hoi-an": {
       "primaryIatas": [
@@ -1402,8 +1505,9 @@
       ],
       "preferredLinkIata": "DAD",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "taj-mahal": {
       "primaryIatas": [
@@ -1411,8 +1515,9 @@
       ],
       "preferredLinkIata": "DEL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "jaipur": {
       "primaryIatas": [
@@ -1450,8 +1555,9 @@
       ],
       "preferredLinkIata": "PEK",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "forbidden-city": {
       "primaryIatas": [
@@ -1459,8 +1565,9 @@
       ],
       "preferredLinkIata": "PEK",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "terracotta-army": {
       "primaryIatas": [
@@ -1507,10 +1614,11 @@
         "ASR",
         "NAV"
       ],
-      "preferredLinkIata": "NAV",
+      "preferredLinkIata": "ASR",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "ephesus": {
       "primaryIatas": [
@@ -1573,12 +1681,13 @@
     },
     "cusco": {
       "primaryIatas": [
-        "CUZ"
+        "ATL"
       ],
-      "preferredLinkIata": "CUZ",
+      "preferredLinkIata": "ATL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "nazca-lines": {
       "primaryIatas": [
@@ -1602,12 +1711,13 @@
     },
     "santiago-de-compostela": {
       "primaryIatas": [
-        "SCL"
+        "MAD"
       ],
-      "preferredLinkIata": "SCL",
+      "preferredLinkIata": "MAD",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "everest-base-camp": {
       "primaryIatas": [
@@ -1615,8 +1725,9 @@
       ],
       "preferredLinkIata": "KTM",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "annapurna-circuit": {
       "primaryIatas": [
@@ -1644,8 +1755,9 @@
       ],
       "preferredLinkIata": "GVA",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "komodo-island": {
       "primaryIatas": [
@@ -1653,8 +1765,9 @@
       ],
       "preferredLinkIata": "LBJ",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "raja-ampat": {
       "primaryIatas": [
@@ -1695,17 +1808,20 @@
       ],
       "preferredLinkIata": "SJO",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "inca-trail": {
       "primaryIatas": [
+        "LIM",
         "CUZ"
       ],
-      "preferredLinkIata": "CUZ",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "LIM",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "peninsula-valdes": {
       "primaryIatas": [
@@ -1723,18 +1839,19 @@
       ],
       "preferredLinkIata": "IBZ",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "crete": {
       "primaryIatas": [
-        "HER",
-        "ATH"
+        "HER"
       ],
       "preferredLinkIata": "HER",
-      "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "corsica": {
       "primaryIatas": [
@@ -1754,9 +1871,9 @@
       ],
       "preferredLinkIata": "CTA",
       "kind": "multi",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "시칠리아는 동부 카타니아(CTA)·서북부 팔레르모(PMO) 등 도착 공항이 나뉩니다. 인천·유럽 경유 후 시칠리아행 국내선·유럽내선으로 이어지는 일정이 흔하니, 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hvar": {
       "primaryIatas": [
@@ -1789,12 +1906,14 @@
     },
     "rocky-mountains": {
       "primaryIatas": [
-        "DEN"
+        "YYC",
+        "YVR"
       ],
-      "preferredLinkIata": "DEN",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "YYC",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "wadi-rum": {
       "primaryIatas": [
@@ -1802,9 +1921,9 @@
       ],
       "preferredLinkIata": "AMM",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium",
-      "bannerNote": "요르단 국제선은 대부분 암만 퀸 알리아(AMM)에 도착한 뒤 페트라·와디 럼으로 이동합니다. 티켓·일정의 도착 공항을 확인해 주세요."
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kamchatka": {
       "primaryIatas": [
@@ -1828,12 +1947,14 @@
     },
     "tahiti": {
       "primaryIatas": [
-        "PPT"
+        "PPT",
+        "NRT"
       ],
       "preferredLinkIata": "PPT",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "sapa": {
       "primaryIatas": [
@@ -1847,12 +1968,14 @@
     },
     "aconcagua": {
       "primaryIatas": [
-        "SCL"
+        "ATL",
+        "EZE"
       ],
-      "preferredLinkIata": "SCL",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "ATL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "denali": {
       "primaryIatas": [
@@ -1876,12 +1999,13 @@
     },
     "sequoia-national-park": {
       "primaryIatas": [
-        "FAT"
+        "LAX"
       ],
-      "preferredLinkIata": "FAT",
+      "preferredLinkIata": "LAX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "arequipa": {
       "primaryIatas": [
@@ -1908,8 +2032,9 @@
       ],
       "preferredLinkIata": "MXP",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "mount-bromo": {
       "primaryIatas": [
@@ -1917,8 +2042,9 @@
       ],
       "preferredLinkIata": "SUB",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "da-nang": {
       "primaryIatas": [
@@ -1935,8 +2061,9 @@
       ],
       "preferredLinkIata": "CTS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "osaka": {
       "primaryIatas": [
@@ -1944,8 +2071,9 @@
       ],
       "preferredLinkIata": "KIX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "fukuoka": {
       "primaryIatas": [
@@ -1953,8 +2081,9 @@
       ],
       "preferredLinkIata": "FUK",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "qingdao": {
       "primaryIatas": [
@@ -1972,8 +2101,9 @@
       ],
       "preferredLinkIata": "DBV",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "saipan": {
       "primaryIatas": [
@@ -1981,8 +2111,9 @@
       ],
       "preferredLinkIata": "SPN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "phu-quoc": {
       "primaryIatas": [
@@ -1990,8 +2121,9 @@
       ],
       "preferredLinkIata": "PQC",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kota-kinabalu": {
       "primaryIatas": [
@@ -1999,8 +2131,9 @@
       ],
       "preferredLinkIata": "BKI",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "honolulu": {
       "primaryIatas": [
@@ -2008,8 +2141,9 @@
       ],
       "preferredLinkIata": "HNL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hokkaido": {
       "primaryIatas": [
@@ -2017,8 +2151,9 @@
       ],
       "preferredLinkIata": "CTS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "sant-joan": {
       "primaryIatas": [
@@ -2026,8 +2161,9 @@
       ],
       "preferredLinkIata": "IBZ",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "miyakojima": {
       "primaryIatas": [
@@ -2045,8 +2181,9 @@
       ],
       "preferredLinkIata": "KTM",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "faroe-islands": {
       "primaryIatas": [
@@ -2054,8 +2191,9 @@
       ],
       "preferredLinkIata": "FAE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kiribati": {
       "primaryIatas": [
@@ -2079,21 +2217,25 @@
     },
     "bled": {
       "primaryIatas": [
-        "ZAG"
+        "ZAG",
+        "VCE"
       ],
       "preferredLinkIata": "ZAG",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "la-spezia": {
       "primaryIatas": [
+        "FCO",
         "MXP"
       ],
-      "preferredLinkIata": "MXP",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "FCO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kotor": {
       "primaryIatas": [
@@ -2101,8 +2243,9 @@
       ],
       "preferredLinkIata": "DBV",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "jeju": {
       "primaryIatas": [
@@ -2119,8 +2262,9 @@
       ],
       "preferredLinkIata": "CJU",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "manila": {
       "primaryIatas": [
@@ -2128,8 +2272,9 @@
       ],
       "preferredLinkIata": "MNL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "chiang-mai": {
       "primaryIatas": [
@@ -2137,8 +2282,9 @@
       ],
       "preferredLinkIata": "CNX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "macau": {
       "primaryIatas": [
@@ -2146,8 +2292,9 @@
       ],
       "preferredLinkIata": "MFM",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "budapest": {
       "primaryIatas": [
@@ -2164,8 +2311,9 @@
       ],
       "preferredLinkIata": "HEL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "reykjavik": {
       "primaryIatas": [
@@ -2173,8 +2321,9 @@
       ],
       "preferredLinkIata": "KEF",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "brisbane": {
       "primaryIatas": [
@@ -2182,8 +2331,9 @@
       ],
       "preferredLinkIata": "BNE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "nara": {
       "primaryIatas": [
@@ -2191,8 +2341,9 @@
       ],
       "preferredLinkIata": "KIX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kobe": {
       "primaryIatas": [
@@ -2200,26 +2351,30 @@
       ],
       "preferredLinkIata": "KIX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "nagasaki": {
       "primaryIatas": [
-        "KMJ"
+        "FUK",
+        "ICN"
       ],
-      "preferredLinkIata": "KMJ",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "FUK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "kanazawa": {
       "primaryIatas": [
-        "NGO"
+        "KIX"
       ],
-      "preferredLinkIata": "NGO",
+      "preferredLinkIata": "KIX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "yokohama": {
       "primaryIatas": [
@@ -2245,8 +2400,9 @@
       ],
       "preferredLinkIata": "KMJ",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "ishigaki": {
       "primaryIatas": [
@@ -2264,8 +2420,9 @@
       ],
       "preferredLinkIata": "LOP",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "vientiane": {
       "primaryIatas": [
@@ -2273,8 +2430,9 @@
       ],
       "preferredLinkIata": "VTE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "vang-vieng": {
       "primaryIatas": [
@@ -2282,8 +2440,9 @@
       ],
       "preferredLinkIata": "VTE",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "zagreb": {
       "primaryIatas": [
@@ -2291,8 +2450,9 @@
       ],
       "preferredLinkIata": "ZAG",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "warsaw": {
       "primaryIatas": [
@@ -2300,8 +2460,9 @@
       ],
       "preferredLinkIata": "WAW",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "philadelphia": {
       "primaryIatas": [
@@ -2309,8 +2470,9 @@
       ],
       "preferredLinkIata": "PHL",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "san-diego": {
       "primaryIatas": [
@@ -2318,17 +2480,3520 @@
       ],
       "preferredLinkIata": "SAN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "gold-coast": {
       "primaryIatas": [
-        "OOL"
+        "OOL",
+        "BNE"
       ],
       "preferredLinkIata": "OOL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
+    }
+  },
+  "placeIds": {
+    "로스앤젤레스": {
+      "primaryIatas": [
+        "LAX"
+      ],
+      "preferredLinkIata": "LAX",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "로스앤젤레스",
+      "linkedSlug": "los-angeles"
+    },
+    "아마존열대우림": {
+      "primaryIatas": [
+        "MAO"
+      ],
+      "preferredLinkIata": "MAO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아마존 열대우림",
+      "linkedSlug": "amazon-rainforest"
+    },
+    "체르마트": {
+      "primaryIatas": [
+        "ZRH",
+        "GVA"
+      ],
+      "preferredLinkIata": "ZRH",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "체르마트",
+      "linkedSlug": "zermatt"
+    },
+    "토론토": {
+      "primaryIatas": [
+        "YYZ"
+      ],
+      "preferredLinkIata": "YYZ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "토론토",
+      "linkedSlug": "toronto"
+    },
+    "페즈": {
+      "primaryIatas": [
+        "FEZ"
+      ],
+      "preferredLinkIata": "FEZ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "페즈",
+      "linkedSlug": "fez"
+    },
+    "병마용": {
+      "primaryIatas": [
+        "XIY"
+      ],
+      "preferredLinkIata": "XIY",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "병마용",
+      "linkedSlug": "terracotta-army"
+    },
+    "취리히": {
+      "primaryIatas": [
+        "ZRH"
+      ],
+      "preferredLinkIata": "ZRH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "취리히",
+      "linkedSlug": "zurich"
+    },
+    "코사무이": {
+      "primaryIatas": [
+        "USM",
+        "BKK"
+      ],
+      "preferredLinkIata": "USM",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코사무이",
+      "linkedSlug": "koh-samui"
+    },
+    "사모아": {
+      "primaryIatas": [
+        "APW",
+        "AKL",
+        "NAN"
+      ],
+      "preferredLinkIata": "APW",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "사모아",
+      "linkedSlug": "samoa"
+    },
+    "페르세폴리스": {
+      "primaryIatas": [
+        "SYZ"
+      ],
+      "preferredLinkIata": "SYZ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "페르세폴리스",
+      "linkedSlug": "persepolis"
+    },
+    "코모도섬": {
+      "primaryIatas": [
+        "LBJ"
+      ],
+      "preferredLinkIata": "LBJ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코모도 섬",
+      "linkedSlug": "komodo-island"
+    },
+    "코모도": {
+      "primaryIatas": [
+        "LBJ"
+      ],
+      "preferredLinkIata": "LBJ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코모도 섬",
+      "linkedSlug": "komodo-island"
+    },
+    "마드리드": {
+      "primaryIatas": [
+        "MAD"
+      ],
+      "preferredLinkIata": "MAD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마드리드",
+      "linkedSlug": "madrid"
+    },
+    "크라비": {
+      "primaryIatas": [
+        "KBV"
+      ],
+      "preferredLinkIata": "KBV",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "크라비",
+      "linkedSlug": "krabi"
+    },
+    "브로모화산": {
+      "primaryIatas": [
+        "SUB"
+      ],
+      "preferredLinkIata": "SUB",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "브로모 화산",
+      "linkedSlug": "mount-bromo"
+    },
+    "보로부두르": {
+      "primaryIatas": [
+        "CGK",
+        "DPS"
+      ],
+      "preferredLinkIata": "CGK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "보로부두르",
+      "linkedSlug": "borobudur"
+    },
+    "푸켓": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "푸켓",
+      "linkedSlug": "phuket"
+    },
+    "그랜드캐니언": {
+      "primaryIatas": [
+        "LAS"
+      ],
+      "preferredLinkIata": "LAS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "그랜드 캐니언",
+      "linkedSlug": "grand-canyon"
+    },
+    "몰디브": {
+      "primaryIatas": [
+        "MLE"
+      ],
+      "preferredLinkIata": "MLE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "몰디브",
+      "linkedSlug": "maldives"
+    },
+    "라로통가": {
+      "primaryIatas": [
+        "TBU",
+        "RAR",
+        "AKL"
+      ],
+      "preferredLinkIata": "TBU",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "라로통가",
+      "linkedSlug": "rarotonga"
+    },
+    "울루루": {
+      "primaryIatas": [
+        "AYQ"
+      ],
+      "preferredLinkIata": "AYQ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "울루루",
+      "linkedSlug": "uluru"
+    },
+    "모리셔스": {
+      "primaryIatas": [
+        "MRU"
+      ],
+      "preferredLinkIata": "MRU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "모리셔스",
+      "linkedSlug": "mauritius"
+    },
+    "기자피라미드": {
+      "primaryIatas": [
+        "CAI"
+      ],
+      "preferredLinkIata": "CAI",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "기자 피라미드",
+      "linkedSlug": "giza-pyramids"
+    },
+    "더블린": {
+      "primaryIatas": [
+        "DUB"
+      ],
+      "preferredLinkIata": "DUB",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "더블린",
+      "linkedSlug": "dublin"
+    },
+    "하와이": {
+      "primaryIatas": [
+        "HNL"
+      ],
+      "preferredLinkIata": "HNL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "하와이",
+      "linkedSlug": "hawaii"
+    },
+    "잔지바르": {
+      "primaryIatas": [
+        "ZNZ"
+      ],
+      "preferredLinkIata": "ZNZ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "잔지바르",
+      "linkedSlug": "zanzibar"
+    },
+    "하롱베이": {
+      "primaryIatas": [
+        "HAN"
+      ],
+      "preferredLinkIata": "HAN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "하롱베이",
+      "linkedSlug": "halong-bay"
+    },
+    "후지산": {
+      "primaryIatas": [
+        "NRT",
+        "HND"
+      ],
+      "preferredLinkIata": "NRT",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "후지산",
+      "linkedSlug": "mount-fuji"
+    },
+    "친퀘테레": {
+      "primaryIatas": [
+        "MXP"
+      ],
+      "preferredLinkIata": "MXP",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "친퀘테레",
+      "linkedSlug": "cinque-terre"
+    },
+    "돌로미티": {
+      "primaryIatas": [
+        "VCE"
+      ],
+      "preferredLinkIata": "VCE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "돌로미티",
+      "linkedSlug": "dolomites"
+    },
+    "플리트비체호수": {
+      "primaryIatas": [
+        "ZAG"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "플리트비체 호수",
+      "linkedSlug": "plitvice-lakes"
+    },
+    "플리트비체": {
+      "primaryIatas": [
+        "ZAG"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "플리트비체 국립공원",
+      "linkedSlug": "plitvice-lakes"
+    },
+    "타히티": {
+      "primaryIatas": [
+        "PPT",
+        "NRT"
+      ],
+      "preferredLinkIata": "PPT",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "타히티",
+      "linkedSlug": "tahiti"
+    },
+    "피오르드랜드": {
+      "primaryIatas": [
+        "ZQN",
+        "AKL",
+        "CHC"
+      ],
+      "preferredLinkIata": "ZQN",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "피오르드랜드",
+      "linkedSlug": "fiordland"
+    },
+    "도쿄": {
+      "primaryIatas": [
+        "HND",
+        "NRT"
+      ],
+      "preferredLinkIata": "HND",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "도쿄",
+      "linkedSlug": "tokyo"
+    },
+    "자카르타": {
+      "primaryIatas": [
+        "CGK"
+      ],
+      "preferredLinkIata": "CGK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "자카르타",
+      "linkedSlug": "jakarta"
+    },
+    "발데스반도": {
+      "primaryIatas": [
+        "PMY",
+        "EZE"
+      ],
+      "preferredLinkIata": "PMY",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "발데스 반도",
+      "linkedSlug": "peninsula-valdes"
+    },
+    "프라하": {
+      "primaryIatas": [
+        "PRG"
+      ],
+      "preferredLinkIata": "PRG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "프라하",
+      "linkedSlug": "prague"
+    },
+    "랑카위": {
+      "primaryIatas": [
+        "LGK",
+        "KUL"
+      ],
+      "preferredLinkIata": "LGK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "랑카위",
+      "linkedSlug": "langkawi"
+    },
+    "보라카이": {
+      "primaryIatas": [
+        "KLO",
+        "MPH"
+      ],
+      "preferredLinkIata": "KLO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "보라카이",
+      "linkedSlug": "boracay"
+    },
+    "코스타리카": {
+      "primaryIatas": [
+        "SJO"
+      ],
+      "preferredLinkIata": "SJO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코스타리카",
+      "linkedSlug": "costa-rica"
+    },
+    "티칼": {
+      "primaryIatas": [
+        "GUA"
+      ],
+      "preferredLinkIata": "GUA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "티칼",
+      "linkedSlug": "tikal"
+    },
+    "길리메노": {
+      "primaryIatas": [
+        "DPS"
+      ],
+      "preferredLinkIata": "DPS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "길리 메노",
+      "linkedSlug": "gili-meno"
+    },
+    "피피섬": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "피피 섬",
+      "linkedSlug": "phi-phi-islands"
+    },
+    "피피": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "피피 섬",
+      "linkedSlug": "phi-phi-islands"
+    },
+    "랄리벨라": {
+      "primaryIatas": [
+        "ADD"
+      ],
+      "preferredLinkIata": "ADD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "랄리벨라",
+      "linkedSlug": "lalibela"
+    },
+    "세부": {
+      "primaryIatas": [
+        "CEB"
+      ],
+      "preferredLinkIata": "CEB",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "세부",
+      "linkedSlug": "cebu"
+    },
+    "발리": {
+      "primaryIatas": [
+        "DPS"
+      ],
+      "preferredLinkIata": "DPS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "발리",
+      "linkedSlug": "bali"
+    },
+    "팔라완": {
+      "primaryIatas": [
+        "PPS"
+      ],
+      "preferredLinkIata": "PPS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "팔라완",
+      "linkedSlug": "palawan"
+    },
+    "시칠리아": {
+      "primaryIatas": [
+        "CTA",
+        "PMO"
+      ],
+      "preferredLinkIata": "CTA",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "시칠리아",
+      "linkedSlug": "sicily"
+    },
+    "이비사": {
+      "primaryIatas": [
+        "IBZ"
+      ],
+      "preferredLinkIata": "IBZ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "이비사",
+      "linkedSlug": "ibiza"
+    },
+    "크레타": {
+      "primaryIatas": [
+        "HER"
+      ],
+      "preferredLinkIata": "HER",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "크레타",
+      "linkedSlug": "crete"
+    },
+    "보드룸": {
+      "primaryIatas": [
+        "BJV",
+        "IST"
+      ],
+      "preferredLinkIata": "BJV",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "보드룸",
+      "linkedSlug": "bodrum"
+    },
+    "아조레스제도": {
+      "primaryIatas": [
+        "PDL"
+      ],
+      "preferredLinkIata": "PDL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아조레스 제도",
+      "linkedSlug": "azores"
+    },
+    "아조레스": {
+      "primaryIatas": [
+        "PDL"
+      ],
+      "preferredLinkIata": "PDL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아조레스 제도",
+      "linkedSlug": "azores"
+    },
+    "버뮤다": {
+      "primaryIatas": [
+        "BDA"
+      ],
+      "preferredLinkIata": "BDA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "버뮤다",
+      "linkedSlug": "bermuda"
+    },
+    "칸쿤": {
+      "primaryIatas": [
+        "CUN"
+      ],
+      "preferredLinkIata": "CUN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "칸쿤",
+      "linkedSlug": "cancun"
+    },
+    "페르난두지노로냐": {
+      "primaryIatas": [
+        "FEN",
+        "REC",
+        "NAT"
+      ],
+      "preferredLinkIata": "FEN",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "페르난두지노로냐",
+      "linkedSlug": "fernando-de-noronha"
+    },
+    "보라보라": {
+      "primaryIatas": [
+        "BOB",
+        "PPT"
+      ],
+      "preferredLinkIata": "BOB",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "보라보라",
+      "linkedSlug": "bora-bora"
+    },
+    "우유니소금사막": {
+      "primaryIatas": [
+        "UYU",
+        "LPB"
+      ],
+      "preferredLinkIata": "UYU",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "우유니 소금사막",
+      "linkedSlug": "uyuni-salt-flat"
+    },
+    "세이셸": {
+      "primaryIatas": [
+        "SEZ"
+      ],
+      "preferredLinkIata": "SEZ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "세이셸",
+      "linkedSlug": "seychelles"
+    },
+    "괌": {
+      "primaryIatas": [
+        "GUM"
+      ],
+      "preferredLinkIata": "GUM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "괌",
+      "linkedSlug": "guam"
+    },
+    "바누아투": {
+      "primaryIatas": [
+        "VLI"
+      ],
+      "preferredLinkIata": "VLI",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "바누아투",
+      "linkedSlug": "vanuatu"
+    },
+    "안다만제도": {
+      "primaryIatas": [
+        "IXZ",
+        "DEL"
+      ],
+      "preferredLinkIata": "IXZ",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "안다만 제도",
+      "linkedSlug": "andaman-islands"
+    },
+    "안다만": {
+      "primaryIatas": [
+        "IXZ",
+        "DEL"
+      ],
+      "preferredLinkIata": "IXZ",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "안다만 제도",
+      "linkedSlug": "andaman-islands"
+    },
+    "사파": {
+      "primaryIatas": [
+        "HAN"
+      ],
+      "preferredLinkIata": "HAN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "사파",
+      "linkedSlug": "sapa"
+    },
+    "팀북투": {
+      "primaryIatas": [
+        "BKO",
+        "ADD",
+        "CDG"
+      ],
+      "preferredLinkIata": "BKO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "팀북투",
+      "linkedSlug": "timbuktu"
+    },
+    "코르시카": {
+      "primaryIatas": [
+        "AJA",
+        "BIA"
+      ],
+      "preferredLinkIata": "AJA",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코르시카",
+      "linkedSlug": "corsica"
+    },
+    "로키산맥": {
+      "primaryIatas": [
+        "YYC",
+        "YVR"
+      ],
+      "preferredLinkIata": "YYC",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "로키 산맥",
+      "linkedSlug": "banff-national-park"
+    },
+    "밴프국립공원": {
+      "primaryIatas": [
+        "YYC"
+      ],
+      "preferredLinkIata": "YYC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "밴프 국립공원",
+      "linkedSlug": "banff-national-park"
+    },
+    "밴프": {
+      "primaryIatas": [
+        "YYC"
+      ],
+      "preferredLinkIata": "YYC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "밴프 국립공원",
+      "linkedSlug": "banff-national-park"
+    },
+    "옐로나이프": {
+      "primaryIatas": [
+        "YZF",
+        "YVR"
+      ],
+      "preferredLinkIata": "YZF",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "옐로나이프",
+      "linkedSlug": "yellowknife"
+    },
+    "밀포드사운드": {
+      "primaryIatas": [
+        "ZQN",
+        "AKL"
+      ],
+      "preferredLinkIata": "ZQN",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "밀포드 사운드",
+      "linkedSlug": "milford-sound"
+    },
+    "그레이트배리어리프": {
+      "primaryIatas": [
+        "CNS"
+      ],
+      "preferredLinkIata": "CNS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "그레이트 배리어 리프",
+      "linkedSlug": "great-barrier-reef"
+    },
+    "빅토리아폭포": {
+      "primaryIatas": [
+        "VFA",
+        "JNB"
+      ],
+      "preferredLinkIata": "VFA",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "빅토리아 폭포",
+      "linkedSlug": "victoria-falls"
+    },
+    "캄차카": {
+      "primaryIatas": [
+        "PKC"
+      ],
+      "preferredLinkIata": "PKC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "캄차카",
+      "linkedSlug": "kamchatka"
+    },
+    "요세미티국립공원": {
+      "primaryIatas": [
+        "SFO"
+      ],
+      "preferredLinkIata": "SFO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "요세미티 국립공원",
+      "linkedSlug": "yosemite"
+    },
+    "요세미티": {
+      "primaryIatas": [
+        "SFO"
+      ],
+      "preferredLinkIata": "SFO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "요세미티 국립공원",
+      "linkedSlug": "yosemite"
+    },
+    "장가계": {
+      "primaryIatas": [
+        "DYG"
+      ],
+      "preferredLinkIata": "DYG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "장가계",
+      "linkedSlug": "zhangjiajie"
+    },
+    "엘니도": {
+      "primaryIatas": [
+        "PPS",
+        "MNL",
+        "ENI"
+      ],
+      "preferredLinkIata": "PPS",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "엘니도",
+      "linkedSlug": "el-nido"
+    },
+    "토레스델파이네": {
+      "primaryIatas": [
+        "PUQ",
+        "SCL"
+      ],
+      "preferredLinkIata": "PUQ",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "토레스 델 파이네",
+      "linkedSlug": "torres-del-paine"
+    },
+    "이구아수폭포": {
+      "primaryIatas": [
+        "GRU"
+      ],
+      "preferredLinkIata": "GRU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "이구아수 폭포",
+      "linkedSlug": "iguazu-falls"
+    },
+    "카나리아제도": {
+      "primaryIatas": [
+        "TFS",
+        "LPA"
+      ],
+      "preferredLinkIata": "TFS",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "카나리아 제도",
+      "linkedSlug": "canary-islands"
+    },
+    "카나리아": {
+      "primaryIatas": [
+        "TFS",
+        "LPA"
+      ],
+      "preferredLinkIata": "TFS",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "카나리아 제도",
+      "linkedSlug": "canary-islands"
+    },
+    "크리스마스섬": {
+      "primaryIatas": [
+        "XCH",
+        "PER"
+      ],
+      "preferredLinkIata": "XCH",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "크리스마스 섬",
+      "linkedSlug": "christmas-island"
+    },
+    "크리스마스": {
+      "primaryIatas": [
+        "XCH",
+        "PER"
+      ],
+      "preferredLinkIata": "XCH",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "크리스마스 섬",
+      "linkedSlug": "christmas-island"
+    },
+    "홍콩": {
+      "primaryIatas": [
+        "HKG"
+      ],
+      "preferredLinkIata": "HKG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "홍콩",
+      "linkedSlug": "hong-kong"
+    },
+    "로포텐제도": {
+      "primaryIatas": [
+        "BOO",
+        "EVE",
+        "OSL"
+      ],
+      "preferredLinkIata": "BOO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "로포텐 제도",
+      "linkedSlug": "lofoten"
+    },
+    "로포텐": {
+      "primaryIatas": [
+        "BOO",
+        "EVE",
+        "OSL"
+      ],
+      "preferredLinkIata": "BOO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "로포텐 제도",
+      "linkedSlug": "lofoten"
+    },
+    "아이슬란드": {
+      "primaryIatas": [
+        "KEF"
+      ],
+      "preferredLinkIata": "KEF",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아이슬란드",
+      "linkedSlug": "iceland"
+    },
+    "방콕": {
+      "primaryIatas": [
+        "BKK",
+        "DMK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "방콕",
+      "linkedSlug": "bangkok"
+    },
+    "상하이": {
+      "primaryIatas": [
+        "PVG"
+      ],
+      "preferredLinkIata": "PVG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "상하이",
+      "linkedSlug": "shanghai"
+    },
+    "델리": {
+      "primaryIatas": [
+        "DEL"
+      ],
+      "preferredLinkIata": "DEL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "델리",
+      "linkedSlug": "delhi"
+    },
+    "파리": {
+      "primaryIatas": [
+        "CDG"
+      ],
+      "preferredLinkIata": "CDG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "파리",
+      "linkedSlug": "paris"
+    },
+    "바르셀로나": {
+      "primaryIatas": [
+        "BCN"
+      ],
+      "preferredLinkIata": "BCN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "바르셀로나",
+      "linkedSlug": "barcelona"
+    },
+    "코펜하겐": {
+      "primaryIatas": [
+        "CPH"
+      ],
+      "preferredLinkIata": "CPH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코펜하겐",
+      "linkedSlug": "copenhagen"
+    },
+    "리스본": {
+      "primaryIatas": [
+        "LIS"
+      ],
+      "preferredLinkIata": "LIS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "리스본",
+      "linkedSlug": "lisbon"
+    },
+    "밀라노": {
+      "primaryIatas": [
+        "MXP"
+      ],
+      "preferredLinkIata": "MXP",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "밀라노",
+      "linkedSlug": "milan"
+    },
+    "뮌헨": {
+      "primaryIatas": [
+        "MUC"
+      ],
+      "preferredLinkIata": "MUC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "뮌헨",
+      "linkedSlug": "munich"
+    },
+    "포르투": {
+      "primaryIatas": [
+        "OPO"
+      ],
+      "preferredLinkIata": "OPO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "포르투",
+      "linkedSlug": "porto"
+    },
+    "세비야": {
+      "primaryIatas": [
+        "SVQ"
+      ],
+      "preferredLinkIata": "SVQ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "세비야",
+      "linkedSlug": "seville"
+    },
+    "브뤼셀": {
+      "primaryIatas": [
+        "BRU"
+      ],
+      "preferredLinkIata": "BRU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "브뤼셀",
+      "linkedSlug": "brussels"
+    },
+    "오슬로": {
+      "primaryIatas": [
+        "OSL"
+      ],
+      "preferredLinkIata": "OSL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "오슬로",
+      "linkedSlug": "oslo"
+    },
+    "제네바": {
+      "primaryIatas": [
+        "GVA"
+      ],
+      "preferredLinkIata": "GVA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "제네바",
+      "linkedSlug": "geneva"
+    },
+    "둔황": {
+      "primaryIatas": [
+        "DNH"
+      ],
+      "preferredLinkIata": "DNH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "둔황",
+      "linkedSlug": "dunhuang"
+    },
+    "보르네오": {
+      "primaryIatas": [
+        "BKI"
+      ],
+      "preferredLinkIata": "BKI",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "보르네오",
+      "linkedSlug": "borneo"
+    },
+    "베를린": {
+      "primaryIatas": [
+        "BER"
+      ],
+      "preferredLinkIata": "BER",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "베를린",
+      "linkedSlug": "berlin"
+    },
+    "바라나시": {
+      "primaryIatas": [
+        "VNS",
+        "DEL"
+      ],
+      "preferredLinkIata": "VNS",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "바라나시",
+      "linkedSlug": "varanasi"
+    },
+    "바라나": {
+      "primaryIatas": [
+        "VNS",
+        "DEL"
+      ],
+      "preferredLinkIata": "VNS",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "바라나시",
+      "linkedSlug": "varanasi"
+    },
+    "미드웨이환초": {
+      "primaryIatas": [
+        "HNL"
+      ],
+      "preferredLinkIata": "HNL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "미드웨이 환초",
+      "linkedSlug": "midway-atoll"
+    },
+    "마이애미": {
+      "primaryIatas": [
+        "MIA"
+      ],
+      "preferredLinkIata": "MIA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마이애미",
+      "linkedSlug": "miami"
+    },
+    "샌프란시스코": {
+      "primaryIatas": [
+        "SFO"
+      ],
+      "preferredLinkIata": "SFO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "샌프란시스코",
+      "linkedSlug": "san-francisco"
+    },
+    "라스베가스": {
+      "primaryIatas": [
+        "LAS"
+      ],
+      "preferredLinkIata": "LAS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "라스베가스",
+      "linkedSlug": "las-vegas"
+    },
+    "워싱턴dc": {
+      "primaryIatas": [
+        "IAD"
+      ],
+      "preferredLinkIata": "IAD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "워싱턴 DC",
+      "linkedSlug": "washington-dc"
+    },
+    "리우데자네이루": {
+      "primaryIatas": [
+        "GIG"
+      ],
+      "preferredLinkIata": "GIG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "리우데자네이루",
+      "linkedSlug": "rio-de-janeiro"
+    },
+    "우수아이아": {
+      "primaryIatas": [
+        "EZE"
+      ],
+      "preferredLinkIata": "EZE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "우수아이아",
+      "linkedSlug": "ushuaia"
+    },
+    "부에노스아이레스": {
+      "primaryIatas": [
+        "EZE"
+      ],
+      "preferredLinkIata": "EZE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "부에노스아이레스",
+      "linkedSlug": "buenos-aires"
+    },
+    "시드니": {
+      "primaryIatas": [
+        "SYD"
+      ],
+      "preferredLinkIata": "SYD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "시드니",
+      "linkedSlug": "sydney"
+    },
+    "멜버른": {
+      "primaryIatas": [
+        "MEL"
+      ],
+      "preferredLinkIata": "MEL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "멜버른",
+      "linkedSlug": "melbourne"
+    },
+    "오클랜드": {
+      "primaryIatas": [
+        "AKL"
+      ],
+      "preferredLinkIata": "AKL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "오클랜드",
+      "linkedSlug": "auckland"
+    },
+    "뉴칼레도니아": {
+      "primaryIatas": [
+        "NOU"
+      ],
+      "preferredLinkIata": "NOU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "뉴칼레도니아",
+      "linkedSlug": "new-caledonia"
+    },
+    "카이로": {
+      "primaryIatas": [
+        "CAI"
+      ],
+      "preferredLinkIata": "CAI",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "카이로",
+      "linkedSlug": "cairo"
+    },
+    "마라케시": {
+      "primaryIatas": [
+        "RAK"
+      ],
+      "preferredLinkIata": "RAK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마라케시",
+      "linkedSlug": "marrakech"
+    },
+    "마라케": {
+      "primaryIatas": [
+        "RAK"
+      ],
+      "preferredLinkIata": "RAK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마라케시",
+      "linkedSlug": "marrakech"
+    },
+    "아콩카과": {
+      "primaryIatas": [
+        "ATL",
+        "EZE"
+      ],
+      "preferredLinkIata": "ATL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아콩카과",
+      "linkedSlug": "aconcagua"
+    },
+    "세인트헬레나": {
+      "primaryIatas": [
+        "JNB",
+        "HLE"
+      ],
+      "preferredLinkIata": "JNB",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "세인트 헬레나",
+      "linkedSlug": "st-helena"
+    },
+    "교토": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "교토",
+      "linkedSlug": "kyoto"
+    },
+    "몽블랑": {
+      "primaryIatas": [
+        "GVA"
+      ],
+      "preferredLinkIata": "GVA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "몽블랑",
+      "linkedSlug": "mont-blanc"
+    },
+    "페트라": {
+      "primaryIatas": [
+        "AMM"
+      ],
+      "preferredLinkIata": "AMM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "페트라",
+      "linkedSlug": "petra"
+    },
+    "아테네": {
+      "primaryIatas": [
+        "ATH"
+      ],
+      "preferredLinkIata": "ATH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아테네",
+      "linkedSlug": "athens"
+    },
+    "스발바르제도": {
+      "primaryIatas": [
+        "OSL",
+        "LYR"
+      ],
+      "preferredLinkIata": "OSL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "스발바르 제도",
+      "linkedSlug": "svalbard"
+    },
+    "스발바르": {
+      "primaryIatas": [
+        "OSL",
+        "LYR"
+      ],
+      "preferredLinkIata": "OSL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "스발바르 제도",
+      "linkedSlug": "svalbard"
+    },
+    "두바이": {
+      "primaryIatas": [
+        "DXB"
+      ],
+      "preferredLinkIata": "DXB",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "두바이",
+      "linkedSlug": "dubai"
+    },
+    "뉴욕": {
+      "primaryIatas": [
+        "JFK",
+        "EWR"
+      ],
+      "preferredLinkIata": "JFK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "뉴욕",
+      "linkedSlug": "new-york"
+    },
+    "시카고": {
+      "primaryIatas": [
+        "ORD"
+      ],
+      "preferredLinkIata": "ORD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "시카고",
+      "linkedSlug": "chicago"
+    },
+    "타지마할": {
+      "primaryIatas": [
+        "DEL"
+      ],
+      "preferredLinkIata": "DEL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "타지마할",
+      "linkedSlug": "taj-mahal"
+    },
+    "만리장성": {
+      "primaryIatas": [
+        "PEK"
+      ],
+      "preferredLinkIata": "PEK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "만리장성",
+      "linkedSlug": "great-wall"
+    },
+    "자금성": {
+      "primaryIatas": [
+        "PEK"
+      ],
+      "preferredLinkIata": "PEK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "자금성",
+      "linkedSlug": "forbidden-city"
+    },
+    "앙코르톰": {
+      "primaryIatas": [
+        "REP"
+      ],
+      "preferredLinkIata": "REP",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "앙코르 톰",
+      "linkedSlug": "angkor-thom"
+    },
+    "호이안": {
+      "primaryIatas": [
+        "DAD"
+      ],
+      "preferredLinkIata": "DAD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "호이안",
+      "linkedSlug": "hoi-an"
+    },
+    "자이푸르": {
+      "primaryIatas": [
+        "JAI",
+        "DEL"
+      ],
+      "preferredLinkIata": "JAI",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "자이푸르",
+      "linkedSlug": "jaipur"
+    },
+    "아유타야": {
+      "primaryIatas": [
+        "BKK",
+        "DMK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아유타야",
+      "linkedSlug": "ayutthaya"
+    },
+    "에페소스": {
+      "primaryIatas": [
+        "ADB"
+      ],
+      "preferredLinkIata": "ADB",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "에페소스",
+      "linkedSlug": "ephesus"
+    },
+    "후에": {
+      "primaryIatas": [
+        "DAD"
+      ],
+      "preferredLinkIata": "DAD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "후에",
+      "linkedSlug": "hue"
+    },
+    "라싸": {
+      "primaryIatas": [
+        "LXA"
+      ],
+      "preferredLinkIata": "LXA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "라싸",
+      "linkedSlug": "lhasa"
+    },
+    "함피": {
+      "primaryIatas": [
+        "BLR",
+        "DEL"
+      ],
+      "preferredLinkIata": "BLR",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "함피",
+      "linkedSlug": "hampi"
+    },
+    "울란바토르": {
+      "primaryIatas": [
+        "UBN"
+      ],
+      "preferredLinkIata": "UBN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "울란바토르",
+      "linkedSlug": "ulaanbaatar"
+    },
+    "베니스": {
+      "primaryIatas": [
+        "VCE"
+      ],
+      "preferredLinkIata": "VCE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "베니스",
+      "linkedSlug": "venice"
+    },
+    "피렌체": {
+      "primaryIatas": [
+        "FLR"
+      ],
+      "preferredLinkIata": "FLR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "피렌체",
+      "linkedSlug": "florence"
+    },
+    "이스탄불": {
+      "primaryIatas": [
+        "IST"
+      ],
+      "preferredLinkIata": "IST",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "이스탄불",
+      "linkedSlug": "istanbul"
+    },
+    "에딘버러": {
+      "primaryIatas": [
+        "EDI"
+      ],
+      "preferredLinkIata": "EDI",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "에딘버러",
+      "linkedSlug": "edinburgh"
+    },
+    "산티아고데콤포스텔라": {
+      "primaryIatas": [
+        "MAD"
+      ],
+      "preferredLinkIata": "MAD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "산티아고 데 콤포스텔라",
+      "linkedSlug": "santiago-de-compostela"
+    },
+    "치첸이트사": {
+      "primaryIatas": [
+        "CUN"
+      ],
+      "preferredLinkIata": "CUN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "치첸이트사",
+      "linkedSlug": "chichen-itza"
+    },
+    "마추픽추": {
+      "primaryIatas": [
+        "CUZ",
+        "LIM"
+      ],
+      "preferredLinkIata": "CUZ",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마추픽추",
+      "linkedSlug": "machu-picchu"
+    },
+    "쿠스코": {
+      "primaryIatas": [
+        "ATL"
+      ],
+      "preferredLinkIata": "ATL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "쿠스코",
+      "linkedSlug": "cusco"
+    },
+    "나스카라인": {
+      "primaryIatas": [
+        "LIM"
+      ],
+      "preferredLinkIata": "LIM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "나스카 라인",
+      "linkedSlug": "nazca-lines"
+    },
+    "이스터섬": {
+      "primaryIatas": [
+        "IPC",
+        "SCL"
+      ],
+      "preferredLinkIata": "IPC",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "이스터 섬",
+      "linkedSlug": "easter-island"
+    },
+    "이스터": {
+      "primaryIatas": [
+        "IPC",
+        "SCL"
+      ],
+      "preferredLinkIata": "IPC",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "이스터 섬",
+      "linkedSlug": "easter-island"
+    },
+    "피지": {
+      "primaryIatas": [
+        "NAN"
+      ],
+      "preferredLinkIata": "NAN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "피지",
+      "linkedSlug": "fiji"
+    },
+    "나이로비": {
+      "primaryIatas": [
+        "NBO"
+      ],
+      "preferredLinkIata": "NBO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "나이로비",
+      "linkedSlug": "nairobi"
+    },
+    "스톡홀름": {
+      "primaryIatas": [
+        "ARN"
+      ],
+      "preferredLinkIata": "ARN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "스톡홀름",
+      "linkedSlug": "stockholm"
+    },
+    "밴쿠버": {
+      "primaryIatas": [
+        "YVR"
+      ],
+      "preferredLinkIata": "YVR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "밴쿠버",
+      "linkedSlug": "vancouver"
+    },
+    "팔라우": {
+      "primaryIatas": [
+        "ROR"
+      ],
+      "preferredLinkIata": "ROR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "팔라우",
+      "linkedSlug": "palau"
+    },
+    "하노이": {
+      "primaryIatas": [
+        "HAN"
+      ],
+      "preferredLinkIata": "HAN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "하노이",
+      "linkedSlug": "hanoi"
+    },
+    "타이베이": {
+      "primaryIatas": [
+        "TPE"
+      ],
+      "preferredLinkIata": "TPE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "타이베이",
+      "linkedSlug": "taipei"
+    },
+    "빈": {
+      "primaryIatas": [
+        "VIE"
+      ],
+      "preferredLinkIata": "VIE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "빈",
+      "linkedSlug": "vienna"
+    },
+    "모스크바": {
+      "primaryIatas": [
+        "SVO"
+      ],
+      "preferredLinkIata": "SVO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "모스크바",
+      "linkedSlug": "moscow"
+    },
+    "마다가스카르": {
+      "primaryIatas": [
+        "TNR",
+        "ADD"
+      ],
+      "preferredLinkIata": "TNR",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마다가스카르",
+      "linkedSlug": "madagascar"
+    },
+    "카파도키아": {
+      "primaryIatas": [
+        "ASR",
+        "NAV"
+      ],
+      "preferredLinkIata": "ASR",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "카파도키아",
+      "linkedSlug": "cappadocia"
+    },
+    "갈라파고스": {
+      "primaryIatas": [
+        "GPS",
+        "GYE"
+      ],
+      "preferredLinkIata": "GPS",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "갈라파고스",
+      "linkedSlug": "galapagos"
+    },
+    "아부심벨": {
+      "primaryIatas": [
+        "CAI",
+        "ASW"
+      ],
+      "preferredLinkIata": "CAI",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아부 심벨",
+      "linkedSlug": "abu-simbel"
+    },
+    "예루살렘": {
+      "primaryIatas": [
+        "TLV"
+      ],
+      "preferredLinkIata": "TLV",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "예루살렘",
+      "linkedSlug": "jerusalem"
+    },
+    "카르스텐츠피라미드": {
+      "primaryIatas": [
+        "CGK",
+        "DPS"
+      ],
+      "preferredLinkIata": "CGK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "카르스텐츠 피라미드",
+      "linkedSlug": "carstensz-pyramid"
+    },
+    "야쿠츠크": {
+      "primaryIatas": [
+        "YKS"
+      ],
+      "preferredLinkIata": "YKS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "야쿠츠크",
+      "linkedSlug": "yakutsk"
+    },
+    "캄차카반도": {
+      "primaryIatas": [
+        "PKC"
+      ],
+      "preferredLinkIata": "PKC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "캄차카 반도",
+      "linkedSlug": "kamchatka-peninsula"
+    },
+    "데날리": {
+      "primaryIatas": [
+        "ANC"
+      ],
+      "preferredLinkIata": "ANC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "데날리",
+      "linkedSlug": "denali"
+    },
+    "잉카트레일": {
+      "primaryIatas": [
+        "LIM",
+        "CUZ"
+      ],
+      "preferredLinkIata": "LIM",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "잉카 트레일",
+      "linkedSlug": "inca-trail"
+    },
+    "파타고니아": {
+      "primaryIatas": [
+        "EZE"
+      ],
+      "preferredLinkIata": "EZE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "파타고니아",
+      "linkedSlug": "patagonia"
+    },
+    "통가": {
+      "primaryIatas": [
+        "TBU"
+      ],
+      "preferredLinkIata": "TBU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "통가",
+      "linkedSlug": "tonga"
+    },
+    "알래스카": {
+      "primaryIatas": [
+        "ANC"
+      ],
+      "preferredLinkIata": "ANC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "알래스카",
+      "linkedSlug": "alaska"
+    },
+    "레위니옹": {
+      "primaryIatas": [
+        "RUN",
+        "BKK",
+        "MRU"
+      ],
+      "preferredLinkIata": "RUN",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "레위니옹",
+      "linkedSlug": "la-reunion"
+    },
+    "남극대륙": {
+      "primaryIatas": [
+        "ATL",
+        "USH",
+        "PUQ",
+        "ICN",
+        "EZE"
+      ],
+      "preferredLinkIata": "ATL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "남극 대륙",
+      "linkedSlug": "antarctica"
+    },
+    "케르겔렌제도": {
+      "primaryIatas": [
+        "RUN"
+      ],
+      "preferredLinkIata": "RUN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "케르겔렌 제도",
+      "linkedSlug": "kerguelen-islands"
+    },
+    "케르겔렌": {
+      "primaryIatas": [
+        "RUN"
+      ],
+      "preferredLinkIata": "RUN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "케르겔렌 제도",
+      "linkedSlug": "kerguelen-islands"
+    },
+    "로마": {
+      "primaryIatas": [
+        "FCO"
+      ],
+      "preferredLinkIata": "FCO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "로마",
+      "linkedSlug": "rome"
+    },
+    "나트랑": {
+      "primaryIatas": [
+        "CXR"
+      ],
+      "preferredLinkIata": "CXR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "나트랑",
+      "linkedSlug": "nha-trang"
+    },
+    "산토리니": {
+      "primaryIatas": [
+        "JTR",
+        "ATH"
+      ],
+      "preferredLinkIata": "JTR",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "산토리니",
+      "linkedSlug": "santorini"
+    },
+    "북해도": {
+      "primaryIatas": [
+        "CTS"
+      ],
+      "preferredLinkIata": "CTS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "북해도",
+      "linkedSlug": "hokkaido"
+    },
+    "함부르크": {
+      "primaryIatas": [
+        "FRA",
+        "MUC",
+        "AMS",
+        "HEL"
+      ],
+      "preferredLinkIata": "FRA",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "함부르크"
+    },
+    "코코스제도": {
+      "primaryIatas": [
+        "PER"
+      ],
+      "preferredLinkIata": "PER",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코코스제도"
+    },
+    "코코스": {
+      "primaryIatas": [
+        "PER"
+      ],
+      "preferredLinkIata": "PER",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코코스제도"
+    },
+    "코토르": {
+      "primaryIatas": [
+        "DBV"
+      ],
+      "preferredLinkIata": "DBV",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코토르",
+      "linkedSlug": "kotor"
+    },
+    "santjoan": {
+      "primaryIatas": [
+        "IBZ"
+      ],
+      "preferredLinkIata": "IBZ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "Sant Joan",
+      "linkedSlug": "sant-joan"
+    },
+    "핏케언제도": {
+      "primaryIatas": [
+        "PPT"
+      ],
+      "preferredLinkIata": "PPT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "핏케언 제도"
+    },
+    "핏케언": {
+      "primaryIatas": [
+        "PPT"
+      ],
+      "preferredLinkIata": "PPT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "핏케언 제도"
+    },
+    "맥머도기지": {
+      "primaryIatas": [
+        "CHC"
+      ],
+      "preferredLinkIata": "CHC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "맥머도 기지",
+      "linkedSlug": "antarctica"
+    },
+    "맥머도": {
+      "primaryIatas": [
+        "CHC"
+      ],
+      "preferredLinkIata": "CHC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "맥머도 기지",
+      "linkedSlug": "antarctica"
+    },
+    "에베레스트": {
+      "primaryIatas": [
+        "KTM"
+      ],
+      "preferredLinkIata": "KTM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "에베레스트",
+      "linkedSlug": "everest-base-camp"
+    },
+    "요르단와디럼": {
+      "primaryIatas": [
+        "AMM"
+      ],
+      "preferredLinkIata": "AMM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "요르단 와디 럼",
+      "linkedSlug": "wadi-rum"
+    },
+    "그린란드": {
+      "primaryIatas": [
+        "CPH"
+      ],
+      "preferredLinkIata": "CPH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "그린란드"
+    },
+    "다윈": {
+      "primaryIatas": [
+        "SIN"
+      ],
+      "preferredLinkIata": "SIN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "다윈",
+      "linkedSlug": "galapagos"
+    },
+    "마닐라": {
+      "primaryIatas": [
+        "MNL"
+      ],
+      "preferredLinkIata": "MNL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마닐라",
+      "linkedSlug": "manila"
+    },
+    "아레키파": {
+      "primaryIatas": [
+        "AQP",
+        "LIM"
+      ],
+      "preferredLinkIata": "AQP",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아레키파",
+      "linkedSlug": "arequipa"
+    },
+    "라자암팟": {
+      "primaryIatas": [
+        "SOQ"
+      ],
+      "preferredLinkIata": "SOQ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "라자암팟",
+      "linkedSlug": "raja-ampat"
+    },
+    "포클랜드": {
+      "primaryIatas": [
+        "SCL"
+      ],
+      "preferredLinkIata": "SCL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "포클랜드 제도"
+    },
+    "미야코지마": {
+      "primaryIatas": [
+        "MMY"
+      ],
+      "preferredLinkIata": "MMY",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "미야코지마",
+      "linkedSlug": "miyakojima"
+    },
+    "삿포로": {
+      "primaryIatas": [
+        "CTS"
+      ],
+      "preferredLinkIata": "CTS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "삿포로",
+      "linkedSlug": "sapporo"
+    },
+    "호놀룰루": {
+      "primaryIatas": [
+        "HNL"
+      ],
+      "preferredLinkIata": "HNL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "호놀룰루",
+      "linkedSlug": "honolulu"
+    },
+    "푸꾸옥": {
+      "primaryIatas": [
+        "PQC"
+      ],
+      "preferredLinkIata": "PQC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "푸꾸옥",
+      "linkedSlug": "phu-quoc"
+    },
+    "보스턴": {
+      "primaryIatas": [
+        "BOS"
+      ],
+      "preferredLinkIata": "BOS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "보스턴",
+      "linkedSlug": "boston"
+    },
+    "오키나와": {
+      "primaryIatas": [
+        "OKA"
+      ],
+      "preferredLinkIata": "OKA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "오키나와",
+      "linkedSlug": "miyakojima"
+    },
+    "오사카": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "오사카",
+      "linkedSlug": "osaka"
+    },
+    "두브로브니크": {
+      "primaryIatas": [
+        "DBV"
+      ],
+      "preferredLinkIata": "DBV",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "두브로브니크",
+      "linkedSlug": "dubrovnik"
+    },
+    "페로제도": {
+      "primaryIatas": [
+        "FAE"
+      ],
+      "preferredLinkIata": "FAE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "페로 제도",
+      "linkedSlug": "faroe-islands"
+    },
+    "페로": {
+      "primaryIatas": [
+        "FAE"
+      ],
+      "preferredLinkIata": "FAE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "페로 제도",
+      "linkedSlug": "faroe-islands"
+    },
+    "카보베르데": {
+      "primaryIatas": [
+        "SID",
+        "LIS"
+      ],
+      "preferredLinkIata": "SID",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "카보베르데",
+      "linkedSlug": "cape-verde"
+    },
+    "후쿠오카": {
+      "primaryIatas": [
+        "FUK"
+      ],
+      "preferredLinkIata": "FUK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "후쿠오카",
+      "linkedSlug": "fukuoka"
+    },
+    "칭다오": {
+      "primaryIatas": [
+        "TAO"
+      ],
+      "preferredLinkIata": "TAO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "칭다오",
+      "linkedSlug": "qingdao"
+    },
+    "코타키나발루": {
+      "primaryIatas": [
+        "BKI"
+      ],
+      "preferredLinkIata": "BKI",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "코타키나발루",
+      "linkedSlug": "kota-kinabalu"
+    },
+    "골드코스트": {
+      "primaryIatas": [
+        "OOL",
+        "BNE"
+      ],
+      "preferredLinkIata": "OOL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "골드코스트",
+      "linkedSlug": "gold-coast"
+    },
+    "샌디에이고": {
+      "primaryIatas": [
+        "SAN"
+      ],
+      "preferredLinkIata": "SAN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "샌디에이고",
+      "linkedSlug": "san-diego"
+    },
+    "마카오": {
+      "primaryIatas": [
+        "MFM"
+      ],
+      "preferredLinkIata": "MFM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마카오",
+      "linkedSlug": "macau"
+    },
+    "이시가키": {
+      "primaryIatas": [
+        "ISG",
+        "OKA"
+      ],
+      "preferredLinkIata": "ISG",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "이시가키",
+      "linkedSlug": "ishigaki"
+    },
+    "헬싱키": {
+      "primaryIatas": [
+        "HEL"
+      ],
+      "preferredLinkIata": "HEL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "헬싱키",
+      "linkedSlug": "helsinki"
+    },
+    "나라": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "나라",
+      "linkedSlug": "nara"
+    },
+    "롬복": {
+      "primaryIatas": [
+        "LOP"
+      ],
+      "preferredLinkIata": "LOP",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "롬복",
+      "linkedSlug": "lombok"
+    },
+    "비엔티안": {
+      "primaryIatas": [
+        "VTE"
+      ],
+      "preferredLinkIata": "VTE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "비엔티안",
+      "linkedSlug": "vientiane"
+    },
+    "필라델피아": {
+      "primaryIatas": [
+        "PHL"
+      ],
+      "preferredLinkIata": "PHL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "필라델피아",
+      "linkedSlug": "philadelphia"
+    },
+    "kalapatthar": {
+      "primaryIatas": [
+        "KTM"
+      ],
+      "preferredLinkIata": "KTM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "Kala Patthar",
+      "linkedSlug": "kala-patthar"
+    },
+    "바르샤바": {
+      "primaryIatas": [
+        "WAW"
+      ],
+      "preferredLinkIata": "WAW",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "바르샤바",
+      "linkedSlug": "warsaw"
+    },
+    "자그레브": {
+      "primaryIatas": [
+        "ZAG"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "자그레브",
+      "linkedSlug": "zagreb"
+    },
+    "레이캬비크": {
+      "primaryIatas": [
+        "KEF"
+      ],
+      "preferredLinkIata": "KEF",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "레이캬비크",
+      "linkedSlug": "reykjavik"
+    },
+    "고베": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "고베",
+      "linkedSlug": "kobe"
+    },
+    "구마모토": {
+      "primaryIatas": [
+        "KMJ"
+      ],
+      "preferredLinkIata": "KMJ",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "구마모토",
+      "linkedSlug": "kumamoto"
+    },
+    "라스페치아": {
+      "primaryIatas": [
+        "FCO",
+        "MXP"
+      ],
+      "preferredLinkIata": "FCO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "라스페치아",
+      "linkedSlug": "la-spezia"
+    },
+    "브리즈번": {
+      "primaryIatas": [
+        "BNE"
+      ],
+      "preferredLinkIata": "BNE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "브리즈번",
+      "linkedSlug": "brisbane"
+    },
+    "남극해": {
+      "primaryIatas": [
+        "USH"
+      ],
+      "preferredLinkIata": "USH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "남극해",
+      "linkedSlug": "antarctica"
+    },
+    "방비엥": {
+      "primaryIatas": [
+        "VTE"
+      ],
+      "preferredLinkIata": "VTE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "방비엥",
+      "linkedSlug": "vang-vieng"
+    },
+    "와일드호스": {
+      "primaryIatas": [
+        "PDX",
+        "SEA",
+        "SFO"
+      ],
+      "preferredLinkIata": "PDX",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "와일드호스"
+    },
+    "사뭇쁘라깐주": {
+      "primaryIatas": [
+        "BKK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "사뭇쁘라깐주"
+    },
+    "사뭇쁘라깐": {
+      "primaryIatas": [
+        "BKK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "사뭇쁘라깐주"
+    },
+    "치앙마이": {
+      "primaryIatas": [
+        "CNX"
+      ],
+      "preferredLinkIata": "CNX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "치앙마이",
+      "linkedSlug": "chiang-mai"
+    },
+    "블레드": {
+      "primaryIatas": [
+        "ZAG",
+        "VCE"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "블레드",
+      "linkedSlug": "bled"
+    },
+    "키리바시": {
+      "primaryIatas": [
+        "TRW",
+        "ICN",
+        "NAN"
+      ],
+      "preferredLinkIata": "TRW",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "키리바시",
+      "linkedSlug": "kiribati"
+    },
+    "키리바": {
+      "primaryIatas": [
+        "TRW",
+        "ICN",
+        "NAN"
+      ],
+      "preferredLinkIata": "TRW",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "키리바시",
+      "linkedSlug": "kiribati"
+    },
+    "트럼프": {
+      "primaryIatas": [
+        "JFK",
+        "EWR"
+      ],
+      "preferredLinkIata": "JFK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "트럼프"
+    },
+    "바티칸": {
+      "primaryIatas": [
+        "FCO"
+      ],
+      "preferredLinkIata": "FCO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "바티칸"
+    },
+    "노시베섬": {
+      "primaryIatas": [
+        "ADD"
+      ],
+      "preferredLinkIata": "ADD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "노시베 섬"
+    },
+    "노시베": {
+      "primaryIatas": [
+        "ADD"
+      ],
+      "preferredLinkIata": "ADD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "노시베 섬"
+    },
+    "로라이마산": {
+      "primaryIatas": [
+        "GRU"
+      ],
+      "preferredLinkIata": "GRU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "로라이마 산"
+    },
+    "나자레": {
+      "primaryIatas": [
+        "LIS"
+      ],
+      "preferredLinkIata": "LIS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "나자레"
+    },
+    "시퀘이아국립공원": {
+      "primaryIatas": [
+        "LAX"
+      ],
+      "preferredLinkIata": "LAX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "시퀘이아 국립공원",
+      "linkedSlug": "sequoia-national-park"
+    },
+    "시퀘이아": {
+      "primaryIatas": [
+        "LAX"
+      ],
+      "preferredLinkIata": "LAX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "시퀘이아 국립공원",
+      "linkedSlug": "sequoia-national-park"
+    },
+    "가나자와": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "가나자와",
+      "linkedSlug": "kanazawa"
+    },
+    "서귀포": {
+      "primaryIatas": [
+        "CJU"
+      ],
+      "preferredLinkIata": "CJU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "서귀포",
+      "linkedSlug": "seogwipo"
+    },
+    "바하마": {
+      "primaryIatas": [
+        "ATL",
+        "JFK",
+        "EWR",
+        "DFW",
+        "YYZ"
+      ],
+      "preferredLinkIata": "ATL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "바하마"
+    },
+    "어센션섬": {
+      "primaryIatas": [
+        "LHR"
+      ],
+      "preferredLinkIata": "LHR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "어센션 섬"
+    },
+    "어센션": {
+      "primaryIatas": [
+        "LHR"
+      ],
+      "preferredLinkIata": "LHR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "어센션 섬"
+    },
+    "태국파타야": {
+      "primaryIatas": [
+        "BKK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "태국 파타야",
+      "linkedSlug": "phuket"
+    },
+    "퀸스타운": {
+      "primaryIatas": [
+        "ZQN"
+      ],
+      "preferredLinkIata": "ZQN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "퀸스타운"
+    },
+    "우유니": {
+      "primaryIatas": [
+        "LPB",
+        "UYU"
+      ],
+      "preferredLinkIata": "LPB",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "우유니",
+      "linkedSlug": "uyuni-salt-flat"
+    },
+    "일룰리사트": {
+      "primaryIatas": [
+        "CPH"
+      ],
+      "preferredLinkIata": "CPH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "일룰리사트",
+      "linkedSlug": "iceland"
+    },
+    "리마": {
+      "primaryIatas": [
+        "LIM"
+      ],
+      "preferredLinkIata": "LIM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "리마"
+    },
+    "레이니스퍄라": {
+      "primaryIatas": [
+        "KEF"
+      ],
+      "preferredLinkIata": "KEF",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "레이니스퍄라",
+      "linkedSlug": "reykjavik"
+    },
+    "아디스아바바": {
+      "primaryIatas": [
+        "ADD"
+      ],
+      "preferredLinkIata": "ADD",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아디스아바바",
+      "linkedSlug": "lalibela"
+    },
+    "솔로몬제도": {
+      "primaryIatas": [
+        "BNE"
+      ],
+      "preferredLinkIata": "BNE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "솔로몬 제도"
+    },
+    "솔로몬": {
+      "primaryIatas": [
+        "BNE"
+      ],
+      "preferredLinkIata": "BNE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "솔로몬 제도"
+    },
+    "일루리삿": {
+      "primaryIatas": [
+        "CPH",
+        "KEF"
+      ],
+      "preferredLinkIata": "CPH",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "일루리삿",
+      "linkedSlug": "iceland"
+    },
+    "우베를란지아": {
+      "primaryIatas": [
+        "GRU"
+      ],
+      "preferredLinkIata": "GRU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "우베를란지아"
+    },
+    "우붓": {
+      "primaryIatas": [
+        "DPS"
+      ],
+      "preferredLinkIata": "DPS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "우붓",
+      "linkedSlug": "bali"
+    },
+    "쿠알라셀랑고르": {
+      "primaryIatas": [
+        "KUL"
+      ],
+      "preferredLinkIata": "KUL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "쿠알라셀랑고르",
+      "linkedSlug": "kuala-lumpur"
+    },
+    "나가사키": {
+      "primaryIatas": [
+        "FUK",
+        "ICN"
+      ],
+      "preferredLinkIata": "FUK",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "나가사키",
+      "linkedSlug": "nagasaki"
+    },
+    "스코푸가포스": {
+      "primaryIatas": [
+        "KEF"
+      ],
+      "preferredLinkIata": "KEF",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "스코푸가포스"
+    },
+    "나우루": {
+      "primaryIatas": [
+        "BNE"
+      ],
+      "preferredLinkIata": "BNE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "나우루"
+    },
+    "플리트비체국립공원": {
+      "primaryIatas": [
+        "ZAG"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "플리트비체 국립공원",
+      "linkedSlug": "plitvice-lakes"
+    },
+    "îlesglorieuses": {
+      "primaryIatas": [
+        "CDG",
+        "ORY"
+      ],
+      "preferredLinkIata": "CDG",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "Îles Glorieuses"
+    },
+    "maroantsetra": {
+      "primaryIatas": [
+        "TNR"
+      ],
+      "preferredLinkIata": "TNR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "Maroantsetra"
+    },
+    "안치라나나": {
+      "primaryIatas": [
+        "TNR",
+        "ADD",
+        "CDG"
+      ],
+      "preferredLinkIata": "TNR",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "안치라나나"
+    },
+    "포클랜드제도": {
+      "primaryIatas": [
+        "SCL"
+      ],
+      "preferredLinkIata": "SCL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "포클랜드 제도"
+    },
+    "앵커리지": {
+      "primaryIatas": [
+        "ANC",
+        "SEA",
+        "SFO",
+        "LAX"
+      ],
+      "preferredLinkIata": "ANC",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "앵커리지",
+      "linkedSlug": "alaska"
+    },
+    "콜로니아": {
+      "primaryIatas": [
+        "EZE"
+      ],
+      "preferredLinkIata": "EZE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "콜로니아"
+    },
+    "빌라두코르부": {
+      "primaryIatas": [
+        "LIS",
+        "OPO"
+      ],
+      "preferredLinkIata": "LIS",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "빌라두코르부"
+    },
+    "england": {
+      "primaryIatas": [
+        "LHR"
+      ],
+      "preferredLinkIata": "LHR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "England"
+    },
+    "사이판": {
+      "primaryIatas": [
+        "SPN"
+      ],
+      "preferredLinkIata": "SPN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "사이판",
+      "linkedSlug": "saipan"
+    },
+    "미니애폴리스": {
+      "primaryIatas": [
+        "MSP"
+      ],
+      "preferredLinkIata": "MSP",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "미니애폴리스"
+    },
+    "몬트리올": {
+      "primaryIatas": [
+        "YUL",
+        "YYZ",
+        "YVR"
+      ],
+      "preferredLinkIata": "YUL",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "몬트리올",
+      "linkedSlug": "montreal"
     }
   }
 }
