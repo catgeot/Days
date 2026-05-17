@@ -3,6 +3,7 @@
 ## 지금 쓰는 것
 
 - **프로젝트 컨텍스트(매 세션 권장)**: 루트의 [`.ai-context.md`](../.ai-context.md)
+- **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 새로운 날 작업이면 `plans/` **루트**에 **새** 파일로 추가하면 됩니다.  
   - 이전 일지는 파일 상단에 링크만 두면 이어감 (`.ai-context.md` 7절 참고)

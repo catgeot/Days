@@ -33,10 +33,13 @@ const exploreRoutes = [
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes];
 
+// 폰·LAN 테스트: 기본(HTTPS). PC만 빠르게 볼 때: npm run dev:http
+const devSsl = process.env.DEV_SSL !== '0';
+
 export default defineConfig({
   plugins: [
     react(),
-    basicSsl(),
+    ...(devSsl ? [basicSsl()] : []),
     Sitemap({
       hostname: 'https://www.gateo.kr',
       dynamicRoutes,
@@ -48,12 +51,18 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
+    // dev 서버 기동 시 브라우저 자동 열기 (이전 Ctrl+클릭 대체)
+    open: true,
     // basic-ssl(HTTPS) 사용 시, 폰에서 접속해도 HMR WebSocket이 같은 호스트·포트로 붙도록 맞춤
-    hmr: {
-      protocol: 'wss',
-      port: 5173,
-      clientPort: 5173,
-    },
+    ...(devSsl
+      ? {
+          hmr: {
+            protocol: 'wss',
+            port: 5173,
+            clientPort: 5173,
+          },
+        }
+      : {}),
   },
   esbuild: {
     pure: ['console.log'],

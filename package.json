@@ -4,10 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "set BROWSER=chrome&& vite",
+    "dev:http": "set DEV_SSL=0&& set BROWSER=chrome&& vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit:airports": "node scripts/audit-rental-airports.mjs",
+    "generate:airports": "node scripts/generate-travel-spot-airports.mjs",
+    "enrich:airports": "node scripts/enrich-travel-spot-airports-ai.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

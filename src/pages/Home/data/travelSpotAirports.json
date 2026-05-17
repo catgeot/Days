@@ -1,0 +1,2334 @@
+{
+  "_meta": {
+    "version": 1,
+    "generatedAt": "2026-05-17T11:45:40.286Z",
+    "spotCount": 244,
+    "stats": {
+      "override": 65,
+      "runtime": 180,
+      "multiRule": 0,
+      "geo": 0,
+      "missing": 0
+    },
+    "missingSlugs": [],
+    "unregisteredIatasInOverrides": []
+  },
+  "spots": {
+    "bora-bora": {
+      "primaryIatas": [
+        "BOB",
+        "PPT"
+      ],
+      "preferredLinkIata": "BOB",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "보라보라 섬 공항은 BOB(모투무테)입니다. 국제선은 타히티 파아페테(PPT)에 먼저 도착한 뒤 국내선으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+    },
+    "santorini": {
+      "primaryIatas": [
+        "JTR",
+        "ATH"
+      ],
+      "preferredLinkIata": "JTR",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "산토리니 직항은 티라(JTR)가 많고, 아테네(ATH) 경유·페리·국내선으로 이어지는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요."
+    },
+    "cancun": {
+      "primaryIatas": [
+        "CUN"
+      ],
+      "preferredLinkIata": "CUN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "maldives": {
+      "primaryIatas": [
+        "MLE"
+      ],
+      "preferredLinkIata": "MLE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "seychelles": {
+      "primaryIatas": [
+        "SEZ"
+      ],
+      "preferredLinkIata": "SEZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "fernando-de-noronha": {
+      "primaryIatas": [
+        "FEN",
+        "REC",
+        "NAT"
+      ],
+      "preferredLinkIata": "FEN",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "섬 공항은 페르난두지노로냐(FEN)뿐입니다. 본토에서는 레시피(REC)·나탈(NAT) 등으로 들어온 뒤 국내선·경비행으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+    },
+    "bermuda": {
+      "primaryIatas": [
+        "BDA"
+      ],
+      "preferredLinkIata": "BDA",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "azores": {
+      "primaryIatas": [
+        "PDL"
+      ],
+      "preferredLinkIata": "PDL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "zanzibar": {
+      "primaryIatas": [
+        "ZNZ",
+        "DAR"
+      ],
+      "preferredLinkIata": "ZNZ",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "잔지바르 섬 도착은 ZNZ(아베이드 아마니 카루메)입니다. 다르에스살람(DAR) 경유·페리·국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+    },
+    "rarotonga": {
+      "primaryIatas": [
+        "RAR",
+        "AKL"
+      ],
+      "preferredLinkIata": "RAR",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "쿡 제도(라로통가) 최종 도착은 RAR입니다. 한국·아시아에서 오는 항공편은 오클랜드(AKL) 등 뉴질랜드·호주 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요."
+    },
+    "samoa": {
+      "primaryIatas": [
+        "APW",
+        "NAN",
+        "AKL"
+      ],
+      "preferredLinkIata": "APW",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "사모아(아피아) 최종 도착은 팔레올로(APW)입니다. 오클랜드(AKL)·피지 난디(NAN) 등 경유 후 국내선·연결편으로 이어지는 일정이 많습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+    },
+    "palawan": {
+      "primaryIatas": [
+        "ENI",
+        "PPS",
+        "MNL"
+      ],
+      "preferredLinkIata": "PPS",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "팔라완·엘니도는 ENI 직항(MNL 경유·AirSWIFT), PPS 육로, MNL 국제선 관문이 나뉩니다. 엘니도 상세 경로는 엘니도 여행지 배너를 참고해 주세요.",
+      "rationale": "엘니도·푸에르토프린세사·마닐라 관문"
+    },
+    "canary-islands": {
+      "primaryIatas": [
+        "TFS",
+        "LPA"
+      ],
+      "preferredLinkIata": "TFS",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "bali": {
+      "primaryIatas": [
+        "DPS"
+      ],
+      "preferredLinkIata": "DPS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "hawaii": {
+      "primaryIatas": [
+        "HNL"
+      ],
+      "preferredLinkIata": "HNL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "guam": {
+      "primaryIatas": [
+        "GUM"
+      ],
+      "preferredLinkIata": "GUM",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "banff-national-park": {
+      "primaryIatas": [
+        "YYC"
+      ],
+      "preferredLinkIata": "YYC",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "캘거리 공항"
+    },
+    "iguazu-falls": {
+      "primaryIatas": [
+        "IGR"
+      ],
+      "preferredLinkIata": "IGR",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "이과수 폴스 공항"
+    },
+    "iceland": {
+      "primaryIatas": [
+        "KEF"
+      ],
+      "preferredLinkIata": "KEF",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "victoria-falls": {
+      "primaryIatas": [
+        "VFA"
+      ],
+      "preferredLinkIata": "VFA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "빅토리아폴스 공항"
+    },
+    "mount-fuji": {
+      "primaryIatas": [
+        "FSZ"
+      ],
+      "preferredLinkIata": "FSZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "great-barrier-reef": {
+      "primaryIatas": [
+        "CNS"
+      ],
+      "preferredLinkIata": "CNS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "andaman-islands": {
+      "primaryIatas": [
+        "IXZ"
+      ],
+      "preferredLinkIata": "IXZ",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "포트블레어 비르 사바르카르"
+    },
+    "palau": {
+      "primaryIatas": [
+        "ROR"
+      ],
+      "preferredLinkIata": "ROR",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "galapagos": {
+      "primaryIatas": [
+        "GPS",
+        "GYE"
+      ],
+      "preferredLinkIata": "GPS",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "갈라파고스 섬 도착은 발트라(GPS) 등이 많습니다. 본토 과야킬(GYE)·키토 경유 후 국내선으로 이어지는 일정도 있습니다. 티켓의 최종 도착 코드를 확인해 주세요."
+    },
+    "mauritius": {
+      "primaryIatas": [
+        "MRU"
+      ],
+      "preferredLinkIata": "MRU",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "christmas-island": {
+      "primaryIatas": [
+        "XCH",
+        "PER"
+      ],
+      "preferredLinkIata": "XCH",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "호주령 크리스마스섬 직항은 크리스마스섬(XCH)입니다. 퍼스(PER) 등 호주 본토에서 정기편·경유로 이어지는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "섬 도착 XCH, 호주 본토 경유 PER"
+    },
+    "diego-garcia": {
+      "primaryIatas": [
+        "MLE"
+      ],
+      "preferredLinkIata": "MLE",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "bannerNote": "디에고가르시아는 영국령 군사 기지로 일반 관광 출입이 불가합니다. 아래 링크는 인도양 권역(몰디브 등) 연결·일정 참고용이며, 실제 목적지와 다릅니다.",
+      "rationale": "민간 출입 불가, 인도양 경유 허브 참고"
+    },
+    "lofoten": {
+      "primaryIatas": [
+        "BOO",
+        "EVE",
+        "LKN",
+        "SVJ"
+      ],
+      "preferredLinkIata": "LKN",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "로포텐으로 가는 항로는 공항마다 역할이 다릅니다. 레크네스(LKN)·스볼바어(SVJ)는 군도 위 공항이라, 국내선 등으로 섬에 직접 도착한 뒤 렌터카·이동을 이어가기 좋습니다. 이베네스(EVE)는 본토(하르스타드·나르비크) 쪽 관문으로 국제·국내 대형 노선이 많고, 차나 버스로 로포텐으로 들어오는 일정이 흔합니다. 보되(BOO)는 로포텐 남쪽 본토에서 페리(예: 보되–모스케네스)나 국내선으로 군도에 이어질 때 자주 쓰입니다. 실제 티켓·일정에 적힌 도착 공항(IATA)을 확인한 뒤, 아래 제휴 링크 검색어도 그 공항에 맞춰 바꿔 주세요."
+    },
+    "sahara-desert": {
+      "primaryIatas": [
+        "RAK"
+      ],
+      "preferredLinkIata": "RAK",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "마라케시·메르주가 관문"
+    },
+    "yellowknife": {
+      "primaryIatas": [
+        "YZF"
+      ],
+      "preferredLinkIata": "YZF",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "옐로나이프 공항"
+    },
+    "uyuni-salt-flat": {
+      "primaryIatas": [
+        "LPB",
+        "UYU"
+      ],
+      "preferredLinkIata": "UYU",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "라파스·우유니 공항"
+    },
+    "new-york": {
+      "primaryIatas": [
+        "EWR"
+      ],
+      "preferredLinkIata": "EWR",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "rio-de-janeiro": {
+      "primaryIatas": [
+        "GIG"
+      ],
+      "preferredLinkIata": "GIG",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "london": {
+      "primaryIatas": [
+        "LHR"
+      ],
+      "preferredLinkIata": "LHR",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "cape-town": {
+      "primaryIatas": [
+        "CPT"
+      ],
+      "preferredLinkIata": "CPT",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "tokyo": {
+      "primaryIatas": [
+        "HND",
+        "NRT"
+      ],
+      "preferredLinkIata": "HND",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "sydney": {
+      "primaryIatas": [
+        "SYD"
+      ],
+      "preferredLinkIata": "SYD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "ushuaia": {
+      "primaryIatas": [
+        "USH"
+      ],
+      "preferredLinkIata": "USH",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "moscow": {
+      "primaryIatas": [
+        "SVO"
+      ],
+      "preferredLinkIata": "SVO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "cairo": {
+      "primaryIatas": [
+        "CAI"
+      ],
+      "preferredLinkIata": "CAI",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "new-caledonia": {
+      "primaryIatas": [
+        "NOU"
+      ],
+      "preferredLinkIata": "NOU",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "singapore": {
+      "primaryIatas": [
+        "SIN"
+      ],
+      "preferredLinkIata": "SIN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "dubai": {
+      "primaryIatas": [
+        "DXB"
+      ],
+      "preferredLinkIata": "DXB",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "nairobi": {
+      "primaryIatas": [
+        "NBO"
+      ],
+      "preferredLinkIata": "NBO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "chicago": {
+      "primaryIatas": [
+        "ORD"
+      ],
+      "preferredLinkIata": "ORD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "buenos-aires": {
+      "primaryIatas": [
+        "EZE"
+      ],
+      "preferredLinkIata": "EZE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "melbourne": {
+      "primaryIatas": [
+        "MEL"
+      ],
+      "preferredLinkIata": "MEL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "chichen-itza": {
+      "primaryIatas": [
+        "CUN"
+      ],
+      "preferredLinkIata": "CUN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "칸쿤 국제공항 후 육로"
+    },
+    "machu-picchu": {
+      "primaryIatas": [
+        "CUZ"
+      ],
+      "preferredLinkIata": "CUZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "rome": {
+      "primaryIatas": [
+        "FCO"
+      ],
+      "preferredLinkIata": "FCO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "giza-pyramids": {
+      "primaryIatas": [
+        "CAI"
+      ],
+      "preferredLinkIata": "CAI",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "angkor-wat": {
+      "primaryIatas": [
+        "REP"
+      ],
+      "preferredLinkIata": "REP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "petra": {
+      "primaryIatas": [
+        "AMM"
+      ],
+      "preferredLinkIata": "AMM",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "요르단 국제선은 대부분 암만 퀸 알리아(AMM)에 도착한 뒤 페트라·와디 럼으로 이동합니다. 티켓·일정의 도착 공항을 확인해 주세요."
+    },
+    "midway-atoll": {
+      "primaryIatas": [
+        "HNL"
+      ],
+      "preferredLinkIata": "HNL",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "bannerNote": "미드웨이 환초는 상용 정기 노선이 없으며, 미국 Fish & Wildlife 허가·투어로 호놀룰루(HNL) 등에서 이어지는 일정이 일반적입니다.",
+      "rationale": "호놀룰루 경유 정부·에코투어"
+    },
+    "bagan": {
+      "primaryIatas": [
+        "MDL"
+      ],
+      "preferredLinkIata": "MDL",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "만달레이 공항"
+    },
+    "fiji": {
+      "primaryIatas": [
+        "NAN"
+      ],
+      "preferredLinkIata": "NAN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "easter-island": {
+      "primaryIatas": [
+        "IPC"
+      ],
+      "preferredLinkIata": "IPC",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "이스터섬 마타베리"
+    },
+    "meteora": {
+      "primaryIatas": [
+        "SKG"
+      ],
+      "preferredLinkIata": "SKG",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "테살로니키 공항"
+    },
+    "st-helena": {
+      "primaryIatas": [
+        "HLE",
+        "JNB"
+      ],
+      "preferredLinkIata": "HLE",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "세인트헬레나 최종 도착은 세인트헬레나(HLE)입니다. 요하네스버그(JNB) 등에서 연결·개항편으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "섬 공항 HLE, 남아공·개항편 연결 JNB"
+    },
+    "ulaanbaatar": {
+      "primaryIatas": [
+        "UBN"
+      ],
+      "preferredLinkIata": "UBN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "칭기스칸 국제공항"
+    },
+    "istanbul": {
+      "primaryIatas": [
+        "IST"
+      ],
+      "preferredLinkIata": "IST",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "prague": {
+      "primaryIatas": [
+        "PRG"
+      ],
+      "preferredLinkIata": "PRG",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "marrakech": {
+      "primaryIatas": [
+        "RAK"
+      ],
+      "preferredLinkIata": "RAK",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "alaska": {
+      "primaryIatas": [
+        "ANC"
+      ],
+      "preferredLinkIata": "ANC",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "앵커리지·페어뱅크스 관문"
+    },
+    "amazon-rainforest": {
+      "primaryIatas": [
+        "MAO"
+      ],
+      "preferredLinkIata": "MAO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "svalbard": {
+      "primaryIatas": [
+        "LYR"
+      ],
+      "preferredLinkIata": "LYR",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "롱위어비엔 공항"
+    },
+    "serengeti": {
+      "primaryIatas": [
+        "NBO"
+      ],
+      "preferredLinkIata": "NBO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "uluru": {
+      "primaryIatas": [
+        "AYQ"
+      ],
+      "preferredLinkIata": "AYQ",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "울루루 에어스"
+    },
+    "antarctica": {
+      "primaryIatas": [
+        "USH"
+      ],
+      "preferredLinkIata": "USH",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "bannerNote": "남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.",
+      "rationale": "남극 크루즈·연구 기지는 우수아이아 등 남미 관문"
+    },
+    "los-angeles": {
+      "primaryIatas": [
+        "LAX"
+      ],
+      "preferredLinkIata": "LAX",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "tonga": {
+      "primaryIatas": [
+        "TBU"
+      ],
+      "preferredLinkIata": "TBU",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "berlin": {
+      "primaryIatas": [
+        "BER"
+      ],
+      "preferredLinkIata": "BER",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "la-reunion": {
+      "primaryIatas": [
+        "RUN"
+      ],
+      "preferredLinkIata": "RUN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "생드니 공항"
+    },
+    "seoul": {
+      "primaryIatas": [
+        "GMP"
+      ],
+      "preferredLinkIata": "GMP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "vanuatu": {
+      "primaryIatas": [
+        "VLI"
+      ],
+      "preferredLinkIata": "VLI",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "patagonia": {
+      "primaryIatas": [
+        "USH"
+      ],
+      "preferredLinkIata": "USH",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kerguelen-islands": {
+      "primaryIatas": [
+        "RUN"
+      ],
+      "preferredLinkIata": "RUN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "bannerNote": "케르겔렌은 연구·군사 목적 선박·전용 항공만 접근 가능합니다. 레위니옹(RUN) 등 프랑스 남방 영토 관문을 거치는 탐험 일정이 일반적입니다.",
+      "rationale": "레위니옹 경유 프랑스 남방군도"
+    },
+    "yakutsk": {
+      "primaryIatas": [
+        "YKS"
+      ],
+      "preferredLinkIata": "YKS",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "야쿠츠크 공항"
+    },
+    "kamchatka-peninsula": {
+      "primaryIatas": [
+        "PKC"
+      ],
+      "preferredLinkIata": "PKC",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "페트로파블롭스크캄차츠키"
+    },
+    "paris": {
+      "primaryIatas": [
+        "CDG",
+        "ORY"
+      ],
+      "preferredLinkIata": "ORY",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "barcelona": {
+      "primaryIatas": [
+        "BCN"
+      ],
+      "preferredLinkIata": "BCN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "bangkok": {
+      "primaryIatas": [
+        "BKK",
+        "DMK"
+      ],
+      "preferredLinkIata": "DMK",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "amsterdam": {
+      "primaryIatas": [
+        "AMS"
+      ],
+      "preferredLinkIata": "AMS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "venice": {
+      "primaryIatas": [
+        "VCE"
+      ],
+      "preferredLinkIata": "VCE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "athens": {
+      "primaryIatas": [
+        "ATH"
+      ],
+      "preferredLinkIata": "ATH",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "vienna": {
+      "primaryIatas": [
+        "VIE"
+      ],
+      "preferredLinkIata": "VIE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "florence": {
+      "primaryIatas": [
+        "FLR"
+      ],
+      "preferredLinkIata": "FLR",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "hong-kong": {
+      "primaryIatas": [
+        "HKG"
+      ],
+      "preferredLinkIata": "HKG",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "taipei": {
+      "primaryIatas": [
+        "TPE"
+      ],
+      "preferredLinkIata": "TPE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "shanghai": {
+      "primaryIatas": [
+        "PVG"
+      ],
+      "preferredLinkIata": "PVG",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kyoto": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "delhi": {
+      "primaryIatas": [
+        "DEL"
+      ],
+      "preferredLinkIata": "DEL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "san-francisco": {
+      "primaryIatas": [
+        "SFO"
+      ],
+      "preferredLinkIata": "SFO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "las-vegas": {
+      "primaryIatas": [
+        "LAS"
+      ],
+      "preferredLinkIata": "LAS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "toronto": {
+      "primaryIatas": [
+        "YYZ"
+      ],
+      "preferredLinkIata": "YYZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "vancouver": {
+      "primaryIatas": [
+        "YVR"
+      ],
+      "preferredLinkIata": "YVR",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "auckland": {
+      "primaryIatas": [
+        "AKL"
+      ],
+      "preferredLinkIata": "AKL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "jerusalem": {
+      "primaryIatas": [
+        "TLV"
+      ],
+      "preferredLinkIata": "TLV",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "gili-meno": {
+      "primaryIatas": [
+        "LOP"
+      ],
+      "preferredLinkIata": "LOP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "el-nido": {
+      "primaryIatas": [
+        "ENI",
+        "PPS",
+        "MNL"
+      ],
+      "preferredLinkIata": "ENI",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "항공권·경로 비교\n· 루트 1(추천·비용↑): 인천→마닐라(MNL)→엘니도(ENI). AirSWIFT 독점, MNL 제4터미널(T4) 환승·짐 비연결 → 환승 3~4시간 이상 권장.\n· 루트 2(가성비·육로): 인천→푸에르토프린세사(PPS)→밴·버스→엘니도(5시간+). 체력 소모 큼.\n티켓의 최종 도착 코드로 제휴 링크 검색어를 맞춰 주세요.",
+      "rationale": "엘니도 직항·PPS 육로·MNL 경유"
+    },
+    "boracay": {
+      "primaryIatas": [
+        "KLO",
+        "MPH"
+      ],
+      "preferredLinkIata": "KLO",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "보라카이는 칼리보(KLO) 국제선 후 버스·페리, 또는 카틱란(MPH) 직항·국내선으로 들어오는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요.",
+      "rationale": "칼리보·카틱란 관문"
+    },
+    "phuket": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "phi-phi-islands": {
+      "primaryIatas": [
+        "KBV"
+      ],
+      "preferredLinkIata": "KBV",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "koh-samui": {
+      "primaryIatas": [
+        "USM"
+      ],
+      "preferredLinkIata": "USM",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "langkawi": {
+      "primaryIatas": [
+        "LGK"
+      ],
+      "preferredLinkIata": "LGK",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "krabi": {
+      "primaryIatas": [
+        "KBV"
+      ],
+      "preferredLinkIata": "KBV",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "cebu": {
+      "primaryIatas": [
+        "CEB"
+      ],
+      "preferredLinkIata": "CEB",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "nha-trang": {
+      "primaryIatas": [
+        "CXR"
+      ],
+      "preferredLinkIata": "CXR",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "yosemite": {
+      "primaryIatas": [
+        "FAT"
+      ],
+      "preferredLinkIata": "FAT",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "grand-canyon": {
+      "primaryIatas": [
+        "LAS",
+        "FLG"
+      ],
+      "preferredLinkIata": "LAS",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "라스베이거스·그랜드캐니언 공항"
+    },
+    "torres-del-paine": {
+      "primaryIatas": [
+        "PUQ"
+      ],
+      "preferredLinkIata": "PUQ",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "푼타아레나스 공항"
+    },
+    "milford-sound": {
+      "primaryIatas": [
+        "ZQN"
+      ],
+      "preferredLinkIata": "ZQN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "퀸즈타운 공항"
+    },
+    "plitvice-lakes": {
+      "primaryIatas": [
+        "ZAG"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "zhangjiajie": {
+      "primaryIatas": [
+        "DYG"
+      ],
+      "preferredLinkIata": "DYG",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "장가계 공항"
+    },
+    "halong-bay": {
+      "primaryIatas": [
+        "HAN"
+      ],
+      "preferredLinkIata": "HAN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "dolomites": {
+      "primaryIatas": [
+        "VCE"
+      ],
+      "preferredLinkIata": "VCE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "zermatt": {
+      "primaryIatas": [
+        "ZRH",
+        "GVA"
+      ],
+      "preferredLinkIata": "GVA",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "체르마트는 차량 통제 구역이라 공항 도착 후 기차(취리히·제네바 공항역 → 비스프 등)로 이어지는 일정이 흔합니다. 지도상으로는 북이탈리아 공항이 가깝게 보일 수 있어도, 실제 티켓·입국·연결은 스위스 관문(ZRH·GVA)을 먼저 확인해 주세요."
+    },
+    "dublin": {
+      "primaryIatas": [
+        "DUB"
+      ],
+      "preferredLinkIata": "DUB",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "edinburgh": {
+      "primaryIatas": [
+        "EDI"
+      ],
+      "preferredLinkIata": "EDI",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "copenhagen": {
+      "primaryIatas": [
+        "CPH"
+      ],
+      "preferredLinkIata": "CPH",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "stockholm": {
+      "primaryIatas": [
+        "ARN"
+      ],
+      "preferredLinkIata": "ARN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "jakarta": {
+      "primaryIatas": [
+        "CGK"
+      ],
+      "preferredLinkIata": "CGK",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kuala-lumpur": {
+      "primaryIatas": [
+        "KUL"
+      ],
+      "preferredLinkIata": "KUL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "hanoi": {
+      "primaryIatas": [
+        "HAN"
+      ],
+      "preferredLinkIata": "HAN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "seattle": {
+      "primaryIatas": [
+        "SEA"
+      ],
+      "preferredLinkIata": "SEA",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "munich": {
+      "primaryIatas": [
+        "MUC"
+      ],
+      "preferredLinkIata": "MUC",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "milan": {
+      "primaryIatas": [
+        "MXP"
+      ],
+      "preferredLinkIata": "MXP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "lisbon": {
+      "primaryIatas": [
+        "LIS"
+      ],
+      "preferredLinkIata": "LIS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "porto": {
+      "primaryIatas": [
+        "OPO"
+      ],
+      "preferredLinkIata": "OPO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "madrid": {
+      "primaryIatas": [
+        "MAD"
+      ],
+      "preferredLinkIata": "MAD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "seville": {
+      "primaryIatas": [
+        "SVQ"
+      ],
+      "preferredLinkIata": "SVQ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "brussels": {
+      "primaryIatas": [
+        "BRU"
+      ],
+      "preferredLinkIata": "BRU",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "oslo": {
+      "primaryIatas": [
+        "OSL"
+      ],
+      "preferredLinkIata": "OSL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "zurich": {
+      "primaryIatas": [
+        "ZRH"
+      ],
+      "preferredLinkIata": "ZRH",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "geneva": {
+      "primaryIatas": [
+        "GVA"
+      ],
+      "preferredLinkIata": "GVA",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "washington-dc": {
+      "primaryIatas": [
+        "IAD"
+      ],
+      "preferredLinkIata": "IAD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "boston": {
+      "primaryIatas": [
+        "BOS"
+      ],
+      "preferredLinkIata": "BOS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "miami": {
+      "primaryIatas": [
+        "MIA"
+      ],
+      "preferredLinkIata": "MIA",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "montreal": {
+      "primaryIatas": [
+        "YUL"
+      ],
+      "preferredLinkIata": "YUL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "angkor-thom": {
+      "primaryIatas": [
+        "REP"
+      ],
+      "preferredLinkIata": "REP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "borobudur": {
+      "primaryIatas": [
+        "JOG"
+      ],
+      "preferredLinkIata": "JOG",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "욕야카르타 공항"
+    },
+    "ayutthaya": {
+      "primaryIatas": [
+        "DMK"
+      ],
+      "preferredLinkIata": "DMK",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "luang-prabang": {
+      "primaryIatas": [
+        "LPQ"
+      ],
+      "preferredLinkIata": "LPQ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "hue": {
+      "primaryIatas": [
+        "DAD"
+      ],
+      "preferredLinkIata": "DAD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "hoi-an": {
+      "primaryIatas": [
+        "DAD"
+      ],
+      "preferredLinkIata": "DAD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "taj-mahal": {
+      "primaryIatas": [
+        "DEL"
+      ],
+      "preferredLinkIata": "DEL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "jaipur": {
+      "primaryIatas": [
+        "JAI"
+      ],
+      "preferredLinkIata": "JAI",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "자이푸르 국제공항"
+    },
+    "varanasi": {
+      "primaryIatas": [
+        "VNS"
+      ],
+      "preferredLinkIata": "VNS",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "바라나시 공항"
+    },
+    "hampi": {
+      "primaryIatas": [
+        "BLR"
+      ],
+      "preferredLinkIata": "BLR",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "방갈로르 후 장거리 육로"
+    },
+    "great-wall": {
+      "primaryIatas": [
+        "PEK"
+      ],
+      "preferredLinkIata": "PEK",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "forbidden-city": {
+      "primaryIatas": [
+        "PEK"
+      ],
+      "preferredLinkIata": "PEK",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "terracotta-army": {
+      "primaryIatas": [
+        "XIY"
+      ],
+      "preferredLinkIata": "XIY",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시안 공항"
+    },
+    "lhasa": {
+      "primaryIatas": [
+        "LXA"
+      ],
+      "preferredLinkIata": "LXA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "라싸 공항"
+    },
+    "dunhuang": {
+      "primaryIatas": [
+        "DNH"
+      ],
+      "preferredLinkIata": "DNH",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "둔황 공항"
+    },
+    "persepolis": {
+      "primaryIatas": [
+        "SYZ"
+      ],
+      "preferredLinkIata": "SYZ",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시라즈 공항"
+    },
+    "cappadocia": {
+      "primaryIatas": [
+        "ASR",
+        "NAV"
+      ],
+      "preferredLinkIata": "NAV",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "ephesus": {
+      "primaryIatas": [
+        "ADB"
+      ],
+      "preferredLinkIata": "ADB",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "이즈미르 아드난 멘데레스"
+    },
+    "luxor": {
+      "primaryIatas": [
+        "LXR"
+      ],
+      "preferredLinkIata": "LXR",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "abu-simbel": {
+      "primaryIatas": [
+        "ASW"
+      ],
+      "preferredLinkIata": "ASW",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "아스완 후 투어·국내선"
+    },
+    "fez": {
+      "primaryIatas": [
+        "FEZ"
+      ],
+      "preferredLinkIata": "FEZ",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "페스 사이스 공항"
+    },
+    "timbuktu": {
+      "primaryIatas": [
+        "BKO"
+      ],
+      "preferredLinkIata": "BKO",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "바마코 후 육로·강"
+    },
+    "lalibela": {
+      "primaryIatas": [
+        "ADD"
+      ],
+      "preferredLinkIata": "ADD",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "아디스아바바 후 국내선"
+    },
+    "cusco": {
+      "primaryIatas": [
+        "CUZ"
+      ],
+      "preferredLinkIata": "CUZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "nazca-lines": {
+      "primaryIatas": [
+        "LIM"
+      ],
+      "preferredLinkIata": "LIM",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "리마 후 버스·소형기"
+    },
+    "tikal": {
+      "primaryIatas": [
+        "GUA"
+      ],
+      "preferredLinkIata": "GUA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "과테말라시티 공항"
+    },
+    "santiago-de-compostela": {
+      "primaryIatas": [
+        "SCL"
+      ],
+      "preferredLinkIata": "SCL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "everest-base-camp": {
+      "primaryIatas": [
+        "KTM"
+      ],
+      "preferredLinkIata": "KTM",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "annapurna-circuit": {
+      "primaryIatas": [
+        "KTM",
+        "PKR"
+      ],
+      "preferredLinkIata": "PKR",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "카트만두·포카라 관문"
+    },
+    "kilimanjaro": {
+      "primaryIatas": [
+        "NBO"
+      ],
+      "preferredLinkIata": "NBO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "mont-blanc": {
+      "primaryIatas": [
+        "GVA"
+      ],
+      "preferredLinkIata": "GVA",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "komodo-island": {
+      "primaryIatas": [
+        "LBJ"
+      ],
+      "preferredLinkIata": "LBJ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "raja-ampat": {
+      "primaryIatas": [
+        "SOQ"
+      ],
+      "preferredLinkIata": "SOQ",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "소롱 공항"
+    },
+    "borneo": {
+      "primaryIatas": [
+        "BKI",
+        "KCH",
+        "KUL"
+      ],
+      "preferredLinkIata": "BKI",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH), 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "사바·사라왕·반도 국제 관문"
+    },
+    "madagascar": {
+      "primaryIatas": [
+        "TNR"
+      ],
+      "preferredLinkIata": "TNR",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "안타ananarivo 국제공항"
+    },
+    "costa-rica": {
+      "primaryIatas": [
+        "SJO"
+      ],
+      "preferredLinkIata": "SJO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "inca-trail": {
+      "primaryIatas": [
+        "CUZ"
+      ],
+      "preferredLinkIata": "CUZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "peninsula-valdes": {
+      "primaryIatas": [
+        "PMY"
+      ],
+      "preferredLinkIata": "PMY",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "푸에르토마드린"
+    },
+    "ibiza": {
+      "primaryIatas": [
+        "IBZ"
+      ],
+      "preferredLinkIata": "IBZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "crete": {
+      "primaryIatas": [
+        "HER",
+        "ATH"
+      ],
+      "preferredLinkIata": "HER",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "corsica": {
+      "primaryIatas": [
+        "AJA",
+        "BIA"
+      ],
+      "preferredLinkIata": "AJA",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "아작시오·바스티아 공항"
+    },
+    "sicily": {
+      "primaryIatas": [
+        "CTA",
+        "PMO"
+      ],
+      "preferredLinkIata": "CTA",
+      "kind": "multi",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "시칠리아는 동부 카타니아(CTA)·서북부 팔레르모(PMO) 등 도착 공항이 나뉩니다. 인천·유럽 경유 후 시칠리아행 국내선·유럽내선으로 이어지는 일정이 흔하니, 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요."
+    },
+    "hvar": {
+      "primaryIatas": [
+        "DBV"
+      ],
+      "preferredLinkIata": "DBV",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "스플리트·두브로브니크 공항 경유 페리"
+    },
+    "bodrum": {
+      "primaryIatas": [
+        "BJV"
+      ],
+      "preferredLinkIata": "BJV",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "밀라스·보드룸 공항"
+    },
+    "bohol": {
+      "primaryIatas": [
+        "CEB"
+      ],
+      "preferredLinkIata": "CEB",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "rocky-mountains": {
+      "primaryIatas": [
+        "DEN"
+      ],
+      "preferredLinkIata": "DEN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "wadi-rum": {
+      "primaryIatas": [
+        "AMM"
+      ],
+      "preferredLinkIata": "AMM",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium",
+      "bannerNote": "요르단 국제선은 대부분 암만 퀸 알리아(AMM)에 도착한 뒤 페트라·와디 럼으로 이동합니다. 티켓·일정의 도착 공항을 확인해 주세요."
+    },
+    "kamchatka": {
+      "primaryIatas": [
+        "PKC"
+      ],
+      "preferredLinkIata": "PKC",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "페트로파블롭스크캄차츠키"
+    },
+    "fiordland": {
+      "primaryIatas": [
+        "ZQN"
+      ],
+      "preferredLinkIata": "ZQN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "퀸즈타운·티아나우 관문"
+    },
+    "tahiti": {
+      "primaryIatas": [
+        "PPT"
+      ],
+      "preferredLinkIata": "PPT",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "sapa": {
+      "primaryIatas": [
+        "HAN"
+      ],
+      "preferredLinkIata": "HAN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "하노이 후 육로·기차"
+    },
+    "aconcagua": {
+      "primaryIatas": [
+        "SCL"
+      ],
+      "preferredLinkIata": "SCL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "denali": {
+      "primaryIatas": [
+        "ANC"
+      ],
+      "preferredLinkIata": "ANC",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "앵커리지 공항"
+    },
+    "carstensz-pyramid": {
+      "primaryIatas": [
+        "DJJ"
+      ],
+      "preferredLinkIata": "DJJ",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "medium",
+      "rationale": "자야푸라·티미카 관문"
+    },
+    "sequoia-national-park": {
+      "primaryIatas": [
+        "FAT"
+      ],
+      "preferredLinkIata": "FAT",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "arequipa": {
+      "primaryIatas": [
+        "AQP"
+      ],
+      "preferredLinkIata": "AQP",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "아레키파 공항"
+    },
+    "similan-islands": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "cinque-terre": {
+      "primaryIatas": [
+        "MXP"
+      ],
+      "preferredLinkIata": "MXP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "mount-bromo": {
+      "primaryIatas": [
+        "SUB"
+      ],
+      "preferredLinkIata": "SUB",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "da-nang": {
+      "primaryIatas": [
+        "DAD"
+      ],
+      "preferredLinkIata": "DAD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "sapporo": {
+      "primaryIatas": [
+        "CTS"
+      ],
+      "preferredLinkIata": "CTS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "osaka": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "fukuoka": {
+      "primaryIatas": [
+        "FUK"
+      ],
+      "preferredLinkIata": "FUK",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "qingdao": {
+      "primaryIatas": [
+        "TAO"
+      ],
+      "preferredLinkIata": "TAO",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "칭다오 공항"
+    },
+    "dubrovnik": {
+      "primaryIatas": [
+        "DBV"
+      ],
+      "preferredLinkIata": "DBV",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "saipan": {
+      "primaryIatas": [
+        "SPN"
+      ],
+      "preferredLinkIata": "SPN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "phu-quoc": {
+      "primaryIatas": [
+        "PQC"
+      ],
+      "preferredLinkIata": "PQC",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kota-kinabalu": {
+      "primaryIatas": [
+        "BKI"
+      ],
+      "preferredLinkIata": "BKI",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "honolulu": {
+      "primaryIatas": [
+        "HNL"
+      ],
+      "preferredLinkIata": "HNL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "hokkaido": {
+      "primaryIatas": [
+        "CTS"
+      ],
+      "preferredLinkIata": "CTS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "sant-joan": {
+      "primaryIatas": [
+        "IBZ"
+      ],
+      "preferredLinkIata": "IBZ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "miyakojima": {
+      "primaryIatas": [
+        "MMY"
+      ],
+      "preferredLinkIata": "MMY",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "미야코지마 공항"
+    },
+    "kala-patthar": {
+      "primaryIatas": [
+        "KTM"
+      ],
+      "preferredLinkIata": "KTM",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "faroe-islands": {
+      "primaryIatas": [
+        "FAE"
+      ],
+      "preferredLinkIata": "FAE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kiribati": {
+      "primaryIatas": [
+        "TRW"
+      ],
+      "preferredLinkIata": "TRW",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "타라와 공항"
+    },
+    "cape-verde": {
+      "primaryIatas": [
+        "SID"
+      ],
+      "preferredLinkIata": "SID",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "살 국제공항"
+    },
+    "bled": {
+      "primaryIatas": [
+        "ZAG"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "la-spezia": {
+      "primaryIatas": [
+        "MXP"
+      ],
+      "preferredLinkIata": "MXP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kotor": {
+      "primaryIatas": [
+        "DBV"
+      ],
+      "preferredLinkIata": "DBV",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "jeju": {
+      "primaryIatas": [
+        "CJU"
+      ],
+      "preferredLinkIata": "CJU",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "seogwipo": {
+      "primaryIatas": [
+        "CJU"
+      ],
+      "preferredLinkIata": "CJU",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "manila": {
+      "primaryIatas": [
+        "MNL"
+      ],
+      "preferredLinkIata": "MNL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "chiang-mai": {
+      "primaryIatas": [
+        "CNX"
+      ],
+      "preferredLinkIata": "CNX",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "macau": {
+      "primaryIatas": [
+        "MFM"
+      ],
+      "preferredLinkIata": "MFM",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "budapest": {
+      "primaryIatas": [
+        "BUD"
+      ],
+      "preferredLinkIata": "BUD",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "helsinki": {
+      "primaryIatas": [
+        "HEL"
+      ],
+      "preferredLinkIata": "HEL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "reykjavik": {
+      "primaryIatas": [
+        "KEF"
+      ],
+      "preferredLinkIata": "KEF",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "brisbane": {
+      "primaryIatas": [
+        "BNE"
+      ],
+      "preferredLinkIata": "BNE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "nara": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kobe": {
+      "primaryIatas": [
+        "KIX"
+      ],
+      "preferredLinkIata": "KIX",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "nagasaki": {
+      "primaryIatas": [
+        "KMJ"
+      ],
+      "preferredLinkIata": "KMJ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kanazawa": {
+      "primaryIatas": [
+        "NGO"
+      ],
+      "preferredLinkIata": "NGO",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "yokohama": {
+      "primaryIatas": [
+        "HND"
+      ],
+      "preferredLinkIata": "HND",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "tsushima": {
+      "primaryIatas": [
+        "PUS"
+      ],
+      "preferredLinkIata": "PUS",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "kumamoto": {
+      "primaryIatas": [
+        "KMJ"
+      ],
+      "preferredLinkIata": "KMJ",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "ishigaki": {
+      "primaryIatas": [
+        "ISG"
+      ],
+      "preferredLinkIata": "ISG",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "이시가키 공항"
+    },
+    "lombok": {
+      "primaryIatas": [
+        "LOP"
+      ],
+      "preferredLinkIata": "LOP",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "vientiane": {
+      "primaryIatas": [
+        "VTE"
+      ],
+      "preferredLinkIata": "VTE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "vang-vieng": {
+      "primaryIatas": [
+        "VTE"
+      ],
+      "preferredLinkIata": "VTE",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "zagreb": {
+      "primaryIatas": [
+        "ZAG"
+      ],
+      "preferredLinkIata": "ZAG",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "warsaw": {
+      "primaryIatas": [
+        "WAW"
+      ],
+      "preferredLinkIata": "WAW",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "philadelphia": {
+      "primaryIatas": [
+        "PHL"
+      ],
+      "preferredLinkIata": "PHL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "san-diego": {
+      "primaryIatas": [
+        "SAN"
+      ],
+      "preferredLinkIata": "SAN",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    },
+    "gold-coast": {
+      "primaryIatas": [
+        "OOL"
+      ],
+      "preferredLinkIata": "OOL",
+      "kind": "single",
+      "source": "runtime-infer",
+      "confidence": "medium"
+    }
+  }
+}

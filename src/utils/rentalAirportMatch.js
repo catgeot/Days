@@ -1,6 +1,51 @@
 import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from './rentalAirportHubs.js';
+import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' with { type: 'json' };
 
 const toRad = (d) => (d * Math.PI) / 180;
+
+/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: string, bannerNote?: string }>} */
+const STATIC_SPOT_AIRPORT_MAP = travelSpotAirportsData.spots ?? {};
+
+function getTravelSpotAirportRow(location) {
+  const slug = String(location?.slug ?? '').toLowerCase();
+  if (!slug) return null;
+  return STATIC_SPOT_AIRPORT_MAP[slug] ?? null;
+}
+
+function resolveRentalPickupBannerFromStaticMap(location) {
+  const row = getTravelSpotAirportRow(location);
+  if (!row?.primaryIatas?.length) return null;
+
+  const codes = row.primaryIatas.filter((c) => hubByIata(c));
+  if (!codes.length) return null;
+
+  const preferred =
+    row.preferredLinkIata && codes.includes(row.preferredLinkIata) ? row.preferredLinkIata : codes[0];
+
+  if (row.kind === 'single' || codes.length === 1) {
+    const hub = hubByIata(preferred);
+    if (!hub) return null;
+    return {
+      kind: 'single',
+      officialKo: hub.officialKo,
+      iata: hub.iata,
+      fromStaticMap: true,
+      ...(row.bannerNote ? { bannerNote: row.bannerNote } : {})
+    };
+  }
+
+  const airports = airportsFromIataCodes(codes).filter((a) => hubByIata(a.iata));
+  if (!airports.length) return null;
+  const linkHub = airports.find((a) => a.iata === preferred) || airports[0];
+  const others = airports.filter((a) => a.iata !== linkHub.iata);
+  return {
+    kind: 'multi',
+    airports: [linkHub, ...others],
+    linkHub,
+    ...(row.bannerNote ? { bannerNote: row.bannerNote } : {}),
+    fromStaticMap: true
+  };
+}
 
 export function distanceKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -173,6 +218,13 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     preferredLinkIata: 'HER'
   },
   {
+    phrases: ['sicily', '시칠리아', 'sicilia', 'catania', '카타니아', 'palermo', '팔레르모', 'taormina', '타오르미나'],
+    iataCodes: ['CTA', 'PMO'],
+    preferredLinkIata: 'CTA',
+    bannerNote:
+      '시칠리아는 동부 카타니아(CTA)·서북부 팔레르모(PMO) 등 도착 공항이 나뉩니다. 인천·유럽 경유 후 시칠리아행 국내선·유럽내선으로 이어지는 일정이 흔하니, 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
+  },
+  {
     phrases: ['palawan', '팔라완', 'puerto princesa', '푸에르토 프린세사'],
     iataCodes: ['PPS', 'MNL'],
     preferredLinkIata: 'PPS',
@@ -249,6 +301,9 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /디트로이트|detroit/i, iata: 'DTW' },
   { re: /산토리니|santorini|티라|thira/i, iata: 'JTR' },
   { re: /크레타|crete|이라클리온|heraklion/i, iata: 'HER' },
+  { re: /카타니아|catania/i, iata: 'CTA' },
+  { re: /팔레르모|palermo/i, iata: 'PMO' },
+  { re: /시칠리아|sicily|sicilia/i, iata: 'CTA' },
   { re: /이비사|ibiza/i, iata: 'IBZ' },
   { re: /세비야|seville|sevilla/i, iata: 'SVQ' },
   { re: /베를린|berlin/i, iata: 'BER' },
@@ -502,6 +557,11 @@ function resolveLinkHubWithinMulti(location, row, airports) {
 export function resolveRentalPickupBannerInfo(location, options = {}) {
   if (!location || typeof location !== 'object') return null;
 
+  if (options.ignoreStaticAirportMap !== true) {
+    const fromStatic = resolveRentalPickupBannerFromStaticMap(location);
+    if (fromStatic) return fromStatic;
+  }
+
   const eg = options.essentialGuide;
   if (eg && typeof eg === 'object') {
     const plannerCodes = extractArrivalIataCodesFromEssentialGuide(eg);
@@ -605,12 +665,24 @@ export function getRentalCarHomeSearchSubtext(location, options = {}) {
 export function resolveRentalAirport(location, options = {}) {
   if (!location || typeof location !== 'object') return null;
 
+  const ignoreStored = options.ignoreStoredRentalAirport === true;
+  if (!ignoreStored && options.ignoreStaticAirportMap !== true) {
+    const staticRow = getTravelSpotAirportRow(location);
+    if (staticRow?.primaryIatas?.length) {
+      const linkCode =
+        staticRow.preferredLinkIata && staticRow.primaryIatas.includes(staticRow.preferredLinkIata)
+          ? staticRow.preferredLinkIata
+          : staticRow.primaryIatas[0];
+      const hub = hubByIata(linkCode);
+      if (hub) return { officialKo: hub.officialKo, iata: hub.iata };
+    }
+  }
+
   const lat = typeof location.lat === 'number' ? location.lat : Number(location.lat);
   const lng = typeof location.lng === 'number' ? location.lng : Number(location.lng);
   const geoHub =
     Number.isFinite(lat) && Number.isFinite(lng) ? nearestHubWithinRadius(lat, lng) : null;
 
-  const ignoreStored = options.ignoreStoredRentalAirport === true;
   if (!ignoreStored && typeof location.rental_airport_official_ko === 'string' && location.rental_airport_official_ko.trim()) {
     const storedOfficial = location.rental_airport_official_ko.trim();
     const storedIataRaw =
