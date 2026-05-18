@@ -48,6 +48,11 @@
 - **1c** `usePlannerData` `placeKey` → `getPlaceStableKey`(canonical_slug 우선).
 - QA(gateo.kr): 앙코르 와트·보르네오·브루나이 — 지구본·검색·플래너·IATA 연결 이상 없음 확인.
 
+### 바간 도착 공항 보정 (완료)
+
+- **원인**: `bagan`·MDL 허브 별칭에 바간 포함, 오버라이드·JSON이 **MDL(만달레이)** 로 고정.
+- **수정**: **NYU(냥우)** 허브 추가, `bagan` curated → NYU. 툴킷 여정(RGN→NYU)과 배너·Trip.com 도착 코드 일치.
+
 ### 세션 종료 (2026-05-18)
 
 - Phase 0(P0 데이터·angkor DB apply) + Phase 1 세션 1(런타임 정규화) 코드·문서 커밋.

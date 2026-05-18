@@ -93,7 +93,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '호주령 크리스마스섬 직항은 크리스마스섬(XCH)입니다. 퍼스(PER) 등 호주 본토에서 정기편·경유로 이어지는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
-  bagan: { primaryIatas: ['MDL'], preferredLinkIata: 'MDL', confidence: 'high', rationale: '만달레이 공항' },
+  bagan: {
+    primaryIatas: ['NYU'],
+    preferredLinkIata: 'NYU',
+    confidence: 'high',
+    rationale: '바간 관문 냥우(NYU) 공항',
+    bannerNote:
+      '국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.',
+  },
   tikal: { primaryIatas: ['GUA'], preferredLinkIata: 'GUA', confidence: 'high', rationale: '과테말라시티 공항' },
   'torres-del-paine': { primaryIatas: ['PUQ'], preferredLinkIata: 'PUQ', confidence: 'high', rationale: '푼타아레나스 공항' },
   persepolis: { primaryIatas: ['SYZ'], preferredLinkIata: 'SYZ', confidence: 'high', rationale: '시라즈 공항' },

@@ -590,13 +590,14 @@
     },
     "bagan": {
       "primaryIatas": [
-        "MDL"
+        "NYU"
       ],
-      "preferredLinkIata": "MDL",
+      "preferredLinkIata": "NYU",
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "만달레이 공항"
+      "bannerNote": "국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.",
+      "rationale": "바간 관문 냥우(NYU) 공항"
     },
     "fiji": {
       "primaryIatas": [
