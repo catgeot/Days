@@ -15,6 +15,9 @@ import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
+import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
+
+const prepareLocation = (loc) => enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(loc));
 
 // Haversine 공식을 이용한 두 좌표 간의 거리 계산 (단위: km)
 const getDistanceKm = (lat1, lon1, lat2, lon2) => {
@@ -116,7 +119,7 @@ export function useHomeHandlers({
           slugBase = addressFromLabelPoint?.name_en || '';
         }
 
-        const labelPin = enrichLocationWithRentalAirport({
+        const labelPin = prepareLocation({
           id: `label-${lat}-${lng}`,
           slug: formatUrlName(slugBase || clickedLabel),
           lat,
@@ -158,7 +161,7 @@ export function useHomeHandlers({
         }
 
         if (nearestPoint) {
-            const finalLoc = enrichLocationWithRentalAirport({
+            const finalLoc = prepareLocation({
                 ...nearestPoint,
                 id: nearestPoint.id || `snap-${nearestPoint.lat}-${nearestPoint.lng}`,
                 type: nearestPoint.type || 'temp-base',
@@ -177,7 +180,7 @@ export function useHomeHandlers({
       const name_en = addressData?.name_en || "";
       const display_name = addressData.city || addressData.country;
 
-      const realPin = enrichLocationWithRentalAirport({
+      const realPin = prepareLocation({
         id: !name_en ? fallbackId : Date.now(),
         slug: name_en ? formatUrlName(name_en) : fallbackId,
         lat,
@@ -215,7 +218,7 @@ export function useHomeHandlers({
     }
 
     const name = loc.name || "Selected";
-    const finalLoc = enrichLocationWithRentalAirport({
+    const finalLoc = prepareLocation({
       ...loc,
       type: loc.type || 'temp-base',
       id: loc.id || `loc-${loc.lat}-${loc.lng}`,

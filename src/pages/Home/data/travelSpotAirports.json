@@ -3873,6 +3873,39 @@
       "placeId": "앙코르 와트",
       "linkedSlug": "angkor-wat"
     },
+    "브루나이": {
+      "primaryIatas": [
+        "BWN"
+      ],
+      "preferredLinkIata": "BWN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "브루나이 국제공항(BWN) — 보르네오(borneo)와 별도 여행지",
+      "placeId": "브루나이"
+    },
+    "Brunei": {
+      "primaryIatas": [
+        "BWN"
+      ],
+      "preferredLinkIata": "BWN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "브루나이 국제공항(BWN) — 보르네오(borneo)와 별도 여행지",
+      "placeId": "Brunei"
+    },
+    "brunei": {
+      "primaryIatas": [
+        "BWN"
+      ],
+      "preferredLinkIata": "BWN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "브루나이 국제공항(BWN) — 보르네오(borneo)와 별도 여행지",
+      "placeId": "brunei"
+    },
     "베를린": {
       "primaryIatas": [
         "BER"

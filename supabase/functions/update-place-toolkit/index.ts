@@ -19,6 +19,9 @@ const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
   HER: { lat: 35.3397, lng: 25.1803 },
   CHQ: { lat: 35.5317, lng: 24.1497 },
   ICN: { lat: 37.4602, lng: 126.4407 },
+  BWN: { lat: 4.9442, lng: 114.9284 },
+  BKI: { lat: 5.9372, lng: 116.0512 },
+  SAI: { lat: 13.7694, lng: 103.6439 },
 };
 
 function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {

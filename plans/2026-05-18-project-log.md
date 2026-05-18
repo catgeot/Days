@@ -41,9 +41,22 @@
 - QA(gateo.kr): `/place/angkor-wat/planner`·「시엠립」검색→Siem Reap — 플래너·Trip.com 배너 **SAI**·ICN→SAI 문구 일치.
 - **브루나이**: `place_toolkit` 단일 행 유지, reconcile **병합 안 함**(`flag_only`). 공식 `travelSpots` slug 없음 — Phase 4에서 별도 여행지 추가 여부·행 삭제 여부 수동 결정.
 
-### 다음
+### Phase 1 세션 1 — 런타임 정규화 (완료)
 
-- Phase 1 런타임 정규화 또는 Phase 0 보르네오 지구본 QA(세션1 JSON 반영 확인).
+- **1a** `src/utils/travelSpotResolve.js` — `mergeCanonicalTravelSpot`·`resolveTravelSpotFromPlaceId`. `useHomeHandlers`·`Home/index.jsx`에서 `enrichLocationWithRentalAirport` 전 적용.
+- **1b** `TRAVEL_SPOT_TOOLKIT_SYNONYMS` 화이트리스트 — `buildToolkitPlaceIdCandidates` 역방향 별칭 전체 주입 제거.
+- **1c** `usePlannerData` `placeKey` → `getPlaceStableKey`(canonical_slug 우선).
+- QA(gateo.kr): 앙코르 와트·보르네오·브루나이 — 지구본·검색·플래너·IATA 연결 이상 없음 확인.
+
+### 세션 종료 (2026-05-18)
+
+- Phase 0(P0 데이터·angkor DB apply) + Phase 1 세션 1(런타임 정규화) 코드·문서 커밋.
+
+### 다음 (내일 제안)
+
+1. **배포** — `main` push → Vercel Production 반영 후 동일 3경로 스모크 QA.
+2. **Phase 2 세션** — `npm run toolkit:audit-place-id` 리포트 검토 → `duplicateSlug`·`unmapped` 우선순위 정리 → `reconcile --dry-run` 후 `--apply` 배치(보르네오 등, 브루나이는 `flag_only` 유지).
+3. **(선택)** `TRAVEL_SPOT_TOOLKIT_SYNONYMS` — 감사 리포트 상위 slug만 화이트리스트 확장.
 
 ### 문서
 

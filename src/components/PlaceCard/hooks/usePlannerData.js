@@ -2,17 +2,17 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import {
   fetchToolkitRow,
-  hasUsableToolkit,
   hasUsableToolkitForLocation,
   toolkitRowMatchesLocation,
   toolkitUpdateMatchesLocation,
   buildToolkitPlaceIdCandidates,
 } from '../../../utils/toolkitPlaceIdResolve';
+import { getPlaceStableKey } from '../../../utils/travelSpotResolve';
 
 const isDev = import.meta.env.DEV;
 
 export const usePlannerData = (location, mediaMode) => {
-  const placeKey = typeof location === 'string' ? location : location?.name;
+  const placeKey = getPlaceStableKey(location);
 
   const [plannerData, setToolkitData] = useState(null);
   const [isPlannerLoading, setIsToolkitLoading] = useState(Boolean(placeKey));
@@ -44,7 +44,10 @@ export const usePlannerData = (location, mediaMode) => {
     setIsPlannerRefreshing(true);
     try {
       const data = await fetchToolkitRow(supabase, location);
-      if (locationRef.current === location || (typeof locationRef.current === 'object' && locationRef.current?.name === placeKey)) {
+      if (
+        locationRef.current === location ||
+        (typeof locationRef.current === 'object' && getPlaceStableKey(locationRef.current) === placeKey)
+      ) {
         setToolkitData(data || null);
       }
     } catch (err) {

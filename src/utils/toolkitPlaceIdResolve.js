@@ -1,4 +1,5 @@
-import { TRAVEL_SPOT_PLACE_ID_ALIASES } from '../../scripts/data/travel-spot-place-id-aliases.mjs';
+import { TRAVEL_SPOT_TOOLKIT_SYNONYMS } from '../../scripts/data/travel-spot-place-id-aliases.mjs';
+import { getPlaceStableKey } from './travelSpotResolve.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import { distanceKm, extractArrivalIataCodesFromEssentialGuide } from './rentalAirportMatch.js';
 
@@ -37,11 +38,10 @@ export function buildToolkitPlaceIdCandidates(location) {
   add(location.name_en);
   add(location.slug);
 
-  const slug = String(location.slug ?? '').trim().toLowerCase();
-  if (slug) {
-    for (const [aliasPlaceId, aliasSlug] of Object.entries(TRAVEL_SPOT_PLACE_ID_ALIASES)) {
-      if (aliasSlug === slug) add(aliasPlaceId);
-    }
+  const slugKey = getPlaceStableKey(location);
+  const synonyms = TRAVEL_SPOT_TOOLKIT_SYNONYMS[slugKey];
+  if (synonyms) {
+    for (const syn of synonyms) add(syn);
   }
 
   return out;

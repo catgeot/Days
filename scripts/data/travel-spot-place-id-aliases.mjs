@@ -74,6 +74,39 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Bohol': 'bohol'
 };
 
+/**
+ * 툴킷 DB `place_id` 조회용 동의어 화이트리스트 (slug → 후보 place_id).
+ * `buildToolkitPlaceIdCandidates`는 역방향 별칭 전체 주입 대신 이 목록만 사용합니다.
+ * (국가·타 도시·잘못된 별칭 제외 — 예: Brunei→borneo는 넣지 않음)
+ *
+ * @type {Record<string, string[]>}
+ */
+export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
+  'angkor-wat': ['Siem Reap', '시엠립', 'Angkor Wat', '앙코르 와트', '앙코르와트'],
+  'borneo': ['보르네오', 'Borneo'],
+  'everest-base-camp': ['에베레스트', '에베레스트 캠프', '에베레스트베이스캠프', 'Everest'],
+  'uyuni-salt-flat': ['우유니', '우유니 사막', '우유니소금사막', 'Uyuni'],
+  'plitvice-lakes': [
+    '플리트비체',
+    '플리트비체 국립공원',
+    '플리트비체호수',
+    'Plitvice',
+    'Plitvice Lakes National Park',
+  ],
+  'bali': ['우붓', 'Ubud'],
+  'reykjavik': ['레이니스퍄라', '레이클라비크', 'Reykjavik'],
+  'ishigaki': ['오키나와', '오키나와현', 'Okinawa'],
+  'galapagos': ['다윈', '다윈섬', 'Darwin'],
+  'phuket': ['태국 파타야', '파타야', 'Pattaya'],
+  'kuala-lumpur': ['쿠알라셀랑고르'],
+  'lalibela': ['아디스아바바', 'Addis Ababa'],
+  'bohol': ['보홀', 'Bohol'],
+  'seattle': ['Seattle', 'seattle'],
+  'iceland': ['Ilulissat', '일룰리사트', '일루리삿', 'Ilulissat Icefjord'],
+  'alaska': ['앵커리지', 'Anchorage'],
+  'antarctica': ['맥머도', '맥머도 기지', '남극해', 'McMurdo Station', 'McMurdo'],
+};
+
 /** @type {Set<string>} 여행지 SSOT에 없거나 매칭하면 안 되는 place_id */
 export const TRAVEL_SPOT_PLACE_ID_BLOCKLIST = new Set(
   [

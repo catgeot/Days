@@ -50,6 +50,14 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 160,
     aliases: ['kuching', '쿠칭', 'sarawak', '사라왕', 'kch']
   },
+  {
+    iata: 'BWN',
+    officialKo: '브루나이 국제공항',
+    lat: 4.9442,
+    lng: 114.9284,
+    radiusKm: 120,
+    aliases: ['brunei', '브루나이', 'bandar seri begawan', 'bandar seri', 'bsb', 'bwn']
+  },
   { iata: 'DPS', officialKo: '응우라라이국제공항', lat: -8.7482, lng: 115.1672, radiusKm: 200, aliases: ['bali', '발리', 'denpasar', 'dps'] },
   { iata: 'LBJ', officialKo: '코모도공항', lat: -8.4867, lng: 119.8890, radiusKm: 120, aliases: ['komodo', '코모도', 'labuan bajo', '라부안바조', 'lbj'] },
   { iata: 'CGK', officialKo: '수카르노하타국제공항', lat: -6.1256, lng: 106.6559, radiusKm: 220, aliases: ['jakarta', '자카르타', 'cgk'] },
