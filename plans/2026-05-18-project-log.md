@@ -34,9 +34,16 @@
 - `npm run toolkit:audit-place-id` · `toolkit:reconcile-place-id --dry-run` 구현 (`scripts/audit-place-toolkit-place-id.mjs`, `reconcile-place-toolkit-place-id.mjs`, `place-toolkit-reconcile-rules.mjs`).
 - P0 dry-run(313행): **wrongAlias 0** · **angkor-wat** `앙코르 와트`/`앙코르와트` 중복 → apply 시 `앙코르와트` 삭제 예정 · **보르네오** 단일 행 OK · **브루나이** unmapped·`flag_only`(보르네오 병합 안 함). 리포트 `scripts/outputs/place-toolkit-place-id-*.json`.
 
-### 다음 세션
+### Phase 0 세션 3 — angkor DB apply·QA (완료)
 
-- **Phase 0 세션 3** — `toolkit:reconcile-place-id --apply --only=angkor-wat` (필요 시) 후 플래너·배너 QA; 브루나이 행은 수동 검토.
+- `toolkit:reconcile-place-id --apply --only=angkor-wat`: `앙코르와트` → canonical `앙코르 와트` merge+delete 1건 (313→312행).
+- `toolkit:audit-place-id --p0`: **P0 duplicateSlug 0** · wrongAlias 0 · P0 unmapped `브루나이` 1건만.
+- QA(gateo.kr): `/place/angkor-wat/planner`·「시엠립」검색→Siem Reap — 플래너·Trip.com 배너 **SAI**·ICN→SAI 문구 일치.
+- **브루나이**: `place_toolkit` 단일 행 유지, reconcile **병합 안 함**(`flag_only`). 공식 `travelSpots` slug 없음 — Phase 4에서 별도 여행지 추가 여부·행 삭제 여부 수동 결정.
+
+### 다음
+
+- Phase 1 런타임 정규화 또는 Phase 0 보르네오 지구본 QA(세션1 JSON 반영 확인).
 
 ### 문서
 
