@@ -19,8 +19,20 @@
 
 ### QA (당일)
 
-- 배너·전체 화면 링크 모두 **도착지 자동 입력** 및 검색 정상 확인.
+- 로컬·프로덕션(gateo.kr): 배너·Trip.com 링크 **도착지(IATA) 자동 입력** 정상.
+- Vercel: `0d92bb5` 배포가 Initializing/Queued에서 지연됐으나 **Redeploy 후 Production 반영** 완료.
+
+### Phase 0 세션 1 — 별칭·공항 JSON (완료)
+
+- **0a** `travel-spot-place-id-aliases.mjs`: `Brunei`/`브루나이`/`마나도`→`borneo` 제거; `Siem Reap`/`시엠립`/`Angkor Wat`/`앙코르 와트`→`angkor-wat` 추가.
+- **0b** `travel-spot-airport-overrides.mjs`: `angkor-wat`·`angkor-thom` **SAI** `high` (구 REP 폐쇄).
+- **0c** `travelSpotAirports.json`: `placeIds.보르네오` 다중공항(BKI·KCH·KUL); 시엠립·앙코르 계열 `placeIds` + `linkedSlug: angkor-wat`. `rentalAirportHubs` SAI 허브·REP 폐쇄 표기. `npm run generate:airports` · `audit:airports` (`none: 0`).
+- 로컬 QA: 앙코르 플래너 툴킷·배너·Trip.com **SAI** 일치 확인.
 
 ### 다음 세션
 
-- **여행지–공항 매칭** 전수·엣지 검수(`travelSpotAirports.json`, live 툴킷, `audit:airports`) — 완성도 핵심.
+- **Phase 0 세션 2** — `toolkit:audit-place-id` + `toolkit:reconcile-place-id --dry-run` 구현·리포트 확인 (DB apply는 세션 3).
+
+### 문서
+
+- [`destination-airport-identity-plan.md`](./destination-airport-identity-plan.md) — 문제 요약, Phase 0~4, DB 스크립트 설계, 세션 분할.

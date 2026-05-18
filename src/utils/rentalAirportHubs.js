@@ -87,7 +87,22 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'DAD', officialKo: '다낭국제공항', lat: 16.0439, lng: 108.1994, radiusKm: 160, aliases: ['da nang', '다낭', 'dad'] },
   { iata: 'CXR', officialKo: '깜란공항', lat: 11.9982, lng: 109.2194, radiusKm: 120, aliases: ['nha trang', '나짱', 'cxr', 'cam ranh'] },
   { iata: 'PQC', officialKo: '푸꾸옥국제공항', lat: 10.2270, lng: 103.9671, radiusKm: 140, aliases: ['phu quoc', '푸꾸옥', 'pqc'] },
-  { iata: 'REP', officialKo: '시엠립국제공항', lat: 13.4107, lng: 103.8128, radiusKm: 120, aliases: ['siem reap', '시엠립', 'angkor', '앙코르', 'rep'] },
+  {
+    iata: 'SAI',
+    officialKo: '시엠립 앙코르국제공항',
+    lat: 13.7694,
+    lng: 103.6439,
+    radiusKm: 120,
+    aliases: ['siem reap angkor', 'siem reap', '시엠립', '씨엠립', 'angkor', '앙코르', 'sai', '씨엠립 앙코르']
+  },
+  {
+    iata: 'REP',
+    officialKo: '시엠립국제공항(구·폐쇄)',
+    lat: 13.4107,
+    lng: 103.8128,
+    radiusKm: 60,
+    aliases: ['rep']
+  },
   { iata: 'VTE', officialKo: '와타이국제공항', lat: 17.9883, lng: 102.5633, radiusKm: 160, aliases: ['vientiane', '비엔티안', 'vte'] },
   { iata: 'LPQ', officialKo: '루앙프라방공항', lat: 19.8978, lng: 102.1610, radiusKm: 100, aliases: ['luang prabang', '루앙프라방', 'lpq'] },
   { iata: 'PVG', officialKo: '푸둥국제공항', lat: 31.1443, lng: 121.8083, radiusKm: 220, aliases: ['shanghai', '상하이', 'pudong', 'pvg'] },

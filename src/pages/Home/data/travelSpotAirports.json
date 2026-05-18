@@ -1,20 +1,20 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-17T11:59:26.777Z",
+    "generatedAt": "2026-05-18T10:44:36.849Z",
     "spotCount": 244,
+    "placeIdCount": 290,
     "stats": {
-      "override": 66,
-      "runtime": 179,
+      "override": 71,
+      "toolkitSync": 158,
+      "runtime": 16,
       "multiRule": 0,
       "geo": 0,
       "missing": 0
     },
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
-    "lastToolkitSyncAt": "2026-05-17T12:32:55.511Z",
-    "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync.",
-    "placeIdCount": 286
+    "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표."
   },
   "spots": {
     "bora-bora": {
@@ -559,12 +559,13 @@
     },
     "angkor-wat": {
       "primaryIatas": [
-        "REP"
+        "SAI"
       ],
-      "preferredLinkIata": "REP",
+      "preferredLinkIata": "SAI",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문"
     },
     "petra": {
       "primaryIatas": [
@@ -1304,8 +1305,9 @@
       ],
       "preferredLinkIata": "SEA",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시애틀터코마국제공항(SEA)"
     },
     "munich": {
       "primaryIatas": [
@@ -1451,13 +1453,13 @@
     },
     "angkor-thom": {
       "primaryIatas": [
-        "REP"
+        "SAI"
       ],
-      "preferredLinkIata": "REP",
+      "preferredLinkIata": "SAI",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "앙코르 권역 — SAI 관문(angkor-wat와 동일)"
     },
     "borobudur": {
       "primaryIatas": [
@@ -1718,8 +1720,8 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "순례 종착지 SCQ — 마드리드(MAD) 경유·국내선 루트도 흔함",
-      "bannerNote": "산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요."
+      "bannerNote": "산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "순례 종착지 SCQ — 마드리드(MAD) 경유·국내선 루트도 흔함"
     },
     "everest-base-camp": {
       "primaryIatas": [
@@ -1854,8 +1856,8 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리",
-      "bannerNote": "크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요."
+      "bannerNote": "크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리"
     },
     "corsica": {
       "primaryIatas": [
@@ -2001,8 +2003,8 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "국제선 CGK/DPS 후 파푸아 티미카(TIM) 국내선 — 카르스텐츠 원정 관문",
-      "bannerNote": "카르스텐츠 원정은 보통 자카르타(CGK) 또는 발리(DPS) 국제선 후 티미카(TIM) 국내선으로 들어옵니다. 센타니(DJJ)는 자야푸라 관문으로 흔하지 않습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요."
+      "bannerNote": "카르스텐츠 원정은 보통 자카르타(CGK) 또는 발리(DPS) 국제선 후 티미카(TIM) 국내선으로 들어옵니다. 센타니(DJJ)는 자야푸라 관문으로 흔하지 않습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "국제선 CGK/DPS 후 파푸아 티미카(TIM) 국내선 — 카르스텐츠 원정 관문"
     },
     "sequoia-national-park": {
       "primaryIatas": [
@@ -3810,15 +3812,66 @@
     },
     "보르네오": {
       "primaryIatas": [
-        "BKI"
+        "BKI",
+        "KCH",
+        "KUL"
       ],
       "preferredLinkIata": "BKI",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "사바·사라왕·반도 국제 관문 (spots.borneo와 동일)",
+      "bannerNote": "보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH), 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
       "placeId": "보르네오",
       "linkedSlug": "borneo"
+    },
+    "siemreap": {
+      "primaryIatas": [
+        "SAI"
+      ],
+      "preferredLinkIata": "SAI",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문",
+      "placeId": "Siem Reap",
+      "linkedSlug": "angkor-wat"
+    },
+    "시엠립": {
+      "primaryIatas": [
+        "SAI"
+      ],
+      "preferredLinkIata": "SAI",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문",
+      "placeId": "시엠립",
+      "linkedSlug": "angkor-wat"
+    },
+    "angkorwat": {
+      "primaryIatas": [
+        "SAI"
+      ],
+      "preferredLinkIata": "SAI",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문",
+      "placeId": "Angkor Wat",
+      "linkedSlug": "angkor-wat"
+    },
+    "앙코르와트": {
+      "primaryIatas": [
+        "SAI"
+      ],
+      "preferredLinkIata": "SAI",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문",
+      "placeId": "앙코르 와트",
+      "linkedSlug": "angkor-wat"
     },
     "베를린": {
       "primaryIatas": [
@@ -4213,13 +4266,13 @@
     },
     "앙코르톰": {
       "primaryIatas": [
-        "REP"
+        "SAI"
       ],
-      "preferredLinkIata": "REP",
+      "preferredLinkIata": "SAI",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "앙코르 권역 — SAI 관문(angkor-wat와 동일)",
       "placeId": "앙코르 톰",
       "linkedSlug": "angkor-thom"
     },

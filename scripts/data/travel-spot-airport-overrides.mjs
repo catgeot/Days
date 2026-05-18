@@ -166,6 +166,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '케르겔렌은 연구·군사 목적 선박·전용 항공만 접근 가능합니다. 레위니옹(RUN) 등 프랑스 남방 영토 관문을 거치는 탐험 일정이 일반적입니다.'
   },
+  'angkor-wat': {
+    primaryIatas: ['SAI'],
+    preferredLinkIata: 'SAI',
+    confidence: 'high',
+    rationale: '시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문'
+  },
+  'angkor-thom': {
+    primaryIatas: ['SAI'],
+    preferredLinkIata: 'SAI',
+    confidence: 'high',
+    rationale: '앙코르 권역 — SAI 관문(angkor-wat와 동일)'
+  },
   borneo: {
     primaryIatas: ['BKI', 'KCH', 'KUL'],
     preferredLinkIata: 'BKI',

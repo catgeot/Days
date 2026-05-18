@@ -3,6 +3,7 @@
 gateo.kr 홈 여행지(`TRAVEL_SPOTS`)를 **추가·수정**할 때와, 플래너 **렌터카·픽업·항공권 기준** 배너(도착 공항)를 맞출 때 참고합니다.
 
 **짧은 맥락**: [`.ai-context.md`](../.ai-context.md) 3절·6절  
+**정체성·공항 이슈(다중 place_id)**: [`destination-airport-identity-plan.md`](./destination-airport-identity-plan.md)  
 **일지**: `plans/YYYY-MM-DD-project-log.md`
 
 ---

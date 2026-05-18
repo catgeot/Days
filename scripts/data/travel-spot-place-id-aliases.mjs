@@ -36,12 +36,12 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '다윈': 'galapagos',
   '다윈섬': 'galapagos',
 
-  // —— 태국·말레이시아·필리핀 권역 ——
+  // —— 태국·말레이시아·필리핀·캄보디아 권역 ——
   '태국 파타야': 'phuket',
   '파타야': 'phuket',
-  '브루나이': 'borneo',
   '쿠알라셀랑고르': 'kuala-lumpur',
-  '마나도': 'borneo',
+  '앙코르 와트': 'angkor-wat',
+  '시엠립': 'angkor-wat',
 
   // —— 에티오피아·보홀 등 ——
   '아디스아바바': 'lalibela',
@@ -68,7 +68,8 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Okinawa': 'ishigaki',
   'Darwin': 'galapagos',
   'Pattaya': 'phuket',
-  'Brunei': 'borneo',
+  'Siem Reap': 'angkor-wat',
+  'Angkor Wat': 'angkor-wat',
   'Addis Ababa': 'lalibela',
   'Bohol': 'bohol'
 };
