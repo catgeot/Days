@@ -12,7 +12,9 @@
     "audit:airports": "node scripts/audit-rental-airports.mjs",
     "generate:airports": "node scripts/generate-travel-spot-airports.mjs",
     "sync:airports-from-toolkit": "node scripts/sync-travel-spot-airports-from-toolkit.mjs",
-    "enrich:airports": "node scripts/enrich-travel-spot-airports-ai.mjs"
+    "enrich:airports": "node scripts/enrich-travel-spot-airports-ai.mjs",
+    "toolkit:audit-place-id": "node scripts/audit-place-toolkit-place-id.mjs",
+    "toolkit:reconcile-place-id": "node scripts/reconcile-place-toolkit-place-id.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

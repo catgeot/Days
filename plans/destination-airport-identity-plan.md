@@ -203,7 +203,7 @@ npm run toolkit:reconcile-place-id -- --apply --only=borneo,angkor-wat
 
 | Phase | 상태 | 비고 |
 |-------|------|------|
-| 0 | 🟡 진행 중 | 세션 1(0a–0c·SAI) 완료 · 세션 2(0d dry-run) 대기 |
+| 0 | 🟡 진행 중 | 세션 1(0a–0c) · 세션 2(0d dry-run·스크립트) 완료 · 세션 3(0d apply) 대기 |
 | 1 | ⬜ 대기 | |
 | 2 | ⬜ 대기 | |
 | 3 | ⬜ 대기 | |

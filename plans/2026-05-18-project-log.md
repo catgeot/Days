@@ -29,9 +29,14 @@
 - **0c** `travelSpotAirports.json`: `placeIds.보르네오` 다중공항(BKI·KCH·KUL); 시엠립·앙코르 계열 `placeIds` + `linkedSlug: angkor-wat`. `rentalAirportHubs` SAI 허브·REP 폐쇄 표기. `npm run generate:airports` · `audit:airports` (`none: 0`).
 - 로컬 QA: 앙코르 플래너 툴킷·배너·Trip.com **SAI** 일치 확인.
 
+### Phase 0 세션 2 — toolkit 감사·reconcile dry-run (완료)
+
+- `npm run toolkit:audit-place-id` · `toolkit:reconcile-place-id --dry-run` 구현 (`scripts/audit-place-toolkit-place-id.mjs`, `reconcile-place-toolkit-place-id.mjs`, `place-toolkit-reconcile-rules.mjs`).
+- P0 dry-run(313행): **wrongAlias 0** · **angkor-wat** `앙코르 와트`/`앙코르와트` 중복 → apply 시 `앙코르와트` 삭제 예정 · **보르네오** 단일 행 OK · **브루나이** unmapped·`flag_only`(보르네오 병합 안 함). 리포트 `scripts/outputs/place-toolkit-place-id-*.json`.
+
 ### 다음 세션
 
-- **Phase 0 세션 2** — `toolkit:audit-place-id` + `toolkit:reconcile-place-id --dry-run` 구현·리포트 확인 (DB apply는 세션 3).
+- **Phase 0 세션 3** — `toolkit:reconcile-place-id --apply --only=angkor-wat` (필요 시) 후 플래너·배너 QA; 브루나이 행은 수동 검토.
 
 ### 문서
 
