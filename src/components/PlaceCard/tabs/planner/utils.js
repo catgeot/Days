@@ -132,7 +132,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             break;
         }
         case 'flight':
-            // 스카이스캐너, 트립닷컴 제거 (하단의 WhiteLabelWidget 통합 검색으로 완벽히 대체됨)
+            // 스카이스캐너 등 제거 — 하단 WhiteLabelWidget(Trip.com 제휴)으로 대체
             break;
         case 'connectivity':
             // 유심 카드의 제휴 버튼은 별도 Airalo 배너로 대체

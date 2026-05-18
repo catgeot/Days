@@ -6,7 +6,6 @@ import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
 import { getFlightDestinationSearchHint, getRentalCarHomeSearchSubtext } from '../../../../../utils/rentalAirportMatch.js';
 import MrtDynamicLink from './MrtDynamicLink';
-import HotelWidget from './HotelWidget';
 import DirectFerriesWidget from './DirectFerriesWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
 import KlookTourBannerWidget from './KlookTourBannerWidget';
@@ -123,11 +122,11 @@ const ToolkitCard = ({
                 </div>
             )}
 
-            {/* Travelpayouts 화이트 라벨 위젯 (항공권 검색 전용) */}
+            {/* Trip.com 제휴 항공권 검색 */}
             {type === 'flight' && (
                 <WhiteLabelWidget
-                    locationName={location?.name}
-                    type="flight"
+                    location={location}
+                    essentialGuide={essentialGuide}
                     customTrigger={
                         <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-xl px-5 py-4 flex items-center gap-3 shadow-lg hover:shadow-xl transition-all group mt-3">
                             <div className="bg-white/20 p-2.5 rounded-lg shrink-0">
@@ -143,10 +142,6 @@ const ToolkitCard = ({
                         </button>
                     }
                 />
-            )}
-            {/* 🆕 [Phase 8-4] TravelPayouts 숙소 전용 검색 위젯 */}
-            {type === 'accommodation' && (
-                <HotelWidget location={location} />
             )}
             {/* 🆕 [Phase 8-8] Direct Ferries 페리 예약 위젯 (2026.04.21) */}
             {type === 'ferry_booking' && (

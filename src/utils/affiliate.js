@@ -239,6 +239,81 @@ export const PLANNER_TRIPCOM_HOTEL_OVERRIDES = {
   // '가나자와': 'https://kr.trip.com/hotels/list?...',
 };
 
+/** Trip.com KR 제휴 — Alliance / SID */
+export const TRIPCOM_KR_PARTNER = {
+  allianceId: '8182427',
+  sid: '309563143',
+};
+
+/** 플래너 항공권 추적 (trip_sub1·trip_sub3) */
+export const TRIPCOM_FLIGHT_TRACKING = {
+  sub1PlannerFlight: '플래너 항공권',
+  sub3PlannerFlight: 'D17104488',
+};
+
+/** 제휴 항공 검색 배너 (iframe) */
+export const TRIPCOM_FLIGHT_AD = {
+  adId: 'S17104971',
+  width: 900,
+  height: 200,
+};
+
+/** 한국 출발 기본 공항 — Trip `dAirportCode` */
+export const TRIPCOM_DEFAULT_DEPARTURE_AIRPORT = 'ICN';
+
+/**
+ * 플래너·배너용 도착 IATA (단일 또는 복수 공항의 linkHub).
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
+ * @returns {string | null}
+ */
+export function getPlannerFlightArrivalIata(location, options = {}) {
+  const info = resolveRentalPickupBannerInfo(location, options);
+  if (!info) return null;
+  if (info.kind === 'single') {
+    return typeof info.iata === 'string' && info.iata.length === 3 ? info.iata.toUpperCase() : null;
+  }
+  const code = info.linkHub?.iata || info.airports?.[0]?.iata;
+  return typeof code === 'string' && code.length === 3 ? code.toUpperCase() : null;
+}
+
+/**
+ * Trip.com 항공 제휴 URL (항공 홈 또는 제휴 ad iframe).
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null, mode?: 'flights' | 'ad' }} [options]
+ * @returns {string}
+ */
+export function buildTripcomPlannerFlightUrl(location, options = {}) {
+  const { mode = 'flights' } = options;
+  const arrival = getPlannerFlightArrivalIata(location, options);
+
+  const params = new URLSearchParams({
+    locale: 'ko-KR',
+    curr: 'KRW',
+    Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+    SID: TRIPCOM_KR_PARTNER.sid,
+    trip_sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlight,
+    trip_sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
+  });
+
+  if (TRIPCOM_DEFAULT_DEPARTURE_AIRPORT) {
+    params.set('dAirportCode', TRIPCOM_DEFAULT_DEPARTURE_AIRPORT);
+  }
+  if (arrival) {
+    params.set('aAirportCode', arrival);
+  }
+
+  if (mode === 'ad') {
+    return `https://kr.trip.com/partners/ad/${TRIPCOM_FLIGHT_AD.adId}?${params.toString()}`;
+  }
+  return `https://kr.trip.com/flights/?${params.toString()}`;
+}
+
+/** 도착 공항 미지정 시 기본 항공권 URL (하위 호환) */
+export const PLANNER_TRIPCOM_FLIGHTS_URL = buildTripcomPlannerFlightUrl(null);
+
 /**
  * 등록된 여행지만 트립닷컴 호텔 목록으로 연결. 없으면 null → 마이리얼트립 사용.
  *

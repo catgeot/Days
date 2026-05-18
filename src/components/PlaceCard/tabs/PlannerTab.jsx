@@ -10,6 +10,7 @@ import ToolkitCard from './planner/components/ToolkitCard';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
+import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
@@ -317,27 +318,16 @@ const PlannerTab = ({
                         </div>
                     </div>
 
-                    {matchedPackage && (
-                        <div className="hidden md:flex w-full mb-6 rounded-2xl overflow-hidden bg-gray-100 items-center justify-center relative border border-gray-200 shadow-sm shrink-0" style={{ minHeight: '90px' }}>
-                            <div className="absolute top-0 left-0 z-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg">
-                                제휴광고
+                    {location && (
+                        <div className="relative w-full mb-6 shrink-0">
+                            <div className="pointer-events-none absolute right-0 top-0 z-10 rounded-bl-lg bg-gradient-to-r from-blue-600 to-purple-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                                제휴링크
                             </div>
-                            <div className="w-full overflow-hidden flex justify-center items-center py-2 md:py-0">
-                                <div className="origin-center md:scale-100 w-[728px] h-[90px] flex items-center justify-center my-0">
-                                    <iframe
-                                        src={`https://info.triplink.kr/d/${matchedPackage.bannerAdKey || matchedPackage.adKey}`}
-                                        width="728"
-                                        height="90"
-                                        frameBorder="0"
-                                        scrolling="no"
-                                        marginHeight="0"
-                                        marginWidth="0"
-                                        title={`${location?.name} 패키지 여행 상품`}
-                                        className="pointer-events-auto"
-                                    ></iframe>
-                                </div>
-                            </div>
-                            <div className="absolute inset-0 pointer-events-none hover:bg-black/5 transition-colors"></div>
+                            <TripcomFlightBannerWidget
+                                location={location}
+                                essentialGuide={guideData}
+                                className="mb-0"
+                            />
                         </div>
                     )}
 

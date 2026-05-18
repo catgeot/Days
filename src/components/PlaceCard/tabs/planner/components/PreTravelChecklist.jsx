@@ -55,8 +55,8 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                 {/* 1. 항공권 검색 */}
                 <div className="mb-3">
                     <WhiteLabelWidget
-                        locationName={locationName}
-                        type="flight"
+                        location={location}
+                        essentialGuide={essentialGuide}
                         customTrigger={
                             <button className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full">
                                 <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
