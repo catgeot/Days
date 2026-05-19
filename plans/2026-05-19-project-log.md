@@ -39,8 +39,24 @@
 - **발리** `/place/bali/planner`: 제목·툴킷 **발리**, 공항·Trip.com **DPS** 일치.
 - **갈라파고스** `/place/galapagos/planner`: 제목·본문 GPS/SCY 정상; 배너 **SIN** 잔존 — DB audit는 GPS/GYE, `travelSpotAirports.json` sync 완료 → **배포 후** 배너 재확인.
 
+### Phase 2 P3 reconcile apply (301→295행)
+
+- `place-toolkit-reconcile-rules.mjs`: P3 5 slug 규칙 추가.
+- **apply** (`lalibela,antarctica,raja-ampat,miyakojima,reykjavik`): 6행 merge+delete — `아디스아바바`→`랄리벨라`, `맥머도 기지`·`남극해`→`남극 대륙`, `라자암팟`→`라자 암팟`, `오키나와`→`미야코지마`, `레이니스퍄라`→`레이캬비크`.
+- 브루나이 `flag_only` 유지.
+
+### 재감사·공항 sync (P3 후)
+
+- `toolkit:audit-place-id`: **`duplicateSlug 0`** · `geoMismatch 8→6` · `unmapped 1`(브루나이).
+- `sync:airports-from-toolkit` + `audit:airports` **`none: 0`**.
+
+### gateo.kr 스모크 QA (P3 slug)
+
+- **레이캬비크** `/place/reykjavik/planner`: 제목·툴킷 **레이캬비크**, 공항·Trip.com **KEF** 일치(레이니스퍄라 중복 행 제거 반영).
+- **랄리벨라** `/place/lalibela/planner`: 제목·툴킷 **랄리벨라**, 배너 **ADD+LLI**, Trip.com **ADD** — 아디스아바바 별도 행 없음.
+
 ### 다음
 
-1. P3 `duplicateSlug` (`antarctica`, `lalibela`, `raja-ampat` 등) 규칙·apply.
-2. `travelSpotAirports.json` 커밋·배포 후 갈라파고스 배너 GPS 재QA.
-3. (선택) `update-place-toolkit` 저장 시 slug→canonical `place_id` 강제(Phase 2d).
+1. `travelSpotAirports.json`·규칙 파일 커밋·배포.
+2. (선택) `update-place-toolkit` 저장 시 slug→canonical `place_id` 강제(Phase 2d).
+3. `geoMismatch` 6건·IATA 없음 37건 점진 검수.

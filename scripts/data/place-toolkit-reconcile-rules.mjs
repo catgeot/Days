@@ -163,5 +163,52 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
       '일루리삿',
       'Ilulissat Icefjord'
     ]
+  },
+  // —— Phase 2 P3: duplicateSlug 잔여 5건 ——
+  {
+    id: 'lalibela',
+    slugs: ['lalibela'],
+    canonicalPlaceId: '랄리벨라',
+    mergeFrom: ['Lalibela', 'lalibela', '랄리벨라', '아디스아바바', 'Addis Ababa']
+  },
+  {
+    id: 'antarctica',
+    slugs: ['antarctica'],
+    canonicalPlaceId: '남극 대륙',
+    mergeFrom: [
+      'Antarctica',
+      'antarctica',
+      '남극 대륙',
+      '맥머도',
+      '맥머도 기지',
+      'McMurdo',
+      'McMurdo Station',
+      '남극해'
+    ]
+  },
+  {
+    id: 'raja-ampat',
+    slugs: ['raja-ampat'],
+    canonicalPlaceId: '라자 암팟',
+    mergeFrom: ['Raja Ampat', 'raja-ampat', '라자 암팟', '라자암팟']
+  },
+  {
+    id: 'miyakojima',
+    slugs: ['miyakojima'],
+    canonicalPlaceId: '미야코지마',
+    mergeFrom: ['Miyakojima', 'miyakojima', '미야코지마', '오키나와', 'Okinawa']
+  },
+  {
+    id: 'reykjavik',
+    slugs: ['reykjavik'],
+    canonicalPlaceId: '레이캬비크',
+    mergeFrom: [
+      'Reykjavik',
+      'reykjavik',
+      '레이캬비크',
+      '레이니스퍄라',
+      'Reynisfjara',
+      '레이클라비크'
+    ]
   }
 ];

@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-19T09:05:53.142Z",
+    "lastToolkitSyncAt": "2026-05-19T09:14:38.335Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -5104,14 +5104,15 @@
     },
     "라자암팟": {
       "primaryIatas": [
-        "SOQ"
+        "SOQ",
+        "CGK"
       ],
       "preferredLinkIata": "SOQ",
-      "kind": "single",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "라자암팟",
+      "placeId": "라자 암팟",
       "linkedSlug": "raja-ampat"
     },
     "포클랜드": {
