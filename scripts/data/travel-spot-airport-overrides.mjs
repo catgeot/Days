@@ -244,6 +244,33 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: '북부 탄자니아 — 킬리만자로(JRO)·나이로비(NBO) 관문'
   },
   'similan-islands': { primaryIatas: ['HKT'], preferredLinkIata: 'HKT', confidence: 'high', rationale: '푸켓(HKT) 후 보트·다이빙 투어' },
+  bohol: {
+    primaryIatas: ['CEB', 'TAG'],
+    preferredLinkIata: 'TAG',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '타그비라란(TAG) 직항·세부(CEB) 페리 관문',
+    bannerNote:
+      '보홀은 타그비라란(TAG) 공항 직항·세부(CEB) 페리로 들어오는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  yokohama: {
+    primaryIatas: ['HND', 'NRT'],
+    preferredLinkIata: 'HND',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '하네다(HND)·나리타(NRT) — 도쿄권 국제·국내선 관문',
+    bannerNote:
+      '요코하마는 도쿄권 하네다(HND)·나리타(NRT) 공항 후 JR·지하철로 이동하는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  tsushima: {
+    primaryIatas: ['TSJ', 'FUK'],
+    preferredLinkIata: 'TSJ',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '대마(津島) TSJ 직항·후쿠오카(FUK) 경유·페리 연결',
+    bannerNote:
+      '대마도는 대마공항(TSJ) 직항·후쿠오카(FUK) 경유 후 페리·국내선으로 이어지는 일정이 흔합니다. 부산 페리 이용 시 항공권과 별도로 페리 예약이 필요합니다.'
+  },
   kiribati: { primaryIatas: ['TRW'], preferredLinkIata: 'TRW', confidence: 'high', rationale: '타라와 공항' },
   'kamchatka-peninsula': { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
   kamchatka: { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },

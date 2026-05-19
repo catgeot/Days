@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-19T11:06:55.092Z",
+    "generatedAt": "2026-05-19T11:23:32.725Z",
     "spotCount": 244,
-    "placeIdCount": 315,
+    "placeIdCount": 323,
     "stats": {
-      "override": 90,
+      "override": 93,
       "toolkitSync": 152,
-      "runtime": 3,
+      "runtime": 0,
       "multiRule": 0,
       "geo": 0,
       "missing": 0
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-19T11:06:59.930Z",
+    "lastToolkitSyncAt": "2026-05-19T11:23:54.533Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -1929,12 +1929,15 @@
     },
     "bohol": {
       "primaryIatas": [
-        "CEB"
+        "CEB",
+        "TAG"
       ],
-      "preferredLinkIata": "CEB",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "TAG",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "보홀은 타그비라란(TAG) 공항 직항·세부(CEB) 페리로 들어오는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "타그비라란(TAG) 직항·세부(CEB) 페리 관문"
     },
     "rocky-mountains": {
       "primaryIatas": [
@@ -2417,21 +2420,27 @@
     },
     "yokohama": {
       "primaryIatas": [
-        "HND"
+        "HND",
+        "NRT"
       ],
       "preferredLinkIata": "HND",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "요코하마는 도쿄권 하네다(HND)·나리타(NRT) 공항 후 JR·지하철로 이동하는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "하네다(HND)·나리타(NRT) — 도쿄권 국제·국내선 관문"
     },
     "tsushima": {
       "primaryIatas": [
-        "PUS"
+        "TSJ",
+        "FUK"
       ],
-      "preferredLinkIata": "PUS",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "TSJ",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "대마도는 대마공항(TSJ) 직항·후쿠오카(FUK) 경유 후 페리·국내선으로 이어지는 일정이 흔합니다. 부산 페리 이용 시 항공권과 별도로 페리 예약이 필요합니다.",
+      "rationale": "대마(津島) TSJ 직항·후쿠오카(FUK) 경유·페리 연결"
     },
     "kumamoto": {
       "primaryIatas": [
@@ -6388,6 +6397,106 @@
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "제주",
       "linkedSlug": "jeju"
+    },
+    "안나푸르나서킷": {
+      "primaryIatas": [
+        "KTM",
+        "PKR"
+      ],
+      "preferredLinkIata": "KTM",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "안나푸르나 서킷",
+      "linkedSlug": "annapurna-circuit"
+    },
+    "디에고가르시아": {
+      "primaryIatas": [
+        "MLE"
+      ],
+      "preferredLinkIata": "MLE",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "디에고 가르시아",
+      "linkedSlug": "diego-garcia"
+    },
+    "사하라사막": {
+      "primaryIatas": [
+        "RAK"
+      ],
+      "preferredLinkIata": "RAK",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "사하라 사막",
+      "linkedSlug": "sahara-desert"
+    },
+    "시미란제도": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "시미란 제도",
+      "linkedSlug": "similan-islands"
+    },
+    "시미란": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "시미란 제도",
+      "linkedSlug": "similan-islands"
+    },
+    "보홀": {
+      "primaryIatas": [
+        "CEB",
+        "TAG"
+      ],
+      "preferredLinkIata": "CEB",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "보홀",
+      "linkedSlug": "bohol"
+    },
+    "대마도": {
+      "primaryIatas": [
+        "TSJ",
+        "FUK"
+      ],
+      "preferredLinkIata": "TSJ",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "대마도",
+      "linkedSlug": "tsushima"
+    },
+    "요코하마": {
+      "primaryIatas": [
+        "HND",
+        "NRT"
+      ],
+      "preferredLinkIata": "HND",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "요코하마",
+      "linkedSlug": "yokohama"
     }
   }
 }

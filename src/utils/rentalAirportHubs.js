@@ -21,6 +21,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'KIX', officialKo: '간사이국제공항', lat: 34.4347, lng: 135.2440, radiusKm: 200, aliases: ['kansai', '간사이', 'kix', 'osaka', '오사카'] },
   { iata: 'CTS', officialKo: '신치토세공항', lat: 42.7752, lng: 141.6923, radiusKm: 220, aliases: ['chitose', '치토세', 'cts', 'sapporo', '삿포로', '홋카이도', 'hokkaido'] },
   { iata: 'FUK', officialKo: '후쿠오카공항', lat: 33.5859, lng: 130.4510, radiusKm: 200, aliases: ['fukuoka', '후쿠오카', 'fuk'] },
+  {
+    iata: 'TSJ',
+    officialKo: '대마공항',
+    lat: 34.2849,
+    lng: 129.3305,
+    radiusKm: 60,
+    aliases: ['tsushima', '대마도', 'tsj', '津島']
+  },
   { iata: 'NGO', officialKo: '주부 센트레아 국제공항', lat: 35.2553, lng: 136.9240, radiusKm: 200, aliases: ['nagoya', '나고야', 'ngo'] },
   { iata: 'OKA', officialKo: '나하공항', lat: 26.1958, lng: 127.6459, radiusKm: 200, aliases: ['okinawa', '오키나와', '나하', 'naha', 'oka'] },
   { iata: 'FSZ', officialKo: '시즈오카공항', lat: 34.6379, lng: 138.1892, radiusKm: 140, aliases: ['shizuoka', '시즈오카', 'fsz', 'fuji', '후지'] },
@@ -80,7 +88,15 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 80,
     aliases: ['el nido', 'el-nido', '엘니도', 'lio', 'eni', 'airswift']
   },
-  { iata: 'CEB', officialKo: '막탄세부국제공항', lat: 10.3072, lng: 123.9794, radiusKm: 180, aliases: ['cebu', '세부', 'ceb'] },
+  { iata: 'CEB', officialKo: '막탄세부국제공항', lat: 10.3072, lng: 123.9794, radiusKm: 180, aliases: ['cebu', '세부', 'ceb', 'bohol ferry'] },
+  {
+    iata: 'TAG',
+    officialKo: '타그비라란 공항',
+    lat: 9.6641,
+    lng: 123.8532,
+    radiusKm: 80,
+    aliases: ['tagbilaran', '타그비라란', 'tag', 'bohol', '보홀']
+  },
   {
     iata: 'KLO',
     officialKo: '칼리보 국제공항',

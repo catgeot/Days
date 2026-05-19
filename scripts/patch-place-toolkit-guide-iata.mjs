@@ -100,6 +100,42 @@ const PATCHES = [
     matchPlaceIds: ['세렝게티', 'Serengeti', 'serengeti'],
     primaryIatas: ['JRO', 'NBO'],
     note: 'Phase D — JRO·NBO 관문'
+  },
+  // Phase D-2 — skippedNoIata slug 우선 (essential_guide IATA 보강)
+  {
+    matchPlaceIds: ['안나푸르나 서킷', 'Annapurna Circuit', 'annapurna-circuit'],
+    primaryIatas: ['KTM', 'PKR'],
+    note: 'Phase D-2 — KTM·PKR 관문'
+  },
+  {
+    matchPlaceIds: ['디에고 가르시아', 'Diego Garcia', 'diego-garcia'],
+    primaryIatas: ['MLE'],
+    note: 'Phase D-2 — MLE 참고 허브(민간 출입 불가)'
+  },
+  {
+    matchPlaceIds: ['사하라 사막', 'Sahara Desert', 'sahara-desert'],
+    primaryIatas: ['RAK'],
+    note: 'Phase D-2 — RAK 관문'
+  },
+  {
+    matchPlaceIds: ['시미란 제도', 'Similan Islands', 'similan-islands'],
+    primaryIatas: ['HKT'],
+    note: 'Phase D-2 — HKT 후 보트'
+  },
+  {
+    matchPlaceIds: ['보홀', 'Bohol', 'bohol'],
+    primaryIatas: ['CEB', 'TAG'],
+    note: 'Phase D-2 — CEB·TAG 관문'
+  },
+  {
+    matchPlaceIds: ['대마도', 'Tsushima', 'tsushima'],
+    primaryIatas: ['TSJ', 'FUK'],
+    note: 'Phase D-2 — TSJ·FUK 관문'
+  },
+  {
+    matchPlaceIds: ['요코하마', 'Yokohama', 'yokohama'],
+    primaryIatas: ['HND', 'NRT'],
+    note: 'Phase D-2 — HND·NRT 관문'
   }
 ];
 

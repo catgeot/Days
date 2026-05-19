@@ -104,3 +104,30 @@
 
 1. **프론트·JSON 배포** + Edge(재배포 완료).
 2. gateo.kr QA: patagonia BRC/EZE·ushuaia USH·torres PUQ 배너·여정 일치.
+
+## Phase D-2 + gateo.kr 스모크 QA (이번 세션)
+
+### gateo.kr 스모크 QA (배포 3586fec)
+
+- **킬리만자로** `/place/kilimanjaro/planner`: 배너 **JRO+NBO**, Trip.com **JRO** (NBO 단독 아님).
+- **싱가포르** `/place/singapore/planner`: 배너·Trip.com **SIN**.
+- **런던** `/place/london/planner`: 배너·Trip.com **LHR**.
+- **제주** `/place/jeju/planner`: 공항 배너 **CJU** (툴킷 미생성·배너만).
+
+### Phase D-2 — skippedNoIata 26→19
+
+- `travel-spot-airport-overrides.mjs`: **bohol**(CEB+TAG)·**yokohama**(HND+NRT)·**tsushima**(TSJ+FUK) curated **high**.
+- `rentalAirportHubs.js`: **TAG**(타그비라란)·**TSJ**(대마공항) 추가.
+- `regionalGatewayIatas.ts`: annapurna-circuit·bohol·yokohama·tsushima.
+- DB `toolkit:patch-guide-iata --apply` **7건**(안나푸르나·디에고가르시아·사하라·시미란·보홀·대마도·요코하마).
+- `generate:airports` + `sync:airports-from-toolkit` + `audit:airports` **`none: 0`** · curated **93** slug.
+
+### (선택) unmapped 52
+
+- `toolkit:audit-place-id`: `unmapped 52` · P0 `unmapped 1`(브루나이 `flag_only`) · `duplicateSlug 0` · `geoMismatch 1`(디에고 가르시아 MLE — P0 제외).
+
+### 다음
+
+1. **프론트·JSON 배포**(overrides·hubs·travelSpotAirports).
+2. gateo.kr QA: 보홀 CEB+TAG·요코하마 HND+NRT·대마도 TSJ (배포 후).
+3. 잔여 `skippedNoIata` 19·`unmapped` 52 점진 검수.

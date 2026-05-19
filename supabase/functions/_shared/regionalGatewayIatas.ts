@@ -21,6 +21,10 @@ export const REGIONAL_GATEWAY_IATAS_BY_SLUG: Record<string, readonly string[]> =
   'diego-garcia': ['MLE'],
   galapagos: ['GPS', 'GYE'],
   lalibela: ['ADD', 'LLI'],
+  'annapurna-circuit': ['KTM', 'PKR'],
+  bohol: ['CEB', 'TAG'],
+  yokohama: ['HND', 'NRT'],
+  tsushima: ['TSJ', 'FUK'],
 };
 
 export function isRegionalGatewayIata(slug: string | null | undefined, iata: string): boolean {
