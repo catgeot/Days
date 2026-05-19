@@ -79,7 +79,16 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Patagonia Chile': 'torres-del-paine',
   '파타고니아 칠레': 'torres-del-paine',
   'Tierra del Fuego': 'ushuaia',
-  '티에라델푸에고': 'ushuaia'
+  '티에라델푸에고': 'ushuaia',
+
+  // —— unmapped 배치 (placeIds·툴킷 조회, SSOT slug 존재 시만) ——
+  '나자레': 'lisbon',
+  'Nazare': 'lisbon',
+  '빌라두코르부': 'porto',
+  'Vila do Conde': 'porto',
+  '리마': 'machu-picchu',
+  'Lima': 'machu-picchu',
+  '스코푸가포스': 'iceland'
 };
 
 /**
@@ -138,6 +147,9 @@ export const TRAVEL_SPOT_PLACE_ID_BLOCKLIST = new Set(
     '강릉시',
     '사뭇쁘라깐주',
     '아오시마',
-    '이슬라마바드'
+    '이슬라마바드',
+    '마나도',
+    'Manado',
+    'manado'
   ].map((s) => s.toLowerCase().replace(/\s+/g, ''))
 );

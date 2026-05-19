@@ -11,6 +11,7 @@ import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
+import RelatedTravelSpots from '../RelatedTravelSpots';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 
@@ -336,6 +337,8 @@ const PlannerTab = ({
                     )}
 
                     <div className="mb-5 w-full shrink-0">{rentalPickupBanner}</div>
+
+                    <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
 
                 {/* 체크리스트 및 타임라인 (상시 렌더링) */}
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (

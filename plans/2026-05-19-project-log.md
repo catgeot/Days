@@ -128,6 +128,28 @@
 
 ### 다음
 
-1. **프론트·JSON 배포**(overrides·hubs·travelSpotAirports).
-2. gateo.kr QA: 보홀 CEB+TAG·요코하마 HND+NRT·대마도 TSJ (배포 후).
+1. ~~**프론트·JSON 배포**~~ → **`1d0b3cd`** push·Vercel 반영 · Edge `update-place-toolkit` 재배포.
+2. ~~gateo.kr QA (배포 후)~~: 보홀 **TAG+CEB** · 요코하마 **HND+NRT** · 대마도 **TSJ+FUK** 일치.
 3. 잔여 `skippedNoIata` 19·`unmapped` 52 점진 검수.
+
+## 연관 여행지 UI Gate·Phase D-3 (이번 세션)
+
+### Gate 해제·연관 UI 1차
+
+- **Gate G1–G3** 충족: `audit:airports` **`none: 0`** · `duplicateSlug 0` · **`skippedNoIata` 19→12** (≤20).
+- `travelSpotClusters.json` — **patagonia-region**(patagonia·ushuaia·torres-del-paine) · **iceland-region**(iceland·reykjavik).
+- `RelatedTravelSpots` + **PlannerTab** 배너 아래 교차 링크(관문 IATA 칩).
+- 분류표: `scripts/data/place-id-residual-classification.json`.
+
+### Phase D-3 — skippedNoIata·unmapped 배치
+
+- DB `toolkit:patch-guide-iata --apply` **7건**(마데이라 FNC·발레타 MLA·블라디보스토크 VVO·이르쿠츠크 IKT·앨리스스프링스 ASP·아오시마 OIT·Ad Dakhiliyah MCT).
+- `rentalAirportHubs` FNC·MLA·VVO·IKT·ASP·OIT·MCT 추가 → sync **placeId만** 7건 반영.
+- 별칭: 나자레→lisbon · 빌라두코르부→porto · 리마→machu-picchu · 스코푸가포스→iceland · **마나도** blocklist.
+- `audit:airports` **`none: 0`** 유지 · Hub **264**.
+
+### 다음
+
+1. **프론트·JSON 배포** — 연관 UI·hubs·travelSpotAirports.
+2. gateo.kr QA: `/place/patagonia/planner` 연관 칩(ushuaia·torres) · iceland↔reykjavik.
+3. 잔여 `skippedNoIata` **12**(국내·blocklist 위주) · `unmapped` 52 분류표 기반 배치.

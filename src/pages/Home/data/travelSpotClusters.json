@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "note": "같은 권역·다른 관문 slug 클러스터. slugs는 travelSpots.js SSOT만 포함."
+  },
+  "patagonia-region": {
+    "labelKo": "파타고니아 권역",
+    "labelEn": "Patagonia",
+    "slugs": ["patagonia", "ushuaia", "torres-del-paine"],
+    "notes": "북부 BRC/EZE · 남부 USH · 칠레 PUQ — 관문이 다름"
+  },
+  "iceland-region": {
+    "labelKo": "아이슬란드 권역",
+    "labelEn": "Iceland",
+    "slugs": ["iceland", "reykjavik"],
+    "notes": "링로드·수도 KEF 관문 — 일정·툴킷 초점이 다름"
+  }
+}

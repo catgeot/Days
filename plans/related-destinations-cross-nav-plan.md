@@ -39,7 +39,7 @@
 |---|------|------|
 | G1 | `npm run audit:airports` → `none: 0` | |
 | G2 | `toolkit:audit-place-id` → `duplicateSlug 0` · `geoMismatch 0` | |
-| G3 | `skippedNoIata`·`unmapped` 잔여 — 우선 slug 배치 검수 완료(목표: skippedNoIata ≤20) | |
+| G3 | `skippedNoIata`·`unmapped` 잔여 — 우선 slug 배치 검수 완료(목표: skippedNoIata ≤20) | ✅ 12 (2026-05-19) |
 | G4 | 클러스터 후보 slug마다 배너 IATA = 툴킷 `primary_arrival_airports_iata` = 여정 타임라인 (gateo.kr QA 3경로) | |
 
 ---
@@ -148,8 +148,8 @@
 | 항목 | 상태 |
 |------|------|
 | 파타고니아 3-slug 역할 분리·BRC/EZE | ✅ 2026-05-19 |
-| `travelSpotClusters.json` | ⬜ Gate 후 |
-| PlannerTab 연관 UI | ⬜ Gate 후 |
+| `travelSpotClusters.json` | ✅ patagonia·iceland 2클러스터 |
+| PlannerTab 연관 UI | ✅ R2 (배포 대기) |
 | el-calafate 등 세부 slug | ⬜ 백로그 |
 
 *완료 시 [`2026-05-19-project-log.md`](./2026-05-19-project-log.md) · [`.ai-context.md`](../.ai-context.md) 6절만 갱신.*

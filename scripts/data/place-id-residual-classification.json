@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-05-19",
+  "gate": {
+    "auditAirportsNone": 0,
+    "duplicateSlug": 0,
+    "geoMismatchP0": 0,
+    "skippedNoIata": 12,
+    "skippedNoIataTarget": 20,
+    "gatePassed": true,
+    "relatedDestinationsUi": "R1–R2 (patagonia-region·iceland-region)"
+  },
+  "skippedNoIataRemaining": [
+    { "place_id": "하이원팰리스호텔", "action": "delete_candidate" },
+    { "place_id": "이슬라마바드", "action": "flag_only" },
+    { "place_id": "춘천", "action": "flag_only" },
+    { "place_id": "강화도", "action": "flag_only" },
+    { "place_id": "독도", "action": "flag_only" },
+    { "place_id": "춘천시", "action": "flag_only" },
+    { "place_id": "닭갈비", "action": "delete_candidate" },
+    { "place_id": "수원", "action": "flag_only" },
+    { "place_id": "아바나", "action": "alias_review" },
+    { "place_id": "달", "action": "delete_candidate" },
+    { "place_id": "마나도", "action": "flag_only" },
+    { "place_id": "강릉시", "action": "flag_only" }
+  ],
+  "skippedNoIataResolvedD3": [
+    "마데이라",
+    "발레타",
+    "아오시마",
+    "블라디보스토크",
+    "Ad Dakhiliyah Governorate",
+    "이르쿠츠크",
+    "앨리스스프링스"
+  ],
+  "unmappedSummary": {
+    "total": 52,
+    "p0FlagOnly": 1,
+    "p0PlaceId": "브루나이"
+  },
+  "unmappedBatches": {
+    "alias_to_existing_slug": [
+      { "place_id": "나자레", "slug": "lisbon", "guideIatas": ["LIS"] },
+      { "place_id": "빌라두코르부", "slug": "porto", "guideIatas": ["LIS", "OPO"] },
+      { "place_id": "리마", "slug": "machu-picchu", "guideIatas": ["LIM"] },
+      { "place_id": "스코푸가포스", "slug": "iceland", "guideIatas": ["KEF"], "note": "툴킷 오탐 가능·검수" }
+    ],
+    "placeIds_only": [
+      { "place_id": "함부르크", "guideIatas": ["FRA", "MUC", "AMS", "HEL"] },
+      { "place_id": "코코스 제도", "guideIatas": ["PER"] },
+      { "place_id": "코코스제도", "guideIatas": ["PER"] },
+      { "place_id": "핏케언 제도", "guideIatas": ["PPT"] },
+      { "place_id": "그린란드", "guideIatas": ["CPH"] },
+      { "place_id": "포클랜드", "guideIatas": ["PUQ", "SCL"] },
+      { "place_id": "포클랜드 제도", "guideIatas": ["SCL"] },
+      { "place_id": "솔로몬 제도", "guideIatas": ["BNE"] },
+      { "place_id": "나우루", "guideIatas": ["BNE"] },
+      { "place_id": "퀸스타운", "guideIatas": ["ZQN"] },
+      { "place_id": "미니애폴리스", "guideIatas": ["MSP"] },
+      { "place_id": "퍼스", "guideIatas": ["PER", "SIN", "KUL"] },
+      { "place_id": "바하마", "guideIatas": ["ATL", "JFK"] },
+      { "place_id": "스리자야와르데네푸라코테", "guideIatas": ["CMB"] },
+      { "place_id": "베네수엘라", "guideIatas": ["IST", "MAD"], "note": "국가 단위·오탐" }
+    ],
+    "flag_only": [
+      { "place_id": "브루나이", "guideIatas": ["BWN"], "note": "P0 유지·borneo와 병합 금지" }
+    ],
+    "reconcile_or_delete_candidate": [
+      { "place_id": "하이원팰리스호텔", "hasGuideContent": false },
+      { "place_id": "로라이마 산", "guideIatas": ["GRU"] },
+      { "place_id": "우베를란지아", "guideIatas": ["GRU"] },
+      { "place_id": "콜로니아", "guideIatas": ["EZE"] },
+      { "place_id": "Maroantsetra", "guideIatas": ["TNR"] },
+      { "place_id": "안치라나나", "guideIatas": ["TNR", "ADD", "CDG"] },
+      { "place_id": "노시베 섬", "guideIatas": ["TNR", "ADD"] }
+    ],
+    "new_slug_candidate": [
+      { "place_id": "마데이라", "proposedSlug": "madeira", "inCitiesData": true },
+      { "place_id": "블라디보스토크", "proposedSlug": "vladivostok", "inCitiesData": true },
+      { "place_id": "이르쿠츠크", "proposedSlug": "irkutsk", "inCitiesData": true },
+      { "place_id": "앨리스스프링스", "proposedSlug": "alice-springs", "inCitiesData": true },
+      { "place_id": "퀸스타운", "proposedSlug": "queenstown", "inCitiesData": false }
+    ]
+  }
+}

@@ -136,6 +136,42 @@ const PATCHES = [
     matchPlaceIds: ['요코하마', 'Yokohama', 'yokohama'],
     primaryIatas: ['HND', 'NRT'],
     note: 'Phase D-2 — HND·NRT 관문'
+  },
+  // Phase D-3 — skippedNoIata (비공식 place_id, placeIds·배너만)
+  {
+    matchPlaceIds: ['발레타', 'Valletta', 'valletta'],
+    primaryIatas: ['MLA'],
+    note: 'Phase D-3 — MLA'
+  },
+  {
+    matchPlaceIds: ['마데이라', 'Madeira', 'madeira'],
+    primaryIatas: ['FNC'],
+    note: 'Phase D-3 — FNC'
+  },
+  {
+    matchPlaceIds: ['블라디보스토크', 'Vladivostok', 'vladivostok'],
+    primaryIatas: ['VVO'],
+    note: 'Phase D-3 — VVO'
+  },
+  {
+    matchPlaceIds: ['이르쿠츠크', 'Irkutsk', 'irkutsk'],
+    primaryIatas: ['IKT'],
+    note: 'Phase D-3 — IKT'
+  },
+  {
+    matchPlaceIds: ['앨리스스프링스', 'Alice Springs', 'alice-springs'],
+    primaryIatas: ['ASP'],
+    note: 'Phase D-3 — ASP'
+  },
+  {
+    matchPlaceIds: ['아오시마', 'Aoshima', 'aoshima'],
+    primaryIatas: ['OIT'],
+    note: 'Phase D-3 — 미야자키 OIT'
+  },
+  {
+    matchPlaceIds: ['Ad Dakhiliyah Governorate'],
+    primaryIatas: ['MCT'],
+    note: 'Phase D-3 — 오만 MCT 참고'
   }
 ];
 

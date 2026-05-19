@@ -3,7 +3,7 @@
     "version": 1,
     "generatedAt": "2026-05-19T11:23:32.725Z",
     "spotCount": 244,
-    "placeIdCount": 323,
+    "placeIdCount": 330,
     "stats": {
       "override": 93,
       "toolkitSync": 152,
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-19T11:23:54.533Z",
+    "lastToolkitSyncAt": "2026-05-19T11:33:46.204Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -534,11 +534,10 @@
     },
     "machu-picchu": {
       "primaryIatas": [
-        "CUZ",
         "LIM"
       ],
-      "preferredLinkIata": "CUZ",
-      "kind": "multi",
+      "preferredLinkIata": "LIM",
+      "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화"
@@ -1357,10 +1356,11 @@
     },
     "porto": {
       "primaryIatas": [
+        "LIS",
         "OPO"
       ],
-      "preferredLinkIata": "OPO",
-      "kind": "single",
+      "preferredLinkIata": "LIS",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화"
@@ -4780,10 +4780,11 @@
     },
     "캄차카반도": {
       "primaryIatas": [
-        "PKC"
+        "PKC",
+        "VVO"
       ],
       "preferredLinkIata": "PKC",
-      "kind": "single",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -5708,7 +5709,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "나자레"
+      "placeId": "나자레",
+      "linkedSlug": "lisbon"
     },
     "시퀘이아국립공원": {
       "primaryIatas": [
@@ -5849,7 +5851,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "리마"
+      "placeId": "리마",
+      "linkedSlug": "machu-picchu"
     },
     "레이니스퍄라": {
       "primaryIatas": [
@@ -5967,7 +5970,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "스코푸가포스"
+      "placeId": "스코푸가포스",
+      "linkedSlug": "iceland"
     },
     "나우루": {
       "primaryIatas": [
@@ -6075,7 +6079,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "빌라두코르부"
+      "placeId": "빌라두코르부",
+      "linkedSlug": "porto"
     },
     "england": {
       "primaryIatas": [
@@ -6497,6 +6502,83 @@
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "요코하마",
       "linkedSlug": "yokohama"
+    },
+    "마데이라": {
+      "primaryIatas": [
+        "FNC"
+      ],
+      "preferredLinkIata": "FNC",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "마데이라"
+    },
+    "발레타": {
+      "primaryIatas": [
+        "MLA"
+      ],
+      "preferredLinkIata": "MLA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "발레타"
+    },
+    "아오시마": {
+      "primaryIatas": [
+        "OIT"
+      ],
+      "preferredLinkIata": "OIT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아오시마"
+    },
+    "블라디보스토크": {
+      "primaryIatas": [
+        "VVO"
+      ],
+      "preferredLinkIata": "VVO",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "블라디보스토크"
+    },
+    "addakhiliyahgovernorate": {
+      "primaryIatas": [
+        "MCT"
+      ],
+      "preferredLinkIata": "MCT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "Ad Dakhiliyah Governorate"
+    },
+    "이르쿠츠크": {
+      "primaryIatas": [
+        "IKT"
+      ],
+      "preferredLinkIata": "IKT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "이르쿠츠크"
+    },
+    "앨리스스프링스": {
+      "primaryIatas": [
+        "ASP"
+      ],
+      "preferredLinkIata": "ASP",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "앨리스스프링스"
     }
   }
 }
