@@ -55,8 +55,15 @@
 - **레이캬비크** `/place/reykjavik/planner`: 제목·툴킷 **레이캬비크**, 공항·Trip.com **KEF** 일치(레이니스퍄라 중복 행 제거 반영).
 - **랄리벨라** `/place/lalibela/planner`: 제목·툴킷 **랄리벨라**, 배너 **ADD+LLI**, Trip.com **ADD** — 아디스아바바 별도 행 없음.
 
+### Phase 3 + 2d (이번 세션)
+
+- **2d** `update-place-toolkit`: slug→SSOT 한글 `place_id` 정규화(`canonicalPlaceIdMap.json`·`PlannerTab` canonical 전달). Edge `HUB_COORDS` GPS/GYE/KEF/HKT/CUZ/USH/PUQ/ADD/MDY 추가.
+- **3a** `travel-spot-airport-overrides.mjs`: galapagos·iceland·phuket·reykjavik·lalibela·ushuaia·cusco·patagonia curated `high`; midway·kerguelen·antarctica 승격. `rentalAirportHubs` LLI 추가.
+- **3b** DB `toolkit:patch-guide-iata --apply` 4건(우수아이아·쿠스코·남극·파타고니아 primary IATA). `generate:airports` + `sync:airports-from-toolkit`.
+- **감사**: `toolkit:audit-place-id` **`duplicateSlug 0`** · **`geoMismatch 0`** · `audit:airports` **`none: 0`**.
+
 ### 다음
 
-1. `travelSpotAirports.json`·규칙 파일 커밋·배포.
-2. (선택) `update-place-toolkit` 저장 시 slug→canonical `place_id` 강제(Phase 2d).
-3. `geoMismatch` 6건·IATA 없음 37건 점진 검수.
+1. `travelSpotAirports.json`·규칙·Edge Function **배포** (`update-place-toolkit` 재배포 필수).
+2. gateo.kr 스모크: 갈라파고스 GPS/GYE·파타고니아 USH/PUQ 배너.
+3. `unmapped` 52·툴킷 IATA 없음 37건 점진 검수.

@@ -9,11 +9,19 @@ import {
   REMOVED_PLACE_ID_ALIASES,
   WRONG_ALIAS_POLICIES
 } from '../data/place-toolkit-reconcile-rules.mjs';
+import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from '../data/travel-spot-airport-overrides.mjs';
 import {
   buildSpotLookup,
   normalizePlaceKey,
   resolveTravelSpotFromPlaceId
 } from './travel-spot-place-resolve.mjs';
+
+/** 허브·게이트웨이만 있는 여행지 — 좌표 대비 IATA 거리 감사 제외 */
+const GEO_MISMATCH_EXEMPT_SLUGS = new Set(
+  Object.entries(TRAVEL_SPOT_AIRPORT_OVERRIDES)
+    .filter(([, o]) => o.confidence === 'high' && o.bannerNote)
+    .map(([slug]) => slug)
+);
 
 function matchesPattern(placeId, patterns) {
   const n = normalizePlaceKey(placeId);
@@ -91,7 +99,7 @@ export function auditPlaceToolkitRows(toolkitRows) {
       }
     }
 
-    if (resolved?.spot && row.essential_guide) {
+    if (resolved?.spot && row.essential_guide && !GEO_MISMATCH_EXEMPT_SLUGS.has(resolved.spot.slug)) {
       const location = {
         lat: resolved.spot.lat,
         lng: resolved.spot.lng,

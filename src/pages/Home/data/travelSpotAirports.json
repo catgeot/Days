@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-18T10:44:36.849Z",
+    "generatedAt": "2026-05-19T09:25:31.778Z",
     "spotCount": 244,
     "placeIdCount": 303,
     "stats": {
-      "override": 71,
-      "toolkitSync": 158,
-      "runtime": 16,
+      "override": 78,
+      "toolkitSync": 154,
+      "runtime": 13,
       "multiRule": 0,
       "geo": 0,
       "missing": 0
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-19T09:14:38.335Z",
+    "lastToolkitSyncAt": "2026-05-19T09:25:35.540Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -217,9 +217,9 @@
       ],
       "preferredLinkIata": "KEF",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "케플라비크(KEF) 국제공항 — 레이캬비크·링로드 관문"
     },
     "victoria-falls": {
       "primaryIatas": [
@@ -279,9 +279,10 @@
       ],
       "preferredLinkIata": "GPS",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "갈라파고스는 산크리스토발(GPS) 직항·과야킬(GYE) 경유 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "산크리스토발(GPS)·과야킬(GYE) 관문 — 툴킷·배너 SSOT"
     },
     "mauritius": {
       "primaryIatas": [
@@ -421,13 +422,13 @@
     },
     "ushuaia": {
       "primaryIatas": [
-        "EZE"
+        "USH"
       ],
-      "preferredLinkIata": "EZE",
+      "preferredLinkIata": "USH",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "우수아이아 마샬공항(USH) — 남극·파타고니아 크루즈 관문"
     },
     "moscow": {
       "primaryIatas": [
@@ -586,7 +587,7 @@
       "preferredLinkIata": "HNL",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "bannerNote": "미드웨이 환초는 상용 정기 노선이 없으며, 미국 Fish & Wildlife 허가·투어로 호놀룰루(HNL) 등에서 이어지는 일정이 일반적입니다.",
       "rationale": "호놀룰루 경유 정부·에코투어"
     },
@@ -739,7 +740,7 @@
       "preferredLinkIata": "USH",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "bannerNote": "남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.",
       "rationale": "남극 크루즈·연구 기지는 우수아이아 등 남미 관문"
     },
@@ -805,13 +806,14 @@
     "patagonia": {
       "primaryIatas": [
         "USH",
-        "EZE"
+        "PUQ"
       ],
       "preferredLinkIata": "USH",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "파타고니아는 칠레·아르헨티나 남단에 걸쳐 있어 우수아이아(USH)·푼타아레나스(PUQ) 등 관문이 나뉩니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "우수아이아(USH)·푼타아레나스(PUQ) 남미 남단 관문"
     },
     "kerguelen-islands": {
       "primaryIatas": [
@@ -820,7 +822,7 @@
       "preferredLinkIata": "RUN",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "bannerNote": "케르겔렌은 연구·군사 목적 선박·전용 항공만 접근 가능합니다. 레위니옹(RUN) 등 프랑스 남방 영토 관문을 거치는 탐험 일정이 일반적입니다.",
       "rationale": "레위니옹 경유 프랑스 남방군도"
     },
@@ -1075,9 +1077,9 @@
       ],
       "preferredLinkIata": "HKT",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "푸켓국제공항(HKT)"
     },
     "phi-phi-islands": {
       "primaryIatas": [
@@ -1681,23 +1683,25 @@
     },
     "lalibela": {
       "primaryIatas": [
-        "ADD"
+        "ADD",
+        "LLI"
       ],
       "preferredLinkIata": "ADD",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
-      "confidence": "medium",
-      "rationale": "아디스아바바 후 국내선"
+      "confidence": "high",
+      "bannerNote": "랄리벨라는 보통 아디스아바바(ADD) 국제선 후 국내선(LLI)으로 이어집니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "아디스아바바 국제선·랄리벨라(LLI) 국내선 관문"
     },
     "cusco": {
       "primaryIatas": [
-        "ATL"
+        "CUZ"
       ],
-      "preferredLinkIata": "ATL",
+      "preferredLinkIata": "CUZ",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "쿠스코 국제공항(CUZ) — 마추픽추 관문"
     },
     "nazca-lines": {
       "primaryIatas": [
@@ -2340,9 +2344,9 @@
       ],
       "preferredLinkIata": "KEF",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "케플라비크(KEF) — 레이캬비크 시내 관문"
     },
     "brisbane": {
       "primaryIatas": [
@@ -3073,10 +3077,11 @@
     },
     "랄리벨라": {
       "primaryIatas": [
+        "LLI",
         "ADD"
       ],
-      "preferredLinkIata": "ADD",
-      "kind": "single",
+      "preferredLinkIata": "LLI",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -4026,10 +4031,11 @@
     },
     "우수아이아": {
       "primaryIatas": [
+        "USH",
         "EZE"
       ],
-      "preferredLinkIata": "EZE",
-      "kind": "single",
+      "preferredLinkIata": "USH",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -4503,9 +4509,9 @@
     },
     "쿠스코": {
       "primaryIatas": [
-        "ATL"
+        "CUZ"
       ],
-      "preferredLinkIata": "ATL",
+      "preferredLinkIata": "CUZ",
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
@@ -4787,6 +4793,7 @@
     "파타고니아": {
       "primaryIatas": [
         "USH",
+        "PUQ",
         "EZE"
       ],
       "preferredLinkIata": "USH",
@@ -4837,14 +4844,10 @@
     },
     "남극대륙": {
       "primaryIatas": [
-        "ATL",
-        "USH",
-        "PUQ",
-        "ICN",
-        "EZE"
+        "USH"
       ],
-      "preferredLinkIata": "ATL",
-      "kind": "multi",
+      "preferredLinkIata": "USH",
+      "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",

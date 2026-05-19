@@ -137,7 +137,63 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '카르스텐츠 원정은 보통 자카르타(CGK) 또는 발리(DPS) 국제선 후 티미카(TIM) 국내선으로 들어옵니다. 센타니(DJJ)는 자야푸라 관문으로 흔하지 않습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
   'cape-verde': { primaryIatas: ['SID'], preferredLinkIata: 'SID', confidence: 'high', rationale: '살 국제공항' },
-  lalibela: { primaryIatas: ['ADD'], preferredLinkIata: 'ADD', confidence: 'medium', rationale: '아디스아바바 후 국내선' },
+  lalibela: {
+    primaryIatas: ['ADD', 'LLI'],
+    preferredLinkIata: 'ADD',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '아디스아바바 국제선·랄리벨라(LLI) 국내선 관문',
+    bannerNote:
+      '랄리벨라는 보통 아디스아바바(ADD) 국제선 후 국내선(LLI)으로 이어집니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  galapagos: {
+    primaryIatas: ['GPS', 'GYE'],
+    preferredLinkIata: 'GPS',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '산크리스토발(GPS)·과야킬(GYE) 관문 — 툴킷·배너 SSOT',
+    bannerNote:
+      '갈라파고스는 산크리스토발(GPS) 직항·과야킬(GYE) 경유 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  iceland: {
+    primaryIatas: ['KEF'],
+    preferredLinkIata: 'KEF',
+    confidence: 'high',
+    rationale: '케플라비크(KEF) 국제공항 — 레이캬비크·링로드 관문'
+  },
+  phuket: {
+    primaryIatas: ['HKT'],
+    preferredLinkIata: 'HKT',
+    confidence: 'high',
+    rationale: '푸켓국제공항(HKT)'
+  },
+  reykjavik: {
+    primaryIatas: ['KEF'],
+    preferredLinkIata: 'KEF',
+    confidence: 'high',
+    rationale: '케플라비크(KEF) — 레이캬비크 시내 관문'
+  },
+  ushuaia: {
+    primaryIatas: ['USH'],
+    preferredLinkIata: 'USH',
+    confidence: 'high',
+    rationale: '우수아이아 마샬공항(USH) — 남극·파타고니아 크루즈 관문'
+  },
+  cusco: {
+    primaryIatas: ['CUZ'],
+    preferredLinkIata: 'CUZ',
+    confidence: 'high',
+    rationale: '쿠스코 국제공항(CUZ) — 마추픽추 관문'
+  },
+  patagonia: {
+    primaryIatas: ['USH', 'PUQ'],
+    preferredLinkIata: 'USH',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '우수아이아(USH)·푼타아레나스(PUQ) 남미 남단 관문',
+    bannerNote:
+      '파타고니아는 칠레·아르헨티나 남단에 걸쳐 있어 우수아이아(USH)·푼타아레나스(PUQ) 등 관문이 나뉩니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
   yellowknife: { primaryIatas: ['YZF'], preferredLinkIata: 'YZF', confidence: 'high', rationale: '옐로나이프 공항' },
   dunhuang: { primaryIatas: ['DNH'], preferredLinkIata: 'DNH', confidence: 'high', rationale: '둔황 공항' },
   uluru: { primaryIatas: ['AYQ'], preferredLinkIata: 'AYQ', confidence: 'high', rationale: '울루루 에어스' },
@@ -148,7 +204,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'midway-atoll': {
     primaryIatas: ['HNL'],
     preferredLinkIata: 'HNL',
-    confidence: 'medium',
+    confidence: 'high',
     rationale: '호놀룰루 경유 정부·에코투어',
     bannerNote:
       '미드웨이 환초는 상용 정기 노선이 없으며, 미국 Fish & Wildlife 허가·투어로 호놀룰루(HNL) 등에서 이어지는 일정이 일반적입니다.'
@@ -168,7 +224,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'kerguelen-islands': {
     primaryIatas: ['RUN'],
     preferredLinkIata: 'RUN',
-    confidence: 'medium',
+    confidence: 'high',
     rationale: '레위니옹 경유 프랑스 남방군도',
     bannerNote:
       '케르겔렌은 연구·군사 목적 선박·전용 항공만 접근 가능합니다. 레위니옹(RUN) 등 프랑스 남방 영토 관문을 거치는 탐험 일정이 일반적입니다.'
@@ -198,7 +254,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   antarctica: {
     primaryIatas: ['USH'],
     preferredLinkIata: 'USH',
-    confidence: 'medium',
+    confidence: 'high',
     rationale: '남극 크루즈·연구 기지는 우수아이아 등 남미 관문',
     bannerNote: '남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.'
   }

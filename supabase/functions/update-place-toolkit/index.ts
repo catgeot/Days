@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  isKnownTravelSpotSlug,
+  resolveCanonicalPlaceId,
+} from "../_shared/resolveCanonicalPlaceId.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +26,15 @@ const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
   BWN: { lat: 4.9442, lng: 114.9284 },
   BKI: { lat: 5.9372, lng: 116.0512 },
   SAI: { lat: 13.7694, lng: 103.6439 },
+  GPS: { lat: -0.4538, lng: -90.2659 },
+  GYE: { lat: -2.1574, lng: -79.8836 },
+  KEF: { lat: 63.985, lng: -22.6056 },
+  HKT: { lat: 8.1132, lng: 98.3169 },
+  CUZ: { lat: -13.5357, lng: -71.9388 },
+  USH: { lat: -54.8433, lng: -68.2958 },
+  PUQ: { lat: -53.0026, lng: -70.8542 },
+  ADD: { lat: 8.9779, lng: 38.7993 },
+  MDY: { lat: 28.2019, lng: -177.3803 },
 };
 
 function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -67,11 +80,31 @@ serve(async (req) => {
 
   try {
     reqBody = await req.json();
-    const { placeId, locationName, lat, lng, country, slug } = reqBody;
+    const { placeId, locationName, lat, lng, country, slug, canonicalPlaceId: canonicalPlaceIdHint } = reqBody;
     requestedPlaceId = placeId;
 
     if (!placeId || !locationName) {
         throw new Error('placeId and locationName are required');
+    }
+
+    const slugNorm = typeof slug === 'string' ? slug.trim().toLowerCase() : '';
+    if (slugNorm && !isKnownTravelSpotSlug(slugNorm)) {
+      console.warn('[update-place-toolkit] Unknown slug (place_id not normalized):', slugNorm);
+    }
+
+    const canonicalPlaceId = resolveCanonicalPlaceId({
+      slug: slugNorm || null,
+      placeId: String(placeId),
+      locationName: String(locationName),
+      canonicalPlaceId: canonicalPlaceIdHint != null ? String(canonicalPlaceIdHint) : null,
+    });
+
+    if (canonicalPlaceId !== String(placeId)) {
+      console.log('[update-place-toolkit] Normalized place_id:', {
+        requested: placeId,
+        canonical: canonicalPlaceId,
+        slug: slugNorm || null,
+      });
     }
 
     const destLat = typeof lat === 'number' ? lat : Number(lat);
@@ -252,11 +285,11 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
       );
     }
 
-    // Upsert essential_guide into place_toolkit table
+    // Upsert essential_guide into place_toolkit table (canonical SSOT 한글명)
     const { error: dbError } = await supabaseAdmin
       .from('place_toolkit')
       .upsert({
-        place_id: String(placeId),
+        place_id: canonicalPlaceId,
         essential_guide: essentialGuideJson,
         toolkit_updated_at: new Date().toISOString()
       }, { onConflict: 'place_id' });

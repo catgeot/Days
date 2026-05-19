@@ -12,6 +12,7 @@ import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
+import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -60,16 +61,18 @@ const PlannerTab = ({
 
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = useCallback(async (placeName, forceUpdate = false) => {
-        const placeId = plannerData?.place_id || location?.name;
-        if (!placeId) {
+        const canonicalLoc = mergeCanonicalTravelSpot(location);
+        const canonicalPlaceId = canonicalLoc?.name || plannerData?.place_id || location?.name;
+        const slug = getPlaceStableKey(canonicalLoc) || canonicalLoc?.slug || location?.slug;
+        if (!canonicalPlaceId) {
             setIsRemoteUpdating(false);
             return null;
         }
 
         // 🆕 [Phase 8 Fix] 중복 요청 방지 - 이미 요청 중이면 기존 Promise 재사용
-        if (pendingToolkitRequests.has(placeId)) {
+        if (pendingToolkitRequests.has(canonicalPlaceId)) {
             console.log('[PlannerTab] [DEV] 중복 요청 방지 - 기존 요청 재사용 (StrictMode 이중 렌더링)');
-            return pendingToolkitRequests.get(placeId);
+            return pendingToolkitRequests.get(canonicalPlaceId);
         }
 
         setIsRemoteUpdating(true);
@@ -80,12 +83,13 @@ const PlannerTab = ({
                 console.log("[PlannerTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
                 const { data, error } = await supabase.functions.invoke('update-place-toolkit', {
                     body: {
-                        placeId,
-                        locationName: placeName || location?.name,
-                        lat: location?.lat,
-                        lng: location?.lng,
-                        country: location?.country,
-                        slug: location?.slug,
+                        placeId: canonicalPlaceId,
+                        canonicalPlaceId,
+                        locationName: placeName || canonicalLoc?.name || location?.name,
+                        lat: canonicalLoc?.lat ?? location?.lat,
+                        lng: canonicalLoc?.lng ?? location?.lng,
+                        country: canonicalLoc?.country ?? location?.country,
+                        slug,
                     },
                 });
 
@@ -100,7 +104,7 @@ const PlannerTab = ({
                 if (data?.success) {
                     console.log(`[PlannerTab] 업데이트 완료. 이벤트 발생 (forceUpdate: ${forceUpdate})`);
                     window.dispatchEvent(new CustomEvent('toolkit-updated', {
-                        detail: { placeId, essentialGuide: data.essentialGuide }
+                        detail: { placeId: canonicalPlaceId, essentialGuide: data.essentialGuide }
                     }));
                 } else {
                     console.error("[PlannerTab] 백엔드 응답 에러 (success: false):", data);
@@ -116,12 +120,12 @@ const PlannerTab = ({
                 throw err;
             } finally {
                 // 요청 완료 후 캐시에서 제거 (메모리 누수 방지)
-                pendingToolkitRequests.delete(placeId);
+                pendingToolkitRequests.delete(canonicalPlaceId);
             }
         })();
 
         // 전역 캐시에 등록
-        pendingToolkitRequests.set(placeId, requestPromise);
+        pendingToolkitRequests.set(canonicalPlaceId, requestPromise);
         return requestPromise;
     }, [plannerData, location]);
 

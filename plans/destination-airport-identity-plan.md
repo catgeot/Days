@@ -206,7 +206,8 @@ npm run toolkit:reconcile-place-id -- --apply --only=borneo,angkor-wat
 | 0 | ✅ 완료 | 0a–0c · 0d apply(angkor) |
 | 1 | ✅ 완료 | 세션 1(1a–1c) · gateo.kr P0 QA |
 | 2 | ✅ 완료 | P1·P2·P3 reconcile apply(295행) · **duplicateSlug 0** · sync·audit `none:0` |
-| 3 | ⬜ 대기 | |
+| 2d | ✅ 완료 | `update-place-toolkit` canonical `place_id` · `PlannerTab` slug 전달 |
+| 3 | ✅ 1차 | 3a curated 승격 · 3b 허브·DB IATA 패치 · **geoMismatch 0** |
 | 4 | ⬜ 백로그 | |
 
 *완료 시 이 표와 [`2026-05-18-project-log.md`](./2026-05-18-project-log.md)에 2~3줄만 갱신.*
