@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-19T10:43:30.107Z",
+    "generatedAt": "2026-05-19T11:06:55.092Z",
     "spotCount": 244,
     "placeIdCount": 315,
     "stats": {
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-19T10:44:38.642Z",
+    "lastToolkitSyncAt": "2026-05-19T11:06:59.930Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -430,7 +430,7 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "우수아이아 마샬공항(USH) — 남극·파타고니아 크루즈 관문"
+      "rationale": "우수아이아 마샬공항(USH) — 티에라델푸에고·남극 크루즈 관문"
     },
     "moscow": {
       "primaryIatas": [
@@ -813,15 +813,15 @@
     },
     "patagonia": {
       "primaryIatas": [
-        "USH",
-        "PUQ"
+        "BRC",
+        "EZE"
       ],
-      "preferredLinkIata": "USH",
+      "preferredLinkIata": "BRC",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "파타고니아는 칠레·아르헨티나 남단에 걸쳐 있어 우수아이아(USH)·푼타아레나스(PUQ) 등 관문이 나뉩니다. 티켓의 최종 도착 코드를 확인해 주세요.",
-      "rationale": "우수아이아(USH)·푼타아레나스(PUQ) 남미 남단 관문"
+      "bannerNote": "이 여행지는 **아르헨티나 북부 파타고니아**(바릴로체·호수·안데스)입니다. 보통 부에노스아이레스(EZE) 국제선 후 바릴로체(BRC) 국내선으로 이어집니다. 남부(우수아이아 USH·토레스 델 파이네 PUQ)는 별도 여행지를 참고하세요. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "아르헨티나 북부 파타고니아 — 바릴로체(BRC)·부에노스아이레스(EZE) 국제선 관문"
     },
     "kerguelen-islands": {
       "primaryIatas": [
@@ -1181,7 +1181,8 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "푼타아레나스 공항"
+      "bannerNote": "토레스 델 파이네는 칠레 남부 파타고니아 국립공원입니다. 보통 푼타아레나스(PUQ) 직항·경유 후 버스·투어로 들어갑니다. 아르헨티나 북부 파타고니아·우수아이아와 관문이 다릅니다.",
+      "rationale": "푼타아레나스(PUQ) — 칠레 남부 토레스 델 파이네·W트레킹 관문"
     },
     "milford-sound": {
       "primaryIatas": [
@@ -4807,10 +4808,10 @@
     },
     "파타고니아": {
       "primaryIatas": [
-        "USH",
-        "PUQ"
+        "BRC",
+        "EZE"
       ],
-      "preferredLinkIata": "USH",
+      "preferredLinkIata": "BRC",
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",

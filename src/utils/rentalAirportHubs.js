@@ -481,7 +481,15 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 220,
     aliases: ['guayaquil', '과야킬', 'gye', 'ecuador gateway']
   },
-  { iata: 'EZE', officialKo: '미니스트로 피스타리니국제공항', lat: -34.8222, lng: -58.5358, radiusKm: 220, aliases: ['buenos aires', '부에노스아이레스', 'eze'] },
+  { iata: 'EZE', officialKo: '미니스트로 피스타리니국제공항', lat: -34.8222, lng: -58.5358, radiusKm: 220, aliases: ['buenos aires', '부에노스아이레스', 'eze', 'argentina gateway'] },
+  {
+    iata: 'BRC',
+    officialKo: '산 카를로스 데 바릴로체 공항',
+    lat: -41.1511,
+    lng: -71.1575,
+    radiusKm: 180,
+    aliases: ['bariloche', '바릴로체', 'san carlos de bariloche', 'brc', 'northern patagonia', '북부 파타고니아']
+  },
   { iata: 'GIG', officialKo: '갈레앙국제공항', lat: -22.8099, lng: -43.2506, radiusKm: 200, aliases: ['rio de janeiro', '리우데자네이루', 'rio', 'gig'] },
   {
     iata: 'GRU',
@@ -563,7 +571,7 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'TLV', officialKo: '벤구리온국제공항', lat: 32.0114, lng: 34.8867, radiusKm: 200, aliases: ['tel aviv', '텔아비브', 'jerusalem', '예루살렘', 'tlv'] },
   { iata: 'CNS', officialKo: '케언스공항', lat: -16.8858, lng: 145.7553, radiusKm: 250, aliases: ['cairns', '케언스', 'great barrier reef', '그레이트배리어리프'] },
   { iata: 'MAO', officialKo: '에두아르도 고메스국제공항', lat: -3.0386, lng: -60.0497, radiusKm: 400, aliases: ['manaus', '마나우스', 'amazon', '아마존'] },
-  { iata: 'USH', officialKo: '마샬공항', lat: -54.8433, lng: -68.2958, radiusKm: 350, aliases: ['ushuaia', '우수아이아', 'ush', 'patagonia', '파타고니아'] },
+  { iata: 'USH', officialKo: '마샬공항', lat: -54.8433, lng: -68.2958, radiusKm: 350, aliases: ['ushuaia', '우수아이아', 'ush', 'tierra del fuego', '티에라델푸에고'] },
   { iata: 'BZN', officialKo: '갤러틴필드공항', lat: 45.7775, lng: -111.1600, radiusKm: 200, aliases: ['bozeman', '보즈먼', 'yellowstone', '옐로스톤'] },
   { iata: 'FAT', officialKo: '프레스노요세미티국제공항', lat: 36.7762, lng: -119.7181, radiusKm: 220, aliases: ['fresno', '프레스노', 'yosemite', '요세미티', 'sequoia', '세쿼이아'] },
   // --- 감사·오버라이드 기반 추가 허브 (travelSpotAirports.json) ---

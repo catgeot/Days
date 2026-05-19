@@ -1031,7 +1031,7 @@ export const TRAVEL_SPOTS = [
     "category": "urban",
     "showOnGlobe": true,
     "denseRegion": null,
-    "desc": "아르헨티나에 위치한 세상의 끝 도시입니다. 남극으로 떠나는 탐험선들의 베이스캠프이자 거친 대자연이 시작되는 관문입니다.",
+    "desc": "아르헨티나 최남단(티에라델푸에고)의 세상 끝 도시입니다. 남극·남부 파타고니아 크루즈의 관문(USH)이며, 북부 파타고니아·토레스 델 파이네와는 별도 여행지입니다.",
     "keywords": [
       "대륙",
       "자연/오지",
@@ -2021,11 +2021,11 @@ export const TRAVEL_SPOTS = [
     "id": 177,
     "slug": "patagonia",
     "name": "파타고니아",
-    "name_en": "Patagonia",
+    "name_en": "Patagonia (Northern)",
     "country": "아르헨티나",
     "country_en": "Argentina",
-    "lat": -41.8102,
-    "lng": -68.9063,
+    "lat": -41.1335,
+    "lng": -71.3103,
     "tier": 2,
     "popularity": 72,
     "continent": "south_america",
@@ -2036,10 +2036,13 @@ export const TRAVEL_SPOTS = [
     "category": "adventure",
     "showOnGlobe": true,
     "denseRegion": null,
-    "desc": "남미 대륙의 최남단으로, 웅장한 빙하와 날카로운 화강암 봉우리들이 인간의 접근을 거부하는 듯한 태초의 야생을 간직하고 있습니다.",
+    "desc": "아르헨티나 북부 파타고니아(호수·안데스·바릴로체 권)입니다. 남부(우수아이아·토레스 델 파이네)와는 별도 여행지로, 보통 부에노스아이레스 경유 후 바릴로체(BRC) 등으로 들어옵니다.",
     "keywords": [
-      "자연/오지",
-      "액티비티"
+      "바릴로체",
+      "호수",
+      "안데스",
+      "트레킹",
+      "자연/오지"
     ]
   },
   {
@@ -3044,7 +3047,7 @@ export const TRAVEL_SPOTS = [
     "category": "nature",
     "showOnGlobe": true,
     "denseRegion": null,
-    "desc": "파타고니아의 보석으로 불리는 국립공원입니다. 세 개의 화강암 봉우리가 하늘을 찌르는 모습은 자연의 경이로움 그 자체입니다. W 트레킹 코스는 전 세계 트레커들이 꿈꾸는 종주 코스입니다.",
+    "desc": "칠레 남부 파타고니아의 토레스 델 파이네 국립공원입니다. W·O 트레킹·화강암 봉우리·빙하 호수로 유명하며, 보통 푼타아레나스(PUQ) 관문을 거칩니다. (아르헨티나 북부 파타고니아·우수아이아와 별도 여행지)",
     "keywords": [
       "칠레",
       "파타고니아",

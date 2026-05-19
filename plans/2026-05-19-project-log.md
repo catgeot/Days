@@ -90,3 +90,17 @@
 1. **프론트·JSON 배포**(travelSpotAirports·overrides·rentalAirportHubs).
 2. gateo.kr 스모크: 서울 ICN+GMP·킬리만자로 JRO 배너(배포 후).
 3. 잔여 `skippedNoIata` 26·`unmapped` 52 점진 검수(annapurna·bohol·yokohama 등).
+
+## 파타고니아 slug 범위 분리 (이번 세션)
+
+- **patagonia** → 아르헨티나 **북부**(바릴로체·BRC/EZE), 좌표·desc·`name_en: Patagonia (Northern)` 재정의.
+- **ushuaia** → USH·티에라델푸에go (남극·남부 크루즈 관문).
+- **torres-del-paine** → PUQ·칠레 W트레킹 (북부·우수아이아와 별도 안내).
+- `rentalAirportHubs` **BRC** 추가 · USH에서 patagonia alias 제거.
+- DB `파타고니아` IATA USH/PUQ→**BRC/EZE** · 배너·툴킷·여정(바릴로체) 정합.
+- `audit:airports` **`none: 0`** 유지.
+
+### 다음
+
+1. **프론트·JSON 배포** + Edge(재배포 완료).
+2. gateo.kr QA: patagonia BRC/EZE·ushuaia USH·torres PUQ 배너·여정 일치.

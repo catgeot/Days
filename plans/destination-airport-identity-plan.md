@@ -209,5 +209,6 @@ npm run toolkit:reconcile-place-id -- --apply --only=borneo,angkor-wat
 | 2d | ✅ 완료 | `update-place-toolkit` canonical `place_id` · `PlannerTab` slug 전달 |
 | 3 | ✅ 1차 | 3a curated 승격 · 3b 허브·DB IATA 패치 · **geoMismatch 0** |
 | 4 | ⬜ 백로그 | |
+| R | ⬜ Gate 후 | 연관 여행지 UI — [`related-destinations-cross-nav-plan.md`](./related-destinations-cross-nav-plan.md) |
 
 *완료 시 이 표와 [`2026-05-18-project-log.md`](./2026-05-18-project-log.md)에 2~3줄만 갱신.*

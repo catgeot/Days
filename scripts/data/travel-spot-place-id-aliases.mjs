@@ -71,7 +71,15 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Siem Reap': 'angkor-wat',
   'Angkor Wat': 'angkor-wat',
   'Addis Ababa': 'lalibela',
-  'Bohol': 'bohol'
+  'Bohol': 'bohol',
+
+  // —— 파타고니아 권역 (북부·남부 slug 분리) ——
+  'Bariloche': 'patagonia',
+  '바릴로체': 'patagonia',
+  'Patagonia Chile': 'torres-del-paine',
+  '파타고니아 칠레': 'torres-del-paine',
+  'Tierra del Fuego': 'ushuaia',
+  '티에라델푸에고': 'ushuaia'
 };
 
 /**
@@ -105,6 +113,9 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'iceland': ['Ilulissat', '일룰리사트', '일루리삿', 'Ilulissat Icefjord'],
   'alaska': ['앵커리지', 'Anchorage'],
   'antarctica': ['맥머도', '맥머도 기지', '남극해', 'McMurdo Station', 'McMurdo'],
+  patagonia: ['Bariloche', '바릴로체', 'Patagonia (Northern)'],
+  ushuaia: ['Ushuaia', 'Tierra del Fuego', '티에라델푸에고'],
+  'torres-del-paine': ['Torres del Paine', '토레스델파이네', 'Parque Nacional Torres del Paine'],
 };
 
 /** @type {Set<string>} 여행지 SSOT에 없거나 매칭하면 안 되는 place_id */

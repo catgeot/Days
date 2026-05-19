@@ -102,7 +102,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.',
   },
   tikal: { primaryIatas: ['GUA'], preferredLinkIata: 'GUA', confidence: 'high', rationale: '과테말라시티 공항' },
-  'torres-del-paine': { primaryIatas: ['PUQ'], preferredLinkIata: 'PUQ', confidence: 'high', rationale: '푼타아레나스 공항' },
+  'torres-del-paine': {
+    primaryIatas: ['PUQ'],
+    preferredLinkIata: 'PUQ',
+    confidence: 'high',
+    rationale: '푼타아레나스(PUQ) — 칠레 남부 토레스 델 파이네·W트레킹 관문',
+    bannerNote:
+      '토레스 델 파이네는 칠레 남부 파타고니아 국립공원입니다. 보통 푼타아레나스(PUQ) 직항·경유 후 버스·투어로 들어갑니다. 아르헨티나 북부 파타고니아·우수아이아와 관문이 다릅니다.'
+  },
   persepolis: { primaryIatas: ['SYZ'], preferredLinkIata: 'SYZ', confidence: 'high', rationale: '시라즈 공항' },
   qingdao: { primaryIatas: ['TAO'], preferredLinkIata: 'TAO', confidence: 'high', rationale: '칭다오 공항' },
   'banff-national-park': { primaryIatas: ['YYC'], preferredLinkIata: 'YYC', confidence: 'high', rationale: '캘거리 공항' },
@@ -177,7 +184,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['USH'],
     preferredLinkIata: 'USH',
     confidence: 'high',
-    rationale: '우수아이아 마샬공항(USH) — 남극·파타고니아 크루즈 관문'
+    rationale: '우수아이아 마샬공항(USH) — 티에라델푸에고·남극 크루즈 관문'
   },
   cusco: {
     primaryIatas: ['CUZ'],
@@ -186,13 +193,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: '쿠스코 국제공항(CUZ) — 마추픽추 관문'
   },
   patagonia: {
-    primaryIatas: ['USH', 'PUQ'],
-    preferredLinkIata: 'USH',
+    primaryIatas: ['BRC', 'EZE'],
+    preferredLinkIata: 'BRC',
     kind: 'multi',
     confidence: 'high',
-    rationale: '우수아이아(USH)·푼타아레나스(PUQ) 남미 남단 관문',
+    rationale: '아르헨티나 북부 파타고니아 — 바릴로체(BRC)·부에노스아이레스(EZE) 국제선 관문',
     bannerNote:
-      '파타고니아는 칠레·아르헨티나 남단에 걸쳐 있어 우수아이아(USH)·푼타아레나스(PUQ) 등 관문이 나뉩니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+      '이 여행지는 **아르헨티나 북부 파타고니아**(바릴로체·호수·안데스)입니다. 보통 부에노스아이레스(EZE) 국제선 후 바릴로체(BRC) 국내선으로 이어집니다. 남부(우수아이아 USH·토레스 델 파이네 PUQ)는 별도 여행지를 참고하세요. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   yellowknife: { primaryIatas: ['YZF'], preferredLinkIata: 'YZF', confidence: 'high', rationale: '옐로나이프 공항' },
   dunhuang: { primaryIatas: ['DNH'], preferredLinkIata: 'DNH', confidence: 'high', rationale: '둔황 공항' },

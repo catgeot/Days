@@ -3,7 +3,9 @@
  * `scripts/data/travel-spot-airport-overrides.mjs` curated high와 동기화.
  */
 export const REGIONAL_GATEWAY_IATAS_BY_SLUG: Record<string, readonly string[]> = {
-  patagonia: ['USH', 'PUQ'],
+  patagonia: ['BRC', 'EZE'],
+  ushuaia: ['USH'],
+  'torres-del-paine': ['PUQ'],
   borneo: ['BKI', 'KCH', 'KUL'],
   alaska: ['ANC'],
   'amazon-rainforest': ['MAO'],

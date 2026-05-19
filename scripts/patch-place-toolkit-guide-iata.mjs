@@ -42,8 +42,8 @@ const PATCHES = [
   },
   {
     matchPlaceIds: ['파타고니아', 'Patagonia', 'patagonia'],
-    primaryIatas: ['USH', 'PUQ'],
-    note: 'EZE 단독 오탐 → USH·PUQ'
+    primaryIatas: ['BRC', 'EZE'],
+    note: '북부 파타고니아 — EZE·BRC (USH/PUQ는 ushuaia·torres-del-paine)'
   },
   // Phase D — skippedNoIata 우선 slug (essential_guide IATA 보강)
   {
