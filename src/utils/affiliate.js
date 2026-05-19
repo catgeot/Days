@@ -249,7 +249,9 @@ export const TRIPCOM_KR_PARTNER = {
 export const TRIPCOM_FLIGHT_TRACKING = {
   sub1PlannerFlight: '플래너 항공권',
   sub1PlannerFlightMobile: '플래너 항공권 모바일',
+  sub1PlannerPreTravelFlight: '플래너 필수준비 항공권 검색 일반',
   sub3PlannerFlight: 'D17104488',
+  sub3PlannerPreTravelFlight: 'D17159522',
 };
 
 /** 제휴 항공 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
@@ -282,32 +284,54 @@ export function getPlannerFlightArrivalIata(location, options = {}) {
   return typeof code === 'string' && code.length === 3 ? code.toUpperCase() : null;
 }
 
+function resolveTripcomFlightTracking(options = {}) {
+  const { tracking } = options;
+
+  if (tracking === 'planner-pre-travel') {
+    return {
+      sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerPreTravelFlight,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerPreTravelFlight,
+      omitLocaleBundle: false,
+    };
+  }
+
+  if (tracking === 'planner-flight-mobile') {
+    return {
+      sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlightMobile,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
+      omitLocaleBundle: true,
+    };
+  }
+
+  return {
+    sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlight,
+    sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
+    omitLocaleBundle: false,
+  };
+}
+
 /**
  * Trip.com 항공 제휴 URL (항공 홈 또는 제휴 ad iframe).
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ essentialGuide?: Record<string, unknown> | null, mode?: 'flights' | 'ad', adId?: string, tracking?: 'planner-flight-mobile' }} [options]
+ * @param {{ essentialGuide?: Record<string, unknown> | null, mode?: 'flights' | 'ad', adId?: string, tracking?: 'planner-flight-mobile' | 'planner-pre-travel' }} [options]
  * @returns {string}
  */
 export function buildTripcomPlannerFlightUrl(location, options = {}) {
   const { mode = 'flights', adId = TRIPCOM_FLIGHT_AD.adId } = options;
   const arrival = getPlannerFlightArrivalIata(location, options);
-  const isMobileAd =
-    adId === TRIPCOM_FLIGHT_AD.mobileAdId ||
-    options.tracking === 'planner-flight-mobile';
+  const { sub1, sub3, omitLocaleBundle } = resolveTripcomFlightTracking(options);
 
   const params = new URLSearchParams({
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
-    trip_sub1: isMobileAd
-      ? TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlightMobile
-      : TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlight,
+    trip_sub1: sub1,
   });
 
-  if (!isMobileAd) {
+  if (!omitLocaleBundle) {
     params.set('locale', 'ko-KR');
     params.set('curr', 'KRW');
-    params.set('trip_sub3', TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight);
+    params.set('trip_sub3', sub3);
   }
 
   if (TRIPCOM_DEFAULT_DEPARTURE_AIRPORT) {
@@ -324,7 +348,7 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   params.set('locale', 'ko-KR');
   params.set('curr', 'KRW');
   if (!params.has('trip_sub3')) {
-    params.set('trip_sub3', TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight);
+    params.set('trip_sub3', sub3);
   }
   return `https://kr.trip.com/flights/?${params.toString()}`;
 }

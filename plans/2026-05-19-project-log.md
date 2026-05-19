@@ -181,3 +181,24 @@
 ### QA
 
 - gateo.kr 모바일: Trip.com 모바일 배너·도착 IATA 자동 반영 · 제휴링크/X 비겹침 · 핀치 줌·맨 위 버튼·헤더 탭 스크롤 **정상**.
+
+## 플래너 Trip.com 항공 링크·CTA (완료)
+
+### 배경
+
+- Trip.com iframe 클릭 시 **빈 탭**이 남고 Chrome에서 gateo 복귀가 불편.
+- `/flights/` 직링크에도 **제휴 파라미터**(`Allianceid`, `SID`, `trip_sub1`, `trip_sub3`, IATA)가 포함되므로 ad 배너 재경유는 불필요.
+- 툴킷 항공 CTA: 보라 그라데이션 위 **회색 보조글**(`plannerCaption`)로 시인성 저하.
+
+### 구현
+
+- **`TripcomFlightBannerWidget`**: iframe `pointer-events-none` + **`/flights/` 오버레이** · 모바일 `_self` / 데스크톱 `_blank`.
+- **`WhiteLabelWidget`**: 동일 직링크·탭 정책.
+- **`affiliate.js`**: `resolveTripcomFlightTracking` · 필수 준비 **`trip_sub1=플래너 필수준비 항공권 검색 일반`**, **`trip_sub3=D17159522`**.
+- **`PreTravelChecklist`**: 항공·숙소·픽업 **→ 화살표 제거** · 항공 `/flights/` 직연결.
+- **`FlightSearchCta`**: ICN→IATA 뱃지 · 고대비 그라데이션 · `ToolkitCard` 항공 파트 적용.
+
+### QA (로컬)
+
+- 모바일: Trip.com 이동 후 **뒤로가기**로 플래너 복귀 · 빈 탭 없음.
+- 툴킷 항공 CTA: 부제·노선 뱃지 **가독성** 개선.

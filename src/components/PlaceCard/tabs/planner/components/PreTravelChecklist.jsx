@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
-import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtTimelineAction from './MrtTimelineAction';
-import { getKlookAffiliateUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
+import {
+    buildTripcomPlannerFlightUrl,
+    getKlookAffiliateUrl,
+    getTripcomHotelOverrideUrlForLocation,
+} from '../../../../../utils/affiliate';
+import { isMobileDevice } from '../../../common/device';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerMicroLabel } from '../readableText';
 
 const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) => {
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = `${locationName || ''} 숙소`;
+    const linkTarget = isMobileDevice() ? '_self' : '_blank';
+
+    const preTravelFlightUrl = useMemo(
+        () =>
+            buildTripcomPlannerFlightUrl(location, {
+                essentialGuide,
+                mode: 'flights',
+                tracking: 'planner-pre-travel',
+            }),
+        [location, essentialGuide],
+    );
 
     return (
         <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 mb-5 shadow-sm flex flex-col">
@@ -53,26 +68,24 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                     <div className="h-px flex-1 bg-amber-300/50"></div>
                 </div>
 
-                {/* 1. 항공권 검색 */}
+                {/* 1. 항공권 검색 — 상단 Trip.com 배너와 구분되는 제휴 추적 URL */}
                 <div className="mb-3">
-                    <WhiteLabelWidget
-                        location={location}
-                        essentialGuide={essentialGuide}
-                        customTrigger={
-                            <button className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full">
-                                <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
-                                    <Plane size={16} />
-                                </div>
-                                <div className="flex-1 text-left min-w-0">
-                                    <div className="font-bold text-sm text-gray-800">항공권 실시간 검색</div>
-                                    <div className={`${plannerCaption} text-gray-600 mt-0.5`}>
-                                        {getFlightDestinationSearchHint(location, { essentialGuide })}
-                                    </div>
-                                </div>
-                                <div className="text-gray-400 group-hover:text-gray-600 transition-colors">→</div>
-                            </button>
-                        }
-                    />
+                    <a
+                        href={preTravelFlightUrl}
+                        target={linkTarget}
+                        rel="noopener noreferrer"
+                        className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full"
+                    >
+                        <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
+                            <Plane size={16} />
+                        </div>
+                        <div className="flex-1 text-left min-w-0">
+                            <div className="font-bold text-sm text-gray-800">항공권 실시간 검색</div>
+                            <div className={`${plannerCaption} text-gray-600 mt-0.5`}>
+                                {getFlightDestinationSearchHint(location, { essentialGuide })}
+                            </div>
+                        </div>
+                    </a>
                 </div>
 
                 {/* 2. 숙소 검색 — 기본 마이리얼트립 / PLANNER_TRIPCOM_HOTEL_OVERRIDES 등록 시 트립닷컴 */}
@@ -80,11 +93,11 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                     {tripcomHotelOverride ? (
                         <a
                             href={tripcomHotelOverride}
-                            target="_blank"
+                            target={linkTarget}
                             rel="noopener noreferrer"
                             className="block"
                         >
-                            <span className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full cursor-pointer">
+                            <span className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full cursor-pointer">
                                 <span className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0 inline-flex">
                                     <Bed size={16} />
                                 </span>
@@ -92,7 +105,6 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                                     <span className="font-bold text-sm text-gray-800 block">호텔 예약 (Trip.com)</span>
                                     <span className="text-xs text-gray-600">이 여행지는 트립닷컴 제휴 링크로 연결됩니다</span>
                                 </span>
-                                <span className="text-gray-400 group-hover:text-gray-600 transition-colors">→</span>
                             </span>
                         </a>
                     ) : (
@@ -100,7 +112,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                             mrtQuery={mrtQuery}
                             label="숙소 실시간 검색"
                             customTrigger={
-                                <button type="button" className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full">
+                                <button type="button" className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full">
                                     <span className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0 inline-flex">
                                         <Bed size={16} />
                                     </span>
@@ -108,7 +120,6 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                                         <span className="font-bold text-sm text-gray-800 block">숙소 실시간 검색</span>
                                         <span className="text-xs text-gray-600">전 세계 숙소 검색 및 예약</span>
                                     </span>
-                                    <span className="text-gray-400 group-hover:text-gray-600 transition-colors">→</span>
                                 </button>
                             }
                         />
@@ -118,9 +129,9 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                 {/* 3. 공항 픽업 예약 */}
                 <a
                     href={getKlookAffiliateUrl('https://www.klook.com/ko/airport-transfers/')}
-                    target="_blank"
+                    target={linkTarget}
                     rel="noopener noreferrer"
-                    className="bg-white border-2 border-amber-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all group w-full block"
+                    className="bg-white border-2 border-amber-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full block"
                 >
                     <div className="bg-amber-100 text-amber-600 p-2 rounded-lg shrink-0">
                         <Car size={16} />
@@ -131,7 +142,6 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                             항공권 구매 후 항공편명으로 검색해 주세요.
                         </div>
                     </div>
-                    <div className="text-gray-400 group-hover:text-gray-600 transition-colors">→</div>
                 </a>
             </div>
         </div>

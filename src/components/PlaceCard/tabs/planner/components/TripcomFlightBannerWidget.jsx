@@ -4,6 +4,7 @@ import {
     buildTripcomPlannerFlightUrl,
     getPlannerFlightArrivalIata,
 } from '../../../../../utils/affiliate';
+import { isMobileDevice } from '../../../common/device';
 import { computeKlookBannerLayout } from './klookBannerLayout';
 import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
 import { plannerCaption } from '../readableText';
@@ -14,11 +15,13 @@ const MIN_DISPLAY_HEIGHT = 120;
 /**
  * Trip.com 제휴 항공 검색 배너 — iframe `aAirportCode` / `dAirportCode` 자동 주입.
  * 모바일(≤767px) 320×480, 데스크톱 900×200.
+ * iframe은 시각용; 클릭은 제휴 flights URL 오버레이로 통일(빈 탭·리다이렉트 체인 방지).
  */
 const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3' }) => {
     const containerRef = useRef(null);
     const { width: nativeW, height: nativeH } = useTripcomPlannerBannerDimensions();
     const [layout, setLayout] = useState({ scale: 1, clipH: MIN_DISPLAY_HEIGHT });
+    const linkTarget = isMobileDevice() ? '_self' : '_blank';
 
     const arrivalIata = useMemo(
         () => getPlannerFlightArrivalIata(location, { essentialGuide }),
@@ -43,9 +46,14 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
         [location, essentialGuide, flightAdId, isMobileBanner],
     );
 
-    const fullPageUrl = useMemo(
-        () => buildTripcomPlannerFlightUrl(location, { essentialGuide, mode: 'flights' }),
-        [location, essentialGuide],
+    const clickUrl = useMemo(
+        () =>
+            buildTripcomPlannerFlightUrl(location, {
+                essentialGuide,
+                mode: 'flights',
+                ...(isMobileBanner ? { tracking: 'planner-flight-mobile' } : {}),
+            }),
+        [location, essentialGuide, isMobileBanner],
     );
 
     useEffect(() => {
@@ -87,8 +95,12 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                 data-tripcom-banner-size={`${nativeW}x${nativeH}`}
             >
                 <PlannerAffiliateLinkBadge />
+                {/*
+                  iframe이 클릭을 가로채면 Trip.com 내부 리다이렉트로 빈 탭이 남을 수 있음.
+                  시각은 ad iframe 유지, 클릭은 flights 제휴 URL로만 통과(Klook 배너와 동일).
+                */}
                 <div
-                    className="flex w-full justify-center overflow-hidden"
+                    className="pointer-events-none flex w-full justify-center overflow-hidden"
                     style={{ height: `${layout.clipH}px` }}
                 >
                     <div
@@ -112,6 +124,17 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                         />
                     </div>
                 </div>
+                <a
+                    href={clickUrl}
+                    target={linkTarget}
+                    rel="noopener noreferrer"
+                    aria-label={
+                        arrivalIata
+                            ? `Trip.com 항공권 검색 — ICN에서 ${arrivalIata}까지`
+                            : 'Trip.com 항공권 검색'
+                    }
+                    className="pointer-events-auto absolute inset-0 z-20"
+                />
                 <p className="sr-only">
                     {arrivalIata
                         ? `도착 공항 ${arrivalIata} 기준으로 Trip.com 항공권 검색 배너`
@@ -125,8 +148,8 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                         <span className="font-mono font-semibold">{arrivalIata}</span> 자동 반영
                         {' · '}
                         <a
-                            href={fullPageUrl}
-                            target="_blank"
+                            href={clickUrl}
+                            target={linkTarget}
                             rel="noopener noreferrer"
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >
@@ -137,8 +160,8 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                     <>
                         도착 공항을 찾지 못해 일반 검색으로 열립니다.{' '}
                         <a
-                            href={fullPageUrl}
-                            target="_blank"
+                            href={clickUrl}
+                            target={linkTarget}
                             rel="noopener noreferrer"
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >

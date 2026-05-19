@@ -1,10 +1,11 @@
 import React from 'react';
-import { ExternalLink, Plane } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
+import FlightSearchCta from './FlightSearchCta';
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
-import { getFlightDestinationSearchHint, getRentalCarHomeSearchSubtext } from '../../../../../utils/rentalAirportMatch.js';
+import { getRentalCarHomeSearchSubtext } from '../../../../../utils/rentalAirportMatch.js';
 import MrtDynamicLink from './MrtDynamicLink';
 import DirectFerriesWidget from './DirectFerriesWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
@@ -129,18 +130,7 @@ const ToolkitCard = ({
                     location={location}
                     essentialGuide={essentialGuide}
                     customTrigger={
-                        <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-xl px-5 py-4 flex items-center gap-3 shadow-lg hover:shadow-xl transition-all group mt-3">
-                            <div className="bg-white/20 p-2.5 rounded-lg shrink-0">
-                                <Plane size={20} />
-                            </div>
-                            <div className="flex-1 text-left min-w-0">
-                                <div className="font-bold text-base">항공권 실시간 검색</div>
-                                <div className={`${plannerCaption} opacity-95 mt-1 md:text-sm`}>
-                                    {getFlightDestinationSearchHint(location, { essentialGuide })}
-                                </div>
-                            </div>
-                            <div className="text-white/80 group-hover:text-white transition-colors text-xl">→</div>
-                        </button>
+                        <FlightSearchCta location={location} essentialGuide={essentialGuide} />
                     }
                 />
             )}

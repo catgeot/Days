@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { Search, Plane } from 'lucide-react';
 import { buildTripcomPlannerFlightUrl } from '../../../utils/affiliate';
+import { isMobileDevice } from './device';
 
 /**
- * 플래너 Trip.com 항공권 제휴 링크 (새 탭, 도착 공항 자동 반영)
+ * 플래너 Trip.com 항공권 제휴 링크 — /flights/ 직링크(제휴 파라미터 포함).
+ * 모바일: 같은 탭, 데스크톱: 새 탭.
  * @param {Record<string, unknown> | null | undefined} [location]
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]
  * @param {React.ReactElement} [customTrigger] - 커스텀 트리거 버튼
@@ -13,9 +15,14 @@ const WhiteLabelWidget = ({ location, essentialGuide, customTrigger }) => {
         () => buildTripcomPlannerFlightUrl(location, { essentialGuide, mode: 'flights' }),
         [location, essentialGuide],
     );
+    const linkTarget = isMobileDevice() ? '_self' : '_blank';
 
     const handleOpen = () => {
-        const tab = window.open(flightUrl, '_blank');
+        if (linkTarget === '_self') {
+            window.location.assign(flightUrl);
+            return;
+        }
+        const tab = window.open(flightUrl, '_blank', 'noopener,noreferrer');
         if (tab) tab.opener = null;
     };
 
