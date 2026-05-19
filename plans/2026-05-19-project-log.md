@@ -223,3 +223,33 @@
 
 - `travelSpotAirports.json`에 **`klookRentalSearchLabel`** / **`klookRentalSearchMode: 'airport'`** 예외만 수동 추가(나리타 등).
 - gateo.kr QA: 배너 클릭 검색어·렌터카 홈 링크·호놀룰루·다중 공항 샘플.
+
+## 플래너 Trip.com 배너 상호작용·모바일 도착지 (세션 종료, 미완)
+
+### 배경
+
+- 배너가 **전체 오버레이 링크**(`pointer-events-none` + `/flights/` 덮개)라 목적지·일자 수정 불가 → 링크 배너처럼만 동작.
+- 이전 **새 탭·복귀 UX** 수정(오버레이·`omitLocaleBundle`·`noreferrer` 등)이 모바일 **도착지 자동입력**과 엇갈림.
+- 관찰: **Referer(gateo.kr)가 전달되면** Trip.com 모바일이 `aAirportCode` 자동입력을 무시하는 경우가 있고, **Referer 없을 때**는 URL 파라미터만으로 도착지가 채워지는 사례 확인(데스크톱은 정상).
+
+### 구현 (로컬, 커밋 없음)
+
+- **`TripcomFlightBannerWidget`**: 오버레이 제거 → iframe 직접 조작 가능.
+- **`affiliate.js`**: 모바일 `omitLocaleBundle` 제거 — ad·`/flights/` URL에 데스크톱과 동일하게 `locale`·`curr`·`trip_sub3`·`aAirportCode`·`dAirportCode` 포함.
+- **`partnerNavigation.js`**: Trip.com 전용 분기
+  - 데스크톱 `_blank` + `rel=noopener`(Referer 유지 → 새 탭 **gateo.kr** 복귀 링크).
+  - 모바일 `_self` + `rel=noreferrer` + iframe `referrerPolicy=no-referrer`(도착지 파라미터 우선).
+  - `openTripcomExternalUrl` — 모바일은 `<a rel=noreferrer>` 클릭으로 이동(`location.assign`은 Referer 전송).
+- **`WhiteLabelWidget`**, **`PreTravelChecklist`**, 배너 「전체 화면 검색」에 위 정책 적용.
+- **버그 수정**: `getPartnerLinkRel` 미정의 ReferenceError → `getTripcomLinkRel`로 정정.
+
+### QA (로컬)
+
+- **데스크톱**: 화면·배너·도착지 자동입력 **정상**.
+- **모바일**: 플래너·배너 **화면 정상**(크래시 해소). **도착지 자동입력은 미해결** — 배너 iframe·「전체 화면 검색」 동일.
+
+### 다음 세션
+
+1. 실기기에서 모바일 ad(`S17158794`) vs `/flights/` 직링크·Referer 조합 재현·Trip.com 측 동작 확인.
+2. 필요 시 모바일만 `mode=ad` 직연결·파라미터 실험 또는 Trip 제휴 문의.
+3. §「플래너 Trip.com 항공 링크·CTA」·§「모바일 배너·UX」 문서를 **현재 코드**(오버레이 제거·`partnerNavigation`) 기준으로 정리(문서는 아직 구 구현 설명).

@@ -4,7 +4,11 @@ import {
     buildTripcomPlannerFlightUrl,
     getPlannerFlightArrivalIata,
 } from '../../../../../utils/affiliate';
-import { isMobileDevice } from '../../../common/device';
+import {
+    getPartnerLinkTarget,
+    getTripcomIframeReferrerPolicy,
+    getTripcomLinkRel,
+} from '../../../common/partnerNavigation';
 import { computeKlookBannerLayout } from './klookBannerLayout';
 import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
 import { plannerCaption } from '../readableText';
@@ -15,13 +19,15 @@ const MIN_DISPLAY_HEIGHT = 120;
 /**
  * Trip.com 제휴 항공 검색 배너 — iframe `aAirportCode` / `dAirportCode` 자동 주입.
  * 모바일(≤767px) 320×480, 데스크톱 900×200.
- * iframe은 시각용; 클릭은 제휴 flights URL 오버레이로 통일(빈 탭·리다이렉트 체인 방지).
+ * 배너 iframe에서 출발·도착·일자 등을 직접 수정할 수 있도록 클릭을 iframe에 전달합니다.
  */
 const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3' }) => {
     const containerRef = useRef(null);
     const { width: nativeW, height: nativeH } = useTripcomPlannerBannerDimensions();
     const [layout, setLayout] = useState({ scale: 1, clipH: MIN_DISPLAY_HEIGHT });
-    const linkTarget = isMobileDevice() ? '_self' : '_blank';
+    const linkTarget = getPartnerLinkTarget();
+    const linkRel = getTripcomLinkRel(linkTarget);
+    const iframeReferrerPolicy = getTripcomIframeReferrerPolicy();
 
     const arrivalIata = useMemo(
         () => getPlannerFlightArrivalIata(location, { essentialGuide }),
@@ -95,12 +101,8 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                 data-tripcom-banner-size={`${nativeW}x${nativeH}`}
             >
                 <PlannerAffiliateLinkBadge />
-                {/*
-                  iframe이 클릭을 가로채면 Trip.com 내부 리다이렉트로 빈 탭이 남을 수 있음.
-                  시각은 ad iframe 유지, 클릭은 flights 제휴 URL로만 통과(Klook 배너와 동일).
-                */}
                 <div
-                    className="pointer-events-none flex w-full justify-center overflow-hidden"
+                    className="flex w-full justify-center overflow-hidden"
                     style={{ height: `${layout.clipH}px` }}
                 >
                     <div
@@ -120,37 +122,28 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                             className="block border-0"
                             scrolling="no"
                             loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
+                            {...(iframeReferrerPolicy
+                                ? { referrerPolicy: iframeReferrerPolicy }
+                                : {})}
                         />
                     </div>
                 </div>
-                <a
-                    href={clickUrl}
-                    target={linkTarget}
-                    rel="noopener noreferrer"
-                    aria-label={
-                        arrivalIata
-                            ? `Trip.com 항공권 검색 — ICN에서 ${arrivalIata}까지`
-                            : 'Trip.com 항공권 검색'
-                    }
-                    className="pointer-events-auto absolute inset-0 z-20"
-                />
                 <p className="sr-only">
                     {arrivalIata
-                        ? `도착 공항 ${arrivalIata} 기준으로 Trip.com 항공권 검색 배너`
-                        : 'Trip.com 항공권 검색 배너'}
+                        ? `도착 공항 ${arrivalIata} 기준 Trip.com 항공권 검색 배너. 배너에서 출발·도착·일자를 수정할 수 있습니다.`
+                        : 'Trip.com 항공권 검색 배너. 배너에서 출발·도착·일자를 수정할 수 있습니다.'}
                 </p>
             </div>
             <p className={`mt-1.5 text-center ${plannerCaption}`}>
                 {arrivalIata ? (
                     <>
                         출발 <span className="font-mono font-semibold">ICN</span> → 도착{' '}
-                        <span className="font-mono font-semibold">{arrivalIata}</span> 자동 반영
+                        <span className="font-mono font-semibold">{arrivalIata}</span> 자동 반영 · 배너에서 수정 가능
                         {' · '}
                         <a
                             href={clickUrl}
                             target={linkTarget}
-                            rel="noopener noreferrer"
+                            rel={linkRel}
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >
                             전체 화면 검색
@@ -162,7 +155,7 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                         <a
                             href={clickUrl}
                             target={linkTarget}
-                            rel="noopener noreferrer"
+                            rel={linkRel}
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >
                             Trip.com 항공권

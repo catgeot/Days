@@ -285,7 +285,6 @@ function resolveTripcomFlightTracking(options = {}) {
     return {
       sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerPreTravelFlight,
       sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerPreTravelFlight,
-      omitLocaleBundle: false,
     };
   }
 
@@ -293,14 +292,12 @@ function resolveTripcomFlightTracking(options = {}) {
     return {
       sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlightMobile,
       sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
-      omitLocaleBundle: true,
     };
   }
 
   return {
     sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlight,
     sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
-    omitLocaleBundle: false,
   };
 }
 
@@ -314,19 +311,16 @@ function resolveTripcomFlightTracking(options = {}) {
 export function buildTripcomPlannerFlightUrl(location, options = {}) {
   const { mode = 'flights', adId = TRIPCOM_FLIGHT_AD.adId } = options;
   const arrival = getPlannerFlightArrivalIata(location, options);
-  const { sub1, sub3, omitLocaleBundle } = resolveTripcomFlightTracking(options);
+  const { sub1, sub3 } = resolveTripcomFlightTracking(options);
 
   const params = new URLSearchParams({
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
     trip_sub1: sub1,
+    locale: 'ko-KR',
+    curr: 'KRW',
+    trip_sub3: sub3,
   });
-
-  if (!omitLocaleBundle) {
-    params.set('locale', 'ko-KR');
-    params.set('curr', 'KRW');
-    params.set('trip_sub3', sub3);
-  }
 
   if (TRIPCOM_DEFAULT_DEPARTURE_AIRPORT) {
     params.set('dAirportCode', TRIPCOM_DEFAULT_DEPARTURE_AIRPORT);
@@ -339,11 +333,6 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
   }
 
-  params.set('locale', 'ko-KR');
-  params.set('curr', 'KRW');
-  if (!params.has('trip_sub3')) {
-    params.set('trip_sub3', sub3);
-  }
   return `https://kr.trip.com/flights/?${params.toString()}`;
 }
 

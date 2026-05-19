@@ -6,14 +6,15 @@ import {
     getKlookAffiliateUrl,
     getTripcomHotelOverrideUrlForLocation,
 } from '../../../../../utils/affiliate';
-import { isMobileDevice } from '../../../common/device';
+import { getPartnerLinkTarget, getTripcomLinkRel } from '../../../common/partnerNavigation';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerMicroLabel } from '../readableText';
 
 const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) => {
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = `${locationName || ''} 숙소`;
-    const linkTarget = isMobileDevice() ? '_self' : '_blank';
+    const linkTarget = getPartnerLinkTarget();
+    const tripcomLinkRel = getTripcomLinkRel(linkTarget);
 
     const preTravelFlightUrl = useMemo(
         () =>
@@ -73,7 +74,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                     <a
                         href={preTravelFlightUrl}
                         target={linkTarget}
-                        rel="noopener noreferrer"
+                        rel={tripcomLinkRel}
                         className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full"
                     >
                         <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">
@@ -94,7 +95,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                         <a
                             href={tripcomHotelOverride}
                             target={linkTarget}
-                            rel="noopener noreferrer"
+                            rel={tripcomLinkRel}
                             className="block"
                         >
                             <span className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full cursor-pointer">
