@@ -37,7 +37,7 @@ const HolaflyBannerWidget = ({ className = '' }) => {
                 />
             </div>
             <div className="border-t border-rose-100/90 bg-gradient-to-b from-rose-50/70 to-white px-2.5 py-2 md:px-3">
-                <p className="break-keep text-[10px] leading-snug text-gray-700 md:text-[11px]">
+                <p className="break-keep text-xs leading-snug text-gray-700 md:text-sm">
                     <span className="font-bold text-rose-800">무제한 중심</span>
                     <span className="mx-0.5 text-rose-700/70" aria-hidden="true">
                         ·

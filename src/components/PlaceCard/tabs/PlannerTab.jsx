@@ -14,6 +14,12 @@ import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerW
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
+import {
+    PLANNER_SCROLL_TO_TOP_EVENT,
+    plannerCaption,
+    plannerMeta,
+    plannerScrollSurfaceClass,
+} from './planner/readableText';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -165,6 +171,12 @@ const PlannerTab = ({
         return () => el.removeEventListener('scroll', onScroll);
     }, [isActive, isLoading, guideData]);
 
+    useEffect(() => {
+        const onScrollToTop = () => scrollPlannerToTop();
+        window.addEventListener(PLANNER_SCROLL_TO_TOP_EVENT, onScrollToTop);
+        return () => window.removeEventListener(PLANNER_SCROLL_TO_TOP_EVENT, onScrollToTop);
+    }, [scrollPlannerToTop]);
+
     const formatDate = (isoString) => {
         if (!isoString) return '';
         const date = new Date(isoString);
@@ -272,14 +284,14 @@ const PlannerTab = ({
         <div className="w-full h-full relative">
             <div
                 ref={scrollContainerRef}
-                className={`w-full h-full flex flex-col overflow-y-auto custom-scrollbar bg-[#f8f9fa] px-4 ${mobilePlaceHeaderScrollPadding} pb-6 md:p-6 md:pt-10 overscroll-none touch-pan-y`}
+                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} pb-6 md:p-6 md:pt-10 ${plannerScrollSurfaceClass}`}
             >
                 {mobileSecondaryNav && (
-                    <div className="md:hidden shrink-0 -mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa]">
+                    <div className="md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa]">
                         {mobileSecondaryNav}
                     </div>
                 )}
-                <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col mt-2 md:mt-0">
+                <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto flex-1 flex flex-col mt-2 md:mt-0">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                         <div>
                             <h2 className="text-xl md:text-2xl font-black text-gray-900 flex flex-wrap items-baseline gap-x-2 gap-y-1">
@@ -297,7 +309,7 @@ const PlannerTab = ({
                                     </span>
                                 ) : null}
                             </h2>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className={`${plannerCaption} mt-1 text-gray-600`}>
                                 {location?.name} 여행을 위한 생존 정보 및 핵심 큐레이션
                             </p>
                         </div>
@@ -308,14 +320,14 @@ const PlannerTab = ({
                                     type="button"
                                     onClick={() => refetchPlannerFromDb?.()}
                                     disabled={isPlannerRefreshing || !refetchPlannerFromDb}
-                                    className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[11px] font-bold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:pointer-events-none"
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:pointer-events-none"
                                     title="DB에 저장된 툴킷만 다시 불러옵니다 (AI 미호출)"
                                 >
                                     <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin text-blue-600' : 'text-gray-500'} />
                                     저장된 데이터 새로고침
                                 </button>
                                 {lastUpdated && (
-                                    <span className="text-[11px] text-gray-400 font-medium px-1">
+                                    <span className={`${plannerMeta} px-1`}>
                                         마지막 업데이트: {lastUpdated}
                                     </span>
                                 )}
@@ -324,10 +336,7 @@ const PlannerTab = ({
                     </div>
 
                     {location && (
-                        <div className="relative w-full mb-6 shrink-0">
-                            <div className="pointer-events-none absolute right-0 top-0 z-10 rounded-bl-lg bg-gradient-to-r from-blue-600 to-purple-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                                제휴링크
-                            </div>
+                        <div className="w-full mb-6 shrink-0">
                             <TripcomFlightBannerWidget
                                 location={location}
                                 essentialGuide={guideData}
@@ -421,8 +430,8 @@ const PlannerTab = ({
 
                 <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
                     <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" />
-                    <p className="text-[11px] md:text-xs text-gray-500 leading-relaxed">
-                        <strong>하이브리드 정보 안내:</strong> 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴 링크(숙박, 유심 등)가 일부 포함되어 있습니다. 제휴 링크를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.
+                    <p className={`${plannerCaption} md:text-sm text-gray-600`}>
+                        <strong className="font-bold text-gray-700">하이브리드 정보 안내:</strong> 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴 링크(숙박, 유심 등)가 일부 포함되어 있습니다. 제휴 링크를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.
                     </p>
                 </div>
 
@@ -442,11 +451,11 @@ const PlannerTab = ({
                 <button
                     type="button"
                     onClick={scrollPlannerToTop}
-                    className="fixed bottom-24 right-4 z-50 flex items-center gap-1.5 rounded-full border border-blue-200/80 bg-white/95 py-2.5 pl-3 pr-3.5 text-[11px] font-bold text-blue-700 shadow-lg backdrop-blur-sm transition-colors hover:bg-blue-50 md:bottom-10 md:right-8"
+                    className="fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5"
                     aria-label="플래너 맨 위로"
                 >
-                    <ArrowUp size={18} className="shrink-0" />
-                    <span className="hidden min-[380px]:inline">맨 위</span>
+                    <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
+                    <span className="hidden md:inline text-sm font-bold">맨 위</span>
                 </button>
             )}
         </div>

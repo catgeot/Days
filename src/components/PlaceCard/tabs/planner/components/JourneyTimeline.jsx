@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Clock, Map as MapIcon, Car, Ship } from 'lucide-react';
 import { DIRECT_FERRIES_HOME_URL } from '../constants';
 import { getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
+import { plannerCaption, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
 
 const timelineCopyHitClass =
     'cursor-pointer rounded border-0 bg-transparent px-0.5 py-0.5 text-left font-inherit transition-colors hover:bg-blue-100/90 focus-visible:outline focus-visible:ring-2 focus-visible:ring-blue-400/45';
@@ -215,12 +216,12 @@ const JourneyTimeline = ({ timeline, location, essentialGuide }) => {
                             {/* 둥근 점 */}
                             <div className="absolute -left-[30px] top-1 w-3 h-3 bg-blue-500 rounded-full border-[3px] border-blue-50 shadow-sm z-10" />
                             <div className="flex flex-col items-start">
-                                <span className="text-[11px] font-bold text-blue-500 tracking-wider uppercase mb-0.5">STEP {step.step || (idx + 1)}</span>
+                                <span className={`${plannerMicroLabel} text-blue-500 mb-0.5`}>STEP {step.step || (idx + 1)}</span>
                                 <div className="flex flex-col gap-2 w-full">
                                     <TimelineStepTitleWithCopy title={step.title} stepIdx={idx} onCopySegment={handleCopySegment} />
                                     {copyFeedback?.stepIdx === idx ? (
                                         <p
-                                            className="text-[11px] font-semibold leading-snug text-blue-900"
+                                            className={`${plannerCaptionStrong} text-blue-900`}
                                             role="status"
                                             aria-live="polite"
                                         >
@@ -242,7 +243,7 @@ const JourneyTimeline = ({ timeline, location, essentialGuide }) => {
                                     )}
                                 </div>
                                 {step.duration && (
-                                    <div className="flex items-center gap-1 text-[11px] text-gray-500 mt-1.5 font-medium bg-blue-100/50 w-fit px-1.5 py-0.5 rounded-md">
+                                    <div className={`flex items-center gap-1 ${plannerCaption} mt-1.5 font-medium bg-blue-100/50 w-fit px-1.5 py-0.5 rounded-md`}>
                                         <Clock size={10} />
                                         <span>{step.duration}</span>
                                     </div>

@@ -12,6 +12,7 @@ import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
+import { PLANNER_SCROLL_TO_TOP_EVENT } from '../tabs/planner/readableText';
 
 const PlaceChatPanel = React.memo(({
     location,
@@ -81,6 +82,13 @@ const PlaceChatPanel = React.memo(({
       navigate('/');
   };
 
+  /** 모바일: 고정 헤더 탭 → 플래너 스크롤 맨 위 (iOS 상태바 탭은 중첩 스크롤에서 동작하지 않음) */
+  const handlePlannerChromeTap = (event) => {
+      if (mediaMode !== 'PLANNER') return;
+      if (event.target.closest('button')) return;
+      window.dispatchEvent(new CustomEvent(PLANNER_SCROLL_TO_TOP_EVENT));
+  };
+
   const handleCopyName = async (event, text, type) => {
       event.preventDefault();
       event.stopPropagation();
@@ -100,8 +108,20 @@ const PlaceChatPanel = React.memo(({
         absolute top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 md:pb-0 md:border-none md:rounded-none
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
 
-      {/* Header */}
-      <div className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'}`}>
+      {/* Header — 플래너 모드: 버튼 외 영역 탭 시 스크롤 맨 위 */}
+      <div
+        className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'} ${mediaMode === 'PLANNER' ? 'max-md:cursor-pointer' : ''}`}
+        onClick={handlePlannerChromeTap}
+        onKeyDown={(event) => {
+            if (mediaMode === 'PLANNER' && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault();
+                window.dispatchEvent(new CustomEvent(PLANNER_SCROLL_TO_TOP_EVENT));
+            }
+        }}
+        role={mediaMode === 'PLANNER' ? 'button' : undefined}
+        tabIndex={mediaMode === 'PLANNER' ? 0 : undefined}
+        title={mediaMode === 'PLANNER' ? '탭하면 플래너 맨 위로' : undefined}
+      >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div className="flex items-center gap-2.5 overflow-hidden w-full min-w-0">
              <button

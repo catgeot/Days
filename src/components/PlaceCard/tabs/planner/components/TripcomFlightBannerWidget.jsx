@@ -5,16 +5,19 @@ import {
     getPlannerFlightArrivalIata,
 } from '../../../../../utils/affiliate';
 import { computeKlookBannerLayout } from './klookBannerLayout';
+import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
+import { plannerCaption } from '../readableText';
+import PlannerAffiliateLinkBadge from './PlannerAffiliateLinkBadge';
 
-const NATIVE_W = TRIPCOM_FLIGHT_AD.width;
-const NATIVE_H = TRIPCOM_FLIGHT_AD.height;
 const MIN_DISPLAY_HEIGHT = 120;
 
 /**
  * Trip.com 제휴 항공 검색 배너 — iframe `aAirportCode` / `dAirportCode` 자동 주입.
+ * 모바일(≤767px) 320×480, 데스크톱 900×200.
  */
 const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3' }) => {
     const containerRef = useRef(null);
+    const { width: nativeW, height: nativeH } = useTripcomPlannerBannerDimensions();
     const [layout, setLayout] = useState({ scale: 1, clipH: MIN_DISPLAY_HEIGHT });
 
     const arrivalIata = useMemo(
@@ -22,9 +25,22 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
         [location, essentialGuide],
     );
 
+    const isMobileBanner =
+        nativeW === TRIPCOM_FLIGHT_AD.mobileWidth && nativeH === TRIPCOM_FLIGHT_AD.mobileHeight;
+    const flightAdId =
+        isMobileBanner && TRIPCOM_FLIGHT_AD.mobileAdId
+            ? TRIPCOM_FLIGHT_AD.mobileAdId
+            : TRIPCOM_FLIGHT_AD.adId;
+
     const iframeSrc = useMemo(
-        () => buildTripcomPlannerFlightUrl(location, { essentialGuide, mode: 'ad' }),
-        [location, essentialGuide],
+        () =>
+            buildTripcomPlannerFlightUrl(location, {
+                essentialGuide,
+                mode: 'ad',
+                adId: flightAdId,
+                ...(isMobileBanner ? { tracking: 'planner-flight-mobile' } : {}),
+            }),
+        [location, essentialGuide, flightAdId, isMobileBanner],
     );
 
     const fullPageUrl = useMemo(
@@ -35,12 +51,16 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
     useEffect(() => {
         const updateScale = () => {
             if (!containerRef.current) return;
-            const { scale, clipH } = computeKlookBannerLayout(
+            let { scale, clipH } = computeKlookBannerLayout(
                 containerRef.current.clientWidth,
                 8,
-                NATIVE_W,
-                NATIVE_H,
+                nativeW,
+                nativeH,
             );
+            if (isMobileBanner && scale > 1) {
+                scale = 1;
+                clipH = nativeH;
+            }
             setLayout({ scale, clipH: Math.max(clipH, MIN_DISPLAY_HEIGHT) });
         };
 
@@ -54,7 +74,7 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
             window.removeEventListener('resize', updateScale);
             ro?.disconnect();
         };
-    }, []);
+    }, [nativeW, nativeH, isMobileBanner]);
 
     return (
         <div className={className}>
@@ -63,25 +83,28 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                 className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
                 data-tripcom-arrival-iata={arrivalIata || ''}
                 data-tripcom-flight-banner="1"
+                data-tripcom-ad-id={flightAdId}
+                data-tripcom-banner-size={`${nativeW}x${nativeH}`}
             >
+                <PlannerAffiliateLinkBadge />
                 <div
                     className="flex w-full justify-center overflow-hidden"
                     style={{ height: `${layout.clipH}px` }}
                 >
                     <div
                         style={{
-                            width: `${NATIVE_W}px`,
-                            height: `${NATIVE_H}px`,
+                            width: `${nativeW}px`,
+                            height: `${nativeH}px`,
                             transform: `scale(${layout.scale})`,
                             transformOrigin: 'top center',
                         }}
                     >
                         <iframe
-                            key={iframeSrc}
+                            key={`${iframeSrc}-${nativeW}x${nativeH}`}
                             src={iframeSrc}
                             title="Trip.com 항공권 검색"
-                            width={NATIVE_W}
-                            height={NATIVE_H}
+                            width={nativeW}
+                            height={nativeH}
                             className="block border-0"
                             scrolling="no"
                             loading="lazy"
@@ -95,7 +118,7 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                         : 'Trip.com 항공권 검색 배너'}
                 </p>
             </div>
-            <p className="mt-1.5 text-[10px] text-gray-500 text-center break-keep">
+            <p className={`mt-1.5 text-center ${plannerCaption}`}>
                 {arrivalIata ? (
                     <>
                         출발 <span className="font-mono font-semibold">ICN</span> → 도착{' '}

@@ -154,7 +154,7 @@ const KlookCarBannerWidget = ({
                 />
             </div>
             {footerHint ? (
-                <p className="mt-2 px-1 text-center text-[10px] font-medium leading-snug text-gray-600 break-keep">
+                <p className="mt-2 px-1 text-center text-xs font-medium leading-snug text-gray-600 break-keep">
                     {footerHint}
                 </p>
             ) : null}

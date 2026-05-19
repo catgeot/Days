@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { getClusterForSlug, getRelatedTravelSpots } from '../../utils/travelSpotClusters.js';
 import { getPlaceStableKey } from '../../utils/travelSpotResolve.js';
+import { plannerCaption, plannerMicroLabel } from './tabs/planner/readableText';
 
 /**
  * 같은 권역·다른 관문 여행지 교차 링크 (PlannerTab 배너 아래)
@@ -20,14 +21,14 @@ export default function RelatedTravelSpots({ location, className = '' }) {
       aria-label="연관 여행지"
     >
       <div className="mb-3">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+        <p className={`${plannerMicroLabel} text-slate-500`}>
           {cluster.labelKo}
         </p>
         <p className="mt-1 text-sm font-bold text-gray-800 break-keep">
           같은 권역이지만 관문 공항·일정이 다릅니다
         </p>
         {cluster.notes ? (
-          <p className="mt-1 text-xs text-gray-500 break-keep">{cluster.notes}</p>
+          <p className={`mt-1 ${plannerCaption}`}>{cluster.notes}</p>
         ) : null}
       </div>
       <div className="-mx-1 flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
@@ -39,10 +40,10 @@ export default function RelatedTravelSpots({ location, className = '' }) {
           >
             <span className="text-sm font-bold text-gray-900 break-keep">{spot.name}</span>
             {spot.name_en ? (
-              <span className="text-[11px] font-medium text-gray-500 break-keep">{spot.name_en}</span>
+              <span className={`${plannerCaption} font-medium`}>{spot.name_en}</span>
             ) : null}
             {spot.gatewayIata ? (
-              <span className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-bold text-blue-700">
+              <span className={`mt-0.5 inline-flex items-center gap-1 ${plannerCaption} font-bold text-blue-700`}>
                 <MapPin size={12} className="shrink-0" aria-hidden />
                 {spot.gatewayIata}
               </span>

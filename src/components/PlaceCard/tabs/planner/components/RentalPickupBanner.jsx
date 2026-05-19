@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Car } from 'lucide-react';
 import { resolveRentalPickupBannerInfo } from '../../../../../utils/rentalAirportMatch.js';
+import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
 
 const airportCopyHitClass =
     'cursor-pointer rounded border-0 bg-transparent px-0.5 py-1 text-left font-inherit transition-colors hover:bg-emerald-100/70 focus-visible:outline focus-visible:ring-2 focus-visible:ring-emerald-500/40';
@@ -79,14 +80,14 @@ export default function RentalPickupBanner({ location, essentialGuide, className
         >
             <Car size={18} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden />
             <div className="min-w-0 flex-1 text-left">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-800/85">
+                <p className={`${plannerMicroLabel} text-emerald-800/85`}>
                     렌터카 · 픽업 · 항공권 기준
                 </p>
-                <p className="mt-0.5 text-[10px] font-medium leading-snug text-gray-500">{subtitle}</p>
+                <p className={`mt-0.5 ${plannerCaption}`}>{subtitle}</p>
 
                 {info.kind === 'multi' ? (
                     <>
-                        <p className="mt-2 text-[10px] font-bold text-emerald-900/90">연동 도착 공항</p>
+                        <p className={`mt-2 ${plannerMicroLabel} text-emerald-900/90`}>연동 도착 공항</p>
                         <div className="mt-1">
                             <RentalPickupAirportCopyRow
                                 officialKo={linkHub.officialKo}
@@ -97,7 +98,7 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                         </div>
                         {alternateAirports.length > 0 ? (
                             <>
-                                <p className="mt-2 text-[10px] font-semibold text-gray-600">다른 도착 후보</p>
+                                <p className={`mt-2 ${plannerCaptionStrong} text-gray-600`}>다른 도착 후보</p>
                                 <div className="mt-1 flex flex-col gap-2">
                                     {alternateAirports.map((a) => (
                                         <RentalPickupAirportCopyRow
@@ -111,7 +112,7 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                             </>
                         ) : null}
                         {info.bannerNote ? (
-                            <p className="mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 text-[11px] font-medium leading-relaxed text-gray-800">
+                            <p className={`mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 ${plannerCaptionMedium} text-gray-800`}>
                                 {info.bannerNote}
                             </p>
                         ) : null}
@@ -127,7 +128,7 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                             />
                         </div>
                         {info.bannerNote ? (
-                            <p className="mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 text-[11px] font-medium leading-relaxed text-gray-800">
+                            <p className={`mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 ${plannerCaptionMedium} text-gray-800`}>
                                 {info.bannerNote}
                             </p>
                         ) : null}
@@ -135,17 +136,17 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                 )}
 
                 {copyMessage ? (
-                    <p className="mt-1.5 text-[11px] font-semibold leading-snug text-emerald-800" role="status" aria-live="polite">
+                    <p className={`mt-1.5 ${plannerCaptionStrong} text-emerald-800`} role="status" aria-live="polite">
                         {copyMessage}
                     </p>
                 ) : null}
 
                 {info.kind === 'multi' ? (
-                    <p className="mt-1.5 text-[11px] leading-snug text-gray-600">
+                    <p className={`mt-1.5 ${plannerCaptionMedium}`}>
                         렌터카·픽업 제휴 링크는 위 「연동 도착 공항」 기준으로 연결됩니다.
                     </p>
                 ) : (
-                    <p className="mt-1 text-[11px] leading-snug text-gray-600">렌터카·픽업 제휴 링크는 이 공항 기준입니다.</p>
+                    <p className={`mt-1 ${plannerCaptionMedium}`}>렌터카·픽업 제휴 링크는 이 공항 기준입니다.</p>
                 )}
             </div>
         </div>

@@ -161,3 +161,23 @@
 
 1. 잔여 `skippedNoIata` **12**(국내·blocklist 위주) · `unmapped` 52 분류표 기반 배치.
 2. (선택) PlaceCard 요약 칩 · borneo 2차 클러스터.
+
+## 플래너 Trip.com 모바일 배너·UX (완료)
+
+### 배경
+
+- 데스크톱 900×200 Trip.com iframe이 모바일에서 잘리고 검색 UI가 작게 보임.
+- 플래너 보조 설명·맨 위 FAB·핀치 줌·제휴 뱃지/X 버튼 겹침 등 가독성·조작 이슈.
+
+### 구현
+
+- **`affiliate.js`**: `TRIPCOM_FLIGHT_AD` 모바일 **S17158794** · `trip_sub1` 「플래너 항공권 모바일」 · `buildTripcomPlannerFlightUrl` `adId`/`tracking` 분기.
+- **`TripcomFlightBannerWidget`**: `useTripcomPlannerBannerDimensions`(≤767px → 320×480) · 모바일 스케일 상한 1.
+- **`PlannerAffiliateLinkBadge`**: 우상단 「제휴링크」를 `-translate-x-full`로 왼쪽 이동(Trip.com 도착 공항 X와 비겹침).
+- **`readableText.js`**: 보조·캡션 `text-xs` 통일 · `plannerScrollSurfaceClass`(`pinch-zoom-scroll`).
+- **`PlannerTab`**: 보조글 상향 · FAB 파란 원형·하단 배치 · `overflow-x-hidden` · 콘텐츠 `max-w-2xl`~`4xl` 단계.
+- **`PlaceChatPanel`**: 플래너 모드 고정 헤더 탭 → `planner-scroll-to-top` 이벤트(iOS 상태바 탭 대체).
+
+### QA
+
+- gateo.kr 모바일: Trip.com 모바일 배너·도착 IATA 자동 반영 · 제휴링크/X 비겹침 · 핀치 줌·맨 위 버튼·헤더 탭 스크롤 **정상**.

@@ -4,6 +4,7 @@ import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import MrtTimelineAction from './MrtTimelineAction';
 import { getKlookAffiliateUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
+import { plannerCaption, plannerMicroLabel } from '../readableText';
 
 const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) => {
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
@@ -26,7 +27,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                                     <CheckCircle2 size={18} className="text-amber-500 shrink-0" />
                                     <div>
                                         <p className="text-xs md:text-sm font-bold text-gray-800">{item.title}</p>
-                                        {item.cost && <p className="text-[10px] md:text-xs text-gray-500 font-medium">{item.cost}</p>}
+                                        {item.cost && <p className={`${plannerCaption} font-medium`}>{item.cost}</p>}
                                     </div>
                                 </div>
                                 {item.url && (
@@ -46,7 +47,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                 {/* 구분선 및 라벨 */}
                 <div className="flex items-center gap-2 mb-4">
                     <div className="h-px flex-1 bg-amber-300/50"></div>
-                    <p className="text-[10px] text-amber-700/90 font-bold tracking-wide">
+                    <p className={`${plannerMicroLabel} text-amber-700/90`}>
                         ✈️ 필수 예약 툴킷
                     </p>
                     <div className="h-px flex-1 bg-amber-300/50"></div>
@@ -64,7 +65,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                                 </div>
                                 <div className="flex-1 text-left min-w-0">
                                     <div className="font-bold text-sm text-gray-800">항공권 실시간 검색</div>
-                                    <div className="text-[11px] text-gray-600 leading-snug mt-0.5">
+                                    <div className={`${plannerCaption} text-gray-600 mt-0.5`}>
                                         {getFlightDestinationSearchHint(location, { essentialGuide })}
                                     </div>
                                 </div>

@@ -58,7 +58,7 @@ const DirectFerriesWidget = ({ location }) => {
             </a>
 
             {/* 제휴 안내 문구 */}
-            <p className="text-[10px] text-gray-500 text-center leading-relaxed break-keep">
+            <p className="text-xs text-gray-500 text-center leading-relaxed break-keep">
                 Direct Ferries 제휴 링크로, 예약 시 사이트 운영에 도움이 됩니다.
             </p>
         </div>

@@ -11,6 +11,7 @@ import KlookCarBannerWidget from './KlookCarBannerWidget';
 import KlookTourBannerWidget from './KlookTourBannerWidget';
 import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
+import { plannerCaption } from '../readableText';
 import { cleanAdviceText, getAdviceText, getMultiLinks, isMapPoiGygOnlyLocation } from '../utils';
 
 const ToolkitCard = ({
@@ -112,7 +113,7 @@ const ToolkitCard = ({
                                     <ExternalLink size={12} className="shrink-0" />
                                 </span>
                                 {link.subtext && (
-                                    <span className="text-[10px] md:text-[11px] font-normal font-sans text-center leading-snug px-1 opacity-90 line-clamp-2 break-keep">
+                                    <span className={`${plannerCaption} font-normal font-sans text-center px-1 opacity-90 line-clamp-2 md:text-sm`}>
                                         {link.subtext}
                                     </span>
                                 )}
@@ -134,7 +135,7 @@ const ToolkitCard = ({
                             </div>
                             <div className="flex-1 text-left min-w-0">
                                 <div className="font-bold text-base">항공권 실시간 검색</div>
-                                <div className="text-[11px] opacity-95 leading-snug mt-1">
+                                <div className={`${plannerCaption} opacity-95 mt-1 md:text-sm`}>
                                     {getFlightDestinationSearchHint(location, { essentialGuide })}
                                 </div>
                             </div>
