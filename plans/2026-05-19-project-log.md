@@ -148,8 +148,16 @@
 - 별칭: 나자레→lisbon · 빌라두코르부→porto · 리마→machu-picchu · 스코푸가포스→iceland · **마나도** blocklist.
 - `audit:airports` **`none: 0`** 유지 · Hub **264**.
 
+### gateo.kr 스모크 QA (배포 9a1c8a6)
+
+- **파타고니아** `/place/patagonia/planner`: 연관 칩 **우수아이아(USH)·토레스 델 파이네(PUQ)** · 배너·Trip.com **BRC** · 클릭→`/place/ushuaia/planner` 전환 **USH** 일치.
+- **우수아이아** `/place/ushuaia/planner`: 연관 **파타고니아(BRC·EZE)·토레 PUQ** · Trip.com **USH**.
+- **아이슬란드** `/place/iceland/planner`: 연관 **레이캬비크(KEF)** · Trip.com·배너 **KEF**.
+- **보홀** `/place/bohol/planner`: 배너 **TAG+CEB** · Trip.com **TAG**.
+- **요코하마** `/place/yokohama/planner`: 배너 **HND+NRT** · Trip.com **HND**.
+- **대마도** `/place/tsushima/planner`: 배너 **TSJ+FUK** · Trip.com **TSJ**.
+
 ### 다음
 
-1. **프론트·JSON 배포** — 연관 UI·hubs·travelSpotAirports.
-2. gateo.kr QA: `/place/patagonia/planner` 연관 칩(ushuaia·torres) · iceland↔reykjavik.
-3. 잔여 `skippedNoIata` **12**(국내·blocklist 위주) · `unmapped` 52 분류표 기반 배치.
+1. 잔여 `skippedNoIata` **12**(국내·blocklist 위주) · `unmapped` 52 분류표 기반 배치.
+2. (선택) PlaceCard 요약 칩 · borneo 2차 클러스터.
