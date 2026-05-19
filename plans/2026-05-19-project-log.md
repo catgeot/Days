@@ -202,3 +202,24 @@
 
 - 모바일: Trip.com 이동 후 **뒤로가기**로 플래너 복귀 · 빈 탭 없음.
 - 툴킷 항공 CTA: 부제·노선 뱃지 **가독성** 개선.
+
+## 플래너 클룩 렌터카·여정 키워드 (완료)
+
+### 배경
+
+- 여정 타임라인 **렌터카 검색** 버튼이 `자동차`·`차량`·`렌탈` 등 넓은 키워드로 **오탐** 다수.
+- 렌터카 배너를 **정식 공항명** 검색으로 연동했으나, 좌표·허브 오탐과 클룩 인덱스(예: 호놀룰루 ✅ / 다니엘 K. 이누우에국제공항 ❌) 때문에 **여행지명**이 더 낫다는 판단.
+
+### 구현
+
+- **`JourneyTimeline`**: 렌터카 키워드 **축소**(렌터카·렌트카·car rental 등만). 버튼 URL **`getKlookRentalHomeUrl`**(aff_adid 1277252). 보조 문구 **`getRentalCarTimelineActionDescription`**(연동 IATA 안내).
+- **`ToolkitCard` / `utils.js` (`airport_transfer`)**: **공항 픽업 검색**·**렌터카 홈** 링크 버튼 → 렌터카 홈. 기존 **안내 문구** 유지(항공편명·공항 코드 subtext). **`KlookCarBannerWidget`** 유지.
+- **`affiliate.js`**: 배너·`getKlookRentalUrlByLocation` 검색어 **`resolveKlookRentalBannerSearchLabel`** — 기본 **`location.name`**. 홍콩·도쿄 등 **`city_id` 딥링크** 유지.
+- **`klookBannerLayout`**: 배너 하단 「여행지명으로 검색… 렌터카 검색 링크」.
+- **`readableText`**: `plannerLinkHint`(버튼 보조글 크기·굵기).
+- **문서**: [`klook-rental-search-data.md`](./klook-rental-search-data.md) — 검색어 역할·향후 `klookRentalSearchLabel` 예외 스키마. [`.ai-context.md`](../.ai-context.md)·[`travel-spots-management.md`](./travel-spots-management.md) 링크.
+
+### 후속 (여행지·공항 DB 완료 후)
+
+- `travelSpotAirports.json`에 **`klookRentalSearchLabel`** / **`klookRentalSearchMode: 'airport'`** 예외만 수동 추가(나리타 등).
+- gateo.kr QA: 배너 클릭 검색어·렌터카 홈 링크·호놀룰루·다중 공항 샘플.

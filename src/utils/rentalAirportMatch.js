@@ -744,6 +744,87 @@ export function getRentalCarHomeSearchSubtext(location, options = {}) {
 }
 
 /**
+ * 공항 이동 카드 버튼·배너 하단용 짧은 검색 안내 (한 줄).
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
+ * @returns {string}
+ */
+export function getRentalCarHomeSearchHintShort(location, options = {}) {
+  const info = resolveRentalPickupBannerInfo(location, options);
+  if (!info) return '공항 코드 입력';
+  if (info.kind === 'multi') {
+    const iatas = info.airports.map((a) => a.iata).filter(Boolean);
+    if (iatas.length === 1) return `코드 ${iatas[0]}`;
+    if (iatas.length > 1) return `코드 ${iatas.slice(0, 2).join('·')}`;
+    return '공항 코드 입력';
+  }
+  if (info.iata) return `코드 ${info.iata}`;
+  return '공항 코드 입력';
+}
+
+/**
+ * 여정 플래너 렌터카 검색 버튼 보조 문구.
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
+ * @returns {string}
+ */
+/**
+ * 클룩 렌터카 배너·검색 URL용 검색어. 기본은 여행지 표시명(`name`).
+ * 공항 정식명은 `travelSpotAirports`에 `klookRentalSearchMode: 'airport'` 또는 `klookRentalSearchLabel`로만 예외 지정.
+ *
+ * @see plans/klook-rental-search-data.md
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {string}
+ */
+export function resolveKlookRentalBannerSearchLabel(location, options = {}) {
+  if (!location || typeof location !== 'object') {
+    return typeof location === 'string' ? location.trim() : '';
+  }
+
+  const row = options.ignoreStaticAirportMap !== true ? getTravelSpotAirportRow(location) : null;
+
+  if (row && typeof row.klookRentalSearchLabel === 'string' && row.klookRentalSearchLabel.trim()) {
+    return row.klookRentalSearchLabel.trim();
+  }
+
+  if (row?.klookRentalSearchMode === 'airport') {
+    const info = resolveRentalPickupBannerInfo(location, options);
+    const hub =
+      info?.kind === 'multi'
+        ? info.linkHub
+        : info?.kind === 'single'
+          ? { officialKo: info.officialKo }
+          : resolveRentalAirport(location);
+    if (hub?.officialKo) return hub.officialKo;
+  }
+
+  const name = typeof location.name === 'string' ? location.name.trim() : '';
+  const nameEn = typeof location.name_en === 'string' ? location.name_en.trim() : '';
+  return name || nameEn;
+}
+
+export function getRentalCarTimelineActionDescription(location, options = {}) {
+  const info = resolveRentalPickupBannerInfo(location, options);
+  if (!info) {
+    return '세자리 공항코드를 입력해 주세요';
+  }
+  if (info.kind === 'multi') {
+    const iatas = info.airports.map((a) => a.iata).filter(Boolean);
+    if (iatas.length) {
+      return `세자리 공항코드(${iatas.join(', ')})를 입력해 주세요`;
+    }
+    return '세자리 공항코드를 입력해 주세요';
+  }
+  if (info.iata) {
+    return `세자리 공항코드(${info.iata})를 입력해 주세요`;
+  }
+  return '세자리 공항코드를 입력해 주세요';
+}
+
+/**
  * 여행지 객체로부터 렌터카 검색에 쓸 공항(한국어 공식명 + IATA)을 추론합니다.
  * 좌표·반경 최근접 허브와 별칭 매칭을 쓰되, `RENTAL_MULTI_AIRPORT_DESTINATIONS`에 해당하면 그 목록 안에서만 링크 허브를 고릅니다(지리상 더 가까운 제3국 허브 오탐 방지).
  *

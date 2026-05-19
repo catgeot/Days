@@ -5,14 +5,13 @@ import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import FlightSearchCta from './FlightSearchCta';
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
-import { getRentalCarHomeSearchSubtext } from '../../../../../utils/rentalAirportMatch.js';
 import MrtDynamicLink from './MrtDynamicLink';
 import DirectFerriesWidget from './DirectFerriesWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
 import KlookTourBannerWidget from './KlookTourBannerWidget';
 import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
-import { plannerCaption } from '../readableText';
+import { plannerLinkHint } from '../readableText';
 import { cleanAdviceText, getAdviceText, getMultiLinks, isMapPoiGygOnlyLocation } from '../utils';
 
 const ToolkitCard = ({
@@ -35,7 +34,6 @@ const ToolkitCard = ({
     const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
     const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
     const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
-    /** 배너 위젯: 공항명 등으로 구성된 검색 결과 페이지(기존 동작) */
     const klookCarBannerSearchUrl = getKlookRentalUrlByLocation(location, { essentialGuide });
 
     return (
@@ -106,15 +104,15 @@ const ToolkitCard = ({
                                 href={link.url}
                                 target={isMobileDevice() ? "_self" : "_blank"}
                                 rel="noopener noreferrer"
-                                className={`flex ${link.subtext ? 'flex-col gap-1' : 'flex-row items-center gap-1'} justify-center w-full py-3 px-1 min-h-[44px] rounded-xl text-[11px] md:text-xs font-semibold transition-colors border overflow-hidden ${link.colorClass} ${isColSpan2 ? 'col-span-2' : ''}`}
+                                className={`flex ${link.subtext ? 'flex-col gap-0.5 py-2' : 'flex-row items-center gap-1 py-3'} justify-center w-full px-1 min-h-[44px] rounded-xl transition-colors border overflow-hidden ${link.colorClass} ${isColSpan2 ? 'col-span-2' : ''}`}
                                 aria-label={link.subtext ? `${link.text}. ${link.subtext}` : `${link.text}에서 검색하기`}
                             >
-                                <span className={`flex items-center justify-center gap-1 min-w-0 ${link.subtext ? '' : 'w-full'}`}>
+                                <span className={`flex items-center justify-center gap-1 min-w-0 text-[11px] md:text-xs font-semibold ${link.subtext ? '' : 'w-full'}`}>
                                     <span className="truncate max-w-[85%]">{link.text}</span>
                                     <ExternalLink size={12} className="shrink-0" />
                                 </span>
                                 {link.subtext && (
-                                    <span className={`${plannerCaption} font-normal font-sans text-center px-1 opacity-90 line-clamp-2 md:text-sm`}>
+                                    <span className={`${plannerLinkHint} text-center px-0.5`}>
                                         {link.subtext}
                                     </span>
                                 )}
@@ -139,10 +137,7 @@ const ToolkitCard = ({
                 <DirectFerriesWidget location={location} />
             )}
             {type === 'airport_transfer' && (
-                <KlookCarBannerWidget
-                    targetUrl={klookCarBannerSearchUrl}
-                    footerHint={getRentalCarHomeSearchSubtext(location, { essentialGuide })}
-                />
+                <KlookCarBannerWidget targetUrl={klookCarBannerSearchUrl} />
             )}
             {type === 'map_poi' && (
                 isGygFallbackLocation

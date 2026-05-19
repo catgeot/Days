@@ -5,6 +5,7 @@ import {
     KLOOK_CAR_AD_ID_DESKTOP,
     KLOOK_CAR_AD_ID_MOBILE,
     KLOOK_CAR_BANNER_MOBILE_HEIGHT,
+    KLOOK_CAR_BANNER_FOOTER_HINT,
     KLOOK_CAR_BANNER_MOBILE_WIDTH,
 } from './klookBannerLayout';
 import { useKlookPlannerBannerDimensions } from './useKlookPlannerBannerDimensions';
@@ -39,7 +40,7 @@ const KlookCarBannerWidget = ({
     height: heightProp,
     className = 'mt-3',
     targetUrl = 'https://www.klook.com/?aid=118544',
-    footerHint = '',
+    footerHint = KLOOK_CAR_BANNER_FOOTER_HINT,
 }) => {
     const responsiveDims = useKlookPlannerBannerDimensions('car');
     const width = widthProp ?? responsiveDims.width;
@@ -154,7 +155,7 @@ const KlookCarBannerWidget = ({
                 />
             </div>
             {footerHint ? (
-                <p className="mt-2 px-1 text-center text-xs font-medium leading-snug text-gray-600 break-keep">
+                <p className="mt-1.5 px-1 text-center text-[9px] md:text-[10px] font-medium leading-tight text-gray-600 break-keep">
                     {footerHint}
                 </p>
             ) : null}

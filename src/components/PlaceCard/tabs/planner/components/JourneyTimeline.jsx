@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Clock, Map as MapIcon, Car, Ship } from 'lucide-react';
 import { DIRECT_FERRIES_HOME_URL } from '../constants';
-import { getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
+import { getKlookRentalHomeUrl } from '../../../../../utils/affiliate';
+import { getRentalCarTimelineActionDescription } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
 
 const timelineCopyHitClass =
@@ -108,6 +109,25 @@ function TimelineStepTitleWithCopy({ title, stepIdx, onCopySegment }) {
     );
 }
 
+/** 여정 단계 제목에서 렌터카 검색 버튼을 노출할지 판별 (오탐 방지: 자동차·차량·이동·렌탈 단독 등은 제외) */
+const RENTAL_CAR_TIMELINE_KEYWORDS = [
+    '렌터카',
+    '렌트카',
+    '렌트 카',
+    'car rental',
+    'rental car',
+    'rent a car',
+    'hire car',
+    'hire a car',
+    '셀프드라이브',
+    '셀프 드라이브',
+];
+
+function matchesRentalCarTimelineKeyword(text) {
+    const lower = text.toLowerCase();
+    return RENTAL_CAR_TIMELINE_KEYWORDS.some((kw) => lower.includes(kw));
+}
+
 // 🔧 타임라인 내 동적 액션 버튼 생성 로직 (페리, 렌터카만 키워드 매칭)
 const getActionForStep = (title, location, essentialGuide) => {
     const text = title.toLowerCase();
@@ -130,14 +150,13 @@ const getActionForStep = (title, location, essentialGuide) => {
         };
     }
 
-    // 2. 렌터카 키워드 매칭
-    if (text.includes('렌터카') || text.includes('렌트카') || text.includes('자동차') ||
-        text.includes('차량') || text.includes('드라이브') || text.includes('렌탈')) {
+    // 2. 렌터카 키워드 매칭 — 클룩은 공항 코드 자동 검색이 되지 않아 렌터카 홈으로만 연결
+    if (matchesRentalCarTimelineKeyword(text)) {
         return {
             type: 'banner',
             label: '렌터카 검색',
-            description: '글로벌 렌터카 비교 및 예약',
-            url: getKlookRentalUrlByLocation(location || {}, { essentialGuide }),
+            description: getRentalCarTimelineActionDescription(location, { essentialGuide }),
+            url: getKlookRentalHomeUrl(),
             icon: <Car size={16} />,
             bgClass: 'bg-white border-2 border-purple-300',
             iconBgClass: 'bg-purple-100',

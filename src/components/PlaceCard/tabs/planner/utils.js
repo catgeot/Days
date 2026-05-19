@@ -163,14 +163,11 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 bannerSrcMobile: bouncePlannerBannerMobile,
             });
             break;
-        case 'airport_transfer':
-            const klookTransferTargetUrl = `https://www.klook.com/ko/airport-transfers/`;
-            const klookTransferDeepLink = getKlookAffiliateUrl(klookTransferTargetUrl);
-
+        case 'airport_transfer': {
             const klookCarRentalHomeLink = getKlookRentalHomeUrl();
 
             links.push({
-                url: klookTransferDeepLink,
+                url: klookCarRentalHomeLink,
                 text: '공항 픽업 검색',
                 subtext: '항공권 구매 후 항공편명으로 검색해 주세요.',
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
@@ -183,6 +180,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
             break;
+        }
         case 'ferry_booking':
             // Direct Ferries는 위젯 내부에서 배너로 처리하므로 별도 버튼 불필요
             break;

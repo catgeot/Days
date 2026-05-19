@@ -19,6 +19,9 @@ export const KLOOK_TOUR_AD_ID_MOBILE = '1273972';
 /** Car(렌터카) 배너 — 데스크톱 468×60 / 모바일 250×250 각각 embed의 data-adid (data-bgtype은 항상 Car) */
 export const KLOOK_CAR_AD_ID_DESKTOP = '1265731';
 export const KLOOK_CAR_AD_ID_MOBILE = '1273974';
+/** 렌터카 배너 하단 안내 — 배너는 여행지명 검색, 정확한 검색은 링크 버튼(렌터카 홈) 유도 */
+export const KLOOK_CAR_BANNER_FOOTER_HINT =
+    '여행지명으로 검색 연결됩니다. 정확한 검색은 렌터카 검색 링크를 이용하세요.';
 export const KLOOK_BANNER_MAX_SCALE = 2.35;
 export const KLOOK_BANNER_MIN_SCALE = 0.2;
 /** 좁은 폭에서 세로가 너무 얇아 보이지 않도록 높이 기준 최소 스케일 */
