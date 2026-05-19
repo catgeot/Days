@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-19T09:25:31.778Z",
+    "generatedAt": "2026-05-19T10:43:30.107Z",
     "spotCount": 244,
-    "placeIdCount": 303,
+    "placeIdCount": 315,
     "stats": {
-      "override": 78,
-      "toolkitSync": 154,
-      "runtime": 13,
+      "override": 90,
+      "toolkitSync": 152,
+      "runtime": 3,
       "multiRule": 0,
       "geo": 0,
       "missing": 0
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-19T09:25:35.540Z",
+    "lastToolkitSyncAt": "2026-05-19T10:44:38.642Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -336,7 +336,7 @@
       "preferredLinkIata": "RAK",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "rationale": "마라케시·메르주가 관문"
     },
     "yellowknife": {
@@ -387,8 +387,9 @@
       ],
       "preferredLinkIata": "LHR",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "히스로공항(LHR)"
     },
     "cape-town": {
       "primaryIatas": [
@@ -396,8 +397,9 @@
       ],
       "preferredLinkIata": "CPT",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "케이프타운국제공항(CPT)"
     },
     "tokyo": {
       "primaryIatas": [
@@ -466,8 +468,9 @@
       ],
       "preferredLinkIata": "SIN",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "창이국제공항(SIN)"
     },
     "dubai": {
       "primaryIatas": [
@@ -716,12 +719,14 @@
     },
     "serengeti": {
       "primaryIatas": [
+        "JRO",
         "NBO"
       ],
-      "preferredLinkIata": "NBO",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "JRO",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "북부 탄자니아 — 킬리만자로(JRO)·나이로비(NBO) 관문"
     },
     "uluru": {
       "primaryIatas": [
@@ -786,12 +791,15 @@
     },
     "seoul": {
       "primaryIatas": [
+        "ICN",
         "GMP"
       ],
-      "preferredLinkIata": "GMP",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "ICN",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "서울은 인천(ICN) 국제선·김포(GMP) 국내·단거리 국제선이 나뉩니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "인천(ICN) 국제선·김포(GMP) 국내·단거리 국제선"
     },
     "vanuatu": {
       "primaryIatas": [
@@ -883,8 +891,9 @@
       ],
       "preferredLinkIata": "AMS",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "스키폴공항(AMS)"
     },
     "venice": {
       "primaryIatas": [
@@ -1161,7 +1170,7 @@
       "preferredLinkIata": "LAS",
       "kind": "multi",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "rationale": "라스베이거스·그랜드캐니언 공항"
     },
     "torres-del-paine": {
@@ -1291,9 +1300,9 @@
       ],
       "preferredLinkIata": "KUL",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "쿠알라룸푸르국제공항(KUL)"
     },
     "hanoi": {
       "primaryIatas": [
@@ -1558,7 +1567,7 @@
       "preferredLinkIata": "BLR",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "rationale": "방갈로르 후 장거리 육로"
     },
     "great-wall": {
@@ -1648,8 +1657,9 @@
       ],
       "preferredLinkIata": "LXR",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "룩소르국제공항(LXR)"
     },
     "abu-simbel": {
       "primaryIatas": [
@@ -1658,7 +1668,7 @@
       "preferredLinkIata": "ASW",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "rationale": "아스완 후 투어·국내선"
     },
     "fez": {
@@ -1678,7 +1688,7 @@
       "preferredLinkIata": "BKO",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "rationale": "바마코 후 육로·강"
     },
     "lalibela": {
@@ -1710,7 +1720,7 @@
       "preferredLinkIata": "LIM",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "rationale": "리마 후 버스·소형기"
     },
     "tikal": {
@@ -1741,9 +1751,9 @@
       ],
       "preferredLinkIata": "KTM",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "카트만두(KTM) — 루클라(LUA) 국내선·트레킹 관문"
     },
     "annapurna-circuit": {
       "primaryIatas": [
@@ -1758,12 +1768,15 @@
     },
     "kilimanjaro": {
       "primaryIatas": [
+        "JRO",
         "NBO"
       ],
-      "preferredLinkIata": "NBO",
-      "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "preferredLinkIata": "JRO",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "킬리만자로 원정은 킬리만자로(JRO) 직항·나이로비(NBO) 경유 육로가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "킬리만자로(JRO) 국제공항·나이로비(NBO) 경유"
     },
     "mont-blanc": {
       "primaryIatas": [
@@ -2044,8 +2057,9 @@
       ],
       "preferredLinkIata": "HKT",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "푸켓(HKT) 후 보트·다이빙 투어"
     },
     "cinque-terre": {
       "primaryIatas": [
@@ -2275,8 +2289,9 @@
       ],
       "preferredLinkIata": "CJU",
       "kind": "single",
-      "source": "runtime-infer",
-      "confidence": "medium"
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "제주국제공항(CJU)"
     },
     "seogwipo": {
       "primaryIatas": [
@@ -4793,8 +4808,7 @@
     "파타고니아": {
       "primaryIatas": [
         "USH",
-        "PUQ",
-        "EZE"
+        "PUQ"
       ],
       "preferredLinkIata": "USH",
       "kind": "multi",
@@ -6226,6 +6240,153 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "베네수엘라"
+    },
+    "에베레스트베이스캠프": {
+      "primaryIatas": [
+        "KTM"
+      ],
+      "preferredLinkIata": "KTM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "에베레스트 베이스캠프",
+      "linkedSlug": "everest-base-camp"
+    },
+    "케이프타운": {
+      "primaryIatas": [
+        "CPT"
+      ],
+      "preferredLinkIata": "CPT",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "케이프타운",
+      "linkedSlug": "cape-town"
+    },
+    "싱가포르": {
+      "primaryIatas": [
+        "SIN"
+      ],
+      "preferredLinkIata": "SIN",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "싱가포르",
+      "linkedSlug": "singapore"
+    },
+    "쿠알라룸푸르": {
+      "primaryIatas": [
+        "KUL"
+      ],
+      "preferredLinkIata": "KUL",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "쿠알라룸푸르",
+      "linkedSlug": "kuala-lumpur"
+    },
+    "런던": {
+      "primaryIatas": [
+        "LHR"
+      ],
+      "preferredLinkIata": "LHR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "런던",
+      "linkedSlug": "london"
+    },
+    "암스테르담": {
+      "primaryIatas": [
+        "AMS"
+      ],
+      "preferredLinkIata": "AMS",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "암스테르담",
+      "linkedSlug": "amsterdam"
+    },
+    "룩소르": {
+      "primaryIatas": [
+        "LXR"
+      ],
+      "preferredLinkIata": "LXR",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "룩소르",
+      "linkedSlug": "luxor"
+    },
+    "서울": {
+      "primaryIatas": [
+        "ICN",
+        "GMP"
+      ],
+      "preferredLinkIata": "ICN",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "서울",
+      "linkedSlug": "seoul"
+    },
+    "킬리만자로": {
+      "primaryIatas": [
+        "JRO",
+        "NBO"
+      ],
+      "preferredLinkIata": "JRO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "킬리만자로",
+      "linkedSlug": "kilimanjaro"
+    },
+    "세렝게티": {
+      "primaryIatas": [
+        "JRO",
+        "NBO"
+      ],
+      "preferredLinkIata": "JRO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "세렝게티",
+      "linkedSlug": "serengeti"
+    },
+    "제주": {
+      "primaryIatas": [
+        "CJU"
+      ],
+      "preferredLinkIata": "CJU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "제주",
+      "linkedSlug": "jeju"
+    },
+    "제": {
+      "primaryIatas": [
+        "CJU"
+      ],
+      "preferredLinkIata": "CJU",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "제주",
+      "linkedSlug": "jeju"
     }
   }
 }

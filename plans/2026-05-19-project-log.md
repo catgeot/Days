@@ -67,3 +67,26 @@
 1. `travelSpotAirports.json`·규칙·Edge Function **배포** (`update-place-toolkit` 재배포 필수).
 2. gateo.kr 스모크: 갈라파고스 GPS/GYE·파타고니아 USH/PUQ 배너.
 3. `unmapped` 52·툴킷 IATA 없음 37건 점진 검수.
+
+## Phase D + 배포 후 QA (이번 세션)
+
+### gateo.kr 스모크 QA (배포 c82ca95 반영)
+
+- **갈라파고스** `/place/galapagos/planner`: 배너·Trip.com **GPS** (GYE 후보), SIN 잔존 없음.
+- **파타고니아** `/place/patagonia/planner`: **USH·PUQ** 배너, EZE 없음.
+- **우수아이아** `/place/ushuaia/planner`: 배너·Trip.com **USH**, EZE는 여정 타임라인 경유만(배너 아님).
+- (선택) **레이캬비크** **KEF** · **랄리벨라** **ADD+LLI** 일치.
+
+### Phase D — skippedNoIata 37→26
+
+- `travel-spot-airport-overrides.mjs`: singapore·london·seoul(ICN+GMP)·jeju·kilimanjaro(JRO+NBO)·everest-base-camp·kuala-lumpur·amsterdam·cape-town·luxor·serengeti·similan-islands curated **high**.
+- `rentalAirportHubs.js`: **JRO**(킬리만자로) 추가.
+- medium→high: grand-canyon·hampi·nazca-lines·abu-simbel·sahara-desert·timbuktu.
+- DB `toolkit:patch-guide-iata --apply` **12건**(우선 10 slug + 세렝게티·파타고니아 EZE 정리).
+- `generate:airports` + `sync:airports-from-toolkit` + `audit:airports` **`none: 0`** 유지.
+
+### 다음
+
+1. **프론트·JSON 배포**(travelSpotAirports·overrides·rentalAirportHubs).
+2. gateo.kr 스모크: 서울 ICN+GMP·킬리만자로 JRO 배너(배포 후).
+3. 잔여 `skippedNoIata` 26·`unmapped` 52 점진 검수(annapurna·bohol·yokohama 등).

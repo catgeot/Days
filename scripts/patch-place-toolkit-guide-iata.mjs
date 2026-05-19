@@ -44,6 +44,62 @@ const PATCHES = [
     matchPlaceIds: ['파타고니아', 'Patagonia', 'patagonia'],
     primaryIatas: ['USH', 'PUQ'],
     note: 'EZE 단독 오탐 → USH·PUQ'
+  },
+  // Phase D — skippedNoIata 우선 slug (essential_guide IATA 보강)
+  {
+    matchPlaceIds: ['싱가포르', 'Singapore', 'singapore'],
+    primaryIatas: ['SIN'],
+    note: 'Phase D — primary IATA SIN'
+  },
+  {
+    matchPlaceIds: ['런던', 'London', 'london'],
+    primaryIatas: ['LHR'],
+    note: 'Phase D — primary IATA LHR'
+  },
+  {
+    matchPlaceIds: ['서울', 'Seoul', 'seoul'],
+    primaryIatas: ['ICN', 'GMP'],
+    note: 'Phase D — ICN·GMP (GMP 단독 오탐 보정)'
+  },
+  {
+    matchPlaceIds: ['제주', 'Jeju', 'jeju'],
+    primaryIatas: ['CJU'],
+    note: 'Phase D — primary IATA CJU'
+  },
+  {
+    matchPlaceIds: ['킬리만자로', 'Kilimanjaro', 'kilimanjaro'],
+    primaryIatas: ['JRO', 'NBO'],
+    note: 'Phase D — JRO·NBO 관문'
+  },
+  {
+    matchPlaceIds: ['에베레스트 베이스캠프', 'Everest Base Camp', 'everest-base-camp', '에베레스트'],
+    primaryIatas: ['KTM'],
+    note: 'Phase D — KTM 관문'
+  },
+  {
+    matchPlaceIds: ['쿠알라룸푸르', 'Kuala Lumpur', 'kuala-lumpur'],
+    primaryIatas: ['KUL'],
+    note: 'Phase D — primary IATA KUL'
+  },
+  {
+    matchPlaceIds: ['암스테르담', 'Amsterdam', 'amsterdam'],
+    primaryIatas: ['AMS'],
+    note: 'Phase D — primary IATA AMS'
+  },
+  {
+    matchPlaceIds: ['케이프타운', 'Cape Town', 'cape-town'],
+    primaryIatas: ['CPT'],
+    note: 'Phase D — primary IATA CPT'
+  },
+  {
+    matchPlaceIds: ['룩소르', 'Luxor', 'luxor'],
+    primaryIatas: ['LXR'],
+    note: 'Phase D — primary IATA LXR'
+  },
+  {
+    matchPlaceIds: ['세렝게티', 'Serengeti', 'serengeti'],
+    primaryIatas: ['JRO', 'NBO'],
+    note: 'Phase D — JRO·NBO 관문'
   }
 ];
 

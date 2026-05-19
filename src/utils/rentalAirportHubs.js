@@ -530,7 +530,15 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 80,
     aliases: ['st helena', 'st-helena', 'saint helena', '세인트 헬레나', '세인트헬레나', 'hle']
   },
-  { iata: 'NBO', officialKo: '조모 케냐타타국제공항', lat: -1.3192, lng: 36.9278, radiusKm: 200, aliases: ['nairobi', '나이로비', 'nbo', 'serengeti', '세렝게티', 'kilimanjaro', '킬리만자로'] },
+  { iata: 'NBO', officialKo: '조모 케냐타타국제공항', lat: -1.3192, lng: 36.9278, radiusKm: 200, aliases: ['nairobi', '나이로비', 'nbo', 'serengeti', '세렝게티'] },
+  {
+    iata: 'JRO',
+    officialKo: '킬리만자로국제공항',
+    lat: -3.4294,
+    lng: 37.0745,
+    radiusKm: 180,
+    aliases: ['kilimanjaro', '킬리만자로', 'jro', 'moshi', '모시', 'arusha gateway']
+  },
   {
     iata: 'ZNZ',
     officialKo: '잔지바르 국제공항',
