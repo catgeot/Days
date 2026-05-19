@@ -192,8 +192,8 @@
 
 ### 구현
 
-- **`TripcomFlightBannerWidget`**: iframe `pointer-events-none` + **`/flights/` 오버레이** · 모바일 `_self` / 데스크톱 `_blank`.
-- **`WhiteLabelWidget`**: 동일 직링크·탭 정책.
+- ~~**`TripcomFlightBannerWidget`**: iframe 오버레이~~ → **`ce2ee7a`에서 제거**(iframe 직접 조작, `partnerNavigation`으로 링크 정책 분리).
+- **`WhiteLabelWidget`**: `/flights/` 직링크 · `openTripcomExternalUrl`.
 - **`affiliate.js`**: `resolveTripcomFlightTracking` · 필수 준비 **`trip_sub1=플래너 필수준비 항공권 검색 일반`**, **`trip_sub3=D17159522`**.
 - **`PreTravelChecklist`**: 항공·숙소·픽업 **→ 화살표 제거** · 항공 `/flights/` 직연결.
 - **`FlightSearchCta`**: ICN→IATA 뱃지 · 고대비 그라데이션 · `ToolkitCard` 항공 파트 적용.
@@ -224,7 +224,7 @@
 - `travelSpotAirports.json`에 **`klookRentalSearchLabel`** / **`klookRentalSearchMode: 'airport'`** 예외만 수동 추가(나리타 등).
 - gateo.kr QA: 배너 클릭 검색어·렌터카 홈 링크·호놀룰루·다중 공항 샘플.
 
-## 플래너 Trip.com 배너 상호작용·모바일 도착지 (세션 종료, 미완)
+## 플래너 Trip.com 배너 상호작용·모바일 도착지 (`ce2ee7a`, 배포)
 
 ### 배경
 
@@ -232,7 +232,7 @@
 - 이전 **새 탭·복귀 UX** 수정(오버레이·`omitLocaleBundle`·`noreferrer` 등)이 모바일 **도착지 자동입력**과 엇갈림.
 - 관찰: **Referer(gateo.kr)가 전달되면** Trip.com 모바일이 `aAirportCode` 자동입력을 무시하는 경우가 있고, **Referer 없을 때**는 URL 파라미터만으로 도착지가 채워지는 사례 확인(데스크톱은 정상).
 
-### 구현 (로컬, 커밋 없음)
+### 구현 (`ce2ee7a` → `main` 푸시 · Vercel Production)
 
 - **`TripcomFlightBannerWidget`**: 오버레이 제거 → iframe 직접 조작 가능.
 - **`affiliate.js`**: 모바일 `omitLocaleBundle` 제거 — ad·`/flights/` URL에 데스크톱과 동일하게 `locale`·`curr`·`trip_sub3`·`aAirportCode`·`dAirportCode` 포함.
