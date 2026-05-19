@@ -205,7 +205,7 @@ npm run toolkit:reconcile-place-id -- --apply --only=borneo,angkor-wat
 |-------|------|------|
 | 0 | ✅ 완료 | 0a–0c · 0d apply(angkor) |
 | 1 | ✅ 완료 | 세션 1(1a–1c) · gateo.kr P0 QA |
-| 2 | ⬜ 대기 | |
+| 2 | 🔄 진행 | P1·P2 reconcile apply(301행) · duplicateSlug 5 · sync·audit `none:0` |
 | 3 | ⬜ 대기 | |
 | 4 | ⬜ 백로그 | |
 
