@@ -1,4 +1,5 @@
 import { TRAVEL_SPOT_TOOLKIT_SYNONYMS } from '../../scripts/data/travel-spot-place-id-aliases.mjs';
+import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from '../../scripts/data/travel-spot-airport-overrides.mjs';
 import { getPlaceStableKey } from './travelSpotResolve.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import { distanceKm, extractArrivalIataCodesFromEssentialGuide } from './rentalAirportMatch.js';
@@ -118,9 +119,32 @@ function hubByIata(iata) {
   return RENTAL_AIRPORT_HUBS.find((h) => h.iata === code) ?? null;
 }
 
+/** 광역·원정지 slug — SSOT 중심 좌표와 관문 공항이 멀 수 있음 (curated high) */
+function getCuratedGatewayIataSet(location) {
+  const slug = getPlaceStableKey(location);
+  if (!slug) return null;
+  const override = TRAVEL_SPOT_AIRPORT_OVERRIDES[slug];
+  if (!override || override.confidence !== 'high') return null;
+  return new Set(
+    override.primaryIatas.map((c) =>
+      String(c)
+        .trim()
+        .toUpperCase()
+    )
+  );
+}
+
 /** 등록된 허브 IATA가 여행지 좌표와 지리적으로 맞는지 */
 export function isIataPlausibleForLocation(iata, location) {
-  const hub = hubByIata(iata);
+  const code = String(iata ?? '')
+    .trim()
+    .toUpperCase();
+  if (!code) return true;
+
+  const curated = getCuratedGatewayIataSet(location);
+  if (curated?.has(code)) return true;
+
+  const hub = hubByIata(code);
   if (!hub) return true;
 
   const lat = Number(location?.lat);

@@ -4,6 +4,7 @@ import {
   isKnownTravelSpotSlug,
   resolveCanonicalPlaceId,
 } from "../_shared/resolveCanonicalPlaceId.ts";
+import { isRegionalGatewayIata } from "../_shared/regionalGatewayIatas.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -52,7 +53,8 @@ function validateEssentialGuideForLocation(
   guide: Record<string, unknown>,
   locationName: string,
   lat?: number,
-  lng?: number
+  lng?: number,
+  slug?: string | null
 ): string | null {
   if (Number.isFinite(lat) && Number.isFinite(lng)) {
     const iatas = Array.isArray(guide.primary_arrival_airports_iata)
@@ -60,6 +62,7 @@ function validateEssentialGuideForLocation(
       : [];
     for (const raw of iatas) {
       const code = String(raw).trim().toUpperCase();
+      if (isRegionalGatewayIata(slug, code)) continue;
       const hub = HUB_COORDS[code];
       if (hub && distanceKm(lat as number, lng as number, hub.lat, hub.lng) > MAX_DESTINATION_AIRPORT_KM) {
         return `도착 공항 ${code}이(가) 「${locationName}」 위치와 맞지 않습니다. AI 응답이 잘못되었을 수 있습니다.`;
@@ -275,7 +278,8 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
       essentialGuideJson,
       String(locationName),
       Number.isFinite(destLat) ? destLat : undefined,
-      Number.isFinite(destLng) ? destLng : undefined
+      Number.isFinite(destLng) ? destLng : undefined,
+      slugNorm || null
     );
     if (validationError) {
       console.error('[update-place-toolkit] Validation failed:', validationError, { placeId, locationName });
