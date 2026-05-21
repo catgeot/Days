@@ -6504,7 +6504,7 @@ export const TRAVEL_SPOTS = [
     "id": 355,
     "slug": "tsushima",
     "name": "대마도",
-    "name_en": "Tsushima",
+    "name_en": "Tsushima (Daemado)",
     "country": "일본",
     "country_en": "Japan",
     "lat": 34.2048,
@@ -6520,12 +6520,15 @@ export const TRAVEL_SPOTS = [
     "category": "nature",
     "showOnGlobe": false,
     "denseRegion": null,
-    "desc": "한국과 일본 사이 대한해협에 위치한 국경의 섬으로 부산에서 쾌속선으로 1시간이면 도착하는 가까운 해외여행지입니다. 맑고 투명한 바다와 원시림이 우거진 산, 한국과 얽힌 역사 유적지가 공존하며, 면세 쇼핑과 온천, 신선한 해산물 요리를 즐길 수 있습니다.",
+    "desc": "일본 対馬島(쓰시마)로, 한국에서는 대마도라 부릅니다. 부산국제여객터미널에서 히타카츠항까지 쾌속페리(약 1시간)가 주 경로이며, 인천 직항 항공은 없습니다. 맑은 바다·숲길 트레킹·면세 쇼핑·온천을 즐기기 좋습니다.",
     "keywords": [
       "아시아",
       "일본",
+      "쓰시마",
+      "쓰시마섬",
       "국경의섬",
       "부산페리",
+      "히타카츠",
       "면세쇼핑"
     ]
   },

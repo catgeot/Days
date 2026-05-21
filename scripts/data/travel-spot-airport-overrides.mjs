@@ -270,12 +270,12 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   },
   tsushima: {
     primaryIatas: ['TSJ', 'FUK'],
-    preferredLinkIata: 'TSJ',
+    preferredLinkIata: 'FUK',
     kind: 'multi',
     confidence: 'high',
-    rationale: '대마(津島) TSJ 직항·후쿠오카(FUK) 경유·페리 연결',
+    rationale: '対馬島(대마도·쓰시마) — 한국인 주 경로 부산 페리·히타카츠; TSJ·FUK는 일본 측 항공 관문',
     bannerNote:
-      '대마도는 대마공항(TSJ) 직항·후쿠오카(FUK) 경유 후 페리·국내선으로 이어지는 일정이 흔합니다. 부산 페리 이용 시 항공권과 별도로 페리 예약이 필요합니다.'
+      '대마도(쓰시마·対馬島)는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.'
   },
   kiribati: { primaryIatas: ['TRW'], preferredLinkIata: 'TRW', confidence: 'high', rationale: '타라와 공항' },
   'kamchatka-peninsula': { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },

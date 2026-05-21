@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T02:43:29.598Z",
+    "generatedAt": "2026-05-21T02:54:38.787Z",
     "spotCount": 245,
     "placeIdCount": 333,
     "stats": {
@@ -14,9 +14,7 @@
     },
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
-    "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-21T02:44:17.864Z",
-    "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
+    "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표."
   },
   "spots": {
     "bora-bora": {
@@ -2445,12 +2443,12 @@
         "TSJ",
         "FUK"
       ],
-      "preferredLinkIata": "TSJ",
+      "preferredLinkIata": "FUK",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "대마도는 대마공항(TSJ) 직항·후쿠오카(FUK) 경유 후 페리·국내선으로 이어지는 일정이 흔합니다. 부산 페리 이용 시 항공권과 별도로 페리 예약이 필요합니다.",
-      "rationale": "대마(津島) TSJ 직항·후쿠오카(FUK) 경유·페리 연결"
+      "bannerNote": "대마도(쓰시마·対馬島)는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.",
+      "rationale": "対馬島(대마도·쓰시마) — 한국인 주 경로 부산 페리·히타카츠; TSJ·FUK는 일본 측 항공 관문"
     },
     "kumamoto": {
       "primaryIatas": [

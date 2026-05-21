@@ -8,7 +8,8 @@
     "skippedNoIataTarget": 20,
     "skippedBlocklisted": 11,
     "gatePassed": true,
-    "relatedDestinationsUi": "R1–R3 (patagonia·iceland·borneo-region)"
+    "relatedDestinationsUi": "R1–R3 (patagonia·iceland·borneo-region)",
+    "tsushimaNote": "대마도=쓰시마(対馬島) 동일·부산페리 주경로·slug tsushima·Trip.com FUK"
   },
   "skippedNoIataRemaining": [],
   "skippedNoIataResolvedD4": {

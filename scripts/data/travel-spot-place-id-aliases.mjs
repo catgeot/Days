@@ -126,6 +126,7 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   ushuaia: ['Ushuaia', 'Tierra del Fuego', '티에라델푸에고'],
   'torres-del-paine': ['Torres del Paine', '토레스델파이네', 'Parque Nacional Torres del Paine'],
   madeira: ['마데이라', 'Madeira', 'Madeira Island', '푼샬', 'Funchal'],
+  tsushima: ['쓰시마', '쓰시마섬', '대마도', 'Tsushima', '対馬', '히타카츠', 'Hitakatsu'],
   madagascar: ['Maroantsetra', '안치라나나', '노시베 섬', '노시베', 'Nosy Be', 'Antsiranana'],
   // —— unmapped alias 배치 (place_toolkit → SSOT slug) ——
   lisbon: ['나자레', 'Nazare'],

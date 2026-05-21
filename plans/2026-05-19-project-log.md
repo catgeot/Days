@@ -189,6 +189,30 @@
 - `unmapped-orphans`: 로라이마 산·우베를란지아·콜로니아 delete 3건.
 - 브루나이 `flag_only`·borneo 병합 없음.
 
+### 배포·gateo.kr 스모크 QA (`a9e1d41`)
+
+- **파타고니아** `/place/patagonia/planner`: 연관 **우수아이아(USH)·토레스 델 파이네(PUQ)** · 배너·Trip.com **BRC**(+EZE 후보).
+- **아이슬란드** `/place/iceland/planner`: 연관 **레이캬비크(KEF)** · Trip.com **KEF**.
+- **보홀** `/place/bohol/planner`: **TAG+CEB** · Trip.com **TAG**.
+- **요코하마** `/place/yokohama/planner`: **HND+NRT** · Trip.com **HND**.
+- **대마도** `/place/tsushima/planner`: **TSJ+FUK** · Trip.com **TSJ** (→ 이후 FUK·배너 문구 수정, 아래).
+- **마데이라** `/place/madeira/planner`: **FNC** · Trip.com **FNC** (신규 slug).
+- **보르네오** `/place/borneo/planner`: **BKI/KCH/KUL** · 연관 **코타키나발루(BKI)** (borneo-region).
+- `npm run audit:airports` → **none: 0**.
+
+### 대마도·쓰시마 정합 (`tsushima` slug)
+
+- **동일 여행지**: 대마도 = 쓰시마(対馬島) · 히타카츠 = 부산 페리 도착 항구(북부).
+- **혼동 원인**: 공항 배너(TSJ) vs 툴킷 여정(부산 페리·ICN 직항 없음) · 데이터 오타 **津島**(아이치) → **対馬** 정정.
+- **수정**: `bannerNote`·`preferredLinkIata` **FUK** · aliases(쓰시마·히타카츠) · `travelSpots` desc/keywords · 津島 alias 제거.
+- **배포 후 QA**: `/place/tsushima/planner` — 페리 우선 안내·Trip.com **FUK** · `audit:airports` **none: 0**.
+
+### 다음 (백로그)
+
+1. `unmapped` **40** · `new_slug_candidate`(블라디보스토크·이르쿠츠크·앨리스스프링스 등) 승격.
+2. (선택) PlaceCard 연관 칩 · `el-calafate` 세부 slug.
+3. Trip.com 모바일 도착지 자동입력(§플래너 Trip.com 배너 상호작용 미완).
+
 ---
 
 ## 세션 종료 (2026-05-21)

@@ -27,7 +27,7 @@ export const RENTAL_AIRPORT_HUBS = [
     lat: 34.2849,
     lng: 129.3305,
     radiusKm: 60,
-    aliases: ['tsushima', '대마도', 'tsj', '津島']
+    aliases: ['tsushima', '대마도', '쓰시마', '쓰시마섬', 'tsj', '히타카츠', 'hitakatsu']
   },
   { iata: 'NGO', officialKo: '주부 센트레아 국제공항', lat: 35.2553, lng: 136.9240, radiusKm: 200, aliases: ['nagoya', '나고야', 'ngo'] },
   { iata: 'OKA', officialKo: '나하공항', lat: 26.1958, lng: 127.6459, radiusKm: 200, aliases: ['okinawa', '오키나와', '나하', 'naha', 'oka'] },
