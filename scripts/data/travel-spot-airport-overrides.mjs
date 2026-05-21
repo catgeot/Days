@@ -6,6 +6,16 @@
  */
 export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   hvar: { primaryIatas: ['DBV'], preferredLinkIata: 'DBV', confidence: 'high', rationale: '스플리트·두브로브니크 공항 경유 페리' },
+  kotor: {
+    primaryIatas: ['TIV', 'TGD'],
+    preferredLinkIata: 'TIV',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '티바트(TIV)·포드고리차(TGD) — 몬테네그로 코토르 관문; 툴킷 DBV 오탐 보정',
+    searchHintIatas: ['TIV', 'TGD'],
+    bannerNote:
+      '코토르는 티바트(TIV, 차로 약 15분)·포드고리차(TGD, 몬테네그로 주요 국제공항) 도착이 일반적입니다. 발칸 일주 여행객은 두브로브니크(DBV, 크로아티아) 후 버스로 들어오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   'chichen-itza': { primaryIatas: ['CUN'], preferredLinkIata: 'CUN', confidence: 'high', rationale: '칸쿤 국제공항 후 육로' },
   'annapurna-circuit': { primaryIatas: ['KTM', 'PKR'], preferredLinkIata: 'PKR', kind: 'multi', confidence: 'high', rationale: '카트만두·포카라 관문' },
   bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },

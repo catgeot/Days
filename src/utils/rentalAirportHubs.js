@@ -304,6 +304,22 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'BRU', officialKo: '브뤼셀공항', lat: 50.9014, lng: 4.4844, radiusKm: 160, aliases: ['brussels', '브뤼셀', 'bru', 'bruxelles'] },
   { iata: 'FLR', officialKo: '피렌체 페레톨라공항', lat: 43.8100, lng: 11.2051, radiusKm: 100, aliases: ['florence', '피렌체', 'firenze', 'flr'] },
   {
+    iata: 'TIV',
+    officialKo: '티바트 공항',
+    lat: 42.4047,
+    lng: 18.7233,
+    radiusKm: 60,
+    aliases: ['tivat', '티바트', 'tiv', 'kotor', '코토르']
+  },
+  {
+    iata: 'TGD',
+    officialKo: '포드고리차 공항',
+    lat: 42.3594,
+    lng: 19.2519,
+    radiusKm: 80,
+    aliases: ['podgorica', '포드고리차', 'tgd', 'montenegro', '몬테네그로']
+  },
+  {
     iata: 'DBV',
     officialKo: '두브로브니크 공항',
     lat: 42.5614,

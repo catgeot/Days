@@ -79,7 +79,10 @@ function rowFromOverride(override) {
     source: 'curated-override',
     confidence: override.confidence ?? 'high',
     ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
-    ...(override.rationale ? { rationale: override.rationale } : {})
+    ...(override.rationale ? { rationale: override.rationale } : {}),
+    ...(Array.isArray(override.searchHintIatas) && override.searchHintIatas.length
+      ? { searchHintIatas: filterRegisteredIatas(override.searchHintIatas) }
+      : {})
   };
 }
 
