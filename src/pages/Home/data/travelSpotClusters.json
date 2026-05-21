@@ -17,7 +17,7 @@
   "borneo-region": {
     "labelKo": "보르네오 권역",
     "labelEn": "Borneo",
-    "slugs": ["borneo", "kota-kinabalu"],
-    "notes": "섬 전역 BKI/KCH/KUL · 키나발루·사바 관문 BKI — 브루나이(BWN)는 별도 여행지"
+    "slugs": ["borneo", "kota-kinabalu", "brunei"],
+    "notes": "섬 전역이지만 관문·입국·일정이 다름 — BKI(사바) · KCH(사라왕) · BWN(브루나이)"
   }
 }

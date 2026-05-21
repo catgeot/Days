@@ -186,6 +186,24 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '마데이라(푼샬) 공항 FNC — Phase D-3·승격 slug'
   },
+  vladivostok: {
+    primaryIatas: ['VVO'],
+    preferredLinkIata: 'VVO',
+    confidence: 'high',
+    rationale: '블라디보스토크 국제공항(VVO) — citiesData 승격'
+  },
+  irkutsk: {
+    primaryIatas: ['IKT'],
+    preferredLinkIata: 'IKT',
+    confidence: 'high',
+    rationale: '이르쿠츠크 국제공항(IKT) — 바이칼 관문·citiesData 승격'
+  },
+  'alice-springs': {
+    primaryIatas: ['ASP'],
+    preferredLinkIata: 'ASP',
+    confidence: 'high',
+    rationale: '앨리스스프링스 공항(ASP) — 레드센터·울루루 관문'
+  },
   ushuaia: {
     primaryIatas: ['USH'],
     preferredLinkIata: 'USH',
@@ -327,7 +345,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '사바·사라왕·반도 국제 관문',
     bannerNote:
-      '보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH), 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+      '보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH), 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 브루나이(BWN)는 별도 여행지입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  brunei: {
+    primaryIatas: ['BWN'],
+    preferredLinkIata: 'BWN',
+    confidence: 'high',
+    rationale: '브루나이 국제공항(BWN) — 보르네오(borneo)와 별도 여행지',
+    bannerNote:
+      '보르네오섬 북부의 독립 국가입니다. 말레이시아 사바·보르네오(borneo)와 입국 서류·관문(BKI)이 다릅니다. 티켓 도착은 BWN을 확인해 주세요.'
   },
   'easter-island': { primaryIatas: ['IPC'], preferredLinkIata: 'IPC', confidence: 'high', rationale: '이스터섬 마타베리' },
   antarctica: {

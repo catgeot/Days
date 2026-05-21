@@ -209,9 +209,49 @@
 
 ### 다음 (백로그)
 
-1. `unmapped` **40** · `new_slug_candidate`(블라디보스토크·이르쿠츠크·앨리스스프링스 등) 승격.
-2. (선택) PlaceCard 연관 칩 · `el-calafate` 세부 slug.
+1. ~~`unmapped` **40** · `new_slug_candidate`(블라디보스토크·이르쿠츠크·앨리스스프링스 등) 승격~~ → **세션 D** (이번, 아래).
+2. (선택) PlaceCard 연관 칩 · `el-calafate` 세부 slug(제품 승인 후 G).
 3. Trip.com 모바일 도착지 자동입력(§플래너 Trip.com 배너 상호작용 미완).
+
+## 배포(85fffad) 스모크 + 세션 F·D·E (2026-05-21)
+
+### gateo.kr 스모크 QA (배포 85fffad 반영)
+
+- **대마도** `/place/tsushima/planner`: 대마도=쓰시마(対馬島) 안내 · 배너 **TSJ+FUK** · Trip.com **FUK** · 페리(부산→히타카츠) 여정·ICN 직항 없음 문구 일치.
+- **마데이라** `/place/madeira/planner`: 배너·Trip.com **FNC** (승격 slug).
+- **보르네오** `/place/borneo/planner`: **BKI** 배너·Trip.com **BKI** · 연관 칩 **코타키나발루(BKI)**.
+- `npm run audit:airports` → **none: 0**.
+
+### 세션 F — 대마도 배포 QA
+
+- gateo.kr `/place/tsushima/planner` 위 스모크 기준 **이상 없음**(코드 수정 불필요).
+- PlaceCardSummary 연관 칩: tsushima 클러스터 없음 → **보류**.
+
+### 세션 D — citiesData 승격 3건
+
+- `travelSpots.js`: **vladivostok**(367)·**irkutsk**(368)·**alice-springs**(369).
+- `travel-spot-airport-overrides.mjs`: VVO·IKT·ASP curated **high**.
+- aliases · `TRAVEL_SPOT_TOOLKIT_SYNONYMS` · `placeIds` **linkedSlug**.
+- `extract-list` · `generate:airports` **Mapped 248/249** · `sync` · `audit:airports` **none: 0**.
+- `place-id-residual-classification.json`: 3건 **status: promoted**.
+
+### 세션 E — unmapped placeIds 배치
+
+- alias 4건·placeIds_only sync 유지(브루나이 `flag_only`·borneo 병합 없음).
+- `toolkit:audit-place-id`: **mapped 251** · **unmapped 37** · P0 **unmapped 1**(브루나이) · `duplicateSlug 4`(alias 의도).
+- `audit:airports` **none: 0** 유지.
+
+### 다음
+
+1. **프론트·JSON 배포** — D 승격 3건·airports JSON.
+2. gateo.kr QA: `/place/vladivostok/planner` · `/place/irkutsk/planner` · `/place/alice-springs/planner` (배포 후).
+3. `el-calafate`(FTE) — 제품 승인 후 세션 G.
+
+### brunei slug 승격 (2026-05-21)
+
+- `travelSpots.js` **brunei**(370) · overrides **BWN** · aliases/synonyms · `placeIds` **linkedSlug**.
+- `borneo-region` slugs: `borneo` · `kota-kinabalu` · **`brunei`** (교차 링크, 병합 없음).
+- `toolkit:audit-place-id`: P0 **unmapped 0** (브루나이 mapped) · `audit:airports` **none: 0**.
 
 ---
 

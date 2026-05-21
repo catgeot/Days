@@ -88,7 +88,19 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Vila do Conde': 'porto',
   '리마': 'machu-picchu',
   'Lima': 'machu-picchu',
-  '스코푸가포스': 'iceland'
+  '스코푸가포스': 'iceland',
+
+  // —— citiesData 승격 (Phase D) ——
+  '블라디보스토크': 'vladivostok',
+  'Vladivostok': 'vladivostok',
+  '이르쿠츠크': 'irkutsk',
+  'Irkutsk': 'irkutsk',
+  '앨리스스프링스': 'alice-springs',
+  'Alice Springs': 'alice-springs',
+
+  // —— 보르네오섬 별도 slug (borneo 병합 금지) ——
+  '브루나이': 'brunei',
+  'Brunei': 'brunei'
 };
 
 /**
@@ -126,6 +138,10 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   ushuaia: ['Ushuaia', 'Tierra del Fuego', '티에라델푸에고'],
   'torres-del-paine': ['Torres del Paine', '토레스델파이네', 'Parque Nacional Torres del Paine'],
   madeira: ['마데이라', 'Madeira', 'Madeira Island', '푼샬', 'Funchal'],
+  vladivostok: ['블라디보스토크', 'Vladivostok', 'VVO'],
+  irkutsk: ['이르쿠츠크', 'Irkutsk', 'IKT', '바이칼', 'Lake Baikal'],
+  'alice-springs': ['앨리스스프링스', 'Alice Springs', 'ASP'],
+  brunei: ['브루나이', 'Brunei', 'Bandar Seri Begawan', 'BSB'],
   tsushima: ['쓰시마', '쓰시마섬', '대마도', 'Tsushima', '対馬', '히타카츠', 'Hitakatsu'],
   madagascar: ['Maroantsetra', '안치라나나', '노시베 섬', '노시베', 'Nosy Be', 'Antsiranana'],
   // —— unmapped alias 배치 (place_toolkit → SSOT slug) ——

@@ -6821,5 +6821,121 @@ export const TRAVEL_SPOTS = [
       "해변",
       "테마파크"
     ]
+  },
+  {
+    "id": 367,
+    "slug": "vladivostok",
+    "name": "블라디보스토크",
+    "name_en": "Vladivostok",
+    "country": "러시아",
+    "country_en": "Russia",
+    "lat": 43.1198,
+    "lng": 131.8869,
+    "tier": 2,
+    "popularity": 76,
+    "continent": "asia",
+    "categories": [
+      "urban",
+      "culture"
+    ],
+    "primaryCategory": "urban",
+    "category": "urban",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "가장 가까운 유럽이라 불리는 극동 러시아의 항구입니다. 시베리아 횡단 열차의 장대한 출발점이자 종착역으로, 골든혼만과 러스키 다리 야경·해산물 시장이 유명합니다.",
+    "keywords": [
+      "아시아",
+      "러시아",
+      "극동",
+      "시베리아횡단열차",
+      "항구"
+    ]
+  },
+  {
+    "id": 368,
+    "slug": "irkutsk",
+    "name": "이르쿠츠크",
+    "name_en": "Irkutsk",
+    "country": "러시아",
+    "country_en": "Russia",
+    "lat": 52.287,
+    "lng": 104.305,
+    "tier": 2,
+    "popularity": 74,
+    "continent": "asia",
+    "categories": [
+      "nature",
+      "culture"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "시베리아의 파리라 불리는 목재 건축 도시입니다. 세계에서 가장 깊은 민물 호수인 바이칼 호수로 향하는 관문으로, 리스트비양카·올호노섬 일정의 출발점입니다.",
+    "keywords": [
+      "아시아",
+      "러시아",
+      "바이칼",
+      "시베리아",
+      "목조건축"
+    ]
+  },
+  {
+    "id": 369,
+    "slug": "alice-springs",
+    "name": "앨리스스프링스",
+    "name_en": "Alice Springs",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -23.698,
+    "lng": 133.8807,
+    "tier": 2,
+    "popularity": 72,
+    "continent": "oceania",
+    "categories": [
+      "adventure",
+      "nature"
+    ],
+    "primaryCategory": "adventure",
+    "category": "adventure",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "호주 대륙 정중앙 아웃백의 거점 도시입니다. 울루루·킹스캐니언·맥도널드 산맥 일정의 출발점으로, 사막 일출·별 관측·원주민 문화 체험이 인기입니다.",
+    "keywords": [
+      "오세아니아",
+      "호주",
+      "아웃백",
+      "울루루",
+      "레드센터"
+    ]
+  },
+  {
+    "id": 370,
+    "slug": "brunei",
+    "name": "브루나이",
+    "name_en": "Brunei",
+    "country": "브루나이",
+    "country_en": "Brunei",
+    "lat": 4.9031,
+    "lng": 114.9398,
+    "tier": 2,
+    "popularity": 70,
+    "continent": "asia",
+    "categories": [
+      "culture",
+      "nature"
+    ],
+    "primaryCategory": "culture",
+    "category": "culture",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "보르네오섬 북부에 있는 독립 왕국으로, 황금 돔 모스크·수상 마을·열대우림이 어우러진 소규모 목적지입니다. 말레이시아 사바(보르네오)와 입국·관문(BWN)이 다르며, 반다르스리브가완을 거점으로 프로보시스 원숭이·왕실 박물관·정글 투어를 즐기기 좋습니다.",
+    "keywords": [
+      "아시아",
+      "브루나이",
+      "보르네오섬",
+      "BWN",
+      "술탄국"
+    ]
   }
 ];

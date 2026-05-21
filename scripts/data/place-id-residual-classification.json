@@ -44,10 +44,10 @@
     "앨리스스프링스"
   ],
   "unmappedSummary": {
-    "total": 40,
-    "note": "delete 3건 후 audit 기준; placeIds_only·alias는 audit unmapped에 남을 수 있음(의도)",
-    "p0FlagOnly": 1,
-    "p0PlaceId": "브루나이"
+    "total": 36,
+    "note": "brunei slug 승격(2026-05-21) — P0 unmapped 0 · borneo-region 교차 링크",
+    "p0FlagOnly": 0,
+    "p0PlaceId": null
   },
   "unmappedBatches": {
     "alias_to_existing_slug": [
@@ -73,9 +73,7 @@
       { "place_id": "스리자야와르데네푸라코테", "guideIatas": ["CMB"] },
       { "place_id": "베네수엘라", "guideIatas": ["IST", "MAD"], "note": "국가 단위·오탐" }
     ],
-    "flag_only": [
-      { "place_id": "브루나이", "guideIatas": ["BWN"], "note": "P0 유지·borneo와 병합 금지" }
-    ],
+    "flag_only": [],
     "reconcile_or_delete_candidate": [],
     "reconcileApplied": {
       "appliedAt": "2026-05-21",
@@ -84,9 +82,10 @@
     },
     "new_slug_candidate": [
       { "place_id": "마데이라", "proposedSlug": "madeira", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
-      { "place_id": "블라디보스토크", "proposedSlug": "vladivostok", "inCitiesData": true },
-      { "place_id": "이르쿠츠크", "proposedSlug": "irkutsk", "inCitiesData": true },
-      { "place_id": "앨리스스프링스", "proposedSlug": "alice-springs", "inCitiesData": true },
+      { "place_id": "블라디보스토크", "proposedSlug": "vladivostok", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "이르쿠츠크", "proposedSlug": "irkutsk", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "앨리스스프링스", "proposedSlug": "alice-springs", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "브루나이", "proposedSlug": "brunei", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21", "note": "borneo 병합 금지·borneo-region 교차 링크" },
       { "place_id": "퀸스타운", "proposedSlug": "queenstown", "inCitiesData": false }
     ]
   }

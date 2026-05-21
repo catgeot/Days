@@ -3688,5 +3688,65 @@
       "madeira",
       "madeira"
     ]
+  },
+  {
+    "id": 367,
+    "slug": "vladivostok",
+    "name": "블라디보스토크",
+    "name_en": "Vladivostok",
+    "country": "러시아",
+    "searchKeys": [
+      "vladivostok",
+      "블라디보스토크",
+      "vladivostok",
+      "vladivostok",
+      "vladivostok",
+      "vladivostok"
+    ]
+  },
+  {
+    "id": 368,
+    "slug": "irkutsk",
+    "name": "이르쿠츠크",
+    "name_en": "Irkutsk",
+    "country": "러시아",
+    "searchKeys": [
+      "irkutsk",
+      "이르쿠츠크",
+      "irkutsk",
+      "irkutsk",
+      "irkutsk",
+      "irkutsk"
+    ]
+  },
+  {
+    "id": 369,
+    "slug": "alice-springs",
+    "name": "앨리스스프링스",
+    "name_en": "Alice Springs",
+    "country": "호주",
+    "searchKeys": [
+      "alice-springs",
+      "앨리스스프링스",
+      "alice springs",
+      "alice springs",
+      "alicesprings",
+      "alicesprings"
+    ]
+  },
+  {
+    "id": 370,
+    "slug": "brunei",
+    "name": "브루나이",
+    "name_en": "Brunei",
+    "country": "브루나이",
+    "searchKeys": [
+      "brunei",
+      "브루나이",
+      "brunei",
+      "brunei",
+      "brunei",
+      "brunei"
+    ]
   }
 ]
