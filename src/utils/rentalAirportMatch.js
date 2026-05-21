@@ -344,6 +344,10 @@ function isTransitHubTimelineTitle(title) {
   if (/경유지|환승지|transit hub|connecting hub/i.test(title)) return true;
   if (/(경유|환승|transfer|layover|connecting)/i.test(title) && /(등\)|예:|예\s|등\s)/.test(title)) return true;
   if (/(경유|환승|transfer|layover|connecting)/i.test(title) && /주요\s*허브|허브\s*공항/i.test(title)) return true;
+  // 「ADD 또는 CDG 공항 경유」처럼 도착·입국 없이 경유만 나열한 단계
+  if (/(경유|환승|transfer|layover|connecting)/i.test(title) && !/(도착|입국|arrival)/i.test(title)) {
+    return true;
+  }
   return false;
 }
 

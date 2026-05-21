@@ -172,30 +172,27 @@ export function essentialGuideMatchesLocation(guide, location) {
   if (!guide || typeof guide !== 'object' || !location) return true;
 
   const curated = getCuratedGatewayIataSet(location);
-  const primary = Array.isArray(guide.primary_arrival_airports_iata)
+  const primaryRaw = Array.isArray(guide.primary_arrival_airports_iata)
     ? guide.primary_arrival_airports_iata
         .map((c) => String(c).trim().toUpperCase())
-        .filter((c) => hubByIata(c))
+        .filter(Boolean)
     : [];
+  const primaryKnown = primaryRaw.filter((c) => hubByIata(c));
 
-  // curated high(디에고 가르시아·핏케언 등): primary만 검사 — 타임라인 경유(SIN 등)는 면제
-  if (curated) {
-    if (primary.length === 0) return true;
-    return primary.some((c) => isIataPlausibleForLocation(c, location));
+  // primary_arrival_airports_iata가 있으면 도착 공항만 검사 — 타임라인 경유(ADD·CDG·SIN 등)는 면제
+  if (primaryRaw.length > 0) {
+    if (primaryKnown.length === 0) return true;
+    return primaryKnown.some(
+      (c) => isIataPlausibleForLocation(c, location) || curated?.has(c)
+    );
   }
 
-  const iataBuckets = [];
-  if (primary.length) iataBuckets.push(primary);
   const fromTimeline = extractArrivalIataCodesFromEssentialGuide(guide);
-  if (fromTimeline?.length) iataBuckets.push(fromTimeline);
+  if (!fromTimeline?.length) return true;
 
-  for (const codes of iataBuckets) {
-    const known = codes.map((c) => String(c).trim().toUpperCase()).filter((c) => hubByIata(c));
-    if (known.length === 0) continue;
-    if (!known.some((c) => isIataPlausibleForLocation(c, location))) return false;
-  }
-
-  return true;
+  const known = fromTimeline.map((c) => String(c).trim().toUpperCase()).filter((c) => hubByIata(c));
+  if (known.length === 0) return true;
+  return known.some((c) => isIataPlausibleForLocation(c, location) || curated?.has(c));
 }
 
 export function hasUsableToolkit(row) {

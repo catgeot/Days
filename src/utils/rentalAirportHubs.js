@@ -564,6 +564,14 @@ export const RENTAL_AIRPORT_HUBS = [
   },
   { iata: 'NBO', officialKo: '조모 케냐타타국제공항', lat: -1.3192, lng: 36.9278, radiusKm: 200, aliases: ['nairobi', '나이로비', 'nbo', 'serengeti', '세렝게티'] },
   {
+    iata: 'FIH',
+    officialKo: '은질리 국제공항',
+    lat: -4.3858,
+    lng: 15.4446,
+    radiusKm: 200,
+    aliases: ['kinshasa', '킨샤사', 'fih', 'ndjili', '은질리', 'congo', 'drc', '콩고']
+  },
+  {
     iata: 'JRO',
     officialKo: '킬리만자로국제공항',
     lat: -3.4294,
