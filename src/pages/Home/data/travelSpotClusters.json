@@ -13,5 +13,11 @@
     "labelEn": "Iceland",
     "slugs": ["iceland", "reykjavik"],
     "notes": "링로드·수도 KEF 관문 — 일정·툴킷 초점이 다름"
+  },
+  "borneo-region": {
+    "labelKo": "보르네오 권역",
+    "labelEn": "Borneo",
+    "slugs": ["borneo", "kota-kinabalu"],
+    "notes": "섬 전역 BKI/KCH/KUL · 키나발루·사바 관문 BKI — 브루나이(BWN)는 별도 여행지"
   }
 }

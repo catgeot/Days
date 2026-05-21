@@ -171,8 +171,23 @@
 
 ### 다음
 
-1. `unmapped` reconcile/delete 후보(로라이마·마다가스카르 등) — dry-run 후 apply.
-2. (선택) borneo 2차 클러스터 · `madeira` slug 승격.
+1. ~~`unmapped` reconcile/delete 후보~~ → **세션 A·B·C** (이번 세션, 아래).
+2. gateo.kr 스모크·배포.
+
+### 세션 C — madeira 승격
+
+- `travelSpots.js` **madeira** 1건(id 366) · overrides FNC · aliases/synonyms · `travelSpotAirports` `linkedSlug`.
+- `generate:airports` **Mapped 245/246** · `audit:airports` **`none: 0`**.
+
+### 세션 B — borneo-region R3
+
+- `travelSpotClusters.json` **borneo-region**(`borneo`·`kota-kinabalu`).
+
+### 세션 A — reconcile apply
+
+- `madagascar-unmapped`: Maroantsetra·안치라나나·노시베 섬 → **마다가스카르** merge+delete 3건.
+- `unmapped-orphans`: 로라이마 산·우베를란지아·콜로니아 delete 3건.
+- 브루나이 `flag_only`·borneo 병합 없음.
 
 ---
 

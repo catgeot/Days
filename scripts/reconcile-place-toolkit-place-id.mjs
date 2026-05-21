@@ -12,7 +12,10 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import { essentialGuideHasContent, parseEssentialGuide } from '../src/utils/toolkitPlaceIdResolve.js';
-import { PLACE_TOOLKIT_RECONCILE_RULES } from './data/place-toolkit-reconcile-rules.mjs';
+import {
+  PLACE_TOOLKIT_DELETE_ONLY,
+  PLACE_TOOLKIT_RECONCILE_RULES
+} from './data/place-toolkit-reconcile-rules.mjs';
 import { auditPlaceToolkitRows } from './lib/audit-place-toolkit.mjs';
 import { fetchAllPlaceToolkits } from './lib/fetch-place-toolkit.mjs';
 import { normalizePlaceKey } from './lib/travel-spot-place-resolve.mjs';
@@ -61,7 +64,8 @@ function buildReconcilePlan(toolkitRows, rules) {
     auditSummary: audit.summary,
     rules: [],
     skipped: [],
-    totals: { rename: 0, merge: 0, delete: 0, flagOnly: 0 }
+    deleteOnly: [],
+    totals: { rename: 0, merge: 0, delete: 0, deleteOnly: 0, flagOnly: 0 }
   };
 
   const activeRules = onlyIds
@@ -148,6 +152,18 @@ function buildReconcilePlan(toolkitRows, rules) {
     plan.rules.push(rulePlan);
   }
 
+  const runDeleteOnly =
+    !onlyIds || onlyIds.includes(PLACE_TOOLKIT_DELETE_ONLY.ruleId);
+  const deleteOnlyIds = runDeleteOnly ? PLACE_TOOLKIT_DELETE_ONLY.placeIds : [];
+  for (const placeId of deleteOnlyIds) {
+    const row = toolkitRows.find((r) => r.place_id === placeId);
+    if (row) {
+      plan.deleteOnly.push({ place_id: placeId, reason: 'SSOT slug 없음·허브 IATA 오탐' });
+      plan.totals.deleteOnly += 1;
+      plan.totals.delete += 1;
+    }
+  }
+
   return plan;
 }
 
@@ -168,6 +184,11 @@ async function applyPlan(supabase, plan) {
       if (error) throw new Error(`delete ${del.place_id}: ${error.message}`);
     }
   }
+
+  for (const del of plan.deleteOnly ?? []) {
+    const { error } = await supabase.from('place_toolkit').delete().eq('place_id', del.place_id);
+    if (error) throw new Error(`delete-only ${del.place_id}: ${error.message}`);
+  }
 }
 
 function printPlan(plan) {
@@ -187,6 +208,11 @@ function printPlan(plan) {
     if (!rule.renames?.length && !rule.merges?.length && !rule.flagOnly?.length) {
       console.log('  (DB 변경 없음 — canonical 단일 또는 매칭 행 없음)');
     }
+  }
+
+  if (plan.deleteOnly?.length) {
+    console.log('\n[delete-only] SSOT slug 없음·오탐 행');
+    for (const d of plan.deleteOnly) console.log(`  delete: ${d.place_id} — ${d.reason}`);
   }
 }
 

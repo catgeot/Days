@@ -180,6 +180,12 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '케플라비크(KEF) — 레이캬비크 시내 관문'
   },
+  madeira: {
+    primaryIatas: ['FNC'],
+    preferredLinkIata: 'FNC',
+    confidence: 'high',
+    rationale: '마데이라(푼샬) 공항 FNC — Phase D-3·승격 slug'
+  },
   ushuaia: {
     primaryIatas: ['USH'],
     preferredLinkIata: 'USH',

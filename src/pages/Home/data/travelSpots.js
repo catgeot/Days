@@ -3508,6 +3508,35 @@ export const TRAVEL_SPOTS = [
     ]
   },
   {
+    "id": 366,
+    "slug": "madeira",
+    "name": "마데이라",
+    "name_en": "Madeira",
+    "country": "포르투갈",
+    "country_en": "Portugal",
+    "lat": 32.7607,
+    "lng": -16.9595,
+    "tier": 2,
+    "popularity": 78,
+    "continent": "europe",
+    "categories": [
+      "nature",
+      "adventure"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "대서양의 진주로 불리며, 일 년 내내 봄날 같은 날씨를 자랑합니다. 울창한 숲을 따라 걷는 레바다(Levada) 하이킹이 유명합니다. 푼샬(Funchal)을 거점으로 해안 드라이브·왜인 투어를 즐기기 좋습니다.",
+    "keywords": [
+      "포르투갈",
+      "레바다",
+      "하이킹",
+      "대서양",
+      "푼샬"
+    ]
+  },
+  {
     "id": 230,
     "slug": "lisbon",
     "name": "리스본",

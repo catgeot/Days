@@ -208,7 +208,22 @@ npm run toolkit:reconcile-place-id -- --apply --only=borneo,angkor-wat
 | 2 | ✅ 완료 | P1·P2·P3 reconcile apply(295행) · **duplicateSlug 0** · sync·audit `none:0` |
 | 2d | ✅ 완료 | `update-place-toolkit` canonical `place_id` · `PlannerTab` slug 전달 |
 | 3 | ✅ 1차 | 3a curated 승격 · 3b 허브·DB IATA 패치 · **geoMismatch 0** |
-| 4 | ⬜ 백로그 | |
-| R | ⬜ Gate 후 | 연관 여행지 UI — [`related-destinations-cross-nav-plan.md`](./related-destinations-cross-nav-plan.md) |
+| 4 | ✅ 세션 A | D-4·D-5 + reconcile 6건(마다가스카르 3 merge·오탐 3 delete) · [`2026-05-19-project-log.md`](./2026-05-19-project-log.md) |
+| R | ✅ 1차 | 연관 여행지 UI — [`related-destinations-cross-nav-plan.md`](./related-destinations-cross-nav-plan.md) |
 
-*완료 시 이 표와 [`2026-05-18-project-log.md`](./2026-05-18-project-log.md)에 2~3줄만 갱신.*
+### Phase 4 잔여 — 세션 A (reconcile/delete 후보)
+
+**분류표**: [`scripts/data/place-id-residual-classification.json`](../scripts/data/place-id-residual-classification.json) → `unmappedBatches.reconcile_or_delete_candidate`
+
+| place_id | guideIatas | 비고 |
+|----------|------------|------|
+| 로라이마 산 | GRU | canonical slug·merge 규칙 **미작성** |
+| 우베를란지아 | GRU | 동일 |
+| 콜로니아 | EZE | 우루과이·아르헨티나 권 — 검수 |
+| Maroantsetra | TNR | 마다가스카르 |
+| 안치라나나 | TNR, ADD, CDG | 마다가스카르 |
+| 노시베 섬 | TNR, ADD | 마다가스카르 |
+
+**절차**: `place-toolkit-reconcile-rules.mjs` 규칙 추가 → `toolkit:reconcile-place-id --dry-run` → 삭제·merge 목록 **사용자 확인** → `--apply --only=…` · 브루나이 `flag_only` 유지.
+
+*완료 시 이 표와 일지에 2~3줄만 갱신.*

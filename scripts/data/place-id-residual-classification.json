@@ -8,7 +8,7 @@
     "skippedNoIataTarget": 20,
     "skippedBlocklisted": 11,
     "gatePassed": true,
-    "relatedDestinationsUi": "R1–R2 (patagonia-region·iceland-region)"
+    "relatedDestinationsUi": "R1–R3 (patagonia·iceland·borneo-region)"
   },
   "skippedNoIataRemaining": [],
   "skippedNoIataResolvedD4": {
@@ -43,8 +43,8 @@
     "앨리스스프링스"
   ],
   "unmappedSummary": {
-    "total": 47,
-    "note": "delete 3건 후 audit 기준; placeIds_only·alias는 audit unmapped에 남을 수 있음(의도)"
+    "total": 40,
+    "note": "delete 3건 후 audit 기준; placeIds_only·alias는 audit unmapped에 남을 수 있음(의도)",
     "p0FlagOnly": 1,
     "p0PlaceId": "브루나이"
   },
@@ -75,17 +75,14 @@
     "flag_only": [
       { "place_id": "브루나이", "guideIatas": ["BWN"], "note": "P0 유지·borneo와 병합 금지" }
     ],
-    "reconcile_or_delete_candidate": [
-      { "place_id": "하이원팰리스호텔", "hasGuideContent": false },
-      { "place_id": "로라이마 산", "guideIatas": ["GRU"] },
-      { "place_id": "우베를란지아", "guideIatas": ["GRU"] },
-      { "place_id": "콜로니아", "guideIatas": ["EZE"] },
-      { "place_id": "Maroantsetra", "guideIatas": ["TNR"] },
-      { "place_id": "안치라나나", "guideIatas": ["TNR", "ADD", "CDG"] },
-      { "place_id": "노시베 섬", "guideIatas": ["TNR", "ADD"] }
-    ],
+    "reconcile_or_delete_candidate": [],
+    "reconcileApplied": {
+      "appliedAt": "2026-05-21",
+      "madagascar-unmapped": ["Maroantsetra", "안치라나나", "노시베 섬"],
+      "unmapped-orphans": ["로라이마 산", "우베를란지아", "콜로니아"]
+    },
     "new_slug_candidate": [
-      { "place_id": "마데이라", "proposedSlug": "madeira", "inCitiesData": true },
+      { "place_id": "마데이라", "proposedSlug": "madeira", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
       { "place_id": "블라디보스토크", "proposedSlug": "vladivostok", "inCitiesData": true },
       { "place_id": "이르쿠츠크", "proposedSlug": "irkutsk", "inCitiesData": true },
       { "place_id": "앨리스스프링스", "proposedSlug": "alice-springs", "inCitiesData": true },

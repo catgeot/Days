@@ -210,5 +210,18 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
       'Reynisfjara',
       '레이클라비크'
     ]
+  },
+  {
+    id: 'madagascar-unmapped',
+    slugs: ['madagascar'],
+    canonicalPlaceId: '마다가스카르',
+    mergeFrom: ['Maroantsetra', '안치라나나', '노시베 섬', '노시베', 'Nosy Be', 'Antsiranana'],
+    note: '마다가스카르 권역 세부 place_id — canonical 통합(세션 A)'
   }
 ];
+
+/** SSOT slug 없음·허브 IATA 오탐 — merge 대상 없이 행 삭제만 (`--only=unmapped-orphans`) */
+export const PLACE_TOOLKIT_DELETE_ONLY = {
+  ruleId: 'unmapped-orphans',
+  placeIds: ['로라이마 산', '우베를란지아', '콜로니아']
+};
