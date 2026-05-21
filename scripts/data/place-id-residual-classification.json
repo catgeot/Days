@@ -4,25 +4,35 @@
     "auditAirportsNone": 0,
     "duplicateSlug": 0,
     "geoMismatchP0": 0,
-    "skippedNoIata": 12,
+    "skippedNoIata": 0,
     "skippedNoIataTarget": 20,
+    "skippedBlocklisted": 11,
     "gatePassed": true,
     "relatedDestinationsUi": "R1–R2 (patagonia-region·iceland-region)"
   },
-  "skippedNoIataRemaining": [
-    { "place_id": "하이원팰리스호텔", "action": "delete_candidate" },
-    { "place_id": "이슬라마바드", "action": "flag_only" },
-    { "place_id": "춘천", "action": "flag_only" },
-    { "place_id": "강화도", "action": "flag_only" },
-    { "place_id": "독도", "action": "flag_only" },
-    { "place_id": "춘천시", "action": "flag_only" },
-    { "place_id": "닭갈비", "action": "delete_candidate" },
-    { "place_id": "수원", "action": "flag_only" },
-    { "place_id": "아바나", "action": "alias_review" },
-    { "place_id": "달", "action": "delete_candidate" },
-    { "place_id": "마나도", "action": "flag_only" },
-    { "place_id": "강릉시", "action": "flag_only" }
+  "skippedNoIataRemaining": [],
+  "skippedNoIataResolvedD4": {
+    "blocklist_sync_excluded": [
+      "이슬라마바드",
+      "춘천",
+      "강화도",
+      "독도",
+      "춘천시",
+      "수원",
+      "마나도",
+      "강릉시"
+    ],
+    "placeIds_only": [{ "place_id": "아바나", "primaryIatas": ["HAV"], "note": "havana travelSpots 승격 전" }]
+  },
+  "deleteCandidateApplied": [
+    { "place_id": "하이원팰리스호텔", "deletedAt": "2026-05-21" },
+    { "place_id": "닭갈비", "deletedAt": "2026-05-21" },
+    { "place_id": "달", "deletedAt": "2026-05-21" }
   ],
+  "unmappedBatchApplied": {
+    "alias_to_existing_slug": "aliases + TOOLKIT_SYNONYMS (2026-05-21)",
+    "placeIds_only": "travelSpotAirports placeIds·sync (기존 IATA 유지)"
+  },
   "skippedNoIataResolvedD3": [
     "마데이라",
     "발레타",
@@ -33,7 +43,8 @@
     "앨리스스프링스"
   ],
   "unmappedSummary": {
-    "total": 52,
+    "total": 47,
+    "note": "delete 3건 후 audit 기준; placeIds_only·alias는 audit unmapped에 남을 수 있음(의도)"
     "p0FlagOnly": 1,
     "p0PlaceId": "브루나이"
   },

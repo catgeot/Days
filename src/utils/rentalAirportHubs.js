@@ -658,4 +658,5 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'ASP', officialKo: '앨리스스프링스 공항', lat: -23.8067, lng: 133.9020, radiusKm: 200, aliases: ['alice springs', '앨리스스프링스', 'asp', 'uluru gateway'] },
   { iata: 'OIT', officialKo: '미야자키 공항', lat: 31.8772, lng: 131.4486, radiusKm: 100, aliases: ['miyazaki', '미야자키', 'oit', 'aoshima', '아오시마'] },
   { iata: 'MCT', officialKo: '무스카트 국제공항', lat: 23.5933, lng: 58.2844, radiusKm: 200, aliases: ['muscat', '무스카트', 'mct', 'oman', '오만'] },
+  { iata: 'HAV', officialKo: '호세 마르티 국제공항', lat: 22.9892, lng: -82.4091, radiusKm: 120, aliases: ['havana', 'habana', '아바나', 'hav'] },
 ];

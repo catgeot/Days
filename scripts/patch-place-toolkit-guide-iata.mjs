@@ -172,6 +172,11 @@ const PATCHES = [
     matchPlaceIds: ['Ad Dakhiliyah Governorate'],
     primaryIatas: ['MCT'],
     note: 'Phase D-3 — 오만 MCT 참고'
+  },
+  {
+    matchPlaceIds: ['아바나', 'Havana', 'havana'],
+    primaryIatas: ['HAV'],
+    note: 'Phase D-4 — citiesData havana, travelSpots 승격 전 placeIds만'
   }
 ];
 

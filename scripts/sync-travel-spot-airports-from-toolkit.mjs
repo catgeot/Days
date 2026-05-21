@@ -23,6 +23,7 @@ import { extractArrivalIataCodesFromEssentialGuide } from '../src/utils/rentalAi
 import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from './data/travel-spot-airport-overrides.mjs';
 import {
   buildSpotLookup,
+  isBlocklistedPlaceId,
   normalizePlaceKey,
   placeIdVariants,
   resolveTravelSpotFromPlaceId
@@ -158,6 +159,7 @@ async function main() {
     skippedOverride: [],
     skippedNoSpot: [],
     skippedNoIata: [],
+    skippedBlocklisted: [],
     skippedInvalidGuide: [],
     matchedByAlias: [],
     matchedByFuzzy: []
@@ -182,11 +184,15 @@ async function main() {
 
     const airportRow = rowFromToolkitGuide(guide);
     if (!airportRow) {
-      report.skippedNoIata.push({
-        place_id: placeId,
-        slug: spot?.slug ?? null,
-        name: spot?.name ?? null
-      });
+      if (isBlocklistedPlaceId(placeId)) {
+        report.skippedBlocklisted.push({ place_id: placeId });
+      } else {
+        report.skippedNoIata.push({
+          place_id: placeId,
+          slug: spot?.slug ?? null,
+          name: spot?.name ?? null
+        });
+      }
       continue;
     }
 
@@ -246,6 +252,7 @@ async function main() {
   console.log('건너뜀 — 오버라이드:', report.skippedOverride.length);
   console.log('건너뜀 — travelSpots 미매칭:', report.skippedNoSpot.length);
   console.log('건너뜀 — IATA 없음:', report.skippedNoIata.length);
+  console.log('건너뜀 — blocklist(의도적 제외):', report.skippedBlocklisted.length);
   console.log('별칭으로 매칭:', report.matchedByAlias.length);
   console.log('퍼지(유일) 매칭:', report.matchedByFuzzy.length);
   console.log('리포트:', REPORT_PATH);

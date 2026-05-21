@@ -3,7 +3,7 @@
     "version": 1,
     "generatedAt": "2026-05-19T11:23:32.725Z",
     "spotCount": 244,
-    "placeIdCount": 330,
+    "placeIdCount": 333,
     "stats": {
       "override": 93,
       "toolkitSync": 152,
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-19T11:33:46.204Z",
+    "lastToolkitSyncAt": "2026-05-21T02:31:43.048Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -5763,7 +5763,8 @@
     "바하마": {
       "primaryIatas": [
         "ATL",
-        "JFK"
+        "JFK",
+        "DFW"
       ],
       "preferredLinkIata": "ATL",
       "kind": "multi",
@@ -6579,6 +6580,43 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "앨리스스프링스"
+    },
+    "florida": {
+      "primaryIatas": [
+        "MCO",
+        "MIA",
+        "TPA"
+      ],
+      "preferredLinkIata": "MCO",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "Florida"
+    },
+    "메히칼리": {
+      "primaryIatas": [
+        "MEX",
+        "LAX",
+        "SAN"
+      ],
+      "preferredLinkIata": "MEX",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "메히칼리"
+    },
+    "아바나": {
+      "primaryIatas": [
+        "HAV"
+      ],
+      "preferredLinkIata": "HAV",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "아바나"
     }
   }
 }

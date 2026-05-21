@@ -157,10 +157,29 @@
 - **요코하마** `/place/yokohama/planner`: 배너 **HND+NRT** · Trip.com **HND**.
 - **대마도** `/place/tsushima/planner`: 배너 **TSJ+FUK** · Trip.com **TSJ**.
 
+### Phase D-4 — skippedNoIata 12→0
+
+- sync: blocklist 11건 → `skippedBlocklisted` 분리 · **아바나** DB `HAV` 패치 + 허브 → `placeIds` 동기화.
+- `audit:airports` **`none: 0`** · Hub **265**.
+
+### Phase D-5 — delete 3건 + unmapped 1차 배치
+
+- `place_toolkit` 삭제: **하이원팰리스호텔·닭갈비·달** (각 1행).
+- unmapped: **alias 4** → `TRAVEL_SPOT_TOOLKIT_SYNONYMS` · **placeIds_only** sync 유지.
+- `toolkit:audit-place-id`: **294행** · `unmapped 47` · P0 `unmapped 1`(브루나이) · `duplicateSlug 4`(alias 의도).
+- `audit:airports` **`none: 0`** 유지.
+
 ### 다음
 
-1. 잔여 `skippedNoIata` **12**(국내·blocklist 위주) · `unmapped` 52 분류표 기반 배치.
-2. (선택) PlaceCard 요약 칩 · borneo 2차 클러스터.
+1. `unmapped` reconcile/delete 후보(로라이마·마다가스카르 등) — dry-run 후 apply.
+2. (선택) borneo 2차 클러스터 · `madeira` slug 승격.
+
+---
+
+## 세션 종료 (2026-05-21)
+
+- **커밋 대상**: D-4·D-5 코드·JSON·분류표·일지·`.ai-context` (DB delete 3건은 이미 프로덕션 반영).
+- **배포 후 QA**: `travelSpotAirports.json`·`rentalAirportHubs`·aliases — gateo.kr `audit:airports none:0` 회귀만 스모크.
 
 ## 플래너 Trip.com 모바일 배너·UX (완료)
 

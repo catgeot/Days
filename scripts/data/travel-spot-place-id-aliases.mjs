@@ -125,6 +125,11 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   patagonia: ['Bariloche', '바릴로체', 'Patagonia (Northern)'],
   ushuaia: ['Ushuaia', 'Tierra del Fuego', '티에라델푸에고'],
   'torres-del-paine': ['Torres del Paine', '토레스델파이네', 'Parque Nacional Torres del Paine'],
+  // —— unmapped alias 배치 (place_toolkit → SSOT slug) ——
+  lisbon: ['나자레', 'Nazare'],
+  porto: ['빌라두코르부', 'Vila do Conde'],
+  'machu-picchu': ['리마', 'Lima'],
+  iceland: ['스코푸가포스'],
 };
 
 /** @type {Set<string>} 여행지 SSOT에 없거나 매칭하면 안 되는 place_id */
