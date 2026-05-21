@@ -27,6 +27,45 @@ export const KLOOK_FERRY_AD_ID = '1281898';
 export const KLOOK_FERRY_TARGET =
   'https://www.klook.com/ko/transport/?target_slug=/ko/transport/ttd/ferries/';
 
+/** 12Go 직접 제휴 파트너 ID */
+export const TWELVE_GO_PARTNER_ID = '15927471';
+
+/**
+ * 12Go 제휴 딥링크 — `z`·`sub_id` 파라미터 부착.
+ *
+ * @param {string} targetUrl
+ * @param {{ subId?: string }} [options]
+ * @returns {string}
+ */
+export function get12GoAffiliateUrl(targetUrl, options = {}) {
+  if (!targetUrl) return '';
+  try {
+    const url = new URL(targetUrl);
+    url.pathname = url.pathname.replace(/^\/en(\/|$)/, '/ko$1');
+    url.searchParams.set('z', TWELVE_GO_PARTNER_ID);
+    if (options.subId) {
+      url.searchParams.set('sub_id', options.subId);
+    }
+    return url.toString();
+  } catch {
+    return targetUrl;
+  }
+}
+
+/** 12Go 한국어 홈 (노선 SSOT 없을 때 폴백) */
+export function get12GoHomeUrl(options = {}) {
+  return get12GoAffiliateUrl('https://12go.asia/ko/', options);
+}
+
+/** 12Go 제휴 검색 폼 위젯 (Form code) */
+export const TWELVE_GO_FORM = {
+  partnerId: TWELVE_GO_PARTNER_ID,
+  scriptSrc: `https://cdn0.trainbusferry.com/tools/form/ko/?id=${TWELVE_GO_PARTNER_ID}&domain=12go.asia`,
+  domain: '12go.asia',
+  language: 'ko',
+  currency: 'KRW',
+};
+
 /**
  * Travelpayouts 제휴 링크 생성기 (Short Link 방식)
  * 대시보드에서 직접 생성한 단축 링크(`tp.st`)를 기반으로,

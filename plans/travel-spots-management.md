@@ -75,18 +75,22 @@ node scripts/extract-travel-spots-list.cjs
       directFerries: false, // DF 취항 있으면 true + direct_ferries provider
       bookings: [
         { provider: 'direct', name: '운항사명', url: 'https://...' },
-        { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/...' },
+        { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/ko/travel/from/to/' },
         { provider: 'direct_ferries', name: 'Direct Ferries' }, // url은 런타임 resolve
       ],
     },
   ],
   fallbacks: ['klook_ferry'], // 노선 URL 없을 때
   dfRecommendations: ['추천 노선 텍스트 (선택)'],
+  twelveGoBannerLabel: '출발 → 도착', // (선택) 12Go 배너 짧은 라벨
+  twelveGoWidget: true, // (선택) compact UI — 배너 + direct 운항사만 (예: tsushima)
   confidence: 'high',
 },
 ```
 
-**provider 규칙**: `direct` → 운항사 공식 · `direct_ferries` → DF 제휴 · `twelve_go` → 12Go 직접(제휴 없음) · `klook_ferry` → fallback만.
+**provider 규칙**: `direct` → 운항사 공식 · `direct_ferries` → DF 제휴 · `twelve_go` → 12Go 노선 URL (`affiliate.js`의 `get12GoAffiliateUrl`로 `z`·`sub_id` 부착) · `klook_ferry` → fallback만.
+
+**12Go UI (2026-05-21)**: `routes[].bookings`에 `twelve_go`가 있으면 [`TwelveGoSearchWidget`](../src/components/PlaceCard/tabs/planner/components/TwelveGoSearchWidget.jsx) **클릭형 제휴 배너** 노출(노선별). Form script embed는 React SPA에서 비활성 이슈로 사용하지 않음. `twelveGoWidget: true` 여행지(대마도)는 상단 링크 그리드 생략·운항사 direct만 버튼.
 
 공항 `bannerNote`에 「버스·페리」「페리·전용선」이 있으면 **공항 overrides와 함께** 페리 overrides도 넣어 여정·카드가 일치하게 합니다.
 
@@ -108,8 +112,9 @@ npm run audit:ferries
 ### 5d. 플래너 QA (페리)
 
 - **`required` / `common`**: AI 툴킷 없어도 「페리 (쾌속선) 예약」 카드 **표시**
-- 예약 버튼: 운항사 · Direct Ferries · 12Go · (fallback) Klook 페리
-- **Direct Ferries 취항 없음** 지역(대마도 등): DF 버튼 없이 **운항사 direct**만 있는지 확인
+- **12Go**: 노선 URL 있으면 제휴 배너(`TwelveGoSearchWidget`) + 운항사/DF 버튼. `twelve_go`는 버튼이 아닌 배너로만 노출
+- 예약 버튼: 운항사 · Direct Ferries · (fallback) Klook 페리
+- **Direct Ferries 취항 없음** 지역(대마도 등): DF 버튼 없이 **운항사 direct**만 있는지 확인. 대마도: 팬스타 쓰시마링크 · 스타라인 니나호(`thestarline.co.kr`)
 
 ### 5e. 크루즈만 (`cruise_only`)
 
@@ -189,9 +194,12 @@ npm run enrich:airports
 
 | 파일 | 용도 |
 |------|------|
-| [`travelSpotFerries.json`](../src/pages/Home/data/travelSpotFerries.json) | slug → `tier`, `routes`, `fallbacks`, `dfRecommendations` |
-| [`travel-spot-ferry-overrides.mjs`](../scripts/data/travel-spot-ferry-overrides.mjs) | 검증된 노선·운항사·12Go 직접 URL |
-| [`ferryBookingMatch.js`](../src/utils/ferryBookingMatch.js) | 런타임: 카드 노출·provider 우선순위·URL resolve |
+| [`travelSpotFerries.json`](../src/pages/Home/data/travelSpotFerries.json) | slug → `tier`, `routes`, `fallbacks`, `dfRecommendations`, `twelveGoWidget` |
+| [`travel-spot-ferry-overrides.mjs`](../scripts/data/travel-spot-ferry-overrides.mjs) | 검증된 노선·운항사·12Go 노선 URL (SSOT) |
+| [`affiliate.js`](../src/utils/affiliate.js) | `get12GoAffiliateUrl`, `TWELVE_GO_PARTNER_ID` (`15927471`) |
+| [`ferryBookingMatch.js`](../src/utils/ferryBookingMatch.js) | 런타임: 카드 노출·provider 우선순위·URL resolve·배너 라벨 |
+| [`TwelveGoSearchWidget.jsx`](../src/components/PlaceCard/tabs/planner/components/TwelveGoSearchWidget.jsx) | 12Go 제휴 클릭 배너 |
+| [`FerryBookingWidget.jsx`](../src/components/PlaceCard/tabs/planner/components/FerryBookingWidget.jsx) | 플래너 페리 카드 UI |
 
 ### tier
 
@@ -206,7 +214,7 @@ npm run enrich:airports
 
 1. `direct` — 운항사 공식 (Direct Ferries 취항 없을 때, 예: JR Beetle)
 2. `direct_ferries` — Direct Ferries 제휴 홈
-3. `twelve_go` — 12Go 직접 URL (제휴 없음)
+3. `twelve_go` — 12Go 노선 딥링크 → UI는 **배너**로만 (`get12GoAffiliateUrl`: `z=15927471`, `sub_id={slug}-planner`)
 4. `klook_ferry` — Klook 페리 통합 페이지 (`aff_adid=1281898`)
 
 크루즈 키워드(여정 플래너) → `getTripcomCruiseUrl()` (페리와 분리).

@@ -19,7 +19,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
   // ── 한일 · 동아시아 ──
   tsushima: {
     tier: 'required',
-    summary: '한국→대마도(쓰시마)는 부산국제여객터미널→히타카츠항 쾌속페리가 주 경로입니다.',
+    twelveGoWidget: true,
+    twelveGoBannerLabel: '부산 → 대마도',
     routes: [
       {
         id: 'busan-hitakatsu',
@@ -27,14 +28,23 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         duration: '약 1시간',
         directFerries: false,
         bookings: [
-          { provider: 'direct', name: 'JR Beetle', url: 'https://www.jrbeetle.co.jp/' },
-          { provider: 'direct', name: '캠ellia 라인', url: 'https://www.camellia-line.co.jp/' },
+          { provider: 'direct', name: '팬스타 쓰시마링크', url: 'https://panstar-cruise.com/' },
+          { provider: 'direct', name: '스타라인 니나호', url: 'https://www.thestarline.co.kr/' },
+          {
+            provider: 'twelve_go',
+            name: '12Go',
+            url: 'https://12go.asia/ko/travel/Busan/Tsushima/',
+          },
         ],
       },
     ],
-    fallbacks: ['klook_ferry'],
+    dfRecommendations: [
+      '부산(Busan) - 히타카츠(Hitakatsu, 쓰시마) 약 1시간',
+      '멀미에 강한 편: 팬스타 쓰시마링크(약 1시간 10분)',
+      '가성비: 스타라인 니나호(약 1시간 30분)',
+    ],
     confidence: 'high',
-    rationale: 'Direct Ferries 취항 없음 — 운항사 직접 예약',
+    rationale: '12Go 검색 위젯 + 추천 운항사 2곳(팬스타·니나호)',
   },
   fukuoka: {
     tier: 'common',
@@ -46,7 +56,7 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         duration: '약 3시간',
         directFerries: true,
         bookings: [
-          { provider: 'direct', name: 'JR Beetle', url: 'https://www.jrbeetle.co.jp/' },
+          { provider: 'direct', name: 'JR Beetle', url: 'https://www.jrbeetle.com/ko' },
           { provider: 'direct_ferries', name: 'Direct Ferries' },
         ],
       },

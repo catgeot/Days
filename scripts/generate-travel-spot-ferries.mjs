@@ -165,6 +165,8 @@ function mergeOverride(slug, override, scored) {
   };
   if (override.summary) entry.summary = override.summary;
   if (override.rationale) entry.rationale = override.rationale;
+  if (override.twelveGoWidget) entry.twelveGoWidget = true;
+  if (override.twelveGoBannerLabel) entry.twelveGoBannerLabel = override.twelveGoBannerLabel;
   if (override.fallbacks?.length) entry.fallbacks = override.fallbacks;
 
   if (override.routes?.length) {

@@ -1,6 +1,6 @@
 import ferryData from '../pages/Home/data/travelSpotFerries.json';
 import { DIRECT_FERRIES_HOME_URL } from '../components/PlaceCard/tabs/planner/constants.js';
-import { getKlookFerryUrl } from './affiliate.js';
+import { get12GoAffiliateUrl, getKlookFerryUrl } from './affiliate.js';
 
 const PROVIDER_ORDER = ['direct', 'direct_ferries', 'twelve_go', 'klook_ferry'];
 
@@ -31,14 +31,24 @@ export function shouldShowFerryCard(slug) {
 
 /**
  * @param {FerryBookingLink} booking
+ * @param {{ slug?: string, campaign?: string }} [context]
  * @returns {FerryBookingLink & { url: string }}
  */
-export function resolveBookingUrl(booking) {
+export function resolveBookingUrl(booking, context = {}) {
   if (booking.provider === 'direct_ferries') {
     return { ...booking, url: DIRECT_FERRIES_HOME_URL };
   }
   if (booking.provider === 'klook_ferry') {
     return { ...booking, url: getKlookFerryUrl() };
+  }
+  if (booking.provider === 'twelve_go') {
+    const base = booking.url ?? '';
+    const subId =
+      context.subId ??
+      (context.slug
+        ? `${context.slug}-${context.campaign || 'planner'}`
+        : context.campaign || 'gateo-planner');
+    return { ...booking, url: get12GoAffiliateUrl(base, { subId }) };
   }
   return { ...booking, url: booking.url ?? '' };
 }
@@ -47,11 +57,11 @@ export function resolveBookingUrl(booking) {
  * @param {FerryBookingLink[]} bookings
  * @returns {Array<FerryBookingLink & { url: string }>}
  */
-function sortAndResolveBookings(bookings) {
+function sortAndResolveBookings(bookings, context = {}) {
   const sorted = [...bookings].sort(
     (a, b) => PROVIDER_ORDER.indexOf(a.provider) - PROVIDER_ORDER.indexOf(b.provider)
   );
-  return sorted.map(resolveBookingUrl).filter((b) => b.url);
+  return sorted.map((b) => resolveBookingUrl(b, context)).filter((b) => b.url);
 }
 
 /**
@@ -78,13 +88,20 @@ export function resolveFerryBookings(slug, stepTitle = '') {
     if (found) matchedRoute = found;
   }
 
+  const context = { slug, campaign: stepTitle ? 'timeline' : 'planner' };
+
   const routeBookings = matchedRoute?.bookings?.length
-    ? sortAndResolveBookings(matchedRoute.bookings)
+    ? sortAndResolveBookings(matchedRoute.bookings, context)
     : [];
 
   const fallbackProviders = profile.fallbacks ?? [];
   const fallbacks = fallbackProviders
-    .map((provider) => resolveBookingUrl({ provider, name: provider === 'klook_ferry' ? 'Klook 페리' : provider }))
+    .map((provider) =>
+      resolveBookingUrl(
+        { provider, name: provider === 'klook_ferry' ? 'Klook 페리' : provider },
+        context,
+      ),
+    )
     .filter((b) => b.url && !routeBookings.some((rb) => rb.provider === b.provider));
 
   const bookings =
@@ -92,7 +109,9 @@ export function resolveFerryBookings(slug, stepTitle = '') {
       ? routeBookings
       : fallbacks.length > 0
         ? fallbacks
-        : [resolveBookingUrl({ provider: 'klook_ferry', name: 'Klook 페리' })].filter((b) => b.url);
+        : [resolveBookingUrl({ provider: 'klook_ferry', name: 'Klook 페리' }, context)].filter(
+            (b) => b.url,
+          );
 
   return { route: matchedRoute, bookings, fallbacks };
 }
@@ -104,6 +123,35 @@ export function resolveFerryBookings(slug, stepTitle = '') {
 export function getDfRecommendations(slug) {
   const profile = resolveFerryProfile(slug);
   return profile?.dfRecommendations ?? [];
+}
+
+/**
+ * 12Go 배너 라벨 — route/profile override → 노선 label 간소화.
+ *
+ * @param {{ twelveGoBannerLabel?: string, label?: string } | null | undefined} route
+ * @param {{ twelveGoBannerLabel?: string } | null | undefined} profile
+ * @returns {string}
+ */
+export function resolveTwelveGoBannerLabel(route, profile) {
+  if (route?.twelveGoBannerLabel) return route.twelveGoBannerLabel;
+  if (profile?.twelveGoBannerLabel) return profile.twelveGoBannerLabel;
+  const label = route?.label?.trim();
+  if (!label) return '페리·교통 검색';
+  return label
+    .replace(/\([^)]*\)/g, '')
+    .replace(/\s*↔\s*/g, ' ↔ ')
+    .replace(/\s*→\s*/g, ' → ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * @param {Array<FerryBookingLink & { url: string }>} bookings
+ */
+export function partitionFerryBookings(bookings) {
+  const twelveGo = bookings.find((b) => b.provider === 'twelve_go' && b.url) ?? null;
+  const others = bookings.filter((b) => b.provider !== 'twelve_go' && b.url);
+  return { twelveGo, others };
 }
 
 /**

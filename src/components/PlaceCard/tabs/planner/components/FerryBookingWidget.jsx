@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ExternalLink, Ship } from 'lucide-react';
 import {
   getDfRecommendations,
+  partitionFerryBookings,
   resolveFerryBookings,
   resolveFerryProfile,
   resolveBookingUrl,
+  resolveTwelveGoBannerLabel,
 } from '../../../../../utils/ferryBookingMatch';
+import TwelveGoSearchWidget from './TwelveGoSearchWidget';
 
 const PROVIDER_BUTTON_STYLES = {
   direct: 'bg-slate-700 hover:bg-slate-800 text-white border-slate-600',
@@ -16,24 +19,84 @@ const PROVIDER_BUTTON_STYLES = {
 
 const FerryBookingWidget = ({ location, aiFerryData }) => {
   const slug = location?.slug;
+  const bookingContext = { slug, campaign: 'planner' };
   const profile = resolveFerryProfile(slug);
   const dfRecommendations = getDfRecommendations(slug);
   const { route, bookings, fallbacks } = resolveFerryBookings(slug);
 
+  const isCompactFerry = Boolean(profile?.twelveGoWidget);
+  const allRoutes = profile?.routes ?? [];
+  const showRouteList = !isCompactFerry && allRoutes.length > 1;
+
   const aiUrl = aiFerryData?.url?.trim?.() ?? '';
   const aiExtraBooking =
-    aiUrl && !bookings.some((b) => b.url === aiUrl)
-      ? resolveBookingUrl({ provider: 'direct', name: '공식 예약', url: aiUrl })
+    !isCompactFerry &&
+    aiUrl &&
+    !bookings.some((b) => b.url === aiUrl)
+      ? resolveBookingUrl({ provider: 'direct', name: '공식 예약', url: aiUrl }, bookingContext)
       : null;
 
-  const allRoutes = profile?.routes ?? [];
-  const showRouteList = allRoutes.length > 1;
+  const compactDirectBookings = useMemo(
+    () => bookings.filter((b) => b.provider === 'direct'),
+    [bookings],
+  );
+
+  const singleRoutePartition = useMemo(
+    () => partitionFerryBookings(bookings),
+    [bookings],
+  );
 
   if (!profile && !aiExtraBooking) return null;
 
+  const renderBookingButtons = (items) => {
+    if (!items.length) return null;
+    return (
+      <div className="flex flex-wrap gap-2">
+        {items.map((b, idx) => (
+          <a
+            key={idx}
+            href={b.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${PROVIDER_BUTTON_STYLES[b.provider] ?? PROVIDER_BUTTON_STYLES.direct}`}
+          >
+            {b.name}
+            <ExternalLink size={12} />
+          </a>
+        ))}
+      </div>
+    );
+  };
+
+  const renderRouteSection = (routeDef, resolvedBookings, { hideHeader = false } = {}) => {
+    const { twelveGo, others } = partitionFerryBookings(resolvedBookings);
+    if (!twelveGo && !others.length) return null;
+
+    return (
+      <div className="space-y-3">
+        {!hideHeader && (
+          <div>
+            <p className="text-sm font-semibold text-gray-800 break-keep">{routeDef.label}</p>
+            {routeDef.duration && (
+              <p className="text-xs text-gray-500 mt-0.5">{routeDef.duration}</p>
+            )}
+          </div>
+        )}
+        {twelveGo && (
+          <TwelveGoSearchWidget
+            slug={slug}
+            targetUrl={twelveGo.url}
+            routeLabel={resolveTwelveGoBannerLabel(routeDef, profile)}
+          />
+        )}
+        {renderBookingButtons(others)}
+      </div>
+    );
+  };
+
   return (
     <div className="mt-4 space-y-3">
-      {profile?.summary && (
+      {!isCompactFerry && profile?.summary && (
         <p className="text-xs text-gray-600 leading-relaxed break-keep">{profile.summary}</p>
       )}
 
@@ -54,107 +117,60 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
         </div>
       )}
 
-      {showRouteList ? (
-        <div className="space-y-3">
+      {isCompactFerry && (
+        <>
+          {singleRoutePartition.twelveGo && (
+            <TwelveGoSearchWidget
+              slug={slug}
+              targetUrl={singleRoutePartition.twelveGo.url}
+              routeLabel={resolveTwelveGoBannerLabel(route, profile)}
+            />
+          )}
+          {renderBookingButtons(compactDirectBookings)}
+        </>
+      )}
+
+      {!isCompactFerry && showRouteList && (
+        <div className="space-y-4">
           {allRoutes.map((r) => {
             const routeBookings = (r.bookings ?? [])
-              .map(resolveBookingUrl)
+              .map((b) => resolveBookingUrl(b, bookingContext))
               .filter((b) => b.url);
-            if (!routeBookings.length) return null;
+            const section = renderRouteSection(r, routeBookings);
+            if (!section) return null;
             return (
-              <div key={r.id} className="border border-gray-200 rounded-xl p-3 bg-white">
-                <div className="mb-2">
-                  <p className="text-sm font-semibold text-gray-800 break-keep">{r.label}</p>
-                  {r.duration && (
-                    <p className="text-xs text-gray-500 mt-0.5">{r.duration}</p>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {routeBookings.map((b, idx) => (
-                    <a
-                      key={`${r.id}-${idx}`}
-                      href={b.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${PROVIDER_BUTTON_STYLES[b.provider] ?? PROVIDER_BUTTON_STYLES.direct}`}
-                    >
-                      {b.name}
-                      <ExternalLink size={12} />
-                    </a>
-                  ))}
-                </div>
+              <div key={r.id} className="border border-gray-200 rounded-xl p-3 bg-white space-y-3">
+                {section}
               </div>
             );
           })}
         </div>
-      ) : (
-        route && (
-          <div className="border border-gray-200 rounded-xl p-3 bg-white">
-            <div className="mb-2">
-              <p className="text-sm font-semibold text-gray-800 break-keep">{route.label}</p>
-              {route.duration && (
-                <p className="text-xs text-gray-500 mt-0.5">{route.duration}</p>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {bookings.map((b, idx) => (
-                <a
-                  key={idx}
-                  href={b.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${PROVIDER_BUTTON_STYLES[b.provider] ?? PROVIDER_BUTTON_STYLES.direct}`}
-                >
-                  {b.name}
-                  <ExternalLink size={12} />
-                </a>
-              ))}
-            </div>
-          </div>
-        )
       )}
 
-      {aiExtraBooking?.url && (
-        <a
-          href={aiExtraBooking.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold border bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500 transition-colors"
-        >
-          {aiExtraBooking.name}
-          <ExternalLink size={12} />
-        </a>
-      )}
-
-      {fallbacks.length > 0 && showRouteList && (
-        <div className="pt-1">
-          <p className="text-xs text-gray-500 mb-2">기타 페리 검색</p>
-          <div className="flex flex-wrap gap-2">
-            {fallbacks.map((b, idx) => (
-              <a
-                key={idx}
-                href={b.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${PROVIDER_BUTTON_STYLES[b.provider] ?? PROVIDER_BUTTON_STYLES.klook_ferry}`}
-              >
-                {b.name}
-                <ExternalLink size={12} />
-              </a>
-            ))}
-          </div>
+      {!isCompactFerry && !showRouteList && route && (
+        <div className="border border-gray-200 rounded-xl p-3 bg-white">
+          {renderRouteSection(route, bookings, { hideHeader: false })}
         </div>
       )}
 
-      {!showRouteList && bookings.some((b) => b.provider === 'direct_ferries') && (
+      {aiExtraBooking?.url && renderBookingButtons([aiExtraBooking])}
+
+      {!isCompactFerry && fallbacks.length > 0 && (
+        <div className="pt-1">
+          <p className="text-xs text-gray-500 mb-2">기타 페리 검색</p>
+          {renderBookingButtons(fallbacks)}
+        </div>
+      )}
+
+      {!isCompactFerry && !showRouteList && bookings.some((b) => b.provider === 'direct_ferries') && (
         <p className="text-xs text-gray-500 text-center leading-relaxed break-keep">
           Direct Ferries 제휴 링크 · 예약 시 사이트 운영에 도움이 됩니다.
         </p>
       )}
 
-      {!showRouteList && !bookings.length && !aiExtraBooking && (
+      {!isCompactFerry && !showRouteList && !bookings.length && !aiExtraBooking && (
         <a
-          href={resolveBookingUrl({ provider: 'klook_ferry', name: 'Klook 페리' }).url}
+          href={resolveBookingUrl({ provider: 'klook_ferry', name: 'Klook 페리' }, bookingContext).url}
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full"

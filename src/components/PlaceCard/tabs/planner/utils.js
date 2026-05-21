@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
 import bouncePlannerBannerDesktop from '../../../../assets/bounce_278x90.png';
 import bouncePlannerBannerMobile from '../../../../assets/bounce.png';
-import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getKlookFerryUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
-import { resolveFerryBookings, shouldShowFerryCard } from '../../../../utils/ferryBookingMatch.js';
+import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getKlookFerryUrl, get12GoHomeUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
+import { shouldShowFerryCard } from '../../../../utils/ferryBookingMatch.js';
 import { getRentalCarHomeSearchSubtext } from '../../../../utils/rentalAirportMatch.js';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 import {
@@ -184,24 +184,22 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
         }
         case 'ferry_booking': {
             const slug = location?.slug;
-            const { bookings } = resolveFerryBookings(slug);
-            const primary = bookings[0];
-            if (primary?.url) {
-                links.push({
-                    url: primary.url,
-                    text: primary.name,
-                    subtext: '노선별 예약 링크는 위 위젯에서 확인하세요.',
-                    colorClass: 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border-cyan-200',
-                });
+            // SSOT 노선 카드(FerryBookingWidget)가 있으면 상단 링크 그리드는 생략 — 중복·역순 안내 방지
+            if (shouldShowFerryCard(slug)) {
+                break;
             }
-            if (shouldShowFerryCard(slug) || !primary) {
-                links.push({
-                    url: getKlookFerryUrl(),
-                    text: 'Klook 페리 통합',
-                    subtext: '노선 특화 URL이 없을 때 전체 페리 검색',
-                    colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200',
-                });
-            }
+            links.push({
+                url: get12GoHomeUrl({ subId: slug ? `${slug}-planner` : 'gateo-planner' }),
+                text: '12Go 교통 검색',
+                subtext: '아시아 기차·버스·페리 통합 검색',
+                colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200',
+            });
+            links.push({
+                url: getKlookFerryUrl(),
+                text: 'Klook 페리 통합',
+                subtext: '노선 특화 URL이 없을 때 전체 페리 검색',
+                colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200',
+            });
             break;
         }
         case 'map_poi':
