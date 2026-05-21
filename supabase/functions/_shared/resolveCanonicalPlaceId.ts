@@ -3,7 +3,8 @@ import canonicalPlaceIdMap from './canonicalPlaceIdMap.json' with { type: 'json'
 const SLUG_TO_CANONICAL = canonicalPlaceIdMap as Record<string, string>;
 
 /**
- * SSOT 한글 place_id — slug가 있으면 travelSpots·reconcile 규칙 우선.
+ * slug-first place_id — 큐레이션 slug가 있으면 DB 키로 slug 저장.
+ * 레거시: slug 미매핑 시 placeId/locationName(한글·영문) 그대로.
  */
 export function resolveCanonicalPlaceId(params: {
   slug?: string | null;
@@ -15,10 +16,16 @@ export function resolveCanonicalPlaceId(params: {
   const fromClient = String(params.canonicalPlaceId ?? '').trim();
   const fallback = String(params.placeId ?? params.locationName ?? '').trim();
 
-  if (slug) {
-    const fromMap = SLUG_TO_CANONICAL[slug];
-    if (fromMap) return fromMap;
-    if (fromClient) return fromClient;
+  if (slug && isKnownTravelSpotSlug(slug)) {
+    return slug;
+  }
+
+  if (slug && SLUG_TO_CANONICAL[slug]) {
+    return slug;
+  }
+
+  if (fromClient && isKnownTravelSpotSlug(fromClient.toLowerCase())) {
+    return fromClient.toLowerCase();
   }
 
   return fallback || fromClient;

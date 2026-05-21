@@ -6,11 +6,16 @@ import Logo from './Logo';
 import { useReport } from '../../../context/ReportContext';
 import { apiClient } from '../lib/apiClient';
 import { supabase } from '../../../shared/api/supabase';
-import { TRAVEL_SPOTS } from '../data/travelSpots';
+import {
+  buildPlaceDbIdCandidates,
+  getPlaceStatsId,
+  getPlaceStableKey,
+  mergeCanonicalTravelSpot,
+} from '../../../utils/travelSpotResolve';
 import FooterModal from './FooterModal';
 
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-const CACHE_VERSION = 'v1.4';
+const CACHE_VERSION = 'v1.5';
 
 const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
   const [thumbUrl, setThumbUrl] = useState('');
@@ -21,10 +26,13 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
 
     const fetchThumbnail = async () => {
       const originName = trip.destination || 'travel';
-      const realSpot = TRAVEL_SPOTS.find(s => s.name === originName);
-      const searchQuery = realSpot ? (realSpot.name_en || realSpot.name) : originName;
+      const location = mergeCanonicalTravelSpot({ name: originName });
+      const searchQuery = location.name_en || location.name || originName;
+      const stableKey = getPlaceStableKey(location);
+      const dbCandidates = buildPlaceDbIdCandidates(location);
+      const statsId = getPlaceStatsId(location);
 
-      const CACHE_KEY = `days_gallery_${searchQuery}`;
+      const CACHE_KEY = `days_gallery_${encodeURIComponent(stableKey)}_${searchQuery}`;
 
       try {
         const cachedItem = sessionStorage.getItem(CACHE_KEY);
@@ -43,13 +51,15 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
       }
 
       try {
-        const { data: statsData, error: _statsError } = await supabase
+        const { data: statsRows, error: _statsError } = await supabase
           .from('place_stats')
           .select('image_url')
-          .eq('place_id', originName)
-          .maybeSingle();
+          .in('place_id', dbCandidates.length ? dbCandidates : [originName])
+          .limit(1);
 
-        if (statsData && statsData.image_url) {
+        const statsData = statsRows?.find((row) => row?.image_url) ?? null;
+
+        if (statsData?.image_url) {
           if (isMounted) {
             setThumbUrl(statsData.image_url);
             setIsLoaded(true);
@@ -65,13 +75,15 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
           const newImageUrl = results[0].urls.small || results[0].urls.regular;
           setThumbUrl(newImageUrl);
 
-          supabase
-            .from('place_stats')
-            .upsert({
-              place_id: originName,
-              image_url: newImageUrl
-            }, { onConflict: 'place_id' })
-            .then();
+          if (statsId) {
+            supabase
+              .from('place_stats')
+              .upsert({
+                place_id: statsId,
+                image_url: newImageUrl
+              }, { onConflict: 'place_id' })
+              .then();
+          }
         }
       } catch (error) {
         console.error("Thumbnail Fetch Error in LogoPanel:", error);

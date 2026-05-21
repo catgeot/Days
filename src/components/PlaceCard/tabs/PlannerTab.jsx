@@ -71,8 +71,9 @@ const PlannerTab = ({
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = useCallback(async (placeName, forceUpdate = false) => {
         const canonicalLoc = mergeCanonicalTravelSpot(location);
-        const canonicalPlaceId = canonicalLoc?.name || plannerData?.place_id || location?.name;
         const slug = getPlaceStableKey(canonicalLoc) || canonicalLoc?.slug || location?.slug;
+        const canonicalPlaceId =
+          slug || plannerData?.place_id || canonicalLoc?.name || location?.name;
         if (!canonicalPlaceId) {
             setIsRemoteUpdating(false);
             return null;

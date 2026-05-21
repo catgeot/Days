@@ -7,6 +7,7 @@
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 새로운 날 작업이면 `plans/` **루트**에 **새** 파일로 추가하면 됩니다.  
   - 이전 일지는 파일 상단에 링크만 두면 이어감 (`.ai-context.md` 7절 참고)
+- **slug-first DB 마이그레이션 (진행 중)**: [`2026-05-21-slug-first-migration-handoff.md`](./2026-05-21-slug-first-migration-handoff.md) — SQL·apply·배포 **세션별 제시어** · 미완료 체크리스트
 
 ## 2026-04까지의 문서 (아카이브)
 

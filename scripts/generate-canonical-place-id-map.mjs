@@ -18,14 +18,14 @@ const list = JSON.parse(readFileSync(listPath, 'utf8'));
 /** @type {Record<string, string>} */
 const map = {};
 
+/** slug-first: Edge·DB place_id = slug (identity map for isKnownTravelSpotSlug) */
 for (const spot of list) {
-  if (spot.slug && spot.name) map[spot.slug] = spot.name;
+  if (spot.slug) map[spot.slug] = spot.slug;
 }
 
 for (const rule of PLACE_TOOLKIT_RECONCILE_RULES) {
-  if (!rule.canonicalPlaceId) continue;
   for (const slug of rule.slugs || []) {
-    if (slug) map[slug] = rule.canonicalPlaceId;
+    if (slug) map[slug] = slug;
   }
 }
 

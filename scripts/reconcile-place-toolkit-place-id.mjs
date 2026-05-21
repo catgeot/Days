@@ -167,6 +167,29 @@ function buildReconcilePlan(toolkitRows, rules) {
   return plan;
 }
 
+async function archiveToolkitRow(supabase, placeId, supersededBy, reason) {
+  const { data: row, error: selErr } = await supabase
+    .from('place_toolkit')
+    .select('*')
+    .eq('place_id', placeId)
+    .maybeSingle();
+  if (selErr) throw selErr;
+  if (!row) return;
+
+  const { error: insErr } = await supabase.from('place_toolkit_archive').insert({
+    ...row,
+    archived_at: new Date().toISOString(),
+    archive_reason: reason,
+    superseded_by: supersededBy ?? null,
+  });
+  if (insErr && !insErr.message?.includes('place_toolkit_archive')) {
+    throw new Error(`archive ${placeId}: ${insErr.message}`);
+  }
+
+  const { error: delErr } = await supabase.from('place_toolkit').delete().eq('place_id', placeId);
+  if (delErr) throw new Error(`delete ${placeId}: ${delErr.message}`);
+}
+
 async function applyPlan(supabase, plan) {
   for (const rule of plan.rules) {
     if (rule.action === 'flag_only') continue;
@@ -180,14 +203,12 @@ async function applyPlan(supabase, plan) {
     }
 
     for (const del of rule.deletes) {
-      const { error } = await supabase.from('place_toolkit').delete().eq('place_id', del.place_id);
-      if (error) throw new Error(`delete ${del.place_id}: ${error.message}`);
+      await archiveToolkitRow(supabase, del.place_id, rule.canonicalPlaceId, del.after ?? 'reconcile-merge');
     }
   }
 
   for (const del of plan.deleteOnly ?? []) {
-    const { error } = await supabase.from('place_toolkit').delete().eq('place_id', del.place_id);
-    if (error) throw new Error(`delete-only ${del.place_id}: ${error.message}`);
+    await archiveToolkitRow(supabase, del.place_id, null, del.reason ?? 'delete-only');
   }
 }
 

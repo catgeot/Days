@@ -5,6 +5,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { TRENDING_LIST as FALLBACK_LIST } from '../data/trendingData';
+import { buildSpotLookup, resolveTravelSpotFromPlaceId } from '../../../utils/travelSpotResolve';
+
+const spotLookup = buildSpotLookup(TRAVEL_SPOTS);
 
 export const useTrendingData = () => {
   // 초기값은 안전장치(Fallback) 데이터 사용
@@ -33,10 +36,9 @@ export const useTrendingData = () => {
         // 🚨 [Fix] 유효한 데이터만 먼저 필터링한 후 순위(rank) 부여
         const validSpots = data
           .map(row => {
-            const dbPlaceName = row.place_id; 
-            const spot = TRAVEL_SPOTS.find(s => s.name === dbPlaceName);
-            if (!spot) return null;
-            return { ...spot, score: row.total_score };
+            const resolved = resolveTravelSpotFromPlaceId(spotLookup, TRAVEL_SPOTS, row.place_id);
+            if (!resolved?.spot) return null;
+            return { ...resolved.spot, score: row.total_score };
           })
           .filter(Boolean);
 

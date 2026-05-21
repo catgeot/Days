@@ -33,13 +33,14 @@ export function buildToolkitPlaceIdCandidates(location) {
     out.push(s);
   };
 
+  const slugKey = getPlaceStableKey(location);
+  if (slugKey) add(slugKey);
+
   add(location.place_id);
   add(location.placeId);
+  add(location.slug);
   add(location.name);
   add(location.name_en);
-  add(location.slug);
-
-  const slugKey = getPlaceStableKey(location);
   const synonyms = TRAVEL_SPOT_TOOLKIT_SYNONYMS[slugKey];
   if (synonyms) {
     for (const syn of synonyms) add(syn);

@@ -33,6 +33,7 @@ const getDistanceKm = (lat1, lon1, lat2, lon2) => {
 };
 
 const SMART_SEARCH_COORD_TOLERANCE_KM = 120;
+const CURATION_COORD_TOLERANCE_KM = 5;
 const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
 const MOOD_HINT_KEYWORDS = [
   '감정', '기분', '마음', '분위기', '무드',
@@ -400,6 +401,38 @@ export function useHomeHandlers({
       return weighted[0];
     };
 
+    const matchCuratedLocation = (verifiedLat, verifiedLng, nameEn) => {
+      const normalizedEn = String(nameEn ?? '').trim().toLowerCase();
+
+      if (normalizedEn) {
+        const spotByName = TRAVEL_SPOTS.find(
+          (s) => s.name_en?.trim().toLowerCase() === normalizedEn
+        );
+        if (spotByName) return { type: 'spot', data: spotByName };
+
+        const cityByName = citiesData.find(
+          (c) => c.name_en?.trim().toLowerCase() === normalizedEn
+        );
+        if (cityByName) return { type: 'city', data: cityByName };
+      }
+
+      for (const spot of TRAVEL_SPOTS) {
+        if (!Number.isFinite(spot.lat) || !Number.isFinite(spot.lng)) continue;
+        if (getDistanceKm(verifiedLat, verifiedLng, spot.lat, spot.lng) <= CURATION_COORD_TOLERANCE_KM) {
+          return { type: 'spot', data: spot };
+        }
+      }
+
+      for (const city of citiesData) {
+        if (!Number.isFinite(city.lat) || !Number.isFinite(city.lng)) continue;
+        if (getDistanceKm(verifiedLat, verifiedLng, city.lat, city.lng) <= CURATION_COORD_TOLERANCE_KM) {
+          return { type: 'city', data: city };
+        }
+      }
+
+      return null;
+    };
+
     const verifyAndNormalizeCandidate = async (candidate, originalQuery, sourceLabel = "AI") => {
       const rawLat = Number(candidate?.lat);
       const rawLng = Number(candidate?.lng);
@@ -430,6 +463,60 @@ export function useHomeHandlers({
       const reasonText = typeof candidate?.reason === 'string' ? candidate.reason.trim() : '';
       const baseDesc = `"${originalQuery}"의 분위기를 "${candidate?.name || nameForLookup}" 여정으로 연결해 탐색합니다.`;
       const enrichedDesc = reasonText ? `${baseDesc} ${reasonText}` : baseDesc;
+
+      const verifiedNameEn = verifiedByNameOnly.name_en || candidate?.name_en || nameForLookup;
+      const curated = matchCuratedLocation(
+        verifiedByNameOnly.lat,
+        verifiedByNameOnly.lng,
+        verifiedNameEn
+      );
+
+      if (curated?.type === 'spot') {
+        const entry = curated.data;
+        const curatedDesc = entry.desc
+          ? (reasonText ? `${entry.desc} ${reasonText}` : entry.desc)
+          : enrichedDesc;
+
+        return {
+          id: entry.id ?? entry.slug,
+          slug: entry.slug,
+          canonical_slug: entry.slug,
+          name: entry.name,
+          name_en: entry.name_en ?? entry.name,
+          country: entry.country ?? verifiedByNameOnly.country ?? candidate?.country ?? "Explore",
+          country_en: entry.country_en ?? verifiedByNameOnly.country_en ?? candidate?.country_en ?? "Explore",
+          lat: entry.lat ?? verifiedByNameOnly.lat,
+          lng: entry.lng ?? verifiedByNameOnly.lng,
+          category: entry.category ?? entry.primaryCategory ?? category,
+          desc: curatedDesc,
+          type: 'temp-base',
+          isCorrected: true,
+          originalQuery: originalQuery
+        };
+      }
+
+      if (curated?.type === 'city') {
+        const entry = curated.data;
+        const curatedDesc = entry.desc
+          ? (reasonText ? `${entry.desc} ${reasonText}` : entry.desc)
+          : enrichedDesc;
+
+        return {
+          id: `city-${entry.lat}-${entry.lng}`,
+          slug: entry.slug,
+          name: entry.name,
+          name_en: entry.name_en || entry.name,
+          country: entry.country || verifiedByNameOnly.country || candidate?.country || "Explore",
+          country_en: entry.country_en || verifiedByNameOnly.country_en || candidate?.country_en || "Explore",
+          lat: entry.lat ?? verifiedByNameOnly.lat,
+          lng: entry.lng ?? verifiedByNameOnly.lng,
+          category: category,
+          desc: curatedDesc,
+          type: 'temp-base',
+          isCorrected: true,
+          originalQuery: originalQuery
+        };
+      }
 
       return {
         id: `search-${verifiedByNameOnly.lat}-${verifiedByNameOnly.lng}`,

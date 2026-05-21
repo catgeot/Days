@@ -18,6 +18,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '플리트비체': 'plitvice-lakes',
   '플리트비체 국립공원': 'plitvice-lakes',
   '플리트비체호수': 'plitvice-lakes',
+  '쿄토': 'kyoto',
 
   // —— 남극·알래스카 ——
   '맥머도': 'antarctica',
@@ -150,6 +151,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
  * @type {Record<string, string[]>}
  */
 export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
+  kyoto: ['교토', 'Kyoto', '쿄토'],
   'angkor-wat': ['Siem Reap', '시엠립', 'Angkor Wat', '앙코르 와트', '앙코르와트'],
   'borneo': ['보르네오', 'Borneo'],
   'everest-base-camp': ['에베레스트', '에베레스트 캠프', '에베레스트베이스캠프', 'Everest'],

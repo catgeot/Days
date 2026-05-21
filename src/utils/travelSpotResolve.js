@@ -198,13 +198,13 @@ export function getPlaceStableKey(location) {
   return String(location.name ?? location.place_id ?? '').trim();
 }
 
-/** place_stats·place_wiki RPC/upsert용 — Option A: SSOT 한글명 우선, 없으면 stable key */
+/** place_stats·place_wiki·place_videos·RPC용 — slug-first; 레거시 한글 행은 buildPlaceDbIdCandidates 폴백 */
 export function getPlaceStatsId(location) {
   if (location == null) return '';
   if (typeof location === 'string') return location.trim();
-  const name = String(location.name ?? '').trim();
-  if (name) return name;
-  return getPlaceStableKey(location);
+  const stable = getPlaceStableKey(location);
+  if (stable) return stable;
+  return String(location.name ?? location.place_id ?? '').trim();
 }
 
 /** DB place_id 조회 후보 — stable key + 표시명 + slug (레거시 한글 행 호환) */
@@ -217,9 +217,12 @@ export function buildPlaceDbIdCandidates(location) {
   const out = new Set();
   const statsId = getPlaceStatsId(location);
   const stable = getPlaceStableKey(location);
+  const name = String(location.name ?? '').trim();
   if (statsId) out.add(statsId);
-  if (stable) out.add(stable);
+  if (stable && stable !== statsId) out.add(stable);
+  if (name && name !== statsId) out.add(name);
   if (location.slug) out.add(String(location.slug).trim().toLowerCase());
   if (location.name_en) out.add(String(location.name_en).trim());
+  if (location.canonical_slug) out.add(String(location.canonical_slug).trim().toLowerCase());
   return [...out].filter(Boolean);
 }
