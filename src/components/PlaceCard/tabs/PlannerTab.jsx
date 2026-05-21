@@ -13,6 +13,7 @@ import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
+import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 import {
     PLANNER_SCROLL_TO_TOP_EVENT,
@@ -49,6 +50,8 @@ const PlannerTab = ({
 
     // essential_guide가 {} 등 빈 객체여도 UI에 내용이 없도록 정규화
     const guideData = getEssentialGuide(plannerData, canonicalLocation);
+    const showFerryCard =
+        shouldShowFerryCard(canonicalLocation?.slug) || Boolean(guideData?.categories?.ferry_booking);
     const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation);
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
@@ -395,8 +398,8 @@ const PlannerTab = ({
                         {(guideData?.categories?.airport_transfer) && (
                             <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         )}
-                        {(guideData?.categories?.ferry_booking) && (
-                            <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData.categories.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        {showFerryCard && (
+                            <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         )}
                         <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-b from-blue-50/45 via-white to-white p-3 shadow-sm ring-1 ring-blue-900/[0.06] md:p-4 flex flex-col gap-4">
                             <ToolkitCard

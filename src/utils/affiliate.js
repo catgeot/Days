@@ -22,6 +22,10 @@ export const KLOOK_OSAKA_RENTAL_AD_ID = '1265791';
 export const KLOOK_KYOTO_RENTAL_AD_ID = '1265792';
 export const KLOOK_HOKKAIDO_RENTAL_AD_ID = '1265795';
 export const KLOOK_KYUSHU_RENTAL_AD_ID = '1265796';
+/** Klook 페리 통합 페이지 전용 aff_adid */
+export const KLOOK_FERRY_AD_ID = '1281898';
+export const KLOOK_FERRY_TARGET =
+  'https://www.klook.com/ko/transport/?target_slug=/ko/transport/ttd/ferries/';
 
 /**
  * Travelpayouts 제휴 링크 생성기 (Short Link 방식)
@@ -88,6 +92,28 @@ export const getAffiliateLink = (originalUrl, provider, options = {}) => {
 export const getKlookAffiliateUrl = (targetUrl, adId = KLOOK_DEFAULT_AD_ID) => {
   if (!targetUrl) return '';
   return `https://affiliate.klook.com/redirect?aid=${KLOOK_AID}&aff_adid=${adId}&k_site=${encodeURIComponent(targetUrl)}`;
+};
+
+/** Klook 페리 통합 페이지 제휴 URL */
+export const getKlookFerryUrl = () =>
+  getKlookAffiliateUrl(KLOOK_FERRY_TARGET, KLOOK_FERRY_AD_ID);
+
+/**
+ * Trip.com 크루즈 제휴 URL (페리 아님 — 여정 플래너 크루즈 키워드용)
+ * @param {{ campaign?: string, locationName?: string }} [options]
+ */
+export const getTripcomCruiseUrl = (options = {}) => {
+  const params = new URLSearchParams({
+    locale: 'ko-KR',
+    curr: 'KRW',
+    Allianceid: '8182427',
+    SID: '309563143',
+    trip_sub3: 'D17217482',
+  });
+  if (options.campaign) params.set('trip_sub1', options.campaign);
+  else params.set('trip_sub1', '플래너 크루즈');
+  if (options.locationName) params.set('trip_sub2', options.locationName);
+  return `https://kr.trip.com/cruises?${params.toString()}`;
 };
 
 function normalizeRentalLocationInput(locationOrName) {

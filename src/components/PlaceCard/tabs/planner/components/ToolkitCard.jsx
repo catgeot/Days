@@ -6,7 +6,7 @@ import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import FlightSearchCta from './FlightSearchCta';
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
 import MrtDynamicLink from './MrtDynamicLink';
-import DirectFerriesWidget from './DirectFerriesWidget';
+import FerryBookingWidget from './FerryBookingWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
 import KlookTourBannerWidget from './KlookTourBannerWidget';
 import GetYourGuideCityWidget from './GetYourGuideCityWidget';
@@ -134,7 +134,7 @@ const ToolkitCard = ({
             )}
             {/* 🆕 [Phase 8-8] Direct Ferries 페리 예약 위젯 (2026.04.21) */}
             {type === 'ferry_booking' && (
-                <DirectFerriesWidget location={location} />
+                <FerryBookingWidget location={location} aiFerryData={data} />
             )}
             {type === 'airport_transfer' && (
                 <KlookCarBannerWidget targetUrl={klookCarBannerSearchUrl} />

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Clock, Map as MapIcon, Car, Ship } from 'lucide-react';
-import { DIRECT_FERRIES_HOME_URL } from '../constants';
-import { getKlookRentalHomeUrl } from '../../../../../utils/affiliate';
+import { Clock, Map as MapIcon, Car, Ship, Anchor } from 'lucide-react';
+import { getKlookRentalHomeUrl, getTripcomCruiseUrl } from '../../../../../utils/affiliate';
+import { resolveFerryBookings, shouldShowFerryCard } from '../../../../../utils/ferryBookingMatch.js';
 import { getRentalCarTimelineActionDescription } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
 
@@ -128,32 +128,69 @@ function matchesRentalCarTimelineKeyword(text) {
     return RENTAL_CAR_TIMELINE_KEYWORDS.some((kw) => lower.includes(kw));
 }
 
-// 🔧 타임라인 내 동적 액션 버튼 생성 로직 (페리, 렌터카만 키워드 매칭)
+// 🔧 타임라인 내 동적 액션 버튼 (크루즈·페리·렌터카)
 const getActionForStep = (title, location, essentialGuide) => {
     const text = title.toLowerCase();
+    const slug = location?.slug;
 
-    // 1. 페리 키워드 매칭
-    if (text.includes('페리') || text.includes('항구') || text.includes('크루즈') ||
-        text.includes('쾌속선') || text.includes('보트') || text.includes('선박') ||
-        text.includes('배') || text.includes('유람선') || text.includes('fast boat')) {
+    // 1. 크루즈 (Trip.com — 페리와 분리)
+    if (
+        text.includes('크루즈') ||
+        text.includes('cruise') ||
+        (text.includes('유람선') && !text.includes('페리'))
+    ) {
         return {
             type: 'banner',
-            label: '페리 실시간 검색',
-            description: '전 세계 페리 노선 비교 및 예약',
-            url: DIRECT_FERRIES_HOME_URL,
-            icon: <Ship size={16} />,
-            bgClass: 'bg-white border-2 border-cyan-300',
-            iconBgClass: 'bg-cyan-100',
-            iconColorClass: 'text-cyan-600',
+            actionTypeKey: 'cruise',
+            label: '크루즈 검색',
+            description: 'Trip.com 크루즈 일정·요금 비교',
+            url: getTripcomCruiseUrl({
+                campaign: '플래너 크루즈',
+                locationName: location?.name,
+            }),
+            icon: <Anchor size={16} />,
+            bgClass: 'bg-white border-2 border-indigo-300',
+            iconBgClass: 'bg-indigo-100',
+            iconColorClass: 'text-indigo-600',
             textClass: 'text-gray-800',
-            descClass: 'text-gray-600'
+            descClass: 'text-gray-600',
         };
     }
 
-    // 2. 렌터카 키워드 매칭 — 클룩은 공항 코드 자동 검색이 되지 않아 렌터카 홈으로만 연결
+    // 2. 페리·쾌속선 (항구 단독 키워드 제외 — 항구도시 오탐 방지)
+    const isFerryStep =
+        text.includes('페리') ||
+        text.includes('쾌속선') ||
+        text.includes('fast boat') ||
+        text.includes('선박') ||
+        text.includes('쾌속페리') ||
+        (text.includes('보트') && (text.includes('환승') || text.includes('탑승') || text.includes('이동')));
+
+    if (isFerryStep || (shouldShowFerryCard(slug) && text.includes('보트'))) {
+        const { bookings } = resolveFerryBookings(slug, title);
+        const primary = bookings[0];
+        if (primary?.url) {
+            return {
+                type: 'banner',
+                actionTypeKey: 'ferry',
+                label: `${primary.name} 예약`,
+                description: '페리·쾌속선 노선 예약',
+                url: primary.url,
+                icon: <Ship size={16} />,
+                bgClass: 'bg-white border-2 border-cyan-300',
+                iconBgClass: 'bg-cyan-100',
+                iconColorClass: 'text-cyan-600',
+                textClass: 'text-gray-800',
+                descClass: 'text-gray-600',
+            };
+        }
+    }
+
+    // 3. 렌터카 키워드
     if (matchesRentalCarTimelineKeyword(text)) {
         return {
             type: 'banner',
+            actionTypeKey: 'rental_car',
             label: '렌터카 검색',
             description: getRentalCarTimelineActionDescription(location, { essentialGuide }),
             url: getKlookRentalHomeUrl(),
@@ -214,10 +251,11 @@ const JourneyTimeline = ({ timeline, location, essentialGuide }) => {
                     const action = getActionForStep(step.title, location, essentialGuide);
 
                     // 액션 타입 식별 (중복 방지용)
-                    let actionTypeKey = null;
-                    if (action) {
-                        if (action.label.includes('페리')) actionTypeKey = 'ferry';
+                    let actionTypeKey = action?.actionTypeKey ?? null;
+                    if (action && !actionTypeKey) {
+                        if (action.label.includes('크루즈')) actionTypeKey = 'cruise';
                         else if (action.label.includes('렌터카')) actionTypeKey = 'rental_car';
+                        else actionTypeKey = 'ferry';
                     }
 
                     // 중복 체크: 이미 표시된 타입이면 숨김

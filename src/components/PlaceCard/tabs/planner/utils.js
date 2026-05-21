@@ -1,7 +1,8 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
 import bouncePlannerBannerDesktop from '../../../../assets/bounce_278x90.png';
 import bouncePlannerBannerMobile from '../../../../assets/bounce.png';
-import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
+import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getKlookFerryUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
+import { resolveFerryBookings, shouldShowFerryCard } from '../../../../utils/ferryBookingMatch.js';
 import { getRentalCarHomeSearchSubtext } from '../../../../utils/rentalAirportMatch.js';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
 import {
@@ -181,9 +182,28 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             });
             break;
         }
-        case 'ferry_booking':
-            // Direct Ferries는 위젯 내부에서 배너로 처리하므로 별도 버튼 불필요
+        case 'ferry_booking': {
+            const slug = location?.slug;
+            const { bookings } = resolveFerryBookings(slug);
+            const primary = bookings[0];
+            if (primary?.url) {
+                links.push({
+                    url: primary.url,
+                    text: primary.name,
+                    subtext: '노선별 예약 링크는 위 위젯에서 확인하세요.',
+                    colorClass: 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border-cyan-200',
+                });
+            }
+            if (shouldShowFerryCard(slug) || !primary) {
+                links.push({
+                    url: getKlookFerryUrl(),
+                    text: 'Klook 페리 통합',
+                    subtext: '노선 특화 URL이 없을 때 전체 페리 검색',
+                    colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200',
+                });
+            }
             break;
+        }
         case 'map_poi':
             const isGygFallbackLocation = isMapPoiGygOnlyLocation(location);
 
