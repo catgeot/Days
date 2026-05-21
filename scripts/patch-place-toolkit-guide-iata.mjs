@@ -212,7 +212,7 @@ const PATCHES = [
     note: '세션 C — NAS·MIA·ATL'
   },
   {
-    matchPlaceIds: ['스리자aya와르데네푸라코테', 'sri-jayawardenapura'],
+    matchPlaceIds: ['스리자야와르데네푸라코테', 'sri-jayawardenapura'],
     primaryIatas: ['CMB'],
     note: '세션 C — CMB'
   },

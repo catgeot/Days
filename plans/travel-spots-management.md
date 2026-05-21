@@ -120,3 +120,23 @@ npm run enrich:airports
 | `npm run generate:airports` | `travelSpotAirports.json` 재생성 |
 | `npm run audit:airports` | 배너·지리 갭 감사 JSON |
 | `npm run enrich:airports` | low-confidence·오버라이드 수 리포트만 |
+| `npm run sync:airports-from-toolkit` | DB `place_toolkit` → JSON (읽기만) |
+| `npm run toolkit:audit-place-id` | slug·unmapped·duplicateSlug 감사 |
+| `npm run toolkit:reconcile-place-id` | 중복 `place_id` 병합·삭제 |
+
+---
+
+## 7. 잔여 unmapped·정체성 (DB 정리 전)
+
+툴킷 `place_id`가 **공식 `travelSpots` slug에 없으면** audit `unmapped`. 검색·감정 검색 유입 지명은 **여행 가치에 따라** 처리 분기(승격이 유일 해법 아님).
+
+| 유형 | 예 | 선행 작업 |
+|------|-----|-----------|
+| **alias** | 바티칸→`rome`, 사뭇쁘라깐주→`bangkok`, 아오시마→`kumamoto` | [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) |
+| **승격** | 아바나→`havana`, 발레타→`malta` | `travelSpots.js` + 2절 체크리스트 |
+| **placeIds-only** | 어센션 섬 | JSON `placeIds`·override |
+| **삭제** | 메히칼리·트럼프 등 | DB 행 삭제 후 재감사 |
+| **reconcile** | duplicateSlug 7(나자레·리마…) | `toolkit:reconcile-place-id` — 신규 여행지 아님 |
+| **유지** | blocklist(춘천·독도…) | 추가 작업 없음 |
+
+상세·우선순위: [`2026-05-19-project-log.md`](./2026-05-19-project-log.md) §다음 세션(D) · [`place-id-residual-classification.json`](../scripts/data/place-id-residual-classification.json) `nextSessionPlan`.

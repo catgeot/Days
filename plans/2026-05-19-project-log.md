@@ -289,11 +289,54 @@
 - `generate:airports` **Mapped 263/264** · `audit:airports` **`none: 0`** · `toolkit:audit-place-id` **mapped↑ unmapped 36→21** · P0 **unmapped 0**.
 - 함부르크 HAM·베네수엘라 CCS·포클랜드 MPM 등 툴킷 오탐 overrides 보정.
 
-### 다음
+### 배포·gateo.kr 스모크 QA (`83118cf`, 2026-05-21)
 
-1. **프론트·JSON 배포** + (선택) `toolkit:patch-guide-iata --apply` 세션 C 13건.
-2. gateo.kr QA: 퀸스타운 ZQN · 함부르크 HAM · 퍼스 PER 등 신규 slug.
-3. (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일 도착지.
+- **커밋·푸시**: `main` `83118cf` → Vercel Production.
+- **퀸스타운** `/place/queenstown/planner`: 배너·Trip.com **ZQN** · 공항 배너 퀸즈타운 공항(ZQN).
+- **함부르크** `/place/hamburg/planner`: 배너·Trip.com **HAM** · 배너/연동에 **FRA 없음**(툴킷 본문 경유 안내만).
+- **퍼스** `/place/perth/planner`: 배너·Trip.com **PER**.
+- **그린란드** `/place/greenland/planner`: 연동 **CPH** · 후보 **GOH** · 배너 문구 CPH·GOH 경유 안내.
+- **/explore** 검색: `퀸스타운`·`Queenstown` → 자동완성 **퀸스타운** · `함부르크`·`Hamburg` → **함부르크**.
+- `npm run audit:airports` → **none: 0** · P0 **unmapped 0** · `unmapped 21`.
+
+### DB IATA 패치 (`toolkit:patch-guide-iata --apply`, 2026-05-21)
+
+- **Applied 12행**: 함부르크(HAM) · 코코스 제도/코코스제도(CCK·PER) · 핏케언(PPT) · 그린란드(CPH·GOH) · 포클랜드/포클랜드 제도(MPM·SCL) · 솔로몬(HIR·BNE) · 나우루(INU·BNE) · 퀸스타운(ZQN) · 미니애폴리스(MSP) · 바하마(NAS·MIA·ATL).
+- **이미 일치 3건**(스킵): 퍼스(PER) · 스리자aya와르데네푸라코테(CMB) · 베네수엘라(CCS).
+- 리포트: `scripts/outputs/place-toolkit-guide-iata-patch.json` · `patch-place-toolkit-guide-iata.mjs` 스리자aya와르데네푸라코테 matchPlaceIds 오타 수정.
+
+### Handoff 세션 — JSON 동기화·감사 (2026-05-21)
+
+- `npm run sync:airports-from-toolkit` → slug 153 · placeId-only 13 · **placeIds 335** · blocklist 8 · 미매칭 21 · IATA 없음 0.
+- `npm run audit:airports` → **none: 0** · P0 **unmapped 0** (Gate 유지).
+- `generate:airports` → **Mapped 263/264** (`travelSpots-list` **berlin** slug 중복 1건, `missingSlugs` 빈 배열).
+- JSON 반영: 그린란드 `bannerNote` 오타(코펜하agen→코펜하겐) · placeIds **GOH·MPM·NAS/MIA/ATL** · `스리랑카`→`sri-jayawardenapura` alias.
+- `toolkit:audit-place-id`: unmapped **21** · duplicateSlug **7**(non-P0) · geoMismatch **1**(디에고 가르시아, lookup).
+- **정체성 논의**: 툴킷 행 = 검색·감정 검색 유입 가능. `unmapped` ≠ 검토 대기 전부 — **alias / 승격 / placeIds-only / 삭제 / reconcile**로 분기. 상세 [`scripts/data/place-id-residual-classification.json`](../scripts/data/place-id-residual-classification.json) `nextSessionPlan`.
+
+### 다음 세션(D) — DB 정리 **전** 선행 (정체성·공항)
+
+**공통 Gate**: `sync:airports-from-toolkit` → `audit:airports` **none:0** · P0 **unmapped 0** 유지.
+
+| 우선 | 유형 | place_id → SSOT | 작업 |
+|------|------|-----------------|------|
+| P1 | **승격** | 아바나 → `havana` | `travelSpots.js`·extract-list·overrides(HAV) · `citiesData`·`keywordData`와 정합 |
+| P1 | **alias** | 바티칸 → `rome` | `travel-spot-place-id-aliases.mjs` · reconcile 병합 |
+| P2 | **승격** | 발레타 → `malta`(slug 확정) | MLA·overrides · 몰타 SSOT 신규 |
+| P2 | **alias** | 사뭇쁘라깐주 → `bangkok` | blocklist **유지** · alias만 추가 |
+| P2 | **alias** | 아오시마 → `kumamoto` | blocklist **유지** · OIT·alias |
+| P3 | **placeIds-only** | 어센션 섬 | 승격 보류 시 placeIds·override 유지 |
+| P3 | **삭제** | 메히칼리·트럼프·England·Florida 등 | 노이즈 툴킷 행 삭제 후 재감사 |
+| P3 | **reconcile** | duplicateSlug **7** | 나자레·리마·스코푸가포스 등 `toolkit:reconcile-place-id` — 신규 승격 아님 |
+| — | **유지** | blocklist 14(춘천·독도·이슬라마바드…) | 추가 승격·alias 없음 |
+
+**순서**: 정체성 표 확정 → aliases·승격·overrides → sync·audit → reconcile·(필요 시) `patch-guide-iata` → `toolkit:audit-place-id` 재감사 → gateo.kr 스모크.
+
+**DB 대청소**는 위 JSON·Gate·reconcile **이후**. (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일 도착지 — 본 Phase와 별도.
+
+### 세션 종료 (2026-05-21 · Handoff·문서)
+
+- **커밋·배포**: JSON sync·문서·patch 스크립트 오타 · 다음 세션 D 계획 반영.
 
 ## 세션 종료 (2026-05-21 · 세션 G)
 

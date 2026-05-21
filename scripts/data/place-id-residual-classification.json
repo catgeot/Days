@@ -44,10 +44,30 @@
     "앨리스스프링스"
   ],
   "unmappedSummary": {
-    "total": 36,
-    "note": "brunei slug 승격(2026-05-21) — P0 unmapped 0 · borneo-region 교차 링크",
+    "total": 21,
+    "note": "2026-05-21 세션 C 후 — P0 unmapped 0 · audit none:0 · DB 대청소 전 정체성 선행",
     "p0FlagOnly": 0,
     "p0PlaceId": null
+  },
+  "nextSessionPlan": {
+    "session": "D",
+    "date": "2026-05-21",
+    "prerequisiteBeforeDbCleanup": true,
+    "gate": ["sync:airports-from-toolkit", "audit:airports none:0", "toolkit:audit-place-id P0 unmapped 0"],
+    "order": ["identity", "aliases.mjs and travelSpots overrides", "sync and audit", "reconcile duplicateSlug", "optional patch-guide-iata", "toolkit delete noise", "re-audit"],
+    "promote": [
+      { "place_id": "아바나", "slug": "havana", "iata": ["HAV"], "priority": "P1", "note": "keywordData·citiesData 있음·travelSpots 갭" },
+      { "place_id": "발레타", "slug": "malta", "iata": ["MLA"], "priority": "P2", "note": "slug명 확정 후 승격" }
+    ],
+    "alias": [
+      { "place_id": "바티칸", "slug": "rome", "iata": ["FCO"], "priority": "P1" },
+      { "place_id": "사뭇쁘라깐주", "slug": "bangkok", "iata": ["BKK"], "priority": "P2", "blocklistKeep": true },
+      { "place_id": "아오시마", "slug": "kumamoto", "iata": ["OIT"], "priority": "P2", "blocklistKeep": true }
+    ],
+    "placeIdsOnly": [{ "place_id": "어센션 섬", "iata": ["LHR"], "priority": "P3" }],
+    "deleteCandidates": ["메히칼리", "트럼프", "England", "Florida", "와일드호스", "Ad Dakhiliyah Governorate", "Îles Glorieuses"],
+    "reconcileDuplicateSlug": ["iceland", "lisbon", "porto", "machu-picchu", "cocos-islands", "falkland-islands", "sri-jayawardenapura"],
+    "blocklistKeepNoAction": ["춘천", "춘천시", "수원", "강릉시", "강화도", "독도", "이슬라마바드", "마나도"]
   },
   "unmappedBatches": {
     "alias_to_existing_slug": [

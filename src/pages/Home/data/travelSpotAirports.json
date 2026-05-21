@@ -1,9 +1,9 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T03:48:57.982Z",
+    "generatedAt": "2026-05-21T04:05:07.121Z",
     "spotCount": 263,
-    "placeIdCount": 334,
+    "placeIdCount": 335,
     "stats": {
       "override": 112,
       "toolkitSync": 152,
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-21T03:49:04.610Z",
+    "lastToolkitSyncAt": "2026-05-21T04:05:59.774Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -2647,7 +2647,7 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "그린란드는 코펜하agen(CPH) 등 유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNote": "그린란드는 코펜하겐(CPH) 등 유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
       "rationale": "덴마크 CPH 경유·누크 GOH"
     },
     "falkland-islands": {
@@ -5293,10 +5293,11 @@
     },
     "그린란드": {
       "primaryIatas": [
-        "CPH"
+        "CPH",
+        "GOH"
       ],
       "preferredLinkIata": "CPH",
-      "kind": "single",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -5355,10 +5356,11 @@
     },
     "포클랜드": {
       "primaryIatas": [
+        "MPM",
         "SCL"
       ],
-      "preferredLinkIata": "SCL",
-      "kind": "single",
+      "preferredLinkIata": "MPM",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -5973,10 +5975,12 @@
     },
     "바하마": {
       "primaryIatas": [
-        "NAS"
+        "NAS",
+        "MIA",
+        "ATL"
       ],
       "preferredLinkIata": "NAS",
-      "kind": "single",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -6252,10 +6256,11 @@
     },
     "포클랜드제도": {
       "primaryIatas": [
+        "MPM",
         "SCL"
       ],
-      "preferredLinkIata": "SCL",
-      "kind": "single",
+      "preferredLinkIata": "MPM",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -6857,6 +6862,18 @@
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "el-calafate",
       "linkedSlug": "el-calafate"
+    },
+    "스리랑카": {
+      "primaryIatas": [
+        "CMB"
+      ],
+      "preferredLinkIata": "CMB",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "스리랑카",
+      "linkedSlug": "sri-jayawardenapura"
     }
   }
 }
