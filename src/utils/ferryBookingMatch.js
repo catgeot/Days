@@ -162,3 +162,75 @@ export function isCruiseOnlyDestination(slug) {
   const profile = resolveFerryProfile(slug);
   return profile?.tier === 'cruise_only';
 }
+
+/** URL 중복 판별용 — 호스트·경로만 비교 (제휴 쿼리·해시 무시) */
+export function normalizeBookingUrlForCompare(url) {
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    return `${u.hostname}${u.pathname}`.toLowerCase().replace(/\/$/, '');
+  } catch {
+    return url.trim().toLowerCase();
+  }
+}
+
+/**
+ * advice 본문의 첫 [@업체명@] 추출 (AI 툴킷 ferry_booking 라벨용).
+ *
+ * @param {string | null | undefined} advice
+ * @returns {string | null}
+ */
+export function extractFirstSmartLinkName(advice) {
+  const match = advice?.match(/\[@([^\]@]+)@\]/);
+  return match?.[1]?.trim() || null;
+}
+
+/**
+ * SSOT 노선에 등록된 모든 예약 URL (정규화 키 Set).
+ *
+ * @param {FerryProfile | null | undefined} profile
+ * @param {{ slug?: string, campaign?: string }} [context]
+ */
+export function collectCuratedFerryBookingUrls(profile, context = {}) {
+  const keys = new Set();
+  for (const route of profile?.routes ?? []) {
+    for (const booking of route.bookings ?? []) {
+      const resolved = resolveBookingUrl(booking, context);
+      if (resolved.url) {
+        keys.add(normalizeBookingUrlForCompare(resolved.url));
+      }
+    }
+  }
+  return keys;
+}
+
+/**
+ * AI 툴킷 ferry_booking.url → 하단 보조 버튼.
+ * SSOT 노선(travelSpotFerries)이 있으면 숨김 — 노선 카드의 선사 링크가 기준.
+ *
+ * @param {{
+ *   aiFerryData?: { advice?: string, url?: string } | null,
+ *   profile?: FerryProfile | null,
+ *   isCompactFerry?: boolean,
+ *   context?: { slug?: string, campaign?: string },
+ * }} params
+ * @returns {(FerryBookingLink & { url: string }) | null}
+ */
+export function resolveAiFerryExtraBooking({
+  aiFerryData,
+  profile,
+  isCompactFerry = false,
+  context = {},
+}) {
+  const aiUrl = aiFerryData?.url?.trim?.() ?? '';
+  if (isCompactFerry || !aiUrl) return null;
+
+  const hasCuratedRoutes = (profile?.routes?.length ?? 0) > 0;
+  if (hasCuratedRoutes) return null;
+
+  const curatedKeys = collectCuratedFerryBookingUrls(profile, context);
+  if (curatedKeys.has(normalizeBookingUrlForCompare(aiUrl))) return null;
+
+  const name = extractFirstSmartLinkName(aiFerryData?.advice) ?? '추천 예약 링크';
+  return resolveBookingUrl({ provider: 'direct', name, url: aiUrl }, context);
+}

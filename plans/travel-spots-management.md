@@ -113,6 +113,8 @@ npm run audit:ferries
 
 - **`required` / `common`**: AI 툴킷 없어도 「페리 (쾌속선) 예약」 카드 **표시**
 - **12Go**: 노선 URL 있으면 제휴 배너(`TwelveGoSearchWidget`) + 운항사/DF 버튼. `twelve_go`는 버튼이 아닌 배너로만 노출
+- **다중 노선** (`routes.length > 1`): 노선별 카드 · 12Go compact 배너(제목은 카드 헤더만) · Powered by 12Go는 목록 하단 1회 — [`ferry-ssot-validation.md` 5절](ferry-ssot-validation.md#5-플래너-ui-페리-카드)
+- **AI `ferry_booking.url`**: SSOT `routes`가 있으면 **예약 버튼 미노출** (`resolveAiFerryExtraBooking`). advice는 ToolkitCard 본문만
 - 예약 버튼: 운항사 · Direct Ferries · (fallback) Klook 페리
 - **Direct Ferries 취항 없음** 지역(대마도 등): DF 버튼 없이 **운항사 direct**만 있는지 확인. 대마도: 팬스타 쓰시마링크 · 스타라인 니나호(`thestarline.co.kr`)
 
@@ -239,6 +241,8 @@ npm run audit:ferries      # required/common booking gap 0 목표
 
 출력: `scripts/outputs/ferry-audit.json`, `scripts/outputs/ferry-candidates.json`
 
+**검증 범위**: SSOT 등록 slug(~33)는 **전수 검증** · 전체 여행지(~265)는 **전수 아님** — 후보·신규·기본 여행지만 큐레이션. 상세: [`ferry-ssot-validation.md`](ferry-ssot-validation.md).
+
 ---
 
 ## 5. 다중 공항·섬 관광지 패턴
@@ -251,7 +255,7 @@ npm run audit:ferries      # required/common booking gap 0 목표
 
 **국제선 관문 + 국내선 최종** (아콩카과 MDZ, 잉카 트레일 CUZ, 흐바르 SPU): `primaryIatas`에 경유지를 넣어도 **`searchHintIatas` 생략** → 배너·검색은 최종 공항만; EZE·LIM 등은 `bannerNote`.
 
-**보라카이 예**: 칼리보 `KLO`(국제선·패키지 다수) + 카틱란 `MPH`(직항·국내선). 한글명은 `칼리보 국제공항` / `카틱란 공항` — 영문 인명만 옮긴 「고도프로 항공기지」류 표기는 사용자에게 낯설 수 있음.
+**보라카이 예**: 칼리보 `KLO`(국제선·패키지 다수) + 카틱란 `MPH`(직항·국내선). 페리 SSOT: `kalibo-boracay` / `caticlan-boracay` 노선과 `bannerNote`를 함께 맞출 것. 한글명은 `칼리보 국제공항` / `카틱란 공항` — 영문 인명만 옮긴 「고도프로 항공기지」류 표기는 사용자에게 낯설 수 있음.
 
 **엘니도 예**: `ENI`·`PPS`·`MNL` 다중 공항 + `bannerNote`에 루트 1(MNL→ENI)·루트 2(PPS 육로) 비교(줄바꿈 `\n`, 배너 `whitespace-pre-line`). 툴킷 「항공권 예약 팁」과 배너를 맞출 때는 오버라이드 우선.
 

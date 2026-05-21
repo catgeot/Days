@@ -1,6 +1,14 @@
-# 2026-05-21 프로젝트 일지 — 플래너·배너·공항 정합
+# 2026-05-21 프로젝트 일지 — 플래너·배너·공항·페리 SSOT
 
 **직전**: [`2026-05-19-project-log.md`](2026-05-19-project-log.md) · **맥락**: [`.ai-context.md`](../.ai-context.md)
+
+---
+
+## 페리 SSOT 검증·UI (추가)
+
+- **문서**: [`ferry-ssot-validation.md`](ferry-ssot-validation.md) — SSOT 33곳 전수 검증, 265곳 전수 아님, provider·검수 큐.
+- **UI**: 다중 노선 compact 12Go · AI `ferry_booking.url`은 SSOT `routes` 있을 때 버튼 미노출 (`resolveAiFerryExtraBooking`).
+- **감사**: `audit:ferries` — gap·medium·DF-only·공항 `bannerNote` 힌트 → `scripts/outputs/ferry-audit.json`.
 
 ---
 

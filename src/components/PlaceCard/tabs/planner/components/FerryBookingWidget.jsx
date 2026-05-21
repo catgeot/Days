@@ -1,8 +1,14 @@
 import React, { useMemo } from 'react';
 import { ExternalLink, Ship } from 'lucide-react';
+import { get12GoHomeUrl } from '../../../../../utils/affiliate';
+import {
+  getPartnerLinkRel,
+  getPartnerLinkTarget,
+} from '../../../common/partnerNavigation';
 import {
   getDfRecommendations,
   partitionFerryBookings,
+  resolveAiFerryExtraBooking,
   resolveFerryBookings,
   resolveFerryProfile,
   resolveBookingUrl,
@@ -28,13 +34,12 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
   const allRoutes = profile?.routes ?? [];
   const showRouteList = !isCompactFerry && allRoutes.length > 1;
 
-  const aiUrl = aiFerryData?.url?.trim?.() ?? '';
-  const aiExtraBooking =
-    !isCompactFerry &&
-    aiUrl &&
-    !bookings.some((b) => b.url === aiUrl)
-      ? resolveBookingUrl({ provider: 'direct', name: '공식 예약', url: aiUrl }, bookingContext)
-      : null;
+  const aiExtraBooking = resolveAiFerryExtraBooking({
+    aiFerryData,
+    profile,
+    isCompactFerry,
+    context: bookingContext,
+  });
 
   const compactDirectBookings = useMemo(
     () => bookings.filter((b) => b.provider === 'direct'),
@@ -68,28 +73,44 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
     );
   };
 
-  const renderRouteSection = (routeDef, resolvedBookings, { hideHeader = false } = {}) => {
+  const renderRouteSection = (routeDef, resolvedBookings, { multiRoute = false } = {}) => {
     const { twelveGo, others } = partitionFerryBookings(resolvedBookings);
     if (!twelveGo && !others.length) return null;
 
     return (
-      <div className="space-y-3">
-        {!hideHeader && (
+      <div className={multiRoute ? 'space-y-2.5' : 'space-y-3'}>
+        <div className={multiRoute ? 'space-y-2' : undefined}>
           <div>
-            <p className="text-sm font-semibold text-gray-800 break-keep">{routeDef.label}</p>
+            <p
+              className={`font-semibold text-gray-800 break-keep ${
+                multiRoute ? 'text-[13px] leading-snug' : 'text-sm'
+              }`}
+            >
+              {routeDef.label}
+            </p>
             {routeDef.duration && (
               <p className="text-xs text-gray-500 mt-0.5">{routeDef.duration}</p>
             )}
           </div>
+          {twelveGo && (
+            <TwelveGoSearchWidget
+              slug={slug}
+              targetUrl={twelveGo.url}
+              routeLabel={resolveTwelveGoBannerLabel(routeDef, profile)}
+              variant={multiRoute ? 'compact' : 'default'}
+              showRouteLabel={!multiRoute}
+              showPoweredBy={!multiRoute}
+            />
+          )}
+        </div>
+        {others.length > 0 && (
+          <div className={multiRoute ? 'pt-2 border-t border-gray-100' : undefined}>
+            {multiRoute && (
+              <p className="text-[10px] font-medium text-gray-500 mb-1.5">선사·공식 예약</p>
+            )}
+            {renderBookingButtons(others)}
+          </div>
         )}
-        {twelveGo && (
-          <TwelveGoSearchWidget
-            slug={slug}
-            targetUrl={twelveGo.url}
-            routeLabel={resolveTwelveGoBannerLabel(routeDef, profile)}
-          />
-        )}
-        {renderBookingButtons(others)}
       </div>
     );
   };
@@ -131,34 +152,50 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
       )}
 
       {!isCompactFerry && showRouteList && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {allRoutes.map((r) => {
             const routeBookings = (r.bookings ?? [])
               .map((b) => resolveBookingUrl(b, bookingContext))
               .filter((b) => b.url);
-            const section = renderRouteSection(r, routeBookings);
+            const section = renderRouteSection(r, routeBookings, { multiRoute: true });
             if (!section) return null;
             return (
-              <div key={r.id} className="border border-gray-200 rounded-xl p-3 bg-white space-y-3">
+              <div key={r.id} className="border border-gray-200 rounded-xl p-3 bg-white">
                 {section}
               </div>
             );
           })}
+          <p className="text-center text-[10px] text-gray-400">
+            노선 검색 Powered by{' '}
+            <a
+              href={get12GoHomeUrl({
+                subId: slug ? `${slug}-12go-widget` : 'gateo-12go-widget',
+              })}
+              target={getPartnerLinkTarget()}
+              rel={getPartnerLinkRel(getPartnerLinkTarget())}
+              className="text-emerald-600 hover:underline pointer-events-auto"
+            >
+              12Go system
+            </a>
+          </p>
         </div>
       )}
 
       {!isCompactFerry && !showRouteList && route && (
         <div className="border border-gray-200 rounded-xl p-3 bg-white">
-          {renderRouteSection(route, bookings, { hideHeader: false })}
+          {renderRouteSection(route, bookings)}
         </div>
       )}
 
-      {aiExtraBooking?.url && renderBookingButtons([aiExtraBooking])}
-
-      {!isCompactFerry && fallbacks.length > 0 && (
-        <div className="pt-1">
-          <p className="text-xs text-gray-500 mb-2">기타 페리 검색</p>
-          {renderBookingButtons(fallbacks)}
+      {!isCompactFerry && (aiExtraBooking?.url || fallbacks.length > 0) && (
+        <div className="border-t border-gray-200 pt-3 space-y-2">
+          {aiExtraBooking?.url && renderBookingButtons([aiExtraBooking])}
+          {fallbacks.length > 0 && (
+            <>
+              <p className="text-xs text-gray-500">기타 페리 검색</p>
+              {renderBookingButtons(fallbacks)}
+            </>
+          )}
         </div>
       )}
 
