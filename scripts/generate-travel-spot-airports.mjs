@@ -128,28 +128,67 @@ function rowFromNearest(spot) {
 }
 
 const existingAirportMap = loadExistingAirportMap();
+const existingSpots = existingAirportMap.spots ?? {};
+
+/** JSON에만 있는 검수 행 — overrides.mjs에 없을 때만 유지 (generate가 curated를 runtime으로 덮어쓰지 않도록) */
+const curatedPreserved = {};
 const toolkitSyncPreserved = {};
-for (const [slug, row] of Object.entries(existingAirportMap.spots ?? {})) {
-  if (row?.source === 'toolkit-sync') toolkitSyncPreserved[slug] = row;
+for (const [slug, row] of Object.entries(existingSpots)) {
+  if (row?.source === 'curated-override') curatedPreserved[slug] = row;
+  else if (row?.source === 'toolkit-sync') toolkitSyncPreserved[slug] = row;
 }
 const preservedPlaceIds = existingAirportMap.placeIds ?? {};
 
+function primaryIataKey(row) {
+  return (row?.primaryIatas ?? []).slice().sort().join(',');
+}
+
+/** overrides에 searchHintIatas가 없을 때 JSON 검수값 유지 */
+function mergeSearchHintFromExisting(row, existingRow) {
+  if (!row || !existingRow?.searchHintIatas?.length) return row;
+  if (Array.isArray(row.searchHintIatas) && row.searchHintIatas.length) return row;
+  const hints = filterRegisteredIatas(existingRow.searchHintIatas);
+  if (!hints.length) return row;
+  return { ...row, searchHintIatas: hints };
+}
+
 const map = {};
-const stats = { override: 0, toolkitSync: 0, runtime: 0, multiRule: 0, geo: 0, missing: 0 };
+const stats = { override: 0, curatedPreserved: 0, toolkitSync: 0, runtime: 0, multiRule: 0, geo: 0, missing: 0 };
 const missingSlugs = [];
 const unregisteredIatas = new Set();
+const overrideDriftWarnings = [];
 
 for (const spot of TRAVEL_SPOTS) {
   const slug = spot.slug;
   let row = null;
 
   const override = TRAVEL_SPOT_AIRPORT_OVERRIDES[slug];
+  const existingRow = existingSpots[slug];
+
   if (override) {
     for (const code of override.primaryIatas) {
       if (!hubByIata.has(code)) unregisteredIatas.add(code);
     }
     row = rowFromOverride(override);
-    if (row) stats.override += 1;
+    if (row) {
+      row = mergeSearchHintFromExisting(row, existingRow);
+      stats.override += 1;
+      if (
+        existingRow?.source === 'curated-override' &&
+        primaryIataKey(existingRow) !== primaryIataKey(row)
+      ) {
+        overrideDriftWarnings.push({
+          slug,
+          from: existingRow.primaryIatas,
+          to: row.primaryIatas
+        });
+      }
+    }
+  }
+
+  if (!row && curatedPreserved[slug]) {
+    row = curatedPreserved[slug];
+    stats.curatedPreserved += 1;
   }
 
   if (!row && toolkitSyncPreserved[slug]) {
@@ -192,7 +231,9 @@ const output = {
     missingSlugs,
     unregisteredIatasInOverrides: [...unregisteredIatas].sort(),
     runtimePriorityNote:
-      '런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.'
+      '런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.',
+    generatePreserveNote:
+      'generate: overrides.mjs > JSON curated-override(overrides 없을 때) > JSON toolkit-sync > runtime-infer. overrides가 JSON curated와 다르면 overrides 우선(경고 출력).'
   },
   spots: map,
   placeIds: preservedPlaceIds
@@ -209,4 +250,13 @@ if (unregisteredIatas.size) {
 }
 if (missingSlugs.length) {
   console.log('\nStill missing:', missingSlugs.join(', '));
+}
+if (stats.curatedPreserved) {
+  console.log('\nPreserved JSON curated-override (no overrides.mjs entry):', stats.curatedPreserved);
+}
+if (overrideDriftWarnings.length) {
+  console.log(
+    '\nWarning: overrides.mjs replaced existing curated primaryIatas for:',
+    overrideDriftWarnings.map((w) => `${w.slug} [${w.from?.join(',')}] → [${w.to?.join(',')}]`).join('; ')
+  );
 }
