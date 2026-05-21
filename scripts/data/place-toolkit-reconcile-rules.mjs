@@ -217,11 +217,91 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     canonicalPlaceId: '마다가스카르',
     mergeFrom: ['Maroantsetra', '안치라나나', '노시베 섬', '노시베', 'Nosy Be', 'Antsiranana'],
     note: '마다가스카르 권역 세부 place_id — canonical 통합(세션 A)'
+  },
+  // —— 세션 D: duplicateSlug·alias 병합 (2026-05-21) ——
+  {
+    id: 'vatican-rome',
+    slugs: ['rome'],
+    canonicalPlaceId: '로마',
+    mergeFrom: ['바티칸', 'Vatican', 'Vatican City']
+  },
+  {
+    id: 'lisbon',
+    slugs: ['lisbon'],
+    canonicalPlaceId: '리스본',
+    mergeFrom: ['나자레', 'Nazare']
+  },
+  {
+    id: 'porto',
+    slugs: ['porto'],
+    canonicalPlaceId: '포르투',
+    mergeFrom: ['빌라두코르부', 'Vila do Conde']
+  },
+  {
+    id: 'machu-picchu',
+    slugs: ['machu-picchu'],
+    canonicalPlaceId: '마추픽추',
+    mergeFrom: ['리마', 'Lima']
+  },
+  {
+    id: 'iceland-scuba',
+    slugs: ['iceland'],
+    canonicalPlaceId: '아이슬란드',
+    mergeFrom: ['스코푸가포스'],
+    note: '툴킷 오탐·KEF SSOT — duplicateSlug 해소'
+  },
+  {
+    id: 'cocos-islands',
+    slugs: ['cocos-islands'],
+    canonicalPlaceId: '코코스 제도',
+    mergeFrom: ['코코스제도', 'Cocos Islands', 'Cocos (Keeling) Islands']
+  },
+  {
+    id: 'falkland-islands',
+    slugs: ['falkland-islands'],
+    canonicalPlaceId: '포클랜드 제도',
+    mergeFrom: ['포클랜드', 'Falkland Islands', 'Stanley']
+  },
+  {
+    id: 'sri-jayawardenapura',
+    slugs: ['sri-jayawardenapura'],
+    canonicalPlaceId: '스리랑카 수도권',
+    mergeFrom: [
+      '스리자aya와르데네푸라코테',
+      '스리자야와르데네푸라코테',
+      'Sri Jayawardenepura Kotte',
+      'Colombo',
+      '콜롬보',
+      '스리랑카'
+    ]
+  },
+  {
+    id: 'havana',
+    slugs: ['havana'],
+    canonicalPlaceId: '아바나',
+    mergeFrom: ['Havana', 'habana']
+  },
+  {
+    id: 'malta',
+    slugs: ['malta'],
+    canonicalPlaceId: '몰타',
+    mergeFrom: ['발레타', 'Valletta', 'Malta']
   }
 ];
 
 /** SSOT slug 없음·허브 IATA 오탐 — merge 대상 없이 행 삭제만 (`--only=unmapped-orphans`) */
 export const PLACE_TOOLKIT_DELETE_ONLY = {
-  ruleId: 'unmapped-orphans',
-  placeIds: ['로라이마 산', '우베를란지아', '콜로니아']
+  ruleId: 'unmapped-noise',
+  placeIds: [
+    '로라이마 산',
+    '우베를란지아',
+    '콜로니아',
+    '메히칼리',
+    '트럼프',
+    'England',
+    'Florida',
+    '와일드호스',
+    'Ad Dakhiliyah Governorate',
+    'Îles Glorieuses'
+  ]
 };

@@ -465,5 +465,17 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     preferredLinkIata: 'CCS',
     confidence: 'high',
     rationale: '카라카스 CCS — 국가 단위·툴킷 IST/MAD 오탐 보정'
+  },
+  havana: {
+    primaryIatas: ['HAV'],
+    preferredLinkIata: 'HAV',
+    confidence: 'high',
+    rationale: '아바나(Havana) HAV — citiesData·Phase D-4 placeIds 승격'
+  },
+  malta: {
+    primaryIatas: ['MLA'],
+    preferredLinkIata: 'MLA',
+    confidence: 'high',
+    rationale: '발레타(Valletta) 관문 MLA — Phase D-3 툴킷·승격 slug'
   }
 };

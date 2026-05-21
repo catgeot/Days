@@ -101,6 +101,7 @@ export const KEYWORD_SYNONYMS = {
   "uyuni": "우유니 소금사막", "lofoten": "로포텐 제도", "socotra": "소코트라 섬", "petra": "페트라",
   "alps": "스위스 알프스", "banff": "밴프 국립공원", "amsterdam": "암스테르담", "lisbon": "리스본",
   "barcelona": "바르셀로나", "prague": "프라하", "budapest": "부다페스트", "zanzibar": "잔지바르",
+  "havana": "아바나", "habana": "아바나", "malta": "몰타", "valletta": "발레타",
   "bora bora": "보라보라", "patagonia": "파타고니아", "ushuaia": "우수아이아", "svalbard": "스발바르 제도",
 
   // --- 한글 변칙/오타 대응 ---

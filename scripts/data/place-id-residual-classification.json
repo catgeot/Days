@@ -23,7 +23,7 @@
       "마나도",
       "강릉시"
     ],
-    "placeIds_only": [{ "place_id": "아바나", "primaryIatas": ["HAV"], "note": "havana travelSpots 승격 전" }]
+    "placeIds_only": [{ "place_id": "어센션 섬", "primaryIatas": ["LHR"], "note": "citiesData만·travelSpots 승격 보류" }]
   },
   "deleteCandidateApplied": [
     { "place_id": "하이원팰리스호텔", "deletedAt": "2026-05-21" },
@@ -44,30 +44,25 @@
     "앨리스스프링스"
   ],
   "unmappedSummary": {
-    "total": 21,
-    "note": "2026-05-21 세션 C 후 — P0 unmapped 0 · audit none:0 · DB 대청소 전 정체성 선행",
+    "total": 11,
+    "note": "2026-05-21 세션 D 후 — blocklist·placeIds-only(어센션 섬)만 · duplicateSlug 0",
     "p0FlagOnly": 0,
     "p0PlaceId": null
   },
+  "sessionDApplied": {
+    "appliedAt": "2026-05-21",
+    "gate": { "auditAirportsNone": 0, "p0Unmapped": 0, "duplicateSlug": 0 },
+    "promote": ["havana", "malta"],
+    "alias": ["바티칸→rome", "사뭇쁘라깐주→bangkok", "아오시마→kumamoto"],
+    "reconcileMerged": 9,
+    "deleteOnly": 7,
+    "maltaRename": "발레타→몰타",
+    "travelSpotsCount": 266
+  },
   "nextSessionPlan": {
-    "session": "D",
-    "date": "2026-05-21",
-    "prerequisiteBeforeDbCleanup": true,
-    "gate": ["sync:airports-from-toolkit", "audit:airports none:0", "toolkit:audit-place-id P0 unmapped 0"],
-    "order": ["identity", "aliases.mjs and travelSpots overrides", "sync and audit", "reconcile duplicateSlug", "optional patch-guide-iata", "toolkit delete noise", "re-audit"],
-    "promote": [
-      { "place_id": "아바나", "slug": "havana", "iata": ["HAV"], "priority": "P1", "note": "keywordData·citiesData 있음·travelSpots 갭" },
-      { "place_id": "발레타", "slug": "malta", "iata": ["MLA"], "priority": "P2", "note": "slug명 확정 후 승격" }
-    ],
-    "alias": [
-      { "place_id": "바티칸", "slug": "rome", "iata": ["FCO"], "priority": "P1" },
-      { "place_id": "사뭇쁘라깐주", "slug": "bangkok", "iata": ["BKK"], "priority": "P2", "blocklistKeep": true },
-      { "place_id": "아오시마", "slug": "kumamoto", "iata": ["OIT"], "priority": "P2", "blocklistKeep": true }
-    ],
-    "placeIdsOnly": [{ "place_id": "어센션 섬", "iata": ["LHR"], "priority": "P3" }],
-    "deleteCandidates": ["메히칼리", "트럼프", "England", "Florida", "와일드호스", "Ad Dakhiliyah Governorate", "Îles Glorieuses"],
-    "reconcileDuplicateSlug": ["iceland", "lisbon", "porto", "machu-picchu", "cocos-islands", "falkland-islands", "sri-jayawardenapura"],
-    "blocklistKeepNoAction": ["춘천", "춘천시", "수원", "강릉시", "강화도", "독도", "이슬라마바드", "마나도"]
+    "session": "E",
+    "note": "프론트·JSON 배포 후 gateo.kr 스모크(havana·malta·바티칸→rome 검색) · (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일",
+    "blocklistKeepNoAction": ["춘천", "춘천시", "수원", "강릉시", "강화도", "독도", "이슬라마바드", "마나도", "사뭇쁘라깐주", "아오시마"]
   },
   "unmappedBatches": {
     "alias_to_existing_slug": [

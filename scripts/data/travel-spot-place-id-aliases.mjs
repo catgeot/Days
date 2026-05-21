@@ -124,7 +124,22 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
 
   // —— 보르네오섬 별도 slug (borneo 병합 금지) ——
   '브루나이': 'brunei',
-  'Brunei': 'brunei'
+  'Brunei': 'brunei',
+
+  // —— 세션 D: alias·승격 (2026-05-21) ——
+  '바티칸': 'rome',
+  'Vatican': 'rome',
+  'Vatican City': 'rome',
+  '사뭇쁘라깐주': 'bangkok',
+  'Samut Prakan': 'bangkok',
+  '아오시마': 'kumamoto',
+  'Aoshima': 'kumamoto',
+  '아바나': 'havana',
+  'Havana': 'havana',
+  'habana': 'havana',
+  '발레타': 'malta',
+  'Valletta': 'malta',
+  'Malta': 'malta'
 };
 
 /**
@@ -186,6 +201,11 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   lisbon: ['나자레', 'Nazare'],
   porto: ['빌라두코르부', 'Vila do Conde'],
   'machu-picchu': ['리마', 'Lima'],
+  rome: ['바티칸', 'Vatican', 'Vatican City'],
+  bangkok: ['사뭇쁘라깐주', 'Samut Prakan'],
+  kumamoto: ['아오시마', 'Aoshima'],
+  havana: ['아바나', 'Havana', 'habana'],
+  malta: ['발레타', 'Valletta', 'Malta'],
 };
 
 /** @type {Set<string>} 여행지 SSOT에 없거나 매칭하면 안 되는 place_id */

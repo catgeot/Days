@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T04:05:07.121Z",
-    "spotCount": 263,
-    "placeIdCount": 335,
+    "generatedAt": "2026-05-21T04:26:37.585Z",
+    "spotCount": 265,
+    "placeIdCount": 337,
     "stats": {
-      "override": 112,
+      "override": 114,
       "toolkitSync": 152,
       "runtime": 0,
       "multiRule": 0,
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-21T04:05:59.774Z",
+    "lastToolkitSyncAt": "2026-05-21T04:27:12.051Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -534,10 +534,11 @@
     },
     "machu-picchu": {
       "primaryIatas": [
+        "CUZ",
         "LIM"
       ],
-      "preferredLinkIata": "LIM",
-      "kind": "single",
+      "preferredLinkIata": "CUZ",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화"
@@ -1366,11 +1367,10 @@
     },
     "porto": {
       "primaryIatas": [
-        "LIS",
         "OPO"
       ],
-      "preferredLinkIata": "LIS",
-      "kind": "multi",
+      "preferredLinkIata": "OPO",
+      "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화"
@@ -2746,6 +2746,26 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "카라카스 CCS — 국가 단위·툴킷 IST/MAD 오탐 보정"
+    },
+    "havana": {
+      "primaryIatas": [
+        "HAV"
+      ],
+      "preferredLinkIata": "HAV",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "아바나(Havana) HAV — citiesData·Phase D-4 placeIds 승격"
+    },
+    "malta": {
+      "primaryIatas": [
+        "MLA"
+      ],
+      "preferredLinkIata": "MLA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "발레타(Valletta) 관문 MLA — Phase D-3 툴킷·승격 slug"
     }
   },
   "placeIds": {
@@ -5179,7 +5199,7 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "코코스제도",
+      "placeId": "코코스 제도",
       "linkedSlug": "cocos-islands"
     },
     "코코스": {
@@ -5192,7 +5212,7 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "코코스제도",
+      "placeId": "코코스 제도",
       "linkedSlug": "cocos-islands"
     },
     "코토르": {
@@ -5876,7 +5896,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "바티칸"
+      "placeId": "바티칸",
+      "linkedSlug": "rome"
     },
     "노시베섬": {
       "primaryIatas": [
@@ -6647,9 +6668,9 @@
     },
     "디에고가르시아": {
       "primaryIatas": [
-        "MLE"
+        "SIN"
       ],
-      "preferredLinkIata": "MLE",
+      "preferredLinkIata": "SIN",
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
@@ -6753,7 +6774,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "발레타"
+      "placeId": "발레타",
+      "linkedSlug": "malta"
     },
     "아오시마": {
       "primaryIatas": [
@@ -6848,7 +6870,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "아바나"
+      "placeId": "아바나",
+      "linkedSlug": "havana"
     },
     "el-calafate": {
       "primaryIatas": [
@@ -6874,6 +6897,32 @@
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "스리랑카",
       "linkedSlug": "sri-jayawardenapura"
+    },
+    "스리랑카수도권": {
+      "primaryIatas": [
+        "CMB",
+        "BKK",
+        "KUL"
+      ],
+      "preferredLinkIata": "CMB",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "스리랑카 수도권",
+      "linkedSlug": "sri-jayawardenapura"
+    },
+    "몰타": {
+      "primaryIatas": [
+        "MLA"
+      ],
+      "preferredLinkIata": "MLA",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "몰타",
+      "linkedSlug": "malta"
     }
   }
 }

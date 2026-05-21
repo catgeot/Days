@@ -3958,5 +3958,35 @@
       "venezuela",
       "venezuela"
     ]
+  },
+  {
+    "id": 385,
+    "slug": "havana",
+    "name": "아바나",
+    "name_en": "Havana",
+    "country": "쿠바",
+    "searchKeys": [
+      "havana",
+      "아바나",
+      "havana",
+      "havana",
+      "havana",
+      "havana"
+    ]
+  },
+  {
+    "id": 386,
+    "slug": "malta",
+    "name": "몰타",
+    "name_en": "Malta",
+    "country": "몰타",
+    "searchKeys": [
+      "malta",
+      "몰타",
+      "malta",
+      "malta",
+      "malta",
+      "malta"
+    ]
   }
 ]

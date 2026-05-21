@@ -334,6 +334,14 @@
 
 **DB 대청소**는 위 JSON·Gate·reconcile **이후**. (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일 도착지 — 본 Phase와 별도.
 
+### 세션 D — 정체성·reconcile·Gate (2026-05-21)
+
+- **alias**: 바티칸→`rome` · 사뭇쁘라깐주→`bangkok` · 아오시마→`kumamoto`(blocklist 유지).
+- **승격**: `havana`(아바나·HAV)·`malta`(발레타→DB `몰타` rename·MLA) — `travelSpots.js` id 385–386 · overrides · aliases/synonyms.
+- **reconcile apply**: duplicateSlug **8→0**(바티칸·나자레·리마·스코푸가포스·코코스·포클랜드·스리랑카 등 merge 9) · delete-only **7**(메히칼리·Florida·England 등).
+- **Gate**: `sync` placeIds **337** · `audit:airports` **none:0** · `toolkit:audit` unmapped **11**(blocklist·어센션 섬) · P0 **0**.
+- **다음**: 프론트·JSON **배포** 후 gateo.kr `/place/rome/planner`(바티칸 검색)·`/place/havana/planner` HAV 스모크.
+
 ### 세션 종료 (2026-05-21 · Handoff·문서)
 
 - **커밋·배포**: JSON sync·문서·patch 스크립트 오타 · 다음 세션 D 계획 반영.
