@@ -6937,5 +6937,34 @@ export const TRAVEL_SPOTS = [
       "BWN",
       "술탄국"
     ]
+  },
+  {
+    "id": 371,
+    "slug": "el-calafate",
+    "name": "엘칼라파테",
+    "name_en": "El Calafate",
+    "country": "아르헨티나",
+    "country_en": "Argentina",
+    "lat": -50.3378,
+    "lng": -72.2648,
+    "tier": 2,
+    "popularity": 78,
+    "continent": "south_america",
+    "categories": [
+      "nature",
+      "adventure"
+    ],
+    "primaryCategory": "nature",
+    "category": "nature",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "남부 아르헨티나 파타고니아의 빙하 관광 거점입니다. 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)이며, 북부 파타고니아(바릴로체)·우수아이아·토레스 델 파이네와는 별도 여행지입니다.",
+    "keywords": [
+      "파타고니아",
+      "페리토모레노",
+      "빙하",
+      "FTE",
+      "자연/오지"
+    ]
   }
 ];

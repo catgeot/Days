@@ -253,12 +253,30 @@
 - `borneo-region` slugs: `borneo` · `kota-kinabalu` · **`brunei`** (교차 링크, 병합 없음).
 - `toolkit:audit-place-id`: P0 **unmapped 0** (브루나이 mapped) · `audit:airports` **none: 0**.
 
+### 세션 G — el-calafate 승격 (2026-05-21)
+
+- `travelSpots.js` **el-calafate**(371) · overrides **FTE** · `rentalAirportHubs` FTE · aliases/synonyms.
+- `patagonia-region` slugs: `patagonia` · **`el-calafate`** · `ushuaia` · `torres-del-paine`.
+- DB `toolkit:patch-guide-iata --apply` 1건(el-calafate EZE 제거→FTE) · extract · generate · sync.
+- `audit:airports` **none: 0** · `toolkit:audit-place-id` P0 **unmapped 0** · mapped **253**.
+
+### el-calafate 새로고침 「알 수 없는 지역」수정
+
+- 원인: `loc-{lat}-{lng}` URL 새로고침 시 `citiesData`만 조회 → SSOT 미매칭.
+- `resolveTravelSpotFromCoords` · `mergeCanonicalTravelSpot` 좌표 병합 · `getPlaceUrlParam` slug 우선.
+
+### 다음
+
+1. ~~**프론트·JSON 배포** + Edge `update-place-toolkit`(FTE HUB_COORDS).~~ → 이번 커밋·배포.
+2. gateo.kr QA: `/place/el-calafate/planner` FTE · 연관 칩 · `/explore` 검색.
+3. 세션 C — `unmapped` 36 `placeIds_only` 배치.
+
 ---
 
-## 세션 종료 (2026-05-21)
+## 세션 종료 (2026-05-21 · 세션 G)
 
-- **커밋 대상**: D-4·D-5 코드·JSON·분류표·일지·`.ai-context` (DB delete 3건은 이미 프로덕션 반영).
-- **배포 후 QA**: `travelSpotAirports.json`·`rentalAirportHubs`·aliases — gateo.kr `audit:airports none:0` 회귀만 스모크.
+- **커밋**: el-calafate 승격·patagonia-region·loc URL 새로고침 수정·문서.
+- **배포 후 QA**: `/place/el-calafate/planner` FTE · 새로고침 이름·desc · `audit:airports none:0`.
 
 ## 플래너 Trip.com 모바일 배너·UX (완료)
 

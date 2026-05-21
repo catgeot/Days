@@ -384,7 +384,8 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /티미카|timika/i, iata: 'TIM' },
   { re: /카르스텐츠|carstensz/i, iata: 'TIM' },
   { re: /콤포스텔라|compostela|산티아고\s*데\s*콤포스텔라/i, iata: 'SCQ' },
-  { re: /브루나이|brunei|bandar\s*seri\s*begawan|bsb/i, iata: 'BWN' }
+  { re: /브루나이|brunei|bandar\s*seri\s*begawan|bsb/i, iata: 'BWN' },
+  { re: /엘칼라파테|el\s*calafate|페리토\s*모레노|perito\s*moreno|\bfte\b/i, iata: 'FTE' }
 ];
 
 function collectPhraseAirportFromTitle(ordered, seen, title, requireArrivalHint) {

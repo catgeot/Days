@@ -174,6 +174,11 @@ const PATCHES = [
     note: 'Phase D-3 — 오만 MCT 참고'
   },
   {
+    matchPlaceIds: ['엘칼라파테', 'El Calafate', 'el-calafate', 'Calafate'],
+    primaryIatas: ['FTE'],
+    note: '세션 G — 페리토 모레노·남부 파타고니아 FTE'
+  },
+  {
     matchPlaceIds: ['아바나', 'Havana', 'havana'],
     primaryIatas: ['HAV'],
     note: 'Phase D-4 — citiesData havana, travelSpots 승격 전 placeIds만'

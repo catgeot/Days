@@ -16,9 +16,19 @@ export const formatUrlName = (nameEn) => {
  */
 export function getPlaceUrlParam(loc) {
   if (!loc) return '';
+  const slug = loc.canonical_slug || loc.slug;
+  if (
+    slug &&
+    typeof slug === 'string' &&
+    !slug.startsWith('search-') &&
+    !slug.startsWith('loc-') &&
+    !slug.startsWith('city-')
+  ) {
+    return slug;
+  }
   const id = loc.id != null ? String(loc.id) : '';
   if (id.startsWith('search-') || id.startsWith('loc-')) {
     return id;
   }
-  return loc.slug || id || loc.name || '';
+  return slug || id || loc.name || '';
 }

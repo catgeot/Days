@@ -80,6 +80,9 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '파타고니아 칠레': 'torres-del-paine',
   'Tierra del Fuego': 'ushuaia',
   '티에라델푸에고': 'ushuaia',
+  '엘칼라파테': 'el-calafate',
+  'El Calafate': 'el-calafate',
+  'Calafate': 'el-calafate',
 
   // —— unmapped 배치 (placeIds·툴킷 조회, SSOT slug 존재 시만) ——
   '나자레': 'lisbon',
@@ -136,6 +139,7 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'antarctica': ['맥머도', '맥머도 기지', '남극해', 'McMurdo Station', 'McMurdo'],
   patagonia: ['Bariloche', '바릴로체', 'Patagonia (Northern)'],
   ushuaia: ['Ushuaia', 'Tierra del Fuego', '티에라델푸에고'],
+  'el-calafate': ['엘칼라파테', 'El Calafate', 'Calafate', 'FTE', 'Perito Moreno', '페리토 모레노'],
   'torres-del-paine': ['Torres del Paine', '토레스델파이네', 'Parque Nacional Torres del Paine'],
   madeira: ['마데이라', 'Madeira', 'Madeira Island', '푼샬', 'Funchal'],
   vladivostok: ['블라디보스토크', 'Vladivostok', 'VVO'],

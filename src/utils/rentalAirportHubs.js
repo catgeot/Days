@@ -588,6 +588,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'CNS', officialKo: '케언스공항', lat: -16.8858, lng: 145.7553, radiusKm: 250, aliases: ['cairns', '케언스', 'great barrier reef', '그레이트배리어리프'] },
   { iata: 'MAO', officialKo: '에두아르도 고메스국제공항', lat: -3.0386, lng: -60.0497, radiusKm: 400, aliases: ['manaus', '마나우스', 'amazon', '아마존'] },
   { iata: 'USH', officialKo: '마샬공항', lat: -54.8433, lng: -68.2958, radiusKm: 350, aliases: ['ushuaia', '우수아이아', 'ush', 'tierra del fuego', '티에라델푸에고'] },
+  {
+    iata: 'FTE',
+    officialKo: 'Armando Tola 국제공항',
+    lat: -50.2803,
+    lng: -72.0531,
+    radiusKm: 200,
+    aliases: ['el calafate', 'el-calafate', '엘칼라파테', 'fte', 'perito moreno', '페리토모레노', '페리토 모레노']
+  },
   { iata: 'BZN', officialKo: '갤러틴필드공항', lat: 45.7775, lng: -111.1600, radiusKm: 200, aliases: ['bozeman', '보즈먼', 'yellowstone', '옐로스톤'] },
   { iata: 'FAT', officialKo: '프레스노요세미티국제공항', lat: 36.7762, lng: -119.7181, radiusKm: 220, aliases: ['fresno', '프레스노', 'yosemite', '요세미티', 'sequoia', '세쿼이아'] },
   // --- 감사·오버라이드 기반 추가 허브 (travelSpotAirports.json) ---

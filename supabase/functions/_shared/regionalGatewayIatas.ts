@@ -4,6 +4,7 @@
  */
 export const REGIONAL_GATEWAY_IATAS_BY_SLUG: Record<string, readonly string[]> = {
   patagonia: ['BRC', 'EZE'],
+  'el-calafate': ['FTE'],
   ushuaia: ['USH'],
   'torres-del-paine': ['PUQ'],
   borneo: ['BKI', 'KCH', 'KUL'],

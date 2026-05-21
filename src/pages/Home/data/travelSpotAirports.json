@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T03:08:11.742Z",
-    "spotCount": 249,
-    "placeIdCount": 333,
+    "generatedAt": "2026-05-21T03:23:33.662Z",
+    "spotCount": 250,
+    "placeIdCount": 334,
     "stats": {
-      "override": 98,
+      "override": 99,
       "toolkitSync": 152,
       "runtime": 0,
       "multiRule": 0,
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-21T03:08:13.874Z",
+    "lastToolkitSyncAt": "2026-05-21T03:26:53.422Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -2593,6 +2593,17 @@
       "confidence": "high",
       "bannerNote": "보르네오섬 북부의 독립 국가입니다. 말레이시아 사바·보르네오(borneo)와 입국 서류·관문(BKI)이 다릅니다. 티켓 도착은 BWN을 확인해 주세요.",
       "rationale": "브루나이 국제공항(BWN) — 보르네오(borneo)와 별도 여행지"
+    },
+    "el-calafate": {
+      "primaryIatas": [
+        "FTE"
+      ],
+      "preferredLinkIata": "FTE",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "엘칼라파테는 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)입니다. 북부 파타고니아(바릴로체 BRC)·우수아이아(USH)·토레스 델 파이네(PUQ)와 관문이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "엘칼라파테(FTE) — 페리토 모레노·남부 아르헨티나 파타고니아 관문"
     }
   },
   "placeIds": {
@@ -6673,6 +6684,19 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "아바나"
+    },
+    "el-calafate": {
+      "primaryIatas": [
+        "FTE",
+        "EZE"
+      ],
+      "preferredLinkIata": "FTE",
+      "kind": "multi",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "el-calafate",
+      "linkedSlug": "el-calafate"
     }
   }
 }

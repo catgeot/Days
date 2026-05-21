@@ -5,8 +5,8 @@
   "patagonia-region": {
     "labelKo": "파타고니아 권역",
     "labelEn": "Patagonia",
-    "slugs": ["patagonia", "ushuaia", "torres-del-paine"],
-    "notes": "북부 BRC/EZE · 남부 USH · 칠레 PUQ — 관문이 다름"
+    "slugs": ["patagonia", "el-calafate", "ushuaia", "torres-del-paine"],
+    "notes": "북부 BRC/EZE · 중남부 FTE · 남부 USH · 칠레 PUQ — 관문이 다름"
   },
   "iceland-region": {
     "labelKo": "아이슬란드 권역",

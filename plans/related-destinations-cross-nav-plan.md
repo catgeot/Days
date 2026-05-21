@@ -150,6 +150,6 @@
 | 파타고니아 3-slug 역할 분리·BRC/EZE | ✅ 2026-05-19 |
 | `travelSpotClusters.json` | ✅ patagonia·iceland 2클러스터 |
 | PlannerTab 연관 UI | ✅ R2 (배포 대기) |
-| el-calafate 등 세부 slug | ⬜ 백로그 |
+| el-calafate 등 세부 slug | ✅ el-calafate (2026-05-21) |
 
 *완료 시 [`2026-05-19-project-log.md`](./2026-05-19-project-log.md) · [`.ai-context.md`](../.ai-context.md) 6절만 갱신.*

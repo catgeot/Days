@@ -33,6 +33,7 @@ const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
   HKT: { lat: 8.1132, lng: 98.3169 },
   CUZ: { lat: -13.5357, lng: -71.9388 },
   USH: { lat: -54.8433, lng: -68.2958 },
+  FTE: { lat: -50.2803, lng: -72.0531 },
   PUQ: { lat: -53.0026, lng: -70.8542 },
   ADD: { lat: 8.9779, lng: 38.7993 },
   MDY: { lat: 28.2019, lng: -177.3803 },

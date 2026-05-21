@@ -21,7 +21,7 @@ import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { getSystemPrompt } from './lib/prompts';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot } from '../../utils/travelSpotResolve.js';
+import { mergeCanonicalTravelSpot, resolveTravelSpotFromCoords } from '../../utils/travelSpotResolve.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -187,6 +187,10 @@ function Home() {
           if (fromSession) {
             target = fromSession;
           } else {
+            const matchedSpot = resolveTravelSpotFromCoords(parsedLat, parsedLng);
+            if (matchedSpot) {
+              target = matchedSpot;
+            } else {
             const matchedCity = (citiesData || []).find(c =>
               Math.abs(c.lat - parsedLat) < 0.001 && Math.abs(c.lng - parsedLng) < 0.001
             );
@@ -202,6 +206,7 @@ function Home() {
               tags: matchedCity ? matchedCity.tags : [],
               desc: matchedCity ? matchedCity.desc : ""
             };
+            }
           }
         }
       }

@@ -210,6 +210,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '우수아이아 마샬공항(USH) — 티에라델푸에고·남극 크루즈 관문'
   },
+  'el-calafate': {
+    primaryIatas: ['FTE'],
+    preferredLinkIata: 'FTE',
+    confidence: 'high',
+    rationale: '엘칼라파테(FTE) — 페리토 모레노·남부 아르헨티나 파타고니아 관문',
+    bannerNote:
+      '엘칼라파테는 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)입니다. 북부 파타고니아(바릴로체 BRC)·우수아이아(USH)·토레스 델 파이네(PUQ)와 관문이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
   cusco: {
     primaryIatas: ['CUZ'],
     preferredLinkIata: 'CUZ',

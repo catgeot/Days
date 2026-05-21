@@ -86,6 +86,7 @@
       { "place_id": "이르쿠츠크", "proposedSlug": "irkutsk", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
       { "place_id": "앨리스스프링스", "proposedSlug": "alice-springs", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
       { "place_id": "브루나이", "proposedSlug": "brunei", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21", "note": "borneo 병합 금지·borneo-region 교차 링크" },
+      { "place_id": "엘칼라파테", "proposedSlug": "el-calafate", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21", "note": "patagonia-region FTE·페리토 모레노" },
       { "place_id": "퀸스타운", "proposedSlug": "queenstown", "inCitiesData": false }
     ]
   }

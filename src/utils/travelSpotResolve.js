@@ -118,6 +118,20 @@ export function resolveTravelSpotFromPlaceId(lookup, spots, placeId) {
   return resolveFuzzy(spots, raw);
 }
 
+/** 좌표 근접 매칭 — loc-/search- URL 새로고침·지오코딩 핀 복구용 */
+export function resolveTravelSpotFromCoords(lat, lng, spots = TRAVEL_SPOTS, epsilon = 0.02) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return (
+    spots.find(
+      (s) =>
+        Number.isFinite(s.lat) &&
+        Number.isFinite(s.lng) &&
+        Math.abs(s.lat - lat) < epsilon &&
+        Math.abs(s.lng - lng) < epsilon
+    ) ?? null
+  );
+}
+
 export function resolveTravelSpotFromLocation(location) {
   if (location == null) return null;
   if (typeof location === 'string') {
@@ -138,6 +152,12 @@ export function resolveTravelSpotFromLocation(location) {
     const hit = resolveTravelSpotFromPlaceId(getSpotLookup(), TRAVEL_SPOTS, key);
     if (hit) return hit;
   }
+
+  const lat = Number(location.lat);
+  const lng = Number(location.lng);
+  const byCoords = resolveTravelSpotFromCoords(lat, lng);
+  if (byCoords) return { spot: byCoords, matchKind: 'coords' };
+
   return null;
 }
 
@@ -151,6 +171,7 @@ export function mergeCanonicalTravelSpot(location) {
   const { spot } = resolved;
   return {
     ...location,
+    id: spot.id ?? location.id,
     canonical_slug: spot.slug,
     slug: spot.slug,
     name: spot.name,
