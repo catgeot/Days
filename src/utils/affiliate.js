@@ -57,6 +57,31 @@ export function get12GoHomeUrl(options = {}) {
   return get12GoAffiliateUrl('https://12go.asia/ko/', options);
 }
 
+const DIRECT_FERRIES_AFFILIATE_BASE =
+  'https://www.directferries.co.kr/?dfpid=7263&affid=1001';
+
+/**
+ * Direct Ferries 제휴 URL — 노선 페이지는 rurl로 래핑, 홈은 기본 제휴 링크.
+ *
+ * @param {string} [targetUrl] - 예: https://www.directferries.co.kr/dubrovnik_split_ferry.htm
+ * @returns {string}
+ */
+export function getDirectFerriesAffiliateUrl(targetUrl) {
+  if (!targetUrl?.trim()) {
+    return `${DIRECT_FERRIES_AFFILIATE_BASE}`;
+  }
+  try {
+    const url = new URL(targetUrl);
+    if (url.searchParams.has('dfpid')) return targetUrl;
+    if (url.hostname.includes('directferries.co.kr') && url.pathname && url.pathname !== '/') {
+      return `${DIRECT_FERRIES_AFFILIATE_BASE}&rurl=${encodeURIComponent(targetUrl)}`;
+    }
+    return targetUrl;
+  } catch {
+    return `${DIRECT_FERRIES_AFFILIATE_BASE}&rurl=${encodeURIComponent(targetUrl)}`;
+  }
+}
+
 /** 12Go 제휴 검색 폼 위젯 (Form code) */
 export const TWELVE_GO_FORM = {
   partnerId: TWELVE_GO_PARTNER_ID,

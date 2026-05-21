@@ -215,7 +215,7 @@ npm run enrich:airports
 ### Provider 우선순위 (같은 노선)
 
 1. `direct` — 운항사 공식 (Direct Ferries 취항 없을 때, 예: JR Beetle)
-2. `direct_ferries` — Direct Ferries 제휴 홈
+2. `direct_ferries` — Direct Ferries **제휴 탐색 홈만**(버튼). 항구명 노선 URL 딥링크는 사용하지 않음 — [`ferry-ssot-validation.md` 5절](ferry-ssot-validation.md#5-플래너-ui-페리-카드)
 3. `twelve_go` — 12Go 노선 딥링크 → UI는 **배너**로만 (`get12GoAffiliateUrl`: `z=15927471`, `sub_id={slug}-planner`)
 4. `klook_ferry` — Klook 페리 통합 페이지 (`aff_adid=1281898`)
 

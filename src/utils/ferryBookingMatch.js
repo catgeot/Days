@@ -1,6 +1,5 @@
 import ferryData from '../pages/Home/data/travelSpotFerries.json';
-import { DIRECT_FERRIES_HOME_URL } from '../components/PlaceCard/tabs/planner/constants.js';
-import { get12GoAffiliateUrl, getKlookFerryUrl } from './affiliate.js';
+import { get12GoAffiliateUrl, getDirectFerriesAffiliateUrl, getKlookFerryUrl } from './affiliate.js';
 
 const PROVIDER_ORDER = ['direct', 'direct_ferries', 'twelve_go', 'klook_ferry'];
 
@@ -36,7 +35,7 @@ export function shouldShowFerryCard(slug) {
  */
 export function resolveBookingUrl(booking, context = {}) {
   if (booking.provider === 'direct_ferries') {
-    return { ...booking, url: DIRECT_FERRIES_HOME_URL };
+    return { ...booking, url: getDirectFerriesAffiliateUrl() };
   }
   if (booking.provider === 'klook_ferry') {
     return { ...booking, url: getKlookFerryUrl() };
@@ -88,7 +87,11 @@ export function resolveFerryBookings(slug, stepTitle = '') {
     if (found) matchedRoute = found;
   }
 
-  const context = { slug, campaign: stepTitle ? 'timeline' : 'planner' };
+  const context = {
+    slug,
+    campaign: stepTitle ? 'timeline' : 'planner',
+    routeId: matchedRoute?.id,
+  };
 
   const routeBookings = matchedRoute?.bookings?.length
     ? sortAndResolveBookings(matchedRoute.bookings, context)

@@ -105,6 +105,29 @@ function main() {
     }
   }
 
+  const manualChecklist = Object.entries(data.spots ?? {}).map(([slug, profile]) => {
+    const routes = profile.routes ?? [];
+    return {
+      slug,
+      tier: profile.tier,
+      confidence: profile.confidence ?? 'high',
+      routeCount: routes.length,
+      providers: [...new Set(routes.flatMap((r) => (r.bookings ?? []).map((b) => b.provider)))],
+      routes: routes.map((r) => ({
+        id: r.id,
+        label: r.label,
+        duration: r.duration,
+        urls: (r.bookings ?? [])
+          .filter((b) => b.url)
+          .map((b) => ({ provider: b.provider, url: b.url })),
+      })),
+      airportBannerFerryHint: Boolean(
+        /페리/.test(airportNotes[slug] ?? '') &&
+          /버스·페리|페리·|페리가/.test(airportNotes[slug] ?? ''),
+      ),
+    };
+  });
+
   const report = {
     generatedAt: new Date().toISOString(),
     meta: data.meta ?? null,
@@ -112,6 +135,7 @@ function main() {
     gapCount: gaps.length,
     mismatchCount: mismatches.length,
     reviewQueue,
+    manualChecklist,
     gaps,
     mismatches,
     notes: [

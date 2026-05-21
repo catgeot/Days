@@ -50,8 +50,7 @@ const PlannerTab = ({
 
     // essential_guide가 {} 등 빈 객체여도 UI에 내용이 없도록 정규화
     const guideData = getEssentialGuide(plannerData, canonicalLocation);
-    const showFerryCard =
-        shouldShowFerryCard(canonicalLocation?.slug) || Boolean(guideData?.categories?.ferry_booking);
+    const showFerryCard = shouldShowFerryCard(canonicalLocation?.slug);
     const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation);
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;

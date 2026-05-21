@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T12:24:10.633Z",
+    "generatedAt": "2026-05-21T13:23:49.224Z",
     "spotCount": 33
   },
   "spots": {
@@ -10,6 +10,7 @@
       "source": "curated-override",
       "confidence": "high",
       "summary": "산토리니는 피레우스(아테네) 또는 다른 키클라데스 섬에서 페리로 접근합니다.",
+      "rationale": "Blue Star 공식 + 12Go piraeus/santorini",
       "routes": [
         {
           "id": "piraeus-santorini",
@@ -18,8 +19,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "Blue Star Ferries",
+              "url": "https://www.bluestarferries.com/en-gb/"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/piraeus/santorini"
             }
           ]
         }
@@ -32,8 +43,9 @@
     "zanzibar": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "잔지바르는 다르에스살람 등 본토에서 페리로 접근하는 일정이 흔합니다.",
+      "rationale": "Azam Marine 공식 예약 URL",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -56,8 +68,9 @@
     "palawan": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "팔라완 일부 구간(엘니도·코론 등)은 보트·페리 이동이 흔합니다.",
+      "rationale": "12Go puerto-princesa/el-nido 노선 URL·라벨 일치",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -147,8 +160,9 @@
     "fiji": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "피지는 비ti 레vu 등 허브에서 다른 섬으로 페리·쾌속선이 연결됩니다.",
+      "rationale": "South Sea Cruises 공식 예약 URL",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -172,7 +186,8 @@
       "tier": "common",
       "source": "curated-override",
       "confidence": "high",
-      "summary": "바르셀로나에서 이비자·마요르카 등 발렌ares 제도로 페리가 운항합니다.",
+      "summary": "바르셀로나에서 이비자·마요르카 등 발렌아레스 제도로 페리가 운항합니다.",
+      "rationale": "Baleària 공식 + 12Go barcelona/ibiza",
       "routes": [
         {
           "id": "barcelona-ibiza",
@@ -181,8 +196,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "Baleària",
+              "url": "https://www.balearia.com/en/routes-timetables/ferry-barcelona-ibiza"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/barcelona/ibiza"
             }
           ]
         }
@@ -197,6 +222,7 @@
       "source": "curated-override",
       "confidence": "high",
       "summary": "아테네 피레우스 항에서 그리스 섬으로 페리가 출발합니다.",
+      "rationale": "Blue Star 공식 + 12Go piraeus/santorini (피레우스 출발)",
       "routes": [
         {
           "id": "piraeus-islands",
@@ -205,8 +231,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "Blue Star Ferries",
+              "url": "https://www.bluestarferries.com/en-gb/"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/piraeus/santorini"
             }
           ]
         }
@@ -266,8 +302,9 @@
     "el-nido": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
-      "summary": "엘니도는 팔awan 본토에서 보트·페리로 접근하는 일정이 많습니다.",
+      "confidence": "high",
+      "summary": "엘니도는 팔라완 본토에서 보트·페리로 접근하는 일정이 많습니다.",
+      "rationale": "12Go coron/el-nido 노선 URL·라벨 일치",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -431,8 +468,9 @@
     "langkawi": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "랑카위는 쿠ala페라투스·페낭 등에서 페리로 접근 가능합니다.",
+      "rationale": "12Go kuala-perlis/langkawi 노선 URL·라벨 일치",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -542,21 +580,23 @@
     "miami": {
       "tier": "cruise_only",
       "source": "curated-override",
-      "confidence": "medium",
-      "summary": "마이애미는 카리브 크루즈의 주요 기항지입니다."
+      "confidence": "high",
+      "summary": "마이애미는 카리브 크루즈의 주요 기항지입니다.",
+      "rationale": "크루즈 관문 — 페리 카드 미노출"
     },
     "komodo-island": {
       "tier": "cruise_only",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "코모도 일대는 리브어보드·보트 투어(크루즈형)가 흔합니다.",
-      "rationale": "Trip.com 크루즈·현지 보트 투어"
+      "rationale": "Trip.com 크루즈·현지 보트 투어 — 페리 카드 미노출"
     },
     "ibiza": {
       "tier": "common",
       "source": "curated-override",
       "confidence": "high",
       "summary": "이비자↔포르멘테라·마요르카 등 페리 노선이 있습니다.",
+      "rationale": "Baleària ibiza-formentera + 12Go ibiza/formentera",
       "routes": [
         {
           "id": "ibiza-formentera",
@@ -565,8 +605,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "Baleària",
+              "url": "https://www.balearia.com/en/routes-timetables/ferry-ibiza-formentera"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/ibiza/formentera"
             }
           ]
         }
@@ -581,6 +631,7 @@
       "source": "curated-override",
       "confidence": "high",
       "summary": "크레타는 피레우스·산토리니 등에서 페리 연결됩니다.",
+      "rationale": "Blue Star 공식 + 12Go piraeus/heraklion",
       "routes": [
         {
           "id": "piraeus-heraklion",
@@ -589,8 +640,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "Blue Star Ferries",
+              "url": "https://www.bluestarferries.com/en-gb/"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/piraeus/heraklion"
             }
           ]
         }
@@ -602,8 +663,9 @@
     "sicily": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
-      "summary": "시칠리아는 본토 이탈리아·튀nis 등과 페리로 연결됩니다.",
+      "confidence": "high",
+      "summary": "시칠리아는 본토 이탈리아·튀니스 등과 페리로 연결됩니다.",
+      "rationale": "GNV naples-palermo 공식 + 12Go naples/palermo",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -615,8 +677,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "GNV",
+              "url": "https://www.gnv.it/en/ferries-destinations/sicily/naples-palermo"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/naples/palermo"
             }
           ]
         }
@@ -630,6 +702,7 @@
       "source": "curated-override",
       "confidence": "high",
       "summary": "흐바르는 스플리트·두브로브니크에서 페리로 접근합니다.",
+      "rationale": "Jadrolinija split-hvar + 12Go split/hvar",
       "routes": [
         {
           "id": "split-hvar",
@@ -638,8 +711,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "Jadrolinija · 크로아티아 국영 페리",
+              "url": "https://www.jadrolinija.hr/en/travel/split-hvar"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/split/hvar"
             }
           ]
         }
@@ -686,8 +769,9 @@
     "tahiti": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "타히티와 주변 섬(모orea 등) 간 페리·항공 연결이 있습니다.",
+      "rationale": "Aremiti Ferry 공식 예약 URL",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -740,7 +824,8 @@
       "tier": "common",
       "source": "curated-override",
       "confidence": "high",
-      "summary": "두브로브니크에서 스플리트·흐바르 등 아드리아해 섬으로 페리가 흔합니다.",
+      "summary": "두브로브니크에서 스플리트·흐바르(스타리 그라드) 등으로 페리가 흔합니다. 스플리트 직항(약 2시간)은 12Go로 검색하고, 그 외 노선은 Direct Ferries·크로아티아 국영 페리(Jadrolinija)에서 확인하세요.",
+      "rationale": "주 노선 12Go dubrovnik/split · DF·Jadrolinija는 버튼(홈·공식)",
       "routes": [
         {
           "id": "dubrovnik-split",
@@ -749,22 +834,33 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/dubrovnik/split"
+            },
+            {
               "provider": "direct_ferries",
-              "name": "Direct Ferries"
+              "name": "Direct Ferries 검색"
+            },
+            {
+              "provider": "direct",
+              "name": "Jadrolinija · 크로아티아 국영 페리",
+              "url": "https://www.jadrolinija.hr/en"
             }
           ]
         }
       ],
       "dfRecommendations": [
-        "두브로브니크(Dubrovnik) - 스플리트(Split) (약 2시간)",
-        "두브로브니크(Dubrovnik) - 스타리 그라드(Stari Grad, 흐바르섬) (약 4시간)"
+        "두브로브니크(Dubrovnik) - 스타리 그라드(Stari Grad, 흐바르섬) (약 4시간)",
+        "두브로브니크(Dubrovnik) - 스플리트(Split) (약 2시간)"
       ]
     },
     "phu-quoc": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "푸꾸옥은 하티엔·라ach Gia 등에서 페리·고속선으로 접근합니다.",
+      "rationale": "12Go rach-gia·ha-tien/phu-quoc 노선 URL·라벨 일치",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -904,8 +1000,9 @@
     "malta": {
       "tier": "common",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "summary": "몰타 본토와 고zo·코mino 섬 간 페리가 흔합니다.",
+      "rationale": "Gozo Channel 공식 + 12Go malta/gozo",
       "fallbacks": [
         "klook_ferry"
       ],
@@ -917,8 +1014,18 @@
           "directFerries": true,
           "bookings": [
             {
+              "provider": "direct",
+              "name": "Gozo Channel",
+              "url": "https://www.gozochannel.com/e-ticketing-system/"
+            },
+            {
               "provider": "direct_ferries",
               "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/malta/gozo"
             }
           ]
         }

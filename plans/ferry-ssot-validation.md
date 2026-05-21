@@ -1,6 +1,6 @@
 # 페리 SSOT 검증·운영 가이드
 
-**상태**: 2026-05-21 — 데이터 무결성 우선. UI(공항 셔틀·터미널·페리 통합)는 SSOT 검증 후 단계적으로 맞춤.
+**상태**: 2026-05-21 — SSOT 33곳 `confidence: high`·감사 `review hints: 0` 완료. UI(공항 셔틀·터미널·페리 통합)는 이후 단계.
 
 **관련**: [`travel-spots-management.md`](travel-spots-management.md) 4~5절 · [`destination-airport-identity-plan.md`](destination-airport-identity-plan.md)
 
@@ -26,8 +26,8 @@
 | 전체 여행지 (`travelSpots`) | ~265 |
 | 페리 SSOT 등록 (`travelSpotFerries.spots`) | **33** (전부 `curated-override`) |
 | 플래너 카드 노출 (`required` + `common`) | **29** |
-| `confidence: medium` (재검수 큐) | **11** |
-| Direct Ferries만 (`twelve_go`·`direct` 없음) | **9** |
+| `confidence: medium` (재검수 큐) | **0** |
+| Direct Ferries만 (`twelve_go`·`direct` 없음) | **0** (지중해 9곳 12Go·선사 보강 완료) |
 | 다중 노선 (`routes.length > 1`) | **7** |
 
 **265곳 전수 검증은 하지 않는다.** SSOT 33곳은 전수 검증, 나머지는 `generate:ferries` 후보·섬/페리 키워드로 **큐레이션 큐**만 운영한다.
@@ -46,7 +46,7 @@ npm run audit:ferries
 
 | 산출물 | 용도 |
 |--------|------|
-| `scripts/outputs/ferry-audit.json` | gap·DF 불일치·medium·DF-only·URL 누락·공항 배너 힌트 |
+| `scripts/outputs/ferry-audit.json` | gap·DF 불일치·medium·DF-only·URL 누락·공항 배너 힌트·`manualChecklist` 33곳 |
 | `scripts/outputs/ferry-candidates.json` | 자동 tier 후보·검수 큐 |
 
 **기대**: `gapCount: 0` (`required`/`common`은 `routes[].bookings` 또는 `fallbacks` 필수).
@@ -62,10 +62,6 @@ npm run audit:ferries
 | Direct Ferries | DF에 실제 취항·노선이 있을 때만 `direct_ferries` + `directFerries: true` |
 | 다중 노선 | 공항 `bannerNote`(KLO/MPH 등)와 노선 스토리 일치 |
 | `cruise_only` | 페리 카드 미노출, 크루즈만 Trip.com |
-
-**우선 재검수** (`confidence: medium`): zanzibar, palawan, el-nido, langkawi, komodo-island, sicily, tahiti, phu-quoc, malta, fiji, miami.
-
-**DF-only 보강** (12Go·로컬 선사 추가 또는 DF 제거): santorini, barcelona, athens, ibiza, crete, sicily, hvar, dubrovnik, malta.
 
 ### 3c. 누락 여행지 (기본·신규만)
 
@@ -95,10 +91,15 @@ npm run audit:ferries
 
 | 모드 | 조건 | 표시 |
 |------|------|------|
+| 카드 노출 | `tier` `required`·`common`만 | `shouldShowFerryCard` — AI `ferry_booking`만으로 카드 미노출 |
 | 단일 노선 | `routes.length === 1` | 카드 1개 · 12Go **full** 배너(노선명 포함) |
 | 다중 노선 | `routes.length > 1` | 노선별 카드 · 12Go **compact** 배너(노선명은 카드 헤더만) · Powered by 12Go **목록 하단 1회** |
-| 선사 | `provider: direct` | 「선사·공식 예약」 구분선 아래 버튼 |
-| 기타 | `fallbacks` | 「기타 페리 검색」 — Klook 페리 |
+| 12Go | `provider: twelve_go` | 노선 URL `/travel/{from}/{to}` — 제휴 `get12GoAffiliateUrl` |
+| Direct Ferries | `provider: direct_ferries` | **탐색 홈만** (`getDirectFerriesAffiliateUrl`) · **버튼** — 항구명 딥링크·노선 배너 **사용 안 함** |
+| 선사 | `provider: direct` | 12Go 배너 아래 「기타 페리 예약」 버튼 (예: `Jadrolinija · 크로아티아 국영 페리`) |
+| 기타 | `fallbacks` | Klook 페리 |
+
+**두브로브니크 예시**: 주 노선 12Go `dubrovnik/split` 1카드 · DF·Jadrolinija 버튼 · `dfRecommendations`에 스타리 그라드(4h) 텍스트 안내.
 
 공항 셔틀·터미널 단계와 한 카드에 묶는 UI는 **데이터 정합 후** 검토.
 
@@ -133,5 +134,7 @@ npm run audit:ferries
 - AI `ferry_booking.url`만 믿고 overrides 생략 → 중복·불명 「공식 예약」 버튼  
 - `direct`에 출처 없는 제3자 URL  
 - DF만 넣고 12Go·로컬 선사 미검증 → 유럽 지중해 등에서 실용성 낮음  
+- Direct Ferries **항구명 노선 URL** 기대 → 매칭 안 됨. **홈 버튼**만 사용  
+- `direct` 라벨에 「공식 선사」만 쓰고 **국영·대표** 맥락 없음 → Jadrolinija 등은 「크로아티아 국영 페리」 권장  
 - 공항만 맞추고 페리 tier 생략 → 카드 미노출  
 - 265여행지 일괄 전수 → 비용 대비 효율 낮음 (**33곳 + 신규 큐만**)

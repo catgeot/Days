@@ -105,8 +105,8 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
         </div>
         {others.length > 0 && (
           <div className={multiRoute ? 'pt-2 border-t border-gray-100' : undefined}>
-            {multiRoute && (
-              <p className="text-[10px] font-medium text-gray-500 mb-1.5">선사·공식 예약</p>
+            {(multiRoute || twelveGo) && (
+              <p className="text-[10px] font-medium text-gray-500 mb-1.5">기타 페리 예약</p>
             )}
             {renderBookingButtons(others)}
           </div>
@@ -155,7 +155,7 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
         <div className="space-y-3">
           {allRoutes.map((r) => {
             const routeBookings = (r.bookings ?? [])
-              .map((b) => resolveBookingUrl(b, bookingContext))
+              .map((b) => resolveBookingUrl(b, { ...bookingContext, routeId: r.id }))
               .filter((b) => b.url);
             const section = renderRouteSection(r, routeBookings, { multiRoute: true });
             if (!section) return null;
@@ -183,7 +183,10 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
 
       {!isCompactFerry && !showRouteList && route && (
         <div className="border border-gray-200 rounded-xl p-3 bg-white">
-          {renderRouteSection(route, bookings)}
+          {renderRouteSection(
+            route,
+            bookings.map((b) => resolveBookingUrl(b, { ...bookingContext, routeId: route.id })),
+          )}
         </div>
       )}
 
@@ -197,12 +200,6 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
             </>
           )}
         </div>
-      )}
-
-      {!isCompactFerry && !showRouteList && bookings.some((b) => b.provider === 'direct_ferries') && (
-        <p className="text-xs text-gray-500 text-center leading-relaxed break-keep">
-          Direct Ferries 제휴 링크 · 예약 시 사이트 운영에 도움이 됩니다.
-        </p>
       )}
 
       {!isCompactFerry && !showRouteList && !bookings.length && !aiExtraBooking && (

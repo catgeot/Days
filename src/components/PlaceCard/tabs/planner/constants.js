@@ -93,7 +93,6 @@ export const DIRECT_FERRIES_BASE_URL =
 
 // Direct Ferries 한국어 홈 (JourneyTimeline 버튼용)
 export const DIRECT_FERRIES_HOME_URL = 'https://www.directferries.co.kr/?dfpid=7263&affid=1001&rurl=';
-
 // 여행지별 추천 페리 노선 텍스트 매핑 (Direct Ferries 리스트 형식)
 export const DIRECT_FERRIES_RECOMMENDATIONS = {
     // 크로아티아 (출발: Croatia 선택)

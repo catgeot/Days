@@ -10,6 +10,13 @@
 - **UI**: 다중 노선 compact 12Go · AI `ferry_booking.url`은 SSOT `routes` 있을 때 버튼 미노출 (`resolveAiFerryExtraBooking`).
 - **감사**: `audit:ferries` — gap·medium·DF-only·공항 `bannerNote` 힌트 → `scripts/outputs/ferry-audit.json`.
 
+## 페리 SSOT 마무리 (동일일 후속)
+
+- **감사**: `gapCount: 0`, `review hints: 0` — 11곳 `medium`→`high`, 지중해 9곳 12Go·선사 보강.
+- **Direct Ferries**: 노선 항구 딥링크 제거 → `getDirectFerriesAffiliateUrl()` **탐색 홈 버튼**만.
+- **두브로브니크**: 주 노선 12Go `dubrovnik/split` 단일 카드 · DF·`Jadrolinija · 크로아티아 국영 페리` 버튼 · 추천 노선에 스타리 그라드(4h) 텍스트.
+- **플래너**: `shouldShowFerryCard`만 카드 노출 (`required`/`common`).
+
 ---
 
 ## 배경

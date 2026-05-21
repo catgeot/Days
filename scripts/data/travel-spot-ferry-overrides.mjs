@@ -155,11 +155,12 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       },
     ],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: '12Go puerto-princesa/el-nido 노선 URL·라벨 일치',
   },
   'el-nido': {
     tier: 'common',
-    summary: '엘니도는 팔awan 본토에서 보트·페리로 접근하는 일정이 많습니다.',
+    summary: '엘니도는 팔라완 본토에서 보트·페리로 접근하는 일정이 많습니다.',
     routes: [
       {
         id: 'coron-el-nido',
@@ -172,7 +173,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       },
     ],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: '12Go coron/el-nido 노선 URL·라벨 일치',
   },
 
   // ── 인도네시아 ──
@@ -372,7 +374,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       },
     ],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: '12Go kuala-perlis/langkawi 노선 URL·라벨 일치',
   },
   'phu-quoc': {
     tier: 'common',
@@ -398,27 +401,38 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       },
     ],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: '12Go rach-gia·ha-tien/phu-quoc 노선 URL·라벨 일치',
   },
 
   // ── 지중해 · 유럽 ──
   dubrovnik: {
     tier: 'common',
-    summary: '두브로브니크에서 스플리트·흐바르 등 아드리아해 섬으로 페리가 흔합니다.',
+    summary:
+      '두브로브니크에서 스플리트·흐바르(스타리 그라드) 등으로 페리가 흔합니다. 스플리트 직항(약 2시간)은 12Go로 검색하고, 그 외 노선은 Direct Ferries·크로아티아 국영 페리(Jadrolinija)에서 확인하세요.',
     routes: [
       {
         id: 'dubrovnik-split',
         label: '두브로브니크 → 스플리트',
         duration: '약 2시간',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/dubrovnik/split' },
+          { provider: 'direct_ferries', name: 'Direct Ferries 검색' },
+          {
+            provider: 'direct',
+            name: 'Jadrolinija · 크로아티아 국영 페리',
+            url: 'https://www.jadrolinija.hr/en',
+          },
+        ],
       },
     ],
     dfRecommendations: [
-      '두브로브니크(Dubrovnik) - 스플리트(Split) (약 2시간)',
       '두브로브니크(Dubrovnik) - 스타리 그라드(Stari Grad, 흐바르섬) (약 4시간)',
+      '두브로브니크(Dubrovnik) - 스플리트(Split) (약 2시간)',
     ],
     confidence: 'high',
+    rationale: '주 노선 12Go dubrovnik/split · DF·Jadrolinija는 버튼(홈·공식)',
   },
   hvar: {
     tier: 'common',
@@ -429,7 +443,15 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         label: '스플리트 → 스타리 그라드(흐바르)',
         duration: '약 1시간',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          {
+            provider: 'direct',
+            name: 'Jadrolinija · 크로아티아 국영 페리',
+            url: 'https://www.jadrolinija.hr/en/travel/split-hvar',
+          },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/split/hvar' },
+        ],
       },
     ],
     dfRecommendations: [
@@ -437,6 +459,7 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       '스타리 그라드(Stari Grad) - 두브로브니크(Dubrovnik) (약 4시간)',
     ],
     confidence: 'high',
+    rationale: 'Jadrolinija split-hvar + 12Go split/hvar',
   },
   santorini: {
     tier: 'common',
@@ -447,7 +470,11 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         label: '피레우스(아테네) → 산토리니',
         duration: '약 5~8시간',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          { provider: 'direct', name: 'Blue Star Ferries', url: 'https://www.bluestarferries.com/en-gb/' },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/piraeus/santorini' },
+        ],
       },
     ],
     dfRecommendations: [
@@ -455,6 +482,7 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       '티라(산토리니:Santorini/Thira) - 미코노스(Mykonos) (약 2-3시간)',
     ],
     confidence: 'high',
+    rationale: 'Blue Star 공식 + 12Go piraeus/santorini',
   },
   athens: {
     tier: 'common',
@@ -465,7 +493,11 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         label: '피레우스 → 키클라데스·크레타',
         duration: '섬별 상이',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          { provider: 'direct', name: 'Blue Star Ferries', url: 'https://www.bluestarferries.com/en-gb/' },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/piraeus/santorini' },
+        ],
       },
     ],
     dfRecommendations: [
@@ -473,6 +505,7 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       '피레우스(Piraeus, 아테네) - 미코노스(Mykonos) (약 2.5-5시간)',
     ],
     confidence: 'high',
+    rationale: 'Blue Star 공식 + 12Go piraeus/santorini (피레우스 출발)',
   },
   crete: {
     tier: 'common',
@@ -483,24 +516,37 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         label: '피레우스 → 이라클리온(크레타)',
         duration: '약 9시간',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          { provider: 'direct', name: 'Blue Star Ferries', url: 'https://www.bluestarferries.com/en-gb/' },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/piraeus/heraklion' },
+        ],
       },
     ],
     dfRecommendations: [
       '이라클리오(Heraklion, 크레타) - 티라(산토리니:Santorini/Thira) (약 2시간)',
     ],
     confidence: 'high',
+    rationale: 'Blue Star 공식 + 12Go piraeus/heraklion',
   },
   barcelona: {
     tier: 'common',
-    summary: '바르셀로나에서 이비자·마요르카 등 발렌ares 제도로 페리가 운항합니다.',
+    summary: '바르셀로나에서 이비자·마요르카 등 발렌아레스 제도로 페리가 운항합니다.',
     routes: [
       {
         id: 'barcelona-ibiza',
         label: '바르셀로나 → 이비자',
         duration: '약 8~9시간',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          {
+            provider: 'direct',
+            name: 'Baleària',
+            url: 'https://www.balearia.com/en/routes-timetables/ferry-barcelona-ibiza',
+          },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/barcelona/ibiza' },
+        ],
       },
     ],
     dfRecommendations: [
@@ -508,6 +554,7 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       '바르셀로나(Barcelona) - 팔마(Palma, 마요르카) (약 7-8시간)',
     ],
     confidence: 'high',
+    rationale: 'Baleària 공식 + 12Go barcelona/ibiza',
   },
   ibiza: {
     tier: 'common',
@@ -518,7 +565,15 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         label: '이비자 → 포르멘테라',
         duration: '약 30분',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          {
+            provider: 'direct',
+            name: 'Baleària',
+            url: 'https://www.balearia.com/en/routes-timetables/ferry-ibiza-formentera',
+          },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/ibiza/formentera' },
+        ],
       },
     ],
     dfRecommendations: [
@@ -526,6 +581,7 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       '이비자(Ibiza) - 팔마(Palma, 마요르카) (약 2시간)',
     ],
     confidence: 'high',
+    rationale: 'Baleària ibiza-formentera + 12Go ibiza/formentera',
   },
   malta: {
     tier: 'common',
@@ -536,28 +592,42 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
         label: '몰타 → 고zo',
         duration: '약 45분',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          { provider: 'direct', name: 'Gozo Channel', url: 'https://www.gozochannel.com/e-ticketing-system/' },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/malta/gozo' },
+        ],
       },
     ],
     dfRecommendations: ['몰타(Malta) - 고zo(Gozo) (약 45분)'],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: 'Gozo Channel 공식 + 12Go malta/gozo',
   },
   sicily: {
     tier: 'common',
-    summary: '시칠리아는 본토 이탈리아·튀nis 등과 페리로 연결됩니다.',
+    summary: '시칠리아는 본토 이탈리아·튀니스 등과 페리로 연결됩니다.',
     routes: [
       {
         id: 'naples-sicily',
         label: '나폴리/빌라 san Giovanni → 시칠리아',
         duration: '약 10~20시간',
         directFerries: true,
-        bookings: [{ provider: 'direct_ferries', name: 'Direct Ferries' }],
+        bookings: [
+          {
+            provider: 'direct',
+            name: 'GNV',
+            url: 'https://www.gnv.it/en/ferries-destinations/sicily/naples-palermo',
+          },
+          { provider: 'direct_ferries', name: 'Direct Ferries' },
+          { provider: 'twelve_go', name: '12Go', url: 'https://12go.asia/en/travel/naples/palermo' },
+        ],
       },
     ],
     dfRecommendations: ['나폴리(Naples) - 팔레르모(Palermo, 시칠리아)'],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: 'GNV naples-palermo 공식 + 12Go naples/palermo',
   },
   zanzibar: {
     tier: 'common',
@@ -574,7 +644,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       },
     ],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: 'Azam Marine 공식 예약 URL',
   },
   fiji: {
     tier: 'common',
@@ -591,7 +662,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       },
     ],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: 'South Sea Cruises 공식 예약 URL',
   },
 
   // ── 남태평양 · 오지 ──
@@ -610,7 +682,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
       },
     ],
     fallbacks: ['klook_ferry'],
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: 'Aremiti Ferry 공식 예약 URL',
   },
   'pitcairn-islands': {
     tier: 'required',
@@ -651,8 +724,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
   'komodo-island': {
     tier: 'cruise_only',
     summary: '코모도 일대는 리브어보드·보트 투어(크루즈형)가 흔합니다.',
-    confidence: 'medium',
-    rationale: 'Trip.com 크루즈·현지 보트 투어',
+    confidence: 'high',
+    rationale: 'Trip.com 크루즈·현지 보트 투어 — 페리 카드 미노출',
   },
   'halong-bay': {
     tier: 'cruise_only',
@@ -668,7 +741,8 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
   miami: {
     tier: 'cruise_only',
     summary: '마이애미는 카리브 크루즈의 주요 기항지입니다.',
-    confidence: 'medium',
+    confidence: 'high',
+    rationale: '크루즈 관문 — 페리 카드 미노출',
   },
 };
 
