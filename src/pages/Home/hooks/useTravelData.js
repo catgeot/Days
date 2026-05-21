@@ -206,7 +206,7 @@ export const useTravelData = (user) => {
             category: locationObj.category || 'general'
         };
 
-        recordInteraction(locationObj.name, 'save');
+        recordInteraction(locationObj, 'save');
 
         if (user) {
           const tripWithUser = { ...newTrip, user_id: user.id };

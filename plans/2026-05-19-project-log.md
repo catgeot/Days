@@ -442,3 +442,30 @@
 1. 실기기에서 모바일 ad(`S17158794`) vs `/flights/` 직링크·Referer 조합 재현·Trip.com 측 동작 확인.
 2. 필요 시 모바일만 `mode=ad` 직연결·파라미터 실험 또는 Trip 제휴 문의.
 3. §「플래너 Trip.com 항공 링크·CTA」·§「모바일 배너·UX」 문서를 **현재 코드**(오버레이 제거·`partnerNavigation`) 기준으로 정리(문서는 아직 구 구현 설명).
+
+---
+
+## 세션 E — canonical slug 점검·Gate·프론트 stable key (2026-05-21)
+
+### Git·Gate
+
+- `main` `b3373fd` — origin 동기화 확인(세션 D 이미 커밋·배포됨).
+- `toolkit:audit-place-id`: **275행** · mapped 264 · unmapped 11(blocklist) · **duplicateSlug 0** · P0 **0** · geoMismatch 1(디에고 가르시아, non-P0).
+- `audit:airports`: **none: 0**.
+
+### DB·데이터
+
+- **결정 A**: `place_toolkit.place_id` = SSOT 한글명 유지 · slug-first 4테이블 마이그레이션 **보류** (`place-id-residual-classification.json` `dbKeyDecision`).
+- `vatican-rome` reconcile **apply** — 바티칸→로마 merge+delete · duplicateSlug 1→0.
+- `travelSpots.js` **berlin** id 173 중복 제거(id 187 유지) · extract-list **265** · `generate:canonical-place-id-map` · sync placeIds **337**.
+
+### 코드
+
+- `travelSpotResolve.js`: `getPlaceStatsId` · `buildPlaceDbIdCandidates`.
+- wiki·gallery·videos·`recordInteraction`: stable key + DB 후보 조회(레거시 한글 행 호환).
+
+### Edge·스모크 (gateo.kr)
+
+- `update-place-toolkit` Edge **재배포** (`canonicalPlaceIdMap.json` 265건).
+- `/place/havana/planner` **HAV** · `/place/malta/planner` **MLA** · `/place/rome/planner` 로마 플래너 정상.
+

@@ -52,8 +52,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = useMemo(() => spotVideos.find(v => v.id === activeVideoId) || (spotVideos.length > 0 ? spotVideos[0] : null), [spotVideos, activeVideoId]);
 
-  const queryKey = location.name;
-  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(queryKey, mediaMode);
+  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(location, mediaMode);
   const {
     plannerData: currentPlannerData,
     isPlannerLoading,

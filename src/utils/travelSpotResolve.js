@@ -197,3 +197,29 @@ export function getPlaceStableKey(location) {
   if (canonical) return String(canonical).trim().toLowerCase();
   return String(location.name ?? location.place_id ?? '').trim();
 }
+
+/** place_stats·place_wiki RPC/upsert용 — Option A: SSOT 한글명 우선, 없으면 stable key */
+export function getPlaceStatsId(location) {
+  if (location == null) return '';
+  if (typeof location === 'string') return location.trim();
+  const name = String(location.name ?? '').trim();
+  if (name) return name;
+  return getPlaceStableKey(location);
+}
+
+/** DB place_id 조회 후보 — stable key + 표시명 + slug (레거시 한글 행 호환) */
+export function buildPlaceDbIdCandidates(location) {
+  if (location == null) return [];
+  if (typeof location === 'string') {
+    const s = location.trim();
+    return s ? [s] : [];
+  }
+  const out = new Set();
+  const statsId = getPlaceStatsId(location);
+  const stable = getPlaceStableKey(location);
+  if (statsId) out.add(statsId);
+  if (stable) out.add(stable);
+  if (location.slug) out.add(String(location.slug).trim().toLowerCase());
+  if (location.name_en) out.add(String(location.name_en).trim());
+  return [...out].filter(Boolean);
+}

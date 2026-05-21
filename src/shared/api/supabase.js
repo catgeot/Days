@@ -3,6 +3,7 @@
 // 🚨 [Fix] 어뷰징 방어벽 투-트랙 적용: 'view'(클릭)는 단기 기억(Session Storage)으로 탭 단위 1회 인정, 'chat/save'는 장기 기억(Local Storage)으로 1일 1회 엄격히 제한.
 
 import { createClient } from '@supabase/supabase-js';
+import { getPlaceStatsId } from '../../utils/travelSpotResolve';
 
 // 1. 비밀 금고(.env)에서 열쇠 꺼내기
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -21,7 +22,10 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 /**
  * 랭킹 시스템: 사용자 인터랙션 기록 (Fire-and-Forget)
  */
-export const recordInteraction = async (placeId, type) => {
+export const recordInteraction = async (placeIdOrLocation, type) => {
+  const placeId = typeof placeIdOrLocation === 'object' && placeIdOrLocation !== null
+    ? getPlaceStatsId(placeIdOrLocation)
+    : placeIdOrLocation;
   // 1. 데이터 오염 방지: 추상적 대화 차단
   if (!placeId || placeId === "New Session" || placeId === "Scanning...") {
       return;

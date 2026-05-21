@@ -64,6 +64,22 @@
     "note": "프론트·JSON 배포 후 gateo.kr 스모크(havana·malta·바티칸→rome 검색) · (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일",
     "blocklistKeepNoAction": ["춘천", "춘천시", "수원", "강릉시", "강화도", "독도", "이슬라마바드", "마나도", "사뭇쁘라깐주", "아오시마"]
   },
+  "dbKeyDecision": {
+    "decidedAt": "2026-05-21",
+    "choice": "A",
+    "label": "현행 유지 — place_toolkit.place_id = SSOT 한글명, 런타임 canonical_slug",
+    "frontendPhaseA": "getPlaceStableKey·buildPlaceDbIdCandidates·getPlaceStatsId 적용 (wiki·gallery·videos·recordInteraction)",
+    "slugFirstMigration": "deferred — 2026-05-07 Phase C 별도 세션( place_alias·migrate-place-id-to-slug 미착수 )",
+    "rationale": "identity plan reconcile 완료·Gate 통과. slug-first는 place_toolkit 재마이그레이션 비용 대비 단기 ROI 낮음."
+  },
+  "sessionEApplied": {
+    "appliedAt": "2026-05-21",
+    "vaticanRomeReconcile": true,
+    "berlinDuplicateRemoved": "id 173 제거, id 187 유지",
+    "travelSpotsCount": 265,
+    "duplicateSlug": 0,
+    "gate": { "auditAirportsNone": 0, "p0Unmapped": 0, "duplicateSlug": 0 }
+  },
   "unmappedBatches": {
     "alias_to_existing_slug": [
       { "place_id": "나자레", "slug": "lisbon", "guideIatas": ["LIS"] },

@@ -8,27 +8,38 @@
 // 6. 🆕 [Phase 8 Fix] Race Condition 해결: 이벤트 리스너를 마운트 시 한 번만 등록하여 즉시 상태 반영 보장
 // 7. 🆕 [Phase 8-3] 툴킷 데이터 완전 분리: toolkit-updated 이벤트 리스너 제거 및 순수 위키 데이터만 관리
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../../shared/api/supabase';
+import { buildPlaceDbIdCandidates, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 
 const isDev = import.meta.env.DEV;
 
-// 🚨 [Fix] mediaMode 파라미터 수용
-export const useWikiData = (placeId, mediaMode) => {
+async function fetchWikiRow(candidates) {
+  if (!candidates?.length) return null;
+  const { data, error } = await supabase
+    .from('place_wiki')
+    .select('*')
+    .in('place_id', candidates)
+    .limit(1);
+  if (error) throw error;
+  return data?.[0] ?? null;
+}
+
+export const useWikiData = (location, mediaMode) => {
   const [wikiData, setWikiData] = useState(null);
   const [isWikiLoading, setIsWikiLoading] = useState(false);
 
-  // 🚨 [Fix] 의존성 배열에 mediaMode 추가
-  useEffect(() => {
-    if (!placeId) return;
+  const placeKey = useMemo(() => getPlaceStableKey(location), [location]);
+  const dbCandidates = useMemo(() => buildPlaceDbIdCandidates(location), [location]);
 
-    // 🚨 [Fix/New] Clean Slate: 새로운 장소로 이동 시 이전 데이터 즉시 삭제
+  useEffect(() => {
+    if (!placeKey) return;
+
     setWikiData(null);
     setIsWikiLoading(false);
 
-    // 🚨 [Fix/New] Lazy Fetching 방어막: 백과 탭이 아닐 경우 DB 조회를 하지 않고 리턴
     if (mediaMode !== 'WIKI') {
-        return;
+      return;
     }
 
     let isSubscribed = true;
@@ -38,16 +49,12 @@ export const useWikiData = (placeId, mediaMode) => {
       if (pollInterval) clearInterval(pollInterval);
 
       if (isDev) {
-        console.log(`[useWikiData] 폴링 시작 - placeId: ${placeId}, mediaMode: ${mediaMode}`);
+        console.log(`[useWikiData] 폴링 시작 - placeKey: ${placeKey}, mediaMode: ${mediaMode}`);
       }
 
       pollInterval = setInterval(async () => {
         try {
-          const { data } = await supabase
-            .from('place_wiki')
-            .select('*')
-            .eq('place_id', String(placeId))
-            .maybeSingle();
+          const data = await fetchWikiRow(dbCandidates);
 
           if (isSubscribed && data) {
             if (isDev) {
@@ -56,7 +63,6 @@ export const useWikiData = (placeId, mediaMode) => {
             }
 
             setWikiData(data);
-            // '[[LOADING]]' 상태가 아니면 폴링 중단 (완료되었거나 에러로 인해 복구됨)
             if (data.ai_practical_info !== '[[LOADING]]') {
               if (isDev) {
                 console.log('[useWikiData] 폴링 완료 - 데이터 로드 성공');
@@ -67,30 +73,21 @@ export const useWikiData = (placeId, mediaMode) => {
         } catch (e) {
           console.error('[useWikiData] 폴링 에러:', e);
         }
-      }, 2000); // 🆕 [Phase 7-1] 3초 → 2초로 단축 (체감 속도 50% 개선)
+      }, 2000);
     };
 
     const fetchWikiData = async () => {
       setIsWikiLoading(true);
 
       if (isDev) {
-        console.log(`[useWikiData] DB 조회 시작 - placeId: ${placeId}`);
+        console.log(`[useWikiData] DB 조회 시작 - placeKey: ${placeKey}, candidates: ${dbCandidates.join(', ')}`);
       }
 
       try {
-        const { data, error } = await supabase
-          .from('place_wiki')
-          .select('*')
-          .eq('place_id', String(placeId))
-          .maybeSingle();
-
-        if (error) {
-            console.error('[useWikiData] DB 조회 에러:', error);
-        }
+        const data = await fetchWikiRow(dbCandidates);
 
         if (isSubscribed) {
           setWikiData(data || null);
-          // 🚨 [New] 최초 조회 시 이미 AI가 백그라운드에서 작업 중(로딩 상태)이라면 폴링 시작
           if (data && data.ai_practical_info === '[[LOADING]]') {
             if (isDev) {
               console.log('[useWikiData] 로딩 상태 감지 - 폴링 시작');
@@ -114,9 +111,8 @@ export const useWikiData = (placeId, mediaMode) => {
       isSubscribed = false;
       if (pollInterval) clearInterval(pollInterval);
     };
-  }, [placeId, mediaMode]);
+  }, [placeKey, dbCandidates, mediaMode]);
 
-  // 🆕 [Phase 9-1.5] 데이터가 [[LOADING]]으로 변경되면 폴링 시작 (수동 갱신 감지)
   useEffect(() => {
     let pollInterval = null;
 
@@ -127,11 +123,7 @@ export const useWikiData = (placeId, mediaMode) => {
 
       pollInterval = setInterval(async () => {
         try {
-          const { data } = await supabase
-            .from('place_wiki')
-            .select('*')
-            .eq('place_id', String(placeId))
-            .maybeSingle();
+          const data = await fetchWikiRow(dbCandidates);
 
           if (data) {
             if (isDev) {
@@ -156,7 +148,7 @@ export const useWikiData = (placeId, mediaMode) => {
     return () => {
       if (pollInterval) clearInterval(pollInterval);
     };
-  }, [wikiData?.ai_practical_info, placeId, mediaMode]);
+  }, [wikiData?.ai_practical_info, dbCandidates, mediaMode]);
 
   return { wikiData, isWikiLoading };
 };

@@ -23,7 +23,7 @@ export const useGlobeLogic = (globeRef, _userId) => {
     const cleanPin = { ...pin, name: cleanName };
 
     if (cleanName !== 'Scanning...' && cleanName !== 'Searching...' && cleanName !== '위치 탐색 중...' && !cleanPin.isScanning) {
-        recordInteraction(cleanName, 'view');
+        recordInteraction(cleanPin, 'view');
     }
 
     setScoutedPins(prev => {
@@ -44,7 +44,7 @@ export const useGlobeLogic = (globeRef, _userId) => {
         display_name: cleanName
     };
 
-    recordInteraction(cleanName, 'view');
+    recordInteraction(cleanPin, 'view');
 
     setScoutedPins(prev => prev.map(p => p.id === tempId ? cleanPin : p));
     setSelectedLocation(cleanPin);

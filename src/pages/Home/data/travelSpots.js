@@ -1910,34 +1910,6 @@ export const TRAVEL_SPOTS = [
     ]
   },
   {
-    "id": 173,
-    "slug": "berlin",
-    "name": "베를린",
-    "name_en": "Berlin",
-    "country": "독일",
-    "country_en": "Germany",
-    "lat": 52.52,
-    "lng": 13.405,
-    "tier": 2,
-    "popularity": 78,
-    "continent": "europe",
-    "categories": [
-      "culture",
-      "urban"
-    ],
-    "primaryCategory": "culture",
-    "category": "culture",
-    "showOnGlobe": false,
-    "denseRegion": "western-europe",
-    "desc": "분단의 아픔을 이겨내고 세계에서 가장 힙한 언더그라운드 클럽과 전위적인 예술가들이 모여드는 자유롭고 쿨한 독일의 수도입니다.",
-    "keywords": [
-      "대륙",
-      "대도시",
-      "역사/문화",
-      "액티비티"
-    ]
-  },
-  {
     "id": 174,
     "slug": "la-reunion",
     "name": "레위니옹",

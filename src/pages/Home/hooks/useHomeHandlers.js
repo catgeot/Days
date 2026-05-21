@@ -172,7 +172,7 @@ export function useHomeHandlers({
             setSelectedLocation(finalLoc);
             moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category, { focus: false });
             processSearchKeywords(finalLoc.name);
-            recordInteraction(finalLoc.name, 'view');
+            recordInteraction(finalLoc, 'view');
             return;
         }
       }
@@ -199,7 +199,7 @@ export function useHomeHandlers({
       setSelectedLocation(realPin);
       moveToLocation(lat, lng, display_name, category, { focus: false });
       processSearchKeywords(display_name);
-      recordInteraction(display_name, 'view');
+      recordInteraction(realPin, 'view');
     } catch (error) {
       console.error("Geocoding Error:", error);
       setSelectedLocation(null);

@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_VIDEOS } from '../data/travelVideos';
+import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 
 const GOOGLE_FORM_URL = "https://forms.gle/QgofLDzzYD6NfWYN7";
 
@@ -31,8 +32,10 @@ export const useYouTubeSearch = (location, mediaMode) => {
     }
 
     const fetchAllSources = async () => {
-      const cacheKey = String(location.name);
-      const staticKey = String(location.id || location.name);
+      const cacheKey = getPlaceStableKey(location);
+      const dbCandidates = buildPlaceDbIdCandidates(location);
+      const statsId = getPlaceStatsId(location);
+      const staticKey = String(location.id || cacheKey || location.name);
 
       try {
         // --- [L1] Static Fallback (정적 데이터 확인) ---
@@ -52,7 +55,8 @@ export const useYouTubeSearch = (location, mediaMode) => {
         const { data: cachedData, error: _dbError } = await supabase
           .from('place_videos')
           .select('videos')
-          .eq('place_id', cacheKey)
+          .in('place_id', dbCandidates.length ? dbCandidates : [cacheKey])
+          .limit(1)
           .maybeSingle();
 
         if (cachedData && Array.isArray(cachedData.videos)) {
@@ -75,7 +79,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
 
         // 🚨 [Security Fix] 클라이언트 단에서 YouTube API 직접 호출 & DB Upsert 하는 것을 방지하고 Edge Function으로 위임
         const { data: edgeData, error: edgeError } = await supabase.functions.invoke('fetch-place-videos', {
-          body: { query: searchQuery, fallbackQuery: fallbackQuery, placeId: cacheKey }
+          body: { query: searchQuery, fallbackQuery: fallbackQuery, placeId: statsId || cacheKey }
         });
 
         if (edgeError) {
@@ -101,7 +105,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
     };
 
     fetchAllSources();
-  }, [location?.id, location?.name, location?.country, location?.name_en, mediaMode]);
+  }, [location?.id, location?.name, location?.country, location?.name_en, location?.slug, location?.canonical_slug, mediaMode]);
 
   return {
     videos,

@@ -11,6 +11,7 @@ import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots';
 import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase';
+import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 
 const CACHE_VERSION = 'v1.4';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
@@ -176,16 +177,28 @@ export const usePlaceGallery = (locationSource) => {
     }
 
     const placeKey =
-      typeof targetSpot === 'object' && targetSpot
-        ? String(targetSpot.slug || targetSpot.id || targetSpot.name || '').trim()
-        : String(koreanName || primaryQuery).trim();
+      typeof locationSource === 'object' && locationSource
+        ? getPlaceStableKey(locationSource)
+        : typeof targetSpot === 'object' && targetSpot
+          ? String(targetSpot.slug || targetSpot.id || targetSpot.name || '').trim()
+          : String(koreanName || primaryQuery).trim();
     const stablePlaceKey = placeKey || koreanName || primaryQuery;
+    const dbStatsId =
+      typeof locationSource === 'object' && locationSource
+        ? getPlaceStatsId(locationSource)
+        : koreanName;
+    const dbCandidates =
+      typeof locationSource === 'object' && locationSource
+        ? buildPlaceDbIdCandidates(locationSource)
+        : koreanName
+          ? [koreanName]
+          : [];
     const fetchKey = `${stablePlaceKey}|${primaryQuery}`;
 
     // 상태 저장을 통한 삭제 시 활용
-    currentKoreanNameRef.current = koreanName;
-    currentQueryRef.current = primaryQuery;
     currentPlaceKeyRef.current = stablePlaceKey;
+    currentKoreanNameRef.current = dbStatsId || koreanName;
+    currentQueryRef.current = primaryQuery;
 
     // 같은 장소+쿼리로의 중복 요청만 스킵 (영문 쿼리만 보고 판단하면 다른 장소가 묶임)
     if (!forceRefresh && lastFetchKeyRef.current === fetchKey) return;
@@ -208,13 +221,15 @@ export const usePlaceGallery = (locationSource) => {
         return;
       }
 
-      if (koreanName) {
+      if (dbCandidates.length) {
         try {
-          const { data: dbData, error: dbError } = await supabase
+          const { data: dbRows, error: dbError } = await supabase
             .from('place_stats')
             .select('gallery_urls')
-            .eq('place_id', koreanName)
-            .single();
+            .in('place_id', dbCandidates)
+            .limit(1);
+
+          const dbData = dbRows?.[0];
 
           if (runId !== galleryLoadSeqRef.current) return;
 
@@ -225,7 +240,7 @@ export const usePlaceGallery = (locationSource) => {
             return;
           }
         } catch {
-          console.warn(`⚠️ Supabase Cache Miss or Error for ${koreanName}. Proceeding to API.`);
+          console.warn(`⚠️ Supabase Cache Miss or Error for ${dbStatsId || koreanName}. Proceeding to API.`);
         }
       }
     } else {
@@ -288,13 +303,14 @@ export const usePlaceGallery = (locationSource) => {
         processAndSetImages(finalResults);
         saveToSmartCache(CACHE_KEY, finalResults);
 
-        if (koreanName) {
+        if (dbStatsId || koreanName) {
           const thumbnailToSave = finalResults[0]?.urls?.small || finalResults[0]?.urls?.regular || '';
+          const statsPlaceId = dbStatsId || koreanName;
 
           supabase
             .from('place_stats')
             .upsert({
-              place_id: koreanName,
+              place_id: statsPlaceId,
               gallery_urls: finalResults,
               image_url: thumbnailToSave
             }, { onConflict: 'place_id' })
