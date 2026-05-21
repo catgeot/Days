@@ -39,6 +39,8 @@ const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
   MDY: { lat: 28.2019, lng: -177.3803 },
   MLE: { lat: 4.1918, lng: 73.529 },
   SIN: { lat: 1.3644, lng: 103.9915 },
+  ASI: { lat: -7.9696, lng: -14.3937 },
+  JNB: { lat: -26.1392, lng: 28.246 },
 };
 
 function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {

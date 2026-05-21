@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-21T05:01:16.419Z",
+    "lastToolkitSyncAt": "2026-05-21T05:23:35.768Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -6010,28 +6010,28 @@
     },
     "어센션섬": {
       "primaryIatas": [
-        "ASC",
+        "ASI",
         "JNB"
       ],
-      "preferredLinkIata": "ASC",
+      "preferredLinkIata": "ASI",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "어센션 섬 최종 도착은 어센션섬(ASC)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
-      "rationale": "어센션섬 ASC, 남아공·개항편 연결 JNB",
+      "bannerNote": "어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "와이드어웨이크 ASI(공식 IATA), 남아공·개항편 연결 JNB",
       "placeId": "어센션 섬"
     },
     "어센션": {
       "primaryIatas": [
-        "ASC",
+        "ASI",
         "JNB"
       ],
-      "preferredLinkIata": "ASC",
+      "preferredLinkIata": "ASI",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "어센션 섬 최종 도착은 어센션섬(ASC)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
-      "rationale": "어센션섬 ASC, 남아공·개항편 연결 JNB",
+      "bannerNote": "어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "와이드어웨이크 ASI(공식 IATA), 남아공·개항편 연결 JNB",
       "placeId": "어센션 섬"
     },
     "태국파타야": {

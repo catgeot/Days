@@ -555,12 +555,12 @@ export const RENTAL_AIRPORT_HUBS = [
     aliases: ['st helena', 'st-helena', 'saint helena', '세인트 헬레나', '세인트헬레나', 'hle']
   },
   {
-    iata: 'ASC',
-    officialKo: '어센션섬 공항',
+    iata: 'ASI',
+    officialKo: '와이드어웨이크 공항',
     lat: -7.9696,
     lng: -14.3937,
     radiusKm: 80,
-    aliases: ['ascension', 'ascension island', '어센션', '어센션 섬', '어센션섬', 'asc']
+    aliases: ['ascension', 'ascension island', 'wideawake', '어센션', '어센션 섬', '어센션섬', 'asi']
   },
   { iata: 'NBO', officialKo: '조모 케냐타타국제공항', lat: -1.3192, lng: 36.9278, radiusKm: 200, aliases: ['nairobi', '나이로비', 'nbo', 'serengeti', '세렝게티'] },
   {

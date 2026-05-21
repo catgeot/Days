@@ -219,8 +219,8 @@ const PATCHES = [
   { matchPlaceIds: ['베네수엘라', 'Venezuela', 'venezuela'], primaryIatas: ['CCS'], note: '세션 C — CCS(IST/MAD 오탐 보정)' },
   {
     matchPlaceIds: ['어센션 섬', 'Ascension Island', 'ascension'],
-    primaryIatas: ['ASC', 'JNB'],
-    note: 'placeIds-only — ASC·JNB (LHR 오탐 보정)'
+    primaryIatas: ['ASI', 'JNB'],
+    note: 'placeIds-only — ASI·JNB (ASC=볼리비아 오매핑·LHR 오탐 보정)'
   }
 ];
 

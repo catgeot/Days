@@ -483,12 +483,12 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
 /** travelSpots slug 없음 — placeIds-only (DB place_id 키) */
 export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
   '어센션 섬': {
-    primaryIatas: ['ASC', 'JNB'],
-    preferredLinkIata: 'ASC',
+    primaryIatas: ['ASI', 'JNB'],
+    preferredLinkIata: 'ASI',
     kind: 'multi',
     confidence: 'high',
-    rationale: '어센션섬 ASC, 남아공·개항편 연결 JNB',
+    rationale: '와이드어웨이크 ASI(공식 IATA), 남아공·개항편 연결 JNB',
     bannerNote:
-      '어센션 섬 최종 도착은 어센션섬(ASC)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.'
+      '어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.'
   }
 };
