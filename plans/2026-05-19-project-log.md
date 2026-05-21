@@ -346,6 +346,23 @@
 
 - **커밋·배포**: JSON sync·문서·patch 스크립트 오타 · 다음 세션 D 계획 반영.
 
+### Handoff — 디에고 가르시아·어센션·플래너 (2026-05-21)
+
+- **디에고 가르시아**: override `confidence: high`(MLE) · DB patch NKW→MLE · `geoMismatch 0`.
+- **어센션 섬**: placeIds-only **ASC+JNB** · `rentalAirportHubs` ASC · `TRAVEL_SPOT_PLACE_ID_OVERRIDES` · travelSpots 승격 **보류**.
+- **플래너 버그**: slug 없이 한글명만 있을 때 MLE curated 면제 미적용 → 「다른 여행지」오탐.
+  - `toolkitPlaceIdResolve`: `resolveTravelSpotFromLocation`으로 override 조회 · curated high는 **primary IATA만** 검사.
+  - `usePlannerData`·`PlannerTab`: `mergeCanonicalTravelSpot` 적용.
+  - Edge `update-place-toolkit`: `clampRegionalGatewayIatas`(diego-garcia→MLE) · 비허용 IATA 거부.
+- **Gate**: `audit:airports` **none:0** · `toolkit:audit-place-id` **geoMismatch 0** · unmapped **11**(blocklist·어센션, 의도).
+
+### 다음 (Handoff QA)
+
+1. **프론트·JSON 배포** + Edge `update-place-toolkit` **재배포**.
+2. gateo.kr `/place/diego-garcia/planner`: 「저장된 데이터 새로고침」→ 툴킷 본문 · MLE 배너 · 불일치 경고 **없음**.
+3. 어센션 toolkit lookup: **ASC+JNB** 배너(placeIds-only).
+4. (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일.
+
 ## 세션 종료 (2026-05-21 · 세션 G)
 
 - **커밋**: el-calafate 승격·patagonia-region·loc URL 새로고침 수정·문서.

@@ -1,6 +1,6 @@
 import { TRAVEL_SPOT_TOOLKIT_SYNONYMS } from '../../scripts/data/travel-spot-place-id-aliases.mjs';
 import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from '../../scripts/data/travel-spot-airport-overrides.mjs';
-import { getPlaceStableKey } from './travelSpotResolve.js';
+import { getPlaceStableKey, resolveTravelSpotFromLocation } from './travelSpotResolve.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import { distanceKm, extractArrivalIataCodesFromEssentialGuide } from './rentalAirportMatch.js';
 
@@ -121,17 +121,27 @@ function hubByIata(iata) {
 
 /** 광역·원정지 slug — SSOT 중심 좌표와 관문 공항이 멀 수 있음 (curated high) */
 function getCuratedGatewayIataSet(location) {
-  const slug = getPlaceStableKey(location);
-  if (!slug) return null;
-  const override = TRAVEL_SPOT_AIRPORT_OVERRIDES[slug];
-  if (!override || override.confidence !== 'high') return null;
-  return new Set(
-    override.primaryIatas.map((c) =>
-      String(c)
-        .trim()
-        .toUpperCase()
-    )
-  );
+  if (!location) return null;
+
+  const trySlug = (slug) => {
+    const key = String(slug ?? '').trim().toLowerCase();
+    if (!key) return null;
+    const override = TRAVEL_SPOT_AIRPORT_OVERRIDES[key];
+    if (!override || override.confidence !== 'high') return null;
+    return new Set(
+      override.primaryIatas.map((c) =>
+        String(c)
+          .trim()
+          .toUpperCase()
+      )
+    );
+  };
+
+  const direct = trySlug(getPlaceStableKey(location));
+  if (direct) return direct;
+
+  const resolved = resolveTravelSpotFromLocation(location);
+  return trySlug(resolved?.spot?.slug ?? null);
 }
 
 /** 등록된 허브 IATA가 여행지 좌표와 지리적으로 맞는지 */
@@ -160,10 +170,21 @@ export function isIataPlausibleForLocation(iata, location) {
 export function essentialGuideMatchesLocation(guide, location) {
   if (!guide || typeof guide !== 'object' || !location) return true;
 
-  const iataBuckets = [];
-  if (Array.isArray(guide.primary_arrival_airports_iata) && guide.primary_arrival_airports_iata.length) {
-    iataBuckets.push(guide.primary_arrival_airports_iata);
+  const curated = getCuratedGatewayIataSet(location);
+  const primary = Array.isArray(guide.primary_arrival_airports_iata)
+    ? guide.primary_arrival_airports_iata
+        .map((c) => String(c).trim().toUpperCase())
+        .filter((c) => hubByIata(c))
+    : [];
+
+  // curated high(디에고 가르시아·핏케언 등): primary만 검사 — 타임라인 경유(SIN 등)는 면제
+  if (curated) {
+    if (primary.length === 0) return true;
+    return primary.some((c) => isIataPlausibleForLocation(c, location));
   }
+
+  const iataBuckets = [];
+  if (primary.length) iataBuckets.push(primary);
   const fromTimeline = extractArrivalIataCodesFromEssentialGuide(guide);
   if (fromTimeline?.length) iataBuckets.push(fromTimeline);
 

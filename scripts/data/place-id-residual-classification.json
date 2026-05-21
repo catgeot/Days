@@ -4,6 +4,7 @@
     "auditAirportsNone": 0,
     "duplicateSlug": 0,
     "geoMismatchP0": 0,
+    "geoMismatch": 0,
     "skippedNoIata": 0,
     "skippedNoIataTarget": 20,
     "skippedBlocklisted": 11,
@@ -23,7 +24,7 @@
       "마나도",
       "강릉시"
     ],
-    "placeIds_only": [{ "place_id": "어센션 섬", "primaryIatas": ["LHR"], "note": "citiesData만·travelSpots 승격 보류" }]
+    "placeIds_only": [{ "place_id": "어센션 섬", "primaryIatas": ["ASC", "JNB"], "note": "citiesData만·travelSpots 승격 보류·placeIds override" }]
   },
   "deleteCandidateApplied": [
     { "place_id": "하이원팰리스호텔", "deletedAt": "2026-05-21" },
@@ -60,8 +61,12 @@
     "travelSpotsCount": 266
   },
   "nextSessionPlan": {
-    "session": "E",
-    "note": "프론트·JSON 배포 후 gateo.kr 스모크(havana·malta·바티칸→rome 검색) · (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일",
+    "session": "Handoff QA",
+    "note": "배포·Edge update-place-toolkit 재배포 후 gateo.kr — diego-garcia 툴킷 본문·MLE 배너·불일치 경고 없음 · 어센션 ASC+JNB placeIds-only",
+    "deployChecklist": [
+      "프론트 배포 (toolkitPlaceIdResolve·usePlannerData·PlannerTab·travelSpotAirports.json)",
+      "Edge update-place-toolkit 재배포 (regional gateway MLE clamp)"
+    ],
     "blocklistKeepNoAction": ["춘천", "춘천시", "수원", "강릉시", "강화도", "독도", "이슬라마바드", "마나도", "사뭇쁘라깐주", "아오시마"]
   },
   "dbKeyDecision": {
@@ -79,6 +84,12 @@
     "travelSpotsCount": 265,
     "duplicateSlug": 0,
     "gate": { "auditAirportsNone": 0, "p0Unmapped": 0, "duplicateSlug": 0 }
+  },
+  "sessionHandoffApplied": {
+    "appliedAt": "2026-05-21",
+    "diegoGarcia": "override high + patch NKW→MLE · geoMismatch 0",
+    "ascension": "placeIds-only ASC+JNB · rentalAirportHubs ASC · patch-guide-iata",
+    "plannerFix": "mergeCanonicalTravelSpot·curated gateway primary-only · Edge clampRegionalGatewayIatas"
   },
   "unmappedBatches": {
     "alias_to_existing_slug": [

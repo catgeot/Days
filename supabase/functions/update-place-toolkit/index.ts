@@ -4,7 +4,7 @@ import {
   isKnownTravelSpotSlug,
   resolveCanonicalPlaceId,
 } from "../_shared/resolveCanonicalPlaceId.ts";
-import { isRegionalGatewayIata } from "../_shared/regionalGatewayIatas.ts";
+import { isRegionalGatewayIata, REGIONAL_GATEWAY_IATAS_BY_SLUG } from "../_shared/regionalGatewayIatas.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -37,6 +37,8 @@ const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
   PUQ: { lat: -53.0026, lng: -70.8542 },
   ADD: { lat: 8.9779, lng: 38.7993 },
   MDY: { lat: 28.2019, lng: -177.3803 },
+  MLE: { lat: 4.1918, lng: 73.529 },
+  SIN: { lat: 1.3644, lng: 103.9915 },
 };
 
 function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -50,6 +52,33 @@ function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): num
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+function clampRegionalGatewayIatas(
+  guide: Record<string, unknown>,
+  slug?: string | null
+): Record<string, unknown> {
+  const key = String(slug ?? '').trim().toLowerCase();
+  const allowed = key ? REGIONAL_GATEWAY_IATAS_BY_SLUG[key] : null;
+  if (!allowed?.length) return guide;
+
+  const next = { ...guide, primary_arrival_airports_iata: [...allowed] };
+
+  if (Array.isArray(next.journey_timeline)) {
+    const allowedSet = new Set(allowed.map((c) => c.toUpperCase()));
+    next.journey_timeline = (next.journey_timeline as Array<Record<string, unknown>>).map((step) => {
+      if (!step?.title || typeof step.title !== 'string') return step;
+      let title = step.title;
+      for (const m of title.matchAll(/\(([A-Z]{3})\)/g)) {
+        if (!allowedSet.has(m[1])) {
+          title = title.replace(`(${m[1]})`, '').replace(/\s{2,}/g, ' ').trim();
+        }
+      }
+      return { ...step, title };
+    });
+  }
+
+  return next;
+}
+
 function validateEssentialGuideForLocation(
   guide: Record<string, unknown>,
   locationName: string,
@@ -57,6 +86,9 @@ function validateEssentialGuideForLocation(
   lng?: number,
   slug?: string | null
 ): string | null {
+  const slugKey = String(slug ?? '').trim().toLowerCase();
+  const regionalAllowed = slugKey ? REGIONAL_GATEWAY_IATAS_BY_SLUG[slugKey] : null;
+
   if (Number.isFinite(lat) && Number.isFinite(lng)) {
     const iatas = Array.isArray(guide.primary_arrival_airports_iata)
       ? (guide.primary_arrival_airports_iata as string[])
@@ -64,6 +96,9 @@ function validateEssentialGuideForLocation(
     for (const raw of iatas) {
       const code = String(raw).trim().toUpperCase();
       if (isRegionalGatewayIata(slug, code)) continue;
+      if (regionalAllowed?.length && !regionalAllowed.includes(code)) {
+        return `도착 공항 ${code}은(는) 「${locationName}」 허용 관문(${regionalAllowed.join(', ')})이 아닙니다.`;
+      }
       const hub = HUB_COORDS[code];
       if (hub && distanceKm(lat as number, lng as number, hub.lat, hub.lng) > MAX_DESTINATION_AIRPORT_KM) {
         return `도착 공항 ${code}이(가) 「${locationName}」 위치와 맞지 않습니다. AI 응답이 잘못되었을 수 있습니다.`;
@@ -274,6 +309,8 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
       console.error('Failed to parse Gemini JSON output:', generatedText);
       throw new Error('Gemini did not return valid JSON');
     }
+
+    essentialGuideJson = clampRegionalGatewayIatas(essentialGuideJson, slugNorm || null);
 
     const validationError = validateEssentialGuideForLocation(
       essentialGuideJson,

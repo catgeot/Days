@@ -129,7 +129,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'diego-garcia': {
     primaryIatas: ['MLE'],
     preferredLinkIata: 'MLE',
-    confidence: 'medium',
+    confidence: 'high',
     rationale: '민간 출입 불가, 인도양 경유 허브 참고',
     bannerNote:
       '디에고가르시아는 영국령 군사 기지로 일반 관광 출입이 불가합니다. 아래 링크는 인도양 권역(몰디브 등) 연결·일정 참고용이며, 실제 목적지와 다릅니다.'
@@ -477,5 +477,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     preferredLinkIata: 'MLA',
     confidence: 'high',
     rationale: '발레타(Valletta) 관문 MLA — Phase D-3 툴킷·승격 slug'
+  }
+};
+
+/** travelSpots slug 없음 — placeIds-only (DB place_id 키) */
+export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
+  '어센션 섬': {
+    primaryIatas: ['ASC', 'JNB'],
+    preferredLinkIata: 'ASC',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '어센션섬 ASC, 남아공·개항편 연결 JNB',
+    bannerNote:
+      '어센션 섬 최종 도착은 어센션섬(ASC)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.'
   }
 };

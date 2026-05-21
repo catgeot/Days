@@ -134,9 +134,11 @@ npm run enrich:airports
 |------|-----|-----------|
 | **alias** | 바티칸→`rome`, 사뭇쁘라깐주→`bangkok`, 아오시마→`kumamoto` | [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) |
 | **승격** | 아바나→`havana`, 발레타→`malta` | `travelSpots.js` + 2절 체크리스트 |
-| **placeIds-only** | 어센션 섬 | JSON `placeIds`·override |
+| **placeIds-only** | 어센션 섬 | `TRAVEL_SPOT_PLACE_ID_OVERRIDES` + sync `placeIds` (travelSpots 승격 없음) |
 | **삭제** | 메히칼리·트럼프 등 | DB 행 삭제 후 재감사 |
 | **reconcile** | duplicateSlug 7(나자레·리마…) | `toolkit:reconcile-place-id` — 신규 여행지 아님 |
 | **유지** | blocklist(춘천·독도…) | 추가 작업 없음 |
 
-상세·우선순위: [`2026-05-19-project-log.md`](./2026-05-19-project-log.md) §다음 세션(D) · [`place-id-residual-classification.json`](../scripts/data/place-id-residual-classification.json) `nextSessionPlan`.
+**curated high·원정지**(디에고 가르시아·핏케언 등): `travel-spot-airport-overrides.mjs` `confidence: high` + `bannerNote`. 플래너는 `toolkitPlaceIdResolve`에서 **primary IATA만** 지리 검사(타임라인 경유 SIN 등 면제). `mergeCanonicalTravelSpot` 후 툴킷 조회.
+
+상세·우선순위: [`2026-05-19-project-log.md`](./2026-05-19-project-log.md) · [`place-id-residual-classification.json`](../scripts/data/place-id-residual-classification.json) `nextSessionPlan`.

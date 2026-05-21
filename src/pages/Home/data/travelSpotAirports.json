@@ -1,12 +1,12 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T04:26:37.585Z",
+    "generatedAt": "2026-05-21T05:01:14.126Z",
     "spotCount": 265,
     "placeIdCount": 337,
     "stats": {
       "override": 114,
-      "toolkitSync": 152,
+      "toolkitSync": 151,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-21T04:43:16.472Z",
+    "lastToolkitSyncAt": "2026-05-21T05:01:16.419Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -313,7 +313,7 @@
       "preferredLinkIata": "MLE",
       "kind": "single",
       "source": "curated-override",
-      "confidence": "medium",
+      "confidence": "high",
       "bannerNote": "디에고가르시아는 영국령 군사 기지로 일반 관광 출입이 불가합니다. 아래 링크는 인도양 권역(몰디브 등) 연결·일정 참고용이며, 실제 목적지와 다릅니다.",
       "rationale": "민간 출입 불가, 인도양 경유 허브 참고"
     },
@@ -769,16 +769,6 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화"
     },
-    "berlin": {
-      "primaryIatas": [
-        "BER"
-      ],
-      "preferredLinkIata": "BER",
-      "kind": "single",
-      "source": "toolkit-sync",
-      "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
-    },
     "la-reunion": {
       "primaryIatas": [
         "RUN"
@@ -910,6 +900,16 @@
         "ATH"
       ],
       "preferredLinkIata": "ATH",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화"
+    },
+    "berlin": {
+      "primaryIatas": [
+        "BER"
+      ],
+      "preferredLinkIata": "BER",
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
@@ -6010,24 +6010,28 @@
     },
     "어센션섬": {
       "primaryIatas": [
-        "LHR"
+        "ASC",
+        "JNB"
       ],
-      "preferredLinkIata": "LHR",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "ASC",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "어센션 섬 최종 도착은 어센션섬(ASC)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "어센션섬 ASC, 남아공·개항편 연결 JNB",
       "placeId": "어센션 섬"
     },
     "어센션": {
       "primaryIatas": [
-        "LHR"
+        "ASC",
+        "JNB"
       ],
-      "preferredLinkIata": "LHR",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "ASC",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "어센션 섬 최종 도착은 어센션섬(ASC)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "어센션섬 ASC, 남아공·개항편 연결 JNB",
       "placeId": "어센션 섬"
     },
     "태국파타야": {
@@ -6668,9 +6672,9 @@
     },
     "디에고가르시아": {
       "primaryIatas": [
-        "SIN"
+        "MLE"
       ],
-      "preferredLinkIata": "SIN",
+      "preferredLinkIata": "MLE",
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",

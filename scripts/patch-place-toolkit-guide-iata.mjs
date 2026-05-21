@@ -216,7 +216,12 @@ const PATCHES = [
     primaryIatas: ['CMB'],
     note: '세션 C — CMB'
   },
-  { matchPlaceIds: ['베네수엘라', 'Venezuela', 'venezuela'], primaryIatas: ['CCS'], note: '세션 C — CCS(IST/MAD 오탐 보정)' }
+  { matchPlaceIds: ['베네수엘라', 'Venezuela', 'venezuela'], primaryIatas: ['CCS'], note: '세션 C — CCS(IST/MAD 오탐 보정)' },
+  {
+    matchPlaceIds: ['어센션 섬', 'Ascension Island', 'ascension'],
+    primaryIatas: ['ASC', 'JNB'],
+    note: 'placeIds-only — ASC·JNB (LHR 오탐 보정)'
+  }
 ];
 
 function matchesPatch(placeId, patch) {

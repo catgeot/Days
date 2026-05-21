@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import {
   fetchToolkitRow,
@@ -7,12 +7,16 @@ import {
   toolkitUpdateMatchesLocation,
   buildToolkitPlaceIdCandidates,
 } from '../../../utils/toolkitPlaceIdResolve';
-import { getPlaceStableKey } from '../../../utils/travelSpotResolve';
+import { getPlaceStableKey, mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
 
 const isDev = import.meta.env.DEV;
 
 export const usePlannerData = (location, mediaMode) => {
-  const placeKey = getPlaceStableKey(location);
+  const canonicalLocation = useMemo(
+    () => (location && typeof location === 'object' ? mergeCanonicalTravelSpot(location) : location),
+    [location]
+  );
+  const placeKey = getPlaceStableKey(canonicalLocation);
 
   const [plannerData, setToolkitData] = useState(null);
   const [isPlannerLoading, setIsToolkitLoading] = useState(Boolean(placeKey));
@@ -43,10 +47,11 @@ export const usePlannerData = (location, mediaMode) => {
     if (!placeKey) return;
     setIsPlannerRefreshing(true);
     try {
-      const data = await fetchToolkitRow(supabase, location);
+      const data = await fetchToolkitRow(supabase, canonicalLocation);
       if (
         locationRef.current === location ||
-        (typeof locationRef.current === 'object' && getPlaceStableKey(locationRef.current) === placeKey)
+        (typeof locationRef.current === 'object' &&
+          getPlaceStableKey(mergeCanonicalTravelSpot(locationRef.current)) === placeKey)
       ) {
         setToolkitData(data || null);
       }
@@ -55,7 +60,7 @@ export const usePlannerData = (location, mediaMode) => {
     } finally {
       setIsPlannerRefreshing(false);
     }
-  }, [location, placeKey]);
+  }, [location, canonicalLocation, placeKey]);
 
   useEffect(() => {
     if (!placeKey) return;
@@ -67,7 +72,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     const cached = plannerDataRef.current;
-    const cacheMatchesPlace = toolkitRowMatchesLocation(cached, location);
+    const cacheMatchesPlace = toolkitRowMatchesLocation(cached, canonicalLocation);
 
     // ✅ 장소가 바뀌었거나, 캐시가 현재 장소와 무관하면 리셋
     if (!cacheMatchesPlace) {
@@ -76,7 +81,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     // ✅ place_id만 맞고 essential_guide가 비어 있으면 캐시 무시 후 재조회
-    if (cacheMatchesPlace && !hasUsableToolkitForLocation(cached, location)) {
+    if (cacheMatchesPlace && !hasUsableToolkitForLocation(cached, canonicalLocation)) {
       if (isDev) {
         console.log(`[usePlannerData] 빈/불일치 툴킷 무시 - placeKey: ${placeKey}, db place_id: ${cached?.place_id}`);
       }
@@ -84,7 +89,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     // ✅ 동일 장소 + 실제 가이드 내용·지리 일치 시에만 재조회 생략
-    if (cacheMatchesPlace && hasUsableToolkitForLocation(cached, location)) {
+    if (cacheMatchesPlace && hasUsableToolkitForLocation(cached, canonicalLocation)) {
       if (isDev) {
         console.log(`[usePlannerData] 기존 툴킷 유지 - placeKey: ${placeKey}, db place_id: ${cached.place_id}`);
       }
@@ -97,13 +102,13 @@ export const usePlannerData = (location, mediaMode) => {
     setIsToolkitLoading(true);
 
     const fetchToolkitData = async () => {
-      const candidates = buildToolkitPlaceIdCandidates(location);
+      const candidates = buildToolkitPlaceIdCandidates(canonicalLocation);
       if (isDev) {
         console.log(`[usePlannerData] DB 조회 시작 - placeKey: ${placeKey}, candidates:`, candidates);
       }
 
       try {
-        const data = await fetchToolkitRow(supabase, location);
+        const data = await fetchToolkitRow(supabase, canonicalLocation);
 
         if (isSubscribed) {
           setToolkitData(data || null);
@@ -111,7 +116,7 @@ export const usePlannerData = (location, mediaMode) => {
             if (data) {
               console.log('[usePlannerData] 데이터 로드 완료', {
                 place_id: data.place_id,
-                hasGuide: hasUsableToolkitForLocation(data, location),
+                hasGuide: hasUsableToolkitForLocation(data, canonicalLocation),
               });
             } else {
               console.log('[usePlannerData] 매칭 행 없음');
@@ -131,13 +136,13 @@ export const usePlannerData = (location, mediaMode) => {
     return () => {
       isSubscribed = false;
     };
-  }, [placeKey, mediaMode, location]);
+  }, [placeKey, mediaMode, location, canonicalLocation]);
 
   useEffect(() => {
     const handleToolkitUpdated = (event) => {
       const updatedPlaceId = event.detail?.placeId;
       const essentialGuide = event.detail?.essentialGuide;
-      const loc = locationRef.current;
+      const loc = mergeCanonicalTravelSpot(locationRef.current);
 
       if (!toolkitUpdateMatchesLocation(updatedPlaceId, loc)) return;
 

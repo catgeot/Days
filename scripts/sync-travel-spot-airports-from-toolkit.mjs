@@ -20,7 +20,7 @@ import { createClient } from '@supabase/supabase-js';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import { RENTAL_AIRPORT_HUBS } from '../src/utils/rentalAirportHubs.js';
 import { extractArrivalIataCodesFromEssentialGuide } from '../src/utils/rentalAirportMatch.js';
-import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from './data/travel-spot-airport-overrides.mjs';
+import { TRAVEL_SPOT_AIRPORT_OVERRIDES, TRAVEL_SPOT_PLACE_ID_OVERRIDES } from './data/travel-spot-airport-overrides.mjs';
 import {
   buildSpotLookup,
   isBlocklistedPlaceId,
@@ -54,6 +54,33 @@ function loadEnvFile() {
     if (process.env[key] == null || process.env[key] === '') process.env[key] = val;
     }
   }
+}
+
+function rowFromPlaceIdOverride(placeId) {
+  const override =
+    TRAVEL_SPOT_PLACE_ID_OVERRIDES[placeId] ??
+    Object.entries(TRAVEL_SPOT_PLACE_ID_OVERRIDES).find(
+      ([key]) => normalizePlaceKey(key) === normalizePlaceKey(placeId)
+    )?.[1];
+  if (!override) return null;
+
+  const registered = override.primaryIatas.filter((c) => hubByIata.has(c));
+  if (!registered.length) return null;
+
+  const preferred =
+    override.preferredLinkIata && registered.includes(override.preferredLinkIata)
+      ? override.preferredLinkIata
+      : registered[0];
+
+  return {
+    primaryIatas: registered,
+    preferredLinkIata: preferred,
+    kind: override.kind ?? (registered.length > 1 ? 'multi' : 'single'),
+    source: 'curated-override',
+    confidence: override.confidence ?? 'high',
+    ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
+    ...(override.rationale ? { rationale: override.rationale } : {})
+  };
 }
 
 function rowFromToolkitGuide(guide) {
@@ -196,7 +223,7 @@ async function main() {
       continue;
     }
 
-    writePlaceIdRows(placeIds, placeId, airportRow, spot?.slug ?? null);
+    writePlaceIdRows(placeIds, placeId, rowFromPlaceIdOverride(placeId) ?? airportRow, spot?.slug ?? null);
 
     if (!spot) {
       report.syncedPlaceIdOnly.push({

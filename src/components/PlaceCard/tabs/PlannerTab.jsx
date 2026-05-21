@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
@@ -45,9 +45,11 @@ const PlannerTab = ({
         scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
+    const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
+
     // essential_guide가 {} 등 빈 객체여도 UI에 내용이 없도록 정규화
-    const guideData = getEssentialGuide(plannerData, location);
-    const toolkitMismatch = isToolkitLocationMismatch(plannerData, location);
+    const guideData = getEssentialGuide(plannerData, canonicalLocation);
+    const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation);
     const isUpdatingExisting = !!guideData;
     const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
 
