@@ -1,6 +1,6 @@
 # slug-first 마이그레이션 — 세션 인수인계
 
-**상태**: 코드·SQL·스크립트 **커밋 대상 완료** · Supabase **미적용** · `migrate --apply` **미실행**  
+**상태**: **Wave 0~S5 완료** (2026-05-21) — Supabase SQL·`migrate --apply`·프론트 `d25688c`·Edge `update-place-toolkit`·gateo.kr 스모크 통과  
 **이전 맥락**: [2026-05-07-project-log.md](./2026-05-07-project-log.md) (진단) · [2026-05-04-project-log.md](./2026-05-04-project-log.md) (Phase A 스키마)  
 **운영 규칙**: [supabase/migrations/README-place-id.md](../supabase/migrations/README-place-id.md)
 
@@ -27,17 +27,19 @@
 | reconcile archive | `scripts/reconcile-place-toolkit-place-id.mjs` |
 | dry-run 백업·리포트 | `scripts/outputs/place_id_backup_20260521/` |
 
-**dry-run 요약** (2026-05-21): wiki 430행·stats 974·videos 241·toolkit 275 — toolkit unresolved 9( blocklist 등). `duplicateSlug 0` (audit).
+**dry-run 요약** (2026-05-21): wiki 430행·stats 975·videos 241·toolkit 275 — SQL 시드 후 **unresolved 0**. `duplicateSlug 0` (audit).
+
+**apply 요약** (2026-05-21): `scripts/outputs/place_id_backup_20260521/migrate-report-20260521.json` — rekeyed 952 · merged/archived 964 · unresolved 0 · `place_toolkit` `angkor-wat` 단일 행 · archive 964건. 이슈 없음.
 
 ---
 
-## 미완료 (다음 세션 — 순서 고정)
+## 완료 (S1–S5, 2026-05-21)
 
-- [ ] **S1** Supabase SQL 2개 적용
-- [ ] **S2** `npm run migrate:place-id-to-slug -- --dry-run` 재확인
-- [ ] **S3** `npm run migrate:place-id-to-slug -- --apply`
-- [ ] **S4** 프론트 배포 + `generate:canonical-place-id-map` + Edge `update-place-toolkit` 재배포
-- [ ] **S5** gateo.kr 스모크 + audit/verify
+- [x] **S1** Supabase SQL 2개 적용 (`place_alias` 1408행 · archive 4테이블)
+- [x] **S2** `migrate:place-id-to-slug --dry-run` 재확인
+- [x] **S3** `migrate:place-id-to-slug --apply`
+- [x] **S4** `generate:canonical-place-id-map` · Edge 재배포 · `main` push (`d25688c`)
+- [x] **S5** verify/audit · gateo.kr `/place/angkor-wat/planner` (직접·TRAVEL_SPOTS·「시엠립」·지도 카드 → 동일 SAI 툴킷)
 
 ---
 
@@ -119,12 +121,12 @@ npm run generate:canonical-place-id-map
 
 ---
 
-## 검증 체크리스트 (완료 시 체크)
+## 검증 체크리스트 (2026-05-21 완료)
 
-- [ ] `place_toolkit.place_id = 'angkor-wat'` 단일 행 (archive에 시엠립/Siem Reap 등)
-- [ ] `place_wiki` / `place_stats` — `angkor-wat` + `name_ko` 백필
-- [ ] `toolkit:audit-place-id` — duplicateSlug 0
-- [ ] `verify:place-slug-resolve` — 앙코르·교토·쿄토 통과
+- [x] `place_toolkit.place_id = 'angkor-wat'` 단일 행 (archive: 시엠립·앙코르 와트·앙코르와트 3건)
+- [x] `place_wiki` / `place_stats` — slug rekey + `name_ko` 백필 (apply)
+- [x] `toolkit:audit-place-id` — duplicateSlug 0
+- [x] `verify:place-slug-resolve` — 앙코르·교토·쿄토 통과
 
 ---
 

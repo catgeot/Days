@@ -22,6 +22,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'CTS', officialKo: '신치토세공항', lat: 42.7752, lng: 141.6923, radiusKm: 220, aliases: ['chitose', '치토세', 'cts', 'sapporo', '삿포로', '홋카이도', 'hokkaido'] },
   { iata: 'FUK', officialKo: '후쿠오카공항', lat: 33.5859, lng: 130.4510, radiusKm: 200, aliases: ['fukuoka', '후쿠오카', 'fuk'] },
   {
+    iata: 'NGS',
+    officialKo: '나가사키 공항',
+    lat: 32.9169,
+    lng: 129.9136,
+    radiusKm: 80,
+    aliases: ['nagasaki', '나가사키', 'ngs', 'nagasaki airport', '오무라']
+  },
+  {
     iata: 'TSJ',
     officialKo: '대마공항',
     lat: 34.2849,
@@ -303,6 +311,14 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 80,
     aliases: ['dubrovnik', '두브로브니크', 'dbv']
   },
+  {
+    iata: 'SPU',
+    officialKo: '스플리트 공항',
+    lat: 43.5389,
+    lng: 16.298,
+    radiusKm: 80,
+    aliases: ['split', '스플리트', 'spu', 'split airport', 'franjo tudman']
+  },
   { iata: 'ZAG', officialKo: '자그레브 공항', lat: 45.7429, lng: 16.0688, radiusKm: 200, aliases: ['zagreb', '자그레브', 'plitvice', '플리트비체', 'zag'] },
   { iata: 'RAK', officialKo: '마라케시 메나라공항', lat: 31.6069, lng: -8.0363, radiusKm: 160, aliases: ['marrakech', 'marrakesh', '마라케시', 'rak'] },
   {
@@ -498,6 +514,14 @@ export const RENTAL_AIRPORT_HUBS = [
     aliases: ['guayaquil', '과야킬', 'gye', 'ecuador gateway']
   },
   { iata: 'EZE', officialKo: '미니스트로 피스타리니국제공항', lat: -34.8222, lng: -58.5358, radiusKm: 220, aliases: ['buenos aires', '부에노스아이레스', 'eze', 'argentina gateway'] },
+  {
+    iata: 'MDZ',
+    officialKo: '멘도사 국제공항',
+    lat: -32.8317,
+    lng: -68.7928,
+    radiusKm: 160,
+    aliases: ['mendoza', '멘도사', 'mdz', 'el plumerillo', 'aconcagua', '아콩카과']
+  },
   {
     iata: 'BRC',
     officialKo: '산 카를로스 데 바릴로체 공항',

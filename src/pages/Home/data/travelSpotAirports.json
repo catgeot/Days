@@ -156,6 +156,10 @@
         "LPA"
       ],
       "preferredLinkIata": "TFS",
+      "searchHintIatas": [
+        "TFS",
+        "LPA"
+      ],
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
@@ -1822,15 +1826,18 @@
     "borneo": {
       "primaryIatas": [
         "BKI",
-        "KCH",
-        "KUL"
+        "KCH"
       ],
       "preferredLinkIata": "BKI",
+      "searchHintIatas": [
+        "BKI",
+        "KCH"
+      ],
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH), 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 브루나이(BWN)는 별도 여행지입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
-      "rationale": "사바·사라왕·반도 국제 관문"
+      "bannerNote": "보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH)입니다. 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 브루나이(BWN)는 별도 여행지입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "사바(BKI)·사라왕(KCH) 관문 — KUL은 경유만"
     },
     "madagascar": {
       "primaryIatas": [
@@ -1854,14 +1861,15 @@
     },
     "inca-trail": {
       "primaryIatas": [
-        "LIM",
-        "CUZ"
+        "CUZ",
+        "LIM"
       ],
-      "preferredLinkIata": "LIM",
+      "preferredLinkIata": "CUZ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "rationale": "LIM 국제선 후 CUZ 국내선 — 잉카 트레일 출발은 쿠스코"
     },
     "peninsula-valdes": {
       "primaryIatas": [
@@ -1919,13 +1927,15 @@
     },
     "hvar": {
       "primaryIatas": [
-        "DBV"
+        "SPU",
+        "DBV",
+        "ZAG"
       ],
-      "preferredLinkIata": "DBV",
-      "kind": "single",
+      "preferredLinkIata": "SPU",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "스플리트·두브로브니크 공항 경유 페리"
+      "rationale": "스플리트(SPU) 도착 후 페리, 귀국은 DBV·ZAG 아웃 권장"
     },
     "bodrum": {
       "primaryIatas": [
@@ -2013,14 +2023,16 @@
     },
     "aconcagua": {
       "primaryIatas": [
+        "MDZ",
         "EZE",
         "SCL"
       ],
-      "preferredLinkIata": "EZE",
+      "preferredLinkIata": "MDZ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "보통 부에노스아이레스(EZE) 또는 산티아고(SCL) 국제선 후 멘도사(MDZ)로 이어집니다. 렌터카·픽업·투어는 멘도사 공항 기준입니다.",
+      "rationale": "EZE/SCL 국제선 후 MDZ — 아콩카과 입산·장비 준비는 멘도사"
     },
     "denali": {
       "primaryIatas": [
@@ -2409,14 +2421,19 @@
     },
     "nagasaki": {
       "primaryIatas": [
-        "FUK",
-        "ICN"
+        "NGS",
+        "FUK"
       ],
-      "preferredLinkIata": "FUK",
+      "preferredLinkIata": "NGS",
+      "searchHintIatas": [
+        "NGS",
+        "FUK"
+      ],
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "인천–나가사키(NGS) 직항이 가장 편합니다. 노선이 없을 때는 후쿠오카(FUK) 입국 후 기차·버스로 나가사키까지 이동하세요.",
+      "rationale": "나가사키 공항(NGS) 직항 우선, FUK는 우회 관문"
     },
     "kanazawa": {
       "primaryIatas": [
@@ -4080,10 +4097,15 @@
         "KCH"
       ],
       "preferredLinkIata": "BKI",
+      "searchHintIatas": [
+        "BKI",
+        "KCH"
+      ],
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH)입니다. 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 브루나이(BWN)는 별도 여행지입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "사바(BKI)·사라왕(KCH) 관문 — KUL은 경유만",
       "placeId": "보르네오",
       "linkedSlug": "borneo"
     },
@@ -4390,14 +4412,16 @@
     },
     "아콩카과": {
       "primaryIatas": [
+        "MDZ",
         "EZE",
         "SCL"
       ],
-      "preferredLinkIata": "EZE",
+      "preferredLinkIata": "MDZ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "보통 부에노스아이레스(EZE) 또는 산티아고(SCL) 국제선 후 멘도사(MDZ)로 이어집니다. 렌터카·픽업·투어는 멘도사 공항 기준입니다.",
+      "rationale": "EZE/SCL 국제선 후 MDZ — 아콩카과 입산·장비 준비는 멘도사",
       "placeId": "아콩카과",
       "linkedSlug": "aconcagua"
     },
@@ -5030,14 +5054,15 @@
     },
     "잉카트레일": {
       "primaryIatas": [
-        "LIM",
-        "CUZ"
+        "CUZ",
+        "LIM"
       ],
-      "preferredLinkIata": "LIM",
+      "preferredLinkIata": "CUZ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "rationale": "LIM 국제선 후 CUZ 국내선 — 잉카 트레일 출발은 쿠스코",
       "placeId": "잉카 트레일",
       "linkedSlug": "inca-trail"
     },
@@ -6195,14 +6220,19 @@
     },
     "나가사키": {
       "primaryIatas": [
-        "FUK",
-        "ICN"
+        "NGS",
+        "FUK"
       ],
-      "preferredLinkIata": "FUK",
+      "preferredLinkIata": "NGS",
+      "searchHintIatas": [
+        "NGS",
+        "FUK"
+      ],
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "인천–나가사키(NGS) 직항이 가장 편합니다. 노선이 없을 때는 후쿠오카(FUK) 입국 후 기차·버스로 나가사키까지 이동하세요.",
+      "rationale": "나가사키 공항(NGS) 직항 우선, FUK는 우회 관문",
       "placeId": "나가사키",
       "linkedSlug": "nagasaki"
     },
@@ -6395,14 +6425,15 @@
     },
     "흐바르": {
       "primaryIatas": [
+        "SPU",
         "DBV",
         "ZAG"
       ],
-      "preferredLinkIata": "DBV",
+      "preferredLinkIata": "SPU",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "스플리트(SPU) 도착 후 페리, 귀국은 DBV·ZAG 아웃 권장",
       "placeId": "흐바르",
       "linkedSlug": "hvar"
     },

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Car } from 'lucide-react';
-import { resolveRentalPickupBannerInfo } from '../../../../../utils/rentalAirportMatch.js';
+import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
 
 const airportCopyHitClass =
@@ -45,6 +45,11 @@ export default function RentalPickupBanner({ location, essentialGuide, className
         [location, essentialGuide]
     );
 
+    const peerAlternates = useMemo(
+        () => resolveBannerPeerAlternateAirports(location, info, { essentialGuide }),
+        [location, info, essentialGuide]
+    );
+
     const handleCopy = useCallback((text, message) => {
         const run = async () => {
             try {
@@ -70,9 +75,13 @@ export default function RentalPickupBanner({ location, essentialGuide, className
         ? '툴킷 여정·항공 안내와 맞춘 도착 공항입니다. 티켓과 다르면 실제 도착 코드로 검색어를 바꿔 주세요.'
         : '항공권·렌터카 검색에 쓰는 도착 공항입니다. 티켓의 도착 공항 코드를 확인해 주세요.';
 
-    const linkHub = info.kind === 'multi' ? info.linkHub : null;
-    const alternateAirports =
-        info.kind === 'multi' ? info.airports.filter((a) => a.iata !== linkHub?.iata) : [];
+    const primaryAirport =
+        info.kind === 'multi' && info.linkHub
+            ? info.linkHub
+            : info.kind === 'single'
+              ? { officialKo: info.officialKo, iata: info.iata }
+              : null;
+    const showPeerAlternates = peerAlternates.length > 0;
 
     return (
         <div
@@ -85,32 +94,28 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                 </p>
                 <p className={`mt-0.5 ${plannerCaption}`}>{subtitle}</p>
 
-                {info.kind === 'multi' ? (
+                {showPeerAlternates ? (
                     <>
                         <p className={`mt-2 ${plannerMicroLabel} text-emerald-900/90`}>연동 도착 공항</p>
                         <div className="mt-1">
                             <RentalPickupAirportCopyRow
-                                officialKo={linkHub.officialKo}
-                                iata={linkHub.iata}
+                                officialKo={primaryAirport.officialKo}
+                                iata={primaryAirport.iata}
                                 onCopy={handleCopy}
                                 highlight
                             />
                         </div>
-                        {alternateAirports.length > 0 ? (
-                            <>
-                                <p className={`mt-2 ${plannerCaptionStrong} text-gray-600`}>다른 도착 후보</p>
-                                <div className="mt-1 flex flex-col gap-2">
-                                    {alternateAirports.map((a) => (
-                                        <RentalPickupAirportCopyRow
-                                            key={a.iata || a.officialKo}
-                                            officialKo={a.officialKo}
-                                            iata={a.iata}
-                                            onCopy={handleCopy}
-                                        />
-                                    ))}
-                                </div>
-                            </>
-                        ) : null}
+                        <p className={`mt-2 ${plannerCaptionStrong} text-gray-600`}>다른 도착 후보</p>
+                        <div className="mt-1 flex flex-col gap-2">
+                            {peerAlternates.map((a) => (
+                                <RentalPickupAirportCopyRow
+                                    key={a.iata || a.officialKo}
+                                    officialKo={a.officialKo}
+                                    iata={a.iata}
+                                    onCopy={handleCopy}
+                                />
+                            ))}
+                        </div>
                         {info.bannerNote ? (
                             <p className={`mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 ${plannerCaptionMedium} text-gray-800`}>
                                 {info.bannerNote}
@@ -121,8 +126,8 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                     <>
                         <div className="mt-1.5">
                             <RentalPickupAirportCopyRow
-                                officialKo={info.officialKo}
-                                iata={info.iata}
+                                officialKo={primaryAirport?.officialKo ?? info.officialKo}
+                                iata={primaryAirport?.iata ?? info.iata}
                                 onCopy={handleCopy}
                                 highlight
                             />
@@ -141,7 +146,7 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                     </p>
                 ) : null}
 
-                {info.kind === 'multi' ? (
+                {showPeerAlternates ? (
                     <p className={`mt-1.5 ${plannerCaptionMedium}`}>
                         렌터카·픽업 제휴 링크는 위 「연동 도착 공항」 기준으로 연결됩니다.
                     </p>

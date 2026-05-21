@@ -3,7 +3,7 @@ import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' 
 
 const toRad = (d) => (d * Math.PI) / 180;
 
-/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: string, bannerNote?: string }>} */
+/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: string, bannerNote?: string, searchHintIatas?: string[] }>} */
 const STATIC_SPOT_AIRPORT_MAP = travelSpotAirportsData.spots ?? {};
 
 /** DB place_toolkit.place_id·사용자 입력 지명 (공식 travelSpots slug 없음 포함) */
@@ -113,7 +113,7 @@ const MIN_ALIAS_LEN = 4;
  * 렌터카 링크와 별개로, 플래너 상단에 둘 이상의 도착 공항을 안내할 여행지.
  * `phrases` 중 하나가 slug·이름(한/영)에 부분 일치하면 적용됩니다. 더 구체적인 행을 위에 둡니다.
  *
- * @typedef {{ phrases: string[], iataCodes: string[], preferredLinkIata?: string, bannerNote?: string }} RentalMultiAirportRow
+ * @typedef {{ phrases: string[], iataCodes: string[], preferredLinkIata?: string, bannerNote?: string, searchHintIatas?: string[] }} RentalMultiAirportRow
  */
 
 /** @type {RentalMultiAirportRow[]} */
@@ -122,6 +122,7 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     phrases: ['zermatt', '체르마트', 'matterhorn', '마테호른', 'tasch', 'visp', '비스프'],
     iataCodes: ['ZRH', 'GVA'],
     preferredLinkIata: 'ZRH',
+    searchHintIatas: ['ZRH', 'GVA'],
     bannerNote:
       '체르마트는 차량 통제 구역이라 공항 도착 후 기차(취리히·제네바 공항역 → 비스프 등)로 이어지는 일정이 흔합니다. 지도상으로는 북이탈리아 공항이 가깝게 보일 수 있어도, 실제 티켓·입국·연결은 스위스 관문(ZRH·GVA)을 먼저 확인해 주세요.'
   },
@@ -151,22 +152,26 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
       '아바노스'
     ],
     iataCodes: ['ASR', 'NAV'],
-    preferredLinkIata: 'ASR'
+    preferredLinkIata: 'ASR',
+    searchHintIatas: ['ASR', 'NAV']
   },
   {
     phrases: ['tokyo', '도쿄', 'shibuya', '시부야', 'shinjuku', '신주쿠', 'ikebukuro', '이케부쿠로'],
     iataCodes: ['HND', 'NRT'],
-    preferredLinkIata: 'HND'
+    preferredLinkIata: 'HND',
+    searchHintIatas: ['HND', 'NRT']
   },
   {
     phrases: ['bangkok', '방콕', 'suvarnabhumi', '수완나품', 'don mueang', '돈므앙'],
     iataCodes: ['BKK', 'DMK'],
-    preferredLinkIata: 'BKK'
+    preferredLinkIata: 'BKK',
+    searchHintIatas: ['BKK', 'DMK']
   },
   {
     phrases: ['paris', '파리'],
     iataCodes: ['CDG', 'ORY'],
-    preferredLinkIata: 'CDG'
+    preferredLinkIata: 'CDG',
+    searchHintIatas: ['CDG', 'ORY']
   },
   {
     phrases: [
@@ -183,7 +188,8 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
       '란사로테'
     ],
     iataCodes: ['TFS', 'LPA'],
-    preferredLinkIata: 'TFS'
+    preferredLinkIata: 'TFS',
+    searchHintIatas: ['TFS', 'LPA']
   },
   {
     phrases: [
@@ -265,6 +271,7 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     phrases: ['crete', '크레타', 'heraklion', '이라클리온', 'chania', '하니아'],
     iataCodes: ['HER', 'CHQ'],
     preferredLinkIata: 'HER',
+    searchHintIatas: ['HER', 'CHQ'],
     bannerNote:
       '크레타는 동부 이라클리온(HER)·서부 하니아(CHQ) 등 도착 공항이 나뉩니다. 아테네(ATH) 경유 후 국내선·페리로 들어오는 일정이 흔하니, 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
   },
@@ -272,6 +279,7 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     phrases: ['sicily', '시칠리아', 'sicilia', 'catania', '카타니아', 'palermo', '팔레르모', 'taormina', '타오르미나'],
     iataCodes: ['CTA', 'PMO'],
     preferredLinkIata: 'CTA',
+    searchHintIatas: ['CTA', 'PMO'],
     bannerNote:
       '시칠리아는 동부 카타니아(CTA)·서북부 팔레르모(PMO) 등 도착 공항이 나뉩니다. 인천·유럽 경유 후 시칠리아행 국내선·유럽내선으로 이어지는 일정이 흔하니, 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
   },
@@ -299,6 +307,77 @@ function matchMultiAirportDestination(location, row) {
     if (pl.length >= 2 && hay.includes(pl)) return true;
   }
   return false;
+}
+
+function findMatchedMultiAirportDestination(location) {
+  if (!location || typeof location !== 'object') return null;
+  for (const row of RENTAL_MULTI_AIRPORT_DESTINATIONS) {
+    if (matchMultiAirportDestination(location, row)) return row;
+  }
+  return null;
+}
+
+/**
+ * 항공권·렌터카 검색 위젯용 IATA — 환승·국제선 관문(EZE 등)은 제외하고 실제 검색·픽업 공항만.
+ * `searchHintIatas`가 있으면 그 목록, 없으면 multi일 때 `linkHub`만(연동 도착 공항).
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {string[] | null}
+ */
+function resolveSearchHintIataCodes(location, options = {}) {
+  const info = resolveRentalPickupBannerInfo(location, options);
+  if (!info) return null;
+
+  const staticRow = options.ignoreStaticAirportMap !== true ? getTravelSpotAirportRow(location) : null;
+  const multiRow = findMatchedMultiAirportDestination(location);
+  const override = staticRow?.searchHintIatas ?? multiRow?.searchHintIatas;
+
+  if (Array.isArray(override) && override.length) {
+    const codes = override
+      .map((c) => String(c ?? '').trim().toUpperCase())
+      .filter((c) => hubByIata(c));
+    if (codes.length) return codes;
+  }
+
+  if (info.kind === 'multi' && info.linkHub?.iata) return [info.linkHub.iata];
+  if (info.kind === 'single' && info.iata) return [info.iata];
+  return null;
+}
+
+/**
+ * 배너 「다른 도착 후보」 — `searchHintIatas`에 2개 이상 있을 때만(linkHub 제외).
+ * 환승·국제선 관문(EZE·LIM 등)은 bannerNote로만 안내하고 여기에는 넣지 않습니다.
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {ReturnType<typeof resolveRentalPickupBannerInfo>} info
+ * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {{ officialKo: string, iata: string }[]}
+ */
+export function resolveBannerPeerAlternateAirports(location, info, options = {}) {
+  if (!info || info.kind !== 'multi' || !info.linkHub?.iata) return [];
+
+  const staticRow = options.ignoreStaticAirportMap !== true ? getTravelSpotAirportRow(location) : null;
+  const multiRow = findMatchedMultiAirportDestination(location);
+  const hintCodes = staticRow?.searchHintIatas ?? multiRow?.searchHintIatas;
+
+  if (!Array.isArray(hintCodes) || hintCodes.length < 2) return [];
+
+  const link = String(info.linkHub.iata).trim().toUpperCase();
+  return hintCodes
+    .map((c) => String(c ?? '').trim().toUpperCase())
+    .filter((c) => c && c !== link && hubByIata(c))
+    .map((c) => {
+      const hub = hubByIata(c);
+      return { officialKo: hub.officialKo, iata: hub.iata };
+    });
+}
+
+/** 권역 교차 링크·검색 힌트용 IATA 라벨 (예: `BKI·KCH`) — 환승 관문 제외 */
+export function formatSearchHintIataLabel(location, options = {}) {
+  const codes = resolveSearchHintIataCodes(location, options);
+  if (!codes?.length) return '';
+  return codes.join('·');
 }
 
 function hubByIata(iata) {
@@ -367,6 +446,7 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /브뤼셀|brussels|bruxelles/i, iata: 'BRU' },
   { re: /피렌체|florence|firenze/i, iata: 'FLR' },
   { re: /두브로브니크|dubrovnik/i, iata: 'DBV' },
+  { re: /스플리트|split(?!\s*port)/i, iata: 'SPU' },
   { re: /마라케시|marrakech|marrakesh/i, iata: 'RAK' },
   { re: /모스크바|moscow|moskva|셰레메티예보/i, iata: 'SVO' },
   { re: /괌|guam|tumon|투몬/i, iata: 'GUM' },
@@ -389,6 +469,12 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /카르스텐츠|carstensz/i, iata: 'TIM' },
   { re: /콤포스텔라|compostela|산티아고\s*데\s*콤포스텔라/i, iata: 'SCQ' },
   { re: /브루나이|brunei|bandar\s*seri\s*begawan|bsb/i, iata: 'BWN' },
+  { re: /쿠스코|cusco|마추픽추|machu\s*picchu/i, iata: 'CUZ' },
+  { re: /리마|lima/i, iata: 'LIM' },
+  { re: /멘도사|mendoza|아콩카|aconcagua/i, iata: 'MDZ' },
+  { re: /부에노스\s*아이레스|buenos\s*aires/i, iata: 'EZE' },
+  { re: /나가사키|nagasaki/i, iata: 'NGS' },
+  { re: /후쿠오카|fukuoka/i, iata: 'FUK' },
   { re: /엘칼라파테|el\s*calafate|페리토\s*모레노|perito\s*moreno|\bfte\b/i, iata: 'FTE' }
 ];
 
@@ -702,22 +788,15 @@ export function getFlightDestinationSearchHint(location, options = {}) {
   const place =
     location && typeof location.name === 'string' && location.name.trim() ? location.name.trim() : '이 여행지';
   const label = flightHintPlaceLabel(place);
-  const info = resolveRentalPickupBannerInfo(location, options);
+  const codes = resolveSearchHintIataCodes(location, options);
 
-  if (!info) {
+  if (!codes?.length) {
     return '정확한 항공권 검색을 위해 도착 공항 3자리 코드(IATA)를 입력해 주세요.';
   }
 
-  if (info.kind === 'multi') {
-    const codes = formatFlightHintIataCodes(info.airports.map((a) => a.iata));
-    if (codes) {
-      return `정확한 항공권 검색을 위해 ${label} 도착 공항 코드(${codes})를 입력해 주세요.`;
-    }
-    return `정확한 항공권 검색을 위해 ${label} 도착 공항 3자리 코드(IATA)를 입력해 주세요.`;
-  }
-
-  if (info.iata) {
-    return `정확한 항공권 검색을 위해 ${label} 도착 공항 코드(${info.iata})를 입력해 주세요.`;
+  const formatted = formatFlightHintIataCodes(codes);
+  if (formatted) {
+    return `정확한 항공권 검색을 위해 ${label} 도착 공항 코드(${formatted})를 입력해 주세요.`;
   }
 
   return `정확한 항공권 검색을 위해 ${label} 도착 공항 3자리 코드(IATA)를 입력해 주세요.`;
@@ -731,21 +810,14 @@ export function getFlightDestinationSearchHint(location, options = {}) {
  * @returns {string}
  */
 export function getRentalCarHomeSearchSubtext(location, options = {}) {
-  const info = resolveRentalPickupBannerInfo(location, options);
-  if (!info) {
+  const codes = resolveSearchHintIataCodes(location, options);
+  if (!codes?.length) {
     return '렌터카 검색 시 세자리 공항 코드(예: PDL)로 입력해 주세요.';
   }
-  if (info.kind === 'multi') {
-    const iatas = info.airports.map((a) => a.iata).filter(Boolean);
-    if (iatas.length) {
-      return `렌터카 검색 시 세자리 공항 코드(${iatas.join(', ')}) 중 하나로 입력해 주세요.`;
-    }
-    return '렌터카 검색 시 도착 공항 세자리 코드로 입력해 주세요.';
+  if (codes.length === 1) {
+    return `렌터카 검색 시 세자리 공항 코드(${codes[0]})로 입력해 주세요.`;
   }
-  if (info.iata) {
-    return `렌터카 검색 시 세자리 공항 코드(${info.iata})로 입력해 주세요.`;
-  }
-  return '렌터카 검색 시 세자리 공항 코드(예: PDL)로 입력해 주세요.';
+  return `렌터카 검색 시 세자리 공항 코드(${codes.join(', ')}) 중 하나로 입력해 주세요.`;
 }
 
 /**
@@ -756,16 +828,10 @@ export function getRentalCarHomeSearchSubtext(location, options = {}) {
  * @returns {string}
  */
 export function getRentalCarHomeSearchHintShort(location, options = {}) {
-  const info = resolveRentalPickupBannerInfo(location, options);
-  if (!info) return '공항 코드 입력';
-  if (info.kind === 'multi') {
-    const iatas = info.airports.map((a) => a.iata).filter(Boolean);
-    if (iatas.length === 1) return `코드 ${iatas[0]}`;
-    if (iatas.length > 1) return `코드 ${iatas.slice(0, 2).join('·')}`;
-    return '공항 코드 입력';
-  }
-  if (info.iata) return `코드 ${info.iata}`;
-  return '공항 코드 입력';
+  const codes = resolveSearchHintIataCodes(location, options);
+  if (!codes?.length) return '공항 코드 입력';
+  if (codes.length === 1) return `코드 ${codes[0]}`;
+  return `코드 ${codes.slice(0, 2).join('·')}`;
 }
 
 /**
@@ -812,21 +878,14 @@ export function resolveKlookRentalBannerSearchLabel(location, options = {}) {
 }
 
 export function getRentalCarTimelineActionDescription(location, options = {}) {
-  const info = resolveRentalPickupBannerInfo(location, options);
-  if (!info) {
+  const codes = resolveSearchHintIataCodes(location, options);
+  if (!codes?.length) {
     return '세자리 공항코드를 입력해 주세요';
   }
-  if (info.kind === 'multi') {
-    const iatas = info.airports.map((a) => a.iata).filter(Boolean);
-    if (iatas.length) {
-      return `세자리 공항코드(${iatas.join(', ')})를 입력해 주세요`;
-    }
-    return '세자리 공항코드를 입력해 주세요';
+  if (codes.length === 1) {
+    return `세자리 공항코드(${codes[0]})를 입력해 주세요`;
   }
-  if (info.iata) {
-    return `세자리 공항코드(${info.iata})를 입력해 주세요`;
-  }
-  return '세자리 공항코드를 입력해 주세요';
+  return `세자리 공항코드(${codes.join(', ')})를 입력해 주세요`;
 }
 
 /**

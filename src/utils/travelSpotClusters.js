@@ -1,6 +1,6 @@
 import { TRAVEL_SPOTS } from '../pages/Home/data/travelSpots.js';
 import clusterData from '../pages/Home/data/travelSpotClusters.json' with { type: 'json' };
-import { resolveRentalPickupBannerInfo } from './rentalAirportMatch.js';
+import { formatSearchHintIataLabel } from './rentalAirportMatch.js';
 
 const CLUSTERS = Object.fromEntries(
   Object.entries(clusterData).filter(([key]) => !key.startsWith('_'))
@@ -48,16 +48,10 @@ export function getClusterForSlug(slug) {
 export function formatGatewayIataForSlug(slug) {
   const spot = spotBySlug.get(slug);
   if (!spot) return '';
-  const info = resolveRentalPickupBannerInfo(
+  return formatSearchHintIataLabel(
     { slug: spot.slug, name: spot.name, lat: spot.lat, lng: spot.lng },
     {}
   );
-  if (!info) return '';
-  if (info.kind === 'single' && info.iata) return info.iata;
-  if (info.kind === 'multi' && info.airports?.length) {
-    return info.airports.map((a) => a.iata).filter(Boolean).join('·');
-  }
-  return '';
 }
 
 /**

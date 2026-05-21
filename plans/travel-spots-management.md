@@ -50,6 +50,16 @@ node scripts/extract-travel-spots-list.cjs
 4. JSON의 **좌표·런타임 추론** (`runtime-infer`, `geo-nearest`)
 5. `RENTAL_MULTI_AIRPORT_DESTINATIONS` · 좌표 최근접
 
+**검색·배너·교차 링크 분리 (2026-05-21)**:
+
+| 표면 | 규칙 |
+|------|------|
+| 배너 연동 공항 | `preferredLinkIata` / `linkHub` 1개 |
+| 배너 「다른 도착 후보」 | **`searchHintIatas` 2개 이상**일 때만 (`resolveBannerPeerAlternateAirports`) |
+| 항공·렌터카 검색 힌트 | `resolveSearchHintIataCodes` — 기본 linkHub; 동급 관문은 `searchHintIatas` |
+| 환승·국제선 관문 (EZE·LIM·KUL) | **`bannerNote`만** — 후보·검색·교차 링크 라벨 제외 |
+| 권역 `RelatedTravelSpots` | `formatSearchHintIataLabel` (예: borneo `BKI·KCH`) |
+
 **툴킷이 있는데 배너가 여정과 다르면** → JSON의 `runtime-infer`가 막고 있는 경우가 많습니다. 먼저 플래너를 열어 툴킷이 로드되는지 확인하고, 계속 어긋나면 `travel-spot-airport-overrides.mjs`에 검수 매핑을 추가한 뒤 `generate:airports`를 실행하세요.
 
 `npm run audit:airports` 리포트의 **`inferNearestMismatch`**(추론 공항 ≠ 최근접 허브) 목록으로 수동 검수 큐를 줄일 수 있습니다.
@@ -96,7 +106,10 @@ npm run enrich:airports
 한 여행지에 관문이 여러 개일 때(보라카이, 팔라완, 로포텐, 시칠리아 등):
 
 - `primaryIatas: ['…', '…']`, `kind: 'multi'`, `preferredLinkIata`(제휴 링크 기본 검색)
-- `bannerNote`로 「국제선은 A, 섬 직항은 B」 안내
+- **`searchHintIatas`**: 티켓 목적지로 **실제로 고를 수 있는 동급 공항**만 (나가사키 NGS/FUK, 보르네오 BKI/KCH). 없으면 검색·배너 후보는 **linkHub 1개**.
+- `bannerNote`로 「국제선은 A 경유, 최종 B」·권역 혼동(브루나이 BWN vs 사바 BKI) 안내 — **환승 코드는 여기만**.
+
+**국제선 관문 + 국내선 최종** (아콩카과 MDZ, 잉카 트레일 CUZ, 흐바르 SPU): `primaryIatas`에 경유지를 넣어도 **`searchHintIatas` 생략** → 배너·검색은 최종 공항만; EZE·LIM 등은 `bannerNote`.
 
 **보라카이 예**: 칼리보 `KLO`(국제선·패키지 다수) + 카틱란 `MPH`(직항·국내선). 한글명은 `칼리보 국제공항` / `카틱란 공항` — 영문 인명만 옮긴 「고도프로 항공기지」류 표기는 사용자에게 낯설 수 있음.
 
