@@ -3763,5 +3763,200 @@
       "elcalafate",
       "elcalafate"
     ]
+  },
+  {
+    "id": 372,
+    "slug": "hamburg",
+    "name": "함부르크",
+    "name_en": "Hamburg",
+    "country": "독일",
+    "searchKeys": [
+      "hamburg",
+      "함부르크",
+      "hamburg",
+      "hamburg",
+      "hamburg",
+      "hamburg"
+    ]
+  },
+  {
+    "id": 373,
+    "slug": "cocos-islands",
+    "name": "코코스 제도",
+    "name_en": "Cocos (Keeling) Islands",
+    "country": "호주",
+    "searchKeys": [
+      "cocos-islands",
+      "코코스 제도",
+      "cocos (keeling) islands",
+      "cocos islands",
+      "cocosislands",
+      "cocos(keeling)islands"
+    ]
+  },
+  {
+    "id": 374,
+    "slug": "pitcairn-islands",
+    "name": "핏케언 제도",
+    "name_en": "Pitcairn Islands",
+    "country": "영국",
+    "searchKeys": [
+      "pitcairn-islands",
+      "핏케언 제도",
+      "pitcairn islands",
+      "pitcairn islands",
+      "pitcairnislands",
+      "pitcairnislands"
+    ]
+  },
+  {
+    "id": 375,
+    "slug": "greenland",
+    "name": "그린란드",
+    "name_en": "Greenland",
+    "country": "그린란드",
+    "searchKeys": [
+      "greenland",
+      "그린란드",
+      "greenland",
+      "greenland",
+      "greenland",
+      "greenland"
+    ]
+  },
+  {
+    "id": 376,
+    "slug": "falkland-islands",
+    "name": "포클랜드 제도",
+    "name_en": "Falkland Islands",
+    "country": "영국",
+    "searchKeys": [
+      "falkland-islands",
+      "포클랜드 제도",
+      "falkland islands",
+      "falkland islands",
+      "falklandislands",
+      "falklandislands"
+    ]
+  },
+  {
+    "id": 377,
+    "slug": "solomon-islands",
+    "name": "솔로몬 제도",
+    "name_en": "Solomon Islands",
+    "country": "솔로몬 제도",
+    "searchKeys": [
+      "solomon-islands",
+      "솔로몬 제도",
+      "solomon islands",
+      "solomon islands",
+      "solomonislands",
+      "solomonislands"
+    ]
+  },
+  {
+    "id": 378,
+    "slug": "nauru",
+    "name": "나우루",
+    "name_en": "Nauru",
+    "country": "나우루",
+    "searchKeys": [
+      "nauru",
+      "나우루",
+      "nauru",
+      "nauru",
+      "nauru",
+      "nauru"
+    ]
+  },
+  {
+    "id": 379,
+    "slug": "queenstown",
+    "name": "퀸스타운",
+    "name_en": "Queenstown",
+    "country": "뉴질랜드",
+    "searchKeys": [
+      "queenstown",
+      "퀸스타운",
+      "queenstown",
+      "queenstown",
+      "queenstown",
+      "queenstown"
+    ]
+  },
+  {
+    "id": 380,
+    "slug": "minneapolis",
+    "name": "미니애폴리스",
+    "name_en": "Minneapolis",
+    "country": "미국",
+    "searchKeys": [
+      "minneapolis",
+      "미니애폴리스",
+      "minneapolis",
+      "minneapolis",
+      "minneapolis",
+      "minneapolis"
+    ]
+  },
+  {
+    "id": 381,
+    "slug": "perth",
+    "name": "퍼스",
+    "name_en": "Perth",
+    "country": "호주",
+    "searchKeys": [
+      "perth",
+      "퍼스",
+      "perth",
+      "perth",
+      "perth",
+      "perth"
+    ]
+  },
+  {
+    "id": 382,
+    "slug": "bahamas",
+    "name": "바하마",
+    "name_en": "Bahamas",
+    "country": "바하마",
+    "searchKeys": [
+      "bahamas",
+      "바하마",
+      "bahamas",
+      "bahamas",
+      "bahamas",
+      "bahamas"
+    ]
+  },
+  {
+    "id": 383,
+    "slug": "sri-jayawardenapura",
+    "name": "스리랑카 수도권",
+    "name_en": "Sri Jayawardenepura Kotte",
+    "country": "스리랑카",
+    "searchKeys": [
+      "sri-jayawardenapura",
+      "스리랑카 수도권",
+      "sri jayawardenepura kotte",
+      "sri jayawardenapura",
+      "srijayawardenapura",
+      "srijayawardenepurakotte"
+    ]
+  },
+  {
+    "id": 384,
+    "slug": "venezuela",
+    "name": "베네수엘라",
+    "name_en": "Venezuela",
+    "country": "베네수엘라",
+    "searchKeys": [
+      "venezuela",
+      "베네수엘라",
+      "venezuela",
+      "venezuela",
+      "venezuela",
+      "venezuela"
+    ]
   }
 ]

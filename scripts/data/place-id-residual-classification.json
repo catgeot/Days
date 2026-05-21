@@ -56,7 +56,8 @@
       { "place_id": "리마", "slug": "machu-picchu", "guideIatas": ["LIM"] },
       { "place_id": "스코푸가포스", "slug": "iceland", "guideIatas": ["KEF"], "note": "툴킷 오탐 가능·검수" }
     ],
-    "placeIds_only": [
+    "placeIds_only": [],
+    "placeIds_only_promoted_2026_05_21": [
       { "place_id": "함부르크", "guideIatas": ["FRA", "MUC", "AMS", "HEL"] },
       { "place_id": "코코스 제도", "guideIatas": ["PER"] },
       { "place_id": "코코스제도", "guideIatas": ["PER"] },
@@ -87,7 +88,19 @@
       { "place_id": "앨리스스프링스", "proposedSlug": "alice-springs", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
       { "place_id": "브루나이", "proposedSlug": "brunei", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21", "note": "borneo 병합 금지·borneo-region 교차 링크" },
       { "place_id": "엘칼라파테", "proposedSlug": "el-calafate", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21", "note": "patagonia-region FTE·페리토 모레노" },
-      { "place_id": "퀸스타운", "proposedSlug": "queenstown", "inCitiesData": false }
+      { "place_id": "퀸스타운", "proposedSlug": "queenstown", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "함부르크", "proposedSlug": "hamburg", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "코코스 제도", "proposedSlug": "cocos-islands", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "핏케언 제도", "proposedSlug": "pitcairn-islands", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "그린란드", "proposedSlug": "greenland", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "포클랜드", "proposedSlug": "falkland-islands", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "솔로몬 제도", "proposedSlug": "solomon-islands", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "나우루", "proposedSlug": "nauru", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "미니애폴리스", "proposedSlug": "minneapolis", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "퍼스", "proposedSlug": "perth", "inCitiesData": true, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "바하마", "proposedSlug": "bahamas", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "스리자aya와르데네푸라코테", "proposedSlug": "sri-jayawardenapura", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21" },
+      { "place_id": "베네수엘라", "proposedSlug": "venezuela", "inCitiesData": false, "status": "promoted", "promotedAt": "2026-05-21", "note": "CCS 보정·국가 단위" }
     ]
   }
 }

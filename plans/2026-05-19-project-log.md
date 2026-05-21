@@ -273,6 +273,28 @@
 
 ---
 
+## 배포 스모크 QA (10b8823 · 2026-05-21)
+
+### gateo.kr
+
+- **엘칼라파테** `/place/el-calafate/planner`: 배너·Trip.com **FTE** · 연관 칩 **파타고니아(BRC·EZE)·우수아이아(USH)·토레스 델 파이네(PUQ)** · slug URL·이름·desc 유지(새로고침).
+- **파타고니아** `/place/patagonia/planner`: 연관 **엘칼라파테(FTE)·USH·PUQ** · 배너·Trip.com **BRC**.
+- **/explore** 검색: `엘칼라파테`·`El Calafate` → 자동완성 **엘칼라파테** 노출.
+- `npm run audit:airports` → **none: 0** · `toolkit:audit-place-id` P0 **unmapped 0** · `unmapped 36`(placeIds_only·승격 보류 3건).
+
+### 세션 C — placeIds_only 13건 travelSpots 승격 (2026-05-21)
+
+- **승격 slug(372–384)**: hamburg · cocos-islands · pitcairn-islands · greenland · falkland-islands · solomon-islands · nauru · queenstown · minneapolis · perth · bahamas · sri-jayawardenapura · venezuela.
+- overrides·`rentalAirportHubs`(HAM·CCK·MPM·HIR·INU·NAS·CCS·GOH) · aliases/synonyms · `extract-list` **264**건.
+- `generate:airports` **Mapped 263/264** · `audit:airports` **`none: 0`** · `toolkit:audit-place-id` **mapped↑ unmapped 36→21** · P0 **unmapped 0**.
+- 함부르크 HAM·베네수엘라 CCS·포클랜드 MPM 등 툴킷 오탐 overrides 보정.
+
+### 다음
+
+1. **프론트·JSON 배포** + (선택) `toolkit:patch-guide-iata --apply` 세션 C 13건.
+2. gateo.kr QA: 퀸스타운 ZQN · 함부르크 HAM · 퍼스 PER 등 신규 slug.
+3. (선택) PlaceCardSummary 연관 칩 · Trip.com 모바일 도착지.
+
 ## 세션 종료 (2026-05-21 · 세션 G)
 
 - **커밋**: el-calafate 승격·patagonia-region·loc URL 새로고침 수정·문서.

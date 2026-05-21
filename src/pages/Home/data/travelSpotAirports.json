@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T03:23:33.662Z",
-    "spotCount": 250,
+    "generatedAt": "2026-05-21T03:48:57.982Z",
+    "spotCount": 263,
     "placeIdCount": 334,
     "stats": {
-      "override": 99,
+      "override": 112,
       "toolkitSync": 152,
       "runtime": 0,
       "multiRule": 0,
@@ -15,7 +15,7 @@
     "missingSlugs": [],
     "unregisteredIatasInOverrides": [],
     "runtimePriorityNote": "런타임: curated/high 오버라이드 > 툴킷 essential_guide > toolkit-sync(placeIds·spots) > runtime-infer > multi-rule·좌표.",
-    "lastToolkitSyncAt": "2026-05-21T03:26:53.422Z",
+    "lastToolkitSyncAt": "2026-05-21T03:49:04.610Z",
     "toolkitSyncNote": "spots: travelSpots slug. placeIds: DB place_id·사용자 지명(별칭 키 포함). DB는 읽기만. 런타임 live essential_guide > toolkit-sync."
   },
   "spots": {
@@ -2604,6 +2604,148 @@
       "confidence": "high",
       "bannerNote": "엘칼라파테는 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)입니다. 북부 파타고니아(바릴로체 BRC)·우수아이아(USH)·토레스 델 파이네(PUQ)와 관문이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.",
       "rationale": "엘칼라파테(FTE) — 페리토 모레노·남부 아르헨티나 파타고니아 관문"
+    },
+    "hamburg": {
+      "primaryIatas": [
+        "HAM"
+      ],
+      "preferredLinkIata": "HAM",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "함부르크 공항 HAM — 툴킷 FRA 오탐 보정"
+    },
+    "cocos-islands": {
+      "primaryIatas": [
+        "CCK",
+        "PER"
+      ],
+      "preferredLinkIata": "CCK",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "호주령 코코스(킬링) 제도는 코코스 제도(CCK) 직항·퍼스(PER) 등 호주 본토 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "코코스 제도 CCK, 호주 본토 경유 PER"
+    },
+    "pitcairn-islands": {
+      "primaryIatas": [
+        "PPT"
+      ],
+      "preferredLinkIata": "PPT",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "핏케언 제도는 상용 직항이 거의 없습니다. 타히티(PPT) 등 남태평양 관문 후 페리·전용선으로 이어지는 일정이 일반적입니다.",
+      "rationale": "타히티 PPT 관문 — 섬 직항 상용 노선 극히 제한"
+    },
+    "greenland": {
+      "primaryIatas": [
+        "CPH",
+        "GOH"
+      ],
+      "preferredLinkIata": "CPH",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "그린란드는 코펜하agen(CPH) 등 유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "덴마크 CPH 경유·누크 GOH"
+    },
+    "falkland-islands": {
+      "primaryIatas": [
+        "MPM",
+        "SCL"
+      ],
+      "preferredLinkIata": "MPM",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "포클랜드 제도는 MPM(마운트 플레전트) 도착·칠레(SCL) 경유 일정이 일반적입니다. 토레스 델 파이네(PUQ)와 혼동하지 마세요.",
+      "rationale": "MPM 스탠리·칠레 SCL 경유"
+    },
+    "solomon-islands": {
+      "primaryIatas": [
+        "HIR",
+        "BNE"
+      ],
+      "preferredLinkIata": "HIR",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "호니아라 HIR·호주 BNE 경유"
+    },
+    "nauru": {
+      "primaryIatas": [
+        "INU",
+        "BNE"
+      ],
+      "preferredLinkIata": "INU",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "나우루 INU·호주 BNE 관문"
+    },
+    "queenstown": {
+      "primaryIatas": [
+        "ZQN"
+      ],
+      "preferredLinkIata": "ZQN",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "퀸즈타운 ZQN"
+    },
+    "minneapolis": {
+      "primaryIatas": [
+        "MSP"
+      ],
+      "preferredLinkIata": "MSP",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "MSP 국제공항"
+    },
+    "perth": {
+      "primaryIatas": [
+        "PER"
+      ],
+      "preferredLinkIata": "PER",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "서호주 PER"
+    },
+    "bahamas": {
+      "primaryIatas": [
+        "NAS",
+        "MIA",
+        "ATL"
+      ],
+      "preferredLinkIata": "NAS",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "바하마는 나소(NAS) 등 섬별 관문이 다릅니다. 마이애미(MIA)·애틀랜타(ATL) 경유 일정도 흔하니 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "나소 NAS·미 동부 MIA/ATL 경유"
+    },
+    "sri-jayawardenapura": {
+      "primaryIatas": [
+        "CMB"
+      ],
+      "preferredLinkIata": "CMB",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "콜롬보 CMB — 행정 수도 코놈보 인접"
+    },
+    "venezuela": {
+      "primaryIatas": [
+        "CCS"
+      ],
+      "preferredLinkIata": "CCS",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "카라카스 CCS — 국가 단위·툴킷 IST/MAD 오탐 보정"
     }
   },
   "placeIds": {
@@ -5017,39 +5159,41 @@
     },
     "함부르크": {
       "primaryIatas": [
-        "FRA",
-        "MUC",
-        "AMS",
-        "HEL"
+        "HAM"
       ],
-      "preferredLinkIata": "FRA",
+      "preferredLinkIata": "HAM",
+      "kind": "single",
+      "source": "toolkit-sync",
+      "confidence": "high",
+      "rationale": "place_toolkit essential_guide 동기화",
+      "placeId": "함부르크",
+      "linkedSlug": "hamburg"
+    },
+    "코코스제도": {
+      "primaryIatas": [
+        "CCK",
+        "PER"
+      ],
+      "preferredLinkIata": "CCK",
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "함부르크"
-    },
-    "코코스제도": {
-      "primaryIatas": [
-        "PER"
-      ],
-      "preferredLinkIata": "PER",
-      "kind": "single",
-      "source": "toolkit-sync",
-      "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "코코스제도"
+      "placeId": "코코스제도",
+      "linkedSlug": "cocos-islands"
     },
     "코코스": {
       "primaryIatas": [
+        "CCK",
         "PER"
       ],
-      "preferredLinkIata": "PER",
-      "kind": "single",
+      "preferredLinkIata": "CCK",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "코코스제도"
+      "placeId": "코코스제도",
+      "linkedSlug": "cocos-islands"
     },
     "코토르": {
       "primaryIatas": [
@@ -5084,7 +5228,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "핏케언 제도"
+      "placeId": "핏케언 제도",
+      "linkedSlug": "pitcairn-islands"
     },
     "핏케언": {
       "primaryIatas": [
@@ -5095,7 +5240,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "핏케언 제도"
+      "placeId": "핏케언 제도",
+      "linkedSlug": "pitcairn-islands"
     },
     "맥머도기지": {
       "primaryIatas": [
@@ -5154,7 +5300,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "그린란드"
+      "placeId": "그린란드",
+      "linkedSlug": "greenland"
     },
     "다윈": {
       "primaryIatas": [
@@ -5215,7 +5362,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "포클랜드 제도"
+      "placeId": "포클랜드 제도",
+      "linkedSlug": "falkland-islands"
     },
     "미야코지마": {
       "primaryIatas": [
@@ -5825,16 +5973,15 @@
     },
     "바하마": {
       "primaryIatas": [
-        "ATL",
-        "JFK",
-        "DFW"
+        "NAS"
       ],
-      "preferredLinkIata": "ATL",
-      "kind": "multi",
+      "preferredLinkIata": "NAS",
+      "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "바하마"
+      "placeId": "바하마",
+      "linkedSlug": "bahamas"
     },
     "어센션섬": {
       "primaryIatas": [
@@ -5879,7 +6026,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "퀸스타운"
+      "placeId": "퀸스타운",
+      "linkedSlug": "queenstown"
     },
     "우유니": {
       "primaryIatas": [
@@ -5944,25 +6092,29 @@
     },
     "솔로몬제도": {
       "primaryIatas": [
+        "HIR",
         "BNE"
       ],
-      "preferredLinkIata": "BNE",
-      "kind": "single",
+      "preferredLinkIata": "HIR",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "솔로몬 제도"
+      "placeId": "솔로몬 제도",
+      "linkedSlug": "solomon-islands"
     },
     "솔로몬": {
       "primaryIatas": [
+        "HIR",
         "BNE"
       ],
-      "preferredLinkIata": "BNE",
-      "kind": "single",
+      "preferredLinkIata": "HIR",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "솔로몬 제도"
+      "placeId": "솔로몬 제도",
+      "linkedSlug": "solomon-islands"
     },
     "일루리삿": {
       "primaryIatas": [
@@ -6039,14 +6191,16 @@
     },
     "나우루": {
       "primaryIatas": [
+        "INU",
         "BNE"
       ],
-      "preferredLinkIata": "BNE",
-      "kind": "single",
+      "preferredLinkIata": "INU",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "나우루"
+      "placeId": "나우루",
+      "linkedSlug": "nauru"
     },
     "플리트비체국립공원": {
       "primaryIatas": [
@@ -6105,7 +6259,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "포클랜드 제도"
+      "placeId": "포클랜드 제도",
+      "linkedSlug": "falkland-islands"
     },
     "앵커리지": {
       "primaryIatas": [
@@ -6178,7 +6333,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "미니애폴리스"
+      "placeId": "미니애폴리스",
+      "linkedSlug": "minneapolis"
     },
     "몬트리올": {
       "primaryIatas": [
@@ -6283,7 +6439,8 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "퍼스"
+      "placeId": "퍼스",
+      "linkedSlug": "perth"
     },
     "다낭": {
       "primaryIatas": [
@@ -6306,19 +6463,22 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "스리자야와르데네푸라코테"
+      "placeId": "스리자야와르데네푸라코테",
+      "linkedSlug": "sri-jayawardenapura"
     },
     "베네수엘라": {
       "primaryIatas": [
+        "CCS",
         "IST",
         "MAD"
       ],
-      "preferredLinkIata": "IST",
+      "preferredLinkIata": "CCS",
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "베네수엘라"
+      "placeId": "베네수엘라",
+      "linkedSlug": "venezuela"
     },
     "에베레스트베이스캠프": {
       "primaryIatas": [

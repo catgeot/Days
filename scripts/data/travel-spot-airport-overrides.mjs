@@ -370,5 +370,100 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '남극 크루즈·연구 기지는 우수아이아 등 남미 관문',
     bannerNote: '남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.'
+  },
+  // —— 세션 C placeIds_only 승격 (2026-05-21) ——
+  hamburg: {
+    primaryIatas: ['HAM'],
+    preferredLinkIata: 'HAM',
+    confidence: 'high',
+    rationale: '함부르크 공항 HAM — 툴킷 FRA 오탐 보정'
+  },
+  'cocos-islands': {
+    primaryIatas: ['CCK', 'PER'],
+    preferredLinkIata: 'CCK',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '코코스 제도 CCK, 호주 본토 경유 PER',
+    bannerNote:
+      '호주령 코코스(킬링) 제도는 코코스 제도(CCK) 직항·퍼스(PER) 등 호주 본토 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  'pitcairn-islands': {
+    primaryIatas: ['PPT'],
+    preferredLinkIata: 'PPT',
+    confidence: 'high',
+    rationale: '타히티 PPT 관문 — 섬 직항 상용 노선 극히 제한',
+    bannerNote:
+      '핏케언 제도는 상용 직항이 거의 없습니다. 타히티(PPT) 등 남태평양 관문 후 페리·전용선으로 이어지는 일정이 일반적입니다.'
+  },
+  greenland: {
+    primaryIatas: ['CPH', 'GOH'],
+    preferredLinkIata: 'CPH',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '덴마크 CPH 경유·누크 GOH',
+    bannerNote:
+      '그린란드는 코펜하겐(CPH) 등 유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  'falkland-islands': {
+    primaryIatas: ['MPM', 'SCL'],
+    preferredLinkIata: 'MPM',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'MPM 스탠리·칠레 SCL 경유',
+    bannerNote:
+      '포클랜드 제도는 MPM(마운트 플레전트) 도착·칠레(SCL) 경유 일정이 일반적입니다. 토레스 델 파이네(PUQ)와 혼동하지 마세요.'
+  },
+  'solomon-islands': {
+    primaryIatas: ['HIR', 'BNE'],
+    preferredLinkIata: 'HIR',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '호니아라 HIR·호주 BNE 경유'
+  },
+  nauru: {
+    primaryIatas: ['INU', 'BNE'],
+    preferredLinkIata: 'INU',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '나우루 INU·호주 BNE 관문'
+  },
+  queenstown: {
+    primaryIatas: ['ZQN'],
+    preferredLinkIata: 'ZQN',
+    confidence: 'high',
+    rationale: '퀸즈타운 ZQN'
+  },
+  minneapolis: {
+    primaryIatas: ['MSP'],
+    preferredLinkIata: 'MSP',
+    confidence: 'high',
+    rationale: 'MSP 국제공항'
+  },
+  perth: {
+    primaryIatas: ['PER'],
+    preferredLinkIata: 'PER',
+    confidence: 'high',
+    rationale: '서호주 PER'
+  },
+  bahamas: {
+    primaryIatas: ['NAS', 'MIA', 'ATL'],
+    preferredLinkIata: 'NAS',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '나소 NAS·미 동부 MIA/ATL 경유',
+    bannerNote:
+      '바하마는 나소(NAS) 등 섬별 관문이 다릅니다. 마이애미(MIA)·애틀랜타(ATL) 경유 일정도 흔하니 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  'sri-jayawardenapura': {
+    primaryIatas: ['CMB'],
+    preferredLinkIata: 'CMB',
+    confidence: 'high',
+    rationale: '콜롬보 CMB — 행정 수도 코놈보 인접'
+  },
+  venezuela: {
+    primaryIatas: ['CCS'],
+    preferredLinkIata: 'CCS',
+    confidence: 'high',
+    rationale: '카라카스 CCS — 국가 단위·툴킷 IST/MAD 오탐 보정'
   }
 };

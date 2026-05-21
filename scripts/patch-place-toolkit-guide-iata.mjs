@@ -182,7 +182,41 @@ const PATCHES = [
     matchPlaceIds: ['아바나', 'Havana', 'havana'],
     primaryIatas: ['HAV'],
     note: 'Phase D-4 — citiesData havana, travelSpots 승격 전 placeIds만'
-  }
+  },
+  // 세션 C — placeIds_only 승격 (2026-05-21)
+  { matchPlaceIds: ['함부르크', 'Hamburg', 'hamburg'], primaryIatas: ['HAM'], note: '세션 C — HAM' },
+  {
+    matchPlaceIds: ['코코스 제도', '코코스제도', 'cocos-islands'],
+    primaryIatas: ['CCK', 'PER'],
+    note: '세션 C — CCK·PER'
+  },
+  { matchPlaceIds: ['핏케언 제도', 'pitcairn-islands'], primaryIatas: ['PPT'], note: '세션 C — PPT 관문' },
+  { matchPlaceIds: ['그린란드', 'greenland'], primaryIatas: ['CPH', 'GOH'], note: '세션 C — CPH·GOH' },
+  {
+    matchPlaceIds: ['포클랜드', '포클랜드 제도', 'falkland-islands'],
+    primaryIatas: ['MPM', 'SCL'],
+    note: '세션 C — MPM·SCL'
+  },
+  {
+    matchPlaceIds: ['솔로몬 제도', 'solomon-islands'],
+    primaryIatas: ['HIR', 'BNE'],
+    note: '세션 C — HIR·BNE'
+  },
+  { matchPlaceIds: ['나우루', 'nauru'], primaryIatas: ['INU', 'BNE'], note: '세션 C — INU·BNE' },
+  { matchPlaceIds: ['퀸스타운', 'Queenstown', 'queenstown'], primaryIatas: ['ZQN'], note: '세션 C — ZQN' },
+  { matchPlaceIds: ['미니애폴리스', 'Minneapolis', 'minneapolis'], primaryIatas: ['MSP'], note: '세션 C — MSP' },
+  { matchPlaceIds: ['퍼스', 'Perth', 'perth'], primaryIatas: ['PER'], note: '세션 C — PER' },
+  {
+    matchPlaceIds: ['바하마', 'Bahamas', 'bahamas'],
+    primaryIatas: ['NAS', 'MIA', 'ATL'],
+    note: '세션 C — NAS·MIA·ATL'
+  },
+  {
+    matchPlaceIds: ['스리자aya와르데네푸라코테', 'sri-jayawardenapura'],
+    primaryIatas: ['CMB'],
+    note: '세션 C — CMB'
+  },
+  { matchPlaceIds: ['베네수엘라', 'Venezuela', 'venezuela'], primaryIatas: ['CCS'], note: '세션 C — CCS(IST/MAD 오탐 보정)' }
 ];
 
 function matchesPatch(placeId, patch) {
