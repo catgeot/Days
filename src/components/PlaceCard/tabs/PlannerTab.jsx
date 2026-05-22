@@ -11,6 +11,7 @@ import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
+import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
 import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
@@ -286,6 +287,7 @@ const PlannerTab = ({
     }
 
     return (
+        <TripcomFlightSearchProvider>
         <div className="w-full h-full relative">
             <div
                 ref={scrollContainerRef}
@@ -464,6 +466,7 @@ const PlannerTab = ({
                 </button>
             )}
         </div>
+        </TripcomFlightSearchProvider>
     );
 };
 

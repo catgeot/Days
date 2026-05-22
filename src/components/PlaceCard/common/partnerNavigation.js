@@ -1,4 +1,45 @@
+import { buildTripcomPlannerFlightUrl, TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
 import { isMobileDevice } from './device';
+
+/**
+ * 플래너에서 Trip.com으로 **페이지 이동**할 때 쓰는 URL.
+ * 모바일 `/flights/` 직링크는 aAirportCode 자동입력이 무시되는 경우가 있어
+ * 배너 iframe과 동일한 partners/ad 위젯 URL을 사용한다.
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string }} [options]
+ */
+export function buildTripcomPlannerNavigationUrl(location, options = {}) {
+    if (isMobileDevice() && TRIPCOM_FLIGHT_AD.mobileAdId) {
+        return buildTripcomPlannerFlightUrl(location, {
+            ...options,
+            mode: 'ad',
+            adId: TRIPCOM_FLIGHT_AD.mobileAdId,
+            tracking: options.tracking ?? 'planner-flight-mobile',
+        });
+    }
+
+    return buildTripcomPlannerFlightUrl(location, {
+        ...options,
+        mode: 'flights',
+    });
+}
+
+/** 모바일 전체 화면 모달용 ad iframe src (외부 Trip.com 페이지 이동 대신 사용) */
+export function buildTripcomPlannerFlightModalSrc(location, options = {}) {
+    if (!shouldUseTripcomFlightSearchModal()) return null;
+
+    return buildTripcomPlannerFlightUrl(location, {
+        ...options,
+        mode: 'ad',
+        adId: TRIPCOM_FLIGHT_AD.mobileAdId,
+        tracking: options.tracking ?? 'planner-flight-mobile',
+    });
+}
+
+export function shouldUseTripcomFlightSearchModal() {
+    return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
+}
 
 /**
  * 제휴·파트너 외부 링크 탭 정책.

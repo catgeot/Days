@@ -5,10 +5,13 @@ import {
     getPlannerFlightArrivalIata,
 } from '../../../../../utils/affiliate';
 import {
+    buildTripcomPlannerNavigationUrl,
     getPartnerLinkTarget,
     getTripcomIframeReferrerPolicy,
     getTripcomLinkRel,
+    shouldUseTripcomFlightSearchModal,
 } from '../../../common/partnerNavigation';
+import { useTryOpenTripcomFlightSearch } from '../TripcomFlightSearchContext';
 import { computeKlookBannerLayout } from './klookBannerLayout';
 import { useTripcomPlannerBannerDimensions } from './useTripcomPlannerBannerDimensions';
 import { plannerCaption } from '../readableText';
@@ -22,6 +25,7 @@ const MIN_DISPLAY_HEIGHT = 120;
  * 배너 iframe에서 출발·도착·일자 등을 직접 수정할 수 있도록 클릭을 iframe에 전달합니다.
  */
 const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3' }) => {
+    const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const containerRef = useRef(null);
     const { width: nativeW, height: nativeH } = useTripcomPlannerBannerDimensions();
     const [layout, setLayout] = useState({ scale: 1, clipH: MIN_DISPLAY_HEIGHT });
@@ -53,13 +57,8 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
     );
 
     const clickUrl = useMemo(
-        () =>
-            buildTripcomPlannerFlightUrl(location, {
-                essentialGuide,
-                mode: 'flights',
-                ...(isMobileBanner ? { tracking: 'planner-flight-mobile' } : {}),
-            }),
-        [location, essentialGuide, isMobileBanner],
+        () => buildTripcomPlannerNavigationUrl(location, { essentialGuide }),
+        [location, essentialGuide],
     );
 
     useEffect(() => {
@@ -89,6 +88,16 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
             ro?.disconnect();
         };
     }, [nativeW, nativeH, isMobileBanner]);
+
+    const handleFullScreenClick = (event) => {
+        if (tryOpenFlightSearch(location, { essentialGuide })) {
+            event.preventDefault();
+        }
+    };
+
+    const fullScreenLinkProps = shouldUseTripcomFlightSearchModal()
+        ? { href: '#', onClick: handleFullScreenClick, role: 'button' }
+        : { href: clickUrl, target: linkTarget, rel: linkRel };
 
     return (
         <div className={className}>
@@ -141,9 +150,7 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                         <span className="font-mono font-semibold">{arrivalIata}</span> 자동 반영 · 배너에서 수정 가능
                         {' · '}
                         <a
-                            href={clickUrl}
-                            target={linkTarget}
-                            rel={linkRel}
+                            {...fullScreenLinkProps}
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >
                             전체 화면 검색
@@ -153,9 +160,7 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                     <>
                         도착 공항을 찾지 못해 일반 검색으로 열립니다.{' '}
                         <a
-                            href={clickUrl}
-                            target={linkTarget}
-                            rel={linkRel}
+                            {...fullScreenLinkProps}
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >
                             Trip.com 항공권

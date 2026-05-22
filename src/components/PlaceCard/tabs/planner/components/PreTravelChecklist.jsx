@@ -2,15 +2,21 @@ import React, { useMemo } from 'react';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
 import {
-    buildTripcomPlannerFlightUrl,
     getKlookAffiliateUrl,
     getTripcomHotelOverrideUrlForLocation,
 } from '../../../../../utils/affiliate';
-import { getPartnerLinkTarget, getTripcomLinkRel } from '../../../common/partnerNavigation';
+import {
+    buildTripcomPlannerNavigationUrl,
+    getPartnerLinkTarget,
+    getTripcomLinkRel,
+    shouldUseTripcomFlightSearchModal,
+} from '../../../common/partnerNavigation';
+import { useTryOpenTripcomFlightSearch } from '../TripcomFlightSearchContext';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerMicroLabel } from '../readableText';
 
 const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) => {
+    const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = `${locationName || ''} 숙소`;
     const linkTarget = getPartnerLinkTarget();
@@ -18,13 +24,22 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
 
     const preTravelFlightUrl = useMemo(
         () =>
-            buildTripcomPlannerFlightUrl(location, {
+            buildTripcomPlannerNavigationUrl(location, {
                 essentialGuide,
-                mode: 'flights',
                 tracking: 'planner-pre-travel',
             }),
         [location, essentialGuide],
     );
+
+    const handlePreTravelFlightClick = (event) => {
+        if (tryOpenFlightSearch(location, { essentialGuide, tracking: 'planner-pre-travel' })) {
+            event.preventDefault();
+        }
+    };
+
+    const preTravelFlightLinkProps = shouldUseTripcomFlightSearchModal()
+        ? { href: '#', onClick: handlePreTravelFlightClick, role: 'button' }
+        : { href: preTravelFlightUrl, target: linkTarget, rel: tripcomLinkRel };
 
     return (
         <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 mb-5 shadow-sm flex flex-col">
@@ -72,9 +87,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                 {/* 1. 항공권 검색 — 상단 Trip.com 배너와 구분되는 제휴 추적 URL */}
                 <div className="mb-3">
                     <a
-                        href={preTravelFlightUrl}
-                        target={linkTarget}
-                        rel={tripcomLinkRel}
+                        {...preTravelFlightLinkProps}
                         className="bg-white border-2 border-indigo-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full"
                     >
                         <div className="bg-indigo-100 text-indigo-600 p-2 rounded-lg shrink-0">

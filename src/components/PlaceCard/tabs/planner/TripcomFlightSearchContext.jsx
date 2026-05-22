@@ -1,0 +1,66 @@
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { getPlannerFlightArrivalIata } from '../../../../utils/affiliate';
+import TripcomFlightSearchModal from '../../modals/TripcomFlightSearchModal';
+import {
+    buildTripcomPlannerFlightModalSrc,
+    shouldUseTripcomFlightSearchModal,
+} from '../../common/partnerNavigation';
+
+const TripcomFlightSearchContext = createContext(null);
+
+export function TripcomFlightSearchProvider({ children }) {
+    const [modalState, setModalState] = useState(null);
+
+    const closeFlightSearch = useCallback(() => {
+        setModalState(null);
+    }, []);
+
+    const tryOpenFlightSearch = useCallback((location, options = {}) => {
+        if (!shouldUseTripcomFlightSearchModal()) return false;
+
+        const iframeSrc = buildTripcomPlannerFlightModalSrc(location, options);
+        if (!iframeSrc) return false;
+
+        const arrivalIata = getPlannerFlightArrivalIata(location, {
+            essentialGuide: options.essentialGuide,
+        });
+
+        setModalState({ iframeSrc, arrivalIata });
+        return true;
+    }, []);
+
+    const value = useMemo(
+        () => ({
+            tryOpenFlightSearch,
+            closeFlightSearch,
+        }),
+        [tryOpenFlightSearch, closeFlightSearch],
+    );
+
+    return (
+        <TripcomFlightSearchContext.Provider value={value}>
+            {children}
+            {modalState ? (
+                <TripcomFlightSearchModal
+                    iframeSrc={modalState.iframeSrc}
+                    arrivalIata={modalState.arrivalIata}
+                    onClose={closeFlightSearch}
+                />
+            ) : null}
+        </TripcomFlightSearchContext.Provider>
+    );
+}
+
+export function useTripcomFlightSearch() {
+    const context = useContext(TripcomFlightSearchContext);
+    if (!context) {
+        throw new Error('useTripcomFlightSearch must be used within TripcomFlightSearchProvider');
+    }
+    return context;
+}
+
+/** Provider 밖에서는 false — 외부 링크 폴백 */
+export function useTryOpenTripcomFlightSearch() {
+    const context = useContext(TripcomFlightSearchContext);
+    return context?.tryOpenFlightSearch ?? (() => false);
+}
