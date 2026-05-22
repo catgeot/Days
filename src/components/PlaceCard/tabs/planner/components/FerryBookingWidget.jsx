@@ -33,6 +33,9 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
   const isCompactFerry = Boolean(profile?.twelveGoWidget);
   const allRoutes = profile?.routes ?? [];
   const showRouteList = !isCompactFerry && allRoutes.length > 1;
+  const hideDfRecommendations =
+    allRoutes.length > 1 ||
+    (allRoutes.length === 1 && (allRoutes[0].tips?.length ?? 0) >= 2);
 
   const aiExtraBooking = resolveAiFerryExtraBooking({
     aiFerryData,
@@ -91,6 +94,18 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
             {routeDef.duration && (
               <p className="text-xs text-gray-500 mt-0.5">{routeDef.duration}</p>
             )}
+            {routeDef.tips?.length > 0 && (
+              <ul className="mt-1.5 space-y-0.5">
+                {routeDef.tips.map((tip, tipIdx) => (
+                  <li
+                    key={tipIdx}
+                    className="text-[11px] text-gray-600 leading-snug break-keep pl-0.5"
+                  >
+                    {tip}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           {twelveGo && (
             <TwelveGoSearchWidget
@@ -121,7 +136,7 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
         <p className="text-xs text-gray-600 leading-relaxed break-keep">{profile.summary}</p>
       )}
 
-      {dfRecommendations.length > 0 && (
+      {dfRecommendations.length > 0 && !hideDfRecommendations && (
         <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">💡</span>
@@ -136,6 +151,10 @@ const FerryBookingWidget = ({ location, aiFerryData }) => {
             ))}
           </ul>
         </div>
+      )}
+
+      {allRoutes.length > 0 && (
+        <h4 className="font-semibold text-gray-800 text-sm">예약·시간표 노선</h4>
       )}
 
       {isCompactFerry && (

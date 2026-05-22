@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-05-21T13:23:49.224Z",
-    "spotCount": 33
+    "generatedAt": "2026-05-22T12:42:51.842Z",
+    "spotCount": 34
   },
   "spots": {
     "santorini": {
@@ -151,6 +151,33 @@
         "사누르(Sanur, 발리) - 누사 페니다(Nusa Penida) (약 45분)"
       ]
     },
+    "lofoten": {
+      "tier": "common",
+      "source": "curated-override",
+      "confidence": "high",
+      "summary": "본토 보되(BOO)–모스케네스(Moskenes) 차량 페리가 로포텐 진입의 대표 노선입니다. 레크네스(LKN)·스볼바어(SVJ) 직항·이베네스(EVE) 경유 육로·국내선 일정과 함께 선택합니다.",
+      "rationale": "Torghatten 18-782 공식만 — 12Go·Direct Ferries·Klook에 노르웨이 국내 페리 미등록(검증 2026-05). toolkit 보되–모스케네스 일정 정합",
+      "routes": [
+        {
+          "id": "bodo-moskenes",
+          "label": "보되 → 모스케네스 (Torghatten Rute 18-782)",
+          "duration": "약 3시간 15분~4시간",
+          "directFerries": false,
+          "tips": [
+            "아래 예약·시간표가 이 노선입니다. 로포텐 목적이면 시간표에서 최종 하차지가 Moskenes인 편을 고르세요.",
+            "같은 18-782 노선이지만, 출항에 따라 베뢰외이(Værøy)·뢰스트(Røst)에 기항한 뒤 모스케네스로 가는 배가 있습니다(직항이 아닌 편).",
+            "보되 공항(BOO) 도착 후 보되 항구(Bodø ferjekai)로 이동해 탑승하는 일정이 흔합니다. 5~9월은 사전 예약·대기를 권장합니다."
+          ],
+          "bookings": [
+            {
+              "provider": "direct",
+              "name": "Torghatten Nord · 예약·시간표",
+              "url": "https://www.torghatten.no/en/our-routes/18-782"
+            }
+          ]
+        }
+      ]
+    },
     "ushuaia": {
       "tier": "cruise_only",
       "source": "curated-override",
@@ -187,7 +214,7 @@
       "source": "curated-override",
       "confidence": "high",
       "summary": "바르셀로나에서 이비자·마요르카 등 발렌아레스 제도로 페리가 운항합니다.",
-      "rationale": "Baleària 공식 + 12Go barcelona/ibiza",
+      "rationale": "Baleària 공식 + 12Go barcelona/ibiza·palma",
       "routes": [
         {
           "id": "barcelona-ibiza",
@@ -208,6 +235,28 @@
               "provider": "twelve_go",
               "name": "12Go",
               "url": "https://12go.asia/en/travel/barcelona/ibiza"
+            }
+          ]
+        },
+        {
+          "id": "barcelona-palma",
+          "label": "바르셀로나 → 팔마(마요르카)",
+          "duration": "약 7~8시간",
+          "directFerries": true,
+          "bookings": [
+            {
+              "provider": "direct",
+              "name": "Baleària",
+              "url": "https://www.balearia.com/en/routes-timetables/ferry-barcelona-mallorca"
+            },
+            {
+              "provider": "direct_ferries",
+              "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/barcelona/palma"
             }
           ]
         }
@@ -702,7 +751,7 @@
       "source": "curated-override",
       "confidence": "high",
       "summary": "흐바르는 스플리트·두브로브니크에서 페리로 접근합니다.",
-      "rationale": "Jadrolinija split-hvar + 12Go split/hvar",
+      "rationale": "12Go split/hvar·dubrovnik/hvar · Jadrolinija split-hvar 공식",
       "routes": [
         {
           "id": "split-hvar",
@@ -723,6 +772,28 @@
               "provider": "twelve_go",
               "name": "12Go",
               "url": "https://12go.asia/en/travel/split/hvar"
+            }
+          ]
+        },
+        {
+          "id": "dubrovnik-hvar",
+          "label": "두브로브니크 → 스타리 그라드(흐바르)",
+          "duration": "약 4시간",
+          "directFerries": true,
+          "bookings": [
+            {
+              "provider": "direct_ferries",
+              "name": "Direct Ferries"
+            },
+            {
+              "provider": "twelve_go",
+              "name": "12Go",
+              "url": "https://12go.asia/en/travel/dubrovnik/hvar"
+            },
+            {
+              "provider": "direct",
+              "name": "Jadrolinija · 크로아티아 국영 페리",
+              "url": "https://www.jadrolinija.hr/en"
             }
           ]
         }
@@ -1001,17 +1072,57 @@
       "tier": "common",
       "source": "curated-override",
       "confidence": "high",
-      "summary": "몰타 본토와 고zo·코mino 섬 간 페리가 흔합니다.",
-      "rationale": "Gozo Channel 공식 + 12Go malta/gozo",
+      "summary": "발레타 항구·슬리에마 연결 페리, 대항–고조 쾌속선, 본토 북부 치르케우아–고조 차량 페리 등 해상 교통이 흔합니다.",
+      "rationale": "Valletta Ferry·Gozo Highspeed·Virtu·Gozo Channel 공식 + 12Go malta/gozo",
       "fallbacks": [
         "klook_ferry"
       ],
       "routes": [
         {
-          "id": "malta-gozo",
-          "label": "몰타 → 고zo",
+          "id": "sliema-valletta",
+          "label": "슬리에마 ↔ 발레타",
+          "duration": "약 10분",
+          "directFerries": false,
+          "tips": [
+            "Valletta Ferry Services. 그랜드하버 전망이 좋고 버스보다 빠른 경우가 많습니다."
+          ],
+          "bookings": [
+            {
+              "provider": "direct",
+              "name": "Valletta Ferry Services",
+              "url": "https://www.vallettaferryservices.com/"
+            }
+          ]
+        },
+        {
+          "id": "valletta-gozo-fast",
+          "label": "발레타(대항) → 고조(므가르)",
           "duration": "약 45분",
+          "directFerries": false,
+          "tips": [
+            "Gozo Fast Ferry(Gozo Highspeed) 또는 Virtu Ferries 쾌속선. 당일치기 여행에 적합합니다."
+          ],
+          "bookings": [
+            {
+              "provider": "direct",
+              "name": "Gozo Highspeed",
+              "url": "https://gozohighspeed.com/"
+            },
+            {
+              "provider": "direct",
+              "name": "Virtu Ferries · Gozo",
+              "url": "https://www.virtuferries.com/gozo/72"
+            }
+          ]
+        },
+        {
+          "id": "cirkewwa-gozo",
+          "label": "치르케우아 → 고조 (Gozo Channel)",
+          "duration": "약 25~45분",
           "directFerries": true,
+          "tips": [
+            "본토 북부 치르케우아–고조 므가르. 차량 승선 가능한 주요 페리 노선입니다."
+          ],
           "bookings": [
             {
               "provider": "direct",
@@ -1031,7 +1142,9 @@
         }
       ],
       "dfRecommendations": [
-        "몰타(Malta) - 고zo(Gozo) (약 45분)"
+        "슬리에마(Sliema) - 발레타(Valletta) (약 10분)",
+        "발레타(Valletta) - 고조(Gozo) 쾌속선 (약 45분)",
+        "치르케우아(Cirkewwa) - 고조(Gozo) (약 25~45분)"
       ]
     }
   }

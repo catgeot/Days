@@ -13,6 +13,7 @@ import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
 import { plannerLinkHint } from '../readableText';
 import { cleanAdviceText, getAdviceText, getMultiLinks, isMapPoiGygOnlyLocation } from '../utils';
+import { shouldShowFerryCard } from '../../../../../utils/ferryBookingMatch';
 
 const ToolkitCard = ({
     icon,
@@ -30,6 +31,9 @@ const ToolkitCard = ({
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
     const links = getMultiLinks({ type, data, location, essentialGuide });
+    const ferryAdviceText = cleanAdviceText(getAdviceText(data));
+    const ferryHasSsot = type === 'ferry_booking' && shouldShowFerryCard(location?.slug);
+    const showFerryAdviceBlock = ferryAdviceText || !ferryHasSsot;
     const isGygFallbackLocation = type === 'map_poi' && isMapPoiGygOnlyLocation(location);
     const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
     const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
@@ -59,9 +63,11 @@ const ToolkitCard = ({
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>
             </div>
 
-            <p className="text-sm text-gray-700 leading-[1.7] mb-5 flex-1 select-text break-keep">
-                <CopyableText text={cleanAdviceText(getAdviceText(data))} locationName={location?.name} type={type} />
-            </p>
+            {showFerryAdviceBlock && (
+                <p className="text-sm text-gray-700 leading-[1.7] mb-5 flex-1 select-text break-keep">
+                    <CopyableText text={ferryAdviceText} locationName={location?.name} type={type} />
+                </p>
+            )}
 
             {links.length > 0 && (
                 <div className="mt-auto grid grid-cols-2 gap-2">
