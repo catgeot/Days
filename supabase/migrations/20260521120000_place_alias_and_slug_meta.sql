@@ -87,6 +87,11 @@ ALTER TABLE public.place_toolkit_archive
   ADD COLUMN IF NOT EXISTS archive_reason TEXT,
   ADD COLUMN IF NOT EXISTS superseded_by TEXT;
 
+ALTER TABLE public.place_wiki_archive ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.place_stats_archive ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.place_videos_archive ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.place_toolkit_archive ENABLE ROW LEVEL SECURITY;
+
 GRANT ALL ON public.place_wiki_archive TO service_role;
 GRANT ALL ON public.place_stats_archive TO service_role;
 GRANT ALL ON public.place_videos_archive TO service_role;

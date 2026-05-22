@@ -7,6 +7,7 @@ import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import PlaceWikiNavView from '../views/PlaceWikiNavView';
 import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
+import { shouldUsePlannerPersona } from '../../../utils/bookingIntentResolver';
 import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 import { getPlaceTitleLines } from '../common/locationDisplay';
@@ -45,7 +46,9 @@ const PlaceChatPanel = React.memo(({
   }, [activeInfo.title, activeInfo.mode, isChatMode, mediaMode]);
 
   const handleSendMessage = (text) => {
-      const persona = PERSONA_TYPES.INSPIRER;
+      const persona = shouldUsePlannerPersona(text, chatData.chatHistory)
+        ? PERSONA_TYPES.PLANNER
+        : PERSONA_TYPES.INSPIRER;
       const systemPrompt = getSystemPrompt(persona, location.name);
       chatData.sendMessage(text, systemPrompt);
   };
@@ -237,7 +240,7 @@ const PlaceChatPanel = React.memo(({
                       isAiLoading={chatData.isAiLoading}
                       onSendMessage={handleSendMessage}
                       locationName={location.name}
-                      mediaMode={mediaMode}
+                      slug={location.slug}
                     />
                 </div>
             </div>

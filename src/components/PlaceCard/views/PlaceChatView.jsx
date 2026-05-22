@@ -1,11 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Send, Loader2, Sparkles } from 'lucide-react';
+import BookingActionCards from '../../chat/BookingActionCards';
 
 const PlaceChatView = ({
   chatHistory,
   isAiLoading,
   onSendMessage,
-  locationName
+  locationName,
+  slug = null,
 }) => {
   const [inputStr, setInputStr] = useState("");
   const messagesEndRef = useRef(null);
@@ -70,6 +72,13 @@ const PlaceChatView = ({
                 <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}>
                     {msg.text}
                 </div>
+                {msg.role === 'model' && msg.bookingActions?.length > 0 && (
+                  <BookingActionCards
+                    actions={msg.bookingActions}
+                    slug={msg.bookingMeta?.slug ?? slug}
+                    plannerUrl={msg.bookingMeta?.plannerUrl}
+                  />
+                )}
               </div>
             </div>
           ))

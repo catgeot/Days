@@ -5,7 +5,8 @@
 - **프로젝트 컨텍스트(매 세션 권장)**: 루트의 [`.ai-context.md`](../.ai-context.md)
 - **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-05-22-project-log.md`](./2026-05-22-project-log.md) (홈 Mapbox 글로브 모바일 배포 수정)  
+  - 최신: [`2026-05-22-project-log.md`](./2026-05-22-project-log.md)  
+  - **AI 채팅 예약 CTA Phase 2 handoff**: [`2026-05-22-ai-chat-booking-cta-handoff.md`](./2026-05-22-ai-chat-booking-cta-handoff.md)
   - 새로운 날 작업이면 `plans/` **루트**에 **새** 파일로 추가하면 됩니다.
 - **slug-first DB 마이그레이션 (완료)**: [`2026-05-21-slug-first-migration-handoff.md`](./2026-05-21-slug-first-migration-handoff.md) — Wave 0~S5 완료 · apply 리포트·검증 체크리스트
 

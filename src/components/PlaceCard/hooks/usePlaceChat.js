@@ -1,47 +1,70 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
+import { resolveBookingActions } from '../../../utils/bookingIntentResolver';
 
-// 🚨 [New] 채팅 로직을 분리하여 PlaceCard, TicketModal 등에서 재사용 가능하게 함
-export const usePlaceChat = (initialSystemPrompt = "") => {
-  const [chatHistory, setChatHistory] = useState([]); // { role: 'user' | 'model', text: string }
+/**
+ * Place Card AI 채팅 — 예약 CTA 포함 메시지 지원.
+ *
+ * @param {{ slug?: string, destinationName?: string, chatSource?: 'home' | 'place' }} [options]
+ */
+export const usePlaceChat = (options = {}) => {
+  const { slug = null, destinationName = '', chatSource = 'place' } = options;
+
+  const [chatHistory, setChatHistory] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 메시지 전송 함수
-  const sendMessage = useCallback(async (userText, currentSystemPrompt = initialSystemPrompt) => {
+  const sendMessage = useCallback(async (userText, currentSystemPrompt = '') => {
     if (!userText.trim() || isAiLoading) return;
 
     setIsAiLoading(true);
     setError(null);
 
-    // 1. 유저 메시지 즉시 UI 반영 (낙관적 업데이트)
-    const newHistory = [...chatHistory, { role: 'user', text: userText }];
+    const priorHistory = chatHistory;
+    const newHistory = [...priorHistory, { role: 'user', text: userText }];
     setChatHistory(newHistory);
 
     try {
-      // 2. API 호출
-      // 🚨 보안 수정: 클라이언트에서 API 키를 넘기지 않습니다.
       const aiReply = await apiClient.fetchProxyGemini(
         null,
-        chatHistory, // 이전 대화 맥락 전달
+        priorHistory,
         currentSystemPrompt,
         userText,
         [],
-        "gemini-2.5-flash" // 🚨 [Chat] 자연스러운 대화, 문맥 유지, 빠른 응답속도가 중요하므로 대화형 상위 모델 사용
+        'gemini-2.5-flash',
       );
 
-      // 3. AI 응답 반영
-      setChatHistory(prev => [...prev, { role: 'model', text: aiReply }]);
+      const booking = resolveBookingActions({
+        userText,
+        destinationName,
+        slug,
+        chatHistory: priorHistory,
+        chatSource,
+        aiReplyText: aiReply,
+      });
 
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: 'model',
+          text: aiReply,
+          bookingActions: booking.show ? booking.actions : null,
+          bookingMeta: booking.show
+            ? { slug: booking.slug, plannerUrl: booking.plannerUrl }
+            : null,
+        },
+      ]);
     } catch {
-      setError("메시지 전송 중 오류가 발생했습니다.");
-      setChatHistory(prev => [...prev, { role: 'model', text: "⚠️ 오류가 발생했습니다. 잠시 후 다시 시도해주세요." }]);
+      setError('메시지 전송 중 오류가 발생했습니다.');
+      setChatHistory((prev) => [
+        ...prev,
+        { role: 'model', text: '⚠️ 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
+      ]);
     } finally {
       setIsAiLoading(false);
     }
-  }, [chatHistory, isAiLoading, initialSystemPrompt]);
+  }, [chatHistory, isAiLoading, slug, destinationName, chatSource]);
 
-  // 대화 초기화
   const clearChat = useCallback(() => {
     setChatHistory([]);
     setError(null);
@@ -53,6 +76,6 @@ export const usePlaceChat = (initialSystemPrompt = "") => {
     isAiLoading,
     error,
     sendMessage,
-    clearChat
+    clearChat,
   };
 };

@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",
     "generate:ferries": "node scripts/generate-travel-spot-ferries.mjs",
+    "generate:transport": "node scripts/generate-travel-spot-transport.mjs",
     "audit:ferries": "node scripts/audit-ferry-routes.mjs",
     "generate:airports": "node scripts/generate-travel-spot-airports.mjs",
     "sync:airports-from-toolkit": "node scripts/sync-travel-spot-airports-from-toolkit.mjs",

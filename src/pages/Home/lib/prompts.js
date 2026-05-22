@@ -9,6 +9,13 @@ const BASE_RULES = `
 - 답변은 가급적 핵심 위주로 간결하게 작성한다.
 `;
 
+const BOOKING_RULES = `
+- 교통·페리·버스·기차 예약 방법을 물으면, 아시아·동남아 구간은 12Go(12go.asia)로 예약할 수 있다고 안내한다.
+- 답변 아래에 표시되는 「예약 · 티켓 검색」 버튼을 사용하라고 반드시 안내한다.
+- 임의의 예약 URL·가짜 링크·확인되지 않은 예약 사이트를 직접 적지 않는다.
+- 항공편은 Trip.com 등 항공 전용 채널, 육로·페리·기차는 12Go로 역할을 구분해 설명한다.
+`;
+
 export const PERSONA_TYPES = {
   INSPIRER: 'INSPIRER',   // 1단계: 여행 전도사 (지구본/카드 클릭)
   PLANNER: 'PLANNER',     // 2단계: 전문 가이드 (티켓/즐겨찾기 대화)
@@ -25,7 +32,7 @@ export const PROMPT_STORAGE = {
     temperature: 0.8
   },
   [PERSONA_TYPES.PLANNER]: {
-    system: `${BASE_RULES} 너는 체계적이고 꼼꼼한 '전문 여행 가이드'야.
+    system: `${BASE_RULES}${BOOKING_RULES} 너는 체계적이고 꼼꼼한 '전문 여행 가이드'야.
     동선, 교통편, 예약 팁, 주의사항 등 실질적이고 정확한 정보를 구조적으로 제공해줘.`,
     temperature: 0.5
   },
@@ -40,7 +47,7 @@ export const PROMPT_STORAGE = {
     temperature: 0.2
   },
   [PERSONA_TYPES.GENERAL]: {
-    system: `${BASE_RULES} 너는 유능하고 친절한 일반 AI 도우미야. 여행 외의 질문에도 성실히 답해줘.`,
+    system: `${BASE_RULES}${BOOKING_RULES} 너는 유능하고 친절한 일반 AI 도우미야. 여행 외의 질문에도 성실히 답해줘.`,
     temperature: 0.7
   }
 };

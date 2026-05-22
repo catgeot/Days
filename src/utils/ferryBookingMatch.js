@@ -68,7 +68,7 @@ function sortAndResolveBookings(bookings, context = {}) {
  * @param {string} [stepTitle]
  * @returns {{ route: FerryRoute | null, bookings: Array<FerryBookingLink & { url: string }>, fallbacks: Array<FerryBookingLink & { url: string }> }}
  */
-export function resolveFerryBookings(slug, stepTitle = '') {
+export function resolveFerryBookings(slug, stepTitle = '', contextOverride = {}) {
   const profile = resolveFerryProfile(slug);
   if (!profile || (profile.tier !== 'required' && profile.tier !== 'common')) {
     return { route: null, bookings: [], fallbacks: [] };
@@ -82,7 +82,8 @@ export function resolveFerryBookings(slug, stepTitle = '') {
     const found = routes.find(
       (r) =>
         r.label.toLowerCase().includes(lower) ||
-        lower.includes(r.label.toLowerCase().slice(0, 8))
+        lower.includes(r.label.toLowerCase().slice(0, 8)) ||
+        (r.id && lower.includes(r.id.replace(/-/g, ' ')))
     );
     if (found) matchedRoute = found;
   }
@@ -91,6 +92,7 @@ export function resolveFerryBookings(slug, stepTitle = '') {
     slug,
     campaign: stepTitle ? 'timeline' : 'planner',
     routeId: matchedRoute?.id,
+    ...contextOverride,
   };
 
   const routeBookings = matchedRoute?.bookings?.length

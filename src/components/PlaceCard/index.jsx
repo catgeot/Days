@@ -40,7 +40,11 @@ const PlaceCard = () => {
     onClose
   } = context || {};
 
-  const chatData = usePlaceChat();
+  const chatData = usePlaceChat({
+    slug: contextLocation?.slug ?? slug ?? null,
+    destinationName: contextLocation?.name ?? '',
+    chatSource: 'place',
+  });
   const { clearChat } = chatData || {};
   const galleryData = usePlaceGallery(contextLocation);
 

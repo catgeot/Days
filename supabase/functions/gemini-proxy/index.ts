@@ -9,7 +9,7 @@ const corsHeaders = {
 const ALLOWED_MODELS = [
   "gemini-2.5-flash",
   "gemini-2.5-pro",
-  "gemini-3.1-flash-lite-preview",
+  "gemini-3.1-flash-lite",
   "gemini-3.1-pro-preview",
   "gemini-3.1-pro"
 ];
@@ -31,6 +31,8 @@ Deno.serve(async (req) => {
     let targetModel = modelId;
     if (modelId === "gemini-3.1-pro") {
       targetModel = "gemini-3.1-pro-preview";
+    } else if (modelId === "gemini-3.1-flash-lite-preview") {
+      targetModel = "gemini-3.1-flash-lite";
     }
 
     // 🚨 보안 정책: 허용된 모델이 아니면 즉시 차단
@@ -58,10 +60,10 @@ Deno.serve(async (req) => {
     });
 
     // 🚨 503 에러 또는 404 에러 발생 시 자동 Fallback 로직
-    if (!response.ok && (response.status === 503 || response.status === 404) && targetModel !== "gemini-3.1-flash-lite-preview") {
-      console.warn(`[Proxy Fallback] ${targetModel} failed with ${response.status}. Retrying with gemini-3.1-flash-lite-preview...`);
+    if (!response.ok && (response.status === 503 || response.status === 404) && targetModel !== "gemini-3.1-flash-lite") {
+      console.warn(`[Proxy Fallback] ${targetModel} failed with ${response.status}. Retrying with gemini-3.1-flash-lite...`);
 
-      targetModel = "gemini-3.1-flash-lite-preview";
+      targetModel = "gemini-3.1-flash-lite";
       apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
 
       response = await fetch(apiUrl, {

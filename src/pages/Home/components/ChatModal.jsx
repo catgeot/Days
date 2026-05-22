@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { X, Send, Bot, User, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
@@ -8,6 +8,12 @@ import {
   generatePlaceChatIntroWithAi,
   persistPlaceChatIntroSummary
 } from '../lib/placeChatIntro';
+import {
+  resolveBookingActions,
+  shouldUsePlannerPersona,
+  resolveSlugFromDestination,
+} from '../../../utils/bookingIntentResolver';
+import BookingActionCards from '../../../components/chat/BookingActionCards';
 
 const ChatModal = ({
   isOpen,
@@ -141,7 +147,13 @@ const ChatModal = ({
     if (!text?.trim() || isLoading) return;
 
     const cleanText = typeof text === 'object' ? (text.text || "질문 내용 확인 불가") : text;
-    const personaToUse = personaOverride || currentPersona;
+    const personaToUse =
+      personaOverride ||
+      (shouldUsePlannerPersona(cleanText, messages) ? PERSONA_TYPES.PLANNER : currentPersona);
+
+    if (personaToUse !== currentPersona) {
+      setCurrentPersona(personaToUse);
+    }
 
     if (!activeChatId && !chatDraft) {
       return;
@@ -176,17 +188,38 @@ const ChatModal = ({
       const destForPrompt =
         chatHistory.find(t => t.id === effectiveChatId)?.destination || chatDraft?.destination || "";
       const systemInstruction = getSystemPrompt(personaToUse, destForPrompt);
+      const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
 
       const aiReply = await apiClient.fetchProxyGemini(
         null,
-        [],
+        priorTurns,
         systemInstruction,
         cleanText,
         [],
         "gemini-2.5-flash"
       );
 
-      const finalMessages = [...newMessages, { role: 'model', text: aiReply }];
+      const slug = resolveSlugFromDestination(destForPrompt);
+      const booking = resolveBookingActions({
+        userText: cleanText,
+        destinationName: destForPrompt,
+        slug,
+        chatHistory: priorTurns,
+        chatSource: 'home',
+        aiReplyText: aiReply,
+      });
+
+      const finalMessages = [
+        ...newMessages,
+        {
+          role: 'model',
+          text: aiReply,
+          bookingActions: booking.show ? booking.actions : null,
+          bookingMeta: booking.show
+            ? { slug: booking.slug, plannerUrl: booking.plannerUrl }
+            : null,
+        },
+      ];
       setMessages(finalMessages);
 
       onUpdateChat(effectiveChatId, finalMessages);
@@ -312,6 +345,13 @@ const ChatModal = ({
                       : 'flex-1 max-w-[95%] bg-gray-800 text-gray-200 rounded-tl-none leading-relaxed'
                   }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{typeof msg.text === 'object' ? (msg.text.text || "내용 없음") : msg.text}</div>
+                    {msg.role === 'model' && msg.bookingActions?.length > 0 && (
+                      <BookingActionCards
+                        actions={msg.bookingActions}
+                        slug={msg.bookingMeta?.slug}
+                        plannerUrl={msg.bookingMeta?.plannerUrl}
+                      />
+                    )}
                   </div>
                 </div>
               ))}

@@ -119,3 +119,11 @@ if (/android|iphone|ipad|ipod|mobile/i.test(ua)) return 'legacy';
 - **로포텐**: `lofoten` 페리 SSOT 신규(Torghatten 18-782) — 12Go·Direct Ferries·Klook **미등록**이라 공식 링크만. `dfRecommendations` 중복 제거·경유/직항 `tips` 통합.
 - **UI**: `FerryBookingWidget` — SSOT 노선 있으면 「추천 노선」 박스 숨김(설명 2줄 이상 `tips` 시), 「예약·시간표 노선」 제목·`tips` 렌더. `ToolkitCard` — SSOT 있을 때 AI `advice` 없으면 「관련 정보…」 오류 문구 숨김.
 - **명령**: `npm run generate:ferries` · `audit:ferries` **0 gap** (34 spots, multiRoute 10).
+
+---
+
+## AI 채팅 예약 CTA Phase 2 — 설계·handoff (구현 대기)
+
+- **Phase 1**: `bookingIntentResolver` · `BookingActionCards` · PlaceChat/ChatModal (12Go·페리, 예약 키워드 gate).
+- **Phase 2a 설계**: 기준 **gili-meno**(항공·픽업·페리·비자·관광세·렌터카). 링크 SSOT = **플래너 재사용** (`getMultiLinks`, `PreTravelChecklist`, Trip.com, `pre_travel[]`). **LOP 경유는 발리 stack QA 후**.
+- **Handoff**: [`2026-05-22-ai-chat-booking-cta-handoff.md`](2026-05-22-ai-chat-booking-cta-handoff.md) · `.ai-context` 5·6절 갱신 · 구현 S1~S6 세션 분할.
