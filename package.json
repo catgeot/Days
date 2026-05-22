@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "set BROWSER=chrome&& vite",
     "dev:http": "set DEV_SSL=0&& set BROWSER=chrome&& vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/verify-globe-engine-build.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",

@@ -1,23 +1,15 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import HomeGlobeLegacy from './HomeGlobe';
 import HomeGlobeMapbox from './HomeGlobeMapbox';
+import { resolveHomeGlobeEngine } from './resolveHomeGlobeEngine';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const HomeGlobeAdapter = forwardRef((props, ref) => {
-  const initialEngine = useMemo(() => {
-    if (!MAPBOX_TOKEN) return 'legacy';
-    if (!import.meta.env.DEV) return 'mapbox';
-    try {
-      const ua = window.navigator?.userAgent || '';
-      const isMobile = /android|iphone|ipad|ipod|mobile/i.test(ua);
-      // For local-device QA, mobile dev sessions default to legacy globe.
-      if (isMobile) return 'legacy';
-    } catch {
-      // Keep mapbox default on detection failure.
-    }
-    return 'mapbox';
-  }, []);
+  const initialEngine = useMemo(
+    () => resolveHomeGlobeEngine({ mapboxToken: MAPBOX_TOKEN }),
+    []
+  );
   const [activeEngine, setActiveEngine] = useState(initialEngine);
   const childRef = useRef(null);
 
