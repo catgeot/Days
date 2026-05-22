@@ -187,7 +187,15 @@ export const RENTAL_AIRPORT_HUBS = [
     aliases: ['samoa', '사모아', 'apia', '아피아', 'faleolo', '팔레올로', 'apw']
   },
   { iata: 'BOB', officialKo: '보라보라 모투무테공항', lat: -16.4444, lng: -151.7513, radiusKm: 80, aliases: ['bora bora', '보라보라', 'bob'] },
-  { iata: 'PPT', officialKo: '파아페테 국제공항', lat: -17.5567, lng: -149.6114, radiusKm: 200, aliases: ['tahiti', '타히티', 'ppt'] },
+  { iata: 'PPT', officialKo: '파아페테 국제공항', lat: -17.5567, lng: -149.6114, radiusKm: 200, aliases: ['tahiti', '타히티', 'ppt', 'pitcairn', '핏케언'] },
+  {
+    iata: 'GMR',
+    officialKo: '토테게기에 공항',
+    lat: -23.0844,
+    lng: -134.8853,
+    radiusKm: 120,
+    aliases: ['totegegie', '토테게기에', 'mangareva', '망가레바', 'gmr', 'gambier', '감비어']
+  },
   { iata: 'LHR', officialKo: '히스로공항', lat: 51.4700, lng: -0.4543, radiusKm: 200, aliases: ['london', '런던', 'heathrow', 'lhr'] },
   { iata: 'CDG', officialKo: '파리샤를드골공항', lat: 49.0097, lng: 2.5479, radiusKm: 220, aliases: ['paris', '파리', 'cdg', 'charles de gaulle'] },
   { iata: 'ORY', officialKo: '파리오를리공항', lat: 48.7233, lng: 2.3794, radiusKm: 180, aliases: ['orly', '오를리', 'ory'] },
@@ -665,7 +673,15 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'FLG', officialKo: '그랜드캐니언 공항', lat: 35.9522, lng: -111.6701, radiusKm: 80, aliases: ['grand canyon', '그랜드캐니언', 'flg', 'flagstaff'] },
   { iata: 'SKG', officialKo: '테살로니키 마케도니아 공항', lat: 40.5197, lng: 22.9709, radiusKm: 160, aliases: ['thessaloniki', '테살로니키', 'skg', 'meteora', '메테오라'] },
   { iata: 'MMY', officialKo: '미야코지마 공항', lat: 24.7828, lng: 125.2951, radiusKm: 100, aliases: ['miyakojima', '미야코지마', 'mmy'] },
-  { iata: 'JOG', officialKo: '아디수치프토 국제공항', lat: -7.7882, lng: 110.4316, radiusKm: 160, aliases: ['yogyakarta', '족자카르타', 'jog', 'jogja', 'borobudur', '보로부두르'] },
+  {
+    iata: 'YIA',
+    officialKo: '족자카르타 국제공항',
+    lat: -7.9006,
+    lng: 110.0625,
+    radiusKm: 160,
+    aliases: ['yogyakarta international', 'kulon progo', 'kulonprogo', 'yia', 'borobudur', '보로부두르', 'magelang', '마겔랑']
+  },
+  { iata: 'JOG', officialKo: '아디수치프토 국제공항', lat: -7.7882, lng: 110.4316, radiusKm: 160, aliases: ['yogyakarta', '족자카르타', 'jog', 'jogja'] },
   {
     iata: 'MPH',
     officialKo: '카틱란 공항',

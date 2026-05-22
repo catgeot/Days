@@ -259,10 +259,16 @@ npm run audit:ferries      # required/common booking gap 0 목표
 
 **엘니도 예**: `ENI`·`PPS`·`MNL` 다중 공항 + `bannerNote`에 루트 1(MNL→ENI)·루트 2(PPS 육로) 비교(줄바꿈 `\n`, 배너 `whitespace-pre-line`). 툴킷 「항공권 예약 팁」과 배너를 맞출 때는 오버라이드 우선.
 
+**로포텐 예** (`lofoten`): `BOO`·`EVE`·`LKN`·`SVJ` + `searchHintIatas` 4종 + 긴 `bannerNote`. 연동 기본 `EVE`(렌터카 북→남), 페리·모스케네스 루트는 후보에서 `BOO`. **OSL** 등 국제 경유는 `primaryIatas`에 넣지 않고 `bannerNote`만.
+
+**경유만·최종 분리** (보로부두르 `YIA`, 라로통가 `RAR`, 흐바르 `SPU`): 최종 IATA만 `primaryIatas` 단일; 경유(CGK/DPS·AKL·DBV/ZAG 귀국)는 `bannerNote`만.
+
 ---
 
 ## 6. 자주 하는 실수
 
+- **`travel-spot-airport-overrides.mjs` 미수정** → `travelSpotAirports.json`·`RENTAL_MULTI_AIRPORT_DESTINATIONS`만 고치면 `generate:airports`·`sync:airports-from-toolkit` 후 **원복**(흐바르 DBV, 로포텐 BOO 단독 등). 검수 반영은 **overrides → generate** 순서가 SSOT.
+- 다중 관문인데 `searchHintIatas`·`bannerNote` 없음 → 배너에 연동 공항 1개만 보임(로포텐·보라카이 패턴).
 - 허브에 없는 IATA를 오버라이드에만 넣음 → generate 시 해당 오버라이드 **무시**
 - PowerShell에서 `&&` 실패 → `;`로 명령 연결
 - `travelSpots.js` **slug 중복** → 마지막 행만 JSON에 남음

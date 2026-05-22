@@ -5,7 +5,14 @@
  * @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: 'single'|'multi', bannerNote?: string, confidence?: string, rationale?: string }>}
  */
 export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
-  hvar: { primaryIatas: ['DBV'], preferredLinkIata: 'DBV', confidence: 'high', rationale: '스플리트·두브로브니크 공항 경유 페리' },
+  hvar: {
+    primaryIatas: ['SPU'],
+    preferredLinkIata: 'SPU',
+    confidence: 'high',
+    rationale: '스플리트(SPU) 도착 후 페리 — 흐바르 타운',
+    bannerNote:
+      '흐바르는 보통 스플리트(SPU) 공항 도착 후 페리로 들어갑니다. 귀국은 동선에 따라 두브로브니크(DBV)나 자그레브(ZAG) 아웃을 쓰는 경우가 많습니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.',
+  },
   kotor: {
     primaryIatas: ['TIV', 'TGD'],
     preferredLinkIata: 'TIV',
@@ -15,6 +22,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     searchHintIatas: ['TIV', 'TGD'],
     bannerNote:
       '코토르는 티바트(TIV, 차로 약 15분)·포드고리차(TGD, 몬테네그로 주요 국제공항) 도착이 일반적입니다. 발칸 일주 여행객은 두브로브니크(DBV, 크로아티아) 후 버스로 들어오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  lofoten: {
+    primaryIatas: ['BOO', 'EVE', 'LKN', 'SVJ'],
+    preferredLinkIata: 'EVE',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '로포텐 다관문 — toolkit-sync BOO·OSL 오탐 보정',
+    searchHintIatas: ['BOO', 'EVE', 'LKN', 'SVJ'],
+    bannerNote:
+      '로포텐으로 가는 항로는 공항마다 역할이 다릅니다. 레크네스(LKN)·스볼바어(SVJ)는 군도 위 공항이라, 국내선 등으로 섬에 직접 도착한 뒤 렌터카·이동을 이어가기 좋습니다. 이베네스(EVE)는 본토(하르스타드·나르비크) 쪽 관문으로 국제·국내 대형 노선이 많고, 차나 버스로 로포텐으로 들어오는 일정이 흔합니다. 보되(BOO)는 로포텐 남쪽 본토에서 페리(예: 보되–모스케네스)나 국내선으로 군도에 이어질 때 자주 쓰입니다. 인천 등에서는 오슬로(OSL) 등 유럽 경유 후 위 공항으로 국내선을 이어 붙입니다. 실제 티켓·일정에 적힌 도착 공항(IATA)을 확인한 뒤, 아래 제휴 링크 검색어도 그 공항에 맞춰 바꿔 주세요.',
   },
   'chichen-itza': { primaryIatas: ['CUN'], preferredLinkIata: 'CUN', confidence: 'high', rationale: '칸쿤 국제공항 후 육로' },
   'annapurna-circuit': { primaryIatas: ['KTM', 'PKR'], preferredLinkIata: 'PKR', kind: 'multi', confidence: 'high', rationale: '카트만두·포카라 관문' },
@@ -46,7 +63,22 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   hampi: { primaryIatas: ['BLR'], preferredLinkIata: 'BLR', confidence: 'high', rationale: '방갈로르 후 장거리 육로' },
   meteora: { primaryIatas: ['SKG'], preferredLinkIata: 'SKG', confidence: 'high', rationale: '테살로니키 공항' },
   miyakojima: { primaryIatas: ['MMY'], preferredLinkIata: 'MMY', confidence: 'high', rationale: '미야코지마 공항' },
-  borobudur: { primaryIatas: ['JOG'], preferredLinkIata: 'JOG', confidence: 'high', rationale: '욕야카르타 공항' },
+  borobudur: {
+    primaryIatas: ['YIA'],
+    preferredLinkIata: 'YIA',
+    confidence: 'high',
+    rationale: '족자카르타 국제공항(YIA) — 툴킷 여정·국내선 최종 도착',
+    bannerNote:
+      '보로부두르·마겔랑 권역은 보통 인천→자카르타(CGK) 또는 발리(DPS) 경유 후 족자카르타(YIA) 국내선 도착이 일반적입니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.',
+  },
+  rarotonga: {
+    primaryIatas: ['RAR'],
+    preferredLinkIata: 'RAR',
+    confidence: 'high',
+    rationale: '라로통가 국제공항(RAR) — 쿡 제도 최종 도착',
+    bannerNote:
+      '라로통가(쿡 제도)는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 도착이 일반적입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.',
+  },
   seattle: {
     primaryIatas: ['SEA'],
     preferredLinkIata: 'SEA',
@@ -401,9 +433,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['PPT'],
     preferredLinkIata: 'PPT',
     confidence: 'high',
-    rationale: '타히티 PPT 관문 — 섬 직항 상용 노선 극히 제한',
+    rationale: '타히티 PPT 국제선 관문 — 렌터카·픽업은 타히티 대기 구간 기준',
     bannerNote:
-      '핏케언 제도는 상용 직항이 거의 없습니다. 타히티(PPT) 등 남태평양 관문 후 페리·전용선으로 이어지는 일정이 일반적입니다.'
+      '핏케언 제도는 상용 직항이 없습니다. 타히티(PPT) 국제선 도착 → 망가레바(GMR) 국내선 → 리키테아 페리·전용 여객선 순이 일반적입니다. 위 연동 공항은 타히티(PPT) 기준입니다.'
   },
   greenland: {
     primaryIatas: ['CPH', 'GOH'],
