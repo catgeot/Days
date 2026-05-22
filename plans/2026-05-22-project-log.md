@@ -45,7 +45,7 @@ if (/android|iphone|ipad|ipod|mobile/i.test(ua)) return 'legacy';
 ## 운영 메모
 
 - **DEV 모바일 → legacy**는 유지 (LAN QA 시 Mapbox 토큰 URL 제한 403/CORS). 배포 경로만 Mapbox.
-- 재발 방지: `npm run build` 시 `[verify-globe-engine] OK` 필수.
+- 재발 방지: `npm run build` 시 `[verify-globe-engine] OK` 필수. esbuild minify 변경 시 `scripts/verify-globe-engine-build.mjs` 패턴 동기화.
 
 ---
 
