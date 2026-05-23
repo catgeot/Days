@@ -1,8 +1,19 @@
-function Logo() {
-	return (
-		<span>
-			GATE<span className="text-blue-400">.</span>0
-		</span>
-	);
+import logo from '../../../assets/gateo_logo1.png';
+
+const SIZE_CLASS = {
+  header: 'h-11 md:h-14',
+  panel: 'h-12 md:h-14',
+};
+
+function Logo({ size = 'header', className = '' }) {
+  return (
+    <img
+      src={logo}
+      alt="GATEO"
+      className={`w-auto max-w-none object-contain object-left ${SIZE_CLASS[size] ?? SIZE_CLASS.header} ${className}`}
+      draggable={false}
+    />
+  );
 }
+
 export default Logo;

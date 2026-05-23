@@ -148,10 +148,8 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
         className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-50 transform transition-transform duration-500 ease-out shadow-2xl flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-black/50 backdrop-blur-md">
-          <div className="scale-75 origin-left">
-            <h2 className="text-3xl font-black text-white tracking-tighter">
-              <Logo />
-            </h2>
+          <div>
+            <Logo size="panel" />
           </div>
           <div className="flex items-center gap-3">
             {user && (
