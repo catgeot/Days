@@ -88,7 +88,7 @@ const HomeUI = React.memo(({
         </div>
 
         <div className="flex-1 md:col-span-5 flex flex-col items-end md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto relative z-50">
-           <div className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md">
+           <div data-site-notice-anchor className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div
               onClick={() => navigate('/explore')}

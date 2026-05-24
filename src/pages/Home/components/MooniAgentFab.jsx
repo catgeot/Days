@@ -4,9 +4,25 @@ import mooniChar from '../../../assets/MOONI_transparent.png';
 import mooniText from '../../../assets/MONNI_text.png';
 import { PERSONA_TYPES } from '../lib/prompts';
 
-const GREETING = '안녕! MOONi예요. 여행이 궁금하면 편하게 물어봐요.';
+const INTRO_GREETING = '안녕! MOONi예요. 여행이 궁금하면 편하게 물어봐요.';
+const HOVER_HINT = '클릭하면 MOONi와 대화할 수 있어요.';
+const NUDGE_WHISPERS = [
+  '안녕하세요, MOONi입니다.',
+  'Z Z Z…',
+  '떠나고 싶어요…',
+  '오늘은 어디로 갈까요?',
+  '구름 위를 걸어볼까…',
+  '바람 냄새가 여행 같아요.',
+  '지도만 봐도 마음이 가요.',
+  '멀리 있는 섬이 보여요.',
+  '다음 휴가는 언제죠…',
+  '여기저기 구경 중…',
+  '궁금한 게 있으면 불러주세요.',
+  '별빛 여행, 떠올려 볼까요?',
+];
 const POSITION_KEY = 'gateo_mooni_fab_pos';
-const HINT_IDLE_MS = 45_000;
+const HINT_NUDGE_MS = 45_000;
+const NUDGE_AUTO_DISMISS_MS = 4_500;
 const DRAG_THRESHOLD = 6;
 const FAB_ESTIMATE = { width: 96, height: 120 };
 const EDGE_PADDING = 8;
@@ -44,26 +60,61 @@ function clampPosition(pos) {
   };
 }
 
+function pickRandomNudge(lastIndex) {
+  if (NUDGE_WHISPERS.length <= 1) return { text: NUDGE_WHISPERS[0], index: 0 };
+  let index;
+  do {
+    index = Math.floor(Math.random() * NUDGE_WHISPERS.length);
+  } while (index === lastIndex);
+  return { text: NUDGE_WHISPERS[index], index };
+}
+
 export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
   const rootRef = useRef(null);
   const dragRef = useRef(null);
   const hintTimerRef = useRef(null);
+  const nudgeDismissTimerRef = useRef(null);
+  const lastNudgeIndexRef = useRef(-1);
 
   const [pos, setPos] = useState(() => clampPosition(loadPosition() ?? DEFAULT_POS));
+  const [hintPhase, setHintPhase] = useState('intro');
   const [showHint, setShowHint] = useState(true);
+  const [nudgeMessage, setNudgeMessage] = useState('');
   const [hoverHint, setHoverHint] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  const scheduleHintReturn = useCallback(() => {
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    hintTimerRef.current = setTimeout(() => {
-      setShowHint(true);
-    }, HINT_IDLE_MS);
+  const clearNudgeDismissTimer = useCallback(() => {
+    if (nudgeDismissTimerRef.current) {
+      clearTimeout(nudgeDismissTimerRef.current);
+      nudgeDismissTimerRef.current = null;
+    }
   }, []);
 
+  const scheduleNextNudge = useCallback(() => {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    hintTimerRef.current = setTimeout(() => {
+      const { text, index } = pickRandomNudge(lastNudgeIndexRef.current);
+      lastNudgeIndexRef.current = index;
+      setNudgeMessage(text);
+      setHintPhase('nudge');
+      setShowHint(true);
+
+      clearNudgeDismissTimer();
+      nudgeDismissTimerRef.current = setTimeout(() => {
+        setShowHint(false);
+        setHintPhase(null);
+        scheduleNextNudge();
+      }, NUDGE_AUTO_DISMISS_MS);
+    }, HINT_NUDGE_MS);
+  }, [clearNudgeDismissTimer]);
+
   useEffect(() => {
-    if (isChatOpen) setShowHint(false);
-  }, [isChatOpen]);
+    if (isChatOpen) {
+      setShowHint(false);
+      clearNudgeDismissTimer();
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    }
+  }, [isChatOpen, clearNudgeDismissTimer]);
 
   useEffect(() => {
     const onResize = () => setPos((prev) => clampPosition(prev));
@@ -73,19 +124,23 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
 
   useEffect(() => () => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-  }, []);
+    clearNudgeDismissTimer();
+  }, [clearNudgeDismissTimer]);
 
   const dismissHint = useCallback(() => {
     setShowHint(false);
-    setHoverHint(false);
-    scheduleHintReturn();
-  }, [scheduleHintReturn]);
+    setHintPhase(null);
+    clearNudgeDismissTimer();
+    scheduleNextNudge();
+  }, [clearNudgeDismissTimer, scheduleNextNudge]);
 
   const openChat = useCallback(() => {
     setShowHint(false);
+    setHintPhase(null);
+    clearNudgeDismissTimer();
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     onOpenChat?.({ persona: PERSONA_TYPES.GENERAL });
-  }, [onOpenChat]);
+  }, [clearNudgeDismissTimer, onOpenChat]);
 
   const onFabPointerDown = (event) => {
     if (event.button !== 0) return;
@@ -149,7 +204,16 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
 
   if (isZenMode || isChatOpen) return null;
 
-  const hintVisible = showHint || hoverHint;
+  const isIntro = showHint && hintPhase === 'intro';
+  const isNudge = showHint && hintPhase === 'nudge';
+  const isHoverOnly = hoverHint && !showHint;
+  const hintVisible = isIntro || isNudge || isHoverOnly;
+  const hintText = isIntro
+    ? INTRO_GREETING
+    : isNudge
+      ? nudgeMessage
+      : HOVER_HINT;
+  const showCloseButton = isIntro || isNudge;
 
   return (
     <div
@@ -161,15 +225,17 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
       {hintVisible && (
         <div className="relative max-w-[220px] animate-fade-in-up pointer-events-auto">
           <div className="rounded-2xl border border-cyan-400/30 bg-black/70 backdrop-blur-xl px-4 py-3 text-sm text-gray-100 shadow-[0_8px_32px_rgba(34,211,238,0.15)]">
-            <p className="leading-snug pr-5">{GREETING}</p>
-            <button
-              type="button"
-              onClick={dismissHint}
-              className="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors"
-              aria-label="말풍선만 닫기"
-            >
-              <X size={14} />
-            </button>
+            <p className={`leading-snug ${showCloseButton ? 'pr-5' : ''}`}>{hintText}</p>
+            {showCloseButton && (
+              <button
+                type="button"
+                onClick={dismissHint}
+                className="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors"
+                aria-label="말풍선 닫기"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
           <div
             className="absolute -bottom-2 right-8 h-3 w-3 rotate-45 border-r border-b border-cyan-400/30 bg-black/70"

@@ -425,7 +425,6 @@ function Home() {
             }}
             onChat={(p) => handleStartChat(selectedLocation?.name, p)}
             onToggleBookmark={handleToggleBookmark}
-            isTickerExpanded={isTickerExpanded}
           />
         )}
 
