@@ -75,7 +75,8 @@ gateo.kr Place Card / **MOONi 홈 채팅** / Home Chat에서 AI 대화 시 **대
 
 | 파일 | 역할 |
 |---|---|
-| [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) | FAB · intro/호버/45초 넛지 |
+| [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) | FAB · `mooniLines.js` peek/idle/react · 드래그 위치 |
+| [`mooniLines.js`](src/pages/Home/lib/mooniLines.js) | MOONi 말풍선 SSOT (intro/peek/idle/react/easterEgg) |
 | [`Home/index.jsx`](src/pages/Home/index.jsx) | `handleStartChat('MOONi', payload)` |
 | [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) | `isMooniSession` · `resolveBookingActions` 호출부 |
 | [`useHomeHandlers.js`](src/pages/Home/hooks/useHomeHandlers.js) | `handleStartChat` · trip destination 저장 |

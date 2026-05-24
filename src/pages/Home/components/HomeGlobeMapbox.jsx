@@ -11,6 +11,8 @@ import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { getMarkerDesign } from '../data/markers';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
+import { findMarkerAtScreenPoint, normalizeLngNear } from '../lib/globeLngUtils';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -155,6 +157,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const isHoveringMarker = useRef(false);
   const hasRaisedFatalRef = useRef(false);
   const suppressClickUntilRef = useRef(0);
+  const markerClickGuardUntilRef = useRef(0);
+  const allMarkersRef = useRef([]);
   const placeLabelLayerIdsRef = useRef([]);
   const allSymbolLayerIdsRef = useRef([]);
   const allLineLayerIdsRef = useRef([]);
@@ -164,6 +168,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const waitingThemeSettleRef = useRef(false);
   const pendingThemeCameraRef = useRef(null);
   const pendingFocusRef = useRef(null);
+  const unbindSpaceDragGuardRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
@@ -547,6 +552,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return keptMarkers;
   }, [travelSpots, allTravelSpots, savedTrips, tempPinsData, activePinId, mapZoom]);
 
+  useEffect(() => {
+    allMarkersRef.current = allMarkers;
+  }, [allMarkers]);
+
   const addRipple = useCallback((lat, lng, ttl = 1600) => {
     const ripple = { id: `${Date.now()}-${Math.random()}`, lat, lng };
     setRipples(prev => [...prev, ripple]);
@@ -561,13 +570,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const currentCenter = map.getCenter();
     const currentZoom = map.getZoom();
+    const normalizedLng = normalizeLngNear(currentCenter.lng, lng);
     const lngDelta = normalizeLngDelta(currentCenter.lng, lng);
     const latDelta = Math.abs(currentCenter.lat - lat);
     const isAlreadyNearTarget = lngDelta < 0.2 && latDelta < 0.2;
     if (isAlreadyNearTarget) return true;
 
     map.flyTo({
-      center: [lng, lat],
+      center: [normalizedLng, lat],
       zoom: Math.max(currentZoom, GLOBE_VIEW.flyZoom),
       duration: 900,
       essential: true
@@ -804,12 +814,25 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     };
   }, [isZenMode, pauseRender]);
 
+  useEffect(() => () => {
+    unbindSpaceDragGuardRef.current?.();
+    unbindSpaceDragGuardRef.current = null;
+  }, []);
+
   const handleGlobeClickInternal = useCallback((event) => {
+    if (isHoveringMarker.current) return;
+    if (Date.now() < markerClickGuardUntilRef.current) return;
     isHoveringMarker.current = false;
     if (Date.now() < suppressClickUntilRef.current) return;
     if (isZenMode || pauseRender) return;
     if (!onGlobeClick || !event?.lngLat) return;
     const map = mapRef.current?.getMap();
+    if (map && event.point && !isScreenPointOnGlobe(map, event.point)) return;
+
+    const markerAtPoint = map && event.point
+      ? findMarkerAtScreenPoint(map, event.point, allMarkersRef.current)
+      : null;
+    if (markerAtPoint) return;
     const labelLayers = placeLabelLayerIdsRef.current || [];
     const clickedLabels = map && labelLayers.length > 0
       ? map.queryRenderedFeatures(event.point, { layers: labelLayers })
@@ -853,10 +876,21 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
   }, [isZenMode, onGlobeClick, pauseRender]);
 
-  const handleInteractionStart = useCallback(() => {
+  const pauseAutoRotateIfGlobeHit = useCallback((event) => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    if (event?.clientX != null) {
+      if (!isClientPointOnGlobe(map, event.clientX, event.clientY)) return;
+    } else if (!isMapEventOnGlobe(map, event)) {
+      return;
+    }
     interactionRef.current = true;
     autoRotateRef.current = false;
   }, []);
+
+  const handleInteractionStart = useCallback((event) => {
+    pauseAutoRotateIfGlobeHit(event);
+  }, [pauseAutoRotateIfGlobeHit]);
 
   const handleInteractionEnd = useCallback(() => {
     interactionRef.current = false;
@@ -884,6 +918,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onClick={handleGlobeClickInternal}
         onError={(evt) => raiseFatal(evt?.error || new Error('Mapbox render error'))}
         onLoad={() => {
+          const map = mapRef.current?.getMap();
+          if (map) {
+            unbindSpaceDragGuardRef.current?.();
+            unbindSpaceDragGuardRef.current = bindGlobeSpaceDragGuard(map);
+          }
           syncMapZoom();
           ensureInteractionReady();
           applyWaterPaint();
@@ -919,18 +958,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             setIsStyleTransitioning(false);
           }
         }}
-        onDragStart={() => {
-          interactionRef.current = true;
-          autoRotateRef.current = false;
+        onDragStart={(event) => {
+          pauseAutoRotateIfGlobeHit(event);
           suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
         }}
         onDragEnd={() => {
           interactionRef.current = false;
           suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
         }}
-        onZoomStart={() => {
-          interactionRef.current = true;
-          autoRotateRef.current = false;
+        onZoomStart={(event) => {
+          pauseAutoRotateIfGlobeHit(event);
         }}
         onZoomEnd={() => {
           interactionRef.current = false;
@@ -963,14 +1000,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
               <div
                 className="globe-marker-wrapper"
                 style={{ position: 'relative', zIndex, pointerEvents: 'auto', cursor: 'pointer' }}
-                onPointerEnter={(e) => {
-                  if (e.pointerType === 'mouse') isHoveringMarker.current = true;
+                onPointerEnter={() => {
+                  isHoveringMarker.current = true;
                 }}
-                onPointerLeave={(e) => {
-                  if (e.pointerType === 'mouse') isHoveringMarker.current = false;
+                onPointerLeave={() => {
+                  isHoveringMarker.current = false;
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  markerClickGuardUntilRef.current = Date.now() + 450;
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
+                  markerClickGuardUntilRef.current = Date.now() + 450;
                   isHoveringMarker.current = false;
                   if (onMarkerClick) onMarkerClick(d, 'globe');
                 }}

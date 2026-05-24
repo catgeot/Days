@@ -14,3 +14,5 @@
 - **SiteUpdateBanner**: 검색바 앵커 정렬 · 「시스템 공지」헤더 · 은은한 글로우·테두리 · 헤더 구분선 제거.
 - **릴리스 노트·공지 리스트**: `releaseNotes.js` SSOT · FooterModal **Updates** · `ReleaseNotesList` · 공지 팝 「지난 공지 보기」. `.ai-context` **1.7**(합의 후 반영) · MOONi 공지 `2026-05-24-2`.
 - **MOONi FAB 카피**: intro `안녕! MOONi예요.` · 호버 넛지 5종 랜덤 · 채팅 모달 첫 메시지는 상세 유지.
+- **MOONi FAB 말풍선 v2** (`mooniLines.js` SSOT): intro/peek/idle/react/easterEgg 카테고리 · 세션 intro 1회 · 모바일 누르고-peek · 드래그·dismiss 반응 · idle 32s(터치)/45s. 데스크 QA OK.
+- **Mapbox 글로브 상호작용** (`globeSpaceHitTest.js`·`globeLngUtils.js`): 우주 클릭 시 지오코딩·드래그·자전 중단 없음 · 마커 클릭 이중 처리·반대편 flyTo 방지 · `normalizeLngNear` flyTo. 데스크 QA OK · **모바일 배포 후 추가 QA 예정**.

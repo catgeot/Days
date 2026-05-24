@@ -3,37 +3,26 @@ import { X } from 'lucide-react';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 import mooniText from '../../../assets/MONNI_text.png';
 import { PERSONA_TYPES } from '../lib/prompts';
+import {
+  getMooniNudgeIntervalMs,
+  hasMooniIntroSeen,
+  markMooniIntroSeen,
+  pickDismissReactLine,
+  pickDragReactLine,
+  pickIdleLine,
+  pickIntroLine,
+  pickPeekLine,
+} from '../lib/mooniLines';
 
-const INTRO_GREETING = '안녕! MOONi예요.';
-const HOVER_HINTS = [
-  'MOONi와 이야기해 봐요',
-  '어서 오세요',
-  '떠나고 싶은 곳이 어디인가요?',
-  '여행 이야기 들려주세요',
-  '궁금한 게 있으면 눌러보세요',
-];
-const NUDGE_WHISPERS = [
-  '안녕하세요, MOONi입니다.',
-  'Z Z Z…',
-  '떠나고 싶어요…',
-  '오늘은 어디로 갈까요?',
-  '구름 위를 걸어볼까…',
-  '바람 냄새가 여행 같아요.',
-  '지도만 봐도 마음이 가요.',
-  '멀리 있는 섬이 보여요.',
-  '다음 휴가는 언제죠…',
-  '여기저기 구경 중…',
-  '궁금한 게 있으면 불러주세요.',
-  '별빛 여행, 떠올려 볼까요?',
-];
-const POSITION_KEY = 'gateo_mooni_fab_pos';
-const HINT_NUDGE_MS = 45_000;
 const NUDGE_AUTO_DISMISS_MS = 4_500;
+const DRAG_REACT_DISMISS_MS = 2_800;
+const PRESS_PEEK_MS = 180;
 const DRAG_THRESHOLD = 6;
 const FAB_ESTIMATE = { width: 96, height: 120 };
 const EDGE_PADDING = 8;
-
+const POSITION_KEY = 'gateo_mooni_fab_pos';
 const DEFAULT_POS = { right: 12, bottom: 16 };
+const DISMISS_REACT_CHANCE = 0.35;
 
 function loadPosition() {
   try {
@@ -66,17 +55,9 @@ function clampPosition(pos) {
   };
 }
 
-function pickRandomFromPool(pool, lastIndex) {
-  if (pool.length <= 1) return { text: pool[0], index: 0 };
-  let index;
-  do {
-    index = Math.floor(Math.random() * pool.length);
-  } while (index === lastIndex);
-  return { text: pool[index], index };
-}
-
-function pickRandomNudge(lastIndex) {
-  return pickRandomFromPool(NUDGE_WHISPERS, lastIndex);
+function canUseHoverPeek() {
+  if (typeof window === 'undefined') return true;
+  return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 }
 
 export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
@@ -84,15 +65,41 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
   const dragRef = useRef(null);
   const hintTimerRef = useRef(null);
   const nudgeDismissTimerRef = useRef(null);
-  const lastNudgeIndexRef = useRef(-1);
-  const lastHoverIndexRef = useRef(-1);
+  const pressPeekTimerRef = useRef(null);
+  const dragReactTimerRef = useRef(null);
+  const lastIdleCategoryRef = useRef(null);
+  const lastPeekCategoryRef = useRef(null);
+  const lastIntroIndexRef = useRef(-1);
+  const lastDragReactIndexRef = useRef(-1);
+  const lastDismissReactIndexRef = useRef(-1);
+  const introSeenOnMount = useRef(hasMooniIntroSeen());
+  const showHintRef = useRef(false);
+  const reactTextRef = useRef('');
 
   const [pos, setPos] = useState(() => clampPosition(loadPosition() ?? DEFAULT_POS));
-  const [hintPhase, setHintPhase] = useState('intro');
-  const [showHint, setShowHint] = useState(true);
+  const [hintPhase, setHintPhase] = useState(() => (introSeenOnMount.current ? null : 'intro'));
+  const [showHint, setShowHint] = useState(() => !introSeenOnMount.current);
+  const [introText, setIntroText] = useState('');
   const [nudgeMessage, setNudgeMessage] = useState('');
-  const [hoverHintText, setHoverHintText] = useState('');
+  const [peekText, setPeekText] = useState('');
+  const [reactText, setReactText] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [isPressPeek, setIsPressPeek] = useState(false);
+
+  useEffect(() => {
+    showHintRef.current = showHint;
+  }, [showHint]);
+
+  useEffect(() => {
+    reactTextRef.current = reactText;
+  }, [reactText]);
+
+  useEffect(() => {
+    if (introSeenOnMount.current) return;
+    const { text, index } = pickIntroLine(lastIntroIndexRef.current);
+    lastIntroIndexRef.current = index;
+    setIntroText(text);
+  }, []);
 
   const clearNudgeDismissTimer = useCallback(() => {
     if (nudgeDismissTimerRef.current) {
@@ -101,11 +108,41 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
     }
   }, []);
 
+  const clearPressPeekTimer = useCallback(() => {
+    if (pressPeekTimerRef.current) {
+      clearTimeout(pressPeekTimerRef.current);
+      pressPeekTimerRef.current = null;
+    }
+  }, []);
+
+  const clearDragReactTimer = useCallback(() => {
+    if (dragReactTimerRef.current) {
+      clearTimeout(dragReactTimerRef.current);
+      dragReactTimerRef.current = null;
+    }
+  }, []);
+
+  const clearPeek = useCallback(() => {
+    setPeekText('');
+    setIsPressPeek(false);
+  }, []);
+
+  const showDragReact = useCallback((text) => {
+    clearDragReactTimer();
+    setReactText(text);
+    dragReactTimerRef.current = setTimeout(() => {
+      setReactText('');
+      dragReactTimerRef.current = null;
+    }, DRAG_REACT_DISMISS_MS);
+  }, [clearDragReactTimer]);
+
+  const wasChatOpenRef = useRef(isChatOpen);
+
   const scheduleNextNudge = useCallback(() => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     hintTimerRef.current = setTimeout(() => {
-      const { text, index } = pickRandomNudge(lastNudgeIndexRef.current);
-      lastNudgeIndexRef.current = index;
+      const { text, category } = pickIdleLine(lastIdleCategoryRef.current);
+      lastIdleCategoryRef.current = category;
       setNudgeMessage(text);
       setHintPhase('nudge');
       setShowHint(true);
@@ -116,16 +153,37 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
         setHintPhase(null);
         scheduleNextNudge();
       }, NUDGE_AUTO_DISMISS_MS);
-    }, HINT_NUDGE_MS);
+    }, getMooniNudgeIntervalMs());
   }, [clearNudgeDismissTimer]);
 
   useEffect(() => {
     if (isChatOpen) {
       setShowHint(false);
+      setHintPhase(null);
+      clearPeek();
+      setReactText('');
       clearNudgeDismissTimer();
+      clearPressPeekTimer();
+      clearDragReactTimer();
       if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     }
-  }, [isChatOpen, clearNudgeDismissTimer]);
+  }, [isChatOpen, clearNudgeDismissTimer, clearPeek, clearPressPeekTimer, clearDragReactTimer]);
+
+  useEffect(() => {
+    if (isChatOpen || !introSeenOnMount.current) return;
+    scheduleNextNudge();
+    return () => {
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount: intro 스킵 세션만 idle 시작
+  }, []);
+
+  useEffect(() => {
+    if (wasChatOpenRef.current && !isChatOpen && !(showHint && hintPhase === 'intro')) {
+      scheduleNextNudge();
+    }
+    wasChatOpenRef.current = isChatOpen;
+  }, [isChatOpen, showHint, hintPhase, scheduleNextNudge]);
 
   useEffect(() => {
     const onResize = () => setPos((prev) => clampPosition(prev));
@@ -136,22 +194,46 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
   useEffect(() => () => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     clearNudgeDismissTimer();
-  }, [clearNudgeDismissTimer]);
+    clearPressPeekTimer();
+    clearDragReactTimer();
+  }, [clearNudgeDismissTimer, clearPressPeekTimer, clearDragReactTimer]);
 
   const dismissHint = useCallback(() => {
+    if (hintPhase === 'intro') {
+      markMooniIntroSeen();
+    }
     setShowHint(false);
     setHintPhase(null);
+
+    if (Math.random() < DISMISS_REACT_CHANCE) {
+      const { text, index } = pickDismissReactLine(lastDismissReactIndexRef.current);
+      lastDismissReactIndexRef.current = index;
+      showDragReact(text);
+    }
+
     clearNudgeDismissTimer();
     scheduleNextNudge();
-  }, [clearNudgeDismissTimer, scheduleNextNudge]);
+  }, [hintPhase, clearNudgeDismissTimer, scheduleNextNudge, showDragReact]);
 
   const openChat = useCallback(() => {
+    markMooniIntroSeen();
     setShowHint(false);
     setHintPhase(null);
+    clearPeek();
+    setReactText('');
     clearNudgeDismissTimer();
+    clearPressPeekTimer();
+    clearDragReactTimer();
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     onOpenChat?.({ persona: PERSONA_TYPES.GENERAL });
-  }, [clearNudgeDismissTimer, onOpenChat]);
+  }, [clearNudgeDismissTimer, clearPeek, clearPressPeekTimer, clearDragReactTimer, onOpenChat]);
+
+  const showPeek = useCallback(() => {
+    if (showHint || isDragging || reactText) return;
+    const { text, category } = pickPeekLine(lastPeekCategoryRef.current);
+    lastPeekCategoryRef.current = category;
+    setPeekText(text);
+  }, [showHint, isDragging, reactText]);
 
   const onFabPointerDown = (event) => {
     if (event.button !== 0) return;
@@ -162,8 +244,20 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
       startRight: pos.right,
       startBottom: pos.bottom,
       moved: false,
+      pressPeekActivated: false,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
+
+    clearPressPeekTimer();
+    pressPeekTimerRef.current = setTimeout(() => {
+      const drag = dragRef.current;
+      if (!drag || drag.moved || showHintRef.current || reactTextRef.current) return;
+      drag.pressPeekActivated = true;
+      setIsPressPeek(true);
+      const { text, category } = pickPeekLine(lastPeekCategoryRef.current);
+      lastPeekCategoryRef.current = category;
+      setPeekText(text);
+    }, PRESS_PEEK_MS);
   };
 
   const onFabPointerMove = (event) => {
@@ -175,8 +269,13 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
 
     if (!drag.moved && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
       drag.moved = true;
+      clearPressPeekTimer();
+      clearPeek();
       setIsDragging(true);
-      setHoverHintText('');
+
+      const { text, index } = pickDragReactLine(lastDragReactIndexRef.current);
+      lastDragReactIndexRef.current = index;
+      showDragReact(text);
     }
 
     if (!drag.moved) return;
@@ -193,6 +292,7 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
     if (!drag || drag.pointerId !== event.pointerId) return;
 
     event.currentTarget.releasePointerCapture(event.pointerId);
+    clearPressPeekTimer();
 
     if (drag.moved) {
       setPos((current) => {
@@ -200,6 +300,8 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
         savePosition(clamped);
         return clamped;
       });
+    } else if (drag.pressPeekActivated || isPressPeek) {
+      clearPeek();
     } else {
       openChat();
     }
@@ -210,6 +312,8 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
 
   const onFabPointerCancel = () => {
     dragRef.current = null;
+    clearPressPeekTimer();
+    clearPeek();
     setIsDragging(false);
   };
 
@@ -217,13 +321,16 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
 
   const isIntro = showHint && hintPhase === 'intro';
   const isNudge = showHint && hintPhase === 'nudge';
-  const isHoverOnly = Boolean(hoverHintText) && !showHint;
-  const hintVisible = isIntro || isNudge || isHoverOnly;
+  const isPeekOnly = Boolean(peekText) && !showHint && !reactText;
+  const isReactOnly = Boolean(reactText) && !showHint;
+  const hintVisible = isIntro || isNudge || isPeekOnly || isReactOnly;
   const hintText = isIntro
-    ? INTRO_GREETING
+    ? introText
     : isNudge
       ? nudgeMessage
-      : hoverHintText;
+      : isReactOnly
+        ? reactText
+        : peekText;
   const showCloseButton = isIntro || isNudge;
 
   return (
@@ -263,12 +370,13 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
         onPointerUp={onFabPointerUp}
         onPointerCancel={onFabPointerCancel}
         onMouseEnter={() => {
-          if (isDragging || showHint) return;
-          const { text, index } = pickRandomFromPool(HOVER_HINTS, lastHoverIndexRef.current);
-          lastHoverIndexRef.current = index;
-          setHoverHintText(text);
+          if (!canUseHoverPeek() || isDragging || showHint || reactText) return;
+          showPeek();
         }}
-        onMouseLeave={() => setHoverHintText('')}
+        onMouseLeave={() => {
+          if (isPressPeek) return;
+          clearPeek();
+        }}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
@@ -278,7 +386,7 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
         className={`group relative flex flex-col items-center gap-1 rounded-2xl p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${
           isDragging ? 'cursor-grabbing scale-[1.02]' : 'cursor-grab hover:scale-105'
         } transition-transform duration-200`}
-        aria-label="MOONi와 대화하기. 드래그하면 위치를 옮길 수 있어요."
+        aria-label="MOONi와 대화하기. 드래그하면 위치를 옮길 수 있어요. 모바일에서는 누르고 있으면 말풍선이 나와요."
       >
         <span className={`pointer-events-none ${isDragging ? '' : 'mooni-float'}`}>
           <img
