@@ -1,15 +1,52 @@
 /**
  * 사용자-facing 업데이트 공지 SSOT.
- * 배포 시 최신 항목을 배열 맨 앞에 추가합니다.
+ *
+ * 배포 시 최신 항목을 RELEASE_NOTES 배열 **맨 앞**에 추가합니다.
+ * id는 YYYY-MM-DD 형식(같은 날 여러 건이면 -2, -3 접미사).
+ *
+ * @typedef {'feature' | 'partner' | 'fix' | 'notice'} ReleaseCategory
+ * @typedef {{ id: string, title: string, items: string[], category?: ReleaseCategory, date?: string }} ReleaseNote
  */
+
+/** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-05-24-2',
+    category: 'feature',
+    title: 'MOONi AI 여행 도우미를 만나보세요',
+    items: [
+      '채팅봇 MOONi와 여행 이야기를 나눌 수 있어요',
+      '목적지·일정·여행 팁 등 궁금한 점을 편하게 물어보세요',
+      'MOONi 를 드래그해서 원하는 위치로 옮길 수 있어요',
+    ],
+  },
+  {
     id: '2026-05-24',
+    category: 'feature',
     title: 'GATEO 로고가 새로워졌어요',
     items: ['홈·메뉴에 새 이미지 로고가 적용되었습니다'],
   },
 ];
 
+export const RELEASE_CATEGORY_LABELS = {
+  feature: '새 기능',
+  partner: '제휴 입점',
+  fix: '개선',
+  notice: '공지',
+};
+
 export function getLatestRelease() {
   return RELEASE_NOTES[0] ?? null;
+}
+
+export function getAllReleases() {
+  return RELEASE_NOTES;
+}
+
+export function formatReleaseDate(release) {
+  const raw = release?.date ?? release?.id ?? '';
+  const match = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return raw;
+  const [, year, month, day] = match;
+  return `${year}. ${Number(month)}. ${Number(day)}.`;
 }

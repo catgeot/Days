@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, ExternalLink } from 'lucide-react';
 import { FOOTER_CONTENT } from '../data/footerData';
+import ReleaseNotesList from '../../../shared/components/ReleaseNotesList';
 
 const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -29,9 +30,10 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
 
   const tabs = [
     { id: 'about', label: 'About Us' },
+    { id: 'updates', label: 'Updates' },
     { id: 'terms', label: 'Terms' },
     { id: 'privacy', label: 'Privacy' },
-    { id: 'contact', label: 'Contact' }
+    { id: 'contact', label: 'Contact' },
   ];
 
   return (
@@ -44,7 +46,7 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
       <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-slide-up-fade">
         <div className="flex justify-between items-center p-5 border-b border-white/10 bg-black/50">
           <h2 className="text-lg font-bold text-white tracking-tight">
-            {FOOTER_CONTENT[activeTab].title}
+            {activeTab === 'updates' ? '업데이트 내역' : FOOTER_CONTENT[activeTab].title}
           </h2>
           <button 
             onClick={onClose} 
@@ -72,9 +74,18 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
 
         <div className="p-6 md:p-8 max-h-[60vh] overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
           
-          <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap font-light">
-            {FOOTER_CONTENT[activeTab].content}
-          </div>
+          {activeTab === 'updates' ? (
+            <>
+              <p className="text-gray-400 text-sm leading-relaxed break-keep mb-5">
+                GATEO의 새 기능, 제휴 입점, 개선 사항을 모아두었습니다.
+              </p>
+              <ReleaseNotesList />
+            </>
+          ) : (
+            <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap font-light">
+              {FOOTER_CONTENT[activeTab].content}
+            </div>
+          )}
 
           {activeTab === 'contact' && (
             <div className="mt-8 space-y-4 animate-fade-in">

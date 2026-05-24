@@ -4,8 +4,14 @@ import mooniChar from '../../../assets/MOONI_transparent.png';
 import mooniText from '../../../assets/MONNI_text.png';
 import { PERSONA_TYPES } from '../lib/prompts';
 
-const INTRO_GREETING = '안녕! MOONi예요. 여행이 궁금하면 편하게 물어봐요.';
-const HOVER_HINT = '클릭하면 MOONi와 대화할 수 있어요.';
+const INTRO_GREETING = '안녕! MOONi예요.';
+const HOVER_HINTS = [
+  'MOONi와 이야기해 봐요',
+  '어서 오세요',
+  '떠나고 싶은 곳이 어디인가요?',
+  '여행 이야기 들려주세요',
+  '궁금한 게 있으면 눌러보세요',
+];
 const NUDGE_WHISPERS = [
   '안녕하세요, MOONi입니다.',
   'Z Z Z…',
@@ -60,13 +66,17 @@ function clampPosition(pos) {
   };
 }
 
-function pickRandomNudge(lastIndex) {
-  if (NUDGE_WHISPERS.length <= 1) return { text: NUDGE_WHISPERS[0], index: 0 };
+function pickRandomFromPool(pool, lastIndex) {
+  if (pool.length <= 1) return { text: pool[0], index: 0 };
   let index;
   do {
-    index = Math.floor(Math.random() * NUDGE_WHISPERS.length);
+    index = Math.floor(Math.random() * pool.length);
   } while (index === lastIndex);
-  return { text: NUDGE_WHISPERS[index], index };
+  return { text: pool[index], index };
+}
+
+function pickRandomNudge(lastIndex) {
+  return pickRandomFromPool(NUDGE_WHISPERS, lastIndex);
 }
 
 export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
@@ -75,12 +85,13 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
   const hintTimerRef = useRef(null);
   const nudgeDismissTimerRef = useRef(null);
   const lastNudgeIndexRef = useRef(-1);
+  const lastHoverIndexRef = useRef(-1);
 
   const [pos, setPos] = useState(() => clampPosition(loadPosition() ?? DEFAULT_POS));
   const [hintPhase, setHintPhase] = useState('intro');
   const [showHint, setShowHint] = useState(true);
   const [nudgeMessage, setNudgeMessage] = useState('');
-  const [hoverHint, setHoverHint] = useState(false);
+  const [hoverHintText, setHoverHintText] = useState('');
   const [isDragging, setIsDragging] = useState(false);
 
   const clearNudgeDismissTimer = useCallback(() => {
@@ -165,7 +176,7 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
     if (!drag.moved && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
       drag.moved = true;
       setIsDragging(true);
-      setHoverHint(false);
+      setHoverHintText('');
     }
 
     if (!drag.moved) return;
@@ -206,13 +217,13 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
 
   const isIntro = showHint && hintPhase === 'intro';
   const isNudge = showHint && hintPhase === 'nudge';
-  const isHoverOnly = hoverHint && !showHint;
+  const isHoverOnly = Boolean(hoverHintText) && !showHint;
   const hintVisible = isIntro || isNudge || isHoverOnly;
   const hintText = isIntro
     ? INTRO_GREETING
     : isNudge
       ? nudgeMessage
-      : HOVER_HINT;
+      : hoverHintText;
   const showCloseButton = isIntro || isNudge;
 
   return (
@@ -252,9 +263,12 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
         onPointerUp={onFabPointerUp}
         onPointerCancel={onFabPointerCancel}
         onMouseEnter={() => {
-          if (!isDragging) setHoverHint(true);
+          if (isDragging || showHint) return;
+          const { text, index } = pickRandomFromPool(HOVER_HINTS, lastHoverIndexRef.current);
+          lastHoverIndexRef.current = index;
+          setHoverHintText(text);
         }}
-        onMouseLeave={() => setHoverHint(false)}
+        onMouseLeave={() => setHoverHintText('')}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();

@@ -2,6 +2,7 @@ import { RefreshCw, Sparkles } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useSiteUpdateBanner } from '../hooks/useSiteUpdateBanner';
 import { useSiteNoticeAnchorRect } from '../hooks/useSiteNoticeAnchorRect';
+import { openUpdatesList } from '../lib/siteNoticeEvents';
 
 function isHomeNoticeSurface(pathname) {
   if (pathname === '/') return true;
@@ -109,6 +110,16 @@ function SiteUpdateBanner() {
               </>
             ) : (
               <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeRelease();
+                    openUpdatesList();
+                  }}
+                  className="mr-auto rounded-xl px-3 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  지난 공지 보기
+                </button>
                 <button
                   type="button"
                   onClick={closeRelease}

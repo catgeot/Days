@@ -13,6 +13,7 @@ import {
   mergeCanonicalTravelSpot,
 } from '../../../utils/travelSpotResolve';
 import FooterModal from './FooterModal';
+import { OPEN_UPDATES_LIST_EVENT } from '../../../shared/lib/siteNoticeEvents';
 
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 const CACHE_VERSION = 'v1.5';
@@ -137,6 +138,12 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
     setIsFooterOpen(true);
   };
 
+  useEffect(() => {
+    const handleOpenUpdates = () => handleOpenFooter('updates');
+    window.addEventListener(OPEN_UPDATES_LIST_EVENT, handleOpenUpdates);
+    return () => window.removeEventListener(OPEN_UPDATES_LIST_EVENT, handleOpenUpdates);
+  }, []);
+
   return (
     <>
       <div
@@ -247,6 +254,8 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
         <div className="p-5 border-t border-white/10 bg-black">
           <div className="flex justify-center items-center gap-4 text-[9px] text-gray-500 uppercase tracking-widest font-bold">
             <button onClick={() => handleOpenFooter('about')} className="hover:text-white transition-colors">About Us</button>
+            <span className="text-gray-800">|</span>
+            <button onClick={() => handleOpenFooter('updates')} className="hover:text-white transition-colors">Updates</button>
             <span className="text-gray-800">|</span>
             <button onClick={() => handleOpenFooter('terms')} className="hover:text-white transition-colors">Terms</button>
             <span className="text-gray-800">|</span>
