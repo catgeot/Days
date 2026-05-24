@@ -6,6 +6,7 @@ import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal';
 import SearchDiscoveryModal from './components/SearchDiscoveryModal';
 import LogoPanel from './components/LogoPanel';
+import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
 import PlaceCardSummary from '../../components/PlaceCard/modes/PlaceCardSummary';
 import SEO from '../../components/SEO';
 
@@ -348,6 +349,7 @@ function Home() {
       </div>
 
       <div className={`transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <SiteUpdateBanner />
         <HomeUI
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch} onTagClick={handleSmartSearch}
           externalInput={draftInput}

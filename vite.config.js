@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import Sitemap from 'vite-plugin-sitemap';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import { writeFileSync } from 'fs';
+import { execSync } from 'child_process';
 
 import { TRAVEL_SPOTS } from './src/pages/Home/data/travelSpots.js';
 
@@ -33,6 +35,27 @@ const exploreRoutes = [
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes];
 
+function gateoEmitVersionJson() {
+  return {
+    name: 'gateo-emit-version-json',
+    closeBundle() {
+      let buildId = String(Date.now());
+      try {
+        buildId = execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+          .toString()
+          .trim();
+      } catch {
+        // fallback to timestamp when git is unavailable
+      }
+
+      writeFileSync(
+        'dist/version.json',
+        `${JSON.stringify({ buildId, builtAt: new Date().toISOString() })}\n`,
+      );
+    },
+  };
+}
+
 // 폰·LAN 테스트: 기본(HTTPS). PC만 빠르게 볼 때: npm run dev:http
 const devSsl = process.env.DEV_SSL !== '0';
 
@@ -40,6 +63,7 @@ export default defineConfig({
   plugins: [
     react(),
     ...(devSsl ? [basicSsl()] : []),
+    gateoEmitVersionJson(),
     Sitemap({
       hostname: 'https://www.gateo.kr',
       dynamicRoutes,
