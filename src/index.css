@@ -13,3 +13,19 @@ body {
   touch-action: pan-y pinch-zoom;
   -webkit-overflow-scrolling: touch;
 }
+
+@keyframes mooni-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.mooni-float {
+  display: inline-block;
+  animation: mooni-float 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mooni-float {
+    animation: none;
+  }
+}

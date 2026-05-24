@@ -4,7 +4,7 @@ import { getPlaceChatIntroSystemPrompt } from './prompts';
 
 const LS_PREFIX = 'days_place_chat_intro:';
 
-const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...']);
+const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...', 'mooni']);
 
 export function normalizeDestinationKey(name) {
   return String(name ?? '')

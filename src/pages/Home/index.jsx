@@ -4,6 +4,7 @@ import { Outlet, useNavigate, useLocation, matchPath, Link } from 'react-router-
 import HomeGlobe from './components/HomeGlobeAdapter';
 import HomeUI from './components/HomeUI';
 import ChatModal from './components/ChatModal';
+import MooniAgentFab from './components/MooniAgentFab';
 import SearchDiscoveryModal from './components/SearchDiscoveryModal';
 import LogoPanel from './components/LogoPanel';
 import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
@@ -443,6 +444,12 @@ function Home() {
           initialExpanded: true,
           onExpandChange: setIsCardExpanded
         }} />
+
+        <MooniAgentFab
+          isChatOpen={isChatOpen}
+          isZenMode={isZenMode}
+          onOpenChat={(payload) => handleStartChat('MOONi', payload)}
+        />
 
         <ChatModal
           isOpen={isChatOpen}

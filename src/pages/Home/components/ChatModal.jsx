@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { X, Send, Bot, User, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
+import { X, Send, User, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
+import mooniChar from '../../../assets/MOONI_transparent.png';
+import mooniText from '../../../assets/MONNI_text.png';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
@@ -51,8 +53,10 @@ const ChatModal = ({
     return '';
   }, [isOpen, chatDraft?.destination, activeChatId, chatHistory]);
 
+  const isMooniSession = introDestinationRaw === 'MOONi';
+
   useEffect(() => {
-    if (!isOpen || !introDestinationRaw) {
+    if (!isOpen || !introDestinationRaw || isMooniSession) {
       setPlaceIntro(null);
       setPlaceIntroError(null);
       setPlaceIntroLoading(false);
@@ -88,7 +92,7 @@ const ChatModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, introDestinationRaw]);
+  }, [isOpen, introDestinationRaw, isMooniSession]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -302,9 +306,12 @@ const ChatModal = ({
 
         <div className="flex-1 flex flex-col bg-black/50 relative">
             <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
-               <div className="flex items-center gap-2">
-                 <Bot size={18} className="text-white" />
-                 <span className="text-white font-bold text-sm">Days AI - {currentPersona}</span>
+               <div className="flex items-center gap-3">
+                 <img src={mooniChar} alt="" className="h-9 w-9 object-contain" aria-hidden="true" />
+                 <div className="flex flex-col">
+                   <img src={mooniText} alt="MOONi" className="h-4 w-auto object-contain" />
+                   <span className="text-[11px] text-cyan-300/80 font-medium">여행 AI 도우미 · {currentPersona}</span>
+                 </div>
                </div>
                <button onClick={onClose}><X size={18} className="text-gray-400 hover:text-white" /></button>
             </div>
@@ -330,6 +337,16 @@ const ChatModal = ({
                   )}
                 </div>
               )}
+              {isMooniSession && messages.length === 0 && !isLoading && (
+                <div className="flex gap-4 w-full">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-transparent">
+                    <img src={mooniChar} alt="" className="h-10 w-10 object-contain" aria-hidden="true" />
+                  </div>
+                  <div className="flex-1 max-w-[95%] p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-none leading-relaxed">
+                    안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요.
+                  </div>
+                </div>
+              )}
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
@@ -337,7 +354,9 @@ const ChatModal = ({
                   className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'w-full'}`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
-                    {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : <Bot size={24} className="text-blue-400" />}
+                    {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : (
+                      <img src={mooniChar} alt="" className="h-10 w-10 object-contain" aria-hidden="true" />
+                    )}
                   </div>
                   <div className={`p-4 rounded-2xl text-base shadow-md ${
                     msg.role === 'user'

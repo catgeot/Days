@@ -8,3 +8,4 @@
 - 3종 후보 dev 비교 후 1번 확정 · 선택 UI·`logoVariants` 임시 코드 제거.
 - Cursor Rule [`.cursor/rules/gateo-project-context.mdc`](../.cursor/rules/gateo-project-context.mdc) (`alwaysApply`) — `@` 없이 `.ai-context.md` Read 동작 QA 확인.
 - **홈 상단 릴리스/업데이트 공지 배너**: 다크 글래스모피즘 팝업 형태, 닫기/다시보지않기. 배포 감지(`version.json` 폴링) 및 릴리스 노트(`releaseNotes.js`) 연동.
+- **MOONi AI 에이전트 (로컬 QA 통과)**: `MooniAgentFab.jsx` — 우측 하단 FAB·드래그 이동(`gateo_mooni_fab_pos`)·말풍선(45초 재표시·hover). `ChatModal` MOONi 브랜딩·세션 dest `MOONi`. 에셋 `MOONI_transparent.png`·`MONNI_text.png`.
