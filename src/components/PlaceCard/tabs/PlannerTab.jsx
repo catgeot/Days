@@ -17,11 +17,11 @@ import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/too
 import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 import {
-    PLANNER_SCROLL_TO_TOP_EVENT,
     plannerCaption,
     plannerMeta,
     plannerScrollSurfaceClass,
 } from './planner/readableText';
+import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -43,9 +43,7 @@ const PlannerTab = ({
     const scrollContainerRef = useRef(null);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
 
-    const scrollPlannerToTop = useCallback(() => {
-        scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-    }, []);
+    const scrollPlannerToTop = usePlaceMediaScrollToTop('PLANNER', scrollContainerRef, isActive);
 
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
 
@@ -176,13 +174,6 @@ const PlannerTab = ({
         onScroll();
         return () => el.removeEventListener('scroll', onScroll);
     }, [isActive, isLoading, guideData]);
-
-    useEffect(() => {
-        const onScrollToTop = () => scrollPlannerToTop();
-        window.addEventListener(PLANNER_SCROLL_TO_TOP_EVENT, onScrollToTop);
-        return () => window.removeEventListener(PLANNER_SCROLL_TO_TOP_EVENT, onScrollToTop);
-    }, [scrollPlannerToTop]);
-
     const formatDate = (isoString) => {
         if (!isoString) return '';
         const date = new Date(isoString);

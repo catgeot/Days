@@ -8,7 +8,7 @@ export const plannerCaptionStrong = 'text-xs font-semibold text-gray-700 leading
 export const plannerMicroLabel = 'text-xs font-bold uppercase tracking-wide';
 export const plannerMeta = 'text-xs text-gray-400 font-medium';
 
-/** 플래너 스크롤 영역 — 세로 스크롤 + 핀치 줌 허용 (touch-pan-y 단독은 줌 차단) */
-export const plannerScrollSurfaceClass = 'pinch-zoom-scroll overscroll-y-contain overscroll-x-none';
-
-export const PLANNER_SCROLL_TO_TOP_EVENT = 'planner-scroll-to-top';
+export {
+    placeScrollSurfaceClass as plannerScrollSurfaceClass,
+    PLANNER_SCROLL_TO_TOP_EVENT,
+} from '../../common/placeScrollSurface';

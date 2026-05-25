@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-05-25',
+    category: 'fix',
+    title: '장소 카드 읽기가 더 편해졌어요',
+    items: [
+      '갤러리·위키·리뷰 탭에서도 상단 헤더를 탭하면 맨 위로 이동해요',
+      '본문을 두 손가락으로 확대해 읽을 수 있어요',
+    ],
+  },
+  {
     id: '2026-05-24-2',
     category: 'feature',
     title: 'MOONi AI 여행 도우미를 만나보세요',

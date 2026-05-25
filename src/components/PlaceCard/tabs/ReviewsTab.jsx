@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye, BookOpen } from 'lucide-react';
@@ -7,6 +7,8 @@ import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
 const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
@@ -157,6 +159,8 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 
 const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
   const navigate = useNavigate();
+  const scrollContainerRef = useRef(null);
+  usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, true);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -318,7 +322,8 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
 
       {/* 모바일: 미디어 탭 + 리뷰 헤더 + 본문 단일 스크롤 / 데스크톱: 본문만 스크롤 */}
       <div
-        className={`flex-1 min-h-0 overflow-y-auto custom-scrollbar overscroll-none touch-pan-y pb-24 md:pb-4 ${mobilePlaceHeaderScrollPadding} md:pt-0`}
+        ref={scrollContainerRef}
+        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} pb-24 md:pb-4 ${mobilePlaceHeaderScrollPadding} md:pt-0`}
       >
         {mobileSecondaryNav && (
           <div className="md:hidden px-2 pb-2 shrink-0">{mobileSecondaryNav}</div>

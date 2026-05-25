@@ -6,6 +6,8 @@ import CopyableText from '../common/CopyableText';
 import PlaceMiniMap from '../common/PlaceMiniMap';
 import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -53,6 +55,7 @@ const PlaceWikiDetailsView = ({
 
   const aiSectionRef = useRef(null);
   const containerRef = useRef(null);
+  const scrollToTop = usePlaceMediaScrollToTop('WIKI', containerRef, isActive);
   const [scrollY, setScrollY] = useState(0);
 
   // 라이트박스 열렸을 때 스크롤 방지
@@ -294,12 +297,6 @@ const PlaceWikiDetailsView = ({
       }
   }
 
-  const scrollToTop = () => {
-      if (containerRef.current) {
-          containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-  };
-
   // 본문 내 [소제목] 스타일링 및 불필요한 기호 제거 함수
   const renderContentWithSubtitles = (content) => {
       if (!content) return null;
@@ -328,7 +325,7 @@ const PlaceWikiDetailsView = ({
   return (
     <div
         ref={containerRef}
-        className={`w-full h-full flex flex-col overflow-y-auto text-white custom-scrollbar relative bg-[#05070a] ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
+        className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden text-white custom-scrollbar relative bg-[#05070a] ${placeScrollSurfaceClass} ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
     >
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
