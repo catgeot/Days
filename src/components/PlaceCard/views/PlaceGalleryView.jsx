@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, Sparkles } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles } from 'lucide-react';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
@@ -15,6 +15,9 @@ const PlaceGalleryView = React.memo(({
   closeImageKeepFullscreen,
   showUI,
   handleDownload,
+  handleRefresh,
+  getRefreshCooldownRemaining,
+  refreshCooldownSec = 30,
   handleRemoveImage,
   mobileSecondaryNav = null
 }) => {
@@ -24,6 +27,23 @@ const PlaceGalleryView = React.memo(({
   const currentIndex = images.findIndex(img => img.id === selectedImg?.id);
 
   const [isMobileUIHidden, setIsMobileUIHidden] = useState(false);
+  const [refreshCooldownLeft, setRefreshCooldownLeft] = useState(0);
+
+  useEffect(() => {
+    if (!getRefreshCooldownRemaining) return undefined;
+    const tick = () => setRefreshCooldownLeft(getRefreshCooldownRemaining());
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [getRefreshCooldownRemaining, isImgLoading]);
+
+  const onRefreshClick = useCallback(() => {
+    if (isImgLoading || refreshCooldownLeft > 0 || !handleRefresh) return;
+    const started = handleRefresh();
+    if (started && getRefreshCooldownRemaining) {
+      setRefreshCooldownLeft(getRefreshCooldownRemaining());
+    }
+  }, [handleRefresh, getRefreshCooldownRemaining, isImgLoading, refreshCooldownLeft]);
 
   useEffect(() => {
     queueMicrotask(() => setIsMobileUIHidden(false));
@@ -227,6 +247,27 @@ const PlaceGalleryView = React.memo(({
                       <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20}/>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {!isImgLoading && images.length > 0 && handleRefresh && (
+                <div className="mt-8 mb-2 flex flex-col items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={onRefreshClick}
+                    disabled={isImgLoading || refreshCooldownLeft > 0}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/45 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium"
+                    title={refreshCooldownLeft > 0 ? `${refreshCooldownLeft}초 후 다시 시도 가능` : 'Unsplash·Pexels에서 추가 사진 불러오기'}
+                  >
+                    <RefreshCw
+                      size={14}
+                      className={isImgLoading ? 'animate-spin' : refreshCooldownLeft > 0 ? '' : 'group-hover:rotate-180 transition-transform duration-500'}
+                    />
+                    {refreshCooldownLeft > 0
+                      ? `${refreshCooldownLeft}초 후 다시 불러올 수 있어요`
+                      : '더 많은 사진 불러오기'}
+                  </button>
+                  <p className="text-[10px] text-white/25">Unsplash · Pexels · {refreshCooldownSec}초에 한 번</p>
                 </div>
               )}
 

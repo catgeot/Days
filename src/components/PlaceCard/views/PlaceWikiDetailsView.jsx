@@ -5,7 +5,6 @@ import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
 import PlaceMiniMap from '../common/PlaceMiniMap';
-import { WIKI_AUTO_UPDATE_DAYS } from '../../../shared/constants';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
@@ -203,27 +202,6 @@ const PlaceWikiDetailsView = ({
       }
     }
   }, [isAiLoading, wikiData, countryName, localAiResponse]);
-
-  const autoUpdateTriggered = useRef(false);
-  useEffect(() => {
-      if (isActive && !autoUpdateTriggered.current && wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]') {
-          const lastUpdated = wikiData.ai_info_updated_at;
-          if (lastUpdated) {
-              const lastDate = new Date(lastUpdated);
-              const now = new Date();
-              const diffTime = Math.abs(now.getTime() - lastDate.getTime());
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-              if (diffDays > WIKI_AUTO_UPDATE_DAYS) {
-                  if (import.meta.env.DEV) {
-                      console.log(`[Wiki] ${WIKI_AUTO_UPDATE_DAYS}일 경과 자동 갱신 실행 (${diffDays}일 지남)`);
-                  }
-                  autoUpdateTriggered.current = true;
-                  handleRequestAiInfo(placeName || wikiData.title, true);
-              }
-          }
-      }
-  }, [isActive, wikiData?.ai_practical_info, wikiData?.ai_info_updated_at, wikiData?.title, placeName, handleRequestAiInfo]);
 
   useEffect(() => {
     const currentInfo = wikiData?.ai_practical_info;

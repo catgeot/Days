@@ -7262,8 +7262,8 @@ export const TRAVEL_SPOTS = [
   {
     "id": 388,
     "slug": "chuuk",
-    "name": "추크",
-    "name_en": "Chuuk",
+    "name": "추크 라군",
+    "name_en": "Chuuk Lagoon",
     "country": "미크로네시아 연방",
     "country_en": "Federated States of Micronesia",
     "lat": 7.4617,
@@ -7276,8 +7276,8 @@ export const TRAVEL_SPOTS = [
     "category": "nature",
     "showOnGlobe": true,
     "denseRegion": null,
-    "desc": "태평양의 거대한 산호초 군도로, 2차 대전 이후 남겨진 수중 전함 잔해로 스쿠버 다이빙 성지로 불립니다. 국제선은 추크(TKK) 공항이 관문입니다.",
-    "keywords": ["미크로네시아", "TKK", "Truk", "트럭", "난파선", "다이빙"]
+    "desc": "태평양의 거대한 산호초 라군으로, 2차 대전 이후 남겨진 수중 전함 잔해로 스쿠버 다이빙 성지로 불립니다. 국제선은 추크(TKK) 공항이 관문입니다.",
+    "keywords": ["미크로네시아", "추크 라군", "Chuuk Lagoon", "TKK", "Truk", "트럭", "추크", "난파선", "다이빙"]
   },
   {
     "id": 389,

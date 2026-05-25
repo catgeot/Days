@@ -313,4 +313,17 @@ npm run audit:ferries      # required/common booking gap 0 목표
 
 **curated high·원정지**(디에고 가르시아·핏케언 등): `travel-spot-airport-overrides.mjs` `confidence: high` + `bannerNote`. 플래너는 `toolkitPlaceIdResolve`에서 **primary IATA만** 지리 검사(타임라인 경유 SIN 등 면제). `mergeCanonicalTravelSpot` 후 툴킷 조회.
 
+---
+
+## 9. 갤러리 검색 특수 케이스 (`usePlaceGallery.js`)
+
+Unsplash·Pexels는 `name_en`을 우선 검색합니다. 지명 단독 결과가 빈약하거나 부적절하면 [`usePlaceGallery.js`](../src/components/PlaceCard/hooks/usePlaceGallery.js)의 `GALLERY_QUERY_OVERRIDES`(slug → primary/backup)를 추가합니다.
+
+| slug | 표시명 | primary 검색 | 비고 |
+|------|--------|--------------|------|
+| `yap` | 야프 | `Federated States of Micronesia` | DB 캐시 스킵 · 국가 키워드 |
+| `chuuk` | 추크 라군 | `Chuuk Lagoon` (`name_en`) | 검색 별칭 `추크`, `truk` 유지 |
+
+**미크로네시아 연방 4주**(id 387–390): `yap` · `chuuk` · `kosrae` · `pohnpei` — `travelSpots.js` SSOT · 공항 YAP/TKK/KOS/PNI. 갤러리 **더 많은 사진 불러오기**는 30초 쿨다운 · Unsplash+Pexels 병합.
+
 상세·우선순위: [`2026-05-19-project-log.md`](./2026-05-19-project-log.md) · [`place-id-residual-classification.json`](../scripts/data/place-id-residual-classification.json) `nextSessionPlan`.

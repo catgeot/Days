@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { X, Send, User, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
-import mooniChar from '../../../assets/MOONI_transparent.png';
-import mooniText from '../../../assets/MONNI_text.png';
+import { X, Send, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
@@ -306,17 +304,14 @@ const ChatModal = ({
 
         <div className="flex-1 flex flex-col bg-black/50 relative">
             <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
-               <div className="flex items-center gap-3">
-                 <img src={mooniChar} alt="" className="h-9 w-9 object-contain" aria-hidden="true" />
-                 <div className="flex flex-col">
-                   <img src={mooniText} alt="MOONi" className="h-4 w-auto object-contain" />
-                   <span className="text-[11px] text-cyan-300/80 font-medium">여행 AI 도우미 · {currentPersona}</span>
-                 </div>
+               <div className="flex flex-col min-w-0">
+                 <span className="font-bold text-white tracking-wide text-base">MOONi</span>
+                 <span className="text-[11px] text-cyan-300/80 font-medium truncate">여행 AI 도우미 · {currentPersona}</span>
                </div>
                <button onClick={onClose}><X size={18} className="text-gray-400 hover:text-white" /></button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 custom-scrollbar">
               {(placeIntro || placeIntroLoading || placeIntroError) && (
                 <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-gray-900/60 p-4 shadow-lg">
                   <div className="flex items-center gap-2 mb-2 text-emerald-300/90">
@@ -338,11 +333,9 @@ const ChatModal = ({
                 </div>
               )}
               {isMooniSession && messages.length === 0 && !isLoading && (
-                <div className="flex gap-4 w-full">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-transparent">
-                    <img src={mooniChar} alt="" className="h-10 w-10 object-contain" aria-hidden="true" />
-                  </div>
-                  <div className="flex-1 max-w-[95%] p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-none leading-relaxed">
+                <div className="flex flex-col items-start w-full">
+                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
+                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
                     안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요.
                   </div>
                 </div>
@@ -351,17 +344,19 @@ const ChatModal = ({
                 <div
                   key={idx}
                   ref={idx === lastUserIdx ? lastQuestionRef : null}
-                  className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'w-full'}`}
+                  className={`flex flex-col w-full ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-gray-700' : 'bg-transparent'}`}>
-                    {msg.role === 'user' ? <User size={20} className="text-gray-300" /> : (
-                      <img src={mooniChar} alt="" className="h-10 w-10 object-contain" aria-hidden="true" />
-                    )}
-                  </div>
-                  <div className={`p-4 rounded-2xl text-base shadow-md ${
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${
+                    msg.role === 'user' ? 'text-blue-400' : msg.role === 'error' ? 'text-red-400' : 'text-cyan-400'
+                  }`}>
+                    {msg.role === 'user' ? 'Me' : 'MOONi'}
+                  </span>
+                  <div className={`p-4 rounded-2xl text-base shadow-md w-full ${
                     msg.role === 'user'
-                      ? 'max-w-[80%] bg-blue-600 text-white rounded-tr-none'
-                      : 'flex-1 max-w-[95%] bg-gray-800 text-gray-200 rounded-tl-none leading-relaxed'
+                      ? 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm'
+                      : msg.role === 'error'
+                        ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
+                        : 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed'
                   }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{typeof msg.text === 'object' ? (msg.text.text || "내용 없음") : msg.text}</div>
                     {msg.role === 'model' && msg.bookingActions?.length > 0 && (
@@ -383,7 +378,7 @@ const ChatModal = ({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-6 bg-gray-900 border-t border-gray-800">
+            <div className="p-4 md:p-6 bg-gray-900 border-t border-gray-800">
               <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative">
                 <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="메시지 입력..." className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500" disabled={isLoading} autoFocus />
                 <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 top-2 p-2 bg-blue-600 rounded-full text-white"><Send size={20} /></button>

@@ -59,6 +59,9 @@ const PlaceMediaPanel = React.memo(({
                 closeImageKeepFullscreen={(e) => { e.stopPropagation(); galleryData.setSelectedImg(null); }}
                 showUI={showUI}
                 handleDownload={galleryData.handleDownload}
+                handleRefresh={galleryData.handleRefresh}
+                getRefreshCooldownRemaining={galleryData.getRefreshCooldownRemaining}
+                refreshCooldownSec={galleryData.refreshCooldownSec}
                 handleRemoveImage={galleryData.handleRemoveImage}
                 mobileSecondaryNav={mobileSecondaryNav}
             />

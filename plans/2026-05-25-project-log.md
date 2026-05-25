@@ -24,3 +24,12 @@
 - **증상**: 플래너·갤러리·위키 등에서 스크롤·핀치 줌 후 간헐적으로 뒤로/홈 버튼 무반응.
 - **조치**: `PlaceChatPanel` — 뒤로/홈과 헤더 스크롤-맨위 탭 분리 · `z-[180]` · fullscreen 시 `pointer-events-none` · 갤러리 상세에서도 헤더 유지. `PlaceWikiDetailsView` — 모바일 하단 바 스크롤 밖 flex 푸터 · 라이트박스 body 포털. `PlannerTab` — 맨 위 버튼 body 포털.
 - 릴리스 노트 미반영(버그 수정 · 사용자 요청).
+
+---
+
+## 후속 — 갤러리·MOONi·위키 (동일 일자)
+
+- **위키 로컬 왓슨**: `PlaceWikiDetailsView` 14일 자동 갱신 제거(툴킷만 4월 비활성화, 위키는 잔존) · `WIKI_AUTO_UPDATE_DAYS` 상수 삭제.
+- **MOONi 채팅**: `ChatModal` 캐릭터 중복 제거 · 헤더·메시지 `MOONi` 텍스트 라벨 · 모바일 본문 전폭.
+- **갤러리**: `usePlaceGallery` 야프 → `Federated States of Micronesia` 검색 오버라이드 · 갱신 버튼 복원(30초 쿨다운·Unsplash+Pexels) · **추크** 표기 **추크 라군** / `Chuuk Lagoon`.
+- **릴리스**: `releaseNotes.js` `2026-05-25-3` 미크로네시아 4주 feature · 가이드 `travel-spots-management.md` 갤러리 검색 절 추가.

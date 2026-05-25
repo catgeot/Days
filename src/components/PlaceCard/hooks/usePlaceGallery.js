@@ -45,6 +45,16 @@ const FALLBACK_DICTIONARY = {
   "나이야 가라": "Niagara Falls"
 };
 
+/** 지명 단독 검색 시 결과가 빈약한 장소 — 국가/광역 키워드로 대체 */
+const GALLERY_QUERY_OVERRIDES = {
+  yap: {
+    primary: 'Federated States of Micronesia',
+    backup: 'Micronesia island tropical ocean landscape',
+  },
+};
+
+const GALLERY_REFRESH_COOLDOWN_MS = 30_000;
+
 export const usePlaceGallery = (locationSource) => {
   const [images, setImages] = useState([]);
   const [isImgLoading, setIsImgLoading] = useState(false);
@@ -59,6 +69,7 @@ export const usePlaceGallery = (locationSource) => {
   const currentKoreanNameRef = useRef('');
   const currentQueryRef = useRef('');
   const currentPlaceKeyRef = useRef('');
+  const lastRefreshAtRef = useRef(0);
 
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
@@ -169,6 +180,15 @@ export const usePlaceGallery = (locationSource) => {
     primaryQuery = primaryQuery.trim();
     if (!primaryQuery) return;
 
+    const slugOverride =
+      typeof targetSpot === 'object' && targetSpot?.slug
+        ? GALLERY_QUERY_OVERRIDES[targetSpot.slug]
+        : null;
+    if (slugOverride) {
+      primaryQuery = slugOverride.primary;
+      backupQuery = slugOverride.backup || backupQuery;
+    }
+
     // 🚨 [Fix] 한글 검색어로 API 호출 시 결과가 희박하므로 Dictionary로 영문 강제 치환
     if (FALLBACK_DICTIONARY[koreanName]) {
       primaryQuery = FALLBACK_DICTIONARY[koreanName];
@@ -221,7 +241,7 @@ export const usePlaceGallery = (locationSource) => {
         return;
       }
 
-      if (dbCandidates.length) {
+      if (!slugOverride && dbCandidates.length) {
         try {
           const { data: dbRows, error: dbError } = await supabase
             .from('place_stats')
@@ -264,11 +284,25 @@ export const usePlaceGallery = (locationSource) => {
       if ((results.length <= 15 || forceRefresh) && PEXELS_KEY) {
         console.warn(`⚠️ Unsplash 이미지 부족 또는 강제 새로고침. Pexels 이미지 검색 병합을 시도합니다.`);
         try {
-          const pexelsImages = await apiClient.fetchPexelsImages(PEXELS_KEY, primaryQuery, pageRef.current);
+          const pexelsQueries = [primaryQuery, backupQuery].filter(Boolean);
+          const seenPexelsIds = new Set();
+          let mergedPexels = [];
 
-          if (pexelsImages && pexelsImages.length > 0) {
-            results = [...results, ...pexelsImages];
-            console.log(`✅ Pexels 이미지 ${pexelsImages.length}개 병합 완료. 총 ${results.length}개`);
+          for (const pexelsQuery of pexelsQueries) {
+            const pexelsImages = await apiClient.fetchPexelsImages(PEXELS_KEY, pexelsQuery, pageRef.current);
+            if (pexelsImages?.length) {
+              for (const img of pexelsImages) {
+                if (!seenPexelsIds.has(img.id)) {
+                  seenPexelsIds.add(img.id);
+                  mergedPexels.push(img);
+                }
+              }
+            }
+          }
+
+          if (mergedPexels.length > 0) {
+            results = [...results, ...mergedPexels];
+            console.log(`✅ Pexels 이미지 ${mergedPexels.length}개 병합 완료. 총 ${results.length}개`);
           }
         } catch (pexelsError) {
           console.error("⚠️ Pexels API Error:", pexelsError);
@@ -422,6 +456,22 @@ export const usePlaceGallery = (locationSource) => {
     }
   }, []);
 
+  const handleRefresh = useCallback(() => {
+    const now = Date.now();
+    if (now - lastRefreshAtRef.current < GALLERY_REFRESH_COOLDOWN_MS) {
+      return false;
+    }
+    lastRefreshAtRef.current = now;
+    fetchImages(true);
+    return true;
+  }, [fetchImages]);
+
+  const getRefreshCooldownRemaining = useCallback(() => {
+    const elapsed = Date.now() - lastRefreshAtRef.current;
+    const remaining = GALLERY_REFRESH_COOLDOWN_MS - elapsed;
+    return remaining > 0 ? Math.ceil(remaining / 1000) : 0;
+  }, []);
+
   // 반환 객체
   return {
     images,
@@ -429,6 +479,9 @@ export const usePlaceGallery = (locationSource) => {
     selectedImg,
     setSelectedImg,
     handleDownload,
-    handleRemoveImage
+    handleRemoveImage,
+    handleRefresh,
+    getRefreshCooldownRemaining,
+    refreshCooldownSec: GALLERY_REFRESH_COOLDOWN_MS / 1000,
   };
 };
