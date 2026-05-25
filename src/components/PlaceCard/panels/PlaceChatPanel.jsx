@@ -95,9 +95,9 @@ const PlaceChatPanel = React.memo(({
   /** 모바일: 고정 헤더 탭 → 미디어 패널 스크롤 맨 위 (iOS 상태바 탭은 중첩 스크롤에서 동작하지 않음) */
   const supportsHeaderScrollTop = HEADER_SCROLL_TOP_MODES.includes(mediaMode);
 
-  const handleMediaChromeTap = (event) => {
+  const handleHeaderScrollTap = (event) => {
       if (!supportsHeaderScrollTop) return;
-      if (event.target.closest('button')) return;
+      if (event.target.closest('button, a, [role="button"]')) return;
       dispatchPlaceScrollToTop(mediaMode);
   };
 
@@ -116,43 +116,53 @@ const PlaceChatPanel = React.memo(({
 
   return (
     <div className={`flex flex-col transition-all duration-500
-        ${isFullScreen ? 'opacity-0 md:translate-x-[-100%]' : 'opacity-100 translate-x-0'}
-        absolute top-0 left-0 w-full z-[150] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 md:pb-0 md:border-none md:rounded-none
+        ${isFullScreen ? 'opacity-0 pointer-events-none md:pointer-events-auto md:translate-x-[-100%]' : 'opacity-100 translate-x-0 pointer-events-auto'}
+        absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 md:pb-0 md:border-none md:rounded-none
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
 
-      {/* Header — 갤러리·위키·리뷰·플래너: 버튼 외 영역 탭 시 스크롤 맨 위 */}
+      {/* Header — 갤러리·위키·리뷰·플래너: 지명 영역 탭 시 스크롤 맨 위 (뒤로/홈 버튼과 분리) */}
       <div
-        className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 ${mediaMode === 'GALLERY' && selectedImg ? 'hidden md:flex' : 'flex'} ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
-        onClick={handleMediaChromeTap}
-        onKeyDown={(event) => {
-            if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
-                event.preventDefault();
-                dispatchPlaceScrollToTop(mediaMode);
-            }
-        }}
-        role={supportsHeaderScrollTop ? 'button' : undefined}
-        tabIndex={supportsHeaderScrollTop ? 0 : undefined}
-        title={supportsHeaderScrollTop ? HEADER_SCROLL_TOP_TITLES[mediaMode] : undefined}
+        className="shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3"
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div className="flex items-center gap-2.5 overflow-hidden w-full min-w-0">
              <button
-                onClick={onClose}
-                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/15 md:bg-white/10 text-white border border-white/25 hover:bg-white/25 transition-all shrink-0 shadow-lg"
+                type="button"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onClose?.();
+                }}
+                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/15 md:bg-white/10 text-white border border-white/25 hover:bg-white/25 transition-all shrink-0 shadow-lg touch-manipulation"
                 title="뒤로가기"
                 aria-label="뒤로가기"
              >
-                 <ArrowLeft className="w-4 h-4 md:w-4 md:h-4" />
+                 <ArrowLeft className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <button
-                onClick={handleGoHomeClick}
-                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-300 hover:bg-white/20 transition-all shrink-0 shadow-lg"
+                type="button"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    handleGoHomeClick();
+                }}
+                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-300 hover:bg-white/20 transition-all shrink-0 shadow-lg touch-manipulation"
                 title="홈으로 이동"
                 aria-label="홈으로 이동"
              >
-                <Globe className="w-4 h-4 md:w-4 md:h-4" />
+                <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
-             <div className="flex flex-col flex-1 min-w-0 justify-center">
+             <div
+                className={`flex flex-col flex-1 min-w-0 justify-center ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
+                onClick={handleHeaderScrollTap}
+                onKeyDown={(event) => {
+                    if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
+                        event.preventDefault();
+                        dispatchPlaceScrollToTop(mediaMode);
+                    }
+                }}
+                role={supportsHeaderScrollTop ? 'button' : undefined}
+                tabIndex={supportsHeaderScrollTop ? 0 : undefined}
+                title={supportsHeaderScrollTop ? HEADER_SCROLL_TOP_TITLES[mediaMode] : undefined}
+             >
                  <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location?.country || "Global"}</span>
                  <div className="flex items-center gap-1.5 min-w-0 mt-0.5">
                      <button

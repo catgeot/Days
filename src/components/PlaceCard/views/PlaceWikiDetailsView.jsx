@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
@@ -323,9 +324,10 @@ const PlaceWikiDetailsView = ({
   };
 
   return (
+    <div className="w-full h-full flex flex-col relative bg-[#05070a]">
     <div
         ref={containerRef}
-        className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden text-white custom-scrollbar relative bg-[#05070a] ${placeScrollSurfaceClass} ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
+        className={`flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden text-white custom-scrollbar relative ${placeScrollSurfaceClass} ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
     >
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -363,7 +365,7 @@ const PlaceWikiDetailsView = ({
             </div>
         )}
 
-        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-48 md:pb-32 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 md:pt-0' : 'pt-[96px]') : 'pt-8'}`}>
+        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-8 md:pb-32 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 md:pt-0' : 'pt-[96px]') : 'pt-8'}`}>
 
             {/* 타이틀이 Hero 이미지 없는 경우를 대비한 Fallback */}
             {!heroImage && (
@@ -615,9 +617,13 @@ const PlaceWikiDetailsView = ({
 
             </div>
 
-            {/* 하단 AI 버튼 (모바일 전용 푸터 고정) */}
-            <div className="fixed md:hidden bottom-0 left-0 right-0 p-3 z-[160] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10 flex gap-2">
+        </div>
+    </div>
+
+            {/* 하단 AI 버튼 (모바일) — 스크롤 컨테이너 밖 flex 푸터 (iOS fixed-in-scroll 터치 간섭 방지) */}
+            <div className="md:hidden shrink-0 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10 flex gap-2">
                 <button
+                    type="button"
                     onClick={() => {
                         if (isAiExpanded) {
                             if (aiSectionRef.current) {
@@ -637,6 +643,7 @@ const PlaceWikiDetailsView = ({
 
                 {matchedPackage && (
                     <button
+                        type="button"
                         onClick={onOpenPackage}
                         className="flex-1 group flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl transition-all duration-300 shadow-sm border bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border-purple-400/50 min-h-[44px]"
                     >
@@ -647,7 +654,6 @@ const PlaceWikiDetailsView = ({
                     </button>
                 )}
             </div>
-        </div>
 
         {/* 맨 위로 가기 버튼 */}
         {scrollY > 500 && (
@@ -660,10 +666,10 @@ const PlaceWikiDetailsView = ({
             </button>
         )}
 
-        {/* 라이트박스 모달 */}
-        {lightboxImg && (
+        {/* 라이트박스 모달 — body 포털 (스크롤 컨테이너 fixed 레이어가 헤더 터치를 가로채지 않도록) */}
+        {lightboxImg && createPortal(
             <div
-                className="fixed inset-0 z-[300] bg-black/95 flex items-center justify-center backdrop-blur-sm animate-fade-in"
+                className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center backdrop-blur-sm animate-fade-in"
                 onClick={() => setLightboxImg(null)}
                 onKeyDown={(e) => {
                     if (e.key === 'Escape') setLightboxImg(null);
@@ -770,7 +776,8 @@ const PlaceWikiDetailsView = ({
                         {lightboxIndex + 1} / {galleryImages.length}
                     </p>
                 </div>
-            </div>
+            </div>,
+            document.body
         )}
     </div>
   );

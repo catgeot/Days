@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
@@ -445,16 +446,17 @@ const PlannerTab = ({
                 </div>
             </div>
             </div>
-            {showScrollToTop && (
+            {showScrollToTop && createPortal(
                 <button
                     type="button"
                     onClick={scrollPlannerToTop}
-                    className="fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5"
+                    className="fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation"
                     aria-label="플래너 맨 위로"
                 >
                     <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
                     <span className="hidden md:inline text-sm font-bold">맨 위</span>
-                </button>
+                </button>,
+                document.body
             )}
         </div>
         </TripcomFlightSearchProvider>
