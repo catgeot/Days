@@ -3973,5 +3973,61 @@
       "malta",
       "malta"
     ]
+  },
+  {
+    "id": 387,
+    "slug": "yap",
+    "name": "야프",
+    "name_en": "Yap",
+    "country": "미크로네시아 연방",
+    "searchKeys": [
+      "yap",
+      "야프",
+      "ruul",
+      "루울",
+      "yap (ruul)",
+      "YAP"
+    ]
+  },
+  {
+    "id": 388,
+    "slug": "chuuk",
+    "name": "추크",
+    "name_en": "Chuuk",
+    "country": "미크로네시아 연방",
+    "searchKeys": [
+      "chuuk",
+      "추크",
+      "truk",
+      "트럭",
+      "TKK"
+    ]
+  },
+  {
+    "id": 389,
+    "slug": "kosrae",
+    "name": "코스라에",
+    "name_en": "Kosrae",
+    "country": "미크로네시아 연방",
+    "searchKeys": [
+      "kosrae",
+      "코스라에",
+      "utwe",
+      "우트웨",
+      "KOS"
+    ]
+  },
+  {
+    "id": 390,
+    "slug": "pohnpei",
+    "name": "폰페이",
+    "name_en": "Pohnpei",
+    "country": "미크로네시아 연방",
+    "searchKeys": [
+      "pohnpei",
+      "폰페이",
+      "PNI",
+      "nan madol"
+    ]
   }
 ]

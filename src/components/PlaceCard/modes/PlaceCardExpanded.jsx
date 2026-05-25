@@ -6,6 +6,7 @@ import { useWikiData } from '../hooks/useWikiData';
 import { usePlannerData } from '../hooks/usePlannerData';
 import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch';
 import { getMatchedPackage } from '../../../utils/tripLinkMatcher';
+import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import TripLinkModal from '../modals/TripLinkModal';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatData, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
@@ -19,14 +20,13 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
   // 상위(PlaceCard)에서 전달받은 initialTab을 상태로 관리
   const [mediaMode, setMediaModeState] = useState(initialTab);
 
-  // 탭 변경 시 URL 업데이트 로직
+  // 탭 변경 시 URL 업데이트 — SSOT slug 기준 (숫자 id·보조지명 slug 유지 방지)
   const setMediaMode = useCallback((newMode) => {
-      const routeSlug = reactLocation.pathname.split('/')[2];
-      const slug = routeSlug || location?.slug;
+      const slug = getPlaceUrlParam(location);
       const tabPath = newMode === 'GALLERY' ? '' : `/${newMode.toLowerCase()}`;
       navigate(`/place/${slug}${tabPath}`, { replace: true });
       setMediaModeState(newMode);
-  }, [navigate, location?.slug, reactLocation.pathname]);
+  }, [navigate, location]);
 
   // props로 받은 initialTab이 변경되면 동기화
   useEffect(() => {
@@ -34,6 +34,16 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, chatDat
           queueMicrotask(() => setMediaModeState(initialTab));
       }
   }, [initialTab]);
+
+  // 장소 객체가 SSOT slug로 통합됐을 때 URL(숫자 id·보조지명)도 맞춤
+  useEffect(() => {
+      const canonical = getPlaceUrlParam(location);
+      const currentSlug = reactLocation.pathname.split('/')[2];
+      if (!canonical || !currentSlug || canonical === currentSlug) return;
+      const tab = reactLocation.pathname.split('/')[3];
+      const tabPath = tab ? `/${tab}` : '';
+      navigate(`/place/${canonical}${tabPath}`, { replace: true });
+  }, [location, reactLocation.pathname, navigate]);
 
   const [selectedVideoId, setSelectedVideoId] = useState(null);
 

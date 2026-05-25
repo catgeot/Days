@@ -1,6 +1,12 @@
-import { TRAVEL_SPOT_TOOLKIT_SYNONYMS } from '../../scripts/data/travel-spot-place-id-aliases.mjs';
+import { TRAVEL_SPOT_TOOLKIT_SYNONYMS, TRAVEL_SPOT_LEGACY_TOOLKIT_IDS } from '../../scripts/data/travel-spot-place-id-aliases.mjs';
 import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from '../../scripts/data/travel-spot-airport-overrides.mjs';
-import { getPlaceStableKey, resolveTravelSpotFromLocation } from './travelSpotResolve.js';
+import {
+  buildPlaceDbIdCandidates,
+  getPlaceStableKey,
+  mergeCanonicalTravelSpot,
+  resolveTravelSpotFromLocation,
+} from './travelSpotResolve.js';
+import { formatUrlName } from '../pages/Home/lib/formatUrlName.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import { distanceKm, extractArrivalIataCodesFromEssentialGuide } from './rentalAirportMatch.js';
 
@@ -14,7 +20,7 @@ export function normalizePlaceKey(s) {
     .replace(/\s+/g, '');
 }
 
-/** 플래너 DB `place_id` 조회 후보 — 공식명·영문·slug·별칭 */
+/** 플래너 DB `place_id` 조회 후보 — slug·별칭·숫자 id·레거시 id·search-/loc- id */
 export function buildToolkitPlaceIdCandidates(location) {
   if (location == null) return [];
   if (typeof location === 'string') {
@@ -22,28 +28,63 @@ export function buildToolkitPlaceIdCandidates(location) {
     return s ? [s] : [];
   }
 
-  const seen = new Set();
   const out = [];
+  const pushVariant = (variant) => {
+    const s = String(variant ?? '').trim();
+    if (!s || out.includes(s)) return;
+    out.push(s);
+  };
+  /** DB place_id는 대소문자 구분 — Ruul vs ruul 등 원문·소문자·slug 변형 모두 조회 */
   const add = (v) => {
     const s = String(v ?? '').trim();
     if (!s) return;
-    const norm = normalizePlaceKey(s);
-    if (seen.has(norm)) return;
-    seen.add(norm);
-    out.push(s);
+    pushVariant(s);
+    const lower = s.toLowerCase();
+    if (lower !== s) pushVariant(lower);
+    const slug = formatUrlName(s);
+    if (slug && slug !== s && slug !== lower) pushVariant(slug);
   };
 
-  const slugKey = getPlaceStableKey(location);
+  const raw = location;
+  const loc = mergeCanonicalTravelSpot(location);
+
+  const slugKey = getPlaceStableKey(loc);
   if (slugKey) add(slugKey);
 
-  add(location.place_id);
-  add(location.placeId);
-  add(location.slug);
-  add(location.name);
-  add(location.name_en);
+  add(loc.place_id);
+  add(loc.placeId);
+  add(loc.slug);
+  add(loc.name);
+  add(loc.name_en);
+  add(raw.place_id);
+  add(raw.placeId);
+  add(raw.slug);
+  add(raw.name);
+  add(raw.name_en);
+
   const synonyms = TRAVEL_SPOT_TOOLKIT_SYNONYMS[slugKey];
   if (synonyms) {
     for (const syn of synonyms) add(syn);
+  }
+
+  const legacyIds = TRAVEL_SPOT_LEGACY_TOOLKIT_IDS[slugKey];
+  if (legacyIds) {
+    for (const legacyId of legacyIds) add(legacyId);
+  }
+
+  for (const id of buildPlaceDbIdCandidates(loc)) add(id);
+  for (const id of buildPlaceDbIdCandidates(raw)) add(id);
+
+  for (const src of [loc, raw]) {
+    const ephemeralId = src?.id != null ? String(src.id).trim() : '';
+    if (
+      ephemeralId &&
+      (ephemeralId.startsWith('search-') ||
+        ephemeralId.startsWith('loc-') ||
+        ephemeralId.startsWith('city-'))
+    ) {
+      add(ephemeralId);
+    }
   }
 
   return out;
@@ -171,7 +212,8 @@ export function isIataPlausibleForLocation(iata, location) {
 export function essentialGuideMatchesLocation(guide, location) {
   if (!guide || typeof guide !== 'object' || !location) return true;
 
-  const curated = getCuratedGatewayIataSet(location);
+  const loc = mergeCanonicalTravelSpot(location);
+  const curated = getCuratedGatewayIataSet(loc);
   const primaryRaw = Array.isArray(guide.primary_arrival_airports_iata)
     ? guide.primary_arrival_airports_iata
         .map((c) => String(c).trim().toUpperCase())
@@ -183,7 +225,7 @@ export function essentialGuideMatchesLocation(guide, location) {
   if (primaryRaw.length > 0) {
     if (primaryKnown.length === 0) return true;
     return primaryKnown.some(
-      (c) => isIataPlausibleForLocation(c, location) || curated?.has(c)
+      (c) => isIataPlausibleForLocation(c, loc) || curated?.has(c)
     );
   }
 
@@ -192,7 +234,7 @@ export function essentialGuideMatchesLocation(guide, location) {
 
   const known = fromTimeline.map((c) => String(c).trim().toUpperCase()).filter((c) => hubByIata(c));
   if (known.length === 0) return true;
-  return known.some((c) => isIataPlausibleForLocation(c, location) || curated?.has(c));
+  return known.some((c) => isIataPlausibleForLocation(c, loc) || curated?.has(c));
 }
 
 export function hasUsableToolkit(row) {
@@ -250,7 +292,20 @@ export async function fetchToolkitRow(supabase, location) {
     return null;
   }
 
-  return pickBestToolkitRow(data, location);
+  if (!data?.length) return null;
+
+  const picked = pickBestToolkitRow(data, location);
+  if (picked) return picked;
+
+  if (import.meta.env?.DEV && data.length > 0) {
+    console.warn('[toolkitPlaceIdResolve] place_id는 일치하나 지리 검증 실패 — 레거시 행 폴백', {
+      candidates,
+      placeIds: data.map((r) => r.place_id),
+    });
+  }
+
+  // place_id는 맞지만 IATA 지리 검증만 실패한 레거시 행 — UI mismatch 경고로 표시
+  return pickBestToolkitRow(data, null);
 }
 
 export function toolkitUpdateMatchesLocation(updatedPlaceId, location) {

@@ -118,24 +118,97 @@ export function resolveTravelSpotFromPlaceId(lookup, spots, placeId) {
   return resolveFuzzy(spots, raw);
 }
 
-/** 좌표 근접 매칭 — loc-/search- URL 새로고침·지오코딩 핀 복구용 */
-export function resolveTravelSpotFromCoords(lat, lng, spots = TRAVEL_SPOTS, epsilon = 0.02) {
+function slugifyNameEn(nameEn) {
+  return String(nameEn ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function spotSlug(spot) {
+  if (!spot) return '';
+  return spot.slug || slugifyNameEn(spot.name_en) || slugifyNameEn(spot.name) || String(spot.id ?? '');
+}
+
+function maxCoordKmForTier(tier) {
+  const t = Number(tier) || 3;
+  if (t <= 1) return 12;
+  if (t === 2) return 22;
+  return 45;
+}
+
+/** "Yap (Ruul)" → ['Yap', 'Yap (Ruul)', 'Ruul'] — SSOT 본명(괄호 앞) 우선 */
+export function extractSearchNameCandidates(query) {
+  const trimmed = String(query ?? '').trim();
+  if (!trimmed) return [];
+  const paren = trimmed.match(/^(.+?)\s*[（(]([^)）]+)[)）]\s*$/);
+  if (paren) {
+    return [paren[1].trim(), trimmed, paren[2].trim()].filter(Boolean);
+  }
+  return [trimmed];
+}
+
+/** 검색어 → travelSpots SSOT (별칭·괄호 보조지명·fuzzy 포함) */
+export function resolveTravelSpotFromSearchQuery(query) {
+  const lookup = getSpotLookup();
+  for (const candidate of extractSearchNameCandidates(query)) {
+    const hit = resolveTravelSpotFromPlaceId(lookup, TRAVEL_SPOTS, candidate);
+    if (hit?.spot) return hit.spot;
+  }
+  return null;
+}
+
+function distanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** 좌표 근접 매칭 — loc-/search- URL·지오코딩 핀을 SSOT travelSpots/cities 행으로 연결 */
+export function resolveTravelSpotFromCoords(lat, lng, spots = TRAVEL_SPOTS, maxKm = null) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  return (
-    spots.find(
-      (s) =>
-        Number.isFinite(s.lat) &&
-        Number.isFinite(s.lng) &&
-        Math.abs(s.lat - lat) < epsilon &&
-        Math.abs(s.lng - lng) < epsilon
-    ) ?? null
-  );
+
+  let best = null;
+  let bestDist = Infinity;
+
+  for (const s of spots) {
+    if (!Number.isFinite(s.lat) || !Number.isFinite(s.lng)) continue;
+    const d = distanceKm(lat, lng, s.lat, s.lng);
+    if (d < bestDist) {
+      bestDist = d;
+      best = s;
+    }
+  }
+
+  if (!best) return null;
+  const allowed = maxKm ?? maxCoordKmForTier(best.tier);
+  return bestDist <= allowed ? best : null;
 }
 
 export function resolveTravelSpotFromLocation(location) {
   if (location == null) return null;
   if (typeof location === 'string') {
     return resolveTravelSpotFromPlaceId(getSpotLookup(), TRAVEL_SPOTS, location);
+  }
+
+  if (location.originalQuery) {
+    const fromQuery = resolveTravelSpotFromSearchQuery(location.originalQuery);
+    if (fromQuery) return { spot: fromQuery, matchKind: 'searchQuery' };
+  }
+
+  if (location.id != null && /^\d+$/.test(String(location.id))) {
+    const byId = TRAVEL_SPOTS.find((s) => String(s.id) === String(location.id));
+    if (byId) return { spot: byId, matchKind: 'id' };
   }
 
   const keys = [
@@ -169,11 +242,12 @@ export function mergeCanonicalTravelSpot(location) {
   if (!resolved?.spot) return location;
 
   const { spot } = resolved;
+  const canonicalSlug = spotSlug(spot);
   return {
     ...location,
     id: spot.id ?? location.id,
-    canonical_slug: spot.slug,
-    slug: spot.slug,
+    canonical_slug: canonicalSlug,
+    slug: canonicalSlug,
     name: spot.name,
     name_en: spot.name_en ?? location.name_en,
     name_ko: spot.name_ko ?? spot.name,
@@ -189,13 +263,33 @@ export function mergeCanonicalTravelSpot(location) {
   };
 }
 
-/** 플래너·캐시용 안정 키 — canonical_slug 우선 */
+/** 검색·지구본·URL 진입이 동일 SSOT 여행지인지 — slug/canonical_slug 기준 */
+export function isSameCanonicalPlace(a, b) {
+  if (a == null || b == null) return false;
+  const keyA = getPlaceStableKey(mergeCanonicalTravelSpot(a));
+  const keyB = getPlaceStableKey(mergeCanonicalTravelSpot(b));
+  return Boolean(keyA && keyB && keyA === keyB);
+}
+
+/** 플래너·캐시용 안정 키 — canonical_slug 우선 (숫자 id·숫자 slug는 SSOT slug로 치환) */
 export function getPlaceStableKey(location) {
   if (location == null) return '';
   if (typeof location === 'string') return location.trim();
-  const canonical = location.canonical_slug ?? location.slug;
-  if (canonical) return String(canonical).trim().toLowerCase();
-  return String(location.name ?? location.place_id ?? '').trim();
+
+  const merged = typeof location === 'object' ? mergeCanonicalTravelSpot(location) : location;
+  let canonical = merged.canonical_slug ?? merged.slug;
+  if (canonical && /^\d+$/.test(String(canonical).trim())) {
+    const spot = TRAVEL_SPOTS.find((s) => String(s.id) === String(canonical).trim());
+    if (spot) canonical = spotSlug(spot);
+  }
+  if (canonical && !/^\d+$/.test(String(canonical).trim())) {
+    return String(canonical).trim().toLowerCase();
+  }
+  if (merged.id != null && /^\d+$/.test(String(merged.id))) {
+    const spot = TRAVEL_SPOTS.find((s) => String(s.id) === String(merged.id));
+    if (spot?.slug) return spotSlug(spot).toLowerCase();
+  }
+  return String(merged.name ?? merged.place_id ?? '').trim();
 }
 
 /** place_stats·place_wiki·place_videos·RPC용 — slug-first; 레거시 한글 행은 buildPlaceDbIdCandidates 폴백 */
@@ -224,5 +318,8 @@ export function buildPlaceDbIdCandidates(location) {
   if (location.slug) out.add(String(location.slug).trim().toLowerCase());
   if (location.name_en) out.add(String(location.name_en).trim());
   if (location.canonical_slug) out.add(String(location.canonical_slug).trim().toLowerCase());
+  const resolved = resolveTravelSpotFromLocation(location);
+  if (resolved?.spot?.id != null) out.add(String(resolved.spot.id));
+  if (location.id != null && /^\d+$/.test(String(location.id))) out.add(String(location.id));
   return [...out].filter(Boolean);
 }

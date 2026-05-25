@@ -1,3 +1,6 @@
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
+import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
+
 export const formatUrlName = (nameEn) => {
   if (!nameEn) return '';
   return nameEn
@@ -10,25 +13,43 @@ export const formatUrlName = (nameEn) => {
     .replace(/^-|-$/g, '');
 };
 
+function isEphemeralSlug(slug) {
+  if (!slug || typeof slug !== 'string') return true;
+  const s = slug.trim();
+  return (
+    !s ||
+    /^\d+$/.test(s) ||
+    s.startsWith('search-') ||
+    s.startsWith('loc-') ||
+    s.startsWith('city-')
+  );
+}
+
 /**
- * `/place/...` 라우팅용. 지오코딩 slug가 유명 도시(slug)와 겹치면 잘못된 프리셋(예: 부산)으로 해석될 수 있어
- * 좌표 기반 id(search-, loc-)는 slug보다 우선합니다.
+ * `/place/...` 라우팅용. SSOT slug(canonical) 우선 — 숫자 id(700)·지오코딩 보조지명(ruul) URL 통일.
  */
 export function getPlaceUrlParam(loc) {
   if (!loc) return '';
-  const slug = loc.canonical_slug || loc.slug;
-  if (
-    slug &&
-    typeof slug === 'string' &&
-    !slug.startsWith('search-') &&
-    !slug.startsWith('loc-') &&
-    !slug.startsWith('city-')
-  ) {
+
+  const merged = typeof loc === 'object' ? mergeCanonicalTravelSpot(loc) : loc;
+  const slug = merged.canonical_slug || merged.slug;
+
+  if (slug && typeof slug === 'string' && !isEphemeralSlug(slug)) {
     return slug;
   }
-  const id = loc.id != null ? String(loc.id) : '';
+
+  const id = merged.id != null ? String(merged.id) : '';
+  if (/^\d+$/.test(id)) {
+    const spot = TRAVEL_SPOTS.find((s) => String(s.id) === id);
+    if (spot?.slug) return spot.slug;
+    const fromName = formatUrlName(spot?.name_en || spot?.name);
+    if (fromName) return fromName;
+  }
+
   if (id.startsWith('search-') || id.startsWith('loc-')) {
     return id;
   }
-  return slug || id || loc.name || '';
+
+  const nameSlug = formatUrlName(merged.name_en || merged.name);
+  return nameSlug || slug || id || merged.name || '';
 }

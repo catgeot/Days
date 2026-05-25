@@ -23,7 +23,7 @@ import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { getSystemPrompt } from './lib/prompts';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot, resolveTravelSpotFromCoords } from '../../utils/travelSpotResolve.js';
+import { mergeCanonicalTravelSpot, resolveTravelSpotFromCoords, resolveTravelSpotFromPlaceId, buildSpotLookup } from '../../utils/travelSpotResolve.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -152,6 +152,11 @@ function Home() {
                     });
 
       if (!target) {
+        const aliasResolved = resolveTravelSpotFromPlaceId(buildSpotLookup(TRAVEL_SPOTS), TRAVEL_SPOTS, normalizedTargetSlug);
+        if (aliasResolved?.spot) target = aliasResolved.spot;
+      }
+
+      if (!target) {
         const matchedCity = (citiesData || []).find(c => c.slug === normalizedTargetSlug);
         if (matchedCity) {
           target = {
@@ -241,6 +246,13 @@ function Home() {
               category: hydratedTarget.category || category,
             })
           );
+
+          const canonicalParam = getPlaceUrlParam(focusTarget);
+          if (canonicalParam && canonicalParam.toLowerCase() !== normalizedTargetSlug) {
+            const tabSuffix = match.params.tab ? `/${match.params.tab}` : '';
+            navigate(`/place/${canonicalParam}${tabSuffix}`, { replace: true });
+          }
+
           setSelectedLocation(focusTarget);
           addScoutPin(focusTarget);
           moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
@@ -535,7 +547,7 @@ function Home() {
       <div style={{ display: 'none' }} aria-hidden="true">
         {/* 여행지 링크 */}
         {TRAVEL_SPOTS.map((spot, index) => (
-          <Link key={`${spot.slug || spot.id}-${index}`} to={`/place/${spot.slug || spot.id}`}>
+          <Link key={`${spot.slug || spot.id}-${index}`} to={`/place/${getPlaceUrlParam(spot)}`}>
             {spot.name}
           </Link>
         ))}

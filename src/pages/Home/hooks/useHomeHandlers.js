@@ -15,9 +15,45 @@ import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
+import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 
 const prepareLocation = (loc) => enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(loc));
+
+const CURATED_PLACES = () => [...TRAVEL_SPOTS, ...(citiesData || [])];
+
+/** 지오코딩·지구본 클릭 좌표를 SSOT travelSpots/cities 행으로 연결 (검색·핀 클릭 ID 불일치 방지) */
+function curatedLocationFromCoords(lat, lng, category) {
+  const nearest = resolveTravelSpotFromCoords(lat, lng, CURATED_PLACES());
+  if (!nearest) return null;
+
+  const spot = TRAVEL_SPOTS.find((s) => s.slug === nearest.slug);
+  if (spot) {
+    return prepareLocation({
+      ...spot,
+      type: 'temp-base',
+      category: spot.category || category,
+    });
+  }
+
+  const city = (citiesData || []).find((c) => c.slug === nearest.slug);
+  if (city) {
+    return prepareLocation({
+      id: `city-${city.lat}-${city.lng}`,
+      slug: city.slug,
+      name: city.name,
+      name_en: city.name_en || city.name,
+      country: city.country || 'Explore',
+      country_en: city.country_en || 'Explore',
+      lat: city.lat,
+      lng: city.lng,
+      category,
+      desc: city.desc,
+      type: 'temp-base',
+    });
+  }
+
+  return null;
+}
 
 // Haversine 공식을 이용한 두 좌표 간의 거리 계산 (단위: km)
 const getDistanceKm = (lat1, lon1, lat2, lon2) => {
@@ -145,6 +181,16 @@ export function useHomeHandlers({
 
       const addressData = await getAddressFromCoordinates(lat, lng);
 
+      const curatedFromClick = curatedLocationFromCoords(lat, lng, category);
+      if (curatedFromClick) {
+        addScoutPin(curatedFromClick);
+        setSelectedLocation(curatedFromClick);
+        moveToLocation(curatedFromClick.lat, curatedFromClick.lng, curatedFromClick.name, curatedFromClick.category, { focus: false });
+        processSearchKeywords(curatedFromClick.name);
+        recordInteraction(curatedFromClick, 'view');
+        return;
+      }
+
       const isOcean = !addressData || (!addressData.city && !addressData.country);
 
       if (isOcean) {
@@ -213,11 +259,6 @@ export function useHomeHandlers({
   const handleLocationSelect = useCallback((loc) => {
     if (!loc) return;
 
-    if (selectedLocation && selectedLocation.lat === loc.lat && selectedLocation.lng === loc.lng) {
-      setIsPlaceCardOpen(true);
-      return;
-    }
-
     const name = loc.name || "Selected";
     const finalLoc = prepareLocation({
       ...loc,
@@ -226,6 +267,19 @@ export function useHomeHandlers({
       name: name,
       category: loc.category || category
     });
+
+    if (
+      selectedLocation &&
+      (isSameCanonicalPlace(selectedLocation, finalLoc) ||
+        (selectedLocation.lat === loc.lat && selectedLocation.lng === loc.lng))
+    ) {
+      const unified = prepareLocation({ ...selectedLocation, ...finalLoc });
+      addScoutPin(unified);
+      setSelectedLocation(unified);
+      setIsPlaceCardOpen(true);
+      setIsCardExpanded(false);
+      return;
+    }
 
     moveToLocation(loc.lat, loc.lng, name, loc.category || category);
     addScoutPin(finalLoc);
@@ -333,6 +387,12 @@ export function useHomeHandlers({
     const query = input.trim();
     setDraftInput(query);
     processSearchKeywords(query);
+
+    const querySpot = resolveTravelSpotFromSearchQuery(query);
+    if (querySpot) {
+      handleLocationSelect(querySpot);
+      return querySpot;
+    }
 
     const localSpot = TRAVEL_SPOTS.find(s =>
       s.name.toLowerCase() === query.toLowerCase() ||
@@ -538,6 +598,18 @@ export function useHomeHandlers({
     const coords = await getCoordinatesFromAddress(query);
 
     if (coords) {
+      const hintedSpot = resolveTravelSpotFromSearchQuery(query);
+      if (hintedSpot) {
+        handleLocationSelect(hintedSpot);
+        return hintedSpot;
+      }
+
+      const curatedFromSearch = curatedLocationFromCoords(coords.lat, coords.lng, category);
+      if (curatedFromSearch) {
+        handleLocationSelect({ ...curatedFromSearch, originalQuery: query });
+        return curatedFromSearch;
+      }
+
       const normalizedLoc = {
         id: `search-${coords.lat}-${coords.lng}`,
         slug: formatUrlName(coords.name_en || coords.name),
@@ -549,7 +621,8 @@ export function useHomeHandlers({
         lng: coords.lng,
         category: category,
         desc: `${query} (${coords.country || "Explore"}) 지역을 탐색합니다.`,
-        type: 'temp-base'
+        type: 'temp-base',
+        originalQuery: query,
       };
       handleLocationSelect(normalizedLoc);
       return normalizedLoc;

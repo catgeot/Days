@@ -346,6 +346,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '대마도(쓰시마·対馬島)는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.'
   },
   kiribati: { primaryIatas: ['TRW'], preferredLinkIata: 'TRW', confidence: 'high', rationale: '타라와 공항' },
+  yap: { primaryIatas: ['YAP'], preferredLinkIata: 'YAP', confidence: 'high', rationale: '야프 국제공항' },
+  chuuk: { primaryIatas: ['TKK'], preferredLinkIata: 'TKK', confidence: 'high', rationale: '추크 국제공항' },
+  kosrae: { primaryIatas: ['KOS'], preferredLinkIata: 'KOS', confidence: 'high', rationale: '코스라에 국제공항' },
+  pohnpei: { primaryIatas: ['PNI'], preferredLinkIata: 'PNI', confidence: 'high', rationale: '폰페이 국제공항' },
   'kamchatka-peninsula': { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
   kamchatka: { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
   'midway-atoll': {

@@ -494,6 +494,38 @@ export const RENTAL_AIRPORT_HUBS = [
     aliases: ['palau', '팔라우', 'koror', '코로르', 'ror']
   },
   {
+    iata: 'YAP',
+    officialKo: '야프 국제공항',
+    lat: 9.4989,
+    lng: 138.0827,
+    radiusKm: 120,
+    aliases: ['yap', '야프', 'ruul', '루울', 'federated states of micronesia']
+  },
+  {
+    iata: 'TKK',
+    officialKo: '추크 국제공항',
+    lat: 7.4617,
+    lng: 151.843,
+    radiusKm: 120,
+    aliases: ['chuuk', '추크', 'truk', '트럭']
+  },
+  {
+    iata: 'KOS',
+    officialKo: '코스라에 국제공항',
+    lat: 5.3569,
+    lng: 162.9583,
+    radiusKm: 120,
+    aliases: ['kosrae', '코스라에', 'utwe', '우트웨']
+  },
+  {
+    iata: 'PNI',
+    officialKo: '폰페이 국제공항',
+    lat: 6.9851,
+    lng: 158.2089,
+    radiusKm: 120,
+    aliases: ['pohnpei', '폰페이', 'nan madol', '나난마돌']
+  },
+  {
     iata: 'NOU',
     officialKo: '누메아 타리나 공항',
     lat: -22.0164,

@@ -10,6 +10,8 @@ import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts'
 import { shouldUsePlannerPersona } from '../../../utils/bookingIntentResolver';
 import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
+import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
+import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
@@ -72,13 +74,9 @@ const PlaceChatPanel = React.memo(({
   const handleRelatedClick = (targetPlace) => {
       if (!targetPlace) return;
 
-      if (targetPlace.slug) {
-          navigate(`/place/${targetPlace.slug}`);
-          return;
-      }
-
-      if (targetPlace.id) {
-          navigate(`/place/${targetPlace.id}`);
+      const param = getPlaceUrlParam(mergeCanonicalTravelSpot(targetPlace));
+      if (param) {
+          navigate(`/place/${param}`);
           return;
       }
 

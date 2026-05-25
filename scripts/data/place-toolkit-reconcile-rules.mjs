@@ -286,6 +286,30 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     slugs: ['malta'],
     canonicalPlaceId: '몰타',
     mergeFrom: ['발레타', 'Valletta', 'Malta']
+  },
+  {
+    id: 'yap',
+    slugs: ['yap'],
+    canonicalPlaceId: 'yap',
+    mergeFrom: ['Yap', 'Ruul', 'ruul', '700', '387']
+  },
+  {
+    id: 'kosrae',
+    slugs: ['kosrae'],
+    canonicalPlaceId: 'kosrae',
+    mergeFrom: ['Kosrae', 'Utwe', 'utwe', '702', '389']
+  },
+  {
+    id: 'chuuk',
+    slugs: ['chuuk'],
+    canonicalPlaceId: 'chuuk',
+    mergeFrom: ['Chuuk', 'Truk', '701', '388']
+  },
+  {
+    id: 'pohnpei',
+    slugs: ['pohnpei'],
+    canonicalPlaceId: 'pohnpei',
+    mergeFrom: ['Pohnpei', '703', '390']
   }
 ];
 

@@ -155,6 +155,8 @@ npm run audit:ferries
 
 **DB `place_id` ≠ travelSpots 공식명**일 때는 [`scripts/data/travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs)에 `place_id → slug` 별칭을 추가합니다. `travelSpots-list.json`의 `searchKeys`·접미사 제거(제도·국립공원 등)도 자동 시도합니다. `citiesData`만 있고 `travelSpots`에 없는 지명은 별칭으로 해결되지 않습니다.
 
+**플래너 DB 조회**: Supabase `place_id`는 **대소문자 구분**입니다. 검색 지오코딩 slug(`ruul`, `utwe`)로 저장된 툴킷은 [`toolkitPlaceIdResolve.js`](../src/utils/toolkitPlaceIdResolve.js) `buildToolkitPlaceIdCandidates`가 소문자·`formatUrlName` 변형까지 조회합니다. 정리 시 삭제보다 `npm run toolkit:reconcile-place-id`로 canonical slug(`yap` 등) 리네임 권장.
+
 ### 작업 순서
 
 1. 새 IATA가 필요하면 **`rentalAirportHubs.js`**에 `officialKo`(예약·항공권에서 쓰는 표기) 추가.

@@ -140,7 +140,26 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'habana': 'havana',
   '발레타': 'malta',
   'Valletta': 'malta',
-  'Malta': 'malta'
+  'Malta': 'malta',
+
+  // —— 미크로네시아 (travelSpots slug: yap, chuuk, kosrae) ——
+  'Yap': 'yap',
+  '야프': 'yap',
+  'Ruul': 'yap',
+  '루울': 'yap',
+  'Yap (Ruul)': 'yap',
+  'Chuuk': 'chuuk',
+  '추크': 'chuuk',
+  'Truk': 'chuuk',
+  'Kosrae': 'kosrae',
+  '코스라에': 'kosrae',
+  'Utwe': 'kosrae',
+  'Utwe Bay': 'kosrae',
+  'Kosrae (Utwe)': 'kosrae',
+  'Pohnpei': 'pohnpei',
+  '폰페이': 'pohnpei',
+  'Nan Madol': 'pohnpei',
+  '나난마돌': 'pohnpei',
 };
 
 /**
@@ -208,6 +227,22 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   kumamoto: ['아오시마', 'Aoshima'],
   havana: ['아바나', 'Havana', 'habana'],
   malta: ['발레타', 'Valletta', 'Malta'],
+  yap: ['Yap', '야프', 'Ruul', '루울', 'Yap (Ruul)'],
+  chuuk: ['Chuuk', '추크', 'Truk'],
+  kosrae: ['Kosrae', '코스라에', 'Utwe', 'Utwe Bay', 'Kosrae (Utwe)'],
+  pohnpei: ['Pohnpei', '폰페이', 'Nan Madol', '나난마돌'],
+};
+
+/**
+ * DB place_toolkit 레거시 place_id — 지구본 숫자 id·구 SSOT id 호환
+ * (예: yap SSOT 387 이전에 700으로 저장된 행)
+ * @type {Record<string, string[]>}
+ */
+export const TRAVEL_SPOT_LEGACY_TOOLKIT_IDS = {
+  yap: ['700'],
+  chuuk: ['701'],
+  kosrae: ['702'],
+  pohnpei: ['703'],
 };
 
 /** @type {Set<string>} 여행지 SSOT에 없거나 매칭하면 안 되는 place_id */
