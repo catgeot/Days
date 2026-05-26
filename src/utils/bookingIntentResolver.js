@@ -7,6 +7,7 @@ import {
 } from './ferryBookingMatch.js';
 import { get12GoAffiliateUrl, get12GoHomeUrl } from './affiliate.js';
 import { resolveTravelSpotFromLocation } from './travelSpotResolve.js';
+import { buildPlacePlannerPath } from './placePlannerPath.js';
 
 const BOOKING_KEYWORDS = [
   '예약',
@@ -214,7 +215,7 @@ export function resolveBookingActions({
       transportType: 'general',
       actions: [],
       slug,
-      plannerUrl: slug ? `/place/${slug}?tab=planner` : null,
+      plannerUrl: buildPlacePlannerPath(slug),
     };
   }
 
@@ -258,7 +259,7 @@ export function resolveBookingActions({
     transportType,
     actions: twelveGoFirst.slice(0, 4),
     slug,
-    plannerUrl: slug ? `/place/${slug}?tab=planner` : null,
+    plannerUrl: buildPlacePlannerPath(slug),
   };
 }
 

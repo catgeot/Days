@@ -69,12 +69,6 @@ const BOOKING_SIGNAL_PATTERNS = [
 const INFO_ONLY_PATTERNS = /여행|가고\s*싶|추천|소개|정보/;
 
 export function classifyChatIntent(userText, chatHistory = [], slug = null) {
-  const recentUser = chatHistory
-    .filter((m) => m.role === 'user')
-    .slice(-4)
-    .map((m) => m.text ?? '')
-    .filter(Boolean);
-  const combined = [userText, ...recentUser].join(' ').toLowerCase();
   const current = String(userText ?? '').toLowerCase();
 
   /** @type {ChatIntent[]} */
@@ -82,14 +76,14 @@ export function classifyChatIntent(userText, chatHistory = [], slug = null) {
 
   const matchAny = (patterns, text) => patterns.some((re) => re.test(text));
 
-  // MOONi/AI 답변에 있는 「페리·12Go·항공」 키워드가 다음 턴 CTA를 오염시키지 않도록 user 발화만 사용
-  if (matchAny(ACCESS_ROUTE_PATTERNS, combined)) intents.push('access_route');
-  if (matchAny(BOOK_FERRY_PATTERNS, combined)) intents.push('book_ferry');
-  if (matchAny(BOOK_FLIGHT_PATTERNS, combined)) intents.push('book_flight');
-  if (matchAny(BOOK_TRANSFER_PATTERNS, combined)) intents.push('book_transfer');
-  if (matchAny(INFO_VISA_PATTERNS, combined)) intents.push('info_visa');
-  if (matchAny(INFO_FEES_PATTERNS, combined)) intents.push('info_fees');
-  if (matchAny(BOOK_GENERAL_PATTERNS, combined)) intents.push('book_general');
+  // 이번 턴 발화만 — 이전 「어떻게 가」 등이 페리·비자 단독 질문 CTA를 오염시키지 않음
+  if (matchAny(ACCESS_ROUTE_PATTERNS, current)) intents.push('access_route');
+  if (matchAny(BOOK_FERRY_PATTERNS, current)) intents.push('book_ferry');
+  if (matchAny(BOOK_FLIGHT_PATTERNS, current)) intents.push('book_flight');
+  if (matchAny(BOOK_TRANSFER_PATTERNS, current)) intents.push('book_transfer');
+  if (matchAny(INFO_VISA_PATTERNS, current)) intents.push('info_visa');
+  if (matchAny(INFO_FEES_PATTERNS, current)) intents.push('info_fees');
+  if (matchAny(BOOK_GENERAL_PATTERNS, current)) intents.push('book_general');
 
   if (
     INFO_ONLY_PATTERNS.test(current) &&

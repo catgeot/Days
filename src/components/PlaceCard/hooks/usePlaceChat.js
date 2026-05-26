@@ -1,6 +1,10 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
+import {
+  ensureChatEssentialGuide,
+  useChatEssentialGuide,
+} from '../../../hooks/useChatEssentialGuide';
 
 /**
  * Place Card AI 채팅 — 예약 CTA 포함 메시지 지원.
@@ -9,6 +13,7 @@ import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
  */
 export const usePlaceChat = (options = {}) => {
   const { slug = null, destinationName = '', chatSource = 'place' } = options;
+  const cachedGuide = useChatEssentialGuide(slug, destinationName);
 
   const [chatHistory, setChatHistory] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -34,6 +39,9 @@ export const usePlaceChat = (options = {}) => {
         'gemini-2.5-flash',
       );
 
+      const essentialGuide =
+        (await ensureChatEssentialGuide(slug, destinationName)) ?? cachedGuide;
+
       const booking = resolveChatBookingActions({
         userText,
         destinationName,
@@ -41,6 +49,7 @@ export const usePlaceChat = (options = {}) => {
         chatHistory: priorHistory,
         chatSource,
         aiReplyText: aiReply,
+        essentialGuide,
       });
 
       setChatHistory((prev) => [
@@ -63,7 +72,7 @@ export const usePlaceChat = (options = {}) => {
     } finally {
       setIsAiLoading(false);
     }
-  }, [chatHistory, isAiLoading, slug, destinationName, chatSource]);
+  }, [chatHistory, isAiLoading, slug, destinationName, chatSource, cachedGuide]);
 
   const clearChat = useCallback(() => {
     setChatHistory([]);

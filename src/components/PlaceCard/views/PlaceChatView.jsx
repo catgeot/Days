@@ -9,6 +9,7 @@ const PlaceChatView = ({
   onSendMessage,
   locationName,
   slug = null,
+  onPlannerNavigate = null,
 }) => {
   const [inputStr, setInputStr] = useState("");
   const messagesEndRef = useRef(null);
@@ -89,6 +90,7 @@ const PlaceChatView = ({
                     })}
                     slug={msg.bookingMeta?.slug ?? slug}
                     plannerUrl={msg.bookingMeta?.plannerUrl}
+                    onPlannerNavigate={onPlannerNavigate}
                   />
                 )}
               </div>

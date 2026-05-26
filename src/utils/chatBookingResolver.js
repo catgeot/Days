@@ -12,6 +12,8 @@ import {
   resolveBookingActions as resolveLegacyBookingActions,
   resolveSlugFromDestination,
 } from './bookingIntentResolver.js';
+import { resolveChatPrepActions } from './chatPrepBookingLinks.js';
+import { buildPlacePlannerPath } from './placePlannerPath.js';
 
 /** Trip URL(`buildTripcomPlannerFlightUrl`)과 동일 SSOT — 출발 미언급 시 ICN */
 export function formatChatFlightLabel({ departureIata, arrivalIata, destinationName }) {
@@ -92,7 +94,7 @@ export function resolveChatBookingActions(params) {
       transportType: 'general',
       actions: [],
       slug,
-      plannerUrl: slug ? `/place/${slug}?tab=planner` : null,
+      plannerUrl: buildPlacePlannerPath(slug),
       intent: intentResult.primary,
     };
   }
@@ -143,6 +145,24 @@ export function resolveChatBookingActions(params) {
     actions.push(...ferryActions);
   }
 
+  const prepLegs = legs.filter((leg) =>
+    ['transfer', 'visa', 'prep_fees'].includes(leg)
+  );
+  if (prepLegs.length) {
+    const locationPayload =
+      location && typeof location === 'object'
+        ? location
+        : { slug, name: destinationName };
+    actions.push(
+      ...resolveChatPrepActions({
+        legs: prepLegs,
+        essentialGuide,
+        location: locationPayload,
+        destinationName,
+      })
+    );
+  }
+
   if (actions.length === 0 && intentResult.primary === 'book_general') {
     const legacy = resolveLegacyBookingActions({
       userText,
@@ -163,9 +183,9 @@ export function resolveChatBookingActions(params) {
   return {
     show: actions.length > 0,
     transportType: legs.includes('ferry') ? 'ferry' : legs.includes('flight') ? 'flight' : 'general',
-    actions: actions.slice(0, 4),
+    actions: actions.slice(0, 6),
     slug,
-    plannerUrl: `/place/${slug}?tab=planner`,
+    plannerUrl: buildPlacePlannerPath(slug),
     intent: intentResult.primary,
   };
 }

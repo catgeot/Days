@@ -260,6 +260,10 @@ const PlaceChatPanel = React.memo(({
                       onSendMessage={handleSendMessage}
                       locationName={location.name}
                       slug={location.slug}
+                      onPlannerNavigate={() => {
+                        setIsChatMode(false);
+                        setMediaMode('PLANNER');
+                      }}
                     />
                 </div>
             </div>

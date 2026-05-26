@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Send, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
@@ -21,6 +22,7 @@ import {
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
+import { ensureChatEssentialGuide } from '../../../hooks/useChatEssentialGuide';
 
 const ChatModal = ({
   isOpen,
@@ -46,9 +48,18 @@ const ChatModal = ({
   const [placeIntroLoading, setPlaceIntroLoading] = useState(false);
   const [placeIntroError, setPlaceIntroError] = useState(null);
 
+  const navigate = useNavigate();
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const hasSentInitialRef = useRef(false);
+
+  const handlePlannerNavigate = useCallback(
+    (plannerPath) => {
+      onClose();
+      navigate(plannerPath);
+    },
+    [onClose, navigate]
+  );
 
   const introDestinationRaw = useMemo(() => {
     if (!isOpen) return '';
@@ -302,14 +313,19 @@ const ChatModal = ({
       const slug =
         (accessRoute && sessionBound?.slug) ||
         resolution?.slug ||
+        sessionBound?.slug ||
         resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
+      const destName =
+        destForPrompt === 'MOONi' ? (resolution?.name ?? sessionBound?.name ?? '') : destForPrompt;
+      const essentialGuide = await ensureChatEssentialGuide(slug, destName);
       const booking = resolveChatBookingActions({
         userText: cleanText,
-        destinationName: destForPrompt === 'MOONi' ? (resolution?.name ?? '') : destForPrompt,
+        destinationName: destName,
         slug,
         chatHistory: priorTurns,
         chatSource: 'home',
         aiReplyText: aiReply,
+        essentialGuide,
       });
 
       const finalMessages = [
@@ -500,6 +516,7 @@ const ChatModal = ({
                         })}
                         slug={msg.bookingMeta?.slug}
                         plannerUrl={msg.bookingMeta?.plannerUrl}
+                        onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}
                   </div>

@@ -1,6 +1,6 @@
 # AI 채팅 예약 CTA 2단계 — Handoff (2026-05-22)
 
-**상태**: Phase 1 완료 · **MOONi M1+M2(S1~S2) 코드 반영** · **QA 게이트 통과 전 — M3 진행 금지**  
+**상태**: Phase 1 완료 · **MOONi M1+M2+M3(S3~S4) 반영** · §10-C QA 사용자 확인 · **다음: M4(노출+Docent 통합) → S5(UI 승인) → S6 QA**  
 **기준 여행지**: **길리 메노** (`gili-meno`) — 다구간·다제휴 스트레스 테스트  
 **회귀 여행지**: 자카르타 (`jakarta`) — flight-only 단순 케이스  
 **MOONi 진입점**: [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) → `handleStartChat('MOONi')` · [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) `isMooniSession`  
@@ -66,10 +66,42 @@ gateo.kr Place Card / **MOONi 홈 채팅** / Home Chat에서 AI 대화 시 **대
 |---|---|---|---|
 | **M1** | MOONi 발화 → slug 해석 · 세션 `destination` 갱신 · 목적지 칩 UI | `resolveDestinationFromChat.js`(가칭) · ChatModal wiring | 「발리」「길리 메노」「자카르타」 |
 | **M2** | Phase 2a **S1~S2** — classifier + profile · MOONi·PlaceCard 공통 | §6 S1~S2 산출물 | gili-meno 「서울에서 어떻게 가?」 |
-| **M3** | Phase 2a **S3~S5** — pre_travel·visa · BookingActionCards | §6 S3~S5 산출물 | 페리·항공·관광세 CTA |
-| **M4** | MOONi → `/place/:slug` 핸드오프 · 채팅 컨텍스트 유지 정책 | navigate + (선택) trip 연동 | jakarta 회귀 (flight-only) |
+| **M3** | Phase 2a **S3~S4** 완료 · **S5 대기**(섹션 UI 승인) | `chatPrepBookingLinks` · `useChatEssentialGuide` · planner 링크 `/place/:slug/planner` | F·G·E · 페리 단독 CTA |
+| **M4** | **여행 맥락 MOONi 단일 세션** — FAB 노출(z-index) · Docent→MOONi 통합 · slug 선바인딩 진입 | §2.6 · §6 M4-A~B | PlaceCard·MOONi 동일 trip·CTA(G9) |
 
 **권장 순서**: **M1 → S1~S6(M2~M3에 매핑) → M4**. LOP·12Go API는 §6 S7+ 그대로 **gili-meno DPS stack QA 후**.
+
+### 2.6 MOONi 존재 영역 (2026-05-26 합의)
+
+**원칙**: 모든 페이지 동일 FAB ❌ · **여행 맥락 화면 + 단일 MOONi 세션**(`ChatModal` · `saved_trips` · `mooniChatResume`) ✅
+
+| 영역 | 현재 | 목표 |
+|------|------|------|
+| `/` 글로브 | FAB `z-[58]` 노출 | 유지 — 자유 발화·slug 해석 |
+| `/place/:slug` | Home 자식으로 FAB **마운트됨** · PlaceCard `z-[100]`에 **가려짐** | **M4-A**: FAB 노출 또는 PlaceCard 전용 MOONi 진입 1곳 |
+| PlaceCard 채팅 | **AI Docent** (`PlaceChatView` / `usePlaceChat`) — MOONi와 **이원화** | **M4-B**: Docent → MOONi 세션 핸드오프(slug 선바인딩 · 동일 resolver·CTA) |
+| `/explore` | Home 트리 | FAB 유지(선택: 검색 후 slug 바인딩) |
+| `/blog` · `/auth` | 없음 | **비대상** (브랜드·목적 상이) |
+
+**UX 모델**
+
+```
+MOONi = ChatModal + trip SSOT (재진입·slug·BookingActionCards)
+  · 글로브 FAB     → destination 'MOONi'
+  · PlaceCard 진입 → slug 선바인딩 · 헤더 「{여행지} · MOONi」
+  · 플래너 링크    → onClose + navigate `/place/:slug/planner` (구현됨)
+```
+
+**구현 단계 (다음 세션 권장 순서)**
+
+| 단계 | 범위 | 산출 |
+|------|------|------|
+| **M4-A** | PlaceCard 위 MOONi FAB `z-index`/safe-area · 또는 헤더·플래너 「MOONi에게 물어보기」 | `/place/*`에서 MOONi 가시·클릭 |
+| **M4-B** | Docent 채팅 → `handleStartChat('MOONi', { boundSlug })` 또는 trip 통합 · PlaceCard AI 패널 정리 | G9 회귀 · FAB 이중 노출 방지 |
+| **S5** | BookingActionCards 2블록(교통·티켓 / 출발 전) — **UI 승인 후** | MOONi·PlaceCard 공통 컴포넌트 |
+| **S6** | gili-meno A~J · jakarta flight-only | gateo.kr |
+
+**리스크**: MOONi trip vs 장소명 trip 분리 · FAB와 플래너 scroll-top 버튼 겹침 · Docent/ MOONi 동시 노출.
 
 ### 2.5 MOONi 관련 파일
 
@@ -175,8 +207,8 @@ userText + chatHistory + location(slug) + essentialGuide
 |---|---|---|
 | **M1** | slug 해석 · destination 갱신 · 목적지 칩 | 발리 · gili-meno · jakarta |
 | **M2** | = **S1~S2** | gili-meno access + ferry intent |
-| **M3** | = **S3~S5** | prep CTA · BookingActionCards UI |
-| **M4** | PlaceCard 핸드오프 · jakarta 회귀 | flight-only |
+| **M3** | **S3~S4 완료** · S5 UI 승인 대기 | prep CTA · planner 링크 fix |
+| **M4** | §2.6 M4-A~B · Docent 통합 | PlaceCard MOONi 노출 · G9 |
 
 ### Phase 2a (PlaceCard + MOONi 공통)
 
@@ -327,4 +359,38 @@ M3 — essentialGuide pre_travel·visa · BookingActionCards UI(§6 S3~S5)
 
 ## 금지
 게이트 미통과 M3 · ferry JSON 직접 수정 · 배포·릴리스 노트(합의 전)
+```
+
+### D. MOONi M4-A~B + S5 준비 (**다음 세션 권장**)
+
+```
+@.ai-context.md
+@plans/2026-05-22-ai-chat-booking-cta-handoff.md
+@plans/2026-05-26-project-log.md
+
+## 목표
+MOONi **여행 맥락 확장** — PlaceCard에서 MOONi 노출(M4-A) · AI Docent → MOONi 단일 세션(M4-B). S5 UI는 승인 후.
+
+## 선행 (이미 반영)
+- M3 S3~S4: essentialGuide · visa·pre_travel·픽업 CTA · `placePlannerPath` · ChatModal 닫기 후 `/place/:slug/planner`
+- §10-C QA 사용자 확인 · 페리 단독 intent(현재 턴만 분류)
+
+## Handoff §2.6 요약
+- `/place/*`에 FAB는 마운트되나 PlaceCard z-[100]에 가려짐 → **노출·진입점** 우선
+- Docent(`PlaceChatView`) vs MOONi(`ChatModal`) 이원화 → **trip·resolver·CTA SSOT 통합**
+- `/blog`·`/auth` MOONi 비대상
+
+## 이번 세션 작업 (코드)
+1. **M4-A**: `MooniAgentFab` z-index/PlaceCard safe-area **또는** PlaceCard 헤더·플래너 MOONi 진입 — slug 선바인딩 `handleStartChat`
+2. **M4-B**: PlaceCard 채팅 → MOONi 세션 핸드오프(메시지·trip 정책 합의) · Docent UI 축소/대체 · FAB 이중 노출 제거
+3. **(선택) S5**: BookingActionCards 2섹션 초안 — **레이아웃 변경 전 사용자 승인**
+
+## QA
+- `/place/gili-meno` 갤러리·플래너 탭에서 MOONi 진입·가시성
+- bound 상태 「페리 예약」→ 12Go만 · MOONi vs PlaceCard **동일 CTA**(G9)
+- MOONi → 플래너 링크: 채팅 닫힘 + planner 탭
+- jakarta 「항공편」 flight-only 회귀
+
+## 금지
+ferry/airports JSON 직접 수정 · S5 대형 UI 승인 없이 · releaseNotes 합의 전 · `/blog` MOONi 확장
 ```

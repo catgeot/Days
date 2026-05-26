@@ -1,15 +1,12 @@
 # 2026-05-26 프로젝트 일지 — MOONi M1 slug 해석
 
-**직전**: [`2026-05-25-project-log.md`](2026-05-25-project-log.md) · **맥락**: [`.ai-context.md`](../.ai-context.md) · [AI 채팅 CTA handoff §10-A](2026-05-22-ai-chat-booking-cta-handoff.md)
+**직전**: [`2026-05-25-project-log.md`](2026-05-25-project-log.md) · **맥락**: [`.ai-context.md`](../.ai-context.md) · [AI 채팅 CTA handoff](2026-05-22-ai-chat-booking-cta-handoff.md)
 
 ---
 
-- **MOONi M1 보완**: slug 재바인딩(자카르타 등) · 테마 발화마다 후보 칩 · MOONi FAB 재진입 시 마지막 대화 복원 · 헤더 `{여행지} · MOONi`.
-- **M2 S1~S2**: `chatIntentClassifier` · `destinationBookingProfile` · `chatBookingResolver` — intent별 Trip/12Go CTA · 정보성 질문(발리 여행 소개)은 CTA 생략.
-- **QA §10-C (에이전트 로컬)**: G1·G2·G5·G6(수정 후) Pass · G3·G7·G4·G8·G9·PlaceCard 링크 재검증 대기.
-- **QA 중 수정**: intent·access_route bound · MOONi resume/`mooniChatEntry` · PlaceCard→`chatBookingResolver` · trip id `String` 비교.
-- **§10-C 재QA (세션2)**: access_route·`resolveSessionBoundSpot`·출발/목적지 칩 · G1·G6 브라우저 Pass · G2~G4·G8 resolver Pass.
-- **G5 재진입**: `mooniChatResume.js` — localStorage(userId별)+DB fetch · 메시지 SSOT `saved_trips.messages` 유지.
-- **항공 CTA 라벨**: ICN→DPS SSOT(`formatChatFlightLabel`) · 저장 메시지 `refreshStoredBookingActionLabels`.
-- **커밋**: (본 세션) MOONi QA 게이트 보완 2차 — 출발지 분리·재진입·항공 라벨.
-- **다음**: G5·G7·G9 사용자 1회 확인 → **M3(S3~S5)** pre_travel·visa·BookingActionCards UI.
+- **MOONi M1 보완**: slug 재바인딩 · MOONi FAB 재진입 · 헤더 `{여행지} · MOONi`.
+- **M2 S1~S2**: intent·Trip/12Go CTA · §10-C QA 사용자 확인 완료.
+- **M3 S3~S4**: `chatPrepBookingLinks` · `useChatEssentialGuide` · visa·관광세·픽업 · planner `/place/:slug/planner` + ChatModal 닫기 후 이동 · 페리 단독 intent(현재 턴만).
+- **제품 합의**: MOONi는 홈만이 아니라 **여행 맥락 화면** 유지 · 단일 세션 — 다음 **M4-A 노출 / M4-B Docent 통합** → S5(UI 승인) → S6 QA ([handoff §2.6](2026-05-22-ai-chat-booking-cta-handoff.md)).
+- **커밋**: M3 S3~S4 및 플래너 링크·prep CTA (본 세션).
+- **다음 세션**: [handoff §10-D](2026-05-22-ai-chat-booking-cta-handoff.md) — M4-A~B.

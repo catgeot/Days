@@ -57,8 +57,16 @@ export function resolveBookingLegsForIntent(primary, profile, intents = []) {
     return ['flight'];
   }
 
-  if (primary === 'book_transfer') {
+  if (primary === 'book_transfer' || intents.includes('book_transfer')) {
     return ['transfer'];
+  }
+
+  if (primary === 'info_visa' || intents.includes('info_visa')) {
+    return ['visa'];
+  }
+
+  if (primary === 'info_fees' || intents.includes('info_fees')) {
+    return ['prep_fees'];
   }
 
   if (primary === 'book_general') {
