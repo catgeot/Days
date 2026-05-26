@@ -22,3 +22,6 @@
 - **기획(문서만)**: handoff **§2.8** PlaceCard MOONi 진입·드래그·크기 · **§2.9** 선택형 대화(S8) · §6 M4-C·S8 · §10-G. **코드 없음** — 다음 §10-F QA Pass 후 §10-G.
 - **§10-F gateo.kr QA**: G·B·M4 **Pass** · D Fail → 패치(ferry 출발·PlaceCard slug) **커밋** · H/I 미구현 · J·G8 재QA 필요. **다음**: [handoff §10-H](2026-05-22-ai-chat-booking-cta-handoff.md).
 - **커밋**: §10-F D·PlaceCard slug ferry QA 패치·문서(본 세션).
+- **푸시·배포**: `0e8cfc4` → gateo.kr (`index-wZSSWQYd.js`).
+- **§10-H gateo.kr QA**: D·J·G8 **Pass**(새 gili-meno 세션 · jakarta PlaceCard) · H·I 미구현 유지 · §10-G(S8·M4-C) 착수 가능.
+- **다음 세션**: [handoff §10-G](2026-05-22-ai-chat-booking-cta-handoff.md) — S8 quick reply · M4-C PlaceCard UX(합의 후).

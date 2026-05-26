@@ -1,6 +1,6 @@
 # AI 채팅 예약 CTA 2단계 — Handoff (2026-05-22)
 
-**상태**: Phase 1·**Phase M·2a S1~S6 완료** · **§10-F gateo.kr QA 부분 Pass**(G·B·M4) · **다음 §10-H 배포·잔여 QA** · Full Pass 후 **§10-G(S8·M4-C)** · S7+ LOP  
+**상태**: Phase 1·**Phase M·2a S1~S6 완료** · **§10-F gateo.kr QA Pass**(G·B·M4·D·J·G8 · H/I 미구현) · **다음 §10-G(S8·M4-C)** · S7+ LOP  
 **기준 여행지**: **길리 메노** (`gili-meno`) — 다구간·다제휴 스트레스 테스트  
 **회귀 여행지**: 자카르타 (`jakarta`) — flight-only 단순 케이스  
 **MOONi 진입점**: [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) → `handleStartChat('MOONi')` · [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) `isMooniSession`  
