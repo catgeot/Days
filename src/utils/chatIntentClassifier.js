@@ -58,9 +58,23 @@ const BOOK_GENERAL_PATTERNS = [
  * @param {string | null} [slug]
  * @returns {{ primary: ChatIntent, intents: ChatIntent[], confidence: 'high'|'medium'|'low' }}
  */
+const BOOKING_SIGNAL_PATTERNS = [
+  ...ACCESS_ROUTE_PATTERNS,
+  ...BOOK_FERRY_PATTERNS,
+  ...BOOK_FLIGHT_PATTERNS,
+  ...BOOK_TRANSFER_PATTERNS,
+  ...BOOK_GENERAL_PATTERNS,
+];
+
+const INFO_ONLY_PATTERNS = /여행|가고\s*싶|추천|소개|정보/;
+
 export function classifyChatIntent(userText, chatHistory = [], slug = null) {
-  const recent = chatHistory.slice(-4).map((m) => m.text ?? '').filter(Boolean);
-  const combined = [userText, ...recent].join(' ').toLowerCase();
+  const recentUser = chatHistory
+    .filter((m) => m.role === 'user')
+    .slice(-4)
+    .map((m) => m.text ?? '')
+    .filter(Boolean);
+  const combined = [userText, ...recentUser].join(' ').toLowerCase();
   const current = String(userText ?? '').toLowerCase();
 
   /** @type {ChatIntent[]} */
@@ -68,6 +82,7 @@ export function classifyChatIntent(userText, chatHistory = [], slug = null) {
 
   const matchAny = (patterns, text) => patterns.some((re) => re.test(text));
 
+  // MOONi/AI 답변에 있는 「페리·12Go·항공」 키워드가 다음 턴 CTA를 오염시키지 않도록 user 발화만 사용
   if (matchAny(ACCESS_ROUTE_PATTERNS, combined)) intents.push('access_route');
   if (matchAny(BOOK_FERRY_PATTERNS, combined)) intents.push('book_ferry');
   if (matchAny(BOOK_FLIGHT_PATTERNS, combined)) intents.push('book_flight');
@@ -76,7 +91,19 @@ export function classifyChatIntent(userText, chatHistory = [], slug = null) {
   if (matchAny(INFO_FEES_PATTERNS, combined)) intents.push('info_fees');
   if (matchAny(BOOK_GENERAL_PATTERNS, combined)) intents.push('book_general');
 
-  if (intents.length === 0 && /여행|가고\s*싶|추천|소개|정보/.test(current)) {
+  if (
+    INFO_ONLY_PATTERNS.test(current) &&
+    !matchAny(BOOKING_SIGNAL_PATTERNS, current)
+  ) {
+    return {
+      primary: 'none',
+      intents: ['none'],
+      confidence: 'high',
+      slug,
+    };
+  }
+
+  if (intents.length === 0 && INFO_ONLY_PATTERNS.test(current)) {
     intents.push('none');
   }
 

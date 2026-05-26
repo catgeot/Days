@@ -137,7 +137,7 @@ export const useTravelData = (user) => {
 
     setSavedTrips((prev) => {
       const updated = prev.map((t) =>
-        t.id === id
+        String(t.id) === String(id)
           ? {
               ...t,
               destination,
@@ -171,7 +171,7 @@ export const useTravelData = (user) => {
     }
 
     setSavedTrips(prev => {
-      const updated = prev.map(t => t.id === id ? { ...t, messages } : t);
+      const updated = prev.map(t => String(t.id) === String(id) ? { ...t, messages } : t);
       if (!user) syncLocalStorage(updated); 
       return updated;
     });

@@ -22,6 +22,7 @@ import DestinationResolutionChips from '../../../components/chat/DestinationReso
 const ChatModal = ({
   isOpen,
   onClose,
+  mooniEntry = false,
   initialQuery,
   chatHistory = [],
   chatDraft = null,
@@ -58,13 +59,14 @@ const ChatModal = ({
   }, [isOpen, chatDraft?.destination, activeChatId, chatHistory]);
 
   const isMooniSession = introDestinationRaw === 'MOONi';
+  const isMooniUi = mooniEntry || isMooniSession;
   const boundDestinationSlug = useMemo(() => {
     if (!introDestinationRaw || isMooniSession) return null;
     return resolveSlugFromDestination(introDestinationRaw);
   }, [introDestinationRaw, isMooniSession]);
 
   useEffect(() => {
-    if (!isOpen || !introDestinationRaw || isMooniSession) {
+    if (!isOpen || !introDestinationRaw || isMooniUi) {
       setPlaceIntro(null);
       setPlaceIntroError(null);
       setPlaceIntroLoading(false);
@@ -100,7 +102,7 @@ const ChatModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, introDestinationRaw, isMooniSession]);
+  }, [isOpen, introDestinationRaw, isMooniUi]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -142,7 +144,9 @@ const ChatModal = ({
       return;
     }
     if (activeChatId) {
-      const targetTrip = chatHistory.find(t => t.id === activeChatId);
+      const targetTrip = chatHistory.find(
+        (t) => String(t.id) === String(activeChatId)
+      );
       if (targetTrip) {
         setMessages(targetTrip.messages || []);
         if (targetTrip.persona) setCurrentPersona(targetTrip.persona);
@@ -382,19 +386,25 @@ const ChatModal = ({
             <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
                <div className="flex flex-col min-w-0">
                  <span className="font-bold text-white tracking-wide text-base">
-                   {boundDestinationSlug ? `${introDestinationRaw} · MOONi` : 'MOONi'}
+                   {isMooniUi && boundDestinationSlug
+                     ? `${introDestinationRaw} · MOONi`
+                     : isMooniUi
+                       ? 'MOONi'
+                       : introDestinationRaw || 'MOONi'}
                  </span>
                  <span className="text-[11px] text-cyan-300/80 font-medium truncate">
-                   {boundDestinationSlug
-                     ? `${introDestinationRaw} 여행 대화 · ${currentPersona}`
-                     : `여행 AI 도우미 · ${currentPersona}`}
+                   {isMooniUi
+                     ? boundDestinationSlug
+                       ? `${introDestinationRaw} 여행 대화 · ${currentPersona}`
+                       : `여행 AI 도우미 · ${currentPersona}`
+                     : `${introDestinationRaw || '여행'} 대화 · ${currentPersona}`}
                  </span>
                </div>
                <button onClick={onClose}><X size={18} className="text-gray-400 hover:text-white" /></button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 custom-scrollbar">
-              {(placeIntro || placeIntroLoading || placeIntroError) && (
+              {!isMooniUi && (placeIntro || placeIntroLoading || placeIntroError) && (
                 <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-gray-900/60 p-4 shadow-lg">
                   <div className="flex items-center gap-2 mb-2 text-emerald-300/90">
                     <Sparkles size={16} className="shrink-0" />
@@ -414,19 +424,11 @@ const ChatModal = ({
                   )}
                 </div>
               )}
-              {isMooniSession && messages.length === 0 && !isLoading && (
+              {isMooniUi && messages.length === 0 && !isLoading && (
                 <div className="flex flex-col items-start w-full">
                   <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
                   <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
                     안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요.
-                  </div>
-                </div>
-              )}
-              {!isMooniSession && boundDestinationSlug && messages.length === 0 && !isLoading && (
-                <div className="flex flex-col items-start w-full">
-                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi · {introDestinationRaw}</span>
-                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
-                    {introDestinationRaw} 여행 대화예요. 교통·예약·일정 등 궁금한 점을 이어서 물어보세요.
                   </div>
                 </div>
               )}

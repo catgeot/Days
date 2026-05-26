@@ -45,6 +45,7 @@ function Home() {
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [mooniChatEntry, setMooniChatEntry] = useState(false);
   const [chatDraft, setChatDraft] = useState(null);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
 
@@ -89,7 +90,7 @@ function Home() {
     globeRef, user, category, isPinVisible, selectedLocation, savedTrips,
     setSelectedLocation, addScoutPin, moveToLocation, processSearchKeywords,
     setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, setDraftInput,
-    setIsChatOpen, setInitialQuery, setActiveChatId, setChatDraft, setSavedTrips, fetchData,
+    setIsChatOpen, setInitialQuery, setActiveChatId, setChatDraft, setSavedTrips, setMooniChatEntry, fetchData,
     toggleBookmark
   });
 
@@ -468,6 +469,7 @@ function Home() {
 
         <ChatModal
           isOpen={isChatOpen}
+          mooniEntry={mooniChatEntry}
           onClose={() => {
             if (activeChatId) {
               try {

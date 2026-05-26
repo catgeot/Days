@@ -10,6 +10,10 @@ const MOONI_PLACEHOLDERS = new Set(['', 'mooni', 'new session', 'scanning...']);
 const VIBE_TERMS = ['조용', '한적', '고요', 'quiet', 'peaceful', '힐링', '느긋', '한가'];
 const ISLAND_TERMS = ['섬', 'island', '아일랜드', '제도'];
 
+/** 출발지·경로 질문 — 「서울에서 어떻게 가?」 등은 목적지 재해석하지 않음 */
+const ACCESS_ROUTE_QUERY =
+  /어떻게\s*가|가는\s*(?:길|방법|법)|교통편|이동\s*(?:방법|수단)|how\s*to\s*get/i;
+
 const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 
 function removeSpaces(str) {
@@ -97,6 +101,10 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
   const currentText = String(userText ?? '').trim();
   if (!currentText) {
     return bound ? buildHighResult(bound, 10, 'bound') : emptyResult();
+  }
+
+  if (bound && ACCESS_ROUTE_QUERY.test(currentText)) {
+    return buildHighResult(bound, 10, 'bound');
   }
 
   const currentDirect = resolveDirectHits(currentText);

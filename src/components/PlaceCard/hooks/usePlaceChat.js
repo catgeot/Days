@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
-import { resolveBookingActions } from '../../../utils/bookingIntentResolver';
+import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
 
 /**
  * Place Card AI 채팅 — 예약 CTA 포함 메시지 지원.
@@ -34,7 +34,7 @@ export const usePlaceChat = (options = {}) => {
         'gemini-2.5-flash',
       );
 
-      const booking = resolveBookingActions({
+      const booking = resolveChatBookingActions({
         userText,
         destinationName,
         slug,

@@ -110,6 +110,7 @@ export function useHomeHandlers({
   setActiveChatId,
   setChatDraft,
   setSavedTrips,
+  setMooniChatEntry,
   fetchData: _fetchData,
   toggleBookmark
 }) {
@@ -300,23 +301,21 @@ export function useHomeHandlers({
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
 
     if (!existingId && String(locationName).trim() === 'MOONi') {
+      setMooniChatEntry?.(true);
       try {
         const lastId = sessionStorage.getItem(MOONI_LAST_CHAT_KEY);
         if (lastId) {
-          const lastTrip = savedTrips.find(
-            (t) => String(t.id) === String(lastId) && !t.is_hidden && tripHasPersistedDialogue(t)
-          );
-          if (lastTrip) {
-            setChatDraft(null);
-            setActiveChatId(lastTrip.id);
-            setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
-            setIsChatOpen(true);
-            return;
-          }
+          setChatDraft(null);
+          setActiveChatId(lastId);
+          setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+          setIsChatOpen(true);
+          return;
         }
       } catch {
         // private mode
       }
+    } else {
+      setMooniChatEntry?.(false);
     }
 
     // 🚨 1. 프론트엔드 상태(savedTrips)에서 탐색
@@ -384,7 +383,7 @@ export function useHomeHandlers({
     setActiveChatId(null);
     setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
     setIsChatOpen(true);
-  }, [globeRef, savedTrips, selectedLocation, category, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft]);
+  }, [globeRef, savedTrips, selectedLocation, category, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft, setMooniChatEntry]);
 
   const handleToggleBookmark = useCallback(async (loc) => {
     if (!loc || !loc.name || isTogglingRef.current) return;
