@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-26T19:52:43.646Z",
+    "generatedAt": "2026-05-26T20:29:27.504Z",
     "spotCount": 269,
     "placeIdCount": 337,
     "stats": {
-      "override": 122,
-      "curatedPreserved": 3,
-      "toolkitSync": 144,
+      "override": 124,
+      "curatedPreserved": 2,
+      "toolkitSync": 143,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -550,9 +550,10 @@
       ],
       "preferredLinkIata": "CUZ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "rationale": "LIM 국제선 후 CUZ 국내선 — 마추픽추는 쿠스코 경유"
     },
     "rome": {
       "primaryIatas": [
@@ -1728,13 +1729,15 @@
     },
     "cusco": {
       "primaryIatas": [
-        "CUZ"
+        "CUZ",
+        "LIM"
       ],
       "preferredLinkIata": "CUZ",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "쿠스코 국제공항(CUZ) — 마추픽추 관문"
+      "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "rationale": "LIM 국제선 후 CUZ 국내선 — 마추픽추·쿠스코 관문"
     },
     "nazca-lines": {
       "primaryIatas": [
@@ -4836,21 +4839,24 @@
       ],
       "preferredLinkIata": "CUZ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "rationale": "LIM 국제선 후 CUZ 국내선 — slug machu-picchu와 동일",
       "placeId": "마추픽추",
       "linkedSlug": "machu-picchu"
     },
     "쿠스코": {
       "primaryIatas": [
-        "CUZ"
+        "CUZ",
+        "LIM"
       ],
       "preferredLinkIata": "CUZ",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "rationale": "LIM 국제선 후 CUZ 국내선 — slug cusco와 동일",
       "placeId": "쿠스코",
       "linkedSlug": "cusco"
     },

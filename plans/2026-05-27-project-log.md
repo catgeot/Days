@@ -11,3 +11,4 @@
 - **문서**: [`related-destinations-cross-nav-plan.md`](related-destinations-cross-nav-plan.md) §5.3.1 · 릴리스 노트 생략.
 - **블레드(bled) 도착 공항**: `LJU` 미등록·toolkit-sync `ZAG` 오탐 → `rentalAirportHubs`·overrides·`generate:airports` · 사용자 QA Pass.
 - **지구본 홈 복귀**: `pendingGlobeHomeFocusRef`·`goHomeFromPlace`·150ms deferred flyTo — 로컬 QA Pass · 릴리스 노트 생략.
+- **쿠스코(cusco) 도착 공항**: CUZ 단독·`bannerNote` 없음 → 여정(LIM 국제선→CUZ 국내선)과 배너 불일치. `overrides`·`PLACE_ID_OVERRIDES`(쿠스코·마추픽추)·`generate:airports` · `machu-picchu`·`inca-trail` SSOT 정리.

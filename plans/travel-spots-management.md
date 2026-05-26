@@ -255,7 +255,9 @@ npm run audit:ferries      # required/common booking gap 0 목표
 - **`searchHintIatas`**: 티켓 목적지로 **실제로 고를 수 있는 동급 공항**만 (나가사키 NGS/FUK, 보르네오 BKI/KCH). 없으면 검색·배너 후보는 **linkHub 1개**.
 - `bannerNote`로 「국제선은 A 경유, 최종 B」·권역 혼동(브루나이 BWN vs 사바 BKI) 안내 — **환승 코드는 여기만**.
 
-**국제선 관문 + 국내선 최종** (아콩카과 MDZ, 잉카 트레일 CUZ, 흐바르 SPU): `primaryIatas`에 경유지를 넣어도 **`searchHintIatas` 생략** → 배너·검색은 최종 공항만; EZE·LIM 등은 `bannerNote`.
+**국제선 관문 + 국내선 최종** (아콩카과 MDZ, **쿠스코·마추픽추·잉카 트레일** CUZ, 흐바르 SPU): `primaryIatas`에 경유지를 넣어도 **`searchHintIatas` 생략** → 배너·검색은 최종 공항만; EZE·LIM 등은 `bannerNote`.
+
+**쿠스코 예** (`cusco`): 국제선 **LIM** → 국내선 **CUZ**. `primaryIatas: ['CUZ','LIM']`, `preferredLinkIata: 'CUZ'`, `bannerNote`에 LIM 안내. slug `cusco`와 placeId `쿠스코`·`마추픽추`를 overrides·`TRAVEL_SPOT_PLACE_ID_OVERRIDES`로 함께 맞출 것 — 한쪽만 고치면 여정 플래너와 배너가 어긋남.
 
 **보라카이 예**: 칼리보 `KLO`(국제선·패키지 다수) + 카틱란 `MPH`(직항·국내선). 페리 SSOT: `kalibo-boracay` / `caticlan-boracay` 노선과 `bannerNote`를 함께 맞출 것. 한글명은 `칼리보 국제공항` / `카틱란 공항` — 영문 인명만 옮긴 「고도프로 항공기지」류 표기는 사용자에게 낯설 수 있음.
 
@@ -269,7 +271,7 @@ npm run audit:ferries      # required/common booking gap 0 목표
 
 ## 6. 자주 하는 실수
 
-- **`travel-spot-airport-overrides.mjs` 미수정** → `travelSpotAirports.json`·`RENTAL_MULTI_AIRPORT_DESTINATIONS`만 고치면 `generate:airports`·`sync:airports-from-toolkit` 후 **원복**(흐바르 DBV, 로포텐 BOO 단독 등). 검수 반영은 **overrides → generate** 순서가 SSOT.
+- **`travel-spot-airport-overrides.mjs` 미수정** → `travelSpotAirports.json`·`RENTAL_MULTI_AIRPORT_DESTINATIONS`만 고치면 `generate:airports`·`sync:airports-from-toolkit` 후 **원복**(흐바르 DBV, 로포텐 BOO 단독, 쿠스코 CUZ 단독 등). 검수 반영은 **overrides → generate** 순서가 SSOT. slug에 override가 있어도 **placeIds**(한글 `쿠스코` 등)는 `TRAVEL_SPOT_PLACE_ID_OVERRIDES` 또는 sync 후 JSON 정합 확인.
 - 다중 관문인데 `searchHintIatas`·`bannerNote` 없음 → 배너에 연동 공항 1개만 보임(로포텐·보라카이 패턴).
 - 허브에 없는 IATA를 오버라이드에만 넣음 → generate 시 해당 오버라이드 **무시**
 - PowerShell에서 `&&` 실패 → `;`로 명령 연결

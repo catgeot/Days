@@ -271,10 +271,31 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '엘칼라파테는 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)입니다. 북부 파타고니아(바릴로체 BRC)·우수아이아(USH)·토레스 델 파이네(PUQ)와 관문이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   cusco: {
-    primaryIatas: ['CUZ'],
+    primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
+    kind: 'multi',
     confidence: 'high',
-    rationale: '쿠스코 국제공항(CUZ) — 마추픽추 관문'
+    bannerNote:
+      '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
+    rationale: 'LIM 국제선 후 CUZ 국내선 — 마추픽추·쿠스코 관문'
+  },
+  'machu-picchu': {
+    primaryIatas: ['CUZ', 'LIM'],
+    preferredLinkIata: 'CUZ',
+    kind: 'multi',
+    confidence: 'high',
+    bannerNote:
+      '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
+    rationale: 'LIM 국제선 후 CUZ 국내선 — 마추픽추는 쿠스코 경유'
+  },
+  'inca-trail': {
+    primaryIatas: ['CUZ', 'LIM'],
+    preferredLinkIata: 'CUZ',
+    kind: 'multi',
+    confidence: 'high',
+    bannerNote:
+      '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
+    rationale: 'LIM 국제선 후 CUZ 국내선 — 잉카 트레일 출발은 쿠스코'
   },
   patagonia: {
     primaryIatas: ['BRC', 'EZE'],
@@ -546,5 +567,23 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     rationale: '와이드어웨이크 ASI(공식 IATA), 남아공·개항편 연결 JNB',
     bannerNote:
       '어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  쿠스코: {
+    primaryIatas: ['CUZ', 'LIM'],
+    preferredLinkIata: 'CUZ',
+    kind: 'multi',
+    confidence: 'high',
+    bannerNote:
+      '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
+    rationale: 'LIM 국제선 후 CUZ 국내선 — slug cusco와 동일'
+  },
+  마추픽추: {
+    primaryIatas: ['CUZ', 'LIM'],
+    preferredLinkIata: 'CUZ',
+    kind: 'multi',
+    confidence: 'high',
+    bannerNote:
+      '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
+    rationale: 'LIM 국제선 후 CUZ 국내선 — slug machu-picchu와 동일'
   }
 };
