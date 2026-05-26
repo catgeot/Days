@@ -138,7 +138,7 @@ function resolveTransportRoutes(slug, combinedText, context) {
  * @param {string} stepTitle
  * @param {{ subIdPrefix: string }} context
  */
-function resolveFerryActions(slug, stepTitle, context) {
+export function resolveFerryActions(slug, stepTitle, context) {
   if (!slug || !shouldShowFerryCard(slug)) return [];
 
   const profile = resolveFerryProfile(slug);

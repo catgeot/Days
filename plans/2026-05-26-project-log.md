@@ -13,4 +13,9 @@
 - **M4-A/B**: `/place/*` FAB 숨김 · PlaceCard MOONi 진입 · `boundSpot`·`mooniPlaceContext` · Docent→`ChatModal` 단일 세션.
 - **S5**: BookingActionCards 2섹션 와이어 합의(§2.7 · 1-A·2-A·3-A·4-A) · **구현은 다음 세션** — [handoff §10-E](2026-05-22-ai-chat-booking-cta-handoff.md).
 - **커밋**: M4-A/B 코드 + 문서(본 세션).
-- **다음**: S5 `BookingActionCards.jsx` → S6 QA(gili-meno·jakarta).
+- **S5**: `BookingActionCards.jsx` 2섹션 구현 — provider A/B · §2.7.
+- **S6 QA**: gili-meno MOONi — A(Trip+12Go+direct) · C · E(출발 전 준비 amber) · F(resolver) · 플래너 링크→`/place/gili-meno/planner`+채팅 닫힘 · jakarta flight-only · M4 MOONi 진입(갤러리) Pass. **G(관광세)**: 로컬 essentialGuide 없으면 CTA 없음(툴킷 데이터 의존).
+- **버그 수정**: `chatBookingResolver` ferry leg — `aiReplyText` 전달·fallback `resolveFerryActions`.
+- **릴리스 노트**: `2026-05-26` MOONi 예약·출발 전 준비 (`releaseNotes.js`).
+- **커밋·푸시**: S5·S6·페리 fallback·릴리스 노트·문서(본 세션).
+- **다음**: [handoff §10-F](2026-05-22-ai-chat-booking-cta-handoff.md) — gateo.kr G·A~J 잔여 QA · S7+ LOP.

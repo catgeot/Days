@@ -8,18 +8,31 @@ import {
 } from '../PlaceCard/common/partnerNavigation';
 import { normalizePlacePlannerPath } from '../../utils/placePlannerPath';
 
-const OTHER_PROVIDER_STYLES = {
+const TRANSPORT_PROVIDERS = new Set([
+  'trip_com',
+  'twelve_go',
+  'direct',
+  'direct_ferries',
+  'klook_ferry',
+]);
+
+const PREP_PROVIDERS = new Set(['klook', 'official', 'pre_travel']);
+
+const TRANSPORT_PROVIDER_STYLES = {
   trip_com: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-500',
   direct_ferries: 'bg-sky-600 hover:bg-sky-700 text-white border-sky-500',
   direct: 'bg-gray-700 hover:bg-gray-600 text-white border-gray-600',
   klook_ferry: 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500',
+};
+
+const PREP_PROVIDER_STYLES = {
   klook: 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500',
   official: 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500',
   pre_travel: 'bg-amber-600 hover:bg-amber-700 text-white border-amber-500',
 };
 
 /**
- * AI 채팅 하단 12Go·페리 예약 CTA.
+ * AI 채팅 하단 예약 CTA — §2.7 2섹션(교통·티켓 / 출발 전 준비).
  *
  * @param {{
  *   actions: Array<{ type: string, label: string, url: string, provider?: string }>,
@@ -42,58 +55,98 @@ const BookingActionCards = ({
   const linkRel = getPartnerLinkRel(linkTarget);
   const plannerPath = normalizePlacePlannerPath(plannerUrl);
 
-  const twelveGoActions = actions.filter((a) => a.provider === 'twelve_go' && a.url);
-  const tripActions = actions.filter((a) => a.provider === 'trip_com' && a.url);
-  const otherActions = actions.filter(
-    (a) => a.provider !== 'twelve_go' && a.provider !== 'trip_com' && a.url
+  const transportActions = actions.filter(
+    (a) => a.url && (TRANSPORT_PROVIDERS.has(a.provider) || !PREP_PROVIDERS.has(a.provider))
+  );
+  const prepActions = actions.filter(
+    (a) => a.url && PREP_PROVIDERS.has(a.provider)
+  );
+
+  const tripActions = transportActions.filter((a) => a.provider === 'trip_com');
+  const twelveGoActions = transportActions.filter((a) => a.provider === 'twelve_go');
+  const otherTransportActions = transportActions.filter(
+    (a) => a.provider !== 'twelve_go' && a.provider !== 'trip_com'
   );
 
   const plannerLinkClass =
     'inline-flex items-center gap-1.5 text-[11px] text-blue-400 hover:text-blue-300 hover:underline break-keep pointer-events-auto';
 
-  return (
-    <div className={`mt-3 space-y-2 w-full ${className}`}>
-      <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-400/90 break-keep">
-        예약 · 티켓 검색
-      </p>
+  const renderTransportSection = () => {
+    if (!transportActions.length) return null;
 
-      {tripActions.map((action, idx) => (
-        <a
-          key={`trip-${idx}`}
-          href={action.url}
-          target={linkTarget}
-          rel={linkRel}
-          className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-xs font-bold break-keep transition-colors pointer-events-auto ${OTHER_PROVIDER_STYLES.trip_com}`}
-        >
-          {action.label}
-          <ExternalLink size={12} className="shrink-0 opacity-80" />
-        </a>
-      ))}
+    return (
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-400/90 break-keep">
+          교통 · 티켓
+        </p>
 
-      {twelveGoActions.map((action, idx) => (
-        <TwelveGoSearchWidget
-          key={`12go-${action.routeId ?? idx}`}
-          slug={slug}
-          targetUrl={action.url}
-          routeLabel={action.label}
-          variant={twelveGoActions.length > 1 ? 'compact' : 'default'}
-          showRouteLabel
-          showPoweredBy={idx === twelveGoActions.length - 1}
-          className="pointer-events-auto"
-        />
-      ))}
+        {tripActions.map((action, idx) => (
+          <a
+            key={`trip-${idx}`}
+            href={action.url}
+            target={linkTarget}
+            rel={linkRel}
+            className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-xs font-bold break-keep transition-colors pointer-events-auto ${TRANSPORT_PROVIDER_STYLES.trip_com}`}
+          >
+            {action.label}
+            <ExternalLink size={12} className="shrink-0 opacity-80" />
+          </a>
+        ))}
 
-      {otherActions.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {otherActions.map((action, idx) => (
+        {twelveGoActions.map((action, idx) => (
+          <TwelveGoSearchWidget
+            key={`12go-${action.routeId ?? idx}`}
+            slug={slug}
+            targetUrl={action.url}
+            routeLabel={action.label}
+            variant={twelveGoActions.length > 1 ? 'compact' : 'default'}
+            showRouteLabel
+            showPoweredBy={idx === twelveGoActions.length - 1}
+            className="pointer-events-auto"
+          />
+        ))}
+
+        {otherTransportActions.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {otherTransportActions.map((action, idx) => (
+              <a
+                key={`transport-${action.provider}-${idx}`}
+                href={action.url}
+                target={linkTarget}
+                rel={linkRel}
+                className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold break-keep transition-colors pointer-events-auto ${
+                  TRANSPORT_PROVIDER_STYLES[action.provider] ??
+                  'bg-gray-700 hover:bg-gray-600 text-white border-gray-600'
+                }`}
+              >
+                {action.label}
+                <ExternalLink size={12} className="shrink-0 opacity-80" />
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderPrepSection = () => {
+    if (!prepActions.length) return null;
+
+    return (
+      <div className="space-y-2 rounded-lg border border-amber-500/15 bg-amber-950/20 p-2.5">
+        <p className="text-[10px] font-bold uppercase tracking-wide text-amber-400/90 break-keep">
+          출발 전 준비
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          {prepActions.map((action, idx) => (
             <a
-              key={`other-${action.provider}-${idx}`}
+              key={`prep-${action.provider}-${idx}`}
               href={action.url}
               target={linkTarget}
               rel={linkRel}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold break-keep transition-colors pointer-events-auto ${
-                OTHER_PROVIDER_STYLES[action.provider] ??
-                'bg-gray-700 hover:bg-gray-600 text-white border-gray-600'
+              className={`inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold break-keep transition-colors pointer-events-auto ${
+                PREP_PROVIDER_STYLES[action.provider] ??
+                'bg-amber-600 hover:bg-amber-700 text-white border-amber-500'
               }`}
             >
               {action.label}
@@ -101,7 +154,14 @@ const BookingActionCards = ({
             </a>
           ))}
         </div>
-      )}
+      </div>
+    );
+  };
+
+  return (
+    <div className={`mt-3 space-y-2 w-full ${className}`}>
+      {renderTransportSection()}
+      {renderPrepSection()}
 
       {plannerPath && (
         onPlannerNavigate ? (

@@ -10,6 +10,7 @@ import {
 import { resolveDepartureIataFromChat } from './resolveDepartureIataFromChat.js';
 import {
   resolveBookingActions as resolveLegacyBookingActions,
+  resolveFerryActions,
   resolveSlugFromDestination,
 } from './bookingIntentResolver.js';
 import { resolveChatPrepActions } from './chatPrepBookingLinks.js';
@@ -132,6 +133,21 @@ export function resolveChatBookingActions(params) {
   }
 
   if (legs.includes('ferry')) {
+    const subIdPrefix = slug
+      ? chatSource === 'home'
+        ? `${slug}-home-chat`
+        : `${slug}-chat`
+      : chatSource === 'home'
+        ? 'gateo-home-chat'
+        : 'gateo-chat';
+    const combinedText = [
+      userText,
+      ...chatHistory.slice(-4).map((m) => m.text ?? ''),
+      aiReplyText,
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     const legacy = resolveLegacyBookingActions({
       userText,
       destinationName,
@@ -139,9 +155,16 @@ export function resolveChatBookingActions(params) {
       location,
       chatHistory,
       chatSource,
-      aiReplyText: '',
+      aiReplyText,
     });
-    const ferryActions = legacy.actions.filter((a) => a.provider === 'twelve_go' || a.provider === 'direct');
+    let ferryActions = legacy.actions.filter(
+      (a) => a.provider === 'twelve_go' || a.provider === 'direct'
+    );
+    if (ferryActions.length === 0) {
+      ferryActions = resolveFerryActions(slug, combinedText, { subIdPrefix }).filter(
+        (a) => a.provider === 'twelve_go' || a.provider === 'direct'
+      );
+    }
     actions.push(...ferryActions);
   }
 

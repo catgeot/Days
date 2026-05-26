@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-05-26',
+    category: 'feature',
+    title: 'MOONi 채팅에서 예약·출발 전 준비까지',
+    items: [
+      'MOONi 채팅으로 예약과 출발 전 준비를 할 수 있어요',
+      '복잡한 여행 준비를 MOONi와 함께 시작해 보세요',
+    ],
+  },
+  {
     id: '2026-05-25-3',
     category: 'feature',
     title: '미크로네시아 연방 여행지가 새로 추가됐어요',
