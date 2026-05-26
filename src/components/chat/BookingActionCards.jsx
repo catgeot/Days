@@ -8,6 +8,7 @@ import {
 } from '../PlaceCard/common/partnerNavigation';
 
 const OTHER_PROVIDER_STYLES = {
+  trip_com: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-500',
   direct_ferries: 'bg-sky-600 hover:bg-sky-700 text-white border-sky-500',
   direct: 'bg-gray-700 hover:bg-gray-600 text-white border-gray-600',
   klook_ferry: 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500',
@@ -35,13 +36,29 @@ const BookingActionCards = ({
   const linkRel = getPartnerLinkRel(linkTarget);
 
   const twelveGoActions = actions.filter((a) => a.provider === 'twelve_go' && a.url);
-  const otherActions = actions.filter((a) => a.provider !== 'twelve_go' && a.url);
+  const tripActions = actions.filter((a) => a.provider === 'trip_com' && a.url);
+  const otherActions = actions.filter(
+    (a) => a.provider !== 'twelve_go' && a.provider !== 'trip_com' && a.url
+  );
 
   return (
     <div className={`mt-3 space-y-2 w-full ${className}`}>
       <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-400/90 break-keep">
         예약 · 티켓 검색
       </p>
+
+      {tripActions.map((action, idx) => (
+        <a
+          key={`trip-${idx}`}
+          href={action.url}
+          target={linkTarget}
+          rel={linkRel}
+          className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-xs font-bold break-keep transition-colors pointer-events-auto ${OTHER_PROVIDER_STYLES.trip_com}`}
+        >
+          {action.label}
+          <ExternalLink size={12} className="shrink-0 opacity-80" />
+        </a>
+      ))}
 
       {twelveGoActions.map((action, idx) => (
         <TwelveGoSearchWidget

@@ -334,8 +334,10 @@ export const TRIPCOM_FLIGHT_TRACKING = {
   sub1PlannerFlight: '플래너 항공권',
   sub1PlannerFlightMobile: '플래너 항공권 모바일',
   sub1PlannerPreTravelFlight: '플래너 필수준비 항공권 검색 일반',
+  sub1ChatFlight: '채팅 항공권',
   sub3PlannerFlight: 'D17104488',
   sub3PlannerPreTravelFlight: 'D17159522',
+  sub3ChatFlight: 'D17104488',
 };
 
 /** 제휴 항공 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
@@ -371,6 +373,13 @@ export function getPlannerFlightArrivalIata(location, options = {}) {
 function resolveTripcomFlightTracking(options = {}) {
   const { tracking } = options;
 
+  if (tracking === 'chat-flight') {
+    return {
+      sub1: TRIPCOM_FLIGHT_TRACKING.sub1ChatFlight,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3ChatFlight,
+    };
+  }
+
   if (tracking === 'planner-pre-travel') {
     return {
       sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerPreTravelFlight,
@@ -399,7 +408,7 @@ function resolveTripcomFlightTracking(options = {}) {
  * @returns {string}
  */
 export function buildTripcomPlannerFlightUrl(location, options = {}) {
-  const { mode = 'flights', adId = TRIPCOM_FLIGHT_AD.adId } = options;
+  const { mode = 'flights', adId = TRIPCOM_FLIGHT_AD.adId, departureIata } = options;
   const arrival = getPlannerFlightArrivalIata(location, options);
   const { sub1, sub3 } = resolveTripcomFlightTracking(options);
 
@@ -412,8 +421,9 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     trip_sub3: sub3,
   });
 
-  if (TRIPCOM_DEFAULT_DEPARTURE_AIRPORT) {
-    params.set('dAirportCode', TRIPCOM_DEFAULT_DEPARTURE_AIRPORT);
+  const depart = departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+  if (depart) {
+    params.set('dAirportCode', depart);
   }
   if (arrival) {
     params.set('aAirportCode', arrival);

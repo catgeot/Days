@@ -132,6 +132,37 @@ export const useTravelData = (user) => {
     return null;
   }, [savedTrips, user]);
 
+  const updateTripDestination = useCallback(async (id, { destination, lat, lng }) => {
+    if (!id || !destination) return;
+
+    setSavedTrips((prev) => {
+      const updated = prev.map((t) =>
+        t.id === id
+          ? {
+              ...t,
+              destination,
+              lat: lat ?? t.lat ?? 0,
+              lng: lng ?? t.lng ?? 0,
+            }
+          : t
+      );
+      if (!user) syncLocalStorage(updated);
+      return updated;
+    });
+
+    if (user) {
+      const { error } = await supabase
+        .from('saved_trips')
+        .update({
+          destination,
+          lat: lat ?? 0,
+          lng: lng ?? 0,
+        })
+        .eq('id', id);
+      if (error) console.warn('🚨 [DB Error] updateTripDestination:', error);
+    }
+  }, [user]);
+
   const updateMessages = useCallback(async (id, messages) => {
     const trip = savedTrips.find(t => t.id === id);
     
@@ -246,6 +277,6 @@ export const useTravelData = (user) => {
 
   return { 
     savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, 
-    saveNewTrip, updateMessages, toggleBookmark, deleteTrip, saveCurationData 
+    saveNewTrip, updateMessages, updateTripDestination, toggleBookmark, deleteTrip, saveCurationData 
   };
 };

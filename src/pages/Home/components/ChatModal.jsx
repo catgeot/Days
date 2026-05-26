@@ -9,11 +9,15 @@ import {
   persistPlaceChatIntroSummary
 } from '../lib/placeChatIntro';
 import {
-  resolveBookingActions,
   shouldUsePlannerPersona,
   resolveSlugFromDestination,
 } from '../../../utils/bookingIntentResolver';
+import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
+import {
+  resolveDestinationFromChat,
+} from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
+import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
 
 const ChatModal = ({
   isOpen,
@@ -23,6 +27,8 @@ const ChatModal = ({
   chatDraft = null,
   onCreateTripOnFirstUserMessage,
   onUpdateChat,
+  onUpdateTripDestination,
+  onUpdateChatDraft,
   activeChatId,
   onSwitchChat,
   onDeleteChat
@@ -52,6 +58,10 @@ const ChatModal = ({
   }, [isOpen, chatDraft?.destination, activeChatId, chatHistory]);
 
   const isMooniSession = introDestinationRaw === 'MOONi';
+  const boundDestinationSlug = useMemo(() => {
+    if (!introDestinationRaw || isMooniSession) return null;
+    return resolveSlugFromDestination(introDestinationRaw);
+  }, [introDestinationRaw, isMooniSession]);
 
   useEffect(() => {
     if (!isOpen || !introDestinationRaw || isMooniSession) {
@@ -145,6 +155,40 @@ const ChatModal = ({
     }
   }, [activeChatId, isOpen, chatHistory, chatDraft]);
 
+  const applyDestinationBinding = useCallback(async (chatId, draft, candidate) => {
+    if (!candidate?.name) return;
+    const patch = {
+      destination: candidate.name,
+      lat: candidate.lat ?? draft?.lat ?? 0,
+      lng: candidate.lng ?? draft?.lng ?? 0,
+    };
+    if (chatId && onUpdateTripDestination) {
+      await onUpdateTripDestination(chatId, patch);
+    } else if (draft && onUpdateChatDraft) {
+      onUpdateChatDraft(patch);
+    }
+  }, [onUpdateTripDestination, onUpdateChatDraft]);
+
+  const handleSelectDestinationCandidate = useCallback(async (candidate, messageIndex) => {
+    if (!candidate?.slug || !candidate?.name) return;
+
+    await applyDestinationBinding(activeChatId, chatDraft, candidate);
+
+    setMessages((prev) => {
+      const next = prev.map((m, i) =>
+        i === messageIndex
+          ? {
+              ...m,
+              destinationCandidates: null,
+              confirmedDestination: { slug: candidate.slug, name: candidate.name },
+            }
+          : m
+      );
+      if (activeChatId) onUpdateChat(activeChatId, next);
+      return next;
+    });
+  }, [activeChatId, chatDraft, applyDestinationBinding, onUpdateChat]);
+
   const handleSend = useCallback(async (text, personaOverride = null) => {
     if (!text?.trim() || isLoading) return;
 
@@ -161,7 +205,28 @@ const ChatModal = ({
       return;
     }
 
-    const userMsg = { role: 'user', text: cleanText };
+    const currentDest =
+      (activeChatId && chatHistory.find((t) => t.id === activeChatId)?.destination) ||
+      chatDraft?.destination ||
+      '';
+
+    let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
+
+    let sessionDest = currentDest;
+    if (resolution?.confidence === 'high' && resolution.name) {
+      sessionDest = resolution.name;
+    }
+
+    const userMsg = {
+      role: 'user',
+      text: cleanText,
+      ...(resolution?.confidence === 'high' && resolution.slug
+        ? { confirmedDestination: { slug: resolution.slug, name: resolution.name } }
+        : {}),
+      ...(resolution?.confidence === 'low' && resolution.candidates?.length
+        ? { destinationCandidates: resolution.candidates, destinationPrompt: true }
+        : {}),
+    };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput('');
@@ -170,9 +235,15 @@ const ChatModal = ({
     let effectiveChatId = activeChatId;
     if (!effectiveChatId) {
       const created = await onCreateTripOnFirstUserMessage({
-        destination: chatDraft.destination,
-        lat: chatDraft.lat,
-        lng: chatDraft.lng,
+        destination: sessionDest,
+        lat:
+          resolution?.confidence === 'high'
+            ? (resolution.lat ?? chatDraft.lat)
+            : chatDraft.lat,
+        lng:
+          resolution?.confidence === 'high'
+            ? (resolution.lng ?? chatDraft.lng)
+            : chatDraft.lng,
         persona: personaToUse,
         firstUserText: cleanText
       });
@@ -182,14 +253,17 @@ const ChatModal = ({
         return;
       }
       effectiveChatId = created.id;
+    } else if (resolution?.confidence === 'high' && resolution.name) {
+      await applyDestinationBinding(effectiveChatId, chatDraft, resolution);
     }
 
     onUpdateChat(effectiveChatId, newMessages);
 
     try {
-      const destForPrompt =
-        chatHistory.find(t => t.id === effectiveChatId)?.destination || chatDraft?.destination || "";
-      const systemInstruction = getSystemPrompt(personaToUse, destForPrompt);
+      const destForPrompt = sessionDest === 'MOONi' ? (resolution?.name || sessionDest) : sessionDest;
+      const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
+        isMooni: destForPrompt === 'MOONi',
+      });
       const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
 
       const aiReply = await apiClient.fetchProxyGemini(
@@ -201,10 +275,12 @@ const ChatModal = ({
         "gemini-2.5-flash"
       );
 
-      const slug = resolveSlugFromDestination(destForPrompt);
-      const booking = resolveBookingActions({
+      const slug =
+        resolution?.slug ??
+        resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
+      const booking = resolveChatBookingActions({
         userText: cleanText,
-        destinationName: destForPrompt,
+        destinationName: destForPrompt === 'MOONi' ? (resolution?.name ?? '') : destForPrompt,
         slug,
         chatHistory: priorTurns,
         chatSource: 'home',
@@ -230,7 +306,7 @@ const ChatModal = ({
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, currentPersona, messages, activeChatId, chatDraft, onUpdateChat, onCreateTripOnFirstUserMessage, chatHistory]);
+  }, [isLoading, currentPersona, messages, activeChatId, chatDraft, onUpdateChat, onCreateTripOnFirstUserMessage, chatHistory, applyDestinationBinding]);
 
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
@@ -305,8 +381,14 @@ const ChatModal = ({
         <div className="flex-1 flex flex-col bg-black/50 relative">
             <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
                <div className="flex flex-col min-w-0">
-                 <span className="font-bold text-white tracking-wide text-base">MOONi</span>
-                 <span className="text-[11px] text-cyan-300/80 font-medium truncate">여행 AI 도우미 · {currentPersona}</span>
+                 <span className="font-bold text-white tracking-wide text-base">
+                   {boundDestinationSlug ? `${introDestinationRaw} · MOONi` : 'MOONi'}
+                 </span>
+                 <span className="text-[11px] text-cyan-300/80 font-medium truncate">
+                   {boundDestinationSlug
+                     ? `${introDestinationRaw} 여행 대화 · ${currentPersona}`
+                     : `여행 AI 도우미 · ${currentPersona}`}
+                 </span>
                </div>
                <button onClick={onClose}><X size={18} className="text-gray-400 hover:text-white" /></button>
             </div>
@@ -340,6 +422,14 @@ const ChatModal = ({
                   </div>
                 </div>
               )}
+              {!isMooniSession && boundDestinationSlug && messages.length === 0 && !isLoading && (
+                <div className="flex flex-col items-start w-full">
+                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi · {introDestinationRaw}</span>
+                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
+                    {introDestinationRaw} 여행 대화예요. 교통·예약·일정 등 궁금한 점을 이어서 물어보세요.
+                  </div>
+                </div>
+              )}
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
@@ -359,6 +449,13 @@ const ChatModal = ({
                         : 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed'
                   }`}>
                     <div style={{ whiteSpace: 'pre-wrap' }}>{typeof msg.text === 'object' ? (msg.text.text || "내용 없음") : msg.text}</div>
+                    {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
+                      <DestinationResolutionChips
+                        confirmed={msg.confirmedDestination}
+                        candidates={msg.destinationCandidates}
+                        onSelectCandidate={(c) => handleSelectDestinationCandidate(c, idx)}
+                      />
+                    )}
                     {msg.role === 'model' && msg.bookingActions?.length > 0 && (
                       <BookingActionCards
                         actions={msg.bookingActions}

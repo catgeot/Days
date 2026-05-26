@@ -16,6 +16,9 @@ import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+
+const MOONI_LAST_CHAT_KEY = 'gateo_mooni_last_chat_id';
 
 const prepareLocation = (loc) => enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(loc));
 
@@ -295,6 +298,26 @@ export function useHomeHandlers({
 
     const locationName = dest || selectedLocation?.name || "New Session";
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
+
+    if (!existingId && String(locationName).trim() === 'MOONi') {
+      try {
+        const lastId = sessionStorage.getItem(MOONI_LAST_CHAT_KEY);
+        if (lastId) {
+          const lastTrip = savedTrips.find(
+            (t) => String(t.id) === String(lastId) && !t.is_hidden && tripHasPersistedDialogue(t)
+          );
+          if (lastTrip) {
+            setChatDraft(null);
+            setActiveChatId(lastTrip.id);
+            setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+            setIsChatOpen(true);
+            return;
+          }
+        }
+      } catch {
+        // private mode
+      }
+    }
 
     // 🚨 1. 프론트엔드 상태(savedTrips)에서 탐색
     let targetTrip = savedTrips.find(t =>

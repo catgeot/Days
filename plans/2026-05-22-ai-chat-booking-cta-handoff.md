@@ -1,6 +1,6 @@
 # AI 채팅 예약 CTA 2단계 — Handoff (2026-05-22)
 
-**상태**: Phase 1 완료(12Go·페리 CTA) · **MOONi 홈 채팅(M1) + Phase 2a(S1~S6) 구현 대기**  
+**상태**: Phase 1 완료 · **MOONi M1+M2(S1~S2) 코드 반영** · **QA 게이트 통과 전 — M3 진행 금지**  
 **기준 여행지**: **길리 메노** (`gili-meno`) — 다구간·다제휴 스트레스 테스트  
 **회귀 여행지**: 자카르타 (`jakarta`) — flight-only 단순 케이스  
 **MOONi 진입점**: [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) → `handleStartChat('MOONi')` · [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) `isMooniSession`  
@@ -285,4 +285,46 @@ Place Card gili-meno: 「서울에서 어떻게 가?」「페리 예약」→ Tr
 
 ## 금지
 ferry/transport/airports JSON 직접 수정 · UI 대变更 · commit 없이 완료 단정 X
+```
+
+### C. MOONi QA 게이트 + M2 수정 (**다음 세션 권장**)
+
+```
+@.ai-context.md
+@plans/2026-05-22-ai-chat-booking-cta-handoff.md
+@plans/2026-05-26-project-log.md
+
+## 목표
+MOONi **M1·M2(S1~S2) 사용자 QA** — 아래 게이트 전부 통과 후에만 M3(S3~S5) 착수.
+
+## 선행 코드 (이미 반영됨 · 수정만)
+- `resolveDestinationFromChat.js` · `ChatModal` · `DestinationResolutionChips`
+- `chatIntentClassifier.js` · `destinationBookingProfile.js` · `chatBookingResolver.js`
+- `updateTripDestination` · MOONi FAB 재진입(`gateo_mooni_last_chat_id`)
+
+## QA 게이트 (전부 Pass = M3 진입 OK)
+
+| # | 시나리오 | 기대 |
+|---|----------|------|
+| G1 | MOONi → 「길리메노 가고싶어」 | slug high · **후보 선택 UI 없음** · 확인 칩만 · 헤더 `길리 메노 · MOONi` |
+| G2 | 「조용한 섬」 | **후보 칩 2~3** · 자동 확정 X · (길li bound 상태여도 칩 표시) |
+| G3 | 「발li 여행」 | 발li 바인딩 · **CTA 없음**(정보성) |
+| G4 | 「자카르타 가고 싶어」 | jakarta 바인딩 · **발li→길li 페리 CTA 없음** |
+| G5 | PlaceCard → MOONi FAB | **이전 대화 복원** · generic intro 아님 · 헤더에 여행지명 |
+| G6 | gili-meno bound → 「서울에서 어떻게 가?」 | **Trip ICN→DPS** + **12Go 페리**(bali-gili) |
+| G7 | gili-meno → 「페리 예약」 | 12Go 페리 CTA |
+| G8 | jakarta bound → 「항공편」 | Trip **CGK** · 페리 CTA 없음 |
+| G9 | PlaceCard gili-meno 동일 발화 | MOONi와 **동일 CTA SSOT** (회귀) |
+
+## 실패 시 우선 수정
+- G1/G2: `resolveDestinationFromChat` · 칩 UI 조건(`destinationPrompt`)
+- G3~G4/G8: `chatBookingResolver` intent gating · slug 재바인딩
+- G5: `useHomeHandlers` MOONi resume · `sessionStorage`
+- G6~G7: `chatIntentClassifier` · `destinationBookingProfile` · Trip sub_id `채팅 항공권`
+
+## Pass 후 다음
+M3 — essentialGuide pre_travel·visa · BookingActionCards UI(§6 S3~S5)
+
+## 금지
+게이트 미통과 M3 · ferry JSON 직접 수정 · 배포·릴리스 노트(합의 전)
 ```

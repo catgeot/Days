@@ -16,6 +16,12 @@ const BOOKING_RULES = `
 - 항공편은 Trip.com 등 항공 전용 채널, 육로·페리·기차는 12Go로 역할을 구분해 설명한다.
 `;
 
+const MOONI_DESTINATION_RULES = `
+- 사용자가 여행 목적지를 정하면, 교통·예약·티켓 안내는 GATEO 플래너와 답변 아래 예약 버튼을 통해 확인하도록 안내한다.
+- 항공·페리 요금·소요시간·운항 여부를 단정하지 않는다.
+- 목적지가 아직 정해지지 않았으면 후보를 질문하고, 확정되기 전에는 특정 장소 예약을 단정하지 않는다.
+`;
+
 export const PERSONA_TYPES = {
   INSPIRER: 'INSPIRER',   // 1단계: 여행 전도사 (지구본/카드 클릭)
   PLANNER: 'PLANNER',     // 2단계: 전문 가이드 (티켓/즐겨찾기 대화)
@@ -52,10 +58,13 @@ export const PROMPT_STORAGE = {
   }
 };
 
-export const getSystemPrompt = (personaType, locationName = "") => {
+export const getSystemPrompt = (personaType, locationName = "", options = {}) => {
   const config = PROMPT_STORAGE[personaType] || PROMPT_STORAGE.GENERAL;
-  const locationContext = locationName ? `\n현재 대상 지역: ${locationName}` : "";
-  return config.system + locationContext;
+  const isMooni =
+    options.isMooni || String(locationName ?? '').trim().toLowerCase() === 'mooni';
+  const mooniContext = isMooni ? MOONI_DESTINATION_RULES : '';
+  const locationContext = locationName ? `\n현재 대상 지역: ${locationName}` : '';
+  return config.system + mooniContext + locationContext;
 };
 
 /** 채팅 모달 최초 진입 시 보여줄 여행지 한줄 요약 (DB 캐시용) */

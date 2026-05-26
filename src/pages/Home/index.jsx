@@ -41,7 +41,7 @@ function Home() {
   }, []);
 
   const { scoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
-  const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, toggleBookmark, deleteTrip } = useTravelData(user);
+  const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, updateTripDestination, toggleBookmark, deleteTrip } = useTravelData(user);
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -114,6 +114,10 @@ function Home() {
     }
     return created;
   }, [category, saveNewTrip]);
+
+  const updateChatDraftDestination = useCallback((patch) => {
+    setChatDraft((prev) => (prev ? { ...prev, ...patch } : null));
+  }, []);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(routeLocation.search);
@@ -465,6 +469,13 @@ function Home() {
         <ChatModal
           isOpen={isChatOpen}
           onClose={() => {
+            if (activeChatId) {
+              try {
+                sessionStorage.setItem('gateo_mooni_last_chat_id', String(activeChatId));
+              } catch {
+                // private mode
+              }
+            }
             setIsChatOpen(false);
             setChatDraft(null);
             setActiveChatId(null);
@@ -475,7 +486,10 @@ function Home() {
           chatHistory={savedTrips}
           chatDraft={chatDraft}
           onCreateTripOnFirstUserMessage={createTripOnFirstUserMessage}
-          onUpdateChat={updateMessages} onToggleBookmark={toggleBookmark}
+          onUpdateChat={updateMessages}
+          onUpdateTripDestination={updateTripDestination}
+          onUpdateChatDraft={updateChatDraftDestination}
+          onToggleBookmark={toggleBookmark}
           activeChatId={activeChatId}
           onSwitchChat={(id) => {
             setChatDraft(null);
