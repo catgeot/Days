@@ -110,6 +110,19 @@
 - SEO: 클러스터 페이지 신설 없음 — 기존 `/place/:slug` 유지
 - 모바일: 가로 스크롤 칩 2~3개, `break-keep` 유지
 
+### 5.3.1 장소 전환 네비게이션 SSOT (2026-05-27)
+
+갤러리·PlaceCard **연관 키워드/칩**으로 다른 slug로 이동할 때:
+
+| 규칙 | 내용 |
+|------|------|
+| **진입 API** | Outlet `onNavigateToPlace` → [`Home/index.jsx`](../src/pages/Home/index.jsx) `navigateToPlace` — `mergeCanonicalTravelSpot`·`addScoutPin` 후 `navigate` |
+| **금지** | `PlaceChatPanel` 등에서 **`navigate('/place/…')`만** 호출 (location 갱신 전 URL 변경 → race) |
+| **URL sync SSOT** | `/place/:slug` 해석·canonical redirect·`selectedLocation` — **Home route effect 단일** |
+| **금지** | `PlaceCardExpanded` 등 자식에서 location↔URL canonical effect 중복 |
+
+**회귀 이력**: `cc8f63f`(2026-05-25, 미크로네시아 SSOT)에서 Home·PlaceCardExpanded 이중 URL 보정 도입 → 연관 키워드 왕복 버그. 2026-05-27 수정 · [`2026-05-27-project-log.md`](./2026-05-27-project-log.md).
+
 ### 5.4 구현 파일 (예상)
 
 | 파일 | 변경 |

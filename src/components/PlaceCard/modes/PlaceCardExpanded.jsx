@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
 import { useWikiData } from '../hooks/useWikiData';
@@ -9,9 +9,8 @@ import { getMatchedPackage } from '../../../utils/tripLinkMatcher';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import TripLinkModal from '../modals/TripLinkModal';
 
-const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
+const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
-  const reactLocation = useLocation();
 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showUI, setShowUI] = useState(true);
@@ -34,16 +33,6 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
           queueMicrotask(() => setMediaModeState(initialTab));
       }
   }, [initialTab]);
-
-  // 장소 객체가 SSOT slug로 통합됐을 때 URL(숫자 id·보조지명)도 맞춤
-  useEffect(() => {
-      const canonical = getPlaceUrlParam(location);
-      const currentSlug = reactLocation.pathname.split('/')[2];
-      if (!canonical || !currentSlug || canonical === currentSlug) return;
-      const tab = reactLocation.pathname.split('/')[3];
-      const tabPath = tab ? `/${tab}` : '';
-      navigate(`/place/${canonical}${tabPath}`, { replace: true });
-  }, [location, reactLocation.pathname, navigate]);
 
   const [selectedVideoId, setSelectedVideoId] = useState(null);
 
@@ -168,6 +157,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         isBookmarked={isBookmarked}
         onClose={onClose}
         onOpenMooni={onOpenMooni}
+        onNavigateToPlace={onNavigateToPlace}
         activeInfo={activeInfo}
         isFullScreen={isFullScreen}
         mediaMode={mediaMode}

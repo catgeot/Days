@@ -24,7 +24,7 @@ import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLo
 import { getSystemPrompt } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot, resolveTravelSpotFromCoords, resolveTravelSpotFromPlaceId, buildSpotLookup } from '../../utils/travelSpotResolve.js';
+import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromPlaceId, buildSpotLookup } from '../../utils/travelSpotResolve.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -109,6 +109,44 @@ function Home() {
       },
     });
   }, [handleStartChat, selectedLocation]);
+
+  const selectedLocationRef = useRef(selectedLocation);
+  const placeRouteSyncRef = useRef(0);
+
+  useEffect(() => {
+    selectedLocationRef.current = selectedLocation;
+  }, [selectedLocation]);
+
+  /** 연관 키워드 등 — URL 변경 전 selectedLocation을 먼저 맞춰 route-sync race 방지 */
+  const navigateToPlace = useCallback((targetPlace) => {
+    if (!targetPlace) return;
+
+    const prepared = enrichLocationWithRentalAirport(
+      mergeCanonicalTravelSpot({
+        ...targetPlace,
+        id:
+          targetPlace.id ||
+          (targetPlace.lat != null && targetPlace.lng != null
+            ? `city-${targetPlace.lat}-${targetPlace.lng}`
+            : undefined),
+        type: targetPlace.type || 'temp-base',
+        category: targetPlace.category || category,
+      })
+    );
+
+    const param = getPlaceUrlParam(prepared);
+    if (!param) {
+      if (targetPlace.lat != null && targetPlace.lng != null) {
+        navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
+      }
+      return;
+    }
+
+    selectedLocationRef.current = prepared;
+    addScoutPin(prepared);
+    moveToLocation(prepared.lat, prepared.lng, prepared.name, prepared.category || category);
+    navigate(`/place/${param}`);
+  }, [category, navigate, addScoutPin, moveToLocation]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -261,7 +299,11 @@ function Home() {
           }
         }
 
+        const syncId = ++placeRouteSyncRef.current;
+
         queueMicrotask(() => {
+          if (syncId !== placeRouteSyncRef.current) return;
+
           const focusTarget = enrichLocationWithRentalAirport(
             mergeCanonicalTravelSpot({
               ...hydratedTarget,
@@ -275,16 +317,24 @@ function Home() {
           if (canonicalParam && canonicalParam.toLowerCase() !== normalizedTargetSlug) {
             const tabSuffix = match.params.tab ? `/${match.params.tab}` : '';
             navigate(`/place/${canonicalParam}${tabSuffix}`, { replace: true });
+            return;
           }
 
-          setSelectedLocation(focusTarget);
-          addScoutPin(focusTarget);
-          moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
+          const alreadySynced =
+            isSameCanonicalPlace(selectedLocationRef.current, focusTarget) &&
+            canonicalParam?.toLowerCase() === normalizedTargetSlug;
+
+          if (!alreadySynced) {
+            selectedLocationRef.current = focusTarget;
+            addScoutPin(focusTarget);
+            moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
+          }
+
+          setIsCardExpanded(true);
         });
+      } else {
+        queueMicrotask(() => setIsCardExpanded(true));
       }
-      queueMicrotask(() => {
-        setIsCardExpanded(true);
-      });
     } else {
       queueMicrotask(() => {
         setIsCardExpanded(false);
@@ -471,6 +521,7 @@ function Home() {
             navigate('/explore');
           },
           onOpenMooni: openMooniFromPlace,
+          onNavigateToPlace: navigateToPlace,
           onToggleBookmark: handleToggleBookmark,
           onTicket: () => {
             navigate('/explore');

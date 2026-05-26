@@ -30,6 +30,7 @@ const PlaceChatPanel = React.memo(({
     isBookmarked,
     onClose,
     onOpenMooni,
+    onNavigateToPlace,
     activeInfo,
     isFullScreen,
     mediaMode,
@@ -67,6 +68,11 @@ const PlaceChatPanel = React.memo(({
 
   const handleRelatedClick = (targetPlace) => {
       if (!targetPlace) return;
+
+      if (onNavigateToPlace) {
+          onNavigateToPlace(targetPlace);
+          return;
+      }
 
       const param = getPlaceUrlParam(mergeCanonicalTravelSpot(targetPlace));
       if (param) {
