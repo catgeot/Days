@@ -19,3 +19,6 @@
 - **릴리스 노트**: `2026-05-26` MOONi 예약·출발 전 준비 (`releaseNotes.js`).
 - **커밋·푸시**: S5·S6·페리 fallback·릴리스 노트·문서(본 세션).
 - **다음**: [handoff §10-F](2026-05-22-ai-chat-booking-cta-handoff.md) — gateo.kr G·A~J 잔여 QA · S7+ LOP.
+- **기획(문서만)**: handoff **§2.8** PlaceCard MOONi 진입·드래그·크기 · **§2.9** 선택형 대화(S8) · §6 M4-C·S8 · §10-G. **코드 없음** — 다음 §10-F QA Pass 후 §10-G.
+- **§10-F gateo.kr QA**: G·B·M4 **Pass** · D Fail → 패치(ferry 출발·PlaceCard slug) **커밋** · H/I 미구현 · J·G8 재QA 필요. **다음**: [handoff §10-H](2026-05-22-ai-chat-booking-cta-handoff.md).
+- **커밋**: §10-F D·PlaceCard slug ferry QA 패치·문서(본 세션).

@@ -17,6 +17,7 @@ import { resolveChatBookingActions, refreshStoredBookingActionLabels } from '../
 import {
   resolveDestinationFromChat,
   isAccessRouteQuery,
+  isFerryRouteQuery,
   resolveDepartureLabelFromChat,
   resolveSessionBoundSpot,
 } from '../../../utils/resolveDestinationFromChat';
@@ -248,28 +249,43 @@ const ChatModal = ({
           }
         : null);
     const accessRoute = isAccessRouteQuery(cleanText);
+    const ferryRoute = isFerryRouteQuery(cleanText);
     const departureLabel = accessRoute ? resolveDepartureLabelFromChat(cleanText, messages) : null;
 
     let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
 
+    const placeBound = mooniPlaceContext?.slug
+      ? {
+          slug: mooniPlaceContext.slug,
+          name: mooniPlaceContext.name,
+          lat: mooniPlaceContext.lat ?? null,
+          lng: mooniPlaceContext.lng ?? null,
+        }
+      : null;
+    const effectiveBound = sessionBound ?? placeBound;
+
     let sessionDest = currentDest;
     if (resolution?.confidence === 'high' && resolution.name) {
       sessionDest = resolution.name;
-    } else if (sessionBound?.name) {
-      sessionDest = sessionBound.name;
+    } else if (effectiveBound?.name) {
+      sessionDest = effectiveBound.name;
     }
 
     const chipDestination =
-      accessRoute && sessionBound
-        ? { slug: sessionBound.slug, name: sessionBound.name }
-        : resolution?.confidence === 'high' && resolution.slug
-          ? { slug: resolution.slug, name: resolution.name }
-          : null;
+      (accessRoute || ferryRoute) && effectiveBound
+        ? { slug: effectiveBound.slug, name: effectiveBound.name }
+        : placeBound
+          ? { slug: placeBound.slug, name: placeBound.name }
+          : resolution?.confidence === 'high' && resolution.slug
+            ? { slug: resolution.slug, name: resolution.name }
+            : null;
 
     const shouldApplyBinding =
       resolution?.confidence === 'high' &&
       resolution.name &&
-      !(accessRoute && sessionBound && resolution.slug !== sessionBound.slug);
+      !(accessRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
+      !(ferryRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
+      !placeBound;
 
     const userMsg = {
       role: 'user',
@@ -331,15 +347,16 @@ const ChatModal = ({
       );
 
       const slug =
-        (accessRoute && sessionBound?.slug) ||
+        mooniPlaceContext?.slug ||
+        ((accessRoute || ferryRoute) && effectiveBound?.slug) ||
         resolution?.slug ||
         sessionBound?.slug ||
-        mooniPlaceContext?.slug ||
         resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
       const destName =
-        destForPrompt === 'MOONi'
-          ? (resolution?.name ?? sessionBound?.name ?? mooniPlaceContext?.name ?? '')
-          : destForPrompt;
+        mooniPlaceContext?.name ||
+        (destForPrompt === 'MOONi'
+          ? (resolution?.name ?? effectiveBound?.name ?? '')
+          : destForPrompt);
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
       const booking = resolveChatBookingActions({
         userText: cleanText,

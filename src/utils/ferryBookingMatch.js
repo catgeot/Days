@@ -79,12 +79,16 @@ export function resolveFerryBookings(slug, stepTitle = '', contextOverride = {})
 
   if (stepTitle && routes.length > 1) {
     const lower = stepTitle.toLowerCase();
-    const found = routes.find(
-      (r) =>
-        r.label.toLowerCase().includes(lower) ||
-        lower.includes(r.label.toLowerCase().slice(0, 8)) ||
-        (r.id && lower.includes(r.id.replace(/-/g, ' ')))
-    );
+    const found = routes.find((r) => {
+      const labelLower = r.label.toLowerCase();
+      if (labelLower.includes(lower) || lower.includes(labelLower.slice(0, 8))) {
+        return true;
+      }
+      if (r.id && lower.includes(r.id.replace(/-/g, ' '))) return true;
+      const departure = labelLower.split('→')[0]?.replace(/[()]/g, ' ').trim() ?? '';
+      const tokens = departure.split(/\s+/).filter((t) => t.length >= 2);
+      return tokens.some((t) => lower.includes(t));
+    });
     if (found) matchedRoute = found;
   }
 

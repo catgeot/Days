@@ -26,6 +26,7 @@ const BOOK_FERRY_PATTERNS = [
   /speedboat/i,
   /보트\s*티켓/,
   /배\s*티켓/,
+  /(?:에서|→)\s*배(?:\s|$|[?!.])/,
 ];
 
 const BOOK_TRANSFER_PATTERNS = [

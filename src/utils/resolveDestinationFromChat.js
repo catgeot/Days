@@ -15,8 +15,16 @@ const ISLAND_TERMS = ['섬', 'island', '아일랜드', '제도'];
 const ACCESS_ROUTE_QUERY =
   /어떻게\s*가|가는\s*(?:길|방법|법)|교통편|이동\s*(?:방법|수단)|how\s*to\s*get/i;
 
-/** 출발 허브 — access_route에서 목적지 후보에서 제외 */
-const DEPARTURE_HUB_SLUGS = new Set(['seoul', 'incheon', 'busan', 'jeju', 'kimpo']);
+/** 출발 허브 — access_route·ferry 출발지 질문에서 목적지 후보에서 제외 */
+const DEPARTURE_HUB_SLUGS = new Set([
+  'seoul',
+  'incheon',
+  'busan',
+  'jeju',
+  'kimpo',
+  'lombok',
+  'bali',
+]);
 
 const DEPARTURE_LABELS = [
   ['서울', 'seoul'],
@@ -106,6 +114,14 @@ export function isAccessRouteQuery(text) {
   return ACCESS_ROUTE_QUERY.test(String(text ?? '').trim());
 }
 
+/** 페리·배 출발지 질문 — 「롬복에서 배」 등은 bound slug 유지 */
+const FERRY_ROUTE_QUERY =
+  /(?:페리|ferry|쾌속선|보트|speedboat|배\s*티켓|(?:에서|→)\s*배(?:\s|$|[?!.]))/i;
+
+export function isFerryRouteQuery(text) {
+  return FERRY_ROUTE_QUERY.test(String(text ?? '').trim());
+}
+
 /** access_route 발화에서 출발지 라벨 (칩 UI용) */
 export function resolveDepartureLabelFromChat(userText, chatHistory = []) {
   const combined = [
@@ -165,16 +181,18 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
 
   const currentText = String(userText ?? '').trim();
   const accessRoute = isAccessRouteQuery(currentText);
+  const ferryRoute = isFerryRouteQuery(currentText);
+  const excludeDepartureHub = accessRoute || (sessionBound && ferryRoute);
 
   if (!currentText) {
     return sessionBound ? buildHighResult(sessionBound, 10, 'bound') : emptyResult();
   }
 
-  if (sessionBound && accessRoute) {
+  if (sessionBound && (accessRoute || ferryRoute)) {
     return buildHighResult(sessionBound, 10, 'bound');
   }
 
-  const currentDirect = filterDepartureHubs(resolveDirectHits(currentText), accessRoute);
+  const currentDirect = filterDepartureHubs(resolveDirectHits(currentText), excludeDepartureHub);
   if (currentDirect.length === 1) {
     return buildHighResult(currentDirect[0].spot, currentDirect[0].score, 'lookup');
   }
@@ -205,7 +223,7 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
     .map((m) => m.text ?? '')
     .filter(Boolean);
   const combined = [...recentUser, currentText].join(' ').trim();
-  const combinedDirect = filterDepartureHubs(resolveDirectHits(combined), accessRoute);
+  const combinedDirect = filterDepartureHubs(resolveDirectHits(combined), excludeDepartureHub);
   if (combinedDirect.length === 1) {
     return buildHighResult(combinedDirect[0].spot, combinedDirect[0].score, 'lookup');
   }
