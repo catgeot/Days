@@ -47,6 +47,7 @@ function Home() {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [mooniChatEntry, setMooniChatEntry] = useState(false);
+  const [mooniPlaceContext, setMooniPlaceContext] = useState(null);
   const [chatDraft, setChatDraft] = useState(null);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
 
@@ -77,8 +78,9 @@ function Home() {
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
+  const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
   const shouldPauseGlobe = isCardExpanded
-    || routeLocation.pathname.startsWith('/place/')
+    || isPlaceRoute
     || routeLocation.pathname.startsWith('/explore');
 
   const {
@@ -91,9 +93,22 @@ function Home() {
     globeRef, user, category, isPinVisible, selectedLocation, savedTrips,
     setSelectedLocation, addScoutPin, moveToLocation, processSearchKeywords,
     setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, setDraftInput,
-    setIsChatOpen, setInitialQuery, setActiveChatId, setChatDraft, setSavedTrips, setMooniChatEntry, fetchData,
+    setIsChatOpen, setInitialQuery, setActiveChatId, setChatDraft, setSavedTrips, setMooniChatEntry, setMooniPlaceContext, fetchData,
     toggleBookmark
   });
+
+  const openMooniFromPlace = useCallback((payload = {}) => {
+    if (!selectedLocation?.name) return;
+    handleStartChat('MOONi', {
+      ...payload,
+      boundSpot: {
+        slug: selectedLocation.slug ?? null,
+        name: selectedLocation.name,
+        lat: selectedLocation.lat ?? 0,
+        lng: selectedLocation.lng ?? 0,
+      },
+    });
+  }, [handleStartChat, selectedLocation]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -444,7 +459,7 @@ function Home() {
               setIsCardExpanded(true);
               navigate(`/place/${getPlaceUrlParam(selectedLocation)}`);
             }}
-            onChat={(p) => handleStartChat(selectedLocation?.name, p)}
+            onChat={openMooniFromPlace}
             onToggleBookmark={handleToggleBookmark}
           />
         )}
@@ -455,7 +470,7 @@ function Home() {
           onClose: () => {
             navigate('/explore');
           },
-          onChat: (p) => handleStartChat(selectedLocation?.name, p),
+          onOpenMooni: openMooniFromPlace,
           onToggleBookmark: handleToggleBookmark,
           onTicket: () => {
             navigate('/explore');
@@ -465,23 +480,27 @@ function Home() {
           onExpandChange: setIsCardExpanded
         }} />
 
-        <MooniAgentFab
-          isChatOpen={isChatOpen}
-          isZenMode={isZenMode}
-          onOpenChat={(payload) => handleStartChat('MOONi', payload)}
-        />
+        {!isPlaceRoute && (
+          <MooniAgentFab
+            isChatOpen={isChatOpen}
+            isZenMode={isZenMode}
+            onOpenChat={(payload) => handleStartChat('MOONi', payload)}
+          />
+        )}
 
         <ChatModal
           isOpen={isChatOpen}
           mooniEntry={mooniChatEntry}
+          mooniPlaceContext={mooniPlaceContext}
           onClose={() => {
-            if (activeChatId && (mooniChatEntry || chatDraft?.destination === 'MOONi')) {
+            if (activeChatId && mooniChatEntry) {
               persistMooniLastChatId(activeChatId, user?.id ?? null);
             }
             setIsChatOpen(false);
             setChatDraft(null);
             setActiveChatId(null);
             setInitialQuery(null);
+            setMooniPlaceContext(null);
             globeRef.current?.resumeRotation();
           }}
           initialQuery={initialQuery}

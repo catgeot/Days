@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, X, Briefcase, Globe } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import PlaceChatView from '../views/PlaceChatView';
+import { useNavigate } from 'react-router-dom';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import PlaceWikiNavView from '../views/PlaceWikiNavView';
-import { getSystemPrompt, PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
-import { shouldUsePlannerPersona } from '../../../utils/bookingIntentResolver';
+import { PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
@@ -16,6 +14,7 @@ import { getPlaceTitleLines } from '../common/locationDisplay';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
+import mooniChar from '../../../assets/MOONI_transparent.png';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 
@@ -30,7 +29,7 @@ const PlaceChatPanel = React.memo(({
     location,
     isBookmarked,
     onClose,
-    chatData,
+    onOpenMooni,
     activeInfo,
     isFullScreen,
     mediaMode,
@@ -44,7 +43,6 @@ const PlaceChatPanel = React.memo(({
     matchedPackage,
     onOpenPackage
 }) => {
-  const [isChatMode, setIsChatMode] = useState(false);
   const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -54,14 +52,10 @@ const PlaceChatPanel = React.memo(({
     if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
     }
-  }, [activeInfo.title, activeInfo.mode, isChatMode, mediaMode]);
+  }, [activeInfo.title, activeInfo.mode, mediaMode]);
 
-  const handleSendMessage = (text) => {
-      const persona = shouldUsePlannerPersona(text, chatData.chatHistory)
-        ? PERSONA_TYPES.PLANNER
-        : PERSONA_TYPES.INSPIRER;
-      const systemPrompt = getSystemPrompt(persona, location.name);
-      chatData.sendMessage(text, systemPrompt);
+  const openMooni = () => {
+    onOpenMooni?.({ persona: PERSONA_TYPES.GENERAL });
   };
 
   const handleWikiNavClick = (sectionId) => {
@@ -194,6 +188,16 @@ const PlaceChatPanel = React.memo(({
                  )}
              </div>
              <div className="shrink-0 flex items-center gap-2">
+                 <button
+                    type="button"
+                    onClick={openMooni}
+                    className="flex items-center gap-1 px-2 py-1.5 md:px-2.5 md:py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-100 shadow-lg shadow-cyan-900/20 transition-all shrink-0 touch-manipulation"
+                    title="MOONi에게 물어보기"
+                    aria-label="MOONi에게 물어보기"
+                 >
+                    <img src={mooniChar} alt="" className="h-6 w-6 object-contain" draggable={false} />
+                    <span className="text-[10px] md:text-xs font-bold whitespace-nowrap hidden sm:inline">MOONi</span>
+                 </button>
                  {mediaMode === 'PLANNER' ? (
                     <button
                         onClick={() => setMediaMode('GALLERY')}
@@ -238,36 +242,7 @@ const PlaceChatPanel = React.memo(({
             .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
         `}</style>
 
-        {isChatMode ? (
-            <div className="h-full flex flex-col p-6">
-                <div className="flex items-center justify-between mb-2 shrink-0">
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                        <span className="text-blue-400"><Sparkles size={14} /></span> AI Assistant
-                    </h3>
-                    <button
-                        onClick={() => setIsChatMode(false)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/20 text-xs text-gray-300 hover:text-white transition-all border border-white/5"
-                    >
-                        <span>닫기</span>
-                        <X size={12} />
-                    </button>
-                </div>
-
-                <div className="flex-1 min-h-0">
-                    <PlaceChatView
-                      chatHistory={chatData.chatHistory}
-                      isAiLoading={chatData.isAiLoading}
-                      onSendMessage={handleSendMessage}
-                      locationName={location.name}
-                      slug={location.slug}
-                      onPlannerNavigate={() => {
-                        setIsChatMode(false);
-                        setMediaMode('PLANNER');
-                      }}
-                    />
-                </div>
-            </div>
-        ) : mediaMode === 'WIKI' ? (
+        {mediaMode === 'WIKI' ? (
             <PlaceWikiNavView
                 wikiData={wikiData}
                 isWikiLoading={isWikiLoading}
@@ -295,25 +270,45 @@ const PlaceChatPanel = React.memo(({
         )}
       </div>
 
-      {/* Footer */}
-      {!isChatMode && mediaMode !== 'WIKI' && (
+      {/* Footer — 데스크톱 MOONi 진입 */}
+      {mediaMode !== 'WIKI' && (
           <div className="hidden md:block p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
               <button
-                onClick={() => setIsChatMode(true)}
-                className="w-full h-12 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-full px-1 pl-2 flex items-center gap-3 transition-all group shadow-lg"
+                type="button"
+                onClick={openMooni}
+                className="w-full h-12 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-cyan-400/30 rounded-full px-1 pl-2 flex items-center gap-3 transition-all group shadow-lg"
               >
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0">
-                      <Sparkles size={14} className="text-blue-300 group-hover:scale-110 transition-transform" />
+                  <div className="w-9 h-9 rounded-full bg-cyan-500/15 flex items-center justify-center shrink-0 overflow-hidden">
+                      <img src={mooniChar} alt="" className="h-8 w-8 object-contain" draggable={false} />
                   </div>
-                  <span className="text-sm text-gray-400 group-hover:text-gray-200 font-medium truncate">AI에게 장소 묻기</span>
-                  <div className="ml-auto mr-2 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <span className="text-sm text-gray-400 group-hover:text-gray-200 font-medium truncate">MOONi에게 물어보기</span>
+                  <div className="ml-auto mr-2 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white transition-all">
                       <Send size={12} />
                   </div>
               </button>
           </div>
       )}
 
-      {relatedPlaces.length > 0 && !isChatMode && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(
+      {/* 모바일: 하단 MOONi FAB (플래너 scroll-top z-[170]과 겹치지 않도록 좌측) */}
+      {!isFullScreen && createPortal(
+          <button
+            type="button"
+            onClick={openMooni}
+            className="md:hidden fixed z-[165] left-3 flex flex-col items-center gap-0.5 touch-manipulation bottom-[max(5.5rem,env(safe-area-inset-bottom,0px)+4.5rem)]"
+            aria-label="MOONi에게 물어보기"
+          >
+            <img
+              src={mooniChar}
+              alt="MOONi"
+              className="h-14 w-14 object-contain drop-shadow-[0_8px_24px_rgba(34,211,238,0.35)]"
+              draggable={false}
+            />
+            <span className="text-[10px] font-bold text-cyan-200/90">MOONi</span>
+          </button>,
+          document.body
+      )}
+
+      {relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(
           <div className="md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
               <style>{`
                   .no-scrollbar::-webkit-scrollbar { display: none; }

@@ -110,6 +110,7 @@ export function useHomeHandlers({
   setChatDraft,
   setSavedTrips,
   setMooniChatEntry,
+  setMooniPlaceContext,
   fetchData: _fetchData,
   toggleBookmark
 }) {
@@ -296,27 +297,53 @@ export function useHomeHandlers({
   const handleStartChat = useCallback(async (dest, initPayload, existingId = null) => {
     if (globeRef.current) globeRef.current.pauseRotation();
 
-    const locationName = dest || selectedLocation?.name || "New Session";
+    const isMooniRequest = String(dest ?? '').trim() === 'MOONi';
+    const boundSpot = initPayload?.boundSpot ?? null;
+    const locationName = isMooniRequest
+      ? (boundSpot?.name || 'MOONi')
+      : (dest || selectedLocation?.name || 'New Session');
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
 
-    if (!existingId && String(locationName).trim() === 'MOONi') {
+    if (isMooniRequest) {
       setMooniChatEntry?.(true);
-      const resumedTrip = await resolveMooniResumeTrip({
-        savedTrips,
-        userId: user?.id ?? null,
-      });
-      if (resumedTrip) {
-        if (!savedTrips.some((t) => String(t.id) === String(resumedTrip.id))) {
-          setSavedTrips((prev) => [resumedTrip, ...prev]);
+      setMooniPlaceContext?.(boundSpot ?? null);
+
+      if (!existingId && boundSpot?.name) {
+        let placeTrip = savedTrips.find(
+          (t) => !t.is_hidden && t.destination === boundSpot.name && tripHasPersistedDialogue(t),
+        );
+        if (placeTrip?.is_hidden) {
+          placeTrip = { ...placeTrip, is_hidden: false };
+          setSavedTrips((prev) => prev.map((t) => (t.id === placeTrip.id ? placeTrip : t)));
         }
-        setChatDraft(null);
-        setActiveChatId(resumedTrip.id);
-        setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
-        setIsChatOpen(true);
-        return;
+        if (placeTrip) {
+          setChatDraft(null);
+          setActiveChatId(placeTrip.id);
+          setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+          setIsChatOpen(true);
+          return;
+        }
+      }
+
+      if (!existingId) {
+        const resumedTrip = await resolveMooniResumeTrip({
+          savedTrips,
+          userId: user?.id ?? null,
+        });
+        if (resumedTrip) {
+          if (!savedTrips.some((t) => String(t.id) === String(resumedTrip.id))) {
+            setSavedTrips((prev) => [resumedTrip, ...prev]);
+          }
+          setChatDraft(null);
+          setActiveChatId(resumedTrip.id);
+          setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+          setIsChatOpen(true);
+          return;
+        }
       }
     } else {
       setMooniChatEntry?.(false);
+      setMooniPlaceContext?.(null);
     }
 
     // 🚨 1. 프론트엔드 상태(savedTrips)에서 탐색
@@ -371,20 +398,20 @@ export function useHomeHandlers({
 
     // 4. DB에 행이 없으면: 빈 saved_trips 를 만들지 않고, 첫 메시지 전송 시 insert (setChatDraft + 모달만 오픈)
     const isSameLocation = selectedLocation && (selectedLocation.name === locationName || selectedLocation.display_name === locationName);
-    const targetLat = isSameLocation ? (selectedLocation.lat || 0) : 0;
-    const targetLng = isSameLocation ? (selectedLocation.lng || 0) : 0;
+    const targetLat = boundSpot?.lat ?? (isSameLocation ? (selectedLocation.lat || 0) : 0);
+    const targetLng = boundSpot?.lng ?? (isSameLocation ? (selectedLocation.lng || 0) : 0);
 
     setChatDraft({
       destination: locationName,
       lat: targetLat,
       lng: targetLng,
       persona,
-      category: category
+      category: category,
     });
     setActiveChatId(null);
     setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
     setIsChatOpen(true);
-  }, [globeRef, savedTrips, selectedLocation, category, user, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft, setMooniChatEntry]);
+  }, [globeRef, savedTrips, selectedLocation, category, user, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft, setMooniChatEntry, setMooniPlaceContext]);
 
   const handleToggleBookmark = useCallback(async (loc) => {
     if (!loc || !loc.name || isTogglingRef.current) return;

@@ -28,6 +28,7 @@ const ChatModal = ({
   isOpen,
   onClose,
   mooniEntry = false,
+  mooniPlaceContext = null,
   initialQuery,
   chatHistory = [],
   chatDraft = null,
@@ -75,9 +76,17 @@ const ChatModal = ({
   const isMooniSession = introDestinationRaw === 'MOONi';
   const isMooniUi = mooniEntry || isMooniSession;
   const boundDestinationSlug = useMemo(() => {
+    if (mooniPlaceContext?.slug) return mooniPlaceContext.slug;
     if (!introDestinationRaw || isMooniSession) return null;
     return resolveSlugFromDestination(introDestinationRaw);
-  }, [introDestinationRaw, isMooniSession]);
+  }, [introDestinationRaw, isMooniSession, mooniPlaceContext?.slug]);
+
+  const mooniHeaderLabel = useMemo(() => {
+    if (!isMooniUi) return introDestinationRaw || 'MOONi';
+    const placeName = mooniPlaceContext?.name
+      ?? (boundDestinationSlug ? introDestinationRaw : null);
+    return placeName ? `${placeName} · MOONi` : 'MOONi';
+  }, [isMooniUi, mooniPlaceContext?.name, boundDestinationSlug, introDestinationRaw]);
 
   useEffect(() => {
     if (!isOpen || !introDestinationRaw || isMooniUi) {
@@ -228,7 +237,16 @@ const ChatModal = ({
       chatDraft?.destination ||
       '';
 
-    const sessionBound = resolveSessionBoundSpot(currentDest, messages);
+    const sessionBound =
+      resolveSessionBoundSpot(currentDest, messages) ??
+      (mooniPlaceContext?.slug
+        ? {
+            slug: mooniPlaceContext.slug,
+            name: mooniPlaceContext.name,
+            lat: mooniPlaceContext.lat ?? null,
+            lng: mooniPlaceContext.lng ?? null,
+          }
+        : null);
     const accessRoute = isAccessRouteQuery(cleanText);
     const departureLabel = accessRoute ? resolveDepartureLabelFromChat(cleanText, messages) : null;
 
@@ -295,7 +313,9 @@ const ChatModal = ({
     onUpdateChat(effectiveChatId, newMessages);
 
     try {
-      const destForPrompt = sessionDest === 'MOONi' ? (resolution?.name || sessionDest) : sessionDest;
+      const destForPrompt = sessionDest === 'MOONi'
+        ? (resolution?.name || sessionBound?.name || mooniPlaceContext?.name || sessionDest)
+        : sessionDest;
       const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
         isMooni: destForPrompt === 'MOONi',
       });
@@ -314,16 +334,19 @@ const ChatModal = ({
         (accessRoute && sessionBound?.slug) ||
         resolution?.slug ||
         sessionBound?.slug ||
+        mooniPlaceContext?.slug ||
         resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
       const destName =
-        destForPrompt === 'MOONi' ? (resolution?.name ?? sessionBound?.name ?? '') : destForPrompt;
+        destForPrompt === 'MOONi'
+          ? (resolution?.name ?? sessionBound?.name ?? mooniPlaceContext?.name ?? '')
+          : destForPrompt;
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
       const booking = resolveChatBookingActions({
         userText: cleanText,
         destinationName: destName,
         slug,
         chatHistory: priorTurns,
-        chatSource: 'home',
+        chatSource: mooniPlaceContext ? 'place' : 'home',
         aiReplyText: aiReply,
         essentialGuide,
       });
@@ -347,7 +370,7 @@ const ChatModal = ({
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, currentPersona, messages, activeChatId, chatDraft, onUpdateChat, onCreateTripOnFirstUserMessage, chatHistory, applyDestinationBinding]);
+  }, [isLoading, currentPersona, messages, activeChatId, chatDraft, onUpdateChat, onCreateTripOnFirstUserMessage, chatHistory, applyDestinationBinding, mooniPlaceContext]);
 
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
@@ -423,16 +446,12 @@ const ChatModal = ({
             <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
                <div className="flex flex-col min-w-0">
                  <span className="font-bold text-white tracking-wide text-base">
-                   {isMooniUi && boundDestinationSlug
-                     ? `${introDestinationRaw} · MOONi`
-                     : isMooniUi
-                       ? 'MOONi'
-                       : introDestinationRaw || 'MOONi'}
+                   {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
                  <span className="text-[11px] text-cyan-300/80 font-medium truncate">
                    {isMooniUi
                      ? boundDestinationSlug
-                       ? `${introDestinationRaw} 여행 대화 · ${currentPersona}`
+                       ? `${mooniPlaceContext?.name ?? introDestinationRaw} 여행 대화 · ${currentPersona}`
                        : `여행 AI 도우미 · ${currentPersona}`
                      : `${introDestinationRaw || '여행'} 대화 · ${currentPersona}`}
                  </span>
@@ -465,7 +484,9 @@ const ChatModal = ({
                 <div className="flex flex-col items-start w-full">
                   <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
                   <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
-                    안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요.
+                    {boundDestinationSlug
+                      ? `${mooniPlaceContext?.name ?? introDestinationRaw} 여행, 교통·예약·일정 무엇이든 물어보세요.`
+                      : '안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요.'}
                   </div>
                 </div>
               )}
@@ -500,8 +521,10 @@ const ChatModal = ({
                       <BookingActionCards
                         actions={refreshStoredBookingActionLabels(msg.bookingActions, {
                           slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
-                          destinationName: introDestinationRaw === 'MOONi'
-                            ? (messages.slice(0, idx).reverse().find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name ?? '')
+                          destinationName: isMooniUi
+                            ? (mooniPlaceContext?.name
+                              ?? messages.slice(0, idx).reverse().find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name
+                              ?? (introDestinationRaw !== 'MOONi' ? introDestinationRaw : ''))
                             : introDestinationRaw,
                           chatHistory: messages
                             .slice(0, idx)

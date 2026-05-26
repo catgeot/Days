@@ -1,6 +1,6 @@
 # AI 채팅 예약 CTA 2단계 — Handoff (2026-05-22)
 
-**상태**: Phase 1 완료 · **MOONi M1+M2+M3(S3~S4) 반영** · §10-C QA 사용자 확인 · **다음: M4(노출+Docent 통합) → S5(UI 승인) → S6 QA**  
+**상태**: Phase 1 완료 · **MOONi M1~M4-A/B 반영** · §10-C QA 확인 · **S5 와이어 합의(1-A·2-A·3-A·4-A) · 구현·S6 QA는 다음 세션**  
 **기준 여행지**: **길리 메노** (`gili-meno`) — 다구간·다제휴 스트레스 테스트  
 **회귀 여행지**: 자카르타 (`jakarta`) — flight-only 단순 케이스  
 **MOONi 진입점**: [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) → `handleStartChat('MOONi')` · [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) `isMooniSession`  
@@ -102,6 +102,26 @@ MOONi = ChatModal + trip SSOT (재진입·slug·BookingActionCards)
 | **S6** | gili-meno A~J · jakarta flight-only | gateo.kr |
 
 **리스크**: MOONi trip vs 장소명 trip 분리 · FAB와 플래너 scroll-top 버튼 겹침 · Docent/ MOONi 동시 노출.
+
+### 2.7 S5 BookingActionCards 2섹션 UI (2026-05-26 와이어 합의)
+
+**상태**: 와이어·합의 완료 · **코드 구현은 다음 세션** (`BookingActionCards.jsx` 단일 파일 ~40줄 diff).
+
+| 섹션 | 라벨 | `provider` / `type` | 비고 |
+|------|------|---------------------|------|
+| **A** | 교통 · 티켓 | `trip_com`, `twelve_go`, `direct`, `klook_ferry` | Trip full-width · 12Go compact(복수) |
+| **B** | 출발 전 준비 | `klook`(transfer), `official`(visa), `pre_travel` | amber 톤 · `PreTravelChecklist` 정렬 |
+
+**합의 옵션 (1-A · 2-A · 3-A · 4-A)**
+
+1. 섹션 B: 얇은 amber border + subtle fill (`border-amber-500/15 bg-amber-950/20`)
+2. prep 버튼: 모바일 full-width · 데스크톱 wrap chip
+3. 순서: A → B → 플래너 링크 (공통 푸터)
+4. Trip.com 채팅: **외부 탭 유지** (플래너 Trip modal 재사용 X)
+
+**규칙**: 빈 섹션·헤더 미렌더 · action 상한 6(A 우선) · resolver·URL SSOT **무변경**.
+
+**대상**: `ChatModal`만 (M4-B로 `PlaceChatView` Docent 제거됨).
 
 ### 2.5 MOONi 관련 파일
 
@@ -218,7 +238,7 @@ userText + chatHistory + location(slug) + essentialGuide
 | **S2** | `chatBookingResolver` — flight·ferry·planner URL 위임 | Trip DPS + ferry SSOT | B·C intent |
 | **S3** | essentialGuide 연동 — pre_travel·visa·transfer·getMultiLinks 추출 | prep·pickup CTA | F·G·E (gili-meno) |
 | **S4** | persona·prompts · `usePlaceChat`/`ChatModal` wiring | AI CTA 안내 | A 복합 stack |
-| **S5** | BookingActionCards 섹션 UI (**사용자 UI 승인 후**) | 다섹션 CTA | 모바일 Trip modal |
+| **S5** | BookingActionCards 2섹션 UI — [§2.7](2026-05-22-ai-chat-booking-cta-handoff.md) 합의 · **구현 다음 세션** | A교통·B출발전 | gili-meno A·C·E·F·G |
 | **S6** | gili-meno A~J QA · jakarta 회귀 | — | gateo.kr |
 | **S7+** | **LOP 경유** · 12Go API | 발리 stack 안정 후 | lombok-gili + LOP flight |
 
@@ -393,4 +413,27 @@ MOONi **여행 맥락 확장** — PlaceCard에서 MOONi 노출(M4-A) · AI Doce
 
 ## 금지
 ferry/airports JSON 직접 수정 · S5 대형 UI 승인 없이 · releaseNotes 합의 전 · `/blog` MOONi 확장
+```
+
+### E. S5 BookingActionCards 2섹션 + S6 QA (**다음 세션 권장**)
+
+```
+@.ai-context.md
+@plans/2026-05-22-ai-chat-booking-cta-handoff.md
+@plans/2026-05-26-project-log.md
+
+## 목표
+AI 채팅 CTA **S5 구현** — BookingActionCards 2섹션(교통·티켓 / 출발 전 준비) · **S6 QA** (gili-meno A~J · jakarta 회귀).
+
+## 선행 (이미 반영)
+- M4-A/B: PlaceCard MOONi 진입 · Docent→MOONi · `mooniPlaceContext` · `/place/*` FAB 숨김
+- S5 와이어 합의: handoff **§2.7** — 1-A·2-A·3-A·4-A (Trip 외부 탭 유지)
+
+## 이번 세션 작업 (코드)
+1. **`BookingActionCards.jsx`** — provider 기준 A/B 분리 · 섹션 헤더(emerald/amber) · B subtle border · 빈 섹션 숨김
+2. **S6 QA**: `/place/gili-meno` MOONi — A「서울에서 어떻게 가?」·C「페리」·E·F·G · jakarta「항공편」 flight-only
+3. M4 QA 미완 시: 갤러리·플래너 MOONi 가시성 · G9 동일 CTA · planner 링크 닫기 후 `/place/:slug/planner`
+
+## 금지
+resolver·ferry/airports JSON 변경 · Trip modal 채팅 연동(4-A) · releaseNotes 합의 전 · UI 합의 외 레이아웃 변경
 ```

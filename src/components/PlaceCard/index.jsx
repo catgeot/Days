@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
-import { usePlaceChat } from './hooks/usePlaceChat';
 import { usePlaceGallery } from './hooks/usePlaceGallery';
 import PlaceCardExpanded from './modes/PlaceCardExpanded';
 import SEO from '../SEO';
@@ -37,22 +36,11 @@ const PlaceCard = () => {
     location: contextLocation,
     isBookmarked,
     onToggleBookmark,
-    onClose
+    onClose,
+    onOpenMooni,
   } = context || {};
 
-  const chatData = usePlaceChat({
-    slug: contextLocation?.slug ?? slug ?? null,
-    destinationName: contextLocation?.name ?? '',
-    chatSource: 'place',
-  });
-  const { clearChat } = chatData || {};
   const galleryData = usePlaceGallery(contextLocation);
-
-  useEffect(() => {
-    return () => {
-      if (clearChat) clearChat();
-    };
-  }, [clearChat]);
 
   useEffect(() => {
     let timeoutId;
@@ -87,7 +75,7 @@ const PlaceCard = () => {
         location={contextLocation}
         isBookmarked={isBookmarked}
         onClose={onClose}
-        chatData={chatData}
+        onOpenMooni={onOpenMooni}
         galleryData={galleryData}
         onToggleBookmark={onToggleBookmark}
         initialTab={currentTab.toUpperCase()}

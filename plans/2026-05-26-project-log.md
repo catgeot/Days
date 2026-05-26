@@ -10,3 +10,7 @@
 - **제품 합의**: MOONi는 홈만이 아니라 **여행 맥락 화면** 유지 · 단일 세션 — 다음 **M4-A 노출 / M4-B Docent 통합** → S5(UI 승인) → S6 QA ([handoff §2.6](2026-05-22-ai-chat-booking-cta-handoff.md)).
 - **커밋**: M3 S3~S4 및 플래너 링크·prep CTA (본 세션).
 - **다음 세션**: [handoff §10-D](2026-05-22-ai-chat-booking-cta-handoff.md) — M4-A~B.
+- **M4-A/B**: `/place/*` FAB 숨김 · PlaceCard MOONi 진입 · `boundSpot`·`mooniPlaceContext` · Docent→`ChatModal` 단일 세션.
+- **S5**: BookingActionCards 2섹션 와이어 합의(§2.7 · 1-A·2-A·3-A·4-A) · **구현은 다음 세션** — [handoff §10-E](2026-05-22-ai-chat-booking-cta-handoff.md).
+- **커밋**: M4-A/B 코드 + 문서(본 세션).
+- **다음**: S5 `BookingActionCards.jsx` → S6 QA(gili-meno·jakarta).

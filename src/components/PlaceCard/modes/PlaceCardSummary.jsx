@@ -124,8 +124,8 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
               }}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.08] border border-white/15 hover:bg-white/12 hover:border-blue-400/30 transition-all duration-300 z-10 relative"
             >
-              <MessageSquare size={16} className="text-blue-400" />
-              <span className="text-xs font-bold text-gray-200">AI에게 장소 묻기</span>
+              <MessageSquare size={16} className="text-cyan-400" />
+              <span className="text-xs font-bold text-gray-200">MOONi에게 물어보기</span>
             </button>
           </div>
         </div>
