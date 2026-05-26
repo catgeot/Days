@@ -22,6 +22,7 @@ import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { getSystemPrompt } from './lib/prompts';
+import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, resolveTravelSpotFromCoords, resolveTravelSpotFromPlaceId, buildSpotLookup } from '../../utils/travelSpotResolve.js';
 
@@ -112,9 +113,12 @@ function Home() {
     if (created) {
       setChatDraft(null);
       setActiveChatId(created.id);
+      if (mooniChatEntry || destination === 'MOONi') {
+        persistMooniLastChatId(created.id, user?.id ?? null);
+      }
     }
     return created;
-  }, [category, saveNewTrip]);
+  }, [category, saveNewTrip, mooniChatEntry, user?.id]);
 
   const updateChatDraftDestination = useCallback((patch) => {
     setChatDraft((prev) => (prev ? { ...prev, ...patch } : null));
@@ -471,12 +475,8 @@ function Home() {
           isOpen={isChatOpen}
           mooniEntry={mooniChatEntry}
           onClose={() => {
-            if (activeChatId) {
-              try {
-                sessionStorage.setItem('gateo_mooni_last_chat_id', String(activeChatId));
-              } catch {
-                // private mode
-              }
+            if (activeChatId && (mooniChatEntry || chatDraft?.destination === 'MOONi')) {
+              persistMooniLastChatId(activeChatId, user?.id ?? null);
             }
             setIsChatOpen(false);
             setChatDraft(null);

@@ -12,13 +12,13 @@ const DEPARTURE_IATA = {
 
 /**
  * @param {string} userText
- * @param {Array<{ text?: string }>} [chatHistory]
+ * @param {Array<{ text?: string, departureLabel?: string }>} [chatHistory]
  * @returns {string | null} IATA or null
  */
 export function resolveDepartureIataFromChat(userText, chatHistory = []) {
   const combined = [
     userText,
-    ...chatHistory.slice(-4).map((m) => m.text ?? ''),
+    ...chatHistory.slice(-6).flatMap((m) => [m.text ?? '', m.departureLabel ?? '']),
   ]
     .filter(Boolean)
     .join(' ');

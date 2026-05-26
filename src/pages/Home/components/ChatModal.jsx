@@ -12,9 +12,12 @@ import {
   shouldUsePlannerPersona,
   resolveSlugFromDestination,
 } from '../../../utils/bookingIntentResolver';
-import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
+import { resolveChatBookingActions, refreshStoredBookingActionLabels } from '../../../utils/chatBookingResolver';
 import {
   resolveDestinationFromChat,
+  isAccessRouteQuery,
+  resolveDepartureLabelFromChat,
+  resolveSessionBoundSpot,
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
@@ -210,23 +213,40 @@ const ChatModal = ({
     }
 
     const currentDest =
-      (activeChatId && chatHistory.find((t) => t.id === activeChatId)?.destination) ||
+      (activeChatId && chatHistory.find((t) => String(t.id) === String(activeChatId))?.destination) ||
       chatDraft?.destination ||
       '';
+
+    const sessionBound = resolveSessionBoundSpot(currentDest, messages);
+    const accessRoute = isAccessRouteQuery(cleanText);
+    const departureLabel = accessRoute ? resolveDepartureLabelFromChat(cleanText, messages) : null;
 
     let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
 
     let sessionDest = currentDest;
     if (resolution?.confidence === 'high' && resolution.name) {
       sessionDest = resolution.name;
+    } else if (sessionBound?.name) {
+      sessionDest = sessionBound.name;
     }
+
+    const chipDestination =
+      accessRoute && sessionBound
+        ? { slug: sessionBound.slug, name: sessionBound.name }
+        : resolution?.confidence === 'high' && resolution.slug
+          ? { slug: resolution.slug, name: resolution.name }
+          : null;
+
+    const shouldApplyBinding =
+      resolution?.confidence === 'high' &&
+      resolution.name &&
+      !(accessRoute && sessionBound && resolution.slug !== sessionBound.slug);
 
     const userMsg = {
       role: 'user',
       text: cleanText,
-      ...(resolution?.confidence === 'high' && resolution.slug
-        ? { confirmedDestination: { slug: resolution.slug, name: resolution.name } }
-        : {}),
+      ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
+      ...(departureLabel && chipDestination ? { departureLabel } : {}),
       ...(resolution?.confidence === 'low' && resolution.candidates?.length
         ? { destinationCandidates: resolution.candidates, destinationPrompt: true }
         : {}),
@@ -257,7 +277,7 @@ const ChatModal = ({
         return;
       }
       effectiveChatId = created.id;
-    } else if (resolution?.confidence === 'high' && resolution.name) {
+    } else if (shouldApplyBinding) {
       await applyDestinationBinding(effectiveChatId, chatDraft, resolution);
     }
 
@@ -280,7 +300,8 @@ const ChatModal = ({
       );
 
       const slug =
-        resolution?.slug ??
+        (accessRoute && sessionBound?.slug) ||
+        resolution?.slug ||
         resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
       const booking = resolveChatBookingActions({
         userText: cleanText,
@@ -454,13 +475,29 @@ const ChatModal = ({
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
                       <DestinationResolutionChips
                         confirmed={msg.confirmedDestination}
+                        departure={msg.departureLabel}
                         candidates={msg.destinationCandidates}
                         onSelectCandidate={(c) => handleSelectDestinationCandidate(c, idx)}
                       />
                     )}
                     {msg.role === 'model' && msg.bookingActions?.length > 0 && (
                       <BookingActionCards
-                        actions={msg.bookingActions}
+                        actions={refreshStoredBookingActionLabels(msg.bookingActions, {
+                          slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
+                          destinationName: introDestinationRaw === 'MOONi'
+                            ? (messages.slice(0, idx).reverse().find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name ?? '')
+                            : introDestinationRaw,
+                          chatHistory: messages
+                            .slice(0, idx)
+                            .filter((m) => m.role === 'user')
+                            .map((m) => ({ text: m.text, departureLabel: m.departureLabel })),
+                          userText:
+                            messages[idx - 1]?.role === 'user'
+                              ? (typeof messages[idx - 1].text === 'object'
+                                  ? messages[idx - 1].text?.text
+                                  : messages[idx - 1].text) ?? ''
+                              : '',
+                        })}
                         slug={msg.bookingMeta?.slug}
                         plannerUrl={msg.bookingMeta?.plannerUrl}
                       />

@@ -1,4 +1,4 @@
-import { buildTripcomPlannerFlightUrl } from './affiliate.js';
+import { buildTripcomPlannerFlightUrl, TRIPCOM_DEFAULT_DEPARTURE_AIRPORT } from './affiliate.js';
 import {
   classifyChatIntent,
   shouldShowChatBookingCta,
@@ -12,6 +12,44 @@ import {
   resolveBookingActions as resolveLegacyBookingActions,
   resolveSlugFromDestination,
 } from './bookingIntentResolver.js';
+
+/** Trip URL(`buildTripcomPlannerFlightUrl`)과 동일 SSOT — 출발 미언급 시 ICN */
+export function formatChatFlightLabel({ departureIata, arrivalIata, destinationName }) {
+  const depart = departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+  if (arrivalIata) {
+    return `${depart} → ${arrivalIata} 항공권`;
+  }
+  return `${destinationName || '항공권'} 검색`;
+}
+
+/**
+ * DB/localStorage에 저장된 bookingActions — 항공 라벨만 최신 SSOT로 보정 (재진입·새로고침).
+ */
+export function refreshStoredBookingActionLabels(
+  actions,
+  { slug, destinationName = '', chatHistory = [], userText = '' } = {}
+) {
+  if (!actions?.length) return actions;
+
+  const profile = getDestinationBookingProfile(slug);
+  const departureIata = resolveDepartureIataFromChat(userText, chatHistory);
+  const arrivalIata = profile.arrivalIata;
+  if (!arrivalIata) return actions;
+
+  const nextLabel = formatChatFlightLabel({
+    departureIata,
+    arrivalIata,
+    destinationName,
+  });
+
+  return actions.map((action) => {
+    if (action.provider !== 'trip_com' || action.type !== 'trip_flight') {
+      return action;
+    }
+    if (action.label === nextLabel) return action;
+    return { ...action, label: nextLabel };
+  });
+}
 
 /**
  * Phase 2a S2 — intent + slug 기반 채팅 CTA (플래너 SSOT 재사용).
@@ -80,9 +118,11 @@ export function resolveChatBookingActions(params) {
     if (flightUrl) {
       actions.push({
         type: 'trip_flight',
-        label: departureIata
-          ? `${departureIata} → ${profile.arrivalIata || '도착'} 항공권`
-          : `${destinationName || '항공권'} 검색`,
+        label: formatChatFlightLabel({
+          departureIata,
+          arrivalIata: profile.arrivalIata,
+          destinationName,
+        }),
         url: flightUrl,
         provider: 'trip_com',
       });

@@ -4,6 +4,7 @@ import {
   resolveTravelSpotFromSearchQuery,
   resolveTravelSpotFromLocation,
 } from './travelSpotResolve.js';
+import { resolveDepartureIataFromChat } from './resolveDepartureIataFromChat.js';
 
 const MOONI_PLACEHOLDERS = new Set(['', 'mooni', 'new session', 'scanning...']);
 
@@ -13,6 +14,17 @@ const ISLAND_TERMS = ['섬', 'island', '아일랜드', '제도'];
 /** 출발지·경로 질문 — 「서울에서 어떻게 가?」 등은 목적지 재해석하지 않음 */
 const ACCESS_ROUTE_QUERY =
   /어떻게\s*가|가는\s*(?:길|방법|법)|교통편|이동\s*(?:방법|수단)|how\s*to\s*get/i;
+
+/** 출발 허브 — access_route에서 목적지 후보에서 제외 */
+const DEPARTURE_HUB_SLUGS = new Set(['seoul', 'incheon', 'busan', 'jeju', 'kimpo']);
+
+const DEPARTURE_LABELS = [
+  ['서울', 'seoul'],
+  ['인천', 'incheon'],
+  ['김포', 'kimpo'],
+  ['부산', 'busan'],
+  ['제주', 'jeju'],
+];
 
 const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 
@@ -90,24 +102,79 @@ export function shouldResolveDestination(destination) {
   return true;
 }
 
+export function isAccessRouteQuery(text) {
+  return ACCESS_ROUTE_QUERY.test(String(text ?? '').trim());
+}
+
+/** access_route 발화에서 출발지 라벨 (칩 UI용) */
+export function resolveDepartureLabelFromChat(userText, chatHistory = []) {
+  const combined = [
+    userText,
+    ...chatHistory.filter((m) => m.role === 'user').slice(-3).map((m) => m.text ?? ''),
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  for (const [label] of DEPARTURE_LABELS) {
+    if (combined.includes(label)) return label;
+  }
+  if (/seoul/i.test(combined)) return '서울';
+  if (/incheon/i.test(combined)) return '인천';
+  if (/busan/i.test(combined)) return '부산';
+  if (/jeju/i.test(combined)) return '제주';
+  if (resolveDepartureIataFromChat(userText, chatHistory)) return '한국';
+  return null;
+}
+
+/**
+ * trip destination + confirmedDestination 메시지에서 세션 바인딩 slug를 복원한다.
+ */
+export function resolveSessionBoundSpot(currentDestination = '', chatHistory = []) {
+  if (!isMooniPlaceholder(currentDestination)) {
+    const fromTrip = resolveTravelSpotFromLocation(currentDestination)?.spot;
+    if (fromTrip) return fromTrip;
+  }
+
+  for (let i = chatHistory.length - 1; i >= 0; i -= 1) {
+    const confirmed = chatHistory[i]?.confirmedDestination;
+    if (!confirmed?.slug) continue;
+    const fromSlug = TRAVEL_SPOTS.find((s) => s.slug === confirmed.slug);
+    if (fromSlug) return fromSlug;
+    const fromName = resolveTravelSpotFromLocation(confirmed.name)?.spot;
+    if (fromName) return fromName;
+  }
+
+  return null;
+}
+
+function isDepartureHubSpot(spot) {
+  if (!spot?.slug) return false;
+  return DEPARTURE_HUB_SLUGS.has(String(spot.slug).toLowerCase());
+}
+
+function filterDepartureHubs(hits, excludeDeparture) {
+  if (!excludeDeparture) return hits;
+  return hits.filter(({ spot }) => !isDepartureHubSpot(spot));
+}
+
 /**
  * 발화·히스토리에서 여행지 slug 후보를 해석한다 (홈 검색 SSOT 재사용).
  */
 export function resolveDestinationFromChat(userText, chatHistory = [], currentDestination = '') {
-  const bound = !isMooniPlaceholder(currentDestination)
-    ? resolveTravelSpotFromLocation(currentDestination)?.spot
-    : null;
+  const sessionBound = resolveSessionBoundSpot(currentDestination, chatHistory);
 
   const currentText = String(userText ?? '').trim();
+  const accessRoute = isAccessRouteQuery(currentText);
+
   if (!currentText) {
-    return bound ? buildHighResult(bound, 10, 'bound') : emptyResult();
+    return sessionBound ? buildHighResult(sessionBound, 10, 'bound') : emptyResult();
   }
 
-  if (bound && ACCESS_ROUTE_QUERY.test(currentText)) {
-    return buildHighResult(bound, 10, 'bound');
+  if (sessionBound && accessRoute) {
+    return buildHighResult(sessionBound, 10, 'bound');
   }
 
-  const currentDirect = resolveDirectHits(currentText);
+  const currentDirect = filterDepartureHubs(resolveDirectHits(currentText), accessRoute);
   if (currentDirect.length === 1) {
     return buildHighResult(currentDirect[0].spot, currentDirect[0].score, 'lookup');
   }
@@ -116,6 +183,13 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
       currentDirect.map(({ spot, score }) => spotToCandidate(spot, score, 'lookup')),
       'lookup'
     );
+  }
+
+  if (accessRoute && sessionBound) {
+    return buildHighResult(sessionBound, 10, 'bound');
+  }
+  if (accessRoute) {
+    return emptyResult();
   }
 
   if (looksLikeThemeQuery(currentText)) {
@@ -131,7 +205,7 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
     .map((m) => m.text ?? '')
     .filter(Boolean);
   const combined = [...recentUser, currentText].join(' ').trim();
-  const combinedDirect = resolveDirectHits(combined);
+  const combinedDirect = filterDepartureHubs(resolveDirectHits(combined), accessRoute);
   if (combinedDirect.length === 1) {
     return buildHighResult(combinedDirect[0].spot, combinedDirect[0].score, 'lookup');
   }
@@ -142,8 +216,8 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
     );
   }
 
-  if (bound) {
-    return buildHighResult(bound, 10, 'bound');
+  if (sessionBound) {
+    return buildHighResult(sessionBound, 10, 'bound');
   }
 
   return emptyResult();

@@ -17,8 +17,7 @@ import { apiClient } from '../lib/apiClient';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
-
-const MOONI_LAST_CHAT_KEY = 'gateo_mooni_last_chat_id';
+import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
 
 const prepareLocation = (loc) => enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(loc));
 
@@ -92,7 +91,7 @@ const MOOD_HINT_KEYWORDS = [
 
 export function useHomeHandlers({
   globeRef,
-  user: _user,
+  user,
   category,
   isPinVisible,
   selectedLocation,
@@ -302,17 +301,19 @@ export function useHomeHandlers({
 
     if (!existingId && String(locationName).trim() === 'MOONi') {
       setMooniChatEntry?.(true);
-      try {
-        const lastId = sessionStorage.getItem(MOONI_LAST_CHAT_KEY);
-        if (lastId) {
-          setChatDraft(null);
-          setActiveChatId(lastId);
-          setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
-          setIsChatOpen(true);
-          return;
+      const resumedTrip = await resolveMooniResumeTrip({
+        savedTrips,
+        userId: user?.id ?? null,
+      });
+      if (resumedTrip) {
+        if (!savedTrips.some((t) => String(t.id) === String(resumedTrip.id))) {
+          setSavedTrips((prev) => [resumedTrip, ...prev]);
         }
-      } catch {
-        // private mode
+        setChatDraft(null);
+        setActiveChatId(resumedTrip.id);
+        setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+        setIsChatOpen(true);
+        return;
       }
     } else {
       setMooniChatEntry?.(false);
@@ -383,7 +384,7 @@ export function useHomeHandlers({
     setActiveChatId(null);
     setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
     setIsChatOpen(true);
-  }, [globeRef, savedTrips, selectedLocation, category, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft, setMooniChatEntry]);
+  }, [globeRef, savedTrips, selectedLocation, category, user, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft, setMooniChatEntry]);
 
   const handleToggleBookmark = useCallback(async (loc) => {
     if (!loc || !loc.name || isTogglingRef.current) return;

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Send, Loader2, Sparkles } from 'lucide-react';
 import BookingActionCards from '../../chat/BookingActionCards';
+import { refreshStoredBookingActionLabels } from '../../../utils/chatBookingResolver';
 
 const PlaceChatView = ({
   chatHistory,
@@ -74,7 +75,18 @@ const PlaceChatView = ({
                 </div>
                 {msg.role === 'model' && msg.bookingActions?.length > 0 && (
                   <BookingActionCards
-                    actions={msg.bookingActions}
+                    actions={refreshStoredBookingActionLabels(msg.bookingActions, {
+                      slug: msg.bookingMeta?.slug ?? slug,
+                      destinationName: locationName,
+                      chatHistory: chatHistory
+                        .slice(0, idx)
+                        .filter((m) => m.role === 'user')
+                        .map((m) => ({ text: m.text, departureLabel: m.departureLabel })),
+                      userText:
+                        chatHistory[idx - 1]?.role === 'user'
+                          ? chatHistory[idx - 1].text ?? ''
+                          : '',
+                    })}
                     slug={msg.bookingMeta?.slug ?? slug}
                     plannerUrl={msg.bookingMeta?.plannerUrl}
                   />

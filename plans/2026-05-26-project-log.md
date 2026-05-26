@@ -8,4 +8,8 @@
 - **M2 S1~S2**: `chatIntentClassifier` · `destinationBookingProfile` · `chatBookingResolver` — intent별 Trip/12Go CTA · 정보성 질문(발리 여행 소개)은 CTA 생략.
 - **QA §10-C (에이전트 로컬)**: G1·G2·G5·G6(수정 후) Pass · G3·G7·G4·G8·G9·PlaceCard 링크 재검증 대기.
 - **QA 중 수정**: intent·access_route bound · MOONi resume/`mooniChatEntry` · PlaceCard→`chatBookingResolver` · trip id `String` 비교.
-- **다음 세션**: 「서울에서 어떻게 가?」→ trip `destination`·PlaceCard URL이 서울로 남는 현상(항공 CTA는 ICN→DPS 정상) · 칩 UI(출발지/PlaceCard 라벨) 개선 후 G1~G9 재QA → M3.
+- **§10-C 재QA (세션2)**: access_route·`resolveSessionBoundSpot`·출발/목적지 칩 · G1·G6 브라우저 Pass · G2~G4·G8 resolver Pass.
+- **G5 재진입**: `mooniChatResume.js` — localStorage(userId별)+DB fetch · 메시지 SSOT `saved_trips.messages` 유지.
+- **항공 CTA 라벨**: ICN→DPS SSOT(`formatChatFlightLabel`) · 저장 메시지 `refreshStoredBookingActionLabels`.
+- **커밋**: (본 세션) MOONi QA 게이트 보완 2차 — 출발지 분리·재진입·항공 라벨.
+- **다음**: G5·G7·G9 사용자 1회 확인 → **M3(S3~S5)** pre_travel·visa·BookingActionCards UI.
