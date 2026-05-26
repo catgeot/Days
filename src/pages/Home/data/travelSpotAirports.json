@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-22T12:28:57.150Z",
-    "spotCount": 265,
+    "generatedAt": "2026-05-26T19:52:43.646Z",
+    "spotCount": 269,
     "placeIdCount": 337,
     "stats": {
-      "override": 117,
+      "override": 122,
       "curatedPreserved": 3,
-      "toolkitSync": 145,
+      "toolkitSync": 144,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -2287,14 +2287,21 @@
     },
     "bled": {
       "primaryIatas": [
+        "LJU",
         "ZAG",
         "VCE"
       ],
-      "preferredLinkIata": "ZAG",
+      "preferredLinkIata": "LJU",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "블레드는 보통 류블랴나(LJU) 공항 도착 후 셔틀·버스(약 30~45분)로 이동합니다. 항공료 절감을 위해 자그레브(ZAG)·베네치아(VCE) 입국 후 육로로 오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "슬로베니아 류블랴나(LJU) 관문 — ZAG·VCE는 대안 루트",
+      "searchHintIatas": [
+        "LJU",
+        "ZAG",
+        "VCE"
+      ]
     },
     "la-spezia": {
       "primaryIatas": [
@@ -2797,6 +2804,46 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "발레타(Valletta) 관문 MLA — Phase D-3 툴킷·승격 slug"
+    },
+    "yap": {
+      "primaryIatas": [
+        "YAP"
+      ],
+      "preferredLinkIata": "YAP",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "야프 국제공항"
+    },
+    "chuuk": {
+      "primaryIatas": [
+        "TKK"
+      ],
+      "preferredLinkIata": "TKK",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "추크 국제공항"
+    },
+    "kosrae": {
+      "primaryIatas": [
+        "KOS"
+      ],
+      "preferredLinkIata": "KOS",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "코스라에 국제공항"
+    },
+    "pohnpei": {
+      "primaryIatas": [
+        "PNI"
+      ],
+      "preferredLinkIata": "PNI",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "폰페이 국제공항"
     }
   },
   "placeIds": {
@@ -5881,14 +5928,21 @@
     },
     "블레드": {
       "primaryIatas": [
+        "LJU",
         "ZAG",
         "VCE"
       ],
-      "preferredLinkIata": "ZAG",
+      "preferredLinkIata": "LJU",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "블레드는 보통 류블랴나(LJU) 공항 도착 후 셔틀·버스(약 30~45분)로 이동합니다. 항공료 절감을 위해 자그레브(ZAG)·베네치아(VCE) 입국 후 육로로 오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "슬로베니아 류블랴나(LJU) 관문 — ZAG·VCE는 대안 루트",
+      "searchHintIatas": [
+        "LJU",
+        "ZAG",
+        "VCE"
+      ],
       "placeId": "블레드",
       "linkedSlug": "bled"
     },

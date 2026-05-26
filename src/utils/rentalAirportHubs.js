@@ -343,6 +343,14 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 80,
     aliases: ['split', '스플리트', 'spu', 'split airport', 'franjo tudman']
   },
+  {
+    iata: 'LJU',
+    officialKo: '류블랴나 요제 푸치니크 공항',
+    lat: 46.2237,
+    lng: 14.4576,
+    radiusKm: 100,
+    aliases: ['ljubljana', '류블랴나', 'lju', 'bled', '블레드', 'slovenia', '슬로베니아', 'joze pucnik']
+  },
   { iata: 'ZAG', officialKo: '자그레브 공항', lat: 45.7429, lng: 16.0688, radiusKm: 200, aliases: ['zagreb', '자그레브', 'plitvice', '플리트비체', 'zag'] },
   { iata: 'RAK', officialKo: '마라케시 메나라공항', lat: 31.6069, lng: -8.0363, radiusKm: 160, aliases: ['marrakech', 'marrakesh', '마라케시', 'rak'] },
   {

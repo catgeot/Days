@@ -445,6 +445,7 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /베를린|berlin/i, iata: 'BER' },
   { re: /브뤼셀|brussels|bruxelles/i, iata: 'BRU' },
   { re: /피렌체|florence|firenze/i, iata: 'FLR' },
+  { re: /류블랴나|ljubljana|블레드|bled/i, iata: 'LJU' },
   { re: /티바트|tivat/i, iata: 'TIV' },
   { re: /포드고리차|podgorica/i, iata: 'TGD' },
   { re: /두브로브니크|dubrovnik/i, iata: 'DBV' },

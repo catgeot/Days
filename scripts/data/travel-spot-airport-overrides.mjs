@@ -36,6 +36,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'chichen-itza': { primaryIatas: ['CUN'], preferredLinkIata: 'CUN', confidence: 'high', rationale: '칸쿤 국제공항 후 육로' },
   'annapurna-circuit': { primaryIatas: ['KTM', 'PKR'], preferredLinkIata: 'PKR', kind: 'multi', confidence: 'high', rationale: '카트만두·포카라 관문' },
   bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },
+  bled: {
+    primaryIatas: ['LJU', 'ZAG', 'VCE'],
+    preferredLinkIata: 'LJU',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '슬로베니아 류블랴나(LJU) 관문 — ZAG·VCE는 대안 루트',
+    searchHintIatas: ['LJU', 'ZAG', 'VCE'],
+    bannerNote:
+      '블레드는 보통 류블랴나(LJU) 공항 도착 후 셔틀·버스(약 30~45분)로 이동합니다. 항공료 절감을 위해 자그레브(ZAG)·베네치아(VCE) 입국 후 육로로 오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   jaipur: { primaryIatas: ['JAI'], preferredLinkIata: 'JAI', confidence: 'high', rationale: '자이푸르 국제공항' },
   'la-reunion': { primaryIatas: ['RUN'], preferredLinkIata: 'RUN', confidence: 'high', rationale: '생드니 공항' },
   ephesus: { primaryIatas: ['ADB'], preferredLinkIata: 'ADB', confidence: 'high', rationale: '이즈미르 아드난 멘데레스' },

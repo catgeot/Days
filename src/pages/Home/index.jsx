@@ -28,6 +28,58 @@ import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCo
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
+function hasValidCoords(loc) {
+  return loc && Number.isFinite(Number(loc.lat)) && Number.isFinite(Number(loc.lng));
+}
+
+/** /place/:slug 복귀 시 지구본 포커스용 — 연관 키워드 점프 후 ref/state race 대비 */
+function resolveFocusLocationFromPlacePath(pathname, category) {
+  let match = matchPath({ path: '/place/:slug' }, pathname);
+  if (!match) {
+    match = matchPath({ path: '/place/:slug/:tab' }, pathname);
+  }
+  if (!match?.params?.slug) return null;
+
+  let slug = match.params.slug;
+  try {
+    slug = decodeURIComponent(slug);
+  } catch {
+    // ignore malformed percent-encoding in slug
+  }
+
+  const normalized = slug.toLowerCase();
+  const spot = TRAVEL_SPOTS.find((s) => s.slug === normalized || String(s.id) === slug);
+  if (spot && hasValidCoords(spot)) {
+    return enrichLocationWithRentalAirport(
+      mergeCanonicalTravelSpot({
+        ...spot,
+        type: 'temp-base',
+        category: spot.category || category,
+      })
+    );
+  }
+
+  const city = (citiesData || []).find((c) => c.slug === normalized);
+  if (city && hasValidCoords(city)) {
+    return enrichLocationWithRentalAirport(
+      mergeCanonicalTravelSpot({
+        id: `city-${city.lat}-${city.lng}`,
+        slug: city.slug,
+        name: city.name,
+        name_en: city.name_en,
+        lat: city.lat,
+        lng: city.lng,
+        country: city.country || 'Explore',
+        country_en: city.country_en || 'Explore',
+        type: 'temp-base',
+        category,
+      })
+    );
+  }
+
+  return null;
+}
+
 function Home() {
   const globeRef = useRef();
   const [user, setUser] = useState(null);
@@ -111,7 +163,13 @@ function Home() {
   }, [handleStartChat, selectedLocation]);
 
   const selectedLocationRef = useRef(selectedLocation);
+  const lastGlobeFocusRef = useRef(null);
   const placeRouteSyncRef = useRef(0);
+
+  const rememberGlobeFocus = useCallback((loc) => {
+    if (!hasValidCoords(loc)) return;
+    lastGlobeFocusRef.current = loc;
+  }, []);
 
   useEffect(() => {
     selectedLocationRef.current = selectedLocation;
@@ -143,10 +201,12 @@ function Home() {
     }
 
     selectedLocationRef.current = prepared;
+    rememberGlobeFocus(prepared);
+    setSelectedLocation(prepared);
     addScoutPin(prepared);
     moveToLocation(prepared.lat, prepared.lng, prepared.name, prepared.category || category);
     navigate(`/place/${param}`);
-  }, [category, navigate, addScoutPin, moveToLocation]);
+  }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -326,8 +386,11 @@ function Home() {
 
           if (!alreadySynced) {
             selectedLocationRef.current = focusTarget;
+            rememberGlobeFocus(focusTarget);
             addScoutPin(focusTarget);
             moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
+          } else {
+            rememberGlobeFocus(selectedLocationRef.current ?? focusTarget);
           }
 
           setIsCardExpanded(true);
@@ -362,15 +425,36 @@ function Home() {
       if (routeLocation.state?.fromSearch) {
         return;
       }
+      const fromPrevPlacePath = prevPath.startsWith('/place/')
+        ? resolveFocusLocationFromPlacePath(prevPath, category)
+        : null;
+      const lastLocation =
+        fromPrevPlacePath ||
+        (hasValidCoords(lastGlobeFocusRef.current) && lastGlobeFocusRef.current) ||
+        (hasValidCoords(selectedLocationRef.current) && selectedLocationRef.current);
+
       queueMicrotask(() => {
         setIsCardExpanded(false);
-        setSelectedLocation(null);
       });
-      if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
-        globeRef.current.resumeRotation();
-      }
+      queueMicrotask(() => {
+        queueMicrotask(() => {
+          if (lastLocation) {
+            rememberGlobeFocus(lastLocation);
+            moveToLocation(
+              lastLocation.lat,
+              lastLocation.lng,
+              lastLocation.name,
+              lastLocation.category || category
+            );
+            return;
+          }
+          if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
+            globeRef.current.resumeRotation();
+          }
+        });
+      });
     }
-  }, [routeLocation.pathname, routeLocation.state?.fromSearch, setSelectedLocation]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
