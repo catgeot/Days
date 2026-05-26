@@ -48,7 +48,16 @@ function resolveFocusLocationFromPlacePath(pathname, category) {
   }
 
   const normalized = slug.toLowerCase();
-  const spot = TRAVEL_SPOTS.find((s) => s.slug === normalized || String(s.id) === slug);
+  let spot = TRAVEL_SPOTS.find(
+    (s) =>
+      s.slug === normalized ||
+      String(s.id) === slug ||
+      formatUrlName(s.name_en || s.name) === normalized
+  );
+  if (!spot) {
+    const aliasResolved = resolveTravelSpotFromPlaceId(buildSpotLookup(TRAVEL_SPOTS), TRAVEL_SPOTS, normalized);
+    if (aliasResolved?.spot) spot = aliasResolved.spot;
+  }
   if (spot && hasValidCoords(spot)) {
     return enrichLocationWithRentalAirport(
       mergeCanonicalTravelSpot({
@@ -59,7 +68,9 @@ function resolveFocusLocationFromPlacePath(pathname, category) {
     );
   }
 
-  const city = (citiesData || []).find((c) => c.slug === normalized);
+  const city = (citiesData || []).find(
+    (c) => c.slug === normalized || formatUrlName(c.name_en || c.name) === normalized
+  );
   if (city && hasValidCoords(city)) {
     return enrichLocationWithRentalAirport(
       mergeCanonicalTravelSpot({
@@ -164,6 +175,8 @@ function Home() {
 
   const selectedLocationRef = useRef(selectedLocation);
   const lastGlobeFocusRef = useRef(null);
+  /** 홈(지구본) 복귀 시 moveToLocation SSOT — navigateToPlace·goHomeFromPlace가 명시 설정 */
+  const pendingGlobeHomeFocusRef = useRef(null);
   const placeRouteSyncRef = useRef(0);
 
   const rememberGlobeFocus = useCallback((loc) => {
@@ -172,8 +185,18 @@ function Home() {
   }, []);
 
   useEffect(() => {
+    if (!selectedLocation) {
+      selectedLocationRef.current = null;
+      return;
+    }
+    if (routeLocation.pathname.startsWith('/place/')) {
+      const urlFocus = resolveFocusLocationFromPlacePath(routeLocation.pathname, category);
+      if (urlFocus && !isSameCanonicalPlace(selectedLocation, urlFocus)) {
+        return;
+      }
+    }
     selectedLocationRef.current = selectedLocation;
-  }, [selectedLocation]);
+  }, [selectedLocation, routeLocation.pathname, category]);
 
   /** 연관 키워드 등 — URL 변경 전 selectedLocation을 먼저 맞춰 route-sync race 방지 */
   const navigateToPlace = useCallback((targetPlace) => {
@@ -201,12 +224,28 @@ function Home() {
     }
 
     selectedLocationRef.current = prepared;
+    pendingGlobeHomeFocusRef.current = prepared;
     rememberGlobeFocus(prepared);
     setSelectedLocation(prepared);
     addScoutPin(prepared);
     moveToLocation(prepared.lat, prepared.lng, prepared.name, prepared.category || category);
     navigate(`/place/${param}`);
   }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
+
+  /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */
+  const goHomeFromPlace = useCallback(() => {
+    const focusLoc = routeLocation.pathname.startsWith('/place/')
+      ? resolveFocusLocationFromPlacePath(routeLocation.pathname, category)
+      : null;
+    const target = focusLoc || lastGlobeFocusRef.current || selectedLocationRef.current;
+    if (target && hasValidCoords(target)) {
+      pendingGlobeHomeFocusRef.current = target;
+      selectedLocationRef.current = target;
+      rememberGlobeFocus(target);
+      setSelectedLocation(target);
+    }
+    navigate('/');
+  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, setSelectedLocation]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -386,11 +425,15 @@ function Home() {
 
           if (!alreadySynced) {
             selectedLocationRef.current = focusTarget;
+            pendingGlobeHomeFocusRef.current = focusTarget;
             rememberGlobeFocus(focusTarget);
             addScoutPin(focusTarget);
             moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
           } else {
-            rememberGlobeFocus(selectedLocationRef.current ?? focusTarget);
+            rememberGlobeFocus(focusTarget);
+            selectedLocationRef.current = focusTarget;
+            pendingGlobeHomeFocusRef.current = focusTarget;
+            setSelectedLocation(focusTarget);
           }
 
           setIsCardExpanded(true);
@@ -428,33 +471,36 @@ function Home() {
       const fromPrevPlacePath = prevPath.startsWith('/place/')
         ? resolveFocusLocationFromPlacePath(prevPath, category)
         : null;
-      const lastLocation =
+      const focusForHome =
+        pendingGlobeHomeFocusRef.current ||
         fromPrevPlacePath ||
         (hasValidCoords(lastGlobeFocusRef.current) && lastGlobeFocusRef.current) ||
         (hasValidCoords(selectedLocationRef.current) && selectedLocationRef.current);
+      pendingGlobeHomeFocusRef.current = null;
 
       queueMicrotask(() => {
         setIsCardExpanded(false);
       });
-      queueMicrotask(() => {
-        queueMicrotask(() => {
-          if (lastLocation) {
-            rememberGlobeFocus(lastLocation);
-            moveToLocation(
-              lastLocation.lat,
-              lastLocation.lng,
-              lastLocation.name,
-              lastLocation.category || category
-            );
-            return;
-          }
-          if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
-            globeRef.current.resumeRotation();
-          }
-        });
-      });
+
+      if (focusForHome) {
+        rememberGlobeFocus(focusForHome);
+        selectedLocationRef.current = focusForHome;
+        setSelectedLocation(focusForHome);
+        const { lat, lng, name } = focusForHome;
+        const focusCategory = focusForHome.category || category;
+        window.setTimeout(() => {
+          moveToLocation(lat, lng, name, focusCategory);
+        }, 150);
+        return;
+      }
+
+      window.setTimeout(() => {
+        if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
+          globeRef.current.resumeRotation();
+        }
+      }, 150);
     }
-  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -606,6 +652,7 @@ function Home() {
           },
           onOpenMooni: openMooniFromPlace,
           onNavigateToPlace: navigateToPlace,
+          onGoHome: goHomeFromPlace,
           onToggleBookmark: handleToggleBookmark,
           onTicket: () => {
             navigate('/explore');

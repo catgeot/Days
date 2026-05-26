@@ -123,16 +123,16 @@
 
 **회귀 이력**: `cc8f63f`(2026-05-25, 미크로네시아 SSOT)에서 Home·PlaceCardExpanded 이중 URL 보정 도입 → 연관 키워드 왕복 버그. 2026-05-27 수정 · [`2026-05-27-project-log.md`](./2026-05-27-project-log.md).
 
-**지구본 홈 복귀 포커스 (2026-05-27, 미완·다음 세션)**:
+**지구본 홈 복귀 포커스 (2026-05-27)**:
 
 | 규칙 | 내용 |
 |------|------|
 | **일반 진입** | `/place/` → `/` 복귀 시 `moveToLocation` — Pass |
-| **연관 키워드 점프 후** | 홈(지구본) 버튼 시 **최초 진입 여행지**로 포커스되는 회귀 — **미해결** |
-| **우선순위(수정 중)** | 홈 복귀 시 `prevPath`의 `/place/:slug` SSOT 해석 → `lastGlobeFocusRef` — `selectedLocation` useEffect가 ref를 덮지 않도록 분리 |
-| **금지** | `lastGlobeFocusRef`를 `selectedLocation` sync effect에서 매 render 갱신 (stale location으로 점프 목적지 덮어씀) |
+| **연관 키워드 점프 후** | 홈(지구본) 버튼 → **점프 목적지(C)** 포커스 — Pass (2026-05-27 로컬 QA) |
+| **진입 API** | Outlet `onGoHome` → `goHomeFromPlace` — `pendingGlobeHomeFocusRef`·`resolveFocusLocationFromPlacePath` 후 `navigate('/')` |
+| **금지** | `lastGlobeFocusRef`를 `selectedLocation` sync effect에서 갱신 · `alreadySynced` 분기에서 stale ref로 `rememberGlobeFocus` |
 
-관련 코드: [`Home/index.jsx`](../src/pages/Home/index.jsx) `rememberGlobeFocus` · `resolveFocusLocationFromPlacePath` · `prevPathRef` home-return effect.
+관련 코드: [`Home/index.jsx`](../src/pages/Home/index.jsx) `goHomeFromPlace` · `rememberGlobeFocus` · `resolveFocusLocationFromPlacePath` · `prevPathRef` home-return effect.
 
 ### 5.4 구현 파일 (예상)
 

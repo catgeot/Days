@@ -31,6 +31,7 @@ const PlaceChatPanel = React.memo(({
     onClose,
     onOpenMooni,
     onNavigateToPlace,
+    onGoHome,
     activeInfo,
     isFullScreen,
     mediaMode,
@@ -89,6 +90,10 @@ const PlaceChatPanel = React.memo(({
   };
 
   const handleGoHomeClick = () => {
+      if (onGoHome) {
+          onGoHome();
+          return;
+      }
       navigate('/');
   };
 

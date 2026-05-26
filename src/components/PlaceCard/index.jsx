@@ -39,6 +39,7 @@ const PlaceCard = () => {
     onClose,
     onOpenMooni,
     onNavigateToPlace,
+    onGoHome,
   } = context || {};
 
   const galleryData = usePlaceGallery(contextLocation);
@@ -78,6 +79,7 @@ const PlaceCard = () => {
         onClose={onClose}
         onOpenMooni={onOpenMooni}
         onNavigateToPlace={onNavigateToPlace}
+        onGoHome={onGoHome}
         galleryData={galleryData}
         onToggleBookmark={onToggleBookmark}
         initialTab={currentTab.toUpperCase()}

@@ -9,7 +9,7 @@ import { getMatchedPackage } from '../../../utils/tripLinkMatcher';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import TripLinkModal from '../modals/TripLinkModal';
 
-const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
+const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
 
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -158,6 +158,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         onClose={onClose}
         onOpenMooni={onOpenMooni}
         onNavigateToPlace={onNavigateToPlace}
+        onGoHome={onGoHome}
         activeInfo={activeInfo}
         isFullScreen={isFullScreen}
         mediaMode={mediaMode}
