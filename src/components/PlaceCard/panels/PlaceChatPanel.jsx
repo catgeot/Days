@@ -13,6 +13,7 @@ import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
+import PlaceMooniFab from '../common/PlaceMooniFab';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 
@@ -102,7 +103,9 @@ const PlaceChatPanel = React.memo(({
 
   const handleHeaderScrollTap = (event) => {
       if (!supportsHeaderScrollTop) return;
-      if (event.target.closest('button, a, [role="button"]')) return;
+      const nestedInteractive = event.target.closest('button, a, [role="button"]');
+      // 스크롤 영역 자신(role=button)은 제외 — 내부 복사·북마크 버튼만 차단
+      if (nestedInteractive && nestedInteractive !== event.currentTarget) return;
       dispatchPlaceScrollToTop(mediaMode);
   };
 
@@ -202,7 +205,7 @@ const PlaceChatPanel = React.memo(({
                  <button
                     type="button"
                     onClick={openMooni}
-                    className="flex items-center gap-1 px-2 py-1.5 md:px-2.5 md:py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-100 shadow-lg shadow-cyan-900/20 transition-all shrink-0 touch-manipulation"
+                    className="hidden md:flex items-center gap-1 px-2 py-1.5 md:px-2.5 md:py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-100 shadow-lg shadow-cyan-900/20 transition-all shrink-0 touch-manipulation"
                     title="MOONi에게 물어보기"
                     aria-label="MOONi에게 물어보기"
                  >
@@ -300,23 +303,15 @@ const PlaceChatPanel = React.memo(({
           </div>
       )}
 
-      {/* 모바일: 하단 MOONi FAB (플래너 scroll-top z-[170]과 겹치지 않도록 좌측) */}
-      {!isFullScreen && createPortal(
-          <button
-            type="button"
-            onClick={openMooni}
-            className="md:hidden fixed z-[165] left-3 flex flex-col items-center gap-0.5 touch-manipulation bottom-[max(5.5rem,env(safe-area-inset-bottom,0px)+4.5rem)]"
-            aria-label="MOONi에게 물어보기"
-          >
-            <img
-              src={mooniChar}
-              alt="MOONi"
-              className="h-14 w-14 object-contain drop-shadow-[0_8px_24px_rgba(34,211,238,0.35)]"
-              draggable={false}
-            />
-            <span className="text-[10px] font-bold text-cyan-200/90">MOONi</span>
-          </button>,
-          document.body
+      {/* 모바일: 드래그 가능 MOONi FAB (플래너 scroll-top z-[170] 우측 예약·갤러리 연관바 minBottom 반영) */}
+      {!isFullScreen && (
+          <PlaceMooniFab
+            onOpen={openMooni}
+            mediaMode={mediaMode}
+            hasGalleryRelatedBar={
+              relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg
+            }
+          />
       )}
 
       {relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(

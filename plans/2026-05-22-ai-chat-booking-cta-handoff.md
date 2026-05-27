@@ -78,7 +78,7 @@ gateo.kr Place Card / **MOONi 홈 채팅** / Home Chat에서 AI 대화 시 **대
 | 영역 | 현재 | 목표 |
 |------|------|------|
 | `/` 글로브 | FAB `z-[58]` 노출 | 유지 — 자유 발화·slug 해석 |
-| `/place/:slug` | Home 자식으로 FAB **마운트됨** · PlaceCard `z-[100]`에 **가려짐** | **M4-A**: FAB 노출 또는 PlaceCard 전용 MOONi 진입 1곳 |
+| `/place/:slug` | Home 자식으로 FAB **마운트됨** · PlaceCard `z-[100]`에 **가려짐** | **M4-A ✅**: `PlaceMooniFab` 모바일 전용(z-[165]) · 홈 FAB 숨김 유지 |
 | PlaceCard 채팅 | **AI Docent** (`PlaceChatView` / `usePlaceChat`) — MOONi와 **이원화** | **M4-B**: Docent → MOONi 세션 핸드오프(slug 선바인딩 · 동일 resolver·CTA) |
 | `/explore` | Home 트리 | FAB 유지(선택: 검색 후 slug 바인딩) |
 | `/blog` · `/auth` | 없음 | **비대상** (브랜드·목적 상이) |
@@ -96,7 +96,7 @@ MOONi = ChatModal + trip SSOT (재진입·slug·BookingActionCards)
 
 | 단계 | 범위 | 산출 |
 |------|------|------|
-| **M4-A** | PlaceCard 위 MOONi FAB `z-index`/safe-area · 또는 헤더·플래너 「MOONi에게 물어보기」 | `/place/*`에서 MOONi 가시·클릭 |
+| **M4-A** | PlaceCard 위 MOONi FAB `z-index`/safe-area · 또는 헤더·플래너 「MOONi에게 물어보기」 | **완료** — `PlaceMooniFab.jsx` · 모바일 헤더 pill 제거 · 데스크톱 footer·헤더 유지 |
 | **M4-B** | Docent 채팅 → `handleStartChat('MOONi', { boundSlug })` 또는 trip 통합 · PlaceCard AI 패널 정리 | G9 회귀 · FAB 이중 노출 방지 |
 | **S5** | BookingActionCards 2블록(교통·티켓 / 출발 전) — **UI 승인 후** | MOONi·PlaceCard 공통 컴포넌트 |
 | **S6** | gili-meno A~J · jakarta flight-only | gateo.kr |
@@ -123,45 +123,29 @@ MOONi = ChatModal + trip SSOT (재진입·slug·BookingActionCards)
 
 **대상**: `ChatModal`만 (M4-B로 `PlaceChatView` Docent 제거됨).
 
-### 2.8 PlaceCard MOONi 진입·위치 UX (2026-05-26 검토)
+### 2.8 PlaceCard MOONi 진입·위치 UX (2026-05-27 반영)
 
-**상태**: 제품 검토 · **구현 대기** (S6·배포 QA 이후 · UI 승인 후)
+**상태**: **M4-C1·C2 구현** — 사용 중 QA·미세 조정
 
 **현재 PlaceCard 진입점** (`PlaceChatPanel` · `PlaceCardSummary`)
 
 | # | 위치 | 크기 | 드래그 |
 |---|------|------|--------|
-| 1 | 헤더 pill 버튼 | `h-6` | ✗ |
+| 1 | 헤더 pill 버튼 | `h-6` | ✗ — **모바일 hidden** |
 | 2 | 데스크톱 좌패널 footer | `h-8` | ✗ |
-| 3 | 모바일 fixed FAB (좌하단) | `h-14` | ✗ |
+| 3 | 모바일 `PlaceMooniFab` (좌하단 기본) | `h-14` | **✅** `gateo_mooni_place_fab_pos` |
 | 4 | Summary 카드 CTA | 텍스트 버튼 | ✗ |
 
-홈 `MooniAgentFab`은 `/place/*`에서 **의도적으로 숨김** (`!isPlaceRoute`) — M4-A. 드래그·위치 저장(`gateo_mooni_fab_pos`)·말풍선 SSOT는 **홈 전용**.
+홈 `MooniAgentFab`은 `/place/*`에서 **의도적으로 숨김** (`!isPlaceRoute`). PlaceCard FAB는 `placeMooniFabPosition.js` — scroll-top(플래너·위키) 예약 구역·갤러리 연관 칩 `minBottom` clamp.
 
-**검토 결론**
-
-| 질문 | 결론 |
-|------|------|
-| PlaceCard에서도 홈처럼 드래그? | **기술적으로 가능** — `MooniAgentFab` pointer 드래그 로직 재사용 또는 `useMooniFabDrag` 추출. 단, PlaceCard는 scroll-top `z-[170]`·연관 칩 `z-[160]`·하단 nav와 **충돌** — 드래그 FAB를 PlaceCard **전역 1곳**으로 통합할 때만 권장. |
-| 진입점이 많은데 필요? | **아니오** — §2.6 「PlaceCard 전용 MOONi 진입 **1곳**」과 불일치. 헤더·footer·모바일 FAB **3중**은 정리 대상. |
-| 캐릭터 조금 더 크게? | **찬성(미세)** — 모바일 FAB `h-14` → `h-16`~`h-[68px]`, 홈과 시각적 parity(`h-[72px]` sm) 근접. 헤더 pill은 아이콘-only 유지(공간). |
-
-**권장 UX (합의 후 구현)**
-
-```
-PlaceCard MOONi = 진입 1곳 + (선택) 드래그
-  · 모바일: fixed FAB 1개 — 홈 FAB와 동일 드래그·localStorage 키 분리 `gateo_mooni_place_fab_pos`
-  · 데스크톱: 좌패널 footer CTA 1개 (헤더 pill 제거)
-  · Summary 카드: FAB 없이 탭 시 PlaceCard 열림 → footer/FAB로 유도 (또는 Summary만 유지 — 2곳 상한)
-  · 드래그 OFF 옵션: scroll-top·연관 칩과 겹칠 때 safe-area clamp만으로 해결 불가 시
-```
-
-**구현 단계 (M4-C · UI 승인 후)**
+**구현 산출**
 
 | 단계 | 범위 | 산출 |
 |------|------|------|
-| **M4-C1** | PlaceCard 진입점 3→1~2 축소 · MOONi 아이콘 `+2~4px` | `PlaceChatPanel.jsx` |
-| **M4-C2** | (선택) 모바일 Place FAB 드래그 · 위치 persist · scroll-top 충돌 QA | 공유 hook 또는 `MooniAgentFab` variant `variant="place"` |
+| **M4-C1** | 모바일 헤더 pill 제거 · 진입 2~3곳(데스크톱 header+footer · 모바일 FAB) | `PlaceChatPanel.jsx` |
+| **M4-C2** | 모바일 Place FAB 드래그 · 위치 persist · scroll-top 충돌 clamp | `PlaceMooniFab.jsx` · `placeMooniFabPosition.js` |
+
+**추가**: 헤더 지명 탭 → 미디어 패널 상단 스크롤 — `handleHeaderScrollTap` `currentTarget` self-match 수정.
 
 **금지**: 홈·PlaceCard FAB **동시 노출** · Docent 잔존 UI 재도입.
 
