@@ -1,6 +1,6 @@
 # AI 채팅 예약 CTA 2단계 — Handoff (2026-05-22)
 
-**상태**: Phase 1·**Phase M·2a S1~S6 완료** · **§10-F gateo.kr QA Pass**(G·B·M4·D·J·G8 · H/I 미구현) · **다음 §10-G(S8·M4-C)** · S7+ LOP  
+**상태**: Phase 1·**Phase M·2a S1~S6 완료** · **§10-F gateo.kr QA Pass** · **§2.10 착수**(맥락·S8 1차) · S7+ LOP  
 **기준 여행지**: **길리 메노** (`gili-meno`) — 다구간·다제휴 스트레스 테스트  
 **회귀 여행지**: 자카르타 (`jakarta`) — flight-only 단순 케이스  
 **MOONi 진입점**: [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) → `handleStartChat('MOONi')` · [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) `isMooniSession`  
@@ -220,6 +220,114 @@ MOONi = ChatModal + trip SSOT (재진입·slug·BookingActionCards)
 
 **Phase 배치**: **S8 = Phase 2c** (S7+ LOP·12Go API와 **병렬 가능** — UI·기존 resolver만).
 
+### 2.10 MOONi 맥락·선택형 대화 — 우선 해결 (2026-05-27)
+
+**상태**: **§2.10 1차 구현·QA Pass(퀸스타운 dock)** · **§2.11(S8-1 2단 칩) 다음 세션**
+
+**사용자 비전 (제품 목표)**
+
+1. **장소카드 → MOONi**: 해당 장소 **인트로로 대화 시작** · 인트로에 여행 정보·**예약까지 이어질 수 있음** 암시.
+2. **타이핑 최소화**: 클릭만으로 대화가 이어지는 **선택지(quick reply)** 중심.
+3. **첫 방문 주제 설계**: 장소카드 진입 후 「무엇을 물어볼지」를 사용자가 고민하지 않도록 — **slug별 주제 칩**을 첫 화면에 노출 (표현·순서가 핵심).
+
+**현재 갭 (코드 기준 · §2.10 1차 조치)**
+
+| # | 증상 | 조치 | 상태 |
+|---|------|------|------|
+| **P1** | PlaceCard MOONi 클릭 시 장소 인트로·주제 맥락 없음 | bound slug → `placeChatIntro` fetch · MOONi 버블 | **완료** |
+| **P2** | PlaceCard 진입인데 범용 MOONi trip 복원 | `boundSpot` 있으면 `resolveMooniResumeTrip` **건너뜀** | **완료** |
+| **P3** | 「조용한 섬」→ 후보 전 AI 범용 답변 | `confidence: low` 시 AI **보류** · 칩만 | **완료** |
+| **P4** | 목적지 칩 선택 후 맥락 단절 | 선택 → intro + MOONi ack | **완료** |
+| **P5** | slug bound 후 주제 칩 없음 | `mooniQuickReplies.js` · `MooniQuickReplyChips` | **1차 완료** |
+| **P6** | 턴 후 칩 사라짐 | 입력창 **위 고정 dock** · 「다른 주제도 골라보세요」 | **완료** · 퀸스타운 QA Pass |
+| **P7** | 칩이 「출발 준비」만 강조 · 탐색 질문 부재 | **§2.11 2단 계층** · 플래너 3섹션 정렬 | **다음 세션** |
+
+**첫 방문 주제 칩 (1차 SSOT · §2.9 — §2.11에서 2단으로 대체 예정)**
+
+bound slug 확정 직후 MOONi가 보여줄 **주제 라벨** (내부 전송문은 intent 분류용):
+
+| 칩 (사용자-facing) | 조건 | 전송 텍스트 |
+|--------------------|------|-------------|
+| ✈️ 어떻게 가? | `legs`에 flight | `서울에서 어떻게 가?` (출발 서브칩은 2차) |
+| 🚢 페리·배 | `ferryRequired` | `페리 예약` |
+| 🛂 비자·입국 | essentialGuide/항상 | `비자 필요해?` |
+| 🚐 공항 픽업 | `legs`에 transfer | `공항 픽업` |
+| 💰 관광세·준비 | prep 항목 있을 때 | `관광세?` |
+| 📋 플래너 보기 | slug 있음 | navigate `/place/:slug/planner` |
+
+- **인트로 톤**: `placeChatIntro` 본문 + 한 줄 「교통·비자·예약은 아래에서 골라보셔도 좋아요.」
+- **홈 MOONi(unbound)**: 기존 자유 intro 유지 → slug 확정(칩·발화) 후 위 세트로 **전환**.
+- **직접 입력**: 입력창 유지 · placeholder 「또는 직접 입력…」
+- **주제 칩 지속**: slug bound 중 입력창 **위 고정 dock** — 턴 후에도 「다른 주제도 골라보세요」 칩 유지 (2026-05-27 · QA Pass)
+
+**§2.10 1차 구현 (2026-05-27 커밋)**
+
+| 파일 | 역할 |
+|------|------|
+| [`mooniQuickReplies.js`](src/pages/Home/lib/mooniQuickReplies.js) | slug → 1차 주제 칩 SSOT · intro hint |
+| [`MooniQuickReplyChips.jsx`](src/components/chat/MooniQuickReplyChips.jsx) | dock·버블 칩 UI |
+| [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) | intro fetch · defer · dock · follow-up |
+| [`useHomeHandlers.js`](src/pages/Home/hooks/useHomeHandlers.js) | boundSpot resume 가드 |
+
+**이번 세션 구현 (완료)**
+
+1. P2 — boundSpot resume 가드  
+2. P1+P5 — intro · MOONi 버블 · quick replies  
+3. P3+P4 — low-confidence defer · 칩 선택 follow-up  
+4. P6 — 고정 topic dock  
+5. QA — 퀸스타운 PlaceCard MOONi · 비자 칩 후 dock 유지 Pass  
+
+**QA 게이트 (§2.10 Pass)**
+
+| # | 시나리오 | 기대 |
+|---|----------|------|
+| T1 | `/place/gili-meno` → MOONi | 길리 메노 인트로 + 예약 암시 + 주제 칩(페리 포함) · 범용 MOONi trip **미복원** |
+| T2 | 홈 MOONi 「조용한 섬」 | AI 답변 **전** 후보 3칩 · 선택 후 intro+주제 칩 |
+| T3 | T2에서 「페리 예약」칩 | 기존 A·D CTA · gili-meno slug |
+| T4 | jakarta bound | 페리 칩 **없음** |
+
+### 2.11 MOONi 주제 칩 2단 계층 — 다음 세션 (S8-1)
+
+**상태**: **설계 합의** · 코딩 **다음 세션**
+
+**배경 (2026-05-27)**: 1차 칩(비자·관광세·픽업 등)은 「곧 출발」 편향 · 장소카드 진입자는 **탐색·판단**(치안·매력·역사·즐길거리)도 많음. 한 줄에 전부 나열하면 선택 피로 → **2단 drill-down**.
+
+**원칙**
+
+- **1단(dock)**: 4~5개 — 여행 **의도**만 (플래너 3섹션 + 탐색)
+- **2단(dock 교체)**: 1단 선택 후 3~4개 구체 질문 · **← 주제 바꾸기**로 1단 복귀
+- 칩 탭 = `handleSend(내부문)` · classifier·CTA **재사용**
+- persona: 탐색·즐기기 → `INSPIRER` · 가는 방법·준비 → `PLANNER`
+
+**1단 칩 (플래너 정렬)**
+
+| 1단 | 사용자 마음 | 플래너 |
+|-----|-------------|--------|
+| 🌍 **이곳이 궁금해** | 어떤 곳·치안·역사·매력 | 위키·갤러리·intro 보완 |
+| ✈️ **가는 방법** | 교통·경로 | JourneyTimeline · 항공 배너 |
+| 🛫 **출발 전 준비** | 비자·입국·관광세·보험 **묶음** | PreTravelChecklist · §출발 전 |
+| 🌴 **즐길거리·일정** | 액티비티·맛집·코스 | §현지 100% · map_poi |
+| 📋 **플래너 보기** | navigate | `/place/:slug/planner` |
+
+**2단 예시**
+
+- **이곳이 궁금해** → 어떤 곳? / 분위기·치안 / 역사·문화 / 왜 가볼 만해?
+- **가는 방법** → 서울·부산·인천 출발 · (ferryRequired) 페리·배
+- **출발 전 준비** → 비자·입국 · 관광세·준비물 · 안전·보험
+- **즐길거리·일정** → 액티비티 / 맛집 / 2~3일 일정 / 동행별 추천
+
+**인트로 문구 (§2.11 반영 시)**
+
+- 현재: 「교통·비자·예약은 아래에서…」(출발 편향)
+- 목표: 「이곳이 어떤 곳인지부터, 가는 방법·준비·즐길거리까지… 예약은 답변 아래 버튼으로」
+
+**구현 순서 (S8-1~3)**
+
+1. `mooniQuickReplies.js` — L1/L2 SSOT · `getMooniQuickReplies(slug, level, parentId?)`
+2. `ChatModal` — dock drill-down state · 「← 주제 바꾸기」
+3. `essentialGuide`/`profile` 기반 2단 가변(페리·pre_travel 없으면 숨김)
+4. QA — 퀸스타운(탐색) · gili-meno(페리·준비)
+
 ### 2.5 MOONi 관련 파일
 
 | 파일 | 역할 |
@@ -227,8 +335,10 @@ MOONi = ChatModal + trip SSOT (재진입·slug·BookingActionCards)
 | [`MooniAgentFab.jsx`](src/pages/Home/components/MooniAgentFab.jsx) | FAB · `mooniLines.js` peek/idle/react · 드래그 위치 |
 | [`mooniLines.js`](src/pages/Home/lib/mooniLines.js) | MOONi 말풍선 SSOT (intro/peek/idle/react/easterEgg) |
 | [`Home/index.jsx`](src/pages/Home/index.jsx) | `handleStartChat('MOONi', payload)` |
-| [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) | `isMooniSession` · `resolveBookingActions` 호출부 |
-| [`useHomeHandlers.js`](src/pages/Home/hooks/useHomeHandlers.js) | `handleStartChat` · trip destination 저장 |
+| [`ChatModal.jsx`](src/pages/Home/components/ChatModal.jsx) | `isMooniSession` · topic dock · destination defer |
+| [`mooniQuickReplies.js`](src/pages/Home/lib/mooniQuickReplies.js) | 1차 주제 칩 SSOT (§2.11에서 2단 확장) |
+| [`MooniQuickReplyChips.jsx`](src/components/chat/MooniQuickReplyChips.jsx) | dock·주제 칩 UI |
+| [`useHomeHandlers.js`](src/pages/Home/hooks/useHomeHandlers.js) | `handleStartChat` · boundSpot resume 가드 |
 | [`placeChatIntro.js`](src/pages/Home/lib/placeChatIntro.js) | `INVALID_DESTINATIONS`에 `mooni` 포함 |
 
 ---

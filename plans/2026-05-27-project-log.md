@@ -13,3 +13,5 @@
 - **지구본 홈 복귀**: `pendingGlobeHomeFocusRef`·`goHomeFromPlace`·150ms deferred flyTo — 로컬 QA Pass · 릴리스 노트 생략.
 - **쿠스코(cusco) 도착 공항**: CUZ 단독·`bannerNote` 없음 → 여정(LIM 국제선→CUZ 국내선)과 배너 불일치. `overrides`·`PLACE_ID_OVERRIDES`(쿠스코·마추픽추)·`generate:airports` · `machu-picchu`·`inca-trail` SSOT 정리.
 - **PlaceCard MOONi UX**: 모바일 헤더 pill 제거 · `PlaceMooniFab` 드래그·`gateo_mooni_place_fab_pos` · scroll-top 예약 구역 clamp · 헤더 지명 탭 상단 스크롤 회귀 수정(`role=button` self-match).
+- **MOONi §2.10 1차**: PlaceCard bound intro·`mooniQuickReplies`·목적지 defer·칩 follow-up·**입력창 위 topic dock**(퀸스타운 QA Pass) · handoff §2.10·§2.11.
+- **다음 세션**: §2.11 S8-1 — 2단 주제 칩(탐색+플래너 정렬) · intro 문구 개선.

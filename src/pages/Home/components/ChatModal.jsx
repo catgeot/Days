@@ -23,7 +23,12 @@ import {
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
+import MooniQuickReplyChips from '../../../components/chat/MooniQuickReplyChips';
 import { ensureChatEssentialGuide } from '../../../hooks/useChatEssentialGuide';
+import {
+  buildMooniIntroWithHint,
+  getMooniQuickReplies,
+} from '../lib/mooniQuickReplies';
 
 const ChatModal = ({
   isOpen,
@@ -89,8 +94,35 @@ const ChatModal = ({
     return placeName ? `${placeName} · MOONi` : 'MOONi';
   }, [isMooniUi, mooniPlaceContext?.name, boundDestinationSlug, introDestinationRaw]);
 
+  const placeIntroTarget = useMemo(() => {
+    if (!isOpen) return '';
+    if (mooniPlaceContext?.name) return mooniPlaceContext.name.trim();
+    if (isMooniUi) return '';
+    return introDestinationRaw;
+  }, [isOpen, mooniPlaceContext?.name, isMooniUi, introDestinationRaw]);
+
+  const effectiveQuickReplySlug = useMemo(() => {
+    if (boundDestinationSlug) return boundDestinationSlug;
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      const slug = messages[i]?.confirmedDestination?.slug;
+      if (slug) return slug;
+    }
+    return null;
+  }, [boundDestinationSlug, messages]);
+
+  const quickReplies = useMemo(
+    () => getMooniQuickReplies(effectiveQuickReplySlug),
+    [effectiveQuickReplySlug]
+  );
+
+  const showBoundTopicDock =
+    isMooniUi && Boolean(effectiveQuickReplySlug) && quickReplies.length > 0;
+
+  const topicDockPrompt =
+    messages.length === 0 ? '무엇부터 도와드릴까요?' : '다른 주제도 골라보세요';
+
   useEffect(() => {
-    if (!isOpen || !introDestinationRaw || isMooniUi) {
+    if (!isOpen || !placeIntroTarget) {
       setPlaceIntro(null);
       setPlaceIntroError(null);
       setPlaceIntroLoading(false);
@@ -104,16 +136,16 @@ const ChatModal = ({
 
     (async () => {
       try {
-        let text = await fetchPlaceChatIntroSummary(introDestinationRaw);
+        let text = await fetchPlaceChatIntroSummary(placeIntroTarget);
         if (cancelled) return;
         if (text) {
           setPlaceIntro(text);
           return;
         }
-        text = await generatePlaceChatIntroWithAi(introDestinationRaw);
+        text = await generatePlaceChatIntroWithAi(placeIntroTarget);
         if (cancelled) return;
         setPlaceIntro(text);
-        await persistPlaceChatIntroSummary(introDestinationRaw, text);
+        await persistPlaceChatIntroSummary(placeIntroTarget, text);
       } catch (e) {
         if (!cancelled) {
           setPlaceIntroError(e?.message || '여행지 요약을 불러오지 못했습니다.');
@@ -126,7 +158,7 @@ const ChatModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, introDestinationRaw, isMooniUi]);
+  }, [isOpen, placeIntroTarget]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -198,24 +230,68 @@ const ChatModal = ({
   }, [onUpdateTripDestination, onUpdateChatDraft]);
 
   const handleSelectDestinationCandidate = useCallback(async (candidate, messageIndex) => {
-    if (!candidate?.slug || !candidate?.name) return;
+    if (!candidate?.slug || !candidate?.name || isLoading) return;
 
     await applyDestinationBinding(activeChatId, chatDraft, candidate);
 
-    setMessages((prev) => {
-      const next = prev.map((m, i) =>
-        i === messageIndex
-          ? {
-              ...m,
-              destinationCandidates: null,
-              confirmedDestination: { slug: candidate.slug, name: candidate.name },
-            }
-          : m
-      );
-      if (activeChatId) onUpdateChat(activeChatId, next);
-      return next;
-    });
-  }, [activeChatId, chatDraft, applyDestinationBinding, onUpdateChat]);
+    let introText = await fetchPlaceChatIntroSummary(candidate.name);
+    if (!introText) {
+      try {
+        introText = await generatePlaceChatIntroWithAi(candidate.name);
+        await persistPlaceChatIntroSummary(candidate.name, introText);
+      } catch {
+        introText = '';
+      }
+    }
+
+    const confirmed = { slug: candidate.slug, name: candidate.name };
+    const modelText = buildMooniIntroWithHint(introText, candidate.name);
+
+    const baseMessages = messages.map((m, i) =>
+      i === messageIndex
+        ? {
+            ...m,
+            destinationCandidates: null,
+            confirmedDestination: confirmed,
+          }
+        : m
+    );
+
+    let effectiveChatId = activeChatId;
+    if (!effectiveChatId && chatDraft) {
+      const userText = baseMessages[messageIndex]?.text ?? '';
+      const created = await onCreateTripOnFirstUserMessage({
+        destination: candidate.name,
+        lat: candidate.lat ?? chatDraft.lat ?? 0,
+        lng: candidate.lng ?? chatDraft.lng ?? 0,
+        persona: currentPersona,
+        firstUserText: typeof userText === 'string' ? userText : userText?.text ?? '',
+      });
+      if (created?.id) effectiveChatId = created.id;
+    }
+
+    const finalMessages = [
+      ...baseMessages,
+      {
+        role: 'model',
+        text: modelText,
+        confirmedDestination: confirmed,
+        showQuickReplies: true,
+      },
+    ];
+
+    setMessages(finalMessages);
+    if (effectiveChatId) onUpdateChat(effectiveChatId, finalMessages);
+  }, [
+    isLoading,
+    activeChatId,
+    chatDraft,
+    messages,
+    currentPersona,
+    applyDestinationBinding,
+    onUpdateChat,
+    onCreateTripOnFirstUserMessage,
+  ]);
 
   const handleSend = useCallback(async (text, personaOverride = null) => {
     if (!text?.trim() || isLoading) return;
@@ -296,6 +372,20 @@ const ChatModal = ({
         ? { destinationCandidates: resolution.candidates, destinationPrompt: true }
         : {}),
     };
+
+    const needsDestinationPick =
+      resolution?.confidence === 'low' &&
+      resolution.candidates?.length > 0 &&
+      !effectiveBound;
+
+    if (needsDestinationPick) {
+      const newMessages = [...messages, userMsg];
+      setMessages(newMessages);
+      setInput('');
+      if (activeChatId) onUpdateChat(activeChatId, newMessages);
+      return;
+    }
+
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput('');
@@ -497,13 +587,35 @@ const ChatModal = ({
                   )}
                 </div>
               )}
-              {isMooniUi && messages.length === 0 && !isLoading && (
+              {isMooniUi && messages.length === 0 && !isLoading && boundDestinationSlug && (
                 <div className="flex flex-col items-start w-full">
                   <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
                   <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
-                    {boundDestinationSlug
-                      ? `${mooniPlaceContext?.name ?? introDestinationRaw} 여행, 교통·예약·일정 무엇이든 물어보세요.`
-                      : '안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요.'}
+                    {placeIntroLoading && !placeIntro && (
+                      <div className="flex items-center gap-2 text-gray-400 text-sm">
+                        <Loader2 className="animate-spin shrink-0" size={18} />
+                        <span>여행지 소개를 준비하고 있어요...</span>
+                      </div>
+                    )}
+                    {placeIntroError && (
+                      <p className="text-sm text-red-400 mb-2">{placeIntroError}</p>
+                    )}
+                    {(!placeIntroLoading || placeIntro) && (
+                      <p className="whitespace-pre-wrap">
+                        {buildMooniIntroWithHint(
+                          placeIntro,
+                          mooniPlaceContext?.name ?? introDestinationRaw
+                        )}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              {isMooniUi && messages.length === 0 && !isLoading && !boundDestinationSlug && (
+                <div className="flex flex-col items-start w-full">
+                  <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
+                  <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
+                    {buildMooniIntroWithHint('', null)}
                   </div>
                 </div>
               )}
@@ -571,11 +683,26 @@ const ChatModal = ({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 md:p-6 bg-gray-900 border-t border-gray-800">
-              <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative">
-                <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="메시지 입력..." className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500" disabled={isLoading} autoFocus />
-                <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 top-2 p-2 bg-blue-600 rounded-full text-white"><Send size={20} /></button>
-              </form>
+            <div className="shrink-0 bg-gray-900 border-t border-gray-800">
+              {showBoundTopicDock && (
+                <div className="px-4 pt-3 md:px-6 md:pt-4 pb-1 border-b border-gray-800/80">
+                  <MooniQuickReplyChips
+                    slug={effectiveQuickReplySlug}
+                    chips={quickReplies}
+                    onSelect={handleSend}
+                    onOpenPlanner={handlePlannerNavigate}
+                    disabled={isLoading}
+                    prompt={topicDockPrompt}
+                    compact
+                  />
+                </div>
+              )}
+              <div className="p-4 md:p-6">
+                <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative">
+                  <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder={effectiveQuickReplySlug ? '또는 직접 입력…' : '메시지 입력...'} className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500" disabled={isLoading} autoFocus />
+                  <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 top-2 p-2 bg-blue-600 rounded-full text-white"><Send size={20} /></button>
+                </form>
+              </div>
             </div>
         </div>
       </div>

@@ -325,7 +325,8 @@ export function useHomeHandlers({
         }
       }
 
-      if (!existingId) {
+      // 장소카드 boundSpot 진입 — 범용 MOONi trip resume 건너뜀 (§2.10 P2)
+      if (!existingId && !boundSpot?.name) {
         const resumedTrip = await resolveMooniResumeTrip({
           savedTrips,
           userId: user?.id ?? null,
