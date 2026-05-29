@@ -15,7 +15,7 @@ const ISLAND_TERMS = ['섬', 'island', '아일랜드', '제도'];
 const ACCESS_ROUTE_QUERY =
   /어떻게\s*가|가는\s*(?:길|방법|법)|교통편|이동\s*(?:방법|수단)|how\s*to\s*get/i;
 
-/** 출발 허브 — access_route·ferry 출발지 질문에서 목적지 후보에서 제외 */
+/** 출발 허브 — access_route·ferry·출발 직접입력 시 목적지 재바인딩에서 제외 */
 const DEPARTURE_HUB_SLUGS = new Set([
   'seoul',
   'incheon',
@@ -24,6 +24,24 @@ const DEPARTURE_HUB_SLUGS = new Set([
   'kimpo',
   'lombok',
   'bali',
+  'manila',
+  'singapore',
+  'bangkok',
+  'london',
+  'tokyo',
+  'osaka',
+  'hong-kong',
+  'taipei',
+  'kuala-lumpur',
+  'jakarta',
+  'sydney',
+  'melbourne',
+  'auckland',
+  'dubai',
+  'paris',
+  'frankfurt',
+  'los-angeles',
+  'new-york',
 ]);
 
 const DEPARTURE_LABELS = [
@@ -32,7 +50,21 @@ const DEPARTURE_LABELS = [
   ['김포', 'kimpo'],
   ['부산', 'busan'],
   ['제주', 'jeju'],
+  ['마닐라', 'manila'],
+  ['싱가포르', 'singapore'],
+  ['방콕', 'bangkok'],
+  ['런던', 'london'],
+  ['도쿄', 'tokyo'],
+  ['홍콩', 'hong kong'],
+  ['타이베이', 'taipei'],
 ];
+
+/** MOONi 「가는 방법」직접입력 — 출발지만 적은 짧은 발화 */
+const DEPARTURE_ONLY_FRAGMENT =
+  /^[\p{L}\p{N}\s.'-]{1,40}$/u;
+
+const ALREADY_ACCESS_SHAPED =
+  /(?:에서\s*어떻게|어떻게\s*가|가는\s*(?:길|방법)|how\s*to\s*get|from\s+[\p{L}])/iu;
 
 const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 
@@ -114,6 +146,22 @@ export function isAccessRouteQuery(text) {
   return ACCESS_ROUTE_QUERY.test(String(text ?? '').trim());
 }
 
+/**
+ * bound + 「가는 방법」출발 직접입력: 「마닐라」→「마닐라에서 어떻게 가?」 (목적지 오인 방지)
+ *
+ * @param {string} text
+ * @param {{ accessDockActive?: boolean }} [options]
+ */
+export function normalizeAccessDepartureUserText(text, { accessDockActive = false } = {}) {
+  const trimmed = String(text ?? '').trim();
+  if (!accessDockActive || !trimmed) return trimmed;
+  if (isAccessRouteQuery(trimmed) || isFerryRouteQuery(trimmed)) return trimmed;
+  if (ALREADY_ACCESS_SHAPED.test(trimmed)) return trimmed;
+  if (trimmed.length > 48 || trimmed.includes('?')) return trimmed;
+  if (!DEPARTURE_ONLY_FRAGMENT.test(trimmed)) return trimmed;
+  return `${trimmed}에서 어떻게 가?`;
+}
+
 /** 페리·배 출발지 질문 — 「롬복에서 배」 등은 bound slug 유지 */
 const FERRY_ROUTE_QUERY =
   /(?:페리|ferry|쾌속선|보트|speedboat|배\s*티켓|(?:에서|→)\s*배(?:\s|$|[?!.]))/i;
@@ -182,7 +230,10 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
   const currentText = String(userText ?? '').trim();
   const accessRoute = isAccessRouteQuery(currentText);
   const ferryRoute = isFerryRouteQuery(currentText);
-  const excludeDepartureHub = accessRoute || (sessionBound && ferryRoute);
+  const excludeDepartureHub =
+    accessRoute ||
+    (sessionBound && ferryRoute) ||
+    (sessionBound && DEPARTURE_ONLY_FRAGMENT.test(currentText) && !looksLikeThemeQuery(currentText));
 
   if (!currentText) {
     return sessionBound ? buildHighResult(sessionBound, 10, 'bound') : emptyResult();

@@ -20,11 +20,15 @@ import {
   isFerryRouteQuery,
   resolveDepartureLabelFromChat,
   resolveSessionBoundSpot,
+  normalizeAccessDepartureUserText,
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
 import MooniQuickReplyChips from '../../../components/chat/MooniQuickReplyChips';
-import { ensureChatEssentialGuide } from '../../../hooks/useChatEssentialGuide';
+import {
+  ensureChatEssentialGuide,
+  useChatEssentialGuide,
+} from '../../../hooks/useChatEssentialGuide';
 import {
   buildMooniIntroWithHint,
   getMooniQuickReplies,
@@ -54,11 +58,14 @@ const ChatModal = ({
   const [placeIntro, setPlaceIntro] = useState(null);
   const [placeIntroLoading, setPlaceIntroLoading] = useState(false);
   const [placeIntroError, setPlaceIntroError] = useState(null);
+  const [topicDockParent, setTopicDockParent] = useState(null);
 
   const navigate = useNavigate();
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const chatInputRef = useRef(null);
   const hasSentInitialRef = useRef(false);
+  const [accessInputHint, setAccessInputHint] = useState(null);
 
   const handlePlannerNavigate = useCallback(
     (plannerPath) => {
@@ -67,6 +74,24 @@ const ChatModal = ({
     },
     [onClose, navigate]
   );
+
+  const focusChatInput = useCallback((chip) => {
+    if (isLoading) return;
+    if (chip?.inputPlaceholder) {
+      setAccessInputHint(chip.inputPlaceholder);
+    }
+    const el = chatInputRef.current;
+    if (!el) return;
+    // 버튼 탭 직후 blur 방지 — 모바일 키보드 활성화
+    window.setTimeout(() => {
+      el.focus({ preventScroll: false });
+      try {
+        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } catch {
+        /* ignore */
+      }
+    }, 80);
+  }, [isLoading]);
 
   const introDestinationRaw = useMemo(() => {
     if (!isOpen) return '';
@@ -110,16 +135,56 @@ const ChatModal = ({
     return null;
   }, [boundDestinationSlug, messages]);
 
+  const topicDockDestName = useMemo(() => {
+    if (mooniPlaceContext?.name) return mooniPlaceContext.name;
+    if (introDestinationRaw && introDestinationRaw !== 'MOONi') return introDestinationRaw;
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      const name = messages[i]?.confirmedDestination?.name;
+      if (name) return name;
+    }
+    return '';
+  }, [mooniPlaceContext?.name, introDestinationRaw, messages]);
+
+  const topicEssentialGuide = useChatEssentialGuide(
+    effectiveQuickReplySlug,
+    topicDockDestName
+  );
+
   const quickReplies = useMemo(
-    () => getMooniQuickReplies(effectiveQuickReplySlug),
-    [effectiveQuickReplySlug]
+    () =>
+      getMooniQuickReplies(
+        effectiveQuickReplySlug,
+        topicDockParent ? 2 : 1,
+        topicDockParent,
+        { essentialGuide: topicEssentialGuide }
+      ),
+    [effectiveQuickReplySlug, topicDockParent, topicEssentialGuide]
   );
 
   const showBoundTopicDock =
     isMooniUi && Boolean(effectiveQuickReplySlug) && quickReplies.length > 0;
 
-  const topicDockPrompt =
-    messages.length === 0 ? '무엇부터 도와드릴까요?' : '다른 주제도 골라보세요';
+  const topicDockPrompt = useMemo(() => {
+    if (topicDockParent) return '세부 질문을 골라보세요';
+    return messages.length === 0 ? '무엇부터 도와드릴까요?' : '다른 주제도 골라보세요';
+  }, [topicDockParent, messages.length]);
+
+  useEffect(() => {
+    setTopicDockParent(null);
+  }, [effectiveQuickReplySlug]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setTopicDockParent(null);
+      setAccessInputHint(null);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (topicDockParent && quickReplies.length === 0) {
+      setTopicDockParent(null);
+    }
+  }, [topicDockParent, quickReplies.length]);
 
   useEffect(() => {
     if (!isOpen || !placeIntroTarget) {
@@ -296,7 +361,24 @@ const ChatModal = ({
   const handleSend = useCallback(async (text, personaOverride = null) => {
     if (!text?.trim() || isLoading) return;
 
-    const cleanText = typeof text === 'object' ? (text.text || "질문 내용 확인 불가") : text;
+    const rawText = typeof text === 'object' ? (text.text || '질문 내용 확인 불가') : text;
+    const sessionBoundEarly =
+      resolveSessionBoundSpot(
+        (activeChatId && chatHistory.find((t) => String(t.id) === String(activeChatId))?.destination) ||
+          chatDraft?.destination ||
+          '',
+        messages
+      ) ??
+      (mooniPlaceContext?.slug
+        ? {
+            slug: mooniPlaceContext.slug,
+            name: mooniPlaceContext.name,
+          }
+        : null);
+    const accessDockActive =
+      Boolean(sessionBoundEarly?.slug) &&
+      (topicDockParent === 'access' || Boolean(accessInputHint));
+    const cleanText = normalizeAccessDepartureUserText(rawText, { accessDockActive });
     const personaToUse =
       personaOverride ||
       (shouldUsePlannerPersona(cleanText, messages) ? PERSONA_TYPES.PLANNER : currentPersona);
@@ -389,6 +471,7 @@ const ChatModal = ({
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput('');
+    setAccessInputHint(null);
     setIsLoading(true);
 
     let effectiveChatId = activeChatId;
@@ -477,7 +560,20 @@ const ChatModal = ({
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, currentPersona, messages, activeChatId, chatDraft, onUpdateChat, onCreateTripOnFirstUserMessage, chatHistory, applyDestinationBinding, mooniPlaceContext]);
+  }, [
+    isLoading,
+    currentPersona,
+    messages,
+    activeChatId,
+    chatDraft,
+    onUpdateChat,
+    onCreateTripOnFirstUserMessage,
+    chatHistory,
+    applyDestinationBinding,
+    mooniPlaceContext,
+    topicDockParent,
+    accessInputHint,
+  ]);
 
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
@@ -665,6 +761,10 @@ const ChatModal = ({
                                   ? messages[idx - 1].text?.text
                                   : messages[idx - 1].text) ?? ''
                               : '',
+                          essentialGuide:
+                            (msg.bookingMeta?.slug ?? boundDestinationSlug) === effectiveQuickReplySlug
+                              ? topicEssentialGuide
+                              : null,
                         })}
                         slug={msg.bookingMeta?.slug}
                         plannerUrl={msg.bookingMeta?.plannerUrl}
@@ -689,8 +789,11 @@ const ChatModal = ({
                   <MooniQuickReplyChips
                     slug={effectiveQuickReplySlug}
                     chips={quickReplies}
-                    onSelect={handleSend}
+                    onSelect={(text, persona) => handleSend(text, persona ?? null)}
+                    onDrillDown={(parentId) => setTopicDockParent(parentId)}
+                    onBack={topicDockParent ? () => setTopicDockParent(null) : undefined}
                     onOpenPlanner={handlePlannerNavigate}
+                    onFocusInput={focusChatInput}
                     disabled={isLoading}
                     prompt={topicDockPrompt}
                     compact
@@ -699,7 +802,24 @@ const ChatModal = ({
               )}
               <div className="p-4 md:p-6">
                 <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative">
-                  <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder={effectiveQuickReplySlug ? '또는 직접 입력…' : '메시지 입력...'} className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500" disabled={isLoading} autoFocus />
+                  <input
+                    ref={chatInputRef}
+                    type="text"
+                    inputMode="text"
+                    enterKeyHint="send"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onBlur={() => {
+                      if (!input.trim()) setAccessInputHint(null);
+                    }}
+                    placeholder={
+                      accessInputHint
+                        ?? (effectiveQuickReplySlug ? '또는 직접 입력…' : '메시지 입력...')
+                    }
+                    className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500"
+                    disabled={isLoading}
+                    autoFocus={!effectiveQuickReplySlug}
+                  />
                   <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 top-2 p-2 bg-blue-600 rounded-full text-white"><Send size={20} /></button>
                 </form>
               </div>
