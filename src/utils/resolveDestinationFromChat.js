@@ -233,6 +233,11 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
     }
   }
 
+  // bound 세션 — 이번 턴에 새 목적지가 없으면 히스토리(출발지 등) 재스캔 금지
+  if (sessionBound) {
+    return buildHighResult(sessionBound, 10, 'bound');
+  }
+
   const recentUser = chatHistory
     .filter((m) => m.role === 'user')
     .slice(-3)
@@ -248,10 +253,6 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
       combinedDirect.map(({ spot, score }) => spotToCandidate(spot, score, 'lookup')),
       'lookup'
     );
-  }
-
-  if (sessionBound) {
-    return buildHighResult(sessionBound, 10, 'bound');
   }
 
   return emptyResult();

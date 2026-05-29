@@ -62,11 +62,18 @@ export const PROMPT_STORAGE = {
 
 export const getSystemPrompt = (personaType, locationName = "", options = {}) => {
   const config = PROMPT_STORAGE[personaType] || PROMPT_STORAGE.GENERAL;
+  const boundPlaceName = String(options.boundPlaceName ?? '').trim();
   const isMooni =
-    options.isMooni || String(locationName ?? '').trim().toLowerCase() === 'mooni';
+    options.isMooni ||
+    Boolean(boundPlaceName) ||
+    String(locationName ?? '').trim().toLowerCase() === 'mooni';
   const mooniContext = isMooni ? MOONI_DESTINATION_RULES : '';
-  const locationContext = locationName ? `\n현재 대상 지역: ${locationName}` : '';
-  return config.system + mooniContext + locationContext;
+  const effectiveLocation = boundPlaceName || locationName;
+  const locationContext = effectiveLocation ? `\n현재 대상 지역: ${effectiveLocation}` : '';
+  const boundPlaceRules = boundPlaceName
+    ? `\n- 사용자가 「이곳」「여기」라고 하면 반드시 「${boundPlaceName}」을(를) 가리킨다. 이전 대화의 출발지(서울·인천 등)와 혼동하지 않는다.`
+    : '';
+  return config.system + mooniContext + locationContext + boundPlaceRules;
 };
 
 /** 채팅 모달 최초 진입 시 보여줄 여행지 한줄 요약 (DB 캐시용) */

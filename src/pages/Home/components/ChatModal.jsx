@@ -34,6 +34,7 @@ import {
   getMooniQuickReplies,
   ACCESS_DEPARTURE_INPUT_PLACEHOLDER,
 } from '../lib/mooniQuickReplies';
+import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 
 const ChatModal = ({
   isOpen,
@@ -415,7 +416,9 @@ const ChatModal = ({
     const effectiveBound = sessionBound ?? placeBound;
 
     let sessionDest = currentDest;
-    if (resolution?.confidence === 'high' && resolution.name) {
+    if (placeBound?.name) {
+      sessionDest = placeBound.name;
+    } else if (resolution?.confidence === 'high' && resolution.name) {
       sessionDest = resolution.name;
     } else if (effectiveBound?.name) {
       sessionDest = effectiveBound.name;
@@ -493,13 +496,21 @@ const ChatModal = ({
     onUpdateChat(effectiveChatId, newMessages);
 
     try {
-      const destForPrompt = sessionDest === 'MOONi'
-        ? (resolution?.name || sessionBound?.name || mooniPlaceContext?.name || sessionDest)
-        : sessionDest;
+      const destForPrompt =
+        placeBound?.name ||
+        (sessionDest === 'MOONi'
+          ? (sessionBound?.name || mooniPlaceContext?.name || resolution?.name || sessionDest)
+          : sessionDest);
       const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
-        isMooni: destForPrompt === 'MOONi',
+        isMooni: Boolean(placeBound) || destForPrompt === 'MOONi',
+        boundPlaceName: placeBound?.name ?? null,
       });
       const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
+      const chatModelId = resolveMooniChatModel({
+        userText: cleanText,
+        chatHistory: priorTurns,
+        persona: personaToUse,
+      });
 
       const aiReply = await apiClient.fetchProxyGemini(
         null,
@@ -507,7 +518,7 @@ const ChatModal = ({
         systemInstruction,
         cleanText,
         [],
-        "gemini-2.5-flash"
+        chatModelId
       );
 
       const slug =

@@ -1,6 +1,7 @@
 import { supabase } from '../../../shared/api/supabase';
 import { apiClient } from './apiClient';
 import { getPlaceChatIntroSystemPrompt } from './prompts';
+import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
 
 const LS_PREFIX = 'days_place_chat_intro:';
 
@@ -110,6 +111,6 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName) {
   }
   const system = getPlaceChatIntroSystemPrompt();
   const userText = `여행지 이름: ${name}\n이 장소를 처음 듣는 사람에게 왜 가볼 만한지, 어떤 분위기·매력이 있는지 2~4문장으로 소개해줘.`;
-  const raw = await apiClient.fetchProxyGemini(null, [], system, userText, [], 'gemini-2.5-flash');
+  const raw = await apiClient.fetchProxyGemini(null, [], system, userText, [], MOONI_GEMINI.INTRO);
   return String(raw ?? '').trim();
 }

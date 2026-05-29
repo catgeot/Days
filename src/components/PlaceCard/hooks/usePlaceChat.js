@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
+import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
@@ -30,13 +31,18 @@ export const usePlaceChat = (options = {}) => {
     setChatHistory(newHistory);
 
     try {
+      const chatModelId = resolveMooniChatModel({
+        userText,
+        chatHistory: priorHistory,
+      });
+
       const aiReply = await apiClient.fetchProxyGemini(
         null,
         priorHistory,
         currentSystemPrompt,
         userText,
         [],
-        'gemini-2.5-flash',
+        chatModelId,
       );
 
       const essentialGuide =
