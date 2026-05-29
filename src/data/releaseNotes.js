@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-05-29',
+    category: 'feature',
+    title: 'MOONi 채팅 — 주제 칩·해외 출발 항공 연동',
+    items: [
+      '장소카드 MOONi에서 「궁금해?」「가는 방법」「출발 준비」「즐길거리」 2단 주제 칩으로 빠르게 질문할 수 있어요.',
+      '마닐라·싱가포르·런던 등 해외 출발지도 항공 검색에 반영돼요 (예: 마닐라→발리 MNL→DPS).',
+    ],
+  },
+  {
     id: '2026-05-26',
     category: 'feature',
     title: 'MOONi 채팅에서 예약·출발 전 준비까지',
