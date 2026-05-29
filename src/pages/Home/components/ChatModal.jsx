@@ -32,6 +32,7 @@ import {
 import {
   buildMooniIntroWithHint,
   getMooniQuickReplies,
+  ACCESS_DEPARTURE_INPUT_PLACEHOLDER,
 } from '../lib/mooniQuickReplies';
 
 const ChatModal = ({
@@ -65,7 +66,6 @@ const ChatModal = ({
   const messagesEndRef = useRef(null);
   const chatInputRef = useRef(null);
   const hasSentInitialRef = useRef(false);
-  const [accessInputHint, setAccessInputHint] = useState(null);
 
   const handlePlannerNavigate = useCallback(
     (plannerPath) => {
@@ -74,24 +74,6 @@ const ChatModal = ({
     },
     [onClose, navigate]
   );
-
-  const focusChatInput = useCallback((chip) => {
-    if (isLoading) return;
-    if (chip?.inputPlaceholder) {
-      setAccessInputHint(chip.inputPlaceholder);
-    }
-    const el = chatInputRef.current;
-    if (!el) return;
-    // 버튼 탭 직후 blur 방지 — 모바일 키보드 활성화
-    window.setTimeout(() => {
-      el.focus({ preventScroll: false });
-      try {
-        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      } catch {
-        /* ignore */
-      }
-    }, 80);
-  }, [isLoading]);
 
   const introDestinationRaw = useMemo(() => {
     if (!isOpen) return '';
@@ -156,7 +138,7 @@ const ChatModal = ({
         effectiveQuickReplySlug,
         topicDockParent ? 2 : 1,
         topicDockParent,
-        { essentialGuide: topicEssentialGuide }
+        { essentialGuide: topicEssentialGuide, omitPlanner: !topicDockParent }
       ),
     [effectiveQuickReplySlug, topicDockParent, topicEssentialGuide]
   );
@@ -164,13 +146,22 @@ const ChatModal = ({
   const showBoundTopicDock =
     isMooniUi && Boolean(effectiveQuickReplySlug) && quickReplies.length > 0;
 
-  /** 모바일 — bound 주제 칩만 있을 때 입력창은 「직접 입력하기」 탭 후에만 노출 */
-  const collapseMobileTextInput = showBoundTopicDock && !accessInputHint;
+  const topicDockPrompt =
+    !topicDockParent && messages.length === 0 ? '무엇부터 도와드릴까요?' : null;
 
-  const topicDockPrompt = useMemo(() => {
-    if (topicDockParent) return '세부 질문을 골라보세요';
-    return messages.length === 0 ? '무엇부터 도와드릴까요?' : '다른 주제도 골라보세요';
-  }, [topicDockParent, messages.length]);
+  const showTopicDockPrompt = Boolean(topicDockPrompt);
+
+  const chatInputPlaceholder = useMemo(() => {
+    if (topicDockParent === 'access') return ACCESS_DEPARTURE_INPUT_PLACEHOLDER;
+    if (effectiveQuickReplySlug) return '또는 직접 입력…';
+    return '메시지 입력...';
+  }, [topicDockParent, effectiveQuickReplySlug]);
+
+  const chatInputPlaceholderMobile = useMemo(() => {
+    if (topicDockParent === 'access') return '출발지…';
+    if (effectiveQuickReplySlug) return '입력…';
+    return '메시지 입력...';
+  }, [topicDockParent, effectiveQuickReplySlug]);
 
   useEffect(() => {
     setTopicDockParent(null);
@@ -179,7 +170,6 @@ const ChatModal = ({
   useEffect(() => {
     if (!isOpen) {
       setTopicDockParent(null);
-      setAccessInputHint(null);
     }
   }, [isOpen]);
 
@@ -188,12 +178,6 @@ const ChatModal = ({
       setTopicDockParent(null);
     }
   }, [topicDockParent, quickReplies.length]);
-
-  useEffect(() => {
-    if (topicDockParent !== 'access' && !input.trim()) {
-      setAccessInputHint(null);
-    }
-  }, [topicDockParent, input]);
 
   useEffect(() => {
     if (!isOpen || !placeIntroTarget) {
@@ -385,8 +369,7 @@ const ChatModal = ({
           }
         : null);
     const accessDockActive =
-      Boolean(sessionBoundEarly?.slug) &&
-      (topicDockParent === 'access' || Boolean(accessInputHint));
+      Boolean(sessionBoundEarly?.slug) && topicDockParent === 'access';
     const cleanText = normalizeAccessDepartureUserText(rawText, { accessDockActive });
     const personaToUse =
       personaOverride ||
@@ -480,7 +463,6 @@ const ChatModal = ({
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput('');
-    setAccessInputHint(null);
     setIsLoading(true);
 
     let effectiveChatId = activeChatId;
@@ -581,8 +563,32 @@ const ChatModal = ({
     applyDestinationBinding,
     mooniPlaceContext,
     topicDockParent,
-    accessInputHint,
   ]);
+
+  const topicDockChipsProps = useMemo(
+    () => ({
+      slug: effectiveQuickReplySlug,
+      chips: quickReplies,
+      onSelect: (text, persona) => handleSend(text, persona ?? null),
+      onDrillDown: (parentId) => setTopicDockParent(parentId),
+      onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
+      onOpenPlanner: handlePlannerNavigate,
+      disabled: isLoading,
+      prompt: topicDockPrompt,
+      showPrompt: showTopicDockPrompt,
+      dock: true,
+    }),
+    [
+      effectiveQuickReplySlug,
+      quickReplies,
+      handleSend,
+      topicDockParent,
+      handlePlannerNavigate,
+      isLoading,
+      topicDockPrompt,
+      showTopicDockPrompt,
+    ]
+  );
 
   useEffect(() => {
     if (isOpen && initialQuery && !hasSentInitialRef.current) {
@@ -655,8 +661,8 @@ const ChatModal = ({
         </div>
 
         <div className="flex-1 flex flex-col bg-black/50 relative">
-            <div className="bg-gray-800/50 p-4 flex justify-between items-center border-b border-gray-700 backdrop-blur-md">
-               <div className="flex flex-col min-w-0">
+            <div className="bg-gray-800/50 p-4 flex justify-between items-center gap-3 border-b border-gray-700 backdrop-blur-md">
+               <div className="flex flex-col min-w-0 flex-1">
                  <span className="font-bold text-white tracking-wide text-base">
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
@@ -668,7 +674,22 @@ const ChatModal = ({
                      : `${introDestinationRaw || '여행'} 대화 · ${currentPersona}`}
                  </span>
                </div>
-               <button onClick={onClose}><X size={18} className="text-gray-400 hover:text-white" /></button>
+               <div className="flex items-center gap-2 shrink-0">
+                 {effectiveQuickReplySlug ? (
+                   <button
+                     type="button"
+                     onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
+                     className="inline-flex items-center gap-1 rounded-full border border-cyan-500/40 bg-cyan-950/45 px-2.5 py-1 text-[11px] font-semibold text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors max-md:px-2"
+                     title="플래너 보기"
+                   >
+                     <span className="max-md:hidden">📋 플래너 보기</span>
+                     <span className="md:hidden">📋 플래너</span>
+                   </button>
+                 ) : null}
+                 <button type="button" onClick={onClose} aria-label="채팅 닫기">
+                   <X size={18} className="text-gray-400 hover:text-white" />
+                 </button>
+               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 custom-scrollbar">
@@ -793,28 +814,53 @@ const ChatModal = ({
             </div>
 
             <div className="shrink-0 bg-gray-900 border-t border-gray-800">
-              {showBoundTopicDock && (
-                <div
-                  className={`px-4 pt-3 md:px-6 md:pt-4 border-b border-gray-800/80 ${
-                    collapseMobileTextInput ? 'pb-3 max-md:pb-4' : 'pb-1'
-                  }`}
+              {showBoundTopicDock ? (
+                <>
+                  <div className="md:hidden p-3 flex items-center gap-2">
+                    <div className="min-w-0 flex-[7]">
+                      <MooniQuickReplyChips {...topicDockChipsProps} />
+                    </div>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSend(input);
+                      }}
+                      className="relative shrink-0 w-[30%] min-w-[5.5rem] max-w-[9.5rem]"
+                    >
+                      <input
+                        type="text"
+                        inputMode="text"
+                        enterKeyHint="send"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder={chatInputPlaceholderMobile}
+                        title={chatInputPlaceholder}
+                        className="w-full bg-gray-800 text-white text-[16px] pl-3 pr-9 py-2 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500"
+                        disabled={isLoading}
+                      />
+                      <button
+                        type="submit"
+                        disabled={isLoading || !input.trim()}
+                        className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40"
+                        aria-label="전송"
+                      >
+                        <Send size={16} />
+                      </button>
+                    </form>
+                  </div>
+                  <div className="hidden md:block px-6 pt-4 pb-1 border-b border-gray-800/80">
+                    <MooniQuickReplyChips {...topicDockChipsProps} />
+                  </div>
+                </>
+              ) : null}
+              <div className={`p-3 md:p-6 ${showBoundTopicDock ? 'max-md:hidden' : ''}`}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSend(input);
+                  }}
+                  className="relative"
                 >
-                  <MooniQuickReplyChips
-                    slug={effectiveQuickReplySlug}
-                    chips={quickReplies}
-                    onSelect={(text, persona) => handleSend(text, persona ?? null)}
-                    onDrillDown={(parentId) => setTopicDockParent(parentId)}
-                    onBack={topicDockParent ? () => setTopicDockParent(null) : undefined}
-                    onOpenPlanner={handlePlannerNavigate}
-                    onFocusInput={focusChatInput}
-                    disabled={isLoading}
-                    prompt={topicDockPrompt}
-                    compact
-                  />
-                </div>
-              )}
-              <div className={`p-4 md:p-6 ${collapseMobileTextInput ? 'max-md:hidden' : ''}`}>
-                <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative">
                   <input
                     ref={chatInputRef}
                     type="text"
@@ -822,18 +868,18 @@ const ChatModal = ({
                     enterKeyHint="send"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onBlur={() => {
-                      if (!input.trim()) setAccessInputHint(null);
-                    }}
-                    placeholder={
-                      accessInputHint
-                        ?? (effectiveQuickReplySlug ? '또는 직접 입력…' : '메시지 입력...')
-                    }
-                    className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-6 pr-14 py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500"
+                    placeholder={chatInputPlaceholder}
+                    className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-5 pr-14 py-3 md:py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500"
                     disabled={isLoading}
                     autoFocus={!effectiveQuickReplySlug}
                   />
-                  <button type="submit" disabled={isLoading || !input.trim()} className="absolute right-2 top-2 p-2 bg-blue-600 rounded-full text-white"><Send size={20} /></button>
+                  <button
+                    type="submit"
+                    disabled={isLoading || !input.trim()}
+                    className="absolute right-2 top-1.5 md:top-2 p-2 bg-blue-600 rounded-full text-white"
+                  >
+                    <Send size={20} />
+                  </button>
                 </form>
               </div>
             </div>

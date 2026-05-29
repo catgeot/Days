@@ -6,28 +6,35 @@ import { getPreTravelItemsFromGuide } from '../../../utils/chatPrepBookingLinks'
 export const MOONI_TOPIC_HINT =
   '이곳이 어떤 곳인지부터, 가는 방법·준비·즐길거리까지 골라보셔도 좋아요. 예약은 답변 아래 버튼으로 이어질 수 있어요.';
 
+/** 「가는 방법」L2 — 출발지 직접 입력 placeholder (입력창 상시 노출) */
+export const ACCESS_DEPARTURE_INPUT_PLACEHOLDER = '어디서 출발하시나요? (예: 서울, 마닐라)';
+
 const L1_DEFS = [
   {
     id: 'explore',
     label: '🌍 이곳이 궁금해',
+    mobileLabel: '🌍 궁금해?',
     drillDown: true,
     persona: PERSONA_TYPES.INSPIRER,
   },
   {
     id: 'access',
     label: '✈️ 가는 방법',
+    mobileLabel: '✈️ 가는 방법',
     drillDown: true,
     persona: PERSONA_TYPES.PLANNER,
   },
   {
     id: 'prep',
     label: '🛫 출발 전 준비',
+    mobileLabel: '🛫 출발 준비',
     drillDown: true,
     persona: PERSONA_TYPES.PLANNER,
   },
   {
     id: 'enjoy',
     label: '🌴 즐길거리·일정',
+    mobileLabel: '🌴 즐길거리',
     drillDown: true,
     persona: PERSONA_TYPES.INSPIRER,
   },
@@ -54,12 +61,6 @@ const L2_ACCESS_DEPARTURES = [
     label: '🚢 페리·배',
     sendText: '페리 예약',
     requiresFerry: true,
-  },
-  {
-    id: 'access_custom',
-    label: '✏️ 직접 입력하기',
-    action: 'focus_input',
-    inputPlaceholder: '어디서 출발하시나요? (예: 서울, 광주)',
   },
 ];
 
@@ -90,7 +91,7 @@ function filterChipDefs(defs, profile, essentialGuide) {
   const hasPreTravel = getPreTravelItemsFromGuide(essentialGuide).length > 0;
 
   return defs.filter((def) => {
-    if (def.action === 'focus_input' || def.action === 'planner') return true;
+    if (def.action === 'planner') return true;
     if (def.requiresFerry && !profile.ferryRequired) return false;
     if (def.requiresLeg && !legs.has(def.requiresLeg)) return false;
     if (def.requiresPreTravel && !hasPreTravel) return false;
@@ -143,7 +144,7 @@ function getL2ForParent(slug, parentId, essentialGuide) {
 export function getMooniQuickReplies(slug, level = 1, parentId = null, options = {}) {
   if (!slug) return [];
 
-  const { essentialGuide = null } = options;
+  const { essentialGuide = null, omitPlanner = false } = options;
   const profile = getDestinationBookingProfile(slug);
 
   if (level === 2 && parentId) {
@@ -151,11 +152,13 @@ export function getMooniQuickReplies(slug, level = 1, parentId = null, options =
   }
 
   return L1_DEFS.filter((def) => {
+    if (omitPlanner && def.action === 'planner') return false;
     if (def.action === 'planner') return true;
     if (!def.drillDown) return true;
     return getL2ForParent(slug, def.id, essentialGuide).length > 0;
-  }).map(({ drillDown, persona, ...rest }) => ({
+  }).map(({ drillDown, persona, mobileLabel, ...rest }) => ({
     ...rest,
+    ...(mobileLabel ? { mobileLabel } : {}),
     ...(drillDown ? { drillDown: true } : {}),
     ...(persona ? { persona } : {}),
   }));

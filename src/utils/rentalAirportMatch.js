@@ -404,7 +404,7 @@ function pushValidHubIata(ordered, seen, raw) {
 }
 
 /** IATA 별칭·짧은 영문이 다른 단어 안쪽(jordan→ord 등)에 걸리지 않도록 단어 경계로만 매칭 */
-function aliasMatchesHay(hay, alias, hubIata) {
+export function aliasMatchesHay(hay, alias, hubIata) {
   const al = alias.toLowerCase();
   const isAscii = /^[\x00-\x7F]+$/.test(alias);
   const isIataToken = al.length === 3 && /^[a-z]{3}$/.test(al) && al === hubIata.toLowerCase();

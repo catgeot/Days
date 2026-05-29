@@ -4,7 +4,7 @@ import {
   resolveTravelSpotFromSearchQuery,
   resolveTravelSpotFromLocation,
 } from './travelSpotResolve.js';
-import { resolveDepartureIataFromChat } from './resolveDepartureIataFromChat.js';
+export { resolveDepartureLabelFromChat } from './resolveDepartureIataFromChat.js';
 
 const MOONI_PLACEHOLDERS = new Set(['', 'mooni', 'new session', 'scanning...']);
 
@@ -43,21 +43,6 @@ const DEPARTURE_HUB_SLUGS = new Set([
   'los-angeles',
   'new-york',
 ]);
-
-const DEPARTURE_LABELS = [
-  ['서울', 'seoul'],
-  ['인천', 'incheon'],
-  ['김포', 'kimpo'],
-  ['부산', 'busan'],
-  ['제주', 'jeju'],
-  ['마닐라', 'manila'],
-  ['싱가포르', 'singapore'],
-  ['방콕', 'bangkok'],
-  ['런던', 'london'],
-  ['도쿄', 'tokyo'],
-  ['홍콩', 'hong kong'],
-  ['타이베이', 'taipei'],
-];
 
 /** MOONi 「가는 방법」직접입력 — 출발지만 적은 짧은 발화 */
 const DEPARTURE_ONLY_FRAGMENT =
@@ -168,26 +153,6 @@ const FERRY_ROUTE_QUERY =
 
 export function isFerryRouteQuery(text) {
   return FERRY_ROUTE_QUERY.test(String(text ?? '').trim());
-}
-
-/** access_route 발화에서 출발지 라벨 (칩 UI용) */
-export function resolveDepartureLabelFromChat(userText, chatHistory = []) {
-  const combined = [
-    userText,
-    ...chatHistory.filter((m) => m.role === 'user').slice(-3).map((m) => m.text ?? ''),
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  for (const [label] of DEPARTURE_LABELS) {
-    if (combined.includes(label)) return label;
-  }
-  if (/seoul/i.test(combined)) return '서울';
-  if (/incheon/i.test(combined)) return '인천';
-  if (/busan/i.test(combined)) return '부산';
-  if (/jeju/i.test(combined)) return '제주';
-  if (resolveDepartureIataFromChat(userText, chatHistory)) return '한국';
-  return null;
 }
 
 /**

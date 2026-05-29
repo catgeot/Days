@@ -1,13 +1,11 @@
-# 2026-05-29 프로젝트 일지 — MOONi 출발 직접입력·Trip 라벨
+# 2026-05-29 프로젝트 일지 — MOONi §2.12·dock UX
 
 **직전**: [`2026-05-27-project-log.md`](2026-05-27-project-log.md) · **맥락**: [`.ai-context.md`](../.ai-context.md)
 
 ---
 
-- **§2.11 S8-1**: 2단 주제 칩 L1/L2 · drill-down · Trip CTA 라벨 `getPlannerFlightArrivalIata`+허브 한글명.
-- **가는 방법**: 「직접 입력」칩 → 입력창 포커스·출발 placeholder.
-- **§2.11.1**: bound+access dock에서 `마닐라`→`마닐라에서 어떻게 가?` · `DEPARTURE_HUB_SLUGS` 확대 — 목적지 재바인딩 방지.
-- **로드맵**: handoff **§2.12** 해외 출발 허브(`rentalAirportHubs`) — 채팅 기능·§2.11.1 QA 후.
-- **§2.11 QA (로컬 UI Pass)**: `dev:http` · 퀸스타운 L1/L2·←주제바꾸기 · gili-meno access 페리·prep 관광세·A1/A2 · jakarta access 페리 없음 — Pass. A1 Trip ICN 폴백(§2.12).
-- **§2.11.2**: 모바일 bound dock — 입력창은 「직접 입력하기」 탭 시에만 노출(`collapseMobileTextInput`).
-- **다음**: §2.12 출발 IATA 확대 · (합의 시) gateo.kr §10-F/G9.
+- **§2.11 S8-1** (선행 `23de3e7`+): 2단 L1/L2 · Trip 라벨 · §2.11.1 출발 직접입력·`DEPARTURE_HUB_SLUGS`.
+- **§2.12**: `resolveDepartureIataFromChat` — `rentalAirportHubs` aliases · `에서`/`from` 출발 구간 · 현재 턴 우선 · Trip `dAirportCode`·칩 라벨 — **gili-meno QA Pass**.
+- **§2.11.3**: MOONi dock — **모바일** 칩·입력 7:3 · L1 `mobileLabel` 단축 · 헤더 📋 플래너 · L2 prompt 제거·주제 바꾸기 pill · **데스크톱** dock+전폭 입력 유지. §2.11.2 입력 숨김 **폐기**.
+- **커밋·푸시**: 본 세션 변경 main 반영.
+- **다음**: MOONi dock·CTA **세부 조정** · (합의 시) gateo §10-F/G9 · releaseNotes 합의 후.
