@@ -24,6 +24,8 @@ export default function MooniQuickReplyChips({
   const chipClass =
     'inline-flex items-center gap-1.5 rounded-full border border-cyan-500/35 bg-cyan-950/30 px-3 py-1.5 text-xs font-medium text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors disabled:opacity-50 disabled:pointer-events-none';
 
+  const backLabelText = backLabel.replace(/^←\s*/, '');
+
   return (
     <div className={dock ? 'space-y-1.5' : 'mt-3 space-y-2'}>
       {onBack ? (
@@ -31,10 +33,10 @@ export default function MooniQuickReplyChips({
           type="button"
           disabled={disabled}
           onClick={onBack}
-          className="inline-flex items-center gap-1 rounded-full border border-cyan-500/45 bg-cyan-950/55 px-3 py-1.5 text-xs font-semibold text-cyan-100 shadow-sm hover:border-cyan-400/70 hover:bg-cyan-900/50 transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-0.5 px-0.5 py-1 text-[11px] font-medium text-gray-300 hover:text-white transition-colors disabled:opacity-50"
         >
-          <ChevronLeft size={15} className="shrink-0" />
-          {backLabel}
+          <ChevronLeft size={14} className="shrink-0 -mr-0.5" aria-hidden />
+          {backLabelText}
         </button>
       ) : null}
       {showPrompt && prompt ? (

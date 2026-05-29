@@ -30,9 +30,10 @@ function SiteUpdateBanner() {
       }
     : undefined;
 
-  const headerStyle = anchored
-    ? { minHeight: anchorRect.height }
-    : undefined;
+  const headerStyle =
+    anchored && anchorRect.height >= 24
+      ? { minHeight: anchorRect.height }
+      : undefined;
 
   return (
     <div
@@ -41,10 +42,10 @@ function SiteUpdateBanner() {
     >
       <div
         style={panelStyle}
-        className={`pointer-events-auto absolute flex flex-col animate-fade-in-down overflow-hidden rounded-[1.5rem] bg-slate-950/78 backdrop-blur-2xl border border-blue-200/25 shadow-[0_20px_56px_rgba(0,0,0,0.72),0_0_0_1px_rgba(147,197,253,0.14),0_0_28px_rgba(59,130,246,0.14)] ${
+        className={`pointer-events-auto absolute flex flex-col animate-fade-in-down overflow-y-auto rounded-[1.5rem] bg-slate-950/78 backdrop-blur-2xl border border-blue-200/25 shadow-[0_20px_56px_rgba(0,0,0,0.72),0_0_0_1px_rgba(147,197,253,0.14),0_0_28px_rgba(59,130,246,0.14)] max-md:max-h-[min(70dvh,calc(100dvh-6rem))] ${
           anchored
             ? ''
-            : 'top-4 left-1/2 -translate-x-1/2 w-full max-w-[200px] sm:max-w-xs md:max-w-md px-4 sm:px-0'
+            : 'top-4 max-md:inset-x-4 max-md:w-auto max-md:max-w-none max-md:translate-x-0 md:left-1/2 md:-translate-x-1/2 w-[calc(100vw-2rem)] md:max-w-md'
         }`}
         role="dialog"
         aria-modal="false"

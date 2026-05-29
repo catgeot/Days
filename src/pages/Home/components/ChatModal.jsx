@@ -620,8 +620,8 @@ const ChatModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] rounded-3xl border border-gray-700 shadow-2xl flex overflow-hidden relative transition-all">
+    <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in">
+      <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none border border-gray-700 max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all">
 
         <div className="hidden md:flex w-72 bg-gray-900 border-r border-gray-700 flex-col">
           <div className="p-5 border-b border-gray-800 flex items-center justify-between">
@@ -661,12 +661,20 @@ const ChatModal = ({
         </div>
 
         <div className="flex-1 flex flex-col bg-black/50 relative">
-            <div className="bg-gray-800/50 p-4 flex justify-between items-center gap-3 border-b border-gray-700 backdrop-blur-md">
+            <div className="bg-gray-800/50 p-4 max-md:py-3 max-md:pt-[max(0.75rem,env(safe-area-inset-top,0px))] flex items-center gap-3 border-b border-gray-700 backdrop-blur-md">
+               <button
+                 type="button"
+                 onClick={onClose}
+                 aria-label="채팅 닫기"
+                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-500/60 bg-gray-700/70 text-gray-200 shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
+               >
+                 <X size={18} className="pointer-events-none" />
+               </button>
                <div className="flex flex-col min-w-0 flex-1">
                  <span className="font-bold text-white tracking-wide text-base">
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
-                 <span className="text-[11px] text-cyan-300/80 font-medium truncate">
+                 <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium truncate">
                    {isMooniUi
                      ? boundDestinationSlug
                        ? `${mooniPlaceContext?.name ?? introDestinationRaw} 여행 대화 · ${currentPersona}`
@@ -679,16 +687,13 @@ const ChatModal = ({
                    <button
                      type="button"
                      onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
-                     className="inline-flex items-center gap-1 rounded-full border border-cyan-500/40 bg-cyan-950/45 px-2.5 py-1 text-[11px] font-semibold text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors max-md:px-2"
+                     className="inline-flex items-center gap-1 rounded-full border border-cyan-400/70 bg-cyan-500/25 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/30 hover:border-cyan-300 hover:bg-cyan-500/35 transition-colors max-md:px-2.5"
                      title="플래너 보기"
                    >
                      <span className="max-md:hidden">📋 플래너 보기</span>
                      <span className="md:hidden">📋 플래너</span>
                    </button>
                  ) : null}
-                 <button type="button" onClick={onClose} aria-label="채팅 닫기">
-                   <X size={18} className="text-gray-400 hover:text-white" />
-                 </button>
                </div>
             </div>
 
@@ -813,11 +818,11 @@ const ChatModal = ({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="shrink-0 bg-gray-900 border-t border-gray-800">
+            <div className="shrink-0 bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
               {showBoundTopicDock ? (
                 <>
-                  <div className="md:hidden p-3 flex items-center gap-2">
-                    <div className="min-w-0 flex-[7]">
+                  <div className="md:hidden px-3 pt-3 pb-1 flex items-end gap-2">
+                    <div className="min-w-0 flex-[6]">
                       <MooniQuickReplyChips {...topicDockChipsProps} />
                     </div>
                     <form
@@ -825,7 +830,7 @@ const ChatModal = ({
                         e.preventDefault();
                         handleSend(input);
                       }}
-                      className="relative shrink-0 w-[30%] min-w-[5.5rem] max-w-[9.5rem]"
+                      className="relative shrink-0 flex-[4] min-w-[6.5rem] max-w-[10.5rem] mb-0.5"
                     >
                       <input
                         type="text"
@@ -835,7 +840,7 @@ const ChatModal = ({
                         onChange={(e) => setInput(e.target.value)}
                         placeholder={chatInputPlaceholderMobile}
                         title={chatInputPlaceholder}
-                        className="w-full bg-gray-800 text-white text-[16px] pl-3 pr-9 py-2 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500"
+                        className="w-full bg-gray-800 text-white text-[16px] pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500"
                         disabled={isLoading}
                       />
                       <button
@@ -844,7 +849,7 @@ const ChatModal = ({
                         className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40"
                         aria-label="전송"
                       >
-                        <Send size={16} />
+                        <Send size={17} />
                       </button>
                     </form>
                   </div>
@@ -853,7 +858,7 @@ const ChatModal = ({
                   </div>
                 </>
               ) : null}
-              <div className={`p-3 md:p-6 ${showBoundTopicDock ? 'max-md:hidden' : ''}`}>
+              <div className={`px-3 pt-3 md:p-6 ${showBoundTopicDock ? 'max-md:hidden' : 'pb-0'}`}>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -869,14 +874,14 @@ const ChatModal = ({
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={chatInputPlaceholder}
-                    className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-5 pr-14 py-3 md:py-4 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-5 pr-14 py-3.5 md:py-4 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500"
                     disabled={isLoading}
                     autoFocus={!effectiveQuickReplySlug}
                   />
                   <button
                     type="submit"
                     disabled={isLoading || !input.trim()}
-                    className="absolute right-2 top-1.5 md:top-2 p-2 bg-blue-600 rounded-full text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 rounded-full text-white"
                   >
                     <Send size={20} />
                   </button>

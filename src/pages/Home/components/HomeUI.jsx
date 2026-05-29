@@ -59,6 +59,11 @@ const HomeUI = React.memo(({
   return (
     <>
       <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
+        <div
+          data-site-notice-anchor-mobile
+          className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"
+          aria-hidden="true"
+        />
 
         <div onClick={onLogoClick} className="md:col-span-2 flex-shrink-0 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
           <h1 className="group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
