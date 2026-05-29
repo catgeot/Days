@@ -164,6 +164,9 @@ const ChatModal = ({
   const showBoundTopicDock =
     isMooniUi && Boolean(effectiveQuickReplySlug) && quickReplies.length > 0;
 
+  /** 모바일 — bound 주제 칩만 있을 때 입력창은 「직접 입력하기」 탭 후에만 노출 */
+  const collapseMobileTextInput = showBoundTopicDock && !accessInputHint;
+
   const topicDockPrompt = useMemo(() => {
     if (topicDockParent) return '세부 질문을 골라보세요';
     return messages.length === 0 ? '무엇부터 도와드릴까요?' : '다른 주제도 골라보세요';
@@ -185,6 +188,12 @@ const ChatModal = ({
       setTopicDockParent(null);
     }
   }, [topicDockParent, quickReplies.length]);
+
+  useEffect(() => {
+    if (topicDockParent !== 'access' && !input.trim()) {
+      setAccessInputHint(null);
+    }
+  }, [topicDockParent, input]);
 
   useEffect(() => {
     if (!isOpen || !placeIntroTarget) {
@@ -785,7 +794,11 @@ const ChatModal = ({
 
             <div className="shrink-0 bg-gray-900 border-t border-gray-800">
               {showBoundTopicDock && (
-                <div className="px-4 pt-3 md:px-6 md:pt-4 pb-1 border-b border-gray-800/80">
+                <div
+                  className={`px-4 pt-3 md:px-6 md:pt-4 border-b border-gray-800/80 ${
+                    collapseMobileTextInput ? 'pb-3 max-md:pb-4' : 'pb-1'
+                  }`}
+                >
                   <MooniQuickReplyChips
                     slug={effectiveQuickReplySlug}
                     chips={quickReplies}
@@ -800,7 +813,7 @@ const ChatModal = ({
                   />
                 </div>
               )}
-              <div className="p-4 md:p-6">
+              <div className={`p-4 md:p-6 ${collapseMobileTextInput ? 'max-md:hidden' : ''}`}>
                 <form onSubmit={(e) => { e.preventDefault(); handleSend(input); }} className="relative">
                   <input
                     ref={chatInputRef}
