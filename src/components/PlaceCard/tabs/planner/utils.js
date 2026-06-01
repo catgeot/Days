@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
 import bouncePlannerBannerDesktop from '../../../../assets/bounce_278x90.png';
 import bouncePlannerBannerMobile from '../../../../assets/bounce.png';
-import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getKlookFerryUrl, get12GoHomeUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
+import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getKlookAirportTransferUrl, getKlookFerryUrl, get12GoHomeUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
 import { shouldShowFerryCard } from '../../../../utils/ferryBookingMatch.js';
 import { getRentalCarHomeSearchSubtext } from '../../../../utils/rentalAirportMatch.js';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
@@ -165,10 +165,11 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             });
             break;
         case 'airport_transfer': {
+            const klookPickupHomeLink = getKlookAirportTransferUrl();
             const klookCarRentalHomeLink = getKlookRentalHomeUrl();
 
             links.push({
-                url: klookCarRentalHomeLink,
+                url: klookPickupHomeLink,
                 text: '공항 픽업 검색',
                 subtext: '항공권 구매 후 항공편명으로 검색해 주세요.',
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'

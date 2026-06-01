@@ -1,9 +1,8 @@
-import { getKlookAffiliateUrl } from './affiliate.js';
+import { getKlookAffiliateUrl, KLOOK_AIRPORT_TRANSFER_TARGET } from './affiliate.js';
 import { getMultiLinks } from '../components/PlaceCard/tabs/planner/utils.js';
 
 /** PreTravelChecklist와 동일 SSOT */
-export const CHAT_KLOOK_AIRPORT_TRANSFER_URL =
-  'https://www.klook.com/ko/airport-transfers/';
+export const CHAT_KLOOK_AIRPORT_TRANSFER_URL = KLOOK_AIRPORT_TRANSFER_TARGET;
 
 /**
  * 툴킷 essential_guide.categories.pre_travel[] — 플래너 PreTravelChecklist와 동일.

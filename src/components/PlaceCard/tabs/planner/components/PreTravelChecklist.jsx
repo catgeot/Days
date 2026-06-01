@@ -1,10 +1,7 @@
 import React, { useMemo } from 'react';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
-import {
-    getKlookAffiliateUrl,
-    getTripcomHotelOverrideUrlForLocation,
-} from '../../../../../utils/affiliate';
+import { getKlookAirportTransferUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
 import {
     buildTripcomPlannerNavigationUrl,
     getPartnerLinkTarget,
@@ -142,7 +139,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
 
                 {/* 3. 공항 픽업 예약 */}
                 <a
-                    href={getKlookAffiliateUrl('https://www.klook.com/ko/airport-transfers/')}
+                    href={getKlookAirportTransferUrl()}
                     target={linkTarget}
                     rel="noopener noreferrer"
                     className="bg-white border-2 border-amber-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full block"

@@ -26,6 +26,9 @@ export const KLOOK_KYUSHU_RENTAL_AD_ID = '1265796';
 export const KLOOK_FERRY_AD_ID = '1281898';
 export const KLOOK_FERRY_TARGET =
   'https://www.klook.com/ko/transport/?target_slug=/ko/transport/ttd/ferries/';
+/** Klook 공항 픽업·셔틀 홈 — PreTravelChecklist·airport_transfer 카드 SSOT */
+export const KLOOK_AIRPORT_TRANSFER_TARGET =
+  'https://www.klook.com/ko/airport-transfers/';
 
 /** 12Go 직접 제휴 파트너 ID */
 export const TWELVE_GO_PARTNER_ID = '15927471';
@@ -278,6 +281,14 @@ export const getKlookRentalHomeUrl = () => {
   const rentalPath = USE_KLOOK_LOCALE_PATH ? 'ko/car-rentals' : 'car-rentals';
   return getKlookAffiliateUrl(`https://www.klook.com/${rentalPath}/`, KLOOK_RENTAL_HOME_AD_ID);
 };
+
+/**
+ * Klook 공항 픽업·셔틀 홈. 렌터카 홈({@link getKlookRentalHomeUrl})과 URL·aff_adid가 다름.
+ *
+ * @returns {string}
+ */
+export const getKlookAirportTransferUrl = () =>
+  getKlookAffiliateUrl(KLOOK_AIRPORT_TRANSFER_TARGET, KLOOK_DEFAULT_AD_ID);
 
 /**
  * 마이리얼트립 검색 결과 페이지에 대한 동적 제휴 링크(Short URL)를 발급받습니다.
