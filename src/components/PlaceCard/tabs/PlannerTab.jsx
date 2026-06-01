@@ -318,7 +318,7 @@ const PlannerTab = ({
         <div className="w-full h-full relative">
             <div
                 ref={scrollContainerRef}
-                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} pb-6 md:p-6 md:pt-10 ${plannerScrollSurfaceClass}`}
+                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} pb-24 md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
             >
                 {mobileSecondaryNav && (
                     <div className="md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa]">
@@ -490,14 +490,20 @@ const PlannerTab = ({
                     </p>
                 </div>
 
-                <div className="flex justify-end pb-4">
+                {/* 관리자/테스트: AI 툴킷 강제 재실행 (평소 흐릿 · hover 시 확인 가능) */}
+                <div
+                    id="planner-admin-force-update"
+                    className="mt-2 flex shrink-0 justify-end pb-[max(0.25rem,env(safe-area-inset-bottom,0px))]"
+                >
                     <button
-                        onClick={() => handleRequestToolkitInfo(plannerData?.place_id || location?.name, true)}
-                        disabled={isLoading}
-                        className="text-[10px] text-gray-300 hover:text-gray-500 transition-colors opacity-30 hover:opacity-100"
-                        title="기존 툴킷 강제 업데이트"
+                        type="button"
+                        onClick={handleRemoteUpdate}
+                        disabled={isRemoteUpdating}
+                        className="text-[10px] font-medium text-gray-400 hover:text-gray-600 transition-colors opacity-40 hover:opacity-100 disabled:pointer-events-none disabled:opacity-30"
+                        title="기존 툴킷 강제 업데이트 (관리자/테스트용)"
+                        aria-label="기존 툴킷 강제 업데이트"
                     >
-                        {isLoading ? 'Updating...' : 'Force Update Toolkit'}
+                        {isRemoteUpdating ? 'Updating...' : 'Force Update Toolkit'}
                     </button>
                 </div>
             </div>
