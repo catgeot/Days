@@ -64,27 +64,32 @@ const L2_ACCESS_DEPARTURES = [
   },
 ];
 
-/** 플래너 「출발 전 필수 준비」·「안전 및 보험」·상단 checklist 정렬 */
+/**
+ * 출발 전 준비 L2 — 비자·입국(플래너 prep 섹션) + 예약·교통(플래너 링크)
+ * @see resolvePlannerFocusFromPrepChipId
+ */
 const L2_PREP = [
   {
     id: 'visa_docs',
     label: '비자·입국·서류',
-    sendText: '비자·입국·필수 서류와 관광세·수수료가 궁금해',
+    sendText: '비자, 입국 필수 준비 사항을 설명해줘',
   },
   {
-    id: 'medical_insurance',
-    label: '의료 후송·보험',
-    sendText: '의료 후송 보험과 여행 보험 준비는?',
+    id: 'prep_flight',
+    label: '항공권',
+    sendText: '항공권 예약을 어떻게 해야 하지?',
+    requiresLeg: 'flight',
   },
   {
-    id: 'entry_proof',
-    label: '숙소·입국 증빙',
-    sendText: '입국 심사에 필요한 숙소·항공 증빙은?',
+    id: 'prep_hotel',
+    label: '숙소',
+    sendText: '여행지의 숙소는 어디가 좋을까?',
   },
   {
-    id: 'safety_local',
-    label: '안전·현지 주의',
-    sendText: '치안과 현지에서 주의할 점은?',
+    id: 'prep_transport',
+    label: '렌터카·픽업',
+    mobileLabel: '교통·픽업',
+    sendText: '현지 교통은 어떻게 이용하는 것이 좋을까?',
   },
 ];
 
@@ -141,7 +146,9 @@ function getL2ForParent(slug, parentId, essentialGuide) {
       return [];
   }
 
-  return filterChipDefs(defs, profile, essentialGuide).map((def) => ({
+  const filtered = filterChipDefs(defs, profile, essentialGuide);
+
+  return filtered.map((def) => ({
     ...def,
     persona,
   }));

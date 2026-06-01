@@ -364,7 +364,7 @@ const ChatModal = ({
     onCreateTripOnFirstUserMessage,
   ]);
 
-  const handleSend = useCallback(async (text, personaOverride = null) => {
+  const handleSend = useCallback(async (text, personaOverride = null, sendOptions = null) => {
     if (!text?.trim() || isLoading) return;
 
     const rawText = typeof text === 'object' ? (text.text || '질문 내용 확인 불가') : text;
@@ -574,7 +574,11 @@ const ChatModal = ({
       const { text: displayReply, hadBracketLinks } = sanitizeMooniModelReply(aiReply, {
         stripPhantomTicketMention: !hasTransportCta,
       });
-      const plannerFocus = resolvePlannerFocusFromUserText(cleanText);
+      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
+      const plannerFocus = resolvePlannerFocusFromUserText(cleanText, {
+        essentialGuide,
+        chipId,
+      });
       const plannerUrl =
         buildPlacePlannerPathWithFocus(slug, plannerFocus) ??
         booking.plannerUrl ??
@@ -628,7 +632,8 @@ const ChatModal = ({
     () => ({
       slug: effectiveQuickReplySlug,
       chips: quickReplies,
-      onSelect: (text, persona) => handleSend(text, persona ?? null),
+      onSelect: (text, persona, chip) =>
+        handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
       onDrillDown: (parentId) => setTopicDockParent(parentId),
       onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
       parentL1Label: topicDockParent ? getMooniL1ChipLabel(topicDockParent) : null,

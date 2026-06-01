@@ -67,7 +67,7 @@ export default function MooniQuickReplyChips({
                 onFocusInput(chip);
                 return;
               }
-              if (chip.sendText) onSelect?.(chip.sendText, chip.persona);
+              if (chip.sendText) onSelect?.(chip.sendText, chip.persona, chip);
             }}
             className={chipClass}
           >

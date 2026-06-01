@@ -379,15 +379,19 @@ const PlannerTab = ({
                         </div>
                     )}
 
-                    <div className="mb-5 w-full shrink-0">{rentalPickupBanner}</div>
+                    <div id="planner-rental-pickup" className="mb-5 w-full shrink-0 scroll-mt-24">
+                        {rentalPickupBanner}
+                    </div>
 
                     <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
 
-                {/* 체크리스트 및 타임라인 (상시 렌더링) */}
-                {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (
+                {/* 체크리스트(항공·숙소·픽업) — 툴킷 있으면 상시 · 타임라인은 있을 때만 */}
+                {guideData && (
                     <div
                         id="planner-pre-travel-checklist"
-                        className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5 scroll-mt-24"
+                        className={`grid grid-cols-1 gap-5 mb-5 scroll-mt-24 ${
+                            (guideData?.journey_timeline?.length ?? 0) > 0 ? 'md:grid-cols-2' : ''
+                        }`}
                     >
                         <PreTravelChecklist
                             items={guideData?.categories?.pre_travel || []}
@@ -395,11 +399,13 @@ const PlannerTab = ({
                             location={location}
                             essentialGuide={guideData}
                         />
-                        <JourneyTimeline
-                            timeline={guideData?.journey_timeline || []}
-                            location={location}
-                            essentialGuide={guideData}
-                        />
+                        {(guideData?.journey_timeline?.length ?? 0) > 0 ? (
+                            <JourneyTimeline
+                                timeline={guideData.journey_timeline}
+                                location={location}
+                                essentialGuide={guideData}
+                            />
+                        ) : null}
                     </div>
                 )}
 
@@ -415,8 +421,12 @@ const PlannerTab = ({
                         <div id="planner-prep-visa" className="scroll-mt-24">
                         <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
                         </div>
+                        <div id="planner-prep-flight" className="scroll-mt-24">
                         <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        </div>
+                        <div id="planner-prep-accommodation" className="scroll-mt-24">
                         <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        </div>
                         <div id="planner-prep-safety" className="scroll-mt-24">
                         <ToolkitCard icon={ShieldAlert} title="안전 및 보험" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
                         </div>
@@ -424,14 +434,16 @@ const PlannerTab = ({
                 </div>
 
                 {/* 섹션 2: 현지 도착 및 이동 */}
-                <div className="mb-8">
+                <div id="planner-arrival" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-teal-500 rounded-full"></div>
                         <h3 className="text-lg font-bold text-gray-800">🛬 현지 도착 및 이동</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
                         {(guideData?.categories?.airport_transfer) && (
+                            <div id="planner-arrival-transfer" className="scroll-mt-24">
                             <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                            </div>
                         )}
                         {showFerryCard && (
                             <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
@@ -464,7 +476,9 @@ const PlannerTab = ({
                     </div>
                     <div className="grid grid-cols-1 gap-5">
                         <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" />
+                        <div id="planner-local-transport" className="scroll-mt-24">
                         <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        </div>
                         <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
                     </div>
                 </div>

@@ -1,4 +1,8 @@
 import { resolveChatBookingActions } from './chatBookingResolver.js';
+import {
+  resolvePlannerFocusFromUserText,
+  PLANNER_FOCUS_ID,
+} from './placePlannerFocus.js';
 
 const TRANSPORT_PROVIDERS = new Set([
   'trip_com',
@@ -67,8 +71,25 @@ export function getChatCtaPromptHint({
     lines.push('- 이번 턴에는 「교통 · 티켓」 섹션이 없다. 항공권 예약 버튼을 언급하지 않는다.');
   }
   if (hasPrep && !hasTransport) {
+    const focus = resolvePlannerFocusFromUserText(userText, { essentialGuide });
+    const plannerScrollTarget =
+      focus === PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST
+        ? '플래너 상단 「출발 전 필수 준비사항」 체크리스트(항공·숙소·픽업)'
+        : focus === PLANNER_FOCUS_ID.PREP_ACCOMMODATION
+          ? '플래너 「숙박 지역 추천」 카드'
+          : focus === PLANNER_FOCUS_ID.PREP_FLIGHT
+            ? '플래너 「항공권」 카드'
+            : focus === PLANNER_FOCUS_ID.ARRIVAL_TRANSFER
+              ? '플래너 「공항 → 항구/목적지 이동」 카드'
+              : focus === PLANNER_FOCUS_ID.LOCAL_TRANSPORT
+                ? '플래너 「교통 및 패스」 카드'
+                : focus === PLANNER_FOCUS_ID.RENTAL_PICKUP
+                  ? '플래너 렌터카·픽업 안내'
+                  : focus === PLANNER_FOCUS_ID.PREP_SAFETY
+                    ? '플래너 「안전 및 보험」 카드'
+                    : '플래너 「비자 및 서류」·「출발 전 필수 준비」 섹션';
     lines.push(
-      '- 「플래너에서 입국·증빙·준비 확인」 버튼(전폭, cyan) — 플래너 「출발 전 필수 준비」의 「비자 및 서류」 카드로 스크롤'
+      `- 「플래너에서 입국·증빙·준비 확인」 버튼(전폭, cyan) — ${plannerScrollTarget}로 스크롤`
     );
   }
   lines.push(
