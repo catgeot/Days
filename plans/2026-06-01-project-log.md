@@ -18,3 +18,4 @@
 - **MOONi 교통·티켓 → 플래너 항공**: Trip CTA 아래 `getMooniPlannerFlightGuideLabel` · `#planner-prep-flight` 스크롤 · `chatCtaPromptHint` 반영.
 - **MOONi 렌터카·픽업 2링크**: `MooniTransportPlannerLinks` — `#planner-arrival-transfer`(또는 `#planner-rental-pickup`) + `#planner-local-transport` · `BookingActionCards`·`MooniPlannerFollowUp`.
 - **문서**: handoff §2.15·`.ai-context` 갱신 — QA Pass.
+- **releaseNotes**: `2026-06-01` — MOONi 채팅 여행 정보·예약·탐색 (사용자 합의 반영).

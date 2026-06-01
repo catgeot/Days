@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-06-01',
+    category: 'feature',
+    title: 'MOONi 채팅 — 여행 정보 확인부터 예약까지',
+    items: [
+      'MOONi 채팅을 통해 항공권, 숙소, 교통 정보를 확인하고 예약까지 이어갈 수 있어요.',
+      'MOONi와 함께 여행지를 탐색하고, 출발해 보세요.',
+    ],
+  },
+  {
     id: '2026-05-29',
     category: 'feature',
     title: 'MOONi 채팅 — 주제 칩·해외 출발 항공 연동',
