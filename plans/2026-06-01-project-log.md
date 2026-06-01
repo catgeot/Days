@@ -9,5 +9,6 @@
 - **intent**: `ENTRY_PROOF_PATTERNS` — 「항공 증빙」이 `book_flight`로 오탐하지 않음 · visa+fees leg 병렬 · **st-helena** 숙소·입국 증빙 칩 QA Pass.
 - **플래너 포커스**: `placePlannerFocus.js` · `/place/:slug/planner#planner-prep-visa` 등 · `PlannerTab` hash 스크롤 · `routeLocation` prop 충돌 수정.
 - **L2 prep 재구성(§2.14)**: 비자·입국·서류 1칩(「비자, 입국 필수 준비…」→ `#planner-prep`) · 항공권/숙소/렌터카·픽업 3칩 · `chipId` 플래너 포커스 · checklist 상시·앵커 확장 — [handoff §2.14](2026-05-22-ai-chat-booking-cta-handoff.md).
-- **플래너 관리자 강제 재실행**: `PlannerTab` 하단 **Force Update Toolkit** 복구 — MOONi FAB·scroll-top에 가려지던 모바일 `pb-24` · `handleRemoteUpdate`→`update-place-toolkit` · `#planner-admin-force-update` (DB만 재조회는 상단 「저장된 데이터 새로고침」).
+- **플래너 관리자 강제 재실행**: `PlannerTab` 하단 **Force Update Toolkit** 복구 — MOONi FAB·scroll-top에 가려지던 모바일 `pb-24` · `handleRemoteUpdate`→`update-place-toolkit` · `#planner-admin-force-update` (DB만 재조회는 상단 「저장된 데이터 새로고침」). `fe78088`
+- **공항 픽업 링크**: `getKlookAirportTransferUrl` SSOT — `airport_transfer` 카드 「공항 픽업 검색」이 렌터카 홈과 동일 URL이던 버그 수정 · PreTravelChecklist·MOONi CTA와 `/ko/airport-transfers/` 통일 · st-helena QA Pass · `c4b4249` · **main push 완료** (`32c0008..c4b4249`).
 - **다음**: gateo §10-F H·I 합의 · releaseNotes(본 묶음) 합의 시.
