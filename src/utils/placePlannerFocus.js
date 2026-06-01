@@ -130,6 +130,76 @@ export function getMooniPlannerCtaLabel({
   }
 }
 
+/** MOONi 「교통 · 티켓」 항공 CTA 아래 — 플래너 항공권 카드(경로·팁 요약) 연결 */
+export function getMooniPlannerFlightGuideLabel(destinationName = '') {
+  const place = String(destinationName ?? '').trim() || '여행지';
+  return `플래너에서 ${place} 항공권 안내 보기`;
+}
+
+/**
+ * MOONi 「렌터카·픽업」 칩 — 플래너 교통 섹션 2링크(공항 이동 + 교통·패스).
+ *
+ * @param {Record<string, unknown> | null | undefined} essentialGuide
+ * @param {string} [destinationName]
+ * @returns {Array<{ focusId: string, label: string }>}
+ */
+export function resolveMooniTransportPlannerLinks(
+  essentialGuide = null,
+  destinationName = ''
+) {
+  const place = String(destinationName ?? '').trim() || '여행지';
+  const cats = /** @type {{ airport_transfer?: unknown }} */ (
+    essentialGuide?.categories ?? {}
+  );
+  /** @type {Array<{ focusId: string, label: string }>} */
+  const links = [];
+
+  if (cats?.airport_transfer) {
+    links.push({
+      focusId: PLANNER_FOCUS_ID.ARRIVAL_TRANSFER,
+      label: `플래너에서 ${place} 공항→목적지 이동 보기`,
+    });
+  } else {
+    links.push({
+      focusId: PLANNER_FOCUS_ID.RENTAL_PICKUP,
+      label: `플래너에서 ${place} 렌터카·픽업 기준 보기`,
+    });
+  }
+
+  links.push({
+    focusId: PLANNER_FOCUS_ID.LOCAL_TRANSPORT,
+    label: `플래너에서 ${place} 교통·패스 안내 보기`,
+  });
+
+  return links;
+}
+
+/**
+ * @param {string | null | undefined} chipId
+ * @param {string} [userText]
+ * @param {string | null | undefined} [plannerFocus]
+ */
+export function isMooniTransportPlannerChip(chipId, userText = '', plannerFocus = null) {
+  if (String(chipId ?? '').trim() === 'prep_transport') return true;
+  if (
+    plannerFocus === PLANNER_FOCUS_ID.ARRIVAL_TRANSFER ||
+    plannerFocus === PLANNER_FOCUS_ID.LOCAL_TRANSPORT ||
+    plannerFocus === PLANNER_FOCUS_ID.RENTAL_PICKUP ||
+    plannerFocus === PLANNER_FOCUS_ID.ARRIVAL
+  ) {
+    return true;
+  }
+  return /현지\s*교통|렌터카|픽업|공항\s*픽/.test(String(userText ?? ''));
+}
+
+/**
+ * MOONi 항공 CTA → 플래너 스크롤 앵커 (항공권 ToolkitCard).
+ * @returns {string}
+ */
+export function resolvePlannerFlightSectionFocus() {
+  return PLANNER_FOCUS_ID.PREP_FLIGHT;
+}
+
 /**
  * MOONi·채팅 CTA — 발화에 맞는 플래너 앵커.
  *

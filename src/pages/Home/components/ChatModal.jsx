@@ -935,6 +935,11 @@ const ChatModal = ({
                         plannerFocus={msg.bookingMeta?.plannerFocus}
                         chipId={msg.bookingMeta?.chipId}
                         userText={priorUserText}
+                        essentialGuide={
+                          (msg.bookingMeta?.slug ?? boundDestinationSlug) === effectiveQuickReplySlug
+                            ? topicEssentialGuide
+                            : null
+                        }
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}

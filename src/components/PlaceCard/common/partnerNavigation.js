@@ -25,16 +25,40 @@ export function buildTripcomPlannerNavigationUrl(location, options = {}) {
     });
 }
 
+/**
+ * Trip.com 항공 검색 모달·강제 위젯용 ad 크기.
+ * 모바일 UA → 320×480 · 데스크톱 → 900×200 (플래너 배너와 동일).
+ */
+export function getTripcomFlightAdForModal() {
+    if (isMobileDevice() && TRIPCOM_FLIGHT_AD.mobileAdId) {
+        return {
+            adId: TRIPCOM_FLIGHT_AD.mobileAdId,
+            width: TRIPCOM_FLIGHT_AD.mobileWidth,
+            height: TRIPCOM_FLIGHT_AD.mobileHeight,
+            tracking: 'planner-flight-mobile',
+        };
+    }
+
+    return {
+        adId: TRIPCOM_FLIGHT_AD.adId,
+        width: TRIPCOM_FLIGHT_AD.width,
+        height: TRIPCOM_FLIGHT_AD.height,
+        tracking: null,
+    };
+}
+
 /** 모바일 전체 화면 모달용 ad iframe src (외부 Trip.com 페이지 이동 대신 사용) */
 export function buildTripcomPlannerFlightModalSrc(location, options = {}) {
     const useModal = options.forceModal === true || shouldUseTripcomFlightSearchModal();
     if (!useModal) return null;
 
+    const { adId, tracking } = getTripcomFlightAdForModal();
+
     return buildTripcomPlannerFlightUrl(location, {
         ...options,
         mode: 'ad',
-        adId: TRIPCOM_FLIGHT_AD.mobileAdId,
-        tracking: options.tracking ?? 'planner-flight-mobile',
+        adId,
+        tracking: options.tracking ?? tracking ?? undefined,
     });
 }
 

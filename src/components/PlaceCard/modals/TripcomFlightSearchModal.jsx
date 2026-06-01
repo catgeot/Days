@@ -4,10 +4,17 @@ import { X, Plane } from 'lucide-react';
 import { TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
 
 /**
- * 모바일 Trip.com 항공 검색 전체 화면 — partners/ad iframe을 뷰포트 중앙에 배치.
- * Trip.com 외부 ad 페이지는 위젯이 좌측으로 쏠리는 경우가 있어 앱 내 모달로 대체한다.
+ * Trip.com 항공 검색 모달 — partners/ad iframe을 뷰포트 중앙에 배치.
+ * 모바일 320×480 · 데스크톱 900×200. Trip.com 외부 ad 페이지는 위젯이 좌측으로
+ * 쏠리는 경우가 있어 앱 내 모달로 대체한다.
  */
-const TripcomFlightSearchModal = ({ iframeSrc, arrivalIata, onClose }) => {
+const TripcomFlightSearchModal = ({
+    iframeSrc,
+    arrivalIata,
+    bannerWidth = TRIPCOM_FLIGHT_AD.mobileWidth,
+    bannerHeight = TRIPCOM_FLIGHT_AD.mobileHeight,
+    onClose,
+}) => {
     const [loadedSrc, setLoadedSrc] = useState('');
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -34,8 +41,9 @@ const TripcomFlightSearchModal = ({ iframeSrc, arrivalIata, onClose }) => {
 
     if (!iframeSrc) return null;
 
-    const bannerW = TRIPCOM_FLIGHT_AD.mobileWidth;
-    const bannerH = TRIPCOM_FLIGHT_AD.mobileHeight;
+    const bannerW = bannerWidth;
+    const bannerH = bannerHeight;
+    const isDesktopBanner = bannerW === TRIPCOM_FLIGHT_AD.width;
 
     const modal = (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] animate-fade-in">
@@ -53,7 +61,11 @@ const TripcomFlightSearchModal = ({ iframeSrc, arrivalIata, onClose }) => {
                         ? `Trip.com 항공권 검색 — ICN에서 ${arrivalIata}까지`
                         : 'Trip.com 항공권 검색'
                 }
-                className="relative z-10 flex max-h-[min(560px,calc(100dvh-2rem))] w-[min(320px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl bg-white shadow-[0_0_50px_rgba(0,0,0,0.45)] animate-scale-up"
+                className={`relative z-10 flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_0_50px_rgba(0,0,0,0.45)] animate-scale-up ${
+                    isDesktopBanner
+                        ? 'max-h-[min(280px,calc(100dvh-2rem))] w-[min(900px,calc(100vw-2rem))]'
+                        : 'max-h-[min(560px,calc(100dvh-2rem))] w-[min(320px,calc(100vw-2rem))]'
+                }`}
             >
                 <div className="relative shrink-0 border-b border-gray-100 bg-gradient-to-r from-sky-50 to-blue-50 px-3 py-2.5">
                     <span className="pointer-events-none absolute right-12 top-2 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">
@@ -100,7 +112,9 @@ const TripcomFlightSearchModal = ({ iframeSrc, arrivalIata, onClose }) => {
                             style={{
                                 width: bannerW,
                                 height: bannerH,
-                                maxHeight: 'calc(100dvh - 6.5rem)',
+                                maxHeight: isDesktopBanner
+                                    ? 'calc(100dvh - 5rem)'
+                                    : 'calc(100dvh - 6.5rem)',
                             }}
                             scrolling="no"
                             referrerPolicy="no-referrer"

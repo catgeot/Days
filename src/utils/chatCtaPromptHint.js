@@ -48,11 +48,19 @@ export function getChatCtaPromptHint({
   ];
 
   if (!booking.show) {
-    lines.push(
-      '- 예약·준비 링크 버튼 섹션이 없을 수 있다.',
-      '- 채팅 헤더 「📋 플래너 보기」만 안내한다.',
-      '- 존재하지 않는 버튼을 언급하지 않는다.'
-    );
+    if (/현지\s*교통|렌터카|픽업|공항\s*픽/.test(userText)) {
+      const place = String(destinationName ?? '').trim() || '여행지';
+      lines.push(
+        `- 「플래너에서 ${place} 공항→목적지 이동 보기」(cyan) · 「플래너에서 ${place} 교통·패스 안내 보기」(회색) — 각각 해당 플래너 카드로 스크롤`,
+        '- 전체 플래너: 헤더 「📋 플래너 보기」'
+      );
+    } else {
+      lines.push(
+        '- 예약·준비 링크 버튼 섹션이 없을 수 있다.',
+        '- 채팅 헤더 「📋 플래너 보기」만 안내한다.',
+        '- 존재하지 않는 버튼을 언급하지 않는다.'
+      );
+    }
     return lines.join('\n');
   }
 
@@ -68,31 +76,38 @@ export function getChatCtaPromptHint({
     lines.push(
       '- 「교통 · 티켓」 섹션 — 항공·페리 등 예약 버튼(항공은 **검색 위젯**으로 열림, Trip.com 직접 이동 아님)'
     );
+    if (booking.actions.some((a) => a.provider === 'trip_com')) {
+      const place = String(destinationName ?? '').trim() || '여행지';
+      lines.push(
+        `- 항공 버튼 아래 「플래너에서 ${place} 항공권 안내 보기」(cyan) — 플래너 「항공권」 카드(경로·팁 요약)로 스크롤`
+      );
+    }
   }
   if (!hasTransport) {
     lines.push('- 이번 턴에는 「교통 · 티켓」 섹션이 없다. 항공권 예약 버튼을 언급하지 않는다.');
   }
   if (hasPrep && !hasTransport) {
     const focus = resolvePlannerFocusFromUserText(userText, { essentialGuide });
-    const plannerScrollTarget =
-      focus === PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST
-        ? '플래너 상단 「출발 전 필수 준비사항」 체크리스트(항공·숙소·픽업)'
-        : focus === PLANNER_FOCUS_ID.PREP_ACCOMMODATION
-          ? '플래너 「숙박 지역 추천」 카드'
-          : focus === PLANNER_FOCUS_ID.PREP_FLIGHT
-            ? '플래너 「항공권」 카드'
-            : focus === PLANNER_FOCUS_ID.ARRIVAL_TRANSFER
-              ? '플래너 「공항 → 항구/목적지 이동」 카드'
-              : focus === PLANNER_FOCUS_ID.LOCAL_TRANSPORT
-                ? '플래너 「교통 및 패스」 카드'
-                : focus === PLANNER_FOCUS_ID.RENTAL_PICKUP
-                  ? '플래너 렌터카·픽업 안내'
-                  : focus === PLANNER_FOCUS_ID.PREP_SAFETY
-                    ? '플래너 「안전 및 보험」 카드'
-                    : '플래너 「비자 및 서류」·「출발 전 필수 준비」 섹션';
-    lines.push(
-      `- 「플래너에서 입국·증빙·준비 확인」 버튼(전폭, cyan) — ${plannerScrollTarget}로 스크롤`
-    );
+    if (focus === PLANNER_FOCUS_ID.ARRIVAL_TRANSFER || focus === PLANNER_FOCUS_ID.LOCAL_TRANSPORT || focus === PLANNER_FOCUS_ID.RENTAL_PICKUP) {
+      const place = String(destinationName ?? '').trim() || '여행지';
+      lines.push(
+        `- 「플래너에서 ${place} 공항→목적지 이동 보기」(cyan) · 「플래너에서 ${place} 교통·패스 안내 보기」(회색) — 각각 해당 플래너 카드로 스크롤`
+      );
+    } else {
+      const plannerScrollTarget =
+        focus === PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST
+          ? '플래너 상단 「출발 전 필수 준비사항」 체크리스트(항공·숙소·픽업)'
+          : focus === PLANNER_FOCUS_ID.PREP_ACCOMMODATION
+            ? '플래너 「숙박 지역 추천」 카드'
+            : focus === PLANNER_FOCUS_ID.PREP_FLIGHT
+              ? '플래너 「항공권」 카드'
+              : focus === PLANNER_FOCUS_ID.PREP_SAFETY
+                ? '플래너 「안전 및 보험」 카드'
+                : '플래너 「비자 및 서류」·「출발 전 필수 준비」 섹션';
+      lines.push(
+        `- 「플래너에서 입국·증빙·준비 확인」 버튼(전폭, cyan) — ${plannerScrollTarget}로 스크롤`
+      );
+    }
   }
   lines.push(
     '- 전체 일정·항공·숙소 예약: 헤더 「📋 플래너 보기」',

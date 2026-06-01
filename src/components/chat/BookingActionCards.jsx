@@ -10,9 +10,12 @@ import { normalizePlacePlannerPath } from '../../utils/placePlannerPath';
 import {
   buildPlacePlannerPathWithFocus,
   getMooniPlannerCtaLabel,
+  getMooniPlannerFlightGuideLabel,
   PLANNER_FOCUS_ID,
+  resolvePlannerFlightSectionFocus,
 } from '../../utils/placePlannerFocus';
 import { useTryOpenTripcomFlightSearch } from '../PlaceCard/tabs/planner/TripcomFlightSearchContext';
+import MooniTransportPlannerLinks from './MooniTransportPlannerLinks';
 
 const TRANSPORT_PROVIDERS = new Set([
   'trip_com',
@@ -98,6 +101,35 @@ const BookingActionCards = ({
     'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-2.5 text-xs font-bold text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/50 transition-colors break-keep pointer-events-auto';
 
   const flightLocation = slug ? { slug, name: destinationName || slug } : null;
+  const flightPlannerPath = slug
+    ? buildPlacePlannerPathWithFocus(slug, resolvePlannerFlightSectionFocus())
+    : null;
+
+  const renderFlightPlannerLink = () => {
+    if (!flightPlannerPath) return null;
+
+    const label = getMooniPlannerFlightGuideLabel(destinationName);
+
+    if (onPlannerNavigate) {
+      return (
+        <button
+          type="button"
+          onClick={() => onPlannerNavigate(flightPlannerPath)}
+          className={plannerButtonClass}
+        >
+          <MapPin size={14} className="shrink-0 opacity-90" />
+          {label}
+        </button>
+      );
+    }
+
+    return (
+      <Link to={flightPlannerPath} className={plannerButtonClass}>
+        <MapPin size={14} className="shrink-0 opacity-90" />
+        {label}
+      </Link>
+    );
+  };
 
   const renderPlannerPrimary = () => {
     if (!plannerPath || !onPlannerNavigate) return null;
@@ -163,6 +195,8 @@ const BookingActionCards = ({
             ) : null}
           </button>
         ))}
+
+        {tripActions.length > 0 ? renderFlightPlannerLink() : null}
 
         {twelveGoActions.map((action, idx) => (
           <TwelveGoSearchWidget
@@ -230,12 +264,27 @@ const BookingActionCards = ({
   };
 
   const showPlannerPrimary =
-    plannerPath && onPlannerNavigate && prepActions.length > 0 && !transportActions.length;
+    plannerPath &&
+    onPlannerNavigate &&
+    prepActions.length > 0 &&
+    !transportActions.length &&
+    chipId !== 'prep_transport';
+
+  const showTransportPlannerLinks = chipId === 'prep_transport' && slug;
 
   return (
     <div className={`mt-3 space-y-2 w-full ${className}`}>
       {renderTransportSection()}
       {renderPrepSection()}
+      {showTransportPlannerLinks ? (
+        <MooniTransportPlannerLinks
+          slug={slug}
+          destinationName={destinationName}
+          essentialGuide={essentialGuide}
+          onPlannerNavigate={onPlannerNavigate}
+          className="mt-0"
+        />
+      ) : null}
       {showPlannerPrimary ? renderPlannerPrimary() : null}
 
       {plannerPath && !showPlannerPrimary && (

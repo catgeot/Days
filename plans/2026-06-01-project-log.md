@@ -14,3 +14,7 @@
 - **다음**: gateo §10-F H·I 합의 · releaseNotes(본 묶음) 합의 시.
 - **MOONi 칩 프롬프트**: `mooniChipPrompts.js` — L2 칩별 답변 지침·SSOT 주입 · 버뮤다 `bannerNote` overrides.
 - **MOONi CTA 라벨·항공 위젯**: `getMooniPlannerCtaLabel` — 주제별 「{여행지} 항공권/숙소/교통…」 · 채팅 Trip CTA → 검색 위젯 모달(`forceModal`) · 출발=도착 IATA 가드 · [handoff §2.15](2026-05-22-ai-chat-booking-cta-handoff.md).
+- **항공 위젯 데스크톱 분기**: `getTripcomFlightAdForModal` — 채팅·모달 `forceModal` 시 데스크톱 900×200(`S17104971`) · 모바일 320×480 유지 · `TripcomFlightSearchModal` 크기 prop.
+- **MOONi 교통·티켓 → 플래너 항공**: Trip CTA 아래 `getMooniPlannerFlightGuideLabel` · `#planner-prep-flight` 스크롤 · `chatCtaPromptHint` 반영.
+- **MOONi 렌터카·픽업 2링크**: `MooniTransportPlannerLinks` — `#planner-arrival-transfer`(또는 `#planner-rental-pickup`) + `#planner-local-transport` · `BookingActionCards`·`MooniPlannerFollowUp`.
+- **문서**: handoff §2.15·`.ai-context` 갱신 — QA Pass.

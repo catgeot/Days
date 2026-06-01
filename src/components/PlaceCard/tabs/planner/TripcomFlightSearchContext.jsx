@@ -3,6 +3,7 @@ import { getPlannerFlightArrivalIata } from '../../../../utils/affiliate';
 import TripcomFlightSearchModal from '../../modals/TripcomFlightSearchModal';
 import {
     buildTripcomPlannerFlightModalSrc,
+    getTripcomFlightAdForModal,
     shouldUseTripcomFlightSearchModal,
 } from '../../common/partnerNavigation';
 
@@ -25,8 +26,9 @@ export function TripcomFlightSearchProvider({ children }) {
         const arrivalIata = getPlannerFlightArrivalIata(location, {
             essentialGuide: options.essentialGuide,
         });
+        const { width: bannerWidth, height: bannerHeight } = getTripcomFlightAdForModal();
 
-        setModalState({ iframeSrc, arrivalIata });
+        setModalState({ iframeSrc, arrivalIata, bannerWidth, bannerHeight });
         return true;
     }, []);
 
@@ -45,6 +47,8 @@ export function TripcomFlightSearchProvider({ children }) {
                 <TripcomFlightSearchModal
                     iframeSrc={modalState.iframeSrc}
                     arrivalIata={modalState.arrivalIata}
+                    bannerWidth={modalState.bannerWidth}
+                    bannerHeight={modalState.bannerHeight}
                     onClose={closeFlightSearch}
                 />
             ) : null}
