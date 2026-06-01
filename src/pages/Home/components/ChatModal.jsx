@@ -47,6 +47,8 @@ import {
   ACCESS_DEPARTURE_INPUT_PLACEHOLDER,
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
+import { getMooniChipPromptHint } from '../lib/mooniChipPrompts';
+import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 
 const ChatModal = ({
   isOpen,
@@ -528,7 +530,18 @@ const ChatModal = ({
           : destForPrompt);
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
 
+      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
+
       const chatCtaHint = getChatCtaPromptHint({
+        userText: cleanText,
+        slug,
+        destinationName: destName,
+        chatHistory: priorTurns,
+        essentialGuide,
+      });
+
+      const chipPromptHint = getMooniChipPromptHint({
+        chipId,
         userText: cleanText,
         slug,
         destinationName: destName,
@@ -539,6 +552,7 @@ const ChatModal = ({
       const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
         isMooni: Boolean(placeBound) || destForPrompt === 'MOONi',
         boundPlaceName: placeBound?.name ?? null,
+        chipPromptHint,
         chatCtaHint,
       });
       const chatModelId = resolveMooniChatModel({
@@ -574,7 +588,6 @@ const ChatModal = ({
       const { text: displayReply, hadBracketLinks } = sanitizeMooniModelReply(aiReply, {
         stripPhantomTicketMention: !hasTransportCta,
       });
-      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
       const plannerFocus = resolvePlannerFocusFromUserText(cleanText, {
         essentialGuide,
         chipId,
@@ -602,7 +615,7 @@ const ChatModal = ({
           plannerFollowUp,
           bookingMeta:
             booking.show || plannerFollowUp
-              ? { slug: booking.slug ?? slug, plannerUrl, plannerFocus }
+              ? { slug: booking.slug ?? slug, plannerUrl, plannerFocus, chipId: chipId ?? null }
               : null,
         },
       ];
@@ -685,6 +698,7 @@ const ChatModal = ({
   if (!isOpen) return null;
 
   return (
+    <TripcomFlightSearchProvider>
     <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in">
       <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none border border-gray-700 max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all">
 
@@ -901,8 +915,16 @@ const ChatModal = ({
                               : null,
                         })}
                         slug={msg.bookingMeta?.slug}
+                        destinationName={msgDestinationName}
+                        essentialGuide={
+                          (msg.bookingMeta?.slug ?? boundDestinationSlug) === effectiveQuickReplySlug
+                            ? topicEssentialGuide
+                            : null
+                        }
                         plannerUrl={msg.bookingMeta?.plannerUrl}
                         plannerFocus={msg.bookingMeta?.plannerFocus}
+                        chipId={msg.bookingMeta?.chipId}
+                        userText={priorUserText}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}
@@ -910,6 +932,9 @@ const ChatModal = ({
                       <MooniPlannerFollowUp
                         destinationName={msgDestinationName}
                         plannerUrl={msg.bookingMeta?.plannerUrl}
+                        plannerFocus={msg.bookingMeta?.plannerFocus}
+                        chipId={msg.bookingMeta?.chipId}
+                        userText={priorUserText}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}
@@ -999,6 +1024,7 @@ const ChatModal = ({
         </div>
       </div>
     </div>
+    </TripcomFlightSearchProvider>
   );
 };
 

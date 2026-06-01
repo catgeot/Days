@@ -432,12 +432,18 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     trip_sub3: sub3,
   });
 
-  const depart = departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+  let depart = String(departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT)
+    .trim()
+    .toUpperCase();
+  const arriveCode = arrival ? String(arrival).trim().toUpperCase() : null;
+  if (arriveCode && depart === arriveCode) {
+    depart = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+  }
   if (depart) {
     params.set('dAirportCode', depart);
   }
-  if (arrival) {
-    params.set('aAirportCode', arrival);
+  if (arriveCode) {
+    params.set('aAirportCode', arriveCode);
   }
 
   if (mode === 'ad') {

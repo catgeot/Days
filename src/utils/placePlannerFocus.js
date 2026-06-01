@@ -88,6 +88,49 @@ export function resolvePlannerFocusFromPrepChipId(chipId, essentialGuide = null)
 }
 
 /**
+ * MOONi 플래너 follow-up·prep CTA 버튼 라벨 — 여행지명 + 주제별 문구.
+ *
+ * @param {{
+ *   destinationName?: string,
+ *   plannerFocus?: string | null,
+ *   chipId?: string | null,
+ *   userText?: string,
+ * }} params
+ * @returns {string}
+ */
+export function getMooniPlannerCtaLabel({
+  destinationName = '',
+  plannerFocus = null,
+  chipId = null,
+  userText = '',
+} = {}) {
+  const place = String(destinationName ?? '').trim() || '여행지';
+  const focus =
+    plannerFocus ||
+    resolvePlannerFocusFromPrepChipId(chipId) ||
+    resolvePlannerFocusFromUserText(userText);
+
+  switch (focus) {
+    case PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST:
+    case PLANNER_FOCUS_ID.PREP_FLIGHT:
+      return `${place} 항공권 예약 정보`;
+    case PLANNER_FOCUS_ID.PREP_ACCOMMODATION:
+      return `${place} 숙소 예약`;
+    case PLANNER_FOCUS_ID.ARRIVAL_TRANSFER:
+    case PLANNER_FOCUS_ID.LOCAL_TRANSPORT:
+    case PLANNER_FOCUS_ID.RENTAL_PICKUP:
+    case PLANNER_FOCUS_ID.ARRIVAL:
+      return `${place} 현지 교통 안내`;
+    case PLANNER_FOCUS_ID.PREP_VISA:
+    case PLANNER_FOCUS_ID.PREP_SAFETY:
+    case PLANNER_FOCUS_ID.PREP_SECTION:
+      return `${place} 비자·입국 정보`;
+    default:
+      return `${place} 여행 정보`;
+  }
+}
+
+/**
  * MOONi·채팅 CTA — 발화에 맞는 플래너 앵커.
  *
  * @param {string} userText

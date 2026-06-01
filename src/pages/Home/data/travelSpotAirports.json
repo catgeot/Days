@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-05-26T20:29:27.504Z",
+    "generatedAt": "2026-06-01T12:08:07.059Z",
     "spotCount": 269,
     "placeIdCount": 337,
     "stats": {
-      "override": 124,
+      "override": 125,
       "curatedPreserved": 2,
-      "toolkitSync": 143,
+      "toolkitSync": 142,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -89,9 +89,10 @@
       ],
       "preferredLinkIata": "BDA",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "버뮤다 최종 도착은 버뮤다 국제공항(BDA)입니다. 한국에서는 인천(ICN) 직항이 없어 보통 미국 동부(뉴욕 JFK·보스턴 BOS·애틀랜타 ATL·마이애미 MIA 등) 또는 영국·유럽(런던 LHR·파리 CDG 등) 경유 후 BDA로 연결되는 일정이 일반적입니다. 미국 경유 시 ESTA·캐나다·영국 경유 시 해당 입국·트랜짓 비자 규정을 반드시 확인하세요. 항공권 검색 시 도착지 코드 BDA를 입력하고, 티켓의 최종 도착 공항을 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "rationale": "버뮤다 국제공항(L.F. Wade) — 한국 직항 없음"
     },
     "azores": {
       "primaryIatas": [

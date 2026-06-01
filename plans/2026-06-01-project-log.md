@@ -12,3 +12,5 @@
 - **플래너 관리자 강제 재실행**: `PlannerTab` 하단 **Force Update Toolkit** 복구 — MOONi FAB·scroll-top에 가려지던 모바일 `pb-24` · `handleRemoteUpdate`→`update-place-toolkit` · `#planner-admin-force-update` (DB만 재조회는 상단 「저장된 데이터 새로고침」). `fe78088`
 - **공항 픽업 링크**: `getKlookAirportTransferUrl` SSOT — `airport_transfer` 카드 「공항 픽업 검색」이 렌터카 홈과 동일 URL이던 버그 수정 · PreTravelChecklist·MOONi CTA와 `/ko/airport-transfers/` 통일 · st-helena QA Pass · `c4b4249` · **main push 완료** (`32c0008..c4b4249`).
 - **다음**: gateo §10-F H·I 합의 · releaseNotes(본 묶음) 합의 시.
+- **MOONi 칩 프롬프트**: `mooniChipPrompts.js` — L2 칩별 답변 지침·SSOT 주입 · 버뮤다 `bannerNote` overrides.
+- **MOONi CTA 라벨·항공 위젯**: `getMooniPlannerCtaLabel` — 주제별 「{여행지} 항공권/숙소/교통…」 · 채팅 Trip CTA → 검색 위젯 모달(`forceModal`) · 출발=도착 IATA 가드 · [handoff §2.15](2026-05-22-ai-chat-booking-cta-handoff.md).

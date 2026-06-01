@@ -12,7 +12,7 @@ import {
   getDestinationBookingProfile,
   resolveBookingLegsForIntent,
 } from './destinationBookingProfile.js';
-import { resolveDepartureIataFromChat } from './resolveDepartureIataFromChat.js';
+import { resolveDepartureFromChat } from './resolveDepartureIataFromChat.js';
 import {
   resolveBookingActions as resolveLegacyBookingActions,
   resolveFerryActions,
@@ -20,6 +20,7 @@ import {
 } from './bookingIntentResolver.js';
 import { resolveChatPrepActions } from './chatPrepBookingLinks.js';
 import { buildPlacePlannerPath } from './placePlannerPath.js';
+import { getMooniPlannerCtaLabel } from './placePlannerFocus.js';
 
 const HUB_BY_IATA = new Map(
   RENTAL_AIRPORT_HUBS.map((hub) => [hub.iata.toUpperCase(), hub.officialKo])
@@ -47,6 +48,12 @@ export function resolveChatFlightArrivalIata({
     resolvedProfile.arrivalIata ||
     null
   );
+}
+
+/** 채팅 Trip CTA 버튼 라벨 — 여행지명 + 주제 */
+export function formatChatFlightCtaLabel(destinationName) {
+  const place = String(destinationName ?? '').trim() || '항공권';
+  return `${place} 항공권 예약 정보`;
 }
 
 /** Trip URL(`buildTripcomPlannerFlightUrl`)과 동일 SSOT — 출발 미언급 시 ICN */
@@ -83,20 +90,18 @@ export function refreshStoredBookingActionLabels(
   if (!actions?.length) return actions;
 
   const profile = getDestinationBookingProfile(slug);
-  const departureIata = resolveDepartureIataFromChat(userText, chatHistory);
   const arrivalIata = resolveChatFlightArrivalIata({
     slug,
     destinationName,
     essentialGuide,
     profile,
   });
+  const departureIata = resolveDepartureFromChat(userText, chatHistory, {
+    excludeIata: arrivalIata,
+  })?.iata;
   if (!arrivalIata) return actions;
 
-  const nextLabel = formatChatFlightLabel({
-    departureIata,
-    arrivalIata,
-    destinationName,
-  });
+  const nextLabel = formatChatFlightCtaLabel(destinationName);
 
   return actions.map((action) => {
     if (action.provider !== 'trip_com' || action.type !== 'trip_flight') {
@@ -163,15 +168,18 @@ export function resolveChatBookingActions(params) {
   const actions = [];
 
   const locationPayload = { slug, name: destinationName };
-  const departureIata = resolveDepartureIataFromChat(userText, chatHistory);
+  const arrivalIataForDepart = resolveChatFlightArrivalIata({
+    slug,
+    destinationName,
+    essentialGuide,
+    profile,
+  });
+  const departureIata = resolveDepartureFromChat(userText, chatHistory, {
+    excludeIata: arrivalIataForDepart,
+  })?.iata;
 
   if (legs.includes('flight')) {
-    const arrivalIata = resolveChatFlightArrivalIata({
-      slug,
-      destinationName,
-      essentialGuide,
-      profile,
-    });
+    const arrivalIata = arrivalIataForDepart;
     const flightUrl = buildTripcomPlannerFlightUrl(locationPayload, {
       essentialGuide,
       tracking: 'chat-flight',
@@ -180,13 +188,16 @@ export function resolveChatBookingActions(params) {
     if (flightUrl) {
       actions.push({
         type: 'trip_flight',
-        label: formatChatFlightLabel({
+        label: formatChatFlightCtaLabel(destinationName),
+        url: flightUrl,
+        provider: 'trip_com',
+        openFlightWidget: true,
+        departureIata,
+        routeHint: formatChatFlightLabel({
           departureIata,
           arrivalIata,
           destinationName,
         }),
-        url: flightUrl,
-        provider: 'trip_com',
       });
     }
   }

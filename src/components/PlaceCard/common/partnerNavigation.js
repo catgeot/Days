@@ -27,7 +27,8 @@ export function buildTripcomPlannerNavigationUrl(location, options = {}) {
 
 /** 모바일 전체 화면 모달용 ad iframe src (외부 Trip.com 페이지 이동 대신 사용) */
 export function buildTripcomPlannerFlightModalSrc(location, options = {}) {
-    if (!shouldUseTripcomFlightSearchModal()) return null;
+    const useModal = options.forceModal === true || shouldUseTripcomFlightSearchModal();
+    if (!useModal) return null;
 
     return buildTripcomPlannerFlightUrl(location, {
         ...options,

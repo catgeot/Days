@@ -65,7 +65,9 @@ export function getChatCtaPromptHint({
     lines.push('- 「출발 전 준비」(amber 박스) 안의 버튼 — 비자·공식·입국 준비 링크');
   }
   if (hasTransport) {
-    lines.push('- 「교통 · 티켓」 섹션 — 항공·페리 등 예약 검색 버튼');
+    lines.push(
+      '- 「교통 · 티켓」 섹션 — 항공·페리 등 예약 버튼(항공은 **검색 위젯**으로 열림, Trip.com 직접 이동 아님)'
+    );
   }
   if (!hasTransport) {
     lines.push('- 이번 턴에는 「교통 · 티켓」 섹션이 없다. 항공권 예약 버튼을 언급하지 않는다.');

@@ -19,7 +19,7 @@ const BOOKING_RULES = `
 `;
 
 const MOONI_DESTINATION_RULES = `
-- 사용자가 여행 목적지를 정하면, 교통·예약·티켓 안내는 GATEO 플래너와 답변 아래 예약 버튼을 통해 확인하도록 안내한다.
+- 사용자가 여행 목적지를 정하면, 교통·예약·티켓은 답변 아래 버튼·플래너로 **이어질 수 있음**을 짧게 안내할 수 있다. 단, [이번 턴 주제] 지시가 있으면 **본문에 실질 정보를 먼저** 제공하고 UI 안내는 마지막 1~2문장으로만 한다.
 - 항공·페리 요금·소요시간·운항 여부를 단정하지 않는다.
 - 비자·관광세·픽업 비용·면제 여부는 단정하지 말고, 버튼·플래너에서 최신 정보를 확인하라고 안내한다.
 - 목적지가 아직 정해지지 않았으면 후보를 질문하고, 확정되기 전에는 특정 장소 예약을 단정하지 않는다.
@@ -78,8 +78,10 @@ export const getSystemPrompt = (personaType, locationName = "", options = {}) =>
     ? `\n- 사용자가 「이곳」「여기」라고 하면 반드시 「${boundPlaceName}」을(를) 가리킨다. 이전 대화의 출발지(서울·인천 등)와 혼동하지 않는다.`
     : '';
   const ctaHint = String(options.chatCtaHint ?? '').trim();
+  const chipHint = String(options.chipPromptHint ?? '').trim();
   const ctaContext = ctaHint ? `\n${ctaHint}` : '';
-  return config.system + mooniContext + locationContext + boundPlaceRules + ctaContext;
+  const chipContext = chipHint ? `\n${chipHint}` : '';
+  return config.system + mooniContext + locationContext + boundPlaceRules + chipContext + ctaContext;
 };
 
 /** 채팅 모달 최초 진입 시 보여줄 여행지 한줄 요약 (DB 캐시용) */

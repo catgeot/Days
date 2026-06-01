@@ -102,16 +102,29 @@ function matchDepartureInText(text) {
  * @param {Array<{ text?: string, departureLabel?: string, role?: string }>} [chatHistory]
  * @returns {{ iata: string, label: string } | null}
  */
-export function resolveDepartureFromChat(userText, chatHistory = []) {
+function isExcludedDeparture(match, excludeIata) {
+  if (!match || !excludeIata) return false;
+  return String(match.iata).trim().toUpperCase() === String(excludeIata).trim().toUpperCase();
+}
+
+/**
+ * @param {string} userText
+ * @param {Array<{ text?: string, departureLabel?: string, role?: string }>} [chatHistory]
+ * @param {{ excludeIata?: string | null }} [options]
+ * @returns {{ iata: string, label: string } | null}
+ */
+export function resolveDepartureFromChat(userText, chatHistory = [], options = {}) {
+  const excludeIata = options.excludeIata ?? null;
+
   const current = matchDepartureInText(userText);
-  if (current) return current;
+  if (current && !isExcludedDeparture(current, excludeIata)) return current;
 
   const slice = chatHistory.slice(-6).reverse();
   for (const m of slice) {
     const fromText = matchDepartureInText(m.text);
-    if (fromText) return fromText;
+    if (fromText && !isExcludedDeparture(fromText, excludeIata)) return fromText;
     const fromLabel = matchDepartureInText(m.departureLabel);
-    if (fromLabel) return fromLabel;
+    if (fromLabel && !isExcludedDeparture(fromLabel, excludeIata)) return fromLabel;
   }
 
   return null;
@@ -122,8 +135,8 @@ export function resolveDepartureFromChat(userText, chatHistory = []) {
  * @param {Array<{ text?: string, departureLabel?: string }>} [chatHistory]
  * @returns {string | null} IATA or null (미매칭 → Trip ICN 폴백)
  */
-export function resolveDepartureIataFromChat(userText, chatHistory = []) {
-  return resolveDepartureFromChat(userText, chatHistory)?.iata ?? null;
+export function resolveDepartureIataFromChat(userText, chatHistory = [], options = {}) {
+  return resolveDepartureFromChat(userText, chatHistory, options)?.iata ?? null;
 }
 
 /**

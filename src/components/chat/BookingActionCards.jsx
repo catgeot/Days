@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, MapPin } from 'lucide-react';
+import { ExternalLink, MapPin, Plane } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TwelveGoSearchWidget from '../PlaceCard/tabs/planner/components/TwelveGoSearchWidget';
 import {
@@ -7,7 +7,12 @@ import {
   getPartnerLinkTarget,
 } from '../PlaceCard/common/partnerNavigation';
 import { normalizePlacePlannerPath } from '../../utils/placePlannerPath';
-import { buildPlacePlannerPathWithFocus } from '../../utils/placePlannerFocus';
+import {
+  buildPlacePlannerPathWithFocus,
+  getMooniPlannerCtaLabel,
+  PLANNER_FOCUS_ID,
+} from '../../utils/placePlannerFocus';
+import { useTryOpenTripcomFlightSearch } from '../PlaceCard/tabs/planner/TripcomFlightSearchContext';
 
 const TRANSPORT_PROVIDERS = new Set([
   'trip_com',
@@ -36,10 +41,14 @@ const PREP_PROVIDER_STYLES = {
  * AI 채팅 하단 예약 CTA — §2.7 2섹션(교통·티켓 / 출발 전 준비).
  *
  * @param {{
- *   actions: Array<{ type: string, label: string, url: string, provider?: string }>,
+ *   actions: Array<{ type: string, label: string, url: string, provider?: string, openFlightWidget?: boolean, routeHint?: string }>,
  *   slug?: string | null,
+ *   destinationName?: string,
+ *   essentialGuide?: object | null,
  *   plannerUrl?: string | null,
  *   plannerFocus?: string | null,
+ *   chipId?: string | null,
+ *   userText?: string,
  *   onPlannerNavigate?: (url: string) => void,
  *   className?: string,
  * }} props
@@ -47,11 +56,17 @@ const PREP_PROVIDER_STYLES = {
 const BookingActionCards = ({
   actions = [],
   slug = null,
+  destinationName = '',
+  essentialGuide = null,
   plannerUrl = null,
   plannerFocus = null,
+  chipId = null,
+  userText = '',
   onPlannerNavigate = null,
   className = '',
 }) => {
+  const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
+
   if (!actions.length) return null;
 
   const linkTarget = getPartnerLinkTarget();
@@ -82,8 +97,16 @@ const BookingActionCards = ({
   const plannerButtonClass =
     'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-2.5 text-xs font-bold text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/50 transition-colors break-keep pointer-events-auto';
 
+  const flightLocation = slug ? { slug, name: destinationName || slug } : null;
+
   const renderPlannerPrimary = () => {
     if (!plannerPath || !onPlannerNavigate) return null;
+    const label = getMooniPlannerCtaLabel({
+      destinationName,
+      plannerFocus,
+      chipId,
+      userText,
+    });
     return (
       <button
         type="button"
@@ -91,7 +114,7 @@ const BookingActionCards = ({
         className={plannerButtonClass}
       >
         <MapPin size={14} className="shrink-0 opacity-90" />
-        플래너에서 입국·증빙·준비 확인
+        {label}
       </button>
     );
   };
@@ -106,16 +129,39 @@ const BookingActionCards = ({
         </p>
 
         {tripActions.map((action, idx) => (
-          <a
+          <button
             key={`trip-${idx}`}
-            href={action.url}
-            target={linkTarget}
-            rel={linkRel}
-            className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-xs font-bold break-keep transition-colors pointer-events-auto ${TRANSPORT_PROVIDER_STYLES.trip_com}`}
+            type="button"
+            onClick={(event) => {
+              if (!flightLocation) return;
+              const opened = tryOpenFlightSearch(flightLocation, {
+                essentialGuide,
+                tracking: 'chat-flight',
+                forceModal: true,
+                departureIata: action.departureIata,
+              });
+              if (opened) {
+                event.preventDefault();
+              } else if (plannerPath && onPlannerNavigate) {
+                event.preventDefault();
+                onPlannerNavigate(
+                  buildPlacePlannerPathWithFocus(slug, PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST) ??
+                    plannerPath
+                );
+              }
+            }}
+            className={`inline-flex w-full flex-col items-stretch gap-1 rounded-lg border px-3 py-2.5 text-xs font-bold break-keep transition-colors pointer-events-auto ${TRANSPORT_PROVIDER_STYLES.trip_com}`}
           >
-            {action.label}
-            <ExternalLink size={12} className="shrink-0 opacity-80" />
-          </a>
+            <span className="inline-flex w-full items-center justify-center gap-1.5">
+              <Plane size={14} className="shrink-0 opacity-90" />
+              {action.label}
+            </span>
+            {action.routeHint ? (
+              <span className="text-[10px] font-normal opacity-90 text-center">
+                {action.routeHint}
+              </span>
+            ) : null}
+          </button>
         ))}
 
         {twelveGoActions.map((action, idx) => (

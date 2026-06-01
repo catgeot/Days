@@ -554,7 +554,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     preferredLinkIata: 'MLA',
     confidence: 'high',
     rationale: '발레타(Valletta) 관문 MLA — Phase D-3 툴킷·승격 slug'
-  }
+  },
+  bermuda: {
+    primaryIatas: ['BDA'],
+    preferredLinkIata: 'BDA',
+    confidence: 'high',
+    rationale: '버뮤다 국제공항(L.F. Wade) — 한국 직항 없음',
+    bannerNote:
+      '버뮤다 최종 도착은 버뮤다 국제공항(BDA)입니다. 한국에서는 인천(ICN) 직항이 없어 보통 미국 동부(뉴욕 JFK·보스턴 BOS·애틀랜타 ATL·마이애미 MIA 등) 또는 영국·유럽(런던 LHR·파리 CDG 등) 경유 후 BDA로 연결되는 일정이 일반적입니다. 미국 경유 시 ESTA·캐나다·영국 경유 시 해당 입국·트랜짓 비자 규정을 반드시 확인하세요. 항공권 검색 시 도착지 코드 BDA를 입력하고, 티켓의 최종 도착 공항을 확인한 뒤 제휴 링크도 맞춰 주세요.',
+  },
 };
 
 /** travelSpots slug 없음 — placeIds-only (DB place_id 키) */
@@ -585,5 +593,5 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
     rationale: 'LIM 국제선 후 CUZ 국내선 — slug machu-picchu와 동일'
-  }
+  },
 };
