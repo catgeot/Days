@@ -17,6 +17,7 @@ export default function MooniQuickReplyChips({
   showPrompt = true,
   dock = false,
   backLabel = '← 주제 바꾸기',
+  parentL1Label = null,
 }) {
   const items = chips ?? [];
   if (!items.length) return null;
@@ -33,10 +34,15 @@ export default function MooniQuickReplyChips({
           type="button"
           disabled={disabled}
           onClick={onBack}
-          className="inline-flex items-center gap-0.5 px-0.5 py-1 text-[11px] font-medium text-gray-300 hover:text-white transition-colors disabled:opacity-50"
+          className="inline-flex flex-wrap items-center gap-x-1 gap-y-0.5 px-0.5 py-1 text-[11px] font-medium text-gray-300 hover:text-white transition-colors disabled:opacity-50 max-w-full text-left"
         >
-          <ChevronLeft size={14} className="shrink-0 -mr-0.5" aria-hidden />
-          {backLabelText}
+          <span className="inline-flex items-center gap-0.5 shrink-0">
+            <ChevronLeft size={14} className="shrink-0 -mr-0.5" aria-hidden />
+            {backLabelText}
+          </span>
+          {parentL1Label ? (
+            <span className="text-cyan-400/90 font-semibold break-keep">{parentL1Label}</span>
+          ) : null}
         </button>
       ) : null}
       {showPrompt && prompt ? (

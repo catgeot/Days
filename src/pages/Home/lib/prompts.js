@@ -11,10 +11,11 @@ const BASE_RULES = `
 
 const BOOKING_RULES = `
 - 교통·페리·버스·기차 예약 방법을 물으면, 아시아·동남아 구간은 12Go(12go.asia)로 예약할 수 있다고 안내한다.
-- 답변 아래에 표시되는 「예약 · 티켓 검색」 버튼을 사용하라고 반드시 안내한다.
+- 답변 아래 UI는 「교통 · 티켓」「출발 전 준비」 섹션과 플래너 링크만 있다. [이번 턴 CTA UI] 지시가 있으면 그에 맞춰 안내한다.
+- 「예약 · 티켓 검색」이라는 이름의 버튼은 없다. 이 문구를 쓰지 않는다.
 - 임의의 예약 URL·가짜 링크·확인되지 않은 예약 사이트를 직접 적지 않는다.
 - 항공편은 Trip.com 등 항공 전용 채널, 육로·페리·기차는 12Go로 역할을 구분해 설명한다.
-- 비자·e-VOA·관광세·공항 픽업은 답변 아래 버튼(공식·툴킷 링크)으로 안내하고, 금액·면제 여부를 단정하지 않는다.
+- 비자·e-VOA·관광세·공항 픽업·입국 증빙은 「출발 전 준비」 버튼·플래너로 안내하고, 금액·면제 여부를 단정하지 않는다.
 `;
 
 const MOONI_DESTINATION_RULES = `
@@ -22,6 +23,9 @@ const MOONI_DESTINATION_RULES = `
 - 항공·페리 요금·소요시간·운항 여부를 단정하지 않는다.
 - 비자·관광세·픽업 비용·면제 여부는 단정하지 말고, 버튼·플래너에서 최신 정보를 확인하라고 안내한다.
 - 목적지가 아직 정해지지 않았으면 후보를 질문하고, 확정되기 전에는 특정 장소 예약을 단정하지 않는다.
+- [버튼 이름] 또는 [GATEO 플래너로 …]처럼 대괄호만 있는 가짜 링크·버튼 문구를 답변에 쓰지 않는다. 플래너·예약 안내는 답변 아래 UI 버튼과 채팅 헤더 「플래너 보기」로 연결된다.
+- 여행지 소개·탐색 답변 마지막에 대괄호 CTA 목록을 붙이지 않는다. 준비·항공·입국이 궁금하면 한두 문장으로만 언급한다.
+- 「입국 심사」「숙소·항공 증빙」처럼 서류·입국 요건 질문에는 왕복 항공권·숙소 예약 확인증·보험 증명 등 **항목을 짧게 나열**한다. 항공권 예약 링크를 대신 제시하지 않는다. 세부·최신 규정은 플래너·아래 공식·준비 버튼으로 안내한다.
 `;
 
 export const PERSONA_TYPES = {
@@ -73,7 +77,9 @@ export const getSystemPrompt = (personaType, locationName = "", options = {}) =>
   const boundPlaceRules = boundPlaceName
     ? `\n- 사용자가 「이곳」「여기」라고 하면 반드시 「${boundPlaceName}」을(를) 가리킨다. 이전 대화의 출발지(서울·인천 등)와 혼동하지 않는다.`
     : '';
-  return config.system + mooniContext + locationContext + boundPlaceRules;
+  const ctaHint = String(options.chatCtaHint ?? '').trim();
+  const ctaContext = ctaHint ? `\n${ctaHint}` : '';
+  return config.system + mooniContext + locationContext + boundPlaceRules + ctaContext;
 };
 
 /** 채팅 모달 최초 진입 시 보여줄 여행지 한줄 요약 (DB 캐시용) */

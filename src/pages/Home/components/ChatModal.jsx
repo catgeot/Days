@@ -24,7 +24,18 @@ import {
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
+import MooniPlannerFollowUp from '../../../components/chat/MooniPlannerFollowUp';
 import MooniQuickReplyChips from '../../../components/chat/MooniQuickReplyChips';
+import {
+  sanitizeMooniModelReply,
+  shouldShowMooniPlannerFollowUp,
+} from '../../../utils/mooniReplySanitizer';
+import { buildPlacePlannerPath } from '../../../utils/placePlannerPath';
+import {
+  buildPlacePlannerPathWithFocus,
+  resolvePlannerFocusFromUserText,
+} from '../../../utils/placePlannerFocus';
+import { getChatCtaPromptHint } from '../../../utils/chatCtaPromptHint';
 import {
   ensureChatEssentialGuide,
   useChatEssentialGuide,
@@ -32,6 +43,7 @@ import {
 import {
   buildMooniIntroWithHint,
   getMooniQuickReplies,
+  getMooniL1ChipLabel,
   ACCESS_DEPARTURE_INPUT_PLACEHOLDER,
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
@@ -501,11 +513,34 @@ const ChatModal = ({
         (sessionDest === 'MOONi'
           ? (sessionBound?.name || mooniPlaceContext?.name || resolution?.name || sessionDest)
           : sessionDest);
+      const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
+
+      const slug =
+        mooniPlaceContext?.slug ||
+        ((accessRoute || ferryRoute) && effectiveBound?.slug) ||
+        resolution?.slug ||
+        sessionBound?.slug ||
+        resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
+      const destName =
+        mooniPlaceContext?.name ||
+        (destForPrompt === 'MOONi'
+          ? (resolution?.name ?? effectiveBound?.name ?? '')
+          : destForPrompt);
+      const essentialGuide = await ensureChatEssentialGuide(slug, destName);
+
+      const chatCtaHint = getChatCtaPromptHint({
+        userText: cleanText,
+        slug,
+        destinationName: destName,
+        chatHistory: priorTurns,
+        essentialGuide,
+      });
+
       const systemInstruction = getSystemPrompt(personaToUse, destForPrompt, {
         isMooni: Boolean(placeBound) || destForPrompt === 'MOONi',
         boundPlaceName: placeBound?.name ?? null,
+        chatCtaHint,
       });
-      const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
       const chatModelId = resolveMooniChatModel({
         userText: cleanText,
         chatHistory: priorTurns,
@@ -521,18 +556,6 @@ const ChatModal = ({
         chatModelId
       );
 
-      const slug =
-        mooniPlaceContext?.slug ||
-        ((accessRoute || ferryRoute) && effectiveBound?.slug) ||
-        resolution?.slug ||
-        sessionBound?.slug ||
-        resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
-      const destName =
-        mooniPlaceContext?.name ||
-        (destForPrompt === 'MOONi'
-          ? (resolution?.name ?? effectiveBound?.name ?? '')
-          : destForPrompt);
-      const essentialGuide = await ensureChatEssentialGuide(slug, destName);
       const booking = resolveChatBookingActions({
         userText: cleanText,
         destinationName: destName,
@@ -543,15 +566,40 @@ const ChatModal = ({
         essentialGuide,
       });
 
+      const hasTransportCta = (booking.actions ?? []).some((a) =>
+        ['trip_com', 'twelve_go', 'direct', 'direct_ferries', 'klook_ferry'].includes(
+          a.provider
+        )
+      );
+      const { text: displayReply, hadBracketLinks } = sanitizeMooniModelReply(aiReply, {
+        stripPhantomTicketMention: !hasTransportCta,
+      });
+      const plannerFocus = resolvePlannerFocusFromUserText(cleanText);
+      const plannerUrl =
+        buildPlacePlannerPathWithFocus(slug, plannerFocus) ??
+        booking.plannerUrl ??
+        buildPlacePlannerPath(slug);
+      const plannerFollowUp =
+        Boolean(slug) &&
+        shouldShowMooniPlannerFollowUp({
+          slug,
+          hadBracketLinks,
+          bookingShow: booking.show,
+          userText: cleanText,
+          aiReplyText: aiReply,
+        });
+
       const finalMessages = [
         ...newMessages,
         {
           role: 'model',
-          text: aiReply,
+          text: displayReply,
           bookingActions: booking.show ? booking.actions : null,
-          bookingMeta: booking.show
-            ? { slug: booking.slug, plannerUrl: booking.plannerUrl }
-            : null,
+          plannerFollowUp,
+          bookingMeta:
+            booking.show || plannerFollowUp
+              ? { slug: booking.slug ?? slug, plannerUrl, plannerFocus }
+              : null,
         },
       ];
       setMessages(finalMessages);
@@ -583,6 +631,7 @@ const ChatModal = ({
       onSelect: (text, persona) => handleSend(text, persona ?? null),
       onDrillDown: (parentId) => setTopicDockParent(parentId),
       onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
+      parentL1Label: topicDockParent ? getMooniL1ChipLabel(topicDockParent) : null,
       onOpenPlanner: handlePlannerNavigate,
       disabled: isLoading,
       prompt: topicDockPrompt,
@@ -761,7 +810,41 @@ const ChatModal = ({
                   </div>
                 </div>
               )}
-              {messages.map((msg, idx) => (
+              {messages.map((msg, idx) => {
+                const rawMsgText =
+                  typeof msg.text === 'object' ? msg.text?.text ?? '내용 없음' : msg.text ?? '';
+                const isModelMsg = msg.role === 'model';
+                const { text: displayMsgText, hadBracketLinks } = isModelMsg
+                  ? sanitizeMooniModelReply(rawMsgText)
+                  : { text: rawMsgText, hadBracketLinks: false };
+                const msgSlug = msg.bookingMeta?.slug ?? boundDestinationSlug;
+                const msgDestinationName = isMooniUi
+                  ? mooniPlaceContext?.name ??
+                    messages
+                      .slice(0, idx)
+                      .reverse()
+                      .find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name ??
+                    (introDestinationRaw !== 'MOONi' ? introDestinationRaw : '')
+                  : introDestinationRaw;
+                const priorUserText =
+                  messages[idx - 1]?.role === 'user'
+                    ? (typeof messages[idx - 1].text === 'object'
+                        ? messages[idx - 1].text?.text
+                        : messages[idx - 1].text) ?? ''
+                    : '';
+                const showPlannerFollowUp =
+                  isModelMsg &&
+                  Boolean(msgSlug) &&
+                  (msg.plannerFollowUp ??
+                    shouldShowMooniPlannerFollowUp({
+                      slug: msgSlug,
+                      hadBracketLinks,
+                      bookingShow: Boolean(msg.bookingActions?.length),
+                      userText: priorUserText,
+                      aiReplyText: rawMsgText,
+                    }));
+
+                return (
                 <div
                   key={idx}
                   ref={idx === lastUserIdx ? lastQuestionRef : null}
@@ -779,7 +862,7 @@ const ChatModal = ({
                         ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
                         : 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed'
                   }`}>
-                    <div style={{ whiteSpace: 'pre-wrap' }}>{typeof msg.text === 'object' ? (msg.text.text || "내용 없음") : msg.text}</div>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
                     {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
                       <DestinationResolutionChips
                         confirmed={msg.confirmedDestination}
@@ -814,12 +897,21 @@ const ChatModal = ({
                         })}
                         slug={msg.bookingMeta?.slug}
                         plannerUrl={msg.bookingMeta?.plannerUrl}
+                        plannerFocus={msg.bookingMeta?.plannerFocus}
+                        onPlannerNavigate={handlePlannerNavigate}
+                      />
+                    )}
+                    {showPlannerFollowUp && (
+                      <MooniPlannerFollowUp
+                        destinationName={msgDestinationName}
+                        plannerUrl={msg.bookingMeta?.plannerUrl}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
               {isLoading && (
                 <div className="flex gap-4 items-center">
                   <Loader2 size={20} className="text-blue-400 animate-spin" />

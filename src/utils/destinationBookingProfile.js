@@ -53,20 +53,24 @@ export function resolveBookingLegsForIntent(primary, profile, intents = []) {
     return profile.ferryRequired ? ['ferry'] : [];
   }
 
-  if (primary === 'book_flight' || intents.includes('book_flight')) {
-    return ['flight'];
-  }
-
   if (primary === 'book_transfer' || intents.includes('book_transfer')) {
     return ['transfer'];
   }
 
-  if (primary === 'info_visa' || intents.includes('info_visa')) {
-    return ['visa'];
+  const hasVisaIntent =
+    primary === 'info_visa' || intents.includes('info_visa');
+  const hasFeesIntent =
+    primary === 'info_fees' || intents.includes('info_fees');
+  if (hasVisaIntent || hasFeesIntent) {
+    /** @type {string[]} */
+    const legs = [];
+    if (hasVisaIntent) legs.push('visa');
+    if (hasFeesIntent) legs.push('prep_fees');
+    return legs;
   }
 
-  if (primary === 'info_fees' || intents.includes('info_fees')) {
-    return ['prep_fees'];
+  if (primary === 'book_flight' || intents.includes('book_flight')) {
+    return ['flight'];
   }
 
   if (primary === 'book_general') {

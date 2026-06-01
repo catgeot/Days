@@ -9,11 +9,14 @@ export function buildPlacePlannerPath(slug) {
   return `/place/${key}/planner`;
 }
 
-/** 저장 메시지·레거시 resolver의 `?tab=planner` 정규화 */
+/** 저장 메시지·레거시 resolver의 `?tab=planner` 정규화 (hash 유지) */
 export function normalizePlacePlannerPath(url) {
   if (!url || typeof url !== 'string') return null;
   const trimmed = url.trim();
-  const legacy = trimmed.match(/^(\/place\/[^/?#]+)\?tab=planner\/?$/);
-  if (legacy) return `${legacy[1]}/planner`;
-  return trimmed;
+  const hashIdx = trimmed.indexOf('#');
+  const pathPart = hashIdx >= 0 ? trimmed.slice(0, hashIdx) : trimmed;
+  const hashPart = hashIdx >= 0 ? trimmed.slice(hashIdx) : '';
+  const legacy = pathPart.match(/^(\/place\/[^/?#]+)\?tab=planner\/?$/);
+  const normalizedPath = legacy ? `${legacy[1]}/planner` : pathPart;
+  return `${normalizedPath}${hashPart}`;
 }

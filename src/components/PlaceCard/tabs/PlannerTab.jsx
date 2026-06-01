@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useLocation } from 'react-router-dom';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
@@ -23,6 +24,10 @@ import {
     plannerScrollSurfaceClass,
 } from './planner/readableText';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import {
+  parsePlannerFocusFromHash,
+  scrollPlannerFocusIntoView,
+} from '../../../utils/placePlannerFocus';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -43,6 +48,9 @@ const PlannerTab = ({
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
+    const routeLocation = useLocation();
+    const plannerFocusId = parsePlannerFocusFromHash(routeLocation.hash);
+    const lastScrolledFocusRef = useRef(null);
 
     const scrollPlannerToTop = usePlaceMediaScrollToTop('PLANNER', scrollContainerRef, isActive);
 
@@ -69,6 +77,33 @@ const PlannerTab = ({
         }
         return () => clearInterval(interval);
     }, [isLoading, currentMessages]);
+
+    useEffect(() => {
+        if (!isActive || isLoading || !plannerFocusId) return;
+        if (lastScrolledFocusRef.current === plannerFocusId) return;
+
+        const tryScroll = () => {
+            const ok = scrollPlannerFocusIntoView(
+                scrollContainerRef.current,
+                plannerFocusId,
+                { headerOffset: 96 }
+            );
+            if (ok) lastScrolledFocusRef.current = plannerFocusId;
+            return ok;
+        };
+
+        tryScroll();
+        const retry = window.setTimeout(tryScroll, 450);
+        const retryLate = window.setTimeout(tryScroll, 1200);
+        return () => {
+            window.clearTimeout(retry);
+            window.clearTimeout(retryLate);
+        };
+    }, [isActive, isLoading, plannerFocusId, guideData]);
+
+    useEffect(() => {
+        if (!plannerFocusId) lastScrolledFocusRef.current = null;
+    }, [plannerFocusId]);
 
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = useCallback(async (placeName, forceUpdate = false) => {
@@ -350,7 +385,10 @@ const PlannerTab = ({
 
                 {/* 체크리스트 및 타임라인 (상시 렌더링) */}
                 {(guideData?.categories?.pre_travel?.length > 0 || guideData?.journey_timeline?.length > 0) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div
+                        id="planner-pre-travel-checklist"
+                        className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5 scroll-mt-24"
+                    >
                         <PreTravelChecklist
                             items={guideData?.categories?.pre_travel || []}
                             locationName={location?.name}
@@ -368,16 +406,20 @@ const PlannerTab = ({
                 {/* 3단계 시각적 그룹화(섹션화) 레이아웃 적용 */}
 
                 {/* 섹션 1: 출발 전 필수 준비 */}
-                <div className="mb-8">
+                <div id="planner-prep" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
                         <h3 className="text-lg font-bold text-gray-800">🛫 출발 전 필수 준비</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
+                        <div id="planner-prep-visa" className="scroll-mt-24">
                         <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
+                        </div>
                         <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <div id="planner-prep-safety" className="scroll-mt-24">
                         <ToolkitCard icon={ShieldAlert} title="안전 및 보험" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
+                        </div>
                     </div>
                 </div>
 

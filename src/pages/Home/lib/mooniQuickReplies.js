@@ -64,15 +64,28 @@ const L2_ACCESS_DEPARTURES = [
   },
 ];
 
+/** 플래너 「출발 전 필수 준비」·「안전 및 보험」·상단 checklist 정렬 */
 const L2_PREP = [
-  { id: 'visa', label: '비자·입국', sendText: '비자 필요해?' },
   {
-    id: 'fees',
-    label: '관광세·준비물',
-    sendText: '관광세?',
-    requiresPreTravel: true,
+    id: 'visa_docs',
+    label: '비자·입국·서류',
+    sendText: '비자·입국·필수 서류와 관광세·수수료가 궁금해',
   },
-  { id: 'safety_insurance', label: '안전·보험', sendText: '여행 보험과 안전 준비는?' },
+  {
+    id: 'medical_insurance',
+    label: '의료 후송·보험',
+    sendText: '의료 후송 보험과 여행 보험 준비는?',
+  },
+  {
+    id: 'entry_proof',
+    label: '숙소·입국 증빙',
+    sendText: '입국 심사에 필요한 숙소·항공 증빙은?',
+  },
+  {
+    id: 'safety_local',
+    label: '안전·현지 주의',
+    sendText: '치안과 현지에서 주의할 점은?',
+  },
 ];
 
 const L2_ENJOY = [
@@ -162,6 +175,14 @@ export function getMooniQuickReplies(slug, level = 1, parentId = null, options =
     ...(drillDown ? { drillDown: true } : {}),
     ...(persona ? { persona } : {}),
   }));
+}
+
+/** L2 dock — 「주제 바꾸기」 옆에 표시할 1단 주제 라벨 */
+export function getMooniL1ChipLabel(parentId, { mobile = false } = {}) {
+  const def = L1_DEFS.find((d) => d.id === parentId);
+  if (!def) return '';
+  if (mobile && def.mobileLabel) return def.mobileLabel;
+  return def.label;
 }
 
 export function buildMooniIntroWithHint(introText, placeName) {

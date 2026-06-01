@@ -7,6 +7,7 @@ import {
   getPartnerLinkTarget,
 } from '../PlaceCard/common/partnerNavigation';
 import { normalizePlacePlannerPath } from '../../utils/placePlannerPath';
+import { buildPlacePlannerPathWithFocus } from '../../utils/placePlannerFocus';
 
 const TRANSPORT_PROVIDERS = new Set([
   'trip_com',
@@ -38,6 +39,7 @@ const PREP_PROVIDER_STYLES = {
  *   actions: Array<{ type: string, label: string, url: string, provider?: string }>,
  *   slug?: string | null,
  *   plannerUrl?: string | null,
+ *   plannerFocus?: string | null,
  *   onPlannerNavigate?: (url: string) => void,
  *   className?: string,
  * }} props
@@ -46,6 +48,7 @@ const BookingActionCards = ({
   actions = [],
   slug = null,
   plannerUrl = null,
+  plannerFocus = null,
   onPlannerNavigate = null,
   className = '',
 }) => {
@@ -53,7 +56,12 @@ const BookingActionCards = ({
 
   const linkTarget = getPartnerLinkTarget();
   const linkRel = getPartnerLinkRel(linkTarget);
-  const plannerPath = normalizePlacePlannerPath(plannerUrl);
+  const plannerPath =
+    normalizePlacePlannerPath(
+      plannerFocus && slug
+        ? buildPlacePlannerPathWithFocus(slug, plannerFocus)
+        : plannerUrl
+    ) ?? normalizePlacePlannerPath(plannerUrl);
 
   const transportActions = actions.filter(
     (a) => a.url && (TRANSPORT_PROVIDERS.has(a.provider) || !PREP_PROVIDERS.has(a.provider))
@@ -70,6 +78,23 @@ const BookingActionCards = ({
 
   const plannerLinkClass =
     'inline-flex items-center gap-1.5 text-[11px] text-blue-400 hover:text-blue-300 hover:underline break-keep pointer-events-auto';
+
+  const plannerButtonClass =
+    'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-2.5 text-xs font-bold text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/50 transition-colors break-keep pointer-events-auto';
+
+  const renderPlannerPrimary = () => {
+    if (!plannerPath || !onPlannerNavigate) return null;
+    return (
+      <button
+        type="button"
+        onClick={() => onPlannerNavigate(plannerPath)}
+        className={plannerButtonClass}
+      >
+        <MapPin size={14} className="shrink-0 opacity-90" />
+        플래너에서 입국·증빙·준비 확인
+      </button>
+    );
+  };
 
   const renderTransportSection = () => {
     if (!transportActions.length) return null;
@@ -158,12 +183,16 @@ const BookingActionCards = ({
     );
   };
 
+  const showPlannerPrimary =
+    plannerPath && onPlannerNavigate && prepActions.length > 0 && !transportActions.length;
+
   return (
     <div className={`mt-3 space-y-2 w-full ${className}`}>
       {renderTransportSection()}
       {renderPrepSection()}
+      {showPlannerPrimary ? renderPlannerPrimary() : null}
 
-      {plannerPath && (
+      {plannerPath && !showPlannerPrimary && (
         onPlannerNavigate ? (
           <button
             type="button"

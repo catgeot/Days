@@ -9,6 +9,17 @@ const ACCESS_ROUTE_PATTERNS = [
   /이동\s*(?:방법|수단)/,
 ];
 
+/** 입국 심사·증빙 — 「항공」이 있어도 항공권 **예약** intent로 보지 않음 */
+const ENTRY_PROOF_PATTERNS = [
+  /입국\s*심사/,
+  /숙소.*증빙/,
+  /항공.*증빙/,
+  /증빙.*(?:숙소|항공)/,
+  /왕복\s*항공/,
+  /예약\s*확인증/,
+  /숙박.*(?:확인|증빙)/,
+];
+
 const BOOK_FLIGHT_PATTERNS = [
   /항공/,
   /비행/,
@@ -36,9 +47,26 @@ const BOOK_TRANSFER_PATTERNS = [
   /공항\s*셔틀/,
 ];
 
-const INFO_VISA_PATTERNS = [/비자/, /visa/i, /e-?voa/i, /입국/];
+const INFO_VISA_PATTERNS = [
+  /비자/,
+  /visa/i,
+  /e-?voa/i,
+  /입국/,
+  /필수\s*서류/,
+  /증빙/,
+  /입국\s*심사/,
+  /eta/i,
+  /uk\s*eta/i,
+];
 
-const INFO_FEES_PATTERNS = [/관광세/, /입국\s*세/, /tourist\s*levy/i, /lovebali/i];
+const INFO_FEES_PATTERNS = [
+  /관광세/,
+  /입국\s*세/,
+  /tourist\s*levy/i,
+  /lovebali/i,
+  /수수료/,
+  /환경세/,
+];
 
 const BOOK_GENERAL_PATTERNS = [
   /예약\s*(?:방법|하)/,
@@ -78,11 +106,17 @@ export function classifyChatIntent(userText, chatHistory = [], slug = null) {
   const matchAny = (patterns, text) => patterns.some((re) => re.test(text));
 
   // 이번 턴 발화만 — 이전 「어떻게 가」 등이 페리·비자 단독 질문 CTA를 오염시키지 않음
+  const isEntryProof = matchAny(ENTRY_PROOF_PATTERNS, current);
+
   if (matchAny(ACCESS_ROUTE_PATTERNS, current)) intents.push('access_route');
   if (matchAny(BOOK_FERRY_PATTERNS, current)) intents.push('book_ferry');
-  if (matchAny(BOOK_FLIGHT_PATTERNS, current)) intents.push('book_flight');
+  if (!isEntryProof && matchAny(BOOK_FLIGHT_PATTERNS, current)) {
+    intents.push('book_flight');
+  }
   if (matchAny(BOOK_TRANSFER_PATTERNS, current)) intents.push('book_transfer');
-  if (matchAny(INFO_VISA_PATTERNS, current)) intents.push('info_visa');
+  if (isEntryProof || matchAny(INFO_VISA_PATTERNS, current)) {
+    intents.push('info_visa');
+  }
   if (matchAny(INFO_FEES_PATTERNS, current)) intents.push('info_fees');
   if (matchAny(BOOK_GENERAL_PATTERNS, current)) intents.push('book_general');
 
