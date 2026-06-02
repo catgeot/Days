@@ -99,6 +99,7 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
       cancelled = false;
 
       const resolvedSlug = resolveGlobeTourSlug(location || { slug, lat, lng });
+      const landmark = resolvedSlug ? globeLandmarks[resolvedSlug] : null;
       keyframes = resolveTourKeyframes(resolvedSlug, lng, lat);
 
       setMode(GLOBE_MODE.TOUR_BOOTSTRAPPING);
@@ -109,7 +110,10 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
       await applyKeyframe(map, keyframes[0], { immediate: true });
 
       try {
-        await bootstrapGlobe3d(map);
+        await bootstrapGlobe3d(map, {
+          exaggeration: landmark?.exaggeration ?? 1.5,
+          buildings: Boolean(landmark?.buildings)
+        });
       } catch {
         active = false;
         onTourUiChange?.(false);

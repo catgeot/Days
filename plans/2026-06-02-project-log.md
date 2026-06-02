@@ -10,15 +10,40 @@
 - 한글 지명: Standard vs satellite 분기.
 - `verify-globe-engine` gateo-spots 검증 **OK**.
 
-## Phase 1 WIP (1a — 로컬 QA)
+## Phase 1 (1a — 커밋 0692e71)
 
 - **구현**: `globeMode` · `globe3dBootstrap`(DEM+타임아웃) · `globeLandmarks.json`(8 slug) · `landmarkOrbit` · `globeTourEngine` · Summary 「3D 투어」· 투어 UI 라벨 숨김.
 - **hit-test**: 파리 클릭 → 런던 카드 — 클릭 거리·`resolveTravelSpotFromCoords` 보정.
 - **로딩 hang**: 지구본 회전으로 `idle` 미발생 — `tourActiveRef` + bootstrap 타임아웃 fix.
-- **QA — 파리**: 에펠탑이 **DEM terrain 뭉치**처럼 보임 (urban · buildings 미적용).
-- **QA — 후지산**: terrain 선회 **그럴듯**.
-- **QA — 2D 복귀**: gateo **마커 라벨** 미복원(dot만) — `globeTourUi.restoreGlobeMapUi` fix.
+- **QA — 2D 복귀**: gateo **마커 라벨** 미복원 — `globeTourUi.restoreGlobeMapUi` fix.
 
-## 다음 (1b~)
+## Phase 1 (1b~1c — 이번 세션, 커밋 예정)
 
-- 3D Buildings on-demand · urban exaggeration·orbit 튜닝 · Phase 1d QA → Phase 2 explore.
+### 구현
+
+- `globe3dBootstrap`: optional 3D buildings (fill-extrusion) · per-slug `exaggeration` · dual wait (terrain/buildings).
+- `globeTourTemplates`: `cityOrbit` · `alpineVillageOrbit` · `smoothOrbit` 옵션.
+- `globeLandmarks.json`: urban 5곳 → **cityOrbit**(도시 중심) · **zermatt** 추가 · 후지산 smooth 튜닝 · buildings **미사용**.
+
+### QA 피드백 → 방향 전환
+
+| 피드백 | 결정 |
+|--------|------|
+| 파리 buildings = 투명 프레임 | urban은 **도시 선회**, buildings OFF |
+| 후지산 매끄럽지 않음 | template 완화 + **Studio keyframe** 후보 (`keyframes` SSOT) |
+| 체르마트 마을+산 | `alpineVillageOrbit` · peakOffset |
+| 여러 여행지 세부 조정 | slug별 JSON — **`tourReady` gate**로 품질 관리 |
+
+### 제품 목표 정렬 (세션 말)
+
+> 「기능 있음」≠「언제든 부드럽게 맛볼 수 있음」  
+> Phase 1 완료 = **tour-ready 카탈로그** + 버튼 gate + slug별 QA Pass.
+
+## 다음 세션 (1d~)
+
+1. **`tourReady` gate** — `PlaceCardSummary` / `canStartGlobeTour` 큐레이션만 노출
+2. **9 slug QA** — 승격/강등 (`tourReady: true/false`)
+3. **후지산** — Mapbox Studio → `keyframes` 변환·저장
+4. **Phase 1g** — 2D 복귀·Skip·모바일·gateo.kr 스mo크 → Phase 1 완료
+
+**제시어**: 계획 문서 「Phase 1 잔여」·「tour-ready 승격 기준」 참조.

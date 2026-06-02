@@ -1,50 +1,78 @@
 {
   "paris": {
-    "landmarkName": "Eiffel Tower",
-    "center": [2.2945, 48.8584],
-    "template": "landmarkOrbit",
-    "orbit": { "zoom": 16.4, "pitch": 68, "startBearing": -30, "orbitSpan": 140, "segments": 6 }
+    "landmarkName": "Paris",
+    "center": [2.3522, 48.8566],
+    "template": "cityOrbit",
+    "exaggeration": 0.45,
+    "orbit": { "zoom": 14.2, "pitch": 50, "startBearing": -35, "orbitSpan": 170 }
   },
   "rome": {
-    "landmarkName": "Colosseum",
-    "center": [12.4924, 41.8902],
-    "template": "landmarkOrbit",
-    "orbit": { "zoom": 16.2, "pitch": 64, "startBearing": -45, "orbitSpan": 130 }
+    "landmarkName": "Rome",
+    "center": [12.49, 41.9],
+    "template": "cityOrbit",
+    "exaggeration": 0.5,
+    "orbit": { "zoom": 14.1, "pitch": 52, "startBearing": -45, "orbitSpan": 160 }
   },
   "tokyo": {
-    "landmarkName": "Tokyo Tower",
-    "center": [139.7454, 35.6586],
-    "template": "landmarkOrbit",
-    "orbit": { "zoom": 16, "pitch": 66, "startBearing": -20, "orbitSpan": 125 }
+    "landmarkName": "Tokyo",
+    "center": [139.76, 35.67],
+    "template": "cityOrbit",
+    "exaggeration": 0.5,
+    "orbit": { "zoom": 14.0, "pitch": 51, "startBearing": -25, "orbitSpan": 165 }
   },
   "seoul": {
-    "landmarkName": "N Seoul Tower",
-    "center": [126.9882, 37.5512],
-    "template": "landmarkOrbit",
-    "orbit": { "zoom": 15.8, "pitch": 63, "startBearing": -35, "orbitSpan": 120 }
+    "landmarkName": "Seoul",
+    "center": [126.978, 37.5665],
+    "template": "cityOrbit",
+    "exaggeration": 0.55,
+    "orbit": { "zoom": 14.0, "pitch": 50, "startBearing": -30, "orbitSpan": 155 }
   },
   "santorini": {
     "landmarkName": "Oia",
     "center": [25.3753, 36.4618],
     "template": "coastalOrbit",
-    "orbit": { "zoom": 15.2, "pitch": 58, "orbitSpan": 115 }
+    "exaggeration": 1.2,
+    "orbit": { "zoom": 15.2, "pitch": 58, "orbitSpan": 115, "smoothOrbit": true }
   },
   "bali": {
     "landmarkName": "Uluwatu",
     "center": [115.0882, -8.8291],
     "template": "coastalOrbit",
-    "orbit": { "zoom": 15.5, "pitch": 60, "orbitSpan": 120 }
+    "exaggeration": 1.2,
+    "orbit": { "zoom": 15.5, "pitch": 60, "orbitSpan": 120, "smoothOrbit": true }
   },
   "mount-fuji": {
     "landmarkName": "Mount Fuji",
     "center": [138.7274, 35.3606],
     "template": "mountainOrbit",
-    "orbit": { "zoom": 12.8, "pitch": 60, "orbitSpan": 100, "segments": 5 }
+    "exaggeration": 1.4,
+    "orbit": {
+      "zoom": 12.6,
+      "pitch": 58,
+      "orbitSpan": 105,
+      "segments": 4,
+      "segmentDuration": 6200,
+      "smoothOrbit": true
+    }
+  },
+  "zermatt": {
+    "landmarkName": "Zermatt & Matterhorn",
+    "center": [7.7491, 46.0207],
+    "template": "alpineVillageOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "peakOffset": [-0.038, -0.022],
+      "zoom": 13.5,
+      "pitch": 57,
+      "startBearing": -60,
+      "orbitSpan": 130
+    }
   },
   "new-york": {
-    "landmarkName": "Statue of Liberty",
-    "center": [-74.0445, 40.6892],
-    "template": "landmarkOrbit",
-    "orbit": { "zoom": 16, "pitch": 65, "startBearing": -50, "orbitSpan": 135 }
+    "landmarkName": "New York",
+    "center": [-74, 40.71],
+    "template": "cityOrbit",
+    "exaggeration": 0.5,
+    "orbit": { "zoom": 14.0, "pitch": 53, "startBearing": -50, "orbitSpan": 165 }
   }
 }

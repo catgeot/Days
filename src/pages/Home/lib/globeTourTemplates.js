@@ -18,6 +18,7 @@ export function landmarkOrbit(center, opts = {}) {
   const orbitSpan = opts.orbitSpan ?? 130;
   const segments = opts.segments ?? 5;
   const segMs = opts.segmentDuration ?? 4200;
+  const smoothOrbit = Boolean(opts.smoothOrbit);
 
   const frames = [
     {
@@ -30,9 +31,9 @@ export function landmarkOrbit(center, opts = {}) {
     {
       center,
       zoom: zoom - 0.6,
-      pitch: 50,
+      pitch: smoothOrbit ? pitch - 8 : 50,
       bearing: startBearing,
-      duration: 2400,
+      duration: smoothOrbit ? 3200 : 2400,
       ease: true
     }
   ];
@@ -41,8 +42,8 @@ export function landmarkOrbit(center, opts = {}) {
     const t = i / segments;
     frames.push({
       center,
-      zoom: zoom + (i === Math.ceil(segments / 2) ? 0.3 : 0),
-      pitch: pitch + Math.sin(t * Math.PI) * 6,
+      zoom: zoom + (!smoothOrbit && i === Math.ceil(segments / 2) ? 0.3 : 0),
+      pitch: pitch + (smoothOrbit ? 0 : Math.sin(t * Math.PI) * 6),
       bearing: startBearing + orbitSpan * t,
       duration: segMs,
       ease: true,
@@ -51,6 +52,39 @@ export function landmarkOrbit(center, opts = {}) {
   }
 
   return frames;
+}
+
+/** Urban city sweep — wide orbit at city center (not landmark POI; avoids 3D building limits). */
+export function cityOrbit(center, opts = {}) {
+  return landmarkOrbit(center, {
+    zoom: 14.1,
+    pitch: 52,
+    startBearing: -40,
+    orbitSpan: 165,
+    segments: 5,
+    segmentDuration: 5000,
+    smoothOrbit: true,
+    ...opts
+  });
+}
+
+/** Alpine village + ridgeline — center between town and peak. */
+export function alpineVillageOrbit(center, opts = {}) {
+  const peakOffset = opts.peakOffset;
+  const orbitCenter = peakOffset
+    ? offsetCenter(center, peakOffset[0], peakOffset[1])
+    : center;
+
+  return landmarkOrbit(orbitCenter, {
+    zoom: 13.6,
+    pitch: 56,
+    startBearing: -50,
+    orbitSpan: 125,
+    segments: 5,
+    segmentDuration: 5600,
+    smoothOrbit: true,
+    ...opts
+  });
 }
 
 /** Wider orbit for mountains / large natural landmarks. */
@@ -86,6 +120,8 @@ export function aerialApproach(center) {
 
 export const TOUR_TEMPLATE_BY_NAME = {
   landmarkOrbit,
+  cityOrbit,
+  alpineVillageOrbit,
   mountainOrbit,
   coastalOrbit,
   aerialApproach,
