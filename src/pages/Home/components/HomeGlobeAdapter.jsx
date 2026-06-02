@@ -25,7 +25,11 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     flyToAndPin: (lat, lng, name, category, options) => childRef.current?.flyToAndPin?.(lat, lng, name, category, options),
     updateLastPinName: (...args) => childRef.current?.updateLastPinName?.(...args),
     triggerRipple: (lat, lng) => childRef.current?.triggerRipple?.(lat, lng),
-    resetPins: () => childRef.current?.resetPins?.()
+    resetPins: () => childRef.current?.resetPins?.(),
+    startTour: (location) => childRef.current?.startTour?.(location),
+    skipTour: () => childRef.current?.skipTour?.(),
+    endTour: () => childRef.current?.endTour?.(),
+    getGlobeMode: () => childRef.current?.getGlobeMode?.()
   }), []);
 
   if (activeEngine === 'mapbox') {

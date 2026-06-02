@@ -631,6 +631,9 @@ function Home() {
             onClose={() => {
               setIsCardExpanded(false);
               setSelectedLocation(null);
+              if (globeRef.current?.getGlobeMode?.() !== 'globe2d') {
+                globeRef.current?.endTour?.();
+              }
               if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
                 globeRef.current.resumeRotation();
               }
@@ -641,6 +644,10 @@ function Home() {
             }}
             onChat={openMooniFromPlace}
             onToggleBookmark={handleToggleBookmark}
+            onStartTour={(location) => {
+              globeRef.current?.pauseRotation?.();
+              globeRef.current?.startTour?.(location);
+            }}
           />
         )}
 

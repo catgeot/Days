@@ -175,7 +175,44 @@ export function updateGateoMarkerSource(map, geojson) {
   });
 }
 
-export function findGateoMarkerAtPoint(map, point, thresholdPx = 28) {
+const LAYER_HIT_PRIORITY = {
+  [GATEO_DOT_LAYER_ID]: 0,
+  [GATEO_ACTIVE_LAYER_ID]: 1,
+  [GATEO_LABEL_LAYER_ID]: 2
+};
+
+function pixelDistanceSq(a, b) {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return dx * dx + dy * dy;
+}
+
+function geoDistanceSq(lat1, lng1, lat2, lng2) {
+  const dLat = lat2 - lat1;
+  let dLng = lng2 - lng1;
+  if (dLng > 180) dLng -= 360;
+  if (dLng < -180) dLng += 360;
+  return dLat * dLat + dLng * dLng;
+}
+
+function markerHitFromEntry(entry) {
+  const { props, coords } = entry;
+  return {
+    id: props.markerId,
+    name: props.fullName || props.name,
+    slug: props.slug,
+    lat: coords[1],
+    lng: coords[0],
+    type: props.type,
+    category: props.category,
+    isActive: Number(props.isActive) === 1,
+    isBookmarked: Number(props.isBookmarked) === 1,
+    hasChat: Number(props.hasChat) === 1,
+    hiddenClusterCount: Number(props.hiddenClusterCount) || 0
+  };
+}
+
+export function findGateoMarkerAtPoint(map, point, clickLngLat = null, thresholdPx = 28) {
   if (!map || !point) return null;
 
   const layers = [GATEO_DOT_LAYER_ID, GATEO_LABEL_LAYER_ID, GATEO_ACTIVE_LAYER_ID]
@@ -190,19 +227,41 @@ export function findGateoMarkerAtPoint(map, point, thresholdPx = 28) {
   const features = map.queryRenderedFeatures(bbox, { layers });
   if (!features?.length) return null;
 
-  const top = features[0];
-  const props = top.properties || {};
-  return {
-    id: props.markerId,
-    name: props.fullName || props.name,
-    slug: props.slug,
-    lat: top.geometry?.coordinates?.[1],
-    lng: top.geometry?.coordinates?.[0],
-    type: props.type,
-    category: props.category,
-    isActive: Number(props.isActive) === 1,
-    isBookmarked: Number(props.isBookmarked) === 1,
-    hasChat: Number(props.hasChat) === 1,
-    hiddenClusterCount: Number(props.hiddenClusterCount) || 0
-  };
+  const candidates = new Map();
+  for (const feature of features) {
+    const props = feature.properties || {};
+    const markerId = String(props.markerId || props.slug || feature.id || '');
+    if (!markerId) continue;
+
+    const coords = feature.geometry?.coordinates;
+    if (!coords?.length) continue;
+
+    const projected = map.project({ lng: coords[0], lat: coords[1] });
+    const distSq = pixelDistanceSq(projected, point);
+    const priority = LAYER_HIT_PRIORITY[feature.layer?.id] ?? 3;
+    const prev = candidates.get(markerId);
+
+    if (!prev || distSq < prev.distSq || (distSq === prev.distSq && priority < prev.priority)) {
+      candidates.set(markerId, { props, coords, distSq, priority });
+    }
+  }
+
+  let entries = [...candidates.values()];
+  if (entries.length === 0) return null;
+
+  const hasClickLngLat = clickLngLat
+    && Number.isFinite(clickLngLat.lat)
+    && Number.isFinite(clickLngLat.lng);
+
+  entries.sort((a, b) => {
+    if (hasClickLngLat) {
+      const geoA = geoDistanceSq(clickLngLat.lat, clickLngLat.lng, a.coords[1], a.coords[0]);
+      const geoB = geoDistanceSq(clickLngLat.lat, clickLngLat.lng, b.coords[1], b.coords[0]);
+      if (geoA !== geoB) return geoA - geoB;
+    }
+    if (a.distSq !== b.distSq) return a.distSq - b.distSq;
+    return a.priority - b.priority;
+  });
+
+  return markerHitFromEntry(entries[0]);
 }

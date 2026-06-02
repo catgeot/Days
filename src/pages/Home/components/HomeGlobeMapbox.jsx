@@ -13,6 +13,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
 import { normalizeLngNear } from '../lib/globeLngUtils';
+import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
 import {
   PLACE_LABEL_MIN_ZOOM,
   HIGH_ZOOM_FULL_REVEAL,
@@ -28,6 +29,9 @@ import {
   isGateoLayer,
   gateoMarkerLayersReady
 } from '../lib/globeMarkerLayers';
+import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
+import { createGlobeTourEngine } from '../lib/globeTourEngine';
+import { applyTourMapUi, restoreGlobeMapUi } from '../lib/globeTourUi';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -139,6 +143,42 @@ const areCoordsNear = (a, b, thresholdDeg) => {
   return latDiff <= thresholdDeg && lngDiff <= thresholdDeg;
 };
 
+const lookupFullMarker = (markers, hit) => {
+  if (!hit || !markers?.length) return hit;
+  if (hit.slug) {
+    const bySlug = markers.find((m) => m.slug === hit.slug);
+    if (bySlug) return bySlug;
+  }
+  const hitLat = Number(hit.lat);
+  const hitLng = Number(hit.lng);
+  if (Number.isFinite(hitLat) && Number.isFinite(hitLng)) {
+    const byCoords = markers.find((m) =>
+      areCoordsNear({ lat: Number(m.lat), lng: Number(m.lng) }, { lat: hitLat, lng: hitLng }, 0.02)
+    );
+    if (byCoords) return byCoords;
+  }
+  if (hit.id != null) {
+    const byId = markers.find((m) =>
+      String(m.id || m.tripId || '') === String(hit.id)
+    );
+    if (byId) return byId;
+  }
+  return hit;
+};
+
+const reconcileMarkerWithClickCoords = (marker, clickLngLat, markers, spotCatalog) => {
+  if (!clickLngLat || !spotCatalog?.length) return marker;
+  const curated = resolveTravelSpotFromCoords(clickLngLat.lat, clickLngLat.lng, spotCatalog);
+  if (!curated?.slug) return marker;
+
+  const curatedMarker = markers.find((m) => m.slug === curated.slug);
+  if (!curatedMarker) return marker;
+
+  const markerSlug = marker?.slug || marker?.canonical_slug;
+  if (markerSlug && markerSlug === curated.slug) return marker;
+  return curatedMarker;
+};
+
 const HomeGlobeMapbox = React.memo(forwardRef(({
   onGlobeClick,
   onMarkerClick,
@@ -172,6 +212,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const pendingThemeCameraRef = useRef(null);
   const pendingFocusRef = useRef(null);
   const unbindSpaceDragGuardRef = useRef(null);
+  const tourEngineRef = useRef(null);
+  const tourActiveRef = useRef(false);
+  const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
@@ -744,13 +787,78 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     resetAndApplyPlaceLabelVisibility();
   }, [applyBasemapConfig, isMobileDevice, pauseRender, resetAndApplyPlaceLabelVisibility]);
 
+  const handleTourModeChange = useCallback((mode) => {
+    tourActiveRef.current = isTourMode(mode);
+    setGlobeMode(mode);
+  }, []);
+
+  const handleTourUiChange = useCallback((active) => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    if (active) {
+      applyTourMapUi(map, { active: true, globeTheme });
+    } else {
+      restoreGlobeMapUi(map, resetAndApplyPlaceLabelVisibility);
+    }
+  }, [globeTheme, resetAndApplyPlaceLabelVisibility]);
+
+  const ensureTourEngine = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return null;
+    if (!tourEngineRef.current) {
+      tourEngineRef.current = createGlobeTourEngine(map, {
+        defaultView: GLOBE_VIEW.default,
+        onModeChange: handleTourModeChange,
+        onTourUiChange: handleTourUiChange
+      });
+    }
+    return tourEngineRef.current;
+  }, [handleTourModeChange, handleTourUiChange]);
+
+  const startTour = useCallback(async (location) => {
+    const map = mapRef.current?.getMap();
+    if (!map || !location) return false;
+    const lat = Number(location.lat);
+    const lng = Number(location.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+
+    tourActiveRef.current = true;
+    autoRotateRef.current = false;
+    interactionRef.current = true;
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    map.stop();
+
+    const engine = ensureTourEngine();
+    if (!engine) return false;
+
+    return engine.start({
+      slug: location.slug,
+      lat,
+      lng,
+      location
+    });
+  }, [ensureTourEngine]);
+
+  const skipTour = useCallback(() => {
+    tourEngineRef.current?.skip();
+  }, []);
+
+  const endTour = useCallback(async () => {
+    await tourEngineRef.current?.end();
+    tourActiveRef.current = false;
+    interactionRef.current = false;
+    if (!pauseRender) {
+      autoRotateRef.current = true;
+    }
+  }, [pauseRender]);
+
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
       autoRotateRef.current = false;
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     },
     resumeRotation: () => {
-      if (pauseRender) return;
+      if (pauseRender || isTourMode(globeMode)) return;
       autoRotateRef.current = true;
     },
     flyToAndPin,
@@ -768,16 +876,22 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
       autoRotateRef.current = true;
       applyBasemapConfig();
-    }
-  }), [addRipple, applyBasemapConfig, flyToAndPin, pauseRender]);
+    },
+    startTour,
+    skipTour,
+    endTour,
+    getGlobeMode: () => globeMode
+  }), [addRipple, applyBasemapConfig, endTour, flyToAndPin, globeMode, pauseRender, skipTour, startTour]);
 
   useEffect(() => {
+    if (isTourMode(globeMode)) return;
+    if (tourActiveRef.current) return;
     autoRotateRef.current = !pauseRender;
     if (pauseRender && rotationTimer.current) {
       clearTimeout(rotationTimer.current);
       rotationTimer.current = null;
     }
-  }, [pauseRender]);
+  }, [globeMode, pauseRender]);
 
   useEffect(() => {
     if (pauseRender) return;
@@ -827,7 +941,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         return;
       }
 
-      const shouldRotate = autoRotateRef.current && !interactionRef.current && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
+      const shouldRotate = autoRotateRef.current
+        && !interactionRef.current
+        && !tourActiveRef.current
+        && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
       if (shouldRotate) {
         const speed = isZenMode ? 1.8 : 3;
         const center = map.getCenter();
@@ -863,14 +980,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (map && event.point && !isScreenPointOnGlobe(map, event.point)) return;
 
     const markerAtPoint = map && event.point
-      ? findGateoMarkerAtPoint(map, event.point)
+      ? findGateoMarkerAtPoint(map, event.point, event.lngLat)
       : null;
     if (markerAtPoint) {
       markerClickGuardUntilRef.current = Date.now() + 450;
-      const fullMarker = allMarkersLookupRef.current.find((m) =>
-        String(m.id || m.tripId || m.slug || '') === String(markerAtPoint.id)
-        || (markerAtPoint.slug && m.slug === markerAtPoint.slug)
-      ) || markerAtPoint;
+      const spotCatalog = allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
+      let fullMarker = lookupFullMarker(allMarkersLookupRef.current, markerAtPoint);
+      fullMarker = reconcileMarkerWithClickCoords(
+        fullMarker,
+        event.lngLat,
+        allMarkersLookupRef.current,
+        spotCatalog
+      );
       if (onMarkerClick) onMarkerClick(fullMarker, 'globe');
       return;
     }
@@ -915,7 +1036,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
 
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
-  }, [isZenMode, onGlobeClick, onMarkerClick, pauseRender]);
+  }, [allTravelSpots, isZenMode, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
 
   const mapStyle = MAP_STYLES[globeTheme] || MAP_STYLES.deep;
 
@@ -1096,6 +1217,38 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       {mobileActionMessage && !isZenMode && (
         <div className="absolute right-3 top-[calc(50%+8.5rem)] z-[70] pointer-events-none rounded-full bg-black/70 px-3 py-1 text-xs text-white border border-white/15 backdrop-blur-sm">
           {mobileActionMessage}
+        </div>
+      )}
+
+      {canSkipTour(globeMode) && !isZenMode && (
+        <div className="absolute bottom-[calc(11.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[65] pointer-events-auto lg:bottom-28">
+          <button
+            type="button"
+            onClick={skipTour}
+            className="flex items-center gap-2 rounded-full border border-white/15 bg-black/65 px-4 py-2 text-xs font-bold text-white/90 shadow-lg backdrop-blur-sm transition-all hover:bg-black/80 active:scale-95"
+          >
+            Skip
+          </button>
+        </div>
+      )}
+
+      {canEndTour(globeMode) && globeMode === GLOBE_MODE.TOUR_READY && !isZenMode && (
+        <div className="absolute bottom-[calc(11.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[65] pointer-events-auto flex gap-2 lg:bottom-28">
+          <button
+            type="button"
+            onClick={endTour}
+            className="flex items-center gap-2 rounded-full border border-blue-400/35 bg-black/65 px-4 py-2 text-xs font-bold text-blue-300 shadow-lg backdrop-blur-sm transition-all hover:bg-black/80 active:scale-95"
+          >
+            2D로 복귀
+          </button>
+        </div>
+      )}
+
+      {globeMode === GLOBE_MODE.TOUR_BOOTSTRAPPING && !isZenMode && (
+        <div className="absolute inset-x-0 top-1/3 z-[65] pointer-events-none flex justify-center">
+          <div className="rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs text-white/80 backdrop-blur-sm">
+            3D 지형 로딩 중…
+          </div>
         </div>
       )}
     </div>

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, Sparkles, Maximize2 } from 'lucide-react';
+import { X, MessageSquare, Sparkles, Maximize2, Mountain } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
 import { getPlaceTitleLines } from '../common/locationDisplay';
+import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 
-const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark }) => {
+const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark, onStartTour }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [glowPhase, setGlowPhase] = useState('enter');
   const isScanning = location?.isScanning;
   const isEnterGlow = glowPhase === 'enter';
   const { primaryName, secondaryName } = getPlaceTitleLines(location);
+  const canStartTour = canStartGlobeTour(location);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -114,19 +116,33 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
 
           <div
             className={`overflow-hidden ${
-              isScanning ? 'max-h-0 opacity-0 mt-0' : 'max-h-[60px] opacity-100 mt-2'
+              isScanning ? 'max-h-0 opacity-0 mt-0' : 'max-h-[120px] opacity-100 mt-2'
             }`}
           >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onChat) onChat({ text: '' });
-              }}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.08] border border-white/15 hover:bg-white/12 hover:border-blue-400/30 transition-all duration-300 z-10 relative"
-            >
-              <MessageSquare size={16} className="text-cyan-400" />
-              <span className="text-xs font-bold text-gray-200">MOONi에게 물어보기</span>
-            </button>
+            <div className={`flex gap-2 ${canStartTour ? '' : ''}`}>
+              {canStartTour && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onStartTour) onStartTour(location);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-500/15 border border-blue-400/30 hover:bg-blue-500/25 hover:border-blue-300/40 transition-all duration-300 z-10 relative"
+                >
+                  <Mountain size={16} className="text-blue-300" />
+                  <span className="text-xs font-bold text-blue-100">3D 투어</span>
+                </button>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onChat) onChat({ text: '' });
+                }}
+                className={`${canStartTour ? 'flex-1' : 'w-full'} flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.08] border border-white/15 hover:bg-white/12 hover:border-blue-400/30 transition-all duration-300 z-10 relative`}
+              >
+                <MessageSquare size={16} className="text-cyan-400" />
+                <span className="text-xs font-bold text-gray-200">MOONi에게 물어보기</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
