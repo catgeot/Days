@@ -7,12 +7,34 @@ import React, {
   forwardRef,
   useImperativeHandle
 } from 'react';
-import Map, { Marker } from 'react-map-gl/mapbox';
+import Map, { Marker, useControl } from 'react-map-gl/mapbox';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { getMarkerDesign } from '../data/markers';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
-import { findMarkerAtScreenPoint, normalizeLngNear } from '../lib/globeLngUtils';
+import { normalizeLngNear } from '../lib/globeLngUtils';
+import {
+  PLACE_LABEL_MIN_ZOOM,
+  TIER_STAGE_ZOOM_LEVELS,
+  HIGH_ZOOM_FULL_REVEAL,
+  getMaxTierForZoom,
+  getMajorMergeThreshold,
+  getMarkerCollisionThreshold
+} from '../lib/globeZoomPolicy';
+import {
+  markersToGeoJSON,
+  setupGateoMarkerLayers,
+  updateGateoMarkerSource,
+  findGateoMarkerAtPoint,
+  isGateoLayer,
+  GATEO_DOT_LAYER_ID,
+  GATEO_LABEL_LAYER_ID
+} from '../lib/globeMarkerLayers';
+
+function LanguageControl() {
+  useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
+  return null;
+}
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -55,15 +77,8 @@ const WATER_COLOR_BY_THEME = {
   neon: '#1d4ed8'
 };
 
-const PLACE_LABEL_MIN_ZOOM = 4.0;
 const GLOBE_CLICK_TOLERANCE_PX = 3;
 const DRAG_CLICK_GUARD_MS = 180;
-const TIER_STAGE_ZOOM_LEVELS = {
-  // Keep initial globe concise, then gradually reveal.
-  tier1: 1.1,
-  tier2: 2.45
-};
-const HIGH_ZOOM_FULL_REVEAL = 3.0;
 const PLACE_LABEL_LAYER_HINTS = [
   'place-label',
   'settlement',
@@ -109,30 +124,21 @@ const normalizeLngDelta = (a, b) => {
   return diff > 180 ? 360 - diff : diff;
 };
 
+const safeMapResize = (map) => {
+  if (!map || map._removed) return;
+  try {
+    const container = map.getContainer?.();
+    if (!container || container.clientWidth <= 0 || container.clientHeight <= 0) return;
+    map.resize();
+  } catch {
+    // Map may be mid-projection/style transition.
+  }
+};
+
 const areCoordsNear = (a, b, thresholdDeg) => {
   const latDiff = Math.abs(a.lat - b.lat);
   const lngDiff = normalizeLngDelta(a.lng, b.lng);
   return latDiff <= thresholdDeg && lngDiff <= thresholdDeg;
-};
-
-const getMaxTierForZoom = (zoom) => {
-  if (zoom < TIER_STAGE_ZOOM_LEVELS.tier1) return 1;
-  if (zoom < TIER_STAGE_ZOOM_LEVELS.tier2) return 2;
-  return 3;
-};
-
-const getMajorMergeThreshold = (zoom) => {
-  if (zoom >= HIGH_ZOOM_FULL_REVEAL) return 0.12;
-  if (zoom < 1.7) return 1.75;
-  if (zoom < 2.5) return 1.1;
-  return 0.55;
-};
-
-const getMarkerCollisionThreshold = (zoom) => {
-  if (zoom >= HIGH_ZOOM_FULL_REVEAL) return 0.06;
-  if (zoom < 1.7) return 1.2;
-  if (zoom < 2.5) return 0.82;
-  return 0.42;
 };
 
 const HomeGlobeMapbox = React.memo(forwardRef(({
@@ -232,8 +238,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       map.doubleClickZoom.enable();
       map.boxZoom.enable();
       map.keyboard.enable();
-      map.resize();
-      requestAnimationFrame(() => map.resize());
+      safeMapResize(map);
+      requestAnimationFrame(() => safeMapResize(map));
     } catch {
       // Ignore interaction bootstrap errors.
     }
@@ -243,24 +249,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const map = mapRef.current?.getMap();
     if (!map || typeof map.setConfigProperty !== 'function') return;
     const shouldShowPlaceLabels = map.getZoom() >= PLACE_LABEL_MIN_ZOOM;
-    const configEntries = [
+    try { map.setConfigProperty('basemap', 'language', 'ko'); } catch {}
+    [
       ['showPointOfInterestLabels', false],
       ['showRoadLabels', false],
       ['showTransitLabels', false],
       ['showRoadsAndTransit', false],
-      // "Administrative boundaries" key on Mapbox Standard family.
       ['showAdminBoundaries', false],
-      // Backward compatibility for previously attempted key.
       ['showAdministrativeBoundaries', false],
       ['showPlaceLabels', shouldShowPlaceLabels]
-    ];
-
-    configEntries.forEach(([key, value]) => {
-      try {
-        map.setConfigProperty('basemap', key, value);
-      } catch {
-        // Ignore unsupported style config keys per-style.
-      }
+    ].forEach(([key, value]) => {
+      try { map.setConfigProperty('basemap', key, value); } catch {}
     });
   }, []);
 
@@ -272,6 +271,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (lastPlaceLabelVisibleRef.current === shouldShowPlaceLabels) return;
 
     allSymbolLayerIdsRef.current.forEach((layerId) => {
+      if (isGateoLayer(layerId)) return;
       if (!map.getLayer(layerId)) return;
       try {
         map.setLayoutProperty(layerId, 'visibility', 'none');
@@ -556,6 +556,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     allMarkersRef.current = allMarkers;
   }, [allMarkers]);
 
+  const markerGeoJSON = useMemo(() => markersToGeoJSON(allMarkers), [allMarkers]);
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || pauseRender || isStyleTransitioning) return;
+    updateGateoMarkerSource(map, markerGeoJSON);
+  }, [markerGeoJSON, pauseRender, isStyleTransitioning]);
+
   const addRipple = useCallback((lat, lng, ttl = 1600) => {
     const ripple = { id: `${Date.now()}-${Math.random()}`, lat, lng };
     setRipples(prev => [...prev, ripple]);
@@ -676,6 +684,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const handleReturnToSpace = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
+
     const returnZoom = isMobileDevice ? 1 : GLOBE_VIEW.default.zoom;
     try {
       map.stop();
@@ -688,7 +697,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         essential: true
       });
     } catch {
-      // Fallback for edge cases where camera animation is rejected.
       map.jumpTo({
         center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
         zoom: returnZoom,
@@ -700,7 +708,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     autoRotateRef.current = !pauseRender;
     setRipples([]);
     pendingFocusRef.current = null;
-  }, [isMobileDevice, pauseRender]);
+    lastPlaceLabelVisibleRef.current = null;
+    applyBasemapConfig();
+    resetAndApplyPlaceLabelVisibility();
+  }, [applyBasemapConfig, isMobileDevice, pauseRender, resetAndApplyPlaceLabelVisibility]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
@@ -725,8 +736,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         map.easeTo({ ...GLOBE_VIEW.default, duration: 1500 });
       }
       autoRotateRef.current = true;
+      applyBasemapConfig();
     }
-  }), [addRipple, flyToAndPin, pauseRender]);
+  }), [addRipple, applyBasemapConfig, flyToAndPin, pauseRender]);
 
   useEffect(() => {
     autoRotateRef.current = !pauseRender;
@@ -745,19 +757,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     // 카드/탭 전환 후 display:none -> block 복귀 시 캔버스가 축소된 채 남는 경우가 있어
     // 프레임 경계에서 resize를 두 번 보정한다.
     const raf1 = requestAnimationFrame(() => {
-      try {
-        map.resize();
-      } catch {
-        // Ignore resize failures during rapid route transitions.
-      }
+      safeMapResize(map);
       raf2 = requestAnimationFrame(() => {
-        try {
-          map.resize();
-          syncMapZoom();
-          applyPlaceLabelVisibility();
-        } catch {
-          // Ignore resize failures during rapid route transitions.
-        }
+        safeMapResize(map);
+        syncMapZoom();
+        applyPlaceLabelVisibility();
       });
     });
 
@@ -792,7 +796,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         return;
       }
 
-      const shouldRotate = autoRotateRef.current && !interactionRef.current && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
+      const shouldRotate = autoRotateRef.current
+        && !interactionRef.current
+        && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
       if (shouldRotate) {
         const speed = isZenMode ? 1.8 : 3;
         const center = map.getCenter();
@@ -830,9 +836,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (map && event.point && !isScreenPointOnGlobe(map, event.point)) return;
 
     const markerAtPoint = map && event.point
-      ? findMarkerAtScreenPoint(map, event.point, allMarkersRef.current)
+      ? findGateoMarkerAtPoint(map, event.point)
       : null;
-    if (markerAtPoint) return;
+    if (markerAtPoint) {
+      if (onMarkerClick) onMarkerClick(markerAtPoint, 'globe');
+      return;
+    }
     const labelLayers = placeLabelLayerIdsRef.current || [];
     const clickedLabels = map && labelLayers.length > 0
       ? map.queryRenderedFeatures(event.point, { layers: labelLayers })
@@ -874,7 +883,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
 
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
-  }, [isZenMode, onGlobeClick, pauseRender]);
+  }, [isZenMode, onGlobeClick, onMarkerClick, pauseRender]);
+
+  const mapStyle = MAP_STYLES[globeTheme] || MAP_STYLES.deep;
 
   const pauseAutoRotateIfGlobeHit = useCallback((event) => {
     const map = mapRef.current?.getMap();
@@ -909,12 +920,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       onPointerLeave={handleInteractionEnd}
       onWheel={handleInteractionStart}
     >
+      <div className="absolute inset-0">
       <Map
         ref={mapRef}
         initialViewState={GLOBE_VIEW.default}
         projection="globe"
         mapboxAccessToken={MAPBOX_TOKEN}
-        mapStyle={MAP_STYLES[globeTheme] || MAP_STYLES.deep}
+        mapStyle={mapStyle}
         onClick={handleGlobeClickInternal}
         onError={(evt) => raiseFatal(evt?.error || new Error('Mapbox render error'))}
         onLoad={() => {
@@ -922,12 +934,47 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           if (map) {
             unbindSpaceDragGuardRef.current?.();
             unbindSpaceDragGuardRef.current = bindGlobeSpaceDragGuard(map);
+            setupGateoMarkerLayers(map);
+            updateGateoMarkerSource(map, markerGeoJSON);
+            map.on('click', GATEO_DOT_LAYER_ID, (e) => {
+              if (e.features?.[0] && onMarkerClick) {
+                const props = e.features[0].properties || {};
+                onMarkerClick({
+                  id: props.markerId,
+                  name: props.fullName || props.name,
+                  slug: props.slug,
+                  lat: e.lngLat.lat,
+                  lng: e.lngLat.lng,
+                  type: props.type,
+                  category: props.category
+                }, 'globe');
+              }
+            });
+            map.on('click', GATEO_LABEL_LAYER_ID, (e) => {
+              if (e.features?.[0] && onMarkerClick) {
+                const props = e.features[0].properties || {};
+                onMarkerClick({
+                  id: props.markerId,
+                  name: props.fullName || props.name,
+                  slug: props.slug,
+                  lat: e.lngLat.lat,
+                  lng: e.lngLat.lng,
+                  type: props.type,
+                  category: props.category
+                }, 'globe');
+              }
+            });
+            [GATEO_DOT_LAYER_ID, GATEO_LABEL_LAYER_ID].forEach((layerId) => {
+              map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+              map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+            });
           }
           syncMapZoom();
           ensureInteractionReady();
           applyWaterPaint();
           refreshPlaceLabelLayers();
           resetAndApplyPlaceLabelVisibility();
+          applyBasemapConfig();
           waitingThemeSettleRef.current = false;
           setIsStyleTransitioning(false);
         }}
@@ -936,6 +983,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           applyWaterPaint();
           refreshPlaceLabelLayers();
           resetAndApplyPlaceLabelVisibility();
+          const map = mapRef.current?.getMap();
+          if (map) {
+            setupGateoMarkerLayers(map);
+            updateGateoMarkerSource(map, markerGeoJSON);
+          }
+          applyBasemapConfig();
         }}
         onIdle={() => {
           syncMapZoom();
@@ -985,42 +1038,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         attributionControl={false}
         fog={fogConfig}
       >
-        {!isZenMode && !isStyleTransitioning && allMarkers.map((d, idx) => {
-          const offsetLat = d._offsetLat || 0;
-          const offsetLng = d._offsetLng || 0;
-          const { html, zIndex } = getMarkerDesign(d);
-          const key = d.id || d.tripId || `${d.type || 'marker'}-${d.lat}-${d.lng}-${d.name || idx}`;
-          return (
-            <Marker
-              key={key}
-              latitude={d.lat + offsetLat}
-              longitude={d.lng + offsetLng}
-              anchor="bottom"
-            >
-              <div
-                className="globe-marker-wrapper"
-                style={{ position: 'relative', zIndex, pointerEvents: 'auto', cursor: 'pointer' }}
-                onPointerEnter={() => {
-                  isHoveringMarker.current = true;
-                }}
-                onPointerLeave={() => {
-                  isHoveringMarker.current = false;
-                }}
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  markerClickGuardUntilRef.current = Date.now() + 450;
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  markerClickGuardUntilRef.current = Date.now() + 450;
-                  isHoveringMarker.current = false;
-                  if (onMarkerClick) onMarkerClick(d, 'globe');
-                }}
-                dangerouslySetInnerHTML={{ __html: html }}
-              />
-            </Marker>
-          );
-        })}
+        <LanguageControl />
 
         {ripples.map(ripple => (
           <Marker
@@ -1036,6 +1054,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           </Marker>
         ))}
       </Map>
+      </div>
 
       {!isZenMode && (
         <div className="absolute z-[70] pointer-events-auto flex flex-col gap-1 right-3 top-14 md:top-8 md:right-[24.8%] md:gap-2 md:flex-row">
