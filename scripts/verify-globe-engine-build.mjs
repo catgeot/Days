@@ -30,4 +30,10 @@ if (hasMapboxToken && !hasProdFirstResolver) {
   process.exit(1);
 }
 
+const hasGateoMarkerLayers = bundle.includes('gateo-spots-dot') || bundle.includes('gateo-spots-label');
+if (hasMapboxToken && !hasGateoMarkerLayers) {
+  console.error('[verify-globe-engine] Mapbox token present but gateo symbol layers missing from bundle.');
+  process.exit(1);
+}
+
 console.log(`[verify-globe-engine] OK (${indexFiles[0]})`);
