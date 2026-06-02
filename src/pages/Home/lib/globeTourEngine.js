@@ -21,12 +21,14 @@ export function hasGlobeTourLandmark(locationOrSlug) {
   return Boolean(globeLandmarks[slug]);
 }
 
-/** Summary 카드 3D 투어 버튼 — 유효 좌표면 POC·fallback 템플릿 모두 허용 */
+/** Summary 카드 3D 투어 버튼 — QA: 유효 좌표면 전 여행지 노출 (tourReady gate 없음) */
 export function canStartGlobeTour(location) {
   if (!location || location.isScanning) return false;
   const lat = Number(location.lat);
   const lng = Number(location.lng);
-  return Number.isFinite(lat) && Number.isFinite(lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+  if (lat === 0 && lng === 0) return false;
+  return true;
 }
 
 export function resolveTourKeyframes(slug, fallbackLng, fallbackLat) {
