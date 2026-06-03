@@ -3,6 +3,7 @@ import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/trav
 import { bootstrapGlobe3d, teardownGlobe3d } from './globe3dBootstrap';
 import { GLOBE_MODE, transitionGlobeMode } from './globeMode';
 import { TOUR_TEMPLATE_BY_NAME, landmarkOrbit } from './globeTourTemplates';
+import { resolveGlobeTourConfig } from './globeTourResolve';
 
 export function resolveGlobeTourSlug(locationOrSlug) {
   if (!locationOrSlug) return null;
@@ -21,7 +22,7 @@ export function hasGlobeTourLandmark(locationOrSlug) {
   return Boolean(globeLandmarks[slug]);
 }
 
-/** Summary 카드 3D 투어 버튼 — QA: 유효 좌표면 전 여행지 노출 (tourReady gate 없음) */
+/** Summary 카드 3D 투어 — 유효 좌표면 전 여행지·신규/숨은 지명 노출 (품질은 landmark·category 템플릿으로 조정) */
 export function canStartGlobeTour(location) {
   if (!location || location.isScanning) return false;
   const lat = Number(location.lat);
@@ -31,13 +32,35 @@ export function canStartGlobeTour(location) {
   return true;
 }
 
-export function resolveTourKeyframes(slug, fallbackLng, fallbackLat) {
+export function resolveTourKeyframes(slug, fallbackLng, fallbackLat, location) {
   const key = String(slug || resolveGlobeTourSlug({ slug, lat: fallbackLat, lng: fallbackLng }) || '').toLowerCase();
-  const landmark = globeLandmarks[key];
-  const center = landmark?.center || [fallbackLng, fallbackLat];
+  const landmark = key ? globeLandmarks[key] : null;
   if (landmark?.keyframes?.length) return landmark.keyframes;
-  const templateFn = TOUR_TEMPLATE_BY_NAME[landmark?.template] || landmarkOrbit;
-  return templateFn(center, landmark?.orbit || {});
+
+  const config = resolveGlobeTourConfig({
+    slug: key,
+    lat: fallbackLat,
+    lng: fallbackLng,
+    location
+  });
+  const templateFn = TOUR_TEMPLATE_BY_NAME[config.template] || landmarkOrbit;
+  return templateFn(config.center, config.orbit);
+}
+
+/** Tour bootstrap options merged from globeLandmarks + category fallback. */
+export function resolveTourBootstrapOptions(slug, location, fallbackLng, fallbackLat) {
+  const key = String(slug || resolveGlobeTourSlug(location || { slug, lat: fallbackLat, lng: fallbackLng }) || '').toLowerCase();
+  const landmark = key ? globeLandmarks[key] : null;
+  const config = resolveGlobeTourConfig({
+    slug: key,
+    lat: fallbackLat,
+    lng: fallbackLng,
+    location
+  });
+  return {
+    exaggeration: landmark?.exaggeration ?? config.exaggeration,
+    buildings: Boolean(landmark?.buildings ?? config.buildings)
+  };
 }
 
 function waitForMoveEnd(map) {
@@ -100,9 +123,10 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
       active = true;
       cancelled = false;
 
-      const resolvedSlug = resolveGlobeTourSlug(location || { slug, lat, lng });
-      const landmark = resolvedSlug ? globeLandmarks[resolvedSlug] : null;
-      keyframes = resolveTourKeyframes(resolvedSlug, lng, lat);
+      const mergedLocation = location || { slug, lat, lng };
+      const resolvedSlug = resolveGlobeTourSlug(mergedLocation);
+      keyframes = resolveTourKeyframes(resolvedSlug, lng, lat, mergedLocation);
+      const bootstrapOpts = resolveTourBootstrapOptions(resolvedSlug, mergedLocation, lng, lat);
 
       setMode(GLOBE_MODE.TOUR_BOOTSTRAPPING);
       onTourUiChange?.(true);
@@ -112,10 +136,7 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
       await applyKeyframe(map, keyframes[0], { immediate: true });
 
       try {
-        await bootstrapGlobe3d(map, {
-          exaggeration: landmark?.exaggeration ?? 1.5,
-          buildings: Boolean(landmark?.buildings)
-        });
+        await bootstrapGlobe3d(map, bootstrapOpts);
       } catch {
         active = false;
         onTourUiChange?.(false);

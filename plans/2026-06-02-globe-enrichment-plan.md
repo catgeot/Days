@@ -1,16 +1,19 @@
 # 홈 지구본 풍부화 마스터 계획 (2026-06-02)
 
-**맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-02-project-log.md`](2026-06-02-project-log.md)
+**맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-03-project-log.md`](2026-06-03-project-log.md) · 직전 [`2026-06-02-project-log.md`](2026-06-02-project-log.md)
+
+**갱신**: 2026-06-03 — 버튼 노출 정책·대표 뷰포인트·Mapbox Standard 랜드마크
 
 ---
 
 ## 제품 목표 (Phase 1 북극성)
 
-**「3D 투어 버튼이 있다」가 아니라, 클릭하는 순간 그 여행지를 부드럽게 맛볼 수 있는 상태.**
+**클릭하는 순간 그 여행지의 감성(지형·스케일)을 맛볼 수 있는 카메라 경로.**
 
-- 사용자: 여행 전 **간접 경험**(분위기·지형·스케일 미리보기)
-- 엔지니어링: slug별 **tour-ready** 큐레이션 — QA 통과 전에는 버튼 미노출
-- 품질 기준: cold start·재방문 모두 **끊김 없는 카메라 경로** + acceptable terrain 로딩
+- 사용자: 여행 전 **간접 경험** · 홈 UI·플래너·채팅은 투어 중에도 유지 (젠/시네마 UI 숨김 **보류**).
+- **버튼 노출**: `lat`/`lng`만 유효하면 **전 여행지** — 큐레이션·신규·DB-only 지명 포함 (숨은 여행지 → 위키·매거진 파이프라인).
+- **품질**: slug별 **대표 뷰포인트**(`globeLandmarks.json`) + category 폴백 — `travelSpots.js` 좌표(공항·도심·행정 중심)를 투어에 그대로 쓰지 않음.
+- **시각 우선순위** (QA 2026-06-03): **대자연·해안·알프스** > 도심 (`mountainOrbit` / `coastalOrbit` / `alpineVillageOrbit` 우선 큐레이션).
 
 ---
 
@@ -37,34 +40,54 @@
 
 ---
 
-## Phase 1 구현 SSOT (WIP — 1a~1c)
+## Phase 1 구현 SSOT (WIP — 1a~1e)
 
 | 파일 | 역할 |
 |------|------|
 | [`globeMode.js`](../src/pages/Home/lib/globeMode.js) | `globe2d` ↔ `tour_*` 상태 머신 |
 | [`globe3dBootstrap.js`](../src/pages/Home/lib/globe3dBootstrap.js) | on-demand DEM · optional buildings · per-slug exaggeration · 타임아웃 |
-| [`globeLandmarks.json`](../src/pages/Home/data/globeLandmarks.json) | slug별 center · template · orbit · (향후) `tourReady` · `keyframes` |
-| [`globeTourTemplates.js`](../src/pages/Home/lib/globeTourTemplates.js) | `cityOrbit` · `alpineVillageOrbit` · `mountainOrbit` · `coastalOrbit` · `smoothOrbit` |
-| [`globeTourEngine.js`](../src/pages/Home/lib/globeTourEngine.js) | terrain ready → keyframe 재생 · `keyframes` 있으면 템플릿 skip |
-| [`globeTourUi.js`](../src/pages/Home/lib/globeTourUi.js) | 투어 중 Mapbox·gateo 라벨 숨김 · 복귀 시 복원 |
-| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」버튼 (현재: 좌표만 있으면 노출 → **tour-ready gate로 변경 예정**) |
+| [`globeLandmarks.json`](../src/pages/Home/data/globeLandmarks.json) | **투어 카메라 SSOT** — slug별 `center` · `template` · `orbit` · (선택) `keyframes` · `tourReady`(QA 메타, 버튼과 무관) |
+| [`globeTourResolve.js`](../src/pages/Home/lib/globeTourResolve.js) | landmark 없을 때 `primaryCategory` → template · 알프스 힌트 |
+| [`globeTourTemplates.js`](../src/pages/Home/lib/globeTourTemplates.js) | `cityOrbit` · `alpineVillageOrbit` · `mountainOrbit` · `coastalOrbit` |
+| [`globeTourEngine.js`](../src/pages/Home/lib/globeTourEngine.js) | terrain → keyframe 재생 · `canStartGlobeTour` = 좌표 유효 시 true |
+| [`globeTourUi.js`](../src/pages/Home/lib/globeTourUi.js) | 투어 중 라벨 정리 · bright 테마 Mapbox Standard 랜드마크 아이콘 파일럿 |
+| [`travelSpots.js`](../src/pages/Home/data/travelSpots.js) | **핀·SEO·공항·페리** 좌표 SSOT — 투어 center와 분리 유지 |
+| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 |
 
 **동작 요약**
 
-- Summary **3D 투어** → DEM on-demand → **bearing 선회**(드론샷). flyTo-only 금지.
-- **도시**: 랜드마크 POI 대신 **도시 중심 `cityOrbit`** (3D buildings 한계 회피).
-- **알프스 마을**: `alpineVillageOrbit` — 마을+능선 동시 프레임.
-- **수동 경로**: `globeLandmarks.json` → `keyframes: [...]` — Mapbox Studio export 변환 후 재생.
-- 투어 중 place·gateo 라벨 숨김 · Skip · **2D로 복귀**.
+- Summary **3D 투어** → `resolveGlobeTourConfig`: **landmark center** → 없으면 category template + `travelSpots` 좌표.
+- **자연/휴양**: `mountainOrbit` · `coastalOrbit` 우선 — 칸쿤(호텔존 해변)·사파(계곡)·밴프(루이스 호) 등 `globeLandmarks`에 뷰포인트 등록.
+- **도시**: `cityOrbit` — fill-extrusion buildings는 기본 OFF.
+- **알프스**: `alpineVillageOrbit` (체르마트 등).
+- **수동 경로**: `keyframes: [...]` — Mapbox Studio export.
+- Skip · **2D 복귀** · 홈 UI 유지.
 
-### tour-ready 승격 기준 (다음 세션)
+### 데이터 역할 (투어 vs 여행지 SSOT)
+
+| 데이터 | 투어에 쓰는가 | 비고 |
+|--------|---------------|------|
+| `globeLandmarks.json` | **카메라 center·template** | 대표 명소·해변·계곡 등 큐레이션 |
+| `travelSpots.js` | 폴백 center·category만 | `lat`/`lng` 변경 시 공항·거리 매칭 영향 — 무작정 이동 금지 |
+| `citiesData.js` | 검색·글로브 커버 | 투어 1순위 SSOT 아님 |
+| `keywordData.js` | 검색 동의어 | 좌표 없음 |
+
+### tour-ready (내부 QA 메타 — 버튼 gate 아님)
 
 | # | 조건 |
 |---|------|
-| 1 | 카메라 — 검증된 template **또는** Studio `keyframes` |
-| 2 | 지형 — `exaggeration`·center QA Pass |
-| 3 | UX — Skip · 2D 복귀 · 모바일 회귀 OK |
-| 4 | `"tourReady": true` — 위 3항 통과 후만 JSON·버튼 노출 |
+| 1 | 카메라 — `globeLandmarks` center 위성 QA **또는** Studio `keyframes` |
+| 2 | 지형 — `exaggeration` Pass |
+| 3 | UX — Skip · 2D 복귀 · 모바일 OK |
+| 4 | (선택) `"tourReady": true` — 운영·승격 추적용. **버튼은 좌표만으로 노출** |
+
+### Mapbox Standard 3D 랜드마크 (강구 중)
+
+- Mapbox **Standard** 스타일: 370+ 도시 · 1만+ 커스텀 3D 랜드마크·공항·역 ([블로그](https://www.mapbox.com/blog/global-cities-3d-landmarks)).
+- gateo 기본 지구본 **deep** = `satellite-streets-v12` — Standard 랜드마크 **미포함**. **bright** = `mapbox://styles/mapbox/standard`.
+- **파일럿 (2026-06-03)**: `globeTourUi` — bright 테마 투어 중 `showLandmarkIcons: true`.
+- **후속 후보**: urban slug만 투어 시작 시 Standard 스타일 임시 전환 · `queryRenderedFeatures`로 랜드마크 근처 `center` 스냅 · [Standard config](https://docs.mapbox.com/map-styles/standard/guides/) (`showLandmarkIcons`, buildings near landmarks).
+- 자연 지명은 DEM+terrain+큐레이션 center가 주력; Standard는 **도시 보조**.
 
 ### 로컬 QA 이력
 
@@ -76,16 +99,36 @@
 | 1b~c | 파리 buildings | **투명 프레임** — photoreal 불가 → **cityOrbit 전환, buildings OFF** |
 | 1b~c | 후지산 | template smooth 튜닝 — **여전히 타일 로딩 끊김** → Studio keyframe 후보 |
 | 1b~c | 체르마트(zermatt) | 마을 포커스 나쁘지 않음 → `alpineVillageOrbit` 추가 |
+| 1d | 칸쿤·사파·흐바르 | 도심 → 해변·산맥 포커스 **사용자 QA Pass** |
 
-### Phase 1 잔여 (다음 세션)
+### Phase 1 잔여
 
 | # | 작업 | 목표 |
 |---|------|------|
-| **1d** | **`tourReady` gate** — `canStartGlobeTour` → 큐레이션 slug만 버튼 노출 | 기능 ≠ 보여줄 수 있음 분리 |
-| **1e** | 1차 카탈로그 QA·승격 — paris · mount-fuji · zermatt 등 9 slug | cold·warm 재생 Pass 목록 |
-| **1f** | **후지산 Studio keyframe** → `keyframes` 배열 저장·변환 가이드 | 맛보기 품질 확보 |
-| **1g** | 2D 복귀·모바일·Skip 회귀 · gateo.kr 스mo크 | Phase 1 완료 선언 |
-| *(선택)* | idle terrain pre-warm (tour-ready slug) | cold start 개선 |
+| **1d** | ✅ `globeTourResolve` + nature slug `globeLandmarks` 1차 | category 폴백 · 대표 center |
+| **1e** | `globeLandmarks` 확장 + 위성 QA | paradise/nature/adventure 우선 · 도심 좌표 이탈 수정 |
+| **1f** | **후지산 Studio keyframe** → `keyframes` | 타일 끊김 완화 |
+| **1g** | 2D 복귀·모바일·Skip · gateo.kr 스mo크 | Phase 1 완료 |
+| **1h** | Mapbox Standard 랜드마크 — urban A/B · deep vs bright 정책 | 도시 감성 보조 |
+| *(선택)* | idle terrain pre-warm | cold start |
+
+---
+
+## 다음 세션 제시어 (2026-06-03 커밋 후)
+
+아래 문장을 새 채팅에 붙여 넣으면 Phase 1 잔여(1e~1h)를 이어갈 수 있습니다.
+
+```
+@.ai-context.md @plans/2026-06-03-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+
+3D 투어 Phase 1e~1h 이어서 진행해 주세요.
+- 1d 완료: globeTourResolve + globeLandmarks 12 slug, 칸쿤·사파·흐바르 QA(해변·산맥 포커스 OK).
+- 버튼은 전 여행지 노출 유지. 투어 center는 globeLandmarks SSOT, travelSpots 핀 좌표는 변경 금지.
+- 1e: paradise/nature/adventure slug globeLandmarks 일괄 확장(흐바르 등 미등록 우선) + 위성 center QA.
+- 1f: 후지산 Mapbox Studio keyframes → globeLandmarks.json.
+- 1g: 2D 복귀·Skip·모바일·gateo.kr 스모크 → Phase 1 완료.
+- 1h: Mapbox Standard 3D 랜드마크 urban A/B (bright 파일럿 확장 또는 투어 시 Standard 스타일 전환 검토).
+```
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 
@@ -103,7 +146,7 @@
 
 1. **한 커밋 = 한 검증 가능 단위** — Gate QA 통과 후 다음 커밋.
 2. **3D 투어는 flyTo-only 금지** — terrain·pitch ON은 버튼 시에만 · `easeTo` bearing 선회.
-3. **tour-ready 미달 slug는 버튼 숨김** — generic fallback으로 “기능 있음” 체크 금지.
+3. **버튼은 전 여행지 노출** — 품질은 `globeLandmarks`·category template·`keyframes`로 끌어올림 (도심-only fallback 지양).
 4. **일괄 WIP merge 금지**.
 
 ### Phase 2~4

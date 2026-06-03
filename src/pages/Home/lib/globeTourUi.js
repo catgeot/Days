@@ -28,7 +28,10 @@ export function applyTourMapUi(map, { active, globeTheme } = {}) {
       ['showPlaceLabels', !active],
       ['showPointOfInterestLabels', false],
       ['showRoadLabels', false],
-      ['showTransitLabels', false]
+      ['showTransitLabels', false],
+      // Mapbox Standard 3D landmark models (370+ cities) — pilot during tour on bright theme
+      ['showLandmarkIcons', active],
+      ['showLandmarkIconLabels', false]
     ].forEach(([key, value]) => {
       try { map.setConfigProperty('basemap', key, value); } catch {}
     });
