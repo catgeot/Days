@@ -1,6 +1,6 @@
 # 2026-06-03 프로젝트 일지 — 3D 투어 Phase 1d~1h + bright gateo-first
 
-**직전**: [`2026-06-02-project-log.md`](2026-06-02-project-log.md) · **계획**: [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md) · **커밋**: `ef0736b` · `9098448` (Mapbox 지명 SSOT·눈 버튼·우주 뷰)
+**직전**: [`2026-06-02-project-log.md`](2026-06-02-project-log.md) · **계획**: [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md) · **커밋**: `ef0736b` · `305475b` (Mapbox 지명 SSOT·눈 버튼·우주 뷰)
 
 ---
 
