@@ -11,6 +11,16 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-06-03',
+    category: 'feature',
+    title: '홈 지구본에서 여행지 3D 투어를 즐겨보세요',
+    items: [
+      '장소를 고르면 「3D 투어」로 그곳의 지형과 풍경을 둘러볼 수 있어요.',
+      '휴대폰에서는 화면을 넓게 쓰도록 간결한 안내와 Skip·2D로 복귀 버튼을 제공해요.',
+      '투어가 끝나면 다시 지구본으로 돌아와 다른 여행지를 탐색할 수 있어요.',
+    ],
+  },
+  {
     id: '2026-06-01',
     category: 'feature',
     title: 'MOONi 채팅 — 여행 정보 확인부터 예약까지',
