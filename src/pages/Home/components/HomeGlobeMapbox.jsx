@@ -235,8 +235,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const refreshPlaceLabelLayers = useCallback(() => {
     const map = mapRef.current?.getMap();
-    if (!map?.getStyle) return;
-    const layers = map.getStyle()?.layers || [];
+    if (!map?.isStyleLoaded?.()) return;
+
+    let layers;
+    try {
+      layers = map.getStyle()?.layers || [];
+    } catch {
+      return;
+    }
     const symbolLayers = layers.filter((layer) => layer.type === 'symbol');
 
     allSymbolLayerIdsRef.current = symbolLayers.map((layer) => layer.id);
@@ -289,12 +295,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const applyBasemapConfig = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map || globeTheme !== 'bright') return;
-
-    const shouldShowPlaceLabels = map.getZoom() >= PLACE_LABEL_MIN_ZOOM;
-    applyStandardBasemapConfig(map, [
-      ...STANDARD_HOME_CONFIG,
-      ['showPlaceLabels', shouldShowPlaceLabels]
-    ]);
+    applyStandardBasemapConfig(map, STANDARD_HOME_CONFIG);
   }, [globeTheme]);
 
   const applyKoreanSatelliteLabels = useCallback(() => {
@@ -320,6 +321,25 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const applyPlaceLabelVisibility = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
+
+    if (globeTheme === 'bright') {
+      applyBasemapConfig();
+      const hideLayer = (layerId) => {
+        if (isGateoLayer(layerId) || !map.getLayer(layerId)) return;
+        try {
+          map.setLayoutProperty(layerId, 'visibility', 'none');
+        } catch {
+          // Ignore during style transitions.
+        }
+      };
+      allSymbolLayerIdsRef.current.forEach(hideLayer);
+      allLineLayerIdsRef.current.forEach(hideLayer);
+      hiddenFillLayerIdsRef.current.forEach(hideLayer);
+      adminBoundaryLayerIdsRef.current.forEach(hideLayer);
+      placeLabelLayerIdsRef.current.forEach(hideLayer);
+      lastPlaceLabelVisibleRef.current = false;
+      return;
+    }
 
     const shouldShowPlaceLabels = map.getZoom() >= PLACE_LABEL_MIN_ZOOM;
     if (lastPlaceLabelVisibleRef.current === shouldShowPlaceLabels) return;
@@ -371,7 +391,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     });
     applyBasemapConfig();
     lastPlaceLabelVisibleRef.current = shouldShowPlaceLabels;
-  }, [applyBasemapConfig]);
+  }, [applyBasemapConfig, globeTheme]);
 
   const syncMapZoom = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -1094,6 +1114,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           setIsStyleTransitioning(false);
         }}
         onStyleData={() => {
+          const map = mapRef.current?.getMap();
+          if (!map?.isStyleLoaded?.()) return;
+
           ensureInteractionReady();
           applyWaterPaint();
           refreshPlaceLabelLayers();
@@ -1150,7 +1173,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         attributionControl={false}
         fog={fogConfig}
       >
-        {globeTheme === 'bright' && <LanguageControl />}
+        {globeTheme !== 'bright' && <LanguageControl />}
 
         {ripples.map(ripple => (
           <Marker

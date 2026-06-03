@@ -21,9 +21,11 @@ const VALID_KEYS = new Set([
   'font'
 ]);
 
-/** Home globe (bright) — minimal labels; landmarks off until urban tour. */
+/** Home globe (bright) — gateo-first: gateo markers/labels only; Mapbox place labels off. */
 export const STANDARD_HOME_CONFIG = [
+  ['showPlaceLabels', false],
   ['showPointOfInterestLabels', false],
+  ['showPedestrianRoads', false],
   ['showRoadLabels', false],
   ['showTransitLabels', false],
   ['showAdminBoundaries', false],

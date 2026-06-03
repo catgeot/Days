@@ -37,11 +37,7 @@ export function applyTourMapUi(map, { active, globeTheme, tourTemplate } = {}) {
     if (urbanLandmarkDemo) {
       applyStandardBasemapConfig(map, STANDARD_URBAN_TOUR_LANDMARKS_CONFIG);
     } else {
-      const shouldShowPlaceLabels = !active && map.getZoom() >= 4;
-      applyStandardBasemapConfig(map, [
-        ...STANDARD_HOME_CONFIG,
-        ['showPlaceLabels', shouldShowPlaceLabels]
-      ]);
+      applyStandardBasemapConfig(map, STANDARD_HOME_CONFIG);
     }
   }
 }
