@@ -1,6 +1,6 @@
 # 2026-06-03 프로젝트 일지 — 3D 투어 좌표·템플릿 1차
 
-**직전**: [`2026-06-02-project-log.md`](2026-06-02-project-log.md) · **계획**: [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md)
+**직전**: [`2026-06-02-project-log.md`](2026-06-02-project-log.md) · **계획**: [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md) · **커밋**: `574ac0c`
 
 ---
 
