@@ -4,7 +4,7 @@ import BookmarkButton from '../common/BookmarkButton';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 
-const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark, onStartTour }) => {
+const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark, onStartTour, isCompact = false }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [glowPhase, setGlowPhase] = useState('enter');
   const isScanning = location?.isScanning;
@@ -94,10 +94,10 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
           </div>
 
           <div
-            className={`${!isScanning ? 'cursor-pointer mb-6' : ''}`}
-            onClick={!isScanning ? onExpand : undefined}
+            className={`${!isScanning && !isCompact ? 'cursor-pointer mb-6' : isCompact ? 'mb-0' : ''}`}
+            onClick={!isScanning && !isCompact ? onExpand : undefined}
           >
-            {isLoading || isScanning ? (
+            {!isCompact && (isLoading || isScanning ? (
               <div className="w-full animate-pulse space-y-3 mt-1 px-1">
                 <div className="h-4 bg-white/10 rounded w-1/3" />
                 <div className="space-y-2">
@@ -111,12 +111,12 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
                   {location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.
                 </p>
               </div>
-            )}
+            ))}
           </div>
 
           <div
             className={`overflow-hidden ${
-              isScanning ? 'max-h-0 opacity-0 mt-0' : 'max-h-[120px] opacity-100 mt-2'
+              isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : 'max-h-[120px] opacity-100 mt-2'
             }`}
           >
             <div className={`flex gap-2 ${canStartTour ? '' : ''}`}>

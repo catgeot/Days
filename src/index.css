@@ -278,6 +278,34 @@ body {
   }
 }
 
+/* Mobile 3D tour — compact header card glow */
+.tour-mobile-bar-halo {
+  position: absolute;
+  inset: -6px;
+  border-radius: 1.15rem;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.38), transparent 72%);
+  filter: blur(8px);
+  animation: tour-mobile-bar-glow 3s ease-in-out infinite;
+}
+
+.tour-mobile-bar-card {
+  box-shadow:
+    0 8px 24px -8px rgba(0, 0, 0, 0.55),
+    0 0 14px 1px rgba(59, 130, 246, 0.18);
+}
+
+.tour-mobile-bar-skip {
+  box-shadow:
+    0 0 10px rgba(59, 130, 246, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+@keyframes tour-mobile-bar-glow {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .place-summary-shell-enter,
   .place-summary-card-enter,
@@ -287,5 +315,10 @@ body {
   .place-summary-halo,
   .place-summary-open-hint {
     animation: none;
+  }
+
+  .tour-mobile-bar-halo {
+    animation: none;
+    opacity: 0.75;
   }
 }

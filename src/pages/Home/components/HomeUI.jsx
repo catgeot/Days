@@ -10,6 +10,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
+import TourMobileBar from './TourMobileBar';
 import { useTrendingData } from '../hooks/useTrendingData';
 
 const HomeUI = React.memo(({
@@ -25,7 +26,12 @@ const HomeUI = React.memo(({
   isZenMode,
   onToggleZenMode,
   user,
-  onLogout
+  onLogout,
+  isTourCinema = false,
+  tourLocation = null,
+  globeMode = null,
+  onTourSkip,
+  onTourEnd,
 }) => {
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
@@ -96,8 +102,17 @@ const HomeUI = React.memo(({
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        <div className="flex-1 md:col-span-5 flex flex-col items-end md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto relative z-50">
-           <div data-site-notice-anchor className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md">
+        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto relative z-50 min-w-0">
+          {isTourCinema && tourLocation ? (
+            <TourMobileBar
+              className="w-full md:hidden"
+              location={tourLocation}
+              globeMode={globeMode}
+              onSkip={onTourSkip}
+              onEndTour={onTourEnd}
+            />
+          ) : (
+           <div data-site-notice-anchor className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md self-end">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div
               onClick={() => navigate('/explore')}
@@ -111,6 +126,7 @@ const HomeUI = React.memo(({
               </span>
             </div>
           </div>
+          )}
         </div>
 
         <div className="hidden md:block md:col-span-1" />
@@ -127,6 +143,7 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
+      {!isTourCinema && (
       <div className="fixed z-50 pointer-events-auto animate-fade-in-left
          bottom-8 left-1/2 -translate-x-1/2 w-auto max-w-[95vw] flex justify-center
          md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:translate-x-0 md:flex-col md:max-w-none">
@@ -146,6 +163,7 @@ const HomeUI = React.memo(({
             })}
          </div>
       </div>
+      )}
 
       {(isTagLoading || relatedTags.length > 0) && (
         <div className="hidden md:flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">

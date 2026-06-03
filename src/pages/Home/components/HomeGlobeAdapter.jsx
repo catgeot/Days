@@ -7,7 +7,10 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const HomeGlobeAdapter = forwardRef((props, ref) => {
   const initialEngine = useMemo(
-    () => resolveHomeGlobeEngine({ mapboxToken: MAPBOX_TOKEN }),
+    () => resolveHomeGlobeEngine({
+      mapboxToken: MAPBOX_TOKEN,
+      search: typeof window !== 'undefined' ? window.location.search : '',
+    }),
     []
   );
   const [activeEngine, setActiveEngine] = useState(initialEngine);
@@ -16,8 +19,14 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
   useEffect(() => {
     if (!MAPBOX_TOKEN && import.meta.env.DEV) {
       console.warn('[HomeGlobeAdapter] mapbox token missing. Falling back to legacy.');
+      return;
     }
-  }, []);
+    if (import.meta.env.DEV && initialEngine === 'mapbox') {
+      console.info(
+        '[HomeGlobeAdapter] DEV Mapbox — LAN 모바일 QA는 URL 제한 없는 토큰(.env.local) 필요. legacy 강제: ?globe=legacy'
+      );
+    }
+  }, [initialEngine]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => childRef.current?.pauseRotation?.(),

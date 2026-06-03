@@ -13,12 +13,13 @@ const bundlePath = path.join(distAssets, indexFiles[0]);
 const bundle = fs.readFileSync(bundlePath, 'utf8');
 const hasMapboxToken = bundle.includes('pk.ey');
 const hasBrokenMobileBranch = /useMemo\(\(\)=>\{try\{const \w=window\.navigator\?\.userAgent[^]*?return"legacy"/.test(bundle);
-// Vite/esbuild minify varies: `return t?i?"mapbox"` (older) vs `return t?a?"mapbox"` (isProd default true in PROD build)
+// Vite/esbuild minify varies across resolver refactors.
 const hasProdFirstResolver =
   /return t\?i\?"mapbox"/.test(bundle) ||
   /return t\?a\?"mapbox"/.test(bundle) ||
   /useMemo\(\(\)=>"mapbox"/.test(bundle) ||
-  (/mapboxToken:\w+,isProd:\w+=!0/.test(bundle) && /return \w+\?\w+\?"mapbox"/.test(bundle));
+  (/mapboxToken:\w+,isProd:\w+=!0/.test(bundle) && /return \w+\?\w+\?"mapbox"/.test(bundle)) ||
+  /if\(!\w+\)return"legacy";if\(\w+\)return"mapbox"/.test(bundle);
 
 if (hasMapboxToken && hasBrokenMobileBranch) {
   console.error('[verify-globe-engine] Production bundle selects legacy globe on mobile UA.');

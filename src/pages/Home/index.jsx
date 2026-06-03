@@ -25,6 +25,7 @@ import { getSystemPrompt } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromPlaceId, buildSpotLookup } from '../../utils/travelSpotResolve.js';
+import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -104,6 +105,13 @@ function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)');
+    const onChange = () => setIsMobileViewport(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
   const { scoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
   const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, updateTripDestination, toggleBookmark, deleteTrip } = useTravelData(user);
   const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
@@ -140,7 +148,14 @@ function Home() {
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
+  const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
+  const [isMobileViewport, setIsMobileViewport] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 1023px)').matches;
+  });
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
+  const isTourActive = isTourMode(globeMode);
+  const isTourCinema = isTourActive && isMobileViewport;
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
   const shouldPauseGlobe = isCardExpanded
     || isPlaceRoute
@@ -563,6 +578,8 @@ function Home() {
           globeTheme={globeTheme}
           isZenMode={isZenMode}
           isPinVisible={isPinVisible}
+          onGlobeModeChange={setGlobeMode}
+          hideTourControls={isTourCinema}
         />
       </div>
 
@@ -581,6 +598,11 @@ function Home() {
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}
           isZenMode={isZenMode} onToggleZenMode={toggleZenMode}
+          isTourCinema={isTourCinema}
+          tourLocation={selectedLocation}
+          globeMode={globeMode}
+          onTourSkip={() => globeRef.current?.skipTour?.()}
+          onTourEnd={() => globeRef.current?.endTour?.()}
           user={user} onLogout={() => supabase.auth.signOut()}
           onClearScouts={() => {
               if(window.confirm("임시 핀을 모두 삭제하시겠습니까?")) {
@@ -625,10 +647,11 @@ function Home() {
           }}
         />
 
-        {selectedLocation && routeLocation.pathname === '/' && (
+        {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && (
           <PlaceCardSummary
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
+            isCompact={isTourActive && !isMobileViewport}
             onClose={() => {
               setIsCardExpanded(false);
               setSelectedLocation(null);
@@ -674,6 +697,7 @@ function Home() {
           <MooniAgentFab
             isChatOpen={isChatOpen}
             isZenMode={isZenMode}
+            isTourActive={isTourActive}
             onOpenChat={(payload) => handleStartChat('MOONi', payload)}
           />
         )}

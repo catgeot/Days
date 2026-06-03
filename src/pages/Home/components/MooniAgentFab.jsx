@@ -60,7 +60,7 @@ function canUseHoverPeek() {
   return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 }
 
-export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
+export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode, isTourActive = false }) {
   const rootRef = useRef(null);
   const dragRef = useRef(null);
   const hintTimerRef = useRef(null);
@@ -317,7 +317,7 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode }) {
     setIsDragging(false);
   };
 
-  if (isZenMode || isChatOpen) return null;
+  if (isZenMode || isChatOpen || isTourActive) return null;
 
   const isIntro = showHint && hintPhase === 'intro';
   const isNudge = showHint && hintPhase === 'nudge';

@@ -38,7 +38,14 @@
 - **1d Pass**: 칸쿤·사파·흐바르 해변·산맥 포커스.
 - **bright gateo-first**: 로컬 — 지명·행정 정리 · gateo 마커 정상 · deep 전환 OK (`ef0736b` 푸시).
 - **지명 QA**: 우주 뷰 Mapbox 지명·Standard 랜드마크 잔존 → `forceHideMapboxLayer`(줌 22–24) + 투어 UI 수정. 눈 OFF 시 줌 3+에서도 Mapbox 숨김 확인.
-- **1g 대기**: gateo.kr 스모크 · 2D 복귀 · Skip · 모바일 · 후지산 keyframe · bright 파리 urban 투어 랜드마크.
+- **1g 대기**: gateo.kr 스모크 · 후지산 keyframe · bright 파리 urban 투어 랜드마크.
+- **1g-b Pass (로컬)**: 모바일 3D 투어 시네마 — `TourMobileBar`(로고 옆·글로우·Skip/2D) · Summary 숨김 · 지도 탭 차단 · DEV Mapbox LAN(URL 무제한 토큰).
+
+## DEV Mapbox LAN
+
+- `.env.local`에 **URL 제한 없는** `VITE_MAPBOX_TOKEN`(Default public 또는 DEV 전용) — LAN 모바일 QA.
+- 프로덕션은 URL 제한 토큰 유지 · Mapbox 프록시 **약관상 불가**.
+- legacy 강제: `?globe=legacy`
 
 ## 다음 세션
 

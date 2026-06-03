@@ -192,6 +192,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   globeTheme = 'deep',
   isZenMode = false,
   isPinVisible = true,
+  onGlobeModeChange,
+  hideTourControls = false,
   onFatalError
 }, ref) => {
   const mapRef = useRef(null);
@@ -747,7 +749,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const handleTourModeChange = useCallback((mode) => {
     tourActiveRef.current = isTourMode(mode);
     setGlobeMode(mode);
-  }, []);
+    onGlobeModeChange?.(mode);
+  }, [onGlobeModeChange]);
 
   const handleTourUiChange = useCallback((active, meta = {}) => {
     const map = mapRef.current?.getMap();
@@ -933,6 +936,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (Date.now() < markerClickGuardUntilRef.current) return;
     if (Date.now() < suppressClickUntilRef.current) return;
     if (isZenMode || pauseRender) return;
+    if (isTourMode(globeMode) || tourActiveRef.current) return;
     if (!onGlobeClick || !event?.lngLat) return;
     const map = mapRef.current?.getMap();
     if (map && event.point && !isScreenPointOnGlobe(map, event.point)) return;
@@ -994,7 +998,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
 
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
-  }, [allTravelSpots, isZenMode, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
+  }, [allTravelSpots, globeMode, isZenMode, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
 
   const mapStyle = MAP_STYLES[globeTheme] || MAP_STYLES.deep;
 
@@ -1133,7 +1137,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       </Map>
       </div>
 
-      {!isZenMode && (
+      {!isZenMode && !hideTourControls && !(isMobileDevice && isTourMode(globeMode)) && (
         <div className="absolute z-[70] pointer-events-auto flex flex-col gap-1 right-3 top-14 md:top-8 md:right-[24.8%] md:gap-2 md:flex-row">
           <button
             type="button"
@@ -1179,7 +1183,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         </div>
       )}
 
-      {canSkipTour(globeMode) && !isZenMode && (
+      {canSkipTour(globeMode) && !isZenMode && !hideTourControls && (
         <div className="absolute bottom-[calc(11.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[65] pointer-events-auto lg:bottom-28">
           <button
             type="button"
@@ -1191,7 +1195,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         </div>
       )}
 
-      {canEndTour(globeMode) && globeMode === GLOBE_MODE.TOUR_READY && !isZenMode && (
+      {canEndTour(globeMode) && globeMode === GLOBE_MODE.TOUR_READY && !isZenMode && !hideTourControls && (
         <div className="absolute bottom-[calc(11.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[65] pointer-events-auto flex gap-2 lg:bottom-28">
           <button
             type="button"

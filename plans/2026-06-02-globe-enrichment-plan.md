@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-03-project-log.md`](2026-06-03-project-log.md) · 직전 [`2026-06-02-project-log.md`](2026-06-02-project-log.md)
 
-**갱신**: 2026-06-03 — `globeMapboxLabelPolicy` · 눈 버튼·우주 뷰 지명 · 1g 스모크 대기
+**갱신**: 2026-06-03 — 모바일 투어 시네마 UI · DEV Mapbox LAN QA · `TourMobileBar`
 
 ---
 
@@ -10,7 +10,7 @@
 
 **클릭하는 순간 그 여행지의 감성(지형·스케일)을 맛볼 수 있는 카메라 경로.**
 
-- 사용자: 여행 전 **간접 경험** · 홈 UI·플래너·채팅은 투어 중에도 유지 (젠/시네마 UI 숨김 **보류**).
+- 사용자: 여행 전 **간접 경험** · 데스크톱은 Summary **컴팩트** 유지 · **모바일(`<lg`)** 투어 중 Summary 숨김 + 헤더 **`TourMobileBar`** (로고 옆 · 글로우 · Skip/2D).
 - **버튼 노출**: `lat`/`lng`만 유효하면 **전 여행지** — 큐레이션·신규·DB-only 지명 포함 (숨은 여행지 → 위키·매거진 파이프라인).
 - **품질**: slug별 **대표 뷰포인트**(`globeLandmarks.json`) + category 폴백 — `travelSpots.js` 좌표(공항·도심·행정 중심)를 투어에 그대로 쓰지 않음.
 - **시각 우선순위** (QA 2026-06-03): **대자연·해안·알프스** > 도심 (`mountainOrbit` / `coastalOrbit` / `alpineVillageOrbit` 우선 큐레이션).
@@ -53,7 +53,9 @@
 | [`globeTourUi.js`](../src/pages/Home/lib/globeTourUi.js) | 투어 중 라벨 정리 · urban 투어 시 Standard 랜드마크만 ON · 종료 시 `reapply`로 홈 정책 복원 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | **Mapbox 지명·경계·랜드마크 SSOT** — 줌≥2·`isPinVisible` · Standard `setConfigProperty` + 레이어 숨김 |
 | [`travelSpots.js`](../src/pages/Home/data/travelSpots.js) | **핀·SEO·공항·페리** 좌표 SSOT — 투어 center와 분리 유지 |
-| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 |
+| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 · 데스크톱 투어 중 `isCompact` |
+| [`TourMobileBar.jsx`](../src/pages/Home/components/TourMobileBar.jsx) | 모바일 투어 시네마 — 헤더(로고 옆) · 국가/지명 + Skip/2D · `index.css` 글로우 |
+| [`resolveHomeGlobeEngine.js`](../src/pages/Home/components/resolveHomeGlobeEngine.js) | PROD→mapbox · DEV→mapbox(URL 무제한 `.env.local` 토큰) · `?globe=legacy` |
 
 **동작 요약**
 
@@ -62,7 +64,7 @@
 - **도시**: `cityOrbit` — fill-extrusion buildings는 기본 OFF.
 - **알프스**: `alpineVillageOrbit` (체르마트 등).
 - **수동 경로**: `keyframes: [...]` — Mapbox Studio export.
-- Skip · **2D 복귀** · 홈 UI 유지.
+- Skip · **2D 복귀** · 모바일: Summary 숨김 · 지도 탭 탐색 차단 · MOONi FAB·카테고리 내비 숨김.
 
 ### 데이터 역할 (투어 vs 여행지 SSOT)
 
@@ -111,7 +113,7 @@
 | **1d** | ✅ `globeTourResolve` + nature slug `globeLandmarks` 1차 | category 폴백 · 대표 center |
 | **1e** | ✅ +58 slug · **68/134** nature 등록 | 흐바르·동남아·알프스 · 잔여 ~66 폴백 |
 | **1f** | ✅ `mount-fuji` 7-frame `keyframes` | `tourReady` |
-| **1g** | 빌드 OK · **gateo 스모크 사용자 QA** | 2D 복귀·Skip·모바일 |
+| **1g** | 빌드 OK · **gateo 스모크 사용자 QA** | 2D 복귀·Skip·모바일 `TourMobileBar` |
 | **1h** | ✅ `globeStandardBasemap` · urban 투어 랜드마크 데모 | |
 | **1h-b** | ✅ bright gateo-first (`ef0736b`) → **지명 SSOT** (`globeMapboxLabelPolicy`) | 우주 뷰·눈 버튼·Standard 랜드마크 |
 | *(선택)* | idle terrain pre-warm | cold start |
