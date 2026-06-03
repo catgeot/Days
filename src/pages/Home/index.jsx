@@ -562,6 +562,7 @@ function Home() {
           pauseRender={shouldPauseGlobe}
           globeTheme={globeTheme}
           isZenMode={isZenMode}
+          isPinVisible={isPinVisible}
         />
       </div>
 

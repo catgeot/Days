@@ -15,7 +15,6 @@ import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScr
 import { normalizeLngNear } from '../lib/globeLngUtils';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
 import {
-  PLACE_LABEL_MIN_ZOOM,
   HIGH_ZOOM_FULL_REVEAL,
   getMaxTierForZoom,
   getMajorMergeThreshold,
@@ -32,7 +31,7 @@ import {
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { applyTourMapUi, restoreGlobeMapUi } from '../lib/globeTourUi';
-import { applyStandardBasemapConfig, STANDARD_HOME_CONFIG } from '../lib/globeStandardBasemap';
+import { applyMapboxGlobeLabelPolicy } from '../lib/globeMapboxLabelPolicy';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -192,6 +191,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   pauseRender = false,
   globeTheme = 'deep',
   isZenMode = false,
+  isPinVisible = true,
   onFatalError
 }, ref) => {
   const mapRef = useRef(null);
@@ -292,12 +292,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
   }, []);
 
-  const applyBasemapConfig = useCallback(() => {
-    const map = mapRef.current?.getMap();
-    if (!map || globeTheme !== 'bright') return;
-    applyStandardBasemapConfig(map, STANDARD_HOME_CONFIG);
-  }, [globeTheme]);
-
   const applyKoreanSatelliteLabels = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map || globeTheme === 'bright') return;
@@ -322,76 +316,22 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const map = mapRef.current?.getMap();
     if (!map) return;
 
-    if (globeTheme === 'bright') {
-      applyBasemapConfig();
-      const hideLayer = (layerId) => {
-        if (isGateoLayer(layerId) || !map.getLayer(layerId)) return;
-        try {
-          map.setLayoutProperty(layerId, 'visibility', 'none');
-        } catch {
-          // Ignore during style transitions.
-        }
-      };
-      allSymbolLayerIdsRef.current.forEach(hideLayer);
-      allLineLayerIdsRef.current.forEach(hideLayer);
-      hiddenFillLayerIdsRef.current.forEach(hideLayer);
-      adminBoundaryLayerIdsRef.current.forEach(hideLayer);
-      placeLabelLayerIdsRef.current.forEach(hideLayer);
-      lastPlaceLabelVisibleRef.current = false;
-      return;
+    if (map.isStyleLoaded?.()) {
+      refreshPlaceLabelLayers();
     }
 
-    const shouldShowPlaceLabels = map.getZoom() >= PLACE_LABEL_MIN_ZOOM;
-    if (lastPlaceLabelVisibleRef.current === shouldShowPlaceLabels) return;
-
-    allSymbolLayerIdsRef.current.forEach((layerId) => {
-      if (isGateoLayer(layerId)) return;
-      if (!map.getLayer(layerId)) return;
-      try {
-        map.setLayoutProperty(layerId, 'visibility', 'none');
-      } catch {
-        // Ignore layer visibility update failures.
-      }
+    const shouldShowMapboxContext = applyMapboxGlobeLabelPolicy(map, {
+      globeTheme,
+      isPinVisible,
+      placeLabelLayerIds: placeLabelLayerIdsRef.current
     });
 
-    allLineLayerIdsRef.current.forEach((layerId) => {
-      if (!map.getLayer(layerId)) return;
-      try {
-        map.setLayoutProperty(layerId, 'visibility', 'none');
-      } catch {
-        // Ignore layer visibility update failures.
-      }
-    });
+    if (shouldShowMapboxContext === null) return;
 
-    hiddenFillLayerIdsRef.current.forEach((layerId) => {
-      if (!map.getLayer(layerId)) return;
-      try {
-        map.setLayoutProperty(layerId, 'visibility', 'none');
-      } catch {
-        // Ignore layer visibility update failures.
-      }
-    });
-
-    adminBoundaryLayerIdsRef.current.forEach((layerId) => {
-      if (!map.getLayer(layerId)) return;
-      try {
-        map.setLayoutProperty(layerId, 'visibility', 'none');
-      } catch {
-        // Ignore layer visibility update failures.
-      }
-    });
-
-    placeLabelLayerIdsRef.current.forEach((layerId) => {
-      if (!map.getLayer(layerId)) return;
-      try {
-        map.setLayoutProperty(layerId, 'visibility', shouldShowPlaceLabels ? 'visible' : 'none');
-      } catch {
-        // Ignore layer visibility update failures.
-      }
-    });
-    applyBasemapConfig();
-    lastPlaceLabelVisibleRef.current = shouldShowPlaceLabels;
-  }, [applyBasemapConfig, globeTheme]);
+    if (lastPlaceLabelVisibleRef.current !== shouldShowMapboxContext) {
+      lastPlaceLabelVisibleRef.current = shouldShowMapboxContext;
+    }
+  }, [globeTheme, isPinVisible, refreshPlaceLabelLayers]);
 
   const syncMapZoom = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -405,6 +345,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     lastPlaceLabelVisibleRef.current = null;
     applyPlaceLabelVisibility();
   }, [applyPlaceLabelVisibility]);
+
+  useEffect(() => {
+    resetAndApplyPlaceLabelVisibility();
+  }, [isPinVisible, resetAndApplyPlaceLabelVisibility]);
 
   const applyWaterPaint = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -468,6 +412,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
     waitingThemeSettleRef.current = true;
     setIsStyleTransitioning(true);
+    lastPlaceLabelVisibleRef.current = null;
   }, [globeTheme]);
 
   const allMarkers = useMemo(() => {
@@ -796,9 +741,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     setRipples([]);
     pendingFocusRef.current = null;
     lastPlaceLabelVisibleRef.current = null;
-    applyBasemapConfig();
     resetAndApplyPlaceLabelVisibility();
-  }, [applyBasemapConfig, isMobileDevice, pauseRender, resetAndApplyPlaceLabelVisibility]);
+  }, [isMobileDevice, pauseRender, resetAndApplyPlaceLabelVisibility]);
 
   const handleTourModeChange = useCallback((mode) => {
     tourActiveRef.current = isTourMode(mode);
@@ -889,13 +833,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         map.easeTo({ ...GLOBE_VIEW.default, duration: 1500 });
       }
       autoRotateRef.current = true;
-      applyBasemapConfig();
+      resetAndApplyPlaceLabelVisibility();
     },
     startTour,
     skipTour,
     endTour,
     getGlobeMode: () => globeMode
-  }), [addRipple, applyBasemapConfig, endTour, flyToAndPin, globeMode, pauseRender, skipTour, startTour]);
+  }), [addRipple, endTour, flyToAndPin, globeMode, pauseRender, resetAndApplyPlaceLabelVisibility, skipTour, startTour]);
 
   useEffect(() => {
     if (isTourMode(globeMode)) return;
@@ -1109,7 +1053,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           refreshPlaceLabelLayers();
           applyKoreanSatelliteLabels();
           resetAndApplyPlaceLabelVisibility();
-          applyBasemapConfig();
           waitingThemeSettleRef.current = false;
           setIsStyleTransitioning(false);
         }}
@@ -1123,7 +1066,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           applyKoreanSatelliteLabels();
           resetAndApplyPlaceLabelVisibility();
           syncGateoMarkerLayers();
-          applyBasemapConfig();
         }}
         onIdle={() => {
           syncMapZoom();

@@ -21,14 +21,29 @@ const VALID_KEYS = new Set([
   'font'
 ]);
 
-/** Home globe (bright) — gateo-first: gateo markers/labels only; Mapbox place labels off. */
-export const STANDARD_HOME_CONFIG = [
+/** Space / idle globe / pins hidden — no Mapbox labels, landmarks, or boundaries. */
+export const STANDARD_HOME_SPACE_CONFIG = [
   ['showPlaceLabels', false],
   ['showPointOfInterestLabels', false],
   ['showPedestrianRoads', false],
   ['showRoadLabels', false],
   ['showTransitLabels', false],
   ['showAdminBoundaries', false],
+  ['showLandmarkIcons', false],
+  ['showLandmarkIconLabels', false],
+  ['show3dLandmarks', false],
+  ['show3dObjects', false],
+  ['showIndoorLabels', false]
+];
+
+/** Zoomed-in home — Mapbox place labels + admin boundaries; roads/POI clutter off. */
+export const STANDARD_HOME_CONFIG = [
+  ['showPlaceLabels', true],
+  ['showPointOfInterestLabels', false],
+  ['showPedestrianRoads', false],
+  ['showRoadLabels', false],
+  ['showTransitLabels', false],
+  ['showAdminBoundaries', true],
   ['showLandmarkIcons', false],
   ['showLandmarkIconLabels', false],
   ['show3dLandmarks', false]

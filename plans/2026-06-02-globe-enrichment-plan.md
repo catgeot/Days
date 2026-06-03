@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-03-project-log.md`](2026-06-03-project-log.md) · 직전 [`2026-06-02-project-log.md`](2026-06-02-project-log.md)
 
-**갱신**: 2026-06-03 — 버튼 노출 정책·대표 뷰포인트·Mapbox Standard 랜드마크
+**갱신**: 2026-06-03 — `globeMapboxLabelPolicy` · 눈 버튼·우주 뷰 지명 · 1g 스모크 대기
 
 ---
 
@@ -50,7 +50,8 @@
 | [`globeTourResolve.js`](../src/pages/Home/lib/globeTourResolve.js) | landmark 없을 때 `primaryCategory` → template · 알프스 힌트 |
 | [`globeTourTemplates.js`](../src/pages/Home/lib/globeTourTemplates.js) | `cityOrbit` · `alpineVillageOrbit` · `mountainOrbit` · `coastalOrbit` |
 | [`globeTourEngine.js`](../src/pages/Home/lib/globeTourEngine.js) | terrain → keyframe 재생 · `canStartGlobeTour` = 좌표 유효 시 true |
-| [`globeTourUi.js`](../src/pages/Home/lib/globeTourUi.js) | 투어 중 라벨 정리 · bright 테마 Mapbox Standard 랜드마크 아이콘 파일럿 |
+| [`globeTourUi.js`](../src/pages/Home/lib/globeTourUi.js) | 투어 중 라벨 정리 · urban 투어 시 Standard 랜드마크만 ON · 종료 시 `reapply`로 홈 정책 복원 |
+| [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | **Mapbox 지명·경계·랜드마크 SSOT** — 줌≥2·`isPinVisible` · Standard `setConfigProperty` + 레이어 숨김 |
 | [`travelSpots.js`](../src/pages/Home/data/travelSpots.js) | **핀·SEO·공항·페리** 좌표 SSOT — 투어 center와 분리 유지 |
 | [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 |
 
@@ -86,8 +87,9 @@
 - Mapbox **Standard** 스타일: 370+ 도시 · 1만+ 커스텀 3D 랜드마크·공항·역 ([블로그](https://www.mapbox.com/blog/global-cities-3d-landmarks)).
 - gateo 기본 지구본 **deep** = `satellite-streets-v12` — Standard 랜드마크 **미포함**. **bright** = `mapbox://styles/mapbox/standard`.
 - **파일럿 (2026-06-03)**: [`globeStandardBasemap.js`](../src/pages/Home/lib/globeStandardBasemap.js) — Standard API 유효 키만 · **urban `cityOrbit` 투어 중** `showLandmarkIcons` + `showLandmarkIconLabels` + `show3dLandmarks` (deep=위성, 해당 없음).
-- **홈 bright**: 도로·POI 라벨 off · `showPlaceLabels`는 줌≥4 시 on → gateo 지명과 **겹침** — 다음 세션 **gateo-first** (`showPlaceLabels: false` 고정) 검토.
-- **후속 보류**: deep에서 urban 투어 시 Standard 스타일 임시 전환.
+- **홈 Mapbox 지명**: [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) — **줌≥2**·**눈 버튼 ON**일 때 `STANDARD_HOME_CONFIG` / 위성 place·boundary 레이어. **우주 뷰·눈 OFF** = `STANDARD_HOME_SPACE_CONFIG` + landmark 레이어 강제 숨김. [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) · `MapboxLanguage`는 **deep/neon만**.
+- **테마 전환 콘솔**: `Unable to perform style diff` — satellite↔Standard **정상 경고** (무시). `getStyle`은 `isStyleLoaded` 이후만 (`onStyleData` 가드).
+- **후속 보류**: deep에서 urban 투어 시 Standard 스타일 임시 전환 · bright를 “Mapbox 지명만” 모드로 단순화( gateo 라벨 축소) — 제품 결정 시.
 - 자연 지명은 DEM+terrain+큐레이션 center; Standard는 **도시 투어 맛보기**용.
 
 ### 로컬 QA 이력
@@ -110,7 +112,8 @@
 | **1e** | ✅ +58 slug · **68/134** nature 등록 | 흐바르·동남아·알프스 · 잔여 ~66 폴백 |
 | **1f** | ✅ `mount-fuji` 7-frame `keyframes` | `tourReady` |
 | **1g** | 빌드 OK · **gateo 스모크 사용자 QA** | 2D 복귀·Skip·모바일 |
-| **1h** | ✅ `globeStandardBasemap` · urban 투어 랜드마크 데모 | bright 홈 지명 정리는 **다음 세션** |
+| **1h** | ✅ `globeStandardBasemap` · urban 투어 랜드마크 데모 | |
+| **1h-b** | ✅ bright gateo-first (`ef0736b`) → **지명 SSOT** (`globeMapboxLabelPolicy`) | 우주 뷰·눈 버튼·Standard 랜드마크 |
 | *(선택)* | idle terrain pre-warm | cold start |
 
 ---
@@ -120,12 +123,12 @@
 ```
 @.ai-context.md @plans/2026-06-03-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-홈 지구본 Phase 1 마무리 이어서 진행해 주세요.
-- 완료: globeLandmarks 80 slug(1e)·후지산 keyframes(1f)·bright urban 투어 Standard 랜드마크(1h)·globeStandardBasemap(콘솔 invalid key 제거).
-- 버튼 전 여행지 노출 유지. travelSpots 핀 좌표 변경 금지.
-- 다음 1순위: bright(Standard) 홈을 deep처럼 gateo-first — showPlaceLabels false 고정, gateo 마커·지명만(도로·POI 라벨 off 유지). 밋밋함 vs 겹침 trade-off는 일지·계획 참고.
-- 1g: gateo.kr 스모크(2D 복귀·Skip·모바일)·흐바르·파리 bright 3D 투어·후지산 keyframe QA → Pass 시 Phase 1 완료.
-- 후순위: nature/adventure 잔여 ~66 slug globeLandmarks 확장.
+홈 지구본 Phase 1 마무리 — 1g 스모크.
+- 완료: globeLandmarks 80 slug(1e)·후지산 keyframes(1f)·Standard urban 투어(1h)·bright gateo-first(ef0736b).
+- deep 메인 · bright는 setConfigProperty 위주 — bootstrap/ onStyleData 대규모 변경 지양.
+- 1g: gateo.kr — 2D 복귀·Skip·모바일·흐바르·파리 bright urban·후지산 keyframe → Pass 시 Phase 1 완료.
+- 후순위: nature/adventure 잔여 ~66 slug globeLandmarks.
+- bright 테마 전환 시 style diff 경고는 무시 가능; Uncaught Style is not done loading 재발 시 isStyleLoaded 가드만 최소 보강.
 ```
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
