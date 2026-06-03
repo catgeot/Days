@@ -1,26 +1,31 @@
-# 2026-06-03 프로젝트 일지 — 3D 투어 좌표·템플릿 1차
+# 2026-06-03 프로젝트 일지 — 3D 투어 Phase 1d~1h
 
-**직전**: [`2026-06-02-project-log.md`](2026-06-02-project-log.md) · **계획**: [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md) · **커밋**: `574ac0c`
+**직전**: [`2026-06-02-project-log.md`](2026-06-02-project-log.md) · **계획**: [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md)
 
 ---
 
 ## 제품 결정
 
-- **3D 투어 버튼**: 유효 좌표가 있으면 **전 여행지·신규/숨은 지명** 노출 유지 — 플래너·로컬 왓슨·DB·위키 파이프라인과 연동.
-- **젠/시네마(홈 UI 숨김)**: 보류 — 홈 UI 유지하며 투어.
-- **시각 품질**: 도심보다 **대자연·해안·알프스** 선회가 유리 (체르마트·사파 등 QA 반영).
+- **3D 투어 버튼**: 유효 좌표면 **전 여행지** 노출 유지.
+- **투어 center**: `globeLandmarks.json` SSOT · `travelSpots` 핀 좌표 변경 금지.
+- **Standard 랜드마크**: **bright(Standard) + urban `cityOrbit` 투어 중**만 Mapbox 아이콘·3D 랜드마크 — deep(위성)에는 해당 없음.
+- **bright 홈 지명**: gateo 마커와 Mapbox 지명 겹침 → **다음 세션**에 deep처럼 `showPlaceLabels` off·gateo-first 정리 예정 (밋밋함은 위성 대비 덜함).
 
-## 구현
+## 구현 (Phase 1d → 1e~1h)
 
-- `globeTourResolve.js` — `globeLandmarks` 우선 · 없으면 `primaryCategory` → `coastalOrbit` / `mountainOrbit` / `cityOrbit` · 알프스 slug/키워드 → `alpineVillageOrbit`.
-- `globeLandmarks.json` — 자연/휴양 12 slug 추가 (칸쿤·사파·푸켓·몰디브·밴프·우유니·EBC·퀸스타운·아이슬란드·파타고니아·하롱·보라카이·보라보라 등).
-- `globeTourEngine.js` · `globeTourUi.js` · 계획·`.ai-context` · `travel-spots-management` 갱신.
+| Phase | 내용 |
+|-------|------|
+| 1d | `globeTourResolve` · nature 12 slug `globeLandmarks` (`574ac0c`) |
+| 1e | +58 slug · **80** landmark · nature/adventure **68/134** · `merge-globe-landmarks-1e.cjs` |
+| 1f | `mount-fuji` 7-frame `keyframes` · `tourReady` |
+| 1h | `globeStandardBasemap.js` — 유효 `setConfigProperty`만 · urban 투어 시 icons+labels+`show3dLandmarks` |
+| — | 파리 center 에펠·센 강 · bright 콘솔 오류 후보 키 제거 (`language`, `showRoadsAndTransit` 등) |
 
-## QA (사용자 확인)
+## QA
 
-- **칸쿤·사파·흐바르** 등: 도심 중심 → **해변·산맥(계곡)** 포커스로 변경됨 확인.
-- 흐바르(`hvar`): `globeLandmarks` 미등록 — category 폴백(`paradise` → `coastalOrbit`) 효과로 개선된 것으로 추정 → 1e에서 전용 center 등록 권장.
+- **1d Pass**: 칸쿤·사파·흐바르 해변·산맥 포커스.
+- **1g 대기**: gateo.kr 스모크 · 2D 복귀 · Skip · 모바일 · 후지산 keyframe 체감 · bright 파리 urban 투어 랜드마크.
 
-## 다음 세션 (Phase 1e~1h)
+## 다음 세션
 
-→ [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md) **「다음 세션 제시어」** 참조.
+→ 계획 문서 **「다음 세션 제시어」** — bright gateo-first 지명 · 1g 스모크 · 잔여 ~66 nature landmark.

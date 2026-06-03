@@ -125,11 +125,17 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
 
       const mergedLocation = location || { slug, lat, lng };
       const resolvedSlug = resolveGlobeTourSlug(mergedLocation);
+      const tourConfig = resolveGlobeTourConfig({
+        slug: resolvedSlug,
+        lat,
+        lng,
+        location: mergedLocation
+      });
       keyframes = resolveTourKeyframes(resolvedSlug, lng, lat, mergedLocation);
       const bootstrapOpts = resolveTourBootstrapOptions(resolvedSlug, mergedLocation, lng, lat);
 
       setMode(GLOBE_MODE.TOUR_BOOTSTRAPPING);
-      onTourUiChange?.(true);
+      onTourUiChange?.(true, { template: tourConfig.template });
       map.stop();
 
       // Snap near landmark before terrain load (no globe-scale flyTo).
@@ -152,6 +158,7 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
       }
 
       setMode(GLOBE_MODE.TOUR_PLAYING);
+      onTourUiChange?.(true, { template: tourConfig.template });
       await playKeyframes(keyframes, { startIndex: 1 });
 
       if (!cancelled) {

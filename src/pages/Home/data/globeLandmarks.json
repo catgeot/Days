@@ -1,67 +1,199 @@
 {
   "paris": {
-    "landmarkName": "Paris",
-    "center": [2.3522, 48.8566],
+    "landmarkName": "Eiffel Tower & Seine",
+    "center": [
+      2.2945,
+      48.8584
+    ],
     "template": "cityOrbit",
     "exaggeration": 0.45,
-    "orbit": { "zoom": 14.2, "pitch": 50, "startBearing": -35, "orbitSpan": 170 }
+    "orbit": {
+      "zoom": 15.0,
+      "pitch": 52,
+      "startBearing": -25,
+      "orbitSpan": 150
+    }
   },
   "rome": {
     "landmarkName": "Rome",
-    "center": [12.49, 41.9],
+    "center": [
+      12.49,
+      41.9
+    ],
     "template": "cityOrbit",
     "exaggeration": 0.5,
-    "orbit": { "zoom": 14.1, "pitch": 52, "startBearing": -45, "orbitSpan": 160 }
+    "orbit": {
+      "zoom": 14.1,
+      "pitch": 52,
+      "startBearing": -45,
+      "orbitSpan": 160
+    }
   },
   "tokyo": {
     "landmarkName": "Tokyo",
-    "center": [139.76, 35.67],
+    "center": [
+      139.76,
+      35.67
+    ],
     "template": "cityOrbit",
     "exaggeration": 0.5,
-    "orbit": { "zoom": 14.0, "pitch": 51, "startBearing": -25, "orbitSpan": 165 }
+    "orbit": {
+      "zoom": 14,
+      "pitch": 51,
+      "startBearing": -25,
+      "orbitSpan": 165
+    }
   },
   "seoul": {
     "landmarkName": "Seoul",
-    "center": [126.978, 37.5665],
+    "center": [
+      126.978,
+      37.5665
+    ],
     "template": "cityOrbit",
     "exaggeration": 0.55,
-    "orbit": { "zoom": 14.0, "pitch": 50, "startBearing": -30, "orbitSpan": 155 }
+    "orbit": {
+      "zoom": 14,
+      "pitch": 50,
+      "startBearing": -30,
+      "orbitSpan": 155
+    }
   },
   "santorini": {
     "landmarkName": "Oia",
-    "center": [25.3753, 36.4618],
+    "center": [
+      25.3753,
+      36.4618
+    ],
     "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": { "zoom": 15.2, "pitch": 58, "orbitSpan": 115, "smoothOrbit": true }
-  },
-  "bali": {
-    "landmarkName": "Uluwatu",
-    "center": [115.0882, -8.8291],
-    "template": "coastalOrbit",
-    "exaggeration": 1.2,
-    "orbit": { "zoom": 15.5, "pitch": 60, "orbitSpan": 120, "smoothOrbit": true }
-  },
-  "mount-fuji": {
-    "landmarkName": "Mount Fuji",
-    "center": [138.7274, 35.3606],
-    "template": "mountainOrbit",
-    "exaggeration": 1.4,
     "orbit": {
-      "zoom": 12.6,
+      "zoom": 15.2,
       "pitch": 58,
-      "orbitSpan": 105,
-      "segments": 4,
-      "segmentDuration": 6200,
+      "orbitSpan": 115,
       "smoothOrbit": true
     }
   },
+  "bali": {
+    "landmarkName": "Uluwatu",
+    "center": [
+      115.0882,
+      -8.8291
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 15.5,
+      "pitch": 60,
+      "orbitSpan": 120,
+      "smoothOrbit": true
+    }
+  },
+  "mount-fuji": {
+    "landmarkName": "Mount Fuji & Kawaguchi",
+    "center": [
+      138.7274,
+      35.3606
+    ],
+    "exaggeration": 1.4,
+    "keyframes": [
+      {
+        "center": [
+          138.757,
+          35.517
+        ],
+        "zoom": 10.5,
+        "pitch": 0,
+        "bearing": -30,
+        "duration": 0
+      },
+      {
+        "center": [
+          138.757,
+          35.517
+        ],
+        "zoom": 11.8,
+        "pitch": 45,
+        "bearing": -30,
+        "duration": 4000,
+        "ease": true
+      },
+      {
+        "center": [
+          138.801,
+          35.499
+        ],
+        "zoom": 12.2,
+        "pitch": 52,
+        "bearing": -10,
+        "duration": 5500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          138.7274,
+          35.3606
+        ],
+        "zoom": 12.6,
+        "pitch": 58,
+        "bearing": 20,
+        "duration": 6000,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          138.68,
+          35.38
+        ],
+        "zoom": 12.4,
+        "pitch": 60,
+        "bearing": 55,
+        "duration": 6000,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          138.7274,
+          35.3606
+        ],
+        "zoom": 12.8,
+        "pitch": 58,
+        "bearing": 95,
+        "duration": 5500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          138.757,
+          35.517
+        ],
+        "zoom": 12.5,
+        "pitch": 56,
+        "bearing": 130,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ],
+    "tourReady": true
+  },
   "zermatt": {
     "landmarkName": "Zermatt & Matterhorn",
-    "center": [7.7491, 46.0207],
+    "center": [
+      7.7491,
+      46.0207
+    ],
     "template": "alpineVillageOrbit",
     "exaggeration": 1.35,
     "orbit": {
-      "peakOffset": [-0.038, -0.022],
+      "peakOffset": [
+        -0.038,
+        -0.022
+      ],
       "zoom": 13.5,
       "pitch": 57,
       "startBearing": -60,
@@ -70,100 +202,1130 @@
   },
   "new-york": {
     "landmarkName": "New York",
-    "center": [-74, 40.71],
+    "center": [
+      -74,
+      40.71
+    ],
     "template": "cityOrbit",
     "exaggeration": 0.5,
-    "orbit": { "zoom": 14.0, "pitch": 53, "startBearing": -50, "orbitSpan": 165 }
+    "orbit": {
+      "zoom": 14,
+      "pitch": 53,
+      "startBearing": -50,
+      "orbitSpan": 165
+    }
   },
   "cancun": {
     "landmarkName": "Zona Hotelera / Caribbean coast",
-    "center": [-86.778, 21.046],
+    "center": [
+      -86.778,
+      21.046
+    ],
     "template": "coastalOrbit",
     "exaggeration": 1.15,
-    "orbit": { "zoom": 14.6, "pitch": 58, "startBearing": -20, "orbitSpan": 125, "smoothOrbit": true }
+    "orbit": {
+      "zoom": 14.6,
+      "pitch": 58,
+      "startBearing": -20,
+      "orbitSpan": 125,
+      "smoothOrbit": true
+    }
   },
   "sapa": {
     "landmarkName": "Muong Hoa Valley terraces",
-    "center": [103.865, 22.327],
+    "center": [
+      103.865,
+      22.327
+    ],
     "template": "mountainOrbit",
     "exaggeration": 1.45,
-    "orbit": { "zoom": 13.8, "pitch": 56, "startBearing": -55, "orbitSpan": 115, "segments": 5 }
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 56,
+      "startBearing": -55,
+      "orbitSpan": 115,
+      "segments": 5
+    }
   },
   "phuket": {
     "landmarkName": "Patong / Andaman coast",
-    "center": [98.298, 7.895],
+    "center": [
+      98.298,
+      7.895
+    ],
     "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": { "zoom": 14.4, "pitch": 57, "orbitSpan": 118, "smoothOrbit": true }
+    "orbit": {
+      "zoom": 14.4,
+      "pitch": 57,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
   },
   "maldives": {
     "landmarkName": "North Male Atoll lagoon",
-    "center": [73.54, 3.87],
+    "center": [
+      73.54,
+      3.87
+    ],
     "template": "coastalOrbit",
     "exaggeration": 1.1,
-    "orbit": { "zoom": 13.8, "pitch": 55, "startBearing": -15, "orbitSpan": 130, "smoothOrbit": true }
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 55,
+      "startBearing": -15,
+      "orbitSpan": 130,
+      "smoothOrbit": true
+    }
   },
   "banff-national-park": {
     "landmarkName": "Lake Louise",
-    "center": [-116.177, 51.425],
+    "center": [
+      -116.177,
+      51.425
+    ],
     "template": "mountainOrbit",
     "exaggeration": 1.5,
-    "orbit": { "zoom": 12.8, "pitch": 58, "startBearing": -48, "orbitSpan": 108, "segments": 4 }
+    "orbit": {
+      "zoom": 12.8,
+      "pitch": 58,
+      "startBearing": -48,
+      "orbitSpan": 108,
+      "segments": 4
+    }
   },
   "uyuni-salt-flat": {
     "landmarkName": "Salar de Uyuni",
-    "center": [-67.489, -20.134],
+    "center": [
+      -67.489,
+      -20.134
+    ],
     "template": "mountainOrbit",
     "exaggeration": 1.2,
-    "orbit": { "zoom": 12.2, "pitch": 52, "startBearing": -30, "orbitSpan": 100, "segments": 4 }
+    "orbit": {
+      "zoom": 12.2,
+      "pitch": 52,
+      "startBearing": -30,
+      "orbitSpan": 100,
+      "segments": 4
+    }
   },
   "everest-base-camp": {
     "landmarkName": "Khumbu valley / EBC approach",
-    "center": [86.925, 27.988],
+    "center": [
+      86.925,
+      27.988
+    ],
     "template": "mountainOrbit",
     "exaggeration": 1.55,
-    "orbit": { "zoom": 12.4, "pitch": 60, "startBearing": -65, "orbitSpan": 95, "segments": 4 }
+    "orbit": {
+      "zoom": 12.4,
+      "pitch": 60,
+      "startBearing": -65,
+      "orbitSpan": 95,
+      "segments": 4
+    }
   },
   "queenstown": {
     "landmarkName": "Lake Wakatipu & Remarkables",
-    "center": [168.662, -45.031],
+    "center": [
+      168.662,
+      -45.031
+    ],
     "template": "mountainOrbit",
     "exaggeration": 1.45,
-    "orbit": { "zoom": 12.9, "pitch": 57, "startBearing": -40, "orbitSpan": 112, "smoothOrbit": true }
+    "orbit": {
+      "zoom": 12.9,
+      "pitch": 57,
+      "startBearing": -40,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
   },
   "iceland": {
     "landmarkName": "Skógafoss / South Coast",
-    "center": [-19.511, 63.532],
+    "center": [
+      -19.511,
+      63.532
+    ],
     "template": "mountainOrbit",
     "exaggeration": 1.4,
-    "orbit": { "zoom": 13.2, "pitch": 56, "startBearing": -35, "orbitSpan": 105 }
+    "orbit": {
+      "zoom": 13.2,
+      "pitch": 56,
+      "startBearing": -35,
+      "orbitSpan": 105
+    }
   },
   "patagonia": {
     "landmarkName": "Torres del Paine massif",
-    "center": [-72.966, -50.942],
+    "center": [
+      -72.966,
+      -50.942
+    ],
     "template": "mountainOrbit",
     "exaggeration": 1.5,
-    "orbit": { "zoom": 12.5, "pitch": 58, "startBearing": -55, "orbitSpan": 100, "segments": 4 }
+    "orbit": {
+      "zoom": 12.5,
+      "pitch": 58,
+      "startBearing": -55,
+      "orbitSpan": 100,
+      "segments": 4
+    }
   },
   "halong-bay": {
     "landmarkName": "Ha Long karst islands",
-    "center": [107.083, 20.91],
+    "center": [
+      107.083,
+      20.91
+    ],
     "template": "coastalOrbit",
     "exaggeration": 1.35,
-    "orbit": { "zoom": 13.5, "pitch": 56, "startBearing": -25, "orbitSpan": 115, "smoothOrbit": true }
+    "orbit": {
+      "zoom": 13.5,
+      "pitch": 56,
+      "startBearing": -25,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
   },
   "boracay": {
     "landmarkName": "White Beach",
-    "center": [121.924, 11.967],
+    "center": [
+      121.924,
+      11.967
+    ],
     "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": { "zoom": 14.8, "pitch": 58, "orbitSpan": 110, "smoothOrbit": true }
+    "orbit": {
+      "zoom": 14.8,
+      "pitch": 58,
+      "orbitSpan": 110,
+      "smoothOrbit": true
+    }
   },
   "bora-bora": {
     "landmarkName": "Mt Otemanu lagoon",
-    "center": [-151.736, -16.5004],
+    "center": [
+      -151.736,
+      -16.5004
+    ],
     "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": { "zoom": 13.6, "pitch": 57, "orbitSpan": 120, "smoothOrbit": true }
+    "orbit": {
+      "zoom": 13.6,
+      "pitch": 57,
+      "orbitSpan": 120,
+      "smoothOrbit": true
+    }
+  },
+  "hvar": {
+    "landmarkName": "Hvar town & Pakleni coast",
+    "center": [
+      16.442,
+      43.159
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.5,
+      "pitch": 57,
+      "startBearing": -35,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "jeju": {
+    "landmarkName": "Seopjikoji coast",
+    "center": [
+      126.93,
+      33.46
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 14.2,
+      "pitch": 56,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
+  },
+  "grand-canyon": {
+    "landmarkName": "South Rim / Mather Point",
+    "center": [
+      -112.1129,
+      36.054
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.45,
+    "orbit": {
+      "zoom": 12.4,
+      "pitch": 58,
+      "startBearing": -48,
+      "orbitSpan": 100,
+      "segments": 4
+    }
+  },
+  "honolulu": {
+    "landmarkName": "Waikiki & Diamond Head coast",
+    "center": [
+      -157.826,
+      21.279
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.3,
+      "pitch": 56,
+      "orbitSpan": 120,
+      "smoothOrbit": true
+    }
+  },
+  "reykjavik": {
+    "landmarkName": "Sun Voyager & Faxaflói",
+    "center": [
+      -21.9426,
+      64.155
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 54,
+      "startBearing": -20,
+      "orbitSpan": 110,
+      "smoothOrbit": true
+    }
+  },
+  "yosemite": {
+    "landmarkName": "Tunnel View valley",
+    "center": [
+      -119.748,
+      37.715
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.6,
+      "pitch": 58,
+      "startBearing": -55,
+      "orbitSpan": 105,
+      "segments": 4
+    }
+  },
+  "da-nang": {
+    "landmarkName": "My Khe Beach",
+    "center": [
+      108.249,
+      16.047
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.5,
+      "pitch": 57,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "hokkaido": {
+    "landmarkName": "Furano lavender fields",
+    "center": [
+      142.457,
+      43.345
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 13.2,
+      "pitch": 55,
+      "startBearing": -40,
+      "orbitSpan": 108
+    }
+  },
+  "el-nido": {
+    "landmarkName": "Bacuit Bay lagoons",
+    "center": [
+      119.39,
+      11.2
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 13.6,
+      "pitch": 56,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "phu-quoc": {
+    "landmarkName": "Sao Beach",
+    "center": [
+      103.957,
+      10.228
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.4,
+      "pitch": 57,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "phi-phi-islands": {
+    "landmarkName": "Maya Bay",
+    "center": [
+      98.678,
+      7.677
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 14.2,
+      "pitch": 58,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
+  },
+  "gili-meno": {
+    "landmarkName": "Gili Meno west coast",
+    "center": [
+      116.072,
+      -8.348
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 14.6,
+      "pitch": 58,
+      "orbitSpan": 110,
+      "smoothOrbit": true
+    }
+  },
+  "milford-sound": {
+    "landmarkName": "Milford Sound fiord",
+    "center": [
+      167.87,
+      -44.64
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.3,
+      "pitch": 58,
+      "startBearing": -50,
+      "orbitSpan": 95,
+      "segments": 4
+    }
+  },
+  "annapurna-circuit": {
+    "landmarkName": "Annapurna sanctuary approach",
+    "center": [
+      83.878,
+      28.53
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.55,
+    "orbit": {
+      "zoom": 12.5,
+      "pitch": 60,
+      "startBearing": -60,
+      "orbitSpan": 95,
+      "segments": 4
+    }
+  },
+  "saipan": {
+    "landmarkName": "Micro Beach lagoon",
+    "center": [
+      145.714,
+      15.213
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.3,
+      "pitch": 56,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "seogwipo": {
+    "landmarkName": "Jeongbang Falls coast",
+    "center": [
+      126.559,
+      33.244
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 14.4,
+      "pitch": 57,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "gold-coast": {
+    "landmarkName": "Surfers Paradise beach",
+    "center": [
+      153.431,
+      -28.003
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.15,
+    "orbit": {
+      "zoom": 14.2,
+      "pitch": 55,
+      "orbitSpan": 120,
+      "smoothOrbit": true
+    }
+  },
+  "koh-samui": {
+    "landmarkName": "Chaweng Beach",
+    "center": [
+      100.062,
+      9.528
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 14.5,
+      "pitch": 57,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
+  },
+  "inca-trail": {
+    "landmarkName": "Machu Picchu citadel",
+    "center": [
+      -72.545,
+      -13.163
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.8,
+      "pitch": 58,
+      "startBearing": -45,
+      "orbitSpan": 100,
+      "segments": 4
+    }
+  },
+  "kota-kinabalu": {
+    "landmarkName": "Kinabalu Park foothills",
+    "center": [
+      116.558,
+      6.073
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.45,
+    "orbit": {
+      "zoom": 12.9,
+      "pitch": 57,
+      "startBearing": -50,
+      "orbitSpan": 105,
+      "segments": 4
+    }
+  },
+  "san-diego": {
+    "landmarkName": "La Jolla Cove",
+    "center": [
+      -117.271,
+      32.847
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.4,
+      "pitch": 56,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "krabi": {
+    "landmarkName": "Railay Beach cliffs",
+    "center": [
+      98.836,
+      8.009
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 14.3,
+      "pitch": 58,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "zhangjiajie": {
+    "landmarkName": "Avatar Hallelujah pillars",
+    "center": [
+      110.479,
+      29.316
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.6,
+      "pitch": 58,
+      "startBearing": -42,
+      "orbitSpan": 102,
+      "segments": 4
+    }
+  },
+  "kilimanjaro": {
+    "landmarkName": "Kibo summit massif",
+    "center": [
+      37.355,
+      -3.067
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.4,
+      "pitch": 58,
+      "startBearing": -55,
+      "orbitSpan": 98,
+      "segments": 4
+    }
+  },
+  "sicily": {
+    "landmarkName": "Taormina coast & Etna view",
+    "center": [
+      15.29,
+      37.852
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 56,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "rocky-mountains": {
+    "landmarkName": "Moraine Lake",
+    "center": [
+      -115.645,
+      51.328
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.7,
+      "pitch": 58,
+      "startBearing": -48,
+      "orbitSpan": 105,
+      "segments": 4
+    }
+  },
+  "seychelles": {
+    "landmarkName": "Anse Source d'Argent",
+    "center": [
+      55.449,
+      -4.357
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14,
+      "pitch": 56,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
+  },
+  "zanzibar": {
+    "landmarkName": "Nungwi Beach",
+    "center": [
+      39.298,
+      -5.726
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.2,
+      "pitch": 57,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "langkawi": {
+    "landmarkName": "Datai Bay",
+    "center": [
+      99.675,
+      6.409
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 14.1,
+      "pitch": 56,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
+  },
+  "costa-rica": {
+    "landmarkName": "Manuel Antonio coast",
+    "center": [
+      -84.395,
+      9.392
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 57,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "cinque-terre": {
+    "landmarkName": "Manarola village coast",
+    "center": [
+      9.728,
+      44.12
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 14,
+      "pitch": 56,
+      "startBearing": -30,
+      "orbitSpan": 110,
+      "smoothOrbit": true
+    }
+  },
+  "rarotonga": {
+    "landmarkName": "Muri Lagoon",
+    "center": [
+      -159.776,
+      -21.237
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 13.9,
+      "pitch": 55,
+      "orbitSpan": 120,
+      "smoothOrbit": true
+    }
+  },
+  "lofoten": {
+    "landmarkName": "Reine fishing village",
+    "center": [
+      13.55,
+      68.128
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.4,
+    "orbit": {
+      "zoom": 13,
+      "pitch": 56,
+      "startBearing": -45,
+      "orbitSpan": 108,
+      "smoothOrbit": true
+    }
+  },
+  "madeira": {
+    "landmarkName": "Cabo Girão cliffs",
+    "center": [
+      -16.976,
+      32.656
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 13.6,
+      "pitch": 57,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "mont-blanc": {
+    "landmarkName": "Chamonix valley & Mont Blanc",
+    "center": [
+      6.869,
+      45.924
+    ],
+    "template": "alpineVillageOrbit",
+    "exaggeration": 1.4,
+    "orbit": {
+      "peakOffset": [
+        -0.03,
+        -0.018
+      ],
+      "zoom": 13.4,
+      "pitch": 57,
+      "startBearing": -55,
+      "orbitSpan": 125
+    }
+  },
+  "ibiza": {
+    "landmarkName": "Es Vedrà viewpoint",
+    "center": [
+      1.203,
+      38.867
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.2,
+      "pitch": 56,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "tahiti": {
+    "landmarkName": "Moorea lagoon view",
+    "center": [
+      -149.839,
+      -17.533
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 13.5,
+      "pitch": 55,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
+  },
+  "bled": {
+    "landmarkName": "Lake Bled island",
+    "center": [
+      14.093,
+      46.363
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 13.4,
+      "pitch": 56,
+      "startBearing": -40,
+      "orbitSpan": 108,
+      "smoothOrbit": true
+    }
+  },
+  "el-calafate": {
+    "landmarkName": "Perito Moreno Glacier",
+    "center": [
+      -73.03,
+      -50.496
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.45,
+    "orbit": {
+      "zoom": 12.4,
+      "pitch": 58,
+      "startBearing": -50,
+      "orbitSpan": 100,
+      "segments": 4
+    }
+  },
+  "canary-islands": {
+    "landmarkName": "Maspalomas dunes",
+    "center": [
+      -15.576,
+      27.762
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 54,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "victoria-falls": {
+    "landmarkName": "Victoria Falls gorge",
+    "center": [
+      25.857,
+      -17.924
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.4,
+    "orbit": {
+      "zoom": 12.8,
+      "pitch": 56,
+      "startBearing": -35,
+      "orbitSpan": 102,
+      "segments": 4
+    }
+  },
+  "cebu": {
+    "landmarkName": "Kawasan Falls / south coast",
+    "center": [
+      123.323,
+      9.798
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 14,
+      "pitch": 56,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "dolomites": {
+    "landmarkName": "Seceda ridge",
+    "center": [
+      11.757,
+      46.556
+    ],
+    "template": "alpineVillageOrbit",
+    "exaggeration": 1.45,
+    "orbit": {
+      "peakOffset": [
+        -0.025,
+        -0.015
+      ],
+      "zoom": 13.2,
+      "pitch": 58,
+      "startBearing": -48,
+      "orbitSpan": 115
+    }
+  },
+  "komodo-island": {
+    "landmarkName": "Padar Island viewpoint",
+    "center": [
+      119.593,
+      -8.648
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 13.4,
+      "pitch": 57,
+      "orbitSpan": 110,
+      "smoothOrbit": true
+    }
+  },
+  "andaman-islands": {
+    "landmarkName": "Radhanagar Beach (Havelock)",
+    "center": [
+      92.984,
+      11.978
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 14,
+      "pitch": 56,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "nha-trang": {
+    "landmarkName": "Nha Trang bay beach",
+    "center": [
+      109.223,
+      12.238
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.2,
+    "orbit": {
+      "zoom": 14.3,
+      "pitch": 56,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "crete": {
+    "landmarkName": "Balos Lagoon",
+    "center": [
+      23.583,
+      35.497
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 13.5,
+      "pitch": 56,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "sequoia-national-park": {
+    "landmarkName": "Giant Forest / Sherman Grove",
+    "center": [
+      -118.568,
+      36.581
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.45,
+    "orbit": {
+      "zoom": 12.6,
+      "pitch": 56,
+      "startBearing": -42,
+      "orbitSpan": 105,
+      "segments": 4
+    }
+  },
+  "mount-bromo": {
+    "landmarkName": "Bromo caldera rim",
+    "center": [
+      112.95,
+      -7.942
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.5,
+      "pitch": 58,
+      "startBearing": -50,
+      "orbitSpan": 100,
+      "segments": 4
+    }
+  },
+  "lombok": {
+    "landmarkName": "Gili Trawangan west coast",
+    "center": [
+      116.038,
+      -8.351
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 14.4,
+      "pitch": 57,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "interlaken": {
+    "landmarkName": "Lake Thun & Jungfrau view",
+    "center": [
+      7.863,
+      46.686
+    ],
+    "template": "alpineVillageOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "peakOffset": [
+        -0.032,
+        -0.02
+      ],
+      "zoom": 13.3,
+      "pitch": 56,
+      "startBearing": -58,
+      "orbitSpan": 128
+    }
+  },
+  "chamonix": {
+    "landmarkName": "Chamonix & Aiguille du Midi",
+    "center": [
+      6.876,
+      45.923
+    ],
+    "template": "alpineVillageOrbit",
+    "exaggeration": 1.4,
+    "orbit": {
+      "peakOffset": [
+        -0.028,
+        -0.016
+      ],
+      "zoom": 13.4,
+      "pitch": 57,
+      "startBearing": -52,
+      "orbitSpan": 125
+    }
+  },
+  "hawaii": {
+    "landmarkName": "North Shore / Waimea Bay",
+    "center": [
+      -158.05,
+      21.64
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 56,
+      "orbitSpan": 118,
+      "smoothOrbit": true
+    }
+  },
+  "palawan": {
+    "landmarkName": "El Nido limestone coast",
+    "center": [
+      118.74,
+      10
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.35,
+    "orbit": {
+      "zoom": 13.4,
+      "pitch": 56,
+      "orbitSpan": 112,
+      "smoothOrbit": true
+    }
+  },
+  "bohol": {
+    "landmarkName": "Chocolate Hills viewpoint",
+    "center": [
+      124.17,
+      9.82
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.3,
+    "orbit": {
+      "zoom": 13.6,
+      "pitch": 54,
+      "startBearing": -35,
+      "orbitSpan": 108
+    }
+  },
+  "mauritius": {
+    "landmarkName": "Le Morne Brabant",
+    "center": [
+      57.31,
+      -20.45
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 13.8,
+      "pitch": 56,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "torres-del-paine": {
+    "landmarkName": "Torres del Paine horns",
+    "center": [
+      -72.966,
+      -50.942
+    ],
+    "template": "mountainOrbit",
+    "exaggeration": 1.5,
+    "orbit": {
+      "zoom": 12.5,
+      "pitch": 58,
+      "startBearing": -55,
+      "orbitSpan": 100,
+      "segments": 4
+    }
+  },
+  "grindelwald": {
+    "landmarkName": "Grindelwald & Eiger north face",
+    "center": [
+      8.041,
+      46.624
+    ],
+    "template": "alpineVillageOrbit",
+    "exaggeration": 1.4,
+    "orbit": {
+      "peakOffset": [
+        -0.03,
+        -0.018
+      ],
+      "zoom": 13.3,
+      "pitch": 57,
+      "startBearing": -54,
+      "orbitSpan": 125
+    }
   }
 }

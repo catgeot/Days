@@ -85,9 +85,10 @@
 
 - Mapbox **Standard** 스타일: 370+ 도시 · 1만+ 커스텀 3D 랜드마크·공항·역 ([블로그](https://www.mapbox.com/blog/global-cities-3d-landmarks)).
 - gateo 기본 지구본 **deep** = `satellite-streets-v12` — Standard 랜드마크 **미포함**. **bright** = `mapbox://styles/mapbox/standard`.
-- **파일럿 (2026-06-03)**: `globeTourUi` — bright 테마 투어 중 `showLandmarkIcons: true`.
-- **후속 후보**: urban slug만 투어 시작 시 Standard 스타일 임시 전환 · `queryRenderedFeatures`로 랜드마크 근처 `center` 스냅 · [Standard config](https://docs.mapbox.com/map-styles/standard/guides/) (`showLandmarkIcons`, buildings near landmarks).
-- 자연 지명은 DEM+terrain+큐레이션 center가 주력; Standard는 **도시 보조**.
+- **파일럿 (2026-06-03)**: [`globeStandardBasemap.js`](../src/pages/Home/lib/globeStandardBasemap.js) — Standard API 유효 키만 · **urban `cityOrbit` 투어 중** `showLandmarkIcons` + `showLandmarkIconLabels` + `show3dLandmarks` (deep=위성, 해당 없음).
+- **홈 bright**: 도로·POI 라벨 off · `showPlaceLabels`는 줌≥4 시 on → gateo 지명과 **겹침** — 다음 세션 **gateo-first** (`showPlaceLabels: false` 고정) 검토.
+- **후속 보류**: deep에서 urban 투어 시 Standard 스타일 임시 전환.
+- 자연 지명은 DEM+terrain+큐레이션 center; Standard는 **도시 투어 맛보기**용.
 
 ### 로컬 QA 이력
 
@@ -106,28 +107,25 @@
 | # | 작업 | 목표 |
 |---|------|------|
 | **1d** | ✅ `globeTourResolve` + nature slug `globeLandmarks` 1차 | category 폴백 · 대표 center |
-| **1e** | `globeLandmarks` 확장 + 위성 QA | paradise/nature/adventure 우선 · 도심 좌표 이탈 수정 |
-| **1f** | **후지산 Studio keyframe** → `keyframes` | 타일 끊김 완화 |
-| **1g** | 2D 복귀·모바일·Skip · gateo.kr 스mo크 | Phase 1 완료 |
-| **1h** | Mapbox Standard 랜드마크 — urban A/B · deep vs bright 정책 | 도시 감성 보조 |
+| **1e** | ✅ +58 slug · **68/134** nature 등록 | 흐바르·동남아·알프스 · 잔여 ~66 폴백 |
+| **1f** | ✅ `mount-fuji` 7-frame `keyframes` | `tourReady` |
+| **1g** | 빌드 OK · **gateo 스모크 사용자 QA** | 2D 복귀·Skip·모바일 |
+| **1h** | ✅ `globeStandardBasemap` · urban 투어 랜드마크 데모 | bright 홈 지명 정리는 **다음 세션** |
 | *(선택)* | idle terrain pre-warm | cold start |
 
 ---
 
-## 다음 세션 제시어 (2026-06-03 커밋 후)
-
-아래 문장을 새 채팅에 붙여 넣으면 Phase 1 잔여(1e~1h)를 이어갈 수 있습니다.
+## 다음 세션 제시어
 
 ```
 @.ai-context.md @plans/2026-06-03-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-3D 투어 Phase 1e~1h 이어서 진행해 주세요.
-- 1d 완료: globeTourResolve + globeLandmarks 12 slug, 칸쿤·사파·흐바르 QA(해변·산맥 포커스 OK).
-- 버튼은 전 여행지 노출 유지. 투어 center는 globeLandmarks SSOT, travelSpots 핀 좌표는 변경 금지.
-- 1e: paradise/nature/adventure slug globeLandmarks 일괄 확장(흐바르 등 미등록 우선) + 위성 center QA.
-- 1f: 후지산 Mapbox Studio keyframes → globeLandmarks.json.
-- 1g: 2D 복귀·Skip·모바일·gateo.kr 스모크 → Phase 1 완료.
-- 1h: Mapbox Standard 3D 랜드마크 urban A/B (bright 파일럿 확장 또는 투어 시 Standard 스타일 전환 검토).
+홈 지구본 Phase 1 마무리 이어서 진행해 주세요.
+- 완료: globeLandmarks 80 slug(1e)·후지산 keyframes(1f)·bright urban 투어 Standard 랜드마크(1h)·globeStandardBasemap(콘솔 invalid key 제거).
+- 버튼 전 여행지 노출 유지. travelSpots 핀 좌표 변경 금지.
+- 다음 1순위: bright(Standard) 홈을 deep처럼 gateo-first — showPlaceLabels false 고정, gateo 마커·지명만(도로·POI 라벨 off 유지). 밋밋함 vs 겹침 trade-off는 일지·계획 참고.
+- 1g: gateo.kr 스모크(2D 복귀·Skip·모바일)·흐바르·파리 bright 3D 투어·후지산 keyframe QA → Pass 시 Phase 1 완료.
+- 후순위: nature/adventure 잔여 ~66 slug globeLandmarks 확장.
 ```
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로

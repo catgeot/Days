@@ -1,13 +1,23 @@
 import { GATEO_LABEL_LAYER_ID, isGateoLayer } from './globeMarkerLayers';
+import {
+  applyStandardBasemapConfig,
+  isStandardBasemapLayer,
+  STANDARD_HOME_CONFIG,
+  STANDARD_URBAN_TOUR_LANDMARKS_CONFIG
+} from './globeStandardBasemap';
 
 /** Hide Mapbox + gateo labels during 3D tour for a clean cinematic view. */
-export function applyTourMapUi(map, { active, globeTheme } = {}) {
+export function applyTourMapUi(map, { active, globeTheme, tourTemplate } = {}) {
   if (!map?.getStyle) return;
+
+  const urbanLandmarkDemo =
+    globeTheme === 'bright' && active && tourTemplate === 'cityOrbit';
 
   const layers = map.getStyle().layers || [];
   for (const layer of layers) {
     if (layer.type !== 'symbol') continue;
     if (!map.getLayer(layer.id)) continue;
+    if (urbanLandmarkDemo && isStandardBasemapLayer(layer.id)) continue;
     try {
       map.setLayoutProperty(layer.id, 'visibility', active ? 'none' : 'visible');
     } catch {
@@ -23,18 +33,16 @@ export function applyTourMapUi(map, { active, globeTheme } = {}) {
     }
   }
 
-  if (globeTheme === 'bright' && typeof map.setConfigProperty === 'function') {
-    [
-      ['showPlaceLabels', !active],
-      ['showPointOfInterestLabels', false],
-      ['showRoadLabels', false],
-      ['showTransitLabels', false],
-      // Mapbox Standard 3D landmark models (370+ cities) — pilot during tour on bright theme
-      ['showLandmarkIcons', active],
-      ['showLandmarkIconLabels', false]
-    ].forEach(([key, value]) => {
-      try { map.setConfigProperty('basemap', key, value); } catch {}
-    });
+  if (globeTheme === 'bright') {
+    if (urbanLandmarkDemo) {
+      applyStandardBasemapConfig(map, STANDARD_URBAN_TOUR_LANDMARKS_CONFIG);
+    } else {
+      const shouldShowPlaceLabels = !active && map.getZoom() >= 4;
+      applyStandardBasemapConfig(map, [
+        ...STANDARD_HOME_CONFIG,
+        ['showPlaceLabels', shouldShowPlaceLabels]
+      ]);
+    }
   }
 }
 

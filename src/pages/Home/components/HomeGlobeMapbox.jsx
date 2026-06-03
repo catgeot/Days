@@ -32,6 +32,7 @@ import {
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { applyTourMapUi, restoreGlobeMapUi } from '../lib/globeTourUi';
+import { applyStandardBasemapConfig, STANDARD_HOME_CONFIG } from '../lib/globeStandardBasemap';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -287,21 +288,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const applyBasemapConfig = useCallback(() => {
     const map = mapRef.current?.getMap();
-    if (!map || globeTheme !== 'bright' || typeof map.setConfigProperty !== 'function') return;
+    if (!map || globeTheme !== 'bright') return;
 
     const shouldShowPlaceLabels = map.getZoom() >= PLACE_LABEL_MIN_ZOOM;
-    try { map.setConfigProperty('basemap', 'language', 'ko'); } catch {}
-    [
-      ['showPointOfInterestLabels', false],
-      ['showRoadLabels', false],
-      ['showTransitLabels', false],
-      ['showRoadsAndTransit', false],
-      ['showAdminBoundaries', false],
-      ['showAdministrativeBoundaries', false],
+    applyStandardBasemapConfig(map, [
+      ...STANDARD_HOME_CONFIG,
       ['showPlaceLabels', shouldShowPlaceLabels]
-    ].forEach(([key, value]) => {
-      try { map.setConfigProperty('basemap', key, value); } catch {}
-    });
+    ]);
   }, [globeTheme]);
 
   const applyKoreanSatelliteLabels = useCallback(() => {
@@ -792,12 +785,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     setGlobeMode(mode);
   }, []);
 
-  const handleTourUiChange = useCallback((active) => {
+  const handleTourUiChange = useCallback((active, meta = {}) => {
     const map = mapRef.current?.getMap();
     if (!map) return;
     if (active) {
-      applyTourMapUi(map, { active: true, globeTheme });
+      applyTourMapUi(map, { active: true, globeTheme, tourTemplate: meta.template });
     } else {
+      applyTourMapUi(map, { active: false, globeTheme, tourTemplate: meta.template });
       restoreGlobeMapUi(map, resetAndApplyPlaceLabelVisibility);
     }
   }, [globeTheme, resetAndApplyPlaceLabelVisibility]);
