@@ -86,3 +86,9 @@
   - 섬 중앙 상공에서 넓게 내려다보며 시작한 뒤, 북쪽의 아피아 해안선(`[-171.77, -13.83]`)으로 부드럽게 다가가며 선회하도록 `center` 경로를 전면 재조정.
   - 이를 통해 처음부터 끝까지 우폴루 섬의 스케일과 지형에 온전히 집중하는 완벽한 3D 비행이 가능해짐.
 
+## 섬 3D 투어 — 전체 island slug 시네마틱 100% (2026-06-04)
+
+- **요구**: 여행지가 **섬**이면 보라카이와 동일한 5단 항공샷 `keyframes` 패턴.
+- **조치**: `buildIslandCinematicKeyframes` SSOT · `globeLandmarks` 잔여 23 slug(발리·제주·몰디브·코모도 등) 전환 · 폴백 `islandCinematic` · `scripts/apply-island-cinematic-keyframes.mjs`.
+- **제외**: 하롱베이(카르스트 군도)·블레드(호수 섬)·그레이트 배리어 리프(육지 관문) — `coastalOrbit`/`mountainOrbit` 유지.
+

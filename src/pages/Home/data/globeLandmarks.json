@@ -8,7 +8,7 @@
     "template": "cityOrbit",
     "exaggeration": 0.45,
     "orbit": {
-      "zoom": 15.0,
+      "zoom": 15,
       "pitch": 52,
       "startBearing": -25,
       "orbitSpan": 150
@@ -65,14 +65,66 @@
       25.3753,
       36.4618
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": {
-      "zoom": 15.2,
-      "pitch": 58,
-      "orbitSpan": 115,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          25.42,
+          36.39
+        ],
+        "zoom": 11,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          25.42,
+          36.39
+        ],
+        "zoom": 12,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          25.42,
+          36.39
+        ],
+        "zoom": 12.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          25.42,
+          36.39
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          25.3753,
+          36.4618
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "bali": {
     "landmarkName": "Uluwatu",
@@ -80,14 +132,66 @@
       115.0882,
       -8.8291
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": {
-      "zoom": 15.5,
-      "pitch": 60,
-      "orbitSpan": 120,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          115.19,
+          -8.41
+        ],
+        "zoom": 9,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          115.19,
+          -8.41
+        ],
+        "zoom": 10,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          115.19,
+          -8.41
+        ],
+        "zoom": 10.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          115.19,
+          -8.41
+        ],
+        "zoom": 11,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          115.0882,
+          -8.8291
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "mount-fuji": {
     "landmarkName": "Mount Fuji & Kawaguchi",
@@ -253,14 +357,66 @@
       98.298,
       7.895
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": {
-      "zoom": 14.4,
-      "pitch": 57,
-      "orbitSpan": 118,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          98.35,
+          7.95
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          98.35,
+          7.95
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          98.35,
+          7.95
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          98.35,
+          7.95
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          98.298,
+          7.895
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "maldives": {
     "landmarkName": "North Malé — Hulhumalé & airport (MLE)",
@@ -268,21 +424,66 @@
       73.5405,
       4.2081
     ],
-    "template": "islandReveal",
     "exaggeration": 1.1,
-    "orbit": {
-      "islandScale": "small",
-      "startBearing": -24,
-      "apexZoom": 12.3,
-      "glideZoom": 13.1,
-      "holdZoom": 14,
-      "driftSpan": 34,
-      "approachBlend": 0.1,
-      "approachPoint": [
-        73.529,
-        4.1918
-      ]
-    }
+    "keyframes": [
+      {
+        "center": [
+          73.5405,
+          4.2081
+        ],
+        "zoom": 11,
+        "pitch": 10,
+        "bearing": -24,
+        "duration": 0
+      },
+      {
+        "center": [
+          73.5405,
+          4.2081
+        ],
+        "zoom": 12,
+        "pitch": 40,
+        "bearing": 6,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          73.5405,
+          4.2081
+        ],
+        "zoom": 12.5,
+        "pitch": 48,
+        "bearing": 46,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          73.5405,
+          4.2081
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 91,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          73.529,
+          4.1918
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 136,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "banff-national-park": {
     "landmarkName": "Lake Louise",
@@ -408,7 +609,7 @@
           121.9248,
           11.9674
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 10,
         "bearing": -60,
         "duration": 0
@@ -418,7 +619,7 @@
           121.9248,
           11.9674
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 45,
         "bearing": -30,
         "duration": 3500,
@@ -450,7 +651,7 @@
       },
       {
         "center": [
-          121.920,
+          121.92,
           11.963
         ],
         "zoom": 13.5,
@@ -475,7 +676,7 @@
           -151.74,
           -16.5
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 10,
         "bearing": -45,
         "duration": 0
@@ -485,7 +686,7 @@
           -151.74,
           -16.5
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 45,
         "bearing": -20,
         "duration": 3500,
@@ -535,15 +736,66 @@
       16.442,
       43.159
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": {
-      "zoom": 14.5,
-      "pitch": 57,
-      "startBearing": -35,
-      "orbitSpan": 115,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          16.65,
+          43.12
+        ],
+        "zoom": 11,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          16.65,
+          43.12
+        ],
+        "zoom": 12,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          16.65,
+          43.12
+        ],
+        "zoom": 12.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          16.65,
+          43.12
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          16.442,
+          43.159
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "jeju": {
     "landmarkName": "Seopjikoji coast",
@@ -551,14 +803,66 @@
       126.93,
       33.46
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": {
-      "zoom": 14.2,
-      "pitch": 56,
-      "orbitSpan": 118,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          126.53,
+          33.38
+        ],
+        "zoom": 9,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          126.53,
+          33.38
+        ],
+        "zoom": 10,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          126.53,
+          33.38
+        ],
+        "zoom": 10.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          126.53,
+          33.38
+        ],
+        "zoom": 11,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          126.93,
+          33.46
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "grand-canyon": {
     "landmarkName": "South Rim / Mather Point",
@@ -582,14 +886,66 @@
       -157.826,
       21.279
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": {
-      "zoom": 14.3,
-      "pitch": 56,
-      "orbitSpan": 120,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          -157.95,
+          21.48
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          -157.95,
+          21.48
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -157.95,
+          21.48
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -157.95,
+          21.48
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -157.826,
+          21.279
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "reykjavik": {
     "landmarkName": "Sun Voyager & Faxaflói",
@@ -659,14 +1015,66 @@
       119.39,
       11.2
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.35,
-    "orbit": {
-      "zoom": 13.6,
-      "pitch": 56,
-      "orbitSpan": 115,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          119.39,
+          11.2
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          119.39,
+          11.2
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          119.39,
+          11.2
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          119.39,
+          11.2
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          119.39,
+          11.2
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "phu-quoc": {
     "landmarkName": "Sao Beach",
@@ -674,14 +1082,66 @@
       103.957,
       10.228
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": {
-      "zoom": 14.4,
-      "pitch": 57,
-      "orbitSpan": 112,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          103.98,
+          10.15
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          103.98,
+          10.15
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          103.98,
+          10.15
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          103.98,
+          10.15
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          103.957,
+          10.228
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "phi-phi-islands": {
     "landmarkName": "Maya Bay",
@@ -689,14 +1149,66 @@
       98.678,
       7.677
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.3,
-    "orbit": {
-      "zoom": 14.2,
-      "pitch": 58,
-      "orbitSpan": 118,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          98.678,
+          7.677
+        ],
+        "zoom": 11,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          98.678,
+          7.677
+        ],
+        "zoom": 12,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          98.678,
+          7.677
+        ],
+        "zoom": 12.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          98.678,
+          7.677
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          98.678,
+          7.677
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "gili-meno": {
     "landmarkName": "Gili Meno west coast",
@@ -704,14 +1216,66 @@
       116.072,
       -8.348
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": {
-      "zoom": 14.6,
-      "pitch": 58,
-      "orbitSpan": 110,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          116.07,
+          -8.35
+        ],
+        "zoom": 11,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          116.07,
+          -8.35
+        ],
+        "zoom": 12,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          116.07,
+          -8.35
+        ],
+        "zoom": 12.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          116.07,
+          -8.35
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          116.072,
+          -8.348
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "milford-sound": {
     "landmarkName": "Milford Sound fiord",
@@ -905,14 +1469,66 @@
       15.29,
       37.852
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.3,
-    "orbit": {
-      "zoom": 13.8,
-      "pitch": 56,
-      "orbitSpan": 112,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          14,
+          37.6
+        ],
+        "zoom": 9,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          14,
+          37.6
+        ],
+        "zoom": 10,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          14,
+          37.6
+        ],
+        "zoom": 10.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          14,
+          37.6
+        ],
+        "zoom": 11,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          15.29,
+          37.852
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "rocky-mountains": {
     "landmarkName": "Moraine Lake",
@@ -943,7 +1559,7 @@
           55.49,
           -4.67
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": -40,
         "duration": 0
@@ -953,7 +1569,7 @@
           55.46,
           -4.65
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": 0,
         "duration": 3500,
@@ -988,7 +1604,7 @@
           55.43,
           -4.62
         ],
-        "zoom": 13.0,
+        "zoom": 13,
         "pitch": 55,
         "bearing": 135,
         "duration": 5000,
@@ -1077,7 +1693,7 @@
           99.8,
           6.35
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": -40,
         "duration": 0
@@ -1087,7 +1703,7 @@
           99.8,
           6.35
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": -10,
         "duration": 3500,
@@ -1168,14 +1784,66 @@
       -159.776,
       -21.237
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": {
-      "zoom": 13.9,
-      "pitch": 55,
-      "orbitSpan": 120,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          -159.776,
+          -21.237
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          -159.776,
+          -21.237
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -159.776,
+          -21.237
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -159.776,
+          -21.237
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -159.776,
+          -21.237
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "lofoten": {
     "landmarkName": "Reine fishing village",
@@ -1199,14 +1867,66 @@
       -16.976,
       32.656
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.35,
-    "orbit": {
-      "zoom": 13.6,
-      "pitch": 57,
-      "orbitSpan": 112,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          -17,
+          32.75
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          -17,
+          32.75
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -17,
+          32.75
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -17,
+          32.75
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -16.976,
+          32.656
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "mont-blanc": {
     "landmarkName": "Chamonix valley & Mont Blanc",
@@ -1240,7 +1960,7 @@
           1.43,
           38.98
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": -40,
         "duration": 0
@@ -1250,7 +1970,7 @@
           1.43,
           38.98
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": -10,
         "duration": 3500,
@@ -1273,7 +1993,7 @@
           1.43,
           38.98
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 52,
         "bearing": 75,
         "duration": 4500,
@@ -1285,7 +2005,7 @@
           1.43,
           38.91
         ],
-        "zoom": 13.0,
+        "zoom": 13,
         "pitch": 55,
         "bearing": 120,
         "duration": 5000,
@@ -1307,7 +2027,7 @@
           -149.41,
           -17.68
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": -40,
         "duration": 0
@@ -1317,7 +2037,7 @@
           -149.41,
           -17.68
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": -10,
         "duration": 3500,
@@ -1340,7 +2060,7 @@
           -149.41,
           -17.68
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 52,
         "bearing": 75,
         "duration": 4500,
@@ -1352,7 +2072,7 @@
           -149.57,
           -17.54
         ],
-        "zoom": 13.0,
+        "zoom": 13,
         "pitch": 55,
         "bearing": 120,
         "duration": 5000,
@@ -1399,14 +2119,66 @@
       -15.576,
       27.762
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": {
-      "zoom": 13.8,
-      "pitch": 54,
-      "orbitSpan": 115,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          -15.57,
+          28.1
+        ],
+        "zoom": 9,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          -15.57,
+          28.1
+        ],
+        "zoom": 10,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -15.57,
+          28.1
+        ],
+        "zoom": 10.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -15.57,
+          28.1
+        ],
+        "zoom": 11,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -15.576,
+          27.762
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "victoria-falls": {
     "landmarkName": "Victoria Falls gorge",
@@ -1437,7 +2209,7 @@
           123.8854,
           10.3157
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": -40,
         "duration": 0
@@ -1447,7 +2219,7 @@
           123.8854,
           10.3157
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": -10,
         "duration": 3500,
@@ -1470,7 +2242,7 @@
           123.8854,
           10.3157
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 52,
         "bearing": 75,
         "duration": 4500,
@@ -1480,9 +2252,9 @@
       {
         "center": [
           123.95,
-          10.30
+          10.3
         ],
-        "zoom": 13.0,
+        "zoom": 13,
         "pitch": 55,
         "bearing": 120,
         "duration": 5000,
@@ -1516,12 +2288,66 @@
       119.55,
       -8.55
     ],
-    "template": "islandReveal",
     "exaggeration": 1.35,
-    "orbit": {
-      "islandScale": "medium",
-      "startBearing": -40
-    }
+    "keyframes": [
+      {
+        "center": [
+          119.55,
+          -8.55
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          119.55,
+          -8.55
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          119.55,
+          -8.55
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          119.55,
+          -8.55
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          119.524,
+          -8.614
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "andaman-islands": {
     "landmarkName": "Radhanagar Beach (Havelock)",
@@ -1529,14 +2355,66 @@
       92.984,
       11.978
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": {
-      "zoom": 14,
-      "pitch": 56,
-      "orbitSpan": 115,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          92.65,
+          11.75
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          92.65,
+          11.75
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          92.65,
+          11.75
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          92.65,
+          11.75
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          92.984,
+          11.978
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "nha-trang": {
     "landmarkName": "Nha Trang bay beach",
@@ -1559,14 +2437,66 @@
       23.583,
       35.497
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.3,
-    "orbit": {
-      "zoom": 13.5,
-      "pitch": 56,
-      "orbitSpan": 112,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          24.9,
+          35.2
+        ],
+        "zoom": 9,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          24.9,
+          35.2
+        ],
+        "zoom": 10,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          24.9,
+          35.2
+        ],
+        "zoom": 10.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          24.9,
+          35.2
+        ],
+        "zoom": 11,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          23.583,
+          35.497
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "sequoia-national-park": {
     "landmarkName": "Giant Forest / Sherman Grove",
@@ -1606,14 +2536,66 @@
       116.038,
       -8.351
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.25,
-    "orbit": {
-      "zoom": 14.4,
-      "pitch": 57,
-      "orbitSpan": 115,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          116.35,
+          -8.65
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          116.35,
+          -8.65
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          116.35,
+          -8.65
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          116.35,
+          -8.65
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          116.038,
+          -8.351
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "interlaken": {
     "landmarkName": "Lake Thun & Jungfrau view",
@@ -1659,14 +2641,66 @@
       -158.05,
       21.64
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.3,
-    "orbit": {
-      "zoom": 13.8,
-      "pitch": 56,
-      "orbitSpan": 118,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          -158,
+          21.5
+        ],
+        "zoom": 9,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          -158,
+          21.5
+        ],
+        "zoom": 10,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -158,
+          21.5
+        ],
+        "zoom": 10.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -158,
+          21.5
+        ],
+        "zoom": 11,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -158.05,
+          21.64
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "palawan": {
     "landmarkName": "El Nido limestone coast",
@@ -1674,14 +2708,66 @@
       118.74,
       10
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.35,
-    "orbit": {
-      "zoom": 13.4,
-      "pitch": 56,
-      "orbitSpan": 112,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          118.74,
+          10
+        ],
+        "zoom": 9,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          118.74,
+          10
+        ],
+        "zoom": 10,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          118.74,
+          10
+        ],
+        "zoom": 10.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          118.74,
+          10
+        ],
+        "zoom": 11,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          118.74,
+          10
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "bohol": {
     "landmarkName": "Chocolate Hills viewpoint",
@@ -1689,14 +2775,66 @@
       124.17,
       9.82
     ],
-    "template": "mountainOrbit",
     "exaggeration": 1.3,
-    "orbit": {
-      "zoom": 13.6,
-      "pitch": 54,
-      "startBearing": -35,
-      "orbitSpan": 108
-    }
+    "keyframes": [
+      {
+        "center": [
+          124,
+          9.85
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          124,
+          9.85
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          124,
+          9.85
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          124,
+          9.85
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          124.17,
+          9.82
+        ],
+        "zoom": 13,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "mauritius": {
     "landmarkName": "Mauritius island",
@@ -1711,7 +2849,7 @@
           57.5522,
           -20.3484
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": -40,
         "duration": 0
@@ -1721,7 +2859,7 @@
           57.5522,
           -20.3484
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": -10,
         "duration": 3500,
@@ -1744,7 +2882,7 @@
           57.5522,
           -20.3484
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 52,
         "bearing": 75,
         "duration": 4500,
@@ -1756,7 +2894,7 @@
           57.32,
           -20.45
         ],
-        "zoom": 13.0,
+        "zoom": 13,
         "pitch": 55,
         "bearing": 120,
         "duration": 5000,
@@ -1813,7 +2951,7 @@
           -171.75,
           -13.917
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": 90,
         "duration": 0
@@ -1823,7 +2961,7 @@
           -171.75,
           -13.88
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": 110,
         "duration": 3500,
@@ -1846,7 +2984,7 @@
           -171.76,
           -13.84
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 52,
         "bearing": 160,
         "duration": 4500,
@@ -1858,7 +2996,7 @@
           -171.77,
           -13.83
         ],
-        "zoom": 13.0,
+        "zoom": 13,
         "pitch": 55,
         "bearing": 180,
         "duration": 5000,
@@ -1896,7 +3034,7 @@
           55.5364,
           -21.1151
         ],
-        "zoom": 10.0,
+        "zoom": 10,
         "pitch": 10,
         "bearing": -40,
         "duration": 0
@@ -1906,7 +3044,7 @@
           55.5364,
           -21.1151
         ],
-        "zoom": 11.0,
+        "zoom": 11,
         "pitch": 40,
         "bearing": -10,
         "duration": 3500,
@@ -1929,7 +3067,7 @@
           55.5364,
           -21.1151
         ],
-        "zoom": 12.0,
+        "zoom": 12,
         "pitch": 52,
         "bearing": 75,
         "duration": 4500,
@@ -1941,7 +3079,7 @@
           55.23,
           -21.05
         ],
-        "zoom": 13.0,
+        "zoom": 13,
         "pitch": 55,
         "bearing": 120,
         "duration": 5000,
@@ -1956,14 +3094,65 @@
       96.873,
       -12.1642
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.15,
-    "orbit": {
-      "zoom": 13.9,
-      "pitch": 55,
-      "startBearing": -22,
-      "orbitSpan": 118,
-      "smoothOrbit": true
-    }
+    "keyframes": [
+      {
+        "center": [
+          96.873,
+          -12.1642
+        ],
+        "zoom": 11,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          96.873,
+          -12.1642
+        ],
+        "zoom": 12,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          96.873,
+          -12.1642
+        ],
+        "zoom": 12.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          96.873,
+          -12.1642
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          96.873,
+          -12.1642
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   }
 }

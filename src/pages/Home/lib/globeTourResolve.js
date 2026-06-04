@@ -24,8 +24,8 @@ const ALPINE_SLUG_HINTS = new Set([
 
 const ALPINE_KEYWORD_HINTS = /알프스|마테호른|matterhorn|alpine|체르마트|인터라켄|chamonix|grindelwald/i;
 
-/** Paradise island tours — centroid overview + descent (see islandReveal). */
-const ISLAND_TOUR_SLUGS = new Set([
+/** Paradise island tours — 5-stage aerial cinematic (see buildIslandCinematicKeyframes). */
+export const ISLAND_TOUR_SLUGS = new Set([
   'maldives',
   'seychelles',
   'samoa',
@@ -45,13 +45,25 @@ const ISLAND_TOUR_SLUGS = new Set([
   'hvar',
   'sicily',
   'canary-islands',
-  'easter-island',
   'cocos-islands',
   'falkland-islands',
   'faroe-islands',
   'christmas-island',
   'similan-islands',
-  'phi-phi-islands'
+  'phi-phi-islands',
+  'bali',
+  'santorini',
+  'phuket',
+  'madeira',
+  'crete',
+  'lombok',
+  'hawaii',
+  'palawan',
+  'bohol',
+  'gili-meno',
+  'phu-quoc',
+  'el-nido',
+  'honolulu'
 ]);
 
 const ISLAND_KEYWORD_HINTS =
@@ -98,7 +110,7 @@ export function resolveGlobeTourConfig({ slug, lat, lng, location } = {}) {
   if (landmark) {
     const template = landmark.template || 'mountainOrbit';
     const orbit =
-      template === 'islandReveal'
+      template === 'islandReveal' || template === 'islandCinematic'
         ? enrichIslandOrbit(key, landmark.orbit || {})
         : landmark.orbit || {};
     return {
@@ -134,12 +146,14 @@ export function resolveGlobeTourConfig({ slug, lat, lng, location } = {}) {
     category === 'paradise' &&
     (ISLAND_TOUR_SLUGS.has(slugHint) || ISLAND_KEYWORD_HINTS.test(keywordBlob))
   ) {
-    template = 'islandReveal';
+    template = 'islandCinematic';
   }
 
   const isUrbanLike = category === 'urban' || category === 'culture';
   const orbit =
-    template === 'islandReveal' ? enrichIslandOrbit(slugHint, {}) : {};
+    template === 'islandCinematic' || template === 'islandReveal'
+      ? enrichIslandOrbit(slugHint, {})
+      : {};
 
   return {
     center: fallbackCenter,

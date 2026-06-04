@@ -10,20 +10,6 @@ function offsetCenter([lng, lat], dLng, dLat) {
   return [lng + dLng, clampLat(lat + dLat)];
 }
 
-function lerpCenter([lngA, latA], [lngB, latB], t) {
-  return [lngA + (lngB - lngA) * t, clampLat(latA + (latB - latA) * t)];
-}
-
-/** Touchdown when no airport coords — offset from centroid along inbound leg. */
-function defaultApproachPoint(center, inboundBearingDeg, distanceKm = 4) {
-  const rad = ((inboundBearingDeg + 180) * Math.PI) / 180;
-  const kmPerDegLat = 111;
-  const dLat = (distanceKm / kmPerDegLat) * Math.cos(rad);
-  const cosLat = Math.cos((center[1] * Math.PI) / 180) || 0.2;
-  const dLng = (distanceKm / (kmPerDegLat * cosLat)) * Math.sin(rad);
-  return offsetCenter(center, dLng, dLat);
-}
-
 /** Drone orbit around a landmark — center fixed, bearing sweeps. */
 export function landmarkOrbit(center, opts = {}) {
   const zoom = opts.zoom ?? 15.8;
@@ -114,128 +100,82 @@ export function mountainOrbit(center, opts = {}) {
   });
 }
 
-/** Island scale — wide overview → glide-in with center locked on island. */
-const ISLAND_SCALE_PROFILES = {
-  small: {
-    apexZoom: 11.4,
-    glideZoom: 12.5,
-    holdZoom: 13.7,
-    driftSpan: 42,
-    driftSegments: 3,
-    approachBlend: 0.2,
-    approachKm: 3
-  },
-  medium: {
-    apexZoom: 10.6,
-    glideZoom: 12.1,
-    holdZoom: 13.3,
-    driftSpan: 38,
-    driftSegments: 3,
-    approachBlend: 0.18,
-    approachKm: 5
-  },
-  large: {
-    apexZoom: 9.8,
-    glideZoom: 11.4,
-    holdZoom: 12.7,
-    driftSpan: 34,
-    driftSegments: 3,
-    approachBlend: 0.16,
-    approachKm: 8
-  },
-  archipelago: {
-    apexZoom: 8.8,
-    glideZoom: 10.6,
-    holdZoom: 12.1,
-    driftSpan: 32,
-    driftSegments: 3,
-    approachBlend: 0.14,
-    approachKm: 6
-  }
+/** 5-stage aerial cinematic — overview → approach → orbit → landing (island SSOT pattern). */
+const ISLAND_CINEMATIC_SCALE = {
+  small: { overviewZoom: 11.0, approachZoom: 12.0, orbit1: 12.5, orbit2: 12.8, landingZoom: 13.5 },
+  medium: { overviewZoom: 10.0, approachZoom: 11.0, orbit1: 11.5, orbit2: 11.8, landingZoom: 13.0 },
+  large: { overviewZoom: 9.0, approachZoom: 10.0, orbit1: 10.5, orbit2: 11.0, landingZoom: 12.5 }
 };
 
 /**
- * Island approach — center stays on island while zoom/pitch close in (no off-island jump).
- * Final frame only nudges map center toward airport/beach (approachBlend).
+ * Standard island 3D tour — top-down overview, locked-center approach/orbit, beach/POI landing.
+ * @param {[number, number]} overviewCenter — wide island overview (frames 1–4)
+ * @param {[number, number]} landingCenter — final approach POI (frame 5)
  */
-export function islandReveal(center, opts = {}) {
-  const scale = opts.islandScale || 'medium';
-  const profile = ISLAND_SCALE_PROFILES[scale] || ISLAND_SCALE_PROFILES.medium;
-  const focus = center;
-  const entryBearing = opts.startBearing ?? -40;
-  const finalPitch = opts.pitch ?? 50;
-  const segMs = opts.segmentDuration ?? 4200;
+export function buildIslandCinematicKeyframes(overviewCenter, landingCenter, opts = {}) {
+  const profile = ISLAND_CINEMATIC_SCALE[opts.scale || 'medium'] || ISLAND_CINEMATIC_SCALE.medium;
+  const startBearing = opts.startBearing ?? -40;
+  const overview = overviewCenter;
+  const landing = landingCenter || overviewCenter;
 
-  const apexZoom = opts.apexZoom ?? profile.apexZoom;
-  const glideZoom = opts.glideZoom ?? profile.glideZoom;
-  const holdZoom = opts.holdZoom ?? profile.holdZoom;
-  const driftSpan = opts.driftSpan ?? profile.driftSpan;
-  const driftSegments = opts.driftSegments ?? profile.driftSegments;
-  const approachBlend = opts.approachBlend ?? profile.approachBlend;
-
-  const endBearing = entryBearing + 14 + driftSpan;
-  const touchdown =
-    opts.approachPoint ||
-    defaultApproachPoint(focus, endBearing, opts.approachKm ?? profile.approachKm);
-  const holdCenter = lerpCenter(focus, touchdown, approachBlend);
-
-  const frames = [
+  return [
     {
-      center: focus,
-      zoom: apexZoom,
-      pitch: 8,
-      bearing: entryBearing,
+      center: [...overview],
+      zoom: profile.overviewZoom,
+      pitch: 10,
+      bearing: startBearing,
       duration: 0
     },
     {
-      center: focus,
-      zoom: apexZoom + 0.18,
-      pitch: 16,
-      bearing: entryBearing + 3,
-      duration: 3200,
-      ease: true
-    },
-    {
-      center: focus,
-      zoom: glideZoom - 0.35,
-      pitch: 30,
-      bearing: entryBearing + 8,
-      duration: segMs,
-      ease: true
-    },
-    {
-      center: focus,
-      zoom: glideZoom,
+      center: [...overview],
+      zoom: profile.approachZoom,
       pitch: 40,
-      bearing: entryBearing + 12,
-      duration: segMs,
+      bearing: startBearing + 30,
+      duration: 3500,
       ease: true
-    }
-  ];
-
-  for (let i = 1; i <= driftSegments; i += 1) {
-    const t = i / driftSegments;
-    frames.push({
-      center: focus,
-      zoom: glideZoom + (holdZoom - glideZoom - 0.25) * t,
-      pitch: 40 + (finalPitch - 6) * t,
-      bearing: entryBearing + 14 + driftSpan * t,
-      duration: segMs,
+    },
+    {
+      center: [...overview],
+      zoom: profile.orbit1,
+      pitch: 48,
+      bearing: startBearing + 70,
+      duration: 4500,
       ease: true,
       orbit: true
-    });
-  }
+    },
+    {
+      center: [...overview],
+      zoom: profile.orbit2,
+      pitch: 52,
+      bearing: startBearing + 115,
+      duration: 4500,
+      ease: true,
+      orbit: true
+    },
+    {
+      center: [...landing],
+      zoom: profile.landingZoom,
+      pitch: 55,
+      bearing: startBearing + 160,
+      duration: 5000,
+      ease: true,
+      orbit: true
+    }
+  ];
+}
 
-  frames.push({
-    center: holdCenter,
-    zoom: holdZoom,
-    pitch: finalPitch,
-    bearing: endBearing + 6,
-    duration: 3400,
-    ease: true
+/**
+ * Island approach — delegates to 5-stage cinematic pattern.
+ * @deprecated Prefer `buildIslandCinematicKeyframes` + `globeLandmarks` keyframes SSOT.
+ */
+export function islandReveal(center, opts = {}) {
+  const scaleMap = { small: 'small', medium: 'medium', large: 'large', archipelago: 'small' };
+  const scale = scaleMap[opts.islandScale] || 'medium';
+  const landing = opts.approachPoint || center;
+  return buildIslandCinematicKeyframes(center, landing, {
+    scale,
+    startBearing: opts.startBearing
   });
-
-  return frames;
 }
 
 /** Coastal cliff / island orbit — slightly lower pitch. */
@@ -268,6 +208,8 @@ export const TOUR_TEMPLATE_BY_NAME = {
   mountainOrbit,
   coastalOrbit,
   islandReveal,
+  islandCinematic: (center, opts = {}) =>
+    buildIslandCinematicKeyframes(center, opts.approachPoint || center, opts),
   aerialApproach,
   // legacy aliases
   coastalSweep: coastalOrbit,
