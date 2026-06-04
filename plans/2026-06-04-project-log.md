@@ -42,3 +42,9 @@
 - **스폰지/멀미**: off-island ring center → 섬이 화면 가장자리로 밀림. **조망~근접은 center=섬 고정**, zoom/pitch만 변화 · 마지막만 `approachBlend` 14~20% 공항 쪽 nudge.
 - **라로통가·코코스**: `coastalOrbit` 유지.
 - **몰디브**: `archipelago`·전역 centroid 제거 → **북말레 훌루말레** 단일 초점 · zoom 상향(MLE).
+
+## 3D 투어 — 몰입감 강화 (2026-06-04)
+
+- **문제**: 투어 모드로 진행 시 지도의 구분선(국경, 행정구역)과 많은 지명이 함께 표시되어 몰입감을 저해함.
+- **조치**: [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx)의 `applyPlaceLabelVisibility`에서 `isPinVisible` 정책에 `!isTourMode(globeMode)` 조건을 추가하여, 투어 모드 진입 시 모든 Mapbox 지명과 행정선이 숨겨지도록 강제함. 투어가 끝나면 자동으로 복원됨.
+

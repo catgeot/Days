@@ -324,7 +324,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const shouldShowMapboxContext = applyMapboxGlobeLabelPolicy(map, {
       globeTheme,
-      isPinVisible,
+      isPinVisible: isPinVisible && !isTourMode(globeMode),
       placeLabelLayerIds: placeLabelLayerIdsRef.current
     });
 
@@ -333,7 +333,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (lastPlaceLabelVisibleRef.current !== shouldShowMapboxContext) {
       lastPlaceLabelVisibleRef.current = shouldShowMapboxContext;
     }
-  }, [globeTheme, isPinVisible, refreshPlaceLabelLayers]);
+  }, [globeTheme, isPinVisible, globeMode, refreshPlaceLabelLayers]);
 
   const syncMapZoom = useCallback(() => {
     const map = mapRef.current?.getMap();
