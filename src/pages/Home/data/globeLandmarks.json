@@ -263,19 +263,25 @@
     }
   },
   "maldives": {
-    "landmarkName": "North Male Atoll lagoon",
+    "landmarkName": "North Malé — Hulhumalé & airport (MLE)",
     "center": [
-      73.54,
-      3.87
+      73.5405,
+      4.2081
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.1,
     "orbit": {
-      "zoom": 13.8,
-      "pitch": 55,
-      "startBearing": -15,
-      "orbitSpan": 130,
-      "smoothOrbit": true
+      "islandScale": "small",
+      "startBearing": -24,
+      "apexZoom": 12.3,
+      "glideZoom": 13.1,
+      "holdZoom": 14,
+      "driftSpan": 34,
+      "approachBlend": 0.1,
+      "approachPoint": [
+        73.529,
+        4.1918
+      ]
     }
   },
   "banff-national-park": {
@@ -390,33 +396,29 @@
     }
   },
   "boracay": {
-    "landmarkName": "White Beach",
+    "landmarkName": "Boracay island",
     "center": [
-      121.924,
-      11.967
+      121.9248,
+      11.9674
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.2,
     "orbit": {
-      "zoom": 14.8,
-      "pitch": 58,
-      "orbitSpan": 110,
-      "smoothOrbit": true
+      "islandScale": "small",
+      "startBearing": -28
     }
   },
   "bora-bora": {
-    "landmarkName": "Mt Otemanu lagoon",
+    "landmarkName": "Bora Bora island",
     "center": [
-      -151.736,
-      -16.5004
+      -151.74,
+      -16.5
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.25,
     "orbit": {
-      "zoom": 13.6,
-      "pitch": 57,
-      "orbitSpan": 120,
-      "smoothOrbit": true
+      "islandScale": "small",
+      "startBearing": -35
     }
   },
   "hvar": {
@@ -821,48 +823,42 @@
     }
   },
   "seychelles": {
-    "landmarkName": "Anse Source d'Argent",
+    "landmarkName": "Inner islands (Mahé group)",
     "center": [
-      55.449,
-      -4.357
+      55.49,
+      -4.67
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.2,
     "orbit": {
-      "zoom": 14,
-      "pitch": 56,
-      "orbitSpan": 118,
-      "smoothOrbit": true
+      "islandScale": "medium",
+      "startBearing": -25
     }
   },
   "zanzibar": {
-    "landmarkName": "Nungwi Beach",
+    "landmarkName": "Zanzibar island",
     "center": [
-      39.298,
-      -5.726
+      39.2026,
+      -6.1659
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.2,
     "orbit": {
-      "zoom": 14.2,
-      "pitch": 57,
-      "orbitSpan": 115,
-      "smoothOrbit": true
+      "islandScale": "large",
+      "startBearing": -30
     }
   },
   "langkawi": {
-    "landmarkName": "Datai Bay",
+    "landmarkName": "Langkawi island",
     "center": [
-      99.675,
-      6.409
+      99.8,
+      6.35
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.25,
     "orbit": {
-      "zoom": 14.1,
-      "pitch": 56,
-      "orbitSpan": 118,
-      "smoothOrbit": true
+      "islandScale": "medium",
+      "startBearing": -26
     }
   },
   "costa-rica": {
@@ -962,33 +958,29 @@
     }
   },
   "ibiza": {
-    "landmarkName": "Es Vedrà viewpoint",
+    "landmarkName": "Ibiza island",
     "center": [
-      1.203,
-      38.867
+      1.43,
+      38.98
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.2,
     "orbit": {
-      "zoom": 14.2,
-      "pitch": 56,
-      "orbitSpan": 115,
-      "smoothOrbit": true
+      "islandScale": "small",
+      "startBearing": -32
     }
   },
   "tahiti": {
-    "landmarkName": "Moorea lagoon view",
+    "landmarkName": "Tahiti island",
     "center": [
-      -149.839,
-      -17.533
+      -149.41,
+      -17.68
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.25,
     "orbit": {
-      "zoom": 13.5,
-      "pitch": 55,
-      "orbitSpan": 118,
-      "smoothOrbit": true
+      "islandScale": "large",
+      "startBearing": -30
     }
   },
   "bled": {
@@ -1055,18 +1047,16 @@
     }
   },
   "cebu": {
-    "landmarkName": "Kawasan Falls / south coast",
+    "landmarkName": "Cebu island",
     "center": [
-      123.323,
-      9.798
+      123.8854,
+      10.3157
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.3,
     "orbit": {
-      "zoom": 14,
-      "pitch": 56,
-      "orbitSpan": 112,
-      "smoothOrbit": true
+      "islandScale": "large",
+      "startBearing": -38
     }
   },
   "dolomites": {
@@ -1089,18 +1079,16 @@
     }
   },
   "komodo-island": {
-    "landmarkName": "Padar Island viewpoint",
+    "landmarkName": "Komodo National Park islands",
     "center": [
-      119.593,
-      -8.648
+      119.55,
+      -8.55
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.35,
     "orbit": {
-      "zoom": 13.4,
-      "pitch": 57,
-      "orbitSpan": 110,
-      "smoothOrbit": true
+      "islandScale": "medium",
+      "startBearing": -40
     }
   },
   "andaman-islands": {
@@ -1279,18 +1267,16 @@
     }
   },
   "mauritius": {
-    "landmarkName": "Le Morne Brabant",
+    "landmarkName": "Mauritius island",
     "center": [
-      57.31,
-      -20.45
+      57.5522,
+      -20.3484
     ],
-    "template": "coastalOrbit",
+    "template": "islandReveal",
     "exaggeration": 1.25,
     "orbit": {
-      "zoom": 13.8,
-      "pitch": 56,
-      "orbitSpan": 115,
-      "smoothOrbit": true
+      "islandScale": "medium",
+      "startBearing": -27
     }
   },
   "torres-del-paine": {
@@ -1326,6 +1312,64 @@
       "pitch": 57,
       "startBearing": -54,
       "orbitSpan": 125
+    }
+  },
+  "samoa": {
+    "landmarkName": "Upolu island (Samoa)",
+    "center": [
+      -172.1046,
+      -13.759
+    ],
+    "template": "islandReveal",
+    "exaggeration": 1.2,
+    "orbit": {
+      "islandScale": "medium",
+      "startBearing": -24
+    }
+  },
+  "great-barrier-reef": {
+    "landmarkName": "Airlie Beach & Whitsunday coast",
+    "center": [
+      148.716,
+      -20.269
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.25,
+    "orbit": {
+      "zoom": 13.9,
+      "pitch": 55,
+      "startBearing": -30,
+      "orbitSpan": 115,
+      "smoothOrbit": true
+    }
+  },
+  "la-reunion": {
+    "landmarkName": "Réunion island",
+    "center": [
+      55.5364,
+      -21.1151
+    ],
+    "template": "islandReveal",
+    "exaggeration": 1.3,
+    "orbit": {
+      "islandScale": "large",
+      "startBearing": -28
+    }
+  },
+  "cocos-islands": {
+    "landmarkName": "West Island & lagoon",
+    "center": [
+      96.873,
+      -12.1642
+    ],
+    "template": "coastalOrbit",
+    "exaggeration": 1.15,
+    "orbit": {
+      "zoom": 13.9,
+      "pitch": 55,
+      "startBearing": -22,
+      "orbitSpan": 118,
+      "smoothOrbit": true
     }
   }
 }

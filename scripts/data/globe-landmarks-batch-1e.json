@@ -182,18 +182,18 @@
     "orbit": { "zoom": 12.7, "pitch": 58, "startBearing": -48, "orbitSpan": 105, "segments": 4 }
   },
   "seychelles": {
-    "landmarkName": "Anse Source d'Argent",
-    "center": [55.449, -4.357],
+    "landmarkName": "Anse Source d'Argent (La Digue)",
+    "center": [55.5163, -4.3758],
     "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": { "zoom": 14.0, "pitch": 56, "orbitSpan": 118, "smoothOrbit": true }
+    "orbit": { "zoom": 14.3, "pitch": 54, "startBearing": -30, "orbitSpan": 115, "smoothOrbit": true, "shoreOffset": [0.004, 0.002] }
   },
   "zanzibar": {
-    "landmarkName": "Nungwi Beach",
-    "center": [39.298, -5.726],
+    "landmarkName": "Stone Town & Forodhani coast",
+    "center": [39.1906, -6.158],
     "template": "coastalOrbit",
     "exaggeration": 1.2,
-    "orbit": { "zoom": 14.2, "pitch": 57, "orbitSpan": 115, "smoothOrbit": true }
+    "orbit": { "zoom": 14.1, "pitch": 54, "startBearing": -35, "orbitSpan": 112, "smoothOrbit": true }
   },
   "langkawi": {
     "landmarkName": "Datai Bay",
@@ -287,11 +287,11 @@
     "orbit": { "zoom": 12.8, "pitch": 56, "startBearing": -35, "orbitSpan": 102, "segments": 4 }
   },
   "cebu": {
-    "landmarkName": "Kawasan Falls / south coast",
-    "center": [123.323, 9.798],
+    "landmarkName": "Mactan & Cebu Strait coast",
+    "center": [123.986, 10.312],
     "template": "coastalOrbit",
     "exaggeration": 1.3,
-    "orbit": { "zoom": 14.0, "pitch": 56, "orbitSpan": 112, "smoothOrbit": true }
+    "orbit": { "zoom": 14.2, "pitch": 54, "startBearing": -40, "orbitSpan": 110, "smoothOrbit": true }
   },
   "dolomites": {
     "landmarkName": "Seceda ridge",
