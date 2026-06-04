@@ -1,7 +1,7 @@
 /** Home globe zoom-tier visibility SSOT */
 
-/** Mapbox place labels + admin boundaries visible at/above this zoom (trial: was 4.0). */
-export const PLACE_LABEL_MIN_ZOOM = 2.0;
+/** Mapbox place labels + admin boundaries visible at/above this zoom (gateo 마커·카테고리 노출 후). */
+export const PLACE_LABEL_MIN_ZOOM = 4.0;
 
 export const TIER_STAGE_ZOOM_LEVELS = {
   tier1: 1.1,
@@ -15,7 +15,7 @@ export const GLOBE_ZOOM_POLICY = {
   gateoTier1MaxZoom: 2.0,
   /** 2.0–3.9: gateo tier 1–2, Mapbox place labels off */
   gateoTier2MaxZoom: TIER_STAGE_ZOOM_LEVELS.tier2,
-  /** 2.0+: Mapbox Korean place labels + boundaries on */
+  /** 4.0+: Mapbox Korean place labels + boundaries on */
   mapboxLabelsMinZoom: PLACE_LABEL_MIN_ZOOM
 };
 

@@ -17,3 +17,10 @@
 ## QA
 
 - 로컬 Pass: 데스크톱 투어 중 풀 Summary · 모바일 투어 중 `TourMobileBar`만 표시.
+
+---
+
+## Mapbox 지명 줌 임계값 복원 (2026-06-04)
+
+- **문제**: `PLACE_LABEL_MIN_ZOOM` 2.0 시험(커밋 `305475b`) — 마커와 동시에 Mapbox 지명 노출 → 일반 지명 클릭 시 장소카드 콘텐츠 빈약.
+- **복원**: [`globeZoomPolicy.js`](../src/pages/Home/lib/globeZoomPolicy.js) `PLACE_LABEL_MIN_ZOOM = 4.0` — tier 마커 → `HIGH_ZOOM_FULL_REVEAL`(3.0) 전체 여행지 → **4.0+** Mapbox 지명·행정선 (`isPinVisible`·`globeMapboxLabelPolicy` SSOT 유지).
