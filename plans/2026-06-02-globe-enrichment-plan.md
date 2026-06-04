@@ -1,8 +1,8 @@
 # 홈 지구본 풍부화 마스터 계획 (2026-06-02)
 
-**맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-03-project-log.md`](2026-06-03-project-log.md) · 직전 [`2026-06-02-project-log.md`](2026-06-02-project-log.md)
+**맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-03 — 모바일 투어 시네마 UI · DEV Mapbox LAN QA · `TourMobileBar`
+**갱신**: 2026-06-04 — 데스크톱 투어 중 Summary **풀 카드** 복원 · 모바일만 `TourMobileBar` 컴팩트
 
 ---
 
@@ -10,7 +10,7 @@
 
 **클릭하는 순간 그 여행지의 감성(지형·스케일)을 맛볼 수 있는 카메라 경로.**
 
-- 사용자: 여행 전 **간접 경험** · 데스크톱은 Summary **컴팩트** 유지 · **모바일(`<lg`)** 투어 중 Summary 숨김 + 헤더 **`TourMobileBar`** (로고 옆 · 글로우 · Skip/2D).
+- 사용자: 여행 전 **간접 경험** · **데스크톱(`lg+`)** 투어 중에도 Summary **풀 카드**(설명·3D 투어·MOONi) · **모바일(`<lg`)** 투어 중 Summary 숨김 + 헤더 **`TourMobileBar`** (로고 옆 · 글로우 · Skip/2D).
 - **버튼 노출**: `lat`/`lng`만 유효하면 **전 여행지** — 큐레이션·신규·DB-only 지명 포함 (숨은 여행지 → 위키·매거진 파이프라인).
 - **품질**: slug별 **대표 뷰포인트**(`globeLandmarks.json`) + category 폴백 — `travelSpots.js` 좌표(공항·도심·행정 중심)를 투어에 그대로 쓰지 않음.
 - **시각 우선순위** (QA 2026-06-03): **대자연·해안·알프스** > 도심 (`mountainOrbit` / `coastalOrbit` / `alpineVillageOrbit` 우선 큐레이션).
@@ -53,7 +53,8 @@
 | [`globeTourUi.js`](../src/pages/Home/lib/globeTourUi.js) | 투어 중 라벨 정리 · urban 투어 시 Standard 랜드마크만 ON · 종료 시 `reapply`로 홈 정책 복원 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | **Mapbox 지명·경계·랜드마크 SSOT** — 줌≥2·`isPinVisible` · Standard `setConfigProperty` + 레이어 숨김 |
 | [`travelSpots.js`](../src/pages/Home/data/travelSpots.js) | **핀·SEO·공항·페리** 좌표 SSOT — 투어 center와 분리 유지 |
-| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 · 데스크톱 투어 중 `isCompact` |
+| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 · 데스크톱 투어 중 **풀 카드** (`isCompact` 미사용) |
+| [`index.jsx`](../src/pages/Home/index.jsx) | `isTourCinema` = 투어+`<lg` → Summary 숨김 · 데스크톱 투어 시 `isCompact` prop 없음 |
 | [`TourMobileBar.jsx`](../src/pages/Home/components/TourMobileBar.jsx) | 모바일 투어 시네마 — 헤더(로고 옆) · 국가/지명 + Skip/2D · `index.css` 글로우 |
 | [`resolveHomeGlobeEngine.js`](../src/pages/Home/components/resolveHomeGlobeEngine.js) | PROD→mapbox · DEV→mapbox(URL 무제한 `.env.local` 토큰) · `?globe=legacy` |
 

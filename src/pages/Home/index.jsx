@@ -651,7 +651,6 @@ function Home() {
           <PlaceCardSummary
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
-            isCompact={isTourActive && !isMobileViewport}
             onClose={() => {
               setIsCardExpanded(false);
               setSelectedLocation(null);
