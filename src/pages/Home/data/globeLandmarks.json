@@ -396,17 +396,71 @@
     }
   },
   "boracay": {
-    "landmarkName": "Boracay island",
+    "landmarkName": "Boracay White Beach",
     "center": [
       121.9248,
       11.9674
     ],
-    "template": "islandReveal",
     "exaggeration": 1.2,
-    "orbit": {
-      "islandScale": "small",
-      "startBearing": -28
-    }
+    "keyframes": [
+      {
+        "center": [
+          121.9248,
+          11.9674
+        ],
+        "zoom": 11.0,
+        "pitch": 10,
+        "bearing": -60,
+        "duration": 0
+      },
+      {
+        "center": [
+          121.9248,
+          11.9674
+        ],
+        "zoom": 12.0,
+        "pitch": 45,
+        "bearing": -30,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          121.9248,
+          11.9674
+        ],
+        "zoom": 12.5,
+        "pitch": 50,
+        "bearing": 15,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          121.9248,
+          11.9674
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 60,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          121.920,
+          11.963
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 100,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "bora-bora": {
     "landmarkName": "Bora Bora island",
@@ -414,12 +468,66 @@
       -151.74,
       -16.5
     ],
-    "template": "islandReveal",
     "exaggeration": 1.25,
-    "orbit": {
-      "islandScale": "small",
-      "startBearing": -35
-    }
+    "keyframes": [
+      {
+        "center": [
+          -151.74,
+          -16.5
+        ],
+        "zoom": 11.0,
+        "pitch": 10,
+        "bearing": -45,
+        "duration": 0
+      },
+      {
+        "center": [
+          -151.74,
+          -16.5
+        ],
+        "zoom": 12.0,
+        "pitch": 45,
+        "bearing": -20,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -151.74,
+          -16.5
+        ],
+        "zoom": 12.5,
+        "pitch": 50,
+        "bearing": 20,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -151.74,
+          -16.5
+        ],
+        "zoom": 12.8,
+        "pitch": 52,
+        "bearing": 70,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -151.74,
+          -16.5
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 110,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "hvar": {
     "landmarkName": "Hvar town & Pakleni coast",
@@ -823,17 +931,71 @@
     }
   },
   "seychelles": {
-    "landmarkName": "Inner islands (Mahé group)",
+    "landmarkName": "Beau Vallon & Mahé",
     "center": [
       55.49,
       -4.67
     ],
-    "template": "islandReveal",
     "exaggeration": 1.2,
-    "orbit": {
-      "islandScale": "medium",
-      "startBearing": -25
-    }
+    "keyframes": [
+      {
+        "center": [
+          55.49,
+          -4.67
+        ],
+        "zoom": 10.0,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          55.46,
+          -4.65
+        ],
+        "zoom": 11.0,
+        "pitch": 40,
+        "bearing": 0,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          55.45,
+          -4.64
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 45,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          55.44,
+          -4.63
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 90,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          55.43,
+          -4.62
+        ],
+        "zoom": 13.0,
+        "pitch": 55,
+        "bearing": 135,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "zanzibar": {
     "landmarkName": "Zanzibar island",
@@ -841,12 +1003,66 @@
       39.2026,
       -6.1659
     ],
-    "template": "islandReveal",
     "exaggeration": 1.2,
-    "orbit": {
-      "islandScale": "large",
-      "startBearing": -30
-    }
+    "keyframes": [
+      {
+        "center": [
+          39.2026,
+          -6.1659
+        ],
+        "zoom": 9.5,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          39.2026,
+          -6.1659
+        ],
+        "zoom": 10.5,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          39.2026,
+          -6.1659
+        ],
+        "zoom": 11.2,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          39.2026,
+          -6.1659
+        ],
+        "zoom": 11.6,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          39.19,
+          -6.16
+        ],
+        "zoom": 12.3,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "langkawi": {
     "landmarkName": "Langkawi island",
@@ -854,12 +1070,66 @@
       99.8,
       6.35
     ],
-    "template": "islandReveal",
     "exaggeration": 1.25,
-    "orbit": {
-      "islandScale": "medium",
-      "startBearing": -26
-    }
+    "keyframes": [
+      {
+        "center": [
+          99.8,
+          6.35
+        ],
+        "zoom": 10.0,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          99.8,
+          6.35
+        ],
+        "zoom": 11.0,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          99.8,
+          6.35
+        ],
+        "zoom": 11.4,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          99.8,
+          6.35
+        ],
+        "zoom": 11.7,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          99.73,
+          6.29
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "costa-rica": {
     "landmarkName": "Manuel Antonio coast",
