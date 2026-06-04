@@ -1801,7 +1801,7 @@
     }
   },
   "samoa": {
-    "landmarkName": "Upolu island (Samoa)",
+    "landmarkName": "Upolu & Apia Coast",
     "center": [
       -172.1046,
       -13.759
@@ -1810,45 +1810,45 @@
     "keyframes": [
       {
         "center": [
-          -172.1046,
-          -13.759
+          -172.10,
+          -13.75
         ],
         "zoom": 10.0,
         "pitch": 10,
-        "bearing": -40,
+        "bearing": 90,
         "duration": 0
       },
       {
         "center": [
-          -172.1046,
-          -13.759
+          -172.00,
+          -13.78
         ],
         "zoom": 11.0,
         "pitch": 40,
-        "bearing": -10,
+        "bearing": 110,
         "duration": 3500,
         "ease": true
       },
       {
         "center": [
-          -172.1046,
-          -13.759
+          -171.90,
+          -13.80
         ],
         "zoom": 11.5,
         "pitch": 48,
-        "bearing": 30,
+        "bearing": 135,
         "duration": 4500,
         "ease": true,
         "orbit": true
       },
       {
         "center": [
-          -172.1046,
-          -13.759
+          -171.83,
+          -13.82
         ],
         "zoom": 12.0,
         "pitch": 52,
-        "bearing": 75,
+        "bearing": 160,
         "duration": 4500,
         "ease": true,
         "orbit": true
@@ -1860,7 +1860,7 @@
         ],
         "zoom": 13.0,
         "pitch": 55,
-        "bearing": 120,
+        "bearing": 180,
         "duration": 5000,
         "ease": true,
         "orbit": true
