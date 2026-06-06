@@ -22,7 +22,9 @@
     "generate:canonical-place-id-map": "node scripts/generate-canonical-place-id-map.mjs",
     "generate:place-alias-seed": "node scripts/generate-place-alias-seed.mjs --write",
     "migrate:place-id-to-slug": "node scripts/migrate-place-id-to-slug.mjs",
-    "verify:place-slug-resolve": "node scripts/verify-place-slug-resolve.mjs"
+    "verify:place-slug-resolve": "node scripts/verify-place-slug-resolve.mjs",
+    "smoke:health": "node scripts/smoke-health.mjs",
+    "smoke:health:ci": "node scripts/smoke-health.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

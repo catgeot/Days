@@ -1,0 +1,39 @@
+# gateo.kr API·사이트 헬스 스모크 — 6시간마다 + 수동 실행
+# @see plans/site-health-monitoring-plan.md Phase 1-C
+#
+# 필수 Repository secrets (Settings → Secrets and variables → Actions):
+#   VITE_SUPABASE_URL      — https://phdjnbfitvmrguqzverm.supabase.co
+#   VITE_SUPABASE_ANON_KEY — Vercel production과 동일, = 뒤 공백 없음
+
+name: Smoke Health
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: smoke-health
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run smoke health probes
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          SMOKE_SITE_URL: https://gateo.kr
+          SMOKE_GEMINI_PROBE: '1'
+          SMOKE_FAIL_ON_WARN: '1'
+        run: node scripts/smoke-health.mjs
