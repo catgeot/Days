@@ -54,10 +54,11 @@ export const STANDARD_HOME_CONFIG = [
  * @see https://docs.mapbox.com/map-styles/standard/api/
  */
 export const STANDARD_URBAN_TOUR_LANDMARKS_CONFIG = [
-  ['showPlaceLabels', false],
+  ['showPlaceLabels', true],
   ['showPointOfInterestLabels', false],
   ['showRoadLabels', false],
   ['showTransitLabels', false],
+  ['showAdminBoundaries', true],
   ['showLandmarkIcons', true],
   ['showLandmarkIconLabels', true],
   ['show3dObjects', true],

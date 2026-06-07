@@ -43,10 +43,11 @@
 - **라로통가·코코스**: `coastalOrbit` 유지.
 - **몰디브**: `archipelago`·전역 centroid 제거 → **북말레 훌루말레** 단일 초점 · zoom 상향(MLE).
 
-## 3D 투어 — 몰입감 강화 (2026-06-04)
+## 3D 투어 — 몰입감 강화 (2026-06-04) — **2026-06-07 복원**
 
 - **문제**: 투어 모드로 진행 시 지도의 구분선(국경, 행정구역)과 많은 지명이 함께 표시되어 몰입감을 저해함.
-- **조치**: [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx)의 `applyPlaceLabelVisibility`에서 `isPinVisible` 정책에 `!isTourMode(globeMode)` 조건을 추가하여, 투어 모드 진입 시 모든 Mapbox 지명과 행정선이 숨겨지도록 강제함. 투어가 끝나면 자동으로 복원됨.
+- **조치(당시)**: `applyPlaceLabelVisibility`에 `!isTourMode` 추가 · `globeTourUi` symbol 숨김.
+- **복원(2026-06-07)**: 투어 중에도 홈과 동일한 지명·행정선 정책 · 지명·마커 클릭 허용 · 빈 지도 탭만 차단 — [`2026-06-07-project-log.md`](2026-06-07-project-log.md).
 
 ## 보라카이 3D 투어 최적화 (2026-06-04)
 

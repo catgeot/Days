@@ -30,7 +30,7 @@ import {
 } from '../lib/globeMarkerLayers';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
-import { applyTourMapUi, restoreGlobeMapUi } from '../lib/globeTourUi';
+import { applyTourMapUi } from '../lib/globeTourUi';
 import { applyMapboxGlobeLabelPolicy } from '../lib/globeMapboxLabelPolicy';
 
 function LanguageControl() {
@@ -324,7 +324,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const shouldShowMapboxContext = applyMapboxGlobeLabelPolicy(map, {
       globeTheme,
-      isPinVisible: isPinVisible && !isTourMode(globeMode),
+      isPinVisible,
       placeLabelLayerIds: placeLabelLayerIdsRef.current
     });
 
@@ -333,7 +333,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (lastPlaceLabelVisibleRef.current !== shouldShowMapboxContext) {
       lastPlaceLabelVisibleRef.current = shouldShowMapboxContext;
     }
-  }, [globeTheme, isPinVisible, globeMode, refreshPlaceLabelLayers]);
+  }, [globeTheme, isPinVisible, refreshPlaceLabelLayers]);
 
   const syncMapZoom = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -755,12 +755,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const handleTourUiChange = useCallback((active, meta = {}) => {
     const map = mapRef.current?.getMap();
     if (!map) return;
-    if (active) {
-      applyTourMapUi(map, { active: true, globeTheme, tourTemplate: meta.template });
-    } else {
-      applyTourMapUi(map, { active: false, globeTheme, tourTemplate: meta.template });
-      restoreGlobeMapUi(map, resetAndApplyPlaceLabelVisibility);
-    }
+    applyTourMapUi(map, { active, globeTheme, tourTemplate: meta.template });
+    resetAndApplyPlaceLabelVisibility();
   }, [globeTheme, resetAndApplyPlaceLabelVisibility]);
 
   const ensureTourEngine = useCallback(() => {
@@ -936,10 +932,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (Date.now() < markerClickGuardUntilRef.current) return;
     if (Date.now() < suppressClickUntilRef.current) return;
     if (isZenMode || pauseRender) return;
-    if (isTourMode(globeMode) || tourActiveRef.current) return;
     if (!onGlobeClick || !event?.lngLat) return;
     const map = mapRef.current?.getMap();
     if (map && event.point && !isScreenPointOnGlobe(map, event.point)) return;
+
+    const inTour = isTourMode(globeMode) || tourActiveRef.current;
 
     const markerAtPoint = map && event.point
       ? findGateoMarkerAtPoint(map, event.point, event.lngLat)
@@ -996,6 +993,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       });
       return;
     }
+
+    if (inTour) return;
 
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
   }, [allTravelSpots, globeMode, isZenMode, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
