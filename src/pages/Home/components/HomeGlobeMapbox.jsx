@@ -26,12 +26,15 @@ import {
   updateGateoMarkerSource,
   findGateoMarkerAtPoint,
   isGateoLayer,
-  gateoMarkerLayersReady
+  gateoMarkerLayersReady,
+  syncGateoMarkerLayerStyle
 } from '../lib/globeMarkerLayers';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { applyTourMapUi } from '../lib/globeTourUi';
 import { applyMapboxGlobeLabelPolicy } from '../lib/globeMapboxLabelPolicy';
+import { getCategoryFocusView } from '../lib/globeCategoryFocus';
+import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -194,7 +197,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   isPinVisible = true,
   onGlobeModeChange,
   hideTourControls = false,
-  onFatalError
+  onFatalError,
+  highlightCategory = null
 }, ref) => {
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
@@ -217,6 +221,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const unbindSpaceDragGuardRef = useRef(null);
   const tourEngineRef = useRef(null);
   const tourActiveRef = useRef(false);
+  const prevHighlightCategoryRef = useRef(null);
+  const highlightCategoryRef = useRef(highlightCategory);
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
@@ -427,8 +433,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const isHighZoomFullReveal = mapZoom >= HIGH_ZOOM_FULL_REVEAL;
     const sourceSpots = isHighZoomFullReveal && allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
     const majorCandidates = sourceSpots
-      .filter((spot) => isHighZoomFullReveal || spot.showOnGlobe !== false)
-      .filter((spot) => (Number(spot.tier) || 3) <= maxTier)
+      .filter((spot) => passesGlobeTierPolicy(spot, maxTier))
       .map((spot) => ({
         ...spot,
         type: 'major',
@@ -589,6 +594,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!map || pauseRender) return;
     if (!gateoMarkerLayersReady(map)) {
       setupGateoMarkerLayers(map);
+    } else {
+      syncGateoMarkerLayerStyle(map);
     }
     updateGateoMarkerSource(map, markerGeoJSON);
   }, [markerGeoJSON, pauseRender]);
@@ -841,6 +848,59 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }), [addRipple, endTour, flyToAndPin, globeMode, pauseRender, resetAndApplyPlaceLabelVisibility, skipTour, startTour]);
 
   useEffect(() => {
+    highlightCategoryRef.current = highlightCategory;
+  }, [highlightCategory]);
+
+  useEffect(() => {
+    if (pauseRender || isZenMode || !highlightCategory) return;
+    if (isTourMode(globeMode) || tourActiveRef.current) return;
+
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    if (prevHighlightCategoryRef.current === null) {
+      prevHighlightCategoryRef.current = highlightCategory;
+      return;
+    }
+    if (prevHighlightCategoryRef.current === highlightCategory) return;
+
+    const catalog = allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
+    const focus = getCategoryFocusView(catalog, highlightCategory);
+    if (!focus) {
+      prevHighlightCategoryRef.current = highlightCategory;
+      return;
+    }
+
+    autoRotateRef.current = false;
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+
+    const center = map.getCenter();
+    const normalizedLng = normalizeLngNear(center.lng, focus.lng);
+    const currentZoom = map.getZoom();
+    map.flyTo({
+      center: [normalizedLng, focus.lat],
+      // 확대·전체 노출 줌은 유지, 우주 뷰에서만 살짝 당김
+      zoom: Math.max(currentZoom, focus.minZoom ?? 1.85),
+      duration: 2200,
+      essential: true
+    });
+    prevHighlightCategoryRef.current = highlightCategory;
+
+    rotationTimer.current = setTimeout(() => {
+      if (!pauseRender && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold) {
+        autoRotateRef.current = true;
+      }
+    }, 2600);
+  }, [
+    allTravelSpots,
+    globeMode,
+    highlightCategory,
+    isZenMode,
+    pauseRender,
+    travelSpots
+  ]);
+
+  useEffect(() => {
     if (isTourMode(globeMode)) return;
     if (tourActiveRef.current) return;
     autoRotateRef.current = !pauseRender;
@@ -1049,6 +1109,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             unbindSpaceDragGuardRef.current?.();
             unbindSpaceDragGuardRef.current = bindGlobeSpaceDragGuard(map);
             syncGateoMarkerLayers();
+            if (prevHighlightCategoryRef.current === null && highlightCategoryRef.current) {
+              prevHighlightCategoryRef.current = highlightCategoryRef.current;
+            }
           }
           syncMapZoom();
           ensureInteractionReady();

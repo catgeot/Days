@@ -10,6 +10,8 @@ export const TIER_STAGE_ZOOM_LEVELS = {
 
 export const HIGH_ZOOM_FULL_REVEAL = 3.0;
 
+/** denseRegion 없는 희소·섬 지역은 passesGlobeTierPolicy()로 tier 필터 생략 */
+
 export const GLOBE_ZOOM_POLICY = {
   /** zoom < 2.0: gateo tier-1 only, Mapbox place labels off */
   gateoTier1MaxZoom: 2.0,

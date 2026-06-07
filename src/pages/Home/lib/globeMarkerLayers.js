@@ -22,8 +22,12 @@ const CATEGORY_COLORS = {
 };
 
 const IS_ACTIVE = ['==', ['to-number', ['get', 'isActive']], 1];
+const IS_MAJOR = ['==', ['get', 'type'], 'major'];
+const SHOW_DOT = ['!=', ['get', 'type'], 'major'];
 
 const DOT_RADIUS = ['interpolate', ['linear'], ['zoom'], 1, 3, 3, 5, 6, 7];
+
+const LABEL_TEXT_SIZE = ['interpolate', ['linear'], ['zoom'], 1, 10, 3, 11, 5, 12, 8, 13];
 
 const ACTIVE_RING_RADIUS = ['interpolate', ['linear'], ['zoom'], 1, 10, 3, 14, 6, 18];
 
@@ -93,6 +97,43 @@ export function gateoMarkerLayersReady(map) {
   return GATEO_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
 }
 
+/** 레이어가 이미 있을 때 스타일·필터 동기화 (테마 전환·핫리로드) */
+export function syncGateoMarkerLayerStyle(map) {
+  if (!gateoMarkerLayersReady(map)) return;
+
+  safeMapUpdate(map, () => {
+    map.setFilter(GATEO_DOT_LAYER_ID, SHOW_DOT);
+
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-size', LABEL_TEXT_SIZE);
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-offset', [
+      'case',
+      IS_MAJOR,
+      ['literal', [0, 0]],
+      ['literal', [0.9, 0]]
+    ]);
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-anchor', [
+      'case',
+      IS_MAJOR,
+      'center',
+      'left'
+    ]);
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'symbol-sort-key', [
+      '-',
+      4,
+      ['to-number', ['get', 'tier']]
+    ]);
+
+    map.setPaintProperty(GATEO_LABEL_LAYER_ID, 'text-color', [
+      'case',
+      IS_ACTIVE,
+      '#fecaca',
+      IS_MAJOR,
+      ['get', 'color'],
+      '#e6edf7'
+    ]);
+  });
+}
+
 export function setupGateoMarkerLayers(map) {
   if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
 
@@ -130,6 +171,7 @@ export function setupGateoMarkerLayers(map) {
       id: GATEO_DOT_LAYER_ID,
       type: 'circle',
       source: GATEO_SOURCE_ID,
+      filter: SHOW_DOT,
       paint: {
         'circle-radius': DOT_RADIUS,
         'circle-color': ['get', 'color'],
@@ -146,15 +188,33 @@ export function setupGateoMarkerLayers(map) {
       source: GATEO_SOURCE_ID,
       layout: {
         'text-field': ['get', 'name'],
-        'text-size': 11,
-        'text-offset': [0.9, 0],
-        'text-anchor': 'left',
+        'text-size': LABEL_TEXT_SIZE,
+        'text-offset': [
+          'case',
+          IS_MAJOR,
+          ['literal', [0, 0]],
+          ['literal', [0.9, 0]]
+        ],
+        'text-anchor': [
+          'case',
+          IS_MAJOR,
+          'center',
+          'left'
+        ],
         'text-max-width': 8,
         'text-allow-overlap': false,
-        'text-ignore-placement': false
+        'text-ignore-placement': false,
+        'symbol-sort-key': ['-', 4, ['to-number', ['get', 'tier']]]
       },
       paint: {
-        'text-color': ['case', IS_ACTIVE, '#fecaca', '#e6edf7'],
+        'text-color': [
+          'case',
+          IS_ACTIVE,
+          '#fecaca',
+          IS_MAJOR,
+          ['get', 'color'],
+          '#e6edf7'
+        ],
         'text-halo-color': 'rgba(2,6,23,0.95)',
         'text-halo-width': 1.2,
         'text-opacity': ['to-number', ['get', 'opacity']]
@@ -162,6 +222,7 @@ export function setupGateoMarkerLayers(map) {
     });
     bindPointerCursor(GATEO_LABEL_LAYER_ID);
 
+    syncGateoMarkerLayerStyle(map);
     return true;
   } catch {
     return false;
@@ -176,9 +237,9 @@ export function updateGateoMarkerSource(map, geojson) {
 }
 
 const LAYER_HIT_PRIORITY = {
-  [GATEO_DOT_LAYER_ID]: 0,
-  [GATEO_ACTIVE_LAYER_ID]: 1,
-  [GATEO_LABEL_LAYER_ID]: 2
+  [GATEO_LABEL_LAYER_ID]: 0,
+  [GATEO_DOT_LAYER_ID]: 1,
+  [GATEO_ACTIVE_LAYER_ID]: 2
 };
 
 function pixelDistanceSq(a, b) {
@@ -212,10 +273,10 @@ function markerHitFromEntry(entry) {
   };
 }
 
-export function findGateoMarkerAtPoint(map, point, clickLngLat = null, thresholdPx = 28) {
+export function findGateoMarkerAtPoint(map, point, clickLngLat = null, thresholdPx = 32) {
   if (!map || !point) return null;
 
-  const layers = [GATEO_DOT_LAYER_ID, GATEO_LABEL_LAYER_ID, GATEO_ACTIVE_LAYER_ID]
+  const layers = [GATEO_LABEL_LAYER_ID, GATEO_DOT_LAYER_ID, GATEO_ACTIVE_LAYER_ID]
     .filter((id) => map.getLayer(id));
   if (layers.length === 0) return null;
 

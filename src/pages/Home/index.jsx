@@ -541,7 +541,7 @@ function Home() {
   };
 
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
-  const filteredSpots = useMemo(() => TRAVEL_SPOTS.filter(s => s.category === category), [category]);
+  // Mapbox 지구본은 마커 겹침을 자연스럽게 처리하므로 카테고리와 무관하게 전체 여행지 노출
   const globeSpots = useMemo(() => TRAVEL_SPOTS, []);
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
 
@@ -571,7 +571,7 @@ function Home() {
           isChatOpen={isChatOpen}
           savedTrips={isPinVisible ? globeRenderedTrips : []}
           tempPinsData={isPinVisible ? scoutedPins : []}
-          travelSpots={isPinVisible ? filteredSpots : []}
+          travelSpots={isPinVisible ? globeSpots : []}
           allTravelSpots={isPinVisible ? globeSpots : []}
           activePinId={selectedLocation?.id}
           pauseRender={shouldPauseGlobe}
@@ -580,6 +580,7 @@ function Home() {
           isPinVisible={isPinVisible}
           onGlobeModeChange={setGlobeMode}
           hideTourControls={isTourCinema}
+          highlightCategory={category}
         />
       </div>
 

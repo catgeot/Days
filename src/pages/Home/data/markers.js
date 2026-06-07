@@ -52,12 +52,10 @@ export const getMarkerDesign = (d) => {
       else if (d.category === 'nearby') accentColor = '#ffd76a';
       else if (d.category === 'adventure') accentColor = '#ff9b8f';
       else if (d.category === 'culture') accentColor = '#b89cff';
-      const labelColor = '#e6edf7';
 
       iconContent = `
-         <div style="display:flex; align-items:center; gap:4px;">
-           <span style="color:${accentColor}; font-size:22px; font-weight:800; line-height:0.6; text-shadow:0 0 1px rgba(2,6,23,0.98), 0 0 2px rgba(2,6,23,0.75); white-space:nowrap;">•</span>
-           <span style="color:${labelColor}; font-size:11px; font-weight:610; letter-spacing:0.12px; line-height:1.1; text-shadow:0 0 1px rgba(2,6,23,1), 0 0 2px rgba(2,6,23,0.98), 0 0 7px rgba(2,6,23,0.9); white-space:nowrap;">${escapeHtml(truncate(d.name, 12))}</span>
+         <div style="display:flex; align-items:center;">
+           <span style="color:${accentColor}; font-size:11px; font-weight:610; letter-spacing:0.12px; line-height:1.1; text-shadow:0 0 1px rgba(2,6,23,1), 0 0 2px rgba(2,6,23,0.98), 0 0 7px rgba(2,6,23,0.9); white-space:nowrap;">${escapeHtml(truncate(d.name, 12))}</span>
          </div>`;
   }
 

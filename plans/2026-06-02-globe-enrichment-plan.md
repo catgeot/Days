@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-04 — 데스크톱 투어 중 Summary **풀 카드** 복원 · 모바일만 `TourMobileBar` 컴팩트
+**갱신**: 2026-06-07 — 홈 지구본 마커·노출 정책(전 여행지·지명-only·denseRegion tier) Phase 0 SSOT 반영
 
 ---
 
@@ -34,9 +34,25 @@
 
 | 파일 | 역할 |
 |------|------|
-| [`globeMarkerLayers.js`](../src/pages/Home/lib/globeMarkerLayers.js) | GeoJSON source · dot/label/active-ring 레이어 · hit-test(클릭 거리 보정) |
-| [`globeZoomPolicy.js`](../src/pages/Home/lib/globeZoomPolicy.js) | zoom tier · merge/collision 임계값 |
-| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 레이어 bootstrap · 한글 지명 분기 |
+| [`globeMarkerLayers.js`](../src/pages/Home/lib/globeMarkerLayers.js) | GeoJSON source · **지명(symbol) 레이어** · active-ring(선택 핀) · hit-test — **여행지(major)는 점 없이 지명만** |
+| [`globeZoomPolicy.js`](../src/pages/Home/lib/globeZoomPolicy.js) | zoom tier · merge/collision 임계값 · `HIGH_ZOOM_FULL_REVEAL`(≥3) |
+| [`globeSpotVisibility.js`](../src/pages/Home/lib/globeSpotVisibility.js) | **`denseRegion` 밀집 권역만** 줌·tier 단계 노출 · `denseRegion` 없음(섬·희소)은 **전 tier 노출** |
+| [`globeCategoryFocus.js`](../src/pages/Home/lib/globeCategoryFocus.js) | 카테고리 버튼 → 해당 테마 **카메라 pan** (줌 인 상태 유지 · 마커 필터/흐림 없음) |
+| [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | Mapbox 행정·도시 지명 (줌≥4·눈 ON) — gateo 지명과 별도 |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 전 카테고리 여행지 노출 · 레이어 bootstrap · 한글 지명 분기 |
+
+### 홈 지구본 마커·노출 정책 (2026-06-07)
+
+| 항목 | 정책 |
+|------|------|
+| **여행지 범위** | 카테고리와 무관 **전체 `TRAVEL_SPOTS`** (구: 카테고리 필터·`showOnGlobe` 숨김 해제) |
+| **표시 형태** | major = **카테고리 색 지명 텍스트** (dot 제거) · 탐색/저장 핀 = 점+라벨 |
+| **밀집 vs 섬** | `travelSpots.denseRegion` **있음** → 줌 tier 1→2→3 · **없음** → tier 구분 없이 노출 |
+| **줌 ≥ 3** | tier 1~3 전체 · 충돌 병합 완화 (`HIGH_ZOOM_FULL_REVEAL`) |
+| **카테고리 버튼** | 마커 숨김/강조 **없음** — tier1 인기 가중 중심으로 **부드러운 flyTo** · AI·저장 trip `category` 태그 유지 |
+| **지명 겹침** | Mapbox `text-allow-overlap: false` + `symbol-sort-key`(tier 1 우선) |
+
+**데이터**: 새 대륙 밀집 권역 추가 시 `denseRegion` 문자열 부여(예: `western-europe`). 섬·단독 목적지는 `null` 유지.
 
 ---
 

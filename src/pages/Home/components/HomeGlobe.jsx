@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, us
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { getCategoryFocusView } from '../lib/globeCategoryFocus';
 
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,
@@ -22,11 +23,13 @@ const HomeGlobe = React.memo(forwardRef(({
   activePinId,
   pauseRender = false,
   globeTheme = 'deep',
-  isZenMode = false
+  isZenMode = false,
+  highlightCategory = null
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
+  const prevHighlightCategoryRef = useRef(null);
   const [ripples, setRipples] = useState([]);
 
   const isHoveringMarker = useRef(false);
@@ -194,10 +197,8 @@ const HomeGlobe = React.memo(forwardRef(({
     const threshold = 0.05;
     const findMatchIndex = (lat, lng) => result.findIndex(m => Math.abs(m.lat - lat) < threshold && Math.abs(m.lng - lng) < threshold);
 
-    // ⭐ showOnGlobe 필터링 적용 (밀집 지역 최적화)
-    travelSpots
-      .filter(spot => spot.showOnGlobe !== false)
-      .forEach(spot => { result.push({ ...spot, type: 'major', priority: 0, isBookmarked: false, hasChat: false }); });
+    // Mapbox와 동일: 카테고리·showOnGlobe 구분 없이 전체 여행지 후보 (줌·충돌 정책은 Mapbox 쪽에서 처리)
+    travelSpots.forEach(spot => { result.push({ ...spot, type: 'major', priority: 0, isBookmarked: false, hasChat: false }); });
 
     let chatCount = 0;
     savedTrips.forEach(trip => {
@@ -245,6 +246,37 @@ const HomeGlobe = React.memo(forwardRef(({
 
     return result;
   }, [travelSpots, savedTrips, tempPinsData, activePinId]);
+
+  useEffect(() => {
+    if (pauseRender || isZenMode || !highlightCategory || !globeEl.current) return;
+
+    if (prevHighlightCategoryRef.current === null) {
+      prevHighlightCategoryRef.current = highlightCategory;
+      return;
+    }
+    if (prevHighlightCategoryRef.current === highlightCategory) return;
+
+    const focus = getCategoryFocusView(travelSpots, highlightCategory);
+    if (!focus) {
+      prevHighlightCategoryRef.current = highlightCategory;
+      return;
+    }
+
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    globeEl.current.controls().autoRotate = false;
+    globeEl.current.pointOfView(
+      { lat: focus.lat, lng: focus.lng, altitude: GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT },
+      2200
+    );
+    prevHighlightCategoryRef.current = highlightCategory;
+
+    rotationTimer.current = setTimeout(() => {
+      const checkAlt = globeEl.current ? globeEl.current.pointOfView().altitude : 99;
+      if (globeEl.current && !pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
+        globeEl.current.controls().autoRotate = true;
+      }
+    }, 2600);
+  }, [highlightCategory, isZenMode, pauseRender, travelSpots]);
 
   const renderElement = (d) => {
     const el = document.createElement('div');
