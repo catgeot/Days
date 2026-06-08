@@ -76,7 +76,7 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'bali',
     slugs: ['bali'],
     canonicalPlaceId: '발리',
-    mergeFrom: ['Bali', 'bali', '발리', '우붓', 'Ubud']
+    mergeFrom: ['Bali', 'bali', '발리']
   },
   {
     id: 'kuala-lumpur',
@@ -220,10 +220,16 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
   },
   // —— 세션 D: duplicateSlug·alias 병합 (2026-05-21) ——
   {
-    id: 'vatican-rome',
-    slugs: ['rome'],
-    canonicalPlaceId: '로마',
-    mergeFrom: ['바티칸', 'Vatican', 'Vatican City']
+    id: 'vatican',
+    slugs: ['vatican'],
+    canonicalPlaceId: '바티칸',
+    mergeFrom: ['Vatican', 'Vatican City']
+  },
+  {
+    id: 'ubud',
+    slugs: ['ubud'],
+    canonicalPlaceId: '우붓',
+    mergeFrom: ['Ubud']
   },
   {
     id: 'lisbon',

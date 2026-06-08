@@ -32,6 +32,13 @@
 - **조치**: 지명·지오코딩 핀 `uiPlace` — 역지오코딩 **국가명** · Mapbox **라벨명** 유지 · 좌표 스냅은 바다/무지명·URL 복원만 · gateo 마커 slug 우선 · fuzzy 접두 충돌 방어(`porto`/`portovecchio`)
 - **파일**: `useHomeHandlers.js` · `HomeGlobeMapbox.jsx` · `travelSpotResolve.js` · [`travel-spots-management.md`](travel-spots-management.md) §8
 
+## 탐색 검색 — 바티칸·우붓 개별 연결 (gateo QA ✅)
+
+- **증상**: 검색 「바티칸」→ 로마 · 「우붓」→ 발리 (`TRAVEL_SPOT_PLACE_ID_ALIASES` 상위 병합)
+- **조치**: `vatican`·`ubud` slug 승격(391·392) · 별칭·툴킷 동의어·reconcile 분리 · FCO/DPS 공항 overrides · `findDirectSpotMatch`로 SSOT 직접 일치 우선
+- **파일**: `travelSpots.js` · `travelSpotResolve.js` · `travel-spot-place-id-aliases.mjs` · `travel-spot-airport-overrides.mjs` · `generate:airports` (271/271)
+- **참고**: 한라산 — 별도 slug 없음 · Mapbox 타일에 산 지명 미포함(제주 키워드·마커로 충분)
+
 ## 다음 (선택)
 
 - S5 `site-health-runbook.md` · Vercel/Mapbox 알림 등 Phase 0 잔여 · gateo.kr **1g 스모크**

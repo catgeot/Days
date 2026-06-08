@@ -555,6 +555,22 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '발레타(Valletta) 관문 MLA — Phase D-3 툴킷·승격 slug'
   },
+  vatican: {
+    primaryIatas: ['FCO'],
+    preferredLinkIata: 'FCO',
+    confidence: 'high',
+    rationale: '바티칸 시국 — 로마 피우미치노(FCO) 관문, 로마 시내와 인접',
+    bannerNote:
+      '바티칸 시국은 로마 시내 서쪽에 위치한 독립국입니다. 국제선은 로마 피우미치노(FCO) 공항이 관문이며, 시내·바티칸까지 지하철·택시·도보로 이동합니다. 항공권 검색 시 도착지 FCO를 사용하세요.'
+  },
+  ubud: {
+    primaryIatas: ['DPS'],
+    preferredLinkIata: 'DPS',
+    confidence: 'high',
+    rationale: '우붓(Ubud) — 발리 응우라라이(DPS) 관문, 공항에서 차로 약 1~1.5시간',
+    bannerNote:
+      '우붓은 발리 중부 고원 마을입니다. 국제선은 응우라라이(DPS) 공항이 관문이며, 공항에서 우붓까지 차로 약 1~1.5시간이 소요됩니다. 항공권 검색 시 도착지 DPS를 사용하세요.'
+  },
   bermuda: {
     primaryIatas: ['BDA'],
     preferredLinkIata: 'BDA',

@@ -91,6 +91,24 @@ function isAmbiguousPrefixFuzzyMatch(core, normalizedName) {
   return Boolean(next && /[a-z0-9]/i.test(next));
 }
 
+/** SSOT 직접 이름·slug·키워드 일치 — 상위 slug 별칭보다 우선 */
+function findDirectSpotMatch(spots, placeId) {
+  const core = normalizePlaceKey(
+    String(placeId).replace(STRIP_SUFFIX_RE, '').replace(STRIP_INFIX_RE, '')
+  );
+  if (core.length < 2) return null;
+
+  const candidates = spots.filter((s) => {
+    const sn = normalizePlaceKey(s.name);
+    const sen = normalizePlaceKey(s.name_en);
+    const slug = normalizePlaceKey(s.slug);
+    if (sn === core || sen === core || slug === core) return true;
+    return (s.keywords || []).some((k) => normalizePlaceKey(k) === core);
+  });
+
+  return candidates.length === 1 ? candidates[0] : null;
+}
+
 function resolveFuzzy(spots, placeId) {
   const core = normalizePlaceKey(
     String(placeId).replace(STRIP_SUFFIX_RE, '').replace(STRIP_INFIX_RE, '')
@@ -119,6 +137,9 @@ export function resolveTravelSpotFromPlaceId(lookup, spots, placeId) {
   const raw = String(placeId ?? '').trim();
   if (!raw) return null;
   if (isBlocklistedPlaceId(raw)) return null;
+
+  const direct = findDirectSpotMatch(spots, raw);
+  if (direct) return { spot: direct, matchKind: 'lookup' };
 
   for (const v of placeIdVariants(raw)) {
     const hit = lookup.get(normalizePlaceKey(v)) || lookup.get(v.toLowerCase());

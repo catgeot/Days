@@ -331,8 +331,8 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 
 | 유형 | 예 | 선행 작업 |
 |------|-----|-----------|
-| **alias** | 바티칸→`rome`, 사뭇쁘라깐주→`bangkok`, 아오시마→`kumamoto` | [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) |
-| **승격** | 아바나→`havana`, 발레타→`malta` | `travelSpots.js` + 2절 체크리스트 |
+| **alias** | 사뭇쁘라깐주→`bangkok`, 아오시마→`kumamoto` | [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) |
+| **승격** | 아바나→`havana`, 발레타→`malta`, 바티칸→`vatican`, 우붓→`ubud` | `travelSpots.js` + 2절 체크리스트 |
 | **placeIds-only** | 어센션 섬 | `TRAVEL_SPOT_PLACE_ID_OVERRIDES` + sync `placeIds` (travelSpots 승격 없음) |
 | **삭제** | 메히칼리·트럼프 등 | DB 행 삭제 후 재감사 |
 | **reconcile** | duplicateSlug 7(나자레·리마…) | `toolkit:reconcile-place-id` — 신규 여행지 아님 |

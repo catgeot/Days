@@ -3983,10 +3983,10 @@
     "searchKeys": [
       "yap",
       "야프",
-      "ruul",
-      "루울",
-      "yap (ruul)",
-      "YAP"
+      "yap",
+      "yap",
+      "yap",
+      "yap"
     ]
   },
   {
@@ -3997,12 +3997,11 @@
     "country": "미크로네시아 연방",
     "searchKeys": [
       "chuuk",
-      "chuuk lagoon",
-      "추크",
       "추크 라군",
-      "truk",
-      "트럭",
-      "TKK"
+      "chuuk lagoon",
+      "chuuk",
+      "chuuk",
+      "chuuklagoon"
     ]
   },
   {
@@ -4014,9 +4013,10 @@
     "searchKeys": [
       "kosrae",
       "코스라에",
-      "utwe",
-      "우트웨",
-      "KOS"
+      "kosrae",
+      "kosrae",
+      "kosrae",
+      "kosrae"
     ]
   },
   {
@@ -4028,8 +4028,40 @@
     "searchKeys": [
       "pohnpei",
       "폰페이",
-      "PNI",
-      "nan madol"
+      "pohnpei",
+      "pohnpei",
+      "pohnpei",
+      "pohnpei"
+    ]
+  },
+  {
+    "id": 391,
+    "slug": "vatican",
+    "name": "바티칸",
+    "name_en": "Vatican City",
+    "country": "바티칸",
+    "searchKeys": [
+      "vatican",
+      "바티칸",
+      "vatican city",
+      "vatican",
+      "vatican",
+      "vaticancity"
+    ]
+  },
+  {
+    "id": 392,
+    "slug": "ubud",
+    "name": "우붓",
+    "name_en": "Ubud",
+    "country": "인도네시아",
+    "searchKeys": [
+      "ubud",
+      "우붓",
+      "ubud",
+      "ubud",
+      "ubud",
+      "ubud"
     ]
   }
 ]

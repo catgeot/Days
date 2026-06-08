@@ -26,8 +26,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '남극해': 'antarctica',
   '앵커리지': 'alaska',
 
-  // —— 발리·아이슬란드·오키나와(야에야마 권) ——
-  '우붓': 'bali',
+  // —— 아이슬란드·오키나와(야에야마 권) ——
   '레이니스퍄라': 'reykjavik',
   '레이클라비크': 'reykjavik',
   '오키나와': 'ishigaki',
@@ -58,7 +57,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '일루리삿': 'iceland',
   'Ilulissat Icefjord': 'iceland',
   'Reykjavik': 'reykjavik',
-  'Ubud': 'bali',
+  'Ubud': 'ubud',
   'Anchorage': 'alaska',
   'McMurdo Station': 'antarctica',
   'McMurdo': 'antarctica',
@@ -128,9 +127,10 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Brunei': 'brunei',
 
   // —— 세션 D: alias·승격 (2026-05-21) ——
-  '바티칸': 'rome',
-  'Vatican': 'rome',
-  'Vatican City': 'rome',
+  '우붓': 'ubud',
+  '바티칸': 'vatican',
+  'Vatican': 'vatican',
+  'Vatican City': 'vatican',
   '사뭇쁘라깐주': 'bangkok',
   'Samut Prakan': 'bangkok',
   '아오시마': 'kumamoto',
@@ -182,7 +182,8 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
     'Plitvice',
     'Plitvice Lakes National Park',
   ],
-  'bali': ['우붓', 'Ubud'],
+  'bali': ['발리', 'Bali'],
+  'ubud': ['우붓', 'Ubud'],
   'reykjavik': ['레이니스퍄라', '레이클라비크', 'Reykjavik'],
   'ishigaki': ['오키나와', '오키나와현', 'Okinawa'],
   'galapagos': ['다윈', '다윈섬', 'Darwin'],
@@ -222,7 +223,7 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   lisbon: ['나자레', 'Nazare'],
   porto: ['빌라두코르부', 'Vila do Conde'],
   'machu-picchu': ['리마', 'Lima'],
-  rome: ['바티칸', 'Vatican', 'Vatican City'],
+  vatican: ['바티칸', 'Vatican', 'Vatican City'],
   bangkok: ['사뭇쁘라깐주', 'Samut Prakan'],
   kumamoto: ['아오시마', 'Aoshima'],
   havana: ['아바나', 'Havana', 'habana'],
