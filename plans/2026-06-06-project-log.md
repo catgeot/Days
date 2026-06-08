@@ -18,6 +18,6 @@
 ## 다음 (운영자)
 
 - ~~GitHub Actions Secrets + Smoke Health Pass~~ ✅ 2026-06-08
-- **잔여**: UptimeRobot M1·M2 · Phase 0 Billing · **S4** Playwright
+- **잔여**: UptimeRobot M1·M2 · Phase 0 Billing · **S5** 런북(선택)
 
 **2026-06-08** — **S3** `geminiProxyError.js` · 401/429/503 사용자 문구 · ChatModal·usePlaceChat error role.

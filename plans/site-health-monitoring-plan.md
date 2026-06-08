@@ -232,8 +232,8 @@ npx playwright install chromium
 
 **Phase 2 완료 기준**
 
-- [ ] 로컬 `npm run test:e2e` Pass (gateo.kr 또는 preview URL)
-- [ ] 실패 시 스크린샷·trace 아티팩트 (GitHub Actions upload)
+- [x] 로컬 `npm run test:e2e` Pass (gateo.kr) — 2026-06-08
+- [x] 실패 시 스크린샷·trace 아티팩트 — [`.github/workflows/e2e-health.yml`](../.github/workflows/e2e-health.yml)
 
 ---
 
@@ -292,7 +292,7 @@ npx playwright install chromium
 | **S1** | Phase 1-A~B | `scripts/smoke-health.mjs`, `npm run smoke:health` | **✅ 2026-06-06** |
 | **S2** | Phase 1-C | `.github/workflows/smoke-health.yml`, secrets 안내 | **✅ 2026-06-08** GHA Pass |
 | **S3** | Phase 3-A | `apiClient.js` 에러 구분 + ChatModal error role | **✅ 2026-06-08** |
-| **S4** | Phase 2 | Playwright 3 spec + `playwright.config.js` | **다음 권장** |
+| **S4** | Phase 2 | Playwright 3 spec + `playwright.config.js` | **✅ 2026-06-08** |
 | **S5** | Phase 3-B · Phase 0 | `site-health-runbook.md` · Billing 알림 체크리스트 | 선택 |
 
 **다음 세션 제시어 (S3 — AI 에러 UX)**
@@ -336,7 +336,7 @@ Phase 0: Google AI Studio Budget 알림 · UptimeRobot gateo.kr + /place/bali
 - [ ] Phase 0: Billing 알림 4종 설정 (운영자)
 - [x] Phase 1 core: smoke + GHA cron + secrets — **2026-06-08**
 - [ ] Phase 1 잔여: UptimeRobot M1·M2 (운영자)
-- [ ] Phase 2: Playwright P0 3시나리오 (S4)
+- [x] Phase 2: Playwright P0 3시나리오 (S4) — **2026-06-08**
 - [x] Phase 3-A: AI 에러 메시지 구분 — **2026-06-08** (S3)
 - [ ] Phase 3-B: 운영 런북 (S5)
 - [x] `.ai-context` 6절·`plans/README.md` 링크

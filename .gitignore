@@ -49,3 +49,8 @@ __pycache__/
 
 # scripts가 생성하는 스냅샷 백업(데이터 절감)
 scripts/outputs/
+
+# Playwright E2E
+/test-results/
+/playwright-report/
+/blob-report/

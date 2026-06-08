@@ -8,7 +8,11 @@
 - `apiClient.fetchProxyGemini` → `GeminiProxyError` throw
 - ChatModal·usePlaceChat·PlaceChatView error 표시 연동 (릴리스 노트 생략)
 
+## S4 — Playwright E2E
+
+- `@playwright/test` · `playwright.config.js` · `e2e/home·place·mooni` 3 spec
+- `npm run test:e2e` gateo.kr Pass · GHA **E2E Health** cron `0 9 * * *` + dispatch
+
 ## 다음
 
-- **S4** Playwright `e2e/home·place·mooni` · GHA workflow_dispatch
-- 운영자: UptimeRobot · Phase 0 Billing
+- **S5** `site-health-runbook.md` (선택) · 운영자 UptimeRobot · Phase 0 Billing
