@@ -4,14 +4,17 @@
  */
 import { loadEnvFile } from './lib/supabase-script-env.mjs';
 
-loadEnvFile();
+if (!process.env.GITHUB_ACTIONS) {
+  loadEnvFile();
+}
 
 const REQUEST_TIMEOUT_MS = 15_000;
 
 const siteUrl = (process.env.SMOKE_SITE_URL || 'https://gateo.kr').replace(/\/$/, '');
 const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim();
-const anonKey = process.env.VITE_SUPABASE_ANON_KEY?.trim();
+const anonKey = process.env.VITE_SUPABASE_ANON_KEY?.trim().replace(/\s+/g, '');
 const skipGemini = process.env.SMOKE_SKIP_GEMINI === '1';
+const isCi = process.env.GITHUB_ACTIONS === 'true';
 
 /** @type {Array<{ id: string, name: string, status: 'pass' | 'warn' | 'fail' | 'skip', detail: string, priority: 'P0' | 'P1' }>} */
 const checks = [];
@@ -63,7 +66,19 @@ async function probeSupabaseRest() {
   const id = 'P0-2';
   const name = 'Supabase REST';
   if (!supabaseUrl || !anonKey) {
-    record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
+    record(
+      id,
+      name,
+      'fail',
+      isCi
+        ? 'VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY missing — Repository secrets 확인'
+        : 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing',
+      'P0'
+    );
+    return;
+  }
+  if (!anonKey.startsWith('eyJ') || anonKey.length < 100) {
+    record(id, name, 'fail', 'anon key format invalid (JWT eyJ… expected)', 'P0');
     return;
   }
   try {
