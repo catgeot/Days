@@ -2,7 +2,7 @@
  * gateo.kr 사이트·API 헬스 스모크 (Phase 1-A)
  * @see plans/site-health-monitoring-plan.md
  */
-import { loadEnvFile } from './lib/supabase-script-env.mjs';
+import { loadEnvFile } from './lib/load-env-file.mjs';
 
 if (!process.env.GITHUB_ACTIONS) {
   loadEnvFile();
