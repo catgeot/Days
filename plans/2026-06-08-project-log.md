@@ -20,6 +20,12 @@
 - Gemini 선불 **잔액 하한 자동 충전** 설정
 - [`site-health-operator-next-steps.md`](site-health-operator-next-steps.md) 갱신
 
+## 홈 지구본 — Mapbox 지명 로딩 플래시
+
+- **증상**: gateo 마커 전 Mapbox 지명이 잠깐 보였다 사라짐 (bright Standard·랜드마크 정책 이후 회귀)
+- **조치**: `applyEarlyMapboxGlobeLabelSuppress` (bright `styledata` 선적용) · `tryRevealGlobe` (지명 숨김+gateo 레이어 준비 후 페이드인) · `isStyleTransitioning` 초기 `true`
+- **파일**: `globeMapboxLabelPolicy.js` · `HomeGlobeMapbox.jsx`
+
 ## 다음 (선택)
 
-- S5 `site-health-runbook.md` · Vercel/Mapbox 알림 등 Phase 0 잔여
+- S5 `site-health-runbook.md` · Vercel/Mapbox 알림 등 Phase 0 잔여 · gateo.kr **1g 스모크**

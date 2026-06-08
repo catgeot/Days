@@ -107,7 +107,7 @@
 - Mapbox **Standard** 스타일: 370+ 도시 · 1만+ 커스텀 3D 랜드마크·공항·역 ([블로그](https://www.mapbox.com/blog/global-cities-3d-landmarks)).
 - gateo 기본 지구본 **deep** = `satellite-streets-v12` — Standard 랜드마크 **미포함**. **bright** = `mapbox://styles/mapbox/standard`.
 - **파일럿 (2026-06-03)**: [`globeStandardBasemap.js`](../src/pages/Home/lib/globeStandardBasemap.js) — Standard API 유효 키만 · **urban `cityOrbit` 투어 중** `showLandmarkIcons` + `showLandmarkIconLabels` + `show3dLandmarks` (deep=위성, 해당 없음).
-- **홈 Mapbox 지명**: [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) — **줌≥4**·**눈 버튼 ON**일 때 `STANDARD_HOME_CONFIG` / 위성 place·boundary 레이어. **우주 뷰·눈 OFF** = `STANDARD_HOME_SPACE_CONFIG` + landmark 레이어 강제 숨김. [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) · `MapboxLanguage`는 **deep/neon만**.
+- **홈 Mapbox 지명**: [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) — **줌≥4**·**눈 버튼 ON**일 때 `STANDARD_HOME_CONFIG` / 위성 place·boundary 레이어. **우주 뷰·눈 OFF** = `STANDARD_HOME_SPACE_CONFIG` + landmark 레이어 강제 숨김. **로딩 플래시 방지**: `applyEarlyMapboxGlobeLabelSuppress` (bright `styledata`) + `HomeGlobeMapbox` `tryRevealGlobe` (지명 정책·gateo 레이어 후 페이드인). [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) · `MapboxLanguage`는 **deep/neon만**.
 - **테마 전환 콘솔**: `Unable to perform style diff` — satellite↔Standard **정상 경고** (무시). `getStyle`은 `isStyleLoaded` 이후만 (`onStyleData` 가드).
 - **후속 보류**: deep에서 urban 투어 시 Standard 스타일 임시 전환 · bright를 “Mapbox 지명만” 모드로 단순화( gateo 라벨 축소) — 제품 결정 시.
 - 자연 지명은 DEM+terrain+큐레이션 center; Standard는 **도시 투어 맛보기**용.

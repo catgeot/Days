@@ -76,6 +76,14 @@ function isMapboxLabelSymbolLayer(layer) {
 }
 
 /**
+ * Apply before the style fully paints (bright Standard only) to avoid a one-frame label flash.
+ */
+export function applyEarlyMapboxGlobeLabelSuppress(map, globeTheme = 'deep') {
+  if (!map || globeTheme !== 'bright') return;
+  applyStandardBasemapConfig(map, STANDARD_HOME_SPACE_CONFIG);
+}
+
+/**
  * Single SSOT for Mapbox place/landmark labels + admin boundaries on the home globe.
  * Standard (bright) labels are driven by setConfigProperty; satellite layers are toggled explicitly.
  */

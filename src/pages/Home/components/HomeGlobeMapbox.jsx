@@ -32,7 +32,10 @@ import {
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { applyTourMapUi } from '../lib/globeTourUi';
-import { applyMapboxGlobeLabelPolicy } from '../lib/globeMapboxLabelPolicy';
+import {
+  applyEarlyMapboxGlobeLabelSuppress,
+  applyMapboxGlobeLabelPolicy
+} from '../lib/globeMapboxLabelPolicy';
 import { getCategoryFocusView } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 
@@ -227,7 +230,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
-  const [isStyleTransitioning, setIsStyleTransitioning] = useState(false);
+  const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
   const isMobileDevice = useMemo(() => {
     try {
@@ -357,6 +360,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   useEffect(() => {
     resetAndApplyPlaceLabelVisibility();
   }, [isPinVisible, resetAndApplyPlaceLabelVisibility]);
+
+  useEffect(() => {
+    const fallback = window.setTimeout(() => setIsStyleTransitioning(false), 8000);
+    return () => window.clearTimeout(fallback);
+  }, [globeTheme]);
 
   const applyWaterPaint = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -604,6 +612,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (pauseRender) return;
     updateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
   }, [markerGeoJSON, pauseRender]);
+
+  const tryRevealGlobe = useCallback(() => {
+    if (pauseRender || waitingThemeSettleRef.current) return;
+    const map = mapRef.current?.getMap();
+    if (!map?.isStyleLoaded?.()) return;
+
+    applyPlaceLabelVisibility();
+    syncGateoMarkerLayers();
+    if (!gateoMarkerLayersReady(map)) return;
+
+    setIsStyleTransitioning(false);
+  }, [applyPlaceLabelVisibility, pauseRender, syncGateoMarkerLayers]);
 
   const addRipple = useCallback((lat, lng, ttl = 1600) => {
     const ripple = { id: `${Date.now()}-${Math.random()}`, lat, lng };
@@ -1094,7 +1114,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       onPointerLeave={handleInteractionEnd}
       onWheel={handleInteractionStart}
     >
-      <div className="absolute inset-0">
+      <div
+        className={`absolute inset-0 transition-opacity duration-300 ${
+          isStyleTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
       <Map
         ref={mapRef}
         initialViewState={GLOBE_VIEW.default}
@@ -1119,12 +1143,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           refreshPlaceLabelLayers();
           applyKoreanSatelliteLabels();
           resetAndApplyPlaceLabelVisibility();
-          waitingThemeSettleRef.current = false;
-          setIsStyleTransitioning(false);
+          if (!waitingThemeSettleRef.current) {
+            tryRevealGlobe();
+          }
         }}
         onStyleData={() => {
           const map = mapRef.current?.getMap();
-          if (!map?.isStyleLoaded?.()) return;
+          if (!map) return;
+
+          applyEarlyMapboxGlobeLabelSuppress(map, globeTheme);
+
+          if (!map.isStyleLoaded?.()) return;
 
           ensureInteractionReady();
           applyWaterPaint();
@@ -1132,6 +1161,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           applyKoreanSatelliteLabels();
           resetAndApplyPlaceLabelVisibility();
           syncGateoMarkerLayers();
+          tryRevealGlobe();
         }}
         onIdle={() => {
           syncMapZoom();
@@ -1151,8 +1181,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             }
             pendingThemeCameraRef.current = null;
             waitingThemeSettleRef.current = false;
-            setIsStyleTransitioning(false);
           }
+          tryRevealGlobe();
         }}
         onDragStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);
