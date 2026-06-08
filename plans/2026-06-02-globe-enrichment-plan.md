@@ -82,7 +82,7 @@
 - **알프스**: `alpineVillageOrbit` (체르마트 등).
 - **수동 경로**: `keyframes: [...]` — Mapbox Studio export.
 - Skip · **2D 복귀** · 모바일: Summary 숨김 · 지도 탭 탐색 차단 · MOONi FAB·카테고리 내비 숨김.
-- **투어 중 지명**: `globeMapboxLabelPolicy`와 동일(눈 ON·줌≥4) · **지명·gateo 마커 클릭** 가능 · 빈 지도 탭만 차단 (`HomeGlobeMapbox` `handleGlobeClickInternal`).
+- **투어 중 지명**: `globeMapboxLabelPolicy`와 동일(눈 ON·줌≥4) · **지명·gateo 마커 클릭** 가능 · 빈 지도 탭만 차단 (`HomeGlobeMapbox` `handleGlobeClickInternal`). **지명 클릭 UI**: 역지오코딩 국가·라벨명 · `uiPlace`로 툴킷 alias·좌표 스냅 분리 — [`travel-spots-management.md`](travel-spots-management.md) §8.
 
 ### 데이터 역할 (투어 vs 여행지 SSOT)
 

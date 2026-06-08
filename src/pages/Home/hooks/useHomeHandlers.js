@@ -20,10 +20,13 @@ import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
 
 const prepareLocation = (loc) => enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(loc));
+const prepareUiLocation = (loc) => enrichLocationWithRentalAirport(loc);
+const prepareResolvedLocation = (loc) =>
+  loc?.uiPlace ? prepareUiLocation(loc) : prepareLocation(loc);
 
 const CURATED_PLACES = () => [...TRAVEL_SPOTS, ...(citiesData || [])];
 
-/** 지오코딩·지구본 클릭 좌표를 SSOT travelSpots/cities 행으로 연결 (검색·핀 클릭 ID 불일치 방지) */
+/** 좌표만 알 때 SSOT 연결 — URL 복원·바다/무지명 클릭 fallback 전용 */
 function curatedLocationFromCoords(lat, lng, category) {
   const nearest = resolveTravelSpotFromCoords(lat, lng, CURATED_PLACES());
   if (!nearest) return null;
@@ -154,13 +157,10 @@ export function useHomeHandlers({
       const clickedLabel = typeof label === 'string' ? label.trim() : '';
       const clickedLabelEn = typeof labelEn === 'string' ? labelEn.trim() : '';
       if (source === 'label' && clickedLabel) {
-        let slugBase = clickedLabelEn;
-        if (!slugBase) {
-          const addressFromLabelPoint = await getAddressFromCoordinates(lat, lng);
-          slugBase = addressFromLabelPoint?.name_en || '';
-        }
+        const addressFromLabelPoint = await getAddressFromCoordinates(lat, lng);
+        const slugBase = clickedLabelEn || addressFromLabelPoint?.name_en || '';
 
-        const labelPin = prepareLocation({
+        const labelPin = prepareUiLocation({
           id: `label-${lat}-${lng}`,
           slug: formatUrlName(slugBase || clickedLabel),
           lat,
@@ -170,9 +170,11 @@ export function useHomeHandlers({
           name_ko: clickedLabel,
           type: 'temp-base',
           category: category,
-          country: 'Explore',
-          country_en: 'Explore',
-          display_name: clickedLabel
+          country: addressFromLabelPoint?.country || 'Explore',
+          country_en: addressFromLabelPoint?.country_en || 'Explore',
+          display_name: clickedLabel,
+          source: 'label',
+          uiPlace: true,
         });
 
         addScoutPin(labelPin);
@@ -184,6 +186,35 @@ export function useHomeHandlers({
       }
 
       const addressData = await getAddressFromCoordinates(lat, lng);
+      const isOcean = !addressData || (!addressData.city && !addressData.country);
+
+      if (!isOcean) {
+        const name_en = addressData?.name_en || '';
+        const display_name = addressData.city || addressData.country;
+
+        const realPin = prepareUiLocation({
+          id: !name_en ? fallbackId : Date.now(),
+          slug: name_en ? formatUrlName(name_en) : fallbackId,
+          lat,
+          lng,
+          name: display_name,
+          name_en: name_en,
+          name_ko: addressData?.name_ko || '',
+          type: 'temp-base',
+          category: category,
+          country: addressData?.country || 'Explore',
+          country_en: addressData?.country_en || 'Explore',
+          display_name: display_name,
+          uiPlace: true,
+        });
+
+        addScoutPin(realPin);
+        setSelectedLocation(realPin);
+        moveToLocation(lat, lng, display_name, category, { focus: false });
+        processSearchKeywords(display_name);
+        recordInteraction(realPin, 'view');
+        return;
+      }
 
       const curatedFromClick = curatedLocationFromCoords(lat, lng, category);
       if (curatedFromClick) {
@@ -194,8 +225,6 @@ export function useHomeHandlers({
         recordInteraction(curatedFromClick, 'view');
         return;
       }
-
-      const isOcean = !addressData || (!addressData.city && !addressData.country);
 
       if (isOcean) {
         const allKnownPoints = [...TRAVEL_SPOTS, ...citiesData];
@@ -227,30 +256,6 @@ export function useHomeHandlers({
             return;
         }
       }
-
-      const name_en = addressData?.name_en || "";
-      const display_name = addressData.city || addressData.country;
-
-      const realPin = prepareLocation({
-        id: !name_en ? fallbackId : Date.now(),
-        slug: name_en ? formatUrlName(name_en) : fallbackId,
-        lat,
-        lng,
-        name: display_name,
-        name_en: name_en,
-        name_ko: addressData?.name_ko || "",
-        type: 'temp-base',
-        category: category,
-        country: addressData?.country || "Explore",
-        country_en: addressData?.country_en || "Explore",
-        display_name: display_name
-      });
-
-      addScoutPin(realPin);
-      setSelectedLocation(realPin);
-      moveToLocation(lat, lng, display_name, category, { focus: false });
-      processSearchKeywords(display_name);
-      recordInteraction(realPin, 'view');
     } catch (error) {
       console.error("Geocoding Error:", error);
       setSelectedLocation(null);
@@ -264,7 +269,7 @@ export function useHomeHandlers({
     if (!loc) return;
 
     const name = loc.name || "Selected";
-    const finalLoc = prepareLocation({
+    const finalLoc = prepareResolvedLocation({
       ...loc,
       type: loc.type || 'temp-base',
       id: loc.id || `loc-${loc.lat}-${loc.lng}`,
@@ -655,12 +660,6 @@ export function useHomeHandlers({
         return hintedSpot;
       }
 
-      const curatedFromSearch = curatedLocationFromCoords(coords.lat, coords.lng, category);
-      if (curatedFromSearch) {
-        handleLocationSelect({ ...curatedFromSearch, originalQuery: query });
-        return curatedFromSearch;
-      }
-
       const normalizedLoc = {
         id: `search-${coords.lat}-${coords.lng}`,
         slug: formatUrlName(coords.name_en || coords.name),
@@ -674,6 +673,7 @@ export function useHomeHandlers({
         desc: `${query} (${coords.country || "Explore"}) 지역을 탐색합니다.`,
         type: 'temp-base',
         originalQuery: query,
+        uiPlace: true,
       };
       handleLocationSelect(normalizedLoc);
       return normalizedLoc;

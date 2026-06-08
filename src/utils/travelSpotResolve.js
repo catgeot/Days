@@ -81,6 +81,16 @@ function getSpotLookup() {
   return cachedLookup;
 }
 
+/** porto ⊂ portovecchio 같은 접두 부분 일치 오매칭 방지 */
+function isAmbiguousPrefixFuzzyMatch(core, normalizedName) {
+  if (!core || !normalizedName || core === normalizedName) return false;
+  const longer = core.length >= normalizedName.length ? core : normalizedName;
+  const shorter = core.length >= normalizedName.length ? normalizedName : core;
+  if (shorter.length < 2 || !longer.startsWith(shorter)) return false;
+  const next = longer[shorter.length];
+  return Boolean(next && /[a-z0-9]/i.test(next));
+}
+
 function resolveFuzzy(spots, placeId) {
   const core = normalizePlaceKey(
     String(placeId).replace(STRIP_SUFFIX_RE, '').replace(STRIP_INFIX_RE, '')
@@ -90,9 +100,15 @@ function resolveFuzzy(spots, placeId) {
   const candidates = spots.filter((s) => {
     const sn = normalizePlaceKey(s.name);
     const sen = normalizePlaceKey(s.name_en);
-    const matchKo = sn.length >= 2 && (sn === core || sn.includes(core) || core.includes(sn));
-    const matchEn = sen.length >= 2 && (sen === core || sen.includes(core) || core.includes(sen));
-    return matchKo || matchEn;
+    const exactKo = sn.length >= 2 && sn === core;
+    const exactEn = sen.length >= 2 && sen === core;
+    if (exactKo || exactEn) return true;
+
+    const fuzzyKo = sn.length >= 2 && (sn.includes(core) || core.includes(sn));
+    const fuzzyEn = sen.length >= 2 && (sen.includes(core) || core.includes(sen));
+    if (fuzzyKo && isAmbiguousPrefixFuzzyMatch(core, sn)) return false;
+    if (fuzzyEn && isAmbiguousPrefixFuzzyMatch(core, sen)) return false;
+    return fuzzyKo || fuzzyEn;
   });
 
   if (candidates.length === 1) return { spot: candidates[0], matchKind: 'fuzzy' };
@@ -237,6 +253,8 @@ export function resolveTravelSpotFromLocation(location) {
 /** 검색·핀·지오코딩 location을 SSOT travelSpots 행으로 병합 */
 export function mergeCanonicalTravelSpot(location) {
   if (!location || typeof location !== 'object') return location;
+  // Mapbox 지명·지오코딩·검색 결과 — UI 표시명 유지 (alias·좌표 스냅 제외)
+  if (location.uiPlace) return location;
 
   const resolved = resolveTravelSpotFromLocation(location);
   if (!resolved?.spot) return location;

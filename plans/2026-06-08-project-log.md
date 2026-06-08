@@ -26,6 +26,12 @@
 - **조치**: `applyEarlyMapboxGlobeLabelSuppress` (bright `styledata` 선적용) · `tryRevealGlobe` (지명 숨김+gateo 레이어 준비 후 페이드인) · `isStyleTransitioning` 초기 `true`
 - **파일**: `globeMapboxLabelPolicy.js` · `HomeGlobeMapbox.jsx`
 
+## 홈 지구본 — Mapbox 지명 클릭·UI 해석 (gateo QA ✅)
+
+- **증상**: 지명 클릭 시 `Explore` 고정 · 툴킷 alias(우붓→발리)·좌표 스냅으로 부모 SSOT로 합쳐짐
+- **조치**: 지명·지오코딩 핀 `uiPlace` — 역지오코딩 **국가명** · Mapbox **라벨명** 유지 · 좌표 스냅은 바다/무지명·URL 복원만 · gateo 마커 slug 우선 · fuzzy 접두 충돌 방어(`porto`/`portovecchio`)
+- **파일**: `useHomeHandlers.js` · `HomeGlobeMapbox.jsx` · `travelSpotResolve.js` · [`travel-spots-management.md`](travel-spots-management.md) §8
+
 ## 다음 (선택)
 
 - S5 `site-health-runbook.md` · Vercel/Mapbox 알림 등 Phase 0 잔여 · gateo.kr **1g 스모크**

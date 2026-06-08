@@ -301,7 +301,31 @@ npm run audit:ferries      # required/common booking gap 0 목표
 
 ---
 
-## 8. 잔여 unmapped·정체성 (DB 정리 전)
+## 8. Mapbox 지명 클릭·UI 해석 (툴킷 alias와 분리)
+
+Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSpots.js`)와 별개로 동작합니다. 오매칭 보정을 위해 미등록 지명마다 `travelSpots`를 추가하지 **않습니다**(§8.2 승격 분기 참고).
+
+| 구분 | 데이터·로직 | 용도 |
+|------|-------------|------|
+| **툴킷·DB** | [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) · `mergeCanonicalTravelSpot` | `place_toolkit.place_id` → SSOT slug · 플래너·sync |
+| **지구본 UI** | `uiPlace: true` · `prepareUiLocation` | Mapbox 라벨·역지오코딩 핀 — **표시명·국가 유지**, alias·좌표 스냅 **미적용** |
+
+**클릭 경로** ([`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) · [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx)):
+
+| 경로 | 국가·지명 | SSOT 좌표 스냅 |
+|------|-----------|----------------|
+| Mapbox **지명** 클릭 | 라벨 + 역지오코딩 `country` | 없음 (`uiPlace`) |
+| **지오코딩** 성공(빈 지도) | Nominatim city/country | 없음 (`uiPlace`) |
+| **바다·무지명** 클릭 | — | `curatedLocationFromCoords` → 최근접 SSOT/cities |
+| **gateo 마커** 클릭 | 마커 slug | 카탈로그 slug 있으면 좌표 재매칭 **안 함** |
+| **검색** (지오코딩 hit) | 쿼리 + geocode | SSOT **이름** 매칭만 · coord 스냅 없음 |
+| **URL** `loc-`/`search-` | 세션 캐시 | [`index.jsx`](../src/pages/Home/index.jsx) `resolveTravelSpotFromCoords` fallback |
+
+**fuzzy**: [`travelSpotResolve.js`](../src/utils/travelSpotResolve.js) — 접두 부분 일치(`porto`⊂`portovecchio`) 차단. 툴킷·검색 SSOT 경로에만 적용.
+
+---
+
+## 8.2 잔여 unmapped·정체성 (DB 정리 전)
 
 툴킷 `place_id`가 **공식 `travelSpots` slug에 없으면** audit `unmapped`. 검색·감정 검색 유입 지명은 **여행 가치에 따라** 처리 분기(승격이 유일 해법 아님).
 

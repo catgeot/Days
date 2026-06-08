@@ -174,13 +174,18 @@ const lookupFullMarker = (markers, hit) => {
 
 const reconcileMarkerWithClickCoords = (marker, clickLngLat, markers, spotCatalog) => {
   if (!clickLngLat || !spotCatalog?.length) return marker;
+
+  const markerSlug = String(marker?.slug || marker?.canonical_slug || '').trim();
+  if (markerSlug && spotCatalog.some((s) => s.slug === markerSlug)) {
+    return lookupFullMarker(markers, marker) || marker;
+  }
+
   const curated = resolveTravelSpotFromCoords(clickLngLat.lat, clickLngLat.lng, spotCatalog);
   if (!curated?.slug) return marker;
 
   const curatedMarker = markers.find((m) => m.slug === curated.slug);
   if (!curatedMarker) return marker;
 
-  const markerSlug = marker?.slug || marker?.canonical_slug;
   if (markerSlug && markerSlug === curated.slug) return marker;
   return curatedMarker;
 };
