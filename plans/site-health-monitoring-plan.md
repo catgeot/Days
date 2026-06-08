@@ -8,23 +8,22 @@
 
 ## 현재 운영 상태 (2026-06-08)
 
-**6시간마다 자동 점검 ✅** — [`.github/workflows/smoke-health.yml`](../.github/workflows/smoke-health.yml) cron `0 */6 * * *` · Repository secrets 등록 · **workflow_dispatch Pass** 확인됨.
+**GHA 2종 ✅** — Smoke 6h + E2E 1일 · **UptimeRobot 생략**(운영자 결정) · Gemini 선불 **자동 충전** 설정.
 
-| Probe | 점검 내용 | 6h cron |
-|-------|-----------|---------|
-| P0-1 | `gateo.kr` HTML 200 · `#root`/`<title>` | ✅ |
-| P0-2 | Supabase REST alive | ✅ |
-| P0-3 | `gemini-proxy` + Gemini 1회 ping (429→실패 알림) | ✅ |
-| P1-1 | `/place/bali` 200 | ✅ |
-| P1-2 | `/sitemap.xml` | ✅ |
+| 워크플로 | cron | 확인 |
+|----------|------|------|
+| [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0·P1 Pass |
+| [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC | home·place·mooni Pass (수동 ~1m) |
 
-**점검하는 것**: 사이트 HTML·주요 URL·Supabase 연결·AI 프록시(Gemini 크레딧 포함).
+**Smoke Probe**: P0 gateo.kr HTML · Supabase · gemini-proxy(429→fail) · P1 `/place/bali` · sitemap.
 
-**점검하지 않는 것** (다음 Phase): 지구본 Mapbox 렌더 · MOONi UI 클릭 · 로그인 · 플래너 CTA · 갤러리(Unsplash) · 제휴 링크 · Google Billing 알림(Phase 0).
+**E2E**: 지구본/map · PlaceCard 발리 · MOONi 1턴(응답 또는 S3 에러 문구).
 
-**로컬 동일 점검**: `npm run smoke:health` (`.env.local` 사용)
+**로컬**: `npm run smoke:health` · `npm run test:e2e` (`.env.local` — smoke만).
 
-**실패 알림**: GitHub Actions 실패 → 저장소 Watch **All Activity** 권장.
+**알림**: GitHub Actions 실패 → Watch **All Activity**.
+
+**운영자 체크리스트**: [`site-health-operator-next-steps.md`](site-health-operator-next-steps.md)
 
 ---
 
@@ -196,7 +195,7 @@ Gemini 직접 ping은 **Actions 스크립트**가 담당 (UptimeRobot은 HTTP su
 - [x] `npm run smoke:health` 로컬 Pass — 2026-06-06
 - [x] GitHub Actions 수동·cron Pass — 2026-06-08 (`8affb1a` CI supabase-js 의존성 제거 후)
 - [x] 크레딧 0 → P0-3 warn + `SMOKE_FAIL_ON_WARN=1` exit 1 (CI 알림)
-- [ ] UptimeRobot M1·M2 — **운영자 수동** (5·15분 ping, Phase 1 잔여)
+- [x] UptimeRobot — **생략** (Smoke+E2E로 충분, 2026-06-08)
 
 ---
 
@@ -333,9 +332,9 @@ Phase 0: Google AI Studio Budget 알림 · UptimeRobot gateo.kr + /place/bali
 
 ## 8. 완료 정의 (전 Phase)
 
-- [ ] Phase 0: Billing 알림 4종 설정 (운영자)
+- [x] Phase 0 (핵심): Gemini 선불 **자동 충전** — **2026-06-08** (Budget 등 나머지 선택)
 - [x] Phase 1 core: smoke + GHA cron + secrets — **2026-06-08**
-- [ ] Phase 1 잔여: UptimeRobot M1·M2 (운영자)
+- [x] Phase 1 UptimeRobot — **생략** (2026-06-08)
 - [x] Phase 2: Playwright P0 3시나리오 (S4) — **2026-06-08**
 - [x] Phase 3-A: AI 에러 메시지 구분 — **2026-06-08** (S3)
 - [ ] Phase 3-B: 운영 런북 (S5)

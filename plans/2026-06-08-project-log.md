@@ -13,6 +13,13 @@
 - `@playwright/test` · `playwright.config.js` · `e2e/home·place·mooni` 3 spec
 - `npm run test:e2e` gateo.kr Pass · GHA **E2E Health** cron `0 9 * * *` + dispatch
 
-## 다음
+## 운영자 (같은 날)
 
-- **S5** `site-health-runbook.md` (선택) · 운영자 UptimeRobot · Phase 0 Billing
+- GHA **E2E Health** 수동 Pass (~1m) · push `c550ac0` 이후
+- **UptimeRobot 생략** — Smoke 6h + E2E 1일로 충분
+- Gemini 선불 **잔액 하한 자동 충전** 설정
+- [`site-health-operator-next-steps.md`](site-health-operator-next-steps.md) 갱신
+
+## 다음 (선택)
+
+- S5 `site-health-runbook.md` · Vercel/Mapbox 알림 등 Phase 0 잔여
