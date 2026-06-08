@@ -17,5 +17,7 @@
 
 ## 다음 (운영자)
 
-- GitHub Actions Secrets: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` 등록 후 **Smoke Health** 수동 1회
-- UptimeRobot M1·M2 (선택) · S3 AI 에러 메시지 구분
+- ~~GitHub Actions Secrets + Smoke Health Pass~~ ✅ 2026-06-08
+- **잔여**: UptimeRobot M1·M2 · Phase 0 Billing · **S4** Playwright
+
+**2026-06-08** — **S3** `geminiProxyError.js` · 401/429/503 사용자 문구 · ChatModal·usePlaceChat error role.

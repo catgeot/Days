@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, Send, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
+import { getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import {
   fetchPlaceChatIntroSummary,
@@ -623,7 +624,8 @@ const ChatModal = ({
 
       onUpdateChat(effectiveChatId, finalMessages);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'error', text: "Error: " + error.message }]);
+      const text = getGeminiProxyErrorMessage(error);
+      setMessages((prev) => [...prev, { role: 'error', text }]);
     } finally {
       setIsLoading(false);
     }

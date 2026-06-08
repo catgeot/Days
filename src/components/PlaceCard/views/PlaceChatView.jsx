@@ -6,6 +6,7 @@ import { refreshStoredBookingActionLabels } from '../../../utils/chatBookingReso
 const PlaceChatView = ({
   chatHistory,
   isAiLoading,
+  error = null,
   onSendMessage,
   locationName,
   slug = null,
@@ -62,14 +63,18 @@ const PlaceChatView = ({
           chatHistory.map((msg, idx) => (
             <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end mt-8' : 'items-start mt-2'} animate-fade-in-up w-full`}>
 
-              <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${msg.role === 'user' ? 'text-blue-400' : 'text-purple-400'}`}>
+              <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${
+                msg.role === 'user' ? 'text-blue-400' : msg.role === 'error' ? 'text-red-400' : 'text-purple-400'
+              }`}>
                   {msg.role === 'user' ? 'Me' : 'AI Docent'}
               </span>
 
               <div className={`relative px-5 py-4 rounded-2xl text-[13.5px] border leading-7 w-full shadow-sm transition-all
                   ${msg.role === 'user'
                       ? 'bg-[#1A1D21]/80 border-blue-500/20 text-white rounded-tr-sm'
-                      : 'bg-[#0F1115]/60 border-white/5 text-gray-200 rounded-tl-sm'
+                      : msg.role === 'error'
+                        ? 'bg-red-950/50 border-red-500/20 text-red-200 rounded-tl-sm'
+                        : 'bg-[#0F1115]/60 border-white/5 text-gray-200 rounded-tl-sm'
                   }`}>
                 <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}>
                     {msg.text}
@@ -112,6 +117,11 @@ const PlaceChatView = ({
 
       {/* 2. Input Area (Fixed Bottom) */}
       <div className="pt-4 mt-auto shrink-0 z-10 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent">
+        {error && (
+          <p className="mb-2 px-2 text-xs text-red-300 break-keep" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
         <div className="relative group w-full h-12 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-full flex items-center px-1 transition-all shadow-lg">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0 ml-1">
               <Sparkles size={14} className="text-blue-300 group-hover:scale-110 transition-transform" />

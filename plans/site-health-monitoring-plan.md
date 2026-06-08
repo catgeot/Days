@@ -6,6 +6,28 @@
 
 ---
 
+## 현재 운영 상태 (2026-06-08)
+
+**6시간마다 자동 점검 ✅** — [`.github/workflows/smoke-health.yml`](../.github/workflows/smoke-health.yml) cron `0 */6 * * *` · Repository secrets 등록 · **workflow_dispatch Pass** 확인됨.
+
+| Probe | 점검 내용 | 6h cron |
+|-------|-----------|---------|
+| P0-1 | `gateo.kr` HTML 200 · `#root`/`<title>` | ✅ |
+| P0-2 | Supabase REST alive | ✅ |
+| P0-3 | `gemini-proxy` + Gemini 1회 ping (429→실패 알림) | ✅ |
+| P1-1 | `/place/bali` 200 | ✅ |
+| P1-2 | `/sitemap.xml` | ✅ |
+
+**점검하는 것**: 사이트 HTML·주요 URL·Supabase 연결·AI 프록시(Gemini 크레딧 포함).
+
+**점검하지 않는 것** (다음 Phase): 지구본 Mapbox 렌더 · MOONi UI 클릭 · 로그인 · 플래너 CTA · 갤러리(Unsplash) · 제휴 링크 · Google Billing 알림(Phase 0).
+
+**로컬 동일 점검**: `npm run smoke:health` (`.env.local` 사용)
+
+**실패 알림**: GitHub Actions 실패 → 저장소 Watch **All Activity** 권장.
+
+---
+
 ## 1. 현재 상태
 
 | 항목 | 상태 |
@@ -171,10 +193,10 @@ Gemini 직접 ping은 **Actions 스크립트**가 담당 (UptimeRobot은 HTTP su
 
 **Phase 1 완료 기준**
 
-- [x] `npm run smoke:health` 로컬 Pass (Gemini 크레딧 충전 상태) — 2026-06-06
-- [ ] GitHub Actions 수동 실행 Pass — **Secrets 등록 후** 운영자 Run workflow
-- [x] 크레딧 0 상태에서 P0-3 **warn** + `SMOKE_FAIL_ON_WARN=1` 시 exit 1 (CI 알림)
-- [ ] UptimeRobot M1·M2 등록 — 운영자 수동
+- [x] `npm run smoke:health` 로컬 Pass — 2026-06-06
+- [x] GitHub Actions 수동·cron Pass — 2026-06-08 (`8affb1a` CI supabase-js 의존성 제거 후)
+- [x] 크레딧 0 → P0-3 warn + `SMOKE_FAIL_ON_WARN=1` exit 1 (CI 알림)
+- [ ] UptimeRobot M1·M2 — **운영자 수동** (5·15분 ping, Phase 1 잔여)
 
 ---
 
@@ -268,17 +290,31 @@ npx playwright install chromium
 | 세션 | 범위 | 산출물 |
 |------|------|--------|
 | **S1** | Phase 1-A~B | `scripts/smoke-health.mjs`, `npm run smoke:health` | **✅ 2026-06-06** |
-| **S2** | Phase 1-C | `.github/workflows/smoke-health.yml`, README secrets 안내 | **✅ 2026-06-06** |
-| **S3** | Phase 3-A | `apiClient.js` 에러 구분 + ChatModal error role |
-| **S4** | Phase 2 | Playwright 3 spec + `playwright.config.js` |
-| **S5** | Phase 3-B | `site-health-runbook.md` (선택) |
+| **S2** | Phase 1-C | `.github/workflows/smoke-health.yml`, secrets 안내 | **✅ 2026-06-08** GHA Pass |
+| **S3** | Phase 3-A | `apiClient.js` 에러 구분 + ChatModal error role | **✅ 2026-06-08** |
+| **S4** | Phase 2 | Playwright 3 spec + `playwright.config.js` | **다음 권장** |
+| **S5** | Phase 3-B · Phase 0 | `site-health-runbook.md` · Billing 알림 체크리스트 | 선택 |
 
-**S1 시작 프롬프트 예시**
+**다음 세션 제시어 (S3 — AI 에러 UX)**
 
 ```
-@plans/site-health-monitoring-plan.md Phase 1-A~B 구현.
-scripts/smoke-health.mjs + package.json smoke:health 스크립트.
-429는 warn, 401은 fail. anon key trim.
+@plans/site-health-monitoring-plan.md S3 구현.
+apiClient.fetchProxyGemini — 401·429·503·기타 에러 메시지 구분.
+ChatModal·usePlaceChat 등 error 표시 연동. 사용자-facing 문구는 계획서 3-A 표 준수.
+```
+
+**다음 세션 제시어 (S4 — Playwright, S3 다음 또는 병렬)**
+
+```
+@plans/site-health-monitoring-plan.md Phase 2(S4) 구현.
+Playwright e2e/home·place·mooni 3 spec. production URL. MOONi cron은 1~2회/일 권장.
+```
+
+**운영자만 (코드 없음)**
+
+```
+Phase 0: Google AI Studio Budget 알림 · UptimeRobot gateo.kr + /place/bali
+@plans/site-health-monitoring-plan.md Phase 0·1-D 체크리스트 진행.
 ```
 
 ---
@@ -297,12 +333,14 @@ scripts/smoke-health.mjs + package.json smoke:health 스크립트.
 
 ## 8. 완료 정의 (전 Phase)
 
-- [ ] Phase 0: Billing 알림 4종 설정
-- [ ] Phase 1: smoke 스크립트 + GHA cron + UptimeRobot
-- [ ] Phase 2: Playwright P0 3시나리오
-- [ ] Phase 3: AI 에러 메시지 구분 + 런북
-- [ ] `.ai-context` 6절·`plans/README.md` 링크 유지
-- [ ] (선택) `releaseNotes.js` — 「운영 안정성」 항목은 사용자 합의 후
+- [ ] Phase 0: Billing 알림 4종 설정 (운영자)
+- [x] Phase 1 core: smoke + GHA cron + secrets — **2026-06-08**
+- [ ] Phase 1 잔여: UptimeRobot M1·M2 (운영자)
+- [ ] Phase 2: Playwright P0 3시나리오 (S4)
+- [x] Phase 3-A: AI 에러 메시지 구분 — **2026-06-08** (S3)
+- [ ] Phase 3-B: 운영 런북 (S5)
+- [x] `.ai-context` 6절·`plans/README.md` 링크
+- [ ] (선택) `releaseNotes.js` — 사용자 합의 후
 
 ---
 

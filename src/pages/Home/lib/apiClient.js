@@ -4,6 +4,10 @@
 // 🚨 [Fix] 404 에러 해결 및 모델 티어 라우팅을 위해 엔드포인트를 gemini-2.5-flash로 전면 교체 (안정성 확보)
 
 import { supabase } from '../../../shared/api/supabase';
+import {
+  classifyGeminiProxyFailure,
+  GeminiProxyError,
+} from './geminiProxyError';
 
 export const apiClient = {
   // --- 1. 프록시 기반 Gemini 통신 (New) ---
@@ -39,17 +43,18 @@ export const apiClient = {
         body: { modelId: finalModelId, parts }
       });
 
-      if (error) throw error;
-      if (!data || !data.success) throw new Error(data?.error || "Proxy returned unsuccessful response");
+      if (error || !data?.success) {
+        const classified = classifyGeminiProxyFailure({ error, data });
+        throw new GeminiProxyError(classified);
+      }
 
       // 3. 결과 파싱
       return data.data?.candidates?.[0]?.content?.parts?.[0]?.text || "죄송합니다.";
 
     } catch (error) {
       console.error("[API Proxy] Fetch Error:", error);
-      // 클라이언트 측 직접 API 호출(Fallback)을 보안상 전면 제거합니다.
-      // 프록시 실패 시 에러를 반환하여 상위에서 처리하도록 합니다.
-      throw new Error("AI 서버와의 통신에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      if (error instanceof GeminiProxyError) throw error;
+      throw new GeminiProxyError(classifyGeminiProxyFailure({ error }));
     }
   },
 

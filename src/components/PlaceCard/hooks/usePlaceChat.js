@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
+import { getGeminiProxyErrorMessage } from '../../../pages/Home/lib/geminiProxyError';
 import { resolveChatBookingActions } from '../../../utils/chatBookingResolver';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import {
@@ -69,11 +70,12 @@ export const usePlaceChat = (options = {}) => {
             : null,
         },
       ]);
-    } catch {
-      setError('메시지 전송 중 오류가 발생했습니다.');
+    } catch (err) {
+      const message = getGeminiProxyErrorMessage(err);
+      setError(message);
       setChatHistory((prev) => [
         ...prev,
-        { role: 'model', text: '⚠️ 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
+        { role: 'error', text: message },
       ]);
     } finally {
       setIsAiLoading(false);
