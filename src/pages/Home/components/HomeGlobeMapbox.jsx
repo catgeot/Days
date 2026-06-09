@@ -33,6 +33,16 @@ import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMod
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { applyTourMapUi } from '../lib/globeTourUi';
 import {
+  REACH_CONTOUR_MINUTES,
+  clearReachBoundaries,
+  easeCameraForReachReveal,
+  reachBoundaryLayersReady,
+  resolveReachBoundaryGeoJSON,
+  setReachBoundaryVisibility,
+  setupReachBoundaryLayers,
+  updateReachBoundarySource
+} from '../lib/globeReachBoundaries';
+import {
   applyEarlyMapboxGlobeLabelSuppress,
   applyMapboxGlobeLabelPolicy
 } from '../lib/globeMapboxLabelPolicy';
@@ -229,12 +239,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const unbindSpaceDragGuardRef = useRef(null);
   const tourEngineRef = useRef(null);
   const tourActiveRef = useRef(false);
+  const reachFetchGenRef = useRef(0);
+  const reachGeoJsonRef = useRef(null);
   const prevHighlightCategoryRef = useRef(null);
   const highlightCategoryRef = useRef(highlightCategory);
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
+  const [reachBoundariesReady, setReachBoundariesReady] = useState(false);
+  const [reachBoundariesLoading, setReachBoundariesLoading] = useState(false);
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
   const isMobileDevice = useMemo(() => {
@@ -602,6 +616,65 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     allMarkersLookupRef.current = allMarkers;
   }, [allMarkers]);
 
+  const clearReachBoundaryState = useCallback(() => {
+    reachFetchGenRef.current += 1;
+    reachGeoJsonRef.current = null;
+    const map = mapRef.current?.getMap();
+    if (map) {
+      clearReachBoundaries(map);
+      setReachBoundaryVisibility(map, false);
+    }
+    setReachBoundariesReady(false);
+    setReachBoundariesLoading(false);
+  }, []);
+
+  const loadReachBoundaries = useCallback(async (lng, lat) => {
+    const map = mapRef.current?.getMap();
+    if (!map || !Number.isFinite(lng) || !Number.isFinite(lat)) return;
+
+    const gen = reachFetchGenRef.current + 1;
+    reachFetchGenRef.current = gen;
+    setReachBoundariesReady(false);
+    setReachBoundariesLoading(true);
+
+    try {
+      setupReachBoundaryLayers(map);
+      setReachBoundaryVisibility(map, true);
+
+      const geojson = await resolveReachBoundaryGeoJSON(lng, lat, MAPBOX_TOKEN);
+      if (reachFetchGenRef.current !== gen) return;
+
+      reachGeoJsonRef.current = geojson;
+      updateReachBoundarySource(map, geojson);
+      setupReachBoundaryLayers(map);
+      setReachBoundaryVisibility(map, true);
+      easeCameraForReachReveal(map);
+      setReachBoundariesReady(true);
+    } catch {
+      if (reachFetchGenRef.current !== gen) return;
+      const fallback = await resolveReachBoundaryGeoJSON(lng, lat, null);
+      reachGeoJsonRef.current = fallback;
+      updateReachBoundarySource(map, fallback);
+      setupReachBoundaryLayers(map);
+      setReachBoundaryVisibility(map, true);
+      easeCameraForReachReveal(map);
+      setReachBoundariesReady(true);
+    } finally {
+      if (reachFetchGenRef.current === gen) {
+        setReachBoundariesLoading(false);
+      }
+    }
+  }, []);
+
+  const restoreReachBoundaryLayersIfNeeded = useCallback(() => {
+    if (globeMode !== GLOBE_MODE.TOUR_READY || !reachGeoJsonRef.current) return;
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    setupReachBoundaryLayers(map);
+    updateReachBoundarySource(map, reachGeoJsonRef.current);
+    setReachBoundaryVisibility(map, true);
+  }, [globeMode]);
+
   const syncGateoMarkerLayers = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return;
@@ -610,8 +683,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     } else {
       syncGateoMarkerLayerStyle(map);
     }
+    if (!reachBoundaryLayersReady(map)) {
+      setupReachBoundaryLayers(map);
+    }
     updateGateoMarkerSource(map, markerGeoJSON);
-  }, [markerGeoJSON, pauseRender]);
+    restoreReachBoundaryLayersIfNeeded();
+  }, [markerGeoJSON, pauseRender, restoreReachBoundaryLayersIfNeeded]);
 
   useEffect(() => {
     if (pauseRender) return;
@@ -782,7 +859,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     tourActiveRef.current = isTourMode(mode);
     setGlobeMode(mode);
     onGlobeModeChange?.(mode);
-  }, [onGlobeModeChange]);
+
+    if (mode === GLOBE_MODE.TOUR_READY) {
+      const map = mapRef.current?.getMap();
+      const center = map?.getCenter?.();
+      if (center) {
+        loadReachBoundaries(center.lng, center.lat);
+      }
+      return;
+    }
+
+    if (mode === GLOBE_MODE.GLOBE_2D) {
+      clearReachBoundaryState();
+    }
+  }, [clearReachBoundaryState, loadReachBoundaries, onGlobeModeChange]);
 
   const handleTourUiChange = useCallback((active, meta = {}) => {
     const map = mapRef.current?.getMap();
@@ -816,6 +906,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     interactionRef.current = true;
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
     map.stop();
+    clearReachBoundaryState();
 
     const engine = ensureTourEngine();
     if (!engine) return false;
@@ -826,7 +917,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       lng,
       location
     });
-  }, [ensureTourEngine]);
+  }, [clearReachBoundaryState, ensureTourEngine]);
 
   const skipTour = useCallback(() => {
     tourEngineRef.current?.skip();
@@ -1293,15 +1384,36 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       )}
 
       {canEndTour(globeMode) && globeMode === GLOBE_MODE.TOUR_READY && !isZenMode && !hideTourControls && (
-        <div className="absolute bottom-[calc(11.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[65] pointer-events-auto flex gap-2 lg:bottom-28">
-          <button
-            type="button"
-            onClick={endTour}
-            className="flex items-center gap-2 rounded-full border border-blue-400/35 bg-black/65 px-4 py-2 text-xs font-bold text-blue-300 shadow-lg backdrop-blur-sm transition-all hover:bg-black/80 active:scale-95"
-          >
-            2D로 복귀
-          </button>
-        </div>
+        <>
+          <div className="absolute left-3 top-[calc(3.5rem+env(safe-area-inset-top,0px))] z-[65] pointer-events-none md:left-6 md:top-20">
+            <div className="rounded-2xl border border-white/10 bg-black/60 px-3 py-2.5 text-[11px] text-white/85 shadow-lg backdrop-blur-sm">
+              <p className="mb-1.5 font-bold tracking-wide text-white/95">이동 가능 경계</p>
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-emerald-400 shrink-0" aria-hidden="true" />
+                <span>도보 약 {REACH_CONTOUR_MINUTES.walk}분</span>
+              </div>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="inline-block h-0.5 w-4 border-t-2 border-solid border-blue-400 shrink-0" aria-hidden="true" />
+                <span>차량 약 {REACH_CONTOUR_MINUTES.drive}분</span>
+              </div>
+              {reachBoundariesLoading && (
+                <p className="mt-1.5 text-[10px] text-white/55">경계 계산 중…</p>
+              )}
+              {reachBoundariesReady && !reachBoundariesLoading && (
+                <p className="mt-1.5 text-[10px] text-white/55">도보: 보행로 · 차량: 도달 외곽</p>
+              )}
+            </div>
+          </div>
+          <div className="absolute bottom-[calc(11.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-[65] pointer-events-auto flex gap-2 lg:bottom-28">
+            <button
+              type="button"
+              onClick={endTour}
+              className="flex items-center gap-2 rounded-full border border-blue-400/35 bg-black/65 px-4 py-2 text-xs font-bold text-blue-300 shadow-lg backdrop-blur-sm transition-all hover:bg-black/80 active:scale-95"
+            >
+              2D로 복귀
+            </button>
+          </div>
+        </>
       )}
 
       {globeMode === GLOBE_MODE.TOUR_BOOTSTRAPPING && !isZenMode && (

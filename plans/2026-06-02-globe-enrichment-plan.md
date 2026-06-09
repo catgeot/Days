@@ -2,7 +2,9 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-07 — 홈 지구본 마커·노출 정책(전 여행지·지명-only·denseRegion tier) Phase 0 SSOT 반영
+**갱신**: 2026-06-09 — Phase **1i** 3D 투어 후 **이동 가능 경계선**(Isochrone) SSOT 반영
+
+**일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
 ---
 
@@ -23,7 +25,8 @@
 |---|------|------|
 | **0-A** | 마커·지명 통합 (GeoJSON, jitter 제거) | **완료** |
 | **0-B** | 지구본 지명 한글화 | **완료** |
-| **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1c 커밋) |
+| **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
+| **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
 | **2** | 탐색 내비 (구글 지도형) | 대기 |
 | **3** | 클러스터 경계·명소 POI | 대기 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
@@ -136,6 +139,31 @@
 | **1h-b** | ✅ bright gateo-first (`ef0736b`) → **지명 SSOT** (`globeMapboxLabelPolicy`) | 우주 뷰·눈 버튼·Standard 랜드마크 |
 | *(선택)* | idle terrain pre-warm | cold start |
 
+### Phase 1i — 이동 가능 경계선 (2026-06-09 ✅ 로컬)
+
+**트리거**: 3D 투어 `TOUR_READY` 직후 · 투어 카메라 center 기준 · **2D 복귀** 시 제거.
+
+| 파일 | 역할 |
+|------|------|
+| [`globeReachBoundaries.js`](../src/pages/Home/lib/globeReachBoundaries.js) | Mapbox **Isochrone** fetch · GeoJSON line 레이어 · 오프라인 원형 폴백 · `isReachBoundaryLayer` |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `loadReachBoundaries` · 범례 UI · `easeCameraForReachReveal`(고 pitch 완화) |
+| [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `gateo-reach-*` 레이어 **지명 정책 숨김 제외** (표시 후 사라짐 회귀 방지) |
+
+**시각 정책**
+
+| 모드 | Isochrone | 표시 |
+|------|-----------|------|
+| **도보** 20분 | `walking` · `polygons=false` · detail | **초록 점선** — 보행로 따라 |
+| **차량** 45분 | `driving` · `polygons=true` · `generalize=220m` | **파란 실선** — 도달 **외곽** 한 줄 (line contour 지그재그 방지) |
+
+- **채움(fill) 없음** — 선(halo+stroke)만.
+- `line-dasharray`는 **paint** 속성 (layout 아님).
+- API 실패 시 geodesic 원형 윤곽 폴백.
+
+**로컬 QA**: 다낭·나트랑·사파 — Skip/종료 후 경계 유지 Pass.
+
+**후속 (선택)**: slug별 분·`generalize` 튜닝 · Directions API로 도로 중심선 추적 · Phase 3 클러스터 hull·POI와 병행.
+
 ---
 
 ## 다음 세션 제시어
@@ -173,7 +201,7 @@
 ### Phase 2~4
 
 - **2**: explore + `NavigationControl`
-- **3**: [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) hull 경계선
+- **3**: [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) hull 경계선 · 주변 여행지 POI (**1i Isochrone과 별개** — 권역·관문 클러스터)
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 
 ---
