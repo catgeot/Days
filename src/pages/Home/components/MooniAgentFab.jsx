@@ -14,7 +14,8 @@ import {
   pickPeekLine,
 } from '../lib/mooniLines';
 
-const NUDGE_AUTO_DISMISS_MS = 4_500;
+/** 인트로·넛지 말풍선 — X 없이 자동 닫힘 (기존 넛지 4.5s → 4s) */
+const HINT_AUTO_DISMISS_MS = 4_000;
 const DRAG_REACT_DISMISS_MS = 2_800;
 const PRESS_PEEK_MS = 180;
 const DRAG_THRESHOLD = 6;
@@ -152,9 +153,24 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode, isTou
         setShowHint(false);
         setHintPhase(null);
         scheduleNextNudge();
-      }, NUDGE_AUTO_DISMISS_MS);
+      }, HINT_AUTO_DISMISS_MS);
     }, getMooniNudgeIntervalMs());
   }, [clearNudgeDismissTimer]);
+
+  useEffect(() => {
+    if (!showHint || hintPhase !== 'intro') return undefined;
+
+    clearNudgeDismissTimer();
+    nudgeDismissTimerRef.current = setTimeout(() => {
+      markMooniIntroSeen();
+      setShowHint(false);
+      setHintPhase(null);
+      nudgeDismissTimerRef.current = null;
+      scheduleNextNudge();
+    }, HINT_AUTO_DISMISS_MS);
+
+    return clearNudgeDismissTimer;
+  }, [showHint, hintPhase, clearNudgeDismissTimer, scheduleNextNudge]);
 
   useEffect(() => {
     if (isChatOpen) {
