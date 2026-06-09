@@ -3,7 +3,7 @@ import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' 
 
 const toRad = (d) => (d * Math.PI) / 180;
 
-/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: string, bannerNote?: string, searchHintIatas?: string[] }>} */
+/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: string, bannerNote?: string, searchHintIatas?: string[], klookRentalHomeSearchLabel?: string, klookRentalSearchLabel?: string, klookRentalSearchMode?: string }>} */
 const STATIC_SPOT_AIRPORT_MAP = travelSpotAirportsData.spots ?? {};
 
 /** DB place_toolkit.place_id·사용자 입력 지명 (공식 travelSpots slug 없음 포함) */
@@ -806,6 +806,32 @@ export function getFlightDestinationSearchHint(location, options = {}) {
 }
 
 /**
+ * 클룩 렌터카 홈에서 직접 검색할 때 쓸 문자열. IATA가 안 잡히는 지역은 공항명 등으로 예외 지정.
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {string | null}
+ */
+function resolveKlookRentalHomeSearchLabel(location, options = {}) {
+  const row = options.ignoreStaticAirportMap !== true ? getTravelSpotAirportRow(location) : null;
+
+  if (row && typeof row.klookRentalHomeSearchLabel === 'string' && row.klookRentalHomeSearchLabel.trim()) {
+    return row.klookRentalHomeSearchLabel.trim();
+  }
+
+  if (row && typeof row.klookRentalSearchLabel === 'string' && row.klookRentalSearchLabel.trim()) {
+    return row.klookRentalSearchLabel.trim();
+  }
+
+  if (row?.klookRentalSearchMode === 'airport') {
+    const hub = resolveRentalAirport(location);
+    if (hub?.officialKo) return hub.officialKo;
+  }
+
+  return null;
+}
+
+/**
  * 공항 이동 카드·렌터카 홈 버튼 하단: 클룩에서 직접 검색할 때 3자리 코드 입력 안내.
  *
  * @param {Record<string, unknown> | null | undefined} location
@@ -813,6 +839,11 @@ export function getFlightDestinationSearchHint(location, options = {}) {
  * @returns {string}
  */
 export function getRentalCarHomeSearchSubtext(location, options = {}) {
+  const label = resolveKlookRentalHomeSearchLabel(location, options);
+  if (label) {
+    return `렌터카 검색 시 ${label}(으)로 검색해 주세요.`;
+  }
+
   const codes = resolveSearchHintIataCodes(location, options);
   if (!codes?.length) {
     return '렌터카 검색 시 세자리 공항 코드(예: PDL)로 입력해 주세요.';
@@ -831,19 +862,15 @@ export function getRentalCarHomeSearchSubtext(location, options = {}) {
  * @returns {string}
  */
 export function getRentalCarHomeSearchHintShort(location, options = {}) {
+  const label = resolveKlookRentalHomeSearchLabel(location, options);
+  if (label) return label;
+
   const codes = resolveSearchHintIataCodes(location, options);
   if (!codes?.length) return '공항 코드 입력';
   if (codes.length === 1) return `코드 ${codes[0]}`;
   return `코드 ${codes.slice(0, 2).join('·')}`;
 }
 
-/**
- * 여정 플래너 렌터카 검색 버튼 보조 문구.
- *
- * @param {Record<string, unknown> | null | undefined} location
- * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
- * @returns {string}
- */
 /**
  * 클룩 렌터카 배너·검색 URL용 검색어. 기본은 여행지 표시명(`name`).
  * 공항 정식명은 `travelSpotAirports`에 `klookRentalSearchMode: 'airport'` 또는 `klookRentalSearchLabel`로만 예외 지정.
@@ -880,7 +907,19 @@ export function resolveKlookRentalBannerSearchLabel(location, options = {}) {
   return name || nameEn;
 }
 
+/**
+ * 여정 플래너 렌터카 검색 버튼 보조 문구.
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
+ * @returns {string}
+ */
 export function getRentalCarTimelineActionDescription(location, options = {}) {
+  const label = resolveKlookRentalHomeSearchLabel(location, options);
+  if (label) {
+    return `${label}(으)로 검색해 주세요`;
+  }
+
   const codes = resolveSearchHintIataCodes(location, options);
   if (!codes?.length) {
     return '세자리 공항코드를 입력해 주세요';

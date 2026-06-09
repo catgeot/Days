@@ -82,7 +82,14 @@ function rowFromOverride(override) {
     ...(override.rationale ? { rationale: override.rationale } : {}),
     ...(Array.isArray(override.searchHintIatas) && override.searchHintIatas.length
       ? { searchHintIatas: filterRegisteredIatas(override.searchHintIatas) }
-      : {})
+      : {}),
+    ...(override.klookRentalHomeSearchLabel
+      ? { klookRentalHomeSearchLabel: String(override.klookRentalHomeSearchLabel).trim() }
+      : {}),
+    ...(override.klookRentalSearchLabel
+      ? { klookRentalSearchLabel: String(override.klookRentalSearchLabel).trim() }
+      : {}),
+    ...(override.klookRentalSearchMode ? { klookRentalSearchMode: override.klookRentalSearchMode } : {})
   };
 }
 

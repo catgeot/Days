@@ -65,8 +65,9 @@
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| `klookRentalSearchLabel` | `string` | 클룩 검색에 쓸 **고정 문자열** (최우선) |
-| `klookRentalSearchMode` | `'airport'` | 명시 시에만 공항 **정식 한글명** 사용. 생략 시 여행지명 |
+| `klookRentalSearchLabel` | `string` | 클룩 **배너** 검색에 쓸 고정 문자열 (최우선) |
+| `klookRentalHomeSearchLabel` | `string` | **렌터카 홈**·타임라인 직접 검색 안내용 (IATA 대신 공항명 등) |
+| `klookRentalSearchMode` | `'airport'` | 명시 시 공항 **정식 한글명** — 배너·홈 공통 fallback |
 
 **권장 예외 후보** (수동 QA 후 추가):
 
@@ -97,6 +98,7 @@
 | 날짜 | 내용 |
 |------|------|
 | 2026-05-19 | 배너 검색어 **여행지명 우선** (`resolveKlookRentalBannerSearchLabel`). 배너 하단 문구 여행지명 기준으로 수정. 링크 버튼은 렌터카 홈 유지. |
+| 2026-06-09 | 렌터카 홈·타임라인 `klookRentalHomeSearchLabel` · `la-reunion` → 롤랑 가로스 공항 · `generate:airports` 필드 전달 |
 
 ---
 

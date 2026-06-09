@@ -18,6 +18,12 @@
 - **범례 문구**: 도보 보행 경로 · 차량 운전 도달 영역
 - **계획**: [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md) §Phase 1i 갱신
 
+## 클룩 렌터카 홈 검색 안내 (la-reunion)
+
+- **`klookRentalHomeSearchLabel`**: 렌터카 홈·타임라인 — IATA 대신 공항명 안내 (`resolveKlookRentalHomeSearchLabel`)
+- **예외**: `la-reunion` → `롤랑 가로스 공항` · `generate:airports`가 `klookRental*` 필드 전달
+- **QA**: `npm run audit:airports` — banner none 0
+
 ## 다음 (선택)
 
 - Phase 1g gateo 스모크 · slug별 isochrone 분 튜닝 · 릴리스 노트 합의

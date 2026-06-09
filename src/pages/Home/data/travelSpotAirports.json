@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-08T12:03:05.491Z",
+    "generatedAt": "2026-06-08T12:24:32.598Z",
     "spotCount": 271,
     "placeIdCount": 337,
     "stats": {
@@ -790,7 +790,8 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "생드니 공항"
+      "rationale": "생드니 공항",
+      "klookRentalHomeSearchLabel": "롤랑 가로스 공항"
     },
     "seoul": {
       "primaryIatas": [
