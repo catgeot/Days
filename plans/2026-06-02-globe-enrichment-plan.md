@@ -149,20 +149,21 @@
 | [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `loadReachBoundaries` · 범례 UI · `easeCameraForReachReveal`(고 pitch 완화) |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `gateo-reach-*` 레이어 **지명 정책 숨김 제외** (표시 후 사라짐 회귀 방지) |
 
-**시각 정책**
+**시각 정책** (2026-06-09 조정 — TravelTime·Mapbox·Geoapify 등 Isochrone fill 관행 반영)
 
 | 모드 | Isochrone | 표시 |
 |------|-----------|------|
-| **도보** 20분 | `walking` · `polygons=false` · detail | **초록 점선** — 보행로 따라 |
-| **차량** 45분 | `driving` · `polygons=true` · `generalize=220m` | **파란 실선** — 도달 **외곽** 한 줄 (line contour 지그재그 방지) |
+| **도보** 20분 | `walking` · `polygons=false` · detail | **초록 점선** — 보행 경로 |
+| **차량** 30분 | `driving` · `polygons=true` · `generalize=500m` | **파란 반투명 영역**(fill 16%) + 외곽 실선 — **운전 도달 영역** (도로망 기준, 바다 자연 제외) |
 
-- **채움(fill) 없음** — 선(halo+stroke)만.
-- `line-dasharray`는 **paint** 속성 (layout 아님).
-- API 실패 시 geodesic 원형 윤곽 폴백.
+- 도보 `line-dasharray`는 **paint** 속성 (layout 아님).
+- 차량: 거리 원·도로 지그재그 외곽선만 단독 사용 **금지** (의미·가독성 한계).
+- API 실패 시 geodesic 원형 폴백(도보 1.6km · 차량 24km).
+- **범례**: `TOUR_READY` · `createPortal` 좌하단 · 모바일 투어 시네마에서도 표시 (`hideTourControls`와 분리).
 
-**로컬 QA**: 다낭·나트랑·사파 — Skip/종료 후 경계 유지 Pass.
+**로컬 QA**: 다낭·나트랑·사파 — Skip/종료 후 경계 유지 Pass · 차량 fill·범례 확인.
 
-**후속 (선택)**: slug별 분·`generalize` 튜닝 · Directions API로 도로 중심선 추적 · Phase 3 클러스터 hull·POI와 병행.
+**후속 (선택)**: slug별 분·`generalize`·fill opacity 튜닝 · Directions API 도로 중심선 · Phase 3 클러스터 hull·POI와 병행.
 
 ---
 

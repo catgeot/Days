@@ -1,13 +1,15 @@
 export const REACH_SOURCE_ID = 'gateo-reach-boundaries';
+export const REACH_DRIVE_FILL_ID = 'gateo-reach-drive-fill';
 export const REACH_DRIVE_HALO_ID = 'gateo-reach-drive-halo';
 export const REACH_DRIVE_LINE_ID = 'gateo-reach-drive-line';
 export const REACH_WALK_HALO_ID = 'gateo-reach-walk-halo';
 export const REACH_WALK_LINE_ID = 'gateo-reach-walk-line';
 
-/** @deprecated fill layers removed — kept for cleanup of older sessions */
-const LEGACY_FILL_LAYER_IDS = ['gateo-reach-drive-fill', 'gateo-reach-walk-fill'];
+/** @deprecated walk fill only — kept for cleanup of older sessions */
+const LEGACY_LAYER_IDS = ['gateo-reach-walk-fill'];
 
 export const REACH_LAYER_IDS = [
+  REACH_DRIVE_FILL_ID,
   REACH_DRIVE_HALO_ID,
   REACH_DRIVE_LINE_ID,
   REACH_WALK_HALO_ID,
@@ -19,25 +21,26 @@ export function isReachBoundaryLayer(layerId = '') {
   return id.startsWith('gateo-reach') || REACH_LAYER_IDS.includes(id);
 }
 
-/** Default contour minutes — walking first, driving wider. */
+/** Default contour minutes — walk: immediate neighborhood, drive: local day-trip bubble. */
 export const REACH_CONTOUR_MINUTES = {
   walk: 20,
-  drive: 45
+  drive: 30
 };
 
 /** Circle fallback radii (km) when Isochrone API is unavailable. */
 const FALLBACK_RADIUS_KM = {
   walk: 1.6,
-  drive: 35
+  drive: 24
 };
 
 /**
- * Walk: line contours along paths (detail preserved).
- * Drive: polygon outer ring only — avoids jagged network-cutoff zigzags from line contours.
+ * Walk: line contours along pedestrian network (detail preserved).
+ * Drive: road-network isochrone polygon — semi-transparent fill + softened outer edge
+ * (industry default: TravelTime, Geoapify, Mapbox demos; not distance circles).
  */
 const ISOCHRONE_FETCH = {
   walk: { profile: 'walking', polygons: false, generalizeM: null },
-  drive: { profile: 'driving', polygons: true, generalizeM: 220 }
+  drive: { profile: 'driving', polygons: true, generalizeM: 500 }
 };
 
 const EMPTY_FC = { type: 'FeatureCollection', features: [] };
@@ -115,7 +118,8 @@ async function fetchIsochroneProfile(lng, lat, profile, minutes, token, {
 }
 
 /**
- * Fetch walking + driving reach contours as lines. Falls back to geodesic circle outlines.
+ * Fetch walking line contours + driving isochrone polygons.
+ * Falls back to geodesic circles when the Isochrone API is unavailable.
  * @returns {import('geojson').FeatureCollection}
  */
 export async function resolveReachBoundaryGeoJSON(lng, lat, token, {
@@ -162,8 +166,8 @@ export function reachBoundaryLayersReady(map) {
   return REACH_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
 }
 
-function removeLegacyFillLayers(map) {
-  for (const layerId of LEGACY_FILL_LAYER_IDS) {
+function removeLegacyLayers(map) {
+  for (const layerId of LEGACY_LAYER_IDS) {
     try {
       if (map.getLayer(layerId)) map.removeLayer(layerId);
     } catch {
@@ -187,13 +191,31 @@ export function setupReachBoundaryLayers(map) {
   if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
 
   try {
-    removeLegacyFillLayers(map);
+    removeLegacyLayers(map);
 
     if (!map.getSource(REACH_SOURCE_ID)) {
       map.addSource(REACH_SOURCE_ID, {
         type: 'geojson',
         data: EMPTY_FC
       });
+    }
+
+    if (!map.getLayer(REACH_DRIVE_FILL_ID)) {
+      try {
+        map.addLayer({
+          id: REACH_DRIVE_FILL_ID,
+          type: 'fill',
+          source: REACH_SOURCE_ID,
+          filter: MODE_FILTER('drive'),
+          paint: {
+            'fill-color': '#3b82f6',
+            'fill-opacity': 0.16,
+            'fill-outline-color': 'transparent'
+          }
+        });
+      } catch {
+        // Continue — partial layers still render; next sync retries missing ids.
+      }
     }
 
     const lineLayerDefs = [
@@ -204,8 +226,8 @@ export function setupReachBoundaryLayers(map) {
         paint: {
           'line-color': '#0f172a',
           'line-width': DRIVE_HALO_WIDTH,
-          'line-opacity': 0.55,
-          'line-blur': 0.4
+          'line-opacity': 0.35,
+          'line-blur': 0.35
         }
       },
       {
@@ -215,7 +237,7 @@ export function setupReachBoundaryLayers(map) {
         paint: {
           'line-color': '#60a5fa',
           'line-width': DRIVE_LINE_WIDTH,
-          'line-opacity': 0.95
+          'line-opacity': 0.72
         }
       },
       {
@@ -295,7 +317,7 @@ export function setReachBoundaryVisibility(map, visible) {
   if (!map?.getStyle?.()) return;
   const visibility = visible ? 'visible' : 'none';
   safeMapUpdate(map, () => {
-    for (const layerId of [...REACH_LAYER_IDS, ...LEGACY_FILL_LAYER_IDS]) {
+    for (const layerId of [...REACH_LAYER_IDS, ...LEGACY_LAYER_IDS]) {
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(layerId, 'visibility', visibility);
       }
