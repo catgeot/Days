@@ -581,6 +581,8 @@ function Home() {
           onGlobeModeChange={setGlobeMode}
           hideTourControls={isTourCinema}
           highlightCategory={category}
+          focusSlug={selectedLocation?.slug ?? null}
+          hasPlaceSummary={Boolean(selectedLocation && routeLocation.pathname === '/' && !isTourCinema)}
         />
       </div>
 

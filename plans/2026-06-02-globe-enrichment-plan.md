@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-09 — Phase **1i** 3D 투어 후 **이동 가능 경계선**(Isochrone) SSOT 반영
+**갱신**: 2026-06-09 — Phase **2~3** 초안 커밋 · Phase 2 **UX·배치 WIP** (다음 세션)
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -27,8 +27,8 @@
 | **0-B** | 지구본 지명 한글화 | **완료** |
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
-| **2** | 탐색 내비 (구글 지도형) | 대기 |
-| **3** | 클러스터 경계·명소 POI | 대기 |
+| **2** | 탐색 내비 (구글 지도형) | **WIP** — `GlobeExploreNavControls` · UX·배치 미완 |
+| **3** | 클러스터 경계·명소 POI | **WIP** — hull·POI 빌드 OK · QA·튜닝 대기 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
 ---
@@ -165,19 +165,55 @@
 
 **후속 (선택)**: slug별 분·`generalize`·fill opacity 튜닝 · Directions API 도로 중심선 · Phase 3 클러스터 hull·POI와 병행.
 
+### Phase 2 — 탐색 지도 내비 (2026-06-09 WIP)
+
+**트리거**: 줌 ≥ `HIGH_ZOOM_FULL_REVEAL`(3.0) · 2D · 투어·zen·모바일 시네마(`hideTourControls`) 제외 · 여행지 flyTo도 zoom 3.0.
+
+| 파일 | 역할 |
+|------|------|
+| [`globeExploreNav.js`](../src/pages/Home/lib/globeExploreNav.js) | `shouldShowGlobeExploreNav` · explore 줌 auto-rotate 정지 · `readGlobeShareViewFromUrl` |
+| [`GlobeExploreNavControls.jsx`](../src/pages/Home/components/GlobeExploreNavControls.jsx) | **+ / − / 나침반** · `z-[70]` (Mapbox 내장 `NavigationControl`은 z-0 가림 → 폐기) |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `hasPlaceSummary` · 공유 URL 복원 |
+
+**로컬 QA (2026-06-09 · 미해결 — 다음 세션)**
+
+| 환경 | 관찰 |
+|------|------|
+| **모바일** | **+만** 보임 (−·나침반 클리핑·겹침 추정) |
+| **데스크톱** | +·−·나침반 보이나 **Summary 열리면 가려짐** (카드 `z-60`·우하단 점유 vs `hasPlaceSummary` 위치 보정 부족) |
+
+**다음 세션 방향 (코드 수정 전 합의)**
+
+1. **배치 SSOT** — Summary·MOONi FAB·카테고리 내비·좌하단 범례(1i·3)와 겹치지 않는 고정 슬롯 (후보: 상단 공유/GPS/우주 버튼 열 **통합** · 또는 Summary **좌측 상단** 등).
+2. **버튼 정리** — 기존 `HomeGlobeMapbox` 우상단 3종(공유·현재위치·우주)과 **중복·역할 분리** — zoom/나침반만 남기거나 한 줄 toolbar로 merge.
+3. **모바일** — safe-area·카테고리 `bottom-8` 바와 수직 스택 높이 재계산.
+
+### Phase 3 — 권역 hull + 주변 POI (2026-06-09 WIP)
+
+**트리거**: `focusSlug`가 [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) 멤버 · 줌 ≥ 3 또는 `TOUR_READY` · 1i Isochrone과 **별개**.
+
+| 파일 | 역할 |
+|------|------|
+| [`globeClusterBoundaries.js`](../src/pages/Home/lib/globeClusterBoundaries.js) | convex hull fill·점선 · sibling POI dot/label · 클릭 → `onMarkerClick` |
+| [`travelSpotClusters.js`](../src/utils/travelSpotClusters.js) | `getClusterMembersWithCoords` |
+| [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `gateo-cluster-*` 지명 정책 숨김 제외 |
+
+**시각**: amber hull(10% fill + dash line) · 관문 sibling 노란 핀·라벨 · 좌하단 권역 범례(1i 범례와 스택).
+
+**로컬 QA 권장**: `/` → `patagonia`·`iceland`·`borneo` 클러스터 slug 선택 → 줌 인 hull·POI · POI 탭 전환 · 파타고니아+투어 후 hull+reach 동시 노출.
+
 ---
 
 ## 다음 세션 제시어
 
 ```
-@.ai-context.md @plans/2026-06-03-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+@.ai-context.md @plans/2026-06-09-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-홈 지구본 Phase 1 마무리 — 1g 스모크.
-- 완료: globeLandmarks 80 slug(1e)·후지산 keyframes(1f)·Standard urban 투어(1h)·bright gateo-first(ef0736b).
-- deep 메인 · bright는 setConfigProperty 위주 — bootstrap/ onStyleData 대규모 변경 지양.
-- 1g: gateo.kr — 2D 복귀·Skip·모바일·흐바르·파리 bright urban·후지산 keyframe → Pass 시 Phase 1 완료.
-- 후순위: nature/adventure 잔여 ~66 slug globeLandmarks.
-- bright 테마 전환 시 style diff 경고는 무시 가능; Uncaught Style is not done loading 재발 시 isStyleLoaded 가드만 최소 보강.
+홈 지구본 Phase 2 UX — 탐색 내비 배치·버튼 통합 (Phase 3 hull QA는 2 정리 후).
+- 현재: GlobeExploreNavControls (+/−/나침반) z-70 · 줌≥3 · flyTo 3.0.
+- QA: 모바일 +만 보임 · PC Summary 열리면 컨트롤 가려짐 — §Phase 2 표 참고.
+- 과제: Summary·MOONi·범례와 겹치지 않는 슬롯 · 우상단 공유/GPS/우주와 merge·역할 분리 합의 후 구현.
+- Phase 3: patagonia/iceland hull·POI smoke · Phase 1g gateo 스모크는 병행 가능.
 ```
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
@@ -201,8 +237,8 @@
 
 ### Phase 2~4
 
-- **2**: explore + `NavigationControl`
-- **3**: [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) hull 경계선 · 주변 여행지 POI (**1i Isochrone과 별개** — 권역·관문 클러스터)
+- **2**: **WIP** — [`GlobeExploreNavControls.jsx`](../src/pages/Home/components/GlobeExploreNavControls.jsx) · 배치·기존 3버튼 통합 **다음 세션**
+- **3**: **WIP** — [`globeClusterBoundaries.js`](../src/pages/Home/lib/globeClusterBoundaries.js) · hull·sibling POI · QA 대기
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 
 ---

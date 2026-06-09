@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import Map, { Marker, useControl } from 'react-map-gl/mapbox';
+import GlobeExploreNavControls from './GlobeExploreNavControls';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
@@ -43,6 +44,21 @@ import {
   setupReachBoundaryLayers,
   updateReachBoundarySource
 } from '../lib/globeReachBoundaries';
+import {
+  buildClusterOverlayGeoJSON,
+  clearClusterBoundaries,
+  clusterBoundaryLayersReady,
+  findClusterPoiAtPoint,
+  setClusterBoundaryVisibility,
+  setupClusterBoundaryLayers,
+  updateClusterHullSource,
+  updateClusterPoiSource
+} from '../lib/globeClusterBoundaries';
+import {
+  readGlobeShareViewFromUrl,
+  shouldPauseGlobeAutoRotateForExplore,
+  shouldShowGlobeExploreNav
+} from '../lib/globeExploreNav';
 import {
   applyEarlyMapboxGlobeLabelSuppress,
   applyMapboxGlobeLabelPolicy
@@ -216,6 +232,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   isPinVisible = true,
   onGlobeModeChange,
   hideTourControls = false,
+  focusSlug = null,
+  hasPlaceSummary = false,
   onFatalError,
   highlightCategory = null
 }, ref) => {
@@ -242,6 +260,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const tourActiveRef = useRef(false);
   const reachFetchGenRef = useRef(0);
   const reachGeoJsonRef = useRef(null);
+  const clusterOverlayRef = useRef(null);
+  const hasRestoredShareViewRef = useRef(false);
   const prevHighlightCategoryRef = useRef(null);
   const highlightCategoryRef = useRef(highlightCategory);
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
@@ -252,6 +272,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [reachBoundariesLoading, setReachBoundariesLoading] = useState(false);
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
+  const showExploreNav = shouldShowGlobeExploreNav({
+    zoom: mapZoom,
+    globeMode,
+    isZenMode,
+    hideTourControls
+  });
+  const clusterOverlay = useMemo(
+    () => buildClusterOverlayGeoJSON(focusSlug),
+    [focusSlug]
+  );
+  const showClusterOverlay = useMemo(() => {
+    if (isZenMode || !clusterOverlay.meta) return false;
+    if (globeMode === GLOBE_MODE.TOUR_BOOTSTRAPPING || globeMode === GLOBE_MODE.TOUR_PLAYING) {
+      return false;
+    }
+    return mapZoom >= HIGH_ZOOM_FULL_REVEAL || globeMode === GLOBE_MODE.TOUR_READY;
+  }, [clusterOverlay.meta, globeMode, isZenMode, mapZoom]);
   const isMobileDevice = useMemo(() => {
     try {
       return /android|iphone|ipad|ipod|mobile/i.test(window.navigator?.userAgent || '');
@@ -676,6 +713,27 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     setReachBoundaryVisibility(map, true);
   }, [globeMode]);
 
+  const syncClusterOverlayLayers = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    if (!clusterBoundaryLayersReady(map)) {
+      setupClusterBoundaryLayers(map);
+    }
+
+    if (!showClusterOverlay || !clusterOverlay.meta) {
+      clusterOverlayRef.current = null;
+      clearClusterBoundaries(map);
+      setClusterBoundaryVisibility(map, false);
+      return;
+    }
+
+    clusterOverlayRef.current = clusterOverlay;
+    updateClusterHullSource(map, clusterOverlay.hull);
+    updateClusterPoiSource(map, clusterOverlay.poi);
+    setClusterBoundaryVisibility(map, true);
+  }, [clusterOverlay, showClusterOverlay]);
+
   const syncGateoMarkerLayers = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return;
@@ -687,14 +745,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!reachBoundaryLayersReady(map)) {
       setupReachBoundaryLayers(map);
     }
+    if (!clusterBoundaryLayersReady(map)) {
+      setupClusterBoundaryLayers(map);
+    }
     updateGateoMarkerSource(map, markerGeoJSON);
     restoreReachBoundaryLayersIfNeeded();
-  }, [markerGeoJSON, pauseRender, restoreReachBoundaryLayersIfNeeded]);
+    syncClusterOverlayLayers();
+  }, [markerGeoJSON, pauseRender, restoreReachBoundaryLayersIfNeeded, syncClusterOverlayLayers]);
 
   useEffect(() => {
     if (pauseRender) return;
     updateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
   }, [markerGeoJSON, pauseRender]);
+
+  useEffect(() => {
+    if (pauseRender) return;
+    syncClusterOverlayLayers();
+  }, [pauseRender, syncClusterOverlayLayers]);
 
   const tryRevealGlobe = useCallback(() => {
     if (pauseRender || waitingThemeSettleRef.current) return;
@@ -730,7 +797,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     map.flyTo({
       center: [normalizedLng, lat],
-      zoom: Math.max(currentZoom, GLOBE_VIEW.flyZoom),
+      zoom: Math.max(currentZoom, HIGH_ZOOM_FULL_REVEAL),
       duration: 900,
       essential: true
     });
@@ -1078,6 +1145,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const shouldRotate = autoRotateRef.current
         && !interactionRef.current
         && !tourActiveRef.current
+        && !shouldPauseGlobeAutoRotateForExplore(map.getZoom())
         && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
       if (shouldRotate) {
         const speed = isZenMode ? 1.8 : 3;
@@ -1130,6 +1198,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       );
       if (onMarkerClick) onMarkerClick(fullMarker, 'globe');
       return;
+    }
+
+    const clusterPoi = map && event.point ? findClusterPoiAtPoint(map, event.point) : null;
+    if (clusterPoi && onMarkerClick) {
+      const spotCatalog = allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
+      const spot = spotCatalog.find((s) => s.slug === clusterPoi.slug);
+      if (spot) {
+        markerClickGuardUntilRef.current = Date.now() + 450;
+        onMarkerClick({ ...spot, type: 'major' }, 'globe');
+        return;
+      }
     }
     const labelLayers = placeLabelLayerIdsRef.current || [];
     const clickedLabels = map && labelLayers.length > 0
@@ -1212,7 +1291,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       onWheel={handleInteractionStart}
     >
       <div
-        className={`absolute inset-0 transition-opacity duration-300 ${
+        className={`gateo-globe-map absolute inset-0 transition-opacity duration-300 ${
           isStyleTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
@@ -1232,6 +1311,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             syncGateoMarkerLayers();
             if (prevHighlightCategoryRef.current === null && highlightCategoryRef.current) {
               prevHighlightCategoryRef.current = highlightCategoryRef.current;
+            }
+            if (!hasRestoredShareViewRef.current) {
+              const shared = readGlobeShareViewFromUrl();
+              if (shared) {
+                hasRestoredShareViewRef.current = true;
+                autoRotateRef.current = false;
+                try {
+                  map.jumpTo({
+                    center: [shared.lng, shared.lat],
+                    zoom: shared.zoom,
+                    pitch: 0,
+                    bearing: 0
+                  });
+                } catch {
+                  // Ignore share-view restore failures.
+                }
+              }
             }
           }
           syncMapZoom();
@@ -1366,6 +1462,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           </button>
         </div>
       )}
+
+      {showExploreNav && !isZenMode && (
+        <GlobeExploreNavControls mapRef={mapRef} hasPlaceSummary={hasPlaceSummary} />
+      )}
+
       {mobileActionMessage && !isZenMode && (
         <div className="absolute right-3 top-[calc(50%+8.5rem)] z-[70] pointer-events-none rounded-full bg-black/70 px-3 py-1 text-xs text-white border border-white/15 backdrop-blur-sm">
           {mobileActionMessage}
@@ -1406,6 +1507,31 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             {reachBoundariesReady && !reachBoundariesLoading && (
               <p className="mt-1.5 text-[10px] text-white/55">도보: 보행 경로 · 차량: 운전 도달 영역</p>
             )}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {showClusterOverlay && clusterOverlay.meta && !isZenMode && typeof document !== 'undefined' && createPortal(
+        <div
+          className={`fixed left-3 z-[55] pointer-events-none md:left-6 ${
+            globeMode === GLOBE_MODE.TOUR_READY
+              ? 'bottom-[calc(8.5rem+env(safe-area-inset-bottom,0px))] md:bottom-36'
+              : 'bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] md:bottom-8'
+          }`}
+          role="note"
+          aria-label="권역 클러스터 범례"
+        >
+          <div className="rounded-2xl border border-amber-400/20 bg-black/60 px-3 py-2.5 text-[11px] text-white/85 shadow-lg backdrop-blur-sm max-w-[13rem]">
+            <p className="mb-1 font-bold tracking-wide text-amber-100/95 break-keep">{clusterOverlay.meta.labelKo}</p>
+            <div className="flex items-center gap-2">
+              <span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-amber-400 shrink-0" aria-hidden="true" />
+              <span className="break-keep">권역 경계</span>
+            </div>
+            <div className="mt-1 flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
+              <span className="break-keep">관문이 다른 여행지</span>
+            </div>
           </div>
         </div>,
         document.body

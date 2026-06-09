@@ -79,3 +79,47 @@ export function getRelatedTravelSpots(currentSlug) {
     })
     .filter(Boolean);
 }
+
+/**
+ * 클러스터 멤버 좌표 — 지구본 hull·POI 레이어용
+ * @param {string | null | undefined} currentSlug
+ * @returns {{
+ *   clusterId: string,
+ *   labelKo: string,
+ *   labelEn: string,
+ *   members: Array<{ slug: string, name: string, lat: number, lng: number, isCurrent: boolean }>
+ * } | null}
+ */
+export function getClusterMembersWithCoords(currentSlug) {
+  const clusterId = getClusterIdForSlug(currentSlug);
+  if (!clusterId) return null;
+  const cluster = CLUSTERS[clusterId];
+  if (!cluster) return null;
+
+  const normalized = String(currentSlug ?? '').trim().toLowerCase();
+  const members = (cluster.slugs ?? [])
+    .map((slug) => {
+      const spot = spotBySlug.get(slug);
+      if (!spot) return null;
+      const lat = Number(spot.lat);
+      const lng = Number(spot.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+      return {
+        slug: spot.slug,
+        name: spot.name,
+        lat,
+        lng,
+        isCurrent: slug === normalized
+      };
+    })
+    .filter(Boolean);
+
+  if (members.length < 2) return null;
+
+  return {
+    clusterId,
+    labelKo: cluster.labelKo,
+    labelEn: cluster.labelEn,
+    members
+  };
+}

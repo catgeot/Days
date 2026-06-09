@@ -1,6 +1,7 @@
 import { PLACE_LABEL_MIN_ZOOM } from './globeZoomPolicy';
 import { isGateoLayer } from './globeMarkerLayers';
 import { isReachBoundaryLayer } from './globeReachBoundaries';
+import { isClusterBoundaryLayer } from './globeClusterBoundaries';
 import {
   applyStandardBasemapConfig,
   isStandardBasemapLayer,
@@ -70,7 +71,7 @@ export function showMapboxDetailLayer(map, layerId) {
 function isMapboxLabelSymbolLayer(layer) {
   const id = layer.id || '';
   const sourceLayer = layer['source-layer'] || '';
-  if (isGateoLayer(id) || isReachBoundaryLayer(id)) return false;
+  if (isGateoLayer(id) || isReachBoundaryLayer(id) || isClusterBoundaryLayer(id)) return false;
   if (isStandardBasemapLayer(id)) return true;
   if (Boolean(layer.layout?.['text-field'])) return true;
   return layerMatchesHints(id, sourceLayer, MAPBOX_SYMBOL_LABEL_HINTS);
