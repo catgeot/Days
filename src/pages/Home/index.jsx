@@ -154,8 +154,11 @@ function Home() {
     return window.matchMedia('(max-width: 1023px)').matches;
   });
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
+  const [tourPivoted, setTourPivoted] = useState(false);
   const isTourActive = isTourMode(globeMode);
   const isTourCinema = isTourActive && isMobileViewport;
+  const tourReadyAnchorRef = useRef(null);
+  const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
   const shouldPauseGlobe = isCardExpanded
     || isPlaceRoute
@@ -560,6 +563,47 @@ function Home() {
     setGlobeTheme(themes[nextIndex]);
   };
 
+  useEffect(() => {
+    const prev = prevGlobeModeRef.current;
+    prevGlobeModeRef.current = globeMode;
+
+    if (globeMode === GLOBE_MODE.GLOBE_2D) {
+      tourReadyAnchorRef.current = null;
+      setTourPivoted(false);
+      return;
+    }
+
+    if (globeMode === GLOBE_MODE.TOUR_READY && prev !== GLOBE_MODE.TOUR_READY && selectedLocation) {
+      tourReadyAnchorRef.current = selectedLocation;
+      setTourPivoted(false);
+    }
+  }, [globeMode, selectedLocation]);
+
+  useEffect(() => {
+    if (globeMode !== GLOBE_MODE.TOUR_READY || !selectedLocation || !tourReadyAnchorRef.current) return;
+    if (isSameCanonicalPlace(tourReadyAnchorRef.current, selectedLocation)) return;
+
+    setTourPivoted(true);
+    globeRef.current?.pivotTourExplore?.(selectedLocation);
+  }, [globeMode, selectedLocation]);
+
+  const handleTourBarClose = useCallback(() => {
+    setIsCardExpanded(false);
+    setSelectedLocation(null);
+    tourReadyAnchorRef.current = null;
+    setTourPivoted(false);
+    if (globeRef.current?.getGlobeMode?.() !== GLOBE_MODE.GLOBE_2D) {
+      globeRef.current?.endTour?.();
+    }
+    globeRef.current?.resumeRotation?.();
+  }, [setSelectedLocation]);
+
+  const handleTourBarStartTour = useCallback(() => {
+    if (!selectedLocation) return;
+    globeRef.current?.pauseRotation?.();
+    globeRef.current?.startTour?.(selectedLocation);
+  }, [selectedLocation]);
+
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       <SEO />
@@ -602,9 +646,12 @@ function Home() {
           isZenMode={isZenMode} onToggleZenMode={toggleZenMode}
           isTourCinema={isTourCinema}
           tourLocation={selectedLocation}
+          tourPivoted={tourPivoted}
           globeMode={globeMode}
           onTourSkip={() => globeRef.current?.skipTour?.()}
           onTourEnd={() => globeRef.current?.endTour?.()}
+          onTourBarClose={handleTourBarClose}
+          onTourBarStartTour={handleTourBarStartTour}
           user={user} onLogout={() => supabase.auth.signOut()}
           onClearScouts={() => {
               if(window.confirm("임시 핀을 모두 삭제하시겠습니까?")) {

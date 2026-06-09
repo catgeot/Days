@@ -12,7 +12,7 @@
 
 **클릭하는 순간 그 여행지의 감성(지형·스케일)을 맛볼 수 있는 카메라 경로.**
 
-- 사용자: 여행 전 **간접 경험** · **데스크톱(`lg+`)** 투어 중에도 Summary **풀 카드**(설명·3D 투어·MOONi) · **모바일(`<lg`)** 투어 중 Summary 숨김 + 헤더 **`TourMobileBar`** (로고 옆 · 글로우 · Skip/2D).
+- 사용자: 여행 전 **간접 경험** · **데스크톱(`lg+`)** 투어 중에도 Summary **풀 카드**(설명·3D 투어·MOONi) · **모바일(`<lg`)** 투어 중 Summary 숨김 + 헤더 **`TourMobileBar`** (로고 옆 · Skip/2D/3D 투어 · **X** 탈출).
 - **버튼 노출**: `lat`/`lng`만 유효하면 **전 여행지** — 큐레이션·신규·DB-only 지명 포함 (숨은 여행지 → 위키·매거진 파이프라인).
 - **품질**: slug별 **대표 뷰포인트**(`globeLandmarks.json`) + category 폴백 — `travelSpots.js` 좌표(공항·도심·행정 중심)를 투어에 그대로 쓰지 않음.
 - **시각 우선순위** (QA 2026-06-03): **대자연·해안·알프스** > 도심 (`mountainOrbit` / `coastalOrbit` / `alpineVillageOrbit` 우선 큐레이션).
@@ -73,8 +73,8 @@
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | **Mapbox 지명·경계·랜드마크 SSOT** — 줌≥4·`isPinVisible` · Standard `setConfigProperty` + 레이어 숨김 |
 | [`travelSpots.js`](../src/pages/Home/data/travelSpots.js) | **핀·SEO·공항·페리** 좌표 SSOT — 투어 center와 분리 유지 |
 | [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 · 데스크톱 투어 중 **풀 카드** (`isCompact` 미사용) |
-| [`index.jsx`](../src/pages/Home/index.jsx) | `isTourCinema` = 투어+`<lg` → Summary 숨김 · 데스크톱 투어 시 `isCompact` prop 없음 |
-| [`TourMobileBar.jsx`](../src/pages/Home/components/TourMobileBar.jsx) | 모바일 투어 시네마 — 헤더(로고 옆) · 국가/지명 + Skip/2D · `index.css` 글로우 |
+| [`TourMobileBar.jsx`](../src/pages/Home/components/TourMobileBar.jsx) | 모바일 투어 시네마 — 헤더(로고 옆) · Skip · 2D(앵커 동일) · 3D 투어(pivot) · X 탈출 · `index.css` 글로우 |
+| [`index.jsx`](../src/pages/Home/index.jsx) | `isTourCinema` = 투어+`<lg` → Summary 숨김 · `tourReadyAnchorRef` · `tourPivoted` · pivot 시 `pivotTourExplore` |
 | [`resolveHomeGlobeEngine.js`](../src/pages/Home/components/resolveHomeGlobeEngine.js) | PROD→mapbox · DEV→mapbox(URL 무제한 `.env.local` 토큰) · `?globe=legacy` |
 
 **동작 요약**
@@ -85,6 +85,7 @@
 - **알프스**: `alpineVillageOrbit` (체르마트 등).
 - **수동 경로**: `keyframes: [...]` — Mapbox Studio export.
 - Skip · **2D 복귀** · 모바일: Summary 숨김 · 지도 탭 탐색 차단 · MOONi FAB·카테고리 내비 숨김.
+- **`TOUR_READY` pivot** (모바일·2026-06-09): 투어 앵커와 다른 지명 클릭 → `pivotTourExplore`(landmark center `easeTo` only · pitch/zoom 유지) · isochrone 갱신 · 바 **3D 투어** 노출. **X** = `endTour`+선택 해제.
 - **투어 중 지명**: `globeMapboxLabelPolicy`와 동일(눈 ON·줌≥4) · **지명·gateo 마커 클릭** 가능 · 빈 지도 탭만 차단 (`HomeGlobeMapbox` `handleGlobeClickInternal`). **지명 클릭 UI**: 역지오코딩 국가·라벨명 · `uiPlace`로 툴킷 alias·좌표 스냅 분리 — [`travel-spots-management.md`](travel-spots-management.md) §8.
 
 ### 데이터 역할 (투어 vs 여행지 SSOT)
@@ -172,7 +173,7 @@
 | 파일 | 역할 |
 |------|------|
 | [`globeExploreNav.js`](../src/pages/Home/lib/globeExploreNav.js) | `readGlobeShareViewFromUrl` — `?lat=&lng=&zoom=` 로드 시 카메라 1회 복원 |
-| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 공유 URL 쓰기(기존) + 복원 · 우상단 3버튼 · `executeFocus` flyTo |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 공유 URL 복원 · 우상단 3버튼 · `pivotTourExplore` · 우주=`endTour` 연동 · `executeFocus` flyTo |
 
 **flyTo 최소 줌 (변경 금지)**
 
@@ -186,7 +187,7 @@
 |------|------|------|
 | 공유 | 현재 뷰 URL(`lat`/`lng`/`zoom`) 공유·복사 | zen·투어 시네마·(모바일 투어) 제외 |
 | GPS | geolocation flyTo | 동일 |
-| 우주 | 기본 우주 뷰 복귀 | 동일 |
+| 우주 | 우주 뷰 복귀 — **3D 투어 중**이면 `endTour` 선행(terrain 해제·`globe2d`) 후 이동 | 동일 |
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 

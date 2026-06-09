@@ -38,6 +38,7 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     startTour: (location) => childRef.current?.startTour?.(location),
     skipTour: () => childRef.current?.skipTour?.(),
     endTour: () => childRef.current?.endTour?.(),
+    pivotTourExplore: (location) => childRef.current?.pivotTourExplore?.(location),
     getGlobeMode: () => childRef.current?.getGlobeMode?.()
   }), []);
 

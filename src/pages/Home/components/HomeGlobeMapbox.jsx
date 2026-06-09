@@ -32,6 +32,7 @@ import {
 } from '../lib/globeMarkerLayers';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
+import { resolveGlobeTourConfig } from '../lib/globeTourResolve';
 import { applyTourMapUi } from '../lib/globeTourUi';
 import {
   REACH_CONTOUR_MINUTES,
@@ -657,7 +658,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     setReachBoundariesLoading(false);
   }, []);
 
-  const loadReachBoundaries = useCallback(async (lng, lat) => {
+  const loadReachBoundaries = useCallback(async (lng, lat, { easeCamera = true } = {}) => {
     const map = mapRef.current?.getMap();
     if (!map || !Number.isFinite(lng) || !Number.isFinite(lat)) return;
 
@@ -677,7 +678,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       updateReachBoundarySource(map, geojson);
       setupReachBoundaryLayers(map);
       setReachBoundaryVisibility(map, true);
-      easeCameraForReachReveal(map);
+      if (easeCamera) easeCameraForReachReveal(map);
       setReachBoundariesReady(true);
     } catch {
       if (reachFetchGenRef.current !== gen) return;
@@ -686,7 +687,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       updateReachBoundarySource(map, fallback);
       setupReachBoundaryLayers(map);
       setReachBoundaryVisibility(map, true);
-      easeCameraForReachReveal(map);
+      if (easeCamera) easeCameraForReachReveal(map);
       setReachBoundariesReady(true);
     } finally {
       if (reachFetchGenRef.current === gen) {
@@ -810,7 +811,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     autoRotateRef.current = false;
     addRipple(lat, lng, 2000);
     const shouldFocus = options?.focus !== false;
-    if (!shouldFocus) {
+    if (!shouldFocus || globeMode === GLOBE_MODE.TOUR_READY) {
       pendingFocusRef.current = null;
       return;
     }
@@ -819,7 +820,34 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!applied) {
       pendingFocusRef.current = { lat, lng };
     }
-  }, [addRipple, executeFocus]);
+  }, [addRipple, executeFocus, globeMode]);
+
+  /** TOUR_READY pivot — ease center only; pitch/zoom/bearing unchanged (no flyTo). */
+  const pivotTourExplore = useCallback((location) => {
+    const map = mapRef.current?.getMap();
+    if (!map || !location) return;
+
+    const lat = Number(location.lat);
+    const lng = Number(location.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    const config = resolveGlobeTourConfig({
+      slug: location.slug,
+      lat,
+      lng,
+      location
+    });
+    const [centerLng, centerLat] = config.center;
+    if (!Number.isFinite(centerLng) || !Number.isFinite(centerLat)) return;
+
+    map.stop();
+    map.easeTo({
+      center: [centerLng, centerLat],
+      duration: 550,
+      essential: true
+    });
+    loadReachBoundaries(centerLng, centerLat, { easeCamera: false });
+  }, [loadReachBoundaries]);
 
   const showMobileActionMessage = useCallback((message) => {
     setMobileActionMessage(message);
@@ -882,37 +910,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       { enableHighAccuracy: true, timeout: 6000 }
     );
   }, [onGlobeClick, showMobileActionMessage]);
-
-  const handleReturnToSpace = useCallback(() => {
-    const map = mapRef.current?.getMap();
-    if (!map) return;
-    const returnZoom = isMobileDevice ? 1 : GLOBE_VIEW.default.zoom;
-    try {
-      map.stop();
-      map.flyTo({
-        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
-        zoom: returnZoom,
-        pitch: GLOBE_VIEW.default.pitch,
-        bearing: GLOBE_VIEW.default.bearing,
-        duration: 1200,
-        essential: true
-      });
-    } catch {
-      // Fallback for edge cases where camera animation is rejected.
-      map.jumpTo({
-        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
-        zoom: returnZoom,
-        pitch: GLOBE_VIEW.default.pitch,
-        bearing: GLOBE_VIEW.default.bearing
-      });
-    }
-    interactionRef.current = false;
-    autoRotateRef.current = !pauseRender;
-    setRipples([]);
-    pendingFocusRef.current = null;
-    lastPlaceLabelVisibleRef.current = null;
-    resetAndApplyPlaceLabelVisibility();
-  }, [isMobileDevice, pauseRender, resetAndApplyPlaceLabelVisibility]);
 
   const handleTourModeChange = useCallback((mode) => {
     tourActiveRef.current = isTourMode(mode);
@@ -991,6 +988,47 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
   }, [pauseRender]);
 
+  const finalizeSpaceReturn = useCallback(() => {
+    interactionRef.current = false;
+    autoRotateRef.current = !pauseRender;
+    setRipples([]);
+    pendingFocusRef.current = null;
+    lastPlaceLabelVisibleRef.current = null;
+    resetAndApplyPlaceLabelVisibility();
+  }, [pauseRender, resetAndApplyPlaceLabelVisibility]);
+
+  const handleReturnToSpace = useCallback(async () => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    if (isTourMode(globeMode) || tourActiveRef.current) {
+      await endTour();
+      finalizeSpaceReturn();
+      return;
+    }
+
+    const returnZoom = isMobileDevice ? 1 : GLOBE_VIEW.default.zoom;
+    try {
+      map.stop();
+      map.flyTo({
+        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
+        zoom: returnZoom,
+        pitch: GLOBE_VIEW.default.pitch,
+        bearing: GLOBE_VIEW.default.bearing,
+        duration: 1200,
+        essential: true
+      });
+    } catch {
+      map.jumpTo({
+        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
+        zoom: returnZoom,
+        pitch: GLOBE_VIEW.default.pitch,
+        bearing: GLOBE_VIEW.default.bearing
+      });
+    }
+    finalizeSpaceReturn();
+  }, [endTour, finalizeSpaceReturn, globeMode, isMobileDevice]);
+
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
       autoRotateRef.current = false;
@@ -1019,8 +1057,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     startTour,
     skipTour,
     endTour,
+    pivotTourExplore,
     getGlobeMode: () => globeMode
-  }), [addRipple, endTour, flyToAndPin, globeMode, pauseRender, resetAndApplyPlaceLabelVisibility, skipTour, startTour]);
+  }), [addRipple, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

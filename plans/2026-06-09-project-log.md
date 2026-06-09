@@ -31,6 +31,13 @@
 - **UI fix**: GPS(초록)·우주(파랑) 버튼 색상 Tailwind 충돌 복구
 - **빌드**: `npm run build` Pass · 사용자 QA Pass
 
+## 모바일 3D 투어 — TOUR_READY pivot · TourMobileBar (2026-06-09)
+
+- **`TOUR_READY` pivot**: 다른 지명 클릭 시 `pivotTourExplore` — center만 `easeTo`(flyTo 없음) · isochrone 갱신 · `tourPivoted` 시 **3D 투어** 버튼
+- **`TourMobileBar`**: 우측 **X** 탈출(`endTour`+선택 해제) · Skip/2D/3D 투어 분기
+- **우주 버튼**: 3D 투어 중 클릭 시 `endTour` 선행(terrain 해제·`globe2d`) 후 우주 뷰 — 2D 복귀 버튼·경계 범례 함께 제거
+- **QA**: 모바일 pivot·X · PC 우주 복귀 — 사용자 Pass
+
 ## 다음 (선택)
 
 - Phase 3 hull smoke(patagonia·iceland) · Phase 1g gateo 스모크 · 릴리스 노트 합의

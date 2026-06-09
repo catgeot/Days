@@ -29,9 +29,12 @@ const HomeUI = React.memo(({
   onLogout,
   isTourCinema = false,
   tourLocation = null,
+  tourPivoted = false,
   globeMode = null,
   onTourSkip,
   onTourEnd,
+  onTourBarClose,
+  onTourBarStartTour,
 }) => {
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
@@ -108,8 +111,11 @@ const HomeUI = React.memo(({
               className="w-full md:hidden"
               location={tourLocation}
               globeMode={globeMode}
+              tourPivoted={tourPivoted}
               onSkip={onTourSkip}
               onEndTour={onTourEnd}
+              onStartTour={onTourBarStartTour}
+              onClose={onTourBarClose}
             />
           ) : (
            <div data-site-notice-anchor className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md self-end">
