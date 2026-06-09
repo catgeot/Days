@@ -17,21 +17,20 @@
 
 - `klookRentalHomeSearchLabel` · `audit:airports` none 0
 
-## 홈 지구본 Phase 2~3 — 탐색 내비 · 권역 hull·POI (초안 커밋)
+## 홈 지구본 Phase 2~3 — 탐색 내비 · 권역 hull·POI (초안 커밋 a25f237)
 
-- **Phase 2**: `globeExploreNav.js` · `GlobeExploreNavControls` (+/−/나침반, z-70) · 줌≥3 · flyTo 3.0 · URL 카메라 복원
-- **Phase 3**: `globeClusterBoundaries.js` · `getClusterMembersWithCoords` · amber hull + sibling POI · `focusSlug` / `hasPlaceSummary`
-- **빌드**: `npm run build` Pass
+- **Phase 3**: `globeClusterBoundaries.js` · amber hull + sibling POI · `focusSlug`
+- **Phase 2 초안**: +/−/나침반 · flyTo 3.0 시도 — 이후 아래 세션에서 정리
 
-### Phase 2 QA (미해결 — 다음 세션)
+## Phase 2 정리 — 탐색 내비 UI 폐기 (2026-06-09)
 
-| 환경 | 관찰 |
-|------|------|
-| 모바일 | **+ 버튼만** 보임 |
-| PC | +/−/나침반 OK · **Summary 열리면** 컨트롤 가려짐 |
-
-**다음 세션**: 배치 SSOT · 우상단 공유/GPS/우주와 **통합·역할 분리** 합의 후 구현 — [`2026-06-02-globe-enrichment-plan.md`](2026-06-02-globe-enrichment-plan.md) §Phase 2 · 제시어.
+- **결정**: +/−/나침반 불필요(pinch·휠 충분) — `GlobeExploreNavControls.jsx` 삭제 · 우상단 **공유·GPS·우주**만
+- **유지**: 공유 URL `?lat=&lng=&zoom=` **복원**(링크 열 때 카메라 1회 jumpTo)
+- **복귀**: `executeFocus` flyTo min **`GLOBE_VIEW.flyZoom`(2.35)** — 시행착오 확정값 · **변경 금지** (`.ai-context` 3절·계획 §Phase 2)
+- **제거**: explore auto-rotate guard · `shouldShowGlobeExploreNav` · `hasPlaceSummary` prop
+- **UI fix**: GPS(초록)·우주(파랑) 버튼 색상 Tailwind 충돌 복구
+- **빌드**: `npm run build` Pass · 사용자 QA Pass
 
 ## 다음 (선택)
 
-- Phase 2 UX · Phase 3 hull smoke(patagonia·iceland) · Phase 1g gateo 스모크 · 릴리스 노트 합의
+- Phase 3 hull smoke(patagonia·iceland) · Phase 1g gateo 스모크 · 릴리스 노트 합의

@@ -1,28 +1,7 @@
 import { HIGH_ZOOM_FULL_REVEAL } from './globeZoomPolicy';
-import { GLOBE_MODE, isTourMode } from './globeMode';
 
-/** 줌 ≥ 3 — 여행지 flyTo(2.35) 직후 한 단계만 더 확대하면 노출 */
+/** 공유 URL에 zoom 파라미터 없을 때 기본값 */
 export const EXPLORE_NAV_MIN_ZOOM = HIGH_ZOOM_FULL_REVEAL;
-
-/**
- * @param {{ zoom?: number, globeMode?: string, isZenMode?: boolean, hideTourControls?: boolean }} opts
- */
-export function shouldShowGlobeExploreNav({
-  zoom,
-  globeMode = GLOBE_MODE.GLOBE_2D,
-  isZenMode = false,
-  hideTourControls = false
-} = {}) {
-  if (isZenMode || hideTourControls) return false;
-  if (isTourMode(globeMode)) return false;
-  if (!Number.isFinite(zoom) || zoom < EXPLORE_NAV_MIN_ZOOM) return false;
-  return true;
-}
-
-/** Pause globe auto-rotate once the user is in flat-map explore territory. */
-export function shouldPauseGlobeAutoRotateForExplore(zoom) {
-  return Number.isFinite(zoom) && zoom >= EXPLORE_NAV_MIN_ZOOM;
-}
 
 /**
  * Read ?lat=&lng=&zoom= share params written by handleShareCurrentView.

@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import Map, { Marker, useControl } from 'react-map-gl/mapbox';
-import GlobeExploreNavControls from './GlobeExploreNavControls';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
@@ -54,11 +53,7 @@ import {
   updateClusterHullSource,
   updateClusterPoiSource
 } from '../lib/globeClusterBoundaries';
-import {
-  readGlobeShareViewFromUrl,
-  shouldPauseGlobeAutoRotateForExplore,
-  shouldShowGlobeExploreNav
-} from '../lib/globeExploreNav';
+import { readGlobeShareViewFromUrl } from '../lib/globeExploreNav';
 import {
   applyEarlyMapboxGlobeLabelSuppress,
   applyMapboxGlobeLabelPolicy
@@ -145,6 +140,9 @@ const PLACE_LABEL_PROPERTY_KEYS = [
   'title'
 ];
 const PLACE_LABEL_ENGLISH_KEYS = ['name_en', 'name_int', 'name_latin', 'name:en', 'name'];
+
+const GLOBE_MAP_BTN_BASE =
+  'h-11 w-11 rounded-full bg-black/55 border shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95 hover:bg-black/70 transition-colors shrink-0';
 
 const GLOBE_VIEW = {
   default: { longitude: 0, latitude: 20, zoom: 1.25, pitch: 0, bearing: 0 },
@@ -233,7 +231,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   onGlobeModeChange,
   hideTourControls = false,
   focusSlug = null,
-  hasPlaceSummary = false,
   onFatalError,
   highlightCategory = null
 }, ref) => {
@@ -272,12 +269,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [reachBoundariesLoading, setReachBoundariesLoading] = useState(false);
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
-  const showExploreNav = shouldShowGlobeExploreNav({
-    zoom: mapZoom,
-    globeMode,
-    isZenMode,
-    hideTourControls
-  });
   const clusterOverlay = useMemo(
     () => buildClusterOverlayGeoJSON(focusSlug),
     [focusSlug]
@@ -797,7 +788,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     map.flyTo({
       center: [normalizedLng, lat],
-      zoom: Math.max(currentZoom, HIGH_ZOOM_FULL_REVEAL),
+      zoom: Math.max(currentZoom, GLOBE_VIEW.flyZoom),
       duration: 900,
       essential: true
     });
@@ -1145,7 +1136,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const shouldRotate = autoRotateRef.current
         && !interactionRef.current
         && !tourActiveRef.current
-        && !shouldPauseGlobeAutoRotateForExplore(map.getZoom())
         && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
       if (shouldRotate) {
         const speed = isZenMode ? 1.8 : 3;
@@ -1423,11 +1413,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       </div>
 
       {!isZenMode && !hideTourControls && !(isMobileDevice && isTourMode(globeMode)) && (
-        <div className="absolute z-[70] pointer-events-auto flex flex-col gap-1 right-3 top-14 md:top-8 md:right-[24.8%] md:gap-2 md:flex-row">
+        <div
+          className="absolute z-[70] pointer-events-auto flex flex-col gap-1 right-3 top-14 md:top-8 md:right-[24.8%] md:gap-2 md:flex-row md:flex-wrap md:items-center"
+          role="toolbar"
+          aria-label="지도 도구"
+        >
           <button
             type="button"
             onClick={handleShareCurrentView}
-            className="h-11 w-11 rounded-full bg-black/55 border border-white/20 text-gray-100 shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95"
+            className={`${GLOBE_MAP_BTN_BASE} border-white/20 text-gray-100`}
             aria-label="현재 위치 공유"
             title="현재 위치 공유"
           >
@@ -1440,7 +1434,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           <button
             type="button"
             onClick={handleGoToCurrentLocation}
-            className="h-11 w-11 rounded-full bg-black/55 border border-emerald-400/35 text-emerald-400 shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95"
+            className={`${GLOBE_MAP_BTN_BASE} border-emerald-400/35 text-emerald-400`}
             aria-label="현재 위치로 이동"
             title="현재 위치로 이동"
           >
@@ -1451,7 +1445,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           <button
             type="button"
             onClick={handleReturnToSpace}
-            className="h-11 w-11 rounded-full bg-black/55 border border-blue-400/35 text-blue-400 shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95"
+            className={`${GLOBE_MAP_BTN_BASE} border-blue-400/35 text-blue-400`}
             aria-label="우주로 복귀"
             title="우주로 복귀"
           >
@@ -1461,10 +1455,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             </svg>
           </button>
         </div>
-      )}
-
-      {showExploreNav && !isZenMode && (
-        <GlobeExploreNavControls mapRef={mapRef} hasPlaceSummary={hasPlaceSummary} />
       )}
 
       {mobileActionMessage && !isZenMode && (

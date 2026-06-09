@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-09 — Phase **2~3** 초안 커밋 · Phase 2 **UX·배치 WIP** (다음 세션)
+**갱신**: 2026-06-09 — Phase **2** 정리(탐색 내비 UI 폐기) · Phase **3** hull WIP
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -27,7 +27,7 @@
 | **0-B** | 지구본 지명 한글화 | **완료** |
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
-| **2** | 탐색 내비 (구글 지도형) | **WIP** — `GlobeExploreNavControls` · UX·배치 미완 |
+| **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
 | **3** | 클러스터 경계·명소 POI | **WIP** — hull·POI 빌드 OK · QA·튜닝 대기 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
@@ -165,28 +165,30 @@
 
 **후속 (선택)**: slug별 분·`generalize`·fill opacity 튜닝 · Directions API 도로 중심선 · Phase 3 클러스터 hull·POI와 병행.
 
-### Phase 2 — 탐색 지도 내비 (2026-06-09 WIP)
+### Phase 2 — 공유 뷰·지도 도구 (2026-06-09 ✅)
 
-**트리거**: 줌 ≥ `HIGH_ZOOM_FULL_REVEAL`(3.0) · 2D · 투어·zen·모바일 시네마(`hideTourControls`) 제외 · 여행지 flyTo도 zoom 3.0.
+**범위**: 구글 지도형 +/−/나침반 **시도 후 폐기** (pinch·휠·드래그로 충분). 우상단 **공유·GPS·우주** 3버튼만 유지.
 
 | 파일 | 역할 |
 |------|------|
-| [`globeExploreNav.js`](../src/pages/Home/lib/globeExploreNav.js) | `shouldShowGlobeExploreNav` · explore 줌 auto-rotate 정지 · `readGlobeShareViewFromUrl` |
-| [`GlobeExploreNavControls.jsx`](../src/pages/Home/components/GlobeExploreNavControls.jsx) | **+ / − / 나침반** · `z-[70]` (Mapbox 내장 `NavigationControl`은 z-0 가림 → 폐기) |
-| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `hasPlaceSummary` · 공유 URL 복원 |
+| [`globeExploreNav.js`](../src/pages/Home/lib/globeExploreNav.js) | `readGlobeShareViewFromUrl` — `?lat=&lng=&zoom=` 로드 시 카메라 1회 복원 |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 공유 URL 쓰기(기존) + 복원 · 우상단 3버튼 · `executeFocus` flyTo |
 
-**로컬 QA (2026-06-09 · 미해결 — 다음 세션)**
+**flyTo 최소 줌 (변경 금지)**
 
-| 환경 | 관찰 |
-|------|------|
-| **모바일** | **+만** 보임 (−·나침반 클리핑·겹침 추정) |
-| **데스크톱** | +·−·나침반 보이나 **Summary 열리면 가려짐** (카드 `z-60`·우하단 점유 vs `hasPlaceSummary` 위치 보정 부족) |
+- SSOT: `HomeGlobeMapbox` **`GLOBE_VIEW.flyZoom` = 2.35** — `executeFocus`에서 `Math.max(currentZoom, flyZoom)`.
+- 다회 QA·시행착오로 확정. Phase 2 WIP 중 `HIGH_ZOOM_FULL_REVEAL`(3.0) 시도는 **되돌림** — AI·에이전트 **임의 튜닝 금지**.
+- 자동 회전: 기존 `rotateZoomThreshold`(2.4)만 사용 (줌 ≥3 전용 guard **제거**).
 
-**다음 세션 방향 (코드 수정 전 합의)**
+**우상단 툴바 SSOT**
 
-1. **배치 SSOT** — Summary·MOONi FAB·카테고리 내비·좌하단 범례(1i·3)와 겹치지 않는 고정 슬롯 (후보: 상단 공유/GPS/우주 버튼 열 **통합** · 또는 Summary **좌측 상단** 등).
-2. **버튼 정리** — 기존 `HomeGlobeMapbox` 우상단 3종(공유·현재위치·우주)과 **중복·역할 분리** — zoom/나침반만 남기거나 한 줄 toolbar로 merge.
-3. **모바일** — safe-area·카테고리 `bottom-8` 바와 수직 스택 높이 재계산.
+| 버튼 | 역할 | 노출 |
+|------|------|------|
+| 공유 | 현재 뷰 URL(`lat`/`lng`/`zoom`) 공유·복사 | zen·투어 시네마·(모바일 투어) 제외 |
+| GPS | geolocation flyTo | 동일 |
+| 우주 | 기본 우주 뷰 복귀 | 동일 |
+
+**폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-09 WIP)
 
@@ -209,11 +211,9 @@
 ```
 @.ai-context.md @plans/2026-06-09-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-홈 지구본 Phase 2 UX — 탐색 내비 배치·버튼 통합 (Phase 3 hull QA는 2 정리 후).
-- 현재: GlobeExploreNavControls (+/−/나침반) z-70 · 줌≥3 · flyTo 3.0.
-- QA: 모바일 +만 보임 · PC Summary 열리면 컨트롤 가려짐 — §Phase 2 표 참고.
-- 과제: Summary·MOONi·범례와 겹치지 않는 슬롯 · 우상단 공유/GPS/우주와 merge·역할 분리 합의 후 구현.
-- Phase 3: patagonia/iceland hull·POI smoke · Phase 1g gateo 스모크는 병행 가능.
+홈 지구본 Phase 3 — 권역 hull·POI smoke (patagonia·iceland·borneo).
+Phase 2 완료 — flyTo min 2.35 변경 금지 · 공유 URL 복원만 유지.
+Phase 1g gateo 스모크 병행 가능.
 ```
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
@@ -232,12 +232,13 @@
 
 1. **한 커밋 = 한 검증 가능 단위** — Gate QA 통과 후 다음 커밋.
 2. **3D 투어는 flyTo-only 금지** — terrain·pitch ON은 버튼 시에만 · `easeTo` bearing 선회.
-3. **버튼은 전 여행지 노출** — 품질은 `globeLandmarks`·category template·`keyframes`로 끌어올림 (도심-only fallback 지양).
-4. **일괄 WIP merge 금지**.
+3. **홈 2D flyTo 줌** — `GLOBE_VIEW.flyZoom`(2.35) **임의 변경 금지** (§Phase 2).
+4. **버튼은 전 여행지 노출** — 품질은 `globeLandmarks`·category template·`keyframes`로 끌어올림 (도심-only fallback 지양).
+5. **일괄 WIP merge 금지**.
 
 ### Phase 2~4
 
-- **2**: **WIP** — [`GlobeExploreNavControls.jsx`](../src/pages/Home/components/GlobeExploreNavControls.jsx) · 배치·기존 3버튼 통합 **다음 세션**
+- **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
 - **3**: **WIP** — [`globeClusterBoundaries.js`](../src/pages/Home/lib/globeClusterBoundaries.js) · hull·sibling POI · QA 대기
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 
