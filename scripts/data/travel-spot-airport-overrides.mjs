@@ -441,10 +441,46 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '대마도(쓰시마·対馬島)는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.'
   },
   kiribati: { primaryIatas: ['TRW'], preferredLinkIata: 'TRW', confidence: 'high', rationale: '타라와 공항' },
-  yap: { primaryIatas: ['YAP'], preferredLinkIata: 'YAP', confidence: 'high', rationale: '야프 국제공항' },
-  chuuk: { primaryIatas: ['TKK'], preferredLinkIata: 'TKK', confidence: 'high', rationale: '추크 국제공항' },
-  kosrae: { primaryIatas: ['KOS'], preferredLinkIata: 'KOS', confidence: 'high', rationale: '코스라에 국제공항' },
-  pohnpei: { primaryIatas: ['PNI'], preferredLinkIata: 'PNI', confidence: 'high', rationale: '폰페이 국제공항' },
+  yap: {
+    primaryIatas: ['YAP', 'HNL'],
+    preferredLinkIata: 'YAP',
+    tripFlightArrivalIata: 'HNL',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'HNL 경유 United 아일랜드 호퍼 후 YAP — Trip HNL·렌터카 YAP',
+    bannerNote:
+      '야프(YAP)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — YAP 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 YAP 도착 기준입니다.'
+  },
+  chuuk: {
+    primaryIatas: ['TKK', 'HNL'],
+    preferredLinkIata: 'TKK',
+    tripFlightArrivalIata: 'HNL',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'HNL 경유 United 아일랜드 호퍼 후 TKK — Trip HNL·렌터카 TKK',
+    bannerNote:
+      '추크(TKK)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — TKK 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 TKK 도착 기준입니다.'
+  },
+  kosrae: {
+    primaryIatas: ['KOS', 'HNL'],
+    preferredLinkIata: 'KOS',
+    tripFlightArrivalIata: 'HNL',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'HNL 경유 United 아일랜드 호퍼 후 KOS — Trip HNL·렌터카 KOS · United 예약 코드 KSA',
+    bannerNote:
+      '코스라에(KOS)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — United 예약 시 목적지 코드 KSA를 사용합니다. 렌터카·픽업·섬 일정은 KOS 도착 기준입니다.'
+  },
+  pohnpei: {
+    primaryIatas: ['PNI', 'HNL'],
+    preferredLinkIata: 'PNI',
+    tripFlightArrivalIata: 'HNL',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'HNL 경유 United 아일랜드 호퍼 후 PNI — Trip HNL·렌터카 PNI',
+    bannerNote:
+      '폰페이(PNI)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.'
+  },
   'kamchatka-peninsula': { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
   kamchatka: { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
   'midway-atoll': {

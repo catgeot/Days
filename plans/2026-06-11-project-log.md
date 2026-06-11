@@ -37,44 +37,39 @@
 
 `rentalAirportHubs.js`(신규 IATA만) → `overrides.mjs` → `npm run generate:airports` → `npm run audit:airports` (`none: 0`)
 
+**2차 항공·분할 예약** 추가 시: [`travel-spots-management.md`](./travel-spots-management.md) **§3.1** — `flight-booking-overrides.mjs` → `npm run generate:flights` (공항 overrides와 **동시** 갱신)
+
 **다중공항**: `searchHintIatas` + `bannerNote` · 경유지는 `bannerNote`만 · `preferredLinkIata` = 렌터카·픽업 최종 · **`tripFlightArrivalIata`** = Trip `aAirportCode`(국제선 관문, 검색 가능 구간)
 
-### 완료 (2026-06-11 · 공항 overrides)
+### 완료 (2026-06-11 · flight tier + UI)
 
-| slug | 렌터카·픽업 | Trip 항공 | 비고 |
-|------|-------------|-----------|------|
-| `socotra` | **SCT** | **AUH** | 허브 SCT 추가 · 전세기 |
-| `marshall-islands` | **MAJ** | **HNL** | 허브 MAJ 추가 · Island Hopper |
+| slug | tier | Trip | 2차·공식 |
+|------|------|------|----------|
+| yap·chuuk·pohnpei·kosrae·marshall-islands | `segmented` | HNL | United HNL→* (kosrae: **KSA**) |
+| socotra | `agency-only` | AUH | SCT 에이전시 안내 |
 
-- **`tripFlightArrivalIata`**: overrides → `generate:airports` → `resolvePlannerFlightArrivalIata()` (`rentalAirportMatch` + `affiliate.getPlannerFlightArrivalIata`)
+- **UI**: `FlightOfficialBookingWidget` · Trip tier 디스클레이머 · 배너 「항공권 팁 확인」→ `#planner-prep-flight`
+- **marshall-islands**: `citiesData` slug hydration + `resolveFlightBookingSlug` alias
 
-### 다음 세션 (2026-06-11 기준)
+### 다음 세션 (2026-06-11 종료 기준)
 
 | 상태 | 작업 | 메모 |
 |------|------|------|
-| ⏳ **우선** | **OTA 미지원 항공 — 공식 예약 링크 tier** | 아래 「공식 예약 링크 검토」·제시어 **E** |
-| ✅ | `socotra`, `marshall-islands` | 위 표 |
-| ⏳ | `yap`, `chuuk`, `pohnpei`, `kosrae` | Micronesia · United HNL→{YAP\|TKK\|PNI\|KOS} · `tripFlightArrivalIata: HNL` |
-| ⏳ | `beijing`, `tokyo` 등 | 툴킷 vs 배너·Trip 검수 |
+| ⏳ **우선** | `beijing`, `tokyo` 등 | 툴킷 vs 배너·Trip `aAirportCode` 검수 |
 | ⏳ | `seoul` | multi · GMP 후보 |
+| ⏳ | 2차 항공 추가 slug | §3.1 — airport + flight overrides 동시 · United URL QA |
+| ✅ | Micronesia·socotra·flight tier 1단계 | United QA · generate:flights |
 
 **QA**: `/place/{slug}` 렌터카 배너 = 최종 IATA · Trip 캡션 = `tripFlightArrivalIata` · 툴킷 STEP 최종 공항 일치
 
-### 공식 예약 링크 검토 (다음 세션 착수 — **미구현**)
+### 공식 예약 링크 tier (2026-06-11 ✅ 1단계)
 
-**배경**: YAP·TKK·PNI·MAJ 등 Trip/스카이스캐너 직접 검색 실패 → **United 공식 URL** 등 tier SSOT 필요 (페리·`OFFICIAL_VISA_LINKS` 패턴).
+**배경**: Trip/스카이스캐너 미지원 구간 → `flight-booking-overrides` tier + United 등 공식 URL.
 
-**합의된 방향** (채팅 2026-06-11):
+**구현**: `flight-booking-overrides.mjs` → `generate:flights` → `flightBookingMatch.js` · `FlightOfficialBookingWidget` · `FlightSearchCta` 디스클레이머 · 가이드 [`travel-spots-management.md`](./travel-spots-management.md) **§3.1**
 
-1. `scripts/data/flight-booking-overrides.mjs` (또는 airport overrides 확장) — `tier`: `standard` \| `segmented` \| `carrier-only` \| `agency-only` · `officialLinks[]` · `bookingNote`
-2. UI: `ToolkitCard` flight — Trip + 공식 링크 병렬 · tier≠standard 시 Trip 캡션 디스클레이머
-3. Micronesia 5곳 일괄 — United URL **수동 QA 후** SSOT 고정
-4. `socotra` → `agency-only` (AUH Trip 유지 · SCT 에이전시 안내)
-
-**1단계 착수**: United `HNL→{IATA}` 예약 URL 브라우저 QA → 스키마·resolver → Micronesia batch.
-
-- **소코트라** (`socotra`): Trip **AUH** · 렌터카 **SCT** · `audit:airports` none:0
-- **마셜 제도** (`marshall-islands`): Trip **HNL** · 렌터카 **MAJ** · `audit:airports` none:0
+- United HNL→{YAP|TKK|PNI|KSA|MAJ} URL QA · `buildUnitedFlightSearchUrl()` 동적 날짜
+- Micronesia 5 + socotra `agency-only` · yap~kosrae `tripFlightArrivalIata: HNL` · audit airports none:0
 
 ---
 
@@ -115,14 +110,22 @@ travel-spots-management 전체 읽기 금지 — 일지 핸드오프만.
 @.ai-context.md @plans/2026-06-11-project-log.md @plans/travel-spots-management.md
 ```
 
-### E. OTA 미지원 — 공식 예약 링크 tier (다음 세션 우선 · 권장)
+### F. 2차 항공·Trip 검수 이어가기 (다음 세션 권장)
 
 ```text
 @plans/2026-06-11-project-log.md 항공권-이어하기
 
-일지 「공식 예약 링크 검토」절부터: flight-booking-overrides SSOT + ToolkitCard flight UI.
-1단계 United HNL→{YAP|TKK|PNI|KOS|MAJ} URL QA 후 Micronesia 5곳.
-tripFlightArrivalIata·금지 3 준수. rentalAirportMatch TITLE_ARRIVAL 변경은 승인 후.
+일지 「다음 세션」표 ⏳ 순: beijing·tokyo·seoul 툴킷 vs 배너·Trip aAirportCode.
+2차 항공 추가·수정 시 travel-spots-management §3.1 — airport overrides + flight-booking-overrides 동시 · generate:airports + generate:flights.
+금지 3 준수 · rentalAirportMatch TITLE_ARRIVAL 변경은 승인 후.
+```
+
+### E. OTA tier 1단계 (완료 — 참고용)
+
+```text
+@plans/2026-06-11-project-log.md 항공권-이어하기
+
+Micronesia·socotra flight tier 1단계 완료 확인. beijing 등 ⏳ 이어가기.
 ```
 
 **키워드 `항공권-이어하기`**: Rule·에이전트는 일지 **「항공권·배너 세션 — 에이전트 핸드오프」** 절만 우선하고, slug·overrides grep 위주로 진행.

@@ -340,6 +340,8 @@ function Home() {
         if (matchedCity) {
           target = {
             id: `city-${matchedCity.lat}-${matchedCity.lng}`,
+            slug: matchedCity.slug,
+            canonical_slug: matchedCity.slug,
             name: matchedCity.name,
             name_en: matchedCity.name_en,
             lat: matchedCity.lat,

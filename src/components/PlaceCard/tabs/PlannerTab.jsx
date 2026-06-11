@@ -220,7 +220,12 @@ const PlannerTab = ({
     const lastUpdated = targetDate ? formatDate(targetDate) : '';
 
     const rentalPickupBanner = (
-        <RentalPickupBanner location={location} essentialGuide={guideData} className="max-w-md" />
+        <RentalPickupBanner
+            location={location}
+            essentialGuide={guideData}
+            scrollContainerRef={scrollContainerRef}
+            className="max-w-md"
+        />
     );
 
     if (isLoading) {

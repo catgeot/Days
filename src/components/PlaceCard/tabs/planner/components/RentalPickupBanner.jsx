@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Car } from 'lucide-react';
+import { ArrowDown, Car } from 'lucide-react';
 import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports } from '../../../../../utils/rentalAirportMatch.js';
+import { shouldShowOfficialFlightBooking } from '../../../../../utils/flightBookingMatch.js';
+import { PLANNER_FOCUS_ID, scrollPlannerFocusIntoView } from '../../../../../utils/placePlannerFocus.js';
 import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
 
 const airportCopyHitClass =
@@ -36,7 +38,7 @@ function RentalPickupAirportCopyRow({ officialKo, iata, onCopy, highlight = fals
 /**
  * 플래너 상단 「렌터카 · 픽업 · 항공권 기준」 도착 공항 배너
  */
-export default function RentalPickupBanner({ location, essentialGuide, className = '' }) {
+export default function RentalPickupBanner({ location, essentialGuide, scrollContainerRef, className = '' }) {
     const [copyMessage, setCopyMessage] = useState(null);
     const copyTimeoutRef = useRef(0);
 
@@ -68,6 +70,20 @@ export default function RentalPickupBanner({ location, essentialGuide, className
     }, []);
 
     useEffect(() => () => window.clearTimeout(copyTimeoutRef.current), []);
+
+    const showFlightNav = useMemo(
+        () => Boolean(info?.bannerNote?.trim()) || shouldShowOfficialFlightBooking(location),
+        [info?.bannerNote, location],
+    );
+
+    const scrollToFlightSection = useCallback(
+        (focusId) => {
+            scrollPlannerFocusIntoView(scrollContainerRef?.current ?? null, focusId, {
+                headerOffset: 96,
+            });
+        },
+        [scrollContainerRef],
+    );
 
     if (!info) return null;
 
@@ -153,6 +169,19 @@ export default function RentalPickupBanner({ location, essentialGuide, className
                 ) : (
                     <p className={`mt-1 ${plannerCaptionMedium}`}>렌터카·픽업 제휴 링크는 이 공항 기준입니다.</p>
                 )}
+
+                {showFlightNav ? (
+                    <div className="mt-3">
+                        <button
+                            type="button"
+                            onClick={() => scrollToFlightSection(PLANNER_FOCUS_ID.PREP_FLIGHT)}
+                            className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-emerald-300/90 bg-white px-3 py-2 text-xs font-semibold text-emerald-900 shadow-sm transition-colors hover:bg-emerald-100/80 focus-visible:outline focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                        >
+                            항공권 팁 확인
+                            <ArrowDown size={13} className="opacity-70" aria-hidden />
+                        </button>
+                    </div>
+                ) : null}
             </div>
         </div>
     );

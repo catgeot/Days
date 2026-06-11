@@ -6,6 +6,7 @@ export const PLANNER_FOCUS_ID = {
   PREP_SECTION: 'planner-prep',
   PREP_VISA: 'planner-prep-visa',
   PREP_FLIGHT: 'planner-prep-flight',
+  PREP_FLIGHT_BOOKING: 'planner-prep-flight-booking',
   PREP_ACCOMMODATION: 'planner-prep-accommodation',
   PREP_SAFETY: 'planner-prep-safety',
   PRE_TRAVEL_CHECKLIST: 'planner-pre-travel-checklist',

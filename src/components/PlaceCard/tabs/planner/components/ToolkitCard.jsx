@@ -4,6 +4,7 @@ import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import FlightSearchCta from './FlightSearchCta';
+import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
 import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
 import MrtDynamicLink from './MrtDynamicLink';
 import FerryBookingWidget from './FerryBookingWidget';
@@ -128,15 +129,18 @@ const ToolkitCard = ({
                 </div>
             )}
 
-            {/* Trip.com 제휴 항공권 검색 */}
+            {/* Trip.com 제휴 + OTA 미지원 지역 공식 예약 링크 */}
             {type === 'flight' && (
-                <WhiteLabelWidget
-                    location={location}
-                    essentialGuide={essentialGuide}
-                    customTrigger={
-                        <FlightSearchCta location={location} essentialGuide={essentialGuide} />
-                    }
-                />
+                <div id="planner-prep-flight-booking" className="scroll-mt-24">
+                    <FlightOfficialBookingWidget location={location} />
+                    <WhiteLabelWidget
+                        location={location}
+                        essentialGuide={essentialGuide}
+                        customTrigger={
+                            <FlightSearchCta location={location} essentialGuide={essentialGuide} />
+                        }
+                    />
+                </div>
             )}
             {/* 🆕 [Phase 8-8] Direct Ferries 페리 예약 위젯 (2026.04.21) */}
             {type === 'ferry_booking' && (

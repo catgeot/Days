@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-11T12:02:11.791Z",
+    "generatedAt": "2026-06-11T12:18:52.180Z",
     "spotCount": 271,
     "placeIdCount": 620,
     "stats": {
@@ -2829,43 +2829,55 @@
     },
     "yap": {
       "primaryIatas": [
-        "YAP"
+        "YAP",
+        "HNL"
       ],
       "preferredLinkIata": "YAP",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "야프 국제공항"
+      "bannerNote": "야프(YAP)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — YAP 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 YAP 도착 기준입니다.",
+      "rationale": "HNL 경유 United 아일랜드 호퍼 후 YAP — Trip HNL·렌터카 YAP",
+      "tripFlightArrivalIata": "HNL"
     },
     "chuuk": {
       "primaryIatas": [
-        "TKK"
+        "TKK",
+        "HNL"
       ],
       "preferredLinkIata": "TKK",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "추크 국제공항"
+      "bannerNote": "추크(TKK)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — TKK 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 TKK 도착 기준입니다.",
+      "rationale": "HNL 경유 United 아일랜드 호퍼 후 TKK — Trip HNL·렌터카 TKK",
+      "tripFlightArrivalIata": "HNL"
     },
     "kosrae": {
       "primaryIatas": [
-        "KOS"
+        "KOS",
+        "HNL"
       ],
       "preferredLinkIata": "KOS",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "코스라에 국제공항"
+      "bannerNote": "코스라에(KOS)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — United 예약 시 목적지 코드 KSA를 사용합니다. 렌터카·픽업·섬 일정은 KOS 도착 기준입니다.",
+      "rationale": "HNL 경유 United 아일랜드 호퍼 후 KOS — Trip HNL·렌터카 KOS · United 예약 코드 KSA",
+      "tripFlightArrivalIata": "HNL"
     },
     "pohnpei": {
       "primaryIatas": [
-        "PNI"
+        "PNI",
+        "HNL"
       ],
       "preferredLinkIata": "PNI",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "폰페이 국제공항"
+      "bannerNote": "폰페이(PNI)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.",
+      "rationale": "HNL 경유 United 아일랜드 호퍼 후 PNI — Trip HNL·렌터카 PNI",
+      "tripFlightArrivalIata": "HNL"
     },
     "vatican": {
       "primaryIatas": [

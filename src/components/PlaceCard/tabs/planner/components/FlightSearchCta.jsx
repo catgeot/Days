@@ -4,6 +4,7 @@ import {
     TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
     getPlannerFlightArrivalIata,
 } from '../../../../../utils/affiliate';
+import { getFlightTripDisclaimer } from '../../../../../utils/flightBookingMatch';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 
 /**
@@ -18,6 +19,8 @@ const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonPr
     const departure = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT || 'ICN';
 
     const subtitle = useMemo(() => {
+        const tierDisclaimer = getFlightTripDisclaimer(location, { arrivalIata });
+        if (tierDisclaimer) return tierDisclaimer;
         if (arrivalIata) {
             return 'Trip.com에서 출발·도착 공항이 자동 입력됩니다';
         }
