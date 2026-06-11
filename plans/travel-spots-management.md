@@ -266,7 +266,25 @@ npm run audit:ferries      # required/common booking gap 0 목표
 
 **로포텐 예** (`lofoten`): `BOO`·`EVE`·`LKN`·`SVJ` + `searchHintIatas` 4종 + 긴 `bannerNote`. 연동 기본 `EVE`(렌터카 북→남), 페리·모스케네스 루트는 후보에서 `BOO`. **OSL** 등 국제 경유는 `primaryIatas`에 넣지 않고 `bannerNote`만.
 
-**경유만·최종 분리** (보로부두르 `YIA`, 라로통가 `RAR`, 흐바르 `SPU`): 최종 IATA만 `primaryIatas` 단일; 경유(CGK/DPS·AKL·DBV/ZAG 귀국)는 `bannerNote`만.
+**경유만·최종 분리** (보로부두르 `YIA`, 흐바르 `SPU`): 최종 IATA만 `primaryIatas` 단일; 경유(CGK/DPS·DBV/ZAG 귀국)는 `bannerNote`만.
+
+**국제선 관문 + 국내선 최종 (추가 사례, 2026-06-11)**:
+
+| slug / placeId | 경유 | 최종 `preferredLinkIata` |
+|----------------|------|--------------------------|
+| `miyakojima` | 나하 경유 **MMY** | 인천 직항 **SHI** (`searchHintIatas`: SHI·MMY) |
+| `lalibela` | **ADD** 국제선 | **LLI** |
+| `아이투타키` (placeIds) | **AKL**·**RAR** | **AIT** — `travelSpots` slug 없음, `TRAVEL_SPOT_PLACE_ID_OVERRIDES` |
+| `rarotonga` | AKL 등 | **RAR** (라로통가 본섬 목적) |
+
+**툴킷-only 여행지** (`citiesData`·DB `place_id`만, slug 없음): 배너는 `essential_guide` → `extractArrivalIataCodesFromEssentialGuide`가 IATA를 뽑습니다. **허브 미등록 IATA는 무시**되므로 `rentalAirportHubs.js` 등록이 필수(예: **TIA**, **AIT**). 오버라이드 slug가 없으면 `TRAVEL_SPOT_PLACE_ID_OVERRIDES` + (선택) `sync:airports-from-toolkit`.
+
+**타임라인 파서 한글 오탐** (`rentalAirportMatch.js` `TITLE_ARRIVAL_AIRPORT_PHRASES`): 짧은 별칭이 다른 지명에 포함되면 잘못된 허브가 잡힙니다. 수정 시 **허브 등록 + 구체 지명 패턴**을 함께 넣을 것.
+
+| 잘못된 패턴 | 오탐 예 | 올바른 방향 |
+|-------------|---------|-------------|
+| `티라` → JTR | **티라나** | `티라나`→TIA, `티라(?!나)`→JTR |
+| `통가` → TBU | **라로통가** | `(?<![로])통가`→TBU, `라로통가`→RAR |
 
 ---
 
@@ -283,6 +301,9 @@ npm run audit:ferries      # required/common booking gap 0 목표
 - `required`/`common`인데 `bookings`·`fallbacks` 둘 다 비움 → `audit:ferries` gap
 - 항구도시를 `common`으로 분류 → 시드니·함부르크 등 **오탐**. `none` 또는 미등록
 - 크루즈 관광지를 `common`으로 분류 → 하롱베이·우수아이아는 **`cruise_only`**
+- **허브 없이 툴킷 IATA만** → 플래너 배너가 경유 공항만 남음(아이투타키 AIT·티라나 TIA). `rentalAirportHubs` 먼저
+- **`TITLE_ARRIVAL_AIRPORT_PHRASES` 짧은 한글 별칭** → 티라나·라로통가 등 오탐. §5 표 참고
+- **국제 경유지를 `preferredLinkIata`로** → 랄리벨라 ADD·아이투타키 RAR. 최종 공항은 쿠스코 패턴(`preferredLinkIata` = 최종)
 
 ---
 

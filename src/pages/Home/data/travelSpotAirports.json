@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-08T12:24:32.598Z",
+    "generatedAt": "2026-06-11T09:51:22.595Z",
     "spotCount": 271,
     "placeIdCount": 337,
     "stats": {
@@ -1719,15 +1719,15 @@
     },
     "lalibela": {
       "primaryIatas": [
-        "ADD",
-        "LLI"
+        "LLI",
+        "ADD"
       ],
-      "preferredLinkIata": "ADD",
+      "preferredLinkIata": "LLI",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "랄리벨라는 보통 아디스아바바(ADD) 국제선 후 국내선(LLI)으로 이어집니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
-      "rationale": "아디스아바바 국제선·랄리벨라(LLI) 국내선 관문"
+      "bannerNote": "랄리벨라는 보통 인천→아디스아바바(ADD) 국제선 후 랄리벨라(LLI) 국내선으로 이어집니다. 렌터카·픽업·투어는 랄리벨라 공항(LLI) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "ADD 국제선 후 LLI 국내선 — 최종 도착·렌터카 LLI"
     },
     "cusco": {
       "primaryIatas": [
@@ -2242,13 +2242,19 @@
     },
     "miyakojima": {
       "primaryIatas": [
+        "SHI",
         "MMY"
       ],
-      "preferredLinkIata": "MMY",
-      "kind": "single",
+      "preferredLinkIata": "SHI",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "미야코지마 공항"
+      "bannerNote": "인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.",
+      "rationale": "인천 직항 시모지시마(SHI)·나하 경유 미야코(MMY) 관문",
+      "searchHintIatas": [
+        "SHI",
+        "MMY"
+      ]
     },
     "kala-patthar": {
       "primaryIatas": [
@@ -5511,13 +5517,19 @@
     },
     "미야코지마": {
       "primaryIatas": [
+        "SHI",
         "MMY"
       ],
-      "preferredLinkIata": "MMY",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "SHI",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.",
+      "rationale": "인천 직항 시모지시마(SHI)·나하 경유 미야코(MMY) — slug miyakojima와 동일",
+      "searchHintIatas": [
+        "SHI",
+        "MMY"
+      ],
       "placeId": "미야코지마",
       "linkedSlug": "miyakojima"
     },

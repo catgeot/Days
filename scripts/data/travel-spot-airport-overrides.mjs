@@ -78,7 +78,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'grand-canyon': { primaryIatas: ['LAS', 'FLG'], preferredLinkIata: 'LAS', kind: 'multi', confidence: 'high', rationale: '라스베이거스·그랜드캐니언 공항' },
   hampi: { primaryIatas: ['BLR'], preferredLinkIata: 'BLR', confidence: 'high', rationale: '방갈로르 후 장거리 육로' },
   meteora: { primaryIatas: ['SKG'], preferredLinkIata: 'SKG', confidence: 'high', rationale: '테살로니키 공항' },
-  miyakojima: { primaryIatas: ['MMY'], preferredLinkIata: 'MMY', confidence: 'high', rationale: '미야코지마 공항' },
+  miyakojima: {
+    primaryIatas: ['SHI', 'MMY'],
+    preferredLinkIata: 'SHI',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '인천 직항 시모지시마(SHI)·나하 경유 미야코(MMY) 관문',
+    searchHintIatas: ['SHI', 'MMY'],
+    bannerNote:
+      '인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
+  },
   borobudur: {
     primaryIatas: ['YIA'],
     preferredLinkIata: 'YIA',
@@ -203,13 +212,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   },
   'cape-verde': { primaryIatas: ['SID'], preferredLinkIata: 'SID', confidence: 'high', rationale: '살 국제공항' },
   lalibela: {
-    primaryIatas: ['ADD', 'LLI'],
-    preferredLinkIata: 'ADD',
+    primaryIatas: ['LLI', 'ADD'],
+    preferredLinkIata: 'LLI',
     kind: 'multi',
     confidence: 'high',
-    rationale: '아디스아바바 국제선·랄리벨라(LLI) 국내선 관문',
+    rationale: 'ADD 국제선 후 LLI 국내선 — 최종 도착·렌터카 LLI',
     bannerNote:
-      '랄리벨라는 보통 아디스아바바(ADD) 국제선 후 국내선(LLI)으로 이어집니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+      '랄리벨라는 보통 인천→아디스아바바(ADD) 국제선 후 랄리벨라(LLI) 국내선으로 이어집니다. 렌터카·픽업·투어는 랄리벨라 공항(LLI) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
   galapagos: {
     primaryIatas: ['GPS', 'GYE'],
@@ -615,5 +624,24 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
     rationale: 'LIM 국제선 후 CUZ 국내선 — slug machu-picchu와 동일'
+  },
+  미야코지마: {
+    primaryIatas: ['SHI', 'MMY'],
+    preferredLinkIata: 'SHI',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '인천 직항 시모지시마(SHI)·나하 경유 미야코(MMY) — slug miyakojima와 동일',
+    searchHintIatas: ['SHI', 'MMY'],
+    bannerNote:
+      '인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
+  },
+  아이투타키: {
+    primaryIatas: ['AIT', 'RAR'],
+    preferredLinkIata: 'AIT',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT',
+    bannerNote:
+      '아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.'
   },
 };

@@ -174,7 +174,15 @@ export const RENTAL_AIRPORT_HUBS = [
     lat: -21.2027,
     lng: -159.8056,
     radiusKm: 80,
-    aliases: ['rarotonga', '라로통가', 'rar', 'cook islands', '쿡 제도']
+    aliases: ['rarotonga', '라로통가', 'rar']
+  },
+  {
+    iata: 'AIT',
+    officialKo: '아이투타키 공항',
+    lat: -18.8509,
+    lng: -159.7642,
+    radiusKm: 60,
+    aliases: ['aitutaki', '아이투타키', 'ait', 'cook islands', '쿡 제도']
   },
   { iata: 'CHC', officialKo: '크라이스트처치공항', lat: -43.4894, lng: 172.5324, radiusKm: 200, aliases: ['christchurch', '크라이스트처치', 'chc'] },
   { iata: 'NAN', officialKo: '난디국제공항', lat: -17.7554, lng: 177.4434, radiusKm: 250, aliases: ['fiji', '피지', 'nadi', 'nan'] },
@@ -311,6 +319,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'BER', officialKo: '베를린 브란덴부르크공항', lat: 52.3667, lng: 13.5033, radiusKm: 200, aliases: ['berlin', '베를린', 'ber'] },
   { iata: 'BRU', officialKo: '브뤼셀공항', lat: 50.9014, lng: 4.4844, radiusKm: 160, aliases: ['brussels', '브뤼셀', 'bru', 'bruxelles'] },
   { iata: 'FLR', officialKo: '피렌체 페레톨라공항', lat: 43.8100, lng: 11.2051, radiusKm: 100, aliases: ['florence', '피렌체', 'firenze', 'flr'] },
+  {
+    iata: 'TIA',
+    officialKo: '티라나 국제공항',
+    lat: 41.4147,
+    lng: 19.7206,
+    radiusKm: 140,
+    aliases: ['tirana', '티라나', 'tia', 'ohrid', '오흐리드', 'pogradec', '포그라데츠']
+  },
   {
     iata: 'TIV',
     officialKo: '티바트 공항',
@@ -712,7 +728,15 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'BIA', officialKo: '바스티아 파레트 공항', lat: 42.5528, lng: 9.4837, radiusKm: 120, aliases: ['bastia', '바스티아', 'bia', 'corsica', '코르시카'] },
   { iata: 'FLG', officialKo: '그랜드캐니언 공항', lat: 35.9522, lng: -111.6701, radiusKm: 80, aliases: ['grand canyon', '그랜드캐니언', 'flg', 'flagstaff'] },
   { iata: 'SKG', officialKo: '테살로니키 마케도니아 공항', lat: 40.5197, lng: 22.9709, radiusKm: 160, aliases: ['thessaloniki', '테살로니키', 'skg', 'meteora', '메테오라'] },
-  { iata: 'MMY', officialKo: '미야코지마 공항', lat: 24.7828, lng: 125.2951, radiusKm: 100, aliases: ['miyakojima', '미야코지마', 'mmy'] },
+  {
+    iata: 'SHI',
+    officialKo: '시모지시마 공항',
+    lat: 24.8261,
+    lng: 125.1447,
+    radiusKm: 100,
+    aliases: ['shimojishima', '시모지시마', 'shi', 'miyakojima shimojishima']
+  },
+  { iata: 'MMY', officialKo: '미야코 공항', lat: 24.7828, lng: 125.2951, radiusKm: 100, aliases: ['miyako airport', '미야코공항', 'mmy'] },
   {
     iata: 'YIA',
     officialKo: '족자카르타 국제공항',
