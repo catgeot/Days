@@ -166,6 +166,14 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     searchHintIatas: ['HND', 'NRT']
   },
   {
+    phrases: ['shanghai', '상하이', 'pudong', '푸둥', 'hongqiao', '훙차오'],
+    iataCodes: ['PVG', 'SHA'],
+    preferredLinkIata: 'PVG',
+    searchHintIatas: ['PVG', 'SHA'],
+    bannerNote:
+      '상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  {
     phrases: ['bangkok', '방콕', 'suvarnabhumi', '수완나품', 'don mueang', '돈므앙'],
     iataCodes: ['BKK', 'DMK'],
     preferredLinkIata: 'BKK',

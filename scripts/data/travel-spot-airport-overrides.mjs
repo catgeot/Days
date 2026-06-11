@@ -355,6 +355,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '서울은 인천(ICN) 국제선·김포(GMP) 국내·단거리 국제선이 나뉩니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
+  shanghai: {
+    primaryIatas: ['PVG', 'SHA'],
+    preferredLinkIata: 'PVG',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '푸둥(PVG) 국제선·훙차오(SHA) 국내·단거리 국제선',
+    searchHintIatas: ['PVG', 'SHA'],
+    bannerNote:
+      '상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   jeju: { primaryIatas: ['CJU'], preferredLinkIata: 'CJU', confidence: 'high', rationale: '제주국제공항(CJU)' },
   kilimanjaro: {
     primaryIatas: ['JRO', 'NBO'],
@@ -711,5 +721,15 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     rationale: 'SGN 국제선 후 VCS 국내선 — 최종 도착·렌터카 VCS (travelSpots slug 없음)',
     bannerNote:
       '콘다오는 인천→호치민(SGN) 국제선 후 VASCO 등 국내선(SGN-VCS)으로 이어지는 일정이 일반적입니다. 국내선은 소형기·좌석이 적어 조기 예약이 필요합니다. 렌터카·픽업·제휴 링크는 콘다오 공항(VCS) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 검색어를 맞춰 주세요.'
+  },
+  상하이: {
+    primaryIatas: ['PVG', 'SHA'],
+    preferredLinkIata: 'PVG',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '푸둥(PVG)·훙차오(SHA) — slug shanghai와 동일',
+    searchHintIatas: ['PVG', 'SHA'],
+    bannerNote:
+      '상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
 };

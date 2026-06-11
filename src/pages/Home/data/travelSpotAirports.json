@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-11T10:48:38.931Z",
+    "generatedAt": "2026-06-11T11:25:48.039Z",
     "spotCount": 271,
-    "placeIdCount": 618,
+    "placeIdCount": 620,
     "stats": {
-      "override": 129,
+      "override": 130,
       "curatedPreserved": 0,
-      "toolkitSync": 142,
+      "toolkitSync": 141,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -964,13 +964,19 @@
     },
     "shanghai": {
       "primaryIatas": [
-        "PVG"
+        "PVG",
+        "SHA"
       ],
       "preferredLinkIata": "PVG",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "푸둥(PVG) 국제선·훙차오(SHA) 국내·단거리 국제선",
+      "searchHintIatas": [
+        "PVG",
+        "SHA"
+      ]
     },
     "kyoto": {
       "primaryIatas": [
@@ -4029,15 +4035,20 @@
     },
     "상하이": {
       "primaryIatas": [
-        "PVG"
+        "PVG",
+        "SHA"
       ],
       "preferredLinkIata": "PVG",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "상하이",
-      "linkedSlug": "shanghai"
+      "bannerNote": "상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "rationale": "푸둥(PVG)·훙차오(SHA) — slug shanghai와 동일",
+      "searchHintIatas": [
+        "PVG",
+        "SHA"
+      ],
+      "placeId": "상하이"
     },
     "델리": {
       "primaryIatas": [

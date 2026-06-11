@@ -15,6 +15,22 @@ alwaysApply: true
    - 페리 SSOT: [`plans/ferry-ssot-validation.md`](plans/ferry-ssot-validation.md)
    - 최근 완료·커밋: [`plans/README.md`](plans/README.md)에 링크된 **최신 일지** 1개만.
 
+## 항공권·배너 — 이어하기 세션 (토큰 절약)
+
+사용자 첫 메시지에 **`항공권-이어하기`** 또는 **`@plans/…-project-log.md`** + slug 지정이 있으면 **전반 파악 생략**:
+
+1. [`.ai-context.md`](.ai-context.md) — **6절 공항 표·3절 금지**만 (전 파일 Read는 1절 유지 규약에 필요한 만큼).
+2. **최신 일지** — **「항공권·배너 세션 — 에이전트 핸드오프」** 절 + 「다음 세션」표 (읽을 것 3 · 금지 3 · 제시어).
+3. 코드 — **대상 slug만** `travel-spot-airport-overrides.mjs` grep · `rentalAirportHubs.js`는 **신규 IATA**일 때만.
+
+**이때 Read 금지**: [`travel-spots-management.md`](plans/travel-spots-management.md) **전체** · `travelSpotAirports.json` / `travelSpots.js` **전체** · `rentalAirportMatch.js` (**로직 변경이 필요할 때만**, 사용자 승인 후).
+
+**다중공항·경유 패턴이 불명확할 때만** `travel-spots-management.md` **§5** grep (전문 Read 아님).
+
+**첫 세션·전반 점검** — 사용자가 「관련문서 확인하고」+ 가이드 `@` 연결 시: `.ai-context` + 최신 일지 + `travel-spots-management.md` §3·§5·§6 읽기 OK.
+
+**수정 절차 SSOT**: `overrides.mjs` → `npm run generate:airports` → `npm run audit:airports` (`none: 0`). JSON spots 직접 편집·`RENTAL_MULTI`만 단독 수정 금지.
+
 ## 빠른 금지 사항 (상세는 .ai-context 3~4절)
 
 - `src/pages/Home/data/travelSpots.js` 전체 스캔 금지 → `travelSpots-list.json` 사용
