@@ -3,7 +3,7 @@ import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' 
 
 const toRad = (d) => (d * Math.PI) / 180;
 
-/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: string, bannerNote?: string, searchHintIatas?: string[], klookRentalHomeSearchLabel?: string, klookRentalSearchLabel?: string, klookRentalSearchMode?: string }>} */
+/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: string, bannerNote?: string, searchHintIatas?: string[], klookRentalHomeSearchLabel?: string, klookRentalSearchLabel?: string, klookRentalSearchMode?: string }>} */
 const STATIC_SPOT_AIRPORT_MAP = travelSpotAirportsData.spots ?? {};
 
 /** DB place_toolkit.place_id·사용자 입력 지명 (공식 travelSpots slug 없음 포함) */
@@ -803,6 +803,36 @@ function formatFlightHintIataCodes(iatas) {
   return `${codes.slice(0, -1).join(', ')} 또는 ${codes[codes.length - 1]}`;
 }
 
+function resolveTripFlightArrivalIataFromStaticRow(location, options = {}) {
+  if (options.ignoreStaticAirportMap === true) return null;
+  const row = getTravelSpotAirportRow(location);
+  const code = String(row?.tripFlightArrivalIata ?? '')
+    .trim()
+    .toUpperCase();
+  if (code.length === 3 && hubByIata(code)) return code;
+  return null;
+}
+
+/**
+ * Trip.com·플래너 항공 검색용 도착 IATA — `tripFlightArrivalIata`가 있으면 우선(렌터카 linkHub와 분리).
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {string | null}
+ */
+export function resolvePlannerFlightArrivalIata(location, options = {}) {
+  const fromOverride = resolveTripFlightArrivalIataFromStaticRow(location, options);
+  if (fromOverride) return fromOverride;
+
+  const info = resolveRentalPickupBannerInfo(location, options);
+  if (!info) return null;
+  if (info.kind === 'single') {
+    return typeof info.iata === 'string' && info.iata.length === 3 ? info.iata.toUpperCase() : null;
+  }
+  const code = info.linkHub?.iata || info.airports?.[0]?.iata;
+  return typeof code === 'string' && code.length === 3 ? code.toUpperCase() : null;
+}
+
 /**
  * 항공권 검색 위젯: 도착지명·정식 공항명 대신 해당 여행지 IATA 코드 입력을 권장합니다.
  *
@@ -814,7 +844,8 @@ export function getFlightDestinationSearchHint(location, options = {}) {
   const place =
     location && typeof location.name === 'string' && location.name.trim() ? location.name.trim() : '이 여행지';
   const label = flightHintPlaceLabel(place);
-  const codes = resolveSearchHintIataCodes(location, options);
+  const flightOverride = resolveTripFlightArrivalIataFromStaticRow(location, options);
+  const codes = flightOverride ? [flightOverride] : resolveSearchHintIataCodes(location, options);
 
   if (!codes?.length) {
     return '정확한 항공권 검색을 위해 도착 공항 3자리 코드(IATA)를 입력해 주세요.';

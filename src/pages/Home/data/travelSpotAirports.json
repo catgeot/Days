@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-11T11:25:48.039Z",
+    "generatedAt": "2026-06-11T12:02:11.791Z",
     "spotCount": 271,
     "placeIdCount": 620,
     "stats": {
@@ -7105,26 +7105,32 @@
     },
     "마셜제도": {
       "primaryIatas": [
+        "MAJ",
         "GUM",
         "HNL"
       ],
-      "preferredLinkIata": "GUM",
+      "preferredLinkIata": "MAJ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "rationale": "GUM·HNL 경유 아일랜드 호퍼 후 MAJ — slug marshall-islands와 동일",
+      "tripFlightArrivalIata": "HNL",
       "placeId": "마셜 제도"
     },
     "마셜": {
       "primaryIatas": [
+        "MAJ",
         "GUM",
         "HNL"
       ],
-      "preferredLinkIata": "GUM",
+      "preferredLinkIata": "MAJ",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "rationale": "GUM·HNL 경유 아일랜드 호퍼 후 MAJ — slug marshall-islands와 동일",
+      "tripFlightArrivalIata": "HNL",
       "placeId": "마셜 제도"
     },
     "toronto": {
@@ -9145,24 +9151,30 @@
     },
     "소코트라섬": {
       "primaryIatas": [
+        "SCT",
         "AUH"
       ],
-      "preferredLinkIata": "AUH",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "SCT",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "소코트라는 인천→아부다비(AUH) 국제선 도착 후, 아부다비에서 주 1~2회 운항하는 정부 인가 전세기(주로 Air Arabia)로 소코트라(SCT)에 들어갑니다. 스카이스캐너·Trip.com 등 항공권 검색은 AUH까지, SCT 구간은 현지 투어 에이전시를 통해서만 발권됩니다. 렌터카·픽업·섬 일정은 SCT 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "rationale": "AUH 국제선·전세기 후 SCT 최종 — slug socotra와 동일",
+      "tripFlightArrivalIata": "AUH",
       "placeId": "소코트라 섬"
     },
     "소코트라": {
       "primaryIatas": [
+        "SCT",
         "AUH"
       ],
-      "preferredLinkIata": "AUH",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "SCT",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "소코트라는 인천→아부다비(AUH) 국제선 도착 후, 아부다비에서 주 1~2회 운항하는 정부 인가 전세기(주로 Air Arabia)로 소코트라(SCT)에 들어갑니다. 스카이스캐너·Trip.com 등 항공권 검색은 AUH까지, SCT 구간은 현지 투어 에이전시를 통해서만 발권됩니다. 렌터카·픽업·섬 일정은 SCT 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "rationale": "AUH 국제선·전세기 후 SCT 최종 — slug socotra와 동일",
+      "tripFlightArrivalIata": "AUH",
       "placeId": "소코트라 섬"
     },
     "geo-0.000-0.000": {

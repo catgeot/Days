@@ -241,6 +241,14 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 120,
     aliases: ['santiago de compostela', 'compostela', '콤포스텔라', 'scq', 'lavacolla', '카미노']
   },
+  {
+    iata: 'SCT',
+    officialKo: '소코트라국제공항',
+    lat: 12.6307,
+    lng: 53.9058,
+    radiusKm: 120,
+    aliases: ['socotra', '소코트라', '소코트라섬', 'sct', 'hadiboh', '하디브']
+  },
   { iata: 'BCN', officialKo: '조세프 타라델라 바르셀로나엘프라트공항', lat: 41.2971, lng: 2.0785, radiusKm: 200, aliases: ['barcelona', '바르셀로나', 'bcn'] },
   {
     iata: 'TFS',
@@ -517,6 +525,14 @@ export const RENTAL_AIRPORT_HUBS = [
     lng: 144.7960,
     radiusKm: 80,
     aliases: ['guam', '괌', 'gum', 'tumon', '투몬']
+  },
+  {
+    iata: 'MAJ',
+    officialKo: '마주로 국제공항',
+    lat: 7.0650,
+    lng: 171.2720,
+    radiusKm: 80,
+    aliases: ['majuro', '마주로', 'maj', 'marshall', '마셜', 'marshall islands', '마셜 제도', 'amata kabua']
   },
   {
     iata: 'SPN',

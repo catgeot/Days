@@ -3,6 +3,7 @@
 import { supabase } from '../shared/api/supabase';
 import {
   resolveKlookRentalBannerSearchLabel,
+  resolvePlannerFlightArrivalIata,
   resolveRentalPickupBannerInfo,
 } from './rentalAirportMatch.js';
 
@@ -372,13 +373,7 @@ export const TRIPCOM_DEFAULT_DEPARTURE_AIRPORT = 'ICN';
  * @returns {string | null}
  */
 export function getPlannerFlightArrivalIata(location, options = {}) {
-  const info = resolveRentalPickupBannerInfo(location, options);
-  if (!info) return null;
-  if (info.kind === 'single') {
-    return typeof info.iata === 'string' && info.iata.length === 3 ? info.iata.toUpperCase() : null;
-  }
-  const code = info.linkHub?.iata || info.airports?.[0]?.iata;
-  return typeof code === 'string' && code.length === 3 ? code.toUpperCase() : null;
+  return resolvePlannerFlightArrivalIata(location, options);
 }
 
 function resolveTripcomFlightTracking(options = {}) {

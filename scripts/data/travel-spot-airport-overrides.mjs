@@ -2,7 +2,7 @@
  * 여행지 slug별 도착 공항 수동·검수 매핑 (배너 없음·오탐 보정).
  * IATA는 rentalAirportHubs.js에 등록되어 있어야 런타임·배너에 반영됩니다.
  *
- * @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, kind?: 'single'|'multi', bannerNote?: string, confidence?: string, rationale?: string }>}
+ * @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: 'single'|'multi', bannerNote?: string, confidence?: string, rationale?: string }>}
  */
 export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   hvar: {
@@ -200,8 +200,28 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'victoria-falls': { primaryIatas: ['VFA'], preferredLinkIata: 'VFA', confidence: 'high', rationale: '빅토리아폴스 공항' },
   'raja-ampat': { primaryIatas: ['SOQ'], preferredLinkIata: 'SOQ', confidence: 'high', rationale: '소롱 공항' },
   'peninsula-valdes': { primaryIatas: ['PMY'], preferredLinkIata: 'PMY', confidence: 'high', rationale: '푸에르토마드린' },
+  socotra: {
+    primaryIatas: ['SCT', 'AUH'],
+    preferredLinkIata: 'SCT',
+    tripFlightArrivalIata: 'AUH',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'AUH 국제선·전세기 후 SCT 최종 — Trip AUH·렌터카 SCT 분리',
+    bannerNote:
+      '소코트라는 인천→아부다비(AUH) 국제선 도착 후, 아부다비에서 주 1~2회 운항하는 정부 인가 전세기(주로 Air Arabia)로 소코트라(SCT)에 들어갑니다. 스카이스캐너·Trip.com 등 항공권 검색은 AUH까지, SCT 구간은 현지 투어 에이전시를 통해서만 발권됩니다. 렌터카·픽업·섬 일정은 SCT 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
+  },
   svalbard: { primaryIatas: ['LYR'], preferredLinkIata: 'LYR', confidence: 'high', rationale: '롱위어비엔 공항' },
   madagascar: { primaryIatas: ['TNR'], preferredLinkIata: 'TNR', confidence: 'high', rationale: '안타ananarivo 국제공항' },
+  'marshall-islands': {
+    primaryIatas: ['MAJ', 'GUM', 'HNL'],
+    preferredLinkIata: 'MAJ',
+    tripFlightArrivalIata: 'HNL',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'GUM·HNL 경유 유나이티드 아일랜드 호퍼 후 MAJ 최종 — Trip HNL·렌터카 MAJ',
+    bannerNote:
+      '마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
+  },
   ulaanbaatar: { primaryIatas: ['UBN'], preferredLinkIata: 'UBN', confidence: 'high', rationale: '칭기스칸 국제공항' },
   'diego-garcia': {
     primaryIatas: ['MLE'],
@@ -731,5 +751,25 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     searchHintIatas: ['PVG', 'SHA'],
     bannerNote:
       '상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  '소코트라 섬': {
+    primaryIatas: ['SCT', 'AUH'],
+    preferredLinkIata: 'SCT',
+    tripFlightArrivalIata: 'AUH',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'AUH 국제선·전세기 후 SCT 최종 — slug socotra와 동일',
+    bannerNote:
+      '소코트라는 인천→아부다비(AUH) 국제선 도착 후, 아부다비에서 주 1~2회 운항하는 정부 인가 전세기(주로 Air Arabia)로 소코트라(SCT)에 들어갑니다. 스카이스캐너·Trip.com 등 항공권 검색은 AUH까지, SCT 구간은 현지 투어 에이전시를 통해서만 발권됩니다. 렌터카·픽업·섬 일정은 SCT 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
+  },
+  '마셜 제도': {
+    primaryIatas: ['MAJ', 'GUM', 'HNL'],
+    preferredLinkIata: 'MAJ',
+    tripFlightArrivalIata: 'HNL',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'GUM·HNL 경유 아일랜드 호퍼 후 MAJ — slug marshall-islands와 동일',
+    bannerNote:
+      '마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
   },
 };

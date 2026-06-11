@@ -93,7 +93,10 @@ function rowFromOverride(override) {
     ...(override.klookRentalSearchLabel
       ? { klookRentalSearchLabel: String(override.klookRentalSearchLabel).trim() }
       : {}),
-    ...(override.klookRentalSearchMode ? { klookRentalSearchMode: override.klookRentalSearchMode } : {})
+    ...(override.klookRentalSearchMode ? { klookRentalSearchMode: override.klookRentalSearchMode } : {}),
+    ...(override.tripFlightArrivalIata
+      ? { tripFlightArrivalIata: String(override.tripFlightArrivalIata).trim().toUpperCase() }
+      : {})
   };
 }
 
@@ -168,7 +171,10 @@ function rowFromPlaceIdOverride(override) {
     confidence: override.confidence ?? 'high',
     ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
     ...(override.rationale ? { rationale: override.rationale } : {}),
-    ...(hints.length ? { searchHintIatas: hints } : {})
+    ...(hints.length ? { searchHintIatas: hints } : {}),
+    ...(override.tripFlightArrivalIata
+      ? { tripFlightArrivalIata: String(override.tripFlightArrivalIata).trim().toUpperCase() }
+      : {})
   };
 }
 
