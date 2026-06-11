@@ -120,6 +120,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'CXR', officialKo: '깜란공항', lat: 11.9982, lng: 109.2194, radiusKm: 120, aliases: ['nha trang', '나짱', 'cxr', 'cam ranh'] },
   { iata: 'PQC', officialKo: '푸꾸옥국제공항', lat: 10.2270, lng: 103.9671, radiusKm: 140, aliases: ['phu quoc', '푸꾸옥', 'pqc'] },
   {
+    iata: 'VCS',
+    officialKo: '콘다오 공항',
+    lat: 8.7318,
+    lng: 106.6337,
+    radiusKm: 80,
+    aliases: ['con dao', '콘다오', 'co ong', 'vcs']
+  },
+  {
     iata: 'SAI',
     officialKo: '시엠립 앙코르국제공항',
     lat: 13.7694,
@@ -319,6 +327,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'BER', officialKo: '베를린 브란덴부르크공항', lat: 52.3667, lng: 13.5033, radiusKm: 200, aliases: ['berlin', '베를린', 'ber'] },
   { iata: 'BRU', officialKo: '브뤼셀공항', lat: 50.9014, lng: 4.4844, radiusKm: 160, aliases: ['brussels', '브뤼셀', 'bru', 'bruxelles'] },
   { iata: 'FLR', officialKo: '피렌체 페레톨라공항', lat: 43.8100, lng: 11.2051, radiusKm: 100, aliases: ['florence', '피렌체', 'firenze', 'flr'] },
+  {
+    iata: 'PSA',
+    officialKo: '피사 갈릴레오 갈릴레이공항',
+    lat: 43.6839,
+    lng: 10.3927,
+    radiusKm: 100,
+    aliases: ['pisa', '피사', 'galileo galilei', 'psa']
+  },
   {
     iata: 'TIA',
     officialKo: '티라나 국제공항',
@@ -575,7 +591,15 @@ export const RENTAL_AIRPORT_HUBS = [
   },
   { iata: 'CUN', officialKo: '칸쿤국제공항', lat: 21.0365, lng: -86.8771, radiusKm: 160, aliases: ['cancun', '칸쿤', 'cun'] },
   { iata: 'MEX', officialKo: '멕시코시티국제공항', lat: 19.4363, lng: -99.0721, radiusKm: 220, aliases: ['mexico city', '멕시코시티', 'mex'] },
-  { iata: 'SJO', officialKo: '후안 산타마리아국제공항', lat: 9.9939, lng: -84.2088, radiusKm: 200, aliases: ['costa rica', '코스타리카', 'san jose', 'sjo'] },
+  { iata: 'SJO', officialKo: '후안 산타마리아국제공항', lat: 9.9939, lng: -84.2088, radiusKm: 200, aliases: ['costa rica', '코스타리카', 'san jose', '산호세', 'sjo'] },
+  {
+    iata: 'LIR',
+    officialKo: '리베리아국제공항',
+    lat: 10.5933,
+    lng: -85.5444,
+    radiusKm: 180,
+    aliases: ['liberia', '리베리아', 'guanacaste', '과나카스테', 'lir']
+  },
   { iata: 'LIM', officialKo: '호르헤 차베스국제공항', lat: -12.0219, lng: -77.1143, radiusKm: 200, aliases: ['lima', '리마'] },
   {
     iata: 'GPS',
@@ -790,7 +814,15 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'UBN', officialKo: '칭기스칸 국제공항', lat: 47.6469, lng: 106.8198, radiusKm: 200, aliases: ['ulaanbaatar', '울란바토르', 'ubn', 'mongolia', '몽골'] },
   { iata: 'TIM', officialKo: '모제스 킬랑긴 공항(티미카)', lat: -4.5283, lng: 136.8844, radiusKm: 200, aliases: ['timika', '티미카', 'tim', 'carstensz', '카르스텐츠'] },
   { iata: 'DJJ', officialKo: '센타니 공항', lat: -2.5769, lng: 140.5163, radiusKm: 200, aliases: ['jayapura', '자야푸라', 'djj'] },
-  { iata: 'SID', officialKo: '아밀카라 카브랄 국제공항', lat: 16.7414, lng: -22.9494, radiusKm: 120, aliases: ['sal', '살', 'sid', 'cape verde', '보베르데'] },
+  { iata: 'SID', officialKo: '아밀카라 카브랄 국제공항', lat: 16.7414, lng: -22.9494, radiusKm: 120, aliases: ['sal', '살', 'sid', 'amilcar cabral', '아밀카르'] },
+  {
+    iata: 'RAI',
+    officialKo: '넬슨 만델라 국제공항',
+    lat: 14.9245,
+    lng: -23.4935,
+    radiusKm: 120,
+    aliases: ['praia', '프라이아', 'santiago island', '산티아고섬', 'rai', 'cape verde', '보베르데']
+  },
   { iata: 'ADD', officialKo: '볼레 국제공항', lat: 8.9779, lng: 38.7993, radiusKm: 220, aliases: ['addis ababa', '아디스아바바', 'add'] },
   { iata: 'LLI', officialKo: '랄리벨라 공항', lat: 11.9751, lng: 38.9783, radiusKm: 120, aliases: ['lalibela', '랄리벨라', 'lli'] },
   { iata: 'YZF', officialKo: '옐로나이프 공항', lat: 62.4628, lng: -114.4403, radiusKm: 120, aliases: ['yellowknife', '옐로나이프', 'yzf'] },

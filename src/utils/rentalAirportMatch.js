@@ -32,7 +32,11 @@ function getTravelSpotAirportRow(location) {
 
   for (const k of placeIdLookupKeys(location)) {
     const row = STATIC_PLACE_ID_AIRPORT_MAP[k] ?? STATIC_PLACE_ID_AIRPORT_MAP[normalizePlaceIdKey(k)];
-    if (row?.primaryIatas?.length) return row;
+    if (!row?.primaryIatas?.length) continue;
+    const linkedSlug = row.linkedSlug ? String(row.linkedSlug).toLowerCase() : '';
+    const linkedRow = linkedSlug ? STATIC_SPOT_AIRPORT_MAP[linkedSlug] : null;
+    if (linkedRow && isCuratedStaticAirportRow(linkedRow)) return linkedRow;
+    return row;
   }
   return null;
 }
@@ -446,6 +450,9 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /베를린|berlin/i, iata: 'BER' },
   { re: /브뤼셀|brussels|bruxelles/i, iata: 'BRU' },
   { re: /피렌체|florence|firenze/i, iata: 'FLR' },
+  { re: /피사|pisa(?!\s*ner)/i, iata: 'PSA' },
+  { re: /밀라노|말펜사|malpensa/i, iata: 'MXP' },
+  { re: /피우미치노|fiumicino|레오나르도\s*다\s*빈치/i, iata: 'FCO' },
   { re: /류블랴나|ljubljana|블레드|bled/i, iata: 'LJU' },
   { re: /티바트|tivat/i, iata: 'TIV' },
   { re: /포드고리차|podgorica/i, iata: 'TGD' },
@@ -480,7 +487,13 @@ const TITLE_ARRIVAL_AIRPORT_PHRASES = [
   { re: /부에노스\s*아이레스|buenos\s*aires/i, iata: 'EZE' },
   { re: /나가사키|nagasaki/i, iata: 'NGS' },
   { re: /후쿠오카|fukuoka/i, iata: 'FUK' },
-  { re: /엘칼라파테|el\s*calafate|페리토\s*모레노|perito\s*moreno|\bfte\b/i, iata: 'FTE' }
+  { re: /엘칼라파테|el\s*calafate|페리토\s*모레노|perito\s*moreno|\bfte\b/i, iata: 'FTE' },
+  { re: /산호세|후안\s*산타마리아|juan\s*santamaria|juan\s*santamaría/i, iata: 'SJO' },
+  { re: /리베리아|liberia(?!\s*city)/i, iata: 'LIR' },
+  { re: /아밀카르|amilcar|amílcar/i, iata: 'SID' },
+  { re: /프라이아|praia|넬슨\s*만델라|nelson\s*mandela/i, iata: 'RAI' },
+  { re: /보베르데.*살|살\s*섬/i, iata: 'SID' },
+  { re: /콘다오|con\s*dao|콘옹|co\s*ong/i, iata: 'VCS' }
 ];
 
 function collectPhraseAirportFromTitle(ordered, seen, title, requireArrivalHint) {

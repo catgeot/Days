@@ -8,7 +8,11 @@ import {
   distanceKm,
   resolveRentalPickupBannerInfo
 } from '../src/utils/rentalAirportMatch.js';
-import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from './data/travel-spot-airport-overrides.mjs';
+import {
+  TRAVEL_SPOT_AIRPORT_OVERRIDES,
+  TRAVEL_SPOT_PLACE_ID_OVERRIDES
+} from './data/travel-spot-airport-overrides.mjs';
+import { normalizePlaceKey, placeIdVariants } from './lib/travel-spot-place-resolve.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '../src/pages/Home/data/travelSpotAirports.json');
@@ -146,6 +150,42 @@ for (const [slug, row] of Object.entries(existingSpots)) {
 }
 const preservedPlaceIds = existingAirportMap.placeIds ?? {};
 
+function rowFromPlaceIdOverride(override) {
+  const iatas = (override.primaryIatas ?? []).filter((c) => hubByIata.has(c));
+  if (!iatas.length) return null;
+  const preferred =
+    override.preferredLinkIata && iatas.includes(override.preferredLinkIata)
+      ? override.preferredLinkIata
+      : iatas[0];
+  const hints = Array.isArray(override.searchHintIatas)
+    ? override.searchHintIatas.filter((c) => hubByIata.has(c))
+    : [];
+  return {
+    primaryIatas: iatas,
+    preferredLinkIata: preferred,
+    kind: override.kind ?? (iatas.length > 1 ? 'multi' : 'single'),
+    source: 'curated-override',
+    confidence: override.confidence ?? 'high',
+    ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
+    ...(override.rationale ? { rationale: override.rationale } : {}),
+    ...(hints.length ? { searchHintIatas: hints } : {})
+  };
+}
+
+function mergePlaceIdOverrides(placeIds) {
+  const merged = { ...placeIds };
+  for (const [placeId, override] of Object.entries(TRAVEL_SPOT_PLACE_ID_OVERRIDES)) {
+    const row = rowFromPlaceIdOverride(override);
+    if (!row) continue;
+    const base = { ...row, placeId };
+    for (const v of placeIdVariants(placeId)) {
+      const key = normalizePlaceKey(v);
+      if (key) merged[key] = base;
+    }
+  }
+  return merged;
+}
+
 function primaryIataKey(row) {
   return (row?.primaryIatas ?? []).slice().sort().join(',');
 }
@@ -243,7 +283,7 @@ const output = {
       'generate: overrides.mjs > JSON curated-override(overrides 없을 때) > JSON toolkit-sync > runtime-infer. overrides가 JSON curated와 다르면 overrides 우선(경고 출력).'
   },
   spots: map,
-  placeIds: preservedPlaceIds
+  placeIds: mergePlaceIdOverrides(preservedPlaceIds)
 };
 
 mkdirSync(dirname(OUTPUT_PATH), { recursive: true });

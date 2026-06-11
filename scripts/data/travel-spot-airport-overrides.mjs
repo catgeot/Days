@@ -33,6 +33,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '로포텐으로 가는 항로는 공항마다 역할이 다릅니다. 레크네스(LKN)·스볼바어(SVJ)는 군도 위 공항이라, 국내선 등으로 섬에 직접 도착한 뒤 렌터카·이동을 이어가기 좋습니다. 이베네스(EVE)는 본토(하르스타드·나르비크) 쪽 관문으로 국제·국내 대형 노선이 많고, 차나 버스로 로포텐으로 들어오는 일정이 흔합니다. 보되(BOO)는 로포텐 남쪽 본토에서 페리(예: 보되–모스케네스)나 국내선으로 군도에 이어질 때 자주 쓰입니다. 인천 등에서는 오슬로(OSL) 등 유럽 경유 후 위 공항으로 국내선을 이어 붙입니다. 실제 티켓·일정에 적힌 도착 공항(IATA)을 확인한 뒤, 아래 제휴 링크 검색어도 그 공항에 맞춰 바꿔 주세요.',
   },
+  'costa-rica': {
+    primaryIatas: ['SJO', 'LIR'],
+    preferredLinkIata: 'SJO',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '수도 산호세(SJO)·북서 휴양지 리베리아(LIR) 관문',
+    searchHintIatas: ['SJO', 'LIR'],
+    bannerNote:
+      '코스타리카는 수도 산호세의 후안 산타마리아(SJO) 또는 북서부 휴양지 접근이 편한 리베리아(LIR) 중 일정에 맞게 선택하세요. 미국·캐나다·멕시코 경유가 일반적이며 직항은 없습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   'chichen-itza': { primaryIatas: ['CUN'], preferredLinkIata: 'CUN', confidence: 'high', rationale: '칸쿤 국제공항 후 육로' },
   'annapurna-circuit': { primaryIatas: ['KTM', 'PKR'], preferredLinkIata: 'PKR', kind: 'multi', confidence: 'high', rationale: '카트만두·포카라 관문' },
   bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },
@@ -210,7 +220,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '카르스텐츠 원정은 보통 자카르타(CGK) 또는 발리(DPS) 국제선 후 티미카(TIM) 국내선으로 들어옵니다. 센타니(DJJ)는 자야푸라 관문으로 흔하지 않습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
-  'cape-verde': { primaryIatas: ['SID'], preferredLinkIata: 'SID', confidence: 'high', rationale: '살 국제공항' },
+  'cape-verde': {
+    primaryIatas: ['SID', 'RAI'],
+    preferredLinkIata: 'SID',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '살(SID) 휴양·프라이아(RAI) 행정 — LIS/CMN 국제선 경유',
+    searchHintIatas: ['SID', 'RAI'],
+    bannerNote:
+      '보베르데는 섬마다 공항이 나뉩니다. 휴양·해양 액티비티는 살 섬 아밀카르 카브랄(SID), 행정·문화 중심은 산티아고 섬 프라이아 넬슨 만델라(RAI) 도착이 일반적입니다. 한국에서는 리스본(LIS)·카사블랑카(CMN) 등 경유 후 섬행 직항으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   lalibela: {
     primaryIatas: ['LLI', 'ADD'],
     preferredLinkIata: 'LLI',
@@ -578,6 +597,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '바티칸 시국은 로마 시내 서쪽에 위치한 독립국입니다. 국제선은 로마 피우미치노(FCO) 공항이 관문이며, 시내·바티칸까지 지하철·택시·도보로 이동합니다. 항공권 검색 시 도착지 FCO를 사용하세요.'
   },
+  'la-spezia': {
+    primaryIatas: ['FCO', 'MXP', 'FLR', 'PSA'],
+    preferredLinkIata: 'FCO',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '공항 없는 항구도시 — 로마(FCO)·밀라노(MXP) 국제선 관문, 피렌체(FLR)·피사(PSA)는 기차 이동 단축',
+    searchHintIatas: ['FCO', 'MXP', 'FLR', 'PSA'],
+    bannerNote:
+      '라스페치아·친퀘테레 권역은 공항이 없습니다. 국제선은 로마 피우미치노(FCO) 또는 밀라노 말펜사(MXP) 입국 후 기차로 오는 일정이 가장 흔합니다. 피렌체(FLR)·피사(PSA)로 들어오면 라스페치아까지 기차 시간이 더 짧을 수 있습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
   ubud: {
     primaryIatas: ['DPS'],
     preferredLinkIata: 'DPS',
@@ -643,5 +672,44 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     rationale: 'AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT',
     bannerNote:
       '아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.'
+  },
+  코스타리카: {
+    primaryIatas: ['SJO', 'LIR'],
+    preferredLinkIata: 'SJO',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '수도 산호세(SJO)·북서 휴양지 리베리아(LIR) — slug costa-rica와 동일',
+    searchHintIatas: ['SJO', 'LIR'],
+    bannerNote:
+      '코스타리카는 수도 산호세의 후안 산타마리아(SJO) 또는 북서부 휴양지 접근이 편한 리베리아(LIR) 중 일정에 맞게 선택하세요. 미국·캐나다·멕시코 경유가 일반적이며 직항은 없습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  라스페치아: {
+    primaryIatas: ['FCO', 'MXP', 'FLR', 'PSA'],
+    preferredLinkIata: 'FCO',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '공항 없는 항구도시 — slug la-spezia와 동일',
+    searchHintIatas: ['FCO', 'MXP', 'FLR', 'PSA'],
+    bannerNote:
+      '라스페치아·친퀘테레 권역은 공항이 없습니다. 국제선은 로마 피우미치노(FCO) 또는 밀라노 말펜사(MXP) 입국 후 기차로 오는 일정이 가장 흔합니다. 피렌체(FLR)·피사(PSA)로 들어오면 라스페치아까지 기차 시간이 더 짧을 수 있습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  보베르데: {
+    primaryIatas: ['SID', 'RAI'],
+    preferredLinkIata: 'SID',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '살(SID)·프라이아(RAI) — slug cape-verde와 동일',
+    searchHintIatas: ['SID', 'RAI'],
+    bannerNote:
+      '보베르데는 섬마다 공항이 나뉩니다. 휴양·해양 액티비티는 살 섬 아밀카르 카브랄(SID), 행정·문화 중심은 산티아고 섬 프라이아 넬슨 만델라(RAI) 도착이 일반적입니다. 한국에서는 리스본(LIS)·카사블랑카(CMN) 등 경유 후 섬행 직항으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  콘다오: {
+    primaryIatas: ['VCS', 'SGN'],
+    preferredLinkIata: 'VCS',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'SGN 국제선 후 VCS 국내선 — 최종 도착·렌터카 VCS (travelSpots slug 없음)',
+    bannerNote:
+      '콘다오는 인천→호치민(SGN) 국제선 후 VASCO 등 국내선(SGN-VCS)으로 이어지는 일정이 일반적입니다. 국내선은 소형기·좌석이 적어 조기 예약이 필요합니다. 렌터카·픽업·제휴 링크는 콘다오 공항(VCS) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 검색어를 맞춰 주세요.'
   },
 };

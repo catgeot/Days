@@ -167,7 +167,7 @@ npm run audit:ferries
 ```powershell
 cd c:\dev\days
 npm run sync:airports-from-toolkit   # place_toolkit → travelSpotAirports.json (DB 수정 없음)
-npm run generate:airports            # 툴킷·오버라이드 없는 slug만 추론으로 채움
+npm run generate:airports            # spots 재생성 + TRAVEL_SPOT_PLACE_ID_OVERRIDES → placeIds 병합
 npm run audit:airports
 npm run enrich:airports
 ```
@@ -276,8 +276,12 @@ npm run audit:ferries      # required/common booking gap 0 목표
 | `lalibela` | **ADD** 국제선 | **LLI** |
 | `아이투타키` (placeIds) | **AKL**·**RAR** | **AIT** — `travelSpots` slug 없음, `TRAVEL_SPOT_PLACE_ID_OVERRIDES` |
 | `rarotonga` | AKL 등 | **RAR** (라로통가 본섬 목적) |
+| `costa-rica` | — | **SJO**·**LIR** (`searchHintIatas` 동일, 일정별 선택) |
+| `la-spezia` | — | **FCO** 기본 · **MXP**·**FLR**·**PSA** 후보 (공항 없는 항구, 기차 연결) |
+| `cape-verde` | LIS·CMN 경유 | **SID**·**RAI** (휴양 vs 행정) |
+| `콘다오` (placeIds) | **SGN** 국제선 | **VCS** — 쿠스코 패턴, `searchHintIatas` 생략 |
 
-**툴킷-only 여행지** (`citiesData`·DB `place_id`만, slug 없음): 배너는 `essential_guide` → `extractArrivalIataCodesFromEssentialGuide`가 IATA를 뽑습니다. **허브 미등록 IATA는 무시**되므로 `rentalAirportHubs.js` 등록이 필수(예: **TIA**, **AIT**). 오버라이드 slug가 없으면 `TRAVEL_SPOT_PLACE_ID_OVERRIDES` + (선택) `sync:airports-from-toolkit`.
+**툴킷-only 여행지** (`citiesData`·DB `place_id`만, slug 없음): 배너는 `essential_guide` → `extractArrivalIataCodesFromEssentialGuide`가 IATA를 뽑습니다. **허브 미등록 IATA는 무시**되므로 `rentalAirportHubs.js` 등록이 필수(예: **TIA**, **AIT**, **VCS**). slug가 없으면 `TRAVEL_SPOT_PLACE_ID_OVERRIDES` 등록 후 **`npm run generate:airports`**(JSON `placeIds` 병합) — DB 툴킷 행이 없어도 반영. `placeIds`에 `linkedSlug`만 있고 slug에 curated가 있으면 런타임이 slug 행을 우선(`rentalAirportMatch.js`).
 
 **타임라인 파서 한글 오탐** (`rentalAirportMatch.js` `TITLE_ARRIVAL_AIRPORT_PHRASES`): 짧은 별칭이 다른 지명에 포함되면 잘못된 허브가 잡힙니다. 수정 시 **허브 등록 + 구체 지명 패턴**을 함께 넣을 것.
 
@@ -313,7 +317,7 @@ npm run audit:ferries      # required/common booking gap 0 목표
 |----------|------|
 | `npm run generate:ferries` | `travelSpotFerries.json` 재생성 |
 | `npm run audit:ferries` | 페리 booking gap·DF mismatch 감사 |
-| `npm run generate:airports` | `travelSpotAirports.json` 재생성 |
+| `npm run generate:airports` | `travelSpotAirports.json` 재생성(spots + placeId-only 오버라이드 병합) |
 | `npm run audit:airports` | 배너·지리 갭 감사 JSON |
 | `npm run enrich:airports` | low-confidence·오버라이드 수 리포트만 |
 | `npm run sync:airports-from-toolkit` | DB `place_toolkit` → JSON (읽기만) |
