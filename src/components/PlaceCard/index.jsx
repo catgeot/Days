@@ -50,7 +50,7 @@ const PlaceCard = () => {
       timeoutId = setTimeout(() => {
         console.warn(`[Safe Path] 유효하지 않은 장소 SLUG(${slug}) 접근. 메인으로 이동합니다.`);
         navigate('/', { replace: true });
-      }, 1500);
+      }, 3500);
     }
     return () => clearTimeout(timeoutId);
   }, [contextLocation, slug, navigate]);

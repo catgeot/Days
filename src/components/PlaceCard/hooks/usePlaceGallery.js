@@ -168,9 +168,16 @@ export const usePlaceGallery = (locationSource) => {
         primaryQuery = simpleNameEn || targetSpot.name || '';
         koreanName = targetSpot.name || '';
 
+        const regionSpot =
+          (typeof locationSource === 'object' && locationSource?.galleryRegionSpot) ||
+          (typeof targetSpot === 'object' && targetSpot?.galleryRegionSpot) ||
+          null;
         const country = targetSpot.country_en || targetSpot.country;
-        if (country && primaryQuery && country !== primaryQuery) {
-           backupQuery = `${primaryQuery} ${country}`;
+
+        if (regionSpot?.name_en && primaryQuery && regionSpot.name_en.toLowerCase() !== primaryQuery.toLowerCase()) {
+          backupQuery = `${primaryQuery} ${regionSpot.name_en}`;
+        } else if (country && primaryQuery && country !== primaryQuery) {
+          backupQuery = `${primaryQuery} ${country}`;
         }
     } else {
         primaryQuery = String(targetSpot);

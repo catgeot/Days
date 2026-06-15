@@ -7,15 +7,39 @@ const KEY_PREFIX = 'gateo_place_loc_v1:';
 function isCacheableId(id) {
   if (id == null) return false;
   const s = String(id);
-  return s.startsWith('search-') || s.startsWith('loc-');
+  return s.startsWith('search-') || s.startsWith('loc-') || s.startsWith('label-');
+}
+
+function isCacheableSlug(slug) {
+  if (!slug || typeof slug !== 'string') return false;
+  const s = slug.trim().toLowerCase();
+  return s && !s.startsWith('search-') && !s.startsWith('loc-') && !s.startsWith('city-');
 }
 
 export function cachePlaceLocation(loc) {
-  if (!loc?.id || !isCacheableId(loc.id)) return;
+  if (!loc) return;
   try {
-    sessionStorage.setItem(KEY_PREFIX + String(loc.id), JSON.stringify(loc));
+    if (loc.id && isCacheableId(loc.id)) {
+      sessionStorage.setItem(KEY_PREFIX + String(loc.id), JSON.stringify(loc));
+    }
+    if (isCacheableSlug(loc.slug)) {
+      sessionStorage.setItem(`${KEY_PREFIX}slug:${loc.slug.trim().toLowerCase()}`, JSON.stringify(loc));
+    }
   } catch {
     // quota / private mode
+  }
+}
+
+/** Mapbox 지명·uiPlace slug (예: tahaa) — 즐겨찾기 복원용 */
+export function readCachedPlaceBySlug(slug) {
+  const normalized = String(slug ?? '').trim().toLowerCase();
+  if (!normalized) return null;
+  try {
+    const raw = sessionStorage.getItem(`${KEY_PREFIX}slug:${normalized}`);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
   }
 }
 

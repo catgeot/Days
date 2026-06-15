@@ -390,20 +390,34 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 | 구분 | 데이터·로직 | 용도 |
 |------|-------------|------|
 | **툴킷·DB** | [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) · `mergeCanonicalTravelSpot` | `place_toolkit.place_id` → SSOT slug · 플래너·sync |
-| **지구본 UI** | `uiPlace: true` · `prepareUiLocation` | Mapbox 라벨·역지오코딩 핀 — **표시명·국가 유지**, alias·좌표 스냅 **미적용** |
+| **역지오 country** | [`travelRegionCountry.js`](../src/pages/Home/lib/travelRegionCountry.js) · [`geocoding.js`](../src/pages/Home/lib/geocoding.js) | Nominatim `country=France/US` → **영토명**(FR-PF·US-GU·MH 등 ISO/state) |
+| **지구본 UI** | `uiPlace: true` · `finalizeUiPlacePin` | Mapbox 라벨 — **표시 지명 유지** · country는 역지오+영토복원 · `galleryRegionSpot`만 근처 SSOT/cities |
 
 **클릭 경로** ([`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) · [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx)):
 
 | 경로 | 국가·지명 | SSOT 좌표 스냅 |
 |------|-----------|----------------|
-| Mapbox **지명** 클릭 | 라벨 + 역지오코딩 `country` | 없음 (`uiPlace`) |
-| **지오코딩** 성공(빈 지도) | Nominatim city/country | 없음 (`uiPlace`) |
+| Mapbox **지명** 클릭 | 라벨 + [`travelRegionCountry`](../src/pages/Home/lib/travelRegionCountry.js) | **이름·slug 병합만** (`uiPlace` coord 스냅 차단) · 갤러리 맥락은 근접 SSOT/cities |
+| **지오코딩** 성공(빈 지도·검색) | 쿼리 + geocode + 영토복원 | 검색: 이름 SSOT 매칭 후 coord 스냅 · uiPlace는 coord-only 차단 |
 | **바다·무지명** 클릭 | — | `curatedLocationFromCoords` → 최근접 SSOT/cities |
-| **gateo 마커** 클릭 | 마커 slug | 카탈로그 slug 있으면 좌표 재매칭 **안 함** |
-| **검색** (지오코딩 hit) | 쿼리 + geocode | SSOT **이름** 매칭만 · coord 스냅 없음 |
-| **URL** `loc-`/`search-` | 세션 캐시 | [`index.jsx`](../src/pages/Home/index.jsx) `resolveTravelSpotFromCoords` fallback |
+| **gateo 마커** 클릭 | 마커 slug · SSOT `country`(영토명) | 카탈로그 slug 있으면 좌표 재매칭 **안 함** |
+| **URL** `/place/:slug` | [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) · 세션 캐시 · 즐겨찾기 | `search-`/`loc-`/`label-` · uiPlace slug(`tahaa`) |
 
 **fuzzy**: [`travelSpotResolve.js`](../src/utils/travelSpotResolve.js) — 접두 부분 일치(`porto`⊂`portovecchio`) 차단. 툴킷·검색 SSOT 경로에만 적용.
+
+### 8.1 SSOT `country` — 여행 표기 (宗主国 vs 영토)
+
+플래너·장소 카드·갤러리 backup에 쓰입니다. **정치적 宗主国(미국·영국·프랑스) 단독 표기는 지양** — 영토·섬 이름 우선.
+
+| slug (예) | `country` / `country_en` |
+|-----------|--------------------------|
+| `guam` | 괌 / Guam |
+| `hawaii`, `honolulu` | 하와이 / Hawaii |
+| `midway-atoll` | 미드웨이 환초 / Midway Atoll |
+| `pitcairn-islands` | 핏케언 제도 / Pitcairn Islands |
+| `bora-bora` | 프랑스령 폴리네시아 / French Polynesia |
+
+Mapbox **하위 지명**(Fa'anui 등)은 SSOT 승격 없이 `uiPlace` + `galleryRegionSpot`(근처 `bora-bora`)로 갤러리 backup `{지명} Bora Bora` 처리.
 
 ---
 

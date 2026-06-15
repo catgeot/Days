@@ -16,15 +16,30 @@ import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
 
 const prepareLocation = (loc) => enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(loc));
 const prepareUiLocation = (loc) => enrichLocationWithRentalAirport(loc);
-const prepareResolvedLocation = (loc) =>
-  loc?.uiPlace ? prepareUiLocation(loc) : prepareLocation(loc);
+const prepareResolvedLocation = (loc) => prepareLocation(loc);
 
 const CURATED_PLACES = () => [...TRAVEL_SPOTS, ...(citiesData || [])];
+
+/** Mapbox uiPlace — 지명·좌표 유지, country·갤러리 맥락만 근처 SSOT/cities에서 보강 */
+function finalizeUiPlacePin(pin, lat, lng) {
+  let nearby = resolveTravelSpotFromCoords(lat, lng, TRAVEL_SPOTS);
+  if (!nearby) {
+    nearby = resolveTravelSpotFromCoords(lat, lng, citiesData || []);
+  }
+  const enriched = enrichUiPlaceFromNearbySpot(
+    pin,
+    lat,
+    lng,
+    nearby ? { spot: nearby } : null,
+  );
+  return prepareUiLocation(enriched);
+}
 
 /** 좌표만 알 때 SSOT 연결 — URL 복원·바다/무지명 클릭 fallback 전용 */
 function curatedLocationFromCoords(lat, lng, category) {
@@ -160,7 +175,7 @@ export function useHomeHandlers({
         const addressFromLabelPoint = await getAddressFromCoordinates(lat, lng);
         const slugBase = clickedLabelEn || addressFromLabelPoint?.name_en || '';
 
-        const labelPin = prepareUiLocation({
+        const labelPin = finalizeUiPlacePin({
           id: `label-${lat}-${lng}`,
           slug: formatUrlName(slugBase || clickedLabel),
           lat,
@@ -175,7 +190,7 @@ export function useHomeHandlers({
           display_name: clickedLabel,
           source: 'label',
           uiPlace: true,
-        });
+        }, lat, lng);
 
         addScoutPin(labelPin);
         setSelectedLocation(labelPin);
@@ -192,7 +207,7 @@ export function useHomeHandlers({
         const name_en = addressData?.name_en || '';
         const display_name = addressData.city || addressData.country;
 
-        const realPin = prepareUiLocation({
+        const realPin = finalizeUiPlacePin({
           id: !name_en ? fallbackId : Date.now(),
           slug: name_en ? formatUrlName(name_en) : fallbackId,
           lat,
@@ -206,7 +221,7 @@ export function useHomeHandlers({
           country_en: addressData?.country_en || 'Explore',
           display_name: display_name,
           uiPlace: true,
-        });
+        }, lat, lng);
 
         addScoutPin(realPin);
         setSelectedLocation(realPin);
@@ -660,13 +675,23 @@ export function useHomeHandlers({
         return hintedSpot;
       }
 
-      const normalizedLoc = {
+      const coordSpot = resolveTravelSpotFromCoords(coords.lat, coords.lng);
+      if (coordSpot) {
+        const snapped = {
+          ...coordSpot,
+          type: 'temp-base',
+          category: coordSpot.category || category,
+          originalQuery: query,
+        };
+        handleLocationSelect(snapped);
+        return snapped;
+      }
+
+      const normalizedLoc = finalizeUiPlacePin({
         id: `search-${coords.lat}-${coords.lng}`,
         slug: formatUrlName(coords.name_en || coords.name),
         name: query,
         name_en: coords.name_en || coords.name,
-        country: coords.country || "Explore",
-        country_en: coords.country_en || "Explore",
         lat: coords.lat,
         lng: coords.lng,
         category: category,
@@ -674,7 +699,9 @@ export function useHomeHandlers({
         type: 'temp-base',
         originalQuery: query,
         uiPlace: true,
-      };
+        country: coords.country || "Explore",
+        country_en: coords.country_en || "Explore",
+      }, coords.lat, coords.lng);
       handleLocationSelect(normalizedLoc);
       return normalizedLoc;
     } else {

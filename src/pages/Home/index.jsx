@@ -21,10 +21,11 @@ import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
+import { hydrateLocationFromSavedTrip, resolvePlaceTargetFromSlug } from './lib/placeRouteHydrate';
 import { getSystemPrompt } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromPlaceId, buildSpotLookup } from '../../utils/travelSpotResolve.js';
+import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords } from '../../utils/travelSpotResolve.js';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -34,7 +35,7 @@ function hasValidCoords(loc) {
 }
 
 /** /place/:slug 복귀 시 지구본 포커스용 — 연관 키워드 점프 후 ref/state race 대비 */
-function resolveFocusLocationFromPlacePath(pathname, category) {
+function resolveFocusLocationFromPlacePath(pathname, category, savedTrips = []) {
   let match = matchPath({ path: '/place/:slug' }, pathname);
   if (!match) {
     match = matchPath({ path: '/place/:slug/:tab' }, pathname);
@@ -48,45 +49,29 @@ function resolveFocusLocationFromPlacePath(pathname, category) {
     // ignore malformed percent-encoding in slug
   }
 
-  const normalized = slug.toLowerCase();
-  let spot = TRAVEL_SPOTS.find(
-    (s) =>
-      s.slug === normalized ||
-      String(s.id) === slug ||
-      formatUrlName(s.name_en || s.name) === normalized
-  );
-  if (!spot) {
-    const aliasResolved = resolveTravelSpotFromPlaceId(buildSpotLookup(TRAVEL_SPOTS), TRAVEL_SPOTS, normalized);
-    if (aliasResolved?.spot) spot = aliasResolved.spot;
-  }
-  if (spot && hasValidCoords(spot)) {
+  const target = resolvePlaceTargetFromSlug(slug, { savedTrips, category });
+  if (target && hasValidCoords(target)) {
     return enrichLocationWithRentalAirport(
       mergeCanonicalTravelSpot({
-        ...spot,
-        type: 'temp-base',
-        category: spot.category || category,
-      })
+        ...target,
+        id: target.id || `loc-${target.lat}-${target.lng}`,
+        type: target.type || 'temp-base',
+        category: target.category || category,
+      }),
     );
   }
 
-  const city = (citiesData || []).find(
-    (c) => c.slug === normalized || formatUrlName(c.name_en || c.name) === normalized
-  );
-  if (city && hasValidCoords(city)) {
-    return enrichLocationWithRentalAirport(
-      mergeCanonicalTravelSpot({
-        id: `city-${city.lat}-${city.lng}`,
-        slug: city.slug,
-        name: city.name,
-        name_en: city.name_en,
-        lat: city.lat,
-        lng: city.lng,
-        country: city.country || 'Explore',
-        country_en: city.country_en || 'Explore',
-        type: 'temp-base',
-        category,
-      })
-    );
+  const normalized = slug.toLowerCase();
+  if (normalized.startsWith('label-') || normalized.startsWith('loc-') || normalized.startsWith('search-')) {
+    const coordsMatch = slug.match(/-(-?\d+\.?\d*)-(-?\d+\.?\d*)$/);
+    if (coordsMatch) {
+      const parsedLat = parseFloat(coordsMatch[1]);
+      const parsedLng = parseFloat(coordsMatch[2]);
+      const rawSession = mergeCachedPlaceIfCoordsMatch(slug, parsedLat, parsedLng);
+      if (rawSession && hasValidCoords(rawSession)) {
+        return enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(rawSession));
+      }
+    }
   }
 
   return null;
@@ -208,7 +193,7 @@ function Home() {
       return;
     }
     if (routeLocation.pathname.startsWith('/place/')) {
-      const urlFocus = resolveFocusLocationFromPlacePath(routeLocation.pathname, category);
+      const urlFocus = resolveFocusLocationFromPlacePath(routeLocation.pathname, category, savedTrips);
       if (urlFocus && !isSameCanonicalPlace(selectedLocation, urlFocus)) {
         return;
       }
@@ -253,7 +238,7 @@ function Home() {
   /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */
   const goHomeFromPlace = useCallback(() => {
     const focusLoc = routeLocation.pathname.startsWith('/place/')
-      ? resolveFocusLocationFromPlacePath(routeLocation.pathname, category)
+      ? resolveFocusLocationFromPlacePath(routeLocation.pathname, category, savedTrips)
       : null;
     const target = focusLoc || lastGlobeFocusRef.current || selectedLocationRef.current;
     if (target && hasValidCoords(target)) {
@@ -324,45 +309,13 @@ function Home() {
 
       const normalizedTargetSlug = targetSlug.toLowerCase();
 
-      let target = TRAVEL_SPOTS.find(s => s.slug === normalizedTargetSlug || String(s.id) === targetSlug)
-                || savedTrips.find(t => {
-                      const nameEn = t.name_en || t.curation_data?.locationEn || "";
-                      return t.slug === normalizedTargetSlug || formatUrlName(nameEn) === normalizedTargetSlug || String(t.id) === targetSlug;
-                    });
+      let target = resolvePlaceTargetFromSlug(targetSlug, {
+        savedTrips,
+        category,
+        selectedLocation,
+      });
 
-      if (!target) {
-        const aliasResolved = resolveTravelSpotFromPlaceId(buildSpotLookup(TRAVEL_SPOTS), TRAVEL_SPOTS, normalizedTargetSlug);
-        if (aliasResolved?.spot) target = aliasResolved.spot;
-      }
-
-      if (!target) {
-        const matchedCity = (citiesData || []).find(c => c.slug === normalizedTargetSlug);
-        if (matchedCity) {
-          target = {
-            id: `city-${matchedCity.lat}-${matchedCity.lng}`,
-            slug: matchedCity.slug,
-            canonical_slug: matchedCity.slug,
-            name: matchedCity.name,
-            name_en: matchedCity.name_en,
-            lat: matchedCity.lat,
-            lng: matchedCity.lng,
-            country: matchedCity.country || "Explore",
-            country_en: matchedCity.country_en || "Explore",
-            tags: matchedCity.tags || [],
-            desc: matchedCity.desc || ""
-          };
-        }
-      }
-
-      if (!target && selectedLocation && (
-          selectedLocation.slug === normalizedTargetSlug ||
-          String(selectedLocation.id) === targetSlug ||
-          selectedLocation.name === targetSlug
-      )) {
-          target = selectedLocation;
-      }
-
-      if (!target && (targetSlug.startsWith('city-') || targetSlug.startsWith('loc-') || targetSlug.startsWith('search-'))) {
+      if (!target && (targetSlug.startsWith('city-') || targetSlug.startsWith('loc-') || targetSlug.startsWith('search-') || targetSlug.startsWith('label-'))) {
         const coordsMatch = targetSlug.match(/-(-?\d+\.?\d*)-(-?\d+\.?\d*)$/);
         if (coordsMatch) {
           const parsedLat = parseFloat(coordsMatch[1]);
@@ -489,7 +442,7 @@ function Home() {
         return;
       }
       const fromPrevPlacePath = prevPath.startsWith('/place/')
-        ? resolveFocusLocationFromPlacePath(prevPath, category)
+        ? resolveFocusLocationFromPlacePath(prevPath, category, savedTrips)
         : null;
       const focusForHome =
         pendingGlobeHomeFocusRef.current ||
@@ -671,30 +624,8 @@ function Home() {
           onToggleBookmark={toggleBookmark}
           onTripSelect={(trip) => {
             setIsLogoPanelOpen(false);
-            const realSpot = TRAVEL_SPOTS.find(s => s.name === trip.destination || s.name_en === trip.destination);
-            const realCity = !realSpot ? (citiesData || []).find(c => c.name === trip.destination || c.name_en === trip.destination) : null;
-
-            let hydratedLocation;
-            if (realSpot) {
-              hydratedLocation = { ...trip, ...realSpot, name: trip.destination };
-            } else if (realCity) {
-              hydratedLocation = { ...trip, ...realCity, name: trip.destination };
-            } else {
-              hydratedLocation = {
-                ...trip,
-                name: trip.destination || trip.curation_data?.location || "알 수 없는 장소",
-                name_en: trip.curation_data?.locationEn || "",
-                lat: trip.lat || 0,
-                lng: trip.lng || 0,
-                country: "Explore",
-                country_en: "Explore",
-                ai_context: {
-                  summary: trip.curation_data?.description || "",
-                  tags: trip.curation_data?.searchKeyword ? trip.curation_data.searchKeyword.split(" ") : []
-                }
-              };
-            }
-            navigate(`/place/${getPlaceUrlParam(hydratedLocation)}`);
+            const hydrated = hydrateLocationFromSavedTrip(trip, category);
+            if (hydrated) navigateToPlace(hydrated);
           }}
         />
 

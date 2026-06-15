@@ -274,15 +274,16 @@ export function resolveTravelSpotFromLocation(location) {
 /** 검색·핀·지오코딩 location을 SSOT travelSpots 행으로 병합 */
 export function mergeCanonicalTravelSpot(location) {
   if (!location || typeof location !== 'object') return location;
-  // Mapbox 지명·지오코딩·검색 결과 — UI 표시명 유지 (alias·좌표 스냅 제외)
-  if (location.uiPlace) return location;
 
   const resolved = resolveTravelSpotFromLocation(location);
   if (!resolved?.spot) return location;
 
-  const { spot } = resolved;
+  const { spot, matchKind } = resolved;
+  // Mapbox·지오코딩 uiPlace — 이름·별칭·originalQuery는 SSOT 병합, 좌표-only 스냅은 유지 차단
+  if (location.uiPlace && matchKind === 'coords') return location;
+
   const canonicalSlug = spotSlug(spot);
-  return {
+  const merged = {
     ...location,
     id: spot.id ?? location.id,
     canonical_slug: canonicalSlug,
@@ -300,6 +301,10 @@ export function mergeCanonicalTravelSpot(location) {
     tier: spot.tier ?? location.tier,
     continent: spot.continent ?? location.continent,
   };
+
+  if (location.uiPlace) delete merged.uiPlace;
+
+  return merged;
 }
 
 /** 검색·지구본·URL 진입이 동일 SSOT 여행지인지 — slug/canonical_slug 기준 */

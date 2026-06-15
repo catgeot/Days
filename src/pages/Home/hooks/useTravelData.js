@@ -234,7 +234,15 @@ export const useTravelData = (user) => {
             messages: [], 
             is_bookmarked: true,
             is_hidden: false, 
-            category: locationObj.category || 'general'
+            category: locationObj.category || 'general',
+            curation_data: {
+              locationEn: locationObj.name_en || locationObj.name,
+              slug: locationObj.slug || undefined,
+              country: locationObj.country,
+              country_en: locationObj.country_en,
+              uiPlace: Boolean(locationObj.uiPlace),
+              galleryRegionSpot: locationObj.galleryRegionSpot || undefined,
+            },
         };
 
         recordInteraction(locationObj, 'save');

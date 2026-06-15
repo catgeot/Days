@@ -5,6 +5,7 @@
 // 3. 🚨 [Fix/New] name_en 강제 추출: 라우팅에 사용할 수 있도록 응답 데이터에서 영문명을 명시적으로 파싱하여 반환 객체에 추가.
 
 import { KEYWORD_SYNONYMS } from '../data/keywordData';
+import { resolveTravelCountryFromAddresses } from './travelRegionCountry.js';
 
 const RETRY_FILTERS = ["고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구"];
 
@@ -126,14 +127,14 @@ export const getCoordinatesFromAddress = async (query) => {
     // 🚨 [Fix] 영문 우선 추출 로직
     // Nominatim이 'en' 헤더 덕분에 영문 데이터를 주지만, 확실하게 city/town/village 등에서 가져옴
     const englishName = address.city || address.town || address.village || address.island || address.state || address.country || cleanQuery;
-    const countryName = address.country || "";
+    const travelCountry = resolveTravelCountryFromAddresses(address, null);
 
     return {
       lat: parseFloat(topResult.lat),
       lng: parseFloat(topResult.lon),
       name: englishName, // 이제 여기가 "Lombok"이 됨
-      country: countryName,
-      country_en: countryName,
+      country: travelCountry.country,
+      country_en: travelCountry.country_en,
       display_name: topResult.display_name
     };
   } catch (error) {
@@ -167,21 +168,18 @@ export const getAddressFromCoordinates = async (lat, lng) => {
     if (!addressEn && !addressKo) return null;
 
     const cityRawEn = addressEn?.city || addressEn?.town || addressEn?.village || addressEn?.municipality || addressEn?.island || addressEn?.state || "";
-    const countryRawEn = addressEn?.country || "";
-
     const cityRawKo = addressKo?.city || addressKo?.town || addressKo?.village || addressKo?.municipality || addressKo?.island || addressKo?.state || "";
-    const countryRawKo = addressKo?.country || "";
+    const travelCountry = resolveTravelCountryFromAddresses(addressEn, addressKo);
 
-    const resolvedCityEn = standardizeName(cityRawEn) || standardizeName(countryRawEn);
-    const resolvedCountryKo = standardizeName(countryRawKo);
-    const resolvedCityKo = standardizeName(cityRawKo) || resolvedCountryKo;
+    const resolvedCityEn = standardizeName(cityRawEn) || standardizeName(travelCountry.country_en);
+    const resolvedCityKo = standardizeName(cityRawKo) || travelCountry.country;
 
     return {
       fullAddress: dataEn?.display_name || dataKo?.display_name || '',
       city: resolvedCityEn || resolvedCityKo,
-      country: resolvedCountryKo || standardizeName(countryRawEn),
-      country_en: countryRawEn || countryRawKo,
-      name_en: cityRawEn || countryRawEn || cityRawKo || countryRawKo,
+      country: travelCountry.country,
+      country_en: travelCountry.country_en,
+      name_en: cityRawEn || travelCountry.country_en || cityRawKo,
       name_ko: resolvedCityKo
     };
   } catch (error) {
