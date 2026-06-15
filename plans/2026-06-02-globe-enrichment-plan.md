@@ -203,7 +203,7 @@
 |------|------|------|
 | 공유 | 현재 뷰 URL(`lat`/`lng`/`zoom`) 공유·복사 | zen·투어 시네마·(모바일 투어) 제외 |
 | GPS | geolocation flyTo | 동일 |
-| 우주 | 우주 뷰 복귀 — **3D 투어 중**이면 `endTour` 선행(terrain 해제·`globe2d`) 후 이동 | 동일 |
+| 우주 | 우주 뷰 복귀 — **`GLOBE_VIEW.default`(zoom 1.25)** · PC·모바일 동일 · `flyTo` **`moveend`까지 autoRotate 잠금**(회전 `jumpTo`가 줌 애니 중단 방지) · **3D 투어 중**이면 `endTour` 선행(terrain 해제·`globe2d`) 후 이동 | 동일 |
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 

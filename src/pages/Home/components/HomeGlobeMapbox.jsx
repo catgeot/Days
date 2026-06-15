@@ -1041,27 +1041,40 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return;
     }
 
-    const returnZoom = isMobileDevice ? 1 : GLOBE_VIEW.default.zoom;
+    // autoRotate jumpTo가 flyTo 줌 애니메이션을 중간에 끊지 않도록 이동 완료까지 회전·상호작용 잠금
+    autoRotateRef.current = false;
+    if (rotationTimer.current) {
+      clearTimeout(rotationTimer.current);
+      rotationTimer.current = null;
+    }
+    interactionRef.current = true;
+
+    const returnCamera = {
+      center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
+      zoom: GLOBE_VIEW.default.zoom,
+      pitch: GLOBE_VIEW.default.pitch,
+      bearing: GLOBE_VIEW.default.bearing
+    };
+
+    const finishReturn = () => {
+      map.off('moveend', finishReturn);
+      finalizeSpaceReturn();
+    };
+
     try {
       map.stop();
+      map.once('moveend', finishReturn);
       map.flyTo({
-        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
-        zoom: returnZoom,
-        pitch: GLOBE_VIEW.default.pitch,
-        bearing: GLOBE_VIEW.default.bearing,
+        ...returnCamera,
         duration: 1200,
         essential: true
       });
     } catch {
-      map.jumpTo({
-        center: [GLOBE_VIEW.default.longitude, GLOBE_VIEW.default.latitude],
-        zoom: returnZoom,
-        pitch: GLOBE_VIEW.default.pitch,
-        bearing: GLOBE_VIEW.default.bearing
-      });
+      map.off('moveend', finishReturn);
+      map.jumpTo(returnCamera);
+      finalizeSpaceReturn();
     }
-    finalizeSpaceReturn();
-  }, [endTour, finalizeSpaceReturn, globeMode, isMobileDevice]);
+  }, [endTour, finalizeSpaceReturn, globeMode]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {

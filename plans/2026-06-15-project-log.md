@@ -23,3 +23,10 @@
 - **SSOT**: [`globeCategoryFocus.js`](../src/pages/Home/lib/globeCategoryFocus.js) `GLOBE_FACE_CENTER_BY_CATEGORY` — 서울·아프리카·오슬로·미니애폴리스·남미
 - **동작**: 줌·고도 유지 pan flyTo(`GLOBE_FACE_FLY_MS`) · `categoryFaceEpoch` · 공유 URL(`?lng&lat&zoom`) 우선
 - **가이드**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 0 카테고리 면 갱신
+
+## 홈 지구본 — 우주 복귀 버튼 (모바일·PC QA Pass)
+
+- **문제**: 모바일에서 우주 복귀 시 `flyTo`가 `rotateZoomThreshold`(2.4) 이하에서 autoRotate `jumpTo`에 의해 중단 — 목표 zoom 1.25 미도달
+- **조치**: `handleReturnToSpace` — `moveend`까지 autoRotate·interaction 잠금 · PC·모바일 공통 `GLOBE_VIEW.default`(zoom 1.25)
+- **QA**: pinch 확대 후 우주 버튼 — 모바일·PC 초기 지구본 고도 복귀 Pass
+- **가이드**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 2 우주 버튼 SSOT 갱신
