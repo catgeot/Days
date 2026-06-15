@@ -40,7 +40,7 @@
 | [`globeMarkerLayers.js`](../src/pages/Home/lib/globeMarkerLayers.js) | GeoJSON source · **지명(symbol) 레이어** · active-ring(선택 핀) · hit-test — **여행지(major)는 점 없이 지명만** |
 | [`globeZoomPolicy.js`](../src/pages/Home/lib/globeZoomPolicy.js) | zoom tier · merge/collision 임계값 · `HIGH_ZOOM_FULL_REVEAL`(≥3) |
 | [`globeSpotVisibility.js`](../src/pages/Home/lib/globeSpotVisibility.js) | **`denseRegion` 밀집 권역만** 줌·tier 단계 노출 · `denseRegion` 없음(섬·희소)은 **전 tier 노출** |
-| [`globeCategoryFocus.js`](../src/pages/Home/lib/globeCategoryFocus.js) | 카테고리 버튼 → 해당 테마 **카메라 pan** (줌 인 상태 유지 · 마커 필터/흐림 없음) |
+| [`globeCategoryFocus.js`](../src/pages/Home/lib/globeCategoryFocus.js) | 카테고리 5면 pan SSOT — `GLOBE_FACE_CENTER_BY_CATEGORY` · 줌·고도 유지 · 랜덤 진입 `pickRandomGlobeCategory` |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | Mapbox 행정·도시 지명 (줌≥4·눈 ON) — gateo 지명과 별도 |
 | [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 전 카테고리 여행지 노출 · 레이어 bootstrap · 한글 지명 분기 |
 
@@ -52,10 +52,25 @@
 | **표시 형태** | major = **카테고리 색 지명 텍스트** (dot 제거) · 탐색/저장 핀 = 점+라벨 |
 | **밀집 vs 섬** | `travelSpots.denseRegion` **있음** → 줌 tier 1→2→3 · **없음** → tier 구분 없이 노출 |
 | **줌 ≥ 3** | tier 1~3 전체 · 충돌 병합 완화 (`HIGH_ZOOM_FULL_REVEAL`) |
-| **카테고리 버튼** | 마커 숨김/강조 **없음** — tier1 인기 가중 중심으로 **부드러운 flyTo** · AI·저장 trip `category` 태그 유지 |
+| **카테고리 버튼** | 마커 숨김/강조 **없음** — **5면 큐레이션 중심 pan**(서울·아프리카·오슬로·미니애폴리스·남미) · **현재 줌·고도 유지** · 홈 진입·복귀 시 **랜덤 면** · 대양·공해는 사용자 드래그 탐험 · AI·저장 trip `category` 태그 유지 |
 | **지명 겹침** | Mapbox `text-allow-overlap: false` + `symbol-sort-key`(tier 1 우선) |
 
 **데이터**: 새 대륙 밀집 권역 추가 시 `denseRegion` 문자열 부여(예: `western-europe`). 섬·단독 목적지는 `null` 유지.
+
+### 카테고리 5면 pan (2026-06-15 ✅)
+
+| 카테고리 | pan 중심 | 비고 |
+|----------|----------|------|
+| paradise | 서울 | |
+| nature | 아프리카 (동아프리카) | |
+| urban | 오슬로 | 유럽 |
+| culture | 미니애폴리스 | 북미 |
+| adventure | 남미 (브라질 중부) | |
+
+- **진입**: 새로고침·`/place`·`/explore`에서 `/` 복귀(포커스 없음) → `pickRandomGlobeCategory` + `categoryFaceEpoch`
+- **이동**: `HomeGlobeMapbox` `flyToCategoryFace` — center만 변경 · `map.getZoom()`·pitch·bearing 유지
+- **예외**: 공유 URL `?lng&lat&zoom` 복원 시 면 pan 생략 · 투어 중 pan 없음
+- **대양**: 버튼 면에 바다가 보이는 구간은 사용자 드래그·줌으로 자연 탐험 (최대 확대 시 불가피)
 
 ---
 

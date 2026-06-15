@@ -27,6 +27,7 @@ import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords } from '../../utils/travelSpotResolve.js';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
+import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -117,17 +118,18 @@ function Home() {
   const [initialQuery, setInitialQuery] = useState(null);
   const [draftInput, setDraftInput] = useState('');
 
-  const CATEGORY_IDS = useMemo(() => ['paradise', 'nature', 'urban', 'culture', 'adventure'], []);
-  const [category, setCategory] = useState(() => {
-    try {
-      const lastIndex = parseInt(localStorage.getItem('gateo_last_category_index') || '-1', 10);
-      const nextIndex = (lastIndex + 1) % 5;
-      localStorage.setItem('gateo_last_category_index', nextIndex.toString());
-      return ['paradise', 'nature', 'urban', 'culture', 'adventure'][nextIndex];
-    } catch {
-      return 'paradise';
-    }
-  });
+  const [category, setCategory] = useState(() => pickRandomGlobeCategory());
+  const [categoryFaceEpoch, setCategoryFaceEpoch] = useState(0);
+
+  const revealRandomGlobeFace = useCallback(() => {
+    setCategory(pickRandomGlobeCategory());
+    setCategoryFaceEpoch((epoch) => epoch + 1);
+  }, []);
+
+  const handleCategorySelect = useCallback((nextCategory) => {
+    setCategory(nextCategory);
+    setCategoryFaceEpoch((epoch) => epoch + 1);
+  }, []);
   const [isPinVisible, setIsPinVisible] = useState(true);
   const [globeTheme, setGlobeTheme] = useState(DEFAULT_GLOBE_THEME);
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
@@ -467,13 +469,9 @@ function Home() {
         return;
       }
 
-      window.setTimeout(() => {
-        if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
-          globeRef.current.resumeRotation();
-        }
-      }, 150);
+      revealRandomGlobeFace();
     }
-  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -580,6 +578,7 @@ function Home() {
           onGlobeModeChange={setGlobeMode}
           hideTourControls={isTourCinema}
           highlightCategory={category}
+          categoryFaceEpoch={categoryFaceEpoch}
           focusSlug={selectedLocation?.slug ?? null}
         />
       </div>
@@ -594,7 +593,7 @@ function Home() {
           onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
           onLogoClick={() => setIsLogoPanelOpen(true)}
           relatedTags={relatedTags} isTagLoading={isTagLoading}
-          selectedCategory={category} onCategorySelect={setCategory}
+          selectedCategory={category} onCategorySelect={handleCategorySelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}

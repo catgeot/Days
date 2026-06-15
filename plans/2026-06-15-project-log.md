@@ -16,3 +16,10 @@
 - **토글**: 범례 카드 스위치 — 지도 경계 on/off · 카드·토글 레이아웃 고정 · 안내 문구 글자수 맞춤
 - **QA**: 첫 투어 종료 후 경계 · pivot 후 숨김 · 재투어 종료 후 표시 · 토글 on/off — Pass
 - **가이드**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 1i·pivot 갱신
+
+## 홈 지구본 — 카테고리 5면 pan (QA Pass)
+
+- **목표**: 카테고리 버튼으로 대륙권 빠른 이동 · 새로고침·`/place`·`/explore` 복귀 시 랜덤 면 · 대양은 사용자 자유 탐험
+- **SSOT**: [`globeCategoryFocus.js`](../src/pages/Home/lib/globeCategoryFocus.js) `GLOBE_FACE_CENTER_BY_CATEGORY` — 서울·아프리카·오슬로·미니애폴리스·남미
+- **동작**: 줌·고도 유지 pan flyTo(`GLOBE_FACE_FLY_MS`) · `categoryFaceEpoch` · 공유 URL(`?lng&lat&zoom`) 우선
+- **가이드**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 0 카테고리 면 갱신

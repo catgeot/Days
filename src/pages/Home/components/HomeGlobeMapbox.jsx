@@ -59,7 +59,7 @@ import {
   applyEarlyMapboxGlobeLabelSuppress,
   applyMapboxGlobeLabelPolicy
 } from '../lib/globeMapboxLabelPolicy';
-import { getCategoryFocusView } from '../lib/globeCategoryFocus';
+import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 
 function LanguageControl() {
@@ -233,7 +233,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   hideTourControls = false,
   focusSlug = null,
   onFatalError,
-  highlightCategory = null
+  highlightCategory = null,
+  categoryFaceEpoch = 0
 }, ref) => {
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
@@ -261,7 +262,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const reachGeoJsonRef = useRef(null);
   const clusterOverlayRef = useRef(null);
   const hasRestoredShareViewRef = useRef(false);
+  const skipCategoryFaceUntilShareCheckRef = useRef(true);
   const prevHighlightCategoryRef = useRef(null);
+  const prevCategoryFaceEpochRef = useRef(categoryFaceEpoch);
+  const categoryFaceFlyGenRef = useRef(0);
   const highlightCategoryRef = useRef(highlightCategory);
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
@@ -272,6 +276,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [reachBoundariesVisible, setReachBoundariesVisible] = useState(true);
   const reachBoundariesVisibleRef = useRef(true);
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
+  const [mapReady, setMapReady] = useState(false);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
   useEffect(() => {
     reachBoundariesVisibleRef.current = reachBoundariesVisible;
@@ -1094,53 +1099,71 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     highlightCategoryRef.current = highlightCategory;
   }, [highlightCategory]);
 
-  useEffect(() => {
-    if (pauseRender || isZenMode || !highlightCategory) return;
-    if (isTourMode(globeMode) || tourActiveRef.current) return;
-
+  const flyToCategoryFace = useCallback((category) => {
     const map = mapRef.current?.getMap();
-    if (!map) return;
+    if (!map || pauseRender || isTourMode(globeMode) || tourActiveRef.current) return false;
 
-    if (prevHighlightCategoryRef.current === null) {
-      prevHighlightCategoryRef.current = highlightCategory;
-      return;
-    }
-    if (prevHighlightCategoryRef.current === highlightCategory) return;
+    const focus = getCategoryGlobeFaceView(category);
+    if (!focus) return false;
 
-    const catalog = allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
-    const focus = getCategoryFocusView(catalog, highlightCategory);
-    if (!focus) {
-      prevHighlightCategoryRef.current = highlightCategory;
-      return;
-    }
+    const gen = categoryFaceFlyGenRef.current + 1;
+    categoryFaceFlyGenRef.current = gen;
 
     autoRotateRef.current = false;
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
-    const center = map.getCenter();
-    const normalizedLng = normalizeLngNear(center.lng, focus.lng);
-    const currentZoom = map.getZoom();
-    map.flyTo({
-      center: [normalizedLng, focus.lat],
-      // 확대·전체 노출 줌은 유지, 우주 뷰에서만 살짝 당김
-      zoom: Math.max(currentZoom, focus.minZoom ?? 1.85),
-      duration: 2200,
-      essential: true
-    });
-    prevHighlightCategoryRef.current = highlightCategory;
+    const normalizedLng = normalizeLngNear(map.getCenter().lng, focus.lng);
+    const flyMs = GLOBE_FACE_FLY_MS;
+
+    try {
+      map.stop();
+      map.flyTo({
+        center: [normalizedLng, focus.lat],
+        zoom: map.getZoom(),
+        pitch: map.getPitch(),
+        bearing: map.getBearing(),
+        duration: flyMs,
+        essential: true
+      });
+    } catch {
+      map.jumpTo({
+        center: [normalizedLng, focus.lat],
+        zoom: map.getZoom(),
+        pitch: map.getPitch(),
+        bearing: map.getBearing()
+      });
+    }
 
     rotationTimer.current = setTimeout(() => {
+      if (categoryFaceFlyGenRef.current !== gen) return;
       if (!pauseRender && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold) {
         autoRotateRef.current = true;
       }
-    }, 2600);
+    }, flyMs + 400);
+
+    return true;
+  }, [globeMode, pauseRender]);
+
+  useEffect(() => {
+    if (!mapReady || pauseRender || isZenMode || !highlightCategory) return;
+    if (isTourMode(globeMode) || tourActiveRef.current) return;
+    if (skipCategoryFaceUntilShareCheckRef.current) return;
+
+    const categoryChanged = prevHighlightCategoryRef.current !== highlightCategory;
+    const epochChanged = prevCategoryFaceEpochRef.current !== categoryFaceEpoch;
+    if (!categoryChanged && !epochChanged) return;
+
+    prevHighlightCategoryRef.current = highlightCategory;
+    prevCategoryFaceEpochRef.current = categoryFaceEpoch;
+    flyToCategoryFace(highlightCategory);
   }, [
-    allTravelSpots,
+    categoryFaceEpoch,
+    flyToCategoryFace,
     globeMode,
     highlightCategory,
     isZenMode,
-    pauseRender,
-    travelSpots
+    mapReady,
+    pauseRender
   ]);
 
   useEffect(() => {
@@ -1372,8 +1395,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             }
             if (!hasRestoredShareViewRef.current) {
               const shared = readGlobeShareViewFromUrl();
+              hasRestoredShareViewRef.current = true;
               if (shared) {
-                hasRestoredShareViewRef.current = true;
                 autoRotateRef.current = false;
                 try {
                   map.jumpTo({
@@ -1385,8 +1408,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
                 } catch {
                   // Ignore share-view restore failures.
                 }
+                prevHighlightCategoryRef.current = highlightCategoryRef.current;
+                prevCategoryFaceEpochRef.current = categoryFaceEpoch;
               }
             }
+            skipCategoryFaceUntilShareCheckRef.current = false;
+            setMapReady(true);
           }
           syncMapZoom();
           ensureInteractionReady();

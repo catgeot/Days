@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, us
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
-import { getCategoryFocusView } from '../lib/globeCategoryFocus';
+import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS } from '../lib/globeCategoryFocus';
 
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,
@@ -24,12 +24,15 @@ const HomeGlobe = React.memo(forwardRef(({
   pauseRender = false,
   globeTheme = 'deep',
   isZenMode = false,
-  highlightCategory = null
+  highlightCategory = null,
+  categoryFaceEpoch = 0
 }, ref) => {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
   const prevHighlightCategoryRef = useRef(null);
+  const prevCategoryFaceEpochRef = useRef(categoryFaceEpoch);
+  const categoryFaceFlyGenRef = useRef(0);
   const [ripples, setRipples] = useState([]);
 
   const isHoveringMarker = useRef(false);
@@ -250,33 +253,41 @@ const HomeGlobe = React.memo(forwardRef(({
   useEffect(() => {
     if (pauseRender || isZenMode || !highlightCategory || !globeEl.current) return;
 
-    if (prevHighlightCategoryRef.current === null) {
-      prevHighlightCategoryRef.current = highlightCategory;
-      return;
-    }
-    if (prevHighlightCategoryRef.current === highlightCategory) return;
+    const categoryChanged = prevHighlightCategoryRef.current !== highlightCategory;
+    const epochChanged = prevCategoryFaceEpochRef.current !== categoryFaceEpoch;
+    if (!categoryChanged && !epochChanged) return;
 
-    const focus = getCategoryFocusView(travelSpots, highlightCategory);
+    const focus = getCategoryGlobeFaceView(highlightCategory);
     if (!focus) {
       prevHighlightCategoryRef.current = highlightCategory;
+      prevCategoryFaceEpochRef.current = categoryFaceEpoch;
       return;
     }
+
+    const gen = categoryFaceFlyGenRef.current + 1;
+    categoryFaceFlyGenRef.current = gen;
+    const flyMs = GLOBE_FACE_FLY_MS;
+    const currentPov = globeEl.current.pointOfView();
 
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
     globeEl.current.controls().autoRotate = false;
+
     globeEl.current.pointOfView(
-      { lat: focus.lat, lng: focus.lng, altitude: GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT },
-      2200
+      { lat: focus.lat, lng: focus.lng, altitude: currentPov.altitude },
+      flyMs
     );
-    prevHighlightCategoryRef.current = highlightCategory;
 
     rotationTimer.current = setTimeout(() => {
-      const checkAlt = globeEl.current ? globeEl.current.pointOfView().altitude : 99;
-      if (globeEl.current && !pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
+      if (categoryFaceFlyGenRef.current !== gen || !globeEl.current) return;
+      const checkAlt = globeEl.current.pointOfView().altitude;
+      if (!pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
         globeEl.current.controls().autoRotate = true;
       }
-    }, 2600);
-  }, [highlightCategory, isZenMode, pauseRender, travelSpots]);
+    }, flyMs + 400);
+
+    prevHighlightCategoryRef.current = highlightCategory;
+    prevCategoryFaceEpochRef.current = categoryFaceEpoch;
+  }, [categoryFaceEpoch, highlightCategory, isZenMode, pauseRender]);
 
   const renderElement = (d) => {
     const el = document.createElement('div');
