@@ -256,6 +256,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const unbindSpaceDragGuardRef = useRef(null);
   const tourEngineRef = useRef(null);
   const tourActiveRef = useRef(false);
+  const prevTourEngineModeRef = useRef(GLOBE_MODE.GLOBE_2D);
   const reachFetchGenRef = useRef(0);
   const reachGeoJsonRef = useRef(null);
   const clusterOverlayRef = useRef(null);
@@ -268,8 +269,26 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [mobileActionMessage, setMobileActionMessage] = useState('');
   const [reachBoundariesReady, setReachBoundariesReady] = useState(false);
   const [reachBoundariesLoading, setReachBoundariesLoading] = useState(false);
+  const [reachBoundariesVisible, setReachBoundariesVisible] = useState(true);
+  const reachBoundariesVisibleRef = useRef(true);
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
+  useEffect(() => {
+    reachBoundariesVisibleRef.current = reachBoundariesVisible;
+  }, [reachBoundariesVisible]);
+
+  const toggleReachBoundaries = useCallback(() => {
+    setReachBoundariesVisible((prev) => {
+      const next = !prev;
+      reachBoundariesVisibleRef.current = next;
+      const map = mapRef.current?.getMap();
+      if (map && reachGeoJsonRef.current) {
+        setReachBoundaryVisibility(map, next);
+      }
+      return next;
+    });
+  }, []);
+
   const clusterOverlay = useMemo(
     () => buildClusterOverlayGeoJSON(focusSlug),
     [focusSlug]
@@ -649,6 +668,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const clearReachBoundaryState = useCallback(() => {
     reachFetchGenRef.current += 1;
     reachGeoJsonRef.current = null;
+    reachBoundariesVisibleRef.current = true;
+    setReachBoundariesVisible(true);
     const map = mapRef.current?.getMap();
     if (map) {
       clearReachBoundaries(map);
@@ -669,7 +690,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     try {
       setupReachBoundaryLayers(map);
-      setReachBoundaryVisibility(map, true);
+      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
 
       const geojson = await resolveReachBoundaryGeoJSON(lng, lat, MAPBOX_TOKEN);
       if (reachFetchGenRef.current !== gen) return;
@@ -677,8 +698,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       reachGeoJsonRef.current = geojson;
       updateReachBoundarySource(map, geojson);
       setupReachBoundaryLayers(map);
-      setReachBoundaryVisibility(map, true);
-      if (easeCamera) easeCameraForReachReveal(map);
+      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
+      if (easeCamera && reachBoundariesVisibleRef.current) easeCameraForReachReveal(map);
       setReachBoundariesReady(true);
     } catch {
       if (reachFetchGenRef.current !== gen) return;
@@ -686,8 +707,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       reachGeoJsonRef.current = fallback;
       updateReachBoundarySource(map, fallback);
       setupReachBoundaryLayers(map);
-      setReachBoundaryVisibility(map, true);
-      if (easeCamera) easeCameraForReachReveal(map);
+      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
+      if (easeCamera && reachBoundariesVisibleRef.current) easeCameraForReachReveal(map);
       setReachBoundariesReady(true);
     } finally {
       if (reachFetchGenRef.current === gen) {
@@ -702,7 +723,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!map) return;
     setupReachBoundaryLayers(map);
     updateReachBoundarySource(map, reachGeoJsonRef.current);
-    setReachBoundaryVisibility(map, true);
+    setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
   }, [globeMode]);
 
   const syncClusterOverlayLayers = useCallback(() => {
@@ -846,8 +867,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       duration: 550,
       essential: true
     });
-    loadReachBoundaries(centerLng, centerLat, { easeCamera: false });
-  }, [loadReachBoundaries]);
+    // 새 지명 pivot — 투어 재시작 전까지 이전·선행 경계를 지도에 두지 않음 (몰입감)
+    clearReachBoundaryState();
+  }, [clearReachBoundaryState]);
 
   const showMobileActionMessage = useCallback((message) => {
     setMobileActionMessage(message);
@@ -912,11 +934,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [onGlobeClick, showMobileActionMessage]);
 
   const handleTourModeChange = useCallback((mode) => {
+    const prev = prevTourEngineModeRef.current;
+    prevTourEngineModeRef.current = mode;
     tourActiveRef.current = isTourMode(mode);
     setGlobeMode(mode);
     onGlobeModeChange?.(mode);
 
-    if (mode === GLOBE_MODE.TOUR_READY) {
+    if (mode === GLOBE_MODE.TOUR_BOOTSTRAPPING || mode === GLOBE_MODE.TOUR_PLAYING) {
+      clearReachBoundaryState();
+      return;
+    }
+
+    if (mode === GLOBE_MODE.TOUR_READY && prev !== GLOBE_MODE.TOUR_READY) {
       const map = mapRef.current?.getMap();
       const center = map?.getCenter?.();
       if (center) {
@@ -1514,27 +1543,53 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         </div>
       )}
 
-      {globeMode === GLOBE_MODE.TOUR_READY && !isZenMode && typeof document !== 'undefined' && createPortal(
+      {globeMode === GLOBE_MODE.TOUR_READY && (reachBoundariesReady || reachBoundariesLoading) && !isZenMode && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed left-3 bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] z-[55] pointer-events-none md:left-6 md:bottom-8"
-          role="note"
-          aria-label="이동 가능 경계 범례"
+          className="fixed left-3 bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] z-[55] md:left-6 md:bottom-8"
+          role="region"
+          aria-label="이동 가능 경계"
         >
-          <div className="rounded-2xl border border-white/10 bg-black/60 px-3 py-2.5 text-[11px] text-white/85 shadow-lg backdrop-blur-sm">
-            <p className="mb-1.5 font-bold tracking-wide text-white/95">이동 가능 경계</p>
-            <div className="flex items-center gap-2">
-              <span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-emerald-400 shrink-0" aria-hidden="true" />
-              <span>도보 약 {REACH_CONTOUR_MINUTES.walk}분</span>
+          <div className="pointer-events-auto rounded-2xl border border-white/10 bg-black/60 px-3 py-2.5 text-[11px] text-white/85 shadow-lg backdrop-blur-sm">
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <p className="min-w-0 flex-1 font-bold tracking-wide text-white/95">이동 가능 경계</p>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={reachBoundariesVisible}
+                aria-label={reachBoundariesVisible ? '이동 가능 경계 숨기기' : '이동 가능 경계 표시'}
+                disabled={reachBoundariesLoading}
+                onClick={toggleReachBoundaries}
+                className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border p-0 transition-colors disabled:opacity-40 ${
+                  reachBoundariesVisible
+                    ? 'border-emerald-400/50 bg-emerald-500/35'
+                    : 'border-white/20 bg-white/10'
+                }`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-[left] duration-200 ${
+                    reachBoundariesVisible ? 'left-5' : 'left-0.5'
+                  }`}
+                />
+              </button>
             </div>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="inline-block h-0.5 w-4 border-t-2 border-solid border-blue-400 shrink-0" aria-hidden="true" />
-              <span>차량 약 {REACH_CONTOUR_MINUTES.drive}분</span>
+            <div className={reachBoundariesVisible ? '' : 'opacity-45'}>
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-emerald-400 shrink-0" aria-hidden="true" />
+                <span>도보 약 {REACH_CONTOUR_MINUTES.walk}분</span>
+              </div>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="inline-block h-0.5 w-4 border-t-2 border-solid border-blue-400 shrink-0" aria-hidden="true" />
+                <span>차량 약 {REACH_CONTOUR_MINUTES.drive}분</span>
+              </div>
             </div>
             {reachBoundariesLoading && (
               <p className="mt-1.5 text-[10px] text-white/55">경계 계산 중…</p>
             )}
             {reachBoundariesReady && !reachBoundariesLoading && (
-              <p className="mt-1.5 text-[10px] text-white/55">도보: 보행 경로 · 차량: 운전 도달 영역</p>
+              <p className="mt-1.5 text-[10px] text-white/55">
+                {reachBoundariesVisible ? '보행 경로 · 운전 도달 영역' : '지도에 숨김 · 토글로  표시'}
+              </p>
             )}
           </div>
         </div>,

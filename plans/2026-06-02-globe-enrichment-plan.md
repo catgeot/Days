@@ -85,7 +85,7 @@
 - **알프스**: `alpineVillageOrbit` (체르마트 등).
 - **수동 경로**: `keyframes: [...]` — Mapbox Studio export.
 - Skip · **2D 복귀** · 모바일: Summary 숨김 · 지도 탭 탐색 차단 · MOONi FAB·카테고리 내비 숨김.
-- **`TOUR_READY` pivot** (모바일·2026-06-09): 투어 앵커와 다른 지명 클릭 → `pivotTourExplore`(landmark center `easeTo` only · pitch/zoom 유지) · isochrone 갱신 · 바 **3D 투어** 노출. **X** = `endTour`+선택 해제.
+- **`TOUR_READY` pivot** (2026-06-09, **2026-06-15**): 투어 앵커와 다른 지명 클릭 → `pivotTourExplore`(landmark center `easeTo` only · pitch/zoom 유지) · **경계 초기화**(재투어 종료까지 미표시) · 바 **3D 투어** 노출. **X** = `endTour`+선택 해제. 재투어: `TOUR_READY→TOUR_BOOTSTRAPPING` 허용.
 - **투어 중 지명**: `globeMapboxLabelPolicy`와 동일(눈 ON·줌≥4) · **지명·gateo 마커 클릭** 가능 · 빈 지도 탭만 차단 (`HomeGlobeMapbox` `handleGlobeClickInternal`). **지명 클릭 UI**: 역지오코딩 국가·라벨명 · `uiPlace`로 툴킷 alias·좌표 스냅 분리 — [`travel-spots-management.md`](travel-spots-management.md) §8.
 
 ### 데이터 역할 (투어 vs 여행지 SSOT)
@@ -142,12 +142,13 @@
 
 ### Phase 1i — 이동 가능 경계선 (2026-06-09 ✅ 로컬)
 
-**트리거**: 3D 투어 `TOUR_READY` 직후 · 투어 카메라 center 기준 · **2D 복귀** 시 제거.
+**트리거**: 3D 투어 `TOUR_READY` **최초 진입** 직후만 로드 · 투어 카메라 center 기준 · pivot·재투어 시작 시 **초기화** · **2D 복귀** 시 제거.
 
 | 파일 | 역할 |
 |------|------|
 | [`globeReachBoundaries.js`](../src/pages/Home/lib/globeReachBoundaries.js) | Mapbox **Isochrone** fetch · GeoJSON line 레이어 · 오프라인 원형 폴백 · `isReachBoundaryLayer` |
-| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `loadReachBoundaries` · 범례 UI · `easeCameraForReachReveal`(고 pitch 완화) |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `loadReachBoundaries` · 범례+**on/off 토글** · `easeCameraForReachReveal`(고 pitch 완화) |
+| [`globeMode.js`](../src/pages/Home/lib/globeMode.js) | `TOUR_READY` → `TOUR_BOOTSTRAPPING` 재진입 (pivot 후 재투어) |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `gateo-reach-*` 레이어 **지명 정책 숨김 제외** (표시 후 사라짐 회귀 방지) |
 
 **시각 정책** (2026-06-09 조정 — TravelTime·Mapbox·Geoapify 등 Isochrone fill 관행 반영)
@@ -160,7 +161,7 @@
 - 도보 `line-dasharray`는 **paint** 속성 (layout 아님).
 - 차량: 거리 원·도로 지그재그 외곽선만 단독 사용 **금지** (의미·가독성 한계).
 - API 실패 시 geodesic 원형 폴백(도보 1.6km · 차량 24km).
-- **범례**: `TOUR_READY` · `createPortal` 좌하단 · 모바일 투어 시네마에서도 표시 (`hideTourControls`와 분리).
+- **범례**: `TOUR_READY` · `createPortal` 좌하단 · **스위치로 지도 경계 on/off** · 모바일 투어 시네마에서도 표시 (`hideTourControls`와 분리).
 
 **로컬 QA**: 다낭·나트랑·사파 — Skip/종료 후 경계 유지 Pass · 차량 fill·범례 확인.
 
