@@ -34,7 +34,8 @@ const ISLAND_CINEMATIC = {
   hawaii: { overview: [-158.0, 21.5], landing: [-158.05, 21.64], scale: 'large' },
   palawan: { overview: [118.74, 10.0], landing: [118.74, 10.0], scale: 'large' },
   bohol: { overview: [124.0, 9.85], landing: [124.17, 9.82], scale: 'medium' },
-  'cocos-islands': { overview: [96.873, -12.1642], landing: [96.873, -12.1642], scale: 'small' }
+  'cocos-islands': { overview: [96.873, -12.1642], landing: [96.873, -12.1642], scale: 'small' },
+  kiribati: { overview: [173.04, 1.374], landing: [173.147, 1.3816], scale: 'small', startBearing: -40 }
 };
 
 const landmarks = JSON.parse(fs.readFileSync(LANDMARKS_PATH, 'utf8'));

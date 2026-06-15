@@ -63,14 +63,15 @@ export const ISLAND_TOUR_SLUGS = new Set([
   'gili-meno',
   'phu-quoc',
   'el-nido',
-  'honolulu'
+  'honolulu',
+  'kiribati'
 ]);
 
 const ISLAND_KEYWORD_HINTS =
   /섬|아일랜드|아톨|군도|island|islands|atoll|archipelago/i;
 
 function hubForTravelSlug(slug) {
-  const entry = travelSpotAirports[slug];
+  const entry = travelSpotAirports.spots?.[slug];
   const iata = entry?.preferredLinkIata || entry?.primaryIatas?.[0];
   if (!iata) return null;
   return RENTAL_AIRPORT_HUBS.find((h) => h.iata === iata) || null;

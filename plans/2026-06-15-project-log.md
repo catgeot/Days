@@ -30,3 +30,11 @@
 - **조치**: `handleReturnToSpace` — `moveend`까지 autoRotate·interaction 잠금 · PC·모바일 공통 `GLOBE_VIEW.default`(zoom 1.25)
 - **QA**: pinch 확대 후 우주 버튼 — 모바일·PC 초기 지구본 고도 복귀 Pass
 - **가이드**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 2 우주 버튼 SSOT 갱신
+
+## 3D 투어 — 키리바시(Kiribati) 바다 조망·검은 화면 (QA Pass)
+
+- **문제**: `travelSpots` 핀(`-1.33°N`)이 Gilbert·타라와 육지(`~1.35°N`) 남쪽 해상이라 category `islandCinematic` 폴백 시 1~4프레임 **바다 중심·섬 가장자리** · 위성 타일도 얇은 atol이라 풍경 감상은 제한적
+- **조치**: `globeLandmarks.json` `kiribati` — Betio↔TRW **육지 띠 중점** overview(`173.04, 1.374`) · 3~4프레임 동쪽 이동 · 5프레임 TRW 착륙 · `apply-island-cinematic-keyframes.mjs` 등록 · `globeTourResolve` `hubForTravelSlug` → `travelSpotAirports.spots` (투어 `approachPoint`만, **공항 배너 SSOT 무관**)
+- **스캔**: `scripts/scan-tour-ocean-mismatch.mjs` — paradise 섬·핀↔hub 거리 후보 점검
+- **QA**: 사용자 확인 — atol 조망 Pass · 위성 한계는 문서화
+- **가이드**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) 얇은 atol·국가 핀 주의 갱신

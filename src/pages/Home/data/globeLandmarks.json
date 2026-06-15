@@ -3154,5 +3154,72 @@
         "orbit": true
       }
     ]
+  },
+  "kiribati": {
+    "landmarkName": "South Tarawa Atoll — Bonriki (TRW)",
+    "center": [
+      173.04,
+      1.374
+    ],
+    "exaggeration": 1.12,
+    "keyframes": [
+      {
+        "center": [
+          173.04,
+          1.374
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          173.04,
+          1.374
+        ],
+        "zoom": 11,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          173.08,
+          1.378
+        ],
+        "zoom": 11.5,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          173.12,
+          1.38
+        ],
+        "zoom": 11.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          173.147,
+          1.3816
+        ],
+        "zoom": 13.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   }
 }
