@@ -100,7 +100,7 @@ function Home() {
 
   const { scoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
   const { savedTrips, setSavedTrips, activeChatId, setActiveChatId, fetchData, saveNewTrip, updateMessages, updateTripDestination, toggleBookmark, deleteTrip } = useTravelData(user);
-  const { relatedTags, isTagLoading, processSearchKeywords } = useSearchEngine();
+  const { relatedPlaces, isTagLoading, processSearchKeywords } = useSearchEngine();
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [mooniChatEntry, setMooniChatEntry] = useState(false);
@@ -154,6 +154,7 @@ function Home() {
   const {
     handleGlobeClick,
     handleLocationSelect,
+    handleRelatedPlaceClick,
     handleStartChat,
     handleToggleBookmark,
     handleSmartSearch
@@ -586,13 +587,14 @@ function Home() {
       <div className={`transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <SiteUpdateBanner />
         <HomeUI
-          onSearch={handleSmartSearch} onTickerClick={handleSmartSearch} onTagClick={handleSmartSearch}
+          onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}
+          onRelatedPlaceClick={handleRelatedPlaceClick}
           externalInput={draftInput}
           savedTrips={filteredSavedTrips}
           onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
           onOpenChat={(p) => handleStartChat(selectedLocation?.name, p)}
           onLogoClick={() => setIsLogoPanelOpen(true)}
-          relatedTags={relatedTags} isTagLoading={isTagLoading}
+          relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}

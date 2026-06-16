@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, X, Briefcase, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -49,7 +49,22 @@ const PlaceChatPanel = React.memo(({
   const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();
+  const anchorKeyRef = useRef(null);
+  const skipRelatedRefreshRef = useRef(false);
+  const [relatedPlaces, setRelatedPlaces] = useState([]);
   const { primaryName, secondaryName } = getPlaceTitleLines(location);
+
+  const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
+
+  useEffect(() => {
+    const key = getPlaceKey(location);
+    if (skipRelatedRefreshRef.current) {
+      skipRelatedRefreshRef.current = false;
+      return;
+    }
+    anchorKeyRef.current = key;
+    setRelatedPlaces(getRelatedPlaces(location));
+  }, [location?.id, location?.name]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -68,8 +83,14 @@ const PlaceChatPanel = React.memo(({
       }
   };
 
-  const handleRelatedClick = (targetPlace) => {
+  const handleRelatedClick = (targetPlace, isBridge = false) => {
       if (!targetPlace) return;
+
+      if (isBridge) {
+        anchorKeyRef.current = getPlaceKey(targetPlace);
+        setRelatedPlaces(getRelatedPlaces(targetPlace));
+      }
+      skipRelatedRefreshRef.current = true;
 
       if (onNavigateToPlace) {
           onNavigateToPlace(targetPlace);
@@ -119,11 +140,6 @@ const PlaceChatPanel = React.memo(({
       setCopiedType(type);
       setTimeout(() => setCopiedType(''), 1200);
   };
-
-  const relatedPlaces = useMemo(
-    () => getRelatedPlaces(location),
-    [location?.id, location?.name]
-  );
 
   return (
     <div className={`flex flex-col transition-all duration-500
@@ -280,6 +296,7 @@ const PlaceChatPanel = React.memo(({
                         selectedPlace={location}
                         selectedImg={selectedImg}
                         isAiMode={isAiMode}
+                        relatedPlaces={relatedPlaces}
                         onRelatedClick={handleRelatedClick}
                     />
                 )}
@@ -327,7 +344,7 @@ const PlaceChatPanel = React.memo(({
                   {relatedPlaces.map((place, idx) => (
                       <button
                           key={`mob-rel-${idx}`}
-                          onClick={() => handleRelatedClick(place.data)}
+                          onClick={() => handleRelatedClick(place.data, place.isBridge)}
                           className={`shrink-0 px-3 py-1.5 rounded-full border text-[11px] font-medium transition-all active:scale-95 flex items-center gap-1.5 shadow-sm
                               ${place.isBridge
                                 ? 'bg-fuchsia-900/20 border-fuchsia-500/30 text-fuchsia-200 hover:bg-fuchsia-800/40 hover:border-fuchsia-400/50'

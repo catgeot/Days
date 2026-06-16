@@ -15,3 +15,10 @@
 - **조치**: `globeLandmarks.json` `cape-verde` — Sal Island(SID) 중앙·Santa Maria keyframes · `ISLAND_TOUR_SLUGS` 등록 · `scan-tour-ocean-mismatch` 동기화
 - **가이드**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) QA·얇은 atol 예시 갱신
 - **QA**: 사용자 Pass
+
+## 꼬꼬무 연관 여행지 — 홈·갤러리 탐색 SSOT
+
+- **홈**: 좌측 연관 검색어 `KEYWORD_DB` → `getRelatedPlaces`(4 연관 + 1 교두보) · 갤러리와 동일 UI(Compass/Sparkles)
+- **갱신 규칙**: 연관 4곳 클릭 → flyTo·카드만 · **교두보(푸시아)만** 새 5개 세트 · 지구본·URL 직접 진입은 전체 갱신
+- **갤러리**: `PlaceChatPanel` state SSOT · 탭 전환 시 목록 고정(선행 커밋 `db2ee02`) + 교두보만 갱신 동일 적용
+- **QA**: 사용자 Pass

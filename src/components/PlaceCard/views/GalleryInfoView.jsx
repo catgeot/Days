@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react'; 
-import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 
-const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick }) => {
+const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
     
     const isPhotoMode = !!selectedImg;
 
@@ -12,11 +11,6 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick
         }
         return `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
     }, [selectedImg, selectedPlace]);
-
-    const relatedPlaces = useMemo(
-        () => getRelatedPlaces(selectedPlace),
-        [selectedPlace?.id, selectedPlace?.name]
-    );
 
     return (
         <div className="animate-fade-in space-y-8 min-h-[200px] max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
@@ -81,7 +75,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick
                                     {relatedPlaces.map((place, idx) => (
                                         <button 
                                             key={`rel-${idx}`} 
-                                            onClick={() => onRelatedClick && onRelatedClick(place.data)}
+                                            onClick={() => onRelatedClick && onRelatedClick(place.data, place.isBridge)}
                                             className={`group px-3 py-1.5 rounded-lg border transition-all duration-300 font-medium text-[12px] flex items-center gap-1.5 ${
                                                 place.isBridge 
                                                 ? 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-300 hover:text-white hover:border-fuchsia-400/60 hover:bg-fuchsia-500/30'

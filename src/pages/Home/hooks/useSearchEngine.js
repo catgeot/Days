@@ -7,11 +7,11 @@
 // 5. 🚨 [Fix/New] isBridge 플래그: 교두보 장소에 `isBridge: true` 마킹을 달아 UI에서 색상을 반전시킬 수 있도록 프론트엔드로 전달.
 // 6. [Fix/New] Pessimistic First (비관적 방어): 특정 풀(Pool)의 개수가 부족할 경우 앱 크래시를 막기 위해 상대 풀에서 부족분을 채우는 강력한 방어 로직 추가.
 // 7. [Performance] 정적 데이터 사전 계산 및 메모이제이션 강화.
+// 8. [Home] 좌측 연관 검색어 — KEYWORD_DB 대신 getRelatedPlaces(꼬꼬무) SSOT.
 
 import { useState, useCallback } from 'react';
 import { TRAVEL_SPOTS } from '../data/travelSpots'; 
 import { citiesData } from '../data/citiesData'; 
-import { KEYWORD_SYNONYMS, KEYWORD_DB } from '../data/keywordData'; 
 
 const removeSpaces = (str) => (str || '').replace(/\s+/g, '').toLowerCase();
 
@@ -38,10 +38,44 @@ const seededShuffle = (array, seed) => {
 
 // 사전 계산된 정적 데이터 (성능 최적화)
 const ALL_PLACES = [...TRAVEL_SPOTS, ...(citiesData || [])];
-const MASTER_VALID_NAMES = new Set([
-  ...TRAVEL_SPOTS.map(s => s.name),
-  ...(citiesData || []).map(c => c.name)
-]);
+
+/** 문자열·장소 객체 → SSOT 장소 (홈 꼬꼬무 입력 정규화) */
+const resolvePlaceFromInput = (input) => {
+  if (input == null) return null;
+
+  if (typeof input === 'object') {
+    if (input.slug) {
+      const bySlug = ALL_PLACES.find((p) => p.slug === input.slug);
+      if (bySlug) return { ...bySlug, ...input };
+    }
+    if (input.name) {
+      const norm = removeSpaces(input.name);
+      const byName = ALL_PLACES.find(
+        (p) => removeSpaces(p.name) === norm || removeSpaces(p.name_en) === norm
+      );
+      if (byName) return { ...byName, ...input };
+    }
+    if (Number.isFinite(Number(input.lat)) && Number.isFinite(Number(input.lng))) {
+      return input;
+    }
+    return input.name ? input : null;
+  }
+
+  if (typeof input === 'string') {
+    const clean = input.replace('📍', '').trim();
+    if (!clean) return null;
+    const norm = removeSpaces(clean);
+    return ALL_PLACES.find(
+      (p) =>
+        removeSpaces(p.name) === norm ||
+        removeSpaces(p.name_en) === norm ||
+        removeSpaces(p.country) === norm ||
+        removeSpaces(p.country_en) === norm
+    ) || null;
+  }
+
+  return null;
+};
 
 // 🚨 [New] 꼬꼬무 장소 추천 로직 (4:1 유기적 셔플 & Safe Path 적용)
 export const getRelatedPlaces = (currentPlace) => {
@@ -100,70 +134,25 @@ export const getRelatedPlaces = (currentPlace) => {
 };
 
 export const useSearchEngine = () => {
-  const [relatedTags, setRelatedTags] = useState([]);
+  const [relatedPlaces, setRelatedPlaces] = useState([]);
   const [isTagLoading, setIsTagLoading] = useState(false);
 
-  const processSearchKeywords = useCallback(async (query) => {
-    if (!query || typeof query !== 'string' || query.trim() === '') {
-      setRelatedTags([]);
-      return;
-    }
-
+  const processSearchKeywords = useCallback((input) => {
     setIsTagLoading(true);
-
-    const cleanQuery = query.replace("📍", "").trim().toLowerCase();
-    const baseKeyword = KEYWORD_SYNONYMS[cleanQuery] || cleanQuery;
-    const normBase = removeSpaces(baseKeyword);
-
-    const tempSet = new Set();
-
-    Object.entries(KEYWORD_DB).forEach(([parent, children]) => {
-      const normParent = removeSpaces(parent);
-      const normChildren = children.map(removeSpaces);
-
-      if (normParent.includes(normBase)) {
-        tempSet.add(parent); 
-        children.forEach(c => tempSet.add(c)); 
-      }
-
-      if (normChildren.some(c => c.includes(normBase))) {
-        tempSet.add(parent);
-        children.forEach(c => tempSet.add(c));
-      }
-    });
-
-    const targetSpot = TRAVEL_SPOTS.find(s => 
-      removeSpaces(s.name) === normBase || removeSpaces(s.name_en) === normBase
-    );
-
-    TRAVEL_SPOTS.forEach(spot => {
-      if (Array.isArray(spot.keywords)) {
-        const isKeywordMatch = spot.keywords.some(k => removeSpaces(k).includes(normBase));
-        if (isKeywordMatch) tempSet.add(spot.name);
-
-        if (targetSpot && targetSpot.id !== spot.id) {
-          const hasCommonTheme = spot.keywords.some(k => targetSpot.keywords?.includes(k));
-          if (hasCommonTheme) tempSet.add(spot.name);
-        }
-      }
-    });
-
-    MASTER_VALID_NAMES.forEach(name => {
-      if (removeSpaces(name).includes(normBase)) {
-        tempSet.add(name);
-      }
-    });
 
     // 🚨 UI 블로킹 방지를 위한 짧은 딜레이 유지
     setTimeout(() => {
-      const validTags = Array.from(tempSet).filter(tag => MASTER_VALID_NAMES.has(tag));
-      const finalTags = validTags.slice(0, 5);
-      
-      setRelatedTags(finalTags);
-      setIsTagLoading(false);
-    }, 50); 
+      const place = resolvePlaceFromInput(input);
+      if (!place) {
+        setRelatedPlaces([]);
+        setIsTagLoading(false);
+        return;
+      }
 
+      setRelatedPlaces(getRelatedPlaces(place));
+      setIsTagLoading(false);
+    }, 50);
   }, []);
 
-  return { relatedTags, isTagLoading, processSearchKeywords };
+  return { relatedPlaces, isTagLoading, processSearchKeywords };
 };

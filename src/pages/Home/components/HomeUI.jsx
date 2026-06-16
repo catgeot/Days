@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-  User, Search, Ticket, MessageSquare, MapPin, X, Trash2,
+  User, Search, Ticket, MessageSquare, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
   Eye, EyeOff, Droplet, Sun, Moon,
   PenTool,
   Leaf,
-  LogOut
+  LogOut,
+  Sparkles,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
@@ -15,7 +16,7 @@ import { useTrendingData } from '../hooks/useTrendingData';
 
 const HomeUI = React.memo(({
   onSearch: _onSearch, onTickerClick, externalInput, savedTrips: _savedTrips, onTripClick: _onTripClick, onTripDelete: _onTripDelete, onOpenChat, onLogoClick,
-  relatedTags = [], isTagLoading = false, onTagClick,
+  relatedPlaces = [], isTagLoading = false, onRelatedPlaceClick,
   selectedCategory, onCategorySelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
@@ -171,13 +172,27 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {(isTagLoading || relatedTags.length > 0) && (
+      {(isTagLoading || relatedPlaces.length > 0) && (
         <div className="hidden md:flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">
-              {!isTagLoading && relatedTags.map((tag, idx) => (
-              <button key={idx} onClick={() => onTagClick(tag)} className="group relative flex items-center justify-between w-28 p-2 md:w-40 md:p-3 bg-black/30 backdrop-blur-md border border-white/5 rounded-xl hover:bg-white/10 hover:border-blue-500/50 md:hover:w-44 transition-all duration-300 shadow-lg">
+              {!isTagLoading && relatedPlaces.map((place, idx) => (
+              <button
+                key={`${place.name}-${idx}`}
+                onClick={() => onRelatedPlaceClick(place.data, place.isBridge)}
+                className={`group relative flex items-center justify-between w-28 p-2 md:w-40 md:p-3 backdrop-blur-md border rounded-xl md:hover:w-44 transition-all duration-300 shadow-lg ${
+                  place.isBridge
+                    ? 'bg-fuchsia-500/10 border-fuchsia-500/30 hover:bg-fuchsia-500/20 hover:border-fuchsia-400/50'
+                    : 'bg-black/30 border-white/5 hover:bg-white/10 hover:border-blue-500/50'
+                }`}
+              >
                   <div className="flex items-center gap-1.5 md:gap-2 overflow-hidden">
-                    <MapPin size={12} className="flex-shrink-0 text-gray-400 group-hover:text-blue-400 transition-colors md:w-[14px] md:h-[14px]" />
-                    <span className="text-[10px] md:text-sm text-gray-200 font-medium group-hover:text-white truncate">{tag}</span>
+                    {place.isBridge ? (
+                      <Sparkles size={12} className="flex-shrink-0 text-fuchsia-400 group-hover:animate-pulse md:w-[14px] md:h-[14px]" />
+                    ) : (
+                      <Compass size={12} className="flex-shrink-0 text-blue-400 group-hover:animate-pulse md:w-[14px] md:h-[14px]" />
+                    )}
+                    <span className={`text-[10px] md:text-sm font-medium truncate ${
+                      place.isBridge ? 'text-fuchsia-200 group-hover:text-white' : 'text-gray-200 group-hover:text-white'
+                    }`}>{place.name}</span>
                   </div>
               </button>
             ))}

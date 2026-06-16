@@ -195,7 +195,7 @@ export function useHomeHandlers({
         addScoutPin(labelPin);
         setSelectedLocation(labelPin);
         moveToLocation(lat, lng, clickedLabel, category, { focus: false });
-        processSearchKeywords(clickedLabel);
+        processSearchKeywords(labelPin);
         recordInteraction(clickedLabel, 'view');
         return;
       }
@@ -226,7 +226,7 @@ export function useHomeHandlers({
         addScoutPin(realPin);
         setSelectedLocation(realPin);
         moveToLocation(lat, lng, display_name, category, { focus: false });
-        processSearchKeywords(display_name);
+        processSearchKeywords(realPin);
         recordInteraction(realPin, 'view');
         return;
       }
@@ -236,7 +236,7 @@ export function useHomeHandlers({
         addScoutPin(curatedFromClick);
         setSelectedLocation(curatedFromClick);
         moveToLocation(curatedFromClick.lat, curatedFromClick.lng, curatedFromClick.name, curatedFromClick.category, { focus: false });
-        processSearchKeywords(curatedFromClick.name);
+        processSearchKeywords(curatedFromClick);
         recordInteraction(curatedFromClick, 'view');
         return;
       }
@@ -266,7 +266,7 @@ export function useHomeHandlers({
             addScoutPin(finalLoc);
             setSelectedLocation(finalLoc);
             moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category, { focus: false });
-            processSearchKeywords(finalLoc.name);
+            processSearchKeywords(finalLoc);
             recordInteraction(finalLoc, 'view');
             return;
         }
@@ -280,7 +280,7 @@ export function useHomeHandlers({
     }
   }, [globeRef, category, isPinVisible, addScoutPin, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
 
-  const handleLocationSelect = useCallback((loc) => {
+  const handleLocationSelect = useCallback((loc, { refreshRelated = true } = {}) => {
     if (!loc) return;
 
     const name = loc.name || "Selected";
@@ -307,12 +307,19 @@ export function useHomeHandlers({
 
     moveToLocation(loc.lat, loc.lng, name, loc.category || category);
     addScoutPin(finalLoc);
-    processSearchKeywords(name);
+    if (refreshRelated) {
+      processSearchKeywords(finalLoc);
+    }
 
     setSelectedLocation(finalLoc);
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false);
   }, [selectedLocation, category, moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded]);
+
+  /** 좌측 꼬꼬무 — 연관 4곳은 목록 유지, 교두보(푸시아)만 새 목록 생성 */
+  const handleRelatedPlaceClick = useCallback((placeData, isBridge = false) => {
+    handleLocationSelect(placeData, { refreshRelated: isBridge });
+  }, [handleLocationSelect]);
 
   const handleStartChat = useCallback(async (dest, initPayload, existingId = null) => {
     if (globeRef.current) globeRef.current.pauseRotation();
@@ -729,7 +736,7 @@ export function useHomeHandlers({
               if (verifiedMoodLoc) {
                 handleLocationSelect(verifiedMoodLoc);
                 setDraftInput(verifiedMoodLoc.name);
-                processSearchKeywords(verifiedMoodLoc.name);
+                processSearchKeywords(verifiedMoodLoc);
                 isCorrected = true;
                 return verifiedMoodLoc;
 
@@ -758,7 +765,7 @@ export function useHomeHandlers({
               verifiedCachedLoc.desc = `"${query}" 검색에 실패하여 "${verifiedCachedLoc.name}"(으)로 교정하여 탐색합니다. (캐시 기반)`;
               handleLocationSelect(verifiedCachedLoc);
               setDraftInput(verifiedCachedLoc.name);
-              processSearchKeywords(verifiedCachedLoc.name);
+              processSearchKeywords(verifiedCachedLoc);
               isCorrected = true;
               return verifiedCachedLoc;
             }
@@ -847,7 +854,7 @@ export function useHomeHandlers({
                 if (chosenLoc) {
                   handleLocationSelect(chosenLoc);
                   setDraftInput(chosenLoc.name);
-                  processSearchKeywords(chosenLoc.name);
+                  processSearchKeywords(chosenLoc);
                   isCorrected = true;
                   return chosenLoc;
 
@@ -908,7 +915,7 @@ export function useHomeHandlers({
 
                   handleLocationSelect(verifiedAiLoc);
                   setDraftInput(verifiedAiLoc.name);
-                  processSearchKeywords(verifiedAiLoc.name);
+                  processSearchKeywords(verifiedAiLoc);
                   isCorrected = true;
                   return verifiedAiLoc;
                 }
@@ -953,6 +960,7 @@ export function useHomeHandlers({
   return {
     handleGlobeClick,
     handleLocationSelect,
+    handleRelatedPlaceClick,
     handleStartChat,
     handleToggleBookmark,
     handleSmartSearch,
