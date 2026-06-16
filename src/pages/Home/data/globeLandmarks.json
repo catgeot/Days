@@ -3221,5 +3221,73 @@
         "orbit": true
       }
     ]
+  },
+  "cape-verde": {
+    "landmarkName": "Sal Island — Santa Maria",
+    "center": [
+      -22.96,
+      16.715
+    ],
+    "exaggeration": 1.12,
+    "tourReady": true,
+    "keyframes": [
+      {
+        "center": [
+          -22.96,
+          16.715
+        ],
+        "zoom": 10,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          -22.96,
+          16.715
+        ],
+        "zoom": 10.8,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -22.949,
+          16.741
+        ],
+        "zoom": 11.2,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -22.92,
+          16.66
+        ],
+        "zoom": 11.5,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -22.905,
+          16.597
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   }
 }

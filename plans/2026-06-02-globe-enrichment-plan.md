@@ -112,7 +112,7 @@
 | `citiesData.js` | 검색·글로브 커버 | 투어 1순위 SSOT 아님 |
 | `keywordData.js` | 검색 동의어 | 좌표 없음 |
 
-**얇은 atol·분산 국가** (2026-06-15): `travelSpots` 핀이 **국가 중심 해상**에 있어도 공항·핀 SSOT는 유지 — 투어는 `globeLandmarks` **육지 띠·공항 POI**로 큐레이션 (`kiribati`: overview Betio↔Bonriki 중점 → TRW). 위성(deep) 타일 한계로 풍경 감상은 제한될 수 있음. 후보 점검: `node scripts/scan-tour-ocean-mismatch.mjs`.
+**얇은 atol·분산 국가** (2026-06-15): `travelSpots` 핀이 **국가 중심 해상**에 있어도 공항·핀 SSOT는 유지 — 투어는 `globeLandmarks` **육지 띠·공항 POI**로 큐레이션 (`kiribati`: overview Betio↔Bonriki 중점 → TRW · `cape-verde`: Sal Island SID→Santa Maria). 위성(deep) 타일 한계로 풍경 감상은 제한될 수 있음. 후보 점검: `node scripts/scan-tour-ocean-mismatch.mjs`.
 
 ### tour-ready (내부 QA 메타 — 버튼 gate 아님)
 
@@ -145,6 +145,7 @@
 | 1b~c | 체르마트(zermatt) | 마을 포커스 나쁘지 않음 → `alpineVillageOrbit` 추가 |
 | 1d | 칸쿤·사파·흐바르 | 도심 → 해변·산맥 포커스 **사용자 QA Pass** |
 | 2026-06-15 | kiribati | atol overview Pass · 위성 얇은 띠 한계 · `globeLandmarks` SSOT |
+| 2026-06-16 | cape-verde | Sal Island(SID) 섬 조망 Pass · 해상 핀 유지 · `globeLandmarks` SSOT |
 
 ### Phase 1 잔여
 

@@ -56,30 +56,37 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
             onClick={!isScanning ? onExpand : undefined}
           />
 
-          <div className="flex items-start justify-between mb-3">
-            <div className={`flex flex-col ${!isScanning ? 'cursor-pointer' : ''}`} onClick={!isScanning ? onExpand : undefined}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <Sparkles size={12} className={isScanning ? 'text-blue-400 animate-pulse' : 'text-yellow-400'} />
-                <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase">
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div
+              className={`flex min-w-0 flex-1 flex-col ${!isScanning ? 'cursor-pointer' : ''}`}
+              onClick={!isScanning ? onExpand : undefined}
+            >
+              <div className="flex items-center gap-1.5 mb-1 min-w-0">
+                <Sparkles size={12} className={`shrink-0 ${isScanning ? 'text-blue-400 animate-pulse' : 'text-yellow-400'}`} />
+                <span className="min-w-0 truncate text-[10px] text-blue-300 font-bold tracking-widest uppercase">
                   {isScanning ? 'SEARCHING...' : (location?.country || 'Global')}
                 </span>
               </div>
               <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className={`text-left min-w-0 truncate text-2xl font-bold leading-none tracking-tight transition-colors ${isScanning ? 'text-blue-300 animate-pulse' : 'text-white group-hover:text-blue-100'}`}
+                  title={primaryName || location?.name || undefined}
+                  className={`text-left min-w-0 flex-1 truncate text-2xl font-bold leading-none tracking-tight transition-colors ${isScanning ? 'text-blue-300 animate-pulse' : 'text-white group-hover:text-blue-100'}`}
                 >
                   {primaryName || location?.name}
                 </span>
                 {!isScanning && <Maximize2 size={14} className="text-gray-500 group-hover:text-white transition-colors shrink-0" />}
               </div>
               {!isScanning && secondaryName && (
-                <span className="mt-1 w-fit text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal">
+                <span
+                  title={secondaryName}
+                  className="mt-1 block min-w-0 max-w-full truncate text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal"
+                >
                   ({secondaryName})
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1 -mr-2 -mt-2 z-10">
+            <div className="flex shrink-0 items-center gap-1 -mr-2 -mt-2 z-10">
               {!isScanning && <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />}
               <button
                 onClick={(e) => {
@@ -140,7 +147,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
                 className={`${canStartTour ? 'flex-1' : 'w-full'} flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.08] border border-white/15 hover:bg-white/12 hover:border-blue-400/30 transition-all duration-300 z-10 relative`}
               >
                 <MessageSquare size={16} className="text-cyan-400" />
-                <span className="text-xs font-bold text-gray-200">MOONi에게 물어보기</span>
+                <span className="text-xs font-bold text-gray-200">MOONi</span>
               </button>
             </div>
           </div>

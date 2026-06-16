@@ -12,7 +12,7 @@ const ISLAND_TOUR_SLUGS = new Set([
   'cocos-islands', 'falkland-islands', 'faroe-islands', 'christmas-island',
   'similan-islands', 'phi-phi-islands', 'bali', 'santorini', 'phuket', 'madeira',
   'crete', 'lombok', 'hawaii', 'palawan', 'bohol', 'gili-meno', 'phu-quoc',
-  'el-nido', 'honolulu', 'kiribati'
+  'el-nido', 'honolulu', 'kiribati', 'cape-verde'
 ]);
 
 const landmarks = JSON.parse(

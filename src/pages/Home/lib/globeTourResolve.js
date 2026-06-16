@@ -64,7 +64,8 @@ export const ISLAND_TOUR_SLUGS = new Set([
   'phu-quoc',
   'el-nido',
   'honolulu',
-  'kiribati'
+  'kiribati',
+  'cape-verde'
 ]);
 
 const ISLAND_KEYWORD_HINTS =
