@@ -52,3 +52,20 @@
   1. 첫「항공 경로」후 **재실행 실패**
   2. **상태바 미닫기** + 다른 장소카드 → **3D 투어 실패** — 새 카드 진입 시 기존 시네마/투어 **자동 종료** 기대
 - **후속 아이디어**: 항로 **데이터화** · 환승 관문 IATA waypoint(overrides `flightRouteWaypoints` 확장)
+
+## 항공 시네마 — 재실행·투어 충돌 (2026-06-16)
+
+- **재실행**: `FlightCinemaContext` useEffect 지연 시작 제거 → `requestFlightCinema` 동기 `startFlightCinema` · `finishCinema` idempotent · engine `setupFlightCinemaLayers({ visible: true })`
+- **투어 충돌**: `startTour` cinema 선종료 · 마커·클러스터 POI 클릭 시 `closeFlightCinema` · `forceReset` 경로 `onComplete('interrupt')` · `closeFlightCinema` TDZ·선언 순서 fix
+- **모바일 투어 UI**: `beginGlobeTour` · `tourLaunchPending` → 써머리 즉시 숨김 · `TourMobileBar` · `handleGlobeModeChange`/`getGlobeMode` 동기화
+- **QA**: 이전 세션 대비 **한층 부드러움** (사용자) · 모바일 투어↔카드 **개선** ✅
+
+## 항공 시네마 — 세션 마감·다음 (2026-06-16)
+
+- **커밋**: 시네마 재실행·cinema↔투어 정리 · 모바일 `beginGlobeTour`/`tourLaunchPending`
+- **미해결 QA**
+  1. **데스크톱 3D 투어 중** 써머리「항공 경로」버튼 노출·**클릭 무반응** — `requestFlightCinema`가 `isTourActive` early return · **기대**: `endTour`→2D 복귀 후 arc 시네마
+  2. **미크로네시아 등** ICN→하와이 허브만 arc — **경유 IATA chain** 데이터·표시(다음 세션 목표)
+- **다음 세션**: overrides `flightRouteWaypoints`·IATA 관문 chain · `buildGreatCircleChain` · bar 라벨(직항/경유) · (선택) 투어 중 항공 경로→2D+시네마
+
+**제시어** — [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) §다음 세션

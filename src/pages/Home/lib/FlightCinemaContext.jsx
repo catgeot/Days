@@ -32,50 +32,28 @@ export function FlightCinemaProvider({
   onActiveChange,
 }) {
   const [active, setActive] = useState(null);
+  const activeRef = useRef(null);
   const pendingCompleteRef = useRef(null);
-  const pendingStartRef = useRef(null);
-  const pendingLocationRef = useRef(null);
 
   useEffect(() => {
+    activeRef.current = active;
     onActiveChange?.(Boolean(active));
   }, [active, onActiveChange]);
 
   const finishCinema = useCallback((reason) => {
+    if (!activeRef.current && !pendingCompleteRef.current) return;
     const onComplete = pendingCompleteRef.current;
     pendingCompleteRef.current = null;
-    pendingStartRef.current = null;
-    pendingLocationRef.current = null;
+    activeRef.current = null;
     setActive(null);
     onComplete?.(reason);
   }, []);
 
   useEffect(() => {
-    if (!active || !pendingStartRef.current) return;
-
-    const payload = pendingStartRef.current;
-
-    const started = globeRef.current?.startFlightCinema?.({
-      originIata: payload.originIata,
-      destIata: payload.destIata,
-      origin: payload.origin,
-      dest: payload.dest,
-      location: pendingLocationRef.current,
-      onComplete: (reason) => finishCinema(reason),
-    });
-
-    if (started) {
-      pendingStartRef.current = null;
-      return;
-    }
-
+    if (!isTourActive || !active) return;
     globeRef.current?.closeFlightCinema?.();
-    pendingStartRef.current = null;
-    pendingLocationRef.current = null;
-    const fallback = pendingCompleteRef.current;
-    pendingCompleteRef.current = null;
-    setActive(null);
-    fallback?.('failed');
-  }, [active, finishCinema, globeRef]);
+    finishCinema('interrupt');
+  }, [active, finishCinema, globeRef, isTourActive]);
 
   const requestFlightCinema = useCallback(
     ({
@@ -108,19 +86,22 @@ export function FlightCinemaProvider({
       if (!resolvedOrigin || !resolvedDest) return false;
       if (normalizedOrigin === normalizedDest) return false;
 
-      if (active) {
-        globeRef.current?.closeFlightCinema?.();
-        finishCinema('restart');
-      }
-
       pendingCompleteRef.current = onComplete ?? null;
-      pendingLocationRef.current = location;
-      pendingStartRef.current = {
+
+      const started = globeRef.current?.startFlightCinema?.({
         originIata: normalizedOrigin,
         destIata: normalizedDest,
         origin: resolvedOrigin,
         dest: resolvedDest,
-      };
+        location,
+        onComplete: (reason) => finishCinema(reason),
+      });
+
+      if (!started) {
+        pendingCompleteRef.current = null;
+        return false;
+      }
+
       setActive({
         originIata: normalizedOrigin,
         destIata: normalizedDest,
@@ -128,7 +109,7 @@ export function FlightCinemaProvider({
       });
       return true;
     },
-    [active, finishCinema, globeRef, isTourActive]
+    [finishCinema, globeRef, isTourActive]
   );
 
   const skipFlightCinema = useCallback(() => {

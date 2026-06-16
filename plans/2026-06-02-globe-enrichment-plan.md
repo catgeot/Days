@@ -212,9 +212,9 @@
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 
-### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용 · WIP 최적화)
+### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용 · WIP)
 
-**상태**: arc 지오메트리 1차 개선 ✅ · **로컬 QA 잔여** — 재실행·투어 충돌 · Trip/플래너 연동 **의도적 미연결**.
+**상태**: arc·재실행·cinema↔투어·모바일 투어 UI **1차 QA ✅(부분)** · **다음** 경유 chain·데스크톱 투어→시네마.
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」만 — ICN→도착 IATA arc · `FlightCinemaBar`(바로 보기·닫기) · **플래너·MOONi 항공권 위젯/링크와 시네마 분리**.
 
@@ -226,15 +226,15 @@
 | 2 | 써머리 카드 숨김 · `flightCinemaActive` → `shouldPauseGlobe` 예외 |
 | 3 | Mapbox arc + `FlightCinemaBar` |
 | 4 | arc·바 **닫기**까지 유지 · 닫기 → UI 복원 |
-| 5 | (목표) 닫기 후 동일 버튼 **재재생** — 현재 **재실행 버그** ⏳ |
+| 5 | 닫기 후 동일 버튼 **재재생** ✅ (2026-06-16 세션) |
 
-**미해결 (다음 세션)**
+**미해결 (다음 세션 — 경유 arc 우선)**
 
 | # | 증상 | 방향 |
 |---|------|------|
-| 1 | 첫 실행 후「항공 경로」재클릭 실패 | `globeFlightCinemaEngine` reset·`runGen`·layer `setData` |
-| 2 | 상태바 열린 채 다른 장소 → 3D 투어 실패 | 새 장소카드/`startTour` 시 **`closeFlightCinema` 선행** · tour↔cinema 상호 정리 |
-| 3 | (후속) 환승·관문 경유 | overrides `flightRouteWaypoints` · 다구간 chain · bar 라벨(직항→경유) |
+| 1 | **데스크톱 3D 투어 중** 써머리「항공 경로」클릭 무반응 | `isTourActive` gate 제거 또는 **`endTour`→2D 후 `requestFlightCinema`** · 데스크톱은 투어 중 풀 카드 유지 정책 |
+| 2 | **미크로네시아** 등 ICN→HNL 등 허브만 arc | overrides **`flightRouteWaypoints`** / **IATA 관문 chain** (HNL→로컬 도착) · `buildGreatCircleChain` · bar **직항→경유** 라벨 |
+| 3 | (선택) 환승 slug 일괄 | `travel-spot-airport-overrides.mjs` → `generate:airports` · kiribati·micronesia 등 |
 
 **보류**: 시네마 종료 후 **항공권 검색** 연결 — arc QA Pass 후 제품 결정.
 
@@ -264,14 +264,17 @@
 
 **상태·충돌**
 
-- 3D tour 중 flight cinema **시작 금지** · (TODO) cinema active 중 **새 장소/투어** → cinema 종료.
+- 모바일: 투어 중 써머리 숨김 · `TourMobileBar` (`beginGlobeTour`/`tourLaunchPending`) ✅
+- 데스크톱: 투어 중 **풀 써머리 유지** —「항공 경로」→ **2D+시네마** 미구현 ⏳
+- 3D tour 중 flight cinema **동시 재생 금지** · cinema active 중 새 장소/투어 → cinema 종료 ✅
 - `GLOBE_VIEW.flyZoom`(2.35) **변경 금지**.
 - 시네마 중 지구본 `opacity-100` (`isFlightCinemaActive`).
 
 **로컬 QA**
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
-- ⏳ 연속 재실행 · cinema+투어 전환
+- ✅ 재실행 · cinema+투어 전환(모바일) — 부분 Pass
+- ⏳ 데스크톱 투어中 항공 경로 · 미크로네시아 경유 arc
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -296,21 +299,22 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — arc 최적화·상태 충돌 (Phase 2b WIP)**
+**항공 시네마 — 경유 arc·투어→2D 시네마 (Phase 2b)**
 
 ```
 @.ai-context.md @plans/2026-06-16-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-최적화
+항공-시네마-경유arc
 
-Phase 2b arc 1차 후 — 재실행 실패 · 상태바+투어 충돌(새 장소카드 시 cinema 종료) · (선택) flightRouteWaypoints 환승 데이터.
-globeFlightCinemaEngine · FlightCinemaContext · HomeGlobeMapbox startTour/locationSelect.
+Phase 2b — flightRouteWaypoints·IATA 관문 chain(미크로네시아·HNL 등) · buildGreatCircleChain · bar 직항/경유 라벨.
+데스크톱 3D 투어 중「항공 경로」→ endTour·2D 복귀 후 requestFlightCinema.
+overrides.mjs → generate:airports · rentalAirportHubs(신규 IATA).
 플래너·MOONi Trip 시네마 연동 금지 — 홈 써머리「항공 경로」만.
 ```
 
 **읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — 세션 마감·다음」** · 본 계획 **§Phase 2b**.
 
-**금지 (3)**: `GLOBE_VIEW.flyZoom` 변경 · 플래너 Trip CTA↔시네마 재연결 · releaseNotes 선반영.
+**금지 (3)**: `GLOBE_VIEW.flyZoom` 변경 · 플래너 Trip CTA↔시네마 재연결 · `travelSpotAirports.json` spots 직접 편집.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 
@@ -335,7 +339,7 @@ globeFlightCinemaEngine · FlightCinemaContext · HomeGlobeMapbox startTour/loca
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **2b**: **WIP** — 홈 써머리 OD arc · 재실행·투어 충돌 ⏳ · Trip/플래너 연동 없음
+- **2b**: **WIP** — 재실행·cinema↔투어·모바일 투어 UI ✅(부분) · **⏳** 경유 arc·데스크톱 투어→시네마
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 

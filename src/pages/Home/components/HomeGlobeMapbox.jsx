@@ -265,6 +265,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const flightCinemaEngineRef = useRef(null);
   const flightCinemaEngineMapRef = useRef(null);
   const flightCinemaActiveRef = useRef(false);
+  const flightCinemaOnCompleteRef = useRef(null);
   const tourActiveRef = useRef(false);
   const prevTourEngineModeRef = useRef(GLOBE_MODE.GLOBE_2D);
   const reachFetchGenRef = useRef(0);
@@ -1013,8 +1014,75 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return flightCinemaEngineRef.current;
   }, []);
 
+  const closeFlightCinema = useCallback(() => {
+    const engine = flightCinemaEngineRef.current;
+    const hadSession = Boolean(flightCinemaActiveRef.current || engine?.isActive?.());
+    const notifyComplete = flightCinemaOnCompleteRef.current;
+    if (engine?.isActive?.()) {
+      engine.close?.();
+    } else if (engine) {
+      engine.forceReset?.();
+      flightCinemaOnCompleteRef.current = null;
+      flightCinemaActiveRef.current = false;
+      interactionRef.current = false;
+      notifyComplete?.('interrupt');
+    }
+    if (!engine?.isActive?.()) {
+      flightCinemaActiveRef.current = false;
+      interactionRef.current = false;
+    }
+    return hadSession;
+  }, []);
+
+  const skipFlightCinema = useCallback(() => {
+    flightCinemaEngineRef.current?.revealFullRoute?.();
+  }, []);
+
+  const startFlightCinema = useCallback((params) => {
+    if (isTourMode(globeMode) || tourActiveRef.current) {
+      return false;
+    }
+    const map = mapRef.current?.getMap();
+    if (!map) return false;
+
+    safeMapResize(map);
+    autoRotateRef.current = false;
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    interactionRef.current = true;
+
+    const engine = ensureFlightCinemaEngine();
+    if (!engine) return false;
+
+    if (engine.isActive?.()) {
+      engine.forceReset?.();
+    }
+
+    const wrappedOnComplete = (reason) => {
+      flightCinemaOnCompleteRef.current = null;
+      flightCinemaActiveRef.current = false;
+      interactionRef.current = false;
+      params.onComplete?.(reason);
+    };
+    flightCinemaOnCompleteRef.current = wrappedOnComplete;
+
+    const started = engine.start({
+      ...params,
+      onComplete: wrappedOnComplete,
+    });
+
+    if (started) {
+      flightCinemaActiveRef.current = true;
+    } else {
+      flightCinemaActiveRef.current = false;
+      interactionRef.current = false;
+    }
+    return started;
+  }, [ensureFlightCinemaEngine, globeMode]);
+
   const startTour = useCallback(async (location) => {
-    if (flightCinemaActiveRef.current) return false;
+    if (flightCinemaActiveRef.current) {
+      closeFlightCinema();
+    }
     const map = mapRef.current?.getMap();
     if (!map || !location) return false;
     const lat = Number(location.lat);
@@ -1037,7 +1105,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       lng,
       location
     });
-  }, [clearReachBoundaryState, ensureTourEngine]);
+  }, [clearReachBoundaryState, closeFlightCinema, ensureTourEngine]);
 
   const skipTour = useCallback(() => {
     tourEngineRef.current?.skip();
@@ -1051,59 +1119,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       autoRotateRef.current = true;
     }
   }, [pauseRender]);
-
-  const startFlightCinema = useCallback((params) => {
-    if (isTourMode(globeMode) || tourActiveRef.current) {
-      return false;
-    }
-    const map = mapRef.current?.getMap();
-    if (!map) return false;
-
-    safeMapResize(map);
-    autoRotateRef.current = false;
-    if (rotationTimer.current) clearTimeout(rotationTimer.current);
-    interactionRef.current = true;
-
-    const engine = ensureFlightCinemaEngine();
-    if (!engine) return false;
-
-    if (engine.isActive?.()) {
-      engine.forceReset?.();
-    }
-    flightCinemaActiveRef.current = false;
-
-    const started = engine.start({
-      ...params,
-      onComplete: (reason) => {
-        flightCinemaActiveRef.current = false;
-        interactionRef.current = false;
-        params.onComplete?.(reason);
-      },
-    });
-
-    if (started) {
-      flightCinemaActiveRef.current = true;
-    } else {
-      flightCinemaActiveRef.current = false;
-      interactionRef.current = false;
-    }
-    return started;
-  }, [ensureFlightCinemaEngine, globeMode]);
-
-  const skipFlightCinema = useCallback(() => {
-    flightCinemaEngineRef.current?.revealFullRoute?.();
-  }, []);
-
-  const closeFlightCinema = useCallback(() => {
-    const engine = flightCinemaEngineRef.current;
-    if (engine?.isActive?.()) {
-      engine.close?.();
-    } else {
-      engine?.forceReset?.();
-    }
-    flightCinemaActiveRef.current = false;
-    interactionRef.current = false;
-  }, []);
 
   const finalizeSpaceReturn = useCallback(() => {
     interactionRef.current = false;
@@ -1370,6 +1385,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       : null;
     if (markerAtPoint) {
       markerClickGuardUntilRef.current = Date.now() + 450;
+      if (flightCinemaActiveRef.current) closeFlightCinema();
       const spotCatalog = allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
       let fullMarker = lookupFullMarker(allMarkersLookupRef.current, markerAtPoint);
       fullMarker = reconcileMarkerWithClickCoords(
@@ -1388,6 +1404,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const spot = spotCatalog.find((s) => s.slug === clusterPoi.slug);
       if (spot) {
         markerClickGuardUntilRef.current = Date.now() + 450;
+        if (flightCinemaActiveRef.current) closeFlightCinema();
         onMarkerClick({ ...spot, type: 'major' }, 'globe');
         return;
       }
@@ -1435,7 +1452,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (inTour) return;
 
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
-  }, [allTravelSpots, globeMode, isZenMode, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
+  }, [allTravelSpots, closeFlightCinema, globeMode, isZenMode, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
 
   const mapStyle = MAP_STYLES[globeTheme] || MAP_STYLES.deep;
 

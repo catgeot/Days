@@ -303,7 +303,7 @@ export function createFlightCinemaEngine(map, options = {}) {
     const cameraMs = Math.round(durationMs * 0.45);
     const cameraView = computeRouteCameraView(fullArc, params.origin, params.dest, flyZoom);
 
-    if (!setupFlightCinemaLayers(map)) return false;
+    if (!setupFlightCinemaLayers(map, { visible: true })) return false;
 
     const gen = runGen + 1;
     runGen = gen;

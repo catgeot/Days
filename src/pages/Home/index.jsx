@@ -94,9 +94,10 @@ function Home() {
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1023px)');
-    const onChange = () => setIsMobileViewport(mq.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
+    const syncMobileViewport = () => setIsMobileViewport(mq.matches);
+    syncMobileViewport();
+    mq.addEventListener('change', syncMobileViewport);
+    return () => mq.removeEventListener('change', syncMobileViewport);
   }, []);
 
   const { scoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
@@ -144,8 +145,10 @@ function Home() {
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
   const [tourPivoted, setTourPivoted] = useState(false);
   const [flightCinemaActive, setFlightCinemaActive] = useState(false);
+  const [tourLaunchPending, setTourLaunchPending] = useState(false);
   const isTourActive = isTourMode(globeMode);
-  const isTourCinema = isTourActive && isMobileViewport;
+  /** 모바일 투어 UI — TourMobileBar·써머리 숨김 (globeMode 동기화 전 launch pending 포함) */
+  const isTourCinema = isMobileViewport && (isTourActive || tourLaunchPending);
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
@@ -546,6 +549,7 @@ function Home() {
   const handleTourBarClose = useCallback(() => {
     setIsCardExpanded(false);
     setSelectedLocation(null);
+    setTourLaunchPending(false);
     tourReadyAnchorRef.current = null;
     setTourPivoted(false);
     if (globeRef.current?.getGlobeMode?.() !== GLOBE_MODE.GLOBE_2D) {
@@ -554,11 +558,36 @@ function Home() {
     globeRef.current?.resumeRotation?.();
   }, [setSelectedLocation]);
 
+  const handleGlobeModeChange = useCallback((mode) => {
+    setGlobeMode(mode);
+    if (!isTourMode(mode)) {
+      setTourLaunchPending(false);
+    }
+  }, []);
+
+  const beginGlobeTour = useCallback(async (location) => {
+    if (!location) return;
+    if (isMobileViewport) {
+      setTourLaunchPending(true);
+    }
+    globeRef.current?.closeFlightCinema?.();
+    globeRef.current?.pauseRotation?.();
+    const ok = await globeRef.current?.startTour?.(location);
+    const mode = globeRef.current?.getGlobeMode?.() ?? GLOBE_MODE.GLOBE_2D;
+    if (isTourMode(mode)) {
+      setGlobeMode(mode);
+      return;
+    }
+    setTourLaunchPending(false);
+    if (!ok && import.meta.env.DEV) {
+      console.warn('[beginGlobeTour] startTour returned false');
+    }
+  }, [isMobileViewport]);
+
   const handleTourBarStartTour = useCallback(() => {
     if (!selectedLocation) return;
-    globeRef.current?.pauseRotation?.();
-    globeRef.current?.startTour?.(selectedLocation);
-  }, [selectedLocation]);
+    void beginGlobeTour(selectedLocation);
+  }, [beginGlobeTour, selectedLocation]);
 
   return (
     <FlightCinemaProvider
@@ -584,7 +613,7 @@ function Home() {
           globeTheme={globeTheme}
           isZenMode={isZenMode}
           isPinVisible={isPinVisible}
-          onGlobeModeChange={setGlobeMode}
+          onGlobeModeChange={handleGlobeModeChange}
           hideTourControls={isTourCinema}
           highlightCategory={category}
           categoryFaceEpoch={categoryFaceEpoch}
@@ -659,8 +688,7 @@ function Home() {
             onChat={openMooniFromPlace}
             onToggleBookmark={handleToggleBookmark}
             onStartTour={(location) => {
-              globeRef.current?.pauseRotation?.();
-              globeRef.current?.startTour?.(location);
+              void beginGlobeTour(location);
             }}
           />
         )}
