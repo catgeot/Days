@@ -19,7 +19,7 @@ const FlightCinemaContext = createContext(null);
 /**
  * @param {{
  *   children: React.ReactNode,
- *   globeRef: React.RefObject<{ startFlightCinema?: Function, skipFlightCinema?: Function } | null>,
+ *   globeRef: React.RefObject<{ startFlightCinema?: Function, skipFlightCinema?: Function, closeFlightCinema?: Function } | null>,
  *   isTourActive?: boolean,
  *   onActiveChange?: (active: boolean) => void,
  * }} props
@@ -50,7 +50,6 @@ export function FlightCinemaProvider({
     if (!active || !pendingStartRef.current) return;
 
     const payload = pendingStartRef.current;
-    pendingStartRef.current = null;
 
     const started = globeRef.current?.startFlightCinema?.({
       originIata: payload.originIata,
@@ -60,17 +59,22 @@ export function FlightCinemaProvider({
       onComplete: (reason) => finishCinema(reason),
     });
 
-    if (!started) {
-      const fallback = pendingCompleteRef.current;
-      pendingCompleteRef.current = null;
-      setActive(null);
-      fallback?.('failed');
+    if (started) {
+      pendingStartRef.current = null;
+      return;
     }
+
+    globeRef.current?.closeFlightCinema?.();
+    pendingStartRef.current = null;
+    const fallback = pendingCompleteRef.current;
+    pendingCompleteRef.current = null;
+    setActive(null);
+    fallback?.('failed');
   }, [active, finishCinema, globeRef]);
 
   const requestFlightCinema = useCallback(
     ({ originIata, destIata, onComplete }) => {
-      if (isTourActive || active) return false;
+      if (isTourActive) return false;
 
       const origin = getAirportHubCoords(originIata);
       const dest = getAirportHubCoords(destIata);
@@ -79,6 +83,11 @@ export function FlightCinemaProvider({
       const normalizedOrigin = String(originIata).trim().toUpperCase();
       const normalizedDest = String(destIata).trim().toUpperCase();
       if (normalizedOrigin === normalizedDest) return false;
+
+      if (active) {
+        globeRef.current?.closeFlightCinema?.();
+        finishCinema('restart');
+      }
 
       pendingCompleteRef.current = onComplete;
       pendingStartRef.current = {
@@ -94,20 +103,26 @@ export function FlightCinemaProvider({
       });
       return true;
     },
-    [active, isTourActive]
+    [active, finishCinema, globeRef, isTourActive]
   );
 
   const skipFlightCinema = useCallback(() => {
     globeRef.current?.skipFlightCinema?.();
   }, [globeRef]);
 
+  const closeFlightCinema = useCallback(() => {
+    globeRef.current?.closeFlightCinema?.();
+    finishCinema('close');
+  }, [finishCinema, globeRef]);
+
   const value = useMemo(
     () => ({
       flightCinemaActive: Boolean(active),
       requestFlightCinema,
       skipFlightCinema,
+      closeFlightCinema,
     }),
-    [active, requestFlightCinema, skipFlightCinema]
+    [active, closeFlightCinema, requestFlightCinema, skipFlightCinema]
   );
 
   const barPortal =
@@ -120,7 +135,7 @@ export function FlightCinemaProvider({
               destIata={active.destIata}
               flightHours={active.flightHours}
               onSkip={skipFlightCinema}
-              onClose={skipFlightCinema}
+              onClose={closeFlightCinema}
             />
           </div>,
           document.body

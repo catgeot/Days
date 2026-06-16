@@ -263,6 +263,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const unbindSpaceDragGuardRef = useRef(null);
   const tourEngineRef = useRef(null);
   const flightCinemaEngineRef = useRef(null);
+  const flightCinemaEngineMapRef = useRef(null);
   const flightCinemaActiveRef = useRef(false);
   const tourActiveRef = useRef(false);
   const prevTourEngineModeRef = useRef(GLOBE_MODE.GLOBE_2D);
@@ -774,7 +775,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!clusterBoundaryLayersReady(map)) {
       setupClusterBoundaryLayers(map);
     }
-    setupFlightCinemaLayers(map);
+    setupFlightCinemaLayers(map, { visible: flightCinemaActiveRef.current });
     updateGateoMarkerSource(map, markerGeoJSON);
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
@@ -996,11 +997,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const ensureFlightCinemaEngine = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return null;
+    if (flightCinemaEngineRef.current && flightCinemaEngineMapRef.current !== map) {
+      flightCinemaEngineRef.current.forceReset?.();
+      flightCinemaEngineRef.current = null;
+      flightCinemaEngineMapRef.current = null;
+      flightCinemaActiveRef.current = false;
+    }
     if (!flightCinemaEngineRef.current) {
       flightCinemaEngineRef.current = createFlightCinemaEngine(map, {
         defaultView: GLOBE_VIEW.default,
         flyZoom: GLOBE_VIEW.flyZoom,
       });
+      flightCinemaEngineMapRef.current = map;
     }
     return flightCinemaEngineRef.current;
   }, []);
@@ -1045,7 +1053,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [pauseRender]);
 
   const startFlightCinema = useCallback((params) => {
-    if (isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
+    if (isTourMode(globeMode) || tourActiveRef.current) {
       return false;
     }
     const map = mapRef.current?.getMap();
@@ -1059,6 +1067,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const engine = ensureFlightCinemaEngine();
     if (!engine) return false;
 
+    if (engine.isActive?.()) {
+      engine.forceReset?.();
+    }
+    flightCinemaActiveRef.current = false;
+
     const started = engine.start({
       ...params,
       onComplete: (reason) => {
@@ -1070,12 +1083,26 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     if (started) {
       flightCinemaActiveRef.current = true;
+    } else {
+      flightCinemaActiveRef.current = false;
+      interactionRef.current = false;
     }
     return started;
   }, [ensureFlightCinemaEngine, globeMode]);
 
   const skipFlightCinema = useCallback(() => {
-    flightCinemaEngineRef.current?.skip();
+    flightCinemaEngineRef.current?.revealFullRoute?.();
+  }, []);
+
+  const closeFlightCinema = useCallback(() => {
+    const engine = flightCinemaEngineRef.current;
+    if (engine?.isActive?.()) {
+      engine.close?.();
+    } else {
+      engine?.forceReset?.();
+    }
+    flightCinemaActiveRef.current = false;
+    interactionRef.current = false;
   }, []);
 
   const finalizeSpaceReturn = useCallback(() => {
@@ -1163,8 +1190,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     pivotTourExplore,
     startFlightCinema,
     skipFlightCinema,
+    closeFlightCinema,
     getGlobeMode: () => globeMode
-  }), [addRipple, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipFlightCinema, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, closeFlightCinema, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipFlightCinema, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

@@ -13,7 +13,7 @@ export default function FlightCinemaBar({
   className = '',
 }) {
   const routeLabel = `${originIata} → ${destIata}`;
-  const durationLabel = `약 ${flightHours}시간 · 직항 기준`;
+  const durationLabel = `약 ${flightHours}시간 · 직항 · 대권 항로`;
 
   return (
     <div
@@ -34,7 +34,7 @@ export default function FlightCinemaBar({
             onClick={onSkip}
             className="tour-mobile-bar-skip shrink-0 rounded-lg border border-blue-400/45 bg-blue-500/20 px-3 py-1.5 text-xs font-bold text-blue-50 transition-all active:scale-[0.98]"
           >
-            Skip
+            바로 보기
           </button>
           <button
             type="button"

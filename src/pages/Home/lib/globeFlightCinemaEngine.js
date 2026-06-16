@@ -1,6 +1,6 @@
 import {
   buildArcCameraCenter,
-  buildGreatCircleLine,
+  buildFlightRouteLine,
   computeRouteFlyZoom,
   sliceArcProgress,
   FLIGHT_CINEMA_DURATION_MS,
@@ -45,13 +45,18 @@ function safeMapUpdate(map, fn) {
 }
 
 function arcLineFeature(coords) {
+  const lineCoords = coords.length >= 2
+    ? coords
+    : coords.length === 1
+      ? [coords[0], coords[0]]
+      : [];
   return {
     type: 'FeatureCollection',
-    features: coords.length >= 2
+    features: lineCoords.length >= 2
       ? [{
           type: 'Feature',
           properties: {},
-          geometry: { type: 'LineString', coordinates: coords },
+          geometry: { type: 'LineString', coordinates: lineCoords },
         }]
       : [],
   };
@@ -79,7 +84,7 @@ export function isFlightCinemaLayer(layerId = '') {
   return FLIGHT_CINEMA_LAYER_IDS.includes(String(layerId));
 }
 
-export function setupFlightCinemaLayers(map) {
+export function setupFlightCinemaLayers(map, { visible = true } = {}) {
   if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
 
   try {
@@ -141,13 +146,17 @@ export function setupFlightCinemaLayers(map) {
     }
 
     for (const layerId of FLIGHT_CINEMA_LAYER_IDS) {
-      if (map.getLayer(layerId)) {
-        map.setLayoutProperty(layerId, 'visibility', 'visible');
-        try {
-          map.moveLayer(layerId);
-        } catch {
-          // Layer order best-effort.
+      if (!map.getLayer(layerId)) continue;
+      try {
+        if (visible) {
+          map.setLayerZoomRange(layerId, 0, 24);
+          map.setLayoutProperty(layerId, 'visibility', 'visible');
+        } else {
+          map.setLayoutProperty(layerId, 'visibility', 'none');
         }
+        map.moveLayer(layerId);
+      } catch {
+        // Style may be mid-transition.
       }
     }
 
@@ -192,25 +201,43 @@ export function createFlightCinemaEngine(map, options = {}) {
   const flyZoom = options.flyZoom ?? 2.35;
 
   let active = false;
+  let animating = false;
   let cancelled = false;
   let rafId = null;
-  let completeTimer = null;
+  let arcDelayTimer = null;
+  let runGen = 0;
   let onCompleteRef = null;
+  let fullArcRef = null;
 
   const cleanupTimers = () => {
     if (rafId != null) {
       cancelAnimationFrame(rafId);
       rafId = null;
     }
-    if (completeTimer != null) {
-      clearTimeout(completeTimer);
-      completeTimer = null;
+    if (arcDelayTimer != null) {
+      clearTimeout(arcDelayTimer);
+      arcDelayTimer = null;
     }
   };
 
-  const finish = (reason = 'complete') => {
+  /** Stale active/timers without invoking a previous onComplete (re-entry guard). */
+  const forceReset = () => {
+    active = false;
+    animating = false;
+    cancelled = false;
+    runGen += 1;
+    fullArcRef = null;
+    cleanupTimers();
+    onCompleteRef = null;
+    clearFlightCinemaLayers(map);
+  };
+
+  const finish = (reason = 'close') => {
     if (!active) return;
     active = false;
+    animating = false;
+    runGen += 1;
+    fullArcRef = null;
     cleanupTimers();
     try {
       map.stop();
@@ -229,9 +256,23 @@ export function createFlightCinemaEngine(map, options = {}) {
     finish('cancel');
   };
 
-  const skip = () => {
+  const revealFullRoute = () => {
     if (!active) return;
-    finish('skip');
+    cleanupTimers();
+    animating = false;
+    if (fullArcRef) {
+      safeMapUpdate(map, () => {
+        map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(fullArcRef));
+      });
+    }
+  };
+
+  const close = () => {
+    if (active) {
+      finish('close');
+      return;
+    }
+    clearFlightCinemaLayers(map);
   };
 
   /**
@@ -245,11 +286,18 @@ export function createFlightCinemaEngine(map, options = {}) {
    * }} params
    */
   const start = (params) => {
-    if (active || !map?.getStyle?.()) return false;
+    if (!map?.getStyle?.()) return false;
+
+    if (active) {
+      forceReset();
+    } else {
+      cleanupTimers();
+    }
 
     const originLngLat = [params.origin.lng, params.origin.lat];
     const destLngLat = [params.dest.lng, params.dest.lat];
-    const fullArc = buildGreatCircleLine(originLngLat, destLngLat);
+    const fullArc = buildFlightRouteLine(originLngLat, destLngLat);
+    fullArcRef = fullArc;
     const durationMs = params.durationMs ?? FLIGHT_CINEMA_DURATION_MS;
     const arcDrawMs = Math.round(durationMs * 0.6);
     const cameraMs = Math.round(durationMs * 0.45);
@@ -257,16 +305,19 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     if (!setupFlightCinemaLayers(map)) return false;
 
+    const gen = runGen + 1;
+    runGen = gen;
     active = true;
+    animating = true;
     cancelled = false;
     onCompleteRef = params.onComplete ?? null;
 
-    const endpointsSource = map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID);
-    const arcSource = map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID);
-    endpointsSource?.setData(
-      endpointsFeature(originLngLat, destLngLat, params.originIata, params.destIata)
-    );
-    arcSource?.setData(arcLineFeature([originLngLat]));
+    safeMapUpdate(map, () => {
+      map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(
+        endpointsFeature(originLngLat, destLngLat, params.originIata, params.destIata)
+      );
+      map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature([originLngLat]));
+    });
 
     autoRotateOff(map);
 
@@ -291,33 +342,33 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     const arcDelayMs = 350;
     const arcStartAt = performance.now() + arcDelayMs;
-    const totalMs = arcDelayMs + arcDrawMs + 450;
 
     const tick = (now) => {
-      if (!active || cancelled) return;
+      if (!active || cancelled || gen !== runGen) return;
       const elapsed = now - arcStartAt;
       const progress = Math.min(1, Math.max(0, elapsed / arcDrawMs));
       const partial = sliceArcProgress(fullArc, progress);
-      arcSource?.setData(arcLineFeature(partial));
+      safeMapUpdate(map, () => {
+        map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(partial));
+      });
       if (progress < 1) {
         rafId = requestAnimationFrame(tick);
+        return;
       }
+      animating = false;
+      rafId = null;
     };
 
-    window.setTimeout(() => {
-      if (!active || cancelled) return;
+    arcDelayTimer = window.setTimeout(() => {
+      arcDelayTimer = null;
+      if (!active || cancelled || gen !== runGen) return;
       rafId = requestAnimationFrame(tick);
     }, arcDelayMs);
-
-    completeTimer = window.setTimeout(() => {
-      if (!active) return;
-      finish('complete');
-    }, totalMs);
 
     return true;
   };
 
-  return { start, skip, cancel, isActive: () => active };
+  return { start, revealFullRoute, close, cancel, forceReset, isActive: () => active };
 }
 
 function autoRotateOff(map) {
