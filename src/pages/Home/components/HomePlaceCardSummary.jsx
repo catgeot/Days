@@ -21,8 +21,11 @@ export default function HomePlaceCardSummary(props) {
   const handlePreviewFlightRoute = () => {
     if (!flightPreview) return;
     requestFlightCinema({
+      location,
       originIata: flightPreview.originIata,
       destIata: flightPreview.destIata,
+      origin: flightPreview.origin,
+      dest: flightPreview.dest,
     });
   };
 

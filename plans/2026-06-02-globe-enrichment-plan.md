@@ -212,23 +212,31 @@
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 
-### Phase 2b — 항공 시네마 (OD arc · ✅ 써머리 QA — 2026-06-16)
+### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용 · WIP 최적화)
 
-**상태**: 써머리「항공 경로」미리보기 **QA Pass** — Trip CTA·항공권 카드는 **후속**.
+**상태**: arc 지오메트리 1차 개선 ✅ · **로컬 QA 잔여** — 재실행·투어 충돌 · Trip/플래너 연동 **의도적 미연결**.
 
-**제품 목표 (현재 스코프)**: 홈 써머리 장소카드 → ICN→도착 IATA arc(대권·표시용 곡선) · 약 N시간 · **닫기**로 종료.
+**제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」만 — ICN→도착 IATA arc · `FlightCinemaBar`(바로 보기·닫기) · **플래너·MOONi 항공권 위젯/링크와 시네마 분리**.
 
 **UX (라우팅 왕복 ❌ · 시네마 인터럽트 ✅)**
 
 | 단계 | 동작 |
 |------|------|
-| 1 | 홈(`/`) 써머리 **`PlaceCardSummary`「항공 경로」** (`HomePlaceCardSummary`) |
+| 1 | 홈(`/`) 써머리 **`HomePlaceCardSummary`「항공 경로」** |
 | 2 | 써머리 카드 숨김 · `flightCinemaActive` → `shouldPauseGlobe` 예외 |
-| 3 | Mapbox arc + `FlightCinemaBar`(바로 보기·닫기) |
-| 4 | arc 그리기 완료 후 **arc·점·바 유지** · **닫기** → UI 복원 (**Trip 모달 없음** — 추후) |
-| 5 | **닫기 후** 동일 버튼 재클릭 → arc 재생 |
+| 3 | Mapbox arc + `FlightCinemaBar` |
+| 4 | arc·바 **닫기**까지 유지 · 닫기 → UI 복원 |
+| 5 | (목표) 닫기 후 동일 버튼 **재재생** — 현재 **재실행 버그** ⏳ |
 
-**후속 (완성도 확인 후)**: 플래너·MOONi Trip CTA 앞 시네마 · 항공권 연결 카드.
+**미해결 (다음 세션)**
+
+| # | 증상 | 방향 |
+|---|------|------|
+| 1 | 첫 실행 후「항공 경로」재클릭 실패 | `globeFlightCinemaEngine` reset·`runGen`·layer `setData` |
+| 2 | 상태바 열린 채 다른 장소 → 3D 투어 실패 | 새 장소카드/`startTour` 시 **`closeFlightCinema` 선행** · tour↔cinema 상호 정리 |
+| 3 | (후속) 환승·관문 경유 | overrides `flightRouteWaypoints` · 다구간 chain · bar 라벨(직항→경유) |
+
+**보류**: 시네마 종료 후 **항공권 검색** 연결 — arc QA Pass 후 제품 결정.
 
 **데이터 SSOT (자유 텍스트 OD 금지)**
 
@@ -237,34 +245,33 @@
 | 출발 (써머리) | ICN — `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` |
 | 도착 | `getPlannerFlightArrivalIata(location)` |
 | 좌표 | `rentalAirportHubs.js` |
+| 경유(선택) | `travel-spot-airport-overrides.mjs` → `flightRouteWaypoints` [[lng,lat],…] |
 | 비행 시간 | geodesic km ÷ 850km/h · 「약 N시간 · 직항 · 대권 항로」 |
-| 표시 경로 | `buildFlightRouteLine` — 대권 + 측면 곡선(미리보기) · 거리·시간 SSOT는 haversine |
+| 표시 경로 | `buildFlightRouteLine` — 3D slerp · 극우회 · unwrap · 측면 곡선(표시용) |
 
 **구현 SSOT (2026-06-16)**
 
 | 파일 | 역할 |
 |------|------|
-| [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | `buildFlightRouteLine` · `resolveSummaryFlightCinemaOd` · `computeRouteFlyZoom` |
+| [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | `buildFlightRouteLine` · `buildGreatCircleChain` · `unwrapRouteLongitudes` · `computeRouteCameraView` |
 | [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc 레이어 · 카메라 · revealFullRoute · close |
 | [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 바로 보기 · 닫기 |
-| [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` — line 정책 숨김 제외 |
-| [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · deferred engine start |
-| [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | 써머리 진입 |
-| [`Home/index.jsx`](../src/pages/Home/index.jsx) | `flightCinemaActive` · overlay 숨김 |
+| [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
+| [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · `requestFlightCinema` |
+| [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 |
+| [`Home/index.jsx`](../src/pages/Home/index.jsx) | `flightCinemaActive` |
 | [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `startFlightCinema` · tour 동시 불가 |
 
 **상태·충돌**
 
-- 3D tour 중 flight cinema **시작 금지**.
-- `GLOBE_VIEW.flyZoom`(2.35) **변경 금지** — `computeRouteFlyZoom` 상한만 사용.
+- 3D tour 중 flight cinema **시작 금지** · (TODO) cinema active 중 **새 장소/투어** → cinema 종료.
+- `GLOBE_VIEW.flyZoom`(2.35) **변경 금지**.
 - 시네마 중 지구본 `opacity-100` (`isFlightCinemaActive`).
-- arc·바는 **닫기 전까지 유지** — 자동 종료 없음.
 
-**로컬 QA (Pass 2026-06-16)**
+**로컬 QA**
 
-- 홈 → sapa · danang · bali — 연속「항공 경로」·닫기 후 재시도 · **바로 보기**.
-- Mapbox 엔진 필수 (`?globe=legacy` 시 생략).
-- sapa 도착 = **HAN** SSOT (사파 마을 좌표 아님).
+- ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
+- ⏳ 연속 재실행 · cinema+투어 전환
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -289,19 +296,21 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — Trip CTA·항공권 카드 (Phase 2b 후속)**
+**항공 시네마 — arc 최적화·상태 충돌 (Phase 2b WIP)**
 
 ```
 @.ai-context.md @plans/2026-06-16-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-Trip연동
+항공-시네마-최적화
 
-Phase 2b 써머리 QA Pass — 플래너·MOONi Trip CTA 앞 시네마 · 항공권 연결 카드.
+Phase 2b arc 1차 후 — 재실행 실패 · 상태바+투어 충돌(새 장소카드 시 cinema 종료) · (선택) flightRouteWaypoints 환승 데이터.
+globeFlightCinemaEngine · FlightCinemaContext · HomeGlobeMapbox startTour/locationSelect.
+플래너·MOONi Trip 시네마 연동 금지 — 홈 써머리「항공 경로」만.
 ```
 
-**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — Phase 2b」** · 본 계획 **§Phase 2b**.
+**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — 세션 마감·다음」** · 본 계획 **§Phase 2b**.
 
-**금지 (3)**: `GLOBE_VIEW.flyZoom` 변경 · `navigate('/')` 왕복 MVP · releaseNotes 선반영(합의 후).
+**금지 (3)**: `GLOBE_VIEW.flyZoom` 변경 · 플래너 Trip CTA↔시네마 재연결 · releaseNotes 선반영.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 
@@ -326,7 +335,7 @@ Phase 2b 써머리 QA Pass — 플래너·MOONi Trip CTA 앞 시네마 · 항공
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **2b**: **다음 세션** — 항공 OD arc 시네마 · `TripcomFlightSearchContext` 연동
+- **2b**: **WIP** — 홈 써머리 OD arc · 재실행·투어 충돌 ⏳ · Trip/플래너 연동 없음
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 

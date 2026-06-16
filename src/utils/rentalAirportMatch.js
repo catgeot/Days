@@ -834,6 +834,27 @@ export function resolvePlannerFlightArrivalIata(location, options = {}) {
 }
 
 /**
+ * 항공 시네마 arc 경유점 — overrides `flightRouteWaypoints` [[lng, lat], ...] (최대 3).
+ * @param {Record<string, unknown> | null | undefined} location
+ * @returns {[number, number][]}
+ */
+export function getFlightRouteWaypoints(location) {
+  const row = getTravelSpotAirportRow(location);
+  const raw = row?.flightRouteWaypoints;
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+
+  const out = [];
+  for (const wp of raw.slice(0, 3)) {
+    if (!Array.isArray(wp) || wp.length < 2) continue;
+    const lng = Number(wp[0]);
+    const lat = Number(wp[1]);
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) continue;
+    out.push([lng, lat]);
+  }
+  return out;
+}
+
+/**
  * 항공권 검색 위젯: 도착지명·정식 공항명 대신 해당 여행지 IATA 코드 입력을 권장합니다.
  *
  * @param {Record<string, unknown> | null | undefined} location

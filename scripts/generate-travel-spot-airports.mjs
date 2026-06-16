@@ -69,6 +69,18 @@ function rowFromBanner(spot, banner) {
   };
 }
 
+function flightRouteWaypointsFromOverride(override) {
+  if (!Array.isArray(override?.flightRouteWaypoints) || !override.flightRouteWaypoints.length) {
+    return {};
+  }
+  const flightRouteWaypoints = override.flightRouteWaypoints
+    .slice(0, 3)
+    .filter((wp) => Array.isArray(wp) && wp.length >= 2)
+    .map((wp) => [Number(wp[0]), Number(wp[1])])
+    .filter(([lng, lat]) => Number.isFinite(lng) && Number.isFinite(lat));
+  return flightRouteWaypoints.length ? { flightRouteWaypoints } : {};
+}
+
 function rowFromOverride(override) {
   const iatas = filterRegisteredIatas(override.primaryIatas);
   if (!iatas.length) return null;
@@ -96,7 +108,8 @@ function rowFromOverride(override) {
     ...(override.klookRentalSearchMode ? { klookRentalSearchMode: override.klookRentalSearchMode } : {}),
     ...(override.tripFlightArrivalIata
       ? { tripFlightArrivalIata: String(override.tripFlightArrivalIata).trim().toUpperCase() }
-      : {})
+      : {}),
+    ...flightRouteWaypointsFromOverride(override),
   };
 }
 
@@ -174,7 +187,8 @@ function rowFromPlaceIdOverride(override) {
     ...(hints.length ? { searchHintIatas: hints } : {}),
     ...(override.tripFlightArrivalIata
       ? { tripFlightArrivalIata: String(override.tripFlightArrivalIata).trim().toUpperCase() }
-      : {})
+      : {}),
+    ...flightRouteWaypointsFromOverride(override),
   };
 }
 

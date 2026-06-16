@@ -2,7 +2,7 @@ import React from 'react';
 import { Plane } from 'lucide-react';
 
 /**
- * Flight OD arc cinema — 미리보기 전용 (Skip · 닫기).
+ * Flight OD arc cinema — 홈 지구본 미리보기 전용 (바로 보기 · 닫기).
  */
 export default function FlightCinemaBar({
   originIata,

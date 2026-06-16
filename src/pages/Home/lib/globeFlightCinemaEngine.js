@@ -1,10 +1,10 @@
 import {
-  buildArcCameraCenter,
   buildFlightRouteLine,
-  computeRouteFlyZoom,
+  computeRouteCameraView,
   sliceArcProgress,
   FLIGHT_CINEMA_DURATION_MS,
 } from './globeFlightCinema.js';
+import { normalizeLngNear } from './globeLngUtils.js';
 
 export const FLIGHT_CINEMA_ARC_SOURCE_ID = 'gateo-flight-cinema-arc';
 export const FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID = 'gateo-flight-cinema-endpoints';
@@ -179,11 +179,8 @@ export function clearFlightCinemaLayers(map) {
   });
 }
 
-function normalizeLngNear(currentLng, targetLng) {
-  let lng = targetLng;
-  while (lng - currentLng > 180) lng -= 360;
-  while (lng - currentLng < -180) lng += 360;
-  return lng;
+function normalizeLngNearRef(currentLng, targetLng) {
+  return normalizeLngNear(currentLng, targetLng);
 }
 
 /**
@@ -281,6 +278,7 @@ export function createFlightCinemaEngine(map, options = {}) {
    *   destIata: string,
    *   origin: { lng: number, lat: number },
    *   dest: { lng: number, lat: number },
+   *   location?: Record<string, unknown> | null,
    *   durationMs?: number,
    *   onComplete?: (reason: string) => void,
    * }} params
@@ -296,12 +294,14 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     const originLngLat = [params.origin.lng, params.origin.lat];
     const destLngLat = [params.dest.lng, params.dest.lat];
-    const fullArc = buildFlightRouteLine(originLngLat, destLngLat);
+    const fullArc = buildFlightRouteLine(originLngLat, destLngLat, {
+      location: params.location ?? null,
+    });
     fullArcRef = fullArc;
     const durationMs = params.durationMs ?? FLIGHT_CINEMA_DURATION_MS;
     const arcDrawMs = Math.round(durationMs * 0.6);
     const cameraMs = Math.round(durationMs * 0.45);
-    const routeZoom = computeRouteFlyZoom(params.origin, params.dest, flyZoom);
+    const cameraView = computeRouteCameraView(fullArc, params.origin, params.dest, flyZoom);
 
     if (!setupFlightCinemaLayers(map)) return false;
 
@@ -321,11 +321,10 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     autoRotateOff(map);
 
-    const center = buildArcCameraCenter(originLngLat, destLngLat);
-    const normalizedLng = normalizeLngNear(map.getCenter().lng, center.lng);
+    const normalizedLng = normalizeLngNearRef(map.getCenter().lng, cameraView.lng);
     const cameraTarget = {
-      center: [normalizedLng, center.lat],
-      zoom: routeZoom,
+      center: [normalizedLng, cameraView.lat],
+      zoom: cameraView.zoom,
       pitch: 0,
       bearing: 0,
     };

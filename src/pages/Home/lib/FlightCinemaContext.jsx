@@ -12,6 +12,7 @@ import FlightCinemaBar from '../components/FlightCinemaBar.jsx';
 import {
   estimateFlightHours,
   getAirportHubCoords,
+  resolveFlightCinemaOd,
 } from './globeFlightCinema.js';
 
 const FlightCinemaContext = createContext(null);
@@ -33,6 +34,7 @@ export function FlightCinemaProvider({
   const [active, setActive] = useState(null);
   const pendingCompleteRef = useRef(null);
   const pendingStartRef = useRef(null);
+  const pendingLocationRef = useRef(null);
 
   useEffect(() => {
     onActiveChange?.(Boolean(active));
@@ -42,6 +44,7 @@ export function FlightCinemaProvider({
     const onComplete = pendingCompleteRef.current;
     pendingCompleteRef.current = null;
     pendingStartRef.current = null;
+    pendingLocationRef.current = null;
     setActive(null);
     onComplete?.(reason);
   }, []);
@@ -56,6 +59,7 @@ export function FlightCinemaProvider({
       destIata: payload.destIata,
       origin: payload.origin,
       dest: payload.dest,
+      location: pendingLocationRef.current,
       onComplete: (reason) => finishCinema(reason),
     });
 
@@ -66,6 +70,7 @@ export function FlightCinemaProvider({
 
     globeRef.current?.closeFlightCinema?.();
     pendingStartRef.current = null;
+    pendingLocationRef.current = null;
     const fallback = pendingCompleteRef.current;
     pendingCompleteRef.current = null;
     setActive(null);
@@ -73,15 +78,34 @@ export function FlightCinemaProvider({
   }, [active, finishCinema, globeRef]);
 
   const requestFlightCinema = useCallback(
-    ({ originIata, destIata, onComplete }) => {
+    ({
+      originIata,
+      destIata,
+      origin,
+      dest,
+      location = null,
+      onComplete,
+    }) => {
       if (isTourActive) return false;
 
-      const origin = getAirportHubCoords(originIata);
-      const dest = getAirportHubCoords(destIata);
-      if (!origin || !dest) return false;
+      let normalizedOrigin = String(originIata || '').trim().toUpperCase();
+      let normalizedDest = String(destIata || '').trim().toUpperCase();
 
-      const normalizedOrigin = String(originIata).trim().toUpperCase();
-      const normalizedDest = String(destIata).trim().toUpperCase();
+      let resolvedOrigin = origin ?? (normalizedOrigin ? getAirportHubCoords(normalizedOrigin) : null);
+      let resolvedDest = dest ?? (normalizedDest ? getAirportHubCoords(normalizedDest) : null);
+
+      if (!resolvedOrigin || !resolvedDest || !normalizedOrigin || !normalizedDest) {
+        const od = resolveFlightCinemaOd(location, {
+          originIata: normalizedOrigin || undefined,
+        });
+        if (!od) return false;
+        normalizedOrigin = od.originIata;
+        normalizedDest = od.destIata;
+        resolvedOrigin = od.origin;
+        resolvedDest = od.dest;
+      }
+
+      if (!resolvedOrigin || !resolvedDest) return false;
       if (normalizedOrigin === normalizedDest) return false;
 
       if (active) {
@@ -89,17 +113,18 @@ export function FlightCinemaProvider({
         finishCinema('restart');
       }
 
-      pendingCompleteRef.current = onComplete;
+      pendingCompleteRef.current = onComplete ?? null;
+      pendingLocationRef.current = location;
       pendingStartRef.current = {
         originIata: normalizedOrigin,
         destIata: normalizedDest,
-        origin,
-        dest,
+        origin: resolvedOrigin,
+        dest: resolvedDest,
       };
       setActive({
         originIata: normalizedOrigin,
         destIata: normalizedDest,
-        flightHours: estimateFlightHours(origin, dest),
+        flightHours: estimateFlightHours(resolvedOrigin, resolvedDest),
       });
       return true;
     },

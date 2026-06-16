@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-11T12:18:52.180Z",
+    "generatedAt": "2026-06-16T13:05:00.912Z",
     "spotCount": 271,
     "placeIdCount": 620,
     "stats": {
@@ -364,7 +364,14 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "라파스·우유니 공항"
+      "rationale": "라파스·우유니 공항 · Trip LPB · 시네마 태평양 경유",
+      "tripFlightArrivalIata": "LPB",
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ]
     },
     "new-york": {
       "primaryIatas": [

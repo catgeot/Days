@@ -1,5 +1,14 @@
 /** 지구본 flyTo·클릭 — 경도 래핑·마커 스크린 히트 */
 
+/** @returns {number} shortest signed delta in degrees, in [-180, 180] */
+export function normalizeLngDeltaSigned(fromLng, toLng) {
+  if (typeof fromLng !== 'number' || typeof toLng !== 'number') return 0;
+  let delta = toLng - fromLng;
+  while (delta > 180) delta -= 360;
+  while (delta < -180) delta += 360;
+  return delta;
+}
+
 export function normalizeLngNear(fromLng, toLng) {
   if (typeof fromLng !== 'number' || typeof toLng !== 'number') return toLng;
   let lng = toLng;

@@ -38,3 +38,17 @@
 - **UX**: Skip→**바로 보기**(애니만 건너뜀) · **닫기**=정리
 - **QA**: 사용자 Pass
 - **후속**: Trip CTA·항공권 카드 연결
+
+## 항공 시네마 — arc·Trip CTA (2026-06-16)
+
+- **arc**: 3D slerp · 극우회(|lat|>58° long arc) · `unwrapRouteLongitudes`(날짜변경선) · `computeRouteCameraView` bbox 프레이밍
+- **우유니(LPB)**: overrides `tripFlightArrivalIata: LPB` · `flightRouteWaypoints: [[180,12]]` · `generate:airports`
+- **Trip 연동**: ~~`useFlightCinemaBeforeTripOpen`~~ **제거** — 시네마는 홈 써머리「항공 경로」전용 · 플래너·MOONi Trip CTA 직접 연결 없음(항공권 검색은 arc 최적화 후 재검토)
+
+## 항공 시네마 — 세션 마감·다음 (2026-06-16)
+
+- **커밋**: arc slerp·극/날짜변경선·LPB waypoint · Trip 연동 제거 · `requestFlightCinema` IATA 좌표 해석 fix
+- **미해결 QA**
+  1. 첫「항공 경로」후 **재실행 실패**
+  2. **상태바 미닫기** + 다른 장소카드 → **3D 투어 실패** — 새 카드 진입 시 기존 시네마/투어 **자동 종료** 기대
+- **후속 아이디어**: 항로 **데이터화** · 환승 관문 IATA waypoint(overrides `flightRouteWaypoints` 확장)
