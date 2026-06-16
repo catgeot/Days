@@ -8,7 +8,7 @@ import MooniAgentFab from './components/MooniAgentFab';
 import SearchDiscoveryModal from './components/SearchDiscoveryModal';
 import LogoPanel from './components/LogoPanel';
 import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
-import PlaceCardSummary from '../../components/PlaceCard/modes/PlaceCardSummary';
+import HomePlaceCardSummary from './components/HomePlaceCardSummary';
 import SEO from '../../components/SEO';
 
 import { supabase } from '../../shared/api/supabase';
@@ -27,6 +27,7 @@ import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords } from '../../utils/travelSpotResolve.js';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
+import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -142,14 +143,15 @@ function Home() {
   });
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
   const [tourPivoted, setTourPivoted] = useState(false);
+  const [flightCinemaActive, setFlightCinemaActive] = useState(false);
   const isTourActive = isTourMode(globeMode);
   const isTourCinema = isTourActive && isMobileViewport;
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
-  const shouldPauseGlobe = isCardExpanded
-    || isPlaceRoute
-    || routeLocation.pathname.startsWith('/explore');
+  const shouldPauseGlobe =
+    !flightCinemaActive
+    && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
 
   const {
     handleGlobeClick,
@@ -559,6 +561,11 @@ function Home() {
   }, [selectedLocation]);
 
   return (
+    <FlightCinemaProvider
+      globeRef={globeRef}
+      isTourActive={isTourActive}
+      onActiveChange={setFlightCinemaActive}
+    >
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       <SEO />
       <div className="w-full h-full">
@@ -573,6 +580,7 @@ function Home() {
           allTravelSpots={isPinVisible ? globeSpots : []}
           activePinId={selectedLocation?.id}
           pauseRender={shouldPauseGlobe}
+          isFlightCinemaActive={flightCinemaActive}
           globeTheme={globeTheme}
           isZenMode={isZenMode}
           isPinVisible={isPinVisible}
@@ -630,8 +638,8 @@ function Home() {
           }}
         />
 
-        {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && (
-          <PlaceCardSummary
+        {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive && (
+          <HomePlaceCardSummary
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
             onClose={() => {
@@ -657,6 +665,7 @@ function Home() {
           />
         )}
 
+        <div className={flightCinemaActive ? 'invisible pointer-events-none' : undefined}>
         <Outlet context={{
           location: selectedLocation,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
@@ -674,8 +683,9 @@ function Home() {
           initialExpanded: true,
           onExpandChange: setIsCardExpanded
         }} />
+        </div>
 
-        {!isPlaceRoute && (
+        {!isPlaceRoute && !flightCinemaActive && (
           <MooniAgentFab
             isChatOpen={isChatOpen}
             isZenMode={isZenMode}
@@ -686,6 +696,7 @@ function Home() {
 
         <ChatModal
           isOpen={isChatOpen}
+          overlaySuppressed={flightCinemaActive}
           mooniEntry={mooniChatEntry}
           mooniPlaceContext={mooniPlaceContext}
           onClose={() => {
@@ -798,6 +809,7 @@ function Home() {
         <Link to="/explore/middle-east">중동</Link>
       </div>
     </div>
+    </FlightCinemaProvider>
   );
 }
 export default Home;

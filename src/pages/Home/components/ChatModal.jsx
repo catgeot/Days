@@ -53,6 +53,7 @@ import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/
 
 const ChatModal = ({
   isOpen,
+  overlaySuppressed = false,
   onClose,
   mooniEntry = false,
   mooniPlaceContext = null,
@@ -701,7 +702,7 @@ const ChatModal = ({
 
   return (
     <TripcomFlightSearchProvider>
-    <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in">
+    <div className={`fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in ${overlaySuppressed ? 'invisible pointer-events-none' : ''}`}>
       <div className="bg-gray-900 w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none border border-gray-700 max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all">
 
         <div className="hidden md:flex w-72 bg-gray-900 border-r border-gray-700 flex-col">

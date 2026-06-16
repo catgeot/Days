@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, Sparkles, Maximize2, Mountain } from 'lucide-react';
+import { X, MessageSquare, Sparkles, Maximize2, Mountain, Plane } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 
-const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, onToggleBookmark, onStartTour, isCompact = false }) => {
+const PlaceCardSummary = ({
+  location,
+  isBookmarked,
+  onClose,
+  onExpand,
+  onChat,
+  onToggleBookmark,
+  onStartTour,
+  onPreviewFlightRoute,
+  canPreviewFlightRoute = false,
+  flightRouteLabel = null,
+  isCompact = false,
+}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [glowPhase, setGlowPhase] = useState('enter');
   const isScanning = location?.isScanning;
@@ -126,14 +138,28 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
               isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : 'max-h-[120px] opacity-100 mt-2'
             }`}
           >
-            <div className={`flex gap-2 ${canStartTour ? '' : ''}`}>
+            <div className={`flex gap-2 ${canStartTour || canPreviewFlightRoute ? 'flex-wrap' : ''}`}>
+              {canPreviewFlightRoute && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPreviewFlightRoute?.();
+                  }}
+                  className="flex-1 min-w-[calc(50%-0.25rem)] flex items-center justify-center gap-2 py-3 rounded-2xl bg-sky-500/15 border border-sky-400/35 hover:bg-sky-500/25 hover:border-sky-300/45 transition-all duration-300 z-10 relative"
+                  title={flightRouteLabel || '항공 경로 미리보기'}
+                >
+                  <Plane size={16} className="text-sky-300" />
+                  <span className="text-xs font-bold text-sky-100">항공 경로</span>
+                </button>
+              )}
               {canStartTour && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     if (onStartTour) onStartTour(location);
                   }}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-500/15 border border-blue-400/30 hover:bg-blue-500/25 hover:border-blue-300/40 transition-all duration-300 z-10 relative"
+                  className="flex-1 min-w-[calc(50%-0.25rem)] flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-500/15 border border-blue-400/30 hover:bg-blue-500/25 hover:border-blue-300/40 transition-all duration-300 z-10 relative"
                 >
                   <Mountain size={16} className="text-blue-300" />
                   <span className="text-xs font-bold text-blue-100">3D 투어</span>
@@ -144,7 +170,7 @@ const PlaceCardSummary = ({ location, isBookmarked, onClose, onExpand, onChat, o
                   e.stopPropagation();
                   if (onChat) onChat({ text: '' });
                 }}
-                className={`${canStartTour ? 'flex-1' : 'w-full'} flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.08] border border-white/15 hover:bg-white/12 hover:border-blue-400/30 transition-all duration-300 z-10 relative`}
+                className={`${canStartTour || canPreviewFlightRoute ? 'flex-1 min-w-[calc(50%-0.25rem)]' : 'w-full'} flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.08] border border-white/15 hover:bg-white/12 hover:border-blue-400/30 transition-all duration-300 z-10 relative`}
               >
                 <MessageSquare size={16} className="text-cyan-400" />
                 <span className="text-xs font-bold text-gray-200">MOONi</span>

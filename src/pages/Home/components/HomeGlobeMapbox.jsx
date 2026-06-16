@@ -54,6 +54,10 @@ import {
   updateClusterHullSource,
   updateClusterPoiSource
 } from '../lib/globeClusterBoundaries';
+import {
+  createFlightCinemaEngine,
+  setupFlightCinemaLayers,
+} from '../lib/globeFlightCinemaEngine';
 import { readGlobeShareViewFromUrl } from '../lib/globeExploreNav';
 import {
   applyEarlyMapboxGlobeLabelSuppress,
@@ -227,6 +231,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   allTravelSpots = [],
   activePinId,
   pauseRender = false,
+  isFlightCinemaActive = false,
   globeTheme = 'deep',
   isZenMode = false,
   isPinVisible = true,
@@ -257,6 +262,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const pendingFocusRef = useRef(null);
   const unbindSpaceDragGuardRef = useRef(null);
   const tourEngineRef = useRef(null);
+  const flightCinemaEngineRef = useRef(null);
+  const flightCinemaActiveRef = useRef(false);
   const tourActiveRef = useRef(false);
   const prevTourEngineModeRef = useRef(GLOBE_MODE.GLOBE_2D);
   const reachFetchGenRef = useRef(0);
@@ -755,7 +762,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const syncGateoMarkerLayers = useCallback(() => {
     const map = mapRef.current?.getMap();
-    if (!map || pauseRender) return;
+    if (!map || (pauseRender && !flightCinemaActiveRef.current)) return;
     if (!gateoMarkerLayersReady(map)) {
       setupGateoMarkerLayers(map);
     } else {
@@ -767,6 +774,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!clusterBoundaryLayersReady(map)) {
       setupClusterBoundaryLayers(map);
     }
+    setupFlightCinemaLayers(map);
     updateGateoMarkerSource(map, markerGeoJSON);
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
@@ -985,7 +993,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return tourEngineRef.current;
   }, [handleTourModeChange, handleTourUiChange]);
 
+  const ensureFlightCinemaEngine = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return null;
+    if (!flightCinemaEngineRef.current) {
+      flightCinemaEngineRef.current = createFlightCinemaEngine(map, {
+        defaultView: GLOBE_VIEW.default,
+        flyZoom: GLOBE_VIEW.flyZoom,
+      });
+    }
+    return flightCinemaEngineRef.current;
+  }, []);
+
   const startTour = useCallback(async (location) => {
+    if (flightCinemaActiveRef.current) return false;
     const map = mapRef.current?.getMap();
     if (!map || !location) return false;
     const lat = Number(location.lat);
@@ -1022,6 +1043,40 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       autoRotateRef.current = true;
     }
   }, [pauseRender]);
+
+  const startFlightCinema = useCallback((params) => {
+    if (isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
+      return false;
+    }
+    const map = mapRef.current?.getMap();
+    if (!map) return false;
+
+    safeMapResize(map);
+    autoRotateRef.current = false;
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    interactionRef.current = true;
+
+    const engine = ensureFlightCinemaEngine();
+    if (!engine) return false;
+
+    const started = engine.start({
+      ...params,
+      onComplete: (reason) => {
+        flightCinemaActiveRef.current = false;
+        interactionRef.current = false;
+        params.onComplete?.(reason);
+      },
+    });
+
+    if (started) {
+      flightCinemaActiveRef.current = true;
+    }
+    return started;
+  }, [ensureFlightCinemaEngine, globeMode]);
+
+  const skipFlightCinema = useCallback(() => {
+    flightCinemaEngineRef.current?.skip();
+  }, []);
 
   const finalizeSpaceReturn = useCallback(() => {
     interactionRef.current = false;
@@ -1083,7 +1138,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     },
     resumeRotation: () => {
-      if (pauseRender || isTourMode(globeMode)) return;
+      if (pauseRender || isTourMode(globeMode) || flightCinemaActiveRef.current) return;
       autoRotateRef.current = true;
     },
     flyToAndPin,
@@ -1106,8 +1161,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     skipTour,
     endTour,
     pivotTourExplore,
+    startFlightCinema,
+    skipFlightCinema,
     getGlobeMode: () => globeMode
-  }), [addRipple, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startTour]);
+  }), [addRipple, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipFlightCinema, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -1115,7 +1172,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const flyToCategoryFace = useCallback((category) => {
     const map = mapRef.current?.getMap();
-    if (!map || pauseRender || isTourMode(globeMode) || tourActiveRef.current) return false;
+    if (!map || pauseRender || isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
+      return false;
+    }
 
     const focus = getCategoryGlobeFaceView(category);
     if (!focus) return false;
@@ -1374,10 +1433,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   if (!MAPBOX_TOKEN) return null;
 
+  const globePaused = pauseRender && !isFlightCinemaActive;
+  const globeDimmed = isChatOpen && !isFlightCinemaActive;
+
   return (
     <div
       className={`absolute inset-0 z-0 transition-opacity duration-500 ${
-        pauseRender ? 'pointer-events-none invisible' : isChatOpen ? 'opacity-30' : 'opacity-100'
+        globePaused ? 'pointer-events-none invisible' : globeDimmed ? 'opacity-30' : 'opacity-100'
       }`}
       onPointerDown={handleInteractionStart}
       onPointerUp={handleInteractionEnd}

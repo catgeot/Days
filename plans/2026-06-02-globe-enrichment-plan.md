@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-09 — Phase **2** 정리(탐색 내비 UI 폐기) · Phase **3** hull WIP
+**갱신**: 2026-06-16 — Phase **2b** 항공 시네마 핸드오프 · Phase **3** ✅
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -28,6 +28,7 @@
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
+| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **다음 세션** — 플래너·MOONi → arc → Trip 모달 |
 | **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
@@ -211,6 +212,61 @@
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 
+### Phase 2b — 항공 시네마 (OD arc · WIP — 2026-06-16)
+
+**상태**: 써머리「항공 경로」미리보기 **1차 구현 · QA 미완** — Trip CTA 연동·항공권 카드는 **후속**.
+
+**제품 목표 (현재 스코프)**: 홈 써머리 장소카드 → ICN→도착 IATA great-circle arc · 약 N시간 · Skip/닫기.
+
+**UX (라우팅 왕복 ❌ · 시네마 인터럽트 ✅)**
+
+| 단계 | 동작 |
+|------|------|
+| 1 | 홈(`/`) 써머리 **`PlaceCardSummary`「항공 경로」** (`HomePlaceCardSummary`) |
+| 2 | 써머리 카드 숨김 · `flightCinemaActive` → `shouldPauseGlobe` 예외 |
+| 3 | Mapbox arc + `FlightCinemaBar`(Skip·닫기) |
+| 4 | 종료 → UI 복원 (**Trip 모달 없음** — 추후 연결) |
+
+**후속 (완성도 확인 후)**: 플래너·MOONi Trip CTA 앞 시네마 · 항공권 연결 카드.
+
+**데이터 SSOT (자유 텍스트 OD 금지)**
+
+| 항목 | SSOT |
+|------|------|
+| 출발 (써머리) | ICN — `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` |
+| 도착 | `getPlannerFlightArrivalIata(location)` |
+| 좌표 | `rentalAirportHubs.js` |
+| 비행 시간 | geodesic km ÷ 850km/h · 「약 N시간 · 직항 기준」 |
+
+**구현 SSOT (2026-06-16)**
+
+| 파일 | 역할 |
+|------|------|
+| [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | great-circle · `resolveSummaryFlightCinemaOd` · `computeRouteFlyZoom` |
+| [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc 레이어 · 카메라 · skip/cancel |
+| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | Skip · 닫기 |
+| [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · deferred engine start |
+| [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | 써머리 진입 |
+| [`Home/index.jsx`](../src/pages/Home/index.jsx) | `flightCinemaActive` · overlay 숨김 |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `startFlightCinema` · tour 동시 불가 |
+
+**상태·충돌**
+
+- 3D tour 중 flight cinema **시작 금지**.
+- `GLOBE_VIEW.flyZoom`(2.35) **변경 금지** — `computeRouteFlyZoom` 상한만 사용.
+- 시네마 중 지구본 `opacity-100` (`isFlightCinemaActive`).
+
+**알려진 이슈 (다음 세션)**
+
+- **1회차 sapa arc OK → 2번째 여행지 arc 실패** (점만 표시).
+- PlaceCard·`flightCinemaActiveRef` / engine `active` 잔류·레이어 reset 의심.
+- `setTimeout(performance.now())` 버그 수정됨 — 연속 재생 회귀 QA 필요.
+
+**로컬 QA**
+
+- 홈 → sapa · danang · bali — **연속**「항공 경로」·Skip 후 재시도.
+- Mapbox 엔진 필수 (`?globe=legacy` 시 생략).
+
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
 **트리거**: `focusSlug`가 [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) 멤버 · 줌 ≥ 3 또는 `TOUR_READY` · 1i Isochrone과 **별개**.
@@ -234,13 +290,21 @@
 
 ## 다음 세션 제시어
 
-```
-@.ai-context.md @plans/2026-06-09-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+**항공 시네마 (Phase 2b — WIP · 다음 세션)**
 
-홈 지구본 Phase 3 — 권역 hull·POI smoke (patagonia·iceland·borneo).
-Phase 2 완료 — flyTo min 2.35 변경 금지 · 공유 URL 복원만 유지.
-Phase 1g gateo 스모크 병행 가능.
 ```
+@.ai-context.md @plans/2026-06-16-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+
+항공-시네마-이어하기
+
+Phase 2b WIP — 써머리「항공 경로」연속 재생·PlaceCard 간섭 디버그.
+첫 sapa OK → 2번째 여행지 arc 실패 · engine/ref/레이어 reset 우선.
+완성 후 Trip CTA·항공권 카드 연결.
+```
+
+**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — 핸드오프」** · 본 계획 **§Phase 2b**.
+
+**금지 (3)**: `GLOBE_VIEW.flyZoom` 변경 · `navigate('/')` 왕복 MVP · `travelSpots.js` 전체 스캔 · releaseNotes 선반영.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 
@@ -265,6 +329,7 @@ Phase 1g gateo 스모크 병행 가능.
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
+- **2b**: **다음 세션** — 항공 OD arc 시네마 · `TripcomFlightSearchContext` 연동
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 
