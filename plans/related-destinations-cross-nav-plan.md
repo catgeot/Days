@@ -61,8 +61,9 @@
 }
 ```
 
-- **`slugs`**: `travelSpots.js`에 존재하는 slug만.
-- **확장 후보 클러스터**: `borneo-region`(borneo·…), `bali-region`, `iceland-region`(iceland·reykjavik) 등 — 공항·DB 정리 후 단계 추가.
+- **`slugs`**: `travelSpots.js`에 존재하는 slug만 · **slug당 1클러스터**.
+- **현재(2026-06-16)**: **31 권역 · 116 slug** — [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) · 일지 [`2026-06-16-project-log.md`](2026-06-16-project-log.md). UI: 지구본 `GlobeClusterLegend` · PlannerTab `RelatedTravelSpots`.
+- **추가 후보**: 일본 본州(kansai/kanto) · 중국 본토 · 미국 서부/동부 · `quito`+갈라파고스 — slug·공항 정리 후.
 
 ### 4.2 세부 slug 추가 절차 (체크리스트)
 

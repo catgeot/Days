@@ -1,12 +1,14 @@
 {
   "_meta": {
-    "note": "같은 권역·다른 관문 slug 클러스터. slugs는 travelSpots.js SSOT만 포함."
+    "note": "같은 권역·다른 관문 slug 클러스터. slugs는 travelSpots.js SSOT만 포함. slug당 1개 클러스터만.",
+    "updated": "2026-06-16",
+    "coverage": "31 clusters · 116 slugs (271 중 · 43%)"
   },
   "patagonia-region": {
     "labelKo": "파타고니아 권역",
     "labelEn": "Patagonia",
-    "slugs": ["patagonia", "el-calafate", "ushuaia", "torres-del-paine"],
-    "notes": "북부 BRC/EZE · 중남부 FTE · 남부 USH · 칠레 PUQ — 관문이 다름"
+    "slugs": ["patagonia", "el-calafate", "ushuaia", "torres-del-paine", "peninsula-valdes"],
+    "notes": "북부 BRC/EZE · 중남부 FTE · 남부 USH · 칠레 PUQ · 월반 PMY — 관문이 다름"
   },
   "iceland-region": {
     "labelKo": "아이슬란드 권역",
@@ -19,5 +21,173 @@
     "labelEn": "Borneo",
     "slugs": ["borneo", "kota-kinabalu", "brunei"],
     "notes": "섬 전역이지만 관문·입국·일정이 다름 — BKI(사바) · KCH(사라왕) · BWN(브루나이)"
+  },
+  "malaysia-peninsula-region": {
+    "labelKo": "말레이 반도 권역",
+    "labelEn": "Peninsular Malaysia",
+    "slugs": ["langkawi", "kuala-lumpur"],
+    "notes": "랑카위 LGK · 수도 KUL — 보르네오(BKI)와 혼동 주의"
+  },
+  "philippines-region": {
+    "labelKo": "필리핀 권역",
+    "labelEn": "Philippines",
+    "slugs": ["palawan", "el-nido", "boracay", "cebu", "bohol", "manila"],
+    "notes": "PPS · ENI · KLO · CEB · TAG · MNL — 섬마다 관문·일정이 다름"
+  },
+  "bali-region": {
+    "labelKo": "발리·누사 권역",
+    "labelEn": "Bali & Nusa",
+    "slugs": ["bali", "ubud", "lombok", "gili-meno"],
+    "notes": "발리·우붓 DPS · 롬복·길리 LOP — 동네는 가깝지만 관문·페리가 다름"
+  },
+  "java-region": {
+    "labelKo": "자바·코모도 권역",
+    "labelEn": "Java & Komodo",
+    "slugs": ["jakarta", "borobudur", "mount-bromo", "komodo-island"],
+    "notes": "CGK · YIA · SUB · LBJ — 자바와 플로레스·코모도는 별도 일정"
+  },
+  "papua-region": {
+    "labelKo": "파푸아 권역",
+    "labelEn": "Papua",
+    "slugs": ["raja-ampat", "carstensz-pyramid"],
+    "notes": "SOQ(라자암팻) · TIM(칼스텐즈) — 동부 뉴기니 원정·다이빙 관문이 다름"
+  },
+  "thailand-south-region": {
+    "labelKo": "태국 남부 권역",
+    "labelEn": "Southern Thailand",
+    "slugs": ["phuket", "krabi", "koh-samui", "phi-phi-islands"],
+    "notes": "HKT · KBV · USM — 안달만 vs 걸프 vs 코사무이 관문이 다름"
+  },
+  "thailand-north-region": {
+    "labelKo": "태국 중부·북부 권역",
+    "labelEn": "Central & Northern Thailand",
+    "slugs": ["bangkok", "chiang-mai", "ayutthaya"],
+    "notes": "BKK · CNX — 수도·북부 산악·유적권, 남부 해변과 일정이 다름"
+  },
+  "vietnam-region": {
+    "labelKo": "베트남 권역",
+    "labelEn": "Vietnam",
+    "slugs": ["hanoi", "halong-bay", "sapa", "hue", "hoi-an", "da-nang", "nha-trang", "phu-quoc"],
+    "notes": "북부 HAN · 중부 DAD · 남부 CXR · 푸꾸옥 PQC — 남북 관문·일정이 다름"
+  },
+  "india-golden-triangle-region": {
+    "labelKo": "인도 북부 권역",
+    "labelEn": "North India",
+    "slugs": ["delhi", "taj-mahal", "jaipur", "varanasi"],
+    "notes": "DEL · JAI · VNS — 수도·라지asthan·성지 관문·일정이 다름"
+  },
+  "hong-kong-macau-region": {
+    "labelKo": "홍콩·마카오 권역",
+    "labelEn": "Hong Kong & Macau",
+    "slugs": ["hong-kong", "macau"],
+    "notes": "HKG · MFM — 입국·통관·일정이 별도"
+  },
+  "japan-okinawa-region": {
+    "labelKo": "오키나와·남서 권역",
+    "labelEn": "Okinawa & Southwest Islands",
+    "slugs": ["ishigaki", "miyakojima"],
+    "notes": "ISG · SHI/MMY — 본岛·미야코·이시가키 관문이 다름"
+  },
+  "japan-kyushu-region": {
+    "labelKo": "큐슈 권역",
+    "labelEn": "Kyushu",
+    "slugs": ["fukuoka", "kumamoto", "nagasaki"],
+    "notes": "FUK · KMJ · NGS — 북·중·서 큐슈 관문·일정이 다름"
+  },
+  "micronesia-region": {
+    "labelKo": "미크로네시아 권역",
+    "labelEn": "Micronesia",
+    "slugs": ["yap", "chuuk", "kosrae", "pohnpei"],
+    "notes": "YAP · TKK · KOS · PNI — 섬마다 국제선 관문이 다름(HNL 경유 흔함)"
+  },
+  "french-polynesia-region": {
+    "labelKo": "프랑스령 폴리네시아 권역",
+    "labelEn": "French Polynesia",
+    "slugs": ["bora-bora", "tahiti"],
+    "notes": "BOB · PPT — 보라보라 vs 타히티 본岛 관문·일정이 다름"
+  },
+  "australia-east-region": {
+    "labelKo": "동부 호주 권역",
+    "labelEn": "East Australia",
+    "slugs": ["sydney", "melbourne", "brisbane", "gold-coast"],
+    "notes": "SYD · MEL · BNE · OOL — 동해안 도시마다 관문·일정이 다름"
+  },
+  "australia-outback-region": {
+    "labelKo": "호주 북부·내륙 권역",
+    "labelEn": "Australian Outback",
+    "slugs": ["uluru", "alice-springs"],
+    "notes": "AYQ · ASP — 울루루 vs 앨리스스프ings 내륙 관문"
+  },
+  "new-zealand-south-region": {
+    "labelKo": "뉴질랜드 남섬 권역",
+    "labelEn": "South Island NZ",
+    "slugs": ["queenstown", "milford-sound", "fiordland"],
+    "notes": "ZQN 관문 — 퀸스타운·밀퍼드·피오르드 일정 초점이 다름"
+  },
+  "tanzania-region": {
+    "labelKo": "탄자니아 권역",
+    "labelEn": "Tanzania",
+    "slugs": ["serengeti", "kilimanjaro", "zanzibar"],
+    "notes": "JRO(사파리·킬리) · ZNZ(잔지바르) — 본토 vs 섬 관문이 다름"
+  },
+  "nepal-region": {
+    "labelKo": "네팔 권역",
+    "labelEn": "Nepal",
+    "slugs": ["everest-base-camp", "annapurna-circuit", "kala-patthar"],
+    "notes": "KTM · PKR — 에베레스트 vs 안나푸르나 트레킹 관문·일정이 다름"
+  },
+  "peru-region": {
+    "labelKo": "페루 권역",
+    "labelEn": "Peru",
+    "slugs": ["machu-picchu", "cusco", "inca-trail", "arequipa", "nazca-lines"],
+    "notes": "CUZ(잉카) · AQP(아레키파) · LIM(나스카) — 고원·남부·리마 경유가 다름"
+  },
+  "norway-region": {
+    "labelKo": "노르웨이 권역",
+    "labelEn": "Norway",
+    "slugs": ["lofoten", "svalbard", "oslo"],
+    "notes": "EVE/BOO/LKN/SVJ · LYR · OSL — 로포텐·스발바르·수도 관문이 다름"
+  },
+  "turkey-region": {
+    "labelKo": "터키 권역",
+    "labelEn": "Turkey",
+    "slugs": ["istanbul", "cappadocia", "ephesus"],
+    "notes": "IST · ASR · ADB — 서부·중부·에게해 관문·일정이 다름"
+  },
+  "greece-region": {
+    "labelKo": "그리스 권역",
+    "labelEn": "Greece",
+    "slugs": ["santorini", "crete", "athens", "meteora"],
+    "notes": "JTR · HER · ATH · SKG — 섬·수도·내륙 관문이 다름"
+  },
+  "italy-region": {
+    "labelKo": "이탈리아 권역",
+    "labelEn": "Italy",
+    "slugs": ["venice", "milan", "dolomites", "cinque-terre", "la-spezia", "florence", "rome", "sicily"],
+    "notes": "VCE · MXP · FCO/FLR/PSA · CTA — 북·중·남·시칠리아 관문·일정이 다름"
+  },
+  "spain-region": {
+    "labelKo": "스페인 권역",
+    "labelEn": "Spain",
+    "slugs": ["barcelona", "madrid", "seville", "canary-islands", "ibiza", "santiago-de-compostela"],
+    "notes": "BCN · MAD · SVQ · TFS · IBZ · SCQ — 본토·카나리·발레아릭 관문이 다름"
+  },
+  "portugal-region": {
+    "labelKo": "포르투갈 권역",
+    "labelEn": "Portugal",
+    "slugs": ["lisbon", "porto", "azores", "madeira"],
+    "notes": "LIS · OPO · PDL · FNC — 본토·아조레스·마데이라 관문이 다름"
+  },
+  "croatia-region": {
+    "labelKo": "크로아티아 권역",
+    "labelEn": "Croatia",
+    "slugs": ["dubrovnik", "hvar", "plitvice-lakes", "zagreb"],
+    "notes": "DBV · SPU · ZAG — 아드리아 해안 vs 수도 내륙 관문"
+  },
+  "egypt-region": {
+    "labelKo": "이집트 권역",
+    "labelEn": "Egypt",
+    "slugs": ["cairo", "giza-pyramids", "luxor", "abu-simbel"],
+    "notes": "CAI · LXR · ASW — 수도·나일 중·남부 관문·일정이 다름"
   }
 }

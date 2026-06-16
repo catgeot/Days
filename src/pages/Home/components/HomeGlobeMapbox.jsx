@@ -61,6 +61,7 @@ import {
 } from '../lib/globeMapboxLabelPolicy';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
+import GlobeClusterLegend from './GlobeClusterLegend';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -1637,27 +1638,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       )}
 
       {showClusterOverlay && clusterOverlay.meta && !isZenMode && typeof document !== 'undefined' && createPortal(
-        <div
-          className={`fixed left-3 z-[55] pointer-events-none md:left-6 ${
+        <GlobeClusterLegend
+          focusSlug={focusSlug}
+          travelSpots={allTravelSpots.length > 0 ? allTravelSpots : travelSpots}
+          onSelectSpot={onMarkerClick}
+          className={`fixed left-3 z-[55] md:left-6 ${
             globeMode === GLOBE_MODE.TOUR_READY
               ? 'bottom-[calc(8.5rem+env(safe-area-inset-bottom,0px))] md:bottom-36'
               : 'bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] md:bottom-8'
           }`}
-          role="note"
-          aria-label="권역 클러스터 범례"
-        >
-          <div className="rounded-2xl border border-amber-400/20 bg-black/60 px-3 py-2.5 text-[11px] text-white/85 shadow-lg backdrop-blur-sm max-w-[13rem]">
-            <p className="mb-1 font-bold tracking-wide text-amber-100/95 break-keep">{clusterOverlay.meta.labelKo}</p>
-            <div className="flex items-center gap-2">
-              <span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-amber-400 shrink-0" aria-hidden="true" />
-              <span className="break-keep">권역 경계</span>
-            </div>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="inline-block h-2 w-2 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
-              <span className="break-keep">관문이 다른 여행지</span>
-            </div>
-          </div>
-        </div>,
+        />,
         document.body
       )}
 

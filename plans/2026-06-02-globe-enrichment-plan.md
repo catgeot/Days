@@ -28,7 +28,7 @@
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
-| **3** | 클러스터 경계·명소 POI | **WIP** — hull·POI 빌드 OK · QA·튜닝 대기 |
+| **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
 ---
@@ -211,19 +211,24 @@
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 
-### Phase 3 — 권역 hull + 주변 POI (2026-06-09 WIP)
+### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
 **트리거**: `focusSlug`가 [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) 멤버 · 줌 ≥ 3 또는 `TOUR_READY` · 1i Isochrone과 **별개**.
 
 | 파일 | 역할 |
 |------|------|
 | [`globeClusterBoundaries.js`](../src/pages/Home/lib/globeClusterBoundaries.js) | convex hull fill·점선 · sibling POI dot/label · 클릭 → `onMarkerClick` |
-| [`travelSpotClusters.js`](../src/utils/travelSpotClusters.js) | `getClusterMembersWithCoords` |
+| [`GlobeClusterLegend.jsx`](../src/pages/Home/components/GlobeClusterLegend.jsx) | 좌하단 **탭→목록→이동** — `getRelatedTravelSpots` · `onMarkerClick` |
+| [`travelSpotClusters.json`](../src/pages/Home/data/travelSpotClusters.json) | **31 권역 · 116 slug** (2026-06-16) — slug당 1클러스터 |
+| [`travelSpotClusters.js`](../src/utils/travelSpotClusters.js) | `getClusterMembersWithCoords` · `getRelatedTravelSpots` |
+| [`RelatedTravelSpots.jsx`](../src/components/PlaceCard/RelatedTravelSpots.jsx) | PlannerTab 동일 SSOT · 가로 스크롤바·드래그 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `gateo-cluster-*` 지명 정책 숨김 제외 |
 
-**시각**: amber hull(10% fill + dash line) · 관문 sibling 노란 핀·라벨 · 좌하단 권역 범례(1i 범례와 스택).
+**시각**: amber hull · sibling POI · 좌하단 **펼침형 권역 카드**(1i 범례와 스택).
 
-**로컬 QA 권장**: `/` → `patagonia`·`iceland`·`borneo` 클러스터 slug 선택 → 줌 인 hull·POI · POI 탭 전환 · 파타고니아+투어 후 hull+reach 동시 노출.
+**데이터 확장 기준**: 같은 광역·다른 관문 IATA · `travelSpotAirports.json` · overrides `searchHintIatas` — 일지 [`2026-06-16-project-log.md`](2026-06-16-project-log.md).
+
+**로컬 QA**: `patagonia`·`palawan`·`bali`·투어 `TOUR_READY` — hull·범례 목록·플래너 `RelatedTravelSpots` · 드래그 스크롤.
 
 ---
 
@@ -260,7 +265,7 @@ Phase 1g gateo 스모크 병행 가능.
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **3**: **WIP** — [`globeClusterBoundaries.js`](../src/pages/Home/lib/globeClusterBoundaries.js) · hull·sibling POI · QA 대기
+- **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 
 ---
