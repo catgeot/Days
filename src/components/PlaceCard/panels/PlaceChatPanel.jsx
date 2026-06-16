@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, X, Briefcase, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -120,7 +120,10 @@ const PlaceChatPanel = React.memo(({
       setTimeout(() => setCopiedType(''), 1200);
   };
 
-  const relatedPlaces = getRelatedPlaces(location);
+  const relatedPlaces = useMemo(
+    () => getRelatedPlaces(location),
+    [location?.id, location?.name]
+  );
 
   return (
     <div className={`flex flex-col transition-all duration-500

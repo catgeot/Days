@@ -13,7 +13,10 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, onRelatedClick
         return `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
     }, [selectedImg, selectedPlace]);
 
-    const relatedPlaces = useMemo(() => getRelatedPlaces(selectedPlace), [selectedPlace]);
+    const relatedPlaces = useMemo(
+        () => getRelatedPlaces(selectedPlace),
+        [selectedPlace?.id, selectedPlace?.name]
+    );
 
     return (
         <div className="animate-fade-in space-y-8 min-h-[200px] max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">

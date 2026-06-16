@@ -15,6 +15,27 @@ import { KEYWORD_SYNONYMS, KEYWORD_DB } from '../data/keywordData';
 
 const removeSpaces = (str) => (str || '').replace(/\s+/g, '').toLowerCase();
 
+/** 장소별 결정적 셔플 시드 — 탭 전환·리렌더 시 꼬꼬무 목록 고정 */
+const getPlaceSeed = (place) => {
+  const key = String(place?.id ?? place?.name ?? '');
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) || 1;
+};
+
+const seededShuffle = (array, seed) => {
+  const out = [...array];
+  let s = seed;
+  for (let i = out.length - 1; i > 0; i--) {
+    s = (Math.imul(1664525, s) + 1013904223) | 0;
+    const j = (s >>> 0) % (i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+};
+
 // 사전 계산된 정적 데이터 (성능 최적화)
 const ALL_PLACES = [...TRAVEL_SPOTS, ...(citiesData || [])];
 const MASTER_VALID_NAMES = new Set([
@@ -24,9 +45,11 @@ const MASTER_VALID_NAMES = new Set([
 
 // 🚨 [New] 꼬꼬무 장소 추천 로직 (4:1 유기적 셔플 & Safe Path 적용)
 export const getRelatedPlaces = (currentPlace) => {
-  // 🛡️ [Safe Path 1] 데이터가 없으면 랜덤 5개 반환
+  const seed = getPlaceSeed(currentPlace);
+
+  // 🛡️ [Safe Path 1] 데이터가 없으면 결정적 5개 반환
   if (!currentPlace) {
-    return [...ALL_PLACES].sort(() => 0.5 - Math.random()).slice(0, 5).map(spot => ({
+    return seededShuffle(ALL_PLACES, seed).slice(0, 5).map(spot => ({
       name: spot.name,
       data: spot,
       isBridge: false 
@@ -53,8 +76,8 @@ export const getRelatedPlaces = (currentPlace) => {
     relatedPool = otherPlaces;
   }
 
-  relatedPool = relatedPool.sort(() => 0.5 - Math.random());
-  bridgePool = bridgePool.sort(() => 0.5 - Math.random());
+  relatedPool = seededShuffle(relatedPool, seed);
+  bridgePool = seededShuffle(bridgePool, seed + 1);
 
   let finalPlaces = [];
 
@@ -73,7 +96,7 @@ export const getRelatedPlaces = (currentPlace) => {
     finalPlaces = relatedPool.slice(0, 5).map(p => ({ name: p.name, data: p, isBridge: false }));
   }
 
-  return finalPlaces.sort(() => 0.5 - Math.random());
+  return seededShuffle(finalPlaces, seed + 2);
 };
 
 export const useSearchEngine = () => {
