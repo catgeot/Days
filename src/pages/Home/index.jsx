@@ -589,10 +589,15 @@ function Home() {
     void beginGlobeTour(selectedLocation);
   }, [beginGlobeTour, selectedLocation]);
 
+  const endTourForFlightCinema = useCallback(async () => {
+    await globeRef.current?.endTour?.();
+  }, []);
+
   return (
     <FlightCinemaProvider
       globeRef={globeRef}
       isTourActive={isTourActive}
+      endTourForCinema={endTourForFlightCinema}
       onActiveChange={setFlightCinemaActive}
     >
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">

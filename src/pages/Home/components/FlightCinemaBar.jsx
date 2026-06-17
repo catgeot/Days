@@ -5,15 +5,18 @@ import { Plane } from 'lucide-react';
  * Flight OD arc cinema — 홈 지구본 미리보기 전용 (바로 보기 · 닫기).
  */
 export default function FlightCinemaBar({
-  originIata,
-  destIata,
+  routeIatas,
   flightHours,
+  isConnecting = false,
   onSkip,
   onClose,
   className = '',
 }) {
-  const routeLabel = `${originIata} → ${destIata}`;
-  const durationLabel = `약 ${flightHours}시간 · 직항 · 대권 항로`;
+  const routeLabel = Array.isArray(routeIatas) && routeIatas.length >= 2
+    ? routeIatas.join(' → ')
+    : '';
+  const connectionLabel = isConnecting ? '경유' : '직항';
+  const durationLabel = `약 ${flightHours}시간 · ${connectionLabel} · 대권 항로`;
 
   return (
     <div

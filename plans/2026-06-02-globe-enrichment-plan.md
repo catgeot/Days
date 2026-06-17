@@ -214,7 +214,7 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용 · WIP)
 
-**상태**: arc·재실행·cinema↔투어·모바일 투어 UI **1차 QA ✅(부분)** · **다음** 경유 chain·데스크톱 투어→시네마.
+**상태**: Phase 2b **경유 chain·데스크톱 투어→시네마 ✅** · kiribati QA Pass · **다음** 툴킷 DB→arc SSOT (프롬프트 변경 없음).
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」만 — ICN→도착 IATA arc · `FlightCinemaBar`(바로 보기·닫기) · **플래너·MOONi 항공권 위젯/링크와 시네마 분리**.
 
@@ -243,9 +243,10 @@
 | 항목 | SSOT |
 |------|------|
 | 출발 (써머리) | ICN — `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` |
-| 도착 | `getPlannerFlightArrivalIata(location)` |
+| 도착(arc) | `resolveCinemaDestIata` → `preferredLinkIata` |
 | 좌표 | `rentalAirportHubs.js` |
-| 경유(선택) | `travel-spot-airport-overrides.mjs` → `flightRouteWaypoints` [[lng,lat],…] |
+| 경유 hub | overrides `flightRouteHubIatas` · trip≠final 추론 · **(다음)** `journey_timeline` / `sync:airports-from-toolkit` |
+| 지리 waypoint | overrides `flightRouteWaypoints` [[lng,lat],…] (극/날짜변경선 등) |
 | 비행 시간 | geodesic km ÷ 850km/h · 「약 N시간 · 직항 · 대권 항로」 |
 | 표시 경로 | `buildFlightRouteLine` — 3D slerp · 극우회 · unwrap · 측면 곡선(표시용) |
 
@@ -265,7 +266,7 @@
 **상태·충돌**
 
 - 모바일: 투어 중 써머리 숨김 · `TourMobileBar` (`beginGlobeTour`/`tourLaunchPending`) ✅
-- 데스크톱: 투어 중 **풀 써머리 유지** —「항공 경로」→ **2D+시네마** 미구현 ⏳
+- 데스크톱: 투어 중「항공 경로」→ **endTour+2D+시네마** ✅ (2026-06-17)
 - 3D tour 중 flight cinema **동시 재생 금지** · cinema active 중 새 장소/투어 → cinema 종료 ✅
 - `GLOBE_VIEW.flyZoom`(2.35) **변경 금지**.
 - 시네마 중 지구본 `opacity-100` (`isFlightCinemaActive`).
@@ -274,7 +275,8 @@
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
 - ✅ 재실행 · cinema+투어 전환(모바일) — 부분 Pass
-- ⏳ 데스크톱 투어中 항공 경로 · 미크로네시아 경유 arc
+- ✅ kiribati ICN→NAN→TRW (2026-06-17)
+- ⏳ 툴킷 DB chain 자동 연동 (프롬프트 변경 없음)
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -299,22 +301,20 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — 경유 arc·투어→2D 시네마 (Phase 2b)**
+**항공 시네마 — 툴킷 SSOT→arc (Phase 2b 후속 · 프롬프트 변경 없음)**
 
 ```
-@.ai-context.md @plans/2026-06-16-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+@.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-경유arc
+항공-시네마-툴킷SSOT
 
-Phase 2b — flightRouteWaypoints·IATA 관문 chain(미크로네시아·HNL 등) · buildGreatCircleChain · bar 직항/경유 라벨.
-데스크톱 3D 투어 중「항공 경로」→ endTour·2D 복귀 후 requestFlightCinema.
-overrides.mjs → generate:airports · rentalAirportHubs(신규 IATA).
-플래너·MOONi Trip 시네마 연동 금지 — 홈 써머리「항공 경로」만.
+Phase 2b 후속 — essential_guide journey_timeline·extractArrivalIataCodesFromEssentialGuide 확장 → flight chain · sync:airports-from-toolkit bake · 홈 써머리 essentialGuide.
+update-place-toolkit 프롬프트·flight_route_iatas 신규 필드 금지. 플래너 Trip CTA↔시네마 연결 금지.
 ```
 
-**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — 세션 마감·다음」** · 본 계획 **§Phase 2b**.
+**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — 다음 세션」** · 본 계획 **§Phase 2b**.
 
-**금지 (3)**: `GLOBE_VIEW.flyZoom` 변경 · 플래너 Trip CTA↔시네마 재연결 · `travelSpotAirports.json` spots 직접 편집.
+**금지 (3)**: Edge 프롬프트 항로 필드 추가 · `GLOBE_VIEW.flyZoom` 변경 · Trip CTA↔시네마 재연결.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 

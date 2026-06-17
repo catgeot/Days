@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-16T13:05:00.912Z",
+    "generatedAt": "2026-06-17T10:07:19.597Z",
     "spotCount": 271,
     "placeIdCount": 620,
     "stats": {
@@ -2291,7 +2291,10 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "타라와 공항"
+      "rationale": "타라와 공항 · 시네마 ICN→피지(NAN)→TRW (툴킷 여정·Fiji Airways 루트)",
+      "flightRouteHubIatas": [
+        "NAN"
+      ]
     },
     "cape-verde": {
       "primaryIatas": [

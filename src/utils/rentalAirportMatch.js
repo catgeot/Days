@@ -833,6 +833,53 @@ export function resolvePlannerFlightArrivalIata(location, options = {}) {
   return typeof code === 'string' && code.length === 3 ? code.toUpperCase() : null;
 }
 
+/** 항공 시네마 arc 최종 도착 IATA — 렌터카 linkHub(preferredLinkIata) 우선, Trip 도착과 분리 */
+export function resolveCinemaDestIata(location, options = {}) {
+  const row = options.ignoreStaticAirportMap === true ? null : getTravelSpotAirportRow(location);
+  const preferred = String(row?.preferredLinkIata ?? '')
+    .trim()
+    .toUpperCase();
+  if (preferred.length === 3 && hubByIata(preferred)) return preferred;
+  return resolvePlannerFlightArrivalIata(location, options);
+}
+
+/**
+ * 항공 시네마 IATA 관문 chain — overrides `flightRouteHubIatas` 또는 trip≠final 자동 추론.
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ originIata?: string, destIata?: string, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {string[]}
+ */
+export function getFlightRouteHubIatas(location, options = {}) {
+  const origin = String(options.originIata ?? 'ICN').trim().toUpperCase();
+  const dest = String(
+    options.destIata ?? resolveCinemaDestIata(location, options) ?? ''
+  )
+    .trim()
+    .toUpperCase();
+  const row = options.ignoreStaticAirportMap === true ? null : getTravelSpotAirportRow(location);
+
+  let hubs = [];
+  if (Array.isArray(row?.flightRouteHubIatas) && row.flightRouteHubIatas.length) {
+    hubs = row.flightRouteHubIatas
+      .map((c) => String(c ?? '').trim().toUpperCase())
+      .filter((c) => c.length === 3 && hubByIata(c));
+  } else {
+    const trip = String(row?.tripFlightArrivalIata ?? '').trim().toUpperCase();
+    if (trip.length === 3 && hubByIata(trip) && trip !== dest && trip !== origin) {
+      hubs = [trip];
+    }
+  }
+
+  const seen = new Set([origin, dest]);
+  const out = [];
+  for (const code of hubs.slice(0, 3)) {
+    if (seen.has(code)) continue;
+    seen.add(code);
+    out.push(code);
+  }
+  return out;
+}
+
 /**
  * 항공 시네마 arc 경유점 — overrides `flightRouteWaypoints` [[lng, lat], ...] (최대 3).
  * @param {Record<string, unknown> | null | undefined} location

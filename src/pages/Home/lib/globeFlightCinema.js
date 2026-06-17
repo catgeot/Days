@@ -1,9 +1,12 @@
 import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import {
-  getPlannerFlightArrivalIata,
   TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
 } from '../../../utils/affiliate.js';
-import { getFlightRouteWaypoints } from '../../../utils/rentalAirportMatch.js';
+import {
+  getFlightRouteHubIatas,
+  getFlightRouteWaypoints,
+  resolveCinemaDestIata,
+} from '../../../utils/rentalAirportMatch.js';
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
 
 const FLIGHT_SPEED_KMH = 850;
@@ -40,6 +43,29 @@ export function haversineKm(a, b) {
 export function estimateFlightHours(origin, dest) {
   const km = haversineKm(origin, dest);
   return Math.max(1, Math.round(km / FLIGHT_SPEED_KMH));
+}
+
+/** @param {{ lat: number, lng: number }[]} chain origin → hubs → dest */
+export function estimateFlightHoursChain(chain) {
+  if (!Array.isArray(chain) || chain.length < 2) return 1;
+  let totalKm = 0;
+  for (let i = 0; i < chain.length - 1; i += 1) {
+    totalKm += haversineKm(chain[i], chain[i + 1]);
+  }
+  return Math.max(1, Math.round(totalKm / FLIGHT_SPEED_KMH));
+}
+
+/** @param {[number, number][]} anchors */
+function dedupeConsecutiveAnchors(anchors) {
+  if (!anchors.length) return [];
+  const out = [anchors[0]];
+  for (let i = 1; i < anchors.length; i += 1) {
+    const prev = out[out.length - 1];
+    const cur = anchors[i];
+    if (Math.abs(prev[0] - cur[0]) < 1e-6 && Math.abs(prev[1] - cur[1]) < 1e-6) continue;
+    out.push(cur);
+  }
+  return out;
 }
 
 /** @param {[number, number]} lngLat */
@@ -222,10 +248,27 @@ export function destinationPoint(lngLat, bearingDeg, distanceKm) {
  * @param {Record<string, unknown> | null | undefined} [location]
  * @returns {[number, number][]}
  */
-function resolveRouteAnchors(originLngLat, destLngLat, location) {
-  const waypoints = getFlightRouteWaypoints(location);
-  if (!waypoints.length) return [originLngLat, destLngLat];
-  return [originLngLat, ...waypoints, destLngLat];
+function resolveRouteAnchors(originLngLat, destLngLat, location, options = {}) {
+  const hubIatas = getFlightRouteHubIatas(location, {
+    originIata: options.originIata,
+    destIata: options.destIata,
+  });
+  const geoWaypoints = getFlightRouteWaypoints(location);
+  const hubCoords = hubIatas
+    .map((iata) => getAirportHubCoords(iata))
+    .filter(Boolean)
+    .map((hub) => [hub.lng, hub.lat]);
+
+  if (!geoWaypoints.length && !hubCoords.length) {
+    return [originLngLat, destLngLat];
+  }
+
+  return dedupeConsecutiveAnchors([
+    originLngLat,
+    ...geoWaypoints,
+    ...hubCoords,
+    destLngLat,
+  ]);
 }
 
 /**
@@ -236,12 +279,20 @@ function resolveRouteAnchors(originLngLat, destLngLat, location) {
  */
 export function buildFlightRouteLine(originLngLat, destLngLat, options = {}) {
   const points = options.points ?? 80;
-  const anchors = resolveRouteAnchors(originLngLat, destLngLat, options.location);
+  const anchors = resolveRouteAnchors(originLngLat, destLngLat, options.location, {
+    originIata: options.originIata,
+    destIata: options.destIata,
+  });
   const gcLine = buildGreatCircleChain(anchors, Math.max(24, Math.round(points / Math.max(1, anchors.length - 1))));
 
   const origin = { lng: originLngLat[0], lat: originLngLat[1] };
   const dest = { lng: destLngLat[0], lat: destLngLat[1] };
-  const km = haversineKm(origin, dest);
+  const chainPoints = [
+    origin,
+    ...anchors.slice(1, -1).map(([lng, lat]) => ({ lng, lat })),
+    dest,
+  ];
+  const km = estimateFlightHoursChain(chainPoints) * FLIGHT_SPEED_KMH;
   const peakKm = Math.min(240, Math.max(40, km * 0.055));
   const coords = [];
 
@@ -339,7 +390,7 @@ export function computeRouteFlyZoom(origin, dest, maxZoom = ROUTE_FLY_ZOOM_MAX) 
  * @param {{ originIata?: string, essentialGuide?: Record<string, unknown> | null }} [options]
  */
 export function resolveFlightCinemaOd(location, options = {}) {
-  const destIata = getPlannerFlightArrivalIata(location, {
+  const destIata = resolveCinemaDestIata(location, {
     essentialGuide: options.essentialGuide,
   });
   const originIata = options.originIata ?? TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
@@ -353,12 +404,28 @@ export function resolveFlightCinemaOd(location, options = {}) {
   const dest = getAirportHubCoords(normalizedDest);
   if (!origin || !dest) return null;
 
+  const hubIatas = getFlightRouteHubIatas(location, {
+    originIata: normalizedOrigin,
+    destIata: normalizedDest,
+  });
+  const routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
+  const chainPoints = [
+    origin,
+    ...hubIatas
+      .map((iata) => getAirportHubCoords(iata))
+      .filter(Boolean),
+    dest,
+  ];
+
   return {
     originIata: normalizedOrigin,
     destIata: normalizedDest,
+    hubIatas,
+    routeIatas,
+    isConnecting: hubIatas.length > 0,
     origin,
     dest,
-    flightHours: estimateFlightHours(origin, dest),
+    flightHours: estimateFlightHoursChain(chainPoints),
   };
 }
 

@@ -296,6 +296,8 @@ export function createFlightCinemaEngine(map, options = {}) {
     const destLngLat = [params.dest.lng, params.dest.lat];
     const fullArc = buildFlightRouteLine(originLngLat, destLngLat, {
       location: params.location ?? null,
+      originIata: params.originIata,
+      destIata: params.destIata,
     });
     fullArcRef = fullArc;
     const durationMs = params.durationMs ?? FLIGHT_CINEMA_DURATION_MS;

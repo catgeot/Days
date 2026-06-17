@@ -20,8 +20,9 @@ const FlightCinemaContext = createContext(null);
 /**
  * @param {{
  *   children: React.ReactNode,
- *   globeRef: React.RefObject<{ startFlightCinema?: Function, skipFlightCinema?: Function, closeFlightCinema?: Function } | null>,
+ *   globeRef: React.RefObject<{ startFlightCinema?: Function, skipFlightCinema?: Function, closeFlightCinema?: Function, endTour?: Function } | null>,
  *   isTourActive?: boolean,
+ *   endTourForCinema?: () => Promise<void>,
  *   onActiveChange?: (active: boolean) => void,
  * }} props
  */
@@ -29,6 +30,7 @@ export function FlightCinemaProvider({
   children,
   globeRef,
   isTourActive = false,
+  endTourForCinema,
   onActiveChange,
 }) {
   const [active, setActive] = useState(null);
@@ -56,7 +58,7 @@ export function FlightCinemaProvider({
   }, [active, finishCinema, globeRef, isTourActive]);
 
   const requestFlightCinema = useCallback(
-    ({
+    async ({
       originIata,
       destIata,
       origin,
@@ -64,13 +66,25 @@ export function FlightCinemaProvider({
       location = null,
       onComplete,
     }) => {
-      if (isTourActive) return false;
+      if (isTourActive) {
+        const endTour = endTourForCinema ?? globeRef.current?.endTour?.bind(globeRef.current);
+        if (typeof endTour === 'function') {
+          await endTour();
+        } else {
+          return false;
+        }
+      }
 
       let normalizedOrigin = String(originIata || '').trim().toUpperCase();
       let normalizedDest = String(destIata || '').trim().toUpperCase();
 
       let resolvedOrigin = origin ?? (normalizedOrigin ? getAirportHubCoords(normalizedOrigin) : null);
       let resolvedDest = dest ?? (normalizedDest ? getAirportHubCoords(normalizedDest) : null);
+
+      let hubIatas = [];
+      let routeIatas = [];
+      let isConnecting = false;
+      let flightHours = 1;
 
       if (!resolvedOrigin || !resolvedDest || !normalizedOrigin || !normalizedDest) {
         const od = resolveFlightCinemaOd(location, {
@@ -81,6 +95,18 @@ export function FlightCinemaProvider({
         normalizedDest = od.destIata;
         resolvedOrigin = od.origin;
         resolvedDest = od.dest;
+        hubIatas = od.hubIatas ?? [];
+        routeIatas = od.routeIatas ?? [normalizedOrigin, normalizedDest];
+        isConnecting = Boolean(od.isConnecting);
+        flightHours = od.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
+      } else {
+        const od = resolveFlightCinemaOd(location, {
+          originIata: normalizedOrigin,
+        });
+        hubIatas = od?.hubIatas ?? [];
+        routeIatas = od?.routeIatas ?? [normalizedOrigin, ...hubIatas, normalizedDest];
+        isConnecting = Boolean(od?.isConnecting);
+        flightHours = od?.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
       }
 
       if (!resolvedOrigin || !resolvedDest) return false;
@@ -105,11 +131,14 @@ export function FlightCinemaProvider({
       setActive({
         originIata: normalizedOrigin,
         destIata: normalizedDest,
-        flightHours: estimateFlightHours(resolvedOrigin, resolvedDest),
+        hubIatas,
+        routeIatas,
+        isConnecting,
+        flightHours,
       });
       return true;
     },
-    [finishCinema, globeRef, isTourActive]
+    [endTourForCinema, finishCinema, globeRef, isTourActive]
   );
 
   const skipFlightCinema = useCallback(() => {
@@ -137,9 +166,9 @@ export function FlightCinemaProvider({
           <div className="fixed inset-x-0 bottom-0 z-[120] flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-none md:bottom-8">
             <FlightCinemaBar
               className="w-full max-w-md md:max-w-lg"
-              originIata={active.originIata}
-              destIata={active.destIata}
+              routeIatas={active.routeIatas}
               flightHours={active.flightHours}
+              isConnecting={active.isConnecting}
               onSkip={skipFlightCinema}
               onClose={closeFlightCinema}
             />

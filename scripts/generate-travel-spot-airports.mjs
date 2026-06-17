@@ -81,6 +81,14 @@ function flightRouteWaypointsFromOverride(override) {
   return flightRouteWaypoints.length ? { flightRouteWaypoints } : {};
 }
 
+function flightRouteHubIatasFromOverride(override) {
+  if (!Array.isArray(override?.flightRouteHubIatas) || !override.flightRouteHubIatas.length) {
+    return {};
+  }
+  const flightRouteHubIatas = filterRegisteredIatas(override.flightRouteHubIatas).slice(0, 3);
+  return flightRouteHubIatas.length ? { flightRouteHubIatas } : {};
+}
+
 function rowFromOverride(override) {
   const iatas = filterRegisteredIatas(override.primaryIatas);
   if (!iatas.length) return null;
@@ -110,6 +118,7 @@ function rowFromOverride(override) {
       ? { tripFlightArrivalIata: String(override.tripFlightArrivalIata).trim().toUpperCase() }
       : {}),
     ...flightRouteWaypointsFromOverride(override),
+    ...flightRouteHubIatasFromOverride(override),
   };
 }
 
@@ -189,6 +198,7 @@ function rowFromPlaceIdOverride(override) {
       ? { tripFlightArrivalIata: String(override.tripFlightArrivalIata).trim().toUpperCase() }
       : {}),
     ...flightRouteWaypointsFromOverride(override),
+    ...flightRouteHubIatasFromOverride(override),
   };
 }
 

@@ -1039,7 +1039,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, []);
 
   const startFlightCinema = useCallback((params) => {
-    if (isTourMode(globeMode) || tourActiveRef.current) {
+    if (tourActiveRef.current) {
       return false;
     }
     const map = mapRef.current?.getMap();
@@ -1077,7 +1077,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       interactionRef.current = false;
     }
     return started;
-  }, [ensureFlightCinemaEngine, globeMode]);
+  }, [ensureFlightCinemaEngine]);
 
   const startTour = useCallback(async (location) => {
     if (flightCinemaActiveRef.current) {

@@ -20,7 +20,7 @@ export default function HomePlaceCardSummary(props) {
 
   const handlePreviewFlightRoute = () => {
     if (!flightPreview) return;
-    requestFlightCinema({
+    void requestFlightCinema({
       location,
       originIata: flightPreview.originIata,
       destIata: flightPreview.destIata,
@@ -35,7 +35,7 @@ export default function HomePlaceCardSummary(props) {
       canPreviewFlightRoute={canPreviewFlight}
       flightRouteLabel={
         flightPreview
-          ? `${flightPreview.originIata} → ${flightPreview.destIata}`
+          ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
           : null
       }
       onPreviewFlightRoute={canPreviewFlight ? handlePreviewFlightRoute : undefined}
