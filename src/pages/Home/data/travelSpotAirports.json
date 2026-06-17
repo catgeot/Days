@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-17T10:24:25.004Z",
+    "generatedAt": "2026-06-17T12:31:46.123Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
-      "override": 130,
+      "override": 134,
       "curatedPreserved": 0,
-      "toolkitSync": 141,
+      "toolkitSync": 137,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -63,9 +63,12 @@
       ],
       "preferredLinkIata": "MLE",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "말레 MLE 국제공항 · 시네마 ICN→두바이(DXB)→MLE (에미레이트 등 중동 경유)",
+      "flightRouteHubIatas": [
+        "DXB"
+      ]
     },
     "seychelles": {
       "primaryIatas": [
@@ -73,9 +76,12 @@
       ],
       "preferredLinkIata": "SEZ",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "마헤 SEZ 국제공항 · 시네마 ICN→두바이(DXB)→SEZ (에미레이트 등 중동 경유)",
+      "flightRouteHubIatas": [
+        "DXB"
+      ]
     },
     "fernando-de-noronha": {
       "primaryIatas": [
@@ -235,7 +241,16 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "케플라비크(KEF) 국제공항 — 레이캬비크·링로드 관문"
+      "rationale": "케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint",
+      "flightRouteWaypoints": [
+        [
+          50,
+          40
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "MUC"
+      ]
     },
     "victoria-falls": {
       "primaryIatas": [
@@ -309,9 +324,12 @@
       ],
       "preferredLinkIata": "MRU",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "모리셔스 SSR 국제공항 · 시네마 ICN→두바이(DXB)→MRU (에미레이트 등 중동 경유)",
+      "flightRouteHubIatas": [
+        "DXB"
+      ]
     },
     "christmas-island": {
       "primaryIatas": [
@@ -2361,9 +2379,18 @@
       ],
       "preferredLinkIata": "FAE",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "바가르 FAE · 플래너 ICN→유럽(코펜하겐 CPH) 환승→FAE · ICN↔CPH 직항 long-arc(지구 한 바퀴) 회피 waypoint",
+      "flightRouteWaypoints": [
+        [
+          50,
+          40
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "CPH"
+      ]
     },
     "kiribati": {
       "primaryIatas": [
@@ -2526,7 +2553,16 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "케플라비크(KEF) — 레이캬비크 시내 관문"
+      "rationale": "케플라비크 KEF — iceland와 동일 · 플래너 유럽 허브(뮌헨) 경유 시네마",
+      "flightRouteWaypoints": [
+        [
+          50,
+          40
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "MUC"
+      ]
     },
     "brisbane": {
       "primaryIatas": [

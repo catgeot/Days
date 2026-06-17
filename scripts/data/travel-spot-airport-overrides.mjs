@@ -161,6 +161,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'abu-simbel': { primaryIatas: ['ASW'], preferredLinkIata: 'ASW', confidence: 'high', rationale: '아스완 후 투어·국내선' },
   'milford-sound': { primaryIatas: ['ZQN'], preferredLinkIata: 'ZQN', confidence: 'high', rationale: '퀸즈타운 공항' },
   fiordland: { primaryIatas: ['ZQN'], preferredLinkIata: 'ZQN', confidence: 'high', rationale: '퀸즈타운·티아나우 관문' },
+  'faroe-islands': {
+    primaryIatas: ['FAE'],
+    preferredLinkIata: 'FAE',
+    flightRouteHubIatas: ['CPH'],
+    flightRouteWaypoints: [[50, 40]],
+    confidence: 'high',
+    rationale: '바가르 FAE · 플래너 ICN→유럽(코펜하겐 CPH) 환승→FAE · ICN↔CPH 직항 long-arc(지구 한 바퀴) 회피 waypoint',
+  },
   'christmas-island': {
     primaryIatas: ['XCH', 'PER'],
     preferredLinkIata: 'XCH',
@@ -220,6 +228,27 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   },
   svalbard: { primaryIatas: ['LYR'], preferredLinkIata: 'LYR', confidence: 'high', rationale: '롱위어비엔 공항' },
   madagascar: { primaryIatas: ['TNR'], preferredLinkIata: 'TNR', confidence: 'high', rationale: '안타ananarivo 국제공항' },
+  mauritius: {
+    primaryIatas: ['MRU'],
+    preferredLinkIata: 'MRU',
+    flightRouteHubIatas: ['DXB'],
+    confidence: 'high',
+    rationale: '모리셔스 SSR 국제공항 · 시네마 ICN→두바이(DXB)→MRU (에미레이트 등 중동 경유)',
+  },
+  maldives: {
+    primaryIatas: ['MLE'],
+    preferredLinkIata: 'MLE',
+    flightRouteHubIatas: ['DXB'],
+    confidence: 'high',
+    rationale: '말레 MLE 국제공항 · 시네마 ICN→두바이(DXB)→MLE (에미레이트 등 중동 경유)',
+  },
+  seychelles: {
+    primaryIatas: ['SEZ'],
+    preferredLinkIata: 'SEZ',
+    flightRouteHubIatas: ['DXB'],
+    confidence: 'high',
+    rationale: '마헤 SEZ 국제공항 · 시네마 ICN→두바이(DXB)→SEZ (에미레이트 등 중동 경유)',
+  },
   'marshall-islands': {
     primaryIatas: ['MAJ', 'GUM', 'HNL'],
     preferredLinkIata: 'MAJ',
@@ -280,8 +309,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   iceland: {
     primaryIatas: ['KEF'],
     preferredLinkIata: 'KEF',
+    flightRouteHubIatas: ['MUC'],
+    flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
-    rationale: '케플라비크(KEF) 국제공항 — 레이캬비크·링로드 관문'
+    rationale: '케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint',
   },
   phuket: {
     primaryIatas: ['HKT'],
@@ -292,8 +323,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   reykjavik: {
     primaryIatas: ['KEF'],
     preferredLinkIata: 'KEF',
+    flightRouteHubIatas: ['MUC'],
+    flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
-    rationale: '케플라비크(KEF) — 레이캬비크 시내 관문'
+    rationale: '케플라비크 KEF — iceland와 동일 · 플래너 유럽 허브(뮌헨) 경유 시네마',
   },
   madeira: {
     primaryIatas: ['FNC'],

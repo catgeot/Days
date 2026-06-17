@@ -212,32 +212,43 @@
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 
-### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용 · QA 잔여)
+### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: 경유 chain·투어→시네마·**툴킷 SSOT→arc ✅** · kiribati·micronesia(HNL) QA Pass · **다음** 스모크·arc UX 최적화.
+**상태**: 경유 chain·투어→시네마·툴킷 SSOT→arc ✅ · long-arc 보정(DXB·CPH·MUC) · 사용자 QA Pass(페로·아이슬란드) · **다음** Bar UX·전여행지 QA·홈 상호작용.
 
-**제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」만 — ICN→도착 IATA arc · `FlightCinemaBar`(바로 보기·닫기) · **플래너·MOONi 항공권 위젯/링크와 시네마 분리**.
+**제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**(항공권 CTA는 Bar에서 연결 예정).
 
-**UX (라우팅 왕복 ❌ · 시네마 인터럽트 ✅)**
+**대권 항로 (arc 엔진)**
 
-| 단계 | 동작 |
-|------|------|
-| 1 | 홈(`/`) 써머리 **`HomePlaceCardSummary`「항공 경로」** |
-| 2 | 써머리 카드 숨김 · `flightCinemaActive` → `shouldPauseGlobe` 예외 |
-| 3 | Mapbox arc + `FlightCinemaBar` |
-| 4 | arc·바 **닫기**까지 유지 · 닫기 → UI 복원 |
-| 5 | 닫기 후 동일 버튼 **재재생** ✅ (2026-06-16 세션) |
+- `buildGreatCircleChain` + 북극(≥58°) 시 **long-arc** 선택 → ICN↔고위도·대서양이 **지구 한 바퀴**로 보일 수 있음.
+- **전역 제거 비권장** — 남미·극권 등 다른 노선 회귀. **slug `flightRouteHubIatas`·`flightRouteWaypoints`** 로 구간 분할(페로·아이슬란드·우유니 패턴).
+- **DB 후보**: Supabase `essential_guide`·`journey_timeline` → `sync:airports-from-toolkit` hub bake — 플래너와 정합·수동 QA 감소. **long-arc waypoint**는 기하학상 여전히 필요할 수 있음(HEL→KEF 등).
 
-**미해결 (다음 세션 — 최적화·스모크)**
+**미해결 (다음 세션)**
 
 | # | 증상 | 방향 |
 |---|------|------|
-| 1 | toolkit-sync만 있는 slug arc | overrides 없는 경유 slug gateo 스모크 · `sync`+`generate` drift |
-| 2 | 2구간+ arc UX | 카메라·bar·극/날짜변경선 waypoint 튜닝 |
-| 3 | Phase 1g | 2D 복귀·Skip·모바일 `TourMobileBar` |
-| 4 | (선택) GUM 관문 | ICN→GUM→YAP — Trip·티켓 패턴 합의 후 |
+| 1 | 전 여행지 arc | 사용자 수동 QA → 이상 slug만 overrides |
+| 2 | Bar 데스크톱 시인성 | 밝은 글로우 배경 |
+| 3 | 「바로 보기」 | arc 즉시 완료 → **「항공권 확인」** · 플래너 탭 또는 Trip 모달 |
+| 4 | 시네마 중 홈 | 연관 키워드 → 시네마 종료(지명 클릭 동일) · 카테고리 버튼 pan 정상화 |
+| 5 | (보류) GUM 관문 | ICN→GUM→YAP |
 
-**보류**: 시네마 종료 후 **항공권 검색** 연결 · **GUM 경유 arc** (배너는 HNL/GUM 병기)
+**보류**: GUM 경유 arc · 시네마→Trip **임의** 연결(Bar CTA 합의 후)
+
+**로컬 QA**
+
+- ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
+
+### Phase 2c — 상세 여정 시뮬레이션 (장기 · 미구현)
+
+**북극성**: 플래너 `journey_timeline`을 **지도 위 선형 시간** 체험 — 항공 arc → 도로/렌터카 → 페리 등 단계별 포커스·모형·안내 카드.
+
+**예시 (서울→길리메노)**: ICN 출발 포커스 → 항공 arc·기체 → DPS 도착 → 패당바이 렌터카/도로 → 페리 → 길리메노 · 상태바·지구본 **카드** · 닫기/다른 여행지 선택 시 **초기화**.
+
+**추가**: 도착지 **숙소 카드** · 완성도 충분 후 단계적 구현(2b Bar·arc QA 선행).
+
+**가능성**: 2b arc·Bar·플래너 SSOT 위에 **세그먼트 타입**(flight/ground/ferry)·`journey_timeline` STEP 매핑으로 **찬찬히 누적 구현 가능** — 2c는 별도 Phase로 문서만 유지.
 
 **데이터 SSOT (자유 텍스트 OD 금지)**
 
@@ -275,9 +286,8 @@
 **로컬 QA**
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
-- ✅ 재실행 · cinema+투어 전환(모바일) — 부분 Pass
-- ✅ kiribati ICN→NAN→TRW · yap/pohnpei ICN→HNL→현지 (2026-06-17)
-- ⏳ toolkit-sync 경유 slug · arc UX · Phase 1g 스모크
+- ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
+- ⏳ 전 여행지 arc · Bar UX · 시네마 중 키워드·카테고리
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -302,21 +312,21 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — 최적화·스모크 (Phase 2b QA 잔여)**
+**항공 시네마 — UX·전여행지 QA (Phase 2b)**
 
 ```
 @.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-최적화QA
+항공-시네마-UX·전여행지QA
 
-Phase 2b — toolkit-sync 경유 arc 스모크 · 2구간+ 카메라/bar UX · Phase 1g 홈 지구본 스모크.
-kiribati·micronesia HNL arc Pass 완료. GUM 관문 arc·Trip CTA↔시네마는 보류.
-update-place-toolkit 프롬프트·flight_route_iatas·GLOBE_VIEW.flyZoom 변경 금지.
+Phase 2b — FlightCinemaBar 글로우·항공권 확인 CTA · 시네마 중 연관키워드·카테고리 버튼 · 전 여행지 arc 수동 QA 후보 반영.
+long-arc 보정(DXB·CPH·MUC) Pass. Phase 2c 여정 시뮬레이션은 문서만·구현 보류.
+update-place-toolkit 프롬프트·GLOBE_VIEW.flyZoom 변경 금지.
 ```
 
-**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — 다음 세션」** · 본 계획 **§Phase 2b**.
+**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「다음 세션」** · 본 계획 **§Phase 2b·2c**.
 
-**금지 (3)**: Edge 프롬프트 항로 필드 · `GLOBE_VIEW.flyZoom` 변경 · Trip CTA↔시네마 연결.
+**금지 (3)**: Edge 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA 임의 연결.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 
