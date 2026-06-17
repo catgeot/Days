@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import PlaceCardSummary from '../../../components/PlaceCard/modes/PlaceCardSummary';
+import { useChatEssentialGuide } from '../../../hooks/useChatEssentialGuide.js';
 import { useFlightCinema } from '../lib/FlightCinemaContext.jsx';
 import {
   canPreviewFlightRoute,
@@ -11,21 +12,29 @@ export default function HomePlaceCardSummary(props) {
   const { requestFlightCinema } = useFlightCinema();
   const { location } = props;
 
+  const slug = location?.slug ? String(location.slug).trim().toLowerCase() : null;
+  const essentialGuide = useChatEssentialGuide(slug, location?.name ?? '');
+
   const flightPreview = useMemo(
-    () => resolveSummaryFlightCinemaOd(location),
-    [location]
+    () => resolveSummaryFlightCinemaOd(location, { essentialGuide }),
+    [location, essentialGuide]
   );
 
-  const canPreviewFlight = canPreviewFlightRoute(location);
+  const canPreviewFlight = useMemo(
+    () => canPreviewFlightRoute(location, { essentialGuide }),
+    [location, essentialGuide]
+  );
 
   const handlePreviewFlightRoute = () => {
     if (!flightPreview) return;
     void requestFlightCinema({
       location,
+      essentialGuide,
       originIata: flightPreview.originIata,
       destIata: flightPreview.destIata,
       origin: flightPreview.origin,
       dest: flightPreview.dest,
+      hubIatas: flightPreview.hubIatas,
     });
   };
 

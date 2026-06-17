@@ -279,6 +279,8 @@ export function createFlightCinemaEngine(map, options = {}) {
    *   origin: { lng: number, lat: number },
    *   dest: { lng: number, lat: number },
    *   location?: Record<string, unknown> | null,
+   *   hubIatas?: string[],
+   *   essentialGuide?: Record<string, unknown> | null,
    *   durationMs?: number,
    *   onComplete?: (reason: string) => void,
    * }} params
@@ -298,6 +300,8 @@ export function createFlightCinemaEngine(map, options = {}) {
       location: params.location ?? null,
       originIata: params.originIata,
       destIata: params.destIata,
+      hubIatas: params.hubIatas,
+      essentialGuide: params.essentialGuide ?? null,
     });
     fullArcRef = fullArc;
     const durationMs = params.durationMs ?? FLIGHT_CINEMA_DURATION_MS;

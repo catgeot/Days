@@ -579,6 +579,71 @@ export function extractArrivalIataCodesFromEssentialGuide(guide) {
   return ordered.length ? ordered : null;
 }
 
+function getJourneyTimelineFromGuide(guide) {
+  if (!guide || typeof guide !== 'object') return null;
+  const timeline = guide.journey_timeline ?? guide.categories?.journey_timeline;
+  return Array.isArray(timeline) && timeline.length ? timeline : null;
+}
+
+function sortJourneyTimelineSteps(timeline) {
+  const indexed = timeline.map((item, idx) => ({ item, idx }));
+  indexed.sort((a, b) => {
+    const sa = Number(a.item?.step);
+    const sb = Number(b.item?.step);
+    if (Number.isFinite(sa) && Number.isFinite(sb) && sa !== sb) return sa - sb;
+    return a.idx - b.idx;
+  });
+  return indexed.map(({ item }) => item);
+}
+
+/**
+ * `journey_timeline` STEP 순 항공 IATA chain → 출발·최종 도착 제외 경유 hub (최대 3).
+ * 시네마 arc·`sync:airports-from-toolkit` bake용 — 도착 배너용 `extractArrivalIataCodesFromEssentialGuide`와 분리.
+ *
+ * @param {Record<string, unknown> | null | undefined} guide
+ * @param {{ originIata?: string, finalDestIata?: string }} [options]
+ * @returns {string[] | null}
+ */
+export function extractFlightRouteHubIatasFromEssentialGuide(guide, options = {}) {
+  const timeline = getJourneyTimelineFromGuide(guide);
+  if (!timeline) return null;
+
+  const origin = String(options.originIata ?? 'ICN').trim().toUpperCase();
+  const sorted = sortJourneyTimelineSteps(timeline);
+
+  const chainOrdered = [];
+  const seen = new Set();
+
+  for (const step of sorted) {
+    const title = step?.title;
+    if (typeof title !== 'string' || !title.trim()) continue;
+
+    const stepCodes = [];
+    const stepSeen = new Set();
+    collectIataFromTitle(stepCodes, stepSeen, title, true);
+    if (stepCodes.length === 0) {
+      collectIataFromTitle(stepCodes, stepSeen, title, false);
+    }
+    for (const code of stepCodes) {
+      if (!seen.has(code)) {
+        seen.add(code);
+        chainOrdered.push(code);
+      }
+    }
+  }
+
+  if (chainOrdered.length === 0) return null;
+
+  const finalDest = String(options.finalDestIata ?? '').trim().toUpperCase();
+  const dest =
+    finalDest.length === 3 && hubByIata(finalDest)
+      ? finalDest
+      : chainOrdered[chainOrdered.length - 1];
+
+  const hubs = chainOrdered.filter((code) => code !== origin && code !== dest);
+  return hubs.length ? hubs.slice(0, 3) : null;
+}
+
 const PLANNER_SOURCED_RENTAL_BANNER_NOTE =
   '도착 공항은 이 툴킷 AI가 정리한 여정·항공 안내와 맞추었습니다. 실제 티켓과 다르면 도착 공항 코드를 기준으로 바꿔 주세요.';
 
@@ -844,9 +909,9 @@ export function resolveCinemaDestIata(location, options = {}) {
 }
 
 /**
- * 항공 시네마 IATA 관문 chain — overrides `flightRouteHubIatas` 또는 trip≠final 자동 추론.
+ * 항공 시네마 IATA 관문 chain — overrides `flightRouteHubIatas` · `tripFlightArrivalIata`≠최종 · 툴킷 timeline.
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ originIata?: string, destIata?: string, ignoreStaticAirportMap?: boolean }} [options]
+ * @param {{ originIata?: string, destIata?: string, essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
  * @returns {string[]}
  */
 export function getFlightRouteHubIatas(location, options = {}) {
@@ -867,6 +932,12 @@ export function getFlightRouteHubIatas(location, options = {}) {
     const trip = String(row?.tripFlightArrivalIata ?? '').trim().toUpperCase();
     if (trip.length === 3 && hubByIata(trip) && trip !== dest && trip !== origin) {
       hubs = [trip];
+    } else if (options.essentialGuide && typeof options.essentialGuide === 'object') {
+      const fromGuide = extractFlightRouteHubIatasFromEssentialGuide(options.essentialGuide, {
+        originIata: origin,
+        finalDestIata: dest,
+      });
+      if (fromGuide?.length) hubs = fromGuide;
     }
   }
 

@@ -1748,19 +1748,72 @@
     ]
   },
   "costa-rica": {
-    "landmarkName": "Manuel Antonio coast",
+    "landmarkName": "Cordillera — Arenal",
     "center": [
-      -84.395,
-      9.392
+      -84.0,
+      9.75
     ],
-    "template": "coastalOrbit",
     "exaggeration": 1.35,
-    "orbit": {
-      "zoom": 13.8,
-      "pitch": 57,
-      "orbitSpan": 112,
-      "smoothOrbit": true
-    }
+    "tourReady": true,
+    "keyframes": [
+      {
+        "center": [
+          -84.0,
+          9.75
+        ],
+        "zoom": 8.8,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          -84.0,
+          9.75
+        ],
+        "zoom": 9.5,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -84.35,
+          10.1
+        ],
+        "zoom": 10.2,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -84.55,
+          10.35
+        ],
+        "zoom": 10.8,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -84.703,
+          10.463
+        ],
+        "zoom": 11.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
   },
   "cinque-terre": {
     "landmarkName": "Manarola village coast",
@@ -3280,6 +3333,74 @@
         "center": [
           -22.905,
           16.597
+        ],
+        "zoom": 12.5,
+        "pitch": 55,
+        "bearing": 120,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
+  },
+  "new-caledonia": {
+    "landmarkName": "Grande Terre — Nouméa",
+    "center": [
+      165.85,
+      -21.35
+    ],
+    "exaggeration": 1.25,
+    "tourReady": true,
+    "keyframes": [
+      {
+        "center": [
+          165.85,
+          -21.35
+        ],
+        "zoom": 9.5,
+        "pitch": 10,
+        "bearing": -40,
+        "duration": 0
+      },
+      {
+        "center": [
+          165.85,
+          -21.35
+        ],
+        "zoom": 10.5,
+        "pitch": 40,
+        "bearing": -10,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          165.95,
+          -21.55
+        ],
+        "zoom": 11,
+        "pitch": 48,
+        "bearing": 30,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          166.12,
+          -21.85
+        ],
+        "zoom": 11.5,
+        "pitch": 52,
+        "bearing": 75,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          166.22,
+          -22.05
         ],
         "zoom": 12.5,
         "pitch": 55,

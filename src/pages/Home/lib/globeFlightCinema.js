@@ -249,10 +249,13 @@ export function destinationPoint(lngLat, bearingDeg, distanceKm) {
  * @returns {[number, number][]}
  */
 function resolveRouteAnchors(originLngLat, destLngLat, location, options = {}) {
-  const hubIatas = getFlightRouteHubIatas(location, {
-    originIata: options.originIata,
-    destIata: options.destIata,
-  });
+  const hubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
+    ? options.hubIatas
+    : getFlightRouteHubIatas(location, {
+        originIata: options.originIata,
+        destIata: options.destIata,
+        essentialGuide: options.essentialGuide,
+      });
   const geoWaypoints = getFlightRouteWaypoints(location);
   const hubCoords = hubIatas
     .map((iata) => getAirportHubCoords(iata))
@@ -275,13 +278,15 @@ function resolveRouteAnchors(originLngLat, destLngLat, location, options = {}) {
  * 직항 대권 항로 + 구면 측면 오프셋 — 항공 지도에서 흔한 곡선 표현(거리·시간 SSOT는 haversine 유지).
  * @param {[number, number]} originLngLat
  * @param {[number, number]} destLngLat
- * @param {{ points?: number, location?: Record<string, unknown> | null }} [options]
+ * @param {{ points?: number, location?: Record<string, unknown> | null, hubIatas?: string[], essentialGuide?: Record<string, unknown> | null }} [options]
  */
 export function buildFlightRouteLine(originLngLat, destLngLat, options = {}) {
   const points = options.points ?? 80;
   const anchors = resolveRouteAnchors(originLngLat, destLngLat, options.location, {
     originIata: options.originIata,
     destIata: options.destIata,
+    hubIatas: options.hubIatas,
+    essentialGuide: options.essentialGuide,
   });
   const gcLine = buildGreatCircleChain(anchors, Math.max(24, Math.round(points / Math.max(1, anchors.length - 1))));
 
@@ -407,6 +412,7 @@ export function resolveFlightCinemaOd(location, options = {}) {
   const hubIatas = getFlightRouteHubIatas(location, {
     originIata: normalizedOrigin,
     destIata: normalizedDest,
+    essentialGuide: options.essentialGuide,
   });
   const routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
   const chainPoints = [
@@ -432,14 +438,15 @@ export function resolveFlightCinemaOd(location, options = {}) {
 /**
  * 써머리 카드 — ICN → 도착 IATA (플래너·Trip SSOT)
  * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
  */
-export function resolveSummaryFlightCinemaOd(location) {
-  return resolveFlightCinemaOd(location, {});
+export function resolveSummaryFlightCinemaOd(location, options = {}) {
+  return resolveFlightCinemaOd(location, options);
 }
 
-/** @param {Record<string, unknown> | null | undefined} location */
-export function canPreviewFlightRoute(location) {
-  return Boolean(resolveSummaryFlightCinemaOd(location));
+/** @param {Record<string, unknown> | null | undefined} location @param {{ essentialGuide?: Record<string, unknown> | null }} [options] */
+export function canPreviewFlightRoute(location, options = {}) {
+  return Boolean(resolveSummaryFlightCinemaOd(location, options));
 }
 
 export const FLIGHT_CINEMA_DURATION_MS = 5500;

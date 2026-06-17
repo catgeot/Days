@@ -212,9 +212,9 @@
 
 **폐기**: `GlobeExploreNavControls.jsx` (+/−/나침반) · `shouldShowGlobeExploreNav` · explore 전용 auto-rotate guard.
 
-### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용 · WIP)
+### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용 · QA 잔여)
 
-**상태**: Phase 2b **경유 chain·데스크톱 투어→시네마 ✅** · kiribati QA Pass · **다음** 툴킷 DB→arc SSOT (프롬프트 변경 없음).
+**상태**: 경유 chain·투어→시네마·**툴킷 SSOT→arc ✅** · kiribati·micronesia(HNL) QA Pass · **다음** 스모크·arc UX 최적화.
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」만 — ICN→도착 IATA arc · `FlightCinemaBar`(바로 보기·닫기) · **플래너·MOONi 항공권 위젯/링크와 시네마 분리**.
 
@@ -228,15 +228,16 @@
 | 4 | arc·바 **닫기**까지 유지 · 닫기 → UI 복원 |
 | 5 | 닫기 후 동일 버튼 **재재생** ✅ (2026-06-16 세션) |
 
-**미해결 (다음 세션 — 경유 arc 우선)**
+**미해결 (다음 세션 — 최적화·스모크)**
 
 | # | 증상 | 방향 |
 |---|------|------|
-| 1 | **데스크톱 3D 투어 중** 써머리「항공 경로」클릭 무반응 | `isTourActive` gate 제거 또는 **`endTour`→2D 후 `requestFlightCinema`** · 데스크톱은 투어 중 풀 카드 유지 정책 |
-| 2 | **미크로네시아** 등 ICN→HNL 등 허브만 arc | overrides **`flightRouteWaypoints`** / **IATA 관문 chain** (HNL→로컬 도착) · `buildGreatCircleChain` · bar **직항→경유** 라벨 |
-| 3 | (선택) 환승 slug 일괄 | `travel-spot-airport-overrides.mjs` → `generate:airports` · kiribati·micronesia 등 |
+| 1 | toolkit-sync만 있는 slug arc | overrides 없는 경유 slug gateo 스모크 · `sync`+`generate` drift |
+| 2 | 2구간+ arc UX | 카메라·bar·극/날짜변경선 waypoint 튜닝 |
+| 3 | Phase 1g | 2D 복귀·Skip·모바일 `TourMobileBar` |
+| 4 | (선택) GUM 관문 | ICN→GUM→YAP — Trip·티켓 패턴 합의 후 |
 
-**보류**: 시네마 종료 후 **항공권 검색** 연결 — arc QA Pass 후 제품 결정.
+**보류**: 시네마 종료 후 **항공권 검색** 연결 · **GUM 경유 arc** (배너는 HNL/GUM 병기)
 
 **데이터 SSOT (자유 텍스트 OD 금지)**
 
@@ -245,7 +246,7 @@
 | 출발 (써머리) | ICN — `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` |
 | 도착(arc) | `resolveCinemaDestIata` → `preferredLinkIata` |
 | 좌표 | `rentalAirportHubs.js` |
-| 경유 hub | overrides `flightRouteHubIatas` · trip≠final 추론 · **(다음)** `journey_timeline` / `sync:airports-from-toolkit` |
+| 경유 hub | overrides `flightRouteHubIatas` · **`tripFlightArrivalIata`≠최종** · `journey_timeline`/`sync:airports-from-toolkit` |
 | 지리 waypoint | overrides `flightRouteWaypoints` [[lng,lat],…] (극/날짜변경선 등) |
 | 비행 시간 | geodesic km ÷ 850km/h · 「약 N시간 · 직항 · 대권 항로」 |
 | 표시 경로 | `buildFlightRouteLine` — 3D slerp · 극우회 · unwrap · 측면 곡선(표시용) |
@@ -275,8 +276,8 @@
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
 - ✅ 재실행 · cinema+투어 전환(모바일) — 부분 Pass
-- ✅ kiribati ICN→NAN→TRW (2026-06-17)
-- ⏳ 툴킷 DB chain 자동 연동 (프롬프트 변경 없음)
+- ✅ kiribati ICN→NAN→TRW · yap/pohnpei ICN→HNL→현지 (2026-06-17)
+- ⏳ toolkit-sync 경유 slug · arc UX · Phase 1g 스모크
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -301,20 +302,21 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — 툴킷 SSOT→arc (Phase 2b 후속 · 프롬프트 변경 없음)**
+**항공 시네마 — 최적화·스모크 (Phase 2b QA 잔여)**
 
 ```
 @.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-툴킷SSOT
+항공-시네마-최적화QA
 
-Phase 2b 후속 — essential_guide journey_timeline·extractArrivalIataCodesFromEssentialGuide 확장 → flight chain · sync:airports-from-toolkit bake · 홈 써머리 essentialGuide.
-update-place-toolkit 프롬프트·flight_route_iatas 신규 필드 금지. 플래너 Trip CTA↔시네마 연결 금지.
+Phase 2b — toolkit-sync 경유 arc 스모크 · 2구간+ 카메라/bar UX · Phase 1g 홈 지구본 스모크.
+kiribati·micronesia HNL arc Pass 완료. GUM 관문 arc·Trip CTA↔시네마는 보류.
+update-place-toolkit 프롬프트·flight_route_iatas·GLOBE_VIEW.flyZoom 변경 금지.
 ```
 
 **읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「항공 시네마 — 다음 세션」** · 본 계획 **§Phase 2b**.
 
-**금지 (3)**: Edge 프롬프트 항로 필드 추가 · `GLOBE_VIEW.flyZoom` 변경 · Trip CTA↔시네마 재연결.
+**금지 (3)**: Edge 프롬프트 항로 필드 · `GLOBE_VIEW.flyZoom` 변경 · Trip CTA↔시네마 연결.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 

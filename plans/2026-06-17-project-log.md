@@ -16,16 +16,27 @@
 
 ## 항공 시네마 — Phase 2b 경유 arc·데스크톱 투어→시네마
 
-- **경유 chain**: `resolveCinemaDestIata`(preferredLink) · `getFlightRouteHubIatas`(explicit 또는 trip≠final) · `buildGreatCircleChain` · bar **경유/직항**
+- **경유 chain**: `resolveCinemaDestIata`(preferredLink) · `getFlightRouteHubIatas` · `buildGreatCircleChain` · bar **경유/직항**
 - **데스크톱 투어**: `endTour`→2D 후 `requestFlightCinema` ✅
-- **데이터(1차)**: overrides `flightRouteHubIatas` · 미크로네시아 `tripFlightArrivalIata` 자동 추론 · kiribati **NAN** (HNL 오류 수정)
-- **QA**: kiribati ICN→NAN→TRW **Pass** — 플래너 여정과 arc 일치 · 시뮬레이션 신뢰 → 예약 퍼널 신뢰도 기대(제품)
+- **QA**: kiribati ICN→NAN→TRW **Pass**
 
-## 항공 시네마 — 다음 세션 (툴킷 SSOT 연동)
+## 항공 시네마 — Phase 2b 툴킷 SSOT→arc
 
-- **방향**: DB `essential_guide.journey_timeline`·기존 항공 SSOT 활용 — **`update-place-toolkit` 프롬프트 변경 없음** (현재 툴킷 정확도 유지·대부분 slug DB 저장됨)
-- **후보 SSOT**: `extractArrivalIataCodesFromEssentialGuide` 확장 → **STEP 순 flight chain** · `sync:airports-from-toolkit` → `flightRouteHubIatas` bake · 홈 써머리 `essentialGuide` lazy-load
-- **금지**: Edge 프롬프트 `flight_route_iatas` 신규 필드 · 플래너 Trip CTA↔시네마 직접 연결 · `GLOBE_VIEW.flyZoom` 변경
-- **보류**: 시네마 종료 후 Trip 검색 연결 — arc+툴킷 SSOT Pass 후
+- **`extractFlightRouteHubIatasFromEssentialGuide`**: `journey_timeline` STEP 순 chain → hub bake · `sync:airports-from-toolkit`
+- **홈 써머리**: `useChatEssentialGuide` lazy-load → 라벨·arc `hubIatas`/`essentialGuide` 전달
+- **hub 우선순위**: `flightRouteHubIatas` → **`tripFlightArrivalIata`≠최종** → 툴킷 timeline
+- **미크로네시아**: yap/chuuk/kosrae/pohnpei/marshall `flightRouteHubIatas: HNL` — GUM timeline 오탐 회귀
+- **QA**: kiribati·yap·pohnpei HNL 경유 arc **Pass** (괌 경유 일정은 배너 대안·arc 미반영 — 제품 보류)
+
+## 항공 시네마 — 다음 세션 (최적화·테스트)
+
+| # | 후보 | 방향 |
+|---|------|------|
+| 1 | toolkit-sync 경유 arc | overrides 없는 slug 스모크 · `sync`+`generate` drift |
+| 2 | 2구간+ arc UX | 카메라·bar 시간·극/날짜변경선 waypoint 튜닝 |
+| 3 | Phase 1g | 홈 지구본 스모크(2D·Skip·모바일 `TourMobileBar`) |
+| 4 | (선택) GUM 관문 | ICN→GUM→YAP arc — Trip·티켓 패턴 합의 후 |
+
+**금지**: `update-place-toolkit` 프롬프트 · `flight_route_iatas` 필드 · Trip CTA↔시네마 · `GLOBE_VIEW.flyZoom` 변경
 
 **제시어** — [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) §다음 세션

@@ -64,6 +64,8 @@ export function FlightCinemaProvider({
       origin,
       dest,
       location = null,
+      essentialGuide = null,
+      hubIatas: hubIatasParam,
       onComplete,
     }) => {
       if (isTourActive) {
@@ -89,6 +91,7 @@ export function FlightCinemaProvider({
       if (!resolvedOrigin || !resolvedDest || !normalizedOrigin || !normalizedDest) {
         const od = resolveFlightCinemaOd(location, {
           originIata: normalizedOrigin || undefined,
+          essentialGuide,
         });
         if (!od) return false;
         normalizedOrigin = od.originIata;
@@ -102,10 +105,11 @@ export function FlightCinemaProvider({
       } else {
         const od = resolveFlightCinemaOd(location, {
           originIata: normalizedOrigin,
+          essentialGuide,
         });
-        hubIatas = od?.hubIatas ?? [];
+        hubIatas = hubIatasParam ?? od?.hubIatas ?? [];
         routeIatas = od?.routeIatas ?? [normalizedOrigin, ...hubIatas, normalizedDest];
-        isConnecting = Boolean(od?.isConnecting);
+        isConnecting = hubIatas.length > 0 || Boolean(od?.isConnecting);
         flightHours = od?.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
       }
 
@@ -120,6 +124,8 @@ export function FlightCinemaProvider({
         origin: resolvedOrigin,
         dest: resolvedDest,
         location,
+        hubIatas,
+        essentialGuide,
         onComplete: (reason) => finishCinema(reason),
       });
 

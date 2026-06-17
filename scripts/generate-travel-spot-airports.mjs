@@ -82,11 +82,18 @@ function flightRouteWaypointsFromOverride(override) {
 }
 
 function flightRouteHubIatasFromOverride(override) {
-  if (!Array.isArray(override?.flightRouteHubIatas) || !override.flightRouteHubIatas.length) {
-    return {};
+  if (Array.isArray(override?.flightRouteHubIatas) && override.flightRouteHubIatas.length) {
+    const flightRouteHubIatas = filterRegisteredIatas(override.flightRouteHubIatas).slice(0, 3);
+    return flightRouteHubIatas.length ? { flightRouteHubIatas } : {};
   }
-  const flightRouteHubIatas = filterRegisteredIatas(override.flightRouteHubIatas).slice(0, 3);
-  return flightRouteHubIatas.length ? { flightRouteHubIatas } : {};
+  const trip = String(override.tripFlightArrivalIata ?? '').trim().toUpperCase();
+  const preferred = String(override.preferredLinkIata ?? override.primaryIatas?.[0] ?? '')
+    .trim()
+    .toUpperCase();
+  if (trip.length === 3 && preferred.length === 3 && trip !== preferred && hubByIata.has(trip)) {
+    return { flightRouteHubIatas: [trip] };
+  }
+  return {};
 }
 
 function rowFromOverride(override) {
