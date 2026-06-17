@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-17 — Phase **2b** arc corridor·민감 공역 핸드오프 · Phase **3** ✅
+**갱신**: 2026-06-17 — Phase **2b** corridor A~E·bermuda fix ✅ · Phase **3** ✅
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -28,7 +28,7 @@
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
-| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **다음 세션** — 플래너·MOONi → arc → Trip 모달 |
+| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **WIP** — corridor ✅ · **다음** arc spot-check · Bar UX |
 | **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
@@ -214,7 +214,7 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: 경유 chain·투어→시네마·툴킷 SSOT→arc ✅ · slug hub(DXB·CPH·MUC) ✅ · **다음 구현** arc corridor A~E · **이후** Bar UX·홈 상호작용.
+**상태**: corridor A~E ✅ · 5클릭 QA ✅ · bermuda 남극 long-arc fix ✅ · **다음** 사용자 arc spot-check·잔여 bbox · **이후** Bar UX·홈 상호작용.
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**(항공권 CTA는 Bar에서 연결 예정).
 
@@ -224,32 +224,32 @@
 - NOTAM/FIR 정밀 항로 **아님** — 「약 N시간 · 대권 항로」·경유 시 Bar **「ICN → DXB → CDG · 경유」** (실제 항로와 동일 문구 금지).
 - **anchor 우선순위**: (1) overrides/`journey_timeline` hub (2) 권역 corridor (3) avoid guard 재빌드 (4) 기하만.
 
-**대권 항로 (arc 엔진 — 변경 예정 A)**
+**대권 항로 (arc 엔진 — A ✅)**
 
-- 현재: 북극(≥58°) short arc → **long arc** → ICN→유럽 **지구 한 바퀴** (~30 slug).
-- **A**: `chooseGreatCircleOmega` — long arc는 **목적지 lng < -30 (아메리카)** 만. 유럽 short arc는 시베리아 경로 → **B+C로 우회**.
+- long arc: **목적지 lng < -30** · polar(≥58°) 또는 short-arc 민감공역 교차 시 — **남극권(minLat<-58) long arc 거부**(bermuda 등)
+- 유럽·북대서양: short arc + **corridor/guard** (`[125,33]`→DXB→`[20,42]`→dest · Atlantic lat 15–45)
 - **전역 polar 제거 금지** — 남미(uyuni 등) 회귀. slug waypoint(LPB `[180,12]` 등) 유지.
 
-**arc corridor · 민감 공역 (다음 세션 B~E)**
+**arc corridor · 민감 공역 (A~E ✅ 2026-06-17)**
 
 | 단계 | 파일·작업 | 내용 |
 |------|-----------|------|
-| **A** | [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | long arc **아메리카 한정** |
-| **B** | `flightRouteCorridors.js` (신규) | ICN→유럽(lat 35–72, lng -25–45): hub 없을 때 **`[125,33]` 출발** + **DXB** fallback |
-| **C** | `flightRouteAvoidZones.js` (신규) | bbox: **북한** · **우크라이나** · **러시아 50°N+** — 교차 시 corridor/DXB 재빌드 · **RU 목적지 guard skip** |
-| **D** | `scripts/audit-flight-arcs.mjs` | `npm run audit:flight-arcs` |
-| **E** | `resolveRouteAnchors` · 5클릭 QA | 예외 slug만 overrides |
+| **A** | [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | long arc **아메리카 한정** · Antarctic 거부 |
+| **B** | [`flightRouteCorridors.js`](../src/pages/Home/lib/flightRouteCorridors.js) | ICN→유럽·북대서양 `[125,33]`+DXB · 지중해 `[20,42]` |
+| **C** | [`flightRouteAvoidZones.js`](../src/pages/Home/lib/flightRouteAvoidZones.js) | bbox guard · **RU 목적지 skip** |
+| **D** | [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
+| **E** | `resolveFlightRoutePlan` · 5클릭 QA | overrides>corridor>guard |
 
-**권역 기본 정책**: 서·북유럽 `[125,33]`→DXB→dest · 남유럽 직항 · KEF/FAE MUC/CPH · 인도양 DXB · 미크로네시아 HNL · 남미 polar · **RU 목적지 우회 없음**.
+**권역 기본 정책**: 서·북유럽 `[125,33]`→DXB→`[20,42]`→dest · 북대서양·Caribbean(lat 15–45) `[125,33]`→DXB · 남유럽 직항 · KEF/FAE MUC/CPH · 인도양 DXB · 미크로네시아 HNL · 남미 polar · **RU 목적지 우회 없음**.
 
-**5클릭 QA**: paris·london·amsterdam · seychelles · iceland/faroe · moscow · uyuni.
+**5클릭 QA ✅**: paris·london·amsterdam · seychelles · iceland/faroe · moscow · uyuni · **bermuda**(DXB·남극 회피).
 
-**미해결 (corridor Pass 후)**: Bar 글로우·「항공권 확인」 · 시네마 중 키워드·카테고리 · (보류) GUM·Trip CTA.
+**다음**: 사용자 **항공 경로 spot-check** · audit 잔여(~24 slug bbox) · Bar UX · 시네마 중 키워드 · (보류) GUM·Trip CTA.
 
 **로컬 QA**
 
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
-- ⏳ corridor A~E · 5클릭 QA
+- ✅ corridor A~E · 5클릭 QA · bermuda (2026-06-17)
 
 ### Phase 2c — 상세 여정 시뮬레이션 (장기 · 미구현)
 
@@ -277,10 +277,10 @@
 
 | 파일 | 역할 |
 |------|------|
-| [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | `buildFlightRouteLine` · `buildGreatCircleChain` · `unwrapRouteLongitudes` · `computeRouteCameraView` · **A** long arc |
-| `flightRouteCorridors.js` (신규) | **B** ICN→유럽 `[125,33]`+DXB · `resolveCorridorAnchors` |
-| `flightRouteAvoidZones.js` (신규) | **C** bbox guard · `sampleChainCrossesZones` |
-| `scripts/audit-flight-arcs.mjs` (신규) | **D** `npm run audit:flight-arcs` |
+| [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | `resolveFlightRoutePlan` · long arc · Antarctic 거부 |
+| [`flightRouteCorridors.js`](../src/pages/Home/lib/flightRouteCorridors.js) | 유럽·북대서양 corridor · `resolveRegionalCorridorAnchors` |
+| [`flightRouteAvoidZones.js`](../src/pages/Home/lib/flightRouteAvoidZones.js) | bbox guard · `coordsCrossAvoidZones` |
+| [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
 | [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc 레이어 · 카메라 · revealFullRoute · close |
 | [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 바로 보기 · 닫기 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
@@ -300,8 +300,8 @@
 **로컬 QA**
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
-- ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
-- ⏳ corridor A~E · 5클릭 QA · Bar UX · 시네마 중 키워드·카테고리
+- ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC · corridor·bermuda (2026-06-17)
+- ⏳ 사용자 arc spot-check · Bar UX · 시네마 중 키워드·카테고리
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -326,21 +326,17 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — arc corridor·민감 공역 (Phase 2b)**
+**항공 시네마 — arc spot-check·잔여 보정 (Phase 2b)**
 
 ```
 @.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-corridor·민감구역
+항공-시네마-arc-QA
 
-Phase 2b arc A~E — chooseGreatCircleOmega(아메리카 long arc만) · flightRouteCorridors(ICN→유럽 [125,33]+DXB) · flightRouteAvoidZones(북한·UA·RU50+ guard) · audit:flight-arcs · 5클릭 QA.
-hub 우선순위: timeline/overrides > corridor > guard. 모스크바 등 RU 목적지 우회 금지.
-Bar UX·시네마 중 키워드는 corridor Pass 후. GLOBE_VIEW.flyZoom·toolkit 프롬프트 변경 금지.
+Phase 2b arc spot-check — 홈「항공 경로」클릭 QA · audit:flight-arcs 잔여(helsinki·북미·대서양) · overrides/corridor 보정.
+hub overrides>corridor>guard · RU 목적지 우회 금지 · GLOBE_VIEW.flyZoom·toolkit 프롬프트 변경 금지.
+Pass 후 Bar UX·시네마 중 키워드.
 ```
-
-**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「유럽 arc·민감 공역」+「다음 세션」** · 본 계획 **§Phase 2b corridor**.
-
-**금지 (3)**: Edge 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA · 유럽 slug 일괄 overrides.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 
@@ -365,7 +361,7 @@ Bar UX·시네마 중 키워드는 corridor Pass 후. GLOBE_VIEW.flyZoom·toolki
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **2b**: **WIP** — chain·투어→시네마 ✅ · **⏳** corridor A~E · Bar UX · 홈 상호작용
+- **2b**: **WIP** — corridor A~E ✅ · **다음** arc spot-check · Bar UX · 홈 상호작용
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 

@@ -48,37 +48,39 @@
 - **대권 항로**: 엔진 유지 + slug hub·waypoint가 현재 최선 — 전역 제거 시 남미 등 회귀
 - **데이터 후보**: Supabase `essential_guide`·`journey_timeline` 기반 arc bake — overrides 보완·검토(다음)
 
-## 항공 시네마 — 유럽 arc·민감 공역 (기획 확정 · 구현 대기)
+## 항공 시네마 — Phase 2b corridor·민감공역 A~E ✅
 
-- **문제**: ICN→서·북유럽 **~30 slug** — `chooseGreatCircleOmega` polar 회피 → **long arc(지구 한 바퀴)** · 엔진 short arc만 쓰면 **시베리아·북한 상공** 관통
-- **제품**: 「항공 경로」는 **여러 번 클릭·비교** — paris·london·amsterdam **동일 관문 패턴** · 러시아 우회·전쟁 지역(우크라이나) bbox **미관통** 기대
-- **합의**: NOTAM/FIR 정밀 X · **「현실감 있는 관문 경로」** — 플래너 timeline hub **1순위** · ICN→유럽 **DXB 단일 관문** + 남쪽 출발 `[125,33]`
-- **구현 묶음(A~E)**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **§Phase 2b corridor** — 엔진(아메리카 long arc만) · corridor · avoid guard · `audit:flight-arcs` · 5클릭 QA
+- **A** `chooseGreatCircleOmega`: long arc **아메리카(lng<-30)** polar·민감공역 short-arc 교차 시만
+- **B** `flightRouteCorridors.js`: ICN→서·북유럽 `[125,33]`→**DXB**→`[20,42]` 지중해 관문
+- **C** `flightRouteAvoidZones.js`: 북한·UA·RU50+ bbox · RU 목적지 guard skip · hub **overrides>corridor>guard**
+- **D** `npm run audit:flight-arcs` — 5클릭 QA **전 Pass** (paris/london/amsterdam·seychelles·iceland/faroe·moscow·uyuni)
+- **잔여**: helsinki·대서양/북극 9 slug bbox — QA 범위 외 · Bar UX·시네마 중 키워드 **다음**
+
+## 항공 시네마 — 버뮤다(bermuda) 남극 long-arc 회귀 fix
+
+- **원인**: BDA(lng<-30) short arc 민감공역 교차 → **Antarctic long arc**(지구 남쪽 한 바퀴)
+- **조치**: long arc **남극권(minLat<-58) 거부** · 북대서양·Caribbean(lat 15–45) **`[125,33]`→DXB** corridor
+- **기대**: `ICN → DXB → BDA` · lat 25–48° · bbox clear
 
 ## 항공 시네마 — 다음 세션 (에이전트 핸드오프)
 
 | # | 우선 | 방향 |
 |---|------|------|
-| **1** | **arc corridor A~E** | `chooseGreatCircleOmega` dest lng<-30만 long arc · `flightRouteCorridors.js`(ICN→유럽 `[125,33]`+DXB) · `flightRouteAvoidZones.js`(북한·UA·RU50+ guard, 목적지 RU 예외) · `resolveRouteAnchors` 연동 · `npm run audit:flight-arcs` |
-| **2** | **5클릭 QA** | paris·london·amsterdam(동일 DXB 패턴·bbox clear) · seychelles · iceland/faroe · moscow(우회 없음) · uyuni — 일지 Pass 기록 |
-| 3 | FlightCinemaBar UX | 밝은 글로우 · 「항공권 확인」 CTA · `revealFullRoute` 스킵 제거 |
+| **1** | **arc spot-check** | 홈「항공 경로」클릭 QA · `npm run audit:flight-arcs` 잔여 slug · helsinki·북미·대서양 bbox |
+| **2** | **arc 보정** | 이슈 slug overrides/corridor · RU 목적지 우회 금지 유지 |
+| 3 | FlightCinemaBar UX | 밝은 글로우 · 「항공권 확인」 CTA · `revealFullRoute` (arc QA Pass 후) |
 | 4 | 시네마 중 홈 | 연관 키워드·카테고리 버튼 |
-| 5 | (장기) Phase 2c | 여정 시뮬 — 문서만 |
+| 5 | (보류) | GUM arc·Trip CTA |
 
-**금지**: `update-place-toolkit` 프롬프트 · `flight_route_iatas` 필드 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA **보류 해제 전** · 유럽 slug **30+ 개별 overrides**(corridor로 대체)
+**금지**: `update-place-toolkit` 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA **보류 해제 전**
 
 ### 다음 세션 제시어
 
 ```
 @.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-corridor·민감구역
+항공-시네마-arc-QA
 
-Phase 2b arc A~E — chooseGreatCircleOmega(아메리카 long arc만) · flightRouteCorridors(ICN→유럽 [125,33]+DXB) · flightRouteAvoidZones(북한·UA·RU50+ guard) · audit:flight-arcs · 5클릭 QA.
-hub 우선순위: timeline/overrides > corridor > guard. 모스크바 등 RU 목적지 우회 금지.
-Bar UX·시네마 중 키워드는 corridor Pass 후. GLOBE_VIEW.flyZoom·toolkit 프롬프트 변경 금지.
+Phase 2b arc spot-check — 홈「항공 경로」클릭 QA · audit:flight-arcs 잔여 · overrides/corridor 보정.
+hub overrides>corridor>guard · RU 목적지 우회 금지 · GLOBE_VIEW.flyZoom·toolkit 프롬프트 변경 금지.
 ```
-
-**읽을 것 (3)**: `.ai-context` 5~6절 · 본 일지 **「유럽 arc·민감 공역」+「다음 세션」** · 계획 **§Phase 2b corridor**.
-
-**금지 (3)**: Edge 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA · 유럽 slug 일괄 overrides.

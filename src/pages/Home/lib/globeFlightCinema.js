@@ -1,15 +1,23 @@
 import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import {
-  TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
-} from '../../../utils/affiliate.js';
-import {
   getFlightRouteHubIatas,
   getFlightRouteWaypoints,
   resolveCinemaDestIata,
 } from '../../../utils/rentalAirportMatch.js';
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
+import {
+  ICN_EUROPE_DEPARTURE_WAYPOINT,
+  resolveRegionalCorridorAnchors,
+  resolveSouthernCorridorAnchors,
+} from './flightRouteCorridors.js';
+import {
+  coordsCrossAvoidZones,
+  isRussiaDestinationLocation,
+} from './flightRouteAvoidZones.js';
 
 const FLIGHT_SPEED_KMH = 850;
+/** SSOT: `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` in affiliate.js */
+const DEFAULT_ORIGIN_IATA = 'ICN';
 const ROUTE_FLY_ZOOM_MAX = 2.35;
 /** Short-arc |lat| above this → prefer long arc or override waypoints (ICN→LPB Arctic loop). */
 const POLAR_AVOID_ABS_LAT = 58;
@@ -127,8 +135,28 @@ function maxAbsLatOnArc(start, end, omega, samples = 24) {
   return maxAbs;
 }
 
+/** @param {[number, number]} start @param {[number, number]} end @param {number} omega */
+function minLatOnArc(start, end, omega, samples = 24) {
+  const v1 = toUnitCartesian(start);
+  const v2 = toUnitCartesian(end);
+  let minLat = 90;
+  for (let i = 0; i <= samples; i += 1) {
+    const p = fromUnitCartesian(slerpUnit(v1, v2, i / samples, omega));
+    minLat = Math.min(minLat, p[1]);
+  }
+  return minLat;
+}
+
+/** long arc가 남극권(Antarctic loop)이면 true — 버뮤다 등 대서양 목적지 회귀 방지 */
+function isAntarcticLongArc(start, end, longOmega) {
+  return minLatOnArc(start, end, longOmega) < -POLAR_AVOID_ABS_LAT;
+}
+
+/** Long arc는 아메리카(dest lng < -30) polar 회피만 — 유럽 short arc는 corridor/guard로 우회 */
+const LONG_ARC_DEST_LNG_THRESHOLD = -30;
+
 /**
- * Pick short or long great-circle arc — avoid Arctic/polar loops on ICN→South America etc.
+ * Pick short or long great-circle arc — long arc는 ICN→아메리카 polar·민감공역(short arc 교차) 회피.
  * @param {[number, number]} start
  * @param {[number, number]} end
  */
@@ -139,12 +167,39 @@ function chooseGreatCircleOmega(start, end) {
   const shortOmega = Math.acos(dot);
   if (shortOmega < 1e-9) return shortOmega;
 
+  const destLng = end[0];
+  if (destLng >= LONG_ARC_DEST_LNG_THRESHOLD) return shortOmega;
+
   const shortMaxLat = maxAbsLatOnArc(start, end, shortOmega);
-  if (shortMaxLat <= POLAR_AVOID_ABS_LAT) return shortOmega;
+  const shortArcCoords = [];
+  for (let i = 0; i <= 16; i += 1) {
+    shortArcCoords.push(fromUnitCartesian(slerpUnit(v1, v2, i / 16, shortOmega)));
+  }
+  const shortCrossesZones = coordsCrossAvoidZones(shortArcCoords).length > 0;
+
+  if (shortMaxLat <= POLAR_AVOID_ABS_LAT && !shortCrossesZones) return shortOmega;
 
   const longOmega = 2 * Math.PI - shortOmega;
   const longMaxLat = maxAbsLatOnArc(start, end, longOmega);
-  return longMaxLat <= shortMaxLat ? longOmega : shortOmega;
+  const longArcAntarctic = isAntarcticLongArc(start, end, longOmega);
+
+  if (shortMaxLat > POLAR_AVOID_ABS_LAT) {
+    if (longArcAntarctic) return shortOmega;
+    return longMaxLat <= shortMaxLat ? longOmega : shortOmega;
+  }
+  if (longArcAntarctic) return shortOmega;
+  return longOmega;
+}
+
+/** @param {[number, number]} start @param {[number, number]} end */
+export function isLongGreatCircleArc(start, end) {
+  const v1 = toUnitCartesian(start);
+  const v2 = toUnitCartesian(end);
+  const dot = Math.max(-1, Math.min(1, dot3(v1, v2)));
+  const shortOmega = Math.acos(dot);
+  if (shortOmega < 1e-9) return false;
+  const omega = chooseGreatCircleOmega(start, end);
+  return omega > shortOmega + 1e-6;
 }
 
 /**
@@ -243,35 +298,96 @@ export function destinationPoint(lngLat, bearingDeg, distanceKm) {
   return [toDeg(λ2), toDeg(φ2)];
 }
 
-/**
- * @param {[number, number][]} routeCoords
- * @param {Record<string, unknown> | null | undefined} [location]
- * @returns {[number, number][]}
- */
-function resolveRouteAnchors(originLngLat, destLngLat, location, options = {}) {
-  const hubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
-    ? options.hubIatas
-    : getFlightRouteHubIatas(location, {
-        originIata: options.originIata,
-        destIata: options.destIata,
-        essentialGuide: options.essentialGuide,
-      });
-  const geoWaypoints = getFlightRouteWaypoints(location);
-  const hubCoords = hubIatas
-    .map((iata) => getAirportHubCoords(iata))
-    .filter(Boolean)
-    .map((hub) => [hub.lng, hub.lat]);
-
-  if (!geoWaypoints.length && !hubCoords.length) {
+/** @param {[number, number][]} geoWaypoints @param {[number, number][]} hubCoords @param {[number, number][]} [postHubWaypoints] */
+function buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints = []) {
+  if (!geoWaypoints.length && !hubCoords.length && !postHubWaypoints.length) {
     return [originLngLat, destLngLat];
   }
-
   return dedupeConsecutiveAnchors([
     originLngLat,
     ...geoWaypoints,
     ...hubCoords,
+    ...postHubWaypoints,
     destLngLat,
   ]);
+}
+
+/** @param {string[]} hubIatas */
+function hubIatasToCoords(hubIatas) {
+  return hubIatas
+    .map((iata) => getAirportHubCoords(iata))
+    .filter(Boolean)
+    .map((hub) => [hub.lng, hub.lat]);
+}
+
+/**
+ * hub 우선순위: overrides/timeline → corridor → avoid guard.
+ * @returns {{ hubIatas: string[], geoWaypoints: [number, number][], anchors: [number, number][] }}
+ */
+export function resolveFlightRoutePlan(originLngLat, destLngLat, location, options = {}) {
+  const originIata = options.originIata ?? DEFAULT_ORIGIN_IATA;
+  const destIata = options.destIata;
+
+  const overrideHubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
+    ? options.hubIatas
+    : getFlightRouteHubIatas(location, {
+        originIata,
+        destIata,
+        essentialGuide: options.essentialGuide,
+      });
+  let geoWaypoints = getFlightRouteWaypoints(location);
+  let postHubWaypoints = [];
+  let hubIatas = [...overrideHubIatas];
+  const hasOverrideHubs = overrideHubIatas.length > 0;
+
+  if (!hasOverrideHubs) {
+    const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, { originIata });
+    if (corridor) {
+      if (!geoWaypoints.length) geoWaypoints = [...corridor.waypoints];
+      postHubWaypoints = [...(corridor.postHubWaypoints ?? [])];
+      hubIatas = [...corridor.hubIatas];
+    }
+  }
+
+  let hubCoords = hubIatasToCoords(hubIatas);
+
+  if (
+    String(originIata).trim().toUpperCase() === DEFAULT_ORIGIN_IATA
+    && hubIatas.includes('DXB')
+    && !geoWaypoints.some(([, lat]) => lat <= 35)
+  ) {
+    geoWaypoints = [ICN_EUROPE_DEPARTURE_WAYPOINT, ...geoWaypoints];
+  }
+
+  let anchors = buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints);
+
+  if (
+    !hasOverrideHubs
+    && !isRussiaDestinationLocation(location, destLngLat, destIata)
+  ) {
+    const chain = buildGreatCircleChain(anchors, 24);
+    const crossed = coordsCrossAvoidZones(chain);
+    if (crossed.length > 0) {
+      const guard = resolveSouthernCorridorAnchors(destLngLat, { originIata });
+      geoWaypoints = guard.hubIatas.length
+        ? [...guard.waypoints]
+        : (geoWaypoints.length ? geoWaypoints : [...guard.waypoints]);
+      postHubWaypoints = [...(guard.postHubWaypoints ?? [])];
+      hubIatas = [...guard.hubIatas];
+      hubCoords = hubIatasToCoords(hubIatas);
+      anchors = buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints);
+    }
+  }
+
+  return { hubIatas, geoWaypoints, anchors };
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} [location]
+ * @returns {[number, number][]}
+ */
+function resolveRouteAnchors(originLngLat, destLngLat, location, options = {}) {
+  return resolveFlightRoutePlan(originLngLat, destLngLat, location, options).anchors;
 }
 
 /**
@@ -398,7 +514,7 @@ export function resolveFlightCinemaOd(location, options = {}) {
   const destIata = resolveCinemaDestIata(location, {
     essentialGuide: options.essentialGuide,
   });
-  const originIata = options.originIata ?? TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+  const originIata = options.originIata ?? DEFAULT_ORIGIN_IATA;
   if (!destIata || !originIata) return null;
 
   const normalizedOrigin = String(originIata).trim().toUpperCase();
@@ -409,11 +525,17 @@ export function resolveFlightCinemaOd(location, options = {}) {
   const dest = getAirportHubCoords(normalizedDest);
   if (!origin || !dest) return null;
 
-  const hubIatas = getFlightRouteHubIatas(location, {
-    originIata: normalizedOrigin,
-    destIata: normalizedDest,
-    essentialGuide: options.essentialGuide,
-  });
+  const plan = resolveFlightRoutePlan(
+    [origin.lng, origin.lat],
+    [dest.lng, dest.lat],
+    location,
+    {
+      originIata: normalizedOrigin,
+      destIata: normalizedDest,
+      essentialGuide: options.essentialGuide,
+    }
+  );
+  const hubIatas = plan.hubIatas;
   const routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
   const chainPoints = [
     origin,
