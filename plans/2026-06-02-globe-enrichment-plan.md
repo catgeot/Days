@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-16 — Phase **2b** 항공 시네마 핸드오프 · Phase **3** ✅
+**갱신**: 2026-06-17 — Phase **2b** arc corridor·민감 공역 핸드오프 · Phase **3** ✅
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -214,31 +214,42 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: 경유 chain·투어→시네마·툴킷 SSOT→arc ✅ · long-arc 보정(DXB·CPH·MUC) · 사용자 QA Pass(페로·아이슬란드) · **다음** Bar UX·전여행지 QA·홈 상호작용.
+**상태**: 경유 chain·투어→시네마·툴킷 SSOT→arc ✅ · slug hub(DXB·CPH·MUC) ✅ · **다음 구현** arc corridor A~E · **이후** Bar UX·홈 상호작용.
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**(항공권 CTA는 Bar에서 연결 예정).
 
-**대권 항로 (arc 엔진)**
+**제품 원칙 — 「현실감 있는 관문 경로」** (2026-06-17)
 
-- `buildGreatCircleChain` + 북극(≥58°) 시 **long-arc** 선택 → ICN↔고위도·대서양이 **지구 한 바퀴**로 보일 수 있음.
-- **전역 제거 비권장** — 남미·극권 등 다른 노선 회귀. **slug `flightRouteHubIatas`·`flightRouteWaypoints`** 로 구간 분할(페로·아이슬란드·우유니 패턴).
-- **DB 후보**: Supabase `essential_guide`·`journey_timeline` → `sync:airports-from-toolkit` hub bake — 플래너와 정합·수동 QA 감소. **long-arc waypoint**는 기하학상 여전히 필요할 수 있음(HEL→KEF 등).
+- 사용자는 **여러 여행지 arc를 비교** — 서·북유럽은 **동일 관문 패턴**(DXB) · 시베리아 직통·전쟁 지역 관통은 **신뢰 저하**.
+- NOTAM/FIR 정밀 항로 **아님** — 「약 N시간 · 대권 항로」·경유 시 Bar **「ICN → DXB → CDG · 경유」** (실제 항로와 동일 문구 금지).
+- **anchor 우선순위**: (1) overrides/`journey_timeline` hub (2) 권역 corridor (3) avoid guard 재빌드 (4) 기하만.
 
-**미해결 (다음 세션)**
+**대권 항로 (arc 엔진 — 변경 예정 A)**
 
-| # | 증상 | 방향 |
-|---|------|------|
-| 1 | 전 여행지 arc | 사용자 수동 QA → 이상 slug만 overrides |
-| 2 | Bar 데스크톱 시인성 | 밝은 글로우 배경 |
-| 3 | 「바로 보기」 | arc 즉시 완료 → **「항공권 확인」** · 플래너 탭 또는 Trip 모달 |
-| 4 | 시네마 중 홈 | 연관 키워드 → 시네마 종료(지명 클릭 동일) · 카테고리 버튼 pan 정상화 |
-| 5 | (보류) GUM 관문 | ICN→GUM→YAP |
+- 현재: 북극(≥58°) short arc → **long arc** → ICN→유럽 **지구 한 바퀴** (~30 slug).
+- **A**: `chooseGreatCircleOmega` — long arc는 **목적지 lng < -30 (아메리카)** 만. 유럽 short arc는 시베리아 경로 → **B+C로 우회**.
+- **전역 polar 제거 금지** — 남미(uyuni 등) 회귀. slug waypoint(LPB `[180,12]` 등) 유지.
 
-**보류**: GUM 경유 arc · 시네마→Trip **임의** 연결(Bar CTA 합의 후)
+**arc corridor · 민감 공역 (다음 세션 B~E)**
+
+| 단계 | 파일·작업 | 내용 |
+|------|-----------|------|
+| **A** | [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | long arc **아메리카 한정** |
+| **B** | `flightRouteCorridors.js` (신규) | ICN→유럽(lat 35–72, lng -25–45): hub 없을 때 **`[125,33]` 출발** + **DXB** fallback |
+| **C** | `flightRouteAvoidZones.js` (신규) | bbox: **북한** · **우크라이나** · **러시아 50°N+** — 교차 시 corridor/DXB 재빌드 · **RU 목적지 guard skip** |
+| **D** | `scripts/audit-flight-arcs.mjs` | `npm run audit:flight-arcs` |
+| **E** | `resolveRouteAnchors` · 5클릭 QA | 예외 slug만 overrides |
+
+**권역 기본 정책**: 서·북유럽 `[125,33]`→DXB→dest · 남유럽 직항 · KEF/FAE MUC/CPH · 인도양 DXB · 미크로네시아 HNL · 남미 polar · **RU 목적지 우회 없음**.
+
+**5클릭 QA**: paris·london·amsterdam · seychelles · iceland/faroe · moscow · uyuni.
+
+**미해결 (corridor Pass 후)**: Bar 글로우·「항공권 확인」 · 시네마 중 키워드·카테고리 · (보류) GUM·Trip CTA.
 
 **로컬 QA**
 
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
+- ⏳ corridor A~E · 5클릭 QA
 
 ### Phase 2c — 상세 여정 시뮬레이션 (장기 · 미구현)
 
@@ -266,7 +277,10 @@
 
 | 파일 | 역할 |
 |------|------|
-| [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | `buildFlightRouteLine` · `buildGreatCircleChain` · `unwrapRouteLongitudes` · `computeRouteCameraView` |
+| [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | `buildFlightRouteLine` · `buildGreatCircleChain` · `unwrapRouteLongitudes` · `computeRouteCameraView` · **A** long arc |
+| `flightRouteCorridors.js` (신규) | **B** ICN→유럽 `[125,33]`+DXB · `resolveCorridorAnchors` |
+| `flightRouteAvoidZones.js` (신규) | **C** bbox guard · `sampleChainCrossesZones` |
+| `scripts/audit-flight-arcs.mjs` (신규) | **D** `npm run audit:flight-arcs` |
 | [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc 레이어 · 카메라 · revealFullRoute · close |
 | [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 바로 보기 · 닫기 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
@@ -287,7 +301,7 @@
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
-- ⏳ 전 여행지 arc · Bar UX · 시네마 중 키워드·카테고리
+- ⏳ corridor A~E · 5클릭 QA · Bar UX · 시네마 중 키워드·카테고리
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -312,21 +326,21 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — UX·전여행지 QA (Phase 2b)**
+**항공 시네마 — arc corridor·민감 공역 (Phase 2b)**
 
 ```
 @.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-UX·전여행지QA
+항공-시네마-corridor·민감구역
 
-Phase 2b — FlightCinemaBar 글로우·항공권 확인 CTA · 시네마 중 연관키워드·카테고리 버튼 · 전 여행지 arc 수동 QA 후보 반영.
-long-arc 보정(DXB·CPH·MUC) Pass. Phase 2c 여정 시뮬레이션은 문서만·구현 보류.
-update-place-toolkit 프롬프트·GLOBE_VIEW.flyZoom 변경 금지.
+Phase 2b arc A~E — chooseGreatCircleOmega(아메리카 long arc만) · flightRouteCorridors(ICN→유럽 [125,33]+DXB) · flightRouteAvoidZones(북한·UA·RU50+ guard) · audit:flight-arcs · 5클릭 QA.
+hub 우선순위: timeline/overrides > corridor > guard. 모스크바 등 RU 목적지 우회 금지.
+Bar UX·시네마 중 키워드는 corridor Pass 후. GLOBE_VIEW.flyZoom·toolkit 프롬프트 변경 금지.
 ```
 
-**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「다음 세션」** · 본 계획 **§Phase 2b·2c**.
+**읽을 것 (3)**: `.ai-context` 5~6절 · 일지 **「유럽 arc·민감 공역」+「다음 세션」** · 본 계획 **§Phase 2b corridor**.
 
-**금지 (3)**: Edge 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA 임의 연결.
+**금지 (3)**: Edge 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA · 유럽 slug 일괄 overrides.
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
 
@@ -351,7 +365,7 @@ update-place-toolkit 프롬프트·GLOBE_VIEW.flyZoom 변경 금지.
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **2b**: **WIP** — 재실행·cinema↔투어·모바일 투어 UI ✅(부분) · **⏳** 경유 arc·데스크톱 투어→시네마
+- **2b**: **WIP** — chain·투어→시네마 ✅ · **⏳** corridor A~E · Bar UX · 홈 상호작용
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 

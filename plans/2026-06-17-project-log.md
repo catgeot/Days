@@ -48,30 +48,37 @@
 - **대권 항로**: 엔진 유지 + slug hub·waypoint가 현재 최선 — 전역 제거 시 남미 등 회귀
 - **데이터 후보**: Supabase `essential_guide`·`journey_timeline` 기반 arc bake — overrides 보완·검토(다음)
 
+## 항공 시네마 — 유럽 arc·민감 공역 (기획 확정 · 구현 대기)
+
+- **문제**: ICN→서·북유럽 **~30 slug** — `chooseGreatCircleOmega` polar 회피 → **long arc(지구 한 바퀴)** · 엔진 short arc만 쓰면 **시베리아·북한 상공** 관통
+- **제품**: 「항공 경로」는 **여러 번 클릭·비교** — paris·london·amsterdam **동일 관문 패턴** · 러시아 우회·전쟁 지역(우크라이나) bbox **미관통** 기대
+- **합의**: NOTAM/FIR 정밀 X · **「현실감 있는 관문 경로」** — 플래너 timeline hub **1순위** · ICN→유럽 **DXB 단일 관문** + 남쪽 출발 `[125,33]`
+- **구현 묶음(A~E)**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **§Phase 2b corridor** — 엔진(아메리카 long arc만) · corridor · avoid guard · `audit:flight-arcs` · 5클릭 QA
+
 ## 항공 시네마 — 다음 세션 (에이전트 핸드오프)
 
 | # | 우선 | 방향 |
 |---|------|------|
-| 1 | **전 여행지 arc 수동 QA** | 사용자 주도 — 이상 slug만 overrides·waypoint · 목표 「이상 없음」 |
-| 2 | **FlightCinemaBar UX** | 데스크톱 **밝은 글로우** 배경 · 「바로 보기」→**「항공권 확인」**(플래너 탭 또는 Trip 모달) · `revealFullRoute` 스킵 제거 |
-| 3 | **시네마 중 홈 상호작용** | 연관 키워드 클릭 → **지명 클릭과 동일** 시네마 종료 · **카테고리 버튼** — 항로 중 pan/face 전환 정상화 |
-| 4 | (검토) DB 항로 | `sync:airports-from-toolkit`·timeline hub 확대 vs 수동 overrides — long-arc waypoint는 여전히 필요할 수 있음 |
-| 5 | (장기) **Phase 2c** | 상세 여정 시뮬레이션 — 항공→렌터카/도로→페리·선형 시간·지도 카드·숙소 카드 (예: 서울→길리메노) |
+| **1** | **arc corridor A~E** | `chooseGreatCircleOmega` dest lng<-30만 long arc · `flightRouteCorridors.js`(ICN→유럽 `[125,33]`+DXB) · `flightRouteAvoidZones.js`(북한·UA·RU50+ guard, 목적지 RU 예외) · `resolveRouteAnchors` 연동 · `npm run audit:flight-arcs` |
+| **2** | **5클릭 QA** | paris·london·amsterdam(동일 DXB 패턴·bbox clear) · seychelles · iceland/faroe · moscow(우회 없음) · uyuni — 일지 Pass 기록 |
+| 3 | FlightCinemaBar UX | 밝은 글로우 · 「항공권 확인」 CTA · `revealFullRoute` 스킵 제거 |
+| 4 | 시네마 중 홈 | 연관 키워드·카테고리 버튼 |
+| 5 | (장기) Phase 2c | 여정 시뮬 — 문서만 |
 
-**금지**: `update-place-toolkit` 프롬프트 · `flight_route_iatas` 필드 · `GLOBE_VIEW.flyZoom` 변경 · GUM arc·Trip CTA **보류 해제 전 임의 연결**
+**금지**: `update-place-toolkit` 프롬프트 · `flight_route_iatas` 필드 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA **보류 해제 전** · 유럽 slug **30+ 개별 overrides**(corridor로 대체)
 
 ### 다음 세션 제시어
 
 ```
 @.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-UX·전여행지QA
+항공-시네마-corridor·민감구역
 
-Phase 2b — FlightCinemaBar 글로우·항공권 확인 CTA · 시네마 중 연관키워드·카테고리 버튼 · 전 여행지 arc 수동 QA 후보 반영.
-long-arc 보정(DXB·CPH·MUC) Pass. Phase 2c 여정 시뮬레이션은 문서만·구현 보류.
-update-place-toolkit 프롬프트·GLOBE_VIEW.flyZoom 변경 금지.
+Phase 2b arc A~E — chooseGreatCircleOmega(아메리카 long arc만) · flightRouteCorridors(ICN→유럽 [125,33]+DXB) · flightRouteAvoidZones(북한·UA·RU50+ guard) · audit:flight-arcs · 5클릭 QA.
+hub 우선순위: timeline/overrides > corridor > guard. 모스크바 등 RU 목적지 우회 금지.
+Bar UX·시네마 중 키워드는 corridor Pass 후. GLOBE_VIEW.flyZoom·toolkit 프롬프트 변경 금지.
 ```
 
-**읽을 것 (3)**: `.ai-context` 5~6절 · 본 일지 **「다음 세션」** · [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **§Phase 2b·2c**.
+**읽을 것 (3)**: `.ai-context` 5~6절 · 본 일지 **「유럽 arc·민감 공역」+「다음 세션」** · 계획 **§Phase 2b corridor**.
 
-**금지 (3)**: Edge 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA 임의 연결.
+**금지 (3)**: Edge 프롬프트 · `GLOBE_VIEW.flyZoom` · GUM arc·Trip CTA · 유럽 slug 일괄 overrides.
