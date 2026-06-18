@@ -34,11 +34,31 @@
 
 | # | 우선 | 방향 |
 |---|------|------|
-| 1 | **audit·avoid-zone** | 잔여 ~41건 spot-check · Atlantic corridor(DXB) 오적용(미국 본토·멕시코 등) |
-| 2 | (선택) | FlightCinemaBar corridor vs passenger hub 라벨 · GUM·Trip CTA **보류** |
-| 3 | (선택) | **2c** 문서만 |
+| 1 | (선택) | FlightCinemaBar corridor vs passenger hub 라벨 · GUM·Trip CTA **보류** |
+| 2 | (선택) | **2c** 문서만 |
 
 **금지**: `update-place-toolkit` · `GLOBE_VIEW.flyZoom` · 배너/`TITLE_ARRIVAL_AIRPORT_PHRASES` (사용자 승인 없이)
+
+### Phase 2b 후속 — avoid-zone·Atlantic corridor ✅
+
+- **`isNorthAtlanticCorridorDest`**: 미·캐나다 본토(lat>35, lng<-65) DXB 제외 · 아소르스·카보베르데(lng≥-30) 포함
+- **`ICN_EUROPE_MEDITERRANEAN_GATEWAY`**: `[20,42]`→`[15,42]` — 헬싱키 ukraine 회귀 해소
+- **overrides** `bahamas`: ATL+태평양 waypoint
+- **`audit:flight-arcs`**: 37→29→**0** · 5-click QA Pass · chicago/toronto DXB 제거 · helsinki·bermuda·azores OK
+
+### Phase 2b 후속 — 북미·남미 hub/waypoint batch ✅
+
+- **29 slug** overrides — ATL/LAX/GRU/LPB + `[[180,12]]` 태평양 waypoint (philadelphia·san-diego·bahamas 패턴)
+- **미 동부** ATL · **서부·캐나다 서부** LAX · **남미** GRU/LPB
+- **`los-angeles`·`sequoia-national-park`**: ICN↔LAX **직항** — hub 제거·waypoint만(툴킷 직항·Bar「직항」·`flightHours≈11`)
+- **`preferredLinkIata`·배너·Trip 매칭 변경 없음** — `flightRoute*`는 시네마 arc 전용
+- **`audit:flight-arcs` none:0** · **`generate:airports`** override 152
+
+## 커밋 (Phase 2b arc 최적화)
+
+- `flightRouteCorridors.js` — Atlantic bbox·지중해 gateway `[15,42]`
+- `travel-spot-airport-overrides.mjs` — avoid-zone·29 slug waypoint batch·LA 직항
+- `travelSpotAirports.json` — `generate:airports`
 
 ### 다음 세션 제시어
 

@@ -1,8 +1,8 @@
 /** ICN→서·북유럽 corridor — hub 없을 때 남쪽 출발 waypoint + DXB 관문 */
 export const ICN_EUROPE_DEPARTURE_WAYPOINT = [125, 33];
 export const ICN_EUROPE_CORRIDOR_HUB = 'DXB';
-/** DXB→서·북유럽 — 우크라이나·RU50 bbox 회피용 지중해 관문 */
-export const ICN_EUROPE_MEDITERRANEAN_GATEWAY = [20, 42];
+/** DXB→서·북유럽 — 우크라이나·RU50 bbox 회피용 지중해 관문 (헬싱키·발트 회귀 방지) */
+export const ICN_EUROPE_MEDITERRANEAN_GATEWAY = [15, 42];
 
 /** Europe bbox (lat 35–72, lng -25–45) */
 export function isEuropeCorridorDest(destLngLat) {
@@ -46,12 +46,19 @@ export function resolveCorridorAnchors(originLngLat, destLngLat, options = {}) {
   };
 }
 
-/** North Atlantic·Caribbean (버뮤다 등) — ICN 직항 short arc는 북극·민감공역 / long arc는 남극 루프 */
+/**
+ * North Atlantic·Caribbean (버뮤다·아소르스 등) — ICN 직항 short arc는 북극·민감공역 / long arc는 남극 루프.
+ * 미국·캐나다 본토(lat>35, lng<-65)는 태평양 routing — DXB Atlantic corridor 오적용 제외.
+ */
 export function isNorthAtlanticCorridorDest(destLngLat, originIata = 'ICN') {
   if (String(originIata ?? '').trim().toUpperCase() !== 'ICN') return false;
   const lng = destLngLat[0];
   const lat = destLngLat[1];
-  return lng >= -90 && lng < -30 && lat >= 15 && lat <= 45;
+  if (lat < 15 || lat > 45) return false;
+  if (lat > 35 && lng < -65) return false;
+  if (lng >= -90 && lng < -30) return true;
+  if (lng >= -30 && lng < 20) return true;
+  return false;
 }
 
 /**

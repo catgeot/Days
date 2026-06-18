@@ -205,6 +205,7 @@ npm run enrich:airports
 | `preferredLinkIata` | `travel-spot-airport-overrides.mjs` | 렌터카·픽업·배너 **최종** 도착 |
 | `tripFlightArrivalIata` | 동일 | Trip.com `aAirportCode` — **OTA로 검색 가능한 관문**(예: HNL, AUH) |
 | `flightRouteHubIatas` | **`travel-spot-airport-overrides.mjs` SSOT** (시네마) | arc 경유 hub · `flightRouteWaypoints` 병행(태평양 우회). **`sync:airports-from-toolkit` bake 중단(2026-06-18)** |
+| `flightRouteWaypoints` | 동일 | arc 지리 waypoint만 — **ICN↔LAX 직항** 등 hub 없이 `[[180,12]]` 단독 가능 · **배너·Trip IATA와 무관** |
 | `officialLinks[].destinationIata` | `flight-booking-overrides.mjs` | 항공사 공식 예약 URL 목적지 — **IATA와 다를 수 있음** (예: 코스라에 렌터카 `KOS` · United `KSA`) |
 
 `primaryIatas`에는 관문+최종을 넣되, **`kind: 'multi'` + `bannerNote`**로 「Trip은 HNL까지 · MAJ는 United」처럼 여정을 설명합니다.
@@ -221,7 +222,7 @@ npm run enrich:airports
 #### 작업 순서 (2차 항공 slug 1건)
 
 1. **`rentalAirportHubs.js`** — 신규 IATA·한글 공식명·aliases.
-2. **`travel-spot-airport-overrides.mjs`** — `preferredLinkIata`, `tripFlightArrivalIata`, `flightRouteHubIatas`(시네마), `bannerNote`, `searchHintIatas`(동급 관문만).
+2. **`travel-spot-airport-overrides.mjs`** — `preferredLinkIata`, `tripFlightArrivalIata`, `flightRouteHubIatas`·`flightRouteWaypoints`(시네마 arc), `bannerNote`, `searchHintIatas`(동급 관문만).
 3. **`flight-booking-overrides.mjs`** — `tier`, `bookingNote`, `officialLinks[]` (United 등 **브라우저 QA 후** 고정).
 4. 재생성:
 

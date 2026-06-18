@@ -37,8 +37,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['SJO', 'LIR'],
     preferredLinkIata: 'SJO',
     kind: 'multi',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: '수도 산호세(SJO)·북서 휴양지 리베리아(LIR) 관문',
+    rationale: 'ICN→LAX→SJO · 태평양 waypoint로 시베리아 bbox arc 회피',
     searchHintIatas: ['SJO', 'LIR'],
     bannerNote:
       '코스타리카는 수도 산호세의 후안 산타마리아(SJO) 또는 북서부 휴양지 접근이 편한 리베리아(LIR) 중 일정에 맞게 선택하세요. 미국·캐나다·멕시코 경유가 일반적이며 직항은 없습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
@@ -100,7 +102,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
-  'grand-canyon': { primaryIatas: ['LAS', 'FLG'], preferredLinkIata: 'LAS', kind: 'multi', confidence: 'high', rationale: '라스베이거스·그랜드캐니언 공항' },
+  'grand-canyon': {
+    primaryIatas: ['LAS', 'FLG'],
+    preferredLinkIata: 'LAS',
+    kind: 'multi',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피',
+  },
   hampi: { primaryIatas: ['BLR'], preferredLinkIata: 'BLR', confidence: 'high', rationale: '방갈로르 후 장거리 육로' },
   meteora: { primaryIatas: ['SKG'], preferredLinkIata: 'SKG', confidence: 'high', rationale: '테살로니키 공항' },
   miyakojima: {
@@ -141,8 +151,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   seattle: {
     primaryIatas: ['SEA'],
     preferredLinkIata: 'SEA',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: '시애틀터코마국제공항(SEA)',
+    rationale: 'ICN→LAX→SEA · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
   },
   boracay: {
     primaryIatas: ['KLO', 'MPH'],
@@ -180,7 +192,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   ishigaki: { primaryIatas: ['ISG'], preferredLinkIata: 'ISG', confidence: 'high', rationale: '이시가키 공항' },
   arequipa: { primaryIatas: ['AQP'], preferredLinkIata: 'AQP', confidence: 'high', rationale: '아레키파 공항' },
   varanasi: { primaryIatas: ['VNS'], preferredLinkIata: 'VNS', confidence: 'high', rationale: '바라나시 공항' },
-  'nazca-lines': { primaryIatas: ['LIM'], preferredLinkIata: 'LIM', confidence: 'high', rationale: '리마 후 버스·소형기' },
+  'nazca-lines': {
+    primaryIatas: ['LIM'],
+    preferredLinkIata: 'LIM',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→LIM · 태평양 waypoint로 시베리아 bbox arc 회피',
+  },
   fez: { primaryIatas: ['FEZ'], preferredLinkIata: 'FEZ', confidence: 'high', rationale: '페스 사이스 공항' },
   'abu-simbel': { primaryIatas: ['ASW'], preferredLinkIata: 'ASW', confidence: 'high', rationale: '아스완 후 투어·국내선' },
   'milford-sound': { primaryIatas: ['ZQN'], preferredLinkIata: 'ZQN', confidence: 'high', rationale: '퀸즈타운 공항' },
@@ -234,8 +253,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'torres-del-paine': {
     primaryIatas: ['PUQ'],
     preferredLinkIata: 'PUQ',
+    flightRouteHubIatas: ['LPB'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: '푼타아레나스(PUQ) — 칠레 남부 토레스 델 파이네·W트레킹 관문',
+    rationale: 'ICN→LPB→PUQ · 태평양 waypoint(우유니 패턴)로 시베리아 bbox arc 회피',
     bannerNote:
       '토레스 델 파이네는 칠레 남부 파타고니아 국립공원입니다. 보통 푼타아레나스(PUQ) 직항·경유 후 버스·투어로 들어갑니다. 아르헨티나 북부 파타고니아·우수아이아와 관문이 다릅니다.'
   },
@@ -249,7 +270,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   },
   persepolis: { primaryIatas: ['SYZ'], preferredLinkIata: 'SYZ', confidence: 'high', rationale: '시라즈 공항' },
   qingdao: { primaryIatas: ['TAO'], preferredLinkIata: 'TAO', confidence: 'high', rationale: '칭다오 공항' },
-  'banff-national-park': { primaryIatas: ['YYC'], preferredLinkIata: 'YYC', confidence: 'high', rationale: '캘거리 공항' },
+  'banff-national-park': {
+    primaryIatas: ['YYC'],
+    preferredLinkIata: 'YYC',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
   'luang-prabang': {
     primaryIatas: ['LPQ'],
     preferredLinkIata: 'LPQ',
@@ -261,7 +289,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   zhangjiajie: { primaryIatas: ['DYG'], preferredLinkIata: 'DYG', confidence: 'high', rationale: '장가계 공항' },
   'andaman-islands': { primaryIatas: ['IXZ'], preferredLinkIata: 'IXZ', confidence: 'high', rationale: '포트블레어 비르 사바르카르' },
   'sahara-desert': { primaryIatas: ['RAK'], preferredLinkIata: 'RAK', confidence: 'high', rationale: '마라케시·메르주가 관문' },
-  'iguazu-falls': { primaryIatas: ['IGR'], preferredLinkIata: 'IGR', confidence: 'high', rationale: '이과수 폴스 공항' },
+  'iguazu-falls': {
+    primaryIatas: ['IGR'],
+    preferredLinkIata: 'IGR',
+    flightRouteHubIatas: ['GRU'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→GRU→IGR · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
   'uyuni-salt-flat': {
     primaryIatas: ['LPB', 'UYU'],
     preferredLinkIata: 'UYU',
@@ -285,7 +320,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '소코트라는 인천→아부다비(AUH) 국제선 도착 후, 아부다비에서 주 1~2회 운항하는 정부 인가 전세기(주로 Air Arabia)로 소코트라(SCT)에 들어갑니다. 스카이스캐너·Trip.com 등 항공권 검색은 AUH까지, SCT 구간은 현지 투어 에이전시를 통해서만 발권됩니다. 렌터카·픽업·섬 일정은 SCT 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
   },
-  svalbard: { primaryIatas: ['LYR'], preferredLinkIata: 'LYR', confidence: 'high', rationale: '롱위어비엔 공항' },
+  svalbard: {
+    primaryIatas: ['LYR'],
+    preferredLinkIata: 'LYR',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→LYR · 태평양 waypoint로 시베리아 bbox arc 회피',
+  },
   madagascar: { primaryIatas: ['TNR'], preferredLinkIata: 'TNR', confidence: 'high', rationale: '안타ananarivo 국제공항' },
   mauritius: {
     primaryIatas: ['MRU'],
@@ -427,8 +469,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'el-calafate': {
     primaryIatas: ['FTE'],
     preferredLinkIata: 'FTE',
+    flightRouteHubIatas: ['LPB'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: '엘칼라파테(FTE) — 페리토 모레노·남부 아르헨티나 파타고니아 관문',
+    rationale: 'ICN→LPB→FTE · 태평양 waypoint(우유니 패턴)로 시베리아 bbox arc 회피',
     bannerNote:
       '엘칼라파테는 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)입니다. 북부 파타고니아(바릴로체 BRC)·우수아이아(USH)·토레스 델 파이네(PUQ)와 관문이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
@@ -436,28 +480,34 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
     kind: 'multi',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'LIM 국제선 후 CUZ 국내선 — 마추픽추·쿠스코 관문'
+    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피',
   },
   'machu-picchu': {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
     kind: 'multi',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'LIM 국제선 후 CUZ 국내선 — 마추픽추는 쿠스코 경유'
+    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피',
   },
   'inca-trail': {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
     kind: 'multi',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'LIM 국제선 후 CUZ 국내선 — 잉카 트레일 출발은 쿠스코'
+    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피',
   },
   patagonia: {
     primaryIatas: ['BRC', 'EZE'],
@@ -468,7 +518,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '이 여행지는 **아르헨티나 북부 파타고니아**(바릴로체·호수·안데스)입니다. 보통 부에노스아이레스(EZE) 국제선 후 바릴로체(BRC) 국내선으로 이어집니다. 남부(우수아이아 USH·토레스 델 파이네 PUQ)는 별도 여행지를 참고하세요. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
-  yellowknife: { primaryIatas: ['YZF'], preferredLinkIata: 'YZF', confidence: 'high', rationale: '옐로나이프 공항' },
+  yellowknife: {
+    primaryIatas: ['YZF'],
+    preferredLinkIata: 'YZF',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→YZF · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
   dunhuang: { primaryIatas: ['DNH'], preferredLinkIata: 'DNH', confidence: 'high', rationale: '둔황 공항' },
   uluru: { primaryIatas: ['AYQ'], preferredLinkIata: 'AYQ', confidence: 'high', rationale: '울루루 에어스' },
   timbuktu: { primaryIatas: ['BKO'], preferredLinkIata: 'BKO', confidence: 'high', rationale: '바마코 후 육로·강' },
@@ -609,9 +666,23 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '미드웨이 환초는 상용 정기 노선이 없으며, 미국 Fish & Wildlife 허가·투어로 호놀룰루(HNL) 등에서 이어지는 일정이 일반적입니다.'
   },
-  denali: { primaryIatas: ['ANC'], preferredLinkIata: 'ANC', confidence: 'high', rationale: '앵커리지 공항' },
+  denali: {
+    primaryIatas: ['ANC'],
+    preferredLinkIata: 'ANC',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→ANC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
   yakutsk: { primaryIatas: ['YKS'], preferredLinkIata: 'YKS', confidence: 'high', rationale: '야쿠츠크 공항' },
-  alaska: { primaryIatas: ['ANC'], preferredLinkIata: 'ANC', confidence: 'high', rationale: '앵커리지·페어뱅크스 관문' },
+  alaska: {
+    primaryIatas: ['ANC'],
+    preferredLinkIata: 'ANC',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→ANC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
   'st-helena': {
     primaryIatas: ['HLE', 'JNB'],
     preferredLinkIata: 'HLE',
@@ -731,8 +802,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   minneapolis: {
     primaryIatas: ['MSP'],
     preferredLinkIata: 'MSP',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: 'MSP 국제공항'
+    rationale: 'ICN→ATL→MSP · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
   },
   perth: {
     primaryIatas: ['PER'],
@@ -744,8 +817,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['NAS', 'MIA', 'ATL'],
     preferredLinkIata: 'NAS',
     kind: 'multi',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: '나소 NAS·미 동부 MIA/ATL 경유',
+    rationale: 'ICN→ATL→NAS · DXB Atlantic corridor ukraine 교차 · 태평양 waypoint',
     bannerNote:
       '바하마는 나소(NAS) 등 섬별 관문이 다릅니다. 마이애미(MIA)·애틀랜타(ATL) 경유 일정도 흔하니 티켓의 최종 도착 코드를 확인해 주세요.'
   },
@@ -758,8 +833,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   venezuela: {
     primaryIatas: ['CCS'],
     preferredLinkIata: 'CCS',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: '카라카스 CCS — 국가 단위·툴킷 IST/MAD 오탐 보정'
+    rationale: 'ICN→ATL→CCS · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
   },
   havana: {
     primaryIatas: ['HAV'],
@@ -806,6 +883,101 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: '버뮤다 국제공항(L.F. Wade) — 한국 직항 없음',
     bannerNote:
       '버뮤다 최종 도착은 버뮤다 국제공항(BDA)입니다. 한국에서는 인천(ICN) 직항이 없어 보통 미국 동부(뉴욕 JFK·보스턴 BOS·애틀랜타 ATL·마이애미 MIA 등) 또는 영국·유럽(런던 LHR·파리 CDG 등) 경유 후 BDA로 연결되는 일정이 일반적입니다. 미국 경유 시 ESTA·캐나다·영국 경유 시 해당 입국·트랜짓 비자 규정을 반드시 확인하세요. 항공권 검색 시 도착지 코드 BDA를 입력하고, 티켓의 최종 도착 공항을 확인한 뒤 제휴 링크도 맞춰 주세요.',
+  },
+  boston: {
+    primaryIatas: ['BOS'],
+    preferredLinkIata: 'BOS',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→ATL→BOS · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  chicago: {
+    primaryIatas: ['ORD'],
+    preferredLinkIata: 'ORD',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→ATL→ORD · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  'las-vegas': {
+    primaryIatas: ['LAS'],
+    preferredLinkIata: 'LAS',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피',
+  },
+  'los-angeles': {
+    primaryIatas: ['LAX'],
+    preferredLinkIata: 'LAX',
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN↔LAX 직항(대한항공·아시아나·에어프레미아 등) · arc만 태평양 waypoint로 시베리아 bbox 회피',
+  },
+  'rio-de-janeiro': {
+    primaryIatas: ['GIG'],
+    preferredLinkIata: 'GIG',
+    flightRouteHubIatas: ['GRU'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→GRU→GIG · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  'rocky-mountains': {
+    primaryIatas: ['YYC', 'YVR'],
+    preferredLinkIata: 'YYC',
+    kind: 'multi',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  'san-francisco': {
+    primaryIatas: ['SFO'],
+    preferredLinkIata: 'SFO',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피',
+  },
+  'sequoia-national-park': {
+    primaryIatas: ['LAX'],
+    preferredLinkIata: 'LAX',
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN↔LAX 직항 후 육로 · arc만 태평양 waypoint로 시베리아 bbox 회피',
+  },
+  toronto: {
+    primaryIatas: ['YYZ'],
+    preferredLinkIata: 'YYZ',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→ATL→YYZ · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  vancouver: {
+    primaryIatas: ['YVR'],
+    preferredLinkIata: 'YVR',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→YVR · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  'washington-dc': {
+    primaryIatas: ['IAD'],
+    preferredLinkIata: 'IAD',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→ATL→IAD · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  yosemite: {
+    primaryIatas: ['SFO'],
+    preferredLinkIata: 'SFO',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피',
   },
 };
 

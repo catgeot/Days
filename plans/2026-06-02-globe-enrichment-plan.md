@@ -214,7 +214,7 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: corridor A~E ✅ · arc QA ✅ · **Bar UX·홈 상호작용** ✅ · **hub SSOT** ✅ · **FlightCinemaBar 「여행 플랜」** ✅ · **2c** 문서만(구현 보류).
+**상태**: corridor A~E ✅ · **`audit:flight-arcs` 0** ✅ · **Bar UX·홈 상호작용** ✅ · **hub SSOT** ✅ · **FlightCinemaBar 「여행 플랜」** ✅ · **2c** 문서만(구현 보류).
 
 **시네마 중 홈 (2026-06-18 확정)**
 
@@ -235,7 +235,18 @@
 
 **FlightCinemaBar 「여행 플랜」**: 항공코드 행 · `buildPlacePlannerPath(slug)` — 플래너 탭 홈 · Trip CTA와 분리.
 
-**다음**: avoid-zone·Atlantic corridor 잔여 spot-check · (선택) corridor/passenger Bar 라벨 · GUM·Trip CTA **보류**.
+**Phase 2b arc 최적화 ✅ (2026-06-18)**
+
+| 항목 | 내용 |
+|------|------|
+| Atlantic corridor | 미·캐나다 본토(lat>35, lng<-65) DXB 제외 · 아소르스·카보베르데 포함 |
+| 지중해 gateway | `[15,42]` — 헬싱키 ukraine 회귀 해소 |
+| waypoint batch | 29 slug — ATL/LAX/GRU/LPB + `[[180,12]]` |
+| ICN↔LAX 직항 | `los-angeles`·`sequoia` — hub 없음·waypoint만 · Bar「직항」 |
+| audit | `npm run audit:flight-arcs` **0 issues** |
+| 배너·Trip | `preferredLinkIata` **미변경** — arc 전용 필드만 |
+
+**다음 (선택)**: corridor/passenger Bar 라벨 · GUM·Trip CTA **보류** · **2c** 문서만.
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**.
 
@@ -248,7 +259,7 @@
 **대권 항로 (arc 엔진 — A ✅)**
 
 - long arc: **목적지 lng < -30** · polar(≥58°) 또는 short-arc 민감공역 교차 시 — **남극권(minLat<-58) long arc 거부**(bermuda 등) · **남반구 대우회(minLat<-40) 시 short 유지**(ICN→LAX/MEX)
-- 유럽·북대서양: short arc + **corridor/guard** (`[125,33]`→DXB→`[20,42]`→dest · Atlantic lat 15–45)
+- 유럽·북대서양: short arc + **corridor/guard** (`[125,33]`→DXB→`[15,42]`→dest · Atlantic 본토 DXB 제외)
 - **전역 polar 제거 금지** — 남미(uyuni 등) 회귀. slug waypoint(LPB `[180,12]` 등) 유지.
 
 **arc corridor · 민감 공역 (A~E ✅ 2026-06-17)**
@@ -256,16 +267,16 @@
 | 단계 | 파일·작업 | 내용 |
 |------|-----------|------|
 | **A** | [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) | long arc **아메리카 한정** · Antarctic 거부 |
-| **B** | [`flightRouteCorridors.js`](../src/pages/Home/lib/flightRouteCorridors.js) | ICN→유럽·북대서양 `[125,33]`+DXB · 지중해 `[20,42]` |
+| **B** | [`flightRouteCorridors.js`](../src/pages/Home/lib/flightRouteCorridors.js) | ICN→유럽·북대서양 `[125,33]`+DXB · 지중해 `[15,42]` · Atlantic 본토 제외 |
 | **C** | [`flightRouteAvoidZones.js`](../src/pages/Home/lib/flightRouteAvoidZones.js) | bbox guard · **RU 목적지 skip** |
 | **D** | [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
 | **E** | `resolveFlightRoutePlan` · 5클릭 QA | overrides>corridor>guard |
 
-**권역 기본 정책**: 서·북유럽 `[125,33]`→DXB→`[20,42]`→dest · 북대서양·Caribbean(lat 15–45) `[125,33]`→DXB · 남유럽 직항 · KEF/FAE MUC/CPH · 인도양 DXB · 미크로네시아 HNL · 남미 polar · **RU 목적지 우회 없음**.
+**권역 기본 정책**: 서·북유럽 `[125,33]`→DXB→`[15,42]`→dest · 북대서양 섬·Caribbean(본토 제외) DXB · 남유럽 직항 · KEF/FAE MUC/CPH · 인도양 DXB · 미크로네시아 HNL · 남미 polar+waypoint · **RU 목적지 우회 없음**.
 
 **5클릭 QA ✅**: paris·london·amsterdam · seychelles · iceland/faroe · moscow · uyuni · **bermuda**(DXB·남극 회피).
 
-**다음**: (선택) 잔여 slug arc spot-check · **2c** 여정 시뮬레이션(구현 보류) · (보류) GUM·Trip CTA.
+**다음 (선택)**: corridor/passenger Bar 라벨 · **2c** 여정 시뮬레이션(구현 보류) · (보류) GUM·Trip CTA.
 
 **로컬 QA**
 
@@ -325,7 +336,7 @@
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC · corridor·bermuda (2026-06-17)
 - ✅ hub SSOT·overrides waypoint · san-diego·philadelphia·fernando·cancun/chichen · FlightCinemaBar 「여행 플랜」 (2026-06-18)
-- ⏳ avoid-zone·Atlantic corridor 잔여 · **2c** 문서만
+- ✅ avoid-zone·Atlantic bbox·29 slug waypoint · **`audit:flight-arcs` 0** · LA 직항 (2026-06-18)
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -384,7 +395,7 @@ Phase 2b 후속 — FlightCinemaBar 디자인 · 항로 arc 최적화(audit·ove
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **2b**: **WIP** — hub SSOT·Bar「여행 플랜」✅ · **다음** avoid-zone·Atlantic corridor · **2c** 문서만
+- **2b**: **WIP→arc audit 0** — hub SSOT·Bar·Atlantic bbox·waypoint batch ✅ · **2c** 문서만 · (선택) Bar corridor 라벨
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 
