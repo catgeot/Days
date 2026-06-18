@@ -186,7 +186,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.',
   },
-  tikal: { primaryIatas: ['GUA'], preferredLinkIata: 'GUA', confidence: 'high', rationale: '과테말라시티 공항' },
+  tikal: {
+    primaryIatas: ['FRS', 'GUA'],
+    preferredLinkIata: 'FRS',
+    tripFlightArrivalIata: 'GUA',
+    flightRouteHubIatas: ['LAX', 'GUA'],
+    flightRouteWaypoints: [[135, 30], [-170, 28]],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '플로레스(FRS) 국내선 최종 · 국제선 GUA 관문 · ICN→LAX 태평양 남방 경유 waypoint',
+    bannerNote:
+      '티칼은 보통 과테말라시티(GUA) 국제선 입국 후 플로레스(FRS) 국내선·차량으로 들어갑니다. 렌터카·픽업은 최종 도착 FRS 기준이며, Trip 항공 검색은 국제선 관문 GUA를 사용합니다.',
+  },
   'torres-del-paine': {
     primaryIatas: ['PUQ'],
     preferredLinkIata: 'PUQ',

@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-17 — Phase **2b** corridor A~E·bermuda fix ✅ · Phase **3** ✅
+**갱신**: 2026-06-18 — Phase **2b** tikal arc spot-check ✅ · Phase **3** ✅
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -214,7 +214,7 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: corridor A~E ✅ · 5클릭 QA ✅ · bermuda 남극 long-arc fix ✅ · **다음** 사용자 arc spot-check·잔여 bbox · **이후** Bar UX·홈 상호작용.
+**상태**: corridor A~E ✅ · 5클릭 QA ✅ · bermuda·**tikal** arc spot-check ✅ · **다음** 잔여 slug spot-check · **이후** Bar UX·홈 상호작용.
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**(항공권 CTA는 Bar에서 연결 예정).
 
@@ -226,7 +226,7 @@
 
 **대권 항로 (arc 엔진 — A ✅)**
 
-- long arc: **목적지 lng < -30** · polar(≥58°) 또는 short-arc 민감공역 교차 시 — **남극권(minLat<-58) long arc 거부**(bermuda 등)
+- long arc: **목적지 lng < -30** · polar(≥58°) 또는 short-arc 민감공역 교차 시 — **남극권(minLat<-58) long arc 거부**(bermuda 등) · **남반구 대우회(minLat<-40) 시 short 유지**(ICN→LAX/MEX)
 - 유럽·북대서양: short arc + **corridor/guard** (`[125,33]`→DXB→`[20,42]`→dest · Atlantic lat 15–45)
 - **전역 polar 제거 금지** — 남미(uyuni 등) 회귀. slug waypoint(LPB `[180,12]` 등) 유지.
 
@@ -250,6 +250,7 @@
 
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
 - ✅ corridor A~E · 5클릭 QA · bermuda (2026-06-17)
+- ✅ **tikal** ICN→LAX→GUA→FRS · gcmap 거리 일치 · 태평양 waypoint (2026-06-18)
 
 ### Phase 2c — 상세 여정 시뮬레이션 (장기 · 미구현)
 

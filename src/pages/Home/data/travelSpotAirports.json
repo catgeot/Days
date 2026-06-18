@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-17T12:31:46.123Z",
+    "generatedAt": "2026-06-18T09:20:43.164Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
@@ -1841,13 +1841,30 @@
     },
     "tikal": {
       "primaryIatas": [
+        "FRS",
         "GUA"
       ],
-      "preferredLinkIata": "GUA",
-      "kind": "single",
+      "preferredLinkIata": "FRS",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "과테말라시티 공항"
+      "bannerNote": "티칼은 보통 과테말라시티(GUA) 국제선 입국 후 플로레스(FRS) 국내선·차량으로 들어갑니다. 렌터카·픽업은 최종 도착 FRS 기준이며, Trip 항공 검색은 국제선 관문 GUA를 사용합니다.",
+      "rationale": "플로레스(FRS) 국내선 최종 · 국제선 GUA 관문 · ICN→LAX 태평양 남방 경유 waypoint",
+      "tripFlightArrivalIata": "GUA",
+      "flightRouteWaypoints": [
+        [
+          135,
+          30
+        ],
+        [
+          -170,
+          28
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "LAX",
+        "GUA"
+      ]
     },
     "santiago-de-compostela": {
       "primaryIatas": [

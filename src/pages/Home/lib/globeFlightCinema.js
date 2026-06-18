@@ -152,6 +152,13 @@ function isAntarcticLongArc(start, end, longOmega) {
   return minLatOnArc(start, end, longOmega) < -POLAR_AVOID_ABS_LAT;
 }
 
+/** long arc가 남반구 대우회(인도양·남미)면 true — ICN→LAX/MEX 등 허브 구간 회귀 방지 */
+const SOUTHERN_DETOUR_MIN_LAT = -40;
+
+function isSouthernDetourLongArc(start, end, longOmega) {
+  return minLatOnArc(start, end, longOmega) < SOUTHERN_DETOUR_MIN_LAT;
+}
+
 /** Long arc는 아메리카(dest lng < -30) polar 회피만 — 유럽 short arc는 corridor/guard로 우회 */
 const LONG_ARC_DEST_LNG_THRESHOLD = -30;
 
@@ -187,7 +194,7 @@ function chooseGreatCircleOmega(start, end) {
     if (longArcAntarctic) return shortOmega;
     return longMaxLat <= shortMaxLat ? longOmega : shortOmega;
   }
-  if (longArcAntarctic) return shortOmega;
+  if (longArcAntarctic || isSouthernDetourLongArc(start, end, longOmega)) return shortOmega;
   return longOmega;
 }
 
