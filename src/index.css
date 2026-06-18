@@ -306,6 +306,38 @@ body {
   50% { opacity: 1; }
 }
 
+/* Home flight OD cinema bar — brighter glow than tour bar */
+.flight-cinema-bar-halo {
+  position: absolute;
+  inset: -10px;
+  border-radius: 1.2rem;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(125, 211, 252, 0.62), transparent 58%),
+    radial-gradient(circle at 50% 60%, rgba(59, 130, 246, 0.42), transparent 72%);
+  filter: blur(12px);
+  animation: flight-cinema-bar-glow 2.4s ease-in-out infinite;
+}
+
+.flight-cinema-bar-card {
+  box-shadow:
+    0 10px 32px -10px rgba(0, 0, 0, 0.65),
+    0 0 22px 2px rgba(56, 189, 248, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(125, 211, 252, 0.35);
+}
+
+.flight-cinema-bar-cta {
+  box-shadow:
+    0 0 14px rgba(56, 189, 248, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+@keyframes flight-cinema-bar-glow {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .place-summary-shell-enter,
   .place-summary-card-enter,
@@ -320,5 +352,10 @@ body {
   .tour-mobile-bar-halo {
     animation: none;
     opacity: 0.75;
+  }
+
+  .flight-cinema-bar-halo {
+    animation: none;
+    opacity: 0.85;
   }
 }

@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-18 — Phase **2b** tikal arc spot-check ✅ · Phase **3** ✅
+**갱신**: 2026-06-18 — Phase **2b** Bar UX·시네마 중 키워드 ✅ · Phase **3** ✅
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -28,7 +28,7 @@
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
-| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **WIP** — corridor ✅ · **다음** arc spot-check · Bar UX |
+| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **WIP** — corridor·arc QA ✅ · Bar UX·시네마 중 키워드 ✅ · **2c** 장기 |
 | **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
@@ -214,7 +214,17 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: corridor A~E ✅ · 5클릭 QA ✅ · bermuda·**tikal** arc spot-check ✅ · **다음** 잔여 slug spot-check · **이후** Bar UX·홈 상호작용.
+**상태**: corridor A~E ✅ · arc QA ✅ · **Bar UX·홈 상호작용** ✅(사용자 QA) · **2c** 문서만(구현 보류).
+
+**시네마 중 홈 (2026-06-18 확정)**
+
+| | 모바일 | 데스크톱 |
+|---|--------|----------|
+| 연관검색어 | 숨김 (`hidden md:flex`) | 표시 · 클릭 → `closeFlightCinema` + 이동 |
+| 카테고리 | 시네마 중 숨김 | 표시 · 클릭 → `closeFlightCinema` + pan |
+| 장소카드 | 시네마 중 숨김 | 시네마 중 숨김 |
+
+**다음**: **FlightCinemaBar 디자인** · **항로 arc 최적화** · (선택) 잔여 slug · GUM·Trip CTA **보류**.
 
 **제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**(항공권 CTA는 Bar에서 연결 예정).
 
@@ -244,13 +254,14 @@
 
 **5클릭 QA ✅**: paris·london·amsterdam · seychelles · iceland/faroe · moscow · uyuni · **bermuda**(DXB·남극 회피).
 
-**다음**: 사용자 **항공 경로 spot-check** · audit 잔여(~24 slug bbox) · Bar UX · 시네마 중 키워드 · (보류) GUM·Trip CTA.
+**다음**: (선택) 잔여 slug arc spot-check · **2c** 여정 시뮬레이션(구현 보류) · (보류) GUM·Trip CTA.
 
 **로컬 QA**
 
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
 - ✅ corridor A~E · 5클릭 QA · bermuda (2026-06-17)
 - ✅ **tikal** ICN→LAX→GUA→FRS · gcmap 거리 일치 · 태평양 waypoint (2026-06-18)
+- ✅ Bar UX — 글로우 · 「항공권 확인」 Trip CTA · 시네마 중 홈 상호작용(모바일 Bar+arc / 데스크톱 클릭=종료) (2026-06-18)
 
 ### Phase 2c — 상세 여정 시뮬레이션 (장기 · 미구현)
 
@@ -302,7 +313,7 @@
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC · corridor·bermuda (2026-06-17)
-- ⏳ 사용자 arc spot-check · Bar UX · 시네마 중 키워드·카테고리
+- ⏳ **FlightCinemaBar 디자인** · 항로 arc 최적화 · **2c** 문서만
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -327,16 +338,15 @@
 
 ## 다음 세션 제시어
 
-**항공 시네마 — arc spot-check·잔여 보정 (Phase 2b)**
+**항공 시네마 — Bar 디자인·항로 최적화 (Phase 2b 후속)**
 
 ```
-@.ai-context.md @plans/2026-06-17-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+@.ai-context.md @plans/2026-06-18-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-arc-QA
+항공-시네마-Bar·항로
 
-Phase 2b arc spot-check — 홈「항공 경로」클릭 QA · audit:flight-arcs 잔여(helsinki·북미·대서양) · overrides/corridor 보정.
-hub overrides>corridor>guard · RU 목적지 우회 금지 · GLOBE_VIEW.flyZoom·toolkit 프롬프트 변경 금지.
-Pass 후 Bar UX·시네마 중 키워드.
+Phase 2b 후속 — FlightCinemaBar 디자인 · 항로 arc 최적화(audit·overrides).
+모바일 시네마=Bar+arc만 · 데스크톱 연관·카테고리 클릭=closeFlightCinema. toolkit·flyZoom 변경 금지.
 ```
 
 **Mapbox 참고**: [add-terrain](https://docs.mapbox.com/mapbox-gl-js/example/add-terrain) · [free-camera](https://docs.mapbox.com/mapbox-gl-js/example/free-camera) · Studio 카메라 경로
@@ -362,7 +372,7 @@ Pass 후 Bar UX·시네마 중 키워드.
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **2b**: **WIP** — corridor A~E ✅ · **다음** arc spot-check · Bar UX · 홈 상호작용
+- **2b**: **WIP** — Bar UX·홈 상호작용 ✅ · **다음** Bar 디자인·항로 최적화 · **2c** 문서만
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 

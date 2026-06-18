@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import FlightCinemaBar from '../components/FlightCinemaBar.jsx';
+import { buildTripcomPlannerFlightUrl } from '../../../utils/affiliate.js';
 import {
   estimateFlightHours,
   getAirportHubCoords,
@@ -141,6 +142,8 @@ export function FlightCinemaProvider({
         routeIatas,
         isConnecting,
         flightHours,
+        location,
+        essentialGuide,
       });
       return true;
     },
@@ -175,6 +178,10 @@ export function FlightCinemaProvider({
               routeIatas={active.routeIatas}
               flightHours={active.flightHours}
               isConnecting={active.isConnecting}
+              flightUrl={buildTripcomPlannerFlightUrl(active.location, {
+                essentialGuide: active.essentialGuide,
+                tracking: 'globe-flight-cinema',
+              })}
               onSkip={skipFlightCinema}
               onClose={closeFlightCinema}
             />

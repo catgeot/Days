@@ -128,10 +128,6 @@ function Home() {
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, []);
 
-  const handleCategorySelect = useCallback((nextCategory) => {
-    setCategory(nextCategory);
-    setCategoryFaceEpoch((epoch) => epoch + 1);
-  }, []);
   const [isPinVisible, setIsPinVisible] = useState(true);
   const [globeTheme, setGlobeTheme] = useState(DEFAULT_GLOBE_THEME);
   const [isTickerExpanded, setIsTickerExpanded] = useState(false);
@@ -149,6 +145,9 @@ function Home() {
   const isTourActive = isTourMode(globeMode);
   /** 모바일 투어 UI — TourMobileBar·써머리 숨김 (globeMode 동기화 전 launch pending 포함) */
   const isTourCinema = isMobileViewport && (isTourActive || tourLaunchPending);
+  const isPlaceCardSummaryVisible = Boolean(
+    selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive
+  );
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
@@ -170,6 +169,21 @@ function Home() {
     setIsChatOpen, setInitialQuery, setActiveChatId, setChatDraft, setSavedTrips, setMooniChatEntry, setMooniPlaceContext, fetchData,
     toggleBookmark
   });
+
+  const handleCategorySelect = useCallback((nextCategory) => {
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    setCategory(nextCategory);
+    setCategoryFaceEpoch((epoch) => epoch + 1);
+  }, [flightCinemaActive]);
+
+  const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    handleRelatedPlaceClick(placeData, isBridge);
+  }, [flightCinemaActive, handleRelatedPlaceClick]);
 
   const openMooniFromPlace = useCallback((payload = {}) => {
     if (!selectedLocation?.name) return;
@@ -630,7 +644,7 @@ function Home() {
         <SiteUpdateBanner />
         <HomeUI
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}
-          onRelatedPlaceClick={handleRelatedPlaceClick}
+          onRelatedPlaceClick={handleRelatedPlaceClickWithCinemaExit}
           externalInput={draftInput}
           savedTrips={filteredSavedTrips}
           onTripClick={handleLocationSelect} onTripDelete={deleteTrip}
@@ -643,6 +657,8 @@ function Home() {
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}
           isZenMode={isZenMode} onToggleZenMode={toggleZenMode}
           isTourCinema={isTourCinema}
+          isFlightCinema={flightCinemaActive}
+          isPlaceCardVisible={isPlaceCardSummaryVisible}
           tourLocation={selectedLocation}
           tourPivoted={tourPivoted}
           globeMode={globeMode}

@@ -29,6 +29,8 @@ const HomeUI = React.memo(({
   user,
   onLogout,
   isTourCinema = false,
+  isFlightCinema = false,
+  isPlaceCardVisible = false,
   tourLocation = null,
   tourPivoted = false,
   globeMode = null,
@@ -151,9 +153,12 @@ const HomeUI = React.memo(({
       </div>
 
       {!isTourCinema && (
-      <div className="fixed z-50 pointer-events-auto animate-fade-in-left
+      <div className={`fixed z-50 pointer-events-auto animate-fade-in-left
          bottom-8 left-1/2 -translate-x-1/2 w-auto max-w-[95vw] flex justify-center
-         md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:translate-x-0 md:flex-col md:max-w-none">
+         md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:translate-x-0 md:flex-col md:max-w-none
+         ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
+         ${isFlightCinema ? 'max-lg:hidden' : ''}`}
+      >
          <div className="flex items-center gap-2 sm:gap-3 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl
             flex-row flex-nowrap overflow-x-auto
             md:flex-col md:gap-4 md:overflow-visible">
@@ -161,7 +166,7 @@ const HomeUI = React.memo(({
                const isActive = selectedCategory === cat.id;
                const Icon = cat.icon;
                return (
-                 <button key={cat.id} onClick={() => onCategorySelect(cat.id)} className={`relative group w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}`}>
+                 <button key={cat.id} type="button" onClick={() => onCategorySelect(cat.id)} className={`relative group w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}`}>
                    <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
                    <div className="hidden md:block absolute right-full mr-3 px-3 py-1 bg-black/80 text-white text-xs font-bold rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">{cat.label}</div>
                    {isActive && <div className={`absolute right-1 top-1 w-1.5 h-1.5 rounded-full ${cat.color.replace('text', 'bg')} shadow-[0_0_5px_currentColor]`}></div>}
@@ -177,6 +182,7 @@ const HomeUI = React.memo(({
               {!isTagLoading && relatedPlaces.map((place, idx) => (
               <button
                 key={`${place.name}-${idx}`}
+                type="button"
                 onClick={() => onRelatedPlaceClick(place.data, place.isBridge)}
                 className={`group relative flex items-center justify-between w-28 p-2 md:w-40 md:p-3 backdrop-blur-md border rounded-xl md:hover:w-44 transition-all duration-300 shadow-lg ${
                   place.isBridge

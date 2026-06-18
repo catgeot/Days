@@ -347,6 +347,7 @@ export const TRIPCOM_FLIGHT_TRACKING = {
   sub1PlannerFlightMobile: '플래너 항공권 모바일',
   sub1PlannerPreTravelFlight: '플래너 필수준비 항공권 검색 일반',
   sub1ChatFlight: '채팅 항공권',
+  sub1GlobeFlightCinema: '홈 항공 시네마',
   sub3PlannerFlight: 'D17104488',
   sub3PlannerPreTravelFlight: 'D17159522',
   sub3ChatFlight: 'D17104488',
@@ -396,6 +397,13 @@ function resolveTripcomFlightTracking(options = {}) {
   if (tracking === 'planner-flight-mobile') {
     return {
       sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlightMobile,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
+    };
+  }
+
+  if (tracking === 'globe-flight-cinema') {
+    return {
+      sub1: TRIPCOM_FLIGHT_TRACKING.sub1GlobeFlightCinema,
       sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
     };
   }
