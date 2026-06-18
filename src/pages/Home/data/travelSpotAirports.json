@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-18T12:26:20.531Z",
+    "generatedAt": "2026-06-18T13:27:13.520Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
-      "override": 152,
+      "override": 159,
       "curatedPreserved": 0,
-      "toolkitSync": 119,
+      "toolkitSync": 112,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -26,10 +26,12 @@
       ],
       "preferredLinkIata": "BOB",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "보라보라는 인천 직항이 없습니다. 보통 인천→도쿄(NRT) 경유 타히티(PPT) 도착 후 Air Tahiti 국내선으로 BOB까지 연결됩니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "보라보라 BOB — 시네마 ICN→NRT→PPT→BOB",
       "flightRouteHubIatas": [
+        "NRT",
         "PPT"
       ]
     },
@@ -153,7 +155,10 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "라로통가(쿡 제도)는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 도착이 일반적입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
-      "rationale": "라로통가 국제공항(RAR) — 쿡 제도 최종 도착"
+      "rationale": "라로통가 RAR — 시네마 ICN→AKL→RAR",
+      "flightRouteHubIatas": [
+        "AKL"
+      ]
     },
     "samoa": {
       "primaryIatas": [
@@ -161,9 +166,10 @@
       ],
       "preferredLinkIata": "APW",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "사모아(아피아)는 인천 직항이 없습니다. 보통 인천→오클랜드(AKL)·피지 난디(NAN) 등 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "팔레올로 APW — 시네마 ICN→AKL/NAN 경유",
       "flightRouteHubIatas": [
         "AKL",
         "NAN"
@@ -333,9 +339,13 @@
       ],
       "preferredLinkIata": "ROR",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "팔라우는 인천 직항이 없습니다. 보통 인천→타이pei(TPE)·마닐라(MNL) 등 경유 후 코로르(ROR) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "코로르 ROR — 시네마 ICN→타이pei(TPE)→ROR",
+      "flightRouteHubIatas": [
+        "TPE"
+      ]
     },
     "galapagos": {
       "primaryIatas": [
@@ -568,9 +578,13 @@
       ],
       "preferredLinkIata": "NOU",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "뉴칼레도니아는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·오클랜드(AKL) 경유 후 누메아(NOU) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "누메아 NOU — 시네마 ICN→SYD→NOU",
+      "flightRouteHubIatas": [
+        "SYD"
+      ]
     },
     "singapore": {
       "primaryIatas": [
@@ -749,19 +763,36 @@
       ],
       "preferredLinkIata": "NAN",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "피지(난디)는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·오클랜드(AKL)·도쿄(NRT) 등 경유 후 NAN 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "난디 NAN — 시네마 ICN→시드니(SYD)→NAN",
+      "flightRouteHubIatas": [
+        "SYD"
+      ]
     },
     "easter-island": {
       "primaryIatas": [
-        "IPC"
+        "IPC",
+        "SCL"
       ],
       "preferredLinkIata": "IPC",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "이스터섬 마타베리"
+      "bannerNote": "이스터섬은 인천 직항이 없습니다. 보통 인천→LA(LAX)·애틀랜트(ATL)·시드니(SYD) 등 경유 후 산티아고(SCL) 도착, 이어 LATAM 국내선으로 IPC까지 연결되는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "마타베리(IPC) — 시네마 ICN→LAX→SCL→IPC · LATAM 국내선",
+      "tripFlightArrivalIata": "SCL",
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "LAX",
+        "SCL"
+      ]
     },
     "meteora": {
       "primaryIatas": [
@@ -930,9 +961,13 @@
       ],
       "preferredLinkIata": "TBU",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "통가(누쿠알로파)는 인천 직항이 없습니다. 보통 인천→피지 난디(NAN) 경유(Fiji Airways) 또는 오클랜드(AKL) 경유(Air New Zealand) 후 TBU 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "푸아아모투 국제공항(TBU) — 시네마 ICN→피지(NAN)→TBU (Fiji Airways 등 가장 일반적)",
+      "flightRouteHubIatas": [
+        "NAN"
+      ]
     },
     "la-reunion": {
       "primaryIatas": [
@@ -963,9 +998,13 @@
       ],
       "preferredLinkIata": "VLI",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "바누아투는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·브리즈번(BNE) 경유 후 포트빌라(VLI) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "포트빌라 VLI — 시네마 ICN→SYD→VLI",
+      "flightRouteHubIatas": [
+        "SYD"
+      ]
     },
     "patagonia": {
       "primaryIatas": [
@@ -3118,7 +3157,11 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "핏케언 제도는 상용 직항이 없습니다. 타히티(PPT) 국제선 도착 → 망가레바(GMR) 국내선 → 리키테아 페리·전용 여객선 순이 일반적입니다. 위 연동 공항은 타히티(PPT) 기준입니다.",
-      "rationale": "타히티 PPT 국제선 관문 — 렌터카·픽업은 타히티 대기 구간 기준"
+      "rationale": "타히티 PPT 국제선 관문 — 시네마 ICN→NRT→PPT",
+      "tripFlightArrivalIata": "PPT",
+      "flightRouteHubIatas": [
+        "NRT"
+      ]
     },
     "greenland": {
       "primaryIatas": [
@@ -3153,7 +3196,11 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "호니아라 HIR·호주 BNE 경유"
+      "bannerNote": "솔로몬 제도는 인천 직항이 없습니다. 보통 인천→브리즈번(BNE)·시드니(SYD) 경유 후 호니아라(HIR) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "호니아라 HIR — 시네마 ICN→BNE→HIR",
+      "flightRouteHubIatas": [
+        "BNE"
+      ]
     },
     "nauru": {
       "primaryIatas": [
@@ -3164,7 +3211,11 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "나우루 INU·호주 BNE 관문"
+      "bannerNote": "나우루는 인천 직항이 없습니다. 보통 인천→브리즈번(BNE) 경유 후 INU 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "나우루 INU — 시네마 ICN→BNE→INU",
+      "flightRouteHubIatas": [
+        "BNE"
+      ]
     },
     "queenstown": {
       "primaryIatas": [
@@ -11012,6 +11063,10 @@
       "confidence": "high",
       "bannerNote": "아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
       "rationale": "AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT",
+      "flightRouteHubIatas": [
+        "AKL",
+        "RAR"
+      ],
       "placeId": "아이투타키"
     },
     "vanuatu": {

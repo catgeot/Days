@@ -1,12 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, LayoutList, Plane } from 'lucide-react';
-import { useTryOpenTripcomFlightSearch } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext.jsx';
-import {
-  getPartnerLinkTarget,
-  getTripcomLinkRel,
-  shouldUseTripcomFlightSearchModal,
-} from '../../../components/PlaceCard/common/partnerNavigation.js';
+import { LayoutList, Plane } from 'lucide-react';
 
 const ROUTE_META = '대권 항로(실제 비행경로와 다를 수 있습니다.)';
 
@@ -68,43 +62,17 @@ function FlightRouteSummary({
 }
 
 /**
- * Flight OD arc cinema — 홈 지구본 미리보기 (항공권 확인 · 여행 플랜 · 닫기).
+ * Flight OD arc cinema — 홈 지구본 미리보기 (여행 플랜 · 닫기).
  */
 export default function FlightCinemaBar({
   routeIatas,
   flightHours,
   flightLegHours = [],
   isConnecting = false,
-  location = null,
-  essentialGuide = null,
-  flightUrl = null,
   plannerUrl = null,
   onClose,
   className = '',
 }) {
-  const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
-  const useFlightSearchModal = shouldUseTripcomFlightSearchModal();
-  const linkTarget = getPartnerLinkTarget();
-  const linkRel = getTripcomLinkRel(linkTarget);
-  const showFlightCta = Boolean(location || flightUrl);
-
-  const handleFlightSearchClick = useCallback(
-    (event) => {
-      if (!location) return;
-      if (
-        tryOpenFlightSearch(location, {
-          essentialGuide,
-          tracking: 'globe-flight-cinema',
-        })
-      ) {
-        event.preventDefault();
-      }
-    },
-    [essentialGuide, location, tryOpenFlightSearch]
-  );
-
-  const flightCtaClassName =
-    'flight-cinema-bar-cta shrink-0 inline-flex items-center gap-1 rounded-lg border border-sky-300/50 bg-gradient-to-r from-sky-500/90 to-blue-600/90 px-2.5 py-1.5 text-[11px] font-bold text-white transition-all hover:from-sky-400 hover:to-blue-500 active:scale-[0.98] sm:gap-1.5 sm:px-3 sm:text-xs';
   const routeAria = Array.isArray(routeIatas) && routeIatas.length >= 2
     ? routeIatas.join(' 경유 ')
     : '';
@@ -120,46 +88,24 @@ export default function FlightCinemaBar({
         <div className="flight-cinema-bar-card relative z-[1] flex flex-col gap-2 rounded-2xl border bg-black/85 px-3 py-2 backdrop-blur-xl md:px-4 md:py-2.5">
           <div className="flex min-w-0 items-start gap-2">
             <Plane size={16} className="mt-0.5 shrink-0 text-sky-300" aria-hidden="true" />
-            <div className="flex min-w-0 flex-1 items-start gap-2">
-              <FlightRouteSummary
-                routeIatas={routeIatas}
-                flightHours={flightHours}
-                flightLegHours={flightLegHours}
-                isConnecting={isConnecting}
-              />
-              {plannerUrl ? (
-                <Link
-                  to={plannerUrl}
-                  onClick={onClose}
-                  title="플래너 탭에서 전체 여정 보기"
-                  className="flight-cinema-bar-planner shrink-0 inline-flex items-center gap-1 rounded-lg border border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:from-violet-400/65 hover:to-violet-500/55 active:scale-[0.98] sm:gap-1.5 sm:px-3 sm:text-xs"
-                >
-                  <LayoutList size={13} className="opacity-95" aria-hidden="true" />
-                  여행 플랜
-                </Link>
-              ) : null}
-            </div>
+            <FlightRouteSummary
+              routeIatas={routeIatas}
+              flightHours={flightHours}
+              flightLegHours={flightLegHours}
+              isConnecting={isConnecting}
+            />
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {showFlightCta && useFlightSearchModal ? (
-              <button
-                type="button"
-                onClick={handleFlightSearchClick}
-                className={flightCtaClassName}
+            {plannerUrl ? (
+              <Link
+                to={plannerUrl}
+                onClick={onClose}
+                title="플래너 탭에서 전체 여정 보기"
+                className="flight-cinema-bar-planner shrink-0 inline-flex items-center gap-1 rounded-lg border border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:from-violet-400/65 hover:to-violet-500/55 active:scale-[0.98] sm:gap-1.5 sm:px-3 sm:text-xs"
               >
-                항공권 확인
-              </button>
-            ) : null}
-            {showFlightCta && !useFlightSearchModal && flightUrl ? (
-              <a
-                href={flightUrl}
-                target={linkTarget}
-                rel={linkRel}
-                className={flightCtaClassName}
-              >
-                항공권 확인
-                <ExternalLink size={12} className="opacity-90" aria-hidden="true" />
-              </a>
+                <LayoutList size={13} className="opacity-95" aria-hidden="true" />
+                여행 플랜
+              </Link>
             ) : null}
             <button
               type="button"

@@ -134,10 +134,20 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   rarotonga: {
     primaryIatas: ['RAR'],
     preferredLinkIata: 'RAR',
+    flightRouteHubIatas: ['AKL'],
     confidence: 'high',
-    rationale: '라로통가 국제공항(RAR) — 쿡 제도 최종 도착',
+    rationale: '라로통가 RAR — 시네마 ICN→AKL→RAR',
     bannerNote:
       '라로통가(쿡 제도)는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 도착이 일반적입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.',
+  },
+  samoa: {
+    primaryIatas: ['APW'],
+    preferredLinkIata: 'APW',
+    flightRouteHubIatas: ['AKL', 'NAN'],
+    confidence: 'high',
+    rationale: '팔레올로 APW — 시네마 ICN→AKL/NAN 경유',
+    bannerNote:
+      '사모아(아피아)는 인천 직항이 없습니다. 보통 인천→오클랜드(AKL)·피지 난디(NAN) 등 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   'san-diego': {
     primaryIatas: ['SAN', 'LAX', 'SFO'],
@@ -155,6 +165,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
     rationale: 'ICN→LAX→SEA · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  'bora-bora': {
+    primaryIatas: ['BOB', 'PPT'],
+    preferredLinkIata: 'BOB',
+    flightRouteHubIatas: ['NRT', 'PPT'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '보라보라 BOB — 시네마 ICN→NRT→PPT→BOB',
+    bannerNote:
+      '보라보라는 인천 직항이 없습니다. 보통 인천→도쿄(NRT) 경유 타히티(PPT) 도착 후 Air Tahiti 국내선으로 BOB까지 연결됩니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   boracay: {
     primaryIatas: ['KLO', 'MPH'],
@@ -179,6 +199,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: '엘니도 직항·PPS 육로·MNL 경유',
     bannerNote:
       '항공권·경로 비교\n· 루트 1(추천·비용↑): 인천→마닐라(MNL)→엘니도(ENI). AirSWIFT 독점, MNL 제4터미널(T4) 환승·짐 비연결 → 환승 3~4시간 이상 권장.\n· 루트 2(가성비·육로): 인천→푸에르토프린세사(PPS)→밴·버스→엘니도(5시간+). 체력 소모 큼.\n티켓의 최종 도착 코드로 제휴 링크 검색어를 맞춰 주세요.'
+  },
+  palau: {
+    primaryIatas: ['ROR'],
+    preferredLinkIata: 'ROR',
+    flightRouteHubIatas: ['TPE'],
+    confidence: 'high',
+    rationale: '코로르 ROR — 시네마 ICN→타이pei(TPE)→ROR',
+    bannerNote:
+      '팔라우는 인천 직항이 없습니다. 보통 인천→타이pei(TPE)·마닐라(MNL) 등 경유 후 코로르(ROR) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   palawan: {
     primaryIatas: ['ENI', 'PPS', 'MNL'],
@@ -729,7 +758,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '보르네오섬 북부의 독립 국가입니다. 말레이시아 사바·보르네오(borneo)와 입국 서류·관문(BKI)이 다릅니다. 티켓 도착은 BWN을 확인해 주세요.'
   },
-  'easter-island': { primaryIatas: ['IPC'], preferredLinkIata: 'IPC', confidence: 'high', rationale: '이스터섬 마타베리' },
+  'easter-island': {
+    primaryIatas: ['IPC', 'SCL'],
+    preferredLinkIata: 'IPC',
+    tripFlightArrivalIata: 'SCL',
+    flightRouteHubIatas: ['LAX', 'SCL'],
+    flightRouteWaypoints: [[180, 12]],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '마타베리(IPC) — 시네마 ICN→LAX→SCL→IPC · LATAM 국내선',
+    bannerNote:
+      '이스터섬은 인천 직항이 없습니다. 보통 인천→LA(LAX)·애틀랜트(ATL)·시드니(SYD) 등 경유 후 산티아고(SCL) 도착, 이어 LATAM 국내선으로 IPC까지 연결되는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
   antarctica: {
     primaryIatas: ['USH'],
     preferredLinkIata: 'USH',
@@ -756,8 +796,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'pitcairn-islands': {
     primaryIatas: ['PPT'],
     preferredLinkIata: 'PPT',
+    tripFlightArrivalIata: 'PPT',
+    flightRouteHubIatas: ['NRT'],
     confidence: 'high',
-    rationale: '타히티 PPT 국제선 관문 — 렌터카·픽업은 타히티 대기 구간 기준',
+    rationale: '타히티 PPT 국제선 관문 — 시네마 ICN→NRT→PPT',
     bannerNote:
       '핏케언 제도는 상용 직항이 없습니다. 타히티(PPT) 국제선 도착 → 망가레바(GMR) 국내선 → 리키테아 페리·전용 여객선 순이 일반적입니다. 위 연동 공항은 타히티(PPT) 기준입니다.'
   },
@@ -779,19 +821,43 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '포클랜드 제도는 MPM(마운트 플레전트) 도착·칠레(SCL) 경유 일정이 일반적입니다. 토레스 델 파이네(PUQ)와 혼동하지 마세요.'
   },
+  fiji: {
+    primaryIatas: ['NAN'],
+    preferredLinkIata: 'NAN',
+    flightRouteHubIatas: ['SYD'],
+    confidence: 'high',
+    rationale: '난디 NAN — 시네마 ICN→시드니(SYD)→NAN',
+    bannerNote:
+      '피지(난디)는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·오클랜드(AKL)·도쿄(NRT) 등 경유 후 NAN 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
+  'new-caledonia': {
+    primaryIatas: ['NOU'],
+    preferredLinkIata: 'NOU',
+    flightRouteHubIatas: ['SYD'],
+    confidence: 'high',
+    rationale: '누메아 NOU — 시네마 ICN→SYD→NOU',
+    bannerNote:
+      '뉴칼레도니아는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·오클랜드(AKL) 경유 후 누메아(NOU) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
   'solomon-islands': {
     primaryIatas: ['HIR', 'BNE'],
     preferredLinkIata: 'HIR',
+    flightRouteHubIatas: ['BNE'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '호니아라 HIR·호주 BNE 경유'
+    rationale: '호니아라 HIR — 시네마 ICN→BNE→HIR',
+    bannerNote:
+      '솔로몬 제도는 인천 직항이 없습니다. 보통 인천→브리즈번(BNE)·시드니(SYD) 경유 후 호니아라(HIR) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   nauru: {
     primaryIatas: ['INU', 'BNE'],
     preferredLinkIata: 'INU',
+    flightRouteHubIatas: ['BNE'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '나우루 INU·호주 BNE 관문'
+    rationale: '나우루 INU — 시네마 ICN→BNE→INU',
+    bannerNote:
+      '나우루는 인천 직항이 없습니다. 보통 인천→브리즈번(BNE) 경유 후 INU 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   queenstown: {
     primaryIatas: ['ZQN'],
@@ -947,6 +1013,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: 'ICN↔LAX 직항 후 육로 · arc만 태평양 waypoint로 시베리아 bbox 회피',
   },
+  tonga: {
+    primaryIatas: ['TBU'],
+    preferredLinkIata: 'TBU',
+    flightRouteHubIatas: ['NAN'],
+    confidence: 'high',
+    rationale: '푸아아모투 국제공항(TBU) — 시네마 ICN→피지(NAN)→TBU (Fiji Airways 등 가장 일반적)',
+    bannerNote:
+      '통가(누쿠알로파)는 인천 직항이 없습니다. 보통 인천→피지 난디(NAN) 경유(Fiji Airways) 또는 오클랜드(AKL) 경유(Air New Zealand) 후 TBU 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
   toronto: {
     primaryIatas: ['YYZ'],
     preferredLinkIata: 'YYZ',
@@ -954,6 +1029,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
     rationale: 'ICN→ATL→YYZ · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+  },
+  vanuatu: {
+    primaryIatas: ['VLI'],
+    preferredLinkIata: 'VLI',
+    flightRouteHubIatas: ['SYD'],
+    confidence: 'high',
+    rationale: '포트빌라 VLI — 시네마 ICN→SYD→VLI',
+    bannerNote:
+      '바누아투는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·브리즈번(BNE) 경유 후 포트빌라(VLI) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   vancouver: {
     primaryIatas: ['YVR'],
@@ -1023,6 +1107,7 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
   아이투타키: {
     primaryIatas: ['AIT', 'RAR'],
     preferredLinkIata: 'AIT',
+    flightRouteHubIatas: ['AKL', 'RAR'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT',

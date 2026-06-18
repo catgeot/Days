@@ -10,7 +10,6 @@ import React, {
 import { createPortal } from 'react-dom';
 import FlightCinemaBar from '../components/FlightCinemaBar.jsx';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext.jsx';
-import { buildTripcomPlannerNavigationUrl } from '../../../components/PlaceCard/common/partnerNavigation.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import {
   estimateFlightHours,
@@ -181,12 +180,6 @@ export function FlightCinemaProvider({
               flightHours={active.flightHours}
               flightLegHours={active.flightLegHours}
               isConnecting={active.isConnecting}
-              location={active.location}
-              essentialGuide={active.essentialGuide}
-              flightUrl={buildTripcomPlannerNavigationUrl(active.location, {
-                essentialGuide: active.essentialGuide,
-                tracking: 'globe-flight-cinema',
-              })}
               plannerUrl={
                 active.location?.slug ? buildPlacePlannerPath(active.location.slug) : null
               }

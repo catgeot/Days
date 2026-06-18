@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-06-18',
+    category: 'feature',
+    title: '홈 지구본에서 한국 출발 항공 경로를 미리 볼 수 있어요',
+    items: [
+      '여행지를 고르면 인천(ICN)에서 도착 공항까지의 항로와 구간별 소요 시간을 확인할 수 있어요.',
+      '경로 바에서 「여행 플랜」으로 플래너 전체 여정을 이어 가세요.',
+    ],
+  },
+  {
     id: '2026-06-16',
     category: 'feature',
     title: '연관 여행지를 따라 끊김 없이 탐색해 보세요',
