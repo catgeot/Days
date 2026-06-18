@@ -617,6 +617,7 @@ export function extractFlightRouteHubIatasFromEssentialGuide(guide, options = {}
   for (const step of sorted) {
     const title = step?.title;
     if (typeof title !== 'string' || !title.trim()) continue;
+    if (isTransitHubTimelineTitle(title)) continue;
 
     const stepCodes = [];
     const stepSeen = new Set();
@@ -909,9 +910,9 @@ export function resolveCinemaDestIata(location, options = {}) {
 }
 
 /**
- * 항공 시네마 IATA 관문 chain — overrides `flightRouteHubIatas` · `tripFlightArrivalIata`≠최종 · 툴킷 timeline.
+ * 항공 시네마 IATA 관문 chain — overrides `flightRouteHubIatas` · `tripFlightArrivalIata`≠최종 (bake SSOT).
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ originIata?: string, destIata?: string, essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @param {{ originIata?: string, destIata?: string, ignoreStaticAirportMap?: boolean }} [options]
  * @returns {string[]}
  */
 export function getFlightRouteHubIatas(location, options = {}) {
@@ -932,12 +933,6 @@ export function getFlightRouteHubIatas(location, options = {}) {
     const trip = String(row?.tripFlightArrivalIata ?? '').trim().toUpperCase();
     if (trip.length === 3 && hubByIata(trip) && trip !== dest && trip !== origin) {
       hubs = [trip];
-    } else if (options.essentialGuide && typeof options.essentialGuide === 'object') {
-      const fromGuide = extractFlightRouteHubIatasFromEssentialGuide(options.essentialGuide, {
-        originIata: origin,
-        finalDestIata: dest,
-      });
-      if (fromGuide?.length) hubs = fromGuide;
     }
   }
 

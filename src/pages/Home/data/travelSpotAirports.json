@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-18T09:52:29.597Z",
+    "generatedAt": "2026-06-18T12:12:09.291Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
-      "override": 134,
+      "override": 140,
       "curatedPreserved": 0,
-      "toolkitSync": 137,
+      "toolkitSync": 131,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -53,9 +53,18 @@
       ],
       "preferredLinkIata": "CUN",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "rationale": "ICN→LAX→CUN(미국 경유) · Atlantic DXB corridor 오적용 · 태평양 waypoint",
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "LAX"
+      ]
     },
     "maldives": {
       "primaryIatas": [
@@ -91,13 +100,17 @@
       ],
       "preferredLinkIata": "FEN",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "ICN→GRU→REC/FEN(플래너 STEP) · 태평양 waypoint로 북한·시베리아 관통 arc 회피",
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ],
       "flightRouteHubIatas": [
-        "GRU",
-        "REC",
-        "NAT"
+        "GRU"
       ]
     },
     "bermuda": {
@@ -591,7 +604,16 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "칸쿤 국제공항 후 육로"
+      "rationale": "칸쿤(CUN) 국제선 후 육로 · ICN→LAX→CUN 미국 경유(플래너 STEP)",
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "LAX"
+      ]
     },
     "machu-picchu": {
       "primaryIatas": [
@@ -1208,12 +1230,11 @@
       ],
       "preferredLinkIata": "KBV",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "ICN→BKK→KBV · toolkit BKK+DMK 중복 hub 오탐 보정",
       "flightRouteHubIatas": [
-        "BKK",
-        "DMK"
+        "BKK"
       ]
     },
     "cebu": {
@@ -1612,13 +1633,11 @@
       ],
       "preferredLinkIata": "LPQ",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "ICN→BKK→LPQ · toolkit 3-hub(VTE/BKK/HAN) 오탐 보정",
       "flightRouteHubIatas": [
-        "VTE",
-        "BKK",
-        "HAN"
+        "BKK"
       ]
     },
     "hue": {
@@ -2731,13 +2750,17 @@
       ],
       "preferredLinkIata": "PHL",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "ICN→ATL→PHL(툴킷 추천 경로 1) · 예시 3-hub(JFK/ATL/DTW) 오탐 제거 · 태평양 waypoint",
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ],
       "flightRouteHubIatas": [
-        "JFK",
-        "ATL",
-        "DTW"
+        "ATL"
       ]
     },
     "san-diego": {
@@ -2748,12 +2771,17 @@
       ],
       "preferredLinkIata": "SAN",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "ICN→LAX 국제선 후 SAN(국내선·Amtrak) · 태평양 waypoint로 시베리아 직통 arc 회피",
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ],
       "flightRouteHubIatas": [
-        "LAX",
-        "SFO"
+        "LAX"
       ]
     },
     "gold-coast": {

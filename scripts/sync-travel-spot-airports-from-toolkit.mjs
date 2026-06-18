@@ -19,10 +19,7 @@ import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import { RENTAL_AIRPORT_HUBS } from '../src/utils/rentalAirportHubs.js';
-import {
-  extractArrivalIataCodesFromEssentialGuide,
-  extractFlightRouteHubIatasFromEssentialGuide,
-} from '../src/utils/rentalAirportMatch.js';
+import { extractArrivalIataCodesFromEssentialGuide } from '../src/utils/rentalAirportMatch.js';
 import { TRAVEL_SPOT_AIRPORT_OVERRIDES, TRAVEL_SPOT_PLACE_ID_OVERRIDES } from './data/travel-spot-airport-overrides.mjs';
 import {
   buildSpotLookup,
@@ -100,10 +97,6 @@ function rowFromToolkitGuide(guide) {
     if (fromStructured) preferred = fromStructured.toUpperCase();
   }
 
-  const flightRouteHubIatas = extractFlightRouteHubIatasFromEssentialGuide(guide, {
-    finalDestIata: preferred,
-  });
-
   return {
     primaryIatas: registered,
     preferredLinkIata: preferred,
@@ -111,7 +104,6 @@ function rowFromToolkitGuide(guide) {
     source: 'toolkit-sync',
     confidence: 'high',
     rationale: 'place_toolkit essential_guide 동기화',
-    ...(flightRouteHubIatas?.length ? { flightRouteHubIatas } : {}),
   };
 }
 

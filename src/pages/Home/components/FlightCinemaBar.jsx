@@ -1,14 +1,16 @@
 import React from 'react';
-import { ExternalLink, Plane } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ExternalLink, LayoutList, Plane } from 'lucide-react';
 
 /**
- * Flight OD arc cinema — 홈 지구본 미리보기 (바로 보기 · 항공권 확인 · 닫기).
+ * Flight OD arc cinema — 홈 지구본 미리보기 (바로 보기 · 항공권 확인 · 여행 플랜 · 닫기).
  */
 export default function FlightCinemaBar({
   routeIatas,
   flightHours,
   isConnecting = false,
   flightUrl = null,
+  plannerUrl = null,
   onSkip,
   onClose,
   className = '',
@@ -34,6 +36,17 @@ export default function FlightCinemaBar({
               <p className="text-sm font-bold text-white truncate">{routeLabel}</p>
               <p className="text-[10px] font-medium text-sky-200/90 truncate">{durationLabel}</p>
             </div>
+            {plannerUrl ? (
+              <Link
+                to={plannerUrl}
+                onClick={onClose}
+                title="플래너 탭에서 전체 여정 보기"
+                className="flight-cinema-bar-planner shrink-0 self-center inline-flex items-center gap-1 rounded-lg border border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:from-violet-400/65 hover:to-violet-500/55 active:scale-[0.98] sm:gap-1.5 sm:px-3 sm:text-xs"
+              >
+                <LayoutList size={13} className="opacity-95" aria-hidden="true" />
+                여행 플랜
+              </Link>
+            ) : null}
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button

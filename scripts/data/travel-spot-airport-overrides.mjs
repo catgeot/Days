@@ -43,7 +43,22 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '코스타리카는 수도 산호세의 후안 산타마리아(SJO) 또는 북서부 휴양지 접근이 편한 리베리아(LIR) 중 일정에 맞게 선택하세요. 미국·캐나다·멕시코 경유가 일반적이며 직항은 없습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
-  'chichen-itza': { primaryIatas: ['CUN'], preferredLinkIata: 'CUN', confidence: 'high', rationale: '칸쿤 국제공항 후 육로' },
+  cancun: {
+    primaryIatas: ['CUN'],
+    preferredLinkIata: 'CUN',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→CUN(미국 경유) · Atlantic DXB corridor 오적용 · 태평양 waypoint',
+  },
+  'chichen-itza': {
+    primaryIatas: ['CUN'],
+    preferredLinkIata: 'CUN',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: '칸쿤(CUN) 국제선 후 육로 · ICN→LAX→CUN 미국 경유(플래너 STEP)',
+  },
   'annapurna-circuit': { primaryIatas: ['KTM', 'PKR'], preferredLinkIata: 'PKR', kind: 'multi', confidence: 'high', rationale: '카트만두·포카라 관문' },
   bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },
   bled: {
@@ -114,6 +129,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '라로통가(쿡 제도)는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 도착이 일반적입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.',
   },
+  'san-diego': {
+    primaryIatas: ['SAN', 'LAX', 'SFO'],
+    preferredLinkIata: 'SAN',
+    flightRouteHubIatas: ['LAX'],
+    flightRouteWaypoints: [[180, 12]],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→LAX 국제선 후 SAN(국내선·Amtrak) · 태평양 waypoint로 시베리아 직통 arc 회피',
+  },
   seattle: {
     primaryIatas: ['SEA'],
     preferredLinkIata: 'SEA',
@@ -169,6 +193,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '바가르 FAE · 플래너 ICN→유럽(코펜하겐 CPH) 환승→FAE · ICN↔CPH 직항 long-arc(지구 한 바퀴) 회피 waypoint',
   },
+  'fernando-de-noronha': {
+    primaryIatas: ['FEN', 'REC', 'NAT'],
+    preferredLinkIata: 'FEN',
+    flightRouteHubIatas: ['GRU'],
+    flightRouteWaypoints: [[180, 12]],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→GRU→REC/FEN(플래너 STEP) · 태평양 waypoint로 북한·시베리아 관통 arc 회피',
+  },
   'christmas-island': {
     primaryIatas: ['XCH', 'PER'],
     preferredLinkIata: 'XCH',
@@ -206,9 +239,24 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '토레스 델 파이네는 칠레 남부 파타고니아 국립공원입니다. 보통 푼타아레나스(PUQ) 직항·경유 후 버스·투어로 들어갑니다. 아르헨티나 북부 파타고니아·우수아이아와 관문이 다릅니다.'
   },
+  philadelphia: {
+    primaryIatas: ['PHL'],
+    preferredLinkIata: 'PHL',
+    flightRouteHubIatas: ['ATL'],
+    flightRouteWaypoints: [[180, 12]],
+    confidence: 'high',
+    rationale: 'ICN→ATL→PHL(툴킷 추천 경로 1) · 예시 3-hub(JFK/ATL/DTW) 오탐 제거 · 태평양 waypoint',
+  },
   persepolis: { primaryIatas: ['SYZ'], preferredLinkIata: 'SYZ', confidence: 'high', rationale: '시라즈 공항' },
   qingdao: { primaryIatas: ['TAO'], preferredLinkIata: 'TAO', confidence: 'high', rationale: '칭다오 공항' },
   'banff-national-park': { primaryIatas: ['YYC'], preferredLinkIata: 'YYC', confidence: 'high', rationale: '캘거리 공항' },
+  'luang-prabang': {
+    primaryIatas: ['LPQ'],
+    preferredLinkIata: 'LPQ',
+    flightRouteHubIatas: ['BKK'],
+    confidence: 'high',
+    rationale: 'ICN→BKK→LPQ · toolkit 3-hub(VTE/BKK/HAN) 오탐 보정',
+  },
   lhasa: { primaryIatas: ['LXA'], preferredLinkIata: 'LXA', confidence: 'high', rationale: '라싸 공항' },
   zhangjiajie: { primaryIatas: ['DYG'], preferredLinkIata: 'DYG', confidence: 'high', rationale: '장가계 공항' },
   'andaman-islands': { primaryIatas: ['IXZ'], preferredLinkIata: 'IXZ', confidence: 'high', rationale: '포트블레어 비르 사바르카르' },
@@ -324,6 +372,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint',
+  },
+  krabi: {
+    primaryIatas: ['KBV'],
+    preferredLinkIata: 'KBV',
+    flightRouteHubIatas: ['BKK'],
+    confidence: 'high',
+    rationale: 'ICN→BKK→KBV · toolkit BKK+DMK 중복 hub 오탐 보정',
   },
   phuket: {
     primaryIatas: ['HKT'],

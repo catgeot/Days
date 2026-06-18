@@ -10,6 +10,7 @@ import React, {
 import { createPortal } from 'react-dom';
 import FlightCinemaBar from '../components/FlightCinemaBar.jsx';
 import { buildTripcomPlannerFlightUrl } from '../../../utils/affiliate.js';
+import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import {
   estimateFlightHours,
   getAirportHubCoords,
@@ -182,6 +183,9 @@ export function FlightCinemaProvider({
                 essentialGuide: active.essentialGuide,
                 tracking: 'globe-flight-cinema',
               })}
+              plannerUrl={
+                active.location?.slug ? buildPlacePlannerPath(active.location.slug) : null
+              }
               onSkip={skipFlightCinema}
               onClose={closeFlightCinema}
             />

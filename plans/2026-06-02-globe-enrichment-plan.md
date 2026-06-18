@@ -28,7 +28,7 @@
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
-| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **WIP** — corridor·arc QA ✅ · Bar UX·시네마 중 키워드 ✅ · **2c** 장기 |
+| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **WIP** — hub SSOT·Bar「여행 플랜」✅ · avoid-zone 잔여 · **2c** 장기 |
 | **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
@@ -214,7 +214,7 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: corridor A~E ✅ · arc QA ✅ · **Bar UX·홈 상호작용** ✅(사용자 QA) · **2c** 문서만(구현 보류).
+**상태**: corridor A~E ✅ · arc QA ✅ · **Bar UX·홈 상호작용** ✅ · **hub SSOT** ✅ · **FlightCinemaBar 「여행 플랜」** ✅ · **2c** 문서만(구현 보류).
 
 **시네마 중 홈 (2026-06-18 확정)**
 
@@ -224,15 +224,26 @@
 | 카테고리 | 시네마 중 숨김 | 표시 · 클릭 → `closeFlightCinema` + pan |
 | 장소카드 | 시네마 중 숨김 | 시네마 중 숨김 |
 
-**다음**: **FlightCinemaBar 디자인** · **항로 arc 최적화** · (선택) 잔여 slug · GUM·Trip CTA **보류**.
+**항로 hub SSOT ✅ (2026-06-18)**
 
-**제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**(항공권 CTA는 Bar에서 연결 예정).
+| 항목 | SSOT·파일 |
+|------|-----------|
+| hub bake | `sync:airports-from-toolkit` — `flightRouteHubIatas` **중단** |
+| hub 추출 가드 | `extractFlightRouteHubIatasFromEssentialGuide` — `isTransitHubTimelineTitle` |
+| 런타임 | `getFlightRouteHubIatas` — overrides · `trip≠final`만 (live timeline **제거**) |
+| 승객 경로·avoid-zone | `travel-spot-airport-overrides.mjs` — `flightRouteHubIatas` + `flightRouteWaypoints` (예: LAX+`[180,12]`, ATL, GRU, cancun/chichen) |
+
+**FlightCinemaBar 「여행 플랜」**: 항공코드 행 · `buildPlacePlannerPath(slug)` — 플래너 탭 홈 · Trip CTA와 분리.
+
+**다음**: avoid-zone·Atlantic corridor 잔여 spot-check · (선택) corridor/passenger Bar 라벨 · GUM·Trip CTA **보류**.
+
+**제품 목표 (현재 스코프)**: 홈 써머리「항공 경로」— ICN→도착 IATA arc · `FlightCinemaBar` · 플래너 Trip과 **분리**.
 
 **제품 원칙 — 「현실감 있는 관문 경로」** (2026-06-17)
 
 - 사용자는 **여러 여행지 arc를 비교** — 서·북유럽은 **동일 관문 패턴**(DXB) · 시베리아 직통·전쟁 지역 관통은 **신뢰 저하**.
 - NOTAM/FIR 정밀 항로 **아님** — 「약 N시간 · 대권 항로」·경유 시 Bar **「ICN → DXB → CDG · 경유」** (실제 항로와 동일 문구 금지).
-- **anchor 우선순위**: (1) overrides/`journey_timeline` hub (2) 권역 corridor (3) avoid guard 재빌드 (4) 기하만.
+- **anchor 우선순위**: (1) overrides hub (2) `trip≠final` (3) 권역 corridor (4) avoid guard (5) 기하만 — live timeline hub **제거됨**(2026-06-18).
 
 **대권 항로 (arc 엔진 — A ✅)**
 
@@ -280,7 +291,7 @@
 | 출발 (써머리) | ICN — `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` |
 | 도착(arc) | `resolveCinemaDestIata` → `preferredLinkIata` |
 | 좌표 | `rentalAirportHubs.js` |
-| 경유 hub | overrides `flightRouteHubIatas` · **`tripFlightArrivalIata`≠최종** · `journey_timeline`/`sync:airports-from-toolkit` |
+| 경유 hub | overrides `flightRouteHubIatas` · **`tripFlightArrivalIata`≠최종** · (목표) timeline auto-bake **중단** — 수동 overrides만 |
 | 지리 waypoint | overrides `flightRouteWaypoints` [[lng,lat],…] (극/날짜변경선 등) |
 | 비행 시간 | geodesic km ÷ 850km/h · 「약 N시간 · 직항 · 대권 항로」 |
 | 표시 경로 | `buildFlightRouteLine` — 3D slerp · 극우회 · unwrap · 측면 곡선(표시용) |
@@ -294,7 +305,7 @@
 | [`flightRouteAvoidZones.js`](../src/pages/Home/lib/flightRouteAvoidZones.js) | bbox guard · `coordsCrossAvoidZones` |
 | [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
 | [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc 레이어 · 카메라 · revealFullRoute · close |
-| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 바로 보기 · 닫기 |
+| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 바로 보기 · 항공권 확인(Trip) · **여행 플랜**(플래너 탭) · 닫기 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
 | [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · `requestFlightCinema` |
 | [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 |
@@ -313,7 +324,8 @@
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC · corridor·bermuda (2026-06-17)
-- ⏳ **FlightCinemaBar 디자인** · 항로 arc 최적화 · **2c** 문서만
+- ✅ hub SSOT·overrides waypoint · san-diego·philadelphia·fernando·cancun/chichen · FlightCinemaBar 「여행 플랜」 (2026-06-18)
+- ⏳ avoid-zone·Atlantic corridor 잔여 · **2c** 문서만
 
 ### Phase 3 — 권역 hull + 주변 POI (2026-06-16 ✅ UX · 데이터 확장)
 
@@ -372,7 +384,7 @@ Phase 2b 후속 — FlightCinemaBar 디자인 · 항로 arc 최적화(audit·ove
 ### Phase 2~4
 
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
-- **2b**: **WIP** — Bar UX·홈 상호작용 ✅ · **다음** Bar 디자인·항로 최적화 · **2c** 문서만
+- **2b**: **WIP** — hub SSOT·Bar「여행 플랜」✅ · **다음** avoid-zone·Atlantic corridor · **2c** 문서만
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
 - **4**: MRT `fetch-mrt-products` · `HotelExploreSheet` (API 합의 후)
 
