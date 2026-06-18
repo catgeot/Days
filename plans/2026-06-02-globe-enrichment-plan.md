@@ -2,7 +2,7 @@
 
 **맥락**: [`.ai-context.md`](../.ai-context.md) · **일지**: [`2026-06-04-project-log.md`](2026-06-04-project-log.md) · 직전 [`2026-06-03-project-log.md`](2026-06-03-project-log.md)
 
-**갱신**: 2026-06-18 — Phase **2b** Bar UX·시네마 중 키워드 ✅ · Phase **3** ✅
+**갱신**: 2026-06-18 — Phase **2b** arc·Bar·Trip 위젯 ✅ · Phase **3** ✅
 
 **일지**: [`2026-06-09-project-log.md`](2026-06-09-project-log.md) · 직전 [`2026-06-08-project-log.md`](2026-06-08-project-log.md)
 
@@ -28,7 +28,7 @@
 | **1** | 3D 투어 (Summary → 여행지 맛보기 선회) | **WIP** (1a~1i) |
 | **1i** | 투어 종료 후 **도보·차량 이동 경계선** (Isochrone) | **완료** (로컬 QA 다낭) |
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
-| **2b** | 항공 예약 퍼널 앞 **5초 시네마** (OD arc) | **WIP** — hub SSOT·Bar「여행 플랜」✅ · avoid-zone 잔여 · **2c** 장기 |
+| **2b** | 항공 예약 퍼널 앞 **시네마** (OD arc) | **WIP→거의 완료** — arc·Bar·Trip 위젯 ✅ · **2c** 장기 |
 | **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
 | **4** | 숙소 탐색 (MRT 시험 → 플래너 연동) | 장기 |
 
@@ -214,7 +214,18 @@
 
 ### Phase 2b — 항공 시네마 (OD arc · 홈 써머리 전용)
 
-**상태**: corridor A~E ✅ · **`audit:flight-arcs` 0** ✅ · **Bar UX·홈 상호작용** ✅ · **hub SSOT** ✅ · **FlightCinemaBar 「여행 플랜」** ✅ · **2c** 문서만(구현 보류).
+**상태**: corridor A~E ✅ · **`audit:flight-arcs` 0** ✅ · **arc 마커·leg 애니·Bar·Trip CTA** ✅ · **2c** 문서만(구현 보류).
+
+**Phase 2b arc·Bar UX ✅ (2026-06-18 후속 · 사용자 QA Pass)**
+
+| 항목 | 내용 |
+|------|------|
+| arc 마커 | 출발(청록)·경유(빨강)·도착(노랑) · IATA 흰색 라벨 |
+| leg 애니 | hub 구간 순차 draw + 정지 · ~10s (`buildFlightArcDrawSchedule`) |
+| Bar 노선 | `ICN ~11h LAX … (총 Nh)` · `estimateFlightLegHours` |
+| Bar 메타 | `대권 항로(실제 비행경로와 다를 수 있습니다.)` |
+| Trip CTA | **모바일** `TripcomFlightSearchModal`(ad iframe) · **데스크톱** `buildTripcomPlannerNavigationUrl` |
+| 제거 | 「바로 보기」·`skipFlightCinema` · `revealFullRoute` UI 노출 없음 |
 
 **시네마 중 홈 (2026-06-18 확정)**
 
@@ -283,7 +294,7 @@
 - ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
 - ✅ corridor A~E · 5클릭 QA · bermuda (2026-06-17)
 - ✅ **tikal** ICN→LAX→GUA→FRS · gcmap 거리 일치 · 태평양 waypoint (2026-06-18)
-- ✅ Bar UX — 글로우 · 「항공권 확인」 Trip CTA · 시네마 중 홈 상호작용(모바일 Bar+arc / 데스크톱 클릭=종료) (2026-06-18)
+- ✅ Bar UX — 글로우 · Trip CTA(모바일 위젯·데스크톱 링크) · 구간 비행시간 · arc leg 애니 (2026-06-18)
 
 ### Phase 2c — 상세 여정 시뮬레이션 (장기 · 미구현)
 
@@ -304,7 +315,7 @@
 | 좌표 | `rentalAirportHubs.js` |
 | 경유 hub | overrides `flightRouteHubIatas` · **`tripFlightArrivalIata`≠최종** · (목표) timeline auto-bake **중단** — 수동 overrides만 |
 | 지리 waypoint | overrides `flightRouteWaypoints` [[lng,lat],…] (극/날짜변경선 등) |
-| 비행 시간 | geodesic km ÷ 850km/h · 「약 N시간 · 직항 · 대권 항로」 |
+| 비행 시간 | geodesic km ÷ 850km/h · Bar 구간 `~Nh` + `(총 Nh)` · 대권 항로 면책 문구 |
 | 표시 경로 | `buildFlightRouteLine` — 3D slerp · 극우회 · unwrap · 측면 곡선(표시용) |
 
 **구현 SSOT (2026-06-16)**
@@ -315,8 +326,8 @@
 | [`flightRouteCorridors.js`](../src/pages/Home/lib/flightRouteCorridors.js) | 유럽·북대서양 corridor · `resolveRegionalCorridorAnchors` |
 | [`flightRouteAvoidZones.js`](../src/pages/Home/lib/flightRouteAvoidZones.js) | bbox guard · `coordsCrossAvoidZones` |
 | [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
-| [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc 레이어 · 카메라 · revealFullRoute · close |
-| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 바로 보기 · 항공권 확인(Trip) · **여행 플랜**(플래너 탭) · 닫기 |
+| [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc·공항 마커·leg draw 스케줄 · close |
+| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 구간 시간 · 항공권 확인(Trip) · **여행 플랜** · 닫기 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
 | [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · `requestFlightCinema` |
 | [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 |

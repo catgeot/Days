@@ -1034,10 +1034,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return hadSession;
   }, []);
 
-  const skipFlightCinema = useCallback(() => {
-    flightCinemaEngineRef.current?.revealFullRoute?.();
-  }, []);
-
   const startFlightCinema = useCallback((params) => {
     if (tourActiveRef.current) {
       return false;
@@ -1204,10 +1200,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     endTour,
     pivotTourExplore,
     startFlightCinema,
-    skipFlightCinema,
     closeFlightCinema,
     getGlobeMode: () => globeMode
-  }), [addRipple, closeFlightCinema, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipFlightCinema, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, closeFlightCinema, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

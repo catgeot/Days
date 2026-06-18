@@ -40,7 +40,6 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     endTour: () => childRef.current?.endTour?.(),
     pivotTourExplore: (location) => childRef.current?.pivotTourExplore?.(location),
     startFlightCinema: (params) => childRef.current?.startFlightCinema?.(params),
-    skipFlightCinema: () => childRef.current?.skipFlightCinema?.(),
     closeFlightCinema: () => childRef.current?.closeFlightCinema?.(),
     getGlobeMode: () => childRef.current?.getGlobeMode?.()
   }), []);

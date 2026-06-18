@@ -4,7 +4,7 @@
 
 ## 항공 시네마 — Phase 2b Bar UX·홈 상호작용 ✅ (사용자 QA Pass)
 
-- **FlightCinemaBar**: `flight-cinema-bar-halo` 글로우 · 「바로 보기」=`revealFullRoute` · 「항공권 확인」Trip CTA(`globe-flight-cinema` 추적)
+- **FlightCinemaBar**: `flight-cinema-bar-halo` 글로우 · 「항공권 확인」Trip CTA(`globe-flight-cinema` 추적) · ~~「바로 보기」~~ **제거(2026-06-18 후속)**
 - **시네마 중 홈**: **모바일** — 연관검색어 숨김 · 카테고리 숨김 · **데스크톱** — 연관·카테고리 클릭 → `closeFlightCinema` 후 탐색
 - **장소카드**: 모바일 `max-lg:hidden` 카테고리
 
@@ -30,12 +30,18 @@
 - 항공코드 행 우측 · `/place/{slug}/planner` (플래너 탭 홈 · 항공 앵커 없음)
 - 클릭 시 시네마 종료 · Trip CTA와 역할 분리(전체 여정 윤곽)
 
+## 항공 시네마 — arc·Bar UX 고도화 ✅ (사용자 QA Pass)
+
+- **arc 마커**: 출발(청록)·경유(빨강)·도착(노랑) + IATA 흰색 라벨(공항 옆)
+- **구간 arc 애니메이션**: hub leg별 순차 draw + 정지(~700ms) · 총 ~10s (`buildFlightArcDrawSchedule`)
+- **FlightCinemaBar**: `ICN ~11h LAX … (총 Nh)` 한 줄 · 메타 `대권 항로(실제 비행경로와 다를 수 있습니다.)` · **「바로 보기」 제거**
+- **Trip CTA**: 모바일 `TripcomFlightSearchProvider` 검색 위젯 · 데스크톱 `buildTripcomPlannerNavigationUrl` · `globe-flight-cinema` 추적
+
 ## 다음 세션 (에이전트 핸드오프)
 
 | # | 우선 | 방향 |
 |---|------|------|
-| 1 | (선택) | FlightCinemaBar corridor vs passenger hub 라벨 · GUM·Trip CTA **보류** |
-| 2 | (선택) | **2c** 문서만 |
+| 1 | (선택) | **2c** 문서만 · corridor/passenger Bar 라벨 · GUM·Trip CTA **보류** |
 
 **금지**: `update-place-toolkit` · `GLOBE_VIEW.flyZoom` · 배너/`TITLE_ARRIVAL_AIRPORT_PHRASES` (사용자 승인 없이)
 
@@ -65,10 +71,8 @@
 ```
 @.ai-context.md @plans/2026-06-18-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
 
-항공-시네마-항로-최적화
+항공-시네마-2c
 
-Phase 2b 후속 — audit:flight-arcs avoid-zone·Atlantic corridor spot-check.
-잔여 DXB 오적용(chicago·toronto 등) · helsinki·대서양 bbox.
-FlightCinemaBar·hub SSOT·여행 플랜 ✅ — corridor/passenger 라벨은 선택.
+Phase 2b arc·Bar·Trip CTA ✅ — 2c 문서·(선택) corridor/passenger 라벨.
 toolkit·flyZoom·배너 로직 변경 금지.
 ```

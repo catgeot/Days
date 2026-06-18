@@ -9,10 +9,12 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import FlightCinemaBar from '../components/FlightCinemaBar.jsx';
-import { buildTripcomPlannerFlightUrl } from '../../../utils/affiliate.js';
+import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext.jsx';
+import { buildTripcomPlannerNavigationUrl } from '../../../components/PlaceCard/common/partnerNavigation.js';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import {
   estimateFlightHours,
+  estimateFlightLegHours,
   getAirportHubCoords,
   resolveFlightCinemaOd,
 } from './globeFlightCinema.js';
@@ -22,7 +24,7 @@ const FlightCinemaContext = createContext(null);
 /**
  * @param {{
  *   children: React.ReactNode,
- *   globeRef: React.RefObject<{ startFlightCinema?: Function, skipFlightCinema?: Function, closeFlightCinema?: Function, endTour?: Function } | null>,
+ *   globeRef: React.RefObject<{ startFlightCinema?: Function, closeFlightCinema?: Function, endTour?: Function } | null>,
  *   isTourActive?: boolean,
  *   endTourForCinema?: () => Promise<void>,
  *   onActiveChange?: (active: boolean) => void,
@@ -89,6 +91,7 @@ export function FlightCinemaProvider({
       let routeIatas = [];
       let isConnecting = false;
       let flightHours = 1;
+      let flightLegHours = [];
 
       if (!resolvedOrigin || !resolvedDest || !normalizedOrigin || !normalizedDest) {
         const od = resolveFlightCinemaOd(location, {
@@ -104,6 +107,7 @@ export function FlightCinemaProvider({
         routeIatas = od.routeIatas ?? [normalizedOrigin, normalizedDest];
         isConnecting = Boolean(od.isConnecting);
         flightHours = od.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
+        flightLegHours = od.flightLegHours ?? estimateFlightLegHours(routeIatas);
       } else {
         const od = resolveFlightCinemaOd(location, {
           originIata: normalizedOrigin,
@@ -113,6 +117,7 @@ export function FlightCinemaProvider({
         routeIatas = od?.routeIatas ?? [normalizedOrigin, ...hubIatas, normalizedDest];
         isConnecting = hubIatas.length > 0 || Boolean(od?.isConnecting);
         flightHours = od?.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
+        flightLegHours = od?.flightLegHours ?? estimateFlightLegHours(routeIatas);
       }
 
       if (!resolvedOrigin || !resolvedDest) return false;
@@ -143,6 +148,7 @@ export function FlightCinemaProvider({
         routeIatas,
         isConnecting,
         flightHours,
+        flightLegHours,
         location,
         essentialGuide,
       });
@@ -150,10 +156,6 @@ export function FlightCinemaProvider({
     },
     [endTourForCinema, finishCinema, globeRef, isTourActive]
   );
-
-  const skipFlightCinema = useCallback(() => {
-    globeRef.current?.skipFlightCinema?.();
-  }, [globeRef]);
 
   const closeFlightCinema = useCallback(() => {
     globeRef.current?.closeFlightCinema?.();
@@ -164,10 +166,9 @@ export function FlightCinemaProvider({
     () => ({
       flightCinemaActive: Boolean(active),
       requestFlightCinema,
-      skipFlightCinema,
       closeFlightCinema,
     }),
-    [active, closeFlightCinema, requestFlightCinema, skipFlightCinema]
+    [active, closeFlightCinema, requestFlightCinema]
   );
 
   const barPortal =
@@ -178,15 +179,17 @@ export function FlightCinemaProvider({
               className="w-full max-w-md md:max-w-lg"
               routeIatas={active.routeIatas}
               flightHours={active.flightHours}
+              flightLegHours={active.flightLegHours}
               isConnecting={active.isConnecting}
-              flightUrl={buildTripcomPlannerFlightUrl(active.location, {
+              location={active.location}
+              essentialGuide={active.essentialGuide}
+              flightUrl={buildTripcomPlannerNavigationUrl(active.location, {
                 essentialGuide: active.essentialGuide,
                 tracking: 'globe-flight-cinema',
               })}
               plannerUrl={
                 active.location?.slug ? buildPlacePlannerPath(active.location.slug) : null
               }
-              onSkip={skipFlightCinema}
               onClose={closeFlightCinema}
             />
           </div>,
@@ -195,10 +198,12 @@ export function FlightCinemaProvider({
       : null;
 
   return (
-    <FlightCinemaContext.Provider value={value}>
-      {children}
-      {barPortal}
-    </FlightCinemaContext.Provider>
+    <TripcomFlightSearchProvider>
+      <FlightCinemaContext.Provider value={value}>
+        {children}
+        {barPortal}
+      </FlightCinemaContext.Provider>
+    </TripcomFlightSearchProvider>
   );
 }
 

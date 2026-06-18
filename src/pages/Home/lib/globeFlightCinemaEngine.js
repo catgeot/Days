@@ -1,8 +1,12 @@
 import {
-  buildFlightRouteLine,
+  buildFlightRouteLineWithLegs,
+  buildFlightArcDrawSchedule,
   computeRouteCameraView,
-  sliceArcProgress,
+  getAirportHubCoords,
+  resolveArcDrawAtTime,
   FLIGHT_CINEMA_DURATION_MS,
+  FLIGHT_CINEMA_INITIAL_DELAY_MS,
+  FLIGHT_CINEMA_LEG_PAUSE_MS,
 } from './globeFlightCinema.js';
 import { normalizeLngNear } from './globeLngUtils.js';
 
@@ -10,14 +14,18 @@ export const FLIGHT_CINEMA_ARC_SOURCE_ID = 'gateo-flight-cinema-arc';
 export const FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID = 'gateo-flight-cinema-endpoints';
 export const FLIGHT_CINEMA_ARC_LAYER_ID = 'gateo-flight-cinema-arc-line';
 export const FLIGHT_CINEMA_ARC_GLOW_LAYER_ID = 'gateo-flight-cinema-arc-glow';
+export const FLIGHT_CINEMA_AIRPORT_LAYER_ID = 'gateo-flight-cinema-airports';
+export const FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID = 'gateo-flight-cinema-airport-labels';
+/** @deprecated legacy layer ids for label-policy compat */
 export const FLIGHT_CINEMA_ORIGIN_LAYER_ID = 'gateo-flight-cinema-origin';
+/** @deprecated legacy layer ids for label-policy compat */
 export const FLIGHT_CINEMA_DEST_LAYER_ID = 'gateo-flight-cinema-dest';
 
 export const FLIGHT_CINEMA_LAYER_IDS = [
   FLIGHT_CINEMA_ARC_GLOW_LAYER_ID,
   FLIGHT_CINEMA_ARC_LAYER_ID,
-  FLIGHT_CINEMA_ORIGIN_LAYER_ID,
-  FLIGHT_CINEMA_DEST_LAYER_ID,
+  FLIGHT_CINEMA_AIRPORT_LAYER_ID,
+  FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
 ];
 
 const EMPTY_FC = { type: 'FeatureCollection', features: [] };
@@ -62,26 +70,126 @@ function arcLineFeature(coords) {
   };
 }
 
-function endpointsFeature(originLngLat, destLngLat, originIata, destIata) {
-  return {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: { role: 'origin', iata: originIata },
-        geometry: { type: 'Point', coordinates: originLngLat },
-      },
-      {
-        type: 'Feature',
-        properties: { role: 'dest', iata: destIata },
-        geometry: { type: 'Point', coordinates: destLngLat },
-      },
-    ],
+const AIRPORT_ROLE = ['get', 'role'];
+
+const AIRPORT_DOT_PAINT = {
+  'circle-radius': [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    1,
+    ['match', AIRPORT_ROLE, 'dest', 6, 'hub', 4, 5],
+    4,
+    ['match', AIRPORT_ROLE, 'dest', 10, 'hub', 7, 9],
+    8,
+    ['match', AIRPORT_ROLE, 'dest', 14, 'hub', 10, 12],
+  ],
+  'circle-color': [
+    'match',
+    AIRPORT_ROLE,
+    'origin',
+    '#22d3ee',
+    'dest',
+    '#fbbf24',
+    'hub',
+    '#ef4444',
+    '#ffffff',
+  ],
+  'circle-stroke-width': 2.5,
+  'circle-stroke-color': '#ffffff',
+};
+
+const AIRPORT_LABEL_LAYOUT = {
+  'text-field': ['get', 'iata'],
+  'text-size': ['interpolate', ['linear'], ['zoom'], 1, 15, 4, 19, 8, 24],
+  'text-offset': [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    1,
+    ['literal', [0.75, 0]],
+    4,
+    ['literal', [0.9, 0]],
+    8,
+    ['literal', [1.1, 0]],
+  ],
+  'text-anchor': 'left',
+  'text-max-width': 8,
+  'text-allow-overlap': true,
+  'text-ignore-placement': true,
+  'text-letter-spacing': 0.08,
+};
+
+const AIRPORT_LABEL_PAINT = {
+  'text-color': '#ffffff',
+  'text-halo-color': 'rgba(2,6,23,0.95)',
+  'text-halo-width': 1.5,
+};
+
+function routeAirportsFeature(originIata, destIata, hubIatas = []) {
+  /** @type {import('geojson').Feature[]} */
+  const features = [];
+  const seen = new Set();
+
+  const pushAirport = (iata, role) => {
+    const code = String(iata || '').trim().toUpperCase();
+    if (!code || seen.has(code)) return;
+    const hub = getAirportHubCoords(code);
+    if (!hub) return;
+    seen.add(code);
+    features.push({
+      type: 'Feature',
+      properties: { role, iata: code },
+      geometry: { type: 'Point', coordinates: [hub.lng, hub.lat] },
+    });
   };
+
+  pushAirport(originIata, 'origin');
+  for (const hubIata of hubIatas) pushAirport(hubIata, 'hub');
+  pushAirport(destIata, 'dest');
+
+  return { type: 'FeatureCollection', features };
+}
+
+function removeLegacyAirportLayers(map) {
+  for (const legacyId of [FLIGHT_CINEMA_ORIGIN_LAYER_ID, FLIGHT_CINEMA_DEST_LAYER_ID]) {
+    if (map.getLayer(legacyId)) {
+      try {
+        map.removeLayer(legacyId);
+      } catch {
+        // Style may be mid-transition.
+      }
+    }
+  }
+}
+
+function applyLayerPaint(map, layerId, paint) {
+  if (!map.getLayer(layerId)) return;
+  for (const [key, value] of Object.entries(paint)) {
+    try {
+      map.setPaintProperty(layerId, key, value);
+    } catch {
+      // Style may be mid-transition.
+    }
+  }
+}
+
+function applyLayerLayout(map, layerId, layout) {
+  if (!map.getLayer(layerId)) return;
+  for (const [key, value] of Object.entries(layout)) {
+    try {
+      map.setLayoutProperty(layerId, key, value);
+    } catch {
+      // Style may be mid-transition.
+    }
+  }
 }
 
 export function isFlightCinemaLayer(layerId = '') {
-  return FLIGHT_CINEMA_LAYER_IDS.includes(String(layerId));
+  const id = String(layerId);
+  return FLIGHT_CINEMA_LAYER_IDS.includes(id)
+    || id === FLIGHT_CINEMA_ORIGIN_LAYER_ID
+    || id === FLIGHT_CINEMA_DEST_LAYER_ID;
 }
 
 export function setupFlightCinemaLayers(map, { visible = true } = {}) {
@@ -115,34 +223,30 @@ export function setupFlightCinemaLayers(map, { visible = true } = {}) {
       });
     }
 
-    if (!map.getLayer(FLIGHT_CINEMA_ORIGIN_LAYER_ID)) {
+    removeLegacyAirportLayers(map);
+
+    if (!map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)) {
       map.addLayer({
-        id: FLIGHT_CINEMA_ORIGIN_LAYER_ID,
+        id: FLIGHT_CINEMA_AIRPORT_LAYER_ID,
         type: 'circle',
         source: FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID,
-        filter: ['==', ['get', 'role'], 'origin'],
-        paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, 5, 4, 9, 8, 12],
-          'circle-color': '#22d3ee',
-          'circle-stroke-width': 2.5,
-          'circle-stroke-color': '#ffffff',
-        },
+        paint: AIRPORT_DOT_PAINT,
       });
+    } else {
+      applyLayerPaint(map, FLIGHT_CINEMA_AIRPORT_LAYER_ID, AIRPORT_DOT_PAINT);
     }
 
-    if (!map.getLayer(FLIGHT_CINEMA_DEST_LAYER_ID)) {
+    if (!map.getLayer(FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID)) {
       map.addLayer({
-        id: FLIGHT_CINEMA_DEST_LAYER_ID,
-        type: 'circle',
+        id: FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
+        type: 'symbol',
         source: FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID,
-        filter: ['==', ['get', 'role'], 'dest'],
-        paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, 6, 4, 10, 8, 14],
-          'circle-color': '#fbbf24',
-          'circle-stroke-width': 2.5,
-          'circle-stroke-color': '#ffffff',
-        },
+        layout: AIRPORT_LABEL_LAYOUT,
+        paint: AIRPORT_LABEL_PAINT,
       });
+    } else {
+      applyLayerLayout(map, FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID, AIRPORT_LABEL_LAYOUT);
+      applyLayerPaint(map, FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID, AIRPORT_LABEL_PAINT);
     }
 
     for (const layerId of FLIGHT_CINEMA_LAYER_IDS) {
@@ -201,19 +305,16 @@ export function createFlightCinemaEngine(map, options = {}) {
   let animating = false;
   let cancelled = false;
   let rafId = null;
-  let arcDelayTimer = null;
   let runGen = 0;
   let onCompleteRef = null;
   let fullArcRef = null;
+  let arcScheduleRef = null;
+  let animationStartAt = 0;
 
   const cleanupTimers = () => {
     if (rafId != null) {
       cancelAnimationFrame(rafId);
       rafId = null;
-    }
-    if (arcDelayTimer != null) {
-      clearTimeout(arcDelayTimer);
-      arcDelayTimer = null;
     }
   };
 
@@ -224,6 +325,8 @@ export function createFlightCinemaEngine(map, options = {}) {
     cancelled = false;
     runGen += 1;
     fullArcRef = null;
+    arcScheduleRef = null;
+    animationStartAt = 0;
     cleanupTimers();
     onCompleteRef = null;
     clearFlightCinemaLayers(map);
@@ -235,6 +338,8 @@ export function createFlightCinemaEngine(map, options = {}) {
     animating = false;
     runGen += 1;
     fullArcRef = null;
+    arcScheduleRef = null;
+    animationStartAt = 0;
     cleanupTimers();
     try {
       map.stop();
@@ -296,7 +401,7 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     const originLngLat = [params.origin.lng, params.origin.lat];
     const destLngLat = [params.dest.lng, params.dest.lat];
-    const fullArc = buildFlightRouteLine(originLngLat, destLngLat, {
+    const { coords: fullArc, legEndIndices } = buildFlightRouteLineWithLegs(originLngLat, destLngLat, {
       location: params.location ?? null,
       originIata: params.originIata,
       destIata: params.destIata,
@@ -305,8 +410,12 @@ export function createFlightCinemaEngine(map, options = {}) {
     });
     fullArcRef = fullArc;
     const durationMs = params.durationMs ?? FLIGHT_CINEMA_DURATION_MS;
-    const arcDrawMs = Math.round(durationMs * 0.6);
-    const cameraMs = Math.round(durationMs * 0.45);
+    arcScheduleRef = buildFlightArcDrawSchedule(legEndIndices, {
+      drawMs: Math.round(durationMs * 0.68),
+      legPauseMs: FLIGHT_CINEMA_LEG_PAUSE_MS,
+      initialDelayMs: FLIGHT_CINEMA_INITIAL_DELAY_MS,
+    });
+    const cameraMs = Math.round(durationMs * 0.5);
     const cameraView = computeRouteCameraView(fullArc, params.origin, params.dest, flyZoom);
 
     if (!setupFlightCinemaLayers(map, { visible: true })) return false;
@@ -320,7 +429,7 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     safeMapUpdate(map, () => {
       map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(
-        endpointsFeature(originLngLat, destLngLat, params.originIata, params.destIata)
+        routeAirportsFeature(params.originIata, params.destIata, params.hubIatas)
       );
       map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature([originLngLat]));
     });
@@ -345,18 +454,17 @@ export function createFlightCinemaEngine(map, options = {}) {
       map.jumpTo(cameraTarget);
     }
 
-    const arcDelayMs = 350;
-    const arcStartAt = performance.now() + arcDelayMs;
+    animationStartAt = performance.now();
 
     const tick = (now) => {
       if (!active || cancelled || gen !== runGen) return;
-      const elapsed = now - arcStartAt;
-      const progress = Math.min(1, Math.max(0, elapsed / arcDrawMs));
-      const partial = sliceArcProgress(fullArc, progress);
+      const schedule = arcScheduleRef;
+      const elapsed = now - animationStartAt;
+      const partial = resolveArcDrawAtTime(fullArc, schedule, elapsed);
       safeMapUpdate(map, () => {
         map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(partial));
       });
-      if (progress < 1) {
+      if (elapsed < (schedule?.totalMs ?? 0)) {
         rafId = requestAnimationFrame(tick);
         return;
       }
@@ -364,11 +472,7 @@ export function createFlightCinemaEngine(map, options = {}) {
       rafId = null;
     };
 
-    arcDelayTimer = window.setTimeout(() => {
-      arcDelayTimer = null;
-      if (!active || cancelled || gen !== runGen) return;
-      rafId = requestAnimationFrame(tick);
-    }, arcDelayMs);
+    rafId = requestAnimationFrame(tick);
 
     return true;
   };

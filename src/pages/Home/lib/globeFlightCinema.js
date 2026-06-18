@@ -63,6 +63,31 @@ export function estimateFlightHoursChain(chain) {
   return Math.max(1, Math.round(totalKm / FLIGHT_SPEED_KMH));
 }
 
+/**
+ * @param {string[]} routeIatas origin → hub… → dest
+ * @returns {{ fromIata: string, toIata: string, hours: number }[]}
+ */
+export function estimateFlightLegHours(routeIatas) {
+  const codes = (routeIatas ?? [])
+    .map((code) => String(code || '').trim().toUpperCase())
+    .filter(Boolean);
+  if (codes.length < 2) return [];
+
+  /** @type {{ fromIata: string, toIata: string, hours: number }[]} */
+  const legs = [];
+  for (let i = 0; i < codes.length - 1; i += 1) {
+    const from = getAirportHubCoords(codes[i]);
+    const to = getAirportHubCoords(codes[i + 1]);
+    if (!from || !to) continue;
+    legs.push({
+      fromIata: codes[i],
+      toIata: codes[i + 1],
+      hours: estimateFlightHours(from, to),
+    });
+  }
+  return legs;
+}
+
 /** @param {[number, number][]} anchors */
 function dedupeConsecutiveAnchors(anchors) {
   if (!anchors.length) return [];
@@ -399,27 +424,10 @@ function resolveRouteAnchors(originLngLat, destLngLat, location, options = {}) {
 
 /**
  * 직항 대권 항로 + 구면 측면 오프셋 — 항공 지도에서 흔한 곡선 표현(거리·시간 SSOT는 haversine 유지).
- * @param {[number, number]} originLngLat
- * @param {[number, number]} destLngLat
- * @param {{ points?: number, location?: Record<string, unknown> | null, hubIatas?: string[], essentialGuide?: Record<string, unknown> | null }} [options]
+ * @param {[number, number][]} gcLine
+ * @param {{ lng: number, lat: number }[]} chainPoints
  */
-export function buildFlightRouteLine(originLngLat, destLngLat, options = {}) {
-  const points = options.points ?? 80;
-  const anchors = resolveRouteAnchors(originLngLat, destLngLat, options.location, {
-    originIata: options.originIata,
-    destIata: options.destIata,
-    hubIatas: options.hubIatas,
-    essentialGuide: options.essentialGuide,
-  });
-  const gcLine = buildGreatCircleChain(anchors, Math.max(24, Math.round(points / Math.max(1, anchors.length - 1))));
-
-  const origin = { lng: originLngLat[0], lat: originLngLat[1] };
-  const dest = { lng: destLngLat[0], lat: destLngLat[1] };
-  const chainPoints = [
-    origin,
-    ...anchors.slice(1, -1).map(([lng, lat]) => ({ lng, lat })),
-    dest,
-  ];
+function bulgeGreatCircleLine(gcLine, chainPoints) {
   const km = estimateFlightHoursChain(chainPoints) * FLIGHT_SPEED_KMH;
   const peakKm = Math.min(240, Math.max(40, km * 0.055));
   const coords = [];
@@ -445,6 +453,101 @@ export function buildFlightRouteLine(originLngLat, destLngLat, options = {}) {
   return unwrapRouteLongitudes(coords);
 }
 
+/** @param {[number, number][]} anchors @param {{ lng: number, lat: number }} hub @param {number} [fromIdx] */
+function findHubAnchorIndex(anchors, hub, fromIdx = 1) {
+  const tol = 0.08;
+  for (let i = fromIdx; i < anchors.length - 1; i += 1) {
+    const [lng, lat] = anchors[i];
+    if (Math.abs(lng - hub.lng) < tol && Math.abs(lat - hub.lat) < tol) return i;
+  }
+  let bestIdx = Math.max(fromIdx, 1);
+  let bestScore = Infinity;
+  for (let i = fromIdx; i < anchors.length - 1; i += 1) {
+    const [lng, lat] = anchors[i];
+    const score = (lng - hub.lng) ** 2 + (lat - hub.lat) ** 2;
+    if (score < bestScore) {
+      bestScore = score;
+      bestIdx = i;
+    }
+  }
+  return bestIdx;
+}
+
+function gcLineIndexForAnchor(anchorIdx, pointsPerSegment, anchorCount) {
+  if (anchorIdx <= 0) return 0;
+  const lastIdx = (anchorCount - 1) * pointsPerSegment;
+  return Math.min(lastIdx, anchorIdx * pointsPerSegment);
+}
+
+/**
+ * @param {[number, number][]} anchors
+ * @param {string[]} hubIatas
+ * @param {number} pointsPerSegment
+ * @param {number} arcLength
+ */
+export function buildRouteLegEndIndices(anchors, hubIatas, pointsPerSegment, arcLength) {
+  const destIdx = arcLength - 1;
+  const hubList = (hubIatas ?? [])
+    .map((iata) => getAirportHubCoords(iata))
+    .filter(Boolean);
+  if (!hubList.length) return [destIdx];
+
+  let prevAnchorIdx = 0;
+  const ends = [];
+  for (const hub of hubList) {
+    const anchorIdx = findHubAnchorIndex(anchors, hub, prevAnchorIdx + 1);
+    let arcIdx = gcLineIndexForAnchor(anchorIdx, pointsPerSegment, anchors.length);
+    const minIdx = (ends.length ? ends[ends.length - 1] : 0) + 1;
+    arcIdx = Math.max(minIdx, Math.min(arcIdx, destIdx - 1));
+    ends.push(arcIdx);
+    prevAnchorIdx = anchorIdx;
+  }
+  if (ends[ends.length - 1] !== destIdx) ends.push(destIdx);
+  return ends;
+}
+
+/**
+ * @param {[number, number]} originLngLat
+ * @param {[number, number]} destLngLat
+ * @param {{ points?: number, location?: Record<string, unknown> | null, hubIatas?: string[], essentialGuide?: Record<string, unknown> | null, originIata?: string, destIata?: string }} [options]
+ * @returns {{ coords: [number, number][], legEndIndices: number[] }}
+ */
+export function buildFlightRouteLineWithLegs(originLngLat, destLngLat, options = {}) {
+  const points = options.points ?? 80;
+  const plan = resolveFlightRoutePlan(originLngLat, destLngLat, options.location, {
+    originIata: options.originIata,
+    destIata: options.destIata,
+    hubIatas: options.hubIatas,
+    essentialGuide: options.essentialGuide,
+  });
+  const { anchors } = plan;
+  const hubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
+    ? options.hubIatas
+    : plan.hubIatas;
+  const pps = Math.max(24, Math.round(points / Math.max(1, anchors.length - 1)));
+  const gcLine = buildGreatCircleChain(anchors, pps);
+
+  const origin = { lng: originLngLat[0], lat: originLngLat[1] };
+  const dest = { lng: destLngLat[0], lat: destLngLat[1] };
+  const chainPoints = [
+    origin,
+    ...anchors.slice(1, -1).map(([lng, lat]) => ({ lng, lat })),
+    dest,
+  ];
+  const coords = bulgeGreatCircleLine(gcLine, chainPoints);
+  const legEndIndices = buildRouteLegEndIndices(anchors, hubIatas, pps, coords.length);
+  return { coords, legEndIndices };
+}
+
+/**
+ * @param {[number, number]} originLngLat
+ * @param {[number, number]} destLngLat
+ * @param {{ points?: number, location?: Record<string, unknown> | null, hubIatas?: string[], essentialGuide?: Record<string, unknown> | null }} [options]
+ */
+export function buildFlightRouteLine(originLngLat, destLngLat, options = {}) {
+  return buildFlightRouteLineWithLegs(originLngLat, destLngLat, options).coords;
+}
+
 /** @param {[number, number][]} coords */
 export function sliceArcProgress(coords, progress) {
   const t = Math.min(1, Math.max(0, progress));
@@ -452,6 +555,82 @@ export function sliceArcProgress(coords, progress) {
   if (t <= 0) return [coords[0]];
   const lastIndex = Math.max(1, Math.floor(t * (coords.length - 1)));
   return coords.slice(0, lastIndex + 1);
+}
+
+/** @param {[number, number][]} coords @param {number} startIdx @param {number} endIdx @param {number} progress */
+export function sliceArcLegProgress(coords, startIdx, endIdx, progress) {
+  const t = Math.min(1, Math.max(0, progress));
+  if (!coords.length) return [];
+  const from = Math.max(0, Math.min(startIdx, coords.length - 1));
+  const to = Math.max(from, Math.min(endIdx, coords.length - 1));
+  if (t <= 0) return coords.slice(0, from + 1);
+  const idx = Math.max(from, Math.floor(from + t * (to - from)));
+  return coords.slice(0, idx + 1);
+}
+
+/**
+ * @param {number[]} legEndIndices
+ * @param {{ drawMs?: number, legPauseMs?: number, initialDelayMs?: number }} [options]
+ */
+export function buildFlightArcDrawSchedule(legEndIndices, options = {}) {
+  const {
+    drawMs = 6500,
+    legPauseMs = FLIGHT_CINEMA_LEG_PAUSE_MS,
+    initialDelayMs = FLIGHT_CINEMA_INITIAL_DELAY_MS,
+  } = options;
+
+  const ends = legEndIndices?.length ? legEndIndices : [0];
+  const totalSpan = Math.max(1, ends[ends.length - 1]);
+  /** @type {{ startIdx: number, endIdx: number, drawStartMs: number, drawEndMs: number }[]} */
+  const legs = [];
+  let prevEnd = 0;
+  let cursor = initialDelayMs;
+
+  for (let i = 0; i < ends.length; i += 1) {
+    const endIdx = ends[i];
+    const span = Math.max(1, endIdx - prevEnd);
+    const legDrawMs = Math.max(400, Math.round(drawMs * (span / totalSpan)));
+    legs.push({
+      startIdx: prevEnd,
+      endIdx,
+      drawStartMs: cursor,
+      drawEndMs: cursor + legDrawMs,
+    });
+    cursor += legDrawMs;
+    if (i < ends.length - 1) cursor += legPauseMs;
+    prevEnd = endIdx;
+  }
+
+  return { legs, totalMs: cursor, initialDelayMs, legPauseMs };
+}
+
+/**
+ * @param {[number, number][]} fullArc
+ * @param {ReturnType<typeof buildFlightArcDrawSchedule>} schedule
+ * @param {number} elapsedMs
+ */
+export function resolveArcDrawAtTime(fullArc, schedule, elapsedMs) {
+  if (!fullArc?.length) return [];
+  const { legs, initialDelayMs } = schedule ?? {};
+  if (!legs?.length) return fullArc.slice(0, 1);
+  const t = Math.max(0, elapsedMs);
+
+  if (t < initialDelayMs) return fullArc.slice(0, 1);
+
+  for (let i = 0; i < legs.length; i += 1) {
+    const leg = legs[i];
+    if (t < leg.drawStartMs) {
+      const prevEnd = legs[i - 1]?.endIdx ?? 0;
+      return fullArc.slice(0, prevEnd + 1);
+    }
+    if (t <= leg.drawEndMs) {
+      const progress = (t - leg.drawStartMs) / Math.max(1, leg.drawEndMs - leg.drawStartMs);
+      return sliceArcLegProgress(fullArc, leg.startIdx, leg.endIdx, progress);
+    }
+  }
+
+  const last = legs[legs.length - 1];
+  return fullArc.slice(0, last.endIdx + 1);
 }
 
 /**
@@ -561,6 +740,7 @@ export function resolveFlightCinemaOd(location, options = {}) {
     origin,
     dest,
     flightHours: estimateFlightHoursChain(chainPoints),
+    flightLegHours: estimateFlightLegHours(routeIatas),
   };
 }
 
@@ -578,4 +758,6 @@ export function canPreviewFlightRoute(location, options = {}) {
   return Boolean(resolveSummaryFlightCinemaOd(location, options));
 }
 
-export const FLIGHT_CINEMA_DURATION_MS = 5500;
+export const FLIGHT_CINEMA_DURATION_MS = 10000;
+export const FLIGHT_CINEMA_LEG_PAUSE_MS = 700;
+export const FLIGHT_CINEMA_INITIAL_DELAY_MS = 500;
