@@ -690,6 +690,7 @@ function Home() {
 
         {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive && (
           <HomePlaceCardSummary
+            globeRef={globeRef}
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
             onClose={() => {

@@ -14,6 +14,7 @@ const PlaceCardSummary = ({
   onStartTour,
   onPreviewFlightRoute,
   canPreviewFlightRoute = false,
+  isFlightRouteReady = false,
   flightRouteLabel = null,
   isCompact = false,
 }) => {
@@ -142,15 +143,28 @@ const PlaceCardSummary = ({
               {canPreviewFlightRoute && (
                 <button
                   type="button"
+                  disabled={!isFlightRouteReady}
+                  aria-busy={!isFlightRouteReady}
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (!isFlightRouteReady) return;
                     onPreviewFlightRoute?.();
                   }}
-                  className="flex-1 min-w-[calc(50%-0.25rem)] flex items-center justify-center gap-2 py-3 rounded-2xl bg-sky-500/15 border border-sky-400/35 hover:bg-sky-500/25 hover:border-sky-300/45 transition-all duration-300 z-10 relative"
-                  title={flightRouteLabel || '항공 경로 미리보기'}
+                  className={`flex-1 min-w-[calc(50%-0.25rem)] flex items-center justify-center gap-2 py-3 rounded-2xl border transition-all duration-300 z-10 relative ${
+                    isFlightRouteReady
+                      ? 'bg-sky-500/15 border-sky-400/35 hover:bg-sky-500/25 hover:border-sky-300/45 cursor-pointer'
+                      : 'bg-white/[0.04] border-white/10 opacity-50 cursor-not-allowed pointer-events-none'
+                  }`}
+                  title={
+                    isFlightRouteReady
+                      ? (flightRouteLabel || '항공 경로 미리보기')
+                      : '지구본 준비 중…'
+                  }
                 >
-                  <Plane size={16} className="text-sky-300" />
-                  <span className="text-xs font-bold text-sky-100">항공 경로</span>
+                  <Plane size={16} className={isFlightRouteReady ? 'text-sky-300' : 'text-gray-500'} />
+                  <span className={`text-xs font-bold ${isFlightRouteReady ? 'text-sky-100' : 'text-gray-400'}`}>
+                    {isFlightRouteReady ? '항공 경로' : '준비 중…'}
+                  </span>
                 </button>
               )}
               {canStartTour && (

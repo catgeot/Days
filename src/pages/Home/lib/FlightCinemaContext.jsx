@@ -23,7 +23,7 @@ const FlightCinemaContext = createContext(null);
 /**
  * @param {{
  *   children: React.ReactNode,
- *   globeRef: React.RefObject<{ startFlightCinema?: Function, closeFlightCinema?: Function, endTour?: Function } | null>,
+ *   globeRef: React.RefObject<{ startFlightCinema?: Function, closeFlightCinema?: Function, endTour?: Function, isFlightCinemaReady?: Function, waitForFlightCinemaReady?: Function } | null>,
  *   isTourActive?: boolean,
  *   endTourForCinema?: () => Promise<void>,
  *   onActiveChange?: (active: boolean) => void,
@@ -121,6 +121,14 @@ export function FlightCinemaProvider({
 
       if (!resolvedOrigin || !resolvedDest) return false;
       if (normalizedOrigin === normalizedDest) return false;
+
+      const waitForReady = globeRef.current?.waitForFlightCinemaReady?.bind(globeRef.current);
+      if (typeof waitForReady === 'function') {
+        const ready = await waitForReady({ timeoutMs: 8000 });
+        if (!ready) return false;
+      } else if (globeRef.current?.isFlightCinemaReady?.() === false) {
+        return false;
+      }
 
       pendingCompleteRef.current = onComplete ?? null;
 

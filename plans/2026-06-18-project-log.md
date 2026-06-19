@@ -60,6 +60,13 @@
 - **`preferredLinkIata`·배너·Trip 매칭 변경 없음** — `flightRoute*`는 시네마 arc 전용
 - **`audit:flight-arcs` none:0** · **`generate:airports`** override 152
 
+## 써머리「항공 경로」버튼 준비·신뢰도 fix ✅ (사용자 QA Pass)
+
+- **증상**: 활성 버튼 클릭 시 자전만 멈추고 시네마 미시작(다회 클릭) · `idle` 폴링·레이어 반복으로 자전 끊김·「준비 중」깜박임
+- **UX**: `hasFlightRoute` ≠ `isFlightRouteReady` — `mapReady` 전「준비 중…」비활성 · 이후「항공 경로」활성·첫 클릭 재생
+- **구현**: `isFlightCinemaGlobeReady`/`ensureFlightCinemaGlobeReady` · `HomePlaceCardSummary`+`globeRef` · `startFlightCinema` 성공 후에만 자전 정지
+- **금지**: Mapbox `idle`/`styledata` 폴링 준비 판정 · 렌더/updater 안 부모 `setState`
+
 ## 커밋 (Phase 2b arc 최적화)
 
 - `flightRouteCorridors.js` — Atlantic bbox·지중해 gateway `[15,42]`

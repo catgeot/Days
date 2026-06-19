@@ -56,7 +56,9 @@ import {
 } from '../lib/globeClusterBoundaries';
 import {
   createFlightCinemaEngine,
+  ensureFlightCinemaGlobeReady,
   setupFlightCinemaLayers,
+  waitForFlightCinemaGlobeReady,
 } from '../lib/globeFlightCinemaEngine';
 import { readGlobeShareViewFromUrl } from '../lib/globeExploreNav';
 import {
@@ -240,7 +242,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   focusSlug = null,
   onFatalError,
   highlightCategory = null,
-  categoryFaceEpoch = 0
+  categoryFaceEpoch = 0,
 }, ref) => {
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
@@ -287,7 +289,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const reachBoundariesVisibleRef = useRef(true);
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
   const [mapReady, setMapReady] = useState(false);
+  const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(false);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
+  useEffect(() => {
+    setFlightCinemaGlobeReady(mapReady);
+  }, [mapReady]);
   useEffect(() => {
     reachBoundariesVisibleRef.current = reachBoundariesVisible;
   }, [reachBoundariesVisible]);
@@ -1042,9 +1048,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!map) return false;
 
     safeMapResize(map);
-    autoRotateRef.current = false;
-    if (rotationTimer.current) clearTimeout(rotationTimer.current);
-    interactionRef.current = true;
+    if (!ensureFlightCinemaGlobeReady(map)) {
+      return false;
+    }
 
     const engine = ensureFlightCinemaEngine();
     if (!engine) return false;
@@ -1067,10 +1073,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     });
 
     if (started) {
+      autoRotateRef.current = false;
+      if (rotationTimer.current) clearTimeout(rotationTimer.current);
+      interactionRef.current = true;
       flightCinemaActiveRef.current = true;
-    } else {
-      flightCinemaActiveRef.current = false;
-      interactionRef.current = false;
     }
     return started;
   }, [ensureFlightCinemaEngine]);
@@ -1201,8 +1207,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     pivotTourExplore,
     startFlightCinema,
     closeFlightCinema,
+    isFlightCinemaReady: () => flightCinemaGlobeReady,
+    waitForFlightCinemaReady: (options) => {
+      const map = mapRef.current?.getMap();
+      if (!map) return Promise.resolve(false);
+      return waitForFlightCinemaGlobeReady(map, options);
+    },
     getGlobeMode: () => globeMode
-  }), [addRipple, closeFlightCinema, endTour, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, closeFlightCinema, endTour, flightCinemaGlobeReady, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -1500,8 +1512,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         mapStyle={mapStyle}
         onClick={handleGlobeClickInternal}
         onError={(evt) => raiseFatal(evt?.error || new Error('Mapbox render error'))}
-        onLoad={() => {
-          const map = mapRef.current?.getMap();
+        onLoad={(evt) => {
+          const map = evt?.target ?? mapRef.current?.getMap();
           if (map) {
             unbindSpaceDragGuardRef.current?.();
             unbindSpaceDragGuardRef.current = bindGlobeSpaceDragGuard(map);
@@ -1529,16 +1541,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
               }
             }
             skipCategoryFaceUntilShareCheckRef.current = false;
-            setMapReady(true);
           }
+          setMapReady(true);
           syncMapZoom();
           ensureInteractionReady();
-          applyWaterPaint();
-          refreshPlaceLabelLayers();
-          applyKoreanSatelliteLabels();
-          resetAndApplyPlaceLabelVisibility();
-          if (!waitingThemeSettleRef.current) {
-            tryRevealGlobe();
+          if (map) {
+            applyWaterPaint();
+            refreshPlaceLabelLayers();
+            applyKoreanSatelliteLabels();
+            resetAndApplyPlaceLabelVisibility();
+            if (!waitingThemeSettleRef.current) {
+              tryRevealGlobe();
+            }
           }
         }}
         onStyleData={() => {

@@ -283,6 +283,76 @@ export function clearFlightCinemaLayers(map) {
   });
 }
 
+/** 읽기 전용 — 항공 시네마 레이어 존재 여부 (map 부수 효과 없음) */
+export function isFlightCinemaGlobeReady(map) {
+  if (!map || map._removed) return false;
+  if (!map.getStyle?.()) return false;
+  return Boolean(
+    map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)
+    && map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)
+    && map.getLayer(FLIGHT_CINEMA_ARC_LAYER_ID)
+    && map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)
+  );
+}
+
+/** 레이어 선등록 후 준비 여부 (시작·대기 시에만 호출) */
+export function ensureFlightCinemaGlobeReady(map) {
+  if (!map || map._removed) return false;
+  if (isFlightCinemaGlobeReady(map)) return true;
+  if (!map.getStyle?.() || !map.isStyleLoaded?.()) return false;
+  return setupFlightCinemaLayers(map, { visible: false });
+}
+
+/** @deprecated — ensureFlightCinemaGlobeReady 사용 */
+export function probeFlightCinemaGlobeReady(map) {
+  return ensureFlightCinemaGlobeReady(map);
+}
+
+/**
+ * @param {import('mapbox-gl').Map} map
+ * @param {{ timeoutMs?: number }} [options]
+ * @returns {Promise<boolean>}
+ */
+export function waitForFlightCinemaGlobeReady(map, { timeoutMs = 8000 } = {}) {
+  if (!map || map._removed) return Promise.resolve(false);
+  if (ensureFlightCinemaGlobeReady(map)) return Promise.resolve(true);
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const listeners = [];
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      listeners.forEach(([event, handler]) => {
+        try {
+          map.off(event, handler);
+        } catch {
+          // ignore
+        }
+      });
+    };
+
+    const finish = (ok) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(ok);
+    };
+
+    const tryReady = () => {
+      if (ensureFlightCinemaGlobeReady(map)) finish(true);
+    };
+
+    const timer = setTimeout(() => finish(false), timeoutMs);
+    ['style.load', 'idle'].forEach((event) => {
+      const handler = () => tryReady();
+      map.on(event, handler);
+      listeners.push([event, handler]);
+    });
+    tryReady();
+  });
+}
+
 function normalizeLngNearRef(currentLng, targetLng) {
   return normalizeLngNear(currentLng, targetLng);
 }

@@ -330,9 +330,10 @@
 | [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 구간 시간 · 항공권 확인(Trip) · **여행 플랜** · 닫기 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
 | [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · `requestFlightCinema` |
-| [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 |
+| [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 · `hasFlightRoute`/`isFlightRouteReady`(`mapReady`+`globeRef`) |
+| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「준비 중…」비활성 · 활성 시에만 클릭 |
 | [`Home/index.jsx`](../src/pages/Home/index.jsx) | `flightCinemaActive` |
-| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `startFlightCinema` · tour 동시 불가 |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `startFlightCinema` · `isFlightCinemaReady`←`mapReady` · tour 동시 불가 |
 
 **상태·충돌**
 
@@ -341,6 +342,7 @@
 - 3D tour 중 flight cinema **동시 재생 금지** · cinema active 중 새 장소/투어 → cinema 종료 ✅
 - `GLOBE_VIEW.flyZoom`(2.35) **변경 금지**.
 - 시네마 중 지구본 `opacity-100` (`isFlightCinemaActive`).
+- 써머리「항공 경로」: **활성 = `mapReady`** — `idle` 폴링·렌더 중 부모 setState로 준비 판정 **금지** (2026-06-18 fix).
 
 **로컬 QA**
 
