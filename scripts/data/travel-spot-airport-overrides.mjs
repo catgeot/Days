@@ -230,7 +230,17 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: 'ICN→LAX→LIM · 태평양 waypoint로 시베리아 bbox arc 회피',
   },
   fez: { primaryIatas: ['FEZ'], preferredLinkIata: 'FEZ', confidence: 'high', rationale: '페스 사이스 공항' },
-  'abu-simbel': { primaryIatas: ['ASW'], preferredLinkIata: 'ASW', confidence: 'high', rationale: '아스완 후 투어·국내선' },
+  'abu-simbel': {
+    primaryIatas: ['CAI', 'ASW', 'ABS'],
+    preferredLinkIata: 'ASW',
+    flightRouteHubIatas: ['DXB', 'CAI'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→DXB 경유 → CAI → ASW 국내선 → ABS 경비행기·육로(투어)',
+    searchHintIatas: ['ASW', 'ABS'],
+    bannerNote:
+      '아부심벨은 인천→중동(DXB·DOH 등) 경유 → 카이로(CAI) 국제선 → 카이로→아스완(ASW) 국내선(약 1.5시간) → 아스완에서 아부심벨(ABS) 경비행기(약 45분) 또는 투어 차량 육로(약 3.5시간) 순입니다. Trip.com 등 항공권 검색·제휴 링크는 아스완(ASW) 기준 — 카이로 경유·국내선 포함 일정이면 최종 도착 코드 ASW로 맞춰 주세요. ABS 직항·현지 투어는 별도 예약입니다. 렌터카·픽업·투어는 아스완(ASW) 기준입니다.',
+  },
   'milford-sound': { primaryIatas: ['ZQN'], preferredLinkIata: 'ZQN', confidence: 'high', rationale: '퀸즈타운 공항' },
   fiordland: { primaryIatas: ['ZQN'], preferredLinkIata: 'ZQN', confidence: 'high', rationale: '퀸즈타운·티아나우 관문' },
   'faroe-islands': {
@@ -338,7 +348,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'terracotta-army': { primaryIatas: ['XIY'], preferredLinkIata: 'XIY', confidence: 'high', rationale: '시안 공항' },
   'victoria-falls': { primaryIatas: ['VFA'], preferredLinkIata: 'VFA', confidence: 'high', rationale: '빅토리아폴스 공항' },
   'raja-ampat': { primaryIatas: ['SOQ'], preferredLinkIata: 'SOQ', confidence: 'high', rationale: '소롱 공항' },
-  'peninsula-valdes': { primaryIatas: ['PMY'], preferredLinkIata: 'PMY', confidence: 'high', rationale: '푸에르토마드린' },
+  'peninsula-valdes': {
+    primaryIatas: ['EZE', 'AEP', 'PMY', 'REL'],
+    preferredLinkIata: 'PMY',
+    flightRouteHubIatas: ['LAX', 'EZE', 'AEP'],
+    flightRouteWaypoints: [[180, 12]],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→LAX→EZE 국제선 → AEP→PMY·REL 국내선 · 발데스 반도',
+    searchHintIatas: ['PMY', 'REL'],
+    bannerNote:
+      '발데스 반도는 인천→미국·유럽 경유(약 14~18시간) 후 부에노스아이레스 국제공항(EZE) 도착 → 공항 간 이동(약 1.5시간) 후 국내선 출발 공항(AEP)에서 트렐레우(REL) 또는 푸에르토마드린(PMY) 국내선(약 2시간) — 렌터카 수령 후 반도 진입. Trip.com 등 항공권·제휴 링크는 PMY·REL 최종 도착 기준 — 국제선·EZE 경유 일정이면 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
   socotra: {
     primaryIatas: ['SCT', 'AUH'],
     preferredLinkIata: 'SCT',
@@ -443,6 +464,8 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint',
+    bannerNote:
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
   },
   krabi: {
     primaryIatas: ['KBV'],
@@ -464,6 +487,8 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '케플라비크 KEF — iceland와 동일 · 플래너 유럽 허브(뮌헨) 경유 시네마',
+    bannerNote:
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
   },
   madeira: {
     primaryIatas: ['FNC'],
@@ -596,9 +621,69 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: '카트만두(KTM) — 루클라(LUA) 국내선·트레킹 관문'
   },
   'kuala-lumpur': { primaryIatas: ['KUL'], preferredLinkIata: 'KUL', confidence: 'high', rationale: '쿠알라룸푸르국제공항(KUL)' },
-  amsterdam: { primaryIatas: ['AMS'], preferredLinkIata: 'AMS', confidence: 'high', rationale: '스키폴공항(AMS)' },
+  amsterdam: {
+    primaryIatas: ['AMS'],
+    preferredLinkIata: 'AMS',
+    flightRouteHubIatas: [],
+    flightRouteWaypoints: [[125, 33], [15, 42]],
+    confidence: 'high',
+    rationale: 'ICN↔AMS KLM 직항(약 13~14h) · corridor DXB 생략 · waypoint로 우크라이나·RU bbox arc 회피',
+  },
+  brussels: {
+    primaryIatas: ['BRU'],
+    preferredLinkIata: 'BRU',
+    flightRouteHubIatas: ['FRA'],
+    confidence: 'high',
+    rationale: '브뤼셀 BRU · ICN→프랑크푸르트(FRA) 루프트한자 경유 — 추천 취항사 대표 루트',
+    bannerNote:
+      '항공권 예약 팁\n· 직항: 없음(인천↔브뤼셀 정기 직항 없음, 1회 경유 필수) · 총 15~18시간\n· 추천: 루프트한자(프랑크푸르트·뮌헨), 에어프랑스(파리), 카타르(도하), KLM(암스테르담)\n· 절감 팁: 파리(CDG)·암스테르담(AMS) 직항 후 유로스타(Eurostar)·탈리스 고속열차로 브뤼셀 남역(약 1시간 30분) — 시간·비용 효율적',
+  },
+  oslo: {
+    primaryIatas: ['OSL'],
+    preferredLinkIata: 'OSL',
+    flightRouteHubIatas: ['HEL'],
+    confidence: 'high',
+    rationale: '가르데르모엔 OSL · ICN→헬싱키(HEL) 핀에어 경유 — 플래너·시네마 최적 루트',
+    bannerNote:
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: 카타르(도하), 루프트한자(뮌헨·프랑크푸르트), KLM(암스테르담)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+  },
+  helsinki: {
+    primaryIatas: ['HEL'],
+    preferredLinkIata: 'HEL',
+    confidence: 'high',
+    rationale: '헬싱키반타 HEL · 핀에어 인천↔헬싱키 직항 — 북유럽 허브 · 시네마는 corridor(DXB) arc',
+    bannerNote:
+      '항공권 예약 팁\n· 직항: 핀에어 인천↔헬싱키(HEL) 직항(약 9~10시간)\n· 대안: 1회 경유(총 12~16시간) — SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+  },
+  stockholm: {
+    primaryIatas: ['ARN'],
+    preferredLinkIata: 'ARN',
+    flightRouteHubIatas: ['HEL'],
+    confidence: 'high',
+    rationale: '알란다 ARN · ICN→헬싱키(HEL) 핀에어 경유 — 오슬로와 동일 패턴',
+    bannerNote:
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+  },
+  copenhagen: {
+    primaryIatas: ['CPH'],
+    preferredLinkIata: 'CPH',
+    flightRouteHubIatas: ['HEL'],
+    confidence: 'high',
+    rationale: '코펜하겐 CPH · ICN→헬싱키(HEL) 핀에어 경유 — 북유럽 1회 경유 대표 루트',
+    bannerNote:
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+  },
   'cape-town': { primaryIatas: ['CPT'], preferredLinkIata: 'CPT', confidence: 'high', rationale: '케이프타운국제공항(CPT)' },
-  luxor: { primaryIatas: ['LXR'], preferredLinkIata: 'LXR', confidence: 'high', rationale: '룩소르국제공항(LXR)' },
+  luxor: {
+    primaryIatas: ['CAI', 'LXR'],
+    preferredLinkIata: 'LXR',
+    flightRouteHubIatas: ['CAI'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→CAI·DOH 국제선 경유 → CAI→LXR 국내선',
+    bannerNote:
+      '룩소르는 인천→카이로(CAI) 또는 도하(DOH) 국제선 경유(약 11~12시간·2~5시간 대기) 후, 카이로→룩소르(LXR) 국내선(약 1시간·CAI 기준) 또는 도하→룩소르(약 3.5시간)로 이어집니다. Trip.com 등 항공권 검색·제휴 링크는 룩소르(LXR) 기준 — 경유·국내선 포함 일정이면 최종 도착 코드 LXR로 맞춰 주세요.',
+  },
   serengeti: {
     primaryIatas: ['JRO', 'NBO'],
     preferredLinkIata: 'JRO',
@@ -696,21 +781,23 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '미드웨이 환초는 상용 정기 노선이 없으며, 미국 Fish & Wildlife 허가·투어로 호놀룰루(HNL) 등에서 이어지는 일정이 일반적입니다.'
   },
   denali: {
-    primaryIatas: ['ANC'],
+    primaryIatas: ['SEA', 'ANC'],
     preferredLinkIata: 'ANC',
-    flightRouteHubIatas: ['LAX'],
+    flightRouteHubIatas: ['SEA'],
     flightRouteWaypoints: [[180, 12]],
+    kind: 'multi',
     confidence: 'high',
-    rationale: 'ICN→LAX→ANC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
   },
   yakutsk: { primaryIatas: ['YKS'], preferredLinkIata: 'YKS', confidence: 'high', rationale: '야쿠츠크 공항' },
   alaska: {
-    primaryIatas: ['ANC'],
+    primaryIatas: ['SEA', 'ANC'],
     preferredLinkIata: 'ANC',
-    flightRouteHubIatas: ['LAX'],
+    flightRouteHubIatas: ['SEA'],
     flightRouteWaypoints: [[180, 12]],
+    kind: 'multi',
     confidence: 'high',
-    rationale: 'ICN→LAX→ANC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
   },
   'st-helena': {
     primaryIatas: ['HLE', 'JNB'],

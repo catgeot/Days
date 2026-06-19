@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import {
   getFlightRouteHubIatas,
+  hasExplicitDirectFlightRoute,
   resolveCinemaDestIata,
 } from '../src/utils/rentalAirportMatch.js';
 import {
@@ -56,7 +57,8 @@ function auditSpot(spot) {
   const destLngLat = [dest.lng, dest.lat];
 
   const overrideHubIatas = getFlightRouteHubIatas(spot, { originIata, destIata });
-  const hasOverrideHubs = overrideHubIatas.length > 0;
+  const explicitDirect = hasExplicitDirectFlightRoute(spot);
+  const hasOverrideHubs = overrideHubIatas.length > 0 || explicitDirect;
   const isRuDest = isRussiaDestinationLocation(spot, destLngLat, destIata);
 
   const plan = resolveFlightRoutePlan(originLngLat, destLngLat, spot, {

@@ -82,7 +82,10 @@ function flightRouteWaypointsFromOverride(override) {
 }
 
 function flightRouteHubIatasFromOverride(override) {
-  if (Array.isArray(override?.flightRouteHubIatas) && override.flightRouteHubIatas.length) {
+  if (Array.isArray(override?.flightRouteHubIatas)) {
+    if (override.flightRouteHubIatas.length === 0) {
+      return { flightRouteHubIatas: [] };
+    }
     const flightRouteHubIatas = filterRegisteredIatas(override.flightRouteHubIatas).slice(0, 3);
     return flightRouteHubIatas.length ? { flightRouteHubIatas } : {};
   }

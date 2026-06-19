@@ -925,7 +925,8 @@ export function getFlightRouteHubIatas(location, options = {}) {
   const row = options.ignoreStaticAirportMap === true ? null : getTravelSpotAirportRow(location);
 
   let hubs = [];
-  if (Array.isArray(row?.flightRouteHubIatas) && row.flightRouteHubIatas.length) {
+  if (Array.isArray(row?.flightRouteHubIatas)) {
+    if (row.flightRouteHubIatas.length === 0) return [];
     hubs = row.flightRouteHubIatas
       .map((c) => String(c ?? '').trim().toUpperCase())
       .filter((c) => c.length === 3 && hubByIata(c));
@@ -944,6 +945,12 @@ export function getFlightRouteHubIatas(location, options = {}) {
     out.push(code);
   }
   return out;
+}
+
+/** overrides `flightRouteHubIatas: []` — corridor·trip hub 추론 없이 ICN→목적지 직항 arc */
+export function hasExplicitDirectFlightRoute(location) {
+  const row = getTravelSpotAirportRow(location);
+  return Array.isArray(row?.flightRouteHubIatas) && row.flightRouteHubIatas.length === 0;
 }
 
 /**

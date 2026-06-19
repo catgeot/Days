@@ -2,6 +2,7 @@ import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import {
   getFlightRouteHubIatas,
   getFlightRouteWaypoints,
+  hasExplicitDirectFlightRoute,
   resolveCinemaDestIata,
 } from '../../../utils/rentalAirportMatch.js';
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
@@ -370,7 +371,8 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
   let geoWaypoints = getFlightRouteWaypoints(location);
   let postHubWaypoints = [];
   let hubIatas = [...overrideHubIatas];
-  const hasOverrideHubs = overrideHubIatas.length > 0;
+  const explicitDirect = hasExplicitDirectFlightRoute(location);
+  const hasOverrideHubs = overrideHubIatas.length > 0 || explicitDirect;
 
   if (!hasOverrideHubs) {
     const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, { originIata });

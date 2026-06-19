@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-18T13:27:13.520Z",
+    "generatedAt": "2026-06-19T13:16:37.305Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
-      "override": 159,
+      "override": 164,
       "curatedPreserved": 0,
-      "toolkitSync": 112,
+      "toolkitSync": 107,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -44,10 +44,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATH"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "cancun": {
       "primaryIatas": [
@@ -197,10 +194,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LPA"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "bali": {
       "primaryIatas": [
@@ -278,6 +272,7 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
+      "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
       "rationale": "케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint",
       "flightRouteWaypoints": [
         [
@@ -308,10 +303,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "HND"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "great-barrier-reef": {
       "primaryIatas": [
@@ -474,10 +466,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "EWR"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "rio-de-janeiro": {
       "primaryIatas": [
@@ -557,10 +546,7 @@
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "PEK"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "cairo": {
       "primaryIatas": [
@@ -858,13 +844,14 @@
     },
     "alaska": {
       "primaryIatas": [
+        "SEA",
         "ANC"
       ],
       "preferredLinkIata": "ANC",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "ICN→LAX→ANC · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
+      "rationale": "ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
           180,
@@ -872,7 +859,7 @@
         ]
       ],
       "flightRouteHubIatas": [
-        "LAX"
+        "SEA"
       ]
     },
     "amazon-rainforest": {
@@ -883,10 +870,7 @@
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GRU"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "svalbard": {
       "primaryIatas": [
@@ -1087,7 +1071,18 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "스키폴공항(AMS)"
+      "rationale": "ICN↔AMS KLM 직항(약 13~14h) · corridor DXB 생략 · waypoint로 우크라이나·RU bbox arc 회피",
+      "flightRouteWaypoints": [
+        [
+          125,
+          33
+        ],
+        [
+          15,
+          42
+        ]
+      ],
+      "flightRouteHubIatas": []
     },
     "venice": {
       "primaryIatas": [
@@ -1137,10 +1132,7 @@
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "FCO"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hong-kong": {
       "primaryIatas": [
@@ -1358,10 +1350,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BKK"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "langkawi": {
       "primaryIatas": [
@@ -1372,10 +1361,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "KUL"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "krabi": {
       "primaryIatas": [
@@ -1528,10 +1514,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GVA"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "dublin": {
       "primaryIatas": [
@@ -1559,9 +1542,13 @@
       ],
       "preferredLinkIata": "CPH",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "rationale": "코펜하겐 CPH · ICN→헬싱키(HEL) 핀에어 경유 — 북유럽 1회 경유 대표 루트",
+      "flightRouteHubIatas": [
+        "HEL"
+      ]
     },
     "stockholm": {
       "primaryIatas": [
@@ -1569,9 +1556,13 @@
       ],
       "preferredLinkIata": "ARN",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "rationale": "알란다 ARN · ICN→헬싱키(HEL) 핀에어 경유 — 오슬로와 동일 패턴",
+      "flightRouteHubIatas": [
+        "HEL"
+      ]
     },
     "jakarta": {
       "primaryIatas": [
@@ -1698,9 +1689,13 @@
       ],
       "preferredLinkIata": "BRU",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "항공권 예약 팁\n· 직항: 없음(인천↔브뤼셀 정기 직항 없음, 1회 경유 필수) · 총 15~18시간\n· 추천: 루프트한자(프랑크푸르트·뮌헨), 에어프랑스(파리), 카타르(도하), KLM(암스테르담)\n· 절감 팁: 파리(CDG)·암스테르담(AMS) 직항 후 유로스타(Eurostar)·탈리스 고속열차로 브뤼셀 남역(약 1시간 30분) — 시간·비용 효율적",
+      "rationale": "브뤼셀 BRU · ICN→프랑크푸르트(FRA) 루프트한자 경유 — 추천 취항사 대표 루트",
+      "flightRouteHubIatas": [
+        "FRA"
+      ]
     },
     "oslo": {
       "primaryIatas": [
@@ -1708,9 +1703,13 @@
       ],
       "preferredLinkIata": "OSL",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: 카타르(도하), 루프트한자(뮌헨·프랑크푸르트), KLM(암스테르담)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "rationale": "가르데르모엔 OSL · ICN→헬싱키(HEL) 핀에어 경유 — 플래너·시네마 최적 루트",
+      "flightRouteHubIatas": [
+        "HEL"
+      ]
     },
     "zurich": {
       "primaryIatas": [
@@ -1778,10 +1777,7 @@
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATL"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "montreal": {
       "primaryIatas": [
@@ -1793,11 +1789,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "YYZ",
-        "YVR"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "angkor-thom": {
       "primaryIatas": [
@@ -1829,10 +1821,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "DMK"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "luang-prabang": {
       "primaryIatas": [
@@ -1976,10 +1965,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "NAV"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "ephesus": {
       "primaryIatas": [
@@ -1993,23 +1979,39 @@
     },
     "luxor": {
       "primaryIatas": [
+        "CAI",
         "LXR"
       ],
       "preferredLinkIata": "LXR",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "룩소르국제공항(LXR)"
+      "bannerNote": "룩소르는 인천→카이로(CAI) 또는 도하(DOH) 국제선 경유(약 11~12시간·2~5시간 대기) 후, 카이로→룩소르(LXR) 국내선(약 1시간·CAI 기준) 또는 도하→룩소르(약 3.5시간)로 이어집니다. Trip.com 등 항공권 검색·제휴 링크는 룩소르(LXR) 기준 — 경유·국내선 포함 일정이면 최종 도착 코드 LXR로 맞춰 주세요.",
+      "rationale": "ICN→CAI·DOH 국제선 경유 → CAI→LXR 국내선",
+      "flightRouteHubIatas": [
+        "CAI"
+      ]
     },
     "abu-simbel": {
       "primaryIatas": [
-        "ASW"
+        "CAI",
+        "ASW",
+        "ABS"
       ],
       "preferredLinkIata": "ASW",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "아스완 후 투어·국내선"
+      "bannerNote": "아부심벨은 인천→중동(DXB·DOH 등) 경유 → 카이로(CAI) 국제선 → 카이로→아스완(ASW) 국내선(약 1.5시간) → 아스완에서 아부심벨(ABS) 경비행기(약 45분) 또는 투어 차량 육로(약 3.5시간) 순입니다. Trip.com 등 항공권 검색·제휴 링크는 아스완(ASW) 기준 — 카이로 경유·국내선 포함 일정이면 최종 도착 코드 ASW로 맞춰 주세요. ABS 직항·현지 투어는 별도 예약입니다. 렌터카·픽업·투어는 아스완(ASW) 기준입니다.",
+      "rationale": "ICN→DXB 경유 → CAI → ASW 국내선 → ABS 경비행기·육로(투어)",
+      "searchHintIatas": [
+        "ASW",
+        "ABS"
+      ],
+      "flightRouteHubIatas": [
+        "DXB",
+        "CAI"
+      ]
     },
     "fez": {
       "primaryIatas": [
@@ -2260,13 +2262,32 @@
     },
     "peninsula-valdes": {
       "primaryIatas": [
-        "PMY"
+        "EZE",
+        "AEP",
+        "PMY",
+        "REL"
       ],
       "preferredLinkIata": "PMY",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "푸에르토마드린"
+      "bannerNote": "발데스 반도는 인천→미국·유럽 경유(약 14~18시간) 후 부에노스아이레스 국제공항(EZE) 도착 → 공항 간 이동(약 1.5시간) 후 국내선 출발 공항(AEP)에서 트렐레우(REL) 또는 푸에르토마드린(PMY) 국내선(약 2시간) — 렌터카 수령 후 반도 진입. Trip.com 등 항공권·제휴 링크는 PMY·REL 최종 도착 기준 — 국제선·EZE 경유 일정이면 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "ICN→LAX→EZE 국제선 → AEP→PMY·REL 국내선 · 발데스 반도",
+      "searchHintIatas": [
+        "PMY",
+        "REL"
+      ],
+      "flightRouteWaypoints": [
+        [
+          180,
+          12
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "LAX",
+        "EZE",
+        "AEP"
+      ]
     },
     "ibiza": {
       "primaryIatas": [
@@ -2310,10 +2331,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "PMO"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "hvar": {
       "primaryIatas": [
@@ -2406,10 +2424,7 @@
       "kind": "single",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "NRT"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "sapa": {
       "primaryIatas": [
@@ -2431,21 +2446,18 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "EZE",
-        "SCL"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "denali": {
       "primaryIatas": [
+        "SEA",
         "ANC"
       ],
       "preferredLinkIata": "ANC",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "ICN→LAX→ANC · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
+      "rationale": "ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
           180,
@@ -2453,7 +2465,7 @@
         ]
       ],
       "flightRouteHubIatas": [
-        "LAX"
+        "SEA"
       ]
     },
     "carstensz-pyramid": {
@@ -2515,10 +2527,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "FCO"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "mount-bromo": {
       "primaryIatas": [
@@ -2844,9 +2853,10 @@
       ],
       "preferredLinkIata": "HEL",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화"
+      "bannerNote": "항공권 예약 팁\n· 직항: 핀에어 인천↔헬싱키(HEL) 직항(약 9~10시간)\n· 대안: 1회 경유(총 12~16시간) — SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "rationale": "헬싱키반타 HEL · 핀에어 인천↔헬싱키 직항 — 북유럽 허브 · 시네마는 corridor(DXB) arc"
     },
     "reykjavik": {
       "primaryIatas": [
@@ -2856,6 +2866,7 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
+      "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
       "rationale": "케플라비크 KEF — iceland와 동일 · 플래너 유럽 허브(뮌헨) 경유 시네마",
       "flightRouteWaypoints": [
         [
@@ -3060,10 +3071,7 @@
       "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BNE"
-      ]
+      "rationale": "place_toolkit essential_guide 동기화"
     },
     "vladivostok": {
       "primaryIatas": [
@@ -7014,9 +7022,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GUM"
-      ],
       "placeId": "콜로니아"
     },
     "빌라두코르부": {
@@ -7589,11 +7594,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATL",
-        "DFW",
-        "FRA"
-      ],
       "placeId": "el-calafate",
       "linkedSlug": "el-calafate"
     },
@@ -7704,10 +7704,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BKK",
-        "DMK"
-      ],
       "placeId": "krabi",
       "linkedSlug": "krabi"
     },
@@ -7757,9 +7753,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "AKL"
-      ],
       "placeId": "rarotonga",
       "linkedSlug": "rarotonga"
     },
@@ -7809,9 +7802,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "HND"
-      ],
       "placeId": "mount-fuji",
       "linkedSlug": "mount-fuji"
     },
@@ -7836,9 +7826,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "NRT"
-      ],
       "placeId": "tahiti",
       "linkedSlug": "tahiti"
     },
@@ -7878,9 +7865,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "EZE"
-      ],
       "placeId": "peninsula-valdes",
       "linkedSlug": "peninsula-valdes"
     },
@@ -7918,11 +7902,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LAX",
-        "SFO",
-        "DFW"
-      ],
       "placeId": "costa-rica",
       "linkedSlug": "costa-rica"
     },
@@ -7948,9 +7927,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ADD"
-      ],
       "placeId": "lalibela",
       "linkedSlug": "lalibela"
     },
@@ -7988,9 +7964,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "PMO"
-      ],
       "placeId": "sicily",
       "linkedSlug": "sicily"
     },
@@ -8004,9 +7977,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "NYU"
-      ],
       "placeId": "bagan",
       "linkedSlug": "bagan"
     },
@@ -8020,9 +7990,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "IST"
-      ],
       "placeId": "bodrum",
       "linkedSlug": "bodrum"
     },
@@ -8049,11 +8016,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GRU",
-        "REC",
-        "NAT"
-      ],
       "placeId": "fernando-de-noronha",
       "linkedSlug": "fernando-de-noronha"
     },
@@ -8067,9 +8029,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "PPT"
-      ],
       "placeId": "bora-bora",
       "linkedSlug": "bora-bora"
     },
@@ -8107,9 +8066,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "DEL"
-      ],
       "placeId": "andaman-islands",
       "linkedSlug": "andaman-islands"
     },
@@ -8122,10 +8078,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ADD",
-        "CDG"
-      ],
       "placeId": "timbuktu",
       "linkedSlug": "timbuktu"
     },
@@ -8150,9 +8102,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "YVR"
-      ],
       "placeId": "banff-national-park",
       "linkedSlug": "banff-national-park"
     },
@@ -8166,9 +8115,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "AKL"
-      ],
       "placeId": "milford-sound",
       "linkedSlug": "milford-sound"
     },
@@ -8194,9 +8140,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "VVO"
-      ],
       "placeId": "kamchatka",
       "linkedSlug": "kamchatka"
     },
@@ -8283,9 +8226,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GRU"
-      ],
       "placeId": "amazon-rainforest",
       "linkedSlug": "amazon-rainforest"
     },
@@ -8322,10 +8262,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "AKL",
-        "NAN"
-      ],
       "placeId": "samoa",
       "linkedSlug": "samoa"
     },
@@ -8362,11 +8298,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ADD",
-        "CDG",
-        "IST"
-      ],
       "placeId": "킨샤사"
     },
     "christmas-island": {
@@ -8379,9 +8310,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "PER"
-      ],
       "placeId": "christmas-island",
       "linkedSlug": "christmas-island"
     },
@@ -8394,10 +8322,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "TKK",
-        "PNI"
-      ],
       "placeId": "Kosrae",
       "linkedSlug": "kosrae"
     },
@@ -8410,9 +8334,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "AKL"
-      ],
       "placeId": "tukao"
     },
     "machu-picchu": {
@@ -8425,9 +8346,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "CUZ"
-      ],
       "placeId": "machu-picchu",
       "linkedSlug": "machu-picchu"
     },
@@ -8454,10 +8372,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "OSL",
-        "EVE"
-      ],
       "placeId": "lofoten",
       "linkedSlug": "lofoten"
     },
@@ -8507,10 +8421,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATL",
-        "GYE"
-      ],
       "placeId": "galapagos",
       "linkedSlug": "galapagos"
     },
@@ -8584,9 +8494,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "SHA"
-      ],
       "placeId": "shanghai",
       "linkedSlug": "shanghai"
     },
@@ -8599,9 +8506,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "PEK"
-      ],
       "placeId": "moscow",
       "linkedSlug": "moscow"
     },
@@ -8615,9 +8519,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "NAV"
-      ],
       "placeId": "cappadocia",
       "linkedSlug": "cappadocia"
     },
@@ -8642,11 +8543,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "VTE",
-        "BKK",
-        "HAN"
-      ],
       "placeId": "luang-prabang",
       "linkedSlug": "luang-prabang"
     },
@@ -8673,9 +8569,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LIM"
-      ],
       "placeId": "cusco",
       "linkedSlug": "cusco"
     },
@@ -8845,9 +8738,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "DEL"
-      ],
       "placeId": "varanasi",
       "linkedSlug": "varanasi"
     },
@@ -8860,9 +8750,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATL"
-      ],
       "placeId": "miami",
       "linkedSlug": "miami"
     },
@@ -8996,9 +8883,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "EWR"
-      ],
       "placeId": "new-york",
       "linkedSlug": "new-york"
     },
@@ -9036,9 +8920,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "DEL"
-      ],
       "placeId": "jaipur",
       "linkedSlug": "jaipur"
     },
@@ -9051,9 +8932,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "IST"
-      ],
       "placeId": "ephesus",
       "linkedSlug": "ephesus"
     },
@@ -9090,9 +8968,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "FCO"
-      ],
       "placeId": "florence",
       "linkedSlug": "florence"
     },
@@ -9178,9 +9053,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATH"
-      ],
       "placeId": "santorini",
       "linkedSlug": "santorini"
     },
@@ -9341,9 +9213,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "TAG"
-      ],
       "placeId": "bohol",
       "linkedSlug": "bohol"
     },
@@ -9443,9 +9312,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "FCO"
-      ],
       "placeId": "la-spezia",
       "linkedSlug": "la-spezia"
     },
@@ -9471,9 +9337,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LIM"
-      ],
       "placeId": "inca-trail",
       "linkedSlug": "inca-trail"
     },
@@ -9487,9 +9350,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ASW"
-      ],
       "placeId": "abu-simbel",
       "linkedSlug": "abu-simbel"
     },
@@ -9539,9 +9399,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "VVO"
-      ],
       "placeId": "kamchatka-peninsula",
       "linkedSlug": "kamchatka-peninsula"
     },
@@ -9555,9 +9412,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "SEA"
-      ],
       "placeId": "denali",
       "linkedSlug": "denali"
     },
@@ -9584,10 +9438,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BKK",
-        "MRU"
-      ],
       "placeId": "la-reunion",
       "linkedSlug": "la-reunion"
     },
@@ -9625,9 +9475,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "TGD"
-      ],
       "placeId": "kotor",
       "linkedSlug": "kotor"
     },
@@ -9641,9 +9488,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "EZE"
-      ],
       "placeId": "antarctica",
       "linkedSlug": "antarctica"
     },
@@ -9657,11 +9501,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LAX",
-        "DFW",
-        "LIM"
-      ],
       "placeId": "arequipa",
       "linkedSlug": "arequipa"
     },
@@ -9735,9 +9574,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BNE"
-      ],
       "placeId": "gold-coast",
       "linkedSlug": "gold-coast"
     },
@@ -9763,9 +9599,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "OKA"
-      ],
       "placeId": "ishigaki",
       "linkedSlug": "ishigaki"
     },
@@ -9802,11 +9635,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "JFK",
-        "ATL",
-        "DTW"
-      ],
       "placeId": "philadelphia",
       "linkedSlug": "philadelphia"
     },
@@ -9857,10 +9685,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "CGK",
-        "DPS"
-      ],
       "placeId": "borobudur",
       "linkedSlug": "borobudur"
     },
@@ -9908,9 +9732,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LHR"
-      ],
       "placeId": "geo-0.000-0.000"
     },
     "nauru": {
@@ -9923,9 +9744,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BNE"
-      ],
       "placeId": "nauru",
       "linkedSlug": "nauru"
     },
@@ -9940,10 +9758,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "IST",
-        "MAD"
-      ],
       "placeId": "venezuela",
       "linkedSlug": "venezuela"
     },
@@ -10007,9 +9821,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "SCL"
-      ],
       "placeId": "falkland-islands",
       "linkedSlug": "falkland-islands"
     },
@@ -10023,9 +9834,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GVA"
-      ],
       "placeId": "zermatt",
       "linkedSlug": "zermatt"
     },
@@ -10051,9 +9859,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BKK"
-      ],
       "placeId": "koh-samui",
       "linkedSlug": "koh-samui"
     },
@@ -10080,11 +9885,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "DOH",
-        "ATH",
-        "CHQ"
-      ],
       "placeId": "crete",
       "linkedSlug": "crete"
     },
@@ -10172,18 +9972,16 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "KUL"
-      ],
       "placeId": "langkawi",
       "linkedSlug": "langkawi"
     },
     "tikal": {
       "primaryIatas": [
+        "FRS",
         "GUA"
       ],
-      "preferredLinkIata": "GUA",
-      "kind": "single",
+      "preferredLinkIata": "FRS",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
@@ -10225,10 +10023,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "YYZ",
-        "YVR"
-      ],
       "placeId": "montreal",
       "linkedSlug": "montreal"
     },
@@ -10243,10 +10037,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "SIN",
-        "KUL"
-      ],
       "placeId": "perth",
       "linkedSlug": "perth"
     },
@@ -10260,9 +10050,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "MAD"
-      ],
       "placeId": "santiago-de-compostela",
       "linkedSlug": "santiago-de-compostela"
     },
@@ -10300,9 +10087,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BNE"
-      ],
       "placeId": "solomon-islands",
       "linkedSlug": "solomon-islands"
     },
@@ -10351,9 +10135,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "DTW"
-      ],
       "placeId": "minneapolis",
       "linkedSlug": "minneapolis"
     },
@@ -10368,11 +10149,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATL",
-        "JFK",
-        "DFW"
-      ],
       "placeId": "bahamas",
       "linkedSlug": "bahamas"
     },
@@ -10385,10 +10161,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BKK",
-        "KUL"
-      ],
       "placeId": "sri-jayawardenapura",
       "linkedSlug": "sri-jayawardenapura"
     },
@@ -10406,16 +10178,14 @@
     },
     "svalbard": {
       "primaryIatas": [
+        "LYR",
         "OSL"
       ],
-      "preferredLinkIata": "OSL",
-      "kind": "single",
+      "preferredLinkIata": "LYR",
+      "kind": "multi",
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LYR"
-      ],
       "placeId": "svalbard",
       "linkedSlug": "svalbard"
     },
@@ -10429,9 +10199,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "DMK"
-      ],
       "placeId": "ayutthaya",
       "linkedSlug": "ayutthaya"
     },
@@ -10481,9 +10248,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "VCS"
-      ],
       "placeId": "ho-chi-minh-city"
     },
     "bali": {
@@ -10533,10 +10297,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "EZE",
-        "SCL"
-      ],
       "placeId": "aconcagua",
       "linkedSlug": "aconcagua"
     },
@@ -10550,9 +10310,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "CGK"
-      ],
       "placeId": "raja-ampat",
       "linkedSlug": "raja-ampat"
     },
@@ -10566,9 +10323,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GUM"
-      ],
       "placeId": "colonia"
     },
     "투발루": {
@@ -10640,9 +10394,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "BIA"
-      ],
       "placeId": "corsica",
       "linkedSlug": "corsica"
     },
@@ -10751,9 +10502,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ADD"
-      ],
       "placeId": "madagascar",
       "linkedSlug": "madagascar"
     },
@@ -10767,9 +10515,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "SKG"
-      ],
       "placeId": "meteora",
       "linkedSlug": "meteora"
     },
@@ -10844,10 +10589,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LAX",
-        "SFO"
-      ],
       "placeId": "san-diego",
       "linkedSlug": "san-diego"
     },
@@ -10885,10 +10626,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LIS",
-        "RAI"
-      ],
       "placeId": "cape-verde",
       "linkedSlug": "cape-verde"
     },
@@ -10903,10 +10640,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATL",
-        "DFW"
-      ],
       "placeId": "turks-and-caicos-islands"
     },
     "uyuni-salt-flat": {
@@ -10919,10 +10652,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LIM",
-        "LPB"
-      ],
       "placeId": "uyuni-salt-flat",
       "linkedSlug": "uyuni-salt-flat"
     },
@@ -10936,9 +10665,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "YVR"
-      ],
       "placeId": "yellowknife",
       "linkedSlug": "yellowknife"
     },
@@ -10952,9 +10678,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "LPA"
-      ],
       "placeId": "canary-islands",
       "linkedSlug": "canary-islands"
     },
@@ -10992,9 +10715,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "EZE"
-      ],
       "placeId": "ushuaia",
       "linkedSlug": "ushuaia"
     },
@@ -11046,10 +10766,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GUM",
-        "TKK"
-      ],
       "placeId": "federated-states-of-micronesia"
     },
     "아이투타키": {
@@ -11139,9 +10855,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GUM"
-      ],
       "placeId": "ruul",
       "linkedSlug": "yap"
     },
@@ -11167,9 +10880,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "SCL"
-      ],
       "placeId": "torres-del-paine",
       "linkedSlug": "torres-del-paine"
     },
@@ -11231,9 +10941,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GUM"
-      ],
       "placeId": "chuuk",
       "linkedSlug": "chuuk"
     },
@@ -11283,10 +10990,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "ATL",
-        "SCL"
-      ],
       "placeId": "easter-island",
       "linkedSlug": "easter-island"
     },
@@ -11313,9 +11016,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GUM"
-      ],
       "placeId": "pohnpei",
       "linkedSlug": "pohnpei"
     },
@@ -11329,9 +11029,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "JNB"
-      ],
       "placeId": "st-helena",
       "linkedSlug": "st-helena"
     },
@@ -11344,10 +11041,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "NRT",
-        "AKL"
-      ],
       "placeId": "모오레아"
     },
     "petra": {
@@ -11408,9 +11101,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "PER"
-      ],
       "placeId": "cocos-islands",
       "linkedSlug": "cocos-islands"
     },
@@ -11423,10 +11113,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "TKK",
-        "PNI"
-      ],
       "placeId": "utwe",
       "linkedSlug": "kosrae"
     },
@@ -11439,11 +11125,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "IST",
-        "MUC",
-        "VIE"
-      ],
       "placeId": "pogradec"
     },
     "보베르데": {
@@ -11487,10 +11168,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "JNB",
-        "HLE"
-      ],
       "placeId": "ascension"
     },
     "interlaken": {
@@ -11515,11 +11192,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "AKL",
-        "NRT",
-        "SFO"
-      ],
       "placeId": "french-polynesia"
     },
     "huahine": {
@@ -11543,9 +11215,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "GMP"
-      ],
       "placeId": "busan"
     },
     "cayo-largo-del-sur": {
@@ -11559,10 +11228,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "YYZ",
-        "MEX"
-      ],
       "placeId": "cayo-largo-del-sur"
     },
     "cinque-terre": {
@@ -11576,9 +11241,6 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "flightRouteHubIatas": [
-        "FCO"
-      ],
       "placeId": "cinque-terre",
       "linkedSlug": "cinque-terre"
     }
