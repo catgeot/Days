@@ -107,3 +107,12 @@
 - **moscow L3**: overrides `IST` hub + `[125,33]` waypoint
 - **audit**: `audit:flight-arcs` **0 issues** · QA 8 slug **PASS** · `audit:flight-routes` semantic **271/271**
 
+---
+
+## arc F안 — 정책 확정 · 구현 대기 (2026-06-21)
+
+- **QA**: ICN→CDG/AMS — FlightAware vs gateo · Google Flights는 NK·RU 무시·부드러운 대권 arc
+- **결정(F안)**: arc **L1 avoid-zone 제거** (GF·gcmap 정합) · dramatization = **bulge** ± display-midpoint · avoid hook(DXB flyover) **금지**
+- **문서**: [`flight-arc-f-plan-handoff.md`](./flight-arc-f-plan-handoff.md)
+- **다음 세션 제시어**: **`항공경로-arc-F안-실행`** → QA 후 Phase 4
+

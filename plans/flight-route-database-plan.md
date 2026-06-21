@@ -71,17 +71,18 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 **제시어** (우선순위):
 
-1. `항공경로-DB-Phase4-실행` — 출발지·경유지 UI · **다음 세션 사용자 QA** (paris/london 직항 Bar + arc DXB flyover·moscow IST)
+1. **`항공경로-arc-F안-실행`** — L1 avoid 제거 · bulge/midpoint · [`flight-arc-f-plan-handoff.md`](./flight-arc-f-plan-handoff.md)
+2. `항공경로-DB-Phase4-실행` — F안 QA 후 출발지·경유지 UI
 
-~~`항공경로-uiPlace-경유직항-QA`~~ **✅** (2026-06-21) · ~~`항공경로-graph-avoid-zone-검토`~~ **✅** (2026-06-21) — graph tier visual waypoint guard · `audit:flight-arcs` **0**
+~~`항공경로-uiPlace-경유직항-QA`~~ **✅** · ~~`항공경로-graph-avoid-zone-검토`~~ **✅** — **F안에서 L1 visual avoid 제거 예정**
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) **graph avoid-zone·핸드오프** | `travelSpots.js` 전체 |
-| `.ai-context.md` 6절 · `globeFlightCinema.js` `applyGraphVisualAvoidGuard` | slug overrides 전수 hub 추가 |
-| `npm run audit:flight-arcs` · `audit:flight-routes` | `travelSpotAirports.json` 직접 편집 |
+| [`flight-arc-f-plan-handoff.md`](./flight-arc-f-plan-handoff.md) · [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) | `travelSpots.js` 전체 |
+| `globeFlightCinema.js` | slug overrides 전수 hub 추가 |
+| `npm run audit:flight-arcs` | `travelSpotAirports.json` 직접 편집 |
 
-**Phase 3 ✅** (2026-06-21): override>graph>corridor · uiPlace QA · Edge · graph **visual avoid-zone** (`hubIatas` 유지). **미완**: Phase 4 UI · **사용자 globe arc QA**.
+**Phase 3 ✅**. **다음**: arc **F안** 구현 → Phase 4 UI.
 
 **gap 스냅샷 (Phase 3 후)**: graph-precompute **112** · graph-direct **80** · hub-override **67** · direct-fallback **9** · corridor-only **1** · uiPlace no-preview **2**
 
