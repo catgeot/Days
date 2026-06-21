@@ -21,22 +21,29 @@
 
 ## 항공 경로 DB — 에이전트 핸드오ff
 
-**다음 세션 제시어**: `항공경로-DB-Phase3-실행`
-
 | Phase | 내용 | 상태 |
 |-------|------|------|
 | 0 | gap-report + audit baseline | **✅** |
 | 1 | Supabase airports + airportsIndex | **✅** |
 | 2 | routes + auto hub precompute | **✅** |
-| 3 | Edge + uiPlace | **다음** |
+| 3 | Edge + uiPlace + graph runtime | **✅** |
+| 4 | 출발지·경유지 UI | **다음** |
+
+**사용자 QA (2026-06-21)**: Mapbox **지명(uiPlace) → 항공 경로 arc 연결 ✅** · 경유·직항 **상세 정확도 검수는 미완** (OpenFlights 2014·graph avoid-zone·uiPlace 2건 no-preview)
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`flight-route-database-plan.md`](./flight-route-database-plan.md) **Phase 3** | `travelSpots.js` 전체 |
-| `.ai-context` 6절 · `travelSpotFlightRoutes.json` · `scripts/lib/flight-route-resolver.mjs` | slug overrides 전수 hub 추가 |
-| `globeFlightCinema.js` `resolveFlightRoutePlan` | `travelSpotAirports.json` 직접 편집 |
+| [`flight-route-database-plan.md`](./flight-route-database-plan.md) **Phase 4·핸드오ff** | `travelSpots.js` 전체 |
+| `.ai-context` 6절 · `audit:flight-arcs` · gap-report uiPlace | slug overrides 전수 hub 추가 |
+| `globeFlightCinema.js` · `resolveFlightRouteEdge.js` | `travelSpotAirports.json` 직접 편집 |
 
-**Phase 3 범위**: Edge `resolve-flight-route` · uiPlace · `graphFlightRouteHubIatas`→arc 우선순위(override>graph>corridor) · `audit:flight-routes` graph-vs-corridor **47**건 검토.
+**다음 세션 제시어** (우선순위):
+
+| 제시어 | 범위 |
+|--------|------|
+| `항공경로-uiPlace-경유직항-QA` | uiPlace·SSOT slug 경유/직항 arc·Bar 정확도 · DMZ·loc-pin · Tahaa/Fa'anui 샘플 |
+| `항공경로-graph-avoid-zone-검토` | graph tier `audit:flight-arcs` avoid-zone (~120) · southern guard 정책 |
+| `항공경로-DB-Phase4-실행` | 출발지·경유지 UI (2·3차) |
 
 ---
 
@@ -61,4 +68,14 @@
 - **merge**: `generate:airports` → `graphFlightRouteHubIatas` **193** slug (overrides·trip-hub 우선 · arc 런타임 **미변경**)
 - **audit**: `audit:flight-routes` — semantic ok **224** · graph-vs-corridor **47** (Phase 3에서 corridor·graph 통합 검토)
 - **Supabase ✅**: `air_routes` migration · `import:routes` **37594** pairs — direct `db.*` IPv6 ENOTFOUND → pooler `aws-1-ap-northeast-2` (`apply-supabase-migration` 자동 폴백)
+
+---
+
+## Phase 3 — Edge resolve-flight-route · graph runtime · uiPlace ✅
+
+- **런타임**: `resolveFlightRoutePlan` override>graph(`graphFlightRouteHubIatas`·`flightRouteGraphLookup`)>corridor · graph tier avoid-guard 스킵
+- **uiPlace**: `resolveUiPlaceCinemaDestIata` — galleryRegionSpot · rental 반경 · `findNearestAirportInIndex`(650km)
+- **Edge ✅**: `resolve-flight-route` 배포 `phdjnbfitvmrguqzverm` · ICN→BDA smoke ATL 1hop
+- **audit**: `audit:flight-routes` semantic **271/271** · graph-vs-corridor **47→0**
+- **QA**: Mapbox 지명 arc **연결 확인** · 경유·직항 상세·avoid-zone **`audit:flight-arcs` 미정리** → 다음 세션
 

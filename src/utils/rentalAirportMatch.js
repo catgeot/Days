@@ -1,4 +1,6 @@
 import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from './rentalAirportHubs.js';
+import { findNearestAirportInIndex, getAirportsIndexCoords } from './airportsIndexLookup.js';
+import { lookupGraphRouteByDestIata } from './flightRouteGraphLookup.js';
 import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' with { type: 'json' };
 
 const toRad = (d) => (d * Math.PI) / 180;
@@ -906,7 +908,44 @@ export function resolveCinemaDestIata(location, options = {}) {
     .trim()
     .toUpperCase();
   if (preferred.length === 3 && hubByIata(preferred)) return preferred;
+  if (preferred.length === 3 && getAirportsIndexCoords(preferred)) return preferred;
+
+  if (location?.uiPlace && !row) {
+    const uiDest = resolveUiPlaceCinemaDestIata(location, options);
+    if (uiDest) return uiDest;
+  }
+
   return resolvePlannerFlightArrivalIata(location, options);
+}
+
+/**
+ * Mapbox uiPlace — galleryRegionSpot · rental 반경 · airportsIndex 최근접.
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {string | null}
+ */
+function resolveUiPlaceCinemaDestIata(location, options = {}) {
+  const regionSlug = String(location?.galleryRegionSpot?.slug ?? '').trim().toLowerCase();
+  if (regionSlug && STATIC_SPOT_AIRPORT_MAP[regionSlug]) {
+    const regionRow = STATIC_SPOT_AIRPORT_MAP[regionSlug];
+    const link = String(regionRow.preferredLinkIata ?? regionRow.primaryIatas?.[0] ?? '')
+      .trim()
+      .toUpperCase();
+    if (link.length === 3 && (hubByIata(link) || getAirportsIndexCoords(link))) return link;
+  }
+
+  const fromRental = resolvePlannerFlightArrivalIata(location, {
+    ...options,
+    ignoreStaticAirportMap: true,
+  });
+  if (fromRental) return fromRental;
+
+  const lat = typeof location.lat === 'number' ? location.lat : Number(location.lat);
+  const lng = typeof location.lng === 'number' ? location.lng : Number(location.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  const nearest = findNearestAirportInIndex(lat, lng);
+  return nearest?.iata ?? null;
 }
 
 /**
@@ -947,10 +986,39 @@ export function getFlightRouteHubIatas(location, options = {}) {
   return out;
 }
 
-/** overrides `flightRouteHubIatas: []` — corridor·trip hub 추론 없이 ICN→목적지 직항 arc */
+/**
+ * OpenFlights graph precompute hub chain — overrides·trip 다음 tier (corridor 이전).
+ * @returns {string[] | null} null = graph 없음 · [] = graph 직항
+ */
+export function getGraphFlightRouteHubIatas(location, options = {}) {
+  const row = options.ignoreStaticAirportMap === true ? null : getTravelSpotAirportRow(location);
+
+  if (row?.graphFlightRouteSource && row.graphFlightRouteSource !== 'graph-unresolved') {
+    return Array.isArray(row.graphFlightRouteHubIatas) ? row.graphFlightRouteHubIatas : [];
+  }
+
+  const destIata = String(
+    options.destIata ?? resolveCinemaDestIata(location, options) ?? ''
+  )
+    .trim()
+    .toUpperCase();
+  if (destIata.length !== 3) return null;
+
+  const graph = lookupGraphRouteByDestIata(destIata, options.originIata ?? 'ICN');
+  if (!graph) return null;
+  return graph.hubIatas;
+}
+
+/** overrides `flightRouteHubIatas: []` — corridor·trip·graph 추론 없이 ICN→목적지 직항 arc */
 export function hasExplicitDirectFlightRoute(location) {
   const row = getTravelSpotAirportRow(location);
   return Array.isArray(row?.flightRouteHubIatas) && row.flightRouteHubIatas.length === 0;
+}
+
+/** overrides `flightRouteHubIatas` 수동 배열 — graph·corridor 스킵 */
+export function hasManualFlightRouteHubOverride(location) {
+  const row = getTravelSpotAirportRow(location);
+  return Array.isArray(row?.flightRouteHubIatas) && row.flightRouteHubIatas.length > 0;
 }
 
 /**

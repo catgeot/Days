@@ -11,6 +11,7 @@ import { RENTAL_AIRPORT_HUBS } from '../src/utils/rentalAirportHubs.js';
 import { getAirportsIndexMeta } from '../src/utils/airportsIndexLookup.js';
 import {
   resolveCinemaDestIata,
+  getGraphFlightRouteHubIatas,
 } from '../src/utils/rentalAirportMatch.js';
 import {
   canPreviewFlightRoute,
@@ -180,7 +181,7 @@ function getSpotAirportRow(spot) {
 }
 
 /**
- * @returns {'hub-override'|'explicit-direct'|'trip-hub-inferred'|'corridor-only'|'direct-fallback'|'no-preview'|'no-dest-iata'}
+ * @returns {'hub-override'|'explicit-direct'|'trip-hub-inferred'|'graph-precompute'|'graph-direct'|'corridor-only'|'direct-fallback'|'no-preview'|'no-dest-iata'}
  */
 function classifyRouteKind(spot) {
   const destIata = resolveCinemaDestIata(spot);
@@ -207,6 +208,11 @@ function classifyRouteKind(spot) {
     && getAirportHubCoords(trip)
   ) {
     return 'trip-hub-inferred';
+  }
+
+  const graphHubs = getGraphFlightRouteHubIatas(spot, { originIata: ORIGIN_IATA, destIata });
+  if (graphHubs !== null) {
+    return graphHubs.length > 0 ? 'graph-precompute' : 'graph-direct';
   }
 
   const origin = getAirportHubCoords(ORIGIN_IATA);

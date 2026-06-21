@@ -3,7 +3,9 @@ import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import {
   getFlightRouteHubIatas,
   getFlightRouteWaypoints,
+  getGraphFlightRouteHubIatas,
   hasExplicitDirectFlightRoute,
+  hasManualFlightRouteHubOverride,
   resolveCinemaDestIata,
 } from '../../../utils/rentalAirportMatch.js';
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
@@ -355,14 +357,14 @@ function hubIatasToCoords(hubIatas) {
 }
 
 /**
- * hub 우선순위: overrides/timeline → corridor → avoid guard.
- * @returns {{ hubIatas: string[], geoWaypoints: [number, number][], anchors: [number, number][] }}
+ * hub 우선순위: overrides/timeline → graph precompute → corridor → avoid guard.
+ * @returns {{ hubIatas: string[], geoWaypoints: [number, number][], anchors: [number, number][], routeSource?: string }}
  */
 export function resolveFlightRoutePlan(originLngLat, destLngLat, location, options = {}) {
   const originIata = options.originIata ?? DEFAULT_ORIGIN_IATA;
   const destIata = options.destIata;
 
-  const overrideHubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
+  const manualHubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
     ? options.hubIatas
     : getFlightRouteHubIatas(location, {
         originIata,
@@ -371,16 +373,34 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
       });
   let geoWaypoints = getFlightRouteWaypoints(location);
   let postHubWaypoints = [];
-  let hubIatas = [...overrideHubIatas];
+  let hubIatas = [...manualHubIatas];
   const explicitDirect = hasExplicitDirectFlightRoute(location);
-  const hasOverrideHubs = overrideHubIatas.length > 0 || explicitDirect;
+  const hasManualOverride = explicitDirect
+    || hasManualFlightRouteHubOverride(location)
+    || manualHubIatas.length > 0;
+  let routeSource = hasManualOverride ? 'override' : null;
 
-  if (!hasOverrideHubs) {
-    const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, { originIata });
-    if (corridor) {
-      if (!geoWaypoints.length) geoWaypoints = [...corridor.waypoints];
-      postHubWaypoints = [...(corridor.postHubWaypoints ?? [])];
-      hubIatas = [...corridor.hubIatas];
+  if (explicitDirect) {
+    hubIatas = [];
+  } else if (!hasManualOverride) {
+    const graphHubIatas = getGraphFlightRouteHubIatas(location, {
+      originIata,
+      destIata,
+      essentialGuide: options.essentialGuide,
+    });
+    if (graphHubIatas !== null) {
+      hubIatas = [...graphHubIatas];
+      routeSource = 'graph';
+    } else {
+      const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, { originIata });
+      if (corridor) {
+        if (!geoWaypoints.length) geoWaypoints = [...corridor.waypoints];
+        postHubWaypoints = [...(corridor.postHubWaypoints ?? [])];
+        hubIatas = [...corridor.hubIatas];
+        routeSource = 'corridor';
+      } else {
+        routeSource = 'direct-fallback';
+      }
     }
   }
 
@@ -397,7 +417,8 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
   let anchors = buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints);
 
   if (
-    !hasOverrideHubs
+    !hasManualOverride
+    && routeSource !== 'graph'
     && !isRussiaDestinationLocation(location, destLngLat, destIata)
   ) {
     const chain = buildGreatCircleChain(anchors, 24);
@@ -411,10 +432,11 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
       hubIatas = [...guard.hubIatas];
       hubCoords = hubIatasToCoords(hubIatas);
       anchors = buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints);
+      routeSource = 'corridor-avoid-guard';
     }
   }
 
-  return { hubIatas, geoWaypoints, anchors };
+  return { hubIatas, geoWaypoints, anchors, routeSource };
 }
 
 /**

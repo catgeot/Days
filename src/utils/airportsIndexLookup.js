@@ -39,3 +39,41 @@ export function getAirportsIndexMeta() {
     source: airportsIndexData?.source ?? null,
   };
 }
+
+const toRad = (deg) => (deg * Math.PI) / 180;
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+}
+
+/**
+ * uiPlace·좌표 핀 — rental 허브 밖 scheduled 공항 (arc 도착 IATA).
+ * @param {number} lat
+ * @param {number} lng
+ * @param {{ maxKm?: number }} [options]
+ * @returns {{ iata: string, lat: number, lng: number, km: number } | null}
+ */
+export function findNearestAirportInIndex(lat, lng, options = {}) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const maxKm = options.maxKm ?? 650;
+
+  let best = null;
+  let bestKm = Infinity;
+  for (const [code, row] of buildIndex()) {
+    if (!Number.isFinite(row.lat) || !Number.isFinite(row.lng)) continue;
+    const km = haversineKm(lat, lng, row.lat, row.lng);
+    if (km < bestKm) {
+      bestKm = km;
+      best = { iata: code, lat: row.lat, lng: row.lng, km };
+    }
+  }
+
+  if (!best || bestKm > maxKm) return null;
+  return best;
+}

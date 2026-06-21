@@ -10,7 +10,9 @@ import { fileURLToPath } from 'url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import {
   getFlightRouteHubIatas,
+  getGraphFlightRouteHubIatas,
   hasExplicitDirectFlightRoute,
+  hasManualFlightRouteHubOverride,
   resolveCinemaDestIata,
 } from '../src/utils/rentalAirportMatch.js';
 import {
@@ -57,6 +59,11 @@ function classifyRuntimeKind(spot, row) {
   if (hasExplicitDirectFlightRoute(spot)) return 'explicit-direct';
 
   const destIata = resolveCinemaDestIata(spot);
+  const graphHubs = getGraphFlightRouteHubIatas(spot, { originIata: ORIGIN_IATA, destIata });
+  if (graphHubs !== null) {
+    return graphHubs.length > 0 ? 'graph-precompute' : 'graph-direct';
+  }
+
   const dest = destIata ? getAirportHubCoords(destIata) : null;
   const origin = getAirportHubCoords(ORIGIN_IATA);
   if (!dest || !origin) return 'no-coords';
@@ -80,6 +87,7 @@ function auditSlug(spot, graphRow, airportRow) {
   const destIata = resolveCinemaDestIata(spot);
   const runtimeKind = classifyRuntimeKind(spot, airportRow);
   const runtimeHubs = getFlightRouteHubIatas(spot, { originIata: ORIGIN_IATA, destIata });
+  const graphHubsFromRuntime = getGraphFlightRouteHubIatas(spot, { originIata: ORIGIN_IATA, destIata });
   const explicitDirect = hasExplicitDirectFlightRoute(spot);
 
   const graphHubs = graphRow?.hubIatas ?? null;
@@ -89,9 +97,18 @@ function auditSlug(spot, graphRow, airportRow) {
   let semantic = 'ok';
   const notes = [];
 
-  if (graphResolved && runtimeKind === 'corridor-only' && !hubSetsEqual(graphHubs, runtimeHubs)) {
+  const effectiveRuntimeHubs = hasManualFlightRouteHubOverride(spot) || explicitDirect || runtimeHubs.length > 0
+    ? runtimeHubs
+    : (graphHubsFromRuntime ?? runtimeHubs);
+
+  if (graphResolved && (runtimeKind === 'graph-precompute' || runtimeKind === 'graph-direct') && !hubSetsEqual(graphHubs, effectiveRuntimeHubs)) {
+    semantic = 'graph-vs-runtime';
+    notes.push(`runtime=${effectiveRuntimeHubs.join('→') || '∅'} graph=${(graphHubs ?? []).join('→') || '∅'}`);
+  }
+
+  if (graphResolved && runtimeKind === 'corridor-only' && !hubSetsEqual(graphHubs, effectiveRuntimeHubs)) {
     semantic = 'graph-vs-corridor';
-    notes.push(`corridor=${runtimeHubs.join('→') || '∅'} graph=${(graphHubs ?? []).join('→') || '∅'}`);
+    notes.push(`corridor=${effectiveRuntimeHubs.join('→') || '∅'} graph=${(graphHubs ?? []).join('→') || '∅'}`);
   }
 
   if (!graphResolved && runtimeKind === 'corridor-only' && runtimeHubs.length > 0) {
@@ -143,6 +160,7 @@ function main() {
     graphUnresolved: rows.filter((r) => r.graphSource === 'graph-unresolved').length,
     semanticOk: rows.filter((r) => r.semantic === 'ok').length,
     graphVsCorridor: rows.filter((r) => r.semantic === 'graph-vs-corridor').length,
+    graphVsRuntime: rows.filter((r) => r.semantic === 'graph-vs-runtime').length,
     corridorNoGraph: rows.filter((r) => r.semantic === 'corridor-no-graph').length,
     overrideVsGraph: rows.filter((r) => r.semantic === 'override-vs-graph').length,
     overrideDirectVsGraph: rows.filter((r) => r.semantic === 'override-direct-vs-graph').length,
@@ -153,7 +171,7 @@ function main() {
 
   const report = {
     generatedAt: new Date().toISOString(),
-    phase: 2,
+    phase: 3,
     originIata: ORIGIN_IATA,
     routesSource: routesDoc?.source ?? null,
     summary,

@@ -15,7 +15,7 @@
 | Supabase `air_routes` | ✅ **37594** pairs (`import:routes`) · ICN outbound **370** |
 | slug graph precompute | ✅ `travelSpotFlightRoutes.json` **193** resolved · `graphFlightRouteHubIatas` merge **193** |
 | 공항 좌표 런타임 | [`rentalAirportHubs.js`](../src/utils/rentalAirportHubs.js) 302 **1순위** → [`airportsIndex.json`](../src/pages/Home/data/airportsIndex.json) **3870** 폴백 |
-| Mapbox 지명(`uiPlace`) | slug/placeIds 없으면 [`canPreviewFlightRoute`](../src/pages/Home/lib/globeFlightCinema.js) false |
+| Mapbox 지명(`uiPlace`) | slug/placeIds 없어도 nearest·Edge로 arc preview ✅ · 경유·직항 상세 QA 미완 |
 | audit | `audit:airports none:0` · `audit:flight-arcs` QA slug Pass |
 
 **기존 WIP와의 관계**: arc·Bar·Trip·배너 파이프라인 **유지**. DB는 hub/waypoint/IATA **추론 두뇌** 추가. overrides는 2차 항공·예외(L3)만 점진 축소.
@@ -61,31 +61,29 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 | **0** | `flight-route-gap-report` · audit baseline · uiPlace 샘플 | ✅ |
 | **1** | migration · OurAirports import · `airportsIndex.json` · `getAirportHubCoords` 확장 | ✅ |
 | **2** | routes import · `flight-route-resolver` · `generate:flight-routes` · semantic audit | ✅ |
-| **3** | Edge `resolve-flight-route` · uiPlace 연동 | **다음** |
-| **4** | 출발지·경유지 UI (2·3차 목표) | 후속 |
+| **3** | Edge `resolve-flight-route` · uiPlace · graph runtime | ✅ |
+| **4** | 출발지·경유지 UI (2·3차 목표) | **다음** |
 | **5** | 가이드·npm·overrides 정리 | 마무리 |
 
 ---
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**제시어**: `항공경로-DB-Phase3-실행` (또는 `@plans/2026-06-21-project-log.md` **Phase 3** + 본 계획)
+**제시어** (우선순위):
+
+1. `항공경로-uiPlace-경유직항-QA` — Mapbox 지명·SSOT slug arc 경유/직항 정확도 · gap uiPlace 2건
+2. `항공경로-graph-avoid-zone-검토` — graph tier + `audit:flight-arcs` avoid-zone 정책
+3. `항공경로-DB-Phase4-실행` — 출발지·경유지 UI
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) · gap-report (`npm run audit:flight-route-gaps`) | `travelSpots.js` 전체 |
-| `.ai-context.md` 6절(항공 DB) · 본 계획 **Phase 3** | slug overrides 전수 수동 추가 |
-| [`audit-flight-route-gaps.mjs`](../scripts/audit-flight-route-gaps.mjs) · [`flight-route-resolver.mjs`](../scripts/lib/flight-route-resolver.mjs) | `travelSpotAirports.json` 직접 편집 |
+| [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) **핸드오프·Phase 3 QA** | `travelSpots.js` 전체 |
+| `.ai-context.md` 6절 · `audit:flight-arcs` · gap-report | slug overrides 전수 수동 추가 |
+| `globeFlightCinema.js` · `resolveFlightRouteEdge.js` | `travelSpotAirports.json` 직접 편집 |
 
-**Phase 0 ✅** (2026-06-21): gap-report · 271 slug routeKind · uiPlace curated 7.
+**Phase 3 ✅** (2026-06-21): Edge `resolve-flight-route` 배포 · uiPlace arc 연결(QA) · override>graph>corridor · semantic **271/271**. **미완**: 경유·직항 상세 QA · graph avoid-zone.
 
-**Phase 1 ✅** (2026-06-21): `airports` migration · Supabase **9055** import · `airportsIndex.json` **3870** · `getAirportHubCoords` index 폴백 · `db:apply-migrations` · gap-report phase 1.
-
-**Phase 2 ✅** (2026-06-21): `air_routes` migration · Supabase **37594** import · resolver · `travelSpotFlightRoutes.json` graph **193** · `audit:flight-routes` · pooler IPv4 migration.
-
-**Phase 3 작업**: Edge `resolve-flight-route` · uiPlace · `resolveFlightRoutePlan`에 graph precompute 통합(override>graph>corridor) · graph-vs-corridor **47** slug 검토.
-
-**gap 스냅샷**: hub-override 67 · direct-fallback 143 · corridor-only 59 · explicit-direct 1 · no-preview 1
+**gap 스냅샷 (Phase 3 후)**: graph-precompute **112** · graph-direct **80** · hub-override **67** · direct-fallback **9** · corridor-only **1** · uiPlace no-preview **2**
 
 ---
 
@@ -93,7 +91,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 | 기존 | 연동 |
 |------|------|
-| `resolveFlightRoutePlan` | override > precompute > corridor > graph |
+| `resolveFlightRoutePlan` | override > graph precompute > corridor |
 | `generate-travel-spot-airports.mjs` | overrides 우선 + `generate:flight-routes` merge |
 | 배너·Trip | arc 전용 — **변경 없음** |
 
