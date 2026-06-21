@@ -4,7 +4,7 @@
 
 - **프로젝트 컨텍스트(매 세션 권장)**: 루트의 [`.ai-context.md`](../.ai-context.md)
 - **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)
-- **항공 경로 DB (우선)**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) (OurAirports·Supabase · **Phase 0·1 ✅** · Phase 2 다음 · 제시어 `항공경로-DB-Phase2-실행`)
+- **항공 경로 DB (우선)**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) (OurAirports·Supabase · **Phase 0·1·2 ✅** · Phase 3 다음 · 제시어 `항공경로-DB-Phase3-실행`)
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 최신: [`2026-06-21-project-log.md`](./2026-06-21-project-log.md)  

@@ -21,20 +21,22 @@
 
 ## 항공 경로 DB — 에이전트 핸드오ff
 
-**다음 세션 제시어**: `항공경로-DB-Phase2-실행`
+**다음 세션 제시어**: `항공경로-DB-Phase3-실행`
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
 | 0 | gap-report + audit baseline | **✅** |
 | 1 | Supabase airports + airportsIndex | **✅** |
-| 2 | routes + auto hub precompute | **다음** |
-| 3 | Edge + uiPlace | 대기 |
+| 2 | routes + auto hub precompute | **✅** |
+| 3 | Edge + uiPlace | **다음** |
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`flight-route-database-plan.md`](./flight-route-database-plan.md) Phase 2 | `travelSpots.js` 전체 |
-| `.ai-context` 6절 · gap-report | slug overrides 전수 hub 추가 |
-| `npm run audit:flight-route-gaps` | `travelSpotAirports.json` 직접 편집 |
+| [`flight-route-database-plan.md`](./flight-route-database-plan.md) **Phase 3** | `travelSpots.js` 전체 |
+| `.ai-context` 6절 · `travelSpotFlightRoutes.json` · `scripts/lib/flight-route-resolver.mjs` | slug overrides 전수 hub 추가 |
+| `globeFlightCinema.js` `resolveFlightRoutePlan` | `travelSpotAirports.json` 직접 편집 |
+
+**Phase 3 범위**: Edge `resolve-flight-route` · uiPlace · `graphFlightRouteHubIatas`→arc 우선순위(override>graph>corridor) · `audit:flight-routes` graph-vs-corridor **47**건 검토.
 
 ---
 
@@ -47,4 +49,16 @@
 - **런타임**: `airportsIndexLookup.js` → `getAirportHubCoords` rental 우선 · index 폴백
 - **gap-report**: phase 1 · hub-override 67 · direct-fallback 143 · dest 271/271 coords
 - **fix**: `generate:airports-index` Supabase **1000행 제한** → 페이지네이션
+
+---
+
+## Phase 2 — air_routes · OpenFlights resolver · precompute ✅
+
+- **migration**: `supabase/migrations/20260621130000_air_routes.sql` · `db:apply-migrations` pooler IPv4 폴백 (`aws-1-ap-northeast-2`)
+- **scripts**: `lib/openflights.mjs` · `lib/flight-route-resolver.mjs` · `import-openflights-routes.mjs` · `generate-flight-routes.mjs` · `audit-flight-routes.mjs`
+- **npm**: `import:routes` · `generate:flight-routes` · `audit:flight-routes` — OpenFlights **67662** legs · **37594** unique pairs · ICN outbound **370**
+- **precompute**: `travelSpotFlightRoutes.json` — graph resolved **193** (direct 80 · 1hop 99 · 2hop 13) · unresolved **10** (BER·UBN·SAI 등 2014 스냅샷 한계) · manual skip **68**
+- **merge**: `generate:airports` → `graphFlightRouteHubIatas` **193** slug (overrides·trip-hub 우선 · arc 런타임 **미변경**)
+- **audit**: `audit:flight-routes` — semantic ok **224** · graph-vs-corridor **47** (Phase 3에서 corridor·graph 통합 검토)
+- **Supabase ✅**: `air_routes` migration · `import:routes` **37594** pairs — direct `db.*` IPv6 ENOTFOUND → pooler `aws-1-ap-northeast-2` (`apply-supabase-migration` 자동 폴백)
 

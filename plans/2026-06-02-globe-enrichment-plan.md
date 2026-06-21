@@ -289,7 +289,7 @@
 
 **다음 (선택)**: corridor/passenger Bar 라벨 · **2c** 여정 시뮬레이션(구현 보류) · (보류) GUM·Trip CTA.
 
-### Phase 2d — 항공 경로 DB (2026-06-21 · **다음 우선**)
+### Phase 2d — 항공 경로 DB (2026-06-21 · **Phase 3 다음**)
 
 **계획 SSOT**: [`flight-route-database-plan.md`](./flight-route-database-plan.md)
 
@@ -297,10 +297,11 @@
 |------|------|
 | **배경** | slug hub 67/271 · `uiPlace` 경로 불가 · hub 302개 한계 |
 | **방향** | OurAirports+OpenFlights → Supabase · airportsIndex + Edge · arc 엔진 유지 |
-| **Phase 0** | gap-report + audit baseline — 제시어 **`항공경로-DB-Phase0`** |
+| **Phase 0~2** | ✅ gap-report · airports · air_routes · graph precompute **193** |
+| **Phase 3** | Edge `resolve-flight-route` · uiPlace — 제시어 **`항공경로-DB-Phase3-실행`** |
 | **2b와 관계** | arc·corridor **유지** — hub/waypoint **자동 추론**으로 slug 수동 작업 대체 |
 
-**2b slug-by-slug hub 추가는 Phase 2d Phase 0~2 완료 전까지 보류.**
+**2b slug-by-slug hub 추가는 Phase 2d Phase 3 완료 전까지 보류.**
 
 **로컬 QA**
 

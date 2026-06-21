@@ -16,6 +16,7 @@ import { normalizePlaceKey, placeIdVariants } from './lib/travel-spot-place-reso
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '../src/pages/Home/data/travelSpotAirports.json');
+const FLIGHT_ROUTES_PATH = join(__dirname, '../src/pages/Home/data/travelSpotFlightRoutes.json');
 
 const hubByIata = new Map(RENTAL_AIRPORT_HUBS.map((h) => [h.iata, h]));
 
@@ -239,11 +240,47 @@ function mergeSearchHintFromExisting(row, existingRow) {
   return { ...row, searchHintIatas: hints };
 }
 
+function loadGraphFlightRoutesBySlug() {
+  try {
+    const doc = JSON.parse(readFileSync(FLIGHT_ROUTES_PATH, 'utf8'));
+    return doc?.spots ?? {};
+  } catch {
+    return {};
+  }
+}
+
+/** overrides hub·trip 분리 없을 때만 graph precompute 필드 병합 (Phase 2) */
+function mergeGraphFlightRoute(row, slug, graphBySlug, override) {
+  if (!row) return row;
+  if (Array.isArray(override?.flightRouteHubIatas)) return row;
+  if (Array.isArray(row.flightRouteHubIatas)) return row;
+
+  const trip = String(override?.tripFlightArrivalIata ?? row?.tripFlightArrivalIata ?? '')
+    .trim()
+    .toUpperCase();
+  const preferred = String(
+    override?.preferredLinkIata ?? row?.preferredLinkIata ?? row?.primaryIatas?.[0] ?? ''
+  )
+    .trim()
+    .toUpperCase();
+  if (trip.length === 3 && preferred.length === 3 && trip !== preferred) return row;
+
+  const graph = graphBySlug[slug];
+  if (!graph || graph.source === 'graph-unresolved' || !Array.isArray(graph.hubIatas)) return row;
+
+  return {
+    ...row,
+    graphFlightRouteHubIatas: graph.hubIatas,
+    graphFlightRouteSource: graph.source,
+  };
+}
+
 const map = {};
 const stats = { override: 0, curatedPreserved: 0, toolkitSync: 0, runtime: 0, multiRule: 0, geo: 0, missing: 0 };
 const missingSlugs = [];
 const unregisteredIatas = new Set();
 const overrideDriftWarnings = [];
+const graphFlightRoutesBySlug = loadGraphFlightRoutesBySlug();
 
 for (const spot of TRAVEL_SPOTS) {
   const slug = spot.slug;
@@ -305,6 +342,7 @@ for (const spot of TRAVEL_SPOTS) {
     continue;
   }
 
+  row = mergeGraphFlightRoute(row, slug, graphFlightRoutesBySlug, override);
   map[slug] = row;
 }
 
