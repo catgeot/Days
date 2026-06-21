@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",
     "audit:flight-arcs": "node scripts/audit-flight-arcs.mjs",
+    "audit:flight-route-gaps": "node scripts/audit-flight-route-gaps.mjs",
     "generate:ferries": "node scripts/generate-travel-spot-ferries.mjs",
     "generate:transport": "node scripts/generate-travel-spot-transport.mjs",
     "audit:ferries": "node scripts/audit-ferry-routes.mjs",
