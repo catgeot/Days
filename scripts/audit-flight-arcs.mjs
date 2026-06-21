@@ -11,8 +11,10 @@ import {
 } from '../src/utils/rentalAirportMatch.js';
 import {
   buildGreatCircleChain,
+  findOverlongFlightLegs,
   getAirportHubCoords,
   isLongGreatCircleArc,
+  MAX_FLIGHT_LEG_HOURS,
   resolveFlightRoutePlan,
 } from '../src/pages/Home/lib/globeFlightCinema.js';
 import {
@@ -37,6 +39,7 @@ const QA_SLUGS = [
   'faroe-islands',
   'moscow',
   'uyuni-salt-flat',
+  'torres-del-paine',
 ];
 
 const originIata = 'ICN';
@@ -102,7 +105,7 @@ function qaPass(row) {
     return row.hasOverrideHubs && !row.hubIatas.includes('DXB');
   }
   if (row.hasOverrideHubs) {
-    return true;
+    return findOverlongFlightLegs(row.routeIatas).length === 0;
   }
   if (row.isGraphTier && row.corridorEligible) {
     return true;
@@ -140,6 +143,19 @@ for (const spot of TRAVEL_SPOTS) {
       kind: 'europe-missing-dxb',
       hubIatas: row.hubIatas,
     });
+  }
+
+  if (hasManualFlightRouteHubOverride(spot)) {
+    const overlongLegs = findOverlongFlightLegs(row.routeIatas);
+    if (overlongLegs.length) {
+      issues.push({
+        slug: row.slug,
+        kind: 'overlong-leg',
+        maxLegHours: MAX_FLIGHT_LEG_HOURS,
+        legs: overlongLegs,
+        routeIatas: row.routeIatas,
+      });
+    }
   }
 
   if (QA_SLUGS.includes(spot.slug)) {

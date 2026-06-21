@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-06-21T01:37:19.926Z",
+  "generatedAt": "2026-06-21T12:04:27.704Z",
   "source": "openflights-cache",
   "originIata": "ICN",
   "routeLegCount": 67662,
   "graphNodeCount": 3409,
-  "spotCount": 203,
+  "spotCount": 191,
   "stats": {
     "total": 271,
-    "resolved": 193,
-    "direct": 80,
-    "oneHop": 99,
+    "resolved": 188,
+    "direct": 78,
+    "oneHop": 96,
     "twoHop": 13,
-    "unresolved": 10,
+    "unresolved": 3,
     "noDestIata": 0,
-    "manualOverrideSkipped": 68
+    "manualOverrideSkipped": 80
   },
   "spots": {
     "santorini": {
@@ -316,16 +316,6 @@
         "USH"
       ]
     },
-    "moscow": {
-      "destIata": "SVO",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
-      "path": [
-        "ICN",
-        "SVO"
-      ]
-    },
     "cairo": {
       "destIata": "CAI",
       "hubIatas": [
@@ -357,16 +347,6 @@
       "path": [
         "ICN",
         "DXB"
-      ]
-    },
-    "nairobi": {
-      "destIata": "NBO",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
-      "path": [
-        "ICN",
-        "NBO"
       ]
     },
     "buenos-aires": {
@@ -421,13 +401,6 @@
         "CAI"
       ]
     },
-    "angkor-wat": {
-      "destIata": "SAI",
-      "hubIatas": null,
-      "hops": null,
-      "source": "graph-unresolved",
-      "path": null
-    },
     "petra": {
       "destIata": "AMM",
       "hubIatas": [
@@ -476,13 +449,6 @@
         "AMS",
         "SKG"
       ]
-    },
-    "st-helena": {
-      "destIata": "HLE",
-      "hubIatas": null,
-      "hops": null,
-      "source": "graph-unresolved",
-      "path": null
     },
     "ulaanbaatar": {
       "destIata": "UBN",
@@ -537,19 +503,6 @@
         "AMS",
         "GIG",
         "MAO"
-      ]
-    },
-    "serengeti": {
-      "destIata": "JRO",
-      "hubIatas": [
-        "AMS"
-      ],
-      "hops": 2,
-      "source": "graph-1hop",
-      "path": [
-        "ICN",
-        "AMS",
-        "JRO"
       ]
     },
     "uluru": {
@@ -834,13 +787,6 @@
         "ICN",
         "DPS"
       ]
-    },
-    "el-nido": {
-      "destIata": "ENI",
-      "hubIatas": null,
-      "hops": null,
-      "source": "graph-unresolved",
-      "path": null
     },
     "boracay": {
       "destIata": "KLO",
@@ -1186,20 +1132,6 @@
         "YUL"
       ]
     },
-    "angkor-thom": {
-      "destIata": "SAI",
-      "hubIatas": null,
-      "hops": null,
-      "source": "graph-unresolved",
-      "path": null
-    },
-    "borobudur": {
-      "destIata": "YIA",
-      "hubIatas": null,
-      "hops": null,
-      "source": "graph-unresolved",
-      "path": null
-    },
     "ayutthaya": {
       "destIata": "BKK",
       "hubIatas": [],
@@ -1402,13 +1334,6 @@
         "BKO"
       ]
     },
-    "lalibela": {
-      "destIata": "LLI",
-      "hubIatas": null,
-      "hops": null,
-      "source": "graph-unresolved",
-      "path": null
-    },
     "santiago-de-compostela": {
       "destIata": "SCQ",
       "hubIatas": [
@@ -1430,32 +1355,6 @@
       "path": [
         "ICN",
         "KTM"
-      ]
-    },
-    "annapurna-circuit": {
-      "destIata": "PKR",
-      "hubIatas": [
-        "KTM"
-      ],
-      "hops": 2,
-      "source": "graph-1hop",
-      "path": [
-        "ICN",
-        "KTM",
-        "PKR"
-      ]
-    },
-    "kilimanjaro": {
-      "destIata": "JRO",
-      "hubIatas": [
-        "AMS"
-      ],
-      "hops": 2,
-      "source": "graph-1hop",
-      "path": [
-        "ICN",
-        "AMS",
-        "JRO"
       ]
     },
     "mont-blanc": {
@@ -2258,13 +2157,6 @@
         "AMS",
         "HAM"
       ]
-    },
-    "cocos-islands": {
-      "destIata": "CCK",
-      "hubIatas": null,
-      "hops": null,
-      "source": "graph-unresolved",
-      "path": null
     },
     "greenland": {
       "destIata": "CPH",

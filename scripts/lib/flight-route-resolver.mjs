@@ -2,6 +2,11 @@
  * ICN-centric OpenFlights graph resolver — max 2 hub hops (3 legs).
  * Phase 2 precompute SSOT · Phase 3 Edge reuse candidate.
  */
+import {
+  estimateFlightHours,
+  getAirportHubCoords,
+  MAX_FLIGHT_LEG_HOURS,
+} from '../../src/pages/Home/lib/globeFlightCinema.js';
 import { TIER_1_TRANSIT_HUBS } from './ourairports.mjs';
 import { buildRouteAdjacency, loadOpenFlightsRoutes } from './openflights.mjs';
 import { createSupabaseScriptClient, loadEnvFile } from './supabase-script-env.mjs';
@@ -37,6 +42,18 @@ function scoreHubPath(hubIatas) {
   let score = hubIatas.length * 100;
   for (const h of hubIatas) score += hubTier(h);
   return score;
+}
+
+/** @param {string[]} path */
+function maxLegHoursOnGraphPath(path) {
+  let max = 0;
+  for (let i = 0; i < path.length - 1; i += 1) {
+    const from = getAirportHubCoords(path[i]);
+    const to = getAirportHubCoords(path[i + 1]);
+    if (!from || !to) continue;
+    max = Math.max(max, estimateFlightHours(from, to));
+  }
+  return max;
 }
 
 /**
@@ -104,8 +121,13 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
 
   if (!candidates.length) return null;
 
-  candidates.sort((a, b) => a.score - b.score || a.hops - b.hops || a.hubIatas.join(',').localeCompare(b.hubIatas.join(',')));
-  const best = candidates[0];
+  const withinLegLimit = candidates.filter(
+    (candidate) => maxLegHoursOnGraphPath(candidate.path) <= MAX_FLIGHT_LEG_HOURS
+  );
+  const pool = withinLegLimit.length ? withinLegLimit : candidates;
+
+  pool.sort((a, b) => a.score - b.score || a.hops - b.hops || a.hubIatas.join(',').localeCompare(b.hubIatas.join(',')));
+  const best = pool[0];
   return {
     hubIatas: best.hubIatas,
     hops: best.hops,

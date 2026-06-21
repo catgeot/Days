@@ -268,11 +268,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'fernando-de-noronha': {
     primaryIatas: ['FEN', 'REC', 'NAT'],
     preferredLinkIata: 'FEN',
-    flightRouteHubIatas: ['GRU'],
-    flightRouteWaypoints: [[180, 12]],
+    flightRouteHubIatas: ['DXB', 'GRU', 'REC'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'ICN→GRU→REC/FEN(플래너 STEP) · 태평양 waypoint로 북한·시베리아 관통 arc 회피',
+    rationale: 'ICN→DXB→GRU→REC→FEN · 플래너 중동·유럽 경유(미국 대안 있을 때 DXB 우선)',
   },
   'christmas-island': {
     primaryIatas: ['XCH', 'PER'],
@@ -306,10 +305,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'torres-del-paine': {
     primaryIatas: ['PUQ'],
     preferredLinkIata: 'PUQ',
-    flightRouteHubIatas: ['LPB'],
+    flightRouteHubIatas: ['LAX', 'SCL'],
     flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: 'ICN→LPB→PUQ · 태평양 waypoint(우유니 패턴)로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→SCL→PUQ · 미국 경유 산티아고 국제선 후 파타고니아 국내선 · 태평양 waypoint',
     bannerNote:
       '토레스 델 파이네는 칠레 남부 파타고니아 국립공원입니다. 보통 푼타아레나스(PUQ) 직항·경유 후 버스·투어로 들어갑니다. 아르헨티나 북부 파타고니아·우수아이아와 관문이 다릅니다.'
   },
@@ -345,19 +344,19 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'iguazu-falls': {
     primaryIatas: ['IGR'],
     preferredLinkIata: 'IGR',
-    flightRouteHubIatas: ['GRU'],
-    flightRouteWaypoints: [[180, 12]],
+    flightRouteHubIatas: ['DXB', 'GRU'],
     confidence: 'high',
-    rationale: 'ICN→GRU→IGR · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→DXB→GRU→IGR · 플래너 중동→GRU→국내선(미국 대안 있을 때 DXB 우선)',
   },
   'uyuni-salt-flat': {
     primaryIatas: ['LPB', 'UYU'],
     preferredLinkIata: 'UYU',
     tripFlightArrivalIata: 'LPB',
+    flightRouteHubIatas: ['LAX', 'LIM', 'LPB'],
     flightRouteWaypoints: [[180, 12]],
     kind: 'multi',
     confidence: 'high',
-    rationale: '라파스·우유니 공항 · Trip LPB · 시네마 태평양 경유',
+    rationale: 'ICN→LAX→LIM→LPB→UYU · 미주·남미 허브 경유 후 라파스·우유니 · Trip LPB · 태평양 waypoint',
   },
   'terracotta-army': { primaryIatas: ['XIY'], preferredLinkIata: 'XIY', confidence: 'high', rationale: '시안 공항' },
   'victoria-falls': { primaryIatas: ['VFA'], preferredLinkIata: 'VFA', confidence: 'high', rationale: '빅토리아폴스 공항' },
@@ -538,10 +537,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'el-calafate': {
     primaryIatas: ['FTE'],
     preferredLinkIata: 'FTE',
-    flightRouteHubIatas: ['LPB'],
+    flightRouteHubIatas: ['LAX', 'EZE'],
     flightRouteWaypoints: [[180, 12]],
     confidence: 'high',
-    rationale: 'ICN→LPB→FTE · 태평양 waypoint(우유니 패턴)로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→EZE→FTE · 미국 경유 부에노스아이레스 국제선 후 파타고니아 국내선 · 태평양 waypoint',
     bannerNote:
       '엘칼라파테는 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)입니다. 북부 파타고니아(바릴로체 BRC)·우수아이아(USH)·토레스 델 파이네(PUQ)와 관문이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
@@ -631,9 +630,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   kilimanjaro: {
     primaryIatas: ['JRO', 'NBO'],
     preferredLinkIata: 'JRO',
+    flightRouteHubIatas: ['ADD'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '킬리만자로(JRO) 국제공항·나이로비(NBO) 경유',
+    rationale: 'ICN→ADD→JRO · 에티오피아항공 등 동아프리카 관문(도하·NBO 경유도 흔함)',
     bannerNote:
       '킬리만자로 원정은 킬리만자로(JRO) 직항·나이로비(NBO) 경유 육로가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
@@ -716,9 +716,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   serengeti: {
     primaryIatas: ['JRO', 'NBO'],
     preferredLinkIata: 'JRO',
+    flightRouteHubIatas: ['ADD'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '북부 탄자니아 — 킬리만자로(JRO)·나이로비(NBO) 관문'
+    rationale: 'ICN→ADD→JRO · 북부 탄자니아 사파리 관문(나이로비·도하 경유도 흔함)'
   },
   'similan-islands': { primaryIatas: ['HKT'], preferredLinkIata: 'HKT', confidence: 'high', rationale: '푸켓(HKT) 후 보트·다이빙 투어' },
   bohol: {
@@ -1120,10 +1121,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'rio-de-janeiro': {
     primaryIatas: ['GIG'],
     preferredLinkIata: 'GIG',
-    flightRouteHubIatas: ['GRU'],
-    flightRouteWaypoints: [[180, 12]],
+    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
-    rationale: 'ICN→GRU→GIG · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→DXB→GIG · 플래너 중동 경유(미국 대안 있을 때 DXB 우선, 유럽 CDG/FRA 대안)',
   },
   'rocky-mountains': {
     primaryIatas: ['YYC', 'YVR'],

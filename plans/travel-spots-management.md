@@ -204,7 +204,7 @@ npm run enrich:airports
 |------|------|---------|
 | `preferredLinkIata` | `travel-spot-airport-overrides.mjs` | 렌터카·픽업·배너 **최종** 도착 |
 | `tripFlightArrivalIata` | 동일 | Trip.com `aAirportCode` — **OTA로 검색 가능한 관문**(예: HNL, AUH) |
-| `flightRouteHubIatas` | **`travel-spot-airport-overrides.mjs` SSOT** (시네마) | arc 경유 hub · **`[]`(빈 배열)= corridor DXB 생략·직항 arc** · `flightRouteWaypoints` 병행(태평양·유럽 남방 우회). **`sync:airports-from-toolkit` bake 중단(2026-06-18)** · **graph-unresolved·플래너 경유**(SAI·ENI·ASI 등) → hub 수동 · overrides → `generate:airports` · Edge 시네마 **미사용** |
+| `flightRouteHubIatas` | **`travel-spot-airport-overrides.mjs` SSOT** (시네마) | arc·Bar 경유 hub · **`[]`(빈 배열)= corridor DXB 생략·직항 arc** · `flightRouteWaypoints` 병행(태평양·유럽 남방 우회). **미국(LAX/ATL) → 중동·유럽(DXB/DOH/CDG 등) 교체는 플래너·항공권 팁에 대안이 명시될 때만** — 대안 없으면 LAX 유지. **`MAX_FLIGHT_LEG_HOURS=16`** · graph-unresolved → hub 수동 · `generate:airports` |
 | `flightRouteWaypoints` | 동일 | arc 지리 waypoint만 — **ICN↔LAX 직항** `[[180,12]]` · **ICN↔AMS 직항** `[[125,33],[15,42]]` 등 hub 없이 가능 · **배너·Trip IATA와 무관** |
 | `officialLinks[].destinationIata` | `flight-booking-overrides.mjs` | 항공사 공식 예약 URL 목적지 — **IATA와 다를 수 있음** (예: 코스라에 렌터카 `KOS` · United `KSA`) |
 

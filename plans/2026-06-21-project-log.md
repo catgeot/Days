@@ -152,3 +152,51 @@
 - **안나푸르나 서킷**: Trip·배너 PKR 오류 → `preferredLinkIata`·`tripFlightArrivalIata` **KTM**(트리부반) · 시네마 `BKK` hub · PKR은 `searchHintIatas` 대안
 - **audit**: `audit:flight-arcs` **0** · `audit:airports` none **0**
 
+---
+
+## 킬리만자로·세렝게티 hub SSOT ✅
+
+- **증상**: Bar·arc `ICN→AMS→JRO` — 플래너·항공권 팁(에티오피아 ADD 경유)과 불일치
+- **수정**: `kilimanjaro`·`serengeti` → `flightRouteHubIatas: ADD` (나이로비와 동일 패턴)
+- **audit**: `audit:flight-arcs` **0** · `audit:airports` none **0**
+
+---
+
+## 토레스 델 파이네 · 구간 최대 비행시간 ✅
+
+- **증상**: Bar `ICN~20h LPB~5h PUQ` — LPB가 arc waypoint(L3)인데 Bar hub(L2)로 오입력
+- **수정**: `torres-del-paine` → `LAX,SCL` · `el-calafate` → `LAX,EZE` · `MAX_FLIGHT_LEG_HOURS=16` graph·audit
+- **audit**: torres QA PASS `ICN→LAX→SCL→PUQ` · GRU/LPB 단일 hub 4건 `overlong-leg` 잔존(우유니 등)
+
+---
+
+## 우유니 소금사막 hub SSOT ✅
+
+- **증상**: `tripFlightArrivalIata: LPB`만 있어 Bar `ICN~20h LPB~1h UYU` — 플래너(미주→남미 허브→LPB→UYU)와 불일치
+- **수정**: `flightRouteHubIatas: LAX,LIM,LPB` · Trip LPB·waypoint 유지
+- **audit**: QA PASS `ICN→LAX→LIM→LPB→UYU` · `overlong-leg` 3건(GRU 단일 hub) 잔존
+
+---
+
+## GRU 단일 hub 3건 정리 ✅
+
+- **대상**: `fernando-de-noronha` · `iguazu-falls` · `rio-de-janeiro` — Bar `ICN~22h GRU` 오류
+- **수정**: `flightRouteHubIatas: LAX,GRU` · waypoint 유지
+- **audit**: `audit:flight-arcs` **0 issues**
+
+---
+
+## 브라질 3건 · 중동 hub 우선(ESTA 회피) ✅
+
+- **요청**: 미국(LAX) 경유보다 중동·유럽 허브 우선 — 플래너·항공권 팁 정합
+- **수정**: `fernando-de-noronha` `DXB,GRU,REC` · `iguazu-falls` `DXB,GRU` · `rio-de-janeiro` `DXB` (태평양 waypoint 제거)
+- **규칙**: **미국 hub 제거는 중동·유럽 대안이 있을 때만** — `.ai-context`·`travel-spots-management` 반영
+- **audit**: **0 issues**
+
+---
+
+## 세션 마무리 · 커밋
+
+- **코드**: `MAX_FLIGHT_LEG_HOURS` · graph·audit overlong-leg · overrides hub 일괄
+- **문서**: `.ai-context` · `travel-spots-management` · `releaseNotes.js`
+- **검증**: `generate:airports` · `audit:flight-arcs` **0 issues**

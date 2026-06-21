@@ -13,6 +13,8 @@ import { resolveRegionalCorridorAnchors } from './flightRouteCorridors.js';
 import { coordsCrossAvoidZones } from './flightRouteAvoidZones.js';
 
 const FLIGHT_SPEED_KMH = 850;
+/** Bar·graph hub 후보 — 단일 leg haversine 상한(일반 장거리 직항 ~14–15h + 여유). */
+export const MAX_FLIGHT_LEG_HOURS = 16;
 /** SSOT: `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` in affiliate.js */
 const DEFAULT_ORIGIN_IATA = 'ICN';
 const ROUTE_FLY_ZOOM_MAX = 2.35;
@@ -83,6 +85,22 @@ export function estimateFlightLegHours(routeIatas) {
     });
   }
   return legs;
+}
+
+/**
+ * @param {string[]} routeIatas
+ * @param {number} [maxHours]
+ * @returns {{ fromIata: string, toIata: string, hours: number }[]}
+ */
+export function findOverlongFlightLegs(routeIatas, maxHours = MAX_FLIGHT_LEG_HOURS) {
+  return estimateFlightLegHours(routeIatas).filter((leg) => leg.hours > maxHours);
+}
+
+/** @param {string[]} pathIatas origin → hub… → dest */
+export function maxLegHoursOnPath(pathIatas) {
+  const legs = estimateFlightLegHours(pathIatas);
+  if (!legs.length) return 0;
+  return Math.max(...legs.map((leg) => leg.hours));
 }
 
 /** @param {[number, number][]} anchors */
