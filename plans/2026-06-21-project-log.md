@@ -125,3 +125,21 @@
 - **Phase 4 출발지 UI**: ~~구현~~ **보류** — arc·항로 테스트 안정화 후 재개
 - **다음**: 항로·arc 로컬 QA · `audit:flight-arcs` · (이후) Phase 4 출발지·경유지 UI
 
+---
+
+## 경유·직항 QA — 어센션·세인트헬레나 ✅
+
+- **증상**: 플래너·항공권은 JNB→HLE→ASI 경유인데 지구본 arc는 ICN→ASI 직항(`direct-fallback`)
+- **원인**: `flightRouteHubIatas` SSOT 누락 — ascension은 placeIds-only · st-helena는 JNB hub 미지정
+- **수정**: overrides `JNB`·`JNB,HLE` → `generate:airports` · ICN→JNB→HLE→ASI 경유 arc 확인 · `audit:flight-arcs` 0 · direct-fallback 143→8
+- **angkor-wat·angkor-thom**: ICN→SAI 직항 arc → **`SGN` hub** · ICN→SGN→SAI 경유(항공권 팁·베트남항공 경유와 정합)
+- **el-nido·borobudur·lalibela·cocos-islands**: hub `MNL`·`CGK`·`ADD`·`PER` — 플래너·항공권 팁 정합 · ulaanbaatar·miyakojima 직항 유지
+
+---
+
+## 세션 종료 — 경유·직항 QA (2026-06-21)
+
+- **런타임 확인**: 지구본 arc·Bar = **클라이언트** `globeFlightCinema.js` + overrides/graph JSON · Edge `resolve-flight-route` **UI 미연결**
+- **audit**: `audit:flight-arcs` **0** · `audit:airports` none **0**
+- **다음**: **`항공경로-DB-Phase4-실행`** (출발지·경유지 UI)
+

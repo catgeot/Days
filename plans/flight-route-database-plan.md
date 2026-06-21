@@ -69,22 +69,18 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**제시어** (우선순위):
+**제시어**: **`항공경로-DB-Phase4-실행`** — 출발지·경유지 UI (arc·경유 QA 안정화 **후**)
 
-1. **항로·arc 로컬 QA** — ICN→CDG/AMS/paris/london/los-angeles · `npm run audit:flight-arcs`
-2. **`항공경로-DB-Phase4-실행`** — arc 안정화 **후** 출발지·경유지 UI (현재 **보류**)
-
-~~`항공경로-arc-F안-실행`~~ **✅** · ~~`항공경로-uiPlace-경유직항-QA`~~ **✅** · ~~`항공경로-graph-avoid-zone-검토`~~ **✅**
+~~`항공경로-arc-F안-실행`~~ **✅** · ~~`항공경로-uiPlace-경유직항-QA`~~ **✅** · ~~경유·직항 slug QA(어센션·앙코르·엘니도 등)~~ **✅**
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`flight-arc-f-plan-handoff.md`](./flight-arc-f-plan-handoff.md) · [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) | `travelSpots.js` 전체 |
-| `globeFlightCinema.js` | slug overrides 전수 hub 추가 |
-| `npm run audit:flight-arcs` | `travelSpotAirports.json` 직접 편집 |
+| [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) · `globeFlightCinema.js` | `travelSpots.js` 전체 |
+| `travel-spot-airport-overrides.mjs` (대상 slug만) | `travelSpotAirports.json` 직접 편집 |
 
-**Phase 3 ✅** · **F안 ✅**. **Phase 4 UI 보류** — arc·항로 QA 안정화 후 출발지·경유지 UI.
+**런타임**: 시네마 arc = **클라이언트** `resolveFlightRoutePlan` + JSON SSOT · Edge `resolve-flight-route` **UI 미연결**.
 
-**gap 스냅샷 (Phase 3 후)**: graph-precompute **112** · graph-direct **80** · hub-override **67** · direct-fallback **9** · corridor-only **1** · uiPlace no-preview **2**
+**gap 스냅샷 (경유 QA 후)**: hub-override **~75** · graph-precompute **112** · direct-fallback **~2**(직항 의도) · `audit:flight-arcs` **0**
 
 ---
 

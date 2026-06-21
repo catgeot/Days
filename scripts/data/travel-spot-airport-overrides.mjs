@@ -126,8 +126,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   borobudur: {
     primaryIatas: ['YIA'],
     preferredLinkIata: 'YIA',
+    flightRouteHubIatas: ['CGK'],
+    kind: 'multi',
     confidence: 'high',
-    rationale: '족자카르타 국제공항(YIA) — 툴킷 여정·국내선 최종 도착',
+    rationale: 'ICN→CGK→YIA · 자카르타 경유 국내선 연결(발리 DPS 경유도 흔함)',
     bannerNote:
       '보로부두르·마겔랑 권역은 보통 인천→자카르타(CGK) 또는 발리(DPS) 경유 후 족자카르타(YIA) 국내선 도착이 일반적입니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.',
   },
@@ -194,9 +196,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'el-nido': {
     primaryIatas: ['ENI', 'PPS', 'MNL'],
     preferredLinkIata: 'ENI',
+    flightRouteHubIatas: ['MNL'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '엘니도 직항·PPS 육로·MNL 경유',
+    rationale: 'ICN→MNL→ENI · AirSWIFT 국내선(추천 루트)',
     bannerNote:
       '항공권·경로 비교\n· 루트 1(추천·비용↑): 인천→마닐라(MNL)→엘니도(ENI). AirSWIFT 독점, MNL 제4터미널(T4) 환승·짐 비연결 → 환승 3~4시간 이상 권장.\n· 루트 2(가성비·육로): 인천→푸에르토프린세사(PPS)→밴·버스→엘니도(5시간+). 체력 소모 큼.\n티켓의 최종 도착 코드로 제휴 링크 검색어를 맞춰 주세요.'
   },
@@ -442,9 +445,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   lalibela: {
     primaryIatas: ['LLI', 'ADD'],
     preferredLinkIata: 'LLI',
+    flightRouteHubIatas: ['ADD'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'ADD 국제선 후 LLI 국내선 — 최종 도착·렌터카 LLI',
+    rationale: 'ICN→ADD→LLI · 에티오피아항공 국제선 후 국내선',
     bannerNote:
       '랄리벨라는 보통 인천→아디스아바바(ADD) 국제선 후 랄리벨라(LLI) 국내선으로 이어집니다. 렌터카·픽업·투어는 랄리벨라 공항(LLI) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
@@ -809,11 +813,22 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'st-helena': {
     primaryIatas: ['HLE', 'JNB'],
     preferredLinkIata: 'HLE',
+    flightRouteHubIatas: ['JNB'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '섬 공항 HLE, 남아공·개항편 연결 JNB',
+    rationale: 'ICN→JNB→HLE · 남아공·Airlink 개항편 연결',
     bannerNote:
       '세인트헬레나 최종 도착은 세인트헬레나(HLE)입니다. 요하네스버그(JNB) 등에서 연결·개항편으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  ascension: {
+    primaryIatas: ['ASI', 'HLE', 'JNB'],
+    preferredLinkIata: 'ASI',
+    flightRouteHubIatas: ['JNB', 'HLE'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→JNB→HLE→ASI · Airlink·월 1회 어센션 연결',
+    bannerNote:
+      '어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   'kerguelen-islands': {
     primaryIatas: ['RUN'],
@@ -826,14 +841,22 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'angkor-wat': {
     primaryIatas: ['SAI'],
     preferredLinkIata: 'SAI',
+    flightRouteHubIatas: ['SGN'],
+    kind: 'multi',
     confidence: 'high',
-    rationale: '시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문'
+    rationale: 'ICN→SGN→SAI · 베트남항공 등 호치민 경유가 일반적(직항은 유동적)',
+    bannerNote:
+      '씨엠립 앙코르(SAI)는 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   'angkor-thom': {
     primaryIatas: ['SAI'],
     preferredLinkIata: 'SAI',
+    flightRouteHubIatas: ['SGN'],
+    kind: 'multi',
     confidence: 'high',
-    rationale: '앙코르 권역 — SAI 관문(angkor-wat와 동일)'
+    rationale: 'ICN→SGN→SAI · angkor-wat와 동일 관문',
+    bannerNote:
+      '앙코르 권역(SAI)은 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   borneo: {
     primaryIatas: ['BKI', 'KCH', 'KUL'],
@@ -881,9 +904,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'cocos-islands': {
     primaryIatas: ['CCK', 'PER'],
     preferredLinkIata: 'CCK',
+    flightRouteHubIatas: ['PER'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '코코스 제도 CCK, 호주 본토 경유 PER',
+    rationale: 'ICN→PER→CCK · Virgin Australia 퍼스 경유(주 2회)',
     bannerNote:
       '호주령 코코스(킬링) 제도는 코코스 제도(CCK) 직항·퍼스(PER) 등 호주 본토 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
@@ -1161,12 +1185,23 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
 
 /** travelSpots slug 없음 — placeIds-only (DB place_id 키) */
 export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
-  '어센션 섬': {
-    primaryIatas: ['ASI', 'JNB'],
+  ascension: {
+    primaryIatas: ['ASI', 'HLE', 'JNB'],
     preferredLinkIata: 'ASI',
+    flightRouteHubIatas: ['JNB', 'HLE'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '와이드어웨이크 ASI(공식 IATA), 남아공·개항편 연결 JNB',
+    rationale: 'ICN→JNB→HLE→ASI · Airlink·월 1회 어센션 연결',
+    bannerNote:
+      '어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.'
+  },
+  '어센션 섬': {
+    primaryIatas: ['ASI', 'HLE', 'JNB'],
+    preferredLinkIata: 'ASI',
+    flightRouteHubIatas: ['JNB', 'HLE'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→JNB→HLE→ASI · Airlink·월 1회 어센션 연결',
     bannerNote:
       '어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.'
   },
