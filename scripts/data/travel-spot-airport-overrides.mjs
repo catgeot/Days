@@ -585,6 +585,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   timbuktu: { primaryIatas: ['BKO'], preferredLinkIata: 'BKO', confidence: 'high', rationale: '바마코 후 육로·강' },
   singapore: { primaryIatas: ['SIN'], preferredLinkIata: 'SIN', confidence: 'high', rationale: '창이국제공항(SIN)' },
   london: { primaryIatas: ['LHR'], preferredLinkIata: 'LHR', confidence: 'high', rationale: '히스로공항(LHR)' },
+  moscow: {
+    primaryIatas: ['SVO'],
+    preferredLinkIata: 'SVO',
+    flightRouteHubIatas: ['IST'],
+    flightRouteWaypoints: [[125, 33]],
+    confidence: 'high',
+    rationale: 'ICN→이스탄불(IST)→SVO · DXB arc 생략 · 러시아 목적지 L3 예외',
+  },
   seoul: {
     primaryIatas: ['ICN', 'GMP'],
     preferredLinkIata: 'ICN',

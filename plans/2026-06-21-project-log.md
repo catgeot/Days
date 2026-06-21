@@ -97,6 +97,13 @@
 
 | 제시어 | 범위 |
 |--------|------|
-| `항공경로-graph-avoid-zone-검토` | graph tier avoid-zone (~120) · paris/london/moscow QA |
 | `항공경로-DB-Phase4-실행` | 출발지·경유지 UI |
+
+---
+
+## graph tier avoid-zone visual guard ✅
+
+- **런타임**: graph tier zone 교차 시 `hubIatas` 유지 · arc만 `[125,33]→DXB flyover→[15,42]`(근거리 동북아·1hop PEK는 출발 waypoint만) 보강
+- **moscow L3**: overrides `IST` hub + `[125,33]` waypoint
+- **audit**: `audit:flight-arcs` **0 issues** · QA 8 slug **PASS** · `audit:flight-routes` semantic **271/271**
 

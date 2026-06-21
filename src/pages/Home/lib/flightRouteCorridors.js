@@ -3,6 +3,10 @@ export const ICN_EUROPE_DEPARTURE_WAYPOINT = [125, 33];
 export const ICN_EUROPE_CORRIDOR_HUB = 'DXB';
 /** DXB→서·북유럽 — 우크라이나·RU50 bbox 회피용 지중해 관문 (헬싱키·발트 회귀 방지) */
 export const ICN_EUROPE_MEDITERRANEAN_GATEWAY = [15, 42];
+/** ICN→태평양·미 서부·하와이 — 북한 bbox arc 회피 (overrides·graph visual guard 공통) */
+export const ICN_PACIFIC_MIDPOINT_WAYPOINT = [180, 12];
+/** Dubai (DXB) — graph visual flyover only · hubIatas(Bar semantic)는 변경하지 않음 */
+export const DXB_VISUAL_FLYOVER_WAYPOINT = [55.3657, 25.2532];
 
 /** Europe bbox (lat 35–72, lng -25–45) */
 export function isEuropeCorridorDest(destLngLat) {
@@ -80,6 +84,22 @@ export function resolveAtlanticCorridorAnchors(originLngLat, destLngLat, options
 export function resolveRegionalCorridorAnchors(originLngLat, destLngLat, options = {}) {
   return resolveCorridorAnchors(originLngLat, destLngLat, options)
     ?? resolveAtlanticCorridorAnchors(originLngLat, destLngLat, options);
+}
+
+/**
+ * Graph tier arc-only avoid — hubIatas(Bar semantic)는 변경하지 않음.
+ * ICN→남쪽 출발→DXB flyover→지중해 관문→(graph hub)→목적지 순.
+ * @returns {{ waypoints: [number, number][], postHubWaypoints: [number, number][] }}
+ */
+export function resolveVisualAvoidWaypoints(_destLngLat, _options = {}) {
+  return {
+    waypoints: [
+      ICN_EUROPE_DEPARTURE_WAYPOINT,
+      DXB_VISUAL_FLYOVER_WAYPOINT,
+      ICN_EUROPE_MEDITERRANEAN_GATEWAY,
+    ],
+    postHubWaypoints: [],
+  };
 }
 
 /** avoid guard 재빌드 — 남쪽 waypoint + DXB + (유럽) 지중해 관문 */

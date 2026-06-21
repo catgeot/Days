@@ -4,7 +4,9 @@ import { fileURLToPath } from 'url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import {
   getFlightRouteHubIatas,
+  getGraphFlightRouteHubIatas,
   hasExplicitDirectFlightRoute,
+  hasManualFlightRouteHubOverride,
   resolveCinemaDestIata,
 } from '../src/utils/rentalAirportMatch.js';
 import {
@@ -69,6 +71,9 @@ function auditSpot(spot) {
   const zones = coordsCrossAvoidZones(chain);
   const directLongArc = isLongGreatCircleArc(originLngLat, destLngLat);
   const corridorEligible = isWesternNorthernEuropeCorridor(destLngLat, originIata);
+  const isGraphTier = !hasManualFlightRouteHubOverride(spot)
+    && !hasExplicitDirectFlightRoute(spot)
+    && getGraphFlightRouteHubIatas(spot, { originIata, destIata }) !== null;
 
   return {
     slug: spot.slug,
@@ -78,7 +83,9 @@ function auditSpot(spot) {
     overrideHubIatas,
     hasOverrideHubs,
     isRuDest,
+    isGraphTier,
     hubIatas: plan.hubIatas,
+    routeSource: plan.routeSource ?? null,
     routeIatas: [originIata, ...plan.hubIatas, destIata],
     corridorEligible,
     directLongArc,
@@ -96,6 +103,9 @@ function qaPass(row) {
   }
   if (row.hasOverrideHubs) {
     return true;
+  }
+  if (row.isGraphTier && row.corridorEligible) {
+    return row.zonesCrossed.length === 0;
   }
   if (row.corridorEligible) {
     return row.hubIatas.includes('DXB') && row.zonesCrossed.length === 0;
@@ -135,6 +145,7 @@ for (const spot of TRAVEL_SPOTS) {
   if (
     row.corridorEligible
     && !row.hasOverrideHubs
+    && !row.isGraphTier
     && !row.hubIatas.includes('DXB')
   ) {
     issues.push({

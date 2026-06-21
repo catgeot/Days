@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-21T01:37:44.560Z",
+    "generatedAt": "2026-06-21T08:28:20.641Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
-      "override": 164,
+      "override": 165,
       "curatedPreserved": 0,
-      "toolkitSync": 107,
+      "toolkitSync": 106,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -630,11 +630,18 @@
       ],
       "preferredLinkIata": "SVO",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "rationale": "ICN→이스탄불(IST)→SVO · DXB arc 생략 · 러시아 목적지 L3 예외",
+      "flightRouteWaypoints": [
+        [
+          125,
+          33
+        ]
+      ],
+      "flightRouteHubIatas": [
+        "IST"
+      ]
     },
     "cairo": {
       "primaryIatas": [
