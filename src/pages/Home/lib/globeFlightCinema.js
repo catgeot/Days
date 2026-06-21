@@ -1,3 +1,4 @@
+import { getAirportsIndexCoords } from '../../../utils/airportsIndexLookup.js';
 import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import {
   getFlightRouteHubIatas,
@@ -31,8 +32,8 @@ export function getAirportHubCoords(iata) {
   const code = String(iata || '').trim().toUpperCase();
   if (!code) return null;
   const hub = RENTAL_AIRPORT_HUBS.find((h) => h.iata === code);
-  if (!hub) return null;
-  return { iata: hub.iata, lng: hub.lng, lat: hub.lat };
+  if (hub) return { iata: hub.iata, lng: hub.lng, lat: hub.lat };
+  return getAirportsIndexCoords(code);
 }
 
 /** @param {{ lat: number, lng: number }} a @param {{ lat: number, lng: number }} b */

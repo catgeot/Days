@@ -7,6 +7,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
+import { RENTAL_AIRPORT_HUBS } from '../src/utils/rentalAirportHubs.js';
+import { getAirportsIndexMeta } from '../src/utils/airportsIndexLookup.js';
 import {
   resolveCinemaDestIata,
 } from '../src/utils/rentalAirportMatch.js';
@@ -289,6 +291,64 @@ function auditUiPlace(sample) {
   };
 }
 
+function summarizeAirportsIndexCoverage(slugRows) {
+  const rentalSet = new Set(RENTAL_AIRPORT_HUBS.map((h) => h.iata));
+  const indexMeta = getAirportsIndexMeta();
+
+  /** @type {Record<string, number>} */
+  const destCoordSource = {
+    rentalHub: 0,
+    airportsIndexOnly: 0,
+    both: 0,
+    neither: 0,
+  };
+
+  const indexOnlyIatas = new Set();
+  const missingDestIatas = new Set();
+
+  for (const row of slugRows) {
+    const iata = String(row.destIata || '').trim().toUpperCase();
+    if (!iata || iata.length !== 3) continue;
+    const inRental = rentalSet.has(iata);
+    const inIndex = getAirportHubCoords(iata) != null;
+    const indexOnly = inIndex && !inRental;
+
+    if (inRental && inIndex) destCoordSource.both += 1;
+    else if (inRental) destCoordSource.rentalHub += 1;
+    else if (indexOnly) {
+      destCoordSource.airportsIndexOnly += 1;
+      indexOnlyIatas.add(iata);
+    } else {
+      destCoordSource.neither += 1;
+      missingDestIatas.add(iata);
+    }
+  }
+
+  const routeIatas = new Set();
+  for (const row of slugRows) {
+    for (const code of row.routeIatas ?? []) {
+      if (code) routeIatas.add(String(code).toUpperCase());
+    }
+  }
+
+  let routeCoordsFromIndexOnly = 0;
+  for (const iata of routeIatas) {
+    if (!rentalSet.has(iata) && getAirportHubCoords(iata)) routeCoordsFromIndexOnly += 1;
+  }
+
+  return {
+    indexMeta,
+    rentalHubCount: rentalSet.size,
+    destCoordSource,
+    indexOnlyDestCount: indexOnlyIatas.size,
+    indexOnlyDestIatas: [...indexOnlyIatas].sort(),
+    missingDestIatas: [...missingDestIatas].sort(),
+    routeIataUnique: routeIatas.size,
+    routeCoordsFromIndexOnly,
+    indexVsRentalDelta: (indexMeta.count ?? 0) - rentalSet.size,
+  };
+}
+
 function summarizeByKind(slugs) {
   /** @type {Record<string, number>} */
   const counts = {};
@@ -336,14 +396,16 @@ const arcsBaseline = runBaselineAudit('audit:flight-arcs', ARCS_AUDIT_JSON);
 
 const slugRows = TRAVEL_SPOTS.map(auditSlug);
 const routeKindCounts = summarizeByKind(slugRows);
+const airportsIndexCoverage = summarizeAirportsIndexCoverage(slugRows);
 const uiPlaceRows = UI_PLACE_SAMPLES.map(auditUiPlace);
 
 const report = {
   generatedAt: new Date().toISOString(),
-  phase: 0,
+  phase: 1,
   originIata: ORIGIN_IATA,
   slugCount: TRAVEL_SPOTS.length,
   routeKindCounts,
+  airportsIndexCoverage,
   slugs: slugRows,
   uiPlaceSamples: uiPlaceRows,
   gaps: {
@@ -390,6 +452,25 @@ console.log(
   + ` issues=${report.baseline.flightArcs.run?.issueCount ?? '?'}`
   + ` qa-fail=${Object.values(report.baseline.flightArcs.run?.qa ?? {}).filter((q) => !q.qaPass).length}`
 );
+
+console.log('\nairportsIndex coverage:');
+console.log(
+  `  index IATA=${airportsIndexCoverage.indexMeta.count ?? '?'}`
+  + ` rental hubs=${airportsIndexCoverage.rentalHubCount}`
+  + ` delta=${airportsIndexCoverage.indexVsRentalDelta}`
+);
+console.log('  dest coord source:', JSON.stringify(airportsIndexCoverage.destCoordSource));
+console.log(
+  `  route IATA unique=${airportsIndexCoverage.routeIataUnique}`
+  + ` index-only coords=${airportsIndexCoverage.routeCoordsFromIndexOnly}`
+);
+if (airportsIndexCoverage.indexOnlyDestCount > 0) {
+  console.log(
+    `  index-only dest IATA (${airportsIndexCoverage.indexOnlyDestCount}):`,
+    airportsIndexCoverage.indexOnlyDestIatas.slice(0, 12).join(', ')
+    + (airportsIndexCoverage.indexOnlyDestCount > 12 ? '…' : '')
+  );
+}
 
 if (report.gaps.uiPlaceNoPreview > 0) {
   console.log('\nuiPlace gaps (no canPreviewFlightRoute):');

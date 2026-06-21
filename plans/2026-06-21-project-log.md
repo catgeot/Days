@@ -21,24 +21,30 @@
 
 ## 항공 경로 DB — 에이전트 핸드오ff
 
-**다음 세션 제시어**: `항공경로-DB-Phase1-실행`
+**다음 세션 제시어**: `항공경로-DB-Phase2-실행`
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
 | 0 | gap-report + audit baseline | **✅** |
-| 1 | Supabase airports + airportsIndex | **다음** |
-| 2 | routes + auto hub precompute | 대기 |
+| 1 | Supabase airports + airportsIndex | **✅** |
+| 2 | routes + auto hub precompute | **다음** |
 | 3 | Edge + uiPlace | 대기 |
-
-### Phase 1 실행 체크리스트 (다음 세션)
-
-1. `supabase/migrations` — `airports` 테이블 (OurAirports 스키마)
-2. `scripts/import-ourairports.mjs` · `npm run import:airports`
-3. `airportsIndex.json` 생성 · `getAirportHubCoords` 확장
-4. gap-report 재실행으로 hub 302→DB 커버리지 비교
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`flight-route-database-plan.md`](./flight-route-database-plan.md) Phase 1 · gap-report | `travelSpots.js` 전체 |
-| `.ai-context` 6절 | slug overrides 전수 hub 추가 |
-| `npm run audit:flight-route-gaps` 출력 | `travelSpotAirports.json` 직접 편집 |
+| [`flight-route-database-plan.md`](./flight-route-database-plan.md) Phase 2 | `travelSpots.js` 전체 |
+| `.ai-context` 6절 · gap-report | slug overrides 전수 hub 추가 |
+| `npm run audit:flight-route-gaps` | `travelSpotAirports.json` 직접 편집 |
+
+---
+
+## Phase 1 — airports migration · index · getAirportHubCoords ✅
+
+- **migration**: `supabase/migrations/20260621120000_airports.sql` — SQL Editor 적용 · `db:apply-migrations` 스크립트
+- **Supabase import**: **9055** IATA · scheduled **4170** · transit hub **301** · `name_ko` **301**
+- **scripts**: `import-ourairports.mjs` · `generate-airports-index.mjs` · `apply-supabase-migration.mjs` · `lib/ourairports.mjs`
+- **npm**: `import:airports` · `generate:airports-index` · `db:apply-migrations` — index **3870** (`source: supabase-airports`, rental 302 제외)
+- **런타임**: `airportsIndexLookup.js` → `getAirportHubCoords` rental 우선 · index 폴백
+- **gap-report**: phase 1 · hub-override 67 · direct-fallback 143 · dest 271/271 coords
+- **fix**: `generate:airports-index` Supabase **1000행 제한** → 페이지네이션
+
