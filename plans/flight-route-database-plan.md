@@ -67,21 +67,24 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**제시어**: `항공경로-DB-Phase0` (또는 `@plans/flight-route-database-plan.md` + `@plans/2026-06-21-project-log.md`)
+**제시어**: `항공경로-DB-Phase0-실행` (또는 `@plans/2026-06-21-project-log.md` **Phase 0 실행 체크리스트** + 본 계획)
 
 | 읽을 것 | 금지 |
 |---------|------|
-| `.ai-context.md` 6절(항공 DB) | `travelSpots.js` 전체 |
-| 본 계획 Phase 0 | slug overrides 전수 수동 추가 |
-| [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) 핸드오프 절 | Supabase apply without migration |
+| [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) **Phase 0 실행 체크리스트** | `travelSpots.js` 전체 |
+| `.ai-context.md` 6절(항공 DB) | slug overrides 전수 수동 추가 |
+| 본 계획 Phase 0 · [`audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `travelSpotAirports.json` 직접 편집 |
+| | Supabase apply without migration |
 
-**Phase 0 작업**
+**Phase 0 작업** (상세 SSOT → 일지 체크리스트)
 
-1. `scripts/audit-flight-route-gaps.mjs` (신규) — 271 slug hub 유무·corridor-only·uiPlace 시뮬레이션 → `scripts/outputs/flight-route-gap-report.json`
-2. `npm run audit:airports` · `audit:flight-arcs` baseline 기록
-3. (코드 변경 없이) gap 리포트 요약을 일지에 2~3줄
+1. `scripts/audit-flight-route-gaps.mjs` (신규) — 271 slug `routeKind` · uiPlace **curated 5~8** (placeIds-only 전수 제외) → `scripts/outputs/flight-route-gap-report.json`
+2. 스크립트 내부에서 `audit:airports` · `audit:flight-arcs` baseline embed
+3. `npm run audit:flight-route-gaps` · gap 요약 · 일지 2~3줄
 
-**완료 후**: Phase 1(migration + OurAirports import) — **Phase 0부터 시작이 맞음.**
+**baseline 스냅샷 (2026-06-21)**: hub-override 67 · corridor-only 59 · direct-fallback 143 · explicit-direct 1 · no-preview 1 · arc issue 4 · airports none:0
+
+**완료 후**: Phase 1(migration + OurAirports import).
 
 ---
 
