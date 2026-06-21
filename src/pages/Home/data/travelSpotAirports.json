@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-21T08:28:20.641Z",
+    "generatedAt": "2026-06-21T09:32:39.202Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
@@ -1265,17 +1265,7 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "ICN↔AMS KLM 직항(약 13~14h) · corridor DXB 생략 · waypoint로 우크라이나·RU bbox arc 회피",
-      "flightRouteWaypoints": [
-        [
-          125,
-          33
-        ],
-        [
-          15,
-          42
-        ]
-      ],
+      "rationale": "ICN↔AMS KLM 직항(약 13~14h) · F안 직항 arc · bulge 표시",
       "flightRouteHubIatas": []
     },
     "venice": {

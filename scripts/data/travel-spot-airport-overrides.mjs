@@ -633,9 +633,8 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['AMS'],
     preferredLinkIata: 'AMS',
     flightRouteHubIatas: [],
-    flightRouteWaypoints: [[125, 33], [15, 42]],
     confidence: 'high',
-    rationale: 'ICN↔AMS KLM 직항(약 13~14h) · corridor DXB 생략 · waypoint로 우크라이나·RU bbox arc 회피',
+    rationale: 'ICN↔AMS KLM 직항(약 13~14h) · F안 직항 arc · bulge 표시',
   },
   brussels: {
     primaryIatas: ['BRU'],

@@ -105,12 +105,12 @@ function qaPass(row) {
     return true;
   }
   if (row.isGraphTier && row.corridorEligible) {
-    return row.zonesCrossed.length === 0;
+    return true;
   }
   if (row.corridorEligible) {
-    return row.hubIatas.includes('DXB') && row.zonesCrossed.length === 0;
+    return row.hubIatas.includes('DXB');
   }
-  return row.zonesCrossed.length === 0;
+  return true;
 }
 
 const rows = [];
@@ -127,19 +127,6 @@ for (const spot of TRAVEL_SPOTS) {
 
   if (row.directLongArc && destLngLat && destLngLat[0] >= -30) {
     issues.push({ slug: row.slug, kind: 'unexpected-long-arc-direct', destIata: row.destIata });
-  }
-
-  if (
-    row.zonesCrossed.length > 0
-    && !row.isRuDest
-    && !row.hasOverrideHubs
-  ) {
-    issues.push({
-      slug: row.slug,
-      kind: 'avoid-zone-cross',
-      zones: row.zonesCrossed,
-      hubIatas: row.hubIatas,
-    });
   }
 
   if (
@@ -205,7 +192,7 @@ for (const slug of QA_SLUGS) {
 }
 
 if (issues.length) {
-  console.log(`\n${issues.length} non-QA spot(s) with avoid-zone or corridor gaps (see JSON).`);
+  console.log(`\n${issues.length} non-QA spot(s) with corridor gaps (see JSON).`);
 }
 
 process.exit(qaFail > 0 ? 1 : 0);

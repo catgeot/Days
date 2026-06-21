@@ -116,3 +116,12 @@
 - **문서**: [`flight-arc-f-plan-handoff.md`](./flight-arc-f-plan-handoff.md)
 - **다음 세션 제시어**: **`항공경로-arc-F안-실행`** → QA 후 Phase 4
 
+---
+
+## arc F안 ✅ (2026-06-21)
+
+- **F안**: `applyGraphVisualAvoidGuard`·`corridor-avoid-guard` 제거 · bulge `0.055→0.07` · amsterdam avoid waypoint 삭제 · audit `avoid-zone-cross` 비목표
+- **QA**: `audit:flight-arcs` **0 issues** · 8 slug PASS · ICN→CDG/AMS/paris/london **직항 arc**(zones 교차 허용)
+- **Phase 4 출발지 UI**: ~~구현~~ **보류** — arc·항로 테스트 안정화 후 재개
+- **다음**: 항로·arc 로컬 QA · `audit:flight-arcs` · (이후) Phase 4 출발지·경유지 UI
+

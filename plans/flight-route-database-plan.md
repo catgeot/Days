@@ -62,7 +62,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 | **1** | migration · OurAirports import · `airportsIndex.json` · `getAirportHubCoords` 확장 | ✅ |
 | **2** | routes import · `flight-route-resolver` · `generate:flight-routes` · semantic audit | ✅ |
 | **3** | Edge `resolve-flight-route` · uiPlace · graph runtime | ✅ |
-| **4** | 출발지·경유지 UI (2·3차 목표) | **다음** |
+| **4** | 출발지·경유지 UI (2·3차 목표) | **보류** (arc 안정화 후) |
 | **5** | 가이드·npm·overrides 정리 | 마무리 |
 
 ---
@@ -71,10 +71,10 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 **제시어** (우선순위):
 
-1. **`항공경로-arc-F안-실행`** — L1 avoid 제거 · bulge/midpoint · [`flight-arc-f-plan-handoff.md`](./flight-arc-f-plan-handoff.md)
-2. `항공경로-DB-Phase4-실행` — F안 QA 후 출발지·경유지 UI
+1. **항로·arc 로컬 QA** — ICN→CDG/AMS/paris/london/los-angeles · `npm run audit:flight-arcs`
+2. **`항공경로-DB-Phase4-실행`** — arc 안정화 **후** 출발지·경유지 UI (현재 **보류**)
 
-~~`항공경로-uiPlace-경유직항-QA`~~ **✅** · ~~`항공경로-graph-avoid-zone-검토`~~ **✅** — **F안에서 L1 visual avoid 제거 예정**
+~~`항공경로-arc-F안-실행`~~ **✅** · ~~`항공경로-uiPlace-경유직항-QA`~~ **✅** · ~~`항공경로-graph-avoid-zone-검토`~~ **✅**
 
 | 읽을 것 | 금지 |
 |---------|------|
@@ -82,7 +82,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 | `globeFlightCinema.js` | slug overrides 전수 hub 추가 |
 | `npm run audit:flight-arcs` | `travelSpotAirports.json` 직접 편집 |
 
-**Phase 3 ✅**. **다음**: arc **F안** 구현 → Phase 4 UI.
+**Phase 3 ✅** · **F안 ✅**. **Phase 4 UI 보류** — arc·항로 QA 안정화 후 출발지·경유지 UI.
 
 **gap 스냅샷 (Phase 3 후)**: graph-precompute **112** · graph-direct **80** · hub-override **67** · direct-fallback **9** · corridor-only **1** · uiPlace no-preview **2**
 

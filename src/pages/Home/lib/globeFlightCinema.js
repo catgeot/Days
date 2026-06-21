@@ -9,18 +9,8 @@ import {
   resolveCinemaDestIata,
 } from '../../../utils/rentalAirportMatch.js';
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
-import {
-  ICN_EUROPE_DEPARTURE_WAYPOINT,
-  ICN_EUROPE_MEDITERRANEAN_GATEWAY,
-  ICN_PACIFIC_MIDPOINT_WAYPOINT,
-  resolveRegionalCorridorAnchors,
-  resolveSouthernCorridorAnchors,
-  resolveVisualAvoidWaypoints,
-} from './flightRouteCorridors.js';
-import {
-  coordsCrossAvoidZones,
-  isRussiaDestinationLocation,
-} from './flightRouteAvoidZones.js';
+import { resolveRegionalCorridorAnchors } from './flightRouteCorridors.js';
+import { coordsCrossAvoidZones } from './flightRouteAvoidZones.js';
 
 const FLIGHT_SPEED_KMH = 850;
 /** SSOT: `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` in affiliate.js */
@@ -359,104 +349,8 @@ function hubIatasToCoords(hubIatas) {
     .map((hub) => [hub.lng, hub.lat]);
 }
 
-/** @param {[number, number][]} existing @param {[number, number][]} additions */
-function prependUniqueWaypoints(existing, additions) {
-  const out = [...existing];
-  for (let i = additions.length - 1; i >= 0; i -= 1) {
-    const wp = additions[i];
-    if (!out.some(([lng, lat]) => Math.abs(lng - wp[0]) < 0.01 && Math.abs(lat - wp[1]) < 0.01)) {
-      out.unshift(wp);
-    }
-  }
-  return out;
-}
-
-/** @param {[number, number][]} existing @param {[number, number][]} additions */
-function appendUniqueWaypoints(existing, additions) {
-  const out = [...existing];
-  for (const wp of additions) {
-    if (!out.some(([lng, lat]) => Math.abs(lng - wp[0]) < 0.01 && Math.abs(lat - wp[1]) < 0.01)) {
-      out.push(wp);
-    }
-  }
-  return out;
-}
-
-/** @param {[number, number]} originLngLat @param {[number, number]} destLngLat */
-function isShortHaulNortheastAsia(originLngLat, destLngLat) {
-  const lng = destLngLat[0];
-  const lat = destLngLat[1];
-  if (lat < 22 || lat > 55 || lng < 95 || lng > 150) return false;
-  const km = haversineKm(
-    { lat: originLngLat[1], lng: originLngLat[0] },
-    { lat: destLngLat[1], lng: destLngLat[0] }
-  );
-  return km < 3200;
-}
-
-/** @param {[number, number]} originLngLat @param {[number, number]} destLngLat @param {[number, number][]} [hubCoords] */
-function shouldUseMinimalDepartureOnly(originLngLat, destLngLat, hubCoords = []) {
-  if (isShortHaulNortheastAsia(originLngLat, destLngLat)) return true;
-  if (hubCoords.length > 0) {
-    const [lng, lat] = hubCoords[0];
-    if (lat >= 22 && lat <= 55 && lng >= 95 && lng <= 150) {
-      const km = haversineKm(
-        { lat: originLngLat[1], lng: originLngLat[0] },
-        { lat, lng }
-      );
-      if (km < 3200) return true;
-    }
-  }
-  return false;
-}
-
 /**
- * Graph tier — hub chain 유지, arc geometry만 waypoint 보강.
- * @param {[number, number]} originLngLat
- * @param {[number, number]} destLngLat
- * @param {[number, number][]} geoWaypoints
- * @param {[number, number][]} postHubWaypoints
- * @param {[number, number][]} hubCoords
- * @param {{ originIata?: string, crossed: string[] }} options
- */
-function applyGraphVisualAvoidGuard(
-  originLngLat,
-  destLngLat,
-  geoWaypoints,
-  postHubWaypoints,
-  hubCoords,
-  options
-) {
-  let nextGeo = [...geoWaypoints];
-  let nextPost = [...postHubWaypoints];
-  const visual = shouldUseMinimalDepartureOnly(originLngLat, destLngLat, hubCoords)
-    ? { waypoints: [ICN_EUROPE_DEPARTURE_WAYPOINT], postHubWaypoints: [] }
-    : resolveVisualAvoidWaypoints(destLngLat, options);
-  nextGeo = prependUniqueWaypoints(nextGeo, visual.waypoints);
-  nextPost = appendUniqueWaypoints(nextPost, visual.postHubWaypoints);
-
-  let anchors = buildRouteAnchors(originLngLat, destLngLat, nextGeo, hubCoords, nextPost);
-  let crossed = coordsCrossAvoidZones(buildGreatCircleChain(anchors, 24));
-
-  if (crossed.length > 0 && hubCoords.length > 0) {
-    nextPost = appendUniqueWaypoints(nextPost, [ICN_EUROPE_MEDITERRANEAN_GATEWAY]);
-    anchors = buildRouteAnchors(originLngLat, destLngLat, nextGeo, hubCoords, nextPost);
-    crossed = coordsCrossAvoidZones(buildGreatCircleChain(anchors, 24));
-  }
-
-  if (crossed.includes('north-korea') && !nextGeo.some(([lng, lat]) =>
-    Math.abs(lng - ICN_PACIFIC_MIDPOINT_WAYPOINT[0]) < 0.01
-    && Math.abs(lat - ICN_PACIFIC_MIDPOINT_WAYPOINT[1]) < 0.01)) {
-    nextGeo = appendUniqueWaypoints(nextGeo, [ICN_PACIFIC_MIDPOINT_WAYPOINT]);
-    anchors = buildRouteAnchors(originLngLat, destLngLat, nextGeo, hubCoords, nextPost);
-    crossed = coordsCrossAvoidZones(buildGreatCircleChain(anchors, 24));
-  }
-
-  return { geoWaypoints: nextGeo, postHubWaypoints: nextPost, anchors, zonesCrossed: crossed };
-}
-
-/**
- * hub 우선순위: overrides/timeline → graph precompute → corridor → avoid guard.
+ * hub 우선순위: overrides/timeline → graph precompute → corridor.
  * @returns {{ hubIatas: string[], geoWaypoints: [number, number][], anchors: [number, number][], routeSource?: string }}
  */
 export function resolveFlightRoutePlan(originLngLat, destLngLat, location, options = {}) {
@@ -503,47 +397,8 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
     }
   }
 
-  let hubCoords = hubIatasToCoords(hubIatas);
-
-  if (
-    String(originIata).trim().toUpperCase() === DEFAULT_ORIGIN_IATA
-    && hubIatas.includes('DXB')
-    && !geoWaypoints.some(([, lat]) => lat <= 35)
-  ) {
-    geoWaypoints = [ICN_EUROPE_DEPARTURE_WAYPOINT, ...geoWaypoints];
-  }
-
-  let anchors = buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints);
-
-  if (!isRussiaDestinationLocation(location, destLngLat, destIata)) {
-    const chain = buildGreatCircleChain(anchors, 24);
-    const crossed = coordsCrossAvoidZones(chain);
-    if (crossed.length > 0) {
-      if (routeSource === 'graph') {
-        const visual = applyGraphVisualAvoidGuard(
-          originLngLat,
-          destLngLat,
-          geoWaypoints,
-          postHubWaypoints,
-          hubCoords,
-          { originIata, crossed }
-        );
-        geoWaypoints = visual.geoWaypoints;
-        postHubWaypoints = visual.postHubWaypoints;
-        anchors = visual.anchors;
-      } else if (!hasManualOverride) {
-        const guard = resolveSouthernCorridorAnchors(destLngLat, { originIata });
-        geoWaypoints = guard.hubIatas.length
-          ? [...guard.waypoints]
-          : (geoWaypoints.length ? geoWaypoints : [...guard.waypoints]);
-        postHubWaypoints = [...(guard.postHubWaypoints ?? [])];
-        hubIatas = [...guard.hubIatas];
-        hubCoords = hubIatasToCoords(hubIatas);
-        anchors = buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints);
-        routeSource = 'corridor-avoid-guard';
-      }
-    }
-  }
+  const hubCoords = hubIatasToCoords(hubIatas);
+  const anchors = buildRouteAnchors(originLngLat, destLngLat, geoWaypoints, hubCoords, postHubWaypoints);
 
   return { hubIatas, geoWaypoints, anchors, routeSource };
 }
@@ -563,7 +418,7 @@ function resolveRouteAnchors(originLngLat, destLngLat, location, options = {}) {
  */
 function bulgeGreatCircleLine(gcLine, chainPoints) {
   const km = estimateFlightHoursChain(chainPoints) * FLIGHT_SPEED_KMH;
-  const peakKm = Math.min(240, Math.max(40, km * 0.055));
+  const peakKm = Math.min(240, Math.max(40, km * 0.07));
   const coords = [];
 
   for (let i = 0; i < gcLine.length; i += 1) {
