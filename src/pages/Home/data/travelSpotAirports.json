@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-21T12:26:37.481Z",
+    "generatedAt": "2026-06-21T12:45:43.839Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
@@ -355,12 +355,10 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "포트블레어 비르 사바르카르",
-      "graphFlightRouteHubIatas": [
-        "AUH",
-        "MAA"
-      ],
-      "graphFlightRouteSource": "graph-2hop"
+      "rationale": "포트블레어 IXZ · ICN→델리(DEL)→국내선 IXZ · graph AUH 오탐 보정",
+      "flightRouteHubIatas": [
+        "DEL"
+      ]
     },
     "palau": {
       "primaryIatas": [
@@ -11894,6 +11892,34 @@
       "rationale": "place_toolkit essential_guide 동기화",
       "placeId": "cinque-terre",
       "linkedSlug": "cinque-terre"
+    },
+    "novosibirsk": {
+      "primaryIatas": [
+        "OVB"
+      ],
+      "preferredLinkIata": "OVB",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "톨마체프(OVB) · ICN→PEK→OVB · citiesData-only",
+      "flightRouteHubIatas": [
+        "PEK"
+      ],
+      "placeId": "Novosibirsk"
+    },
+    "노보시비르스크": {
+      "primaryIatas": [
+        "OVB"
+      ],
+      "preferredLinkIata": "OVB",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "톨마체프(OVB) · ICN→PEK→OVB · citiesData-only",
+      "flightRouteHubIatas": [
+        "PEK"
+      ],
+      "placeId": "노보시비르스크"
     }
   }
 }

@@ -339,7 +339,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   },
   lhasa: { primaryIatas: ['LXA'], preferredLinkIata: 'LXA', confidence: 'high', rationale: '라싸 공항' },
   zhangjiajie: { primaryIatas: ['DYG'], preferredLinkIata: 'DYG', confidence: 'high', rationale: '장가계 공항' },
-  'andaman-islands': { primaryIatas: ['IXZ'], preferredLinkIata: 'IXZ', confidence: 'high', rationale: '포트블레어 비르 사바르카르' },
+  'andaman-islands': {
+    primaryIatas: ['IXZ'],
+    preferredLinkIata: 'IXZ',
+    flightRouteHubIatas: ['DEL'],
+    confidence: 'high',
+    rationale: '포트블레어 IXZ · ICN→델리(DEL)→국내선 IXZ · graph AUH 오탐 보정',
+  },
   'sahara-desert': { primaryIatas: ['RAK'], preferredLinkIata: 'RAK', confidence: 'high', rationale: '마라케시·메르주가 관문' },
   'iguazu-falls': {
     primaryIatas: ['IGR'],
@@ -521,6 +527,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     preferredLinkIata: 'IKT',
     confidence: 'high',
     rationale: '이르쿠츠크 국제공항(IKT) — 바이칼 관문·citiesData 승격'
+  },
+  novosibirsk: {
+    primaryIatas: ['OVB'],
+    preferredLinkIata: 'OVB',
+    flightRouteHubIatas: ['PEK'],
+    confidence: 'high',
+    rationale: '톨마체프(OVB) · ICN→PEK→OVB · citiesData·시베리아 관문(yakutsk 패턴)',
   },
   'alice-springs': {
     primaryIatas: ['ASP'],
@@ -1329,5 +1342,26 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     rationale: 'GUM·HNL 경유 아일랜드 호퍼 후 MAJ — slug marshall-islands와 동일',
     bannerNote:
       '마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
+  },
+  novosibirsk: {
+    primaryIatas: ['OVB'],
+    preferredLinkIata: 'OVB',
+    flightRouteHubIatas: ['PEK'],
+    confidence: 'high',
+    rationale: '톨마체프(OVB) · ICN→PEK→OVB · citiesData-only',
+  },
+  '노보시비르스크': {
+    primaryIatas: ['OVB'],
+    preferredLinkIata: 'OVB',
+    flightRouteHubIatas: ['PEK'],
+    confidence: 'high',
+    rationale: '톨마체프(OVB) · ICN→PEK→OVB · citiesData-only',
+  },
+  Novosibirsk: {
+    primaryIatas: ['OVB'],
+    preferredLinkIata: 'OVB',
+    flightRouteHubIatas: ['PEK'],
+    confidence: 'high',
+    rationale: '톨마체프(OVB) · ICN→PEK→OVB · citiesData-only',
   },
 };

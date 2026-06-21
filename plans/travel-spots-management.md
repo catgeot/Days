@@ -409,7 +409,7 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 | **gateo 마커** 클릭 | 마커 slug · SSOT `country`(영토명) | 카탈로그 slug 있으면 좌표 재매칭 **안 함** |
 | **URL** `/place/:slug` | [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) · 세션 캐시 · 즐겨찾기 | `search-`/`loc-`/`label-` · uiPlace slug(`tahaa`) |
 
-**fuzzy**: [`travelSpotResolve.js`](../src/utils/travelSpotResolve.js) — 접두 부분 일치(`porto`⊂`portovecchio`) 차단. 툴킷·검색 SSOT 경로에만 적용.
+**fuzzy**: [`travelSpotResolve.js`](../src/utils/travelSpotResolve.js) — 접두 부분 일치(`porto`⊂`portovecchio`)·suffix contains(`nice`⊂`venice`, `니스`⊂`베니스`) 차단. `citiesData` 전용 지명(`nice`/`니스`)은 blocklist. 툴킷·검색·`mergeCanonicalTravelSpot` 경로에 적용.
 
 ### 8.1 SSOT `country` — 여행 표기 (宗主国 vs 영토)
 
@@ -438,7 +438,7 @@ Mapbox **하위 지명**(Fa'anui·Tahaa 등)은 SSOT 승격 없이 `uiPlace` + `
 | **placeIds-only** | 어센션 섬 | `TRAVEL_SPOT_PLACE_ID_OVERRIDES` + sync `placeIds` (travelSpots 승격 없음) |
 | **삭제** | 메히칼리·트럼프 등 | DB 행 삭제 후 재감사 |
 | **reconcile** | duplicateSlug 7(나자레·리마…) | `toolkit:reconcile-place-id` — 신규 여행지 아님 |
-| **유지** | blocklist(춘천·독도…) | 추가 작업 없음 |
+| **유지** | blocklist(춘천·독도·**nice**·**니스**…) | `citiesData` 전용 — travelSpots fuzzy 오매칭 방지 |
 
 **curated high·원정지**(디에고 가르시아·핏케언 등): `travel-spot-airport-overrides.mjs` `confidence: high` + `bannerNote`. 플래너는 `toolkitPlaceIdResolve`에서 **primary IATA만** 지리 검사(타임라인 경유 SIN 등 면제). `mergeCanonicalTravelSpot` 후 툴킷 조회.
 

@@ -860,6 +860,7 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'MLA', officialKo: '몰타 국제공항', lat: 35.8575, lng: 14.4775, radiusKm: 80, aliases: ['malta', '몰타', 'valletta', '발레타', 'mla'] },
   { iata: 'VVO', officialKo: '블라디보스토크 국제공항', lat: 43.3990, lng: 132.1480, radiusKm: 160, aliases: ['vladivostok', '블라디보스토크', 'vvo'] },
   { iata: 'IKT', officialKo: '이르쿠츠크 국제공항', lat: 52.2680, lng: 104.3889, radiusKm: 180, aliases: ['irkutsk', '이르쿠츠크', 'ikt', 'baikal', '바이칼'] },
+  { iata: 'OVB', officialKo: '톨마체프 국제공항', lat: 55.0198, lng: 82.6187, radiusKm: 180, aliases: ['novosibirsk', '노보시비르스크', 'ovb'] },
   { iata: 'ASP', officialKo: '앨리스스프링스 공항', lat: -23.8067, lng: 133.9020, radiusKm: 200, aliases: ['alice springs', '앨리스스프링스', 'asp', 'uluru gateway'] },
   { iata: 'OIT', officialKo: '미야자키 공항', lat: 31.8772, lng: 131.4486, radiusKm: 100, aliases: ['miyazaki', '미야자키', 'oit', 'aoshima', '아오시마'] },
   { iata: 'MCT', officialKo: '무스카트 국제공항', lat: 23.5933, lng: 58.2844, radiusKm: 200, aliases: ['muscat', '무스카트', 'mct', 'oman', '오만'] },

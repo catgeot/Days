@@ -33,6 +33,17 @@ function getTravelSpotAirportRow(location) {
   const slug = String(location?.slug ?? '').toLowerCase();
   if (slug && STATIC_SPOT_AIRPORT_MAP[slug]) return STATIC_SPOT_AIRPORT_MAP[slug];
 
+  if (slug) {
+    const slugPlaceRow =
+      STATIC_PLACE_ID_AIRPORT_MAP[slug] ?? STATIC_PLACE_ID_AIRPORT_MAP[normalizePlaceIdKey(slug)];
+    if (slugPlaceRow?.primaryIatas?.length) {
+      const linkedSlug = slugPlaceRow.linkedSlug ? String(slugPlaceRow.linkedSlug).toLowerCase() : '';
+      const linkedRow = linkedSlug ? STATIC_SPOT_AIRPORT_MAP[linkedSlug] : null;
+      if (linkedRow && isCuratedStaticAirportRow(linkedRow)) return linkedRow;
+      return slugPlaceRow;
+    }
+  }
+
   for (const k of placeIdLookupKeys(location)) {
     const row = STATIC_PLACE_ID_AIRPORT_MAP[k] ?? STATIC_PLACE_ID_AIRPORT_MAP[normalizePlaceIdKey(k)];
     if (!row?.primaryIatas?.length) continue;

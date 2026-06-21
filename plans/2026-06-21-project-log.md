@@ -200,3 +200,20 @@
 - **코드**: `MAX_FLIGHT_LEG_HOURS` · graph·audit overlong-leg · overrides hub 일괄
 - **문서**: `.ai-context` · `travel-spots-management` · `releaseNotes.js`
 - **검증**: `generate:airports` · `audit:flight-arcs` **0 issues**
+
+---
+
+## 안다만·노보시비르스크 항공 arc QA ✅
+
+- **안다만**: graph `ICN→AUH→MAA→IXZ` 오탐 → `flightRouteHubIatas: DEL` · 플래너 `ICN→델리→IXZ` 정합
+- **노보시비르스크**: citiesData-only · OVB·placeIds SSOT 없음 → 버튼 미표시 → `OVB` hub · placeIds · slug→placeIds lookup · `ICN→PEK→OVB`(yakutsk 패턴)
+- **audit**: `audit:flight-arcs` **0** · `audit:airports` none **0**
+
+---
+
+## 홈 연관 검색어 — 니스→베니스 오매칭 ✅
+
+- **증상**: 연관 검색어 「니스」 클릭 시 베니스(venice) 장소 카드 표시
+- **원인**: `mergeCanonicalTravelSpot` fuzzy — `venice`.includes(`nice`) · `베니스`.includes(`니스`)
+- **수정**: `isSpuriousSuffixContainsMatch` · blocklist `nice`/`니스` · `travel-spots-management` §8 fuzzy·blocklist 갱신
+- **검증**: `mergeCanonicalTravelSpot({ slug: nice })` → slug **nice** · name **니스**

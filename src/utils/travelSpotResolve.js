@@ -91,6 +91,17 @@ function isAmbiguousPrefixFuzzyMatch(core, normalizedName) {
   return Boolean(next && /[a-z0-9]/i.test(next));
 }
 
+/** nice ⊂ venice, 니스 ⊂ 베니스 — 짧은 잔여 접두와 함께하는 suffix contains 오매칭 방지 */
+function isSpuriousSuffixContainsMatch(core, normalizedName) {
+  if (!core || !normalizedName || core === normalizedName) return false;
+  if (!normalizedName.includes(core)) return false;
+  const idx = normalizedName.indexOf(core);
+  if (idx === 0) return false;
+  if (idx + core.length !== normalizedName.length) return false;
+  const prefix = normalizedName.slice(0, idx);
+  return prefix.length > 0 && prefix.length <= 2 && !/[-\s]/.test(prefix);
+}
+
 /** SSOT 직접 이름·slug·키워드 일치 — 상위 slug 별칭보다 우선 */
 function findDirectSpotMatch(spots, placeId) {
   const core = normalizePlaceKey(
@@ -122,8 +133,16 @@ function resolveFuzzy(spots, placeId) {
     const exactEn = sen.length >= 2 && sen === core;
     if (exactKo || exactEn) return true;
 
-    const fuzzyKo = sn.length >= 2 && (sn.includes(core) || core.includes(sn));
-    const fuzzyEn = sen.length >= 2 && (sen.includes(core) || core.includes(sen));
+    const fuzzyKo =
+      sn.length >= 2 &&
+      (sn === core ||
+        (sn.includes(core) && !isSpuriousSuffixContainsMatch(core, sn)) ||
+        core.includes(sn));
+    const fuzzyEn =
+      sen.length >= 2 &&
+      (sen === core ||
+        (sen.includes(core) && !isSpuriousSuffixContainsMatch(core, sen)) ||
+        core.includes(sen));
     if (fuzzyKo && isAmbiguousPrefixFuzzyMatch(core, sn)) return false;
     if (fuzzyEn && isAmbiguousPrefixFuzzyMatch(core, sen)) return false;
     return fuzzyKo || fuzzyEn;

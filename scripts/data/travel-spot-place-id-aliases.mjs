@@ -119,6 +119,8 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Vladivostok': 'vladivostok',
   '이르쿠츠크': 'irkutsk',
   'Irkutsk': 'irkutsk',
+  '노보시비르스크': 'novosibirsk',
+  'Novosibirsk': 'novosibirsk',
   '앨리스스프링스': 'alice-springs',
   'Alice Springs': 'alice-springs',
 
@@ -202,6 +204,7 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   madeira: ['마데이라', 'Madeira', 'Madeira Island', '푼샬', 'Funchal'],
   vladivostok: ['블라디보스토크', 'Vladivostok', 'VVO'],
   irkutsk: ['이르쿠츠크', 'Irkutsk', 'IKT', '바이칼', 'Lake Baikal'],
+  novosibirsk: ['노보시비르스크', 'Novosibirsk', 'OVB'],
   'alice-springs': ['앨리스스프링스', 'Alice Springs', 'ASP'],
   brunei: ['브루나이', 'Brunei', 'Bandar Seri Begawan', 'BSB'],
   tsushima: ['쓰시마', '쓰시마섬', '대마도', 'Tsushima', '対馬', '히타카츠', 'Hitakatsu'],
@@ -269,6 +272,9 @@ export const TRAVEL_SPOT_PLACE_ID_BLOCKLIST = new Set(
     '이슬라마바드',
     '마나도',
     'Manado',
-    'manado'
+    'manado',
+    // citiesData 전용 — fuzzy(venice⊃nice) 오매칭 방지
+    'nice',
+    '니스',
   ].map((s) => s.toLowerCase().replace(/\s+/g, ''))
 );
