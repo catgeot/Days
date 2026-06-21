@@ -178,6 +178,14 @@ function maxCoordKmForTier(tier) {
   return 45;
 }
 
+/** uiPlace Mapbox 라벨 — 갤러리·항공 arc formal slug (Tahaa↔bora-bora ~33km) */
+export const UI_PLACE_GALLERY_REGION_MAX_KM = 50;
+
+/** @param {typeof TRAVEL_SPOTS} [spots] */
+export function resolveTravelSpotForUiPlaceRegion(lat, lng, spots = TRAVEL_SPOTS) {
+  return resolveTravelSpotFromCoords(lat, lng, spots, UI_PLACE_GALLERY_REGION_MAX_KM);
+}
+
 /** "Yap (Ruul)" → ['Yap', 'Yap (Ruul)', 'Ruul'] — SSOT 본명(괄호 앞) 우선 */
 export function extractSearchNameCandidates(query) {
   const trimmed = String(query ?? '').trim();

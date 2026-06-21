@@ -15,7 +15,7 @@ import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotForUiPlaceRegion, resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
@@ -28,9 +28,9 @@ const CURATED_PLACES = () => [...TRAVEL_SPOTS, ...(citiesData || [])];
 
 /** Mapbox uiPlace — 지명·좌표 유지, country·갤러리 맥락만 근처 SSOT/cities에서 보강 */
 function finalizeUiPlacePin(pin, lat, lng) {
-  let nearby = resolveTravelSpotFromCoords(lat, lng, TRAVEL_SPOTS);
+  let nearby = resolveTravelSpotForUiPlaceRegion(lat, lng, TRAVEL_SPOTS);
   if (!nearby) {
-    nearby = resolveTravelSpotFromCoords(lat, lng, citiesData || []);
+    nearby = resolveTravelSpotForUiPlaceRegion(lat, lng, citiesData || []);
   }
   const enriched = enrichUiPlaceFromNearbySpot(
     pin,

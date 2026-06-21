@@ -79,3 +79,24 @@
 - **audit**: `audit:flight-routes` semantic **271/271** · graph-vs-corridor **47→0**
 - **QA**: Mapbox 지명 arc **연결 확인** · 경유·직항 상세·avoid-zone **`audit:flight-arcs` 미정리** → 다음 세션
 
+---
+
+## uiPlace·경유/직항 QA (2026-06-21)
+
+- **버그 수정**: `getFlightRouteAirportRow` — uiPlace formal slug의 `flightRouteHubIatas`·waypoint 상속 (배너 행과 분리)
+- **Tahaa 추가 수정**: Tahaa↔bora-bora **33km** > tier2 **22km** → `galleryRegionSpot` 미부착 · `UI_PLACE_GALLERY_REGION_MAX_KM=50` + 좌표 fallback — **Edge 불필요**(시네마는 클라 sync만)
+- **Tahaa·Fa'anui·label-pin**: ICN→NRT→PPT→BOB · Bar「경유」 — `bora-bora` SSOT와 일치 ✅
+- **DMZ·loc-pin**: 최근접 ICN = 출발 ICN → `canPreview` false · **의도**(origin-equals-dest) — 항공 버튼 비활성 정상
+- **SSOT 샘플**: amsterdam·luxor·los-angeles Bar 정합 ✅ · paris·moscow·hawaii graph-tier **직항 arc + avoid-zone** — `항공경로-graph-avoid-zone-검토`로 이관
+- **audit**: `audit:flight-route-gaps` uiPlace 7건 · route-mismatch **0** · no-preview **2**(DMZ·loc-pin)
+- **사용자 QA ✅**: 로컬 Tahaa ICN→NRT→PPT→BOB · Bar「경유」 확인
+
+---
+
+## 핸드오프 갱신 (uiPlace QA 완료)
+
+| 제시어 | 범위 |
+|--------|------|
+| `항공경로-graph-avoid-zone-검토` | graph tier avoid-zone (~120) · paris/london/moscow QA |
+| `항공경로-DB-Phase4-실행` | 출발지·경유지 UI |
+

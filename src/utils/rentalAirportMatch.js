@@ -1,6 +1,7 @@
 import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from './rentalAirportHubs.js';
 import { findNearestAirportInIndex, getAirportsIndexCoords } from './airportsIndexLookup.js';
 import { lookupGraphRouteByDestIata } from './flightRouteGraphLookup.js';
+import { resolveTravelSpotForUiPlaceRegion } from './travelSpotResolve.js';
 import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' with { type: 'json' };
 
 const toRad = (d) => (d * Math.PI) / 180;
@@ -41,6 +42,40 @@ function getTravelSpotAirportRow(location) {
     return row;
   }
   return null;
+}
+
+/**
+ * uiPlace — galleryRegionSpot 또는 좌표 근처 formal slug의 airports 행 (항공 arc·Bar 전용).
+ * @param {Record<string, unknown> | null | undefined} location
+ */
+function resolveUiPlaceRegionAirportRow(location) {
+  const regionSlug = String(location?.galleryRegionSpot?.slug ?? '').trim().toLowerCase();
+  if (regionSlug && STATIC_SPOT_AIRPORT_MAP[regionSlug]) {
+    return STATIC_SPOT_AIRPORT_MAP[regionSlug];
+  }
+  if (!location?.uiPlace) return null;
+
+  const lat = typeof location.lat === 'number' ? location.lat : Number(location.lat);
+  const lng = typeof location.lng === 'number' ? location.lng : Number(location.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  const nearby = resolveTravelSpotForUiPlaceRegion(lat, lng);
+  const nearbySlug = nearby?.slug ? String(nearby.slug).trim().toLowerCase() : '';
+  return nearbySlug && STATIC_SPOT_AIRPORT_MAP[nearbySlug]
+    ? STATIC_SPOT_AIRPORT_MAP[nearbySlug]
+    : null;
+}
+
+/**
+ * 항공 arc·Bar SSOT — uiPlace는 formal slug 행 상속(배너·렌터카와 분리).
+ * @param {Record<string, unknown> | null | undefined} location
+ */
+function getFlightRouteAirportRow(location) {
+  if (location?.uiPlace) {
+    const regionRow = resolveUiPlaceRegionAirportRow(location);
+    if (regionRow) return regionRow;
+  }
+  return getTravelSpotAirportRow(location);
 }
 
 /** generate가 넣은 좌표·런타임 추론(`runtime-infer` 등) — 툴킷이 있으면 배너에서 양보 */
@@ -925,9 +960,8 @@ export function resolveCinemaDestIata(location, options = {}) {
  * @returns {string | null}
  */
 function resolveUiPlaceCinemaDestIata(location, options = {}) {
-  const regionSlug = String(location?.galleryRegionSpot?.slug ?? '').trim().toLowerCase();
-  if (regionSlug && STATIC_SPOT_AIRPORT_MAP[regionSlug]) {
-    const regionRow = STATIC_SPOT_AIRPORT_MAP[regionSlug];
+  const regionRow = resolveUiPlaceRegionAirportRow(location);
+  if (regionRow) {
     const link = String(regionRow.preferredLinkIata ?? regionRow.primaryIatas?.[0] ?? '')
       .trim()
       .toUpperCase();
@@ -961,7 +995,7 @@ export function getFlightRouteHubIatas(location, options = {}) {
   )
     .trim()
     .toUpperCase();
-  const row = options.ignoreStaticAirportMap === true ? null : getTravelSpotAirportRow(location);
+  const row = options.ignoreStaticAirportMap === true ? null : getFlightRouteAirportRow(location);
 
   let hubs = [];
   if (Array.isArray(row?.flightRouteHubIatas)) {
@@ -991,7 +1025,7 @@ export function getFlightRouteHubIatas(location, options = {}) {
  * @returns {string[] | null} null = graph 없음 · [] = graph 직항
  */
 export function getGraphFlightRouteHubIatas(location, options = {}) {
-  const row = options.ignoreStaticAirportMap === true ? null : getTravelSpotAirportRow(location);
+  const row = options.ignoreStaticAirportMap === true ? null : getFlightRouteAirportRow(location);
 
   if (row?.graphFlightRouteSource && row.graphFlightRouteSource !== 'graph-unresolved') {
     return Array.isArray(row.graphFlightRouteHubIatas) ? row.graphFlightRouteHubIatas : [];
@@ -1011,13 +1045,13 @@ export function getGraphFlightRouteHubIatas(location, options = {}) {
 
 /** overrides `flightRouteHubIatas: []` — corridor·trip·graph 추론 없이 ICN→목적지 직항 arc */
 export function hasExplicitDirectFlightRoute(location) {
-  const row = getTravelSpotAirportRow(location);
+  const row = getFlightRouteAirportRow(location);
   return Array.isArray(row?.flightRouteHubIatas) && row.flightRouteHubIatas.length === 0;
 }
 
 /** overrides `flightRouteHubIatas` 수동 배열 — graph·corridor 스킵 */
 export function hasManualFlightRouteHubOverride(location) {
-  const row = getTravelSpotAirportRow(location);
+  const row = getFlightRouteAirportRow(location);
   return Array.isArray(row?.flightRouteHubIatas) && row.flightRouteHubIatas.length > 0;
 }
 
@@ -1027,7 +1061,7 @@ export function hasManualFlightRouteHubOverride(location) {
  * @returns {[number, number][]}
  */
 export function getFlightRouteWaypoints(location) {
-  const row = getTravelSpotAirportRow(location);
+  const row = getFlightRouteAirportRow(location);
   const raw = row?.flightRouteWaypoints;
   if (!Array.isArray(raw) || raw.length === 0) return [];
 

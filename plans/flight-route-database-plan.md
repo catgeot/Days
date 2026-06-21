@@ -15,7 +15,7 @@
 | Supabase `air_routes` | ✅ **37594** pairs (`import:routes`) · ICN outbound **370** |
 | slug graph precompute | ✅ `travelSpotFlightRoutes.json` **193** resolved · `graphFlightRouteHubIatas` merge **193** |
 | 공항 좌표 런타임 | [`rentalAirportHubs.js`](../src/utils/rentalAirportHubs.js) 302 **1순위** → [`airportsIndex.json`](../src/pages/Home/data/airportsIndex.json) **3870** 폴백 |
-| Mapbox 지명(`uiPlace`) | slug/placeIds 없어도 nearest·Edge로 arc preview ✅ · 경유·직항 상세 QA 미완 |
+| Mapbox 지명(`uiPlace`) | slug/placeIds 없어도 nearest·Edge로 arc preview ✅ · 경유·직항 Bar QA **✅**(Tahaa/Fa'anui·DMZ/loc-pin 의도) · 시네마 **클라 sync** |
 | audit | `audit:airports none:0` · `audit:flight-arcs` QA slug Pass |
 
 **기존 WIP와의 관계**: arc·Bar·Trip·배너 파이프라인 **유지**. DB는 hub/waypoint/IATA **추론 두뇌** 추가. overrides는 2차 항공·예외(L3)만 점진 축소.
@@ -71,9 +71,10 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 **제시어** (우선순위):
 
-1. `항공경로-uiPlace-경유직항-QA` — Mapbox 지명·SSOT slug arc 경유/직항 정확도 · gap uiPlace 2건
-2. `항공경로-graph-avoid-zone-검토` — graph tier + `audit:flight-arcs` avoid-zone 정책
-3. `항공경로-DB-Phase4-실행` — 출발지·경유지 UI
+1. `항공경로-graph-avoid-zone-검토` — graph tier + `audit:flight-arcs` avoid-zone 정책
+2. `항공경로-DB-Phase4-실행` — 출발지·경유지 UI
+
+~~`항공경로-uiPlace-경유직항-QA`~~ **✅** (2026-06-21) — Tahaa `UI_PLACE_GALLERY_REGION_MAX_KM=50` · `getFlightRouteAirportRow` · Edge 불필요
 
 | 읽을 것 | 금지 |
 |---------|------|
@@ -81,7 +82,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 | `.ai-context.md` 6절 · `audit:flight-arcs` · gap-report | slug overrides 전수 수동 추가 |
 | `globeFlightCinema.js` · `resolveFlightRouteEdge.js` | `travelSpotAirports.json` 직접 편집 |
 
-**Phase 3 ✅** (2026-06-21): Edge `resolve-flight-route` 배포 · uiPlace arc 연결(QA) · override>graph>corridor · semantic **271/271**. **미완**: 경유·직항 상세 QA · graph avoid-zone.
+**Phase 3 ✅** (2026-06-21): Edge `resolve-flight-route` 배포 · uiPlace arc·경유 Bar QA **✅** · override>graph>corridor · semantic **271/271**. **미완**: graph avoid-zone · Phase 4 UI.
 
 **gap 스냅샷 (Phase 3 후)**: graph-precompute **112** · graph-direct **80** · hub-override **67** · direct-fallback **9** · corridor-only **1** · uiPlace no-preview **2**
 

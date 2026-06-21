@@ -47,6 +47,7 @@ const UI_PLACE_SAMPLES = [
       uiPlace: true,
       galleryRegionSpot: { slug: 'bora-bora', name: '보라보라', name_en: 'Bora Bora' },
     },
+    expectedRouteIatas: ['ICN', 'NRT', 'PPT', 'BOB'],
   },
   {
     key: 'faanui',
@@ -63,6 +64,7 @@ const UI_PLACE_SAMPLES = [
       uiPlace: true,
       galleryRegionSpot: { slug: 'bora-bora', name: '보라보라', name_en: 'Bora Bora' },
     },
+    expectedRouteIatas: ['ICN', 'NRT', 'PPT', 'BOB'],
   },
   {
     key: 'remote-pacific',
@@ -93,7 +95,9 @@ const UI_PLACE_SAMPLES = [
       country_en: 'Explore',
       uiPlace: true,
       source: 'label',
+      galleryRegionSpot: { slug: 'bora-bora', name: '보라보라', name_en: 'Bora Bora' },
     },
+    expectedRouteIatas: ['ICN', 'NRT', 'PPT', 'BOB'],
   },
   {
     key: 'search-pin',
@@ -126,6 +130,8 @@ const UI_PLACE_SAMPLES = [
       uiPlace: true,
       source: 'search',
     },
+    expectedNoPreview: true,
+    expectedNoPreviewReason: 'origin-equals-dest',
   },
   {
     key: 'loc-pin',
@@ -142,6 +148,8 @@ const UI_PLACE_SAMPLES = [
       uiPlace: true,
       source: 'loc',
     },
+    expectedNoPreview: true,
+    expectedNoPreviewReason: 'origin-equals-dest',
   },
 ];
 
@@ -278,6 +286,23 @@ function auditUiPlace(sample) {
   const canPreview = canPreviewFlightRoute(location, { originIata: ORIGIN_IATA });
   const od = canPreview ? resolveFlightCinemaOd(location, { originIata: ORIGIN_IATA }) : null;
   const inSpots = Boolean(spotAirportRows[String(location.slug ?? '').toLowerCase()]);
+  const originEqualsDest = destIata === ORIGIN_IATA;
+
+  let gap = null;
+  if (!canPreview) {
+    gap = originEqualsDest
+      ? 'no-preview-origin-equals-dest'
+      : 'no-flight-preview-without-slug-or-iata';
+  } else if (Array.isArray(sample.expectedRouteIatas) && sample.expectedRouteIatas.length >= 2) {
+    const actual = od?.routeIatas ?? [];
+    const expected = sample.expectedRouteIatas;
+    const routeMatch =
+      actual.length === expected.length
+      && actual.every((code, i) => code === expected[i]);
+    if (!routeMatch) {
+      gap = 'route-mismatch';
+    }
+  }
 
   return {
     key: sample.key,
@@ -291,9 +316,15 @@ function auditUiPlace(sample) {
     inTravelSpotAirports: inSpots,
     destIata: destIata ?? null,
     canPreview,
+    isConnecting: Boolean(od?.isConnecting),
+    barLabel: od
+      ? (od.isConnecting ? '경유' : '직항')
+      : null,
     routeIatas: od?.routeIatas ?? [],
     hubIatas: od?.hubIatas ?? [],
-    gap: canPreview ? null : 'no-flight-preview-without-slug-or-iata',
+    expectedRouteIatas: sample.expectedRouteIatas ?? null,
+    gap,
+    noPreviewReason: !canPreview && originEqualsDest ? 'origin-equals-dest' : null,
   };
 }
 
@@ -423,6 +454,7 @@ const report = {
     noPreview: routeKindCounts['no-preview'] ?? 0,
     noDestIata: routeKindCounts['no-dest-iata'] ?? 0,
     uiPlaceNoPreview: uiPlaceRows.filter((r) => !r.canPreview).length,
+    uiPlaceRouteMismatch: uiPlaceRows.filter((r) => r.gap === 'route-mismatch').length,
     uiPlaceSampleCount: uiPlaceRows.length,
   },
   baseline: {
@@ -481,7 +513,26 @@ if (airportsIndexCoverage.indexOnlyDestCount > 0) {
 if (report.gaps.uiPlaceNoPreview > 0) {
   console.log('\nuiPlace gaps (no canPreviewFlightRoute):');
   for (const row of uiPlaceRows.filter((r) => !r.canPreview)) {
-    console.log(`  ${row.key}: ${row.label}`);
+    console.log(`  ${row.key}: ${row.label}${row.noPreviewReason ? ` (${row.noPreviewReason})` : ''}`);
+  }
+}
+
+if (report.gaps.uiPlaceRouteMismatch > 0) {
+  console.log('\nuiPlace route mismatches:');
+  for (const row of uiPlaceRows.filter((r) => r.gap === 'route-mismatch')) {
+    console.log(
+      `  ${row.key}: expected ${row.expectedRouteIatas?.join('→')} got ${row.routeIatas.join('→')}`
+    );
+  }
+}
+
+const uiPlaceOk = uiPlaceRows.filter((r) => r.canPreview && !r.gap);
+if (uiPlaceOk.length) {
+  console.log('\nuiPlace preview OK:');
+  for (const row of uiPlaceOk) {
+    console.log(
+      `  ${row.key}: ${row.routeIatas.join(' → ')} · Bar「${row.barLabel}」`
+    );
   }
 }
 

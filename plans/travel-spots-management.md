@@ -393,7 +393,7 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 |------|-------------|------|
 | **툴킷·DB** | [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) · `mergeCanonicalTravelSpot` | `place_toolkit.place_id` → SSOT slug · 플래너·sync |
 | **역지오 country** | [`travelRegionCountry.js`](../src/pages/Home/lib/travelRegionCountry.js) · [`geocoding.js`](../src/pages/Home/lib/geocoding.js) | Nominatim `country=France/US` → **영토명**(FR-PF·US-GU·MH 등 ISO/state) |
-| **지구본 UI** | `uiPlace: true` · `finalizeUiPlacePin` | Mapbox 라벨 — **표시 지명 유지** · country는 역지오+영토복원 · `galleryRegionSpot`만 근처 SSOT/cities |
+| **지구본 UI** | `uiPlace: true` · `finalizeUiPlacePin` | Mapbox 라벨 — **표시 지명 유지** · country는 역지오+영토복원 · `galleryRegionSpot`은 근처 SSOT/cities(**50km**, Tahaa↔bora-bora ~33km) |
 
 **클릭 경로** ([`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) · [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx)):
 
@@ -419,7 +419,7 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 | `pitcairn-islands` | 핏케언 제도 / Pitcairn Islands |
 | `bora-bora` | 프랑스령 폴리네시아 / French Polynesia |
 
-Mapbox **하위 지명**(Fa'anui 등)은 SSOT 승격 없이 `uiPlace` + `galleryRegionSpot`(근처 `bora-bora`)로 갤러리 backup `{지명} Bora Bora` 처리.
+Mapbox **하위 지명**(Fa'anui·Tahaa 등)은 SSOT 승격 없이 `uiPlace` + `galleryRegionSpot`(근처 `bora-bora`, [`UI_PLACE_GALLERY_REGION_MAX_KM`](../src/utils/travelSpotResolve.js) **50**)로 갤러리 backup `{지명} Bora Bora` 처리. **항공 arc·Bar**는 [`getFlightRouteAirportRow`](../src/utils/rentalAirportMatch.js)가 formal slug의 `flightRouteHubIatas` 상속(시네마 **Edge 불필요**).
 
 ---
 
