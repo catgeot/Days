@@ -80,7 +80,9 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 **런타임**: 시네마 arc = **클라이언트** `resolveFlightRoutePlan` + JSON SSOT · Edge `resolve-flight-route` **UI 미연결**.
 
-**gap 스냅샷 (경유 QA 후)**: hub-override **~75** · graph-precompute **112** · direct-fallback **~2**(직항 의도) · `audit:flight-arcs` **0**
+**gap 스냅샷 (경유 QA 후)**: hub-override **76** · graph-precompute **112** · graph-direct **78**(검수: `npm run generate:graph-direct-review`) · direct-fallback **~2** · `audit:flight-arcs` **0**
+
+**graph-direct 오탐 패턴**: OpenFlights 2014 직항 레그 잔재(예: ~~나이로비 ICN→NBO~~ → `ADD` hub) · 플래너「경유 필수」와 Bar「직항」 불일치 시 overrides `flightRouteHubIatas`.
 
 ---
 

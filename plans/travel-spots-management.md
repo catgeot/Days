@@ -210,6 +210,8 @@ npm run enrich:airports
 
 `primaryIatas`에는 관문+최종을 넣되, **`kind: 'multi'` + `bannerNote`**로 「Trip은 HNL까지 · MAJ는 United」처럼 여정을 설명합니다.
 
+**트레킹·국제선/국내선 분리 예** (`annapurna-circuit`): 국제선 도착 **KTM**(트리부반·카트만두) · `tripFlightArrivalIata: KTM` · 렌터카·픽업 `preferredLinkIata: KTM` · 포카라 **PKR**은 `searchHintIatas`·`bannerNote` 대안만 — `preferredLinkIata: PKR`로 Trip 도착 지정 금지.
+
 #### tier (`flight-booking-overrides.mjs`)
 
 | tier | 의미 | 예 |
@@ -378,6 +380,8 @@ npm run audit:ferries      # required/common booking gap 0 목표
 | `npm run generate:airports` | `travelSpotAirports.json` 재생성(spots + placeId-only 오버라이드 병합) |
 | `npm run generate:flights` | `travelSpotFlightBookings.json` 재생성 (2차 항공 tier) |
 | `npm run audit:airports` | 배너·지리 갭 감사 JSON |
+| `npm run audit:flight-route-gaps` | routeKind·uiPlace gap-report JSON |
+| `npm run generate:graph-direct-review` | `audit:flight-route-gaps` 후 graph-direct tier 검수 MD (`scripts/outputs/`) |
 | `npm run enrich:airports` | low-confidence·오버라이드 수 리포트만 |
 | `npm run sync:airports-from-toolkit` | DB `place_toolkit` → JSON (읽기만) |
 | `npm run toolkit:audit-place-id` | slug·unmapped·duplicateSlug 감사 |

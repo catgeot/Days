@@ -12,6 +12,7 @@
     "audit:airports": "node scripts/audit-rental-airports.mjs",
     "audit:flight-arcs": "node scripts/audit-flight-arcs.mjs",
     "audit:flight-route-gaps": "node scripts/audit-flight-route-gaps.mjs",
+    "generate:graph-direct-review": "node scripts/generate-graph-direct-review-list.mjs",
     "import:airports": "node scripts/import-ourairports.mjs",
     "import:routes": "node scripts/import-openflights-routes.mjs",
     "generate:airports-index": "node scripts/generate-airports-index.mjs",

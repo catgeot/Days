@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-21T10:15:55.804Z",
+    "generatedAt": "2026-06-21T11:51:04.813Z",
     "spotCount": 271,
     "placeIdCount": 627,
     "stats": {
-      "override": 165,
+      "override": 166,
       "curatedPreserved": 0,
-      "toolkitSync": 106,
+      "toolkitSync": 105,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -701,11 +701,12 @@
       ],
       "preferredLinkIata": "NBO",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "rationale": "ICN→ADD→NBO · 에티오피아항공 등 동아프리카 관문(도하·두바이 경유도 흔함)",
+      "flightRouteHubIatas": [
+        "ADD"
+      ]
     },
     "chicago": {
       "primaryIatas": [
@@ -2528,15 +2529,20 @@
         "KTM",
         "PKR"
       ],
-      "preferredLinkIata": "PKR",
+      "preferredLinkIata": "KTM",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "카트만두·포카라 관문",
-      "graphFlightRouteHubIatas": [
-        "KTM"
+      "bannerNote": "안나푸르나 서킷은 보통 인천→카트만두 트리부반국제공항(KTM) 국제선 도착 후 시내 준비·베시사하르(Besisahar) 육로로 서킷에 들어갑니다. 포카라(PKR) 경유·국내선으로 접근하는 일정도 있습니다. 항공권·Trip 검색 도착 코드는 KTM을 사용하세요.",
+      "rationale": "국제선 카트만두 트리부반(KTM) 도착 — 베시사하르 육로·서킷 준비; PKR은 국내선·대안",
+      "searchHintIatas": [
+        "KTM",
+        "PKR"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "tripFlightArrivalIata": "KTM",
+      "flightRouteHubIatas": [
+        "BKK"
+      ]
     },
     "kilimanjaro": {
       "primaryIatas": [

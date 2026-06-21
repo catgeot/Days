@@ -61,7 +61,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: '칸쿤(CUN) 국제선 후 육로 · ICN→LAX→CUN 미국 경유(플래너 STEP)',
   },
-  'annapurna-circuit': { primaryIatas: ['KTM', 'PKR'], preferredLinkIata: 'PKR', kind: 'multi', confidence: 'high', rationale: '카트만두·포카라 관문' },
+  'annapurna-circuit': {
+    primaryIatas: ['KTM', 'PKR'],
+    preferredLinkIata: 'KTM',
+    tripFlightArrivalIata: 'KTM',
+    flightRouteHubIatas: ['BKK'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '국제선 카트만두 트리부반(KTM) 도착 — 베시사하르 육로·서킷 준비; PKR은 국내선·대안',
+    searchHintIatas: ['KTM', 'PKR'],
+    bannerNote:
+      '안나푸르나 서킷은 보통 인천→카트만두 트리부반국제공항(KTM) 국제선 도착 후 시내 준비·베시사하르(Besisahar) 육로로 서킷에 들어갑니다. 포카라(PKR) 경유·국내선으로 접근하는 일정도 있습니다. 항공권·Trip 검색 도착 코드는 KTM을 사용하세요.',
+  },
   bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },
   bled: {
     primaryIatas: ['LJU', 'ZAG', 'VCE'],
@@ -685,6 +696,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
   },
   'cape-town': { primaryIatas: ['CPT'], preferredLinkIata: 'CPT', confidence: 'high', rationale: '케이프타운국제공항(CPT)' },
+  nairobi: {
+    primaryIatas: ['NBO'],
+    preferredLinkIata: 'NBO',
+    flightRouteHubIatas: ['ADD'],
+    confidence: 'high',
+    rationale: 'ICN→ADD→NBO · 에티오피아항공 등 동아프리카 관문(도하·두바이 경유도 흔함)',
+  },
   luxor: {
     primaryIatas: ['CAI', 'LXR'],
     preferredLinkIata: 'LXR',

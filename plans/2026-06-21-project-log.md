@@ -143,3 +143,12 @@
 - **audit**: `audit:flight-arcs` **0** · `audit:airports` none **0**
 - **다음**: **`항공경로-DB-Phase4-실행`** (출발지·경유지 UI)
 
+---
+
+## graph-direct 검수 · 나이로비·안나푸르나 hub SSOT ✅
+
+- **graph-direct 리스트**: `scripts/generate-graph-direct-review-list.mjs` → `scripts/outputs/graph-direct-review-list.md` (78건 · gap-report 연동)
+- **나이로비**: `graph-direct` ICN→NBO 오탐 → `flightRouteHubIatas: ADD` · Bar 경유
+- **안나푸르나 서킷**: Trip·배너 PKR 오류 → `preferredLinkIata`·`tripFlightArrivalIata` **KTM**(트리부반) · 시네마 `BKK` hub · PKR은 `searchHintIatas` 대안
+- **audit**: `audit:flight-arcs` **0** · `audit:airports` none **0**
+
