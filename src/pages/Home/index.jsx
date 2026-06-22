@@ -148,6 +148,9 @@ function Home() {
   const isPlaceCardSummaryVisible = Boolean(
     selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive
   );
+  /** 써머리 카드 닫힘·투어 X 탈출 후에도 마지막 방문 핀·지명 강조 유지 */
+  const globeActivePinId = selectedLocation?.id ?? scoutedPins[0]?.id ?? null;
+  const globeFocusSlug = selectedLocation?.slug ?? scoutedPins[0]?.slug ?? null;
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
@@ -267,10 +270,11 @@ function Home() {
       pendingGlobeHomeFocusRef.current = target;
       selectedLocationRef.current = target;
       rememberGlobeFocus(target);
+      addScoutPin(target);
       setSelectedLocation(target);
     }
     navigate('/');
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, setSelectedLocation]);
+  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -560,7 +564,12 @@ function Home() {
     globeRef.current?.pivotTourExplore?.(selectedLocation);
   }, [globeMode, selectedLocation]);
 
-  const handleTourBarClose = useCallback(() => {
+  /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
+  const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
+    if (selectedLocation) {
+      addScoutPin(selectedLocation);
+      rememberGlobeFocus(selectedLocation);
+    }
     setIsCardExpanded(false);
     setSelectedLocation(null);
     setTourLaunchPending(false);
@@ -570,7 +579,9 @@ function Home() {
       globeRef.current?.endTour?.();
     }
     globeRef.current?.resumeRotation?.();
-  }, [setSelectedLocation]);
+  }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation]);
+
+  const handleTourBarClose = dismissPlaceSelectionKeepGlobePin;
 
   const handleGlobeModeChange = useCallback((mode) => {
     setGlobeMode(mode);
@@ -626,7 +637,7 @@ function Home() {
           tempPinsData={isPinVisible ? scoutedPins : []}
           travelSpots={isPinVisible ? globeSpots : []}
           allTravelSpots={isPinVisible ? globeSpots : []}
-          activePinId={selectedLocation?.id}
+          activePinId={globeActivePinId}
           pauseRender={shouldPauseGlobe}
           isFlightCinemaActive={flightCinemaActive}
           globeTheme={globeTheme}
@@ -636,7 +647,7 @@ function Home() {
           hideTourControls={isTourCinema}
           highlightCategory={category}
           categoryFaceEpoch={categoryFaceEpoch}
-          focusSlug={selectedLocation?.slug ?? null}
+          focusSlug={globeFocusSlug}
         />
       </div>
 
@@ -693,16 +704,7 @@ function Home() {
             globeRef={globeRef}
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
-            onClose={() => {
-              setIsCardExpanded(false);
-              setSelectedLocation(null);
-              if (globeRef.current?.getGlobeMode?.() !== 'globe2d') {
-                globeRef.current?.endTour?.();
-              }
-              if (globeRef.current && typeof globeRef.current.resumeRotation === 'function') {
-                globeRef.current.resumeRotation();
-              }
-            }}
+            onClose={dismissPlaceSelectionKeepGlobePin}
             onExpand={() => {
               setIsCardExpanded(true);
               navigate(`/place/${getPlaceUrlParam(selectedLocation)}`);

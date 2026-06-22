@@ -90,7 +90,7 @@
 | [`travelSpots.js`](../src/pages/Home/data/travelSpots.js) | **핀·SEO·공항·페리** 좌표 SSOT — 투어 center와 분리 유지 |
 | [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「3D 투어」— 전 여행지 노출 · 데스크톱 투어 중 **풀 카드** (`isCompact` 미사용) |
 | [`TourMobileBar.jsx`](../src/pages/Home/components/TourMobileBar.jsx) | 모바일 투어 시네마 — 헤더(로고 옆) · Skip · 2D(앵커 동일) · 3D 투어(pivot) · X 탈출 · `index.css` 글로우 |
-| [`index.jsx`](../src/pages/Home/index.jsx) | `isTourCinema` = 투어+`<lg` → Summary 숨김 · `tourReadyAnchorRef` · `tourPivoted` · pivot 시 `pivotTourExplore` |
+| [`index.jsx`](../src/pages/Home/index.jsx) | `isTourCinema` = 투어+`<lg` → Summary 숨김 · `tourReadyAnchorRef` · `tourPivoted` · pivot 시 `pivotTourExplore` · **`globeActivePinId`** = `selectedLocation?.id ?? scoutedPins[0]?.id` (써머리·X 닫힘 후 마지막 방문 핀·지명 강조) · `dismissPlaceSelectionKeepGlobePin` |
 | [`resolveHomeGlobeEngine.js`](../src/pages/Home/components/resolveHomeGlobeEngine.js) | PROD→mapbox · DEV→mapbox(URL 무제한 `.env.local` 토큰) · `?globe=legacy` |
 
 **동작 요약**
@@ -101,7 +101,7 @@
 - **알프스**: `alpineVillageOrbit` (체르마트 등).
 - **수동 경로**: `keyframes: [...]` — Mapbox Studio export.
 - Skip · **2D 복귀** · 모바일: Summary 숨김 · 지도 탭 탐색 차단 · MOONi FAB·카테고리 내비 숨김.
-- **`TOUR_READY` pivot** (2026-06-09, **2026-06-15**): 투어 앵커와 다른 지명 클릭 → `pivotTourExplore`(landmark center `easeTo` only · pitch/zoom 유지) · **경계 초기화**(재투어 종료까지 미표시) · 바 **3D 투어** 노출. **X** = `endTour`+선택 해제. 재투어: `TOUR_READY→TOUR_BOOTSTRAPPING` 허용.
+- **`TOUR_READY` pivot** (2026-06-09, **2026-06-15**): 투어 앵커와 다른 지명 클릭 → `pivotTourExplore`(landmark center `easeTo` only · pitch/zoom 유지) · **경계 초기화**(재투어 종료까지 미표시) · 바 **3D 투어** 노출. **X** = 써머리·선택 UI만 닫음(`dismissPlaceSelectionKeepGlobePin`) · **`scoutedPins`에 핀 보존** · `globeActivePinId`로 active-ring·지명 강조 유지 · `endTour`+회전 재개. **2D 복귀** = 투어만 종료·써머리 유지. 재투어: `TOUR_READY→TOUR_BOOTSTRAPPING` 허용.
 - **투어 중 지명**: `globeMapboxLabelPolicy`와 동일(눈 ON·줌≥4) · **지명·gateo 마커 클릭** 가능 · 빈 지도 탭만 차단 (`HomeGlobeMapbox` `handleGlobeClickInternal`). **지명 클릭 UI**: 역지오코딩 국가·라벨명 · `uiPlace`로 툴킷 alias·좌표 스냅 분리 — [`travel-spots-management.md`](travel-spots-management.md) §8.
 
 ### 데이터 역할 (투어 vs 여행지 SSOT)
