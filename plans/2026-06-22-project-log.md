@@ -57,3 +57,9 @@
 - **원인**: `onLoad`가 `prevHighlightCategoryRef`를 선동기화 + `initialViewState`가 `GLOBE_VIEW.default` 고정
 - **수정**: [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — 랜덤 카테고리 중심 `initialGlobeViewState` · share 복원 후에만 prev ref 동기화
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) 카테고리 5면 진입·주의 갱신
+
+## 트립링크 패키지 임시 비노출
+
+- **배경**: 트립링크 제휴 페이지 종료 응답 — 탐색·위키·플래너 잘못된 링크 제거
+- **수정**: [`tripLinkPackages.js`](../src/pages/Home/data/tripLinkPackages.js) `TRIPLINK_PACKAGES_ENABLED = false` · matcher·탐색 큐레이션·모달 가드
+- **재연동**: 여행사 선정 후 플래그 `true` + 패키지 데이터 교체

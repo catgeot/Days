@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 're
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
-import { TRIPLINK_PACKAGES } from '../data/tripLinkPackages';
+import { TRIPLINK_PACKAGES, TRIPLINK_PACKAGES_ENABLED } from '../data/tripLinkPackages';
 
 // 분리된 컴포넌트 및 유틸리티 import
 import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS, TRIPCOM_EXPLORE_LEADING_CARD } from './SearchDiscovery/constants';
@@ -372,13 +372,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     const seed = getDailySeed();
     const shuffled = shuffleWithSeed(filteredSpots, seed);
 
-    // 🎯 트립링크 패키지 일일 셔플 (여행지와 동일한 seed 사용)
-    const shuffledFamilyPackages = shuffleWithSeed([
-      ...TRIPLINK_PACKAGES.domestic, // 제주도 포함
-      ...TRIPLINK_PACKAGES.family
-    ], seed);
-    const shuffledLonghaulPackages = shuffleWithSeed([...TRIPLINK_PACKAGES.longhaul], seed);
-    const shuffledResortPackages = shuffleWithSeed([...TRIPLINK_PACKAGES.resort], seed);
+    // 🎯 트립링크 패키지 일일 셔플 (TRIPLINK_PACKAGES_ENABLED일 때만)
+    const shuffledFamilyPackages = TRIPLINK_PACKAGES_ENABLED
+      ? shuffleWithSeed([...TRIPLINK_PACKAGES.domestic, ...TRIPLINK_PACKAGES.family], seed)
+      : [];
+    const shuffledLonghaulPackages = TRIPLINK_PACKAGES_ENABLED
+      ? shuffleWithSeed([...TRIPLINK_PACKAGES.longhaul], seed)
+      : [];
+    const shuffledResortPackages = TRIPLINK_PACKAGES_ENABLED
+      ? shuffleWithSeed([...TRIPLINK_PACKAGES.resort], seed)
+      : [];
 
     // 테마별 우선 노출 여행지 목록 (2026-04-22: 신규 25개 여행지 반영하여 대폭 확장)
     // 가족/효도 테마: 아시아 중심, 가까운 거리, 가족 친화적 (38개)
@@ -1123,7 +1126,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       )}
 
       {/* 트립링크 대화면 모달 */}
-      {selectedPackage && (
+      {TRIPLINK_PACKAGES_ENABLED && selectedPackage && (
         <TripLinkModal
           pkg={selectedPackage}
           onClose={() => setSelectedPackage(null)}

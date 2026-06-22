@@ -6,6 +6,7 @@ import { useWikiData } from '../hooks/useWikiData';
 import { usePlannerData } from '../hooks/usePlannerData';
 import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch';
 import { getMatchedPackage } from '../../../utils/tripLinkMatcher';
+import { TRIPLINK_PACKAGES_ENABLED } from '../../../pages/Home/data/tripLinkPackages';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import TripLinkModal from '../modals/TripLinkModal';
 
@@ -201,7 +202,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         />
       </div>
 
-      {tripLinkModalPkg && (
+      {TRIPLINK_PACKAGES_ENABLED && tripLinkModalPkg && (
         <TripLinkModal
           pkg={tripLinkModalPkg}
           onClose={() => setTripLinkModalPkg(null)}

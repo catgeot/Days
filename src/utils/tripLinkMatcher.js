@@ -1,4 +1,5 @@
 import { DESTINATION_PACKAGE_MAP, FALLBACK_PACKAGE_MAP } from '../pages/Home/data/tripLinkDestinationMap';
+import { TRIPLINK_PACKAGES_ENABLED } from '../pages/Home/data/tripLinkPackages';
 
 /**
  * 장소 데이터를 기반으로 적합한 트립링크 패키지를 찾아 반환합니다.
@@ -6,7 +7,7 @@ import { DESTINATION_PACKAGE_MAP, FALLBACK_PACKAGE_MAP } from '../pages/Home/dat
  * @returns {Object|null} 매칭된 패키지 객체 또는 null
  */
 export const getMatchedPackage = (place) => {
-  if (!place) return null;
+  if (!TRIPLINK_PACKAGES_ENABLED || !place) return null;
 
   // 1. 도시명/장소명(한글, 영문)으로 정확한 매칭 시도
   const nameKo = place.name?.toLowerCase().trim();

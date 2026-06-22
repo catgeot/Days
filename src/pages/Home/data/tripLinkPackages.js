@@ -1,3 +1,6 @@
+/** false면 탐색·위키·플래너 트립링크 패키지·모달 노출 중단 (여행사 재연동 시 true) */
+export const TRIPLINK_PACKAGES_ENABLED = false;
+
 export const TRIPLINK_PACKAGES = {
   // 테마 0: 국내여행 (제주도)
   domestic: [
