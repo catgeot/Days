@@ -208,7 +208,7 @@ npm run enrich:airports
 | `flightRouteWaypoints` | 동일 | arc 지리 waypoint만 — **ICN↔LAX 직항** `[[180,12]]` · **ICN↔AMS 직항** `[[125,33],[15,42]]` 등 hub 없이 가능 · **배너·Trip IATA와 무관** |
 | `officialLinks[].destinationIata` | `flight-booking-overrides.mjs` | 항공사 공식 예약 URL 목적지 — **IATA와 다를 수 있음** (예: 코스라에 렌터카 `KOS` · United `KSA`) |
 
-`primaryIatas`에는 관문+최종을 넣되, **`kind: 'multi'` + `bannerNote`**로 「Trip은 HNL까지 · MAJ는 United」처럼 여정을 설명합니다.
+`primaryIatas`에는 관문+최종을 넣되, **`kind: 'multi'` + `bannerNote`**로 「Trip은 GUM까지 · YAP는 United」처럼 여정을 설명합니다.
 
 **트레킹·국제선/국내선 분리 예** (`annapurna-circuit`): 국제선 도착 **KTM**(트리부반·카트만두) · `tripFlightArrivalIata: KTM` · 렌터카·픽업 `preferredLinkIata: KTM` · 포카라 **PKR**은 `searchHintIatas`·`bannerNote` 대안만 — `preferredLinkIata: PKR`로 Trip 도착 지정 금지.
 
@@ -217,7 +217,7 @@ npm run enrich:airports
 | tier | 의미 | 예 |
 |------|------|-----|
 | `standard` | Trip/OTA만 (본 파일 **미등록**) | 일반 대도시 |
-| `segmented` | Trip = 1차 관문 · 공식 링크 = 2차 | Micronesia HNL→{YAP\|TKK\|PNI\|KSA\|MAJ} |
+| `segmented` | Trip = 1차 관문 · 공식 링크 = 2차 | Micronesia ICN→**GUM** · United **GUM→**{YAP\|TKK\|PNI\|KSA\|MAJ} (HNL 아일랜드 호퍼는 배너 대안) |
 | `agency-only` | 2차가 OTA·항공사 URL 없음 · 현지 에이전시 | `socotra` SCT 전세기 |
 | `carrier-only` | (예약) 특정 항공사만 | 필요 시 추가 |
 
@@ -245,7 +245,7 @@ npm run generate:flights
 - **`bannerNote`(배너)와 `bookingNote`(항공 카드)** 문구는 같은 여정을 가리키게 맞출 것.
 - **`citiesData`만 있는 slug**(`marshall-islands` 등): `location.slug` 없으면 flight tier 조회 실패 → [`index.jsx`](../src/pages/Home/index.jsx) hydration·[`flightBookingMatch.js`](../src/utils/flightBookingMatch.js) slug alias 확인.
 - **`rentalAirportMatch.js` 로직·`TITLE_ARRIVAL_AIRPORT_PHRASES`** — 사용자 승인 없이 변경 금지.
-- Micronesia·Island Hopper: Trip **HNL** · 2차 **United HNL→*** — `officialLinks.originIata` 기본 HNL.
+- Micronesia·Island Hopper: Trip **GUM** · 2차 **United GUM→*** — `officialLinks.originIata` **GUM**. essential_guide·배너와 시네마 `flightRouteHubIatas: ['GUM']` 정합. HNL 전구간 호퍼(UA154 등)는 `bannerNote`·`bookingNote` **대안**만.
 
 ---
 

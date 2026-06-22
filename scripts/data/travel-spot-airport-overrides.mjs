@@ -179,6 +179,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '사모아(아피아)는 인천 직항이 없습니다. 보통 인천→오클랜드(AKL)·피지 난디(NAN) 등 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
+  saipan: {
+    primaryIatas: ['SPN'],
+    preferredLinkIata: 'SPN',
+    flightRouteHubIatas: [],
+    confidence: 'high',
+    rationale: 'ICN↔SPN 직항(진에어 등) · graph 2hop FUK·PUS 경유 오탐 보정',
+  },
   'san-diego': {
     primaryIatas: ['SAN', 'LAX', 'SFO'],
     preferredLinkIata: 'SAN',
@@ -445,13 +452,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'marshall-islands': {
     primaryIatas: ['MAJ', 'GUM', 'HNL'],
     preferredLinkIata: 'MAJ',
-    tripFlightArrivalIata: 'HNL',
-    flightRouteHubIatas: ['HNL'],
+    tripFlightArrivalIata: 'GUM',
+    flightRouteHubIatas: ['GUM'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'GUM·HNL 경유 유나이티드 아일랜드 호퍼 후 MAJ 최종 — Trip HNL·렌터카 MAJ',
+    rationale: 'ICN→GUM 직항 후 United MAJ — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안',
     bannerNote:
-      '마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
+      '마셜 제도(마주로)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 MAJ에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — MAJ 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
   },
   ulaanbaatar: { primaryIatas: ['UBN'], preferredLinkIata: 'UBN', confidence: 'high', rationale: '칭기스칸 국제공항' },
   'diego-garcia': {
@@ -799,48 +806,48 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: '타라와 공항 · 시네마 ICN→피지(NAN)→TRW (툴킷 여정·Fiji Airways 루트)',
   },
   yap: {
-    primaryIatas: ['YAP', 'HNL'],
+    primaryIatas: ['YAP', 'GUM', 'HNL'],
     preferredLinkIata: 'YAP',
-    tripFlightArrivalIata: 'HNL',
-    flightRouteHubIatas: ['HNL'],
+    tripFlightArrivalIata: 'GUM',
+    flightRouteHubIatas: ['GUM'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'HNL 경유 United 아일랜드 호퍼 후 YAP — Trip HNL·렌터카 YAP',
+    rationale: 'ICN→GUM 직항 후 United YAP — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안',
     bannerNote:
-      '야프(YAP)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — YAP 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 YAP 도착 기준입니다.'
+      '야프(YAP)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 YAP에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — YAP 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 YAP 도착 기준입니다.'
   },
   chuuk: {
-    primaryIatas: ['TKK', 'HNL'],
+    primaryIatas: ['TKK', 'GUM', 'HNL'],
     preferredLinkIata: 'TKK',
-    tripFlightArrivalIata: 'HNL',
-    flightRouteHubIatas: ['HNL'],
+    tripFlightArrivalIata: 'GUM',
+    flightRouteHubIatas: ['GUM'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'HNL 경유 United 아일랜드 호퍼 후 TKK — Trip HNL·렌터카 TKK',
+    rationale: 'ICN→GUM 직항 후 United TKK — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안',
     bannerNote:
-      '추크(TKK)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — TKK 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 TKK 도착 기준입니다.'
+      '추크(TKK)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 TKK에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼·MAJ 경유도 가능). Trip.com 등 항공권 검색은 GUM까지 — TKK 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 TKK 도착 기준입니다.'
   },
   kosrae: {
-    primaryIatas: ['KOS', 'HNL'],
+    primaryIatas: ['KOS', 'GUM', 'HNL'],
     preferredLinkIata: 'KOS',
-    tripFlightArrivalIata: 'HNL',
-    flightRouteHubIatas: ['HNL'],
+    tripFlightArrivalIata: 'GUM',
+    flightRouteHubIatas: ['GUM'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'HNL 경유 United 아일랜드 호퍼 후 KOS — Trip HNL·렌터카 KOS · United 예약 코드 KSA',
+    rationale: 'ICN→GUM 직항 후 United KOS(KSA) — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안',
     bannerNote:
-      '코스라에(KOS)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — United 예약 시 목적지 코드 KSA를 사용합니다. 렌터카·픽업·섬 일정은 KOS 도착 기준입니다.'
+      '코스라에(KOS)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 KOS에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — United 예약 시 목적지 코드 KSA를 사용합니다. 렌터카·픽업·섬 일정은 KOS 도착 기준입니다.'
   },
   pohnpei: {
-    primaryIatas: ['PNI', 'HNL'],
+    primaryIatas: ['PNI', 'GUM', 'HNL'],
     preferredLinkIata: 'PNI',
-    tripFlightArrivalIata: 'HNL',
-    flightRouteHubIatas: ['HNL'],
+    tripFlightArrivalIata: 'GUM',
+    flightRouteHubIatas: ['GUM'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'HNL 경유 United 아일랜드 호퍼 후 PNI — Trip HNL·렌터카 PNI',
+    rationale: 'ICN→GUM 직항 후 United PNI — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안',
     bannerNote:
-      '폰페이(PNI)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.'
+      '폰페이(PNI)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 PNI에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼·MAJ 경유도 가능). Trip.com 등 항공권 검색은 GUM까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.'
   },
   'kamchatka-peninsula': { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
   kamchatka: { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
@@ -1387,12 +1394,13 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
   '마셜 제도': {
     primaryIatas: ['MAJ', 'GUM', 'HNL'],
     preferredLinkIata: 'MAJ',
-    tripFlightArrivalIata: 'HNL',
+    tripFlightArrivalIata: 'GUM',
+    flightRouteHubIatas: ['GUM'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'GUM·HNL 경유 아일랜드 호퍼 후 MAJ — slug marshall-islands와 동일',
+    rationale: 'ICN→GUM 직항 후 United MAJ — slug marshall-islands와 동일',
     bannerNote:
-      '마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
+      '마셜 제도(마주로)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 MAJ에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — MAJ 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.'
   },
   novosibirsk: {
     primaryIatas: ['OVB'],

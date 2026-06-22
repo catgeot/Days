@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-22T13:30:07.105Z",
+    "generatedAt": "2026-06-22T13:53:43.956Z",
     "spotCount": 271,
     "placeIdCount": 630,
     "stats": {
-      "override": 166,
+      "override": 167,
       "curatedPreserved": 0,
-      "toolkitSync": 105,
+      "toolkitSync": 104,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -3201,14 +3201,10 @@
       ],
       "preferredLinkIata": "SPN",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [
-        "FUK",
-        "PUS"
-      ],
-      "graphFlightRouteSource": "graph-2hop"
+      "rationale": "ICN↔SPN 직항(진에어 등) · graph 2hop FUK·PUS 경유 오탐 보정",
+      "flightRouteHubIatas": []
     },
     "phu-quoc": {
       "primaryIatas": [
@@ -4100,65 +4096,69 @@
     "yap": {
       "primaryIatas": [
         "YAP",
+        "GUM",
         "HNL"
       ],
       "preferredLinkIata": "YAP",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "야프(YAP)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — YAP 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 YAP 도착 기준입니다.",
-      "rationale": "HNL 경유 United 아일랜드 호퍼 후 YAP — Trip HNL·렌터카 YAP",
-      "tripFlightArrivalIata": "HNL",
+      "bannerNote": "야프(YAP)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 YAP에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — YAP 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 YAP 도착 기준입니다.",
+      "rationale": "ICN→GUM 직항 후 United YAP — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
+      "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
-        "HNL"
+        "GUM"
       ]
     },
     "chuuk": {
       "primaryIatas": [
         "TKK",
+        "GUM",
         "HNL"
       ],
       "preferredLinkIata": "TKK",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "추크(TKK)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — TKK 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 TKK 도착 기준입니다.",
-      "rationale": "HNL 경유 United 아일랜드 호퍼 후 TKK — Trip HNL·렌터카 TKK",
-      "tripFlightArrivalIata": "HNL",
+      "bannerNote": "추크(TKK)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 TKK에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼·MAJ 경유도 가능). Trip.com 등 항공권 검색은 GUM까지 — TKK 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 TKK 도착 기준입니다.",
+      "rationale": "ICN→GUM 직항 후 United TKK — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
+      "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
-        "HNL"
+        "GUM"
       ]
     },
     "kosrae": {
       "primaryIatas": [
         "KOS",
+        "GUM",
         "HNL"
       ],
       "preferredLinkIata": "KOS",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "코스라에(KOS)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — United 예약 시 목적지 코드 KSA를 사용합니다. 렌터카·픽업·섬 일정은 KOS 도착 기준입니다.",
-      "rationale": "HNL 경유 United 아일랜드 호퍼 후 KOS — Trip HNL·렌터카 KOS · United 예약 코드 KSA",
-      "tripFlightArrivalIata": "HNL",
+      "bannerNote": "코스라에(KOS)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 KOS에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — United 예약 시 목적지 코드 KSA를 사용합니다. 렌터카·픽업·섬 일정은 KOS 도착 기준입니다.",
+      "rationale": "ICN→GUM 직항 후 United KOS(KSA) — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
+      "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
-        "HNL"
+        "GUM"
       ]
     },
     "pohnpei": {
       "primaryIatas": [
         "PNI",
+        "GUM",
         "HNL"
       ],
       "preferredLinkIata": "PNI",
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "폰페이(PNI)는 인천→호놀룰루(HNL) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(경유 MAJ)로 들어갑니다. Trip.com 등 항공권 검색은 HNL까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.",
-      "rationale": "HNL 경유 United 아일랜드 호퍼 후 PNI — Trip HNL·렌터카 PNI",
-      "tripFlightArrivalIata": "HNL",
+      "bannerNote": "폰페이(PNI)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 PNI에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼·MAJ 경유도 가능). Trip.com 등 항공권 검색은 GUM까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.",
+      "rationale": "ICN→GUM 직항 후 United PNI — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
+      "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
-        "HNL"
+        "GUM"
       ]
     },
     "vatican": {
@@ -8424,11 +8424,11 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
-      "rationale": "GUM·HNL 경유 아일랜드 호퍼 후 MAJ — slug marshall-islands와 동일",
-      "tripFlightArrivalIata": "HNL",
+      "bannerNote": "마셜 제도(마주로)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 MAJ에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — MAJ 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "rationale": "ICN→GUM 직항 후 United MAJ — slug marshall-islands와 동일",
+      "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
-        "HNL"
+        "GUM"
       ],
       "placeId": "마셜 제도"
     },
@@ -8442,11 +8442,11 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "마셜 제도(마주로)는 인천→호놀룰루(HNL) 또는 괌(GUM) 국제선 도착 후, 유나이티드항공 아일랜드 호퍼(Island Hopper)로 마주로(MAJ)에 들어갑니다. Trip.com 등 항공권 검색은 HNL(또는 일정에 맞게 GUM)까지 — MAJ 구간은 아일랜드 호퍼 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
-      "rationale": "GUM·HNL 경유 아일랜드 호퍼 후 MAJ — slug marshall-islands와 동일",
-      "tripFlightArrivalIata": "HNL",
+      "bannerNote": "마셜 제도(마주로)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 MAJ에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — MAJ 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "rationale": "ICN→GUM 직항 후 United MAJ — slug marshall-islands와 동일",
+      "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
-        "HNL"
+        "GUM"
       ],
       "placeId": "마셜 제도"
     },

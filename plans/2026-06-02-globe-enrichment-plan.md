@@ -284,7 +284,7 @@
 | **D** | [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
 | **E** | `resolveFlightRoutePlan` · 5클릭 QA | overrides>corridor>guard |
 
-**권역 기본 정책**: 서·북유럽 `[125,33]`→DXB→`[15,42]`→dest · 북대서양 섬·Caribbean(본토 제외) DXB · 남유럽 직항 · KEF/FAE MUC/CPH · 인도양 DXB · 미크로네시아 HNL · 남미 polar+waypoint · **RU 목적지 우회 없음**.
+**권역 기본 정책**: 서·북유럽 `[125,33]`→DXB→`[15,42]`→dest · 북대서양 섬·Caribbean(본토 제외) DXB · 남유럽 직항 · KEF/FAE MUC/CPH · 인도양 DXB · **미크로네시아 GUM** (HNL 호퍼 대안) · 남미 polar+waypoint · **RU 목적지 우회 없음**.
 
 **5클릭 QA ✅**: paris·london·amsterdam · seychelles · iceland/faroe · moscow · uyuni · **bermuda**(DXB·남극 회피).
 
@@ -306,7 +306,7 @@
 
 **로컬 QA**
 
-- ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
+- ✅ kiribati·micronesia(**GUM**, 2026-06-22) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC (2026-06-17)
 - ✅ corridor A~E · 5클릭 QA · bermuda (2026-06-17)
 - ✅ **tikal** ICN→LAX→GUA→FRS · gcmap 거리 일치 · 태평양 waypoint (2026-06-18)
 - ✅ Bar UX — 글로우 · Trip CTA(모바일 위젯·데스크톱 링크) · 구간 비행시간 · arc leg 애니 (2026-06-18)
@@ -362,7 +362,7 @@
 **로컬 QA**
 
 - ✅ uyuni LPB 태평양 arc · sapa HAN · danang · bali
-- ✅ kiribati·micronesia(HNL) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC · corridor·bermuda (2026-06-17)
+- ✅ kiribati·micronesia(**GUM**, 2026-06-22) · 인도양 DXB · 페로 CPH · 아이슬란드 MUC · corridor·bermuda (2026-06-17)
 - ✅ hub SSOT·overrides waypoint · san-diego·philadelphia·fernando·cancun/chichen · FlightCinemaBar 「여행 플랜」 (2026-06-18)
 - ✅ avoid-zone·Atlantic bbox·29 slug waypoint · **`audit:flight-arcs` 0** · LA 직항 (2026-06-18)
 

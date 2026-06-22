@@ -118,3 +118,15 @@ Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
 - **QA**: `npm run build` ✅
 - **후속 fix**: Mapbox 기본 대륙·대양 레이어 숨김 — gateo 커스텀 라벨(`globeGeoContextLabels`)만 유지 · 중복 표기 해소
 - **Mapbox SSOT 전환**: 커스텀 `globeGeoContext*` 제거 · `globeMapboxLabelPolicy` 대륙·대양 레이어 줌 0+ · bright `STANDARD_HOME_GLOBE_CONTEXT_CONFIG` · 한글 coalesce
+
+## 사이판 — 항공 시네마 과다 경유 fix
+
+- **증상**: OpenFlights graph 2hop ICN→FUK→PUS→SPN (인천 직항 SPN 미반영)
+- **수정**: `travel-spot-airport-overrides.mjs` `saipan` `flightRouteHubIatas: []` 직항 arc
+- **QA**: `generate:airports` · `audit:airports` none **0**
+
+## 미크로네시아 — 시네마·Trip 경유 GUM 전환
+
+- **배경**: yap/chuuk/kosrae/pohnpei·marshall HNL arc — 지리상 ICN→GUM 직항이 더 가까움(2026-06-17 HNL은 toolkit GUM 오탐 회피용)
+- **수정**: `flightRouteHubIatas`·`tripFlightArrivalIata` **GUM** · `flight-booking-overrides` United **GUM→*** · 배너 HNL 대안 명시
+- **QA**: `generate:airports` · `generate:flights` · `audit:airports` none **0** · HNL 대안 문구 유지(essential_guide와 중복 최소화는 보류)
