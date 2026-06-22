@@ -68,8 +68,9 @@
 | culture | 미니애폴리스 | 북미 |
 | adventure | 남미 (브라질 중부) | |
 
-- **진입**: 새로고침·`/place`·`/explore`에서 `/` 복귀(포커스 없음) → `pickRandomGlobeCategory` + `categoryFaceEpoch`
+- **진입**: 새로고침·첫 `/` → `pickRandomGlobeCategory` + **`initialGlobeViewState`**(랜덤 면 중심) · `/place`·`/explore`에서 `/` 복귀(포커스 없음) → `categoryFaceEpoch` + `flyToCategoryFace`
 - **이동**: `HomeGlobeMapbox` `flyToCategoryFace` — center만 변경 · `map.getZoom()`·pitch·bearing 유지
+- **주의 (2026-06-22 fix)**: `GLOBE_VIEW.default`(0°,20°)는 아조레스·대서양이 항상 노출 — 마운트 시 default 고정·`onLoad`에서 `prevHighlightCategoryRef` 선동기화하면 첫 flyTo가 스킵됨 → **`initialGlobeViewState` + share 복원 후 prev ref 동기화**
 - **예외**: 공유 URL `?lng&lat&zoom` 복원 시 면 pan 생략 · 투어 중 pan 없음
 - **대양**: 버튼 면에 바다가 보이는 구간은 사용자 드래그·줌으로 자연 탐험 (최대 확대 시 불가피)
 

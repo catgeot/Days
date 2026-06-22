@@ -1468,6 +1468,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const mapStyle = MAP_STYLES[globeTheme] || MAP_STYLES.deep;
 
+  /** 마운트 시 랜덤 카테고리 면 — default(0°,20°)는 아조레스 등 대서양이 항상 노출됨 */
+  const initialGlobeViewState = useMemo(() => {
+    const focus = getCategoryGlobeFaceView(highlightCategory);
+    if (!focus) return GLOBE_VIEW.default;
+    return {
+      ...GLOBE_VIEW.default,
+      longitude: focus.lng,
+      latitude: focus.lat
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Map initialViewState는 마운트 1회만
+  }, []);
+
   const pauseAutoRotateIfGlobeHit = useCallback((event) => {
     const map = mapRef.current?.getMap();
     if (!map) return;
@@ -1511,7 +1523,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       >
       <Map
         ref={mapRef}
-        initialViewState={GLOBE_VIEW.default}
+        initialViewState={initialGlobeViewState}
         projection="globe"
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle={mapStyle}
@@ -1523,9 +1535,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             unbindSpaceDragGuardRef.current?.();
             unbindSpaceDragGuardRef.current = bindGlobeSpaceDragGuard(map);
             syncGateoMarkerLayers();
-            if (prevHighlightCategoryRef.current === null && highlightCategoryRef.current) {
-              prevHighlightCategoryRef.current = highlightCategoryRef.current;
-            }
             if (!hasRestoredShareViewRef.current) {
               const shared = readGlobeShareViewFromUrl();
               hasRestoredShareViewRef.current = true;
@@ -1541,9 +1550,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
                 } catch {
                   // Ignore share-view restore failures.
                 }
-                prevHighlightCategoryRef.current = highlightCategoryRef.current;
-                prevCategoryFaceEpochRef.current = categoryFaceEpoch;
               }
+              // 공유 URL·initialViewState 모두 카테고리 fly 대상과 일치 — mapReady 후 중복 pan 방지
+              prevHighlightCategoryRef.current = highlightCategoryRef.current;
+              prevCategoryFaceEpochRef.current = categoryFaceEpoch;
             }
             skipCategoryFaceUntilShareCheckRef.current = false;
           }
