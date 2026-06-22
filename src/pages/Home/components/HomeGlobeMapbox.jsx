@@ -1209,9 +1209,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (tourActiveRef.current || flightCinemaActiveRef.current) return false;
       const map = mapRef.current?.getMap();
       if (!map || map._removed) return false;
-      if (isFlightCinemaGlobeReady(map)) return true;
       if (!map.isStyleLoaded?.()) return false;
-      return ensureFlightCinemaGlobeReady(map);
+      return isFlightCinemaGlobeReady(map);
     },
     waitForFlightCinemaReady: (options) => {
       const map = mapRef.current?.getMap();

@@ -16,12 +16,10 @@ function FlightRouteSummary({
   routeIatas = [],
   flightHours = 1,
   flightLegHours = [],
-  isConnecting = false,
 }) {
   const codes = routeIatas.filter(Boolean);
   const legs = flightLegHours.filter(Boolean);
-  const connectionLabel = isConnecting ? '경유' : '직항';
-  const showLegTimes = isConnecting && legs.length > 0 && codes.length >= 2;
+  const showLegTimes = legs.length > 0 && codes.length >= 2;
 
   if (!codes.length) return null;
 
@@ -29,9 +27,7 @@ function FlightRouteSummary({
     return (
       <div className="min-w-0 leading-tight">
         <p className="text-sm font-bold text-white break-keep">{codes.join(' → ')}</p>
-        <p className="mt-0.5 text-[10px] font-medium text-white/45 break-keep">
-          약 {flightHours}시간 · {connectionLabel} · {ROUTE_META}
-        </p>
+        <p className="mt-0.5 text-[10px] font-medium text-white/45 break-keep">{ROUTE_META}</p>
       </div>
     );
   }
@@ -92,7 +88,6 @@ export default function FlightCinemaBar({
               routeIatas={routeIatas}
               flightHours={flightHours}
               flightLegHours={flightLegHours}
-              isConnecting={isConnecting}
             />
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">

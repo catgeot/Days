@@ -12,7 +12,7 @@
 ## 써머리「항공 경로」버튼 — 준비 판정 정확도 fix
 
 - **증상**: `mapReady`만 true면 버튼 활성 · 클릭 무반응(시네마 레이어 미등록·스타일 전환 후 stale ready)
-- **수정**: `HomeGlobeMapbox` `isFlightCinemaReady` → `isFlightCinemaGlobeReady`+`ensure` · 스타일 전환·투어·시네마 중 false · `HomePlaceCardSummary` 준비 폴링 지속(ready→not-ready 복귀)
+- **수정**: `HomeGlobeMapbox` `isFlightCinemaReady` → `isFlightCinemaGlobeReady` · 스타일 전환·투어·시네마 중 false · `HomePlaceCardSummary` 준비 폴링 지속(ready→not-ready 복귀) · *(후속: 폴링 ensure 제거 — 본 일지 FlightCinemaBar 절)*
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 2c 준비 판정 갱신
 - **QA**: 사용자 확인 ✅
 
@@ -90,3 +90,9 @@ Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
 - **원인**: uiPlace 50km 밖 `getFlightRouteAirportRow` null → `placeIds` `flightRouteHubIatas`(NRT·PPT·RAR) 미적용 · Edge/graph-direct 폴백
 - **수정**: `rentalAirportMatch` — placeIds curated `flightRouteHubIatas` 있으면 arc SSOT·Edge 스킵 · 기대 `ICN→NRT→PPT→RAR→MHX` 경유
 - **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8 uiPlace·Manihiki QA 갱신
+
+## FlightCinemaBar 직항 시간 · 써머리 준비 판정
+
+- **Bar**: 직항도 경유와 동일 인라인(`ICN ~13h JFK (총 13h)`) · `FlightCinemaBar` `showLegTimes` isConnecting 조건 제거
+- **준비 버튼**: `isFlightCinemaReady` 폴링 시 `ensureFlightCinemaGlobeReady` 부수 호출 제거 → 레이어 실존(`isFlightCinemaGlobeReady`)만 true · 미준비 시 「준비 중…」 비활성 유지
+- **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) · [`.ai-context.md`](../.ai-context.md) 3절 준비 판정 갱신
