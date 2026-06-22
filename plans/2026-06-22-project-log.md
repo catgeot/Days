@@ -16,6 +16,41 @@
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 2c 준비 판정 갱신
 - **QA**: 사용자 확인 ✅
 
+## 항공 허브 geo 규칙 v2 — 트랙 A·B ✅ (트랙 C·Phase4 대기)
+
+- **트랙 A**: `hampi` DEL · `cape-town` ADD · `victoria-falls` ADD→JNB `flightRouteHubIatas` override → `generate:flight-routes` · `generate:airports` · `audit:airports` none **0** · `audit:flight-arcs` **0**
+- **트랙 B**: `flightRouteGeoRules.js` v2 scorer(총시간·cross-track·권역) · graph-direct guard · `audit:flight-route-detours` · Edge `flightRouteGraph.ts` 동기 · precompute graph-direct 78→43(override **84**건 skip 불변)
+- **시네마 QA**: 함피 DEL · 케이프타운 ADD · 빅토리아폴스 ADD→JNB · `routeSource=override`
+- **대기**: ~~uiPlace→Edge 연결(`rentalAirportMatch` 승인 후)~~ → **다음 세션 C-3 승인됨** · Phase4 출발지 picker·timezone·경유 hub top-N
+
+### 항공권·배너 세션 — 에이전트 핸드오프 (C-3)
+
+**승인 범위** (사용자 합의): `getTravelSpotAirportRow`·배너 **불변** · `getGraphFlightRouteHubIatas` / `getFlightRouteAirportRow` — **uiPlace 50km 밖 + Edge fallback만** · [`resolveFlightRouteViaEdge.js`](../src/utils/resolveFlightRouteEdge.js) → `FlightCinemaContext` hub 주입 · Edge 실패 시 JSON lookup 폴백 · **배포** `resolve-flight-route` v2
+
+| 트리거 | Edge |
+|--------|------|
+| `uiPlace` + formal slug 상속 row **없음** (50km 밖) | 호출 |
+| override `flightRouteHubIatas` · 50km 상속 | 스킵 |
+| `originIata !== ICN` | 호출 (Phase4 선행) |
+
+### 다음 세션
+
+| 읽을 것 | 금지 | 제시어 |
+|---------|------|--------|
+| `.ai-context` 6절 · 본 절 C-3 · [`항공_허브_규칙_검토_55c0864d.plan.md`](../../.cursor/plans/항공_허브_규칙_검토_55c0864d.plan.md) B-3 | `travelSpots.js` 전체 · JSON spots 직접 · 배너·`getTravelSpotAirportRow` 변경 | 아래 **제시어** 복붙 |
+
+**제시어 (복붙)**:
+
+```
+항공권-이어하기 @plans/2026-06-22-project-log.md
+
+트랙 C-3 실행 — rentalAirportMatch uiPlace→Edge (승인 범위 내):
+· getGraphFlightRouteHubIatas / getFlightRouteAirportRow — uiPlace 50km 밖 Edge fallback만
+· resolveFlightRouteViaEdge → FlightCinemaContext hub 주입 · Edge 실패 JSON 폴백
+· resolve-flight-route Edge v2 배포
+· 배너·getTravelSpotAirportRow 불변 · audit:flight-arcs 0
+```
+
 ## 홈 지구본 — 첫 진입 면 로테이션 fix
 
 - **증상**: 새로고침·첫 `/` 진입 시 항상 default(0°,20°) → 아조레스 제도 노출 · `categoryFaceEpoch` flyTo 미실행

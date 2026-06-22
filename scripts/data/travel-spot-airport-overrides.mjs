@@ -122,7 +122,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피',
   },
-  hampi: { primaryIatas: ['BLR'], preferredLinkIata: 'BLR', confidence: 'high', rationale: '방갈로르 후 장거리 육로' },
+  hampi: {
+    primaryIatas: ['BLR'],
+    preferredLinkIata: 'BLR',
+    flightRouteHubIatas: ['DEL'],
+    confidence: 'high',
+    rationale: '방갈로르(BLR) · ICN→델리(DEL) 경유 — graph AUH 오탐 보정',
+  },
   meteora: { primaryIatas: ['SKG'], preferredLinkIata: 'SKG', confidence: 'high', rationale: '테살로니키 공항' },
   miyakojima: {
     primaryIatas: ['SHI', 'MMY'],
@@ -365,7 +371,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: 'ICN→LAX→LIM→LPB→UYU · 미주·남미 허브 경유 후 라파스·우유니 · Trip LPB · 태평양 waypoint',
   },
   'terracotta-army': { primaryIatas: ['XIY'], preferredLinkIata: 'XIY', confidence: 'high', rationale: '시안 공항' },
-  'victoria-falls': { primaryIatas: ['VFA'], preferredLinkIata: 'VFA', confidence: 'high', rationale: '빅토리아폴스 공항' },
+  'victoria-falls': {
+    primaryIatas: ['VFA'],
+    preferredLinkIata: 'VFA',
+    flightRouteHubIatas: ['ADD', 'JNB'],
+    confidence: 'high',
+    rationale: 'ICN→ADD→JNB→VFA · graph AMS→HRE 우회 제거 · JNB 경유 대안은 bannerNote',
+  },
   'raja-ampat': { primaryIatas: ['SOQ'], preferredLinkIata: 'SOQ', confidence: 'high', rationale: '소롱 공항' },
   'peninsula-valdes': {
     primaryIatas: ['EZE', 'AEP', 'PMY', 'REL'],
@@ -708,7 +720,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
   },
-  'cape-town': { primaryIatas: ['CPT'], preferredLinkIata: 'CPT', confidence: 'high', rationale: '케이프타운국제공항(CPT)' },
+  'cape-town': {
+    primaryIatas: ['CPT'],
+    preferredLinkIata: 'CPT',
+    flightRouteHubIatas: ['ADD'],
+    confidence: 'high',
+    rationale: '케이프타운(CPT) · ICN→ADD→CPT · 나이로비·킬리만자로와 동일 동아프리카 관문',
+  },
   nairobi: {
     primaryIatas: ['NBO'],
     preferredLinkIata: 'NBO',

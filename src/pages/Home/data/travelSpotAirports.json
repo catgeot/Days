@@ -1,9 +1,9 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-21T12:45:43.839Z",
+    "generatedAt": "2026-06-22T11:25:09.862Z",
     "spotCount": 271,
-    "placeIdCount": 627,
+    "placeIdCount": 629,
     "stats": {
       "override": 166,
       "curatedPreserved": 0,
@@ -46,9 +46,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST",
+        "ATH"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "cancun": {
       "primaryIatas": [
@@ -123,7 +124,7 @@
       "bannerNote": "버뮤다 최종 도착은 버뮤다 국제공항(BDA)입니다. 한국에서는 인천(ICN) 직항이 없어 보통 미국 동부(뉴욕 JFK·보스턴 BOS·애틀랜타 ATL·마이애미 MIA 등) 또는 영국·유럽(런던 LHR·파리 CDG 등) 경유 후 BDA로 연결되는 일정이 일반적입니다. 미국 경유 시 ESTA·캐나다·영국 경유 시 해당 입국·트랜짓 비자 규정을 반드시 확인하세요. 항공권 검색 시 도착지 코드 BDA를 입력하고, 티켓의 최종 도착 공항을 확인한 뒤 제휴 링크도 맞춰 주세요.",
       "rationale": "버뮤다 국제공항(L.F. Wade) — 한국 직항 없음",
       "graphFlightRouteHubIatas": [
-        "ATL"
+        "JFK"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -151,9 +152,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "NBO"
+        "NBO",
+        "DAR"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "rarotonga": {
       "primaryIatas": [
@@ -197,7 +199,7 @@
       "bannerNote": "팔라완·엘니도는 ENI 직항(MNL 경유·AirSWIFT), PPS 육로, MNL 국제선 관문이 나뉩니다. 엘니도 상세 경로는 엘니도 여행지 배너를 참고해 주세요.",
       "rationale": "엘니도·푸에르토프린세사·마닐라 관문",
       "graphFlightRouteHubIatas": [
-        "BKI"
+        "MNL"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -212,7 +214,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "LED"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -313,12 +315,11 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "빅토리아폴스 공항",
-      "graphFlightRouteHubIatas": [
-        "AMS",
-        "HRE"
-      ],
-      "graphFlightRouteSource": "graph-2hop"
+      "rationale": "ICN→ADD→JNB→VFA · graph AMS→HRE 우회 제거 · JNB 경유 대안은 bannerNote",
+      "flightRouteHubIatas": [
+        "ADD",
+        "JNB"
+      ]
     },
     "mount-fuji": {
       "primaryIatas": [
@@ -330,8 +331,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HND",
+        "KMQ"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "great-barrier-reef": {
       "primaryIatas": [
@@ -343,9 +347,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "HKG"
+        "BNE",
+        "SYD"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "andaman-islands": {
       "primaryIatas": [
@@ -416,7 +421,7 @@
       "bannerNote": "호주령 크리스마스섬 직항은 크리스마스섬(XCH)입니다. 퍼스(PER) 등 호주 본토에서 정기편·경유로 이어지는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
       "rationale": "섬 도착 XCH, 호주 본토 경유 PER",
       "graphFlightRouteHubIatas": [
-        "BKK",
+        "CGK",
         "PER"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -432,7 +437,7 @@
       "bannerNote": "디에고가르시아는 영국령 군사 기지로 일반 관광 출입이 불가합니다. 아래 링크는 인도양 권역(몰디브 등) 연결·일정 참고용이며, 실제 목적지와 다릅니다.",
       "rationale": "민간 출입 불가, 인도양 경유 허브 참고",
       "graphFlightRouteHubIatas": [
-        "AUH"
+        "CMB"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -456,7 +461,7 @@
         "SVJ"
       ],
       "graphFlightRouteHubIatas": [
-        "AMS",
+        "HEL",
         "OSL"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -471,9 +476,10 @@
       "confidence": "high",
       "rationale": "마라케시·메르주가 관문",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MXP",
+        "CMN"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "yellowknife": {
       "primaryIatas": [
@@ -552,8 +558,11 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "히스로공항(LHR)",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HEL",
+        "CPH"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "cape-town": {
       "primaryIatas": [
@@ -563,11 +572,10 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "케이프타운국제공항(CPT)",
-      "graphFlightRouteHubIatas": [
-        "AMS"
-      ],
-      "graphFlightRouteSource": "graph-1hop"
+      "rationale": "케이프타운(CPT) · ICN→ADD→CPT · 나이로비·킬리만자로와 동일 동아프리카 관문",
+      "flightRouteHubIatas": [
+        "ADD"
+      ]
     },
     "tokyo": {
       "primaryIatas": [
@@ -579,8 +587,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "NRT",
+        "KMQ"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "sydney": {
       "primaryIatas": [
@@ -591,8 +602,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "BNE"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "ushuaia": {
       "primaryIatas": [
@@ -604,7 +617,7 @@
       "confidence": "high",
       "rationale": "우수아이아 마샬공항(USH) — 티에라델푸에고·남극 크루즈 관문",
       "graphFlightRouteHubIatas": [
-        "AMS",
+        "LHR",
         "EZE"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -638,7 +651,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "TLV"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -665,8 +678,11 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "창이국제공항(SIN)",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "dubai": {
       "primaryIatas": [
@@ -677,8 +693,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "AUH",
+        "DOH"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "nairobi": {
       "primaryIatas": [
@@ -722,9 +741,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "LAX",
+        "LIM"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "melbourne": {
       "primaryIatas": [
@@ -736,7 +756,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AUH"
+        "SYD"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -790,9 +810,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "CAG"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "giza-pyramids": {
       "primaryIatas": [
@@ -804,7 +825,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "TLV"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -832,7 +853,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "TLV"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -860,9 +881,10 @@
       "bannerNote": "국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.",
       "rationale": "바간 관문 냥우(NYU) 공항",
       "graphFlightRouteHubIatas": [
-        "RGN"
+        "KMG",
+        "MDL"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "fiji": {
       "primaryIatas": [
@@ -911,7 +933,7 @@
       "confidence": "high",
       "rationale": "테살로니키 공항",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -961,8 +983,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "MUC"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "marrakech": {
       "primaryIatas": [
@@ -974,9 +998,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MXP",
+        "CMN"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "alaska": {
       "primaryIatas": [
@@ -1008,8 +1033,8 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS",
-        "GIG"
+        "JFK",
+        "GRU"
       ],
       "graphFlightRouteSource": "graph-2hop"
     },
@@ -1071,7 +1096,7 @@
       "bannerNote": "남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.",
       "rationale": "남극 크루즈·연구 기지는 우수아이아 등 남미 관문",
       "graphFlightRouteHubIatas": [
-        "AMS",
+        "LHR",
         "EZE"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -1091,8 +1116,11 @@
           12
         ]
       ],
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "SFO",
+        "MRY"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "tonga": {
       "primaryIatas": [
@@ -1119,9 +1147,10 @@
       "rationale": "생드니 공항",
       "klookRentalHomeSearchLabel": "롤랑 가로스 공항",
       "graphFlightRouteHubIatas": [
-        "CDG"
+        "PVG",
+        "MRU"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "seoul": {
       "primaryIatas": [
@@ -1163,7 +1192,7 @@
       "bannerNote": "이 여행지는 **아르헨티나 북부 파타고니아**(바릴로체·호수·안데스)입니다. 보통 부에노스아이레스(EZE) 국제선 후 바릴로체(BRC) 국내선으로 이어집니다. 남부(우수아이아 USH·토레스 델 파이네 PUQ)는 별도 여행지를 참고하세요. 티켓의 최종 도착 코드를 확인해 주세요.",
       "rationale": "아르헨티나 북부 파타고니아 — 바릴로체(BRC)·부에노스아이레스(EZE) 국제선 관문",
       "graphFlightRouteHubIatas": [
-        "AMS",
+        "FRA",
         "EZE"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -1179,9 +1208,10 @@
       "bannerNote": "케르겔렌은 연구·군사 목적 선박·전용 항공만 접근 가능합니다. 레위니옹(RUN) 등 프랑스 남방 영토 관문을 거치는 탐험 일정이 일반적입니다.",
       "rationale": "레위니옹 경유 프랑스 남방군도",
       "graphFlightRouteHubIatas": [
-        "CDG"
+        "PVG",
+        "MRU"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "yakutsk": {
       "primaryIatas": [
@@ -1193,7 +1223,7 @@
       "confidence": "high",
       "rationale": "야쿠츠크 공항",
       "graphFlightRouteHubIatas": [
-        "PEK"
+        "HRB"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1207,7 +1237,7 @@
       "confidence": "high",
       "rationale": "페트로파블롭스크캄차츠키",
       "graphFlightRouteHubIatas": [
-        "KHV"
+        "VVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1220,8 +1250,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HEL",
+        "CPH"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "barcelona": {
       "primaryIatas": [
@@ -1233,7 +1266,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1270,7 +1303,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "SVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1284,7 +1317,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1320,7 +1353,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1363,8 +1396,11 @@
         "PVG",
         "SHA"
       ],
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "NGB",
+        "XMN"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "kyoto": {
       "primaryIatas": [
@@ -1541,8 +1577,11 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "푸켓국제공항(HKT)",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "phi-phi-islands": {
       "primaryIatas": [
@@ -1553,8 +1592,11 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "푸켓 국제공항 후 랏사다 항구 페리(툴킷 여정·직항 일정)",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "koh-samui": {
       "primaryIatas": [
@@ -1567,9 +1609,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
+        "HKG",
         "BKK"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "langkawi": {
       "primaryIatas": [
@@ -1582,9 +1625,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
+        "HKG",
         "KUL"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "krabi": {
       "primaryIatas": [
@@ -1608,8 +1652,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "KLO"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "nha-trang": {
       "primaryIatas": [
@@ -1621,9 +1667,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "DAD"
+        "HKG",
+        "SGN"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "yosemite": {
       "primaryIatas": [
@@ -1695,7 +1742,7 @@
       "confidence": "high",
       "rationale": "퀸즈타운 공항",
       "graphFlightRouteHubIatas": [
-        "SYD"
+        "BNE"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1709,7 +1756,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "SVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1723,7 +1770,7 @@
       "confidence": "high",
       "rationale": "장가계 공항",
       "graphFlightRouteHubIatas": [
-        "CAN"
+        "NKG"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1749,7 +1796,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "SVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1764,9 +1811,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "GVA"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "dublin": {
       "primaryIatas": [
@@ -1778,7 +1826,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "HEL"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -1792,9 +1840,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "LHR",
+        "BHD"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "copenhagen": {
       "primaryIatas": [
@@ -1845,8 +1894,11 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "쿠알라룸푸르국제공항(KUL)",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "hanoi": {
       "primaryIatas": [
@@ -1888,8 +1940,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "FRA"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "milan": {
       "primaryIatas": [
@@ -1900,8 +1954,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "MUC"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "madeira": {
       "primaryIatas": [
@@ -1913,9 +1969,10 @@
       "confidence": "high",
       "rationale": "마데이라(푼샬) 공항 FNC — Phase D-3·승격 slug",
       "graphFlightRouteHubIatas": [
+        "HEL",
         "AMS"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "lisbon": {
       "primaryIatas": [
@@ -1927,9 +1984,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "HEL",
+        "CPH"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "porto": {
       "primaryIatas": [
@@ -1941,9 +1999,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "HEL",
+        "CDG"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "madrid": {
       "primaryIatas": [
@@ -1954,8 +2013,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "FRA",
+        "CDG"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "seville": {
       "primaryIatas": [
@@ -1967,9 +2029,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "FRA",
+        "BIO"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "brussels": {
       "primaryIatas": [
@@ -2009,9 +2072,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "GVA"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "geneva": {
       "primaryIatas": [
@@ -2023,9 +2087,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "ZRH"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "washington-dc": {
       "primaryIatas": [
@@ -2075,9 +2140,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
+        "ORD",
         "ATL"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "montreal": {
       "primaryIatas": [
@@ -2091,7 +2157,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "YYZ"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2158,8 +2224,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "hoi-an": {
       "primaryIatas": [
@@ -2170,8 +2239,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "taj-mahal": {
       "primaryIatas": [
@@ -2195,7 +2267,7 @@
       "confidence": "high",
       "rationale": "자이푸르 국제공항",
       "graphFlightRouteHubIatas": [
-        "AUH"
+        "DEL"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2209,9 +2281,10 @@
       "confidence": "high",
       "rationale": "바라나시 공항",
       "graphFlightRouteHubIatas": [
+        "DEL",
         "BOM"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "hampi": {
       "primaryIatas": [
@@ -2221,11 +2294,10 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "방갈로르 후 장거리 육로",
-      "graphFlightRouteHubIatas": [
-        "AUH"
-      ],
-      "graphFlightRouteSource": "graph-1hop"
+      "rationale": "방갈로르(BLR) · ICN→델리(DEL) 경유 — graph AUH 오탐 보정",
+      "flightRouteHubIatas": [
+        "DEL"
+      ]
     },
     "great-wall": {
       "primaryIatas": [
@@ -2236,8 +2308,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "DLC",
+        "HET"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "forbidden-city": {
       "primaryIatas": [
@@ -2248,8 +2323,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "DLC",
+        "HET"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "terracotta-army": {
       "primaryIatas": [
@@ -2260,8 +2338,10 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "시안 공항",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "TAO"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "lhasa": {
       "primaryIatas": [
@@ -2273,9 +2353,10 @@
       "confidence": "high",
       "rationale": "라싸 공항",
       "graphFlightRouteHubIatas": [
-        "PEK"
+        "TNA",
+        "XIY"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "dunhuang": {
       "primaryIatas": [
@@ -2287,9 +2368,10 @@
       "confidence": "high",
       "rationale": "둔황 공항",
       "graphFlightRouteHubIatas": [
-        "HGH"
+        "TSN",
+        "LHW"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "persepolis": {
       "primaryIatas": [
@@ -2316,7 +2398,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2330,7 +2412,7 @@
       "confidence": "high",
       "rationale": "이즈미르 아드난 멘데레스",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2380,7 +2462,7 @@
       "confidence": "high",
       "rationale": "페스 사이스 공항",
       "graphFlightRouteHubIatas": [
-        "AMS",
+        "MXP",
         "BCN"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -2395,9 +2477,10 @@
       "confidence": "high",
       "rationale": "바마코 후 육로·강",
       "graphFlightRouteHubIatas": [
-        "CDG"
+        "IST",
+        "TUN"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "lalibela": {
       "primaryIatas": [
@@ -2493,9 +2576,10 @@
       "bannerNote": "산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
       "rationale": "순례 종착지 SCQ — 마드리드(MAD) 경유·국내선 루트도 흔함",
       "graphFlightRouteHubIatas": [
+        "HEL",
         "CDG"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "everest-base-camp": {
       "primaryIatas": [
@@ -2554,9 +2638,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "ZRH"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "komodo-island": {
       "primaryIatas": [
@@ -2582,7 +2667,7 @@
       "confidence": "high",
       "rationale": "소롱 공항",
       "graphFlightRouteHubIatas": [
-        "KUL",
+        "DPS",
         "UPG"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -2705,9 +2790,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "PMI"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "crete": {
       "primaryIatas": [
@@ -2721,9 +2807,10 @@
       "bannerNote": "크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
       "rationale": "동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST",
+        "ATH"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "corsica": {
       "primaryIatas": [
@@ -2736,9 +2823,10 @@
       "confidence": "high",
       "rationale": "아작시오·바스티아 공항",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "NCE"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "sicily": {
       "primaryIatas": [
@@ -2751,9 +2839,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST",
+        "NAP"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "hvar": {
       "primaryIatas": [
@@ -2766,7 +2855,7 @@
       "bannerNote": "흐바르는 보통 스플리트(SPU) 공항 도착 후 페리로 들어갑니다. 귀국은 동선에 따라 두브로브니크(DBV)나 자그레브(ZAG) 아웃을 쓰는 경우가 많습니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.",
       "rationale": "스플리트(SPU) 도착 후 페리 — 흐바르 타운",
       "graphFlightRouteHubIatas": [
-        "CDG"
+        "MUC"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2780,9 +2869,10 @@
       "confidence": "high",
       "rationale": "밀라스·보드룸 공항",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST",
+        "ESB"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "bohol": {
       "primaryIatas": [
@@ -2830,7 +2920,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "TLV"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2844,7 +2934,7 @@
       "confidence": "high",
       "rationale": "페트로파블롭스크캄차츠키",
       "graphFlightRouteHubIatas": [
-        "KHV"
+        "VVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2858,7 +2948,7 @@
       "confidence": "high",
       "rationale": "퀸즈타운·티아나우 관문",
       "graphFlightRouteHubIatas": [
-        "SYD"
+        "BNE"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2872,7 +2962,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "HNL"
+        "NRT"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -2900,7 +2990,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS",
+        "IAH",
         "EZE"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -2957,8 +3047,11 @@
           12
         ]
       ],
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "SFO",
+        "MRY"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "arequipa": {
       "primaryIatas": [
@@ -2970,7 +3063,7 @@
       "confidence": "high",
       "rationale": "아레키파 공항",
       "graphFlightRouteHubIatas": [
-        "AMS",
+        "LAX",
         "LIM"
       ],
       "graphFlightRouteSource": "graph-2hop"
@@ -2984,8 +3077,11 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "푸켓(HKT) 후 보트·다이빙 투어",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "cinque-terre": {
       "primaryIatas": [
@@ -2998,8 +3094,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "MUC"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "mount-bromo": {
       "primaryIatas": [
@@ -3011,7 +3109,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "HKG"
+        "TPE"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3024,8 +3122,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "sapporo": {
       "primaryIatas": [
@@ -3060,8 +3161,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "KMI"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "qingdao": {
       "primaryIatas": [
@@ -3072,8 +3175,10 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "칭다오 공항",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "CGO"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "dubrovnik": {
       "primaryIatas": [
@@ -3085,9 +3190,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST",
+        "ZAG"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "saipan": {
       "primaryIatas": [
@@ -3098,8 +3204,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "FUK",
+        "PUS"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "phu-quoc": {
       "primaryIatas": [
@@ -3111,9 +3220,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "HAN"
+        "HKG",
+        "SGN"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "kota-kinabalu": {
       "primaryIatas": [
@@ -3161,9 +3271,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "PMI"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "miyakojima": {
       "primaryIatas": [
@@ -3241,9 +3352,10 @@
         "RAI"
       ],
       "graphFlightRouteHubIatas": [
-        "CDG"
+        "PEK",
+        "LGW"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "bled": {
       "primaryIatas": [
@@ -3263,7 +3375,7 @@
         "VCE"
       ],
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "SVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3287,9 +3399,10 @@
         "PSA"
       ],
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "CAG"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "kotor": {
       "primaryIatas": [
@@ -3307,9 +3420,10 @@
         "TGD"
       ],
       "graphFlightRouteHubIatas": [
-        "CDG"
+        "IST",
+        "BEG"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "jeju": {
       "primaryIatas": [
@@ -3381,7 +3495,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "SVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3463,8 +3577,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "FUK",
+        "TSJ"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "kanazawa": {
       "primaryIatas": [
@@ -3489,8 +3606,11 @@
       "confidence": "high",
       "bannerNote": "요코하마는 도쿄권 하네다(HND)·나리타(NRT) 공항 후 JR·지하철로 이동하는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
       "rationale": "하네다(HND)·나리타(NRT) — 도쿄권 국제·국내선 관문",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "NRT",
+        "KMQ"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "tsushima": {
       "primaryIatas": [
@@ -3503,8 +3623,10 @@
       "confidence": "high",
       "bannerNote": "대마도(쓰시마·対馬島)는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.",
       "rationale": "対馬島(대마도·쓰시마) — 한국인 주 경로 부산 페리·히타카츠; TSJ·FUK는 일본 측 항공 관문",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "KMI"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "kumamoto": {
       "primaryIatas": [
@@ -3515,8 +3637,11 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "FUK",
+        "ITM"
+      ],
+      "graphFlightRouteSource": "graph-2hop"
     },
     "ishigaki": {
       "primaryIatas": [
@@ -3528,7 +3653,7 @@
       "confidence": "high",
       "rationale": "이시가키 공항",
       "graphFlightRouteHubIatas": [
-        "HND"
+        "OKA"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3542,7 +3667,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "KUL"
+        "DPS"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3555,8 +3680,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "BKK"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "vang-vieng": {
       "primaryIatas": [
@@ -3567,8 +3694,10 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [],
-      "graphFlightRouteSource": "graph-direct"
+      "graphFlightRouteHubIatas": [
+        "BKK"
+      ],
+      "graphFlightRouteSource": "graph-1hop"
     },
     "zagreb": {
       "primaryIatas": [
@@ -3580,7 +3709,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "SVO"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3594,7 +3723,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3649,9 +3778,10 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "KUL"
+        "BNE",
+        "SYD"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "vladivostok": {
       "primaryIatas": [
@@ -3675,7 +3805,7 @@
       "confidence": "high",
       "rationale": "이르쿠츠크 국제공항(IKT) — 바이칼 관문·citiesData 승격",
       "graphFlightRouteHubIatas": [
-        "BKK"
+        "PEK"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3689,9 +3819,10 @@
       "confidence": "high",
       "rationale": "앨리스스프링스 공항(ASP) — 레드센터·울루루 관문",
       "graphFlightRouteHubIatas": [
-        "SYD"
+        "MNL",
+        "DRW"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "brunei": {
       "primaryIatas": [
@@ -3704,7 +3835,7 @@
       "bannerNote": "보르네오섬 북부의 독립 국가입니다. 말레이시아 사바·보르네오(borneo)와 입국 서류·관문(BKI)이 다릅니다. 티켓 도착은 BWN을 확인해 주세요.",
       "rationale": "브루나이 국제공항(BWN) — 보르네오(borneo)와 별도 여행지",
       "graphFlightRouteHubIatas": [
-        "BKK"
+        "HKG"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3739,9 +3870,10 @@
       "confidence": "high",
       "rationale": "함부르크 공항 HAM — 툴킷 FRA 오탐 보정",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "HEL",
+        "CPH"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "cocos-islands": {
       "primaryIatas": [
@@ -3785,7 +3917,7 @@
       "bannerNote": "그린란드는 코펜하겐(CPH) 등 유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
       "rationale": "덴마크 CPH 경유·누크 GOH",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "HEL"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3801,9 +3933,10 @@
       "bannerNote": "포클랜드 제도는 MPM(마운트 플레전트) 도착·칠레(SCL) 경유 일정이 일반적입니다. 토레스 델 파이네(PUQ)와 혼동하지 마세요.",
       "rationale": "MPM 스탠리·칠레 SCL 경유",
       "graphFlightRouteHubIatas": [
-        "NBO"
+        "PEK",
+        "JNB"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "solomon-islands": {
       "primaryIatas": [
@@ -3845,7 +3978,7 @@
       "confidence": "high",
       "rationale": "퀸즈타운 ZQN",
       "graphFlightRouteHubIatas": [
-        "SYD"
+        "BNE"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3878,7 +4011,7 @@
       "confidence": "high",
       "rationale": "서호주 PER",
       "graphFlightRouteHubIatas": [
-        "BKK"
+        "DPS"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -3945,9 +4078,10 @@
       "confidence": "high",
       "rationale": "아바나(Havana) HAV — citiesData·Phase D-4 placeIds 승격",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "ATL",
+        "GCM"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "malta": {
       "primaryIatas": [
@@ -3959,7 +4093,7 @@
       "confidence": "high",
       "rationale": "발레타(Valletta) 관문 MLA — Phase D-3 툴킷·승격 slug",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "IST"
       ],
       "graphFlightRouteSource": "graph-1hop"
     },
@@ -4038,9 +4172,10 @@
       "bannerNote": "바티칸 시국은 로마 시내 서쪽에 위치한 독립국입니다. 국제선은 로마 피우미치노(FCO) 공항이 관문이며, 시내·바티칸까지 지하철·택시·도보로 이동합니다. 항공권 검색 시 도착지 FCO를 사용하세요.",
       "rationale": "바티칸 시국 — 로마 피우미치노(FCO) 관문, 로마 시내와 인접",
       "graphFlightRouteHubIatas": [
-        "AMS"
+        "MUC",
+        "CAG"
       ],
-      "graphFlightRouteSource": "graph-1hop"
+      "graphFlightRouteSource": "graph-2hop"
     },
     "ubud": {
       "primaryIatas": [

@@ -1,13 +1,19 @@
 /**
  * ICN-centric OpenFlights graph resolver — max 2 hub hops (3 legs).
  * Phase 2 precompute SSOT · Phase 3 Edge reuse candidate.
+ * v2: geo·권역 scoring — flightRouteGeoRules.js
  */
 import {
   estimateFlightHours,
   getAirportHubCoords,
   MAX_FLIGHT_LEG_HOURS,
 } from '../../src/pages/Home/lib/globeFlightCinema.js';
-import { TIER_1_TRANSIT_HUBS } from './ourairports.mjs';
+import {
+  filterSuspiciousGraphDirect,
+  scoreFlightPathV2,
+  TIER_1_TRANSIT_HUBS,
+} from '../../src/pages/Home/lib/flightRouteGeoRules.js';
+import { loadOurAirportsRecords } from './ourairports.mjs';
 import { buildRouteAdjacency, loadOpenFlightsRoutes } from './openflights.mjs';
 import { createSupabaseScriptClient, loadEnvFile } from './supabase-script-env.mjs';
 
@@ -17,12 +23,28 @@ export const MAX_HUB_STOPS = 2;
 /** @type {Map<string, number> | null} */
 let hubTierCache = null;
 
+/** @type {Map<string, import('./ourairports.mjs').ReturnType<typeof loadOurAirportsRecords> extends Promise<infer T> ? T extends (infer U)[] ? U : never : never> | null} */
+let airportMetaCache = null;
+
 function hubTier(iata) {
   if (!hubTierCache) {
     hubTierCache = new Map();
     for (const code of TIER_1_TRANSIT_HUBS) hubTierCache.set(code, 1);
   }
   return hubTierCache.get(iata) ?? 99;
+}
+
+/**
+ * @param {{ skipDownload?: boolean }} [options]
+ */
+export async function loadAirportMetaMap(options = {}) {
+  if (airportMetaCache) return airportMetaCache;
+  const records = await loadOurAirportsRecords({ skipDownload: options.skipDownload ?? true });
+  /** @type {Map<string, typeof records[number]>} */
+  const map = new Map();
+  for (const row of records) map.set(row.iata_code, row);
+  airportMetaCache = map;
+  return map;
 }
 
 /**
@@ -35,12 +57,18 @@ export function hasRouteEdge(origin, dest, adjacency) {
 }
 
 /**
- * Score candidate hub paths — lower is better.
- * @param {string[]} hubIatas
+ * Score candidate hub paths — lower is better (v2 geo rules).
+ * @param {string[]} path
+ * @param {Map<string, unknown> | null | undefined} airportMeta
  */
-function scoreHubPath(hubIatas) {
-  let score = hubIatas.length * 100;
-  for (const h of hubIatas) score += hubTier(h);
+function scoreHubPath(path, airportMeta) {
+  if (airportMeta?.size) {
+    return scoreFlightPathV2(path, { airportMeta });
+  }
+  let score = (path.length - 2) * 100;
+  for (let i = 1; i < path.length - 1; i += 1) {
+    score += hubTier(path[i]);
+  }
   return score;
 }
 
@@ -60,13 +88,14 @@ function maxLegHoursOnGraphPath(path) {
  * @param {string} origin
  * @param {string} dest
  * @param {Map<string, Set<string>>} adjacency
- * @param {{ maxHubStops?: number }} [options]
+ * @param {{ maxHubStops?: number, airportMeta?: Map<string, unknown> }} [options]
  * @returns {{ hubIatas: string[], hops: number, source: string, path: string[] } | null}
  */
 export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
   const from = String(origin || '').trim().toUpperCase();
   const to = String(dest || '').trim().toUpperCase();
   const maxHubStops = options.maxHubStops ?? MAX_HUB_STOPS;
+  const airportMeta = options.airportMeta ?? null;
 
   if (!from || !to || from.length !== 3 || to.length !== 3) return null;
   if (from === to) {
@@ -74,7 +103,7 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
   }
 
   /** @type {{ hubIatas: string[], hops: number, source: string, path: string[], score: number }[]} */
-  const candidates = [];
+  let candidates = [];
 
   if (hasRouteEdge(from, to, adjacency)) {
     candidates.push({
@@ -82,7 +111,7 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
       hops: 1,
       source: 'graph-direct',
       path: [from, to],
-      score: scoreHubPath([]),
+      score: scoreHubPath([from, to], airportMeta),
     });
   }
 
@@ -90,12 +119,13 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
     for (const h1 of adjacency.get(from) ?? []) {
       if (h1 === to) continue;
       if (hasRouteEdge(h1, to, adjacency)) {
+        const path = [from, h1, to];
         candidates.push({
           hubIatas: [h1],
           hops: 2,
           source: 'graph-1hop',
-          path: [from, h1, to],
-          score: scoreHubPath([h1]),
+          path,
+          score: scoreHubPath(path, airportMeta),
         });
       }
     }
@@ -107,12 +137,13 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
       for (const h2 of adjacency.get(h1) ?? []) {
         if (h2 === from || h2 === to || h2 === h1) continue;
         if (hasRouteEdge(h2, to, adjacency)) {
+          const path = [from, h1, h2, to];
           candidates.push({
             hubIatas: [h1, h2],
             hops: 3,
             source: 'graph-2hop',
-            path: [from, h1, h2, to],
-            score: scoreHubPath([h1, h2]),
+            path,
+            score: scoreHubPath(path, airportMeta),
           });
         }
       }
@@ -121,12 +152,22 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
 
   if (!candidates.length) return null;
 
+  if (airportMeta?.size) {
+    candidates = filterSuspiciousGraphDirect(candidates, adjacency, airportMeta);
+    if (!candidates.length) return null;
+  }
+
   const withinLegLimit = candidates.filter(
     (candidate) => maxLegHoursOnGraphPath(candidate.path) <= MAX_FLIGHT_LEG_HOURS
   );
   const pool = withinLegLimit.length ? withinLegLimit : candidates;
 
-  pool.sort((a, b) => a.score - b.score || a.hops - b.hops || a.hubIatas.join(',').localeCompare(b.hubIatas.join(',')));
+  pool.sort(
+    (a, b) =>
+      a.score - b.score ||
+      a.hops - b.hops ||
+      a.hubIatas.join(',').localeCompare(b.hubIatas.join(','))
+  );
   const best = pool[0];
   return {
     hubIatas: best.hubIatas,
@@ -196,11 +237,13 @@ export async function loadFlightRouteGraph(options = {}) {
 /**
  * @param {string} destIata
  * @param {Map<string, Set<string>>} adjacency
- * @param {{ originIata?: string }} [options]
+ * @param {{ originIata?: string, airportMeta?: Map<string, unknown> }} [options]
  */
 export function resolveFlightRouteFromGraph(destIata, adjacency, options = {}) {
   const originIata = String(options.originIata ?? DEFAULT_ORIGIN_IATA).trim().toUpperCase();
   const dest = String(destIata || '').trim().toUpperCase();
   if (!dest || dest.length !== 3) return null;
-  return resolveGraphFlightRoute(originIata, dest, adjacency);
+  return resolveGraphFlightRoute(originIata, dest, adjacency, {
+    airportMeta: options.airportMeta,
+  });
 }

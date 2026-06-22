@@ -204,7 +204,7 @@ npm run enrich:airports
 |------|------|---------|
 | `preferredLinkIata` | `travel-spot-airport-overrides.mjs` | 렌터카·픽업·배너 **최종** 도착 |
 | `tripFlightArrivalIata` | 동일 | Trip.com `aAirportCode` — **OTA로 검색 가능한 관문**(예: HNL, AUH) |
-| `flightRouteHubIatas` | **`travel-spot-airport-overrides.mjs` SSOT** (시네마) | arc·Bar 경유 hub · **`[]`(빈 배열)= corridor DXB 생략·직항 arc** · `flightRouteWaypoints` 병행(태평양·유럽 남방 우회). **미국(LAX/ATL) → 중동·유럽(DXB/DOH/CDG 등) 교체는 플래너·항공권 팁에 대안이 명시될 때만** — 대안 없으면 LAX 유지. **`MAX_FLIGHT_LEG_HOURS=16`** · graph-unresolved → hub 수동 · `generate:airports` |
+| `flightRouteHubIatas` | **`travel-spot-airport-overrides.mjs` SSOT** (시네마) | arc·Bar 경유 hub · **`[]`(빈 배열)= corridor DXB 생략·직항 arc** · `flightRouteWaypoints` 병행(태평양·유럽 남방 우회). **미국(LAX/ATL) → 중동·유럽(DXB/DOH/CDG 등) 교체는 플래너·항공권 팁에 대안이 명시될 때만** — 대안 없으면 LAX 유지. **`MAX_FLIGHT_LEG_HOURS=16`** · graph-unresolved → hub 수동 · `generate:airports` · **수동 override는 v2 graph 재생성 영향 없음** (`generate:flight-routes` skip) |
 | `flightRouteWaypoints` | 동일 | arc 지리 waypoint만 — **ICN↔LAX 직항** `[[180,12]]` · **ICN↔AMS 직항** `[[125,33],[15,42]]` 등 hub 없이 가능 · **배너·Trip IATA와 무관** |
 | `officialLinks[].destinationIata` | `flight-booking-overrides.mjs` | 항공사 공식 예약 URL 목적지 — **IATA와 다를 수 있음** (예: 코스라에 렌터카 `KOS` · United `KSA`) |
 
@@ -423,7 +423,7 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 | `pitcairn-islands` | 핏케언 제도 / Pitcairn Islands |
 | `bora-bora` | 프랑스령 폴리네시아 / French Polynesia |
 
-Mapbox **하위 지명**(Fa'anui·Tahaa 등)은 SSOT 승격 없이 `uiPlace` + `galleryRegionSpot`(근처 `bora-bora`, [`UI_PLACE_GALLERY_REGION_MAX_KM`](../src/utils/travelSpotResolve.js) **50**)로 갤러리 backup `{지명} Bora Bora` 처리. **항공 arc·Bar**는 [`getFlightRouteAirportRow`](../src/utils/rentalAirportMatch.js)가 formal slug의 `flightRouteHubIatas` 상속(시네마 **Edge 불필요**).
+Mapbox **하위 지명**(Fa'anui·Tahaa 등)은 SSOT 승격 없이 `uiPlace` + `galleryRegionSpot`(근처 `bora-bora`, [`UI_PLACE_GALLERY_REGION_MAX_KM`](../src/utils/travelSpotResolve.js) **50**)로 갤러리 backup `{지명} Bora Bora` 처리. **항공 arc·Bar**는 [`getFlightRouteAirportRow`](../src/utils/rentalAirportMatch.js)가 formal slug의 `flightRouteHubIatas` 상속(**50km 이내 · Edge 불필요**). **50km 밖 uiPlace** — graph JSON dest-only lookup → **C-3**: [`resolveFlightRouteViaEdge`](../src/utils/resolveFlightRouteEdge.js) + v2 Edge(배너 [`getTravelSpotAirportRow`](../src/utils/rentalAirportMatch.js)와 분리).
 
 ---
 

@@ -18,6 +18,7 @@
     "generate:airports-index": "node scripts/generate-airports-index.mjs",
     "generate:flight-routes": "node scripts/generate-flight-routes.mjs",
     "audit:flight-routes": "node scripts/audit-flight-routes.mjs",
+    "audit:flight-route-detours": "node scripts/audit-flight-route-detours.mjs",
     "db:apply-migrations": "node scripts/apply-supabase-migration.mjs",
     "generate:ferries": "node scripts/generate-travel-spot-ferries.mjs",
     "generate:transport": "node scripts/generate-travel-spot-transport.mjs",

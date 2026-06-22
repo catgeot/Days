@@ -13,6 +13,7 @@ import { resolveCinemaDestIata } from '../src/utils/rentalAirportMatch.js';
 import { TRAVEL_SPOT_AIRPORT_OVERRIDES } from './data/travel-spot-airport-overrides.mjs';
 import {
   DEFAULT_ORIGIN_IATA,
+  loadAirportMetaMap,
   loadFlightRouteGraph,
   resolveFlightRouteFromGraph,
 } from './lib/flight-route-resolver.mjs';
@@ -38,8 +39,11 @@ function hasManualFlightRouteOverride(slug) {
 
 async function main() {
   console.log('Loading OpenFlights route graph...');
-  const { adjacency, routeLegCount } = await loadFlightRouteGraph({ fromSupabase, skipDownload });
-  console.log(`Graph: ${routeLegCount} legs · ${adjacency.size} origin nodes`);
+  const [{ adjacency, routeLegCount }, airportMeta] = await Promise.all([
+    loadFlightRouteGraph({ fromSupabase, skipDownload }),
+    loadAirportMetaMap({ skipDownload: true }),
+  ]);
+  console.log(`Graph: ${routeLegCount} legs · ${adjacency.size} origin nodes · airport meta ${airportMeta.size}`);
 
   /** @type {Record<string, unknown>} */
   const spots = {};
@@ -71,6 +75,7 @@ async function main() {
 
     const resolved = resolveFlightRouteFromGraph(destIata, adjacency, {
       originIata: DEFAULT_ORIGIN_IATA,
+      airportMeta,
     });
 
     if (!resolved) {

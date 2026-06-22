@@ -1,44 +1,46 @@
 {
-  "generatedAt": "2026-06-21T12:04:27.704Z",
+  "generatedAt": "2026-06-22T11:25:07.943Z",
   "source": "openflights-cache",
   "originIata": "ICN",
   "routeLegCount": 67662,
   "graphNodeCount": 3409,
-  "spotCount": 191,
+  "spotCount": 187,
   "stats": {
     "total": 271,
-    "resolved": 188,
-    "direct": 78,
-    "oneHop": 96,
-    "twoHop": 13,
+    "resolved": 184,
+    "direct": 43,
+    "oneHop": 61,
+    "twoHop": 79,
     "unresolved": 3,
     "noDestIata": 0,
-    "manualOverrideSkipped": 80
+    "manualOverrideSkipped": 84
   },
   "spots": {
     "santorini": {
       "destIata": "JTR",
       "hubIatas": [
-        "AMS"
+        "IST",
+        "ATH"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
+        "ATH",
         "JTR"
       ]
     },
     "bermuda": {
       "destIata": "BDA",
       "hubIatas": [
-        "ATL"
+        "JFK"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "ATL",
+        "JFK",
         "BDA"
       ]
     },
@@ -58,39 +60,41 @@
     "zanzibar": {
       "destIata": "ZNZ",
       "hubIatas": [
-        "NBO"
+        "NBO",
+        "DAR"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
         "NBO",
+        "DAR",
         "ZNZ"
       ]
     },
     "palawan": {
       "destIata": "PPS",
       "hubIatas": [
-        "BKI"
+        "MNL"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "BKI",
+        "MNL",
         "PPS"
       ]
     },
     "canary-islands": {
       "destIata": "TFS",
       "hubIatas": [
-        "AMS"
+        "LED"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "LED",
         "TFS"
       ]
     },
@@ -124,57 +128,34 @@
         "GUM"
       ]
     },
-    "victoria-falls": {
-      "destIata": "VFA",
+    "mount-fuji": {
+      "destIata": "NRT",
       "hubIatas": [
-        "AMS",
-        "HRE"
+        "HND",
+        "KMQ"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
-        "HRE",
-        "VFA"
-      ]
-    },
-    "mount-fuji": {
-      "destIata": "NRT",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
-      "path": [
-        "ICN",
+        "HND",
+        "KMQ",
         "NRT"
       ]
     },
     "great-barrier-reef": {
       "destIata": "CNS",
       "hubIatas": [
-        "HKG"
-      ],
-      "hops": 2,
-      "source": "graph-1hop",
-      "path": [
-        "ICN",
-        "HKG",
-        "CNS"
-      ]
-    },
-    "andaman-islands": {
-      "destIata": "IXZ",
-      "hubIatas": [
-        "AUH",
-        "MAA"
+        "BNE",
+        "SYD"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AUH",
-        "MAA",
-        "IXZ"
+        "BNE",
+        "SYD",
+        "CNS"
       ]
     },
     "galapagos": {
@@ -195,14 +176,14 @@
     "christmas-island": {
       "destIata": "XCH",
       "hubIatas": [
-        "BKK",
+        "CGK",
         "PER"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "BKK",
+        "CGK",
         "PER",
         "XCH"
       ]
@@ -210,27 +191,27 @@
     "diego-garcia": {
       "destIata": "MLE",
       "hubIatas": [
-        "AUH"
+        "CMB"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AUH",
+        "CMB",
         "MLE"
       ]
     },
     "lofoten": {
       "destIata": "EVE",
       "hubIatas": [
-        "AMS",
+        "HEL",
         "OSL"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "HEL",
         "OSL",
         "EVE"
       ]
@@ -238,13 +219,15 @@
     "sahara-desert": {
       "destIata": "RAK",
       "hubIatas": [
-        "AMS"
+        "MXP",
+        "CMN"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MXP",
+        "CMN",
         "RAK"
       ]
     },
@@ -260,58 +243,58 @@
     },
     "london": {
       "destIata": "LHR",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
-      "path": [
-        "ICN",
-        "LHR"
-      ]
-    },
-    "cape-town": {
-      "destIata": "CPT",
       "hubIatas": [
-        "AMS"
+        "HEL",
+        "CPH"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
-        "CPT"
+        "HEL",
+        "CPH",
+        "LHR"
       ]
     },
     "tokyo": {
       "destIata": "HND",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "NRT",
+        "KMQ"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "NRT",
+        "KMQ",
         "HND"
       ]
     },
     "sydney": {
       "destIata": "SYD",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "BNE"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "BNE",
         "SYD"
       ]
     },
     "ushuaia": {
       "destIata": "USH",
       "hubIatas": [
-        "AMS",
+        "LHR",
         "EZE"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "LHR",
         "EZE",
         "USH"
       ]
@@ -319,98 +302,112 @@
     "cairo": {
       "destIata": "CAI",
       "hubIatas": [
-        "AMS"
+        "TLV"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "TLV",
         "CAI"
       ]
     },
     "singapore": {
       "destIata": "SIN",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "SGN",
         "SIN"
       ]
     },
     "dubai": {
       "destIata": "DXB",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "AUH",
+        "DOH"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "AUH",
+        "DOH",
         "DXB"
       ]
     },
     "buenos-aires": {
       "destIata": "EZE",
       "hubIatas": [
-        "AMS"
+        "LAX",
+        "LIM"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "LAX",
+        "LIM",
         "EZE"
       ]
     },
     "melbourne": {
       "destIata": "MEL",
       "hubIatas": [
-        "AUH"
+        "SYD"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AUH",
+        "SYD",
         "MEL"
       ]
     },
     "rome": {
       "destIata": "FCO",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "CAG"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "CAG",
         "FCO"
       ]
     },
     "giza-pyramids": {
       "destIata": "CAI",
       "hubIatas": [
-        "AMS"
+        "TLV"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "TLV",
         "CAI"
       ]
     },
     "petra": {
       "destIata": "AMM",
       "hubIatas": [
-        "AMS"
+        "TLV"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "TLV",
         "AMM"
       ]
     },
@@ -427,26 +424,28 @@
     "bagan": {
       "destIata": "NYU",
       "hubIatas": [
-        "RGN"
+        "KMG",
+        "MDL"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "RGN",
+        "KMG",
+        "MDL",
         "NYU"
       ]
     },
     "meteora": {
       "destIata": "SKG",
       "hubIatas": [
-        "AMS"
+        "IST"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
         "SKG"
       ]
     },
@@ -469,39 +468,44 @@
     },
     "prague": {
       "destIata": "PRG",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "MUC"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "MUC",
         "PRG"
       ]
     },
     "marrakech": {
       "destIata": "RAK",
       "hubIatas": [
-        "AMS"
+        "MXP",
+        "CMN"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MXP",
+        "CMN",
         "RAK"
       ]
     },
     "amazon-rainforest": {
       "destIata": "MAO",
       "hubIatas": [
-        "AMS",
-        "GIG"
+        "JFK",
+        "GRU"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
-        "GIG",
+        "JFK",
+        "GRU",
         "MAO"
       ]
     },
@@ -521,38 +525,45 @@
     "antarctica": {
       "destIata": "USH",
       "hubIatas": [
-        "AMS",
+        "LHR",
         "EZE"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "LHR",
         "EZE",
         "USH"
       ]
     },
     "los-angeles": {
       "destIata": "LAX",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "SFO",
+        "MRY"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "SFO",
+        "MRY",
         "LAX"
       ]
     },
     "la-reunion": {
       "destIata": "RUN",
       "hubIatas": [
-        "CDG"
+        "PVG",
+        "MRU"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "CDG",
+        "PVG",
+        "MRU",
         "RUN"
       ]
     },
@@ -568,14 +579,14 @@
     "patagonia": {
       "destIata": "BRC",
       "hubIatas": [
-        "AMS",
+        "FRA",
         "EZE"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "FRA",
         "EZE",
         "BRC"
       ]
@@ -583,62 +594,69 @@
     "kerguelen-islands": {
       "destIata": "RUN",
       "hubIatas": [
-        "CDG"
+        "PVG",
+        "MRU"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "CDG",
+        "PVG",
+        "MRU",
         "RUN"
       ]
     },
     "yakutsk": {
       "destIata": "YKS",
       "hubIatas": [
-        "PEK"
+        "HRB"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "PEK",
+        "HRB",
         "YKS"
       ]
     },
     "kamchatka-peninsula": {
       "destIata": "PKC",
       "hubIatas": [
-        "KHV"
+        "VVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "KHV",
+        "VVO",
         "PKC"
       ]
     },
     "paris": {
       "destIata": "CDG",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HEL",
+        "CPH"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HEL",
+        "CPH",
         "CDG"
       ]
     },
     "barcelona": {
       "destIata": "BCN",
       "hubIatas": [
-        "AMS"
+        "MUC"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
         "BCN"
       ]
     },
@@ -655,26 +673,26 @@
     "venice": {
       "destIata": "VCE",
       "hubIatas": [
-        "AMS"
+        "SVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "SVO",
         "VCE"
       ]
     },
     "athens": {
       "destIata": "ATH",
       "hubIatas": [
-        "AMS"
+        "IST"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
         "ATH"
       ]
     },
@@ -698,13 +716,13 @@
     "florence": {
       "destIata": "FLR",
       "hubIatas": [
-        "AMS"
+        "MUC"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
         "FLR"
       ]
     },
@@ -730,11 +748,16 @@
     },
     "shanghai": {
       "destIata": "PVG",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "NGB",
+        "XMN"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "NGB",
+        "XMN",
         "PVG"
       ]
     },
@@ -800,33 +823,45 @@
     },
     "phuket": {
       "destIata": "HKT",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "BKK",
         "HKT"
       ]
     },
     "phi-phi-islands": {
       "destIata": "HKT",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "BKK",
         "HKT"
       ]
     },
     "koh-samui": {
       "destIata": "USM",
       "hubIatas": [
+        "HKG",
         "BKK"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
         "BKK",
         "USM"
       ]
@@ -834,75 +869,82 @@
     "langkawi": {
       "destIata": "LGK",
       "hubIatas": [
+        "HKG",
         "KUL"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
         "KUL",
         "LGK"
       ]
     },
     "cebu": {
       "destIata": "CEB",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "KLO"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "KLO",
         "CEB"
       ]
     },
     "nha-trang": {
       "destIata": "CXR",
       "hubIatas": [
-        "DAD"
+        "HKG",
+        "SGN"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "DAD",
+        "HKG",
+        "SGN",
         "CXR"
       ]
     },
     "milford-sound": {
       "destIata": "ZQN",
       "hubIatas": [
-        "SYD"
+        "BNE"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "SYD",
+        "BNE",
         "ZQN"
       ]
     },
     "plitvice-lakes": {
       "destIata": "ZAG",
       "hubIatas": [
-        "AMS"
+        "SVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "SVO",
         "ZAG"
       ]
     },
     "zhangjiajie": {
       "destIata": "DYG",
       "hubIatas": [
-        "CAN"
+        "NKG"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "CAN",
+        "NKG",
         "DYG"
       ]
     },
@@ -919,52 +961,56 @@
     "dolomites": {
       "destIata": "VCE",
       "hubIatas": [
-        "AMS"
+        "SVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "SVO",
         "VCE"
       ]
     },
     "zermatt": {
       "destIata": "ZRH",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "GVA"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "GVA",
         "ZRH"
       ]
     },
     "dublin": {
       "destIata": "DUB",
       "hubIatas": [
-        "AMS"
+        "HEL"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "HEL",
         "DUB"
       ]
     },
     "edinburgh": {
       "destIata": "EDI",
       "hubIatas": [
-        "AMS"
+        "LHR",
+        "BHD"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "LHR",
+        "BHD",
         "EDI"
       ]
     },
@@ -980,11 +1026,16 @@
     },
     "kuala-lumpur": {
       "destIata": "KUL",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "SGN",
         "KUL"
       ]
     },
@@ -1000,33 +1051,41 @@
     },
     "munich": {
       "destIata": "MUC",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "FRA"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "FRA",
         "MUC"
       ]
     },
     "milan": {
       "destIata": "MXP",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "MUC"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "MUC",
         "MXP"
       ]
     },
     "madeira": {
       "destIata": "FNC",
       "hubIatas": [
+        "HEL",
         "AMS"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HEL",
         "AMS",
         "FNC"
       ]
@@ -1034,87 +1093,104 @@
     "lisbon": {
       "destIata": "LIS",
       "hubIatas": [
-        "AMS"
+        "HEL",
+        "CPH"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "HEL",
+        "CPH",
         "LIS"
       ]
     },
     "porto": {
       "destIata": "OPO",
       "hubIatas": [
-        "AMS"
+        "HEL",
+        "CDG"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "HEL",
+        "CDG",
         "OPO"
       ]
     },
     "madrid": {
       "destIata": "MAD",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "FRA",
+        "CDG"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "FRA",
+        "CDG",
         "MAD"
       ]
     },
     "seville": {
       "destIata": "SVQ",
       "hubIatas": [
-        "AMS"
+        "FRA",
+        "BIO"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "FRA",
+        "BIO",
         "SVQ"
       ]
     },
     "zurich": {
       "destIata": "ZRH",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "GVA"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "GVA",
         "ZRH"
       ]
     },
     "geneva": {
       "destIata": "GVA",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "ZRH"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "ZRH",
         "GVA"
       ]
     },
     "miami": {
       "destIata": "MIA",
       "hubIatas": [
+        "ORD",
         "ATL"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "ORD",
         "ATL",
         "MIA"
       ]
@@ -1122,13 +1198,13 @@
     "montreal": {
       "destIata": "YUL",
       "hubIatas": [
-        "AMS"
+        "YYZ"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "YYZ",
         "YUL"
       ]
     },
@@ -1144,21 +1220,31 @@
     },
     "hue": {
       "destIata": "DAD",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "SGN",
         "DAD"
       ]
     },
     "hoi-an": {
       "destIata": "DAD",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "SGN",
         "DAD"
       ]
     },
@@ -1175,95 +1261,101 @@
     "jaipur": {
       "destIata": "JAI",
       "hubIatas": [
-        "AUH"
+        "DEL"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AUH",
+        "DEL",
         "JAI"
       ]
     },
     "varanasi": {
       "destIata": "VNS",
       "hubIatas": [
+        "DEL",
         "BOM"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "DEL",
         "BOM",
         "VNS"
       ]
     },
-    "hampi": {
-      "destIata": "BLR",
-      "hubIatas": [
-        "AUH"
-      ],
-      "hops": 2,
-      "source": "graph-1hop",
-      "path": [
-        "ICN",
-        "AUH",
-        "BLR"
-      ]
-    },
     "great-wall": {
       "destIata": "PEK",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "DLC",
+        "HET"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "DLC",
+        "HET",
         "PEK"
       ]
     },
     "forbidden-city": {
       "destIata": "PEK",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "DLC",
+        "HET"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "DLC",
+        "HET",
         "PEK"
       ]
     },
     "terracotta-army": {
       "destIata": "XIY",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "TAO"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "TAO",
         "XIY"
       ]
     },
     "lhasa": {
       "destIata": "LXA",
       "hubIatas": [
-        "PEK"
+        "TNA",
+        "XIY"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "PEK",
+        "TNA",
+        "XIY",
         "LXA"
       ]
     },
     "dunhuang": {
       "destIata": "DNH",
       "hubIatas": [
-        "HGH"
+        "TSN",
+        "LHW"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "HGH",
+        "TSN",
+        "LHW",
         "DNH"
       ]
     },
@@ -1283,40 +1375,40 @@
     "cappadocia": {
       "destIata": "ASR",
       "hubIatas": [
-        "AMS"
+        "IST"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
         "ASR"
       ]
     },
     "ephesus": {
       "destIata": "ADB",
       "hubIatas": [
-        "AMS"
+        "IST"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
         "ADB"
       ]
     },
     "fez": {
       "destIata": "FEZ",
       "hubIatas": [
-        "AMS",
+        "MXP",
         "BCN"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MXP",
         "BCN",
         "FEZ"
       ]
@@ -1324,25 +1416,29 @@
     "timbuktu": {
       "destIata": "BKO",
       "hubIatas": [
-        "CDG"
+        "IST",
+        "TUN"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "CDG",
+        "IST",
+        "TUN",
         "BKO"
       ]
     },
     "santiago-de-compostela": {
       "destIata": "SCQ",
       "hubIatas": [
+        "HEL",
         "CDG"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HEL",
         "CDG",
         "SCQ"
       ]
@@ -1360,13 +1456,15 @@
     "mont-blanc": {
       "destIata": "GVA",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "ZRH"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "ZRH",
         "GVA"
       ]
     },
@@ -1386,14 +1484,14 @@
     "raja-ampat": {
       "destIata": "SOQ",
       "hubIatas": [
-        "KUL",
+        "DPS",
         "UPG"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "KUL",
+        "DPS",
         "UPG",
         "SOQ"
       ]
@@ -1424,78 +1522,88 @@
     "ibiza": {
       "destIata": "IBZ",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "PMI"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "PMI",
         "IBZ"
       ]
     },
     "crete": {
       "destIata": "HER",
       "hubIatas": [
-        "AMS"
+        "IST",
+        "ATH"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
+        "ATH",
         "HER"
       ]
     },
     "corsica": {
       "destIata": "AJA",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "NCE"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "NCE",
         "AJA"
       ]
     },
     "sicily": {
       "destIata": "CTA",
       "hubIatas": [
-        "AMS"
+        "IST",
+        "NAP"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
+        "NAP",
         "CTA"
       ]
     },
     "hvar": {
       "destIata": "SPU",
       "hubIatas": [
-        "CDG"
+        "MUC"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "CDG",
+        "MUC",
         "SPU"
       ]
     },
     "bodrum": {
       "destIata": "BJV",
       "hubIatas": [
-        "AMS"
+        "IST",
+        "ESB"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
+        "ESB",
         "BJV"
       ]
     },
@@ -1515,52 +1623,52 @@
     "wadi-rum": {
       "destIata": "AMM",
       "hubIatas": [
-        "AMS"
+        "TLV"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "TLV",
         "AMM"
       ]
     },
     "kamchatka": {
       "destIata": "PKC",
       "hubIatas": [
-        "KHV"
+        "VVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "KHV",
+        "VVO",
         "PKC"
       ]
     },
     "fiordland": {
       "destIata": "ZQN",
       "hubIatas": [
-        "SYD"
+        "BNE"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "SYD",
+        "BNE",
         "ZQN"
       ]
     },
     "tahiti": {
       "destIata": "PPT",
       "hubIatas": [
-        "HNL"
+        "NRT"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "HNL",
+        "NRT",
         "PPT"
       ]
     },
@@ -1577,14 +1685,14 @@
     "aconcagua": {
       "destIata": "MDZ",
       "hubIatas": [
-        "AMS",
+        "IAH",
         "EZE"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "IAH",
         "EZE",
         "MDZ"
       ]
@@ -1604,69 +1712,87 @@
     },
     "sequoia-national-park": {
       "destIata": "LAX",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "SFO",
+        "MRY"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "SFO",
+        "MRY",
         "LAX"
       ]
     },
     "arequipa": {
       "destIata": "AQP",
       "hubIatas": [
-        "AMS",
+        "LAX",
         "LIM"
       ],
       "hops": 3,
       "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "LAX",
         "LIM",
         "AQP"
       ]
     },
     "similan-islands": {
       "destIata": "HKT",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "BKK",
         "HKT"
       ]
     },
     "cinque-terre": {
       "destIata": "MXP",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "MUC"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "MUC",
         "MXP"
       ]
     },
     "mount-bromo": {
       "destIata": "SUB",
       "hubIatas": [
-        "HKG"
+        "TPE"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "HKG",
+        "TPE",
         "SUB"
       ]
     },
     "da-nang": {
       "destIata": "DAD",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "HKG",
+        "SGN"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "HKG",
+        "SGN",
         "DAD"
       ]
     },
@@ -1692,57 +1818,72 @@
     },
     "fukuoka": {
       "destIata": "FUK",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "KMI"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "KMI",
         "FUK"
       ]
     },
     "qingdao": {
       "destIata": "TAO",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "CGO"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "CGO",
         "TAO"
       ]
     },
     "dubrovnik": {
       "destIata": "DBV",
       "hubIatas": [
-        "AMS"
+        "IST",
+        "ZAG"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
+        "ZAG",
         "DBV"
       ]
     },
     "saipan": {
       "destIata": "SPN",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "FUK",
+        "PUS"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "FUK",
+        "PUS",
         "SPN"
       ]
     },
     "phu-quoc": {
       "destIata": "PQC",
       "hubIatas": [
-        "HAN"
+        "HKG",
+        "SGN"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "HAN",
+        "HKG",
+        "SGN",
         "PQC"
       ]
     },
@@ -1779,13 +1920,15 @@
     "sant-joan": {
       "destIata": "IBZ",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "PMI"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "PMI",
         "IBZ"
       ]
     },
@@ -1809,52 +1952,58 @@
     "cape-verde": {
       "destIata": "SID",
       "hubIatas": [
-        "CDG"
+        "PEK",
+        "LGW"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "CDG",
+        "PEK",
+        "LGW",
         "SID"
       ]
     },
     "bled": {
       "destIata": "LJU",
       "hubIatas": [
-        "AMS"
+        "SVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "SVO",
         "LJU"
       ]
     },
     "la-spezia": {
       "destIata": "FCO",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "CAG"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "CAG",
         "FCO"
       ]
     },
     "kotor": {
       "destIata": "TIV",
       "hubIatas": [
-        "CDG"
+        "IST",
+        "BEG"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "CDG",
+        "IST",
+        "BEG",
         "TIV"
       ]
     },
@@ -1911,13 +2060,13 @@
     "budapest": {
       "destIata": "BUD",
       "hubIatas": [
-        "AMS"
+        "SVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "SVO",
         "BUD"
       ]
     },
@@ -1963,11 +2112,16 @@
     },
     "nagasaki": {
       "destIata": "NGS",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "FUK",
+        "TSJ"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "FUK",
+        "TSJ",
         "NGS"
       ]
     },
@@ -1983,116 +2137,137 @@
     },
     "yokohama": {
       "destIata": "HND",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "NRT",
+        "KMQ"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "NRT",
+        "KMQ",
         "HND"
       ]
     },
     "tsushima": {
       "destIata": "FUK",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "KMI"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "KMI",
         "FUK"
       ]
     },
     "kumamoto": {
       "destIata": "OIT",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "FUK",
+        "ITM"
+      ],
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
+        "FUK",
+        "ITM",
         "OIT"
       ]
     },
     "ishigaki": {
       "destIata": "ISG",
       "hubIatas": [
-        "HND"
+        "OKA"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "HND",
+        "OKA",
         "ISG"
       ]
     },
     "lombok": {
       "destIata": "LOP",
       "hubIatas": [
-        "KUL"
+        "DPS"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "KUL",
+        "DPS",
         "LOP"
       ]
     },
     "vientiane": {
       "destIata": "VTE",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "BKK"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "BKK",
         "VTE"
       ]
     },
     "vang-vieng": {
       "destIata": "VTE",
-      "hubIatas": [],
-      "hops": 1,
-      "source": "graph-direct",
+      "hubIatas": [
+        "BKK"
+      ],
+      "hops": 2,
+      "source": "graph-1hop",
       "path": [
         "ICN",
+        "BKK",
         "VTE"
       ]
     },
     "zagreb": {
       "destIata": "ZAG",
       "hubIatas": [
-        "AMS"
+        "SVO"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "SVO",
         "ZAG"
       ]
     },
     "warsaw": {
       "destIata": "WAW",
       "hubIatas": [
-        "AMS"
+        "MUC"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
         "WAW"
       ]
     },
     "gold-coast": {
       "destIata": "OOL",
       "hubIatas": [
-        "KUL"
+        "BNE",
+        "SYD"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "KUL",
+        "BNE",
+        "SYD",
         "OOL"
       ]
     },
@@ -2109,104 +2284,110 @@
     "irkutsk": {
       "destIata": "IKT",
       "hubIatas": [
-        "BKK"
+        "PEK"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "BKK",
+        "PEK",
         "IKT"
       ]
     },
     "alice-springs": {
       "destIata": "ASP",
       "hubIatas": [
-        "SYD"
+        "MNL",
+        "DRW"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "SYD",
+        "MNL",
+        "DRW",
         "ASP"
       ]
     },
     "brunei": {
       "destIata": "BWN",
       "hubIatas": [
-        "BKK"
+        "HKG"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "BKK",
+        "HKG",
         "BWN"
       ]
     },
     "hamburg": {
       "destIata": "HAM",
       "hubIatas": [
-        "AMS"
+        "HEL",
+        "CPH"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "HEL",
+        "CPH",
         "HAM"
       ]
     },
     "greenland": {
       "destIata": "CPH",
       "hubIatas": [
-        "AMS"
+        "HEL"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "HEL",
         "CPH"
       ]
     },
     "falkland-islands": {
       "destIata": "MPM",
       "hubIatas": [
-        "NBO"
+        "PEK",
+        "JNB"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "NBO",
+        "PEK",
+        "JNB",
         "MPM"
       ]
     },
     "queenstown": {
       "destIata": "ZQN",
       "hubIatas": [
-        "SYD"
+        "BNE"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "SYD",
+        "BNE",
         "ZQN"
       ]
     },
     "perth": {
       "destIata": "PER",
       "hubIatas": [
-        "BKK"
+        "DPS"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "BKK",
+        "DPS",
         "PER"
       ]
     },
@@ -2223,39 +2404,43 @@
     "havana": {
       "destIata": "HAV",
       "hubIatas": [
-        "AMS"
+        "ATL",
+        "GCM"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "ATL",
+        "GCM",
         "HAV"
       ]
     },
     "malta": {
       "destIata": "MLA",
       "hubIatas": [
-        "AMS"
+        "IST"
       ],
       "hops": 2,
       "source": "graph-1hop",
       "path": [
         "ICN",
-        "AMS",
+        "IST",
         "MLA"
       ]
     },
     "vatican": {
       "destIata": "FCO",
       "hubIatas": [
-        "AMS"
+        "MUC",
+        "CAG"
       ],
-      "hops": 2,
-      "source": "graph-1hop",
+      "hops": 3,
+      "source": "graph-2hop",
       "path": [
         "ICN",
-        "AMS",
+        "MUC",
+        "CAG",
         "FCO"
       ]
     },

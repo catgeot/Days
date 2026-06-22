@@ -7,6 +7,7 @@ import {
   resolveGraphFlightRoute,
   type AirportRow,
 } from "../_shared/flightRouteGraph.ts";
+import type { AirportMeta } from "../_shared/flightRouteGeoRules.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -67,6 +68,42 @@ async function loadScheduledAirports(supabase: ReturnType<typeof createClient>):
   return all;
 }
 
+async function loadAirportMetaMap(
+  supabase: ReturnType<typeof createClient>,
+): Promise<Map<string, AirportMeta>> {
+  const PAGE = 1000;
+  const map = new Map<string, AirportMeta>();
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("airports")
+      .select("iata_code, latitude_deg, longitude_deg, iso_country, continent, type, scheduled_service")
+      .not("iata_code", "is", null)
+      .range(from, from + PAGE - 1);
+
+    if (error) throw new Error(error.message);
+    if (!data?.length) break;
+    for (const row of data) {
+      const code = String(row.iata_code ?? "").trim().toUpperCase();
+      if (code.length !== 3) continue;
+      map.set(code, {
+        iata_code: code,
+        latitude_deg: Number(row.latitude_deg),
+        longitude_deg: Number(row.longitude_deg),
+        iso_country: row.iso_country ?? null,
+        continent: row.continent ?? null,
+        type: row.type ?? null,
+        scheduled_service: row.scheduled_service ?? null,
+      });
+    }
+    if (data.length < PAGE) break;
+    from += PAGE;
+  }
+
+  return map;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -110,8 +147,11 @@ serve(async (req) => {
       );
     }
 
-    const adjacency = await loadAdjacency(supabase);
-    const graph = resolveGraphFlightRoute(originIata, destIata, adjacency);
+    const [adjacency, airportMeta] = await Promise.all([
+      loadAdjacency(supabase),
+      loadAirportMetaMap(supabase),
+    ]);
+    const graph = resolveGraphFlightRoute(originIata, destIata, adjacency, { airportMeta });
 
     return new Response(
       JSON.stringify({
