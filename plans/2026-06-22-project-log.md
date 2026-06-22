@@ -95,4 +95,6 @@ Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
 
 - **Bar**: 직항도 경유와 동일 인라인(`ICN ~13h JFK (총 13h)`) · `FlightCinemaBar` `showLegTimes` isConnecting 조건 제거
 - **준비 버튼**: `isFlightCinemaReady` 폴링 시 `ensureFlightCinemaGlobeReady` 부수 호출 제거 → 레이어 실존(`isFlightCinemaGlobeReady`)만 true · 미준비 시 「준비 중…」 비활성 유지
+- **후속 fix**: 준비↔활성 깜박임 — `HomePlaceCardSummary` not-ready **4연속**(≈1s) 히스테리시스 · `onIdle` 시 `isFlightCinemaGlobeReady` false면 `syncGateoMarkerLayers`
+- **QA**: 사용자 1차 확인 ✅ (추가 이슈 있으면 재보고)
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) · [`.ai-context.md`](../.ai-context.md) 3절 준비 판정 갱신

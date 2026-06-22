@@ -345,7 +345,7 @@
 | [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 경유·직항 **인라인** 구간 시간 · **여행 플랜** · 닫기 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
 | [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · `requestFlightCinema` |
-| [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 · `hasFlightRoute`/`isFlightRouteReady`(`globeRef.isFlightCinemaReady`+`flightPreview` · 250ms 폴링) |
+| [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 · `hasFlightRoute`/`isFlightRouteReady`(`globeRef.isFlightCinemaReady`+`flightPreview` · 250ms 폴링 · **not-ready 4연속 히스테리시스**) |
 | [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「준비 중…」비활성 · 활성 시에만 클릭 |
 | [`Home/index.jsx`](../src/pages/Home/index.jsx) | `flightCinemaActive` |
 | [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `startFlightCinema`(ensure) · `isFlightCinemaReady`←**`isFlightCinemaGlobeReady` 읽기 전용**(폴링) · 스타일 전환·투어·시네마 중 false · tour 동시 불가 |
@@ -357,7 +357,7 @@
 - 3D tour 중 flight cinema **동시 재생 금지** · cinema active 중 새 장소/투어 → cinema 종료 ✅
 - `GLOBE_VIEW.flyZoom`(2.35) **변경 금지**.
 - 시네마 중 지구본 `opacity-100` (`isFlightCinemaActive`).
-- 써머리「항공 경로」: **활성 = 시네마 레이어 실존** (`isFlightCinemaGlobeReady` **읽기 전용** 폴링) — `mapReady`·폴링 중 `ensure` **금지** · 레이어 등록은 `startFlightCinema`/`waitForFlightCinemaReady` · 스타일 전환 후 stale ready 방지(폴링 지속) (2026-06-18·**2026-06-22** fix).
+- 써머리「항공 경로」: **활성 = 시네마 레이어 실존** (`isFlightCinemaGlobeReady` **읽기 전용** 폴링) — `mapReady`·폴링 중 `ensure` **금지** · 레이어 등록은 `startFlightCinema`/`waitForFlightCinemaReady` · UI 깜박임 방지: **not-ready 4연속(~1s)** 히스테리시스 · `onIdle` cinema 레이어 재동기화 (2026-06-18·**2026-06-22** fix).
 
 **로컬 QA**
 

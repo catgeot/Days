@@ -1589,7 +1589,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           syncMapZoom();
           applyPlaceLabelVisibility();
           const map = mapRef.current?.getMap();
-          if (map && !gateoMarkerLayersReady(map)) {
+          if (
+            map
+            && (!gateoMarkerLayersReady(map) || !isFlightCinemaGlobeReady(map))
+          ) {
             syncGateoMarkerLayers();
           }
           if (waitingThemeSettleRef.current) {
