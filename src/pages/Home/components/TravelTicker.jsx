@@ -121,7 +121,9 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
 
               <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
                 <WeatherIcon type={city.weather} size={12} />
-                <span className="text-xs font-medium text-gray-300 group-hover:text-white font-mono">{city.temp}°</span>
+                <span className="text-xs font-medium text-gray-300 group-hover:text-white font-mono">
+                  {typeof city.temp === 'number' ? city.temp : '–'}°
+                </span>
               </div>
             </div>
           ))}
@@ -145,7 +147,9 @@ export default function TravelTicker({ data = [], onCityClick, isExpanded: exter
 
             <div className="flex flex-col items-end">
               <WeatherIcon type={currentCity.weather} size={14} />
-              <span className="text-xs font-medium text-white/80 mt-0.5">{currentCity.temp}°</span>
+              <span className="text-xs font-medium text-white/80 mt-0.5">
+                {typeof currentCity.temp === 'number' ? currentCity.temp : '–'}°
+              </span>
             </div>
           </div>
 

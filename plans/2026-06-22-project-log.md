@@ -98,3 +98,9 @@ Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
 - **후속 fix**: 준비↔활성 깜박임 — `HomePlaceCardSummary` not-ready **4연속**(≈1s) 히스테리시스 · `onIdle` 시 `isFlightCinemaGlobeReady` false면 `syncGateoMarkerLayers`
 - **QA**: 사용자 1차 확인 ✅ (추가 이슈 있으면 재보고)
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) · [`.ai-context.md`](../.ai-context.md) 3절 준비 판정 갱신
+
+## 홈 TravelTicker — Open-Meteo 실제 날씨 연동
+
+- **변경**: `tickerWeather.js` — WMO→아이콘 매핑 · Open-Meteo `current` · sessionStorage 30분 캐시 · `useTrendingData` 랭킹 후 enrich · Fallback `trendingData` 수동 temp/weather 제거
+- **Fallback**: API 실패 시 `20°`·`cloud` · 로딩 중 `–°` (`TravelTicker`)
+- **QA**: `npm run build` ✅ · Osaka Open-Meteo 스모크 21°C · 커밋·푸시 ✅
