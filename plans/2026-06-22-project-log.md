@@ -23,33 +23,46 @@
 - **시네마 QA**: 함피 DEL · 케이프타운 ADD · 빅토리아폴스 ADD→JNB · `routeSource=override`
 - **대기**: ~~uiPlace→Edge 연결(`rentalAirportMatch` 승인 후)~~ → **다음 세션 C-3 승인됨** · Phase4 출발지 picker·timezone·경유 hub top-N
 
-### 항공권·배너 세션 — 에이전트 핸드오프 (C-3)
+## 트랙 C-3 — uiPlace→Edge · FlightCinemaContext hub 주입 ✅
 
-**승인 범위** (사용자 합의): `getTravelSpotAirportRow`·배너 **불변** · `getGraphFlightRouteHubIatas` / `getFlightRouteAirportRow` — **uiPlace 50km 밖 + Edge fallback만** · [`resolveFlightRouteViaEdge.js`](../src/utils/resolveFlightRouteEdge.js) → `FlightCinemaContext` hub 주입 · Edge 실패 시 JSON lookup 폴백 · **배포** `resolve-flight-route` v2
+- **`getFlightRouteAirportRow`**: uiPlace 50km 밖 → `null`(배너 `getTravelSpotAirportRow` 불변)
+- **`shouldResolveFlightRouteViaEdge`**: 50km 상속·override 스킵 · `originIata≠ICN` Edge
+- **`getGraphFlightRouteHubIatas`**: Edge 트리거 시 `null` → `resolveFlightRouteHubsForCinema`(Edge→JSON 폴백)
+- **`FlightCinemaContext`**: 시네마 시작 전 async hub 주입 · Bar·arc 동기화
+- **배포**: `resolve-flight-route` v2 `phdjnbfitvmrguqzverm` · `audit:flight-arcs` **0**
 
-| 트리거 | Edge |
-|--------|------|
-| `uiPlace` + formal slug 상속 row **없음** (50km 밖) | 호출 |
-| override `flightRouteHubIatas` · 50km 상속 | 스킵 |
-| `originIata !== ICN` | 호출 (Phase4 선행) |
+## 트랙 C-3 — Edge UX · 로컬 QA ✅
 
-### 다음 세션
+- **증상**: uiPlace Edge(Manihiki 등) — 버튼 활성인데 클릭 무반응 · 연타 후 작동 · 콘솔 로그 없음(의도)
+- **원인**: `requestFlightCinema`가 Edge await(1~5s cold start) 중 피드백 없음 · Edge를 globe ready **이전**에 await
+- **수정**: globe ready → Edge → 시네마 · `flightCinemaRequestPending` · 버튼 **「조회 중…」** · 중복 클릭 가드
+- **Manihiki QA**: 동기 미리보기 dest **MHX** · Edge graph **ICN→NRT→PPT→RAR**(쿡 제도 관문 · OpenFlights) · Network `resolve-flight-route`로 확인(콘솔 X)
+- **로컬 QA 샘플**: SSOT `보라보라`/`함피` · uiPlace sync `Tahaa`/`Fa'anui` · Edge `Manihiki` · no-preview `DMZ`/`서울`
+- **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8 uiPlace·Edge QA 갱신
+
+### 항공권·배너 세션 — 에이전트 핸드오프 (Phase 4)
+
+**C-3 완료** — `getTravelSpotAirportRow`·배너 불변 · uiPlace 50km 밖 Edge · `resolveFlightRouteHubsForCinema` · Edge v2 배포 ✅
 
 | 읽을 것 | 금지 | 제시어 |
 |---------|------|--------|
-| `.ai-context` 6절 · 본 절 C-3 · [`항공_허브_규칙_검토_55c0864d.plan.md`](../../.cursor/plans/항공_허브_규칙_검토_55c0864d.plan.md) B-3 | `travelSpots.js` 전체 · JSON spots 직접 · 배너·`getTravelSpotAirportRow` 변경 | 아래 **제시어** 복붙 |
+| `.ai-context` 6절 · 본 절 Phase 4 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) Phase 4 | `travelSpots.js` 전체 · JSON spots 직접 · C-3 재실행 | 아래 **제시어** 복붙 |
 
 **제시어 (복붙)**:
 
 ```
 항공권-이어하기 @plans/2026-06-22-project-log.md
 
-트랙 C-3 실행 — rentalAirportMatch uiPlace→Edge (승인 범위 내):
-· getGraphFlightRouteHubIatas / getFlightRouteAirportRow — uiPlace 50km 밖 Edge fallback만
-· resolveFlightRouteViaEdge → FlightCinemaContext hub 주입 · Edge 실패 JSON 폴백
-· resolve-flight-route Edge v2 배포
+Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
+· 출발지 picker (ICN 외 originIata — shouldResolveFlightRouteViaEdge 이미 선행)
+· timezone 제안
+· 경유 hub top-N UI
 · 배너·getTravelSpotAirportRow 불변 · audit:flight-arcs 0
 ```
+
+### (아카이브) C-3 핸드오ff — 완료
+
+**승인 범위** (사용자 합의): `getTravelSpotAirportRow`·배너 **불변** · `getGraphFlightRouteHubIatas` / `getFlightRouteAirportRow` — **uiPlace 50km 밖 + Edge fallback만** · [`resolveFlightRouteViaEdge.js`](../src/utils/resolveFlightRouteEdge.js) → `FlightCinemaContext` hub 주입 · Edge 실패 시 JSON lookup 폴백 · **배포** `resolve-flight-route` v2
 
 ## 홈 지구본 — 첫 진입 면 로테이션 fix
 

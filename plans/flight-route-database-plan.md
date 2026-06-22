@@ -15,7 +15,7 @@
 | Supabase `air_routes` | ✅ **37594** pairs (`import:routes`) · ICN outbound **370** |
 | slug graph precompute | ✅ `travelSpotFlightRoutes.json` **193** resolved · `graphFlightRouteHubIatas` merge **193** |
 | 공항 좌표 런타임 | [`rentalAirportHubs.js`](../src/utils/rentalAirportHubs.js) 302 **1순위** → [`airportsIndex.json`](../src/pages/Home/data/airportsIndex.json) **3870** 폴백 |
-| Mapbox 지명(`uiPlace`) | slug/placeIds 없어도 nearest·Edge로 arc preview ✅ · 경유·직항 Bar QA **✅**(Tahaa/Fa'anui·DMZ/loc-pin 의도) · 시네마 **클라 sync** |
+| Mapbox 지명(`uiPlace`) | slug/placeIds 없어도 nearest·**Edge 연결 ✅**(C-3) · 50km 이내 sync · 50km 밖 `resolve-flight-route` v2 · Tahaa/Fa'anui·Manihiki QA · 버튼「조회 중…」|
 | audit | `audit:airports none:0` · `audit:flight-arcs` **0 issues** · QA 8 slug Pass |
 
 **기존 WIP와의 관계**: arc·Bar·Trip·배너 파이프라인 **유지**. DB는 hub/waypoint/IATA **추론 두뇌** 추가. overrides는 2차 항공·예외(L3)만 점진 축소.

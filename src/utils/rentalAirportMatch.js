@@ -85,8 +85,29 @@ function getFlightRouteAirportRow(location) {
   if (location?.uiPlace) {
     const regionRow = resolveUiPlaceRegionAirportRow(location);
     if (regionRow) return regionRow;
+    // 50km 밖 uiPlace — 배너(getTravelSpotAirportRow)와 분리 · Edge resolve-flight-route
+    return null;
   }
   return getTravelSpotAirportRow(location);
+}
+
+/**
+ * uiPlace·비-ICN 출발 — live graph Edge 호출 여부 (C-3).
+ * 50km formal slug 상속·override flightRouteHubIatas → 스킵.
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ originIata?: string, destIata?: string, ignoreStaticAirportMap?: boolean }} [options]
+ */
+export function shouldResolveFlightRouteViaEdge(location, options = {}) {
+  const origin = String(options.originIata ?? 'ICN').trim().toUpperCase();
+  if (origin !== 'ICN') return true;
+
+  if (!location?.uiPlace) return false;
+
+  const regionRow = resolveUiPlaceRegionAirportRow(location);
+  if (regionRow) return false;
+
+  return true;
 }
 
 /** generate가 넣은 좌표·런타임 추론(`runtime-infer` 등) — 툴킷이 있으면 배너에서 양보 */
@@ -1036,17 +1057,27 @@ export function getFlightRouteHubIatas(location, options = {}) {
  * @returns {string[] | null} null = graph 없음 · [] = graph 직항
  */
 export function getGraphFlightRouteHubIatas(location, options = {}) {
+  const destIata = String(
+    options.destIata ?? resolveCinemaDestIata(location, options) ?? ''
+  )
+    .trim()
+    .toUpperCase();
+
+  if (
+    shouldResolveFlightRouteViaEdge(location, {
+      ...options,
+      destIata,
+    })
+  ) {
+    return null;
+  }
+
   const row = options.ignoreStaticAirportMap === true ? null : getFlightRouteAirportRow(location);
 
   if (row?.graphFlightRouteSource && row.graphFlightRouteSource !== 'graph-unresolved') {
     return Array.isArray(row.graphFlightRouteHubIatas) ? row.graphFlightRouteHubIatas : [];
   }
 
-  const destIata = String(
-    options.destIata ?? resolveCinemaDestIata(location, options) ?? ''
-  )
-    .trim()
-    .toUpperCase();
   if (destIata.length !== 3) return null;
 
   const graph = lookupGraphRouteByDestIata(destIata, options.originIata ?? 'ICN');

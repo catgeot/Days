@@ -9,7 +9,7 @@ import {
 
 /** 써머리 장소카드 — 항공 경로 시네마 진입 (플래너 Trip CTA와 분리) */
 export default function HomePlaceCardSummary({ globeRef, ...props }) {
-  const { requestFlightCinema } = useFlightCinema();
+  const { requestFlightCinema, flightCinemaRequestPending } = useFlightCinema();
   const { location } = props;
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : null;
@@ -49,7 +49,7 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
   const isFlightRouteReady = hasFlightRoute && flightCinemaGlobeReady && Boolean(flightPreview);
 
   const handlePreviewFlightRoute = () => {
-    if (!flightPreview || !isFlightRouteReady) return;
+    if (!flightPreview || !isFlightRouteReady || flightCinemaRequestPending) return;
     void requestFlightCinema({
       location,
       essentialGuide,
@@ -67,6 +67,7 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
       location={location}
       canPreviewFlightRoute={hasFlightRoute}
       isFlightRouteReady={isFlightRouteReady}
+      isFlightRoutePending={flightCinemaRequestPending}
       flightRouteLabel={
         flightPreview
           ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')

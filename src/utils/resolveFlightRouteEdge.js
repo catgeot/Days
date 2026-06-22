@@ -3,6 +3,11 @@
  * 동기 arc는 travelSpotFlightRoutes byDestIata · graphFlightRouteHubIatas 우선.
  */
 import { supabase } from '../shared/api/supabase';
+import { lookupGraphRouteByDestIata } from './flightRouteGraphLookup.js';
+import {
+  resolveCinemaDestIata,
+  shouldResolveFlightRouteViaEdge,
+} from './rentalAirportMatch.js';
 
 /** @type {Map<string, { hubIatas: string[] | null, source: string, path: string[] | null, resolvedDestIata: string, fetchedAt: number }>} */
 const cache = new Map();
@@ -70,4 +75,67 @@ export async function resolveFlightRouteViaEdge(params = {}) {
 
 export function clearFlightRouteEdgeCache() {
   cache.clear();
+}
+
+/**
+ * 시네마 hub chain — Edge 우선 · 실패 시 JSON byDestIata 폴백.
+ * shouldResolveFlightRouteViaEdge가 false면 null(동기 resolveFlightRoutePlan 사용).
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ originIata?: string, destIata?: string, essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @returns {Promise<{ hubIatas: string[], destIata: string, routeSource: string } | null>}
+ */
+export async function resolveFlightRouteHubsForCinema(location, options = {}) {
+  const originIata = String(options.originIata ?? 'ICN').trim().toUpperCase();
+  const destIata = String(
+    options.destIata ?? resolveCinemaDestIata(location, options) ?? ''
+  )
+    .trim()
+    .toUpperCase();
+
+  if (
+    !shouldResolveFlightRouteViaEdge(location, {
+      ...options,
+      originIata,
+      destIata,
+    })
+  ) {
+    return null;
+  }
+
+  const lat = typeof location?.lat === 'number' ? location.lat : Number(location?.lat);
+  const lng = typeof location?.lng === 'number' ? location.lng : Number(location?.lng);
+
+  const edge = await resolveFlightRouteViaEdge({
+    originIata,
+    ...(destIata.length === 3 ? { destIata } : {}),
+    ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {}),
+  });
+
+  const resolvedDest = String(edge?.destIata ?? destIata).trim().toUpperCase();
+
+  if (edge?.hubIatas != null && resolvedDest.length === 3) {
+    return {
+      hubIatas: edge.hubIatas,
+      destIata: resolvedDest,
+      routeSource: edge.source ?? 'graph',
+    };
+  }
+
+  if (resolvedDest.length === 3) {
+    const graph = lookupGraphRouteByDestIata(resolvedDest, originIata);
+    if (graph) {
+      return {
+        hubIatas: graph.hubIatas,
+        destIata: resolvedDest,
+        routeSource: graph.source ?? 'graph',
+      };
+    }
+  }
+
+  if (resolvedDest.length === 3) {
+    return { hubIatas: [], destIata: resolvedDest, routeSource: 'direct-fallback' };
+  }
+
+  return null;
 }

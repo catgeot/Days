@@ -13,10 +13,12 @@ import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import {
   estimateFlightHours,
+  estimateFlightHoursChain,
   estimateFlightLegHours,
   getAirportHubCoords,
   resolveFlightCinemaOd,
 } from './globeFlightCinema.js';
+import { resolveFlightRouteHubsForCinema } from '../../../utils/resolveFlightRouteEdge.js';
 
 const FlightCinemaContext = createContext(null);
 
@@ -37,8 +39,10 @@ export function FlightCinemaProvider({
   onActiveChange,
 }) {
   const [active, setActive] = useState(null);
+  const [requestPending, setRequestPending] = useState(false);
   const activeRef = useRef(null);
   const pendingCompleteRef = useRef(null);
+  const requestInFlightRef = useRef(false);
 
   useEffect(() => {
     activeRef.current = active;
@@ -71,6 +75,12 @@ export function FlightCinemaProvider({
       hubIatas: hubIatasParam,
       onComplete,
     }) => {
+      if (requestInFlightRef.current) return false;
+
+      requestInFlightRef.current = true;
+      setRequestPending(true);
+
+      try {
       if (isTourActive) {
         const endTour = endTourForCinema ?? globeRef.current?.endTour?.bind(globeRef.current);
         if (typeof endTour === 'function') {
@@ -130,6 +140,29 @@ export function FlightCinemaProvider({
         return false;
       }
 
+      const edgeHubs = await resolveFlightRouteHubsForCinema(location, {
+        originIata: normalizedOrigin,
+        destIata: normalizedDest,
+        essentialGuide,
+      });
+
+      if (edgeHubs) {
+        hubIatas = edgeHubs.hubIatas ?? [];
+        if (edgeHubs.destIata && edgeHubs.destIata !== normalizedDest) {
+          normalizedDest = edgeHubs.destIata;
+          resolvedDest = getAirportHubCoords(normalizedDest) ?? resolvedDest;
+        }
+        routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
+        isConnecting = hubIatas.length > 0;
+        const chainPoints = [
+          resolvedOrigin,
+          ...hubIatas.map((iata) => getAirportHubCoords(iata)).filter(Boolean),
+          resolvedDest,
+        ];
+        flightHours = estimateFlightHoursChain(chainPoints);
+        flightLegHours = estimateFlightLegHours(routeIatas);
+      }
+
       pendingCompleteRef.current = onComplete ?? null;
 
       const started = globeRef.current?.startFlightCinema?.({
@@ -160,6 +193,10 @@ export function FlightCinemaProvider({
         essentialGuide,
       });
       return true;
+      } finally {
+        requestInFlightRef.current = false;
+        setRequestPending(false);
+      }
     },
     [endTourForCinema, finishCinema, globeRef, isTourActive]
   );
@@ -172,10 +209,11 @@ export function FlightCinemaProvider({
   const value = useMemo(
     () => ({
       flightCinemaActive: Boolean(active),
+      flightCinemaRequestPending: requestPending,
       requestFlightCinema,
       closeFlightCinema,
     }),
-    [active, closeFlightCinema, requestFlightCinema]
+    [active, closeFlightCinema, requestFlightCinema, requestPending]
   );
 
   const barPortal =

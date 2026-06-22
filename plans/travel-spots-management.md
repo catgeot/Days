@@ -423,7 +423,26 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 | `pitcairn-islands` | 핏케언 제도 / Pitcairn Islands |
 | `bora-bora` | 프랑스령 폴리네시아 / French Polynesia |
 
-Mapbox **하위 지명**(Fa'anui·Tahaa 등)은 SSOT 승격 없이 `uiPlace` + `galleryRegionSpot`(근처 `bora-bora`, [`UI_PLACE_GALLERY_REGION_MAX_KM`](../src/utils/travelSpotResolve.js) **50**)로 갤러리 backup `{지명} Bora Bora` 처리. **항공 arc·Bar**는 [`getFlightRouteAirportRow`](../src/utils/rentalAirportMatch.js)가 formal slug의 `flightRouteHubIatas` 상속(**50km 이내 · Edge 불필요**). **50km 밖 uiPlace** — graph JSON dest-only lookup → **C-3**: [`resolveFlightRouteViaEdge`](../src/utils/resolveFlightRouteEdge.js) + v2 Edge(배너 [`getTravelSpotAirportRow`](../src/utils/rentalAirportMatch.js)와 분리).
+Mapbox **하위 지명**(Fa'anui·Tahaa 등)은 SSOT 승격 없이 `uiPlace` + `galleryRegionSpot`(근처 `bora-bora`, [`UI_PLACE_GALLERY_REGION_MAX_KM`](../src/utils/travelSpotResolve.js) **50**)로 갤러리 backup `{지명} Bora Bora` 처리.
+
+**항공 arc·Bar (C-3 ✅)**
+
+| 구분 | 동작 |
+|------|------|
+| **50km 이내** | [`getFlightRouteAirportRow`](../src/utils/rentalAirportMatch.js) → formal slug `flightRouteHubIatas` 상속 · Edge **스킵** |
+| **50km 밖 uiPlace** | [`shouldResolveFlightRouteViaEdge`](../src/utils/rentalAirportMatch.js) → [`resolveFlightRouteHubsForCinema`](../src/utils/resolveFlightRouteEdge.js) · Edge `resolve-flight-route` v2 → 실패 시 JSON `lookupGraphRouteByDestIata` |
+| **배너** | [`getTravelSpotAirportRow`](../src/utils/rentalAirportMatch.js) **불변** (arc 전용 row와 분리) |
+
+**로컬 QA 샘플** (`npm run audit:flight-route-gaps` uiPlace 7건과 동일)
+
+| 진입 | 지명 | 기대 |
+|------|------|------|
+| 검색 | **보라보라** · **함피** | SSOT · Edge 없음 |
+| 검색 또는 Mapbox 라벨 | **Tahaa** · **Fa'anui** | uiPlace sync · `ICN→NRT→PPT→BOB` |
+| 검색 | **Manihiki** | Edge · 동기 라벨 dest **MHX** · Edge Bar 예: `ICN→NRT→PPT→RAR`(쿡 제도 관문 graph) |
+| 검색 | **DMZ** · **서울** | no-preview · 버튼 비활성 |
+
+Edge 조회 중 버튼 **「조회 중…」** · Network `resolve-flight-route` 확인(콘솔 로그 없음 · cold start 1~5s). [`FlightCinemaContext`](../src/pages/Home/lib/FlightCinemaContext.jsx): globe ready → Edge → 시네마.
 
 ---
 
