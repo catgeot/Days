@@ -3,8 +3,8 @@ export const ICN_EUROPE_DEPARTURE_WAYPOINT = [125, 33];
 export const ICN_EUROPE_CORRIDOR_HUB = 'DXB';
 /** DXB→서·북유럽 — 우크라이나·RU50 bbox 회피용 지중해 관문 (헬싱키·발트 회귀 방지) */
 export const ICN_EUROPE_MEDITERRANEAN_GATEWAY = [15, 42];
-/** ICN→태평양·미 서부·하와이 — 북한 bbox arc 회피 (overrides·graph visual guard 공통) */
-export const ICN_PACIFIC_MIDPOINT_WAYPOINT = [180, 12];
+/** ICN→태평양·미 서부 — 북한 bbox arc 회피 · 북태평양 대권(구 [180,12]는 하와이급 남하) */
+export const ICN_PACIFIC_MIDPOINT_WAYPOINT = [135, 35];
 /** Dubai (DXB) — graph visual flyover only · hubIatas(Bar semantic)는 변경하지 않음 */
 export const DXB_VISUAL_FLYOVER_WAYPOINT = [55.3657, 25.2532];
 

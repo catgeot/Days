@@ -7,29 +7,44 @@ import {
   applyStandardBasemapConfig,
   isStandardBasemapLayer,
   STANDARD_HOME_CONFIG,
+  STANDARD_HOME_GLOBE_CONTEXT_CONFIG,
   STANDARD_HOME_SPACE_CONFIG
 } from './globeStandardBasemap';
 
 const MAPBOX_LABEL_MAX_ZOOM = 22;
+const GLOBE_CONTEXT_LABEL_MIN_ZOOM = 0;
 /** Layers pinned above max globe zoom so they never paint in space view. */
 const FORCE_HIDDEN_ZOOM_MIN = 22;
 const FORCE_HIDDEN_ZOOM_MAX = 24;
 
 const ADMIN_BOUNDARY_HINTS = ['admin', 'boundary', 'border', 'disputed'];
 const ROAD_OVERLAY_HINTS = ['road', 'street', 'highway', 'motorway', 'transit', 'rail', 'ferry'];
-const MAPBOX_SYMBOL_LABEL_HINTS = [
+const MAPBOX_PLACE_LABEL_HINTS = [
   'place-label',
   'settlement',
   'country-label',
   'state-label',
+];
+
+/** satellite-streets 대륙·대양 — 줌 4 미만에서도 유지 (도시·국가 지명과 분리) */
+export const MAPBOX_GLOBE_CONTEXT_LABEL_HINTS = [
+  'continent-label',
+  'continent',
+  'marine-label',
+  'marine',
+  'water-label',
+  'water-point-label',
+  'ocean-label',
+  'ocean',
+];
+
+const MAPBOX_SYMBOL_LABEL_HINTS = [
+  ...MAPBOX_PLACE_LABEL_HINTS,
   'landmark',
   'poi',
   'label',
   'airport',
-  'continent',
-  'marine',
-  'water-label',
-  'natural'
+  'natural',
 ];
 
 const layerMatchesHints = (layerId, sourceLayer, hints) => {
@@ -38,11 +53,18 @@ const layerMatchesHints = (layerId, sourceLayer, hints) => {
   return hints.some((hint) => id.includes(hint) || sl.includes(hint));
 };
 
+export function isGlobeContextBasemapLabel(layerId, sourceLayer) {
+  return layerMatchesHints(layerId, sourceLayer, MAPBOX_GLOBE_CONTEXT_LABEL_HINTS);
+}
+
 export function resolveStandardHomeBasemapConfig({ isPinVisible, zoom }) {
-  const showDetail = isPinVisible
-    && Number.isFinite(zoom)
-    && zoom >= PLACE_LABEL_MIN_ZOOM;
-  return showDetail ? STANDARD_HOME_CONFIG : STANDARD_HOME_SPACE_CONFIG;
+  if (!isPinVisible || !Number.isFinite(zoom)) {
+    return STANDARD_HOME_SPACE_CONFIG;
+  }
+  if (zoom >= PLACE_LABEL_MIN_ZOOM) {
+    return STANDARD_HOME_CONFIG;
+  }
+  return STANDARD_HOME_GLOBE_CONTEXT_CONFIG;
 }
 
 export function shouldShowMapboxGlobeLabels({ isPinVisible, zoom }) {
@@ -66,6 +88,32 @@ export function showMapboxDetailLayer(map, layerId) {
     map.setLayoutProperty(layerId, 'visibility', 'visible');
   } catch {
     // Style may be mid-transition.
+  }
+}
+
+/** 대륙·대양 Mapbox 라벨 — gateo 여행지명과 겹칠 때 여행지 우선(sort-key는 스타일 기본값) */
+export function showGlobeContextBasemapLayer(map, layerId) {
+  if (!map?.getLayer?.(layerId)) return;
+  try {
+    map.setLayerZoomRange(layerId, GLOBE_CONTEXT_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
+    map.setLayoutProperty(layerId, 'visibility', 'visible');
+    map.setPaintProperty(layerId, 'text-opacity', [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      1,
+      0.68,
+      4,
+      0.58,
+      6,
+      0.42,
+      8,
+      0.25,
+    ]);
+    map.setPaintProperty(layerId, 'text-halo-color', 'rgba(2, 6, 23, 0.88)');
+    map.setPaintProperty(layerId, 'text-halo-width', 1.1);
+  } catch {
+    // Style may be mid-transition or layer paint not overridable.
   }
 }
 
@@ -131,9 +179,16 @@ export function applyMapboxGlobeLabelPolicy(
 
     if (layer.type === 'symbol') {
       const isLandmark = isStandardBasemapLayer(layerId);
+      const isContextLabel = isGlobeContextBasemapLabel(layerId, layer['source-layer']);
       const isPlaceLabel = placeLabelSet.has(layerId)
-        || layerMatchesHints(layerId, layer['source-layer'], ['place-label', 'settlement', 'country-label', 'state-label']);
+        || layerMatchesHints(layerId, layer['source-layer'], MAPBOX_PLACE_LABEL_HINTS);
       const isMapboxLabel = isMapboxLabelSymbolLayer(layer);
+
+      if (isContextLabel) {
+        if (isPinVisible) showGlobeContextBasemapLayer(map, layerId);
+        else forceHideMapboxLayer(map, layerId);
+        continue;
+      }
 
       if (globeTheme === 'bright') {
         // Home never uses Standard landmark icons; config + layer hide (tour uses separate config).

@@ -49,6 +49,21 @@ export const STANDARD_HOME_CONFIG = [
   ['show3dLandmarks', false]
 ];
 
+/** Globe view (zoom < 4) — 대륙·대양 등 Mapbox place 라벨만; POI·도로 clutter off */
+export const STANDARD_HOME_GLOBE_CONTEXT_CONFIG = [
+  ['showPlaceLabels', true],
+  ['showPointOfInterestLabels', false],
+  ['showPedestrianRoads', false],
+  ['showRoadLabels', false],
+  ['showTransitLabels', false],
+  ['showAdminBoundaries', false],
+  ['showLandmarkIcons', false],
+  ['showLandmarkIconLabels', false],
+  ['show3dLandmarks', false],
+  ['show3dObjects', false],
+  ['showIndoorLabels', false]
+];
+
 /**
  * Urban 3D tour demo — stylized landmark icons + labels + Mapbox 3D landmark models.
  * @see https://docs.mapbox.com/map-styles/standard/api/

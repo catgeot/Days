@@ -1,9 +1,9 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-22T12:38:25.455Z",
+    "generatedAt": "2026-06-22T13:30:07.105Z",
     "spotCount": 271,
-    "placeIdCount": 629,
+    "placeIdCount": 630,
     "stats": {
       "override": 166,
       "curatedPreserved": 0,
@@ -62,8 +62,8 @@
       "rationale": "ICN→LAX→CUN(미국 경유) · Atlantic DXB corridor 오적용 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -265,8 +265,8 @@
       "rationale": "ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -492,8 +492,8 @@
       "rationale": "ICN→LAX→YZF · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -513,8 +513,8 @@
       "tripFlightArrivalIata": "LPB",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -723,8 +723,8 @@
       "rationale": "ICN→ATL→ORD · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -771,8 +771,8 @@
       "rationale": "칸쿤(CUN) 국제선 후 육로 · ICN→LAX→CUN 미국 경유(플래너 STEP)",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -792,8 +792,8 @@
       "rationale": "ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -914,8 +914,8 @@
       "tripFlightArrivalIata": "SCL",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1015,8 +1015,8 @@
       "rationale": "ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1049,8 +1049,8 @@
       "rationale": "ICN→LAX→LYR · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1112,8 +1112,8 @@
       "rationale": "ICN↔LAX 직항(대한항공·아시아나·에어프레미아 등) · arc만 태평양 waypoint로 시베리아 bbox 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "graphFlightRouteHubIatas": [
@@ -1437,8 +1437,8 @@
       "rationale": "ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1456,8 +1456,8 @@
       "rationale": "ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1475,8 +1475,8 @@
       "rationale": "ICN→ATL→YYZ · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1494,8 +1494,8 @@
       "rationale": "ICN→LAX→YVR · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1683,8 +1683,8 @@
       "rationale": "ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1703,8 +1703,8 @@
       "rationale": "ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1723,8 +1723,8 @@
       "rationale": "ICN→LAX→SCL→PUQ · 미국 경유 산티아고 국제선 후 파타고니아 국내선 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -1923,8 +1923,8 @@
       "rationale": "ICN→LAX→SEA · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2103,8 +2103,8 @@
       "rationale": "ICN→ATL→IAD · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2122,8 +2122,8 @@
       "rationale": "ICN→ATL→BOS · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2510,8 +2510,8 @@
       "rationale": "ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2529,8 +2529,8 @@
       "rationale": "ICN→LAX→LIM · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2722,8 +2722,8 @@
       ],
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2743,8 +2743,8 @@
       "rationale": "ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2770,8 +2770,8 @@
       ],
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -2902,8 +2902,8 @@
       "rationale": "ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -3007,8 +3007,8 @@
       "rationale": "ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -3043,8 +3043,8 @@
       "rationale": "ICN↔LAX 직항 후 육로 · arc만 태평양 waypoint로 시베리아 bbox 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "graphFlightRouteHubIatas": [
@@ -3738,8 +3738,8 @@
       "rationale": "ICN→ATL→PHL(툴킷 추천 경로 1) · 예시 3-hub(JFK/ATL/DTW) 오탐 제거 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -3759,8 +3759,8 @@
       "rationale": "ICN→LAX 국제선 후 SAN(국내선·Amtrak) · 태평양 waypoint로 시베리아 직통 arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -3851,8 +3851,8 @@
       "rationale": "ICN→LAX→EZE→FTE · 미국 경유 부에노스아이레스 국제선 후 파타고니아 국내선 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -3993,8 +3993,8 @@
       "rationale": "ICN→ATL→MSP · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -4029,8 +4029,8 @@
       "rationale": "ICN→ATL→NAS · DXB Atlantic corridor ukraine 교차 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [
@@ -4060,8 +4060,8 @@
       "rationale": "ICN→ATL→CCS · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
-          180,
-          12
+          135,
+          35
         ]
       ],
       "flightRouteHubIatas": [

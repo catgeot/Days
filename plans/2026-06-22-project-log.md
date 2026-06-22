@@ -104,3 +104,17 @@ Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
 - **변경**: `tickerWeather.js` — WMO→아이콘 매핑 · Open-Meteo `current` · sessionStorage 30분 캐시 · `useTrendingData` 랭킹 후 enrich · Fallback `trendingData` 수동 temp/weather 제거
 - **Fallback**: API 실패 시 `20°`·`cloud` · 로딩 중 `–°` (`TravelTicker`)
 - **QA**: `npm run build` ✅ · Osaka Open-Meteo 스모크 21°C · 커밋·푸시 ✅
+
+## 항공 시네마 — 태평양 waypoint 남하 과다 fix
+
+- **증상**: ICN→LAX 등 태평양 횡단 arc가 `[180,12]`(하와이급)까지 남하 · 옐로나이프(YZF) 등 첨부 스크린샷
+- **수정**: `ICN_PACIFIC_MIDPOINT_WAYPOINT` · overrides 35 slug `[[135,35]]` — 북한 bbox 회피 유지 · minLat 12°→34°
+- **QA**: `generate:airports` · `audit:airports` none **0** · `audit:flight-arcs` **0** · uyuni PASS
+
+## 지구본 — 대륙·대양 배경 라벨 상시 표기
+
+- **요청**: 여행지명과 자연스럽게 어울리는 대륙·대양 이름 항상 표기
+- **구현**: `globeGeoContextLabels.js`(7대륙+6대양) · `globeGeoContextLayers.js` Mapbox symbol — gateo 라벨보다 낮은 sort-key·은은한 색·줌 시 fade
+- **QA**: `npm run build` ✅
+- **후속 fix**: Mapbox 기본 대륙·대양 레이어 숨김 — gateo 커스텀 라벨(`globeGeoContextLabels`)만 유지 · 중복 표기 해소
+- **Mapbox SSOT 전환**: 커스텀 `globeGeoContext*` 제거 · `globeMapboxLabelPolicy` 대륙·대양 레이어 줌 0+ · bright `STANDARD_HOME_GLOBE_CONTEXT_CONFIG` · 한글 coalesce

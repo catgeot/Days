@@ -64,7 +64,8 @@ import {
 import { readGlobeShareViewFromUrl } from '../lib/globeExploreNav';
 import {
   applyEarlyMapboxGlobeLabelSuppress,
-  applyMapboxGlobeLabelPolicy
+  applyMapboxGlobeLabelPolicy,
+  isGlobeContextBasemapLabel,
 } from '../lib/globeMapboxLabelPolicy';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
@@ -122,7 +123,7 @@ const PLACE_LABEL_LAYER_HINTS = [
   'place-label',
   'settlement',
   'country-label',
-  'state-label'
+  'state-label',
 ];
 const HIDDEN_OVERLAY_LAYER_HINTS = [
   'road',
@@ -255,6 +256,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const markerClickGuardUntilRef = useRef(0);
   const allMarkersLookupRef = useRef([]);
   const placeLabelLayerIdsRef = useRef([]);
+  const contextLabelLayerIdsRef = useRef([]);
   const allSymbolLayerIdsRef = useRef([]);
   const allLineLayerIdsRef = useRef([]);
   const hiddenFillLayerIdsRef = useRef([]);
@@ -370,6 +372,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         return PLACE_LABEL_LAYER_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint));
       })
       .map((layer) => layer.id);
+
+    contextLabelLayerIdsRef.current = symbolLayers
+      .filter((layer) => Boolean(layer.layout && layer.layout['text-field']))
+      .filter((layer) => isGlobeContextBasemapLabel(layer.id, layer['source-layer']))
+      .map((layer) => layer.id);
   }, []);
 
   const ensureInteractionReady = useCallback(() => {
@@ -393,7 +400,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const map = mapRef.current?.getMap();
     if (!map || globeTheme === 'bright') return;
 
-    placeLabelLayerIdsRef.current.forEach((layerId) => {
+    [...placeLabelLayerIdsRef.current, ...contextLabelLayerIdsRef.current].forEach((layerId) => {
       if (isGateoLayer(layerId) || !map.getLayer(layerId)) return;
       try {
         map.setLayoutProperty(layerId, 'text-field', [
@@ -423,12 +430,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       placeLabelLayerIds: placeLabelLayerIdsRef.current
     });
 
+    if (globeTheme !== 'bright') {
+      applyKoreanSatelliteLabels();
+    }
+
     if (shouldShowMapboxContext === null) return;
 
     if (lastPlaceLabelVisibleRef.current !== shouldShowMapboxContext) {
       lastPlaceLabelVisibleRef.current = shouldShowMapboxContext;
     }
-  }, [globeTheme, isPinVisible, refreshPlaceLabelLayers]);
+  }, [globeTheme, isPinVisible, refreshPlaceLabelLayers, applyKoreanSatelliteLabels]);
 
   const syncMapZoom = useCallback(() => {
     const map = mapRef.current?.getMap();
