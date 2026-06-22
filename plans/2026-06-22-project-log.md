@@ -8,3 +8,10 @@
 - **수정**: [`index.jsx`](../src/pages/Home/index.jsx) — `globeActivePinId` · `dismissPlaceSelectionKeepGlobePin` · `goHomeFromPlace`에 `addScoutPin`
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 1 X·핀 정책 갱신
 - **QA**: 사용자 확인 ✅
+
+## 써머리「항공 경로」버튼 — 준비 판정 정확도 fix
+
+- **증상**: `mapReady`만 true면 버튼 활성 · 클릭 무반응(시네마 레이어 미등록·스타일 전환 후 stale ready)
+- **수정**: `HomeGlobeMapbox` `isFlightCinemaReady` → `isFlightCinemaGlobeReady`+`ensure` · 스타일 전환·투어·시네마 중 false · `HomePlaceCardSummary` 준비 폴링 지속(ready→not-ready 복귀)
+- **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 2c 준비 판정 갱신
+- **QA**: 사용자 확인 ✅

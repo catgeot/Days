@@ -57,6 +57,7 @@ import {
 import {
   createFlightCinemaEngine,
   ensureFlightCinemaGlobeReady,
+  isFlightCinemaGlobeReady,
   setupFlightCinemaLayers,
   waitForFlightCinemaGlobeReady,
 } from '../lib/globeFlightCinemaEngine';
@@ -289,11 +290,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const reachBoundariesVisibleRef = useRef(true);
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(true);
   const [mapReady, setMapReady] = useState(false);
-  const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(false);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
-  useEffect(() => {
-    setFlightCinemaGlobeReady(mapReady);
-  }, [mapReady]);
   useEffect(() => {
     reachBoundariesVisibleRef.current = reachBoundariesVisible;
   }, [reachBoundariesVisible]);
@@ -1207,14 +1204,22 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     pivotTourExplore,
     startFlightCinema,
     closeFlightCinema,
-    isFlightCinemaReady: () => flightCinemaGlobeReady,
+    isFlightCinemaReady: () => {
+      if (!mapReady || isStyleTransitioning) return false;
+      if (tourActiveRef.current || flightCinemaActiveRef.current) return false;
+      const map = mapRef.current?.getMap();
+      if (!map || map._removed) return false;
+      if (isFlightCinemaGlobeReady(map)) return true;
+      if (!map.isStyleLoaded?.()) return false;
+      return ensureFlightCinemaGlobeReady(map);
+    },
     waitForFlightCinemaReady: (options) => {
       const map = mapRef.current?.getMap();
       if (!map) return Promise.resolve(false);
       return waitForFlightCinemaGlobeReady(map, options);
     },
     getGlobeMode: () => globeMode
-  }), [addRipple, closeFlightCinema, endTour, flightCinemaGlobeReady, flyToAndPin, globeMode, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, closeFlightCinema, endTour, flyToAndPin, globeMode, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

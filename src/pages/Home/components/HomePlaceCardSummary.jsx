@@ -26,23 +26,27 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
   );
 
   const readGlobeFlightReady = () => Boolean(globeRef?.current?.isFlightCinemaReady?.());
-  const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(readGlobeFlightReady);
+  const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(false);
 
   useEffect(() => {
-    if (!hasFlightRoute || flightCinemaGlobeReady) return undefined;
+    if (!hasFlightRoute) {
+      setFlightCinemaGlobeReady(false);
+      return undefined;
+    }
 
-    const bump = () => {
-      if (readGlobeFlightReady()) {
-        setFlightCinemaGlobeReady(true);
-      }
+    const syncReady = () => {
+      setFlightCinemaGlobeReady((prev) => {
+        const next = readGlobeFlightReady();
+        return prev === next ? prev : next;
+      });
     };
 
-    bump();
-    const interval = window.setInterval(bump, 250);
+    syncReady();
+    const interval = window.setInterval(syncReady, 250);
     return () => window.clearInterval(interval);
-  }, [globeRef, hasFlightRoute, flightCinemaGlobeReady, location?.id]);
+  }, [globeRef, hasFlightRoute, location?.id]);
 
-  const isFlightRouteReady = hasFlightRoute && flightCinemaGlobeReady;
+  const isFlightRouteReady = hasFlightRoute && flightCinemaGlobeReady && Boolean(flightPreview);
 
   const handlePreviewFlightRoute = () => {
     if (!flightPreview || !isFlightRouteReady) return;
