@@ -77,15 +77,27 @@ function resolveUiPlaceRegionAirportRow(location) {
     : null;
 }
 
+/** placeIds·spots — 시네마 hub·waypoint·graph bake 수동 SSOT */
+function hasCuratedFlightRouteFields(row) {
+  if (!row) return false;
+  if (Array.isArray(row.flightRouteHubIatas)) return true;
+  if (Array.isArray(row.flightRouteWaypoints) && row.flightRouteWaypoints.length > 0) return true;
+  if (row.graphFlightRouteSource && row.graphFlightRouteSource !== 'graph-unresolved') return true;
+  return false;
+}
+
 /**
  * 항공 arc·Bar SSOT — uiPlace는 formal slug 행 상속(배너·렌터카와 분리).
+ * 50km 밖 uiPlace도 placeIds `flightRouteHubIatas` curated override가 있으면 Edge 대신 사용.
  * @param {Record<string, unknown> | null | undefined} location
  */
 function getFlightRouteAirportRow(location) {
   if (location?.uiPlace) {
     const regionRow = resolveUiPlaceRegionAirportRow(location);
     if (regionRow) return regionRow;
-    // 50km 밖 uiPlace — 배너(getTravelSpotAirportRow)와 분리 · Edge resolve-flight-route
+    const placeRow = getTravelSpotAirportRow(location);
+    if (placeRow && hasCuratedFlightRouteFields(placeRow)) return placeRow;
+    // 50km 밖 uiPlace — override 없을 때만 Edge resolve-flight-route
     return null;
   }
   return getTravelSpotAirportRow(location);
@@ -106,6 +118,9 @@ export function shouldResolveFlightRouteViaEdge(location, options = {}) {
 
   const regionRow = resolveUiPlaceRegionAirportRow(location);
   if (regionRow) return false;
+
+  const placeRow = getTravelSpotAirportRow(location);
+  if (placeRow && hasCuratedFlightRouteFields(placeRow)) return false;
 
   return true;
 }

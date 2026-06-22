@@ -193,6 +193,14 @@ export const RENTAL_AIRPORT_HUBS = [
     radiusKm: 60,
     aliases: ['aitutaki', '아이투타키', 'ait', 'cook islands', '쿡 제도']
   },
+  {
+    iata: 'MHX',
+    officialKo: '마니히키 공항',
+    lat: -10.38091,
+    lng: -160.999424,
+    radiusKm: 40,
+    aliases: ['manihiki', '마니히키', 'tukao', '투카오', 'mhx']
+  },
   { iata: 'CHC', officialKo: '크라이스트처치공항', lat: -43.4894, lng: 172.5324, radiusKm: 200, aliases: ['christchurch', '크라이스트처치', 'chc'] },
   { iata: 'NAN', officialKo: '난디국제공항', lat: -17.7554, lng: 177.4434, radiusKm: 250, aliases: ['fiji', '피지', 'nadi', 'nan'] },
   {

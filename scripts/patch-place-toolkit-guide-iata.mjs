@@ -77,6 +77,11 @@ const PATCHES = [
     note: 'Phase D — KTM 관문'
   },
   {
+    matchPlaceIds: ['tukao', 'Manihiki', 'manihiki', 'Tukao'],
+    primaryIatas: ['MHX', 'RAR'],
+    note: 'RAR 단독 geoMismatch → MHX·RAR (쿡 제도 관문)'
+  },
+  {
     matchPlaceIds: ['쿠알라룸푸르', 'Kuala Lumpur', 'kuala-lumpur'],
     primaryIatas: ['KUL'],
     note: 'Phase D — primary IATA KUL'

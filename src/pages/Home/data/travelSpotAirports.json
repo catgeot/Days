@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-22T11:25:09.862Z",
+    "generatedAt": "2026-06-22T12:38:25.455Z",
     "spotCount": 271,
     "placeIdCount": 629,
     "stats": {
@@ -9106,13 +9106,21 @@
     },
     "tukao": {
       "primaryIatas": [
+        "MHX",
         "RAR"
       ],
-      "preferredLinkIata": "RAR",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "preferredLinkIata": "MHX",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "bannerNote": "마니히키(투카오)는 인천→도쿄(NRT)·타히티(PPT) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 마니히키(MHX) 도착이 일반적입니다. 렌터카·픽업은 MHX 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "rationale": "MHX 섬 공항 · RAR·PPT 쿡 제도 관문 — uiPlace Manihiki(Tukao)",
+      "tripFlightArrivalIata": "MHX",
+      "flightRouteHubIatas": [
+        "NRT",
+        "PPT",
+        "RAR"
+      ],
       "placeId": "tukao"
     },
     "machu-picchu": {
@@ -12055,6 +12063,25 @@
         "PEK"
       ],
       "placeId": "노보시비르스크"
+    },
+    "manihiki": {
+      "primaryIatas": [
+        "MHX",
+        "RAR"
+      ],
+      "preferredLinkIata": "MHX",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "마니히키(투카오)는 인천→도쿄(NRT)·타히티(PPT) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 마니히키(MHX) 도착이 일반적입니다. 렌터카·픽업은 MHX 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "rationale": "MHX 섬 공항 · RAR·PPT 쿡 제도 관문 — uiPlace Manihiki(Tukao)",
+      "tripFlightArrivalIata": "MHX",
+      "flightRouteHubIatas": [
+        "NRT",
+        "PPT",
+        "RAR"
+      ],
+      "placeId": "Manihiki"
     }
   }
 }

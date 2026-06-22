@@ -76,3 +76,17 @@ Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
 - **배경**: 트립링크 제휴 페이지 종료 응답 — 탐색·위키·플래너 잘못된 링크 제거
 - **수정**: [`tripLinkPackages.js`](../src/pages/Home/data/tripLinkPackages.js) `TRIPLINK_PACKAGES_ENABLED = false` · matcher·탐색 큐레이션·모달 가드
 - **재연동**: 여행사 선정 후 플래그 `true` + 패키지 데이터 교체
+
+## Manihiki(Tukao) 플래너 — 지리 검증 geoMismatch fix
+
+- **증상**: uiPlace `tukao` — Edge 툴킷 생성 후에도 `essentialGuideMatchesLocation` 실패 · `빈/불일치 툴킷 무시` · 플래너 빈 화면
+- **원인**: DB `primary_arrival_airports_iata` RAR 단독 — 마니히키(-10.4°)↔RAR(-21.2°) **>900km** · curated override 없음
+- **수정**: `overrides.mjs` `tukao`·`Manihiki` MHX+RAR high · `rentalAirportHubs` MHX · synonyms · `generate:airports` · `audit:airports` none **0**
+- **DB 보정(선택)**: `npm run toolkit:patch-guide-iata -- --dry-run` → `--apply`
+
+## Manihiki 항공 경로 — ICN→MHX 직항 오표 fix
+
+- **증상**: 써머리·시네마 Bar `ICN→MHX` 직항(~11h) · 플래너 여정(ICN→AKL/SYD→RAR→MHX)과 불일치
+- **원인**: uiPlace 50km 밖 `getFlightRouteAirportRow` null → `placeIds` `flightRouteHubIatas`(NRT·PPT·RAR) 미적용 · Edge/graph-direct 폴백
+- **수정**: `rentalAirportMatch` — placeIds curated `flightRouteHubIatas` 있으면 arc SSOT·Edge 스킵 · 기대 `ICN→NRT→PPT→RAR→MHX` 경유
+- **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8 uiPlace·Manihiki QA 갱신

@@ -159,6 +159,17 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '라로통가(쿡 제도)는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 도착이 일반적입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.',
   },
+  tukao: {
+    primaryIatas: ['MHX', 'RAR'],
+    preferredLinkIata: 'MHX',
+    tripFlightArrivalIata: 'MHX',
+    flightRouteHubIatas: ['NRT', 'PPT', 'RAR'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'MHX 섬 공항 · RAR·PPT 쿡 제도 관문 — uiPlace Manihiki(Tukao)',
+    bannerNote:
+      '마니히키(투카오)는 인천→도쿄(NRT)·타히티(PPT) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 마니히키(MHX) 도착이 일반적입니다. 렌터카·픽업은 MHX 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.',
+  },
   samoa: {
     primaryIatas: ['APW'],
     preferredLinkIata: 'APW',
@@ -1291,6 +1302,28 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     rationale: 'AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT',
     bannerNote:
       '아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.'
+  },
+  tukao: {
+    primaryIatas: ['MHX', 'RAR'],
+    preferredLinkIata: 'MHX',
+    tripFlightArrivalIata: 'MHX',
+    flightRouteHubIatas: ['NRT', 'PPT', 'RAR'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'MHX 섬 공항 · RAR·PPT 쿡 제도 관문 — uiPlace Manihiki(Tukao)',
+    bannerNote:
+      '마니히키(투카오)는 인천→도쿄(NRT)·타히티(PPT) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 마니히키(MHX) 도착이 일반적입니다. 렌터카·픽업은 MHX 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.'
+  },
+  Manihiki: {
+    primaryIatas: ['MHX', 'RAR'],
+    preferredLinkIata: 'MHX',
+    tripFlightArrivalIata: 'MHX',
+    flightRouteHubIatas: ['NRT', 'PPT', 'RAR'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'MHX 섬 공항 · RAR·PPT 쿡 제도 관문 — uiPlace Manihiki(Tukao)',
+    bannerNote:
+      '마니히키(투카오)는 인천→도쿄(NRT)·타히티(PPT) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 마니히키(MHX) 도착이 일반적입니다. 렌터카·픽업은 MHX 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.'
   },
   코스타리카: {
     primaryIatas: ['SJO', 'LIR'],

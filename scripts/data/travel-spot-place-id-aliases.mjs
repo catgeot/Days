@@ -210,6 +210,7 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   tsushima: ['쓰시마', '쓰시마섬', '대마도', 'Tsushima', '対馬', '히타카츠', 'Hitakatsu'],
   madagascar: ['Maroantsetra', '안치라나나', '노시베 섬', '노시베', 'Nosy Be', 'Antsiranana'],
   hamburg: ['함부르크', 'Hamburg', 'HAM'],
+  tukao: ['Manihiki', 'manihiki', 'Tukao', '마니히키', '투카오'],
   'cocos-islands': ['코코스 제도', '코코스제도', 'Cocos Islands', 'CCK'],
   'pitcairn-islands': ['핏케언 제도', 'Pitcairn Islands', 'Pitcairn'],
   greenland: ['그린란드', 'Greenland', 'Ilulissat', '일룰리사트'],
