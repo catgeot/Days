@@ -33,13 +33,41 @@
 
 8/8 PASS — 보라보라·함피·Tahaa·Manihiki override·원격 uiPlace Edge·사이판 직항·MNL 출발·서울 no-preview
 
-### 항공권·배너 세션 — 핸드오프
+**다음**: ~~Edge topN prod smoke~~ ✅ · **Phase 4 v2 출발 UI** (검색·내 위치) · Trip `dAirportCode` · graph-direct 78 검수
+
+---
+
+## Phase 4 v2 — 출발지 검색·내 위치 (다음 세션)
+
+**배경**: IATA 칩 나열(4칩·Bar 더보기)은 비전문 사용자에게 직관적이지 않음 → **도시·공항 검색** + **「내 위치에서 출발」**로 전환 합의.
+
+| 항목 | 결정 |
+|------|------|
+| UI 배치 | **써머리·Bar 동일** — `FlightOriginSelector` 공통 컴포넌트 |
+| 검색 SSOT | `RENTAL_AIRPORT_HUBS` + MOONi [`resolveDepartureFromChat`](../../src/utils/resolveDepartureIataFromChat.js) matcher 공유 |
+| 내 위치 | GPS → 허브 200km → `findNearestAirportInIndex` 120km 폴백 |
+| 제거 | IATA 칩·Bar 「더보기」 |
+| 불변 | `getTravelSpotAirportRow`·배너 · Edge topN·경유 후보 |
+
+### 항공권·배너 세션 — 에이전트 핸드오ff (Phase 4 v2)
 
 | 읽을 것 | 금지 |
 |---------|------|
-| 본 절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) Phase D·5 | `travelSpots.js` 전체 · JSON spots 직접 |
+| 본 절 · `.ai-context` 6절 · `flight-route-database-plan.md` Phase 4 | `travelSpots.js` 전체 · JSON spots 직접 |
 
-**다음**: Edge topN prod smoke · Trip `dAirportCode` 연동 · geolocation opt-in · graph-direct 78건 검수(병행 가능)
+**제시어 (복붙)**:
+
+```
+항공권-이어하기 @plans/2026-06-23-project-log.md
+
+Phase 4 v2 — 출발지 검색·내 위치 UI:
+· IATA 칩 제거 → FlightOriginSelector (써머리·Bar 동일)
+· flightCinemaOriginSearch.js — searchFlightOriginHubs + resolveOriginFromGeolocation
+· resolveDepartureIataFromChat matcher 공유 · last-used 유지
+· smoke/build · 배너·getTravelSpotAirportRow 불변
+```
+
+**구현 체크**: `FlightOriginSelector.jsx` · `PlaceCardSummary`·`FlightCinemaBar` 교체 · geo 권한 거부 UX · 보라보라+MNL QA
 
 ---
 
