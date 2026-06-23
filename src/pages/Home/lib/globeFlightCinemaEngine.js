@@ -457,13 +457,27 @@ export function createFlightCinemaEngine(map, options = {}) {
    *   hubIatas?: string[],
    *   essentialGuide?: Record<string, unknown> | null,
    *   durationMs?: number,
+   *   relaunch?: boolean,
    *   onComplete?: (reason: string) => void,
    * }} params
    */
   const start = (params) => {
     if (!map?.getStyle?.()) return false;
 
-    if (active) {
+    const relaunch = params.relaunch === true && active;
+
+    try {
+      map.stop();
+    } catch {
+      // ignore
+    }
+
+    if (relaunch) {
+      cleanupTimers();
+      runGen += 1;
+      cancelled = false;
+      animating = false;
+    } else if (active) {
       forceReset();
     } else {
       cleanupTimers();
@@ -479,23 +493,27 @@ export function createFlightCinemaEngine(map, options = {}) {
       essentialGuide: params.essentialGuide ?? null,
     });
     fullArcRef = fullArc;
-    const durationMs = params.durationMs ?? FLIGHT_CINEMA_DURATION_MS;
+    const durationMs = params.durationMs ?? (relaunch ? Math.round(FLIGHT_CINEMA_DURATION_MS * 0.45) : FLIGHT_CINEMA_DURATION_MS);
     arcScheduleRef = buildFlightArcDrawSchedule(legEndIndices, {
       drawMs: Math.round(durationMs * 0.68),
-      legPauseMs: FLIGHT_CINEMA_LEG_PAUSE_MS,
-      initialDelayMs: FLIGHT_CINEMA_INITIAL_DELAY_MS,
+      legPauseMs: relaunch ? Math.max(80, Math.round(FLIGHT_CINEMA_LEG_PAUSE_MS * 0.35)) : FLIGHT_CINEMA_LEG_PAUSE_MS,
+      initialDelayMs: relaunch ? 0 : FLIGHT_CINEMA_INITIAL_DELAY_MS,
     });
-    const cameraMs = Math.round(durationMs * 0.5);
+    const cameraMs = relaunch ? Math.min(420, Math.round(durationMs * 0.35)) : Math.round(durationMs * 0.5);
     const cameraView = computeRouteCameraView(fullArc, params.origin, params.dest, flyZoom);
 
-    if (!setupFlightCinemaLayers(map, { visible: true })) return false;
+    if (isFlightCinemaGlobeReady(map)) {
+      setupFlightCinemaLayers(map, { visible: true });
+    } else if (!setupFlightCinemaLayers(map, { visible: true })) {
+      return false;
+    }
 
     const gen = runGen + 1;
     runGen = gen;
     active = true;
     animating = true;
     cancelled = false;
-    onCompleteRef = params.onComplete ?? null;
+    if (params.onComplete) onCompleteRef = params.onComplete;
 
     safeMapUpdate(map, () => {
       map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, ChevronUp, LayoutList, Plane } from 'lucide-react';
+import { LayoutList, Plane } from 'lucide-react';
+import FlightOriginSelector from './FlightOriginSelector.jsx';
 
 const ROUTE_META = '대권 항로(실제 비행경로와 다를 수 있습니다.)';
 
@@ -66,86 +67,6 @@ function FlightRouteSummary({
 
 /**
  * @param {{
- *   primaryOptions?: { iata: string, label: string }[],
- *   extendedOptions?: { iata: string, label: string }[],
- *   selectedIata?: string,
- *   suggestedIata?: string | null,
- *   disabled?: boolean,
- *   onSelect?: (iata: string) => void,
- * }} props
- */
-function FlightOriginPicker({
-  primaryOptions = [],
-  extendedOptions = [],
-  selectedIata = 'ICN',
-  suggestedIata = null,
-  disabled = false,
-  onSelect,
-}) {
-  const [showExtended, setShowExtended] = useState(false);
-  const allOptions = [...primaryOptions, ...extendedOptions];
-  if (!allOptions.length) return null;
-
-  const selectedInExtended =
-    extendedOptions.some((option) => option.iata === selectedIata) && !showExtended;
-
-  const renderChip = (option) => {
-    const active = option.iata === selectedIata;
-    const suggested = suggestedIata && option.iata === suggestedIata && !active;
-    return (
-      <button
-        key={option.iata}
-        type="button"
-        disabled={disabled || active}
-        onClick={() => onSelect?.(option.iata)}
-        className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-colors ${
-          active
-            ? 'border-sky-300/70 bg-sky-400/25 text-white'
-            : suggested
-              ? 'border-violet-300/50 bg-violet-500/15 text-violet-100'
-              : 'border-white/15 bg-white/5 text-white/75 hover:border-white/30 hover:bg-white/10'
-        } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
-        title={option.officialKo || option.label}
-      >
-        {option.iata}
-        {suggested ? ' · 제안' : ''}
-      </button>
-    );
-  };
-
-  return (
-    <div className="min-w-0">
-      <div className="mb-1 flex items-center justify-between gap-2">
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
-          출발지
-        </p>
-        {extendedOptions.length > 0 ? (
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => setShowExtended((prev) => !prev)}
-            className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-sky-200/80 hover:text-sky-100 break-keep"
-          >
-            {showExtended ? '접기' : '더보기'}
-            {showExtended ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-          </button>
-        ) : null}
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {primaryOptions.map(renderChip)}
-        {selectedInExtended ? renderChip(extendedOptions.find((o) => o.iata === selectedIata)) : null}
-      </div>
-      {showExtended && extendedOptions.length > 0 ? (
-        <div className="mt-1 flex flex-wrap gap-1 border-t border-white/10 pt-1.5">
-          {extendedOptions.map(renderChip)}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-/**
- * @param {{
  *   alternatives?: Array<{ key: string, label: string, flightHours?: number }>,
  *   selectedKey?: string | null,
  *   disabled?: boolean,
@@ -199,14 +120,13 @@ export default function FlightCinemaBar({
   flightHours,
   flightLegHours = [],
   originIata = 'ICN',
-  primaryOriginOptions = [],
-  extendedOriginOptions = [],
-  browserOriginSuggestion = null,
+  browserOriginHint = null,
   timezoneDiffHint = null,
   routeAlternatives = [],
   selectedRouteKey = null,
   isRouteUpdatePending = false,
   onSelectOrigin,
+  onApplyBrowserOriginSuggestion,
   onSelectRouteAlternative,
   plannerUrl = null,
   onClose,
@@ -215,8 +135,6 @@ export default function FlightCinemaBar({
   const routeAria = Array.isArray(routeIatas) && routeIatas.length >= 2
     ? routeIatas.join(' 경유 ')
     : '';
-
-  const suggestedOriginIata = browserOriginSuggestion?.iata ?? null;
 
   return (
     <div
@@ -227,13 +145,13 @@ export default function FlightCinemaBar({
       <div className="flight-cinema-bar-shell relative">
         <div className="flight-cinema-bar-halo" aria-hidden="true" />
         <div className="flight-cinema-bar-card relative z-[1] flex flex-col gap-2 rounded-2xl border bg-black/85 px-3 py-2 backdrop-blur-xl md:px-4 md:py-2.5">
-          <FlightOriginPicker
-            primaryOptions={primaryOriginOptions}
-            extendedOptions={extendedOriginOptions}
+          <FlightOriginSelector
+            variant="bar"
             selectedIata={originIata}
-            suggestedIata={suggestedOriginIata}
             disabled={isRouteUpdatePending}
+            browserOriginHint={browserOriginHint}
             onSelect={onSelectOrigin}
+            onApplyBrowserOriginSuggestion={onApplyBrowserOriginSuggestion}
           />
 
           <div className="flex min-w-0 items-start gap-2">

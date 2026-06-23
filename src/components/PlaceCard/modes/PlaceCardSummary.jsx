@@ -3,6 +3,7 @@ import { X, MessageSquare, Sparkles, Maximize2, Mountain, Plane } from 'lucide-r
 import BookmarkButton from '../common/BookmarkButton';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
+import FlightOriginSelector from '../../../pages/Home/components/FlightOriginSelector.jsx';
 
 const PlaceCardSummary = ({
   location,
@@ -17,9 +18,7 @@ const PlaceCardSummary = ({
   isFlightRouteReady = false,
   isFlightRoutePending = false,
   flightRouteLabel = null,
-  flightOriginOptions = [],
   selectedFlightOriginIata = 'ICN',
-  suggestedFlightOriginIata = null,
   flightBrowserOriginHint = null,
   onSelectFlightOrigin,
   onApplyBrowserOriginSuggestion,
@@ -152,60 +151,20 @@ const PlaceCardSummary = ({
               isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : 'max-h-[220px] opacity-100 mt-2'
             }`}
           >
-            {canPreviewFlightRoute && flightOriginOptions.length > 0 && (
-              <div className="mb-2 space-y-1.5">
-                <div className="flex items-center justify-between gap-2 min-w-0">
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep shrink-0">
-                    출발
-                  </span>
-                  <span className="min-w-0 truncate text-[11px] font-bold text-sky-100 tabular-nums">
-                    {selectedFlightOriginIata}
-                    {flightRouteLabel ? (
-                      <span className="ml-1 font-medium text-gray-400">→ 미리보기</span>
-                    ) : null}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {flightOriginOptions.map((option) => {
-                    const active = option.iata === selectedFlightOriginIata;
-                    const suggested =
-                      suggestedFlightOriginIata &&
-                      option.iata === suggestedFlightOriginIata &&
-                      !active;
-                    return (
-                      <button
-                        key={option.iata}
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectFlightOrigin?.(option.iata);
-                        }}
-                        className={`shrink-0 rounded-lg border px-2.5 py-1 text-[10px] font-bold transition-colors ${
-                          active
-                            ? 'border-sky-400/50 bg-sky-500/15 text-sky-100'
-                            : suggested
-                              ? 'border-violet-400/40 bg-violet-500/10 text-violet-100'
-                              : 'border-white/10 bg-white/[0.04] text-gray-300 hover:border-white/20 hover:bg-white/[0.08]'
-                        }`}
-                        title={option.officialKo || option.label}
-                      >
-                        {option.iata}
-                      </button>
-                    );
-                  })}
-                </div>
-                {flightBrowserOriginHint && onApplyBrowserOriginSuggestion ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onApplyBrowserOriginSuggestion();
-                    }}
-                    className="w-full text-left text-[10px] font-medium text-violet-300/90 hover:text-violet-200 break-keep"
-                    title={flightBrowserOriginHint}
-                  >
-                    {flightBrowserOriginHint}
-                  </button>
+            {canPreviewFlightRoute && (
+              <div className="mb-2">
+                <FlightOriginSelector
+                  variant="summary"
+                  selectedIata={selectedFlightOriginIata}
+                  disabled={isFlightRoutePending}
+                  browserOriginHint={flightBrowserOriginHint}
+                  onSelect={onSelectFlightOrigin}
+                  onApplyBrowserOriginSuggestion={onApplyBrowserOriginSuggestion}
+                />
+                {flightRouteLabel ? (
+                  <p className="mt-1 text-[10px] font-medium text-gray-400 break-keep">
+                    {selectedFlightOriginIata} → 미리보기
+                  </p>
                 ) : null}
               </div>
             )}

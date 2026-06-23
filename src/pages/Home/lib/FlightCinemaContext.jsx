@@ -32,12 +32,7 @@ import {
   formatBrowserTimezoneOriginHint,
   formatTimezoneDiffHint,
 } from './flightCinemaTimezone.js';
-import {
-  listFlightCinemaOriginExtendedOptions,
-  listFlightCinemaOriginPickerOptions,
-  listFlightCinemaOriginPrimaryOptions,
-  suggestFlightOriginFromBrowserTimezone,
-} from './flightCinemaOriginOptions.js';
+import { suggestFlightOriginFromBrowserTimezone } from './flightCinemaOriginOptions.js';
 import { persistFlightOriginIata } from './flightOriginPreference.js';
 
 const FlightCinemaContext = createContext(null);
@@ -65,9 +60,10 @@ export function FlightCinemaProvider({
   const requestInFlightRef = useRef(false);
 
   const browserOriginSuggestion = useMemo(() => suggestFlightOriginFromBrowserTimezone(), []);
-  const originPrimaryOptions = useMemo(() => listFlightCinemaOriginPrimaryOptions(), []);
-  const originExtendedOptions = useMemo(() => listFlightCinemaOriginExtendedOptions(), []);
-  const originPickerOptions = useMemo(() => listFlightCinemaOriginPickerOptions(), []);
+  const browserOriginHint = useMemo(
+    () => formatBrowserTimezoneOriginHint(browserOriginSuggestion),
+    [browserOriginSuggestion]
+  );
 
   useEffect(() => {
     activeRef.current = active;
@@ -101,6 +97,7 @@ export function FlightCinemaProvider({
       routeAlternatives = [],
       selectedRouteKey,
       skipEdgeHubResolve = false,
+      relaunch = false,
       onComplete,
     }) => {
       let normalizedOrigin = String(originIata || '').trim().toUpperCase();
@@ -145,12 +142,15 @@ export function FlightCinemaProvider({
       if (!resolvedOrigin || !resolvedDest) return false;
       if (normalizedOrigin === normalizedDest) return false;
 
-      const waitForReady = globeRef.current?.waitForFlightCinemaReady?.bind(globeRef.current);
-      if (typeof waitForReady === 'function') {
-        const ready = await waitForReady({ timeoutMs: 8000 });
-        if (!ready) return false;
-      } else if (globeRef.current?.isFlightCinemaReady?.() === false) {
-        return false;
+      const isRelaunch = relaunch || Boolean(activeRef.current);
+      if (!isRelaunch) {
+        const waitForReady = globeRef.current?.waitForFlightCinemaReady?.bind(globeRef.current);
+        if (typeof waitForReady === 'function') {
+          const ready = await waitForReady({ timeoutMs: 8000 });
+          if (!ready) return false;
+        } else if (globeRef.current?.isFlightCinemaReady?.() === false) {
+          return false;
+        }
       }
 
       const edgeHubs = skipEdgeHubResolve
@@ -198,6 +198,7 @@ export function FlightCinemaProvider({
         location,
         hubIatas,
         essentialGuide,
+        relaunch: isRelaunch,
         onComplete: (reason) => finishCinema(reason),
       });
 
@@ -305,13 +306,30 @@ export function FlightCinemaProvider({
       const picked = current.routeAlternatives?.find((row) => row.key === alternativeKey);
       if (!picked || picked.key === current.selectedRouteKey) return false;
 
+      const previous = current;
+      const timezoneDiffHours = estimateAirportTimezoneDiffHours(picked.originIata, picked.destIata);
+      setActive({
+        ...current,
+        originIata: picked.originIata,
+        destIata: picked.destIata,
+        hubIatas: picked.hubIatas ?? [],
+        routeIatas: picked.routeIatas ?? [
+          picked.originIata,
+          ...(picked.hubIatas ?? []),
+          picked.destIata,
+        ],
+        selectedRouteKey: picked.key,
+        flightHours: picked.flightHours ?? current.flightHours,
+        flightLegHours: picked.flightLegHours ?? current.flightLegHours,
+        isConnecting: Boolean(picked.hubIatas?.length),
+        timezoneDiffHint: formatTimezoneDiffHint(timezoneDiffHours),
+      });
+
       requestInFlightRef.current = true;
       setRequestPending(true);
-      globeRef.current?.closeFlightCinema?.();
-      pendingCompleteRef.current = null;
 
       try {
-        return await launchFlightCinema({
+        const ok = await launchFlightCinema({
           originIata: picked.originIata,
           destIata: picked.destIata,
           location: current.location,
@@ -320,7 +338,10 @@ export function FlightCinemaProvider({
           routeAlternatives: current.routeAlternatives,
           selectedRouteKey: picked.key,
           skipEdgeHubResolve: true,
+          relaunch: true,
         });
+        if (!ok) setActive(previous);
+        return ok;
       } finally {
         requestInFlightRef.current = false;
         setRequestPending(false);
@@ -341,8 +362,7 @@ export function FlightCinemaProvider({
 
       requestInFlightRef.current = true;
       setRequestPending(true);
-      globeRef.current?.closeFlightCinema?.();
-      pendingCompleteRef.current = null;
+      // closeFlightCinema 금지 — onComplete→finishCinema→써머리 복귀. startFlightCinema가 forceReset으로 arc만 교체.
 
       try {
         let routeAlternatives = [];
@@ -366,6 +386,7 @@ export function FlightCinemaProvider({
           location: current.location,
           essentialGuide: current.essentialGuide,
           routeAlternatives,
+          relaunch: true,
         });
       } finally {
         requestInFlightRef.current = false;
@@ -380,6 +401,11 @@ export function FlightCinemaProvider({
     finishCinema('close');
   }, [finishCinema, globeRef]);
 
+  const handleApplyBrowserOriginSuggestion = useCallback(() => {
+    if (!browserOriginSuggestion?.iata || requestInFlightRef.current) return false;
+    return updateFlightCinemaOrigin(browserOriginSuggestion.iata);
+  }, [browserOriginSuggestion, updateFlightCinemaOrigin]);
+
   const value = useMemo(
     () => ({
       flightCinemaActive: Boolean(active),
@@ -389,18 +415,13 @@ export function FlightCinemaProvider({
       selectFlightRouteAlternative,
       updateFlightCinemaOrigin,
       browserOriginSuggestion,
-      originPrimaryOptions,
-      originExtendedOptions,
-      originPickerOptions,
-      browserOriginHint: formatBrowserTimezoneOriginHint(browserOriginSuggestion),
+      browserOriginHint,
     }),
     [
       active,
+      browserOriginHint,
       browserOriginSuggestion,
       closeFlightCinema,
-      originExtendedOptions,
-      originPickerOptions,
-      originPrimaryOptions,
       requestFlightCinema,
       requestPending,
       selectFlightRouteAlternative,
@@ -420,14 +441,15 @@ export function FlightCinemaProvider({
               isConnecting={active.isConnecting}
               originIata={active.originIata}
               destIata={active.destIata}
-              primaryOriginOptions={originPrimaryOptions}
-              extendedOriginOptions={originExtendedOptions}
-              browserOriginSuggestion={browserOriginSuggestion}
+              browserOriginHint={browserOriginHint}
               timezoneDiffHint={active.timezoneDiffHint}
               routeAlternatives={active.routeAlternatives}
               selectedRouteKey={active.selectedRouteKey}
               isRouteUpdatePending={requestPending}
               onSelectOrigin={updateFlightCinemaOrigin}
+              onApplyBrowserOriginSuggestion={
+                browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
+              }
               onSelectRouteAlternative={selectFlightRouteAlternative}
               plannerUrl={
                 active.location?.slug ? buildPlacePlannerPath(active.location.slug) : null

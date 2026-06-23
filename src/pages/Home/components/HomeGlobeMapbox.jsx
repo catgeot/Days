@@ -1063,10 +1063,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const engine = ensureFlightCinemaEngine();
     if (!engine) return false;
 
-    if (engine.isActive?.()) {
-      engine.forceReset?.();
-    }
-
     const wrappedOnComplete = (reason) => {
       flightCinemaOnCompleteRef.current = null;
       flightCinemaActiveRef.current = false;

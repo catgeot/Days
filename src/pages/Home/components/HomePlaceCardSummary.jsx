@@ -21,7 +21,6 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
     flightCinemaRequestPending,
     browserOriginSuggestion,
     browserOriginHint,
-    originPrimaryOptions,
   } = useFlightCinema();
   const { location } = props;
 
@@ -117,9 +116,7 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
           ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
           : null
       }
-      flightOriginOptions={originPrimaryOptions}
       selectedFlightOriginIata={selectedOriginIata}
-      suggestedFlightOriginIata={browserOriginSuggestion?.iata ?? null}
       flightBrowserOriginHint={browserOriginHint}
       onSelectFlightOrigin={handleSelectOrigin}
       onApplyBrowserOriginSuggestion={

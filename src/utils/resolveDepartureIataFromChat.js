@@ -57,10 +57,11 @@ function extractDepartureFragment(text) {
 }
 
 /**
+ * 출발지 텍스트 매칭 — MOONi·시네마 출발 검색 SSOT.
  * @param {string} text
  * @returns {{ iata: string, label: string } | null}
  */
-function matchDepartureInText(text) {
+export function matchDepartureInText(text) {
   const raw = String(text ?? '').trim();
   if (!raw) return null;
   const fragment = extractDepartureFragment(raw);
