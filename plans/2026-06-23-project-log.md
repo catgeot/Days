@@ -4,7 +4,14 @@
 
 ## 항공 경로 — 영향 분석·글로벌 출발 UX 확정
 
-**상태**: Phase 4 **v2 ✅** · baseline smoke **8/8** · prod QA(출발 검색·경유 전환) ✅
+**상태**: Phase 4 **v2.1 ✅** · baseline smoke **8/8** · 릴리스 노트 `2026-06-23`
+
+### Phase 4 v2.1 — 써머리·Bar UI/UX ✅
+
+- `FlightOriginSelector` — portal 드롭다운·44px 터치 · bar collapsed 칩 · summary GPS 인라인
+- `PlaceCardSummary` — 경로·시간 미리보기 · blurb 축소 · CTA grid 2+1 · 갱신 로딩
+- `FlightCinemaBar` — 목적지 헤더 · relaunch Loader2 · 경유 `aria-current`
+- smoke **8/8** · build ✅ · `releaseNotes.js` `2026-06-23`
 
 ### Phase 4 v2 — 출발지 검색·내 위치 ✅
 
@@ -16,29 +23,6 @@
 | 경유 전환 | `relaunch` — 레이어 유지·Bar 낙관적 갱신 · 써머리 복귀 버그 수정 |
 
 **QA**: 서울→ICN 선택 · 보라보라+MNL · 경유 후보 1클릭 arc 전환 ✅
-
----
-
-## Phase 4 v2.1 — 써머리·Bar UI/UX 최적화 (다음 세션)
-
-**범위**: `PlaceCardSummary` · `FlightCinemaBar` · `FlightOriginSelector` — 레이아웃·밀도·드롭다운 overflow·모바일 터치·로딩/전환 피드백. **로직·SSOT 불변**.
-
-### 항공권·배너 세션 — 에이전트 핸드오ff (Phase 4 v2.1)
-
-| 읽을 것 | 금지 |
-|---------|------|
-| 본 절 · `.ai-context` 6절 · `FlightOriginSelector`·`FlightCinemaBar` | `travelSpots.js` 전체 · JSON spots · 배너 SSOT 변경 |
-
-**제시어 (복붙)**:
-
-```
-항공권-이어하기 @plans/2026-06-23-project-log.md
-
-Phase 4 v2.1 — 써머리·Bar UI/UX 최적화:
-· PlaceCardSummary · FlightCinemaBar · FlightOriginSelector 레이아웃·밀도
-· 검색 드롭다운 overflow(z-index) · 모바일 터치 · 경유/출발 전환 피드백
-· flightCinemaOriginSearch · relaunch · getTravelSpotAirportRow 불변
-```
 
 ---
 

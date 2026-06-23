@@ -116,6 +116,7 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
           ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
           : null
       }
+      flightRouteHours={flightPreview?.flightHours ?? null}
       selectedFlightOriginIata={selectedOriginIata}
       flightBrowserOriginHint={browserOriginHint}
       onSelectFlightOrigin={handleSelectOrigin}

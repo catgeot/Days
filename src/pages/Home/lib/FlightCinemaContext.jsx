@@ -435,6 +435,7 @@ export function FlightCinemaProvider({
           <div className="fixed inset-x-0 bottom-0 z-[120] flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-none md:bottom-8">
             <FlightCinemaBar
               className="w-full max-w-md md:max-w-lg"
+              location={active.location}
               routeIatas={active.routeIatas}
               flightHours={active.flightHours}
               flightLegHours={active.flightLegHours}

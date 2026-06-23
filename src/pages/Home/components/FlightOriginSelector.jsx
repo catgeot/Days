@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Loader2, LocateFixed, Search } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { ChevronDown, Loader2, LocateFixed, Search } from 'lucide-react';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions.js';
 import {
   resolveOriginFromGeolocation,
@@ -12,6 +13,9 @@ const GEO_ERROR_MESSAGES = {
   unavailable: '현재 위치를 가져오지 못했어요.',
   not_found: '근처 공항을 찾지 못했어요.',
 };
+
+const LISTBOX_MAX_HEIGHT = 176;
+const LISTBOX_Z_INDEX = 130;
 
 /**
  * @param {{
@@ -33,6 +37,8 @@ export default function FlightOriginSelector({
 }) {
   const listboxId = useId();
   const rootRef = useRef(null);
+  const inputWrapRef = useRef(null);
+  const listboxPortalRef = useRef(null);
   const inputRef = useRef(null);
 
   const selectedOption = useMemo(
@@ -45,18 +51,54 @@ export default function FlightOriginSelector({
   const [results, setResults] = useState([]);
   const [geoPending, setGeoPending] = useState(false);
   const [geoError, setGeoError] = useState(null);
+  const [barExpanded, setBarExpanded] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState(null);
 
   const isBar = variant === 'bar';
+  const showSearchUi = !isBar || barExpanded;
+
+  const updateDropdownPosition = useCallback(() => {
+    const anchor = inputWrapRef.current;
+    if (!anchor) return;
+
+    const rect = anchor.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const flipUp = spaceBelow < LISTBOX_MAX_HEIGHT + 12 && rect.top > LISTBOX_MAX_HEIGHT + 12;
+
+    setDropdownStyle({
+      left: rect.left,
+      width: rect.width,
+      top: flipUp ? rect.top - 4 : rect.bottom + 4,
+      flipUp,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen || results.length === 0) {
+      setDropdownStyle(null);
+      return undefined;
+    }
+
+    updateDropdownPosition();
+    window.addEventListener('resize', updateDropdownPosition);
+    window.addEventListener('scroll', updateDropdownPosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updateDropdownPosition);
+      window.removeEventListener('scroll', updateDropdownPosition, true);
+    };
+  }, [isOpen, results.length, updateDropdownPosition]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
 
     const handlePointerDown = (event) => {
-      if (!rootRef.current?.contains(event.target)) {
-        setIsOpen(false);
-        setQuery('');
-        setResults([]);
-      }
+      const target = event.target;
+      if (rootRef.current?.contains(target)) return;
+      if (listboxPortalRef.current?.contains(target)) return;
+      setIsOpen(false);
+      setQuery('');
+      setResults([]);
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -86,8 +128,9 @@ export default function FlightOriginSelector({
       setQuery('');
       setResults([]);
       setGeoError(null);
+      if (isBar) setBarExpanded(false);
     },
-    [onSelect]
+    [isBar, onSelect]
   );
 
   const handleUseMyLocation = useCallback(async () => {
@@ -106,19 +149,19 @@ export default function FlightOriginSelector({
   }, [disabled, geoPending, handleSelect]);
 
   const inputClass = isBar
-    ? 'w-full rounded-md border border-white/15 bg-white/5 py-1.5 pl-7 pr-2 text-[11px] font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
-    : 'w-full rounded-lg border border-white/10 bg-white/[0.04] py-1.5 pl-7 pr-2 text-[11px] font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
+    ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
+    : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
 
-  const listClass = isBar
-    ? 'absolute z-20 mt-1 max-h-44 w-full overflow-y-auto rounded-md border border-white/15 bg-black/95 py-1 shadow-xl backdrop-blur-xl'
-    : 'absolute z-20 mt-1 max-h-44 w-full overflow-y-auto rounded-lg border border-white/10 bg-black/95 py-1 shadow-xl backdrop-blur-xl';
+  const listPortalClass = isBar
+    ? 'overflow-y-auto rounded-md border border-white/15 bg-black/95 py-1 shadow-xl backdrop-blur-xl'
+    : 'overflow-y-auto rounded-lg border border-white/10 bg-black/95 py-1 shadow-xl backdrop-blur-xl';
 
   const itemClass = (active) =>
     isBar
-      ? `flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-[11px] transition-colors ${
+      ? `flex min-h-[44px] w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-xs transition-colors ${
           active ? 'bg-sky-400/20 text-white' : 'text-white/85 hover:bg-white/10'
         }`
-      : `flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-[11px] transition-colors ${
+      : `flex min-h-[44px] w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-xs transition-colors ${
           active ? 'bg-sky-500/15 text-sky-100' : 'text-gray-200 hover:bg-white/[0.08]'
         }`;
 
@@ -127,64 +170,38 @@ export default function FlightOriginSelector({
     : 'text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep';
 
   const selectedClass = isBar
-    ? 'text-[11px] font-bold text-sky-100 tabular-nums'
-    : 'text-[11px] font-bold text-sky-100 tabular-nums';
+    ? 'text-xs font-bold text-sky-100 tabular-nums'
+    : 'text-xs font-bold text-sky-100 tabular-nums';
 
-  return (
-    <div
-      ref={rootRef}
-      className="min-w-0 space-y-1.5"
-      onClick={(event) => event.stopPropagation()}
-      onMouseDown={(event) => event.stopPropagation()}
-    >
-      <div className="flex items-center justify-between gap-2 min-w-0">
-        <p className={labelClass}>출발지</p>
-        {selectedOption ? (
-          <span className={`min-w-0 truncate ${selectedClass}`} title={selectedOption.officialKo || selectedOption.label}>
-            {selectedOption.label} ({selectedOption.iata})
-          </span>
-        ) : (
-          <span className={selectedClass}>{selectedIata}</span>
-        )}
-      </div>
+  const geoButtonClass = isBar
+    ? 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-md border border-violet-300/40 bg-violet-500/15 px-2.5 text-xs font-semibold text-violet-100 transition-colors hover:border-violet-200/55 hover:bg-violet-500/25'
+    : 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-lg border border-violet-400/35 bg-violet-500/10 px-2.5 text-xs font-semibold text-violet-200 transition-colors hover:border-violet-300/50 hover:bg-violet-500/15';
 
-      <div className="relative">
-        <Search
-          size={13}
-          className={`pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 ${
-            isBar ? 'text-white/40' : 'text-gray-500'
-          }`}
-          aria-hidden="true"
-        />
-        <input
-          ref={inputRef}
-          type="search"
-          value={query}
-          disabled={disabled}
-          placeholder="도시·공항 검색 (예: 마닐라, ICN)"
-          autoComplete="off"
-          aria-expanded={isOpen}
-          aria-controls={listboxId}
-          aria-autocomplete="list"
-          className={`${inputClass} ${disabled ? 'opacity-60 cursor-wait' : ''}`}
-          onFocus={() => setIsOpen(true)}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setIsOpen(true);
-            setGeoError(null);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') {
-              setIsOpen(false);
-              setQuery('');
-              setResults([]);
-              inputRef.current?.blur();
-            }
-          }}
-        />
+  const geoInlineClass = `${geoButtonClass} absolute right-1 top-1/2 h-9 min-h-0 w-9 -translate-y-1/2 p-0`;
 
-        {isOpen && results.length > 0 ? (
-          <ul id={listboxId} role="listbox" className={listClass}>
+  const selectedLabel = selectedOption
+    ? `${selectedOption.label} (${selectedOption.iata})`
+    : selectedIata;
+
+  const listboxPortal =
+    isOpen && results.length > 0 && dropdownStyle && typeof document !== 'undefined'
+      ? createPortal(
+          <ul
+            id={listboxId}
+            ref={listboxPortalRef}
+            role="listbox"
+            className={listPortalClass}
+            style={{
+              position: 'fixed',
+              zIndex: LISTBOX_Z_INDEX,
+              left: dropdownStyle.left,
+              width: dropdownStyle.width,
+              maxHeight: LISTBOX_MAX_HEIGHT,
+              ...(dropdownStyle.flipUp
+                ? { bottom: window.innerHeight - dropdownStyle.top }
+                : { top: dropdownStyle.top }),
+            }}
+          >
             {results.map((row) => {
               const active = row.iata === selectedIata;
               return (
@@ -200,25 +217,142 @@ export default function FlightOriginSelector({
                 </li>
               );
             })}
-          </ul>
+          </ul>,
+          document.body
+        )
+      : null;
+
+  if (isBar && !showSearchUi) {
+    return (
+      <div
+        ref={rootRef}
+        className="min-w-0"
+        onClick={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <p className={labelClass}>출발지</p>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => setBarExpanded(true)}
+            className={`inline-flex min-h-[44px] max-w-full items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs font-bold text-sky-100 transition-colors hover:border-sky-300/40 hover:bg-white/10 ${
+              disabled ? 'opacity-60 cursor-wait' : ''
+            }`}
+            aria-expanded={false}
+            title={selectedOption?.officialKo || selectedLabel}
+          >
+            <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
+            <ChevronDown size={14} className="shrink-0 opacity-70" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={rootRef}
+      className={`min-w-0 ${isBar ? 'space-y-1.5' : 'space-y-1'}`}
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+    >
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <p className={labelClass}>출발지</p>
+        {!isBar && selectedOption ? (
+          <span
+            className={`min-w-0 truncate ${selectedClass}`}
+            title={selectedOption.officialKo || selectedOption.label}
+          >
+            {selectedOption.label} ({selectedOption.iata})
+          </span>
+        ) : isBar ? (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => {
+              setBarExpanded(false);
+              setIsOpen(false);
+              setQuery('');
+              setResults([]);
+            }}
+            className="shrink-0 text-[10px] font-semibold text-white/50 hover:text-white/80"
+          >
+            접기
+          </button>
+        ) : (
+          <span className={selectedClass}>{selectedIata}</span>
+        )}
+      </div>
+
+      <div className={`flex gap-1.5 ${isBar ? 'flex-col' : 'items-stretch'}`}>
+        <div ref={inputWrapRef} className="relative min-w-0 flex-1">
+          <Search
+            size={14}
+            className={`pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 ${
+              isBar ? 'text-white/40' : 'text-gray-500'
+            }`}
+            aria-hidden="true"
+          />
+          <input
+            ref={inputRef}
+            type="search"
+            value={query}
+            disabled={disabled}
+            placeholder="도시·공항 검색 (예: 마닐라, ICN)"
+            autoComplete="off"
+            aria-expanded={isOpen && results.length > 0}
+            aria-controls={listboxId}
+            aria-autocomplete="list"
+            className={`${inputClass} ${disabled ? 'opacity-60 cursor-wait' : ''}`}
+            onFocus={() => setIsOpen(true)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setIsOpen(true);
+              setGeoError(null);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                setIsOpen(false);
+                setQuery('');
+                setResults([]);
+                inputRef.current?.blur();
+                if (isBar) setBarExpanded(false);
+              }
+            }}
+          />
+          {!isBar ? (
+            <button
+              type="button"
+              disabled={disabled || geoPending}
+              onClick={handleUseMyLocation}
+              className={`${geoInlineClass} ${disabled || geoPending ? 'opacity-60 cursor-wait' : ''}`}
+              title="내 위치에서 출발"
+              aria-label="내 위치에서 출발"
+            >
+              {geoPending ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <LocateFixed size={16} />
+              )}
+            </button>
+          ) : null}
+        </div>
+
+        {isBar ? (
+          <button
+            type="button"
+            disabled={disabled || geoPending}
+            onClick={handleUseMyLocation}
+            className={`${geoButtonClass} w-full ${disabled || geoPending ? 'opacity-60 cursor-wait' : ''}`}
+          >
+            {geoPending ? <Loader2 size={14} className="animate-spin" /> : <LocateFixed size={14} />}
+            내 위치에서 출발
+          </button>
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5">
-        <button
-          type="button"
-          disabled={disabled || geoPending}
-          onClick={handleUseMyLocation}
-          className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold transition-colors break-keep ${
-            isBar
-              ? 'border-violet-300/40 bg-violet-500/15 text-violet-100 hover:border-violet-200/55 hover:bg-violet-500/25'
-              : 'border-violet-400/35 bg-violet-500/10 text-violet-200 hover:border-violet-300/50 hover:bg-violet-500/15'
-          } ${disabled || geoPending ? 'opacity-60 cursor-wait' : ''}`}
-        >
-          {geoPending ? <Loader2 size={11} className="animate-spin" /> : <LocateFixed size={11} />}
-          내 위치에서 출발
-        </button>
-      </div>
+      {listboxPortal}
 
       {geoError ? (
         <p className={`text-[10px] font-medium break-keep ${isBar ? 'text-rose-200/90' : 'text-rose-300/90'}`}>
@@ -231,7 +365,7 @@ export default function FlightOriginSelector({
           type="button"
           disabled={disabled}
           onClick={onApplyBrowserOriginSuggestion}
-          className={`w-full text-left text-[10px] font-medium break-keep ${
+          className={`min-h-[44px] w-full text-left text-xs font-medium break-keep ${
             isBar ? 'text-violet-200/85 hover:text-violet-100' : 'text-violet-300/90 hover:text-violet-200'
           } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
           title={browserOriginHint}
