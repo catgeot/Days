@@ -18,7 +18,24 @@ import {
   getAirportHubCoords,
   resolveFlightCinemaOd,
 } from './globeFlightCinema.js';
-import { resolveFlightRouteHubsForCinema } from '../../../utils/resolveFlightRouteEdge.js';
+import {
+  resolveFlightRouteAlternativesForCinema,
+  resolveFlightRouteHubsForCinema,
+} from '../../../utils/resolveFlightRouteEdge.js';
+import {
+  hasExplicitDirectFlightRoute,
+  hasManualFlightRouteHubOverride,
+} from '../../../utils/rentalAirportMatch.js';
+import { buildFlightRouteAlternativeKey } from './flightCinemaRouteAlternatives.js';
+import {
+  estimateAirportTimezoneDiffHours,
+  formatBrowserTimezoneOriginHint,
+  formatTimezoneDiffHint,
+} from './flightCinemaTimezone.js';
+import {
+  listFlightCinemaOriginPickerOptions,
+  suggestFlightOriginFromBrowserTimezone,
+} from './flightCinemaOriginOptions.js';
 
 const FlightCinemaContext = createContext(null);
 
@@ -44,6 +61,9 @@ export function FlightCinemaProvider({
   const pendingCompleteRef = useRef(null);
   const requestInFlightRef = useRef(false);
 
+  const browserOriginSuggestion = useMemo(() => suggestFlightOriginFromBrowserTimezone(), []);
+  const originPickerOptions = useMemo(() => listFlightCinemaOriginPickerOptions(), []);
+
   useEffect(() => {
     activeRef.current = active;
     onActiveChange?.(Boolean(active));
@@ -64,7 +84,7 @@ export function FlightCinemaProvider({
     finishCinema('interrupt');
   }, [active, finishCinema, globeRef, isTourActive]);
 
-  const requestFlightCinema = useCallback(
+  const launchFlightCinema = useCallback(
     async ({
       originIata,
       destIata,
@@ -73,30 +93,18 @@ export function FlightCinemaProvider({
       location = null,
       essentialGuide = null,
       hubIatas: hubIatasParam,
+      routeAlternatives = [],
+      selectedRouteKey,
+      skipEdgeHubResolve = false,
       onComplete,
     }) => {
-      if (requestInFlightRef.current) return false;
-
-      requestInFlightRef.current = true;
-      setRequestPending(true);
-
-      try {
-      if (isTourActive) {
-        const endTour = endTourForCinema ?? globeRef.current?.endTour?.bind(globeRef.current);
-        if (typeof endTour === 'function') {
-          await endTour();
-        } else {
-          return false;
-        }
-      }
-
       let normalizedOrigin = String(originIata || '').trim().toUpperCase();
       let normalizedDest = String(destIata || '').trim().toUpperCase();
 
       let resolvedOrigin = origin ?? (normalizedOrigin ? getAirportHubCoords(normalizedOrigin) : null);
       let resolvedDest = dest ?? (normalizedDest ? getAirportHubCoords(normalizedDest) : null);
 
-      let hubIatas = [];
+      let hubIatas = hubIatasParam ?? [];
       let routeIatas = [];
       let isConnecting = false;
       let flightHours = 1;
@@ -112,7 +120,7 @@ export function FlightCinemaProvider({
         normalizedDest = od.destIata;
         resolvedOrigin = od.origin;
         resolvedDest = od.dest;
-        hubIatas = od.hubIatas ?? [];
+        hubIatas = hubIatasParam ?? od.hubIatas ?? [];
         routeIatas = od.routeIatas ?? [normalizedOrigin, normalizedDest];
         isConnecting = Boolean(od.isConnecting);
         flightHours = od.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
@@ -123,7 +131,7 @@ export function FlightCinemaProvider({
           essentialGuide,
         });
         hubIatas = hubIatasParam ?? od?.hubIatas ?? [];
-        routeIatas = od?.routeIatas ?? [normalizedOrigin, ...hubIatas, normalizedDest];
+        routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
         isConnecting = hubIatas.length > 0 || Boolean(od?.isConnecting);
         flightHours = od?.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
         flightLegHours = od?.flightLegHours ?? estimateFlightLegHours(routeIatas);
@@ -140,11 +148,13 @@ export function FlightCinemaProvider({
         return false;
       }
 
-      const edgeHubs = await resolveFlightRouteHubsForCinema(location, {
-        originIata: normalizedOrigin,
-        destIata: normalizedDest,
-        essentialGuide,
-      });
+      const edgeHubs = skipEdgeHubResolve
+        ? null
+        : await resolveFlightRouteHubsForCinema(location, {
+            originIata: normalizedOrigin,
+            destIata: normalizedDest,
+            essentialGuide,
+          });
 
       if (edgeHubs) {
         hubIatas = edgeHubs.hubIatas ?? [];
@@ -152,6 +162,16 @@ export function FlightCinemaProvider({
           normalizedDest = edgeHubs.destIata;
           resolvedDest = getAirportHubCoords(normalizedDest) ?? resolvedDest;
         }
+        routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
+        isConnecting = hubIatas.length > 0;
+        const chainPoints = [
+          resolvedOrigin,
+          ...hubIatas.map((iata) => getAirportHubCoords(iata)).filter(Boolean),
+          resolvedDest,
+        ];
+        flightHours = estimateFlightHoursChain(chainPoints);
+        flightLegHours = estimateFlightLegHours(routeIatas);
+      } else if (hubIatasParam != null) {
         routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
         isConnecting = hubIatas.length > 0;
         const chainPoints = [
@@ -181,6 +201,10 @@ export function FlightCinemaProvider({
         return false;
       }
 
+      const routeKey =
+        selectedRouteKey ?? buildFlightRouteAlternativeKey(normalizedOrigin, normalizedDest, hubIatas);
+      const timezoneDiffHours = estimateAirportTimezoneDiffHours(normalizedOrigin, normalizedDest);
+
       setActive({
         originIata: normalizedOrigin,
         destIata: normalizedDest,
@@ -191,14 +215,157 @@ export function FlightCinemaProvider({
         flightLegHours,
         location,
         essentialGuide,
+        routeAlternatives,
+        selectedRouteKey: routeKey,
+        timezoneDiffHint: formatTimezoneDiffHint(timezoneDiffHours),
       });
       return true;
+    },
+    [finishCinema, globeRef]
+  );
+
+  const requestFlightCinema = useCallback(
+    async ({
+      originIata,
+      destIata,
+      origin,
+      dest,
+      location = null,
+      essentialGuide = null,
+      hubIatas: hubIatasParam,
+      onComplete,
+    }) => {
+      if (requestInFlightRef.current) return false;
+
+      requestInFlightRef.current = true;
+      setRequestPending(true);
+
+      try {
+        if (isTourActive) {
+          const endTour = endTourForCinema ?? globeRef.current?.endTour?.bind(globeRef.current);
+          if (typeof endTour === 'function') {
+            await endTour();
+          } else {
+            return false;
+          }
+        }
+
+        let routeAlternatives = [];
+        const normalizedOrigin = String(originIata || 'ICN').trim().toUpperCase();
+        const normalizedDest = String(
+          destIata || resolveFlightCinemaOd(location, { essentialGuide })?.destIata || ''
+        )
+          .trim()
+          .toUpperCase();
+
+        const canFetchAlternatives =
+          location &&
+          normalizedDest.length === 3 &&
+          !hasManualFlightRouteHubOverride(location) &&
+          !hasExplicitDirectFlightRoute(location);
+
+        if (canFetchAlternatives) {
+          routeAlternatives = await resolveFlightRouteAlternativesForCinema(location, {
+            originIata: normalizedOrigin,
+            destIata: normalizedDest,
+            essentialGuide,
+            topN: 3,
+          });
+        }
+
+        return await launchFlightCinema({
+          originIata,
+          destIata,
+          origin,
+          dest,
+          location,
+          essentialGuide,
+          hubIatas: hubIatasParam,
+          routeAlternatives,
+          onComplete,
+        });
       } finally {
         requestInFlightRef.current = false;
         setRequestPending(false);
       }
     },
-    [endTourForCinema, finishCinema, globeRef, isTourActive]
+    [endTourForCinema, globeRef, isTourActive, launchFlightCinema]
+  );
+
+  const selectFlightRouteAlternative = useCallback(
+    async (alternativeKey) => {
+      const current = activeRef.current;
+      if (!current || requestInFlightRef.current) return false;
+
+      const picked = current.routeAlternatives?.find((row) => row.key === alternativeKey);
+      if (!picked || picked.key === current.selectedRouteKey) return false;
+
+      requestInFlightRef.current = true;
+      setRequestPending(true);
+      globeRef.current?.closeFlightCinema?.();
+      pendingCompleteRef.current = null;
+
+      try {
+        return await launchFlightCinema({
+          originIata: picked.originIata,
+          destIata: picked.destIata,
+          location: current.location,
+          essentialGuide: current.essentialGuide,
+          hubIatas: picked.hubIatas,
+          routeAlternatives: current.routeAlternatives,
+          selectedRouteKey: picked.key,
+          skipEdgeHubResolve: true,
+        });
+      } finally {
+        requestInFlightRef.current = false;
+        setRequestPending(false);
+      }
+    },
+    [globeRef, launchFlightCinema]
+  );
+
+  const updateFlightCinemaOrigin = useCallback(
+    async (nextOriginIata) => {
+      const current = activeRef.current;
+      const normalized = String(nextOriginIata ?? '').trim().toUpperCase();
+      if (!current || !normalized || normalized === current.originIata || requestInFlightRef.current) {
+        return false;
+      }
+
+      requestInFlightRef.current = true;
+      setRequestPending(true);
+      globeRef.current?.closeFlightCinema?.();
+      pendingCompleteRef.current = null;
+
+      try {
+        let routeAlternatives = [];
+        const canFetchAlternatives =
+          current.location &&
+          !hasManualFlightRouteHubOverride(current.location) &&
+          !hasExplicitDirectFlightRoute(current.location);
+
+        if (canFetchAlternatives) {
+          routeAlternatives = await resolveFlightRouteAlternativesForCinema(current.location, {
+            originIata: normalized,
+            destIata: current.destIata,
+            essentialGuide: current.essentialGuide,
+            topN: 3,
+          });
+        }
+
+        return await launchFlightCinema({
+          originIata: normalized,
+          destIata: current.destIata,
+          location: current.location,
+          essentialGuide: current.essentialGuide,
+          routeAlternatives,
+        });
+      } finally {
+        requestInFlightRef.current = false;
+        setRequestPending(false);
+      }
+    },
+    [globeRef, launchFlightCinema]
   );
 
   const closeFlightCinema = useCallback(() => {
@@ -212,8 +379,22 @@ export function FlightCinemaProvider({
       flightCinemaRequestPending: requestPending,
       requestFlightCinema,
       closeFlightCinema,
+      selectFlightRouteAlternative,
+      updateFlightCinemaOrigin,
+      browserOriginSuggestion,
+      originPickerOptions,
+      browserOriginHint: formatBrowserTimezoneOriginHint(browserOriginSuggestion),
     }),
-    [active, closeFlightCinema, requestFlightCinema, requestPending]
+    [
+      active,
+      browserOriginSuggestion,
+      closeFlightCinema,
+      originPickerOptions,
+      requestFlightCinema,
+      requestPending,
+      selectFlightRouteAlternative,
+      updateFlightCinemaOrigin,
+    ]
   );
 
   const barPortal =
@@ -226,6 +407,16 @@ export function FlightCinemaProvider({
               flightHours={active.flightHours}
               flightLegHours={active.flightLegHours}
               isConnecting={active.isConnecting}
+              originIata={active.originIata}
+              destIata={active.destIata}
+              originOptions={originPickerOptions}
+              browserOriginSuggestion={browserOriginSuggestion}
+              timezoneDiffHint={active.timezoneDiffHint}
+              routeAlternatives={active.routeAlternatives}
+              selectedRouteKey={active.selectedRouteKey}
+              isRouteUpdatePending={requestPending}
+              onSelectOrigin={updateFlightCinemaOrigin}
+              onSelectRouteAlternative={selectFlightRouteAlternative}
               plannerUrl={
                 active.location?.slug ? buildPlacePlannerPath(active.location.slug) : null
               }

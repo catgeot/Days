@@ -6,27 +6,50 @@ import {
   canPreviewFlightRoute,
   resolveSummaryFlightCinemaOd,
 } from '../lib/globeFlightCinema.js';
+import {
+  estimateAirportTimezoneDiffHours,
+  formatTimezoneDiffHint,
+} from '../lib/flightCinemaTimezone.js';
 
 /** 연속 not-ready 폴링 횟수 — 250ms×4 ≈ 1s (일시적 레이어 공백·style idle 깜박임 흡수) */
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
 
 /** 써머리 장소카드 — 항공 경로 시네마 진입 (플래너 Trip CTA와 분리) */
 export default function HomePlaceCardSummary({ globeRef, ...props }) {
-  const { requestFlightCinema, flightCinemaRequestPending } = useFlightCinema();
+  const {
+    requestFlightCinema,
+    flightCinemaRequestPending,
+    browserOriginSuggestion,
+    browserOriginHint,
+    originPickerOptions,
+  } = useFlightCinema();
   const { location } = props;
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : null;
   const essentialGuide = useChatEssentialGuide(slug, location?.name ?? '');
 
+  const [selectedOriginIata, setSelectedOriginIata] = useState('ICN');
+
+  useEffect(() => {
+    queueMicrotask(() => setSelectedOriginIata('ICN'));
+  }, [location?.id]);
+
   const flightPreview = useMemo(
-    () => resolveSummaryFlightCinemaOd(location, { essentialGuide }),
-    [location, essentialGuide]
+    () => resolveSummaryFlightCinemaOd(location, { essentialGuide, originIata: selectedOriginIata }),
+    [location, essentialGuide, selectedOriginIata]
   );
 
   const hasFlightRoute = useMemo(
-    () => canPreviewFlightRoute(location, { essentialGuide }),
-    [location, essentialGuide]
+    () => canPreviewFlightRoute(location, { essentialGuide, originIata: selectedOriginIata }),
+    [location, essentialGuide, selectedOriginIata]
   );
+
+  const timezoneDiffHint = useMemo(() => {
+    if (!flightPreview?.originIata || !flightPreview?.destIata) return null;
+    return formatTimezoneDiffHint(
+      estimateAirportTimezoneDiffHours(flightPreview.originIata, flightPreview.destIata)
+    );
+  }, [flightPreview?.destIata, flightPreview?.originIata]);
 
   const readGlobeFlightReady = () => Boolean(globeRef?.current?.isFlightCinemaReady?.());
   const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(false);
@@ -70,12 +93,20 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
     void requestFlightCinema({
       location,
       essentialGuide,
-      originIata: flightPreview.originIata,
+      originIata: selectedOriginIata,
       destIata: flightPreview.destIata,
       origin: flightPreview.origin,
       dest: flightPreview.dest,
-      hubIatas: flightPreview.hubIatas,
     });
+  };
+
+  const handleSelectOrigin = (iata) => {
+    setSelectedOriginIata(String(iata ?? 'ICN').trim().toUpperCase());
+  };
+
+  const handleApplyBrowserOriginSuggestion = () => {
+    if (!browserOriginSuggestion?.iata) return;
+    setSelectedOriginIata(browserOriginSuggestion.iata);
   };
 
   return (
@@ -89,6 +120,15 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
         flightPreview
           ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
           : null
+      }
+      flightOriginOptions={originPickerOptions}
+      selectedFlightOriginIata={selectedOriginIata}
+      suggestedFlightOriginIata={browserOriginSuggestion?.iata ?? null}
+      flightOriginTimezoneHint={timezoneDiffHint}
+      flightBrowserOriginHint={browserOriginHint}
+      onSelectFlightOrigin={handleSelectOrigin}
+      onApplyBrowserOriginSuggestion={
+        browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
       }
       onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
     />

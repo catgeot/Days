@@ -8,29 +8,31 @@ import {
   resolveCinemaDestIata,
   shouldResolveFlightRouteViaEdge,
 } from './rentalAirportMatch.js';
+import { normalizeFlightRouteAlternatives } from '../pages/Home/lib/flightCinemaRouteAlternatives.js';
 
 /** @type {Map<string, { hubIatas: string[] | null, source: string, path: string[] | null, resolvedDestIata: string, fetchedAt: number }>} */
 const cache = new Map();
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
-function cacheKey(originIata, destIata, lat, lng) {
-  if (destIata) return `${originIata}|${destIata}`;
-  return `${originIata}|${lat?.toFixed(3)},${lng?.toFixed(3)}`;
+function cacheKey(originIata, destIata, lat, lng, topN = 1) {
+  if (destIata) return `${originIata}|${destIata}|n${topN}`;
+  return `${originIata}|${lat?.toFixed(3)},${lng?.toFixed(3)}|n${topN}`;
 }
 
 /**
- * @param {{ originIata?: string, destIata?: string, lat?: number, lng?: number, maxNearestKm?: number }} params
- * @returns {Promise<{ destIata: string, hubIatas: string[] | null, source: string, path: string[] | null, nearestAirport?: object } | null>}
+ * @param {{ originIata?: string, destIata?: string, lat?: number, lng?: number, maxNearestKm?: number, topN?: number }} params
+ * @returns {Promise<{ destIata: string, hubIatas: string[] | null, source: string, path: string[] | null, nearestAirport?: object, alternatives?: Array<{ hubIatas: string[], source: string, path: string[] | null }> } | null>}
  */
 export async function resolveFlightRouteViaEdge(params = {}) {
   const originIata = String(params.originIata ?? 'ICN').trim().toUpperCase();
   const destIata = params.destIata ? String(params.destIata).trim().toUpperCase() : '';
   const lat = params.lat != null ? Number(params.lat) : NaN;
   const lng = params.lng != null ? Number(params.lng) : NaN;
+  const topN = params.topN != null ? Math.max(1, Math.min(5, Number(params.topN))) : 1;
 
   if (destIata.length !== 3 && !(Number.isFinite(lat) && Number.isFinite(lng))) return null;
 
-  const key = cacheKey(originIata, destIata || null, lat, lng);
+  const key = cacheKey(originIata, destIata || null, lat, lng, topN);
   const hit = cache.get(key);
   if (hit && Date.now() - hit.fetchedAt < CACHE_TTL_MS) {
     return {
@@ -38,6 +40,7 @@ export async function resolveFlightRouteViaEdge(params = {}) {
       hubIatas: hit.hubIatas,
       source: hit.source,
       path: hit.path ?? null,
+      alternatives: hit.alternatives ?? [],
     };
   }
 
@@ -48,6 +51,7 @@ export async function resolveFlightRouteViaEdge(params = {}) {
         ...(destIata.length === 3 ? { destIata } : {}),
         ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {}),
         maxNearestKm: params.maxNearestKm ?? 650,
+        topN,
       },
     });
 
@@ -59,10 +63,17 @@ export async function resolveFlightRouteViaEdge(params = {}) {
       source: data.source ?? 'graph-unresolved',
       path: data.path ?? null,
       nearestAirport: data.nearestAirport ?? undefined,
+      alternatives: Array.isArray(data.alternatives)
+        ? data.alternatives.map((row) => ({
+            hubIatas: Array.isArray(row?.hubIatas) ? row.hubIatas : [],
+            source: row?.source ?? data.source ?? 'graph',
+            path: Array.isArray(row?.path) ? row.path : null,
+          }))
+        : [],
     };
 
     cache.set(key, { ...result, resolvedDestIata: result.destIata, fetchedAt: Date.now() });
-    cache.set(cacheKey(originIata, result.destIata, null, null), {
+    cache.set(cacheKey(originIata, result.destIata, null, null, topN), {
       ...result,
       resolvedDestIata: result.destIata,
       fetchedAt: Date.now(),
@@ -138,4 +149,45 @@ export async function resolveFlightRouteHubsForCinema(location, options = {}) {
   }
 
   return null;
+}
+
+/**
+ * 경유 hub top-N — Edge graph 후보 (수동 override arc는 UI에서 숨김).
+ *
+ * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ originIata?: string, destIata?: string, essentialGuide?: Record<string, unknown> | null, topN?: number }} [options]
+ * @returns {Promise<import('../pages/Home/lib/flightCinemaRouteAlternatives.js').buildFlightRouteAlternativeOption extends (...args: infer _) => infer R ? R[] : never>}
+ */
+export async function resolveFlightRouteAlternativesForCinema(location, options = {}) {
+  const originIata = String(options.originIata ?? 'ICN').trim().toUpperCase();
+  const destIata = String(
+    options.destIata ?? resolveCinemaDestIata(location, options) ?? ''
+  )
+    .trim()
+    .toUpperCase();
+  const topN = options.topN ?? 3;
+
+  if (destIata.length !== 3) return [];
+
+  const lat = typeof location?.lat === 'number' ? location.lat : Number(location?.lat);
+  const lng = typeof location?.lng === 'number' ? location.lng : Number(location?.lng);
+
+  const edge = await resolveFlightRouteViaEdge({
+    originIata,
+    destIata,
+    ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {}),
+    topN,
+  });
+
+  const resolvedDest = String(edge?.destIata ?? destIata).trim().toUpperCase();
+  if (!edge?.alternatives?.length) {
+    if (edge?.hubIatas != null) {
+      return normalizeFlightRouteAlternatives(originIata, resolvedDest, [
+        { hubIatas: edge.hubIatas, source: edge.source, path: edge.path },
+      ]);
+    }
+    return [];
+  }
+
+  return normalizeFlightRouteAlternatives(originIata, resolvedDest, edge.alternatives, topN);
 }

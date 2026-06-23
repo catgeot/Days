@@ -50,24 +50,26 @@ function maxLegHoursOnGraphPath(
   return max;
 }
 
-export function resolveGraphFlightRoute(
+type Candidate = GraphRouteResult & { score: number };
+
+function collectGraphRouteCandidates(
   origin: string,
   dest: string,
   adjacency: Map<string, Set<string>>,
   options: { maxHubStops?: number; airportMeta?: Map<string, AirportMeta> } = {},
-): GraphRouteResult | null {
+): Candidate[] {
   const from = String(origin || "").trim().toUpperCase();
   const to = String(dest || "").trim().toUpperCase();
   const maxHubStops = options.maxHubStops ?? MAX_HUB_STOPS;
   const airportMeta = options.airportMeta;
 
-  if (!from || !to || from.length !== 3 || to.length !== 3) return null;
+  if (!from || !to || from.length !== 3 || to.length !== 3) return [];
   if (from === to) {
-    return { hubIatas: [], hops: 0, source: "same-airport", path: [from] };
+    return [{ hubIatas: [], hops: 0, source: "same-airport", path: [from], score: 0 }];
   }
 
-  type Candidate = GraphRouteResult & { score: number };
-  let candidates: Candidate[] = [];
+  /** @type {Candidate[]} */
+  let candidates = [];
 
   if (hasRouteEdge(from, to, adjacency)) {
     candidates.push({
@@ -114,11 +116,11 @@ export function resolveGraphFlightRoute(
     }
   }
 
-  if (!candidates.length) return null;
+  if (!candidates.length) return [];
 
   if (airportMeta?.size) {
     candidates = filterSuspiciousGraphDirect(candidates, adjacency, airportMeta);
-    if (!candidates.length) return null;
+    if (!candidates.length) return [];
   }
 
   const withinLegLimit = candidates.filter(
@@ -132,13 +134,46 @@ export function resolveGraphFlightRoute(
       a.hops - b.hops ||
       a.hubIatas.join(",").localeCompare(b.hubIatas.join(",")),
   );
-  const best = pool[0];
-  return {
-    hubIatas: best.hubIatas,
-    hops: best.hops,
-    source: best.source,
-    path: best.path,
-  };
+
+  return pool;
+}
+
+function dedupeRouteCandidates(candidates: Candidate[]): Candidate[] {
+  const seen = new Set<string>();
+  const out: Candidate[] = [];
+  for (const candidate of candidates) {
+    const key = candidate.path.join(">");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(candidate);
+  }
+  return out;
+}
+
+export function resolveGraphFlightRouteTopN(
+  origin: string,
+  dest: string,
+  adjacency: Map<string, Set<string>>,
+  options: { maxHubStops?: number; airportMeta?: Map<string, AirportMeta>; topN?: number } = {},
+): GraphRouteResult[] {
+  const topN = Math.max(1, Math.min(5, options.topN ?? 1));
+  const pool = dedupeRouteCandidates(collectGraphRouteCandidates(origin, dest, adjacency, options));
+  return pool.slice(0, topN).map(({ hubIatas, hops, source, path }) => ({
+    hubIatas,
+    hops,
+    source,
+    path,
+  }));
+}
+
+export function resolveGraphFlightRoute(
+  origin: string,
+  dest: string,
+  adjacency: Map<string, Set<string>>,
+  options: { maxHubStops?: number; airportMeta?: Map<string, AirportMeta> } = {},
+): GraphRouteResult | null {
+  const best = resolveGraphFlightRouteTopN(origin, dest, adjacency, { ...options, topN: 1 })[0];
+  return best ?? null;
 }
 
 export function buildRouteAdjacency(

@@ -58,6 +58,105 @@ function FlightRouteSummary({
 }
 
 /**
+ * @param {{
+ *   options?: { iata: string, label: string }[],
+ *   selectedIata?: string,
+ *   suggestedIata?: string | null,
+ *   disabled?: boolean,
+ *   onSelect?: (iata: string) => void,
+ * }} props
+ */
+function FlightOriginPicker({
+  options = [],
+  selectedIata = 'ICN',
+  suggestedIata = null,
+  disabled = false,
+  onSelect,
+}) {
+  if (!options.length) return null;
+
+  return (
+    <div className="min-w-0">
+      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
+        출발지
+      </p>
+      <div className="flex gap-1 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {options.map((option) => {
+          const active = option.iata === selectedIata;
+          const suggested = suggestedIata && option.iata === suggestedIata && !active;
+          return (
+            <button
+              key={option.iata}
+              type="button"
+              disabled={disabled || active}
+              onClick={() => onSelect?.(option.iata)}
+              className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-colors ${
+                active
+                  ? 'border-sky-300/70 bg-sky-400/25 text-white'
+                  : suggested
+                    ? 'border-violet-300/50 bg-violet-500/15 text-violet-100'
+                    : 'border-white/15 bg-white/5 text-white/75 hover:border-white/30 hover:bg-white/10'
+              } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
+              title={option.officialKo || option.label}
+            >
+              {option.iata}
+              {suggested ? ' · 제안' : ''}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * @param {{
+ *   alternatives?: Array<{ key: string, label: string, flightHours?: number }>,
+ *   selectedKey?: string | null,
+ *   disabled?: boolean,
+ *   onSelect?: (key: string) => void,
+ * }} props
+ */
+function FlightRouteAlternatives({
+  alternatives = [],
+  selectedKey = null,
+  disabled = false,
+  onSelect,
+}) {
+  if (!alternatives || alternatives.length <= 1) return null;
+
+  return (
+    <div className="min-w-0">
+      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
+        경유 후보
+      </p>
+      <div className="flex flex-wrap gap-1">
+        {alternatives.map((row) => {
+          const active = row.key === selectedKey;
+          return (
+            <button
+              key={row.key}
+              type="button"
+              disabled={disabled || active}
+              onClick={() => onSelect?.(row.key)}
+              className={`rounded-md border px-2 py-1 text-[10px] font-bold transition-colors break-keep ${
+                active
+                  ? 'border-amber-300/60 bg-amber-400/20 text-amber-50'
+                  : 'border-white/15 bg-white/5 text-white/75 hover:border-white/30 hover:bg-white/10'
+              } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
+              title={row.routeIatas?.join(' → ') || row.label}
+            >
+              {row.label}
+              {typeof row.flightHours === 'number' ? ` · ${row.flightHours}h` : ''}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/**
  * Flight OD arc cinema — 홈 지구본 미리보기 (여행 플랜 · 닫기).
  */
 export default function FlightCinemaBar({
@@ -65,6 +164,16 @@ export default function FlightCinemaBar({
   flightHours,
   flightLegHours = [],
   isConnecting = false,
+  originIata = 'ICN',
+  destIata = null,
+  originOptions = [],
+  browserOriginSuggestion = null,
+  timezoneDiffHint = null,
+  routeAlternatives = [],
+  selectedRouteKey = null,
+  isRouteUpdatePending = false,
+  onSelectOrigin,
+  onSelectRouteAlternative,
   plannerUrl = null,
   onClose,
   className = '',
@@ -72,6 +181,8 @@ export default function FlightCinemaBar({
   const routeAria = Array.isArray(routeIatas) && routeIatas.length >= 2
     ? routeIatas.join(' 경유 ')
     : '';
+
+  const suggestedOriginIata = browserOriginSuggestion?.iata ?? null;
 
   return (
     <div
@@ -82,6 +193,18 @@ export default function FlightCinemaBar({
       <div className="flight-cinema-bar-shell relative">
         <div className="flight-cinema-bar-halo" aria-hidden="true" />
         <div className="flight-cinema-bar-card relative z-[1] flex flex-col gap-2 rounded-2xl border bg-black/85 px-3 py-2 backdrop-blur-xl md:px-4 md:py-2.5">
+          <FlightOriginPicker
+            options={originOptions}
+            selectedIata={originIata}
+            suggestedIata={suggestedOriginIata}
+            disabled={isRouteUpdatePending}
+            onSelect={onSelectOrigin}
+          />
+
+          {timezoneDiffHint ? (
+            <p className="text-[10px] font-medium text-sky-200/75 break-keep">{timezoneDiffHint}</p>
+          ) : null}
+
           <div className="flex min-w-0 items-start gap-2">
             <Plane size={16} className="mt-0.5 shrink-0 text-sky-300" aria-hidden="true" />
             <FlightRouteSummary
@@ -90,6 +213,14 @@ export default function FlightCinemaBar({
               flightLegHours={flightLegHours}
             />
           </div>
+
+          <FlightRouteAlternatives
+            alternatives={routeAlternatives}
+            selectedKey={selectedRouteKey}
+            disabled={isRouteUpdatePending}
+            onSelect={onSelectRouteAlternative}
+          />
+
           <div className="flex items-center gap-1.5 sm:gap-2">
             {plannerUrl ? (
               <Link

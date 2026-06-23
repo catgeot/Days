@@ -62,14 +62,14 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 | **1** | migration · OurAirports import · `airportsIndex.json` · `getAirportHubCoords` 확장 | ✅ |
 | **2** | routes import · `flight-route-resolver` · `generate:flight-routes` · semantic audit | ✅ |
 | **3** | Edge `resolve-flight-route` · uiPlace · graph runtime | ✅ |
-| **4** | 출발지·경유지 UI (2·3차 목표) | **보류** (arc 안정화 후) |
+| **4** | 출발지·경유지 UI (2·3차 목표) | **초안** — [`2026-06-23-project-log.md`](./2026-06-23-project-log.md) · UX·Edge topN·QA 대기 |
 | **5** | 가이드·npm·overrides 정리 | 마무리 |
 
 ---
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**제시어**: **`항공경로-DB-Phase4-실행`** — 출발지·경유지 UI (arc·경유 QA 안정화 **후**)
+**제시어**: **`항공권-이어하기 @plans/2026-06-23-project-log.md`** — Phase 4 UX 정리 (초안 → 합의·배포·QA)
 
 ~~`항공경로-arc-F안-실행`~~ **✅** · ~~`항공경로-uiPlace-경유직항-QA`~~ **✅** · ~~경유·직항 slug QA(어센션·앙코르·엘니도 등)~~ **✅**
 

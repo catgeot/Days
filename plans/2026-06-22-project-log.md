@@ -42,23 +42,17 @@
 
 ### 항공권·배너 세션 — 에이전트 핸드오프 (Phase 4)
 
+**→ 이관**: [`2026-06-23-project-log.md`](./2026-06-23-project-log.md) **Phase 4 UI 초안** · UX·Edge topN·QA 핸드오프
+
 **C-3 완료** — `getTravelSpotAirportRow`·배너 불변 · uiPlace 50km 밖 Edge · `resolveFlightRouteHubsForCinema` · Edge v2 배포 ✅
 
-| 읽을 것 | 금지 | 제시어 |
-|---------|------|--------|
-| `.ai-context` 6절 · 본 절 Phase 4 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) Phase 4 | `travelSpots.js` 전체 · JSON spots 직접 · C-3 재실행 | 아래 **제시어** 복붙 |
-
-**제시어 (복붙)**:
+### (아카이브) Phase 4 실행 제시어 — 초안 완료 (2026-06-23)
 
 ```
 항공권-이어하기 @plans/2026-06-22-project-log.md
-
-Phase 4 실행 — 출발지·경유 UI (C-3·Edge 안정 후):
-· 출발지 picker (ICN 외 originIata — shouldResolveFlightRouteViaEdge 이미 선행)
-· timezone 제안
-· 경유 hub top-N UI
-· 배너·getTravelSpotAirportRow 불변 · audit:flight-arcs 0
+Phase 4 실행 — 출발지·경유 UI …
 ```
+→ 후속: [`2026-06-23-project-log.md`](./2026-06-23-project-log.md) **Phase 4 UX** 제시어
 
 ### (아카이브) C-3 핸드오ff — 완료
 

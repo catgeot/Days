@@ -17,6 +17,13 @@ const PlaceCardSummary = ({
   isFlightRouteReady = false,
   isFlightRoutePending = false,
   flightRouteLabel = null,
+  flightOriginOptions = [],
+  selectedFlightOriginIata = 'ICN',
+  suggestedFlightOriginIata = null,
+  flightOriginTimezoneHint = null,
+  flightBrowserOriginHint = null,
+  onSelectFlightOrigin,
+  onApplyBrowserOriginSuggestion,
   isCompact = false,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -143,9 +150,63 @@ const PlaceCardSummary = ({
 
           <div
             className={`overflow-hidden ${
-              isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : 'max-h-[120px] opacity-100 mt-2'
+              isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : 'max-h-[220px] opacity-100 mt-2'
             }`}
           >
+            {canPreviewFlightRoute && flightOriginOptions.length > 0 && (
+              <div className="mb-2 space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep">
+                    출발지
+                  </span>
+                  {flightBrowserOriginHint && onApplyBrowserOriginSuggestion ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onApplyBrowserOriginSuggestion();
+                      }}
+                      className="max-w-[55%] truncate text-[10px] font-semibold text-violet-300/90 hover:text-violet-200 break-keep"
+                      title={flightBrowserOriginHint}
+                    >
+                      {flightBrowserOriginHint}
+                    </button>
+                  ) : null}
+                </div>
+                <div className="flex gap-1 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  {flightOriginOptions.map((option) => {
+                    const active = option.iata === selectedFlightOriginIata;
+                    const suggested =
+                      suggestedFlightOriginIata &&
+                      option.iata === suggestedFlightOriginIata &&
+                      !active;
+                    return (
+                      <button
+                        key={option.iata}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectFlightOrigin?.(option.iata);
+                        }}
+                        className={`shrink-0 rounded-lg border px-2 py-1 text-[10px] font-bold transition-colors ${
+                          active
+                            ? 'border-sky-400/50 bg-sky-500/15 text-sky-100'
+                            : suggested
+                              ? 'border-violet-400/40 bg-violet-500/10 text-violet-100'
+                              : 'border-white/10 bg-white/[0.04] text-gray-300 hover:border-white/20 hover:bg-white/[0.08]'
+                        }`}
+                        title={option.officialKo || option.label}
+                      >
+                        {option.iata}
+                      </button>
+                    );
+                  })}
+                </div>
+                {flightOriginTimezoneHint ? (
+                  <p className="text-[10px] font-medium text-sky-300/70 break-keep">{flightOriginTimezoneHint}</p>
+                ) : null}
+              </div>
+            )}
             <div className={`flex gap-2 ${canStartTour || canPreviewFlightRoute ? 'flex-wrap' : ''}`}>
               {canPreviewFlightRoute && (
                 <button

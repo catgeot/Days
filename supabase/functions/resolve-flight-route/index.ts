@@ -4,7 +4,7 @@ import {
   buildRouteAdjacency,
   DEFAULT_ORIGIN_IATA,
   findNearestScheduledAirport,
-  resolveGraphFlightRoute,
+  resolveGraphFlightRouteTopN,
   type AirportRow,
 } from "../_shared/flightRouteGraph.ts";
 import type { AirportMeta } from "../_shared/flightRouteGeoRules.ts";
@@ -116,6 +116,7 @@ serve(async (req) => {
     const lat = body.lat != null ? Number(body.lat) : NaN;
     const lng = body.lng != null ? Number(body.lng) : NaN;
     const maxNearestKm = body.maxNearestKm != null ? Number(body.maxNearestKm) : 650;
+    const topN = body.topN != null ? Math.max(1, Math.min(5, Number(body.topN))) : 1;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? Deno.env.get("VITE_SUPABASE_URL");
     const supabaseKey =
@@ -151,7 +152,11 @@ serve(async (req) => {
       loadAdjacency(supabase),
       loadAirportMetaMap(supabase),
     ]);
-    const graph = resolveGraphFlightRoute(originIata, destIata, adjacency, { airportMeta });
+    const alternatives = resolveGraphFlightRouteTopN(originIata, destIata, adjacency, {
+      airportMeta,
+      topN,
+    });
+    const graph = alternatives[0] ?? null;
 
     return new Response(
       JSON.stringify({
@@ -163,6 +168,12 @@ serve(async (req) => {
         hops: graph?.hops ?? null,
         source: graph?.source ?? "graph-unresolved",
         path: graph?.path ?? null,
+        alternatives: alternatives.map((row) => ({
+          hubIatas: row.hubIatas,
+          hops: row.hops,
+          source: row.source,
+          path: row.path,
+        })),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
