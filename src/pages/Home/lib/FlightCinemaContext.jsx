@@ -436,6 +436,7 @@ export function FlightCinemaProvider({
             <FlightCinemaBar
               className="w-full max-w-md md:max-w-lg"
               location={active.location}
+              essentialGuide={active.essentialGuide}
               routeIatas={active.routeIatas}
               flightHours={active.flightHours}
               flightLegHours={active.flightLegHours}

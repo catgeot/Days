@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, Loader2, LocateFixed, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, LocateFixed, Search } from 'lucide-react';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions.js';
 import {
   resolveOriginFromGeolocation,
@@ -21,10 +21,13 @@ const LISTBOX_Z_INDEX = 130;
  * @param {{
  *   selectedIata?: string,
  *   disabled?: boolean,
- *   variant?: 'summary' | 'bar',
+ *   variant?: 'summary' | 'bar' | 'bar-header',
  *   browserOriginHint?: string | null,
  *   onSelect?: (iata: string) => void,
  *   onApplyBrowserOriginSuggestion?: () => void,
+ *   onExpandRequest?: () => void,
+ *   onCollapseRequest?: () => void,
+ *   initialExpanded?: boolean,
  * }} props
  */
 export default function FlightOriginSelector({
@@ -34,6 +37,9 @@ export default function FlightOriginSelector({
   browserOriginHint = null,
   onSelect,
   onApplyBrowserOriginSuggestion,
+  onExpandRequest,
+  onCollapseRequest,
+  initialExpanded = false,
 }) {
   const listboxId = useId();
   const rootRef = useRef(null);
@@ -51,10 +57,12 @@ export default function FlightOriginSelector({
   const [results, setResults] = useState([]);
   const [geoPending, setGeoPending] = useState(false);
   const [geoError, setGeoError] = useState(null);
-  const [barExpanded, setBarExpanded] = useState(false);
+  const [barExpanded, setBarExpanded] = useState(initialExpanded);
   const [dropdownStyle, setDropdownStyle] = useState(null);
 
-  const isBar = variant === 'bar';
+  const isBar = variant === 'bar' || variant === 'bar-header';
+  const isBarHeader = variant === 'bar-header';
+  const isSummary = variant === 'summary';
   const showSearchUi = !isBar || barExpanded;
 
   const updateDropdownPosition = useCallback(() => {
@@ -129,8 +137,9 @@ export default function FlightOriginSelector({
       setResults([]);
       setGeoError(null);
       if (isBar) setBarExpanded(false);
+      onCollapseRequest?.();
     },
-    [isBar, onSelect]
+    [isBar, onCollapseRequest, onSelect]
   );
 
   const handleUseMyLocation = useCallback(async () => {
@@ -150,7 +159,9 @@ export default function FlightOriginSelector({
 
   const inputClass = isBar
     ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
-    : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
+    : isSummary
+      ? 'min-h-[40px] w-full rounded-lg border border-sky-400/35 bg-black/40 py-2 pl-8 pr-12 text-sm font-medium text-white placeholder:text-white/45 shadow-inner shadow-black/20 focus:border-sky-300/55 focus:outline-none focus:ring-1 focus:ring-sky-400/35'
+      : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
 
   const listPortalClass = isBar
     ? 'overflow-y-auto rounded-md border border-white/15 bg-black/95 py-1 shadow-xl backdrop-blur-xl'
@@ -167,17 +178,31 @@ export default function FlightOriginSelector({
 
   const labelClass = isBar
     ? 'text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep'
-    : 'text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep';
+    : isSummary
+      ? 'text-[11px] font-bold text-sky-100 break-keep'
+      : 'text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep';
+
+  const summarySelectedClass =
+    'inline-flex max-w-[58%] shrink-0 items-center rounded-md border border-sky-400/40 bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold text-sky-50 tabular-nums truncate';
+
+  const barSearchLabelClass = 'text-[11px] font-bold text-sky-100 break-keep';
+
+  const barCollapseClass =
+    'inline-flex shrink-0 items-center gap-1 rounded-md border border-white/25 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/90 transition-colors hover:border-sky-300/45 hover:bg-sky-500/15 hover:text-white motion-safe:active:scale-[0.98]';
 
   const selectedClass = isBar
     ? 'text-xs font-bold text-sky-100 tabular-nums'
     : 'text-xs font-bold text-sky-100 tabular-nums';
 
   const geoButtonClass = isBar
-    ? 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-md border border-violet-300/40 bg-violet-500/15 px-2.5 text-xs font-semibold text-violet-100 transition-colors hover:border-violet-200/55 hover:bg-violet-500/25'
+    ? 'inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-md border border-violet-300/40 bg-violet-500/15 px-3 text-sm font-semibold text-violet-100 transition-colors hover:border-violet-200/55 hover:bg-violet-500/25'
     : 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-lg border border-violet-400/35 bg-violet-500/10 px-2.5 text-xs font-semibold text-violet-200 transition-colors hover:border-violet-300/50 hover:bg-violet-500/15';
 
-  const geoInlineClass = `${geoButtonClass} absolute right-1 top-1/2 h-9 min-h-0 w-9 -translate-y-1/2 p-0`;
+  const geoInlineClass = isSummary
+    ? `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 border-sky-400/35 bg-sky-500/15 p-0 text-sky-100`
+    : `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 p-0`;
+
+  const geoIconSize = isBar ? 16 : 18;
 
   const selectedLabel = selectedOption
     ? `${selectedOption.label} (${selectedOption.iata})`
@@ -222,7 +247,41 @@ export default function FlightOriginSelector({
         )
       : null;
 
-  if (isBar && !showSearchUi) {
+  const chipButtonClass = isBarHeader
+    ? `inline-flex min-h-0 max-w-[9.5rem] items-center gap-1 rounded-md border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-bold text-sky-100 transition-colors hover:border-sky-300/40 hover:bg-white/10 ${
+        disabled ? 'opacity-60 cursor-wait' : ''
+      }`
+    : `inline-flex min-h-[44px] max-w-full items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs font-bold text-sky-100 transition-colors hover:border-sky-300/40 hover:bg-white/10 ${
+        disabled ? 'opacity-60 cursor-wait' : ''
+      }`;
+
+  if (isBarHeader) {
+    return (
+      <div
+        ref={rootRef}
+        className="flex shrink-0 items-center gap-1.5"
+        onClick={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
+          출발
+        </span>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => onExpandRequest?.()}
+          className={chipButtonClass}
+          aria-expanded={false}
+          title={selectedOption?.officialKo || selectedLabel}
+        >
+          <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
+          <ChevronDown size={12} className="shrink-0 opacity-70" aria-hidden="true" />
+        </button>
+      </div>
+    );
+  }
+
+  if (isBar && !isBarHeader && !showSearchUi) {
     return (
       <div
         ref={rootRef}
@@ -236,9 +295,7 @@ export default function FlightOriginSelector({
             type="button"
             disabled={disabled}
             onClick={() => setBarExpanded(true)}
-            className={`inline-flex min-h-[44px] max-w-full items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs font-bold text-sky-100 transition-colors hover:border-sky-300/40 hover:bg-white/10 ${
-              disabled ? 'opacity-60 cursor-wait' : ''
-            }`}
+            className={chipButtonClass}
             aria-expanded={false}
             title={selectedOption?.officialKo || selectedLabel}
           >
@@ -253,15 +310,23 @@ export default function FlightOriginSelector({
   return (
     <div
       ref={rootRef}
-      className={`min-w-0 ${isBar ? 'space-y-1.5' : 'space-y-1'}`}
+      className={`min-w-0 ${
+        isSummary
+          ? 'space-y-2 rounded-xl border border-sky-400/25 bg-gradient-to-b from-sky-500/12 to-sky-950/25 p-2.5'
+          : isBar
+            ? 'space-y-1.5'
+            : 'space-y-1'
+      }`}
       onClick={(event) => event.stopPropagation()}
       onMouseDown={(event) => event.stopPropagation()}
     >
       <div className="flex items-center justify-between gap-2 min-w-0">
-        <p className={labelClass}>출발지</p>
+        <p className={isBar ? barSearchLabelClass : labelClass}>
+          {isSummary || isBar ? '출발지 검색' : '출발지'}
+        </p>
         {!isBar && selectedOption ? (
           <span
-            className={`min-w-0 truncate ${selectedClass}`}
+            className={isSummary ? summarySelectedClass : `min-w-0 truncate ${selectedClass}`}
             title={selectedOption.officialKo || selectedOption.label}
           >
             {selectedOption.label} ({selectedOption.iata})
@@ -271,13 +336,19 @@ export default function FlightOriginSelector({
             type="button"
             disabled={disabled}
             onClick={() => {
-              setBarExpanded(false);
               setIsOpen(false);
               setQuery('');
               setResults([]);
+              if (onCollapseRequest) {
+                onCollapseRequest();
+                return;
+              }
+              setBarExpanded(false);
             }}
-            className="shrink-0 text-[10px] font-semibold text-white/50 hover:text-white/80"
+            className={barCollapseClass}
+            aria-label="출발지 검색 접기"
           >
+            <ChevronUp size={13} aria-hidden="true" />
             접기
           </button>
         ) : (
@@ -289,8 +360,12 @@ export default function FlightOriginSelector({
         <div ref={inputWrapRef} className="relative min-w-0 flex-1">
           <Search
             size={14}
-            className={`pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 ${
-              isBar ? 'text-white/40' : 'text-gray-500'
+            className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${
+              isBar
+                ? 'left-2.5 text-white/40'
+                : isSummary
+                  ? 'left-3 text-sky-300/75'
+                  : 'left-2.5 text-gray-500'
             }`}
             aria-hidden="true"
           />
@@ -318,6 +393,7 @@ export default function FlightOriginSelector({
                 setResults([]);
                 inputRef.current?.blur();
                 if (isBar) setBarExpanded(false);
+                onCollapseRequest?.();
               }
             }}
           />
@@ -331,9 +407,9 @@ export default function FlightOriginSelector({
               aria-label="내 위치에서 출발"
             >
               {geoPending ? (
-                <Loader2 size={16} className="animate-spin" />
+                <Loader2 size={geoIconSize} className="animate-spin" />
               ) : (
-                <LocateFixed size={16} />
+                <LocateFixed size={geoIconSize} />
               )}
             </button>
           ) : null}
@@ -346,7 +422,7 @@ export default function FlightOriginSelector({
             onClick={handleUseMyLocation}
             className={`${geoButtonClass} w-full ${disabled || geoPending ? 'opacity-60 cursor-wait' : ''}`}
           >
-            {geoPending ? <Loader2 size={14} className="animate-spin" /> : <LocateFixed size={14} />}
+            {geoPending ? <Loader2 size={geoIconSize} className="animate-spin" /> : <LocateFixed size={geoIconSize} />}
             내 위치에서 출발
           </button>
         ) : null}

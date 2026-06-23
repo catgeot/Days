@@ -342,11 +342,11 @@
 | [`flightRouteAvoidZones.js`](../src/pages/Home/lib/flightRouteAvoidZones.js) | bbox guard · `coordsCrossAvoidZones` |
 | [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
 | [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc·공항 마커·leg draw 스케줄 · close |
-| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 경유·직항 **인라인** 구간 시간 · **여행 플랜** · 닫기 |
+| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 목적지·출발 열(`bar-header`) · 경유·직항 **인라인** · **여행 플랜** · **항공권 검색**(Trip) · 닫기 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
 | [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · `requestFlightCinema` |
 | [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 · `hasFlightRoute`/`isFlightRouteReady`(`globeRef.isFlightCinemaReady`+`flightPreview` · 250ms 폴링 · **not-ready 4연속 히스테리시스**) |
-| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | 「준비 중…」비활성 · 활성 시에만 클릭 |
+| [`PlaceCardSummary.jsx`](../src/components/PlaceCard/modes/PlaceCardSummary.jsx) | CTA「탭하고 여행정보 확인하기」·MOONi **제거**(v2.2) · lg 400/xl 440px · 「준비 중…」비활성 |
 | [`Home/index.jsx`](../src/pages/Home/index.jsx) | `flightCinemaActive` |
 | [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | `startFlightCinema`(ensure) · `isFlightCinemaReady`←**`isFlightCinemaGlobeReady` 읽기 전용**(폴링) · 스타일 전환·투어·시네마 중 false · tour 동시 불가 |
 

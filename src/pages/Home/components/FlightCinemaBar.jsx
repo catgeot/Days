@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutList, Loader2, Plane } from 'lucide-react';
+import { LayoutList, Loader2, Plane, Search } from 'lucide-react';
 import { getPlaceTitleLines } from '../../../components/PlaceCard/common/locationDisplay';
+import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import FlightOriginSelector from './FlightOriginSelector.jsx';
 
 const ROUTE_META = '대권 항로(실제 비행경로와 다를 수 있습니다.)';
+
+const BAR_BTN =
+  'inline-flex min-h-[32px] items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all motion-safe:active:scale-[0.98]';
 
 /**
  * @param {{
@@ -104,7 +108,7 @@ function FlightRouteAlternatives({
               disabled={disabled || active}
               aria-current={active ? 'true' : undefined}
               onClick={() => onSelect?.(row.key)}
-              className={`min-h-[44px] rounded-md border px-3 py-2 text-xs font-bold transition-colors break-keep motion-safe:active:scale-[0.98] ${
+              className={`min-h-[32px] rounded-md border px-2.5 py-1.5 text-xs font-bold transition-colors break-keep motion-safe:active:scale-[0.98] ${
                 active
                   ? 'border-amber-300/60 bg-amber-400/20 text-amber-50'
                   : 'border-white/15 bg-white/5 text-white/75 hover:border-white/30 hover:bg-white/10'
@@ -124,6 +128,7 @@ function FlightRouteAlternatives({
 /**
  * @param {{
  *   location?: Record<string, unknown> | null,
+ *   essentialGuide?: Record<string, unknown> | null,
  *   routeIatas?: string[],
  *   flightHours?: number,
  *   flightLegHours?: { fromIata: string, toIata: string, hours: number }[],
@@ -143,6 +148,7 @@ function FlightRouteAlternatives({
  */
 export default function FlightCinemaBar({
   location = null,
+  essentialGuide = null,
   routeIatas,
   flightHours,
   flightLegHours = [],
@@ -164,6 +170,18 @@ export default function FlightCinemaBar({
     : '';
 
   const { primaryName } = getPlaceTitleLines(location);
+  const [originExpanded, setOriginExpanded] = useState(false);
+
+  const originSelectorProps = {
+    selectedIata: originIata,
+    disabled: isRouteUpdatePending,
+    browserOriginHint,
+    onSelect: (iata) => {
+      onSelectOrigin?.(iata);
+      setOriginExpanded(false);
+    },
+    onApplyBrowserOriginSuggestion,
+  };
 
   return (
     <div
@@ -173,26 +191,38 @@ export default function FlightCinemaBar({
     >
       <div className="flight-cinema-bar-shell relative">
         <div className="flight-cinema-bar-halo" aria-hidden="true" />
-        <div className="flight-cinema-bar-card relative z-[1] flex flex-col gap-2 rounded-2xl border bg-black/85 px-3 py-2 backdrop-blur-xl md:px-4 md:py-2.5">
+        <div className="flight-cinema-bar-card relative z-[1] flex flex-col gap-1.5 rounded-2xl border bg-black/85 px-3 py-2 backdrop-blur-xl md:px-4 md:py-2">
           {location ? (
-            <div className="min-w-0 border-b border-white/10 pb-2">
-              <p className="text-[9px] font-bold tracking-widest uppercase text-blue-300/90 truncate leading-none">
-                {location?.country || 'Global'}
-              </p>
-              <p className="mt-0.5 text-sm font-bold text-white truncate leading-tight">
-                {primaryName || location?.name}
-              </p>
+            <div className="space-y-1.5 border-b border-white/10 pb-1.5">
+              <div className="flex items-center justify-between gap-2 min-w-0">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[9px] font-bold tracking-widest uppercase text-blue-300/90 truncate leading-none">
+                    {location?.country || 'Global'}
+                  </p>
+                  <p className="mt-0.5 text-sm font-bold text-white truncate leading-tight">
+                    {primaryName || location?.name}
+                  </p>
+                </div>
+                {!originExpanded ? (
+                  <FlightOriginSelector
+                    variant="bar-header"
+                    {...originSelectorProps}
+                    onExpandRequest={() => setOriginExpanded(true)}
+                  />
+                ) : null}
+              </div>
+              {originExpanded ? (
+                <FlightOriginSelector
+                  variant="bar"
+                  initialExpanded
+                  onCollapseRequest={() => setOriginExpanded(false)}
+                  {...originSelectorProps}
+                />
+              ) : null}
             </div>
-          ) : null}
-
-          <FlightOriginSelector
-            variant="bar"
-            selectedIata={originIata}
-            disabled={isRouteUpdatePending}
-            browserOriginHint={browserOriginHint}
-            onSelect={onSelectOrigin}
-            onApplyBrowserOriginSuggestion={onApplyBrowserOriginSuggestion}
-          />
+          ) : (
+            <FlightOriginSelector variant="bar" {...originSelectorProps} />
+          )}
 
           <div className="flex min-w-0 items-start gap-2">
             {isRouteUpdatePending ? (
@@ -216,22 +246,37 @@ export default function FlightCinemaBar({
             onSelect={onSelectRouteAlternative}
           />
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5">
             {plannerUrl ? (
               <Link
                 to={plannerUrl}
                 onClick={onClose}
                 title="플래너 탭에서 전체 여정 보기"
-                className="flight-cinema-bar-planner shrink-0 inline-flex min-h-[44px] items-center gap-1 rounded-lg border border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 px-3 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:from-violet-400/65 hover:to-violet-500/55 motion-safe:active:scale-[0.98] sm:gap-1.5 sm:px-3"
+                className={`flight-cinema-bar-planner shrink-0 ${BAR_BTN} border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 text-white shadow-sm hover:from-violet-400/65 hover:to-violet-500/55 sm:gap-1.5`}
               >
-                <LayoutList size={14} className="opacity-95" aria-hidden="true" />
+                <LayoutList size={13} className="opacity-95" aria-hidden="true" />
                 여행 플랜
               </Link>
+            ) : null}
+            {location ? (
+              <WhiteLabelWidget
+                location={location}
+                essentialGuide={essentialGuide}
+                customTrigger={
+                  <button
+                    type="button"
+                    className={`flight-cinema-bar-cta shrink-0 ${BAR_BTN} border-sky-300/50 bg-sky-500/20 text-sky-50 hover:border-sky-200/60 hover:bg-sky-500/30`}
+                  >
+                    <Search size={13} aria-hidden="true" />
+                    항공권 검색
+                  </button>
+                }
+              />
             ) : null}
             <button
               type="button"
               onClick={onClose}
-              className="ml-auto shrink-0 min-h-[44px] rounded-lg border border-white/25 bg-white/10 px-3 py-2.5 text-xs font-bold text-white transition-all motion-safe:active:scale-[0.98] sm:px-3"
+              className={`ml-auto shrink-0 ${BAR_BTN} border-white/25 bg-white/10 text-white hover:bg-white/15 sm:px-2.5`}
             >
               닫기
             </button>

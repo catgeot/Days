@@ -4,7 +4,13 @@
 
 ## 항공 경로 — 영향 분석·글로벌 출발 UX 확정
 
-**상태**: Phase 4 **v2.1 ✅** · baseline smoke **8/8** · 릴리스 노트 `2026-06-23`
+**상태**: Phase 4 **v2.2 ✅** · baseline smoke **8/8** · 릴리스 `2026-06-23`(v2.1)
+
+### Phase 4 v2.2 — 써머리·Bar UI 디테일 ✅
+
+- `PlaceCardSummary` — CTA「탭하고 여행정보 확인하기」·MOONi 제거 · 데스크톱 폭 400/440px · 액션 버튼 슬림
+- `FlightCinemaBar` — 목적지·출발 **열 배치**(`bar-header`) · Trip **항공권 검색** · 하단 버튼 슬림 · 접기 **중복 fix**
+- `FlightOriginSelector` — summary/bar 확장 **「출발지 검색」** · 출발지 영역·접기 칩 시인성 · 내 위치 버튼 확대(40px·icon 18)
 
 ### Phase 4 v2.1 — 써머리·Bar UI/UX ✅
 
