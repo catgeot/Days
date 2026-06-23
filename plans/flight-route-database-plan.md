@@ -62,7 +62,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 | **1** | migration · OurAirports import · `airportsIndex.json` · `getAirportHubCoords` 확장 | ✅ |
 | **2** | routes import · `flight-route-resolver` · `generate:flight-routes` · semantic audit | ✅ |
 | **3** | Edge `resolve-flight-route` · uiPlace · graph runtime | ✅ |
-| **4** | 출발지·경유지 UI (2·3차 목표) | **초안** — [`2026-06-23-project-log.md`](./2026-06-23-project-log.md) · UX·Edge topN·QA 대기 |
+| **4** | 출발지·경유지 UI (2·3차 목표) | **UX v1 ✅** — [`2026-06-23-project-log.md`](./2026-06-23-project-log.md) · Trip·geolocation Phase D/B2 |
 | **5** | 가이드·npm·overrides 정리 | 마무리 |
 
 ---

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutList, Plane } from 'lucide-react';
+import { ChevronDown, ChevronUp, LayoutList, Plane } from 'lucide-react';
 
 const ROUTE_META = '대권 항로(실제 비행경로와 다를 수 있습니다.)';
 
@@ -9,13 +9,14 @@ const ROUTE_META = '대권 항로(실제 비행경로와 다를 수 있습니다
  *   routeIatas?: string[],
  *   flightHours?: number,
  *   flightLegHours?: { fromIata: string, toIata: string, hours: number }[],
- *   isConnecting?: boolean,
+ *   timezoneDiffHint?: string | null,
  * }} props
  */
 function FlightRouteSummary({
   routeIatas = [],
   flightHours = 1,
   flightLegHours = [],
+  timezoneDiffHint = null,
 }) {
   const codes = routeIatas.filter(Boolean);
   const legs = flightLegHours.filter(Boolean);
@@ -27,6 +28,9 @@ function FlightRouteSummary({
     return (
       <div className="min-w-0 leading-tight">
         <p className="text-sm font-bold text-white break-keep">{codes.join(' → ')}</p>
+        {timezoneDiffHint ? (
+          <p className="mt-0.5 text-[10px] font-medium text-sky-200/75 break-keep">{timezoneDiffHint}</p>
+        ) : null}
         <p className="mt-0.5 text-[10px] font-medium text-white/45 break-keep">{ROUTE_META}</p>
       </div>
     );
@@ -52,6 +56,9 @@ function FlightRouteSummary({
           (총 {flightHours}h)
         </span>
       </p>
+      {timezoneDiffHint ? (
+        <p className="mt-0.5 text-[10px] font-medium text-sky-200/75 break-keep">{timezoneDiffHint}</p>
+      ) : null}
       <p className="mt-0.5 text-[10px] font-medium text-white/45 break-keep">{ROUTE_META}</p>
     </div>
   );
@@ -59,7 +66,8 @@ function FlightRouteSummary({
 
 /**
  * @param {{
- *   options?: { iata: string, label: string }[],
+ *   primaryOptions?: { iata: string, label: string }[],
+ *   extendedOptions?: { iata: string, label: string }[],
  *   selectedIata?: string,
  *   suggestedIata?: string | null,
  *   disabled?: boolean,
@@ -67,44 +75,71 @@ function FlightRouteSummary({
  * }} props
  */
 function FlightOriginPicker({
-  options = [],
+  primaryOptions = [],
+  extendedOptions = [],
   selectedIata = 'ICN',
   suggestedIata = null,
   disabled = false,
   onSelect,
 }) {
-  if (!options.length) return null;
+  const [showExtended, setShowExtended] = useState(false);
+  const allOptions = [...primaryOptions, ...extendedOptions];
+  if (!allOptions.length) return null;
+
+  const selectedInExtended =
+    extendedOptions.some((option) => option.iata === selectedIata) && !showExtended;
+
+  const renderChip = (option) => {
+    const active = option.iata === selectedIata;
+    const suggested = suggestedIata && option.iata === suggestedIata && !active;
+    return (
+      <button
+        key={option.iata}
+        type="button"
+        disabled={disabled || active}
+        onClick={() => onSelect?.(option.iata)}
+        className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-colors ${
+          active
+            ? 'border-sky-300/70 bg-sky-400/25 text-white'
+            : suggested
+              ? 'border-violet-300/50 bg-violet-500/15 text-violet-100'
+              : 'border-white/15 bg-white/5 text-white/75 hover:border-white/30 hover:bg-white/10'
+        } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
+        title={option.officialKo || option.label}
+      >
+        {option.iata}
+        {suggested ? ' · 제안' : ''}
+      </button>
+    );
+  };
 
   return (
     <div className="min-w-0">
-      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
-        출발지
-      </p>
-      <div className="flex gap-1 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {options.map((option) => {
-          const active = option.iata === selectedIata;
-          const suggested = suggestedIata && option.iata === suggestedIata && !active;
-          return (
-            <button
-              key={option.iata}
-              type="button"
-              disabled={disabled || active}
-              onClick={() => onSelect?.(option.iata)}
-              className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-colors ${
-                active
-                  ? 'border-sky-300/70 bg-sky-400/25 text-white'
-                  : suggested
-                    ? 'border-violet-300/50 bg-violet-500/15 text-violet-100'
-                    : 'border-white/15 bg-white/5 text-white/75 hover:border-white/30 hover:bg-white/10'
-              } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
-              title={option.officialKo || option.label}
-            >
-              {option.iata}
-              {suggested ? ' · 제안' : ''}
-            </button>
-          );
-        })}
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
+          출발지
+        </p>
+        {extendedOptions.length > 0 ? (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => setShowExtended((prev) => !prev)}
+            className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-sky-200/80 hover:text-sky-100 break-keep"
+          >
+            {showExtended ? '접기' : '더보기'}
+            {showExtended ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+        ) : null}
       </div>
+      <div className="flex flex-wrap gap-1">
+        {primaryOptions.map(renderChip)}
+        {selectedInExtended ? renderChip(extendedOptions.find((o) => o.iata === selectedIata)) : null}
+      </div>
+      {showExtended && extendedOptions.length > 0 ? (
+        <div className="mt-1 flex flex-wrap gap-1 border-t border-white/10 pt-1.5">
+          {extendedOptions.map(renderChip)}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -163,10 +198,9 @@ export default function FlightCinemaBar({
   routeIatas,
   flightHours,
   flightLegHours = [],
-  isConnecting = false,
   originIata = 'ICN',
-  destIata = null,
-  originOptions = [],
+  primaryOriginOptions = [],
+  extendedOriginOptions = [],
   browserOriginSuggestion = null,
   timezoneDiffHint = null,
   routeAlternatives = [],
@@ -194,16 +228,13 @@ export default function FlightCinemaBar({
         <div className="flight-cinema-bar-halo" aria-hidden="true" />
         <div className="flight-cinema-bar-card relative z-[1] flex flex-col gap-2 rounded-2xl border bg-black/85 px-3 py-2 backdrop-blur-xl md:px-4 md:py-2.5">
           <FlightOriginPicker
-            options={originOptions}
+            primaryOptions={primaryOriginOptions}
+            extendedOptions={extendedOriginOptions}
             selectedIata={originIata}
             suggestedIata={suggestedOriginIata}
             disabled={isRouteUpdatePending}
             onSelect={onSelectOrigin}
           />
-
-          {timezoneDiffHint ? (
-            <p className="text-[10px] font-medium text-sky-200/75 break-keep">{timezoneDiffHint}</p>
-          ) : null}
 
           <div className="flex min-w-0 items-start gap-2">
             <Plane size={16} className="mt-0.5 shrink-0 text-sky-300" aria-hidden="true" />
@@ -211,6 +242,7 @@ export default function FlightCinemaBar({
               routeIatas={routeIatas}
               flightHours={flightHours}
               flightLegHours={flightLegHours}
+              timezoneDiffHint={timezoneDiffHint}
             />
           </div>
 

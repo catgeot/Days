@@ -20,7 +20,6 @@ const PlaceCardSummary = ({
   flightOriginOptions = [],
   selectedFlightOriginIata = 'ICN',
   suggestedFlightOriginIata = null,
-  flightOriginTimezoneHint = null,
   flightBrowserOriginHint = null,
   onSelectFlightOrigin,
   onApplyBrowserOriginSuggestion,
@@ -155,25 +154,18 @@ const PlaceCardSummary = ({
           >
             {canPreviewFlightRoute && flightOriginOptions.length > 0 && (
               <div className="mb-2 space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep">
-                    출발지
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep shrink-0">
+                    출발
                   </span>
-                  {flightBrowserOriginHint && onApplyBrowserOriginSuggestion ? (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onApplyBrowserOriginSuggestion();
-                      }}
-                      className="max-w-[55%] truncate text-[10px] font-semibold text-violet-300/90 hover:text-violet-200 break-keep"
-                      title={flightBrowserOriginHint}
-                    >
-                      {flightBrowserOriginHint}
-                    </button>
-                  ) : null}
+                  <span className="min-w-0 truncate text-[11px] font-bold text-sky-100 tabular-nums">
+                    {selectedFlightOriginIata}
+                    {flightRouteLabel ? (
+                      <span className="ml-1 font-medium text-gray-400">→ 미리보기</span>
+                    ) : null}
+                  </span>
                 </div>
-                <div className="flex gap-1 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex flex-wrap gap-1">
                   {flightOriginOptions.map((option) => {
                     const active = option.iata === selectedFlightOriginIata;
                     const suggested =
@@ -188,7 +180,7 @@ const PlaceCardSummary = ({
                           e.stopPropagation();
                           onSelectFlightOrigin?.(option.iata);
                         }}
-                        className={`shrink-0 rounded-lg border px-2 py-1 text-[10px] font-bold transition-colors ${
+                        className={`shrink-0 rounded-lg border px-2.5 py-1 text-[10px] font-bold transition-colors ${
                           active
                             ? 'border-sky-400/50 bg-sky-500/15 text-sky-100'
                             : suggested
@@ -202,8 +194,18 @@ const PlaceCardSummary = ({
                     );
                   })}
                 </div>
-                {flightOriginTimezoneHint ? (
-                  <p className="text-[10px] font-medium text-sky-300/70 break-keep">{flightOriginTimezoneHint}</p>
+                {flightBrowserOriginHint && onApplyBrowserOriginSuggestion ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onApplyBrowserOriginSuggestion();
+                    }}
+                    className="w-full text-left text-[10px] font-medium text-violet-300/90 hover:text-violet-200 break-keep"
+                    title={flightBrowserOriginHint}
+                  >
+                    {flightBrowserOriginHint}
+                  </button>
                 ) : null}
               </div>
             )}

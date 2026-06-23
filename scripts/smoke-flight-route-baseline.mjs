@@ -1,0 +1,195 @@
+/**
+ * 항공 경로 6유형 기준선 smoke — sync tier·Edge gate·audit 연동.
+ * Usage: node scripts/smoke-flight-route-baseline.mjs [--edge]
+ */
+import { readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..');
+
+async function loadModule(relPath) {
+  return import(pathToFileURL(join(root, relPath)).href);
+}
+
+function loadTravelSpotBySlug(slug) {
+  const json = JSON.parse(
+    readFileSync(join(root, 'src/pages/Home/data/travelSpotAirports.json'), 'utf8')
+  );
+  const row = json.spots?.[slug];
+  if (!row) return null;
+  return {
+    slug,
+    name: slug,
+    lat: row.lat,
+    lng: row.lng,
+    type: 'travel-spot',
+  };
+}
+
+function uiPlaceLocation(name, lat, lng) {
+  return {
+    id: `label-${lat}-${lng}`,
+    name,
+    lat,
+    lng,
+    uiPlace: true,
+    type: 'temp-base',
+  };
+}
+
+async function main() {
+  const runEdge = process.argv.includes('--edge');
+  const {
+    shouldResolveFlightRouteViaEdge,
+    getGraphFlightRouteHubIatas,
+    hasManualFlightRouteHubOverride,
+    resolveCinemaDestIata,
+  } = await loadModule('src/utils/rentalAirportMatch.js');
+  const { canPreviewFlightRoute, resolveSummaryFlightCinemaOd } = await loadModule(
+    'src/pages/Home/lib/globeFlightCinema.js'
+  );
+  const resolveFlightRouteViaEdge = runEdge
+    ? (await loadModule('src/utils/resolveFlightRouteEdge.js')).resolveFlightRouteViaEdge
+    : null;
+
+  const cases = [
+    {
+      id: 'ssot-curated-bora',
+      label: 'SSOT curated — 보라보라',
+      location: loadTravelSpotBySlug('bora-bora'),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+    },
+    {
+      id: 'ssot-override-hampi',
+      label: 'SSOT override — 함피(DEL hub)',
+      location: loadTravelSpotBySlug('hampi'),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+      expectManualOverride: true,
+    },
+    {
+      id: 'uiplace-sync-tahaa',
+      label: 'uiPlace sync — Tahaa',
+      location: uiPlaceLocation('Tahaa', -16.61, -151.5),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+    },
+    {
+      id: 'uiplace-override-manihiki',
+      label: 'uiPlace override — Manihiki (placeIds hub, Edge 스킵)',
+      location: uiPlaceLocation('Manihiki', -10.38, -161.08),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+    },
+    {
+      id: 'uiplace-edge-remote',
+      label: 'uiPlace Edge — 원격 좌표(override 없음)',
+      location: uiPlaceLocation('Remote Atoll', -12.5, -176.2),
+      originIata: 'ICN',
+      expectEdge: true,
+      expectPreview: true,
+    },
+    {
+      id: 'explicit-direct-saipan',
+      label: 'explicit direct — 사이판',
+      location: loadTravelSpotBySlug('saipan'),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+    },
+    {
+      id: 'non-icn-origin-mnl',
+      label: 'non-ICN 출발 — 보라보라 + MNL',
+      location: loadTravelSpotBySlug('bora-bora'),
+      originIata: 'MNL',
+      expectEdge: true,
+      expectPreview: true,
+    },
+    {
+      id: 'no-preview-seoul',
+      label: 'no-preview — 서울',
+      location: { name: '서울', lat: 37.5665, lng: 126.978, type: 'temp-base' },
+      originIata: 'ICN',
+      expectPreview: false,
+    },
+  ];
+
+  const results = [];
+
+  for (const testCase of cases) {
+    const { location, originIata } = testCase;
+    const edge = shouldResolveFlightRouteViaEdge(location, { originIata });
+    const preview = canPreviewFlightRoute(location, { originIata });
+    const summary = preview
+      ? resolveSummaryFlightCinemaOd(location, { originIata })
+      : null;
+    const graphHubs = getGraphFlightRouteHubIatas(location, { originIata });
+    const manualOverride = hasManualFlightRouteHubOverride(location);
+    const destIata = resolveCinemaDestIata(location);
+
+    let edgeResult = null;
+    let edgeAlternatives = 0;
+    if (runEdge && edge && destIata && resolveFlightRouteViaEdge) {
+      edgeResult = await resolveFlightRouteViaEdge({
+        originIata,
+        destIata,
+        lat: location?.lat,
+        lng: location?.lng,
+        topN: 3,
+      });
+      edgeAlternatives = edgeResult?.alternatives?.length ?? 0;
+    }
+
+    const checks = [];
+    if (testCase.expectEdge != null && edge !== testCase.expectEdge) {
+      checks.push(`edge gate: expected ${testCase.expectEdge}, got ${edge}`);
+    }
+    if (testCase.expectPreview != null && preview !== testCase.expectPreview) {
+      checks.push(`preview: expected ${testCase.expectPreview}, got ${preview}`);
+    }
+    if (testCase.expectManualOverride && !manualOverride) {
+      checks.push('expected manual hub override');
+    }
+
+    results.push({
+      id: testCase.id,
+      label: testCase.label,
+      pass: checks.length === 0,
+      checks,
+      edge,
+      preview,
+      destIata,
+      routeLabel: summary?.routeIatas?.join(' → ') ?? null,
+      graphHubs,
+      manualOverride,
+      edgeAlternatives,
+      edgeHubs: edgeResult?.hubIatas ?? null,
+    });
+  }
+
+  const passCount = results.filter((row) => row.pass).length;
+  const outPath = join(root, 'scripts/outputs/flight-route-baseline-smoke.json');
+  writeFileSync(outPath, `${JSON.stringify({ passCount, total: results.length, results }, null, 2)}\n`);
+
+  console.log(`Flight route baseline smoke: ${passCount}/${results.length} pass`);
+  for (const row of results) {
+    const status = row.pass ? 'PASS' : 'FAIL';
+    console.log(`  ${status} ${row.id} — edge=${row.edge} preview=${row.preview} route=${row.routeLabel ?? '—'}`);
+    for (const check of row.checks) console.log(`         ${check}`);
+  }
+  console.log(`Output: ${outPath}`);
+
+  if (passCount !== results.length) process.exit(1);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

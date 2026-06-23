@@ -33,9 +33,12 @@ import {
   formatTimezoneDiffHint,
 } from './flightCinemaTimezone.js';
 import {
+  listFlightCinemaOriginExtendedOptions,
   listFlightCinemaOriginPickerOptions,
+  listFlightCinemaOriginPrimaryOptions,
   suggestFlightOriginFromBrowserTimezone,
 } from './flightCinemaOriginOptions.js';
+import { persistFlightOriginIata } from './flightOriginPreference.js';
 
 const FlightCinemaContext = createContext(null);
 
@@ -62,6 +65,8 @@ export function FlightCinemaProvider({
   const requestInFlightRef = useRef(false);
 
   const browserOriginSuggestion = useMemo(() => suggestFlightOriginFromBrowserTimezone(), []);
+  const originPrimaryOptions = useMemo(() => listFlightCinemaOriginPrimaryOptions(), []);
+  const originExtendedOptions = useMemo(() => listFlightCinemaOriginExtendedOptions(), []);
   const originPickerOptions = useMemo(() => listFlightCinemaOriginPickerOptions(), []);
 
   useEffect(() => {
@@ -332,6 +337,8 @@ export function FlightCinemaProvider({
         return false;
       }
 
+      persistFlightOriginIata(normalized);
+
       requestInFlightRef.current = true;
       setRequestPending(true);
       globeRef.current?.closeFlightCinema?.();
@@ -382,6 +389,8 @@ export function FlightCinemaProvider({
       selectFlightRouteAlternative,
       updateFlightCinemaOrigin,
       browserOriginSuggestion,
+      originPrimaryOptions,
+      originExtendedOptions,
       originPickerOptions,
       browserOriginHint: formatBrowserTimezoneOriginHint(browserOriginSuggestion),
     }),
@@ -389,7 +398,9 @@ export function FlightCinemaProvider({
       active,
       browserOriginSuggestion,
       closeFlightCinema,
+      originExtendedOptions,
       originPickerOptions,
+      originPrimaryOptions,
       requestFlightCinema,
       requestPending,
       selectFlightRouteAlternative,
@@ -409,7 +420,8 @@ export function FlightCinemaProvider({
               isConnecting={active.isConnecting}
               originIata={active.originIata}
               destIata={active.destIata}
-              originOptions={originPickerOptions}
+              primaryOriginOptions={originPrimaryOptions}
+              extendedOriginOptions={originExtendedOptions}
               browserOriginSuggestion={browserOriginSuggestion}
               timezoneDiffHint={active.timezoneDiffHint}
               routeAlternatives={active.routeAlternatives}

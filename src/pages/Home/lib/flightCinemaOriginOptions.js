@@ -1,6 +1,9 @@
 import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 
-/** 시네마 출발지 picker — ICN 기본 + 해외 거주·출장 빈도 허브 */
+/** 써머리·MOONi §2.12 정렬 — 한국·빈번 허브 (Bar 1행) */
+export const FLIGHT_CINEMA_ORIGIN_PRIMARY_IATAS = ['ICN', 'GMP', 'PUS', 'CJU'];
+
+/** Bar「더보기」— ICN 기본 + 해외 거주·출장 빈도 허브 */
 export const FLIGHT_CINEMA_ORIGIN_PICKER_IATAS = [
   'ICN',
   'GMP',
@@ -71,8 +74,21 @@ export function getFlightCinemaOriginOption(iata) {
 }
 
 /** @returns {{ iata: string, label: string, officialKo?: string }[]} */
+export function listFlightCinemaOriginPrimaryOptions() {
+  return FLIGHT_CINEMA_ORIGIN_PRIMARY_IATAS.map((iata) => getFlightCinemaOriginOption(iata)).filter(Boolean);
+}
+
+/** @returns {{ iata: string, label: string, officialKo?: string }[]} */
 export function listFlightCinemaOriginPickerOptions() {
   return FLIGHT_CINEMA_ORIGIN_PICKER_IATAS.map((iata) => getFlightCinemaOriginOption(iata)).filter(Boolean);
+}
+
+/** Bar「더보기」— primary 제외 해외 허브 */
+export function listFlightCinemaOriginExtendedOptions() {
+  const primary = new Set(FLIGHT_CINEMA_ORIGIN_PRIMARY_IATAS);
+  return FLIGHT_CINEMA_ORIGIN_PICKER_IATAS.filter((iata) => !primary.has(iata))
+    .map((iata) => getFlightCinemaOriginOption(iata))
+    .filter(Boolean);
 }
 
 /**
