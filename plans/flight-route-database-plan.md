@@ -69,14 +69,14 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ## 다음 세션 — 에이전트 핸드오ff
 
-**다음(항공)**: Trip Phase D · graph-direct 78 · 일지 [`2026-06-23-project-log.md`](./2026-06-23-project-log.md)
+**다음(항공)**: **비-ICN 출발 라우팅** — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md)
 
-~~`항공경로-arc-F안-실행`~~ **✅** · ~~`항공경로-uiPlace-경유직항-QA`~~ **✅** · ~~경유·직항 slug QA(어센션·앙코르·엘니도 등)~~ **✅**
+~~Phase 4 v2.2 출발지 UI~~ **✅** · ~~arc-F안·uiPlace QA~~ **✅**
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`2026-06-21-project-log.md`](./2026-06-21-project-log.md) · `globeFlightCinema.js` | `travelSpots.js` 전체 |
-| `travel-spot-airport-overrides.mjs` (대상 slug만) | `travelSpotAirports.json` 직접 편집 |
+| [`2026-06-29-project-log.md`](./2026-06-29-project-log.md) · `flight-route-non-icn-routing-plan.md` | `travelSpots.js` 전체 |
+| `globeFlightCinema.js` · `rentalAirportMatch.js` · resolver·GeoRules | `travelSpotAirports.json` 직접 편집 |
 
 **런타임**: 시네마 arc = **클라이언트** `resolveFlightRoutePlan` + JSON SSOT · Edge `resolve-flight-route` **UI 미연결**.
 
