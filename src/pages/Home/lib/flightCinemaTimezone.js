@@ -28,9 +28,10 @@ export function estimateAirportTimezoneDiffHours(originIata, destIata) {
  * @returns {string | null}
  */
 export function formatTimezoneDiffHint(diffHours) {
-  if (diffHours == null || diffHours === 0) return '현지와 시차 없음(근사)';
+  if (diffHours == null) return null;
+  if (diffHours === 0) return '시차 없음';
   const sign = diffHours > 0 ? '+' : '';
-  return `현지 시차 약 ${sign}${diffHours}h (경도 기준)`;
+  return `시차 약 ${sign}${diffHours}h`;
 }
 
 /**

@@ -150,3 +150,15 @@ Bar `GMP~1hPEK~8hCPH~1hCDG` 등 — `~Nh`는 **구간 비행 추정**(환승 대
 @plans/2026-06-29-project-log.md
 항공 Bar 구간 시간 tooltip (F) — FlightCinemaBar UX
 ```
+
+---
+
+## 항공 Bar — 모바일 공간·가독성 **완료 ✅**
+
+**상태**: FlightCinemaBar 레이아웃 압축 · smoke/audit 변경 없음 · **사용자 확인 ✅**
+
+- **시차** — 지명 옆 `(시차 약 ±Nh)` · `formatTimezoneDiffHint` 축약 · `flightCinemaTimezone.js`
+- **대권 항로** — 상시 `ROUTE_META` 제거 → ⓘ `FlightRouteInfoTooltip` 통합(직항·구간 공통)
+- **경유 후보** — 항로 아래 보조 라인 · 기본 접힘 · chevron 텍스트 인접 · 펼침 칩 가로 스크롤 · `sky` 톤 가독성
+- **액션 구분** — 경유 영역과 하단 버튼 `border-t` + 여백 · 버튼 min-h 28px 슬림화
+- **출발지** — Bar 헤더·접기 chevron 한 단계 확대 · `FlightOriginSelector.jsx`

@@ -1,22 +1,22 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
-import { Info, LayoutList, Loader2, Plane, Search } from 'lucide-react';
+import { ChevronDown, Info, LayoutList, Loader2, Plane, Search } from 'lucide-react';
 import { getPlaceTitleLines } from '../../../components/PlaceCard/common/locationDisplay';
 import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import FlightOriginSelector from './FlightOriginSelector.jsx';
 import { getFlightOriginMetroHint } from '../lib/flightOriginMetroGateways.js';
 
-const ROUTE_META = '대권 항로(실제 비행경로와 다를 수 있습니다.)';
+const ROUTE_META = '대권 항로입니다. 실제 비행경로와 다를 수 있어요.';
 
 const LEG_TIME_TITLE = '구간 추정 비행 시간(환승 대기·체크인 미포함)';
 
-const ROUTE_TIME_TOOLTIP_Z = 130;
+const ROUTE_INFO_TOOLTIP_Z = 130;
 
 /**
- * @param {{ metroHint?: string | null }} props
+ * @param {{ metroHint?: string | null, showLegTimeHint?: boolean }} props
  */
-function FlightRouteTimeTooltip({ metroHint = null }) {
+function FlightRouteInfoTooltip({ metroHint = null, showLegTimeHint = true }) {
   const tooltipId = useId();
   const rootRef = useRef(null);
   const tooltipRef = useRef(null);
@@ -88,12 +88,17 @@ function FlightRouteTimeTooltip({ metroHint = null }) {
             top: tooltipStyle.top,
             width: tooltipStyle.width,
             transform: tooltipStyle.transform,
-            zIndex: ROUTE_TIME_TOOLTIP_Z,
+            zIndex: ROUTE_INFO_TOOLTIP_Z,
           }}
           className="rounded-lg border border-white/15 bg-black/95 px-2.5 py-2 text-[10px] font-medium leading-snug text-white/85 shadow-lg backdrop-blur-sm"
         >
-          <p className="break-keep">구간 ~Nh는 대권 거리 기준 추정 비행 시간이에요.</p>
-          <p className="mt-1 break-keep text-white/65">환승 대기·체크인은 포함되지 않아요.</p>
+          <p className="break-keep">{ROUTE_META}</p>
+          {showLegTimeHint ? (
+            <>
+              <p className="mt-1 break-keep text-white/65">구간 ~Nh는 대권 거리 기준 추정 비행 시간이에요.</p>
+              <p className="mt-1 break-keep text-white/65">환승 대기·체크인은 포함되지 않아요.</p>
+            </>
+          ) : null}
           {metroHint ? (
             <p className="mt-1.5 break-keep text-amber-200/90">{metroHint}</p>
           ) : null}
@@ -114,7 +119,7 @@ function FlightRouteTimeTooltip({ metroHint = null }) {
       >
         <button
           type="button"
-          aria-label="구간 시간 안내"
+          aria-label="항로 안내"
           aria-expanded={showTooltip}
           aria-controls={tooltipId}
           onClick={() => setPinned((open) => !open)}
@@ -129,7 +134,7 @@ function FlightRouteTimeTooltip({ metroHint = null }) {
 }
 
 const BAR_BTN =
-  'inline-flex min-h-[32px] items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all motion-safe:active:scale-[0.98]';
+  'inline-flex min-h-[28px] items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-bold transition-all motion-safe:active:scale-[0.98]';
 
 /**
  * @param {{
@@ -137,7 +142,6 @@ const BAR_BTN =
  *   flightHours?: number,
  *   flightLegHours?: { fromIata: string, toIata: string, hours: number }[],
  *   originIata?: string | null,
- *   timezoneDiffHint?: string | null,
  *   isPending?: boolean,
  * }} props
  */
@@ -146,7 +150,6 @@ function FlightRouteSummary({
   flightHours = 1,
   flightLegHours = [],
   originIata = null,
-  timezoneDiffHint = null,
   isPending = false,
 }) {
   const codes = routeIatas.filter(Boolean);
@@ -161,11 +164,10 @@ function FlightRouteSummary({
 
   const content = !showLegTimes ? (
     <div className="min-w-0 leading-tight">
-      <p className="text-sm font-bold text-white break-keep">{codes.join(' → ')}</p>
-      {timezoneDiffHint ? (
-        <p className="mt-0.5 text-[10px] font-medium text-sky-200/75 break-keep">{timezoneDiffHint}</p>
-      ) : null}
-      <p className="mt-0.5 text-[10px] font-medium text-white/45 break-keep">{ROUTE_META}</p>
+      <div className="flex min-w-0 items-center gap-2">
+        <p className="min-w-0 flex-1 text-sm font-bold text-white break-keep">{codes.join(' → ')}</p>
+        <FlightRouteInfoTooltip metroHint={metroHint} showLegTimeHint={false} />
+      </div>
     </div>
   ) : (
     <div className="min-w-0 max-w-full leading-tight">
@@ -195,13 +197,9 @@ function FlightRouteSummary({
           >
             (총 {flightHours}h)
           </span>
-          <FlightRouteTimeTooltip metroHint={metroHint} />
+          <FlightRouteInfoTooltip metroHint={metroHint} />
         </span>
       </div>
-      {timezoneDiffHint ? (
-        <p className="mt-0.5 text-[10px] font-medium text-sky-200/75 break-keep">{timezoneDiffHint}</p>
-      ) : null}
-      <p className="mt-0.5 text-[10px] font-medium text-white/45 break-keep">{ROUTE_META}</p>
     </div>
   );
 
@@ -229,36 +227,61 @@ function FlightRouteAlternatives({
   disabled = false,
   onSelect,
 }) {
+  const [expanded, setExpanded] = useState(false);
+
   if (!alternatives || alternatives.length <= 1) return null;
+
+  const activeRow = alternatives.find((row) => row.key === selectedKey) || alternatives[0];
+  const activeSummary = activeRow
+    ? `${activeRow.label}${typeof activeRow.flightHours === 'number' ? ` · ${activeRow.flightHours}h` : ''}`
+    : '';
 
   return (
     <div className="min-w-0">
-      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
-        경유 후보
-      </p>
-      <div className="flex flex-wrap gap-1.5">
-        {alternatives.map((row) => {
-          const active = row.key === selectedKey;
-          return (
-            <button
-              key={row.key}
-              type="button"
-              disabled={disabled || active}
-              aria-current={active ? 'true' : undefined}
-              onClick={() => onSelect?.(row.key)}
-              className={`min-h-[32px] rounded-md border px-2.5 py-1.5 text-xs font-bold transition-colors break-keep motion-safe:active:scale-[0.98] ${
-                active
-                  ? 'border-amber-300/60 bg-amber-400/20 text-amber-50'
-                  : 'border-white/15 bg-white/5 text-white/75 hover:border-white/30 hover:bg-white/10'
-              } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
-              title={row.routeIatas?.join(' → ') || row.label}
-            >
-              {row.label}
-              {typeof row.flightHours === 'number' ? ` · ${row.flightHours}h` : ''}
-            </button>
-          );
-        })}
-      </div>
+      <button
+        type="button"
+        disabled={disabled}
+        aria-expanded={expanded}
+        onClick={() => setExpanded((open) => !open)}
+        className={`inline-flex max-w-full min-h-0 items-center gap-1 py-0 text-left transition-colors hover:text-sky-100 motion-safe:active:opacity-80 ${disabled ? 'opacity-60 cursor-wait' : ''}`}
+      >
+        <span className="shrink-0 text-[10px] font-medium text-sky-200/70">경유 후보</span>
+        <span className="shrink-0 text-[10px] text-white/35" aria-hidden="true">·</span>
+        <span className="inline-flex min-w-0 items-center gap-1 text-[10px] font-semibold text-sky-100/90">
+          <span className="truncate">{activeSummary || `${alternatives.length}개`}</span>
+          <ChevronDown
+            size={13}
+            strokeWidth={2.5}
+            className={`shrink-0 text-sky-200/80 transition-transform motion-safe:duration-200 ${expanded ? 'rotate-180' : ''}`}
+            aria-hidden="true"
+          />
+        </span>
+      </button>
+      {expanded ? (
+        <div className="mt-1 mb-0.5 flex max-w-full gap-1 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {alternatives.map((row) => {
+            const active = row.key === selectedKey;
+            return (
+              <button
+                key={row.key}
+                type="button"
+                disabled={disabled || active}
+                aria-current={active ? 'true' : undefined}
+                onClick={() => onSelect?.(row.key)}
+                className={`shrink-0 rounded border px-2 py-0.5 text-[10px] font-semibold transition-colors break-keep motion-safe:active:scale-[0.98] ${
+                  active
+                    ? 'border-amber-300/50 bg-amber-400/15 text-amber-100/90'
+                    : 'border-white/15 bg-white/[0.05] text-white/80 hover:border-white/30 hover:bg-white/10'
+                } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
+                title={row.routeIatas?.join(' → ') || row.label}
+              >
+                {row.label}
+                {typeof row.flightHours === 'number' ? ` · ${row.flightHours}h` : ''}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -337,8 +360,15 @@ export default function FlightCinemaBar({
                   <p className="text-[9px] font-bold tracking-widest uppercase text-blue-300/90 truncate leading-none">
                     {location?.country || 'Global'}
                   </p>
-                  <p className="mt-0.5 text-sm font-bold text-white truncate leading-tight">
+                  <p className="mt-0.5 truncate text-sm font-bold text-white leading-tight">
                     {primaryName || location?.name}
+                    {timezoneDiffHint ? (
+                      <span className="ml-1.5 text-[10px] font-semibold tabular-nums text-sky-100/95">
+                        (
+                        {timezoneDiffHint}
+                        )
+                      </span>
+                    ) : null}
                   </p>
                 </div>
                 {!originExpanded ? (
@@ -368,32 +398,34 @@ export default function FlightCinemaBar({
             ) : (
               <Plane size={16} className="mt-0.5 shrink-0 text-sky-300" aria-hidden="true" />
             )}
-            <FlightRouteSummary
-              routeIatas={routeIatas}
-              flightHours={flightHours}
-              flightLegHours={flightLegHours}
-              originIata={originIata}
-              timezoneDiffHint={timezoneDiffHint}
-              isPending={isRouteUpdatePending}
-            />
+            <div className="min-w-0 flex-1 leading-tight">
+              <FlightRouteSummary
+                routeIatas={routeIatas}
+                flightHours={flightHours}
+                flightLegHours={flightLegHours}
+                originIata={originIata}
+                isPending={isRouteUpdatePending}
+              />
+              <div className="-mt-1">
+                <FlightRouteAlternatives
+                  alternatives={routeAlternatives}
+                  selectedKey={selectedRouteKey}
+                  disabled={isRouteUpdatePending}
+                  onSelect={onSelectRouteAlternative}
+                />
+              </div>
+            </div>
           </div>
 
-          <FlightRouteAlternatives
-            alternatives={routeAlternatives}
-            selectedKey={selectedRouteKey}
-            disabled={isRouteUpdatePending}
-            onSelect={onSelectRouteAlternative}
-          />
-
-          <div className="flex items-center gap-1.5">
+          <div className="mt-2.5 flex items-center gap-1.5 border-t border-white/10 pt-2">
             {plannerUrl ? (
               <Link
                 to={plannerUrl}
                 onClick={onClose}
                 title="플래너 탭에서 전체 여정 보기"
-                className={`flight-cinema-bar-planner shrink-0 ${BAR_BTN} border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 text-white shadow-sm hover:from-violet-400/65 hover:to-violet-500/55 sm:gap-1.5`}
+                className={`flight-cinema-bar-planner shrink-0 ${BAR_BTN} border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 text-white shadow-sm hover:from-violet-400/65 hover:to-violet-500/55`}
               >
-                <LayoutList size={13} className="opacity-95" aria-hidden="true" />
+                <LayoutList size={12} className="opacity-95" aria-hidden="true" />
                 여행 플랜
               </Link>
             ) : null}
@@ -406,7 +438,7 @@ export default function FlightCinemaBar({
                     type="button"
                     className={`flight-cinema-bar-cta shrink-0 ${BAR_BTN} border-sky-300/50 bg-sky-500/20 text-sky-50 hover:border-sky-200/60 hover:bg-sky-500/30`}
                   >
-                    <Search size={13} aria-hidden="true" />
+                    <Search size={12} aria-hidden="true" />
                     항공권 검색
                   </button>
                 }
@@ -415,7 +447,7 @@ export default function FlightCinemaBar({
             <button
               type="button"
               onClick={onClose}
-              className={`ml-auto shrink-0 ${BAR_BTN} border-white/25 bg-white/10 text-white hover:bg-white/15 sm:px-2.5`}
+              className={`ml-auto shrink-0 ${BAR_BTN} border-white/25 bg-white/10 text-white hover:bg-white/15`}
             >
               닫기
             </button>

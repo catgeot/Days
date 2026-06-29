@@ -275,7 +275,7 @@ export default function FlightOriginSelector({
           title={selectedOption?.officialKo || selectedLabel}
         >
           <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
-          <ChevronDown size={12} className="shrink-0 opacity-70" aria-hidden="true" />
+          <ChevronDown size={14} className="shrink-0 opacity-70" aria-hidden="true" />
         </button>
       </div>
     );
@@ -300,7 +300,7 @@ export default function FlightOriginSelector({
             title={selectedOption?.officialKo || selectedLabel}
           >
             <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
-            <ChevronDown size={14} className="shrink-0 opacity-70" aria-hidden="true" />
+            <ChevronDown size={16} className="shrink-0 opacity-70" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -348,7 +348,7 @@ export default function FlightOriginSelector({
             className={barCollapseClass}
             aria-label="출발지 검색 접기"
           >
-            <ChevronUp size={13} aria-hidden="true" />
+            <ChevronUp size={15} aria-hidden="true" />
             접기
           </button>
         ) : (
