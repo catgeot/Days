@@ -336,6 +336,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '토레스 델 파이네는 칠레 남부 파타고니아 국립공원입니다. 보통 푼타아레나스(PUQ) 직항·경유 후 버스·투어로 들어갑니다. 아르헨티나 북부 파타고니아·우수아이아와 관문이 다릅니다.'
   },
+  paris: {
+    primaryIatas: ['CDG'],
+    preferredLinkIata: 'CDG',
+    flightRouteHubIatas: [],
+    confidence: 'high',
+    rationale: 'ICN↔CDG 직항 · graph HEL·CPH 오탐',
+  },
   philadelphia: {
     primaryIatas: ['PHL'],
     preferredLinkIata: 'PHL',

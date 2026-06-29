@@ -44,12 +44,16 @@ async function main() {
   const {
     shouldResolveFlightRouteViaEdge,
     getGraphFlightRouteHubIatas,
+    getFlightRouteWaypoints,
     hasManualFlightRouteHubOverride,
     resolveCinemaDestIata,
   } = await loadModule('src/utils/rentalAirportMatch.js');
-  const { canPreviewFlightRoute, resolveSummaryFlightCinemaOd } = await loadModule(
-    'src/pages/Home/lib/globeFlightCinema.js'
-  );
+  const {
+    canPreviewFlightRoute,
+    resolveSummaryFlightCinemaOd,
+    resolveFlightRoutePlan,
+    getAirportHubCoords,
+  } = await loadModule('src/pages/Home/lib/globeFlightCinema.js');
   const resolveFlightRouteViaEdge = runEdge
     ? (await loadModule('src/utils/resolveFlightRouteEdge.js')).resolveFlightRouteViaEdge
     : null;
@@ -119,6 +123,25 @@ async function main() {
       originIata: 'ICN',
       expectPreview: false,
     },
+    {
+      id: 'icn-paris-direct',
+      label: 'ICN → paris explicit direct',
+      location: loadTravelSpotBySlug('paris'),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+      expectRouteIatas: ['ICN', 'CDG'],
+    },
+    {
+      id: 'icn-grand-canyon-waypoint',
+      label: 'ICN → grand-canyon Pacific waypoint',
+      location: loadTravelSpotBySlug('grand-canyon'),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+      expectHubIatas: ['LAX'],
+      expectWaypoints: [[135, 35]],
+    },
   ];
 
   const results = [];
@@ -133,6 +156,21 @@ async function main() {
     const graphHubs = getGraphFlightRouteHubIatas(location, { originIata });
     const manualOverride = hasManualFlightRouteHubOverride(location);
     const destIata = resolveCinemaDestIata(location);
+    const waypoints = getFlightRouteWaypoints(location, { originIata });
+
+    let planWaypoints = null;
+    if (testCase.expectWaypoints != null && destIata) {
+      const origin = getAirportHubCoords(originIata);
+      const dest = getAirportHubCoords(destIata);
+      if (origin && dest) {
+        planWaypoints = resolveFlightRoutePlan(
+          [origin.lng, origin.lat],
+          [dest.lng, dest.lat],
+          location,
+          { originIata, destIata }
+        ).geoWaypoints;
+      }
+    }
 
     let edgeResult = null;
     let edgeAlternatives = 0;
@@ -156,6 +194,31 @@ async function main() {
     }
     if (testCase.expectManualOverride && !manualOverride) {
       checks.push('expected manual hub override');
+    }
+    if (testCase.expectRouteIatas) {
+      const actual = summary?.routeIatas ?? [];
+      const expected = testCase.expectRouteIatas;
+      if (actual.join(' → ') !== expected.join(' → ')) {
+        checks.push(`route: expected ${expected.join(' → ')}, got ${actual.join(' → ') || '—'}`);
+      }
+    }
+    if (testCase.expectHubIatas) {
+      const actual = summary?.hubIatas ?? [];
+      if (actual.join(',') !== testCase.expectHubIatas.join(',')) {
+        checks.push(`hubs: expected ${testCase.expectHubIatas.join(',')}, got ${actual.join(',') || '—'}`);
+      }
+    }
+    if (testCase.expectWaypoints) {
+      const actual = planWaypoints ?? waypoints;
+      const same =
+        actual.length === testCase.expectWaypoints.length
+        && actual.every(
+          (wp, i) =>
+            wp[0] === testCase.expectWaypoints[i][0] && wp[1] === testCase.expectWaypoints[i][1]
+        );
+      if (!same) {
+        checks.push(`waypoints: expected ${JSON.stringify(testCase.expectWaypoints)}, got ${JSON.stringify(actual)}`);
+      }
     }
 
     results.push({

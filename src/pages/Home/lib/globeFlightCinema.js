@@ -382,7 +382,7 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
         destIata,
         essentialGuide: options.essentialGuide,
       });
-  let geoWaypoints = getFlightRouteWaypoints(location);
+  let geoWaypoints = getFlightRouteWaypoints(location, { originIata });
   let postHubWaypoints = [];
   let hubIatas = [...manualHubIatas];
   const explicitDirect = hasExplicitDirectFlightRoute(location);

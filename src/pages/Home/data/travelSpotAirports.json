@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-22T13:53:43.956Z",
+    "generatedAt": "2026-06-29T08:58:48.502Z",
     "spotCount": 271,
     "placeIdCount": 630,
     "stats": {
-      "override": 167,
+      "override": 168,
       "curatedPreserved": 0,
-      "toolkitSync": 104,
+      "toolkitSync": 103,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -1247,14 +1247,10 @@
       ],
       "preferredLinkIata": "CDG",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [
-        "HEL",
-        "CPH"
-      ],
-      "graphFlightRouteSource": "graph-2hop"
+      "rationale": "ICN↔CDG 직항 · graph HEL·CPH 오탐",
+      "flightRouteHubIatas": []
     },
     "barcelona": {
       "primaryIatas": [

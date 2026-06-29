@@ -1114,10 +1114,15 @@ export function hasManualFlightRouteHubOverride(location) {
 
 /**
  * 항공 시네마 arc 경유점 — overrides `flightRouteWaypoints` [[lng, lat], ...] (최대 3).
+ * ICN 출발일 때만 적용 — 비-ICN(BDA 등)에 Pacific waypoint가 붙으면 arc가 도쿄 동쪽으로 우회함.
  * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ originIata?: string }} [options]
  * @returns {[number, number][]}
  */
-export function getFlightRouteWaypoints(location) {
+export function getFlightRouteWaypoints(location, options = {}) {
+  const originIata = String(options.originIata ?? 'ICN').trim().toUpperCase();
+  if (originIata !== 'ICN') return [];
+
   const row = getFlightRouteAirportRow(location);
   const raw = row?.flightRouteWaypoints;
   if (!Array.isArray(raw) || raw.length === 0) return [];
