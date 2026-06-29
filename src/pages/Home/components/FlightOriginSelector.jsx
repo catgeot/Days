@@ -21,10 +21,11 @@ const LISTBOX_Z_INDEX = 130;
  * @param {{
  *   selectedIata?: string,
  *   disabled?: boolean,
- *   variant?: 'summary' | 'bar' | 'bar-header',
+ *   variant?: 'summary' | 'summary-header' | 'summary-panel' | 'bar' | 'bar-header',
  *   browserOriginHint?: string | null,
  *   onSelect?: (iata: string) => void,
  *   onApplyBrowserOriginSuggestion?: () => void,
+ *   isExpanded?: boolean,
  *   onExpandRequest?: () => void,
  *   onCollapseRequest?: () => void,
  *   initialExpanded?: boolean,
@@ -40,6 +41,7 @@ export default function FlightOriginSelector({
   onExpandRequest,
   onCollapseRequest,
   initialExpanded = false,
+  isExpanded = false,
 }) {
   const listboxId = useId();
   const rootRef = useRef(null);
@@ -62,6 +64,8 @@ export default function FlightOriginSelector({
 
   const isBar = variant === 'bar' || variant === 'bar-header';
   const isBarHeader = variant === 'bar-header';
+  const isSummaryHeader = variant === 'summary-header';
+  const isSummaryPanel = variant === 'summary-panel';
   const isSummary = variant === 'summary';
   const showSearchUi = !isBar || barExpanded;
 
@@ -159,7 +163,7 @@ export default function FlightOriginSelector({
 
   const inputClass = isBar
     ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
-    : isSummary
+    : isSummary || isSummaryPanel
       ? 'min-h-[40px] w-full rounded-lg border border-sky-400/35 bg-black/40 py-2 pl-8 pr-12 text-sm font-medium text-white placeholder:text-white/45 shadow-inner shadow-black/20 focus:border-sky-300/55 focus:outline-none focus:ring-1 focus:ring-sky-400/35'
       : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
 
@@ -185,6 +189,10 @@ export default function FlightOriginSelector({
   const summarySelectedClass =
     'inline-flex max-w-[58%] shrink-0 items-center rounded-md border border-sky-400/40 bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold text-sky-50 tabular-nums truncate';
 
+  const summaryHeaderChipClass = `inline-flex min-h-0 max-w-[8.5rem] items-center gap-1 rounded-md border border-sky-400/45 bg-sky-500/18 px-2 py-0.5 text-[10px] font-semibold leading-tight text-sky-50 transition-colors hover:border-sky-300/55 hover:bg-sky-500/28 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-sky-300/50 motion-safe:active:scale-[0.98] ${
+    disabled ? 'opacity-60 cursor-wait' : ''
+  }`;
+
   const barSearchLabelClass = 'text-[11px] font-bold text-sky-100 break-keep';
 
   const barCollapseClass =
@@ -198,7 +206,7 @@ export default function FlightOriginSelector({
     ? 'inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-md border border-violet-300/40 bg-violet-500/15 px-3 text-sm font-semibold text-violet-100 transition-colors hover:border-violet-200/55 hover:bg-violet-500/25'
     : 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-lg border border-violet-400/35 bg-violet-500/10 px-2.5 text-xs font-semibold text-violet-200 transition-colors hover:border-violet-300/50 hover:bg-violet-500/15';
 
-  const geoInlineClass = isSummary
+  const geoInlineClass = isSummary || isSummaryPanel
     ? `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 border-sky-400/35 bg-sky-500/15 p-0 text-sky-100`
     : `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 p-0`;
 
@@ -207,6 +215,13 @@ export default function FlightOriginSelector({
   const selectedLabel = selectedOption
     ? `${selectedOption.label} (${selectedOption.iata})`
     : selectedIata;
+
+  const handleCollapse = useCallback(() => {
+    setIsOpen(false);
+    setQuery('');
+    setResults([]);
+    onCollapseRequest?.();
+  }, [onCollapseRequest]);
 
   const listboxPortal =
     isOpen && results.length > 0 && dropdownStyle && typeof document !== 'undefined'
@@ -251,9 +266,42 @@ export default function FlightOriginSelector({
     ? `inline-flex min-h-0 max-w-[9.5rem] items-center gap-1 rounded-md border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-bold text-sky-100 transition-colors hover:border-sky-300/40 hover:bg-white/10 ${
         disabled ? 'opacity-60 cursor-wait' : ''
       }`
-    : `inline-flex min-h-[44px] max-w-full items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs font-bold text-sky-100 transition-colors hover:border-sky-300/40 hover:bg-white/10 ${
-        disabled ? 'opacity-60 cursor-wait' : ''
-      }`;
+    : isSummaryHeader
+      ? summaryHeaderChipClass
+      : `inline-flex min-h-[44px] max-w-full items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-2 text-xs font-bold text-sky-100 transition-colors hover:border-sky-300/40 hover:bg-white/10 ${
+          disabled ? 'opacity-60 cursor-wait' : ''
+        }`;
+
+  if (isSummaryHeader) {
+    const toggleAction = isExpanded ? onCollapseRequest : onExpandRequest;
+
+    return (
+      <div
+        ref={rootRef}
+        className="flex shrink-0 items-center gap-3"
+        onClick={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <span className="shrink-0 text-[10px] font-bold tracking-wide text-sky-100/90 break-keep">출발</span>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => toggleAction?.()}
+          className={chipButtonClass}
+          aria-expanded={isExpanded}
+          aria-label={isExpanded ? '출발지 검색 접기' : '출발지 검색 펼치기'}
+          title={selectedOption?.officialKo || selectedLabel}
+        >
+          <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
+          {isExpanded ? (
+            <ChevronUp size={13} strokeWidth={2.25} className="shrink-0 text-sky-100/90" aria-hidden="true" />
+          ) : (
+            <ChevronDown size={13} strokeWidth={2.25} className="shrink-0 text-sky-100/90" aria-hidden="true" />
+          )}
+        </button>
+      </div>
+    );
+  }
 
   if (isBarHeader) {
     return (
@@ -311,8 +359,10 @@ export default function FlightOriginSelector({
     <div
       ref={rootRef}
       className={`min-w-0 ${
-        isSummary
-          ? 'space-y-2 rounded-xl border border-sky-400/25 bg-gradient-to-b from-sky-500/12 to-sky-950/25 p-2.5'
+        isSummary || isSummaryPanel
+          ? `space-y-2 rounded-xl border border-sky-400/25 bg-gradient-to-b from-sky-500/12 to-sky-950/25 p-2.5${
+              isSummaryPanel ? ' mt-1.5' : ''
+            }`
           : isBar
             ? 'space-y-1.5'
             : 'space-y-1'
@@ -320,41 +370,43 @@ export default function FlightOriginSelector({
       onClick={(event) => event.stopPropagation()}
       onMouseDown={(event) => event.stopPropagation()}
     >
-      <div className="flex items-center justify-between gap-2 min-w-0">
-        <p className={isBar ? barSearchLabelClass : labelClass}>
-          {isSummary || isBar ? '출발지 검색' : '출발지'}
-        </p>
-        {!isBar && selectedOption ? (
-          <span
-            className={isSummary ? summarySelectedClass : `min-w-0 truncate ${selectedClass}`}
-            title={selectedOption.officialKo || selectedOption.label}
-          >
-            {selectedOption.label} ({selectedOption.iata})
-          </span>
-        ) : isBar ? (
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => {
-              setIsOpen(false);
-              setQuery('');
-              setResults([]);
-              if (onCollapseRequest) {
-                onCollapseRequest();
-                return;
-              }
-              setBarExpanded(false);
-            }}
-            className={barCollapseClass}
-            aria-label="출발지 검색 접기"
-          >
-            <ChevronUp size={15} aria-hidden="true" />
-            접기
-          </button>
-        ) : (
-          <span className={selectedClass}>{selectedIata}</span>
-        )}
-      </div>
+      {!isSummaryPanel ? (
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <p className={isBar ? barSearchLabelClass : labelClass}>
+            {isSummary || isBar ? '출발지 검색' : '출발지'}
+          </p>
+          {!isBar && selectedOption ? (
+            <span
+              className={isSummary ? summarySelectedClass : `min-w-0 truncate ${selectedClass}`}
+              title={selectedOption.officialKo || selectedOption.label}
+            >
+              {selectedOption.label} ({selectedOption.iata})
+            </span>
+          ) : isBar ? (
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => {
+                setIsOpen(false);
+                setQuery('');
+                setResults([]);
+                if (onCollapseRequest) {
+                  onCollapseRequest();
+                  return;
+                }
+                setBarExpanded(false);
+              }}
+              className={barCollapseClass}
+              aria-label="출발지 검색 접기"
+            >
+              <ChevronUp size={15} aria-hidden="true" />
+              접기
+            </button>
+          ) : (
+            <span className={selectedClass}>{selectedIata}</span>
+          )}
+        </div>
+      ) : null}
 
       <div className={`flex gap-1.5 ${isBar ? 'flex-col' : 'items-stretch'}`}>
         <div ref={inputWrapRef} className="relative min-w-0 flex-1">
@@ -363,7 +415,7 @@ export default function FlightOriginSelector({
             className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${
               isBar
                 ? 'left-2.5 text-white/40'
-                : isSummary
+                : isSummary || isSummaryPanel
                   ? 'left-3 text-sky-300/75'
                   : 'left-2.5 text-gray-500'
             }`}
@@ -393,7 +445,10 @@ export default function FlightOriginSelector({
                 setResults([]);
                 inputRef.current?.blur();
                 if (isBar) setBarExpanded(false);
-                onCollapseRequest?.();
+                if (onCollapseRequest) {
+                  handleCollapse();
+                  return;
+                }
               }
             }}
           />

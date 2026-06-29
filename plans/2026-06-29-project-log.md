@@ -162,3 +162,14 @@ Bar `GMP~1hPEK~8hCPH~1hCDG` 등 — `~Nh`는 **구간 비행 추정**(환승 대
 - **경유 후보** — 항로 아래 보조 라인 · 기본 접힘 · chevron 텍스트 인접 · 펼침 칩 가로 스크롤 · `sky` 톤 가독성
 - **액션 구분** — 경유 영역과 하단 버튼 `border-t` + 여백 · 버튼 min-h 28px 슬림화
 - **출발지** — Bar 헤더·접기 chevron 한 단계 확대 · `FlightOriginSelector.jsx`
+
+---
+
+## 써머리 장소카드 — 출발지 UI 압축 **완료 ✅**
+
+**상태**: PlaceCardSummary 출발지 progressive disclosure · smoke/audit 변경 없음 · **사용자 확인 ✅**
+
+- **접힘** — `출발` + origin 칩(▼) · 경로 라벨 우측 한 줄 · `localStorage` 없을 때만 자동 펼침
+- **펼침** — 헤더 고정(동일 칩 위치 · ▲ 접기) · `summary-panel` 검색만 아래
+- **스타일** — 출발↔칩 `gap-3` · 슬림 칩(`10px` semibold) · Bar `bar-header` 패턴과 정렬
+- **코드** — `PlaceCardSummary` · `HomePlaceCardSummary` · `FlightOriginSelector` (`summary-header` · `summary-panel`)

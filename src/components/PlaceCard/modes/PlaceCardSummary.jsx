@@ -48,6 +48,8 @@ const PlaceCardSummary = ({
 
   onApplyBrowserOriginSuggestion,
 
+  initialOriginExpanded = false,
+
   isCompact = false,
 
 }) => {
@@ -55,6 +57,8 @@ const PlaceCardSummary = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const [glowPhase, setGlowPhase] = useState('enter');
+
+  const [originExpanded, setOriginExpanded] = useState(initialOriginExpanded);
 
   const isScanning = location?.isScanning;
 
@@ -127,6 +131,10 @@ const PlaceCardSummary = ({
     };
 
   }, [location?.id, location?.name, location?.lat, location?.lng]);
+
+  useEffect(() => {
+    setOriginExpanded(initialOriginExpanded);
+  }, [location?.id, initialOriginExpanded]);
 
 
 
@@ -341,35 +349,61 @@ const PlaceCardSummary = ({
 
               <div className="mb-2">
 
-                <FlightOriginSelector
+                <div className="flex items-center justify-between gap-2 min-w-0">
 
-                  variant="summary"
+                  <FlightOriginSelector
 
-                  selectedIata={selectedFlightOriginIata}
+                    variant="summary-header"
 
-                  disabled={isFlightRoutePending}
+                    isExpanded={originExpanded}
 
-                  browserOriginHint={flightBrowserOriginHint}
+                    selectedIata={selectedFlightOriginIata}
 
-                  onSelect={onSelectFlightOrigin}
+                    disabled={isFlightRoutePending}
 
-                  onApplyBrowserOriginSuggestion={onApplyBrowserOriginSuggestion}
+                    onExpandRequest={() => setOriginExpanded(true)}
 
-                />
+                    onCollapseRequest={() => setOriginExpanded(false)}
 
-                {flightRouteLabel ? (
+                  />
 
-                  <p className="mt-1.5 text-xs font-semibold text-sky-200/90 break-keep tabular-nums">
+                  {flightRouteLabel ? (
 
-                    {flightRouteLabel}
+                    <p className="min-w-0 flex-1 truncate text-right text-xs font-semibold text-sky-200/90 break-keep tabular-nums">
 
-                    {typeof flightRouteHours === 'number' ? (
+                      {flightRouteLabel}
 
-                      <span className="ml-1.5 font-medium text-sky-300/75">· 약 {flightRouteHours}h</span>
+                      {typeof flightRouteHours === 'number' ? (
 
-                    ) : null}
+                        <span className="ml-1 font-medium text-sky-300/75">· 약 {flightRouteHours}h</span>
 
-                  </p>
+                      ) : null}
+
+                    </p>
+
+                  ) : null}
+
+                </div>
+
+                {originExpanded ? (
+
+                  <FlightOriginSelector
+
+                    variant="summary-panel"
+
+                    selectedIata={selectedFlightOriginIata}
+
+                    disabled={isFlightRoutePending}
+
+                    browserOriginHint={flightBrowserOriginHint}
+
+                    onSelect={onSelectFlightOrigin}
+
+                    onApplyBrowserOriginSuggestion={onApplyBrowserOriginSuggestion}
+
+                    onCollapseRequest={() => setOriginExpanded(false)}
+
+                  />
 
                 ) : null}
 
