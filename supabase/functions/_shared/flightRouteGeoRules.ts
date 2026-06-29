@@ -13,6 +13,13 @@ export const REGIONAL_TRANSIT_HUBS = new Set([
   "ADD", "JNB", "NBO", "DAR", "DEL", "BOM", "MAA", "CAI", "KTM", "DPS", "SGN", "KIX",
 ]);
 
+export const MAX_FLIGHT_PATH_DETOUR_RATIO = 1.35;
+
+export function isMajorTransitHub(iata: string): boolean {
+  const hub = String(iata || "").trim().toUpperCase();
+  return TIER_1_TRANSIT_HUBS.has(hub) || REGIONAL_TRANSIT_HUBS.has(hub);
+}
+
 export const EUROPEAN_TRANSIT_HUBS = new Set([
   "AMS", "BRU", "CDG", "CPH", "DUB", "FCO", "FRA", "HEL", "LHR", "LIS", "MAD", "MUC",
   "OSL", "PRG", "VIE", "WAW", "ZRH", "ARN", "BUD",
@@ -138,6 +145,35 @@ function scoreHubGeoPenalty(
   return penalty;
 }
 
+function scoreOriginRegionHubPenalty(
+  originIata: string,
+  hubIata: string,
+  hubIndex: number,
+  destRegion: DestRegion,
+  airportMeta?: Map<string, AirportMeta>,
+): number {
+  const originRegion = resolveDestRegion(originIata, airportMeta?.get(originIata) ?? null);
+  const hub = String(hubIata || "").trim().toUpperCase();
+  let penalty = 0;
+
+  const originPreferred = PREFERRED_HUBS_BY_REGION[originRegion] ?? PREFERRED_HUBS_BY_REGION.unknown;
+  if (originPreferred.has(hub)) penalty -= 100;
+
+  if (originRegion === "americas" && destRegion === "europe") {
+    if (EUROPEAN_TRANSIT_HUBS.has(hub)) {
+      penalty += hubIndex > 1 ? 600 : 80;
+    } else if (!isMajorTransitHub(hub)) {
+      penalty += 300;
+    }
+  }
+
+  if (originRegion === "americas" && destRegion === "americas" && !isMajorTransitHub(hub)) {
+    penalty += 500;
+  }
+
+  return penalty;
+}
+
 function coordsForIata(
   iata: string,
   metaMap: Map<string, AirportMeta> | undefined,
@@ -176,13 +212,23 @@ export function scoreFlightPathV2(
   }
 
   let score = totalHours * 100;
+  const originIata = codes[0];
   const origin = chain[0];
   const dest = chain[chain.length - 1];
+  let hubIndex = 0;
 
   for (let i = 1; i < codes.length - 1; i += 1) {
+    hubIndex += 1;
     score += crossTrackKm(origin, dest, chain[i]) * 0.5;
     const hubMeta = airportMeta?.get(codes[i]) ?? null;
     score += scoreHubGeoPenalty(codes[i], destRegion, destCountry, hubMeta?.iso_country ?? null);
+    score += scoreOriginRegionHubPenalty(
+      originIata,
+      codes[i],
+      hubIndex,
+      destRegion,
+      airportMeta,
+    );
   }
 
   return score;
@@ -247,4 +293,18 @@ export function flightPathDetourRatio(
     pathHours += estimateFlightHours(chain[i], chain[i + 1]);
   }
   return pathHours / directHours;
+}
+
+export function filterCandidatesByDetourRatio<
+  T extends { path: string[] },
+>(
+  candidates: T[],
+  airportMeta?: Map<string, AirportMeta>,
+  maxRatio = MAX_FLIGHT_PATH_DETOUR_RATIO,
+): T[] {
+  if (!candidates.length) return candidates;
+  const filtered = candidates.filter(
+    (c) => flightPathDetourRatio(c.path, airportMeta) <= maxRatio,
+  );
+  return filtered.length ? filtered : candidates;
 }

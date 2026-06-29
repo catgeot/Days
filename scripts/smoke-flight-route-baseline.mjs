@@ -53,10 +53,22 @@ async function main() {
     resolveSummaryFlightCinemaOd,
     resolveFlightRoutePlan,
     getAirportHubCoords,
+    buildFlightRouteLineWithLegs,
   } = await loadModule('src/pages/Home/lib/globeFlightCinema.js');
+  const { flightPathDetourRatio } = await loadModule('src/pages/Home/lib/flightRouteGeoRules.js');
+  const {
+    loadFlightRouteGraph,
+    loadAirportMetaMap,
+    resolveGraphFlightRoute,
+  } = await loadModule('scripts/lib/flight-route-resolver.mjs');
   const resolveFlightRouteViaEdge = runEdge
     ? (await loadModule('src/utils/resolveFlightRouteEdge.js')).resolveFlightRouteViaEdge
     : null;
+
+  const graphCtx = {
+    adjacency: (await loadFlightRouteGraph({ skipDownload: true })).adjacency,
+    airportMeta: await loadAirportMetaMap({ skipDownload: true }),
+  };
 
   const cases = [
     {
@@ -142,12 +154,124 @@ async function main() {
       expectHubIatas: ['LAX'],
       expectWaypoints: [[135, 35]],
     },
+    {
+      id: 'bda-grand-canyon-no-sgf',
+      label: 'BDA → grand-canyon graph (SGF 없음)',
+      location: loadTravelSpotBySlug('grand-canyon'),
+      originIata: 'BDA',
+      destIata: 'LAS',
+      graphOnly: true,
+      expectPreview: true,
+      forbiddenHubs: ['SGF'],
+      expectHubIatas: ['ATL'],
+    },
+    {
+      id: 'bda-paris-detour',
+      label: 'BDA → paris graph detour ≤1.35',
+      location: loadTravelSpotBySlug('paris'),
+      originIata: 'BDA',
+      destIata: 'CDG',
+      graphOnly: true,
+      expectPreview: true,
+      maxDetourRatio: 1.35,
+      forbiddenHubs: ['MUC', 'SGF'],
+    },
+    {
+      id: 'bda-paris-arc-via-jfk',
+      label: 'BDA → paris arc multi-leg (explicitDirect ICN gate)',
+      location: loadTravelSpotBySlug('paris'),
+      originIata: 'BDA',
+      destIata: 'CDG',
+      arcOnly: true,
+      expectHubIatas: ['JFK'],
+      minArcLegs: 2,
+    },
   ];
 
   const results = [];
 
   for (const testCase of cases) {
     const { location, originIata } = testCase;
+
+    if (testCase.arcOnly) {
+      const destIata = testCase.destIata ?? resolveCinemaDestIata(location);
+      const origin = getAirportHubCoords(originIata);
+      const dest = getAirportHubCoords(destIata);
+      const checks = [];
+      if (origin && dest) {
+        const { legEndIndices } = buildFlightRouteLineWithLegs(
+          [origin.lng, origin.lat],
+          [dest.lng, dest.lat],
+          {
+            location,
+            originIata,
+            destIata,
+            hubIatas: testCase.expectHubIatas,
+          }
+        );
+        if (testCase.minArcLegs != null && legEndIndices.length < testCase.minArcLegs) {
+          checks.push(`arc legs: expected ≥${testCase.minArcLegs}, got ${legEndIndices.length}`);
+        }
+      } else {
+        checks.push('missing origin/dest coords');
+      }
+      results.push({
+        id: testCase.id,
+        label: testCase.label,
+        pass: checks.length === 0,
+        checks,
+        edge: null,
+        preview: true,
+        destIata,
+        routeLabel: [originIata, ...(testCase.expectHubIatas ?? []), destIata].join(' → '),
+        graphHubs: testCase.expectHubIatas ?? [],
+        manualOverride: false,
+        edgeAlternatives: 0,
+        edgeHubs: null,
+      });
+      continue;
+    }
+
+    if (testCase.graphOnly) {
+      const destIata = testCase.destIata ?? resolveCinemaDestIata(location);
+      const graph = resolveGraphFlightRoute(originIata, destIata, graphCtx.adjacency, {
+        airportMeta: graphCtx.airportMeta,
+      });
+      const hubIatas = graph?.hubIatas ?? [];
+      const path = graph?.path ?? [originIata, destIata];
+      const detourRatio = flightPathDetourRatio(path);
+      const checks = [];
+
+      if (testCase.expectHubIatas) {
+        if (hubIatas.join(',') !== testCase.expectHubIatas.join(',')) {
+          checks.push(`hubs: expected ${testCase.expectHubIatas.join(',')}, got ${hubIatas.join(',') || '—'}`);
+        }
+      }
+      if (testCase.forbiddenHubs?.some((hub) => hubIatas.includes(hub))) {
+        checks.push(`forbidden hub present: ${testCase.forbiddenHubs.filter((h) => hubIatas.includes(h)).join(',')}`);
+      }
+      if (testCase.maxDetourRatio != null && detourRatio > testCase.maxDetourRatio) {
+        checks.push(`detour: ${detourRatio.toFixed(2)} > ${testCase.maxDetourRatio}`);
+      }
+
+      results.push({
+        id: testCase.id,
+        label: testCase.label,
+        pass: checks.length === 0,
+        checks,
+        edge: null,
+        preview: true,
+        destIata,
+        routeLabel: path.join(' → '),
+        graphHubs: hubIatas,
+        manualOverride: false,
+        edgeAlternatives: 0,
+        edgeHubs: null,
+        detourRatio: Number(detourRatio.toFixed(2)),
+      });
+      continue;
+    }
+
     const edge = shouldResolveFlightRouteViaEdge(location, { originIata });
     const preview = canPreviewFlightRoute(location, { originIata });
     const summary = preview

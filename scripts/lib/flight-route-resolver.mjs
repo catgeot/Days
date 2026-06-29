@@ -9,7 +9,9 @@ import {
   MAX_FLIGHT_LEG_HOURS,
 } from '../../src/pages/Home/lib/globeFlightCinema.js';
 import {
+  filterCandidatesByDetourRatio,
   filterSuspiciousGraphDirect,
+  isMajorTransitHub,
   scoreFlightPathV2,
   TIER_1_TRANSIT_HUBS,
 } from '../../src/pages/Home/lib/flightRouteGeoRules.js';
@@ -85,21 +87,38 @@ function maxLegHoursOnGraphPath(path) {
 }
 
 /**
+ * @param {Map<string, Set<string>>} adjacency
+ * @param {string} fromIata
+ * @param {boolean} onlyMajorHubs
+ */
+function routeNeighbors(adjacency, fromIata, onlyMajorHubs) {
+  const all = [...(adjacency.get(fromIata) ?? [])];
+  if (!onlyMajorHubs) return all;
+  return all.filter((code) => isMajorTransitHub(code));
+}
+
+/**
  * @param {string} origin
  * @param {string} dest
  * @param {Map<string, Set<string>>} adjacency
- * @param {{ maxHubStops?: number, airportMeta?: Map<string, unknown> }} [options]
- * @returns {{ hubIatas: string[], hops: number, source: string, path: string[] } | null}
+ * @param {{ maxHubStops?: number, airportMeta?: Map<string, unknown>, onlyMajorHubs?: boolean }} [options]
  */
-export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
+function collectGraphRouteCandidates(origin, dest, adjacency, options = {}) {
   const from = String(origin || '').trim().toUpperCase();
   const to = String(dest || '').trim().toUpperCase();
   const maxHubStops = options.maxHubStops ?? MAX_HUB_STOPS;
   const airportMeta = options.airportMeta ?? null;
+  const onlyMajorHubs = options.onlyMajorHubs ?? false;
 
-  if (!from || !to || from.length !== 3 || to.length !== 3) return null;
+  if (!from || !to || from.length !== 3 || to.length !== 3) return [];
   if (from === to) {
-    return { hubIatas: [], hops: 0, source: 'same-airport', path: [from] };
+    return [{
+      hubIatas: [],
+      hops: 0,
+      source: 'same-airport',
+      path: [from],
+      score: 0,
+    }];
   }
 
   /** @type {{ hubIatas: string[], hops: number, source: string, path: string[], score: number }[]} */
@@ -116,7 +135,7 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
   }
 
   if (maxHubStops >= 1) {
-    for (const h1 of adjacency.get(from) ?? []) {
+    for (const h1 of routeNeighbors(adjacency, from, onlyMajorHubs)) {
       if (h1 === to) continue;
       if (hasRouteEdge(h1, to, adjacency)) {
         const path = [from, h1, to];
@@ -132,9 +151,9 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
   }
 
   if (maxHubStops >= 2) {
-    for (const h1 of adjacency.get(from) ?? []) {
+    for (const h1 of routeNeighbors(adjacency, from, onlyMajorHubs)) {
       if (h1 === to) continue;
-      for (const h2 of adjacency.get(h1) ?? []) {
+      for (const h2 of routeNeighbors(adjacency, h1, onlyMajorHubs)) {
         if (h2 === from || h2 === to || h2 === h1) continue;
         if (hasRouteEdge(h2, to, adjacency)) {
           const path = [from, h1, h2, to];
@@ -150,11 +169,21 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
     }
   }
 
-  if (!candidates.length) return null;
+  return candidates;
+}
+
+/**
+ * @param {{ hubIatas: string[], hops: number, source: string, path: string[], score: number }[]} candidates
+ * @param {Map<string, Set<string>>} adjacency
+ * @param {Map<string, unknown> | null | undefined} airportMeta
+ */
+function finalizeGraphRouteCandidates(candidates, adjacency, airportMeta) {
+  if (!candidates.length) return [];
 
   if (airportMeta?.size) {
     candidates = filterSuspiciousGraphDirect(candidates, adjacency, airportMeta);
-    if (!candidates.length) return null;
+    if (!candidates.length) return [];
+    candidates = filterCandidatesByDetourRatio(candidates, airportMeta);
   }
 
   const withinLegLimit = candidates.filter(
@@ -168,7 +197,38 @@ export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
       a.hops - b.hops ||
       a.hubIatas.join(',').localeCompare(b.hubIatas.join(','))
   );
+  return pool;
+}
+
+/**
+ * @param {string} origin
+ * @param {string} dest
+ * @param {Map<string, Set<string>>} adjacency
+ * @param {{ maxHubStops?: number, airportMeta?: Map<string, unknown> }} [options]
+ * @returns {{ hubIatas: string[], hops: number, source: string, path: string[] } | null}
+ */
+export function resolveGraphFlightRoute(origin, dest, adjacency, options = {}) {
+  const from = String(origin || '').trim().toUpperCase();
+  const to = String(dest || '').trim().toUpperCase();
+  const airportMeta = options.airportMeta ?? null;
+
+  if (!from || !to || from.length !== 3 || to.length !== 3) return null;
+
+  let pool = finalizeGraphRouteCandidates(
+    collectGraphRouteCandidates(from, to, adjacency, { ...options, onlyMajorHubs: true }),
+    adjacency,
+    airportMeta,
+  );
+  if (!pool.length) {
+    pool = finalizeGraphRouteCandidates(
+      collectGraphRouteCandidates(from, to, adjacency, { ...options, onlyMajorHubs: false }),
+      adjacency,
+      airportMeta,
+    );
+  }
+
   const best = pool[0];
+  if (!best) return null;
   return {
     hubIatas: best.hubIatas,
     hops: best.hops,

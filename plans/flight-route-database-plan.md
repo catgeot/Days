@@ -69,18 +69,18 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ## 다음 세션 — 에이전트 핸드오ff
 
-**다음(항공)**: **비-ICN 출발 라우팅** — 2세션 · **S1** A+C+E(일부) → **S2** B+E+Edge — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md)
+**항공(비-ICN)**: **S1+S2 ✅** — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md) · **다음**: 브라우저 BDA QA · F(tooltip) · 릴리스 노트
 
-~~Phase 4 v2.2 출발지 UI~~ **✅** · ~~arc-F안·uiPlace QA~~ **✅**
+~~Phase 4 v2.2 출발지 UI~~ **✅** · ~~비-ICN S1~~ **✅** · ~~비-ICN S2 B+E+Edge~~ **✅**
 
 | 읽을 것 | 금지 |
 |---------|------|
 | [`2026-06-29-project-log.md`](./2026-06-29-project-log.md) · `flight-route-non-icn-routing-plan.md` | `travelSpots.js` 전체 |
 | `globeFlightCinema.js` · `rentalAirportMatch.js` · resolver·GeoRules | `travelSpotAirports.json` 직접 편집 |
 
-**런타임**: 시네마 arc = **클라이언트** `resolveFlightRoutePlan` + JSON SSOT · Edge `resolve-flight-route` **UI 미연결**.
+**런타임**: 시네마 Bar = Edge hub (비-ICN) · arc = `resolveFlightRoutePlan` + `options.hubIatas` · `explicitDirect` ICN 전용.
 
-**gap 스냅샷 (경유 QA 후)**: hub-override **76** · graph-precompute **112** · graph-direct **78**(검수: `npm run generate:graph-direct-review`) · direct-fallback **~2** · `audit:flight-arcs` **0**
+**gap 스냅샷 (S2 후)**: hub-override **76** · graph-precompute **112** · `smoke:flight-route-baseline` **13/13** · `audit:flight-arcs` **0**
 
 **graph-direct 오탐 패턴**: OpenFlights 2014 직항 레그 잔재(예: ~~나이로비 ICN→NBO~~ → `ADD` hub) · 플래너「경유 필수」와 Bar「직항」 불일치 시 overrides `flightRouteHubIatas`.
 

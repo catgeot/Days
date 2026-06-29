@@ -373,29 +373,35 @@ function hubIatasToCoords(hubIatas) {
  */
 export function resolveFlightRoutePlan(originLngLat, destLngLat, location, options = {}) {
   const originIata = options.originIata ?? DEFAULT_ORIGIN_IATA;
+  const normalizedOrigin = String(originIata).trim().toUpperCase();
   const destIata = options.destIata;
+  const explicitHubsFromOptions = Array.isArray(options.hubIatas) && options.hubIatas.length > 0;
 
-  const manualHubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
+  const manualHubIatas = explicitHubsFromOptions
     ? options.hubIatas
+        .map((c) => String(c ?? '').trim().toUpperCase())
+        .filter((c) => c.length === 3)
     : getFlightRouteHubIatas(location, {
-        originIata,
+        originIata: normalizedOrigin,
         destIata,
         essentialGuide: options.essentialGuide,
       });
-  let geoWaypoints = getFlightRouteWaypoints(location, { originIata });
+  let geoWaypoints = getFlightRouteWaypoints(location, { originIata: normalizedOrigin });
   let postHubWaypoints = [];
   let hubIatas = [...manualHubIatas];
-  const explicitDirect = hasExplicitDirectFlightRoute(location);
+  // explicitDirect(예: paris ICN↔CDG)는 ICN 출발만 — BDA 등 Edge hub chain과 충돌 방지
+  const explicitDirect =
+    hasExplicitDirectFlightRoute(location) && normalizedOrigin === DEFAULT_ORIGIN_IATA;
   const hasManualOverride = explicitDirect
     || hasManualFlightRouteHubOverride(location)
     || manualHubIatas.length > 0;
   let routeSource = hasManualOverride ? 'override' : null;
 
-  if (explicitDirect) {
+  if (explicitDirect && !explicitHubsFromOptions) {
     hubIatas = [];
   } else if (!hasManualOverride) {
     const graphHubIatas = getGraphFlightRouteHubIatas(location, {
-      originIata,
+      originIata: normalizedOrigin,
       destIata,
       essentialGuide: options.essentialGuide,
     });
@@ -403,7 +409,9 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
       hubIatas = [...graphHubIatas];
       routeSource = 'graph';
     } else {
-      const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, { originIata });
+      const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, {
+        originIata: normalizedOrigin,
+      });
       if (corridor) {
         if (!geoWaypoints.length) geoWaypoints = [...corridor.waypoints];
         postHubWaypoints = [...(corridor.postHubWaypoints ?? [])];

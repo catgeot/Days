@@ -21,6 +21,15 @@ export const REGIONAL_TRANSIT_HUBS = new Set([
   'ADD', 'JNB', 'NBO', 'DAR', 'DEL', 'BOM', 'MAA', 'CAI', 'KTM', 'DPS', 'SGN', 'KIX',
 ]);
 
+/** Path flight-hours / direct great-circle hours — above this → candidate drop (fallback if empty). */
+export const MAX_FLIGHT_PATH_DETOUR_RATIO = 1.35;
+
+/** tier-1 ∪ regional — graph BFS intermediate hub gate. */
+export function isMajorTransitHub(iata) {
+  const hub = String(iata || '').trim().toUpperCase();
+  return TIER_1_TRANSIT_HUBS.has(hub) || REGIONAL_TRANSIT_HUBS.has(hub);
+}
+
 /** EU/Atlantic hubs penalized when destination is in Africa. */
 export const EUROPEAN_TRANSIT_HUBS = new Set([
   'AMS', 'BRU', 'CDG', 'CPH', 'DUB', 'FCO', 'FRA', 'HEL', 'LHR', 'LIS', 'MAD', 'MUC',
@@ -129,6 +138,37 @@ export function scoreHubGeoPenalty(hubIata, destRegion, destCountry, hubCountry)
 }
 
 /**
+ * Origin-region hub penalty — e.g. Americas→Europe: extra EU zigzag hops.
+ * @param {string} originIata
+ * @param {string} hubIata
+ * @param {number} hubIndex 1-based index among intermediate hubs
+ * @param {DestRegion} destRegion
+ * @param {Map<string, { iso_country?: string, continent?: string, latitude_deg?: number, longitude_deg?: number }> | null | undefined} airportMeta
+ */
+export function scoreOriginRegionHubPenalty(originIata, hubIata, hubIndex, destRegion, airportMeta) {
+  const originRegion = resolveDestRegion(originIata, airportMeta?.get(originIata) ?? null);
+  const hub = String(hubIata || '').trim().toUpperCase();
+  let penalty = 0;
+
+  const originPreferred = PREFERRED_HUBS_BY_REGION[originRegion] ?? PREFERRED_HUBS_BY_REGION.unknown;
+  if (originPreferred.has(hub)) penalty -= 100;
+
+  if (originRegion === 'americas' && destRegion === 'europe') {
+    if (EUROPEAN_TRANSIT_HUBS.has(hub)) {
+      penalty += hubIndex > 1 ? 600 : 80;
+    } else if (!isMajorTransitHub(hub)) {
+      penalty += 300;
+    }
+  }
+
+  if (originRegion === 'americas' && destRegion === 'americas' && !isMajorTransitHub(hub)) {
+    penalty += 500;
+  }
+
+  return penalty;
+}
+
+/**
  * v2 path score — lower is better.
  * @param {string[]} path origin → hub… → dest
  * @param {{ airportMeta?: Map<string, { iso_country?: string, continent?: string, type?: string, scheduled_service?: string, latitude_deg?: number, longitude_deg?: number }> }} [options]
@@ -165,9 +205,12 @@ export function scoreFlightPathV2(path, options = {}) {
 
   let score = totalHours * 100;
 
+  const originIata = codes[0];
   const origin = chain[0];
   const dest = chain[chain.length - 1];
+  let hubIndex = 0;
   for (let i = 1; i < codes.length - 1; i += 1) {
+    hubIndex += 1;
     const hubCoords = chain[i];
     const xt = crossTrackKm(origin, dest, hubCoords);
     score += xt * 0.5;
@@ -178,6 +221,13 @@ export function scoreFlightPathV2(path, options = {}) {
       destRegion,
       destCountry,
       hubMeta?.iso_country ?? null,
+    );
+    score += scoreOriginRegionHubPenalty(
+      originIata,
+      codes[i],
+      hubIndex,
+      destRegion,
+      metaMap,
     );
   }
 
@@ -214,6 +264,20 @@ export function flightPathDetourRatio(path) {
   }
 
   return pathHours / directHours;
+}
+
+/**
+ * Drop graph candidates whose path detour exceeds maxRatio; keep pool if all would drop.
+ * @param {{ path: string[] }[]} candidates
+ * @param {Map<string, unknown> | null | undefined} [airportMeta]
+ * @param {number} [maxRatio]
+ */
+export function filterCandidatesByDetourRatio(candidates, airportMeta, maxRatio = MAX_FLIGHT_PATH_DETOUR_RATIO) {
+  if (!candidates?.length) return candidates ?? [];
+  const filtered = candidates.filter(
+    (c) => flightPathDetourRatio(c.path) <= maxRatio,
+  );
+  return filtered.length ? filtered : candidates;
 }
 
 /**

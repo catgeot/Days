@@ -3,7 +3,9 @@
  * v2 geo scoring — flightRouteGeoRules.ts
  */
 import {
+  filterCandidatesByDetourRatio,
   filterSuspiciousGraphDirect,
+  isMajorTransitHub,
   scoreFlightPathV2,
   type AirportMeta,
 } from "./flightRouteGeoRules.ts";
@@ -52,16 +54,27 @@ function maxLegHoursOnGraphPath(
 
 type Candidate = GraphRouteResult & { score: number };
 
+function routeNeighbors(
+  adjacency: Map<string, Set<string>>,
+  fromIata: string,
+  onlyMajorHubs: boolean,
+): string[] {
+  const all = [...(adjacency.get(fromIata) ?? [])];
+  if (!onlyMajorHubs) return all;
+  return all.filter((code) => isMajorTransitHub(code));
+}
+
 function collectGraphRouteCandidates(
   origin: string,
   dest: string,
   adjacency: Map<string, Set<string>>,
-  options: { maxHubStops?: number; airportMeta?: Map<string, AirportMeta> } = {},
+  options: { maxHubStops?: number; airportMeta?: Map<string, AirportMeta>; onlyMajorHubs?: boolean } = {},
 ): Candidate[] {
   const from = String(origin || "").trim().toUpperCase();
   const to = String(dest || "").trim().toUpperCase();
   const maxHubStops = options.maxHubStops ?? MAX_HUB_STOPS;
   const airportMeta = options.airportMeta;
+  const onlyMajorHubs = options.onlyMajorHubs ?? false;
 
   if (!from || !to || from.length !== 3 || to.length !== 3) return [];
   if (from === to) {
@@ -82,7 +95,7 @@ function collectGraphRouteCandidates(
   }
 
   if (maxHubStops >= 1) {
-    for (const h1 of adjacency.get(from) ?? []) {
+    for (const h1 of routeNeighbors(adjacency, from, onlyMajorHubs)) {
       if (h1 === to) continue;
       if (hasRouteEdge(h1, to, adjacency)) {
         const path = [from, h1, to];
@@ -98,9 +111,9 @@ function collectGraphRouteCandidates(
   }
 
   if (maxHubStops >= 2) {
-    for (const h1 of adjacency.get(from) ?? []) {
+    for (const h1 of routeNeighbors(adjacency, from, onlyMajorHubs)) {
       if (h1 === to) continue;
-      for (const h2 of adjacency.get(h1) ?? []) {
+      for (const h2 of routeNeighbors(adjacency, h1, onlyMajorHubs)) {
         if (h2 === from || h2 === to || h2 === h1) continue;
         if (hasRouteEdge(h2, to, adjacency)) {
           const path = [from, h1, h2, to];
@@ -116,11 +129,20 @@ function collectGraphRouteCandidates(
     }
   }
 
+  return candidates;
+}
+
+function finalizeGraphRouteCandidates(
+  candidates: Candidate[],
+  adjacency: Map<string, Set<string>>,
+  airportMeta?: Map<string, AirportMeta>,
+): Candidate[] {
   if (!candidates.length) return [];
 
   if (airportMeta?.size) {
     candidates = filterSuspiciousGraphDirect(candidates, adjacency, airportMeta);
     if (!candidates.length) return [];
+    candidates = filterCandidatesByDetourRatio(candidates, airportMeta);
   }
 
   const withinLegLimit = candidates.filter(
@@ -157,8 +179,19 @@ export function resolveGraphFlightRouteTopN(
   options: { maxHubStops?: number; airportMeta?: Map<string, AirportMeta>; topN?: number } = {},
 ): GraphRouteResult[] {
   const topN = Math.max(1, Math.min(5, options.topN ?? 1));
-  const pool = dedupeRouteCandidates(collectGraphRouteCandidates(origin, dest, adjacency, options));
-  return pool.slice(0, topN).map(({ hubIatas, hops, source, path }) => ({
+  let pool = finalizeGraphRouteCandidates(
+    collectGraphRouteCandidates(origin, dest, adjacency, { ...options, onlyMajorHubs: true }),
+    adjacency,
+    options.airportMeta,
+  );
+  if (!pool.length) {
+    pool = finalizeGraphRouteCandidates(
+      collectGraphRouteCandidates(origin, dest, adjacency, { ...options, onlyMajorHubs: false }),
+      adjacency,
+      options.airportMeta,
+    );
+  }
+  return dedupeRouteCandidates(pool).slice(0, topN).map(({ hubIatas, hops, source, path }) => ({
     hubIatas,
     hops,
     source,
