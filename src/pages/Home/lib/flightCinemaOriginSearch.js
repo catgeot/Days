@@ -3,6 +3,7 @@ import { distanceKm } from '../../../utils/rentalAirportMatch.js';
 import { findNearestAirportInIndex } from '../../../utils/airportsIndexLookup.js';
 import { matchDepartureInText } from '../../../utils/resolveDepartureIataFromChat.js';
 import { getFlightCinemaOriginOption } from './flightCinemaOriginOptions.js';
+import { promoteFlightOriginGateway } from './flightOriginMetroGateways.js';
 
 const GEO_HUB_MAX_KM = 200;
 const GEO_INDEX_MAX_KM = 120;
@@ -116,6 +117,34 @@ export function searchFlightOriginHubs(query, options = {}) {
 }
 
 /**
+ * GPS 좌표 → rental 허브 + metro gateway 승격 (geolocation API 없음 — smoke·단위용).
+ * @returns {{ iata: string, label: string, officialKo?: string, source: 'hub' } | null}
+ */
+export function resolveFlightOriginFromCoords(latitude, longitude) {
+  const hub = findNearestRentalHub(latitude, longitude, GEO_HUB_MAX_KM);
+  if (!hub) return null;
+
+  const promoted = promoteFlightOriginGateway(hub.iata, latitude, longitude);
+  if (promoted) {
+    const option = getFlightCinemaOriginOption(promoted);
+    const promotedHub = RENTAL_AIRPORT_HUBS.find((row) => row.iata === promoted);
+    return {
+      iata: promoted,
+      label: option?.label || promotedHub?.officialKo || promoted,
+      officialKo: promotedHub?.officialKo,
+      source: 'hub',
+    };
+  }
+
+  return {
+    iata: hub.iata,
+    label: hub.label,
+    officialKo: hub.officialKo,
+    source: 'hub',
+  };
+}
+
+/**
  * GPS → rental 허브 200km → airportsIndex 120km 폴백.
  * @returns {Promise<{ iata: string, label: string, officialKo?: string, source: 'hub' | 'index' }>}
  */
@@ -129,14 +158,9 @@ export function resolveOriginFromGeolocation() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        const hub = findNearestRentalHub(latitude, longitude, GEO_HUB_MAX_KM);
-        if (hub) {
-          resolve({
-            iata: hub.iata,
-            label: hub.label,
-            officialKo: hub.officialKo,
-            source: 'hub',
-          });
+        const fromHub = resolveFlightOriginFromCoords(latitude, longitude);
+        if (fromHub) {
+          resolve(fromHub);
           return;
         }
 

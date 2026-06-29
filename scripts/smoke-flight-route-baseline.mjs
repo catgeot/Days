@@ -186,6 +186,18 @@ async function main() {
       expectHubIatas: ['JFK'],
       minArcLegs: 2,
     },
+    {
+      id: 'mnl-paris-via-hkg',
+      label: 'MNL → paris graph (FRA 2hop 없음)',
+      location: loadTravelSpotBySlug('paris'),
+      originIata: 'MNL',
+      destIata: 'CDG',
+      graphOnly: true,
+      expectPreview: true,
+      expectHubIatas: ['HKG'],
+      forbiddenHubs: ['FRA'],
+      maxDetourRatio: 1.35,
+    },
   ];
 
   const results = [];

@@ -1,7 +1,7 @@
 # 출발지 Metro Gateway 승격 계획
 
 **작성**: 2026-06-29  
-**상태**: **계획·handoff ✅** · 구현 **다음 세션**  
+**상태**: **계획·handoff ✅** · 구현 **S1 ✅** · **S2** 브라우저 QA  
 **배경**: GPS「현재 위치」→ 최근접 rental 허브만 선택 → 서울 **GMP**·상하이 **SHA** 등 국내·단거리 공항이 장거리 국제 경로 출발지로 잡힘  
 **관련**: [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md)
 

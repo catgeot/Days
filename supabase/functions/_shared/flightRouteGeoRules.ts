@@ -167,6 +167,14 @@ function scoreOriginRegionHubPenalty(
     }
   }
 
+  if (originRegion === "southeast_asia" && destRegion === "europe") {
+    if (EUROPEAN_TRANSIT_HUBS.has(hub)) {
+      penalty += hubIndex > 1 ? 600 : 80;
+    } else if (!isMajorTransitHub(hub)) {
+      penalty += 300;
+    }
+  }
+
   if (originRegion === "americas" && destRegion === "americas" && !isMajorTransitHub(hub)) {
     penalty += 500;
   }
