@@ -69,7 +69,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ## 다음 세션 — 에이전트 핸드오ff
 
-**다음(항공)**: **비-ICN 출발 라우팅** — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md)
+**다음(항공)**: **비-ICN 출발 라우팅** — 2세션 · **S1** A+C+E(일부) → **S2** B+E+Edge — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md)
 
 ~~Phase 4 v2.2 출발지 UI~~ **✅** · ~~arc-F안·uiPlace QA~~ **✅**
 

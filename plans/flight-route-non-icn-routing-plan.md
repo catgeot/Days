@@ -55,6 +55,7 @@ paris: { flightRouteHubIatas: [], rationale: 'ICN↔CDG 직항 · graph HEL·CPH
 
 - BDA grand-canyon/paris · ICN paris
 - detour audit: ICN, BDA, MNL
+- [`audit-flight-route-detours.mjs`](../scripts/audit-flight-route-detours.mjs) L62 — `resolveFlightRoutePlan` 인자 순서 버그 수정 (S2)
 
 ### F. (선택) Bar 구간 시간 tooltip
 
@@ -63,6 +64,37 @@ paris: { flightRouteHubIatas: [], rationale: 'ICN↔CDG 직항 · graph HEL·CPH
 ## 구현 순서
 
 A → C → B → E → (F)
+
+**권장 세션 분할** (2026-06-29 합의): ICN wins(A+C)와 graph 튜닝(B+Edge) 분리.
+
+| 세션 | 범위 | 해결 이슈 | 미완(다음 세션) |
+|------|------|-----------|-----------------|
+| **1** | **A + C + E(일부)** | ICN→파리 직항 · BDA arc 도쿄 우회 | SGF · BDA→파리 지그재그 |
+| **2** | **B + E(완료) + Edge deploy** | BDA→그랜드캐니언 SGF · BDA→파리 detour | F(tooltip) 선택 |
+
+### 세션 1 — A + C + E(일부)
+
+1. **A** — `getFlightRouteWaypoints(location, { originIata })` ICN 게이트 · [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) L385
+2. **C** — `paris` override → `npm run generate:airports` → `npm run audit:airports` (`none: 0`)
+3. **E(일부)** — smoke `icn-paris-direct` · `icn-grand-canyon-waypoint` 추가 · 기존 8/8 유지 · `audit:flight-arcs`
+
+**세션 1 완료 기준**
+
+| 케이스 | 기대 |
+|--------|------|
+| ICN → paris | Bar `ICN → CDG` · hubs 없음 |
+| ICN → grand-canyon | `[135,35]`·LAX hub **회귀 없음** |
+| BDA → grand-canyon | arc **도쿄 동쪽 없음** (waypoint만) · SGF는 **세션 2까지 허용** |
+| smoke | 8/8 + ICN 신규 케이스 PASS |
+
+### 세션 2 — B + E(완료) + Edge
+
+1. **B** — `isMajorTransitHub` · major 이웃 우선+fallback · detour 1.35 · origin-region penalty · [`flight-route-resolver.mjs`](../scripts/lib/flight-route-resolver.mjs) + [`flightRouteGraph.ts`](../supabase/functions/_shared/flightRouteGraph.ts) + GeoRules JS/TS 동기
+2. **E(완료)** — smoke BDA 케이스 · `audit:flight-route-detours` ICN/BDA/MNL · L62 `resolveFlightRoutePlan` 인자 버그 수정
+3. **Edge deploy** — `resolve-flight-route` (BDA cinema QA 필수)
+4. **수동 QA** — BDA 그랜드캐니언·파리 · ICN paris/grand-canyon 회귀
+
+**세션 2 완료 기준**: 아래 검증 표 전체 + smoke 전체 PASS.
 
 ---
 
