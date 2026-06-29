@@ -1,7 +1,7 @@
 # 항공경로 — 비-ICN 출발·waypoint·경유 수정 계획
 
 **작성**: 2026-06-29  
-**상태**: **S1+S2 ✅** (2026-06-29) · smoke **13/13** · Edge deploy ✅ · **후속**: [`flight-origin-metro-gateway-plan.md`](./flight-origin-metro-gateway-plan.md) (GPS GMP/SHA 승격)  
+**상태**: **S1+S2 ✅** (2026-06-29) · smoke **14/14** · Edge deploy ✅ · Metro Gateway ✅ · 릴리스 노트 `2026-06-29`  
 **배경**: Phase 4 v2 출발지 변경 QA — BDA·MNL 등 비-ICN에서 arc·경유 오류  
 **관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md)
 
