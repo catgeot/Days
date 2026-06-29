@@ -1,7 +1,7 @@
 # 항공경로 — 비-ICN 출발·waypoint·경유 수정 계획
 
 **작성**: 2026-06-29  
-**상태**: **S1+S2 ✅** (2026-06-29) · smoke **13/13** · Edge deploy ✅ · **브라우저 수동 QA** — 다음 세션  
+**상태**: **S1+S2 ✅** (2026-06-29) · smoke **13/13** · Edge deploy ✅ · **후속**: [`flight-origin-metro-gateway-plan.md`](./flight-origin-metro-gateway-plan.md) (GPS GMP/SHA 승격)  
 **배경**: Phase 4 v2 출발지 변경 QA — BDA·MNL 등 비-ICN에서 arc·경유 오류  
 **관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md)
 
@@ -126,6 +126,12 @@ npm run audit:flight-route-detours
 | ICN → grand-canyon | Pacific waypoint 회귀 없음 |
 | smoke:flight-route-baseline | **13/13** PASS |
 | audit:flight-arcs | 0 |
+
+---
+
+## 후속 — 출발지 Metro Gateway
+
+GPS「현재 위치」GMP/SHA 오탐 → [`flight-origin-metro-gateway-plan.md`](./flight-origin-metro-gateway-plan.md) · 일지 handoff · **Edge deploy 불필요**
 
 ---
 
