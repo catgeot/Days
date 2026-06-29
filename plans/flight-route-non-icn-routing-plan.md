@@ -59,9 +59,20 @@ paris: { flightRouteHubIatas: [], rationale: 'ICN↔CDG 직항 · graph HEL·CPH
 - detour audit: ICN, BDA, MNL
 - [`audit-flight-route-detours.mjs`](../scripts/audit-flight-route-detours.mjs) L62 — `resolveFlightRoutePlan` 인자 순서 버그 수정 (S2)
 
-### F. (선택) Bar 구간 시간 tooltip
+### F. Bar 구간 시간 tooltip — **완료 ✅** (2026-06-29)
 
----
+**목표**: Bar `~Nh`·`(총 Nh)`가 **비행 추정치**(환승 대기 없음)임을 tooltip/ⓘ로 설명 — **레이아웃 추가 없음**.
+
+| 항목 | 내용 |
+|------|------|
+| 대상 UI | [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) `FlightRouteSummary` |
+| 시간 SSOT | [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) `estimateFlightLegHours` — 대권 거리÷속도 |
+| QA 케이스 | GMP~PEK~CPH~CDG(수동 김포) · ICN~CDG(직항) · 경유 3hop |
+| 선택 | GMP/SHA 수동 + 장거리 → ICN/PVG 권장 한 줄 ([`flight-origin-metro-gateway-plan.md`](./flight-origin-metro-gateway-plan.md) 리스크) |
+
+**완료 기준**: 데스크톱 hover·모바일 ⓘ 탭 · portal tooltip · `(총 Nh)` 옆 ⓘ · `ROUTE_META` 중복 최소화 · smoke/audit 변경 없음(UX만).
+
+**handoff**: 일지 [`2026-06-29-project-log.md`](./2026-06-29-project-log.md) 「F(tooltip) 다음 세션」·제시어.
 
 ## 구현 순서
 
@@ -72,7 +83,8 @@ A → C → B → E → (F)
 | 세션 | 범위 | 해결 이슈 | 상태 |
 |------|------|-----------|------|
 | **1** | **A + C + E(일부)** | ICN→파리 직항 · BDA arc 도쿄 우회 | **✅** |
-| **2** | **B + E + Edge + arc fix** | BDA SGF·지그재그 · BDA arc JFK 경유 | **✅** · F(tooltip) · **브라우저 QA 대기** |
+| **2** | **B + E + Edge + arc fix** | BDA SGF·지그재그 · BDA arc JFK 경유 | **✅** |
+| **3** | **F tooltip** | Bar 구간 `~Nh` 설명 UX | **✅** |
 
 ### 세션 1 — A + C + E(일부)
 

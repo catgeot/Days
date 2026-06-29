@@ -78,6 +78,6 @@ export function promoteFlightOriginGateway(feederIata, lat, lng, hubs = RENTAL_A
 ## 리스크
 
 - 김포 공항 현장 GPS도 ICN 승격 — GMP 출발은 수동 선택
-- 수동 GMP/SHA + 장거리 목적지 오표시 — F(tooltip) 후속
+- 수동 GMP/SHA + 장거리 목적지 — Bar ⓘ tooltip에 ICN/PVG 권장 (**F ✅**)
 
 **예상 diff**: ~120줄 · Edge deploy **불필요**

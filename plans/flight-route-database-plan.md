@@ -69,7 +69,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ## 다음 세션 — 에이전트 핸드오ff
 
-**항공(비-ICN)**: **S1+S2 ✅** — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) · **다음 우선**: [`flight-origin-metro-gateway-plan.md`](./flight-origin-metro-gateway-plan.md) (GPS ICN/PVG 승격) · F(tooltip) · 릴리스 노트
+**항공(비-ICN)**: **S1+S2 ✅** · Metro Gateway **✅** · **F(tooltip) ✅** · 릴리스 노트 `2026-06-29` — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md)
 
 ~~Phase 4 v2.2 출발지 UI~~ **✅** · ~~비-ICN S1~~ **✅** · ~~비-ICN S2 B+E+Edge~~ **✅**
 

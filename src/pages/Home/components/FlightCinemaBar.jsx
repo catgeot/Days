@@ -1,11 +1,132 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
-import { LayoutList, Loader2, Plane, Search } from 'lucide-react';
+import { Info, LayoutList, Loader2, Plane, Search } from 'lucide-react';
 import { getPlaceTitleLines } from '../../../components/PlaceCard/common/locationDisplay';
 import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import FlightOriginSelector from './FlightOriginSelector.jsx';
+import { getFlightOriginMetroHint } from '../lib/flightOriginMetroGateways.js';
 
 const ROUTE_META = '대권 항로(실제 비행경로와 다를 수 있습니다.)';
+
+const LEG_TIME_TITLE = '구간 추정 비행 시간(환승 대기·체크인 미포함)';
+
+const ROUTE_TIME_TOOLTIP_Z = 130;
+
+/**
+ * @param {{ metroHint?: string | null }} props
+ */
+function FlightRouteTimeTooltip({ metroHint = null }) {
+  const tooltipId = useId();
+  const rootRef = useRef(null);
+  const tooltipRef = useRef(null);
+  const [pinned, setPinned] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [tooltipStyle, setTooltipStyle] = useState(null);
+
+  const showTooltip = pinned || hovered;
+
+  const updateTooltipPosition = useCallback(() => {
+    const anchor = rootRef.current;
+    if (!anchor) return;
+
+    const rect = anchor.getBoundingClientRect();
+    const width = Math.min(256, window.innerWidth - 16);
+    const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
+
+    setTooltipStyle({
+      left,
+      top: rect.top - 8,
+      width,
+      transform: 'translateY(-100%)',
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!showTooltip) {
+      setTooltipStyle(null);
+      return undefined;
+    }
+
+    updateTooltipPosition();
+    window.addEventListener('scroll', updateTooltipPosition, true);
+    window.addEventListener('resize', updateTooltipPosition);
+    return () => {
+      window.removeEventListener('scroll', updateTooltipPosition, true);
+      window.removeEventListener('resize', updateTooltipPosition);
+    };
+  }, [showTooltip, updateTooltipPosition]);
+
+  useEffect(() => {
+    if (!pinned) return undefined;
+
+    const onPointerDown = (event) => {
+      if (rootRef.current?.contains(event.target)) return;
+      if (tooltipRef.current?.contains(event.target)) return;
+      setPinned(false);
+    };
+
+    const timer = window.setTimeout(() => {
+      document.addEventListener('pointerdown', onPointerDown);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [pinned]);
+
+  const tooltipPanel = showTooltip && tooltipStyle
+    ? createPortal(
+        <div
+          ref={tooltipRef}
+          id={tooltipId}
+          role="tooltip"
+          style={{
+            position: 'fixed',
+            left: tooltipStyle.left,
+            top: tooltipStyle.top,
+            width: tooltipStyle.width,
+            transform: tooltipStyle.transform,
+            zIndex: ROUTE_TIME_TOOLTIP_Z,
+          }}
+          className="rounded-lg border border-white/15 bg-black/95 px-2.5 py-2 text-[10px] font-medium leading-snug text-white/85 shadow-lg backdrop-blur-sm"
+        >
+          <p className="break-keep">구간 ~Nh는 대권 거리 기준 추정 비행 시간이에요.</p>
+          <p className="mt-1 break-keep text-white/65">환승 대기·체크인은 포함되지 않아요.</p>
+          {metroHint ? (
+            <p className="mt-1.5 break-keep text-amber-200/90">{metroHint}</p>
+          ) : null}
+        </div>,
+        document.body
+      )
+    : null;
+
+  return (
+    <>
+      <div
+        ref={rootRef}
+        className="relative inline-flex shrink-0 align-middle"
+        onMouseEnter={() => {
+          if (window.matchMedia('(hover: hover)').matches) setHovered(true);
+        }}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <button
+          type="button"
+          aria-label="구간 시간 안내"
+          aria-expanded={showTooltip}
+          aria-controls={tooltipId}
+          onClick={() => setPinned((open) => !open)}
+          className="inline-flex min-h-[28px] min-w-[28px] items-center justify-center rounded-full border border-sky-400/25 bg-sky-500/15 text-sky-200/90 transition-colors hover:border-sky-300/45 hover:bg-sky-500/25 hover:text-sky-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-300/60 motion-safe:active:scale-[0.98]"
+        >
+          <Info size={12} strokeWidth={2.25} aria-hidden="true" />
+        </button>
+      </div>
+      {tooltipPanel}
+    </>
+  );
+}
 
 const BAR_BTN =
   'inline-flex min-h-[32px] items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all motion-safe:active:scale-[0.98]';
@@ -15,6 +136,7 @@ const BAR_BTN =
  *   routeIatas?: string[],
  *   flightHours?: number,
  *   flightLegHours?: { fromIata: string, toIata: string, hours: number }[],
+ *   originIata?: string | null,
  *   timezoneDiffHint?: string | null,
  *   isPending?: boolean,
  * }} props
@@ -23,12 +145,17 @@ function FlightRouteSummary({
   routeIatas = [],
   flightHours = 1,
   flightLegHours = [],
+  originIata = null,
   timezoneDiffHint = null,
   isPending = false,
 }) {
   const codes = routeIatas.filter(Boolean);
   const legs = flightLegHours.filter(Boolean);
   const showLegTimes = legs.length > 0 && codes.length >= 2;
+  const metroHint = getFlightOriginMetroHint(originIata, {
+    flightHours,
+    hopCount: Math.max(0, codes.length - 1),
+  });
 
   if (!codes.length) return null;
 
@@ -42,24 +169,35 @@ function FlightRouteSummary({
     </div>
   ) : (
     <div className="min-w-0 max-w-full leading-tight">
-      <p
-        className="overflow-x-auto whitespace-nowrap text-sm leading-snug [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        aria-label={`${codes.join(' 경유 ')} 총 약 ${flightHours}시간`}
-      >
-        {codes.map((code, index) => (
-          <React.Fragment key={`${code}-${index}`}>
-            <span className="font-bold tabular-nums text-white">{code}</span>
-            {index < legs.length ? (
-              <span className="mx-1 text-[10px] font-medium tabular-nums text-sky-300/85 sm:mx-1.5">
-                ~{legs[index].hours}h
-              </span>
-            ) : null}
-          </React.Fragment>
-        ))}
-        <span className="ml-1 text-[11px] font-semibold text-sky-200/90">
-          (총 {flightHours}h)
+      <div className="flex min-w-0 items-center gap-2.5">
+        <p
+          className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-sm leading-snug [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label={`${codes.join(' 경유 ')} 총 약 ${flightHours}시간`}
+        >
+          {codes.map((code, index) => (
+            <React.Fragment key={`${code}-${index}`}>
+              <span className="font-bold tabular-nums text-white">{code}</span>
+              {index < legs.length ? (
+                <span
+                  className="mx-1.5 text-[10px] font-medium tabular-nums text-sky-300/85 sm:mx-2"
+                  title={`${legs[index].fromIata}→${legs[index].toIata} ${LEG_TIME_TITLE}`}
+                >
+                  ~{legs[index].hours}h
+                </span>
+              ) : null}
+            </React.Fragment>
+          ))}
+        </p>
+        <span className="inline-flex shrink-0 items-center gap-1.5">
+          <span
+            className="whitespace-nowrap text-[11px] font-semibold tabular-nums text-sky-200/90"
+            title={`총 ${flightHours}시간 — 구간 합산 추정(환승 대기 미포함)`}
+          >
+            (총 {flightHours}h)
+          </span>
+          <FlightRouteTimeTooltip metroHint={metroHint} />
         </span>
-      </p>
+      </div>
       {timezoneDiffHint ? (
         <p className="mt-0.5 text-[10px] font-medium text-sky-200/75 break-keep">{timezoneDiffHint}</p>
       ) : null}
@@ -234,6 +372,7 @@ export default function FlightCinemaBar({
               routeIatas={routeIatas}
               flightHours={flightHours}
               flightLegHours={flightLegHours}
+              originIata={originIata}
               timezoneDiffHint={timezoneDiffHint}
               isPending={isRouteUpdatePending}
             />

@@ -52,3 +52,28 @@ export function promoteFlightOriginGateway(feederIata, lat, lng, hubs = RENTAL_A
 
   return null;
 }
+
+const METRO_GATEWAY_HINT_LABELS = {
+  ICN: '인천(ICN)',
+  PVG: '푸둥(PVG)',
+};
+
+/**
+ * 수동 feeder(GMP·SHA) + 장거리·경유 시 gateway 출발 권장 한 줄 (Bar tooltip).
+ * @param {string} originIata
+ * @param {{ flightHours?: number, hopCount?: number }} [opts]
+ * @returns {string | null}
+ */
+export function getFlightOriginMetroHint(originIata, { flightHours = 0, hopCount = 0 } = {}) {
+  const code = String(originIata ?? '').trim().toUpperCase();
+  const isLongHaul = flightHours >= 4 || hopCount >= 2;
+  if (!isLongHaul) return null;
+
+  for (const group of FLIGHT_ORIGIN_METRO_GATEWAYS) {
+    if (!group.feederIatas.includes(code)) continue;
+    const label = METRO_GATEWAY_HINT_LABELS[group.gatewayIata] ?? group.gatewayIata;
+    return `장거리 국제선은 ${label} 출발을 권장해요.`;
+  }
+
+  return null;
+}
