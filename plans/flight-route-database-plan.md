@@ -69,6 +69,8 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ## 다음 세션 — 에이전트 핸드오ff
 
+**다음 우선**: **Heuristic SSOT + GATN lookup seed** — [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · Phase 0(S0) · 일지 [`2026-06-30-project-log.md`](./2026-06-30-project-log.md)
+
 **항공(비-ICN)**: **S1+S2 ✅** · Metro Gateway **✅** · **F(tooltip) ✅** · 릴리스 노트 `2026-06-29` — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md)
 
 ~~Phase 4 v2.2 출발지 UI~~ **✅** · ~~비-ICN S1~~ **✅** · ~~비-ICN S2 B+E+Edge~~ **✅**
