@@ -70,6 +70,7 @@ import {
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import GlobeClusterLegend from './GlobeClusterLegend';
+import { readViewportSize } from '../../../shared/lib/mobileViewport';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -283,7 +284,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const categoryFaceFlyGenRef = useRef(0);
   const highlightCategoryRef = useRef(highlightCategory);
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
-  const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const [dimensions, setDimensions] = useState(() => readViewportSize());
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
   const [reachBoundariesReady, setReachBoundariesReady] = useState(false);
@@ -501,12 +502,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [raiseFatal]);
 
   useEffect(() => {
-    const handleResize = () => {
-      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    const syncViewport = () => {
+      setDimensions(readViewportSize());
+      const map = mapRef.current?.getMap();
+      if (map) safeMapResize(map);
     };
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', syncViewport);
+    window.visualViewport?.addEventListener('resize', syncViewport);
+    window.visualViewport?.addEventListener('scroll', syncViewport);
+    syncViewport();
+    return () => {
+      window.removeEventListener('resize', syncViewport);
+      window.visualViewport?.removeEventListener('resize', syncViewport);
+      window.visualViewport?.removeEventListener('scroll', syncViewport);
+    };
   }, []);
 
   useEffect(() => {

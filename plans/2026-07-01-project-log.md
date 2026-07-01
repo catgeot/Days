@@ -100,3 +100,32 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **수정**: `HomeGlobeMapbox.jsx` · `PlaceMiniMap.jsx` · `FooterModal.jsx` · `LogoPanel.jsx` · `index.css`
 - **주의**: `HomeUI.jsx` — PowerShell `Set-Content`로 UTF-8 깨짐 시 JSX 파싱 오류. **git/에디터 패치만** 사용.
 - **커밋**: `f10bed0`
+
+---
+
+## AI 에이전트 — Windows PowerShell 소스 편집 금지
+
+**상태**: **규칙 확정** (2026-07-01)
+
+| 금지 | 이유 |
+|------|------|
+| PowerShell `Get-Content` → `-replace` → `Set-Content` 로 `.jsx`/`.tsx` 등 수정 | 기본 인코딩·`-NoNewline`으로 **한글 깨짐**, JSX `title="…"` 속성 **따옴표 파손**, Vite esbuild **파싱 오류** |
+| 동일 방식으로 UTF-8 BOM 없이 덮어쓰기 | `Login.jsx`·`HomeUI.jsx` 세션에서 재현 — **git checkout 복구** 후 StrReplace/Write만 사용 |
+
+**올바른 방법**: Cursor **StrReplace** / **Write** · git diff 패치 · 사용자 IDE 직접 편집.  
+**SSOT**: [`.ai-context.md`](../.ai-context.md) 3절 「Windows/PowerShell 소스 편집 금지」.
+
+---
+
+## 모바일 — 이메일 로그인 후 홈 지구본·UI 비정상
+
+**상태**: **⏳ 배포·실기기 QA 대기** (2026-07-01)
+
+- **증상**: 배포 사이트 · 모바일 · 이메일 로그인 후 홈 복귀 시 지구본 확대·UI 배치 깨짐 (OAuth는 상대적으로 적음).
+- **원인**: 로그인 input `text-sm`(14px) → iOS Safari **자동 페이지 줌** 유지 · Mapbox 캔버스가 `innerWidth/Height`만 사용해 `visualViewport`와 불일치.
+- **수정**:
+  - [`mobileViewport.js`](../src/shared/lib/mobileViewport.js) — `readViewportSize`, `resetIosZoomAfterInput`
+  - [`Login.jsx`](../src/shared/Auth/Login.jsx) — input `text-base`, 성공 시 `gateo_reset_viewport` + zoom reset
+  - [`Home/index.jsx`](../src/pages/Home/index.jsx) — 홈 마운트 시 플래그로 2차 sync
+  - [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — `visualViewport` resize 리스너
+- **릴리스 노트**: 배포 QA 통과 후 사용자 합의 시 `fix` 초안 제시.

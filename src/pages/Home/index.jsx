@@ -29,6 +29,7 @@ import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCo
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
+import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -98,6 +99,16 @@ function Home() {
     syncMobileViewport();
     mq.addEventListener('change', syncMobileViewport);
     return () => mq.removeEventListener('change', syncMobileViewport);
+  }, []);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('gateo_reset_viewport') !== '1') return undefined;
+    sessionStorage.removeItem('gateo_reset_viewport');
+    resetIosZoomAfterInput();
+    const mapSyncTimer = window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 120);
+    return () => window.clearTimeout(mapSyncTimer);
   }, []);
 
   const { scoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);

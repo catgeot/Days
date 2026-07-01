@@ -38,6 +38,7 @@ alwaysApply: true
 - API 키 브라우저 노출·UI 임의 변경·사용자 승인 없는 「완료」 단정 금지
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
 - Git commit은 **사용자 요청 시에만**, 메시지는 **한글**
+- **PowerShell `Set-Content`/`-replace`로 한글 `.jsx` 등 소스 일괄 수정 금지** — UTF-8·JSX 파손 (`.ai-context` 3절)
 
 ## 세션 종료
 

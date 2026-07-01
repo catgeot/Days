@@ -3,6 +3,7 @@ import { supabase } from '../api/supabase';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
+import { resetIosZoomAfterInput } from '../lib/mobileViewport';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -56,6 +57,8 @@ const Login = () => {
       });
 
       if (error) throw error;
+      sessionStorage.setItem('gateo_reset_viewport', '1');
+      resetIosZoomAfterInput();
       navigate(from);
     } catch (error) {
       alert(error.message);
@@ -99,7 +102,7 @@ const Login = () => {
               <input
                 type="email"
                 required
-                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
+                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -122,7 +125,7 @@ const Login = () => {
               <input
                 type="password"
                 required
-                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all"
+                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
