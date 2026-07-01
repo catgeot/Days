@@ -149,3 +149,4 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **모바일**: 확대 중 카테고리 → 초기 줌·고도 복귀 (유지)
 - **데스크톱**: 확대 중 카테고리 → **flyTo 줌·고도**(2.35 / legacy 2.1)로 pan
 - **SSOT**: `globeCategoryFocus.js` — `resolveCategoryFaceMapboxZoom` · `resolveCategoryFaceLegacyAltitude`
+- **커밋**: `827bc9e`
