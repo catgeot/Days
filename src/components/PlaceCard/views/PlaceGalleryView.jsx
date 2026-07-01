@@ -11,6 +11,10 @@ const MOBILE_GALLERY_LIGHTBOX_QUERY =
 
 const TOUCH_DEVICE_QUERY = '(hover: none) and (pointer: coarse)';
 
+/** 모바일 확대 포털 — 가로 스와이프 vs 탭(UI 토글) 구분 */
+const MOBILE_SWIPE_THRESHOLD_PX = 48;
+const MOBILE_SWIPE_DIRECTION_RATIO = 1.25;
+
 const mobileNavButtonClass = (enabled) =>
   `flex shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 ${
     enabled ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
@@ -35,6 +39,8 @@ const PlaceGalleryView = React.memo(({
 }) => {
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
+  const mobileSwipeStartRef = useRef(null);
+  const suppressMobileTapRef = useRef(false);
   usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -132,6 +138,33 @@ const PlaceGalleryView = React.memo(({
     if (currentIndex < images.length - 1) setSelectedImg(images[currentIndex + 1]);
   }, [currentIndex, images, setSelectedImg]);
 
+  const onMobilePhotoTouchStart = useCallback((e) => {
+    if (!showNavControls || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    mobileSwipeStartRef.current = { x: t.clientX, y: t.clientY };
+    suppressMobileTapRef.current = false;
+  }, [showNavControls]);
+
+  const onMobilePhotoTouchEnd = useCallback((e) => {
+    const start = mobileSwipeStartRef.current;
+    mobileSwipeStartRef.current = null;
+    if (!start || !showNavControls) return;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) < MOBILE_SWIPE_THRESHOLD_PX) return;
+    if (Math.abs(dx) < Math.abs(dy) * MOBILE_SWIPE_DIRECTION_RATIO) return;
+
+    suppressMobileTapRef.current = true;
+    if (dx > 0) handlePrev();
+    else handleNext();
+  }, [showNavControls, handlePrev, handleNext]);
+
+  const onMobilePhotoTouchCancel = useCallback(() => {
+    mobileSwipeStartRef.current = null;
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedImg) return;
@@ -194,9 +227,16 @@ const PlaceGalleryView = React.memo(({
           </div>
 
           <div
-            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1"
+            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1 touch-none"
+            onTouchStart={onMobilePhotoTouchStart}
+            onTouchEnd={onMobilePhotoTouchEnd}
+            onTouchCancel={onMobilePhotoTouchCancel}
             onClick={(e) => {
               e.stopPropagation();
+              if (suppressMobileTapRef.current) {
+                suppressMobileTapRef.current = false;
+                return;
+              }
               if (e.ctrlKey || e.metaKey) return;
               setIsMobileUIHidden((prev) => !prev);
             }}
