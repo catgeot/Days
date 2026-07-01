@@ -6,7 +6,7 @@ export const GLOBE_CATEGORY_IDS = ['paradise', 'nature', 'urban', 'culture', 'ad
 export const GLOBE_FACE_SECTOR_DEG = 360 / GLOBE_CATEGORY_IDS.length;
 
 /**
- * 면 pan 중심 — 사용자 큐레이션 (줌 유지 pan, 최대 확대 시 바다는 불가피).
+ * 면 pan 중심 — 사용자 큐레이션 (최대 확대 시 바다는 불가피).
  * 카테고리 버튼 순서: paradise → nature → urban → culture → adventure
  */
 export const GLOBE_FACE_CENTER_BY_CATEGORY = {
@@ -17,7 +17,7 @@ export const GLOBE_FACE_CENTER_BY_CATEGORY = {
   adventure: { lng: -58.0, lat: -15.0 }        // 남미 (브라질 중부)
 };
 
-/** 면 전환 pan flyTo 시간 — 줌·고도 변경 없음 */
+/** 면 전환 flyTo 시간 — 확대 상태면 호출 측에서 초기 줌·고도로 복귀 후 pan */
 export const GLOBE_FACE_FLY_MS = 2200;
 
 export function spotMatchesCategory(spot, category) {
@@ -37,7 +37,7 @@ export function getCategoryGlobeFaceLng(category) {
   return -180 + GLOBE_FACE_SECTOR_DEG * (idx + 0.5);
 }
 
-/** 카테고리 버튼·홈 진입 시 pan 대상 (육지 편향 중심, 줌·고도는 호출 측 현재값 유지) */
+/** 카테고리 버튼·홈 진입 시 pan 대상 (육지 편향 중심; 확대 중이면 호출 측에서 초기 줌·고도 복귀) */
 export function getCategoryGlobeFaceView(category) {
   if (!category) return null;
   const center = GLOBE_FACE_CENTER_BY_CATEGORY[category];

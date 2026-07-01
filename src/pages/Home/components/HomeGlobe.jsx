@@ -268,12 +268,16 @@ const HomeGlobe = React.memo(forwardRef(({
     categoryFaceFlyGenRef.current = gen;
     const flyMs = GLOBE_FACE_FLY_MS;
     const currentPov = globeEl.current.pointOfView();
+    // flyTo·수동 확대 후에는 초기 고도로 되돌린 뒤 카테고리 면으로 pan
+    const targetAlt = currentPov.altitude < GLOBE_CAMERA_CONFIG.DEFAULT_ALT
+      ? GLOBE_CAMERA_CONFIG.DEFAULT_ALT
+      : currentPov.altitude;
 
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
     globeEl.current.controls().autoRotate = false;
 
     globeEl.current.pointOfView(
-      { lat: focus.lat, lng: focus.lng, altitude: currentPov.altitude },
+      { lat: focus.lat, lng: focus.lng, altitude: targetAlt },
       flyMs
     );
 

@@ -130,3 +130,15 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
   - [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — `visualViewport` resize 리스너
 - **릴리스 노트**: 배포 QA 통과 후 사용자 합의 시 `fix` 초안 제시.
 - **커밋**: `e2246d7`
+
+---
+
+## 홈 지구본 — 카테고리 버튼 확대 복귀
+
+**상태**: **✅ 완료** (사용자 QA 통과 · 2026-07-01)
+
+- **문제**: 지명 flyTo·수동 확대 후 카테고리 버튼 → 확대 유지 + 권역만 pan → 탐색 맥락 단절
+- **수정**: 확대 상태면 **초기 줌·고도 복귀** 후 해당 카테고리 면으로 fly — Mapbox `GLOBE_VIEW.default.zoom`(1.25) · legacy `DEFAULT_ALT`(2.5)
+- **수정 파일**: `HomeGlobeMapbox.jsx` · `HomeGlobe.jsx` · `globeCategoryFocus.js`(주석 SSOT)
+- **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) 카테고리 5면 pan 절
+- **릴리스 노트**: 갱신 없음 (사용자 요청)

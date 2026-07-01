@@ -1257,12 +1257,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const normalizedLng = normalizeLngNear(map.getCenter().lng, focus.lng);
     const flyMs = GLOBE_FACE_FLY_MS;
+    const currentZoom = map.getZoom();
+    // flyTo·수동 확대 후에는 초기 줌으로 되돌린 뒤 카테고리 면으로 pan
+    const targetZoom = currentZoom > GLOBE_VIEW.default.zoom
+      ? GLOBE_VIEW.default.zoom
+      : currentZoom;
 
     try {
       map.stop();
       map.flyTo({
         center: [normalizedLng, focus.lat],
-        zoom: map.getZoom(),
+        zoom: targetZoom,
         pitch: map.getPitch(),
         bearing: map.getBearing(),
         duration: flyMs,
@@ -1271,7 +1276,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     } catch {
       map.jumpTo({
         center: [normalizedLng, focus.lat],
-        zoom: map.getZoom(),
+        zoom: targetZoom,
         pitch: map.getPitch(),
         bearing: map.getBearing()
       });
