@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, ExternalLink } from 'lucide-react';
 import { FOOTER_CONTENT } from '../data/footerData';
 import ReleaseNotesList from '../../../shared/components/ReleaseNotesList';
+import MapboxCreditsPanel from '../../../shared/components/MapboxCreditsPanel';
 
 const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -31,6 +32,7 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
   const tabs = [
     { id: 'about', label: 'About Us' },
     { id: 'updates', label: 'Updates' },
+    { id: 'credits', label: 'Credits' },
     { id: 'terms', label: 'Terms' },
     { id: 'privacy', label: 'Privacy' },
     { id: 'contact', label: 'Contact' },
@@ -46,7 +48,11 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
       <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-slide-up-fade">
         <div className="flex justify-between items-center p-5 border-b border-white/10 bg-black/50">
           <h2 className="text-lg font-bold text-white tracking-tight">
-            {activeTab === 'updates' ? '업데이트 내역' : FOOTER_CONTENT[activeTab].title}
+            {activeTab === 'updates'
+              ? '업데이트 내역'
+              : activeTab === 'credits'
+                ? '기술·지도 출처'
+                : FOOTER_CONTENT[activeTab].title}
           </h2>
           <button 
             onClick={onClose} 
@@ -81,6 +87,8 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
               </p>
               <ReleaseNotesList />
             </>
+          ) : activeTab === 'credits' ? (
+            <MapboxCreditsPanel />
           ) : (
             <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap font-light">
               {FOOTER_CONTENT[activeTab].content}

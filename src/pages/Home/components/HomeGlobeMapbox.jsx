@@ -1523,7 +1523,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       onWheel={handleInteractionStart}
     >
       <div
-        className={`gateo-globe-map absolute inset-0 transition-opacity duration-300 ${
+        className={`gateo-globe-map gateo-mapbox-map absolute inset-0 transition-opacity duration-300 ${
           isStyleTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >

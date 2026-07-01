@@ -254,7 +254,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
     return (
         <div
             ref={mapContainerRef}
-            className="w-full h-96 md:h-[500px] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-10 mb-8 animate-fade-in group bg-[#0b0f1c]"
+            className="gateo-mapbox-map w-full h-96 md:h-[500px] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-10 mb-8 animate-fade-in group bg-[#0b0f1c]"
         >
             {/* 오버레이 UI */}
             {mapState === 'idle' && (
@@ -293,7 +293,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
                 mapStyle={MAP_STYLES[currentStyle].url}
                 mapboxAccessToken={MAPBOX_TOKEN}
                 localIdeographFontFamily="sans-serif"
-                attributionControl={false}
+                attributionControl={{ compact: true }}
                 projection="globe"
                 fog={{
                     range: [0.8, 8],

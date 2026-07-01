@@ -86,3 +86,17 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **수정**: `HomeUI.jsx` · `MooniAgentFab.jsx` · `HomeGlobeMapbox.jsx` · `index.css`
 - **릴리스 노트**: 초안 대기 (사용자 합의 후 `releaseNotes.js`)
 - **커밋**: `97f4fb5`
+
+---
+
+## Mapbox attribution — 모바일 Credits·데스크톱 compact
+
+**상태**: **✅ 완료** (2026-07-01)
+
+- **정책**: Mapbox ToS — 무료 티어도 로고·텍스트 attribution 필수. 모바일은 지도 UI 공간 부족 → **텍스트는 Credits 탭**, 지도에는 **로고만** 좌하단.
+- **데스크톱(≥768px)**: `attributionControl={{ compact: true }}` — 홈 지구본·PlaceMiniMap · footer `md:left-[8.75rem]`(로고 겹침 완화).
+- **모바일(<768px)**: `.gateo-mapbox-map` CSS로 `.mapboxgl-ctrl-attrib` 숨김 · LogoPanel **Credits** → FooterModal 「기술·지도 출처」(Mapbox/OSM/Maxar 링크 · Telemetry · 기술 스택).
+- **SSOT**: [`mapboxAttribution.js`](../src/data/mapboxAttribution.js) · UI [`MapboxCreditsPanel.jsx`](../src/shared/components/MapboxCreditsPanel.jsx)
+- **수정**: `HomeGlobeMapbox.jsx` · `PlaceMiniMap.jsx` · `FooterModal.jsx` · `LogoPanel.jsx` · `index.css`
+- **주의**: `HomeUI.jsx` — PowerShell `Set-Content`로 UTF-8 깨짐 시 JSX 파싱 오류. **git/에디터 패치만** 사용.
+- **커밋**: (본 커밋)

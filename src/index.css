@@ -363,13 +363,22 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-/* Mapbox compact attribution·logo — 지도 위 자연 노출 (홈 footer·UI와 겹침 방지) */
-.gateo-globe-map .mapboxgl-ctrl-bottom-left {
-  z-index: 1;
-  pointer-events: auto;
+/* Mapbox — desktop: compact attribution on map; mobile: logo only (text → FooterModal Credits) */
+@media (max-width: 767px) {
+  .gateo-mapbox-map .mapboxgl-ctrl-attrib,
+  .gateo-mapbox-map .mapboxgl-ctrl-attrib.mapboxgl-compact,
+  .gateo-mapbox-map .mapboxgl-ctrl-attrib-button {
+    display: none !important;
+  }
 }
 
 @media (min-width: 768px) {
+  .gateo-mapbox-map .mapboxgl-ctrl-bottom-left,
+  .gateo-mapbox-map .mapboxgl-ctrl-bottom-right {
+    z-index: 1;
+    pointer-events: auto;
+  }
+
   .home-category-bar-card {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
