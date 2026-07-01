@@ -155,9 +155,15 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 
 ## 홈 지구본 — 초기 로딩 지연 (~7초)
 
-**상태**: **⏳ WIP** — 1·2안(`6037c9d`) **로컬 QA 무효** · Phase 1 실행 대기 (2026-07-01)
+**상태**: **✅ PC·모바일 로컬 QA 통과** (2026-07-01) — PC 구체 2.07s·마커 +0.88s · **모바일 전체 4.05s**
 
-- **커밋**: `6037c9d`(1·2안) · 핸드오프·재분석 문서는 본 세션 커밋
+- **Phase 0·1 (본 세션)**: DEV `performance.mark`(onLoad·tryRevealBase·idle·fallback-2s·opacity-visible) · `isStyleTransitioning` 초기 `false`(테마 전환만 freeze) · `tryRevealGlobeBase` `map.loaded()` 완화·`globeBaseRevealedRef` · `onLoad` base 선 reveal + overlay sync `requestIdleCallback` 지연 · fallback **8s→2s** + DEV warn
+- **QA (본 세션)**: 구체 **2.4s** ✅ · 마커 **10.4s** ❌ — 원인 `tryRevealGlobeOverlays`/`setupGateoMarkerLayers` `isStyleLoaded` + idle defer
+- **1-E (본 세션)**: overlay `map.loaded()` 완화 · `onLoad` 마커 sync **rAF 즉시** · 라벨·water만 idle defer · DEV mark `tryRevealOverlays`
+- **QA 재측정 ✅**: 구체 **2.07s** · 마커 **+0.88s**(구체 직후) — 7~8s black·10.4s 마커 해소 · **Phase 2(lazy chunk) 불필요**
+- **1-F (본 세션)**: 모바일 마커 미표시 — `globeOverlaysRevealedRef` 1회 reveal 가드 · `loaded()` 시 `addLayer` 실패 · `setup` `isStyleLoaded` 복원 · `areGateoMarkerLayersVisible` 재노출 · `styledata`/fallback/`mapReady` 재시도
+- **QA 1-F ✅**: 모바일 **4.05s** 로딩 완료(구체+마커) · PC 회귀 없음(2.07s·+0.88s)
+- **릴리스 노트**: `2026-07-01-2` fix 「홈 지구본이 더 빨리 보여요」
 
 ### 증상
 

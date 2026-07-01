@@ -97,6 +97,17 @@ export function gateoMarkerLayersReady(map) {
   return GATEO_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
 }
 
+export function areGateoMarkerLayersVisible(map) {
+  if (!gateoMarkerLayersReady(map)) return false;
+  return GATEO_LAYER_IDS.some((layerId) => {
+    try {
+      return map.getLayoutProperty(layerId, 'visibility') !== 'none';
+    } catch {
+      return false;
+    }
+  });
+}
+
 /** Hide gateo spot layers until GeoJSON source is synced (avoids label flash on base reveal). */
 export function setGateoMarkerLayerVisibility(map, visible) {
   if (!map?.getStyle?.()) return;
@@ -149,7 +160,9 @@ export function syncGateoMarkerLayerStyle(map) {
 }
 
 export function setupGateoMarkerLayers(map) {
-  if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
+  if (!map?.getStyle?.()) return false;
+  // addLayer requires style fully loaded — loaded() alone throws on mobile Safari.
+  if (!map.isStyleLoaded?.()) return false;
 
   try {
     if (!map.getSource(GATEO_SOURCE_ID)) {

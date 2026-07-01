@@ -45,18 +45,17 @@
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | Mapbox 행정·도시 지명 (줌≥4·눈 ON) — gateo 지명과 별도 |
 | [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 전 카테고리 여행지 노출 · 레이어 bootstrap · 한글 지명 분기 · **초기 로딩 reveal** (아래 §) |
 
-### 홈 지구본 초기 로딩 (2026-07-01 ⏳)
+### 홈 지구본 초기 로딩 (2026-07-01 ✅)
 
 **일지**: [`2026-07-01-project-log.md`](./2026-07-01-project-log.md) 「홈 지구본 — 초기 로딩 지연」
 
 | 항목 | SSOT |
 |------|------|
-| **증상** | PC·모바일 공통 홈 `/` 진입 ~7초 후 지구본 표시 |
-| **원인 (6037c9d 후)** | `tryRevealGlobeBase` **`isStyleLoaded()` 게이트** + **8s fallback** — theme-settle(2안)은 해소됐으나 로컬 7~8s black 유지 |
-| **Mapbox** | `mapbox-gl@3.20.0` · `satellite-streets-v12` · globe projection — **2026-06 이후 npm bump 없음** |
-| **1·2안 ✅** | base/overlay 분리 · `globeThemeInitializedRef` · preconnect (`6037c9d`) |
-| **다음 (Phase 1)** | reveal 트리거 완화 · onLoad 순서 · fallback 2s · perf mark — 일지 「다음 세션 — 실행 계획」 |
-| **Phase 2~3** | lazy + mapbox chunk · dark-v11→satellite 2단계 스타일 (QA 후) |
+| **QA** | PC 구체 ~2s·마커 +1s · 모바일 ~4s · Phase 2(lazy chunk) **불필요** |
+| **핵심** | base/overlay reveal 분리 · `isStyleTransitioning` 첫 진입 false · fallback 2s · 모바일 overlay 재노출(`areGateoMarkerLayersVisible`) |
+| **파일** | [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) · [`globeMarkerLayers.js`](../src/pages/Home/lib/globeMarkerLayers.js) |
+| **Mapbox** | `mapbox-gl@3.20.0` · `satellite-streets-v12` · globe — npm bump 없음 |
+| **Phase 2~3** | lazy chunk · dark-v11→satellite 2단계 — **보류**(QA 통과) |
 
 **테마 전환**(deep↔bright)만 `waitingThemeSettleRef` + `isStyleTransitioning` freeze 유지 (플래시 방지).
 

@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-07-01-2',
+    category: 'fix',
+    title: '홈 지구본이 더 빨리 보여요',
+    items: [
+      '홈에 들어갔을 때 지구본과 여행지 표시가 이전보다 빨리 나타나요.',
+      '모바일에서도 지구본과 여행지 마커가 정상적으로 표시돼요.',
+    ],
+  },
+  {
     id: '2026-07-01',
     category: 'feature',
     title: '장소 갤러리 모바일 확대 보기가 더 편해졌어요',
