@@ -344,6 +344,37 @@ body {
   50% { opacity: 1; }
 }
 
+/* Home category bar — mobile bottom-left contrast */
+.home-category-bar-halo {
+  position: absolute;
+  inset: -8px;
+  border-radius: 1.25rem;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 85%, rgba(255, 255, 255, 0.14), transparent 62%),
+    radial-gradient(circle at 80% 85%, rgba(15, 23, 42, 0.55), transparent 72%);
+  filter: blur(10px);
+}
+
+.home-category-bar-card {
+  box-shadow:
+    0 10px 32px -8px rgba(0, 0, 0, 0.72),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Mapbox compact attribution·logo — 지도 위 자연 노출 (홈 footer·UI와 겹침 방지) */
+.gateo-globe-map .mapboxgl-ctrl-bottom-left {
+  z-index: 1;
+  pointer-events: auto;
+}
+
+@media (min-width: 768px) {
+  .home-category-bar-card {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .place-summary-shell-enter,
   .place-summary-card-enter,

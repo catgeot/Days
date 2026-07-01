@@ -22,7 +22,8 @@ const DRAG_THRESHOLD = 6;
 const FAB_ESTIMATE = { width: 96, height: 120 };
 const EDGE_PADDING = 8;
 const POSITION_KEY = 'gateo_mooni_fab_pos';
-const DEFAULT_POS = { right: 12, bottom: 16 };
+/** 홈 FAB 기본 — 모바일 우측 하단 (카테고리 바는 좌하단) */
+const DEFAULT_POS = { right: 16, bottom: 32 };
 const DISMISS_REACT_CHANCE = 0.35;
 
 function loadPosition() {

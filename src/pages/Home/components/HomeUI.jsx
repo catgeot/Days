@@ -13,6 +13,16 @@ import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
 import { useTrendingData } from '../hooks/useTrendingData';
+import { CATEGORY_LABELS } from './SearchDiscovery/constants';
+
+/** 모바일 활성 카테고리 — 테마색 글로우 */
+const CATEGORY_ACTIVE_MOBILE = {
+  paradise: 'bg-cyan-500/25 border-cyan-400/50 shadow-[0_0_14px_rgba(34,211,238,0.35)]',
+  nature: 'bg-green-500/25 border-green-400/50 shadow-[0_0_14px_rgba(74,222,128,0.35)]',
+  urban: 'bg-purple-500/25 border-purple-400/50 shadow-[0_0_14px_rgba(192,132,252,0.35)]',
+  culture: 'bg-yellow-500/20 border-yellow-400/50 shadow-[0_0_14px_rgba(250,204,21,0.3)]',
+  adventure: 'bg-red-500/25 border-red-400/50 shadow-[0_0_14px_rgba(248,113,113,0.35)]',
+};
 
 const HomeUI = React.memo(({
   onSearch: _onSearch, onTickerClick, externalInput, savedTrips: _savedTrips, onTripClick: _onTripClick, onTripDelete: _onTripDelete, onOpenChat, onLogoClick,
@@ -154,25 +164,42 @@ const HomeUI = React.memo(({
 
       {!isTourCinema && (
       <div className={`fixed z-50 pointer-events-auto animate-fade-in-left
-         bottom-8 left-1/2 -translate-x-1/2 w-auto max-w-[95vw] flex justify-center
-         md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:translate-x-0 md:flex-col md:max-w-none
+         bottom-8 left-4 w-auto max-w-[calc(100vw-7rem)] flex justify-start
+         md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:max-w-none md:flex-col
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
-         <div className="flex items-center gap-2 sm:gap-3 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl
-            flex-row flex-nowrap overflow-x-auto
-            md:flex-col md:gap-4 md:overflow-visible">
+         <div className="relative max-md:home-category-bar-shell">
+         <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
+         <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
+            max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border
+            md:items-center md:gap-4 md:bg-black/40 md:p-2.5 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl
+            flex-row flex-nowrap overflow-x-auto md:flex-col md:overflow-visible">
             {CATEGORIES.map((cat) => {
                const isActive = selectedCategory === cat.id;
                const Icon = cat.icon;
                return (
-                 <button key={cat.id} type="button" onClick={() => onCategorySelect(cat.id)} className={`relative group w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}`}>
-                   <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
-                   <div className="hidden md:block absolute right-full mr-3 px-3 py-1 bg-black/80 text-white text-xs font-bold rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">{cat.label}</div>
-                   {isActive && <div className={`absolute right-1 top-1 w-1.5 h-1.5 rounded-full ${cat.color.replace('text', 'bg')} shadow-[0_0_5px_currentColor]`}></div>}
+                 <button
+                   key={cat.id}
+                   type="button"
+                   onClick={() => onCategorySelect(cat.id)}
+                   aria-label={CATEGORY_LABELS[cat.id] || cat.label}
+                   aria-pressed={isActive}
+                   className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
+                     w-[3.25rem] py-1.5 md:w-14 md:py-2 max-md:border
+                     ${isActive
+                       ? `${CATEGORY_ACTIVE_MOBILE[cat.id]} md:bg-white/10 md:border-white/20 md:shadow-[0_0_15px_rgba(255,255,255,0.1)]`
+                       : 'max-md:bg-black/45 max-md:border-white/22 max-md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] md:hover:bg-white/5 md:border-transparent border-transparent'
+                     }`}
+                 >
+                   <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'max-md:text-gray-100 text-gray-500 group-hover:text-gray-300'}`} />
+                   <span className={`text-[9px] md:text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-200/90 md:text-gray-400 md:group-hover:text-gray-300'}`}>
+                     {CATEGORY_LABELS[cat.id]}
+                   </span>
                  </button>
                )
             })}
+         </div>
          </div>
       </div>
       )}
@@ -206,7 +233,7 @@ const HomeUI = React.memo(({
       )}
 
       <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
-        <div className="absolute bottom-6 left-6 flex items-end gap-4 pointer-events-auto">
+        <div className="absolute bottom-6 left-6 md:left-[8.75rem] flex items-end gap-4 pointer-events-auto">
           {user ? (
             <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-red-400/50 transition-all shadow-lg">

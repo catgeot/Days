@@ -1640,7 +1640,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         clickTolerance={GLOBE_CLICK_TOLERANCE_PX}
         dragPan
         touchZoomRotate
-        attributionControl={false}
+        attributionControl={{ compact: true }}
         fog={fogConfig}
       >
         {globeTheme !== 'bright' && <LanguageControl />}

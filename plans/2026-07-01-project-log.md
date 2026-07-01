@@ -71,3 +71,18 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 금지: travelSpots/Airports JSON · 범위 밖 리팩터 · releaseNotes 합의 전 반영.
 기존: body 포털·세로 순서·가로 오버레이·탭 UI 숨김 유지.
 ```
+
+---
+
+## 홈 지구본 — 모바일 카테고리 바·MOONi·Mapbox
+
+**상태**: **✅ 완료** (사용자 QA·세션 종료 · 2026-07-01)
+
+- **모바일**: 카테고리 바 하단 **좌측** · 한글 라벨·시인성(헤일로·테마색 글로우) · 버튼 간격 축소
+- **데스크톱**: 카테고리 바 **아이콘+한글 라벨** 상시 표시 · `md:gap-4` 유지
+- **MOONi FAB**: 기본 위치 우하단 `{ right: 16, bottom: 32 }` (`gateo_mooni_fab_pos` 저장값 우선)
+- **Mapbox**: `attributionControl` compact 복원 · 데스크톱 footer `md:left-[8.75rem]`로 로고 겹침 완화
+- **되돌림**: `map.setPadding`·로고 클릭 차단 CSS — 지구본 시야 치우침 방지
+- **수정**: `HomeUI.jsx` · `MooniAgentFab.jsx` · `HomeGlobeMapbox.jsx` · `index.css`
+- **릴리스 노트**: 초안 대기 (사용자 합의 후 `releaseNotes.js`)
+- **커밋**: (본 세션 커밋 SHA 기록 예정)
