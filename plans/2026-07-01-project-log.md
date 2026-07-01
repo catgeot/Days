@@ -85,4 +85,4 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **되돌림**: `map.setPadding`·로고 클릭 차단 CSS — 지구본 시야 치우침 방지
 - **수정**: `HomeUI.jsx` · `MooniAgentFab.jsx` · `HomeGlobeMapbox.jsx` · `index.css`
 - **릴리스 노트**: 초안 대기 (사용자 합의 후 `releaseNotes.js`)
-- **커밋**: (본 세션 커밋 SHA 기록 예정)
+- **커밋**: `97f4fb5`
