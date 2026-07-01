@@ -67,7 +67,7 @@ import {
   applyMapboxGlobeLabelPolicy,
   isGlobeContextBasemapLabel,
 } from '../lib/globeMapboxLabelPolicy';
-import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS } from '../lib/globeCategoryFocus';
+import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import GlobeClusterLegend from './GlobeClusterLegend';
 import { readViewportSize } from '../../../shared/lib/mobileViewport';
@@ -1257,11 +1257,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const normalizedLng = normalizeLngNear(map.getCenter().lng, focus.lng);
     const flyMs = GLOBE_FACE_FLY_MS;
-    const currentZoom = map.getZoom();
-    // flyTo·수동 확대 후에는 초기 줌으로 되돌린 뒤 카테고리 면으로 pan
-    const targetZoom = currentZoom > GLOBE_VIEW.default.zoom
-      ? GLOBE_VIEW.default.zoom
-      : currentZoom;
+    const targetZoom = resolveCategoryFaceMapboxZoom(map.getZoom());
 
     try {
       map.stop();

@@ -143,3 +143,9 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) 카테고리 5면 pan 절
 - **릴리스 노트**: 갱신 없음 (사용자 요청)
 - **커밋**: `d898190`
+
+### 후속 — 모바일·데스크톱 분기 (2026-07-01 ✅)
+
+- **모바일**: 확대 중 카테고리 → 초기 줌·고도 복귀 (유지)
+- **데스크톱**: 확대 중 카테고리 → **flyTo 줌·고도**(2.35 / legacy 2.1)로 pan
+- **SSOT**: `globeCategoryFocus.js` — `resolveCategoryFaceMapboxZoom` · `resolveCategoryFaceLegacyAltitude`

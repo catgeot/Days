@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle, us
 import Globe from 'react-globe.gl';
 import { getMarkerDesign } from '../data/markers';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
-import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS } from '../lib/globeCategoryFocus';
+import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceLegacyAltitude } from '../lib/globeCategoryFocus';
 
 const GLOBE_CAMERA_CONFIG = {
   DEFAULT_ALT: 2.5,
@@ -268,10 +268,7 @@ const HomeGlobe = React.memo(forwardRef(({
     categoryFaceFlyGenRef.current = gen;
     const flyMs = GLOBE_FACE_FLY_MS;
     const currentPov = globeEl.current.pointOfView();
-    // flyTo·수동 확대 후에는 초기 고도로 되돌린 뒤 카테고리 면으로 pan
-    const targetAlt = currentPov.altitude < GLOBE_CAMERA_CONFIG.DEFAULT_ALT
-      ? GLOBE_CAMERA_CONFIG.DEFAULT_ALT
-      : currentPov.altitude;
+    const targetAlt = resolveCategoryFaceLegacyAltitude(currentPov.altitude);
 
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
     globeEl.current.controls().autoRotate = false;

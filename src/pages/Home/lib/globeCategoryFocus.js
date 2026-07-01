@@ -17,8 +17,48 @@ export const GLOBE_FACE_CENTER_BY_CATEGORY = {
   adventure: { lng: -58.0, lat: -15.0 }        // 남미 (브라질 중부)
 };
 
-/** 면 전환 flyTo 시간 — 확대 상태면 호출 측에서 초기 줌·고도로 복귀 후 pan */
+/** 면 전환 flyTo 시간 — 확대 상태면 호출 측에서 줌·고도 조정 후 pan */
 export const GLOBE_FACE_FLY_MS = 2200;
+
+/** Mapbox — [`HomeGlobeMapbox`](../components/HomeGlobeMapbox.jsx) `GLOBE_VIEW`와 동기화 */
+export const GLOBE_CATEGORY_MAPBOX_ZOOM = {
+  default: 1.25,
+  fly: 2.35
+};
+
+/** legacy react-globe.gl — [`HomeGlobe`](../components/HomeGlobe.jsx) `GLOBE_CAMERA_CONFIG`와 동기화 */
+export const GLOBE_CATEGORY_LEGACY_ALT = {
+  default: 2.5,
+  fly: 2.1
+};
+
+/** [`Home/index.jsx`](../index.jsx) `isMobileViewport`와 동일 (max-width 1023px) */
+export const GLOBE_CATEGORY_MOBILE_MAX_WIDTH_PX = 1023;
+
+export function isGlobeCategoryMobileViewport() {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia(`(max-width: ${GLOBE_CATEGORY_MOBILE_MAX_WIDTH_PX}px)`).matches;
+}
+
+/**
+ * 카테고리 면 pan 줌 — 확대 중일 때만 조정.
+ * 모바일: 초기 줌 · 데스크톱: flyTo 줌(executeFocus와 동일).
+ */
+export function resolveCategoryFaceMapboxZoom(currentZoom, isMobile = isGlobeCategoryMobileViewport()) {
+  const { default: defaultZoom, fly: flyZoom } = GLOBE_CATEGORY_MAPBOX_ZOOM;
+  if (currentZoom <= defaultZoom) return currentZoom;
+  return isMobile ? defaultZoom : flyZoom;
+}
+
+/**
+ * 카테고리 면 pan 고도 — 확대 중일 때만 조정 (altitude 낮을수록 확대).
+ * 모바일: 초기 고도 · 데스크톱: flyTo 고도.
+ */
+export function resolveCategoryFaceLegacyAltitude(currentAlt, isMobile = isGlobeCategoryMobileViewport()) {
+  const { default: defaultAlt, fly: flyAlt } = GLOBE_CATEGORY_LEGACY_ALT;
+  if (currentAlt >= defaultAlt) return currentAlt;
+  return isMobile ? defaultAlt : flyAlt;
+}
 
 export function spotMatchesCategory(spot, category) {
   if (!category || !spot) return true;
@@ -37,7 +77,7 @@ export function getCategoryGlobeFaceLng(category) {
   return -180 + GLOBE_FACE_SECTOR_DEG * (idx + 0.5);
 }
 
-/** 카테고리 버튼·홈 진입 시 pan 대상 (육지 편향 중심; 확대 중이면 호출 측에서 초기 줌·고도 복귀) */
+/** 카테고리 버튼·홈 진입 시 pan 대상 (육지 편향 중심; 확대 중 줌·고도는 `resolveCategoryFace*`) */
 export function getCategoryGlobeFaceView(category) {
   if (!category) return null;
   const center = GLOBE_FACE_CENTER_BY_CATEGORY[category];
