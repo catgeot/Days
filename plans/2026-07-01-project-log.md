@@ -15,7 +15,7 @@
   - **가로**: 사진 전면 + 상·하·좌우 오버레이 · Unsplash 1줄 인라인
   - **그리드 가로**: 개요 숨김 · pt/mt/gap 축소 · 2행 탭 pill 컴팩트
   - `MOBILE_GALLERY_LIGHTBOX_QUERY` · `TOUCH_DEVICE_QUERY` · `currentIndex` id→참조→URL
-- **커밋**: `e0d96f1`(1차) · *(본 세션 2~5차 커밋 SHA 아래)*
+- **커밋**: `e0d96f1`(1차) · `c1e71b2`(2~5차·QA·핸드오프)
 
 | 차수 | 내용 |
 |------|------|
