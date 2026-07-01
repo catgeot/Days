@@ -150,3 +150,66 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **데스크톱**: 확대 중 카테고리 → **flyTo 줌·고도**(2.35 / legacy 2.1)로 pan
 - **SSOT**: `globeCategoryFocus.js` — `resolveCategoryFaceMapboxZoom` · `resolveCategoryFaceLegacyAltitude`
 - **커밋**: `827bc9e`
+
+---
+
+## 홈 지구본 — 초기 로딩 지연 (~7초)
+
+**상태**: **⏳ WIP** — 1·2안 코드 반영 · **배포·체감 QA 대기** (2026-07-01)
+
+- **커밋**: `f86d598`
+
+### 증상
+
+- PC·모바일 공통: 홈 `/` 진입 시 지구본이 **약 7초 후** 표시 (UI·헤더는 먼저 보임).
+
+### 원인 (파악)
+
+| 구분 | 내용 |
+|------|------|
+| **직접 원인 (앱)** | `HomeGlobeMapbox` — `isStyleTransitioning` + **`waitingThemeSettleRef`** 가 Mapbox **`onIdle`** 전까지 `tryRevealGlobeBase` 차단 (2026-06-08 지명 플래시 fix `069b95f` 부작용) |
+| **1안만으로 무효** | gateo 마커 레이어 분리만으로는 **idle 대기**가 병목이라 체감 단축 없음 (사용자 확인) |
+| **Mapbox SDK** | `mapbox-gl@3.20.0` · `react-map-gl@8.1.0` — **2026-06 이후 버전 bump 없음** (위키 통합 `d7ab503` 이후 고정). globe projection + `satellite-streets-v12` 초기 타일·셰이더 부담 |
+| **7/1 작업** | 카테고리 바·attribution·mobileViewport — **초기 7초와 무관** |
+
+### 적용 (1·2안)
+
+| # | 내용 | 파일 |
+|---|------|------|
+| **1** | 베이스(위성 구체) / 오버레이(gateo 지명) 분리 · 마커 레이어 생성 시 `visibility:none` | `globeMarkerLayers.js` · `HomeGlobeMapbox.jsx` |
+| **2** | **첫 마운트** `globeTheme` effect theme-settle freeze 생략 · `onLoad`에서 즉시 `tryRevealGlobe()` | `HomeGlobeMapbox.jsx` |
+| **+** | Mapbox `preconnect` | `index.html` |
+
+### 다음 세션 (미적용 후보)
+
+| 우선 | 작업 |
+|------|------|
+| A | 배포 후 **첫 진입** 체감 재측정 (2안 효과) |
+| B | DevTools Network — `satellite-streets-v12`·타일 응답 vs `onLoad`/`idle` 타이밍 |
+| C | `HomeGlobeMapbox` **dynamic import** (vendor ~686KB gzip 분리) |
+| D | 첫 프레임 **가벼운 스타일** → satellite 지연 로드 |
+| E | Performance mark — `onLoad` / `idle` / `tryRevealGlobeBase` 구간 수치화 |
+
+### 홈 지구본 로딩 세션 — 에이전트 핸드오프
+
+#### 읽을 것 (3)
+
+1. [`.ai-context.md`](../.ai-context.md) — 1절 · 3절 · 5절 「지구본 로딩」
+2. **본 일지** — 「홈 지구본 — 초기 로딩 지연」+ 「다음 세션」표
+3. [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — `tryRevealGlobeBase` · `tryRevealGlobeOverlays` · `globeThemeInitializedRef` grep만
+
+#### 금지 (3)
+
+1. `GLOBE_VIEW.flyZoom`·`HIGH_ZOOM_FULL_REVEAL` 임의 변경 (`.ai-context` 3절)
+2. `travelSpots.js` / JSON spots 직접 수정
+3. 배포 QA 전 「완료」 단정 · `releaseNotes.js` 임의 반영
+
+#### 제시어 (보관)
+
+```
+지구본-로딩 @plans/2026-07-01-project-log.md
+
+홈 Mapbox 지구본 초기 로딩 ~7초 — 1·2안 배포 QA 또는 C~E 최적화.
+읽기: .ai-context 5절 + 본 일지 「홈 지구본 — 초기 로딩」+ HomeGlobeMapbox grep(tryRevealGlobe*, globeThemeInitializedRef).
+금지: flyZoom/HIGH_ZOOM 변경 · travelSpots JSON · releaseNotes 합의 전.
+```

@@ -43,7 +43,22 @@
 | [`globeSpotVisibility.js`](../src/pages/Home/lib/globeSpotVisibility.js) | **`denseRegion` 밀집 권역만** 줌·tier 단계 노출 · `denseRegion` 없음(섬·희소)은 **전 tier 노출** |
 | [`globeCategoryFocus.js`](../src/pages/Home/lib/globeCategoryFocus.js) | 카테고리 5면 pan SSOT — `GLOBE_FACE_CENTER_BY_CATEGORY` · 확대 중이면 초기 줌·고도 복귀 후 pan · 랜덤 진입 `pickRandomGlobeCategory` |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | Mapbox 행정·도시 지명 (줌≥4·눈 ON) — gateo 지명과 별도 |
-| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 전 카테고리 여행지 노출 · 레이어 bootstrap · 한글 지명 분기 |
+| [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) | 전 카테고리 여행지 노출 · 레이어 bootstrap · 한글 지명 분기 · **초기 로딩 reveal** (아래 §) |
+
+### 홈 지구본 초기 로딩 (2026-07-01 ⏳)
+
+**일지**: [`2026-07-01-project-log.md`](./2026-07-01-project-log.md) 「홈 지구본 — 초기 로딩 지연」
+
+| 항목 | SSOT |
+|------|------|
+| **증상** | PC·모바일 공통 홈 `/` 진입 ~7초 후 지구본 표시 |
+| **원인** | `isStyleTransitioning` + `waitingThemeSettleRef` → Mapbox **`onIdle`** 전 `tryRevealGlobeBase` 차단 (2026-06-08 지명 플래시 fix `069b95f`) |
+| **Mapbox** | `mapbox-gl@3.20.0` · `satellite-streets-v12` · globe projection — **2026-06 이후 npm bump 없음** |
+| **1안** | `tryRevealGlobeBase`(위성 구체) / `tryRevealGlobeOverlays`(gateo 지명) · `setGateoMarkerLayerVisibility` |
+| **2안** | `globeThemeInitializedRef` — **첫 마운트** theme-settle freeze 생략 · `onLoad` 즉시 reveal |
+| **다음** | 배포 QA · dynamic import · 가벼운 초기 스타일 · Network/`idle` 프로파일 |
+
+**테마 전환**(deep↔bright)만 `waitingThemeSettleRef` + `isStyleTransitioning` freeze 유지 (플래시 방지).
 
 ### 홈 지구본 마커·노출 정책 (2026-06-07)
 

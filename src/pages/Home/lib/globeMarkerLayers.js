@@ -97,6 +97,20 @@ export function gateoMarkerLayersReady(map) {
   return GATEO_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
 }
 
+/** Hide gateo spot layers until GeoJSON source is synced (avoids label flash on base reveal). */
+export function setGateoMarkerLayerVisibility(map, visible) {
+  if (!map?.getStyle?.()) return;
+  const visibility = visible ? 'visible' : 'none';
+  GATEO_LAYER_IDS.forEach((layerId) => {
+    if (!map.getLayer(layerId)) return;
+    try {
+      map.setLayoutProperty(layerId, 'visibility', visibility);
+    } catch {
+      // Style may be mid-transition.
+    }
+  });
+}
+
 /** 레이어가 이미 있을 때 스타일·필터 동기화 (테마 전환·핫리로드) */
 export function syncGateoMarkerLayerStyle(map) {
   if (!gateoMarkerLayersReady(map)) return;
@@ -223,6 +237,7 @@ export function setupGateoMarkerLayers(map) {
     bindPointerCursor(GATEO_LABEL_LAYER_ID);
 
     syncGateoMarkerLayerStyle(map);
+    setGateoMarkerLayerVisibility(map, false);
     return true;
   } catch {
     return false;

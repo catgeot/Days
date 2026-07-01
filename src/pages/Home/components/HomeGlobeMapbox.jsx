@@ -28,6 +28,7 @@ import {
   findGateoMarkerAtPoint,
   isGateoLayer,
   gateoMarkerLayersReady,
+  setGateoMarkerLayerVisibility,
   syncGateoMarkerLayerStyle
 } from '../lib/globeMarkerLayers';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
@@ -264,6 +265,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const adminBoundaryLayerIdsRef = useRef([]);
   const lastPlaceLabelVisibleRef = useRef(null);
   const waitingThemeSettleRef = useRef(false);
+  const globeOverlaysRevealedRef = useRef(false);
+  const globeThemeInitializedRef = useRef(false);
   const pendingThemeCameraRef = useRef(null);
   const pendingFocusRef = useRef(null);
   const unbindSpaceDragGuardRef = useRef(null);
@@ -460,9 +463,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [isPinVisible, resetAndApplyPlaceLabelVisibility]);
 
   useEffect(() => {
-    const fallback = window.setTimeout(() => setIsStyleTransitioning(false), 8000);
+    const fallback = window.setTimeout(() => {
+      setIsStyleTransitioning(false);
+      const map = mapRef.current?.getMap();
+      if (map && gateoMarkerLayersReady(map) && !globeOverlaysRevealedRef.current) {
+        setGateoMarkerLayerVisibility(map, true);
+        globeOverlaysRevealedRef.current = true;
+        applyPlaceLabelVisibility();
+      }
+    }, 8000);
     return () => window.clearTimeout(fallback);
-  }, [globeTheme]);
+  }, [applyPlaceLabelVisibility, globeTheme]);
 
   const applyWaterPaint = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -519,6 +530,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, []);
 
   useEffect(() => {
+    // First mount: skip theme-settle freeze so base globe can reveal on style load (not first idle).
+    if (!globeThemeInitializedRef.current) {
+      globeThemeInitializedRef.current = true;
+      return;
+    }
+
     // During style/theme swap, briefly freeze marker rendering to avoid visual stacking/flicker.
     const map = mapRef.current?.getMap();
     if (map) {
@@ -533,6 +550,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       pendingThemeCameraRef.current = null;
     }
     waitingThemeSettleRef.current = true;
+    globeOverlaysRevealedRef.current = false;
+    if (map && gateoMarkerLayersReady(map)) {
+      setGateoMarkerLayerVisibility(map, false);
+    }
     setIsStyleTransitioning(true);
     lastPlaceLabelVisibleRef.current = null;
   }, [globeTheme]);
@@ -815,17 +836,36 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     syncClusterOverlayLayers();
   }, [pauseRender, syncClusterOverlayLayers]);
 
-  const tryRevealGlobe = useCallback(() => {
+  /** Satellite globe — show as soon as style paints; suppress Mapbox detail labels until overlays ready. */
+  const tryRevealGlobeBase = useCallback(() => {
     if (pauseRender || waitingThemeSettleRef.current) return;
     const map = mapRef.current?.getMap();
     if (!map?.isStyleLoaded?.()) return;
 
     applyPlaceLabelVisibility();
+    setIsStyleTransitioning(false);
+  }, [applyPlaceLabelVisibility, pauseRender]);
+
+  /** Gateo spot labels — after GeoJSON layers + source sync (keeps 2026-06 label-flash fix). */
+  const tryRevealGlobeOverlays = useCallback(() => {
+    if (pauseRender) return;
+    const map = mapRef.current?.getMap();
+    if (!map?.isStyleLoaded?.()) return;
+
     syncGateoMarkerLayers();
     if (!gateoMarkerLayersReady(map)) return;
 
-    setIsStyleTransitioning(false);
+    if (!globeOverlaysRevealedRef.current) {
+      setGateoMarkerLayerVisibility(map, true);
+      globeOverlaysRevealedRef.current = true;
+    }
+    applyPlaceLabelVisibility();
   }, [applyPlaceLabelVisibility, pauseRender, syncGateoMarkerLayers]);
+
+  const tryRevealGlobe = useCallback(() => {
+    tryRevealGlobeBase();
+    tryRevealGlobeOverlays();
+  }, [tryRevealGlobeBase, tryRevealGlobeOverlays]);
 
   const addRipple = useCallback((lat, lng, ttl = 1600) => {
     const ripple = { id: `${Date.now()}-${Math.random()}`, lat, lng };
@@ -1581,9 +1621,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             refreshPlaceLabelLayers();
             applyKoreanSatelliteLabels();
             resetAndApplyPlaceLabelVisibility();
-            if (!waitingThemeSettleRef.current) {
-              tryRevealGlobe();
-            }
+            tryRevealGlobe();
           }
         }}
         onStyleData={() => {
