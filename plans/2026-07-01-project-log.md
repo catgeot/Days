@@ -142,3 +142,4 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **수정 파일**: `HomeGlobeMapbox.jsx` · `HomeGlobe.jsx` · `globeCategoryFocus.js`(주석 SSOT)
 - **문서**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) 카테고리 5면 pan 절
 - **릴리스 노트**: 갱신 없음 (사용자 요청)
+- **커밋**: `d898190`
