@@ -5,9 +5,11 @@ import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
-/** 세로는 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
+/** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
-  '(max-width: 767px), ((max-height: 500px) and (orientation: landscape) and (hover: none) and (pointer: coarse))';
+  '(max-width: 767px), ((max-width: 834px) and (hover: none) and (pointer: coarse)), ((max-height: 500px) and (orientation: landscape) and (hover: none) and (pointer: coarse))';
+
+const TOUCH_DEVICE_QUERY = '(hover: none) and (pointer: coarse)';
 
 const mobileNavButtonClass = (enabled) =>
   `flex shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 ${
@@ -55,7 +57,13 @@ const PlaceGalleryView = React.memo(({
   const [isMobileViewport, setIsMobileViewport] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(MOBILE_GALLERY_LIGHTBOX_QUERY).matches
   );
+  const [isTouchDevice, setIsTouchDevice] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(TOUCH_DEVICE_QUERY).matches
+  );
   const [refreshCooldownLeft, setRefreshCooldownLeft] = useState(0);
+
+  /** 그리드·확대·회전 중에도 터치 기기는 body 포털 유지 (헤더 z-index 겹침 방지) */
+  const shouldUseMobilePortal = Boolean(selectedImg && (isMobileViewport || isTouchDevice));
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_GALLERY_LIGHTBOX_QUERY);
@@ -64,6 +72,26 @@ const PlaceGalleryView = React.memo(({
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
   }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia(TOUCH_DEVICE_QUERY);
+    const sync = () => setIsTouchDevice(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  useEffect(() => {
+    if (!shouldUseMobilePortal) return undefined;
+    const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
+    };
+  }, [shouldUseMobilePortal]);
 
   useEffect(() => {
     if (!getRefreshCooldownRemaining) return undefined;
@@ -86,8 +114,9 @@ const PlaceGalleryView = React.memo(({
   }, [selectedImg]);
 
   useEffect(() => {
+    const mq = window.matchMedia(MOBILE_GALLERY_LIGHTBOX_QUERY);
     const handleResize = () => {
-      if (window.innerWidth >= 768) setIsMobileUIHidden(false);
+      if (!mq.matches) setIsMobileUIHidden(false);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -132,35 +161,12 @@ const PlaceGalleryView = React.memo(({
     if (mobilePortal) {
       return (
         <div
-          className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-black animate-fade-in portrait:flex portrait:flex-col landscape:relative"
+          className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-black animate-fade-in"
           role="dialog"
           aria-modal="true"
           aria-label="갤러리 사진 확대 보기"
         >
-          <div
-            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (e.ctrlKey || e.metaKey) return;
-              setIsMobileUIHidden((prev) => !prev);
-            }}
-            onDoubleClick={(e) => {
-              if (e.ctrlKey || e.metaKey) {
-                e.stopPropagation();
-                if (handleRemoveImage && selectedImg) {
-                  handleRemoveImage(selectedImg);
-                  setSelectedImg(null);
-                }
-              }
-            }}
-          >
-            <img
-              src={selectedImg.urls.regular}
-              className="max-h-full max-w-full select-none rounded-lg object-contain shadow-2xl animate-fade-in landscape:h-full landscape:w-full landscape:max-h-[100dvh] landscape:max-w-[100vw] landscape:rounded-none landscape:shadow-none"
-              alt="full-view"
-            />
-          </div>
-
+          <div className="relative h-full w-full portrait:flex portrait:flex-col">
           <div
             className={`relative z-[220] flex shrink-0 items-start gap-3 px-4 pb-2 pt-[max(0.75rem,env(safe-area-inset-top,0px))] transition-opacity duration-300 portrait:static landscape:absolute landscape:inset-x-0 landscape:top-0 landscape:bg-gradient-to-b landscape:from-black/85 landscape:to-transparent landscape:px-3 landscape:pb-1 landscape:pt-[max(0.5rem,env(safe-area-inset-top,0px))] ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             onClick={(e) => e.stopPropagation()}
@@ -185,6 +191,30 @@ const PlaceGalleryView = React.memo(({
             >
               <X size={26} strokeWidth={2.5} className="landscape:h-6 landscape:w-6" />
             </button>
+          </div>
+
+          <div
+            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (e.ctrlKey || e.metaKey) return;
+              setIsMobileUIHidden((prev) => !prev);
+            }}
+            onDoubleClick={(e) => {
+              if (e.ctrlKey || e.metaKey) {
+                e.stopPropagation();
+                if (handleRemoveImage && selectedImg) {
+                  handleRemoveImage(selectedImg);
+                  setSelectedImg(null);
+                }
+              }
+            }}
+          >
+            <img
+              src={selectedImg.urls.regular}
+              className="max-h-full max-w-full select-none rounded-lg object-contain shadow-2xl animate-fade-in landscape:h-full landscape:w-full landscape:max-h-[100dvh] landscape:max-w-[100vw] landscape:rounded-none landscape:shadow-none"
+              alt="full-view"
+            />
           </div>
 
           {showNavControls && (
@@ -229,7 +259,7 @@ const PlaceGalleryView = React.memo(({
               </div>
             )}
 
-            <div className="flex items-center gap-3 landscape:justify-center landscape:gap-4">
+            <div className="flex items-center gap-3 landscape:justify-center landscape:gap-3">
               {showNavControls ? (
                 <button
                   type="button"
@@ -244,11 +274,24 @@ const PlaceGalleryView = React.memo(({
                 <div className="h-12 w-12 shrink-0 portrait:block landscape:hidden" aria-hidden />
               )}
 
-              <div className="flex min-w-0 flex-1 items-center justify-center gap-3 landscape:flex-none">
+              <div className="flex min-w-0 flex-1 items-center justify-center gap-3 landscape:flex-none landscape:gap-2.5">
                 {showNavControls && currentIndex >= 0 && (
                   <span className="shrink-0 text-sm font-semibold tabular-nums tracking-wide text-white/85 landscape:text-xs">
                     {currentIndex + 1} / {images.length}
                   </span>
+                )}
+                {selectedImg.user && (
+                  <a
+                    href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden max-w-[min(42vw,14rem)] shrink truncate rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] leading-none text-white/75 backdrop-blur-sm transition-all hover:bg-white/15 hover:text-white landscape:inline"
+                    title={`Photo by ${selectedImg.user.name || 'Unknown'} on Unsplash`}
+                  >
+                    Photo by{' '}
+                    <span className="font-semibold text-white/90">{selectedImg.user.name || 'Unknown'}</span>
+                    {' '}on Unsplash
+                  </a>
                 )}
                 <button
                   type="button"
@@ -275,6 +318,7 @@ const PlaceGalleryView = React.memo(({
                 <div className="h-12 w-12 shrink-0 portrait:block landscape:hidden" aria-hidden />
               )}
             </div>
+          </div>
           </div>
         </div>
       );
@@ -385,7 +429,7 @@ const PlaceGalleryView = React.memo(({
       className={`flex-1 h-full bg-[#05070a]/80 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
     >
       {selectedImg ? (
-        isMobileViewport
+        shouldUseMobilePortal
           ? createPortal(renderPhotoViewer(null, { mobilePortal: true }), document.body)
           : renderPhotoViewer(
               'w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden'
@@ -393,18 +437,18 @@ const PlaceGalleryView = React.memo(({
       ) : (
         <div
           ref={scrollContainerRef}
-          className={`w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} ${mobilePlaceHeaderScrollPadding} md:pt-10 pb-28 md:pb-6`}
+          className={`w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} ${mobilePlaceHeaderScrollPadding} landscape:pt-[calc(3.25rem+env(safe-area-inset-top,0px))] md:pt-10 pb-28 landscape:pb-14 md:pb-6`}
         >
 
           {mobileSecondaryNav && (
-            <div className="md:hidden px-2 pb-2 shrink-0">
+            <div className="md:hidden shrink-0 px-2 pb-2 landscape:px-1.5 landscape:pb-1 landscape:pt-0 [&_button]:landscape:px-2.5 [&_button]:landscape:py-1 [&_span]:landscape:text-[10px]">
               {mobileSecondaryNav}
             </div>
           )}
 
-          <div className="px-6">
+          <div className="px-6 landscape:px-3">
             {placeOverviewText && (
-              <div className="md:hidden mb-4">
+              <div className="md:hidden mb-4 landscape:hidden">
                 <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3.5 backdrop-blur-md shadow-inner">
                   {location?.originalQuery && (
                     <p className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-violet-200/95">
@@ -419,15 +463,15 @@ const PlaceGalleryView = React.memo(({
               </div>
             )}
 
-            <div className={`${placeOverviewText ? 'mt-4' : 'mt-12'} md:mt-0`}>
+            <div className={`${placeOverviewText ? 'mt-4' : 'mt-12'} landscape:mt-1 md:mt-0`}>
               {isImgLoading ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 landscape:gap-2">
                    {[...Array(6)].map((_, i) => (
                      <div key={i} className="aspect-[3/4] animate-pulse bg-white/5 rounded-2xl border border-white/5" />
                    ))}
                 </div>
               ) : (
-                <div className="columns-2 gap-4 space-y-4">
+                <div className="columns-2 gap-4 space-y-4 landscape:gap-2 landscape:space-y-2">
                   {images.map((img, i) => (
                     <div
                       key={img.id || i}
@@ -458,7 +502,7 @@ const PlaceGalleryView = React.memo(({
               )}
 
               {!isImgLoading && images.length > 0 && handleRefresh && (
-                <div className="mt-8 mb-2 flex flex-col items-center gap-1.5">
+                <div className="mt-8 landscape:mt-4 mb-2 flex flex-col items-center gap-1.5">
                   <button
                     type="button"
                     onClick={onRefreshClick}

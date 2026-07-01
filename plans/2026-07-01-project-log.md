@@ -6,16 +6,23 @@
 
 ## 장소카드 갤러리 탭 — 모바일 확대 뷰 UX
 
-**상태**: **1차 ✅** · **세부 조정 ⏳**
+**상태**: **✅ 완료** (사용자 QA 통과 · 2026-07-01)
 
 - **원인**: 모바일 `PlaceChatPanel` 헤더(`z-[180]`)가 미디어 패널(`z-10`) 위에 겹쳐 확대 뷰 닫기·노트 터치 불가.
 - **수정 파일**: [`PlaceGalleryView.jsx`](../src/components/PlaceCard/views/PlaceGalleryView.jsx)
-  - 모바일·가로 회전 터치 기기 → `document.body` 포털 `z-[9999]`
-  - 상단: 사진 노트 + 닫기(X) **한 줄** · 닫기 버튼 시인성 강화
-  - 하단: ← · 페이지 · 다운로드 · → (세로) / 가로는 사진 **전면 오버레이**·좌우 ←→
-  - `MOBILE_GALLERY_LIGHTBOX_QUERY`: `(max-width:767px)` 또는 `(max-height:500px + landscape + coarse pointer)` — **가로 회전 시 포털 유지**
-  - `currentIndex`: id → 참조 → URL fallback
-- **커밋**: `e0d96f1` — fix(갤러리): 모바일 확대 뷰 포털·가로 레이아웃 개선
+  - 터치 기기 확대 → `document.body` 포털 `z-[9999]` · `shouldUseMobilePortal` · body scroll lock
+  - **세로**: 메타·닫기 → 사진 → ← · 페이지 · 다운로드 · →
+  - **가로**: 사진 전면 + 상·하·좌우 오버레이 · Unsplash 1줄 인라인
+  - **그리드 가로**: 개요 숨김 · pt/mt/gap 축소 · 2행 탭 pill 컴팩트
+  - `MOBILE_GALLERY_LIGHTBOX_QUERY` · `TOUCH_DEVICE_QUERY` · `currentIndex` id→참조→URL
+- **커밋**: `e0d96f1`(1차) · *(본 세션 2~5차 커밋 SHA 아래)*
+
+| 차수 | 내용 |
+|------|------|
+| 2차 | 가로 Unsplash 1줄 · 태블릿 `834px` 포털 · UI 숨김 `matchMedia` |
+| 3차 | 그리드 가로 — 헤더 아래 사진 즉시 노출 |
+| 4차 | 확대 가로 회전 — `fixed` 셸 · 터치 포털 고정 · scroll lock |
+| 5차 | 세로 DOM 순서 복원 (메타·닫기 → 사진 → 하단) |
 
 ---
 
@@ -25,7 +32,7 @@
 
 1. [`.ai-context.md`](../.ai-context.md) — 1절 유지 규약 · 3절 금지
 2. **본 일지** — 「갤러리 세션 — 에이전트 핸드오프」+ 「다음 세션」표
-3. [`PlaceGalleryView.jsx`](../src/components/PlaceCard/views/PlaceGalleryView.jsx) — `MOBILE_GALLERY_LIGHTBOX_QUERY` · `renderPhotoViewer({ mobilePortal: true })` 만 (전체 스캔 금지)
+3. [`PlaceGalleryView.jsx`](../src/components/PlaceCard/views/PlaceGalleryView.jsx) — `renderPhotoViewer({ mobilePortal: true })` · `handlePrev`/`handleNext` · `shouldUseMobilePortal` grep만
 
 ### 금지 (3)
 
@@ -33,21 +40,22 @@
 2. 갤러리 외 PlaceCard·헤더 대규모 리팩터 (요청 범위만)
 3. 사용자 QA·릴리스 노트 합의 전 「완료」 단정 · `releaseNotes.js` 임의 반영
 
-### 다음 세션 (세부 조정 후보)
+### 다음 세션 — 스와이프 넘기기
 
 | 항목 | 메모 |
 |------|------|
-| 가로 Unsplash 크레딧 | 현재 `landscape:hidden` — 필요 시 1줄 오버레이 |
-| UI 숨김(탭 토글) | `isMobileUIHidden` — 가로에서도 의도 확인 |
-| iPad / 좁은 태블릿 | `767px` 경계·포털 vs 데스크톱 분기 |
-| 데스크톱 확대 | 패널 내 뷰는 변경 없음 — 요청 시만 |
+| 목표 | 모바일 확대 뷰에서 **좌우 스와이프**로 이전·다음 사진 (`handlePrev`/`handleNext` 연동) |
+| 범위 | `PlaceGalleryView` 포털 이미지 영역 · `isMobileUIHidden` 탭 토글과 충돌 방지 |
+| 참고 | 세로·가로 오버레이·포털·scroll lock **유지** · 데스크톱 키보드 ←→는 기존 유지 |
+| UX | 임계값·가로 스와이 vs 세로 스크롤 구분 · 첫/끝 사진 bounce 또는 no-op |
 
 ### 제시어
 
 ```
-갤러리-이어하기 @plans/2026-07-01-project-log.md
+갤러리-스와이프 @plans/2026-07-01-project-log.md
 
-PlaceGalleryView 모바일 포털(세로 거의 OK). 가로·세부 UI 이어 조정.
-읽기: .ai-context 1·3절 + 본 일지 핸드오프 + PlaceGalleryView grep만.
-금지: travelSpots/Airports JSON 직접 편집 · 범위 밖 리팩터.
+PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기기.
+읽기: .ai-context 1·3절 + 본 일지 「다음 세션 — 스와이프」+ PlaceGalleryView grep(handlePrev/Next, mobilePortal).
+금지: travelSpots/Airports JSON · 범위 밖 리팩터 · releaseNotes 합의 전 반영.
+기존: body 포털·세로 순서·가로 오버레이·탭 UI 숨김 유지.
 ```
