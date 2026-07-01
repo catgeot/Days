@@ -99,4 +99,4 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 - **SSOT**: [`mapboxAttribution.js`](../src/data/mapboxAttribution.js) · UI [`MapboxCreditsPanel.jsx`](../src/shared/components/MapboxCreditsPanel.jsx)
 - **수정**: `HomeGlobeMapbox.jsx` · `PlaceMiniMap.jsx` · `FooterModal.jsx` · `LogoPanel.jsx` · `index.css`
 - **주의**: `HomeUI.jsx` — PowerShell `Set-Content`로 UTF-8 깨짐 시 JSX 파싱 오류. **git/에디터 패치만** 사용.
-- **커밋**: (본 커밋)
+- **커밋**: `f10bed0`
