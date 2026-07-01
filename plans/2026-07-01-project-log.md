@@ -15,7 +15,7 @@
   - 하단: ← · 페이지 · 다운로드 · → (세로) / 가로는 사진 **전면 오버레이**·좌우 ←→
   - `MOBILE_GALLERY_LIGHTBOX_QUERY`: `(max-width:767px)` 또는 `(max-height:500px + landscape + coarse pointer)` — **가로 회전 시 포털 유지**
   - `currentIndex`: id → 참조 → URL fallback
-- **커밋**: (아래 git commit 후 SHA 기록)
+- **커밋**: `e0d96f1` — fix(갤러리): 모바일 확대 뷰 포털·가로 레이아웃 개선
 
 ---
 
