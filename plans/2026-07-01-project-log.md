@@ -34,6 +34,7 @@
 - 모바일 포털 이미지 영역 `touchstart`/`touchend` · 48px·1.25× 가로 우선
 - `suppressMobileTapRef` — 스와이프 후 `isMobileUIHidden` 탭 토글 억제
 - [`releaseNotes.js`](../src/data/releaseNotes.js) `2026-07-01` 반영
+- **커밋**: `97fe854`
 
 ---
 
