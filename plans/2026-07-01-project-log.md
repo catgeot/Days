@@ -155,24 +155,25 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 
 ## 홈 지구본 — 초기 로딩 지연 (~7초)
 
-**상태**: **⏳ WIP** — 1·2안 코드 반영 · **배포·체감 QA 대기** (2026-07-01)
+**상태**: **⏳ WIP** — 1·2안(`6037c9d`) **로컬 QA 무효** · Phase 1 실행 대기 (2026-07-01)
 
-- **커밋**: `6037c9d`
+- **커밋**: `6037c9d`(1·2안) · 핸드오프·재분석 문서는 본 세션 커밋
 
 ### 증상
 
 - PC·모바일 공통: 홈 `/` 진입 시 지구본이 **약 7초 후** 표시 (UI·헤더는 먼저 보임).
+- **로컬 dev QA (2026-07-01)**: 지구본 영역 **7~8초 검은 화면** (`bg-black` + `opacity-0`) 후 표시 · 1·2안 체감 개선 없음.
 
-### 원인 (파악)
+### 원인 (1·2안 이후 재분석)
 
 | 구분 | 내용 |
 |------|------|
-| **직접 원인 (앱)** | `HomeGlobeMapbox` — `isStyleTransitioning` + **`waitingThemeSettleRef`** 가 Mapbox **`onIdle`** 전까지 `tryRevealGlobeBase` 차단 (2026-06-08 지명 플래시 fix `069b95f` 부작용) |
-| **1안만으로 무효** | gateo 마커 레이어 분리만으로는 **idle 대기**가 병목이라 체감 단축 없음 (사용자 확인) |
-| **Mapbox SDK** | `mapbox-gl@3.20.0` · `react-map-gl@8.1.0` — **2026-06 이후 버전 bump 없음** (위키 통합 `d7ab503` 이후 고정). globe projection + `satellite-streets-v12` 초기 타일·셰이더 부담 |
-| **7/1 작업** | 카테고리 바·attribution·mobileViewport — **초기 7초와 무관** |
+| **6037c9d가 푼 것** | 첫 마운트 `waitingThemeSettleRef` freeze · gateo 오버레이 분리 |
+| **남은 병목 (주)** | `tryRevealGlobeBase`가 **`map.isStyleLoaded()` false** 시 조기 return → `isStyleTransitioning` 유지 · **8s fallback**(`setTimeout 8000`)과 체감 7~8초 일치 |
+| **보조** | `onLoad`에서 `syncGateoMarkerLayers` 등 **무거운 sync 후** reveal · mapbox-gl **동기 import** + vite `vendor` chunk |
+| **Mapbox SDK** | `mapbox-gl@3.20.0` · `satellite-streets-v12` · globe — npm bump 없음 |
 
-### 적용 (1·2안)
+### 적용 완료 (1·2안 · `6037c9d`)
 
 | # | 내용 | 파일 |
 |---|------|------|
@@ -180,36 +181,41 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
 | **2** | **첫 마운트** `globeTheme` effect theme-settle freeze 생략 · `onLoad`에서 즉시 `tryRevealGlobe()` | `HomeGlobeMapbox.jsx` |
 | **+** | Mapbox `preconnect` | `index.html` |
 
-### 다음 세션 (미적용 후보)
+### 다음 세션 — 실행 계획 (Phase 0→1 우선)
 
-| 우선 | 작업 |
-|------|------|
-| A | 배포 후 **첫 진입** 체감 재측정 (2안 효과) |
-| B | DevTools Network — `satellite-streets-v12`·타일 응답 vs `onLoad`/`idle` 타이밍 |
-| C | `HomeGlobeMapbox` **dynamic import** (vendor ~686KB gzip 분리) |
-| D | 첫 프레임 **가벼운 스타일** → satellite 지연 로드 |
-| E | Performance mark — `onLoad` / `idle` / `tryRevealGlobeBase` 구간 수치화 |
+| Phase | 작업 | 파일 |
+|-------|------|------|
+| **0** | DEV `performance.mark` — `onLoad` / `tryRevealBase` / `idle` / `fallback-8s` / opacity visible | `HomeGlobeMapbox.jsx` |
+| **1-A** | 첫 마운트 `tryRevealGlobeBase` — `isStyleLoaded` 게이트 완화 · `globeBaseRevealedRef` | `HomeGlobeMapbox.jsx` |
+| **1-B** | `isStyleTransitioning` — **첫 진입 false**, 테마 전환만 freeze | `HomeGlobeMapbox.jsx` |
+| **1-C** | `onLoad` — **`tryRevealGlobeBase` 먼저**, overlay·레이어 sync는 rAF/idle 지연 | `HomeGlobeMapbox.jsx` |
+| **1-D** | 8s fallback → **2s safety net** + DEV warn | `HomeGlobeMapbox.jsx` |
+| **2** | (QA 미달 시) `HomeGlobeAdapter` lazy · vite `mapbox` chunk · placeholder | `HomeGlobeAdapter.jsx` · `vite.config.js` |
+| **3** | (배포 QA) dark-v11 → satellite 2단계 스타일 | `HomeGlobeMapbox.jsx` |
 
-### 홈 지구본 로딩 세션 — 에이전트 핸드오프
+**완료 기준**: 로컬 cold load 지구본 **≤2s** · gateo 지명 플래시·테마 전환 회귀 없음.
+
+### 홈 지구본 로딩 세션 — 에이전트 핸드오프 (종료)
 
 #### 읽을 것 (3)
 
 1. [`.ai-context.md`](../.ai-context.md) — 1절 · 3절 · 5절 「지구본 로딩」
-2. **본 일지** — 「홈 지구본 — 초기 로딩 지연」+ 「다음 세션」표
-3. [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — `tryRevealGlobeBase` · `tryRevealGlobeOverlays` · `globeThemeInitializedRef` grep만
+2. **본 일지** — 「홈 지구본 — 초기 로딩 지연」+ 「다음 세션 — 실행 계획」표
+3. [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — `tryRevealGlobeBase` · `isStyleTransitioning` · `onLoad` · 8s fallback grep
 
 #### 금지 (3)
 
 1. `GLOBE_VIEW.flyZoom`·`HIGH_ZOOM_FULL_REVEAL` 임의 변경 (`.ai-context` 3절)
 2. `travelSpots.js` / JSON spots 직접 수정
-3. 배포 QA 전 「완료」 단정 · `releaseNotes.js` 임의 반영
+3. 로컬 QA·배포 QA 전 「완료」 단정 · `releaseNotes.js` 임의 반영
 
 #### 제시어 (보관)
 
 ```
-지구본-로딩 @plans/2026-07-01-project-log.md
+지구본-로딩-실행 @plans/2026-07-01-project-log.md
 
-홈 Mapbox 지구본 초기 로딩 ~7초 — 1·2안 배포 QA 또는 C~E 최적화.
-읽기: .ai-context 5절 + 본 일지 「홈 지구본 — 초기 로딩」+ HomeGlobeMapbox grep(tryRevealGlobe*, globeThemeInitializedRef).
+홈 Mapbox 지구본 ~7초 검은 화면 — Phase 0 계측 + Phase 1 reveal(isStyleLoaded 완화·onLoad 순서·fallback 2s).
+읽기: .ai-context 5절 + 본 일지 「다음 세션 — 실행 계획」+ HomeGlobeMapbox grep(tryRevealGlobeBase, isStyleTransitioning, setTimeout 8000).
 금지: flyZoom/HIGH_ZOOM 변경 · travelSpots JSON · releaseNotes 합의 전.
+Phase 2(lazy·mapbox chunk)는 Phase 1 QA 미달 시만.
 ```
