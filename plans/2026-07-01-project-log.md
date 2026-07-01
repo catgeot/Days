@@ -129,3 +129,4 @@ PlaceGalleryView 모바일 확대 포털에 좌우 스와이프로 사진 넘기
   - [`Home/index.jsx`](../src/pages/Home/index.jsx) — 홈 마운트 시 플래그로 2차 sync
   - [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — `visualViewport` resize 리스너
 - **릴리스 노트**: 배포 QA 통과 후 사용자 합의 시 `fix` 초안 제시.
+- **커밋**: `e2246d7`
