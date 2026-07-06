@@ -63,9 +63,17 @@ export function resolveTourBootstrapOptions(slug, location, fallbackLng, fallbac
   };
 }
 
-function waitForMoveEnd(map) {
+function waitForMoveEnd(map, timeoutMs = 14000) {
   return new Promise((resolve) => {
-    map.once('moveend', resolve);
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve();
+    };
+    const timer = setTimeout(finish, timeoutMs);
+    map.once('moveend', finish);
   });
 }
 
@@ -83,6 +91,8 @@ function applyKeyframe(map, frame, { immediate = false } = {}) {
     return Promise.resolve();
   }
 
+  const moveTimeoutMs = Math.max(1200, (frame.duration || 0) + 800);
+
   if (frame.ease || frame.orbit) {
     map.easeTo({
       ...camera,
@@ -92,7 +102,7 @@ function applyKeyframe(map, frame, { immediate = false } = {}) {
   } else {
     map.flyTo({ ...camera, duration: frame.duration });
   }
-  return waitForMoveEnd(map);
+  return waitForMoveEnd(map, moveTimeoutMs);
 }
 
 export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defaultView } = {}) {

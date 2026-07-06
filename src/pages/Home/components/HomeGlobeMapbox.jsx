@@ -283,6 +283,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const prevStyleTransitioningRef = useRef(false);
   const pendingThemeCameraRef = useRef(null);
   const pendingFocusRef = useRef(null);
+  const pendingTourPivotRef = useRef(null);
   const unbindSpaceDragGuardRef = useRef(null);
   const tourEngineRef = useRef(null);
   const flightCinemaEngineRef = useRef(null);
@@ -943,25 +944,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return true;
   }, [pauseRender]);
 
-  const flyToAndPin = useCallback((lat, lng, _name, _category, options = {}) => {
-    const map = mapRef.current?.getMap();
-    if (!map) return;
-    if (rotationTimer.current) clearTimeout(rotationTimer.current);
-
-    autoRotateRef.current = false;
-    addRipple(lat, lng, 2000);
-    const shouldFocus = options?.focus !== false;
-    if (!shouldFocus || globeMode === GLOBE_MODE.TOUR_READY) {
-      pendingFocusRef.current = null;
-      return;
-    }
-
-    const applied = executeFocus(lat, lng);
-    if (!applied) {
-      pendingFocusRef.current = { lat, lng };
-    }
-  }, [addRipple, executeFocus, globeMode]);
-
   /** TOUR_READY pivot — ease center only; pitch/zoom/bearing unchanged (no flyTo). */
   const pivotTourExplore = useCallback((location) => {
     const map = mapRef.current?.getMap();
@@ -989,6 +971,46 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     // 새 지명 pivot — 투어 재시작 전까지 이전·선행 경계를 지도에 두지 않음 (몰입감)
     clearReachBoundaryState();
   }, [clearReachBoundaryState]);
+
+  const flyToAndPin = useCallback((lat, lng, _name, _category, options = {}) => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+
+    autoRotateRef.current = false;
+    addRipple(lat, lng, 2000);
+    const shouldFocus = options?.focus !== false;
+    if (!shouldFocus) {
+      pendingFocusRef.current = null;
+      return;
+    }
+
+    const pivotTarget = options?.location || {
+      lat,
+      lng,
+      name: _name,
+      category: _category,
+      slug: options?.slug
+    };
+
+    if (globeMode === GLOBE_MODE.TOUR_BOOTSTRAPPING || globeMode === GLOBE_MODE.TOUR_PLAYING) {
+      pendingTourPivotRef.current = pivotTarget;
+      pendingFocusRef.current = null;
+      tourEngineRef.current?.skip();
+      return;
+    }
+
+    if (globeMode === GLOBE_MODE.TOUR_READY) {
+      pendingFocusRef.current = null;
+      pivotTourExplore(pivotTarget);
+      return;
+    }
+
+    const applied = executeFocus(lat, lng);
+    if (!applied) {
+      pendingFocusRef.current = { lat, lng };
+    }
+  }, [addRipple, executeFocus, globeMode, pivotTourExplore]);
 
   const showMobileActionMessage = useCallback((message) => {
     setMobileActionMessage(message);
@@ -1070,13 +1092,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (center) {
         loadReachBoundaries(center.lng, center.lat);
       }
+      const pendingPivot = pendingTourPivotRef.current;
+      if (pendingPivot) {
+        pendingTourPivotRef.current = null;
+        pivotTourExplore(pendingPivot);
+      }
       return;
     }
 
     if (mode === GLOBE_MODE.GLOBE_2D) {
       clearReachBoundaryState();
     }
-  }, [clearReachBoundaryState, loadReachBoundaries, onGlobeModeChange]);
+  }, [clearReachBoundaryState, loadReachBoundaries, onGlobeModeChange, pivotTourExplore]);
 
   const handleTourUiChange = useCallback((active, meta = {}) => {
     const map = mapRef.current?.getMap();

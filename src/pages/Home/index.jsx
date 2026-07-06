@@ -267,7 +267,7 @@ function Home() {
     rememberGlobeFocus(prepared);
     setSelectedLocation(prepared);
     addScoutPin(prepared);
-    moveToLocation(prepared.lat, prepared.lng, prepared.name, prepared.category || category);
+    moveToLocation(prepared.lat, prepared.lng, prepared.name, prepared.category || category, { location: prepared });
     navigate(`/place/${param}`);
   }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
 
@@ -568,6 +568,12 @@ function Home() {
   }, [globeMode, selectedLocation]);
 
   useEffect(() => {
+    if (globeMode === GLOBE_MODE.TOUR_READY && selectedLocation && !tourReadyAnchorRef.current) {
+      tourReadyAnchorRef.current = selectedLocation;
+    }
+  }, [globeMode, selectedLocation]);
+
+  useEffect(() => {
     if (globeMode !== GLOBE_MODE.TOUR_READY || !selectedLocation || !tourReadyAnchorRef.current) return;
     if (isSameCanonicalPlace(tourReadyAnchorRef.current, selectedLocation)) return;
 
@@ -596,7 +602,7 @@ function Home() {
 
   const handleGlobeModeChange = useCallback((mode) => {
     setGlobeMode(mode);
-    if (!isTourMode(mode)) {
+    if (!isTourMode(mode) || mode === GLOBE_MODE.TOUR_READY) {
       setTourLaunchPending(false);
     }
   }, []);

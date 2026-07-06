@@ -305,7 +305,7 @@ export function useHomeHandlers({
       return;
     }
 
-    moveToLocation(loc.lat, loc.lng, name, loc.category || category);
+    moveToLocation(loc.lat, loc.lng, name, loc.category || category, { location: finalLoc });
     addScoutPin(finalLoc);
     if (refreshRelated) {
       processSearchKeywords(finalLoc);
