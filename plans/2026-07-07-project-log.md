@@ -66,17 +66,22 @@
 - **패턴** — `MOBILE_INPUT_*_CLASS` · `useDeferredViewportSyncOnBlur` · `<form onSubmit>`+`enterKeyHint` · `useMobileOverlayViewport`
 - **QA** — 로그북 블로그 리스트 검색 Enter ✅ (사용자 확인)
 - **Enter 수정** — `PlaceChatView`·`SearchDiscoveryModal`·`RecentList` form · `FlightOriginSelector` `inputMode="text"`+Enter fallback
-- **잔여** — 출발지 `FlightOriginSelector` **모바일 listbox portal 미표시** → 다음 세션
+- **잔여** — 출발지 `FlightOriginSelector` listbox **표시 ✅** · **잔여: 장소카드·listbox 상단 쏠림·목록 잘림·홈 검은 배경 시인성** → 다음 세션
 
 ---
 
 ## 출발지 드롭다운 세션 — 에이전트 핸드오프
 
+### 상태 (2026-07-07)
+
+- **1차 QA ✅** — 모바일에서 listbox **표시 시작** (이전: 미표시)
+- **2차 QA ⏳** — 장소카드·드롭다운 **상단 쏠림** → 목록 전체 미노출 · listbox가 **홈 검은 바탕에 묻혀 시인성 저하**
+
 ### 읽을 것 (3)
 
 1. [`.ai-context.md`](../.ai-context.md) — 3절 모바일 입력·뷰포트 SSOT
 2. **본 일지** — 「출발지 드롭다운 세션 — 에이전트 핸드오프」
-3. grep — `FlightOriginSelector` · `listboxPortal` · `dropdownStyle` · `LISTBOX_Z_INDEX` · `updateDropdownPosition` · `visualViewport`
+3. grep — `FlightOriginSelector` · `useInlineListbox` · `listboxPortal` · `listPortalClass` · `PlaceCardSummary` · `updateDropdownPosition` · `readVisualViewportLayout`
 
 ### 금지 (3)
 
@@ -84,30 +89,29 @@
 2. PowerShell `-replace`/`Set-Content`로 한글 JSX 수정
 3. 사용자 QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
 
-### 증상·단서
+### 완료 (본 세션·커밋)
 
-- **증상** — 모바일에서 출발지(도시·공항) 입력 시 **자동완성 드롭다운(listbox)이 보이지 않음** (데스크톱은 정상 추정)
-- **코드** — [`FlightOriginSelector.jsx`](../src/pages/Home/components/FlightOriginSelector.jsx) `createPortal`+`position:fixed` · `updateDropdownPosition` · `flipUp`·`visualViewport` · `LISTBOX_Z_INDEX`
-- **의심** — 키보드 올라온 뒤 `getBoundingClientRect`/`dropdownStyle.top` 오프셋 · z-index·overflow 클리핑 · `isBar`/`isSummary` variant별 anchor
+- [`mobileViewport.js`](../src/shared/lib/mobileViewport.js) — `readVisualViewportLayout` · `anchorRectInVisualViewport`
+- [`FlightOriginSelector.jsx`](../src/pages/Home/components/FlightOriginSelector.jsx) — visual/layout dual-path · `useLayoutEffect`+rAF · `LISTBOX_Z_INDEX` 225 · 모바일 `bar` → form 내 `absolute bottom-full` 인라인 listbox · `summary-panel`은 portal 유지
 
 ### 다음 세션 작업
 
-| 단계 | 내용 |
+| 우선 | 내용 |
 |------|------|
-| 1 | 모바일 실기기·에뮬에서 listbox DOM 존재 여부·`dropdownStyle`·viewport 좌표 확인 |
-| 2 | 키보드 열림 시 `visualViewport` 기준 위치 재계산·`flipUp` 보정 |
-| 3 | z-index·portal 대상(`document.body`)·부모 `overflow:hidden` 간섭 점검 |
-| 4 | `isBar`·`HomePlaceCardSummary`·시네마 바 variant QA |
+| 1 | **장소카드 상단 쏠림** — 키보드·`visualViewport` 시 `PlaceCardSummary`/`summary-panel` anchor·카드 `bottom` 배치 점검 |
+| 2 | **listbox 잘림** — `flipUp`·`maxHeight`·portal `top` 클램프 · 인라인 `bottom-full` vs portal variant 분기 |
+| 3 | **시인성** — `listPortalClass` 배경·테두리·그림자 강화 (홈 지구본 검은 배경 대비) · z-index·backdrop |
+| 4 | variant QA — `isBar`(인라인) · `summary-panel`(portal) · FlightCinemaBar vs PlaceCardSummary |
 
 ### 제시어 (다음 세션)
 
 ```
 출발지-이어하기 @plans/2026-07-07-project-log.md
 
-모바일 출발지 FlightOriginSelector — 지명 입력 시 listbox 드롭다운이 보이지 않음.
+모바일 출발지 listbox — 표시됨. 잔여: 장소카드·드롭다운 상단 쏠림(목록 잘림)·홈 검은 배경 시인성.
 읽기: .ai-context 3절 + 본 일지 「출발지 드롭다운 세션 — 에이전트 핸드오프」.
-grep: FlightOriginSelector · listboxPortal · dropdownStyle · updateDropdownPosition · LISTBOX_Z_INDEX · visualViewport.
-Enter·16px viewport는 적용됨 — 이번엔 portal 위치·z-index·키보드 viewport만.
+grep: FlightOriginSelector · useInlineListbox · listPortalClass · PlaceCardSummary · updateDropdownPosition.
+1차 완료: visualViewport SSOT · bar 인라인 listbox · portal z-index 225. 2차: 위치·maxHeight·listbox 스타일만.
 금지: flyZoom 변경 · PowerShell JSX · releaseNotes 합의 전.
 ```
 

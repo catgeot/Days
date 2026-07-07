@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, ChevronUp, Loader2, LocateFixed, Search } from 'lucide-react';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions.js';
@@ -6,7 +6,11 @@ import {
   resolveOriginFromGeolocation,
   searchFlightOriginHubs,
 } from '../lib/flightCinemaOriginSearch.js';
-import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
+import {
+  anchorRectInVisualViewport,
+  readVisualViewportLayout,
+  syncHomeViewportAfterInput,
+} from '../../../shared/lib/mobileViewport';
 
 const GEO_ERROR_MESSAGES = {
   unsupported: '이 기기에서는 위치 정보를 사용할 수 없어요.',
@@ -16,7 +20,11 @@ const GEO_ERROR_MESSAGES = {
 };
 
 const LISTBOX_MAX_HEIGHT = 176;
-const LISTBOX_Z_INDEX = 130;
+const LISTBOX_MIN_HEIGHT = 88;
+const LISTBOX_GAP = 4;
+const LISTBOX_VIEWPORT_PAD = 8;
+/** FlightCinemaBar z-[120]·PlaceMooniFab z-[165]·SearchDiscovery popover z-[215] 위 */
+const LISTBOX_Z_INDEX = 225;
 
 /**
  * @param {{
@@ -62,6 +70,7 @@ export default function FlightOriginSelector({
   const [geoError, setGeoError] = useState(null);
   const [barExpanded, setBarExpanded] = useState(initialExpanded);
   const [dropdownStyle, setDropdownStyle] = useState(null);
+  const [useInlineListbox, setUseInlineListbox] = useState(false);
 
   const isBar = variant === 'bar' || variant === 'bar-header';
   const isBarHeader = variant === 'bar-header';
@@ -70,45 +79,123 @@ export default function FlightOriginSelector({
   const isSummary = variant === 'summary';
   const showSearchUi = !isBar || barExpanded;
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const mq = window.matchMedia('(hover: none) and (pointer: coarse)');
+    const sync = () => setUseInlineListbox(mq.matches && variant === 'bar');
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, [variant]);
+
   const updateDropdownPosition = useCallback(() => {
-    const anchor = inputWrapRef.current;
-    if (!anchor) return;
+    const inputWrap = inputWrapRef.current;
+    if (!inputWrap) return;
 
-    const rect = anchor.getBoundingClientRect();
-    const vv = window.visualViewport;
-    const viewportHeight = vv?.height ?? window.innerHeight;
-    const offsetTop = vv?.offsetTop ?? 0;
-    const viewportBottom = viewportHeight + offsetTop;
-    const spaceBelow = viewportBottom - rect.bottom;
-    const flipUp = spaceBelow < LISTBOX_MAX_HEIGHT + 12 && rect.top > LISTBOX_MAX_HEIGHT + 12;
+    const rect = inputWrap.getBoundingClientRect();
+    const vp = readVisualViewportLayout();
+    const visual = anchorRectInVisualViewport(rect);
+    if (!visual) return;
 
-    setDropdownStyle({
-      left: rect.left,
-      width: rect.width,
-      top: flipUp ? rect.top - 4 : rect.bottom + 4,
-      flipUp,
-    });
+    const layoutOnScreen = rect.bottom > 0 && rect.top < vp.height + vp.offsetTop;
+    const visualOnScreen = visual.bottom > 0 && visual.top < vp.height;
+
+    /** @type {{ top: number, bottom: number, left: number, width: number, spaceBelow: number, spaceAbove: number, viewportHeight: number } | null} */
+    let metrics = null;
+
+    if (visualOnScreen) {
+      metrics = {
+        top: visual.top,
+        bottom: visual.bottom,
+        left: visual.left,
+        width: visual.width,
+        spaceBelow: vp.height - visual.bottom - LISTBOX_GAP,
+        spaceAbove: visual.top - LISTBOX_GAP,
+        viewportHeight: vp.height,
+      };
+    } else if (layoutOnScreen) {
+      const viewportBottom = vp.height + vp.offsetTop;
+      metrics = {
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        width: rect.width,
+        spaceBelow: viewportBottom - rect.bottom - LISTBOX_GAP,
+        spaceAbove: rect.top - LISTBOX_GAP,
+        viewportHeight: viewportBottom,
+      };
+    }
+
+    if (!metrics) {
+      if (rect.bottom > 0) {
+        const top = rect.bottom + LISTBOX_GAP;
+        const viewportBottom = vp.height + vp.offsetTop;
+        setDropdownStyle({
+          left: Math.max(LISTBOX_VIEWPORT_PAD, rect.left),
+          width: Math.max(120, rect.width),
+          top,
+          maxHeight: Math.min(
+            LISTBOX_MAX_HEIGHT,
+            Math.max(LISTBOX_MIN_HEIGHT, viewportBottom - top - LISTBOX_VIEWPORT_PAD)
+          ),
+        });
+        return;
+      }
+      setDropdownStyle(null);
+      return;
+    }
+
+    const flipUp = metrics.spaceBelow < LISTBOX_MAX_HEIGHT && metrics.spaceAbove > metrics.spaceBelow;
+
+    const left = Math.min(
+      Math.max(LISTBOX_VIEWPORT_PAD, metrics.left),
+      vp.width - LISTBOX_VIEWPORT_PAD
+    );
+    const width = Math.max(120, Math.min(metrics.width, vp.width - left - LISTBOX_VIEWPORT_PAD));
+
+    if (flipUp) {
+      const maxHeight = Math.min(
+        LISTBOX_MAX_HEIGHT,
+        Math.max(LISTBOX_MIN_HEIGHT, metrics.spaceAbove - LISTBOX_VIEWPORT_PAD)
+      );
+      const top = Math.max(LISTBOX_VIEWPORT_PAD, metrics.top - LISTBOX_GAP - maxHeight);
+      setDropdownStyle({ left, width, top, maxHeight });
+      return;
+    }
+
+    const top = metrics.bottom + LISTBOX_GAP;
+    const maxHeight = Math.min(
+      LISTBOX_MAX_HEIGHT,
+      Math.max(
+        LISTBOX_MIN_HEIGHT,
+        metrics.viewportHeight - top - LISTBOX_VIEWPORT_PAD
+      )
+    );
+    setDropdownStyle({ left, width, top, maxHeight });
   }, []);
 
-  useEffect(() => {
-    if (!isOpen || results.length === 0) {
-      setDropdownStyle(null);
+  useLayoutEffect(() => {
+    if (useInlineListbox || !isOpen || results.length === 0) {
+      if (!useInlineListbox) setDropdownStyle(null);
       return undefined;
     }
 
     updateDropdownPosition();
+    const raf = requestAnimationFrame(updateDropdownPosition);
+
     window.addEventListener('resize', updateDropdownPosition);
     window.addEventListener('scroll', updateDropdownPosition, true);
     window.visualViewport?.addEventListener('resize', updateDropdownPosition);
     window.visualViewport?.addEventListener('scroll', updateDropdownPosition);
 
     return () => {
+      cancelAnimationFrame(raf);
       window.removeEventListener('resize', updateDropdownPosition);
       window.removeEventListener('scroll', updateDropdownPosition, true);
       window.visualViewport?.removeEventListener('resize', updateDropdownPosition);
       window.visualViewport?.removeEventListener('scroll', updateDropdownPosition);
     };
-  }, [isOpen, results.length, updateDropdownPosition]);
+  }, [isOpen, results, query, updateDropdownPosition, useInlineListbox]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -246,8 +333,25 @@ export default function FlightOriginSelector({
     onCollapseRequest?.();
   }, [dismissSearchUi, onCollapseRequest]);
 
+  const renderListboxOptions = () =>
+    results.map((row) => {
+      const active = row.iata === selectedIata;
+      return (
+        <li key={row.iata} role="option" aria-selected={active}>
+          <button
+            type="button"
+            className={itemClass(active)}
+            onClick={() => handleSelect(row.iata)}
+          >
+            <span className="min-w-0 truncate font-semibold break-keep">{row.label}</span>
+            <span className="shrink-0 font-bold tabular-nums opacity-80">{row.iata}</span>
+          </button>
+        </li>
+      );
+    });
+
   const listboxPortal =
-    isOpen && results.length > 0 && dropdownStyle && typeof document !== 'undefined'
+    !useInlineListbox && isOpen && results.length > 0 && dropdownStyle && typeof document !== 'undefined'
       ? createPortal(
           <ul
             id={listboxId}
@@ -259,32 +363,11 @@ export default function FlightOriginSelector({
               zIndex: LISTBOX_Z_INDEX,
               left: dropdownStyle.left,
               width: dropdownStyle.width,
-              maxHeight: LISTBOX_MAX_HEIGHT,
-              ...(dropdownStyle.flipUp
-                ? {
-                    bottom:
-                      (window.visualViewport?.height ?? window.innerHeight)
-                      + (window.visualViewport?.offsetTop ?? 0)
-                      - dropdownStyle.top,
-                  }
-                : { top: dropdownStyle.top }),
+              top: dropdownStyle.top,
+              maxHeight: dropdownStyle.maxHeight,
             }}
           >
-            {results.map((row) => {
-              const active = row.iata === selectedIata;
-              return (
-                <li key={row.iata} role="option" aria-selected={active}>
-                  <button
-                    type="button"
-                    className={itemClass(active)}
-                    onClick={() => handleSelect(row.iata)}
-                  >
-                    <span className="min-w-0 truncate font-semibold break-keep">{row.label}</span>
-                    <span className="shrink-0 font-bold tabular-nums opacity-80">{row.iata}</span>
-                  </button>
-                </li>
-              );
-            })}
+            {renderListboxOptions()}
           </ul>,
           document.body
         )
@@ -467,7 +550,13 @@ export default function FlightOriginSelector({
             aria-controls={listboxId}
             aria-autocomplete="list"
             className={`${inputClass} ${disabled ? 'opacity-60 cursor-wait' : ''}`}
-            onFocus={() => setIsOpen(true)}
+            onFocus={() => {
+              setIsOpen(true);
+              requestAnimationFrame(() => {
+                updateDropdownPosition();
+                requestAnimationFrame(updateDropdownPosition);
+              });
+            }}
             onChange={(event) => {
               setQuery(event.target.value);
               setIsOpen(true);
@@ -495,6 +584,17 @@ export default function FlightOriginSelector({
               }
             }}
           />
+          {useInlineListbox && isOpen && results.length > 0 ? (
+            <ul
+              id={listboxId}
+              ref={listboxPortalRef}
+              role="listbox"
+              className={`${listPortalClass} absolute left-0 right-0 bottom-full z-[50] mb-1`}
+              style={{ maxHeight: LISTBOX_MAX_HEIGHT }}
+            >
+              {renderListboxOptions()}
+            </ul>
+          ) : null}
           {!isBar ? (
             <button
               type="button"
