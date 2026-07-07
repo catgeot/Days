@@ -6,7 +6,7 @@
 // 4. 🚨 [New] Unsplash 프로덕션 승인 요건: 다운로드 트래킹(download_location) 호출 및 실제 파일 다운로드 로직(handleDownload) 추가
 // 5. 🚨 [New] 갤러리 이미지 영구 삭제 기능(Ctrl + 더블클릭) 지원을 위한 handleRemoveImage 추가 및 쿼리/이름 Ref 추가
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots';
 import { citiesData } from '../../../pages/Home/data/citiesData';
@@ -89,6 +89,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   const sourceName = locationSource && typeof locationSource === 'object' ? locationSource.name : locationSource;
   const sourceId = locationSource && typeof locationSource === 'object' ? locationSource.id : null;
+  const stablePlaceKey = useMemo(
+    () => resolveGalleryStablePlaceKey(locationSource),
+    [
+      typeof locationSource === 'object' && locationSource
+        ? getPlaceStableKey(locationSource) || locationSource.slug || locationSource.id || locationSource.name
+        : locationSource,
+    ],
+  );
 
   const loadFromSmartCache = (key) => {
     const cachedItem = sessionStorage.getItem(key);
@@ -422,8 +430,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   useEffect(() => {
     if (!enabled) return undefined;
     fetchImages();
-    return () => setSelectedImg(null);
-  }, [enabled, fetchImages]);
+    // stablePlaceKey — 장소 전환 시에만 재조회 (location 객체 참조만 바뀌는 hydration은 무시)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, stablePlaceKey]);
+
+  /** 여행지 전환 시에만 확대 뷰 닫기 — fetchImages identity·객체 참조 변경 시 닫지 않음 */
+  const prevStablePlaceKeyRef = useRef(stablePlaceKey);
+  useEffect(() => {
+    const prev = prevStablePlaceKeyRef.current;
+    prevStablePlaceKeyRef.current = stablePlaceKey;
+    if (prev && stablePlaceKey && prev !== stablePlaceKey) {
+      setSelectedImg(null);
+    }
+  }, [stablePlaceKey]);
 
   // 🚨 [New] 트래킹 API 호출 및 안전한 다운로드(Blob 방식) 핸들러 구현 (Fire & Forget 구조)
   const handleDownload = useCallback(async (imageObj) => {

@@ -19,6 +19,8 @@ export function getGalleryImageAttribution(image) {
       authorName,
       providerName: 'Pexels',
       href,
+      photographerHref: href,
+      providerHref: 'https://www.pexels.com/',
       title: `Photo by ${authorName} on Pexels`,
       providerLabel: 'on Pexels',
     };
@@ -27,13 +29,16 @@ export function getGalleryImageAttribution(image) {
   const baseHref =
     image?.user?.links?.html || image?.links?.html || 'https://unsplash.com';
   const separator = baseHref.includes('?') ? '&' : '?';
-  const href = `${baseHref}${separator}utm_source=Project_Days&utm_medium=referral`;
+  const photographerHref = `${baseHref}${separator}utm_source=Project_Days&utm_medium=referral`;
+  const providerHref = 'https://unsplash.com/?utm_source=Project_Days&utm_medium=referral';
 
   return {
     source,
     authorName,
     providerName: 'Unsplash',
-    href,
+    href: photographerHref,
+    photographerHref,
+    providerHref,
     title: `Photo by ${authorName} on Unsplash`,
     providerLabel: 'on Unsplash',
   };

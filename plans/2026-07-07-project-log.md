@@ -393,3 +393,50 @@ grep: LogoPanel · usePlaceGallery(thumbnailOnly) · buildPlaceDbIdCandidates ·
 금지: travelSpots/Airports JSON · 갤러리 UX 범위 밖 · releaseNotes 합의 전.
 이전: isOpen 시만 카드 마운트 · thumbnailOnly · fallback·Rank DEV 노이즈 정리.
 ```
+
+---
+
+## PlaceCard 갤러리 PC 라이트박스 — 에이전트 핸드오프 (2026-07-07)
+
+**상태**: **✅ 1차 QA 통과 · 커밋 완료**
+
+### 본 세션 완료
+
+| 항목 | 내용 |
+|------|------|
+| 첫 확대 즉시 닫힘 | `usePlaceGallery` — `fetchImages` cleanup에서 `setSelectedImg(null)` 제거 · `stablePlaceKey`로 장소 전환 시만 초기화 · 그리드 클릭 ghost click 방지 |
+| PC 하단 prev/next | `PlaceGalleryView` — 좌우 중앙 → 하단 바 `[이전] · 카운터/다운로드 · [다음]` |
+| PC 출처 | 좌측 `GalleryInfoView` PHOTO_LOG (작가·Unsplash 분리 링크) · 라이트박스는 **전체화면** 시에만 상단 fallback · **모바일 기존 유지** |
+| SSOT | `galleryImageAttribution.js` — `photographerHref` / `providerHref` |
+
+### 다음 세션 (미완)
+
+| 목표 | 내용 |
+|------|------|
+| **A** | Unsplash **권장 형식** 전면 준수 — `Photo by [작가] on [Unsplash]` 각각 링크+UTM · `PlaceGalleryView`(전체화면·모바일)·`PlaceWikiDetailsView` 등 잔여 단일 `<a>` 정리 |
+| **B** | PC 라이트박스 **하단 prev/next** — 현재 `bottom-4`/`bottom-8` → 화면 하단(safe-area)에 최대한 밀착 |
+| **C** | PC **상단 전체화면·닫기** — 시인성 개선(대비·크기·ring) · 상단 여백 축소로 더 위로 |
+
+### 읽을 것 (3)
+
+1. `.ai-context` 3절 갤러리·출처 SSOT
+2. **본 일지** — 「PlaceCard 갤러리 PC 라이트박스 — 에이전트 핸드오프」
+3. grep — `PlaceGalleryView` · `GalleryInfoView` · `galleryImageAttribution` · `renderAttributionLink`
+
+### 금지 (3)
+
+1. 모바일 확대 포털 레이아웃 임의 변경 (PC `renderPhotoViewer` non-portal 분기만)
+2. `usePinchZoomPan` · viewport 줌 재도입
+3. `releaseNotes.js` 사용자 합의 전 반영
+
+### 제시어 (다음 세션)
+
+```
+갤러리-PC-이어하기 @plans/2026-07-07-project-log.md
+
+PlaceCard PC 갤러리 라이트박스 — Unsplash 권장 2링크 전면 적용 · 하단 prev/next 하단 밀착 · 상단 확대/닫기 시인성·위치.
+읽기: .ai-context 3절 + 본 일지 「PlaceCard 갤러리 PC 라이트박스 — 에이전트 핸드오프」.
+grep: PlaceGalleryView · GalleryInfoView · galleryImageAttribution · renderAttributionLink.
+금지: 모바일 포털 UX 변경 · usePinchZoomPan · releaseNotes 합의 전.
+이전: 첫 확대 버그 수정 · PC 하단 nav · 출처 좌측 패널(전체화면만 라이트박스 fallback).
+```

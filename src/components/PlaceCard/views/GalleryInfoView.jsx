@@ -56,17 +56,27 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                             {description}
                         </p>
                         {photoAttribution && (
-                            <a
-                                href={photoAttribution.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex max-w-full flex-wrap items-center gap-1 text-[12px] text-gray-500 transition-colors hover:text-gray-300"
-                                title={photoAttribution.title}
-                            >
-                                <span>Photo by</span>
-                                <span className="font-semibold text-gray-400">{photoAttribution.authorName}</span>
-                                <span>{photoAttribution.providerLabel}</span>
-                            </a>
+                            <p className="text-[12px] leading-relaxed text-gray-500">
+                                Photo by{' '}
+                                <a
+                                    href={photoAttribution.photographerHref || photoAttribution.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-semibold text-gray-400 transition-colors hover:text-blue-300/90"
+                                    title={photoAttribution.title}
+                                >
+                                    {photoAttribution.authorName}
+                                </a>
+                                {' on '}
+                                <a
+                                    href={photoAttribution.providerHref}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-semibold text-gray-400 transition-colors hover:text-blue-300/90"
+                                >
+                                    {photoAttribution.providerName}
+                                </a>
+                            </p>
                         )}
                     </div>
                 ) : (
