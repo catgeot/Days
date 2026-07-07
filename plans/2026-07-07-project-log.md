@@ -398,7 +398,7 @@ grep: LogoPanel · usePlaceGallery(thumbnailOnly) · buildPlaceDbIdCandidates ·
 
 ## PlaceCard 갤러리 PC 라이트박스 — 에이전트 핸드오프 (2026-07-07)
 
-**상태**: **✅ 1차 QA 통과 · 커밋 완료**
+**상태**: **✅ 1차 QA 통과 · 커밋 `c246719`**
 
 ### 본 세션 완료
 
