@@ -402,7 +402,7 @@ grep: LogoPanel · usePlaceGallery(thumbnailOnly) · buildPlaceDbIdCandidates ·
 
 ### 4차 세션 완료 (2026-07-07)
 
-- **모바일 출처 같은 탭** — `galleryAttributionNavigation.js` · `GalleryAttributionLink` · `sessionStorage` 복귀 시 확대/위키 라이트박스 복원 · PC는 `_blank` 유지 · QA 통과
+- **모바일 출처 같은 탭** — `galleryAttributionNavigation.js` · `GalleryAttributionLink` · `sessionStorage` 복귀 시 확대/위키 라이트박스 복원 · PC는 `_blank` 유지 · 커밋 `0585246`
 
 ### 3차 세션 완료 (2026-07-07)
 
