@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Star, Upload, Sparkles, Loader2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
@@ -6,6 +6,11 @@ import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import { getReviewPrompt } from '../../../pages/Home/lib/prompts';
+import {
+  MOBILE_TEXTAREA_CLASS,
+  dismissMobileTextInput,
+  useMobileOverlayViewport,
+} from '../../../shared/hooks/useMobileInputViewport';
 
 const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSuccess }) => {
   const [user, setUser] = useState(null);
@@ -27,23 +32,22 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
   const [isGenerating, setIsGenerating] = useState(false);
 
   const imageScrollRef = useRef(null);
+  const contentRef = useRef(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+  useMobileOverlayViewport(isOpen);
+
+  const handleDismiss = useCallback(({ force = false } = {}) => {
+    if (!force && isSubmitting) return;
+    contentRef.current?.blur();
+    dismissMobileTextInput();
+    onClose();
+  }, [isSubmitting, onClose]);
 
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget && !isSubmitting) {
-      onClose();
+      handleDismiss();
     }
   };
 
@@ -188,6 +192,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
       if (result.error) throw new Error(result.error);
 
       onSuccess();
+      handleDismiss({ force: true });
     } catch (error) {
       console.error('Error saving review:', error);
       alert('리뷰 저장 중 오류가 발생했습니다: ' + error.message);
@@ -198,11 +203,11 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 max-md:p-0 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] max-md:max-h-[100dvh] max-md:rounded-none max-md:h-[100dvh]"
         onClick={e => e.stopPropagation()}
       >
         {/* 헤더 */}
@@ -211,7 +216,8 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
             {existingReview ? '리뷰 수정' : '리뷰 작성'}
           </h2>
           <button
-            onClick={onClose}
+            type="button"
+            onClick={handleDismiss}
             disabled={isSubmitting}
             className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-500"
           >
@@ -278,11 +284,12 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
             </div>
 
             <textarea
+              ref={contentRef}
               value={content}
               maxLength={1000}
               onChange={(e) => setContent(e.target.value)}
               placeholder="이 장소에서의 경험을 공유해주세요. 어떤 점이 좋았나요?"
-              className="w-full flex-1 min-h-[120px] md:min-h-[250px] resize-none border border-gray-200 bg-gray-50/50 rounded-xl p-3 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors"
+              className={`w-full flex-1 min-h-[120px] md:min-h-[250px] resize-none border border-gray-200 bg-gray-50/50 rounded-xl p-3 ${MOBILE_TEXTAREA_CLASS} text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-colors`}
               disabled={isSubmitting || isGenerating}
             />
           </div>
@@ -410,7 +417,8 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
 
           <div className="flex gap-2">
             <button
-              onClick={onClose}
+              type="button"
+              onClick={handleDismiss}
               disabled={isSubmitting}
               className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-200/50 rounded-xl transition-colors"
             >

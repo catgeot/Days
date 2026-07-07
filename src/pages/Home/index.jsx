@@ -29,7 +29,7 @@ import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCo
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
-import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
+import { syncHomeViewportAfterInput } from '../../shared/lib/mobileViewport';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -104,11 +104,7 @@ function Home() {
   useEffect(() => {
     if (sessionStorage.getItem('gateo_reset_viewport') !== '1') return undefined;
     sessionStorage.removeItem('gateo_reset_viewport');
-    resetIosZoomAfterInput();
-    const mapSyncTimer = window.setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 120);
-    return () => window.clearTimeout(mapSyncTimer);
+    syncHomeViewportAfterInput();
   }, []);
 
   const { scoutedPins, selectedLocation, setSelectedLocation, moveToLocation, addScoutPin, clearScouts } = useGlobeLogic(globeRef, user?.id);
@@ -149,6 +145,26 @@ function Home() {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(max-width: 1023px)').matches;
   });
+  const prevChatOpenRef = useRef(false);
+  const prevPathnameRef = useRef(routeLocation.pathname);
+
+  useEffect(() => {
+    if (prevChatOpenRef.current && !isChatOpen && isMobileViewport) {
+      syncHomeViewportAfterInput();
+    }
+    prevChatOpenRef.current = isChatOpen;
+  }, [isChatOpen, isMobileViewport]);
+
+  useEffect(() => {
+    const prevPath = prevPathnameRef.current;
+    const wasExplore = prevPath.startsWith('/explore');
+    const isExplore = routeLocation.pathname.startsWith('/explore');
+    if (wasExplore && !isExplore && isMobileViewport) {
+      syncHomeViewportAfterInput();
+    }
+    prevPathnameRef.current = routeLocation.pathname;
+  }, [routeLocation.pathname, isMobileViewport]);
+
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
   const [tourPivoted, setTourPivoted] = useState(false);
   const [flightCinemaActive, setFlightCinemaActive] = useState(false);

@@ -34,3 +34,27 @@ export function resetIosZoomAfterInput() {
     window.dispatchEvent(new Event('resize'));
   });
 }
+
+let homeViewportSyncTimer = null;
+
+/**
+ * 홈 지구본 복귀 시 viewport·Mapbox 크기 재동기화.
+ * 로그인 후 sessionStorage 플래그, MOONi 채팅·탐색 모달 닫기 등에서 공통 사용.
+ */
+export function syncHomeViewportAfterInput() {
+  resetIosZoomAfterInput();
+
+  if (typeof window === 'undefined') return;
+
+  if (homeViewportSyncTimer != null) {
+    window.clearTimeout(homeViewportSyncTimer);
+  }
+
+  homeViewportSyncTimer = window.setTimeout(() => {
+    homeViewportSyncTimer = null;
+    window.dispatchEvent(new Event('resize'));
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
+  }, 120);
+}

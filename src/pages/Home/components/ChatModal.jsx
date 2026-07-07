@@ -84,12 +84,20 @@ const ChatModal = ({
   const chatInputRef = useRef(null);
   const hasSentInitialRef = useRef(false);
 
+  const handleClose = useCallback(() => {
+    chatInputRef.current?.blur();
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    onClose();
+  }, [onClose]);
+
   const handlePlannerNavigate = useCallback(
     (plannerPath) => {
-      onClose();
+      handleClose();
       navigate(plannerPath);
     },
-    [onClose, navigate]
+    [handleClose, navigate]
   );
 
   const introDestinationRaw = useMemo(() => {
@@ -256,6 +264,14 @@ const ChatModal = ({
     }
     return () => clearInterval(interval);
   }, [isLoading]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -746,7 +762,7 @@ const ChatModal = ({
             <div className="bg-gray-800/50 p-4 max-md:py-3 max-md:pt-[max(0.75rem,env(safe-area-inset-top,0px))] flex items-center gap-3 border-b border-gray-700 backdrop-blur-md">
                <button
                  type="button"
-                 onClick={onClose}
+                 onClick={handleClose}
                  aria-label="채팅 닫기"
                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-500/60 bg-gray-700/70 text-gray-200 shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
                >

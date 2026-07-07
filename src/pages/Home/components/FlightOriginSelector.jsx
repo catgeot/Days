@@ -6,6 +6,7 @@ import {
   resolveOriginFromGeolocation,
   searchFlightOriginHubs,
 } from '../lib/flightCinemaOriginSearch.js';
+import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
 
 const GEO_ERROR_MESSAGES = {
   unsupported: '이 기기에서는 위치 정보를 사용할 수 없어요.',
@@ -74,7 +75,11 @@ export default function FlightOriginSelector({
     if (!anchor) return;
 
     const rect = anchor.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
+    const vv = window.visualViewport;
+    const viewportHeight = vv?.height ?? window.innerHeight;
+    const offsetTop = vv?.offsetTop ?? 0;
+    const viewportBottom = viewportHeight + offsetTop;
+    const spaceBelow = viewportBottom - rect.bottom;
     const flipUp = spaceBelow < LISTBOX_MAX_HEIGHT + 12 && rect.top > LISTBOX_MAX_HEIGHT + 12;
 
     setDropdownStyle({
@@ -94,10 +99,14 @@ export default function FlightOriginSelector({
     updateDropdownPosition();
     window.addEventListener('resize', updateDropdownPosition);
     window.addEventListener('scroll', updateDropdownPosition, true);
+    window.visualViewport?.addEventListener('resize', updateDropdownPosition);
+    window.visualViewport?.addEventListener('scroll', updateDropdownPosition);
 
     return () => {
       window.removeEventListener('resize', updateDropdownPosition);
       window.removeEventListener('scroll', updateDropdownPosition, true);
+      window.visualViewport?.removeEventListener('resize', updateDropdownPosition);
+      window.visualViewport?.removeEventListener('scroll', updateDropdownPosition);
     };
   }, [isOpen, results.length, updateDropdownPosition]);
 
@@ -111,6 +120,7 @@ export default function FlightOriginSelector({
       setIsOpen(false);
       setQuery('');
       setResults([]);
+      syncHomeViewportAfterInput();
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -131,20 +141,35 @@ export default function FlightOriginSelector({
     return () => window.clearTimeout(timer);
   }, [query]);
 
+  const dismissSearchUi = useCallback(() => {
+    inputRef.current?.blur();
+    setIsOpen(false);
+    setQuery('');
+    setResults([]);
+    syncHomeViewportAfterInput();
+  }, []);
+
   const handleSelect = useCallback(
     (iata) => {
       const code = String(iata ?? '').trim().toUpperCase();
       if (code.length !== 3) return;
       onSelect?.(code);
-      setIsOpen(false);
-      setQuery('');
-      setResults([]);
       setGeoError(null);
       if (isBar) setBarExpanded(false);
       onCollapseRequest?.();
+      dismissSearchUi();
     },
-    [isBar, onCollapseRequest, onSelect]
+    [dismissSearchUi, isBar, onCollapseRequest, onSelect]
   );
+
+  const submitOriginQuery = useCallback(() => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    const matches = results.length > 0 ? results : searchFlightOriginHubs(trimmed);
+    if (matches.length > 0) {
+      handleSelect(matches[0].iata);
+    }
+  }, [query, results, handleSelect]);
 
   const handleUseMyLocation = useCallback(async () => {
     if (disabled || geoPending) return;
@@ -162,10 +187,10 @@ export default function FlightOriginSelector({
   }, [disabled, geoPending, handleSelect]);
 
   const inputClass = isBar
-    ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
+    ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
     : isSummary || isSummaryPanel
-      ? 'min-h-[40px] w-full rounded-lg border border-sky-400/35 bg-black/40 py-2 pl-8 pr-12 text-sm font-medium text-white placeholder:text-white/45 shadow-inner shadow-black/20 focus:border-sky-300/55 focus:outline-none focus:ring-1 focus:ring-sky-400/35'
-      : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
+      ? 'min-h-[40px] w-full rounded-lg border border-sky-400/35 bg-black/40 py-2 pl-8 pr-12 text-[16px] md:text-sm font-medium text-white placeholder:text-white/45 shadow-inner shadow-black/20 focus:border-sky-300/55 focus:outline-none focus:ring-1 focus:ring-sky-400/35'
+      : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
 
   const listPortalClass = isBar
     ? 'overflow-y-auto rounded-md border border-white/15 bg-black/95 py-1 shadow-xl backdrop-blur-xl'
@@ -217,11 +242,9 @@ export default function FlightOriginSelector({
     : selectedIata;
 
   const handleCollapse = useCallback(() => {
-    setIsOpen(false);
-    setQuery('');
-    setResults([]);
+    dismissSearchUi();
     onCollapseRequest?.();
-  }, [onCollapseRequest]);
+  }, [dismissSearchUi, onCollapseRequest]);
 
   const listboxPortal =
     isOpen && results.length > 0 && dropdownStyle && typeof document !== 'undefined'
@@ -238,7 +261,12 @@ export default function FlightOriginSelector({
               width: dropdownStyle.width,
               maxHeight: LISTBOX_MAX_HEIGHT,
               ...(dropdownStyle.flipUp
-                ? { bottom: window.innerHeight - dropdownStyle.top }
+                ? {
+                    bottom:
+                      (window.visualViewport?.height ?? window.innerHeight)
+                      + (window.visualViewport?.offsetTop ?? 0)
+                      - dropdownStyle.top,
+                  }
                 : { top: dropdownStyle.top }),
             }}
           >
@@ -387,9 +415,7 @@ export default function FlightOriginSelector({
               type="button"
               disabled={disabled}
               onClick={() => {
-                setIsOpen(false);
-                setQuery('');
-                setResults([]);
+                dismissSearchUi();
                 if (onCollapseRequest) {
                   onCollapseRequest();
                   return;
@@ -409,7 +435,14 @@ export default function FlightOriginSelector({
       ) : null}
 
       <div className={`flex gap-1.5 ${isBar ? 'flex-col' : 'items-stretch'}`}>
-        <div ref={inputWrapRef} className="relative min-w-0 flex-1">
+        <form
+          ref={inputWrapRef}
+          className="relative min-w-0 flex-1"
+          onSubmit={(event) => {
+            event.preventDefault();
+            submitOriginQuery();
+          }}
+        >
           <Search
             size={14}
             className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${
@@ -423,7 +456,9 @@ export default function FlightOriginSelector({
           />
           <input
             ref={inputRef}
-            type="search"
+            type="text"
+            inputMode="search"
+            enterKeyHint="search"
             value={query}
             disabled={disabled}
             placeholder="도시·공항 검색 (예: 마닐라, ICN)"
@@ -438,17 +473,20 @@ export default function FlightOriginSelector({
               setIsOpen(true);
               setGeoError(null);
             }}
+            onBlur={() => {
+              window.setTimeout(() => {
+                if (listboxPortalRef.current?.contains(document.activeElement)) return;
+                syncHomeViewportAfterInput();
+              }, 0);
+            }}
             onKeyDown={(event) => {
               if (event.key === 'Escape') {
-                setIsOpen(false);
-                setQuery('');
-                setResults([]);
-                inputRef.current?.blur();
                 if (isBar) setBarExpanded(false);
                 if (onCollapseRequest) {
                   handleCollapse();
                   return;
                 }
+                dismissSearchUi();
               }
             }}
           />
@@ -468,7 +506,7 @@ export default function FlightOriginSelector({
               )}
             </button>
           ) : null}
-        </div>
+        </form>
 
         {isBar ? (
           <button

@@ -49,6 +49,55 @@
 
 ---
 
+## 모바일 — MOONi·탐색 입력 후 홈 지구본 UI 배치
+
+**상태**: **⏳ 실기기 QA 대기** (리뷰·출발지·훅 SSOT 반영)
+
+- **증상** — 텍스트 입력 후 지구본/홈 복귀 시 지구본·공유/위치/우주 버튼 상단 쏠림 · 출발지는 input 확대·Enter 무반응 · 리뷰 작성 동일
+- **원인** — iOS `visualViewport`/자동 줌(16px 미만) · Mapbox `readViewportSize` 불일치 · overlay 닫을 때 sync 없음
+- **수정** — [`mobileViewport.js`](../src/shared/lib/mobileViewport.js) `syncHomeViewportAfterInput` · [`useMobileInputViewport.js`](../src/shared/hooks/useMobileInputViewport.js) SSOT · ChatModal · index(MOONi·explore) · FlightOriginSelector · ReviewEditorModal
+- **미적용 후보** (다음 세션 grep): `PlaceChatView` · DailyReport(`Write`/`QuickMemo`/`UserProfile`) · `TicketModal` · Auth(`SignUp`/`ForgotPassword`/`UpdatePassword`)
+
+---
+
+## 모바일 입력 뷰포트 세션 — 에이전트 핸드오프
+
+### 읽을 것 (3)
+
+1. [`.ai-context.md`](../.ai-context.md) — 3절 「모바일 텍스트 입력·뷰포트 SSOT」·5절 미완
+2. **본 일지** — 「모바일 입력 뷰포트 세션 — 에이전트 핸드오프」
+3. grep — `useMobileInputViewport` · `syncHomeViewportAfterInput` · `text-xs`/`text-sm` + `<input`/`<textarea`
+
+### 금지 (3)
+
+1. `GLOBE_VIEW.flyZoom`·`HIGH_ZOOM_FULL_REVEAL` 임의 변경
+2. PowerShell `-replace`/`Set-Content`로 한글 JSX 수정
+3. 사용자 QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
+
+### 다음 세션 작업
+
+| 단계 | 내용 |
+|------|------|
+| 1 | `src` 전역 `<input`/`<textarea` grep — `text-[16px]`/`MOBILE_*_CLASS` 미적용 목록 |
+| 2 | 모달·오버레이 → `useMobileOverlayViewport(isOpen)` + `dismissMobileTextInput` on dismiss |
+| 3 | 인라인 입력(바·탭) → blur/`onCollapse` 시 `syncHomeViewportAfterInput` · `type="search"` → `text`+form |
+| 4 | 실기기 QA — 홈 지구본·PlaceCard 리뷰·항공 출발지·MOONi·탐색 |
+
+### 제시어 (다음 세션)
+
+```
+모바일입력-이어하기 @plans/2026-07-07-project-log.md
+
+모바일 텍스트 입력 iOS viewport — useMobileInputViewport SSOT로 미적용 input 일괄 grep·적용.
+읽기: .ai-context 3절(모바일 텍스트 입력·뷰포트) + 본 일지 「모바일 입력 뷰포트 세션 — 에이전트 핸드오프」.
+grep: useMobileInputViewport · syncHomeViewportAfterInput · text-xs|text-sm + input|textarea.
+적용됨: Login · ChatModal · FlightOriginSelector · ReviewEditorModal · index explore/MOONi.
+후보: PlaceChatView · DailyReport · TicketModal · Auth SignUp/ForgotPassword.
+금지: flyZoom 변경 · PowerShell JSX · releaseNotes 합의 전.
+```
+
+---
+
 ## 3D 투어 세션 — 에이전트 핸드오프
 
 ### 읽을 것 (3)
