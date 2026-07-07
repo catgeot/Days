@@ -682,7 +682,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           data-search-bar-anchor="true"
           className="relative w-full rounded-2xl focus-within:border-blue-400/60 focus-within:shadow-[0_0_25px_rgba(59,130,246,0.2)] transition-all"
         >
-          <div
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearchSubmit();
+            }}
             ref={isMobileView ? searchBarRowRefMobile : searchBarRowRefPc}
             onMouseDownCapture={(e) => {
               if (e.button !== 0) return;
@@ -697,16 +701,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             <input
               ref={inputRef}
               type="text"
+              inputMode="text"
+              enterKeyHint="search"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
                 if (e.target.value.trim() !== '') {
                   setIsSearchHistoryOpen(false);
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearchSubmit();
                 }
               }}
               placeholder="예: 번아웃, 설레는 밤산책, 바람 쐬고 싶다"
@@ -726,7 +727,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 <X size={20} className="md:h-[18px] md:w-[18px]" />
               </button>
             )}
-          </div>
+          </form>
         </div>
         {/* 드롭다운·섹션 패널 열림 시 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
         {!isSearchHistoryOpen && !activeQuickSection && (

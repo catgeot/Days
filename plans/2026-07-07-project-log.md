@@ -56,17 +56,27 @@
 - **증상** — 텍스트 입력 후 지구본/홈 복귀 시 지구본·공유/위치/우주 버튼 상단 쏠림 · 출발지는 input 확대·Enter 무반응 · 리뷰 작성 동일
 - **원인** — iOS `visualViewport`/자동 줌(16px 미만) · Mapbox `readViewportSize` 불일치 · overlay 닫을 때 sync 없음
 - **수정** — [`mobileViewport.js`](../src/shared/lib/mobileViewport.js) `syncHomeViewportAfterInput` · [`useMobileInputViewport.js`](../src/shared/hooks/useMobileInputViewport.js) SSOT · ChatModal · index(MOONi·explore) · FlightOriginSelector · ReviewEditorModal
-- **미적용 후보** (다음 세션 grep): `PlaceChatView` · DailyReport(`Write`/`QuickMemo`/`UserProfile`) · `TicketModal` · Auth(`SignUp`/`ForgotPassword`/`UpdatePassword`)
+- **미적용 후보** (다음 세션 grep): ~~`PlaceChatView` · DailyReport · `TicketModal` · Auth~~ → **본 세션 일괄 적용** · 실기기 QA 대기
 
 ---
 
-## 모바일 입력 뷰포트 세션 — 에이전트 핸드오프
+## 모바일 입력 — 후보 일괄 적용 (2026-07-07)
+
+- **적용** — `PlaceChatView` · `TicketModal` · Auth · DailyReport(`Write`/`QuickMemo`/`UserProfile`/`RecentList`) · `SearchDiscoveryModal` form
+- **패턴** — `MOBILE_INPUT_*_CLASS` · `useDeferredViewportSyncOnBlur` · `<form onSubmit>`+`enterKeyHint` · `useMobileOverlayViewport`
+- **QA** — 로그북 블로그 리스트 검색 Enter ✅ (사용자 확인)
+- **Enter 수정** — `PlaceChatView`·`SearchDiscoveryModal`·`RecentList` form · `FlightOriginSelector` `inputMode="text"`+Enter fallback
+- **잔여** — 출발지 `FlightOriginSelector` **모바일 listbox portal 미표시** → 다음 세션
+
+---
+
+## 출발지 드롭다운 세션 — 에이전트 핸드오프
 
 ### 읽을 것 (3)
 
-1. [`.ai-context.md`](../.ai-context.md) — 3절 「모바일 텍스트 입력·뷰포트 SSOT」·5절 미완
-2. **본 일지** — 「모바일 입력 뷰포트 세션 — 에이전트 핸드오프」
-3. grep — `useMobileInputViewport` · `syncHomeViewportAfterInput` · `text-xs`/`text-sm` + `<input`/`<textarea`
+1. [`.ai-context.md`](../.ai-context.md) — 3절 모바일 입력·뷰포트 SSOT
+2. **본 일지** — 「출발지 드롭다운 세션 — 에이전트 핸드오프」
+3. grep — `FlightOriginSelector` · `listboxPortal` · `dropdownStyle` · `LISTBOX_Z_INDEX` · `updateDropdownPosition` · `visualViewport`
 
 ### 금지 (3)
 
@@ -74,31 +84,36 @@
 2. PowerShell `-replace`/`Set-Content`로 한글 JSX 수정
 3. 사용자 QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
 
+### 증상·단서
+
+- **증상** — 모바일에서 출발지(도시·공항) 입력 시 **자동완성 드롭다운(listbox)이 보이지 않음** (데스크톱은 정상 추정)
+- **코드** — [`FlightOriginSelector.jsx`](../src/pages/Home/components/FlightOriginSelector.jsx) `createPortal`+`position:fixed` · `updateDropdownPosition` · `flipUp`·`visualViewport` · `LISTBOX_Z_INDEX`
+- **의심** — 키보드 올라온 뒤 `getBoundingClientRect`/`dropdownStyle.top` 오프셋 · z-index·overflow 클리핑 · `isBar`/`isSummary` variant별 anchor
+
 ### 다음 세션 작업
 
 | 단계 | 내용 |
 |------|------|
-| 1 | `src` 전역 `<input`/`<textarea` grep — `text-[16px]`/`MOBILE_*_CLASS` 미적용 목록 |
-| 2 | 모달·오버레이 → `useMobileOverlayViewport(isOpen)` + `dismissMobileTextInput` on dismiss |
-| 3 | 인라인 입력(바·탭) → blur/`onCollapse` 시 `syncHomeViewportAfterInput` · `type="search"` → `text`+form |
-| 4 | 실기기 QA — 홈 지구본·PlaceCard 리뷰·항공 출발지·MOONi·탐색 |
+| 1 | 모바일 실기기·에뮬에서 listbox DOM 존재 여부·`dropdownStyle`·viewport 좌표 확인 |
+| 2 | 키보드 열림 시 `visualViewport` 기준 위치 재계산·`flipUp` 보정 |
+| 3 | z-index·portal 대상(`document.body`)·부모 `overflow:hidden` 간섭 점검 |
+| 4 | `isBar`·`HomePlaceCardSummary`·시네마 바 variant QA |
 
 ### 제시어 (다음 세션)
 
 ```
-모바일입력-이어하기 @plans/2026-07-07-project-log.md
+출발지-이어하기 @plans/2026-07-07-project-log.md
 
-모바일 텍스트 입력 iOS viewport — useMobileInputViewport SSOT로 미적용 input 일괄 grep·적용.
-읽기: .ai-context 3절(모바일 텍스트 입력·뷰포트) + 본 일지 「모바일 입력 뷰포트 세션 — 에이전트 핸드오프」.
-grep: useMobileInputViewport · syncHomeViewportAfterInput · text-xs|text-sm + input|textarea.
-적용됨: Login · ChatModal · FlightOriginSelector · ReviewEditorModal · index explore/MOONi.
-후보: PlaceChatView · DailyReport · TicketModal · Auth SignUp/ForgotPassword.
+모바일 출발지 FlightOriginSelector — 지명 입력 시 listbox 드롭다운이 보이지 않음.
+읽기: .ai-context 3절 + 본 일지 「출발지 드롭다운 세션 — 에이전트 핸드오프」.
+grep: FlightOriginSelector · listboxPortal · dropdownStyle · updateDropdownPosition · LISTBOX_Z_INDEX · visualViewport.
+Enter·16px viewport는 적용됨 — 이번엔 portal 위치·z-index·키보드 viewport만.
 금지: flyZoom 변경 · PowerShell JSX · releaseNotes 합의 전.
 ```
 
 ---
 
-## 3D 투어 세션 — 에이전트 핸드오프
+## 모바일 입력 뷰포트 세션 — 에이전트 핸드오프 (완료)
 
 ### 읽을 것 (3)
 

@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Trash2, StickyNote } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
+import {
+  MOBILE_TEXTAREA_CLASS,
+  useDeferredViewportSyncOnBlur,
+} from '../../../shared/hooks/useMobileInputViewport';
 
 const QuickMemo = ({ user }) => {
   const [memos, setMemos] = useState(['']);
   const [currentMemoIndex, setCurrentMemoIndex] = useState(0);
   const [isMemoSaved, setIsMemoSaved] = useState(true);
+  const handleMemoBlur = useDeferredViewportSyncOnBlur();
 
   useEffect(() => {
     if (!user) return;
@@ -74,10 +79,11 @@ const QuickMemo = ({ user }) => {
 
         <div className="flex-1 bg-gray-100 border border-gray-200 rounded-xl p-1 flex flex-col transition-all hover:border-blue-400">
           <textarea 
-            className="flex-1 w-full bg-transparent border-0 p-3 text-sm text-gray-800 placeholder-gray-500 focus:outline-none resize-none custom-scrollbar leading-relaxed font-medium selection:bg-blue-500/30"
+            className={`flex-1 w-full bg-transparent border-0 p-3 ${MOBILE_TEXTAREA_CLASS} text-gray-800 placeholder-gray-500 focus:outline-none resize-none custom-scrollbar leading-relaxed font-medium selection:bg-blue-500/30`}
             placeholder="새로운 아이디어를 적어보세요..."
             value={memos[currentMemoIndex]}
             onChange={handleChange}
+            onBlur={handleMemoBlur}
             spellCheck="false"
           />
           <div className="h-12 flex items-center justify-between px-3 border-t border-gray-200 bg-white/5">

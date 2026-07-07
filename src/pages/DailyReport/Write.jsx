@@ -6,6 +6,11 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLogbookMedia } from './hooks/useLogbookMedia';
 import { useLogbookAI } from './hooks/useLogbookAI';
 import { usePenNameContext } from './context/PenNameContext';
+import {
+  MOBILE_INPUT_TEXT_CLASS,
+  MOBILE_TEXTAREA_CLASS,
+  useDeferredViewportSyncOnBlur,
+} from '../../shared/hooks/useMobileInputViewport';
 
 const Write = () => {
   const { id } = useParams();
@@ -34,6 +39,7 @@ const Write = () => {
   const [aiLoadingMsg, setAiLoadingMsg] = useState('');
   const { displayName: penName, setDisplayName: setPenName, loading: penLoading, saving: penSaving, save: savePenName, maxLen: penMaxLen, user: penUser } = usePenNameContext();
   const [penSaveHint, setPenSaveHint] = useState('');
+  const handleFieldBlur = useDeferredViewportSyncOnBlur();
 
   const {
     imageFiles, previewUrls, existingImages, setExistingImages,
@@ -219,7 +225,7 @@ const Write = () => {
                    {locationLoading ? <Loader2 size={10} className="animate-spin" /> : "현재 위치 찾기"}
                 </button>
               </div>
-              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 placeholder-gray-400 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} placeholder="어디의 공기를 담았나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
+              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 placeholder-gray-400 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} onBlur={handleFieldBlur} placeholder="어디의 공기를 담았나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
               {showSuggestions && recentLocations.length > 0 && (
                 <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl">
                    {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center gap-3 transition-all" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="opacity-50" />{loc}</div>))}
@@ -242,9 +248,10 @@ const Write = () => {
                 onChange={(e) => setPenName(e.target.value.slice(0, penMaxLen))}
                 disabled={penLoading}
                 placeholder={penUser?.email ? `${penUser.email.split('@')[0]} (비우면 계정 기준 표시)` : '닉네임'}
-                className="flex-1 min-w-0 text-base font-semibold text-gray-900 bg-transparent outline-none border border-gray-200 rounded-xl px-3 py-2 focus:border-blue-400 focus:ring-1 focus:ring-blue-200"
+                className={`flex-1 min-w-0 ${MOBILE_INPUT_TEXT_CLASS} font-semibold text-gray-900 bg-transparent outline-none border border-gray-200 rounded-xl px-3 py-2 focus:border-blue-400 focus:ring-1 focus:ring-blue-200`}
                 maxLength={penMaxLen}
                 autoComplete="nickname"
+                onBlur={handleFieldBlur}
               />
               <button
                 type="button"
@@ -335,9 +342,10 @@ const Write = () => {
               )}
 
               <textarea
-                className="w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-gray-800 placeholder-gray-400 flex-1 min-h-[400px]"
+                className={`w-full bg-transparent border-none resize-none outline-none text-lg leading-[2] text-gray-800 placeholder-gray-400 flex-1 min-h-[400px] ${MOBILE_TEXTAREA_CLASS}`}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                onBlur={handleFieldBlur}
                 disabled={isAILoading || isCompressing}
                 placeholder="떠오르는 파편화된 기억들을 자유롭게 적어보세요. 사진을 올리고 위쪽의 AI 버튼을 누르면 투박한 메모가 아름다운 기록으로 변합니다."
               />

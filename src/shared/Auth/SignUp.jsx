@@ -5,6 +5,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../api/supabase';
 import { UserPlus, Mail, Lock, X, Loader2 } from 'lucide-react';
+import { MOBILE_INPUT_TEXT_CLASS } from '../hooks/useMobileInputViewport';
+import { resetIosZoomAfterInput } from '../lib/mobileViewport';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
 
   const handleGoHome = () => {
+    resetIosZoomAfterInput();
     navigate(from);
   };
 
@@ -93,7 +96,7 @@ const Signup = () => {
               <input
                 type="email"
                 required
-                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
+                className={`w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 ${MOBILE_INPUT_TEXT_CLASS} text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all`}
                 placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -110,7 +113,7 @@ const Signup = () => {
               <input
                 type="password"
                 required
-                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all"
+                className={`w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 ${MOBILE_INPUT_TEXT_CLASS} text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all`}
                 placeholder="6자리 이상 입력해주세요"
                 minLength={6}
                 value={password}

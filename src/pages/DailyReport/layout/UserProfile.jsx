@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LogOut, Image as ImageIcon, UserRoundPen } from 'lucide-react';
 import { usePenNameContext } from '../context/PenNameContext';
+import {
+  MOBILE_INPUT_TEXT_CLASS,
+  useDeferredViewportSyncOnBlur,
+} from '../../../shared/hooks/useMobileInputViewport';
 
 const UserProfile = ({ user, onLogout, onOpenSlide }) => {
   const avatarUrl = user?.user_metadata?.avatar_url?.replace(/^http:\/\//i, 'https://');
   const { displayName, setDisplayName, loading: penLoading, saving, save, maxLen } = usePenNameContext();
   const [saveHint, setSaveHint] = useState('');
+  const handlePenNameBlur = useDeferredViewportSyncOnBlur();
 
   const previewName = (displayName.trim() || user?.email?.split('@')[0] || '').trim();
 
@@ -52,9 +57,10 @@ const UserProfile = ({ user, onLogout, onOpenSlide }) => {
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value.slice(0, maxLen))}
+                onBlur={handlePenNameBlur}
                 disabled={penLoading}
                 placeholder={user.email?.split('@')[0] || '닉네임'}
-                className="flex-1 min-w-0 text-sm text-gray-900 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200"
+                className={`flex-1 min-w-0 ${MOBILE_INPUT_TEXT_CLASS} text-gray-900 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200`}
                 maxLength={maxLen}
                 autoComplete="nickname"
               />

@@ -3,6 +3,7 @@ import { supabase } from '../api/supabase';
 import { Link } from 'react-router-dom';
 import { Mail, Loader2, ArrowLeft, Send } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
+import { MOBILE_INPUT_TEXT_CLASS } from '../hooks/useMobileInputViewport';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -57,7 +58,7 @@ const ForgotPassword = () => {
               <input
                 type="email"
                 required
-                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
+                className={`w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 ${MOBILE_INPUT_TEXT_CLASS} text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all`}
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

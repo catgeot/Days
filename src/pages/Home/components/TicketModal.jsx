@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Calendar, MapPin, CreditCard, Ticket, Trash2, Plane, MessageSquare } from 'lucide-react';
+import {
+  dismissMobileTextInput,
+  useMobileOverlayViewport,
+} from '../../../shared/hooks/useMobileInputViewport';
 
 const TicketModal = ({
   isOpen, onClose, onIssue, preFilledDestination,
@@ -7,6 +11,13 @@ const TicketModal = ({
 }) => {
   const [destination, setDestination] = useState('');
   const [date, setDate] = useState('');
+
+  useMobileOverlayViewport(isOpen);
+
+  const handleClose = useCallback(() => {
+    dismissMobileTextInput();
+    onClose();
+  }, [onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -51,7 +62,7 @@ const TicketModal = ({
         </div>
 
         <div className="w-2/3 p-8 relative">
-           <button onClick={onClose} className="absolute top-6 right-6 text-gray-500 hover:text-white"><X size={20}/></button>
+           <button onClick={handleClose} className="absolute top-6 right-6 text-gray-500 hover:text-white"><X size={20}/></button>
            <h2 className="text-3xl font-bold text-white mb-1">Boarding Pass</h2>
            <p className="text-sm text-gray-400 mb-8">여행 계획을 확정하고 티켓을 발권하세요.</p>
            
@@ -72,7 +83,7 @@ const TicketModal = ({
              </div>
            </div>
 
-           <button onClick={() => { onIssue({ text: `${destination} 여행 계획 세워줘` }); onClose(); }} className="absolute bottom-8 right-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
+           <button onClick={() => { onIssue({ text: `${destination} 여행 계획 세워줘` }); handleClose(); }} className="absolute bottom-8 right-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
              <Ticket size={18} /> 발권하기 (Issue Ticket)
            </button>
         </div>

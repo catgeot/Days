@@ -457,7 +457,7 @@ export default function FlightOriginSelector({
           <input
             ref={inputRef}
             type="text"
-            inputMode="search"
+            inputMode="text"
             enterKeyHint="search"
             value={query}
             disabled={disabled}
@@ -480,6 +480,11 @@ export default function FlightOriginSelector({
               }, 0);
             }}
             onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                submitOriginQuery();
+                return;
+              }
               if (event.key === 'Escape') {
                 if (isBar) setBarExpanded(false);
                 if (onCollapseRequest) {

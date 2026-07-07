@@ -3,6 +3,8 @@ import { supabase } from '../api/supabase';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Loader2, Check } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
+import { MOBILE_INPUT_TEXT_CLASS } from '../hooks/useMobileInputViewport';
+import { resetIosZoomAfterInput } from '../lib/mobileViewport';
 
 const UpdatePassword = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ const UpdatePassword = () => {
       if (error) throw error;
 
       alert('비밀번호가 성공적으로 변경되었습니다! 다시 로그인해주세요.');
+      resetIosZoomAfterInput();
       navigate('/auth/login');
     } catch (error) {
       alert(error.message);
@@ -48,7 +51,7 @@ const UpdatePassword = () => {
                 type="password"
                 required
                 minLength={6}
-                className="w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all"
+                className={`w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 ${MOBILE_INPUT_TEXT_CLASS} text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all`}
                 placeholder="새 비밀번호 입력"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import {
+  MOBILE_INPUT_TEXT_CLASS,
+  useDeferredViewportSyncOnBlur,
+} from '../../../shared/hooks/useMobileInputViewport';
 
 const RecentList = ({ reports, loading, isPublicMode }) => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
+  const handleSearchBlur = useDeferredViewportSyncOnBlur();
 
   const filteredReports = reports.filter(report =>
     report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -39,11 +44,35 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
         </h3>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-56 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={16} />
-            <input type="text" placeholder="기억 검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all" />
-            {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><XCircle size={14} /></button>}
-          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.currentTarget.querySelector('input')?.blur();
+            }}
+            className="relative flex-1 sm:w-56 group"
+          >
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" size={16} />
+            <input
+              type="text"
+              inputMode="search"
+              enterKeyHint="search"
+              placeholder="기억 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onBlur={handleSearchBlur}
+              className={`w-full pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl ${MOBILE_INPUT_TEXT_CLASS} text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all`}
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label="검색어 지우기"
+              >
+                <XCircle size={14} />
+              </button>
+            )}
+          </form>
 
           <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200 flex-shrink-0">
             <button

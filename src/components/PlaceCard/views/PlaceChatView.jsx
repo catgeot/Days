@@ -2,6 +2,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Send, Loader2, Sparkles } from 'lucide-react';
 import BookingActionCards from '../../chat/BookingActionCards';
 import { refreshStoredBookingActionLabels } from '../../../utils/chatBookingResolver';
+import {
+  MOBILE_INPUT_TEXT_CLASS,
+  useDeferredViewportSyncOnBlur,
+} from '../../../shared/hooks/useMobileInputViewport';
 
 const PlaceChatView = ({
   chatHistory,
@@ -14,6 +18,7 @@ const PlaceChatView = ({
 }) => {
   const [inputStr, setInputStr] = useState("");
   const messagesEndRef = useRef(null);
+  const handleInputBlur = useDeferredViewportSyncOnBlur();
 
   useEffect(() => {
       if (chatHistory.length <= 1) {
@@ -22,7 +27,7 @@ const PlaceChatView = ({
   }, [chatHistory.length]);
 
   const handleSend = () => {
-    if (!inputStr.trim()) return;
+    if (!inputStr.trim() || isAiLoading) return;
     onSendMessage(inputStr);
     setInputStr("");
     setTimeout(() => {
@@ -30,11 +35,9 @@ const PlaceChatView = ({
     }, 10);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        handleSend();
-    }
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    handleSend();
   };
 
   return (
@@ -122,28 +125,33 @@ const PlaceChatView = ({
             {error}
           </p>
         )}
-        <div className="relative group w-full h-12 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-full flex items-center px-1 transition-all shadow-lg">
+        <form
+          onSubmit={handleFormSubmit}
+          className="relative group w-full h-12 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-full flex items-center px-1 transition-all shadow-lg"
+        >
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0 ml-1">
               <Sparkles size={14} className="text-blue-300 group-hover:scale-110 transition-transform" />
           </div>
           <input
             type="text"
+            inputMode="text"
+            enterKeyHint="send"
             value={inputStr}
             onChange={(e) => setInputStr(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onBlur={handleInputBlur}
             placeholder="궁금한 내용을 입력하세요..."
             disabled={isAiLoading}
-            className="flex-1 bg-transparent border-none h-full focus:outline-none text-sm text-white placeholder-gray-400 pl-3 pr-12 disabled:opacity-50"
+            className={`flex-1 bg-transparent border-none h-full focus:outline-none ${MOBILE_INPUT_TEXT_CLASS} text-white placeholder-gray-400 pl-3 pr-12 disabled:opacity-50`}
             autoComplete="off"
           />
           <button
-            onClick={handleSend}
+            type="submit"
             disabled={isAiLoading || !inputStr.trim()}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all disabled:bg-transparent disabled:opacity-30 disabled:cursor-not-allowed z-10"
           >
             {isAiLoading ? <Loader2 size={14} className="animate-spin" /> : <Send size={12} />}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
