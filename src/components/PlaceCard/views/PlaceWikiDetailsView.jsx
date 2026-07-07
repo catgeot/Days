@@ -8,6 +8,7 @@ import PlaceMiniMap from '../common/PlaceMiniMap';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { usePinchZoomPan } from '../common/usePinchZoomPan';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -56,6 +57,7 @@ const PlaceWikiDetailsView = ({
   const aiSectionRef = useRef(null);
   const containerRef = useRef(null);
   const scrollToTop = usePlaceMediaScrollToTop('WIKI', containerRef, isActive);
+  usePinchZoomPan(containerRef, isActive && !lightboxImg);
   const [scrollY, setScrollY] = useState(0);
 
   // 라이트박스 열렸을 때 스크롤 방지

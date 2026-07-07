@@ -85,6 +85,69 @@
 
 ---
 
+## 플래너 모바일 핀치 줌 — 좌·우·상·하 패닝 (2026-07-07)
+
+**상태**: **✅ 모바일 QA 통과 (2026-07-07)**
+
+- **증상** — 핀치 확대 후 가로 이동 불가 · 한 손가락 패닝 막힘(세로 스크롤과 충돌)
+- **원인** — `pinch-zoom-scroll` `touch-action: pan-y pinch-zoom` · PlaceCard `fixed` 레이아웃
+- **수정** — [`usePinchZoomPan.js`](../src/components/PlaceCard/common/usePinchZoomPan.js) · 줌 시 `overflow:hidden` + `translate` 통합 패닝 · 2손가락 네이티브 유지 · 플래너·위키·갤러리·리뷰 공통
+- **릴리스 노트** — 합의 후 `releaseNotes.js` 반영 (미반영)
+
+---
+
+## PlaceCard 가로·갤러리 UX — 다음 세션 (2026-07-07)
+
+**상태**: **⏳ 미착수** (사용자 핸드오프)
+
+| 우선 | 탭 | 증상 | grep·파일 후보 |
+|------|-----|------|----------------|
+| 1 | **플래너** | 가로 모드 상단 헤더가 본문 가독 영역 과다 점유 | `PlannerTab` · `PlaceChatPanel` · `mobilePlaceHeaderInset` · `landscape:` |
+| 2 | **위키** | 가로 모드 상단·하단 고정(헤더·푸터)으로 읽기 불편 | `PlaceWikiDetailsView` · 하단 flex 푸터 · `PlaceChatPanel` |
+| 3 | **갤러리** | 그리드→개별 사진 탐색 중 **핀치 확대 불가** | `PlaceGalleryView` lightbox · `touch-none` · `shouldUseMobilePortal` · `usePinchZoomPan` |
+| 4 | **갤러리** | 가로 모드 고정 헤더·연관 키워드 하단 푸터가 화면 대부분 차지 | `PlaceGalleryView` `landscape:` · `RelatedTravelSpots` · `PlaceMobileSecondaryNav` |
+
+**공통 맥락** — 세로는 `mobilePlaceHeaderScrollPadding`(6.25rem+safe-area) · 가로(`orientation: landscape`, `max-height: 500px`)는 별도 chrome 축소·숨김·탭 토글 패턴 검토. 갤러리 라이트박스는 이미 `landscape:` UI 분기 있음(헤더 absolute·탭 UI 숨김) — **본문·확대·푸터** 추가 튜닝 필요.
+
+---
+
+## PlaceCard 가로·갤러리 세션 — 에이전트 핸드오프
+
+### 읽을 것 (3)
+
+1. [`.ai-context.md`](../.ai-context.md) — 3절 PlaceCard·갤러리·모바일 뷰포트 · 5~6절 스냅샷
+2. **본 일지** — 「PlaceCard 가로·갤러리 UX — 다음 세션」+ 「플래너 모바일 핀치 줌」
+3. grep — `PlaceGalleryView`(landscape, lightbox, touch-none, selectedImg) · `PlaceWikiDetailsView`(landscape, footer) · `PlaceChatPanel` · `mobilePlaceHeaderInset` · `usePinchZoomPan` · `RelatedTravelSpots`
+
+### 금지 (3)
+
+1. `GLOBE_VIEW.flyZoom`·`HIGH_ZOOM_FULL_REVEAL` 임의 변경
+2. PowerShell `-replace`/`Set-Content`로 한글 JSX 수정
+3. 사용자 QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
+
+### 다음 세션 작업
+
+| 우선 | 내용 |
+|------|------|
+| 1 | 플래너 가로 — 헤더·2차 nav chrome 축소 또는 숨김(읽기 영역 확보) |
+| 2 | 위키 가로 — 상단 헤더·하단 푸터(탭/액션) landscape 전용 레이아웃 |
+| 3 | 갤러리 개별 사진 — 라이트박스/포털에서 핀치·확대(`touch-none` 해소 또는 전용 zoom) |
+| 4 | 갤러리 가로 — 헤더·연관 키워드 푸터 축소·토글(그리드 `landscape:` 패턴 참고) |
+
+### 제시어 (다음 세션)
+
+```
+PlaceCard-가로-이어하기 @plans/2026-07-07-project-log.md
+
+플래너 핀치 줌·패닝 ✅. 다음: PlaceCard 가로(landscape) 읽기 UX + 갤러리 개별 사진 확대.
+읽기: .ai-context 3·5·6절 + 본 일지 「PlaceCard 가로·갤러리 세션 — 에이전트 핸드오프」.
+grep: PlaceGalleryView(landscape,selectedImg,touch-none) · PlaceWikiDetailsView · PlaceChatPanel · mobilePlaceHeaderInset · usePinchZoomPan.
+과제: (1)플래너 가로 헤더 (2)위키 가로 상·하 chrome (3)갤러리 사진 확대 (4)갤러리 가로 푸터.
+금지: flyZoom 변경 · PowerShell JSX · releaseNotes 합의 전.
+```
+
+---
+
 ## 출발지 드롭다운 세션 — 에이전트 핸드오프 (아카이브)
 
 ### 상태 (2026-07-07)

@@ -4,6 +4,7 @@ import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { usePinchZoomPan } from '../common/usePinchZoomPan';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -42,6 +43,7 @@ const PlaceGalleryView = React.memo(({
   const mobileSwipeStartRef = useRef(null);
   const suppressMobileTapRef = useRef(false);
   usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
+  usePinchZoomPan(scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
     const byId = images.findIndex((img) => img.id === selectedImg.id);

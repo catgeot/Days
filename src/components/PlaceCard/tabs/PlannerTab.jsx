@@ -24,6 +24,7 @@ import {
     plannerScrollSurfaceClass,
 } from './planner/readableText';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { usePinchZoomPan } from '../common/usePinchZoomPan';
 import {
   parsePlannerFocusFromHash,
   scrollPlannerFocusIntoView,
@@ -65,6 +66,8 @@ const PlannerTab = ({
 
     // isRemoteUpdating 플래그를 로딩 조건에 추가
     const isLoading = isPlannerLoading || isRemoteUpdating;
+
+    usePinchZoomPan(scrollContainerRef, isActive && !isLoading && !!guideData);
 
     // 로딩 메시지 순차적 변경 (주기 4초로 변경)
     useEffect(() => {
