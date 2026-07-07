@@ -6,6 +6,8 @@ import {
     openTripcomExternalUrl,
 } from './partnerNavigation';
 import { useTryOpenTripcomFlightSearch } from '../tabs/planner/TripcomFlightSearchContext';
+import { TRIPCOM_DEFAULT_DEPARTURE_AIRPORT } from '../../../utils/affiliate';
+import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/flightOriginPreference.js';
 
 /**
  * 플래너 Trip.com 항공권 제휴 링크.
@@ -13,18 +15,30 @@ import { useTryOpenTripcomFlightSearch } from '../tabs/planner/TripcomFlightSear
  * 데스크톱: /flights/ 직링크 + 새 탭 + Referer(gateo 복귀 링크).
  * @param {Record<string, unknown> | null | undefined} [location]
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]
+ * @param {string | null | undefined} [departureIata] - 시네마 Bar 등 명시 시에만 전달. 미지정(플래너)은 ICN 고정.
+ * @param {'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | null | undefined} [tracking]
  * @param {React.ReactElement} [customTrigger] - 커스텀 트리거 버튼
  */
-const WhiteLabelWidget = ({ location, essentialGuide, customTrigger }) => {
+const WhiteLabelWidget = ({
+    location,
+    essentialGuide,
+    departureIata: departureOverride,
+    tracking,
+    customTrigger,
+}) => {
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
+    const departureIata = useMemo(() => {
+        if (departureOverride) return resolveFlightDepartureIataForTrip(departureOverride);
+        return TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+    }, [departureOverride]);
     const flightUrl = useMemo(
-        () => buildTripcomPlannerNavigationUrl(location, { essentialGuide }),
-        [location, essentialGuide],
+        () => buildTripcomPlannerNavigationUrl(location, { essentialGuide, departureIata, tracking }),
+        [location, essentialGuide, departureIata, tracking],
     );
     const linkTarget = getPartnerLinkTarget();
 
     const handleOpen = () => {
-        if (tryOpenFlightSearch(location, { essentialGuide })) return;
+        if (tryOpenFlightSearch(location, { essentialGuide, departureIata, tracking })) return;
         openTripcomExternalUrl(flightUrl, { target: linkTarget });
     };
 

@@ -11,7 +11,7 @@ import { createPortal } from 'react-dom';
 import FlightCinemaBar from '../components/FlightCinemaBar.jsx';
 import { useVisualViewportBottomAnchor } from '../../../shared/hooks/useMobileInputViewport.js';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext.jsx';
-import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
+import { buildPlacePlannerPathFromFlightCinema } from '../../../utils/placePlannerPath.js';
 import {
   estimateFlightHours,
   estimateFlightHoursChain,
@@ -471,7 +471,11 @@ export function FlightCinemaProvider({
               }
               onSelectRouteAlternative={selectFlightRouteAlternative}
               plannerUrl={
-                active.location?.slug ? buildPlacePlannerPath(active.location.slug) : null
+                active.location?.slug
+                  ? buildPlacePlannerPathFromFlightCinema(active.location.slug, {
+                      originIata: active.originIata,
+                    })
+                  : null
               }
               onClose={closeFlightCinema}
             />

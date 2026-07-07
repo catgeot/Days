@@ -186,7 +186,16 @@
 
 ---
 
-## 출발지 드롭다운 세션 — 에이전트 핸드오프 (아카이브)
+## 항공 시네마 Bar — Trip 출발지 연동 (2026-07-07)
+
+**상태**: **✅ QA 통과**
+
+- **배경** — 장소카드·Bar 출발지(`flightOriginPreference`)는 arc·경로에 반영되나 Trip `dAirportCode`는 ICN 고정
+- **Bar Trip** — `resolveFlightDepartureIataForTrip` · `WhiteLabelWidget` `departureIata`+`globe-flight-cinema` 추적
+- **플래너** — Trip·여정 **ICN 고정** 유지 · Bar「여행 플랜」→ `buildPlacePlannerPathFromFlightCinema`(`?from=flight-cinema`) · [`FlightCinemaPlannerNotice`](src/components/PlaceCard/tabs/planner/components/FlightCinemaPlannerNotice.jsx) 상단 안내
+- **QA ✅** — Bar 출발 변경 → 「항공권 검색」 `dAirportCode` · 플래너 진입 안내 배너 (사용자 확인)
+
+---
 
 ### 상태 (2026-07-07)
 

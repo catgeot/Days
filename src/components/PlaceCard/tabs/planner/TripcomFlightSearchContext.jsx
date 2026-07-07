@@ -26,9 +26,10 @@ export function TripcomFlightSearchProvider({ children }) {
         const arrivalIata = getPlannerFlightArrivalIata(location, {
             essentialGuide: options.essentialGuide,
         });
+        const departureIata = options.departureIata ?? null;
         const { width: bannerWidth, height: bannerHeight } = getTripcomFlightAdForModal();
 
-        setModalState({ iframeSrc, arrivalIata, bannerWidth, bannerHeight });
+        setModalState({ iframeSrc, arrivalIata, departureIata, bannerWidth, bannerHeight });
         return true;
     }, []);
 
@@ -47,6 +48,7 @@ export function TripcomFlightSearchProvider({ children }) {
                 <TripcomFlightSearchModal
                     iframeSrc={modalState.iframeSrc}
                     arrivalIata={modalState.arrivalIata}
+                    departureIata={modalState.departureIata}
                     bannerWidth={modalState.bannerWidth}
                     bannerHeight={modalState.bannerHeight}
                     onClose={closeFlightSearch}

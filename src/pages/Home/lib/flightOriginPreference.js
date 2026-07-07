@@ -53,3 +53,14 @@ export function resolveDefaultFlightOriginIata() {
   if (prefersKoreanLocale()) return 'ICN';
   return 'ICN';
 }
+
+/**
+ * Trip.com `dAirportCode` — 명시 override → last-used(localStorage) → browser tz → ICN.
+ * @param {string | null | undefined} [override]
+ * @returns {string}
+ */
+export function resolveFlightDepartureIataForTrip(override) {
+  const explicit = String(override ?? '').trim().toUpperCase();
+  if (explicit.length === 3) return explicit;
+  return resolveDefaultFlightOriginIata();
+}

@@ -259,7 +259,7 @@
 | 런타임 | `getFlightRouteHubIatas` — overrides · `trip≠final`만 (live timeline **제거**) |
 | 승객 경로·avoid-zone | `travel-spot-airport-overrides.mjs` — `flightRouteHubIatas` + `flightRouteWaypoints` (예: LAX+`[180,12]`, ATL, GRU, cancun/chichen) |
 
-**FlightCinemaBar 「여행 플랜」**: 경유·**직항** 공통 인라인 구간 시간(`ICN ~13h JFK (총 13h)` · sky-300) + `buildPlacePlannerPath(slug)` — 플래너 탭 홈 · Trip CTA와 분리.
+**FlightCinemaBar 「여행 플랜」**: `buildPlacePlannerPathFromFlightCinema`(`?from=flight-cinema` · 비-ICN `cinemaOrigin`) + [`FlightCinemaPlannerNotice`](../src/components/PlaceCard/tabs/planner/components/FlightCinemaPlannerNotice.jsx) — 플래너 **ICN 기준** 안내 · Bar **항공권 검색**은 Bar 선택 출발지(`departureIata`·`globe-flight-cinema`) · 플래너 Trip **ICN 고정**과 분리.
 
 **Phase 2b arc 최적화 ✅ (2026-06-18)**
 
@@ -356,7 +356,8 @@
 | [`flightRouteAvoidZones.js`](../src/pages/Home/lib/flightRouteAvoidZones.js) | bbox guard · `coordsCrossAvoidZones` |
 | [`scripts/audit-flight-arcs.mjs`](../scripts/audit-flight-arcs.mjs) | `npm run audit:flight-arcs` |
 | [`globeFlightCinemaEngine.js`](../src/pages/Home/lib/globeFlightCinemaEngine.js) | arc·공항 마커·leg draw 스케줄 · close |
-| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 목적지·출발 열(`bar-header`) · 경유·직항 **인라인** · **여행 플랜** · **항공권 검색**(Trip) · 닫기 |
+| [`FlightCinemaBar.jsx`](../src/pages/Home/components/FlightCinemaBar.jsx) | 목적지·출발 열(`bar-header`) · 경유·직항 **인라인** · **여행 플랜**(`buildPlacePlannerPathFromFlightCinema`) · **항공권 검색**(Bar 출발지 Trip) · 닫기 |
+| [`FlightCinemaPlannerNotice.jsx`](../src/components/PlaceCard/tabs/planner/components/FlightCinemaPlannerNotice.jsx) | Bar→플래너 진입 ICN 기준 안내 |
 | [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js) | `isFlightCinemaLayer` |
 | [`FlightCinemaContext.jsx`](../src/pages/Home/lib/FlightCinemaContext.jsx) | Provider · `requestFlightCinema` |
 | [`HomePlaceCardSummary.jsx`](../src/pages/Home/components/HomePlaceCardSummary.jsx) | **유일** 진입 · `hasFlightRoute`/`isFlightRouteReady`(`globeRef.isFlightCinemaReady`+`flightPreview` · 250ms 폴링 · **not-ready 4연속 히스테리시스**) |

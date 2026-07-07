@@ -474,6 +474,8 @@ export default function FlightCinemaBar({
               <WhiteLabelWidget
                 location={location}
                 essentialGuide={essentialGuide}
+                departureIata={originIata}
+                tracking="globe-flight-cinema"
                 customTrigger={
                   <button
                     type="button"

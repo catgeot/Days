@@ -11,6 +11,7 @@ import { TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
 const TripcomFlightSearchModal = ({
     iframeSrc,
     arrivalIata,
+    departureIata = null,
     bannerWidth = TRIPCOM_FLIGHT_AD.mobileWidth,
     bannerHeight = TRIPCOM_FLIGHT_AD.mobileHeight,
     onClose,
@@ -44,6 +45,9 @@ const TripcomFlightSearchModal = ({
     const bannerW = bannerWidth;
     const bannerH = bannerHeight;
     const isDesktopBanner = bannerW === TRIPCOM_FLIGHT_AD.width;
+    const departCode = departureIata
+        ? String(departureIata).trim().toUpperCase()
+        : 'ICN';
 
     const modal = (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] animate-fade-in">
@@ -58,7 +62,7 @@ const TripcomFlightSearchModal = ({
                 aria-modal="true"
                 aria-label={
                     arrivalIata
-                        ? `Trip.com 항공권 검색 — ICN에서 ${arrivalIata}까지`
+                        ? `Trip.com 항공권 검색 — ${departCode}에서 ${arrivalIata}까지`
                         : 'Trip.com 항공권 검색'
                 }
                 className={`relative z-10 flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_0_50px_rgba(0,0,0,0.45)] animate-scale-up ${
@@ -79,7 +83,7 @@ const TripcomFlightSearchModal = ({
                             <p className="truncate text-sm font-bold text-gray-900">항공권 검색</p>
                             {arrivalIata ? (
                                 <p className="text-[11px] font-mono text-gray-600">
-                                    ICN → {arrivalIata}
+                                    {departCode} → {arrivalIata}
                                 </p>
                             ) : (
                                 <p className="text-[11px] text-gray-600">Trip.com 제휴 검색</p>

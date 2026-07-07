@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
@@ -13,6 +13,7 @@ import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
 import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerWidget';
+import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
@@ -29,6 +30,10 @@ import {
   parsePlannerFocusFromHash,
   scrollPlannerFocusIntoView,
 } from '../../../utils/placePlannerFocus';
+import {
+  clearFlightCinemaPlannerEntryParams,
+  parseFlightCinemaPlannerEntry,
+} from '../../../utils/placePlannerPath';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
 const pendingToolkitRequests = new Map(); // { placeId: Promise }
@@ -50,6 +55,12 @@ const PlannerTab = ({
     const scrollContainerRef = useRef(null);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
     const routeLocation = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const flightCinemaEntry = useMemo(
+        () => parseFlightCinemaPlannerEntry(searchParams),
+        [searchParams],
+    );
+    const [cinemaNoticeDismissed, setCinemaNoticeDismissed] = useState(false);
     const plannerFocusId = parsePlannerFocusFromHash(routeLocation.hash);
     const lastScrolledFocusRef = useRef(null);
 
@@ -112,6 +123,19 @@ const PlannerTab = ({
     useEffect(() => {
         if (!plannerFocusId) lastScrolledFocusRef.current = null;
     }, [plannerFocusId]);
+
+    useEffect(() => {
+        setCinemaNoticeDismissed(false);
+    }, [location?.slug, flightCinemaEntry?.cinemaOriginIata]);
+
+    const dismissFlightCinemaNotice = useCallback(() => {
+        setCinemaNoticeDismissed(true);
+        if (!flightCinemaEntry) return;
+        const next = clearFlightCinemaPlannerEntryParams(searchParams);
+        setSearchParams(next, { replace: true });
+    }, [flightCinemaEntry, searchParams, setSearchParams]);
+
+    const showFlightCinemaNotice = Boolean(flightCinemaEntry) && !cinemaNoticeDismissed;
 
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = useCallback(async (placeName, forceUpdate = false) => {
@@ -339,6 +363,12 @@ const PlannerTab = ({
                     </div>
                 )}
                 <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto flex-1 flex flex-col mt-2 md:mt-0">
+                    {showFlightCinemaNotice ? (
+                        <FlightCinemaPlannerNotice
+                            cinemaOriginIata={flightCinemaEntry?.cinemaOriginIata ?? null}
+                            onDismiss={dismissFlightCinemaNotice}
+                        />
+                    ) : null}
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 shrink-0">
                         <div>
                             <h2 className="text-xl md:text-2xl font-black text-gray-900 flex flex-wrap items-baseline gap-x-2 gap-y-1">
