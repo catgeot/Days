@@ -1,6 +1,9 @@
 /** 읽기 영역 — 세로 스크롤 + 핀치 줌 공존 (touch-pan-y 단독은 줌 차단). 줌 후 pan-x는 usePinchZoomPan */
 export const placeScrollSurfaceClass = 'pinch-zoom-scroll overscroll-y-contain overscroll-x-none';
 
+/** 갤러리 라이트박스 — 스크롤 없이 핀치·패닝만 (usePinchZoomPan) */
+export const placeLightboxZoomClass = 'pinch-zoom-lightbox';
+
 export const PLACE_MEDIA_SCROLL_TO_TOP_EVENT = 'place-media-scroll-to-top';
 
 /** @deprecated PLACE_MEDIA_SCROLL_TO_TOP_EVENT 사용 */

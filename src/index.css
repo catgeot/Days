@@ -23,6 +23,20 @@ body {
   will-change: transform;
 }
 
+/* 갤러리 라이트박스 — 그리드 스크롤과 분리, 핀치 확대 + usePinchZoomPan 패닝 */
+.pinch-zoom-lightbox {
+  touch-action: pinch-zoom;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pinch-zoom-lightbox.pinch-zoom-scroll--zoomed {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  touch-action: auto;
+  -webkit-overflow-scrolling: auto;
+  will-change: transform;
+}
+
 @keyframes mooni-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }

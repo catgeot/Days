@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
+import { snapVisualViewportPinchZoom } from '../../../shared/lib/mobileViewport';
 
 const ZOOMED_CLASS = 'pinch-zoom-scroll--zoomed';
 /** iOS·Android 핀치 줌 감지 — 1.0 부동소수 오차 여유 */
 const ZOOM_SCALE_THRESHOLD = 1.02;
+/** 핀치 아웃 후 이 scale 이하면 1.0으로 스냅 */
+const PINCH_SNAP_MAX_SCALE = 1.08;
 /** 탭 vs 패닝 구분 */
 const PAN_START_THRESHOLD_PX = 4;
 
@@ -28,6 +31,7 @@ export function usePinchZoomPan(scrollRef, enabled = true) {
         let panStarted = false;
         let lastPanX = 0;
         let lastPanY = 0;
+        let activeTouchCount = 0;
 
         const isZoomed = () => (vv?.scale ?? 1) > ZOOM_SCALE_THRESHOLD;
 
@@ -118,6 +122,7 @@ export function usePinchZoomPan(scrollRef, enabled = true) {
         }
 
         function onTouchStart(event) {
+            activeTouchCount = event.touches.length;
             if (event.touches.length >= 2) {
                 resetPanState();
                 applyZoomedState(true);
@@ -135,6 +140,7 @@ export function usePinchZoomPan(scrollRef, enabled = true) {
         }
 
         function onTouchMove(event) {
+            activeTouchCount = event.touches.length;
             if (event.touches.length >= 2) {
                 resetPanState();
                 applyZoomedState(true);
@@ -162,9 +168,20 @@ export function usePinchZoomPan(scrollRef, enabled = true) {
             event.preventDefault();
         }
 
-        function onTouchEnd() {
+        function onTouchEnd(event) {
+            const wasPinching = activeTouchCount >= 2;
+            activeTouchCount = event.touches.length;
             resetPanState();
             applyZoomedState(isZoomed());
+
+            if (wasPinching && event.touches.length === 0) {
+                requestAnimationFrame(() => {
+                    if (snapVisualViewportPinchZoom(PINCH_SNAP_MAX_SCALE)) {
+                        applyZoomedState(false);
+                    }
+                    sync();
+                });
+            }
         }
 
         vv?.addEventListener('resize', sync);
