@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
+import GalleryAttributionLink from '../common/GalleryAttributionLink';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
     
@@ -59,24 +60,26 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                             <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5">
                                 <p className="text-[13px] leading-relaxed text-gray-300">
                                     Photo by{' '}
-                                    <a
+                                    <GalleryAttributionLink
                                         href={photoAttribution.photographerHref || photoAttribution.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        location={selectedPlace}
+                                        image={selectedImg}
+                                        context="gallery"
                                         className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
                                         title={photoAttribution.title}
                                     >
                                         {photoAttribution.authorName}
-                                    </a>
+                                    </GalleryAttributionLink>
                                     {' on '}
-                                    <a
+                                    <GalleryAttributionLink
                                         href={photoAttribution.providerHref}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        location={selectedPlace}
+                                        image={selectedImg}
+                                        context="gallery"
                                         className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
                                     >
                                         {photoAttribution.providerName}
-                                    </a>
+                                    </GalleryAttributionLink>
                                 </p>
                             </div>
                         )}

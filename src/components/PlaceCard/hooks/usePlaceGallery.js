@@ -12,6 +12,12 @@ import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots';
 import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
+import {
+  clearGalleryAttributionReturnState,
+  consumeGalleryAttributionReturnState,
+  findImageForReturnState,
+  readGalleryAttributionReturnState,
+} from '../common/galleryAttributionNavigation';
 
 const CACHE_VERSION = 'v1.4';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
@@ -443,6 +449,36 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       setSelectedImg(null);
     }
   }, [stablePlaceKey]);
+
+  /** 모바일 출처 같은 탭 복귀 — 새로고침 시 확대 뷰 복원 */
+  useEffect(() => {
+    if (!enabled || !stablePlaceKey || images.length === 0) return undefined;
+
+    const pending = consumeGalleryAttributionReturnState(stablePlaceKey, 'gallery');
+    if (!pending) return undefined;
+
+    const img = findImageForReturnState(images, pending);
+    if (img) {
+      setSelectedImg(img);
+    }
+    return undefined;
+  }, [enabled, stablePlaceKey, images]);
+
+  /** bfcache 복귀 시 React 상태 유지 — pending sessionStorage만 정리 */
+  useEffect(() => {
+    if (!enabled || !stablePlaceKey) return undefined;
+
+    const onPageShow = (event) => {
+      if (!event.persisted) return;
+      const pending = readGalleryAttributionReturnState();
+      if (!pending || pending.placeKey !== stablePlaceKey) return;
+      if ((pending.context || 'gallery') !== 'gallery') return;
+      clearGalleryAttributionReturnState();
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, [enabled, stablePlaceKey]);
 
   // 🚨 [New] 트래킹 API 호출 및 안전한 다운로드(Blob 방식) 핸들러 구현 (Fire & Forget 구조)
   const handleDownload = useCallback(async (imageObj) => {

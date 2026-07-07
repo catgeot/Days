@@ -9,6 +9,14 @@ import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../co
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
+import GalleryAttributionLink from '../common/GalleryAttributionLink';
+import {
+  clearGalleryAttributionReturnState,
+  consumeGalleryAttributionReturnState,
+  findImageForReturnState,
+  readGalleryAttributionReturnState,
+  resolveGalleryPlaceKey,
+} from '../common/galleryAttributionNavigation';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -264,12 +272,47 @@ const PlaceWikiDetailsView = ({
       return () => window.removeEventListener('request-ai-info', handleRemoteRequest);
   }, [handleRequestAiInfo]);
 
-  // 매거진 레이아웃을 위한 데이터 가공
   const images = galleryData?.images || [];
   const heroImage = images.length > 0 ? images[0] : null;
-  const contentImages = images.slice(1); // 본문 섹션용
   const sectionCount = wikiData?.sections?.length || 0;
-  const galleryImages = contentImages.slice(sectionCount); // 하단 갤러리 전용
+  const galleryImages = useMemo(
+    () => images.slice(1).slice(sectionCount),
+    [images, sectionCount],
+  );
+  const contentImages = images.slice(1);
+  const wikiPlaceKey = useMemo(() => resolveGalleryPlaceKey(location), [location]);
+
+  useEffect(() => {
+    if (!isActive || !wikiPlaceKey || galleryImages.length === 0) return undefined;
+
+    const pending = consumeGalleryAttributionReturnState(wikiPlaceKey, 'wiki');
+    if (!pending) return undefined;
+
+    let img = findImageForReturnState(galleryImages, pending);
+    if (!img && typeof pending.lightboxIndex === 'number' && galleryImages[pending.lightboxIndex]) {
+      img = galleryImages[pending.lightboxIndex];
+    }
+    if (img) {
+      const idx = galleryImages.findIndex((item) => String(item.id) === String(img.id));
+      setLightboxImg(img);
+      setLightboxIndex(idx >= 0 ? idx : pending.lightboxIndex ?? 0);
+    }
+    return undefined;
+  }, [isActive, wikiPlaceKey, galleryImages]);
+
+  useEffect(() => {
+    if (!isActive || !wikiPlaceKey) return undefined;
+
+    const onPageShow = (event) => {
+      if (!event.persisted) return;
+      const pending = readGalleryAttributionReturnState();
+      if (!pending || pending.placeKey !== wikiPlaceKey || pending.context !== 'wiki') return;
+      clearGalleryAttributionReturnState();
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, [isActive, wikiPlaceKey]);
 
   // 요약 텍스트에서 인용구(첫 문장) 추출
   let pullQuote = "";
@@ -742,26 +785,30 @@ const PlaceWikiDetailsView = ({
                             {lightboxAttribution && (
                                 <p className="text-white/60 text-xs">
                                     Photo by{' '}
-                                    <a
+                                    <GalleryAttributionLink
                                         href={lightboxAttribution.photographerHref || lightboxAttribution.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        location={location}
+                                        image={lightboxImg}
+                                        context="wiki"
+                                        lightboxIndex={lightboxIndex}
                                         className="font-semibold text-white/75 underline transition-colors hover:text-white"
                                         title={lightboxAttribution.title}
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         {lightboxAttribution.authorName}
-                                    </a>
+                                    </GalleryAttributionLink>
                                     {' on '}
-                                    <a
+                                    <GalleryAttributionLink
                                         href={lightboxAttribution.providerHref}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        location={location}
+                                        image={lightboxImg}
+                                        context="wiki"
+                                        lightboxIndex={lightboxIndex}
                                         className="font-semibold text-white/75 underline transition-colors hover:text-white"
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         {lightboxAttribution.providerName}
-                                    </a>
+                                    </GalleryAttributionLink>
                                 </p>
                             )}
                         </div>
