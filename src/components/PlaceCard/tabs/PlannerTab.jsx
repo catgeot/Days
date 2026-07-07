@@ -5,7 +5,7 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
-import { mobilePlaceHeaderScrollPadding, mobilePlaceFooterScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
@@ -24,7 +24,6 @@ import {
     plannerScrollSurfaceClass,
 } from './planner/readableText';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
-import { usePinchZoomPan } from '../common/usePinchZoomPan';
 import {
   parsePlannerFocusFromHash,
   scrollPlannerFocusIntoView,
@@ -66,8 +65,6 @@ const PlannerTab = ({
 
     // isRemoteUpdating 플래그를 로딩 조건에 추가
     const isLoading = isPlannerLoading || isRemoteUpdating;
-
-    usePinchZoomPan(scrollContainerRef, isActive && !isLoading && !!guideData);
 
     // 로딩 메시지 순차적 변경 (주기 4초로 변경)
     useEffect(() => {
@@ -326,10 +323,10 @@ const PlannerTab = ({
         <div className="w-full h-full relative">
             <div
                 ref={scrollContainerRef}
-                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
+                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} pb-24 md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
             >
                 {mobileSecondaryNav && (
-                    <div className="md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] max-md:landscape:px-1.5 max-md:landscape:pb-0.5 max-md:landscape:mb-0.5 max-md:landscape:border-b-0 [&_button]:max-md:landscape:px-2 [&_button]:max-md:landscape:py-0.5 [&_span]:max-md:landscape:text-[10px]">
+                    <div className="md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa]">
                         {mobileSecondaryNav}
                     </div>
                 )}

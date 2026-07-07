@@ -50,47 +50,6 @@ export function readVisualViewportBottomInset(pad = 0) {
   return keyboardInset + pad;
 }
 
-/** iOS·Android 핀치 줌 scale — PlaceCard usePinchZoomPan·갤러리 라이트박스 SSOT */
-export const VISUAL_VIEWPORT_ZOOM_THRESHOLD = 1.02;
-
-export function readVisualViewportScale() {
-  if (typeof window === 'undefined') return 1;
-  return window.visualViewport?.scale ?? 1;
-}
-
-export function isVisualViewportPinchZoomed(threshold = VISUAL_VIEWPORT_ZOOM_THRESHOLD) {
-  return readVisualViewportScale() > threshold;
-}
-
-/**
- * 핀치 아웃 후 scale이 1.0 근처(예: 1.03)에 멈추는 경우 1.0으로 스냅.
- * @param {number} maxScale — 이 값 이하일 때만 스냅 (기본 1.08, 강제 리셋은 Infinity)
- */
-export function snapVisualViewportPinchZoom(maxScale = 1.08) {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return false;
-
-  const scale = readVisualViewportScale();
-  if (scale <= 1.001) return false;
-  if (scale > maxScale) return false;
-
-  window.scrollTo(0, 0);
-
-  const meta = document.querySelector('meta[name="viewport"]');
-  if (!meta) return false;
-
-  const original =
-    meta.getAttribute('content') || 'width=device-width, initial-scale=1.0, viewport-fit=cover';
-  meta.setAttribute(
-    'content',
-    'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
-  );
-  requestAnimationFrame(() => {
-    meta.setAttribute('content', original);
-    window.dispatchEvent(new Event('resize'));
-  });
-  return true;
-}
-
 /**
  * 로그인 폼 등 input 포커스 후 iOS가 페이지를 확대한 상태를 홈 복귀 전에 되돌린다.
  * (font-size 16px 미만 input 포커스 시 Safari 자동 줌)

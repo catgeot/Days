@@ -8,7 +8,6 @@ import PlaceMiniMap from '../common/PlaceMiniMap';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
-import { usePinchZoomPan } from '../common/usePinchZoomPan';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -57,7 +56,6 @@ const PlaceWikiDetailsView = ({
   const aiSectionRef = useRef(null);
   const containerRef = useRef(null);
   const scrollToTop = usePlaceMediaScrollToTop('WIKI', containerRef, isActive);
-  usePinchZoomPan(containerRef, isActive && !lightboxImg);
   const [scrollY, setScrollY] = useState(0);
 
   // 라이트박스 열렸을 때 스크롤 방지
@@ -317,7 +315,7 @@ const PlaceWikiDetailsView = ({
         `}</style>
 
         {mobileSecondaryNav && (
-            <div className="md:hidden shrink-0 border-b border-white/10 bg-[#05070a] max-md:landscape:border-b-0 max-md:landscape:py-0 [&_button]:max-md:landscape:px-2 [&_button]:max-md:landscape:py-0.5 [&_span]:max-md:landscape:text-[10px]">
+            <div className="md:hidden shrink-0 border-b border-white/10 bg-[#05070a]">
                 {mobileSecondaryNav}
             </div>
         )}
@@ -325,9 +323,9 @@ const PlaceWikiDetailsView = ({
         {/* Hero Section */}
         {heroImage && (
             <div className="relative w-full overflow-hidden flex-shrink-0">
-                <div className={`${mobileSecondaryNav ? 'h-0' : 'h-16 max-md:landscape:h-8'} md:h-0 bg-[#05070a]`} />
+                <div className={`${mobileSecondaryNav ? 'h-0' : 'h-16'} md:h-0 bg-[#05070a]`} />
 
-                <div className="relative w-full h-[40vh] max-md:landscape:h-[28vh] md:h-[50vh]">
+                <div className="relative w-full h-[40vh] md:h-[50vh]">
                     <img
                         src={heroImage.urls?.regular || heroImage.urls?.full}
                         alt={heroImage.alt_description || placeName || 'Hero image'}
@@ -345,7 +343,7 @@ const PlaceWikiDetailsView = ({
             </div>
         )}
 
-        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-8 md:pb-32 max-md:landscape:px-4 max-md:landscape:pb-4 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 md:pt-0 max-md:landscape:pt-2' : 'pt-[96px] max-md:landscape:pt-12') : 'pt-8 max-md:landscape:pt-3'}`}>
+        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-8 md:pb-32 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 md:pt-0' : 'pt-[96px]') : 'pt-8'}`}>
 
             {/* 타이틀이 Hero 이미지 없는 경우를 대비한 Fallback */}
             {!heroImage && (
@@ -601,7 +599,7 @@ const PlaceWikiDetailsView = ({
     </div>
 
             {/* 하단 AI 버튼 (모바일) — 스크롤 컨테이너 밖 flex 푸터 (iOS fixed-in-scroll 터치 간섭 방지) */}
-            <div className="md:hidden shrink-0 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] max-md:landscape:p-1.5 max-md:landscape:pb-[max(0.35rem,env(safe-area-inset-bottom,0px))] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10 flex gap-2 max-md:landscape:gap-1.5">
+            <div className="md:hidden shrink-0 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10 flex gap-2">
                 <button
                     type="button"
                     onClick={() => {
@@ -613,10 +611,10 @@ const PlaceWikiDetailsView = ({
                             handleRequestAiInfo(placeName || wikiData?.title);
                         }
                     }}
-                    className={`group flex items-center justify-center gap-1.5 px-3 py-2.5 max-md:landscape:px-2 max-md:landscape:py-1.5 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-xl transition-all duration-300 shadow-sm min-h-[44px] max-md:landscape:min-h-[36px] ${matchedPackage ? 'flex-1' : 'w-full'}`}
+                    className={`group flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 border border-blue-500/30 rounded-xl transition-all duration-300 shadow-sm min-h-[44px] ${matchedPackage ? 'flex-1' : 'w-full'}`}
                 >
-                    <Sparkles size={16} className="text-blue-400 group-hover:scale-110 transition-transform shrink-0 max-md:landscape:w-3.5 max-md:landscape:h-3.5" />
-                    <span className="text-[11px] sm:text-xs max-md:landscape:text-[10px] font-medium text-gray-200 tracking-wide truncate">
+                    <Sparkles size={16} className="text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
+                    <span className="text-[11px] sm:text-xs font-medium text-gray-200 tracking-wide truncate">
                         {isAiExpanded ? '로컬 왓슨' : '제미나이 묻기'}
                     </span>
                 </button>
@@ -625,10 +623,10 @@ const PlaceWikiDetailsView = ({
                     <button
                         type="button"
                         onClick={onOpenPackage}
-                        className="flex-1 group flex items-center justify-center gap-1.5 px-3 py-2.5 max-md:landscape:px-2 max-md:landscape:py-1.5 rounded-xl transition-all duration-300 shadow-sm border bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border-purple-400/50 min-h-[44px] max-md:landscape:min-h-[36px]"
+                        className="flex-1 group flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl transition-all duration-300 shadow-sm border bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500/90 hover:to-blue-500/90 border-purple-400/50 min-h-[44px]"
                     >
-                        <Briefcase size={16} className="text-purple-100 group-hover:scale-110 transition-transform shrink-0 max-md:landscape:w-3.5 max-md:landscape:h-3.5" />
-                        <span className="text-[11px] sm:text-xs max-md:landscape:text-[10px] font-medium text-white tracking-wide truncate max-md:landscape:sr-only">
+                        <Briefcase size={16} className="text-purple-100 group-hover:scale-110 transition-transform shrink-0" />
+                        <span className="text-[11px] sm:text-xs font-medium text-white tracking-wide truncate">
                             패키지 여행
                         </span>
                     </button>

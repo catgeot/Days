@@ -1,22 +1,15 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles } from 'lucide-react';
-import { mobilePlaceHeaderScrollPadding, mobilePlaceFooterScrollPadding } from '../common/mobilePlaceHeaderInset';
-import { placeScrollSurfaceClass, placeLightboxZoomClass } from '../common/placeScrollSurface';
+import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
-import { usePinchZoomPan } from '../common/usePinchZoomPan';
-import {
-  isVisualViewportPinchZoomed,
-  snapVisualViewportPinchZoom,
-} from '../../../shared/lib/mobileViewport';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
   '(max-width: 767px), ((max-width: 834px) and (hover: none) and (pointer: coarse)), ((max-height: 500px) and (orientation: landscape) and (hover: none) and (pointer: coarse))';
 
 const TOUCH_DEVICE_QUERY = '(hover: none) and (pointer: coarse)';
-
-const isViewportPinchZoomed = isVisualViewportPinchZoomed;
 
 /** 모바일 확대 포털 — 가로 스와이프 vs 탭(UI 토글) 구분 */
 const MOBILE_SWIPE_THRESHOLD_PX = 48;
@@ -46,11 +39,9 @@ const PlaceGalleryView = React.memo(({
 }) => {
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
-  const lightboxViewportRef = useRef(null);
   const mobileSwipeStartRef = useRef(null);
   const suppressMobileTapRef = useRef(false);
   usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
-  usePinchZoomPan(scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
     const byId = images.findIndex((img) => img.id === selectedImg.id);
@@ -80,8 +71,6 @@ const PlaceGalleryView = React.memo(({
   /** 그리드·확대·회전 중에도 터치 기기는 body 포털 유지 (헤더 z-index 겹침 방지) */
   const shouldUseMobilePortal = Boolean(selectedImg && (isMobileViewport || isTouchDevice));
 
-  usePinchZoomPan(lightboxViewportRef, Boolean(selectedImg && shouldUseMobilePortal));
-
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_GALLERY_LIGHTBOX_QUERY);
     const sync = () => setIsMobileViewport(mq.matches);
@@ -101,9 +90,12 @@ const PlaceGalleryView = React.memo(({
   useEffect(() => {
     if (!shouldUseMobilePortal) return undefined;
     const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
     document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
     return () => {
       document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
     };
   }, [shouldUseMobilePortal]);
 
@@ -147,7 +139,7 @@ const PlaceGalleryView = React.memo(({
   }, [currentIndex, images, setSelectedImg]);
 
   const onMobilePhotoTouchStart = useCallback((e) => {
-    if (!showNavControls || e.touches.length !== 1 || isViewportPinchZoomed()) return;
+    if (!showNavControls || e.touches.length !== 1) return;
     const t = e.touches[0];
     mobileSwipeStartRef.current = { x: t.clientX, y: t.clientY };
     suppressMobileTapRef.current = false;
@@ -235,8 +227,7 @@ const PlaceGalleryView = React.memo(({
           </div>
 
           <div
-            ref={lightboxViewportRef}
-            className={`relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1 ${placeLightboxZoomClass}`}
+            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1 touch-none"
             onTouchStart={onMobilePhotoTouchStart}
             onTouchEnd={onMobilePhotoTouchEnd}
             onTouchCancel={onMobilePhotoTouchCancel}
@@ -247,7 +238,6 @@ const PlaceGalleryView = React.memo(({
                 return;
               }
               if (e.ctrlKey || e.metaKey) return;
-              if (isViewportPinchZoomed()) return;
               setIsMobileUIHidden((prev) => !prev);
             }}
             onDoubleClick={(e) => {
@@ -257,11 +247,6 @@ const PlaceGalleryView = React.memo(({
                   handleRemoveImage(selectedImg);
                   setSelectedImg(null);
                 }
-                return;
-              }
-              if (isViewportPinchZoomed()) {
-                e.preventDefault();
-                snapVisualViewportPinchZoom(Number.POSITIVE_INFINITY);
               }
             }}
           >
@@ -492,7 +477,7 @@ const PlaceGalleryView = React.memo(({
       ) : (
         <div
           ref={scrollContainerRef}
-          className={`w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} ${mobilePlaceHeaderScrollPadding} ${mobilePlaceFooterScrollPadding} md:pt-10 md:pb-6`}
+          className={`w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} ${mobilePlaceHeaderScrollPadding} landscape:pt-[calc(3.25rem+env(safe-area-inset-top,0px))] md:pt-10 pb-28 landscape:pb-14 md:pb-6`}
         >
 
           {mobileSecondaryNav && (

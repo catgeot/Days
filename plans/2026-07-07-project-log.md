@@ -85,97 +85,78 @@
 
 ---
 
-## 플래너 모바일 핀치 줌 — 좌·우·상·하 패닝 (2026-07-07)
+## PlaceCard 줌·가로 UX (2026-07-07)
 
-**상태**: **✅ 모바일 QA 통과 (2026-07-07)**
+**상태**: **⏳ revert 적용·커밋 대기 — 다음 세션 정책 구현**
 
-- **증상** — 핀치 확대 후 가로 이동 불가 · 한 손가락 패닝 막힘(세로 스크롤과 충돌)
-- **원인** — `pinch-zoom-scroll` `touch-action: pan-y pinch-zoom` · PlaceCard `fixed` 레이아웃
-- **수정** — [`usePinchZoomPan.js`](../src/components/PlaceCard/common/usePinchZoomPan.js) · 줌 시 `overflow:hidden` + `translate` 통합 패닝 · 2손가락 네이티브 유지 · 플래너·위키·갤러리·리뷰 공통
-- **릴리스 노트** — 합의 후 `releaseNotes.js` 반영 (미반영)
+### 본 세션
 
----
+- **되돌리기 ✅** — `git revert --no-commit 836be2f 0aa82f0` (working tree = e74f8e3 줌 기준). `usePinchZoomPan`·`snapVisualViewportPinchZoom`·라이트박스 viewport 줌 제거.
+- **시행착오** — 공통 훅·meta 스냅·탭별 패치 → 줌 잔류·탭 이탈·플래너 좌우 막힘. **패치 중단·정책 분리** (사용자 합의).
+- **836be2f 가로 chrome** — revert에 포함·**함께 제거** · immersive와 **별도 커밋** 재적용 권장.
 
-## PlaceCard 가로·갤러리 UX (2026-07-07)
+### 다음 세션 확정 정책
 
-**상태**: **⏳ 부분 QA · 다음 세션 세부 조정** (커밋 후 핸드오프)
+| 영역 | 확대 | 비고 |
+|------|------|------|
+| 갤러리 **그리드** | 없음 | `touch-action: pan-y` |
+| 갤러리 **개별 사진** | 두 손가락 in/out만 | **img transform 격리** 권장 · 강제 1.0 스냅·더블탭 리셋 **없음** |
+| **위키** | 없음 | 텍스트 가독성 충분 |
+| **플래너** | in/out만 | **유일한 텍스트 줌** · 한 손가락 상하좌우 스크롤 · `usePinchZoomPan`·meta 스냅 **금지** |
+| **가로 모드** | — | 헤더·푸터 숨김·본문 집중 · `isMobileUIHidden` 패턴 |
 
-### 본 세션 반영
+**금지** — `usePinchZoomPan` · `snapVisualViewportPinchZoom` · document viewport 줌 공통 적용.
 
-- **SSOT** — `mobilePlaceHeaderInset.js`(가로 pt·footer pb) · `placeLightboxZoomClass` · `mobileViewport.js` `snapVisualViewportPinchZoom`
-- **(1~2) 가로 chrome** — `PlaceChatPanel`·`PlannerTab`·`PlaceWikiDetailsView` landscape 축소
-- **(3) 갤러리 라이트박스** — 핀치 확대/축소 ✅ · `usePinchZoomPan` · `touch-none` 제거
-- **(4) 연관 키워드** — 가로 접기·토글 · portrait 이중 렌더 회귀 수정 ✅
-- **줌 스냅** — scale ~1.03 잔류 → `snapVisualViewportPinchZoom`(meta viewport) · 1.0 복귀 ✅
+### 구현 순서
 
-### QA·잔여 (사용자 확인 2026-07-07)
+1. revert **커밋**(한글)
+2. `placeScrollSurface` 탭별 클래스 SSOT
+3. 플래너만 CSS 네이티브 줌 + 탭 이탈 reset
+4. 라이트박스 img transform (별도)
+5. 가로 immersive + chrome 재적용 (별도)
 
-| # | 결과 | 메모 |
-|---|------|------|
-| 갤러리 핀치 in/out | ✅ | 축소·확대 동작 |
-| 1.0 복귀 후 스크롤 | ❌ | **헤더와 본문 분리** — 스크롤 시 본문만 스크롤되지 않고 통째로 아래로 밀리며 고정 헤더와 분리 |
-| 가로 읽기 UX | ⏳ | 축소만 적용 · **헤더·푸터 가림(immersive)** 방안은 미구현·검토 예정 |
+### 에이전트 의견
 
-### 다음 세션 과제
-
-| 우선 | 내용 | grep·파일 |
-|------|------|-----------|
-| **P0** | 핀치 줌 1.0 복귀 **후 스크롤** 시 헤더·본문 분리 수정 | `usePinchZoomPan` · `snapVisualViewportPinchZoom` · `PlaceChatPanel` · `mobilePlaceHeaderInset` · `visualViewport` |
-| **P1** | **visualViewport meta 스냅 대신** CSS transform 기반 핀치 in/out 단일 로직 검토(꼬임 없으면 전환) | `usePinchZoomPan` · `PlaceGalleryView` lightbox · `placeLightboxZoomClass` |
-| **P2** | **가로 immersive** — 헤더·푸터(연관 키워드·2차 nav) 탭/스크롤로 가림·본문 집중 | `PlaceChatPanel` · `PlaceMobileSecondaryNav` · `landscape:` · `PlaceGalleryView` lightbox `isUIHidden` 패턴 |
-
-**가로 immersive 후보** — 스크롤·탭 시 chrome 숨김 · 라이트박스 `isMobileUIHidden`과 동일 UX · 플래너/위키/갤러리 그리드 공통.
+- 플래너 네이티브 줌도 fixed 헤더에서 **줌 잔류** 가능 → 탭·카드 닫기 시 `resetIosZoomAfterInput` 유사 reset.
+- 사진은 **transform 격리**가 스와이프·탭 이탈과 충돌 최소.
+- 가로 immersive는 줌과 **독립 PR**.
 
 ---
 
-## PlaceCard 가로·갤러리 세션 — 에이전트 핸드오프
+## PlaceCard 줌·가로 UX — 에이전트 핸드오프
 
 ### 읽을 것 (3)
 
-1. [`.ai-context.md`](../.ai-context.md) — 3절 모바일 뷰포트·PlaceCard · 5~6절 스냅샷
-2. **본 일지** — 「PlaceCard 가로·갤러리 UX」+ QA·잔여 표
-3. grep — `snapVisualViewportPinchZoom` · `usePinchZoomPan` · `PlaceGalleryView`(lightbox, lightboxViewportRef) · `PlaceChatPanel`(mobilePlaceHeaderScrollPadding) · `mobilePlaceHeaderInset` · `visualViewport`
+1. [`.ai-context.md`](../.ai-context.md) — 3절 · 5~6절
+2. **본 일지** — 「PlaceCard 줌·가로 UX」정책 표
+3. grep — `placeScrollSurface` · `pinch-zoom-scroll` · `PlaceGalleryView` · `PlannerTab` · `PlaceChatPanel` · `landscape:` · `resetIosZoomAfterInput`
 
 ### 금지 (3)
 
-1. `GLOBE_VIEW.flyZoom`·`HIGH_ZOOM_FULL_REVEAL` 임의 변경
-2. PowerShell `-replace`/`Set-Content`로 한글 JSX 수정
-3. 사용자 QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
+1. `usePinchZoomPan` · `snapVisualViewportPinchZoom` 재도입
+2. PowerShell JSX · `GLOBE_VIEW.flyZoom` 변경
+3. QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
 
-### 다음 세션 작업
+### 다음 세션
 
-| 우선 | 내용 |
+| 순서 | 내용 |
 |------|------|
-| P0 | 1.0 복귀 후 스크롤 — 헤더·본문 분리(통째 이동) 수정 · `snapVisualViewportPinchZoom` 부작용·offsetTop 점검 |
-| P1 | meta viewport 스냅 없이 transform 핀치 in/out 단일화 가능성 검토 |
-| P2 | 가로 모드 헤더·푸터 immersive 가림(본문 집중) 설계·적용 |
+| 0 | revert **커밋** |
+| 1 | 탭별 touch-action SSOT |
+| 2 | 플래너만 줌+스크롤 |
+| 3 | 라이트박스 img transform |
+| 4 | 가로 immersive + chrome |
 
-### 제시어 (다음 세션)
+### 제시어
 
 ```
 PlaceCard-줌-이어하기 @plans/2026-07-07-project-log.md
 
-갤러리 핀치 in/out ✅. P0: 1.0 복귀 후 스크롤 시 PlaceChatPanel 헤더와 본문 분리(통째 밀림) 수정.
-P1: snapVisualViewportPinchZoom(meta) 대신 transform 핀치 단일 로직 검토. P2: 가로 immersive(헤더·푸터 가림).
-읽기: .ai-context 3·5·6절 + 본 일지 「PlaceCard 가로·갤러리 UX」+ 핸드오프.
-grep: snapVisualViewportPinchZoom · usePinchZoomPan · PlaceGalleryView · PlaceChatPanel · mobilePlaceHeaderInset.
-금지: flyZoom · PowerShell JSX · releaseNotes 합의 전.
+revert(836be2f·0aa82f0) 적용·커밋 대기. 정책: 그리드·위키 줌 없음 · 플래너만 확대·스크롤 · 사진 transform in/out · 가로 immersive.
+금지: usePinchZoomPan · snapVisualViewportPinchZoom.
+읽기: .ai-context 3·5·6절 + 본 일지 「PlaceCard 줌·가로 UX」핸드오프.
+grep: placeScrollSurface · PlannerTab · PlaceGalleryView · PlaceChatPanel landscape · resetIosZoomAfterInput.
 ```
-
----
-
-## PlaceCard 가로·갤러리 UX — 아카이브 (초기 핸드오프 2026-07-07)
-
-**초기 과제 (1~4)** — landscape chrome·라이트박스 확대 · 대부분 반영 · 상세는 위 「본 세션 반영」
-
-| 우선 | 탭 | 증상 | grep·파일 후보 |
-|------|-----|------|----------------|
-| 1 | **플래너** | 가로 모드 상단 헤더가 본문 가독 영역 과다 점유 | `PlannerTab` · `PlaceChatPanel` · `mobilePlaceHeaderInset` · `landscape:` |
-| 2 | **위키** | 가로 모드 상단·하단 고정(헤더·푸터)으로 읽기 불편 | `PlaceWikiDetailsView` · 하단 flex 푸터 · `PlaceChatPanel` |
-| 3 | **갤러리** | 그리드→개별 사진 탐색 중 **핀치 확대 불가** | `PlaceGalleryView` lightbox · `touch-none` · `shouldUseMobilePortal` · `usePinchZoomPan` |
-| 4 | **갤러리** | 가로 모드 고정 헤더·연관 키워드 하단 푸터가 화면 대부분 차지 | `PlaceGalleryView` `landscape:` · `RelatedTravelSpots` · `PlaceMobileSecondaryNav` |
-
-**공통 맥락** — 초기 과제(1~4) 대부분 반영 · **잔여 P0~P2는 위 핸드오프 참고**.
 
 ---
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, X, Briefcase, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -26,9 +26,6 @@ const HEADER_SCROLL_TOP_TITLES = {
   REVIEWS: '탭하면 리뷰 맨 위로',
 };
 
-/** 갤러리 연관 키워드 바 — 가로 모바일에서 접기 기본 */
-const MOBILE_LANDSCAPE_QUERY = '(max-width: 767px) and (orientation: landscape)';
-
 const PlaceChatPanel = React.memo(({
     location,
     isBookmarked,
@@ -50,7 +47,6 @@ const PlaceChatPanel = React.memo(({
     onOpenPackage
 }) => {
   const [copiedType, setCopiedType] = useState('');
-  const [isRelatedBarExpanded, setIsRelatedBarExpanded] = useState(false);
   const scrollRef = useRef(null);
   const navigate = useNavigate();
   const anchorKeyRef = useRef(null);
@@ -75,22 +71,6 @@ const PlaceChatPanel = React.memo(({
         scrollRef.current.scrollTop = 0;
     }
   }, [activeInfo.title, activeInfo.mode, mediaMode]);
-
-  useEffect(() => {
-    const mq = window.matchMedia(MOBILE_LANDSCAPE_QUERY);
-    const sync = () => setIsRelatedBarExpanded(!mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, []);
-
-  useEffect(() => {
-    if (selectedImg) setIsRelatedBarExpanded(false);
-  }, [selectedImg]);
-
-  const toggleRelatedBar = useCallback(() => {
-    setIsRelatedBarExpanded((prev) => !prev);
-  }, []);
 
   const openMooni = () => {
     onOpenMooni?.({ persona: PERSONA_TYPES.GENERAL });
@@ -169,7 +149,7 @@ const PlaceChatPanel = React.memo(({
 
       {/* Header — 갤러리·위키·리뷰·플래너: 지명 영역 탭 시 스크롤 맨 위 (뒤로/홈 버튼과 분리) */}
       <div
-        className="shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 max-md:landscape:py-1 max-md:landscape:gap-1 flex flex-col items-stretch justify-between gap-2 md:gap-3"
+        className="shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3"
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div className="flex items-center gap-2.5 overflow-hidden w-full min-w-0">
@@ -179,11 +159,11 @@ const PlaceChatPanel = React.memo(({
                     event.stopPropagation();
                     onClose?.();
                 }}
-                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 max-md:landscape:w-7 max-md:landscape:h-7 rounded-full bg-white/15 md:bg-white/10 text-white border border-white/25 hover:bg-white/25 transition-all shrink-0 shadow-lg touch-manipulation"
+                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/15 md:bg-white/10 text-white border border-white/25 hover:bg-white/25 transition-all shrink-0 shadow-lg touch-manipulation"
                 title="뒤로가기"
                 aria-label="뒤로가기"
              >
-                 <ArrowLeft className="w-4 h-4 md:w-4 md:h-4 max-md:landscape:w-3.5 max-md:landscape:h-3.5 pointer-events-none" />
+                 <ArrowLeft className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <button
                 type="button"
@@ -191,7 +171,7 @@ const PlaceChatPanel = React.memo(({
                     event.stopPropagation();
                     handleGoHomeClick();
                 }}
-                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 max-md:landscape:w-7 max-md:landscape:h-7 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-300 hover:bg-white/20 transition-all shrink-0 shadow-lg touch-manipulation"
+                className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-300 hover:bg-white/20 transition-all shrink-0 shadow-lg touch-manipulation"
                 title="홈으로 이동"
                 aria-label="홈으로 이동"
              >
@@ -210,12 +190,12 @@ const PlaceChatPanel = React.memo(({
                 tabIndex={supportsHeaderScrollTop ? 0 : undefined}
                 title={supportsHeaderScrollTop ? HEADER_SCROLL_TOP_TITLES[mediaMode] : undefined}
              >
-                 <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md max-md:landscape:sr-only">{location?.country || "Global"}</span>
-                 <div className="flex items-center gap-1.5 min-w-0 mt-0.5 max-md:landscape:mt-0">
+                 <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location?.country || "Global"}</span>
+                 <div className="flex items-center gap-1.5 min-w-0 mt-0.5">
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, primaryName || location.name, 'primary')}
-                        className="text-left text-base max-md:landscape:text-sm font-black tracking-tighter text-white truncate leading-none drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0"
+                        className="text-left text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0"
                         title="여행지명 복사"
                      >
                         {primaryName || location.name}
@@ -228,7 +208,7 @@ const PlaceChatPanel = React.memo(({
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, secondaryName, 'secondary')}
-                        className="mt-1 max-md:landscape:hidden w-fit text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal truncate hover:text-white"
+                        className="mt-1 w-fit text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal truncate hover:text-white"
                         title="보조 지명 복사"
                      >
                         ({secondaryName})
@@ -254,18 +234,18 @@ const PlaceChatPanel = React.memo(({
                  {mediaMode === 'PLANNER' ? (
                     <button
                         onClick={() => setMediaMode('GALLERY')}
-                        className="px-2.5 py-1.5 max-md:landscape:px-2 max-md:landscape:py-1 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 group shrink-0"
+                        className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 group shrink-0"
                     >
                         <ImageIcon className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
-                        <span className="text-xs font-bold max-md:landscape:sr-only">갤러리 복귀</span>
+                        <span className="text-xs font-bold">갤러리 복귀</span>
                     </button>
                  ) : (
                     <button
                         onClick={() => setMediaMode('PLANNER')}
-                        className="px-2.5 py-1.5 max-md:landscape:px-2 max-md:landscape:py-1 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
+                        className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
                     >
                         <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
-                        <span className="text-xs font-bold whitespace-nowrap max-md:landscape:sr-only">여행 플래너</span>
+                        <span className="text-xs font-bold whitespace-nowrap">여행 플래너</span>
                     </button>
                  )}
              </div>
@@ -355,49 +335,26 @@ const PlaceChatPanel = React.memo(({
       )}
 
       {relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(
-          <div className="md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 max-md:landscape:p-1.5 max-md:landscape:pb-[max(0.35rem,env(safe-area-inset-bottom,0px))] animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+          <div className="md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
               <style>{`
                   .no-scrollbar::-webkit-scrollbar { display: none; }
                   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
               `}</style>
-              {isRelatedBarExpanded ? (
-                <>
-                  <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pl-1 pr-2 max-md:landscape:pl-0.5 max-md:landscape:pr-1 md:pl-3 md:pr-4">
-                      {relatedPlaces.map((place, idx) => (
-                          <button
-                              key={`mob-rel-${idx}`}
-                              onClick={() => handleRelatedClick(place.data, place.isBridge)}
-                              className={`shrink-0 px-3 py-1.5 max-md:landscape:px-2 max-md:landscape:py-0.5 rounded-full border text-[11px] max-md:landscape:text-[9px] font-medium transition-all active:scale-95 flex items-center gap-1.5 shadow-sm
-                                  ${place.isBridge
-                                    ? 'bg-fuchsia-900/20 border-fuchsia-500/30 text-fuchsia-200 hover:bg-fuchsia-800/40 hover:border-fuchsia-400/50'
-                                    : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/20'}`}
-                          >
-                              {place.isBridge && <Sparkles size={10} className="text-fuchsia-400 max-md:landscape:w-2 max-md:landscape:h-2" />}
-                              {place.data.name}
-                          </button>
-                      ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={toggleRelatedBar}
-                    className="mt-1.5 hidden max-md:landscape:flex w-full items-center justify-center py-0.5 text-[9px] font-semibold text-white/45 touch-manipulation"
-                    aria-label="연관 여행지 접기"
-                  >
-                    접기
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={toggleRelatedBar}
-                  className="hidden max-md:landscape:flex w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold text-gray-300 touch-manipulation active:scale-95"
-                  aria-expanded={false}
-                  aria-label={`연관 여행지 ${relatedPlaces.length}곳 펼치기`}
-                >
-                  <Sparkles size={10} className="text-fuchsia-400 shrink-0" />
-                  연관 {relatedPlaces.length}
-                </button>
-              )}
+              <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pl-3 pr-4">
+                  {relatedPlaces.map((place, idx) => (
+                      <button
+                          key={`mob-rel-${idx}`}
+                          onClick={() => handleRelatedClick(place.data, place.isBridge)}
+                          className={`shrink-0 px-3 py-1.5 rounded-full border text-[11px] font-medium transition-all active:scale-95 flex items-center gap-1.5 shadow-sm
+                              ${place.isBridge
+                                ? 'bg-fuchsia-900/20 border-fuchsia-500/30 text-fuchsia-200 hover:bg-fuchsia-800/40 hover:border-fuchsia-400/50'
+                                : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/20'}`}
+                      >
+                          {place.isBridge && <Sparkles size={10} className="text-fuchsia-400" />}
+                          {place.data.name}
+                      </button>
+                  ))}
+              </div>
           </div>,
           document.body
       )}

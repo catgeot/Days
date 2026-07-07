@@ -9,7 +9,6 @@ import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
-import { usePinchZoomPan } from '../common/usePinchZoomPan';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
 const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
@@ -162,7 +161,6 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
   const navigate = useNavigate();
   const scrollContainerRef = useRef(null);
   usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, true);
-  usePinchZoomPan(scrollContainerRef, true);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
