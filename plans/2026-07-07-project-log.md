@@ -110,6 +110,17 @@
 
 ---
 
+## PlaceCard MOONi·갤러리 scroll-top (2026-07-07)
+
+**상태**: **✅ QA·디자인 확정 · 커밋·푸시**
+
+- **갤러리 맨 위 버튼 ✅** — `PlaceGalleryView` · `usePlaceMediaScrollToTop` · 연관바 위 `bottom-24`
+- **MOONi 헤더 고정 ✅** — 모바일 드래그 FAB(`PlaceMooniFab`·`placeMooniFabPosition`) 제거 · 헤더 원형 버튼(플래너 옆) SSOT
+- **헤더 MOONi 시인성 ✅** — `place-header-mooni-btn` · `mooni-header-glow` · 캐릭터 drop-shadow · reduced-motion 고정 글로우
+- **QA** — 갤러리 scroll-top · MOONi 헤더 · 글로우 디자인 사용자 확정
+
+---
+
 **상태 (이전)**: **⏳ revert 적용·커밋 대기 — 다음 세션 정책 구현**
 
 ### 본 세션

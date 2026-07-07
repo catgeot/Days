@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles } from 'lucide-react';
+import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp } from 'lucide-react';
 import { mobilePlaceHeaderScrollPadding, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
@@ -44,7 +44,8 @@ const PlaceGalleryView = React.memo(({
   const scrollContainerRef = useRef(null);
   const mobileSwipeStartRef = useRef(null);
   const suppressMobileTapRef = useRef(false);
-  usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
     const byId = images.findIndex((img) => img.id === selectedImg.id);
@@ -150,6 +151,20 @@ const PlaceGalleryView = React.memo(({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (selectedImg) {
+      setShowScrollToTop(false);
+      return;
+    }
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const threshold = 280;
+    const onScroll = () => setShowScrollToTop(el.scrollTop > threshold);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [selectedImg, images.length, isImgLoading]);
 
   const handlePrev = useCallback((e) => {
     e?.stopPropagation();
@@ -601,6 +616,18 @@ const PlaceGalleryView = React.memo(({
             </div>
           </div>
         </div>
+      )}
+      {showScrollToTop && !selectedImg && createPortal(
+        <button
+          type="button"
+          onClick={scrollGalleryToTop}
+          className={`fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-24 right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation ${mobileLandscapeChromeHidden}`}
+          aria-label="갤러리 맨 위로"
+        >
+          <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
+          <span className="hidden md:inline text-sm font-bold">맨 위</span>
+        </button>,
+        document.body
       )}
     </div>
   );

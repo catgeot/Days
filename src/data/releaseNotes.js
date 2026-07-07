@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-07-07-2',
+    category: 'feature',
+    title: '장소 카드에서 MOONi·갤러리가 더 편해졌어요',
+    items: [
+      '모바일 장소 카드에서 MOONi를 상단 헤더에서 바로 열 수 있어요. 본문을 가리지 않아요.',
+      '갤러리 탭에서 긴 목록을 볼 때 맨 위로 버튼으로 빠르게 돌아갈 수 있어요.',
+    ],
+  },
+  {
     id: '2026-07-07',
     category: 'feature',
     title: '모바일에서 출발지 검색이 더 편해졌어요',

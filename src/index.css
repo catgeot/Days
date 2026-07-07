@@ -35,6 +35,36 @@ body {
   }
 }
 
+@keyframes mooni-header-glow {
+  0%, 100% {
+    border-color: rgba(34, 211, 238, 0.42);
+    box-shadow:
+      0 0 10px rgba(34, 211, 238, 0.22),
+      0 2px 10px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    border-color: rgba(103, 232, 249, 0.72);
+    box-shadow:
+      0 0 18px rgba(34, 211, 238, 0.48),
+      0 0 6px rgba(34, 211, 238, 0.35),
+      0 2px 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.place-header-mooni-btn {
+  animation: mooni-header-glow 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place-header-mooni-btn {
+    animation: none;
+    border-color: rgba(34, 211, 238, 0.55);
+    box-shadow:
+      0 0 14px rgba(34, 211, 238, 0.38),
+      0 2px 10px rgba(0, 0, 0, 0.35);
+  }
+}
+
 /* PlaceCardSummary — 열릴 때·호버 시 테두리 글로우 */
 @keyframes place-summary-border-enter {
   0% {

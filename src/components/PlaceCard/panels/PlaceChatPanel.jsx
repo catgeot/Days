@@ -13,7 +13,6 @@ import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
-import PlaceMooniFab from '../common/PlaceMooniFab';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.png';
@@ -221,16 +220,21 @@ const PlaceChatPanel = React.memo(({
                     </span>
                  )}
              </div>
-             <div className="shrink-0 flex items-center gap-2">
+             <div className="shrink-0 flex items-center gap-1.5 md:gap-2">
                  <button
                     type="button"
                     onClick={openMooni}
-                    className="hidden md:flex items-center gap-1 px-2 py-1.5 md:px-2.5 md:py-1.5 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-100 shadow-lg shadow-cyan-900/20 transition-all shrink-0 touch-manipulation"
+                    className="place-header-mooni-btn flex h-8 w-8 md:h-auto md:w-auto items-center justify-center gap-1 rounded-full border border-cyan-400/45 bg-cyan-500/25 px-0 md:px-2.5 md:py-1.5 text-cyan-50 ring-1 ring-cyan-300/30 ring-inset transition-all shrink-0 touch-manipulation hover:border-cyan-300/70 hover:bg-cyan-500/35 active:scale-95"
                     title="MOONi에게 물어보기"
                     aria-label="MOONi에게 물어보기"
                  >
-                    <img src={mooniChar} alt="" className="h-6 w-6 object-contain" draggable={false} />
-                    <span className="text-[10px] md:text-xs font-bold whitespace-nowrap hidden sm:inline">MOONi</span>
+                    <img
+                      src={mooniChar}
+                      alt=""
+                      className="h-6 w-6 object-contain drop-shadow-[0_2px_10px_rgba(34,211,238,0.65)] brightness-110 contrast-[1.08] saturate-110"
+                      draggable={false}
+                    />
+                    <span className="hidden md:inline text-xs font-bold whitespace-nowrap text-cyan-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">MOONi</span>
                  </button>
                  {mediaMode === 'PLANNER' ? (
                     <button
@@ -321,19 +325,6 @@ const PlaceChatPanel = React.memo(({
                       <Send size={12} />
                   </div>
               </button>
-          </div>
-      )}
-
-      {/* 모바일: 드래그 가능 MOONi FAB (플래너 scroll-top z-[170] 우측 예약·갤러리 연관바 minBottom 반영) */}
-      {!isFullScreen && (
-          <div className={mobileLandscapeChromeHidden}>
-            <PlaceMooniFab
-              onOpen={openMooni}
-              mediaMode={mediaMode}
-              hasGalleryRelatedBar={
-                relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg
-              }
-            />
           </div>
       )}
 

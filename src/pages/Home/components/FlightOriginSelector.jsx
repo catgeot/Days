@@ -24,7 +24,7 @@ const LISTBOX_MAX_HEIGHT = 176;
 const LISTBOX_FLOOR_HEIGHT = 44;
 const LISTBOX_GAP = 4;
 const LISTBOX_VIEWPORT_PAD = 8;
-/** FlightCinemaBar z-[120]·PlaceMooniFab z-[165]·SearchDiscovery popover z-[215] 위 */
+/** FlightCinemaBar z-[120]·SearchDiscovery popover z-[215] 위 */
 const LISTBOX_Z_INDEX = 225;
 
 /**
