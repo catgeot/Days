@@ -327,6 +327,14 @@ grep: HomeGlobeMapbox(flyToAndPin,pivotTourExplore) · globeTourEngine(waitForMo
 - **증상**: `/place/` 탐색 시 `globe reveal fallback` 반복 · Rank view 중복 차단 로그 · `usePlannerData` 리스너 등록/제거 반복
 - **수정**: `HomeGlobeMapbox` fallback — `pauseRender`·이미 reveal 시 타이머/경고 생략 · `useHomeHandlers` `addScoutPin`과 중복 `recordInteraction` 제거 · `usePlannerData` 리스너 DEV 로그 삭제
 
+## PlaceMiniMap Mapbox container 오류
+
+**상태**: **✅ 로컬 QA 통과 (2026-07-07)**
+
+- **증상**: 위키 탭 `PlaceMiniMap` — `Invalid type: 'container' must be a String or HTMLElement`
+- **원인**: `PlaceMediaPanel` 탭 전환 시 `hidden` 패널에 Mapbox가 마운트 · react-map-gl 비동기 init 타이밍
+- **수정**: `PlaceMiniMap.jsx` — `isActive`·`requestAnimationFrame` 지연 마운트 · 좌표 `Number()` · `PlaceWikiDetailsView`에서 `isActive` 전달
+
 ## 홈 버킷리스트 — 갤러리 API·SessionStorage 과다 호출
 
 **상태**: **✅ 로컬 수정·커밋 (2026-07-07)** — batch `place_stats`·`place_id` 매칭 강화는 **다음 세션**
@@ -348,6 +356,7 @@ grep: HomeGlobeMapbox(flyToAndPin,pivotTourExplore) · globeTourEngine(waitForMo
 | Rank view 중복 | `useHomeHandlers.js` — `addScoutPin`과 중복 `recordInteraction` 제거 |
 | Planner DEV 로그 | `usePlannerData.js` — Toolkit 리스너 등록/제거 로그 삭제 |
 | 버킷리스트 갤러리 과다 | `LogoPanel.jsx` · `usePlaceGallery.js` — `isOpen` 시만 마운트 · `thumbnailOnly` |
+| PlaceMiniMap container | `PlaceMiniMap.jsx` · `PlaceWikiDetailsView.jsx` — WIKI `isActive`·rAF 지연 마운트 |
 
 ### Supabase 재사용 (현행 SSOT)
 

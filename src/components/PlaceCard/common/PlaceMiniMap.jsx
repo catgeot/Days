@@ -50,10 +50,14 @@ const MAP_STYLES = {
     streets: { label: '도심', url: 'mapbox://styles/mapbox/navigation-night-v1' }
 };
 
-const PlaceMiniMap = ({ lat, lng }) => {
+const PlaceMiniMap = ({ lat, lng, isActive = true }) => {
     const mapRef = useRef(null);
     const mapContainerRef = useRef(null);
     const spinReqRef = useRef(null);
+    const [shouldRenderMap, setShouldRenderMap] = useState(false);
+
+    const latitude = Number(lat);
+    const longitude = Number(lng);
 
     const [is3D, setIs3D] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -69,6 +73,25 @@ const PlaceMiniMap = ({ lat, lng }) => {
 
     // Mapbox 토큰 (환경 변수에서 가져오기)
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+    // WIKI 탭이 보일 때만 Mapbox 마운트 — hidden 패널·레이아웃 전 init 시 container 오류 방지
+    useEffect(() => {
+        if (!isActive || !Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+            setShouldRenderMap(false);
+            return undefined;
+        }
+
+        let cancelled = false;
+        const frame = requestAnimationFrame(() => {
+            if (!cancelled) setShouldRenderMap(true);
+        });
+
+        return () => {
+            cancelled = true;
+            cancelAnimationFrame(frame);
+            setShouldRenderMap(false);
+        };
+    }, [isActive, latitude, longitude]);
 
     useEffect(() => {
         // Fullscreen API 지원 여부 확인 (크로스 브라우저)
@@ -109,7 +132,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
         if (mapRef.current) {
             mapRef.current.stop();
             mapRef.current.jumpTo({
-                center: [lng - 60, Math.max(lat - 20, -80)], // 회전 효과를 위한 오프셋
+                center: [longitude - 60, Math.max(latitude - 20, -80)], // 회전 효과를 위한 오프셋
                 zoom: 0.5,
                 pitch: 0,
                 bearing: 0
@@ -118,7 +141,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
         queueMicrotask(() => {
             setMapState('idle');
         });
-    }, [lat, lng]);
+    }, [latitude, longitude]);
 
     // 대기 상태(idle)일 때 지구 자전 효과
     useEffect(() => {
@@ -158,7 +181,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
         setMapState('playing');
 
         mapRef.current.flyTo({
-            center: [lng, lat],
+            center: [longitude, latitude],
             zoom: 10,
             pitch: is3D ? 60 : 0,
             bearing: is3D ? -20 : 0,
@@ -176,7 +199,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
         if (!mapRef.current) return;
         mapRef.current.stop();
         mapRef.current.jumpTo({
-            center: [lng, lat],
+            center: [longitude, latitude],
             zoom: 10,
             pitch: is3D ? 60 : 0,
             bearing: is3D ? -20 : 0
@@ -241,7 +264,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
         }
     };
 
-    if (!lat || !lng) return null;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
 
     if (!MAPBOX_TOKEN) {
         return (
@@ -280,11 +303,12 @@ const PlaceMiniMap = ({ lat, lng }) => {
                 </div>
             )}
 
+            {shouldRenderMap && (
             <Map
                 ref={mapRef}
                 initialViewState={{
-                    longitude: lng - 60,
-                    latitude: Math.max(lat - 20, -80),
+                    longitude: longitude - 60,
+                    latitude: Math.max(latitude - 20, -80),
                     zoom: 0.5,
                     pitch: 0,
                     bearing: 0
@@ -305,6 +329,11 @@ const PlaceMiniMap = ({ lat, lng }) => {
                 }}
                 terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
                 onLoad={onMapLoad}
+                onError={(evt) => {
+                    if (import.meta.env.DEV) {
+                        console.error('[PlaceMiniMap] Mapbox error:', evt?.error);
+                    }
+                }}
                 onMouseDown={handleMapInteraction}
                 onTouchStart={handleMapInteraction}
                 onWheel={handleMapInteraction}
@@ -330,7 +359,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
                     maxzoom={14}
                 />
 
-                <Marker longitude={lng} latitude={lat} anchor="center">
+                <Marker longitude={longitude} latitude={latitude} anchor="center">
                     {/* 커스텀 텍스트 라벨 제거, 파란 점만 표시 */}
                     <div className={`w-5 h-5 bg-blue-500 rounded-full border-3 border-white shadow-2xl relative transition-opacity duration-1000 ${mapState === 'idle' ? 'opacity-0' : 'opacity-100'}`}>
                         {/* 외곽 링 효과 */}
@@ -346,6 +375,7 @@ const PlaceMiniMap = ({ lat, lng }) => {
                     <NavigationControl position="bottom-right" showCompass={true} showZoom={true} />
                 )}
             </Map>
+            )}
 
             {/* 상단 컨트롤 버튼 그룹 */}
             {mapState === 'ready' && (

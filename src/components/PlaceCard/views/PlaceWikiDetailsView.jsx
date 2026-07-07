@@ -403,7 +403,11 @@ const PlaceWikiDetailsView = ({
                         {/* 지도 (요약글 아래, 본문 진입 전) */}
                         {location?.lat && location?.lng && (
                             <div className="bg-white/5 p-2 md:p-4 rounded-3xl border border-white/10 shadow-xl my-12 md:mx-12">
-                                <PlaceMiniMap lat={location.lat} lng={location.lng} name={location.name} />
+                                <PlaceMiniMap
+                                    lat={location.lat}
+                                    lng={location.lng}
+                                    isActive={isActive}
+                                />
                             </div>
                         )}
 
