@@ -6,7 +6,7 @@
 
 ## 홈 3D 투어 — 연관 키워드·권역 리스트 지구본 이동
 
-**상태**: **⏳ 로컬 빌드 통과 · 다음 세션 QA·이어하기**
+**상태**: **✅ 로컬·모바일 QA 통과 (2026-07-07)**
 
 ### 증상
 
@@ -27,12 +27,25 @@
 - [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx) — `flyToAndPin`: `TOUR_READY`→`pivotTourExplore` · `TOUR_PLAYING/BOOTSTRAPPING`→skip 후 pending pivot
 - [`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) · [`index.jsx`](../src/pages/Home/index.jsx) — `moveToLocation`에 `{ location }` 전달 · `tourReadyAnchor` 보강 · `TOUR_READY` 시 `tourLaunchPending` 해제
 
-### QA 체크리스트 (다음 세션)
+### QA 체크리스트
 
-- [ ] 데스크톱: 3D 투어 완료(`TOUR_READY`) 후 연관 키워드 → 지구본 pivot
-- [ ] 모바일: 첫 3D 투어 자연 종료 → Skip 사라짐 · 권역 리스트 노출·클릭 이동
-- [ ] 투어 재생 중 연관 키워드 → skip+새 지명 pivot
-- [ ] 회귀: 2D 복귀 · 카테고리 면 · 항공 시네마 · MOONi FAB
+- [x] 데스크톱: 3D 투어 완료(`TOUR_READY`) 후 연관 키워드 → 지구본 pivot
+- [x] 모바일: 첫 3D 투어 자연 종료 → Skip 사라짐 · 권역 리스트 노출·클릭 이동
+- [x] 투어 재생 중 연관 키워드 → skip+새 지명 pivot
+- [x] 회귀: 2D 복귀 · 카테고리 면 · 항공 시네마 · MOONi FAB
+- [x] 후속: 출발지 검색 접힘 · 투어 중 카테고리 `endTour`+면 이동 · 모바일 Skip 고착 해소
+
+### QA 후속 (로컬 시험 피드백)
+
+- **출발지 검색** — `TOUR_READY` pivot·권역 리스트 후에도 검색 패널 상시 노출 → `initialOriginExpanded={false}` · `location.slug` 변경 시 접힘 리셋
+- **카테고리 클릭** — 투어 중 카테고리 선택 시 `endTour` 후 면 이동 (`handleCategorySelect`)
+- **지구본 50% 이탈** — `flyToCategoryFace`가 3D 투어 pitch를 유지하던 문제 → `GLOBE_VIEW.default` pitch/bearing 고정
+
+### QA 후속 2 (모바일 Skip 고착)
+
+- **증상** — 투어 시각 종료 후에도 `TourMobileBar` Skip 유지 · 관문 리스트 pivot 후 `3D 투어` 버튼 미노출
+- **원인** — Mapbox 엔진 `TOUR_READY` vs `index` `globeMode` `TOUR_PLAYING` 불일치 · 모바일 `moveend` 미발화로 `playKeyframes` 완료 지연
+- **수정** — `globeTourEngine` duration cap·idle 폴백 · 엔진 콜백 ref · 모바일 400ms mode sync
 
 ---
 
@@ -50,13 +63,12 @@
 2. `travelSpots.js` / JSON spots 직접 수정
 3. 사용자 QA·릴리스 노트 합의 전 「완료」 단정 · `releaseNotes.js` 임의 반영
 
-### 다음 세션 — QA·후속
+### 다음 세션 — 후속 후보
 
 | 항목 | 메모 |
 |------|------|
-| **1차** | 위 QA 체크리스트 실기기·데스크톱 검증 |
 | **잔여 리스크** | pivot 이중 호출(`flyToAndPin`+`index` effect) · 타임아웃 값 튜닝 |
-| **후속 후보** | `TourMobileBar`·Skip/2D UX · 투어 중 장소카드·연관 칩 일관성 · `globeLandmarks` 품질 |
+| **후속 후보** | `TourMobileBar`·Skip/2D UX · 투어 중 장소카드·연관 칩 일관성 · `globeLandmarks` 품질 · 릴리스 노트 합의 |
 
 ### 제시어 (다음 세션)
 

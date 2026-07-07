@@ -134,7 +134,7 @@ const PlaceCardSummary = ({
 
   useEffect(() => {
     setOriginExpanded(initialOriginExpanded);
-  }, [location?.id, initialOriginExpanded]);
+  }, [location?.id, location?.slug, initialOriginExpanded]);
 
 
 

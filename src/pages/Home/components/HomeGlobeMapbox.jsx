@@ -301,6 +301,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const prevCategoryFaceEpochRef = useRef(categoryFaceEpoch);
   const categoryFaceFlyGenRef = useRef(0);
   const highlightCategoryRef = useRef(highlightCategory);
+  const onGlobeModeChangeRef = useRef(onGlobeModeChange);
+  const tourEngineCallbacksRef = useRef({});
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [dimensions, setDimensions] = useState(() => readViewportSize());
   const [ripples, setRipples] = useState([]);
@@ -1079,7 +1081,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     prevTourEngineModeRef.current = mode;
     tourActiveRef.current = isTourMode(mode);
     setGlobeMode(mode);
-    onGlobeModeChange?.(mode);
+    onGlobeModeChangeRef.current?.(mode);
 
     if (mode === GLOBE_MODE.TOUR_BOOTSTRAPPING || mode === GLOBE_MODE.TOUR_PLAYING) {
       clearReachBoundaryState();
@@ -1103,7 +1105,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (mode === GLOBE_MODE.GLOBE_2D) {
       clearReachBoundaryState();
     }
-  }, [clearReachBoundaryState, loadReachBoundaries, onGlobeModeChange, pivotTourExplore]);
+  }, [clearReachBoundaryState, loadReachBoundaries, pivotTourExplore]);
 
   const handleTourUiChange = useCallback((active, meta = {}) => {
     const map = mapRef.current?.getMap();
@@ -1112,18 +1114,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     resetAndApplyPlaceLabelVisibility();
   }, [globeTheme, resetAndApplyPlaceLabelVisibility]);
 
+  tourEngineCallbacksRef.current = {
+    onModeChange: handleTourModeChange,
+    onTourUiChange: handleTourUiChange,
+  };
+
   const ensureTourEngine = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return null;
     if (!tourEngineRef.current) {
       tourEngineRef.current = createGlobeTourEngine(map, {
         defaultView: GLOBE_VIEW.default,
-        onModeChange: handleTourModeChange,
-        onTourUiChange: handleTourUiChange
+        onModeChange: (mode) => tourEngineCallbacksRef.current.onModeChange?.(mode),
+        onTourUiChange: (active, meta) => tourEngineCallbacksRef.current.onTourUiChange?.(active, meta),
       });
     }
     return tourEngineRef.current;
-  }, [handleTourModeChange, handleTourUiChange]);
+  }, []);
 
   const ensureFlightCinemaEngine = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -1347,6 +1354,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     highlightCategoryRef.current = highlightCategory;
   }, [highlightCategory]);
 
+  useEffect(() => {
+    onGlobeModeChangeRef.current = onGlobeModeChange;
+  }, [onGlobeModeChange]);
+
   const flyToCategoryFace = useCallback((category) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender || isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
@@ -1366,23 +1377,22 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const flyMs = GLOBE_FACE_FLY_MS;
     const targetZoom = resolveCategoryFaceMapboxZoom(map.getZoom());
 
+    const faceCamera = {
+      center: [normalizedLng, focus.lat],
+      zoom: targetZoom,
+      pitch: GLOBE_VIEW.default.pitch,
+      bearing: GLOBE_VIEW.default.bearing
+    };
+
     try {
       map.stop();
       map.flyTo({
-        center: [normalizedLng, focus.lat],
-        zoom: targetZoom,
-        pitch: map.getPitch(),
-        bearing: map.getBearing(),
+        ...faceCamera,
         duration: flyMs,
         essential: true
       });
     } catch {
-      map.jumpTo({
-        center: [normalizedLng, focus.lat],
-        zoom: targetZoom,
-        pitch: map.getPitch(),
-        bearing: map.getBearing()
-      });
+      map.jumpTo(faceCamera);
     }
 
     rotationTimer.current = setTimeout(() => {

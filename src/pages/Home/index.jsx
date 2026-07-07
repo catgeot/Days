@@ -184,13 +184,20 @@ function Home() {
     toggleBookmark
   });
 
-  const handleCategorySelect = useCallback((nextCategory) => {
+  const handleCategorySelect = useCallback(async (nextCategory) => {
     if (flightCinemaActive) {
       globeRef.current?.closeFlightCinema?.();
     }
+    const activeMode = globeRef.current?.getGlobeMode?.() ?? globeMode;
+    if (isTourMode(activeMode)) {
+      tourReadyAnchorRef.current = null;
+      setTourPivoted(false);
+      setTourLaunchPending(false);
+      await globeRef.current?.endTour?.();
+    }
     setCategory(nextCategory);
     setCategoryFaceEpoch((epoch) => epoch + 1);
-  }, [flightCinemaActive]);
+  }, [flightCinemaActive, globeMode]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -606,6 +613,24 @@ function Home() {
       setTourLaunchPending(false);
     }
   }, []);
+
+  /** 모바일 — Mapbox 엔진·index globeMode 불일치 시 TourMobileBar Skip 고착 방지 */
+  useEffect(() => {
+    if (!isMobileViewport || !isTourActive) return undefined;
+
+    const syncEngineMode = () => {
+      const engineMode = globeRef.current?.getGlobeMode?.();
+      if (!engineMode || engineMode === globeMode) return;
+      setGlobeMode(engineMode);
+      if (engineMode === GLOBE_MODE.TOUR_READY || engineMode === GLOBE_MODE.GLOBE_2D) {
+        setTourLaunchPending(false);
+      }
+    };
+
+    syncEngineMode();
+    const timer = window.setInterval(syncEngineMode, 400);
+    return () => window.clearInterval(timer);
+  }, [globeMode, isMobileViewport, isTourActive]);
 
   const beginGlobeTour = useCallback(async (location) => {
     if (!location) return;

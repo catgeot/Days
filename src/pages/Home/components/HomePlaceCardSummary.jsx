@@ -7,7 +7,6 @@ import {
   resolveSummaryFlightCinemaOd,
 } from '../lib/globeFlightCinema.js';
 import {
-  getStoredFlightOriginIata,
   persistFlightOriginIata,
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference.js';
@@ -124,7 +123,7 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
       onApplyBrowserOriginSuggestion={
         browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
       }
-      initialOriginExpanded={!getStoredFlightOriginIata()}
+      initialOriginExpanded={false}
       onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
     />
   );

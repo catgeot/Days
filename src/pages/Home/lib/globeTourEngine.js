@@ -70,10 +70,22 @@ function waitForMoveEnd(map, timeoutMs = 14000) {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      map.off('moveend', onMoveEnd);
+      map.off('idle', onIdle);
       resolve();
     };
+    const onMoveEnd = () => finish();
+    const onIdle = () => finish();
     const timer = setTimeout(finish, timeoutMs);
-    map.once('moveend', finish);
+
+    if (!map.isMoving?.()) {
+      requestAnimationFrame(() => {
+        if (!map.isMoving?.()) finish();
+      });
+    }
+
+    map.once('moveend', onMoveEnd);
+    map.once('idle', onIdle);
   });
 }
 
@@ -92,6 +104,7 @@ function applyKeyframe(map, frame, { immediate = false } = {}) {
   }
 
   const moveTimeoutMs = Math.max(1200, (frame.duration || 0) + 800);
+  const durationCapMs = Math.max(900, (frame.duration || 0) + 200);
 
   if (frame.ease || frame.orbit) {
     map.easeTo({
@@ -102,7 +115,10 @@ function applyKeyframe(map, frame, { immediate = false } = {}) {
   } else {
     map.flyTo({ ...camera, duration: frame.duration });
   }
-  return waitForMoveEnd(map, moveTimeoutMs);
+  return Promise.race([
+    waitForMoveEnd(map, moveTimeoutMs),
+    new Promise((resolve) => setTimeout(resolve, durationCapMs))
+  ]);
 }
 
 export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defaultView } = {}) {
@@ -172,6 +188,8 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
       await playKeyframes(keyframes, { startIndex: 1 });
 
       if (!cancelled) {
+        setMode(GLOBE_MODE.TOUR_READY);
+      } else if (currentMode === GLOBE_MODE.TOUR_PLAYING) {
         setMode(GLOBE_MODE.TOUR_READY);
       }
       active = false;
