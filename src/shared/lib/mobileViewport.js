@@ -41,6 +41,15 @@ export function anchorRectInVisualViewport(rect) {
   };
 }
 
+/** layout viewport bottom → visual viewport bottom (키보드 높이). fixed `bottom` SSOT */
+export function readVisualViewportBottomInset(pad = 0) {
+  if (typeof window === 'undefined') return pad;
+  const vp = readVisualViewportLayout();
+  const layoutHeight = window.innerHeight;
+  const keyboardInset = Math.max(0, layoutHeight - vp.height - vp.offsetTop);
+  return keyboardInset + pad;
+}
+
 /**
  * 로그인 폼 등 input 포커스 후 iOS가 페이지를 확대한 상태를 홈 복귀 전에 되돌린다.
  * (font-size 16px 미만 input 포커스 시 Safari 자동 줌)

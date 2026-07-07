@@ -1,5 +1,5 @@
-import { useCallback, useEffect } from 'react';
-import { syncHomeViewportAfterInput } from '../lib/mobileViewport';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { readVisualViewportBottomInset, syncHomeViewportAfterInput } from '../lib/mobileViewport';
 
 /** iOS Safari 자동 줌 방지 — 모바일 16px, 데스크톱은 기존 크기 유지 */
 export const MOBILE_INPUT_TEXT_CLASS = 'text-[16px] md:text-sm';
@@ -54,4 +54,51 @@ export function useDeferredViewportSyncOnBlur(deferMs = 0) {
       syncHomeViewportAfterInput();
     }, deferMs);
   }, [deferMs]);
+}
+
+/** 모바일 터치 기기 여부 — 출발지 검색 등 키보드 UI 분기 */
+export function useCoarsePointer() {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const mq = window.matchMedia('(hover: none) and (pointer: coarse)');
+    const sync = () => setMatches(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  return matches;
+}
+
+/** 키보드 visualViewport 하단에 fixed UI 고정 — `{ bottom }` px */
+export function useVisualViewportBottomAnchor(enabled, { pad = 8 } = {}) {
+  const [style, setStyle] = useState(undefined);
+
+  useLayoutEffect(() => {
+    if (!enabled || typeof window === 'undefined') {
+      setStyle(undefined);
+      return undefined;
+    }
+
+    const update = () => {
+      setStyle({ bottom: readVisualViewportBottomInset(pad) });
+    };
+
+    update();
+    const raf = requestAnimationFrame(update);
+    window.addEventListener('resize', update);
+    window.visualViewport?.addEventListener('resize', update);
+    window.visualViewport?.addEventListener('scroll', update);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('scroll', update);
+    };
+  }, [enabled, pad]);
+
+  return style;
 }

@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import FlightCinemaBar from '../components/FlightCinemaBar.jsx';
+import { useVisualViewportBottomAnchor } from '../../../shared/hooks/useMobileInputViewport.js';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext.jsx';
 import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import {
@@ -58,6 +59,14 @@ export function FlightCinemaProvider({
   const activeRef = useRef(null);
   const pendingCompleteRef = useRef(null);
   const requestInFlightRef = useRef(false);
+  const [barCompactLayout, setBarCompactLayout] = useState(null);
+  const barKeyboardAnchorStyle = useVisualViewportBottomAnchor(barCompactLayout?.compact ?? false, {
+    pad: 8,
+  });
+
+  const handleBarCompactLayoutChange = useCallback((layout) => {
+    setBarCompactLayout(layout);
+  }, []);
 
   const browserOriginSuggestion = useMemo(() => suggestFlightOriginFromBrowserTimezone(), []);
   const browserOriginHint = useMemo(
@@ -432,9 +441,17 @@ export function FlightCinemaProvider({
   const barPortal =
     active && typeof document !== 'undefined'
       ? createPortal(
-          <div className="fixed inset-x-0 bottom-0 z-[120] flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-none md:bottom-8">
+          <div
+            className={`fixed inset-x-0 z-[120] flex justify-center px-4 pointer-events-none max-md:transition-[bottom] max-md:duration-200 ${
+              barCompactLayout?.compact
+                ? ''
+                : 'bottom-0 pb-[max(1rem,env(safe-area-inset-bottom))] md:bottom-8'
+            }`}
+            style={barCompactLayout?.compact ? barKeyboardAnchorStyle : undefined}
+          >
             <FlightCinemaBar
               className="w-full max-w-md md:max-w-lg"
+              onCompactLayoutChange={handleBarCompactLayoutChange}
               location={active.location}
               essentialGuide={active.essentialGuide}
               routeIatas={active.routeIatas}

@@ -20,7 +20,8 @@ const GEO_ERROR_MESSAGES = {
 };
 
 const LISTBOX_MAX_HEIGHT = 176;
-const LISTBOX_MIN_HEIGHT = 88;
+/** 좁은 visualViewport(키보드)에서도 1행은 보이도록 */
+const LISTBOX_FLOOR_HEIGHT = 44;
 const LISTBOX_GAP = 4;
 const LISTBOX_VIEWPORT_PAD = 8;
 /** FlightCinemaBar z-[120]·PlaceMooniFab z-[165]·SearchDiscovery popover z-[215] 위 */
@@ -38,6 +39,7 @@ const LISTBOX_Z_INDEX = 225;
  *   onExpandRequest?: () => void,
  *   onCollapseRequest?: () => void,
  *   initialExpanded?: boolean,
+ *   onSearchActiveChange?: (active: boolean) => void,
  * }} props
  */
 export default function FlightOriginSelector({
@@ -51,6 +53,7 @@ export default function FlightOriginSelector({
   onCollapseRequest,
   initialExpanded = false,
   isExpanded = false,
+  onSearchActiveChange,
 }) {
   const listboxId = useId();
   const rootRef = useRef(null);
@@ -70,7 +73,9 @@ export default function FlightOriginSelector({
   const [geoError, setGeoError] = useState(null);
   const [barExpanded, setBarExpanded] = useState(initialExpanded);
   const [dropdownStyle, setDropdownStyle] = useState(null);
+  const [inlineListboxMaxHeight, setInlineListboxMaxHeight] = useState(LISTBOX_MAX_HEIGHT);
   const [useInlineListbox, setUseInlineListbox] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const isBar = variant === 'bar' || variant === 'bar-header';
   const isBarHeader = variant === 'bar-header';
@@ -82,11 +87,20 @@ export default function FlightOriginSelector({
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     const mq = window.matchMedia('(hover: none) and (pointer: coarse)');
-    const sync = () => setUseInlineListbox(mq.matches && variant === 'bar');
+    const sync = () =>
+      setUseInlineListbox(mq.matches && (variant === 'bar' || variant === 'summary-panel'));
     sync();
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
   }, [variant]);
+
+  useEffect(() => {
+    if (!onSearchActiveChange || (!isSummaryPanel && !isBar)) return undefined;
+    if (isBarHeader || isSummaryHeader) return undefined;
+    const active = inputFocused || query.trim().length > 0;
+    onSearchActiveChange(active);
+    return () => onSearchActiveChange(false);
+  }, [inputFocused, query, onSearchActiveChange, isSummaryPanel, isBar, isBarHeader, isSummaryHeader]);
 
   const updateDropdownPosition = useCallback(() => {
     const inputWrap = inputWrapRef.current;
@@ -97,46 +111,29 @@ export default function FlightOriginSelector({
     const visual = anchorRectInVisualViewport(rect);
     if (!visual) return;
 
-    const layoutOnScreen = rect.bottom > 0 && rect.top < vp.height + vp.offsetTop;
-    const visualOnScreen = visual.bottom > 0 && visual.top < vp.height;
+    let metrics = {
+      top: visual.top,
+      bottom: visual.bottom,
+      left: visual.left,
+      width: visual.width,
+      spaceBelow: vp.height - visual.bottom - LISTBOX_GAP,
+      spaceAbove: visual.top - LISTBOX_GAP,
+    };
 
-    /** @type {{ top: number, bottom: number, left: number, width: number, spaceBelow: number, spaceAbove: number, viewportHeight: number } | null} */
-    let metrics = null;
+    const visibleInVisualVp =
+      rect.bottom > vp.offsetTop && rect.top < vp.offsetTop + vp.height;
 
-    if (visualOnScreen) {
-      metrics = {
-        top: visual.top,
-        bottom: visual.bottom,
-        left: visual.left,
-        width: visual.width,
-        spaceBelow: vp.height - visual.bottom - LISTBOX_GAP,
-        spaceAbove: visual.top - LISTBOX_GAP,
-        viewportHeight: vp.height,
-      };
-    } else if (layoutOnScreen) {
-      const viewportBottom = vp.height + vp.offsetTop;
-      metrics = {
-        top: rect.top,
-        bottom: rect.bottom,
-        left: rect.left,
-        width: rect.width,
-        spaceBelow: viewportBottom - rect.bottom - LISTBOX_GAP,
-        spaceAbove: rect.top - LISTBOX_GAP,
-        viewportHeight: viewportBottom,
-      };
-    }
-
-    if (!metrics) {
-      if (rect.bottom > 0) {
-        const top = rect.bottom + LISTBOX_GAP;
-        const viewportBottom = vp.height + vp.offsetTop;
+    const partiallyVisible = visual.bottom > 0 && visual.top < vp.height;
+    if (!partiallyVisible && !visibleInVisualVp) {
+      if (visual.bottom > 0) {
+        const top = Math.min(visual.bottom + LISTBOX_GAP, vp.height - LISTBOX_FLOOR_HEIGHT);
         setDropdownStyle({
-          left: Math.max(LISTBOX_VIEWPORT_PAD, rect.left),
-          width: Math.max(120, rect.width),
+          left: Math.max(LISTBOX_VIEWPORT_PAD, visual.left),
+          width: Math.max(120, visual.width),
           top,
           maxHeight: Math.min(
             LISTBOX_MAX_HEIGHT,
-            Math.max(LISTBOX_MIN_HEIGHT, viewportBottom - top - LISTBOX_VIEWPORT_PAD)
+            Math.max(LISTBOX_FLOOR_HEIGHT, vp.height - top - LISTBOX_VIEWPORT_PAD)
           ),
         });
         return;
@@ -145,7 +142,28 @@ export default function FlightOriginSelector({
       return;
     }
 
-    const flipUp = metrics.spaceBelow < LISTBOX_MAX_HEIGHT && metrics.spaceAbove > metrics.spaceBelow;
+    if (!partiallyVisible && visibleInVisualVp) {
+      const clampedTop = Math.max(0, rect.top - vp.offsetTop);
+      const clampedBottom = Math.min(vp.height, rect.bottom - vp.offsetTop);
+      metrics = {
+        top: clampedTop,
+        bottom: clampedBottom,
+        left: visual.left,
+        width: visual.width,
+        spaceBelow: vp.height - clampedBottom - LISTBOX_GAP,
+        spaceAbove: clampedTop - LISTBOX_GAP,
+      };
+    }
+
+    const inlineMaxHeight = Math.min(
+      LISTBOX_MAX_HEIGHT,
+      Math.max(LISTBOX_FLOOR_HEIGHT, metrics.spaceAbove - LISTBOX_VIEWPORT_PAD)
+    );
+    setInlineListboxMaxHeight(inlineMaxHeight);
+
+    const flipUp =
+      metrics.spaceBelow < LISTBOX_FLOOR_HEIGHT * 2
+      || (metrics.spaceBelow < LISTBOX_MAX_HEIGHT && metrics.spaceAbove > metrics.spaceBelow);
 
     const left = Math.min(
       Math.max(LISTBOX_VIEWPORT_PAD, metrics.left),
@@ -154,11 +172,10 @@ export default function FlightOriginSelector({
     const width = Math.max(120, Math.min(metrics.width, vp.width - left - LISTBOX_VIEWPORT_PAD));
 
     if (flipUp) {
-      const maxHeight = Math.min(
-        LISTBOX_MAX_HEIGHT,
-        Math.max(LISTBOX_MIN_HEIGHT, metrics.spaceAbove - LISTBOX_VIEWPORT_PAD)
-      );
-      const top = Math.max(LISTBOX_VIEWPORT_PAD, metrics.top - LISTBOX_GAP - maxHeight);
+      const anchorBottom = metrics.top - LISTBOX_GAP;
+      let maxHeight = Math.min(LISTBOX_MAX_HEIGHT, anchorBottom - LISTBOX_VIEWPORT_PAD);
+      let top = Math.max(LISTBOX_VIEWPORT_PAD, anchorBottom - maxHeight);
+      maxHeight = Math.min(LISTBOX_MAX_HEIGHT, Math.max(0, anchorBottom - top));
       setDropdownStyle({ left, width, top, maxHeight });
       return;
     }
@@ -166,18 +183,34 @@ export default function FlightOriginSelector({
     const top = metrics.bottom + LISTBOX_GAP;
     const maxHeight = Math.min(
       LISTBOX_MAX_HEIGHT,
-      Math.max(
-        LISTBOX_MIN_HEIGHT,
-        metrics.viewportHeight - top - LISTBOX_VIEWPORT_PAD
-      )
+      Math.max(LISTBOX_FLOOR_HEIGHT, vp.height - top - LISTBOX_VIEWPORT_PAD)
     );
     setDropdownStyle({ left, width, top, maxHeight });
   }, []);
 
   useLayoutEffect(() => {
-    if (useInlineListbox || !isOpen || results.length === 0) {
-      if (!useInlineListbox) setDropdownStyle(null);
+    if (!isOpen || results.length === 0) {
+      setDropdownStyle(null);
+      setInlineListboxMaxHeight(LISTBOX_MAX_HEIGHT);
       return undefined;
+    }
+
+    if (useInlineListbox) {
+      updateDropdownPosition();
+      const raf = requestAnimationFrame(updateDropdownPosition);
+
+      window.addEventListener('resize', updateDropdownPosition);
+      window.addEventListener('scroll', updateDropdownPosition, true);
+      window.visualViewport?.addEventListener('resize', updateDropdownPosition);
+      window.visualViewport?.addEventListener('scroll', updateDropdownPosition);
+
+      return () => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener('resize', updateDropdownPosition);
+        window.removeEventListener('scroll', updateDropdownPosition, true);
+        window.visualViewport?.removeEventListener('resize', updateDropdownPosition);
+        window.visualViewport?.removeEventListener('scroll', updateDropdownPosition);
+      };
     }
 
     updateDropdownPosition();
@@ -280,8 +313,8 @@ export default function FlightOriginSelector({
       : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
 
   const listPortalClass = isBar
-    ? 'overflow-y-auto rounded-md border border-white/15 bg-black/95 py-1 shadow-xl backdrop-blur-xl'
-    : 'overflow-y-auto rounded-lg border border-white/10 bg-black/95 py-1 shadow-xl backdrop-blur-xl';
+    ? 'overflow-y-auto overscroll-contain rounded-md border border-sky-400/45 bg-[#0b1220]/98 py-1 shadow-[0_12px_40px_rgba(0,0,0,0.92),0_0_0_1px_rgba(56,189,248,0.22)] ring-1 ring-sky-400/15 backdrop-blur-xl'
+    : 'overflow-y-auto overscroll-contain rounded-lg border border-sky-400/50 bg-[#0b1220]/98 py-1 shadow-[0_12px_40px_rgba(0,0,0,0.92),0_0_0_1px_rgba(56,189,248,0.28)] ring-1 ring-sky-400/20 backdrop-blur-xl';
 
   const itemClass = (active) =>
     isBar
@@ -551,6 +584,10 @@ export default function FlightOriginSelector({
             aria-autocomplete="list"
             className={`${inputClass} ${disabled ? 'opacity-60 cursor-wait' : ''}`}
             onFocus={() => {
+              setInputFocused(true);
+              if (isSummaryPanel && typeof window !== 'undefined') {
+                window.scrollTo(0, 0);
+              }
               setIsOpen(true);
               requestAnimationFrame(() => {
                 updateDropdownPosition();
@@ -565,6 +602,7 @@ export default function FlightOriginSelector({
             onBlur={() => {
               window.setTimeout(() => {
                 if (listboxPortalRef.current?.contains(document.activeElement)) return;
+                setInputFocused(false);
                 syncHomeViewportAfterInput();
               }, 0);
             }}
@@ -589,8 +627,8 @@ export default function FlightOriginSelector({
               id={listboxId}
               ref={listboxPortalRef}
               role="listbox"
-              className={`${listPortalClass} absolute left-0 right-0 bottom-full z-[50] mb-1`}
-              style={{ maxHeight: LISTBOX_MAX_HEIGHT }}
+              className={`${listPortalClass} absolute left-0 right-0 bottom-full mb-1`}
+              style={{ maxHeight: inlineListboxMaxHeight, zIndex: LISTBOX_Z_INDEX }}
             >
               {renderListboxOptions()}
             </ul>

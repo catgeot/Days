@@ -66,7 +66,7 @@
 - **패턴** — `MOBILE_INPUT_*_CLASS` · `useDeferredViewportSyncOnBlur` · `<form onSubmit>`+`enterKeyHint` · `useMobileOverlayViewport`
 - **QA** — 로그북 블로그 리스트 검색 Enter ✅ (사용자 확인)
 - **Enter 수정** — `PlaceChatView`·`SearchDiscoveryModal`·`RecentList` form · `FlightOriginSelector` `inputMode="text"`+Enter fallback
-- **잔여** — 출발지 `FlightOriginSelector` listbox **표시 ✅** · **잔여: 장소카드·listbox 상단 쏠림·목록 잘림·홈 검은 배경 시인성** → 다음 세션
+- **잔여** — 출발지 모바일 QA ✅ · **다음: 써머리 출발지 접기 UX** · 추가 최적화
 
 ---
 
@@ -74,14 +74,14 @@
 
 ### 상태 (2026-07-07)
 
-- **1차 QA ✅** — 모바일에서 listbox **표시 시작** (이전: 미표시)
-- **2차 QA ⏳** — 장소카드·드롭다운 **상단 쏠림** → 목록 전체 미노출 · listbox가 **홈 검은 바탕에 묻혀 시인성 저하**
+- **모바일 QA ✅** — PlaceCardSummary·FlightCinemaBar 출발지 검색 · compact · 키보드 위 인라인 listbox (사용자 확인)
+- **코드** — 2~5차: flipUp anchor · compact · `readVisualViewportBottomInset` · FlightCinemaBar portal bottom 동기화
 
 ### 읽을 것 (3)
 
-1. [`.ai-context.md`](../.ai-context.md) — 3절 모바일 입력·뷰포트 SSOT
+1. [`.ai-context.md`](../.ai-context.md) — 3절 모바일 입력·뷰포트 SSOT · 5절 스냅샷
 2. **본 일지** — 「출발지 드롭다운 세션 — 에이전트 핸드오프」
-3. grep — `FlightOriginSelector` · `useInlineListbox` · `listboxPortal` · `listPortalClass` · `PlaceCardSummary` · `updateDropdownPosition` · `readVisualViewportLayout`
+3. grep — `FlightOriginSelector` · `isOriginCompact` · `useVisualViewportBottomAnchor` · `PlaceCardSummary` · `FlightCinemaBar` · `bar-header` · `summary-header`
 
 ### 금지 (3)
 
@@ -89,29 +89,32 @@
 2. PowerShell `-replace`/`Set-Content`로 한글 JSX 수정
 3. 사용자 QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
 
-### 완료 (본 세션·커밋)
+### 완료 (본 세션)
 
-- [`mobileViewport.js`](../src/shared/lib/mobileViewport.js) — `readVisualViewportLayout` · `anchorRectInVisualViewport`
-- [`FlightOriginSelector.jsx`](../src/pages/Home/components/FlightOriginSelector.jsx) — visual/layout dual-path · `useLayoutEffect`+rAF · `LISTBOX_Z_INDEX` 225 · 모바일 `bar` → form 내 `absolute bottom-full` 인라인 listbox · `summary-panel`은 portal 유지
+| 영역 | 내용 |
+|------|------|
+| SSOT | `mobileViewport.js` `readVisualViewportBottomInset` · `useMobileInputViewport.js` `useCoarsePointer` · `useVisualViewportBottomAnchor` |
+| listbox | `FlightOriginSelector.jsx` flipUp anchor · 모바일 `bar`/`summary-panel` 인라인 `bottom-full` · `onSearchActiveChange` |
+| PlaceCard | `PlaceCardSummary.jsx` `isOriginCompact` · 키보드 bottom · chrome 숨김 |
+| CinemaBar | `FlightCinemaBar.jsx` + `FlightCinemaContext.jsx` 동일 compact · portal bottom |
 
 ### 다음 세션 작업
 
 | 우선 | 내용 |
 |------|------|
-| 1 | **장소카드 상단 쏠림** — 키보드·`visualViewport` 시 `PlaceCardSummary`/`summary-panel` anchor·카드 `bottom` 배치 점검 |
-| 2 | **listbox 잘림** — `flipUp`·`maxHeight`·portal `top` 클램프 · 인라인 `bottom-full` vs portal variant 분기 |
-| 3 | **시인성** — `listPortalClass` 배경·테두리·그림자 강화 (홈 지구본 검은 배경 대비) · z-index·backdrop |
-| 4 | variant QA — `isBar`(인라인) · `summary-panel`(portal) · FlightCinemaBar vs PlaceCardSummary |
+| 1 | **써머리 출발지 접기** — `FlightCinemaBar` `bar-header` 칩처럼 `PlaceCardSummary`/`summary-header` **접힌 상태 기본** · 검색 패널 토글 UX 통일 |
+| 2 | 추가 QA·최적화 — edge 기기 · 회전 · blur/접기 후 viewport 복귀 |
+| 3 | (선택) 릴리스 노트 초안 — 사용자 합의 후 `releaseNotes.js` |
 
 ### 제시어 (다음 세션)
 
 ```
 출발지-이어하기 @plans/2026-07-07-project-log.md
 
-모바일 출발지 listbox — 표시됨. 잔여: 장소카드·드롭다운 상단 쏠림(목록 잘림)·홈 검은 배경 시인성.
-읽기: .ai-context 3절 + 본 일지 「출발지 드롭다운 세션 — 에이전트 핸드오프」.
-grep: FlightOriginSelector · useInlineListbox · listPortalClass · PlaceCardSummary · updateDropdownPosition.
-1차 완료: visualViewport SSOT · bar 인라인 listbox · portal z-index 225. 2차: 위치·maxHeight·listbox 스타일만.
+모바일 출발지 QA ✅. 다음: 써머리(PlaceCardSummary) 출발지도 상태바(bar-header)처럼 접기·펼치기 UX.
+읽기: .ai-context 3·5절 + 본 일지 「출발지 드롭다운 세션 — 에이전트 핸드오프」.
+grep: PlaceCardSummary · summary-header · originExpanded · FlightCinemaBar · bar-header · isOriginCompact.
+완료: compact·인라인 listbox·visualViewport bottom. 잔여: summary 접기 UX · 추가 QA.
 금지: flyZoom 변경 · PowerShell JSX · releaseNotes 합의 전.
 ```
 

@@ -6,6 +6,7 @@ import { getPlaceTitleLines } from '../../../components/PlaceCard/common/locatio
 import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import FlightOriginSelector from './FlightOriginSelector.jsx';
 import { getFlightOriginMetroHint } from '../lib/flightOriginMetroGateways.js';
+import { useCoarsePointer, useMobileOverlayViewport } from '../../../shared/hooks/useMobileInputViewport.js';
 
 const ROUTE_META = '대권 항로입니다. 실제 비행경로와 다를 수 있어요.';
 
@@ -305,6 +306,7 @@ function FlightRouteAlternatives({
  *   plannerUrl?: string | null,
  *   onClose?: () => void,
  *   className?: string,
+ *   onCompactLayoutChange?: (layout: { compact: boolean; searchActive: boolean } | null) => void,
  * }} props
  */
 export default function FlightCinemaBar({
@@ -325,6 +327,7 @@ export default function FlightCinemaBar({
   plannerUrl = null,
   onClose,
   className = '',
+  onCompactLayoutChange,
 }) {
   const routeAria = Array.isArray(routeIatas) && routeIatas.length >= 2
     ? routeIatas.join(' 경유 ')
@@ -332,6 +335,35 @@ export default function FlightCinemaBar({
 
   const { primaryName } = getPlaceTitleLines(location);
   const [originExpanded, setOriginExpanded] = useState(false);
+  const [originSearchActive, setOriginSearchActive] = useState(false);
+  const isMobileCoarse = useCoarsePointer();
+
+  const searchUiOpen = !location || originExpanded;
+  const isOriginCompact = isMobileCoarse && (
+    (location && originExpanded) || (!location && originSearchActive)
+  );
+  const isOriginSearchMode = isOriginCompact && originSearchActive;
+
+  useMobileOverlayViewport(isOriginSearchMode);
+
+  useEffect(() => {
+    if (!originExpanded) setOriginSearchActive(false);
+  }, [originExpanded]);
+
+  useEffect(() => {
+    if (!isOriginSearchMode || typeof window === 'undefined') return;
+    window.scrollTo(0, 0);
+  }, [isOriginSearchMode]);
+
+  useEffect(() => {
+    if (!onCompactLayoutChange) return undefined;
+    if (!isOriginCompact) {
+      onCompactLayoutChange(null);
+      return undefined;
+    }
+    onCompactLayoutChange({ compact: true, searchActive: isOriginSearchMode });
+    return () => onCompactLayoutChange(null);
+  }, [isOriginCompact, isOriginSearchMode, onCompactLayoutChange]);
 
   const originSelectorProps = {
     selectedIata: originIata,
@@ -342,6 +374,7 @@ export default function FlightCinemaBar({
       setOriginExpanded(false);
     },
     onApplyBrowserOriginSuggestion,
+    onSearchActiveChange: setOriginSearchActive,
   };
 
   return (
@@ -351,10 +384,15 @@ export default function FlightCinemaBar({
       aria-label={routeAria ? `항공 경로 ${routeAria}` : '항공 경로 시네마'}
     >
       <div className="flight-cinema-bar-shell relative">
-        <div className="flight-cinema-bar-halo" aria-hidden="true" />
-        <div className="flight-cinema-bar-card relative z-[1] flex flex-col gap-1.5 rounded-2xl border bg-black/85 px-3 py-2 backdrop-blur-xl md:px-4 md:py-2">
+        {!isOriginCompact ? <div className="flight-cinema-bar-halo" aria-hidden="true" /> : null}
+        <div
+          className={`flight-cinema-bar-card relative z-[1] flex flex-col gap-1.5 rounded-2xl border bg-black/85 backdrop-blur-xl md:px-4 md:py-2 ${
+            isOriginCompact ? 'overflow-visible px-2.5 py-2' : 'px-3 py-2'
+          }`}
+        >
           {location ? (
-            <div className="space-y-1.5 border-b border-white/10 pb-1.5">
+            <div className={`space-y-1.5 ${isOriginCompact ? '' : 'border-b border-white/10 pb-1.5'}`}>
+              {!isOriginCompact ? (
               <div className="flex items-center justify-between gap-2 min-w-0">
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-bold tracking-widest uppercase text-blue-300/90 truncate leading-none">
@@ -379,6 +417,7 @@ export default function FlightCinemaBar({
                   />
                 ) : null}
               </div>
+              ) : null}
               {originExpanded ? (
                 <FlightOriginSelector
                   variant="bar"
@@ -392,6 +431,8 @@ export default function FlightCinemaBar({
             <FlightOriginSelector variant="bar" {...originSelectorProps} />
           )}
 
+          {!isOriginCompact ? (
+          <>
           <div className="flex min-w-0 items-start gap-2">
             {isRouteUpdatePending ? (
               <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin text-sky-300" aria-hidden="true" />
@@ -452,6 +493,8 @@ export default function FlightCinemaBar({
               닫기
             </button>
           </div>
+          </>
+          ) : null}
         </div>
       </div>
     </div>

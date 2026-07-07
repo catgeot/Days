@@ -10,7 +10,11 @@ import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 
 import FlightOriginSelector from '../../../pages/Home/components/FlightOriginSelector.jsx';
 
-
+import {
+  useCoarsePointer,
+  useMobileOverlayViewport,
+  useVisualViewportBottomAnchor,
+} from '../../../shared/hooks/useMobileInputViewport.js';
 
 const PlaceCardSummary = ({
 
@@ -59,6 +63,27 @@ const PlaceCardSummary = ({
   const [glowPhase, setGlowPhase] = useState('enter');
 
   const [originExpanded, setOriginExpanded] = useState(initialOriginExpanded);
+
+  const [originSearchActive, setOriginSearchActive] = useState(false);
+
+  const isMobileCoarse = useCoarsePointer();
+
+  const isOriginCompact = isMobileCoarse && originExpanded;
+
+  const isOriginSearchMode = isOriginCompact && originSearchActive;
+
+  const keyboardAnchorStyle = useVisualViewportBottomAnchor(isOriginCompact, { pad: 8 });
+
+  useMobileOverlayViewport(isOriginSearchMode);
+
+  useEffect(() => {
+    if (!originExpanded) setOriginSearchActive(false);
+  }, [originExpanded]);
+
+  useEffect(() => {
+    if (!isOriginSearchMode || typeof window === 'undefined') return;
+    window.scrollTo(0, 0);
+  }, [isOriginSearchMode]);
 
   const isScanning = location?.isScanning;
 
@@ -146,7 +171,14 @@ const PlaceCardSummary = ({
 
   return (
 
-    <div className="absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px] z-[60] animate-fade-in-up transition-all duration-300">
+    <div
+      className={`z-[60] animate-fade-in-up transition-all duration-200 ${
+        isOriginCompact
+          ? 'fixed left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px]'
+          : 'absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]'
+      }`}
+      style={keyboardAnchorStyle}
+    >
 
       <div className={`relative ${isEnterGlow ? 'place-summary-shell-enter' : ''}`}>
 
@@ -176,11 +208,9 @@ const PlaceCardSummary = ({
 
         <div
 
-          className={`place-summary-card relative z-[1] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-4 group ${
-
-            isEnterGlow ? 'place-summary-card-enter' : glowPhase === 'idle' ? 'place-summary-card-idle' : ''
-
-          }`}
+          className={`place-summary-card relative z-[1] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl group ${
+            isOriginCompact ? 'overflow-visible' : 'overflow-hidden'
+          } ${isOriginCompact ? 'p-2.5' : 'p-4'} ${isEnterGlow ? 'place-summary-card-enter' : glowPhase === 'idle' ? 'place-summary-card-idle' : ''}`}
 
         >
 
@@ -194,7 +224,11 @@ const PlaceCardSummary = ({
 
 
 
-          <div className="flex items-start justify-between gap-2 mb-3">
+          <div
+
+            className={`flex items-start justify-between gap-2 mb-3 ${isOriginCompact ? 'hidden' : ''}`}
+
+          >
 
             <div
 
@@ -284,7 +318,7 @@ const PlaceCardSummary = ({
 
           <div
 
-            className={`${!isScanning && !isCompact ? `cursor-pointer ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
+            className={`${isOriginCompact ? 'hidden' : ''} ${!isScanning && !isCompact ? `cursor-pointer ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
 
             onClick={!isScanning && !isCompact ? onExpand : undefined}
 
@@ -333,9 +367,9 @@ const PlaceCardSummary = ({
 
           <div
 
-            className={`overflow-hidden ${
+            className={`${isOriginCompact ? 'overflow-visible' : 'overflow-hidden'} ${
 
-              isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : 'max-h-[220px] opacity-100 mt-2'
+              isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : isOriginCompact ? 'max-h-[280px] opacity-100 mt-0' : 'max-h-[220px] opacity-100 mt-2'
 
             }`}
 
@@ -347,43 +381,47 @@ const PlaceCardSummary = ({
 
             {canPreviewFlightRoute && (
 
-              <div className="mb-2">
+              <div className={isOriginCompact ? 'mb-0' : 'mb-2'}>
 
-                <div className="flex items-center justify-between gap-2 min-w-0">
+                {!isOriginCompact ? (
 
-                  <FlightOriginSelector
+                  <div className="flex items-center justify-between gap-2 min-w-0">
 
-                    variant="summary-header"
+                    <FlightOriginSelector
 
-                    isExpanded={originExpanded}
+                      variant="summary-header"
 
-                    selectedIata={selectedFlightOriginIata}
+                      isExpanded={originExpanded}
 
-                    disabled={isFlightRoutePending}
+                      selectedIata={selectedFlightOriginIata}
 
-                    onExpandRequest={() => setOriginExpanded(true)}
+                      disabled={isFlightRoutePending}
 
-                    onCollapseRequest={() => setOriginExpanded(false)}
+                      onExpandRequest={() => setOriginExpanded(true)}
 
-                  />
+                      onCollapseRequest={() => setOriginExpanded(false)}
 
-                  {flightRouteLabel ? (
+                    />
 
-                    <p className="min-w-0 flex-1 truncate text-right text-xs font-semibold text-sky-200/90 break-keep tabular-nums">
+                    {flightRouteLabel ? (
 
-                      {flightRouteLabel}
+                      <p className="min-w-0 flex-1 truncate text-right text-xs font-semibold text-sky-200/90 break-keep tabular-nums">
 
-                      {typeof flightRouteHours === 'number' ? (
+                        {flightRouteLabel}
 
-                        <span className="ml-1 font-medium text-sky-300/75">· 약 {flightRouteHours}h</span>
+                        {typeof flightRouteHours === 'number' ? (
 
-                      ) : null}
+                          <span className="ml-1 font-medium text-sky-300/75">· 약 {flightRouteHours}h</span>
 
-                    </p>
+                        ) : null}
 
-                  ) : null}
+                      </p>
 
-                </div>
+                    ) : null}
+
+                  </div>
+
+                ) : null}
 
                 {originExpanded ? (
 
@@ -403,6 +441,8 @@ const PlaceCardSummary = ({
 
                     onCollapseRequest={() => setOriginExpanded(false)}
 
+                    onSearchActiveChange={setOriginSearchActive}
+
                   />
 
                 ) : null}
@@ -410,6 +450,8 @@ const PlaceCardSummary = ({
               </div>
 
             )}
+
+            {!isOriginCompact ? (
 
             <div
 
@@ -534,6 +576,8 @@ const PlaceCardSummary = ({
               )}
 
             </div>
+
+            ) : null}
 
           </div>
 
