@@ -321,3 +321,66 @@ grep: HomeGlobeMapbox(flyToAndPin,pivotTourExplore) · globeTourEngine(waitForMo
 
 - **증상**: Pexels 병합 사진도 `on Unsplash`로 표시 · Pexels 링크(`links.html`) 미연결
 - **수정**: [`galleryImageAttribution.js`](../src/components/PlaceCard/common/galleryImageAttribution.js) — id `pexels-*`·`source`로 구분 · `PlaceGalleryView`·`GalleryInfoView`·`PlaceWikiDetailsView` 반영 · Pexels 매핑에 `source: 'pexels'` 추가
+
+## DEV 콘솔 노이즈 정리
+
+- **증상**: `/place/` 탐색 시 `globe reveal fallback` 반복 · Rank view 중복 차단 로그 · `usePlannerData` 리스너 등록/제거 반복
+- **수정**: `HomeGlobeMapbox` fallback — `pauseRender`·이미 reveal 시 타이머/경고 생략 · `useHomeHandlers` `addScoutPin`과 중복 `recordInteraction` 제거 · `usePlannerData` 리스너 DEV 로그 삭제
+
+## 홈 버킷리스트 — 갤러리 API·SessionStorage 과다 호출
+
+**상태**: **✅ 로컬 수정·커밋 (2026-07-07)** — batch `place_stats`·`place_id` 매칭 강화는 **다음 세션**
+
+- **증상**: 홈(로고 패널 닫힘)에서도 `Tengatangi` 등 Unsplash/Pexels 갤러리 호출 · `SessionStorage full` 반복
+- **원인**: `LogoPanel` `BucketListCard`가 패널 마운트 시 전 여행지에 `usePlaceGallery` 전체 로드(60장·Pexels 병합)
+- **수정**: 패널 `isOpen`일 때만 카드 마운트 · `usePlaceGallery({ thumbnailOnly: true })` — DB `image_url`·1장 캐시·Pexels 생략
+- **미완**: uiPlace 버킷(`Tengatangi` 등) `place_id` 불일치 시 DB 재사용 실패 → Unsplash 폴백 · **LogoPanel batch `place_stats` 조회** 검토
+
+---
+
+## 버킷리스트·DEV 콘솔 세션 — 에이전트 핸드오프
+
+### 완료 (본 세션)
+
+| 항목 | 파일 |
+|------|------|
+| 지구본 fallback DEV 노이즈 | `HomeGlobeMapbox.jsx` — `pauseRender`·이미 reveal 시 2s 타이머 생략 |
+| Rank view 중복 | `useHomeHandlers.js` — `addScoutPin`과 중복 `recordInteraction` 제거 |
+| Planner DEV 로그 | `usePlannerData.js` — Toolkit 리스너 등록/제거 로그 삭제 |
+| 버킷리스트 갤러리 과다 | `LogoPanel.jsx` · `usePlaceGallery.js` — `isOpen` 시만 마운트 · `thumbnailOnly` |
+
+### Supabase 재사용 (현행 SSOT)
+
+`usePlaceGallery` 조회 순서: **sessionStorage → `place_stats`(image_url·gallery_urls[0]) → Unsplash**. DB 히트 시 API 없음. Unsplash 로그 = `place_id` 미스매치 또는 DB 이미지 필드 비어 있음.
+
+### 다음 세션 — 실행 계획
+
+| 목표 | 내용 |
+|------|------|
+| **A** | `LogoPanel` — 버킷 `place_id` 후보 일괄 수집 → `place_stats` **1회 batch** `.in('place_id', …)` → 카드에 `image_url` 주입 (Unsplash·N회 Supabase 제거) |
+| **B** | uiPlace·`saved_trips.destination` ↔ DB `place_id` 매칭 감사 — `buildPlaceDbIdCandidates`·`hydrateLocationFromSavedTrip` 보강 |
+| **C** | 로컬 QA — 홈 대기 갤러리 0 · 패널 재오픈 캐시 히트 · DB 있는 장소 Unsplash 0 |
+
+### 읽을 것 (3)
+
+1. `.ai-context` 1·3절 (갤러리·place_id SSOT)
+2. 본 일지 「버킷리스트·DEV 콘솔 세션 — 에이전트 핸드오프」
+3. grep: `LogoPanel` · `usePlaceGallery`(thumbnailOnly, buildPlaceDbIdCandidates) · `placeRouteHydrate`
+
+### 금지 (3)
+
+1. `travelSpots.js` / `travelSpotAirports.json` 전체 Read·직접 수정
+2. 버킷리스트 외 PlaceCard 갤러리 UX 임의 변경
+3. `releaseNotes.js` 사용자 합의 전 반영
+
+### 제시어 (다음 세션)
+
+```
+버킷리스트-이어하기 @plans/2026-07-07-project-log.md
+
+LogoPanel 버킷리스트 — place_stats batch 조회·place_id 매칭 강화 (Supabase 썸네일 재사용).
+읽기: .ai-context 1·3절 + 본 일지 「버킷리스트·DEV 콘솔 세션 — 에이전트 핸드오프」.
+grep: LogoPanel · usePlaceGallery(thumbnailOnly) · buildPlaceDbIdCandidates · hydrateLocationFromSavedTrip.
+금지: travelSpots/Airports JSON · 갤러리 UX 범위 밖 · releaseNotes 합의 전.
+이전: isOpen 시만 카드 마운트 · thumbnailOnly · fallback·Rank DEV 노이즈 정리.
+```

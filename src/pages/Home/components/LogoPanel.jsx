@@ -14,7 +14,7 @@ const DEFAULT_THUMB =
 
 const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
   const location = useMemo(() => hydrateLocationFromSavedTrip(trip), [trip]);
-  const { images, isImgLoading } = usePlaceGallery(location);
+  const { images, isImgLoading } = usePlaceGallery(location, { thumbnailOnly: true });
 
   const thumbUrl = images[0]?.urls?.small || images[0]?.urls?.regular || '';
   const isLoaded = !isImgLoading;
@@ -127,7 +127,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                   <span className="text-xs text-gray-500 font-mono">{bucketList.length} / 50</span>
                 </div>
 
-                {bucketList.length > 0 ? (
+                {isOpen && bucketList.length > 0 ? (
                   <div className="grid grid-cols-2 gap-3">
                     {bucketList.map((trip) => (
                       <BucketListCard
@@ -138,7 +138,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
                       />
                     ))}
                   </div>
-                ) : (
+                ) : bucketList.length > 0 ? null : (
                   <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl bg-white/5">
                     <Plane size={32} className="mx-auto text-gray-600 mb-3" />
                     <p className="text-sm text-gray-400">아직 저장한 여행지가 없습니다.</p>

@@ -66,7 +66,8 @@ function resolveGalleryStablePlaceKey(locationSource) {
   return String(locationSource).trim();
 }
 
-export const usePlaceGallery = (locationSource) => {
+export const usePlaceGallery = (locationSource, options = {}) => {
+  const { enabled = true, thumbnailOnly = false } = options;
   const [images, setImages] = useState([]);
   const [isImgLoading, setIsImgLoading] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
@@ -248,7 +249,9 @@ export const usePlaceGallery = (locationSource) => {
     setIsImgLoading(true);
     if (!forceRefresh) setImages([]);
 
-    const CACHE_KEY = `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
+    const CACHE_KEY = thumbnailOnly
+      ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
+      : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
 
     if (!forceRefresh) {
       pageRef.current = 1; // 🚨 [Fix] 일반 로드 시 페이지 초기화
@@ -262,9 +265,10 @@ export const usePlaceGallery = (locationSource) => {
 
       if (!slugOverride && dbCandidates.length) {
         try {
+          const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
           const { data: dbRows, error: dbError } = await supabase
             .from('place_stats')
-            .select('gallery_urls')
+            .select(dbSelect)
             .in('place_id', dbCandidates)
             .limit(1);
 
@@ -272,11 +276,24 @@ export const usePlaceGallery = (locationSource) => {
 
           if (runId !== galleryLoadSeqRef.current) return;
 
-          if (!dbError && dbData && dbData.gallery_urls && dbData.gallery_urls.length > 0) {
-            processAndSetImages(dbData.gallery_urls);
-            saveToSmartCache(CACHE_KEY, dbData.gallery_urls);
-            if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
-            return;
+          if (!dbError && dbData) {
+            if (thumbnailOnly && dbData.image_url) {
+              const thumb = {
+                id: 'db-thumb',
+                urls: { small: dbData.image_url, regular: dbData.image_url },
+              };
+              processAndSetImages([thumb]);
+              saveToSmartCache(CACHE_KEY, [thumb]);
+              if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+              return;
+            }
+            if (dbData.gallery_urls && dbData.gallery_urls.length > 0) {
+              const gallerySlice = thumbnailOnly ? dbData.gallery_urls.slice(0, 1) : dbData.gallery_urls;
+              processAndSetImages(gallerySlice);
+              saveToSmartCache(CACHE_KEY, gallerySlice);
+              if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+              return;
+            }
           }
         } catch {
           console.warn(`⚠️ Supabase Cache Miss or Error for ${dbStatsId || koreanName}. Proceeding to API.`);
@@ -299,8 +316,8 @@ export const usePlaceGallery = (locationSource) => {
 
       if (runId !== galleryLoadSeqRef.current) return;
 
-      // 🚨 [Fix] Unsplash 이미지가 적을 때(15장 이하) 또는 강제 새로고침 시 Pexels 결합 (더 풍성한 갤러리 제공)
-      if ((results.length <= 15 || forceRefresh) && PEXELS_KEY) {
+      // 썸네일 모드: Pexels 병합·대량 캐시 생략 (버킷리스트 등 1장만 필요)
+      if (!thumbnailOnly && (results.length <= 15 || forceRefresh) && PEXELS_KEY) {
         console.warn(`⚠️ Unsplash 이미지 부족 또는 강제 새로고침. Pexels 이미지 검색 병합을 시도합니다.`);
         try {
           const pexelsQueries = [primaryQuery, backupQuery].filter(Boolean);
@@ -342,9 +359,12 @@ export const usePlaceGallery = (locationSource) => {
       }
 
       if (results.length > 0) {
+        if (thumbnailOnly) {
+          results = [results[0]];
+        }
         // 새로고침(Refresh) 시 페이지네이션처럼 기존 데이터를 유지하며 병합 (Append)
         let finalResults = results;
-        if (forceRefresh && allImagesRef.current && allImagesRef.current.length > 0) {
+        if (!thumbnailOnly && forceRefresh && allImagesRef.current && allImagesRef.current.length > 0) {
           // 강제 새로고침(더보기) 시: 이전 사진들을 보존하고 새 사진들을 이어 붙임
           const existingIds = new Set(allImagesRef.current.map(img => img.id));
           const freshImages = results.filter(img => !existingIds.has(img.id));
@@ -360,16 +380,27 @@ export const usePlaceGallery = (locationSource) => {
           const thumbnailToSave = finalResults[0]?.urls?.small || finalResults[0]?.urls?.regular || '';
           const statsPlaceId = dbStatsId || koreanName;
 
-          supabase
-            .from('place_stats')
-            .upsert({
-              place_id: statsPlaceId,
-              gallery_urls: finalResults,
-              image_url: thumbnailToSave
-            }, { onConflict: 'place_id' })
-            .then(({ error }) => {
-              if (error) console.error("⚠️ Supabase Update Error:", error);
-            });
+          if (thumbnailOnly) {
+            if (thumbnailToSave) {
+              supabase
+                .from('place_stats')
+                .upsert({ place_id: statsPlaceId, image_url: thumbnailToSave }, { onConflict: 'place_id' })
+                .then(({ error }) => {
+                  if (error) console.error('⚠️ Supabase Thumbnail Update Error:', error);
+                });
+            }
+          } else {
+            supabase
+              .from('place_stats')
+              .upsert({
+                place_id: statsPlaceId,
+                gallery_urls: finalResults,
+                image_url: thumbnailToSave
+              }, { onConflict: 'place_id' })
+              .then(({ error }) => {
+                if (error) console.error('⚠️ Supabase Update Error:', error);
+              });
+          }
         }
       } else {
         console.warn(`⚠️ 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
@@ -386,12 +417,13 @@ export const usePlaceGallery = (locationSource) => {
       if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
     }
 
-  }, [ACCESS_KEY, PEXELS_KEY, sourceName, sourceId, locationSource, processAndSetImages]);
+  }, [ACCESS_KEY, PEXELS_KEY, sourceName, sourceId, locationSource, processAndSetImages, thumbnailOnly]);
 
   useEffect(() => {
+    if (!enabled) return undefined;
     fetchImages();
     return () => setSelectedImg(null);
-  }, [fetchImages]);
+  }, [enabled, fetchImages]);
 
   // 🚨 [New] 트래킹 API 호출 및 안전한 다운로드(Blob 방식) 핸들러 구현 (Fire & Forget 구조)
   const handleDownload = useCallback(async (imageObj) => {

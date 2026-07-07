@@ -9,7 +9,7 @@
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
 import { formatUrlName } from '../lib/formatUrlName';
-import { supabase, recordInteraction } from '../../../shared/api/supabase';
+import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
@@ -196,7 +196,6 @@ export function useHomeHandlers({
         setSelectedLocation(labelPin);
         moveToLocation(lat, lng, clickedLabel, category, { focus: false });
         processSearchKeywords(labelPin);
-        recordInteraction(clickedLabel, 'view');
         return;
       }
 
@@ -227,7 +226,6 @@ export function useHomeHandlers({
         setSelectedLocation(realPin);
         moveToLocation(lat, lng, display_name, category, { focus: false });
         processSearchKeywords(realPin);
-        recordInteraction(realPin, 'view');
         return;
       }
 
@@ -237,7 +235,6 @@ export function useHomeHandlers({
         setSelectedLocation(curatedFromClick);
         moveToLocation(curatedFromClick.lat, curatedFromClick.lng, curatedFromClick.name, curatedFromClick.category, { focus: false });
         processSearchKeywords(curatedFromClick);
-        recordInteraction(curatedFromClick, 'view');
         return;
       }
 
@@ -267,7 +264,6 @@ export function useHomeHandlers({
             setSelectedLocation(finalLoc);
             moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category, { focus: false });
             processSearchKeywords(finalLoc);
-            recordInteraction(finalLoc, 'view');
             return;
         }
       }

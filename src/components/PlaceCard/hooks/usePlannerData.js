@@ -175,15 +175,8 @@ export const usePlannerData = (location, mediaMode) => {
 
     window.addEventListener('toolkit-updated', handleToolkitUpdated);
 
-    if (isDev) {
-      console.log('[usePlannerData] Toolkit 이벤트 리스너 등록 완료');
-    }
-
     return () => {
       window.removeEventListener('toolkit-updated', handleToolkitUpdated);
-      if (isDev) {
-        console.log('[usePlannerData] Toolkit 이벤트 리스너 제거');
-      }
     };
   }, []);
 

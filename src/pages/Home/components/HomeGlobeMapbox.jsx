@@ -886,7 +886,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [tryRevealGlobeBase, tryRevealGlobeOverlays]);
 
   useEffect(() => {
+    if (pauseRender) return undefined;
     const fallback = window.setTimeout(() => {
+      if (globeBaseRevealedRef.current || pauseRender) return;
       if (import.meta.env.DEV) {
         markGlobeLoadPhase('fallback-2s');
         console.warn('[HomeGlobeMapbox] globe reveal fallback (2s safety net)');
@@ -896,7 +898,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       tryRevealGlobeOverlays();
     }, 2000);
     return () => window.clearTimeout(fallback);
-  }, [globeTheme, tryRevealGlobeOverlays]);
+  }, [globeTheme, tryRevealGlobeOverlays, pauseRender]);
 
   useEffect(() => {
     if (import.meta.env.DEV && prevStyleTransitioningRef.current && !isStyleTransitioning) {
