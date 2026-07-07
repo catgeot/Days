@@ -741,15 +741,26 @@ const PlaceWikiDetailsView = ({
                             )}
                             {lightboxAttribution && (
                                 <p className="text-white/60 text-xs">
-                                    Photo by {lightboxAttribution.authorName}
+                                    Photo by{' '}
                                     <a
-                                        href={lightboxAttribution.href}
+                                        href={lightboxAttribution.photographerHref || lightboxAttribution.href}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="ml-2 underline hover:text-white/80"
+                                        className="font-semibold text-white/75 underline transition-colors hover:text-white"
+                                        title={lightboxAttribution.title}
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        {lightboxAttribution.providerLabel}
+                                        {lightboxAttribution.authorName}
+                                    </a>
+                                    {' on '}
+                                    <a
+                                        href={lightboxAttribution.providerHref}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-semibold text-white/75 underline transition-colors hover:text-white"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {lightboxAttribution.providerName}
                                     </a>
                                 </p>
                             )}

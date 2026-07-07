@@ -56,27 +56,29 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                             {description}
                         </p>
                         {photoAttribution && (
-                            <p className="text-[12px] leading-relaxed text-gray-500">
-                                Photo by{' '}
-                                <a
-                                    href={photoAttribution.photographerHref || photoAttribution.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-semibold text-gray-400 transition-colors hover:text-blue-300/90"
-                                    title={photoAttribution.title}
-                                >
-                                    {photoAttribution.authorName}
-                                </a>
-                                {' on '}
-                                <a
-                                    href={photoAttribution.providerHref}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-semibold text-gray-400 transition-colors hover:text-blue-300/90"
-                                >
-                                    {photoAttribution.providerName}
-                                </a>
-                            </p>
+                            <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5">
+                                <p className="text-[13px] leading-relaxed text-gray-300">
+                                    Photo by{' '}
+                                    <a
+                                        href={photoAttribution.photographerHref || photoAttribution.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
+                                        title={photoAttribution.title}
+                                    >
+                                        {photoAttribution.authorName}
+                                    </a>
+                                    {' on '}
+                                    <a
+                                        href={photoAttribution.providerHref}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
+                                    >
+                                        {photoAttribution.providerName}
+                                    </a>
+                                </p>
+                            </div>
                         )}
                     </div>
                 ) : (

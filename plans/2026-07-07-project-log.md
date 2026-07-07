@@ -398,9 +398,22 @@ grep: LogoPanel · usePlaceGallery(thumbnailOnly) · buildPlaceDbIdCandidates ·
 
 ## PlaceCard 갤러리 PC 라이트박스 — 에이전트 핸드오프 (2026-07-07)
 
-**상태**: **✅ 1차 QA 통과 · 커밋 `c246719`**
+**상태**: **✅ QA 통과 · 커밋 대기**
 
-### 본 세션 완료
+### 3차 세션 완료 (2026-07-07)
+
+- 전체화면 출처 — 사진 좌측 가장자리(`5%`) 정렬 · 상단 버튼과 분리
+- 하단 nav — **개별 보기** 좌우 분산(세로 사진 가림 방지) · **전체화면** 중앙 묶음+버튼 너비 간격
+- PC 사진 클릭 — 그리드 복귀 제거 → **UI 토글**(몰입 보기)
+- `GalleryInfoView` PHOTO_LOG 출처 — 카드·대비·밑줄 링크로 시인성 개선
+
+### 2차 세션 완료 (2026-07-07)
+
+- **A** `PlaceGalleryView` `renderAttributionLinks` — 작가·Unsplash/Pexels **분리 `<a>`+UTM** (전체화면 fallback·모바일 출처 pill) · `PlaceWikiDetailsView` 위키 라이트박스 동일
+- **B** PC non-portal 하단 nav — `md:bottom-0` + `safe-area-inset-bottom` 밀착 (카운터·단일 다운로드 버튼 동일)
+- **C** PC 상단 전체화면·닫기 — `ring-2`·`bg-black/75`·11×11 · `md:top-[max(0.5rem,safe-area)]` 상단 여백 축소
+
+### 1차 세션 완료
 
 | 항목 | 내용 |
 |------|------|
@@ -409,13 +422,9 @@ grep: LogoPanel · usePlaceGallery(thumbnailOnly) · buildPlaceDbIdCandidates ·
 | PC 출처 | 좌측 `GalleryInfoView` PHOTO_LOG (작가·Unsplash 분리 링크) · 라이트박스는 **전체화면** 시에만 상단 fallback · **모바일 기존 유지** |
 | SSOT | `galleryImageAttribution.js` — `photographerHref` / `providerHref` |
 
-### 다음 세션 (미완)
+### 다음 세션
 
-| 목표 | 내용 |
-|------|------|
-| **A** | Unsplash **권장 형식** 전면 준수 — `Photo by [작가] on [Unsplash]` 각각 링크+UTM · `PlaceGalleryView`(전체화면·모바일)·`PlaceWikiDetailsView` 등 잔여 단일 `<a>` 정리 |
-| **B** | PC 라이트박스 **하단 prev/next** — 현재 `bottom-4`/`bottom-8` → 화면 하단(safe-area)에 최대한 밀착 |
-| **C** | PC **상단 전체화면·닫기** — 시인성 개선(대비·크기·ring) · 상단 여백 축소로 더 위로 |
+- 없음 (갤러리 PC 라이트박스 2~3차 완료). 릴리스 노트는 배포 전 합의.
 
 ### 읽을 것 (3)
 

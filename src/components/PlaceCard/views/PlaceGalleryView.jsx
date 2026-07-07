@@ -243,20 +243,29 @@ const PlaceGalleryView = React.memo(({
     [selectedImg],
   );
 
-  const renderAttributionLink = (className) => {
+  const renderAttributionLinks = (wrapperClassName, linkClassName = '') => {
     if (!photoAttribution) return null;
     return (
-      <a
-        href={photoAttribution.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-        title={photoAttribution.title}
-      >
+      <span className={wrapperClassName} title={photoAttribution.title}>
         <span>Photo by</span>
-        <span className="truncate font-semibold text-white">{photoAttribution.authorName}</span>
-        <span>{photoAttribution.providerLabel}</span>
-      </a>
+        <a
+          href={photoAttribution.photographerHref || photoAttribution.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`truncate font-semibold text-white hover:underline ${linkClassName}`}
+        >
+          {photoAttribution.authorName}
+        </a>
+        <span>on</span>
+        <a
+          href={photoAttribution.providerHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`shrink-0 font-semibold text-white hover:underline ${linkClassName}`}
+        >
+          {photoAttribution.providerName}
+        </a>
+      </span>
     );
   };
 
@@ -361,7 +370,7 @@ const PlaceGalleryView = React.memo(({
           >
             {photoAttribution && (
               <div className="mb-3 flex justify-center portrait:flex landscape:hidden">
-                {renderAttributionLink(
+                {renderAttributionLinks(
                   'flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-xs text-white/85 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white'
                 )}
               </div>
@@ -389,7 +398,7 @@ const PlaceGalleryView = React.memo(({
                   </span>
                 )}
                 {photoAttribution && (
-                  renderAttributionLink(
+                  renderAttributionLinks(
                     'hidden max-w-[min(42vw,14rem)] shrink truncate rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] leading-none text-white/75 backdrop-blur-sm transition-all hover:bg-white/15 hover:text-white landscape:inline'
                   )
                 )}
@@ -426,15 +435,11 @@ const PlaceGalleryView = React.memo(({
 
     return (
     <div className={wrapperClassName}>
-      <div className="relative w-full h-full flex items-center justify-center cursor-pointer md:cursor-default" onClick={(e) => {
+      <div className="relative w-full h-full flex items-center justify-center cursor-pointer" onClick={(e) => {
           e.stopPropagation();
           if (suppressOpenClickRef.current) return;
           if (e.ctrlKey || e.metaKey) return;
-          if (window.innerWidth >= 768 && !isFullScreen) {
-            setSelectedImg(null);
-          } else if (window.innerWidth < 768) {
-            setIsMobileUIHidden(prev => !prev);
-          }
+          setIsMobileUIHidden((prev) => !prev);
       }}
       onDoubleClick={(e) => {
           if (e.ctrlKey || e.metaKey) {
@@ -454,7 +459,11 @@ const PlaceGalleryView = React.memo(({
 
       {showNavControls && (
         <div
-          className={`absolute inset-x-0 bottom-4 z-[220] flex items-center gap-3 px-4 transition-opacity duration-300 md:bottom-8 md:px-8 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute inset-x-0 z-[220] flex items-center px-4 transition-opacity duration-300 ${
+            isFullScreen
+              ? 'bottom-4 justify-center gap-[calc(0.75rem+3rem)] md:bottom-0 md:gap-[calc(1rem+2.75rem)] md:px-6 md:pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] md:pt-2'
+              : 'bottom-4 gap-3 md:bottom-8 md:px-8'
+          } ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
           <button
@@ -467,7 +476,7 @@ const PlaceGalleryView = React.memo(({
             <ChevronLeft className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
           </button>
 
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-3">
+          <div className={`flex min-w-0 items-center justify-center gap-3 ${isFullScreen ? '' : 'flex-1'}`}>
             {currentIndex >= 0 && (
               <span
                 className="shrink-0 rounded-full border border-white/10 bg-black/50 px-3.5 py-1.5 text-sm font-semibold tabular-nums tracking-wide text-white/90 shadow-xl backdrop-blur-md"
@@ -502,7 +511,7 @@ const PlaceGalleryView = React.memo(({
 
       {!showNavControls && currentIndex >= 0 && (
         <div
-          className={`absolute bottom-4 left-1/2 z-[220] -translate-x-1/2 transition-opacity duration-300 md:bottom-8 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute bottom-4 left-1/2 z-[220] -translate-x-1/2 transition-opacity duration-300 ${isFullScreen ? 'md:bottom-0 md:mb-[max(0.75rem,env(safe-area-inset-bottom,0px))]' : 'md:bottom-8'} ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
           aria-live="polite"
           aria-atomic="true"
@@ -513,27 +522,37 @@ const PlaceGalleryView = React.memo(({
         </div>
       )}
 
+      {isFullScreen && photoAttribution && (
+        <div
+          className={`absolute z-[220] max-w-[min(calc(100%-7.5rem),38rem)] transition-opacity duration-300 top-4 left-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:left-[max(0.75rem,5%)] ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {renderAttributionLinks(
+            'inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white md:px-4 md:py-2 md:text-sm'
+          )}
+        </div>
+      )}
+
       <div
-        className={`absolute z-[220] flex items-start gap-3 transition-opacity duration-300 top-4 right-4 md:top-8 md:right-8 ${isFullScreen ? 'inset-x-4 justify-between md:inset-x-8' : 'justify-end'} ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        className={`absolute z-[220] flex items-start gap-3 transition-opacity duration-300 top-4 right-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:right-3 justify-end ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {isFullScreen && (
-          <div className="min-w-0 flex-1 pr-3">
-            {renderAttributionLink(
-              'inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white md:px-4 md:py-2 md:text-sm'
-            )}
-          </div>
-        )}
-        <div className="flex shrink-0 items-center gap-3">
-        <button onClick={() => toggleFullScreen(fullScreenContainerRef)} className="hidden md:block p-3 bg-black/50 border border-white/10 text-white/50 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl">
-          {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20}/>}
+        <div className="flex shrink-0 items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => toggleFullScreen(fullScreenContainerRef)}
+          aria-label={isFullScreen ? '전체화면 종료' : '전체화면'}
+          className="hidden md:flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-blue-300/60 hover:bg-blue-600/90 hover:ring-blue-300/40"
+        >
+          {isFullScreen ? <Minimize2 size={22} strokeWidth={2.25} /> : <Maximize2 size={22} strokeWidth={2.25} />}
         </button>
         <button
+          type="button"
           onClick={isFullScreen ? closeImageKeepFullscreen : () => setSelectedImg(null)}
           aria-label="닫기"
-          className="rounded-full border border-white/10 bg-black/50 p-3 text-white/50 shadow-xl transition-all hover:bg-red-500 hover:text-white"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40 md:h-11 md:w-11"
         >
-          <X size={20} />
+          <X size={22} strokeWidth={2.5} />
         </button>
         </div>
       </div>
@@ -554,7 +573,7 @@ const PlaceGalleryView = React.memo(({
       )}
 
       {!showNavControls && (
-      <div className={`absolute bottom-4 right-4 md:bottom-8 md:right-8 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
+      <div className={`absolute bottom-4 right-4 z-[220] transition-opacity duration-300 ${isFullScreen ? 'md:bottom-0 md:right-3 md:mb-[max(0.75rem,env(safe-area-inset-bottom,0px))]' : 'md:bottom-8 md:right-8'} ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
         <button
           onClick={() => handleDownload && handleDownload(selectedImg)}
           className="flex items-center gap-2 p-3 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl"
