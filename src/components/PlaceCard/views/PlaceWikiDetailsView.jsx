@@ -5,7 +5,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
 import PlaceMiniMap from '../common/PlaceMiniMap';
-import { mobilePlaceHeaderScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
@@ -309,9 +309,10 @@ const PlaceWikiDetailsView = ({
 
   return (
     <div className="w-full h-full flex flex-col relative bg-[#05070a]">
+    <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
     <div
         ref={containerRef}
-        className={`flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden text-white custom-scrollbar relative ${placeScrollSurfaceClass} ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
+        className={`flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden text-white custom-scrollbar relative ${placeScrollSurfaceClass}`}
     >
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }

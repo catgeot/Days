@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp } from 'lucide-react';
-import { mobilePlaceHeaderScrollPadding, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderSpacerClass, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
@@ -75,6 +75,10 @@ const PlaceGalleryView = React.memo(({
     () => typeof window !== 'undefined' && window.matchMedia(TOUCH_DEVICE_QUERY).matches
   );
   const [refreshCooldownLeft, setRefreshCooldownLeft] = useState(0);
+  const galleryPlaceKey = useMemo(
+    () => location?.slug || location?.id || location?.name || '',
+    [location?.slug, location?.id, location?.name],
+  );
 
   const {
     transformStyle,
@@ -122,7 +126,7 @@ const PlaceGalleryView = React.memo(({
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [getRefreshCooldownRemaining, isImgLoading]);
+  }, [getRefreshCooldownRemaining, isImgLoading, galleryPlaceKey]);
 
   const onRefreshClick = useCallback(() => {
     if (isImgLoading || refreshCooldownLeft > 0 || !handleRefresh) return;
@@ -455,6 +459,19 @@ const PlaceGalleryView = React.memo(({
         </>
       )}
 
+      {showNavControls && currentIndex >= 0 && (
+        <div
+          className={`absolute bottom-4 left-1/2 z-[220] -translate-x-1/2 transition-opacity duration-300 md:bottom-8 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          onClick={(e) => e.stopPropagation()}
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <span className="rounded-full border border-white/10 bg-black/50 px-3.5 py-1.5 text-sm font-semibold tabular-nums tracking-wide text-white/90 shadow-xl backdrop-blur-md">
+            {currentIndex + 1} / {images.length}
+          </span>
+        </div>
+      )}
+
       <div
         className={`absolute flex items-center gap-3 z-[220] top-4 right-4 md:top-8 md:right-8 transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         onClick={(e) => e.stopPropagation()}
@@ -528,10 +545,12 @@ const PlaceGalleryView = React.memo(({
               'w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden'
             )
       ) : (
-        <div
-          ref={scrollContainerRef}
-          className={`w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} ${mobilePlaceHeaderScrollPadding} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6`}
-        >
+        <div className="w-full h-full flex flex-col min-h-0">
+          <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
+          <div
+            ref={scrollContainerRef}
+            className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6`}
+          >
 
           {mobileSecondaryNav && (
             <div className={`md:hidden shrink-0 px-2 pb-2 ${mobileLandscapeChromeHidden}`}>
@@ -623,6 +642,7 @@ const PlaceGalleryView = React.memo(({
               )}
             </div>
           </div>
+        </div>
         </div>
       )}
       {showScrollToTop && !selectedImg && createPortal(

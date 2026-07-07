@@ -118,6 +118,31 @@
 
 ---
 
+## PlaceCard 모바일 헤더 터치·갤러리 UX (2026-07-07)
+
+**상태**: **✅ QA 확정 · 커밋·푸시**
+
+### 모바일 헤더 터치 회귀
+
+- **증상** — 플래너·갤러리·위키·리뷰 등 스크롤 후 상단 뒤로/지구본 버튼 간헐적 무반응 (2026-05-25과 동일)
+- **원인** — `overflow-y-auto` + `padding-top`(헤더 inset)이 iOS에서 헤더 영역 터치를 스크롤 surface가 가로챔
+- **조치** — [`mobilePlaceHeaderInset.js`](../src/components/PlaceCard/common/mobilePlaceHeaderInset.js) `mobilePlaceHeaderSpacerClass` SSOT · 스크롤 밖 spacer(플래너·갤러리·위키·리뷰·영상) · `PlaceChatPanel` 모바일 헤더 `fixed`+`isolate`
+- **QA** — 실기기 장스크롤 → 맨 위 → 뒤로/홈 연타
+
+### 갤러리 새로고침 쿨타임 per-place
+
+- **증상** — 「더 많은 사진 불러오기」 30초 쿨타임이 다른 여행지에도 공유됨
+- **조치** — `usePlaceGallery` `lastRefreshAtByPlaceRef`(Map·slug/id) · `PlaceGalleryView` 장소 전환 시 쿨다운 UI 재동기화
+- **QA** — A에서 갱신 → B 즉시 활성 · A 복귀 시 A만 잔여 쿨타임
+
+### 갤러리 데스크톱 사진 카운터
+
+- **요청** — 모바일 개별 사진과 동일하게 PC에서 `n / total`
+- **조치** — `PlaceGalleryView` 데스크톱 lightbox **하단 중앙** 배지 (2장 이상)
+- **QA** — PC 갤러리 확대 · 좌우 이동 시 카운터 갱신
+
+---
+
 ## PlaceCard MOONi·갤러리 scroll-top (2026-07-07)
 
 **상태**: **✅ QA·디자인 확정 · 커밋·푸시**

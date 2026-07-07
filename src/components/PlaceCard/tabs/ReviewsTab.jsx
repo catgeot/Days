@@ -6,7 +6,7 @@ import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
-import { mobilePlaceHeaderScrollPadding, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
@@ -321,9 +321,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       </button>
 
       {/* 모바일: 미디어 탭 + 리뷰 헤더 + 본문 단일 스크롤 / 데스크톱: 본문만 스크롤 */}
+      <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
       <div
         ref={scrollContainerRef}
-        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceFooterScrollPadding} md:pb-4 ${mobilePlaceHeaderScrollPadding} md:pt-0`}
+        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceFooterScrollPadding} md:pb-4 md:pt-0`}
       >
         {mobileSecondaryNav && (
           <div className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}>{mobileSecondaryNav}</div>

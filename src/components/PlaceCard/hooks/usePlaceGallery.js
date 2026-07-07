@@ -55,6 +55,17 @@ const GALLERY_QUERY_OVERRIDES = {
 
 const GALLERY_REFRESH_COOLDOWN_MS = 30_000;
 
+function resolveGalleryStablePlaceKey(locationSource) {
+  if (!locationSource) return '';
+  if (typeof locationSource === 'object') {
+    return (
+      getPlaceStableKey(locationSource) ||
+      String(locationSource.slug || locationSource.id || locationSource.name || '').trim()
+    );
+  }
+  return String(locationSource).trim();
+}
+
 export const usePlaceGallery = (locationSource) => {
   const [images, setImages] = useState([]);
   const [isImgLoading, setIsImgLoading] = useState(false);
@@ -69,7 +80,8 @@ export const usePlaceGallery = (locationSource) => {
   const currentKoreanNameRef = useRef('');
   const currentQueryRef = useRef('');
   const currentPlaceKeyRef = useRef('');
-  const lastRefreshAtRef = useRef(0);
+  /** 여행지(slug/id)별 갤러리 새로고침 쿨타임 — 장소 전환 시 다른 여행지에 영향 없음 */
+  const lastRefreshAtByPlaceRef = useRef(new Map());
 
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
@@ -464,20 +476,30 @@ export const usePlaceGallery = (locationSource) => {
   }, []);
 
   const handleRefresh = useCallback(() => {
+    const placeKey =
+      resolveGalleryStablePlaceKey(locationSource) || currentPlaceKeyRef.current;
+    if (!placeKey) return false;
+
     const now = Date.now();
-    if (now - lastRefreshAtRef.current < GALLERY_REFRESH_COOLDOWN_MS) {
+    const lastAt = lastRefreshAtByPlaceRef.current.get(placeKey) || 0;
+    if (now - lastAt < GALLERY_REFRESH_COOLDOWN_MS) {
       return false;
     }
-    lastRefreshAtRef.current = now;
+    lastRefreshAtByPlaceRef.current.set(placeKey, now);
     fetchImages(true);
     return true;
-  }, [fetchImages]);
+  }, [fetchImages, locationSource]);
 
   const getRefreshCooldownRemaining = useCallback(() => {
-    const elapsed = Date.now() - lastRefreshAtRef.current;
+    const placeKey =
+      resolveGalleryStablePlaceKey(locationSource) || currentPlaceKeyRef.current;
+    if (!placeKey) return 0;
+
+    const lastAt = lastRefreshAtByPlaceRef.current.get(placeKey) || 0;
+    const elapsed = Date.now() - lastAt;
     const remaining = GALLERY_REFRESH_COOLDOWN_MS - elapsed;
     return remaining > 0 ? Math.ceil(remaining / 1000) : 0;
-  }, []);
+  }, [locationSource]);
 
   // 반환 객체
   return {

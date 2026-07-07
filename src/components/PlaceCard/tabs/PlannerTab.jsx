@@ -5,7 +5,7 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
-import { mobilePlaceHeaderScrollPadding, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderScrollPadding, mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
@@ -352,10 +352,11 @@ const PlannerTab = ({
 
     return (
         <TripcomFlightSearchProvider>
-        <div className="w-full h-full relative">
+        <div className="w-full h-full relative flex flex-col min-h-0">
+            <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
             <div
                 ref={scrollContainerRef}
-                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
+                className={`flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
             >
                 {mobileSecondaryNav && (
                     <div className={`md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
