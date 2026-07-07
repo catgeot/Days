@@ -81,7 +81,7 @@
 | Summary 접기 | `bar-header` 패리티 · `summary-panel` 「접기」 |
 | 칩 크기 | `summary-header` `min-h-[32px]` · 사용자 확인 ✅ |
 
-**릴리스 노트** — 초안 본 세션 대화 제시 · 합의 후 `releaseNotes.js` 반영
+**릴리스 노트** — `releaseNotes.js` `2026-07-07` 반영 (합의)
 
 ---
 
