@@ -383,7 +383,7 @@ const PlaceCardSummary = ({
 
               <div className={isOriginCompact ? 'mb-0' : 'mb-2'}>
 
-                {!isOriginCompact ? (
+                {!isOriginCompact && !originExpanded ? (
 
                   <div className="flex items-center justify-between gap-2 min-w-0">
 
@@ -391,15 +391,11 @@ const PlaceCardSummary = ({
 
                       variant="summary-header"
 
-                      isExpanded={originExpanded}
-
                       selectedIata={selectedFlightOriginIata}
 
                       disabled={isFlightRoutePending}
 
                       onExpandRequest={() => setOriginExpanded(true)}
-
-                      onCollapseRequest={() => setOriginExpanded(false)}
 
                     />
 

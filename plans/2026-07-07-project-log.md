@@ -66,16 +66,31 @@
 - **패턴** — `MOBILE_INPUT_*_CLASS` · `useDeferredViewportSyncOnBlur` · `<form onSubmit>`+`enterKeyHint` · `useMobileOverlayViewport`
 - **QA** — 로그북 블로그 리스트 검색 Enter ✅ (사용자 확인)
 - **Enter 수정** — `PlaceChatView`·`SearchDiscoveryModal`·`RecentList` form · `FlightOriginSelector` `inputMode="text"`+Enter fallback
-- **잔여** — 출발지 모바일 QA ✅ · **다음: 써머리 출발지 접기 UX** · 추가 최적화
+- **잔여** — ~~써머리 출발지 접기 UX~~ ✅ · MOONi·탐색 입력 후 홈 배치 **실기기 QA 대기**
 
 ---
 
-## 출발지 드롭다운 세션 — 에이전트 핸드오프
+## 출발지 드롭다운 — 완료 (2026-07-07)
+
+**상태**: **✅ QA 통과** (모바일 compact·listbox · 써머리 접기 · 출발 칩 터치 영역)
+
+| 영역 | 내용 |
+|------|------|
+| SSOT | `mobileViewport.js` · `useMobileInputViewport.js` |
+| listbox | `FlightOriginSelector` flipUp · 모바일 인라인 `bottom-full` |
+| Summary 접기 | `bar-header` 패리티 · `summary-panel` 「접기」 |
+| 칩 크기 | `summary-header` `min-h-[32px]` · 사용자 확인 ✅ |
+
+**릴리스 노트** — 초안 본 세션 대화 제시 · 합의 후 `releaseNotes.js` 반영
+
+---
+
+## 출발지 드롭다운 세션 — 에이전트 핸드오프 (아카이브)
 
 ### 상태 (2026-07-07)
 
-- **모바일 QA ✅** — PlaceCardSummary·FlightCinemaBar 출발지 검색 · compact · 키보드 위 인라인 listbox (사용자 확인)
-- **코드** — 2~5차: flipUp anchor · compact · `readVisualViewportBottomInset` · FlightCinemaBar portal bottom 동기화
+- **모바일 QA ✅** — PlaceCardSummary·FlightCinemaBar 출발지 검색 · compact · 키보드 위 인라인 listbox
+- **써머리 접기·칩 ✅** — `summary-header`/`summary-panel` · 터치 영역 확대 · 사용자 확인
 
 ### 읽을 것 (3)
 
@@ -97,14 +112,16 @@
 | listbox | `FlightOriginSelector.jsx` flipUp anchor · 모바일 `bar`/`summary-panel` 인라인 `bottom-full` · `onSearchActiveChange` |
 | PlaceCard | `PlaceCardSummary.jsx` `isOriginCompact` · 키보드 bottom · chrome 숨김 |
 | CinemaBar | `FlightCinemaBar.jsx` + `FlightCinemaContext.jsx` 동일 compact · portal bottom |
+| Summary 접기 | `PlaceCardSummary` `!originExpanded` 칩 · `summary-panel` 「접기」 · `summary-header` expand-only |
+| 칩 크기 | `summary-header` `min-h-[32px]` · `11px` · 사용자 확인 ✅ |
 
 ### 다음 세션 작업
 
 | 우선 | 내용 |
 |------|------|
-| 1 | **써머리 출발지 접기** — `FlightCinemaBar` `bar-header` 칩처럼 `PlaceCardSummary`/`summary-header` **접힌 상태 기본** · 검색 패널 토글 UX 통일 |
-| 2 | 추가 QA·최적화 — edge 기기 · 회전 · blur/접기 후 viewport 복귀 |
-| 3 | (선택) 릴리스 노트 초안 — 사용자 합의 후 `releaseNotes.js` |
+| 1 | MOONi·탐색 입력 후 홈 지구본 배치 **실기기 QA** |
+| 2 | 출발지 edge 회귀 — 회전 · blur 후 viewport |
+| 3 | 릴리스 노트 합의 → `releaseNotes.js` 반영 |
 
 ### 제시어 (다음 세션)
 

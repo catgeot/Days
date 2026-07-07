@@ -35,7 +35,6 @@ const LISTBOX_Z_INDEX = 225;
  *   browserOriginHint?: string | null,
  *   onSelect?: (iata: string) => void,
  *   onApplyBrowserOriginSuggestion?: () => void,
- *   isExpanded?: boolean,
  *   onExpandRequest?: () => void,
  *   onCollapseRequest?: () => void,
  *   initialExpanded?: boolean,
@@ -52,7 +51,6 @@ export default function FlightOriginSelector({
   onExpandRequest,
   onCollapseRequest,
   initialExpanded = false,
-  isExpanded = false,
   onSearchActiveChange,
 }) {
   const listboxId = useId();
@@ -334,7 +332,7 @@ export default function FlightOriginSelector({
   const summarySelectedClass =
     'inline-flex max-w-[58%] shrink-0 items-center rounded-md border border-sky-400/40 bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold text-sky-50 tabular-nums truncate';
 
-  const summaryHeaderChipClass = `inline-flex min-h-0 max-w-[8.5rem] items-center gap-1 rounded-md border border-sky-400/45 bg-sky-500/18 px-2 py-0.5 text-[10px] font-semibold leading-tight text-sky-50 transition-colors hover:border-sky-300/55 hover:bg-sky-500/28 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-sky-300/50 motion-safe:active:scale-[0.98] ${
+  const summaryHeaderChipClass = `inline-flex min-h-[32px] max-w-[9.5rem] items-center gap-1.5 rounded-md border border-sky-400/45 bg-sky-500/18 px-2.5 py-1 text-[11px] font-semibold leading-tight text-sky-50 transition-colors hover:border-sky-300/55 hover:bg-sky-500/28 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-sky-300/50 motion-safe:active:scale-[0.98] ${
     disabled ? 'opacity-60 cursor-wait' : ''
   }`;
 
@@ -417,8 +415,6 @@ export default function FlightOriginSelector({
         }`;
 
   if (isSummaryHeader) {
-    const toggleAction = isExpanded ? onCollapseRequest : onExpandRequest;
-
     return (
       <div
         ref={rootRef}
@@ -426,22 +422,18 @@ export default function FlightOriginSelector({
         onClick={(event) => event.stopPropagation()}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <span className="shrink-0 text-[10px] font-bold tracking-wide text-sky-100/90 break-keep">출발</span>
+        <span className="shrink-0 text-[11px] font-bold tracking-wide text-sky-100/90 break-keep">출발</span>
         <button
           type="button"
           disabled={disabled}
-          onClick={() => toggleAction?.()}
+          onClick={() => onExpandRequest?.()}
           className={chipButtonClass}
-          aria-expanded={isExpanded}
-          aria-label={isExpanded ? '출발지 검색 접기' : '출발지 검색 펼치기'}
+          aria-expanded={false}
+          aria-label="출발지 검색 펼치기"
           title={selectedOption?.officialKo || selectedLabel}
         >
           <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
-          {isExpanded ? (
-            <ChevronUp size={13} strokeWidth={2.25} className="shrink-0 text-sky-100/90" aria-hidden="true" />
-          ) : (
-            <ChevronDown size={13} strokeWidth={2.25} className="shrink-0 text-sky-100/90" aria-hidden="true" />
-          )}
+          <ChevronDown size={14} strokeWidth={2.25} className="shrink-0 text-sky-100/90" aria-hidden="true" />
         </button>
       </div>
     );
@@ -548,7 +540,21 @@ export default function FlightOriginSelector({
             <span className={selectedClass}>{selectedIata}</span>
           )}
         </div>
-      ) : null}
+      ) : (
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <p className={barSearchLabelClass}>출발지 검색</p>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={handleCollapse}
+            className={barCollapseClass}
+            aria-label="출발지 검색 접기"
+          >
+            <ChevronUp size={15} aria-hidden="true" />
+            접기
+          </button>
+        </div>
+      )}
 
       <div className={`flex gap-1.5 ${isBar ? 'flex-col' : 'items-stretch'}`}>
         <form
