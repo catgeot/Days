@@ -1,103 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 
 import { useReport } from '../../../context/ReportContext';
-import { apiClient } from '../lib/apiClient';
-import { supabase } from '../../../shared/api/supabase';
-import {
-  buildPlaceDbIdCandidates,
-  getPlaceStatsId,
-  getPlaceStableKey,
-  mergeCanonicalTravelSpot,
-} from '../../../utils/travelSpotResolve';
+import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
+import { hydrateLocationFromSavedTrip } from '../lib/placeRouteHydrate';
 import FooterModal from './FooterModal';
 import { OPEN_UPDATES_LIST_EVENT } from '../../../shared/lib/siteNoticeEvents';
 
-const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-const CACHE_VERSION = 'v1.5';
+const DEFAULT_THUMB =
+  'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
 
 const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
-  const [thumbUrl, setThumbUrl] = useState('');
-  const [isLoaded, setIsLoaded] = useState(false);
+  const location = useMemo(() => hydrateLocationFromSavedTrip(trip), [trip]);
+  const { images, isImgLoading } = usePlaceGallery(location);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchThumbnail = async () => {
-      const originName = trip.destination || 'travel';
-      const location = mergeCanonicalTravelSpot({ name: originName });
-      const searchQuery = location.name_en || location.name || originName;
-      const stableKey = getPlaceStableKey(location);
-      const dbCandidates = buildPlaceDbIdCandidates(location);
-      const statsId = getPlaceStatsId(location);
-
-      const CACHE_KEY = `days_gallery_${encodeURIComponent(stableKey)}_${searchQuery}`;
-
-      try {
-        const cachedItem = sessionStorage.getItem(CACHE_KEY);
-        if (cachedItem) {
-          const parsed = JSON.parse(cachedItem);
-          if (parsed.version === CACHE_VERSION && parsed.data && parsed.data.length > 0) {
-            if (isMounted) {
-              setThumbUrl(parsed.data[0].urls.small || parsed.data[0].urls.regular);
-              setIsLoaded(true);
-            }
-            return;
-          }
-        }
-      } catch (e) {
-        console.warn("Cache parse error", e);
-      }
-
-      try {
-        const { data: statsRows, error: _statsError } = await supabase
-          .from('place_stats')
-          .select('image_url')
-          .in('place_id', dbCandidates.length ? dbCandidates : [originName])
-          .limit(1);
-
-        const statsData = statsRows?.find((row) => row?.image_url) ?? null;
-
-        if (statsData?.image_url) {
-          if (isMounted) {
-            setThumbUrl(statsData.image_url);
-            setIsLoaded(true);
-          }
-          return;
-        }
-
-        if (!ACCESS_KEY) return;
-
-        const results = await apiClient.fetchUnsplashImages(ACCESS_KEY, searchQuery);
-
-        if (isMounted && results.length > 0) {
-          const newImageUrl = results[0].urls.small || results[0].urls.regular;
-          setThumbUrl(newImageUrl);
-
-          if (statsId) {
-            supabase
-              .from('place_stats')
-              .upsert({
-                place_id: statsId,
-                image_url: newImageUrl
-              }, { onConflict: 'place_id' })
-              .then();
-          }
-        }
-      } catch (error) {
-        console.error("Thumbnail Fetch Error in LogoPanel:", error);
-      } finally {
-        if (isMounted) setIsLoaded(true);
-      }
-    };
-
-    fetchThumbnail();
-    return () => { isMounted = false; };
-  }, [trip.destination]);
-
-  const finalImgSrc = thumbUrl || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
+  const thumbUrl = images[0]?.urls?.small || images[0]?.urls?.regular || '';
+  const isLoaded = !isImgLoading;
+  const finalImgSrc = thumbUrl || DEFAULT_THUMB;
 
   return (
     <div

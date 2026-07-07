@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
@@ -8,6 +8,7 @@ import PlaceMiniMap from '../common/PlaceMiniMap';
 import { mobilePlaceHeaderScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 
 const LOADING_MESSAGES_NEW = [
     "지역 위키백과 정보 분석 및 연동 중...",
@@ -49,6 +50,11 @@ const PlaceWikiDetailsView = ({
   // 라이트박스 상태 (갤러리 이미지만)
   const [lightboxImg, setLightboxImg] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(0); // galleryImages 내에서의 인덱스
+
+  const lightboxAttribution = useMemo(
+    () => (lightboxImg ? getGalleryImageAttribution(lightboxImg) : null),
+    [lightboxImg],
+  );
 
   const isUpdatingExisting = !!wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
   const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
@@ -728,20 +734,18 @@ const PlaceWikiDetailsView = ({
                             {lightboxImg.alt_description && (
                                 <p className="text-white/90 text-sm mb-1">{lightboxImg.alt_description}</p>
                             )}
-                            {lightboxImg.user?.name && (
+                            {lightboxAttribution && (
                                 <p className="text-white/60 text-xs">
-                                    Photo by {lightboxImg.user.name}
-                                    {lightboxImg.user.links?.html && (
-                                        <a
-                                            href={lightboxImg.user.links.html}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="ml-2 underline hover:text-white/80"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            on Unsplash
-                                        </a>
-                                    )}
+                                    Photo by {lightboxAttribution.authorName}
+                                    <a
+                                        href={lightboxAttribution.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="ml-2 underline hover:text-white/80"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {lightboxAttribution.providerLabel}
+                                    </a>
                                 </p>
                             )}
                         </div>

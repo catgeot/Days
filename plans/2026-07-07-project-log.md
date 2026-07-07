@@ -270,3 +270,20 @@ grep: HomeGlobeMapbox(flyToAndPin,pivotTourExplore) · globeTourEngine(waitForMo
 금지: flyZoom/HIGH_ZOOM 변경 · travelSpots JSON · releaseNotes 합의 전.
 이전 수정: moveend 타임아웃 · TOUR_READY pivot · TOUR_PLAYING skip+pending pivot.
 ```
+
+---
+
+## 로고 패널 버킷리스트 썸네일
+
+**상태**: **✅ QA 통과 (2026-07-07)**
+
+- **증상**: 장소카드 갤러리에 사진이 있어도 버킷리스트 카드에 기본 이미지만 표시
+- **원인**: `LogoPanel`이 `place_stats.image_url`·별도 캐시 키(v1.5)만 조회 — 갤러리 SSOT(`gallery_urls`·`usePlaceGallery` 캐시)와 불일치
+- **수정**: `BucketListCard` → `hydrateLocationFromSavedTrip` + `usePlaceGallery` 재사용 ([`LogoPanel.jsx`](../src/pages/Home/components/LogoPanel.jsx))
+
+## 갤러리 사진 출처 표기 (Unsplash / Pexels)
+
+**상태**: **✅ QA 통과 (2026-07-07)**
+
+- **증상**: Pexels 병합 사진도 `on Unsplash`로 표시 · Pexels 링크(`links.html`) 미연결
+- **수정**: [`galleryImageAttribution.js`](../src/components/PlaceCard/common/galleryImageAttribution.js) — id `pexels-*`·`source`로 구분 · `PlaceGalleryView`·`GalleryInfoView`·`PlaceWikiDetailsView` 반영 · Pexels 매핑에 `source: 'pexels'` 추가

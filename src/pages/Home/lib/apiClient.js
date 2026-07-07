@@ -114,6 +114,7 @@ export const apiClient = {
       // Unsplash 응답 객체 포맷과 호환되도록 매핑
       return (data.photos || []).map(photo => ({
         id: `pexels-${photo.id}`,
+        source: 'pexels',
         urls: {
           regular: photo.src.large, // 일반 뷰용 (가로 최대 940px)
           small: photo.src.medium,  // 썸네일용 (높이 350px)

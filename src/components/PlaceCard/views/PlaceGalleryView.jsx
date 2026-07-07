@@ -5,6 +5,7 @@ import { mobilePlaceHeaderScrollPadding, mobilePlaceGalleryFooterScrollPadding, 
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
+import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -231,6 +232,11 @@ const PlaceGalleryView = React.memo(({
     return raw.charAt(0).toUpperCase() + raw.slice(1);
   }, [selectedImg]);
 
+  const photoAttribution = useMemo(
+    () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
+    [selectedImg],
+  );
+
   const renderPhotoViewer = (wrapperClassName, { mobilePortal = false } = {}) => {
     if (mobilePortal) {
       return (
@@ -329,17 +335,18 @@ const PlaceGalleryView = React.memo(({
             className={`relative z-[220] shrink-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-4 transition-opacity duration-300 portrait:static landscape:absolute landscape:inset-x-0 landscape:bottom-0 landscape:bg-gradient-to-t landscape:from-black/85 landscape:to-transparent landscape:px-3 landscape:pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] landscape:pt-2 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             onClick={(e) => e.stopPropagation()}
           >
-            {selectedImg.user && (
+            {photoAttribution && (
               <div className="mb-3 flex justify-center portrait:flex landscape:hidden">
                 <a
-                  href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`}
+                  href={photoAttribution.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-xs text-white/85 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white"
+                  title={photoAttribution.title}
                 >
                   <span>Photo by</span>
-                  <span className="truncate font-semibold text-white">{selectedImg.user.name || 'Unknown'}</span>
-                  <span>on Unsplash</span>
+                  <span className="truncate font-semibold text-white">{photoAttribution.authorName}</span>
+                  <span>{photoAttribution.providerLabel}</span>
                 </a>
               </div>
             )}
@@ -365,17 +372,17 @@ const PlaceGalleryView = React.memo(({
                     {currentIndex + 1} / {images.length}
                   </span>
                 )}
-                {selectedImg.user && (
+                {photoAttribution && (
                   <a
-                    href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`}
+                    href={photoAttribution.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hidden max-w-[min(42vw,14rem)] shrink truncate rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] leading-none text-white/75 backdrop-blur-sm transition-all hover:bg-white/15 hover:text-white landscape:inline"
-                    title={`Photo by ${selectedImg.user.name || 'Unknown'} on Unsplash`}
+                    title={photoAttribution.title}
                   >
                     Photo by{' '}
-                    <span className="font-semibold text-white/90">{selectedImg.user.name || 'Unknown'}</span>
-                    {' '}on Unsplash
+                    <span className="font-semibold text-white/90">{photoAttribution.authorName}</span>
+                    {' '}{photoAttribution.providerLabel}
                   </a>
                 )}
                 <button
@@ -479,17 +486,18 @@ const PlaceGalleryView = React.memo(({
         </div>
       )}
 
-      {selectedImg.user && (
+      {photoAttribution && (
         <div className={`absolute bottom-4 left-4 md:bottom-8 md:left-8 z-[220] transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
           <a
-            href={`${selectedImg.user.links?.html || '#' }?utm_source=Project_Days&utm_medium=referral`}
+            href={photoAttribution.href}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 text-xs md:text-sm rounded-full hover:bg-white/20 hover:text-white transition-all shadow-xl"
+            title={photoAttribution.title}
           >
             <span>Photo by</span>
-            <span className="font-semibold text-white truncate max-w-[100px] md:max-w-[200px]">{selectedImg.user.name || 'Unknown'}</span>
-            <span>on Unsplash</span>
+            <span className="font-semibold text-white truncate max-w-[100px] md:max-w-[200px]">{photoAttribution.authorName}</span>
+            <span>{photoAttribution.providerLabel}</span>
           </a>
         </div>
       )}

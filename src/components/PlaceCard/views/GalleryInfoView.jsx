@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Camera, MapPin, Compass, Sparkles } from 'lucide-react'; 
+import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
+import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
     
@@ -11,6 +12,11 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         }
         return `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
     }, [selectedImg, selectedPlace]);
+
+    const photoAttribution = useMemo(
+        () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
+        [selectedImg],
+    );
 
     return (
         <div className="animate-fade-in space-y-8 min-h-[200px] max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
@@ -45,10 +51,23 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
              {/* Content Area */}
              <div className="px-0.5">
                 {isPhotoMode ? (
-                    <div className="animate-fade-in">
+                    <div className="animate-fade-in space-y-4">
                         <p className="text-[16px] text-gray-200 leading-relaxed font-normal opacity-90 tracking-tight">
                             {description}
                         </p>
+                        {photoAttribution && (
+                            <a
+                                href={photoAttribution.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex max-w-full flex-wrap items-center gap-1 text-[12px] text-gray-500 transition-colors hover:text-gray-300"
+                                title={photoAttribution.title}
+                            >
+                                <span>Photo by</span>
+                                <span className="font-semibold text-gray-400">{photoAttribution.authorName}</span>
+                                <span>{photoAttribution.providerLabel}</span>
+                            </a>
+                        )}
                     </div>
                 ) : (
                     <div className="animate-fade-in space-y-10">
