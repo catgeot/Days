@@ -308,7 +308,10 @@ function Home() {
       setSelectedLocation(target);
     }
     navigate('/');
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation]);
+    if (isMobileViewport) {
+      syncHomeViewportAfterInput();
+    }
+  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -619,7 +622,10 @@ function Home() {
       globeRef.current?.endTour?.();
     }
     globeRef.current?.resumeRotation?.();
-  }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation]);
+    if (isMobileViewport) {
+      syncHomeViewportAfterInput();
+    }
+  }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
 
   const handleTourBarClose = dismissPlaceSelectionKeepGlobePin;
 

@@ -110,6 +110,14 @@
 
 ---
 
+## 모바일 — PlaceCard 닫기 viewport sync (2026-07-07)
+
+- **배경** — 출발지 검색 후 홈 복귀 시 지구본 상단 쏠림(실기기 1회성·캐시 의심) · MOONi·탐색과 동일 방어 로직 보강
+- **수정** — `index.jsx` `dismissPlaceSelectionKeepGlobePin` · `goHomeFromPlace` — 모바일만 `syncHomeViewportAfterInput()`
+- **영향** — MOONi 닫기와 동일(blur·scroll 0·120ms resize) · 데스크톱 무 변경 · 투어 Bar X도 동일 함수 경유(무해)
+
+---
+
 ## PlaceCard MOONi·갤러리 scroll-top (2026-07-07)
 
 **상태**: **✅ QA·디자인 확정 · 커밋·푸시**
