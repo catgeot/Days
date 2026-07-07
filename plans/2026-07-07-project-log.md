@@ -87,7 +87,30 @@
 
 ## PlaceCard 줌·가로 UX (2026-07-07)
 
-**상태**: **⏳ revert 적용·커밋 대기 — 다음 세션 정책 구현**
+**상태**: **✅ 실기기 QA 통과 — 배포·릴리스 노트 합의 대기**
+
+### 본 세션 (줌 이어하기·마무리)
+
+- **revert ✅** — `3c5d0f5` (836be2f·0aa82f0).
+- **탭별 SSOT ✅** — `placeScrollPanYClass` · `plannerScrollSurfaceClass` · `useLightboxPinchTransform`.
+- **플래너 줌 reset ✅** — 탭 이탈·카드 닫기 `resetIosZoomAfterInput`.
+- **가로 immersive ✅** — `mobileLandscapeChromeHidden` — 헤더·푸터·FAB·연관바·탭네비 **숨김**(축소 아님) · 세로 복귀 시 노출 · 라이트박스 가로 자동 chrome 숨김.
+- **QA ✅** — 사용자 실기기 확인 (줌 정책·가로 본문 집중).
+
+### 정책 (확정)
+
+| 영역 | 확대 | chrome |
+|------|------|--------|
+| 갤러리 그리드 | 없음 | 세로만 |
+| 사진 라이트박스 | transform in/out | 가로 immersive |
+| 위키·리뷰 | 없음 | 가로 chrome 숨김 |
+| 플래너 | 네이티브 줌+스크롤 | 가로 chrome 숨김 |
+
+**금지** — `usePinchZoomPan` · `snapVisualViewportPinchZoom`.
+
+---
+
+**상태 (이전)**: **⏳ revert 적용·커밋 대기 — 다음 세션 정책 구현**
 
 ### 본 세션
 
@@ -123,40 +146,24 @@
 
 ---
 
-## PlaceCard 줌·가로 UX — 에이전트 핸드오프
+## PlaceCard 줌·가로 UX — 에이전트 핸드오프 (완료)
+
+### 상태 (2026-07-07)
+
+- **구현·QA ✅** — revert `3c5d0f5` + 탭별 줌 + `useLightboxPinchTransform` + `mobileLandscapeChromeHidden`
+- **잔여** — 배포 후 회귀 · 릴리스 노트 합의 → `releaseNotes.js`
 
 ### 읽을 것 (3)
 
 1. [`.ai-context.md`](../.ai-context.md) — 3절 · 5~6절
 2. **본 일지** — 「PlaceCard 줌·가로 UX」정책 표
-3. grep — `placeScrollSurface` · `pinch-zoom-scroll` · `PlaceGalleryView` · `PlannerTab` · `PlaceChatPanel` · `landscape:` · `resetIosZoomAfterInput`
+3. grep — `placeScrollSurface` · `mobileLandscapeChromeHidden` · `useLightboxPinchTransform` · `PlaceGalleryView`
 
 ### 금지 (3)
 
 1. `usePinchZoomPan` · `snapVisualViewportPinchZoom` 재도입
 2. PowerShell JSX · `GLOBE_VIEW.flyZoom` 변경
-3. QA·릴리스 노트 합의 전 「완료」·`releaseNotes.js` 임의 반영
-
-### 다음 세션
-
-| 순서 | 내용 |
-|------|------|
-| 0 | revert **커밋** |
-| 1 | 탭별 touch-action SSOT |
-| 2 | 플래너만 줌+스크롤 |
-| 3 | 라이트박스 img transform |
-| 4 | 가로 immersive + chrome |
-
-### 제시어
-
-```
-PlaceCard-줌-이어하기 @plans/2026-07-07-project-log.md
-
-revert(836be2f·0aa82f0) 적용·커밋 대기. 정책: 그리드·위키 줌 없음 · 플래너만 확대·스크롤 · 사진 transform in/out · 가로 immersive.
-금지: usePinchZoomPan · snapVisualViewportPinchZoom.
-읽기: .ai-context 3·5·6절 + 본 일지 「PlaceCard 줌·가로 UX」핸드오프.
-grep: placeScrollSurface · PlannerTab · PlaceGalleryView · PlaceChatPanel landscape · resetIosZoomAfterInput.
-```
+3. 릴리스 노트 합의 전 `releaseNotes.js` 임의 반영
 
 ---
 

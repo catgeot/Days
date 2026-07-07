@@ -5,7 +5,7 @@ import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, Shiel
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
-import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderScrollPadding, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
@@ -24,6 +24,7 @@ import {
     plannerScrollSurfaceClass,
 } from './planner/readableText';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import {
   parsePlannerFocusFromHash,
   scrollPlannerFocusIntoView,
@@ -77,6 +78,13 @@ const PlannerTab = ({
         }
         return () => clearInterval(interval);
     }, [isLoading, currentMessages]);
+
+    useEffect(() => {
+        if (!isActive) return undefined;
+        return () => {
+            resetIosZoomAfterInput();
+        };
+    }, [isActive]);
 
     useEffect(() => {
         if (!isActive || isLoading || !plannerFocusId) return;
@@ -323,10 +331,10 @@ const PlannerTab = ({
         <div className="w-full h-full relative">
             <div
                 ref={scrollContainerRef}
-                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} pb-24 md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
+                className={`w-full h-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceHeaderScrollPadding} ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
             >
                 {mobileSecondaryNav && (
-                    <div className="md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa]">
+                    <div className={`md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
                         {mobileSecondaryNav}
                     </div>
                 )}
@@ -517,7 +525,7 @@ const PlannerTab = ({
                 <button
                     type="button"
                     onClick={scrollPlannerToTop}
-                    className="fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation"
+                    className={`fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation ${mobileLandscapeChromeHidden}`}
                     aria-label="플래너 맨 위로"
                 >
                     <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />

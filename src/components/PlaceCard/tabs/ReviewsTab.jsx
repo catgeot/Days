@@ -6,7 +6,7 @@ import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
-import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderScrollPadding, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
@@ -314,7 +314,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       {/* 모바일 우측 하단 FAB 작성 버튼 */}
       <button
         onClick={handleWriteClick}
-        className="md:hidden fixed bottom-6 right-4 z-50 flex items-center justify-center gap-1.5 px-4 py-3 bg-blue-600 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:bg-blue-700 active:scale-95 transition-all"
+        className={`md:hidden fixed bottom-6 right-4 z-50 flex items-center justify-center gap-1.5 px-4 py-3 bg-blue-600 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:bg-blue-700 active:scale-95 transition-all ${mobileLandscapeChromeHidden}`}
       >
         <PenSquare className="w-4 h-4" />
         <span className="font-bold text-sm">작성</span>
@@ -323,14 +323,14 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       {/* 모바일: 미디어 탭 + 리뷰 헤더 + 본문 단일 스크롤 / 데스크톱: 본문만 스크롤 */}
       <div
         ref={scrollContainerRef}
-        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} pb-24 md:pb-4 ${mobilePlaceHeaderScrollPadding} md:pt-0`}
+        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceFooterScrollPadding} md:pb-4 ${mobilePlaceHeaderScrollPadding} md:pt-0`}
       >
         {mobileSecondaryNav && (
-          <div className="md:hidden px-2 pb-2 shrink-0">{mobileSecondaryNav}</div>
+          <div className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}>{mobileSecondaryNav}</div>
         )}
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
-        <div className="md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm">
+        <div className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}>
           <div className="flex items-center justify-between px-3 py-2.5">
             <div className="flex items-center gap-2">
               <button

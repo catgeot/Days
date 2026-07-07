@@ -1,7 +1,18 @@
 /**
- * 모바일에서 `PlaceChatPanel` 1행 고정 헤더 아래로 스크롤 본문·액션 탭이 시작되도록 하는 패딩.
- * 수정 전 참고: 갤러리 그리드 pt-[96px](6rem), 리뷰·위키 등은 동일 스크롤 컨테이너에 적용, 플래너 116px 등 구간별 상이.
- * 요청 범위 6~6.5rem 중간값 6.25rem(100px) + safe-area.
+ * 모바일 PlaceCard — 세로/가로 chrome·스크롤 inset SSOT
  */
+
+/** 가로 immersive — 모바일 chrome(헤더·푸터·FAB·연관바) 숨김 */
+export const mobileLandscapeChromeHidden = 'max-md:landscape:hidden';
+
+/** 세로 — PlaceChatPanel 고정 헤더 아래 본문 시작 · 가로 — safe-area만 */
 export const mobilePlaceHeaderScrollPadding =
-  'pt-[calc(6.25rem+env(safe-area-inset-top,0px))]';
+  'pt-[calc(6.25rem+env(safe-area-inset-top,0px))] max-md:landscape:pt-[env(safe-area-inset-top,0px)]';
+
+/** 세로 — 하단 FAB·연관바 여유 · 가로 — safe-area만 */
+export const mobilePlaceFooterScrollPadding =
+  'pb-24 max-md:landscape:pb-[env(safe-area-inset-bottom,0px)]';
+
+/** 갤러리 그리드 — 연관바가 조금 더 높음 */
+export const mobilePlaceGalleryFooterScrollPadding =
+  'pb-28 max-md:landscape:pb-[env(safe-area-inset-bottom,0px)]';

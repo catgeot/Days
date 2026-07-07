@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Maximize2, Minimize2, Play, Sparkles, List, X, ChevronLeft, ChevronRight, AlertCircle, ExternalLink } from 'lucide-react';
-import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 
 const YouTubePlayerView = forwardRef(({
   videoId,
@@ -129,7 +129,7 @@ const YouTubePlayerView = forwardRef(({
       className={`flex flex-col flex-1 w-full h-full bg-[#05070a] md:rounded-[2rem] md:border md:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''} ${mobileSecondaryNav ? `${mobilePlaceHeaderScrollPadding} md:pt-0` : ''}`}
     >
       {mobileSecondaryNav && (
-        <div className="md:hidden shrink-0 z-[215] relative border-b border-white/10">
+        <div className={`md:hidden shrink-0 z-[215] relative border-b border-white/10 ${mobileLandscapeChromeHidden}`}>
           {mobileSecondaryNav}
         </div>
       )}

@@ -15,6 +15,7 @@ import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import PlaceMooniFab from '../common/PlaceMooniFab';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
+import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
@@ -144,12 +145,12 @@ const PlaceChatPanel = React.memo(({
   return (
     <div className={`flex flex-col transition-all duration-500
         ${isFullScreen ? 'opacity-0 pointer-events-none md:pointer-events-auto md:translate-x-[-100%]' : 'opacity-100 translate-x-0 pointer-events-auto'}
-        absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 md:pb-0 md:border-none md:rounded-none
+        absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 max-md:landscape:pb-0 max-md:landscape:border-b-0 max-md:landscape:bg-transparent max-md:landscape:backdrop-blur-none md:pb-0 md:border-none md:rounded-none
         md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
 
       {/* Header — 갤러리·위키·리뷰·플래너: 지명 영역 탭 시 스크롤 맨 위 (뒤로/홈 버튼과 분리) */}
       <div
-        className="shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3"
+        className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 ${mobileLandscapeChromeHidden}`}
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div className="flex items-center gap-2.5 overflow-hidden w-full min-w-0">
@@ -325,17 +326,19 @@ const PlaceChatPanel = React.memo(({
 
       {/* 모바일: 드래그 가능 MOONi FAB (플래너 scroll-top z-[170] 우측 예약·갤러리 연관바 minBottom 반영) */}
       {!isFullScreen && (
-          <PlaceMooniFab
-            onOpen={openMooni}
-            mediaMode={mediaMode}
-            hasGalleryRelatedBar={
-              relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg
-            }
-          />
+          <div className={mobileLandscapeChromeHidden}>
+            <PlaceMooniFab
+              onOpen={openMooni}
+              mediaMode={mediaMode}
+              hasGalleryRelatedBar={
+                relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg
+              }
+            />
+          </div>
       )}
 
       {relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(
-          <div className="md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+          <div className={`md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)] ${mobileLandscapeChromeHidden}`}>
               <style>{`
                   .no-scrollbar::-webkit-scrollbar { display: none; }
                   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

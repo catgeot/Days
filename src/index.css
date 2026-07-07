@@ -8,9 +8,14 @@ body {
   margin: 0; 
 }
 
-/* 플래너·위키 등 읽기 영역: 세로 스크롤과 핀치 줌 공존 (touch-pan-y 단독은 줌 차단) */
-.pinch-zoom-scroll {
-  touch-action: pan-y pinch-zoom;
+/* PlaceCard 탭별 touch-action SSOT */
+.place-scroll-pan-y {
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.place-scroll-zoom {
+  touch-action: pan-x pan-y pinch-zoom;
   -webkit-overflow-scrolling: touch;
 }
 

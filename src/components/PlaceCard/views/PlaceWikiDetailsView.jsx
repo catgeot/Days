@@ -5,7 +5,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
 import PlaceMiniMap from '../common/PlaceMiniMap';
-import { mobilePlaceHeaderScrollPadding } from '../common/mobilePlaceHeaderInset';
+import { mobilePlaceHeaderScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
@@ -315,7 +315,7 @@ const PlaceWikiDetailsView = ({
         `}</style>
 
         {mobileSecondaryNav && (
-            <div className="md:hidden shrink-0 border-b border-white/10 bg-[#05070a]">
+            <div className={`md:hidden shrink-0 border-b border-white/10 bg-[#05070a] ${mobileLandscapeChromeHidden}`}>
                 {mobileSecondaryNav}
             </div>
         )}
@@ -323,7 +323,7 @@ const PlaceWikiDetailsView = ({
         {/* Hero Section */}
         {heroImage && (
             <div className="relative w-full overflow-hidden flex-shrink-0">
-                <div className={`${mobileSecondaryNav ? 'h-0' : 'h-16'} md:h-0 bg-[#05070a]`} />
+                <div className={`${mobileSecondaryNav ? 'h-0' : 'h-16 max-md:landscape:h-0'} md:h-0 bg-[#05070a]`} />
 
                 <div className="relative w-full h-[40vh] md:h-[50vh]">
                     <img
@@ -343,7 +343,7 @@ const PlaceWikiDetailsView = ({
             </div>
         )}
 
-        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-8 md:pb-32 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 md:pt-0' : 'pt-[96px]') : 'pt-8'}`}>
+        <div className={`max-w-3xl mx-auto w-full px-6 md:px-0 pb-8 md:pb-32 max-md:landscape:px-4 max-md:landscape:pb-4 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 md:pt-0' : 'pt-[96px] max-md:landscape:pt-4') : 'pt-8'}`}>
 
             {/* 타이틀이 Hero 이미지 없는 경우를 대비한 Fallback */}
             {!heroImage && (
@@ -599,7 +599,7 @@ const PlaceWikiDetailsView = ({
     </div>
 
             {/* 하단 AI 버튼 (모바일) — 스크롤 컨테이너 밖 flex 푸터 (iOS fixed-in-scroll 터치 간섭 방지) */}
-            <div className="md:hidden shrink-0 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10 flex gap-2">
+            <div className={`md:hidden shrink-0 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] bg-[#05070a]/95 backdrop-blur-xl border-t border-white/10 flex gap-2 ${mobileLandscapeChromeHidden}`}>
                 <button
                     type="button"
                     onClick={() => {

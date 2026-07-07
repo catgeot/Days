@@ -9,6 +9,6 @@ export const plannerMicroLabel = 'text-xs font-bold uppercase tracking-wide';
 export const plannerMeta = 'text-xs text-gray-400 font-medium';
 
 export {
-    placeScrollSurfaceClass as plannerScrollSurfaceClass,
+    plannerScrollSurfaceClass,
     PLANNER_SCROLL_TO_TOP_EVENT,
 } from '../../common/placeScrollSurface';

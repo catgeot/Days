@@ -1,5 +1,11 @@
-/** 읽기 영역 — 세로 스크롤 + 핀치 줌 공존 (touch-pan-y 단독은 줌 차단) */
-export const placeScrollSurfaceClass = 'pinch-zoom-scroll overscroll-y-contain overscroll-x-none';
+/** 갤러리·위키·리뷰 — 세로 스크롤만 (줌 없음) */
+export const placeScrollPanYClass = 'place-scroll-pan-y overscroll-y-contain overscroll-x-none';
+
+/** 플래너 — 네이티브 핀치 줌 + 상하좌우 스크롤 */
+export const plannerScrollSurfaceClass = 'place-scroll-zoom overscroll-y-contain overscroll-x-none';
+
+/** @deprecated placeScrollPanYClass 사용 */
+export const placeScrollSurfaceClass = placeScrollPanYClass;
 
 export const PLACE_MEDIA_SCROLL_TO_TOP_EVENT = 'place-media-scroll-to-top';
 

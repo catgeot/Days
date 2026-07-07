@@ -8,6 +8,7 @@ import { useYouTubeSearch } from '../../../pages/Home/hooks/useYouTubeSearch';
 import { getMatchedPackage } from '../../../utils/tripLinkMatcher';
 import { TRIPLINK_PACKAGES_ENABLED } from '../../../pages/Home/data/tripLinkPackages';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
+import { resetIosZoomAfterInput } from '../../../shared/lib/mobileViewport';
 import TripLinkModal from '../modals/TripLinkModal';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
@@ -41,6 +42,19 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
 
   const containerRef = useRef(null);
   const playerRef = useRef(null);
+  const prevMediaModeRef = useRef(mediaMode);
+
+  const handleClose = useCallback(() => {
+    resetIosZoomAfterInput();
+    onClose?.();
+  }, [onClose]);
+
+  useEffect(() => {
+    if (prevMediaModeRef.current === 'PLANNER' && mediaMode !== 'PLANNER') {
+      resetIosZoomAfterInput();
+    }
+    prevMediaModeRef.current = mediaMode;
+  }, [mediaMode]);
 
   const {
     videos: spotVideos,
@@ -156,7 +170,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
       <PlaceChatPanel
         location={location}
         isBookmarked={isBookmarked}
-        onClose={onClose}
+        onClose={handleClose}
         onOpenMooni={onOpenMooni}
         onNavigateToPlace={onNavigateToPlace}
         onGoHome={onGoHome}
