@@ -62,7 +62,7 @@ const PlaceMobileSecondaryNav = ({
             className={`w-4 h-4 group-hover:scale-110 transition-transform ${isLightScrollChrome ? 'text-emerald-600' : 'text-emerald-400'}`}
           />
         )}
-        <span className="text-xs font-bold whitespace-nowrap">{mediaMode === 'WIKI' ? '갤러리 복귀' : '여행 위키'}</span>
+        <span className="text-xs font-bold whitespace-nowrap">{mediaMode === 'WIKI' ? '갤러리 복귀' : '여행 스케치'}</span>
       </button>
       <button
         type="button"

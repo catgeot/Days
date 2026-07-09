@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { BookOpen, Sparkles, Loader2, RefreshCw, ChevronLeft, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase } from 'lucide-react';
+import { BookOpen, Sparkles, Loader2, RefreshCw, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase, ImageIcon, Download } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
@@ -19,7 +19,7 @@ import {
 } from '../common/galleryAttributionNavigation';
 
 const LOADING_MESSAGES_NEW = [
-    "지역 위키백과 정보 분석 및 연동 중...",
+    "여행 스케치 자료 분석 및 연동 중...",
     "핵심 랜드마크와 역사적 배경 스캔 중...",
     "여행자를 위한 실용적인 로컬 팁 추출 중...",
     "날씨, 문화, 예절 등 필수 지식 정리 중...",
@@ -63,6 +63,15 @@ const PlaceWikiDetailsView = ({
     () => (lightboxImg ? getGalleryImageAttribution(lightboxImg) : null),
     [lightboxImg],
   );
+
+  const lightboxCaption = useMemo(() => {
+    if (!lightboxImg) return '';
+    const raw = (lightboxImg.alt_description || lightboxImg.description || '').trim();
+    if (!raw) return '';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  }, [lightboxImg]);
+
+  const handleLightboxDownload = galleryData?.handleDownload;
 
   const isUpdatingExisting = !!wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
   const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
@@ -282,6 +291,57 @@ const PlaceWikiDetailsView = ({
   const contentImages = images.slice(1);
   const wikiPlaceKey = useMemo(() => resolveGalleryPlaceKey(location), [location]);
 
+  const canGoLightboxPrev = lightboxIndex > 0;
+  const canGoLightboxNext = lightboxIndex < galleryImages.length - 1;
+
+  const goLightboxPrev = useCallback((e) => {
+    e?.stopPropagation?.();
+    if (lightboxIndex <= 0) return;
+    const newIndex = lightboxIndex - 1;
+    setLightboxIndex(newIndex);
+    setLightboxImg(galleryImages[newIndex]);
+  }, [lightboxIndex, galleryImages]);
+
+  const goLightboxNext = useCallback((e) => {
+    e?.stopPropagation?.();
+    if (lightboxIndex >= galleryImages.length - 1) return;
+    const newIndex = lightboxIndex + 1;
+    setLightboxIndex(newIndex);
+    setLightboxImg(galleryImages[newIndex]);
+  }, [lightboxIndex, galleryImages]);
+
+  const renderLightboxAttribution = (wrapperClassName, linkClassName = '') => {
+    if (!lightboxAttribution || !lightboxImg) return null;
+    return (
+      <span className={wrapperClassName} title={lightboxAttribution.title}>
+        <span>Photo by</span>
+        <GalleryAttributionLink
+          href={lightboxAttribution.photographerHref || lightboxAttribution.href}
+          location={location}
+          image={lightboxImg}
+          context="wiki"
+          lightboxIndex={lightboxIndex}
+          className={`truncate font-semibold text-white hover:underline ${linkClassName}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {lightboxAttribution.authorName}
+        </GalleryAttributionLink>
+        <span>on</span>
+        <GalleryAttributionLink
+          href={lightboxAttribution.providerHref}
+          location={location}
+          image={lightboxImg}
+          context="wiki"
+          lightboxIndex={lightboxIndex}
+          className={`shrink-0 font-semibold text-white hover:underline ${linkClassName}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {lightboxAttribution.providerName}
+        </GalleryAttributionLink>
+      </span>
+    );
+  };
+
   useEffect(() => {
     if (!isActive || !wikiPlaceKey || galleryImages.length === 0) return undefined;
 
@@ -405,7 +465,7 @@ const PlaceWikiDetailsView = ({
             {/* 소제목 */}
             <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-8 pb-4 border-b border-white/10">
                 <BookOpen size={24} />
-                <span>GATEO 매거진 백과</span>
+                <span>GATEO 여행 스케치</span>
             </div>
 
             {/* 메인 레이아웃 (단일 컬럼) */}
@@ -499,7 +559,7 @@ const PlaceWikiDetailsView = ({
                             })}
                         </div>
 
-                        {/* 하단 갤러리 그리드 (위키 섹션 직후) */}
+                        {/* 하단 갤러리 그리드 (위키 섹션 직후) — 비정형 aspectRatio 배열 */}
                         {galleryImages.length > 0 && (
                             <div className="mt-24 pt-12 border-t border-white/10" data-gallery-section>
                                 <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white tracking-tight">
@@ -509,7 +569,7 @@ const PlaceWikiDetailsView = ({
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                                     {galleryImages.map((img, i) => (
                                         <div
-                                            key={i}
+                                            key={img.id || i}
                                             className="rounded-2xl overflow-hidden relative cursor-pointer bg-white/5"
                                             style={img.width && img.height ? { aspectRatio: `${img.width} / ${img.height}` } : {}}
                                             onClick={() => {
@@ -698,128 +758,121 @@ const PlaceWikiDetailsView = ({
             </button>
         )}
 
-        {/* 라이트박스 모달 — body 포털 (스크롤 컨테이너 fixed 레이어가 헤더 터치를 가로채지 않도록) */}
+        {/* 라이트박스 모달 — 갤러리 탭 개별 사진 UI와 동일 톤 (body 포털) */}
         {lightboxImg && createPortal(
             <div
-                className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center backdrop-blur-sm animate-fade-in"
+                className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-black animate-fade-in"
                 onClick={() => setLightboxImg(null)}
                 onKeyDown={(e) => {
                     if (e.key === 'Escape') setLightboxImg(null);
-                    if (e.key === 'ArrowLeft') {
-                        const newIndex = lightboxIndex - 1;
-                        if (newIndex >= 0) {
-                            setLightboxIndex(newIndex);
-                            setLightboxImg(galleryImages[newIndex]);
-                        }
-                    }
-                    if (e.key === 'ArrowRight') {
-                        const newIndex = lightboxIndex + 1;
-                        if (newIndex < galleryImages.length) {
-                            setLightboxIndex(newIndex);
-                            setLightboxImg(galleryImages[newIndex]);
-                        }
-                    }
+                    if (e.key === 'ArrowLeft') goLightboxPrev(e);
+                    if (e.key === 'ArrowRight') goLightboxNext(e);
                 }}
                 role="dialog"
                 aria-modal="true"
                 aria-label="이미지 확대 보기"
+                tabIndex={-1}
             >
-                {/* 닫기 버튼 */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setLightboxImg(null);
-                    }}
-                    className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 z-10 group"
-                    aria-label="닫기"
-                >
-                    <X size={24} className="text-white group-hover:rotate-90 transition-transform" />
-                </button>
+                <div className="relative h-full w-full" onClick={(e) => e.stopPropagation()}>
+                    <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+                        <img
+                            src={lightboxImg.urls?.regular || lightboxImg.urls?.small}
+                            alt={lightboxImg.alt_description || 'Gallery image'}
+                            className="relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in"
+                        />
+                    </div>
 
-                {/* 좌측 네비게이션 */}
-                {lightboxIndex > 0 && (
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            const newIndex = lightboxIndex - 1;
-                            setLightboxIndex(newIndex);
-                            setLightboxImg(galleryImages[newIndex]);
-                        }}
-                        className="absolute left-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 z-10 group"
-                        aria-label="이전 이미지"
-                    >
-                        <ChevronLeftIcon size={32} className="text-white group-hover:-translate-x-1 transition-transform" />
-                    </button>
-                )}
+                    {(canGoLightboxPrev || canGoLightboxNext) && (
+                        <div
+                            className="absolute inset-x-0 bottom-4 z-[220] flex items-center justify-center gap-[calc(0.75rem+3rem)] px-4 md:bottom-0 md:gap-[calc(1rem+2.75rem)] md:px-6 md:pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] md:pt-2"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                type="button"
+                                onClick={goLightboxPrev}
+                                disabled={!canGoLightboxPrev}
+                                aria-label="이전 사진"
+                                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 md:h-11 md:w-11 ${
+                                    canGoLightboxPrev ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
+                                }`}
+                            >
+                                <ChevronLeftIcon className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
+                            </button>
 
-                {/* 우측 네비게이션 */}
-                {lightboxIndex < galleryImages.length - 1 && (
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            const newIndex = lightboxIndex + 1;
-                            setLightboxIndex(newIndex);
-                            setLightboxImg(galleryImages[newIndex]);
-                        }}
-                        className="absolute right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200 z-10 group"
-                        aria-label="다음 이미지"
-                    >
-                        <ChevronRight size={32} className="text-white group-hover:translate-x-1 transition-transform" />
-                    </button>
-                )}
-
-                {/* 이미지 */}
-                <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-                    <img
-                        src={lightboxImg.urls?.regular || lightboxImg.urls?.small}
-                        alt={lightboxImg.alt_description || 'Gallery image'}
-                        className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-                    />
-
-                    {/* 이미지 정보 (하단) */}
-                    {(lightboxImg.user?.name || lightboxImg.alt_description) && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg">
-                            {lightboxImg.alt_description && (
-                                <p className="text-white/90 text-sm mb-1">{lightboxImg.alt_description}</p>
-                            )}
-                            {lightboxAttribution && (
-                                <p className="text-white/60 text-xs">
-                                    Photo by{' '}
-                                    <GalleryAttributionLink
-                                        href={lightboxAttribution.photographerHref || lightboxAttribution.href}
-                                        location={location}
-                                        image={lightboxImg}
-                                        context="wiki"
-                                        lightboxIndex={lightboxIndex}
-                                        className="font-semibold text-white/75 underline transition-colors hover:text-white"
-                                        title={lightboxAttribution.title}
-                                        onClick={(e) => e.stopPropagation()}
+                            <div className="flex min-w-0 items-center justify-center gap-3">
+                                <span
+                                    className="shrink-0 rounded-full border border-white/10 bg-black/50 px-3.5 py-1.5 text-sm font-semibold tabular-nums tracking-wide text-white/90 shadow-xl backdrop-blur-md"
+                                    aria-live="polite"
+                                    aria-atomic="true"
+                                >
+                                    {lightboxIndex + 1} / {galleryImages.length}
+                                </span>
+                                {handleLightboxDownload && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleLightboxDownload(lightboxImg)}
+                                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white/90 backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white"
+                                        title="이미지 다운로드"
+                                        aria-label="이미지 다운로드"
                                     >
-                                        {lightboxAttribution.authorName}
-                                    </GalleryAttributionLink>
-                                    {' on '}
-                                    <GalleryAttributionLink
-                                        href={lightboxAttribution.providerHref}
-                                        location={location}
-                                        image={lightboxImg}
-                                        context="wiki"
-                                        lightboxIndex={lightboxIndex}
-                                        className="font-semibold text-white/75 underline transition-colors hover:text-white"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        {lightboxAttribution.providerName}
-                                    </GalleryAttributionLink>
-                                </p>
+                                        <Download size={20} />
+                                    </button>
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={goLightboxNext}
+                                disabled={!canGoLightboxNext}
+                                aria-label="다음 사진"
+                                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 md:h-11 md:w-11 ${
+                                    canGoLightboxNext ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
+                                }`}
+                            >
+                                <ChevronRight className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
+                            </button>
+                        </div>
+                    )}
+
+                    {lightboxAttribution && (
+                        <div
+                            className="absolute z-[220] max-w-[min(calc(100%-7.5rem),38rem)] top-4 left-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:left-[max(0.75rem,5%)]"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {renderLightboxAttribution(
+                                'inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white md:px-4 md:py-2 md:text-sm'
                             )}
                         </div>
                     )}
-                </div>
 
-                {/* 이미지 카운터 */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full">
-                    <p className="text-white/80 text-sm font-medium">
-                        {lightboxIndex + 1} / {galleryImages.length}
-                    </p>
+                    <div
+                        className="absolute z-[220] flex items-start gap-3 top-4 right-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:right-3 justify-end"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setLightboxImg(null)}
+                            aria-label="닫기"
+                            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40"
+                        >
+                            <X size={22} strokeWidth={2.5} />
+                        </button>
+                    </div>
+
+                    {lightboxCaption && (
+                        <div
+                            className="md:hidden absolute left-0 right-0 top-16 z-[205] px-4"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
+                                <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-300/90 mb-1.5 flex items-center gap-1.5">
+                                    <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
+                                    사진 노트
+                                </p>
+                                <p className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">{lightboxCaption}</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>,
             document.body

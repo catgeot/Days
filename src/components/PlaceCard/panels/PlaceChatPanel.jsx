@@ -22,7 +22,7 @@ const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 const HEADER_SCROLL_TOP_TITLES = {
   PLANNER: '탭하면 플래너 맨 위로',
   GALLERY: '탭하면 갤러리 맨 위로',
-  WIKI: '탭하면 위키 맨 위로',
+  WIKI: '탭하면 여행 스케치 맨 위로',
   REVIEWS: '탭하면 리뷰 맨 위로',
 };
 

@@ -6,8 +6,8 @@ import SEO from '../SEO';
 
 const TAB_METADATA = {
   wiki: {
-    suffix: '여행 정보 & 위키',
-    descTemplate: (name) => `${name}의 역사, 문화, 관광 명소 정보를 AI 도슨트와 함께 탐색하세요.`,
+    suffix: '여행 스케치',
+    descTemplate: (name) => `${name}의 역사·문화·명소를 매거진형 여행 스케치와 AI 도슨트로 만나보세요.`,
   },
   reviews: {
     suffix: '여행 후기 & 리뷰',

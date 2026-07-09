@@ -32,3 +32,14 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 - [x] `[@Klook@]` · `클룩(Klook)` → 클룩 제휴 홈
 - [x] Airalo / Holafly / GetYourGuide → 제휴 홈
 - [x] 일반 명소명 → Google 검색 유지
+
+---
+
+## 위키 탭 → 「여행 스케치」(URL `/wiki` 유지)
+
+**상태**: ✅ 구현·문서·커밋 (2026-07-09)
+
+- UI·SEO 표시명만 「여행 스케치」로 교체 (`WIKI` 키·사이트맵 `/wiki` 유지)
+- 위키 포토 **클릭 확대(라이트박스)** 를 갤러리 탭 개별 사진 UI와 동일 톤으로 맞춤 (그리드는 기존 비정형 aspectRatio 유지)
+- 릴리스 노트 `2026-07-09-2` 반영
+- 대상: `PlaceMobileSecondaryNav` · `PlaceChatPanel` · `PlaceCard/index` TAB_METADATA · `SEO` · `PlaceWikiDetailsView`
