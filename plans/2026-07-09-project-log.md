@@ -99,7 +99,7 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 
 ## 마이리얼트립 패키지 연동 (핸드오프 · MVP 합의)
 
-**상태**: 📋 설계·합의 완료 · **구현은 다음 세션**
+**상태**: ✅ **MVP 구현** (2026-07-09) · 숙소 API·지구본은 **다음 세션**
 
 ### 조사 요약 (유지)
 
@@ -107,43 +107,48 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 - 홈 단축 `https://myrealt.rip/dUxR7d` (`mylink_id=2282829` → `/pkc`) 정상.
 - 공식 파트너 API: 항공·숙소·TNA·마이링크만. **`/pkc` 패키지 목록·검색 API 없음**.
 - 패키지 운영 패턴(힌트): `www.myrealtrip.com/pkc/search?q={키워드}` → 제휴 포털 마이링크 → `myrealt.rip/…`.
-- Edge `mrt-link-generator` 깨짐(옛 API) · secret은 로컬 검증 실키로 재설정 필요 · `VITE_` 키 브라우저 금지.
-- 숙소는 추후 `region-autocomplete`→`regionId`→search + 칩(플래너 1차·지구본 2차). **이번 MVP 범위 밖**.
+- Edge `mrt-link-generator` 깨짐(옛 API) · secret은 로컬 검증 겸키로 재설정 필요 · `VITE_` 키 브라우저 금지.
+- MRT 분류명(「특가」등)은 마케팅 용어 — 표시·URL 드리프트 가능 → `mrtPackageThemeLinks.js` 주석·단축 직접 확인.
 
-### MVP (다음 세션 구현)
+### MVP 구현 (완료)
 
-탐색 **에디터스 픽** 테마 subtitle 패키지 문구 → MRT 단축 **새 탭**. 트립링크 카드/모달 on 하지 않음.
+탐색 **에디터스 픽** 테마 subtitle → MRT 단축 **새 탭**. 트립링크 카드/모달 on 하지 않음.
 
 | 섹션 | CTA | shortUrl |
 |------|-----|----------|
-| 가족(아시아 단거리) | 동남아 | `https://myrealt.rip/dVDy3a` |
-| **일본 (신규 섹션)** | 일본 특가 | `https://myrealt.rip/dVEgd5` |
+| 가족(단거리) | 동남아·일본 | `https://myrealt.rip/dVHNd0` |
+| 일본 | 일본 특가 | `https://myrealt.rip/dVEgd5` |
 | 유럽 & 장거리 | 유럽 | `https://myrealt.rip/dVE182` |
-| 휴양(에어텔) | 동남아 | `https://myrealt.rip/dVDy3a` |
+| 휴양(에어텔) | 동남아 휴양 | `https://myrealt.rip/dVDy3a` |
 
-SSOT 보관만: 지방 출발 `dVEE92`, 홈쇼핑 `dVEo96`.
+SSOT: [`mrtPackageThemeLinks.js`](../src/pages/Home/data/mrtPackageThemeLinks.js) · `CurationSection` `packageLinkUrl` · `SearchDiscoveryModal` 일본 섹션. 보관만: 지방 `dVEE92` · 홈쇼핑 `dVEo96` · 홈 `dUxR7d`.
 
-**구현 포인트**
+### 숙소 API → 지구본 (다음 세션)
 
-1. `src/pages/Home/data/mrtPackageThemeLinks.js` — shortUrl SSOT + 테마 매핑.
-2. `CurationSection.jsx` — `packageLinkUrl`, 실제 subtitle과 키워드 정합, `scrollToAd`/트립링크 스크롤 제거 → `window.open`.
-3. `SearchDiscoveryModal.jsx` — `japanTargets`·일본 `CurationSection` (가족 다음·유럽 앞). 가족 `familyTargets`에서 일본 도시 분리 권장. `promotedPackages` 트립링크 미전달.
-4. 금지: `travelSpots.js` 전체 스캔 · spots JSON 직접 수정 · `VITE_` MRT 키 · TripLinkModal 재사용.
+**계획 위치**
 
-**후속(별 세션)**: Edge mylink 공식화 · 숙소 region 칩 · TNA 상품 프록시.
+| 문서 | 내용 |
+|------|------|
+| [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **Phase 4** | 숙소 탐색 (MRT → 지구본·플래너) · `regionId` 검색 · 지구본 표시 우선 |
+| 본 일지 | 공식: `region-autocomplete`→`regionId`→search · 칩은 플래너 병행·후순위 |
+| archive `phase8-6-mrt-integration-plan.md` | 옛 `fetch-mrt-products`·위젯 구상 — **현행 API와 재대조 필요** |
 
-**제시어**: 아래 「다음 세션 제시어」 절.
+**금지 유지**: `VITE_` MRT 키 · TripLinkModal/iframe · `TRIPLINK_PACKAGES_ENABLED=true` · spots JSON 직접 수정.
+
+**후속(더 뒤)**: Edge mylink 공식화 · TNA 상품 프록시.
 
 ---
 
 ## 다음 세션 제시어
 
 ```
-@.ai-context.md @plans/2026-07-09-project-log.md
-MRT 패키지 MVP 이어하기 — 일지 「마이리얼트립 패키지 연동」핸드오프·MVP 표 확인.
-목표: 탐색 에디터스 픽 테마 subtitle → MRT /pkc 단축 새 탭.
-매핑: 가족·휴양=동남아 dVDy3a · 장거리=유럽 dVE182 · 일본 신규 섹션=dVEgd5.
-구현: mrtPackageThemeLinks.js + CurationSection packageLinkUrl + SearchDiscoveryModal 일본 섹션.
-금지: travelSpots.js 전체 스캔 · spots JSON 직접 수정 · VITE_ MRT 키 · TripLinkModal/iframe · TRIPLINK_PACKAGES_ENABLED=true.
-Edge mylink·숙소 region은 이번 범위 밖.
+@.ai-context.md @plans/2026-07-09-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+MRT 숙소 API → 지구본 표시 이어하기.
+
+일지 「숙소 API → 지구본」+ 지구본 계획 Phase 4 확인.
+목표: 공식 숙소 API(region-autocomplete→regionId→search) Edge 프록시로 호출 후 지구본에 숙소 정보 표시.
+순서 힌트(계획): 플래너 칩 1차·지구본 2차였으나 **이번은 지구본 표시 우선**(사용자).
+참고: archive phase8-6 fetch-mrt-products는 구상 — 현행 파트너 API 스펙과 재대조.
+금지: VITE_ MRT 키 · TripLinkModal · TRIPLINK_PACKAGES_ENABLED=true · travelSpots.js 전체 스캔 · spots JSON 직접 수정.
+패키지 MVP(/pkc 단축)는 완료 — 이번 범위 밖. Edge mylink 공식화는 병행하지 말 것.
 ```

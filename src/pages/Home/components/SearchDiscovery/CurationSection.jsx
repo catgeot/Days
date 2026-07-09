@@ -4,7 +4,20 @@ import SpotThumbnailCard from './SpotThumbnailCard';
 import TripLinkSectionCard from './TripLinkSectionCard';
 import PackageThumbnailCard from './PackageThumbnailCard';
 
-const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, leadingPackage, delayClass, onSelectSpot, onMoreClick, onSelectPackage }) => {
+const CurationSection = ({
+  title,
+  subtitle,
+  icon,
+  spots,
+  promotedPackages,
+  leadingPackage,
+  delayClass,
+  onSelectSpot,
+  onMoreClick,
+  onSelectPackage,
+  packageLinkUrl,
+  packageCtaLabel,
+}) => {
   const scrollRef = useRef(null);
   const [showLeftBtn, setShowLeftBtn] = useState(false);
   const [showRightBtn, setShowRightBtn] = useState(true);
@@ -26,11 +39,9 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, leadi
     }
   };
 
-  const scrollToAd = () => {
-    if (!scrollRef.current) return;
-    const isMobile = window.innerWidth <= 768;
-    const cardWidth = isMobile ? 256 : 296; // card width + gap(16px)
-    scrollRef.current.scrollTo({ left: cardWidth * 5, behavior: 'smooth' });
+  const openPackageLink = () => {
+    if (!packageLinkUrl) return;
+    window.open(packageLinkUrl, '_blank', 'noopener,noreferrer');
   };
 
   // 마우스 드래그 스크롤 핸들러
@@ -72,26 +83,24 @@ const CurationSection = ({ title, subtitle, icon, spots, promotedPackages, leadi
 
   if (!spots || spots.length === 0) return null;
 
-  // subtitle 내에서 강조할 키워드를 찾아 버튼화하는 함수
+  // subtitle 내 packageCtaLabel을 찾아 MRT 단축 새 탭 버튼화
   const renderSubtitle = (text) => {
     if (!text) return null;
-    const keywords = ['아시아 단거리 패키지 추천', '장거리 패키지 추천', '휴양 패키지 추천'];
-    for (const keyword of keywords) {
-      if (text.includes(keyword)) {
-        const parts = text.split(keyword);
-        return (
-          <>
-            {parts[0]}
-            <button
-              onClick={scrollToAd}
-              className="inline-flex items-center gap-1 px-2.5 py-1 ml-1 text-xs md:text-sm font-bold text-white bg-sky-500/20 border border-sky-400/30 rounded-lg hover:bg-sky-500/40 hover:text-white transition-all cursor-pointer shadow-[0_0_15px_rgba(56,189,248,0.15)] group-hover:border-sky-400/50"
-            >
-              {keyword} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-            </button>
-            {parts[1]}
-          </>
-        );
-      }
+    if (packageLinkUrl && packageCtaLabel && text.includes(packageCtaLabel)) {
+      const parts = text.split(packageCtaLabel);
+      return (
+        <>
+          {parts[0]}
+          <button
+            type="button"
+            onClick={openPackageLink}
+            className="inline-flex items-center gap-1 px-2.5 py-1 ml-1 text-xs md:text-sm font-bold text-white bg-sky-500/20 border border-sky-400/30 rounded-lg hover:bg-sky-500/40 hover:text-white transition-all cursor-pointer shadow-[0_0_15px_rgba(56,189,248,0.15)] group-hover:border-sky-400/50"
+          >
+            {packageCtaLabel} <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+          </button>
+          {parts[1]}
+        </>
+      );
     }
     return text;
   };

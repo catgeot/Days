@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree, Waves } from 'lucide-react';
+import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree, Waves, Landmark } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { TRIPLINK_PACKAGES, TRIPLINK_PACKAGES_ENABLED } from '../data/tripLinkPackages';
+import { MRT_PACKAGE_THEME_LINKS } from '../data/mrtPackageThemeLinks';
 import { isIslandExploreSpot } from '../lib/islandExploreSpots';
 
 // 분리된 컴포넌트 및 유틸리티 import
@@ -390,12 +391,17 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       : [];
 
     // 테마별 우선 노출 여행지 목록 (2026-04-22: 신규 25개 여행지 반영하여 대폭 확장)
-    // 가족/효도 테마: 아시아 중심, 가까운 거리, 가족 친화적 (38개)
+    // 가족/효도 테마: 아시아 단거리(일본 제외) — 일본은 japanTargets로 분리
     const familyTargets = [
-      '제주', '서귀포', '오사카', '교토', '도쿄', '후쿠오카', '삿포로', '나라', '고베', '나가사키',
-      '요코하마', '가나자와', '대마도', '오키나와', '다낭', '나트랑', '하노이', '푸꾸옥', '호이안',
+      '제주', '서귀포', '다낭', '나트랑', '하노이', '푸꾸옥', '호이안',
       '방콕', '푸켓', '치앙마이', '타이베이', '가오슝', '싱가포르', '마닐라', '세부', '보라카이',
       '쿠알라룸푸르', '코타키나발루', '랑카위', '홍콩', '마카오', '상하이', '장가계', '칭다오', '청도', '베이징'
+    ];
+
+    // 일본 테마: 본토·오키나와·대마도 (MRT 일본 특가 CTA)
+    const japanTargets = [
+      '오사카', '교토', '도쿄', '후쿠오카', '삿포로', '나라', '고베', '나가사키',
+      '요코하마', '가나자와', '대마도', '오키나와', '미야코지마', '이시가키', '나고야', '히로시마'
     ];
 
     // 장거리 테마: 유럽, 북미, 오세아니아 등 장거리 여행 (42개)
@@ -460,10 +466,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
     return {
       trending: getSpotsByTargets(familyTargets, s => s.continent === 'asia' || s.continent === 'oceania'),
+      japan: getSpotsByTargets(japanTargets, s => s.continent === 'asia'),
       city: getSpotsByTargets(longhaulTargets, s => s.continent === 'europe' || s.continent === 'americas' || s.continent === 'middle-east'),
       healing: getSpotsByTargets(resortTargets, s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature'),
       island: getSpotsByTargets(islandTargets, isHiddenIslandExploreSpot),
-      // 패키지 데이터 추가 (셔플된 배열에서 4개씩 추출)
+      // 트립링크 인피드 (TRIPLINK_PACKAGES_ENABLED일 때만 — MVP는 MRT 단축 CTA)
       familyPackages: shuffledFamilyPackages.slice(0, 4),
       longhaulPackages: shuffledLonghaulPackages.slice(0, 4),
       resortPackages: shuffledResortPackages.slice(0, 4)
@@ -565,37 +572,48 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           />
           <CurationSection
             title="가볍고 가까운, 완벽한 가족 여행"
-            subtitle="가이드와 함께하는 아시아 단거리 패키지 여행"
+            subtitle={`4시간 이내 단거리 ${MRT_PACKAGE_THEME_LINKS.family.ctaLabel}`}
             icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
-            promotedPackages={curationData.familyPackages}
             leadingPackage={TRIPCOM_EXPLORE_LEADING_CARD}
+            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.family.shortUrl}
+            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.family.ctaLabel}
             delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
-            onSelectPackage={handlePackageSelect}
+          />
+          <CurationSection
+            title="가까운 일본, 특가 패키지"
+            subtitle={`항공·호텔 묶음 ${MRT_PACKAGE_THEME_LINKS.japan.ctaLabel}`}
+            icon={<div className="p-2 bg-rose-500/10 rounded-xl border border-rose-500/20"><Landmark className="text-rose-400" size={24} /></div>}
+            spots={curationData.japan}
+            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.japan.shortUrl}
+            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.japan.ctaLabel}
+            delayClass="animation-delay-150"
+            onSelectSpot={handleSpotSelect}
+            onMoreClick={() => handleFilterModeChange('continent')}
           />
           <CurationSection
             title="유럽 & 장거리 일주"
-            subtitle="교통, 언어 걱정 없는 장거리 패키지 여행"
+            subtitle={`교통·언어 걱정 없는 ${MRT_PACKAGE_THEME_LINKS.longhaul.ctaLabel} 여행`}
             icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
             spots={curationData.city}
-            promotedPackages={curationData.longhaulPackages}
+            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.longhaul.shortUrl}
+            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.longhaul.ctaLabel}
             delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('urban')}
-            onSelectPackage={handlePackageSelect}
           />
           <CurationSection
             title="일상의 탈출, 에어텔/올인클루시브"
-            subtitle="비행기, 숙소, 픽업이 포함된 휴양 패키지 여행"
+            subtitle={`비행·숙소·픽업 포함 ${MRT_PACKAGE_THEME_LINKS.resort.ctaLabel}`}
             icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
             spots={curationData.healing}
-            promotedPackages={curationData.resortPackages}
+            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.resort.shortUrl}
+            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.resort.ctaLabel}
             delayClass="animation-delay-300"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('paradise')}
-            onSelectPackage={handlePackageSelect}
           />
         </div>
       );
