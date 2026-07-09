@@ -94,3 +94,53 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 - 필터·대륙×섬 교차필터 · 에디터스 픽 **상단** 「섬으로 떠나는 여행」(숨겨진 섬 위주) · SEO 히든 링크
 - **아이투타키(`aitutaki`)** 기본 여행지 승격 · AIT/RAR · `audit:airports` none:0
 - **releaseNotes**: `2026-07-09-4` 반영
+
+---
+
+## 마이리얼트립 패키지 연동 조사 (핸드오프)
+
+**상태**: 🔍 조사·API 스모크만 · **구현은 다음 세션**
+
+### 결론
+
+- 패키지 UI는 트립링크 경로(`TRIPLINK_PACKAGES_ENABLED=false`)라 **현재 비노출**.
+- MRT 패키지 홈 단축링크 **`https://myrealt.rip/dUxR7d`** 정상 (`mylink_id=2282829` → `/pkc`).
+- **목표**: 홈 버튼 1개 연결이 아니라 **테마별·여행지별** 패키지 매핑 (기존 `tripLinkDestinationMap` / 탐색 인피드 자리 재사용 검토).
+- 공식 마이링크 API: `POST https://partner-ext-api.myrealtrip.com/v1/mylink` · body `{ targetUrl }` · Bearer · 응답 `data.mylink` / `data.mylinkId`.
+- 문서: [docs.myrealtrip.com 마이 링크](https://docs.myrealtrip.com/#/api/partner-api/%EB%A7%88%EC%9D%B4-%EB%A7%81%ED%81%AC)
+
+### API 키
+
+| 소스 | 마스킹 | 스모크 |
+|------|--------|--------|
+| `.env.local` `VITE_MYREALTRIP_API_KEY` | `IZTzmr***KCG1vS` | ✅ `201` 단축링크 발급 |
+| 대화·`supabase secrets list`의 `b7e2***ac9367` | digest로 보임 | ❌ `401 Invalid API Key` |
+
+- Edge `MYREALTRIP_API_KEY`는 list digest ≠ 실키일 수 있음 → **재설정 시 로컬 검증된 실키** 사용.
+- 브라우저에 `VITE_` 키 노출 금지 — 서버(Edge)만.
+
+### Edge `mrt-link-generator` (깨짐)
+
+- 배포 호출 시 `shortLink === originalUrl` (변환 실패·fallback).
+- 원인: 옛 URL `api.myrealtrip.com/partner/v1/links` + body `url` + 응답 `url`/`shortUrl` 가정.
+- 수정 방향: `partner-ext-api` + `/v1/mylink` + `targetUrl` + `data.mylink`.
+
+### 다음 세션 (우선)
+
+1. 테마·여행지 → MRT 패키지 URL(또는 검색/카테고리 딥링크) SSOT 설계  
+2. (선택) Edge 마이링크 수정 후 동적 단축  
+3. 트립링크 플래그/매퍼를 MRT로 교체할지·병행할지 합의 후 UI
+
+**제시어**: 아래 「다음 세션 제시어」 절.
+
+---
+
+## 다음 세션 제시어
+
+```
+@.ai-context.md @plans/2026-07-09-project-log.md
+MRT 패키지 연동 이어하기 — 일지 「마이리얼트립 패키지 연동 조사」핸드오프 확인.
+목표: 테마별·여행지별 패키지 매핑(홈 dUxR7d 단일 연결만으로는 부족).
+금지: travelSpots.js 전체 스캔 · spots JSON 직접 수정 · VITE_에 MRT 키 노출 · UI 임의 변경.
+먼저 SSOT/매핑 구조 제안 → 합의 후 구현. Edge mrt-link-generator는 공식 partner-ext-api 기준으로 수정 검토.
+```
