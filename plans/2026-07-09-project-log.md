@@ -48,66 +48,24 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 
 ## 여행 스케치 Mapbox → Wikidata 로케이터 지도
 
-**상태**: ✅ 커밋 · 사용자 QA 후 **Mapbox Static으로 교체 결정** (다음 세션)
+**상태**: ✅ P242 1차 커밋 · QA 후 Static 교체로 전환 (아래)
 
-- 요약 아래 `PlaceMiniMap`(Mapbox GL) 제거 → Wikidata **P242** 정적 이미지
-- [`wikiLocatorMap.js`](../src/utils/wikiLocatorMap.js) · [`PlaceWikiLocatorMap.jsx`](../src/components/PlaceCard/common/PlaceWikiLocatorMap.jsx)
-- API 스모크: Faroe Islands / Santorini / Bora Bora ✅ · 없는 제목 → 블록 숨김 ✅
-- **QA 피드백**: 로케이터 그림만으로는 “어디인지”가 안 읽힘 (축척·라벨·스타일 불균일 · Cancun 등 P242 공백)
-- **결정**: 위키 P242는 최선 아님 → **Mapbox Static Images API**로 교체 (아래 핸드오프)
+- 요약 아래 `PlaceMiniMap`(Mapbox GL) 제거 → Wikidata **P242** 정적 이미지(1차)
+- **QA 피드백**: “어디인지” 안 읽힘 → **Mapbox Static Images**로 교체
 
 ---
 
-## 여행 스케치 정적 지도 세션 — 에이전트 핸드오프
+## 여행 스케치 Mapbox Static 지도
 
-### 완료 (본 세션)
+**상태**: ✅ QA 통과 · 커밋·푸시
 
-| 항목 | 내용 |
-|------|------|
-| GL 미니맵 제거 | `PlaceMiniMap.jsx` 삭제 · 홈 지구본 Mapbox **유지** |
-| 위키 로케이터 1차 | P242 → Commons `FilePath` · 세션 캐시 · Commons/CC BY-SA 출처 |
-| 검토 | P242 ≠ 위치 안내 최적 · Static Images가 목적(대륙 옆·핀)에 맞음 |
+- [`placeStaticMap.js`](../src/utils/placeStaticMap.js) — `lat/lng` → Static URL · outdoors-v12 · zoom 4.75 · 1200×800@2x · amber 핀
+- [`PlaceWikiLocatorMap.jsx`](../src/components/PlaceCard/common/PlaceWikiLocatorMap.jsx) — 매거진 풀폭 Static · 하단 캡션 · 탭 시 **전체화면 GL**(확대·이동) · 확대 시 Mapbox 기본 attribution만
+- `wikiLocatorMap.js` **삭제** (P242 폴백 없음) · 홈 지구본 무변경
+- 복구: Static `onError`/탭 복귀 시 블록 유지 · [`useWikiData.js`](../src/components/PlaceCard/hooks/useWikiData.js) 같은 placeKey면 wiki 비우지 않음(깜박임 수정)
+- Credits: Static 반영 ([`mapboxAttribution.js`](../src/data/mapboxAttribution.js)) · explorer CSS [`index.css`](../src/index.css)
 
-### 다음 세션 — 실행 계획 (Mapbox Static)
-
-| 단계 | 내용 |
-|------|------|
-| **1** | `wikiLocatorMap.js` / Wikidata fetch **제거 또는 미사용** — 좌표 기반 URL 빌더로 교체 |
-| **2** | Mapbox Static Images: `styles/v1/{user}/{style}/static/{overlay}/{lon},{lat},{zoom}/{w}x{h}@2x?access_token=` |
-| **3** | 입력: `location.lat` / `location.lng` (필수) · 핀 overlay · 줌은 섬/도시 맥락용 고정 또는 간단 휴리스틱 |
-| **4** | UI: [`PlaceWikiLocatorMap.jsx`](../src/components/PlaceCard/common/PlaceWikiLocatorMap.jsx)를 Static `<img>`로 개조(또는 리네임) · 밝은/다크 스타일·출처는 Mapbox attribution SSOT |
-| **5** | 토큰: 기존 `VITE_MAPBOX_TOKEN` · URL 제한·quota 주의 · `attributionControl={false}` 금지 원칙과 동일하게 **이미지 옆/캡션에 attribution** |
-| **6** | QA: 페로 제도(북대서양 맥락) · Santorini · Cancun(P242 없던 곳) · 좌표 없으면 블록 숨김 |
-
-**권장 기본값 (합의 전 제안)**: dark/outdoors 계열 스타일 · 핀 1개 · zoom ≈ 4~6(섬·소국) / 도시 5~7 · 크기 ~1200×640 · `@2x` · 클릭 시 선택적으로 홈 지구본/외부 지도 링크는 **범위 밖**(요청 시만).
-
-**하지 말 것**: Mapbox GL `PlaceMiniMap` 부활 · Wikidata P242 폴백 유지 · `releaseNotes` 합의 전 반영 · 홈 지구본 코드 손대기.
-
-### 읽을 것 (3)
-
-1. `.ai-context` 3절 Mapbox attribution · 5절 미완 한 줄
-2. 본 일지 「여행 스케치 정적 지도 세션 — 에이전트 핸드오프」
-3. grep: `PlaceWikiLocatorMap` · `wikiLocatorMap` · `VITE_MAPBOX_TOKEN` · [`mapboxAttribution.js`](../src/data/mapboxAttribution.js)
-
-### 금지 (3)
-
-1. `travelSpots.js` / airports JSON 전체 Read·직접 수정
-2. 인터랙티브 GL 미니맵 재도입
-3. `releaseNotes.js` 사용자 합의 전 반영
-
-### 제시어 (다음 세션)
-
-```
-여행스케치-지도-이어하기 @plans/2026-07-09-project-log.md
-
-여행 스케치 요약 아래 지도를 Wikidata P242 → Mapbox Static Images로 교체.
-읽기: .ai-context 3·5절 + 본 일지 「여행 스케치 정적 지도 세션 — 에이전트 핸드오프」.
-대상: PlaceWikiLocatorMap.jsx · wikiLocatorMap.js(제거/교체) · location.lat/lng · VITE_MAPBOX_TOKEN.
-구현: Static URL + 핀 · attribution 캡션 · 좌표 없으면 숨김 · 홈 지구본 무관.
-금지: PlaceMiniMap GL 부활 · P242 폴백 · releaseNotes 합의 전 · airports/travelSpots 전체.
-QA: 페로 제도 · Santorini · Cancun · 모바일 스크롤.
-이전: P242 1차 커밋됨 · 사용자 QA「어디인지 안 보임」→ Static 결정.
-```
+**releaseNotes**: 합의 전 미반영 (`1.7`)
 
 ---
 

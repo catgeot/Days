@@ -503,7 +503,7 @@ const PlaceWikiDetailsView = ({
                             </p>
                         )}
 
-                        {/* 위치 지도 — Wikidata P242 로케이터 (요약글 아래, 본문 진입 전) */}
+                        {/* 위치 지도 — Mapbox Static (요약글 아래, 본문 진입 전) */}
                         <PlaceWikiLocatorMap location={location} isActive={isActive} />
 
                         {/* 위키 섹션들 */}

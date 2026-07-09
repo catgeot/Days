@@ -407,6 +407,14 @@ body {
   }
 }
 
+/* 여행 스케치 전체화면 탐색 — Mapbox 기본 출처(좌 로고·우 attribution) 유지 */
+.gateo-place-map-explorer .mapboxgl-ctrl-bottom-left,
+.gateo-place-map-explorer .mapboxgl-ctrl-bottom-right {
+  z-index: 1;
+  pointer-events: auto;
+  margin-bottom: max(0.25rem, env(safe-area-inset-bottom, 0px));
+}
+
 @media (min-width: 768px) {
   .gateo-mapbox-map .mapboxgl-ctrl-bottom-left,
   .gateo-mapbox-map .mapboxgl-ctrl-bottom-right {

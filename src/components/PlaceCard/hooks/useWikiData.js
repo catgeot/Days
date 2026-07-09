@@ -1,14 +1,8 @@
 // src/components/PlaceCard/hooks/useWikiData.js
-// 🚨 [Phase 7-1] 로딩 동기화 개선:
-// 1. [Subtraction] .single() 대신 .maybeSingle()을 사용하여 데이터 부재 시 406 에러 차단 유지.
-// 2. 🚨 [Fix/New] Lazy Fetching (지연 호출): mediaMode를 감시하여 'WIKI' 탭이 활성화될 때만 Supabase 쿼리를 실행하도록 트래픽 누수 차단.
-// 3. 🚨 [Fix/New] Clean Slate (잔상 제거): 장소가 변경되었을 때 이전 장소의 위키 데이터가 남지 않도록 즉시 상태 초기화.
-// 4. 🆕 [Phase 7-1] 폴링 간격 3초 → 2초로 단축하여 체감 로딩 속도 50% 개선
-// 5. 🆕 [Phase 7-1] 디버깅 로그 추가 (개발 환경에서만 출력)
-// 6. 🆕 [Phase 8 Fix] Race Condition 해결: 이벤트 리스너를 마운트 시 한 번만 등록하여 즉시 상태 반영 보장
-// 7. 🆕 [Phase 8-3] 툴킷 데이터 완전 분리: toolkit-updated 이벤트 리스너 제거 및 순수 위키 데이터만 관리
+// Lazy fetch: mediaMode === 'WIKI'일 때만 place_wiki 조회.
+// 같은 placeKey 재조회 시 wikiData를 null로 비우지 않음 (탭 복귀 깜박임 방지).
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 
@@ -28,18 +22,35 @@ async function fetchWikiRow(candidates) {
 export const useWikiData = (location, mediaMode) => {
   const [wikiData, setWikiData] = useState(null);
   const [isWikiLoading, setIsWikiLoading] = useState(false);
+  const wikiDataRef = useRef(null);
+  const prevPlaceKeyRef = useRef('');
 
   const placeKey = useMemo(() => getPlaceStableKey(location), [location]);
-  const dbCandidates = useMemo(() => buildPlaceDbIdCandidates(location), [location]);
+  // location 객체 참조 변경만으로 후보 배열이 바뀌지 않게 placeKey에 고정
+  const dbCandidates = useMemo(
+    () => buildPlaceDbIdCandidates(location),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- placeKey가 같으면 동일 장소
+    [placeKey],
+  );
+  const candidatesKey = useMemo(() => dbCandidates.join('\0'), [dbCandidates]);
 
   useEffect(() => {
-    if (!placeKey) return;
+    wikiDataRef.current = wikiData;
+  }, [wikiData]);
 
-    setWikiData(null);
-    setIsWikiLoading(false);
+  useEffect(() => {
+    if (!placeKey) return undefined;
+
+    const placeChanged = prevPlaceKeyRef.current !== placeKey;
+    if (placeChanged) {
+      prevPlaceKeyRef.current = placeKey;
+      setWikiData(null);
+      wikiDataRef.current = null;
+      setIsWikiLoading(false);
+    }
 
     if (mediaMode !== 'WIKI') {
-      return;
+      return undefined;
     }
 
     let isSubscribed = true;
@@ -77,10 +88,16 @@ export const useWikiData = (location, mediaMode) => {
     };
 
     const fetchWikiData = async () => {
-      setIsWikiLoading(true);
+      // 이미 같은 장소 데이터가 있으면 스켈레톤으로 비우지 않음 (복귀 깜박임 방지)
+      const keepVisible = Boolean(wikiDataRef.current) && !placeChanged;
+      if (!keepVisible) {
+        setIsWikiLoading(true);
+      }
 
       if (isDev) {
-        console.log(`[useWikiData] DB 조회 시작 - placeKey: ${placeKey}, candidates: ${dbCandidates.join(', ')}`);
+        console.log(
+          `[useWikiData] DB 조회 시작 - placeKey: ${placeKey}, candidates: ${dbCandidates.join(', ')}${keepVisible ? ' (배경)' : ''}`,
+        );
       }
 
       try {
@@ -99,7 +116,7 @@ export const useWikiData = (location, mediaMode) => {
         }
       } catch (err) {
         console.error('[useWikiData] 예상치 못한 에러:', err);
-        if (isSubscribed) setWikiData(null);
+        if (isSubscribed && !keepVisible) setWikiData(null);
       } finally {
         if (isSubscribed) setIsWikiLoading(false);
       }
@@ -111,7 +128,7 @@ export const useWikiData = (location, mediaMode) => {
       isSubscribed = false;
       if (pollInterval) clearInterval(pollInterval);
     };
-  }, [placeKey, dbCandidates, mediaMode]);
+  }, [placeKey, candidatesKey, mediaMode, dbCandidates]);
 
   useEffect(() => {
     let pollInterval = null;
@@ -148,7 +165,7 @@ export const useWikiData = (location, mediaMode) => {
     return () => {
       if (pollInterval) clearInterval(pollInterval);
     };
-  }, [wikiData?.ai_practical_info, dbCandidates, mediaMode]);
+  }, [wikiData?.ai_practical_info, candidatesKey, mediaMode, dbCandidates]);
 
   return { wikiData, isWikiLoading };
 };

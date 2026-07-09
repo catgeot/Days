@@ -19,11 +19,12 @@ export const MAPBOX_TELEMETRY = {
 export const GATEO_TECH_STACK = [
   { name: 'React', detail: 'UI · SPA' },
   { name: 'Vite', detail: '빌드' },
-  { name: 'Mapbox GL JS', detail: '3D 지구본·장소 미니맵' },
+  { name: 'Mapbox GL JS', detail: '3D 지구본' },
+  { name: 'Mapbox Static Images', detail: '여행 스케치 위치 지도' },
   { name: 'Supabase', detail: '인증·데이터' },
   { name: 'Vercel', detail: '호스팅' },
   { name: 'Google Gemini', detail: 'MOONi AI (프록시 경유)' },
 ];
 
 export const MAPBOX_CREDITS_INTRO =
-  '홈 지구본·장소 지도는 Mapbox 지도 스타일과 OpenStreetMap 등 오픈 데이터를 사용합니다. 모바일 화면에서는 지도 위 텍스트 attribution 대신 이 페이지에서 출처를 확인할 수 있습니다.';
+  '홈 지구본·여행 스케치 위치 지도는 Mapbox 지도 스타일과 OpenStreetMap 등 오픈 데이터를 사용합니다. 모바일 화면에서는 지도 위 텍스트 attribution 대신 이 페이지에서 출처를 확인할 수 있습니다.';
