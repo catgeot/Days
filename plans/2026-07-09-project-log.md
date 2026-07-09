@@ -97,39 +97,40 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 
 ---
 
-## 마이리얼트립 패키지 연동 조사 (핸드오프)
+## 마이리얼트립 패키지 연동 (핸드오프 · MVP 합의)
 
-**상태**: 🔍 조사·API 스모크만 · **구현은 다음 세션**
+**상태**: 📋 설계·합의 완료 · **구현은 다음 세션**
 
-### 결론
+### 조사 요약 (유지)
 
-- 패키지 UI는 트립링크 경로(`TRIPLINK_PACKAGES_ENABLED=false`)라 **현재 비노출**.
-- MRT 패키지 홈 단축링크 **`https://myrealt.rip/dUxR7d`** 정상 (`mylink_id=2282829` → `/pkc`).
-- **목표**: 홈 버튼 1개 연결이 아니라 **테마별·여행지별** 패키지 매핑 (기존 `tripLinkDestinationMap` / 탐색 인피드 자리 재사용 검토).
-- 공식 마이링크 API: `POST https://partner-ext-api.myrealtrip.com/v1/mylink` · body `{ targetUrl }` · Bearer · 응답 `data.mylink` / `data.mylinkId`.
-- 문서: [docs.myrealtrip.com 마이 링크](https://docs.myrealtrip.com/#/api/partner-api/%EB%A7%88%EC%9D%B4-%EB%A7%81%ED%81%AC)
+- 트립링크 `TRIPLINK_PACKAGES_ENABLED=false` · 모달/iframe **재사용 안 함** (사이트·관리 불가 · 규격 억지 맞춤 폐기).
+- 홈 단축 `https://myrealt.rip/dUxR7d` (`mylink_id=2282829` → `/pkc`) 정상.
+- 공식 파트너 API: 항공·숙소·TNA·마이링크만. **`/pkc` 패키지 목록·검색 API 없음**.
+- 패키지 운영 패턴(힌트): `www.myrealtrip.com/pkc/search?q={키워드}` → 제휴 포털 마이링크 → `myrealt.rip/…`.
+- Edge `mrt-link-generator` 깨짐(옛 API) · secret은 로컬 검증 실키로 재설정 필요 · `VITE_` 키 브라우저 금지.
+- 숙소는 추후 `region-autocomplete`→`regionId`→search + 칩(플래너 1차·지구본 2차). **이번 MVP 범위 밖**.
 
-### API 키
+### MVP (다음 세션 구현)
 
-| 소스 | 마스킹 | 스모크 |
-|------|--------|--------|
-| `.env.local` `VITE_MYREALTRIP_API_KEY` | `IZTzmr***KCG1vS` | ✅ `201` 단축링크 발급 |
-| 대화·`supabase secrets list`의 `b7e2***ac9367` | digest로 보임 | ❌ `401 Invalid API Key` |
+탐색 **에디터스 픽** 테마 subtitle 패키지 문구 → MRT 단축 **새 탭**. 트립링크 카드/모달 on 하지 않음.
 
-- Edge `MYREALTRIP_API_KEY`는 list digest ≠ 실키일 수 있음 → **재설정 시 로컬 검증된 실키** 사용.
-- 브라우저에 `VITE_` 키 노출 금지 — 서버(Edge)만.
+| 섹션 | CTA | shortUrl |
+|------|-----|----------|
+| 가족(아시아 단거리) | 동남아 | `https://myrealt.rip/dVDy3a` |
+| **일본 (신규 섹션)** | 일본 특가 | `https://myrealt.rip/dVEgd5` |
+| 유럽 & 장거리 | 유럽 | `https://myrealt.rip/dVE182` |
+| 휴양(에어텔) | 동남아 | `https://myrealt.rip/dVDy3a` |
 
-### Edge `mrt-link-generator` (깨짐)
+SSOT 보관만: 지방 출발 `dVEE92`, 홈쇼핑 `dVEo96`.
 
-- 배포 호출 시 `shortLink === originalUrl` (변환 실패·fallback).
-- 원인: 옛 URL `api.myrealtrip.com/partner/v1/links` + body `url` + 응답 `url`/`shortUrl` 가정.
-- 수정 방향: `partner-ext-api` + `/v1/mylink` + `targetUrl` + `data.mylink`.
+**구현 포인트**
 
-### 다음 세션 (우선)
+1. `src/pages/Home/data/mrtPackageThemeLinks.js` — shortUrl SSOT + 테마 매핑.
+2. `CurationSection.jsx` — `packageLinkUrl`, 실제 subtitle과 키워드 정합, `scrollToAd`/트립링크 스크롤 제거 → `window.open`.
+3. `SearchDiscoveryModal.jsx` — `japanTargets`·일본 `CurationSection` (가족 다음·유럽 앞). 가족 `familyTargets`에서 일본 도시 분리 권장. `promotedPackages` 트립링크 미전달.
+4. 금지: `travelSpots.js` 전체 스캔 · spots JSON 직접 수정 · `VITE_` MRT 키 · TripLinkModal 재사용.
 
-1. 테마·여행지 → MRT 패키지 URL(또는 검색/카테고리 딥링크) SSOT 설계  
-2. (선택) Edge 마이링크 수정 후 동적 단축  
-3. 트립링크 플래그/매퍼를 MRT로 교체할지·병행할지 합의 후 UI
+**후속(별 세션)**: Edge mylink 공식화 · 숙소 region 칩 · TNA 상품 프록시.
 
 **제시어**: 아래 「다음 세션 제시어」 절.
 
@@ -139,8 +140,10 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 
 ```
 @.ai-context.md @plans/2026-07-09-project-log.md
-MRT 패키지 연동 이어하기 — 일지 「마이리얼트립 패키지 연동 조사」핸드오프 확인.
-목표: 테마별·여행지별 패키지 매핑(홈 dUxR7d 단일 연결만으로는 부족).
-금지: travelSpots.js 전체 스캔 · spots JSON 직접 수정 · VITE_에 MRT 키 노출 · UI 임의 변경.
-먼저 SSOT/매핑 구조 제안 → 합의 후 구현. Edge mrt-link-generator는 공식 partner-ext-api 기준으로 수정 검토.
+MRT 패키지 MVP 이어하기 — 일지 「마이리얼트립 패키지 연동」핸드오프·MVP 표 확인.
+목표: 탐색 에디터스 픽 테마 subtitle → MRT /pkc 단축 새 탭.
+매핑: 가족·휴양=동남아 dVDy3a · 장거리=유럽 dVE182 · 일본 신규 섹션=dVEgd5.
+구현: mrtPackageThemeLinks.js + CurationSection packageLinkUrl + SearchDiscoveryModal 일본 섹션.
+금지: travelSpots.js 전체 스캔 · spots JSON 직접 수정 · VITE_ MRT 키 · TripLinkModal/iframe · TRIPLINK_PACKAGES_ENABLED=true.
+Edge mylink·숙소 region은 이번 범위 밖.
 ```
