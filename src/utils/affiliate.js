@@ -61,6 +61,40 @@ export function get12GoHomeUrl(options = {}) {
   return get12GoAffiliateUrl('https://12go.asia/ko/', options);
 }
 
+/** Bounce 짐 보관 — 플래너 배너·스마트 링크 홈 SSOT */
+export const BOUNCE_AFFILIATE_HOME_URL =
+  'https://go.bounce.com/GATEO951904439302671';
+
+/** BikesBooking 오토바이/스쿠터 — 플래너·스마트 링크 홈 SSOT */
+export const BIKESBOOKING_AFFILIATE_HOME_URL =
+  'https://bikesbooking.tp.st/HymHjnL8';
+
+/** 마이리얼트립 사이트 홈 (검색 없이 진입할 때) */
+export const MRT_HOME_URL = 'https://www.myrealtrip.com';
+
+/** Klook 한국어 사이트 홈 (스마트 링크·일반 랜딩) */
+export const KLOOK_SITE_HOME_TARGET = 'https://www.klook.com/ko/';
+
+/** GetYourGuide 제휴 파트너 ID — 위젯·스마트 링크 홈 공통 */
+export const GYG_PARTNER_ID = 'LRKVVU4';
+export const GYG_LOCALE = 'ko-KR';
+/** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) */
+export const GYG_DEFAULT_CMP = 'gateo_planer';
+
+/**
+ * GetYourGuide 제휴 홈 (단축 URL 불필요 — partner_id 직접).
+ * @param {{ cmp?: string }} [options]
+ * @returns {string}
+ */
+export function getGygHomeUrl(options = {}) {
+  const params = new URLSearchParams({
+    partner_id: GYG_PARTNER_ID,
+    utm_medium: 'online_publisher',
+    cmp: options.cmp || GYG_DEFAULT_CMP,
+  });
+  return `https://www.getyourguide.com/?${params.toString()}`;
+}
+
 const DIRECT_FERRIES_AFFILIATE_BASE =
   'https://www.directferries.co.kr/?dfpid=7263&affid=1001';
 
@@ -149,6 +183,26 @@ export const getAffiliateLink = (originalUrl, provider, options = {}) => {
   // 승인되지 않은 제휴사이거나 링크가 없으면 원본 URL을 그대로 반환 (사용자 불편 방지)
   return originalUrl;
 };
+
+/**
+ * Airalo eSIM 제휴 홈.
+ * 목적지 검색바 딥링크 불가 → 홈(단축 링크)만 사용.
+ * @param {{ locationName?: string, campaign?: string }} [options]
+ * @returns {string}
+ */
+export function getAiraloHomeUrl(options = {}) {
+  return getAffiliateLink('https://www.airalo.com/ko/', 'airalo', options);
+}
+
+/**
+ * Holafly eSIM 제휴 홈.
+ * 목적지 검색바 딥링크 불가 → 홈(단축 링크)만 사용.
+ * @param {{ locationName?: string, campaign?: string }} [options]
+ * @returns {string}
+ */
+export function getHolaflyHomeUrl(options = {}) {
+  return getAffiliateLink('https://esim.holafly.com/ko/', 'holafly', options);
+}
 
 /**
  * Klook 직접 제휴 딥링크 생성기
@@ -299,10 +353,10 @@ export const getKlookAirportTransferUrl = () =>
  * @returns {Promise<string>} - 마이리얼트립 제휴 단축 URL 또는 원본 URL
  */
 export const generateMrtLink = async (query) => {
-  if (!query) return 'https://www.myrealtrip.com';
+  if (!query) return MRT_HOME_URL;
 
   const encodedQuery = encodeURIComponent(query);
-  const originalUrl = `https://www.myrealtrip.com/search?q=${encodedQuery}`;
+  const originalUrl = `${MRT_HOME_URL}/search?q=${encodedQuery}`;
 
   try {
     const { data, error } = await supabase.functions.invoke('mrt-link-generator', {
@@ -340,6 +394,28 @@ export const TRIPCOM_KR_PARTNER = {
   allianceId: '8182427',
   sid: '309563143',
 };
+
+/**
+ * Trip.com KR 사이트 홈 (항공/호텔 딥링크 아님).
+ * @param {{ campaign?: string, locationName?: string }} [options]
+ * @returns {string}
+ */
+export function getTripcomHomeUrl(options = {}) {
+  const params = new URLSearchParams({
+    locale: 'ko-KR',
+    curr: 'KRW',
+    Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+    SID: TRIPCOM_KR_PARTNER.sid,
+  });
+  if (options.campaign) params.set('trip_sub1', options.campaign);
+  if (options.locationName) params.set('trip_sub2', options.locationName);
+  return `https://kr.trip.com/?${params.toString()}`;
+}
+
+/** Klook 사이트 홈 제휴 URL */
+export function getKlookSiteHomeUrl() {
+  return getKlookAffiliateUrl(KLOOK_SITE_HOME_TARGET);
+}
 
 /** 플래너 항공권 추적 (trip_sub1·trip_sub3) */
 export const TRIPCOM_FLIGHT_TRACKING = {

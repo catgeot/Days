@@ -1,8 +1,8 @@
 import React from 'react';
-import { getAffiliateLink } from '../../../../../utils/affiliate';
+import { getHolaflyHomeUrl } from '../../../../../utils/affiliate';
 import holaflyBannerImg from '../../../../../assets/Holafly.png';
 
-const HOLAFLY_URL = getAffiliateLink('https://esim.holafly.com/ko/', 'holafly', {
+const HOLAFLY_URL = getHolaflyHomeUrl({
     campaign: 'planner_banner',
     locationName: 'planner',
 });

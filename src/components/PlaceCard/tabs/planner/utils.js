@@ -1,7 +1,16 @@
 /* eslint-disable no-case-declarations -- switch cases use const/let; wrapping each case in blocks would be very large. */
 import bouncePlannerBannerDesktop from '../../../../assets/bounce_278x90.png';
 import bouncePlannerBannerMobile from '../../../../assets/bounce.png';
-import { getKlookAffiliateUrl, getKlookRentalHomeUrl, getKlookAirportTransferUrl, getKlookFerryUrl, get12GoHomeUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../utils/affiliate';
+import {
+    BIKESBOOKING_AFFILIATE_HOME_URL,
+    BOUNCE_AFFILIATE_HOME_URL,
+    getKlookAffiliateUrl,
+    getKlookRentalHomeUrl,
+    getKlookAirportTransferUrl,
+    getKlookFerryUrl,
+    get12GoHomeUrl,
+    getTripcomHotelOverrideUrlForLocation,
+} from '../../../../utils/affiliate';
 import { shouldShowFerryCard } from '../../../../utils/ferryBookingMatch.js';
 import { getRentalCarHomeSearchSubtext } from '../../../../utils/rentalAirportMatch.js';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
@@ -149,14 +158,14 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
 
             // 4. 오토바이/스쿠터 대여 (BikesBooking 어필리에이트)
             links.push({
-                url: `https://bikesbooking.tp.st/HymHjnL8`,
+                url: BIKESBOOKING_AFFILIATE_HOME_URL,
                 text: '오토바이 대여',
                 colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
             });
 
             // 5. 짐 보관 서비스 (바운스 배너 — 모바일 300×250 / 데스크톱 278×90)
             links.push({
-                url: 'https://go.bounce.com/GATEO951904439302671',
+                url: BOUNCE_AFFILIATE_HOME_URL,
                 text: 'Bounce (글로벌 짐 보관) 찾기',
                 colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200',
                 isBanner: true,

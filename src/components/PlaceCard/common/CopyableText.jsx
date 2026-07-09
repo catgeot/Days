@@ -1,10 +1,21 @@
 import React from 'react';
+import { resolveAffiliateHomeFromBrandText } from '../../../utils/affiliateBrandMatch';
 import { isMobileDevice } from './device';
 
 export const CopyableWord = ({ word, koreanName, locationName, type }) => {
+    const affiliateHomeUrl = resolveAffiliateHomeFromBrandText(word, koreanName, {
+        locationName,
+        campaign: 'copyable-smart-link',
+    });
+
     const handleSmartLink = (e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (affiliateHomeUrl) {
+            window.open(affiliateHomeUrl, isMobileDevice() ? '_self' : '_blank');
+            return;
+        }
 
         const searchTarget = word;
 
@@ -24,8 +35,6 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
         }
 
         const query = encodeURIComponent(queryStr);
-
-        // 모든 타입에서 구글 검색 사용 (통합)
         const url = `https://www.google.com/search?q=${query}`;
 
         window.open(url, isMobileDevice() ? '_self' : '_blank');
@@ -37,7 +46,7 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
             <button
                 onClick={handleSmartLink}
                 className={`inline-flex items-center gap-0.5 font-bold ${type === 'wiki' ? 'text-amber-400 hover:text-amber-300' : 'text-blue-500 hover:text-blue-700'} transition-colors focus:outline-none bg-black/5 hover:bg-black/10 px-1 rounded-md whitespace-nowrap`}
-                title="구글에서 검색하기"
+                title={affiliateHomeUrl ? '제휴 사이트로 이동' : '구글에서 검색하기'}
             >
                 {word}
             </button>

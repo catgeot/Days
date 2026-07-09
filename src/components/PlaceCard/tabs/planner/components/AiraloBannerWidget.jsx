@@ -1,8 +1,8 @@
 import React from 'react';
-import { getAffiliateLink } from '../../../../../utils/affiliate';
+import { getAiraloHomeUrl } from '../../../../../utils/affiliate';
 import airaloBannerImg from '../../../../../assets/Airalo.svg';
 
-const AIRALO_URL = getAffiliateLink('https://www.airalo.com/ko/', 'airalo', {
+const AIRALO_URL = getAiraloHomeUrl({
     campaign: 'planner_banner',
     locationName: 'planner',
 });

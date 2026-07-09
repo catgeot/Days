@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
+import { GYG_LOCALE, GYG_PARTNER_ID } from '../../../../../utils/affiliate';
 import { getGygLocationIdByLocation } from '../locationRules';
-
-const GYG_PARTNER_ID = 'LRKVVU4';
-const GYG_LOCALE = 'ko-KR';
 
 const GetYourGuideCityWidget = ({ location }) => {
   const locationId = useMemo(

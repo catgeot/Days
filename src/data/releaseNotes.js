@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-07-09',
+    category: 'partner',
+    title: '여행 플랜의 제휴 브랜드 링크가 바로 연결돼요',
+    items: [
+      '플래너·위키에서 클룩·트립닷컴·에어알로 등 제휴 브랜드 이름을 누르면 제휴 사이트로 바로 이동해요.',
+      '제휴가 아닌 명소·상호는 이전처럼 구글 검색으로 열려요.',
+    ],
+  },
+  {
     id: '2026-07-07-2',
     category: 'feature',
     title: '장소 카드에서 MOONi·갤러리가 더 편해졌어요',
