@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-07-09-4',
+    category: 'feature',
+    title: '탐색에 「섬여행」테마가 생겼어요',
+    items: [
+      '탐색에서 섬·군도 여행지만 모아볼 수 있어요. 에디터스 픽 맨 위에 숨겨진 섬 추천도 있어요.',
+      '쿡 제도 아이투타키가 기본 여행지로 추가됐어요.',
+    ],
+  },
+  {
     id: '2026-07-09-3',
     category: 'feature',
     title: '여행 스케치에서 위치를 지도로 볼 수 있어요',

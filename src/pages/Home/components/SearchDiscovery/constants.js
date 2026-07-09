@@ -1,4 +1,4 @@
-import { Map, Globe2, Layers, Palmtree, TreePine, Building2, Landmark, Tent } from 'lucide-react';
+import { Map, Globe2, Layers, Palmtree, TreePine, Building2, Landmark, Tent, Waves } from 'lucide-react';
 
 export const CONTINENTS = [
   { id: 'all', label: '추천 여행지', icon: Globe2 },
@@ -15,6 +15,7 @@ export const CONTINENTS = [
 export const THEMES = [
   { id: 'all', label: '에디터스 픽', icon: Layers },
   { id: 'paradise', label: '휴양', icon: Palmtree },
+  { id: 'island', label: '섬여행', icon: Waves },
   { id: 'nature', label: '자연', icon: TreePine },
   { id: 'urban', label: '도심', icon: Building2 },
   { id: 'culture', label: '문화', icon: Landmark },
@@ -23,6 +24,7 @@ export const THEMES = [
 
 export const CATEGORY_COLORS = {
   paradise: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  island: 'bg-sky-500/20 text-sky-400 border-sky-500/30',
   nature: 'bg-green-500/20 text-green-400 border-green-500/30',
   urban: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   culture: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -31,6 +33,7 @@ export const CATEGORY_COLORS = {
 
 export const CATEGORY_LABELS = {
   paradise: '휴양',
+  island: '섬여행',
   nature: '자연',
   urban: '도심',
   culture: '문화',
@@ -39,6 +42,7 @@ export const CATEGORY_LABELS = {
 
 export const CATEGORY_ICONS = {
   paradise: Palmtree,
+  island: Waves,
   nature: TreePine,
   urban: Building2,
   culture: Landmark,

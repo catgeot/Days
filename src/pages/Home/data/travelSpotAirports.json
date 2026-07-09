@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-06-29T08:58:48.502Z",
-    "spotCount": 271,
+    "generatedAt": "2026-07-09T08:59:03.896Z",
+    "spotCount": 272,
     "placeIdCount": 630,
     "stats": {
-      "override": 168,
+      "override": 169,
       "curatedPreserved": 0,
       "toolkitSync": 103,
       "runtime": 0,
@@ -169,6 +169,22 @@
       "rationale": "라로통가 RAR — 시네마 ICN→AKL→RAR",
       "flightRouteHubIatas": [
         "AKL"
+      ]
+    },
+    "aitutaki": {
+      "primaryIatas": [
+        "AIT",
+        "RAR"
+      ],
+      "preferredLinkIata": "AIT",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "rationale": "AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT",
+      "flightRouteHubIatas": [
+        "AKL",
+        "RAR"
       ]
     },
     "samoa": {
@@ -11562,6 +11578,7 @@
       "confidence": "high",
       "bannerNote": "아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
       "rationale": "AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT",
+      "linkedSlug": "aitutaki",
       "flightRouteHubIatas": [
         "AKL",
         "RAR"

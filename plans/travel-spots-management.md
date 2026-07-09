@@ -330,7 +330,7 @@ npm run audit:ferries      # required/common booking gap 0 목표
 |----------------|------|--------------------------|
 | `miyakojima` | 나하 경유 **MMY** | 인천 직항 **SHI** (`searchHintIatas`: SHI·MMY) |
 | `lalibela` | **ADD** 국제선 | **LLI** |
-| `아이투타키` (placeIds) | **AKL**·**RAR** | **AIT** — `travelSpots` slug 없음, `TRAVEL_SPOT_PLACE_ID_OVERRIDES` |
+| `aitutaki` / `아이투타키` | **AKL**·**RAR** | **AIT** — slug `aitutaki` + placeId 별칭 |
 | `rarotonga` | AKL 등 | **RAR** (라로통가 본섬 목적) |
 | `costa-rica` | — | **SJO**·**LIR** (`searchHintIatas` 동일, 일정별 선택) |
 | `la-spezia` | — | **FCO** 기본 · **MXP**·**FLR**·**PSA** 후보 (공항 없는 항구, 기차 연결) |

@@ -913,6 +913,7 @@ function Home() {
         {/* Explore 링크 */}
         <Link to="/explore">여행지 탐색</Link>
         <Link to="/explore/paradise">낙원</Link>
+        <Link to="/explore/island">섬여행</Link>
         <Link to="/explore/nature">자연</Link>
         <Link to="/explore/urban">도시</Link>
         <Link to="/explore/culture">문화</Link>

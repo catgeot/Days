@@ -214,7 +214,7 @@
     "slug": "hawaii",
     "name": "하와이",
     "name_en": "Hawaii",
-    "country": "미국",
+    "country": "하와이",
     "searchKeys": [
       "hawaii",
       "하와이",
@@ -229,7 +229,7 @@
     "slug": "guam",
     "name": "괌",
     "name_en": "Guam",
-    "country": "미국",
+    "country": "괌",
     "searchKeys": [
       "guam",
       "괌",
@@ -814,7 +814,7 @@
     "slug": "midway-atoll",
     "name": "미드웨이 환초",
     "name_en": "Midway Atoll",
-    "country": "미국",
+    "country": "미드웨이 환초",
     "searchKeys": [
       "midway-atoll",
       "미드웨이 환초",
@@ -3124,7 +3124,7 @@
     "slug": "honolulu",
     "name": "호놀룰루",
     "name_en": "Honolulu",
-    "country": "미국",
+    "country": "하와이",
     "searchKeys": [
       "honolulu",
       "호놀룰루",
@@ -3784,7 +3784,7 @@
     "slug": "pitcairn-islands",
     "name": "핏케언 제도",
     "name_en": "Pitcairn Islands",
-    "country": "영국",
+    "country": "핏케언 제도",
     "searchKeys": [
       "pitcairn-islands",
       "핏케언 제도",
@@ -4062,6 +4062,21 @@
       "ubud",
       "ubud",
       "ubud"
+    ]
+  },
+  {
+    "id": 393,
+    "slug": "aitutaki",
+    "name": "아이투타키",
+    "name_en": "Aitutaki",
+    "country": "쿡 제도",
+    "searchKeys": [
+      "aitutaki",
+      "아이투타키",
+      "aitutaki",
+      "aitutaki",
+      "aitutaki",
+      "aitutaki"
     ]
   }
 ]

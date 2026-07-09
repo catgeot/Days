@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree } from 'lucide-react';
+import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree, Waves } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { TRIPLINK_PACKAGES, TRIPLINK_PACKAGES_ENABLED } from '../data/tripLinkPackages';
+import { isIslandExploreSpot } from '../lib/islandExploreSpots';
 
 // 분리된 컴포넌트 및 유틸리티 import
 import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS, TRIPCOM_EXPLORE_LEADING_CARD } from './SearchDiscovery/constants';
@@ -353,14 +354,19 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         (spot.country || '').includes(lowerQuery) ||
         (spot.country_en || '').toLowerCase().includes(lowerQuery) ||
         (spot.keywords && spot.keywords.some(k => k.includes(lowerQuery))) ||
-        (CATEGORY_LABELS[spot.primaryCategory] || '').includes(lowerQuery)
+        (CATEGORY_LABELS[spot.primaryCategory] || '').includes(lowerQuery) ||
+        (isIslandExploreSpot(spot) && (CATEGORY_LABELS.island || '').includes(lowerQuery))
       );
       return [...result].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
     } else {
       if (filterMode === 'continent' && selectedContinent !== 'all') {
         result = result.filter(spot => spot.continent === selectedContinent);
       } else if (filterMode === 'theme' && selectedTheme !== 'all') {
-        result = result.filter(spot => spot.primaryCategory === selectedTheme);
+        if (selectedTheme === 'island') {
+          result = result.filter(isIslandExploreSpot);
+        } else {
+          result = result.filter(spot => spot.primaryCategory === selectedTheme);
+        }
       }
       return [...result].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
     }
@@ -410,6 +416,23 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       '라로통가', '사모아', '팔라우', '뉴칼레도니아', '골드코스트', '그레이트 배리어 리프'
     ];
 
+    // 섬여행 에디터스 픽: 숨겨진·생소한 섬 위주 (인기 휴양지 제외)
+    const islandTargets = [
+      '라로통가', '아이투타키', '길리 메노', '야프', '추크', '코스라에', '폰페이', '나우루', '키리바시',
+      '팔라우', '사모아', '통가', '바누아투', '뉴칼레도니아', '레위니옹', '흐바르',
+      '로포텐', '페로', '아조레스', '마데이라', '이스터', '미드웨이', '핏케언',
+      '케르겔렌', '디에고 가르시아', '세인트 헬레나', '페르난두지노로냐', '시미란',
+      '코모도', '안다만', '미야코지마', '이시가키', '대마도', '카보베르데'
+    ];
+    const popularIslandSlugs = new Set([
+      'jeju', 'seogwipo', 'maldives', 'boracay', 'bali', 'santorini', 'guam', 'saipan',
+      'phuket', 'phi-phi-islands', 'bora-bora', 'hawaii', 'honolulu', 'cebu', 'iceland',
+      'sicily', 'crete', 'ibiza', 'koh-samui', 'lombok', 'palawan', 'fiji', 'mauritius',
+      'seychelles', 'zanzibar', 'tahiti',
+    ]);
+    const isHiddenIslandExploreSpot = (s) =>
+      isIslandExploreSpot(s) && !popularIslandSlugs.has((s.slug || '').toLowerCase());
+
     const getSpotsByTargets = (targets, fallbackFilter) => {
       // 🚨 [New] 타겟 배열 자체를 일일 셔플하여 매일 다른 우선순위 적용
       const shuffledTargets = shuffleWithSeed([...targets], seed);
@@ -439,6 +462,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       trending: getSpotsByTargets(familyTargets, s => s.continent === 'asia' || s.continent === 'oceania'),
       city: getSpotsByTargets(longhaulTargets, s => s.continent === 'europe' || s.continent === 'americas' || s.continent === 'middle-east'),
       healing: getSpotsByTargets(resortTargets, s => s.primaryCategory === 'paradise' || s.primaryCategory === 'nature'),
+      island: getSpotsByTargets(islandTargets, isHiddenIslandExploreSpot),
       // 패키지 데이터 추가 (셔플된 배열에서 4개씩 추출)
       familyPackages: shuffledFamilyPackages.slice(0, 4),
       longhaulPackages: shuffledLonghaulPackages.slice(0, 4),
@@ -455,7 +479,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         id: t.id,
         label: t.label,
         icon: t.icon,
-        spots: filteredSpots.filter(s => s.primaryCategory === t.id)
+        spots: filteredSpots.filter(s =>
+          t.id === 'island' ? isIslandExploreSpot(s) : s.primaryCategory === t.id
+        )
       })).filter(g => g.spots.length > 0);
     }
     if (filterMode === 'theme' && selectedTheme !== 'all') {
@@ -529,13 +555,22 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       return (
         <div className="space-y-12 pb-10 w-full pt-4">
           <CurationSection
+            title="섬으로 떠나는 여행"
+            subtitle="라로통가·야프·길리 메노처럼, 아직 덜 알려진 섬·군도"
+            icon={<div className="p-2 bg-sky-500/10 rounded-xl border border-sky-500/20"><Waves className="text-sky-400" size={24} /></div>}
+            spots={curationData.island}
+            delayClass=""
+            onSelectSpot={handleSpotSelect}
+            onMoreClick={() => handleThemeSelect('island')}
+          />
+          <CurationSection
             title="가볍고 가까운, 완벽한 가족 여행"
             subtitle="가이드와 함께하는 아시아 단거리 패키지 여행"
             icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
             promotedPackages={curationData.familyPackages}
             leadingPackage={TRIPCOM_EXPLORE_LEADING_CARD}
-            delayClass=""
+            delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
             onSelectPackage={handlePackageSelect}
@@ -546,7 +581,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
             spots={curationData.city}
             promotedPackages={curationData.longhaulPackages}
-            delayClass="animation-delay-100"
+            delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('urban')}
             onSelectPackage={handlePackageSelect}
@@ -557,7 +592,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
             spots={curationData.healing}
             promotedPackages={curationData.resortPackages}
-            delayClass="animation-delay-200"
+            delayClass="animation-delay-300"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('paradise')}
             onSelectPackage={handlePackageSelect}

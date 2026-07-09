@@ -32,6 +32,7 @@ export const ISLAND_TOUR_SLUGS = new Set([
   'zanzibar',
   'la-reunion',
   'rarotonga',
+  'aitutaki',
   'boracay',
   'bora-bora',
   'mauritius',

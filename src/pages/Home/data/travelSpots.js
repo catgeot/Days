@@ -281,6 +281,34 @@ export const TRAVEL_SPOTS = [
     ]
   },
   {
+    "id": 393,
+    "slug": "aitutaki",
+    "name": "아이투타키",
+    "name_en": "Aitutaki",
+    "country": "쿡 제도",
+    "country_en": "Cook Islands",
+    "lat": -18.8578,
+    "lng": -159.785,
+    "tier": 2,
+    "popularity": 62,
+    "continent": "oceania",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": true,
+    "denseRegion": null,
+    "desc": "쿡 제도의 숨겨진 보석으로, 터키석빛 라군과 모래톱 섬이 이어지는 남태평양의 고요한 섬입니다.",
+    "keywords": [
+      "휴양",
+      "자연/오지",
+      "낭만",
+      "남태평양",
+      "섬"
+    ]
+  },
+  {
     "id": 111,
     "slug": "samoa",
     "name": "사모아",

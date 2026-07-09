@@ -1898,6 +1898,73 @@
       }
     ]
   },
+  "aitutaki": {
+    "landmarkName": "Aitutaki Lagoon",
+    "center": [
+      -159.785,
+      -18.858
+    ],
+    "exaggeration": 1.2,
+    "keyframes": [
+      {
+        "center": [
+          -159.785,
+          -18.858
+        ],
+        "zoom": 10.2,
+        "pitch": 8,
+        "bearing": -50,
+        "duration": 0
+      },
+      {
+        "center": [
+          -159.785,
+          -18.858
+        ],
+        "zoom": 11.2,
+        "pitch": 38,
+        "bearing": -15,
+        "duration": 3500,
+        "ease": true
+      },
+      {
+        "center": [
+          -159.785,
+          -18.858
+        ],
+        "zoom": 11.7,
+        "pitch": 48,
+        "bearing": 35,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -159.785,
+          -18.858
+        ],
+        "zoom": 12,
+        "pitch": 52,
+        "bearing": 85,
+        "duration": 4500,
+        "ease": true,
+        "orbit": true
+      },
+      {
+        "center": [
+          -159.785,
+          -18.858
+        ],
+        "zoom": 13.2,
+        "pitch": 55,
+        "bearing": 130,
+        "duration": 5000,
+        "ease": true,
+        "orbit": true
+      }
+    ]
+  },
   "lofoten": {
     "landmarkName": "Reine fishing village",
     "center": [

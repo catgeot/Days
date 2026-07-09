@@ -8,6 +8,10 @@
  * @type {Record<string, string>}
  */
 export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
+  // —— 쿡 제도 ——
+  '아이투타키': 'aitutaki',
+  'Aitutaki': 'aitutaki',
+
   // —— 사용자 예시·확실한 약칭 ——
   '에베레스트': 'everest-base-camp',
   '에베레스트 캠프': 'everest-base-camp',

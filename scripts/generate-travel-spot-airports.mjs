@@ -208,6 +208,7 @@ function rowFromPlaceIdOverride(override) {
     ...(override.tripFlightArrivalIata
       ? { tripFlightArrivalIata: String(override.tripFlightArrivalIata).trim().toUpperCase() }
       : {}),
+    ...(override.linkedSlug ? { linkedSlug: String(override.linkedSlug).trim() } : {}),
     ...flightRouteWaypointsFromOverride(override),
     ...flightRouteHubIatasFromOverride(override),
   };

@@ -82,3 +82,15 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 - **검증**: `418059f` 한글 제목·본문 OK · working tree clean.
 - **SSOT**: `.ai-context` 3절 「Windows Agent `git commit`」— UTF-8 메시지 파일 권장.
 - **추가**: 메시지 제목에 리터럴 `git commit -F` 쓰면 Cursor trailer 주입과 섞임 → 제목은 「UTF-8 커밋 메시지 파일」처럼 우회 표현.
+
+---
+
+## 탐색「섬여행」가상 테마
+
+**상태**: ✅ 구현·문서·커밋 (2026-07-09)
+
+- 탐색 테마 탭에 **섬여행** 추가 (`/explore/island`) — `primaryCategory` 재분류 없음
+- SSOT: [`islandExploreSpots.js`](../src/pages/Home/lib/islandExploreSpots.js) slug allowlist · `isIslandExploreSpot`
+- 필터·대륙×섬 교차필터 · 에디터스 픽 **상단** 「섬으로 떠나는 여행」(숨겨진 섬 위주) · SEO 히든 링크
+- **아이투타키(`aitutaki`)** 기본 여행지 승격 · AIT/RAR · `audit:airports` none:0
+- **releaseNotes**: `2026-07-09-4` 반영
