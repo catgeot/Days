@@ -5,7 +5,7 @@ const COMPOSITE_SOURCE_ID = 'composite';
 const DEFAULT_BOOTSTRAP_TIMEOUT_MS = 6000;
 const DEFAULT_TERRAIN_EXAGGERATION = 1.5;
 
-/** PlaceMiniMap fill-extrusion pattern — composite/building source-layer. */
+/** Mapbox fill-extrusion pattern — composite/building source-layer. */
 const BUILDINGS_LAYER = {
   id: BUILDINGS_LAYER_ID,
   source: COMPOSITE_SOURCE_ID,

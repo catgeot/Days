@@ -4,7 +4,7 @@ import { BookOpen, Sparkles, Loader2, RefreshCw, Quote, Camera, ArrowUp, X, Chev
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import CopyableText from '../common/CopyableText';
-import PlaceMiniMap from '../common/PlaceMiniMap';
+import PlaceWikiLocatorMap from '../common/PlaceWikiLocatorMap';
 import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
@@ -503,16 +503,8 @@ const PlaceWikiDetailsView = ({
                             </p>
                         )}
 
-                        {/* 지도 (요약글 아래, 본문 진입 전) */}
-                        {location?.lat && location?.lng && (
-                            <div className="bg-white/5 p-2 md:p-4 rounded-3xl border border-white/10 shadow-xl my-12 md:mx-12">
-                                <PlaceMiniMap
-                                    lat={location.lat}
-                                    lng={location.lng}
-                                    isActive={isActive}
-                                />
-                            </div>
-                        )}
+                        {/* 위치 지도 — Wikidata P242 로케이터 (요약글 아래, 본문 진입 전) */}
+                        <PlaceWikiLocatorMap location={location} isActive={isActive} />
 
                         {/* 위키 섹션들 */}
                         <div className="space-y-16 pt-8">
