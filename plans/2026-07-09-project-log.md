@@ -117,3 +117,9 @@ QA: 페로 제도 · Santorini · Cancun · 모바일 스크롤.
 - Cursor `settings.json`: 기본 터미널 **Git Bash** (+ `automationProfile`) — Agent는 Windows에서 PS 강제 가능(알려진 제한)
 - `smoke:health` 로컬 실패 원인: Vite **HTTPS(basic-ssl)** 인데 `http://localhost:5173` 호출 → self-signed TLS 거부
 - 수정: `scripts/smoke-health.mjs` 로컬 HTTPS 허용·HTTP→HTTPS 폴백 · `npm run smoke:health:local`
+
+## Windows Agent git commit (2026-07-09)
+
+- **증상**: Agent Shell이 PS라 bash HEREDOC·`bash -lc`·메시지 내 `<…>`가 실패할 수 있음 (커밋 자체 손상 아님 — 재시도로 성공).
+- **검증**: `418059f` 한글 제목·본문 OK · working tree clean.
+- **SSOT**: `.ai-context` 3절 「Windows Agent `git commit`」— UTF-8 `-F` 파일 권장.
