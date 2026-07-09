@@ -122,4 +122,5 @@ QA: 페로 제도 · Santorini · Cancun · 모바일 스크롤.
 
 - **증상**: Agent Shell이 PS라 bash HEREDOC·`bash -lc`·메시지 내 `<…>`가 실패할 수 있음 (커밋 자체 손상 아님 — 재시도로 성공).
 - **검증**: `418059f` 한글 제목·본문 OK · working tree clean.
-- **SSOT**: `.ai-context` 3절 「Windows Agent `git commit`」— UTF-8 `-F` 파일 권장.
+- **SSOT**: `.ai-context` 3절 「Windows Agent `git commit`」— UTF-8 메시지 파일 권장.
+- **추가**: 메시지 제목에 리터럴 `git commit -F` 쓰면 Cursor trailer 주입과 섞임 → 제목은 「UTF-8 커밋 메시지 파일」처럼 우회 표현.
