@@ -53,16 +53,22 @@ Smoke(6h)·E2E(1일) GHA로 HTTP·UI·Gemini까지 커버 — **5분 ping 중복
 
 ## 3. 로컬 스모크 — 장애 시 1차 확인 (5분, 필요할 때)
 
-```powershell
-cd c:\dev\days
+```bash
+cd /c/dev/days
+# 프로덕션(gateo.kr)
 npm run smoke:health
+
+# 로컬 Vite(dev · basic-ssl HTTPS) — npm run dev 실행 중일 때
+npm run smoke:health:local
 ```
 
 `.env.local`에 `VITE_SUPABASE_URL` · `VITE_SUPABASE_ANON_KEY` 필요 (`=` 뒤 공백 금지).
 
+로컬은 `https://localhost:5173`(self-signed). `http://`로 치면 스크립트가 HTTPS로 폴백한다.
+
 | Probe | 의미 |
 |-------|------|
-| P0-1 | gateo.kr HTML |
+| P0-1 | Site HTML (`SMOKE_SITE_URL` 또는 gateo.kr) |
 | P0-2 | Supabase alive |
 | P0-3 | gemini-proxy + Gemini ping (429 → 크레딧 부족 warn) |
 | P1-1 | `/place/bali` |

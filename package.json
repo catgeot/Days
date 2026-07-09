@@ -37,6 +37,7 @@
     "migrate:place-id-to-slug": "node scripts/migrate-place-id-to-slug.mjs",
     "verify:place-slug-resolve": "node scripts/verify-place-slug-resolve.mjs",
     "smoke:health": "node scripts/smoke-health.mjs",
+    "smoke:health:local": "set SMOKE_SITE_URL=https://localhost:5173&& node scripts/smoke-health.mjs",
     "smoke:health:ci": "node scripts/smoke-health.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"

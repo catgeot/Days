@@ -10,11 +10,61 @@ if (!process.env.GITHUB_ACTIONS) {
 
 const REQUEST_TIMEOUT_MS = 15_000;
 
-const siteUrl = (process.env.SMOKE_SITE_URL || 'https://gateo.kr').replace(/\/$/, '');
+let siteUrl = (process.env.SMOKE_SITE_URL || 'https://gateo.kr').replace(/\/$/, '');
 const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim();
 const anonKey = process.env.VITE_SUPABASE_ANON_KEY?.trim().replace(/\s+/g, '');
 const skipGemini = process.env.SMOKE_SKIP_GEMINI === '1';
 const isCi = process.env.GITHUB_ACTIONS === 'true';
+
+function isLocalHost(url) {
+  try {
+    const { hostname } = new URL(url);
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+  } catch {
+    return false;
+  }
+}
+
+/** Vite basic-ssl(self-signed) 로컬 HTTPS — Node fetch가 인증서 거부하지 않도록 */
+function allowInsecureLocalTls(url) {
+  if (isLocalHost(url) && url.startsWith('https://')) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  }
+}
+
+/**
+ * 로컬에서 http://localhost:5173 로 치면 Vite HTTPS(dev)에 실패함 → https로 한 번 재시도.
+ * @returns {Promise<string>}
+ */
+async function resolveSiteUrl(preferred) {
+  allowInsecureLocalTls(preferred);
+  if (!isLocalHost(preferred) || !preferred.startsWith('http://')) {
+    return preferred;
+  }
+  try {
+    const response = await fetchWithTimeout(`${preferred}/`);
+    if (response.ok) return preferred;
+  } catch {
+    // fall through to https
+  }
+  const httpsUrl = preferred.replace(/^http:\/\//i, 'https://');
+  allowInsecureLocalTls(httpsUrl);
+  try {
+    const response = await fetchWithTimeout(`${httpsUrl}/`);
+    if (response.ok) {
+      console.log(
+        `[smoke-health] local HTTP unreachable — using ${httpsUrl} (Vite basic-ssl). Set SMOKE_SITE_URL=${httpsUrl}`
+      );
+      return httpsUrl;
+    }
+  } catch (error) {
+    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+    console.log(
+      `[smoke-health] local site probe failed (${preferred} / ${httpsUrl}): ${detail}. Is npm run dev running?`
+    );
+  }
+  return preferred;
+}
 
 /** @type {Array<{ id: string, name: string, status: 'pass' | 'warn' | 'fail' | 'skip', detail: string, priority: 'P0' | 'P1' }>} */
 const checks = [];
@@ -220,6 +270,8 @@ function printSummary() {
 
   return ok ? 0 : 1;
 }
+
+siteUrl = await resolveSiteUrl(siteUrl);
 
 await probeSiteHtml();
 await probeSupabaseRest();
