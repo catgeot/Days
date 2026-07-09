@@ -65,7 +65,7 @@ Klook · Trip.com · 12Go · Direct Ferries · Airalo · Holafly · Tiqets · Ge
 - 복구: Static `onError`/탭 복귀 시 블록 유지 · [`useWikiData.js`](../src/components/PlaceCard/hooks/useWikiData.js) 같은 placeKey면 wiki 비우지 않음(깜박임 수정)
 - Credits: Static 반영 ([`mapboxAttribution.js`](../src/data/mapboxAttribution.js)) · explorer CSS [`index.css`](../src/index.css)
 
-**releaseNotes**: 합의 전 미반영 (`1.7`)
+**releaseNotes**: ✅ `2026-07-09-3` 반영 (`releaseNotes.js`)
 
 ---
 

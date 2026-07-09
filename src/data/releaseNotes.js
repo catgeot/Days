@@ -11,6 +11,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-07-09-3',
+    category: 'feature',
+    title: '여행 스케치에서 위치를 지도로 볼 수 있어요',
+    items: [
+      '요약 아래에 여행지 위치가 지도로 보여요. 대륙·해역 맥락과 핀으로 어디인지 바로 알 수 있어요.',
+      '지도를 누르면 크게 열려 확대·이동할 수 있어요.',
+    ],
+  },
+  {
     id: '2026-07-09-2',
     category: 'feature',
     title: '여행 위키가 「여행 스케치」로 바뀌었어요',
