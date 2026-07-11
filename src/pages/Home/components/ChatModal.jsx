@@ -128,7 +128,7 @@ const ChatModal = ({
     const fromDraft = (chatDraft?.destination || '').trim();
     if (fromDraft) return fromDraft;
     if (activeChatId && Array.isArray(chatHistory)) {
-      const trip = chatHistory.find((t) => t.id === activeChatId);
+      const trip = chatHistory.find((t) => String(t.id) === String(activeChatId));
       return (trip?.destination || '').trim();
     }
     return '';
@@ -136,44 +136,74 @@ const ChatModal = ({
 
   const isMooniSession = introDestinationRaw === 'MOONi';
   const isMooniUi = mooniEntry || isMooniSession;
-  const boundDestinationSlug = useMemo(() => {
-    if (mooniPlaceContext?.slug) return mooniPlaceContext.slug;
-    if (!introDestinationRaw || isMooniSession) return null;
-    return resolveSlugFromDestination(introDestinationRaw);
-  }, [introDestinationRaw, isMooniSession, mooniPlaceContext?.slug]);
+
+  /** Active conversation is place SSOT; entry mooniPlaceContext is seed only. */
+  const activeSessionPlace = useMemo(() => {
+    if (!isOpen) return null;
+
+    const entrySeed = mooniPlaceContext?.slug
+      ? {
+          slug: mooniPlaceContext.slug,
+          name: mooniPlaceContext.name,
+          lat: mooniPlaceContext.lat ?? null,
+          lng: mooniPlaceContext.lng ?? null,
+        }
+      : null;
+
+    if (chatDraft && !activeChatId) {
+      const fromDraft = resolveSessionBoundSpot(chatDraft.destination || '', []);
+      if (fromDraft) {
+        return {
+          slug: fromDraft.slug,
+          name: fromDraft.name,
+          lat: fromDraft.lat ?? null,
+          lng: fromDraft.lng ?? null,
+        };
+      }
+      return entrySeed;
+    }
+
+    if (activeChatId && Array.isArray(chatHistory)) {
+      const trip = chatHistory.find((t) => String(t.id) === String(activeChatId));
+      if (trip) {
+        // Prefer trip.messages (not local messages) to avoid one-frame stale
+        // place after sidebar switch before the messages sync effect runs.
+        const fromTrip = resolveSessionBoundSpot(
+          trip.destination || '',
+          trip.messages || []
+        );
+        if (fromTrip) {
+          return {
+            slug: fromTrip.slug,
+            name: fromTrip.name,
+            lat: fromTrip.lat ?? null,
+            lng: fromTrip.lng ?? null,
+          };
+        }
+      }
+    }
+
+    return entrySeed;
+  }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext]);
+
+  const boundDestinationSlug = activeSessionPlace?.slug ?? null;
 
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
-    const placeName = mooniPlaceContext?.name
-      ?? (boundDestinationSlug ? introDestinationRaw : null);
+    const placeName = activeSessionPlace?.name ?? null;
     return placeName ? `${placeName} · MOONi` : 'MOONi';
-  }, [isMooniUi, mooniPlaceContext?.name, boundDestinationSlug, introDestinationRaw]);
+  }, [isMooniUi, activeSessionPlace?.name, introDestinationRaw]);
 
   const placeIntroTarget = useMemo(() => {
     if (!isOpen) return '';
-    if (mooniPlaceContext?.name) return mooniPlaceContext.name.trim();
+    if (activeSessionPlace?.name) return activeSessionPlace.name.trim();
     if (isMooniUi) return '';
     return introDestinationRaw;
-  }, [isOpen, mooniPlaceContext?.name, isMooniUi, introDestinationRaw]);
+  }, [isOpen, activeSessionPlace?.name, isMooniUi, introDestinationRaw]);
 
-  const effectiveQuickReplySlug = useMemo(() => {
-    if (boundDestinationSlug) return boundDestinationSlug;
-    for (let i = messages.length - 1; i >= 0; i -= 1) {
-      const slug = messages[i]?.confirmedDestination?.slug;
-      if (slug) return slug;
-    }
-    return null;
-  }, [boundDestinationSlug, messages]);
+  const effectiveQuickReplySlug = boundDestinationSlug;
 
-  const topicDockDestName = useMemo(() => {
-    if (mooniPlaceContext?.name) return mooniPlaceContext.name;
-    if (introDestinationRaw && introDestinationRaw !== 'MOONi') return introDestinationRaw;
-    for (let i = messages.length - 1; i >= 0; i -= 1) {
-      const name = messages[i]?.confirmedDestination?.name;
-      if (name) return name;
-    }
-    return '';
-  }, [mooniPlaceContext?.name, introDestinationRaw, messages]);
+  const topicDockDestName = activeSessionPlace?.name ?? '';
 
   const topicEssentialGuide = useChatEssentialGuide(
     effectiveQuickReplySlug,
@@ -217,6 +247,12 @@ const ChatModal = ({
     setAccessOriginSearchOpen(false);
     setAccessOriginSearchActive(false);
   }, [effectiveQuickReplySlug]);
+
+  useEffect(() => {
+    setTopicDockParent(null);
+    setAccessOriginSearchOpen(false);
+    setAccessOriginSearchActive(false);
+  }, [activeChatId]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -457,19 +493,12 @@ const ChatModal = ({
     if (!text?.trim() || isLoading) return;
 
     const rawText = typeof text === 'object' ? (text.text || '질문 내용 확인 불가') : text;
-    const sessionBoundEarly =
-      resolveSessionBoundSpot(
-        (activeChatId && chatHistory.find((t) => String(t.id) === String(activeChatId))?.destination) ||
-          chatDraft?.destination ||
-          '',
-        messages
-      ) ??
-      (mooniPlaceContext?.slug
-        ? {
-            slug: mooniPlaceContext.slug,
-            name: mooniPlaceContext.name,
-          }
-        : null);
+    const sessionBoundEarly = activeSessionPlace?.slug
+      ? {
+          slug: activeSessionPlace.slug,
+          name: activeSessionPlace.name,
+        }
+      : null;
     const accessDockActive =
       Boolean(sessionBoundEarly?.slug) && topicDockParent === 'access';
     const cleanText = normalizeAccessDepartureUserText(rawText, { accessDockActive });
@@ -490,31 +519,22 @@ const ChatModal = ({
       chatDraft?.destination ||
       '';
 
-    const sessionBound =
-      resolveSessionBoundSpot(currentDest, messages) ??
-      (mooniPlaceContext?.slug
-        ? {
-            slug: mooniPlaceContext.slug,
-            name: mooniPlaceContext.name,
-            lat: mooniPlaceContext.lat ?? null,
-            lng: mooniPlaceContext.lng ?? null,
-          }
-        : null);
+    const sessionBound = activeSessionPlace?.slug
+      ? {
+          slug: activeSessionPlace.slug,
+          name: activeSessionPlace.name,
+          lat: activeSessionPlace.lat ?? null,
+          lng: activeSessionPlace.lng ?? null,
+        }
+      : null;
     const accessRoute = isAccessRouteQuery(cleanText);
     const ferryRoute = isFerryRouteQuery(cleanText);
     const departureLabel = accessRoute ? resolveDepartureLabelFromChat(cleanText, messages) : null;
 
     let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
 
-    const placeBound = mooniPlaceContext?.slug
-      ? {
-          slug: mooniPlaceContext.slug,
-          name: mooniPlaceContext.name,
-          lat: mooniPlaceContext.lat ?? null,
-          lng: mooniPlaceContext.lng ?? null,
-        }
-      : null;
-    const effectiveBound = sessionBound ?? placeBound;
+    const placeBound = sessionBound;
+    const effectiveBound = sessionBound;
 
     let sessionDest = currentDest;
     if (placeBound?.name) {
@@ -600,18 +620,18 @@ const ChatModal = ({
       const destForPrompt =
         placeBound?.name ||
         (sessionDest === 'MOONi'
-          ? (sessionBound?.name || mooniPlaceContext?.name || resolution?.name || sessionDest)
+          ? (sessionBound?.name || resolution?.name || sessionDest)
           : sessionDest);
       const priorTurns = messages.map((m) => ({ role: m.role, text: m.text }));
 
       const slug =
-        mooniPlaceContext?.slug ||
+        placeBound?.slug ||
         ((accessRoute || ferryRoute) && effectiveBound?.slug) ||
         resolution?.slug ||
         sessionBound?.slug ||
         resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
       const destName =
-        mooniPlaceContext?.name ||
+        placeBound?.name ||
         (destForPrompt === 'MOONi'
           ? (resolution?.name ?? effectiveBound?.name ?? '')
           : destForPrompt);
@@ -725,6 +745,7 @@ const ChatModal = ({
     onCreateTripOnFirstUserMessage,
     chatHistory,
     applyDestinationBinding,
+    activeSessionPlace,
     mooniPlaceContext,
     topicDockParent,
   ]);
@@ -875,7 +896,7 @@ const ChatModal = ({
                  <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium leading-tight truncate">
                    {isMooniUi
                      ? boundDestinationSlug
-                       ? `${mooniPlaceContext?.name ?? introDestinationRaw} 여행 대화 · ${currentPersona}`
+                       ? `${activeSessionPlace?.name ?? introDestinationRaw} 여행 대화 · ${currentPersona}`
                        : `여행 AI 도우미 · ${currentPersona}`
                      : `${introDestinationRaw || '여행'} 대화 · ${currentPersona}`}
                  </span>
@@ -942,7 +963,7 @@ const ChatModal = ({
                       <p className="whitespace-pre-wrap">
                         {buildMooniIntroWithHint(
                           placeIntro,
-                          mooniPlaceContext?.name ?? introDestinationRaw
+                          activeSessionPlace?.name ?? introDestinationRaw
                         )}
                       </p>
                     )}
@@ -966,7 +987,7 @@ const ChatModal = ({
                   : { text: rawMsgText, hadBracketLinks: false };
                 const msgSlug = msg.bookingMeta?.slug ?? boundDestinationSlug;
                 const msgDestinationName = isMooniUi
-                  ? mooniPlaceContext?.name ??
+                  ? activeSessionPlace?.name ??
                     messages
                       .slice(0, idx)
                       .reverse()
@@ -1023,7 +1044,7 @@ const ChatModal = ({
                         actions={refreshStoredBookingActionLabels(msg.bookingActions, {
                           slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
                           destinationName: isMooniUi
-                            ? (mooniPlaceContext?.name
+                            ? (activeSessionPlace?.name
                               ?? messages.slice(0, idx).reverse().find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name
                               ?? (introDestinationRaw !== 'MOONi' ? introDestinationRaw : ''))
                             : introDestinationRaw,

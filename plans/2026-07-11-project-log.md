@@ -45,6 +45,17 @@
 
 ---
 
+## MOONi 사이드바 전환 — 장소 바인딩 동기화
+
+**상태**: ✅ QA 확인 (2026-07-11)
+
+- 원인: `mooniPlaceContext` 진입 고정 → 헤더·플래너·토픽독·전송이 활성 trip과 어긋남
+- `activeSessionPlace` SSOT (`resolveSessionBoundSpot`) · `onSwitchChat`에서 context 재설정 · `activeChatId` 시 토픽독 리셋
+- 파일: [`ChatModal.jsx`](../src/pages/Home/components/ChatModal.jsx) · [`index.jsx`](../src/pages/Home/index.jsx)
+- releaseNotes: 버그 수정 · 생략
+
+---
+
 ## MOONi 독 UX — 에이전트 핸드오프
 
 ### 다음 세션

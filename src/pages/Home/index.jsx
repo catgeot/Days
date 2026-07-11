@@ -26,6 +26,7 @@ import { getSystemPrompt } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords } from '../../utils/travelSpotResolve.js';
+import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
@@ -838,6 +839,20 @@ function Home() {
           onSwitchChat={(id) => {
             setChatDraft(null);
             setActiveChatId(id);
+            const trip = savedTrips.find((t) => String(t.id) === String(id));
+            const spot = trip
+              ? resolveSessionBoundSpot(trip.destination, trip.messages || [])
+              : null;
+            setMooniPlaceContext(
+              spot
+                ? {
+                    slug: spot.slug,
+                    name: spot.name,
+                    lat: spot.lat ?? null,
+                    lng: spot.lng ?? null,
+                  }
+                : null
+            );
           }}
           onDeleteChat={deleteTrip}
         />
