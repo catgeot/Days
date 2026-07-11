@@ -17,7 +17,7 @@
 
 ## MOONi 모바일 독 UX
 
-**상태**: ✅ QA 확인 (2026-07-11) · **데스크톱 미세조정은 다음**
+**상태**: ✅ QA 확인 (2026-07-11)
 
 | # | 항목 |
 |---|------|
@@ -33,13 +33,24 @@
 
 ---
 
+## MOONi 데스크톱 독·헤더 밀도 (D0)
+
+**상태**: ✅ QA 확인 (2026-07-11)
+
+- 헤더 Compact · 칩·입력·access 독 padding 축소
+- dock 칩: **1줄 가로 스크롤** + 우측 페이드 (wrap 제거)
+- bound: **칩(왼쪽) + 입력(오른쪽)** 한 줄 · 입력 cyan 테두리·시인성
+- 파일: [`ChatModal.jsx`](../src/pages/Home/components/ChatModal.jsx) · [`MooniQuickReplyChips.jsx`](../src/components/chat/MooniQuickReplyChips.jsx)
+- **releaseNotes**: `2026-07-11` 데스크톱 항목 추가
+
+---
+
 ## MOONi 독 UX — 에이전트 핸드오프
 
-### 다음 세션 (데스크톱)
+### 다음 세션
 
 | 우선 | 항목 | 노트 |
 |------|------|------|
-| **D0** | 데스크톱 독·헤더 시인성/밀도 | 모바일 QA 완료 후 이어하기 |
 | **P2** | 대화 시작 후에도 짧은 「다른 주제」 힌트 (선택) | `messages.length === 0`만 |
 | **P3** | L2 라벨 이모지 톤 통일 | 페리만 🚢 등 혼재 |
 
@@ -62,9 +73,9 @@
 ```
 @.ai-context.md @plans/2026-07-11-project-log.md
 
-MOONi 독 UX — 데스크톱 이어하기.
+MOONi 독 UX — P2/P3 이어하기.
 
-모바일 QA 완료. 일지 「다음 세션 (데스크톱)」 D0부터.
-대상: ChatModal.jsx · MooniQuickReplyChips.jsx (md+).
+D0 데스크톱 밀도 QA Pass. 일지 「다음 세션」 P2·P3.
+대상: ChatModal.jsx · MooniQuickReplyChips.jsx · mooniQuickReplies.js.
 금지: access 고정 도시 칩 복구 · travelSpots.js 전체 스캔 · PowerShell 한글 JSX.
 ```

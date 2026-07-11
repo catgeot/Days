@@ -28,11 +28,11 @@ export default function MooniQuickReplyChips({
   const backLabelText = backLabel.replace(/^←\s*/, '');
 
   const chipRowClass = dock
-    ? 'flex gap-2 max-md:flex-nowrap max-md:overflow-x-auto max-md:overscroll-x-contain max-md:touch-pan-x max-md:pb-0.5 max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden md:flex-wrap'
+    ? 'flex gap-2 flex-nowrap overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
     : 'flex flex-wrap gap-2';
 
   return (
-    <div className={dock ? 'space-y-1.5' : 'mt-3 space-y-2'}>
+    <div className={dock ? 'space-y-1' : 'mt-3 space-y-2'}>
       {onBack ? (
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <button
@@ -91,7 +91,7 @@ export default function MooniQuickReplyChips({
         </div>
         {dock ? (
           <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 to-transparent md:hidden"
+            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 to-transparent"
             aria-hidden
           />
         ) : null}

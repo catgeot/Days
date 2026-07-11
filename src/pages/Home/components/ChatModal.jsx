@@ -852,7 +852,7 @@ const ChatModal = ({
 
         <div className="flex-1 flex flex-col bg-black/50 relative">
             <div
-              className="bg-gray-800/50 p-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 border-b border-gray-700 backdrop-blur-md"
+              className="bg-gray-800/50 p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 border-b border-gray-700 backdrop-blur-md"
               onPointerDown={() => {
                 if (mobileDockInputFocused && !input.trim()) {
                   collapseMobileDockInput();
@@ -864,15 +864,15 @@ const ChatModal = ({
                  onClick={handleClose}
                  aria-label="채팅 닫기"
                  title="닫기"
-                 className="flex h-9 w-9 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
+                 className="flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
                >
                  <X size={16} className="pointer-events-none max-md:h-4 max-md:w-4" />
                </button>
                <div className="flex flex-col min-w-0 flex-1 justify-center">
-                 <span className="font-bold text-white tracking-wide text-base max-md:text-[15px] max-md:leading-snug truncate">
+                 <span className="font-bold text-white tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate">
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
-                 <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium truncate">
+                 <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium leading-tight truncate">
                    {isMooniUi
                      ? boundDestinationSlug
                        ? `${mooniPlaceContext?.name ?? introDestinationRaw} 여행 대화 · ${currentPersona}`
@@ -1086,7 +1086,7 @@ const ChatModal = ({
 
             <div className="shrink-0 bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
               {showAccessOriginDock ? (
-                <div className="px-3 md:px-6 pt-3 pb-2 space-y-2 border-b border-gray-800/80">
+                <div className="px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 border-b border-gray-800/80">
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
                     <button
                       type="button"
@@ -1208,18 +1208,46 @@ const ChatModal = ({
                       </button>
                     </form>
                   </div>
-                  <div className="hidden md:block px-6 pt-4 pb-1 border-b border-gray-800/80">
-                    <MooniQuickReplyChips {...topicDockChipsProps} />
+                  <div className="hidden md:flex items-end gap-3 px-4 pt-2 pb-2">
+                    <div className="min-w-0 flex-1">
+                      <MooniQuickReplyChips {...topicDockChipsProps} />
+                    </div>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSend(input);
+                      }}
+                      className="relative w-[min(18rem,40%)] shrink-0 mb-0.5"
+                    >
+                      <input
+                        ref={chatInputRef}
+                        type="text"
+                        inputMode="text"
+                        enterKeyHint="send"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="직접 입력…"
+                        title={chatInputPlaceholder}
+                        className="w-full min-h-[36px] bg-gray-700/95 text-white text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-400/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-cyan-300/80 focus:ring-1 focus:ring-cyan-400/35 placeholder:text-gray-300/90"
+                        disabled={isLoading}
+                      />
+                      <button
+                        type="submit"
+                        disabled={isLoading || !input.trim()}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70"
+                        aria-label="전송"
+                      >
+                        <Send size={16} />
+                      </button>
+                    </form>
                   </div>
                 </>
               ) : null}
               <div
-                className={`px-3 pt-3 md:p-6 ${
-                  showAccessOriginDock
+                className={`px-3 pt-3 md:px-4 md:pt-2.5 md:pb-3 ${
+                  showAccessOriginDock || showBoundTopicDock
                     ? 'hidden'
-                    : showBoundTopicDock
-                      ? 'max-md:hidden'
-                      : 'pb-0'
+                    : 'pb-0'
                 }`}
               >
                 <form
@@ -1230,23 +1258,23 @@ const ChatModal = ({
                   className="relative"
                 >
                   <input
-                    ref={chatInputRef}
+                    ref={!showBoundTopicDock ? chatInputRef : undefined}
                     type="text"
                     inputMode="text"
                     enterKeyHint="send"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={chatInputPlaceholder}
-                    className="w-full bg-gray-800 text-white text-[16px] md:text-base pl-5 pr-14 py-3.5 md:py-4 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-800 md:bg-gray-700/95 text-white text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-gray-600 md:border-cyan-400/45 md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-blue-500 md:focus:border-cyan-300/80 md:focus:ring-1 md:focus:ring-cyan-400/35 placeholder:text-gray-500 md:placeholder:text-gray-300/90"
                     disabled={isLoading}
                     autoFocus={!effectiveQuickReplySlug}
                   />
                   <button
                     type="submit"
                     disabled={isLoading || !input.trim()}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 rounded-full text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-blue-600 rounded-full text-white"
                   >
-                    <Send size={20} />
+                    <Send size={18} />
                   </button>
                 </form>
               </div>
