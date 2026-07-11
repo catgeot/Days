@@ -94,8 +94,18 @@ const ChatModal = ({
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const chatInputRef = useRef(null);
+  const mobileDockInputRef = useRef(null);
   const hasSentInitialRef = useRef(false);
   const mobileDockBlurTimerRef = useRef(null);
+
+  const collapseMobileDockInput = useCallback(() => {
+    if (mobileDockBlurTimerRef.current) {
+      clearTimeout(mobileDockBlurTimerRef.current);
+      mobileDockBlurTimerRef.current = null;
+    }
+    setMobileDockInputFocused(false);
+    mobileDockInputRef.current?.blur();
+  }, []);
 
   const handleClose = useCallback(() => {
     chatInputRef.current?.blur();
@@ -202,12 +212,6 @@ const ChatModal = ({
     return '메시지 입력...';
   }, [topicDockParent, effectiveQuickReplySlug]);
 
-  const chatInputPlaceholderMobile = useMemo(() => {
-    if (topicDockParent === 'access') return '출발지…';
-    if (effectiveQuickReplySlug) return '입력…';
-    return '메시지 입력...';
-  }, [topicDockParent, effectiveQuickReplySlug]);
-
   useEffect(() => {
     setTopicDockParent(null);
     setAccessOriginSearchOpen(false);
@@ -236,6 +240,25 @@ const ChatModal = ({
       }
     };
   }, []);
+
+  /** 키보드만 닫히고 blur가 안 오는 경우(iOS 등) — 빈 입력이면 칩 복귀 */
+  useEffect(() => {
+    if (!isOpen || !mobileDockInputFocused) return undefined;
+    const vv = window.visualViewport;
+    if (!vv) return undefined;
+    let prevHeight = vv.height;
+    const onResize = () => {
+      const nextHeight = vv.height;
+      const grew = nextHeight - prevHeight;
+      prevHeight = nextHeight;
+      if (grew < 100) return;
+      if (mobileDockInputRef.current?.value?.trim()) return;
+      setMobileDockInputFocused(false);
+      mobileDockInputRef.current?.blur();
+    };
+    vv.addEventListener('resize', onResize);
+    return () => vv.removeEventListener('resize', onResize);
+  }, [isOpen, mobileDockInputFocused]);
 
   useEffect(() => {
     if (topicDockParent && topicDockParent !== 'access' && quickReplies.length === 0) {
@@ -828,17 +851,25 @@ const ChatModal = ({
         </div>
 
         <div className="flex-1 flex flex-col bg-black/50 relative">
-            <div className="bg-gray-800/50 p-4 max-md:py-3 max-md:pt-[max(0.75rem,env(safe-area-inset-top,0px))] flex items-center gap-3 border-b border-gray-700 backdrop-blur-md">
+            <div
+              className="bg-gray-800/50 p-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 border-b border-gray-700 backdrop-blur-md"
+              onPointerDown={() => {
+                if (mobileDockInputFocused && !input.trim()) {
+                  collapseMobileDockInput();
+                }
+              }}
+            >
                <button
                  type="button"
                  onClick={handleClose}
                  aria-label="채팅 닫기"
-                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-500/60 bg-gray-700/70 text-gray-200 shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
+                 title="닫기"
+                 className="flex h-9 w-9 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
                >
-                 <X size={18} className="pointer-events-none" />
+                 <X size={16} className="pointer-events-none max-md:h-4 max-md:w-4" />
                </button>
-               <div className="flex flex-col min-w-0 flex-1">
-                 <span className="font-bold text-white tracking-wide text-base">
+               <div className="flex flex-col min-w-0 flex-1 justify-center">
+                 <span className="font-bold text-white tracking-wide text-base max-md:text-[15px] max-md:leading-snug truncate">
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
                  <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium truncate">
@@ -848,23 +879,32 @@ const ChatModal = ({
                        : `여행 AI 도우미 · ${currentPersona}`
                      : `${introDestinationRaw || '여행'} 대화 · ${currentPersona}`}
                  </span>
+                 <span className="md:hidden text-[10px] text-gray-400 font-medium leading-none mt-0.5 truncate">
+                   {isMooniUi ? 'MOONi 여행 대화' : '여행 대화'}
+                 </span>
                </div>
                <div className="flex items-center gap-2 shrink-0">
                  {effectiveQuickReplySlug ? (
                    <button
                      type="button"
                      onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
-                     className="inline-flex items-center gap-1 rounded-full border border-cyan-400/70 bg-cyan-500/25 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/30 hover:border-cyan-300 hover:bg-cyan-500/35 transition-colors max-md:px-2.5"
-                     title="플래너 보기"
+                     className="inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation"
+                     title="여행 플래너 열기"
                    >
-                     <span className="max-md:hidden">📋 플래너 보기</span>
-                     <span className="md:hidden">📋 플래너</span>
+                     📋 플래너 보기
                    </button>
                  ) : null}
                </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 custom-scrollbar">
+            <div
+              className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 custom-scrollbar"
+              onPointerDown={() => {
+                if (mobileDockInputFocused && !input.trim()) {
+                  collapseMobileDockInput();
+                }
+              }}
+            >
               {!isMooniUi && (placeIntro || placeIntroLoading || placeIntroError) && (
                 <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-gray-900/60 p-4 shadow-lg">
                   <div className="flex items-center gap-2 mb-2 text-emerald-300/90">
@@ -1047,20 +1087,20 @@ const ChatModal = ({
             <div className="shrink-0 bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
               {showAccessOriginDock ? (
                 <div className="px-3 md:px-6 pt-3 pb-2 space-y-2 border-b border-gray-800/80">
-                  <button
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => setTopicDockParent(null)}
-                    className="inline-flex flex-wrap items-center gap-x-1 gap-y-0.5 px-0.5 py-1 text-[11px] font-medium text-gray-300 hover:text-white transition-colors disabled:opacity-50 max-w-full text-left"
-                  >
-                    <span className="inline-flex items-center gap-0.5 shrink-0">
-                      <ChevronLeft size={14} className="shrink-0 -mr-0.5" aria-hidden />
-                      주제 바꾸기
-                    </span>
-                    <span className="text-cyan-400/90 font-semibold break-keep">
+                  <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => setTopicDockParent(null)}
+                      className="inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
+                      다른 주제
+                    </button>
+                    <span className="text-[11px] text-cyan-400/75 font-medium break-keep min-w-0">
                       {getMooniL1ChipLabel('access', { mobile: true })}
                     </span>
-                  </button>
+                  </div>
 
                   {accessOriginSearchOpen ? (
                     <FlightOriginSelector
@@ -1106,9 +1146,9 @@ const ChatModal = ({
                 </div>
               ) : showBoundTopicDock ? (
                 <>
-                  <div className="md:hidden px-3 pt-3 pb-1 flex items-end gap-2">
+                  <div className="md:hidden px-3 pt-2 pb-1 flex flex-col gap-1.5">
                     {!mobileDockInputExpanded ? (
-                      <div className="min-w-0 flex-[6]">
+                      <div className="min-w-0 w-full">
                         <MooniQuickReplyChips {...topicDockChipsProps} />
                       </div>
                     ) : null}
@@ -1117,13 +1157,10 @@ const ChatModal = ({
                         e.preventDefault();
                         handleSend(input);
                       }}
-                      className={
-                        mobileDockInputExpanded
-                          ? 'relative w-full min-w-0 mb-0.5 transition-[flex-basis,max-width] duration-200'
-                          : 'relative shrink-0 flex-[4] min-w-[6.5rem] max-w-[10.5rem] mb-0.5 transition-[flex-basis,max-width] duration-200'
-                      }
+                      className="relative w-full min-w-0"
                     >
                       <input
+                        ref={mobileDockInputRef}
                         type="text"
                         inputMode="text"
                         enterKeyHint="send"
@@ -1145,20 +1182,29 @@ const ChatModal = ({
                         placeholder={
                           mobileDockInputExpanded
                             ? chatInputPlaceholder
-                            : chatInputPlaceholderMobile
+                            : '직접 입력…'
                         }
                         title={chatInputPlaceholder}
-                        className="w-full bg-gray-800 text-white text-[16px] pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500"
+                        className={
+                          mobileDockInputExpanded
+                            ? 'w-full bg-gray-800 text-white text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 transition-[padding] duration-150'
+                            : 'w-full h-8 bg-gray-800/80 text-white text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 placeholder:text-[12px] transition-[padding] duration-150'
+                        }
                         disabled={isLoading}
                         aria-expanded={mobileDockInputExpanded}
                       />
                       <button
                         type="submit"
                         disabled={isLoading || !input.trim()}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40"
+                        onMouseDown={(e) => e.preventDefault()}
+                        className={
+                          mobileDockInputExpanded
+                            ? 'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation'
+                            : 'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-blue-600/80 rounded-full text-white disabled:opacity-40 touch-manipulation'
+                        }
                         aria-label="전송"
                       >
-                        <Send size={17} />
+                        <Send size={mobileDockInputExpanded ? 17 : 13} />
                       </button>
                     </form>
                   </div>

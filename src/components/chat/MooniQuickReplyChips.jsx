@@ -16,71 +16,85 @@ export default function MooniQuickReplyChips({
   prompt = '무엇부터 도와드릴까요?',
   showPrompt = true,
   dock = false,
-  backLabel = '← 주제 바꾸기',
+  backLabel = '다른 주제',
   parentL1Label = null,
 }) {
   const items = chips ?? [];
   if (!items.length) return null;
 
   const chipClass =
-    'inline-flex items-center gap-1.5 rounded-full border border-cyan-500/35 bg-cyan-950/30 px-3 py-1.5 text-xs font-medium text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors disabled:opacity-50 disabled:pointer-events-none';
+    'inline-flex shrink-0 items-center justify-center gap-1 min-h-[36px] rounded-full border border-cyan-500/35 bg-cyan-950/30 px-3 py-1.5 text-xs font-medium text-cyan-100 touch-manipulation hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors disabled:opacity-50 disabled:pointer-events-none';
 
   const backLabelText = backLabel.replace(/^←\s*/, '');
+
+  const chipRowClass = dock
+    ? 'flex gap-2 max-md:flex-nowrap max-md:overflow-x-auto max-md:overscroll-x-contain max-md:touch-pan-x max-md:pb-0.5 max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden md:flex-wrap'
+    : 'flex flex-wrap gap-2';
 
   return (
     <div className={dock ? 'space-y-1.5' : 'mt-3 space-y-2'}>
       {onBack ? (
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={onBack}
-          className="inline-flex flex-wrap items-center gap-x-1 gap-y-0.5 px-0.5 py-1 text-[11px] font-medium text-gray-300 hover:text-white transition-colors disabled:opacity-50 max-w-full text-left"
-        >
-          <span className="inline-flex items-center gap-0.5 shrink-0">
-            <ChevronLeft size={14} className="shrink-0 -mr-0.5" aria-hidden />
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={onBack}
+            className="inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+          >
+            <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
             {backLabelText}
-          </span>
+          </button>
           {parentL1Label ? (
-            <span className="text-cyan-400/90 font-semibold break-keep">{parentL1Label}</span>
+            <span className="text-[11px] text-cyan-400/75 font-medium break-keep min-w-0">
+              {parentL1Label}
+            </span>
           ) : null}
-        </button>
+        </div>
       ) : null}
       {showPrompt && prompt ? (
         <p className="text-xs text-gray-400 px-0.5">{prompt}</p>
       ) : null}
-      <div className="flex flex-wrap gap-2">
-        {items.map((chip) => (
-          <button
-            key={chip.id}
-            type="button"
-            disabled={disabled}
-            onClick={() => {
-              if (chip.action === 'planner' && slug && onOpenPlanner) {
-                onOpenPlanner(`/place/${slug}/planner`);
-                return;
-              }
-              if (chip.drillDown && onDrillDown) {
-                onDrillDown(chip.id);
-                return;
-              }
-              if (chip.action === 'focus_input' && onFocusInput) {
-                onFocusInput(chip);
-                return;
-              }
-              if (chip.sendText) onSelect?.(chip.sendText, chip.persona, chip);
-            }}
-            className={chipClass}
-          >
-            {chip.mobileLabel ? (
-              <>
-                <span className="md:hidden">{chip.mobileLabel}</span>
-                <span className="max-md:hidden">{chip.label}</span>
-              </>
-            ) : (
-              chip.label
-            )}
-          </button>
-        ))}
+      <div className={dock ? 'relative min-w-0' : undefined}>
+        <div className={chipRowClass}>
+          {items.map((chip) => (
+            <button
+              key={chip.id}
+              type="button"
+              disabled={disabled}
+              onClick={() => {
+                if (chip.action === 'planner' && slug && onOpenPlanner) {
+                  onOpenPlanner(`/place/${slug}/planner`);
+                  return;
+                }
+                if (chip.drillDown && onDrillDown) {
+                  onDrillDown(chip.id);
+                  return;
+                }
+                if (chip.action === 'focus_input' && onFocusInput) {
+                  onFocusInput(chip);
+                  return;
+                }
+                if (chip.sendText) onSelect?.(chip.sendText, chip.persona, chip);
+              }}
+              className={chipClass}
+            >
+              {chip.mobileLabel ? (
+                <>
+                  <span className="md:hidden">{chip.mobileLabel}</span>
+                  <span className="max-md:hidden">{chip.label}</span>
+                </>
+              ) : (
+                chip.label
+              )}
+            </button>
+          ))}
+        </div>
+        {dock ? (
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 to-transparent md:hidden"
+            aria-hidden
+          />
+        ) : null}
       </div>
     </div>
   );

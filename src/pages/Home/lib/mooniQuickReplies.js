@@ -197,7 +197,7 @@ export function getMooniQuickReplies(slug, level = 1, parentId = null, options =
   }));
 }
 
-/** L2 dock — 「주제 바꾸기」 옆에 표시할 1단 주제 라벨 */
+/** L2 dock — 「다른 주제」 옆에 표시할 1단 주제 라벨(맥락) */
 export function getMooniL1ChipLabel(parentId, { mobile = false } = {}) {
   const def = L1_DEFS.find((d) => d.id === parentId);
   if (!def) return '';
