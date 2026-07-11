@@ -6,8 +6,21 @@ import { getPreTravelItemsFromGuide } from '../../../utils/chatPrepBookingLinks'
 export const MOONI_TOPIC_HINT =
   '이곳이 어떤 곳인지부터, 가는 방법·준비·즐길거리까지 골라보셔도 좋아요. 예약은 답변 아래 버튼으로 이어질 수 있어요.';
 
-/** 「가는 방법」L2 — 출발지 직접 입력 placeholder (입력창 상시 노출) */
+/** 「가는 방법」L2 — 출발지 검색(FlightOriginSelector) + 페리 칩. 고정 도시 칩 없음. */
 export const ACCESS_DEPARTURE_INPUT_PLACEHOLDER = '어디서 출발하시나요? (예: 서울, 마닐라)';
+
+/**
+ * 출발 IATA → MOONi access_route 발화
+ * @param {string} iata
+ * @param {{ label?: string } | null} [option]
+ */
+export function buildAccessRouteAskText(iata, option = null) {
+  const code = String(iata ?? '').trim().toUpperCase();
+  const label = String(option?.label ?? '').trim();
+  const place = label || code;
+  if (!place) return '어떻게 가?';
+  return `${place}에서 어떻게 가?`;
+}
 
 const L1_DEFS = [
   {
@@ -52,10 +65,7 @@ const L2_EXPLORE = [
   { id: 'why_go', label: '왜 가볼 만해?', sendText: '왜 가볼 만한 여행지야?' },
 ];
 
-const L2_ACCESS_DEPARTURES = [
-  { id: 'from_seoul', label: '서울에서', sendText: '서울에서 어떻게 가?', requiresLeg: 'flight' },
-  { id: 'from_busan', label: '부산에서', sendText: '부산에서 어떻게 가?', requiresLeg: 'flight' },
-  { id: 'from_incheon', label: '인천에서', sendText: '인천에서 어떻게 가?', requiresLeg: 'flight' },
+const L2_ACCESS_EXTRAS = [
   {
     id: 'ferry',
     label: '🚢 페리·배',
@@ -134,7 +144,8 @@ function getL2ForParent(slug, parentId, essentialGuide) {
       defs = L2_EXPLORE;
       break;
     case 'access':
-      defs = L2_ACCESS_DEPARTURES;
+      // 출발지는 FlightOriginSelector(채팅 독) — 칩은 페리 등 보조만
+      defs = L2_ACCESS_EXTRAS;
       break;
     case 'prep':
       defs = L2_PREP;
@@ -174,6 +185,8 @@ export function getMooniQuickReplies(slug, level = 1, parentId = null, options =
   return L1_DEFS.filter((def) => {
     if (omitPlanner && def.action === 'planner') return false;
     if (def.action === 'planner') return true;
+    // 가는 방법: 출발지 검색 UI가 있으므로 L2 칩이 없어도 L1 유지
+    if (def.id === 'access') return true;
     if (!def.drillDown) return true;
     return getL2ForParent(slug, def.id, essentialGuide).length > 0;
   }).map(({ drillDown, persona, mobileLabel, ...rest }) => ({

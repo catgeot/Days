@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Send, Loader2, MessageSquare, Trash2, Sparkles } from 'lucide-react';
+import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
@@ -46,10 +46,17 @@ import {
   getMooniQuickReplies,
   getMooniL1ChipLabel,
   ACCESS_DEPARTURE_INPUT_PLACEHOLDER,
+  buildAccessRouteAskText,
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
-import { getMooniChipPromptHint } from '../lib/mooniChipPrompts';
+import { getMooniChipPromptHint, MOONI_CHIP_IDS } from '../lib/mooniChipPrompts';
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
+import FlightOriginSelector from './FlightOriginSelector';
+import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
+import {
+  persistFlightOriginIata,
+  resolveDefaultFlightOriginIata,
+} from '../lib/flightOriginPreference';
 
 const ChatModal = ({
   isOpen,
@@ -77,12 +84,18 @@ const ChatModal = ({
   const [placeIntroLoading, setPlaceIntroLoading] = useState(false);
   const [placeIntroError, setPlaceIntroError] = useState(null);
   const [topicDockParent, setTopicDockParent] = useState(null);
+  /** 모바일 주제 독: 입력 포커스·타이핑 시 칩 숨기고 검색바 확장 */
+  const [mobileDockInputFocused, setMobileDockInputFocused] = useState(false);
+  const [accessOriginIata, setAccessOriginIata] = useState(() => resolveDefaultFlightOriginIata());
+  const [accessOriginSearchOpen, setAccessOriginSearchOpen] = useState(false);
+  const [accessOriginSearchActive, setAccessOriginSearchActive] = useState(false);
 
   const navigate = useNavigate();
   const lastQuestionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const chatInputRef = useRef(null);
   const hasSentInitialRef = useRef(false);
+  const mobileDockBlurTimerRef = useRef(null);
 
   const handleClose = useCallback(() => {
     chatInputRef.current?.blur();
@@ -171,6 +184,13 @@ const ChatModal = ({
   const showBoundTopicDock =
     isMooniUi && Boolean(effectiveQuickReplySlug) && quickReplies.length > 0;
 
+  const showAccessOriginDock = isMooniUi && topicDockParent === 'access' && Boolean(effectiveQuickReplySlug);
+
+  const mobileDockInputExpanded =
+    showBoundTopicDock &&
+    !showAccessOriginDock &&
+    (mobileDockInputFocused || Boolean(input.trim()));
+
   const topicDockPrompt =
     !topicDockParent && messages.length === 0 ? '무엇부터 도와드릴까요?' : null;
 
@@ -190,19 +210,45 @@ const ChatModal = ({
 
   useEffect(() => {
     setTopicDockParent(null);
+    setAccessOriginSearchOpen(false);
+    setAccessOriginSearchActive(false);
   }, [effectiveQuickReplySlug]);
 
   useEffect(() => {
     if (!isOpen) {
       setTopicDockParent(null);
+      setMobileDockInputFocused(false);
+      setAccessOriginSearchOpen(false);
+      setAccessOriginSearchActive(false);
+      if (mobileDockBlurTimerRef.current) {
+        clearTimeout(mobileDockBlurTimerRef.current);
+        mobileDockBlurTimerRef.current = null;
+      }
+    } else {
+      setAccessOriginIata(resolveDefaultFlightOriginIata());
     }
   }, [isOpen]);
 
   useEffect(() => {
-    if (topicDockParent && quickReplies.length === 0) {
+    return () => {
+      if (mobileDockBlurTimerRef.current) {
+        clearTimeout(mobileDockBlurTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (topicDockParent && topicDockParent !== 'access' && quickReplies.length === 0) {
       setTopicDockParent(null);
     }
   }, [topicDockParent, quickReplies.length]);
+
+  useEffect(() => {
+    if (topicDockParent !== 'access') {
+      setAccessOriginSearchOpen(false);
+      setAccessOriginSearchActive(false);
+    }
+  }, [topicDockParent]);
 
   useEffect(() => {
     if (!isOpen || !placeIntroTarget) {
@@ -660,6 +706,27 @@ const ChatModal = ({
     topicDockParent,
   ]);
 
+  const handleAccessOriginSelect = useCallback(
+    (iata) => {
+      const code = String(iata ?? '').trim().toUpperCase();
+      if (code.length !== 3) return;
+      persistFlightOriginIata(code);
+      setAccessOriginIata(code);
+      setAccessOriginSearchOpen(false);
+      setAccessOriginSearchActive(false);
+      const option = getFlightCinemaOriginOption(code);
+      const askText = buildAccessRouteAskText(code, option);
+      handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
+    },
+    [handleSend]
+  );
+
+  const handleAskWithAccessOrigin = useCallback(() => {
+    const option = getFlightCinemaOriginOption(accessOriginIata);
+    const askText = buildAccessRouteAskText(accessOriginIata, option);
+    handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
+  }, [accessOriginIata, handleSend]);
+
   const topicDockChipsProps = useMemo(
     () => ({
       slug: effectiveQuickReplySlug,
@@ -668,7 +735,9 @@ const ChatModal = ({
         handleSend(text, persona ?? null, chip ? { chipId: chip.id } : null),
       onDrillDown: (parentId) => setTopicDockParent(parentId),
       onBack: topicDockParent ? () => setTopicDockParent(null) : undefined,
-      parentL1Label: topicDockParent ? getMooniL1ChipLabel(topicDockParent) : null,
+      parentL1Label: topicDockParent
+        ? getMooniL1ChipLabel(topicDockParent, { mobile: true })
+        : null,
       onOpenPlanner: handlePlannerNavigate,
       disabled: isLoading,
       prompt: topicDockPrompt,
@@ -976,18 +1045,83 @@ const ChatModal = ({
             </div>
 
             <div className="shrink-0 bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
-              {showBoundTopicDock ? (
+              {showAccessOriginDock ? (
+                <div className="px-3 md:px-6 pt-3 pb-2 space-y-2 border-b border-gray-800/80">
+                  <button
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() => setTopicDockParent(null)}
+                    className="inline-flex flex-wrap items-center gap-x-1 gap-y-0.5 px-0.5 py-1 text-[11px] font-medium text-gray-300 hover:text-white transition-colors disabled:opacity-50 max-w-full text-left"
+                  >
+                    <span className="inline-flex items-center gap-0.5 shrink-0">
+                      <ChevronLeft size={14} className="shrink-0 -mr-0.5" aria-hidden />
+                      주제 바꾸기
+                    </span>
+                    <span className="text-cyan-400/90 font-semibold break-keep">
+                      {getMooniL1ChipLabel('access', { mobile: true })}
+                    </span>
+                  </button>
+
+                  {accessOriginSearchOpen ? (
+                    <FlightOriginSelector
+                      variant="chat"
+                      selectedIata={accessOriginIata}
+                      disabled={isLoading}
+                      onSelect={handleAccessOriginSelect}
+                      onCollapseRequest={() => {
+                        setAccessOriginSearchOpen(false);
+                        setAccessOriginSearchActive(false);
+                      }}
+                      onSearchActiveChange={setAccessOriginSearchActive}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="min-w-0 flex-1">
+                        <FlightOriginSelector
+                          variant="chat-header"
+                          selectedIata={accessOriginIata}
+                          disabled={isLoading}
+                          onExpandRequest={() => setAccessOriginSearchOpen(true)}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        disabled={isLoading}
+                        onClick={handleAskWithAccessOrigin}
+                        className="shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/25 px-3 py-2 text-[12px] font-semibold text-cyan-50 touch-manipulation hover:bg-cyan-500/35 disabled:opacity-50"
+                      >
+                        물어보기
+                      </button>
+                    </div>
+                  )}
+
+                  {!accessOriginSearchOpen && !accessOriginSearchActive && quickReplies.length > 0 ? (
+                    <MooniQuickReplyChips
+                      {...topicDockChipsProps}
+                      onBack={undefined}
+                      parentL1Label={null}
+                      showPrompt={false}
+                    />
+                  ) : null}
+                </div>
+              ) : showBoundTopicDock ? (
                 <>
                   <div className="md:hidden px-3 pt-3 pb-1 flex items-end gap-2">
-                    <div className="min-w-0 flex-[6]">
-                      <MooniQuickReplyChips {...topicDockChipsProps} />
-                    </div>
+                    {!mobileDockInputExpanded ? (
+                      <div className="min-w-0 flex-[6]">
+                        <MooniQuickReplyChips {...topicDockChipsProps} />
+                      </div>
+                    ) : null}
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
                         handleSend(input);
                       }}
-                      className="relative shrink-0 flex-[4] min-w-[6.5rem] max-w-[10.5rem] mb-0.5"
+                      className={
+                        mobileDockInputExpanded
+                          ? 'relative w-full min-w-0 mb-0.5 transition-[flex-basis,max-width] duration-200'
+                          : 'relative shrink-0 flex-[4] min-w-[6.5rem] max-w-[10.5rem] mb-0.5 transition-[flex-basis,max-width] duration-200'
+                      }
                     >
                       <input
                         type="text"
@@ -995,10 +1129,28 @@ const ChatModal = ({
                         enterKeyHint="send"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder={chatInputPlaceholderMobile}
+                        onFocus={() => {
+                          if (mobileDockBlurTimerRef.current) {
+                            clearTimeout(mobileDockBlurTimerRef.current);
+                            mobileDockBlurTimerRef.current = null;
+                          }
+                          setMobileDockInputFocused(true);
+                        }}
+                        onBlur={() => {
+                          mobileDockBlurTimerRef.current = setTimeout(() => {
+                            setMobileDockInputFocused(false);
+                            mobileDockBlurTimerRef.current = null;
+                          }, 120);
+                        }}
+                        placeholder={
+                          mobileDockInputExpanded
+                            ? chatInputPlaceholder
+                            : chatInputPlaceholderMobile
+                        }
                         title={chatInputPlaceholder}
                         className="w-full bg-gray-800 text-white text-[16px] pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500"
                         disabled={isLoading}
+                        aria-expanded={mobileDockInputExpanded}
                       />
                       <button
                         type="submit"
@@ -1015,7 +1167,15 @@ const ChatModal = ({
                   </div>
                 </>
               ) : null}
-              <div className={`px-3 pt-3 md:p-6 ${showBoundTopicDock ? 'max-md:hidden' : 'pb-0'}`}>
+              <div
+                className={`px-3 pt-3 md:p-6 ${
+                  showAccessOriginDock
+                    ? 'hidden'
+                    : showBoundTopicDock
+                      ? 'max-md:hidden'
+                      : 'pb-0'
+                }`}
+              >
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();

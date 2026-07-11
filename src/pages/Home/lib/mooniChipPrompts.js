@@ -14,6 +14,8 @@ export const MOONI_CHIP_IDS = {
   PREP_FLIGHT: 'prep_flight',
   PREP_HOTEL: 'prep_hotel',
   PREP_TRANSPORT: 'prep_transport',
+  ACCESS_ORIGIN: 'access_origin',
+  /** @deprecated 고정 도시 칩 제거 — TEXT_TO_CHIP·구 세션 호환 */
   FROM_SEOUL: 'from_seoul',
   FROM_BUSAN: 'from_busan',
   FROM_INCHEON: 'from_incheon',
@@ -74,6 +76,16 @@ const MOONI_CHIP_ANSWER_GUIDES = {
       '렌터카 필요 여부·좌측/우측 통행·유류·주차·앱(그랩 등)을 해당 여행지에 맞게 언급한다.',
       '섬·도심 등 **차량 제한**이 있으면 명시한다.',
       '마지막 1~2문장으로 플래너 「공항→목적지 이동」·「교통·패스」 카드(답변 아래 cyan·회색 버튼 2개)를 안내할 수 있다.',
+    ],
+  },
+  [MOONI_CHIP_IDS.ACCESS_ORIGIN]: {
+    title: '선택한 출발지에서 가는 방법',
+    rules: [
+      '대화·칩에서 확인된 **출발 공항(도시)** 기준으로 목적지까지의 **실제 경로**를 단계별로 설명한다.',
+      '항공·페리·기차·버스 등 수단별 장단점·환승·소요·주의사항을 포함한다.',
+      '해당 출발지 직항이 없을 때 대표 환승 허브 경유 패턴을 안내한다.',
+      '페리가 필요한 여행지면 항공 후 페리 구간을 명시한다.',
+      '마지막 1~2문장으로 「교통 · 티켓」·플래너를 연결한다.',
     ],
   },
   [MOONI_CHIP_IDS.FROM_SEOUL]: {
@@ -167,6 +179,7 @@ const TEXT_TO_CHIP = [
   { re: /서울에서\s*어떻게|서울에서\s*가/, id: MOONI_CHIP_IDS.FROM_SEOUL },
   { re: /부산에서\s*어떻게|부산에서\s*가/, id: MOONI_CHIP_IDS.FROM_BUSAN },
   { re: /인천에서\s*어떻게|인천에서\s*가/, id: MOONI_CHIP_IDS.FROM_INCHEON },
+  { re: /.+\s*에서\s*어떻게\s*가/, id: MOONI_CHIP_IDS.ACCESS_ORIGIN },
   { re: /페리\s*예약|^페리/, id: MOONI_CHIP_IDS.FERRY },
   { re: /이곳은\s*어떤\s*곳|어떤\s*곳이야/, id: MOONI_CHIP_IDS.PLACE_OVERVIEW },
   { re: /분위기.*치안|치안.*분위기/, id: MOONI_CHIP_IDS.SAFETY_VIBE },
@@ -335,6 +348,7 @@ export function getMooniChipPromptHint({
   const ssotLines = [];
   if (
     resolvedChipId === MOONI_CHIP_IDS.PREP_FLIGHT ||
+    resolvedChipId === MOONI_CHIP_IDS.ACCESS_ORIGIN ||
     resolvedChipId === MOONI_CHIP_IDS.FROM_SEOUL ||
     resolvedChipId === MOONI_CHIP_IDS.FROM_BUSAN ||
     resolvedChipId === MOONI_CHIP_IDS.FROM_INCHEON ||

@@ -31,7 +31,7 @@ const LISTBOX_Z_INDEX = 225;
  * @param {{
  *   selectedIata?: string,
  *   disabled?: boolean,
- *   variant?: 'summary' | 'summary-header' | 'summary-panel' | 'bar' | 'bar-header',
+ *   variant?: 'summary' | 'summary-header' | 'summary-panel' | 'bar' | 'bar-header' | 'chat' | 'chat-header',
  *   browserOriginHint?: string | null,
  *   onSelect?: (iata: string) => void,
  *   onApplyBrowserOriginSuggestion?: () => void,
@@ -77,20 +77,35 @@ export default function FlightOriginSelector({
 
   const isBar = variant === 'bar' || variant === 'bar-header';
   const isBarHeader = variant === 'bar-header';
-  const isSummaryHeader = variant === 'summary-header';
-  const isSummaryPanel = variant === 'summary-panel';
+  const isChatHeader = variant === 'chat-header';
+  const isChat = variant === 'chat';
+  const isSummaryHeader = variant === 'summary-header' || isChatHeader;
+  const isSummaryPanel = variant === 'summary-panel' || isChat;
   const isSummary = variant === 'summary';
   const showSearchUi = !isBar || barExpanded;
 
   useEffect(() => {
+    if (!isChat || disabled) return undefined;
+    const t = window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
+    return () => window.clearTimeout(t);
+  }, [isChat, disabled]);
+
+  useEffect(() => {
     if (typeof window === 'undefined') return undefined;
+    // MOONi 모달(z-9999) 안에서는 portal listbox가 가려지므로 chat은 항상 inline
+    if (isChat) {
+      setUseInlineListbox(true);
+      return undefined;
+    }
     const mq = window.matchMedia('(hover: none) and (pointer: coarse)');
     const sync = () =>
       setUseInlineListbox(mq.matches && (variant === 'bar' || variant === 'summary-panel'));
     sync();
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
-  }, [variant]);
+  }, [variant, isChat]);
 
   useEffect(() => {
     if (!onSearchActiveChange || (!isSummaryPanel && !isBar)) return undefined;
