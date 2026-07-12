@@ -1,21 +1,21 @@
 {
-  "generatedAt": "2026-07-12T08:34:05.345Z",
+  "generatedAt": "2026-07-12T08:43:41.296Z",
   "source": "openflights-cache+heuristic",
   "originIata": "ICN",
   "routeLegCount": 67662,
   "graphNodeCount": 3409,
-  "spotCount": 185,
+  "spotCount": 244,
   "stats": {
     "total": 272,
-    "resolved": 185,
-    "heuristic": 37,
-    "heuristicSeed": 148,
+    "resolved": 244,
+    "heuristic": 48,
+    "heuristicSeed": 196,
     "direct": 0,
     "oneHop": 0,
     "twoHop": 0,
     "unresolved": 0,
     "noDestIata": 0,
-    "manualOverrideSkipped": 87
+    "manualOverrideSkipped": 28
   },
   "spots": {
     "santorini": {
@@ -31,6 +31,51 @@
         "JTR"
       ],
       "macroId": "ICN|south_europe",
+      "seedConfirmed": true
+    },
+    "cancun": {
+      "destIata": "CUN",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "CUN"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "maldives": {
+      "destIata": "MLE",
+      "hubIatas": [
+        "KUL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "KUL",
+        "MLE"
+      ],
+      "macroId": "ICN|south_asia",
+      "seedConfirmed": true
+    },
+    "seychelles": {
+      "destIata": "SEZ",
+      "hubIatas": [
+        "DXB"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "DXB",
+        "SEZ"
+      ],
+      "macroId": "ICN|africa",
       "seedConfirmed": true
     },
     "bermuda": {
@@ -145,6 +190,66 @@
       "macroId": "ICN|oceania",
       "seedConfirmed": true
     },
+    "banff-national-park": {
+      "destIata": "YYC",
+      "hubIatas": [
+        "YVR"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "YVR",
+        "YYC"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "iguazu-falls": {
+      "destIata": "IGR",
+      "hubIatas": [
+        "YVR"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "YVR",
+        "IGR"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
+    },
+    "iceland": {
+      "destIata": "KEF",
+      "hubIatas": [
+        "HEL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "HEL",
+        "KEF"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
+    "victoria-falls": {
+      "destIata": "VFA",
+      "hubIatas": [
+        "ADD"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ADD",
+        "VFA"
+      ],
+      "macroId": "ICN|africa",
+      "seedConfirmed": true
+    },
     "mount-fuji": {
       "destIata": "NRT",
       "hubIatas": [],
@@ -172,6 +277,18 @@
       "macroId": "ICN|oceania",
       "seedConfirmed": true
     },
+    "andaman-islands": {
+      "destIata": "IXZ",
+      "hubIatas": [],
+      "hops": 1,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "IXZ"
+      ],
+      "macroId": "ICN|south_asia",
+      "seedConfirmed": false
+    },
     "galapagos": {
       "destIata": "GPS",
       "hubIatas": [
@@ -186,6 +303,21 @@
       ],
       "macroId": "ICN|americas",
       "seedConfirmed": false
+    },
+    "mauritius": {
+      "destIata": "MRU",
+      "hubIatas": [
+        "DXB"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "DXB",
+        "MRU"
+      ],
+      "macroId": "ICN|africa",
+      "seedConfirmed": true
     },
     "christmas-island": {
       "destIata": "XCH",
@@ -241,6 +373,21 @@
       "macroId": "ICN|africa",
       "seedConfirmed": false
     },
+    "yellowknife": {
+      "destIata": "YZF",
+      "hubIatas": [
+        "YVR"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "YVR",
+        "YZF"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "new-york": {
       "destIata": "JFK",
       "hubIatas": [
@@ -252,6 +399,21 @@
         "ICN",
         "YVR",
         "JFK"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "rio-de-janeiro": {
+      "destIata": "GIG",
+      "hubIatas": [
+        "DXB"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "DXB",
+        "GIG"
       ],
       "macroId": "ICN|americas",
       "seedConfirmed": true
@@ -269,6 +431,23 @@
         "LHR"
       ],
       "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
+    "cape-town": {
+      "destIata": "CPT",
+      "hubIatas": [
+        "ADD",
+        "JNB"
+      ],
+      "hops": 3,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ADD",
+        "JNB",
+        "CPT"
+      ],
+      "macroId": "ICN|africa",
       "seedConfirmed": true
     },
     "tokyo": {
@@ -357,6 +536,36 @@
       "macroId": "ICN|middle_east",
       "seedConfirmed": true
     },
+    "nairobi": {
+      "destIata": "NBO",
+      "hubIatas": [
+        "ADD"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ADD",
+        "NBO"
+      ],
+      "macroId": "ICN|africa",
+      "seedConfirmed": true
+    },
+    "chicago": {
+      "destIata": "ORD",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ATL",
+        "ORD"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "buenos-aires": {
       "destIata": "EZE",
       "hubIatas": [
@@ -389,6 +598,36 @@
       "macroId": "ICN|oceania",
       "seedConfirmed": true
     },
+    "chichen-itza": {
+      "destIata": "CUN",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "CUN"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "machu-picchu": {
+      "destIata": "CUZ",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "LAX",
+        "CUZ"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
+    },
     "rome": {
       "destIata": "FCO",
       "hubIatas": [],
@@ -414,6 +653,23 @@
         "CAI"
       ],
       "macroId": "ICN|africa",
+      "seedConfirmed": true
+    },
+    "angkor-wat": {
+      "destIata": "SAI",
+      "hubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "hops": 3,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "HKG",
+        "BKK",
+        "SAI"
+      ],
+      "macroId": "ICN|southeast_asia",
       "seedConfirmed": true
     },
     "petra": {
@@ -524,6 +780,21 @@
       "macroId": "ICN|africa",
       "seedConfirmed": false
     },
+    "alaska": {
+      "destIata": "ANC",
+      "hubIatas": [
+        "SEA"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "SEA",
+        "ANC"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "amazon-rainforest": {
       "destIata": "MAO",
       "hubIatas": [
@@ -538,6 +809,35 @@
       ],
       "macroId": "ICN|americas",
       "seedConfirmed": false
+    },
+    "svalbard": {
+      "destIata": "LYR",
+      "hubIatas": [],
+      "hops": 1,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "LYR"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": false
+    },
+    "serengeti": {
+      "destIata": "JRO",
+      "hubIatas": [
+        "ADD",
+        "NBO"
+      ],
+      "hops": 3,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ADD",
+        "NBO",
+        "JRO"
+      ],
+      "macroId": "ICN|africa",
+      "seedConfirmed": true
     },
     "uluru": {
       "destIata": "AYQ",
@@ -820,6 +1120,66 @@
       "macroId": "ICN|south_asia",
       "seedConfirmed": false
     },
+    "san-francisco": {
+      "destIata": "SFO",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "SFO"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "las-vegas": {
+      "destIata": "LAS",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "LAS"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "toronto": {
+      "destIata": "YYZ",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ATL",
+        "YYZ"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "vancouver": {
+      "destIata": "YVR",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "YVR"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "auckland": {
       "destIata": "AKL",
       "hubIatas": [
@@ -858,6 +1218,21 @@
       ],
       "macroId": "ICN|southeast_asia",
       "seedConfirmed": true
+    },
+    "el-nido": {
+      "destIata": "ENI",
+      "hubIatas": [
+        "MNL"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "MNL",
+        "ENI"
+      ],
+      "macroId": "ICN|southeast_asia",
+      "seedConfirmed": false
     },
     "boracay": {
       "destIata": "KLO",
@@ -939,6 +1314,21 @@
       "macroId": "ICN|southeast_asia",
       "seedConfirmed": true
     },
+    "krabi": {
+      "destIata": "KBV",
+      "hubIatas": [
+        "BKK"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "BKK",
+        "KBV"
+      ],
+      "macroId": "ICN|southeast_asia",
+      "seedConfirmed": true
+    },
     "cebu": {
       "destIata": "CEB",
       "hubIatas": [],
@@ -965,6 +1355,51 @@
       ],
       "macroId": "ICN|southeast_asia",
       "seedConfirmed": true
+    },
+    "yosemite": {
+      "destIata": "SFO",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "SFO"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "grand-canyon": {
+      "destIata": "LAS",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "LAS"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "torres-del-paine": {
+      "destIata": "PUQ",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "LAX",
+        "PUQ"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
     },
     "milford-sound": {
       "destIata": "ZQN",
@@ -1074,6 +1509,36 @@
       "macroId": "ICN|north_europe",
       "seedConfirmed": true
     },
+    "copenhagen": {
+      "destIata": "CPH",
+      "hubIatas": [
+        "HEL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "HEL",
+        "CPH"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
+    "stockholm": {
+      "destIata": "ARN",
+      "hubIatas": [
+        "HEL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "HEL",
+        "ARN"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
     "jakarta": {
       "destIata": "CGK",
       "hubIatas": [],
@@ -1113,6 +1578,21 @@
         "HAN"
       ],
       "macroId": "ICN|southeast_asia",
+      "seedConfirmed": true
+    },
+    "seattle": {
+      "destIata": "SEA",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "SEA"
+      ],
+      "macroId": "ICN|americas",
       "seedConfirmed": true
     },
     "munich": {
@@ -1217,6 +1697,36 @@
       "macroId": "ICN|south_europe",
       "seedConfirmed": true
     },
+    "brussels": {
+      "destIata": "BRU",
+      "hubIatas": [
+        "FRA"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "FRA",
+        "BRU"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
+    "oslo": {
+      "destIata": "OSL",
+      "hubIatas": [
+        "HEL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "HEL",
+        "OSL"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
     "zurich": {
       "destIata": "ZRH",
       "hubIatas": [],
@@ -1242,6 +1752,36 @@
         "GVA"
       ],
       "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
+    "washington-dc": {
+      "destIata": "IAD",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ATL",
+        "IAD"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "boston": {
+      "destIata": "BOS",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ATL",
+        "BOS"
+      ],
+      "macroId": "ICN|americas",
       "seedConfirmed": true
     },
     "miami": {
@@ -1276,6 +1816,38 @@
       "macroId": "ICN|americas",
       "seedConfirmed": true
     },
+    "angkor-thom": {
+      "destIata": "SAI",
+      "hubIatas": [
+        "HKG",
+        "BKK"
+      ],
+      "hops": 3,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "HKG",
+        "BKK",
+        "SAI"
+      ],
+      "macroId": "ICN|southeast_asia",
+      "seedConfirmed": true
+    },
+    "borobudur": {
+      "destIata": "YIA",
+      "hubIatas": [
+        "SIN"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "SIN",
+        "YIA"
+      ],
+      "macroId": "ICN|southeast_asia",
+      "seedConfirmed": true
+    },
     "ayutthaya": {
       "destIata": "BKK",
       "hubIatas": [],
@@ -1284,6 +1856,21 @@
       "path": [
         "ICN",
         "BKK"
+      ],
+      "macroId": "ICN|southeast_asia",
+      "seedConfirmed": true
+    },
+    "luang-prabang": {
+      "destIata": "LPQ",
+      "hubIatas": [
+        "BKK"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "BKK",
+        "LPQ"
       ],
       "macroId": "ICN|southeast_asia",
       "seedConfirmed": true
@@ -1358,6 +1945,21 @@
       ],
       "macroId": "ICN|south_asia",
       "seedConfirmed": false
+    },
+    "hampi": {
+      "destIata": "BLR",
+      "hubIatas": [
+        "KUL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "KUL",
+        "BLR"
+      ],
+      "macroId": "ICN|south_asia",
+      "seedConfirmed": true
     },
     "great-wall": {
       "destIata": "PEK",
@@ -1465,6 +2067,23 @@
       "macroId": "ICN|middle_east",
       "seedConfirmed": true
     },
+    "luxor": {
+      "destIata": "LXR",
+      "hubIatas": [
+        "DXB",
+        "CAI"
+      ],
+      "hops": 3,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "DXB",
+        "CAI",
+        "LXR"
+      ],
+      "macroId": "ICN|africa",
+      "seedConfirmed": true
+    },
     "fez": {
       "destIata": "FEZ",
       "hubIatas": [
@@ -1495,6 +2114,53 @@
       "macroId": "ICN|africa",
       "seedConfirmed": true
     },
+    "lalibela": {
+      "destIata": "LLI",
+      "hubIatas": [
+        "DXB",
+        "ADD"
+      ],
+      "hops": 3,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "DXB",
+        "ADD",
+        "LLI"
+      ],
+      "macroId": "ICN|africa",
+      "seedConfirmed": true
+    },
+    "cusco": {
+      "destIata": "CUZ",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "LAX",
+        "CUZ"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
+    },
+    "nazca-lines": {
+      "destIata": "LIM",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "LIM"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "santiago-de-compostela": {
       "destIata": "SCQ",
       "hubIatas": [
@@ -1520,6 +2186,35 @@
         "KTM"
       ],
       "macroId": "ICN|south_asia",
+      "seedConfirmed": true
+    },
+    "annapurna-circuit": {
+      "destIata": "KTM",
+      "hubIatas": [],
+      "hops": 1,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "KTM"
+      ],
+      "macroId": "ICN|south_asia",
+      "seedConfirmed": true
+    },
+    "kilimanjaro": {
+      "destIata": "JRO",
+      "hubIatas": [
+        "ADD",
+        "NBO"
+      ],
+      "hops": 3,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ADD",
+        "NBO",
+        "JRO"
+      ],
+      "macroId": "ICN|africa",
       "seedConfirmed": true
     },
     "mont-blanc": {
@@ -1590,6 +2285,55 @@
       ],
       "macroId": "ICN|africa",
       "seedConfirmed": true
+    },
+    "costa-rica": {
+      "destIata": "SJO",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "SJO"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "inca-trail": {
+      "destIata": "CUZ",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "LAX",
+        "CUZ"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
+    },
+    "peninsula-valdes": {
+      "destIata": "PMY",
+      "hubIatas": [
+        "LAX",
+        "EZE",
+        "AEP"
+      ],
+      "hops": 4,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "LAX",
+        "EZE",
+        "AEP",
+        "PMY"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
     },
     "ibiza": {
       "destIata": "IBZ",
@@ -1692,6 +2436,21 @@
       "macroId": "ICN|southeast_asia",
       "seedConfirmed": true
     },
+    "rocky-mountains": {
+      "destIata": "YYC",
+      "hubIatas": [
+        "YVR"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "YVR",
+        "YYC"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "wadi-rum": {
       "destIata": "AMM",
       "hubIatas": [
@@ -1775,6 +2534,21 @@
       ],
       "macroId": "ICN|americas",
       "seedConfirmed": false
+    },
+    "denali": {
+      "destIata": "ANC",
+      "hubIatas": [
+        "SEA"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "SEA",
+        "ANC"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
     },
     "carstensz-pyramid": {
       "destIata": "TIM",
@@ -2030,6 +2804,21 @@
       "macroId": "ICN|south_asia",
       "seedConfirmed": true
     },
+    "faroe-islands": {
+      "destIata": "FAE",
+      "hubIatas": [
+        "CPH"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "CPH",
+        "FAE"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
     "cape-verde": {
       "destIata": "SID",
       "hubIatas": [
@@ -2170,6 +2959,21 @@
       "path": [
         "ICN",
         "HEL"
+      ],
+      "macroId": "ICN|north_europe",
+      "seedConfirmed": true
+    },
+    "reykjavik": {
+      "destIata": "KEF",
+      "hubIatas": [
+        "HEL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "HEL",
+        "KEF"
       ],
       "macroId": "ICN|north_europe",
       "seedConfirmed": true
@@ -2345,6 +3149,36 @@
       "macroId": "ICN|north_europe",
       "seedConfirmed": true
     },
+    "philadelphia": {
+      "destIata": "PHL",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ATL",
+        "PHL"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
+    "san-diego": {
+      "destIata": "SAN",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "LAX",
+        "SAN"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "gold-coast": {
       "destIata": "OOL",
       "hubIatas": [
@@ -2408,6 +3242,21 @@
       "macroId": "ICN|southeast_asia",
       "seedConfirmed": true
     },
+    "el-calafate": {
+      "destIata": "FTE",
+      "hubIatas": [
+        "LAX"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "LAX",
+        "FTE"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
+    },
     "hamburg": {
       "destIata": "HAM",
       "hubIatas": [
@@ -2470,6 +3319,21 @@
       "macroId": "ICN|oceania",
       "seedConfirmed": true
     },
+    "minneapolis": {
+      "destIata": "MSP",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ATL",
+        "MSP"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": true
+    },
     "perth": {
       "destIata": "PER",
       "hubIatas": [
@@ -2483,6 +3347,21 @@
         "PER"
       ],
       "macroId": "ICN|oceania",
+      "seedConfirmed": true
+    },
+    "bahamas": {
+      "destIata": "NAS",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic-seed",
+      "path": [
+        "ICN",
+        "ATL",
+        "NAS"
+      ],
+      "macroId": "ICN|americas",
       "seedConfirmed": true
     },
     "sri-jayawardenapura": {
@@ -2499,6 +3378,21 @@
       ],
       "macroId": "ICN|south_asia",
       "seedConfirmed": true
+    },
+    "venezuela": {
+      "destIata": "CCS",
+      "hubIatas": [
+        "ATL"
+      ],
+      "hops": 2,
+      "source": "heuristic",
+      "path": [
+        "ICN",
+        "ATL",
+        "CCS"
+      ],
+      "macroId": "ICN|americas",
+      "seedConfirmed": false
     },
     "havana": {
       "destIata": "HAV",

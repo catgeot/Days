@@ -80,13 +80,14 @@ async function main() {
       expectPreview: true,
     },
     {
-      id: 'ssot-override-hampi',
-      label: 'SSOT override — 함피(DEL hub)',
+      id: 'ssot-heuristic-hampi',
+      label: 'S5 heuristic — 함피(hub override 제거 → ICN→BLR)',
       location: loadTravelSpotBySlug('hampi'),
       originIata: 'ICN',
       expectEdge: false,
       expectPreview: true,
-      expectManualOverride: true,
+      expectManualOverride: false,
+      expectRouteIatas: ['ICN', 'BLR'],
     },
     {
       id: 'uiplace-sync-tahaa',
@@ -406,8 +407,11 @@ async function main() {
     if (testCase.expectPreview != null && preview !== testCase.expectPreview) {
       checks.push(`preview: expected ${testCase.expectPreview}, got ${preview}`);
     }
-    if (testCase.expectManualOverride && !manualOverride) {
+    if (testCase.expectManualOverride === true && !manualOverride) {
       checks.push('expected manual hub override');
+    }
+    if (testCase.expectManualOverride === false && manualOverride) {
+      checks.push('expected no manual hub override (S5 heuristic)');
     }
     if (testCase.expectRouteIatas) {
       const actual = summary?.routeIatas ?? [];

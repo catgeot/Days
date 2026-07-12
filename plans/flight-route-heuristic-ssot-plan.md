@@ -1,7 +1,7 @@
 # 항공 경로 개선 플랜 — 규칙 SSOT + GATN 얇은 seed
 
 **작성**: 2026-06-30  
-**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 ✅** · **S1~S4 ✅** (`2026-07-12`) · **다음 = S5 Phase 5 override 축소**
+**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 ✅** · **S1~S5 ✅** (`2026-07-12`) · **다음 = Phase 6 QA·릴리스**
 **관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-07-12-project-log.md`](./2026-07-12-project-log.md)
 
 ## 배경·목표
@@ -233,14 +233,16 @@ override > heuristic(+seed) > graph > corridor
 
 ## Phase 5 — Override 축소·전수 정리
 
+**상태**: ✅ S5 (`2026-07-12`)
+
 **입력**: Phase 2 diff + graph-direct-review 78건 + hub-override 76건
 
 **작업**
-1. `heuristic_wins` slug — overrides `flightRouteHubIatas` **제거** (macro/heuristic으로 대체)
-2. graph-direct 오탐 패턴 → macro template 또는 geoRule 추가 (예: Africa→ADD, 소형공항 direct 금지)
-3. **L3 유지** 대상만 overrides에 남김: 남태평양 연쇄, uiPlace, explicitDirect(ICN 전용), Trip 분리 IATA
+1. `heuristic_wins` slug — overrides `flightRouteHubIatas` **제거** (macro/heuristic으로 대체) ✅ ~60건
+2. graph-direct 오탐 패턴 → macro/heuristic 위임 (africa conflict 55는 **수동 큐**, bake 금지) ✅
+3. **L3 유지**: 남태평양 연쇄 · uiPlace/Trip 분리 · explicitDirect · moscow IST · 원격 특수 ✅
 
-**목표**: hub-override **76 → ~25** (섬·특수만)
+**결과**: JSON spots hub-override **25** · explicit-direct **3** · smoke **15/15**
 
 **금지**: JSON `graphFlightRouteHubIatas`만 단독 수정 — [`overrides.mjs`](scripts/data/travel-spot-airport-overrides.mjs) → `generate:airports` 절차 준수
 
@@ -268,7 +270,7 @@ override > heuristic(+seed) > graph > corridor
 | **S2** | Phase 2 diff audit | diff MD·우선순위 slug 목록 | ✅ 80.8% |
 | **S3** | Phase 3 GATN seed + `generate:flight-route-seed` | gateway-seed.json | ✅ 37·5660 |
 | **S4** | Phase 4 runtime/precompute 통합 | smoke 15/15 · Edge client fallback | ✅ |
-| **S5** | Phase 5 override 축소 + Phase 6 QA | overrides ~25·릴리스 노트 초안 | ← 다음 |
+| **S5** | Phase 5 override 축소 + Phase 6 QA | overrides ~25·릴리스 노트 초안 | Phase 5 ✅ · Phase 6 ← 다음 |
 
 ---
 
@@ -345,21 +347,20 @@ OpenFlights(ODbL)만 쓸 때보다 **출처 표기 의무는 늘어납니다.** 
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**상태**: S4 Phase 4 runtime/precompute ✅ · **다음 = S5 Phase 5 override 축소**
+**상태**: S5 Phase 5 override 축소 ✅ (hub-override **25**) · **다음 = Phase 6 QA·릴리스 노트**
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 플랜 Phase 5 · 일지 `2026-07-12` 「Heuristic S4」 | `travelSpots.js` 전체 · timeline cinema bake |
-| `.ai-context.md` 6절 · heuristic-graph-diff (africa 55) | africa conflict 자동 bake · seed reject-only |
-| overrides.mjs → generate:airports | JSON `graphFlightRouteHubIatas`만 단독 수정 |
+| 본 플랜 Phase 6 · 일지 `2026-07-12` 「Heuristic S5」 | `travelSpots.js` 전체 · timeline cinema bake |
+| `.ai-context.md` 6절 · conflict 55 | africa conflict 자동 bake · seed reject-only |
+| overrides L3(태평양·Trip·moscow) | JSON `graphFlightRouteHubIatas`만 단독 수정 |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/flight-route-heuristic-ssot-plan.md @plans/2026-07-12-project-log.md
 
-S4 ✅ (override > heuristic(+seed) > graph > corridor). 다음 = S5 Phase 5 override 축소.
-heuristic_wins slug에서 flightRouteHubIatas 제거 · hub-override 76→~25.
-africa graph_wins·conflict 55는 수동 큐 · timeline auto-bake 금지.
-smoke:flight-route-baseline 15/15 · overrides.mjs → generate:airports 준수.
+S5 ✅ hub-override 25. 다음 = Phase 6 QA·릴리스 노트.
+africa conflict 55 수동 큐 · timeline auto-bake 금지.
+smoke:flight-route-baseline 15/15 · 브라우저 샘플 QA 후 releaseNotes 합의.
 ```

@@ -37,7 +37,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['SJO', 'LIR'],
     preferredLinkIata: 'SJO',
     kind: 'multi',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     rationale: 'ICN→LAX→SJO · 태평양 waypoint로 시베리아 bbox arc 회피',
@@ -48,30 +47,27 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   cancun: {
     primaryIatas: ['CUN'],
     preferredLinkIata: 'CUN',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→CUN(미국 경유) · Atlantic DXB corridor 오적용 · 태평양 waypoint',
+    rationale: 'ICN→LAX→CUN(미국 경유) · Atlantic DXB corridor 오적용 · 태평양 waypoint'
   },
   'chichen-itza': {
     primaryIatas: ['CUN'],
     preferredLinkIata: 'CUN',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: '칸쿤(CUN) 국제선 후 육로 · ICN→LAX→CUN 미국 경유(플래너 STEP)',
+    rationale: '칸쿤(CUN) 국제선 후 육로 · ICN→LAX→CUN 미국 경유(플래너 STEP)'
   },
   'annapurna-circuit': {
     primaryIatas: ['KTM', 'PKR'],
     preferredLinkIata: 'KTM',
     tripFlightArrivalIata: 'KTM',
-    flightRouteHubIatas: ['BKK'],
     kind: 'multi',
     confidence: 'high',
     rationale: '국제선 카트만두 트리부반(KTM) 도착 — 베시사하르 육로·서킷 준비; PKR은 국내선·대안',
     searchHintIatas: ['KTM', 'PKR'],
     bannerNote:
-      '안나푸르나 서킷은 보통 인천→카트만두 트리부반국제공항(KTM) 국제선 도착 후 시내 준비·베시사하르(Besisahar) 육로로 서킷에 들어갑니다. 포카라(PKR) 경유·국내선으로 접근하는 일정도 있습니다. 항공권·Trip 검색 도착 코드는 KTM을 사용하세요.',
+      '안나푸르나 서킷은 보통 인천→카트만두 트리부반국제공항(KTM) 국제선 도착 후 시내 준비·베시사하르(Besisahar) 육로로 서킷에 들어갑니다. 포카라(PKR) 경유·국내선으로 접근하는 일정도 있습니다. 항공권·Trip 검색 도착 코드는 KTM을 사용하세요.'
   },
   bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },
   bled: {
@@ -117,17 +113,15 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['LAS', 'FLG'],
     preferredLinkIata: 'LAS',
     kind: 'multi',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   hampi: {
     primaryIatas: ['BLR'],
     preferredLinkIata: 'BLR',
-    flightRouteHubIatas: ['DEL'],
     confidence: 'high',
-    rationale: '방갈로르(BLR) · ICN→델리(DEL) 경유 — graph AUH 오탐 보정',
+    rationale: '방갈로르(BLR) · ICN→델리(DEL) 경유 — graph AUH 오탐 보정'
   },
   meteora: { primaryIatas: ['SKG'], preferredLinkIata: 'SKG', confidence: 'high', rationale: '테살로니키 공항' },
   miyakojima: {
@@ -143,12 +137,11 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   borobudur: {
     primaryIatas: ['YIA'],
     preferredLinkIata: 'YIA',
-    flightRouteHubIatas: ['CGK'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→CGK→YIA · 자카르타 경유 국내선 연결(발리 DPS 경유도 흔함)',
     bannerNote:
-      '보로부두르·마겔랑 권역은 보통 인천→자카르타(CGK) 또는 발리(DPS) 경유 후 족자카르타(YIA) 국내선 도착이 일반적입니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.',
+      '보로부두르·마겔랑 권역은 보통 인천→자카르타(CGK) 또는 발리(DPS) 경유 후 족자카르타(YIA) 국내선 도착이 일반적입니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.'
   },
   rarotonga: {
     primaryIatas: ['RAR'],
@@ -199,19 +192,17 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'san-diego': {
     primaryIatas: ['SAN', 'LAX', 'SFO'],
     preferredLinkIata: 'SAN',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'ICN→LAX 국제선 후 SAN(국내선·Amtrak) · 태평양 waypoint로 시베리아 직통 arc 회피',
+    rationale: 'ICN→LAX 국제선 후 SAN(국내선·Amtrak) · 태평양 waypoint로 시베리아 직통 arc 회피'
   },
   seattle: {
     primaryIatas: ['SEA'],
     preferredLinkIata: 'SEA',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→SEA · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→LAX→SEA · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   'bora-bora': {
     primaryIatas: ['BOB', 'PPT'],
@@ -241,7 +232,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'el-nido': {
     primaryIatas: ['ENI', 'PPS', 'MNL'],
     preferredLinkIata: 'ENI',
-    flightRouteHubIatas: ['MNL'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→MNL→ENI · AirSWIFT 국내선(추천 루트)',
@@ -272,10 +262,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'nazca-lines': {
     primaryIatas: ['LIM'],
     preferredLinkIata: 'LIM',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→LIM · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→LIM · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   fez: { primaryIatas: ['FEZ'], preferredLinkIata: 'FEZ', confidence: 'high', rationale: '페스 사이스 공항' },
   'abu-simbel': {
@@ -294,10 +283,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'faroe-islands': {
     primaryIatas: ['FAE'],
     preferredLinkIata: 'FAE',
-    flightRouteHubIatas: ['CPH'],
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
-    rationale: '바가르 FAE · 플래너 ICN→유럽(코펜하겐 CPH) 환승→FAE · ICN↔CPH 직항 long-arc(지구 한 바퀴) 회피 waypoint',
+    rationale: '바가르 FAE · 플래너 ICN→유럽(코펜하겐 CPH) 환승→FAE · ICN↔CPH 직항 long-arc(지구 한 바퀴) 회피 waypoint'
   },
   'fernando-de-noronha': {
     primaryIatas: ['FEN', 'REC', 'NAT'],
@@ -339,7 +327,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'torres-del-paine': {
     primaryIatas: ['PUQ'],
     preferredLinkIata: 'PUQ',
-    flightRouteHubIatas: ['LAX', 'SCL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     rationale: 'ICN→LAX→SCL→PUQ · 미국 경유 산티아고 국제선 후 파타고니아 국내선 · 태평양 waypoint',
@@ -356,44 +343,39 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   philadelphia: {
     primaryIatas: ['PHL'],
     preferredLinkIata: 'PHL',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→PHL(툴킷 추천 경로 1) · 예시 3-hub(JFK/ATL/DTW) 오탐 제거 · 태평양 waypoint',
+    rationale: 'ICN→ATL→PHL(툴킷 추천 경로 1) · 예시 3-hub(JFK/ATL/DTW) 오탐 제거 · 태평양 waypoint'
   },
   persepolis: { primaryIatas: ['SYZ'], preferredLinkIata: 'SYZ', confidence: 'high', rationale: '시라즈 공항' },
   qingdao: { primaryIatas: ['TAO'], preferredLinkIata: 'TAO', confidence: 'high', rationale: '칭다오 공항' },
   'banff-national-park': {
     primaryIatas: ['YYC'],
     preferredLinkIata: 'YYC',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   'luang-prabang': {
     primaryIatas: ['LPQ'],
     preferredLinkIata: 'LPQ',
-    flightRouteHubIatas: ['BKK'],
     confidence: 'high',
-    rationale: 'ICN→BKK→LPQ · toolkit 3-hub(VTE/BKK/HAN) 오탐 보정',
+    rationale: 'ICN→BKK→LPQ · toolkit 3-hub(VTE/BKK/HAN) 오탐 보정'
   },
   lhasa: { primaryIatas: ['LXA'], preferredLinkIata: 'LXA', confidence: 'high', rationale: '라싸 공항' },
   zhangjiajie: { primaryIatas: ['DYG'], preferredLinkIata: 'DYG', confidence: 'high', rationale: '장가계 공항' },
   'andaman-islands': {
     primaryIatas: ['IXZ'],
     preferredLinkIata: 'IXZ',
-    flightRouteHubIatas: ['DEL'],
     confidence: 'high',
-    rationale: '포트블레어 IXZ · ICN→델리(DEL)→국내선 IXZ · graph AUH 오탐 보정',
+    rationale: '포트블레어 IXZ · ICN→델리(DEL)→국내선 IXZ · graph AUH 오탐 보정'
   },
   'sahara-desert': { primaryIatas: ['RAK'], preferredLinkIata: 'RAK', confidence: 'high', rationale: '마라케시·메르주가 관문' },
   'iguazu-falls': {
     primaryIatas: ['IGR'],
     preferredLinkIata: 'IGR',
-    flightRouteHubIatas: ['DXB', 'GRU'],
     confidence: 'high',
-    rationale: 'ICN→DXB→GRU→IGR · 플래너 중동→GRU→국내선(미국 대안 있을 때 DXB 우선)',
+    rationale: 'ICN→DXB→GRU→IGR · 플래너 중동→GRU→국내선(미국 대안 있을 때 DXB 우선)'
   },
   'uyuni-salt-flat': {
     primaryIatas: ['LPB', 'UYU'],
@@ -409,22 +391,20 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'victoria-falls': {
     primaryIatas: ['VFA'],
     preferredLinkIata: 'VFA',
-    flightRouteHubIatas: ['ADD', 'JNB'],
     confidence: 'high',
-    rationale: 'ICN→ADD→JNB→VFA · graph AMS→HRE 우회 제거 · JNB 경유 대안은 bannerNote',
+    rationale: 'ICN→ADD→JNB→VFA · graph AMS→HRE 우회 제거 · JNB 경유 대안은 bannerNote'
   },
   'raja-ampat': { primaryIatas: ['SOQ'], preferredLinkIata: 'SOQ', confidence: 'high', rationale: '소롱 공항' },
   'peninsula-valdes': {
     primaryIatas: ['EZE', 'AEP', 'PMY', 'REL'],
     preferredLinkIata: 'PMY',
-    flightRouteHubIatas: ['LAX', 'EZE', 'AEP'],
     flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→LAX→EZE 국제선 → AEP→PMY·REL 국내선 · 발데스 반도',
     searchHintIatas: ['PMY', 'REL'],
     bannerNote:
-      '발데스 반도는 인천→미국·유럽 경유(약 14~18시간) 후 부에노스아이레스 국제공항(EZE) 도착 → 공항 간 이동(약 1.5시간) 후 국내선 출발 공항(AEP)에서 트렐레우(REL) 또는 푸에르토마드린(PMY) 국내선(약 2시간) — 렌터카 수령 후 반도 진입. Trip.com 등 항공권·제휴 링크는 PMY·REL 최종 도착 기준 — 국제선·EZE 경유 일정이면 티켓의 최종 도착 코드를 확인해 주세요.',
+      '발데스 반도는 인천→미국·유럽 경유(약 14~18시간) 후 부에노스아이레스 국제공항(EZE) 도착 → 공항 간 이동(약 1.5시간) 후 국내선 출발 공항(AEP)에서 트렐레우(REL) 또는 푸에르토마드린(PMY) 국내선(약 2시간) — 렌터카 수령 후 반도 진입. Trip.com 등 항공권·제휴 링크는 PMY·REL 최종 도착 기준 — 국제선·EZE 경유 일정이면 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   socotra: {
     primaryIatas: ['SCT', 'AUH'],
@@ -439,32 +419,28 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   svalbard: {
     primaryIatas: ['LYR'],
     preferredLinkIata: 'LYR',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→LYR · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→LYR · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   madagascar: { primaryIatas: ['TNR'], preferredLinkIata: 'TNR', confidence: 'high', rationale: '안타ananarivo 국제공항' },
   mauritius: {
     primaryIatas: ['MRU'],
     preferredLinkIata: 'MRU',
-    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
-    rationale: '모리셔스 SSR 국제공항 · 시네마 ICN→두바이(DXB)→MRU (에미레이트 등 중동 경유)',
+    rationale: '모리셔스 SSR 국제공항 · 시네마 ICN→두바이(DXB)→MRU (에미레이트 등 중동 경유)'
   },
   maldives: {
     primaryIatas: ['MLE'],
     preferredLinkIata: 'MLE',
-    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
-    rationale: '말레 MLE 국제공항 · 시네마 ICN→두바이(DXB)→MLE (에미레이트 등 중동 경유)',
+    rationale: '말레 MLE 국제공항 · 시네마 ICN→두바이(DXB)→MLE (에미레이트 등 중동 경유)'
   },
   seychelles: {
     primaryIatas: ['SEZ'],
     preferredLinkIata: 'SEZ',
-    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
-    rationale: '마헤 SEZ 국제공항 · 시네마 ICN→두바이(DXB)→SEZ (에미레이트 등 중동 경유)',
+    rationale: '마헤 SEZ 국제공항 · 시네마 ICN→두바이(DXB)→SEZ (에미레이트 등 중동 경유)'
   },
   'marshall-islands': {
     primaryIatas: ['MAJ', 'GUM', 'HNL'],
@@ -508,7 +484,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   lalibela: {
     primaryIatas: ['LLI', 'ADD'],
     preferredLinkIata: 'LLI',
-    flightRouteHubIatas: ['ADD'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→ADD→LLI · 에티오피아항공 국제선 후 국내선',
@@ -527,19 +502,17 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   iceland: {
     primaryIatas: ['KEF'],
     preferredLinkIata: 'KEF',
-    flightRouteHubIatas: ['MUC'],
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint',
     bannerNote:
-      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장'
   },
   krabi: {
     primaryIatas: ['KBV'],
     preferredLinkIata: 'KBV',
-    flightRouteHubIatas: ['BKK'],
     confidence: 'high',
-    rationale: 'ICN→BKK→KBV · toolkit BKK+DMK 중복 hub 오탐 보정',
+    rationale: 'ICN→BKK→KBV · toolkit BKK+DMK 중복 hub 오탐 보정'
   },
   phuket: {
     primaryIatas: ['HKT'],
@@ -550,12 +523,11 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   reykjavik: {
     primaryIatas: ['KEF'],
     preferredLinkIata: 'KEF',
-    flightRouteHubIatas: ['MUC'],
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '케플라비크 KEF — iceland와 동일 · 플래너 유럽 허브(뮌헨) 경유 시네마',
     bannerNote:
-      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장'
   },
   madeira: {
     primaryIatas: ['FNC'],
@@ -578,9 +550,8 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   novosibirsk: {
     primaryIatas: ['OVB'],
     preferredLinkIata: 'OVB',
-    flightRouteHubIatas: ['PEK'],
     confidence: 'high',
-    rationale: '톨마체프(OVB) · ICN→PEK→OVB · citiesData·시베리아 관문(yakutsk 패턴)',
+    rationale: '톨마체프(OVB) · ICN→PEK→OVB · citiesData·시베리아 관문(yakutsk 패턴)'
   },
   'alice-springs': {
     primaryIatas: ['ASP'],
@@ -597,7 +568,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'el-calafate': {
     primaryIatas: ['FTE'],
     preferredLinkIata: 'FTE',
-    flightRouteHubIatas: ['LAX', 'EZE'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     rationale: 'ICN→LAX→EZE→FTE · 미국 경유 부에노스아이레스 국제선 후 파타고니아 국내선 · 태평양 waypoint',
@@ -608,34 +578,31 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
     kind: 'multi',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   'machu-picchu': {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
     kind: 'multi',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   'inca-trail': {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
     kind: 'multi',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   patagonia: {
     primaryIatas: ['BRC', 'EZE'],
@@ -649,10 +616,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   yellowknife: {
     primaryIatas: ['YZF'],
     preferredLinkIata: 'YZF',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→YZF · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→LAX→YZF · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   dunhuang: { primaryIatas: ['DNH'], preferredLinkIata: 'DNH', confidence: 'high', rationale: '둔황 공항' },
   uluru: { primaryIatas: ['AYQ'], preferredLinkIata: 'AYQ', confidence: 'high', rationale: '울루루 에어스' },
@@ -665,7 +631,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     flightRouteHubIatas: ['IST'],
     flightRouteWaypoints: [[125, 33]],
     confidence: 'high',
-    rationale: 'ICN→이스탄불(IST)→SVO · DXB arc 생략 · 러시아 목적지 L3 예외',
+    rationale: 'ICN→이스탄불(IST)→SVO · DXB arc 생략 · 러시아 목적지 L3 예외'
   },
   seoul: {
     primaryIatas: ['ICN', 'GMP'],
@@ -690,7 +656,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   kilimanjaro: {
     primaryIatas: ['JRO', 'NBO'],
     preferredLinkIata: 'JRO',
-    flightRouteHubIatas: ['ADD'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→ADD→JRO · 에티오피아항공 등 동아프리카 관문(도하·NBO 경유도 흔함)',
@@ -714,20 +679,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   brussels: {
     primaryIatas: ['BRU'],
     preferredLinkIata: 'BRU',
-    flightRouteHubIatas: ['FRA'],
     confidence: 'high',
     rationale: '브뤼셀 BRU · ICN→프랑크푸르트(FRA) 루프트한자 경유 — 추천 취항사 대표 루트',
     bannerNote:
-      '항공권 예약 팁\n· 직항: 없음(인천↔브뤼셀 정기 직항 없음, 1회 경유 필수) · 총 15~18시간\n· 추천: 루프트한자(프랑크푸르트·뮌헨), 에어프랑스(파리), 카타르(도하), KLM(암스테르담)\n· 절감 팁: 파리(CDG)·암스테르담(AMS) 직항 후 유로스타(Eurostar)·탈리스 고속열차로 브뤼셀 남역(약 1시간 30분) — 시간·비용 효율적',
+      '항공권 예약 팁\n· 직항: 없음(인천↔브뤼셀 정기 직항 없음, 1회 경유 필수) · 총 15~18시간\n· 추천: 루프트한자(프랑크푸르트·뮌헨), 에어프랑스(파리), 카타르(도하), KLM(암스테르담)\n· 절감 팁: 파리(CDG)·암스테르담(AMS) 직항 후 유로스타(Eurostar)·탈리스 고속열차로 브뤼셀 남역(약 1시간 30분) — 시간·비용 효율적'
   },
   oslo: {
     primaryIatas: ['OSL'],
     preferredLinkIata: 'OSL',
-    flightRouteHubIatas: ['HEL'],
     confidence: 'high',
     rationale: '가르데르모엔 OSL · ICN→헬싱키(HEL) 핀에어 경유 — 플래너·시네마 최적 루트',
     bannerNote:
-      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: 카타르(도하), 루프트한자(뮌헨·프랑크푸르트), KLM(암스테르담)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: 카타르(도하), 루프트한자(뮌헨·프랑크푸르트), KLM(암스테르담)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장'
   },
   helsinki: {
     primaryIatas: ['HEL'],
@@ -740,49 +703,43 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   stockholm: {
     primaryIatas: ['ARN'],
     preferredLinkIata: 'ARN',
-    flightRouteHubIatas: ['HEL'],
     confidence: 'high',
     rationale: '알란다 ARN · ICN→헬싱키(HEL) 핀에어 경유 — 오슬로와 동일 패턴',
     bannerNote:
-      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장'
   },
   copenhagen: {
     primaryIatas: ['CPH'],
     preferredLinkIata: 'CPH',
-    flightRouteHubIatas: ['HEL'],
     confidence: 'high',
     rationale: '코펜하겐 CPH · ICN→헬싱키(HEL) 핀에어 경유 — 북유럽 1회 경유 대표 루트',
     bannerNote:
-      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장',
+      '항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장'
   },
   'cape-town': {
     primaryIatas: ['CPT'],
     preferredLinkIata: 'CPT',
-    flightRouteHubIatas: ['ADD'],
     confidence: 'high',
-    rationale: '케이프타운(CPT) · ICN→ADD→CPT · 나이로비·킬리만자로와 동일 동아프리카 관문',
+    rationale: '케이프타운(CPT) · ICN→ADD→CPT · 나이로비·킬리만자로와 동일 동아프리카 관문'
   },
   nairobi: {
     primaryIatas: ['NBO'],
     preferredLinkIata: 'NBO',
-    flightRouteHubIatas: ['ADD'],
     confidence: 'high',
-    rationale: 'ICN→ADD→NBO · 에티오피아항공 등 동아프리카 관문(도하·두바이 경유도 흔함)',
+    rationale: 'ICN→ADD→NBO · 에티오피아항공 등 동아프리카 관문(도하·두바이 경유도 흔함)'
   },
   luxor: {
     primaryIatas: ['CAI', 'LXR'],
     preferredLinkIata: 'LXR',
-    flightRouteHubIatas: ['CAI'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→CAI·DOH 국제선 경유 → CAI→LXR 국내선',
     bannerNote:
-      '룩소르는 인천→카이로(CAI) 또는 도하(DOH) 국제선 경유(약 11~12시간·2~5시간 대기) 후, 카이로→룩소르(LXR) 국내선(약 1시간·CAI 기준) 또는 도하→룩소르(약 3.5시간)로 이어집니다. Trip.com 등 항공권 검색·제휴 링크는 룩소르(LXR) 기준 — 경유·국내선 포함 일정이면 최종 도착 코드 LXR로 맞춰 주세요.',
+      '룩소르는 인천→카이로(CAI) 또는 도하(DOH) 국제선 경유(약 11~12시간·2~5시간 대기) 후, 카이로→룩소르(LXR) 국내선(약 1시간·CAI 기준) 또는 도하→룩소르(약 3.5시간)로 이어집니다. Trip.com 등 항공권 검색·제휴 링크는 룩소르(LXR) 기준 — 경유·국내선 포함 일정이면 최종 도착 코드 LXR로 맞춰 주세요.'
   },
   serengeti: {
     primaryIatas: ['JRO', 'NBO'],
     preferredLinkIata: 'JRO',
-    flightRouteHubIatas: ['ADD'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→ADD→JRO · 북부 탄자니아 사파리 관문(나이로비·도하 경유도 흔함)'
@@ -879,21 +836,19 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   denali: {
     primaryIatas: ['SEA', 'ANC'],
     preferredLinkIata: 'ANC',
-    flightRouteHubIatas: ['SEA'],
     flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   yakutsk: { primaryIatas: ['YKS'], preferredLinkIata: 'YKS', confidence: 'high', rationale: '야쿠츠크 공항' },
   alaska: {
     primaryIatas: ['SEA', 'ANC'],
     preferredLinkIata: 'ANC',
-    flightRouteHubIatas: ['SEA'],
     flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→SEA→ANC · 시애틀 허브 경유 · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   'st-helena': {
     primaryIatas: ['HLE', 'JNB'],
@@ -926,7 +881,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'angkor-wat': {
     primaryIatas: ['SAI'],
     preferredLinkIata: 'SAI',
-    flightRouteHubIatas: ['SGN'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→SGN→SAI · 베트남항공 등 호치민 경유가 일반적(직항은 유동적)',
@@ -936,7 +890,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'angkor-thom': {
     primaryIatas: ['SAI'],
     preferredLinkIata: 'SAI',
-    flightRouteHubIatas: ['SGN'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→SGN→SAI · angkor-wat와 동일 관문',
@@ -1071,10 +1024,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   minneapolis: {
     primaryIatas: ['MSP'],
     preferredLinkIata: 'MSP',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→MSP · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→ATL→MSP · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   perth: {
     primaryIatas: ['PER'],
@@ -1086,7 +1038,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['NAS', 'MIA', 'ATL'],
     preferredLinkIata: 'NAS',
     kind: 'multi',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     rationale: 'ICN→ATL→NAS · DXB Atlantic corridor ukraine 교차 · 태평양 waypoint',
@@ -1102,10 +1053,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   venezuela: {
     primaryIatas: ['CCS'],
     preferredLinkIata: 'CCS',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→CCS · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→ATL→CCS · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   havana: {
     primaryIatas: ['HAV'],
@@ -1156,26 +1106,23 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   boston: {
     primaryIatas: ['BOS'],
     preferredLinkIata: 'BOS',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→BOS · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→ATL→BOS · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   chicago: {
     primaryIatas: ['ORD'],
     preferredLinkIata: 'ORD',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→ORD · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→ATL→ORD · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   'las-vegas': {
     primaryIatas: ['LAS'],
     preferredLinkIata: 'LAS',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   'los-angeles': {
     primaryIatas: ['LAX'],
@@ -1187,26 +1134,23 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'rio-de-janeiro': {
     primaryIatas: ['GIG'],
     preferredLinkIata: 'GIG',
-    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
-    rationale: 'ICN→DXB→GIG · 플래너 중동 경유(미국 대안 있을 때 DXB 우선, 유럽 CDG/FRA 대안)',
+    rationale: 'ICN→DXB→GIG · 플래너 중동 경유(미국 대안 있을 때 DXB 우선, 유럽 CDG/FRA 대안)'
   },
   'rocky-mountains': {
     primaryIatas: ['YYC', 'YVR'],
     preferredLinkIata: 'YYC',
     kind: 'multi',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→LAX→YYC · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   'san-francisco': {
     primaryIatas: ['SFO'],
     preferredLinkIata: 'SFO',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   'sequoia-national-park': {
     primaryIatas: ['LAX'],
@@ -1227,10 +1171,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   toronto: {
     primaryIatas: ['YYZ'],
     preferredLinkIata: 'YYZ',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→YYZ · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→ATL→YYZ · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   vanuatu: {
     primaryIatas: ['VLI'],
@@ -1244,26 +1187,23 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   vancouver: {
     primaryIatas: ['YVR'],
     preferredLinkIata: 'YVR',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→YVR · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→LAX→YVR · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   'washington-dc': {
     primaryIatas: ['IAD'],
     preferredLinkIata: 'IAD',
-    flightRouteHubIatas: ['ATL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→IAD · 태평양 waypoint로 시베리아·북한 bbox arc 회피',
+    rationale: 'ICN→ATL→IAD · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   yosemite: {
     primaryIatas: ['SFO'],
     preferredLinkIata: 'SFO',
-    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피',
+    rationale: 'ICN→LAX→SFO · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
 };
 
