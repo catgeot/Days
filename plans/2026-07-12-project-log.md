@@ -22,3 +22,43 @@
 - **케이스**: 허브 AGX·COK · placeId `카바라티`/`kavaratti`/`아가티` — Trip `COK` · 최종·픽업 `AGX`
 - **재발 방지**: `resolvePlannerFlightArrivalIata` airportsIndex last-resort · `audit:airports` `cinemaTripGap` · 가이드 §6
 - `generate:airports` · `audit:airports` — `none: 0`, `cinemaTripGap: 0`
+
+---
+
+## 항공경로 도착지 코퍼스 · destArrivalProfile
+
+**상태**: ✅ 전수조사·SSOT 생성 (구현 세션)
+
+- `npm run audit:flight-route-dest-corpus` — 272 slug · toolkit 303행 · arrival **100%**(270/270) · timeline↔override 일치 **35.7%**(10/28) → auto-bake 금지 유지
+- verdict: agree 16 · conflict 55 · override_only 59 · graph_only 139 · none 3 · gateway 고유 **44**
+- Phase 0: gap hub-override **84** · graph-precompute **138** · `audit:flight-routes` semanticOk 270 · smoke **14/14**
+- `generate:dest-arrival-profiles` → [`destArrivalProfiles.json`](../src/pages/Home/data/destArrivalProfiles.json) (cinemaSafe 90 · toolkit-audit 43은 수동 승격만)
+- 조립 SSOT: [`flightRouteAssemble.js`](../src/pages/Home/lib/flightRouteAssemble.js) longHaul→gateway→final
+
+### 개선 효과 (이번 산출물로 나아지는 점)
+
+| 영역 | 이전 | 이후 |
+|------|------|------|
+| 도착·관문 데이터 | slug 수동·OpenFlights 개괄 | **destArrivalProfile** 272 slug 코퍼스 · gateway 고유 44 |
+| 경로 조립 | hub 한 배열에 장거리+관문 혼재 | **longHaul → gateway → final** 고정 (`flightRouteAssemble`) |
+| 플래너 timeline | 예전에 자동 bake 시도→회귀 | **audit만** · cinemaSafe/toolkit-audit 분리 |
+| Heuristic 착수 | Phase 0 대기 | baseline 숫자·코퍼스 확보 → **S1 Router/macro** 가능 |
+
+### 다음 세션 — 에이전트 핸드오프
+
+| 읽을 것 (3) | 금지 (3) |
+|-------------|----------|
+| 본 일지 「항공경로 도착지 코퍼스」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
+| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 1~2 | timeline hub cinema 자동 bake |
+| `destArrivalProfiles.json` · `flightRouteAssemble.js` · `dest-region-gateways.json` | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 |
+
+**제시어**
+
+```
+항공경로-이어하기 @plans/2026-07-12-project-log.md @plans/flight-route-heuristic-ssot-plan.md
+
+dest 코퍼스·Phase 0 스냅샷 완료. 다음 = Heuristic Router + macro (S1).
+assemble = longHaul→gateway→final · destArrivalProfiles cinemaSafe만 후보.
+timeline auto-bake 금지 · conflict 55는 수동 승격 큐.
+로컬 · overrides.mjs → generate:airports 절차 준수.
+```

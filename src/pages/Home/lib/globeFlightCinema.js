@@ -368,7 +368,9 @@ function hubIatasToCoords(hubIatas) {
 }
 
 /**
- * hub 우선순위: overrides/timeline → graph precompute → corridor.
+ * hub 우선순위: overrides (flightRouteHubIatas / trip gateway) → graph precompute → corridor.
+ * Assemble order SSOT (longHaul → gateway → final): flightRouteAssemble.js · destArrivalProfiles.json
+ * essential_guide timeline hubs are NOT applied here (auto-bake forbidden).
  * @returns {{ hubIatas: string[], geoWaypoints: [number, number][], anchors: [number, number][], routeSource?: string }}
  */
 export function resolveFlightRoutePlan(originLngLat, destLngLat, location, options = {}) {

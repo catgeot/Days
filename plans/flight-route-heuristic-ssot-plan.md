@@ -1,8 +1,8 @@
 # 항공 경로 개선 플랜 — 규칙 SSOT + GATN 얇은 seed
 
 **작성**: 2026-06-30  
-**상태**: **플랜 ✅** · **구현 미착수** · Phase 0(S0)부터  
-**관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-06-30-project-log.md`](./2026-06-30-project-log.md)
+**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 스냅샷 ✅** (`2026-07-12`) · **Heuristic Router 미착수** → S1(Phase 1)부터  
+**관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-07-12-project-log.md`](./2026-07-12-project-log.md)
 
 ## 배경·목표
 
@@ -336,21 +336,22 @@ OpenFlights(ODbL)만 쓸 때보다 **출처 표기 의무는 늘어납니다.** 
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**상태**: 플랜 수립·GATN seed lookup(fail-open) 합의 ✅ · **구현 미착수** · Phase 0(S0)부터
+**상태**: dest 코퍼스·Phase 0 baseline ✅ (일지 `2026-07-12`) · **Heuristic Router/macro 미착수** → **S1(Phase 1)**부터
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 플랜 Phase 3「GATN seed vs Graph BFS」·설계 원칙 fail-open | `travelSpots.js` 전체 |
-| `.ai-context.md` 6절 · `flight-route-database-plan.md` handoff | `travelSpotAirports.json` 직접 편집 |
-| 최신 `plans/YYYY-MM-DD-project-log.md` (사용자 baseline 커밋 후) | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 |
+| 본 플랜 Phase 1 Macro + Phase 2 diff · `flightRouteAssemble.js` | `travelSpots.js` 전체 |
+| `.ai-context.md` 6절 · `destArrivalProfiles.json` · 일지 `2026-07-12` 핸드오프 | `travelSpotAirports.json` 직접 편집 · timeline cinema bake |
+| `dest-region-gateways.json` (권역 gateway seed) | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 |
 
 **제시어**
 
 ```
-항공경로-이어하기 @plans/flight-route-heuristic-ssot-plan.md
+항공경로-이어하기 @plans/flight-route-heuristic-ssot-plan.md @plans/2026-07-12-project-log.md
 
-Phase 0 baseline부터: audit npm 전체 → gap/graph-direct 스냅샷.
-GATN seed = 관문 outbound lookup만(BFS 없음·fail-open·confirm-only).
-Heuristic vs graph diff 전에 플랜 Phase 1~3 범위 재확인 후 착수.
+S1: Heuristic Router + macro templates.
+경로 조립 = longHaul→gateway→final (flightRouteAssemble).
+destArrivalProfiles · region gateways를 macro seed로 사용.
+timeline auto-bake 금지 · conflict Top은 overrides 수동 승격.
 로컬 세션 · Cloud Agent 없음.
 ```

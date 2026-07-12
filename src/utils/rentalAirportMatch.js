@@ -1054,6 +1054,10 @@ export function getFlightRouteHubIatas(location, options = {}) {
     .toUpperCase();
   const row = options.ignoreStaticAirportMap === true ? null : getFlightRouteAirportRow(location);
 
+  // Cinema hubs: overrides / tripFlightArrival only.
+  // Do NOT call extractFlightRouteHubIatasFromEssentialGuide here (auto-bake forbidden 2026-06-18).
+  // Audit corpus: npm run audit:flight-route-dest-corpus · profiles: destArrivalProfiles.json
+
   let hubs = [];
   if (Array.isArray(row?.flightRouteHubIatas)) {
     if (row.flightRouteHubIatas.length === 0) return [];

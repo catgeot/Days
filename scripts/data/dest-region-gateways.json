@@ -1,0 +1,980 @@
+{
+  "generatedAt": "2026-07-12T08:07:38.019Z",
+  "regionGateways": {
+    "unknown": [
+      {
+        "iata": "SCL",
+        "count": 4
+      },
+      {
+        "iata": "BNE",
+        "count": 4
+      },
+      {
+        "iata": "GUM",
+        "count": 4
+      },
+      {
+        "iata": "EZE",
+        "count": 3
+      },
+      {
+        "iata": "LIM",
+        "count": 3
+      },
+      {
+        "iata": "AKL",
+        "count": 2
+      },
+      {
+        "iata": "PER",
+        "count": 2
+      },
+      {
+        "iata": "YVR",
+        "count": 2
+      },
+      {
+        "iata": "VVO",
+        "count": 2
+      },
+      {
+        "iata": "FCO",
+        "count": 2
+      },
+      {
+        "iata": "PPT",
+        "count": 1
+      },
+      {
+        "iata": "NAT",
+        "count": 1
+      },
+      {
+        "iata": "HND",
+        "count": 1
+      },
+      {
+        "iata": "GYE",
+        "count": 1
+      },
+      {
+        "iata": "LPB",
+        "count": 1
+      },
+      {
+        "iata": "AEP",
+        "count": 1
+      },
+      {
+        "iata": "SYD",
+        "count": 1
+      },
+      {
+        "iata": "GRU",
+        "count": 1
+      },
+      {
+        "iata": "OSL",
+        "count": 1
+      },
+      {
+        "iata": "MRU",
+        "count": 1
+      },
+      {
+        "iata": "SHA",
+        "count": 1
+      },
+      {
+        "iata": "BKK",
+        "count": 1
+      },
+      {
+        "iata": "GVA",
+        "count": 1
+      },
+      {
+        "iata": "DPS",
+        "count": 1
+      },
+      {
+        "iata": "NAV",
+        "count": 1
+      },
+      {
+        "iata": "GUA",
+        "count": 1
+      },
+      {
+        "iata": "CGK",
+        "count": 1
+      },
+      {
+        "iata": "BIA",
+        "count": 1
+      },
+      {
+        "iata": "PMO",
+        "count": 1
+      },
+      {
+        "iata": "IST",
+        "count": 1
+      },
+      {
+        "iata": "RAI",
+        "count": 1
+      },
+      {
+        "iata": "TGD",
+        "count": 1
+      },
+      {
+        "iata": "OKA",
+        "count": 1
+      },
+      {
+        "iata": "MEL",
+        "count": 1
+      },
+      {
+        "iata": "KUL",
+        "count": 1
+      },
+      {
+        "iata": "MAD",
+        "count": 1
+      }
+    ],
+    "africa": [
+      {
+        "iata": "ADD",
+        "count": 5
+      },
+      {
+        "iata": "JNB",
+        "count": 2
+      },
+      {
+        "iata": "CAI",
+        "count": 2
+      },
+      {
+        "iata": "ATH",
+        "count": 1
+      },
+      {
+        "iata": "LPA",
+        "count": 1
+      },
+      {
+        "iata": "CHQ",
+        "count": 1
+      }
+    ],
+    "south_asia": [
+      {
+        "iata": "DEL",
+        "count": 4
+      },
+      {
+        "iata": "NYU",
+        "count": 1
+      },
+      {
+        "iata": "KUL",
+        "count": 1
+      }
+    ]
+  },
+  "gatewayFrequency": [
+    {
+      "gatewayIata": "ADD",
+      "slugCount": 5,
+      "destRegions": [
+        "africa"
+      ],
+      "sampleSlugs": [
+        "cape-town",
+        "nairobi",
+        "serengeti",
+        "lalibela",
+        "kilimanjaro"
+      ]
+    },
+    {
+      "gatewayIata": "DEL",
+      "slugCount": 4,
+      "destRegions": [
+        "south_asia"
+      ],
+      "sampleSlugs": [
+        "andaman-islands",
+        "jaipur",
+        "varanasi",
+        "hampi"
+      ]
+    },
+    {
+      "gatewayIata": "SCL",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "easter-island",
+        "torres-del-paine",
+        "aconcagua",
+        "falkland-islands"
+      ]
+    },
+    {
+      "gatewayIata": "BNE",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "uluru",
+        "gold-coast",
+        "solomon-islands",
+        "nauru"
+      ]
+    },
+    {
+      "gatewayIata": "GUM",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "yap",
+        "chuuk",
+        "kosrae",
+        "pohnpei"
+      ]
+    },
+    {
+      "gatewayIata": "EZE",
+      "slugCount": 3,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "antarctica",
+        "patagonia",
+        "el-calafate"
+      ]
+    },
+    {
+      "gatewayIata": "LIM",
+      "slugCount": 3,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "cusco",
+        "inca-trail",
+        "arequipa"
+      ]
+    },
+    {
+      "gatewayIata": "AKL",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "rarotonga",
+        "milford-sound"
+      ]
+    },
+    {
+      "gatewayIata": "JNB",
+      "slugCount": 2,
+      "destRegions": [
+        "africa"
+      ],
+      "sampleSlugs": [
+        "victoria-falls",
+        "st-helena"
+      ]
+    },
+    {
+      "gatewayIata": "PER",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "christmas-island",
+        "cocos-islands"
+      ]
+    },
+    {
+      "gatewayIata": "YVR",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "yellowknife",
+        "montreal"
+      ]
+    },
+    {
+      "gatewayIata": "VVO",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "kamchatka-peninsula",
+        "kamchatka"
+      ]
+    },
+    {
+      "gatewayIata": "FCO",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "florence",
+        "cinque-terre"
+      ]
+    },
+    {
+      "gatewayIata": "KUL",
+      "slugCount": 2,
+      "destRegions": [
+        "south_asia",
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "langkawi",
+        "perth"
+      ]
+    },
+    {
+      "gatewayIata": "CAI",
+      "slugCount": 2,
+      "destRegions": [
+        "africa"
+      ],
+      "sampleSlugs": [
+        "luxor",
+        "abu-simbel"
+      ]
+    },
+    {
+      "gatewayIata": "PPT",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "bora-bora"
+      ]
+    },
+    {
+      "gatewayIata": "ATH",
+      "slugCount": 1,
+      "destRegions": [
+        "africa"
+      ],
+      "sampleSlugs": [
+        "santorini"
+      ]
+    },
+    {
+      "gatewayIata": "NAT",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "fernando-de-noronha"
+      ]
+    },
+    {
+      "gatewayIata": "LPA",
+      "slugCount": 1,
+      "destRegions": [
+        "africa"
+      ],
+      "sampleSlugs": [
+        "canary-islands"
+      ]
+    },
+    {
+      "gatewayIata": "HND",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "mount-fuji"
+      ]
+    },
+    {
+      "gatewayIata": "GYE",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "galapagos"
+      ]
+    },
+    {
+      "gatewayIata": "LPB",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "uyuni-salt-flat"
+      ]
+    },
+    {
+      "gatewayIata": "AEP",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "ushuaia"
+      ]
+    },
+    {
+      "gatewayIata": "SYD",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "new-caledonia"
+      ]
+    },
+    {
+      "gatewayIata": "NYU",
+      "slugCount": 1,
+      "destRegions": [
+        "south_asia"
+      ],
+      "sampleSlugs": [
+        "bagan"
+      ]
+    },
+    {
+      "gatewayIata": "GRU",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "amazon-rainforest"
+      ]
+    },
+    {
+      "gatewayIata": "OSL",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "svalbard"
+      ]
+    },
+    {
+      "gatewayIata": "MRU",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "la-reunion"
+      ]
+    },
+    {
+      "gatewayIata": "SHA",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "shanghai"
+      ]
+    },
+    {
+      "gatewayIata": "BKK",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "koh-samui"
+      ]
+    },
+    {
+      "gatewayIata": "GVA",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "zermatt"
+      ]
+    },
+    {
+      "gatewayIata": "DPS",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "borobudur"
+      ]
+    },
+    {
+      "gatewayIata": "NAV",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "cappadocia"
+      ]
+    },
+    {
+      "gatewayIata": "GUA",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "tikal"
+      ]
+    },
+    {
+      "gatewayIata": "CGK",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "raja-ampat"
+      ]
+    },
+    {
+      "gatewayIata": "CHQ",
+      "slugCount": 1,
+      "destRegions": [
+        "africa"
+      ],
+      "sampleSlugs": [
+        "crete"
+      ]
+    },
+    {
+      "gatewayIata": "BIA",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "corsica"
+      ]
+    },
+    {
+      "gatewayIata": "PMO",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "sicily"
+      ]
+    },
+    {
+      "gatewayIata": "IST",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "bodrum"
+      ]
+    },
+    {
+      "gatewayIata": "RAI",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "cape-verde"
+      ]
+    },
+    {
+      "gatewayIata": "TGD",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "kotor"
+      ]
+    },
+    {
+      "gatewayIata": "OKA",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "ishigaki"
+      ]
+    },
+    {
+      "gatewayIata": "MEL",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "alice-springs"
+      ]
+    },
+    {
+      "gatewayIata": "MAD",
+      "slugCount": 1,
+      "destRegions": [
+        "unknown"
+      ],
+      "sampleSlugs": [
+        "venezuela"
+      ]
+    }
+  ],
+  "nearDestHubFrequency": [
+    {
+      "hubIata": "SCL",
+      "slugCount": 8,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "BNE",
+      "slugCount": 8,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "DEL",
+      "slugCount": 7,
+      "destRegions": [
+        "south_asia"
+      ]
+    },
+    {
+      "hubIata": "GUM",
+      "slugCount": 7,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "ADD",
+      "slugCount": 6,
+      "destRegions": [
+        "africa"
+      ]
+    },
+    {
+      "hubIata": "EZE",
+      "slugCount": 6,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "LIM",
+      "slugCount": 6,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "AKL",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "PER",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "YVR",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "VVO",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "FCO",
+      "slugCount": 4,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "KUL",
+      "slugCount": 4,
+      "destRegions": [
+        "south_asia",
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "JNB",
+      "slugCount": 3,
+      "destRegions": [
+        "africa"
+      ]
+    },
+    {
+      "hubIata": "PPT",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "ATH",
+      "slugCount": 2,
+      "destRegions": [
+        "africa"
+      ]
+    },
+    {
+      "hubIata": "NAT",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "LPA",
+      "slugCount": 2,
+      "destRegions": [
+        "africa"
+      ]
+    },
+    {
+      "hubIata": "HND",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "GYE",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "LPB",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "AEP",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "SYD",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "NYU",
+      "slugCount": 2,
+      "destRegions": [
+        "south_asia"
+      ]
+    },
+    {
+      "hubIata": "GRU",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "OSL",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "MRU",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "SHA",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "BKK",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "GVA",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "DPS",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "NAV",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "CAI",
+      "slugCount": 2,
+      "destRegions": [
+        "africa"
+      ]
+    },
+    {
+      "hubIata": "GUA",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "CGK",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "CHQ",
+      "slugCount": 2,
+      "destRegions": [
+        "africa"
+      ]
+    },
+    {
+      "hubIata": "BIA",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "PMO",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "IST",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "RAI",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "TGD",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "OKA",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "MEL",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "MAD",
+      "slugCount": 2,
+      "destRegions": [
+        "unknown"
+      ]
+    },
+    {
+      "hubIata": "ABS",
+      "slugCount": 1,
+      "destRegions": [
+        "africa"
+      ]
+    }
+  ]
+}
