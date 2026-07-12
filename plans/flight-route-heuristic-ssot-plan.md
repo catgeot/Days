@@ -1,7 +1,7 @@
 # 항공 경로 개선 플랜 — 규칙 SSOT + GATN 얇은 seed
 
 **작성**: 2026-06-30  
-**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 ✅** · **S1 Heuristic Router + macro ✅** (`2026-07-12`) · **다음 = S2 Phase 2 diff audit**  
+**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 ✅** · **S1 Heuristic Router + macro ✅** · **S2 Phase 2 diff audit ✅** · **S3 Phase 3 GATN thin seed ✅** (`2026-07-12`) · **다음 = S4 Phase 4 runtime/precompute**
 **관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-07-12-project-log.md`](./2026-07-12-project-log.md)
 
 ## 배경·목표
@@ -119,10 +119,13 @@ npm run audit:flight-arcs
 
 ## Phase 2 — Heuristic vs Graph diff audit
 
-**신규 스크립트**: `scripts/audit-flight-route-heuristic-diff.mjs`  
-**npm**: `audit:flight-route-heuristic-diff`
+**상태**: ✅ S2 (`2026-07-12`)
 
-271 slug × ICN(및 smoke 케이스 BDA·MNL·PVG)에 대해:
+**스크립트**: `scripts/audit-flight-route-heuristic-diff.mjs`  
+**npm**: `audit:flight-route-heuristic-diff`  
+**산출**: [`scripts/outputs/heuristic-graph-diff.json`](../scripts/outputs/heuristic-graph-diff.json) · [`.md`](../scripts/outputs/heuristic-graph-diff.md)
+
+271 slug × ICN(및 `--with-smoke-origins` BDA·MNL·PVG)에 대해:
 
 | 판정 | 의미 | 후속 |
 |------|------|------|
@@ -131,11 +134,8 @@ npm run audit:flight-arcs
 | `graph_wins` | heuristic 실패 | macro/seed 보강 |
 | `both_bad` | 수동 L3 또는 QA | overrides.mjs |
 
-**산출물**: `scripts/outputs/heuristic-graph-diff.json` + `.md` (slug, destIata, graph path, heuristic path, 판정, rationale)
-
-**합격 기준 (Phase 2 종료)**
-- `heuristic_wins` + `agree` ≥ **80%** (271 slug ICN 기준)
-- `both_bad` ≤ **15건** (수동 검수 큐)
+**ICN 결과**: agree **81** · heuristic_wins **138** · graph_wins **52** · both_bad **0**  
+**합격**: agree+heuristic_wins **80.8%** ✅ · both_bad ≤15 ✅ · conflict 55 수동 큐 유지 (timeline bake 금지)
 
 ---
 
@@ -260,9 +260,9 @@ override > heuristic(+seed) > graph > corridor
 |------|------|------|
 | **S0** | Phase 0 baseline audit + 브라우저 샘플 QA | gap JSON·일지 | ✅ |
 | **S1** | Phase 1 Heuristic Router + macro templates | unit smoke 확장 | ✅ 12/12 |
-| **S2** | Phase 2 diff audit | diff MD·우선순위 slug 목록 | ← 다음 |
-| **S3** | Phase 3 GATN seed + `generate:flight-route-seed` | gateway-seed.json |
-| **S4** | Phase 4 runtime/precompute 통합 | smoke 14/14·Edge deploy |
+| **S2** | Phase 2 diff audit | diff MD·우선순위 slug 목록 | ✅ 80.8% |
+| **S3** | Phase 3 GATN seed + `generate:flight-route-seed` | gateway-seed.json | ✅ 37·5660 |
+| **S4** | Phase 4 runtime/precompute 통합 | smoke 14/14·Edge deploy | ← 다음 |
 | **S5** | Phase 5 override 축소 + Phase 6 QA | overrides ~25·릴리스 노트 초안 |
 
 ---
@@ -340,21 +340,22 @@ OpenFlights(ODbL)만 쓸 때보다 **출처 표기 의무는 늘어납니다.** 
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**상태**: S1 Heuristic Router + macro ✅ · **다음 = S2 Phase 2 heuristic↔graph diff audit**
+**상태**: S3 Phase 3 GATN thin seed ✅ (37 origins · 5660 edges) · **다음 = S4 Phase 4 runtime/precompute**
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 플랜 Phase 2 · `flightRouteHeuristic.js` · `flightRouteMacroTemplates.js` | `travelSpots.js` 전체 · timeline cinema bake |
-| `.ai-context.md` 6절 · 일지 `2026-07-12` 「Heuristic S1」 | `travelSpotAirports.json` spots 직접 편집 |
-| `smoke:flight-route-heuristic` · assemble SSOT | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 · S1을 런타임에 임의 연결 |
+| 본 플랜 Phase 4 · 일지 `2026-07-12` 「Heuristic S3」 | `travelSpots.js` 전체 · timeline cinema bake |
+| `.ai-context.md` 6절 · `flightRouteGatewaySeed.js` | africa conflict 자동 bake · seed reject-only |
+| `smoke:flight-route-baseline` · generate:flight-routes | overrides 없이 JSON만 수정 |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/flight-route-heuristic-ssot-plan.md @plans/2026-07-12-project-log.md
 
-S1 ✅. 다음 = S2 Phase 2 heuristic↔graph diff audit.
-audit:flight-route-heuristic-diff · agree+heuristic_wins ≥80% 목표.
-cinemaSafe만 후보 · timeline auto-bake 금지 · conflict는 overrides 수동 승격.
-로컬 · resolveFlightRoutePlan 연결은 S4.
+S3 ✅ (GATN thin seed 37×5660). 다음 = S4 Phase 4 runtime/precompute.
+heuristic(+seed) > graph > corridor · fail-open · BFS 금지 유지.
+smoke:flight-route-baseline 14/14 · resolveFlightRoutePlan 연결 · Edge sync 필요 시.
+africa graph_wins·conflict 55는 수동 큐 · timeline auto-bake 금지.
+overrides.mjs → generate:airports 준수.
 ```

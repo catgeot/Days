@@ -56,21 +56,45 @@
 - `resolveDestRegion` 좌표 fallback 보강 (EU/Americas/SEA/Oceania)
 - `npm run smoke:flight-route-heuristic` **12/12** · baseline **14/14** 회귀 유지
 
+## 항공경로 Heuristic S2 — Phase 2 diff audit
+
+**상태**: ✅ (2026-07-12) · 런타임 미연결 유지 (S4)
+
+- [`scripts/audit-flight-route-heuristic-diff.mjs`](../scripts/audit-flight-route-heuristic-diff.mjs) · `npm run audit:flight-route-heuristic-diff`
+- ICN **271**: agree **81** · heuristic_wins **138** · graph_wins **52** · both_bad **0**
+- **agree+heuristic_wins = 80.8%** ✅ (≥80%) · both_bad ≤15 ✅
+- cinemaSafe 사용 **90**/90 · dest-corpus **conflict 55** 수동 승격 큐(자동 bake 없음)
+- 산출: [`scripts/outputs/heuristic-graph-diff.md`](../scripts/outputs/heuristic-graph-diff.md)
+- graph_wins 집중: **africa 16** · americas/europe 일부 — S3 macro/seed 보강 후보
+- smoke·baseline 회귀 유지 (12/12 · 14/14)
+
+## 항공경로 Heuristic S3 — Phase 3 GATN thin seed
+
+**상태**: ✅ (2026-07-12) · lookup only · **런타임 미연결** (S4)
+
+- [`scripts/lib/gat-network.mjs`](../scripts/lib/gat-network.mjs) — GATN CSV 파서 · 관문 outbound만
+- [`scripts/generate-flight-route-seed.mjs`](../scripts/generate-flight-route-seed.mjs) · `npm run generate:flight-route-seed`
+- [`scripts/data/flight-route-gateway-seed.json`](../scripts/data/flight-route-gateway-seed.json) — **37** origins · **5660** edges
+- [`flightRouteGatewaySeed.js`](../src/pages/Home/lib/flightRouteGatewaySeed.js) — `seedHasDirectEdge` / `seedConfirmsPath` (BFS 없음)
+- `npm run smoke:flight-route-gateway-seed` **8/8** · heuristic **12/12** · baseline **14/14**
+- africa graph_wins·conflict 55·timeline bake·`resolveFlightRoutePlan` 연결 **미실시** (의도)
+
 ### 다음 세션 — 에이전트 핸드오프
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 일지 「Heuristic S1」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
-| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 2 | timeline hub cinema 자동 bake · S1을 `resolveFlightRoutePlan`에 임의 연결 |
-| `flightRouteHeuristic.js` · `flightRouteMacroTemplates.js` | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 |
+| 본 일지 「Heuristic S3」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
+| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 4 | timeline hub cinema 자동 bake · africa conflict 자동 bake |
+| gateway-seed + heuristic · `smoke:flight-route-baseline` | overrides 없이 JSON만 수정 · seed를 reject-only로 쓰지 말 것 |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/2026-07-12-project-log.md @plans/flight-route-heuristic-ssot-plan.md
 
-S1 ✅. 다음 = S2 Phase 2 heuristic↔graph diff audit.
-audit:flight-route-heuristic-diff · agree+heuristic_wins ≥80% 목표.
-cinemaSafe만 후보 · timeline auto-bake 금지 · conflict 55는 수동 승격 큐.
-로컬 · resolveFlightRoutePlan 연결은 S4 · overrides.mjs → generate:airports 준수.
+S3 ✅ (GATN thin seed 37×5660). 다음 = S4 Phase 4 runtime/precompute.
+heuristic(+seed) > graph > corridor · fail-open · BFS 금지 유지.
+smoke:flight-route-baseline 14/14 · resolveFlightRoutePlan 연결 · Edge sync 필요 시.
+africa graph_wins·conflict 55는 수동 큐 · timeline auto-bake 금지.
+overrides.mjs → generate:airports 준수.
 ```
