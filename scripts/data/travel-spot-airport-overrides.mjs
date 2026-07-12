@@ -62,6 +62,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['KTM', 'PKR'],
     preferredLinkIata: 'KTM',
     tripFlightArrivalIata: 'KTM',
+    flightRouteHubIatas: ['BKK'],
     kind: 'multi',
     confidence: 'high',
     rationale: '국제선 카트만두 트리부반(KTM) 도착 — 베시사하르 육로·서킷 준비; PKR은 국내선·대안',
@@ -69,7 +70,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '안나푸르나 서킷은 보통 인천→카트만두 트리부반국제공항(KTM) 국제선 도착 후 시내 준비·베시사하르(Besisahar) 육로로 서킷에 들어갑니다. 포카라(PKR) 경유·국내선으로 접근하는 일정도 있습니다. 항공권·Trip 검색 도착 코드는 KTM을 사용하세요.'
   },
-  bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },
+  bodrum: {
+    primaryIatas: ['BJV'],
+    preferredLinkIata: 'BJV',
+    flightRouteHubIatas: ['IST'],
+    confidence: 'high',
+    rationale: 'ICN→IST→BJV · 이스탄불 경유 국내선(밀라스·보드룸)'
+  },
   bled: {
     primaryIatas: ['LJU', 'ZAG', 'VCE'],
     preferredLinkIata: 'LJU',
@@ -80,7 +87,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '블레드는 보통 류블랴나(LJU) 공항 도착 후 셔틀·버스(약 30~45분)로 이동합니다. 항공료 절감을 위해 자그레브(ZAG)·베네치아(VCE) 입국 후 육로로 오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
   },
-  jaipur: { primaryIatas: ['JAI'], preferredLinkIata: 'JAI', confidence: 'high', rationale: '자이푸르 국제공항' },
+  jaipur: {
+    primaryIatas: ['JAI'],
+    preferredLinkIata: 'JAI',
+    flightRouteHubIatas: ['DEL'],
+    confidence: 'high',
+    rationale: 'ICN→DEL→JAI · 델리 경유 국내선'
+  },
   'la-reunion': {
     primaryIatas: ['RUN'],
     preferredLinkIata: 'RUN',
@@ -94,11 +107,20 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   crete: {
     primaryIatas: ['HER', 'CHQ'],
     preferredLinkIata: 'HER',
+    flightRouteHubIatas: ['ATH'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리',
+    rationale: 'ICN→ATH→HER · 아테네 경유 국내선·페리(하니아 CHQ 대안)',
     bannerNote:
       '크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.'
+  },
+  santorini: {
+    primaryIatas: ['JTR', 'ATH'],
+    preferredLinkIata: 'JTR',
+    flightRouteHubIatas: ['ATH'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→ATH→JTR · 아테네 경유 국내선·페리'
   },
   'santiago-de-compostela': {
     primaryIatas: ['SCQ', 'MAD'],
@@ -137,6 +159,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   borobudur: {
     primaryIatas: ['YIA'],
     preferredLinkIata: 'YIA',
+    flightRouteHubIatas: ['CGK'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→CGK→YIA · 자카르타 경유 국내선 연결(발리 DPS 경유도 흔함)',
@@ -192,6 +215,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'san-diego': {
     primaryIatas: ['SAN', 'LAX', 'SFO'],
     preferredLinkIata: 'SAN',
+    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
@@ -232,6 +256,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'el-nido': {
     primaryIatas: ['ENI', 'PPS', 'MNL'],
     preferredLinkIata: 'ENI',
+    flightRouteHubIatas: ['MNL'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→MNL→ENI · AirSWIFT 국내선(추천 루트)',
@@ -250,18 +275,39 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   palawan: {
     primaryIatas: ['ENI', 'PPS', 'MNL'],
     preferredLinkIata: 'PPS',
+    flightRouteHubIatas: ['MNL'],
     kind: 'multi',
     confidence: 'high',
-    rationale: '엘니도·푸에르토프린세사·마닐라 관문',
+    rationale: 'ICN→MNL→PPS · 마닐라 국제선 관문 후 팔라완(ENI AirSWIFT·PPS 육로)',
     bannerNote:
       '팔라완·엘니도는 ENI 직항(MNL 경유·AirSWIFT), PPS 육로, MNL 국제선 관문이 나뉩니다. 엘니도 상세 경로는 엘니도 여행지 배너를 참고해 주세요.'
   },
-  ishigaki: { primaryIatas: ['ISG'], preferredLinkIata: 'ISG', confidence: 'high', rationale: '이시가키 공항' },
-  arequipa: { primaryIatas: ['AQP'], preferredLinkIata: 'AQP', confidence: 'high', rationale: '아레키파 공항' },
-  varanasi: { primaryIatas: ['VNS'], preferredLinkIata: 'VNS', confidence: 'high', rationale: '바라나시 공항' },
+  ishigaki: {
+    primaryIatas: ['ISG'],
+    preferredLinkIata: 'ISG',
+    flightRouteHubIatas: ['OKA'],
+    confidence: 'high',
+    rationale: 'ICN→OKA→ISG · 오키나와 경유 국내선'
+  },
+  arequipa: {
+    primaryIatas: ['AQP'],
+    preferredLinkIata: 'AQP',
+    flightRouteHubIatas: ['LAX', 'LIM'],
+    flightRouteWaypoints: [[135, 35]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→LIM→AQP · 리마 경유 국내선 · 태평양 waypoint'
+  },
+  varanasi: {
+    primaryIatas: ['VNS'],
+    preferredLinkIata: 'VNS',
+    flightRouteHubIatas: ['DEL'],
+    confidence: 'high',
+    rationale: 'ICN→DEL→VNS · 델리 경유 국내선'
+  },
   'nazca-lines': {
     primaryIatas: ['LIM'],
     preferredLinkIata: 'LIM',
+    flightRouteHubIatas: ['LAX'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     rationale: 'ICN→LAX→LIM · 태평양 waypoint로 시베리아 bbox arc 회피'
@@ -283,6 +329,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'faroe-islands': {
     primaryIatas: ['FAE'],
     preferredLinkIata: 'FAE',
+    flightRouteHubIatas: ['CPH'],
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '바가르 FAE · 플래너 ICN→유럽(코펜하겐 CPH) 환승→FAE · ICN↔CPH 직항 long-arc(지구 한 바퀴) 회피 waypoint'
@@ -298,6 +345,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'christmas-island': {
     primaryIatas: ['XCH', 'PER'],
     preferredLinkIata: 'XCH',
+    flightRouteHubIatas: ['PER'],
     kind: 'multi',
     confidence: 'high',
     rationale: '섬 도착 XCH, 호주 본토 경유 PER',
@@ -327,6 +375,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'torres-del-paine': {
     primaryIatas: ['PUQ'],
     preferredLinkIata: 'PUQ',
+    flightRouteHubIatas: ['LAX', 'SCL'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     rationale: 'ICN→LAX→SCL→PUQ · 미국 경유 산티아고 국제선 후 파타고니아 국내선 · 태평양 waypoint',
@@ -359,6 +408,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'luang-prabang': {
     primaryIatas: ['LPQ'],
     preferredLinkIata: 'LPQ',
+    flightRouteHubIatas: ['BKK'],
     confidence: 'high',
     rationale: 'ICN→BKK→LPQ · toolkit 3-hub(VTE/BKK/HAN) 오탐 보정'
   },
@@ -367,6 +417,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'andaman-islands': {
     primaryIatas: ['IXZ'],
     preferredLinkIata: 'IXZ',
+    flightRouteHubIatas: ['DEL'],
     confidence: 'high',
     rationale: '포트블레어 IXZ · ICN→델리(DEL)→국내선 IXZ · graph AUH 오탐 보정'
   },
@@ -374,6 +425,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'iguazu-falls': {
     primaryIatas: ['IGR'],
     preferredLinkIata: 'IGR',
+    flightRouteHubIatas: ['DXB', 'GRU'],
     confidence: 'high',
     rationale: 'ICN→DXB→GRU→IGR · 플래너 중동→GRU→국내선(미국 대안 있을 때 DXB 우선)'
   },
@@ -391,13 +443,21 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'victoria-falls': {
     primaryIatas: ['VFA'],
     preferredLinkIata: 'VFA',
+    flightRouteHubIatas: ['ADD', 'JNB'],
     confidence: 'high',
     rationale: 'ICN→ADD→JNB→VFA · graph AMS→HRE 우회 제거 · JNB 경유 대안은 bannerNote'
   },
-  'raja-ampat': { primaryIatas: ['SOQ'], preferredLinkIata: 'SOQ', confidence: 'high', rationale: '소롱 공항' },
+  'raja-ampat': {
+    primaryIatas: ['SOQ'],
+    preferredLinkIata: 'SOQ',
+    flightRouteHubIatas: ['CGK'],
+    confidence: 'high',
+    rationale: 'ICN→CGK→SOQ · 자카르타 경유'
+  },
   'peninsula-valdes': {
     primaryIatas: ['EZE', 'AEP', 'PMY', 'REL'],
     preferredLinkIata: 'PMY',
+    flightRouteHubIatas: ['LAX', 'EZE'],
     flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
@@ -419,26 +479,30 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   svalbard: {
     primaryIatas: ['LYR'],
     preferredLinkIata: 'LYR',
-    flightRouteWaypoints: [[135, 35]],
+    flightRouteHubIatas: ['OSL'],
+    flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
-    rationale: 'ICN→LAX→LYR · 태평양 waypoint로 시베리아 bbox arc 회피'
+    rationale: 'ICN→OSL→LYR · 오슬로 경유 스발바르'
   },
-  madagascar: { primaryIatas: ['TNR'], preferredLinkIata: 'TNR', confidence: 'high', rationale: '안타ananarivo 국제공항' },
+  madagascar: { primaryIatas: ['TNR'], preferredLinkIata: 'TNR', confidence: 'high', rationale: '안타나나리보 국제공항' },
   mauritius: {
     primaryIatas: ['MRU'],
     preferredLinkIata: 'MRU',
+    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
     rationale: '모리셔스 SSR 국제공항 · 시네마 ICN→두바이(DXB)→MRU (에미레이트 등 중동 경유)'
   },
   maldives: {
     primaryIatas: ['MLE'],
     preferredLinkIata: 'MLE',
+    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
     rationale: '말레 MLE 국제공항 · 시네마 ICN→두바이(DXB)→MLE (에미레이트 등 중동 경유)'
   },
   seychelles: {
     primaryIatas: ['SEZ'],
     preferredLinkIata: 'SEZ',
+    flightRouteHubIatas: ['DXB'],
     confidence: 'high',
     rationale: '마헤 SEZ 국제공항 · 시네마 ICN→두바이(DXB)→SEZ (에미레이트 등 중동 경유)'
   },
@@ -484,6 +548,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   lalibela: {
     primaryIatas: ['LLI', 'ADD'],
     preferredLinkIata: 'LLI',
+    flightRouteHubIatas: ['ADD'],
     kind: 'multi',
     confidence: 'high',
     rationale: 'ICN→ADD→LLI · 에티오피아항공 국제선 후 국내선',
@@ -493,15 +558,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   galapagos: {
     primaryIatas: ['GPS', 'GYE'],
     preferredLinkIata: 'GPS',
+    flightRouteHubIatas: ['LAX', 'GYE'],
+    flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
-    rationale: '산크리스토발(GPS)·과야킬(GYE) 관문 — 툴킷·배너 SSOT',
+    rationale: 'ICN→LAX→GYE→GPS · 과야킬 경유 갈라파고스',
     bannerNote:
       '갈라파고스는 산크리스토발(GPS) 직항·과야킬(GYE) 경유 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   iceland: {
     primaryIatas: ['KEF'],
     preferredLinkIata: 'KEF',
+    flightRouteHubIatas: ['MUC'],
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint',
@@ -511,8 +579,25 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   krabi: {
     primaryIatas: ['KBV'],
     preferredLinkIata: 'KBV',
+    flightRouteHubIatas: ['BKK'],
     confidence: 'high',
     rationale: 'ICN→BKK→KBV · toolkit BKK+DMK 중복 hub 오탐 보정'
+  },
+  'koh-samui': {
+    primaryIatas: ['USM', 'BKK'],
+    preferredLinkIata: 'USM',
+    flightRouteHubIatas: ['BKK'],
+    kind: 'multi',
+    confidence: 'high',
+    rationale: 'ICN→BKK→USM · 방콕 경유 국내선·페리'
+  },
+  'amazon-rainforest': {
+    primaryIatas: ['MAO'],
+    preferredLinkIata: 'MAO',
+    flightRouteHubIatas: ['LAX', 'GRU'],
+    flightRouteWaypoints: [[135, 35]],
+    confidence: 'high',
+    rationale: 'ICN→LAX→GRU→MAO · 상파울루 경유 아마존(마나우스)'
   },
   phuket: {
     primaryIatas: ['HKT'],
@@ -523,6 +608,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   reykjavik: {
     primaryIatas: ['KEF'],
     preferredLinkIata: 'KEF',
+    flightRouteHubIatas: ['MUC'],
     flightRouteWaypoints: [[50, 40]],
     confidence: 'high',
     rationale: '케플라비크 KEF — iceland와 동일 · 플래너 유럽 허브(뮌헨) 경유 시네마',
@@ -556,18 +642,22 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'alice-springs': {
     primaryIatas: ['ASP'],
     preferredLinkIata: 'ASP',
+    flightRouteHubIatas: ['SYD'],
     confidence: 'high',
-    rationale: '앨리스스프링스 공항(ASP) — 레드센터·울루루 관문'
+    rationale: 'ICN→SYD→ASP · 시드니 국제선 후 레드센터 국내선'
   },
   ushuaia: {
     primaryIatas: ['USH'],
     preferredLinkIata: 'USH',
+    flightRouteHubIatas: ['LAX', 'EZE'],
+    flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: '우수아이아 마샬공항(USH) — 티에라델푸에고·남극 크루즈 관문'
+    rationale: 'ICN→LAX→EZE→USH · 미국 경유 부에노스아이레스 국제선 후 티에라델푸에고 국내선 · 태평양 waypoint'
   },
   'el-calafate': {
     primaryIatas: ['FTE'],
     preferredLinkIata: 'FTE',
+    flightRouteHubIatas: ['LAX', 'EZE'],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     rationale: 'ICN→LAX→EZE→FTE · 미국 경유 부에노스아이레스 국제선 후 파타고니아 국내선 · 태평양 waypoint',
@@ -577,39 +667,44 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   cusco: {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
+    flightRouteHubIatas: ['LAX', 'LIM'],
     kind: 'multi',
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피'
+    rationale: 'ICN→LAX→LIM→CUZ · 리마 경유 국내선 · 태평양 waypoint'
   },
   'machu-picchu': {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
+    flightRouteHubIatas: ['LAX', 'LIM'],
     kind: 'multi',
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피'
+    rationale: 'ICN→LAX→LIM→CUZ · 리마 경유 국내선 · 태평양 waypoint'
   },
   'inca-trail': {
     primaryIatas: ['CUZ', 'LIM'],
     preferredLinkIata: 'CUZ',
+    flightRouteHubIatas: ['LAX', 'LIM'],
     kind: 'multi',
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
     bannerNote:
       '국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.',
-    rationale: 'ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피'
+    rationale: 'ICN→LAX→LIM→CUZ · 리마 경유 국내선 · 태평양 waypoint'
   },
   patagonia: {
     primaryIatas: ['BRC', 'EZE'],
     preferredLinkIata: 'BRC',
+    flightRouteHubIatas: ['LAX', 'EZE'],
+    flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
-    rationale: '아르헨티나 북부 파타고니아 — 바릴로체(BRC)·부에노스아이레스(EZE) 국제선 관문',
+    rationale: 'ICN→LAX→EZE→BRC · 부에노스아이레스 국제선 후 바릴로체 국내선',
     bannerNote:
       '이 여행지는 **아르헨티나 북부 파타고니아**(바릴로체·호수·안데스)입니다. 보통 부에노스아이레스(EZE) 국제선 후 바릴로체(BRC) 국내선으로 이어집니다. 남부(우수아이아 USH·토레스 델 파이네 PUQ)는 별도 여행지를 참고하세요. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
@@ -621,7 +716,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: 'ICN→LAX→YZF · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   dunhuang: { primaryIatas: ['DNH'], preferredLinkIata: 'DNH', confidence: 'high', rationale: '둔황 공항' },
-  uluru: { primaryIatas: ['AYQ'], preferredLinkIata: 'AYQ', confidence: 'high', rationale: '울루루 에어스' },
+  uluru: {
+    primaryIatas: ['AYQ'],
+    preferredLinkIata: 'AYQ',
+    flightRouteHubIatas: ['SYD'],
+    confidence: 'high',
+    rationale: 'ICN→SYD→AYQ · 시드니 국제선 후 울루루 국내선'
+  },
   timbuktu: { primaryIatas: ['BKO'], preferredLinkIata: 'BKO', confidence: 'high', rationale: '바마코 후 육로·강' },
   singapore: { primaryIatas: ['SIN'], preferredLinkIata: 'SIN', confidence: 'high', rationale: '창이국제공항(SIN)' },
   london: { primaryIatas: ['LHR'], preferredLinkIata: 'LHR', confidence: 'high', rationale: '히스로공항(LHR)' },
@@ -823,8 +924,20 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '폰페이(PNI)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 PNI에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼·MAJ 경유도 가능). Trip.com 등 항공권 검색은 GUM까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.'
   },
-  'kamchatka-peninsula': { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
-  kamchatka: { primaryIatas: ['PKC'], preferredLinkIata: 'PKC', confidence: 'high', rationale: '페트로파블롭스크캄차츠키' },
+  'kamchatka-peninsula': {
+    primaryIatas: ['PKC'],
+    preferredLinkIata: 'PKC',
+    flightRouteHubIatas: ['VVO'],
+    confidence: 'high',
+    rationale: 'ICN→VVO→PKC · 블라디보스토크 경유'
+  },
+  kamchatka: {
+    primaryIatas: ['PKC'],
+    preferredLinkIata: 'PKC',
+    flightRouteHubIatas: ['VVO'],
+    confidence: 'high',
+    rationale: 'ICN→VVO→PKC · 블라디보스토크 경유'
+  },
   'midway-atoll': {
     primaryIatas: ['HNL'],
     preferredLinkIata: 'HNL',
@@ -928,8 +1041,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   antarctica: {
     primaryIatas: ['USH'],
     preferredLinkIata: 'USH',
+    flightRouteHubIatas: ['LAX', 'EZE'],
+    flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: '남극 크루즈·연구 기지는 우수아이아 등 남미 관문',
+    rationale: 'ICN→LAX→EZE→USH · 남극 크루즈 관문 우수아이아',
     bannerNote: '남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.'
   },
   // —— 세션 C placeIds_only 승격 (2026-05-21) ——
@@ -971,9 +1086,11 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'falkland-islands': {
     primaryIatas: ['MPM', 'SCL'],
     preferredLinkIata: 'MPM',
+    flightRouteHubIatas: ['LAX', 'SCL'],
+    flightRouteWaypoints: [[135, 35]],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'MPM 스탠리·칠레 SCL 경유',
+    rationale: 'ICN→LAX→SCL→MPM · 칠레 SCL 경유',
     bannerNote:
       '포클랜드 제도는 MPM(마운트 플레전트) 도착·칠레(SCL) 경유 일정이 일반적입니다. 토레스 델 파이네(PUQ)와 혼동하지 마세요.'
   },

@@ -26,6 +26,7 @@
     "audit:flight-route-detours": "node scripts/audit-flight-route-detours.mjs",
     "audit:flight-route-dest-corpus": "node scripts/audit-flight-route-dest-corpus.mjs",
     "audit:flight-route-heuristic-diff": "node scripts/audit-flight-route-heuristic-diff.mjs",
+    "audit:flight-route-risk": "node scripts/audit-flight-route-risk.mjs",
     "generate:dest-arrival-profiles": "node scripts/generate-dest-arrival-profiles.mjs",
     "db:apply-migrations": "node scripts/apply-supabase-migration.mjs",
     "generate:ferries": "node scripts/generate-travel-spot-ferries.mjs",

@@ -117,19 +117,43 @@
 - **수정**: seed 직항+`allowDirect`면 직항만 유지 · hub당 `+220` 페널티 · smoke SIN/HKT · `generate:flight-routes`
 - 결과: singapore/phuket/KUL/BKK → **ICN 직항**
 
+### QA — S5 hub 축소 회귀 · L3 선택 복구
+
+**상태**: ✅ 코드·smoke (2026-07-12) · **홈 클릭 QA 대기**
+
+- **확인 9곳 L3**: palawan/el-nido `MNL` · kamchatka `VVO` · el-calafate/ushuaia `LAX,EZE` · andaman `DEL` · santorini/crete `ATH` · bodrum `IST` · alice `SYD`
+- **위험군 2차**: 파타고니아·안데스·몰디브/세이셸 DXB · 인도 국내(DEL) · 보로부두르 CGK 등 — hub-override skip **73**
+- `npm run audit:flight-route-risk` — risk **50→28** · hub_mismatch **0** · 잔여 28은 프로필 오탐·대안공항 위주(후지·상하이·코펜하겐 HEL·함피 DEL 등) → **자동 bake 금지**
+- smoke baseline **15/15** · heuristic **14/14** · airports `none:0`
+
 ### 다음 세션 — 에이전트 핸드오프
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 일지 「Heuristic S6」·합의된 RN 초안 | `travelSpots.js` / spots JSON 직접 편집 |
-| [`.ai-context.md`](../.ai-context.md) 6절 | timeline cinema bake · africa conflict bake |
-| Credits `FLIGHT_ROUTE_ATTRIBUTION` | seed reject-only · JSON만 단독 수정 |
+| 본 일지 「QA — S5 hub」·다음 QA 큐 | 잔여 28 전부 L3 bake · timeline cinema bake |
+| [`scripts/outputs/flight-route-risk.md`](../scripts/outputs/flight-route-risk.md) | `travelSpots.js` / spots JSON 직접 |
+| [`.ai-context.md`](../.ai-context.md) 6절 | africa conflict 55 bake |
+
+**다음 QA 큐 (홈 클릭)**
+
+| slug/검색 | 이슈 메모 (현재 precompute) |
+|-----------|------------------------------|
+| 하와이 `hawaii` | ICN→HNL 직항 — 회귀 확인 |
+| 사모아 `samoa` | 불필요 다중 경유 의심 |
+| 버뮤다 `bermuda` | ICN→YVR→JFK→BDA (과다 경유) |
+| 워싱턴 | 직항 있는데 경유 우선 |
+| 마이애미 `miami` | ICN→YVR→ATL→MIA |
+| 부에노스아이레스 `buenos-aires` | ICN→LAX→ATL→EZE (미국 2회) |
+
+**직항 vs 경유**: 시네마는 대표 arc(실시간 검색 아님). macro `allowDirect`·seed·detour로 고름. **직항 가능한데 경유만 나오면 버그/점수 오탐** (SEA SIN/HKT와 동일 계열). 비-ICN 유연성은 별도 경로.
 
 **제시어**
 
 ```
-항공경로-이어하기 @plans/2026-07-12-project-log.md @plans/flight-route-heuristic-ssot-plan.md
+항공경로-이어하기 @plans/2026-07-12-project-log.md
 
-S6 QA ✅. 릴리스 노트 합의되면 releaseNotes.js 반영.
-africa conflict 55 수동 큐 · timeline auto-bake 금지.
+S5 hub QA L3 복구 커밋됨. 다음 클릭 QA:
+하와이·사모아·버뮤다·워싱턴·마이애미·부에노스아이레스
+(직항인데 경유 / 미국 이중 경유 / 사모아 과다 hub).
+직항 가능하면 직항 우선 — allowDirect·seed 점수 점검.
 ```
