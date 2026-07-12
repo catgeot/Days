@@ -348,6 +348,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return false;
     }
   }, []);
+  /** 모바일: 2D 복귀 후 고줌에 범례가 남지 않도록 TOUR_READY에서만 노출 (지도 레이어는 showClusterOverlay 유지) */
+  const showClusterLegend = useMemo(() => {
+    if (!showClusterOverlay) return false;
+    if (isMobileDevice) return globeMode === GLOBE_MODE.TOUR_READY;
+    return true;
+  }, [globeMode, isMobileDevice, showClusterOverlay]);
   const fogConfig = useMemo(() => {
     const atmosphere = ATMOSPHERE_BY_THEME[globeTheme] || ATMOSPHERE_BY_THEME.deep;
     return { ...GLOBE_SPACE_FOG_BASE, ...atmosphere };
@@ -1927,7 +1933,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         document.body
       )}
 
-      {showClusterOverlay && clusterOverlay.meta && !isZenMode && typeof document !== 'undefined' && createPortal(
+      {showClusterLegend && clusterOverlay.meta && !isZenMode && typeof document !== 'undefined' && createPortal(
         <GlobeClusterLegend
           focusSlug={focusSlug}
           travelSpots={allTravelSpots.length > 0 ? allTravelSpots : travelSpots}

@@ -39,7 +39,8 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    // LogoPanel z-[140] 위 — Credits 등 패널 내부 모달
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
       <div 
         className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
