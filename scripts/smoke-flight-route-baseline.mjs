@@ -1,5 +1,5 @@
 /**
- * 항공 경로 기준선 smoke — sync tier·Edge gate·audit·S4 plan heuristic.
+ * 항공 경로 6유형 기준선 smoke — sync tier·Edge gate·audit 연동.
  * Usage: node scripts/smoke-flight-route-baseline.mjs [--edge]
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -80,14 +80,13 @@ async function main() {
       expectPreview: true,
     },
     {
-      id: 'ssot-heuristic-hampi',
-      label: 'S5 heuristic — 함피(hub override 제거 → ICN→BLR)',
+      id: 'ssot-override-hampi',
+      label: 'SSOT override — 함피(DEL hub)',
       location: loadTravelSpotBySlug('hampi'),
       originIata: 'ICN',
       expectEdge: false,
       expectPreview: true,
-      expectManualOverride: false,
-      expectRouteIatas: ['ICN', 'BLR'],
+      expectManualOverride: true,
     },
     {
       id: 'uiplace-sync-tahaa',
@@ -147,12 +146,12 @@ async function main() {
     },
     {
       id: 'icn-grand-canyon-waypoint',
-      label: 'ICN → grand-canyon seed direct + Pacific waypoint',
+      label: 'ICN → grand-canyon Pacific waypoint',
       location: loadTravelSpotBySlug('grand-canyon'),
       originIata: 'ICN',
       expectEdge: false,
       expectPreview: true,
-      expectHubIatas: [],
+      expectHubIatas: ['LAX'],
       expectWaypoints: [[135, 35]],
     },
     {
@@ -199,16 +198,6 @@ async function main() {
       forbiddenHubs: ['FRA'],
       maxDetourRatio: 1.35,
     },
-    {
-      id: 'plan-heuristic-bda-cdg',
-      label: 'S4 plan — BDA→CDG heuristic(+seed) > graph',
-      location: loadTravelSpotBySlug('paris'),
-      originIata: 'BDA',
-      destIata: 'CDG',
-      planOnly: true,
-      expectHubIatas: ['JFK'],
-      expectRouteSources: ['heuristic', 'heuristic-seed'],
-    },
   ];
 
   const results = [];
@@ -248,74 +237,6 @@ async function main() {
         destIata,
         routeLabel: [originIata, ...(testCase.expectHubIatas ?? []), destIata].join(' → '),
         graphHubs: testCase.expectHubIatas ?? [],
-        manualOverride: false,
-        edgeAlternatives: 0,
-        edgeHubs: null,
-      });
-      continue;
-    }
-
-    if (testCase.planOnly) {
-      const destIata = testCase.destIata ?? resolveCinemaDestIata(location);
-      const origin = getAirportHubCoords(originIata);
-      const dest = getAirportHubCoords(destIata);
-      const checks = [];
-      if (!origin || !dest || !destIata) {
-        checks.push('missing origin/dest coords');
-      } else {
-        const plan = resolveFlightRoutePlan(
-          [origin.lng, origin.lat],
-          [dest.lng, dest.lat],
-          location,
-          { originIata, destIata },
-        );
-        if (testCase.expectHubIatas) {
-          if (plan.hubIatas.join(',') !== testCase.expectHubIatas.join(',')) {
-            checks.push(
-              `hubs: expected ${testCase.expectHubIatas.join(',')}, got ${plan.hubIatas.join(',') || '—'}`,
-            );
-          }
-        }
-        if (
-          testCase.expectRouteSources?.length &&
-          !testCase.expectRouteSources.includes(plan.routeSource)
-        ) {
-          checks.push(
-            `routeSource: expected one of ${testCase.expectRouteSources.join('|')}, got ${plan.routeSource}`,
-          );
-        }
-        if (testCase.forbiddenHubs?.some((hub) => plan.hubIatas.includes(hub))) {
-          checks.push(
-            `forbidden hub present: ${testCase.forbiddenHubs.filter((h) => plan.hubIatas.includes(h)).join(',')}`,
-          );
-        }
-        results.push({
-          id: testCase.id,
-          label: testCase.label,
-          pass: checks.length === 0,
-          checks,
-          edge: null,
-          preview: true,
-          destIata,
-          routeLabel: [originIata, ...plan.hubIatas, destIata].join(' → '),
-          graphHubs: plan.hubIatas,
-          manualOverride: false,
-          edgeAlternatives: 0,
-          edgeHubs: null,
-          routeSource: plan.routeSource,
-        });
-        continue;
-      }
-      results.push({
-        id: testCase.id,
-        label: testCase.label,
-        pass: false,
-        checks,
-        edge: null,
-        preview: true,
-        destIata,
-        routeLabel: null,
-        graphHubs: [],
         manualOverride: false,
         edgeAlternatives: 0,
         edgeHubs: null,
@@ -407,11 +328,8 @@ async function main() {
     if (testCase.expectPreview != null && preview !== testCase.expectPreview) {
       checks.push(`preview: expected ${testCase.expectPreview}, got ${preview}`);
     }
-    if (testCase.expectManualOverride === true && !manualOverride) {
+    if (testCase.expectManualOverride && !manualOverride) {
       checks.push('expected manual hub override');
-    }
-    if (testCase.expectManualOverride === false && manualOverride) {
-      checks.push('expected no manual hub override (S5 heuristic)');
     }
     if (testCase.expectRouteIatas) {
       const actual = summary?.routeIatas ?? [];

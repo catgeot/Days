@@ -11,7 +11,6 @@ import {
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
 import { resolveRegionalCorridorAnchors } from './flightRouteCorridors.js';
 import { coordsCrossAvoidZones } from './flightRouteAvoidZones.js';
-import { resolveHeuristicFlightRoute } from './flightRouteHeuristic.js';
 
 const FLIGHT_SPEED_KMH = 850;
 /** Bar·graph hub 후보 — 단일 leg haversine 상한(일반 장거리 직항 ~14–15h + 여유). */
@@ -369,10 +368,7 @@ function hubIatasToCoords(hubIatas) {
 }
 
 /**
- * hub 우선순위: overrides → heuristic(+GATN seed fail-open) → graph precompute → corridor.
- * Assemble order SSOT (longHaul → gateway → final): flightRouteAssemble.js · destArrivalProfiles.json
- * essential_guide timeline hubs are NOT applied here (auto-bake forbidden).
- * Seed is confirm/boost only — never reject-only. Graph BFS is fallback only.
+ * hub 우선순위: overrides/timeline → graph precompute → corridor.
  * @returns {{ hubIatas: string[], geoWaypoints: [number, number][], anchors: [number, number][], routeSource?: string }}
  */
 export function resolveFlightRoutePlan(originLngLat, destLngLat, location, options = {}) {
@@ -404,49 +400,25 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
   if (explicitDirect && !explicitHubsFromOptions) {
     hubIatas = [];
   } else if (!hasManualOverride) {
-    const resolvedDest = String(
-      destIata ?? resolveCinemaDestIata(location, {
+    const graphHubIatas = getGraphFlightRouteHubIatas(location, {
+      originIata: normalizedOrigin,
+      destIata,
+      essentialGuide: options.essentialGuide,
+    });
+    if (graphHubIatas !== null) {
+      hubIatas = [...graphHubIatas];
+      routeSource = 'graph';
+    } else {
+      const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, {
         originIata: normalizedOrigin,
-        essentialGuide: options.essentialGuide,
-      }) ?? '',
-    )
-      .trim()
-      .toUpperCase();
-    const slug = location?.slug ? String(location.slug) : null;
-
-    if (resolvedDest.length === 3) {
-      const heuristic = resolveHeuristicFlightRoute({
-        originIata: normalizedOrigin,
-        destIata: resolvedDest,
-        slug,
       });
-      if (heuristic) {
-        hubIatas = [...(heuristic.hubIatas ?? [])];
-        routeSource = heuristic.source ?? 'heuristic';
-      }
-    }
-
-    if (!routeSource) {
-      const graphHubIatas = getGraphFlightRouteHubIatas(location, {
-        originIata: normalizedOrigin,
-        destIata: resolvedDest || destIata,
-        essentialGuide: options.essentialGuide,
-      });
-      if (graphHubIatas !== null) {
-        hubIatas = [...graphHubIatas];
-        routeSource = 'graph';
+      if (corridor) {
+        if (!geoWaypoints.length) geoWaypoints = [...corridor.waypoints];
+        postHubWaypoints = [...(corridor.postHubWaypoints ?? [])];
+        hubIatas = [...corridor.hubIatas];
+        routeSource = 'corridor';
       } else {
-        const corridor = resolveRegionalCorridorAnchors(originLngLat, destLngLat, {
-          originIata: normalizedOrigin,
-        });
-        if (corridor) {
-          if (!geoWaypoints.length) geoWaypoints = [...corridor.waypoints];
-          postHubWaypoints = [...(corridor.postHubWaypoints ?? [])];
-          hubIatas = [...corridor.hubIatas];
-          routeSource = 'corridor';
-        } else {
-          routeSource = 'direct-fallback';
-        }
+        routeSource = 'direct-fallback';
       }
     }
   }

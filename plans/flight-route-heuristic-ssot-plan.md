@@ -1,15 +1,15 @@
 # 항공 경로 개선 플랜 — 규칙 SSOT + GATN 얇은 seed
 
 **작성**: 2026-06-30  
-**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 ✅** · **S1~S5 ✅** · **Phase 6 QA·Credits ✅** (`2026-07-12`) · **릴리스 노트 합의 대기**
-**관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-07-12-project-log.md`](./2026-07-12-project-log.md)
+**상태**: **플랜 ✅** · **구현 미착수** · Phase 0(S0)부터  
+**관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-06-30-project-log.md`](./2026-06-30-project-log.md)
 
 ## 배경·목표
 
 **현재 문제**
 - [`air_routes`](supabase/migrations/20260621130000_air_routes.sql) = OpenFlights 2014 스냅샷 → ICN→CDG 누락, graph-direct 오탐 ~78건, hub-override 76건
-- 런타임 우선순위: **override → heuristic(+seed) → graph → corridor** ([`globeFlightCinema.js`](src/pages/Home/lib/globeFlightCinema.js) `resolveFlightRoutePlan`) — S4 ✅
-- OpenFlights graph는 fallback · hub-override 축소는 S5
+- 런타임 우선순위: **override → graph precompute → corridor** ([`globeFlightCinema.js`](src/pages/Home/lib/globeFlightCinema.js) `resolveFlightRoutePlan`)
+- geoRules·corridor로 보정 중이나 **그래프가 여전히 1차 추론**
 
 **목표 (이번 대화 합의)**
 - **로컬 세션**으로 진행 (Cloud Agent 미사용)
@@ -83,13 +83,9 @@ npm run audit:flight-arcs
 
 ## Phase 1 — Heuristic Router 프로토타입
 
-**상태**: ✅ S1 (`2026-07-12`) — 런타임 `resolveFlightRoutePlan` 미연결 (S4)
-
-**신규 SSOT 모듈**
+**신규 SSOT 모듈** (제안 경로)
 - [`src/pages/Home/lib/flightRouteHeuristic.js`](src/pages/Home/lib/flightRouteHeuristic.js) — 런타임·스크립트 공용
-- [`src/pages/Home/lib/flightRouteMacroTemplates.js`](src/pages/Home/lib/flightRouteMacroTemplates.js) — origin×region macro
-- [`scripts/lib/flight-route-heuristic.mjs`](scripts/lib/flight-route-heuristic.mjs) — audit 래퍼 + region-gateway seed
-- `npm run smoke:flight-route-heuristic` — **14/14**
+- [`scripts/lib/flight-route-heuristic.mjs`](scripts/lib/flight-route-heuristic.mjs) — audit/precompute 래퍼
 
 **재사용 (중복 금지)**
 - [`flightRouteGeoRules.js`](src/pages/Home/lib/flightRouteGeoRules.js): `TIER_1_TRANSIT_HUBS`, `PREFERRED_HUBS_BY_REGION`, `scoreFlightPathV2`, `filterCandidatesByDetourRatio`, `isMajorTransitHub`
@@ -102,16 +98,16 @@ npm run audit:flight-arcs
 4. direct leg: detour·legHours·small-airport 필터 ([`filterSuspiciousGraphDirect`](src/pages/Home/lib/flightRouteGeoRules.js) 로직 재활용, adjacency optional)
 5. 반환: `{ hubIatas, path, source: 'heuristic', rationale }`
 
-**Macro Templates** — [`flightRouteMacroTemplates.js`](src/pages/Home/lib/flightRouteMacroTemplates.js) ✅
+**Macro Templates** — [`flightRouteMacroTemplates.js`](src/pages/Home/lib/flightRouteMacroTemplates.js) (신규) 또는 [`flightRouteCorridors.js`](src/pages/Home/lib/flightRouteCorridors.js) 확장
 
 | 매크로 | 예시 |
 |--------|------|
-| ICN→northEurope | DXB / HEL·CPH 후보 (직항 허용) |
+| ICN→northEurope | DXB / HEL·CPH 후보 |
 | ICN→southEurope | 직항 또는 FRA·IST |
-| ICN→oceania_remote | NRT→PPT→… |
+| ICN→southPacific | NRT→PPT→… |
 | ICN→africa | ADD·DOH·DXB |
-| ICN→americas | LAX·SEA + gateway |
-| nonICN→* | americas\|europe(BDA→JFK) · southeast_asia\|europe(MNL→HKG) |
+| ICN→americas | LAX·SEA + waypoint |
+| nonICN→* | origin region별 gateway (BDA→JFK 등 기존 smoke 케이스 반영) |
 
 기존 corridor waypoint 규칙(ICN Pacific `[135,35]`, DXB Mediterranean gate)은 **arc 전용**으로 유지 — Bar hub chain과 분리 ([`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) S2 arc fix 준수).
 
@@ -119,13 +115,10 @@ npm run audit:flight-arcs
 
 ## Phase 2 — Heuristic vs Graph diff audit
 
-**상태**: ✅ S2 (`2026-07-12`)
+**신규 스크립트**: `scripts/audit-flight-route-heuristic-diff.mjs`  
+**npm**: `audit:flight-route-heuristic-diff`
 
-**스크립트**: `scripts/audit-flight-route-heuristic-diff.mjs`  
-**npm**: `audit:flight-route-heuristic-diff`  
-**산출**: [`scripts/outputs/heuristic-graph-diff.json`](../scripts/outputs/heuristic-graph-diff.json) · [`.md`](../scripts/outputs/heuristic-graph-diff.md)
-
-271 slug × ICN(및 `--with-smoke-origins` BDA·MNL·PVG)에 대해:
+271 slug × ICN(및 smoke 케이스 BDA·MNL·PVG)에 대해:
 
 | 판정 | 의미 | 후속 |
 |------|------|------|
@@ -134,8 +127,11 @@ npm run audit:flight-arcs
 | `graph_wins` | heuristic 실패 | macro/seed 보강 |
 | `both_bad` | 수동 L3 또는 QA | overrides.mjs |
 
-**ICN 결과**: agree **81** · heuristic_wins **138** · graph_wins **52** · both_bad **0**  
-**합격**: agree+heuristic_wins **80.8%** ✅ · both_bad ≤15 ✅ · conflict 55 수동 큐 유지 (timeline bake 금지)
+**산출물**: `scripts/outputs/heuristic-graph-diff.json` + `.md` (slug, destIata, graph path, heuristic path, 판정, rationale)
+
+**합격 기준 (Phase 2 종료)**
+- `heuristic_wins` + `agree` ≥ **80%** (271 slug ICN 기준)
+- `both_bad` ≤ **15건** (수동 검수 큐)
 
 ---
 
@@ -208,41 +204,34 @@ DXB, DOH, IST, FRA, CDG, AMS, LHR, LAX, JFK, SYD, AKL, PPT, RAR, NAN …
 
 ## Phase 4 — 런타임·precompute 통합
 
-**상태**: ✅ S4 (`2026-07-12`)
-
 **변경 파일 (핵심)**
-- [`scripts/lib/flight-route-resolver.mjs`](scripts/lib/flight-route-resolver.mjs) — `resolveFlightRoutePreferHeuristic()` · seed re-export
+- [`scripts/lib/flight-route-resolver.mjs`](scripts/lib/flight-route-resolver.mjs) — `resolveHeuristicFlightRoute()` 추가, `loadFlightRouteGraph` 옆 seed loader
 - [`scripts/generate-flight-routes.mjs`](scripts/generate-flight-routes.mjs) — precompute: heuristic + seed 우선, graph fallback
 - [`src/pages/Home/lib/globeFlightCinema.js`](src/pages/Home/lib/globeFlightCinema.js) — `resolveFlightRoutePlan` 우선순위 변경
-- [`src/utils/resolveFlightRouteEdge.js`](src/utils/resolveFlightRouteEdge.js) — cinema Edge 경로도 heuristic 우선 (Deno Edge 배포 불필요)
+- [`supabase/functions/resolve-flight-route/flightRouteGraph.ts`](supabase/functions/resolve-flight-route/flightRouteGraph.ts) — resolver 동기 (Edge deploy 필요 시)
 
 **우선순위 변경**
 ```
 override > heuristic(+seed) > graph > corridor
 ```
 
-**seed 정책 (명시)**: confirm-only / **fail-open** — seed miss로 경로 reject 금지. seed 확정 후보가 있으면 그 pool만, 없으면 heuristic 전체 유지.
-
 **회귀**
-- `smoke:flight-route-baseline` **15/15** (S4 plan BDA→CDG 추가) + heuristic **12/12** + seed **8/8**
-- `audit:flight-arcs` **0** · `audit:airports` **none:0**
-- precompute: heuristic **37** · heuristic-seed **148** · graph fallback **0** (heuristic always resolves) · override skip **87**
-- Edge Deno sync **생략** — client heuristic이 non-ICN cinema를 커버, graph Edge는 fallback만
+- `smoke:flight-route-baseline` **14/14** 유지 + heuristic 케이스 추가 (ICN→paris direct, BDA→CDG, ICN→grand-canyon waypoint)
+- `audit:flight-arcs` **0**
+- `npm run generate:flight-routes` → `npm run generate:airports` → `audit:airports none:0`
 
 ---
 
 ## Phase 5 — Override 축소·전수 정리
 
-**상태**: ✅ S5 (`2026-07-12`)
-
 **입력**: Phase 2 diff + graph-direct-review 78건 + hub-override 76건
 
 **작업**
-1. `heuristic_wins` slug — overrides `flightRouteHubIatas` **제거** (macro/heuristic으로 대체) ✅ ~60건
-2. graph-direct 오탐 패턴 → macro/heuristic 위임 (africa conflict 55는 **수동 큐**, bake 금지) ✅
-3. **L3 유지**: 남태평양 연쇄 · uiPlace/Trip 분리 · explicitDirect · moscow IST · 원격 특수 ✅
+1. `heuristic_wins` slug — overrides `flightRouteHubIatas` **제거** (macro/heuristic으로 대체)
+2. graph-direct 오탐 패턴 → macro template 또는 geoRule 추가 (예: Africa→ADD, 소형공항 direct 금지)
+3. **L3 유지** 대상만 overrides에 남김: 남태평양 연쇄, uiPlace, explicitDirect(ICN 전용), Trip 분리 IATA
 
-**결과**: JSON spots hub-override **25** · explicit-direct **3** · smoke **15/15**
+**목표**: hub-override **76 → ~25** (섬·특수만)
 
 **금지**: JSON `graphFlightRouteHubIatas`만 단독 수정 — [`overrides.mjs`](scripts/data/travel-spot-airport-overrides.mjs) → `generate:airports` 절차 준수
 
@@ -250,17 +239,14 @@ override > heuristic(+seed) > graph > corridor
 
 ## Phase 6 — QA·문서·릴리스
 
-**상태**: ✅ QA·문서·Credits (2026-07-12) · **릴리스 노트만 합의 대기**
-
-- **브라우저 QA**: Bar 경로 샘플 Pass (paris·nairobi·bora·moscow·uyuni·seychelles·saipan·hampi · BDA→paris/easter) · `both_bad` **0**
-- **문서**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) handoff 갱신 · Credits `FLIGHT_ROUTE_ATTRIBUTION`
-- **`.ai-context.md` 6절**: Heuristic S1~S6 QA · 미완 = 릴리스 노트 합의
+- **브라우저 QA**: Phase 0 샘플 재검 + `both_bad` 전건
+- **문서**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) handoff 갱신 (아키텍처 다이어그램·npm 추가)
+- **`.ai-context.md` 6절**: npm 1~2줄·미완 1줄만 (5절 이력 누적 금지)
 - **릴리스 노트**: 사용자 합의 후 [`releaseNotes.js`](src/data/releaseNotes.js) — 「항공 경로 추정 방식 개선(규칙 기반)」
 
 **선택 후속** (기존 일지 잔여)
-- Bar 구간 시간 tooltip (F) — 일부 반영됨(`2026-06-29`)
+- Bar 구간 시간 tooltip (F)
 - `import:routes` / OpenFlights — seed+heuristic 안정화 후 **deprecated** 표시 (즉시 삭제 X)
-- africa conflict **55** 수동 큐 (자동 bake 금지 유지)
 
 ---
 
@@ -268,13 +254,12 @@ override > heuristic(+seed) > graph > corridor
 
 | 세션 | 내용 | 산출 |
 |------|------|------|
-| **S0** | Phase 0 baseline audit + 브라우저 샘플 QA | gap JSON·일지 | ✅ |
-| **S1** | Phase 1 Heuristic Router + macro templates | unit smoke 확장 | ✅ 12/12 |
-| **S2** | Phase 2 diff audit | diff MD·우선순위 slug 목록 | ✅ 80.8% |
-| **S3** | Phase 3 GATN seed + `generate:flight-route-seed` | gateway-seed.json | ✅ 37·5660 |
-| **S4** | Phase 4 runtime/precompute 통합 | smoke 15/15 · Edge client fallback | ✅ |
-| **S5** | Phase 5 override 축소 | overrides hub **25** | ✅ |
-| **S6** | Phase 6 QA·문서·릴리스 | Credits · 릴리스 노트 합의 | QA·docs ✅ · RN ← |
+| **S0** | Phase 0 baseline audit + 브라우저 샘플 QA | gap JSON·일지 |
+| **S1** | Phase 1 Heuristic Router + macro templates | unit smoke 확장 |
+| **S2** | Phase 2 diff audit | diff MD·우선순위 slug 목록 |
+| **S3** | Phase 3 GATN seed + `generate:flight-route-seed` | gateway-seed.json |
+| **S4** | Phase 4 runtime/precompute 통합 | smoke 14/14·Edge deploy |
+| **S5** | Phase 5 override 축소 + Phase 6 QA | overrides ~25·릴리스 노트 초안 |
 
 ---
 
@@ -351,19 +336,21 @@ OpenFlights(ODbL)만 쓸 때보다 **출처 표기 의무는 늘어납니다.** 
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**상태**: Phase 6 QA·Credits ✅ · **릴리스 노트 합의 후** `releaseNotes.js` 반영 · africa conflict 55·timeline bake 금지 유지
+**상태**: 플랜 수립·GATN seed lookup(fail-open) 합의 ✅ · **구현 미착수** · Phase 0(S0)부터
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 플랜 Phase 6 · 일지 `2026-07-12` 「Heuristic S6」 | `travelSpots.js` 전체 · timeline cinema bake |
-| `.ai-context.md` 6절 · conflict 55 | africa conflict 자동 bake · seed reject-only |
-| 합의된 릴리스 노트 초안 | JSON `graphFlightRouteHubIatas`만 단독 수정 |
+| 본 플랜 Phase 3「GATN seed vs Graph BFS」·설계 원칙 fail-open | `travelSpots.js` 전체 |
+| `.ai-context.md` 6절 · `flight-route-database-plan.md` handoff | `travelSpotAirports.json` 직접 편집 |
+| 최신 `plans/YYYY-MM-DD-project-log.md` (사용자 baseline 커밋 후) | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 |
 
 **제시어**
 
 ```
-항공경로-이어하기 @plans/flight-route-heuristic-ssot-plan.md @plans/2026-07-12-project-log.md
+항공경로-이어하기 @plans/flight-route-heuristic-ssot-plan.md
 
-S6 QA ✅. 릴리스 노트 합의되면 releaseNotes.js 반영.
-africa conflict 55 수동 큐 · timeline auto-bake 금지.
+Phase 0 baseline부터: audit npm 전체 → gap/graph-direct 스냅샷.
+GATN seed = 관문 outbound lookup만(BFS 없음·fail-open·confirm-only).
+Heuristic vs graph diff 전에 플랜 Phase 1~3 범위 재확인 후 착수.
+로컬 세션 · Cloud Agent 없음.
 ```

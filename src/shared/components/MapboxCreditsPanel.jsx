@@ -1,7 +1,6 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import {
-  FLIGHT_ROUTE_ATTRIBUTION,
   GATEO_TECH_STACK,
   MAPBOX_ATTRIBUTION_LINKS,
   MAPBOX_CREDITS_INTRO,
@@ -19,31 +18,6 @@ const MapboxCreditsPanel = () => (
       <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">지도 데이터 출처</h3>
       <ul className="space-y-2">
         {MAPBOX_ATTRIBUTION_LINKS.map((item) => (
-          <li key={item.label} className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <a
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={linkClass}
-            >
-              {item.label}
-              <ExternalLink size={12} className="shrink-0 opacity-70" aria-hidden />
-            </a>
-            {item.note ? (
-              <span className="text-[11px] text-gray-500">({item.note})</span>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <section>
-      <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">항공 경로 데이터</h3>
-      <p className="text-gray-400 text-xs leading-relaxed break-keep mb-3">
-        {FLIGHT_ROUTE_ATTRIBUTION.intro}
-      </p>
-      <ul className="space-y-2">
-        {FLIGHT_ROUTE_ATTRIBUTION.links.map((item) => (
           <li key={item.label} className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <a
               href={item.href}

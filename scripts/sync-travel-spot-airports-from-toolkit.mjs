@@ -4,9 +4,6 @@
  * - DB는 **읽기만** 합니다 (place_toolkit 수정 없음).
  * - 수동 오버라이드(travel-spot-airport-overrides.mjs)가 있는 slug는 건너뜁니다.
  * - 툴킷이 없거나 IATA를 추출할 수 없는 여행지는 기존 JSON 행을 유지합니다.
- * - **금지**: journey_timeline 경유 허브(`flightRouteHubIatas`) 자동 bake — 시네마는
- *   overrides 수동 승격만 (`extractFlightRouteHubIatasFromEssentialGuide`는 audit 전용).
- *   도착지 코퍼스: `npm run audit:flight-route-dest-corpus` → `generate:dest-arrival-profiles`.
  *
  * 환경 변수 (.env 또는 셸):
  *   VITE_SUPABASE_URL

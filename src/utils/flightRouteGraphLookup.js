@@ -1,6 +1,6 @@
 /**
- * OpenFlights / heuristic precompute — dest IATA lookup (slug·uiPlace 공통).
- * SSOT 생성: npm run generate:flight-routes (heuristic(+seed) > graph)
+ * OpenFlights graph precompute — dest IATA lookup (slug·uiPlace 공통).
+ * SSOT 생성: npm run generate:flight-routes
  */
 import travelSpotFlightRoutes from '../pages/Home/data/travelSpotFlightRoutes.json' with { type: 'json' };
 

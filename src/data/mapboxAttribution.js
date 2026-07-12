@@ -26,28 +26,5 @@ export const GATEO_TECH_STACK = [
   { name: 'Google Gemini', detail: 'MOONi AI (프록시 경유)' },
 ];
 
-/** 항공 경로 추정 데이터 출처 — Credits 탭 (시각화·추정용, 실제 운항 스케줄 아님) */
-export const FLIGHT_ROUTE_ATTRIBUTION = {
-  intro:
-    '홈·플래너의 항공 경로 미리보기는 추정 경로입니다. 실제 운항·스케줄이 아니며, 아래 공개 데이터와 규칙 기반 추정으로 그립니다.',
-  links: [
-    {
-      label: 'OpenFlights routes',
-      href: 'https://openflights.org/data.html',
-      note: 'ODbL · 그래프 fallback',
-    },
-    {
-      label: 'OurAirports',
-      href: 'https://ourairports.com/data/',
-      note: '공항 좌표',
-    },
-    {
-      label: 'Wikipedia GATN (route extract)',
-      href: 'https://github.com/julien-arino/wikipediaGATN',
-      note: 'CC BY-SA · 관문 직항 lookup만 (코드 미포함)',
-    },
-  ],
-};
-
 export const MAPBOX_CREDITS_INTRO =
   '홈 지구본·여행 스케치 위치 지도는 Mapbox 지도 스타일과 OpenStreetMap 등 오픈 데이터를 사용합니다. 모바일 화면에서는 지도 위 텍스트 attribution 대신 이 페이지에서 출처를 확인할 수 있습니다.';

@@ -1,7 +1,7 @@
 /**
- * ICN-centric route resolver — heuristic(+GATN seed) first, OpenFlights graph fallback.
- * Phase 4: override는 generate 쪽 skip · runtime cinema는 resolveFlightRoutePlan.
- * Graph BFS는 fallback only — seed는 lookup confirm/fail-open (reject-only 금지).
+ * ICN-centric OpenFlights graph resolver — max 2 hub hops (3 legs).
+ * Phase 2 precompute SSOT · Phase 3 Edge reuse candidate.
+ * v2: geo·권역 scoring — flightRouteGeoRules.js
  */
 import {
   estimateFlightHours,
@@ -15,18 +15,9 @@ import {
   scoreFlightPathV2,
   TIER_1_TRANSIT_HUBS,
 } from '../../src/pages/Home/lib/flightRouteGeoRules.js';
-import { resolveHeuristicFlightRoute } from '../../src/pages/Home/lib/flightRouteHeuristic.js';
-import {
-  seedConfirmsPath,
-  seedHasDirectEdge,
-} from '../../src/pages/Home/lib/flightRouteGatewaySeed.js';
 import { loadOurAirportsRecords } from './ourairports.mjs';
 import { buildRouteAdjacency, loadOpenFlightsRoutes } from './openflights.mjs';
 import { createSupabaseScriptClient, loadEnvFile } from './supabase-script-env.mjs';
-import {
-  loadRegionGatewaySeed,
-  resolveHeuristicFlightRouteForAudit,
-} from './flight-route-heuristic.mjs';
 
 export const DEFAULT_ORIGIN_IATA = 'ICN';
 export const MAX_HUB_STOPS = 2;
@@ -316,64 +307,3 @@ export function resolveFlightRouteFromGraph(destIata, adjacency, options = {}) {
     airportMeta: options.airportMeta,
   });
 }
-
-/**
- * Heuristic(+seed fail-open) then OpenFlights graph fallback.
- * No BFS in the heuristic path — seed is lookup confirm/boost only.
- *
- * @param {{
- *   originIata?: string,
- *   destIata: string,
- *   slug?: string | null,
- *   airportMeta?: Map<string, unknown> | null,
- *   adjacency?: Map<string, Set<string>> | null,
- *   preferHeuristic?: boolean,
- * }} input
- * @returns {{
- *   hubIatas: string[],
- *   hops: number,
- *   source: string,
- *   path: string[],
- *   rationale?: object,
- * } | null}
- */
-export function resolveFlightRoutePreferHeuristic(input = {}) {
-  const originIata = String(input.originIata ?? DEFAULT_ORIGIN_IATA).trim().toUpperCase();
-  const destIata = String(input.destIata ?? '').trim().toUpperCase();
-  if (!destIata || destIata.length !== 3) return null;
-
-  const preferHeuristic = input.preferHeuristic !== false;
-  if (preferHeuristic) {
-    const heuristic = resolveHeuristicFlightRouteForAudit({
-      originIata,
-      destIata,
-      slug: input.slug,
-      airportMeta: input.airportMeta ?? null,
-      adjacency: input.adjacency ?? null,
-    });
-    if (heuristic?.path?.length) {
-      const hubs = Array.isArray(heuristic.hubIatas) ? heuristic.hubIatas : [];
-      return {
-        hubIatas: hubs,
-        hops: Math.max(1, hubs.length + 1),
-        source: heuristic.source ?? 'heuristic',
-        path: heuristic.path,
-        rationale: heuristic.rationale,
-      };
-    }
-  }
-
-  if (!input.adjacency) return null;
-  const graph = resolveGraphFlightRoute(originIata, destIata, input.adjacency, {
-    airportMeta: input.airportMeta ?? null,
-  });
-  return graph;
-}
-
-export {
-  resolveHeuristicFlightRoute,
-  resolveHeuristicFlightRouteForAudit,
-  loadRegionGatewaySeed,
-  seedConfirmsPath,
-  seedHasDirectEdge,
-};

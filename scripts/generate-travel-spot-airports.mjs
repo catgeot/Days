@@ -250,7 +250,7 @@ function loadGraphFlightRoutesBySlug() {
   }
 }
 
-/** overrides hub·trip 분리 없을 때만 graph/heuristic precompute 필드 병합 (Phase 4) */
+/** overrides hub·trip 분리 없을 때만 graph precompute 필드 병합 (Phase 2) */
 function mergeGraphFlightRoute(row, slug, graphBySlug, override) {
   if (!row) return row;
   if (Array.isArray(override?.flightRouteHubIatas)) return row;

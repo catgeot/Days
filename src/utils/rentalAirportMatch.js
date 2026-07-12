@@ -1054,10 +1054,6 @@ export function getFlightRouteHubIatas(location, options = {}) {
     .toUpperCase();
   const row = options.ignoreStaticAirportMap === true ? null : getFlightRouteAirportRow(location);
 
-  // Cinema hubs: overrides / tripFlightArrival only.
-  // Do NOT call extractFlightRouteHubIatasFromEssentialGuide here (auto-bake forbidden 2026-06-18).
-  // Audit corpus: npm run audit:flight-route-dest-corpus · profiles: destArrivalProfiles.json
-
   let hubs = [];
   if (Array.isArray(row?.flightRouteHubIatas)) {
     if (row.flightRouteHubIatas.length === 0) return [];
@@ -1082,8 +1078,7 @@ export function getFlightRouteHubIatas(location, options = {}) {
 }
 
 /**
- * OpenFlights graph / heuristic precompute hub chain — overrides·trip 다음 tier (corridor 이전).
- * Phase 4: runtime cinema prefers live heuristic before this baked field.
+ * OpenFlights graph precompute hub chain — overrides·trip 다음 tier (corridor 이전).
  * @returns {string[] | null} null = graph 없음 · [] = graph 직항
  */
 export function getGraphFlightRouteHubIatas(location, options = {}) {

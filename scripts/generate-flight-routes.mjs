@@ -1,13 +1,9 @@
 /**
- * Heuristic(+GATN seed) → OpenFlights graph fallback → slug precompute.
- *
- * Priority (Phase 4): heuristic(+seed fail-open) > graph
- * Runtime cinema: override > heuristic(+seed) > graph > corridor
+ * OpenFlights graph → slug precompute (ICN-centric hub chain).
  *
  * npm run generate:flight-routes
  * npm run generate:flight-routes -- --from-supabase
  * npm run generate:flight-routes -- --dry-run
- * npm run generate:flight-routes -- --graph-only
  */
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
@@ -20,7 +16,6 @@ import {
   loadAirportMetaMap,
   loadFlightRouteGraph,
   resolveFlightRouteFromGraph,
-  resolveFlightRoutePreferHeuristic,
 } from './lib/flight-route-resolver.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -30,7 +25,6 @@ const OUTPUT_PATH = join(ROOT, 'src/pages/Home/data/travelSpotFlightRoutes.json'
 const dryRun = process.argv.includes('--dry-run');
 const fromSupabase = process.argv.includes('--from-supabase');
 const skipDownload = process.argv.includes('--skip-download');
-const graphOnly = process.argv.includes('--graph-only');
 
 function hasManualFlightRouteOverride(slug) {
   const override = TRAVEL_SPOT_AIRPORT_OVERRIDES[slug];
@@ -43,28 +37,19 @@ function hasManualFlightRouteOverride(slug) {
   return trip.length === 3 && preferred.length === 3 && trip !== preferred;
 }
 
-function isHeuristicSource(source) {
-  return source === 'heuristic' || source === 'heuristic-seed';
-}
-
 async function main() {
   console.log('Loading OpenFlights route graph...');
   const [{ adjacency, routeLegCount }, airportMeta] = await Promise.all([
     loadFlightRouteGraph({ fromSupabase, skipDownload }),
     loadAirportMetaMap({ skipDownload: true }),
   ]);
-  console.log(
-    `Graph: ${routeLegCount} legs · ${adjacency.size} origin nodes · airport meta ${airportMeta.size}` +
-      (graphOnly ? ' · graph-only' : ' · heuristic-first'),
-  );
+  console.log(`Graph: ${routeLegCount} legs · ${adjacency.size} origin nodes · airport meta ${airportMeta.size}`);
 
   /** @type {Record<string, unknown>} */
   const spots = {};
   const stats = {
     total: 0,
     resolved: 0,
-    heuristic: 0,
-    heuristicSeed: 0,
     direct: 0,
     oneHop: 0,
     twoHop: 0,
@@ -88,18 +73,10 @@ async function main() {
       continue;
     }
 
-    const resolved = graphOnly
-      ? resolveFlightRouteFromGraph(destIata, adjacency, {
-          originIata: DEFAULT_ORIGIN_IATA,
-          airportMeta,
-        })
-      : resolveFlightRoutePreferHeuristic({
-          originIata: DEFAULT_ORIGIN_IATA,
-          destIata,
-          slug,
-          airportMeta,
-          adjacency,
-        });
+    const resolved = resolveFlightRouteFromGraph(destIata, adjacency, {
+      originIata: DEFAULT_ORIGIN_IATA,
+      airportMeta,
+    });
 
     if (!resolved) {
       stats.unresolved += 1;
@@ -114,9 +91,7 @@ async function main() {
     }
 
     stats.resolved += 1;
-    if (resolved.source === 'heuristic-seed') stats.heuristicSeed += 1;
-    else if (isHeuristicSource(resolved.source)) stats.heuristic += 1;
-    else if (resolved.source === 'graph-direct') stats.direct += 1;
+    if (resolved.source === 'graph-direct') stats.direct += 1;
     else if (resolved.source === 'graph-1hop') stats.oneHop += 1;
     else if (resolved.source === 'graph-2hop') stats.twoHop += 1;
 
@@ -126,15 +101,12 @@ async function main() {
       hops: resolved.hops,
       source: resolved.source,
       path: resolved.path,
-      ...(resolved.rationale?.macroId
-        ? { macroId: resolved.rationale.macroId, seedConfirmed: resolved.rationale.seedConfirmed === true }
-        : {}),
     };
   }
 
   const output = {
     generatedAt: new Date().toISOString(),
-    source: fromSupabase ? 'supabase-air_routes' : 'openflights-cache+heuristic',
+    source: fromSupabase ? 'supabase-air_routes' : 'openflights-cache',
     originIata: DEFAULT_ORIGIN_IATA,
     routeLegCount,
     graphNodeCount: adjacency.size,
@@ -142,7 +114,7 @@ async function main() {
     stats,
     spots,
     note:
-      'Phase 4 precompute — heuristic(+GATN seed fail-open) > graph. Runtime: override > heuristic > graph > corridor. BFS는 graph fallback만.',
+      'Phase 2 precompute — runtime arc는 overrides>corridor 우선. graph 필드는 audit·Phase 3 Edge용.',
   };
 
   console.log('Stats:', stats);
