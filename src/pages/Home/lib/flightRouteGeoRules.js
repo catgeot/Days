@@ -106,6 +106,17 @@ export function resolveDestRegion(iata, meta) {
     : getAirportHubCoords(iata);
   if (!coords) return 'unknown';
   const { lat, lng } = coords;
+  // Europe (before Africa bbox — HEL/CDG/FCO have no continent in rental hubs)
+  if (lat >= 35 && lat <= 72 && lng >= -25 && lng <= 45) return 'europe';
+  // Americas (mainland + Caribbean / Bermuda)
+  if (lng <= -30 && lng >= -170) return 'americas';
+  // Southeast Asia / Philippines
+  if (lat >= -11 && lat <= 28 && lng >= 95 && lng <= 141) return 'southeast_asia';
+  // Oceania (AU/NZ + near Pacific) — remote Polynesia often lng < -130
+  if (lat >= -50 && lat <= 0 && lng >= 110 && lng <= 180) return 'oceania';
+  if (lat > -30 && lat < 20 && lng < -130 && lng > -180) return 'oceania';
+  // Middle East (after Europe; before broad Africa)
+  if (lat >= 12 && lat <= 42 && lng >= 32 && lng <= 62) return 'middle_east';
   if (lat >= -35 && lat <= 37 && lng >= -20 && lng <= 55) return 'africa';
   if (lat >= 5 && lat <= 40 && lng >= 60 && lng <= 100) return 'south_asia';
   return 'unknown';

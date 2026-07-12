@@ -44,21 +44,33 @@
 | 플래너 timeline | 예전에 자동 bake 시도→회귀 | **audit만** · cinemaSafe/toolkit-audit 분리 |
 | Heuristic 착수 | Phase 0 대기 | baseline 숫자·코퍼스 확보 → **S1 Router/macro** 가능 |
 
+---
+
+## 항공경로 Heuristic S1 — Router + macro
+
+**상태**: ✅ 프로토타입·unit smoke (2026-07-12) · **런타임 미연결** (S4)
+
+- [`flightRouteMacroTemplates.js`](../src/pages/Home/lib/flightRouteMacroTemplates.js) — ICN×권역 · BDA/MNL non-ICN macro
+- [`flightRouteHeuristic.js`](../src/pages/Home/lib/flightRouteHeuristic.js) — macro 후보 + `scoreFlightPathV2`/detour → `assembleFlightRouteHubs`
+- cinemaSafe profile만 후보 가중 · toolkit-audit(santorini 등) 미적용
+- `resolveDestRegion` 좌표 fallback 보강 (EU/Americas/SEA/Oceania)
+- `npm run smoke:flight-route-heuristic` **12/12** · baseline **14/14** 회귀 유지
+
 ### 다음 세션 — 에이전트 핸드오프
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 일지 「항공경로 도착지 코퍼스」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
-| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 1~2 | timeline hub cinema 자동 bake |
-| `destArrivalProfiles.json` · `flightRouteAssemble.js` · `dest-region-gateways.json` | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 |
+| 본 일지 「Heuristic S1」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
+| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 2 | timeline hub cinema 자동 bake · S1을 `resolveFlightRoutePlan`에 임의 연결 |
+| `flightRouteHeuristic.js` · `flightRouteMacroTemplates.js` | overrides 없이 JSON `graphFlightRouteHubIatas`만 수정 |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/2026-07-12-project-log.md @plans/flight-route-heuristic-ssot-plan.md
 
-dest 코퍼스·Phase 0 스냅샷 완료. 다음 = Heuristic Router + macro (S1).
-assemble = longHaul→gateway→final · destArrivalProfiles cinemaSafe만 후보.
-timeline auto-bake 금지 · conflict 55는 수동 승격 큐.
-로컬 · overrides.mjs → generate:airports 절차 준수.
+S1 ✅. 다음 = S2 Phase 2 heuristic↔graph diff audit.
+audit:flight-route-heuristic-diff · agree+heuristic_wins ≥80% 목표.
+cinemaSafe만 후보 · timeline auto-bake 금지 · conflict 55는 수동 승격 큐.
+로컬 · resolveFlightRoutePlan 연결은 S4 · overrides.mjs → generate:airports 준수.
 ```
