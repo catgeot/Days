@@ -231,20 +231,21 @@
     },
     "samoa": {
       "finalIata": "APW",
-      "gatewayIata": null,
+      "gatewayIata": "NAN",
       "longHaulHubs": [
-        "AKL",
+        "NRT"
+      ],
+      "nearDestHubs": [
         "NAN"
       ],
-      "nearDestHubs": [],
-      "destRegion": "unknown",
+      "destRegion": "oceania",
       "hubIatas": [
-        "AKL",
+        "NRT",
         "NAN"
       ],
       "path": [
         "ICN",
-        "AKL",
+        "NRT",
         "NAN",
         "APW"
       ],
@@ -2485,17 +2486,12 @@
     "washington-dc": {
       "finalIata": "IAD",
       "gatewayIata": null,
-      "longHaulHubs": [
-        "ATL"
-      ],
+      "longHaulHubs": [],
       "nearDestHubs": [],
-      "destRegion": "unknown",
-      "hubIatas": [
-        "ATL"
-      ],
+      "destRegion": "americas",
+      "hubIatas": [],
       "path": [
         "ICN",
-        "ATL",
         "IAD"
       ],
       "source": "override",

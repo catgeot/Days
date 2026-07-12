@@ -126,34 +126,49 @@
 - `npm run audit:flight-route-risk` — risk **50→28** · hub_mismatch **0** · 잔여 28은 프로필 오탐·대안공항 위주(후지·상하이·코펜하겐 HEL·함피 DEL 등) → **자동 bake 금지**
 - smoke baseline **15/15** · heuristic **14/14** · airports `none:0`
 
+### QA — 직항 우선 · Americas/Hawaii/Samoa
+
+**상태**: ✅ 코드·smoke (2026-07-12) · **홈 클릭 QA 대기**
+
+| slug | 이전 | 이후 |
+|------|------|------|
+| `hawaii` | (HNL americas 오분류 시 LAX 경유) | **ICN→HNL** (`ICN\|oceania`) |
+| `washington-dc` | ICN→ATL→IAD | **ICN→IAD** (seed 직항) |
+| `bermuda` | ICN→YVR→JFK→BDA | **ICN→ATL→BDA** |
+| `miami` | ICN→YVR→ATL→MIA | **ICN→ATL→MIA** |
+| `buenos-aires` | ICN→LAX→ATL→EZE | **ICN→ATL→EZE** |
+| `samoa` | AKL+NAN 연쇄 과다 | **ICN→NRT→NAN→APW** |
+
+- **원인**: (1) HNL `lng~-158`이 Americas bbox에 걸림 (2) `ICN|americas` `allowDirect:false` + ATL/JFK longHaul 부재 → seed 직항·동부 1hop 탈락 (3) samoa `flightRouteHubIatas: [AKL,NAN]`을 연쇄로 해석
+- **수정**: geoRules Hawaii/Polynesia→oceania 선행 · americas `allowDirect:true` + ATL·JFK longHaul · samoa/washington override·cinemaSafe profile · grand-canyon smoke 직항+waypoint
+- smoke heuristic **18/18** · baseline **15/15** · airports `none:0`
+
 ### 다음 세션 — 에이전트 핸드오프
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 일지 「QA — S5 hub」·다음 QA 큐 | 잔여 28 전부 L3 bake · timeline cinema bake |
+| 본 일지 「QA — 직항 우선」 | 잔여 28 전부 L3 bake · timeline cinema bake |
 | [`scripts/outputs/flight-route-risk.md`](../scripts/outputs/flight-route-risk.md) | `travelSpots.js` / spots JSON 직접 |
 | [`.ai-context.md`](../.ai-context.md) 6절 | africa conflict 55 bake |
 
 **다음 QA 큐 (홈 클릭)**
 
-| slug/검색 | 이슈 메모 (현재 precompute) |
-|-----------|------------------------------|
-| 하와이 `hawaii` | ICN→HNL 직항 — 회귀 확인 |
-| 사모아 `samoa` | 불필요 다중 경유 의심 |
-| 버뮤다 `bermuda` | ICN→YVR→JFK→BDA (과다 경유) |
-| 워싱턴 | 직항 있는데 경유 우선 |
-| 마이애미 `miami` | ICN→YVR→ATL→MIA |
-| 부에노스아이레스 `buenos-aires` | ICN→LAX→ATL→EZE (미국 2회) |
-
-**직항 vs 경유**: 시네마는 대표 arc(실시간 검색 아님). macro `allowDirect`·seed·detour로 고름. **직항 가능한데 경유만 나오면 버그/점수 오탐** (SEA SIN/HKT와 동일 계열). 비-ICN 유연성은 별도 경로.
+| slug/검색 | 기대 path |
+|-----------|-----------|
+| 하와이 `hawaii` | ICN→HNL |
+| 워싱턴 `washington-dc` | ICN→IAD |
+| 버뮤다 `bermuda` | ICN→ATL→BDA |
+| 마이애미 `miami` | ICN→ATL→MIA |
+| 부에노스아이레스 `buenos-aires` | ICN→ATL→EZE |
+| 사모아 `samoa` | ICN→NRT→NAN→APW |
+| (부수) 라스베이거스·그랜드캐년 | ICN→LAS 직항 + 태평양 waypoint |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/2026-07-12-project-log.md
 
-S5 hub QA L3 복구 커밋됨. 다음 클릭 QA:
-하와이·사모아·버뮤다·워싱턴·마이애미·부에노스아이레스
-(직항인데 경유 / 미국 이중 경유 / 사모아 과다 hub).
-직항 가능하면 직항 우선 — allowDirect·seed 점수 점검.
+직항 우선 Americas/Hawaii/Samoa 반영됨. 홈 클릭 QA:
+하와이 HNL · 워싱턴 IAD · 버뮤다/마이애미/부에노스 ATL 1hop · 사모아 NRT→NAN.
+이상 없으면 릴리스 노트 합의.
 ```

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-07-12T09:41:48.125Z",
+    "generatedAt": "2026-07-12T10:10:01.074Z",
     "spotCount": 272,
     "placeIdCount": 633,
     "stats": {
@@ -123,8 +123,7 @@
       "bannerNote": "버뮤다 최종 도착은 버뮤다 국제공항(BDA)입니다. 한국에서는 인천(ICN) 직항이 없어 보통 미국 동부(뉴욕 JFK·보스턴 BOS·애틀랜타 ATL·마이애미 MIA 등) 또는 영국·유럽(런던 LHR·파리 CDG 등) 경유 후 BDA로 연결되는 일정이 일반적입니다. 미국 경유 시 ESTA·캐나다·영국 경유 시 해당 입국·트랜짓 비자 규정을 반드시 확인하세요. 항공권 검색 시 도착지 코드 BDA를 입력하고, 티켓의 최종 도착 공항을 확인한 뒤 제휴 링크도 맞춰 주세요.",
       "rationale": "버뮤다 국제공항(L.F. Wade) — 한국 직항 없음",
       "graphFlightRouteHubIatas": [
-        "YVR",
-        "JFK"
+        "ATL"
       ],
       "graphFlightRouteSource": "heuristic-seed"
     },
@@ -194,10 +193,10 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "사모아(아피아)는 인천 직항이 없습니다. 보통 인천→오클랜드(AKL)·피지 난디(NAN) 등 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
-      "rationale": "팔레올로 APW — 시네마 ICN→AKL/NAN 경유",
+      "bannerNote": "사모아(아피아)는 인천 직항이 없습니다. 보통 인천→도쿄(NRT)·피지 난디(NAN) 또는 오클랜드(AKL) 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "팔레올로 APW — 시네마 ICN→NRT→NAN→APW (AKL·HNL 1hop은 seed/detour 열세)",
       "flightRouteHubIatas": [
-        "AKL",
+        "NRT",
         "NAN"
       ]
     },
@@ -283,9 +282,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "YVR"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "iguazu-falls": {
@@ -545,7 +542,7 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "YVR"
+        "ATL"
       ],
       "graphFlightRouteSource": "heuristic-seed"
     },
@@ -749,7 +746,6 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "LAX",
         "ATL"
       ],
       "graphFlightRouteSource": "heuristic-seed"
@@ -1023,10 +1019,8 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "SEA"
-      ],
-      "graphFlightRouteSource": "heuristic-seed"
+      "graphFlightRouteHubIatas": [],
+      "graphFlightRouteSource": "heuristic"
     },
     "amazon-rainforest": {
       "primaryIatas": [
@@ -1131,9 +1125,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "SFO"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "tonga": {
@@ -1450,9 +1442,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "LAX"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "las-vegas": {
@@ -1463,16 +1453,14 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피",
+      "rationale": "ICN→LAS 직항(seed) · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
           135,
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "LAX"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "toronto": {
@@ -1490,9 +1478,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "ATL"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "vancouver": {
@@ -1510,9 +1496,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "LAX"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "auckland": {
@@ -1688,9 +1672,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "LAX"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "grand-canyon": {
@@ -1702,16 +1684,14 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피",
+      "rationale": "ICN→LAS 직항(seed) · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
           135,
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "LAX"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "torres-del-paine": {
@@ -1919,9 +1899,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "LAX"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "munich": {
@@ -2080,17 +2058,14 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "ICN→ATL→IAD · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
+      "rationale": "ICN→IAD 직항(seed) · 태평양 waypoint로 시베리아·북한 bbox arc 회피",
       "flightRouteWaypoints": [
         [
           135,
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "ATL"
-      ],
-      "graphFlightRouteSource": "heuristic-seed"
+      "flightRouteHubIatas": []
     },
     "boston": {
       "primaryIatas": [
@@ -2122,7 +2097,6 @@
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
       "graphFlightRouteHubIatas": [
-        "YVR",
         "ATL"
       ],
       "graphFlightRouteSource": "heuristic-seed"
@@ -2138,9 +2112,7 @@
       "source": "toolkit-sync",
       "confidence": "high",
       "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [
-        "YVR"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "angkor-thom": {
@@ -2851,9 +2823,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "YVR"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "wadi-rum": {
@@ -2955,10 +2925,8 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "SEA"
-      ],
-      "graphFlightRouteSource": "heuristic-seed"
+      "graphFlightRouteHubIatas": [],
+      "graphFlightRouteSource": "heuristic"
     },
     "carstensz-pyramid": {
       "primaryIatas": [
@@ -2990,9 +2958,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "SFO"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "arequipa": {
@@ -3896,9 +3862,7 @@
           35
         ]
       ],
-      "graphFlightRouteHubIatas": [
-        "ATL"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic-seed"
     },
     "perth": {
@@ -3981,9 +3945,7 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "아바나(Havana) HAV — citiesData·Phase D-4 placeIds 승격",
-      "graphFlightRouteHubIatas": [
-        "YVR"
-      ],
+      "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "heuristic"
     },
     "malta": {

@@ -137,7 +137,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     kind: 'multi',
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피'
+    rationale: 'ICN→LAS 직항(seed) · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   hampi: {
     primaryIatas: ['BLR'],
@@ -199,11 +199,12 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   samoa: {
     primaryIatas: ['APW'],
     preferredLinkIata: 'APW',
-    flightRouteHubIatas: ['AKL', 'NAN'],
+    // AKL·NAN는 대안 관문(병렬)이지 연쇄가 아님 — 시네마는 seed 확인된 ICN→NRT→NAN→APW
+    flightRouteHubIatas: ['NRT', 'NAN'],
     confidence: 'high',
-    rationale: '팔레올로 APW — 시네마 ICN→AKL/NAN 경유',
+    rationale: '팔레올로 APW — 시네마 ICN→NRT→NAN→APW (AKL·HNL 1hop은 seed/detour 열세)',
     bannerNote:
-      '사모아(아피아)는 인천 직항이 없습니다. 보통 인천→오클랜드(AKL)·피지 난디(NAN) 등 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+      '사모아(아피아)는 인천 직항이 없습니다. 보통 인천→도쿄(NRT)·피지 난디(NAN) 또는 오클랜드(AKL) 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   saipan: {
     primaryIatas: ['SPN'],
@@ -1239,7 +1240,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     preferredLinkIata: 'LAS',
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→LAX→LAS · 태평양 waypoint로 시베리아 bbox arc 회피'
+    rationale: 'ICN→LAS 직항(seed) · 태평양 waypoint로 시베리아 bbox arc 회피'
   },
   'los-angeles': {
     primaryIatas: ['LAX'],
@@ -1311,9 +1312,10 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   'washington-dc': {
     primaryIatas: ['IAD'],
     preferredLinkIata: 'IAD',
+    flightRouteHubIatas: [],
     flightRouteWaypoints: [[135, 35]],
     confidence: 'high',
-    rationale: 'ICN→ATL→IAD · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
+    rationale: 'ICN→IAD 직항(seed) · 태평양 waypoint로 시베리아·북한 bbox arc 회피'
   },
   yosemite: {
     primaryIatas: ['SFO'],

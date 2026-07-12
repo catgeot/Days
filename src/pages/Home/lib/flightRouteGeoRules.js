@@ -108,11 +108,13 @@ export function resolveDestRegion(iata, meta) {
   const { lat, lng } = coords;
   // Europe (before Africa bbox — HEL/CDG/FCO have no continent in rental hubs)
   if (lat >= 35 && lat <= 72 && lng >= -25 && lng <= 45) return 'europe';
-  // Americas (mainland + Caribbean / Bermuda)
+  // Hawaii / Polynesia (before Americas — HNL lng~-158 was misclassified as americas)
+  if (lng < -130 && lng > -180 && lat > -50 && lat < 30) return 'oceania';
+  // Americas (mainland + Alaska + Caribbean / Bermuda)
   if (lng <= -30 && lng >= -170) return 'americas';
   // Southeast Asia / Philippines
   if (lat >= -11 && lat <= 28 && lng >= 95 && lng <= 141) return 'southeast_asia';
-  // Oceania (AU/NZ + near Pacific) — remote Polynesia often lng < -130
+  // Oceania (AU/NZ + near Pacific)
   if (lat >= -50 && lat <= 0 && lng >= 110 && lng <= 180) return 'oceania';
   if (lat > -30 && lat < 20 && lng < -130 && lng > -180) return 'oceania';
   // Middle East (after Europe; before broad Africa)

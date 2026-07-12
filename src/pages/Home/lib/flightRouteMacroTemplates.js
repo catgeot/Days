@@ -100,10 +100,11 @@ export const MACRO_TEMPLATES = {
   },
   'ICN|americas': {
     macroId: 'ICN|americas',
-    allowDirect: false,
-    longHaulChains: [['LAX'], ['SEA'], ['SFO'], ['YVR']],
-    gatewayCandidates: ['LAX', 'ATL', 'JFK', 'GRU', 'PTY'],
-    notes: 'Pacific west-coast first; ATL/JFK/LatAm for near-dest',
+    allowDirect: true,
+    longHaulChains: [['LAX'], ['SEA'], ['SFO'], ['YVR'], ['ATL'], ['JFK']],
+    gatewayCandidates: ['LAX', 'ATL', 'JFK', 'GRU', 'PTY', 'MIA'],
+    notes:
+      'Seed trunk directs OK (IAD·LAX·SEA); else west-coast / ATL·JFK 1hop — avoid US double via',
   },
   'ICN|oceania_remote': {
     macroId: 'ICN|oceania_remote',

@@ -1,21 +1,21 @@
 {
-  "generatedAt": "2026-07-12T09:42:00.620Z",
+  "generatedAt": "2026-07-12T10:08:30.607Z",
   "source": "openflights-cache+heuristic",
   "originIata": "ICN",
   "routeLegCount": 67662,
   "graphNodeCount": 3409,
-  "spotCount": 199,
+  "spotCount": 198,
   "stats": {
     "total": 272,
-    "resolved": 199,
-    "heuristic": 23,
-    "heuristicSeed": 176,
+    "resolved": 198,
+    "heuristic": 25,
+    "heuristicSeed": 173,
     "direct": 0,
     "oneHop": 0,
     "twoHop": 0,
     "unresolved": 0,
     "noDestIata": 0,
-    "manualOverrideSkipped": 73
+    "manualOverrideSkipped": 74
   },
   "spots": {
     "cancun": {
@@ -36,15 +36,13 @@
     "bermuda": {
       "destIata": "BDA",
       "hubIatas": [
-        "YVR",
-        "JFK"
+        "ATL"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "YVR",
-        "JFK",
+        "ATL",
         "BDA"
       ],
       "macroId": "ICN|americas",
@@ -133,14 +131,11 @@
     },
     "banff-national-park": {
       "destIata": "YYC",
-      "hubIatas": [
-        "YVR"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "YVR",
         "YYC"
       ],
       "macroId": "ICN|americas",
@@ -233,13 +228,13 @@
     "new-york": {
       "destIata": "JFK",
       "hubIatas": [
-        "YVR"
+        "ATL"
       ],
       "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "YVR",
+        "ATL",
         "JFK"
       ],
       "macroId": "ICN|americas",
@@ -383,14 +378,12 @@
     "buenos-aires": {
       "destIata": "EZE",
       "hubIatas": [
-        "LAX",
         "ATL"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "LAX",
         "ATL",
         "EZE"
       ],
@@ -576,18 +569,15 @@
     },
     "alaska": {
       "destIata": "ANC",
-      "hubIatas": [
-        "SEA"
-      ],
-      "hops": 2,
-      "source": "heuristic-seed",
+      "hubIatas": [],
+      "hops": 1,
+      "source": "heuristic",
       "path": [
         "ICN",
-        "SEA",
         "ANC"
       ],
       "macroId": "ICN|americas",
-      "seedConfirmed": true
+      "seedConfirmed": false
     },
     "serengeti": {
       "destIata": "JRO",
@@ -606,14 +596,11 @@
     },
     "los-angeles": {
       "destIata": "LAX",
-      "hubIatas": [
-        "SFO"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "SFO",
         "LAX"
       ],
       "macroId": "ICN|americas",
@@ -830,14 +817,11 @@
     },
     "san-francisco": {
       "destIata": "SFO",
-      "hubIatas": [
-        "LAX"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "LAX",
         "SFO"
       ],
       "macroId": "ICN|americas",
@@ -845,14 +829,11 @@
     },
     "las-vegas": {
       "destIata": "LAS",
-      "hubIatas": [
-        "LAX"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "LAX",
         "LAS"
       ],
       "macroId": "ICN|americas",
@@ -860,14 +841,11 @@
     },
     "toronto": {
       "destIata": "YYZ",
-      "hubIatas": [
-        "ATL"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "ATL",
         "YYZ"
       ],
       "macroId": "ICN|americas",
@@ -875,14 +853,11 @@
     },
     "vancouver": {
       "destIata": "YVR",
-      "hubIatas": [
-        "LAX"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "LAX",
         "YVR"
       ],
       "macroId": "ICN|americas",
@@ -1004,14 +979,11 @@
     },
     "yosemite": {
       "destIata": "SFO",
-      "hubIatas": [
-        "LAX"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "LAX",
         "SFO"
       ],
       "macroId": "ICN|americas",
@@ -1019,14 +991,11 @@
     },
     "grand-canyon": {
       "destIata": "LAS",
-      "hubIatas": [
-        "LAX"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "LAX",
         "LAS"
       ],
       "macroId": "ICN|americas",
@@ -1205,14 +1174,11 @@
     },
     "seattle": {
       "destIata": "SEA",
-      "hubIatas": [
-        "LAX"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "LAX",
         "SEA"
       ],
       "macroId": "ICN|americas",
@@ -1371,21 +1337,6 @@
       "macroId": "ICN|north_europe",
       "seedConfirmed": true
     },
-    "washington-dc": {
-      "destIata": "IAD",
-      "hubIatas": [
-        "ATL"
-      ],
-      "hops": 2,
-      "source": "heuristic-seed",
-      "path": [
-        "ICN",
-        "ATL",
-        "IAD"
-      ],
-      "macroId": "ICN|americas",
-      "seedConfirmed": true
-    },
     "boston": {
       "destIata": "BOS",
       "hubIatas": [
@@ -1404,14 +1355,12 @@
     "miami": {
       "destIata": "MIA",
       "hubIatas": [
-        "YVR",
         "ATL"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "YVR",
         "ATL",
         "MIA"
       ],
@@ -1420,14 +1369,11 @@
     },
     "montreal": {
       "destIata": "YUL",
-      "hubIatas": [
-        "YVR"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "YVR",
         "YUL"
       ],
       "macroId": "ICN|americas",
@@ -1842,14 +1788,11 @@
     },
     "rocky-mountains": {
       "destIata": "YYC",
-      "hubIatas": [
-        "YVR"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "YVR",
         "YYC"
       ],
       "macroId": "ICN|americas",
@@ -1929,18 +1872,15 @@
     },
     "denali": {
       "destIata": "ANC",
-      "hubIatas": [
-        "SEA"
-      ],
-      "hops": 2,
-      "source": "heuristic-seed",
+      "hubIatas": [],
+      "hops": 1,
+      "source": "heuristic",
       "path": [
         "ICN",
-        "SEA",
         "ANC"
       ],
       "macroId": "ICN|americas",
-      "seedConfirmed": true
+      "seedConfirmed": false
     },
     "carstensz-pyramid": {
       "destIata": "TIM",
@@ -1956,14 +1896,11 @@
     },
     "sequoia-national-park": {
       "destIata": "LAX",
-      "hubIatas": [
-        "SFO"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "SFO",
         "LAX"
       ],
       "macroId": "ICN|americas",
@@ -2583,14 +2520,11 @@
     },
     "minneapolis": {
       "destIata": "MSP",
-      "hubIatas": [
-        "ATL"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "ATL",
         "MSP"
       ],
       "macroId": "ICN|americas",
@@ -2658,14 +2592,11 @@
     },
     "havana": {
       "destIata": "HAV",
-      "hubIatas": [
-        "YVR"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic",
       "path": [
         "ICN",
-        "YVR",
         "HAV"
       ],
       "macroId": "ICN|americas",

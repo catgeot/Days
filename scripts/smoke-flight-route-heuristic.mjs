@@ -212,6 +212,82 @@ async function main() {
       },
     },
     {
+      id: 'heuristic-icn-hnl-direct',
+      label: 'ICN→HNL Hawaii oceania direct (not via LAX)',
+      run: () => {
+        const r = resolveHeuristicFlightRoute({
+          originIata: 'ICN',
+          destIata: 'HNL',
+          slug: 'hawaii',
+        });
+        const checks = [];
+        if (!r) return ['null result'];
+        if (r.rationale.macroId !== 'ICN|oceania') checks.push(`macroId=${r.rationale.macroId}`);
+        if (r.hubIatas.length !== 0) checks.push(`hubs=${r.hubIatas.join(',')}`);
+        if (r.path.join('-') !== 'ICN-HNL') checks.push(`path=${r.path.join('-')}`);
+        return checks;
+      },
+    },
+    {
+      id: 'heuristic-icn-iad-direct',
+      label: 'ICN→IAD americas seed direct (not via ATL)',
+      run: () => {
+        const r = resolveHeuristicFlightRoute({
+          originIata: 'ICN',
+          destIata: 'IAD',
+          slug: 'washington-dc',
+        });
+        const checks = [];
+        if (!r) return ['null result'];
+        if (r.hubIatas.length !== 0) checks.push(`hubs=${r.hubIatas.join(',')}`);
+        if (r.path.join('-') !== 'ICN-IAD') checks.push(`path=${r.path.join('-')}`);
+        return checks;
+      },
+    },
+    {
+      id: 'heuristic-icn-atl-1hop-east',
+      label: 'ICN→BDA/MIA/EZE prefer ATL 1hop (no US double via)',
+      run: () => {
+        const checks = [];
+        for (const [slug, dest] of [
+          ['bermuda', 'BDA'],
+          ['miami', 'MIA'],
+          ['buenos-aires', 'EZE'],
+        ]) {
+          const r = resolveHeuristicFlightRoute({ originIata: 'ICN', destIata: dest, slug });
+          if (!r) {
+            checks.push(`${slug}: null`);
+            continue;
+          }
+          if (r.path.join('-') !== `ICN-ATL-${dest}`) {
+            checks.push(`${slug}: path=${r.path.join('-')}`);
+          }
+          if (r.hubIatas.length !== 1 || r.hubIatas[0] !== 'ATL') {
+            checks.push(`${slug}: hubs=${r.hubIatas.join(',')}`);
+          }
+        }
+        return checks;
+      },
+    },
+    {
+      id: 'heuristic-icn-samoa-nrt-nan',
+      label: 'ICN→APW Samoa NRT→NAN (not AKL→NAN chain)',
+      run: () => {
+        const r = resolveHeuristicFlightRoute({
+          originIata: 'ICN',
+          destIata: 'APW',
+          slug: 'samoa',
+        });
+        const checks = [];
+        if (!r) return ['null result'];
+        if (r.path.join('-') !== 'ICN-NRT-NAN-APW') checks.push(`path=${r.path.join('-')}`);
+        if (r.hubIatas.includes('AKL') && r.hubIatas.includes('NAN')) {
+          checks.push('AKL+NAN sequential chain');
+        }
+        return checks;
+      },
+    },
+    {
       id: 'cinemaSafe-only-profile',
       label: 'toolkit-audit santorini NOT cinemaSafe candidate',
       run: () => {

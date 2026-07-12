@@ -147,12 +147,12 @@ async function main() {
     },
     {
       id: 'icn-grand-canyon-waypoint',
-      label: 'ICN → grand-canyon Pacific waypoint',
+      label: 'ICN → grand-canyon seed direct + Pacific waypoint',
       location: loadTravelSpotBySlug('grand-canyon'),
       originIata: 'ICN',
       expectEdge: false,
       expectPreview: true,
-      expectHubIatas: ['LAX'],
+      expectHubIatas: [],
       expectWaypoints: [[135, 35]],
     },
     {
