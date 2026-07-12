@@ -30,6 +30,7 @@ import {
   mergeRegionGatewaySeed,
   resolveMacroTemplate,
 } from './flightRouteMacroTemplates.js';
+import { seedConfirmsPath } from './flightRouteGatewaySeed.js';
 
 /**
  * @typedef {{
@@ -37,7 +38,7 @@ import {
  *   path: string[],
  *   gatewayIata: string | null,
  *   finalIata: string | null,
- *   source: 'heuristic',
+ *   source: 'heuristic' | 'heuristic-seed',
  *   rationale: {
  *     macroId: string,
  *     destRegion: string,
@@ -47,9 +48,22 @@ import {
  *     allowDirect: boolean,
  *     profileUsed: boolean,
  *     candidateCount: number,
+ *     seedConfirmed: boolean,
  *   },
  * }} HeuristicFlightRoute
  */
+
+/**
+ * GATN thin seed — confirm-only / fail-open (reject-only 금지).
+ * Prefer seed-confirmed paths when any exist; otherwise keep full candidate pool.
+ * @param {{ path: string[] }[]} candidates
+ */
+function preferSeedConfirmedCandidates(candidates) {
+  if (!candidates?.length) return { pool: [], seedConfirmed: false };
+  const confirmed = candidates.filter((c) => seedConfirmsPath(c.path));
+  if (confirmed.length) return { pool: confirmed, seedConfirmed: true };
+  return { pool: candidates, seedConfirmed: false };
+}
 
 /**
  * @param {string} code
@@ -193,11 +207,14 @@ function buildPathCandidates({ originIata, destIata, macro, profile, airportMeta
       longHaulHubs: profile.longHaulHubs,
       nearDestHubs: profile.nearDestHubs,
     });
-    push(assembled.path, {
-      source: 'heuristic-profile',
-      longHaulHubs: profile.longHaulHubs,
-      gatewayIata: assembled.gatewayIata,
-    });
+    // Do not inject profile-only direct when macro forbids direct (e.g. BDA→Europe).
+    if (assembled.hubIatas.length > 0 || template.allowDirect) {
+      push(assembled.path, {
+        source: 'heuristic-profile',
+        longHaulHubs: profile.longHaulHubs,
+        gatewayIata: assembled.gatewayIata,
+      });
+    }
   }
 
   return candidates;
@@ -227,6 +244,7 @@ function filterOverlongLegs(candidates) {
  *   adjacency?: Map<string, Set<string>> | null,
  *   regionGatewayIatas?: string[],
  *   maxDetourRatio?: number,
+ *   useGatewaySeed?: boolean,
  * }} input
  * @returns {HeuristicFlightRoute | null}
  */
@@ -250,11 +268,13 @@ export function resolveHeuristicFlightRoute(input = {}) {
         allowDirect: true,
         profileUsed: false,
         candidateCount: 0,
+        seedConfirmed: false,
       },
     };
   }
 
   const airportMeta = input.airportMeta ?? null;
+  const useGatewaySeed = input.useGatewaySeed !== false;
   let macro = resolveMacroTemplate(originIata, destIata, airportMeta);
   if (input.regionGatewayIatas?.length) {
     macro = {
@@ -294,12 +314,13 @@ export function resolveHeuristicFlightRoute(input = {}) {
     // Last resort: direct if coords exist
     if (hasCoords(originIata, airportMeta) && hasCoords(destIata, airportMeta)) {
       const path = [originIata, destIata];
+      const seedConfirmed = useGatewaySeed && seedConfirmsPath(path);
       return {
         hubIatas: [],
         path,
         gatewayIata: null,
         finalIata: destIata,
-        source: 'heuristic',
+        source: seedConfirmed ? 'heuristic-seed' : 'heuristic',
         rationale: {
           macroId: macro.template.macroId,
           destRegion: macro.destRegion,
@@ -309,15 +330,22 @@ export function resolveHeuristicFlightRoute(input = {}) {
           allowDirect: true,
           profileUsed: profile.used,
           candidateCount: 0,
+          seedConfirmed,
         },
       };
     }
     return null;
   }
 
+  const { pool, seedConfirmed } = useGatewaySeed
+    ? preferSeedConfirmedCandidates(candidates)
+    : { pool: candidates, seedConfirmed: false };
+  candidates = pool;
+
   /** cinemaSafe profile hubs get a strong preference (still no timeline bake). */
   const scoreCandidate = (c) => {
     let score = scoreFlightPathV2(c.path, { airportMeta });
+    if (useGatewaySeed && seedConfirmsPath(c.path)) score -= 180;
     if (c.source === 'heuristic-profile') score -= 250;
     if (profile.used && profile.longHaulHubs.length) {
       const hubs = c.path.slice(1, -1);
@@ -366,12 +394,15 @@ export function resolveHeuristicFlightRoute(input = {}) {
     nearDestHubs: layers.nearDestHubs,
   });
 
+  const finalSeedConfirmed =
+    seedConfirmed || (useGatewaySeed && seedConfirmsPath(assembled.path));
+
   return {
     hubIatas: assembled.hubIatas,
     path: assembled.path,
     gatewayIata: assembled.gatewayIata,
     finalIata: assembled.finalIata,
-    source: 'heuristic',
+    source: finalSeedConfirmed ? 'heuristic-seed' : 'heuristic',
     rationale: {
       macroId: macro.template.macroId,
       destRegion: macro.destRegion,
@@ -381,6 +412,7 @@ export function resolveHeuristicFlightRoute(input = {}) {
       allowDirect: macro.template.allowDirect,
       profileUsed: profile.used,
       candidateCount: candidates.length,
+      seedConfirmed: finalSeedConfirmed,
     },
   };
 }

@@ -231,7 +231,9 @@ async function main() {
         });
         const checks = [];
         if (!r) return ['null result'];
-        if (r.source !== 'heuristic') checks.push(`source=${r.source}`);
+        if (r.source !== 'heuristic' && r.source !== 'heuristic-seed') {
+          checks.push(`source=${r.source}`);
+        }
         if (!r.rationale?.macroId) checks.push('missing macroId');
         return checks;
       },

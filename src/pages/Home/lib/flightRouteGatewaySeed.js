@@ -1,8 +1,8 @@
 /**
  * GATN thin seed — runtime lookup only (no BFS / path inference).
- * Not wired into resolveFlightRoutePlan yet (S4).
+ * Wired via flightRouteHeuristic (confirm/fail-open) · resolveFlightRoutePlan (S4).
  *
- * @see plans/flight-route-heuristic-ssot-plan.md Phase 3
+ * @see plans/flight-route-heuristic-ssot-plan.md Phase 3–4
  * @module flightRouteGatewaySeed
  */
 import gatewaySeedJson from '../../../../scripts/data/flight-route-gateway-seed.json' with { type: 'json' };

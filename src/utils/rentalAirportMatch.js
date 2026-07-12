@@ -1082,7 +1082,8 @@ export function getFlightRouteHubIatas(location, options = {}) {
 }
 
 /**
- * OpenFlights graph precompute hub chain — overrides·trip 다음 tier (corridor 이전).
+ * OpenFlights graph / heuristic precompute hub chain — overrides·trip 다음 tier (corridor 이전).
+ * Phase 4: runtime cinema prefers live heuristic before this baked field.
  * @returns {string[] | null} null = graph 없음 · [] = graph 직항
  */
 export function getGraphFlightRouteHubIatas(location, options = {}) {

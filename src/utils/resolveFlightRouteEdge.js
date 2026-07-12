@@ -1,5 +1,6 @@
 /**
  * Edge resolve-flight-route — uiPlace·비-precompute dest IATA graph 조회.
+ * Phase 4: heuristic(+seed) client-side first · Edge graph는 fallback.
  * 동기 arc는 travelSpotFlightRoutes byDestIata · graphFlightRouteHubIatas 우선.
  */
 import { supabase } from '../shared/api/supabase';
@@ -9,6 +10,7 @@ import {
   shouldResolveFlightRouteViaEdge,
 } from './rentalAirportMatch.js';
 import { normalizeFlightRouteAlternatives } from '../pages/Home/lib/flightCinemaRouteAlternatives.js';
+import { resolveHeuristicFlightRoute } from '../pages/Home/lib/flightRouteHeuristic.js';
 
 /** @type {Map<string, { hubIatas: string[] | null, source: string, path: string[] | null, resolvedDestIata: string, fetchedAt: number }>} */
 const cache = new Map();
@@ -89,7 +91,7 @@ export function clearFlightRouteEdgeCache() {
 }
 
 /**
- * 시네마 hub chain — Edge 우선 · 실패 시 JSON byDestIata 폴백.
+ * 시네마 hub chain — heuristic(+seed) 우선 · Edge graph fallback · JSON byDestIata.
  * shouldResolveFlightRouteViaEdge가 false면 null(동기 resolveFlightRoutePlan 사용).
  *
  * @param {Record<string, unknown> | null | undefined} location
@@ -112,6 +114,22 @@ export async function resolveFlightRouteHubsForCinema(location, options = {}) {
     })
   ) {
     return null;
+  }
+
+  const slug = location?.slug ? String(location.slug) : null;
+  if (destIata.length === 3) {
+    const heuristic = resolveHeuristicFlightRoute({
+      originIata,
+      destIata,
+      slug,
+    });
+    if (heuristic) {
+      return {
+        hubIatas: heuristic.hubIatas ?? [],
+        destIata,
+        routeSource: heuristic.source ?? 'heuristic',
+      };
+    }
   }
 
   const lat = typeof location?.lat === 'number' ? location.lat : Number(location?.lat);

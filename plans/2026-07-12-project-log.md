@@ -79,22 +79,31 @@
 - `npm run smoke:flight-route-gateway-seed` **8/8** · heuristic **12/12** · baseline **14/14**
 - africa graph_wins·conflict 55·timeline bake·`resolveFlightRoutePlan` 연결 **미실시** (의도)
 
+## 항공경로 Heuristic S4 — Phase 4 runtime/precompute
+
+**상태**: ✅ (2026-07-12)
+
+- 우선순위: **override > heuristic(+seed) > graph > corridor** — `resolveFlightRoutePlan` · Edge cinema 경로도 heuristic 우선
+- seed: confirm-only / fail-open (`preferSeedConfirmedCandidates`) · BFS 없음 · Deno Edge 배포 불필요
+- `generate:flight-routes` heuristic-first → `generate:airports` · precompute **185** (seed 148 · heuristic 37) · override skip 87
+- cinemaSafe 프로필 빈 hub가 `allowDirect:false` 직항을 주입하던 버그 수정 (BDA→CDG→JFK)
+- smoke baseline **15/15** · heuristic **12/12** · seed **8/8** · `audit:flight-arcs` 0 · `none:0`
+
 ### 다음 세션 — 에이전트 핸드오프
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 일지 「Heuristic S3」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
-| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 4 | timeline hub cinema 자동 bake · africa conflict 자동 bake |
-| gateway-seed + heuristic · `smoke:flight-route-baseline` | overrides 없이 JSON만 수정 · seed를 reject-only로 쓰지 말 것 |
+| 본 일지 「Heuristic S4」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
+| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 5 | timeline hub cinema 자동 bake · africa conflict 자동 bake |
+| heuristic-graph-diff · overrides.mjs | overrides 없이 JSON만 수정 · seed reject-only |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/2026-07-12-project-log.md @plans/flight-route-heuristic-ssot-plan.md
 
-S3 ✅ (GATN thin seed 37×5660). 다음 = S4 Phase 4 runtime/precompute.
-heuristic(+seed) > graph > corridor · fail-open · BFS 금지 유지.
-smoke:flight-route-baseline 14/14 · resolveFlightRoutePlan 연결 · Edge sync 필요 시.
+S4 ✅ (override > heuristic(+seed) > graph > corridor). 다음 = S5 Phase 5 override 축소.
+heuristic_wins slug에서 flightRouteHubIatas 제거 · hub-override 76→~25.
 africa graph_wins·conflict 55는 수동 큐 · timeline auto-bake 금지.
-overrides.mjs → generate:airports 준수.
+smoke:flight-route-baseline 15/15 · overrides.mjs → generate:airports 준수.
 ```

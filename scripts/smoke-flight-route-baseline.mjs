@@ -1,5 +1,5 @@
 /**
- * 항공 경로 6유형 기준선 smoke — sync tier·Edge gate·audit 연동.
+ * 항공 경로 기준선 smoke — sync tier·Edge gate·audit·S4 plan heuristic.
  * Usage: node scripts/smoke-flight-route-baseline.mjs [--edge]
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -198,6 +198,16 @@ async function main() {
       forbiddenHubs: ['FRA'],
       maxDetourRatio: 1.35,
     },
+    {
+      id: 'plan-heuristic-bda-cdg',
+      label: 'S4 plan — BDA→CDG heuristic(+seed) > graph',
+      location: loadTravelSpotBySlug('paris'),
+      originIata: 'BDA',
+      destIata: 'CDG',
+      planOnly: true,
+      expectHubIatas: ['JFK'],
+      expectRouteSources: ['heuristic', 'heuristic-seed'],
+    },
   ];
 
   const results = [];
@@ -237,6 +247,74 @@ async function main() {
         destIata,
         routeLabel: [originIata, ...(testCase.expectHubIatas ?? []), destIata].join(' → '),
         graphHubs: testCase.expectHubIatas ?? [],
+        manualOverride: false,
+        edgeAlternatives: 0,
+        edgeHubs: null,
+      });
+      continue;
+    }
+
+    if (testCase.planOnly) {
+      const destIata = testCase.destIata ?? resolveCinemaDestIata(location);
+      const origin = getAirportHubCoords(originIata);
+      const dest = getAirportHubCoords(destIata);
+      const checks = [];
+      if (!origin || !dest || !destIata) {
+        checks.push('missing origin/dest coords');
+      } else {
+        const plan = resolveFlightRoutePlan(
+          [origin.lng, origin.lat],
+          [dest.lng, dest.lat],
+          location,
+          { originIata, destIata },
+        );
+        if (testCase.expectHubIatas) {
+          if (plan.hubIatas.join(',') !== testCase.expectHubIatas.join(',')) {
+            checks.push(
+              `hubs: expected ${testCase.expectHubIatas.join(',')}, got ${plan.hubIatas.join(',') || '—'}`,
+            );
+          }
+        }
+        if (
+          testCase.expectRouteSources?.length &&
+          !testCase.expectRouteSources.includes(plan.routeSource)
+        ) {
+          checks.push(
+            `routeSource: expected one of ${testCase.expectRouteSources.join('|')}, got ${plan.routeSource}`,
+          );
+        }
+        if (testCase.forbiddenHubs?.some((hub) => plan.hubIatas.includes(hub))) {
+          checks.push(
+            `forbidden hub present: ${testCase.forbiddenHubs.filter((h) => plan.hubIatas.includes(h)).join(',')}`,
+          );
+        }
+        results.push({
+          id: testCase.id,
+          label: testCase.label,
+          pass: checks.length === 0,
+          checks,
+          edge: null,
+          preview: true,
+          destIata,
+          routeLabel: [originIata, ...plan.hubIatas, destIata].join(' → '),
+          graphHubs: plan.hubIatas,
+          manualOverride: false,
+          edgeAlternatives: 0,
+          edgeHubs: null,
+          routeSource: plan.routeSource,
+        });
+        continue;
+      }
+      results.push({
+        id: testCase.id,
+        label: testCase.label,
+        pass: false,
+        checks,
+        edge: null,
+        preview: true,
+        destIata,
+        routeLabel: null,
+        graphHubs: [],
         manualOverride: false,
         edgeAlternatives: 0,
         edgeHubs: null,
