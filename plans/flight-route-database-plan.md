@@ -67,24 +67,22 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 ---
 
-## 다음 세션 — 에이전트 핸드오ff
+## 다음 세션 — 에이전트 핸드오프
 
-**다음 우선**: **Heuristic SSOT + GATN lookup seed** — [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · Phase 0(S0) · 일지 [`2026-06-30-project-log.md`](./2026-06-30-project-log.md)
+**상태 (2026-07-12)**: Graph DB Phase 0~4 ✅ · **Heuristic SSOT S1~S5 ✅** · Phase 6 QA·Credits attribution ✅ · **릴리스 노트 합의 대기**
 
-**항공(비-ICN)**: **S1+S2 ✅** · Metro Gateway **✅** · **F(tooltip) ✅** · 릴리스 노트 `2026-06-29` — [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md)
-
-~~Phase 4 v2.2 출발지 UI~~ **✅** · ~~비-ICN S1~~ **✅** · ~~비-ICN S2 B+E+Edge~~ **✅**
+**SSOT**: [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · 일지 [`2026-07-12-project-log.md`](./2026-07-12-project-log.md)
 
 | 읽을 것 | 금지 |
 |---------|------|
-| [`2026-06-29-project-log.md`](./2026-06-29-project-log.md) · `flight-route-non-icn-routing-plan.md` | `travelSpots.js` 전체 |
-| `globeFlightCinema.js` · `rentalAirportMatch.js` · resolver·GeoRules | `travelSpotAirports.json` 직접 편집 |
+| Heuristic 플랜 Phase 6 · 일지 S5/S6 | `travelSpots.js` 전체 · timeline cinema bake |
+| `.ai-context` 6절 · africa conflict 55 | africa conflict 자동 bake · JSON spots 직접 편집 |
 
-**런타임**: 시네마 Bar = Edge hub (비-ICN) · arc = `resolveFlightRoutePlan` + `options.hubIatas` · `explicitDirect` ICN 전용.
+**런타임 우선순위**: override > heuristic(+GATN seed fail-open) > graph precompute > corridor · `explicitDirect` ICN 전용.
 
-**gap 스냅샷 (S2 후)**: hub-override **76** · graph-precompute **112** · `smoke:flight-route-baseline` **13/13** · `audit:flight-arcs` **0**
+**스냅샷**: hub-override **25** · heuristic↔graph pass **96.3%** · `both_bad` **0** · smoke baseline **15/15** · arcs **0** · none **0**
 
-**graph-direct 오탐 패턴**: OpenFlights 2014 직항 레그 잔재(예: ~~나이로비 ICN→NBO~~ → `ADD` hub) · 플래너「경유 필수」와 Bar「직항」 불일치 시 overrides `flightRouteHubIatas`.
+**npm (Heuristic)**: `smoke:flight-route-baseline` · `smoke:flight-route-heuristic` · `smoke:flight-route-gateway-seed` · `audit:flight-route-heuristic-diff` · `generate:flight-route-seed`
 
 ---
 
@@ -92,7 +90,7 @@ PoC: 대시보드 CSV import 가능(~12MB). 운영: `supabase/migrations` + `scr
 
 | 기존 | 연동 |
 |------|------|
-| `resolveFlightRoutePlan` | override > graph precompute > corridor |
+| `resolveFlightRoutePlan` | override > heuristic(+seed) > graph > corridor |
 | `generate-travel-spot-airports.mjs` | overrides 우선 + `generate:flight-routes` merge |
 | 배너·Trip | arc 전용 — **변경 없음** |
 

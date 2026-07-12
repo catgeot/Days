@@ -99,20 +99,31 @@
 - africa conflict **55** 미자동 bake · timeline cinema bake 금지 유지
 - smoke baseline **15/15** (hampi → heuristic ICN→BLR) · arcs **0** · none **0**
 
+---
+
+## 항공경로 Heuristic S6 — Phase 6 QA·릴리스
+
+**상태**: ✅ QA·문서·Credits (2026-07-12) · **릴리스 노트 합의 대기**
+
+- smoke baseline **15/15** · heuristic **12/12** · seed **8/8** · arcs **0** · none **0**
+- heuristic↔graph: agree **247** · wins **14** · graph_wins **10** · both_bad **0** · pass **96.3%** · conflict 55 유지
+- 브라우저 Bar QA Pass: paris(ICN→CDG) · nairobi(ADD) · bora(NRT·PPT) · moscow(IST) · uyuni · seychelles(DXB) · saipan(직항) · hampi(BLR) · BDA→paris(JFK) · BDA→easter(LAX·SCL)
+- Credits: `FLIGHT_ROUTE_ATTRIBUTION` (OpenFlights·OurAirports·GATN extract)
+- database-plan handoff · heuristic 플랜 Phase 6 갱신
+
 ### 다음 세션 — 에이전트 핸드오프
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 일지 「Heuristic S5」·[`.ai-context.md`](../.ai-context.md) 6절 | `travelSpots.js` / `travelSpotAirports.json` spots 직접 편집 |
-| [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) Phase 6 | timeline hub cinema 자동 bake · africa conflict 자동 bake |
-| heuristic-graph-diff conflict 55 · overrides L3 목록 | overrides 없이 JSON만 수정 · seed reject-only |
+| 본 일지 「Heuristic S6」·합의된 RN 초안 | `travelSpots.js` / spots JSON 직접 편집 |
+| [`.ai-context.md`](../.ai-context.md) 6절 | timeline cinema bake · africa conflict bake |
+| Credits `FLIGHT_ROUTE_ATTRIBUTION` | seed reject-only · JSON만 단독 수정 |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/2026-07-12-project-log.md @plans/flight-route-heuristic-ssot-plan.md
 
-S5 ✅ hub-override 25 (태평양·Trip분리·moscow IST·원격 특수). 다음 = Phase 6 QA·릴리스 노트.
+S6 QA ✅. 릴리스 노트 합의되면 releaseNotes.js 반영.
 africa conflict 55 수동 큐 · timeline auto-bake 금지.
-smoke:flight-route-baseline 15/15 · 브라우저 샘플 QA 후 releaseNotes 합의.
 ```

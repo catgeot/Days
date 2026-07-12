@@ -1,7 +1,7 @@
 # 항공 경로 개선 플랜 — 규칙 SSOT + GATN 얇은 seed
 
 **작성**: 2026-06-30  
-**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 ✅** · **S1~S5 ✅** (`2026-07-12`) · **다음 = Phase 6 QA·릴리스**
+**상태**: **플랜 ✅** · **dest 코퍼스·Phase 0 ✅** · **S1~S5 ✅** · **Phase 6 QA·Credits ✅** (`2026-07-12`) · **릴리스 노트 합의 대기**
 **관련**: [`.ai-context.md`](../.ai-context.md) 6절 · [`flight-route-database-plan.md`](./flight-route-database-plan.md) · 일지 [`2026-07-12-project-log.md`](./2026-07-12-project-log.md)
 
 ## 배경·목표
@@ -250,14 +250,17 @@ override > heuristic(+seed) > graph > corridor
 
 ## Phase 6 — QA·문서·릴리스
 
-- **브라우저 QA**: Phase 0 샘플 재검 + `both_bad` 전건
-- **문서**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) handoff 갱신 (아키텍처 다이어그램·npm 추가)
-- **`.ai-context.md` 6절**: npm 1~2줄·미완 1줄만 (5절 이력 누적 금지)
+**상태**: ✅ QA·문서·Credits (2026-07-12) · **릴리스 노트만 합의 대기**
+
+- **브라우저 QA**: Bar 경로 샘플 Pass (paris·nairobi·bora·moscow·uyuni·seychelles·saipan·hampi · BDA→paris/easter) · `both_bad` **0**
+- **문서**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) handoff 갱신 · Credits `FLIGHT_ROUTE_ATTRIBUTION`
+- **`.ai-context.md` 6절**: Heuristic S1~S6 QA · 미완 = 릴리스 노트 합의
 - **릴리스 노트**: 사용자 합의 후 [`releaseNotes.js`](src/data/releaseNotes.js) — 「항공 경로 추정 방식 개선(규칙 기반)」
 
 **선택 후속** (기존 일지 잔여)
-- Bar 구간 시간 tooltip (F)
+- Bar 구간 시간 tooltip (F) — 일부 반영됨(`2026-06-29`)
 - `import:routes` / OpenFlights — seed+heuristic 안정화 후 **deprecated** 표시 (즉시 삭제 X)
+- africa conflict **55** 수동 큐 (자동 bake 금지 유지)
 
 ---
 
@@ -270,7 +273,8 @@ override > heuristic(+seed) > graph > corridor
 | **S2** | Phase 2 diff audit | diff MD·우선순위 slug 목록 | ✅ 80.8% |
 | **S3** | Phase 3 GATN seed + `generate:flight-route-seed` | gateway-seed.json | ✅ 37·5660 |
 | **S4** | Phase 4 runtime/precompute 통합 | smoke 15/15 · Edge client fallback | ✅ |
-| **S5** | Phase 5 override 축소 + Phase 6 QA | overrides ~25·릴리스 노트 초안 | Phase 5 ✅ · Phase 6 ← 다음 |
+| **S5** | Phase 5 override 축소 | overrides hub **25** | ✅ |
+| **S6** | Phase 6 QA·문서·릴리스 | Credits · 릴리스 노트 합의 | QA·docs ✅ · RN ← |
 
 ---
 
@@ -347,20 +351,19 @@ OpenFlights(ODbL)만 쓸 때보다 **출처 표기 의무는 늘어납니다.** 
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**상태**: S5 Phase 5 override 축소 ✅ (hub-override **25**) · **다음 = Phase 6 QA·릴리스 노트**
+**상태**: Phase 6 QA·Credits ✅ · **릴리스 노트 합의 후** `releaseNotes.js` 반영 · africa conflict 55·timeline bake 금지 유지
 
 | 읽을 것 (3) | 금지 (3) |
 |-------------|----------|
-| 본 플랜 Phase 6 · 일지 `2026-07-12` 「Heuristic S5」 | `travelSpots.js` 전체 · timeline cinema bake |
+| 본 플랜 Phase 6 · 일지 `2026-07-12` 「Heuristic S6」 | `travelSpots.js` 전체 · timeline cinema bake |
 | `.ai-context.md` 6절 · conflict 55 | africa conflict 자동 bake · seed reject-only |
-| overrides L3(태평양·Trip·moscow) | JSON `graphFlightRouteHubIatas`만 단독 수정 |
+| 합의된 릴리스 노트 초안 | JSON `graphFlightRouteHubIatas`만 단독 수정 |
 
 **제시어**
 
 ```
 항공경로-이어하기 @plans/flight-route-heuristic-ssot-plan.md @plans/2026-07-12-project-log.md
 
-S5 ✅ hub-override 25. 다음 = Phase 6 QA·릴리스 노트.
+S6 QA ✅. 릴리스 노트 합의되면 releaseNotes.js 반영.
 africa conflict 55 수동 큐 · timeline auto-bake 금지.
-smoke:flight-route-baseline 15/15 · 브라우저 샘플 QA 후 releaseNotes 합의.
 ```
