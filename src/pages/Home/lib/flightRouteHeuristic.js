@@ -30,7 +30,7 @@ import {
   mergeRegionGatewaySeed,
   resolveMacroTemplate,
 } from './flightRouteMacroTemplates.js';
-import { seedConfirmsPath } from './flightRouteGatewaySeed.js';
+import { seedConfirmsPath, seedHasDirectEdge } from './flightRouteGatewaySeed.js';
 
 /**
  * @typedef {{
@@ -56,10 +56,27 @@ import { seedConfirmsPath } from './flightRouteGatewaySeed.js';
 /**
  * GATN thin seed — confirm-only / fail-open (reject-only 금지).
  * Prefer seed-confirmed paths when any exist; otherwise keep full candidate pool.
+ * When O→D direct is seed-confirmed and macro allows direct, keep only direct
+ * (GATN also lists via-HKG chains that would otherwise beat ICN→SIN/HKT).
+ *
  * @param {{ path: string[] }[]} candidates
+ * @param {{ allowDirect?: boolean, originIata?: string, destIata?: string }} [opts]
  */
-function preferSeedConfirmedCandidates(candidates) {
+function preferSeedConfirmedCandidates(candidates, opts = {}) {
   if (!candidates?.length) return { pool: [], seedConfirmed: false };
+  const origin = String(opts.originIata || '').trim().toUpperCase();
+  const dest = String(opts.destIata || '').trim().toUpperCase();
+  if (
+    opts.allowDirect &&
+    origin &&
+    dest &&
+    seedHasDirectEdge(origin, dest)
+  ) {
+    const direct = candidates.filter((c) => c.path?.length === 2);
+    if (direct.length) {
+      return { pool: direct, seedConfirmed: true };
+    }
+  }
   const confirmed = candidates.filter((c) => seedConfirmsPath(c.path));
   if (confirmed.length) return { pool: confirmed, seedConfirmed: true };
   return { pool: candidates, seedConfirmed: false };
@@ -338,13 +355,20 @@ export function resolveHeuristicFlightRoute(input = {}) {
   }
 
   const { pool, seedConfirmed } = useGatewaySeed
-    ? preferSeedConfirmedCandidates(candidates)
+    ? preferSeedConfirmedCandidates(candidates, {
+        allowDirect: macro.template.allowDirect,
+        originIata,
+        destIata,
+      })
     : { pool: candidates, seedConfirmed: false };
   candidates = pool;
 
   /** cinemaSafe profile hubs get a strong preference (still no timeline bake). */
   const scoreCandidate = (c) => {
     let score = scoreFlightPathV2(c.path, { airportMeta });
+    // Extra hubs cost — prevents seed-confirmed via-HKG chains beating trunk directs.
+    const hubCount = Math.max(0, (c.path?.length ?? 2) - 2);
+    score += hubCount * 220;
     if (useGatewaySeed && seedConfirmsPath(c.path)) score -= 180;
     if (c.source === 'heuristic-profile') score -= 250;
     if (profile.used && profile.longHaulHubs.length) {

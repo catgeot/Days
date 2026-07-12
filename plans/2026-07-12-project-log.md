@@ -105,11 +105,17 @@
 
 **상태**: ✅ QA·문서·Credits (2026-07-12) · **릴리스 노트 합의 대기**
 
-- smoke baseline **15/15** · heuristic **12/12** · seed **8/8** · arcs **0** · none **0**
+- smoke baseline **15/15** · heuristic **14/14** · seed **8/8** · arcs **0** · none **0**
 - heuristic↔graph: agree **247** · wins **14** · graph_wins **10** · both_bad **0** · pass **96.3%** · conflict 55 유지
 - 브라우저 Bar QA Pass: paris(ICN→CDG) · nairobi(ADD) · bora(NRT·PPT) · moscow(IST) · uyuni · seychelles(DXB) · saipan(직항) · hampi(BLR) · BDA→paris(JFK) · BDA→easter(LAX·SCL)
 - Credits: `FLIGHT_ROUTE_ATTRIBUTION` (OpenFlights·OurAirports·GATN extract)
 - database-plan handoff · heuristic 플랜 Phase 6 갱신
+
+### 핫픽스 — SEA 직항(SIN/HKT) 경유 오탐
+
+- **원인**: GATN seed가 ICN→SIN/HKT 직항과 via-HKG 경유를 모두 confirm → 동일 `-180` 보너스에 경유가 점수 우세
+- **수정**: seed 직항+`allowDirect`면 직항만 유지 · hub당 `+220` 페널티 · smoke SIN/HKT · `generate:flight-routes`
+- 결과: singapore/phuket/KUL/BKK → **ICN 직항**
 
 ### 다음 세션 — 에이전트 핸드오프
 

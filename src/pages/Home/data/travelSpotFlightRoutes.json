@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-12T08:43:41.296Z",
+  "generatedAt": "2026-07-12T09:09:35.281Z",
   "source": "openflights-cache+heuristic",
   "originIata": "ICN",
   "routeLegCount": 67662,
@@ -140,15 +140,13 @@
     "canary-islands": {
       "destIata": "TFS",
       "hubIatas": [
-        "DOH",
-        "LPA"
+        "DOH"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic",
       "path": [
         "ICN",
         "DOH",
-        "LPA",
         "TFS"
       ],
       "macroId": "ICN|africa",
@@ -420,14 +418,11 @@
     },
     "london": {
       "destIata": "LHR",
-      "hubIatas": [
-        "HEL"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HEL",
         "LHR"
       ],
       "macroId": "ICN|north_europe",
@@ -436,15 +431,13 @@
     "cape-town": {
       "destIata": "CPT",
       "hubIatas": [
-        "ADD",
-        "JNB"
+        "ADD"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
         "ADD",
-        "JNB",
         "CPT"
       ],
       "macroId": "ICN|africa",
@@ -464,14 +457,11 @@
     },
     "sydney": {
       "destIata": "SYD",
-      "hubIatas": [
-        "BNE"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "BNE",
         "SYD"
       ],
       "macroId": "ICN|oceania",
@@ -509,16 +499,11 @@
     },
     "singapore": {
       "destIata": "SIN",
-      "hubIatas": [
-        "HKG",
-        "KUL"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
-        "KUL",
         "SIN"
       ],
       "macroId": "ICN|southeast_asia",
@@ -657,16 +642,11 @@
     },
     "angkor-wat": {
       "destIata": "SAI",
-      "hubIatas": [
-        "HKG",
-        "BKK"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
-        "BKK",
         "SAI"
       ],
       "macroId": "ICN|southeast_asia",
@@ -825,15 +805,13 @@
     "serengeti": {
       "destIata": "JRO",
       "hubIatas": [
-        "ADD",
-        "NBO"
+        "ADD"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
         "ADD",
-        "NBO",
         "JRO"
       ],
       "macroId": "ICN|africa",
@@ -963,14 +941,11 @@
     },
     "barcelona": {
       "destIata": "BCN",
-      "hubIatas": [
-        "FRA"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "FRA",
         "BCN"
       ],
       "macroId": "ICN|south_europe",
@@ -1248,16 +1223,11 @@
     },
     "phuket": {
       "destIata": "HKT",
-      "hubIatas": [
-        "HKG",
-        "BKK"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
-        "BKK",
         "HKT"
       ],
       "macroId": "ICN|southeast_asia",
@@ -1265,16 +1235,11 @@
     },
     "phi-phi-islands": {
       "destIata": "HKT",
-      "hubIatas": [
-        "HKG",
-        "BKK"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
-        "BKK",
         "HKT"
       ],
       "macroId": "ICN|southeast_asia",
@@ -1283,14 +1248,12 @@
     "koh-samui": {
       "destIata": "USM",
       "hubIatas": [
-        "HKG",
         "BKK"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
         "BKK",
         "USM"
       ],
@@ -1300,14 +1263,12 @@
     "langkawi": {
       "destIata": "LGK",
       "hubIatas": [
-        "HKG",
         "KUL"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
         "KUL",
         "LGK"
       ],
@@ -1343,14 +1304,11 @@
     },
     "nha-trang": {
       "destIata": "CXR",
-      "hubIatas": [
-        "HKG"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
         "CXR"
       ],
       "macroId": "ICN|southeast_asia",
@@ -1511,14 +1469,11 @@
     },
     "copenhagen": {
       "destIata": "CPH",
-      "hubIatas": [
-        "HEL"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HEL",
         "CPH"
       ],
       "macroId": "ICN|north_europe",
@@ -1553,16 +1508,11 @@
     },
     "kuala-lumpur": {
       "destIata": "KUL",
-      "hubIatas": [
-        "HKG",
-        "SIN"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
-        "SIN",
         "KUL"
       ],
       "macroId": "ICN|southeast_asia",
@@ -1639,14 +1589,11 @@
     },
     "lisbon": {
       "destIata": "LIS",
-      "hubIatas": [
-        "FRA"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "FRA",
         "LIS"
       ],
       "macroId": "ICN|south_europe",
@@ -1669,14 +1616,11 @@
     },
     "madrid": {
       "destIata": "MAD",
-      "hubIatas": [
-        "FRA"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "FRA",
         "MAD"
       ],
       "macroId": "ICN|south_europe",
@@ -1818,16 +1762,11 @@
     },
     "angkor-thom": {
       "destIata": "SAI",
-      "hubIatas": [
-        "HKG",
-        "BKK"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
-        "BKK",
         "SAI"
       ],
       "macroId": "ICN|southeast_asia",
@@ -1877,14 +1816,11 @@
     },
     "hue": {
       "destIata": "DAD",
-      "hubIatas": [
-        "HKG"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
         "DAD"
       ],
       "macroId": "ICN|southeast_asia",
@@ -1892,14 +1828,11 @@
     },
     "hoi-an": {
       "destIata": "DAD",
-      "hubIatas": [
-        "HKG"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
         "DAD"
       ],
       "macroId": "ICN|southeast_asia",
@@ -1919,16 +1852,11 @@
     },
     "jaipur": {
       "destIata": "JAI",
-      "hubIatas": [
-        "DEL",
-        "BOM"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic",
       "path": [
         "ICN",
-        "DEL",
-        "BOM",
         "JAI"
       ],
       "macroId": "ICN|south_asia",
@@ -2024,15 +1952,13 @@
     "persepolis": {
       "destIata": "SYZ",
       "hubIatas": [
-        "DXB",
-        "DOH"
+        "DXB"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
         "DXB",
-        "DOH",
         "SYZ"
       ],
       "macroId": "ICN|middle_east",
@@ -2053,15 +1979,13 @@
     "ephesus": {
       "destIata": "ADB",
       "hubIatas": [
-        "DXB",
-        "IST"
+        "DXB"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
         "DXB",
-        "IST",
         "ADB"
       ],
       "macroId": "ICN|middle_east",
@@ -2117,14 +2041,12 @@
     "lalibela": {
       "destIata": "LLI",
       "hubIatas": [
-        "DXB",
         "ADD"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "DXB",
         "ADD",
         "LLI"
       ],
@@ -2203,15 +2125,13 @@
     "kilimanjaro": {
       "destIata": "JRO",
       "hubIatas": [
-        "ADD",
-        "NBO"
+        "ADD"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
         "ADD",
-        "NBO",
         "JRO"
       ],
       "macroId": "ICN|africa",
@@ -2410,15 +2330,13 @@
     "bodrum": {
       "destIata": "BJV",
       "hubIatas": [
-        "DXB",
-        "IST"
+        "DXB"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
         "DXB",
-        "IST",
         "BJV"
       ],
       "macroId": "ICN|middle_east",
@@ -2594,16 +2512,11 @@
     },
     "similan-islands": {
       "destIata": "HKT",
-      "hubIatas": [
-        "HKG",
-        "BKK"
-      ],
-      "hops": 3,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
-        "BKK",
         "HKT"
       ],
       "macroId": "ICN|southeast_asia",
@@ -2638,14 +2551,11 @@
     },
     "da-nang": {
       "destIata": "DAD",
-      "hubIatas": [
-        "HKG"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
         "DAD"
       ],
       "macroId": "ICN|southeast_asia",
@@ -2716,14 +2626,11 @@
     },
     "phu-quoc": {
       "destIata": "PQC",
-      "hubIatas": [
-        "HKG"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HKG",
         "PQC"
       ],
       "macroId": "ICN|southeast_asia",
@@ -3274,14 +3181,11 @@
     },
     "greenland": {
       "destIata": "CPH",
-      "hubIatas": [
-        "HEL"
-      ],
-      "hops": 2,
+      "hubIatas": [],
+      "hops": 1,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "HEL",
         "CPH"
       ],
       "macroId": "ICN|north_europe",
@@ -3290,15 +3194,13 @@
     "falkland-islands": {
       "destIata": "MPM",
       "hubIatas": [
-        "DXB",
-        "JNB"
+        "ADD"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic-seed",
       "path": [
         "ICN",
-        "DXB",
-        "JNB",
+        "ADD",
         "MPM"
       ],
       "macroId": "ICN|africa",
@@ -3397,15 +3299,13 @@
     "havana": {
       "destIata": "HAV",
       "hubIatas": [
-        "YVR",
-        "ATL"
+        "YVR"
       ],
-      "hops": 3,
+      "hops": 2,
       "source": "heuristic",
       "path": [
         "ICN",
         "YVR",
-        "ATL",
         "HAV"
       ],
       "macroId": "ICN|americas",

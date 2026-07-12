@@ -188,6 +188,30 @@ async function main() {
       },
     },
     {
+      id: 'heuristic-icn-sin-direct',
+      label: 'ICN→SIN seed trunk stays direct (not via HKG/KUL)',
+      run: () => {
+        const r = resolveHeuristicFlightRoute({ originIata: 'ICN', destIata: 'SIN' });
+        const checks = [];
+        if (!r) return ['null result'];
+        if (r.hubIatas.length !== 0) checks.push(`hubs=${r.hubIatas.join(',')}`);
+        if (r.path.join('-') !== 'ICN-SIN') checks.push(`path=${r.path.join('-')}`);
+        return checks;
+      },
+    },
+    {
+      id: 'heuristic-icn-hkt-direct',
+      label: 'ICN→HKT seed trunk stays direct (not via HKG/BKK)',
+      run: () => {
+        const r = resolveHeuristicFlightRoute({ originIata: 'ICN', destIata: 'HKT' });
+        const checks = [];
+        if (!r) return ['null result'];
+        if (r.hubIatas.length !== 0) checks.push(`hubs=${r.hubIatas.join(',')}`);
+        if (r.path.join('-') !== 'ICN-HKT') checks.push(`path=${r.path.join('-')}`);
+        return checks;
+      },
+    },
+    {
       id: 'cinemaSafe-only-profile',
       label: 'toolkit-audit santorini NOT cinemaSafe candidate',
       run: () => {

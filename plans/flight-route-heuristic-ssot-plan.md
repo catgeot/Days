@@ -89,7 +89,7 @@ npm run audit:flight-arcs
 - [`src/pages/Home/lib/flightRouteHeuristic.js`](src/pages/Home/lib/flightRouteHeuristic.js) — 런타임·스크립트 공용
 - [`src/pages/Home/lib/flightRouteMacroTemplates.js`](src/pages/Home/lib/flightRouteMacroTemplates.js) — origin×region macro
 - [`scripts/lib/flight-route-heuristic.mjs`](scripts/lib/flight-route-heuristic.mjs) — audit 래퍼 + region-gateway seed
-- `npm run smoke:flight-route-heuristic` — **12/12**
+- `npm run smoke:flight-route-heuristic` — **14/14**
 
 **재사용 (중복 금지)**
 - [`flightRouteGeoRules.js`](src/pages/Home/lib/flightRouteGeoRules.js): `TIER_1_TRANSIT_HUBS`, `PREFERRED_HUBS_BY_REGION`, `scoreFlightPathV2`, `filterCandidatesByDetourRatio`, `isMajorTransitHub`
