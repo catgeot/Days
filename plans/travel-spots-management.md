@@ -362,6 +362,7 @@ npm run audit:ferries      # required/common booking gap 0 목표
 - 항구도시를 `common`으로 분류 → 시드니·함부르크 등 **오탐**. `none` 또는 미등록
 - 크루즈 관광지를 `common`으로 분류 → 하롱베이·우수아이아는 **`cruise_only`**
 - **허브 없이 툴킷 IATA만** → 플래너 배너가 경유 공항만 남음(아이투타키 AIT·티라나 TIA). `rentalAirportHubs` 먼저
+- **시네마/`airportsIndex`만으로 도착이 보여도 허브 미등록이면 Trip `aAirportCode` 누락** → 허브 등록·placeId override 후 `audit:airports`의 `cinemaTripGap` 확인 (카바라티 AGX 사례)
 - **`TITLE_ARRIVAL_AIRPORT_PHRASES` 짧은 한글 별칭** → 티라나·라로통가 등 오탐. §5 표 참고
 - **국제 경유지를 `preferredLinkIata`로** → 랄리벨라 ADD·아이투타키 RAR. 최종 공항은 쿠스코 패턴(`preferredLinkIata` = 최종)
 - **2차 항공인데 `tripFlightArrivalIata`·flight tier 누락** → Trip이 MAJ까지 검색되거나 United·디스클레이머 없음 — §3.1

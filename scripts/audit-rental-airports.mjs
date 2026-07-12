@@ -6,7 +6,9 @@ import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from '../src/utils/rentalA
 import {
   distanceKm,
   resolveRentalAirport,
-  resolveRentalPickupBannerInfo
+  resolveRentalPickupBannerInfo,
+  resolveCinemaDestIata,
+  resolvePlannerFlightArrivalIata
 } from '../src/utils/rentalAirportMatch.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -163,6 +165,89 @@ try {
   console.warn('[audit:airports] inferNearestMismatch skipped:', err.message);
 }
 
+/**
+ * 시네마 dest는 있는데 Trip 도착이 비거나, cinema dest가 허브 미등록인 경우
+ * (상태바만 IATA 표시 · aAirportCode 누락 유형)
+ */
+const cinemaTripGap = [];
+function pushCinemaTripGap(entry) {
+  cinemaTripGap.push(entry);
+}
+
+for (const spot of TRAVEL_SPOTS) {
+  const lat = spot.lat;
+  const lng = spot.lng;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+
+  const cinemaDest = resolveCinemaDestIata(spot, {});
+  if (!cinemaDest) continue;
+
+  const tripDest = resolvePlannerFlightArrivalIata(spot, {});
+  const cinemaInHubs = hubIatas.has(cinemaDest);
+  const tripMissing = !tripDest;
+  const cinemaNotInHubs = !cinemaInHubs;
+
+  if (tripMissing || cinemaNotInHubs) {
+    pushCinemaTripGap({
+      key: spot.slug,
+      name: spot.name,
+      kind: 'slug',
+      cinemaDest,
+      tripDest: tripDest ?? null,
+      cinemaInHubs,
+      hubRegistered: cinemaInHubs,
+      issue: tripMissing ? 'trip_missing' : 'cinema_dest_not_in_hubs'
+    });
+  }
+}
+
+try {
+  const staticAirports = JSON.parse(readFileSync(STATIC_AIRPORTS_PATH, 'utf-8'));
+  const placeIds = staticAirports.placeIds ?? {};
+  for (const [placeId, row] of Object.entries(placeIds)) {
+    const preferred = String(row?.preferredLinkIata ?? row?.primaryIatas?.[0] ?? '')
+      .trim()
+      .toUpperCase();
+    const tripOverride = String(row?.tripFlightArrivalIata ?? '')
+      .trim()
+      .toUpperCase();
+    const cinemaDest = preferred.length === 3 ? preferred : null;
+    if (!cinemaDest) continue;
+
+    const location = {
+      name: placeId,
+      place_id: placeId,
+      lat: typeof row.lat === 'number' ? row.lat : undefined,
+      lng: typeof row.lng === 'number' ? row.lng : undefined
+    };
+    const tripDest =
+      (tripOverride.length === 3 && hubIatas.has(tripOverride) ? tripOverride : null) ||
+      resolvePlannerFlightArrivalIata(location, {}) ||
+      (hubIatas.has(cinemaDest) ? cinemaDest : null);
+
+    const cinemaInHubs = hubIatas.has(cinemaDest);
+    const tripMissing = !tripDest;
+    const cinemaNotInHubs = !cinemaInHubs;
+
+    if (tripMissing || cinemaNotInHubs) {
+      pushCinemaTripGap({
+        key: placeId,
+        name: placeId,
+        kind: 'placeId',
+        cinemaDest,
+        tripDest: tripDest ?? null,
+        cinemaInHubs,
+        hubRegistered: cinemaInHubs,
+        issue: tripMissing ? 'trip_missing' : 'cinema_dest_not_in_hubs'
+      });
+    }
+  }
+} catch (err) {
+  console.warn('[audit:airports] cinemaTripGap placeIds skipped:', err.message);
+}
+
+cinemaTripGap.sort((a, b) => String(a.key).localeCompare(String(b.key)));
+
 const report = {
   generatedAt: new Date().toISOString(),
   hubCount: hubIatas.size,
@@ -175,13 +260,15 @@ const report = {
     geoGaps: geoGaps.length,
     farMatch: farMatch.length,
     staticMapCandidates: staticMapCandidates.length,
-    inferNearestMismatch: inferNearestMismatch.length
+    inferNearestMismatch: inferNearestMismatch.length,
+    cinemaTripGap: cinemaTripGap.length
   },
   noBanner,
   geoGaps,
   farMatch: farMatch.slice(0, 50),
   staticMapCandidates: staticMapCandidates.slice(0, 80),
-  inferNearestMismatch: inferNearestMismatch.slice(0, 80)
+  inferNearestMismatch: inferNearestMismatch.slice(0, 80),
+  cinemaTripGap: cinemaTripGap.slice(0, 80)
 };
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -193,6 +280,7 @@ console.log('Banner — single:', singleCount, 'multi:', multiCount, 'none:', no
 console.log('Geo gaps (no hub in radius, nearest <600km):', geoGaps.length);
 console.log('Far match (resolved >> nearest):', farMatch.length);
 console.log('Infer vs nearest (runtime-infer 검수 후보):', inferNearestMismatch.length);
+console.log('Cinema/Trip gap (상태바 dest vs Trip aAirportCode):', cinemaTripGap.length);
 console.log('\nWrote', OUTPUT_JSON);
 
 console.log('\n--- No banner (first 25) ---');
@@ -202,3 +290,13 @@ for (const g of noBanner.slice(0, 25)) {
   );
 }
 if (noBanner.length > 25) console.log(`... and ${noBanner.length - 25} more (see JSON)`);
+
+if (cinemaTripGap.length) {
+  console.log('\n--- Cinema/Trip gap (first 25) ---');
+  for (const g of cinemaTripGap.slice(0, 25)) {
+    console.log(
+      `${g.kind} ${g.key}: cinema ${g.cinemaDest}, trip ${g.tripDest ?? 'null'}, ${g.issue}${g.hubRegistered ? '' : ' (hub missing)'}`
+    );
+  }
+  if (cinemaTripGap.length > 25) console.log(`... and ${cinemaTripGap.length - 25} more (see JSON)`);
+}

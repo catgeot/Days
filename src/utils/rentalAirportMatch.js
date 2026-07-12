@@ -965,6 +965,8 @@ function resolveTripFlightArrivalIataFromStaticRow(location, options = {}) {
 
 /**
  * Trip.com·플래너 항공 검색용 도착 IATA — `tripFlightArrivalIata`가 있으면 우선(렌터카 linkHub와 분리).
+ * 허브·배너가 없을 때 시네마와 동일하게 airportsIndex 최근접을 last-resort로 사용
+ * (상태바에만 IATA가 보이고 Trip `aAirportCode`가 비는 불일치 방지).
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
@@ -975,12 +977,20 @@ export function resolvePlannerFlightArrivalIata(location, options = {}) {
   if (fromOverride) return fromOverride;
 
   const info = resolveRentalPickupBannerInfo(location, options);
-  if (!info) return null;
-  if (info.kind === 'single') {
-    return typeof info.iata === 'string' && info.iata.length === 3 ? info.iata.toUpperCase() : null;
+  if (info) {
+    if (info.kind === 'single') {
+      return typeof info.iata === 'string' && info.iata.length === 3 ? info.iata.toUpperCase() : null;
+    }
+    const code = info.linkHub?.iata || info.airports?.[0]?.iata;
+    if (typeof code === 'string' && code.length === 3) return code.toUpperCase();
   }
-  const code = info.linkHub?.iata || info.airports?.[0]?.iata;
-  return typeof code === 'string' && code.length === 3 ? code.toUpperCase() : null;
+
+  // 시네마 uiPlace 경로와 동일 — hubs 미등록이어도 Trip aAirportCode에 도착 반영
+  const lat = typeof location?.lat === 'number' ? location.lat : Number(location?.lat);
+  const lng = typeof location?.lng === 'number' ? location.lng : Number(location?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const nearest = findNearestAirportInIndex(lat, lng);
+  return nearest?.iata ?? null;
 }
 
 /** 항공 시네마 arc 최종 도착 IATA — 렌터카 linkHub(preferredLinkIata) 우선, Trip 도착과 분리 */

@@ -1441,4 +1441,34 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     confidence: 'high',
     rationale: '톨마체프(OVB) · ICN→PEK→OVB · citiesData-only',
   },
+  카바라티: {
+    primaryIatas: ['AGX', 'COK'],
+    preferredLinkIata: 'AGX',
+    tripFlightArrivalIata: 'COK',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '락샤드윕 카바라티 — COK 국제·국내 관문 후 AGX, 보트/헬기 이동',
+    bannerNote:
+      '카바라티(락샤드윕)는 보통 인천→코치 국제공항(COK) 도착 후 국내선으로 아가티(AGX)에 내린 뒤, 보트나 헬기로 카바라티로 이어집니다. Trip.com 등 항공권 검색은 COK까지 — AGX·섬 이동은 현지 일정에 맞춰 주세요. 렌터카·픽업은 AGX 기준입니다.',
+  },
+  kavaratti: {
+    primaryIatas: ['AGX', 'COK'],
+    preferredLinkIata: 'AGX',
+    tripFlightArrivalIata: 'COK',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '락샤드윕 카바라티 — COK 국제·국내 관문 후 AGX, 보트/헬기 이동',
+    bannerNote:
+      '카바라티(락샤드윕)는 보통 인천→코치 국제공항(COK) 도착 후 국내선으로 아가티(AGX)에 내린 뒤, 보트나 헬기로 카바라티로 이어집니다. Trip.com 등 항공권 검색은 COK까지 — AGX·섬 이동은 현지 일정에 맞춰 주세요. 렌터카·픽업은 AGX 기준입니다.',
+  },
+  아가티: {
+    primaryIatas: ['AGX', 'COK'],
+    preferredLinkIata: 'AGX',
+    tripFlightArrivalIata: 'COK',
+    kind: 'multi',
+    confidence: 'high',
+    rationale: '락샤드윕 아가티 공항 — COK 관문 후 AGX 최종',
+    bannerNote:
+      '아가티(락샤드윕)는 보통 인천→코치 국제공항(COK) 도착 후 국내선으로 아가티(AGX)에 내립니다. Trip.com 등 항공권 검색은 COK까지 — AGX 구간은 현지 일정에 맞춰 주세요. 렌터카·픽업은 AGX 기준입니다.',
+  },
 };

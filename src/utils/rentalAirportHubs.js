@@ -153,6 +153,22 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'DEL', officialKo: '인디라 간디국제공항', lat: 28.5562, lng: 77.1000, radiusKm: 220, aliases: ['delhi', '델리', 'new delhi'] },
   { iata: 'BOM', officialKo: '차트라파티 시바지국제공항', lat: 19.0896, lng: 72.8656, radiusKm: 200, aliases: ['mumbai', '뭄바이', 'bombay'] },
   { iata: 'BLR', officialKo: '켐페고우다국제공항', lat: 13.1986, lng: 77.7064, radiusKm: 200, aliases: ['bangalore', '벵갈루루', 'blr'] },
+  {
+    iata: 'COK',
+    officialKo: '코치 국제공항',
+    lat: 10.151047,
+    lng: 76.400838,
+    radiusKm: 120,
+    aliases: ['kochi', 'cochin', '코치', '코친', 'cok', '케랄라']
+  },
+  {
+    iata: 'AGX',
+    officialKo: '아가티 공항',
+    lat: 10.8237,
+    lng: 72.176003,
+    radiusKm: 80,
+    aliases: ['agatti', '아가티', 'agx', 'lakshadweep', '락샤드윕', 'kavaratti', '카바라티']
+  },
   { iata: 'KTM', officialKo: '트리부반국제공항', lat: 27.6966, lng: 85.3591, radiusKm: 160, aliases: ['kathmandu', '카트만두', 'ktm', 'everest', '에베레스트'] },
   { iata: 'MLE', officialKo: '벨라나국제공항', lat: 4.1918, lng: 73.5290, radiusKm: 300, aliases: ['maldives', '몰디브', 'male', 'mle'] },
   { iata: 'CMB', officialKo: '반다라나이크국제공항', lat: 7.1808, lng: 79.8841, radiusKm: 200, aliases: ['colombo', '콜롬보', 'sri lanka', 'cmb'] },
