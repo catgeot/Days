@@ -54,38 +54,45 @@
 
 ---
 
-## 다음 세션 — 항공경로↔플래너 공항 데이터 정합 검토
+## 공항 배너·SSOT 정합 검토 (읽기만)
 
-**목표**: 계획서 **새로** 수립. 구현 전에 다각도 검토만(또는 계획 확정까지).
+**상태**: ✅ 방향 합의 · 구현은 다음 세션 · 계획 [`airport-banner-index-fallback-plan.md`](./airport-banner-index-fallback-plan.md)
 
-**관찰**: 공항 IATA가 플래너 배너·Trip·시네마 arc 등에서 **서로 다른 resolver/데이터**를 볼 수 있음 → 같은 핀에서 표시·링크 불일치 위험.
+- Supabase `airports`/`air_routes` ≠ Edge `toolkitAirportCoords`(번들 검증) — **DB 중복 적재 아님**. SSOT 강제 통합 **보류**.
+- EG 전 배너 = bake + hub만 · 시네마는 `airportsIndex` → 양곤·부탄 배너 공백 / 만달레이(MDL hub) 정상. uiPlace 격리로 남의 slug 흡수 끊김 + index 폴백 미연결.
+- 같은 `resolveRentalPickupBannerInfo`가 EG **전·후** 재사용 · 툴킷 실행 후 EG primary로 배너 갱신(현행). index는 **last-resort만**.
+
+---
+
+## 다음 세션 — 배너 airportsIndex last-resort 구현
+
+**목표**: [`airport-banner-index-fallback-plan.md`](./airport-banner-index-fallback-plan.md) 최소 구현 · QA.
 
 ### 다음 세션 제시어 (복붙)
 
 ```
-@.ai-context.md @plans/2026-07-19-project-log.md
+@.ai-context.md @plans/2026-07-19-project-log.md @plans/airport-banner-index-fallback-plan.md
 
-공항 데이터 무결성 — 항공경로(시네마) vs 플래너 배너·Trip 도착 IATA가 서로 다른 SSOT를 보는지 다각도 검토 후, 새 계획서 수립.
+플래너 공항 배너 — airportsIndex last-resort 구현 (합의된 계획 실행).
 
 ## 배경
-- 직전: Mapbox·플래너 재발 방지(Edge toolkitAirportCoords · 배너 index · uiPlace 격리) 커밋·Edge 배포.
-- 사용자: 플래너·항공경로가 공항을 쓰는데 데이터가 갈라져 보임 → 분리 유지 vs 동일 SSOT 여부 검토 후 계획.
+- 검토 완료: SSOT 통합·Supabase 배너 조회 보류. uiPlace 격리 유지.
+- QA: 만달레이 배너 OK · 양곤·부탄 공백(시네마 dest는 보임). hub 없는 유명 지명.
+- EG 전·후 동일 resolveRentalPickupBannerInfo — index는 맨 끝만. 툴킷 있으면 EG/curated 우선 유지.
 
 ## 이 세션에서 할 일
-1. 소비처 매핑(읽기만): 시네마 dest · resolveCinemaDestIata · resolvePlannerFlightArrivalIata · resolveRentalPickupBannerInfo · overrides/hubs/airportsIndex/toolkit primary.
-2. 같은 location 샘플 3~5곳(카탈로그·uiPlace·살타형)에서 IATA가 갈라지는지 표로 정리.
-3. 옵션 비교: (A) 역할별 분리 유지+명시적 우선순위 문서화 (B) 표시·검색용 dest IATA 단일 resolver (C) 하이브리드.
-4. 새 plans/*-plan.md 초안(범위·비범위·완료 기준·위험) — 사용자와 합의 전 코드 대량 변경 금지.
+1. resolveRentalAirport / 배너 cascade 끝단에 findNearestAirportInIndex (시네마·Trip과 동일 maxKm).
+2. fromPlanner 카피 오용 금지(index 폴백은 일반 문구).
+3. QA: 양곤·부탄 EG 전 배너 · 툴킷 실행 후 EG 전환 · 만달레이 회귀 · far 오흡수 없음.
+4. 일지 2~5줄 · 필요 시 .ai-context 5절만.
 
 ## 금지
 - travelSpotAirports.json spots 직접 수정 · RENTAL_MULTI만 단독 수정
-- Heuristic 항공 SSOT Phase 본구현과 범위 혼동(별도 계획)
-- 사용자 합의 없는 「완료」단정·대규모 리팩터
+- uiPlace far 풀머지 원복 · Heuristic SSOT Phase · role bag/SSOT 통합 · Edge/Supabase airports 재설계
+- 도시마다 hub 수동 나열이 주경로가 되지 않게
+- 사용자 QA 전 「완료」 단정
 
-## 참고 파일(필요 시 grep)
+## 참고
 - src/utils/rentalAirportMatch.js
 - src/utils/airportsIndexLookup.js
-- src/utils/rentalAirportHubs.js
-- src/pages/Home/lib/ (flight cinema dest)
-- scripts/data/travel-spot-airport-overrides.mjs
 ```
