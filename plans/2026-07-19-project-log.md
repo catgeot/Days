@@ -28,7 +28,7 @@
 
 ## 살타(salta) 플래너 — 지리 검증 geoMismatch fix
 
-**상태**: ✅ 로컬·DB·Edge 배포 완료 · 프론트 커밋/배포·사용자 QA 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 `1263284` · Edge 배포됨
 
 - **증상**: place_id `salta` 일치하나 `essentialGuideMatchesLocation` 실패 → 플래너 빈 화면 · Edge 강제 갱신 후에도 `hasGuide: false`
 - **원인**: DB primary `['EZE','AEP','SLA']` — EZE/AEP(~1290km)만 허브 검증·SLA는 `RENTAL_AIRPORT_HUBS` 미등록이라 `primaryKnown`에서 탈락 → `.some()` 전부 실패
@@ -38,4 +38,4 @@
   - DB `toolkit:patch-guide-iata --apply` salta→`['SLA']` (+ tukao·ascension·luxor 잔여 패치)
   - Edge `update-place-toolkit` — EZE/AEP/SLA/MDZ/BRC 허브 · 「전부 원거리만 거부」(혼합 허용)
 - **검증**: node — mixed primary PASS · EZE-only FAIL · `fetchToolkitRow(salta)` `hasUsable: true` · primary `['SLA']`
-- **QA**: 살타 검색→플래너 실행 · 가이드 표시 확인 (배포 후)
+- **재발 검토**: Salta형 클라 공백은 완화 · 잔여 **중간** — Edge `HUB_COORDS`≪클라 index · AI 원거리-only · 배너 hub-only · Mapbox uiPlace 머지. 후속: Edge 좌표 공유 · banner index 필터 · uiPlace place_id 격리
