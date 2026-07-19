@@ -904,7 +904,8 @@ function resolveLinkHubWithinMulti(location, row, airports) {
  * 2. `essentialGuide` — 툴킷 여정·항공 안내의 도착 IATA (실시간 DB)
  * 3. JSON의 **toolkit-sync** (`npm run sync:airports-from-toolkit`로 박아 둔 스냅샷)
  * 4. JSON의 **좌표·런타임 추론**(runtime-infer 등)
- * 5. `RENTAL_MULTI_AIRPORT_DESTINATIONS` · 좌표 최근접
+ * 5. `RENTAL_MULTI_AIRPORT_DESTINATIONS` · 좌표 최근접 허브
+ * 6. `airportsIndex` 최근접 — last-resort (`fromPlanner` 없음 · 일반 배너 문구)
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{ essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
@@ -1322,8 +1323,23 @@ export function getRentalCarTimelineActionDescription(location, options = {}) {
 }
 
 /**
+ * hubs·별칭이 없을 때 시네마·Trip과 동일 maxKm으로 airportsIndex 최근접.
+ * @returns {{ officialKo: string, iata: string } | null}
+ */
+function resolveAirportFromIndexNearest(lat, lng) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const nearest = findNearestAirportInIndex(lat, lng);
+  if (!nearest?.iata) return null;
+  const hub = hubByIata(nearest.iata);
+  return hub
+    ? { officialKo: hub.officialKo, iata: hub.iata }
+    : { officialKo: nearest.iata, iata: nearest.iata };
+}
+
+/**
  * 여행지 객체로부터 렌터카 검색에 쓸 공항(한국어 공식명 + IATA)을 추론합니다.
  * 좌표·반경 최근접 허브와 별칭 매칭을 쓰되, `RENTAL_MULTI_AIRPORT_DESTINATIONS`에 해당하면 그 목록 안에서만 링크 허브를 고릅니다(지리상 더 가까운 제3국 허브 오탐 방지).
+ * 허브·별칭이 없으면 airportsIndex 최근접을 last-resort로 사용합니다(배너 cascade 끝단).
  *
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{ ignoreStoredRentalAirport?: boolean, skipMultiDestinationOverride?: boolean }} [options]
@@ -1420,8 +1436,10 @@ export function resolveRentalAirport(location, options = {}) {
       }
     }
   }
+  if (bestAlias) return bestAlias;
 
-  return bestAlias;
+  // last-resort — curated/EG/hub 없음 · fromPlanner 카피 경로와 분리
+  return resolveAirportFromIndexNearest(lat, lng);
 }
 
 /**

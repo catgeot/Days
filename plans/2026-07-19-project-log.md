@@ -56,43 +56,27 @@
 
 ## 공항 배너·SSOT 정합 검토 (읽기만)
 
-**상태**: ✅ 방향 합의 · 구현은 다음 세션 · 계획 [`airport-banner-index-fallback-plan.md`](./airport-banner-index-fallback-plan.md)
+**상태**: ✅ 방향 합의 · 계획 [`airport-banner-index-fallback-plan.md`](./airport-banner-index-fallback-plan.md)
 
 - Supabase `airports`/`air_routes` ≠ Edge `toolkitAirportCoords`(번들 검증) — **DB 중복 적재 아님**. SSOT 강제 통합 **보류**.
-- EG 전 배너 = bake + hub만 · 시네마는 `airportsIndex` → 양곤·부탄 배너 공백 / 만달레이(MDL hub) 정상. uiPlace 격리로 남의 slug 흡수 끊김 + index 폴백 미연결.
+- EG 전 배너 = bake + hub만 · 시네마는 `airportsIndex` → 양곤·부탄 배너 공백 / 만달레이(MDL hub) 정상. uiPlace 격리로 남의 slug 흡수 끊김 + index 폴백 미연결(→ 아래 구현으로 보완).
 - 같은 `resolveRentalPickupBannerInfo`가 EG **전·후** 재사용 · 툴킷 실행 후 EG primary로 배너 갱신(현행). index는 **last-resort만**.
 
 ---
 
-## 다음 세션 — 배너 airportsIndex last-resort 구현
+## 배너 airportsIndex last-resort 구현
 
-**목표**: [`airport-banner-index-fallback-plan.md`](./airport-banner-index-fallback-plan.md) 최소 구현 · QA.
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시
 
-### 다음 세션 제시어 (복붙)
+- `resolveRentalAirport` 끝단 `findNearestAirportInIndex`(시네마·Trip과 동일 default maxKm) · `fromPlanner` 미설정(일반 배너 문구)
+- 노드: 양곤→RGN · 부탄/파로→PBH · 만달레이→MDL(hub 우선, HEH 미침범) · EG `primary` 시 `fromPlanner` · BA 좌표+「양곤」이름→AEP(이름 오흡수 없음)
+- 비범위 유지: spots/RENTAL_MULTI 단독·uiPlace far 풀머지 원복·Heuristic/SSOT 통합 없음
 
-```
-@.ai-context.md @plans/2026-07-19-project-log.md @plans/airport-banner-index-fallback-plan.md
+---
 
-플래너 공항 배너 — airportsIndex last-resort 구현 (합의된 계획 실행).
+## 부탄 Force Update — Gemini JSON 파싱 실패
 
-## 배경
-- 검토 완료: SSOT 통합·Supabase 배너 조회 보류. uiPlace 격리 유지.
-- QA: 만달레이 배너 OK · 양곤·부탄 공백(시네마 dest는 보임). hub 없는 유명 지명.
-- EG 전·후 동일 resolveRentalPickupBannerInfo — index는 맨 끝만. 툴킷 있으면 EG/curated 우선 유지.
+**상태**: ✅ Edge 배포 · 사용자 재시도 확인 · 커밋·푸시
 
-## 이 세션에서 할 일
-1. resolveRentalAirport / 배너 cascade 끝단에 findNearestAirportInIndex (시네마·Trip과 동일 maxKm).
-2. fromPlanner 카피 오용 금지(index 폴백은 일반 문구).
-3. QA: 양곤·부탄 EG 전 배너 · 툴킷 실행 후 EG 전환 · 만달레이 회귀 · far 오흡수 없음.
-4. 일지 2~5줄 · 필요 시 .ai-context 5절만.
-
-## 금지
-- travelSpotAirports.json spots 직접 수정 · RENTAL_MULTI만 단독 수정
-- uiPlace far 풀머지 원복 · Heuristic SSOT Phase · role bag/SSOT 통합 · Edge/Supabase airports 재설계
-- 도시마다 hub 수동 나열이 주경로가 되지 않게
-- 사용자 QA 전 「완료」 단정
-
-## 참고
-- src/utils/rentalAirportMatch.js
-- src/utils/airportsIndexLookup.js
-```
+- **증상**: `placeKey: bhutan` 「매칭 행 없음」(DB 미생성 정상) → Force Update → `Gemini did not return valid JSON`
+- **수정**: `_shared/parseGeminiJson.ts` · `update-place-toolkit` fence/잡문 파싱 + `maxOutputTokens: 16384` · 배포 `phdjnbfitvmrguqzverm`

@@ -1,6 +1,6 @@
 /**
- * OurAirports 경량 인덱스 — rentalAirportHubs에 없는 IATA 좌표 폴백 (시네마 arc 전용).
- * 배너·렌터카 매칭은 rentalAirportHubs SSOT 유지.
+ * OurAirports 경량 인덱스 — rentalAirportHubs에 없는 IATA 좌표 폴백.
+ * 시네마 arc · Trip 도착 · 플래너 배너 last-resort (curated/EG/hub 이후).
  *
  * SSOT 생성: npm run generate:airports-index
  */

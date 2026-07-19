@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -128,19 +129,7 @@ AI인 당신은 아래 제시된 마크다운 템플릿의 '구조'와 '섹션 �
 
     let parsedResult;
     try {
-      // 마크다운 JSON 코드 블록 제거 및 클린업
-      let cleanText = generatedText.trim();
-      if (cleanText.startsWith('```json')) {
-          cleanText = cleanText.substring(7);
-      } else if (cleanText.startsWith('```')) {
-          cleanText = cleanText.substring(3);
-      }
-      if (cleanText.endsWith('```')) {
-          cleanText = cleanText.substring(0, cleanText.length - 3);
-      }
-      cleanText = cleanText.trim();
-
-      parsedResult = JSON.parse(cleanText);
+      parsedResult = parseGeminiJsonText(generatedText);
     } catch (e) {
       console.error('Failed to parse Gemini JSON output:', generatedText);
       throw new Error('Gemini did not return valid JSON');

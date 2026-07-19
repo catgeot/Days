@@ -5,6 +5,7 @@ import {
   resolveCanonicalPlaceId,
 } from "../_shared/resolveCanonicalPlaceId.ts";
 import { isRegionalGatewayIata, REGIONAL_GATEWAY_IATAS_BY_SLUG } from "../_shared/regionalGatewayIatas.ts";
+import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
 import toolkitAirportCoords from "../_shared/toolkitAirportCoords.json" with { type: "json" };
 
 const corsHeaders = {
@@ -241,7 +242,9 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
           },
           body: JSON.stringify({
             generationConfig: {
-              responseMimeType: "application/json"
+              responseMimeType: "application/json",
+              // 국가급 지명(부탄 등) 툴킷 JSON이 잘리면 parse 실패 → 여유 토큰
+              maxOutputTokens: 16384,
             },
             contents: [
               { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
@@ -288,18 +291,42 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
     }
 
     const data = await response.json();
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const candidate = data.candidates?.[0];
+    const finishReason = candidate?.finishReason ?? data.promptFeedback?.blockReason ?? null;
+    const parts = candidate?.content?.parts;
+    const generatedText = Array.isArray(parts)
+      ? parts.map((p: { text?: string }) => p?.text ?? '').join('')
+      : candidate?.content?.parts?.[0]?.text;
 
     if (!generatedText) {
+      console.error('[update-place-toolkit] Empty Gemini content', {
+        usedModel,
+        finishReason,
+        promptFeedback: data.promptFeedback ?? null,
+      });
       throw new Error('No content generated from Gemini');
     }
 
-    let essentialGuideJson;
+    if (finishReason && String(finishReason).toUpperCase().includes('MAX_TOKEN')) {
+      console.warn('[update-place-toolkit] Response may be truncated:', { usedModel, finishReason });
+    }
+
+    let essentialGuideJson: Record<string, unknown>;
     try {
-      essentialGuideJson = JSON.parse(generatedText);
+      essentialGuideJson = parseGeminiJsonText(generatedText) as Record<string, unknown>;
     } catch (e) {
-      console.error('Failed to parse Gemini JSON output:', generatedText);
-      throw new Error('Gemini did not return valid JSON');
+      const err = e as Error;
+      console.error('Failed to parse Gemini JSON output:', {
+        usedModel,
+        finishReason,
+        preview: String(generatedText).slice(0, 800),
+        message: err.message,
+      });
+      throw new Error(
+        finishReason && String(finishReason).toUpperCase().includes('MAX_TOKEN')
+          ? 'Gemini JSON truncated (MAX_TOKENS) — retry Force Update'
+          : 'Gemini did not return valid JSON'
+      );
     }
 
     essentialGuideJson = clampRegionalGatewayIatas(essentialGuideJson, slugNorm || null);

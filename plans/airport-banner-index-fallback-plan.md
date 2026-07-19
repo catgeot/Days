@@ -1,7 +1,8 @@
 # 플래너 공항 배너 — airportsIndex last-resort
 
 **작성**: 2026-07-19  
-**상태**: 계획 합의 · **구현은 다음 세션**  
+**상태**: ✅ 구현·QA 통과  
+
 **일지**: [`2026-07-19-project-log.md`](./2026-07-19-project-log.md)  
 **관련**: [`.ai-context.md`](../.ai-context.md) 6절 · Heuristic SSOT와 **범위 분리**
 
