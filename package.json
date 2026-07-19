@@ -18,6 +18,7 @@
     "import:airports": "node scripts/import-ourairports.mjs",
     "import:routes": "node scripts/import-openflights-routes.mjs",
     "generate:airports-index": "node scripts/generate-airports-index.mjs",
+    "generate:toolkit-airport-coords": "node scripts/generate-toolkit-airport-coords.mjs",
     "generate:flight-routes": "node scripts/generate-flight-routes.mjs",
     "audit:flight-routes": "node scripts/audit-flight-routes.mjs",
     "audit:flight-route-detours": "node scripts/audit-flight-route-detours.mjs",

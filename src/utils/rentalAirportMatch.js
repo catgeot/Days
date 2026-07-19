@@ -499,6 +499,16 @@ function pushValidHubIata(ordered, seen, raw) {
   ordered.push(upper);
 }
 
+/** 구조화 primary IATA — hub 또는 airportsIndex (타임라인 휴리스틱보다 넓게) */
+function pushValidArrivalIata(ordered, seen, raw) {
+  const upper = String(raw ?? '').trim().toUpperCase();
+  if (!/^[A-Z]{3}$/.test(upper)) return;
+  if (!hubByIata(upper) && !getAirportsIndexCoords(upper)) return;
+  if (seen.has(upper)) return;
+  seen.add(upper);
+  ordered.push(upper);
+}
+
 /** IATA 별칭·짧은 영문이 다른 단어 안쪽(jordan→ord 등)에 걸리지 않도록 단어 경계로만 매칭 */
 export function aliasMatchesHay(hay, alias, hubIata) {
   const al = alias.toLowerCase();
@@ -611,7 +621,7 @@ function collectIataFromTitle(ordered, seen, title, requireArrivalHint) {
 
 /**
  * AI 툴킷(`essential_guide`)에 기반한 **도착(또는 목적지 권역) 공항 IATA** 목록.
- * - `primary_arrival_airports_iata`(툴킷 JSON 최상위, 신규): 있으면 최우선
+ * - `primary_arrival_airports_iata`(툴킷 JSON 최상위, 신규): hub 또는 airportsIndex
  * - 없으면 `journey_timeline` 제목·항공 `advice`에서 `(XXX)` 패턴 추출 (등록된 렌터카 허브만)
  *
  * @param {Record<string, unknown> | null | undefined} guide
@@ -626,7 +636,7 @@ export function extractArrivalIataCodesFromEssentialGuide(guide) {
   const structured = guide.primary_arrival_airports_iata;
   if (Array.isArray(structured)) {
     for (const x of structured) {
-      pushValidHubIata(ordered, seen, x);
+      pushValidArrivalIata(ordered, seen, x);
     }
   }
 
@@ -732,6 +742,15 @@ export function extractFlightRouteHubIatasFromEssentialGuide(guide, options = {}
 const PLANNER_SOURCED_RENTAL_BANNER_NOTE =
   '도착 공항은 이 툴킷 AI가 정리한 여정·항공 안내와 맞추었습니다. 실제 티켓과 다르면 도착 공항 코드를 기준으로 바꿔 주세요.';
 
+/** hub 좌표 우선 · 없으면 airportsIndex — 배너 거리 필터용 */
+function airportCoordsForBanner(iata) {
+  const hub = hubByIata(iata);
+  if (hub) return { lat: hub.lat, lng: hub.lng, officialKo: hub.officialKo, iata: hub.iata };
+  const idx = getAirportsIndexCoords(iata);
+  if (idx) return { lat: idx.lat, lng: idx.lng, officialKo: String(iata).toUpperCase(), iata: idx.iata };
+  return null;
+}
+
 function linkHubNearestToLocation(location, airports) {
   const lat = typeof location.lat === 'number' ? location.lat : Number(location.lat);
   const lng = typeof location.lng === 'number' ? location.lng : Number(location.lng);
@@ -739,12 +758,12 @@ function linkHubNearestToLocation(location, airports) {
   let best = null;
   let bestD = Infinity;
   for (const a of airports) {
-    const hub = hubByIata(a.iata);
-    if (!hub) continue;
-    const d = distanceKm(lat, lng, hub.lat, hub.lng);
+    const coords = airportCoordsForBanner(a.iata);
+    if (!coords) continue;
+    const d = distanceKm(lat, lng, coords.lat, coords.lng);
     if (d < bestD) {
       bestD = d;
-      best = { officialKo: hub.officialKo, iata: hub.iata };
+      best = { officialKo: a.officialKo || coords.officialKo, iata: coords.iata };
     }
   }
   return best || airports[0];
@@ -763,9 +782,9 @@ function filterAirportsNearDestination(location, airports) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return airports;
 
   const withDist = airports.map((a) => {
-    const hub = hubByIata(a.iata);
-    if (!hub) return { ...a, d: Infinity };
-    return { ...a, d: distanceKm(lat, lng, hub.lat, hub.lng) };
+    const coords = airportCoordsForBanner(a.iata);
+    if (!coords) return { ...a, d: Infinity };
+    return { ...a, d: distanceKm(lat, lng, coords.lat, coords.lng) };
   });
 
   const finite = withDist.filter((a) => Number.isFinite(a.d));
@@ -794,7 +813,10 @@ function filterAirportsNearDestination(location, airports) {
  * @param {string[]} iataCodes
  */
 function resolveRentalPickupBannerFromPlannerIatas(location, iataCodes) {
-  let airports = airportsFromIataCodes(iataCodes).filter((a) => hubByIata(a.iata));
+  // hub 미등록 로컬 IATA도 유지(officialKo=IATA) · 거리 필터로 원거리 hub만 제거
+  let airports = airportsFromIataCodes(iataCodes).filter(
+    (a) => hubByIata(a.iata) || getAirportsIndexCoords(a.iata)
+  );
   if (airports.length === 0) return null;
 
   airports = filterAirportsNearDestination(location, airports);

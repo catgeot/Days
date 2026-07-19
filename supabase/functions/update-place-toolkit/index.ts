@@ -5,6 +5,7 @@ import {
   resolveCanonicalPlaceId,
 } from "../_shared/resolveCanonicalPlaceId.ts";
 import { isRegionalGatewayIata, REGIONAL_GATEWAY_IATAS_BY_SLUG } from "../_shared/regionalGatewayIatas.ts";
+import toolkitAirportCoords from "../_shared/toolkitAirportCoords.json" with { type: "json" };
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,41 +14,10 @@ const corsHeaders = {
 
 const MAX_DESTINATION_AIRPORT_KM = 900;
 
-/** 주요 허브만 — 응답 IATA가 요청 좌표와 맞는지 서버에서 검증 */
-/** `primary_arrival_airports_iata` 거리 검증용 — 등록된 주요 허브만 */
-const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
-  TIM: { lat: -4.5283, lng: 136.8844 },
-  CGK: { lat: -6.1256, lng: 106.6559 },
-  DPS: { lat: -8.7482, lng: 115.1672 },
-  SCQ: { lat: 42.8963, lng: -8.4154 },
-  MAD: { lat: 40.4719, lng: -3.5626 },
-  HER: { lat: 35.3397, lng: 25.1803 },
-  CHQ: { lat: 35.5317, lng: 24.1497 },
-  ICN: { lat: 37.4602, lng: 126.4407 },
-  BWN: { lat: 4.9442, lng: 114.9284 },
-  BKI: { lat: 5.9372, lng: 116.0512 },
-  SAI: { lat: 13.7694, lng: 103.6439 },
-  GPS: { lat: -0.4538, lng: -90.2659 },
-  GYE: { lat: -2.1574, lng: -79.8836 },
-  KEF: { lat: 63.985, lng: -22.6056 },
-  HKT: { lat: 8.1132, lng: 98.3169 },
-  CUZ: { lat: -13.5357, lng: -71.9388 },
-  USH: { lat: -54.8433, lng: -68.2958 },
-  FTE: { lat: -50.2803, lng: -72.0531 },
-  PUQ: { lat: -53.0026, lng: -70.8542 },
-  ADD: { lat: 8.9779, lng: 38.7993 },
-  FIH: { lat: -4.3858, lng: 15.4446 },
-  MDY: { lat: 28.2019, lng: -177.3803 },
-  MLE: { lat: 4.1918, lng: 73.529 },
-  SIN: { lat: 1.3644, lng: 103.9915 },
-  ASI: { lat: -7.9696, lng: -14.3937 },
-  JNB: { lat: -26.1392, lng: 28.246 },
-  EZE: { lat: -34.8222, lng: -58.5358 },
-  AEP: { lat: -34.5592, lng: -58.4156 },
-  SLA: { lat: -24.856001, lng: -65.486198 },
-  MDZ: { lat: -32.8317, lng: -68.7928 },
-  BRC: { lat: -41.1511, lng: -71.1575 },
-};
+/** hub + airportsIndex 공유 SSOT — `npm run generate:toolkit-airport-coords` */
+const AIRPORT_COORDS: Record<string, { lat: number; lng: number }> =
+  (toolkitAirportCoords as { byIata?: Record<string, { lat: number; lng: number }> })?.byIata ??
+  {};
 
 function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const toRad = (d: number) => (d * Math.PI) / 180;
@@ -114,10 +84,10 @@ function validateEssentialGuideForLocation(
       if (regionalAllowed?.length && !regionalAllowed.includes(code)) {
         return `도착 공항 ${code}은(는) 「${locationName}」 허용 관문(${regionalAllowed.join(', ')})이 아닙니다.`;
       }
-      const hub = HUB_COORDS[code];
-      if (!hub) continue;
+      const coords = AIRPORT_COORDS[code];
+      if (!coords) continue;
       checked.push(code);
-      if (distanceKm(lat as number, lng as number, hub.lat, hub.lng) <= MAX_DESTINATION_AIRPORT_KM) {
+      if (distanceKm(lat as number, lng as number, coords.lat, coords.lng) <= MAX_DESTINATION_AIRPORT_KM) {
         anyNear = true;
       }
     }

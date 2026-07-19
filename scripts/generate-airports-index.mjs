@@ -4,6 +4,9 @@
  * npm run generate:airports-index
  * npm run generate:airports-index -- --from-csv
  * npm run generate:airports-index -- --dry-run
+ *
+ * hub/index 갱신 후 Edge 검증 좌표도 맞추려면:
+ *   npm run generate:toolkit-airport-coords
  */
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';

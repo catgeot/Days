@@ -49,6 +49,25 @@ export function buildToolkitPlaceIdCandidates(location) {
   const raw = location;
   const loc = mergeCanonicalTravelSpot(location);
 
+  const collectEphemeral = (src) => {
+    const ephemeralId = src?.id != null ? String(src.id).trim() : '';
+    if (
+      ephemeralId &&
+      (ephemeralId.startsWith('search-') ||
+        ephemeralId.startsWith('loc-') ||
+        ephemeralId.startsWith('city-'))
+    ) {
+      return ephemeralId;
+    }
+    return '';
+  };
+
+  // Mapbox uiPlace — ephemeral id를 slug 충돌 행보다 앞에 두어 조회·생성 격리
+  if (raw.uiPlace || loc.uiPlace) {
+    const ephemeralFirst = collectEphemeral(raw) || collectEphemeral(loc);
+    if (ephemeralFirst) add(ephemeralFirst);
+  }
+
   const slugKey = getPlaceStableKey(loc);
   if (slugKey) add(slugKey);
 
@@ -77,15 +96,8 @@ export function buildToolkitPlaceIdCandidates(location) {
   for (const id of buildPlaceDbIdCandidates(raw)) add(id);
 
   for (const src of [loc, raw]) {
-    const ephemeralId = src?.id != null ? String(src.id).trim() : '';
-    if (
-      ephemeralId &&
-      (ephemeralId.startsWith('search-') ||
-        ephemeralId.startsWith('loc-') ||
-        ephemeralId.startsWith('city-'))
-    ) {
-      add(ephemeralId);
-    }
+    const ephemeralId = collectEphemeral(src);
+    if (ephemeralId) add(ephemeralId);
   }
 
   return out;

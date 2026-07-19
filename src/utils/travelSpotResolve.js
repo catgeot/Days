@@ -340,6 +340,23 @@ export function healPlaceholderCountry(location, spots = TRAVEL_SPOTS) {
   };
 }
 
+/** uiPlace soft-merge — 표시명·좌표·uiPlace 유지, placeholder 국가만 보강 */
+function softMergeUiPlaceCountry(location, spot) {
+  const needsCountry =
+    isPlaceholderCountry(location.country) || isPlaceholderCountry(location.country_en);
+  if (!needsCountry) return location;
+  return {
+    ...location,
+    country: preferConcreteCountry(location.country, spot.country),
+    country_en: preferConcreteCountry(location.country_en, spot.country_en),
+    galleryRegionSpot: location.galleryRegionSpot || {
+      slug: spot.slug,
+      name: spot.name,
+      name_en: spot.name_en,
+    },
+  };
+}
+
 /** 검색·핀·지오코딩 location을 SSOT travelSpots 행으로 병합 */
 export function mergeCanonicalTravelSpot(location) {
   if (!location || typeof location !== 'object') return location;
@@ -350,19 +367,24 @@ export function mergeCanonicalTravelSpot(location) {
   const { spot, matchKind } = resolved;
   // Mapbox·지오코딩 uiPlace — 표시명·좌표는 유지. placeholder 국가만 SSOT로 보강.
   if (location.uiPlace && matchKind === 'coords') {
-    const needsCountry =
-      isPlaceholderCountry(location.country) || isPlaceholderCountry(location.country_en);
-    if (!needsCountry) return location;
-    return {
-      ...location,
-      country: preferConcreteCountry(location.country, spot.country),
-      country_en: preferConcreteCountry(location.country_en, spot.country_en),
-      galleryRegionSpot: location.galleryRegionSpot || {
-        slug: spot.slug,
-        name: spot.name,
-        name_en: spot.name_en,
-      },
-    };
+    return softMergeUiPlaceCountry(location, spot);
+  }
+
+  // uiPlace + slug/name 매칭 — 핀이 큐레이션 좌표와 가까울 때만 풀머지(남의 툴킷 상속 방지)
+  if (location.uiPlace) {
+    const pinLat = Number(location.lat);
+    const pinLng = Number(location.lng);
+    const spotLat = Number(spot.lat);
+    const spotLng = Number(spot.lng);
+    const nearEnough =
+      Number.isFinite(pinLat) &&
+      Number.isFinite(pinLng) &&
+      Number.isFinite(spotLat) &&
+      Number.isFinite(spotLng) &&
+      distanceKm(pinLat, pinLng, spotLat, spotLng) <= UI_PLACE_GALLERY_REGION_MAX_KM;
+    if (!nearEnough) {
+      return softMergeUiPlaceCountry(location, spot);
+    }
   }
 
   const canonicalSlug = spotSlug(spot);
