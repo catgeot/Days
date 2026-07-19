@@ -389,6 +389,12 @@ import_map = "./functions/update-place-wiki/deno.json"
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
 entrypoint = "./functions/update-place-wiki/index.ts"
 
+[functions.generate-place-magazine]
+enabled = true
+verify_jwt = false
+import_map = "./functions/generate-place-magazine/deno.json"
+entrypoint = "./functions/generate-place-magazine/index.ts"
+
 [functions.fetch-place-videos]
 enabled = true
 verify_jwt = false

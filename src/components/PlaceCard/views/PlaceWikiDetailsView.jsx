@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { BookOpen, Sparkles, Loader2, RefreshCw, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase, ImageIcon, Download } from 'lucide-react';
+import { BookOpen, Sparkles, Loader2, RefreshCw, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase, ImageIcon, Download, PenLine } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
+import {
+  getPlaceStableKey,
+  mergeCanonicalTravelSpot,
+  resolveTravelSpotFromLocation,
+} from '../../../utils/travelSpotResolve';
 import CopyableText from '../common/CopyableText';
 import PlaceWikiLocatorMap from '../common/PlaceWikiLocatorMap';
 import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
@@ -35,6 +40,23 @@ const LOADING_MESSAGES_UPDATE = [
     "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
 ];
 
+const MAGAZINE_LOADING_MESSAGES = [
+    "하이엔드 매거진 에디터가 서사를 구상하는 중...",
+    "오감 자극 묘사와 로컬 루트를 엮는 중...",
+    "프롤로그와 7개 피처 섹션을 집필하는 중...",
+    "문장 리듬과 여백을 다듬는 중...",
+    "GATEO 여행 스케치 매거진을 완성하는 중..."
+];
+
+/** summary + sections 가 모두 채워진 완성 매거진인지 */
+function hasMagazineContent(wikiData) {
+  if (!wikiData) return false;
+  if (wikiData.summary === '[[LOADING]]') return false;
+  const summaryOk = Boolean(wikiData.summary && String(wikiData.summary).trim());
+  const sectionsOk = Array.isArray(wikiData.sections) && wikiData.sections.length > 0;
+  return summaryOk && sectionsOk;
+}
+
 const PlaceWikiDetailsView = ({
   wikiData,
   isWikiLoading,
@@ -49,6 +71,9 @@ const PlaceWikiDetailsView = ({
 }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isMagazineGenerating, setIsMagazineGenerating] = useState(false);
+  const [magazineError, setMagazineError] = useState(null);
+  const [magazineLoadingStep, setMagazineLoadingStep] = useState(0);
 
   const [isAiExpanded, setIsAiExpanded] = useState(false);
   const [localAiResponse, setLocalAiResponse] = useState(null);
@@ -123,10 +148,107 @@ const PlaceWikiDetailsView = ({
       return () => clearInterval(interval);
   }, [isAiLoading, currentMessages]);
 
+  const isMagazineLoading =
+    isMagazineGenerating || wikiData?.summary === '[[LOADING]]';
+
+  useEffect(() => {
+      let interval;
+      if (isMagazineLoading) {
+          setMagazineLoadingStep(0);
+          interval = setInterval(() => {
+              setMagazineLoadingStep((prev) =>
+                  prev < MAGAZINE_LOADING_MESSAGES.length - 1 ? prev + 1 : prev
+              );
+          }, 5000);
+      }
+      return () => clearInterval(interval);
+  }, [isMagazineLoading]);
+
+  // DB 폴링으로 매거진이 채워지면 로컬 생성 상태 해제
+  useEffect(() => {
+      if (hasMagazineContent(wikiData)) {
+          setIsMagazineGenerating(false);
+          setMagazineError(null);
+      } else if (wikiData?.summary === '[[LOADING]]') {
+          setIsMagazineGenerating(true);
+      }
+  }, [wikiData?.summary, wikiData?.sections]);
+
   const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName });
   useEffect(() => {
       requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName };
   }, [placeName, wikiData]);
+
+  const handleGenerateMagazine = useCallback(async () => {
+      if (isMagazineLoading) return;
+
+      const canonicalLoc = mergeCanonicalTravelSpot(location);
+      const resolved = resolveTravelSpotFromLocation(location);
+      // uiPlace soft-merge 시 stable key가 한글명이 될 수 있음 → SSOT slug 우선
+      const slug =
+          resolved?.spot?.slug ||
+          canonicalLoc?.canonical_slug ||
+          canonicalLoc?.slug ||
+          location?.slug ||
+          (getPlaceStableKey(canonicalLoc) || '').toLowerCase();
+      const placeId =
+          slug ||
+          wikiData?.place_id ||
+          requestInfoRef.current.placeId ||
+          placeName;
+      const locationName =
+          placeName ||
+          resolved?.spot?.name ||
+          canonicalLoc?.name ||
+          location?.name ||
+          wikiData?.title ||
+          requestInfoRef.current.placeName;
+
+      if (!placeId || !locationName) {
+          setMagazineError('장소 정보를 확인할 수 없습니다.');
+          return;
+      }
+
+      setIsMagazineGenerating(true);
+      setMagazineError(null);
+
+      try {
+          if (import.meta.env.DEV) {
+              console.log('[PlaceWikiDetailsView] generate-place-magazine 호출', { placeId, locationName, slug });
+          }
+
+          const { data, error: functionError } = await supabase.functions.invoke('generate-place-magazine', {
+              body: {
+                  placeId,
+                  canonicalPlaceId: placeId,
+                  locationName,
+                  slug,
+                  forceUpdate: false,
+              },
+          });
+
+          if (functionError) {
+              console.error('[PlaceWikiDetailsView] Magazine Edge Error:', functionError);
+              throw new Error('매거진 생성에 실패했습니다.');
+          }
+
+          if (!data?.success) {
+              throw new Error(data?.error || '매거진을 생성하지 못했습니다.');
+          }
+
+          // 폴링이 wikiData를 갱신할 때까지 로딩 유지 (이미 완성본이면 useEffect가 해제)
+          if (data.summary && Array.isArray(data.sections) && data.sections.length > 0) {
+              setIsMagazineGenerating(false);
+              window.dispatchEvent(new CustomEvent('magazine-updated', {
+                  detail: { placeId, summary: data.summary, sections: data.sections },
+              }));
+          }
+      } catch (err) {
+          console.error('[PlaceWikiDetailsView] Magazine Request Error:', err);
+          setMagazineError(err.message || '매거진 생성 중 오류가 발생했습니다.');
+          setIsMagazineGenerating(false);
+      }
+  }, [isMagazineLoading, location, placeName, wikiData?.place_id, wikiData?.title]);
 
   useEffect(() => {
       const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
@@ -376,8 +498,9 @@ const PlaceWikiDetailsView = ({
 
   // 요약 텍스트에서 인용구(첫 문장) 추출
   let pullQuote = "";
-  let remainingSummary = wikiData?.summary || "";
-  if (wikiData?.summary) {
+  let remainingSummary = "";
+  if (wikiData?.summary && wikiData.summary !== '[[LOADING]]') {
+      remainingSummary = wikiData.summary;
       const match = wikiData.summary.match(/^([^.!?]+[.!?]+)\s*(.*)$/);
       if (match) {
           pullQuote = match[1];
@@ -483,7 +606,31 @@ const PlaceWikiDetailsView = ({
                             </div>
                         </div>
                     </div>
-                ) : wikiData ? (
+                ) : isMagazineLoading ? (
+                    <div className="flex flex-col items-center justify-center min-h-[40vh] py-12 animate-fade-in">
+                        <div className="w-full max-w-md space-y-6">
+                            <div className="flex justify-between items-end px-2">
+                                <span className="text-base font-bold text-gray-300">매거진 작성 중</span>
+                                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
+                                    {Math.round((magazineLoadingStep / (MAGAZINE_LOADING_MESSAGES.length - 1)) * 100)}%
+                                </span>
+                            </div>
+                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500 ease-out"
+                                    style={{ width: `${(magazineLoadingStep / (MAGAZINE_LOADING_MESSAGES.length - 1)) * 100}%` }}
+                                />
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-gray-400 font-medium justify-center mt-6">
+                                <Loader2 size={16} className="animate-spin text-amber-400" />
+                                <span className="animate-pulse break-keep">{MAGAZINE_LOADING_MESSAGES[magazineLoadingStep]}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 text-center break-keep">
+                                피처 기사 분량이 길어 1~2분 정도 걸릴 수 있습니다. 탭을 닫아도 생성이 이어집니다.
+                            </p>
+                        </div>
+                    </div>
+                ) : hasMagazineContent(wikiData) ? (
                     <div className="space-y-12 animate-fade-in">
 
                         {/* 인용구 (Pull Quote) */}
@@ -595,9 +742,32 @@ const PlaceWikiDetailsView = ({
 
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-[40vh] text-gray-500 gap-4 animate-fade-in">
-                        <BookOpen size={48} className="opacity-20" />
-                        <p className="text-center">아직 이 장소의 매거진 정보가 준비되지 않았습니다.</p>
+                    <div className="flex flex-col items-stretch min-h-[40vh] text-gray-400 gap-8 animate-fade-in py-10">
+                        <div className="flex flex-col items-center gap-6">
+                            <BookOpen size={48} className="opacity-20 text-amber-400" />
+                            <div className="text-center space-y-2 px-4">
+                                <p className="text-base text-gray-300 font-medium break-keep">
+                                    아직 이 장소의 매거진이 준비되지 않았습니다.
+                                </p>
+                                <p className="text-sm text-gray-500 break-keep">
+                                    AI 에디터가 하이엔드 여행 스케치 피처 기사를 작성합니다.
+                                </p>
+                            </div>
+                            {magazineError && (
+                                <p className="text-sm text-red-400/90 text-center px-4 break-keep">{magazineError}</p>
+                            )}
+                            <button
+                                type="button"
+                                onClick={handleGenerateMagazine}
+                                className="flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r from-amber-600/30 to-orange-600/30 hover:from-amber-600/40 hover:to-orange-600/40 border border-amber-500/40 rounded-2xl transition-all duration-300 shadow-lg min-h-[48px]"
+                            >
+                                <PenLine size={18} className="text-amber-300" />
+                                <span className="text-sm md:text-base font-bold text-amber-100 tracking-wide">
+                                    {magazineError ? '다시 생성하기' : '매거진 생성하기'}
+                                </span>
+                            </button>
+                        </div>
+                        <PlaceWikiLocatorMap location={location} isActive={isActive} />
                     </div>
                 )}
 

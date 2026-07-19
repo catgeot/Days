@@ -467,8 +467,17 @@ export function buildPlaceDbIdCandidates(location) {
   if (location.slug) out.add(String(location.slug).trim().toLowerCase());
   if (location.name_en) out.add(String(location.name_en).trim());
   if (location.canonical_slug) out.add(String(location.canonical_slug).trim().toLowerCase());
+  // uiPlace soft-merge 등으로 location.slug가 비어도 SSOT slug는 반드시 후보에 포함
+  // (place_wiki 등은 slug 행에 매거진이 있는데 한글/숫자 id만 조회하면 빈 탭이 됨)
   const resolved = resolveTravelSpotFromLocation(location);
-  if (resolved?.spot?.id != null) out.add(String(resolved.spot.id));
+  if (resolved?.spot) {
+    const spot = resolved.spot;
+    const resolvedSlug = spotSlug(spot);
+    if (resolvedSlug) out.add(String(resolvedSlug).trim().toLowerCase());
+    if (spot.name) out.add(String(spot.name).trim());
+    if (spot.name_en) out.add(String(spot.name_en).trim());
+    if (spot.id != null) out.add(String(spot.id));
+  }
   if (location.id != null && /^\d+$/.test(String(location.id))) out.add(String(location.id));
   return [...out].filter(Boolean);
 }

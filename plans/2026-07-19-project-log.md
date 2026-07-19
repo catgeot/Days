@@ -80,3 +80,15 @@
 
 - **증상**: `placeKey: bhutan` 「매칭 행 없음」(DB 미생성 정상) → Force Update → `Gemini did not return valid JSON`
 - **수정**: `_shared/parseGeminiJson.ts` · `update-place-toolkit` fence/잡문 파싱 + `maxOutputTokens: 16384` · 배포 `phdjnbfitvmrguqzverm`
+
+---
+
+## 여행 스케치 — 탭 내 매거진 생성
+
+**상태**: ⏳ Edge 재배포 · 조회 버그 수정 · 프론트 QA·커밋 대기
+
+- **목적**: 로컬 `wiki.py` 일괄 실행 대신, 매거진(`summary`/`sections`)이 비어 있으면 여행 스케치 탭에서 생성
+- **추가**: Edge `generate-place-magazine` (wiki.py Condé Nast 프롬프트 유지 · `gemini-3.1-pro-preview`→`2.5-pro` · 재시도 3회) · upsert `place_wiki`
+- **UI**: `PlaceWikiDetailsView` 「매거진 생성하기」·로딩 · `useWikiData` summary `[[LOADING]]` 폴링
+- **Edge**: `phdjnbfitvmrguqzverm` 배포 · JSON 파싱 복구·`maxOutputTokens` 65536·안정화 재시도
+- **조회 버그**: 마다가스카르·나우루·알래스카는 5월 `place_wiki` slug 행에 매거진 있음에도 uiPlace soft-merge 시 후보에 slug 누락 → 빈 탭. `buildPlaceDbIdCandidates`에 resolved slug 포함 · `fetchWikiRow` 매거진 완성 행 우선. 바르셀로나는 slug 행이 빈 껍데기(`name_ko` 사그라다 파밀리아)·본문 없음 → 생성 대상.
