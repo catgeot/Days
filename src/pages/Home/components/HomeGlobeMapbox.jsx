@@ -228,6 +228,67 @@ const reconcileMarkerWithClickCoords = (marker, clickLngLat, markers, spotCatalo
   return curatedMarker;
 };
 
+const isMarkerCountryMissing = (marker) => {
+  const c = String(marker?.country ?? '').trim().toLowerCase();
+  return !c || c === 'explore' || c === 'global' || c === 'searching' || c === 'searching...';
+};
+
+/**
+ * GeoJSON 히트·구버전 임시 핀은 country 등이 비어 있음 → 카탈로그 SSOT로 복원.
+ * 검색 진입과 마커 재클릭의 장소카드 국가·갤러리·플래너 키를 동일하게 맞춤.
+ * 좌표 스냅: major 전체 치환 · temp/saved는 국가가 비었을 때만(옛 세션 핀 자가치유).
+ */
+const hydrateMarkerFromSpotCatalog = (marker, spotCatalog = []) => {
+  if (!marker || !spotCatalog?.length) return marker;
+
+  const slug = String(marker.slug || marker.canonical_slug || '').trim().toLowerCase();
+  let spot = slug ? spotCatalog.find((s) => String(s.slug || '').toLowerCase() === slug) : null;
+
+  if (!spot && marker.id != null && /^\d+$/.test(String(marker.id))) {
+    spot = spotCatalog.find((s) => String(s.id) === String(marker.id));
+  }
+
+  const markerType = marker.type || 'major';
+  const allowCoordSnap = markerType === 'major' || isMarkerCountryMissing(marker);
+  if (!spot && allowCoordSnap) {
+    const lat = Number(marker.lat);
+    const lng = Number(marker.lng);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      spot = resolveTravelSpotFromCoords(lat, lng, spotCatalog);
+    }
+  }
+
+  if (!spot) return marker;
+
+  // temp/saved + 국가만 비어 있으면 표시명·좌표 유지, country만 SSOT 보강
+  if (markerType !== 'major' && isMarkerCountryMissing(marker)) {
+    return {
+      ...marker,
+      country: spot.country ?? marker.country,
+      country_en: spot.country_en ?? marker.country_en,
+      slug: marker.slug || spot.slug,
+      canonical_slug: marker.canonical_slug || spot.slug,
+      name_en: marker.name_en || spot.name_en,
+      galleryRegionSpot: marker.galleryRegionSpot || {
+        slug: spot.slug,
+        name: spot.name,
+        name_en: spot.name_en,
+      },
+    };
+  }
+
+  return {
+    ...spot,
+    type: markerType,
+    isActive: marker.isActive,
+    isBookmarked: marker.isBookmarked,
+    hasChat: marker.hasChat,
+    tripId: marker.tripId,
+    hiddenClusterCount: marker.hiddenClusterCount,
+    clusterCount: marker.clusterCount,
+  };
+};
+
 /** DEV-only performance marks for globe cold-load diagnostics (Phase 0). */
 const markGlobeLoadPhase = (phase) => {
   if (!import.meta.env.DEV) return;
@@ -1547,7 +1608,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         allMarkersLookupRef.current,
         spotCatalog
       );
-      if (onMarkerClick) onMarkerClick(fullMarker, 'globe');
+      fullMarker = hydrateMarkerFromSpotCatalog(fullMarker, spotCatalog);
+      if (onMarkerClick) onMarkerClick(fullMarker, { source: 'globe' });
       return;
     }
 
@@ -1558,7 +1620,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (spot) {
         markerClickGuardUntilRef.current = Date.now() + 450;
         if (flightCinemaActiveRef.current) closeFlightCinema();
-        onMarkerClick({ ...spot, type: 'major' }, 'globe');
+        onMarkerClick({ ...spot, type: 'major' }, { source: 'globe' });
         return;
       }
     }

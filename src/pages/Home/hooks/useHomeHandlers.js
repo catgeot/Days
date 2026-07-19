@@ -15,14 +15,30 @@ import { citiesData } from '../data/citiesData';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { enrichLocationWithRentalAirport } from '../../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords, resolveTravelSpotForUiPlaceRegion, resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+import {
+  mergeCanonicalTravelSpot,
+  healPlaceholderCountry,
+  isSameCanonicalPlace,
+  isPlaceholderCountry,
+  resolveTravelSpotFromCoords,
+  resolveTravelSpotForUiPlaceRegion,
+  resolveTravelSpotFromSearchQuery,
+} from '../../../utils/travelSpotResolve.js';
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
 
-const prepareLocation = (loc) => enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(loc));
-const prepareUiLocation = (loc) => enrichLocationWithRentalAirport(loc);
+const prepareLocation = (loc) =>
+  enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
+const prepareUiLocation = (loc) => enrichLocationWithRentalAirport(healPlaceholderCountry(loc));
 const prepareResolvedLocation = (loc) => prepareLocation(loc);
+
+/** 재진입 merge 시 Explore/Global/undefined가 실국가명을 덮어쓰지 않게 */
+function coalesceLocationCountry(primary, fallback) {
+  if (!isPlaceholderCountry(primary)) return primary;
+  if (!isPlaceholderCountry(fallback)) return fallback;
+  return primary || fallback || undefined;
+}
 
 const CURATED_PLACES = () => [...TRAVEL_SPOTS, ...(citiesData || [])];
 
@@ -276,8 +292,11 @@ export function useHomeHandlers({
     }
   }, [globeRef, category, isPinVisible, addScoutPin, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded, setIsPinVisible, moveToLocation, processSearchKeywords]);
 
-  const handleLocationSelect = useCallback((loc, { refreshRelated = true } = {}) => {
+  const handleLocationSelect = useCallback((loc, options = {}) => {
     if (!loc) return;
+
+    // 지구본은 과거 onMarkerClick(loc, 'globe') 호출 — 문자열이면 옵션 무시
+    const { refreshRelated = true } = typeof options === 'object' && options ? options : {};
 
     const name = loc.name || "Selected";
     const finalLoc = prepareResolvedLocation({
@@ -293,7 +312,12 @@ export function useHomeHandlers({
       (isSameCanonicalPlace(selectedLocation, finalLoc) ||
         (selectedLocation.lat === loc.lat && selectedLocation.lng === loc.lng))
     ) {
-      const unified = prepareLocation({ ...selectedLocation, ...finalLoc });
+      const unified = prepareLocation({
+        ...selectedLocation,
+        ...finalLoc,
+        country: coalesceLocationCountry(finalLoc.country, selectedLocation.country),
+        country_en: coalesceLocationCountry(finalLoc.country_en, selectedLocation.country_en),
+      });
       addScoutPin(unified);
       setSelectedLocation(unified);
       setIsPlaceCardOpen(true);

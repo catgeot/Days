@@ -862,7 +862,7 @@ function Home() {
           isFromPlaceCard={isExploreFromPlace}
           onClose={() => navigate('/')}
           onSelect={(spot) => {
-            navigate(`/place/${getPlaceUrlParam(spot)}`);
+            navigateToPlace(spot);
           }}
           onSearch={async (query) => {
             const selectedFromSearch = await handleSmartSearch(query);

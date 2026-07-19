@@ -275,13 +275,14 @@ export function resolveTravelSpotFromLocation(location) {
     if (byId) return { spot: byId, matchKind: 'id' };
   }
 
+  // slug를 name보다 먼저 — GeoJSON 히트·부분 이름 fuzzy 오매칭 방지
   const keys = [
     location.canonical_slug,
+    location.slug,
     location.place_id,
     location.placeId,
-    location.name,
     location.name_en,
-    location.slug,
+    location.name,
   ];
 
   for (const key of keys) {
@@ -298,6 +299,47 @@ export function resolveTravelSpotFromLocation(location) {
   return null;
 }
 
+/** 장소카드 UI fallback(Global) / 지오코딩 기본값(Explore) 등 — 실국가명 아님 */
+export function isPlaceholderCountry(country) {
+  const c = String(country ?? '').trim().toLowerCase();
+  return !c || c === 'explore' || c === 'global' || c === 'searching' || c === 'searching...';
+}
+
+function preferConcreteCountry(primary, fallback) {
+  if (!isPlaceholderCountry(primary)) return primary;
+  if (!isPlaceholderCountry(fallback)) return fallback;
+  return primary || fallback || '';
+}
+
+/**
+ * 구버전 세션 캐시·임시 핀에 남은 Explore/Global/빈 국가명을 SSOT로 복구.
+ * 표시명·좌표는 유지하고 country·galleryRegionSpot만 보강할 수 있음.
+ */
+export function healPlaceholderCountry(location, spots = TRAVEL_SPOTS) {
+  if (!location || typeof location !== 'object') return location;
+
+  const merged = mergeCanonicalTravelSpot(location);
+  if (!isPlaceholderCountry(merged.country) && !isPlaceholderCountry(merged.country_en)) {
+    return merged;
+  }
+
+  const lat = Number(merged.lat);
+  const lng = Number(merged.lng);
+  const nearby = resolveTravelSpotFromCoords(lat, lng, spots);
+  if (!nearby?.country && !nearby?.country_en) return merged;
+
+  return {
+    ...merged,
+    country: preferConcreteCountry(merged.country, nearby.country),
+    country_en: preferConcreteCountry(merged.country_en, nearby.country_en),
+    galleryRegionSpot: merged.galleryRegionSpot || {
+      slug: nearby.slug,
+      name: nearby.name,
+      name_en: nearby.name_en,
+    },
+  };
+}
+
 /** 검색·핀·지오코딩 location을 SSOT travelSpots 행으로 병합 */
 export function mergeCanonicalTravelSpot(location) {
   if (!location || typeof location !== 'object') return location;
@@ -306,8 +348,22 @@ export function mergeCanonicalTravelSpot(location) {
   if (!resolved?.spot) return location;
 
   const { spot, matchKind } = resolved;
-  // Mapbox·지오코딩 uiPlace — 이름·별칭·originalQuery는 SSOT 병합, 좌표-only 스냅은 유지 차단
-  if (location.uiPlace && matchKind === 'coords') return location;
+  // Mapbox·지오코딩 uiPlace — 표시명·좌표는 유지. placeholder 국가만 SSOT로 보강.
+  if (location.uiPlace && matchKind === 'coords') {
+    const needsCountry =
+      isPlaceholderCountry(location.country) || isPlaceholderCountry(location.country_en);
+    if (!needsCountry) return location;
+    return {
+      ...location,
+      country: preferConcreteCountry(location.country, spot.country),
+      country_en: preferConcreteCountry(location.country_en, spot.country_en),
+      galleryRegionSpot: location.galleryRegionSpot || {
+        slug: spot.slug,
+        name: spot.name,
+        name_en: spot.name_en,
+      },
+    };
+  }
 
   const canonicalSlug = spotSlug(spot);
   const merged = {
@@ -318,8 +374,8 @@ export function mergeCanonicalTravelSpot(location) {
     name: spot.name,
     name_en: spot.name_en ?? location.name_en,
     name_ko: spot.name_ko ?? spot.name,
-    country: spot.country ?? location.country,
-    country_en: spot.country_en ?? location.country_en,
+    country: preferConcreteCountry(spot.country, location.country),
+    country_en: preferConcreteCountry(spot.country_en, location.country_en),
     category: spot.category ?? spot.primaryCategory ?? location.category,
     desc: location.desc || spot.desc,
     keywords: spot.keywords ?? location.keywords,

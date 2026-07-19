@@ -42,7 +42,7 @@ export default function GlobeClusterLegend({
   const handleSelect = (slug) => {
     const spot = spotBySlug.get(slug);
     if (!spot || !onSelectSpot) return;
-    onSelectSpot({ ...spot, type: 'major' }, 'globe');
+    onSelectSpot({ ...spot, type: 'major' }, { source: 'globe' });
     setExpanded(false);
   };
 

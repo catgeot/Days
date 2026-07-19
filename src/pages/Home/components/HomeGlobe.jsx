@@ -351,7 +351,7 @@ const HomeGlobe = React.memo(forwardRef(({
 
       // 클릭 조건: 이동하지 않았고, 50-500ms 범위 내
       if (!moved && duration >= 50 && duration < 500) {
-        if (onMarkerClick) onMarkerClick(d, 'globe');
+        if (onMarkerClick) onMarkerClick(d, { source: 'globe' });
       }
 
       // 초기화
