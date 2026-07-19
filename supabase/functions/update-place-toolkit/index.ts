@@ -42,6 +42,11 @@ const HUB_COORDS: Record<string, { lat: number; lng: number }> = {
   SIN: { lat: 1.3644, lng: 103.9915 },
   ASI: { lat: -7.9696, lng: -14.3937 },
   JNB: { lat: -26.1392, lng: 28.246 },
+  EZE: { lat: -34.8222, lng: -58.5358 },
+  AEP: { lat: -34.5592, lng: -58.4156 },
+  SLA: { lat: -24.856001, lng: -65.486198 },
+  MDZ: { lat: -32.8317, lng: -68.7928 },
+  BRC: { lat: -41.1511, lng: -71.1575 },
 };
 
 function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -96,16 +101,30 @@ function validateEssentialGuideForLocation(
     const iatas = Array.isArray(guide.primary_arrival_airports_iata)
       ? (guide.primary_arrival_airports_iata as string[])
       : [];
+    const checked: string[] = [];
+    let anyNear = false;
+
     for (const raw of iatas) {
       const code = String(raw).trim().toUpperCase();
-      if (isRegionalGatewayIata(slug, code)) continue;
+      if (!code) continue;
+      if (isRegionalGatewayIata(slug, code)) {
+        anyNear = true;
+        continue;
+      }
       if (regionalAllowed?.length && !regionalAllowed.includes(code)) {
         return `도착 공항 ${code}은(는) 「${locationName}」 허용 관문(${regionalAllowed.join(', ')})이 아닙니다.`;
       }
       const hub = HUB_COORDS[code];
-      if (hub && distanceKm(lat as number, lng as number, hub.lat, hub.lng) > MAX_DESTINATION_AIRPORT_KM) {
-        return `도착 공항 ${code}이(가) 「${locationName}」 위치와 맞지 않습니다. AI 응답이 잘못되었을 수 있습니다.`;
+      if (!hub) continue;
+      checked.push(code);
+      if (distanceKm(lat as number, lng as number, hub.lat, hub.lng) <= MAX_DESTINATION_AIRPORT_KM) {
+        anyNear = true;
       }
+    }
+
+    // 원거리 국제 관문(EZE)+로컬(SLA) 혼합은 로컬이 있으면 통과 · 전부 원거리만이면 거부
+    if (checked.length > 0 && !anyNear) {
+      return `도착 공항 ${checked.join(', ')}이(가) 「${locationName}」 위치와 맞지 않습니다. AI 응답이 잘못되었을 수 있습니다.`;
     }
   }
 

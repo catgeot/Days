@@ -8,6 +8,7 @@ import {
 } from './travelSpotResolve.js';
 import { formatUrlName } from '../pages/Home/lib/formatUrlName.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
+import { getAirportsIndexCoords } from './airportsIndexLookup.js';
 import { distanceKm, extractArrivalIataCodesFromEssentialGuide } from './rentalAirportMatch.js';
 
 /** 목적지 좌표와 도착 공항 허브가 이 거리(km)보다 멀면 툴킷·배너에서 제외 */
@@ -186,7 +187,20 @@ function getCuratedGatewayIataSet(location) {
   return trySlug(resolved?.spot?.slug ?? null);
 }
 
-/** 등록된 허브 IATA가 여행지 좌표와 지리적으로 맞는지 */
+/** 허브 또는 airportsIndex로 IATA 좌표 조회 — 둘 다 없으면 null(미검증 통과용) */
+function coordsForIata(iata) {
+  const code = String(iata ?? '')
+    .trim()
+    .toUpperCase();
+  if (!code) return null;
+  const hub = hubByIata(code);
+  if (hub) return { lat: hub.lat, lng: hub.lng, radiusKm: hub.radiusKm ?? 200 };
+  const indexed = getAirportsIndexCoords(code);
+  if (indexed) return { lat: indexed.lat, lng: indexed.lng, radiusKm: 200 };
+  return null;
+}
+
+/** 등록된 허브·인덱스 IATA가 여행지 좌표와 지리적으로 맞는지 */
 export function isIataPlausibleForLocation(iata, location) {
   const code = String(iata ?? '')
     .trim()
@@ -196,16 +210,27 @@ export function isIataPlausibleForLocation(iata, location) {
   const curated = getCuratedGatewayIataSet(location);
   if (curated?.has(code)) return true;
 
-  const hub = hubByIata(code);
-  if (!hub) return true;
+  const coords = coordsForIata(code);
+  if (!coords) return true;
 
   const lat = Number(location?.lat);
   const lng = Number(location?.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return true;
 
-  const d = distanceKm(lat, lng, hub.lat, hub.lng);
-  const maxR = Math.max(hub.radiusKm ?? 200, MAX_DESTINATION_AIRPORT_KM);
+  const d = distanceKm(lat, lng, coords.lat, coords.lng);
+  const maxR = Math.max(coords.radiusKm ?? 200, MAX_DESTINATION_AIRPORT_KM);
   return d <= maxR;
+}
+
+/**
+ * 지리 검증용 IATA 목록 — 좌표를 알 수 있는 코드만.
+ * 허브 미등록이라도 airportsIndex에 있으면 포함 (예: SLA 살타).
+ * 원거리 허브(EZE)와 로컬 공항(SLA)이 섞여 있을 때 로컬이 빠지지 않게 함.
+ */
+function geolocatableIatas(codes) {
+  return (codes || [])
+    .map((c) => String(c).trim().toUpperCase())
+    .filter((c) => c && (hubByIata(c) || getAirportsIndexCoords(c)));
 }
 
 /** AI 툴킷 본문이 다른 여행지(잘못 생성)인지 검사 */
@@ -219,11 +244,12 @@ export function essentialGuideMatchesLocation(guide, location) {
         .map((c) => String(c).trim().toUpperCase())
         .filter(Boolean)
     : [];
-  const primaryKnown = primaryRaw.filter((c) => hubByIata(c));
 
   // primary_arrival_airports_iata가 있으면 도착 공항만 검사 — 타임라인 경유(ADD·CDG·SIN 등)는 면제
   if (primaryRaw.length > 0) {
+    const primaryKnown = geolocatableIatas(primaryRaw);
     if (primaryKnown.length === 0) return true;
+    // 하나라도 목적지 근처면 통과 (원거리 국제 관문+로컬 공항 혼합 허용)
     return primaryKnown.some(
       (c) => isIataPlausibleForLocation(c, loc) || curated?.has(c)
     );
@@ -232,7 +258,7 @@ export function essentialGuideMatchesLocation(guide, location) {
   const fromTimeline = extractArrivalIataCodesFromEssentialGuide(guide);
   if (!fromTimeline?.length) return true;
 
-  const known = fromTimeline.map((c) => String(c).trim().toUpperCase()).filter((c) => hubByIata(c));
+  const known = geolocatableIatas(fromTimeline);
   if (known.length === 0) return true;
   return known.some((c) => isIataPlausibleForLocation(c, loc) || curated?.has(c));
 }

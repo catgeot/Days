@@ -82,6 +82,11 @@ const PATCHES = [
     note: 'RAR 단독 geoMismatch → MHX·RAR (쿡 제도 관문)'
   },
   {
+    matchPlaceIds: ['salta', 'Salta', '살타'],
+    primaryIatas: ['SLA'],
+    note: 'EZE·AEP 국제 관문 혼입 → SLA(살타 로컬) — geoMismatch 해소'
+  },
+  {
     matchPlaceIds: ['쿠알라룸푸르', 'Kuala Lumpur', 'kuala-lumpur'],
     primaryIatas: ['KUL'],
     note: 'Phase D — primary IATA KUL'

@@ -661,6 +661,14 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'EZE', officialKo: '미니스트로 피스타리니국제공항', lat: -34.8222, lng: -58.5358, radiusKm: 220, aliases: ['buenos aires international', '부에노스아이레스 국제', 'eze', 'argentina gateway'] },
   { iata: 'AEP', officialKo: '호르헤 뉴베리 공항', lat: -34.5592, lng: -58.4156, radiusKm: 80, aliases: ['buenos aires', '부에노스아이레스', 'aep', 'aeroparque', '아에로파르크'] },
   {
+    iata: 'SLA',
+    officialKo: '살타 공항',
+    lat: -24.856001,
+    lng: -65.486198,
+    radiusKm: 120,
+    aliases: ['salta', '살타', 'sla', 'martin miguel de guemes', '살타공항']
+  },
+  {
     iata: 'MDZ',
     officialKo: '멘도사 국제공항',
     lat: -32.8317,
