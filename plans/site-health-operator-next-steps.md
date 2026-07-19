@@ -26,6 +26,8 @@
 
 E2E 실패 시 Actions 실행 상세 → **Artifacts** → `playwright-report` 에 스크린샷·trace.
 
+**UI 문구 변경 시 (재발 방지)** — PlaceCard 탭·버튼 라벨을 바꾸면 `e2e/*.spec.js`를 **같은 커밋**에서 갱신하고, 가능하면 `npm run test:e2e` 1회. Smoke만 통과해도 E2E는 옛 라벨로 매일 실패할 수 있음 (2026-07-09~18 「여행 위키」→「여행 스케치」사례 · 계획서 §2-B-1).
+
 ---
 
 ## 1. Phase 0 — 결제·쿼터 (코드 없음)
@@ -84,6 +86,7 @@ npm run smoke:health:local
 |------------------|----------|------|
 | MOONi 「AI 사용량 한도」·「통신 실패」 | Smoke **P0-3** | AI Studio 선불 크레딧 충전 · Supabase Secrets `GEMINI_API_KEY` |
 | Smoke·E2E 전체 **401** | anon key | Vercel·`.env.local` `VITE_SUPABASE_ANON_KEY` trim · 재배포 |
+| **E2E만** 실패 · Smoke 정상 | Annotation의 `getByRole` name vs 실 UI | `e2e/*.spec.js` 문구를 PlaceCard 등과 맞춤 · 푸시 후 E2E 수동 재실행 |
 | 홈만 **5xx** | Smoke **P0-1** · E2E-1 | Vercel 배포·도메인 · Vercel Notifications |
 | 지구본 blank | Mapbox Statistics | `VITE_MAPBOX_TOKEN` · quota |
 | 갤러리만 빈 화면 | — | Unsplash/Pexels 키·rate limit |

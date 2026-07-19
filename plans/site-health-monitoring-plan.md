@@ -215,8 +215,19 @@ npx playwright install chromium
 | ID | 파일 | 시나리오 | Assert |
 |----|------|----------|--------|
 | E2E-1 | `e2e/home.spec.js` | `/` 로드 | 지구본 canvas 또는 map container visible |
-| E2E-2 | `e2e/place.spec.js` | `/place/bali` | PlaceCard 제목·탭 visible |
+| E2E-2 | `e2e/place.spec.js` | `/place/bali` | PlaceCard 제목·탭 visible (**표시 문구와 동일** — 아래 재발 방지) |
 | E2E-3 | `e2e/mooni.spec.js` | MOONi FAB → 채팅 1턴 | **모델 응답** 또는 **429/통신 실패 메시지** 중 하나 (완전 무응답 = fail) |
+
+#### 2-B-1. E2E ↔ UI 문구 동기화 (재발 방지 · 2026-07-19)
+
+**사례**: 2026-07-09 `25569df`에서 PlaceCard 탭 「여행 위키」→「여행 스케치」로 바꿨으나 `e2e/place.spec.js`를 안 고쳐 **E2E Health가 10일간 매일 실패**. Smoke는 통과 — **문구 드리프트는 E2E만 깨진다**.
+
+| 규칙 | |
+|------|--|
+| **같은 변경에** | PlaceCard·홈 등 **사용자에게 보이는 버튼/탭/라벨**을 바꾸면 `e2e/*.spec.js`의 `getByRole(…, { name })`·텍스트 assert를 **같은 커밋**에서 맞춤 |
+| **배포 전** | UI 카피 변경 시 `SMOKE_SITE_URL=https://gateo.kr npm run test:e2e` (또는 해당 spec만) 로컬 1회 |
+| **실패 분류** | Actions에서 E2E만 빨갛고 Smoke가 초록 → **프로덕션 다운보다 스펙 드리프트·UI 회귀**를 먼저 의 |
+| **하드코딩 문구** | E2E는 접근성 name(한글 라벨)에 의존 — 리네임 시 테스트가 SSOT. 별도 i18n 키 추상화는 없음 |
 
 **CI**: `workflow_dispatch` + **배포 후** (`repository_dispatch` 또는 Vercel deploy hook 연동은 Phase 3).
 
