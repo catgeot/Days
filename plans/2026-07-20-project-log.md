@@ -88,23 +88,32 @@
 - **모바일**: 「숙소 찾기」→ 즉시 전체화면 모달(일정+목록). 카드 안 일정·가로 스트립·「N곳 보기」제거. 제목 `{여행지} 근처 숙소`.
 - **PC**: 좌측 포털 유지 · 날짜는 버튼+`showPicker`(투명 input만으로는 Chromium 미동작).
 - **Edge/클라**: `countryHintAlts`(한·영) · 해외 cityHints 하드거절 완화·state 미포함 — 피지·아이투타키(쿡 제도) 복구.
-- **건수**: 현재 `size: 12` · API 상한 20 · 테스트 후 상향 예정.
+
+## MRT 숙소 — UX·size 상한·릴리스 (단일 기간 달력)
+
+**상태**: ✅ 사용자 QA · 커밋·푸시 · 릴리스 `2026-07-20-2`
+
+- **일정**: 체크인·아웃 **한 달력** 기간 선택(1탭 인·2탭 아웃·최대 30박) · OS `type=date` 이중 달력 제거.
+- **일정 바 1열**: 아이콘 · 체크인 · **N박** · 체크아웃 · 라벨·MyRealTrip 건수 가독성 상향.
+- **모바일 모달**: 목록 스크롤 시 **맨 위** FAB.
+- **건수**: `size: 20`(MRT API·Edge 상한) · 클라 캐시 `v6`(12건 캐시 무효화). Edge 재배포 불필요(이미 min(20)).
+- **릴리스**: `내 주변·여행지 숙소를 찾고 예약할 수 있어요`.
 
 ## MRT 숙소 세션 — 에이전트 핸드오프
 
-**상태**: ✅ **최적화 2차 커밋·푸시** · Edge 재배포됨 · **다음 = 최적화 3차**  
-**선행**: 4.1 ✅ · 1차 ✅ · 2차 ✅
+**상태**: ✅ **단일 달력·size 20·릴리스 커밋·푸시** · Edge는 기존 배포로 충분  
+**선행**: 4.1 ✅ · 1차 ✅ · 2차 ✅ · UX/size ✅
 
-### 유지 (2차 기준)
+### 유지 (현재 기준)
 
-- Summary **「숙소 찾기」** 카드 그리드 · 펼칠 때만 fetch (`v5` 캐시).
+- Summary **「숙소 찾기」** 카드 그리드 · 펼칠 때만 fetch (`v6` 캐시 · `size` 20).
 - **PC**: 숙소 버튼 첫 칸 · 좌측 전폭 포털 · 일정+그리드.
-- **모바일**: 버튼 → **전체화면 모달만**(일정·목록) · 스크림·회전 정지·MOONi 숨김 유지.
+- **모바일**: 버튼 → **전체화면 모달만**(일정·목록·맨 위) · 스크림·회전 정지·MOONi 숨김 유지.
 - Edge: `countryHint`+`countryHintAlts` · `cityHints` 점수(해외) / 국내 하드거절 · 국내 fineGrain 시·군 우선.
-- 일정: 기본 +14일·2박 · 변경 시 재조회 · PC `showPicker` / 모바일 터치 overlay.
+- 일정: 기본 +14일·2박 · **단일 기간 달력** · 변경 시 재조회.
 - 색: 숙소 amber · 항공 sky · 3D violet.
 
-**파일**: `GlobeStayStrip` · `fetchMrtStays` · `PlaceCardSummary` · `HomePlaceCardSummary` · `fetch-mrt-stays`.
+**파일**: `GlobeStayStrip` · `fetchMrtStays` · `PlaceCardSummary` · `HomePlaceCardSummary` · `fetch-mrt-stays` · `releaseNotes.js`.
 
 ### 금지 3
 
@@ -112,18 +121,6 @@
 2. TripLink · `mrt-link-generator` 병행
 3. 호텔 핀/지오코딩 · `travelSpots.js` 전체 스캔 · spots 직접 수정
 
-### 다음 세션 — 최적화 3차 (합의 후)
+### 다음 세션 (선택)
 
-우선 후보: `size` 12→20 · 빈 결과 CTA · 그리드/이미지 밀도 · 성인 수 · fetch 타이밍·캐시 · PC 패널 inset.
-
-### 다음 세션 제시어
-
-```
-@.ai-context.md @plans/2026-07-20-project-log.md
-MRT 숙소 — 최적화 3차 (size·빈결과·그리드).
-
-핸드오프 「다음 세션 — 최적화 3차」확인.
-읽기: GlobeStayStrip · fetchMrtStays · fetch-mrt-stays (countryHintAlts).
-금지: VITE_ MRT 키 · 호텔 핀/지오코딩 · TripLink 병행.
-산출: 짧은 옵션→합의 1안→구현. 모바일 전체화면·PC 포털 패턴 유지.
-```
+빈 결과 CTA · 그리드/이미지 밀도 · 성인 수 · fetch 타이밍 · PC 패널 inset · 배포 후 지속 QA.

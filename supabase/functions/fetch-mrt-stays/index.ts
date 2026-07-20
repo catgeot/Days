@@ -276,7 +276,7 @@ serve(async (req) => {
     const checkOut = String(body?.checkOut || defaults.checkOut);
     const adultCount = Math.max(1, Math.min(8, Number(body?.adultCount) || 2));
     const childCount = Math.max(0, Math.min(8, Number(body?.childCount) || 0));
-    const size = Math.max(1, Math.min(20, Number(body?.size) || 8));
+    const size = Math.max(1, Math.min(20, Number(body?.size) || 20));
     const page = Math.max(0, Number(body?.page) || 0);
 
     const { region, usedKeyword } = await resolveRegion(

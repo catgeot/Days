@@ -5,7 +5,7 @@
 import { supabase } from '../shared/api/supabase';
 import { isPlaceholderCountry } from './travelSpotResolve';
 
-const CACHE_PREFIX = 'gateo:mrt-stays:v5:';
+const CACHE_PREFIX = 'gateo:mrt-stays:v6:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 
@@ -301,7 +301,7 @@ export async function fetchMrtStays(params) {
     ? params.cityHints.map((k) => String(k || '').trim()).filter(Boolean).slice(0, 8)
     : [];
   const { checkIn, checkOut } = normalizeMrtStayDates(params?.checkIn, params?.checkOut);
-  const size = Math.max(1, Math.min(20, Number(params?.size) || 8));
+  const size = Math.max(1, Math.min(20, Number(params?.size) || 20));
   const ladderKey = [keyword, ...altKeywords].join('|');
   const key = cacheKey(ladderKey, isDomestic, countryHint, countryHintAlts, cityHints, checkIn, checkOut);
 
@@ -367,6 +367,6 @@ export async function fetchMrtStaysForLocation(location, dates = {}) {
     countryHint: normalizeMrtCountryHint(query.countryHint || location?.country, isDomestic),
     isDomestic,
     ...normalized,
-    size: 12,
+    size: 20,
   });
 }

@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
+  ArrowUp,
   BedDouble,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
+  ChevronRight,
   Loader2,
   X,
 } from 'lucide-react';
@@ -12,7 +14,6 @@ import {
   canShowMrtStayStrip,
   defaultMrtStayDates,
   fetchMrtStaysForLocation,
-  mrtStayMinCheckOut,
   mrtStayNights,
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
@@ -20,6 +21,9 @@ import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 
 const LG_MQ = '(min-width: 1024px)';
+/** fetchMrtStays.normalizeMrtStayDates와 동일 상한 */
+const MAX_STAY_NIGHTS = 30;
+const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
 
 function useIsLg() {
   const [isLg, setIsLg] = useState(() =>
@@ -40,6 +44,27 @@ function formatPrice(n) {
   return `${Number(n).toLocaleString('ko-KR')}원~`;
 }
 
+function parseYmd(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || '').trim());
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0, 0);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function toYmd(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function addDaysYmd(ymd, days) {
+  const d = parseYmd(ymd);
+  if (!d) return ymd;
+  d.setDate(d.getDate() + days);
+  return toYmd(d);
+}
+
 /** YYYY-MM-DD → 2026.7.20 */
 function formatStayDateLabel(ymd) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || '').trim());
@@ -47,87 +72,258 @@ function formatStayDateLabel(ymd) {
   return `${Number(m[1])}.${Number(m[2])}.${Number(m[3])}`;
 }
 
-function openStayDatePicker(input) {
-  if (!input) return;
-  try {
-    if (typeof input.showPicker === 'function') {
-      void input.showPicker();
-      return;
-    }
-  } catch {
-    /* NotAllowedError · unsupported */
+function monthTitle(viewMonth) {
+  return `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
+}
+
+function buildMonthCells(viewMonth) {
+  const year = viewMonth.getFullYear();
+  const month = viewMonth.getMonth();
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstDow; i += 1) cells.push(null);
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    cells.push(toYmd(new Date(year, month, day, 12, 0, 0, 0)));
   }
-  input.focus({ preventScroll: true });
-  try {
-    input.click();
-  } catch {
-    /* ignore */
-  }
+  while (cells.length % 7 !== 0) cells.push(null);
+  return cells;
 }
 
 /**
- * PC: 버튼 클릭 → showPicker (opacity-0 input만으로는 Chromium에서 달력이 안 열림)
- * 모바일: 전체 면적 date input이 터치를 수신
+ * 한 달력에서 체크인→체크아웃 기간 선택.
+ * 1탭=체크인 · 2탭=체크아웃(자동 적용·닫기) · 최대 30박.
  */
-function StayDateField({ label, value, min, onChange, ariaLabel }) {
-  const inputRef = useRef(null);
+function StayRangeCalendar({
+  checkIn,
+  checkOut,
+  todayYmd,
+  onApply,
+  onCancel,
+}) {
+  const [viewMonth, setViewMonth] = useState(() => parseYmd(checkIn) || new Date());
+  const [draftIn, setDraftIn] = useState(checkIn);
+  const [draftOut, setDraftOut] = useState(checkOut);
+  const [pickingOut, setPickingOut] = useState(false);
+
+  const maxOutYmd = draftIn ? addDaysYmd(draftIn, MAX_STAY_NIGHTS) : null;
+  const cells = buildMonthCells(viewMonth);
+  const hint = pickingOut
+    ? '체크아웃 날짜를 선택하세요'
+    : '체크인 날짜를 선택하세요';
+
+  const shiftMonth = (delta) => {
+    setViewMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
+  };
+
+  const handleDayClick = (ymd) => {
+    if (!ymd || ymd < todayYmd) return;
+    if (!pickingOut || !draftIn) {
+      setDraftIn(ymd);
+      setDraftOut(null);
+      setPickingOut(true);
+      return;
+    }
+    if (ymd <= draftIn) {
+      setDraftIn(ymd);
+      setDraftOut(null);
+      setPickingOut(true);
+      return;
+    }
+    if (maxOutYmd && ymd > maxOutYmd) return;
+    const next = normalizeMrtStayDates(draftIn, ymd);
+    onApply?.(next.checkIn, next.checkOut);
+  };
+
+  const dayClass = (ymd) => {
+    if (!ymd) return 'invisible pointer-events-none';
+    const disabled =
+      ymd < todayYmd || (pickingOut && draftIn && maxOutYmd && ymd > maxOutYmd && ymd !== draftIn);
+    const isIn = ymd === draftIn;
+    const isOut = Boolean(draftOut) && ymd === draftOut;
+    const inRange =
+      Boolean(draftIn && draftOut) && ymd > draftIn && ymd < draftOut;
+    if (disabled && !isIn) {
+      return 'text-white/20 cursor-not-allowed';
+    }
+    if (isIn || isOut) {
+      return 'bg-amber-400 text-black font-bold shadow-sm';
+    }
+    if (inRange) {
+      return 'bg-amber-400/25 text-amber-50 font-semibold';
+    }
+    if (ymd === todayYmd) {
+      return 'text-amber-100 ring-1 ring-amber-300/50 font-semibold hover:bg-white/10';
+    }
+    return 'text-white/85 hover:bg-white/10';
+  };
 
   return (
-    <div className="flex min-w-0 flex-1 items-center justify-center gap-1">
-      <span className="shrink-0 text-[10px] font-medium text-amber-100/55" aria-hidden="true">
-        {label}
-      </span>
-      <div className="relative min-h-[32px] min-w-[4.75rem] flex-1">
+    <div
+      role="dialog"
+      aria-label="숙소 일정 선택"
+      className="mt-2 rounded-xl border border-amber-400/30 bg-black/90 p-2.5 shadow-xl backdrop-blur-md"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
         <button
           type="button"
-          onClick={() => openStayDatePicker(inputRef.current)}
-          className="flex min-h-[32px] w-full items-center justify-center rounded-lg border border-white/10 bg-black/40 px-1.5 py-1 text-[13px] font-semibold tabular-nums text-amber-50 hover:border-amber-300/45 hover:bg-black/55 transition-colors md:text-xs"
-          aria-label={ariaLabel}
+          aria-label="이전 달"
+          onClick={() => shiftMonth(-1)}
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
         >
-          {formatStayDateLabel(value)}
+          <ChevronLeft size={16} aria-hidden="true" />
         </button>
-        <input
-          ref={inputRef}
-          type="date"
-          value={value}
-          min={min}
-          onChange={(e) => onChange(e.target.value)}
-          tabIndex={-1}
-          aria-hidden="true"
-          className="absolute inset-0 z-[1] h-full w-full cursor-pointer opacity-0 lg:pointer-events-none"
-        />
+        <p className="text-[13px] font-bold tabular-nums text-amber-50">{monthTitle(viewMonth)}</p>
+        <button
+          type="button"
+          aria-label="다음 달"
+          onClick={() => shiftMonth(1)}
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
+        >
+          <ChevronRight size={16} aria-hidden="true" />
+        </button>
+      </div>
+      <p className="mb-2 text-center text-[11px] text-amber-100/65">{hint}</p>
+      <div className="mb-1 grid grid-cols-7 gap-0.5">
+        {WEEKDAYS_KO.map((d) => (
+          <div
+            key={d}
+            className={`py-1 text-center text-[10px] font-medium ${
+              d === '일' ? 'text-rose-300/70' : 'text-white/40'
+            }`}
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-0.5">
+        {cells.map((ymd, idx) => {
+          const disabled =
+            !ymd ||
+            ymd < todayYmd ||
+            (pickingOut && draftIn && maxOutYmd && ymd > maxOutYmd);
+          return (
+            <button
+              key={ymd || `e-${idx}`}
+              type="button"
+              disabled={Boolean(disabled)}
+              onClick={() => handleDayClick(ymd)}
+              className={`flex h-9 items-center justify-center rounded-lg text-[12px] tabular-nums transition-colors ${dayClass(
+                ymd
+              )}`}
+            >
+              {ymd ? Number(ymd.slice(8, 10)) : ''}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-2 flex items-center justify-between gap-2 border-t border-white/10 pt-2">
+        <p className="min-w-0 truncate text-[11px] tabular-nums text-white/55">
+          {formatStayDateLabel(draftIn || checkIn)}
+          <span className="mx-1 text-white/25">→</span>
+          {draftOut ? formatStayDateLabel(draftOut) : pickingOut ? '선택 중' : formatStayDateLabel(checkOut)}
+        </p>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="shrink-0 rounded-lg px-2 py-1 text-[11px] font-medium text-white/60 hover:bg-white/10 hover:text-white transition-colors"
+        >
+          닫기
+        </button>
       </div>
     </div>
   );
 }
 
-/** 상단 N박 · 하단 체크인→체크아웃 (의도적 2줄 — 모바일 폭에서 1줄 불가) */
+/** 상단 N박 · 하단 일정 한 줄 → 탭 시 단일 기간 달력 */
 function StayDateBar({
   checkIn,
   checkOut,
   nights,
   todayYmd,
-  minCheckOut,
-  onCheckIn,
-  onCheckOut,
+  onChange,
   showClose = false,
   onClose,
 }) {
+  const rootRef = useRef(null);
+  const [open, setOpen] = useState(false);
+
+  const closeCalendar = useCallback(() => setOpen(false), []);
+
+  const handleApply = useCallback(
+    (nextIn, nextOut) => {
+      onChange?.(nextIn, nextOut);
+      setOpen(false);
+    },
+    [onChange]
+  );
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeCalendar();
+    };
+    const onPointer = (e) => {
+      if (!rootRef.current || rootRef.current.contains(e.target)) return;
+      closeCalendar();
+    };
+    window.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('touchstart', onPointer, { passive: true });
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('touchstart', onPointer);
+    };
+  }, [open, closeCalendar]);
+
   return (
-    <div className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-2.5 py-2">
-      <div className="relative mb-1.5 flex items-center justify-center">
-        <CalendarDays
-          size={14}
-          className="absolute left-0 shrink-0 text-amber-200/80"
-          aria-hidden="true"
-        />
-        {nights > 0 ? (
-          <span className="rounded-md bg-amber-400/15 px-2 py-0.5 text-[11px] font-bold tabular-nums text-amber-100">
-            {nights}박
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-2.5 py-2"
+    >
+      <div className="flex min-w-0 items-center gap-1.5">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-haspopup="dialog"
+          aria-label="체크인·체크아웃 날짜 선택"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen((v) => !v);
+          }}
+          className={`flex min-h-[40px] min-w-0 flex-1 items-center gap-1.5 rounded-lg border px-2 py-1.5 transition-colors ${
+            open
+              ? 'border-amber-300/50 bg-black/55'
+              : 'border-white/10 bg-black/40 hover:border-amber-300/45 hover:bg-black/55'
+          }`}
+        >
+          <CalendarDays
+            size={16}
+            className="shrink-0 text-amber-200/90"
+            aria-hidden="true"
+          />
+          <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
+            <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크인</span>
+            <span className="truncate text-sm font-bold tabular-nums text-amber-50">
+              {formatStayDateLabel(checkIn)}
+            </span>
           </span>
-        ) : (
-          <span className="text-[11px] font-medium text-amber-100/50">일정</span>
-        )}
+          <span
+            className="shrink-0 rounded-md bg-amber-400/20 px-1.5 py-0.5 text-xs font-bold tabular-nums text-amber-100"
+            aria-label={nights > 0 ? `${nights}박` : '일정'}
+          >
+            {nights > 0 ? `${nights}박` : '·'}
+          </span>
+          <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
+            <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크아웃</span>
+            <span className="truncate text-sm font-bold tabular-nums text-amber-50">
+              {formatStayDateLabel(checkOut)}
+            </span>
+          </span>
+        </button>
         {showClose ? (
           <button
             type="button"
@@ -136,31 +332,22 @@ function StayDateBar({
               e.stopPropagation();
               onClose?.();
             }}
-            className="absolute right-0 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all"
           >
-            <X size={14} strokeWidth={2.5} aria-hidden="true" />
+            <X size={16} strokeWidth={2.5} aria-hidden="true" />
           </button>
         ) : null}
       </div>
-      <div className="flex min-w-0 items-center gap-1">
-        <StayDateField
-          label="체크인"
-          value={checkIn}
-          min={todayYmd}
-          ariaLabel="체크인 날짜 선택"
-          onChange={onCheckIn}
+      {open ? (
+        <StayRangeCalendar
+          key={`${checkIn}|${checkOut}|open`}
+          checkIn={checkIn}
+          checkOut={checkOut}
+          todayYmd={todayYmd}
+          onApply={handleApply}
+          onCancel={closeCalendar}
         />
-        <span className="shrink-0 text-white/25" aria-hidden="true">
-          →
-        </span>
-        <StayDateField
-          label="체크아웃"
-          value={checkOut}
-          min={minCheckOut}
-          ariaLabel="체크아웃 날짜 선택"
-          onChange={onCheckOut}
-        />
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -255,7 +442,9 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | loading | ready | empty | error
   const [stayDates, setStayDates] = useState(() => defaultMrtStayDates());
+  const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const fetchedKeyRef = useRef('');
+  const mobileListScrollRef = useRef(null);
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : '';
   const name = location?.name || '';
@@ -273,7 +462,6 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     const day = String(d.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
   })();
-  const minCheckOut = mrtStayMinCheckOut(stayDates.checkIn);
   const mobileOpen = !isLg && listFullscreen;
 
   useEffect(() => {
@@ -307,6 +495,19 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       document.body.style.overflow = prev;
     };
   }, [listFullscreen]);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      setShowMobileScrollTop(false);
+      return undefined;
+    }
+    const el = mobileListScrollRef.current;
+    if (!el) return undefined;
+    const onScroll = () => setShowMobileScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [mobileOpen, status, items]);
 
   useEffect(() => {
     if (!eligible || !expanded) return undefined;
@@ -377,9 +578,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       checkOut={stayDates.checkOut}
       nights={nights}
       todayYmd={todayYmd}
-      minCheckOut={minCheckOut}
-      onCheckIn={(next) => applyStayDates(next, stayDates.checkOut)}
-      onCheckOut={(next) => applyStayDates(stayDates.checkIn, next)}
+      onChange={applyStayDates}
       showClose={Boolean(opts.showClose)}
       onClose={() => setExpanded(false)}
     />
@@ -397,7 +596,10 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     isLg && status === 'ready' && items?.length ? (
       <>
         <div className="mb-1.5 px-0.5">
-          <p className="break-keep text-[11px] font-medium text-white/45">근처 숙소 · MyRealTrip</p>
+          <p className="break-keep text-xs font-semibold text-amber-100/75">
+            근처 숙소 · MyRealTrip
+            {items?.length ? ` · ${items.length}곳` : ''}
+          </p>
         </div>
         <div className="globe-stay-strip-scroll grid grid-cols-[repeat(auto-fill,minmax(152px,1fr))] gap-2.5">
           <style>{`
@@ -511,7 +713,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                   <p className="truncate text-sm font-bold text-amber-50">
                     {name ? `${name} 근처 숙소` : '근처 숙소'}
                   </p>
-                  <p className="truncate text-[11px] text-white/45">
+                  <p className="truncate text-xs font-semibold text-amber-100/75">
                     MyRealTrip
                     {status === 'ready' && items?.length ? ` · ${items.length}곳` : ''}
                     {status === 'loading' ? ' · 불러오는 중…' : ''}
@@ -528,7 +730,10 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
               </div>
               {renderDateBar()}
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div
+              ref={mobileListScrollRef}
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            >
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
                   <Loader2 size={22} className="animate-spin text-amber-200/80" />
@@ -557,6 +762,21 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                 </div>
               ) : null}
             </div>
+            <button
+              type="button"
+              aria-label="맨 위로"
+              onClick={() => {
+                mobileListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-3 z-10 flex h-11 items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500 px-3.5 text-black shadow-[0_4px_20px_rgba(245,158,11,0.45)] transition-all duration-300 active:scale-95 ${
+                showMobileScrollTop
+                  ? 'pointer-events-auto translate-y-0 opacity-100'
+                  : 'pointer-events-none translate-y-3 opacity-0'
+              }`}
+            >
+              <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold">맨 위</span>
+            </button>
           </div>,
           document.body
         )
