@@ -41,14 +41,14 @@
 
 ## 큐레이션 갤러리 써머리 — 고정 desc에 가려짐
 
-**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 `ae4cca8`
 
 - **증상**: 큐레이션 문구가 카드 오픈 직후 잠깐 보이다 `/place/` sync·SSOT hydrate에 덮여 사라짐.
 - **조치**: `curationSummary` 분리 · `overlaySessionCuration`(selectedLocation·slug 캐시) · 갤러리에서 큐레이션 블록과 고정 desc를 시각적으로 분리.
 
 ## 테마 검색 회귀 — 반딧불·빙하 문장
 
-**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 `ae4cca8`
 
 - **반딧불**: `isConcept`(keywords `includes`)가 null → Explore `onSearch`가 무조건 홈 이동.
 - **빙하를 보고 싶어**: `보고싶` 무드 경로로 AI가 비관련 지역(필리핀) 선택.
