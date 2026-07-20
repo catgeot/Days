@@ -130,9 +130,11 @@ function filterChipDefs(defs, profile, essentialGuide) {
 /**
  * @param {string | null | undefined} slug
  * @param {Record<string, unknown> | null | undefined} essentialGuide
+ * @param {boolean} [allowNameBound] — SSOT 없는 uiPlace도 대화형 L2 허용
  */
-function getL2ForParent(slug, parentId, essentialGuide) {
-  if (!slug || !parentId) return [];
+function getL2ForParent(slug, parentId, essentialGuide, allowNameBound = false) {
+  if (!parentId) return [];
+  if (!slug && !allowNameBound) return [];
 
   const profile = getDestinationBookingProfile(slug);
   const parent = L1_DEFS.find((d) => d.id === parentId);
@@ -166,29 +168,31 @@ function getL2ForParent(slug, parentId, essentialGuide) {
 }
 
 /**
- * @param {string | null | undefined} slug
+ * @param {string | null | undefined} slug — SSOT catalog slug (플래너·페리 프로필)
  * @param {1 | 2} [level]
  * @param {string | null} [parentId]
- * @param {{ essentialGuide?: Record<string, unknown> | null }} [options]
+ * @param {{ essentialGuide?: Record<string, unknown> | null, omitPlanner?: boolean, allowNameBound?: boolean }} [options]
+ *   allowNameBound: 미등록 uiPlace — 대화 칩만 (플래너 칩 제외)
  * @returns {Array<{ id: string, label: string, sendText?: string, action?: string, drillDown?: boolean, persona?: string }>}
  */
 export function getMooniQuickReplies(slug, level = 1, parentId = null, options = {}) {
-  if (!slug) return [];
-
-  const { essentialGuide = null, omitPlanner = false } = options;
-  const profile = getDestinationBookingProfile(slug);
+  const { essentialGuide = null, omitPlanner = false, allowNameBound = false } = options;
+  if (!slug && !allowNameBound) return [];
 
   if (level === 2 && parentId) {
-    return getL2ForParent(slug, parentId, essentialGuide);
+    return getL2ForParent(slug, parentId, essentialGuide, allowNameBound);
   }
 
   return L1_DEFS.filter((def) => {
-    if (omitPlanner && def.action === 'planner') return false;
-    if (def.action === 'planner') return true;
+    // 플래너 URL은 SSOT slug 필수 — uiPlace·omit 시 숨김
+    if (def.action === 'planner') {
+      if (omitPlanner || !slug) return false;
+      return true;
+    }
     // 가는 방법: 출발지 검색 UI가 있으므로 L2 칩이 없어도 L1 유지
     if (def.id === 'access') return true;
     if (!def.drillDown) return true;
-    return getL2ForParent(slug, def.id, essentialGuide).length > 0;
+    return getL2ForParent(slug, def.id, essentialGuide, allowNameBound).length > 0;
   }).map(({ drillDown, persona, mobileLabel, ...rest }) => ({
     ...rest,
     ...(mobileLabel ? { mobileLabel } : {}),

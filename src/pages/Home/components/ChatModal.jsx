@@ -8,8 +8,10 @@ import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import {
   fetchPlaceChatIntroSummary,
   generatePlaceChatIntroWithAi,
-  persistPlaceChatIntroSummary
+  persistPlaceChatIntroSummary,
+  formatPlaceChatLabel,
 } from '../lib/placeChatIntro';
+import { resolveCatalogPlaceSlug } from '../lib/formatUrlName';
 import {
   shouldUsePlannerPersona,
   resolveSlugFromDestination,
@@ -137,16 +139,18 @@ const ChatModal = ({
   const isMooniSession = introDestinationRaw === 'MOONi';
   const isMooniUi = mooniEntry || isMooniSession;
 
-  /** Active conversation is place SSOT; entry mooniPlaceContext is seed only. */
+  /** Place-bound session: SSOT slug when catalogued; uiPlace uses name/country seed. */
   const activeSessionPlace = useMemo(() => {
     if (!isOpen) return null;
 
-    const entrySeed = mooniPlaceContext?.slug
+    const entryLabel = formatPlaceChatLabel(mooniPlaceContext);
+    const entrySeed = entryLabel
       ? {
-          slug: mooniPlaceContext.slug,
-          name: mooniPlaceContext.name,
-          lat: mooniPlaceContext.lat ?? null,
-          lng: mooniPlaceContext.lng ?? null,
+          slug: resolveCatalogPlaceSlug(mooniPlaceContext?.slug) || null,
+          name: entryLabel,
+          country: mooniPlaceContext?.country ?? null,
+          lat: mooniPlaceContext?.lat ?? null,
+          lng: mooniPlaceContext?.lng ?? null,
         }
       : null;
 
@@ -155,9 +159,21 @@ const ChatModal = ({
       if (fromDraft) {
         return {
           slug: fromDraft.slug,
-          name: fromDraft.name,
+          name: formatPlaceChatLabel(fromDraft) || fromDraft.name,
+          country: fromDraft.country ?? null,
           lat: fromDraft.lat ?? null,
           lng: fromDraft.lng ?? null,
+        };
+      }
+      // Draft destination may already be 「국가 지명」 (uiPlace) — keep it over empty seed
+      const draftLabel = String(chatDraft.destination || '').trim();
+      if (draftLabel && draftLabel !== 'MOONi') {
+        return {
+          slug: entrySeed?.slug ?? null,
+          name: draftLabel,
+          country: entrySeed?.country ?? null,
+          lat: entrySeed?.lat ?? chatDraft.lat ?? null,
+          lng: entrySeed?.lng ?? chatDraft.lng ?? null,
         };
       }
       return entrySeed;
@@ -175,9 +191,20 @@ const ChatModal = ({
         if (fromTrip) {
           return {
             slug: fromTrip.slug,
-            name: fromTrip.name,
+            name: formatPlaceChatLabel(fromTrip) || fromTrip.name,
+            country: fromTrip.country ?? null,
             lat: fromTrip.lat ?? null,
             lng: fromTrip.lng ?? null,
+          };
+        }
+        const tripDest = String(trip.destination || '').trim();
+        if (tripDest && tripDest !== 'MOONi') {
+          return {
+            slug: entrySeed?.slug ?? null,
+            name: tripDest,
+            country: entrySeed?.country ?? trip.curation_data?.country ?? null,
+            lat: entrySeed?.lat ?? trip.lat ?? null,
+            lng: entrySeed?.lng ?? trip.lng ?? null,
           };
         }
       }
@@ -186,7 +213,10 @@ const ChatModal = ({
     return entrySeed;
   }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext]);
 
-  const boundDestinationSlug = activeSessionPlace?.slug ?? null;
+  const boundDestinationSlug = resolveCatalogPlaceSlug(activeSessionPlace?.slug) || null;
+  /** 지명만 있는 uiPlace도 주제 칩 허용 (플래너·카탈로그 연동은 slug 있을 때만) */
+  const hasPlaceBoundName = Boolean(String(activeSessionPlace?.name || '').trim());
+  const allowNameBoundChips = hasPlaceBoundName && !boundDestinationSlug;
 
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
@@ -216,15 +246,26 @@ const ChatModal = ({
         effectiveQuickReplySlug,
         topicDockParent ? 2 : 1,
         topicDockParent,
-        { essentialGuide: topicEssentialGuide, omitPlanner: !topicDockParent }
+        {
+          essentialGuide: topicEssentialGuide,
+          omitPlanner: !topicDockParent || !boundDestinationSlug,
+          allowNameBound: allowNameBoundChips,
+        }
       ),
-    [effectiveQuickReplySlug, topicDockParent, topicEssentialGuide]
+    [
+      effectiveQuickReplySlug,
+      topicDockParent,
+      topicEssentialGuide,
+      boundDestinationSlug,
+      allowNameBoundChips,
+    ]
   );
 
   const showBoundTopicDock =
-    isMooniUi && Boolean(effectiveQuickReplySlug) && quickReplies.length > 0;
+    isMooniUi && hasPlaceBoundName && quickReplies.length > 0;
 
-  const showAccessOriginDock = isMooniUi && topicDockParent === 'access' && Boolean(effectiveQuickReplySlug);
+  const showAccessOriginDock =
+    isMooniUi && topicDockParent === 'access' && hasPlaceBoundName;
 
   const mobileDockInputExpanded =
     showBoundTopicDock &&
@@ -493,9 +534,9 @@ const ChatModal = ({
     if (!text?.trim() || isLoading) return;
 
     const rawText = typeof text === 'object' ? (text.text || '질문 내용 확인 불가') : text;
-    const sessionBoundEarly = activeSessionPlace?.slug
+    const sessionBoundEarly = activeSessionPlace?.name
       ? {
-          slug: activeSessionPlace.slug,
+          slug: boundDestinationSlug,
           name: activeSessionPlace.name,
         }
       : null;
@@ -519,9 +560,10 @@ const ChatModal = ({
       chatDraft?.destination ||
       '';
 
-    const sessionBound = activeSessionPlace?.slug
+    // Name-bound for prompts (uiPlace OK). Catalog slug only for planner/access docks.
+    const sessionBound = activeSessionPlace?.name
       ? {
-          slug: activeSessionPlace.slug,
+          slug: boundDestinationSlug,
           name: activeSessionPlace.name,
           lat: activeSessionPlace.lat ?? null,
           lng: activeSessionPlace.lng ?? null,
@@ -746,6 +788,7 @@ const ChatModal = ({
     chatHistory,
     applyDestinationBinding,
     activeSessionPlace,
+    boundDestinationSlug,
     mooniPlaceContext,
     topicDockParent,
   ]);
@@ -946,7 +989,7 @@ const ChatModal = ({
                   )}
                 </div>
               )}
-              {isMooniUi && messages.length === 0 && !isLoading && boundDestinationSlug && (
+              {isMooniUi && messages.length === 0 && !isLoading && placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
                   <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
                   <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">
@@ -963,14 +1006,14 @@ const ChatModal = ({
                       <p className="whitespace-pre-wrap">
                         {buildMooniIntroWithHint(
                           placeIntro,
-                          activeSessionPlace?.name ?? introDestinationRaw
+                          placeIntroTarget
                         )}
                       </p>
                     )}
                   </div>
                 </div>
               )}
-              {isMooniUi && messages.length === 0 && !isLoading && !boundDestinationSlug && (
+              {isMooniUi && messages.length === 0 && !isLoading && !placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
                   <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>
                   <div className="w-full p-4 rounded-2xl text-base shadow-md bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed">

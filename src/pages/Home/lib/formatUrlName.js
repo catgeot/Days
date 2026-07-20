@@ -13,7 +13,7 @@ export const formatUrlName = (nameEn) => {
     .replace(/^-|-$/g, '');
 };
 
-function isEphemeralSlug(slug) {
+export function isEphemeralSlug(slug) {
   if (!slug || typeof slug !== 'string') return true;
   const s = slug.trim();
   return (
@@ -21,8 +21,16 @@ function isEphemeralSlug(slug) {
     /^\d+$/.test(s) ||
     s.startsWith('search-') ||
     s.startsWith('loc-') ||
-    s.startsWith('city-')
+    s.startsWith('city-') ||
+    s.startsWith('label-')
   );
+}
+
+/** 무니 플래너·퀵리플라이용 — TRAVEL_SPOTS에 있는 slug만 */
+export function resolveCatalogPlaceSlug(slug) {
+  const s = String(slug ?? '').trim().toLowerCase();
+  if (!s || isEphemeralSlug(s)) return null;
+  return TRAVEL_SPOTS.find((x) => String(x.slug).toLowerCase() === s)?.slug ?? null;
 }
 
 /**

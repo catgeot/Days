@@ -454,8 +454,10 @@ export function useHomeHandlers({
 
     const isMooniRequest = String(dest ?? '').trim() === 'MOONi';
     const boundSpot = initPayload?.boundSpot ?? null;
+    const boundPlaceLabel =
+      String(boundSpot?.displayLabel || boundSpot?.name || '').trim() || null;
     const locationName = isMooniRequest
-      ? (boundSpot?.name || 'MOONi')
+      ? (boundPlaceLabel || 'MOONi')
       : (dest || selectedLocation?.name || 'New Session');
     const persona = initPayload?.persona || (selectedLocation ? PERSONA_TYPES.INSPIRER : PERSONA_TYPES.GENERAL);
 
@@ -463,9 +465,13 @@ export function useHomeHandlers({
       setMooniChatEntry?.(true);
       setMooniPlaceContext?.(boundSpot ?? null);
 
-      if (!existingId && boundSpot?.name) {
+      if (!existingId && boundPlaceLabel) {
         let placeTrip = savedTrips.find(
-          (t) => !t.is_hidden && t.destination === boundSpot.name && tripHasPersistedDialogue(t),
+          (t) =>
+            !t.is_hidden &&
+            (t.destination === boundPlaceLabel ||
+              t.destination === boundSpot?.name) &&
+            tripHasPersistedDialogue(t),
         );
         if (placeTrip?.is_hidden) {
           placeTrip = { ...placeTrip, is_hidden: false };
@@ -481,7 +487,7 @@ export function useHomeHandlers({
       }
 
       // 장소카드 boundSpot 진입 — 범용 MOONi trip resume 건너뜀 (§2.10 P2)
-      if (!existingId && !boundSpot?.name) {
+      if (!existingId && !boundPlaceLabel) {
         const resumedTrip = await resolveMooniResumeTrip({
           savedTrips,
           userId: user?.id ?? null,
@@ -553,9 +559,22 @@ export function useHomeHandlers({
     }
 
     // 4. DB에 행이 없으면: 빈 saved_trips 를 만들지 않고, 첫 메시지 전송 시 insert (setChatDraft + 모달만 오픈)
-    const isSameLocation = selectedLocation && (selectedLocation.name === locationName || selectedLocation.display_name === locationName);
-    const targetLat = boundSpot?.lat ?? (isSameLocation ? (selectedLocation.lat || 0) : 0);
-    const targetLng = boundSpot?.lng ?? (isSameLocation ? (selectedLocation.lng || 0) : 0);
+    const isSameLocation =
+      selectedLocation &&
+      (selectedLocation.name === locationName ||
+        selectedLocation.display_name === locationName ||
+        selectedLocation.name === boundSpot?.name ||
+        Boolean(boundSpot?.name));
+    const targetLat = Number.isFinite(Number(boundSpot?.lat))
+      ? Number(boundSpot.lat)
+      : isSameLocation
+        ? selectedLocation.lat || 0
+        : 0;
+    const targetLng = Number.isFinite(Number(boundSpot?.lng))
+      ? Number(boundSpot.lng)
+      : isSameLocation
+        ? selectedLocation.lng || 0
+        : 0;
 
     setChatDraft({
       destination: locationName,

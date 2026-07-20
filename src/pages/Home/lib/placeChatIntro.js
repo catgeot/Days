@@ -2,6 +2,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { apiClient } from './apiClient';
 import { getPlaceChatIntroSystemPrompt } from './prompts';
 import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
+import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 
 const LS_PREFIX = 'days_place_chat_intro:';
 
@@ -11,6 +12,40 @@ export function normalizeDestinationKey(name) {
   return String(name ?? '')
     .trim()
     .replace(/\s+/g, ' ');
+}
+
+/**
+ * 무니·장소 채팅용 표시 라벨 — 「일본 쿠시로」처럼 국가+지명.
+ * placeholder 국가(Explore 등)·중복 표기는 생략.
+ */
+export function formatPlaceChatLabel(loc) {
+  if (!loc || typeof loc !== 'object') {
+    return normalizeDestinationKey(loc);
+  }
+  const name = normalizeDestinationKey(loc.name || loc.displayLabel || '');
+  if (!name) return '';
+  const country = normalizeDestinationKey(loc.country || '');
+  if (!country || isPlaceholderCountry(country)) return name;
+  if (name.includes(country) || country.includes(name)) return name;
+  return `${country} ${name}`;
+}
+
+/** 장소카드 → 무니 boundSpot 시드 (SSOT slug 없어도 국가·지명 유지) */
+export function buildMooniBoundSpotFromLocation(loc) {
+  if (!loc?.name) return null;
+  const displayLabel = formatPlaceChatLabel(loc);
+  const rawSlug = typeof loc.slug === 'string' ? loc.slug.trim() : '';
+  return {
+    slug: rawSlug || null,
+    name: String(loc.name).trim(),
+    displayLabel,
+    name_en: loc.name_en ?? null,
+    country: isPlaceholderCountry(loc.country) ? null : (loc.country ?? null),
+    country_en: isPlaceholderCountry(loc.country_en) ? null : (loc.country_en ?? null),
+    lat: Number.isFinite(Number(loc.lat)) ? Number(loc.lat) : null,
+    lng: Number.isFinite(Number(loc.lng)) ? Number(loc.lng) : null,
+    uiPlace: Boolean(loc.uiPlace),
+  };
 }
 
 function isValidIntroDestination(key) {

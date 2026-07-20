@@ -62,3 +62,11 @@
 - **수정**: 재북마크 시 curation 갱신 · 마커/heal lift · placeholder 시 역지오 자가치유 · 전진 지오코딩 국가 한글 정규화.
 - **범위**: 살타 전용 아님 — 지구본·검색 **미등록 uiPlace 전반** (SSOT 있는 지점은 기존 카탈로그 hydrate).
 - **문서**: [`travel-spots-management.md`](./travel-spots-management.md) **§8.0** · `.ai-context` 3절 uiPlace 국가명 규칙.
+
+## 미등록 uiPlace → MOONi 국가·지명 바인딩
+
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 대기
+
+- **증상**: 무드/검색으로 연 미등록 지점(예: 일본 구시로)에서 MOONi가 좌표·범용 인사만 받고, 하단 주제 칩·장소 소개가 비활성. 카드에 `구시로`/`(구시로시)` 한글 중복.
+- **조치**: `buildMooniBoundSpotFromLocation` · `formatPlaceChatLabel`로 국가+지명 전달 · ChatModal은 slug 없이도 소개·프롬프트·대화 칩(`allowNameBound`) · 플래너만 catalog slug · URL 복원 시 역지오 지명 heal · `getPlaceTitleLines` 한글 행정 변형 보조줄 숨김.
+- **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8.0 MOONi · `.ai-context` uiPlace 한 줄.

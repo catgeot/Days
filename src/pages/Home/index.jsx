@@ -38,6 +38,7 @@ import {
 } from '../../utils/travelSpotResolve.js';
 import { getAddressFromCoordinates } from './lib/geocoding';
 import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat';
+import { buildMooniBoundSpotFromLocation } from './lib/placeChatIntro';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
@@ -237,15 +238,11 @@ function Home() {
   }, [flightCinemaActive, handleRelatedPlaceClick]);
 
   const openMooniFromPlace = useCallback((payload = {}) => {
-    if (!selectedLocation?.name) return;
+    const boundSpot = buildMooniBoundSpotFromLocation(selectedLocation);
+    if (!boundSpot?.name) return;
     handleStartChat('MOONi', {
       ...payload,
-      boundSpot: {
-        slug: selectedLocation.slug ?? null,
-        name: selectedLocation.name,
-        lat: selectedLocation.lat ?? 0,
-        lng: selectedLocation.lng ?? 0,
-      },
+      boundSpot,
     });
   }, [handleStartChat, selectedLocation]);
 
@@ -493,26 +490,55 @@ function Home() {
             setSelectedLocation(focusTarget);
           }
 
-          // SSOT 미등록 uiPlace(살타 등) — URL 복원 시 Explore/빈 국가를 역지오로 복구
+          // SSOT 미등록 uiPlace — URL 복원 시 Explore/빈 국가·좌표-only 표시명을 역지오로 복구
+          const needsCountryHeal = isPlaceholderCountry(focusTarget.country);
+          const needsNameHeal =
+            !focusTarget.name ||
+            focusTarget.name === '알 수 없는 지역' ||
+            focusTarget.name === '알 수 없는 도시' ||
+            focusTarget.name === '좌표 탐색';
           if (
-            isPlaceholderCountry(focusTarget.country) &&
+            (needsCountryHeal || needsNameHeal) &&
             Number.isFinite(Number(focusTarget.lat)) &&
             Number.isFinite(Number(focusTarget.lng))
           ) {
             getAddressFromCoordinates(focusTarget.lat, focusTarget.lng)
               .then((address) => {
-                if (!address?.country || isPlaceholderCountry(address.country)) return;
+                if (!address) return;
                 if (syncId !== placeRouteSyncRef.current) return;
+                const healedCountry =
+                  address.country && !isPlaceholderCountry(address.country)
+                    ? address.country
+                    : null;
+                const healedName =
+                  address.name_ko || address.city || address.name_en || null;
+                if (!healedCountry && !healedName) return;
                 setSelectedLocation((prev) => {
                   if (!prev || !isSameCanonicalPlace(prev, focusTarget)) return prev;
-                  if (!isPlaceholderCountry(prev.country) && !isPlaceholderCountry(prev.country_en)) {
-                    return prev;
-                  }
+                  const countryStillBad =
+                    isPlaceholderCountry(prev.country) && isPlaceholderCountry(prev.country_en);
+                  const nameStillBad =
+                    !prev.name ||
+                    prev.name === '알 수 없는 지역' ||
+                    prev.name === '알 수 없는 도시' ||
+                    prev.name === '좌표 탐색';
+                  if (!countryStillBad && !nameStillBad) return prev;
                   const healed = enrichLocationWithRentalAirport(
                     healPlaceholderCountry({
                       ...prev,
-                      country: address.country,
-                      country_en: address.country_en || address.country,
+                      ...(countryStillBad && healedCountry
+                        ? {
+                            country: healedCountry,
+                            country_en: address.country_en || healedCountry,
+                          }
+                        : {}),
+                      ...(nameStillBad && healedName
+                        ? {
+                            name: healedName,
+                            name_ko: healedName,
+                            name_en: address.name_en || prev.name_en || healedName,
+                          }
+                        : {}),
                     }),
                   );
                   selectedLocationRef.current = healed;
@@ -893,16 +919,23 @@ function Home() {
             const spot = trip
               ? resolveSessionBoundSpot(trip.destination, trip.messages || [])
               : null;
-            setMooniPlaceContext(
-              spot
-                ? {
-                    slug: spot.slug,
-                    name: spot.name,
-                    lat: spot.lat ?? null,
-                    lng: spot.lng ?? null,
-                  }
-                : null
-            );
+            if (spot) {
+              setMooniPlaceContext(buildMooniBoundSpotFromLocation(spot));
+            } else if (
+              trip?.destination &&
+              String(trip.destination).trim() !== 'MOONi'
+            ) {
+              setMooniPlaceContext({
+                slug: null,
+                name: String(trip.destination).trim(),
+                displayLabel: String(trip.destination).trim(),
+                country: trip.curation_data?.country ?? null,
+                lat: trip.lat ?? null,
+                lng: trip.lng ?? null,
+              });
+            } else {
+              setMooniPlaceContext(null);
+            }
           }}
           onDeleteChat={deleteTrip}
         />
