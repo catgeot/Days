@@ -417,6 +417,16 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 
 **Smart Search 자유 탐색** ([`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) · [`geocoding.js`](../src/pages/Home/lib/geocoding.js)): 지구본 POI와 같이 **세부 장소도 검색·탐색**. Mapbox Geocoding 우선 · 시설 쿼리(`휴게소` 등, `isFacilityQuery`)는 행정구역-only 히트·수식어 strip·`search_dictionary`의 시·군 교정 캐시 **거부**. AI 폴백은 시설을 군/시로 축소하지 않음 · Nominatim 미매칭(횡성호 등)은 AI 좌표+역지오 uiPlace · `maybeSingle`.
 
+**Explore 최근 기록** ([`exploreRecentHistory.js`](../src/pages/Home/lib/exploreRecentHistory.js) · [`SearchDiscoveryModal.jsx`](../src/pages/Home/components/SearchDiscoveryModal.jsx)):
+
+| 항목 | 클릭 |
+|------|------|
+| 최근 검색어 | 재검색 (`onSearch` · AI 가능) |
+| 최근 방문지 · 키워드 매칭 여행지 | **AI 금지** · 카탈로그→`/place/` · uiPlace(좌표 있음)→지구본 홈(`handleLocationSelect`+`fromSearch`) |
+| 키워드(보라) 칩 | 검색창에만 채움 (제출 안 함) |
+
+방문지·키워드 destination은 compact `{name,slug,lat,lng,country…}` 저장(문자열 legacy 호환). 좌표 없는 옛 기록은 검색창만 채움. 목록별 popover 「전체 삭제」.
+
 **fuzzy**: [`travelSpotResolve.js`](../src/utils/travelSpotResolve.js) — 접두 부분 일치(`porto`⊂`portovecchio`)·suffix contains(`nice`⊂`venice`, `니스`⊂`베니스`) 차단. `citiesData` 전용 지명(`nice`/`니스`)은 blocklist. 툴킷·검색·`mergeCanonicalTravelSpot` 경로에 적용.
 
 ### 8.0 미등록 uiPlace — `Explore`/`Global` 잔존 방지 (2026-07-20)

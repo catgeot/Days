@@ -22,6 +22,11 @@ import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import {
+  pushRecentVisited,
+  pushKeywordVisit,
+  isCatalogTravelSpot,
+} from './lib/exploreRecentHistory';
+import {
   hydrateLocationFromSavedTrip,
   overlaySessionCuration,
   resolvePlaceTargetFromSlug,
@@ -945,7 +950,16 @@ function Home() {
           isFromPlaceCard={isExploreFromPlace}
           onClose={() => navigate('/')}
           onSelect={(spot) => {
-            navigateToPlace(spot);
+            // 카탈로그 → 장소 카드. 신규 검색 uiPlace 등은 검색과 동일하게 지구본 홈.
+            if (isCatalogTravelSpot(spot)) {
+              navigateToPlace(spot);
+              return;
+            }
+            const lat = Number(spot?.lat);
+            const lng = Number(spot?.lng);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+            handleLocationSelect({ ...spot, lat, lng });
+            navigate('/', { state: { fromSearch: true } });
           }}
           onSearch={async (query) => {
             const selectedFromSearch = await handleSmartSearch(query);
@@ -954,43 +968,8 @@ function Home() {
             if (!selectedFromSearch?.name) return;
 
             try {
-              const key = 'gateo_recent_visited_destinations';
-              const current = JSON.parse(localStorage.getItem(key) || '[]');
-              const safeCurrent = Array.isArray(current) ? current : [];
-              const next = [
-                selectedFromSearch.name,
-                ...safeCurrent.filter((item) => item !== selectedFromSearch.name)
-              ].slice(0, 30);
-              localStorage.setItem(key, JSON.stringify(next));
-
-              const keywordVisitKey = 'gateo_recent_keyword_visits';
-              const rawKeywordVisits = JSON.parse(localStorage.getItem(keywordVisitKey) || '[]');
-              const keywordVisits = Array.isArray(rawKeywordVisits) ? rawKeywordVisits : [];
-              const normalizedKeyword = (query || '').trim();
-
-              if (normalizedKeyword) {
-                const matched = keywordVisits.find((entry) => entry?.keyword === normalizedKeyword);
-                let nextKeywordVisits;
-
-                if (matched) {
-                  const updatedDestinations = [
-                    selectedFromSearch.name,
-                    ...(Array.isArray(matched.destinations) ? matched.destinations : []).filter((dest) => dest !== selectedFromSearch.name)
-                  ].slice(0, 5);
-
-                  nextKeywordVisits = [
-                    { ...matched, destinations: updatedDestinations, updatedAt: Date.now() },
-                    ...keywordVisits.filter((entry) => entry?.keyword !== normalizedKeyword)
-                  ];
-                } else {
-                  nextKeywordVisits = [
-                    { keyword: normalizedKeyword, destinations: [selectedFromSearch.name], updatedAt: Date.now() },
-                    ...keywordVisits
-                  ];
-                }
-
-                localStorage.setItem(keywordVisitKey, JSON.stringify(nextKeywordVisits.slice(0, 30)));
-              }
+              pushRecentVisited(selectedFromSearch);
+              pushKeywordVisit(query, selectedFromSearch);
             } catch {
               // Ignore localStorage errors in private mode, etc.
             }

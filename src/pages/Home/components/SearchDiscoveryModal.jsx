@@ -12,36 +12,22 @@ import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
 import TripLinkModal from '../../../components/PlaceCard/modals/TripLinkModal';
-
-const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
-const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
-const RECENT_KEYWORD_VISITS_KEY = 'gateo_recent_keyword_visits';
-/** 로컬 최근 검색·방문 등 최대 보관 개수 (목록이 길어도 패널 높이로 스크롤 처리) */
-const MAX_RECENT_ITEMS = 30;
-
-const safeLoadRecentList = (key) => {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
-    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string' && item.trim() !== '') : [];
-  } catch {
-    return [];
-  }
-};
-
-const pushRecentItem = (key, value) => {
-  const trimmed = (value || '').trim();
-  if (!trimmed) return [];
-
-  const nextItems = [trimmed, ...safeLoadRecentList(key).filter((item) => item !== trimmed)].slice(0, MAX_RECENT_ITEMS);
-  localStorage.setItem(key, JSON.stringify(nextItems));
-  return nextItems;
-};
-
-const removeRecentItem = (key, value) => {
-  const nextItems = safeLoadRecentList(key).filter((item) => item !== value);
-  localStorage.setItem(key, JSON.stringify(nextItems));
-  return nextItems;
-};
+import {
+  RECENT_SEARCH_KEY,
+  safeLoadRecentList,
+  pushRecentSearch,
+  removeRecentSearch,
+  clearRecentSearches,
+  safeLoadRecentVisited,
+  pushRecentVisited,
+  removeRecentVisited,
+  clearRecentVisited,
+  safeLoadKeywordVisits,
+  removeKeywordVisit,
+  clearKeywordVisits,
+  destinationLabel,
+  resolveDestinationToSpot,
+} from '../lib/exploreRecentHistory';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -53,19 +39,18 @@ const pickVisibleElementRect = (...refs) => {
   return null;
 };
 
-const safeLoadKeywordVisits = () => {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(RECENT_KEYWORD_VISITS_KEY) || '[]');
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item) =>
-      item &&
-      typeof item.keyword === 'string' &&
-      Array.isArray(item.destinations)
-    );
-  } catch {
-    return [];
-  }
-};
+const HistoryPopoverHeader = ({ title, onClearAll }) => (
+  <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/[0.08] px-3 py-2">
+    <span className="text-[11px] text-gray-400">{title}</span>
+    <button
+      type="button"
+      onClick={onClearAll}
+      className="shrink-0 text-[11px] text-gray-400 transition-colors hover:text-red-300"
+    >
+      전체 삭제
+    </button>
+  </div>
+);
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuery = '', isFromPlaceCard = false }) => {
   const navigate = useNavigate();
@@ -154,7 +139,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (isOpen) {
       setQuery(''); // 모달 열릴 때마다 항상 검색어 초기화
       setRecentSearches(safeLoadRecentList(RECENT_SEARCH_KEY));
-      setRecentVisitedDestinations(safeLoadRecentList(RECENT_VISITED_KEY));
+      setRecentVisitedDestinations(safeLoadRecentVisited());
       setKeywordVisitHistory(safeLoadKeywordVisits());
       setActiveQuickSection(null);
       setIsSearchHistoryOpen(false);
@@ -297,8 +282,28 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   };
 
   const handleSpotSelect = (spot) => {
-    setRecentVisitedDestinations(pushRecentItem(RECENT_VISITED_KEY, spot?.name));
+    setRecentVisitedDestinations(pushRecentVisited(spot));
     onSelect(spot);
+  };
+
+  /** AI 검색 없이 최근 방문지·키워드 매칭지로 직연결 */
+  const openDestinationDirect = (destination) => {
+    const spot = resolveDestinationToSpot(destination);
+    setIsSearchHistoryOpen(false);
+    setActiveQuickSection(null);
+    if (spot) {
+      handleSpotSelect(spot);
+      return;
+    }
+    const label = destinationLabel(destination);
+    if (label) setQuery(label);
+  };
+
+  const fillKeywordOnly = (keyword) => {
+    const next = (keyword || '').trim();
+    if (next) setQuery(next);
+    setIsSearchHistoryOpen(false);
+    setActiveQuickSection(null);
   };
 
   const handlePackageSelect = (pkg) => {
@@ -309,40 +314,45 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     const finalQuery = (submitQuery ?? query).trim();
     if (finalQuery === '' || !onSearch) return;
     setQuery(finalQuery);
-    setRecentSearches(pushRecentItem(RECENT_SEARCH_KEY, finalQuery));
+    setRecentSearches(pushRecentSearch(finalQuery));
     setIsAILoading(true);
     try {
       await onSearch(finalQuery);
     } finally {
       setIsAILoading(false);
       setIsSearchHistoryOpen(false);
+      setActiveQuickSection(null);
     }
   };
 
   const handleRemoveRecentSearch = (keyword) => {
-    const next = removeRecentItem(RECENT_SEARCH_KEY, keyword);
+    const next = removeRecentSearch(keyword);
     setRecentSearches(next);
     if (next.length === 0) setIsSearchHistoryOpen(false);
   };
 
+  const handleClearRecentSearches = () => {
+    setRecentSearches(clearRecentSearches());
+    setIsSearchHistoryOpen(false);
+    if (activeQuickSection === 'searches') setActiveQuickSection(null);
+  };
+
   const handleRemoveRecentVisited = (destination) => {
-    setRecentVisitedDestinations(removeRecentItem(RECENT_VISITED_KEY, destination));
+    setRecentVisitedDestinations(removeRecentVisited(destination));
+  };
+
+  const handleClearRecentVisited = () => {
+    setRecentVisitedDestinations(clearRecentVisited());
+    if (activeQuickSection === 'visited') setActiveQuickSection(null);
   };
 
   const handleRemoveKeywordVisit = (keyword, destination = null) => {
-    const nextHistory = safeLoadKeywordVisits()
-      .map((entry) => {
-        if (entry.keyword !== keyword) return entry;
-        if (!destination) return null;
-        const nextDestinations = (entry.destinations || []).filter((item) => item !== destination);
-        if (nextDestinations.length === 0) return null;
-        return { ...entry, destinations: nextDestinations };
-      })
-      .filter(Boolean)
-      .slice(0, MAX_RECENT_ITEMS);
+    setKeywordVisitHistory(removeKeywordVisit(keyword, destination));
+  };
 
-    localStorage.setItem(RECENT_KEYWORD_VISITS_KEY, JSON.stringify(nextHistory));
-    setKeywordVisitHistory(nextHistory);
+  const handleClearKeywordVisits = () => {
+    setKeywordVisitHistory(clearKeywordVisits());
+    if (activeQuickSection === 'keywordVisits') setActiveQuickSection(null);
   };
 
   const filteredSpots = useMemo(() => {
@@ -1034,7 +1044,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             maxHeight: popoverLayout.maxHeight,
           }}
         >
-          <div className="shrink-0 border-b border-white/[0.08] px-3 py-2 text-[11px] text-gray-400">최근 검색</div>
+          <HistoryPopoverHeader title="최근 검색" onClearAll={handleClearRecentSearches} />
           <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-2">
             <div className="space-y-1">
               {recentSearches.map((keyword) => (
@@ -1075,6 +1085,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             maxHeight: popoverLayout.maxHeight,
           }}
         >
+          {activeQuickSection === 'searches' && (
+            <HistoryPopoverHeader title="최근 검색어" onClearAll={handleClearRecentSearches} />
+          )}
+          {activeQuickSection === 'visited' && (
+            <HistoryPopoverHeader title="최근 방문지" onClearAll={handleClearRecentVisited} />
+          )}
+          {activeQuickSection === 'keywordVisits' && (
+            <HistoryPopoverHeader title="키워드 방문 기록" onClearAll={handleClearKeywordVisits} />
+          )}
           <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-3">
             {activeQuickSection === 'searches' && (
               <div className="flex flex-wrap gap-2">
@@ -1101,24 +1120,27 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
             {activeQuickSection === 'visited' && (
               <div className="flex flex-wrap gap-2">
-                {recentVisitedDestinations.map((destination) => (
-                  <div key={`popover-quick-visited-${destination}`} className="inline-flex items-center gap-1 rounded-full border border-blue-400/35 bg-blue-500/15 py-1 pl-2.5 pr-1.5">
-                    <button type="button" onClick={() => handleSearchSubmit(destination)} className="text-xs text-blue-100 transition-colors hover:text-white">
-                      {destination}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveRecentVisited(destination);
-                      }}
-                      className="text-blue-200/80 transition-colors hover:text-red-200"
-                      aria-label={`${destination} 삭제`}
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
+                {recentVisitedDestinations.map((destination) => {
+                  const label = destinationLabel(destination);
+                  return (
+                    <div key={`popover-quick-visited-${label}`} className="inline-flex items-center gap-1 rounded-full border border-blue-400/35 bg-blue-500/15 py-1 pl-2.5 pr-1.5">
+                      <button type="button" onClick={() => openDestinationDirect(destination)} className="text-xs text-blue-100 transition-colors hover:text-white">
+                        {label}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveRecentVisited(destination);
+                        }}
+                        className="text-blue-200/80 transition-colors hover:text-red-200"
+                        aria-label={`${label} 삭제`}
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -1127,7 +1149,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 {keywordVisitHistory.map((entry) => (
                   <div key={`popover-quick-kw-${entry.keyword}`} className="flex flex-wrap items-center gap-1.5">
                     <div className="inline-flex items-center gap-1 rounded-full border border-purple-400/35 bg-purple-500/15 py-1 pl-2.5 pr-1.5">
-                      <button type="button" onClick={() => handleSearchSubmit(entry.keyword)} className="text-[11px] text-purple-100 transition-colors hover:text-white">
+                      <button type="button" onClick={() => fillKeywordOnly(entry.keyword)} className="text-[11px] text-purple-100 transition-colors hover:text-white">
                         {entry.keyword}
                       </button>
                       <button
@@ -1142,24 +1164,27 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                         <X size={12} />
                       </button>
                     </div>
-                    {(entry.destinations || []).slice(0, 5).map((destination) => (
-                      <div key={`popover-quick-kw-d-${entry.keyword}-${destination}`} className="inline-flex items-center gap-1 rounded-full border border-white/[0.14] bg-white/[0.07] py-1 pl-2 pr-1.5">
-                        <button type="button" onClick={() => handleSearchSubmit(destination)} className="text-[11px] text-gray-100 transition-colors hover:text-white">
-                          {destination}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveKeywordVisit(entry.keyword, destination);
-                          }}
-                          className="text-gray-400 transition-colors hover:text-red-300"
-                          aria-label={`${destination} 삭제`}
-                        >
-                          <X size={11} />
-                        </button>
-                      </div>
-                    ))}
+                    {(entry.destinations || []).slice(0, 5).map((destination) => {
+                      const label = destinationLabel(destination);
+                      return (
+                        <div key={`popover-quick-kw-d-${entry.keyword}-${label}`} className="inline-flex items-center gap-1 rounded-full border border-white/[0.14] bg-white/[0.07] py-1 pl-2 pr-1.5">
+                          <button type="button" onClick={() => openDestinationDirect(destination)} className="text-[11px] text-gray-100 transition-colors hover:text-white">
+                            {label}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveKeywordVisit(entry.keyword, destination);
+                            }}
+                            className="text-gray-400 transition-colors hover:text-red-300"
+                            aria-label={`${label} 삭제`}
+                          >
+                            <X size={11} />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 ))}
               </div>

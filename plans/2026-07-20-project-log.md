@@ -70,3 +70,11 @@
 - **증상**: 무드/검색으로 연 미등록 지점(예: 일본 구시로)에서 MOONi가 좌표·범용 인사만 받고, 하단 주제 칩·장소 소개가 비활성. 카드에 `구시로`/`(구시로시)` 한글 중복.
 - **조치**: `buildMooniBoundSpotFromLocation` · `formatPlaceChatLabel`로 국가+지명 전달 · ChatModal은 slug 없이도 소개·프롬프트·대화 칩(`allowNameBound`) · 플래너만 catalog slug · URL 복원 시 역지오 지명 heal · `getPlaceTitleLines` 한글 행정 변형 보조줄 숨김.
 - **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8.0 MOONi · `.ai-context` uiPlace 한 줄.
+
+## Explore 최근 기록 — AI 없이 직연결
+
+**상태**: ✅ 사용자 QA 통과 · 커밋 대기
+
+- **증상**: 최근 방문지·키워드 매칭 여행지 클릭이 `handleSearchSubmit`→AI로 재진입. 미등록 uiPlace는 이름만 저장돼 검색창만 채워짐.
+- **조치**: [`exploreRecentHistory.js`](../src/pages/Home/lib/exploreRecentHistory.js) — compact `{name,slug,lat,lng…}` 저장 · 카탈로그→`/place/` · uiPlace→지구본 홈(`handleLocationSelect`+`fromSearch`) · 키워드(보라)는 입력만 · 목록별 「전체 삭제」.
+- **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8 Explore 최근 기록 · `.ai-context` Smart Search 한 줄.
