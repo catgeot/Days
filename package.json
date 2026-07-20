@@ -36,6 +36,7 @@
     "generate:canonical-place-id-map": "node scripts/generate-canonical-place-id-map.mjs",
     "generate:place-alias-seed": "node scripts/generate-place-alias-seed.mjs --write",
     "migrate:place-id-to-slug": "node scripts/migrate-place-id-to-slug.mjs",
+    "restore:place-wiki-archive": "node scripts/restore-place-wiki-from-archive.mjs",
     "verify:place-slug-resolve": "node scripts/verify-place-slug-resolve.mjs",
     "smoke:health": "node scripts/smoke-health.mjs",
     "smoke:health:local": "set SMOKE_SITE_URL=https://localhost:5173&& node scripts/smoke-health.mjs",

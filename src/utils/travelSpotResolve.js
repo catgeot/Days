@@ -50,27 +50,36 @@ export function buildSpotLookup(spots = TRAVEL_SPOTS) {
   const lookup = new Map();
   const bySlug = new Map(spots.map((s) => [s.slug, s]));
 
-  const add = (key, spot) => {
+  // force=false: 이미 있으면 유지. force=true: 공식명·명시 별칭이 관문 keywords를 덮음
+  const add = (key, spot, { force = false } = {}) => {
     if (key == null || key === '' || !spot) return;
     for (const v of placeIdVariants(key)) {
       const k = normalizePlaceKey(v) || String(v).trim();
-      if (k && !lookup.has(k)) lookup.set(k, spot);
+      if (!k) continue;
+      if (!force && lookup.has(k)) continue;
+      lookup.set(k, spot);
     }
   };
 
+  // 1) keywords (약) — 관문 도시의 목적지 키워드가 공식명보다 앞서면 안 됨
   for (const spot of spots) {
-    add(spot.id, spot);
-    add(spot.slug, spot);
-    add(spot.name, spot);
-    add(spot.name_en, spot);
     for (const kw of spot.keywords || []) add(kw, spot);
   }
 
+  // 2) id·slug·공식 표시명
+  for (const spot of spots) {
+    add(spot.id, spot, { force: true });
+    add(spot.slug, spot, { force: true });
+    add(spot.name, spot, { force: true });
+    add(spot.name_en, spot, { force: true });
+  }
+
+  // 3) 명시 별칭 — 최우선
   for (const [placeId, slug] of Object.entries(TRAVEL_SPOT_PLACE_ID_ALIASES)) {
     const spot = bySlug.get(slug);
     if (!spot) continue;
-    for (const v of placeIdVariants(placeId)) add(v, spot);
-    add(placeId, spot);
+    for (const v of placeIdVariants(placeId)) add(v, spot, { force: true });
+    add(placeId, spot, { force: true });
   }
 
   return lookup;

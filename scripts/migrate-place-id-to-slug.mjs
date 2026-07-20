@@ -34,6 +34,16 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10).replace(/-/g, '');
 }
 
+/** place_wiki: summary/sections 있으면 큰 가산점 (빈 slug 껍데기 승자 방지) */
+function magazineContentScore(row, tableName) {
+  if (tableName !== 'place_wiki' || !row) return 0;
+  let score = 0;
+  if (row.summary && row.summary !== '[[LOADING]]' && String(row.summary).trim()) score += 1e12;
+  if (Array.isArray(row.sections) && row.sections.length > 0) score += 1e12;
+  if (row.ai_practical_info && row.ai_practical_info !== '[[LOADING]]') score += 1e10;
+  return score;
+}
+
 async function fetchAllRows(supabase, table) {
   const rows = [];
   const pageSize = 500;
@@ -88,8 +98,12 @@ function buildMigrationPlan(rows, tableName, aliasMap) {
 
   for (const [slug, members] of bySlug) {
     const sorted = [...members].sort((a, b) => {
-      const scoreB = rowRecencyScore(b.row, tableName) + (b.oldId === slug ? 1e12 : 0);
-      const scoreA = rowRecencyScore(a.row, tableName) + (a.oldId === slug ? 1e12 : 0);
+      // 매거진/본문 있는 행이 빈 slug 껍데기보다 우선 (과거: slug 행 +1e12로 빈 껍데기 승자 사고)
+      const magB = magazineContentScore(b.row, tableName);
+      const magA = magazineContentScore(a.row, tableName);
+      if (magB !== magA) return magB - magA;
+      const scoreB = rowRecencyScore(b.row, tableName) + (b.oldId === slug ? 1e9 : 0);
+      const scoreA = rowRecencyScore(a.row, tableName) + (a.oldId === slug ? 1e9 : 0);
       return scoreB - scoreA;
     });
     const winner = sorted[0];

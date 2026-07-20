@@ -45,7 +45,18 @@ function getKnownSlugs() {
   return set;
 }
 
-/** Static alias map: normalized alias → canonical_slug */
+/**
+ * Static alias map: normalized alias → canonical_slug
+ *
+ * 우선순위(낮→높, 나중 덮어씀):
+ * 1) 관문 keywords / lookup 보조키 (약)
+ * 2) spot slug · name · name_en (공식명)
+ * 3) toolkit synonyms
+ * 4) TRAVEL_SPOT_PLACE_ID_ALIASES (명시 SSOT)
+ *
+ * 관문 도시 keywords에 목적지 한글명이 들어 있어도(예: alice-springs←울루루)
+ * 공식 spot.name 매핑을 덮지 않도록 한다. (place_wiki 마이그레이션 시 빈 껍데기 승자 사고 방지)
+ */
 export function buildStaticAliasToSlugMap() {
   if (cachedAliasToSlug) return cachedAliasToSlug;
   const map = new Map();
@@ -57,29 +68,48 @@ export function buildStaticAliasToSlugMap() {
     map.set(a.toLowerCase(), s);
   };
 
-  for (const [alias, slug] of Object.entries(TRAVEL_SPOT_PLACE_ID_ALIASES)) {
-    add(alias, slug);
+  const lookup = buildSpotLookup(TRAVEL_SPOTS);
+
+  // 1) keywords·lookup — 약한 매핑
+  for (const spot of TRAVEL_SPOTS) {
+    const slug = spotSlugOrNull(spot);
+    if (!slug) continue;
+    for (const kw of spot.keywords || []) add(kw, slug);
+    for (const v of lookup.keys()) {
+      const hit = lookup.get(v);
+      if (hit?.slug === slug) add(v, slug);
+    }
   }
 
+  // 2) 공식 slug·표시명 — keywords보다 우선
+  for (const spot of TRAVEL_SPOTS) {
+    const slug = spotSlugOrNull(spot);
+    if (!slug) continue;
+    add(slug, slug);
+    add(spot.name, slug);
+    add(spot.name_en, slug);
+  }
+
+  // 3) toolkit synonyms
   for (const [slug, synonyms] of Object.entries(TRAVEL_SPOT_TOOLKIT_SYNONYMS)) {
     add(slug, slug);
     for (const syn of synonyms || []) add(syn, slug);
   }
 
-  const lookup = buildSpotLookup(TRAVEL_SPOTS);
-  for (const spot of TRAVEL_SPOTS) {
-    add(spot.slug, spot.slug);
-    add(spot.name, spot.slug);
-    add(spot.name_en, spot.slug);
-    for (const kw of spot.keywords || []) add(kw, spot.slug);
-    for (const v of lookup.keys()) {
-      const hit = lookup.get(v);
-      if (hit?.slug === spot.slug) add(v, spot.slug);
-    }
+  // 4) 명시 별칭 — 최우선
+  for (const [alias, slug] of Object.entries(TRAVEL_SPOT_PLACE_ID_ALIASES)) {
+    add(alias, slug);
   }
 
   cachedAliasToSlug = map;
   return map;
+}
+
+function spotSlugOrNull(spot) {
+  const s = String(spot?.slug ?? '')
+    .trim()
+    .toLowerCase();
+  return s || null;
 }
 
 export function isKnownSlug(value) {

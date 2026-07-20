@@ -77,6 +77,14 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Addis Ababa': 'lalibela',
   'Bohol': 'bohol',
 
+  // —— 관문 keywords 오염 방지 (공식 spot.name → 본인 slug) ——
+  '울루루': 'uluru',
+  'Uluru': 'uluru',
+  '친퀘테레': 'cinque-terre',
+  'Cinque Terre': 'cinque-terre',
+  '파타고니아': 'patagonia',
+  '하와이': 'hawaii',
+
   // —— 파타고니아 권역 (북부·남부 slug 분리) ——
   'Bariloche': 'patagonia',
   '바릴로체': 'patagonia',
