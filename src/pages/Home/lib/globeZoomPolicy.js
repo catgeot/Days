@@ -3,6 +3,13 @@
 /** Mapbox place labels + admin boundaries visible at/above this zoom (gateo 마커·카테고리 노출 후). */
 export const PLACE_LABEL_MIN_ZOOM = 4.0;
 
+/** Mapbox POI · natural · landmark labels — high zoom only (clean globe below). */
+export const POI_LABEL_MIN_ZOOM = 5.5;
+
+/** Gateo marker click hit (px) — shrink at detail zoom so bare land / POI wins nearby. */
+export const GATEO_MARKER_HIT_PX_LOW = 32;
+export const GATEO_MARKER_HIT_PX_DETAIL = 14;
+
 export const TIER_STAGE_ZOOM_LEVELS = {
   tier1: 1.1,
   tier2: 2.45
@@ -18,8 +25,16 @@ export const GLOBE_ZOOM_POLICY = {
   /** 2.0–3.9: gateo tier 1–2, Mapbox place labels off */
   gateoTier2MaxZoom: TIER_STAGE_ZOOM_LEVELS.tier2,
   /** 4.0+: Mapbox Korean place labels + boundaries on */
-  mapboxLabelsMinZoom: PLACE_LABEL_MIN_ZOOM
+  mapboxLabelsMinZoom: PLACE_LABEL_MIN_ZOOM,
+  /** 5.5+: Mapbox POI / natural / landmark labels on */
+  mapboxPoiLabelsMinZoom: POI_LABEL_MIN_ZOOM
 };
+
+/** Pixel hit radius for gateo markers — tighter when place/POI detail is visible. */
+export function getGateoMarkerHitThresholdPx(zoom) {
+  if (!Number.isFinite(zoom) || zoom < PLACE_LABEL_MIN_ZOOM) return GATEO_MARKER_HIT_PX_LOW;
+  return GATEO_MARKER_HIT_PX_DETAIL;
+}
 
 export const getMaxTierForZoom = (zoom) => {
   if (zoom < TIER_STAGE_ZOOM_LEVELS.tier1) return 1;

@@ -245,6 +245,7 @@ export function useHomeHandlers({
         return;
       }
 
+      // 바다·무지명: tier km 이내 curated만. 전역 nearest 스냅 금지 — 클릭 좌표 uiPlace 유지
       const curatedFromClick = curatedLocationFromCoords(lat, lng, category);
       if (curatedFromClick) {
         addScoutPin(curatedFromClick);
@@ -254,35 +255,26 @@ export function useHomeHandlers({
         return;
       }
 
-      if (isOcean) {
-        const allKnownPoints = [...TRAVEL_SPOTS, ...citiesData];
-        let nearestPoint = null;
-        let minDistance = Infinity;
+      const explorePin = finalizeUiPlacePin({
+        id: fallbackId,
+        slug: fallbackId,
+        lat,
+        lng,
+        name: '좌표 탐색',
+        name_en: `Explore ${lat.toFixed(2)}, ${lng.toFixed(2)}`,
+        name_ko: '좌표 탐색',
+        type: 'temp-base',
+        category,
+        country: 'Explore',
+        country_en: 'Explore',
+        display_name: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+        uiPlace: true,
+      }, lat, lng);
 
-        for (let pt of allKnownPoints) {
-          if (pt.lat === undefined || pt.lng === undefined) continue;
-          const dist = getDistanceKm(lat, lng, pt.lat, pt.lng);
-          if (dist < minDistance) {
-            minDistance = dist;
-            nearestPoint = pt;
-          }
-        }
-
-        if (nearestPoint) {
-            const finalLoc = prepareLocation({
-                ...nearestPoint,
-                id: nearestPoint.id || `snap-${nearestPoint.lat}-${nearestPoint.lng}`,
-                type: nearestPoint.type || 'temp-base',
-                category: nearestPoint.category || category
-            });
-
-            addScoutPin(finalLoc);
-            setSelectedLocation(finalLoc);
-            moveToLocation(finalLoc.lat, finalLoc.lng, finalLoc.name, finalLoc.category, { focus: false });
-            processSearchKeywords(finalLoc);
-            return;
-        }
-      }
+      addScoutPin(explorePin);
+      setSelectedLocation(explorePin);
+      moveToLocation(lat, lng, explorePin.name, category, { focus: false });
+      processSearchKeywords(explorePin);
     } catch (error) {
       console.error("Geocoding Error:", error);
       setSelectedLocation(null);
@@ -640,25 +632,47 @@ export function useHomeHandlers({
       const verifiedByNameCountry = await getCoordinatesFromAddress(
         countryForLookup ? `${nameForLookup}, ${countryForLookup}` : nameForLookup
       );
-      const verifiedByNameOnly = verifiedByNameCountry || await getCoordinatesFromAddress(nameForLookup);
-      if (!verifiedByNameOnly) return null;
+      let verifiedByNameOnly = verifiedByNameCountry || await getCoordinatesFromAddress(nameForLookup);
 
-      const distanceKm = getDistanceKm(rawLat, rawLng, verifiedByNameOnly.lat, verifiedByNameOnly.lng);
-      if (distanceKm > SMART_SEARCH_COORD_TOLERANCE_KM) {
-        console.warn(`[Smart Search ${sourceLabel}] 지명-좌표 불일치 차단: "${nameForLookup}" (${distanceKm.toFixed(1)}km)`);
-        return null;
+      if (verifiedByNameOnly) {
+        const distanceKm = getDistanceKm(rawLat, rawLng, verifiedByNameOnly.lat, verifiedByNameOnly.lng);
+        if (distanceKm > SMART_SEARCH_COORD_TOLERANCE_KM) {
+          console.warn(
+            `[Smart Search ${sourceLabel}] 지명-좌표 불일치 → AI 좌표 폴백: "${nameForLookup}" (${distanceKm.toFixed(1)}km)`
+          );
+          verifiedByNameOnly = null;
+        }
+      }
+
+      // Nominatim에 없는 국내 저수지·댐 등: AI 좌표 + 역지오로 국가 보강 (횡성호 등)
+      let resolvedLat = verifiedByNameOnly?.lat;
+      let resolvedLng = verifiedByNameOnly?.lng;
+      let geoCountry = verifiedByNameOnly?.country;
+      let geoCountryEn = verifiedByNameOnly?.country_en;
+      let geoNameEn = verifiedByNameOnly?.name_en || verifiedByNameOnly?.name;
+
+      if (!verifiedByNameOnly) {
+        const reverse = await getAddressFromCoordinates(rawLat, rawLng);
+        if (!reverse || (!reverse.city && !reverse.country)) {
+          console.warn(`[Smart Search ${sourceLabel}] 지명 forward·역지오 모두 실패: "${nameForLookup}"`);
+          return null;
+        }
+        resolvedLat = rawLat;
+        resolvedLng = rawLng;
+        geoCountry = reverse.country || candidate?.country;
+        geoCountryEn = reverse.country_en || candidate?.country_en;
+        geoNameEn = candidate?.name_en || reverse.name_en || nameForLookup;
+        console.log(
+          `[Smart Search ${sourceLabel}] AI 좌표 신뢰 (Nominatim 미매칭): "${nameForLookup}" @ ${rawLat}, ${rawLng}`
+        );
       }
 
       const reasonText = typeof candidate?.reason === 'string' ? candidate.reason.trim() : '';
       const baseDesc = `"${originalQuery}"의 분위기를 "${candidate?.name || nameForLookup}" 여정으로 연결해 탐색합니다.`;
       const enrichedDesc = reasonText ? `${baseDesc} ${reasonText}` : baseDesc;
 
-      const verifiedNameEn = verifiedByNameOnly.name_en || candidate?.name_en || nameForLookup;
-      const curated = matchCuratedLocation(
-        verifiedByNameOnly.lat,
-        verifiedByNameOnly.lng,
-        verifiedNameEn
-      );
+      const verifiedNameEn = geoNameEn || candidate?.name_en || nameForLookup;
+      const curated = matchCuratedLocation(resolvedLat, resolvedLng, verifiedNameEn);
 
       if (curated?.type === 'spot') {
         const entry = curated.data;
@@ -672,10 +686,10 @@ export function useHomeHandlers({
           canonical_slug: entry.slug,
           name: entry.name,
           name_en: entry.name_en ?? entry.name,
-          country: entry.country ?? verifiedByNameOnly.country ?? candidate?.country ?? "Explore",
-          country_en: entry.country_en ?? verifiedByNameOnly.country_en ?? candidate?.country_en ?? "Explore",
-          lat: entry.lat ?? verifiedByNameOnly.lat,
-          lng: entry.lng ?? verifiedByNameOnly.lng,
+          country: entry.country ?? geoCountry ?? candidate?.country ?? "Explore",
+          country_en: entry.country_en ?? geoCountryEn ?? candidate?.country_en ?? "Explore",
+          lat: entry.lat ?? resolvedLat,
+          lng: entry.lng ?? resolvedLng,
           category: entry.category ?? entry.primaryCategory ?? category,
           desc: curatedDesc,
           type: 'temp-base',
@@ -695,10 +709,10 @@ export function useHomeHandlers({
           slug: entry.slug,
           name: entry.name,
           name_en: entry.name_en || entry.name,
-          country: entry.country || verifiedByNameOnly.country || candidate?.country || "Explore",
-          country_en: entry.country_en || verifiedByNameOnly.country_en || candidate?.country_en || "Explore",
-          lat: entry.lat ?? verifiedByNameOnly.lat,
-          lng: entry.lng ?? verifiedByNameOnly.lng,
+          country: entry.country || geoCountry || candidate?.country || "Explore",
+          country_en: entry.country_en || geoCountryEn || candidate?.country_en || "Explore",
+          lat: entry.lat ?? resolvedLat,
+          lng: entry.lng ?? resolvedLng,
           category: category,
           desc: curatedDesc,
           type: 'temp-base',
@@ -707,21 +721,23 @@ export function useHomeHandlers({
         };
       }
 
-      return {
-        id: `search-${verifiedByNameOnly.lat}-${verifiedByNameOnly.lng}`,
-        slug: formatUrlName(verifiedByNameOnly.name_en || verifiedByNameOnly.name || nameForLookup),
-        name: candidate?.name || verifiedByNameOnly.name || nameForLookup,
-        name_en: verifiedByNameOnly.name_en || candidate?.name_en || candidate?.name || nameForLookup,
-        country: verifiedByNameOnly.country || candidate?.country || "Explore",
-        country_en: verifiedByNameOnly.country_en || candidate?.country_en || "Explore",
-        lat: verifiedByNameOnly.lat,
-        lng: verifiedByNameOnly.lng,
+      return finalizeUiPlacePin({
+        id: `search-${resolvedLat}-${resolvedLng}`,
+        slug: formatUrlName(verifiedNameEn || nameForLookup),
+        name: candidate?.name || nameForLookup,
+        name_en: verifiedNameEn || candidate?.name_en || candidate?.name || nameForLookup,
+        name_ko: candidate?.name || '',
+        country: geoCountry || candidate?.country || "Explore",
+        country_en: geoCountryEn || candidate?.country_en || "Explore",
+        lat: resolvedLat,
+        lng: resolvedLng,
         category: category,
         desc: enrichedDesc,
         type: 'temp-base',
         isCorrected: true,
-        originalQuery: originalQuery
-      };
+        originalQuery: originalQuery,
+        uiPlace: true,
+      }, resolvedLat, resolvedLng);
     };
 
     const coords = await getCoordinatesFromAddress(query);
@@ -769,11 +785,12 @@ export function useHomeHandlers({
         const lowerQuery = query.toLowerCase();
         const treatAsMoodQuery = isLikelyMoodQuery(query);
         // 1. 먼저 DB에서 캐시된 교정 결과가 있는지 확인 (Phase 1.5)
+        // maybeSingle: 0건일 때 .single()이 406을 내던 문제 방지
         const { data: cachedDict } = await supabase
           .from('search_dictionary')
           .select('*')
           .eq('original_query', lowerQuery)
-          .single();
+          .maybeSingle();
 
         if (cachedDict && cachedDict.location_data) {
           console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);

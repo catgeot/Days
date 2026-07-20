@@ -19,7 +19,8 @@ import {
   HIGH_ZOOM_FULL_REVEAL,
   getMaxTierForZoom,
   getMajorMergeThreshold,
-  getMarkerCollisionThreshold
+  getMarkerCollisionThreshold,
+  getGateoMarkerHitThresholdPx,
 } from '../lib/globeZoomPolicy';
 import {
   markersToGeoJSON,
@@ -127,6 +128,13 @@ const PLACE_LABEL_LAYER_HINTS = [
   'settlement',
   'country-label',
   'state-label',
+];
+/** High-zoom POI / natural / landmark — clickable when visible (≥ POI_LABEL_MIN_ZOOM). */
+const POI_LABEL_LAYER_HINTS = [
+  'poi',
+  'landmark',
+  'natural',
+  'airport',
 ];
 const HIDDEN_OVERLAY_LAYER_HINTS = [
   'road',
@@ -345,6 +353,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const markerClickGuardUntilRef = useRef(0);
   const allMarkersLookupRef = useRef([]);
   const placeLabelLayerIdsRef = useRef([]);
+  const poiLabelLayerIdsRef = useRef([]);
   const contextLabelLayerIdsRef = useRef([]);
   const allSymbolLayerIdsRef = useRef([]);
   const allLineLayerIdsRef = useRef([]);
@@ -476,6 +485,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       })
       .map((layer) => layer.id);
 
+    poiLabelLayerIdsRef.current = symbolLayers
+      .filter((layer) => Boolean(layer.layout && layer.layout['text-field']))
+      .filter((layer) => {
+        const id = layer.id || '';
+        const sourceLayer = layer['source-layer'] || '';
+        if (PLACE_LABEL_LAYER_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint))) {
+          return false;
+        }
+        if (isGlobeContextBasemapLabel(id, sourceLayer)) return false;
+        return POI_LABEL_LAYER_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint));
+      })
+      .map((layer) => layer.id);
+
     contextLabelLayerIdsRef.current = symbolLayers
       .filter((layer) => Boolean(layer.layout && layer.layout['text-field']))
       .filter((layer) => isGlobeContextBasemapLabel(layer.id, layer['source-layer']))
@@ -503,7 +525,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const map = mapRef.current?.getMap();
     if (!map || globeTheme === 'bright') return;
 
-    [...placeLabelLayerIdsRef.current, ...contextLabelLayerIdsRef.current].forEach((layerId) => {
+    [
+      ...placeLabelLayerIdsRef.current,
+      ...poiLabelLayerIdsRef.current,
+      ...contextLabelLayerIdsRef.current,
+    ].forEach((layerId) => {
       if (isGateoLayer(layerId) || !map.getLayer(layerId)) return;
       try {
         map.setLayoutProperty(layerId, 'text-field', [
@@ -530,7 +556,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const shouldShowMapboxContext = applyMapboxGlobeLabelPolicy(map, {
       globeTheme,
       isPinVisible,
-      placeLabelLayerIds: placeLabelLayerIdsRef.current
+      placeLabelLayerIds: placeLabelLayerIdsRef.current,
+      poiLabelLayerIds: poiLabelLayerIdsRef.current,
     });
 
     if (globeTheme !== 'bright') {
@@ -1624,8 +1651,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const inTour = isTourMode(globeMode) || tourActiveRef.current;
 
+    const markerHitPx = getGateoMarkerHitThresholdPx(map?.getZoom?.());
     const markerAtPoint = map && event.point
-      ? findGateoMarkerAtPoint(map, event.point, event.lngLat)
+      ? findGateoMarkerAtPoint(map, event.point, event.lngLat, markerHitPx)
       : null;
     if (markerAtPoint) {
       markerClickGuardUntilRef.current = Date.now() + 450;
@@ -1654,7 +1682,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         return;
       }
     }
-    const labelLayers = placeLabelLayerIdsRef.current || [];
+    const labelLayers = [
+      ...(poiLabelLayerIdsRef.current || []),
+      ...(placeLabelLayerIdsRef.current || []),
+    ].filter((id) => map?.getLayer?.(id));
     const clickedLabels = map && labelLayers.length > 0
       ? map.queryRenderedFeatures(event.point, { layers: labelLayers })
       : [];

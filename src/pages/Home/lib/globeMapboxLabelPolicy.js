@@ -1,4 +1,4 @@
-import { PLACE_LABEL_MIN_ZOOM } from './globeZoomPolicy';
+import { PLACE_LABEL_MIN_ZOOM, POI_LABEL_MIN_ZOOM } from './globeZoomPolicy';
 import { isGateoLayer } from './globeMarkerLayers';
 import { isReachBoundaryLayer } from './globeReachBoundaries';
 import { isClusterBoundaryLayer } from './globeClusterBoundaries';
@@ -8,6 +8,7 @@ import {
   isStandardBasemapLayer,
   STANDARD_HOME_CONFIG,
   STANDARD_HOME_GLOBE_CONTEXT_CONFIG,
+  STANDARD_HOME_POI_CONFIG,
   STANDARD_HOME_SPACE_CONFIG
 } from './globeStandardBasemap';
 
@@ -26,6 +27,14 @@ const MAPBOX_PLACE_LABEL_HINTS = [
   'state-label',
 ];
 
+/** satellite-streets POI / natural / landmark — only at/above POI_LABEL_MIN_ZOOM */
+export const MAPBOX_POI_LABEL_HINTS = [
+  'poi',
+  'landmark',
+  'natural',
+  'airport',
+];
+
 /** satellite-streets 대륙·대양 — 줌 4 미만에서도 유지 (도시·국가 지명과 분리) */
 export const MAPBOX_GLOBE_CONTEXT_LABEL_HINTS = [
   'continent-label',
@@ -40,11 +49,8 @@ export const MAPBOX_GLOBE_CONTEXT_LABEL_HINTS = [
 
 const MAPBOX_SYMBOL_LABEL_HINTS = [
   ...MAPBOX_PLACE_LABEL_HINTS,
-  'landmark',
-  'poi',
+  ...MAPBOX_POI_LABEL_HINTS,
   'label',
-  'airport',
-  'natural',
 ];
 
 const layerMatchesHints = (layerId, sourceLayer, hints) => {
@@ -57,9 +63,16 @@ export function isGlobeContextBasemapLabel(layerId, sourceLayer) {
   return layerMatchesHints(layerId, sourceLayer, MAPBOX_GLOBE_CONTEXT_LABEL_HINTS);
 }
 
+export function isMapboxPoiLabelLayer(layerId, sourceLayer) {
+  return layerMatchesHints(layerId, sourceLayer, MAPBOX_POI_LABEL_HINTS);
+}
+
 export function resolveStandardHomeBasemapConfig({ isPinVisible, zoom }) {
   if (!isPinVisible || !Number.isFinite(zoom)) {
     return STANDARD_HOME_SPACE_CONFIG;
+  }
+  if (zoom >= POI_LABEL_MIN_ZOOM) {
+    return STANDARD_HOME_POI_CONFIG;
   }
   if (zoom >= PLACE_LABEL_MIN_ZOOM) {
     return STANDARD_HOME_CONFIG;
@@ -69,6 +82,10 @@ export function resolveStandardHomeBasemapConfig({ isPinVisible, zoom }) {
 
 export function shouldShowMapboxGlobeLabels({ isPinVisible, zoom }) {
   return Boolean(isPinVisible && Number.isFinite(zoom) && zoom >= PLACE_LABEL_MIN_ZOOM);
+}
+
+export function shouldShowMapboxPoiLabels({ isPinVisible, zoom }) {
+  return Boolean(isPinVisible && Number.isFinite(zoom) && zoom >= POI_LABEL_MIN_ZOOM);
 }
 
 export function forceHideMapboxLayer(map, layerId) {
@@ -85,6 +102,16 @@ export function showMapboxDetailLayer(map, layerId) {
   if (!map?.getLayer?.(layerId)) return;
   try {
     map.setLayerZoomRange(layerId, PLACE_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
+    map.setLayoutProperty(layerId, 'visibility', 'visible');
+  } catch {
+    // Style may be mid-transition.
+  }
+}
+
+export function showMapboxPoiDetailLayer(map, layerId) {
+  if (!map?.getLayer?.(layerId)) return;
+  try {
+    map.setLayerZoomRange(layerId, POI_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
     map.setLayoutProperty(layerId, 'visibility', 'visible');
   } catch {
     // Style may be mid-transition.
@@ -142,12 +169,13 @@ export function applyEarlyMapboxGlobeLabelSuppress(map, globeTheme = 'deep') {
  */
 export function applyMapboxGlobeLabelPolicy(
   map,
-  { globeTheme = 'deep', isPinVisible = true, placeLabelLayerIds = [] } = {}
+  { globeTheme = 'deep', isPinVisible = true, placeLabelLayerIds = [], poiLabelLayerIds = [] } = {}
 ) {
   if (!map?.getStyle || !map.isStyleLoaded?.()) return null;
 
   const zoom = map.getZoom();
   const showDetail = shouldShowMapboxGlobeLabels({ isPinVisible, zoom });
+  const showPoi = shouldShowMapboxPoiLabels({ isPinVisible, zoom });
 
   if (globeTheme === 'bright') {
     applyStandardBasemapConfig(
@@ -164,6 +192,7 @@ export function applyMapboxGlobeLabelPolicy(
   }
 
   const placeLabelSet = new Set(placeLabelLayerIds);
+  const poiLabelSet = new Set(poiLabelLayerIds);
 
   for (const layer of layers) {
     const layerId = layer.id;
@@ -178,10 +207,14 @@ export function applyMapboxGlobeLabelPolicy(
     }
 
     if (layer.type === 'symbol') {
+      const sourceLayer = layer['source-layer'] || '';
       const isLandmark = isStandardBasemapLayer(layerId);
-      const isContextLabel = isGlobeContextBasemapLabel(layerId, layer['source-layer']);
+      const isContextLabel = isGlobeContextBasemapLabel(layerId, sourceLayer);
+      const isPoiLabel = poiLabelSet.has(layerId)
+        || isLandmark
+        || isMapboxPoiLabelLayer(layerId, sourceLayer);
       const isPlaceLabel = placeLabelSet.has(layerId)
-        || layerMatchesHints(layerId, layer['source-layer'], MAPBOX_PLACE_LABEL_HINTS);
+        || layerMatchesHints(layerId, sourceLayer, MAPBOX_PLACE_LABEL_HINTS);
       const isMapboxLabel = isMapboxLabelSymbolLayer(layer);
 
       if (isContextLabel) {
@@ -191,17 +224,22 @@ export function applyMapboxGlobeLabelPolicy(
       }
 
       if (globeTheme === 'bright') {
-        // Home never uses Standard landmark icons; config + layer hide (tour uses separate config).
-        if (isLandmark || !showDetail) {
+        // Standard: config drives most labels; force-hide non-label clutter + POI below threshold.
+        if (!showDetail) {
           forceHideMapboxLayer(map, layerId);
-        } else if (!isMapboxLabel) {
+        } else if (isPoiLabel && !showPoi) {
+          forceHideMapboxLayer(map, layerId);
+        } else if (!isMapboxLabel && !isPlaceLabel) {
           forceHideMapboxLayer(map, layerId);
         }
         continue;
       }
 
       // satellite-streets (deep / neon)
-      if (!showDetail || !isPlaceLabel) {
+      if (isPoiLabel) {
+        if (showPoi) showMapboxPoiDetailLayer(map, layerId);
+        else forceHideMapboxLayer(map, layerId);
+      } else if (!showDetail || !isPlaceLabel) {
         forceHideMapboxLayer(map, layerId);
       } else {
         showMapboxDetailLayer(map, layerId);

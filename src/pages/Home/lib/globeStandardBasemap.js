@@ -36,7 +36,7 @@ export const STANDARD_HOME_SPACE_CONFIG = [
   ['showIndoorLabels', false]
 ];
 
-/** Zoomed-in home — Mapbox place labels + admin boundaries; roads/POI clutter off. */
+/** Zoomed-in home (4–5.5) — place labels + admin; POI/roads clutter off. */
 export const STANDARD_HOME_CONFIG = [
   ['showPlaceLabels', true],
   ['showPointOfInterestLabels', false],
@@ -46,6 +46,19 @@ export const STANDARD_HOME_CONFIG = [
   ['showAdminBoundaries', true],
   ['showLandmarkIcons', false],
   ['showLandmarkIconLabels', false],
+  ['show3dLandmarks', false]
+];
+
+/** High-zoom explore (≥ 5.5) — place + POI/landmark labels; roads/transit still off. */
+export const STANDARD_HOME_POI_CONFIG = [
+  ['showPlaceLabels', true],
+  ['showPointOfInterestLabels', true],
+  ['showPedestrianRoads', false],
+  ['showRoadLabels', false],
+  ['showTransitLabels', false],
+  ['showAdminBoundaries', true],
+  ['showLandmarkIcons', true],
+  ['showLandmarkIconLabels', true],
   ['show3dLandmarks', false]
 ];
 
