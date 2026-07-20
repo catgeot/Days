@@ -487,7 +487,10 @@ function StayCard({
   dateFlexible = false,
   className = '',
   imageClassName = 'h-[72px] lg:h-[96px]',
+  /** PC 확장 목록용 — 이미지·타이포 한 단계 확대 */
+  size = 'md',
 }) {
+  const large = size === 'lg';
   return (
     <a
       href={item.productUrl}
@@ -510,25 +513,47 @@ function StayCard({
             className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-[10px] text-white/30">
+          <div
+            className={`flex h-full w-full items-center justify-center text-white/30 ${
+              large ? 'text-xs' : 'text-[10px]'
+            }`}
+          >
             No image
           </div>
         )}
       </div>
-      <div className="space-y-0.5 p-2 pointer-events-none">
-        <p className="line-clamp-2 break-keep text-[11px] font-semibold leading-snug text-white">
+      <div className={`pointer-events-none ${large ? 'space-y-1 p-2.5' : 'space-y-0.5 p-2'}`}>
+        <p
+          className={`line-clamp-2 break-keep font-semibold leading-snug text-white ${
+            large ? 'text-[13px]' : 'text-[11px]'
+          }`}
+        >
           {item.itemName}
         </p>
         <div className="flex min-w-0 items-center justify-between gap-1">
           {item.reviewScore ? (
-            <span className="text-[10px] tabular-nums text-amber-100/80">★ {item.reviewScore}</span>
+            <span
+              className={`tabular-nums text-amber-100/80 ${large ? 'text-xs' : 'text-[10px]'}`}
+            >
+              ★ {item.reviewScore}
+            </span>
           ) : (
             <span />
           )}
           {price ? (
-            <span className="truncate text-[10px] font-bold tabular-nums text-white/90">{price}</span>
+            <span
+              className={`truncate font-bold tabular-nums text-white/90 ${
+                large ? 'text-xs' : 'text-[10px]'
+              }`}
+            >
+              {price}
+            </span>
           ) : dateFlexible ? (
-            <span className="truncate text-[10px] font-semibold text-amber-100/70">
+            <span
+              className={`truncate font-semibold text-amber-100/70 ${
+                large ? 'text-xs' : 'text-[10px]'
+              }`}
+            >
               일정 조정 후 예약
             </span>
           ) : null}
@@ -581,6 +606,7 @@ function StayCardsGrid({
   sortMode = 'recommended',
   imageClassName,
   cardClassName = 'w-auto min-w-0',
+  cardSize = 'md',
 }) {
   const priced = [];
   const flexible = [];
@@ -603,6 +629,7 @@ function StayCardsGrid({
       dateFlexible={dateFlexible}
       className={cardClassName}
       imageClassName={imageClassName}
+      size={cardSize}
     />
   );
 
@@ -831,13 +858,6 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const emptyMessage =
     '이 여행지 숙소를 찾지 못했어요. 날짜·인원을 바꿔 보세요.';
 
-  const statusLine =
-    status === 'loading' ? (
-      <p className="px-0.5 text-[11px] text-white/45">숙소를 불러오는 중…</p>
-    ) : status === 'empty' || status === 'error' ? (
-      <p className="break-keep px-0.5 text-[11px] text-white/45">{emptyMessage}</p>
-    ) : null;
-
   /** PC 포털 전용 그리드 — 모바일은 전체화면만 사용 */
   const desktopList =
     isLg && status === 'ready' && items?.length ? (
@@ -847,7 +867,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           sortMode={sortMode}
           onSortChange={setSortMode}
         />
-        <div className="globe-stay-strip-scroll grid grid-cols-[repeat(auto-fill,minmax(152px,1fr))] gap-2.5">
+        <div className="globe-stay-strip-scroll grid grid-cols-[repeat(auto-fill,minmax(188px,1fr))] gap-3">
           <style>{`
             .globe-stay-strip-scroll {
               scrollbar-width: thin;
@@ -868,6 +888,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           <StayCardsGrid
             items={items}
             sortMode={sortMode}
+            cardSize="lg"
+            imageClassName="h-[120px]"
           />
         </div>
       </>
@@ -875,8 +897,24 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
 
   const desktopPanelBody = (
     <>
-      <div className="mb-2">{renderDateBar({ showClose: true })}</div>
-      {statusLine}
+      <div className="mb-2 shrink-0">{renderDateBar({ showClose: true })}</div>
+      {status === 'loading' ? (
+        <div
+          className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 px-4 py-10"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <Loader2 size={28} className="animate-spin text-amber-200/90" aria-hidden="true" />
+          <p className="text-sm font-medium text-white/70">숙소를 불러오는 중…</p>
+          <p className="text-xs text-white/40">잠시만 기다려 주세요</p>
+        </div>
+      ) : null}
+      {status === 'empty' || status === 'error' ? (
+        <div className="flex min-h-0 flex-1 items-center justify-center px-4 py-10">
+          <p className="break-keep text-center text-sm text-white/50">{emptyMessage}</p>
+        </div>
+      ) : null}
       {desktopList}
     </>
   );
@@ -926,7 +964,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             aria-label="숙소 목록"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="fixed z-[61] left-4 top-[5.25rem] bottom-6 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] overflow-y-auto rounded-3xl border border-white/10 bg-black/80 p-3 shadow-2xl backdrop-blur-xl"
+            className="fixed z-[61] left-4 top-[5.25rem] bottom-6 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-y-auto rounded-3xl border border-white/10 bg-black/80 p-3 shadow-2xl backdrop-blur-xl"
           >
             {desktopPanelBody}
           </div>,
