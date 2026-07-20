@@ -73,7 +73,7 @@
 
 ## Explore 최근 기록 — AI 없이 직연결
 
-**상태**: ✅ 사용자 QA 통과 · 커밋 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋 `28688a8`
 
 - **증상**: 최근 방문지·키워드 매칭 여행지 클릭이 `handleSearchSubmit`→AI로 재진입. 미등록 uiPlace는 이름만 저장돼 검색창만 채워짐.
 - **조치**: [`exploreRecentHistory.js`](../src/pages/Home/lib/exploreRecentHistory.js) — compact `{name,slug,lat,lng…}` 저장 · 카탈로그→`/place/` · uiPlace→지구본 홈(`handleLocationSelect`+`fromSearch`) · 키워드(보라)는 입력만 · 목록별 「전체 삭제」.
