@@ -1218,7 +1218,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const map = mapRef.current?.getMap();
       const center = map?.getCenter?.();
       if (center) {
-        loadReachBoundaries(center.lng, center.lat);
+        // Keep final orbit pitch/bearing — do not ease to top-down for reach overlays.
+        loadReachBoundaries(center.lng, center.lat, { easeCamera: false });
       }
       const pendingPivot = pendingTourPivotRef.current;
       if (pendingPivot) {

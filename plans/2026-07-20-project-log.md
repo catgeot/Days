@@ -132,3 +132,11 @@
 ### 다음 세션 (선택)
 
 빈 결과 CTA 보강 · 그리드/이미지 밀도 · PC 패널 inset · 배포 후 지속 QA.
+
+## 지구본 3D 투어 — 종료 시 top-down 카메라 전환 제거
+
+**상태**: ✅ 사용자 QA 통과 · 커밋
+
+- **증상**: 3D 투어 마지막에 카메라가 위에서 내려다보는 각도로 바뀜.
+- **원인**: `TOUR_READY` 진입 시 `loadReachBoundaries` → `easeCameraForReachReveal`(pitch↓).
+- **조치**: 투어 종료 reach 로드에 `{ easeCamera: false }` — 마지막 오빗 pitch/bearing 유지.
