@@ -100,20 +100,41 @@ export function mountainOrbit(center, opts = {}) {
   });
 }
 
-/** 5-stage aerial cinematic — overview → approach → orbit → landing (island SSOT pattern). */
-const ISLAND_CINEMATIC_SCALE = {
-  small: { overviewZoom: 11.0, approachZoom: 12.0, orbit1: 12.5, orbit2: 12.8, landingZoom: 13.5 },
-  medium: { overviewZoom: 10.0, approachZoom: 11.0, orbit1: 11.5, orbit2: 11.8, landingZoom: 13.0 },
-  large: { overviewZoom: 9.0, approachZoom: 10.0, orbit1: 10.5, orbit2: 11.0, landingZoom: 12.5 }
+/** 5-stage aerial cinematic — overview → approach → orbit → landing. */
+const REGION_CINEMATIC_PROFILES = {
+  island: {
+    small: { overviewZoom: 11.0, approachZoom: 12.0, orbit1: 12.5, orbit2: 12.8, landingZoom: 13.5, landingPitch: 55 },
+    medium: { overviewZoom: 10.0, approachZoom: 11.0, orbit1: 11.5, orbit2: 11.8, landingZoom: 13.0, landingPitch: 55 },
+    large: { overviewZoom: 9.0, approachZoom: 10.0, orbit1: 10.5, orbit2: 11.0, landingZoom: 12.5, landingPitch: 55 }
+  },
+  urban: {
+    small: { overviewZoom: 12.2, approachZoom: 13.0, orbit1: 13.4, orbit2: 13.7, landingZoom: 14.2, landingPitch: 52 },
+    medium: { overviewZoom: 11.4, approachZoom: 12.2, orbit1: 12.7, orbit2: 13.0, landingZoom: 13.8, landingPitch: 52 },
+    large: { overviewZoom: 10.6, approachZoom: 11.4, orbit1: 12.0, orbit2: 12.4, landingZoom: 13.2, landingPitch: 50 }
+  },
+  nature: {
+    small: { overviewZoom: 11.2, approachZoom: 12.0, orbit1: 12.4, orbit2: 12.7, landingZoom: 13.4, landingPitch: 56 },
+    medium: { overviewZoom: 10.2, approachZoom: 11.0, orbit1: 11.5, orbit2: 11.9, landingZoom: 12.8, landingPitch: 56 },
+    large: { overviewZoom: 9.2, approachZoom: 10.0, orbit1: 10.6, orbit2: 11.0, landingZoom: 12.2, landingPitch: 58 }
+  }
 };
 
+const ISLAND_CINEMATIC_SCALE = REGION_CINEMATIC_PROFILES.island;
+
+function resolveRegionScale(profileName, scale) {
+  const family = REGION_CINEMATIC_PROFILES[profileName] || REGION_CINEMATIC_PROFILES.nature;
+  return family[scale || 'medium'] || family.medium;
+}
+
 /**
- * Standard island 3D tour — top-down overview, locked-center approach/orbit, beach/POI landing.
- * @param {[number, number]} overviewCenter — wide island overview (frames 1–4)
- * @param {[number, number]} landingCenter — final approach POI (frame 5)
+ * Region 3D tour — wide overview orbit, then settle on landing POI.
+ * @param {[number, number]} overviewCenter
+ * @param {[number, number]} landingCenter
+ * @param {{ profile?: 'island'|'urban'|'nature', scale?: string, startBearing?: number }} [opts]
  */
-export function buildIslandCinematicKeyframes(overviewCenter, landingCenter, opts = {}) {
-  const profile = ISLAND_CINEMATIC_SCALE[opts.scale || 'medium'] || ISLAND_CINEMATIC_SCALE.medium;
+export function buildRegionCinematicKeyframes(overviewCenter, landingCenter, opts = {}) {
+  const profileName = opts.profile || 'island';
+  const zoomProfile = resolveRegionScale(profileName, opts.scale);
   const startBearing = opts.startBearing ?? -40;
   const overview = overviewCenter;
   const landing = landingCenter || overviewCenter;
@@ -121,14 +142,14 @@ export function buildIslandCinematicKeyframes(overviewCenter, landingCenter, opt
   return [
     {
       center: [...overview],
-      zoom: profile.overviewZoom,
+      zoom: zoomProfile.overviewZoom,
       pitch: 10,
       bearing: startBearing,
       duration: 0
     },
     {
       center: [...overview],
-      zoom: profile.approachZoom,
+      zoom: zoomProfile.approachZoom,
       pitch: 40,
       bearing: startBearing + 30,
       duration: 3500,
@@ -136,7 +157,7 @@ export function buildIslandCinematicKeyframes(overviewCenter, landingCenter, opt
     },
     {
       center: [...overview],
-      zoom: profile.orbit1,
+      zoom: zoomProfile.orbit1,
       pitch: 48,
       bearing: startBearing + 70,
       duration: 4500,
@@ -145,7 +166,7 @@ export function buildIslandCinematicKeyframes(overviewCenter, landingCenter, opt
     },
     {
       center: [...overview],
-      zoom: profile.orbit2,
+      zoom: zoomProfile.orbit2,
       pitch: 52,
       bearing: startBearing + 115,
       duration: 4500,
@@ -154,14 +175,26 @@ export function buildIslandCinematicKeyframes(overviewCenter, landingCenter, opt
     },
     {
       center: [...landing],
-      zoom: profile.landingZoom,
-      pitch: 55,
+      zoom: zoomProfile.landingZoom,
+      pitch: zoomProfile.landingPitch,
       bearing: startBearing + 160,
       duration: 5000,
       ease: true,
       orbit: true
     }
   ];
+}
+
+/**
+ * Standard island 3D tour — top-down overview, locked-center approach/orbit, beach/POI landing.
+ * @param {[number, number]} overviewCenter — wide island overview (frames 1–4)
+ * @param {[number, number]} landingCenter — final approach POI (frame 5)
+ */
+export function buildIslandCinematicKeyframes(overviewCenter, landingCenter, opts = {}) {
+  return buildRegionCinematicKeyframes(overviewCenter, landingCenter, {
+    ...opts,
+    profile: 'island'
+  });
 }
 
 /**
@@ -209,7 +242,17 @@ export const TOUR_TEMPLATE_BY_NAME = {
   coastalOrbit,
   islandReveal,
   islandCinematic: (center, opts = {}) =>
-    buildIslandCinematicKeyframes(center, opts.approachPoint || center, opts),
+    buildIslandCinematicKeyframes(
+      opts.overviewCenter || center,
+      opts.approachPoint || center,
+      opts
+    ),
+  regionCinematic: (center, opts = {}) =>
+    buildRegionCinematicKeyframes(
+      opts.overviewCenter || center,
+      opts.approachPoint || center,
+      opts
+    ),
   aerialApproach,
   // legacy aliases
   coastalSweep: coastalOrbit,

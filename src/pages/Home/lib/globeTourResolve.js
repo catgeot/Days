@@ -2,13 +2,13 @@ import globeLandmarks from '../data/globeLandmarks.json';
 import travelSpotAirports from '../data/travelSpotAirports.json';
 import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 
-/** Category → default orbit when slug has no globeLandmarks entry (nature-first). */
+/** Category → default orbit when slug has no globeLandmarks entry. */
 export const CATEGORY_TOUR_TEMPLATE = {
   paradise: 'coastalOrbit',
-  nature: 'mountainOrbit',
-  adventure: 'mountainOrbit',
-  urban: 'cityOrbit',
-  culture: 'cityOrbit'
+  nature: 'regionCinematic',
+  adventure: 'regionCinematic',
+  urban: 'regionCinematic',
+  culture: 'regionCinematic'
 };
 
 const ALPINE_SLUG_HINTS = new Set([
@@ -66,7 +66,15 @@ export const ISLAND_TOUR_SLUGS = new Set([
   'el-nido',
   'honolulu',
   'kiribati',
-  'cape-verde'
+  'cape-verde',
+  'bermuda',
+  'azores',
+  'corsica',
+  'miyakojima',
+  'ishigaki',
+  'bahamas',
+  'guam',
+  'fernando-de-noronha'
 ]);
 
 const ISLAND_KEYWORD_HINTS =
@@ -79,7 +87,7 @@ function hubForTravelSlug(slug) {
   return RENTAL_AIRPORT_HUBS.find((h) => h.iata === iata) || null;
 }
 
-/** Inject CCK 등 공항 좌표를 final approach touchdown으로 (orbit.approachPoint 우선). */
+/** Inject airport coords as final approach only (never overview). approachPoint wins. */
 function enrichIslandOrbit(slug, orbit = {}) {
   if (orbit.approachPoint) return orbit;
   const hub = slug ? hubForTravelSlug(slug) : null;
@@ -88,6 +96,42 @@ function enrichIslandOrbit(slug, orbit = {}) {
     ...orbit,
     approachPoint: [hub.lng, hub.lat]
   };
+}
+
+function regionOrbitForFallback(center, profile) {
+  return {
+    profile,
+    overviewCenter: center,
+    approachPoint: center,
+    scale: profile === 'urban' ? 'medium' : 'medium'
+  };
+}
+
+function resolveLandmarkOrbit(key, landmark, template) {
+  const base = landmark.orbit || {};
+  const center = landmark.center;
+  let orbit = { ...base };
+
+  if (
+    template === 'islandReveal' ||
+    template === 'islandCinematic' ||
+    template === 'regionCinematic'
+  ) {
+    if (!orbit.overviewCenter && center) {
+      orbit = { ...orbit, overviewCenter: center };
+    }
+    if (template === 'islandReveal' || template === 'islandCinematic') {
+      orbit = enrichIslandOrbit(key, orbit);
+    }
+    if (template === 'regionCinematic' && !orbit.profile) {
+      orbit = { ...orbit, profile: 'nature' };
+    }
+    if (!orbit.approachPoint && center) {
+      orbit = { ...orbit, approachPoint: center };
+    }
+  }
+
+  return orbit;
 }
 
 /**
@@ -111,11 +155,16 @@ export function resolveGlobeTourConfig({ slug, lat, lng, location } = {}) {
   ];
 
   if (landmark) {
-    const template = landmark.template || 'mountainOrbit';
-    const orbit =
-      template === 'islandReveal' || template === 'islandCinematic'
-        ? enrichIslandOrbit(key, landmark.orbit || {})
-        : landmark.orbit || {};
+    let template = landmark.template || 'mountainOrbit';
+    if (
+      !landmark.keyframes?.length &&
+      !landmark.template &&
+      landmark.orbit?.overviewCenter
+    ) {
+      template = 'regionCinematic';
+    }
+
+    const orbit = resolveLandmarkOrbit(key, landmark, template);
     return {
       center: landmark.center || fallbackCenter,
       template,
@@ -132,7 +181,7 @@ export function resolveGlobeTourConfig({ slug, lat, lng, location } = {}) {
     (Array.isArray(location?.categories) ? location.categories[0] : null) ||
     'nature';
 
-  let template = CATEGORY_TOUR_TEMPLATE[category] || 'mountainOrbit';
+  let template = CATEGORY_TOUR_TEMPLATE[category] || 'regionCinematic';
   const slugHint = key || String(location?.slug || '').toLowerCase();
   const keywordBlob = [
     ...(location?.keywords || []),
@@ -150,13 +199,22 @@ export function resolveGlobeTourConfig({ slug, lat, lng, location } = {}) {
     (ISLAND_TOUR_SLUGS.has(slugHint) || ISLAND_KEYWORD_HINTS.test(keywordBlob))
   ) {
     template = 'islandCinematic';
+  } else if (category === 'paradise') {
+    template = 'regionCinematic';
   }
 
   const isUrbanLike = category === 'urban' || category === 'culture';
-  const orbit =
-    template === 'islandCinematic' || template === 'islandReveal'
-      ? enrichIslandOrbit(slugHint, {})
-      : {};
+  let orbit = {};
+
+  if (template === 'islandCinematic' || template === 'islandReveal') {
+    orbit = enrichIslandOrbit(slugHint, {
+      overviewCenter: fallbackCenter,
+      profile: 'island'
+    });
+  } else if (template === 'regionCinematic') {
+    const profile = isUrbanLike ? 'urban' : 'nature';
+    orbit = regionOrbitForFallback(fallbackCenter, profile);
+  }
 
   return {
     center: fallbackCenter,

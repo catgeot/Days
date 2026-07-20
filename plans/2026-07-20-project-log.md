@@ -135,8 +135,20 @@
 
 ## 지구본 3D 투어 — 종료 시 top-down 카메라 전환 제거
 
-**상태**: ✅ 사용자 QA 통과 · 커밋
+**상태**: ✅ 사용자 QA 통과 · 커밋 `b1c2b54` · 후속 소프트 랜딩 적용
 
 - **증상**: 3D 투어 마지막에 카메라가 위에서 내려다보는 각도로 바뀜.
 - **원인**: `TOUR_READY` 진입 시 `loadReachBoundaries` → `easeCameraForReachReveal`(pitch↓).
-- **조치**: 투어 종료 reach 로드에 `{ easeCamera: false }` — 마지막 오빗 pitch/bearing 유지.
+- **조치(1차)**: `{ easeCamera: false }` — 밋밋함.
+- **조치(2차)**: `easeCameraForReachReveal` → pitch **52** / zoom `-0.35` 소프트 랜딩 (bearing 유지).
+
+## 지구본 3D 투어 — 몰입감(진단 + 2단 시네마틱 + 큐레이션)
+
+**상태**: ✅ 일부 QA · 커밋·푸시
+
+- **진단**: `node scripts/scan-tour-quality.mjs` — 폴백·pin–hub·우선순위 큐 (landmarks 88→108, paradise 폴백 10→1).
+- **템플릿**: `buildRegionCinematicKeyframes` (`urban`/`nature`/`island`) · 폴백 urban·nature·adventure·paradise(비해상) → `regionCinematic` wide→tight.
+- **정책**: 공항은 landing만 · overview 금지 · 투어 center는 `globeLandmarks` SSOT.
+- **큐레이션 20**: bermuda·azores·corsica·miyakojima·ishigaki·bahamas·guam·fernando-de-noronha·similan·faroe·christmas·falkland · amazon·serengeti·wadi-rum·borneo·denali · la-spezia·bodrum·petra.
+- **소프트 랜딩**: 투어 종료 pitch **52** (top-down 36 제거).
+- **버뮤다 수정**: landing 해상 오류 → Horseshoe Bay 육지.

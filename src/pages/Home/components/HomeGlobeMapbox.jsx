@@ -1218,8 +1218,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const map = mapRef.current?.getMap();
       const center = map?.getCenter?.();
       if (center) {
-        // Keep final orbit pitch/bearing — do not ease to top-down for reach overlays.
-        loadReachBoundaries(center.lng, center.lat, { easeCamera: false });
+        // Soft landing to explore pitch (~52); keeps 3D feel vs old top-down.
+        loadReachBoundaries(center.lng, center.lat, { easeCamera: true });
       }
       const pendingPivot = pendingTourPivotRef.current;
       if (pendingPivot) {

@@ -287,17 +287,19 @@ export function setupReachBoundaryLayers(map) {
   }
 }
 
-/** High-pitch tour ends looking at the horizon — ease down so ground overlays read clearly. */
+/** Soft landing after tour — settle to oblique explore pitch (not top-down). Bearing unchanged. */
+const TOUR_SETTLE_PITCH = 52;
+
 export function easeCameraForReachReveal(map) {
   if (!map?.easeTo) return;
   const pitch = map.getPitch?.() ?? 0;
   const zoom = map.getZoom?.() ?? 12;
-  if (pitch < 42) return;
+  if (pitch <= TOUR_SETTLE_PITCH) return;
 
   map.easeTo({
-    pitch: 36,
-    zoom: Math.max(zoom - 0.8, 10.5),
-    duration: 1600,
+    pitch: TOUR_SETTLE_PITCH,
+    zoom: Math.max(zoom - 0.35, 11.0),
+    duration: 1200,
     essential: true
   });
 }
