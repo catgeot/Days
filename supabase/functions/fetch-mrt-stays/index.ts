@@ -7,6 +7,10 @@ const corsHeaders = {
 
 const MRT_BASE = "https://partner-ext-api.myrealtrip.com";
 
+/** Warm-instance TTL — 콜드스타트 시 비움 */
+const REGION_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+const SEARCH_CACHE_TTL_MS = 10 * 60 * 1000;
+
 type Region = {
   regionId: number;
   name?: string;
@@ -26,6 +30,41 @@ type StayItem = {
   imageUrl: string | null;
   productUrl: string;
 };
+
+type CacheEntry<T> = { expires: number; value: T };
+
+const regionListCache = new Map<string, CacheEntry<Region[]>>();
+const searchCache = new Map<string, CacheEntry<{ items: StayItem[]; totalCount: number }>>();
+const inflight = new Map<string, Promise<unknown>>();
+
+function getCached<T>(map: Map<string, CacheEntry<T>>, key: string): T | undefined {
+  const e = map.get(key);
+  if (!e) return undefined;
+  if (Date.now() > e.expires) {
+    map.delete(key);
+    return undefined;
+  }
+  return e.value;
+}
+
+function setCached<T>(map: Map<string, CacheEntry<T>>, key: string, value: T, ttlMs: number) {
+  map.set(key, { expires: Date.now() + ttlMs, value });
+}
+
+async function withDedupe<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const existing = inflight.get(key);
+  if (existing) return existing as Promise<T>;
+  const p = fn().finally(() => {
+    inflight.delete(key);
+  });
+  inflight.set(key, p);
+  return p;
+}
+
+function hasPricedStay(it: { salePrice?: unknown }) {
+  const n = Number(it?.salePrice);
+  return Number.isFinite(n) && n > 0;
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -203,6 +242,33 @@ async function mrtPost(path: string, apiKey: string, body: Record<string, unknow
   return { status: res.status, data };
 }
 
+async function fetchRegionList(
+  apiKey: string,
+  isDomestic: boolean,
+  keyword: string,
+): Promise<Region[]> {
+  const cacheKey = `ac:${isDomestic ? "d" : "i"}:${norm(keyword)}`;
+  const hit = getCached(regionListCache, cacheKey);
+  if (hit) return hit;
+
+  return withDedupe(cacheKey, async () => {
+    const cached = getCached(regionListCache, cacheKey);
+    if (cached) return cached;
+
+    const ac = await mrtPost("/v1/products/accommodation/region-autocomplete", apiKey, {
+      keyword,
+      isDomestic,
+    });
+    const acResult = ac.data?.result || {};
+    if (ac.status !== 200 || acResult.status !== 200) {
+      return [];
+    }
+    const regions = (ac.data?.data?.regions || []) as Region[];
+    setCached(regionListCache, cacheKey, regions, REGION_CACHE_TTL_MS);
+    return regions;
+  });
+}
+
 async function resolveRegion(
   apiKey: string,
   isDomestic: boolean,
@@ -211,20 +277,92 @@ async function resolveRegion(
   cityHints: string[],
 ): Promise<{ region: Region | null; usedKeyword: string | null }> {
   for (const kw of keywords) {
-    const ac = await mrtPost("/v1/products/accommodation/region-autocomplete", apiKey, {
-      keyword: kw,
-      isDomestic,
-    });
-    const acResult = ac.data?.result || {};
-    if (ac.status !== 200 || acResult.status !== 200) continue;
-
-    const regions = (ac.data?.data?.regions || []) as Region[];
+    const regions = await fetchRegionList(apiKey, isDomestic, kw);
+    if (!regions.length) continue;
     const region = pickRegion(regions, kw, countryHints, cityHints, isDomestic);
     if (region?.regionId) {
       return { region, usedKeyword: kw };
     }
   }
   return { region: null, usedKeyword: null };
+}
+
+async function searchStays(
+  apiKey: string,
+  params: {
+    regionId: number;
+    checkIn: string;
+    checkOut: string;
+    adultCount: number;
+    childCount: number;
+    page: number;
+    size: number;
+  },
+): Promise<{ ok: true; items: StayItem[]; totalCount: number } | { ok: false; detail: string }> {
+  const {
+    regionId,
+    checkIn,
+    checkOut,
+    adultCount,
+    childCount,
+    page,
+    size,
+  } = params;
+  const cacheKey =
+    `search:${regionId}|${checkIn}|${checkOut}|${adultCount}|${childCount}|${size}|${page}`;
+  const hit = getCached(searchCache, cacheKey);
+  if (hit) return { ok: true, ...hit };
+
+  return withDedupe(cacheKey, async () => {
+    const cached = getCached(searchCache, cacheKey);
+    if (cached) return { ok: true, ...cached };
+
+    const search = await mrtPost("/v1/products/accommodation/search", apiKey, {
+      regionId,
+      checkIn,
+      checkOut,
+      adultCount,
+      childCount,
+      page,
+      size,
+    });
+    const searchResult = search.data?.result || {};
+    if (search.status !== 200 || searchResult.status !== 200) {
+      return {
+        ok: false as const,
+        detail: searchResult.message || `HTTP ${search.status}`,
+      };
+    }
+
+    const rawItems = (search.data?.data?.items || []) as Array<Record<string, unknown>>;
+    // 가격 있는(해당 일정 예약 가능) 숙소 우선 · 가격 없는 숙소도 유지
+    // (오지·박재고 지역에서 「취급 없음」 오해 방지 — 일정 조정 후 예약 유도)
+    const mapped: StayItem[] = rawItems
+      .filter((it) => it?.itemId != null && it?.productUrl)
+      .map((it) => ({
+        itemId: Number(it.itemId),
+        itemName: String(it.itemName || ""),
+        salePrice: hasPricedStay(it) ? Number(it.salePrice) : null,
+        originalPrice: it.originalPrice != null ? Number(it.originalPrice) : null,
+        starRating: it.starRating != null ? Number(it.starRating) : null,
+        reviewScore: it.reviewScore != null ? String(it.reviewScore) : null,
+        reviewCount: it.reviewCount != null ? Number(it.reviewCount) : null,
+        imageUrl: it.imageUrl ? String(it.imageUrl) : null,
+        productUrl: String(it.productUrl),
+      }));
+    const items = mapped.sort((a, b) => {
+      const ap = a.salePrice != null && a.salePrice > 0 ? 1 : 0;
+      const bp = b.salePrice != null && b.salePrice > 0 ? 1 : 0;
+      return bp - ap;
+    });
+
+    const payload = {
+      items,
+      totalCount: Number(search.data?.data?.totalCount ?? items.length),
+    };
+    setCached(searchCache, cacheKey, payload, SEARCH_CACHE_TTL_MS);
+    return { ok: true as const, ...payload };
+  });
 }
 
 serve(async (req) => {
@@ -299,7 +437,7 @@ serve(async (req) => {
       });
     }
 
-    const search = await mrtPost("/v1/products/accommodation/search", apiKey, {
+    const search = await searchStays(apiKey, {
       regionId: region.regionId,
       checkIn,
       checkOut,
@@ -308,12 +446,12 @@ serve(async (req) => {
       page,
       size,
     });
-    const searchResult = search.data?.result || {};
-    if (search.status !== 200 || searchResult.status !== 200) {
+
+    if (!search.ok) {
       return jsonResponse({
         ok: false,
         error: "accommodation/search failed",
-        detail: searchResult.message || `HTTP ${search.status}`,
+        detail: search.detail,
         region: {
           regionId: region.regionId,
           name: region.name ?? null,
@@ -323,21 +461,6 @@ serve(async (req) => {
       }, 502);
     }
 
-    const rawItems = (search.data?.data?.items || []) as Array<Record<string, unknown>>;
-    const items: StayItem[] = rawItems
-      .filter((it) => it?.itemId != null && it?.productUrl)
-      .map((it) => ({
-        itemId: Number(it.itemId),
-        itemName: String(it.itemName || ""),
-        salePrice: it.salePrice != null ? Number(it.salePrice) : null,
-        originalPrice: it.originalPrice != null ? Number(it.originalPrice) : null,
-        starRating: it.starRating != null ? Number(it.starRating) : null,
-        reviewScore: it.reviewScore != null ? String(it.reviewScore) : null,
-        reviewCount: it.reviewCount != null ? Number(it.reviewCount) : null,
-        imageUrl: it.imageUrl ? String(it.imageUrl) : null,
-        productUrl: String(it.productUrl),
-      }));
-
     return jsonResponse({
       ok: true,
       region: {
@@ -346,10 +469,12 @@ serve(async (req) => {
         subName: region.subName ?? null,
         type: region.type ?? null,
       },
-      items,
+      items: search.items,
       checkIn,
       checkOut,
-      totalCount: Number(search.data?.data?.totalCount ?? items.length),
+      adultCount,
+      childCount,
+      totalCount: search.totalCount,
       usedKeyword,
     });
   } catch (err) {

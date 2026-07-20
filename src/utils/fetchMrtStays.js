@@ -5,9 +5,33 @@
 import { supabase } from '../shared/api/supabase';
 import { isPlaceholderCountry } from './travelSpotResolve';
 
-const CACHE_PREFIX = 'gateo:mrt-stays:v6:';
+const CACHE_PREFIX = 'gateo:mrt-stays:v8:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
+const MAX_ADULTS = 8;
+const MAX_CHILDREN = 8;
+
+export function normalizeMrtGuestCounts(adultCount, childCount) {
+  const adults = Math.max(1, Math.min(MAX_ADULTS, Number(adultCount) || 2));
+  const children = Math.max(0, Math.min(MAX_CHILDREN, Number(childCount) || 0));
+  return { adultCount: adults, childCount: children };
+}
+
+/** 해당 일정에 요금이 있어 바로 예약 후보인 숙소 */
+export function isMrtStayPriced(item) {
+  const n = Number(item?.salePrice);
+  return Number.isFinite(n) && n > 0;
+}
+
+/** 가격 있는 숙소 먼저 · 일정 미가용(가격 없음)은 뒤에 */
+export function sortMrtStaysPricedFirst(items) {
+  const list = Array.isArray(items) ? items.slice() : [];
+  return list.sort((a, b) => {
+    const ap = isMrtStayPriced(a) ? 1 : 0;
+    const bp = isMrtStayPriced(b) ? 1 : 0;
+    return bp - ap;
+  });
+}
 
 function ymdLocal(d) {
   const y = d.getFullYear();
@@ -247,7 +271,17 @@ export function canShowMrtStayStrip(location, opts = {}) {
   return Boolean(query.keyword);
 }
 
-function cacheKey(keyword, isDomestic, countryHint, countryHintAlts, cityHints, checkIn, checkOut) {
+function cacheKey(
+  keyword,
+  isDomestic,
+  countryHint,
+  countryHintAlts,
+  cityHints,
+  checkIn,
+  checkOut,
+  adultCount,
+  childCount,
+) {
   const cityKey = Array.isArray(cityHints) && cityHints.length
     ? cityHints.join(',')
     : '-';
@@ -255,7 +289,7 @@ function cacheKey(keyword, isDomestic, countryHint, countryHintAlts, cityHints, 
     .map((c) => String(c || '').trim())
     .filter(Boolean)
     .join('|') || '-';
-  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:${keyword}`;
+  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${keyword}`;
 }
 
 function readCache(key) {
@@ -284,7 +318,7 @@ function writeCache(key, payload) {
 }
 
 /**
- * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, countryHintAlts?: string[], nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, size?: number }} params
+ * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, countryHintAlts?: string[], nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, size?: number }} params
  */
 export async function fetchMrtStays(params) {
   const keyword = String(params?.keyword || '').trim();
@@ -301,9 +335,23 @@ export async function fetchMrtStays(params) {
     ? params.cityHints.map((k) => String(k || '').trim()).filter(Boolean).slice(0, 8)
     : [];
   const { checkIn, checkOut } = normalizeMrtStayDates(params?.checkIn, params?.checkOut);
+  const { adultCount, childCount } = normalizeMrtGuestCounts(
+    params?.adultCount,
+    params?.childCount,
+  );
   const size = Math.max(1, Math.min(20, Number(params?.size) || 20));
   const ladderKey = [keyword, ...altKeywords].join('|');
-  const key = cacheKey(ladderKey, isDomestic, countryHint, countryHintAlts, cityHints, checkIn, checkOut);
+  const key = cacheKey(
+    ladderKey,
+    isDomestic,
+    countryHint,
+    countryHintAlts,
+    cityHints,
+    checkIn,
+    checkOut,
+    adultCount,
+    childCount,
+  );
 
   const hit = readCache(key);
   if (hit) return hit;
@@ -316,6 +364,8 @@ export async function fetchMrtStays(params) {
         size,
         checkIn,
         checkOut,
+        adultCount,
+        childCount,
         ...(countryHint ? { countryHint } : {}),
         ...(countryHintAlts.length ? { countryHintAlts } : {}),
         ...(nameEn ? { nameEn } : {}),
@@ -328,13 +378,16 @@ export async function fetchMrtStays(params) {
       return null;
     }
 
+    const items = sortMrtStaysPricedFirst(Array.isArray(data.items) ? data.items : []);
     const payload = {
       ok: true,
       region: data.region ?? null,
-      items: Array.isArray(data.items) ? data.items : [],
+      items,
       checkIn: data.checkIn,
       checkOut: data.checkOut,
-      totalCount: data.totalCount ?? 0,
+      adultCount: data.adultCount ?? adultCount,
+      childCount: data.childCount ?? childCount,
+      totalCount: data.totalCount ?? items.length,
       usedKeyword: data.usedKeyword ?? keyword,
     };
 
@@ -351,9 +404,9 @@ export async function fetchMrtStays(params) {
 /**
  * 홈 Summary 숙소 — SSOT slug + uiPlace. 실패·빈 결과는 호출측에서 empty 처리.
  * @param {object} location
- * @param {{ checkIn?: string, checkOut?: string }} [dates]
+ * @param {{ checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number }} [opts]
  */
-export async function fetchMrtStaysForLocation(location, dates = {}) {
+export async function fetchMrtStaysForLocation(location, opts = {}) {
   if (!location || location.isScanning) return null;
   if (!canShowMrtStayStrip(location)) return null;
 
@@ -361,12 +414,14 @@ export async function fetchMrtStaysForLocation(location, dates = {}) {
   if (!query.keyword) return null;
 
   const isDomestic = isMrtDomesticLocation(location);
-  const normalized = normalizeMrtStayDates(dates.checkIn, dates.checkOut);
+  const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
+  const guests = normalizeMrtGuestCounts(opts.adultCount, opts.childCount);
   return fetchMrtStays({
     ...query,
     countryHint: normalizeMrtCountryHint(query.countryHint || location?.country, isDomestic),
     isDomestic,
     ...normalized,
+    ...guests,
     size: 20,
   });
 }

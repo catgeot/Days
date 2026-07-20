@@ -99,28 +99,36 @@
 - **건수**: `size: 20`(MRT API·Edge 상한) · 클라 캐시 `v6`(12건 캐시 무효화). Edge 재배포 불필요(이미 min(20)).
 - **릴리스**: `내 주변·여행지 숙소를 찾고 예약할 수 있어요`.
 
+## MRT 숙소 — 캐시·인원·정렬·가용 우선 목록
+
+**상태**: ✅ 사용자 QA · Edge 재배포 · 커밋·푸시
+
+- **Edge**: region autocomplete **6h** · search **10m** · in-flight dedupe · 가격 있는 숙소 우선·없는 숙소도 유지.
+- **클라**: 캐시 `v8` · 기본 성인 2·아동 0 · 일정·인원 **변경하기** 시에만 재조회.
+- **UI**: 보름/박수 칩 없음 · 인원 스테퍼 축소 · 정렬(추천·가격·평점) · 「일정 조정 시 예약」 섹션.
+- **릴리스**: `2026-07-20-3`.
+
 ## MRT 숙소 세션 — 에이전트 핸드오프
 
-**상태**: ✅ **단일 달력·size 20·릴리스 커밋·푸시** · Edge는 기존 배포로 충분  
-**선행**: 4.1 ✅ · 1차 ✅ · 2차 ✅ · UX/size ✅
+**상태**: ✅ **캐시·변경하기·가용 우선·정렬 · Edge 재배포 · 커밋·푸시**  
+**선행**: 4.1 ✅ · 1차 ✅ · 2차 ✅ · UX/size ✅ · 본 세션 ✅
 
 ### 유지 (현재 기준)
 
-- Summary **「숙소 찾기」** 카드 그리드 · 펼칠 때만 fetch (`v6` 캐시 · `size` 20).
-- **PC**: 숙소 버튼 첫 칸 · 좌측 전폭 포털 · 일정+그리드.
-- **모바일**: 버튼 → **전체화면 모달만**(일정·목록·맨 위) · 스크림·회전 정지·MOONi 숨김 유지.
-- Edge: `countryHint`+`countryHintAlts` · `cityHints` 점수(해외) / 국내 하드거절 · 국내 fineGrain 시·군 우선.
-- 일정: 기본 +14일·2박 · **단일 기간 달력** · 변경 시 재조회.
-- 색: 숙소 amber · 항공 sky · 3D violet.
+- Summary **「숙소 찾기」** · 펼칠 때만 fetch (`v8` · `size` 20).
+- **PC** 좌측 포털 · **모바일** 전체화면 모달.
+- Edge: countryHint(+Alts) · cityHints · **region 6h / search 10m / dedupe** · **가용(가격) 우선 · 비가용도 유지**.
+- 일정·인원: 기본 +14·2박 · 성인 2·아동 0 · 초안 편집 후 **변경하기** 1회 재조회.
+- 목록: 클라이언트 정렬(추천·낮은/높은 가격·평점) · API 재호출 없음.
 
-**파일**: `GlobeStayStrip` · `fetchMrtStays` · `PlaceCardSummary` · `HomePlaceCardSummary` · `fetch-mrt-stays` · `releaseNotes.js`.
+**파일**: `GlobeStayStrip` · `fetchMrtStays` · `fetch-mrt-stays` · `releaseNotes.js`.
 
 ### 금지 3
 
 1. `VITE_` MRT 키 · 브라우저 직호출
-2. TripLink · `mrt-link-generator` 병행
+2. TripLink · `mrt-link-generator` 병행 · 다날짜 자동 가용성 스캔
 3. 호텔 핀/지오코딩 · `travelSpots.js` 전체 스캔 · spots 직접 수정
 
 ### 다음 세션 (선택)
 
-빈 결과 CTA · 그리드/이미지 밀도 · 성인 수 · fetch 타이밍 · PC 패널 inset · 배포 후 지속 QA.
+빈 결과 CTA 보강 · 그리드/이미지 밀도 · PC 패널 inset · 배포 후 지속 QA.

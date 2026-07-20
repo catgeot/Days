@@ -2,19 +2,25 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowUp,
+  ArrowUpDown,
   BedDouble,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Minus,
+  Plus,
+  Users,
   X,
 } from 'lucide-react';
 import {
   canShowMrtStayStrip,
   defaultMrtStayDates,
   fetchMrtStaysForLocation,
+  isMrtStayPriced,
   mrtStayNights,
+  normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
 import { getAddressFromCoordinates } from '../lib/geocoding';
@@ -24,6 +30,33 @@ const LG_MQ = '(min-width: 1024px)';
 /** fetchMrtStays.normalizeMrtStayDates와 동일 상한 */
 const MAX_STAY_NIGHTS = 30;
 const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
+
+const STAY_SORT_OPTIONS = [
+  { id: 'recommended', label: '추천순' },
+  { id: 'price_asc', label: '낮은 가격순' },
+  { id: 'price_desc', label: '높은 가격순' },
+  { id: 'rating_desc', label: '평점 높은순' },
+];
+
+function reviewScoreNum(item) {
+  const n = Number(item?.reviewScore);
+  return Number.isFinite(n) ? n : -1;
+}
+
+/** 이미 받은 목록만 재정렬 — API 재호출 없음 */
+function sortStayGroup(list, sortMode) {
+  const arr = Array.isArray(list) ? list.slice() : [];
+  if (sortMode === 'price_asc') {
+    return arr.sort((a, b) => Number(a.salePrice) - Number(b.salePrice));
+  }
+  if (sortMode === 'price_desc') {
+    return arr.sort((a, b) => Number(b.salePrice) - Number(a.salePrice));
+  }
+  if (sortMode === 'rating_desc') {
+    return arr.sort((a, b) => reviewScoreNum(b) - reviewScoreNum(a));
+  }
+  return arr;
+}
 
 function useIsLg() {
   const [isLg, setIsLg] = useState(() =>
@@ -92,13 +125,14 @@ function buildMonthCells(viewMonth) {
 
 /**
  * 한 달력에서 체크인→체크아웃 기간 선택.
- * 1탭=체크인 · 2탭=체크아웃(자동 적용·닫기) · 최대 30박.
+ * 1탭=체크인 · 2탭=체크아웃(초안만 확정·닫기) · 최대 30박.
+ * 실제 조회는 부모「변경하기」에서만.
  */
 function StayRangeCalendar({
   checkIn,
   checkOut,
   todayYmd,
-  onApply,
+  onPick,
   onCancel,
 }) {
   const [viewMonth, setViewMonth] = useState(() => parseYmd(checkIn) || new Date());
@@ -132,7 +166,7 @@ function StayRangeCalendar({
     }
     if (maxOutYmd && ymd > maxOutYmd) return;
     const next = normalizeMrtStayDates(draftIn, ymd);
-    onApply?.(next.checkIn, next.checkOut);
+    onPick?.(next.checkIn, next.checkOut);
   };
 
   const dayClass = (ymd) => {
@@ -237,28 +271,85 @@ function StayRangeCalendar({
   );
 }
 
-/** 상단 N박 · 하단 일정 한 줄 → 탭 시 단일 기간 달력 */
+function GuestStepper({ label, value, min, max, onChange }) {
+  return (
+    <div className="flex min-w-0 items-center gap-1">
+      <span className="shrink-0 text-[10px] font-semibold text-amber-100/75">{label}</span>
+      <div className="flex items-center rounded-md border border-white/12 bg-black/40">
+        <button
+          type="button"
+          aria-label={`${label} 줄이기`}
+          disabled={value <= min}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (value > min) onChange?.(value - 1);
+          }}
+          className="flex h-6 w-6 items-center justify-center text-amber-100/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
+        >
+          <Minus size={12} aria-hidden="true" />
+        </button>
+        <span className="min-w-[0.95rem] text-center text-[11px] font-bold tabular-nums text-amber-50">
+          {value}
+        </span>
+        <button
+          type="button"
+          aria-label={`${label} 늘리기`}
+          disabled={value >= max}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (value < max) onChange?.(value + 1);
+          }}
+          className="flex h-6 w-6 items-center justify-center text-amber-100/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
+        >
+          <Plus size={12} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 일정·인원 초안 편집 → 「변경하기」한 번에 적용(조회).
+ * 달력 기간 선택·인원 스테퍼는 API를 치지 않음.
+ */
 function StayDateBar({
   checkIn,
   checkOut,
-  nights,
   todayYmd,
-  onChange,
+  adultCount,
+  childCount,
+  onApply,
   showClose = false,
   onClose,
 }) {
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [draftIn, setDraftIn] = useState(checkIn);
+  const [draftOut, setDraftOut] = useState(checkOut);
+  const [draftAdult, setDraftAdult] = useState(adultCount);
+  const [draftChild, setDraftChild] = useState(childCount);
+
+  useEffect(() => {
+    setDraftIn(checkIn);
+    setDraftOut(checkOut);
+    setDraftAdult(adultCount);
+    setDraftChild(childCount);
+  }, [checkIn, checkOut, adultCount, childCount]);
+
+  const draftNights = mrtStayNights(draftIn, draftOut);
+  const dirty =
+    draftIn !== checkIn ||
+    draftOut !== checkOut ||
+    draftAdult !== adultCount ||
+    draftChild !== childCount;
 
   const closeCalendar = useCallback(() => setOpen(false), []);
 
-  const handleApply = useCallback(
-    (nextIn, nextOut) => {
-      onChange?.(nextIn, nextOut);
-      setOpen(false);
-    },
-    [onChange]
-  );
+  const handleCalendarPick = useCallback((nextIn, nextOut) => {
+    setDraftIn(nextIn);
+    setDraftOut(nextOut);
+    setOpen(false);
+  }, []);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -308,19 +399,19 @@ function StayDateBar({
           <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
             <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크인</span>
             <span className="truncate text-sm font-bold tabular-nums text-amber-50">
-              {formatStayDateLabel(checkIn)}
+              {formatStayDateLabel(draftIn)}
             </span>
           </span>
           <span
             className="shrink-0 rounded-md bg-amber-400/20 px-1.5 py-0.5 text-xs font-bold tabular-nums text-amber-100"
-            aria-label={nights > 0 ? `${nights}박` : '일정'}
+            aria-label={draftNights > 0 ? `${draftNights}박` : '일정'}
           >
-            {nights > 0 ? `${nights}박` : '·'}
+            {draftNights > 0 ? `${draftNights}박` : '·'}
           </span>
           <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
             <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크아웃</span>
             <span className="truncate text-sm font-bold tabular-nums text-amber-50">
-              {formatStayDateLabel(checkOut)}
+              {formatStayDateLabel(draftOut)}
             </span>
           </span>
         </button>
@@ -338,13 +429,51 @@ function StayDateBar({
           </button>
         ) : null}
       </div>
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-1.5">
+        <Users size={12} className="shrink-0 text-amber-200/75" aria-hidden="true" />
+        <GuestStepper
+          label="성인"
+          value={draftAdult}
+          min={1}
+          max={8}
+          onChange={setDraftAdult}
+        />
+        <GuestStepper
+          label="아동"
+          value={draftChild}
+          min={0}
+          max={8}
+          onChange={setDraftChild}
+        />
+        <button
+          type="button"
+          disabled={!dirty}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!dirty) return;
+            onApply?.({
+              checkIn: draftIn,
+              checkOut: draftOut,
+              adultCount: draftAdult,
+              childCount: draftChild,
+            });
+          }}
+          className={`ml-auto shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-all active:scale-95 ${
+            dirty
+              ? 'border-amber-300/55 bg-amber-400 text-black hover:bg-amber-300'
+              : 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
+          }`}
+        >
+          변경하기
+        </button>
+      </div>
       {open ? (
         <StayRangeCalendar
-          key={`${checkIn}|${checkOut}|open`}
-          checkIn={checkIn}
-          checkOut={checkOut}
+          key={`${draftIn}|${draftOut}|open`}
+          checkIn={draftIn}
+          checkOut={draftOut}
           todayYmd={todayYmd}
-          onApply={handleApply}
+          onPick={handleCalendarPick}
           onCancel={closeCalendar}
         />
       ) : null}
@@ -352,14 +481,24 @@ function StayDateBar({
   );
 }
 
-function StayCard({ item, price, className = '', imageClassName = 'h-[72px] lg:h-[96px]' }) {
+function StayCard({
+  item,
+  price,
+  dateFlexible = false,
+  className = '',
+  imageClassName = 'h-[72px] lg:h-[96px]',
+}) {
   return (
     <a
       href={item.productUrl}
       target="_blank"
       rel="noopener noreferrer sponsored"
       draggable={false}
-      className={`rounded-2xl border border-amber-400/30 bg-amber-500/10 overflow-hidden hover:border-amber-300/45 hover:bg-amber-500/20 transition-colors ${className}`}
+      className={`rounded-2xl border overflow-hidden transition-colors ${
+        dateFlexible
+          ? 'border-white/15 bg-white/5 hover:border-amber-300/35 hover:bg-amber-500/10 opacity-95'
+          : 'border-amber-400/30 bg-amber-500/10 hover:border-amber-300/45 hover:bg-amber-500/20'
+      } ${className}`}
     >
       <div className={`relative w-full bg-white/5 pointer-events-none ${imageClassName}`}>
         {item.imageUrl ? (
@@ -368,7 +507,7 @@ function StayCard({ item, price, className = '', imageClassName = 'h-[72px] lg:h
             alt=""
             loading="lazy"
             draggable={false}
-            className="h-full w-full object-cover"
+            className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-[10px] text-white/30">
@@ -388,10 +527,99 @@ function StayCard({ item, price, className = '', imageClassName = 'h-[72px] lg:h
           )}
           {price ? (
             <span className="truncate text-[10px] font-bold tabular-nums text-white/90">{price}</span>
+          ) : dateFlexible ? (
+            <span className="truncate text-[10px] font-semibold text-amber-100/70">
+              일정 조정 후 예약
+            </span>
           ) : null}
         </div>
       </div>
     </a>
+  );
+}
+
+function StayListToolbar({
+  count,
+  sortMode,
+  onSortChange,
+}) {
+  return (
+    <div className="mb-1.5 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
+      <p className="min-w-0 break-keep text-xs font-semibold text-amber-100/75">
+        근처 숙소 · MyRealTrip
+        {count ? ` · ${count}곳` : ''}
+      </p>
+      <label className="relative flex shrink-0 items-center">
+        <span className="sr-only">숙소 정렬</span>
+        <ArrowUpDown
+          size={11}
+          className="pointer-events-none absolute left-1.5 text-amber-200/70"
+          aria-hidden="true"
+        />
+        <select
+          value={sortMode}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => {
+            e.stopPropagation();
+            onSortChange?.(e.target.value);
+          }}
+          className="appearance-none rounded-md border border-white/12 bg-black/40 py-1 pl-5 pr-5 text-[10px] font-semibold text-amber-50 outline-none hover:border-amber-300/35 focus:border-amber-300/50"
+        >
+          {STAY_SORT_OPTIONS.map((opt) => (
+            <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+  );
+}
+
+function StayCardsGrid({
+  items,
+  sortMode = 'recommended',
+  imageClassName,
+  cardClassName = 'w-auto min-w-0',
+}) {
+  const priced = [];
+  const flexible = [];
+  for (const item of items || []) {
+    if (isMrtStayPriced(item)) priced.push(item);
+    else flexible.push(item);
+  }
+
+  const pricedSorted = sortStayGroup(priced, sortMode);
+  const flexibleSorted = sortStayGroup(
+    flexible,
+    sortMode === 'price_asc' || sortMode === 'price_desc' ? 'recommended' : sortMode,
+  );
+
+  const renderCard = (item, dateFlexible) => (
+    <StayCard
+      key={item.itemId}
+      item={item}
+      price={formatPrice(item.salePrice)}
+      dateFlexible={dateFlexible}
+      className={cardClassName}
+      imageClassName={imageClassName}
+    />
+  );
+
+  return (
+    <>
+      {pricedSorted.map((item) => renderCard(item, false))}
+      {flexibleSorted.length > 0 ? (
+        <>
+          <p className="col-span-full break-keep px-0.5 pt-1 text-[11px] font-semibold text-amber-100/65">
+            {pricedSorted.length > 0
+              ? '일정 조정 시 예약할 수 있는 숙소'
+              : '이 일정엔 요금이 없어요 · 일정을 바꾸면 예약할 수 있어요'}
+          </p>
+          {flexibleSorted.map((item) => renderCard(item, true))}
+        </>
+      ) : null}
+    </>
   );
 }
 
@@ -442,6 +670,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | loading | ready | empty | error
   const [stayDates, setStayDates] = useState(() => defaultMrtStayDates());
+  const [guests, setGuests] = useState(() => normalizeMrtGuestCounts(2, 0));
+  const [sortMode, setSortMode] = useState('recommended');
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const fetchedKeyRef = useRef('');
   const mobileListScrollRef = useRef(null);
@@ -452,9 +682,9 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const isScanning = Boolean(location?.isScanning);
   const placeKey = `${slug}|${name}|${country}|${location?.lat}|${location?.lng}`;
   const datesKey = `${stayDates.checkIn}|${stayDates.checkOut}`;
-  const fetchKey = `${placeKey}|${datesKey}`;
+  const guestsKey = `a${guests.adultCount}c${guests.childCount}`;
+  const fetchKey = `${placeKey}|${datesKey}|${guestsKey}`;
   const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
-  const nights = mrtStayNights(stayDates.checkIn, stayDates.checkOut);
   const todayYmd = (() => {
     const d = new Date();
     const y = d.getFullYear();
@@ -470,6 +700,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     setItems(null);
     setStatus('idle');
     setStayDates(defaultMrtStayDates());
+    setGuests(normalizeMrtGuestCounts(2, 0));
+    setSortMode('recommended');
     fetchedKeyRef.current = '';
   }, [placeKey]);
 
@@ -519,7 +751,10 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     (async () => {
       const locForFetch = await withStayAdmin(location);
       if (cancelled) return;
-      const result = await fetchMrtStaysForLocation(locForFetch, stayDates);
+      const result = await fetchMrtStaysForLocation(locForFetch, {
+        ...stayDates,
+        ...guests,
+      });
       if (cancelled) return;
       fetchedKeyRef.current = fetchKey;
       if (result?.checkIn && result?.checkOut) {
@@ -542,17 +777,25 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     return () => {
       cancelled = true;
     };
-  }, [eligible, expanded, fetchKey, location, stayDates]);
+  }, [eligible, expanded, fetchKey, location, stayDates, guests]);
 
-  const applyStayDates = useCallback((nextIn, nextOut) => {
-    const normalized = normalizeMrtStayDates(nextIn, nextOut);
+  const applyStayFilters = useCallback((next) => {
+    const dates = normalizeMrtStayDates(next?.checkIn, next?.checkOut);
+    const nextGuests = normalizeMrtGuestCounts(next?.adultCount, next?.childCount);
     setStayDates((prev) => {
-      if (prev.checkIn === normalized.checkIn && prev.checkOut === normalized.checkOut) {
+      if (prev.checkIn === dates.checkIn && prev.checkOut === dates.checkOut) return prev;
+      return dates;
+    });
+    setGuests((prev) => {
+      if (
+        prev.adultCount === nextGuests.adultCount &&
+        prev.childCount === nextGuests.childCount
+      ) {
         return prev;
       }
-      fetchedKeyRef.current = '';
-      return normalized;
+      return nextGuests;
     });
+    fetchedKeyRef.current = '';
   }, []);
 
   const openMobileFullscreen = useCallback(() => {
@@ -576,31 +819,34 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     <StayDateBar
       checkIn={stayDates.checkIn}
       checkOut={stayDates.checkOut}
-      nights={nights}
       todayYmd={todayYmd}
-      onChange={applyStayDates}
+      adultCount={guests.adultCount}
+      childCount={guests.childCount}
+      onApply={applyStayFilters}
       showClose={Boolean(opts.showClose)}
       onClose={() => setExpanded(false)}
     />
   );
 
+  const emptyMessage =
+    '이 여행지 숙소를 찾지 못했어요. 날짜·인원을 바꿔 보세요.';
+
   const statusLine =
     status === 'loading' ? (
       <p className="px-0.5 text-[11px] text-white/45">숙소를 불러오는 중…</p>
     ) : status === 'empty' || status === 'error' ? (
-      <p className="break-keep px-0.5 text-[11px] text-white/45">이 여행지 숙소를 찾지 못했어요.</p>
+      <p className="break-keep px-0.5 text-[11px] text-white/45">{emptyMessage}</p>
     ) : null;
 
   /** PC 포털 전용 그리드 — 모바일은 전체화면만 사용 */
   const desktopList =
     isLg && status === 'ready' && items?.length ? (
       <>
-        <div className="mb-1.5 px-0.5">
-          <p className="break-keep text-xs font-semibold text-amber-100/75">
-            근처 숙소 · MyRealTrip
-            {items?.length ? ` · ${items.length}곳` : ''}
-          </p>
-        </div>
+        <StayListToolbar
+          count={items.length}
+          sortMode={sortMode}
+          onSortChange={setSortMode}
+        />
         <div className="globe-stay-strip-scroll grid grid-cols-[repeat(auto-fill,minmax(152px,1fr))] gap-2.5">
           <style>{`
             .globe-stay-strip-scroll {
@@ -619,17 +865,10 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
               border-radius: 9999px;
             }
           `}</style>
-          {items.map((item) => {
-            const price = formatPrice(item.salePrice);
-            return (
-              <StayCard
-                key={item.itemId}
-                item={item}
-                price={price}
-                className="w-auto min-w-0"
-              />
-            );
-          })}
+          <StayCardsGrid
+            items={items}
+            sortMode={sortMode}
+          />
         </div>
       </>
     ) : null;
@@ -742,24 +981,25 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
               ) : null}
               {status === 'empty' || status === 'error' ? (
                 <p className="break-keep px-1 py-12 text-center text-[12px] text-white/45">
-                  이 일정으로 숙소를 찾지 못했어요. 날짜를 바꿔 보세요.
+                  {emptyMessage}
                 </p>
               ) : null}
               {status === 'ready' && items?.length ? (
-                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                  {items.map((item) => {
-                    const price = formatPrice(item.salePrice);
-                    return (
-                      <StayCard
-                        key={item.itemId}
-                        item={item}
-                        price={price}
-                        className="w-full"
-                        imageClassName="h-[100px]"
-                      />
-                    );
-                  })}
-                </div>
+                <>
+                  <StayListToolbar
+                    count={items.length}
+                    sortMode={sortMode}
+                    onSortChange={setSortMode}
+                  />
+                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                    <StayCardsGrid
+                      items={items}
+                      sortMode={sortMode}
+                      cardClassName="w-full"
+                      imageClassName="h-[100px]"
+                    />
+                  </div>
+                </>
               ) : null}
             </div>
             <button
