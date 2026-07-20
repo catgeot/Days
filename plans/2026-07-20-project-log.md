@@ -14,7 +14,7 @@
 
 ## Smart Search — 횡성 저수지 등 Nominatim 미매칭
 
-**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 `6520201`
 
 - **증상**: AI가 「횡성호」로 교정·좌표 파싱해도 연결 실패 · Explore「컬렉션에 없는 키워드」잔류 · `search_dictionary` 406.
 - **원인**: Nominatim에 횡성호 없음 → `verifyAndNormalizeCandidate`가 forward 실패 시 null · `.single()` 0건 406 · 한글 쿼리 해외 오탐. (며칠 전엔 캐시·검증이 맞아 동작)
@@ -23,7 +23,7 @@
 
 ## 지구본 자유 탐색 — POI 라벨 + 스냅 완화
 
-**상태**: ✅ 구현 · 사용자 확인 · 커밋·푸시 대기
+**상태**: ✅ 구현 · 사용자 확인 · 커밋·푸시 `6520201`
 
 - **스냅**: 바다·무지명 시 전역 nearest SSOT 스냅 **제거** → tier km curated만, 아니면 클릭 좌표 `uiPlace`(`좌표 탐색`). 줌≥4 마커 hit 32→14px.
 - **라벨**: `POI_LABEL_MIN_ZOOM=5.5` — 저줌 깨끗 / 고줌 POI·natural·landmark 표시·클릭 → 기존 uiPlace PlaceCard.
