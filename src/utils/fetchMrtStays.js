@@ -130,11 +130,14 @@ export function stripKoAdminSuffix(name) {
 
 /**
  * Edge cityHint용 — 동명 동(퇴계동→안동) 거부.
+ * 해외는 state(Western Division 등)를 넣지 않음 — MRT blob에 없어 탈락 유발.
  * @param {object} admin
+ * @param {{ isDomestic?: boolean }} [opts]
  * @returns {string[]}
  */
-export function resolveMrtCityHints(admin) {
+export function resolveMrtCityHints(admin, opts = {}) {
   const a = admin && typeof admin === 'object' ? admin : {};
+  const isDomestic = Boolean(opts.isDomestic);
   const hints = [];
   const seen = new Set();
   pushUnique(hints, seen, a.city);
@@ -142,14 +145,16 @@ export function resolveMrtCityHints(admin) {
   pushUnique(hints, seen, a.cityEn);
   pushUnique(hints, seen, a.county);
   pushUnique(hints, seen, stripKoAdminSuffix(a.county));
-  pushUnique(hints, seen, a.state);
-  pushUnique(hints, seen, stripKoAdminSuffix(a.state));
+  if (isDomestic) {
+    pushUnique(hints, seen, a.state);
+    pushUnique(hints, seen, stripKoAdminSuffix(a.state));
+  }
   return hints.slice(0, 8);
 }
 
 /**
  * @param {object} location
- * @returns {{ keyword: string, altKeywords: string[], countryHint: string, nameEn: string, cityHints: string[] }}
+ * @returns {{ keyword: string, altKeywords: string[], countryHint: string, countryHintAlts: string[], nameEn: string, cityHints: string[] }}
  */
 export function resolveMrtStayQuery(location) {
   const slug = String(location?.slug || '').trim().toLowerCase();
@@ -159,6 +164,7 @@ export function resolveMrtStayQuery(location) {
   const nameKo = String(location?.name_ko || '').trim();
   const isDomestic = isMrtDomesticLocation(location);
   const countryHint = normalizeMrtCountryHint(location?.country, isDomestic);
+  const countryEn = String(location?.country_en || '').trim();
   const admin = location?.stayAdmin && typeof location.stayAdmin === 'object'
     ? location.stayAdmin
     : {};
@@ -204,14 +210,27 @@ export function resolveMrtStayQuery(location) {
   }
 
   pushUnique(ladder, seen, nameEn);
-  pushUnique(ladder, seen, admin.state);
-  pushUnique(ladder, seen, stripKoAdminSuffix(admin.state));
+  if (isDomestic) {
+    pushUnique(ladder, seen, admin.state);
+    pushUnique(ladder, seen, stripKoAdminSuffix(admin.state));
+  }
 
   const keyword = String(ladder[0] || '').trim();
   const altKeywords = ladder.slice(1, 10);
-  const cityHints = resolveMrtCityHints(admin);
+  const cityHints = resolveMrtCityHints(admin, { isDomestic });
 
-  return { keyword, altKeywords, countryHint, nameEn, cityHints };
+  /** MRT subName 한·영 혼용 — Edge countryMatches가 둘 다 허용 */
+  const countryHintAlts = [];
+  const altSeen = new Set([countryHint.toLowerCase()]);
+  for (const raw of [countryEn, admin.country]) {
+    const c = String(raw || '').trim();
+    if (!c || altSeen.has(c.toLowerCase())) continue;
+    if (normalizeMrtCountryHint(c, isDomestic) === countryHint) continue;
+    altSeen.add(c.toLowerCase());
+    countryHintAlts.push(c);
+  }
+
+  return { keyword, altKeywords, countryHint, countryHintAlts, nameEn, cityHints };
 }
 
 /**
@@ -228,11 +247,15 @@ export function canShowMrtStayStrip(location, opts = {}) {
   return Boolean(query.keyword);
 }
 
-function cacheKey(keyword, isDomestic, countryHint, cityHints, checkIn, checkOut) {
+function cacheKey(keyword, isDomestic, countryHint, countryHintAlts, cityHints, checkIn, checkOut) {
   const cityKey = Array.isArray(cityHints) && cityHints.length
     ? cityHints.join(',')
     : '-';
-  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryHint || '-'}:${cityKey}:${checkIn}:${checkOut}:${keyword}`;
+  const countryKey = [countryHint, ...(Array.isArray(countryHintAlts) ? countryHintAlts : [])]
+    .map((c) => String(c || '').trim())
+    .filter(Boolean)
+    .join('|') || '-';
+  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:${keyword}`;
 }
 
 function readCache(key) {
@@ -261,7 +284,7 @@ function writeCache(key, payload) {
 }
 
 /**
- * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, size?: number }} params
+ * @param {{ keyword: string, isDomestic: boolean, countryHint?: string, countryHintAlts?: string[], nameEn?: string, altKeywords?: string[], cityHints?: string[], checkIn?: string, checkOut?: string, size?: number }} params
  */
 export async function fetchMrtStays(params) {
   const keyword = String(params?.keyword || '').trim();
@@ -269,6 +292,9 @@ export async function fetchMrtStays(params) {
 
   const isDomestic = Boolean(params?.isDomestic);
   const countryHint = String(params?.countryHint || '').trim();
+  const countryHintAlts = Array.isArray(params?.countryHintAlts)
+    ? params.countryHintAlts.map((k) => String(k || '').trim()).filter(Boolean).slice(0, 4)
+    : [];
   const nameEn = String(params?.nameEn || '').trim();
   const altKeywords = Array.isArray(params?.altKeywords) ? params.altKeywords : [];
   const cityHints = Array.isArray(params?.cityHints)
@@ -277,7 +303,7 @@ export async function fetchMrtStays(params) {
   const { checkIn, checkOut } = normalizeMrtStayDates(params?.checkIn, params?.checkOut);
   const size = Math.max(1, Math.min(20, Number(params?.size) || 8));
   const ladderKey = [keyword, ...altKeywords].join('|');
-  const key = cacheKey(ladderKey, isDomestic, countryHint, cityHints, checkIn, checkOut);
+  const key = cacheKey(ladderKey, isDomestic, countryHint, countryHintAlts, cityHints, checkIn, checkOut);
 
   const hit = readCache(key);
   if (hit) return hit;
@@ -291,6 +317,7 @@ export async function fetchMrtStays(params) {
         checkIn,
         checkOut,
         ...(countryHint ? { countryHint } : {}),
+        ...(countryHintAlts.length ? { countryHintAlts } : {}),
         ...(nameEn ? { nameEn } : {}),
         ...(altKeywords.length ? { altKeywords } : {}),
         ...(cityHints.length ? { cityHints } : {}),

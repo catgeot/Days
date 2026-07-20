@@ -72,17 +72,24 @@ function isKoreaLabel(s: string) {
  * - 코로르 subName "팔라우, 코로르" → OK
  * - 태국 POI "태국, …" / 사르디니아 "이탈리아, …, 팔라우" → 거부
  * - 국내: Nominatim countryHint「대한민국」↔ MRT「한국, 강원」
+ * - 해외: countryHints에 한·영을 함께 넘김 (피지↔Fiji)
  */
-function countryMatches(r: Region, countryHint: string) {
-  const c = norm(countryHint);
-  if (!c) return true;
+function countryMatches(r: Region, countryHints: string[]) {
+  const hints = (countryHints || []).map(norm).filter(Boolean);
+  if (!hints.length) return true;
   const sub = norm(r.subName || "");
   if (!sub) return false;
   const head = sub.split(/[,/|]/)[0]?.trim() || "";
   if (!head) return false;
-  if (head === c || head.startsWith(c) || c.startsWith(head)) return true;
-  if (isKoreaLabel(c) && isKoreaLabel(head)) return true;
+  for (const c of hints) {
+    if (head === c || head.startsWith(c) || c.startsWith(head)) return true;
+    if (isKoreaLabel(c) && isKoreaLabel(head)) return true;
+  }
   return false;
+}
+
+function collectCountryHints(countryHint: string, countryHintAlts: string[]) {
+  return uniqueKeywords([countryHint, ...(countryHintAlts || [])]);
 }
 
 /**
@@ -105,7 +112,7 @@ function cityMatches(r: Region, cityHints: string[]) {
 function scoreRegion(
   r: Region,
   keyword: string,
-  countryHint: string,
+  countryHints: string[],
   cityHints: string[],
 ): number {
   let score = 0;
@@ -120,8 +127,8 @@ function scoreRegion(
   if (name === kw) score += 12;
   else if (name.includes(kw) || kw.includes(name)) score += 4;
 
-  if (countryHint) {
-    if (countryMatches(r, countryHint)) score += 55;
+  if (countryHints.length) {
+    if (countryMatches(r, countryHints)) score += 55;
     else score -= 45;
   }
 
@@ -136,15 +143,16 @@ function scoreRegion(
 function pickRegion(
   regions: Region[],
   keyword: string,
-  countryHint: string,
+  countryHints: string[],
   cityHints: string[],
+  isDomestic: boolean,
 ): Region | null {
   if (!regions?.length) return null;
 
   let best: Region | null = null;
   let bestScore = -Infinity;
   for (const r of regions) {
-    const s = scoreRegion(r, keyword, countryHint, cityHints);
+    const s = scoreRegion(r, keyword, countryHints, cityHints);
     if (s > bestScore) {
       bestScore = s;
       best = r;
@@ -154,12 +162,13 @@ function pickRegion(
   if (!best) return null;
 
   // 국가 힌트가 있는데 후보 전부가 불일치면 재시도 유도
-  if (countryHint && !countryMatches(best, countryHint) && bestScore < 20) {
+  if (countryHints.length && !countryMatches(best, countryHints) && bestScore < 20) {
     return null;
   }
 
-  // 시·군 힌트 불일치면 다음 키워드로 (퇴계동→안동 차단)
-  if (cityHints.length && !cityMatches(best, cityHints)) {
+  // 국내만 시·군 하드 거부 (퇴계동→안동). 해외는 Nominatim state(Western Division 등)가
+  // MRT blob에 없어 피지 등 국가 단위 검색이 전부 탈락하는 경우가 있음 → 점수만 반영
+  if (isDomestic && cityHints.length && !cityMatches(best, cityHints)) {
     return null;
   }
 
@@ -198,7 +207,7 @@ async function resolveRegion(
   apiKey: string,
   isDomestic: boolean,
   keywords: string[],
-  countryHint: string,
+  countryHints: string[],
   cityHints: string[],
 ): Promise<{ region: Region | null; usedKeyword: string | null }> {
   for (const kw of keywords) {
@@ -210,7 +219,7 @@ async function resolveRegion(
     if (ac.status !== 200 || acResult.status !== 200) continue;
 
     const regions = (ac.data?.data?.regions || []) as Region[];
-    const region = pickRegion(regions, kw, countryHint, cityHints);
+    const region = pickRegion(regions, kw, countryHints, cityHints, isDomestic);
     if (region?.regionId) {
       return { region, usedKeyword: kw };
     }
@@ -241,6 +250,10 @@ serve(async (req) => {
 
     const isDomestic = Boolean(body?.isDomestic);
     const countryHint = String(body?.countryHint ?? "").trim();
+    const countryHintAlts = Array.isArray(body?.countryHintAlts)
+      ? body.countryHintAlts.map((k: unknown) => String(k ?? "").trim())
+      : [];
+    const countryHints = collectCountryHints(countryHint, countryHintAlts);
     const nameEn = String(body?.nameEn ?? "").trim();
     const altKeywords = Array.isArray(body?.altKeywords)
       ? body.altKeywords.map((k: unknown) => String(k ?? "").trim())
@@ -270,7 +283,7 @@ serve(async (req) => {
       apiKey,
       isDomestic,
       keywords,
-      countryHint,
+      countryHints,
       cityHints,
     );
 

@@ -107,7 +107,7 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
 
   return (
     <GlobeStayStrip location={location} onExpandedChange={onStayExpandedChange}>
-      {({ toggle, mobilePanel }) => (
+      {({ toggle, mobilePanel, expanded: stayExpanded }) => (
         <PlaceCardSummary
           {...props}
           location={location}
@@ -129,6 +129,7 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
           initialOriginExpanded={false}
           onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
           stayToggle={toggle}
+          stayExpanded={stayExpanded}
           belowCard={mobilePanel}
         />
       )}

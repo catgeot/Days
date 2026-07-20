@@ -60,6 +60,8 @@ const PlaceCardSummary = ({
 
   stayToggle = null,
 
+  stayExpanded = false,
+
 }) => {
 
   const [isLoading, setIsLoading] = useState(true);
@@ -213,7 +215,7 @@ const PlaceCardSummary = ({
         <div
 
           className={`place-summary-card relative z-[1] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl group ${
-            isOriginCompact ? 'overflow-visible' : 'overflow-hidden'
+            isOriginCompact || stayExpanded ? 'overflow-visible' : 'overflow-hidden'
           } ${isOriginCompact ? 'p-2.5' : 'p-4'} ${isEnterGlow ? 'place-summary-card-enter' : glowPhase === 'idle' ? 'place-summary-card-idle' : ''}`}
 
         >
@@ -381,10 +383,14 @@ const PlaceCardSummary = ({
 
           <div
 
-            className={`${isOriginCompact ? 'overflow-visible' : 'overflow-hidden'} ${
-
-              isScanning || isCompact ? 'max-h-0 opacity-0 mt-0' : isOriginCompact ? 'max-h-[280px] opacity-100 mt-0' : 'max-h-[220px] opacity-100 mt-2'
-
+            className={`${
+              isScanning || isCompact
+                ? 'max-h-0 opacity-0 mt-0 overflow-hidden'
+                : isOriginCompact
+                  ? 'max-h-[280px] opacity-100 mt-0 overflow-visible'
+                  : stayExpanded
+                    ? 'max-h-[min(70vh,560px)] opacity-100 mt-2 overflow-y-auto overscroll-contain'
+                    : 'max-h-[220px] opacity-100 mt-2 overflow-hidden'
             }`}
 
             onClick={(event) => event.stopPropagation()}
