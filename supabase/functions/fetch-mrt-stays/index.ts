@@ -54,10 +54,24 @@ function regionBlob(r: Region) {
   return [r.name, r.subName, r.enName].filter(Boolean).join(" ").toLowerCase();
 }
 
+/** Nominatim「대한민국」↔ MRT subName「한국」등 */
+function isKoreaLabel(s: string) {
+  const n = norm(s);
+  return (
+    n === "한국" ||
+    n === "대한민국" ||
+    n === "korea" ||
+    n === "south korea" ||
+    n === "republic of korea" ||
+    n === "kr"
+  );
+}
+
 /**
  * 국가는 subName 첫 세그먼트 기준.
  * - 코로르 subName "팔라우, 코로르" → OK
  * - 태국 POI "태국, …" / 사르디니아 "이탈리아, …, 팔라우" → 거부
+ * - 국내: Nominatim countryHint「대한민국」↔ MRT「한국, 강원」
  */
 function countryMatches(r: Region, countryHint: string) {
   const c = norm(countryHint);
@@ -66,7 +80,9 @@ function countryMatches(r: Region, countryHint: string) {
   if (!sub) return false;
   const head = sub.split(/[,/|]/)[0]?.trim() || "";
   if (!head) return false;
-  return head === c || head.startsWith(c);
+  if (head === c || head.startsWith(c) || c.startsWith(head)) return true;
+  if (isKoreaLabel(c) && isKoreaLabel(head)) return true;
+  return false;
 }
 
 /** countryHint가 있으면 동명 이국 POI(예: 태국 팔라우)보다 자국 CITY를 우선 */
@@ -197,11 +213,11 @@ serve(async (req) => {
       ? body.altKeywords.map((k: unknown) => String(k ?? "").trim())
       : [];
 
+    // countryHint는 scoreRegion 필터 전용 — 검색 키워드에 넣으면 「한국」등 오탐
     const keywords = uniqueKeywords([
       keyword,
       ...altKeywords,
       nameEn,
-      countryHint,
     ]);
 
     const defaults = defaultStayDates();

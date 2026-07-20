@@ -178,6 +178,7 @@ const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
       feature.properties?.name_preferred ||
       feature.text ||
       placeName;
+    const stayAdmin = buildStayAdminFromMapboxFeature(feature);
 
     return {
       lat,
@@ -189,6 +190,7 @@ const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
       display_name: feature.place_name || placeName,
       source: 'mapbox',
       place_types: feature.place_type || [],
+      ...(stayAdmin ? { stayAdmin } : {}),
     };
   } catch (error) {
     console.warn('Mapbox forward geocoding failed:', error);
@@ -324,6 +326,8 @@ export const getCoordinatesFromAddress = async (query) => {
       travelCountry.country ||
       countryEn;
 
+    const stayAdmin = buildStayAdminFromOsmAddress(address, address);
+
     return {
       lat: parseFloat(topResult.lat),
       lng: parseFloat(topResult.lon),
@@ -333,6 +337,7 @@ export const getCoordinatesFromAddress = async (query) => {
       country_en: countryEn || countryKo,
       display_name: topResult.display_name,
       source: 'nominatim',
+      ...(stayAdmin ? { stayAdmin } : {}),
     };
   } catch (error) {
     console.error("Forward Geocoding error:", error);
@@ -374,6 +379,86 @@ const pickFeaturePlaceName = (data, address) => {
   return '';
 };
 
+const pickOsmAddr = (address, keys) => {
+  if (!address) return '';
+  for (const key of keys) {
+    const value = address[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return '';
+};
+
+/**
+ * MRT 숙소 쿼리 사다리용 행정 계층 (표시 지명과 분리).
+ * 한글 address 우선, 영문은 cityEn 등.
+ */
+export const buildStayAdminFromOsmAddress = (addressKo, addressEn = null) => {
+  const ko = addressKo || addressEn;
+  const en = addressEn || addressKo;
+  if (!ko && !en) return null;
+
+  const neighbourhood =
+    pickOsmAddr(ko, ['neighbourhood', 'suburb', 'quarter', 'residential']) ||
+    pickOsmAddr(en, ['neighbourhood', 'suburb', 'quarter', 'residential']);
+  const district =
+    pickOsmAddr(ko, ['borough', 'city_district', 'district']) ||
+    pickOsmAddr(en, ['borough', 'city_district', 'district']);
+  const city =
+    pickOsmAddr(ko, ['city', 'town', 'village', 'municipality']) ||
+    pickOsmAddr(en, ['city', 'town', 'village', 'municipality']);
+  const cityEn = pickOsmAddr(en, ['city', 'town', 'village', 'municipality']);
+  const county =
+    pickOsmAddr(ko, ['county']) || pickOsmAddr(en, ['county']);
+  const state =
+    pickOsmAddr(ko, ['state', 'province', 'region']) ||
+    pickOsmAddr(en, ['state', 'province', 'region']);
+
+  if (!neighbourhood && !district && !city && !county && !state) return null;
+
+  return {
+    neighbourhood: neighbourhood || '',
+    district: district || '',
+    city: city || '',
+    cityEn: cityEn || '',
+    county: county || '',
+    state: state || '',
+  };
+};
+
+/** Mapbox forward context → stayAdmin */
+export const buildStayAdminFromMapboxFeature = (feature) => {
+  if (!feature) return null;
+  const ctx = Array.isArray(feature.context) ? feature.context : [];
+  const pick = (prefix) => {
+    const hit = ctx.find((c) => String(c?.id || '').startsWith(prefix));
+    return typeof hit?.text === 'string' ? hit.text.trim() : '';
+  };
+  const types = Array.isArray(feature.place_type) ? feature.place_type : [];
+  const selfText = typeof feature.text === 'string' ? feature.text.trim() : '';
+
+  const neighbourhood =
+    pick('neighborhood.') ||
+    (types.includes('neighborhood') ? selfText : '');
+  const locality = pick('locality.') || (types.includes('locality') ? selfText : '');
+  const city =
+    pick('place.') ||
+    locality ||
+    (types.includes('place') ? selfText : '');
+  const district = pick('district.');
+  const state = pick('region.');
+
+  if (!neighbourhood && !district && !city && !state) return null;
+
+  return {
+    neighbourhood: neighbourhood || '',
+    district: district || '',
+    city: city || '',
+    cityEn: '',
+    county: '',
+    state: state || '',
+  };
+};
+
 // 3. 주소 찾기 (Reverse) — zoom=14로 POI·산업·자연 지명까지 확보
 export const getAddressFromCoordinates = async (lat, lng) => {
   try {
@@ -408,6 +493,7 @@ export const getAddressFromCoordinates = async (lat, lng) => {
     const placeNameKo = featureKo || cityRawKo;
     const resolvedCityEn = standardizeName(placeNameEn) || standardizeName(travelCountry.country_en);
     const resolvedCityKo = standardizeName(placeNameKo) || travelCountry.country;
+    const stayAdmin = buildStayAdminFromOsmAddress(addressKo, addressEn);
 
     return {
       fullAddress: dataEn?.display_name || dataKo?.display_name || '',
@@ -417,6 +503,7 @@ export const getAddressFromCoordinates = async (lat, lng) => {
       name_en: placeNameEn || travelCountry.country_en || placeNameKo,
       name_ko: resolvedCityKo,
       feature_type: dataEn?.type || dataEn?.class || dataKo?.type || '',
+      ...(stayAdmin ? { stayAdmin } : {}),
     };
   } catch (error) {
     console.error("Geocoding error:", error);

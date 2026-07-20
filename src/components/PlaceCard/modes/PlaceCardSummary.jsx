@@ -592,7 +592,7 @@ const PlaceCardSummary = ({
         </div>
 
         {!isScanning && !isOriginCompact && belowCard ? (
-          <div className="relative z-[1] mt-0">{belowCard}</div>
+          <div className="relative z-[1] mt-0 lg:contents">{belowCard}</div>
         ) : null}
 
       </div>

@@ -83,28 +83,19 @@
 
 ## MRT 숙소 세션 — 에이전트 핸드오프
 
-**상태**: ✅ MVP 구현·사용자 QA·커밋 (2026-07-20) · **다음 = 효용·레이아웃 심층 분석** (구현 보류)  
+**상태**: ✅ **4.1 출시 합의** (좌측 전폭·uiPlace/GPS·사다리·포털) · Edge 재배포 · **다음 = 최적화**  
 **선행**: 패키지 `/pkc` MVP ✅ · 일지 [`2026-07-09-project-log.md`](./2026-07-09-project-log.md)
 
-### 합의 MVP (출시)
+### 합의 MVP + 4.1 (유지)
 
-- 포커스 시 Summary 아래 **「숙소」토글** → 펼칠 때만 MRT 카드 스트립 (fetch 1회·sessionStorage).
-- search에 **좌표 없음** → 핀·지오코딩 안 함.
-- Edge `fetch-mrt-stays` · `region-autocomplete`→`regionId`→search · `countryHint`=subName 첫 세그먼트 · slug `palau`→`코로르`.
+- Summary **「숙소」토글** → 펼칠 때만 fetch (sessionStorage `v4`).
+- search에 **호텔 좌표·핀 없음**.
+- Edge `fetch-mrt-stays` · region-autocomplete → search · `countryHint`는 필터 전용(키워드 제외).
+- **PC**: 좌측 전폭 패널(`createPortal`→`document.body`) + 그리드 · **모바일**: 아래 스트립.
+- **게이트**: slug + uiPlace/GPS(실국가·키워드) · `stayAdmin` 사다리(동→시).
+- **국내 countryHint**: Nominatim `대한민국` → MRT `한국` 정규화(별칭 매칭).
 
-### 이번 세션 완료
-
-| 단계 | 결과 |
-|------|------|
-| S0~S3 | Edge 배포·클라 토글 스트립·팔라우 오탐 수정·스크롤 UX · **사용자 확인 ✅** |
-
-**파일**: `supabase/functions/fetch-mrt-stays/` · `src/utils/fetchMrtStays.js` · `GlobeStayStrip.jsx` · `HomePlaceCardSummary` · `PlaceCardSummary`(`belowCard`).
-
-### 사용자 피드백 → 다음 분석 (구현 X)
-
-1. **토글+리스트 패턴은 유지**하고 싶음.
-2. **지구본 홈 톤과 이질감** — 아래 펼침이 지구본을 가려 노이즈. **좌측 펼침** 등 효율 노출 검토 (제거보다 배치).
-3. **SSOT slug만이 아님** — uiPlace·홈 자기위치 검색에도 API만 되면 숙소 검색 가능(플래너 진입 없이).
+**파일**: `GlobeStayStrip.jsx` · `fetchMrtStays.js` · `geocoding.js`(`stayAdmin`) · `PlaceCardSummary` · `useHomeHandlers` · `fetch-mrt-stays`.
 
 ### 금지 3
 
@@ -112,13 +103,26 @@
 2. TripLink · `mrt-link-generator` 병행
 3. 호텔 지오코딩 · `travelSpots.js` 전체 스캔 · spots 직접 수정
 
-### 다음 세션 제시어 (심층 분석)
+### 해결한 이슈 (4.1)
+
+| 이슈 | 조치 |
+|------|------|
+| 아래 펼침이 지구본 노이즈 | PC 좌측 전폭 · 토글은 Summary 아래 유지 |
+| 춘천 퇴계동 검색 실패 | `대한민국`↔`한국` · 사다리로 CITY `춘천` |
+| 스크롤바만 보임 | Summary `transform`이 `fixed` 포함 블록 → **body 포털** |
+
+### 다음 세션 — 최적화 (구현 시)
+
+우선 후보(합의 후): 패널 inset/z-index·지구본 톤 · 그리드 밀도·이미지 · 빈 결과 CTA · fetch 타이밍·캐시 · 국내 동→시 사다리 튜닝 · 모바일 바텀시트 여부.
+
+### 다음 세션 제시어
 
 ```
 @.ai-context.md @plans/2026-07-20-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
-MRT 숙소 MVP 출시 후 — 효용·레이아웃 심층 분석 (구현 보류).
+MRT 숙소 4.1 이후 — 최적화 (레이아웃·쿼리·UX).
 
-핸드오프 「사용자 피드백 → 다음 분석」확인.
-논의: ① Summary 아래 vs 좌측 패널 ② 지구본 톤 정합 ③ uiPlace·홈 위치 검색 숙소 ④ 플래너 없이 홈 전환.
-산출: 옵션 표·권장 1안·비범위. 코드 변경은 합의 후.
+핸드오프 「다음 세션 — 최적화」확인.
+읽기: GlobeStayStrip(포털·그리드) · fetchMrtStays(사다리·countryHint) · Edge countryMatches.
+금지: VITE_ MRT 키 · 호텔 핀/지오코딩 · TripLink 병행.
+산출: 짧은 옵션→합의 1안→구현. 좌측 전폭·토글 패턴은 유지.
 ```

@@ -291,6 +291,9 @@ export function useHomeHandlers({
           display_name: clickedLabel,
           source: 'label',
           uiPlace: true,
+          ...(addressFromLabelPoint?.stayAdmin
+            ? { stayAdmin: addressFromLabelPoint.stayAdmin }
+            : {}),
         }, lat, lng);
 
         addScoutPin(labelPin);
@@ -321,6 +324,7 @@ export function useHomeHandlers({
           country_en: addressData?.country_en || 'Explore',
           display_name: display_name,
           uiPlace: true,
+          ...(addressData?.stayAdmin ? { stayAdmin: addressData.stayAdmin } : {}),
         }, lat, lng);
 
         addScoutPin(realPin);
@@ -906,6 +910,7 @@ export function useHomeHandlers({
         uiPlace: true,
         country: coords.country || "Explore",
         country_en: coords.country_en || "Explore",
+        ...(coords.stayAdmin ? { stayAdmin: coords.stayAdmin } : {}),
       }, coords.lat, coords.lng);
       handleLocationSelect(normalizedLoc);
       return normalizedLoc;
