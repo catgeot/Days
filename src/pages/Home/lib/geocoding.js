@@ -3,6 +3,7 @@
 // 1. [Fix] 영문 강제 변환(For Unsplash) 및 재시도(Retry) 로직 유지.
 // 2. 🚨 [Fix/New] 역지오코딩(Reverse Geocoding) 로케일 강제: accept-language를 'en,ko'로 변경하여 영문명을 최우선으로 확보.
 // 3. 🚨 [Fix/New] name_en 강제 추출: 라우팅에 사용할 수 있도록 응답 데이터에서 영문명을 명시적으로 파싱하여 반환 객체에 추가.
+// 4. [Free Explore] Mapbox Geocoding 우선 — 지구본 POI 라벨과 동일 소스. 휴게소·세부 장소 검색이 상위 행정구역으로 떨어지지 않게.
 
 import { KEYWORD_SYNONYMS } from '../data/keywordData';
 import { resolveTravelCountryFromAddresses } from './travelRegionCountry.js';
@@ -12,6 +13,13 @@ const RETRY_FILTERS = [
   "저수지", "댐", "호수",
 ];
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
+const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
+
+/** 세부 시설·명소 쿼리 — 행정구역(군/시)으로 축소·스냅하면 안 되는 입력 */
+export const FACILITY_QUERY_RE =
+  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크/i;
+
+export const isFacilityQuery = (query) => FACILITY_QUERY_RE.test(String(query || ''));
 
 // 1. 내부 통역 함수
 const standardizeName = (rawName) => {
@@ -37,7 +45,15 @@ const isPlausibleForwardHit = (query, result) => {
   const name = String(result.name || '').trim();
   if (name.length <= 1) return false;
   const cls = String(result.class || '');
-  if (cls === 'highway' || cls === 'office' || cls === 'railway') return false;
+  const type = String(result.type || '');
+  const facilityQ = isFacilityQuery(query);
+
+  if (cls === 'office' || cls === 'railway') return false;
+  // 고속도로 휴게소(OSM: highway=services|rest_area)는 시설 검색에서만 허용
+  if (cls === 'highway') {
+    const allowRest = facilityQ && /services|rest_area|fuel/.test(type);
+    if (!allowRest) return false;
+  }
 
   if (HAS_HANGUL_RE.test(query)) {
     const cc = String(result.address?.country_code || '').toLowerCase();
@@ -48,32 +64,142 @@ const isPlausibleForwardHit = (query, result) => {
   return true;
 };
 
+/** 시설 검색인데 행정구역·광역만 맞은 경우 — 상위 지명으로 떨어뜨리지 않음 */
+const isAdminOnlyHitForFacility = (query, result) => {
+  if (!isFacilityQuery(query) || !result) return false;
+  const cls = String(result.class || '');
+  const type = String(result.type || '');
+  const addresstype = String(result.addresstype || '');
+  if (cls === 'boundary' || type === 'administrative') return true;
+  if (/^(county|state|region|municipality|city|town|village|suburb)$/.test(addresstype)) return true;
+  return false;
+};
+
 // 🚨 [New] 여행지 목적에 맞는 우선순위 스코어링 함수
-const calculatePlaceScore = (place) => {
+const calculatePlaceScore = (place, query = '') => {
   let score = 0;
   if (!place) return 0;
   const type = place.type || "";
   const category = place.category || "";
   const address = place.address || {};
   const cls = place.class || "";
+  const facilityQ = isFacilityQuery(query);
 
   // 여행지로 선호되는 키워드에 높은 점수 부여
   if (address.island) score += 50;
   if (address.city || address.town || address.village) score += 30;
   if (category === "tourism" || cls === "tourism") score += 40;
   if (cls === "natural" || cls === "water" || type === "reservoir" || type === "water") score += 45;
+  if (facilityQ && (cls === 'amenity' || /services|rest_area|fuel/.test(type))) score += 60;
 
   // 단순 행정구역(특히 대도시의 구/동)이나 역 등은 점수를 낮춤
   if (address.suburb || address.borough || address.quarter || address.city_district) score -= 30;
   if (type === "station" || category === "railway") score -= 40;
   if (type === "administrative" && address.borough) score -= 20;
+  if (facilityQ && (cls === 'boundary' || type === 'administrative')) score -= 80;
 
   return score;
 };
 
-// 2. 좌표 찾기 (Forward)
+const mapboxPlaceTypeScore = (placeTypes = [], facilityQ = false) => {
+  const types = Array.isArray(placeTypes) ? placeTypes : [];
+  if (types.includes('poi')) return facilityQ ? 100 : 80;
+  if (types.includes('address')) return 50;
+  if (types.includes('neighborhood') || types.includes('locality')) return 35;
+  if (types.includes('place')) return facilityQ ? 5 : 40;
+  if (types.includes('district') || types.includes('region')) return facilityQ ? -40 : 20;
+  if (types.includes('country')) return -80;
+  return 0;
+};
+
+const countryFromMapboxFeature = (feature) => {
+  const ctx = Array.isArray(feature?.context) ? feature.context : [];
+  const countryCtx = ctx.find((c) => String(c?.id || '').startsWith('country.'));
+  const short = String(countryCtx?.short_code || feature?.properties?.short_code || '')
+    .toLowerCase()
+    .replace(/^us-/, '');
+  const textEn = countryCtx?.text || '';
+  const addressLike = {
+    country: textEn,
+    country_code: short.length === 2 ? short : '',
+  };
+  return resolveTravelCountryFromAddresses(addressLike, null);
+};
+
+/** Mapbox Geocoding — 지구본 라벨·POI와 같은 인덱스 */
+const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
+  if (!MAPBOX_TOKEN || !searchQuery) return null;
+  try {
+    const encoded = encodeURIComponent(searchQuery);
+    const params = new URLSearchParams({
+      access_token: MAPBOX_TOKEN,
+      language: 'ko',
+      limit: '6',
+      autocomplete: 'false',
+    });
+    // place·poi·address 등 — 자유 탐색. types를 너무 좁히면 휴게소가 빠짐.
+    if (countrycodes) params.set('country', countrycodes);
+
+    const response = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?${params}`,
+    );
+    if (!response.ok) return null;
+    const data = await response.json();
+    const features = Array.isArray(data?.features) ? data.features : [];
+    if (!features.length) return null;
+
+    const facilityQ = isFacilityQuery(searchQuery);
+    const ranked = [...features]
+      .map((f) => ({
+        feature: f,
+        score: mapboxPlaceTypeScore(f.place_type, facilityQ),
+      }))
+      .sort((a, b) => b.score - a.score);
+
+    const best = ranked[0];
+    if (!best) return null;
+
+    // 시설 검색인데 POI/주소가 없고 행정구역만이면 거부 → Nominatim·AI로 이어감
+    if (facilityQ && best.score < 40) return null;
+
+    const feature = best.feature;
+    const [lng, lat] = feature.center || [];
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+    const travelCountry = countryFromMapboxFeature(feature);
+    const countryEn = travelCountry.country_en || travelCountry.country || '';
+    const countryKo =
+      KEYWORD_SYNONYMS[String(countryEn).toLowerCase()] ||
+      KEYWORD_SYNONYMS[String(travelCountry.country || '').toLowerCase()] ||
+      travelCountry.country ||
+      countryEn;
+    const placeName = feature.text || feature.place_name || searchQuery;
+    const placeNameEn =
+      feature.properties?.name_preferred ||
+      feature.text ||
+      placeName;
+
+    return {
+      lat,
+      lng,
+      name: placeName,
+      name_en: placeNameEn,
+      country: countryKo,
+      country_en: countryEn || countryKo,
+      display_name: feature.place_name || placeName,
+      source: 'mapbox',
+      place_types: feature.place_type || [],
+    };
+  } catch (error) {
+    console.warn('Mapbox forward geocoding failed:', error);
+    return null;
+  }
+};
+
+// 2. 좌표 찾기 (Forward) — Mapbox(지구본 POI) 우선, Nominatim 폴백
 export const getCoordinatesFromAddress = async (query) => {
   const hasHangul = HAS_HANGUL_RE.test(query || '');
+  const facilityQ = isFacilityQuery(query);
 
   // 🚨 [New] 재시도 로직이 포함된 Fetcher
   const fetchCoords = async (searchQuery, attempt = 1, { acceptLanguage = 'en', countrycodes = '' } = {}) => {
@@ -108,7 +234,9 @@ export const getCoordinatesFromAddress = async (query) => {
 
       const data = await response.json();
       if (!data?.length) return null;
-      const plausible = data.filter((row) => isPlausibleForwardHit(searchQuery, row));
+      const plausible = data.filter(
+        (row) => isPlausibleForwardHit(searchQuery, row) && !isAdminOnlyHitForFacility(searchQuery, row)
+      );
       return plausible.length > 0 ? plausible : null;
 
     } catch {
@@ -125,6 +253,18 @@ export const getCoordinatesFromAddress = async (query) => {
   try {
     const cleanQuery = standardizeName(query);
 
+    // 0) Mapbox — 지구본에서 보이는 POI·세부 지명과 동일 소스
+    if (MAPBOX_TOKEN) {
+      let mapboxHit = null;
+      if (hasHangul) {
+        mapboxHit = await fetchMapboxForward(cleanQuery, { countrycodes: 'kr' });
+      }
+      if (!mapboxHit) {
+        mapboxHit = await fetchMapboxForward(cleanQuery);
+      }
+      if (mapboxHit) return mapboxHit;
+    }
+
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
     let data = null;
     if (hasHangul) {
@@ -137,8 +277,8 @@ export const getCoordinatesFromAddress = async (query) => {
       data = await fetchCoords(cleanQuery, 1, { acceptLanguage: 'en' });
     }
 
-    // 2차 패스: 수식어 제거
-    if (!data) {
+    // 2차 패스: 수식어 제거 — 시설 쿼리(휴게소 등)는 행정구역으로 축소되지 않게 스킵
+    if (!data && !facilityQ) {
       let retryQuery = cleanQuery;
       RETRY_FILTERS.forEach(filter => {
         if (retryQuery.endsWith(filter)) retryQuery = retryQuery.slice(0, -filter.length).trim();
@@ -166,7 +306,9 @@ export const getCoordinatesFromAddress = async (query) => {
     if (!data) return null;
 
     // 🚨 [New] 반환된 결과 중 여행지에 적합한 것을 우선순위로 정렬 (예: '구'보다 '섬'을 우선)
-    const sortedData = [...data].sort((a, b) => calculatePlaceScore(b) - calculatePlaceScore(a));
+    const sortedData = [...data].sort(
+      (a, b) => calculatePlaceScore(b, cleanQuery) - calculatePlaceScore(a, cleanQuery)
+    );
     const topResult = sortedData[0];
     const address = topResult.address || {};
 
@@ -189,7 +331,8 @@ export const getCoordinatesFromAddress = async (query) => {
       name_en: englishName || placeName,
       country: countryKo,
       country_en: countryEn || countryKo,
-      display_name: topResult.display_name
+      display_name: topResult.display_name,
+      source: 'nominatim',
     };
   } catch (error) {
     console.error("Forward Geocoding error:", error);

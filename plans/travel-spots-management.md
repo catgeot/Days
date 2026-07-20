@@ -407,14 +407,15 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 | 경로 | 국가·지명 | SSOT 좌표 스냅 |
 |------|-----------|----------------|
 | Mapbox **지명·POI** 클릭 | 라벨 + [`travelRegionCountry`](../src/pages/Home/lib/travelRegionCountry.js) | **이름·slug 병합만** (`uiPlace` coord 스냅 차단) · 갤러리 맥락은 근접 SSOT/cities |
-| **지오코딩** 성공(빈 지도·검색) | 쿼리 + geocode + 영토복원 · 전진 geocode는 `KEYWORD_SYNONYMS`로 국가 **한글 정규화** · 역지오는 industrial/natural feature명 우선 | 검색: 이름 SSOT 매칭 후 coord 스냅 · uiPlace는 coord-only 차단 |
+| **검색바** (Smart Search) | [`geocoding.js`](../src/pages/Home/lib/geocoding.js) **Mapbox forward 우선** → Nominatim · 영토복원 · 국가 한글 정규화 | **이름·별칭 SSOT만** 연결 · **coord 스냅 금지** (홍천 휴게소→홍천군 방지) · 그 외 `uiPlace` |
+| **지오코딩** 성공(빈 지도) | 쿼리 + geocode + 영토복원 · 역지오는 industrial/natural feature명 우선 | uiPlace · gallery만 근접 SSOT/cities |
 | **바다·무지명** 클릭 | — | tier km 이내 `curatedLocationFromCoords`만 · 없으면 **클릭 좌표 uiPlace**(`좌표 탐색`) — 전역 nearest 스냅 **금지** |
 | **gateo 마커** 클릭 | 마커 slug · SSOT `country`(영토명) · **saved는 `curation_data.country` 승격** | 카탈로그 slug 있으면 좌표 재매칭 **안 함** · 국가 비면 카탈로그/역지오 자가치유 |
 | **URL** `/place/:slug` | [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) · 세션 캐시 · 즐겨찾기 · `healPlaceholderCountry` | `search-`/`loc-`/`label-` · uiPlace slug(`tahaa`·`salta` 등) |
 
 **라벨 줌 게이트** ([`globeZoomPolicy.js`](../src/pages/Home/lib/globeZoomPolicy.js) · [`globeMapboxLabelPolicy.js`](../src/pages/Home/lib/globeMapboxLabelPolicy.js)): 줌 &lt;4 대륙·대양만 · 4–5.5 도시·국가 · **≥5.5 POI·자연·랜드마크**. 도로/transit는 계속 숨김.
 
-**Smart Search AI 폴백** ([`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) `verifyAndNormalizeCandidate` · [`geocoding.js`](../src/pages/Home/lib/geocoding.js)): Nominatim에 없는 국내 저수지·댐 등(예: 횡성호) — AI/캐시 좌표가 유효하면 forward 재검증 실패·불일치 시에도 **역지오로 국가만 보강 후 uiPlace 연결**. `search_dictionary` 조회는 **`maybeSingle`**(0건 406 방지). 한글 쿼리는 `countrycodes=kr` 우선 · highway/해외 오탐 거부.
+**Smart Search 자유 탐색** ([`useHomeHandlers.js`](../src/pages/Home/hooks/useHomeHandlers.js) · [`geocoding.js`](../src/pages/Home/lib/geocoding.js)): 지구본 POI와 같이 **세부 장소도 검색·탐색**. Mapbox Geocoding 우선 · 시설 쿼리(`휴게소` 등, `isFacilityQuery`)는 행정구역-only 히트·수식어 strip·`search_dictionary`의 시·군 교정 캐시 **거부**. AI 폴백은 시설을 군/시로 축소하지 않음 · Nominatim 미매칭(횡성호 등)은 AI 좌표+역지오 uiPlace · `maybeSingle`.
 
 **fuzzy**: [`travelSpotResolve.js`](../src/utils/travelSpotResolve.js) — 접두 부분 일치(`porto`⊂`portovecchio`)·suffix contains(`nice`⊂`venice`, `니스`⊂`베니스`) 차단. `citiesData` 전용 지명(`nice`/`니스`)은 blocklist. 툴킷·검색·`mergeCanonicalTravelSpot` 경로에 적용.
 

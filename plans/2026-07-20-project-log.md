@@ -30,6 +30,15 @@
 - **역지오**: Nominatim zoom=14 · industrial/natural feature명 우선. 요약 카드 uiPlace 안내 문구.
 - **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8 클릭 우선순위·줌 게이트.
 
+## 검색바 자유 탐색 — 홍천 휴게소→홍천군 스냅
+
+**상태**: ✅ 사용자 QA 통과 · 커밋 대기
+
+- **증상**: 지구본은 세부 POI 클릭 가능하나 검색은 상위 여행지/행정구역으로 묶임 (예: 홍천 휴게소 → 홍천군).
+- **원인**: Nominatim 미매칭 → AI·캐시가 군으로 교정 · 검색 성공 시 `resolveTravelSpotFromCoords` 스냅.
+- **조치**: Mapbox forward 우선 · 검색 coord 스냅 제거(이름 SSOT만) · `isFacilityQuery` 행정구역 히트/캐시/AI 축소 거부.
+- **무드 큐레이션**: AI mood 프롬프트·캐시 로직 미변경. Mapbox가 감정어를 가로채지 않도록 감정 키워드·문장부호는 geocode 스킵 → mood AI 유지.
+
 ## 살타 등 미등록 uiPlace — 즐겨찾기 국가명 Explore 잔존
 
 **상태**: ✅ 사용자 QA 통과 · 커밋·푸시 `a3810c7`

@@ -7,7 +7,7 @@
 // 5. 🚨 [Fix/New] 바다 클릭 방어막 (Pessimistic First): 영문명을 얻지 못했거나 바다를 클릭한 경우 `loc-${lat}-${lng}` 포맷을 ID로 강제 할당하여 튕김 방지.
 
 import { useCallback, useRef } from 'react';
-import { getAddressFromCoordinates, getCoordinatesFromAddress } from '../lib/geocoding';
+import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
 import { formatUrlName } from '../lib/formatUrlName';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -105,7 +105,14 @@ const getDistanceKm = (lat1, lon1, lat2, lon2) => {
 };
 
 const SMART_SEARCH_COORD_TOLERANCE_KM = 120;
-const CURATION_COORD_TOLERANCE_KM = 5;
+
+/** 시설 검색이 시·군·구로 캐시·교정된 경우 거부 */
+const isAdminRegionName = (name) => {
+  const n = String(name || '').replace(/\s+/g, '');
+  if (!n) return false;
+  if (/[시군구]$/.test(n)) return true;
+  return /(?:gun|si|gu|-gun|-si)$/i.test(n);
+};
 const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
 const MOOD_HINT_KEYWORDS = [
   '감정', '기분', '마음', '분위기', '무드',
@@ -564,6 +571,15 @@ export function useHomeHandlers({
       return MOOD_HINT_KEYWORDS.some((keyword) => normalized.includes(keyword));
     };
 
+    /** 감정 키워드·문장부호 — Mapbox가 임의 지명으로 가로채기 전에 AI 무드 큐레이션으로 보냄 */
+    const shouldSkipGeocodeForMood = (text) => {
+      if (isFacilityQuery(text)) return false;
+      const normalized = (text || '').toLowerCase().trim();
+      if (!normalized) return false;
+      if (/[?!.]/.test(normalized)) return true;
+      return MOOD_HINT_KEYWORDS.some((keyword) => normalized.includes(keyword));
+    };
+
     const pickMoodVariant = (variants = []) => {
       if (!Array.isArray(variants) || variants.length === 0) return null;
       const now = Date.now();
@@ -582,8 +598,10 @@ export function useHomeHandlers({
       return weighted[0];
     };
 
-    const matchCuratedLocation = (verifiedLat, verifiedLng, nameEn) => {
+    // 이름 일치만 SSOT 연결. 좌표 근접 스냅은 시설·세부 검색을 상위 여행지로 끌어올림 → 금지.
+    const matchCuratedLocation = (verifiedLat, verifiedLng, nameEn, nameKo = '') => {
       const normalizedEn = String(nameEn ?? '').trim().toLowerCase();
+      const normalizedKo = String(nameKo ?? '').replace(/\s+/g, '').toLowerCase();
 
       if (normalizedEn) {
         const spotByName = TRAVEL_SPOTS.find(
@@ -597,18 +615,16 @@ export function useHomeHandlers({
         if (cityByName) return { type: 'city', data: cityByName };
       }
 
-      for (const spot of TRAVEL_SPOTS) {
-        if (!Number.isFinite(spot.lat) || !Number.isFinite(spot.lng)) continue;
-        if (getDistanceKm(verifiedLat, verifiedLng, spot.lat, spot.lng) <= CURATION_COORD_TOLERANCE_KM) {
-          return { type: 'spot', data: spot };
-        }
-      }
+      if (normalizedKo) {
+        const spotByKo = TRAVEL_SPOTS.find(
+          (s) => String(s.name || '').replace(/\s+/g, '').toLowerCase() === normalizedKo
+        );
+        if (spotByKo) return { type: 'spot', data: spotByKo };
 
-      for (const city of citiesData) {
-        if (!Number.isFinite(city.lat) || !Number.isFinite(city.lng)) continue;
-        if (getDistanceKm(verifiedLat, verifiedLng, city.lat, city.lng) <= CURATION_COORD_TOLERANCE_KM) {
-          return { type: 'city', data: city };
-        }
+        const cityByKo = citiesData.find(
+          (c) => String(c.name || '').replace(/\s+/g, '').toLowerCase() === normalizedKo
+        );
+        if (cityByKo) return { type: 'city', data: cityByKo };
       }
 
       return null;
@@ -672,7 +688,12 @@ export function useHomeHandlers({
       const enrichedDesc = reasonText ? `${baseDesc} ${reasonText}` : baseDesc;
 
       const verifiedNameEn = geoNameEn || candidate?.name_en || nameForLookup;
-      const curated = matchCuratedLocation(resolvedLat, resolvedLng, verifiedNameEn);
+      const curated = matchCuratedLocation(
+        resolvedLat,
+        resolvedLng,
+        verifiedNameEn,
+        candidate?.name || originalQuery
+      );
 
       if (curated?.type === 'spot') {
         const entry = curated.data;
@@ -740,36 +761,32 @@ export function useHomeHandlers({
       }, resolvedLat, resolvedLng);
     };
 
-    const coords = await getCoordinatesFromAddress(query);
+    // 감정 키워드(번아웃·설렘 등)·문장부호는 지오코딩 스킵 → AI 무드 큐레이션 유지
+    // (Mapbox가 "힐링" 등을 임의 POI로 잡는 회귀 방지). 시설·일반 지명은 기존처럼 geocode.
+    const coords = shouldSkipGeocodeForMood(query)
+      ? null
+      : await getCoordinatesFromAddress(query);
 
     if (coords) {
+      // 검색어가 SSOT 공식명·별칭과 일치할 때만 큐레이션 여행지로 연결.
+      // 좌표 근접 스냅 금지 — 홍천 휴게소 → 홍천군 같은 상위 지명 끌어올림 방지 (지구본 POI 클릭과 동일).
       const hintedSpot = resolveTravelSpotFromSearchQuery(query);
       if (hintedSpot) {
         handleLocationSelect(hintedSpot);
         return hintedSpot;
       }
 
-      const coordSpot = resolveTravelSpotFromCoords(coords.lat, coords.lng);
-      if (coordSpot) {
-        const snapped = {
-          ...coordSpot,
-          type: 'temp-base',
-          category: coordSpot.category || category,
-          originalQuery: query,
-        };
-        handleLocationSelect(snapped);
-        return snapped;
-      }
-
+      const displayName = coords.name || query;
       const normalizedLoc = finalizeUiPlacePin({
         id: `search-${coords.lat}-${coords.lng}`,
-        slug: formatUrlName(coords.name_en || coords.name),
-        name: query,
-        name_en: coords.name_en || coords.name,
+        slug: formatUrlName(coords.name_en || coords.name || query),
+        name: displayName,
+        name_en: coords.name_en || coords.name || query,
+        name_ko: displayName,
         lat: coords.lat,
         lng: coords.lng,
         category: category,
-        desc: `${query} (${coords.country || "Explore"}) 지역을 탐색합니다.`,
+        desc: `${displayName} (${coords.country || "Explore"}) 지역을 탐색합니다.`,
         type: 'temp-base',
         originalQuery: query,
         uiPlace: true,
@@ -792,7 +809,17 @@ export function useHomeHandlers({
           .eq('original_query', lowerQuery)
           .maybeSingle();
 
-        if (cachedDict && cachedDict.location_data) {
+        const cacheLooksLikeAdminCollapse =
+          isFacilityQuery(query) &&
+          isAdminRegionName(cachedDict?.corrected_query || cachedDict?.location_data?.name);
+
+        if (cacheLooksLikeAdminCollapse) {
+          console.warn(
+            `[Smart Search] 시설 검색의 행정구역 캐시 무시: "${query}" → "${cachedDict?.corrected_query}"`
+          );
+        }
+
+        if (cachedDict && cachedDict.location_data && !cacheLooksLikeAdminCollapse) {
           console.log(`[Smart Search DB Cache] "${query}" -> "${cachedDict.corrected_query}" (캐시 적중)`);
           const parsedData = cachedDict.location_data;
           const isMoodCache = parsedData?.intent_type === 'mood' && Array.isArray(parsedData?.variants);
@@ -870,8 +897,27 @@ export function useHomeHandlers({
     }
   ]
 }`
+              : isFacilityQuery(query)
+              ? `사용자가 여행 검색창에 "${query}"라고 입력했습니다.
+이는 휴게소·역·공원·댐 등 **세부 장소·시설** 검색입니다.
+규칙을 지키세요.
+1) 입력한 시설·명소 자체를 찾으세요. 시·군·구 등 상위 행정구역으로 축소·교정하지 마세요.
+2) 예: "홍천 휴게소" → 홍천(고속)휴게소 좌표. "홍천군"으로 바꾸지 마세요.
+3) 실제로 존재하는 장소여야 하며, 좌표는 해당 시설 위치여야 합니다.
+응답은 반드시 다른 설명 없이 아래 JSON 형식으로만 응답하세요.
+{
+  "intent_type": "typo",
+  "name": "시설·명소의 정확한 이름(한국어)",
+  "name_en": "정확한 이름(영어)",
+  "country": "소속 국가(한국어)",
+  "country_en": "소속 국가(영어)",
+  "lat": 위도(숫자),
+  "lng": 경도(숫자),
+  "reason": "이 시설을 찾은 이유 1문장 (한국어, 30자 내외)"
+}`
               : `사용자가 여행 검색창에 "${query}"라고 입력했습니다.
 입력값은 오타일 가능성이 높습니다. 가장 가능성 높은 실제 지명 1곳으로 교정하세요.
+세부 시설(휴게소·역 등)이 아니면 행정구역으로 넓히지 마세요.
 응답은 반드시 다른 설명 없이 아래 JSON 형식으로만 응답하세요.
 {
   "intent_type": "typo",
@@ -958,9 +1004,19 @@ export function useHomeHandlers({
               }
             } else {
               const cleanName = parsedData.name;
-              if (cleanName && cleanName !== query && cleanName.length > 0 && cleanName.length < 30) {
+              const facilityCollapsedToAdmin =
+                isFacilityQuery(query) && isAdminRegionName(cleanName);
+              if (facilityCollapsedToAdmin) {
+                console.warn(
+                  `[Smart Search AI] 시설 검색이 행정구역으로 축소되어 거부: "${query}" → "${cleanName}"`
+                );
+              } else if (cleanName && cleanName.length > 0 && cleanName.length < 40) {
                 console.log(`[Smart Search AI] AI가 "${query}"를 "${cleanName}"(으)로 교정 및 좌표를 파싱했습니다.`, parsedData);
-                const verifiedAiLoc = await verifyAndNormalizeCandidate(parsedData, query, "AI");
+                // 시설 검색은 원문 유지 가능 — 이름 불일치여도 좌표가 맞으면 uiPlace로 연결
+                const candidateForVerify = isFacilityQuery(query)
+                  ? { ...parsedData, name: cleanName || query }
+                  : parsedData;
+                const verifiedAiLoc = await verifyAndNormalizeCandidate(candidateForVerify, query, "AI");
 
                 if (verifiedAiLoc) {
                   // 3. AI 교정 성공 + 실재 검증 성공 시에만 캐시 저장
