@@ -307,6 +307,35 @@ export function useHomeHandlers({
       category: loc.category || category
     });
 
+    /** SSOT 미등록(살타 등) + 구즐겨찾기 Explore — 역지오코딩으로 국가 자가치유 */
+    const scheduleCountryHeal = (pin) => {
+      if (!isPlaceholderCountry(pin?.country) && !isPlaceholderCountry(pin?.country_en)) return;
+      const lat = Number(pin?.lat);
+      const lng = Number(pin?.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+      getAddressFromCoordinates(lat, lng).then((address) => {
+        if (!address?.country || isPlaceholderCountry(address.country)) return;
+        setSelectedLocation((prev) => {
+          if (!prev) return prev;
+          const samePlace =
+            isSameCanonicalPlace(prev, pin) ||
+            (Number(prev.lat) === lat && Number(prev.lng) === lng);
+          if (!samePlace) return prev;
+          if (!isPlaceholderCountry(prev.country) && !isPlaceholderCountry(prev.country_en)) {
+            return prev;
+          }
+          const healed = prepareResolvedLocation({
+            ...prev,
+            country: address.country,
+            country_en: address.country_en || address.country,
+          });
+          addScoutPin(healed);
+          return healed;
+        });
+      }).catch(() => {});
+    };
+
     if (
       selectedLocation &&
       (isSameCanonicalPlace(selectedLocation, finalLoc) ||
@@ -322,6 +351,7 @@ export function useHomeHandlers({
       setSelectedLocation(unified);
       setIsPlaceCardOpen(true);
       setIsCardExpanded(false);
+      scheduleCountryHeal(unified);
       return;
     }
 
@@ -334,6 +364,7 @@ export function useHomeHandlers({
     setSelectedLocation(finalLoc);
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false);
+    scheduleCountryHeal(finalLoc);
   }, [selectedLocation, category, moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded]);
 
   /** 좌측 꼬꼬무 — 연관 4곳은 목록 유지, 교두보(푸시아)만 새 목록 생성 */

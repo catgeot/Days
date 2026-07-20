@@ -8,8 +8,16 @@
 
 import { useState, useCallback } from 'react';
 import { supabase, recordInteraction } from '../../../shared/api/supabase';
+import { isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
 
 const LOCAL_STORAGE_KEY = 'days_guest_trips';
+
+/** Explore/Global이 실국가명을 덮어쓰지 않게 — 재즐겨찾기 시 curation_data 갱신용 */
+function preferConcreteCountry(primary, fallback) {
+  if (!isPlaceholderCountry(primary)) return primary;
+  if (!isPlaceholderCountry(fallback)) return fallback;
+  return primary || fallback || undefined;
+}
 
 export const useTravelData = (user) => {
   const [savedTrips, setSavedTrips] = useState([]);
@@ -214,14 +222,35 @@ export const useTravelData = (user) => {
             recordInteraction(trip.destination, 'save');
         }
 
+        // 재즐겨찾기: 구버전 Explore/Global curation_data를 현재 장소카드 국가로 갱신
+        // (해제 후 재검색해도 destination 매칭으로 옛 행만 is_bookmarked 토글되던 문제)
+        const prevMeta = trip.curation_data || {};
+        const shouldRefreshMeta = newStatus === true && locationObj;
+        const nextPatch = shouldRefreshMeta
+          ? {
+              is_bookmarked: newStatus,
+              lat: locationObj.lat ?? trip.lat,
+              lng: locationObj.lng ?? trip.lng,
+              curation_data: {
+                ...prevMeta,
+                locationEn: locationObj.name_en || locationObj.name || prevMeta.locationEn,
+                slug: locationObj.slug || prevMeta.slug,
+                country: preferConcreteCountry(locationObj.country, prevMeta.country),
+                country_en: preferConcreteCountry(locationObj.country_en, prevMeta.country_en),
+                uiPlace: Boolean(locationObj.uiPlace ?? prevMeta.uiPlace),
+                galleryRegionSpot: locationObj.galleryRegionSpot || prevMeta.galleryRegionSpot,
+              },
+            }
+          : { is_bookmarked: newStatus };
+
         setSavedTrips(prev => {
-          const updated = prev.map(t => t.id === targetId ? { ...t, is_bookmarked: newStatus } : t);
+          const updated = prev.map(t => (t.id === targetId ? { ...t, ...nextPatch } : t));
           if (!user) syncLocalStorage(updated); 
           return updated;
         });
         
         if (user) {
-          const { error } = await supabase.from('saved_trips').update({ is_bookmarked: newStatus }).eq('id', targetId);
+          const { error } = await supabase.from('saved_trips').update(nextPatch).eq('id', targetId);
           if (error) console.warn("🚨 [DB Error] toggleBookmark (update):", error);
         }
     } 

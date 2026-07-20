@@ -128,13 +128,20 @@ export const getCoordinatesFromAddress = async (query) => {
     // Nominatim이 'en' 헤더 덕분에 영문 데이터를 주지만, 확실하게 city/town/village 등에서 가져옴
     const englishName = address.city || address.town || address.village || address.island || address.state || address.country || cleanQuery;
     const travelCountry = resolveTravelCountryFromAddresses(address, null);
+    // Nominatim Accept-Language:en → country가 "Argentina" 등 영문만 올 수 있음 → 한글 표기 정규화
+    const countryEn = travelCountry.country_en || travelCountry.country || '';
+    const countryKo =
+      KEYWORD_SYNONYMS[String(countryEn).toLowerCase()] ||
+      KEYWORD_SYNONYMS[String(travelCountry.country || '').toLowerCase()] ||
+      travelCountry.country ||
+      countryEn;
 
     return {
       lat: parseFloat(topResult.lat),
       lng: parseFloat(topResult.lon),
       name: englishName, // 이제 여기가 "Lombok"이 됨
-      country: travelCountry.country,
-      country_en: travelCountry.country_en,
+      country: countryKo,
+      country_en: countryEn || countryKo,
       display_name: topResult.display_name
     };
   } catch (error) {

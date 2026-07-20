@@ -241,6 +241,21 @@ const isMarkerCountryMissing = (marker) => {
 const hydrateMarkerFromSpotCatalog = (marker, spotCatalog = []) => {
   if (!marker || !spotCatalog?.length) return marker;
 
+  // saved_trips 스프레드 마커: curation_data.country를 상위로 승격 후 카탈로그 보강
+  const meta = marker.curation_data;
+  if (meta && typeof meta === 'object') {
+    marker = {
+      ...marker,
+      country: isMarkerCountryMissing(marker) ? (meta.country || marker.country) : marker.country,
+      country_en: isMarkerCountryMissing({ country: marker.country_en })
+        ? (meta.country_en || marker.country_en)
+        : marker.country_en,
+      slug: marker.slug || meta.slug,
+      name_en: marker.name_en || meta.locationEn,
+      galleryRegionSpot: marker.galleryRegionSpot || meta.galleryRegionSpot,
+    };
+  }
+
   const slug = String(marker.slug || marker.canonical_slug || '').trim().toLowerCase();
   let spot = slug ? spotCatalog.find((s) => String(s.slug || '').toLowerCase() === slug) : null;
 
@@ -703,15 +718,30 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
       const idx = findMatchIndex(trip.lat, trip.lng);
       const fixedName = trip.name || trip.destination || 'Saved Place';
+      const meta = trip.curation_data || {};
+      // country는 curation_data에만 있는 경우가 많음(살타 등 미등록 uiPlace) — 마커 재클릭 Explore 방지
+      const tripCountry = trip.country || meta.country;
+      const tripCountryEn = trip.country_en || meta.country_en;
 
       if (idx !== -1) {
         if (isBookmarked) result[idx].isBookmarked = true;
         if (hasMessageChat) result[idx].hasChat = true;
         result[idx].tripId = trip.id;
+        if (isMarkerCountryMissing(result[idx]) && tripCountry) {
+          result[idx].country = tripCountry;
+          result[idx].country_en = tripCountryEn;
+        }
+        if (!result[idx].slug && meta.slug) result[idx].slug = meta.slug;
+        if (!result[idx].name_en && meta.locationEn) result[idx].name_en = meta.locationEn;
       } else {
         result.push({
           ...trip,
           name: fixedName,
+          name_en: trip.name_en || meta.locationEn,
+          slug: trip.slug || meta.slug,
+          country: tripCountry,
+          country_en: tripCountryEn,
+          galleryRegionSpot: trip.galleryRegionSpot || meta.galleryRegionSpot,
           type: 'temp-base',
           priority: isBookmarked ? 4 : 3,
           isBookmarked,

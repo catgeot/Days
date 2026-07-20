@@ -4,6 +4,7 @@ import { formatUrlName } from './formatUrlName.js';
 import {
   buildSpotLookup,
   resolveTravelSpotFromPlaceId,
+  isPlaceholderCountry,
 } from '../../../utils/travelSpotResolve.js';
 import { readCachedPlaceBySlug } from './placeLocationCache.js';
 
@@ -66,6 +67,11 @@ export function hydrateLocationFromSavedTrip(trip, category = 'paradise') {
   const slug = meta.slug || trip.slug || formatUrlName(nameEn || dest);
   const lat = Number(trip.lat);
   const lng = Number(trip.lng);
+  const rawCountry = meta.country || trip.country || '';
+  const rawCountryEn = meta.country_en || trip.country_en || '';
+  // Explore/Global을 하드코딩하지 않음 → healPlaceholderCountry·역지오 자가치유 여지
+  const country = isPlaceholderCountry(rawCountry) ? undefined : rawCountry;
+  const countryEn = isPlaceholderCountry(rawCountryEn) ? undefined : rawCountryEn;
 
   return {
     ...trip,
@@ -78,8 +84,8 @@ export function hydrateLocationFromSavedTrip(trip, category = 'paradise') {
     name_en: nameEn,
     lat,
     lng,
-    country: meta.country || trip.country || 'Explore',
-    country_en: meta.country_en || trip.country_en || 'Explore',
+    country,
+    country_en: countryEn,
     type: 'temp-base',
     category: trip.category || category,
     uiPlace: meta.uiPlace !== false,

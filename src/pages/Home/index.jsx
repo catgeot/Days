@@ -25,7 +25,14 @@ import { hydrateLocationFromSavedTrip, resolvePlaceTargetFromSlug } from './lib/
 import { getSystemPrompt } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
-import { mergeCanonicalTravelSpot, isSameCanonicalPlace, resolveTravelSpotFromCoords } from '../../utils/travelSpotResolve.js';
+import {
+  mergeCanonicalTravelSpot,
+  healPlaceholderCountry,
+  isPlaceholderCountry,
+  isSameCanonicalPlace,
+  resolveTravelSpotFromCoords,
+} from '../../utils/travelSpotResolve.js';
+import { getAddressFromCoordinates } from './lib/geocoding';
 import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
@@ -56,12 +63,14 @@ function resolveFocusLocationFromPlacePath(pathname, category, savedTrips = []) 
   const target = resolvePlaceTargetFromSlug(slug, { savedTrips, category });
   if (target && hasValidCoords(target)) {
     return enrichLocationWithRentalAirport(
-      mergeCanonicalTravelSpot({
-        ...target,
-        id: target.id || `loc-${target.lat}-${target.lng}`,
-        type: target.type || 'temp-base',
-        category: target.category || category,
-      }),
+      healPlaceholderCountry(
+        mergeCanonicalTravelSpot({
+          ...target,
+          id: target.id || `loc-${target.lat}-${target.lng}`,
+          type: target.type || 'temp-base',
+          category: target.category || category,
+        }),
+      ),
     );
   }
 
@@ -266,16 +275,18 @@ function Home() {
     if (!targetPlace) return;
 
     const prepared = enrichLocationWithRentalAirport(
-      mergeCanonicalTravelSpot({
-        ...targetPlace,
-        id:
-          targetPlace.id ||
-          (targetPlace.lat != null && targetPlace.lng != null
-            ? `city-${targetPlace.lat}-${targetPlace.lng}`
-            : undefined),
-        type: targetPlace.type || 'temp-base',
-        category: targetPlace.category || category,
-      })
+      healPlaceholderCountry(
+        mergeCanonicalTravelSpot({
+          ...targetPlace,
+          id:
+            targetPlace.id ||
+            (targetPlace.lat != null && targetPlace.lng != null
+              ? `city-${targetPlace.lat}-${targetPlace.lng}`
+              : undefined),
+          type: targetPlace.type || 'temp-base',
+          category: targetPlace.category || category,
+        })
+      )
     );
 
     const param = getPlaceUrlParam(prepared);
@@ -406,8 +417,8 @@ function Home() {
               name_en: matchedCity ? matchedCity.name_en : "",
               lat: parsedLat,
               lng: parsedLng,
-              country: matchedCity ? matchedCity.country : "Explore",
-              country_en: matchedCity ? matchedCity.country_en : "Explore",
+              country: matchedCity?.country || undefined,
+              country_en: matchedCity?.country_en || undefined,
               tags: matchedCity ? matchedCity.tags : [],
               desc: matchedCity ? matchedCity.desc : ""
             };
@@ -441,12 +452,14 @@ function Home() {
           if (syncId !== placeRouteSyncRef.current) return;
 
           const focusTarget = enrichLocationWithRentalAirport(
-            mergeCanonicalTravelSpot({
-              ...hydratedTarget,
-              id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
-              type: hydratedTarget.type || 'temp-base',
-              category: hydratedTarget.category || category,
-            })
+            healPlaceholderCountry(
+              mergeCanonicalTravelSpot({
+                ...hydratedTarget,
+                id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
+                type: hydratedTarget.type || 'temp-base',
+                category: hydratedTarget.category || category,
+              })
+            )
           );
 
           const canonicalParam = getPlaceUrlParam(focusTarget);
@@ -471,6 +484,36 @@ function Home() {
             selectedLocationRef.current = focusTarget;
             pendingGlobeHomeFocusRef.current = focusTarget;
             setSelectedLocation(focusTarget);
+          }
+
+          // SSOT 미등록 uiPlace(살타 등) — URL 복원 시 Explore/빈 국가를 역지오로 복구
+          if (
+            isPlaceholderCountry(focusTarget.country) &&
+            Number.isFinite(Number(focusTarget.lat)) &&
+            Number.isFinite(Number(focusTarget.lng))
+          ) {
+            getAddressFromCoordinates(focusTarget.lat, focusTarget.lng)
+              .then((address) => {
+                if (!address?.country || isPlaceholderCountry(address.country)) return;
+                if (syncId !== placeRouteSyncRef.current) return;
+                setSelectedLocation((prev) => {
+                  if (!prev || !isSameCanonicalPlace(prev, focusTarget)) return prev;
+                  if (!isPlaceholderCountry(prev.country) && !isPlaceholderCountry(prev.country_en)) {
+                    return prev;
+                  }
+                  const healed = enrichLocationWithRentalAirport(
+                    healPlaceholderCountry({
+                      ...prev,
+                      country: address.country,
+                      country_en: address.country_en || address.country,
+                    }),
+                  );
+                  selectedLocationRef.current = healed;
+                  addScoutPin(healed);
+                  return healed;
+                });
+              })
+              .catch(() => {});
           }
 
           setIsCardExpanded(true);

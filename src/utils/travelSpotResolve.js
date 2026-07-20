@@ -321,13 +321,33 @@ function preferConcreteCountry(primary, fallback) {
 }
 
 /**
+ * saved_trips.curation_data에만 남은 국가·slug를 상위 필드로 승격.
+ * (마커 GeoJSON·재클릭 시 country 공백 → Explore/Global 재발 방지)
+ */
+export function liftCurationCountryFields(location) {
+  if (!location || typeof location !== 'object') return location;
+  const meta = location.curation_data;
+  if (!meta || typeof meta !== 'object') return location;
+
+  return {
+    ...location,
+    country: preferConcreteCountry(location.country, meta.country),
+    country_en: preferConcreteCountry(location.country_en, meta.country_en),
+    slug: location.slug || meta.slug || location.slug,
+    name_en: location.name_en || meta.locationEn || location.name_en,
+    galleryRegionSpot: location.galleryRegionSpot || meta.galleryRegionSpot,
+  };
+}
+
+/**
  * 구버전 세션 캐시·임시 핀에 남은 Explore/Global/빈 국가명을 SSOT로 복구.
  * 표시명·좌표는 유지하고 country·galleryRegionSpot만 보강할 수 있음.
  */
 export function healPlaceholderCountry(location, spots = TRAVEL_SPOTS) {
   if (!location || typeof location !== 'object') return location;
 
-  const merged = mergeCanonicalTravelSpot(location);
+  const lifted = liftCurationCountryFields(location);
+  const merged = mergeCanonicalTravelSpot(lifted);
   if (!isPlaceholderCountry(merged.country) && !isPlaceholderCountry(merged.country_en)) {
     return merged;
   }
