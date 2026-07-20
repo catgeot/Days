@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
+import { splitPlaceOverview } from '../common/placeOverviewText';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
     
@@ -13,6 +14,9 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         }
         return `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
     }, [selectedImg, selectedPlace]);
+
+    const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
+        useMemo(() => splitPlaceOverview(selectedPlace), [selectedPlace]);
 
     const photoAttribution = useMemo(
         () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
@@ -86,9 +90,30 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                     </div>
                 ) : (
                     <div className="animate-fade-in space-y-10">
-                        <p className="text-[14px] text-gray-300/90 leading-8 font-normal tracking-wide whitespace-pre-line">
-                            {selectedPlace?.desc || "이 장소에 대한 정보가 업데이트 중입니다."}
-                        </p>
+                        <div className="space-y-4">
+                            {(overviewQuery || curationOverview) && (
+                                <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3.5 py-3">
+                                    {overviewQuery && (
+                                        <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-violet-200/90">
+                                            <Sparkles size={12} className="shrink-0 text-violet-300" aria-hidden />
+                                            <span className="min-w-0 line-clamp-2">
+                                                「{overviewQuery}」에서 이 여행지로
+                                            </span>
+                                        </p>
+                                    )}
+                                    {curationOverview && (
+                                        <p className="text-[14px] leading-relaxed text-violet-50/95 whitespace-pre-line">
+                                            {curationOverview}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                            {(fixedOverview || !curationOverview) && (
+                                <p className="text-[14px] text-gray-300/90 leading-8 font-normal tracking-wide whitespace-pre-line">
+                                    {fixedOverview || '이 장소에 대한 정보가 업데이트 중입니다.'}
+                                </p>
+                            )}
+                        </div>
                         
                         <div className="pt-6 border-t border-white/5">
                             {selectedPlace?.keywords && (

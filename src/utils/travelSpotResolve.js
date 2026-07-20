@@ -428,7 +428,9 @@ export function mergeCanonicalTravelSpot(location) {
     country: preferConcreteCountry(spot.country, location.country),
     country_en: preferConcreteCountry(spot.country_en, location.country_en),
     category: spot.category ?? spot.primaryCategory ?? location.category,
+    // 큐레이션 연결 desc·curationSummary는 location 우선 (고정 SSOT가 덮어쓰지 않음)
     desc: location.desc || spot.desc,
+    curationSummary: location.curationSummary || location.curation_summary,
     keywords: spot.keywords ?? location.keywords,
     lat: spot.lat ?? location.lat,
     lng: spot.lng ?? location.lng,

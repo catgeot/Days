@@ -21,7 +21,11 @@ import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
-import { hydrateLocationFromSavedTrip, resolvePlaceTargetFromSlug } from './lib/placeRouteHydrate';
+import {
+  hydrateLocationFromSavedTrip,
+  overlaySessionCuration,
+  resolvePlaceTargetFromSlug,
+} from './lib/placeRouteHydrate';
 import { getSystemPrompt } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
@@ -451,15 +455,18 @@ function Home() {
         queueMicrotask(() => {
           if (syncId !== placeRouteSyncRef.current) return;
 
-          const focusTarget = enrichLocationWithRentalAirport(
-            healPlaceholderCountry(
-              mergeCanonicalTravelSpot({
-                ...hydratedTarget,
-                id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
-                type: hydratedTarget.type || 'temp-base',
-                category: hydratedTarget.category || category,
-              })
-            )
+          const focusTarget = overlaySessionCuration(
+            enrichLocationWithRentalAirport(
+              healPlaceholderCountry(
+                mergeCanonicalTravelSpot({
+                  ...hydratedTarget,
+                  id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
+                  type: hydratedTarget.type || 'temp-base',
+                  category: hydratedTarget.category || category,
+                })
+              )
+            ),
+            { selectedLocation: selectedLocationRef.current },
           );
 
           const canonicalParam = getPlaceUrlParam(focusTarget);
@@ -910,48 +917,49 @@ function Home() {
           onSearch={async (query) => {
             const selectedFromSearch = await handleSmartSearch(query);
 
-            if (selectedFromSearch?.name) {
-              try {
-                const key = 'gateo_recent_visited_destinations';
-                const current = JSON.parse(localStorage.getItem(key) || '[]');
-                const safeCurrent = Array.isArray(current) ? current : [];
-                const next = [
-                  selectedFromSearch.name,
-                  ...safeCurrent.filter((item) => item !== selectedFromSearch.name)
-                ].slice(0, 30);
-                localStorage.setItem(key, JSON.stringify(next));
+            // 결과 없을 때 Explore를 닫고 홈만 열지 않음 (반딧불 isConcept null 회귀 방지)
+            if (!selectedFromSearch?.name) return;
 
-                const keywordVisitKey = 'gateo_recent_keyword_visits';
-                const rawKeywordVisits = JSON.parse(localStorage.getItem(keywordVisitKey) || '[]');
-                const keywordVisits = Array.isArray(rawKeywordVisits) ? rawKeywordVisits : [];
-                const normalizedKeyword = (query || '').trim();
+            try {
+              const key = 'gateo_recent_visited_destinations';
+              const current = JSON.parse(localStorage.getItem(key) || '[]');
+              const safeCurrent = Array.isArray(current) ? current : [];
+              const next = [
+                selectedFromSearch.name,
+                ...safeCurrent.filter((item) => item !== selectedFromSearch.name)
+              ].slice(0, 30);
+              localStorage.setItem(key, JSON.stringify(next));
 
-                if (normalizedKeyword) {
-                  const matched = keywordVisits.find((entry) => entry?.keyword === normalizedKeyword);
-                  let nextKeywordVisits;
+              const keywordVisitKey = 'gateo_recent_keyword_visits';
+              const rawKeywordVisits = JSON.parse(localStorage.getItem(keywordVisitKey) || '[]');
+              const keywordVisits = Array.isArray(rawKeywordVisits) ? rawKeywordVisits : [];
+              const normalizedKeyword = (query || '').trim();
 
-                  if (matched) {
-                    const updatedDestinations = [
-                      selectedFromSearch.name,
-                      ...(Array.isArray(matched.destinations) ? matched.destinations : []).filter((dest) => dest !== selectedFromSearch.name)
-                    ].slice(0, 5);
+              if (normalizedKeyword) {
+                const matched = keywordVisits.find((entry) => entry?.keyword === normalizedKeyword);
+                let nextKeywordVisits;
 
-                    nextKeywordVisits = [
-                      { ...matched, destinations: updatedDestinations, updatedAt: Date.now() },
-                      ...keywordVisits.filter((entry) => entry?.keyword !== normalizedKeyword)
-                    ];
-                  } else {
-                    nextKeywordVisits = [
-                      { keyword: normalizedKeyword, destinations: [selectedFromSearch.name], updatedAt: Date.now() },
-                      ...keywordVisits
-                    ];
-                  }
+                if (matched) {
+                  const updatedDestinations = [
+                    selectedFromSearch.name,
+                    ...(Array.isArray(matched.destinations) ? matched.destinations : []).filter((dest) => dest !== selectedFromSearch.name)
+                  ].slice(0, 5);
 
-                  localStorage.setItem(keywordVisitKey, JSON.stringify(nextKeywordVisits.slice(0, 30)));
+                  nextKeywordVisits = [
+                    { ...matched, destinations: updatedDestinations, updatedAt: Date.now() },
+                    ...keywordVisits.filter((entry) => entry?.keyword !== normalizedKeyword)
+                  ];
+                } else {
+                  nextKeywordVisits = [
+                    { keyword: normalizedKeyword, destinations: [selectedFromSearch.name], updatedAt: Date.now() },
+                    ...keywordVisits
+                  ];
                 }
-              } catch {
-                // Ignore localStorage errors in private mode, etc.
+
+                localStorage.setItem(keywordVisitKey, JSON.stringify(nextKeywordVisits.slice(0, 30)));
               }
+            } catch {
+              // Ignore localStorage errors in private mode, etc.
             }
 
             navigate('/', { state: { fromSearch: true } });

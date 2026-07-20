@@ -7,6 +7,7 @@ import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
+import { splitPlaceOverview } from '../common/placeOverviewText';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -227,10 +228,9 @@ const PlaceGalleryView = React.memo(({
 
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden || isMobileLandscapeImmersive;
 
-  const placeOverviewText = useMemo(() => {
-    const t = (location?.desc || location?.description || '').trim();
-    return t;
-  }, [location?.desc, location?.description]);
+  const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
+    useMemo(() => splitPlaceOverview(location), [location]);
+  const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
 
   const photoCaption = useMemo(() => {
     if (!selectedImg) return '';
@@ -617,23 +617,36 @@ const PlaceGalleryView = React.memo(({
           )}
 
           <div className="px-6 max-md:landscape:px-3">
-            {placeOverviewText && (
+            {hasPlaceOverview && (
               <div className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}>
-                <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3.5 backdrop-blur-md shadow-inner">
-                  {location?.originalQuery && (
-                    <p className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-violet-200/95">
-                      <Sparkles size={12} className="shrink-0 text-violet-300" aria-hidden />
-                      <span className="min-w-0 line-clamp-2 normal-case font-semibold tracking-normal text-violet-100/90">
-                        「{location.originalQuery}」에서 이 여행지로
-                      </span>
+                <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3.5 backdrop-blur-md shadow-inner space-y-3">
+                  {(overviewQuery || curationOverview) && (
+                    <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3 py-2.5">
+                      {overviewQuery && (
+                        <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-violet-200/95">
+                          <Sparkles size={12} className="shrink-0 text-violet-300" aria-hidden />
+                          <span className="min-w-0 line-clamp-2">
+                            「{overviewQuery}」에서 이 여행지로
+                          </span>
+                        </p>
+                      )}
+                      {curationOverview && (
+                        <p className="text-[13px] leading-relaxed text-violet-50/95 whitespace-pre-line">
+                          {curationOverview}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {fixedOverview && (
+                    <p className="text-[13px] leading-relaxed text-gray-100/95 whitespace-pre-line">
+                      {fixedOverview}
                     </p>
                   )}
-                  <p className="text-[13px] leading-relaxed text-gray-100/95 whitespace-pre-line">{placeOverviewText}</p>
                 </div>
               </div>
             )}
 
-            <div className={`${placeOverviewText ? 'mt-4' : 'mt-12'} max-md:landscape:mt-0 md:mt-0`}>
+            <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} max-md:landscape:mt-0 md:mt-0`}>
               {isImgLoading ? (
                 <div className="grid grid-cols-2 gap-4">
                    {[...Array(6)].map((_, i) => (

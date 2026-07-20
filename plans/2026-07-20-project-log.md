@@ -32,12 +32,27 @@
 
 ## 검색바 자유 탐색 — 홍천 휴게소→홍천군 스냅
 
-**상태**: ✅ 사용자 QA 통과 · 커밋 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋 `0094711`
 
 - **증상**: 지구본은 세부 POI 클릭 가능하나 검색은 상위 여행지/행정구역으로 묶임 (예: 홍천 휴게소 → 홍천군).
 - **원인**: Nominatim 미매칭 → AI·캐시가 군으로 교정 · 검색 성공 시 `resolveTravelSpotFromCoords` 스냅.
 - **조치**: Mapbox forward 우선 · 검색 coord 스냅 제거(이름 SSOT만) · `isFacilityQuery` 행정구역 히트/캐시/AI 축소 거부.
 - **무드 큐레이션**: AI mood 프롬프트·캐시 로직 미변경. Mapbox가 감정어를 가로채지 않도록 감정 키워드·문장부호는 geocode 스킵 → mood AI 유지.
+
+## 큐레이션 갤러리 써머리 — 고정 desc에 가려짐
+
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 대기
+
+- **증상**: 큐레이션 문구가 카드 오픈 직후 잠깐 보이다 `/place/` sync·SSOT hydrate에 덮여 사라짐.
+- **조치**: `curationSummary` 분리 · `overlaySessionCuration`(selectedLocation·slug 캐시) · 갤러리에서 큐레이션 블록과 고정 desc를 시각적으로 분리.
+
+## 테마 검색 회귀 — 반딧불·빙하 문장
+
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 대기
+
+- **반딧불**: `isConcept`(keywords `includes`)가 null → Explore `onSearch`가 무조건 홈 이동.
+- **빙하를 보고 싶어**: `보고싶` 무드 경로로 AI가 비관련 지역(필리핀) 선택.
+- **조치**: SSOT 테마 키워드 큐레이션(`pickThemeCurationSpot`) · 테마 있으면 무드 geocode 스킵 안 함 · 검색 실패 시 홈 강제 이동 제거.
 
 ## 살타 등 미등록 uiPlace — 즐겨찾기 국가명 Explore 잔존
 

@@ -130,6 +130,84 @@ const MOOD_HINT_KEYWORDS = [
   'excited', 'nostalgic', 'healing', 'rest', 'calm', 'refresh', 'escape'
 ];
 
+const normalizeSearchKey = (s) => String(s || '').replace(/\s+/g, '').toLowerCase();
+
+/** 너무 짧은·범용 키워드 — 문장 부분일치 오탐 방지 */
+const THEME_KEYWORD_BLOCKLIST = new Set(
+  ['아시아', '유럽', '아프리카', '휴양지', '가족여행', '신혼여행', '자연', '도시', '문화', '모험', '섬'].map(
+    normalizeSearchKey
+  )
+);
+
+/**
+ * SSOT keywords 테마 매칭 (반딧불→반딧불이, 「빙하를 보고 싶어」→빙하).
+ * 예전 isConcept(return null)는 Explore를 닫고 홈만 열어 검색이 사라진 것처럼 보였음.
+ */
+function findThemeKeywordHits(query) {
+  const q = normalizeSearchKey(query);
+  if (q.length < 2) return [];
+
+  const hits = [];
+  for (const spot of TRAVEL_SPOTS) {
+    for (const kw of spot.keywords || []) {
+      const k = normalizeSearchKey(kw);
+      if (k.length < 2) continue;
+      if (THEME_KEYWORD_BLOCKLIST.has(k)) continue;
+
+      let score = 0;
+      if (k === q) score = 100 + k.length;
+      else if (k.includes(q) && q.length >= 2) score = 80 + q.length;
+      else if (q.includes(k) && k.length >= 2) score = 60 + k.length * 3;
+      else continue;
+
+      // 1글자만 문장 부분일치 금지. 한글 2글자 테마(빙하·온천)는 허용.
+      if (k.length < 2) continue;
+
+      hits.push({ spot, keyword: kw, score });
+    }
+  }
+
+  hits.sort(
+    (a, b) =>
+      b.score - a.score ||
+      (Number(b.spot.popularity) || 0) - (Number(a.spot.popularity) || 0)
+  );
+  return hits;
+}
+
+function pickThemeCurationSpot(query, category) {
+  const hits = findThemeKeywordHits(query);
+  if (!hits.length) return null;
+
+  const topScore = hits[0].score;
+  const topHits = hits.filter((h) => h.score === topScore);
+  const picked = topHits[Math.floor(Math.random() * topHits.length)];
+  const entry = picked.spot;
+  const curationSummary = `"${query.trim()}"에 어울리는 「${picked.keyword}」 테마로 ${entry.name}을(를) 연결했습니다.`;
+  const fixed = typeof entry.desc === 'string' ? entry.desc.trim() : '';
+  const desc =
+    fixed && fixed !== curationSummary ? `${curationSummary}\n\n${fixed}` : curationSummary;
+
+  return {
+    id: entry.id ?? entry.slug,
+    slug: entry.slug,
+    canonical_slug: entry.slug,
+    name: entry.name,
+    name_en: entry.name_en ?? entry.name,
+    country: entry.country,
+    country_en: entry.country_en,
+    lat: entry.lat,
+    lng: entry.lng,
+    category: entry.category ?? entry.primaryCategory ?? category,
+    desc,
+    curationSummary,
+    keywords: entry.keywords,
+    type: 'temp-base',
+    isCorrected: true,
+    originalQuery: query.trim(),
+  };
+}
+
 export function useHomeHandlers({
   globeRef,
   user,
@@ -560,24 +638,32 @@ export function useHomeHandlers({
       return normalizedCity;
     }
 
-    const isConcept = TRAVEL_SPOTS.some(spot => spot.category === query || spot.keywords?.some(k => k.includes(query)));
-    if (isConcept) return null;
+    // 테마 키워드(반딧불·빙하 등) — null 반환 금지. SSOT keywords로 큐레이션 연결.
+    const themeSpot = pickThemeCurationSpot(query, category);
+    if (themeSpot) {
+      handleLocationSelect(themeSpot);
+      setDraftInput(themeSpot.name);
+      processSearchKeywords(themeSpot);
+      return themeSpot;
+    }
 
     const isLikelyMoodQuery = (text) => {
-      const normalized = (text || '').toLowerCase().trim();
-      if (!normalized) return false;
-      if (normalized.length >= 8) return true;
-      if (/[?!.]/.test(normalized)) return true;
-      return MOOD_HINT_KEYWORDS.some((keyword) => normalized.includes(keyword));
+      const compact = normalizeSearchKey(text);
+      if (!compact) return false;
+      if (compact.length >= 8) return true;
+      if (/[?!.]/.test(text || '')) return true;
+      return MOOD_HINT_KEYWORDS.some((keyword) => compact.includes(normalizeSearchKey(keyword)));
     };
 
     /** 감정 키워드·문장부호 — Mapbox가 임의 지명으로 가로채기 전에 AI 무드 큐레이션으로 보냄 */
     const shouldSkipGeocodeForMood = (text) => {
       if (isFacilityQuery(text)) return false;
-      const normalized = (text || '').toLowerCase().trim();
-      if (!normalized) return false;
-      if (/[?!.]/.test(normalized)) return true;
-      return MOOD_HINT_KEYWORDS.some((keyword) => normalized.includes(keyword));
+      // 테마 키워드가 있으면 지오코딩·테마 경로 우선 (「빙하를 보고 싶어」≠ 순수 감정)
+      if (findThemeKeywordHits(text).length > 0) return false;
+      const compact = normalizeSearchKey(text);
+      if (!compact) return false;
+      if (/[?!.]/.test(text || '')) return true;
+      return MOOD_HINT_KEYWORDS.some((keyword) => compact.includes(normalizeSearchKey(keyword)));
     };
 
     const pickMoodVariant = (variants = []) => {
@@ -684,8 +770,20 @@ export function useHomeHandlers({
       }
 
       const reasonText = typeof candidate?.reason === 'string' ? candidate.reason.trim() : '';
-      const baseDesc = `"${originalQuery}"의 분위기를 "${candidate?.name || nameForLookup}" 여정으로 연결해 탐색합니다.`;
+      const isMoodSource = /Mood/i.test(sourceLabel);
+      const placeLabel = candidate?.name || nameForLookup;
+      const baseDesc = isMoodSource
+        ? `"${originalQuery}"의 분위기를 "${placeLabel}" 여정으로 연결해 탐색합니다.`
+        : `"${originalQuery}" 검색을 "${placeLabel}"(으)로 연결해 탐색합니다.`;
       const enrichedDesc = reasonText ? `${baseDesc} ${reasonText}` : baseDesc;
+
+      /** 고정 SSOT desc가 있어도 큐레이션 설명을 앞에 유지 (갤러리 써머리 몰입) */
+      const composeCurationDesc = (fixedDesc) => {
+        const fixed = typeof fixedDesc === 'string' ? fixedDesc.trim() : '';
+        if (!fixed) return enrichedDesc;
+        if (fixed === enrichedDesc || fixed.includes(enrichedDesc)) return fixed;
+        return `${enrichedDesc}\n\n${fixed}`;
+      };
 
       const verifiedNameEn = geoNameEn || candidate?.name_en || nameForLookup;
       const curated = matchCuratedLocation(
@@ -697,9 +795,6 @@ export function useHomeHandlers({
 
       if (curated?.type === 'spot') {
         const entry = curated.data;
-        const curatedDesc = entry.desc
-          ? (reasonText ? `${entry.desc} ${reasonText}` : entry.desc)
-          : enrichedDesc;
 
         return {
           id: entry.id ?? entry.slug,
@@ -712,7 +807,8 @@ export function useHomeHandlers({
           lat: entry.lat ?? resolvedLat,
           lng: entry.lng ?? resolvedLng,
           category: entry.category ?? entry.primaryCategory ?? category,
-          desc: curatedDesc,
+          desc: composeCurationDesc(entry.desc),
+          curationSummary: enrichedDesc,
           type: 'temp-base',
           isCorrected: true,
           originalQuery: originalQuery
@@ -721,9 +817,6 @@ export function useHomeHandlers({
 
       if (curated?.type === 'city') {
         const entry = curated.data;
-        const curatedDesc = entry.desc
-          ? (reasonText ? `${entry.desc} ${reasonText}` : entry.desc)
-          : enrichedDesc;
 
         return {
           id: `city-${entry.lat}-${entry.lng}`,
@@ -735,7 +828,8 @@ export function useHomeHandlers({
           lat: entry.lat ?? resolvedLat,
           lng: entry.lng ?? resolvedLng,
           category: category,
-          desc: curatedDesc,
+          desc: composeCurationDesc(entry.desc),
+          curationSummary: enrichedDesc,
           type: 'temp-base',
           isCorrected: true,
           originalQuery: originalQuery
@@ -754,6 +848,7 @@ export function useHomeHandlers({
         lng: resolvedLng,
         category: category,
         desc: enrichedDesc,
+        curationSummary: enrichedDesc,
         type: 'temp-base',
         isCorrected: true,
         originalQuery: originalQuery,

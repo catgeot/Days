@@ -5,8 +5,60 @@ import {
   buildSpotLookup,
   resolveTravelSpotFromPlaceId,
   isPlaceholderCountry,
+  isSameCanonicalPlace,
 } from '../../../utils/travelSpotResolve.js';
 import { readCachedPlaceBySlug } from './placeLocationCache.js';
+
+/**
+ * SSOT/cities hydrate 후에도 검색·테마 큐레이션(originalQuery·curationSummary)을 유지.
+ * /place/:slug sync가 카탈로그 desc만 넣으면 큐레이션이 깜빡이다 사라지던 회귀 방지.
+ */
+export function overlaySessionCuration(target, options = {}) {
+  if (!target || typeof target !== 'object') return target;
+
+  const { selectedLocation = null } = options;
+  const slug = String(target.slug || target.canonical_slug || '')
+    .trim()
+    .toLowerCase();
+
+  let source = null;
+  if (
+    selectedLocation &&
+    (selectedLocation.curationSummary || selectedLocation.originalQuery) &&
+    isSameCanonicalPlace(selectedLocation, target)
+  ) {
+    source = selectedLocation;
+  }
+
+  if (!source && slug) {
+    const cached = readCachedPlaceBySlug(slug);
+    if (cached?.curationSummary || cached?.originalQuery) {
+      source = cached;
+    }
+  }
+
+  if (!source) return target;
+
+  const curationSummary = String(source.curationSummary || '').trim();
+  const originalQuery = source.originalQuery || undefined;
+  const fixed = String(target.desc || '').trim();
+  let desc = fixed;
+  if (curationSummary) {
+    if (!fixed) desc = curationSummary;
+    else if (fixed === curationSummary || fixed.startsWith(curationSummary)) desc = fixed;
+    else desc = `${curationSummary}\n\n${fixed}`;
+  } else if (source.desc) {
+    desc = source.desc;
+  }
+
+  return {
+    ...target,
+    originalQuery,
+    curationSummary: curationSummary || source.curationSummary,
+    isCorrected: source.isCorrected ?? true,
+    desc,
+  };
+}
 
 /** 즐겨찾기·저장 여정에서 /place/:slug URL 세그먼트와 매칭 */
 export function findSavedTripByPlaceSlug(trips, slug) {
@@ -118,25 +170,28 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
     );
     if (aliasResolved?.spot) target = aliasResolved.spot;
   }
-  if (target) return target;
+  if (target) return overlaySessionCuration(target, options);
 
   const matchedCity = (citiesData || []).find(
     (c) => c.slug === normalized || formatUrlName(c.name_en || c.name) === normalized,
   );
   if (matchedCity) {
-    return {
-      id: `city-${matchedCity.lat}-${matchedCity.lng}`,
-      slug: matchedCity.slug,
-      canonical_slug: matchedCity.slug,
-      name: matchedCity.name,
-      name_en: matchedCity.name_en,
-      lat: matchedCity.lat,
-      lng: matchedCity.lng,
-      country: matchedCity.country || 'Explore',
-      country_en: matchedCity.country_en || 'Explore',
-      tags: matchedCity.tags || [],
-      desc: matchedCity.desc || '',
-    };
+    return overlaySessionCuration(
+      {
+        id: `city-${matchedCity.lat}-${matchedCity.lng}`,
+        slug: matchedCity.slug,
+        canonical_slug: matchedCity.slug,
+        name: matchedCity.name,
+        name_en: matchedCity.name_en,
+        lat: matchedCity.lat,
+        lng: matchedCity.lng,
+        country: matchedCity.country || 'Explore',
+        country_en: matchedCity.country_en || 'Explore',
+        tags: matchedCity.tags || [],
+        desc: matchedCity.desc || '',
+      },
+      options,
+    );
   }
 
   if (
@@ -149,7 +204,7 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
   }
 
   const cached = readCachedPlaceBySlug(normalized);
-  if (cached) return cached;
+  if (cached) return overlaySessionCuration(cached, options);
 
   const tripMatch = findSavedTripByPlaceSlug(savedTrips, normalized);
   if (tripMatch) {
