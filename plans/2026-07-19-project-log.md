@@ -25,6 +25,7 @@
 - **수정**: `hydrateMarkerFromSpotCatalog` · `mergeCanonicalTravelSpot` placeholder 보강 · slug-first resolve · 탐색 `navigateToPlace` · 재진입 country coalesce
 - **후속**: 구세션 잔존 Global — `healPlaceholderCountry` · place cache v2 + v1 purge · temp 핀 국가 자가치유
 - **검증**: node 스크립트 ALL PASS · 사용자: 신규 검색 후 마커 국가명 일치 확인
+- **후속(07-20)**: SSOT 미등록(살타 등) Explore 잔존 — 일지 `2026-07-20` · [`travel-spots-management.md`](./travel-spots-management.md) §8.0 · 커밋 `a3810c7`
 
 ## 살타(salta) 플래너 — 지리 검증 geoMismatch fix
 

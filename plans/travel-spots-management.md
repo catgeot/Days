@@ -405,12 +405,29 @@ Mapbox **행정·도시 지명** 클릭은 gateo **큐레이션 SSOT**(`travelSp
 | 경로 | 국가·지명 | SSOT 좌표 스냅 |
 |------|-----------|----------------|
 | Mapbox **지명** 클릭 | 라벨 + [`travelRegionCountry`](../src/pages/Home/lib/travelRegionCountry.js) | **이름·slug 병합만** (`uiPlace` coord 스냅 차단) · 갤러리 맥락은 근접 SSOT/cities |
-| **지오코딩** 성공(빈 지도·검색) | 쿼리 + geocode + 영토복원 | 검색: 이름 SSOT 매칭 후 coord 스냅 · uiPlace는 coord-only 차단 |
+| **지오코딩** 성공(빈 지도·검색) | 쿼리 + geocode + 영토복원 · 전진 geocode는 `KEYWORD_SYNONYMS`로 국가 **한글 정규화** | 검색: 이름 SSOT 매칭 후 coord 스냅 · uiPlace는 coord-only 차단 |
 | **바다·무지명** 클릭 | — | `curatedLocationFromCoords` → 최근접 SSOT/cities |
-| **gateo 마커** 클릭 | 마커 slug · SSOT `country`(영토명) | 카탈로그 slug 있으면 좌표 재매칭 **안 함** |
-| **URL** `/place/:slug` | [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) · 세션 캐시 · 즐겨찾기 | `search-`/`loc-`/`label-` · uiPlace slug(`tahaa`) |
+| **gateo 마커** 클릭 | 마커 slug · SSOT `country`(영토명) · **saved는 `curation_data.country` 승격** | 카탈로그 slug 있으면 좌표 재매칭 **안 함** · 국가 비면 카탈로그/역지오 자가치유 |
+| **URL** `/place/:slug` | [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) · 세션 캐시 · 즐겨찾기 · `healPlaceholderCountry` | `search-`/`loc-`/`label-` · uiPlace slug(`tahaa`·`salta` 등) |
 
 **fuzzy**: [`travelSpotResolve.js`](../src/utils/travelSpotResolve.js) — 접두 부분 일치(`porto`⊂`portovecchio`)·suffix contains(`nice`⊂`venice`, `니스`⊂`베니스`) 차단. `citiesData` 전용 지명(`nice`/`니스`)은 blocklist. 툴킷·검색·`mergeCanonicalTravelSpot` 경로에 적용.
+
+### 8.0 미등록 uiPlace — `Explore`/`Global` 잔존 방지 (2026-07-20)
+
+SSOT에 없는 지구본·검색 핀(살타·Tahaa 등)은 카탈로그 hydrate만으로는 국가를 못 채웁니다. **placeholder 국가**(`Explore`·`Global`·빈 값·`SEARCHING`)가 장소카드에 남으면 아래를 깨지 마세요.
+
+| 계층 | 역할 | 파일 |
+|------|------|------|
+| **lift** | `saved_trips.curation_data` → 상위 `country`/`slug` | [`liftCurationCountryFields`](../src/utils/travelSpotResolve.js) · [`HomeGlobeMapbox`](../src/pages/Home/components/HomeGlobeMapbox.jsx) 마커 병합 |
+| **heal** | placeholder면 근처 SSOT/cities로 보강 | [`healPlaceholderCountry`](../src/utils/travelSpotResolve.js) |
+| **역지오 자가치유** | SSOT 50km 밖·미등록도 coords로 국가 복구 | [`useHomeHandlers`](../src/pages/Home/hooks/useHomeHandlers.js) `handleLocationSelect` · [`index.jsx`](../src/pages/Home/index.jsx) `/place/` URL sync |
+| **재즐겨찾기** | `is_bookmarked`만 토글 **금지** — 현재 카드 국가로 `curation_data` 갱신 | [`useTravelData`](../src/pages/Home/hooks/useTravelData.js) `toggleBookmark` |
+| **캐시** | v1 Explore 캐시 폐기 · placeholder만 있는 캐시 비사용 | [`placeLocationCache.js`](../src/pages/Home/lib/placeLocationCache.js) v2 |
+| **hydrate** | 즐겨찾기 복원 시 Explore를 하드코딩하지 않음 | [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) |
+
+**에이전트 금지**: 마커 GeoJSON에 `country` 생략 · 재북마크 시 `curation_data` 미갱신 · URL/카드 fallback에 `"Explore"` 고정 재도입.
+
+**한계**: Nominatim 실패·바다/무주소 좌표는 국가 공란 가능. 여행 가치가 큰 지점만 §8.2 **승격**.
 
 ### 8.1 SSOT `country` — 여행 표기 (宗主国 vs 영토)
 

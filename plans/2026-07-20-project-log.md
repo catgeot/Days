@@ -14,7 +14,9 @@
 
 ## 살타 등 미등록 uiPlace — 즐겨찾기 국가명 Explore 잔존
 
-**상태**: 🔧 코드 수정 · 사용자 QA 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 `a3810c7`
 
 - **원인**: 살타 미등록(SSOT hydrate 불가) + 재즐겨찾기가 `is_bookmarked`만 토글해 옛 `curation_data.country=Explore` 유지 + 마커가 `curation_data` 국가를 상위로 안 올림.
 - **수정**: 재북마크 시 curation 갱신 · 마커/heal lift · placeholder 시 역지오 자가치유 · 전진 지오코딩 국가 한글 정규화.
+- **범위**: 살타 전용 아님 — 지구본·검색 **미등록 uiPlace 전반** (SSOT 있는 지점은 기존 카탈로그 hydrate).
+- **문서**: [`travel-spots-management.md`](./travel-spots-management.md) **§8.0** · `.ai-context` 3절 uiPlace 국가명 규칙.
