@@ -30,7 +30,7 @@
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
 | **2b** | 항공 예약 퍼널 앞 **시네마** (OD arc) | **WIP→거의 완료** — arc·Bar·Trip 위젯 ✅ · **2c** 장기 |
 | **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
-| **4** | 숙소 탐색 (MRT API → 카드 스트립) | **4.1 ✅** PC 좌측 전폭(포털)·uiPlace/GPS·사다리 · **다음 최적화** — 일지 `2026-07-20` |
+| **4** | 숙소 탐색 (MRT API → 카드 스트립) | **4.1 ✅** · **최적화 1차 ✅** · **다음 2차** — 일지 `2026-07-20` |
 
 ---
 
@@ -440,7 +440,7 @@ Phase 2b 후속 — FlightCinemaBar 디자인 · 항로 arc 최적화(audit·ove
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
 - **2b**: **WIP→arc audit 0** — hub SSOT·Bar·Atlantic bbox·waypoint batch ✅ · **2c** 문서만 · (선택) Bar corridor 라벨
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
-- **4 / 4.1**: MRT 숙소 ✅ — 토글 유지 · **PC 좌측 전폭(`createPortal`)** · uiPlace/GPS · stayAdmin 사다리 · 한국 `countryHint` 정규화 · 핀·호텔 지오코딩 금지 · Edge `fetch-mrt-stays` · **다음 최적화** · 일지 `2026-07-20` · archive `fetch-mrt-products` 이름 재사용 금지
+- **4 / 4.1 + 최적화 1차**: MRT 숙소 ✅ — PC 좌측 전폭 · 카드 안「숙소 찾기」· cityHints·일정·모바일 스크림 · 핀·호텔 지오코딩 금지 · **다음 최적화 2차** · 일지 `2026-07-20` · archive `fetch-mrt-products` 이름 재사용 금지
 
 ---
 

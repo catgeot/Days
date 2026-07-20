@@ -1,9 +1,22 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { BedDouble, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Loader2 } from 'lucide-react';
+import {
+  BedDouble,
+  CalendarDays,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Loader2,
+  X,
+} from 'lucide-react';
 import {
   canShowMrtStayStrip,
+  defaultMrtStayDates,
   fetchMrtStaysForLocation,
+  mrtStayMinCheckOut,
+  mrtStayNights,
+  normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
@@ -28,6 +41,58 @@ function useIsLg() {
 function formatPrice(n) {
   if (n == null || !Number.isFinite(Number(n)) || Number(n) <= 0) return null;
   return `${Number(n).toLocaleString('ko-KR')}원~`;
+}
+
+/** YYYY-MM-DD → 2026.7.20 */
+function formatStayDateLabel(ymd) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || '').trim());
+  if (!m) return ymd || '날짜 선택';
+  return `${Number(m[1])}.${Number(m[2])}.${Number(m[3])}`;
+}
+
+function openNativeDatePicker(input) {
+  if (!input) return;
+  try {
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+  } catch {
+    /* cross-origin / unsupported */
+  }
+  input.focus();
+  input.click();
+}
+
+/** 표시는 버튼 · 클릭 시 네이티브 달력 (숫자 커서 편집 방지) */
+function StayDateField({ label, value, min, onChange, ariaLabel }) {
+  const inputRef = useRef(null);
+
+  return (
+    <div className="flex min-w-0 items-center gap-1.5">
+      <span className="shrink-0 text-[10px] font-medium text-amber-100/55">{label}</span>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => openNativeDatePicker(inputRef.current)}
+          className="min-h-[32px] min-w-[5.75rem] rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-left text-[13px] font-semibold tabular-nums text-amber-50 hover:border-amber-300/45 hover:bg-black/55 transition-colors md:text-xs"
+          aria-label={ariaLabel}
+        >
+          {formatStayDateLabel(value)}
+        </button>
+        <input
+          ref={inputRef}
+          type="date"
+          value={value}
+          min={min}
+          onChange={(e) => onChange(e.target.value)}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 h-px w-px opacity-0"
+        />
+      </div>
+    </div>
+  );
 }
 
 function hasStayAdminLadder(admin) {
@@ -66,39 +131,61 @@ async function withStayAdmin(location) {
 }
 
 /**
- * Summary「숙소」토글 — 펼칠 때만 MRT 카드 스트립.
- * PC: 카드 좌측 플라이아웃 · 모바일: 아래 스트립.
- * slug SSOT + uiPlace(국가·키워드 있을 때). 지도 핀·호텔 지오코딩 없음.
+ * Summary「숙소 찾기」토글 — 펼칠 때만 MRT 카드.
+ * children({ toggle, mobilePanel }) 로 카드 안 그리드에 토글 배치.
+ * PC: body 포털 전폭 · 모바일: mobilePanel(카드 아래).
  */
-export default function GlobeStayStrip({ location, hidden = false }) {
+export default function GlobeStayStrip({ location, hidden = false, children, onExpandedChange }) {
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | loading | ready | empty | error
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
+  const [stayDates, setStayDates] = useState(() => defaultMrtStayDates());
   const scrollRef = useRef(null);
   const dragRef = useRef({ active: false, moved: false, startX: 0, scrollLeft: 0 });
   const fetchedKeyRef = useRef('');
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : '';
   const name = location?.name || '';
-  const nameEn = location?.name_en || '';
   const country = location?.country || '';
   const isScanning = Boolean(location?.isScanning);
   const placeKey = `${slug}|${name}|${country}|${location?.lat}|${location?.lng}`;
+  const datesKey = `${stayDates.checkIn}|${stayDates.checkOut}`;
+  const fetchKey = `${placeKey}|${datesKey}`;
   const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
+  const nights = mrtStayNights(stayDates.checkIn, stayDates.checkOut);
+  const todayYmd = (() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  })();
+  const minCheckOut = mrtStayMinCheckOut(stayDates.checkIn);
 
   useEffect(() => {
     setExpanded(false);
     setItems(null);
     setStatus('idle');
+    setStayDates(defaultMrtStayDates());
     fetchedKeyRef.current = '';
   }, [placeKey]);
 
   useEffect(() => {
+    onExpandedChange?.(Boolean(eligible && expanded));
+  }, [eligible, expanded, onExpandedChange]);
+
+  useEffect(() => {
+    return () => {
+      onExpandedChange?.(false);
+    };
+  }, [onExpandedChange]);
+
+  useEffect(() => {
     if (!eligible || !expanded) return undefined;
-    if (fetchedKeyRef.current === placeKey) return undefined;
+    if (fetchedKeyRef.current === fetchKey) return undefined;
 
     let cancelled = false;
     setStatus('loading');
@@ -106,9 +193,17 @@ export default function GlobeStayStrip({ location, hidden = false }) {
     (async () => {
       const locForFetch = await withStayAdmin(location);
       if (cancelled) return;
-      const result = await fetchMrtStaysForLocation(locForFetch);
+      const result = await fetchMrtStaysForLocation(locForFetch, stayDates);
       if (cancelled) return;
-      fetchedKeyRef.current = placeKey;
+      fetchedKeyRef.current = fetchKey;
+      if (result?.checkIn && result?.checkOut) {
+        const synced = normalizeMrtStayDates(result.checkIn, result.checkOut);
+        setStayDates((prev) =>
+          prev.checkIn === synced.checkIn && prev.checkOut === synced.checkOut
+            ? prev
+            : synced
+        );
+      }
       if (result?.items?.length) {
         setItems(result.items);
         setStatus('ready');
@@ -121,7 +216,18 @@ export default function GlobeStayStrip({ location, hidden = false }) {
     return () => {
       cancelled = true;
     };
-  }, [eligible, expanded, placeKey, location]);
+  }, [eligible, expanded, fetchKey, location, stayDates]);
+
+  const applyStayDates = useCallback((nextIn, nextOut) => {
+    const normalized = normalizeMrtStayDates(nextIn, nextOut);
+    setStayDates((prev) => {
+      if (prev.checkIn === normalized.checkIn && prev.checkOut === normalized.checkOut) {
+        return prev;
+      }
+      fetchedKeyRef.current = '';
+      return normalized;
+    });
+  }, []);
 
   const syncScrollButtons = useCallback(() => {
     const el = scrollRef.current;
@@ -196,10 +302,54 @@ export default function GlobeStayStrip({ location, hidden = false }) {
     }
   };
 
-  if (!eligible) return null;
+  if (!eligible) {
+    if (typeof children === 'function') {
+      return children({ toggle: null, mobilePanel: null, eligible: false });
+    }
+    return null;
+  }
 
   const panelBody = (
     <>
+      <div className="mb-2 flex items-start gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1.5 rounded-2xl border border-amber-400/25 bg-amber-500/10 px-2.5 py-2">
+          <CalendarDays size={14} className="shrink-0 text-amber-200/80" aria-hidden="true" />
+          <StayDateField
+            label="체크인"
+            value={stayDates.checkIn}
+            min={todayYmd}
+            ariaLabel="체크인 날짜 선택"
+            onChange={(next) => applyStayDates(next, stayDates.checkOut)}
+          />
+          <span className="shrink-0 text-white/25" aria-hidden="true">
+            →
+          </span>
+          <StayDateField
+            label="체크아웃"
+            value={stayDates.checkOut}
+            min={minCheckOut}
+            ariaLabel="체크아웃 날짜 선택"
+            onChange={(next) => applyStayDates(stayDates.checkIn, next)}
+          />
+          {nights > 0 ? (
+            <span className="ml-1.5 shrink-0 rounded-md bg-amber-400/15 px-1.5 py-0.5 text-[11px] font-bold tabular-nums text-amber-100">
+              {nights}박
+            </span>
+          ) : null}
+        </div>
+        <button
+          type="button"
+          aria-label="숙소 목록 닫기"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(false);
+          }}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white shadow-lg shadow-black/30 hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all"
+        >
+          <X size={18} strokeWidth={2.5} aria-hidden="true" />
+        </button>
+      </div>
+
       {status === 'loading' ? (
         <p className="px-0.5 text-[11px] text-white/45">숙소를 불러오는 중…</p>
       ) : null}
@@ -286,7 +436,7 @@ export default function GlobeStayStrip({ location, hidden = false }) {
                   rel="noopener noreferrer sponsored"
                   draggable={false}
                   onClick={handleLinkClick}
-                  className="snap-start shrink-0 w-[132px] lg:w-auto lg:min-w-0 lg:snap-none rounded-2xl border border-white/10 bg-white/[0.06] overflow-hidden hover:border-amber-300/35 hover:bg-white/[0.1] transition-colors"
+                  className="snap-start shrink-0 w-[132px] lg:w-auto lg:min-w-0 lg:snap-none rounded-2xl border border-amber-400/30 bg-amber-500/10 overflow-hidden hover:border-amber-300/45 hover:bg-amber-500/20 transition-colors"
                 >
                   <div className="relative h-[72px] lg:h-[96px] w-full bg-white/5 pointer-events-none">
                     {item.imageUrl ? (
@@ -331,60 +481,86 @@ export default function GlobeStayStrip({ location, hidden = false }) {
     </>
   );
 
+  const toggle = (
+    <button
+      type="button"
+      aria-expanded={expanded}
+      aria-controls="globe-stay-strip-panel"
+      onClick={(e) => {
+        e.stopPropagation();
+        setExpanded((v) => !v);
+      }}
+      className={`relative z-10 flex min-h-[40px] w-full min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2 py-2 transition-all duration-300 lg:min-h-[36px] ${
+        expanded
+          ? 'bg-amber-500/20 border-amber-300/45 hover:bg-amber-500/25'
+          : 'bg-amber-500/10 border-amber-400/30 hover:bg-amber-500/20 hover:border-amber-300/40'
+      }`}
+    >
+      {status === 'loading' && expanded ? (
+        <Loader2 size={16} className="animate-spin text-amber-200 shrink-0" />
+      ) : (
+        <BedDouble size={16} className="text-amber-200 shrink-0" />
+      )}
+      <span className="min-w-0 truncate text-xs font-bold text-amber-50">숙소 찾기</span>
+      {expanded ? (
+        <>
+          <ChevronUp size={14} className="shrink-0 text-amber-100/70 lg:hidden" />
+          <ChevronLeft size={14} className="shrink-0 text-amber-100/70 hidden lg:block" />
+        </>
+      ) : (
+        <ChevronDown size={14} className="shrink-0 text-amber-100/70" />
+      )}
+    </button>
+  );
+
+  const mobilePanel =
+    expanded && !isLg ? (
+      <div
+        id="globe-stay-strip-panel"
+        className="mt-2 min-w-0"
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        {panelBody}
+      </div>
+    ) : null;
+
+  const desktopPortal =
+    expanded && isLg && typeof document !== 'undefined'
+      ? createPortal(
+          <div
+            id="globe-stay-strip-panel"
+            role="region"
+            aria-label="숙소 목록"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="fixed z-[61] left-4 top-[5.25rem] bottom-6 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] overflow-y-auto rounded-3xl border border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl p-3"
+          >
+            {panelBody}
+          </div>,
+          document.body
+        )
+      : null;
+
+  if (typeof children === 'function') {
+    return (
+      <>
+        {children({ toggle, mobilePanel, eligible: true })}
+        {desktopPortal}
+      </>
+    );
+  }
+
+  // 폴백: 카드 아래 풀폭 토글 (레거시)
   return (
     <div
       className="mt-2 w-full min-w-0 lg:mt-2"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <button
-        type="button"
-        aria-expanded={expanded}
-        aria-controls="globe-stay-strip-panel"
-        onClick={() => setExpanded((v) => !v)}
-        className={`flex w-full min-h-[36px] items-center justify-center gap-1.5 rounded-xl border px-2 py-2 transition-all duration-300 ${
-          expanded
-            ? 'bg-amber-500/20 border-amber-300/45 hover:bg-amber-500/25'
-            : 'bg-amber-500/10 border-amber-400/30 hover:bg-amber-500/20 hover:border-amber-300/40'
-        }`}
-      >
-        <BedDouble size={15} className="text-amber-200 shrink-0" />
-        <span className="text-xs font-bold text-amber-50">숙소</span>
-        <span className="text-[10px] font-medium text-amber-100/55">MyRealTrip</span>
-        {status === 'loading' && expanded ? (
-          <Loader2 size={14} className="ml-0.5 animate-spin text-amber-200/80" />
-        ) : expanded ? (
-          <>
-            <ChevronUp size={14} className="ml-0.5 text-amber-100/70 lg:hidden" />
-            <ChevronLeft size={14} className="ml-0.5 text-amber-100/70 hidden lg:block" />
-          </>
-        ) : (
-          <ChevronDown size={14} className="ml-0.5 text-amber-100/70" />
-        )}
-      </button>
-
-      {/* 모바일: Summary 아래. PC: body 포털 — Summary transform이 fixed 포함 블록이 되어 폭이 0이 되던 문제 방지 */}
-      {expanded && !isLg ? (
-        <div id="globe-stay-strip-panel" className="mt-2 min-w-0">
-          {panelBody}
-        </div>
-      ) : null}
-
-      {expanded && isLg && typeof document !== 'undefined'
-        ? createPortal(
-            <div
-              id="globe-stay-strip-panel"
-              role="region"
-              aria-label="숙소 목록"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              className="fixed z-[61] left-4 top-[5.25rem] bottom-6 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] overflow-y-auto rounded-3xl border border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl p-3"
-            >
-              {panelBody}
-            </div>,
-            document.body
-          )
-        : null}
+      {toggle}
+      {mobilePanel}
+      {desktopPortal}
     </div>
   );
 }

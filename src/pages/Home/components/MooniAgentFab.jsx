@@ -62,7 +62,14 @@ function canUseHoverPeek() {
   return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 }
 
-export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode, isTourActive = false }) {
+export default function MooniAgentFab({
+  onOpenChat,
+  isChatOpen,
+  isZenMode,
+  isTourActive = false,
+  /** 모바일 숙소 패널 펼침 — FAB 숨김(가독성) */
+  hideForStayPanel = false,
+}) {
   const rootRef = useRef(null);
   const dragRef = useRef(null);
   const hintTimerRef = useRef(null);
@@ -334,7 +341,7 @@ export default function MooniAgentFab({ onOpenChat, isChatOpen, isZenMode, isTou
     setIsDragging(false);
   };
 
-  if (isZenMode || isChatOpen || isTourActive) return null;
+  if (isZenMode || isChatOpen || isTourActive || hideForStayPanel) return null;
 
   const isIntro = showHint && hintPhase === 'intro';
   const isNudge = showHint && hintPhase === 'nudge';

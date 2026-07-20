@@ -165,6 +165,8 @@ function Home() {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(max-width: 1023px)').matches;
   });
+  /** 모바일 숙소 패널 펼침 — 스크림·회전 정지·MOONi 숨김 */
+  const [isStayStripExpanded, setIsStayStripExpanded] = useState(false);
   const prevChatOpenRef = useRef(false);
   const prevPathnameRef = useRef(routeLocation.pathname);
 
@@ -195,9 +197,23 @@ function Home() {
   const isPlaceCardSummaryVisible = Boolean(
     selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive
   );
+  const mobilePlaceScrim = isMobileViewport && isPlaceCardSummaryVisible;
+  const mobileStayScrimStrong = mobilePlaceScrim && isStayStripExpanded;
   /** 써머리 카드 닫힘·투어 X 탈출 후에도 마지막 방문 핀·지명 강조 유지 */
   const globeActivePinId = selectedLocation?.id ?? scoutedPins[0]?.id ?? null;
   const globeFocusSlug = selectedLocation?.slug ?? scoutedPins[0]?.slug ?? null;
+
+  useEffect(() => {
+    if (!isPlaceCardSummaryVisible) setIsStayStripExpanded(false);
+  }, [isPlaceCardSummaryVisible, selectedLocation?.id]);
+
+  useEffect(() => {
+    if (!mobileStayScrimStrong) return undefined;
+    globeRef.current?.pauseRotation?.();
+    return () => {
+      globeRef.current?.resumeRotation?.();
+    };
+  }, [mobileStayScrimStrong]);
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
@@ -845,6 +861,15 @@ function Home() {
           }}
         />
 
+        {mobilePlaceScrim ? (
+          <div
+            aria-hidden="true"
+            className={`fixed inset-0 z-[55] transition-colors duration-300 ${
+              mobileStayScrimStrong ? 'bg-black/55' : 'bg-black/30'
+            }`}
+          />
+        ) : null}
+
         {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive && (
           <HomePlaceCardSummary
             globeRef={globeRef}
@@ -860,6 +885,7 @@ function Home() {
             onStartTour={(location) => {
               void beginGlobeTour(location);
             }}
+            onStayExpandedChange={setIsStayStripExpanded}
           />
         )}
 
@@ -888,6 +914,7 @@ function Home() {
             isChatOpen={isChatOpen}
             isZenMode={isZenMode}
             isTourActive={isTourActive}
+            hideForStayPanel={mobileStayScrimStrong}
             onOpenChat={(payload) => handleStartChat('MOONi', payload)}
           />
         )}

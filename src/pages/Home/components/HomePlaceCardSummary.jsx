@@ -16,7 +16,7 @@ import GlobeStayStrip from './GlobeStayStrip.jsx';
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
 
 /** 써머리 장소카드 — 항공 경로 시네마 진입 (플래너 Trip CTA와 분리) */
-export default function HomePlaceCardSummary({ globeRef, ...props }) {
+export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, ...props }) {
   const {
     requestFlightCinema,
     flightCinemaRequestPending,
@@ -106,27 +106,32 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
   };
 
   return (
-    <PlaceCardSummary
-      {...props}
-      location={location}
-      canPreviewFlightRoute={hasFlightRoute}
-      isFlightRouteReady={isFlightRouteReady}
-      isFlightRoutePending={flightCinemaRequestPending}
-      flightRouteLabel={
-        flightPreview
-          ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
-          : null
-      }
-      flightRouteHours={flightPreview?.flightHours ?? null}
-      selectedFlightOriginIata={selectedOriginIata}
-      flightBrowserOriginHint={browserOriginHint}
-      onSelectFlightOrigin={handleSelectOrigin}
-      onApplyBrowserOriginSuggestion={
-        browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
-      }
-      initialOriginExpanded={false}
-      onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
-      belowCard={<GlobeStayStrip location={location} />}
-    />
+    <GlobeStayStrip location={location} onExpandedChange={onStayExpandedChange}>
+      {({ toggle, mobilePanel }) => (
+        <PlaceCardSummary
+          {...props}
+          location={location}
+          canPreviewFlightRoute={hasFlightRoute}
+          isFlightRouteReady={isFlightRouteReady}
+          isFlightRoutePending={flightCinemaRequestPending}
+          flightRouteLabel={
+            flightPreview
+              ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
+              : null
+          }
+          flightRouteHours={flightPreview?.flightHours ?? null}
+          selectedFlightOriginIata={selectedOriginIata}
+          flightBrowserOriginHint={browserOriginHint}
+          onSelectFlightOrigin={handleSelectOrigin}
+          onApplyBrowserOriginSuggestion={
+            browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
+          }
+          initialOriginExpanded={false}
+          onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
+          stayToggle={toggle}
+          belowCard={mobilePanel}
+        />
+      )}
+    </GlobeStayStrip>
   );
 }

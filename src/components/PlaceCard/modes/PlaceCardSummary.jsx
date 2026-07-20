@@ -58,6 +58,8 @@ const PlaceCardSummary = ({
 
   belowCard = null,
 
+  stayToggle = null,
+
 }) => {
 
   const [isLoading, setIsLoading] = useState(true);
@@ -167,7 +169,7 @@ const PlaceCardSummary = ({
 
   const actionButtonCount =
 
-    (canPreviewFlightRoute ? 1 : 0) + (canStartTour ? 1 : 0);
+    (canPreviewFlightRoute ? 1 : 0) + (canStartTour ? 1 : 0) + (stayToggle ? 1 : 0);
 
 
 
@@ -463,13 +465,25 @@ const PlaceCardSummary = ({
 
             <div
 
-              className={`grid gap-2 ${
+              className={`grid isolate gap-2 ${
 
                 actionButtonCount >= 3 ? 'grid-cols-2' : actionButtonCount === 2 ? 'grid-cols-2' : 'grid-cols-1'
 
               }`}
 
             >
+
+              {/* PC: 숙소 먼저(좌측 패널) · 모바일: 숙소 맨 아래(하단 확장) */}
+
+              {stayToggle ? (
+
+                <div className="order-last col-span-2 min-w-0 lg:order-first lg:col-span-1">
+
+                  {stayToggle}
+
+                </div>
+
+              ) : null}
 
               {canPreviewFlightRoute && (
 
@@ -491,7 +505,7 @@ const PlaceCardSummary = ({
 
                   }}
 
-                  className={`flex min-h-[36px] items-center justify-center gap-1.5 rounded-xl border px-2 py-2 transition-all duration-300 z-10 relative ${
+                  className={`order-1 relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border px-2 py-2 transition-all duration-300 lg:order-2 lg:min-h-[36px] ${
 
                     flightRouteInteractive
 
@@ -527,7 +541,7 @@ const PlaceCardSummary = ({
 
                   {isFlightRoutePending || flightRouteBusy ? (
 
-                    <Loader2 size={16} className="animate-spin text-sky-300" />
+                    <Loader2 size={16} className="shrink-0 animate-spin text-sky-300" />
 
                   ) : (
 
@@ -535,7 +549,7 @@ const PlaceCardSummary = ({
 
                       size={16}
 
-                      className={flightRouteInteractive ? 'text-sky-300' : 'text-gray-500'}
+                      className={`shrink-0 ${flightRouteInteractive ? 'text-sky-300' : 'text-gray-500'}`}
 
                     />
 
@@ -563,6 +577,8 @@ const PlaceCardSummary = ({
 
                 <button
 
+                  type="button"
+
                   onClick={(e) => {
 
                     e.stopPropagation();
@@ -571,13 +587,13 @@ const PlaceCardSummary = ({
 
                   }}
 
-                  className="flex min-h-[36px] items-center justify-center gap-1.5 rounded-xl bg-blue-500/15 border border-blue-400/30 py-2 hover:bg-blue-500/25 hover:border-blue-300/40 transition-all duration-300 z-10 relative"
+                  className="order-2 relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl bg-violet-500/15 border border-violet-400/30 px-2 py-2 hover:bg-violet-500/25 hover:border-violet-300/40 transition-all duration-300 lg:order-3 lg:min-h-[36px]"
 
                 >
 
-                  <Mountain size={16} className="text-blue-300" />
+                  <Mountain size={16} className="shrink-0 text-violet-300" />
 
-                  <span className="text-xs font-bold text-blue-100">3D 투어</span>
+                  <span className="min-w-0 truncate text-xs font-bold text-violet-100">3D 투어</span>
 
                 </button>
 

@@ -83,46 +83,38 @@
 
 ## MRT 숙소 세션 — 에이전트 핸드오프
 
-**상태**: ✅ **4.1 출시 합의** (좌측 전폭·uiPlace/GPS·사다리·포털) · Edge 재배포 · **다음 = 최적화**  
-**선행**: 패키지 `/pkc` MVP ✅ · 일지 [`2026-07-09-project-log.md`](./2026-07-09-project-log.md)
+**상태**: ✅ **최적화 1차 커밋·푸시** · 춘천 오탐·일정·스크림·버튼 순서 QA 통과분 포함 · **다음 = 최적화 2차**  
+**선행**: 4.1 ✅ · Edge `fetch-mrt-stays` 재배포됨(cityHints)
 
-### 합의 MVP + 4.1 (유지)
+### 유지 (4.1 + 1차 최적화)
 
-- Summary **「숙소」토글** → 펼칠 때만 fetch (sessionStorage `v4`).
-- search에 **호텔 좌표·핀 없음**.
-- Edge `fetch-mrt-stays` · region-autocomplete → search · `countryHint`는 필터 전용(키워드 제외).
-- **PC**: 좌측 전폭 패널(`createPortal`→`document.body`) + 그리드 · **모바일**: 아래 스트립.
-- **게이트**: slug + uiPlace/GPS(실국가·키워드) · `stayAdmin` 사다리(동→시).
-- **국내 countryHint**: Nominatim `대한민국` → MRT `한국` 정규화(별칭 매칭).
+- Summary **「숙소 찾기」** 카드 안 그리드 · 펼칠 때만 fetch (`v5` 캐시).
+- **PC**: 숙소 버튼 **첫 칸** · 좌측 전폭 포털 · **모바일**: 숙소 버튼 **맨 아래 전폭** · 카드 아래 스트립.
+- Edge: `countryHint`·`cityHints` 필터 전용 · 국내 fineGrain **시·군 우선**.
+- 일정: 패널 상단 달력(`showPicker`) · 기본 +14일·2박 · 변경 시 재조회.
+- 모바일 스크림: 카드만 `black/30` · 숙소 펼침 `black/55` + 회전 정지 + MOONi 숨김.
+- 색: 숙소 amber · 항공 sky · 3D violet · 카드 테두리 amber.
 
-**파일**: `GlobeStayStrip.jsx` · `fetchMrtStays.js` · `geocoding.js`(`stayAdmin`) · `PlaceCardSummary` · `useHomeHandlers` · `fetch-mrt-stays`.
+**파일**: `GlobeStayStrip` · `fetchMrtStays` · `PlaceCardSummary` · `HomePlaceCardSummary` · `Home/index` · `MooniAgentFab` · `fetch-mrt-stays`.
 
 ### 금지 3
 
 1. `VITE_` MRT 키 · 브라우저 직호출
 2. TripLink · `mrt-link-generator` 병행
-3. 호텔 지오코딩 · `travelSpots.js` 전체 스캔 · spots 직접 수정
+3. 호텔 핀/지오코딩 · `travelSpots.js` 전체 스캔 · spots 직접 수정
 
-### 해결한 이슈 (4.1)
+### 다음 세션 — 최적화 2차 (합의 후)
 
-| 이슈 | 조치 |
-|------|------|
-| 아래 펼침이 지구본 노이즈 | PC 좌측 전폭 · 토글은 Summary 아래 유지 |
-| 춘천 퇴계동 검색 실패 | `대한민국`↔`한국` · 사다리로 CITY `춘천` |
-| 스크롤바만 보임 | Summary `transform`이 `fixed` 포함 블록 → **body 포털** |
-
-### 다음 세션 — 최적화 (구현 시)
-
-우선 후보(합의 후): 패널 inset/z-index·지구본 톤 · 그리드 밀도·이미지 · 빈 결과 CTA · fetch 타이밍·캐시 · 국내 동→시 사다리 튜닝 · 모바일 바텀시트 여부.
+우선 후보: 패널 inset/z-index·그리드 밀도·이미지 · 빈 결과 CTA · fetch 타이밍·캐시 · 성인 수 · 모바일 바텀시트 여부.
 
 ### 다음 세션 제시어
 
 ```
 @.ai-context.md @plans/2026-07-20-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
-MRT 숙소 4.1 이후 — 최적화 (레이아웃·쿼리·UX).
+MRT 숙소 — 최적화 2차 (패널·그리드·빈결과·캐시).
 
-핸드오프 「다음 세션 — 최적화」확인.
-읽기: GlobeStayStrip(포털·그리드) · fetchMrtStays(사다리·countryHint) · Edge countryMatches.
+핸드오프 「다음 세션 — 최적화 2차」확인.
+읽기: GlobeStayStrip · fetchMrtStays · PlaceCardSummary 액션 그리드 · Home 모바일 스크림.
 금지: VITE_ MRT 키 · 호텔 핀/지오코딩 · TripLink 병행.
-산출: 짧은 옵션→합의 1안→구현. 좌측 전폭·토글 패턴은 유지.
+산출: 짧은 옵션→합의 1안→구현. 좌측 전폭·토글·일정·스크림 패턴 유지.
 ```

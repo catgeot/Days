@@ -85,8 +85,29 @@ function countryMatches(r: Region, countryHint: string) {
   return false;
 }
 
-/** countryHint가 있으면 동명 이국 POI(예: 태국 팔라우)보다 자국 CITY를 우선 */
-function scoreRegion(r: Region, keyword: string, countryHint: string): number {
+/**
+ * 시·군·도 힌트 — subName/name에 포함되면 OK.
+ * 예: cityHints=["춘천","강원"] → "한국, 강원, 춘천" OK · "한국, 경북, 안동" 거부
+ */
+function cityMatches(r: Region, cityHints: string[]) {
+  if (!cityHints?.length) return true;
+  const blob = regionBlob(r);
+  if (!blob) return false;
+  for (const raw of cityHints) {
+    const h = norm(raw);
+    if (!h || h.length < 2) continue;
+    if (blob.includes(h)) return true;
+  }
+  return false;
+}
+
+/** countryHint·cityHints로 동명 이국/타시 오탐 억제 */
+function scoreRegion(
+  r: Region,
+  keyword: string,
+  countryHint: string,
+  cityHints: string[],
+): number {
   let score = 0;
   const kw = norm(keyword);
   const name = norm(r.name || "");
@@ -104,6 +125,11 @@ function scoreRegion(r: Region, keyword: string, countryHint: string): number {
     else score -= 45;
   }
 
+  if (cityHints.length) {
+    if (cityMatches(r, cityHints)) score += 40;
+    else score -= 50;
+  }
+
   return score;
 }
 
@@ -111,13 +137,14 @@ function pickRegion(
   regions: Region[],
   keyword: string,
   countryHint: string,
+  cityHints: string[],
 ): Region | null {
   if (!regions?.length) return null;
 
   let best: Region | null = null;
   let bestScore = -Infinity;
   for (const r of regions) {
-    const s = scoreRegion(r, keyword, countryHint);
+    const s = scoreRegion(r, keyword, countryHint, cityHints);
     if (s > bestScore) {
       bestScore = s;
       best = r;
@@ -128,6 +155,11 @@ function pickRegion(
 
   // 국가 힌트가 있는데 후보 전부가 불일치면 재시도 유도
   if (countryHint && !countryMatches(best, countryHint) && bestScore < 20) {
+    return null;
+  }
+
+  // 시·군 힌트 불일치면 다음 키워드로 (퇴계동→안동 차단)
+  if (cityHints.length && !cityMatches(best, cityHints)) {
     return null;
   }
 
@@ -167,6 +199,7 @@ async function resolveRegion(
   isDomestic: boolean,
   keywords: string[],
   countryHint: string,
+  cityHints: string[],
 ): Promise<{ region: Region | null; usedKeyword: string | null }> {
   for (const kw of keywords) {
     const ac = await mrtPost("/v1/products/accommodation/region-autocomplete", apiKey, {
@@ -177,7 +210,7 @@ async function resolveRegion(
     if (ac.status !== 200 || acResult.status !== 200) continue;
 
     const regions = (ac.data?.data?.regions || []) as Region[];
-    const region = pickRegion(regions, kw, countryHint);
+    const region = pickRegion(regions, kw, countryHint, cityHints);
     if (region?.regionId) {
       return { region, usedKeyword: kw };
     }
@@ -212,8 +245,13 @@ serve(async (req) => {
     const altKeywords = Array.isArray(body?.altKeywords)
       ? body.altKeywords.map((k: unknown) => String(k ?? "").trim())
       : [];
+    const cityHints = uniqueKeywords(
+      Array.isArray(body?.cityHints)
+        ? body.cityHints.map((k: unknown) => String(k ?? "").trim())
+        : [],
+    ).slice(0, 8);
 
-    // countryHint는 scoreRegion 필터 전용 — 검색 키워드에 넣으면 「한국」등 오탐
+    // countryHint·cityHints는 scoreRegion 필터 전용 — 검색 키워드에 넣지 않음
     const keywords = uniqueKeywords([
       keyword,
       ...altKeywords,
@@ -233,6 +271,7 @@ serve(async (req) => {
       isDomestic,
       keywords,
       countryHint,
+      cityHints,
     );
 
     if (!region?.regionId) {
