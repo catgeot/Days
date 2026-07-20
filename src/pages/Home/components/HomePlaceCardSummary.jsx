@@ -10,6 +10,7 @@ import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference.js';
+import GlobeStayStrip from './GlobeStayStrip.jsx';
 
 /** 연속 not-ready 폴링 횟수 — 250ms×4 ≈ 1s (일시적 레이어 공백·style idle 깜박임 흡수) */
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
@@ -125,6 +126,7 @@ export default function HomePlaceCardSummary({ globeRef, ...props }) {
       }
       initialOriginExpanded={false}
       onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
+      belowCard={<GlobeStayStrip location={location} />}
     />
   );
 }

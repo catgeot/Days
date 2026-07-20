@@ -56,6 +56,8 @@ const PlaceCardSummary = ({
 
   isCompact = false,
 
+  belowCard = null,
+
 }) => {
 
   const [isLoading, setIsLoading] = useState(true);
@@ -588,6 +590,10 @@ const PlaceCardSummary = ({
           </div>
 
         </div>
+
+        {!isScanning && !isOriginCompact && belowCard ? (
+          <div className="relative z-[1] mt-0">{belowCard}</div>
+        ) : null}
 
       </div>
 
