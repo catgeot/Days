@@ -15,9 +15,11 @@ import {
   X,
 } from 'lucide-react';
 import {
+  buildMrtStayListUrl,
   canShowMrtStayStrip,
   defaultMrtStayDates,
   fetchMrtStaysForLocation,
+  isMrtDomesticLocation,
   isMrtStayPriced,
   mrtStayNights,
   normalizeMrtGuestCounts,
@@ -25,11 +27,17 @@ import {
 } from '../../../utils/fetchMrtStays';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
+import {
+  MRT_HOME_MYLINK_ID,
+  MRT_PACKAGE_SHORT_URLS,
+} from '../data/mrtPackageThemeLinks';
 
 const LG_MQ = '(min-width: 1024px)';
 /** fetchMrtStays.normalizeMrtStayDates와 동일 상한 */
 const MAX_STAY_NIGHTS = 30;
 const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
+/** 목록 URL을 못 만들 때만 — 마이리얼트립 제휴 홈 */
+const MRT_AFFILIATE_HOME_URL = MRT_PACKAGE_SHORT_URLS.home;
 
 const STAY_SORT_OPTIONS = [
   { id: 'recommended', label: '추천순' },
@@ -567,13 +575,27 @@ function StayListToolbar({
   count,
   sortMode,
   onSortChange,
+  listUrl,
 }) {
+  const href = listUrl || MRT_AFFILIATE_HOME_URL;
   return (
     <div className="mb-1.5 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
-      <p className="min-w-0 break-keep text-xs font-semibold text-amber-100/75">
-        근처 숙소 · MyRealTrip
-        {count ? ` · ${count}곳` : ''}
-      </p>
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+        {count ? (
+          <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/75">
+            {count}곳
+          </p>
+        ) : null}
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={(e) => e.stopPropagation()}
+          className="inline-flex shrink-0 items-center rounded-md border border-amber-300/45 bg-amber-500/20 px-2 py-1 text-[10px] font-bold text-amber-50 hover:bg-amber-500/30 hover:border-amber-300/60 active:scale-[0.98] transition-all"
+        >
+          마이리얼트립에서 보기
+        </a>
+      </div>
       <label className="relative flex shrink-0 items-center">
         <span className="sr-only">숙소 정렬</span>
         <ArrowUpDown
@@ -695,13 +717,17 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
   const [items, setItems] = useState(null);
+  /** Edge 응답 region·usedKeyword — MRT 사이트 목록 딥링크용 */
+  const [mrtListMeta, setMrtListMeta] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | loading | ready | empty | error
   const [stayDates, setStayDates] = useState(() => defaultMrtStayDates());
   const [guests, setGuests] = useState(() => normalizeMrtGuestCounts(2, 0));
   const [sortMode, setSortMode] = useState('recommended');
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
+  const [showDesktopScrollTop, setShowDesktopScrollTop] = useState(false);
   const fetchedKeyRef = useRef('');
   const mobileListScrollRef = useRef(null);
+  const desktopListScrollRef = useRef(null);
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : '';
   const name = location?.name || '';
@@ -725,6 +751,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     setExpanded(false);
     setListFullscreen(false);
     setItems(null);
+    setMrtListMeta(null);
     setStatus('idle');
     setStayDates(defaultMrtStayDates());
     setGuests(normalizeMrtGuestCounts(2, 0));
@@ -768,6 +795,21 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     return () => el.removeEventListener('scroll', onScroll);
   }, [mobileOpen, status, items]);
 
+  const desktopOpen = Boolean(expanded && isLg);
+
+  useEffect(() => {
+    if (!desktopOpen) {
+      setShowDesktopScrollTop(false);
+      return undefined;
+    }
+    const el = desktopListScrollRef.current;
+    if (!el) return undefined;
+    const onScroll = () => setShowDesktopScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [desktopOpen, status, items]);
+
   useEffect(() => {
     if (!eligible || !expanded) return undefined;
     if (fetchedKeyRef.current === fetchKey) return undefined;
@@ -794,9 +836,15 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       }
       if (result?.items?.length) {
         setItems(result.items);
+        setMrtListMeta({
+          regionId: result.region?.regionId ?? null,
+          keyword: result.usedKeyword || name || '',
+          isDomestic: isMrtDomesticLocation(locForFetch),
+        });
         setStatus('ready');
       } else {
         setItems(null);
+        setMrtListMeta(null);
         setStatus(result == null ? 'error' : 'empty');
       }
     })();
@@ -858,6 +906,20 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const emptyMessage =
     '이 여행지 숙소를 찾지 못했어요. 날짜·인원을 바꿔 보세요.';
 
+  const mrtStayListUrl =
+    status === 'ready' && mrtListMeta
+      ? buildMrtStayListUrl({
+          keyword: mrtListMeta.keyword,
+          regionId: mrtListMeta.regionId,
+          isDomestic: mrtListMeta.isDomestic,
+          checkIn: stayDates.checkIn,
+          checkOut: stayDates.checkOut,
+          adultCount: guests.adultCount,
+          childCount: guests.childCount,
+          mylinkId: MRT_HOME_MYLINK_ID,
+        })
+      : null;
+
   /** PC 포털 전용 그리드 — 모바일은 전체화면만 사용 */
   const desktopList =
     isLg && status === 'ready' && items?.length ? (
@@ -866,25 +928,9 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           count={items.length}
           sortMode={sortMode}
           onSortChange={setSortMode}
+          listUrl={mrtStayListUrl}
         />
-        <div className="globe-stay-strip-scroll grid grid-cols-[repeat(auto-fill,minmax(188px,1fr))] gap-3">
-          <style>{`
-            .globe-stay-strip-scroll {
-              scrollbar-width: thin;
-              scrollbar-color: rgba(251, 191, 36, 0.45) rgba(255, 255, 255, 0.08);
-            }
-            .globe-stay-strip-scroll::-webkit-scrollbar {
-              width: 6px;
-            }
-            .globe-stay-strip-scroll::-webkit-scrollbar-track {
-              background: rgba(255, 255, 255, 0.06);
-              border-radius: 9999px;
-            }
-            .globe-stay-strip-scroll::-webkit-scrollbar-thumb {
-              background: rgba(251, 191, 36, 0.45);
-              border-radius: 9999px;
-            }
-          `}</style>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(188px,1fr))] gap-3">
           <StayCardsGrid
             items={items}
             sortMode={sortMode}
@@ -896,11 +942,31 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     ) : null;
 
   const desktopPanelBody = (
-    <>
-      <div className="mb-2 shrink-0">{renderDateBar({ showClose: true })}</div>
+    <div
+      ref={desktopListScrollRef}
+      className="globe-stay-strip-scroll min-h-0 flex-1 overflow-y-auto"
+    >
+      <style>{`
+        .globe-stay-strip-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(251, 191, 36, 0.45) rgba(255, 255, 255, 0.08);
+        }
+        .globe-stay-strip-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .globe-stay-strip-scroll::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.06);
+          border-radius: 9999px;
+        }
+        .globe-stay-strip-scroll::-webkit-scrollbar-thumb {
+          background: rgba(251, 191, 36, 0.45);
+          border-radius: 9999px;
+        }
+      `}</style>
+      <div className="mb-3">{renderDateBar({ showClose: true })}</div>
       {status === 'loading' ? (
         <div
-          className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 px-4 py-10"
+          className="flex min-h-[min(360px,calc(100%-5rem))] flex-col items-center justify-center gap-3 px-4 py-10"
           role="status"
           aria-live="polite"
           aria-busy="true"
@@ -911,12 +977,12 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
         </div>
       ) : null}
       {status === 'empty' || status === 'error' ? (
-        <div className="flex min-h-0 flex-1 items-center justify-center px-4 py-10">
+        <div className="flex min-h-[min(360px,calc(100%-5rem))] items-center justify-center px-4 py-10">
           <p className="break-keep text-center text-sm text-white/50">{emptyMessage}</p>
         </div>
       ) : null}
       {desktopList}
-    </>
+    </div>
   );
 
   const toggle = (
@@ -956,7 +1022,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const mobilePanel = null;
 
   const desktopPortal =
-    expanded && isLg && typeof document !== 'undefined'
+    desktopOpen && typeof document !== 'undefined'
       ? createPortal(
           <div
             id="globe-stay-strip-panel"
@@ -964,9 +1030,24 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             aria-label="숙소 목록"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="fixed z-[61] left-4 top-[5.25rem] bottom-6 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-y-auto rounded-3xl border border-white/10 bg-black/80 p-3 shadow-2xl backdrop-blur-xl"
+            className="fixed z-[61] left-4 top-[5.25rem] bottom-6 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-black/80 p-3 shadow-2xl backdrop-blur-xl"
           >
             {desktopPanelBody}
+            <button
+              type="button"
+              aria-label="맨 위로"
+              onClick={() => {
+                desktopListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`absolute bottom-4 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500 px-3 text-black shadow-[0_4px_20px_rgba(245,158,11,0.45)] transition-all duration-300 hover:bg-amber-400 active:scale-95 ${
+                showDesktopScrollTop
+                  ? 'pointer-events-auto translate-y-0 opacity-100'
+                  : 'pointer-events-none translate-y-3 opacity-0'
+              }`}
+            >
+              <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold">맨 위</span>
+            </button>
           </div>,
           document.body
         )
@@ -984,17 +1065,17 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="shrink-0 space-y-2.5 border-b border-white/10 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <div className="shrink-0 border-b border-white/10 px-3 pb-2.5 pt-[max(0.75rem,env(safe-area-inset-top))]">
               <div className="flex items-center justify-between gap-2 px-1">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-amber-50">
                     {name ? `${name} 근처 숙소` : '근처 숙소'}
                   </p>
-                  <p className="truncate text-xs font-semibold text-amber-100/75">
-                    MyRealTrip
-                    {status === 'ready' && items?.length ? ` · ${items.length}곳` : ''}
-                    {status === 'loading' ? ' · 불러오는 중…' : ''}
-                  </p>
+                  {status === 'loading' ? (
+                    <p className="truncate text-xs font-semibold text-amber-100/75">
+                      불러오는 중…
+                    </p>
+                  ) : null}
                 </div>
                 <button
                   type="button"
@@ -1005,12 +1086,12 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                   <X size={20} strokeWidth={2.5} aria-hidden="true" />
                 </button>
               </div>
-              {renderDateBar()}
             </div>
             <div
               ref={mobileListScrollRef}
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
             >
+              <div className="mb-3">{renderDateBar()}</div>
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
                   <Loader2 size={22} className="animate-spin text-amber-200/80" />
@@ -1028,6 +1109,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                     count={items.length}
                     sortMode={sortMode}
                     onSortChange={setSortMode}
+                    listUrl={mrtStayListUrl}
                   />
                   <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                     <StayCardsGrid

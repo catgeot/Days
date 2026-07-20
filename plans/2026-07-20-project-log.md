@@ -141,6 +141,15 @@
 - **카드**: PC 그리드 `minmax(188px)` · 이미지 `120px` · `size="lg"` 타이포. 모바일 전체화면은 유지.
 - **파일**: `GlobeStayStrip.jsx`만 (브라우저 Ctrl+줌 대신 목록만 확대).
 
+## MRT 숙소 — 모바일 헤더 스크롤·목록 CTA·제휴 mylink
+
+**상태**: ✅ 구현 · 커밋·푸시 · 로컬 QA 중(배포 후 URL에 `mylink_id` 재확인)
+
+- **모바일**: 일정·인원 2열을 스크롤 영역으로 — 본문 확대. PC도 동일(헤더 고정은 답답해서 철회). PC·모바일 **맨 위** FAB.
+- **CTA**: 툴바 `MyRealTrip N곳` → `N곳` + **마이리얼트립에서 보기** → `accommodation…/union/products` (regionId·일정·인원).
+- **제휴**: `MRT_HOME_MYLINK_ID`(홈 단축 `dUxR7d` → `2282829`)를 목록 URL에 `mylink_id`+`utm_source=mktpartner`로 부착. SSOT `mrtPackageThemeLinks.js`.
+- **확인**: 열린 주소에 `mylink_id=2282829` 있어야 제휴. 수익은 `/v1/revenues`(예약·정산 후).
+
 ## 지구본 3D 투어 — 종료 시 top-down 카메라 전환 제거
 
 **상태**: ✅ 사용자 QA 통과 · 커밋 `b1c2b54` · 후속 소프트 랜딩 적용

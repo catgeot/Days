@@ -23,6 +23,58 @@ export function isMrtStayPriced(item) {
   return Number.isFinite(n) && n > 0;
 }
 
+/**
+ * 게이트오 목록과 같은 조건의 MRT 숙소 검색 결과 페이지.
+ * (파트너 API search와 동일 regionId·일정·인원 — 소비자 사이트 union/products)
+ *
+ * @param {{
+ *   keyword?: string,
+ *   regionId?: number|string|null,
+ *   isDomestic?: boolean,
+ *   checkIn?: string,
+ *   checkOut?: string,
+ *   adultCount?: number,
+ *   childCount?: number,
+ *   mrtKeyName?: string|null,
+ *   mylinkId?: string|number|null,
+ * }} opts
+ * @returns {string|null}
+ */
+export function buildMrtStayListUrl(opts = {}) {
+  const keyword = String(opts.keyword || '').trim();
+  const regionId = opts.regionId != null && opts.regionId !== ''
+    ? Number(opts.regionId)
+    : null;
+  if (!keyword && !(Number.isFinite(regionId) && regionId > 0)) return null;
+
+  const { checkIn, checkOut } = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
+  const { adultCount, childCount } = normalizeMrtGuestCounts(
+    opts.adultCount,
+    opts.childCount,
+  );
+  const params = new URLSearchParams({
+    isDomestic: opts.isDomestic ? 'true' : 'false',
+    checkIn,
+    checkOut,
+    adultCount: String(adultCount),
+    childCount: String(childCount),
+    roomCount: '1',
+  });
+  if (keyword) params.set('keyword', keyword);
+  if (Number.isFinite(regionId) && regionId > 0) {
+    params.set('regionId', String(regionId));
+  }
+  const mrtKeyName = String(opts.mrtKeyName || '').trim();
+  if (mrtKeyName) params.set('mrtKeyName', mrtKeyName);
+  const mylinkId = String(opts.mylinkId ?? '').trim();
+  if (mylinkId) {
+    params.set('utm_source', 'mktpartner');
+    params.set('mylink_id', mylinkId);
+  }
+
+  return `https://accommodation.myrealtrip.com/union/products?${params.toString()}`;
+}
+
 /** 가격 있는 숙소 먼저 · 일정 미가용(가격 없음)은 뒤에 */
 export function sortMrtStaysPricedFirst(items) {
   const list = Array.isArray(items) ? items.slice() : [];

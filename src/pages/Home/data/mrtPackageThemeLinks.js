@@ -26,6 +26,13 @@ export const MRT_PACKAGE_SHORT_URLS = {
   homeShopping: 'https://myrealt.rip/dVEo96',
 };
 
+/**
+ * 홈 단축(`home` → myrealt.rip/dUxR7d) 리다이렉트의 mylink_id.
+ * 숙소 목록 등 비항공 MRT URL에 `?mylink_id=`로 붙여 제휴 추적.
+ * @see https://docs.myrealtrip.com/#/api/partner-api/마이-링크
+ */
+export const MRT_HOME_MYLINK_ID = '2282829';
+
 /** 에디터스 픽 테마 → CTA 문구 + 단축 URL */
 export const MRT_PACKAGE_THEME_LINKS = {
   family: {
