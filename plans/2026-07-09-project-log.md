@@ -125,13 +125,15 @@ SSOT: [`mrtPackageThemeLinks.js`](../src/pages/Home/data/mrtPackageThemeLinks.js
 
 ### 숙소 API → 지구본 (다음 세션)
 
+**갱신 (2026-07-20)**: MVP·핸드오프는 [`2026-07-20-project-log.md`](./2026-07-20-project-log.md) 「MRT 숙소 세션」— 포커스+카드 스트립 · 핀·지오코딩 없음.
+
 **계획 위치**
 
 | 문서 | 내용 |
 |------|------|
-| [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **Phase 4** | 숙소 탐색 (MRT → 지구본·플래너) · `regionId` 검색 · 지구본 표시 우선 |
-| 본 일지 | 공식: `region-autocomplete`→`regionId`→search · 칩은 플래너 병행·후순위 |
-| archive `phase8-6-mrt-integration-plan.md` | 옛 `fetch-mrt-products`·위젯 구상 — **현행 API와 재대조 필요** |
+| [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) **Phase 4** | 숙소 탐색 (MRT → 카드 스트립) · `regionId` 검색 |
+| [`2026-07-20-project-log.md`](./2026-07-20-project-log.md) | MVP 합의·제시어 SSOT |
+| archive `phase8-6-mrt-integration-plan.md` | 옛 `fetch-mrt-products`·위젯 구상 — 참고만 |
 
 **금지 유지**: `VITE_` MRT 키 · TripLinkModal/iframe · `TRIPLINK_PACKAGES_ENABLED=true` · spots JSON 직접 수정.
 

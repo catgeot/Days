@@ -78,3 +78,52 @@
 - **증상**: 최근 방문지·키워드 매칭 여행지 클릭이 `handleSearchSubmit`→AI로 재진입. 미등록 uiPlace는 이름만 저장돼 검색창만 채워짐.
 - **조치**: [`exploreRecentHistory.js`](../src/pages/Home/lib/exploreRecentHistory.js) — compact `{name,slug,lat,lng…}` 저장 · 카탈로그→`/place/` · uiPlace→지구본 홈(`handleLocationSelect`+`fromSearch`) · 키워드(보라)는 입력만 · 목록별 「전체 삭제」.
 - **문서**: [`travel-spots-management.md`](./travel-spots-management.md) §8 Explore 최근 기록 · `.ai-context` Smart Search 한 줄.
+
+---
+
+## MRT 숙소 세션 — 에이전트 핸드오프
+
+**상태**: 📋 문서·MVP 합의 (2026-07-20) · **구현은 다음 세션**  
+**선행**: 패키지 `/pkc` MVP ✅ · 일지 [`2026-07-09-project-log.md`](./2026-07-09-project-log.md)
+
+### 합의 MVP
+
+- 여행지 포커스(기존 `flyZoom` 2.35) 후 Summary 아래 **숙소 카드 스트립** (MRT search **1회**).
+- search 응답에 **좌표 없음** → 지도 핀·런타임 지오코딩 **안 함**. 「숙소 N」단일 뱃지도 MVP 제외.
+- 공식: `POST …/region-autocomplete` → `regionId` → `POST …/accommodation/search` (`partner-ext-api.myrealtrip.com`).
+- Edge 신규명: `fetch-mrt-stays` (archive `fetch-mrt-products` 이름 재사용 금지).
+
+### 읽을 것 3
+
+1. [`.ai-context.md`](../.ai-context.md) 5~6절 (패키지 vs 숙소)
+2. 본 절 + [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md) Phase 4
+3. [공식 숙소 조회](https://docs.myrealtrip.com/#/api/service-api/%EC%88%99%EC%86%8C-%EC%A1%B0%ED%9A%8C) · [마이링크](https://docs.myrealtrip.com/#/api/partner-api/%EB%A7%88%EC%9D%B4-%EB%A7%81%ED%81%AC) (후속)
+
+### 금지 3
+
+1. `VITE_` MRT 키 · 브라우저 직호출
+2. `TRIPLINK_PACKAGES_ENABLED=true` · TripLinkModal/iframe · `mrt-link-generator` 병행 수정
+3. 호텔 지오코딩 · `travelSpots.js` 전체 스캔 · spots JSON 직접 수정
+
+### 구현 순서 (다음 세션)
+
+| 단계 | 내용 |
+|------|------|
+| S0 | `MYREALTRIP_API_KEY`로 autocomplete→search curl 스모크 |
+| S1 | Edge `fetch-mrt-stays` 배포 |
+| S2 | 클라 invoke + `GlobeStayStrip` (slug spot 포커스 시) · sessionStorage 캐시 |
+| S3 | 국내/해외 1곳 · 실패 시 스트립 숨김 · 플래너/패키지 회귀 |
+
+### 다음 세션 제시어
+
+```
+@.ai-context.md @plans/2026-07-20-project-log.md @plans/2026-07-09-project-log.md @plans/2026-06-02-globe-enrichment-plan.md
+MRT 숙소 API → 카드 스트립 이어하기.
+
+핸드오프 「MRT 숙소 세션」확인.
+목표: region-autocomplete→regionId→search 를 Edge fetch-mrt-stays로 프록시 후,
+여행지 포커스 시 Summary 아래 숙소 카드 스트립 (지도 핀·지오코딩 없음).
+순서: S0 키 스모크 → S1 Edge → S2 클라+스트립 → S3 QA.
+금지: VITE_ MRT 키 · TripLink · mylink Edge 병행 · travelSpots.js 전체 스캔 · spots JSON 직접 수정 · 호텔 지오코딩.
+패키지 /pkc·플래너 딥링크는 범위 밖.
+```

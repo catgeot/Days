@@ -30,7 +30,7 @@
 | **2** | 공유 뷰 URL 복원 · 우상단 지도 도구 | **완료** — +/−/나침반 **폐기** · flyTo min **2.35 고정** |
 | **2b** | 항공 예약 퍼널 앞 **시네마** (OD arc) | **WIP→거의 완료** — arc·Bar·Trip 위젯 ✅ · **2c** 장기 |
 | **3** | 클러스터 경계·명소 POI | **✅** — hull·POI · `GlobeClusterLegend` · 31권역 데이터 |
-| **4** | 숙소 탐색 (MRT API → 지구본·플래너) | **다음** — 일지 `2026-07-09` · `regionId` 검색 · 지구본 표시 우선 |
+| **4** | 숙소 탐색 (MRT API → 카드 스트립) | **다음** — MVP 합의 일지 `2026-07-20` · 핀·지오코딩 없음 · 포커스+스트립 |
 
 ---
 
@@ -440,7 +440,7 @@ Phase 2b 후속 — FlightCinemaBar 디자인 · 항로 arc 최적화(audit·ove
 - **2**: **✅** — 공유 URL 복원 · 우상단 3버튼 · flyTo 2.35 고정 · +/−/나침반 폐기
 - **2b**: **WIP→arc audit 0** — hub SSOT·Bar·Atlantic bbox·waypoint batch ✅ · **2c** 문서만 · (선택) Bar corridor 라벨
 - **3**: **✅** — hull·POI · `GlobeClusterLegend` · `travelSpotClusters.json` 31권역
-- **4**: MRT 숙소 API (`region-autocomplete`→`regionId`→search) · Edge 프록시 · **지구본 표시 우선**(사용자 2026-07-09) · `HotelExploreSheet`/플래너 칩은 병행·후순위 · 구상 `fetch-mrt-products`(archive phase8-6)는 스펙 재대조 후
+- **4**: MRT 숙소 API (`region-autocomplete`→`regionId`→search) · Edge `fetch-mrt-stays` · **MVP = 포커스 시 Summary 카드 스트립**(사용자 2026-07-20 합의) · search에 좌표 없음 → **지도 핀·런타임 지오코딩 금지** · `HotelExploreSheet`/플래너 칩·「숙소 N」뱃지는 후순위 · archive `fetch-mrt-products` 이름 재사용 금지 · 핸드오프 일지 `2026-07-20`
 
 ---
 
