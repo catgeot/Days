@@ -65,7 +65,7 @@
 
 ## 미등록 uiPlace → MOONi 국가·지명 바인딩
 
-**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 대기
+**상태**: ✅ 사용자 QA 통과 · 커밋·푸시 `d2ee569`
 
 - **증상**: 무드/검색으로 연 미등록 지점(예: 일본 구시로)에서 MOONi가 좌표·범용 인사만 받고, 하단 주제 칩·장소 소개가 비활성. 카드에 `구시로`/`(구시로시)` 한글 중복.
 - **조치**: `buildMooniBoundSpotFromLocation` · `formatPlaceChatLabel`로 국가+지명 전달 · ChatModal은 slug 없이도 소개·프롬프트·대화 칩(`allowNameBound`) · 플래너만 catalog slug · URL 복원 시 역지오 지명 heal · `getPlaceTitleLines` 한글 행정 변형 보조줄 숨김.
