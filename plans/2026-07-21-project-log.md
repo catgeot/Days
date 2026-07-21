@@ -66,7 +66,7 @@
 
 ### 에이전트 핸드오프
 
-- **유지**: Summary「숙소 찾기」·펼칠 때만 fetch · `v10` · PC 포털/모바일 전체화면 · 빈 결과 Trip.com CTA
+- **유지**: Summary「숙소 찾기」·펼칠 때만 fetch · `v11` · PC 포털/모바일 전체화면 · 빈 결과 Trip.com CTA · `npm run audit:mrt-stays`
 - **금지**: `VITE_` MRT 키 · TripLink · 호텔 핀/지오코딩 · `travelSpots.js` 전체 스캔 · Trip.com 스크래핑
 - **다음**: Edge `fetch-mrt-stays` 재배포(재고 0 region 재시도) · 써머리 TNA 스트립
 
@@ -105,22 +105,12 @@
 - 정렬 옆 `LayoutGrid` 아이콘 토글 — 모바일 2↔1열 · PC 5↔3열(확대)
 - **파일**: `GlobeStayStrip.jsx`
 
-## MRT 숙소 — 우유니·라자암팟·버뮤다·베네수엘라
+## MRT 숙소 — travelSpots 전수 LIVE 감사
 
-**상태**: ✅ 클라 수정 · LIVE 스모크(오버라이드) · Edge 재시도 코드(배포 대기)
+**상태**: ✅ 스크립트 · LIVE 2회 · 오버라이드 추가 · 커밋
 
-- **증상**: 네 slug에서 숙소 없음
-- **원인**
-  1. 우유니: 「우유니 소금사막」autocomplete 미매칭 → CITY「우유니」
-  2. 라자 암팟: 공백·미매칭 → 와이사이(섬 허브) · 소롱 대안
-  3. 버뮤다: 「버뮤다」→세인트조지스 재고 0 → 패짓(Paget) CITY
-  4. 베네수엘라: MRT region/재고 없음(카라카스 등도 null) — API 폴백 불가
-- **조치**: `mrtStayQuery` 오버라이드 · 캐시 `v10` · 빈 결과 「트립닷컴에서 숙소 검색」CTA(`buildTripcomHotelSearchUrl`) · Edge 재고 0 region 스킵 후 다음 키워드 재시도
-- **LIVE**: 우유니 43 · 라자암팟 14 · 버뮤다 2 · 베네수엘라 NO_REGION(CTA)
-- **남은 일**: `npx supabase functions deploy fetch-mrt-stays --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` (Access token 필요) · 사용자 QA
-
-### 에이전트 핸드오프
-
-- **유지**: Summary「숙소 찾기」·펼칠 때만 fetch · `v10` · 빈 결과 Trip.com CTA
-- **금지**: Trip.com 스크래핑·호텔 목록 API 가장 · `VITE_` MRT 키
-- **다음**: Edge 재배포 · (선택) 베네수엘라 등 `PLANNER_TRIPCOM_HOTEL_OVERRIDES` city ID 등록
+- `scripts/audit-mrt-stay-coverage.mjs` · `npm run audit:mrt-stays` (+ `MRT_STAY_AUDIT_LIVE=1`)
+- 1차: 272곳 OK **235**(86.4%) · Fail 37
+- 오버라이드 보강(홍콩·마카오·쓰시마·바티칸·보드룸/튀르키예·피피·시밀란·안다만·이스터·갈라파고스·페스·함피·앙코르톰·포카라·쿠스코·마나우스·멘도사·앵커리지·티미카·캄차카·사하라→마라케시 등) · 캐시 `v11`
+- 2차: OK **257**(94.5%) · Fail **15** (남극·크리스마스섬·추크·코코스·디에고가르시아·포클랜드·페로·케르겔렌·미드웨이·나우루·페르세폴리스·핏케언·스발바르·팀북투·베네수엘라 — MRT 미취급·원격지 → 빈 결과 Trip.com CTA)
+- 리포트: `/opt/cursor/artifacts/mrt-stay-audit/mrt-stay-coverage-live-2026-07-21.md`

@@ -24,7 +24,7 @@ export {
 };
 
 /** countryHint·keyword override 변경 시 무효화 */
-const CACHE_PREFIX = 'gateo:mrt-stays:v10:';
+const CACHE_PREFIX = 'gateo:mrt-stays:v11:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;

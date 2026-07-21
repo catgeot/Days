@@ -5,8 +5,9 @@
 import { isPlaceholderCountry } from './travelSpotResolve.js';
 
 /**
- * 동명·오탐이 심한 slug — 1차 키워드·대안 (Edge가 countryHint로도 재시도).
- * @type {Record<string, { keyword?: string, altKeywords?: string[] }>}
+ * 동명·오탐·미매칭 slug — 1차 키워드·대안·(선택) 국가 힌트 덮어쓰기.
+ * countryHint/countryHintAlts: gateo country가 MRT subName과 다를 때(홍콩 country=중국 등).
+ * @type {Record<string, { keyword?: string, altKeywords?: string[], countryHint?: string, countryHintAlts?: string[] }>}
  */
 const MRT_STAY_KEYWORD_OVERRIDES = {
   palau: { keyword: '코로르', altKeywords: ['Koror', '팔라우'] },
@@ -46,6 +47,96 @@ const MRT_STAY_KEYWORD_OVERRIDES = {
     keyword: '와이사이',
     altKeywords: ['Waisai', '라자암팟', '라자 암팟', 'Raja Ampat', '소롱', 'Sorong'],
   },
+  /** gateo country「중국」↔ MRT「홍콩 특별행정구」 */
+  'hong-kong': {
+    keyword: '홍콩',
+    altKeywords: ['Hong Kong', '침사추이', '코우룬', 'Kowloon'],
+    countryHint: '홍콩',
+    countryHintAlts: ['홍콩 특별행정구', 'Hong Kong'],
+  },
+  /** 「마카오」한글 → 포르투갈 지명 오탐 — 영문 Macau + 특별행정구 */
+  macau: {
+    keyword: 'Macau',
+    altKeywords: ['마카오', 'Macao'],
+    countryHint: '마카오',
+    countryHintAlts: ['마카오 특별행정구', 'Macau', 'Macao'],
+  },
+  /** 「대마도」미매칭 — MRT CITY「쓰시마」 */
+  tsushima: { keyword: '쓰시마', altKeywords: ['Tsushima', '이즈하라', 'Izuhara', '대마도'] },
+  /** 바티칸 단독 region 없음 → 로마 + 이탈리아 */
+  vatican: {
+    keyword: '로마',
+    altKeywords: ['Rome', '바티칸', 'Vatican'],
+    countryHint: '이탈리아',
+    countryHintAlts: ['Italy', '바티칸', 'Vatican'],
+  },
+  /** 터키↔튀르키예는 country alts · 키워드 보강 */
+  bodrum: { keyword: '보드룸', altKeywords: ['Bodrum'] },
+  'phi-phi-islands': {
+    keyword: '톤사이',
+    altKeywords: ['피피동', 'Phi Phi Don', '크라비', 'Krabi', '피피'],
+  },
+  'similan-islands': {
+    keyword: '카오락',
+    altKeywords: ['Khao Lak', '시밀란', 'Similan'],
+  },
+  'andaman-islands': {
+    keyword: '포트블레어',
+    altKeywords: ['Port Blair', '안다만', 'Andaman'],
+  },
+  'easter-island': {
+    keyword: '앙가로아',
+    altKeywords: ['Hanga Roa', '이스터', 'Easter Island'],
+  },
+  galapagos: {
+    keyword: '푸에르토아요라',
+    altKeywords: ['Puerto Ayora', '갈라파고스', 'Galapagos'],
+  },
+  fez: { keyword: '페스', altKeywords: ['Fes', 'Fez', '페즈'] },
+  hampi: { keyword: '호스펫', altKeywords: ['Hospet', '함피', 'Hampi'] },
+  'angkor-thom': {
+    keyword: '시엠립',
+    altKeywords: ['Siem Reap', '씨엠립', '앙코르'],
+  },
+  'annapurna-circuit': {
+    keyword: '포카라',
+    altKeywords: ['Pokhara', '안나푸르나', 'Annapurna'],
+  },
+  'kala-patthar': {
+    keyword: '루클라',
+    altKeywords: ['Lukla', '나체바자르', 'Namche'],
+  },
+  'inca-trail': {
+    keyword: '쿠스코',
+    altKeywords: ['Cusco', 'Cuzco', '잉카'],
+  },
+  'amazon-rainforest': {
+    keyword: '마나우스',
+    altKeywords: ['Manaus', '아마존', 'Amazon'],
+  },
+  aconcagua: {
+    keyword: '멘도사',
+    altKeywords: ['Mendoza', '아콩카과', 'Aconcagua'],
+  },
+  denali: {
+    keyword: '앵커리지',
+    altKeywords: ['Anchorage', '페어뱅크스', 'Fairbanks', '데날리'],
+  },
+  'carstensz-pyramid': {
+    keyword: '티미카',
+    altKeywords: ['Timika', '팀카', '카르스텐츠'],
+  },
+  'kamchatka-peninsula': {
+    keyword: '페트로파블롭스크',
+    altKeywords: ['Petropavlovsk', '캄차카', 'Kamchatka'],
+  },
+  /** 사하라 허브로 마라케시(모로코) — gateo country「사하라」는 MRT 미매칭 */
+  'sahara-desert': {
+    keyword: '마라케시',
+    altKeywords: ['Marrakech', 'Marrakesh', '사하라'],
+    countryHint: '모로코',
+    countryHintAlts: ['Morocco', '사하라'],
+  },
 };
 
 /**
@@ -68,6 +159,15 @@ const MRT_COUNTRY_HINT_ALTS = {
   bermuda: ['버뮤다'],
   '쿡 제도': ['Cook Islands', '쿡제도'],
   'cook islands': ['쿡 제도', '쿡제도'],
+  /** MRT subName head는「튀르키예」— gateo「터키」 */
+  터키: ['튀르키예', 'Turkey', 'Türkiye'],
+  turkey: ['튀르키예', '터키', 'Türkiye'],
+  튀르키예: ['터키', 'Turkey', 'Türkiye'],
+  /** 홍콩·마카오 — spot country가「중국」인 경우 slug override와 병행 */
+  홍콩: ['홍콩 특별행정구', 'Hong Kong', '중국'],
+  'hong kong': ['홍콩', '홍콩 특별행정구', '중국'],
+  마카오: ['마카오 특별행정구', 'Macau', 'Macao', '중국'],
+  macau: ['마카오', '마카오 특별행정구', 'Macao'],
 };
 
 const OVERSEAS_PREFIX_RE = /^(프랑스령|영국령|미국령|네덜란드령|덴마크령|포르투갈령)\s+/u;
@@ -238,7 +338,10 @@ export function resolveMrtStayQuery(location) {
   const nameEn = String(location?.name_en || '').trim();
   const nameKo = String(location?.name_ko || '').trim();
   const isDomestic = isMrtDomesticLocation(location);
-  const countryHint = normalizeMrtCountryHint(location?.country, isDomestic);
+  const countryHint = normalizeMrtCountryHint(
+    override?.countryHint || location?.country,
+    isDomestic,
+  );
   const countryEn = String(location?.country_en || '').trim();
   const admin = location?.stayAdmin && typeof location.stayAdmin === 'object'
     ? location.stayAdmin
@@ -316,7 +419,7 @@ export function resolveMrtStayQuery(location) {
   /** MRT subName 한·영·공백·영토 별칭 — Edge countryMatches(compact·세그먼트) */
   const countryHintAlts = expandMrtCountryHintAlts(
     countryHint,
-    [countryEn, admin.country],
+    [countryEn, admin.country, ...(override?.countryHintAlts || [])],
     { isDomestic },
   );
 

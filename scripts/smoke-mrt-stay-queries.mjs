@@ -110,6 +110,40 @@ const CASES = [
     },
     expectKeyword: /베네수엘라|Venezuela/,
   },
+  {
+    slug: 'hong-kong',
+    location: {
+      slug: 'hong-kong',
+      name: '홍콩',
+      name_en: 'Hong Kong',
+      country: '중국',
+      country_en: 'China',
+    },
+    expectKeyword: /홍콩|Hong Kong/,
+    expectCountryAlt: /홍콩/,
+  },
+  {
+    slug: 'macau',
+    location: {
+      slug: 'macau',
+      name: '마카오',
+      name_en: 'Macau',
+      country: '중국',
+      country_en: 'China',
+    },
+    expectKeyword: /Macau|마카오/,
+  },
+  {
+    slug: 'bodrum',
+    location: {
+      slug: 'bodrum',
+      name: '보드룸',
+      name_en: 'Bodrum',
+      country: '터키',
+      country_en: 'Turkey',
+    },
+    expectCountryAlt: /튀르키예/,
+  },
 ];
 
 function assert(cond, msg) {
