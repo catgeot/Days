@@ -19,7 +19,66 @@ const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_
 export const FACILITY_QUERY_RE =
   /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크/i;
 
-export const isFacilityQuery = (query) => FACILITY_QUERY_RE.test(String(query || ''));
+/** 유명 랜드마크 — 도시 SSOT·country=kr 우선으로 묶이면 안 됨 */
+export const LANDMARK_QUERY_RE =
+  /에펠\s*탑|타임\s*스퀘어|콜로세움|콜로세오|피라미드|eiffel|times\s*square|colosseum|coliseum|pyramid/i;
+
+/** 도로·거리명으로 유명한 명소가 가로채지는 패턴 (Eiffel Tower Street 등) */
+const STREETISH_LABEL_RE =
+  /\b(street|st\.|road|rd\.|avenue|ave\.|lane|ln\.|drive|dr\.|blvd|boulevard|highway|way)\b|(?:거리|도로|로)$/i;
+
+/**
+ * 유명 명소 → 본명·국가 고정 쿼리.
+ * Mapbox가 동명 도로·카피 시설을 먼저 줄 때 파리 에펠탑 등으로 고정.
+ */
+function resolveLandmarkGeocodePlan(query) {
+  const q = String(query || '').trim();
+  if (!q) return null;
+
+  if (/에펠\s*탑|eiffel/i.test(q)) {
+    return {
+      queries: [
+        'Tour Eiffel, Paris',
+        'Eiffel Tower, Paris, France',
+        'Tour Eiffel',
+        'Eiffel Tower',
+      ],
+      country: 'fr',
+      acceptText: /^(tour\s+)?eiffel(\s+tower)?$/i,
+      rejectLabel: STREETISH_LABEL_RE,
+    };
+  }
+  if (/타임\s*스퀘어|times\s*square/i.test(q)) {
+    return {
+      queries: ['Times Square, New York', 'Times Square, Manhattan', 'Times Square'],
+      country: 'us',
+      acceptText: /^times\s+square$/i,
+      rejectLabel: STREETISH_LABEL_RE,
+    };
+  }
+  if (/콜로세움|콜로세오|colosseum|coliseum/i.test(q)) {
+    return {
+      queries: ['Colosseum, Rome', 'Colosseo, Roma', 'Colosseum'],
+      country: 'it',
+      acceptText: /^(the\s+)?colosseum$|^colosseo$/i,
+      rejectLabel: STREETISH_LABEL_RE,
+    };
+  }
+  if (/피라미드|pyramid/i.test(q) && /기자|기제|giza|cairo|카이로|이집트|egypt/i.test(q)) {
+    return {
+      queries: ['Pyramids of Giza', 'Great Pyramid of Giza', 'Giza Pyramid Complex'],
+      country: 'eg',
+      acceptText: /pyramid|giza/i,
+      rejectLabel: STREETISH_LABEL_RE,
+    };
+  }
+  return null;
+}
+
+export const isFacilityQuery = (query) => {
+  const q = String(query || '');
+  return FACILITY_QUERY_RE.test(q) || LANDMARK_QUERY_RE.test(q);
+};
 
 /**
  * 숙박·브랜드 검색어 → OSM/Mapbox에 잘 잡히는 별칭.
@@ -55,6 +114,12 @@ export function expandForwardQueryAliases(query) {
     add('비발디파크');
     add('소노펠리체');
     if (/홍천/.test(q)) add('홍천 비발디파크');
+  }
+
+  // 유명 명소 — 도시로 축소하지 않고 POI 영문명으로 Mapbox/Nominatim 히트
+  const landmarkPlan = resolveLandmarkGeocodePlan(q);
+  if (landmarkPlan) {
+    for (const preferred of landmarkPlan.queries) add(preferred);
   }
 
   return out;
@@ -161,6 +226,39 @@ const mapboxPlaceTypeScore = (placeTypes = [], facilityQ = false) => {
   return 0;
 };
 
+/** Mapbox feature 순위 — 명소는 Street/동명 도로 페널티, 본명·국가 가산 */
+const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null) => {
+  let score = mapboxPlaceTypeScore(feature?.place_type, facilityQ);
+  const text = String(feature?.text || '').trim();
+  const placeName = String(feature?.place_name || '').trim();
+  const label = `${text} ${placeName}`;
+
+  if (typeof feature?.relevance === 'number') {
+    score += feature.relevance * 12;
+  }
+
+  // 「Eiffel Tower Street」(필리핀 등) — 명소 검색에서 도로명 배제
+  if (STREETISH_LABEL_RE.test(text) || STREETISH_LABEL_RE.test(placeName)) {
+    score -= 160;
+  }
+
+  if (landmarkPlan) {
+    if (landmarkPlan.rejectLabel?.test(label)) score -= 200;
+    if (landmarkPlan.acceptText?.test(text)) score += 160;
+    if (landmarkPlan.country) {
+      const ctx = Array.isArray(feature?.context) ? feature.context : [];
+      const countryCtx = ctx.find((c) => String(c?.id || '').startsWith('country.'));
+      const short = String(countryCtx?.short_code || feature?.properties?.short_code || '')
+        .toLowerCase()
+        .replace(/^us-/, '');
+      if (short === landmarkPlan.country) score += 90;
+      else if (short) score -= 40;
+    }
+  }
+
+  return score;
+};
+
 const countryFromMapboxFeature = (feature) => {
   const ctx = Array.isArray(feature?.context) ? feature.context : [];
   const countryCtx = ctx.find((c) => String(c?.id || '').startsWith('country.'));
@@ -176,7 +274,10 @@ const countryFromMapboxFeature = (feature) => {
 };
 
 /** Mapbox Geocoding — 지구본 라벨·POI와 같은 인덱스 */
-const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
+const fetchMapboxForward = async (
+  searchQuery,
+  { countrycodes = '', landmarkPlan = null } = {},
+) => {
   if (!MAPBOX_TOKEN || !searchQuery) return null;
   try {
     const encoded = encodeURIComponent(searchQuery);
@@ -188,6 +289,8 @@ const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
     });
     // place·poi·address 등 — 자유 탐색. types를 너무 좁히면 휴게소가 빠짐.
     if (countrycodes) params.set('country', countrycodes);
+    // 유명 명소는 POI 우선 (도로·주소 히트 억제)
+    if (landmarkPlan) params.set('types', 'poi');
 
     const response = await fetch(
       `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?${params}`,
@@ -197,15 +300,33 @@ const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
     const features = Array.isArray(data?.features) ? data.features : [];
     if (!features.length) return null;
 
-    const facilityQ = isFacilityQuery(searchQuery);
+    const facilityQ = isFacilityQuery(searchQuery) || Boolean(landmarkPlan);
+    const plan = landmarkPlan || resolveLandmarkGeocodePlan(searchQuery);
     const ranked = [...features]
       .map((f) => ({
         feature: f,
-        score: mapboxPlaceTypeScore(f.place_type, facilityQ),
+        score: scoreMapboxFeature(f, searchQuery, facilityQ, plan),
       }))
       .sort((a, b) => b.score - a.score);
 
-    const best = ranked[0];
+    // 도로명만 남으면 거부 → 다음 쿼리/Nominatim
+    const best = ranked.find((row) => {
+      if (!row || row.score < 40) return false;
+      const text = String(row.feature?.text || '');
+      const placeName = String(row.feature?.place_name || '');
+      if (STREETISH_LABEL_RE.test(text) || STREETISH_LABEL_RE.test(placeName)) return false;
+      if (plan?.rejectLabel?.test(`${text} ${placeName}`)) return false;
+      if (plan?.acceptText && !plan.acceptText.test(text) && plan.country) {
+        // 국가 고정 쿼리인데 본명도 아니면 스킵 (카피 시설 완화)
+        const ctx = Array.isArray(row.feature?.context) ? row.feature.context : [];
+        const countryCtx = ctx.find((c) => String(c?.id || '').startsWith('country.'));
+        const short = String(countryCtx?.short_code || '')
+          .toLowerCase()
+          .replace(/^us-/, '');
+        if (short && short !== plan.country) return false;
+      }
+      return true;
+    });
     if (!best) return null;
 
     // 시설 검색인데 POI/주소가 없고 행정구역만이면 거부 → Nominatim·AI로 이어감
@@ -307,11 +428,13 @@ export const getCoordinatesFromAddress = async (query) => {
 
   try {
     const cleanQuery = standardizeName(query);
+    const landmarkQ = LANDMARK_QUERY_RE.test(cleanQuery);
 
     const tryMapboxBundle = async (q) => {
       if (!MAPBOX_TOKEN) return null;
       let mapboxHit = null;
-      if (HAS_HANGUL_RE.test(q)) {
+      // 해외 명소 한글명(에펠탑 등)은 KR 우선이 오탐·무응답을 낳음 → 글로벌만
+      if (HAS_HANGUL_RE.test(q) && !LANDMARK_QUERY_RE.test(q)) {
         mapboxHit = await fetchMapboxForward(q, { countrycodes: 'kr' });
       }
       if (!mapboxHit) {
@@ -322,7 +445,7 @@ export const getCoordinatesFromAddress = async (query) => {
 
     const tryNominatimBundle = async (q) => {
       let rows = null;
-      if (HAS_HANGUL_RE.test(q)) {
+      if (HAS_HANGUL_RE.test(q) && !LANDMARK_QUERY_RE.test(q)) {
         rows = await fetchCoords(q, 1, { acceptLanguage: 'ko,en', countrycodes: 'kr' });
         if (!rows) {
           rows = await fetchCoords(q, 1, { acceptLanguage: 'en', countrycodes: 'kr' });
@@ -335,13 +458,30 @@ export const getCoordinatesFromAddress = async (query) => {
     };
 
     // 0) Mapbox — 지구본에서 보이는 POI·세부 지명과 동일 소스
+    // 명소: 본명+국가 고정 쿼리 우선 (Eiffel Tower Street 필리핀 오탐 방지)
+    const landmarkPlan = landmarkQ ? resolveLandmarkGeocodePlan(cleanQuery) : null;
+    if (landmarkPlan) {
+      for (const preferred of landmarkPlan.queries) {
+        const pinned = await fetchMapboxForward(preferred, {
+          countrycodes: landmarkPlan.country || '',
+          landmarkPlan,
+        });
+        if (pinned) return pinned;
+      }
+      // country 필터로 못 찾으면 동일 쿼리 글로벌(도로명 페널티 유지)
+      for (const preferred of landmarkPlan.queries) {
+        const globalHit = await fetchMapboxForward(preferred, { landmarkPlan });
+        if (globalHit) return globalHit;
+      }
+    }
+
     const primaryMapbox = await tryMapboxBundle(cleanQuery);
     if (primaryMapbox) return primaryMapbox;
 
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
     let data = await tryNominatimBundle(cleanQuery);
 
-    // 1.5) 숙박 브랜드 별칭 (제주 신라호텔→호텔신라 제주, 대명 콘도→비발디파크)
+    // 1.5) 숙박·명소 별칭 (제주 신라호텔→호텔신라 제주, 에펠탑→Eiffel Tower)
     if (!data) {
       for (const alt of expandForwardQueryAliases(cleanQuery)) {
         const altMapbox = await tryMapboxBundle(alt);

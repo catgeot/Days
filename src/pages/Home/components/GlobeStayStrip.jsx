@@ -8,6 +8,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  LayoutGrid,
   Loader2,
   Minus,
   Plus,
@@ -46,6 +47,17 @@ const STAY_SORT_OPTIONS = [
   { id: 'price_desc', label: '높은 가격순' },
   { id: 'rating_desc', label: '평점 높은순' },
 ];
+
+/** 모바일 목록 열 수 — 기본 2열, 1열은 확대 */
+const MOBILE_GRID_IMAGE = {
+  2: 'h-[100px]',
+  1: 'h-[180px]',
+};
+/** PC 목록 — 기본 5열, 확대는 3열 */
+const DESKTOP_GRID_DENSITY = {
+  default: { cols: 5, imageClassName: 'h-[120px]' },
+  zoom: { cols: 3, imageClassName: 'h-[168px]' },
+};
 
 function reviewScoreNum(item) {
   const n = Number(item?.reviewScore);
@@ -576,11 +588,48 @@ function StayCard({
   );
 }
 
+function StayGridDensityToggle({ variant, value, onChange }) {
+  const isZoomed =
+    variant === 'desktop' ? value === 'zoom' : value === 1;
+  const nextValue =
+    variant === 'desktop'
+      ? isZoomed
+        ? 'default'
+        : 'zoom'
+      : isZoomed
+        ? 2
+        : 1;
+  const label = isZoomed ? '기본 그리드로' : '확대해서 보기';
+
+  return (
+    <button
+      type="button"
+      aria-pressed={isZoomed}
+      aria-label={label}
+      title={label}
+      onClick={(e) => {
+        e.stopPropagation();
+        onChange?.(nextValue);
+      }}
+      className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border transition-colors ${
+        isZoomed
+          ? 'border-amber-300/50 bg-amber-500/30 text-amber-50'
+          : 'border-white/12 bg-black/40 text-amber-100/70 hover:border-amber-300/35 hover:bg-white/5 hover:text-amber-50'
+      }`}
+    >
+      <LayoutGrid size={14} strokeWidth={2.25} aria-hidden="true" />
+    </button>
+  );
+}
+
 function StayListToolbar({
   count,
   sortMode,
   onSortChange,
   listUrl,
+  densityVariant = 'mobile',
+  densityValue,
+  onDensityChange,
 }) {
   const href = listUrl || MRT_AFFILIATE_HOME_URL;
   return (
@@ -601,29 +650,36 @@ function StayListToolbar({
           마이리얼트립에서 보기
         </a>
       </div>
-      <label className="relative flex shrink-0 items-center">
-        <span className="sr-only">숙소 정렬</span>
-        <ArrowUpDown
-          size={11}
-          className="pointer-events-none absolute left-1.5 text-amber-200/70"
-          aria-hidden="true"
+      <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+        <StayGridDensityToggle
+          variant={densityVariant}
+          value={densityValue}
+          onChange={onDensityChange}
         />
-        <select
-          value={sortMode}
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => {
-            e.stopPropagation();
-            onSortChange?.(e.target.value);
-          }}
-          className="appearance-none rounded-md border border-white/12 bg-black/40 py-1 pl-5 pr-5 text-[10px] font-semibold text-amber-50 outline-none hover:border-amber-300/35 focus:border-amber-300/50"
-        >
-          {STAY_SORT_OPTIONS.map((opt) => (
-            <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </label>
+        <label className="relative flex shrink-0 items-center">
+          <span className="sr-only">숙소 정렬</span>
+          <ArrowUpDown
+            size={11}
+            className="pointer-events-none absolute left-1.5 text-amber-200/70"
+            aria-hidden="true"
+          />
+          <select
+            value={sortMode}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              e.stopPropagation();
+              onSortChange?.(e.target.value);
+            }}
+            className="appearance-none rounded-md border border-white/12 bg-black/40 py-1 pl-5 pr-5 text-[10px] font-semibold text-amber-50 outline-none hover:border-amber-300/35 focus:border-amber-300/50"
+          >
+            {STAY_SORT_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
     </div>
   );
 }
@@ -728,6 +784,10 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const [stayDates, setStayDates] = useState(() => defaultMrtStayDates());
   const [guests, setGuests] = useState(() => normalizeMrtGuestCounts(2, 0));
   const [sortMode, setSortMode] = useState('recommended');
+  /** 모바일 목록 열 — 2(기본) | 1 */
+  const [mobileGridCols, setMobileGridCols] = useState(2);
+  /** PC 목록 밀도 — default(5열) | zoom(3열 확대) */
+  const [desktopGridDensity, setDesktopGridDensity] = useState('default');
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const [showDesktopScrollTop, setShowDesktopScrollTop] = useState(false);
   const fetchedKeyRef = useRef('');
@@ -926,6 +986,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       : null;
 
   /** PC 포털 전용 그리드 — 모바일은 전체화면만 사용 */
+  const desktopDensity =
+    DESKTOP_GRID_DENSITY[desktopGridDensity] || DESKTOP_GRID_DENSITY.default;
   const desktopList =
     isLg && status === 'ready' && items?.length ? (
       <>
@@ -934,13 +996,20 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           sortMode={sortMode}
           onSortChange={setSortMode}
           listUrl={mrtStayListUrl}
+          densityVariant="desktop"
+          densityValue={desktopGridDensity}
+          onDensityChange={setDesktopGridDensity}
         />
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(188px,1fr))] gap-3">
+        <div
+          className={`grid gap-3 ${
+            desktopDensity.cols === 3 ? 'grid-cols-3' : 'grid-cols-5'
+          }`}
+        >
           <StayCardsGrid
             items={items}
             sortMode={sortMode}
             cardSize="lg"
-            imageClassName="h-[120px]"
+            imageClassName={desktopDensity.imageClassName}
           />
         </div>
       </>
@@ -1115,13 +1184,23 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                     sortMode={sortMode}
                     onSortChange={setSortMode}
                     listUrl={mrtStayListUrl}
+                    densityVariant="mobile"
+                    densityValue={mobileGridCols}
+                    onDensityChange={setMobileGridCols}
                   />
-                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                  <div
+                    className={`grid gap-2.5 ${
+                      mobileGridCols === 1 ? 'grid-cols-1' : 'grid-cols-2'
+                    }`}
+                  >
                     <StayCardsGrid
                       items={items}
                       sortMode={sortMode}
                       cardClassName="w-full"
-                      imageClassName="h-[100px]"
+                      cardSize={mobileGridCols === 1 ? 'lg' : 'md'}
+                      imageClassName={
+                        MOBILE_GRID_IMAGE[mobileGridCols] || MOBILE_GRID_IMAGE[2]
+                      }
                     />
                   </div>
                 </>

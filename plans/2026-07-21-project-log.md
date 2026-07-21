@@ -87,3 +87,20 @@
 - **혼합**: 써머리「투어·티켓」카드 스트립 = Partner `tna/search`(분당 200, 숙소 50과 **별도**) + 패널 내「패키지 더보기」=`/pkc/search?q=` + mylink (`/pkc` 목록 API 없음).
 - 숙소찾기 UX 미러 · 펼칠 때만 fetch · `VITE_` 키 금지 · 탐색 테마 단축 유지.
 - 계획: Cursor plan `tna_스트립_혼합` · 제시어는 세션 종료 메시지 참고.
+
+## 홈 검색 — 에펠탑→파리·동명 도로 오탐
+
+**상태**: ✅ QA 확인 · 커밋·푸시
+
+- **증상**: 에펠탑 → 파리 SSOT · 이후 `Eiffel Tower Street`(필리핀)
+- **원인**: `KEYWORD_SYNONYMS` 명소→도시 · Mapbox 동명 도로 우선
+- **조치**: 명소→도시 동의어 제거 · `resolveLandmarkGeocodePlan`(`Tour Eiffel, Paris`+`country=fr`) · Street 페널티 · `types=poi`
+- **파일**: `keywordData.js` · `geocoding.js`
+- **릴리스 노트**: `2026-07-21-3`
+
+## 숙소 찾기 — 목록 그리드 밀도 토글
+
+**상태**: ✅ QA 확인 · 커밋·푸시
+
+- 정렬 옆 `LayoutGrid` 아이콘 토글 — 모바일 2↔1열 · PC 5↔3열(확대)
+- **파일**: `GlobeStayStrip.jsx`
