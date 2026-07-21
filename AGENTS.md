@@ -40,7 +40,7 @@ npm run audit:airports   # 공항 SSOT 작업 시
 
 ### Mapbox 토큰
 
-- `VITE_MAPBOX_TOKEN`은 현재 Secrets에 없음. 없으면 지구본 확대/place 지도가 `HomeGlobeMapbox.jsx`에서 fatal. 지도 확대 QA가 필요하면 Secrets에 추가해야 함.
+- `VITE_MAPBOX_TOKEN`은 Secrets에 등록됨(place 확대 지도 QA 가능). 없으면 지구본 확대/place 지도가 `HomeGlobeMapbox.jsx`에서 fatal. **주의**: dev 서버는 기동 시 env를 읽으므로 Secret 추가 후에는 vite를 **재시작**해야 반영됨.
 - `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`는 없으면 `src/shared/api/supabase.js`가 import 시 throw → 앱 자체가 안 뜸(현재 Secrets에 등록됨).
 
 ### 브랜치·병합
