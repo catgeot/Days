@@ -715,18 +715,8 @@ function Home() {
   /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
   const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
     if (selectedLocation) {
-      const lat = Number(selectedLocation.lat);
-      const lng = Number(selectedLocation.lng);
-      if (globeRef.current?.isImmersed?.()) {
-        // 모바일: 닫으면 줌 원상복구 · PC: 카드만 닫고 확대 유지(추가 조작 가능)
-        if (isMobileViewport) {
-          globeRef.current?.exitImmerse?.(lat, lng);
-        } else {
-          globeRef.current?.clearImmerseState?.();
-        }
-      } else {
-        globeRef.current?.clearImmerseState?.();
-      }
+      // 모바일·PC 공통: 카드만 닫고 확대(줌) 유지 — 「넓게 보기」로만 원상복구
+      globeRef.current?.clearImmerseState?.();
       addScoutPin(selectedLocation);
       rememberGlobeFocus(selectedLocation);
     }

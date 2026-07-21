@@ -123,14 +123,14 @@ const PlaceCardSummary = ({
       <div className="z-[60] absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[400px] animate-fade-in-up">
         <div className="tour-mobile-bar-shell relative">
           <div className="tour-mobile-bar-halo" aria-hidden="true" />
-          <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-1.5 rounded-2xl border border-white/15 bg-black/80 px-2 py-1.5 backdrop-blur-xl">
+          <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-2.5 rounded-2xl border border-white/15 bg-black/80 px-2.5 py-1.5 backdrop-blur-xl">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onExpand?.();
               }}
-              className="min-w-0 max-w-[34%] shrink leading-none pr-0.5 text-left"
+              className="min-w-0 flex-1 leading-none pr-1 text-left"
             >
               <p className="text-[9px] font-bold tracking-widest uppercase text-emerald-300/90 truncate leading-none">
                 {location?.country || 'Global'}
@@ -139,28 +139,30 @@ const PlaceCardSummary = ({
                 {primaryName || location?.name}
               </p>
             </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onImmerseZoomStep?.('x2');
-              }}
-              className={`flex min-h-[32px] flex-1 items-center justify-center rounded-lg border px-2 py-1.5 text-xs font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
-              title="현재 배율에서 ×2 확대"
-            >
-              ×2
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onImmerseZoomStep?.('x4');
-              }}
-              className={`flex min-h-[32px] flex-1 items-center justify-center rounded-lg border px-2 py-1.5 text-xs font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
-              title="현재 배율에서 ×4 확대"
-            >
-              ×4
-            </button>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onImmerseZoomStep?.('x2');
+                }}
+                className={`flex h-8 min-w-[2.5rem] items-center justify-center rounded-lg border px-2.5 text-xs font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
+                title="현재 배율에서 ×2 확대"
+              >
+                ×2
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onImmerseZoomStep?.('x4');
+                }}
+                className={`flex h-8 min-w-[2.5rem] items-center justify-center rounded-lg border px-2.5 text-xs font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
+                title="현재 배율에서 ×4 확대"
+              >
+                ×4
+              </button>
+            </div>
             <button
               type="button"
               onClick={(e) => {
@@ -402,42 +404,57 @@ const PlaceCardSummary = ({
 
                 {!isScanning && canToggleImmerse && (
                   isImmersed ? (
-                    <div className="col-span-2 relative z-10 flex min-h-[40px] min-w-0 items-center gap-1.5 lg:min-h-[36px]">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onImmerseZoomStep?.('x2');
-                        }}
-                        className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
-                        title="현재 배율에서 ×2 확대"
-                      >
-                        ×2
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onImmerseZoomStep?.('x4');
-                        }}
-                        className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
-                        title="현재 배율에서 ×4 확대"
-                      >
-                        ×4
-                      </button>
+                    isMobileCoarse ? (
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           onToggleImmerse?.();
                         }}
-                        className="relative z-10 flex min-h-[40px] min-w-0 flex-[1.35] items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
+                        className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
                         title="지구본을 넓게 보기"
                       >
                         <ScanEye size={16} className="shrink-0 text-emerald-300" />
                         <span className="min-w-0 truncate text-xs font-bold text-emerald-100">넓게 보기</span>
                       </button>
-                    </div>
+                    ) : (
+                      <div className="col-span-2 relative z-10 flex min-h-[40px] min-w-0 items-center gap-1.5 lg:min-h-[36px]">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onImmerseZoomStep?.('x2');
+                          }}
+                          className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
+                          title="현재 배율에서 ×2 확대"
+                        >
+                          ×2
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onImmerseZoomStep?.('x4');
+                          }}
+                          className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
+                          title="현재 배율에서 ×4 확대"
+                        >
+                          ×4
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleImmerse?.();
+                          }}
+                          className="relative z-10 flex min-h-[40px] min-w-0 flex-[1.35] items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
+                          title="지구본을 넓게 보기"
+                        >
+                          <ScanEye size={16} className="shrink-0 text-emerald-300" />
+                          <span className="min-w-0 truncate text-xs font-bold text-emerald-100">넓게 보기</span>
+                        </button>
+                      </div>
+                    )
                   ) : (
                     <button
                       type="button"
