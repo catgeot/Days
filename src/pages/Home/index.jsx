@@ -173,6 +173,9 @@ function Home() {
   useEffect(() => {
     if (prevChatOpenRef.current && !isChatOpen && isMobileViewport) {
       syncHomeViewportAfterInput();
+      queueMicrotask(() => {
+        globeRef.current?.wakeAfterOverlay?.();
+      });
     }
     prevChatOpenRef.current = isChatOpen;
   }, [isChatOpen, isMobileViewport]);
@@ -942,6 +945,10 @@ function Home() {
             setInitialQuery(null);
             setMooniPlaceContext(null);
             globeRef.current?.resumeRotation();
+            // 오버레이·viewport sync 직후 몰입 flyTo가 먹히도록 Mapbox 입력/리사이즈 복구
+            queueMicrotask(() => {
+              globeRef.current?.wakeAfterOverlay?.();
+            });
           }}
           initialQuery={initialQuery}
           chatHistory={savedTrips}

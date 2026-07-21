@@ -105,7 +105,12 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
       return;
     }
 
-    const ok = globeRef?.current?.immerseToPin?.(lat, lng);
+    let ok = globeRef?.current?.immerseToPin?.(lat, lng);
+    if (!ok) {
+      // 채팅 오버레이 직후 Mapbox가 한 프레임 늦게 받을 수 있음
+      globeRef?.current?.wakeAfterOverlay?.();
+      ok = globeRef?.current?.immerseToPin?.(lat, lng);
+    }
     if (ok) setIsImmersed(true);
   };
 

@@ -61,6 +61,7 @@ import {
   createFlightCinemaEngine,
   ensureFlightCinemaGlobeReady,
   isFlightCinemaGlobeReady,
+  isFlightCinemaLayer,
   setupFlightCinemaLayers,
   waitForFlightCinemaGlobeReady,
 } from '../lib/globeFlightCinemaEngine';
@@ -358,6 +359,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
   const immerseActiveRef = useRef(false);
+  /**
+   * 항공 시네마 레이어가 한 번이라도 확인되면 latch.
+   * 줌 중 setLayoutProperty 등으로 isStyleLoaded/getLayer가 순간 false여도
+   * 폴링 UI가 「준비 중」으로 깜박이지 않게 한다. 테마 전환 시에만 해제.
+   */
+  const flightCinemaLayersLatchedRef = useRef(false);
   const hasRaisedFatalRef = useRef(false);
   const suppressClickUntilRef = useRef(0);
   const markerClickGuardUntilRef = useRef(0);
@@ -490,6 +497,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       .filter((layer) => Boolean(layer.layout && layer.layout['text-field']))
       .filter((layer) => {
         const id = layer.id || '';
+        if (isGateoLayer(id) || isFlightCinemaLayer(id)) return false;
         const sourceLayer = layer['source-layer'] || '';
         return PLACE_LABEL_LAYER_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint));
       })
@@ -499,6 +507,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       .filter((layer) => Boolean(layer.layout && layer.layout['text-field']))
       .filter((layer) => {
         const id = layer.id || '';
+        if (isGateoLayer(id) || isFlightCinemaLayer(id)) return false;
         const sourceLayer = layer['source-layer'] || '';
         if (PLACE_LABEL_LAYER_HINTS.some((hint) => id.includes(hint) || sourceLayer.includes(hint))) {
           return false;
@@ -540,7 +549,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       ...poiLabelLayerIdsRef.current,
       ...contextLabelLayerIdsRef.current,
     ].forEach((layerId) => {
-      if (isGateoLayer(layerId) || !map.getLayer(layerId)) return;
+      if (isGateoLayer(layerId) || isFlightCinemaLayer(layerId) || !map.getLayer(layerId)) return;
       try {
         map.setLayoutProperty(layerId, 'text-field', [
           'coalesce',
@@ -675,6 +684,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     waitingThemeSettleRef.current = true;
     globeBaseRevealedRef.current = false;
     globeOverlaysRevealedRef.current = false;
+    flightCinemaLayersLatchedRef.current = false;
     if (map && gateoMarkerLayersReady(map)) {
       setGateoMarkerLayerVisibility(map, false);
     }
@@ -960,6 +970,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       setupClusterBoundaryLayers(map);
     }
     setupFlightCinemaLayers(map, { visible: flightCinemaActiveRef.current });
+    if (isFlightCinemaGlobeReady(map)) {
+      flightCinemaLayersLatchedRef.current = true;
+    }
     updateGateoMarkerSource(map, markerGeoJSON);
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
@@ -1133,9 +1146,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const immerseToPin = useCallback((lat, lng, options = {}) => {
     const map = mapRef.current?.getMap();
-    if (!map || pauseRender) return false;
+    if (!map || map._removed) return false;
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
-    if (isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
+    // startTour와 같이 pauseRender는 막지 않음 — 써머리 카드가 보이는 홈에서
+    // 채팅 오버레이 직후·isCardExpanded 잔류 등으로 pause가 걸려도 카메라 이동은 허용.
+    if (isTourMode(globeMode) || flightCinemaActiveRef.current) {
+      return false;
+    }
+    // 엔진 모드는 2D인데 ref만 남은 경우(중단된 투어) — 몰입 허용
+    if (tourActiveRef.current && !isTourMode(globeMode)) {
+      tourActiveRef.current = false;
+    } else if (tourActiveRef.current) {
       return false;
     }
 
@@ -1143,6 +1164,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       clearTimeout(rotationTimer.current);
       rotationTimer.current = null;
     }
+    interactionRef.current = false;
     autoRotateRef.current = false;
     immerseActiveRef.current = true;
 
@@ -1151,16 +1173,21 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const zoom = Number.isFinite(options?.zoom) ? options.zoom : GLOBE_VIEW.immerseZoom;
     const pitch = Number.isFinite(options?.pitch) ? options.pitch : GLOBE_VIEW.immersePitch;
 
-    map.stop();
-    map.flyTo({
-      center: [normalizedLng, lat],
-      zoom,
-      pitch,
-      duration: GLOBE_VIEW.immerseFlyDuration,
-      essential: true
-    });
+    try {
+      map.stop();
+      map.flyTo({
+        center: [normalizedLng, lat],
+        zoom,
+        pitch,
+        duration: GLOBE_VIEW.immerseFlyDuration,
+        essential: true
+      });
+    } catch {
+      immerseActiveRef.current = false;
+      return false;
+    }
     return true;
-  }, [globeMode, pauseRender]);
+  }, [globeMode]);
 
   const exitImmerse = useCallback((lat, lng) => {
     const map = mapRef.current?.getMap();
@@ -1541,6 +1568,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (pauseRender || isTourMode(globeMode) || flightCinemaActiveRef.current || immerseActiveRef.current) return;
       autoRotateRef.current = true;
     },
+    /** 채팅·모달 닫힌 뒤 Mapbox 입력·리사이즈 복구 (몰입 flyTo 무반응 방지) */
+    wakeAfterOverlay: () => {
+      interactionRef.current = false;
+      ensureInteractionReady();
+      const map = mapRef.current?.getMap();
+      if (map && !map._removed && isFlightCinemaGlobeReady(map)) {
+        flightCinemaLayersLatchedRef.current = true;
+      }
+    },
     flyToAndPin,
     immerseToPin,
     exitImmerse,
@@ -1571,10 +1607,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     isFlightCinemaReady: () => {
       if (!mapReady || isStyleTransitioning) return false;
       if (tourActiveRef.current || flightCinemaActiveRef.current) return false;
+      // 줌 중 isStyleLoaded 깜박임은 무시 — 레이어 latch 또는 실존만 본다
+      if (flightCinemaLayersLatchedRef.current) return true;
       const map = mapRef.current?.getMap();
       if (!map || map._removed) return false;
-      if (!map.isStyleLoaded?.()) return false;
-      return isFlightCinemaGlobeReady(map);
+      const ready = isFlightCinemaGlobeReady(map);
+      if (ready) flightCinemaLayersLatchedRef.current = true;
+      return ready;
     },
     waitForFlightCinemaReady: (options) => {
       const map = mapRef.current?.getMap();
@@ -1582,7 +1621,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return waitForFlightCinemaGlobeReady(map, options);
     },
     getGlobeMode: () => globeMode
-  }), [addRipple, clearImmerseState, closeFlightCinema, endTour, exitImmerse, flyToAndPin, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, clearImmerseState, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -1989,6 +2028,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             && (!gateoMarkerLayersReady(map) || !isFlightCinemaGlobeReady(map))
           ) {
             syncGateoMarkerLayers();
+          } else if (map && isFlightCinemaGlobeReady(map)) {
+            flightCinemaLayersLatchedRef.current = true;
           }
           if (waitingThemeSettleRef.current) {
             const pendingCamera = pendingThemeCameraRef.current;

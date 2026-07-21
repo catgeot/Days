@@ -89,6 +89,9 @@ const HomeGlobe = React.memo(forwardRef(({
       if (pauseRender || immerseActiveRef.current) return;
       if(globeEl.current) globeEl.current.controls().autoRotate = true;
     },
+    wakeAfterOverlay: () => {
+      // Legacy three.js globe — no Mapbox resize; keep API parity with Adapter.
+    },
     flyToAndPin: (lat, lng, _name, _category, _options) => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
       immerseActiveRef.current = false;
