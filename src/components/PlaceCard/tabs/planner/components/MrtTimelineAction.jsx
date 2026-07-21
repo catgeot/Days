@@ -1,25 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { generateMrtLink } from '../../../../../utils/affiliate';
+import React from 'react';
+import { getMrtSearchUrl } from '../../../../../utils/affiliate';
 
 const MrtTimelineAction = ({ mrtQuery, label, icon, colorClass, customTrigger }) => {
-    const [url, setUrl] = useState(null);
-
-    useEffect(() => {
-        let isMounted = true;
-        const fetchLink = async () => {
-            const link = await generateMrtLink(mrtQuery);
-            if (isMounted) setUrl(link);
-        };
-        fetchLink();
-        return () => { isMounted = false; };
-    }, [mrtQuery]);
+    const url = getMrtSearchUrl(mrtQuery);
 
     // customTrigger가 있으면 그것을 사용
     if (customTrigger) {
         return (
-            <a href={url || '#'} target="_blank" rel="noopener noreferrer"
-               onClick={(e) => { if (!url) e.preventDefault(); }}
-               className={!url ? 'opacity-50 cursor-wait' : ''}>
+            <a href={url} target="_blank" rel="noopener noreferrer">
                 {customTrigger}
             </a>
         );
@@ -27,9 +15,12 @@ const MrtTimelineAction = ({ mrtQuery, label, icon, colorClass, customTrigger })
 
     // 기본 버튼
     return (
-        <a href={url || '#'} target="_blank" rel="noopener noreferrer"
-           onClick={(e) => { if (!url) e.preventDefault(); }}
-           className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors border border-transparent hover:border-current ${colorClass} ${!url ? 'opacity-50 cursor-wait' : ''}`}>
+        <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors border border-transparent hover:border-current ${colorClass}`}
+        >
             {icon}
             {label}
         </a>

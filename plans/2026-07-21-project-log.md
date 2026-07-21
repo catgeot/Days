@@ -69,3 +69,21 @@
 - **유지**: Summary「숙소 찾기」·펼칠 때만 fetch · `v9` · PC 포털/모바일 전체화면
 - **금지**: `VITE_` MRT 키 · TripLink · 호텔 핀/지오코딩 · `travelSpots.js` 전체 스캔
 - **다음(선택)**: 빈 결과 CTA
+
+## MRT 제휴 — 마이링크 URL 파라미터 재정립
+
+**상태**: ✅ 코드 · 사용자 QA 확인 · 커밋·푸시
+
+- 홈 단축 `fOey96` → `mylink_id=2640202` SSOT (`mrtPackageThemeLinks.js`)
+- 플래너「숙소 실시간 검색」: `getMrtSearchUrl` (www `/search` + mylink)
+- 플래너 숙소 툴킷(지역별·한인민박): `getMrtAccommodationSearchUrl` → `accommodation…/union/products` + mylink
+- 숙소 카드 상세 `productUrl`에도 `buildMrtMylinkUrl` 부착. 탐색 패키지 단축 유지.
+- Edge `mrt-link-generator` 클라 호출 제거(파일 미삭제 · 후속 폐기).
+
+## 다음 세션 — 써머리 TNA 스트립 + 패키지 딥링크 (합의만)
+
+**상태**: 📋 계획 확정 · 미구현
+
+- **혼합**: 써머리「투어·티켓」카드 스트립 = Partner `tna/search`(분당 200, 숙소 50과 **별도**) + 패널 내「패키지 더보기」=`/pkc/search?q=` + mylink (`/pkc` 목록 API 없음).
+- 숙소찾기 UX 미러 · 펼칠 때만 fetch · `VITE_` 키 금지 · 탐색 테마 단축 유지.
+- 계획: Cursor plan `tna_스트립_혼합` · 제시어는 세션 종료 메시지 참고.

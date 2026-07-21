@@ -25,6 +25,7 @@ import {
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
+import { buildMrtMylinkUrl } from '../../../utils/affiliate';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
@@ -499,9 +500,13 @@ function StayCard({
   size = 'md',
 }) {
   const large = size === 'lg';
+  const productHref = item.productUrl
+    ? buildMrtMylinkUrl(item.productUrl)
+    : MRT_AFFILIATE_HOME_URL;
+
   return (
     <a
-      href={item.productUrl}
+      href={productHref}
       target="_blank"
       rel="noopener noreferrer sponsored"
       draggable={false}

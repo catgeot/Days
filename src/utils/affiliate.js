@@ -1,6 +1,10 @@
 // src/utils/affiliate.js
 
-import { supabase } from '../shared/api/supabase';
+import {
+  MRT_HOME_MYLINK_ID,
+  MRT_PACKAGE_SHORT_URLS,
+} from '../pages/Home/data/mrtPackageThemeLinks.js';
+import { buildMrtStayListUrl } from './fetchMrtStays.js';
 import {
   resolveKlookRentalBannerSearchLabel,
   resolvePlannerFlightArrivalIata,
@@ -346,37 +350,74 @@ export const getKlookAirportTransferUrl = () =>
   getKlookAffiliateUrl(KLOOK_AIRPORT_TRANSFER_TARGET, KLOOK_DEFAULT_AD_ID);
 
 /**
- * 마이리얼트립 검색 결과 페이지에 대한 동적 제휴 링크(Short URL)를 발급받습니다.
- * Edge Function(mrt-link-generator)을 경유하여 발급하며, 실패 시 원본 검색 URL을 그대로 반환합니다.
+ * MRT 비항공 URL에 공식 마이링크 트래킹 파라미터를 붙입니다.
+ * API 호출 없음 — docs: mylink_id 필수 · utm_source=mktpartner(랜딩 관례).
  *
- * @param {string} query - 검색어 (예: '로마 한인민박', '파리 교통패스')
- * @returns {Promise<string>} - 마이리얼트립 제휴 단축 URL 또는 원본 URL
+ * @param {string} targetUrl
+ * @param {{ mylinkId?: string, utmContent?: string }} [options]
+ * @returns {string}
  */
-export const generateMrtLink = async (query) => {
-  if (!query) return MRT_HOME_URL;
-
-  const encodedQuery = encodeURIComponent(query);
-  const originalUrl = `${MRT_HOME_URL}/search?q=${encodedQuery}`;
-
+export function buildMrtMylinkUrl(targetUrl, options = {}) {
+  if (!targetUrl) return getMrtHomeAffiliateUrl();
   try {
-    const { data, error } = await supabase.functions.invoke('mrt-link-generator', {
-      body: { originalUrl }
-    });
-
-    if (error) {
-      console.warn('[MRT Link] Edge Function 오류로 원본 URL을 반환합니다.', error);
-      return originalUrl;
-    }
-
-    return data?.shortLink || originalUrl;
-  } catch (err) {
-    console.error('[MRT Link] 네트워크/서버 오류로 원본 URL을 반환합니다.', err);
-    return originalUrl;
+    const url = new URL(targetUrl);
+    const mylinkId = String(options.mylinkId ?? MRT_HOME_MYLINK_ID).trim();
+    if (mylinkId) url.searchParams.set('mylink_id', mylinkId);
+    url.searchParams.set('utm_source', 'mktpartner');
+    const utmContent = String(options.utmContent ?? '').trim();
+    if (utmContent) url.searchParams.set('utm_content', utmContent.slice(0, 100));
+    return url.toString();
+  } catch {
+    return targetUrl;
   }
-};
+}
+
+/** 마이리얼트립 제휴 홈 — 파트너 단축 URL SSOT */
+export function getMrtHomeAffiliateUrl() {
+  return MRT_PACKAGE_SHORT_URLS.home || buildMrtMylinkUrl(MRT_HOME_URL);
+}
 
 /**
- * 플래너 호텔 버튼 기본값은 마이리얼트립 동적 검색(`generateMrtLink`).
+ * 마이리얼트립 검색 결과 제휴 URL (동기 · Edge 불필요).
+ * 사이트 통합 검색(`/search`) — PreTravelChecklist「숙소 실시간 검색」등.
+ *
+ * @param {string} query - 검색어 (예: '로마 한인민박', '파리 숙소')
+ * @returns {string}
+ */
+export function getMrtSearchUrl(query) {
+  const q = String(query ?? '').trim();
+  if (!q) return getMrtHomeAffiliateUrl();
+  return buildMrtMylinkUrl(`${MRT_HOME_URL}/search?q=${encodeURIComponent(q)}`);
+}
+
+/**
+ * 숙소 도메인 키워드 검색 제휴 URL (`accommodation…/union/products`).
+ * 플래너 숙소 툴킷(지역별·한인민박) — 장소카드「숙소 찾기」목록과 동일 패턴.
+ *
+ * @param {string} query
+ * @param {{ isDomestic?: boolean }} [options]
+ * @returns {string}
+ */
+export function getMrtAccommodationSearchUrl(query, options = {}) {
+  const keyword = String(query ?? '').trim();
+  if (!keyword) return getMrtHomeAffiliateUrl();
+  const url = buildMrtStayListUrl({
+    keyword,
+    isDomestic: Boolean(options.isDomestic),
+    mylinkId: MRT_HOME_MYLINK_ID,
+  });
+  return url || getMrtHomeAffiliateUrl();
+}
+
+/**
+ * @deprecated {@link getMrtSearchUrl} 사용 — 동기 마이링크.
+ * @param {string} query
+ * @returns {string}
+ */
+export const generateMrtLink = (query) => getMrtSearchUrl(query);
+
+/**
+ * 플래너 호텔 버튼 기본값은 마이리얼트립(`getMrtAccommodationSearchUrl` / `getMrtSearchUrl`).
  * 마이리얼트립에서 호텔 검색이 빈약한 여행지만 여기에 제휴에서 받은 트립닷컴 호텔 목록 URL 전체를 등록한다.
  *
  * 키: `travelSpots`의 `slug`(소문자) 또는 한글 `name`과 정확히 일치.

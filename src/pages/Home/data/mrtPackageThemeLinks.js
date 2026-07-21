@@ -18,8 +18,8 @@ export const MRT_PACKAGE_SHORT_URLS = {
   europe: 'https://myrealt.rip/dVE182',
   /** 일본 패키지 (MRT 표기: 특가) */
   japan: 'https://myrealt.rip/dVEgd5',
-  /** 홈 단축 (/pkc) — 보관 */
-  home: 'https://myrealt.rip/dUxR7d',
+  /** 홈 단축 — 폴백·스마트 링크용 (제휴홈에서 재조회 불가 → short+mylink_id 함께 보관) */
+  home: 'https://myrealt.rip/fOey96',
   /** 지방 출발 — 보관만 */
   regionalDeparture: 'https://myrealt.rip/dVEE92',
   /** 홈쇼핑 — 보관만 */
@@ -27,11 +27,12 @@ export const MRT_PACKAGE_SHORT_URLS = {
 };
 
 /**
- * 홈 단축(`home` → myrealt.rip/dUxR7d) 리다이렉트의 mylink_id.
- * 숙소 목록 등 비항공 MRT URL에 `?mylink_id=`로 붙여 제휴 추적.
+ * 홈 단축(`home` → myrealt.rip/fOey96) 리다이렉트의 mylink_id.
+ * 검색·숙소 목록 등 비항공 MRT URL에 `?mylink_id=`+`utm_source=mktpartner`로 제휴 추적.
+ * 파트너 페이지에서 링크를 만들 때마다 ID는 달라질 수 있으나 동일 계정으로 인정됨.
  * @see https://docs.myrealtrip.com/#/api/partner-api/마이-링크
  */
-export const MRT_HOME_MYLINK_ID = '2282829';
+export const MRT_HOME_MYLINK_ID = '2640202';
 
 /** 에디터스 픽 테마 → CTA 문구 + 단축 URL */
 export const MRT_PACKAGE_THEME_LINKS = {

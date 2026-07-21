@@ -13,8 +13,8 @@ import {
   getGygHomeUrl,
   getHolaflyHomeUrl,
   getKlookSiteHomeUrl,
+  getMrtHomeAffiliateUrl,
   getTripcomHomeUrl,
-  MRT_HOME_URL,
 } from './affiliate.js';
 
 /** @typedef {'klook' | 'tripcom' | 'twelve_go' | 'direct_ferries' | 'airalo' | 'holafly' | 'tiqets' | 'bounce' | 'bikesbooking' | 'mrt' | 'getyourguide'} AffiliateBrandProvider */
@@ -146,7 +146,7 @@ function buildHomeUrlForProvider(provider, options = {}) {
     case 'bikesbooking':
       return BIKESBOOKING_AFFILIATE_HOME_URL;
     case 'mrt':
-      return MRT_HOME_URL;
+      return getMrtHomeAffiliateUrl();
     default:
       return '';
   }
