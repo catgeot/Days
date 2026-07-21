@@ -577,6 +577,43 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
 export const PLANNER_TRIPCOM_FLIGHTS_URL = buildTripcomPlannerFlightUrl(null);
 
 /**
+ * MRT 숙소 빈 결과·미취급 시 Trip.com 호텔 검색 딥링크 (목록 API 아님 — 새 탭 이동용).
+ * city ID 없이 `cityName` 파라미터로 검색 페이지를 연다. 등록 오버라이드가 있으면 우선.
+ *
+ * @param {{ slug?: string, name?: string, name_en?: string, name_ko?: string } | null | undefined} location
+ * @param {{ checkIn?: string, checkOut?: string, campaign?: string, adultCount?: number, childCount?: number }} [options]
+ * @returns {string}
+ */
+export function buildTripcomHotelSearchUrl(location, options = {}) {
+  const override = getTripcomHotelOverrideUrlForLocation(location);
+  if (override) return override;
+
+  const cityName = String(
+    location?.name || location?.name_ko || location?.name_en || '',
+  ).trim();
+  const params = new URLSearchParams({
+    locale: 'ko-KR',
+    curr: 'KRW',
+    Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+    SID: TRIPCOM_KR_PARTNER.sid,
+    trip_sub1: options.campaign || '숙소찾기 빈결과',
+  });
+  if (cityName) {
+    params.set('cityName', cityName);
+    params.set('trip_sub2', cityName);
+  }
+  if (options.checkIn) params.set('checkIn', String(options.checkIn));
+  if (options.checkOut) params.set('checkOut', String(options.checkOut));
+  const adults = Number(options.adultCount);
+  if (Number.isFinite(adults) && adults > 0) params.set('adult', String(Math.min(8, adults)));
+  const children = Number(options.childCount);
+  if (Number.isFinite(children) && children >= 0) {
+    params.set('children', String(Math.min(8, children)));
+  }
+  return `https://kr.trip.com/hotels/list?${params.toString()}`;
+}
+
+/**
  * 등록된 여행지만 트립닷컴 호텔 목록으로 연결. 없으면 null → 마이리얼트립 사용.
  *
  * @param {{ slug?: string, name?: string } | null | undefined} location

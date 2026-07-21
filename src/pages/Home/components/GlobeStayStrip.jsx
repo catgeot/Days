@@ -26,7 +26,7 @@ import {
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
-import { buildMrtMylinkUrl } from '../../../utils/affiliate';
+import { buildMrtMylinkUrl, buildTripcomHotelSearchUrl } from '../../../utils/affiliate';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
@@ -969,7 +969,43 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   );
 
   const emptyMessage =
-    '이 여행지 숙소를 찾지 못했어요. 날짜·인원을 바꿔 보세요.';
+    '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요. 날짜·인원을 바꿔 보거나, 트립닷컴에서 검색해 보세요.';
+
+  const tripcomEmptyUrl = buildTripcomHotelSearchUrl(location, {
+    checkIn: stayDates.checkIn,
+    checkOut: stayDates.checkOut,
+    adultCount: guests.adultCount,
+    childCount: guests.childCount,
+    campaign: '숙소찾기 빈결과',
+  });
+
+  const emptyState = (
+    <div className="flex min-h-[min(360px,calc(100%-5rem))] flex-col items-center justify-center gap-3 px-4 py-10">
+      <p className="break-keep text-center text-sm text-white/50">{emptyMessage}</p>
+      <a
+        href={tripcomEmptyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-4 py-2.5 text-sm font-semibold text-sky-50 transition-colors hover:bg-sky-500/30"
+      >
+        트립닷컴에서 숙소 검색
+      </a>
+    </div>
+  );
+
+  const emptyStateMobile = (
+    <div className="flex flex-col items-center gap-3 px-1 py-12">
+      <p className="break-keep text-center text-[12px] text-white/45">{emptyMessage}</p>
+      <a
+        href={tripcomEmptyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-3.5 py-2 text-[12px] font-semibold text-sky-50 transition-colors hover:bg-sky-500/30"
+      >
+        트립닷컴에서 숙소 검색
+      </a>
+    </div>
+  );
 
   const mrtStayListUrl =
     status === 'ready' && mrtListMeta
@@ -1050,11 +1086,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           <p className="text-xs text-white/40">잠시만 기다려 주세요</p>
         </div>
       ) : null}
-      {status === 'empty' || status === 'error' ? (
-        <div className="flex min-h-[min(360px,calc(100%-5rem))] items-center justify-center px-4 py-10">
-          <p className="break-keep text-center text-sm text-white/50">{emptyMessage}</p>
-        </div>
-      ) : null}
+      {status === 'empty' || status === 'error' ? emptyState : null}
       {desktopList}
     </div>
   );
@@ -1172,11 +1204,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                   <p className="text-[12px]">숙소를 불러오는 중…</p>
                 </div>
               ) : null}
-              {status === 'empty' || status === 'error' ? (
-                <p className="break-keep px-1 py-12 text-center text-[12px] text-white/45">
-                  {emptyMessage}
-                </p>
-              ) : null}
+              {status === 'empty' || status === 'error' ? emptyStateMobile : null}
               {status === 'ready' && items?.length ? (
                 <>
                   <StayListToolbar

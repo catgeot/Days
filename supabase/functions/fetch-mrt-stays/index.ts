@@ -290,12 +290,16 @@ async function resolveRegion(
   keywords: string[],
   countryHints: string[],
   cityHints: string[],
+  skipRegionIds: Set<number> = new Set(),
 ): Promise<{ region: Region | null; usedKeyword: string | null }> {
   for (const kw of keywords) {
     const regions = await fetchRegionList(apiKey, isDomestic, kw);
     if (!regions.length) continue;
-    const region = pickRegion(regions, kw, countryHints, cityHints, isDomestic);
-    if (region?.regionId) {
+    // 재고 0인 regionId는 건너뛰고 같은·다음 키워드에서 다른 CITY를 고름
+    const filtered = regions.filter((r) => !skipRegionIds.has(Number(r.regionId)));
+    if (!filtered.length) continue;
+    const region = pickRegion(filtered, kw, countryHints, cityHints, isDomestic);
+    if (region?.regionId && !skipRegionIds.has(Number(region.regionId))) {
       return { region, usedKeyword: kw };
     }
   }
@@ -460,15 +464,77 @@ serve(async (req) => {
     const size = Math.max(1, Math.min(20, Number(body?.size) || 20));
     const page = Math.max(0, Number(body?.page) || 0);
 
-    const { region, usedKeyword } = await resolveRegion(
-      apiKey,
-      isDomestic,
-      keywords,
-      countryHints,
-      cityHints,
-    );
+    // region 매칭은 됐지만 해당 CITY 재고 0인 경우(버뮤다→세인트조지스 등)
+    // 다음 키워드·다른 regionId로 최대 수회 재시도
+    const skipRegionIds = new Set<number>();
+    const maxRegionAttempts = Math.min(6, Math.max(1, keywords.length + 2));
+    let lastRegion: Region | null = null;
+    let lastUsedKeyword: string | null = null;
+    let lastSearch: { items: StayItem[]; totalCount: number } | null = null;
 
-    if (!region?.regionId) {
+    for (let attempt = 0; attempt < maxRegionAttempts; attempt++) {
+      const { region, usedKeyword } = await resolveRegion(
+        apiKey,
+        isDomestic,
+        keywords,
+        countryHints,
+        cityHints,
+        skipRegionIds,
+      );
+
+      if (!region?.regionId) break;
+
+      lastRegion = region;
+      lastUsedKeyword = usedKeyword;
+
+      const search = await searchStays(apiKey, {
+        regionId: region.regionId,
+        checkIn,
+        checkOut,
+        adultCount,
+        childCount,
+        page,
+        size,
+      });
+
+      if (!search.ok) {
+        return jsonResponse({
+          ok: false,
+          error: "accommodation/search failed",
+          detail: search.detail,
+          region: {
+            regionId: region.regionId,
+            name: region.name ?? null,
+            subName: region.subName ?? null,
+            type: region.type ?? null,
+          },
+        }, 502);
+      }
+
+      lastSearch = { items: search.items, totalCount: search.totalCount };
+      if (search.items.length > 0 || search.totalCount > 0) {
+        return jsonResponse({
+          ok: true,
+          region: {
+            regionId: region.regionId,
+            name: region.name ?? null,
+            subName: region.subName ?? null,
+            type: region.type ?? null,
+          },
+          items: search.items,
+          checkIn,
+          checkOut,
+          adultCount,
+          childCount,
+          totalCount: search.totalCount,
+          usedKeyword,
+        });
+      }
+
+      skipRegionIds.add(Number(region.regionId));
+    }
+
+    if (!lastRegion?.regionId) {
       return jsonResponse({
         ok: true,
         region: null,
@@ -476,49 +542,25 @@ serve(async (req) => {
         checkIn,
         checkOut,
         totalCount: 0,
-        usedKeyword,
+        usedKeyword: lastUsedKeyword,
       });
-    }
-
-    const search = await searchStays(apiKey, {
-      regionId: region.regionId,
-      checkIn,
-      checkOut,
-      adultCount,
-      childCount,
-      page,
-      size,
-    });
-
-    if (!search.ok) {
-      return jsonResponse({
-        ok: false,
-        error: "accommodation/search failed",
-        detail: search.detail,
-        region: {
-          regionId: region.regionId,
-          name: region.name ?? null,
-          subName: region.subName ?? null,
-          type: region.type ?? null,
-        },
-      }, 502);
     }
 
     return jsonResponse({
       ok: true,
       region: {
-        regionId: region.regionId,
-        name: region.name ?? null,
-        subName: region.subName ?? null,
-        type: region.type ?? null,
+        regionId: lastRegion.regionId,
+        name: lastRegion.name ?? null,
+        subName: lastRegion.subName ?? null,
+        type: lastRegion.type ?? null,
       },
-      items: search.items,
+      items: lastSearch?.items || [],
       checkIn,
       checkOut,
       adultCount,
       childCount,
-      totalCount: search.totalCount,
-      usedKeyword,
+      totalCount: lastSearch?.totalCount || 0,
+      usedKeyword: lastUsedKeyword,
     });
   } catch (err) {
     console.error("[fetch-mrt-stays]", err);

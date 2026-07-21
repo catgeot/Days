@@ -25,8 +25,27 @@ const MRT_STAY_KEYWORD_OVERRIDES = {
     keyword: '레위니옹',
     altKeywords: ['La Reunion', 'Reunion', 'Réunion', '생드니', 'Saint-Denis'],
   },
-  bermuda: { keyword: '버뮤다', altKeywords: ['Bermuda', '해밀턴', 'Hamilton'] },
+  /**
+   * 「버뮤다」→세인트조지스 CITY는 재고 0.
+   * 패짓(Paget) CITY에 호텔 재고 — 1차 키워드를 패짓으로.
+   */
+  bermuda: {
+    keyword: '패짓',
+    altKeywords: ['Paget', '해밀턴', 'Hamilton', '버뮤다', 'Bermuda'],
+  },
   saipan: { keyword: '사이판', altKeywords: ['Saipan', '가란', 'Garapan'] },
+  /** 「우유니 소금사막」autocomplete 미매칭 — CITY「우유니」 */
+  'uyuni-salt-flat': {
+    keyword: '우유니',
+    altKeywords: ['Uyuni', '우유니 소금사막', 'Uyuni Salt Flat'],
+  },
+  /**
+   * 「라자 암팟」공백·미매칭 — 섬 허브 와이사이 우선(리조트), 관문 소롱 대안.
+   */
+  'raja-ampat': {
+    keyword: '와이사이',
+    altKeywords: ['Waisai', '라자암팟', '라자 암팟', 'Raja Ampat', '소롱', 'Sorong'],
+  },
 };
 
 /**
