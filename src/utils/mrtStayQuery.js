@@ -145,6 +145,36 @@ function pushUnique(list, seen, raw) {
   list.push(k);
 }
 
+/** 숙박·리조트 uiPlace — MRT 키워드를 브랜드·지역으로 고정 (부산 오탐·신라스테이 혼동 완화) */
+function pushLodgingStayKeywords(ladder, seen, location) {
+  const blob = [
+    location?.originalQuery,
+    location?.name,
+    location?.name_ko,
+    location?.name_en,
+  ]
+    .map((s) => String(s || ''))
+    .join(' ');
+
+  if (/비발디|vivaldi|대명\s*콘도|소노\s*펠리체|sono\s*felice/i.test(blob)) {
+    pushUnique(ladder, seen, '비발디파크');
+    pushUnique(ladder, seen, '소노펠리체');
+    pushUnique(ladder, seen, '홍천');
+  }
+
+  if (/신라\s*호텔|호텔\s*신라|the\s*shilla/i.test(blob) && !/신라\s*스테이|shilla\s*stay/i.test(blob)) {
+    if (/제주|jeju/i.test(blob)) {
+      pushUnique(ladder, seen, '호텔신라 제주');
+      pushUnique(ladder, seen, '중문');
+    } else if (/서울|seoul/i.test(blob)) {
+      pushUnique(ladder, seen, '호텔신라');
+      pushUnique(ladder, seen, '장충동');
+    } else {
+      pushUnique(ladder, seen, '호텔신라');
+    }
+  }
+}
+
 /** 춘천시 → 춘천 등 — MRT CITY 매칭용 */
 export function stripKoAdminSuffix(name) {
   const s = String(name || '').trim();
@@ -201,6 +231,21 @@ export function resolveMrtStayQuery(location) {
   if (override?.keyword) pushUnique(ladder, seen, override.keyword);
   for (const k of override?.altKeywords || []) pushUnique(ladder, seen, k);
 
+  // 숙박 브랜드 키워드 선두 (비발디→홍천, 호텔신라→중문/장충)
+  pushLodgingStayKeywords(ladder, seen, location);
+
+  // uiPlace: 검색어(originalQuery)를 선두 — Mapbox name이 시·군만일 때 「홍천 대명 콘도」 숙소 오탐 방지
+  if (location?.uiPlace) {
+    pushUnique(ladder, seen, String(location.originalQuery || '').trim());
+  }
+
+  // originalQuery·이름에서 시·군 토큰을 cityHints에 보강 (AI 핀에 stayAdmin 없을 때)
+  const cityHintExtras = [];
+  const hintBlob = `${location?.originalQuery || ''} ${name} ${nameKo}`;
+  for (const m of hintBlob.matchAll(/(홍천|춘천|강릉|속초|제주|중문|서귀포|서울|부산|강원)/g)) {
+    cityHintExtras.push(m[1]);
+  }
+
   const fineGrain = /[동읍면]$/.test(name) || /[동읍면]$/.test(admin.neighbourhood || '');
 
   const pushCityLadder = () => {
@@ -244,6 +289,10 @@ export function resolveMrtStayQuery(location) {
   const keyword = String(ladder[0] || '').trim();
   const altKeywords = ladder.slice(1, 10);
   const cityHints = resolveMrtCityHints(admin, { isDomestic });
+  const citySeen = new Set(cityHints.map((h) => h.toLowerCase()));
+  for (const extra of cityHintExtras) {
+    pushUnique(cityHints, citySeen, extra);
+  }
 
   /** MRT subName 한·영·공백·영토 별칭 — Edge countryMatches(compact·세그먼트) */
   const countryHintAlts = expandMrtCountryHintAlts(

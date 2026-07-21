@@ -106,12 +106,13 @@ const getDistanceKm = (lat1, lon1, lat2, lon2) => {
 
 const SMART_SEARCH_COORD_TOLERANCE_KM = 120;
 
-/** 시설 검색이 시·군·구로 캐시·교정된 경우 거부 */
+/** 시설 검색이 시·군·구·시청으로 캐시·교정된 경우 거부 */
 const isAdminRegionName = (name) => {
   const n = String(name || '').replace(/\s+/g, '');
   if (!n) return false;
+  if (/시청|구청|도청|군청|청사$/.test(n)) return true;
   if (/[시군구]$/.test(n)) return true;
-  return /(?:gun|si|gu|-gun|-si)$/i.test(n);
+  return /(?:gun|si|gu|-gun|-si|city\s*hall|town\s*hall)$/i.test(n);
 };
 const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
 const MOOD_HINT_KEYWORDS = [
@@ -139,6 +140,9 @@ const THEME_KEYWORD_BLOCKLIST = new Set(
   )
 );
 
+/** 명소·지명 keywords — 테마 큐레이션 금지 (성산일출봉→제주 스냅 방지, Mapbox uiPlace로) */
+const THEME_PLACE_NAME_KEYWORD_RE = /(?:산|봉|길|궁|폭포|해변|해수욕장|국립공원|박물관|타워|전망대)$/;
+
 /**
  * SSOT keywords 테마 매칭 (반딧불→반딧불이, 「빙하를 보고 싶어」→빙하).
  * 예전 isConcept(return null)는 Explore를 닫고 홈만 열어 검색이 사라진 것처럼 보였음.
@@ -146,6 +150,8 @@ const THEME_KEYWORD_BLOCKLIST = new Set(
 function findThemeKeywordHits(query) {
   const q = normalizeSearchKey(query);
   if (q.length < 2) return [];
+  // 성산일출봉·한라산 등 지명형 쿼리 — 테마(일출 부분일치 포함)로 상위 여행지 묶지 않음
+  if (THEME_PLACE_NAME_KEYWORD_RE.test(q)) return [];
 
   const hits = [];
   for (const spot of TRAVEL_SPOTS) {
@@ -153,6 +159,8 @@ function findThemeKeywordHits(query) {
       const k = normalizeSearchKey(kw);
       if (k.length < 2) continue;
       if (THEME_KEYWORD_BLOCKLIST.has(k)) continue;
+      // 한라산·성산일출봉·올레길 등은 자유 탐색(POI) — 상위 여행지 테마 연결 금지
+      if (THEME_PLACE_NAME_KEYWORD_RE.test(k)) continue;
 
       let score = 0;
       if (k === q) score = 100 + k.length;
@@ -661,14 +669,7 @@ export function useHomeHandlers({
       return normalizedCity;
     }
 
-    // 테마 키워드(반딧불·빙하 등) — null 반환 금지. SSOT keywords로 큐레이션 연결.
-    const themeSpot = pickThemeCurationSpot(query, category);
-    if (themeSpot) {
-      handleLocationSelect(themeSpot);
-      setDraftInput(themeSpot.name);
-      processSearchKeywords(themeSpot);
-      return themeSpot;
-    }
+    // 테마 키워드(반딧불·빙하 등)는 지오코딩 실패 후에만 — 성산일출봉 등 명소가 제주 SSOT로 먼저 묶이지 않게.
 
     const isLikelyMoodQuery = (text) => {
       const compact = normalizeSearchKey(text);
@@ -915,6 +916,15 @@ export function useHomeHandlers({
       handleLocationSelect(normalizedLoc);
       return normalizedLoc;
     } else {
+      // 지오코딩 실패 시에만 테마 큐레이션 (반딧불·빙하 문장 등)
+      const themeSpot = pickThemeCurationSpot(query, category);
+      if (themeSpot) {
+        handleLocationSelect(themeSpot);
+        setDraftInput(themeSpot.name);
+        processSearchKeywords(themeSpot);
+        return themeSpot;
+      }
+
       // 🚨 [New] Smart Search Fallback (AI 자동 교정 엔진)
       let isCorrected = false;
       try {

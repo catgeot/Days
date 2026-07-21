@@ -6,6 +6,8 @@ import {
 
 const STRIP_SUFFIX_RE = /\s*(제도|국립공원|국립\s*공원|호수|섬|기지|시|군|주)\s*$/gi;
 const STRIP_INFIX_RE = /\s*(제도|국립공원|국립\s*공원)\s*/gi;
+/** 제주도→제주 등 — 공식명 히트일 때만 적용 (오 strip 방지) */
+const STRIP_DO_SUFFIX_RE = /\s*도\s*$/u;
 
 export function normalizePlaceKey(s) {
   return String(s ?? '')
@@ -45,8 +47,13 @@ function isBlocklistedPlaceId(placeId) {
 }
 
 let cachedLookup = null;
+let cachedOfficialLookup = null;
 
-export function buildSpotLookup(spots = TRAVEL_SPOTS) {
+/**
+ * @param {typeof TRAVEL_SPOTS} [spots]
+ * @param {{ includeKeywords?: boolean }} [opts] — Smart Search는 false (성산일출봉→제주 키워드 스냅 방지)
+ */
+export function buildSpotLookup(spots = TRAVEL_SPOTS, { includeKeywords = true } = {}) {
   const lookup = new Map();
   const bySlug = new Map(spots.map((s) => [s.slug, s]));
 
@@ -62,8 +69,10 @@ export function buildSpotLookup(spots = TRAVEL_SPOTS) {
   };
 
   // 1) keywords (약) — 관문 도시의 목적지 키워드가 공식명보다 앞서면 안 됨
-  for (const spot of spots) {
-    for (const kw of spot.keywords || []) add(kw, spot);
+  if (includeKeywords) {
+    for (const spot of spots) {
+      for (const kw of spot.keywords || []) add(kw, spot);
+    }
   }
 
   // 2) id·slug·공식 표시명
@@ -88,6 +97,13 @@ export function buildSpotLookup(spots = TRAVEL_SPOTS) {
 function getSpotLookup() {
   if (!cachedLookup) cachedLookup = buildSpotLookup(TRAVEL_SPOTS);
   return cachedLookup;
+}
+
+function getOfficialSpotLookup() {
+  if (!cachedOfficialLookup) {
+    cachedOfficialLookup = buildSpotLookup(TRAVEL_SPOTS, { includeKeywords: false });
+  }
+  return cachedOfficialLookup;
 }
 
 /** porto ⊂ portovecchio 같은 접두 부분 일치 오매칭 방지 */
@@ -225,12 +241,62 @@ export function extractSearchNameCandidates(query) {
   return [trimmed];
 }
 
-/** 검색어 → travelSpots SSOT (별칭·괄호 보조지명·fuzzy 포함) */
+/** 공식 name / name_en / slug 정확 일치만 (keywords·fuzzy 제외) */
+function findOfficialDirectSpotMatch(spots, placeId) {
+  const core = normalizePlaceKey(
+    String(placeId).replace(STRIP_SUFFIX_RE, '').replace(STRIP_INFIX_RE, '')
+  );
+  if (core.length < 2) return null;
+
+  const candidates = spots.filter((s) => {
+    const sn = normalizePlaceKey(s.name);
+    const sen = normalizePlaceKey(s.name_en);
+    const slug = normalizePlaceKey(s.slug);
+    return sn === core || sen === core || slug === core;
+  });
+
+  return candidates.length === 1 ? candidates[0] : null;
+}
+
+function lookupOfficialSpot(lookup, placeId) {
+  const raw = String(placeId ?? '').trim();
+  if (!raw) return null;
+  for (const v of placeIdVariants(raw)) {
+    const hit = lookup.get(normalizePlaceKey(v)) || lookup.get(v.toLowerCase());
+    if (hit) return hit;
+  }
+  return null;
+}
+
+/**
+ * Smart Search → SSOT.
+ * 공식명·slug·별칭(+접미사 strip)만. keyword·fuzzy containment 금지
+ * (제주 신라호텔→제주, 성산일출봉→제주 keywords 스냅 방지 → Mapbox uiPlace).
+ */
 export function resolveTravelSpotFromSearchQuery(query) {
-  const lookup = getSpotLookup();
+  const lookup = getOfficialSpotLookup();
+
+  const tryOfficial = (candidate) => {
+    if (!candidate || isBlocklistedPlaceId(candidate)) return null;
+    const direct = findOfficialDirectSpotMatch(TRAVEL_SPOTS, candidate);
+    if (direct) return direct;
+    const fromLookup = lookupOfficialSpot(lookup, candidate);
+    if (fromLookup) return fromLookup;
+
+    // 제주도 → 제주: trailing 「도」는 공식 히트일 때만
+    const doStripped = String(candidate).trim().replace(STRIP_DO_SUFFIX_RE, '').trim();
+    if (doStripped && doStripped !== String(candidate).trim() && doStripped.length >= 2) {
+      const directDo = findOfficialDirectSpotMatch(TRAVEL_SPOTS, doStripped);
+      if (directDo) return directDo;
+      const lookupDo = lookupOfficialSpot(lookup, doStripped);
+      if (lookupDo) return lookupDo;
+    }
+    return null;
+  };
+
   for (const candidate of extractSearchNameCandidates(query)) {
-    const hit = resolveTravelSpotFromPlaceId(lookup, TRAVEL_SPOTS, candidate);
-    if (hit?.spot) return hit.spot;
+    const hit = tryOfficial(candidate);
+    if (hit) return hit;
   }
   return null;
 }
@@ -390,31 +456,20 @@ function softMergeUiPlaceCountry(location, spot) {
 export function mergeCanonicalTravelSpot(location) {
   if (!location || typeof location !== 'object') return location;
 
+  // Free-explore uiPlace — 표시명·좌표·uiPlace 유지.
+  // name_en=서귀포시·keywords=성산일출봉 등으로 SSOT 풀머지하면 서귀포/제주 카드로 바뀜 → 금지.
+  if (location.uiPlace) {
+    const lat = Number(location.lat);
+    const lng = Number(location.lng);
+    const nearby = resolveTravelSpotFromCoords(lat, lng, TRAVEL_SPOTS, UI_PLACE_GALLERY_REGION_MAX_KM);
+    if (!nearby) return location;
+    return softMergeUiPlaceCountry(location, nearby);
+  }
+
   const resolved = resolveTravelSpotFromLocation(location);
   if (!resolved?.spot) return location;
 
-  const { spot, matchKind } = resolved;
-  // Mapbox·지오코딩 uiPlace — 표시명·좌표는 유지. placeholder 국가만 SSOT로 보강.
-  if (location.uiPlace && matchKind === 'coords') {
-    return softMergeUiPlaceCountry(location, spot);
-  }
-
-  // uiPlace + slug/name 매칭 — 핀이 큐레이션 좌표와 가까울 때만 풀머지(남의 툴킷 상속 방지)
-  if (location.uiPlace) {
-    const pinLat = Number(location.lat);
-    const pinLng = Number(location.lng);
-    const spotLat = Number(spot.lat);
-    const spotLng = Number(spot.lng);
-    const nearEnough =
-      Number.isFinite(pinLat) &&
-      Number.isFinite(pinLng) &&
-      Number.isFinite(spotLat) &&
-      Number.isFinite(spotLng) &&
-      distanceKm(pinLat, pinLng, spotLat, spotLng) <= UI_PLACE_GALLERY_REGION_MAX_KM;
-    if (!nearEnough) {
-      return softMergeUiPlaceCountry(location, spot);
-    }
-  }
+  const { spot } = resolved;
 
   const canonicalSlug = spotSlug(spot);
   const merged = {
@@ -437,8 +492,6 @@ export function mergeCanonicalTravelSpot(location) {
     tier: spot.tier ?? location.tier,
     continent: spot.continent ?? location.continent,
   };
-
-  if (location.uiPlace) delete merged.uiPlace;
 
   return merged;
 }

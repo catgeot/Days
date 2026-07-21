@@ -17,9 +17,48 @@ const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_
 
 /** 세부 시설·명소 쿼리 — 행정구역(군/시)으로 축소·스냅하면 안 되는 입력 */
 export const FACILITY_QUERY_RE =
-  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크/i;
+  /휴게소|rest\s*area|\bsa\b|터미널|기차역|지하철역|공항|항구|나들목|톨게이트|\bic\b|박물관|미술관|사찰|성당|교회|리조트|호텔|콘도|펜션|댐|저수지|폭포|해변|해수욕장|시장|마트|카페|공원|타워|전망대|온천|스키장|골프장|캠핑장|유원지|테마파크/i;
 
 export const isFacilityQuery = (query) => FACILITY_QUERY_RE.test(String(query || ''));
+
+/**
+ * 숙박·브랜드 검색어 → OSM/Mapbox에 잘 잡히는 별칭.
+ * 「제주 신라호텔」은 버스정류장만 맞고 「호텔신라 제주」는 tourism=hotel.
+ */
+export function expandForwardQueryAliases(query) {
+  const q = String(query || '').trim();
+  if (!q) return [];
+  const out = [];
+  const add = (s) => {
+    const t = String(s || '').trim();
+    if (!t || t === q || out.includes(t)) return;
+    out.push(t);
+  };
+
+  if (/신라\s*호텔|호텔\s*신라|the\s*shilla/i.test(q)) {
+    if (/제주|jeju/i.test(q)) {
+      add('호텔신라 제주');
+      add('The Shilla Jeju');
+      add('제주 호텔신라');
+    } else if (/서울|seoul/i.test(q)) {
+      add('서울신라호텔');
+      add('호텔신라 서울');
+      add('The Shilla Seoul');
+    } else {
+      add('서울신라호텔');
+      add('호텔신라 제주');
+    }
+  }
+
+  if (/대명|비발디|vivaldi|소노\s*펠리체|sono\s*felice/i.test(q)) {
+    add('소노펠리체 비발디파크');
+    add('비발디파크');
+    add('소노펠리체');
+    if (/홍천/.test(q)) add('홍천 비발디파크');
+  }
+
+  return out;
+}
 
 // 1. 내부 통역 함수
 const standardizeName = (rawName) => {
@@ -64,13 +103,15 @@ const isPlausibleForwardHit = (query, result) => {
   return true;
 };
 
-/** 시설 검색인데 행정구역·광역만 맞은 경우 — 상위 지명으로 떨어뜨리지 않음 */
+/** 시설 검색인데 행정구역·시청·광역만 맞은 경우 — 상위 지명으로 떨어뜨리지 않음 */
 const isAdminOnlyHitForFacility = (query, result) => {
   if (!isFacilityQuery(query) || !result) return false;
   const cls = String(result.class || '');
   const type = String(result.type || '');
   const addresstype = String(result.addresstype || '');
+  const name = String(result.name || '');
   if (cls === 'boundary' || type === 'administrative') return true;
+  if (type === 'townhall' || /시청|구청|도청|군청|청사/.test(name)) return true;
   if (/^(county|state|region|municipality|city|town|village|suburb)$/.test(addresstype)) return true;
   return false;
 };
@@ -91,12 +132,20 @@ const calculatePlaceScore = (place, query = '') => {
   if (category === "tourism" || cls === "tourism") score += 40;
   if (cls === "natural" || cls === "water" || type === "reservoir" || type === "water") score += 45;
   if (facilityQ && (cls === 'amenity' || /services|rest_area|fuel/.test(type))) score += 60;
+  // 숙박 POI 우선 (호텔·리조트·콘도)
+  if (facilityQ && (type === 'hotel' || type === 'resort' || type === 'guest_house' || cls === 'leisure')) {
+    score += 90;
+  }
+  if (facilityQ && cls === 'building' && type === 'hotel') score += 90;
 
   // 단순 행정구역(특히 대도시의 구/동)이나 역 등은 점수를 낮춤
   if (address.suburb || address.borough || address.quarter || address.city_district) score -= 30;
   if (type === "station" || category === "railway") score -= 40;
   if (type === "administrative" && address.borough) score -= 20;
   if (facilityQ && (cls === 'boundary' || type === 'administrative')) score -= 80;
+  if (facilityQ && (type === 'townhall' || /시청|구청|도청|군청/.test(String(place.name || '')))) {
+    score -= 100;
+  }
 
   return score;
 };
@@ -163,6 +212,11 @@ const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
     if (facilityQ && best.score < 40) return null;
 
     const feature = best.feature;
+    const label = `${feature.text || ''} ${feature.place_name || ''}`;
+    if (facilityQ && /시청|구청|도청|군청|town\s*hall|city\s*hall/i.test(label)) {
+      return null;
+    }
+
     const [lng, lat] = feature.center || [];
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
@@ -200,7 +254,6 @@ const fetchMapboxForward = async (searchQuery, { countrycodes = '' } = {}) => {
 
 // 2. 좌표 찾기 (Forward) — Mapbox(지구본 POI) 우선, Nominatim 폴백
 export const getCoordinatesFromAddress = async (query) => {
-  const hasHangul = HAS_HANGUL_RE.test(query || '');
   const facilityQ = isFacilityQuery(query);
 
   // 🚨 [New] 재시도 로직이 포함된 Fetcher
@@ -255,28 +308,50 @@ export const getCoordinatesFromAddress = async (query) => {
   try {
     const cleanQuery = standardizeName(query);
 
-    // 0) Mapbox — 지구본에서 보이는 POI·세부 지명과 동일 소스
-    if (MAPBOX_TOKEN) {
+    const tryMapboxBundle = async (q) => {
+      if (!MAPBOX_TOKEN) return null;
       let mapboxHit = null;
-      if (hasHangul) {
-        mapboxHit = await fetchMapboxForward(cleanQuery, { countrycodes: 'kr' });
+      if (HAS_HANGUL_RE.test(q)) {
+        mapboxHit = await fetchMapboxForward(q, { countrycodes: 'kr' });
       }
       if (!mapboxHit) {
-        mapboxHit = await fetchMapboxForward(cleanQuery);
+        mapboxHit = await fetchMapboxForward(q);
       }
-      if (mapboxHit) return mapboxHit;
-    }
+      return mapboxHit;
+    };
+
+    const tryNominatimBundle = async (q) => {
+      let rows = null;
+      if (HAS_HANGUL_RE.test(q)) {
+        rows = await fetchCoords(q, 1, { acceptLanguage: 'ko,en', countrycodes: 'kr' });
+        if (!rows) {
+          rows = await fetchCoords(q, 1, { acceptLanguage: 'en', countrycodes: 'kr' });
+        }
+      }
+      if (!rows) {
+        rows = await fetchCoords(q, 1, { acceptLanguage: 'en' });
+      }
+      return rows;
+    };
+
+    // 0) Mapbox — 지구본에서 보이는 POI·세부 지명과 동일 소스
+    const primaryMapbox = await tryMapboxBundle(cleanQuery);
+    if (primaryMapbox) return primaryMapbox;
 
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
-    let data = null;
-    if (hasHangul) {
-      data = await fetchCoords(cleanQuery, 1, { acceptLanguage: 'ko,en', countrycodes: 'kr' });
-      if (!data) {
-        data = await fetchCoords(cleanQuery, 1, { acceptLanguage: 'en', countrycodes: 'kr' });
-      }
-    }
+    let data = await tryNominatimBundle(cleanQuery);
+
+    // 1.5) 숙박 브랜드 별칭 (제주 신라호텔→호텔신라 제주, 대명 콘도→비발디파크)
     if (!data) {
-      data = await fetchCoords(cleanQuery, 1, { acceptLanguage: 'en' });
+      for (const alt of expandForwardQueryAliases(cleanQuery)) {
+        const altMapbox = await tryMapboxBundle(alt);
+        if (altMapbox) return altMapbox;
+        data = await tryNominatimBundle(alt);
+        if (data) {
+          console.log(`🔄 Alias geocode: "${cleanQuery}" → "${alt}"`);
+          break;
+        }
+      }
     }
 
     // 2차 패스: 수식어 제거 — 시설 쿼리(휴게소 등)는 행정구역으로 축소되지 않게 스킵
@@ -287,12 +362,7 @@ export const getCoordinatesFromAddress = async (query) => {
       });
       if (retryQuery !== cleanQuery && retryQuery.length >= 2) {
         console.log(`🔄 Pass 2: Retrying with "${retryQuery}"`);
-        if (hasHangul) {
-          data = await fetchCoords(retryQuery, 1, { acceptLanguage: 'ko,en', countrycodes: 'kr' });
-        }
-        if (!data) {
-          data = await fetchCoords(retryQuery, 1, { acceptLanguage: 'en' });
-        }
+        data = await tryNominatimBundle(retryQuery);
       }
     }
 
@@ -314,9 +384,32 @@ export const getCoordinatesFromAddress = async (query) => {
     const topResult = sortedData[0];
     const address = topResult.address || {};
 
-    // 지명 우선: OSM name → settlement → query (Unsplash용 영문 확보 위해 en 패스 병행 가능)
-    const placeName = topResult.name || address.city || address.town || address.village || address.island || address.state || address.country || cleanQuery;
-    const englishName = address.city || address.town || address.village || address.island || address.state || address.country || placeName;
+    // 지명 우선: OSM name → settlement → query
+    // name_en에 address.city를 쓰면 성산일출봉 → 서귀포시 → SSOT 서귀포로 풀머지됨 → 금지
+    const placeName =
+      topResult.name ||
+      address.city ||
+      address.town ||
+      address.village ||
+      address.island ||
+      address.state ||
+      address.country ||
+      cleanQuery;
+    const namedFeature =
+      Boolean(topResult.name) &&
+      (/^(natural|tourism|leisure|historic|amenity|waterway|building)$/i.test(String(topResult.class || '')) ||
+        /^(peak|volcano|attraction|viewpoint|beach|hot_spring|reservoir|waterfall|hotel|resort|guest_house)$/i.test(
+          String(topResult.type || '')
+        ));
+    const englishName = namedFeature
+      ? placeName
+      : address.city ||
+        address.town ||
+        address.village ||
+        address.island ||
+        address.state ||
+        address.country ||
+        placeName;
     const travelCountry = resolveTravelCountryFromAddresses(address, null);
     // Nominatim Accept-Language:en → country가 "Argentina" 등 영문만 올 수 있음 → 한글 표기 정규화
     const countryEn = travelCountry.country_en || travelCountry.country || '';
