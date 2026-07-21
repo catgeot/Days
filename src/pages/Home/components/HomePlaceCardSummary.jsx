@@ -10,13 +10,24 @@ import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference.js';
+import {
+  IMMERSE_ENTRY,
+  nextImmerseAltitude,
+  nextImmerseZoom,
+  resolveImmerseCamera,
+} from '../lib/globeImmerseZoom.js';
 import GlobeStayStrip from './GlobeStayStrip.jsx';
 
 /** 연속 not-ready 폴링 횟수 — 250ms×4 ≈ 1s (일시적 레이어 공백·style idle 깜박임 흡수) */
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
 
 /** 써머리 장소카드 — 항공 경로 시네마 진입 (플래너 Trip CTA와 분리) */
-export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, ...props }) {
+export default function HomePlaceCardSummary({
+  globeRef,
+  onStayExpandedChange,
+  onImmersedChange,
+  ...props
+}) {
   const {
     requestFlightCinema,
     flightCinemaRequestPending,
@@ -40,6 +51,16 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
       setIsImmersed(Boolean(globeRef?.current?.isImmersed?.()));
     });
   }, [globeRef, location?.id]);
+
+  useEffect(() => {
+    onImmersedChange?.(isImmersed);
+  }, [isImmersed, onImmersedChange]);
+
+  useEffect(() => {
+    return () => {
+      onImmersedChange?.(false);
+    };
+  }, [onImmersedChange]);
 
   const flightPreview = useMemo(
     () => resolveSummaryFlightCinemaOd(location, { essentialGuide, originIata: selectedOriginIata }),
@@ -94,6 +115,18 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
 
   const isFlightRouteReady = hasFlightRoute && flightCinemaGlobeReady && Boolean(flightPreview);
 
+  const flyImmerseTo = (options) => {
+    const lat = Number(location?.lat);
+    const lng = Number(location?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+    let ok = globeRef?.current?.immerseToPin?.(lat, lng, options);
+    if (!ok) {
+      globeRef?.current?.wakeAfterOverlay?.();
+      ok = globeRef?.current?.immerseToPin?.(lat, lng, options);
+    }
+    return Boolean(ok);
+  };
+
   const handleToggleImmerse = () => {
     const lat = Number(location?.lat);
     const lng = Number(location?.lng);
@@ -105,13 +138,27 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
       return;
     }
 
-    let ok = globeRef?.current?.immerseToPin?.(lat, lng);
-    if (!ok) {
-      // 채팅 오버레이 직후 Mapbox가 한 프레임 늦게 받을 수 있음
-      globeRef?.current?.wakeAfterOverlay?.();
-      ok = globeRef?.current?.immerseToPin?.(lat, lng);
+    const camera = resolveImmerseCamera('base');
+    if (flyImmerseTo({
+      zoom: camera.zoom,
+      pitch: camera.pitch,
+      altitude: camera.altitude,
+    })) {
+      setIsImmersed(true);
     }
-    if (ok) setIsImmersed(true);
+  };
+
+  /** ×2 / ×4 — 현재 줌에서 누적 확대만 (동일 버튼 재클릭도 후퇴 없음) */
+  const handleImmerseZoomStep = (step) => {
+    if (!isImmersed) return;
+    const view = globeRef?.current?.getMapView?.() ?? null;
+    const zoom = nextImmerseZoom(view?.zoom, step);
+    const altitude = nextImmerseAltitude(view?.altitude, step);
+    flyImmerseTo({
+      zoom,
+      pitch: IMMERSE_ENTRY.pitchDeep,
+      altitude,
+    });
   };
 
   const handlePreviewFlightRoute = () => {
@@ -168,6 +215,7 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
           canToggleImmerse={canToggleImmerse}
           isImmersed={isImmersed}
           onToggleImmerse={handleToggleImmerse}
+          onImmerseZoomStep={handleImmerseZoomStep}
           stayToggle={toggle}
           stayExpanded={stayExpanded}
           belowCard={mobilePanel}

@@ -10,8 +10,11 @@ const GLOBE_CAMERA_CONFIG = {
   AUTO_ROTATE_DISABLE_ALT: 2.0,
   FLY_TARGET_ALT: 2.1,
   FLY_DISABLE_ALT: 1.8,
-  /** 「이 지역 보기」— 낮을수록 확대 (Mapbox immerseZoom 8.5 시가지) */
-  IMMERSE_ALT: 0.18,
+  /** 「이 지역 보기」— 낮을수록 확대 (Mapbox ×4 / zoom 8.5 시가지) */
+  IMMERSE_ALT_BASE: 0.55,
+  IMMERSE_ALT_X2: 0.32,
+  IMMERSE_ALT_X4: 0.18,
+  IMMERSE_ALT: 0.55,
   FLY_DURATION: 3000,
   IMMERSE_DURATION: 1200,
   IDLE_DELAY_ZOOMED_OUT: 4000,
@@ -117,7 +120,7 @@ const HomeGlobe = React.memo(forwardRef(({
         }, totalWaitTime);
       }
     },
-    immerseToPin: (lat, lng) => {
+    immerseToPin: (lat, lng, options = {}) => {
       if (!globeEl.current || !Number.isFinite(lat) || !Number.isFinite(lng)) return false;
       if (rotationTimer.current) {
         clearTimeout(rotationTimer.current);
@@ -125,8 +128,11 @@ const HomeGlobe = React.memo(forwardRef(({
       }
       immerseActiveRef.current = true;
       globeEl.current.controls().autoRotate = false;
+      const altitude = Number.isFinite(options?.altitude)
+        ? options.altitude
+        : GLOBE_CAMERA_CONFIG.IMMERSE_ALT_BASE;
       globeEl.current.pointOfView(
-        { lat, lng, altitude: GLOBE_CAMERA_CONFIG.IMMERSE_ALT },
+        { lat, lng, altitude },
         GLOBE_CAMERA_CONFIG.IMMERSE_DURATION
       );
       return true;
@@ -136,7 +142,7 @@ const HomeGlobe = React.memo(forwardRef(({
       const wasImmersed = immerseActiveRef.current;
       immerseActiveRef.current = false;
       const alt = globeEl.current.pointOfView().altitude;
-      if (!wasImmersed && alt > GLOBE_CAMERA_CONFIG.IMMERSE_ALT + 0.15) return false;
+      if (!wasImmersed && alt > GLOBE_CAMERA_CONFIG.IMMERSE_ALT_BASE + 0.15) return false;
 
       if (rotationTimer.current) {
         clearTimeout(rotationTimer.current);
@@ -161,6 +167,19 @@ const HomeGlobe = React.memo(forwardRef(({
       immerseActiveRef.current = false;
     },
     isImmersed: () => Boolean(immerseActiveRef.current),
+    getMapView: () => {
+      if (!globeEl.current) return null;
+      try {
+        const pov = globeEl.current.pointOfView();
+        return {
+          zoom: null,
+          pitch: null,
+          altitude: Number.isFinite(pov?.altitude) ? pov.altitude : null,
+        };
+      } catch {
+        return null;
+      }
+    },
     updateLastPinName: () => {},
     triggerRipple: (lat, lng) => {
       const newRipple = { lat, lng, maxR: 5, propagationSpeed: 4, repeatPeriod: 500 };

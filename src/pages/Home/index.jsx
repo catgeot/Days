@@ -167,6 +167,7 @@ function Home() {
   });
   /** 모바일 숙소 패널 펼침 — 스크림·회전 정지·MOONi 숨김 */
   const [isStayStripExpanded, setIsStayStripExpanded] = useState(false);
+  const [isPlaceImmersed, setIsPlaceImmersed] = useState(false);
   const prevChatOpenRef = useRef(false);
   const prevPathnameRef = useRef(routeLocation.pathname);
 
@@ -200,14 +201,17 @@ function Home() {
   const isPlaceCardSummaryVisible = Boolean(
     selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive
   );
-  const mobilePlaceScrim = isMobileViewport && isPlaceCardSummaryVisible;
+  const mobilePlaceScrim = isMobileViewport && isPlaceCardSummaryVisible && !isPlaceImmersed;
   const mobileStayScrimStrong = mobilePlaceScrim && isStayStripExpanded;
   /** 써머리 카드 닫힘·투어 X 탈출 후에도 마지막 방문 핀·지명 강조 유지 */
   const globeActivePinId = selectedLocation?.id ?? scoutedPins[0]?.id ?? null;
   const globeFocusSlug = selectedLocation?.slug ?? scoutedPins[0]?.slug ?? null;
 
   useEffect(() => {
-    if (!isPlaceCardSummaryVisible) setIsStayStripExpanded(false);
+    if (!isPlaceCardSummaryVisible) {
+      setIsStayStripExpanded(false);
+      setIsPlaceImmersed(false);
+    }
   }, [isPlaceCardSummaryVisible, selectedLocation?.id]);
 
   useEffect(() => {
@@ -714,7 +718,12 @@ function Home() {
       const lat = Number(selectedLocation.lat);
       const lng = Number(selectedLocation.lng);
       if (globeRef.current?.isImmersed?.()) {
-        globeRef.current?.exitImmerse?.(lat, lng);
+        // 모바일: 닫으면 줌 원상복구 · PC: 카드만 닫고 확대 유지(추가 조작 가능)
+        if (isMobileViewport) {
+          globeRef.current?.exitImmerse?.(lat, lng);
+        } else {
+          globeRef.current?.clearImmerseState?.();
+        }
       } else {
         globeRef.current?.clearImmerseState?.();
       }
@@ -897,6 +906,7 @@ function Home() {
               void beginGlobeTour(location);
             }}
             onStayExpandedChange={setIsStayStripExpanded}
+            onImmersedChange={setIsPlaceImmersed}
           />
         )}
 

@@ -169,9 +169,12 @@ const GLOBE_MAP_BTN_BASE =
 const GLOBE_VIEW = {
   default: { longitude: 0, latitude: 20, zoom: 1.25, pitch: 0, bearing: 0 },
   flyZoom: 2.35,
-  /** 써머리「이 지역 보기」— 시가지·시내 스카이라인이 읽히는 몰입 줌 */
-  immerseZoom: 8.5,
-  immersePitch: 35,
+  /** 써머리「이 지역 보기」— base 권역 → ×2 → ×4 시가지 (globeImmerseZoom.js) */
+  immerseZoomBase: 6,
+  immerseZoomX2: 7,
+  immerseZoomX4: 8.5,
+  immersePitchBase: 25,
+  immersePitchDeep: 35,
   maxZoom: 22,
   rotateZoomThreshold: 2.4,
   flyDuration: 3000,
@@ -1186,8 +1189,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const currentCenter = map.getCenter();
     const normalizedLng = normalizeLngNear(currentCenter.lng, lng);
-    const zoom = Number.isFinite(options?.zoom) ? options.zoom : GLOBE_VIEW.immerseZoom;
-    const pitch = Number.isFinite(options?.pitch) ? options.pitch : GLOBE_VIEW.immersePitch;
+    const zoom = Number.isFinite(options?.zoom) ? options.zoom : GLOBE_VIEW.immerseZoomBase;
+    const pitch = Number.isFinite(options?.pitch) ? options.pitch : GLOBE_VIEW.immersePitchBase;
 
     try {
       map.stop();
@@ -1211,7 +1214,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const wasImmersed = immerseActiveRef.current;
     immerseActiveRef.current = false;
-    if (!wasImmersed && map.getZoom() < GLOBE_VIEW.immerseZoom - 0.35) {
+    if (!wasImmersed && map.getZoom() < GLOBE_VIEW.immerseZoomBase - 0.35) {
       return false;
     }
 
@@ -1598,6 +1601,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     exitImmerse,
     clearImmerseState,
     isImmersed: () => Boolean(immerseActiveRef.current),
+    getMapView: () => {
+      const map = mapRef.current?.getMap();
+      if (!map || map._removed) return null;
+      try {
+        return {
+          zoom: map.getZoom(),
+          pitch: map.getPitch(),
+          altitude: null,
+        };
+      } catch {
+        return null;
+      }
+    },
     updateLastPinName: () => {},
     triggerRipple: (lat, lng) => addRipple(lat, lng, 1500),
     resetPins: () => {
