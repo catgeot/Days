@@ -66,9 +66,9 @@
 
 ### 에이전트 핸드오프
 
-- **유지**: Summary「숙소 찾기」·펼칠 때만 fetch · `v9` · PC 포털/모바일 전체화면
-- **금지**: `VITE_` MRT 키 · TripLink · 호텔 핀/지오코딩 · `travelSpots.js` 전체 스캔
-- **다음(선택)**: 빈 결과 CTA
+- **유지**: Summary「숙소 찾기」·펼칠 때만 fetch · `v10` · PC 포털/모바일 전체화면 · 빈 결과 Trip.com CTA
+- **금지**: `VITE_` MRT 키 · TripLink · 호텔 핀/지오코딩 · `travelSpots.js` 전체 스캔 · Trip.com 스크래핑
+- **다음**: Edge `fetch-mrt-stays` 재배포(재고 0 region 재시도) · 써머리 TNA 스트립
 
 ## MRT 제휴 — 마이링크 URL 파라미터 재정립
 
@@ -98,9 +98,29 @@
 - **파일**: `keywordData.js` · `geocoding.js`
 - **릴리스 노트**: `2026-07-21-3`
 
-## 숙소 찾기 — 목록 그리드 밀도 토글
+## 숙소 찾기 목록 그리드 밀도 토글
 
 **상태**: ✅ QA 확인 · 커밋·푸시
 
 - 정렬 옆 `LayoutGrid` 아이콘 토글 — 모바일 2↔1열 · PC 5↔3열(확대)
 - **파일**: `GlobeStayStrip.jsx`
+
+## MRT 숙소 — 우유니·라자암팟·버뮤다·베네수엘라
+
+**상태**: ✅ 클라 수정 · LIVE 스모크(오버라이드) · Edge 재시도 코드(배포 대기)
+
+- **증상**: 네 slug에서 숙소 없음
+- **원인**
+  1. 우유니: 「우유니 소금사막」autocomplete 미매칭 → CITY「우유니」
+  2. 라자 암팟: 공백·미매칭 → 와이사이(섬 허브) · 소롱 대안
+  3. 버뮤다: 「버뮤다」→세인트조지스 재고 0 → 패짓(Paget) CITY
+  4. 베네수엘라: MRT region/재고 없음(카라카스 등도 null) — API 폴백 불가
+- **조치**: `mrtStayQuery` 오버라이드 · 캐시 `v10` · 빈 결과 「트립닷컴에서 숙소 검색」CTA(`buildTripcomHotelSearchUrl`) · Edge 재고 0 region 스킵 후 다음 키워드 재시도
+- **LIVE**: 우유니 43 · 라자암팟 14 · 버뮤다 2 · 베네수엘라 NO_REGION(CTA)
+- **남은 일**: `npx supabase functions deploy fetch-mrt-stays --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` (Access token 필요) · 사용자 QA
+
+### 에이전트 핸드오프
+
+- **유지**: Summary「숙소 찾기」·펼칠 때만 fetch · `v10` · 빈 결과 Trip.com CTA
+- **금지**: Trip.com 스크래핑·호텔 목록 API 가장 · `VITE_` MRT 키
+- **다음**: Edge 재배포 · (선택) 베네수엘라 등 `PLANNER_TRIPCOM_HOTEL_OVERRIDES` city ID 등록

@@ -66,6 +66,50 @@ const CASES = [
     },
     expectKeyword: /바릴로체|Bariloche/,
   },
+  {
+    slug: 'uyuni-salt-flat',
+    location: {
+      slug: 'uyuni-salt-flat',
+      name: '우유니 소금사막',
+      name_en: 'Uyuni Salt Flat',
+      country: '볼리비아',
+      country_en: 'Bolivia',
+    },
+    expectKeyword: /우유니|Uyuni/,
+  },
+  {
+    slug: 'raja-ampat',
+    location: {
+      slug: 'raja-ampat',
+      name: '라자 암팟',
+      name_en: 'Raja Ampat',
+      country: '인도네시아',
+      country_en: 'Indonesia',
+    },
+    expectKeyword: /와이사이|Waisai|소롱/,
+  },
+  {
+    slug: 'bermuda',
+    location: {
+      slug: 'bermuda',
+      name: '버뮤다',
+      name_en: 'Bermuda',
+      country: '버뮤다',
+      country_en: 'Bermuda',
+    },
+    expectKeyword: /패짓|Paget/,
+  },
+  {
+    slug: 'venezuela',
+    location: {
+      slug: 'venezuela',
+      name: '베네수엘라',
+      name_en: 'Venezuela',
+      country: '베네수엘라',
+      country_en: 'Venezuela',
+    },
+    expectKeyword: /베네수엘라|Venezuela/,
+  },
 ];
 
 function assert(cond, msg) {
