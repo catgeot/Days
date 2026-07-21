@@ -191,12 +191,21 @@ export function setupClusterBoundaryLayers(map) {
         id: CLUSTER_HULL_FILL_ID,
         type: 'fill',
         source: CLUSTER_HULL_SOURCE_ID,
+        layout: { visibility: 'none' },
         paint: {
           'fill-color': '#f59e0b',
-          'fill-opacity': 0.1,
+          // 면 채움 비활성 — 경계선(line)만 노출
+          'fill-opacity': 0,
           'fill-outline-color': 'transparent'
         }
       });
+    } else {
+      try {
+        map.setLayoutProperty(CLUSTER_HULL_FILL_ID, 'visibility', 'none');
+        map.setPaintProperty(CLUSTER_HULL_FILL_ID, 'fill-opacity', 0);
+      } catch {
+        /* style mid-swap */
+      }
     }
 
     if (!map.getLayer(CLUSTER_HULL_LINE_ID)) {
@@ -281,9 +290,13 @@ export function setClusterBoundaryVisibility(map, visible) {
   const visibility = visible ? 'visible' : 'none';
   safeMapUpdate(map, () => {
     for (const layerId of CLUSTER_LAYER_IDS) {
-      if (map.getLayer(layerId)) {
-        map.setLayoutProperty(layerId, 'visibility', visibility);
+      if (!map.getLayer(layerId)) continue;
+      // 면 채움은 항상 숨김 — 점선 경계·POI만 토글
+      if (layerId === CLUSTER_HULL_FILL_ID) {
+        map.setLayoutProperty(layerId, 'visibility', 'none');
+        continue;
       }
+      map.setLayoutProperty(layerId, 'visibility', visibility);
     }
   });
 }

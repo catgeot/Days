@@ -436,6 +436,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     () => buildClusterOverlayGeoJSON(focusSlug),
     [focusSlug]
   );
+  /** 2D 고줌·TOUR_READY 공통 노출 (시네마틱 중만 숨김). 면 채움 없이 경계선·POI만. */
   const showClusterOverlay = useMemo(() => {
     if (isZenMode || !clusterOverlay.meta) return false;
     if (globeMode === GLOBE_MODE.TOUR_BOOTSTRAPPING || globeMode === GLOBE_MODE.TOUR_PLAYING) {
@@ -450,12 +451,27 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return false;
     }
   }, []);
-  /** 모바일: 2D 복귀 후 고줌에 범례가 남지 않도록 TOUR_READY에서만 노출 (지도 레이어는 showClusterOverlay 유지) */
+  /** 모바일 범례: TOUR_READY만. PC: 2D 고줌에서도 권역 리스트 노출 */
   const showClusterLegend = useMemo(() => {
     if (!showClusterOverlay) return false;
     if (isMobileDevice) return globeMode === GLOBE_MODE.TOUR_READY;
     return true;
   }, [globeMode, isMobileDevice, showClusterOverlay]);
+  /** PC: HomeUI 좌측 레일(연관 키워드 아래) 슬롯에 마운트 */
+  const [clusterLegendHost, setClusterLegendHost] = useState(null);
+  useEffect(() => {
+    if (!showClusterLegend || isMobileDevice || typeof document === 'undefined') {
+      setClusterLegendHost(null);
+      return undefined;
+    }
+    const resolve = () => {
+      const el = document.getElementById('gateo-cluster-legend-slot');
+      setClusterLegendHost(el);
+    };
+    resolve();
+    const raf = window.requestAnimationFrame(resolve);
+    return () => window.cancelAnimationFrame(raf);
+  }, [showClusterLegend, isMobileDevice, focusSlug]);
   const fogConfig = useMemo(() => {
     const atmosphere = ATMOSPHERE_BY_THEME[globeTheme] || ATMOSPHERE_BY_THEME.deep;
     return { ...GLOBE_SPACE_FOG_BASE, ...atmosphere };
@@ -2211,13 +2227,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           focusSlug={focusSlug}
           travelSpots={allTravelSpots.length > 0 ? allTravelSpots : travelSpots}
           onSelectSpot={onMarkerClick}
-          className={`fixed left-3 z-[55] md:left-6 ${
-            globeMode === GLOBE_MODE.TOUR_READY
-              ? 'bottom-[calc(8.5rem+env(safe-area-inset-bottom,0px))] md:bottom-36'
-              : 'bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] md:bottom-8'
-          }`}
+          className={
+            clusterLegendHost
+              ? ''
+              : `fixed left-3 z-[55] bottom-[calc(8.5rem+env(safe-area-inset-bottom,0px))]`
+          }
         />,
-        document.body
+        clusterLegendHost || document.body
       )}
 
       {canEndTour(globeMode) && globeMode === GLOBE_MODE.TOUR_READY && !isZenMode && !hideTourControls && (

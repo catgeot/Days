@@ -204,9 +204,11 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {(isTagLoading || relatedPlaces.length > 0) && (
-        <div className="hidden md:flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-2 md:gap-3 pointer-events-auto animate-fade-in-right">
-              {!isTagLoading && relatedPlaces.map((place, idx) => (
+      {/* PC 좌측 레일 — 연관 키워드 + 권역 범례 마운트(게이트 슬롯) */}
+      <div className="hidden md:flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-[55] flex-col gap-2 md:gap-3 pointer-events-none animate-fade-in-right">
+        {(isTagLoading || relatedPlaces.length > 0) && (
+          <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
+            {!isTagLoading && relatedPlaces.map((place, idx) => (
               <button
                 key={`${place.name}-${idx}`}
                 type="button"
@@ -229,8 +231,10 @@ const HomeUI = React.memo(({
                   </div>
               </button>
             ))}
-        </div>
-      )}
+          </div>
+        )}
+        <div id="gateo-cluster-legend-slot" className="pointer-events-auto" />
+      </div>
 
       <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <div className="absolute bottom-6 left-6 md:left-[8.75rem] flex items-end gap-4 pointer-events-auto">
