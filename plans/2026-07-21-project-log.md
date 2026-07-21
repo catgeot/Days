@@ -4,11 +4,37 @@
 
 ## 지구본 — 몰입 버튼·포커스 자전 지연
 
-**상태**: ✅ 코드 · 릴리스 노트 · 커밋·푸시
+**상태**: ✅ 코드 · 릴리스 노트 · 커밋·푸시 · **줌 8.5(시가지) 추가 조정**
 
 - 카드 오픈은 `flyZoom` 지향만 유지(자동 깊은 확대 없음). 플라이 후 자전 재개 **~2.8초** 지연.
-- 써머리 액션「이 지역 보기」↔「넓게 보기」(`immerseZoom` **6.5**). 닫기·장소 전환·투어/시네마 시 몰입 해제.
+- 써머리 액션「이 지역 보기」↔「넓게 보기」(`immerseZoom` **8.5** · pitch 35). 닫기·장소 전환·투어/시네마 시 몰입 해제.
 - 조절바는 도입하지 않음(고정 몰입 줌).
+
+### 다음 세션 — 에이전트 핸드오프 (몰입·항공 버튼)
+
+**증상**
+1. 채팅(MOONi) 열고 닫은 뒤 「이 지역 보기」가 무반응. 숙소·3D 투어는 정상.
+2. 「항공 경로」버튼이 지구본 확대·축소할 때마다 로딩(준비 중)으로 깜박임.
+
+**유력 원인 (미검증)**
+1. 몰입: `immerseToPin`이 `pauseRender`(채팅 시 `shouldPauseGlobe`)면 `false` 반환 · `HomePlaceCardSummary`는 `ok`일 때만 `isImmersed` 갱신 → UI는 그대로·카메라 무이동. 채팅 종료 후 pause 잔류·타이밍 확인.
+2. 항공: `isFlightCinemaReady`가 `isStyleTransitioning` / `!isStyleLoaded` / 시네마 소스·레이어 부재면 false. `HomePlaceCardSummary` 250ms 폴링 + not-ready 4연속≈1s → 줌·스타일 재적용 시 레이어 공백으로 버튼 busy.
+
+**읽을 것**
+- `HomeGlobeMapbox.jsx` — `immerseToPin` · `isFlightCinemaReady` · `pauseRender`
+- `HomePlaceCardSummary.jsx` — `handleToggleImmerse` · flight ready 폴링
+- `globeFlightCinemaEngine.js` — `isFlightCinemaGlobeReady` / `ensureFlightCinemaGlobeReady`
+- `Home/index.jsx` — `shouldPauseGlobe` · 채팅 open/close
+
+**금지**: 조절바 추가 · 카드 오픈 시 자동 몰입 · `travelSpots.js` 전체 스캔
+
+**제시어**
+```
+지구본 몰입·항공 버튼 이슈 이어하기
+@.ai-context.md @plans/2026-07-21-project-log.md
+채팅 닫은 뒤 「이 지역 보기」무반응 + 줌할 때마다 항공 경로 로딩 원인을 코드로 확인하고 수정해 주세요.
+일지 「다음 세션 — 에이전트 핸드오프 (몰입·항공 버튼)」절 기준으로.
+```
 
 ## 홈 검색 — POI 포커스 + 그 지점 숙소
 

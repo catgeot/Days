@@ -10,8 +10,8 @@ const GLOBE_CAMERA_CONFIG = {
   AUTO_ROTATE_DISABLE_ALT: 2.0,
   FLY_TARGET_ALT: 2.1,
   FLY_DISABLE_ALT: 1.8,
-  /** 「이 지역 보기」— 낮을수록 확대 (Mapbox immerseZoom 6.5에 가깝게) */
-  IMMERSE_ALT: 0.28,
+  /** 「이 지역 보기」— 낮을수록 확대 (Mapbox immerseZoom 8.5 시가지) */
+  IMMERSE_ALT: 0.18,
   FLY_DURATION: 3000,
   IMMERSE_DURATION: 1200,
   IDLE_DELAY_ZOOMED_OUT: 4000,

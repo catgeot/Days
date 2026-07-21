@@ -168,9 +168,9 @@ const GLOBE_MAP_BTN_BASE =
 const GLOBE_VIEW = {
   default: { longitude: 0, latitude: 20, zoom: 1.25, pitch: 0, bearing: 0 },
   flyZoom: 2.35,
-  /** 써머리「이 지역 보기」— POI 라벨(≥5.5)이 뜨는 지역·도시 몰입 줌 */
-  immerseZoom: 6.5,
-  immersePitch: 25,
+  /** 써머리「이 지역 보기」— 시가지·시내 스카이라인이 읽히는 몰입 줌 */
+  immerseZoom: 8.5,
+  immersePitch: 35,
   maxZoom: 22,
   rotateZoomThreshold: 2.4,
   flyDuration: 3000,
