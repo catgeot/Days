@@ -89,6 +89,11 @@ function norm(s: string) {
   return s.trim().toLowerCase();
 }
 
+/** 공백·구두점 무시 비교 — 「북마리아나 제도」↔「북마리아나제도」 */
+function compactNorm(s: string) {
+  return norm(s).replace(/[\s._-]+/g, "");
+}
+
 function regionBlob(r: Region) {
   return [r.name, r.subName, r.enName].filter(Boolean).join(" ").toLowerCase();
 }
@@ -107,21 +112,22 @@ function isKoreaLabel(s: string) {
 }
 
 /**
- * 국가는 subName 첫 세그먼트 기준.
- * - 코로르 subName "팔라우, 코로르" → OK
- * - 태국 POI "태국, …" / 사르디니아 "이탈리아, …, 팔라우" → 거부
- * - 국내: Nominatim countryHint「대한민국」↔ MRT「한국, 강원」
- * - 해외: countryHints에 한·영을 함께 넘김 (피지↔Fiji)
+ * 국가는 subName 세그먼트 기준 (startsWith 금지 — 인도네시아↔인도 오탐).
+ * - head 일치: 코로르 "팔라우, 코로르" · 사이판 "북마리아나제도, …"
+ * - 비-head 세그먼트 일치: 호놀룰루 "미국, 하와이" ← gateo country「하와이」
+ * - 태국 POI "태국, …, 팔라우"는 head≠팔라우·점수 패널티로 억제 (팔라우는 head 일치 후보 우선)
  */
 function countryMatches(r: Region, countryHints: string[]) {
-  const hints = (countryHints || []).map(norm).filter(Boolean);
+  const hints = (countryHints || []).map(compactNorm).filter(Boolean);
   if (!hints.length) return true;
   const sub = norm(r.subName || "");
   if (!sub) return false;
-  const head = sub.split(/[,/|]/)[0]?.trim() || "";
+  const segments = sub.split(/[,/|]/).map((p) => compactNorm(p)).filter(Boolean);
+  const head = segments[0] || "";
   if (!head) return false;
   for (const c of hints) {
-    if (head === c || head.startsWith(c) || c.startsWith(head)) return true;
+    if (head === c) return true;
+    if (segments.includes(c)) return true;
     if (isKoreaLabel(c) && isKoreaLabel(head)) return true;
   }
   return false;
@@ -163,12 +169,21 @@ function scoreRegion(
   else if (r.type === "AIRPORT") score += 8;
   else if (r.type === "POINT_OF_INTEREST") score += 0;
 
+  // 박물관·궁·아울렛 등 POI가 지명 키워드를 가로채 빈 숙소 목록이 되는 경우 억제
+  if (/박물관|궁\b|아울렛|정원|대성당|식물원/.test(name)) score -= 20;
+
   if (name === kw) score += 12;
   else if (name.includes(kw) || kw.includes(name)) score += 4;
 
   if (countryHints.length) {
-    if (countryMatches(r, countryHints)) score += 55;
-    else score -= 45;
+    if (countryMatches(r, countryHints)) {
+      // head 일치가 세그먼트(영토) 일치보다 확실 — 동명 이국 억제
+      const head = compactNorm((r.subName || "").split(/[,/|]/)[0] || "");
+      const hintSet = new Set(countryHints.map(compactNorm).filter(Boolean));
+      score += hintSet.has(head) ? 55 : 35;
+    } else {
+      score -= 45;
+    }
   }
 
   if (cityHints.length) {
@@ -334,31 +349,59 @@ async function searchStays(
       };
     }
 
-    const rawItems = (search.data?.data?.items || []) as Array<Record<string, unknown>>;
+    const dataNode = search.data?.data || {};
+    const rawItems = (
+      dataNode.items ||
+      dataNode.accommodations ||
+      dataNode.products ||
+      dataNode.hotelList ||
+      search.data?.items ||
+      []
+    ) as Array<Record<string, unknown>>;
     // 가격 있는(해당 일정 예약 가능) 숙소 우선 · 가격 없는 숙소도 유지
     // (오지·박재고 지역에서 「취급 없음」 오해 방지 — 일정 조정 후 예약 유도)
-    const mapped: StayItem[] = rawItems
-      .filter((it) => it?.itemId != null && it?.productUrl)
-      .map((it) => ({
-        itemId: Number(it.itemId),
-        itemName: String(it.itemName || ""),
+    // productUrl 누락 시 itemId로 소비자 URL 합성 — 일부 지역 totalCount>0·items 필드만 다른 응답 대비
+    const mapped: StayItem[] = [];
+    for (const it of rawItems) {
+      const itemId = Number(it?.itemId ?? it?.id ?? it?.productId);
+      if (!Number.isFinite(itemId) || itemId <= 0) continue;
+      const rawUrl = String(
+        it?.productUrl || it?.productURL || it?.url || it?.deeplink || it?.deepLink || "",
+      ).trim();
+      const productUrl = rawUrl ||
+        `https://accommodation.myrealtrip.com/union/products/${itemId}`;
+      mapped.push({
+        itemId,
+        itemName: String(it.itemName || it.name || ""),
         salePrice: hasPricedStay(it) ? Number(it.salePrice) : null,
         originalPrice: it.originalPrice != null ? Number(it.originalPrice) : null,
         starRating: it.starRating != null ? Number(it.starRating) : null,
         reviewScore: it.reviewScore != null ? String(it.reviewScore) : null,
         reviewCount: it.reviewCount != null ? Number(it.reviewCount) : null,
-        imageUrl: it.imageUrl ? String(it.imageUrl) : null,
-        productUrl: String(it.productUrl),
-      }));
+        imageUrl: it.imageUrl ? String(it.imageUrl) : (it.thumbnailUrl ? String(it.thumbnailUrl) : null),
+        productUrl,
+      });
+    }
     const items = mapped.sort((a, b) => {
       const ap = a.salePrice != null && a.salePrice > 0 ? 1 : 0;
       const bp = b.salePrice != null && b.salePrice > 0 ? 1 : 0;
       return bp - ap;
     });
 
+    const totalCount = Number(dataNode.totalCount ?? search.data?.totalCount ?? items.length);
+    if (totalCount > 0 && items.length === 0) {
+      const sample = rawItems[0];
+      console.warn("[fetch-mrt-stays] search items empty after map", {
+        regionId,
+        totalCount,
+        rawLen: rawItems.length,
+        sampleKeys: sample && typeof sample === "object" ? Object.keys(sample) : [],
+      });
+    }
+
     const payload = {
       items,
-      totalCount: Number(search.data?.data?.totalCount ?? items.length),
+      totalCount,
     };
     setCached(searchCache, cacheKey, payload, SEARCH_CACHE_TTL_MS);
     return { ok: true as const, ...payload };
