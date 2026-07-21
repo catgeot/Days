@@ -168,9 +168,17 @@ const GLOBE_MAP_BTN_BASE =
 const GLOBE_VIEW = {
   default: { longitude: 0, latitude: 20, zoom: 1.25, pitch: 0, bearing: 0 },
   flyZoom: 2.35,
+  /** 써머리「이 지역 보기」— POI 라벨(≥5.5)이 뜨는 지역·도시 몰입 줌 */
+  immerseZoom: 6.5,
+  immersePitch: 25,
   maxZoom: 22,
   rotateZoomThreshold: 2.4,
-  flyDuration: 3000
+  flyDuration: 3000,
+  /** 카드 오픈 지향 flyTo duration (ms) */
+  orientFlyDuration: 900,
+  /** 플라이 완료 후 자전 재개까지 대기 (ms) */
+  orientRotatePauseMs: 2800,
+  immerseFlyDuration: 1200,
 };
 
 const normalizeLngDelta = (a, b) => {
@@ -348,6 +356,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const autoRotateRef = useRef(!pauseRender);
   const rotationFrameRef = useRef(null);
   const rotationTimer = useRef(null);
+  /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
+  const immerseActiveRef = useRef(false);
   const hasRaisedFatalRef = useRef(false);
   const suppressClickUntilRef = useRef(0);
   const markerClickGuardUntilRef = useRef(0);
@@ -1044,7 +1054,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, ttl);
   }, []);
 
-  const executeFocus = useCallback((lat, lng) => {
+  const scheduleOrientRotateResume = useCallback((map, flyDurationMs) => {
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    const waitMs = Math.max(0, Number(flyDurationMs) || 0) + GLOBE_VIEW.orientRotatePauseMs;
+    rotationTimer.current = setTimeout(() => {
+      if (immerseActiveRef.current) return;
+      const zoom = map?.getZoom?.();
+      if (!pauseRender && Number.isFinite(zoom) && zoom <= GLOBE_VIEW.rotateZoomThreshold) {
+        autoRotateRef.current = true;
+      }
+    }, waitMs);
+  }, [pauseRender]);
+
+  const executeFocus = useCallback((lat, lng, options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return false;
 
@@ -1054,23 +1076,28 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const lngDelta = normalizeLngDelta(currentCenter.lng, lng);
     const latDelta = Math.abs(currentCenter.lat - lat);
     const isAlreadyNearTarget = lngDelta < 0.2 && latDelta < 0.2;
-    if (isAlreadyNearTarget) return true;
+    const forceFlyZoom = options?.forceFlyZoom === true;
+    const targetZoom = forceFlyZoom
+      ? GLOBE_VIEW.flyZoom
+      : Math.max(currentZoom, GLOBE_VIEW.flyZoom);
+    const flyDuration = GLOBE_VIEW.orientFlyDuration;
+
+    if (isAlreadyNearTarget && !forceFlyZoom && Math.abs(currentZoom - targetZoom) < 0.05) {
+      scheduleOrientRotateResume(map, 0);
+      return true;
+    }
 
     map.flyTo({
       center: [normalizedLng, lat],
-      zoom: Math.max(currentZoom, GLOBE_VIEW.flyZoom),
-      duration: 900,
+      zoom: targetZoom,
+      pitch: GLOBE_VIEW.default.pitch,
+      duration: flyDuration,
       essential: true
     });
 
-    rotationTimer.current = setTimeout(() => {
-      const currentZoom = map.getZoom();
-      if (!pauseRender && currentZoom <= GLOBE_VIEW.rotateZoomThreshold) {
-        autoRotateRef.current = true;
-      }
-    }, 1200);
+    scheduleOrientRotateResume(map, flyDuration);
     return true;
-  }, [pauseRender]);
+  }, [pauseRender, scheduleOrientRotateResume]);
 
   /** TOUR_READY pivot — ease center only; pitch/zoom/bearing unchanged (no flyTo). */
   const pivotTourExplore = useCallback((location) => {
@@ -1100,11 +1127,83 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     clearReachBoundaryState();
   }, [clearReachBoundaryState]);
 
+  const clearImmerseState = useCallback(() => {
+    immerseActiveRef.current = false;
+  }, []);
+
+  const immerseToPin = useCallback((lat, lng, options = {}) => {
+    const map = mapRef.current?.getMap();
+    if (!map || pauseRender) return false;
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+    if (isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
+      return false;
+    }
+
+    if (rotationTimer.current) {
+      clearTimeout(rotationTimer.current);
+      rotationTimer.current = null;
+    }
+    autoRotateRef.current = false;
+    immerseActiveRef.current = true;
+
+    const currentCenter = map.getCenter();
+    const normalizedLng = normalizeLngNear(currentCenter.lng, lng);
+    const zoom = Number.isFinite(options?.zoom) ? options.zoom : GLOBE_VIEW.immerseZoom;
+    const pitch = Number.isFinite(options?.pitch) ? options.pitch : GLOBE_VIEW.immersePitch;
+
+    map.stop();
+    map.flyTo({
+      center: [normalizedLng, lat],
+      zoom,
+      pitch,
+      duration: GLOBE_VIEW.immerseFlyDuration,
+      essential: true
+    });
+    return true;
+  }, [globeMode, pauseRender]);
+
+  const exitImmerse = useCallback((lat, lng) => {
+    const map = mapRef.current?.getMap();
+    if (!map) return false;
+
+    const wasImmersed = immerseActiveRef.current;
+    immerseActiveRef.current = false;
+    if (!wasImmersed && map.getZoom() < GLOBE_VIEW.immerseZoom - 0.35) {
+      return false;
+    }
+
+    if (rotationTimer.current) {
+      clearTimeout(rotationTimer.current);
+      rotationTimer.current = null;
+    }
+    autoRotateRef.current = false;
+
+    const currentCenter = map.getCenter();
+    const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+    const centerLng = hasCoords ? normalizeLngNear(currentCenter.lng, lng) : currentCenter.lng;
+    const centerLat = hasCoords ? lat : currentCenter.lat;
+    const flyDuration = GLOBE_VIEW.orientFlyDuration;
+
+    map.stop();
+    map.flyTo({
+      center: [centerLng, centerLat],
+      zoom: GLOBE_VIEW.flyZoom,
+      pitch: GLOBE_VIEW.default.pitch,
+      bearing: GLOBE_VIEW.default.bearing,
+      duration: flyDuration,
+      essential: true
+    });
+    scheduleOrientRotateResume(map, flyDuration);
+    return true;
+  }, [scheduleOrientRotateResume]);
+
   const flyToAndPin = useCallback((lat, lng, _name, _category, options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map) return;
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
+    const wasImmersed = immerseActiveRef.current;
+    immerseActiveRef.current = false;
     autoRotateRef.current = false;
     addRipple(lat, lng, 2000);
     const shouldFocus = options?.focus !== false;
@@ -1134,7 +1233,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return;
     }
 
-    const applied = executeFocus(lat, lng);
+    const applied = executeFocus(lat, lng, { forceFlyZoom: wasImmersed });
     if (!applied) {
       pendingFocusRef.current = { lat, lng };
     }
@@ -1327,6 +1426,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     });
 
     if (started) {
+      immerseActiveRef.current = false;
       autoRotateRef.current = false;
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
       interactionRef.current = true;
@@ -1345,6 +1445,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const lng = Number(location.lng);
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
 
+    immerseActiveRef.current = false;
     tourActiveRef.current = true;
     autoRotateRef.current = false;
     interactionRef.current = true;
@@ -1378,6 +1479,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const finalizeSpaceReturn = useCallback(() => {
     interactionRef.current = false;
+    immerseActiveRef.current = false;
     autoRotateRef.current = !pauseRender;
     setRipples([]);
     pendingFocusRef.current = null;
@@ -1436,13 +1538,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     },
     resumeRotation: () => {
-      if (pauseRender || isTourMode(globeMode) || flightCinemaActiveRef.current) return;
+      if (pauseRender || isTourMode(globeMode) || flightCinemaActiveRef.current || immerseActiveRef.current) return;
       autoRotateRef.current = true;
     },
     flyToAndPin,
+    immerseToPin,
+    exitImmerse,
+    clearImmerseState,
+    isImmersed: () => Boolean(immerseActiveRef.current),
     updateLastPinName: () => {},
     triggerRipple: (lat, lng) => addRipple(lat, lng, 1500),
     resetPins: () => {
+      immerseActiveRef.current = false;
       setRipples([]);
       if (rotationTimer.current) {
         clearTimeout(rotationTimer.current);
@@ -1475,7 +1582,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return waitForFlightCinemaGlobeReady(map, options);
     },
     getGlobeMode: () => globeMode
-  }), [addRipple, closeFlightCinema, endTour, flyToAndPin, globeMode, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, clearImmerseState, closeFlightCinema, endTour, exitImmerse, flyToAndPin, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -1615,6 +1722,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const shouldRotate = autoRotateRef.current
         && !interactionRef.current
         && !tourActiveRef.current
+        && !immerseActiveRef.current
         && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
       if (shouldRotate) {
         const speed = isZenMode ? 1.8 : 3;

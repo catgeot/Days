@@ -708,6 +708,13 @@ function Home() {
   /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
   const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
     if (selectedLocation) {
+      const lat = Number(selectedLocation.lat);
+      const lng = Number(selectedLocation.lng);
+      if (globeRef.current?.isImmersed?.()) {
+        globeRef.current?.exitImmerse?.(lat, lng);
+      } else {
+        globeRef.current?.clearImmerseState?.();
+      }
       addScoutPin(selectedLocation);
       rememberGlobeFocus(selectedLocation);
     }
@@ -757,6 +764,7 @@ function Home() {
     if (isMobileViewport) {
       setTourLaunchPending(true);
     }
+    globeRef.current?.clearImmerseState?.();
     globeRef.current?.closeFlightCinema?.();
     globeRef.current?.pauseRotation?.();
     const ok = await globeRef.current?.startTour?.(location);

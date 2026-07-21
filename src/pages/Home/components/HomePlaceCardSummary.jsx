@@ -29,10 +29,17 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
   const essentialGuide = useChatEssentialGuide(slug, location?.name ?? '');
 
   const [selectedOriginIata, setSelectedOriginIata] = useState(() => resolveDefaultFlightOriginIata());
+  const [isImmersed, setIsImmersed] = useState(false);
 
   useEffect(() => {
     queueMicrotask(() => setSelectedOriginIata(resolveDefaultFlightOriginIata()));
   }, [location?.id]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setIsImmersed(Boolean(globeRef?.current?.isImmersed?.()));
+    });
+  }, [globeRef, location?.id]);
 
   const flightPreview = useMemo(
     () => resolveSummaryFlightCinemaOd(location, { essentialGuide, originIata: selectedOriginIata }),
@@ -43,6 +50,12 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
     () => canPreviewFlightRoute(location, { essentialGuide, originIata: selectedOriginIata }),
     [location, essentialGuide, selectedOriginIata]
   );
+
+  const canToggleImmerse = useMemo(() => {
+    const lat = Number(location?.lat);
+    const lng = Number(location?.lng);
+    return Number.isFinite(lat) && Number.isFinite(lng) && !location?.isScanning;
+  }, [location?.lat, location?.lng, location?.isScanning]);
 
   const readGlobeFlightReady = () => Boolean(globeRef?.current?.isFlightCinemaReady?.());
   const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(false);
@@ -81,8 +94,27 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
 
   const isFlightRouteReady = hasFlightRoute && flightCinemaGlobeReady && Boolean(flightPreview);
 
+  const handleToggleImmerse = () => {
+    const lat = Number(location?.lat);
+    const lng = Number(location?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    if (isImmersed) {
+      globeRef?.current?.exitImmerse?.(lat, lng);
+      setIsImmersed(false);
+      return;
+    }
+
+    const ok = globeRef?.current?.immerseToPin?.(lat, lng);
+    if (ok) setIsImmersed(true);
+  };
+
   const handlePreviewFlightRoute = () => {
     if (!flightPreview || !isFlightRouteReady || flightCinemaRequestPending) return;
+    if (isImmersed) {
+      globeRef?.current?.clearImmerseState?.();
+      setIsImmersed(false);
+    }
     persistFlightOriginIata(selectedOriginIata);
     void requestFlightCinema({
       location,
@@ -128,6 +160,9 @@ export default function HomePlaceCardSummary({ globeRef, onStayExpandedChange, .
           }
           initialOriginExpanded={false}
           onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
+          canToggleImmerse={canToggleImmerse}
+          isImmersed={isImmersed}
+          onToggleImmerse={handleToggleImmerse}
           stayToggle={toggle}
           stayExpanded={stayExpanded}
           belowCard={mobilePanel}

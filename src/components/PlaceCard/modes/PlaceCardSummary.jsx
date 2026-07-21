@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { X, Sparkles, Maximize2, Mountain, Plane, Loader2, ChevronRight } from 'lucide-react';
+import { X, Sparkles, Maximize2, Mountain, Plane, Loader2, ChevronRight, ScanSearch, ScanEye } from 'lucide-react';
 
 import BookmarkButton from '../common/BookmarkButton';
 
@@ -31,6 +31,12 @@ const PlaceCardSummary = ({
   onToggleBookmark,
 
   onStartTour,
+
+  onToggleImmerse,
+
+  isImmersed = false,
+
+  canToggleImmerse = true,
 
   onPreviewFlightRoute,
 
@@ -170,6 +176,8 @@ const PlaceCardSummary = ({
 
 
   const actionButtonCount =
+
+    (!isScanning && canToggleImmerse ? 1 : 0) +
 
     (canPreviewFlightRoute ? 1 : 0) + (canStartTour ? 1 : 0) + (stayToggle ? 1 : 0);
 
@@ -579,6 +587,62 @@ const PlaceCardSummary = ({
 
               )}
 
+              {!isScanning && canToggleImmerse && (
+
+                <button
+
+                  type="button"
+
+                  onClick={(e) => {
+
+                    e.stopPropagation();
+
+                    onToggleImmerse?.();
+
+                  }}
+
+                  className={`order-2 relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border px-2 py-2 transition-all duration-300 lg:order-3 lg:min-h-[36px] ${
+
+                    isImmersed
+
+                      ? 'bg-emerald-500/15 border-emerald-400/35 hover:bg-emerald-500/25 hover:border-emerald-300/45'
+
+                      : 'bg-teal-500/15 border-teal-400/30 hover:bg-teal-500/25 hover:border-teal-300/40'
+
+                  }`}
+
+                  title={isImmersed ? '지구본을 넓게 보기' : '이 지역을 확대해 보기'}
+
+                >
+
+                  {isImmersed ? (
+
+                    <ScanEye size={16} className="shrink-0 text-emerald-300" />
+
+                  ) : (
+
+                    <ScanSearch size={16} className="shrink-0 text-teal-300" />
+
+                  )}
+
+                  <span
+
+                    className={`min-w-0 truncate text-xs font-bold ${
+
+                      isImmersed ? 'text-emerald-100' : 'text-teal-100'
+
+                    }`}
+
+                  >
+
+                    {isImmersed ? '넓게 보기' : '이 지역 보기'}
+
+                  </span>
+
+                </button>
+
+              )}
+
               {canStartTour && (
 
                 <button
@@ -593,7 +657,7 @@ const PlaceCardSummary = ({
 
                   }}
 
-                  className="order-2 relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl bg-violet-500/15 border border-violet-400/30 px-2 py-2 hover:bg-violet-500/25 hover:border-violet-300/40 transition-all duration-300 lg:order-3 lg:min-h-[36px]"
+                  className="order-3 relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl bg-violet-500/15 border border-violet-400/30 px-2 py-2 hover:bg-violet-500/25 hover:border-violet-300/40 transition-all duration-300 lg:order-4 lg:min-h-[36px]"
 
                 >
 

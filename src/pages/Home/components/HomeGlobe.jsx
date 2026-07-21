@@ -10,8 +10,13 @@ const GLOBE_CAMERA_CONFIG = {
   AUTO_ROTATE_DISABLE_ALT: 2.0,
   FLY_TARGET_ALT: 2.1,
   FLY_DISABLE_ALT: 1.8,
+  /** 「이 지역 보기」— 낮을수록 확대 (Mapbox immerseZoom 6.5에 가깝게) */
+  IMMERSE_ALT: 0.28,
   FLY_DURATION: 3000,
+  IMMERSE_DURATION: 1200,
   IDLE_DELAY_ZOOMED_OUT: 4000,
+  /** 플라이 완료 후 자전 재개 여유 (카드 오픈 지향) */
+  ORIENT_ROTATE_PAUSE: 2800,
   AUTO_ROTATE_SPEED: 0.5,
   LABEL_RESOLUTION: 2
 };
@@ -30,6 +35,7 @@ const HomeGlobe = React.memo(forwardRef(({
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const rotationTimer = useRef(null);
+  const immerseActiveRef = useRef(false);
   const prevHighlightCategoryRef = useRef(null);
   const prevCategoryFaceEpochRef = useRef(categoryFaceEpoch);
   const categoryFaceFlyGenRef = useRef(0);
@@ -80,11 +86,12 @@ const HomeGlobe = React.memo(forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     },
     resumeRotation: () => {
-      if (pauseRender) return;
+      if (pauseRender || immerseActiveRef.current) return;
       if(globeEl.current) globeEl.current.controls().autoRotate = true;
     },
     flyToAndPin: (lat, lng, _name, _category, _options) => {
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
+      immerseActiveRef.current = false;
 
       if (globeEl.current) {
         globeEl.current.controls().autoRotate = false;
@@ -97,8 +104,9 @@ const HomeGlobe = React.memo(forwardRef(({
         setRipples(prev => [...prev, newRipple]);
         setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 2000);
 
-        const totalWaitTime = GLOBE_CAMERA_CONFIG.FLY_DURATION + GLOBE_CAMERA_CONFIG.IDLE_DELAY_ZOOMED_OUT;
+        const totalWaitTime = GLOBE_CAMERA_CONFIG.FLY_DURATION + GLOBE_CAMERA_CONFIG.ORIENT_ROTATE_PAUSE;
         rotationTimer.current = setTimeout(() => {
+          if (immerseActiveRef.current) return;
           const checkAlt = globeEl.current ? globeEl.current.pointOfView().altitude : 99;
           if (globeEl.current && !pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
              globeEl.current.controls().autoRotate = true;
@@ -106,6 +114,50 @@ const HomeGlobe = React.memo(forwardRef(({
         }, totalWaitTime);
       }
     },
+    immerseToPin: (lat, lng) => {
+      if (!globeEl.current || !Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+      if (rotationTimer.current) {
+        clearTimeout(rotationTimer.current);
+        rotationTimer.current = null;
+      }
+      immerseActiveRef.current = true;
+      globeEl.current.controls().autoRotate = false;
+      globeEl.current.pointOfView(
+        { lat, lng, altitude: GLOBE_CAMERA_CONFIG.IMMERSE_ALT },
+        GLOBE_CAMERA_CONFIG.IMMERSE_DURATION
+      );
+      return true;
+    },
+    exitImmerse: (lat, lng) => {
+      if (!globeEl.current) return false;
+      const wasImmersed = immerseActiveRef.current;
+      immerseActiveRef.current = false;
+      const alt = globeEl.current.pointOfView().altitude;
+      if (!wasImmersed && alt > GLOBE_CAMERA_CONFIG.IMMERSE_ALT + 0.15) return false;
+
+      if (rotationTimer.current) {
+        clearTimeout(rotationTimer.current);
+        rotationTimer.current = null;
+      }
+      globeEl.current.controls().autoRotate = false;
+      const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+      const pov = hasCoords
+        ? { lat, lng, altitude: GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT }
+        : { altitude: GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT };
+      globeEl.current.pointOfView(pov, GLOBE_CAMERA_CONFIG.FLY_DURATION);
+      rotationTimer.current = setTimeout(() => {
+        if (immerseActiveRef.current || !globeEl.current) return;
+        const checkAlt = globeEl.current.pointOfView().altitude;
+        if (!pauseRender && checkAlt > GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
+          globeEl.current.controls().autoRotate = true;
+        }
+      }, GLOBE_CAMERA_CONFIG.FLY_DURATION + GLOBE_CAMERA_CONFIG.ORIENT_ROTATE_PAUSE);
+      return true;
+    },
+    clearImmerseState: () => {
+      immerseActiveRef.current = false;
+    },
+    isImmersed: () => Boolean(immerseActiveRef.current),
     updateLastPinName: () => {},
     triggerRipple: (lat, lng) => {
       const newRipple = { lat, lng, maxR: 5, propagationSpeed: 4, repeatPeriod: 500 };
@@ -113,6 +165,7 @@ const HomeGlobe = React.memo(forwardRef(({
       setTimeout(() => setRipples(prev => prev.filter(r => r !== newRipple)), 1500);
     },
     resetPins: () => {
+        immerseActiveRef.current = false;
         setRipples([]);
         if (globeEl.current) {
             globeEl.current.controls().autoRotate = true;
@@ -155,7 +208,7 @@ const HomeGlobe = React.memo(forwardRef(({
         const alt = globeEl.current.pointOfView().altitude;
 
         if (!pauseRender && globeEl.current.controls) {
-          if (alt <= GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
+          if (immerseActiveRef.current || alt <= GLOBE_CAMERA_CONFIG.AUTO_ROTATE_DISABLE_ALT) {
             globeEl.current.controls().autoRotate = false;
           } else {
             globeEl.current.controls().autoRotate = true;
