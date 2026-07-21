@@ -30,6 +30,19 @@ npm run audit:airports   # 공항 SSOT 작업 시
 
 클라우드 VM은 Ubuntu. Windows PowerShell 전용 구문·로컬 `.env.local` 가정 금지.
 
+### 개발 서버 실행 (Ubuntu)
+
+- `package.json`의 `dev`/`dev:http`는 **Windows cmd 전용**(`set BROWSER=chrome&&`)이라 Ubuntu에서 그대로 쓰면 env가 안 먹는다. VM에서는 vite를 직접 실행:
+  - HTTP(권장, 자체서명 인증서 경고 회피): `DEV_SSL=0 npx vite --no-open --host 0.0.0.0 --port 5173`
+  - HTTPS(기본, `basic-ssl`): `npx vite --no-open --host` — 브라우저가 self-signed 경고 표시.
+- `vite.config.js`: `strictPort: true`(5173 점유 시 실패)·`open: true`(헤드리스에서는 `--no-open` 권장).
+- 초기 홈 지구본은 `react-globe.gl`(three.js)라 **Mapbox 없이도 렌더**된다. Mapbox는 여행지 확대(place locator map)에서만 필요.
+
+### Mapbox 토큰
+
+- `VITE_MAPBOX_TOKEN`은 현재 Secrets에 없음. 없으면 지구본 확대/place 지도가 `HomeGlobeMapbox.jsx`에서 fatal. 지도 확대 QA가 필요하면 Secrets에 추가해야 함.
+- `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`는 없으면 `src/shared/api/supabase.js`가 import 시 throw → 앱 자체가 안 뜸(현재 Secrets에 등록됨).
+
 ### 브랜치·병합
 
 - 기본: `main`에서 feature 브랜치로 작업 후 PR 또는 사용자 승인 후 병합.
