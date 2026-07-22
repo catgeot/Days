@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-22T04:03:49.328Z",
+    "generatedAt": "2026-07-22T04:20:50.449Z",
     "spotCount": 20,
     "source": "scripts/data/stay-agency-link-overrides.mjs"
   },
@@ -35,16 +35,16 @@
       ]
     },
     "nauru": {
-      "note": "나우루는 OTA 숙소 재고가 거의 없습니다. 공식 방문·비자 안내와 국적 항공사로 입도 루트를 확인하세요.",
+      "note": "나우루는 OTA 숙소가 거의 없습니다. 공식 Accommodation 안내(호텔 2곳·유닛형)로 정부에 문의해 예약하고, 비자·항공 루트도 함께 확인하세요.",
       "confidence": "high",
       "links": [
         {
-          "name": "나우루 정부 — 방문 안내",
-          "href": "https://www.nauru.gov.nr/about-nauru/visiting-nauru.aspx",
+          "name": "나우루 정부 — 숙소 안내",
+          "href": "https://www.nauru.gov.nr/about-nauru/visiting-nauru/accommodation.aspx",
           "kind": "tourism-board",
           "locale": "en",
           "verifiedAt": "2026-07-22",
-          "evidence": "Government of the Republic of Nauru (.gov.nr) Visiting Nauru — 2026-07-22 HTTP 200 · UTM 없이 연결(쿼리 시 403)"
+          "evidence": "Nauru.gov.nr Accommodation — 호텔 2곳(정부·가족) + 유닛형 2곳 · 선호 알려주면 상세 전달 · 연락 +674 557 3133 ext.307 · UTM 없이 연결"
         },
         {
           "name": "나우루 정부 — 비자",
