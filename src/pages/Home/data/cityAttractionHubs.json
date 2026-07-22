@@ -2223,7 +2223,7 @@
         "name_en": "Geumsan Boriam",
         "kind": "temple",
         "lat": 34.76,
-        "lng": 128.0
+        "lng": 128
       },
       {
         "name": "가천다랑이논",
@@ -2445,6 +2445,649 @@
         "kind": "landmark",
         "lat": 34.906,
         "lng": 127.498
+      }
+    ]
+  },
+  {
+    "hubId": "melbourne",
+    "name": "멜버른",
+    "name_en": "Melbourne",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -37.8136,
+    "lng": 144.9631,
+    "aliases": [
+      "melbourne",
+      "멜번"
+    ],
+    "attractions": [
+      {
+        "name": "페더레이션 스퀘어",
+        "name_en": "Federation Square",
+        "kind": "landmark",
+        "lat": -37.8183,
+        "lng": 144.9681
+      },
+      {
+        "name": "멜버른 로열 보태닉 가든",
+        "name_en": "Royal Botanic Gardens Melbourne",
+        "kind": "park",
+        "lat": -37.8304,
+        "lng": 144.9803
+      },
+      {
+        "name": "세인트 킬다 비치",
+        "name_en": "St Kilda Beach",
+        "kind": "beach",
+        "lat": -37.8677,
+        "lng": 144.974
+      },
+      {
+        "name": "퀸 빅토리아 마켓",
+        "name_en": "Queen Victoria Market",
+        "kind": "market",
+        "lat": -37.8076,
+        "lng": 144.9568
+      },
+      {
+        "name": "유레카 타워",
+        "name_en": "Eureka Tower",
+        "kind": "viewpoint",
+        "lat": -37.8213,
+        "lng": 144.9647
+      },
+      {
+        "name": "브라이튼 배싱 박스",
+        "name_en": "Brighton Bathing Boxes",
+        "kind": "landmark",
+        "lat": -37.9185,
+        "lng": 144.9864
+      },
+      {
+        "name": "멜버른 크리켓 그라운드",
+        "name_en": "Melbourne Cricket Ground",
+        "kind": "landmark",
+        "lat": -37.82,
+        "lng": 144.9834
+      }
+    ]
+  },
+  {
+    "hubId": "auckland",
+    "name": "오클랜드",
+    "name_en": "Auckland",
+    "country": "뉴질랜드",
+    "country_en": "New Zealand",
+    "lat": -36.8509,
+    "lng": 174.7645,
+    "aliases": [
+      "auckland",
+      "오클랜드시"
+    ],
+    "attractions": [
+      {
+        "name": "스카이타워",
+        "name_en": "Sky Tower",
+        "kind": "viewpoint",
+        "lat": -36.8485,
+        "lng": 174.7622
+      },
+      {
+        "name": "오클랜드 도메인",
+        "name_en": "Auckland Domain",
+        "kind": "park",
+        "lat": -36.8591,
+        "lng": 174.7762
+      },
+      {
+        "name": "마운트 이든",
+        "name_en": "Mount Eden",
+        "kind": "viewpoint",
+        "lat": -36.877,
+        "lng": 174.7645
+      },
+      {
+        "name": "오클랜드 전쟁기념박물관",
+        "name_en": "Auckland War Memorial Museum",
+        "kind": "museum",
+        "lat": -36.8603,
+        "lng": 174.7778
+      },
+      {
+        "name": "비아덕트 하버",
+        "name_en": "Viaduct Harbour",
+        "kind": "neighborhood",
+        "lat": -36.8426,
+        "lng": 174.7633
+      },
+      {
+        "name": "와인야드 쿼터",
+        "name_en": "Wynyard Quarter",
+        "kind": "neighborhood",
+        "lat": -36.8412,
+        "lng": 174.7558
+      },
+      {
+        "name": "와이헤케 섬",
+        "name_en": "Waiheke Island",
+        "kind": "landmark",
+        "lat": -36.8,
+        "lng": 175.1
+      }
+    ]
+  },
+  {
+    "hubId": "istanbul",
+    "name": "이스탄불",
+    "name_en": "Istanbul",
+    "country": "튀르키예",
+    "country_en": "Turkey",
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "aliases": [
+      "istanbul",
+      "이스탄불시",
+      "콘스탄티노플"
+    ],
+    "attractions": [
+      {
+        "name": "아야 소피아",
+        "name_en": "Hagia Sophia",
+        "kind": "landmark",
+        "lat": 41.0086,
+        "lng": 28.9802
+      },
+      {
+        "name": "술탄아흐메트 모스크",
+        "name_en": "Blue Mosque",
+        "kind": "landmark",
+        "lat": 41.0054,
+        "lng": 28.9768
+      },
+      {
+        "name": "그랜드 바자르",
+        "name_en": "Grand Bazaar",
+        "kind": "market",
+        "lat": 41.0106,
+        "lng": 28.9681
+      },
+      {
+        "name": "톱카프 궁전",
+        "name_en": "Topkapi Palace",
+        "kind": "landmark",
+        "lat": 41.0115,
+        "lng": 28.9833
+      },
+      {
+        "name": "갈라타 타워",
+        "name_en": "Galata Tower",
+        "kind": "viewpoint",
+        "lat": 41.0256,
+        "lng": 28.9742
+      },
+      {
+        "name": "탁심 광장",
+        "name_en": "Taksim Square",
+        "kind": "landmark",
+        "lat": 41.037,
+        "lng": 28.985
+      },
+      {
+        "name": "예레바탄 사라이",
+        "name_en": "Basilica Cistern",
+        "kind": "landmark",
+        "lat": 41.0084,
+        "lng": 28.9779
+      }
+    ]
+  },
+  {
+    "hubId": "danang",
+    "name": "다낭",
+    "name_en": "Da Nang",
+    "country": "베트남",
+    "country_en": "Vietnam",
+    "lat": 16.0544,
+    "lng": 108.2022,
+    "aliases": [
+      "danang",
+      "da nang",
+      "다낭시"
+    ],
+    "attractions": [
+      {
+        "name": "미케 비치",
+        "name_en": "My Khe Beach",
+        "kind": "beach",
+        "lat": 16.0605,
+        "lng": 108.2475
+      },
+      {
+        "name": "오행산",
+        "name_en": "Marble Mountains",
+        "kind": "viewpoint",
+        "lat": 16.0039,
+        "lng": 108.2635
+      },
+      {
+        "name": "드래곤 브릿지",
+        "name_en": "Dragon Bridge",
+        "kind": "landmark",
+        "lat": 16.061,
+        "lng": 108.2274
+      },
+      {
+        "name": "바나힐",
+        "name_en": "Ba Na Hills",
+        "kind": "landmark",
+        "lat": 15.995,
+        "lng": 107.995
+      },
+      {
+        "name": "한시장",
+        "name_en": "Han Market",
+        "kind": "market",
+        "lat": 16.0695,
+        "lng": 108.222
+      },
+      {
+        "name": "링응 사원",
+        "name_en": "Linh Ung Pagoda",
+        "kind": "temple",
+        "lat": 16.1003,
+        "lng": 108.278
+      },
+      {
+        "name": "호이안 올드타운",
+        "name_en": "Hoi An Ancient Town",
+        "kind": "neighborhood",
+        "lat": 15.8801,
+        "lng": 108.338
+      }
+    ]
+  },
+  {
+    "hubId": "mokpo",
+    "name": "목포",
+    "name_en": "Mokpo",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.8118,
+    "lng": 126.3922,
+    "aliases": [
+      "mokpo",
+      "목포시"
+    ],
+    "attractions": [
+      {
+        "name": "유달산",
+        "name_en": "Yudalsan",
+        "kind": "viewpoint",
+        "lat": 34.7915,
+        "lng": 126.375
+      },
+      {
+        "name": "목포해상케이블카",
+        "name_en": "Mokpo Marine Cable Car",
+        "kind": "landmark",
+        "lat": 34.784,
+        "lng": 126.372
+      },
+      {
+        "name": "목포갓바위",
+        "name_en": "Mokpo Gatbawi",
+        "kind": "landmark",
+        "lat": 34.7825,
+        "lng": 126.358
+      },
+      {
+        "name": "삼학도",
+        "name_en": "Samhakdo",
+        "kind": "park",
+        "lat": 34.781,
+        "lng": 126.393
+      },
+      {
+        "name": "목포근대역사관",
+        "name_en": "Mokpo Modern History Museum",
+        "kind": "museum",
+        "lat": 34.7895,
+        "lng": 126.385
+      },
+      {
+        "name": "평화광장",
+        "name_en": "Peace Plaza Mokpo",
+        "kind": "landmark",
+        "lat": 34.791,
+        "lng": 126.425
+      },
+      {
+        "name": "고하도 해안산책로",
+        "name_en": "Gohado Coastal Trail",
+        "kind": "park",
+        "lat": 34.77,
+        "lng": 126.355
+      }
+    ]
+  },
+  {
+    "hubId": "jinju",
+    "name": "진주",
+    "name_en": "Jinju",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.1803,
+    "lng": 128.1076,
+    "aliases": [
+      "jinju",
+      "진주시"
+    ],
+    "attractions": [
+      {
+        "name": "진주성",
+        "name_en": "Jinju Fortress",
+        "kind": "landmark",
+        "lat": 35.1898,
+        "lng": 128.078
+      },
+      {
+        "name": "촉석루",
+        "name_en": "Chokseongnu",
+        "kind": "viewpoint",
+        "lat": 35.1885,
+        "lng": 128.0805
+      },
+      {
+        "name": "진양호",
+        "name_en": "Jinyang Lake",
+        "kind": "park",
+        "lat": 35.17,
+        "lng": 128.04
+      },
+      {
+        "name": "국립진주박물관",
+        "name_en": "Jinju National Museum",
+        "kind": "museum",
+        "lat": 35.189,
+        "lng": 128.0765
+      },
+      {
+        "name": "진양호동물원",
+        "name_en": "Jinyangho Zoo",
+        "kind": "park",
+        "lat": 35.178,
+        "lng": 128.045
+      },
+      {
+        "name": "비봉산전망대",
+        "name_en": "Bibongsan Observatory",
+        "kind": "viewpoint",
+        "lat": 35.185,
+        "lng": 128.12
+      },
+      {
+        "name": "남강유등길",
+        "name_en": "Namgang Lantern Walk",
+        "kind": "landmark",
+        "lat": 35.191,
+        "lng": 128.082
+      }
+    ]
+  },
+  {
+    "hubId": "geoje",
+    "name": "거제",
+    "name_en": "Geoje",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.8806,
+    "lng": 128.6211,
+    "aliases": [
+      "geoje",
+      "거제시",
+      "거제도"
+    ],
+    "attractions": [
+      {
+        "name": "외도보타니아",
+        "name_en": "Oedo Botania",
+        "kind": "park",
+        "lat": 34.769,
+        "lng": 128.711
+      },
+      {
+        "name": "바람의언덕",
+        "name_en": "Windy Hill Geoje",
+        "kind": "viewpoint",
+        "lat": 34.77,
+        "lng": 128.68
+      },
+      {
+        "name": "학동몽돌해수욕장",
+        "name_en": "Hakdong Pebble Beach",
+        "kind": "beach",
+        "lat": 34.79,
+        "lng": 128.68
+      },
+      {
+        "name": "거제포로수용소유적공원",
+        "name_en": "Geoje POW Camp Park",
+        "kind": "museum",
+        "lat": 34.875,
+        "lng": 128.615
+      },
+      {
+        "name": "해금강",
+        "name_en": "Haegeumgang",
+        "kind": "viewpoint",
+        "lat": 34.743,
+        "lng": 128.663
+      },
+      {
+        "name": "구조라해수욕장",
+        "name_en": "Gujora Beach",
+        "kind": "beach",
+        "lat": 34.805,
+        "lng": 128.69
+      },
+      {
+        "name": "지심도",
+        "name_en": "Jisimdo",
+        "kind": "park",
+        "lat": 34.825,
+        "lng": 128.73
+      }
+    ]
+  },
+  {
+    "hubId": "gunsan",
+    "name": "군산",
+    "name_en": "Gunsan",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.9677,
+    "lng": 126.7369,
+    "aliases": [
+      "gunsan",
+      "군산시"
+    ],
+    "attractions": [
+      {
+        "name": "군산근대역사박물관",
+        "name_en": "Gunsan Modern History Museum",
+        "kind": "museum",
+        "lat": 35.981,
+        "lng": 126.716
+      },
+      {
+        "name": "경암동철길마을",
+        "name_en": "Gyeongam-dong Railroad Village",
+        "kind": "neighborhood",
+        "lat": 35.978,
+        "lng": 126.718
+      },
+      {
+        "name": "선유도",
+        "name_en": "Seonyudo",
+        "kind": "beach",
+        "lat": 35.815,
+        "lng": 126.41
+      },
+      {
+        "name": "은파호수공원",
+        "name_en": "Eunpa Lake Park",
+        "kind": "park",
+        "lat": 35.945,
+        "lng": 126.715
+      },
+      {
+        "name": "초원사진관",
+        "name_en": "Chowon Photo Studio",
+        "kind": "landmark",
+        "lat": 35.982,
+        "lng": 126.715
+      },
+      {
+        "name": "진포해양테마공원",
+        "name_en": "Jinpo Maritime Theme Park",
+        "kind": "park",
+        "lat": 35.989,
+        "lng": 126.716
+      },
+      {
+        "name": "새만금전망대",
+        "name_en": "Saemangeum Observatory",
+        "kind": "viewpoint",
+        "lat": 35.84,
+        "lng": 126.55
+      }
+    ]
+  },
+  {
+    "hubId": "damyang",
+    "name": "담양",
+    "name_en": "Damyang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.3214,
+    "lng": 126.988,
+    "aliases": [
+      "damyang",
+      "담양군"
+    ],
+    "attractions": [
+      {
+        "name": "죽녹원",
+        "name_en": "Juknokwon",
+        "kind": "park",
+        "lat": 35.325,
+        "lng": 126.986
+      },
+      {
+        "name": "메타세쿼이아길",
+        "name_en": "Metasequoia Road",
+        "kind": "landmark",
+        "lat": 35.323,
+        "lng": 126.98
+      },
+      {
+        "name": "담양관방제림",
+        "name_en": "Gwanbangjerim Forest",
+        "kind": "park",
+        "lat": 35.32,
+        "lng": 126.985
+      },
+      {
+        "name": "소쇄원",
+        "name_en": "Soswaewon",
+        "kind": "park",
+        "lat": 35.275,
+        "lng": 126.99
+      },
+      {
+        "name": "담양호",
+        "name_en": "Damyang Lake",
+        "kind": "viewpoint",
+        "lat": 35.35,
+        "lng": 126.95
+      },
+      {
+        "name": "한국대나무박물관",
+        "name_en": "Korea Bamboo Museum",
+        "kind": "museum",
+        "lat": 35.318,
+        "lng": 126.988
+      },
+      {
+        "name": "식영정",
+        "name_en": "Sigyeongjeong",
+        "kind": "landmark",
+        "lat": 35.29,
+        "lng": 126.995
+      }
+    ]
+  },
+  {
+    "hubId": "suwon",
+    "name": "수원",
+    "name_en": "Suwon",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.2636,
+    "lng": 127.0286,
+    "aliases": [
+      "suwon",
+      "수원시"
+    ],
+    "attractions": [
+      {
+        "name": "수원화성",
+        "name_en": "Hwaseong Fortress",
+        "kind": "landmark",
+        "lat": 37.285,
+        "lng": 127.012
+      },
+      {
+        "name": "화성행궁",
+        "name_en": "Hwaseong Haenggung",
+        "kind": "landmark",
+        "lat": 37.2815,
+        "lng": 127.014
+      },
+      {
+        "name": "수원화성박물관",
+        "name_en": "Suwon Hwaseong Museum",
+        "kind": "museum",
+        "lat": 37.287,
+        "lng": 127.01
+      },
+      {
+        "name": "광교호수공원",
+        "name_en": "Gwanggyo Lake Park",
+        "kind": "park",
+        "lat": 37.282,
+        "lng": 127.066
+      },
+      {
+        "name": "방화수류정",
+        "name_en": "Banghwasuryujeong",
+        "kind": "viewpoint",
+        "lat": 37.2885,
+        "lng": 127.016
+      },
+      {
+        "name": "화홍문",
+        "name_en": "Hwahongmun",
+        "kind": "landmark",
+        "lat": 37.2878,
+        "lng": 127.0175
+      },
+      {
+        "name": "융건릉",
+        "name_en": "Yunggeolleung",
+        "kind": "park",
+        "lat": 37.211,
+        "lng": 127
       }
     ]
   }
