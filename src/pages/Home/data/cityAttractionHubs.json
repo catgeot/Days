@@ -1934,5 +1934,518 @@
         "lng": 127.6993
       }
     ]
+  },
+  {
+    "hubId": "sydney",
+    "name": "시드니",
+    "name_en": "Sydney",
+    "country": "호주",
+    "country_en": "Australia",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "aliases": [
+      "sydney",
+      "시드니시"
+    ],
+    "attractions": [
+      {
+        "name": "시드니 오페라하우스",
+        "name_en": "Sydney Opera House",
+        "kind": "landmark",
+        "lat": -33.8568,
+        "lng": 151.2153
+      },
+      {
+        "name": "시드니 하버브리지",
+        "name_en": "Sydney Harbour Bridge",
+        "kind": "landmark",
+        "lat": -33.8523,
+        "lng": 151.2108
+      },
+      {
+        "name": "본디 비치",
+        "name_en": "Bondi Beach",
+        "kind": "beach",
+        "lat": -33.8908,
+        "lng": 151.2743
+      },
+      {
+        "name": "더 록스",
+        "name_en": "The Rocks",
+        "kind": "neighborhood",
+        "lat": -33.8596,
+        "lng": 151.209
+      },
+      {
+        "name": "달링하버",
+        "name_en": "Darling Harbour",
+        "kind": "landmark",
+        "lat": -33.8721,
+        "lng": 151.1989
+      },
+      {
+        "name": "로열 보태닉 가든",
+        "name_en": "Royal Botanic Garden Sydney",
+        "kind": "park",
+        "lat": -33.8642,
+        "lng": 151.2166
+      },
+      {
+        "name": "맨리 비치",
+        "name_en": "Manly Beach",
+        "kind": "beach",
+        "lat": -33.797,
+        "lng": 151.288
+      }
+    ]
+  },
+  {
+    "hubId": "dubai",
+    "name": "두바이",
+    "name_en": "Dubai",
+    "country": "아랍에미리트",
+    "country_en": "United Arab Emirates",
+    "lat": 25.2048,
+    "lng": 55.2708,
+    "aliases": [
+      "dubai",
+      "두바이시"
+    ],
+    "attractions": [
+      {
+        "name": "부르즈 할리파",
+        "name_en": "Burj Khalifa",
+        "kind": "landmark",
+        "lat": 25.1972,
+        "lng": 55.2744
+      },
+      {
+        "name": "두바이몰",
+        "name_en": "The Dubai Mall",
+        "kind": "landmark",
+        "lat": 25.1985,
+        "lng": 55.2796
+      },
+      {
+        "name": "팜 주메이라",
+        "name_en": "Palm Jumeirah",
+        "kind": "landmark",
+        "lat": 25.1124,
+        "lng": 55.139
+      },
+      {
+        "name": "부르즈 알 아랍",
+        "name_en": "Burj Al Arab",
+        "kind": "landmark",
+        "lat": 25.1412,
+        "lng": 55.1853
+      },
+      {
+        "name": "두바이 마리나",
+        "name_en": "Dubai Marina",
+        "kind": "neighborhood",
+        "lat": 25.0805,
+        "lng": 55.1403
+      },
+      {
+        "name": "두바이 프레임",
+        "name_en": "Dubai Frame",
+        "kind": "viewpoint",
+        "lat": 25.2354,
+        "lng": 55.3002
+      },
+      {
+        "name": "알 파히디 역사지구",
+        "name_en": "Al Fahidi Historical District",
+        "kind": "neighborhood",
+        "lat": 25.2636,
+        "lng": 55.2972
+      }
+    ]
+  },
+  {
+    "hubId": "pyeongchang",
+    "name": "평창",
+    "name_en": "Pyeongchang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.3705,
+    "lng": 128.3901,
+    "aliases": [
+      "pyeongchang",
+      "평창군"
+    ],
+    "attractions": [
+      {
+        "name": "월정사",
+        "name_en": "Woljeongsa",
+        "kind": "temple",
+        "lat": 37.7317,
+        "lng": 128.5926
+      },
+      {
+        "name": "대관령 양떼목장",
+        "name_en": "Daegwallyeong Sheep Farm",
+        "kind": "landmark",
+        "lat": 37.689,
+        "lng": 128.752
+      },
+      {
+        "name": "알펜시아 리조트",
+        "name_en": "Alpensia Resort",
+        "kind": "landmark",
+        "lat": 37.658,
+        "lng": 128.671
+      },
+      {
+        "name": "용평리조트",
+        "name_en": "Yongpyong Resort",
+        "kind": "landmark",
+        "lat": 37.645,
+        "lng": 128.681
+      },
+      {
+        "name": "오대산 선재길",
+        "name_en": "Odaesan Seonjae Trail",
+        "kind": "park",
+        "lat": 37.729,
+        "lng": 128.595
+      },
+      {
+        "name": "평창 올림픽 플라자",
+        "name_en": "Pyeongchang Olympic Plaza",
+        "kind": "landmark",
+        "lat": 37.666,
+        "lng": 128.706
+      },
+      {
+        "name": "이효석 문학관",
+        "name_en": "Lee Hyo-seok Literature Museum",
+        "kind": "museum",
+        "lat": 37.563,
+        "lng": 128.423
+      }
+    ]
+  },
+  {
+    "hubId": "yangyang",
+    "name": "양양",
+    "name_en": "Yangyang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 38.0754,
+    "lng": 128.619,
+    "aliases": [
+      "yangyang",
+      "양양군"
+    ],
+    "attractions": [
+      {
+        "name": "서피비치",
+        "name_en": "Surfyy Beach",
+        "kind": "beach",
+        "lat": 38.0735,
+        "lng": 128.6685
+      },
+      {
+        "name": "하조대해수욕장",
+        "name_en": "Hajodae Beach",
+        "kind": "beach",
+        "lat": 38.087,
+        "lng": 128.666
+      },
+      {
+        "name": "낙산해수욕장",
+        "name_en": "Naksan Beach",
+        "kind": "beach",
+        "lat": 38.122,
+        "lng": 128.632
+      },
+      {
+        "name": "죽도해변",
+        "name_en": "Jukdo Beach",
+        "kind": "beach",
+        "lat": 38.065,
+        "lng": 128.672
+      },
+      {
+        "name": "오색케이블카",
+        "name_en": "Osaek Cable Car",
+        "kind": "viewpoint",
+        "lat": 38.078,
+        "lng": 128.46
+      },
+      {
+        "name": "양양전통시장",
+        "name_en": "Yangyang Traditional Market",
+        "kind": "market",
+        "lat": 38.0758,
+        "lng": 128.6215
+      },
+      {
+        "name": "설악해수욕장",
+        "name_en": "Seorak Beach",
+        "kind": "beach",
+        "lat": 38.131,
+        "lng": 128.627
+      }
+    ]
+  },
+  {
+    "hubId": "namhae",
+    "name": "남해",
+    "name_en": "Namhae",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.8377,
+    "lng": 127.8925,
+    "aliases": [
+      "namhae",
+      "남해군"
+    ],
+    "attractions": [
+      {
+        "name": "남해 독일마을",
+        "name_en": "Namhae German Village",
+        "kind": "neighborhood",
+        "lat": 34.777,
+        "lng": 127.996
+      },
+      {
+        "name": "상주은모래비치",
+        "name_en": "Sangju Eunmorae Beach",
+        "kind": "beach",
+        "lat": 34.723,
+        "lng": 127.988
+      },
+      {
+        "name": "금산 보리암",
+        "name_en": "Geumsan Boriam",
+        "kind": "temple",
+        "lat": 34.76,
+        "lng": 128.0
+      },
+      {
+        "name": "가천다랑이논",
+        "name_en": "Gacheon Darangyi Rice Terraces",
+        "kind": "viewpoint",
+        "lat": 34.725,
+        "lng": 127.91
+      },
+      {
+        "name": "미조항",
+        "name_en": "Mijo Port",
+        "kind": "landmark",
+        "lat": 34.71,
+        "lng": 128.045
+      },
+      {
+        "name": "이순신순국공원",
+        "name_en": "Namhae Yi Sun-sin Memorial Park",
+        "kind": "park",
+        "lat": 34.828,
+        "lng": 127.84
+      },
+      {
+        "name": "씨워크",
+        "name_en": "Namhae Seawalk",
+        "kind": "viewpoint",
+        "lat": 34.775,
+        "lng": 128.01
+      }
+    ]
+  },
+  {
+    "hubId": "andong",
+    "name": "안동",
+    "name_en": "Andong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.5684,
+    "lng": 128.7294,
+    "aliases": [
+      "andong",
+      "안동시"
+    ],
+    "attractions": [
+      {
+        "name": "하회마을",
+        "name_en": "Hahoe Folk Village",
+        "kind": "landmark",
+        "lat": 36.539,
+        "lng": 128.518
+      },
+      {
+        "name": "병산서원",
+        "name_en": "Byeongsan Seowon",
+        "kind": "landmark",
+        "lat": 36.535,
+        "lng": 128.552
+      },
+      {
+        "name": "도산서원",
+        "name_en": "Dosan Seowon",
+        "kind": "landmark",
+        "lat": 36.727,
+        "lng": 128.847
+      },
+      {
+        "name": "월영교",
+        "name_en": "Woryeonggyo Bridge",
+        "kind": "landmark",
+        "lat": 36.574,
+        "lng": 128.706
+      },
+      {
+        "name": "봉정사",
+        "name_en": "Bongjeongsa",
+        "kind": "temple",
+        "lat": 36.653,
+        "lng": 128.662
+      },
+      {
+        "name": "안동구시장",
+        "name_en": "Andong Old Market",
+        "kind": "market",
+        "lat": 36.565,
+        "lng": 128.728
+      },
+      {
+        "name": "안동찜닭골목",
+        "name_en": "Andong Jjimdak Alley",
+        "kind": "neighborhood",
+        "lat": 36.5645,
+        "lng": 128.7295
+      }
+    ]
+  },
+  {
+    "hubId": "boryeong",
+    "name": "보령",
+    "name_en": "Boryeong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.3334,
+    "lng": 126.6129,
+    "aliases": [
+      "boryeong",
+      "보령시",
+      "대천"
+    ],
+    "attractions": [
+      {
+        "name": "대천해수욕장",
+        "name_en": "Daecheon Beach",
+        "kind": "beach",
+        "lat": 36.308,
+        "lng": 126.513
+      },
+      {
+        "name": "무창포해수욕장",
+        "name_en": "Muchangpo Beach",
+        "kind": "beach",
+        "lat": 36.246,
+        "lng": 126.536
+      },
+      {
+        "name": "무창포 신비의 바닷길",
+        "name_en": "Muchangpo Miracle Sea Road",
+        "kind": "viewpoint",
+        "lat": 36.244,
+        "lng": 126.532
+      },
+      {
+        "name": "성주사지",
+        "name_en": "Seongjusa Temple Site",
+        "kind": "temple",
+        "lat": 36.345,
+        "lng": 126.66
+      },
+      {
+        "name": "보령석탄박물관",
+        "name_en": "Boryeong Coal Museum",
+        "kind": "museum",
+        "lat": 36.326,
+        "lng": 126.56
+      },
+      {
+        "name": "개화예술공원",
+        "name_en": "Gaehwa Art Park",
+        "kind": "park",
+        "lat": 36.352,
+        "lng": 126.605
+      },
+      {
+        "name": "보령머드광장",
+        "name_en": "Boryeong Mud Square",
+        "kind": "landmark",
+        "lat": 36.31,
+        "lng": 126.515
+      }
+    ]
+  },
+  {
+    "hubId": "suncheon",
+    "name": "순천",
+    "name_en": "Suncheon",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.9506,
+    "lng": 127.4872,
+    "aliases": [
+      "suncheon",
+      "순천시"
+    ],
+    "attractions": [
+      {
+        "name": "순천만습지",
+        "name_en": "Suncheon Bay Wetland",
+        "kind": "park",
+        "lat": 34.885,
+        "lng": 127.509
+      },
+      {
+        "name": "순천만국가정원",
+        "name_en": "Suncheon Bay National Garden",
+        "kind": "park",
+        "lat": 34.929,
+        "lng": 127.509
+      },
+      {
+        "name": "낙안읍성",
+        "name_en": "Naganeupseong Folk Village",
+        "kind": "landmark",
+        "lat": 34.907,
+        "lng": 127.341
+      },
+      {
+        "name": "선암사",
+        "name_en": "Seonamsa",
+        "kind": "temple",
+        "lat": 34.996,
+        "lng": 127.328
+      },
+      {
+        "name": "순천드라마촬영장",
+        "name_en": "Suncheon Drama Film Set",
+        "kind": "landmark",
+        "lat": 34.97,
+        "lng": 127.423
+      },
+      {
+        "name": "조례호수공원",
+        "name_en": "Jorye Lake Park",
+        "kind": "park",
+        "lat": 34.96,
+        "lng": 127.525
+      },
+      {
+        "name": "순천왜성",
+        "name_en": "Suncheon Waeseong",
+        "kind": "landmark",
+        "lat": 34.906,
+        "lng": 127.498
+      }
+    ]
   }
 ]
