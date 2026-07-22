@@ -171,7 +171,7 @@
 
 ### Trip CTA bookableCount 복구 + API↔MRT 홈 괴리 (이어하기)
 
-**상태**: ✅ Edge 재배포 · 커밋·push · **Vercel PROD QA**
+**상태**: ✅ Edge 재배포 · `35b24d2` push(`origin/main`) · **Vercel PROD QA**
 
 #### 수정
 
