@@ -5661,5 +5661,641 @@
         "lng": 128.48
       }
     ]
+  },
+  {
+    "hubId": "seville",
+    "name": "세비야",
+    "name_en": "Seville",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 37.3891,
+    "lng": -5.9845,
+    "aliases": [
+      "세비야시",
+      "sevilla"
+    ],
+    "attractions": [
+      {
+        "name": "세비야 대성당",
+        "name_en": "Seville Cathedral",
+        "kind": "landmark",
+        "lat": 37.3856,
+        "lng": -5.993
+      },
+      {
+        "name": "히랄다 탑",
+        "name_en": "Giralda",
+        "kind": "landmark",
+        "lat": 37.3861,
+        "lng": -5.9926
+      },
+      {
+        "name": "알카사르 세비야",
+        "name_en": "Alcázar of Seville",
+        "kind": "landmark",
+        "lat": 37.383,
+        "lng": -5.9903
+      },
+      {
+        "name": "플라자 데 에스파냐",
+        "name_en": "Plaza de España Seville",
+        "kind": "landmark",
+        "lat": 37.3772,
+        "lng": -5.9869
+      },
+      {
+        "name": "트리아나",
+        "name_en": "Triana",
+        "kind": "neighborhood",
+        "lat": 37.3835,
+        "lng": -6.002
+      },
+      {
+        "name": "메트로폴 파라솔",
+        "name_en": "Metropol Parasol",
+        "kind": "landmark",
+        "lat": 37.3933,
+        "lng": -5.9919
+      },
+      {
+        "name": "황금의 탑",
+        "name_en": "Torre del Oro",
+        "kind": "landmark",
+        "lat": 37.3824,
+        "lng": -5.9965
+      }
+    ]
+  },
+  {
+    "hubId": "porto",
+    "name": "포르투",
+    "name_en": "Porto",
+    "country": "포르투갈",
+    "country_en": "Portugal",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "aliases": [
+      "포르토",
+      "oporto"
+    ],
+    "attractions": [
+      {
+        "name": "루이스 1세 다리",
+        "name_en": "Dom Luís I Bridge",
+        "kind": "landmark",
+        "lat": 41.14,
+        "lng": -8.6096
+      },
+      {
+        "name": "리베이라",
+        "name_en": "Ribeira Porto",
+        "kind": "neighborhood",
+        "lat": 41.1406,
+        "lng": -8.612
+      },
+      {
+        "name": "클레리구스 탑",
+        "name_en": "Clérigos Tower",
+        "kind": "viewpoint",
+        "lat": 41.1457,
+        "lng": -8.6144
+      },
+      {
+        "name": "상벤투 역",
+        "name_en": "São Bento Station",
+        "kind": "landmark",
+        "lat": 41.1456,
+        "lng": -8.6105
+      },
+      {
+        "name": "리벨류 서점",
+        "name_en": "Livraria Lello",
+        "kind": "landmark",
+        "lat": 41.1469,
+        "lng": -8.6147
+      },
+      {
+        "name": "포르투 대성당",
+        "name_en": "Porto Cathedral",
+        "kind": "landmark",
+        "lat": 41.1428,
+        "lng": -8.6113
+      },
+      {
+        "name": "빌라 노바 드 가이아",
+        "name_en": "Vila Nova de Gaia",
+        "kind": "neighborhood",
+        "lat": 41.1335,
+        "lng": -8.617
+      }
+    ]
+  },
+  {
+    "hubId": "brussels",
+    "name": "브뤼셀",
+    "name_en": "Brussels",
+    "country": "벨기에",
+    "country_en": "Belgium",
+    "lat": 50.8503,
+    "lng": 4.3517,
+    "aliases": [
+      "브루셀",
+      "bruxelles"
+    ],
+    "attractions": [
+      {
+        "name": "그랑플라스",
+        "name_en": "Grand Place Brussels",
+        "kind": "landmark",
+        "lat": 50.8467,
+        "lng": 4.3525
+      },
+      {
+        "name": "아토미움",
+        "name_en": "Atomium",
+        "kind": "landmark",
+        "lat": 50.8949,
+        "lng": 4.341
+      },
+      {
+        "name": "마네켄피스",
+        "name_en": "Manneken Pis",
+        "kind": "landmark",
+        "lat": 50.8449,
+        "lng": 4.3499
+      },
+      {
+        "name": "갤러리 생 위베르",
+        "name_en": "Galeries Royales Saint-Hubert",
+        "kind": "landmark",
+        "lat": 50.8475,
+        "lng": 4.3547
+      },
+      {
+        "name": "미니유럽",
+        "name_en": "Mini-Europe",
+        "kind": "park",
+        "lat": 50.8942,
+        "lng": 4.3387
+      },
+      {
+        "name": "생미셸 대성당",
+        "name_en": "Cathedral of St. Michael and St. Gudula",
+        "kind": "landmark",
+        "lat": 50.8477,
+        "lng": 4.3572
+      },
+      {
+        "name": "브뤼셀 왕궁 공원",
+        "name_en": "Brussels Park",
+        "kind": "park",
+        "lat": 50.8445,
+        "lng": 4.3638
+      }
+    ]
+  },
+  {
+    "hubId": "copenhagen",
+    "name": "코펜하겐",
+    "name_en": "Copenhagen",
+    "country": "덴마크",
+    "country_en": "Denmark",
+    "lat": 55.6761,
+    "lng": 12.5683,
+    "aliases": [
+      "코펜하겐시",
+      "københavn",
+      "kopenhagen"
+    ],
+    "attractions": [
+      {
+        "name": "인어공주 동상",
+        "name_en": "The Little Mermaid",
+        "kind": "landmark",
+        "lat": 55.6929,
+        "lng": 12.5993
+      },
+      {
+        "name": "티볼리 공원",
+        "name_en": "Tivoli Gardens",
+        "kind": "park",
+        "lat": 55.6736,
+        "lng": 12.5681
+      },
+      {
+        "name": "니하운",
+        "name_en": "Nyhavn",
+        "kind": "neighborhood",
+        "lat": 55.6797,
+        "lng": 12.5907
+      },
+      {
+        "name": "크리스티안스보르 궁전",
+        "name_en": "Christiansborg Palace",
+        "kind": "landmark",
+        "lat": 55.6764,
+        "lng": 12.5806
+      },
+      {
+        "name": "라운드 타워",
+        "name_en": "Round Tower Copenhagen",
+        "kind": "viewpoint",
+        "lat": 55.6814,
+        "lng": 12.5758
+      },
+      {
+        "name": "자유도시 크리스티아니아",
+        "name_en": "Freetown Christiania",
+        "kind": "neighborhood",
+        "lat": 55.6736,
+        "lng": 12.601
+      },
+      {
+        "name": "아말리엔보르 궁전",
+        "name_en": "Amalienborg",
+        "kind": "landmark",
+        "lat": 55.684,
+        "lng": 12.593
+      }
+    ]
+  },
+  {
+    "hubId": "dublin",
+    "name": "더블린",
+    "name_en": "Dublin",
+    "country": "아일랜드",
+    "country_en": "Ireland",
+    "lat": 53.3498,
+    "lng": -6.2603,
+    "aliases": [
+      "더블린시"
+    ],
+    "attractions": [
+      {
+        "name": "트리니티 칼리지",
+        "name_en": "Trinity College Dublin",
+        "kind": "landmark",
+        "lat": 53.3438,
+        "lng": -6.2546
+      },
+      {
+        "name": "템플바",
+        "name_en": "Temple Bar Dublin",
+        "kind": "neighborhood",
+        "lat": 53.3454,
+        "lng": -6.2641
+      },
+      {
+        "name": "더블린 성",
+        "name_en": "Dublin Castle",
+        "kind": "landmark",
+        "lat": 53.3429,
+        "lng": -6.2674
+      },
+      {
+        "name": "기네스 스토어하우스",
+        "name_en": "Guinness Storehouse",
+        "kind": "museum",
+        "lat": 53.3419,
+        "lng": -6.2867
+      },
+      {
+        "name": "피닉스 공원",
+        "name_en": "Phoenix Park",
+        "kind": "park",
+        "lat": 53.3559,
+        "lng": -6.3298
+      },
+      {
+        "name": "세인트 패트릭 대성당",
+        "name_en": "St Patrick's Cathedral Dublin",
+        "kind": "landmark",
+        "lat": 53.3395,
+        "lng": -6.2714
+      },
+      {
+        "name": "하프니 다리",
+        "name_en": "Ha'penny Bridge",
+        "kind": "landmark",
+        "lat": 53.3463,
+        "lng": -6.263
+      }
+    ]
+  },
+  {
+    "hubId": "hamyang",
+    "name": "함양",
+    "name_en": "Hamyang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.5204,
+    "lng": 127.7252,
+    "aliases": [
+      "함양군"
+    ],
+    "attractions": [
+      {
+        "name": "상림공원",
+        "name_en": "Sangrim Park",
+        "kind": "park",
+        "lat": 35.521,
+        "lng": 127.725
+      },
+      {
+        "name": "남계서원",
+        "name_en": "Namgye Seowon",
+        "kind": "landmark",
+        "lat": 35.48,
+        "lng": 127.78
+      },
+      {
+        "name": "함양 개평한옥마을",
+        "name_en": "Gaepyeong Hanok Village",
+        "kind": "neighborhood",
+        "lat": 35.52,
+        "lng": 127.75
+      },
+      {
+        "name": "지리산 벽송사",
+        "name_en": "Byeoksongsa Temple",
+        "kind": "temple",
+        "lat": 35.4,
+        "lng": 127.65
+      },
+      {
+        "name": "함양 대봉산 휴양밸리",
+        "name_en": "Daebongsan Recreation Valley",
+        "kind": "park",
+        "lat": 35.58,
+        "lng": 127.68
+      },
+      {
+        "name": "함양 지안재",
+        "name_en": "Hamyang Jianjae",
+        "kind": "viewpoint",
+        "lat": 35.55,
+        "lng": 127.7
+      },
+      {
+        "name": "함양 출렁다리",
+        "name_en": "Hamyang Suspension Bridge",
+        "kind": "viewpoint",
+        "lat": 35.58,
+        "lng": 127.69
+      }
+    ]
+  },
+  {
+    "hubId": "sancheong",
+    "name": "산청",
+    "name_en": "Sancheong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.4154,
+    "lng": 127.8735,
+    "aliases": [
+      "산청군"
+    ],
+    "attractions": [
+      {
+        "name": "산청 황매산",
+        "name_en": "Hwangmaesan Mountain",
+        "kind": "viewpoint",
+        "lat": 35.48,
+        "lng": 127.97
+      },
+      {
+        "name": "남사예담촌",
+        "name_en": "Namsa Yedamchon",
+        "kind": "neighborhood",
+        "lat": 35.35,
+        "lng": 127.88
+      },
+      {
+        "name": "산청 동의보감촌",
+        "name_en": "Sancheong Donguibogam Village",
+        "kind": "park",
+        "lat": 35.42,
+        "lng": 127.85
+      },
+      {
+        "name": "지리산 대원사",
+        "name_en": "Daewonsa Temple Jirisan",
+        "kind": "temple",
+        "lat": 35.35,
+        "lng": 127.75
+      },
+      {
+        "name": "산청 경호강",
+        "name_en": "Gyeongho River",
+        "kind": "park",
+        "lat": 35.41,
+        "lng": 127.87
+      },
+      {
+        "name": "산청 박물관",
+        "name_en": "Sancheong Museum",
+        "kind": "museum",
+        "lat": 35.415,
+        "lng": 127.873
+      },
+      {
+        "name": "산청 한방테마파크",
+        "name_en": "Sancheong Herbal Theme Park",
+        "kind": "park",
+        "lat": 35.42,
+        "lng": 127.86
+      }
+    ]
+  },
+  {
+    "hubId": "goheung",
+    "name": "고흥",
+    "name_en": "Goheung",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.6112,
+    "lng": 127.2847,
+    "aliases": [
+      "고흥군",
+      "나로도"
+    ],
+    "attractions": [
+      {
+        "name": "나로우주센터",
+        "name_en": "Naro Space Center",
+        "kind": "landmark",
+        "lat": 34.431,
+        "lng": 127.535
+      },
+      {
+        "name": "고흥 우주발사전망대",
+        "name_en": "Goheung Space Launch Observatory",
+        "kind": "viewpoint",
+        "lat": 34.44,
+        "lng": 127.53
+      },
+      {
+        "name": "고흥 팔영산",
+        "name_en": "Palyongsan Mountain",
+        "kind": "viewpoint",
+        "lat": 34.66,
+        "lng": 127.45
+      },
+      {
+        "name": "고흥 녹동항",
+        "name_en": "Nokdong Port",
+        "kind": "landmark",
+        "lat": 34.525,
+        "lng": 127.13
+      },
+      {
+        "name": "고흥 유자공원",
+        "name_en": "Goheung Yuzu Park",
+        "kind": "park",
+        "lat": 34.61,
+        "lng": 127.28
+      },
+      {
+        "name": "고흥 소록도",
+        "name_en": "Sorokdo Island",
+        "kind": "landmark",
+        "lat": 34.51,
+        "lng": 127.12
+      },
+      {
+        "name": "고흥 남열해돋이해수욕장",
+        "name_en": "Namyeol Sunrise Beach",
+        "kind": "beach",
+        "lat": 34.55,
+        "lng": 127.45
+      }
+    ]
+  },
+  {
+    "hubId": "jangheung",
+    "name": "장흥",
+    "name_en": "Jangheung",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.6816,
+    "lng": 126.907,
+    "aliases": [
+      "장흥군"
+    ],
+    "attractions": [
+      {
+        "name": "장흥 정남진",
+        "name_en": "Jeongnamjin",
+        "kind": "landmark",
+        "lat": 34.68,
+        "lng": 126.92
+      },
+      {
+        "name": "장흥 편백숲 우드랜드",
+        "name_en": "Jangheung Woodland",
+        "kind": "park",
+        "lat": 34.68,
+        "lng": 126.95
+      },
+      {
+        "name": "장흥 토요시장",
+        "name_en": "Jangheung Saturday Market",
+        "kind": "market",
+        "lat": 34.682,
+        "lng": 126.907
+      },
+      {
+        "name": "장흥 탐진강",
+        "name_en": "Tamjingang River",
+        "kind": "park",
+        "lat": 34.68,
+        "lng": 126.91
+      },
+      {
+        "name": "장흥 보림사",
+        "name_en": "Borimsa Temple",
+        "kind": "temple",
+        "lat": 34.72,
+        "lng": 126.88
+      },
+      {
+        "name": "장흥 회진 문학관",
+        "name_en": "Hoejin Literature Museum",
+        "kind": "museum",
+        "lat": 34.55,
+        "lng": 126.95
+      },
+      {
+        "name": "장흥 수문해수욕장",
+        "name_en": "Sumun Beach",
+        "kind": "beach",
+        "lat": 34.55,
+        "lng": 127
+      }
+    ]
+  },
+  {
+    "hubId": "gurye",
+    "name": "구례",
+    "name_en": "Gurye",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.2024,
+    "lng": 127.4627,
+    "aliases": [
+      "구례군"
+    ],
+    "attractions": [
+      {
+        "name": "구례 화엄사",
+        "name_en": "Hwaeomsa Temple",
+        "kind": "temple",
+        "lat": 35.24,
+        "lng": 127.5
+      },
+      {
+        "name": "구례 섬진강",
+        "name_en": "Seomjingang River Gurye",
+        "kind": "park",
+        "lat": 35.2,
+        "lng": 127.46
+      },
+      {
+        "name": "구례 사성암",
+        "name_en": "Saseongam Hermitage",
+        "kind": "temple",
+        "lat": 35.22,
+        "lng": 127.48
+      },
+      {
+        "name": "구례 오산",
+        "name_en": "Osan Mountain Gurye",
+        "kind": "viewpoint",
+        "lat": 35.22,
+        "lng": 127.47
+      },
+      {
+        "name": "구례 지리산 온천",
+        "name_en": "Jirisan Hot Springs Gurye",
+        "kind": "landmark",
+        "lat": 35.25,
+        "lng": 127.48
+      },
+      {
+        "name": "구례 천은사",
+        "name_en": "Cheoneunsa Temple",
+        "kind": "temple",
+        "lat": 35.28,
+        "lng": 127.52
+      },
+      {
+        "name": "구례 수목원",
+        "name_en": "Gurye Arboretum",
+        "kind": "park",
+        "lat": 35.24,
+        "lng": 127.49
+      }
+    ]
   }
 ]

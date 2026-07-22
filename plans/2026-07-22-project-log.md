@@ -323,21 +323,35 @@
 - hub 스모크: `리스본`/`lisboa`/`부다페스트`/`아테네`/`취리히`/`에든버러`/`에딘버러`/`남원`/`거창`/`완도`/`진도`/`영주` + 회귀(마드리드·속초·파리)
 - exact: `벨렘탑`/`아크로폴리스`/`파르테논 신전`/`에든버러 성`/`광한루원`/`부석사`/`소수서원`/`수승대`/`완도타워`/`운림산방`
 
+## cityAttractionHubs — 세비야·포르투·브뤼셀·코펜하겐·더블린 + 국내 5 (#15)
+
+**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+
+- **브랜치**: `cursor/city-attraction-batch15-7299` = #14 tip **위 append**
+- 한 배치 **10 hub × 7명소** (#14 핸드오프 「다음 후보」+ 코펜하겐·더블린·구례)
+- 해외: `seville`(alias **`sevilla`**) · `porto`(alias **`포르토`**/`oporto`) · `brussels`(alias **`브루셀`**/`bruxelles`) · `copenhagen`(alias **`københavn`**) · `dublin`
+- 국내: `hamyang` · `sancheong` · `goheung`(alias **`나로도`**) · `jangheung` · `gurye`
+- 총 **100 hub** · 명소 **680** · shrine KIND_LABEL 유지 · 시드 intact
+- 주의: 세비야 `플라자 데 에스파냐`는 마드리드 Plaza Mayor와 분리 · 구례 화엄사·섬진강은 **`구례` 접두**(타 권역 혼동 방지)
+- hub 스모크: `세비야`/`sevilla`/`포르투`/`포르토`/`브뤼셀`/`브루셀`/`코펜하겐`/`더블린`/`함양`/`산청`/`고흥`/`나로도`/`장흥`/`구례` + 회귀(리스본·남원·속초·파리)
+- exact: `세비야 대성당`/`히랄다 탑`/`리벨류 서점`/`아토미움`/`인어공주 동상`/`기네스 스토어하우스`/`상림공원`/`남사예담촌`/`나로우주센터`/`장흥 편백숲 우드랜드`/`구례 화엄사`
+
 ### PR 머지 순서
 
 | 순서 | PR | 비고 |
 |------|-----|------|
 | ✅ | **#13** | squash → main. #6~#12 포함 |
-| 다음 | **본 배치(#14)** | #13 tip 위 10 hub |
+| 다음 | **#14** | #13 tip 위 10 hub |
+| 다음 | **본 배치(#15)** | #14 tip 위 10 hub. 단독 머지 시 #14 포함 |
 | — | #4~#12 | #13에 흡수 · **데스크톱에서 draft 닫기** |
 
-### 현재 hub 맵 (90)
+### 현재 hub 맵 (100)
 
 | 구분 | hubId |
 |------|-------|
 | 시드 | `sokcho` · `paris` |
-| 국내 | …(기존 44) · **`namwon`** · **`geochang`** · **`wando`** · **`jindo`** · **`yeongju`** |
-| 해외 | …(기존 35) · **`lisbon`** · **`budapest`** · **`athens`** · **`zurich`** · **`edinburgh`** |
+| 국내 | …(기존 49) · **`hamyang`** · **`sancheong`** · **`goheung`** · **`jangheung`** · **`gurye`** |
+| 해외 | …(기존 40) · **`seville`** · **`porto`** · **`brussels`** · **`copenhagen`** · **`dublin`** |
 
 - **제주**: `jeju`(제주시) / `seogwipo`(서귀포) **분리**. alias `제주`·`제주도` → 제주시. 성산·중문·천지연 등은 서귀포.
 - **고성**: `goseong` = **강원 고성**(화진포·DMZ). 경남 고성과 혼동 주의.
@@ -358,9 +372,9 @@
 ```bash
 node --input-type=module -e "
 import { resolveCityAttractionHub, resolveHubAttraction, getKindLabel, listCityAttractionHubs } from './src/pages/Home/lib/cityAttractionHubs.js';
-console.log(listCityAttractionHubs().length); // 90
-const hubs = ['리스본','lisboa','부다페스트','아테네','취리히','에든버러','남원','거창','완도','진도','영주','마드리드','속초','파리'];
-const exact = ['벨렘탑','아크로폴리스','에든버러 성','광한루원','부석사','소수서원','수승대','완도타워','운림산방','낙산사'];
+console.log(listCityAttractionHubs().length); // 100
+const hubs = ['세비야','sevilla','포르투','포르토','브뤼셀','브루셀','코펜하겐','더블린','함양','산청','고흥','나로도','장흥','구례','리스본','속초','파리'];
+const exact = ['세비야 대성당','히랄다 탑','리벨류 서점','아토미움','인어공주 동상','기네스 스토어하우스','상림공원','남사예담촌','나로우주센터','장흥 편백숲 우드랜드','구례 화엄사','낙산사'];
 for (const q of hubs) console.log('hub', q, !!resolveCityAttractionHub(q));
 for (const q of exact) console.log('exact', q, !!resolveHubAttraction(q));
 console.log('shrine', getKindLabel('shrine')); // 신사
@@ -369,11 +383,11 @@ console.log('shrine', getKindLabel('shrine')); // 신사
 
 ### 에이전트 핸드오프 (명소-이어하기)
 
-- **읽을 것 3**: 본 절「#14」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
+- **읽을 것 3**: 본 절「#15」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
 - **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · UI/Mapbox 동기화 무단
 - **다음 작업 (사용자 선택)**:
-  1. **머지**: 본 배치(#14) · draft **#4~#12 닫기**(데스크톱)
-  2. **다음 배치**(8~12 hub): 예) 세비야·포르투·브뤼셀 · 국내 함양·산청·고흥·장흥 등 미등록
-  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `lisboa`→리스본 · `에딘버러`→에든버러 · `부석사` exact · 모바일 키보드
+  1. **머지**: #14 → 본 배치(#15) · draft **#4~#12 닫기**(데스크톱)
+  2. **다음 배치**(8~12 hub): 예) 스톡홀름·헬싱키·오슬로 · 국내 합천·하동(기등록 제외)·곡성·영광 등 미등록
+  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `sevilla`→세비야 · `나로도`→고흥 · `구례 화엄사` exact · 모바일 키보드
   4. 릴리스 노트는 **합의 후**만
-- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#14 tip 위 append)」 / 「#14 머지부터」
+- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#15 tip 위 append)」 / 「#14→#15 머지부터」
