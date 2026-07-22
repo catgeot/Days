@@ -1,0 +1,314 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-07-22T03:37:03.566Z",
+    "spotCount": 20,
+    "source": "scripts/data/stay-agency-link-overrides.mjs"
+  },
+  "spots": {
+    "antarctica": {
+      "note": "남극은 일반 OTA 숙소가 없습니다. IAATO 회원 운항사·인가 오퍼레이터를 통해 루트를 잡으세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "IAATO 회원 디렉터리",
+          "href": "https://iaato.org/about-us/member-directory",
+          "kind": "local-dmc",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "International Association of Antarctica Tour Operators — 인가 운항·에이전시 공식 멤버십 디렉터리"
+        }
+      ]
+    },
+    "pitcairn-islands": {
+      "note": "핏케언은 정기 OTA 숙소가 거의 없습니다. 공식 관광 안내로 입도·선박 일정을 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Visit Pitcairn (공식)",
+          "href": "https://www.visitpitcairn.pn/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Pitcairn Islands Government Tourism Department 공식 사이트"
+        }
+      ]
+    },
+    "nauru": {
+      "note": "나우루는 OTA 숙소 재고가 거의 없습니다. 공식 방문·비자 안내와 국적 항공사로 입도 루트를 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "나우루 정부 — 방문 안내",
+          "href": "https://www.nauru.gov.nr/about-nauru/visiting-nauru.aspx",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Government of the Republic of Nauru (.gov.nr) Visiting Nauru — 2026-07-22 HTTP 200 · UTM 없이 연결(쿼리 시 403)"
+        },
+        {
+          "name": "나우루 정부 — 비자",
+          "href": "https://www.nauru.gov.nr/about-nauru/visiting-nauru/visa-requirements.aspx",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Nauru.gov.nr Visa Requirements — 사전 비자 필수 공식 안내"
+        },
+        {
+          "name": "Nauru Airlines",
+          "href": "https://www.nauruair.com/",
+          "kind": "local-dmc",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "나우루 국적 항공사 공식 사이트 — 입도 항공 루트(관광공사 naurutourism.com.nr는 DNS NXDOMAIN으로 철회)"
+        }
+      ]
+    },
+    "tonga": {
+      "note": "통가는 OTA 재고가 적을 수 있습니다. Tonga Tourism Authority 공식 안내로 섬·숙소 루트를 넓혀 보세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Tonga Tourism Authority",
+          "href": "https://www.tongatourism.travel/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Tonga Tourism Authority 공식 사이트 (tongatourism.travel) · Privacy Policy에 운영 주체 명시"
+        }
+      ]
+    },
+    "kiribati": {
+      "note": "키리바시는 OTA 숙소가 거의 없습니다. 국가 관광청 안내로 섬·숙소·일정을 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Kiribati National Tourism Office",
+          "href": "https://www.kiribatitourism.gov.ki/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Kiribati National Tourism Office — .gov.ki 공식 도메인"
+        }
+      ]
+    },
+    "yap": {
+      "note": "야프는 OTA 재고가 거의 없습니다. Yap Visitors Bureau 공식 안내로 숙소·투어를 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Yap Visitors Bureau",
+          "href": "https://www.visityap.com/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Yap Visitors Bureau (FSM Yap State) 공식 사이트 · Copyright Yap Visitors Bureau"
+        }
+      ]
+    },
+    "chuuk": {
+      "note": "추크는 OTA 숙소 매칭이 어렵습니다. Chuuk Visitors Bureau 공식 안내로 루트를 잡으세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Chuuk Visitors Bureau",
+          "href": "https://visitchuuk.com/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Chuuk Visitors Bureau — Chuuk State(FSM) 공식 관광 기관"
+        }
+      ]
+    },
+    "pohnpei": {
+      "note": "폰페이는 OTA보다 주 관광청 안내로 숙소·일정을 잡는 경우가 많습니다.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Visit Pohnpei",
+          "href": "https://visitpohnpei.travel/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Pohnpei Tourism Office (Pohnpei State Government) 공식 가이드"
+        }
+      ]
+    },
+    "kosrae": {
+      "note": "코스라에는 OTA 재고가 적을 수 있습니다. Kosrae Visitor Bureau 공식 안내를 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Kosrae Visitor Bureau",
+          "href": "https://visitkosrae.com/index.php/en/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Kosrae Visitor Bureau 공식 사이트 (Visit Kosrae)"
+        }
+      ]
+    },
+    "samoa": {
+      "note": "사모아는 OTA와 함께 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Samoa Tourism (공식)",
+          "href": "https://www.samoa.travel/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Samoa Tourism Authority 공식 여행 가이드 (samoa.travel)"
+        }
+      ]
+    },
+    "christmas-island": {
+      "note": "크리스마스섬은 OTA 매칭이 어렵습니다. 공식 관광협회·국립공원 안내로 입도·일정을 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Christmas Island Tourism",
+          "href": "https://www.christmas.net.au/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Christmas Island Tourism Association (CITA) 공식 사이트"
+        },
+        {
+          "name": "Parks Australia — Christmas Island",
+          "href": "https://christmasislandnationalpark.gov.au/plan/plan-your-trip/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Parks Australia Christmas Island National Park — Plan your trip"
+        }
+      ]
+    },
+    "cocos-islands": {
+      "note": "코코스제도는 OTA 재고가 거의 없습니다. 공식 관광 안내로 입도·숙소 루트를 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Cocos Keeling Islands",
+          "href": "https://cocoskeelingislands.com.au/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Cocos (Keeling) Islands 공식 관광 사이트 · Tourism Australia 가이드와도 연동"
+        }
+      ]
+    },
+    "vanuatu": {
+      "note": "바누아투는 OTA와 함께 Vanuatu Tourism Office 공식 안내로 섬·숙소 루트를 넓혀 보세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Vanuatu Tourism Office",
+          "href": "https://www.vanuatu.travel/en/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Vanuatu Tourism Office 공식 사이트 (vanuatu.travel)"
+        }
+      ]
+    },
+    "palau": {
+      "note": "팔라우는 OTA와 함께 Palau Visitors Authority 공식 안내를 함께 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Visit Palau (공식)",
+          "href": "https://pristineparadisepalau.com/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Palau Visitors Authority 공식 관광 사이트 (Pristine Paradise Palau)"
+        }
+      ]
+    },
+    "rarotonga": {
+      "note": "라로통가(쿡 제도)는 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Cook Islands Tourism",
+          "href": "https://cookislands.travel/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Cook Islands Tourism 공식 사이트 (cookislands.travel)"
+        }
+      ]
+    },
+    "svalbard": {
+      "note": "스발바르는 극지 특성상 공식 Visit Svalbard 안내로 숙소·일정을 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Visit Svalbard",
+          "href": "https://www.visitsvalbard.com/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Visit Svalbard — 스발바르 공식 관광 포털"
+        }
+      ]
+    },
+    "faroe-islands": {
+      "note": "페로 제도는 공식 Visit Faroe Islands 안내로 섬·숙소 루트를 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Visit Faroe Islands",
+          "href": "https://visitfaroeislands.com/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Visit Faroe Islands 공식 관광 사이트"
+        }
+      ]
+    },
+    "falkland-islands": {
+      "note": "포클랜드 제도는 OTA 재고가 제한적일 수 있습니다. 공식 관광 안내를 확인하세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Falkland Islands Tourist Board",
+          "href": "https://www.falklandislands.com/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Falkland Islands Tourist Board 공식 사이트 (IAATO Associate에도 등재)"
+        }
+      ]
+    },
+    "greenland": {
+      "note": "그린란드는 공식 Visit Greenland 안내로 지역·숙소 루트를 넓혀 보세요.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Visit Greenland",
+          "href": "https://visitgreenland.com/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Visit Greenland 공식 관광 사이트"
+        }
+      ]
+    },
+    "solomon-islands": {
+      "note": "솔로몬 제도는 OTA보다 공식 관광청 안내로 섬·숙소 루트를 잡는 경우가 많습니다.",
+      "confidence": "high",
+      "links": [
+        {
+          "name": "Solomon Islands Visitors Bureau",
+          "href": "https://www.visitsolomons.com.sb/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Solomon Islands Visitors Bureau 공식 사이트 (visitsolomons.com.sb)"
+        }
+      ]
+    }
+  }
+}

@@ -7,7 +7,8 @@ import { isPlaceholderCountry } from './travelSpotResolve.js';
 /**
  * 동명·오탐·미매칭 slug — 1차 키워드·대안·(선택) 국가 힌트 덮어쓰기.
  * countryHint/countryHintAlts: gateo country가 MRT subName과 다를 때(홍콩 country=중국 등).
- * @type {Record<string, { keyword?: string, altKeywords?: string[], countryHint?: string, countryHintAlts?: string[] }>}
+ * ignoreStayAdmin: 역지오 stayAdmin(관문 도시 등)이 키워드·cityHints에 섞이지 않게 — 오지·외부영토.
+ * @type {Record<string, { keyword?: string, altKeywords?: string[], countryHint?: string, countryHintAlts?: string[], ignoreStayAdmin?: boolean }>}
  */
 const MRT_STAY_KEYWORD_OVERRIDES = {
   palau: { keyword: '코로르', altKeywords: ['Koror', '팔라우'] },
@@ -136,6 +137,27 @@ const MRT_STAY_KEYWORD_OVERRIDES = {
     altKeywords: ['Marrakech', 'Marrakesh', '사하라'],
     countryHint: '모로코',
     countryHintAlts: ['Morocco', '사하라'],
+  },
+  /**
+   * 호주령 크리스마스섬 — 항공 관문 PER이 stayAdmin/cityHints에 섞이면 퍼스 숙소 오탐.
+   * 섬 정착지 Flying Fish Cove만 검색 · 미매칭 시 empty(공식 안내 SSOT).
+   */
+  'christmas-island': {
+    keyword: 'Flying Fish Cove',
+    altKeywords: ['플라잉피시코브', '크리스마스섬', 'Christmas Island'],
+    countryHint: '호주',
+    countryHintAlts: ['Australia', 'Christmas Island', '크리스마스섬'],
+    ignoreStayAdmin: true,
+  },
+  /**
+   * 호주령 코코스(킬링) — 동일하게 PER 관문 오탐 방지 · 웨스트 아일랜드 허브.
+   */
+  'cocos-islands': {
+    keyword: 'West Island',
+    altKeywords: ['웨스트아일랜드', '코코스제도', 'Cocos Keeling', 'Cocos Islands'],
+    countryHint: '호주',
+    countryHintAlts: ['Australia', 'Cocos', '코코스'],
+    ignoreStayAdmin: true,
   },
 };
 
@@ -343,9 +365,12 @@ export function resolveMrtStayQuery(location) {
     isDomestic,
   );
   const countryEn = String(location?.country_en || '').trim();
-  const admin = location?.stayAdmin && typeof location.stayAdmin === 'object'
-    ? location.stayAdmin
-    : {};
+  const rawAdmin =
+    location?.stayAdmin && typeof location.stayAdmin === 'object'
+      ? location.stayAdmin
+      : {};
+  /** 오지·외부영토 — 관문 도시(퍼스 등) stayAdmin이 퍼스 숙소로 새지 않게 */
+  const admin = override?.ignoreStayAdmin ? {} : rawAdmin;
 
   const ladder = [];
   const seen = new Set();

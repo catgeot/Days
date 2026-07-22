@@ -467,13 +467,18 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   fiji: '791',
   /** 팔라우 — 코로르 */
   palau: '5780',
+  /**
+   * 코코스(킬링) — 웨스트 아일랜드.
+   * city 없으면 직전 세션(통가 등) 잔존 · sparse 유지(재고 극소·예약 어려움)
+   */
+  'cocos-islands': '77705',
 };
 
 /**
  * MRT·Trip 모두 일반 호텔 재고가 사실상 없거나 CTA 오매핑 위험 — empty UX 기대치 하향.
  * (군사·무인·크루즈/연구 · 오매핑 city · 예약 불가 단건 등)
- * QA 2026-07-22: christmas `93327` 오매핑 · chuuk/cocos · persepolis(시라즈 포함 Trip 0) · timbuktu
- * · nauru/kiribati/yap — 허브 city 확정·목록 0 (상세 페이지 잔존 가능, 예약 목록 없음)
+ * QA 2026-07-22: christmas `93327` 오매핑 · chuuk · persepolis(시라즈 포함 Trip 0) · timbuktu
+ * · nauru/kiribati/yap/cocos — 허브 city 확정·목록 0~극소 (세션 잔존 방지용 city 유지)
  */
 export const TRIPCOM_HOTEL_SPARSE_INVENTORY_SLUGS = new Set([
   'antarctica',

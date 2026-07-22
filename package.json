@@ -30,6 +30,8 @@
     "audit:ferries": "node scripts/audit-ferry-routes.mjs",
     "generate:airports": "node scripts/generate-travel-spot-airports.mjs",
     "generate:flights": "node scripts/generate-travel-spot-flight-bookings.mjs",
+    "generate:stay-agencies": "node scripts/generate-travel-spot-stay-agency-links.mjs",
+    "audit:stay-agencies": "node scripts/audit-stay-agency-links.mjs",
     "sync:airports-from-toolkit": "node scripts/sync-travel-spot-airports-from-toolkit.mjs",
     "enrich:airports": "node scripts/enrich-travel-spot-airports-ai.mjs",
     "toolkit:audit-place-id": "node scripts/audit-place-toolkit-place-id.mjs",

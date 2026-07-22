@@ -84,9 +84,19 @@
 - sparse UX: 극지 5 + `chuuk` · `christmas-island` · `cocos-islands` · `persepolis` · `timbuktu` + **`nauru`·`kiribati`·`yap`**(Trip 목록 0·city 유지)
 - `persepolis`: 시라즈 hub city 철회(Trip 실재고 0) · empty는 당일 투어 안내 + OTA 한계 문구
 
-### 에이전트 핸드오프 (다음 세션 — 숙소 city ID)
+## 숙소 empty/저재고 — 인증 여행사·안내 링크
 
-- **읽을 것**: 태평양 배치 표 · `.ai-context` 5절 · `affiliate.js` city/sparse · `npm run audit:tripcom-hotel-city-gaps`
-- **금지**: Trip.com 호텔 목록 스크래핑·가짜 API · 숙소 확장창 상시 iframe · `VITE_` MRT 키 · **검증 안 된·오매핑 city ID 등록** · 272곳 수동 클릭
-- **다음 작업**: gap MD의 비태평양 CTA 후보만 공개 URL로 배치 (전수 클릭 X)
-- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md`
+**상태**: ✅ 커밋 · **다음 세션 QA**(관광청 링크 전수·숙소 이어하기)
+
+- SSOT: `scripts/data/stay-agency-link-overrides.mjs` → `npm run generate:stay-agencies` → `travelSpotStayAgencyLinks.json`
+- 런타임: `src/utils/stayAgencyLinks.js` · UI: `GlobeStayStrip` empty/error + 저재고 footer (공식 화이트 카드 1순위 · Trip 보조 CTA)
+- 시드 **20**: 남극·핏케언·나우루·통가·키리바시·야프·추크·폰페이·코스라에·사모아 · 크리스마스·코코스·바누아투·팔라우·라로통가·스발바르·페로·포클랜드·그린란드·솔로몬
+- 나우루: 죽은 `.nr` 관광사·`.gov` UTM 403 수정 · 코코스 Trip **`77705`** · 크리스마스/코코스 MRT `ignoreStayAdmin`(퍼스 오탐) · 캐시 `v12`
+- `npm run audit:stay-agencies` ✅ · 릴리스 노트는 합의 후 `releaseNotes.js`
+
+### 에이전트 핸드오프 (다음 세션 — 숙소·관광청 QA)
+
+- **읽을 것 3**: 본 절 · `.ai-context` 5절 · `stay-agency-link-overrides.mjs` / `affiliate.js` city·sparse
+- **금지 3**: 미검증 여행사 URL · Trip 호텔 스크래핑 · 검증 안 된 city ID · `VITE_` MRT 키
+- **다음 작업**: 시드 20곳 empty/저재고에서 공식 링크·Trip CTA QA · 잔여 sparse(`chuuk` city 등) · gap MD 비태평양 city 후보
+- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「관광청 링크 QA부터」

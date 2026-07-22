@@ -7,6 +7,7 @@ import {
   CalendarDays,
   ChevronDown,
   ChevronLeft,
+  ExternalLink,
   LayoutGrid,
   Loader2,
   MapPin,
@@ -31,6 +32,12 @@ import {
   buildTripcomHotelSearchUrl,
   getTripcomHotelEmptyCopy,
 } from '../../../utils/affiliate';
+import {
+  STAY_AGENCY_DISCLAIMER,
+  getStayAgencyKindLabel,
+  resolveStayAgencyProfile,
+  withStayAgencyReferral,
+} from '../../../utils/stayAgencyLinks';
 import {
   getPartnerLinkTarget,
   getTripcomLinkRel,
@@ -495,23 +502,118 @@ function StayListToolbar({
   );
 }
 
-/** MRT 저재고(≤5) — 목록 하단 Trip.com 안내 */
-function StayLowInventoryFooter({ href, linkTarget, linkRel, ctaClassName }) {
-  if (!href) return null;
+/** 공신력 있는 관광청·여행사 안내 링크 — 신뢰(중립 화이트) · 큰 탭 영역 · Trip CTA와 구분 */
+function StayAgencyGuideLinks({
+  profile,
+  linkTarget,
+  linkRel,
+  compact = false,
+  className = '',
+}) {
+  if (!profile?.links?.length) return null;
+  const titleClass = compact
+    ? 'break-keep text-[11px] font-semibold tracking-wide text-slate-100/90'
+    : 'break-keep text-[13px] font-semibold tracking-wide text-slate-100';
+  const linkClass = compact
+    ? 'group flex w-full min-h-[44px] items-center gap-2.5 rounded-xl border border-slate-200/90 bg-white px-3.5 py-2.5 text-left text-slate-800 shadow-sm transition-colors hover:bg-slate-50 active:bg-slate-100'
+    : 'group flex w-full min-h-[48px] items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-4 py-3 text-left text-slate-800 shadow-sm transition-colors hover:bg-slate-50 active:bg-slate-100';
+
   return (
-    <div className="mt-4 flex flex-col items-center gap-2.5 rounded-xl border border-sky-300/25 bg-sky-500/10 px-3 py-4 text-center">
-      <p className="break-keep text-[12px] font-medium leading-relaxed text-white/75">
-        이 지역은 마이리얼트립 재고가 적어요. 트립닷컴도 함께 확인해 보세요
+    <div
+      className={`flex w-full max-w-sm flex-col items-stretch gap-2.5 ${className}`.trim()}
+    >
+      <p className={`${titleClass} text-center`}>공식·인가 안내</p>
+      <div className="flex w-full flex-col gap-2">
+        {profile.links.map((link) => {
+          const kindLabel = getStayAgencyKindLabel(link.kind);
+          return (
+            <a
+              key={`${link.kind}:${link.href}`}
+              href={withStayAgencyReferral(link.href)}
+              target={linkTarget}
+              rel={linkRel}
+              onClick={(e) => e.stopPropagation()}
+              className={linkClass}
+              aria-label={`${link.name}. ${kindLabel}`}
+            >
+              <span className="min-w-0 flex-1">
+                <span
+                  className={`block truncate font-semibold leading-snug ${
+                    compact ? 'text-[13px]' : 'text-[14px]'
+                  }`}
+                >
+                  {link.name}
+                </span>
+                <span className="mt-0.5 block text-[11px] font-medium text-slate-500">
+                  {kindLabel}
+                </span>
+              </span>
+              <ExternalLink
+                size={compact ? 14 : 16}
+                className="shrink-0 text-slate-400 transition-colors group-hover:text-slate-600"
+                aria-hidden
+              />
+            </a>
+          );
+        })}
+      </div>
+      <p className="break-keep text-center text-[10px] font-medium leading-relaxed text-white/50">
+        {STAY_AGENCY_DISCLAIMER}
       </p>
-      <a
-        href={href}
-        target={linkTarget}
-        rel={linkRel}
-        onClick={(e) => e.stopPropagation()}
-        className={ctaClassName}
-      >
-        트립닷컴에서 숙소 검색
-      </a>
+    </div>
+  );
+}
+
+/** MRT 저재고(≤5) — 목록 하단 공식 안내 + Trip.com */
+function StayLowInventoryFooter({
+  href,
+  linkTarget,
+  linkRel,
+  ctaClassName,
+  agencyProfile = null,
+}) {
+  if (!href && !agencyProfile?.links?.length) return null;
+  const hasAgency = Boolean(agencyProfile?.links?.length);
+  return (
+    <div
+      className={`mt-4 flex flex-col items-center gap-3 rounded-xl px-3 py-4 text-center ${
+        hasAgency
+          ? 'border border-white/15 bg-white/5'
+          : 'border border-sky-300/25 bg-sky-500/10'
+      }`}
+    >
+      <p className="break-keep text-[12px] font-medium leading-relaxed text-white/75">
+        {hasAgency
+          ? '이 지역은 마이리얼트립 재고가 적어요. 공식·전문 안내와 트립닷컴을 함께 확인해 보세요'
+          : '이 지역은 마이리얼트립 재고가 적어요. 트립닷컴도 함께 확인해 보세요'}
+      </p>
+      {hasAgency ? (
+        <StayAgencyGuideLinks
+          profile={agencyProfile}
+          linkTarget={linkTarget}
+          linkRel={linkRel}
+          compact
+        />
+      ) : null}
+      {href ? (
+        <div className={`flex w-full flex-col items-center gap-1.5 ${hasAgency ? 'max-w-sm' : ''}`}>
+          {hasAgency ? (
+            <p className="break-keep text-[10px] font-medium text-white/55">또는 숙소 OTA</p>
+          ) : null}
+          <a
+            href={href}
+            target={linkTarget}
+            rel={linkRel}
+            onClick={(e) => e.stopPropagation()}
+            className={ctaClassName}
+          >
+            <span>트립닷컴에서 숙소 검색</span>
+            {hasAgency ? (
+              <ExternalLink size={13} className="shrink-0 opacity-80" aria-hidden />
+            ) : null}
+          </a>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -830,14 +932,40 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       })
     : null;
 
-  /** gateo.kr 배포(origin/main) empty CTA와 동일 — outline sky, 「트립닷컴에서 숙소 검색」 */
+  /** gateo.kr 배포 empty CTA — outline sky */
   const tripcomCtaDesktopClassName =
     'inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-4 py-2.5 text-sm font-semibold text-sky-50 transition-colors hover:bg-sky-500/30';
   const tripcomCtaMobileClassName =
     'inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-3.5 py-2 text-[12px] font-semibold text-sky-50 transition-colors hover:bg-sky-500/30';
+  /** 공식 안내와 나란히 둘 때 — 보조이되 폭·대비를 맞춤 */
+  const tripcomCtaBesideAgencyDesktopClassName =
+    'inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-sky-200/70 bg-sky-500/40 px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-sky-500/55';
+  const tripcomCtaBesideAgencyMobileClassName =
+    'inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-sky-200/70 bg-sky-500/40 px-3.5 py-2.5 text-[12px] font-semibold text-white shadow-sm transition-colors hover:bg-sky-500/55';
 
-  const { title: emptyTitle, subtitle: emptySubtitle, cta: emptyCtaLabel } =
+  const { title: emptyTitleBase, subtitle: emptySubtitleBase, cta: emptyCtaLabel } =
     getTripcomHotelEmptyCopy(location);
+  const stayAgencyProfile = resolveStayAgencyProfile(location);
+  const hasStayAgencyLinks = Boolean(stayAgencyProfile?.links?.length);
+  const emptyTitle = emptyTitleBase;
+  const emptySubtitle = hasStayAgencyLinks
+    ? stayAgencyProfile.note ||
+      '아래 공신력 있는 안내·여행사로 루트를 확인해 보세요'
+    : emptySubtitleBase;
+  const agencyLinkTarget = getPartnerLinkTarget();
+  const agencyLinkRel = 'noopener noreferrer';
+  const tripcomEmptyCtaDesktopClass = hasStayAgencyLinks
+    ? tripcomCtaBesideAgencyDesktopClassName
+    : tripcomCtaDesktopClassName;
+  const tripcomEmptyCtaMobileClass = hasStayAgencyLinks
+    ? tripcomCtaBesideAgencyMobileClassName
+    : tripcomCtaMobileClassName;
+  const tripcomLowCtaDesktopClass = hasStayAgencyLinks
+    ? tripcomCtaBesideAgencyDesktopClassName
+    : tripcomCtaDesktopClassName;
+  const tripcomLowCtaMobileClass = hasStayAgencyLinks
+    ? tripcomCtaBesideAgencyMobileClassName
+    : tripcomCtaMobileClassName;
 
   const emptyState = (
     <div className="flex min-h-[min(420px,calc(100%-5rem))] w-full flex-col items-center justify-center gap-5 px-4 py-8">
@@ -847,15 +975,34 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           {emptySubtitle}
         </p>
       </div>
-      <a
-        href={tripcomEmptyUrl}
-        target={tripcomLinkTarget}
-        rel={tripcomLinkRel}
-        onClick={(e) => e.stopPropagation()}
-        className={tripcomCtaDesktopClassName}
+      {hasStayAgencyLinks ? (
+        <StayAgencyGuideLinks
+          profile={stayAgencyProfile}
+          linkTarget={agencyLinkTarget}
+          linkRel={agencyLinkRel}
+        />
+      ) : null}
+      <div
+        className={`flex w-full flex-col items-center gap-1.5 ${
+          hasStayAgencyLinks ? 'max-w-sm' : ''
+        }`}
       >
-        {emptyCtaLabel}
-      </a>
+        {hasStayAgencyLinks ? (
+          <p className="break-keep text-[11px] font-medium text-white/55">또는 숙소 OTA</p>
+        ) : null}
+        <a
+          href={tripcomEmptyUrl}
+          target={tripcomLinkTarget}
+          rel={tripcomLinkRel}
+          onClick={(e) => e.stopPropagation()}
+          className={tripcomEmptyCtaDesktopClass}
+        >
+          <span>{emptyCtaLabel}</span>
+          {hasStayAgencyLinks ? (
+            <ExternalLink size={14} className="shrink-0 opacity-80" aria-hidden />
+          ) : null}
+        </a>
+      </div>
     </div>
   );
 
@@ -868,15 +1015,35 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           {emptySubtitle}
         </p>
       </div>
-      <a
-        href={tripcomEmptyUrl}
-        target={tripcomLinkTarget}
-        rel={tripcomLinkRel}
-        onClick={(e) => e.stopPropagation()}
-        className={tripcomCtaMobileClassName}
+      {hasStayAgencyLinks ? (
+        <StayAgencyGuideLinks
+          profile={stayAgencyProfile}
+          linkTarget={agencyLinkTarget}
+          linkRel={agencyLinkRel}
+          compact
+        />
+      ) : null}
+      <div
+        className={`flex w-full flex-col items-center gap-1.5 ${
+          hasStayAgencyLinks ? 'max-w-sm' : ''
+        }`}
       >
-        {emptyCtaLabel}
-      </a>
+        {hasStayAgencyLinks ? (
+          <p className="break-keep text-[10px] font-medium text-white/55">또는 숙소 OTA</p>
+        ) : null}
+        <a
+          href={tripcomEmptyUrl}
+          target={tripcomLinkTarget}
+          rel={tripcomLinkRel}
+          onClick={(e) => e.stopPropagation()}
+          className={tripcomEmptyCtaMobileClass}
+        >
+          <span>{emptyCtaLabel}</span>
+          {hasStayAgencyLinks ? (
+            <ExternalLink size={13} className="shrink-0 opacity-80" aria-hidden />
+          ) : null}
+        </a>
+      </div>
     </div>
   );
 
@@ -928,7 +1095,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           href={tripcomLowUrl}
           linkTarget={tripcomLinkTarget}
           linkRel={tripcomLinkRel}
-          ctaClassName={tripcomCtaDesktopClassName}
+          ctaClassName={tripcomLowCtaDesktopClass}
+          agencyProfile={stayAgencyProfile}
         />
       </>
     ) : null;
@@ -1120,7 +1288,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                     href={tripcomLowUrl}
                     linkTarget={tripcomLinkTarget}
                     linkRel={tripcomLinkRel}
-                    ctaClassName={tripcomCtaMobileClassName}
+                    ctaClassName={tripcomLowCtaMobileClass}
+                    agencyProfile={stayAgencyProfile}
                   />
                 </>
               ) : null}
