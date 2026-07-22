@@ -8229,5 +8229,645 @@
         "lng": 126.45
       }
     ]
+  },
+  {
+    "hubId": "hamburg",
+    "name": "함부르크",
+    "name_en": "Hamburg",
+    "country": "독일",
+    "country_en": "Germany",
+    "lat": 53.5511,
+    "lng": 9.9937,
+    "aliases": [
+      "hamburg",
+      "함부르크시"
+    ],
+    "attractions": [
+      {
+        "name": "엘프필하모니",
+        "name_en": "Elbphilharmonie",
+        "kind": "landmark",
+        "lat": 53.5413,
+        "lng": 9.984
+      },
+      {
+        "name": "슈파이허슈타트",
+        "name_en": "Speicherstadt",
+        "kind": "neighborhood",
+        "lat": 53.5436,
+        "lng": 9.999
+      },
+      {
+        "name": "미니어처 분데스란트",
+        "name_en": "Miniatur Wunderland",
+        "kind": "museum",
+        "lat": 53.5438,
+        "lng": 9.989
+      },
+      {
+        "name": "함부르크 항구",
+        "name_en": "Port of Hamburg",
+        "kind": "viewpoint",
+        "lat": 53.543,
+        "lng": 9.968
+      },
+      {
+        "name": "레퍼반",
+        "name_en": "Reeperbahn",
+        "kind": "neighborhood",
+        "lat": 53.5495,
+        "lng": 9.961
+      },
+      {
+        "name": "빙넨알스터",
+        "name_en": "Binnenalster",
+        "kind": "park",
+        "lat": 53.555,
+        "lng": 9.994
+      },
+      {
+        "name": "함부르크 시청",
+        "name_en": "Hamburg City Hall",
+        "kind": "landmark",
+        "lat": 53.5503,
+        "lng": 9.992
+      }
+    ]
+  },
+  {
+    "hubId": "bratislava",
+    "name": "브라티슬라바",
+    "name_en": "Bratislava",
+    "country": "슬로바키아",
+    "country_en": "Slovakia",
+    "lat": 48.1486,
+    "lng": 17.1077,
+    "aliases": [
+      "bratislava",
+      "포조니"
+    ],
+    "attractions": [
+      {
+        "name": "브라티슬라바 성",
+        "name_en": "Bratislava Castle",
+        "kind": "landmark",
+        "lat": 48.1421,
+        "lng": 17.1
+      },
+      {
+        "name": "브라티슬라바 구시가지",
+        "name_en": "Bratislava Old Town",
+        "kind": "neighborhood",
+        "lat": 48.1435,
+        "lng": 17.109
+      },
+      {
+        "name": "성 마르틴 대성당 브라티슬라바",
+        "name_en": "St. Martin's Cathedral Bratislava",
+        "kind": "landmark",
+        "lat": 48.1419,
+        "lng": 17.1048
+      },
+      {
+        "name": "미하일 문",
+        "name_en": "Michael's Gate",
+        "kind": "landmark",
+        "lat": 48.1455,
+        "lng": 17.1087
+      },
+      {
+        "name": "데빈 성",
+        "name_en": "Devín Castle",
+        "kind": "viewpoint",
+        "lat": 48.1738,
+        "lng": 16.978
+      },
+      {
+        "name": "슬로바키아 국립극장",
+        "name_en": "Slovak National Theatre",
+        "kind": "landmark",
+        "lat": 48.1415,
+        "lng": 17.1105
+      },
+      {
+        "name": "추밀 청동상",
+        "name_en": "Čumil Man at Work",
+        "kind": "landmark",
+        "lat": 48.1438,
+        "lng": 17.1095
+      }
+    ]
+  },
+  {
+    "hubId": "zagreb",
+    "name": "자그레브",
+    "name_en": "Zagreb",
+    "country": "크로아티아",
+    "country_en": "Croatia",
+    "lat": 45.815,
+    "lng": 15.9819,
+    "aliases": [
+      "zagreb",
+      "자그렙"
+    ],
+    "attractions": [
+      {
+        "name": "자그레브 대성당",
+        "name_en": "Zagreb Cathedral",
+        "kind": "landmark",
+        "lat": 45.8144,
+        "lng": 15.9797
+      },
+      {
+        "name": "상토원 자그레브",
+        "name_en": "Gornji Grad Zagreb",
+        "kind": "neighborhood",
+        "lat": 45.8155,
+        "lng": 15.9735
+      },
+      {
+        "name": "성 마르크 교회",
+        "name_en": "St. Mark's Church Zagreb",
+        "kind": "landmark",
+        "lat": 45.8164,
+        "lng": 15.9738
+      },
+      {
+        "name": "돌락 시장",
+        "name_en": "Dolac Market",
+        "kind": "market",
+        "lat": 45.8135,
+        "lng": 15.9775
+      },
+      {
+        "name": "미로고이 묘지",
+        "name_en": "Mirogoj Cemetery",
+        "kind": "park",
+        "lat": 45.835,
+        "lng": 15.985
+      },
+      {
+        "name": "자그레브 박물관",
+        "name_en": "Museum of Zagreb",
+        "kind": "museum",
+        "lat": 45.8158,
+        "lng": 15.973
+      },
+      {
+        "name": "반 옐라치치 광장",
+        "name_en": "Ban Jelačić Square",
+        "kind": "landmark",
+        "lat": 45.8131,
+        "lng": 15.9772
+      }
+    ]
+  },
+  {
+    "hubId": "salzburg",
+    "name": "잘츠부르크",
+    "name_en": "Salzburg",
+    "country": "오스트리아",
+    "country_en": "Austria",
+    "lat": 47.8095,
+    "lng": 13.055,
+    "aliases": [
+      "salzburg",
+      "잘쯔부르크"
+    ],
+    "attractions": [
+      {
+        "name": "호엔잘츠부르크 성",
+        "name_en": "Hohensalzburg Fortress",
+        "kind": "landmark",
+        "lat": 47.7949,
+        "lng": 13.047
+      },
+      {
+        "name": "미라벨 정원",
+        "name_en": "Mirabell Gardens",
+        "kind": "park",
+        "lat": 47.8054,
+        "lng": 13.0418
+      },
+      {
+        "name": "모차르트 생가",
+        "name_en": "Mozart Birthplace",
+        "kind": "museum",
+        "lat": 47.8,
+        "lng": 13.0436
+      },
+      {
+        "name": "잘츠부르크 대성당",
+        "name_en": "Salzburg Cathedral",
+        "kind": "landmark",
+        "lat": 47.798,
+        "lng": 13.047
+      },
+      {
+        "name": "헬브룬 궁전",
+        "name_en": "Hellbrunn Palace",
+        "kind": "landmark",
+        "lat": 47.7625,
+        "lng": 13.0608
+      },
+      {
+        "name": "겟라이데가세",
+        "name_en": "Getreidegasse",
+        "kind": "neighborhood",
+        "lat": 47.8,
+        "lng": 13.043
+      },
+      {
+        "name": "운터스베르크",
+        "name_en": "Untersberg",
+        "kind": "viewpoint",
+        "lat": 47.705,
+        "lng": 13.005
+      }
+    ]
+  },
+  {
+    "hubId": "bordeaux",
+    "name": "보르도",
+    "name_en": "Bordeaux",
+    "country": "프랑스",
+    "country_en": "France",
+    "lat": 44.8378,
+    "lng": -0.5792,
+    "aliases": [
+      "bordeaux",
+      "보르도시"
+    ],
+    "attractions": [
+      {
+        "name": "물의 거울",
+        "name_en": "Miroir d'eau",
+        "kind": "landmark",
+        "lat": 44.8448,
+        "lng": -0.57
+      },
+      {
+        "name": "시테 뒤 뱅",
+        "name_en": "Cité du Vin",
+        "kind": "museum",
+        "lat": 44.8625,
+        "lng": -0.55
+      },
+      {
+        "name": "보르도 대극장",
+        "name_en": "Grand Théâtre de Bordeaux",
+        "kind": "landmark",
+        "lat": 44.8426,
+        "lng": -0.574
+      },
+      {
+        "name": "생트카트린 거리",
+        "name_en": "Rue Sainte-Catherine",
+        "kind": "neighborhood",
+        "lat": 44.837,
+        "lng": -0.574
+      },
+      {
+        "name": "보르도 생미셸 대성당",
+        "name_en": "Basilica of Saint-Michel Bordeaux",
+        "kind": "landmark",
+        "lat": 44.8335,
+        "lng": -0.565
+      },
+      {
+        "name": "부르스 광장",
+        "name_en": "Place de la Bourse",
+        "kind": "landmark",
+        "lat": 44.8415,
+        "lng": -0.5695
+      },
+      {
+        "name": "샤르트롱",
+        "name_en": "Chartrons",
+        "kind": "neighborhood",
+        "lat": 44.852,
+        "lng": -0.565
+      }
+    ]
+  },
+  {
+    "hubId": "muan",
+    "name": "무안",
+    "name_en": "Muan",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.9904,
+    "lng": 126.4817,
+    "aliases": [
+      "무안군",
+      "muan"
+    ],
+    "attractions": [
+      {
+        "name": "무안황토갯벌랜드",
+        "name_en": "Muan Hwangto Tidal Flat Land",
+        "kind": "park",
+        "lat": 34.98,
+        "lng": 126.4
+      },
+      {
+        "name": "회산백련지",
+        "name_en": "Hoesan White Lotus Pond",
+        "kind": "park",
+        "lat": 34.99,
+        "lng": 126.52
+      },
+      {
+        "name": "무안읍성",
+        "name_en": "Muan Eupseong",
+        "kind": "landmark",
+        "lat": 34.9905,
+        "lng": 126.478
+      },
+      {
+        "name": "도리포해수욕장",
+        "name_en": "Doripo Beach",
+        "kind": "beach",
+        "lat": 35.07,
+        "lng": 126.28
+      },
+      {
+        "name": "해제면 갯벌",
+        "name_en": "Haeje Tidal Flat",
+        "kind": "viewpoint",
+        "lat": 35.05,
+        "lng": 126.3
+      },
+      {
+        "name": "무안국제공항 전망대",
+        "name_en": "Muan Airport Observation Deck",
+        "kind": "viewpoint",
+        "lat": 34.9914,
+        "lng": 126.3828
+      },
+      {
+        "name": "법천사 무안",
+        "name_en": "Beopcheonsa Muan",
+        "kind": "temple",
+        "lat": 34.97,
+        "lng": 126.5
+      }
+    ]
+  },
+  {
+    "hubId": "yeongam",
+    "name": "영암",
+    "name_en": "Yeongam",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.8002,
+    "lng": 126.6967,
+    "aliases": [
+      "영암군",
+      "yeongam"
+    ],
+    "attractions": [
+      {
+        "name": "월출산국립공원",
+        "name_en": "Wolchulsan National Park",
+        "kind": "park",
+        "lat": 34.766,
+        "lng": 126.7
+      },
+      {
+        "name": "왕인박사유적지",
+        "name_en": "Doctor Wangin Historic Site",
+        "kind": "landmark",
+        "lat": 34.78,
+        "lng": 126.7
+      },
+      {
+        "name": "구림마을",
+        "name_en": "Gurim Village",
+        "kind": "neighborhood",
+        "lat": 34.77,
+        "lng": 126.68
+      },
+      {
+        "name": "도갑사",
+        "name_en": "Dogapsa",
+        "kind": "temple",
+        "lat": 34.75,
+        "lng": 126.68
+      },
+      {
+        "name": "영암도기박물관",
+        "name_en": "Yeongam Ceramic Museum",
+        "kind": "museum",
+        "lat": 34.78,
+        "lng": 126.69
+      },
+      {
+        "name": "기찬랜드",
+        "name_en": "Gichan Land",
+        "kind": "park",
+        "lat": 34.8,
+        "lng": 126.7
+      },
+      {
+        "name": "영암군립하정웅미술관",
+        "name_en": "Yeongam Ha Jeong-ung Art Museum",
+        "kind": "museum",
+        "lat": 34.8,
+        "lng": 126.71
+      }
+    ]
+  },
+  {
+    "hubId": "gangjin",
+    "name": "강진",
+    "name_en": "Gangjin",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.642,
+    "lng": 126.7672,
+    "aliases": [
+      "강진군",
+      "gangjin"
+    ],
+    "attractions": [
+      {
+        "name": "다산초당",
+        "name_en": "Dasanchodang",
+        "kind": "landmark",
+        "lat": 34.6,
+        "lng": 126.8
+      },
+      {
+        "name": "가우도",
+        "name_en": "Gaudo Island",
+        "kind": "viewpoint",
+        "lat": 34.62,
+        "lng": 126.78
+      },
+      {
+        "name": "마량미항",
+        "name_en": "Maryang Port",
+        "kind": "viewpoint",
+        "lat": 34.45,
+        "lng": 126.82
+      },
+      {
+        "name": "금곡사 강진",
+        "name_en": "Geumgoksa Gangjin",
+        "kind": "temple",
+        "lat": 34.63,
+        "lng": 126.75
+      },
+      {
+        "name": "강진다원",
+        "name_en": "Gangjin Tea Plantation",
+        "kind": "park",
+        "lat": 34.64,
+        "lng": 126.78
+      },
+      {
+        "name": "강진만생태공원",
+        "name_en": "Gangjin Bay Ecological Park",
+        "kind": "park",
+        "lat": 34.62,
+        "lng": 126.77
+      },
+      {
+        "name": "하멜기념관",
+        "name_en": "Hamel Memorial Museum",
+        "kind": "museum",
+        "lat": 34.57,
+        "lng": 126.78
+      }
+    ]
+  },
+  {
+    "hubId": "jangseong",
+    "name": "장성",
+    "name_en": "Jangseong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.3019,
+    "lng": 126.7848,
+    "aliases": [
+      "장성군",
+      "jangseong"
+    ],
+    "attractions": [
+      {
+        "name": "백양사",
+        "name_en": "Baegyangsa",
+        "kind": "temple",
+        "lat": 35.43,
+        "lng": 126.88
+      },
+      {
+        "name": "장성호",
+        "name_en": "Jangseong Lake",
+        "kind": "park",
+        "lat": 35.35,
+        "lng": 126.8
+      },
+      {
+        "name": "황룡강",
+        "name_en": "Hwangryong River",
+        "kind": "park",
+        "lat": 35.3,
+        "lng": 126.78
+      },
+      {
+        "name": "축령산 장성",
+        "name_en": "Chukryeongsan Jangseong",
+        "kind": "viewpoint",
+        "lat": 35.45,
+        "lng": 126.75
+      },
+      {
+        "name": "홍길동테마파크",
+        "name_en": "Hong Gildong Theme Park",
+        "kind": "landmark",
+        "lat": 35.32,
+        "lng": 126.78
+      },
+      {
+        "name": "장성산수유마을",
+        "name_en": "Jangseong Cornus Village",
+        "kind": "neighborhood",
+        "lat": 35.35,
+        "lng": 126.82
+      },
+      {
+        "name": "평림댐",
+        "name_en": "Pyeongnim Dam",
+        "kind": "viewpoint",
+        "lat": 35.28,
+        "lng": 126.75
+      }
+    ]
+  },
+  {
+    "hubId": "hampyeong",
+    "name": "함평",
+    "name_en": "Hampyeong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.0654,
+    "lng": 126.5166,
+    "aliases": [
+      "함평군",
+      "hampyeong"
+    ],
+    "attractions": [
+      {
+        "name": "함평자연생태공원",
+        "name_en": "Hampyeong Eco Park",
+        "kind": "park",
+        "lat": 35.07,
+        "lng": 126.52
+      },
+      {
+        "name": "함평엑스포공원",
+        "name_en": "Hampyeong Expo Park",
+        "kind": "park",
+        "lat": 35.06,
+        "lng": 126.52
+      },
+      {
+        "name": "용천사 함평",
+        "name_en": "Yongcheonsa Hampyeong",
+        "kind": "temple",
+        "lat": 35.1,
+        "lng": 126.55
+      },
+      {
+        "name": "돌머리해수욕장",
+        "name_en": "Dolmeori Beach",
+        "kind": "beach",
+        "lat": 35.12,
+        "lng": 126.35
+      },
+      {
+        "name": "함평나비대축제장",
+        "name_en": "Hampyeong Butterfly Festival Grounds",
+        "kind": "landmark",
+        "lat": 35.065,
+        "lng": 126.516
+      },
+      {
+        "name": "함평향교",
+        "name_en": "Hampyeong Hyanggyo",
+        "kind": "landmark",
+        "lat": 35.0655,
+        "lng": 126.517
+      },
+      {
+        "name": "함평해수찜",
+        "name_en": "Hampyeong Seawater Spa",
+        "kind": "landmark",
+        "lat": 35.08,
+        "lng": 126.4
+      }
+    ]
   }
 ]
