@@ -1006,8 +1006,13 @@ function Home() {
           onSearch={async (query) => {
             const selectedFromSearch = await handleSmartSearch(query);
 
+            // 모호함 → Explore에 선택 카드 유지 (홈으로 나가지 않음)
+            if (selectedFromSearch?.__disambiguation === true) {
+              return selectedFromSearch;
+            }
+
             // 결과 없을 때 Explore를 닫고 홈만 열지 않음 (반딧불 isConcept null 회귀 방지)
-            if (!selectedFromSearch?.name) return;
+            if (!selectedFromSearch?.name) return selectedFromSearch;
 
             try {
               pushRecentVisited(selectedFromSearch);
@@ -1017,6 +1022,7 @@ function Home() {
             }
 
             navigate('/', { state: { fromSearch: true } });
+            return selectedFromSearch;
           }}
         />
       </div>

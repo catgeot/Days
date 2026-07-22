@@ -11,6 +11,9 @@ import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS, TRIPCOM_EXPLORE_L
 import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
+import SearchSuggestionList, {
+  SearchDisambiguationCards,
+} from './SearchDiscovery/SearchSuggestionList';
 import TripLinkModal from '../../../components/PlaceCard/modals/TripLinkModal';
 import {
   RECENT_SEARCH_KEY,
@@ -28,6 +31,10 @@ import {
   destinationLabel,
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
+import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
+import { searchBoxRetrieve } from '../lib/mapboxSearchBox';
+import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -71,11 +78,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(false);
   /** fixed 오버레이 위치 (페이지 레이아웃을 밀지 않음) */
   const [popoverLayout, setPopoverLayout] = useState(null);
+  const [hybridSuggestions, setHybridSuggestions] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [disambiguation, setDisambiguation] = useState(null);
 
   const searchBarRowRefPc = useRef(null);
   const searchBarRowRefMobile = useRef(null);
   const quickMenuRowRefPc = useRef(null);
   const quickMenuRowRefMobile = useRef(null);
+  const suggestRequestIdRef = useRef(0);
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
@@ -121,6 +132,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const inputRef = useRef(null);
   const scrollContainerRef = useRef(null);
 
+  /** 모바일 키보드·입력 포커스 해제 — 선택 카드/결과 리스트가 보이도록 */
+  const dismissSearchKeyboard = () => {
+    inputRef.current?.blur();
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    syncHomeViewportAfterInput();
+  };
+
   const isSearching = query.trim().length > 0;
   const isCurationMode = !isSearching && selectedContinent === 'all' && selectedTheme === 'all';
   const trimmedQuery = query.trim();
@@ -130,9 +150,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       return '여행지를 몰라도 괜찮아요. 지금 감정, 분위기, 떠오르는 단어를 입력하면 AI가 어울리는 목적지를 찾아드립니다.';
     }
     if (trimmedQuery.length <= 2) {
-      return '조금만 더 길게 적어보세요. 예: "멍하니 쉬고 싶다", "설레는 밤바다", "도망가고 싶은 금요일"';
+      return '도시·명소 이름이 뜨면 바로 고르거나, 조금 더 적어 Enter로 검색하세요.';
     }
-    return `Enter를 누르면 "${trimmedQuery}" 감정을 바탕으로 AI가 실재 여행지를 매칭하고 이유와 함께 안내합니다.`;
+    return `제안 목록에서 고르거나 Enter로 "${trimmedQuery}"를 검색합니다. 모호하면 선택 카드가 열립니다.`;
   }, [trimmedQuery]);
 
   useEffect(() => {
@@ -143,6 +163,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       setKeywordVisitHistory(safeLoadKeywordVisits());
       setActiveQuickSection(null);
       setIsSearchHistoryOpen(false);
+      setHybridSuggestions([]);
+      setDisambiguation(null);
       // 모바일 키보드 자동 올림 방지를 위해 focus() 제거
       document.body.style.overflow = 'hidden';
       setSelectedSubGroup(null);
@@ -154,9 +176,57 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       setSelectedTheme('all');
       setSelectedSubGroup(null);
       setSelectedPackage(null);
+      setHybridSuggestions([]);
+      setDisambiguation(null);
     }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
+
+  /** 타이핑 → 검색바 드롭다운용 제안 (큐레이션·SSOT 즉시, Mapbox는 비허브만) */
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const q = query.trim();
+    if (!q) {
+      setHybridSuggestions([]);
+      setSuggestionsLoading(false);
+      return undefined;
+    }
+
+    // 큐레이션·SSOT는 동기 즉시 → 드롭다운에 바로 표시
+    const local = buildLocalSearchSuggestions(q);
+    setHybridSuggestions(local);
+    setIsSearchHistoryOpen(true);
+    setActiveQuickSection(null);
+
+    const requestId = ++suggestRequestIdRef.current;
+    // 허브 exact면 Mapbox 스킵 (이미 local에 명소 포함)
+    setSuggestionsLoading(true);
+    const timer = setTimeout(async () => {
+      try {
+        const items = await buildHybridSearchSuggestions(q);
+        if (suggestRequestIdRef.current !== requestId) return;
+        setHybridSuggestions(items);
+      } catch {
+        if (suggestRequestIdRef.current !== requestId) return;
+        // local 유지
+      } finally {
+        if (suggestRequestIdRef.current === requestId) {
+          setSuggestionsLoading(false);
+        }
+      }
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [isOpen, query]);
+
+  /** 선택 카드·Enter 검색 후 키보드가 남아 리스트를 가리지 않게 */
+  useEffect(() => {
+    if (!disambiguation?.candidates?.length) return undefined;
+    dismissSearchKeyboard();
+    const t = window.setTimeout(() => dismissSearchKeyboard(), 50);
+    return () => window.clearTimeout(t);
+    // dismissSearchKeyboard는 inputRef 기반 — 매 렌더 동일 동작
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disambiguation]);
 
   /** 검색/섹션 확장 패널 바깥 클릭 시 닫기 (앵커·패널 내부는 유지) */
   useEffect(() => {
@@ -178,6 +248,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       document.removeEventListener('touchstart', handlePointerDown);
     };
   }, [isOpen, isSearchHistoryOpen, activeQuickSection]);
+
+  const showSearchDropdown =
+    isSearchHistoryOpen &&
+    (trimmedQuery.length > 0 || recentSearches.length > 0);
 
   useLayoutEffect(() => {
     if (!isOpen) {
@@ -202,7 +276,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
     const updateLayout = () => {
       const vp = getViewportSize();
-      if (isSearchHistoryOpen && recentSearches.length > 0) {
+      if (showSearchDropdown) {
         const r = pickVisibleElementRect(searchBarRowRefPc, searchBarRowRefMobile);
         if (!r || !isAnchorOnScreen(r, vp.height + vp.offsetTop)) {
           setIsSearchHistoryOpen(false);
@@ -257,7 +331,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       window.visualViewport?.removeEventListener('resize', updateLayout);
       window.visualViewport?.removeEventListener('scroll', updateLayout);
     };
-  }, [isOpen, isSearchHistoryOpen, activeQuickSection, recentSearches.length, recentVisitedDestinations.length, keywordVisitHistory.length, isSearching, query]);
+  }, [isOpen, isSearchHistoryOpen, activeQuickSection, recentSearches.length, recentVisitedDestinations.length, keywordVisitHistory.length, isSearching, query, showSearchDropdown, hybridSuggestions.length]);
 
   const handleFilterModeChange = (mode) => {
     setFilterMode(mode);
@@ -283,7 +357,69 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
   const handleSpotSelect = (spot) => {
     setRecentVisitedDestinations(pushRecentVisited(spot));
+    setDisambiguation(null);
     onSelect(spot);
+  };
+
+  const handleSearchSubmit = async (submitQuery) => {
+    const finalQuery = (submitQuery ?? query).trim();
+    if (finalQuery === '' || !onSearch) return;
+    dismissSearchKeyboard();
+    setQuery(finalQuery);
+    setRecentSearches(pushRecentSearch(finalQuery));
+    setIsAILoading(true);
+    setDisambiguation(null);
+    setIsSearchHistoryOpen(false);
+    try {
+      const result = await onSearch(finalQuery);
+      if (isSearchDisambiguation(result)) {
+        setDisambiguation(result);
+        // 선택 카드가 열린 뒤에도 키보드가 남아 있으면 한 번 더
+        dismissSearchKeyboard();
+        return;
+      }
+    } finally {
+      setIsAILoading(false);
+      setIsSearchHistoryOpen(false);
+      setActiveQuickSection(null);
+    }
+  };
+
+  /** 제안·선택 카드 클릭 — Mapbox retrieve 필요 시 좌표 확보 후 오픈 */
+  const handleSuggestionSelect = async (item) => {
+    if (!item) return;
+    dismissSearchKeyboard();
+    setIsSearchHistoryOpen(false);
+    setActiveQuickSection(null);
+    setDisambiguation(null);
+
+    // 최근 검색어 = 사용자가 친 키워드 우선 (속초 치고 낙산사 골라도 '속초' 기록)
+    const typedKeyword = query.trim();
+    const recentKeyword = typedKeyword || String(item.name || '').trim();
+    if (recentKeyword) {
+      setRecentSearches(pushRecentSearch(recentKeyword));
+    }
+
+    let place = item;
+    if (item.needsRetrieve && item.mapboxId) {
+      setIsAILoading(true);
+      try {
+        const retrieved = await searchBoxRetrieve(item.mapboxId, item.sessionToken);
+        if (retrieved) place = { ...item, ...retrieved, needsRetrieve: false };
+      } finally {
+        setIsAILoading(false);
+      }
+    }
+
+    const lat = Number(place?.lat);
+    const lng = Number(place?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      // 좌표 없으면 해당 이름으로 Enter 검색
+      if (place?.name) await handleSearchSubmit(place.name);
+      return;
+    }
+
+    handleSpotSelect({ ...place, lat, lng });
   };
 
   /** AI 검색 없이 최근 방문지·키워드 매칭지로 직연결 */
@@ -291,6 +427,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     const spot = resolveDestinationToSpot(destination);
     setIsSearchHistoryOpen(false);
     setActiveQuickSection(null);
+    setDisambiguation(null);
     if (spot) {
       handleSpotSelect(spot);
       return;
@@ -304,25 +441,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (next) setQuery(next);
     setIsSearchHistoryOpen(false);
     setActiveQuickSection(null);
+    setDisambiguation(null);
   };
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
-  };
-
-  const handleSearchSubmit = async (submitQuery) => {
-    const finalQuery = (submitQuery ?? query).trim();
-    if (finalQuery === '' || !onSearch) return;
-    setQuery(finalQuery);
-    setRecentSearches(pushRecentSearch(finalQuery));
-    setIsAILoading(true);
-    try {
-      await onSearch(finalQuery);
-    } finally {
-      setIsAILoading(false);
-      setIsSearchHistoryOpen(false);
-      setActiveQuickSection(null);
-    }
   };
 
   const handleRemoveRecentSearch = (keyword) => {
@@ -546,23 +669,50 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   };
 
   const renderContent = () => {
-    if (filteredSpots.length === 0) {
+    if (disambiguation?.candidates?.length) {
       return (
-        <div className="flex flex-col items-center justify-center py-20 text-center px-4 w-full animate-fade-in">
-          <div className="relative mb-6 group cursor-pointer" onClick={handleSearchSubmit}>
-             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
-             <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform">
-               <Globe2 size={32} className="text-blue-400" />
-             </div>
-          </div>
-          <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
-             <span className="text-blue-400">'{query}'</span> AI 전 세계 탐색
-          </h3>
-          <p className="text-gray-400 break-keep max-w-md mx-auto text-sm md:text-base leading-relaxed">
-             현재 컬렉션에 없는 키워드입니다. <br/>
-             <strong className="text-gray-200">엔터(Enter) 키</strong>를 누르거나 <strong className="text-gray-200 cursor-pointer hover:text-blue-400 transition-colors" onClick={handleSearchSubmit}>위의 아이콘</strong>을 누르면, <br/>
-             AI가 오타/유사 지명을 보정해 전 세계 지도를 탐색하고 최적 위치로 즉시 이동합니다.
-          </p>
+        <SearchDisambiguationCards
+          title={disambiguation.title}
+          candidates={disambiguation.candidates}
+          onSelect={handleSuggestionSelect}
+          onCancel={() => setDisambiguation(null)}
+        />
+      );
+    }
+
+    if (isSearching) {
+      return (
+        <div className="w-full pb-20 pt-2">
+          {filteredSpots.length > 0 ? (
+            <>
+              <div className="mb-4 text-sm font-medium text-gray-500 flex items-center gap-2">
+                <Search size={16} />
+                <span>컬렉션 여행지 {filteredSpots.length}건</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
+                {filteredSpots.map((spot) => (
+                  <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center px-4 w-full animate-fade-in">
+              <div className="relative mb-6 group cursor-pointer" onClick={() => handleSearchSubmit()}>
+                <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+                <div className="w-20 h-20 bg-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(59,130,246,0.3)] group-hover:scale-105 transition-transform">
+                  <Globe2 size={32} className="text-blue-400" />
+                </div>
+              </div>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
+                <span className="text-blue-400">'{query}'</span> AI 전 세계 탐색
+              </h3>
+              <p className="text-gray-400 break-keep max-w-md mx-auto text-sm md:text-base leading-relaxed">
+                검색바 아래 제안에서 고르거나,
+                <br />
+                <strong className="text-gray-200">엔터(Enter)</strong>로 AI·지도 검색을 이어갈 수 있어요.
+              </p>
+            </div>
+          )}
         </div>
       );
     }
@@ -658,22 +808,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       );
     }
 
-    // 3. 검색 결과 (그리드 뷰)
-    return (
-      <div className="w-full pb-20 pt-4">
-        {/* 사용자 피드백: 상단 배너 노출 보류 */}
-        {/* renderDynamicBanner() */}
-        <div className="mb-6 text-sm font-medium text-gray-500 flex items-center gap-2">
-           <Search size={16} />
-           <span>'{query}' 검색 결과 {filteredSpots.length}건</span>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
-          {filteredSpots.map(spot => (
-            <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
-          ))}
-        </div>
-      </div>
-    );
+    // 검색 모드는 상단에서 처리. 여기까지 오면 빈 상태.
+    return null;
   };
 
   const headerContent = (isMobileView) => (
@@ -754,7 +890,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             onMouseDownCapture={(e) => {
               if (e.button !== 0) return;
               if (e.target instanceof Element && e.target.closest('[data-search-clear]')) return;
-              if (recentSearches.length === 0) return;
               setActiveQuickSection(null);
               setIsSearchHistoryOpen((prev) => !prev);
             }}
@@ -767,13 +902,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               inputMode="text"
               enterKeyHint="search"
               value={query}
+              onFocus={() => {
+                setActiveQuickSection(null);
+                setIsSearchHistoryOpen(true);
+              }}
               onChange={(e) => {
                 setQuery(e.target.value);
-                if (e.target.value.trim() !== '') {
-                  setIsSearchHistoryOpen(false);
-                }
+                setDisambiguation(null);
+                setActiveQuickSection(null);
+                // 타이핑 중에는 드롭다운에 제안 리스트를 유지
+                setIsSearchHistoryOpen(true);
               }}
-              placeholder="예: 번아웃, 설레는 밤산책, 바람 쐬고 싶다"
+              placeholder="예: 속초, 파리, 에펠탑, 번아웃"
               className="h-full w-full bg-transparent px-4 text-[16px] font-medium text-white outline-none placeholder-gray-500 md:px-3 md:text-base"
             />
             {query && (
@@ -783,6 +923,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                 onClick={() => {
                   setQuery('');
                   setIsSearchHistoryOpen(false);
+                  setDisambiguation(null);
+                  setHybridSuggestions([]);
                   inputRef.current?.focus();
                 }}
                 className="p-3 text-gray-400 transition-colors hover:text-white md:p-2"
@@ -793,7 +935,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           </form>
         </div>
         {/* 드롭다운·섹션 패널 열림 시 안내문은 숨겨 한 화면에 정보가 겹치지 않게 함 */}
-        {!isSearchHistoryOpen && !activeQuickSection && (
+        {!showSearchDropdown && !activeQuickSection && (
           <p className="text-xs md:text-sm text-blue-200/80 px-1 pt-1.5 leading-relaxed">
             {searchGuideText}
           </p>
@@ -1033,7 +1175,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       {/* 검색·섹션 확장 popover: 구글처럼 본문(탐색 화면)을 가리거나 어둡게 하지 않고
           드롭다운만 띄움. 외부 클릭은 useEffect 내 handlePointerDown에서 닫음. */}
 
-      {popoverLayout?.variant === 'search' && recentSearches.length > 0 && (
+      {popoverLayout?.variant === 'search' && showSearchDropdown && (
         <div
           data-search-popover
           className="fixed z-[215] flex flex-col overflow-hidden rounded-2xl border border-amber-950/25 bg-[#261d16] backdrop-blur-xl shadow-[0_16px_44px_rgba(0,0,0,0.55)]"
@@ -1044,33 +1186,51 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
             maxHeight: popoverLayout.maxHeight,
           }}
         >
-          <HistoryPopoverHeader title="최근 검색" onClearAll={handleClearRecentSearches} />
-          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-2">
-            <div className="space-y-1">
-              {recentSearches.map((keyword) => (
-                <div key={`popover-search-${keyword}`} className="flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 hover:bg-white/[0.06]">
-                  <button
-                    type="button"
-                    onClick={() => handleSearchSubmit(keyword)}
-                    className="truncate text-left text-sm text-gray-100 transition-colors hover:text-white"
-                  >
-                    {keyword}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveRecentSearch(keyword);
-                    }}
-                    className="shrink-0 text-gray-400 transition-colors hover:text-red-300"
-                    aria-label={`${keyword} 삭제`}
-                  >
-                    <X size={13} />
-                  </button>
-                </div>
-              ))}
+          {trimmedQuery ? (
+            <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+              <SearchSuggestionList
+                variant="popover"
+                query={query}
+                items={hybridSuggestions}
+                loading={suggestionsLoading}
+                onSelect={(item) => {
+                  setIsSearchHistoryOpen(false);
+                  handleSuggestionSelect(item);
+                }}
+                title={`'${trimmedQuery}' 도시·명소·여행지`}
+              />
             </div>
-          </div>
+          ) : (
+            <>
+              <HistoryPopoverHeader title="최근 검색" onClearAll={handleClearRecentSearches} />
+              <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-2">
+                <div className="space-y-1">
+                  {recentSearches.map((keyword) => (
+                    <div key={`popover-search-${keyword}`} className="flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 hover:bg-white/[0.06]">
+                      <button
+                        type="button"
+                        onClick={() => handleSearchSubmit(keyword)}
+                        className="truncate text-left text-sm text-gray-100 transition-colors hover:text-white"
+                      >
+                        {keyword}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveRecentSearch(keyword);
+                        }}
+                        className="shrink-0 text-gray-400 transition-colors hover:text-red-300"
+                        aria-label={`${keyword} 삭제`}
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

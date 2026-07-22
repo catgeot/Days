@@ -211,3 +211,12 @@
 
 - 2초 reveal 폴백에서 `gateoMarkerLayersReady` → `getLayer` Uncaught 수정
 - ready 계열 try/catch: 마커·reach·cluster·flight cinema
+
+## Explore 검색 — 도시·명소 하이브리드 제안
+
+**상태**: ✅ QA(속초·파리·키보드) · 커밋
+
+- 검색바 드롭다운에 도시+명소+여행지 혼합 제안 · 큐레이션 SSOT `cityAttractionHubs.json`(속초·파리 시드) 우선 · 허브 exact는 Mapbox 대기 없음
+- Enter 시 허브·모호함 → 선택 카드 · mood 다후보 선택 UI · 최근 검색은 **입력 키워드** 우선 · 모바일 검색 시 키보드 자동 닫힘
+- 핵심: `cityAttractionHubs.js` · `searchSuggestions.js` · `mapboxSearchBox.js` · `SearchSuggestionList.jsx` · `SearchDiscoveryModal` · `useHomeHandlers`
+- **다음**: 인기 도시 명소 SSOT 확장(클라우드 에이전트 배치 후보) · 릴리스 노트 합의 후 반영

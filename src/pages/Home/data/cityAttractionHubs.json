@@ -1,0 +1,110 @@
+[
+  {
+    "hubId": "sokcho",
+    "name": "속초",
+    "name_en": "Sokcho",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 38.207,
+    "lng": 128.5918,
+    "aliases": ["속초시", "sokcho"],
+    "attractions": [
+      {
+        "name": "속초해수욕장",
+        "name_en": "Sokcho Beach",
+        "kind": "beach",
+        "lat": 38.1902,
+        "lng": 128.6035
+      },
+      {
+        "name": "속초중앙시장",
+        "name_en": "Sokcho Jungang Market",
+        "kind": "market",
+        "lat": 38.2065,
+        "lng": 128.5912
+      },
+      {
+        "name": "낙산사",
+        "name_en": "Naksansa",
+        "kind": "temple",
+        "lat": 38.1247,
+        "lng": 128.628
+      },
+      {
+        "name": "외옹치해수욕장",
+        "name_en": "Oeongchi Beach",
+        "kind": "beach",
+        "lat": 38.184,
+        "lng": 128.616
+      },
+      {
+        "name": "설악산 권금성",
+        "name_en": "Gwongeumseong",
+        "kind": "viewpoint",
+        "lat": 38.1635,
+        "lng": 128.492
+      },
+      {
+        "name": "영금정",
+        "name_en": "Yeonggeumjeong",
+        "kind": "landmark",
+        "lat": 38.2135,
+        "lng": 128.601
+      }
+    ]
+  },
+  {
+    "hubId": "paris",
+    "name": "파리",
+    "name_en": "Paris",
+    "country": "프랑스",
+    "country_en": "France",
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "aliases": ["paris", "빠리"],
+    "attractions": [
+      {
+        "name": "에펠탑",
+        "name_en": "Eiffel Tower",
+        "kind": "landmark",
+        "lat": 48.8584,
+        "lng": 2.2945
+      },
+      {
+        "name": "루브르 박물관",
+        "name_en": "Louvre Museum",
+        "kind": "museum",
+        "lat": 48.8606,
+        "lng": 2.3376
+      },
+      {
+        "name": "노트르담 대성당",
+        "name_en": "Notre-Dame Cathedral",
+        "kind": "landmark",
+        "lat": 48.853,
+        "lng": 2.3499
+      },
+      {
+        "name": "개선문",
+        "name_en": "Arc de Triomphe",
+        "kind": "landmark",
+        "lat": 48.8738,
+        "lng": 2.295
+      },
+      {
+        "name": "사크레쾨르 대성당",
+        "name_en": "Sacré-Cœur",
+        "kind": "landmark",
+        "lat": 48.8867,
+        "lng": 2.3431
+      },
+      {
+        "name": "몽마르트",
+        "name_en": "Montmartre",
+        "kind": "neighborhood",
+        "lat": 48.8863,
+        "lng": 2.3406
+      }
+    ]
+  }
+]

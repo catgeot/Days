@@ -27,6 +27,14 @@ import {
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
+import {
+  resolveCityAttractionHub,
+  resolveHubAttraction,
+  attractionToPlacePin,
+  makeDisambiguationResult,
+} from '../lib/cityAttractionHubs.js';
+import { buildHubCandidatesForEnter } from '../lib/searchSuggestions.js';
+import { searchBoxForward } from '../lib/mapboxSearchBox.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -631,6 +639,23 @@ export function useHomeHandlers({
       return querySpot;
     }
 
+    // 큐레이션 명소 exact (낙산사·에펠탑) → 바로 핀
+    const hubAttractionHit = resolveHubAttraction(query);
+    if (hubAttractionHit) {
+      const pin = attractionToPlacePin(hubAttractionHit.hub, hubAttractionHit.attraction);
+      handleLocationSelect(pin);
+      return pin;
+    }
+
+    // 도시 허브 exact (속초·파리) → 선택 카드 (임의 1곳 점프 금지)
+    const hubHit = resolveCityAttractionHub(query);
+    if (hubHit) {
+      const candidates = await buildHubCandidatesForEnter(hubHit);
+      return makeDisambiguationResult(query, candidates, {
+        title: `'${hubHit.name}' — 도시와 명소를 골라주세요`,
+      });
+    }
+
     const localSpot = TRAVEL_SPOTS.find(s =>
       s.name.toLowerCase() === query.toLowerCase() ||
       (s.name_en && s.name_en.toLowerCase() === query.toLowerCase())
@@ -895,6 +920,65 @@ export function useHomeHandlers({
         return hintedSpot;
       }
 
+      // 시설·유명 명소 단건이 아니면, 동명·다국가 등 모호할 때만 선택 카드
+      if (!isFacilityQuery(query)) {
+        try {
+          const remoteHits = await searchBoxForward(query, {
+            limit: 5,
+            types: 'place,city,poi',
+          });
+          const seenNames = new Set();
+          const distinct = [];
+          for (const hit of remoteHits) {
+            const key = String(hit.name || '')
+              .trim()
+              .toLowerCase()
+              .replace(/\s+/g, '');
+            if (!key || seenNames.has(key)) continue;
+            seenNames.add(key);
+            distinct.push(hit);
+          }
+          if (distinct.length >= 2) {
+            const countries = new Set(
+              distinct.map((d) => String(d.country || '').trim()).filter(Boolean),
+            );
+            const placeLike = distinct.filter(
+              (d) => d.kind === 'city' || d.kind === 'attraction' || d.kind === 'poi',
+            );
+            const compactQuery = query.replace(/\s+/g, '');
+            const ambiguous =
+              countries.size >= 2 ||
+              (placeLike.length >= 2 && compactQuery.length <= 8 && !/[?!.]/.test(query));
+
+            if (ambiguous) {
+              const geoName = String(coords.name || query).trim();
+              const geoKey = geoName.toLowerCase().replace(/\s+/g, '');
+              if (!seenNames.has(geoKey)) {
+                distinct.unshift({
+                  id: `geocode-${coords.lat}-${coords.lng}`,
+                  kind: 'city',
+                  badge: '도시',
+                  name: geoName,
+                  name_en: coords.name_en || geoName,
+                  country: coords.country || 'Explore',
+                  country_en: coords.country_en || 'Explore',
+                  lat: coords.lat,
+                  lng: coords.lng,
+                  source: 'geocode',
+                  uiPlace: true,
+                  desc: `${geoName} (${coords.country || 'Explore'})`,
+                });
+              }
+              return makeDisambiguationResult(query, distinct.slice(0, 8), {
+                title: `'${query}' — 위치가 여러 곳입니다. 골라주세요`,
+              });
+            }
+          }
+        } catch {
+          // Search Box 실패 시 단일 geocode 결과로 진행
+        }
+      }
+
       const displayName = coords.name || query;
       const normalizedLoc = finalizeUiPlacePin({
         id: `search-${coords.lat}-${coords.lng}`,
@@ -954,7 +1038,42 @@ export function useHomeHandlers({
           const isMoodCache = parsedData?.intent_type === 'mood' && Array.isArray(parsedData?.variants);
 
           if (isMoodCache) {
-            const picked = pickMoodVariant(parsedData.variants);
+            const moodVariants = Array.isArray(parsedData.variants) ? parsedData.variants : [];
+            if (moodVariants.length >= 2) {
+              const cards = [];
+              for (const variant of moodVariants) {
+                const verified = await verifyAndNormalizeCandidate(variant, query, 'CacheMood');
+                if (!verified) continue;
+                cards.push({
+                  id: `mood-cache-${verified.lat}-${verified.lng}`,
+                  kind: 'city',
+                  badge: '추천',
+                  name: verified.name,
+                  name_en: verified.name_en,
+                  country: verified.country,
+                  country_en: verified.country_en,
+                  lat: verified.lat,
+                  lng: verified.lng,
+                  source: 'mood',
+                  uiPlace: true,
+                  desc: variant?.reason || verified.desc || '',
+                });
+              }
+              if (cards.length >= 2) {
+                return makeDisambiguationResult(query, cards, {
+                  title: `'${query}'에 어울리는 여행지 — 골라주세요`,
+                });
+              }
+              if (cards.length === 1) {
+                handleLocationSelect(cards[0]);
+                setDraftInput(cards[0].name);
+                processSearchKeywords(cards[0]);
+                isCorrected = true;
+                return cards[0];
+              }
+            }
+
+            const picked = pickMoodVariant(moodVariants);
             if (picked?.variant) {
               const verifiedMoodLoc = await verifyAndNormalizeCandidate(picked.variant, query, "CacheMood");
               if (verifiedMoodLoc) {
@@ -962,9 +1081,8 @@ export function useHomeHandlers({
                 setDraftInput(verifiedMoodLoc.name);
                 processSearchKeywords(verifiedMoodLoc);
                 isCorrected = true;
-                return verifiedMoodLoc;
 
-                const nextVariants = [...parsedData.variants];
+                const nextVariants = [...moodVariants];
                 nextVariants[picked.index] = {
                   ...nextVariants[picked.index],
                   served_count: Number(nextVariants[picked.index]?.served_count || 0) + 1,
@@ -981,6 +1099,8 @@ export function useHomeHandlers({
                   .then(({ error }) => {
                     if (error) console.warn("[Smart Search Mood Cache Update Error]", error);
                   });
+
+                return verifiedMoodLoc;
               }
             }
           } else {
@@ -1090,6 +1210,49 @@ export function useHomeHandlers({
                 }
               }
 
+              if (verifiedCandidates.length >= 2) {
+                const cards = verifiedCandidates.map((variant) => ({
+                  id: `mood-ai-${variant.lat}-${variant.lng}`,
+                  kind: 'city',
+                  badge: '추천',
+                  name: variant.name,
+                  name_en: variant.name_en,
+                  country: variant.country,
+                  country_en: variant.country_en,
+                  lat: variant.lat,
+                  lng: variant.lng,
+                  source: 'mood',
+                  uiPlace: true,
+                  desc: variant.reason || '',
+                }));
+
+                const cachePayload = {
+                  corrected_query: cards[0].name,
+                  location_data: {
+                    intent_type: 'mood',
+                    source: 'ai',
+                    variants: verifiedCandidates,
+                    last_pick_at: new Date().toISOString()
+                  }
+                };
+                if (cachedDict?.id) {
+                  supabase.from('search_dictionary').update(cachePayload).eq('id', cachedDict.id).then(({ error }) => {
+                    if (error) console.warn("[Smart Search Mood Cache Upsert Error]", error);
+                  });
+                } else {
+                  supabase.from('search_dictionary').insert({
+                    original_query: lowerQuery,
+                    ...cachePayload
+                  }).then(({ error }) => {
+                    if (error) console.warn("[Smart Search Mood Cache Insert Error]", error);
+                  });
+                }
+
+                return makeDisambiguationResult(query, cards, {
+                  title: `'${query}'에 어울리는 여행지 — 골라주세요`,
+                });
+              }
+
               const picked = pickMoodVariant(verifiedCandidates);
               if (picked?.variant) {
                 const chosen = picked.variant;
@@ -1099,7 +1262,6 @@ export function useHomeHandlers({
                   setDraftInput(chosenLoc.name);
                   processSearchKeywords(chosenLoc);
                   isCorrected = true;
-                  return chosenLoc;
 
                   const variantsForCache = verifiedCandidates.map((variant, idx) => ({
                     ...variant,
@@ -1129,6 +1291,8 @@ export function useHomeHandlers({
                       if (error) console.warn("[Smart Search Mood Cache Insert Error]", error);
                     });
                   }
+
+                  return chosenLoc;
                 }
               }
             } else {
