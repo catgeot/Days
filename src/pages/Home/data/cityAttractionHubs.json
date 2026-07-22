@@ -3090,5 +3090,650 @@
         "lng": 127
       }
     ]
+  },
+  {
+    "hubId": "barcelona",
+    "name": "바르셀로나",
+    "name_en": "Barcelona",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 41.3874,
+    "lng": 2.1686,
+    "aliases": [
+      "barcelona",
+      "바르셀로나시"
+    ],
+    "attractions": [
+      {
+        "name": "사그라다 파밀리아",
+        "name_en": "Sagrada Familia",
+        "kind": "landmark",
+        "lat": 41.4036,
+        "lng": 2.1744
+      },
+      {
+        "name": "구엘 공원",
+        "name_en": "Park Guell",
+        "kind": "park",
+        "lat": 41.4145,
+        "lng": 2.1527
+      },
+      {
+        "name": "카사 바트요",
+        "name_en": "Casa Batllo",
+        "kind": "landmark",
+        "lat": 41.3916,
+        "lng": 2.1649
+      },
+      {
+        "name": "카사 밀라",
+        "name_en": "Casa Mila",
+        "kind": "landmark",
+        "lat": 41.3954,
+        "lng": 2.1619
+      },
+      {
+        "name": "람블라스",
+        "name_en": "La Rambla",
+        "kind": "neighborhood",
+        "lat": 41.381,
+        "lng": 2.1734
+      },
+      {
+        "name": "바르셀로네타 비치",
+        "name_en": "Barceloneta Beach",
+        "kind": "beach",
+        "lat": 41.3785,
+        "lng": 2.1925
+      },
+      {
+        "name": "몬주익",
+        "name_en": "Montjuic",
+        "kind": "viewpoint",
+        "lat": 41.364,
+        "lng": 2.1677
+      }
+    ]
+  },
+  {
+    "hubId": "vancouver",
+    "name": "밴쿠버",
+    "name_en": "Vancouver",
+    "country": "캐나다",
+    "country_en": "Canada",
+    "lat": 49.2827,
+    "lng": -123.1207,
+    "aliases": [
+      "vancouver",
+      "밴쿠버시"
+    ],
+    "attractions": [
+      {
+        "name": "스탠리 파크",
+        "name_en": "Stanley Park",
+        "kind": "park",
+        "lat": 49.3017,
+        "lng": -123.1417
+      },
+      {
+        "name": "그랜빌 아일랜드",
+        "name_en": "Granville Island",
+        "kind": "market",
+        "lat": 49.2712,
+        "lng": -123.134
+      },
+      {
+        "name": "캐필라노 서스펜션 브릿지",
+        "name_en": "Capilano Suspension Bridge",
+        "kind": "landmark",
+        "lat": 49.3427,
+        "lng": -123.1149
+      },
+      {
+        "name": "가스타운",
+        "name_en": "Gastown",
+        "kind": "neighborhood",
+        "lat": 49.284,
+        "lng": -123.108
+      },
+      {
+        "name": "캐나다 플레이스",
+        "name_en": "Canada Place",
+        "kind": "landmark",
+        "lat": 49.2888,
+        "lng": -123.1111
+      },
+      {
+        "name": "그라우스 마운틴",
+        "name_en": "Grouse Mountain",
+        "kind": "viewpoint",
+        "lat": 49.38,
+        "lng": -123.081
+      },
+      {
+        "name": "퀸 엘리자베스 파크",
+        "name_en": "Queen Elizabeth Park Vancouver",
+        "kind": "park",
+        "lat": 49.2418,
+        "lng": -123.1126
+      }
+    ]
+  },
+  {
+    "hubId": "phuket",
+    "name": "푸켓",
+    "name_en": "Phuket",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 7.8804,
+    "lng": 98.3923,
+    "aliases": [
+      "phuket",
+      "푸켓섬",
+      "푸껫"
+    ],
+    "attractions": [
+      {
+        "name": "파통 비치",
+        "name_en": "Patong Beach",
+        "kind": "beach",
+        "lat": 7.8965,
+        "lng": 98.2965
+      },
+      {
+        "name": "카타 비치",
+        "name_en": "Kata Beach",
+        "kind": "beach",
+        "lat": 7.821,
+        "lng": 98.297
+      },
+      {
+        "name": "피피섬",
+        "name_en": "Phi Phi Islands",
+        "kind": "beach",
+        "lat": 7.7407,
+        "lng": 98.7784
+      },
+      {
+        "name": "빅 부다 푸켓",
+        "name_en": "Big Buddha Phuket",
+        "kind": "temple",
+        "lat": 7.8277,
+        "lng": 98.3128
+      },
+      {
+        "name": "푸켓 올드타운",
+        "name_en": "Phuket Old Town",
+        "kind": "neighborhood",
+        "lat": 7.884,
+        "lng": 98.388
+      },
+      {
+        "name": "카론 비치",
+        "name_en": "Karon Beach",
+        "kind": "beach",
+        "lat": 7.847,
+        "lng": 98.294
+      },
+      {
+        "name": "프롱텝 케이프",
+        "name_en": "Promthep Cape",
+        "kind": "viewpoint",
+        "lat": 7.762,
+        "lng": 98.305
+      }
+    ]
+  },
+  {
+    "hubId": "chiang-mai",
+    "name": "치앙마이",
+    "name_en": "Chiang Mai",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 18.7883,
+    "lng": 98.9853,
+    "aliases": [
+      "chiang mai",
+      "chiangmai",
+      "치앙마이시"
+    ],
+    "attractions": [
+      {
+        "name": "도이수텝",
+        "name_en": "Doi Suthep",
+        "kind": "temple",
+        "lat": 18.805,
+        "lng": 98.921
+      },
+      {
+        "name": "치앙마이 올드타운",
+        "name_en": "Chiang Mai Old City",
+        "kind": "neighborhood",
+        "lat": 18.788,
+        "lng": 98.986
+      },
+      {
+        "name": "치앙마이 나이트 바자",
+        "name_en": "Chiang Mai Night Bazaar",
+        "kind": "market",
+        "lat": 18.785,
+        "lng": 98.999
+      },
+      {
+        "name": "왓 프라싱",
+        "name_en": "Wat Phra Singh",
+        "kind": "temple",
+        "lat": 18.7887,
+        "lng": 98.9817
+      },
+      {
+        "name": "왓 체디르엉",
+        "name_en": "Wat Chedi Luang",
+        "kind": "temple",
+        "lat": 18.7869,
+        "lng": 98.9864
+      },
+      {
+        "name": "인타논산",
+        "name_en": "Doi Inthanon",
+        "kind": "viewpoint",
+        "lat": 18.588,
+        "lng": 98.487
+      },
+      {
+        "name": "워로롯 시장",
+        "name_en": "Warorot Market",
+        "kind": "market",
+        "lat": 18.7905,
+        "lng": 99.0015
+      }
+    ]
+  },
+  {
+    "hubId": "cheongju",
+    "name": "청주",
+    "name_en": "Cheongju",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.6424,
+    "lng": 127.489,
+    "aliases": [
+      "cheongju",
+      "청주시"
+    ],
+    "attractions": [
+      {
+        "name": "청남대",
+        "name_en": "Cheongnamdae",
+        "kind": "park",
+        "lat": 36.46,
+        "lng": 127.49
+      },
+      {
+        "name": "상당산성",
+        "name_en": "Sangdangsanseong",
+        "kind": "landmark",
+        "lat": 36.66,
+        "lng": 127.54
+      },
+      {
+        "name": "문암생태공원",
+        "name_en": "Munam Ecological Park",
+        "kind": "park",
+        "lat": 36.64,
+        "lng": 127.43
+      },
+      {
+        "name": "청주 고인쇄박물관",
+        "name_en": "Cheongju Early Printing Museum",
+        "kind": "museum",
+        "lat": 36.644,
+        "lng": 127.48
+      },
+      {
+        "name": "수암골",
+        "name_en": "Suamgol",
+        "kind": "neighborhood",
+        "lat": 36.635,
+        "lng": 127.501
+      },
+      {
+        "name": "육거리시장",
+        "name_en": "Yukgeori Market",
+        "kind": "market",
+        "lat": 36.6355,
+        "lng": 127.4895
+      },
+      {
+        "name": "청주 중앙공원",
+        "name_en": "Cheongju Central Park",
+        "kind": "park",
+        "lat": 36.6358,
+        "lng": 127.491
+      }
+    ]
+  },
+  {
+    "hubId": "taean",
+    "name": "태안",
+    "name_en": "Taean",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.7456,
+    "lng": 126.298,
+    "aliases": [
+      "taean",
+      "태안군",
+      "안면도"
+    ],
+    "attractions": [
+      {
+        "name": "꽃지해수욕장",
+        "name_en": "Kkotji Beach",
+        "kind": "beach",
+        "lat": 36.503,
+        "lng": 126.333
+      },
+      {
+        "name": "신두리해안사구",
+        "name_en": "Sinduri Coastal Dune",
+        "kind": "viewpoint",
+        "lat": 36.838,
+        "lng": 126.196
+      },
+      {
+        "name": "천리포수목원",
+        "name_en": "Chollipo Arboretum",
+        "kind": "park",
+        "lat": 36.802,
+        "lng": 126.15
+      },
+      {
+        "name": "만리포해수욕장",
+        "name_en": "Mallipo Beach",
+        "kind": "beach",
+        "lat": 36.787,
+        "lng": 126.143
+      },
+      {
+        "name": "몽산포해수욕장",
+        "name_en": "Mongsanpo Beach",
+        "kind": "beach",
+        "lat": 36.673,
+        "lng": 126.282
+      },
+      {
+        "name": "안면도수목원",
+        "name_en": "Anmyeondo Arboretum",
+        "kind": "park",
+        "lat": 36.51,
+        "lng": 126.36
+      },
+      {
+        "name": "태안해안국립공원",
+        "name_en": "Taeanhaean National Park",
+        "kind": "park",
+        "lat": 36.7,
+        "lng": 126.25
+      }
+    ]
+  },
+  {
+    "hubId": "ulleung",
+    "name": "울릉",
+    "name_en": "Ulleung",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.4844,
+    "lng": 130.9057,
+    "aliases": [
+      "ulleung",
+      "울릉도",
+      "울릉군"
+    ],
+    "attractions": [
+      {
+        "name": "성인봉",
+        "name_en": "Seonginbong",
+        "kind": "viewpoint",
+        "lat": 37.498,
+        "lng": 130.867
+      },
+      {
+        "name": "내수전일출전망대",
+        "name_en": "Naesujeon Sunrise Observatory",
+        "kind": "viewpoint",
+        "lat": 37.52,
+        "lng": 130.91
+      },
+      {
+        "name": "태하향목전망대",
+        "name_en": "Taeha Hyangmok Observatory",
+        "kind": "viewpoint",
+        "lat": 37.52,
+        "lng": 130.8
+      },
+      {
+        "name": "나리분지",
+        "name_en": "Nari Basin",
+        "kind": "park",
+        "lat": 37.503,
+        "lng": 130.865
+      },
+      {
+        "name": "행남산책로",
+        "name_en": "Haengnam Coastal Walk",
+        "kind": "viewpoint",
+        "lat": 37.48,
+        "lng": 130.91
+      },
+      {
+        "name": "봉래폭포",
+        "name_en": "Bongrae Falls",
+        "kind": "viewpoint",
+        "lat": 37.49,
+        "lng": 130.89
+      },
+      {
+        "name": "울릉독도박물관",
+        "name_en": "Ulleung Dokdo Museum",
+        "kind": "museum",
+        "lat": 37.483,
+        "lng": 130.905
+      }
+    ]
+  },
+  {
+    "hubId": "ganghwa",
+    "name": "강화",
+    "name_en": "Ganghwa",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.7469,
+    "lng": 126.4877,
+    "aliases": [
+      "ganghwa",
+      "강화도",
+      "강화군"
+    ],
+    "attractions": [
+      {
+        "name": "보문사",
+        "name_en": "Bomunsa Ganghwa",
+        "kind": "temple",
+        "lat": 37.688,
+        "lng": 126.32
+      },
+      {
+        "name": "강화평화전망대",
+        "name_en": "Ganghwa Peace Observatory",
+        "kind": "viewpoint",
+        "lat": 37.82,
+        "lng": 126.45
+      },
+      {
+        "name": "초지진",
+        "name_en": "Chojijin",
+        "kind": "landmark",
+        "lat": 37.63,
+        "lng": 126.53
+      },
+      {
+        "name": "갑곶돈대",
+        "name_en": "Gapgot Dondae",
+        "kind": "landmark",
+        "lat": 37.73,
+        "lng": 126.52
+      },
+      {
+        "name": "고려궁지",
+        "name_en": "Goryeogungji",
+        "kind": "landmark",
+        "lat": 37.752,
+        "lng": 126.485
+      },
+      {
+        "name": "마니산",
+        "name_en": "Manisan",
+        "kind": "viewpoint",
+        "lat": 37.612,
+        "lng": 126.435
+      },
+      {
+        "name": "석모도",
+        "name_en": "Seokmodo",
+        "kind": "park",
+        "lat": 37.69,
+        "lng": 126.32
+      }
+    ]
+  },
+  {
+    "hubId": "gapyeong",
+    "name": "가평",
+    "name_en": "Gapyeong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.8315,
+    "lng": 127.5109,
+    "aliases": [
+      "gapyeong",
+      "가평군"
+    ],
+    "attractions": [
+      {
+        "name": "아침고요수목원",
+        "name_en": "Garden of Morning Calm",
+        "kind": "park",
+        "lat": 37.743,
+        "lng": 127.353
+      },
+      {
+        "name": "쁘띠프랑스",
+        "name_en": "Petite France",
+        "kind": "landmark",
+        "lat": 37.715,
+        "lng": 127.39
+      },
+      {
+        "name": "자라섬",
+        "name_en": "Jarasum",
+        "kind": "park",
+        "lat": 37.828,
+        "lng": 127.522
+      },
+      {
+        "name": "청평호",
+        "name_en": "Cheongpyeong Lake",
+        "kind": "viewpoint",
+        "lat": 37.735,
+        "lng": 127.42
+      },
+      {
+        "name": "가평레일바이크",
+        "name_en": "Gapyeong Rail Bike",
+        "kind": "landmark",
+        "lat": 37.815,
+        "lng": 127.51
+      },
+      {
+        "name": "호명호수",
+        "name_en": "Homyeong Lake",
+        "kind": "park",
+        "lat": 37.76,
+        "lng": 127.4
+      },
+      {
+        "name": "연인산",
+        "name_en": "Yeonin Mountain",
+        "kind": "viewpoint",
+        "lat": 37.85,
+        "lng": 127.45
+      }
+    ]
+  },
+  {
+    "hubId": "gongju",
+    "name": "공주",
+    "name_en": "Gongju",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.4465,
+    "lng": 127.119,
+    "aliases": [
+      "gongju",
+      "공주시"
+    ],
+    "attractions": [
+      {
+        "name": "공산성",
+        "name_en": "Gongsanseong",
+        "kind": "landmark",
+        "lat": 36.462,
+        "lng": 127.126
+      },
+      {
+        "name": "마곡사",
+        "name_en": "Magoksa",
+        "kind": "temple",
+        "lat": 36.56,
+        "lng": 127.01
+      },
+      {
+        "name": "무령왕릉",
+        "name_en": "Tomb of King Muryeong",
+        "kind": "museum",
+        "lat": 36.4615,
+        "lng": 127.112
+      },
+      {
+        "name": "국립공주박물관",
+        "name_en": "Gongju National Museum",
+        "kind": "museum",
+        "lat": 36.4625,
+        "lng": 127.1125
+      },
+      {
+        "name": "석장리박물관",
+        "name_en": "Seokjangni Museum",
+        "kind": "museum",
+        "lat": 36.44,
+        "lng": 127.16
+      },
+      {
+        "name": "공주한옥마을",
+        "name_en": "Gongju Hanok Village",
+        "kind": "neighborhood",
+        "lat": 36.46,
+        "lng": 127.12
+      },
+      {
+        "name": "금강신관공원",
+        "name_en": "Geumgang Singwan Park",
+        "kind": "park",
+        "lat": 36.455,
+        "lng": 127.12
+      }
+    ]
   }
 ]
