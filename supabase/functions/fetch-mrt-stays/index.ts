@@ -462,7 +462,8 @@ serve(async (req) => {
     const checkOut = String(body?.checkOut || defaults.checkOut);
     const adultCount = Math.max(1, Math.min(8, Number(body?.adultCount) || 2));
     const childCount = Math.max(0, Math.min(8, Number(body?.childCount) || 0));
-    const size = Math.max(1, Math.min(20, Number(body?.size) || 20));
+    /** 파트너 API size 상한 50 · 클라는 fetch 50 후 UI 20 노출 */
+    const size = Math.max(1, Math.min(50, Number(body?.size) || 20));
     const page = Math.max(0, Number(body?.page) || 0);
 
     // region 매칭은 됐지만 해당 CITY 재고 0인 경우(버뮤다→세인트조지스 등)

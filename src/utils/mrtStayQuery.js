@@ -167,11 +167,12 @@ const MRT_STAY_KEYWORD_OVERRIDES = {
     altKeywords: ['Reykjavik', 'Reykjavík', '아이슬란드', 'Iceland'],
   },
   /**
-   * 라로통가 — 아바루아·아로랑기 호텔 밀집(MRT 홈과 동일 권역).
+   * 라로통가 — CITY「라로통가」(홈 total≈143) 우선.
+   * 아바루아/아로랑기는 NEIGHBORHOOD로 좁혀져 재고·홈 괴리(8·36)가 큼.
    */
   rarotonga: {
-    keyword: '아바루아',
-    altKeywords: ['Avarua', '아로랑기', 'Arorangi', '라로통가', 'Rarotonga'],
+    keyword: '라로통가',
+    altKeywords: ['Rarotonga', '아바루아', 'Avarua', '아로랑기', 'Arorangi'],
     countryHint: '쿡 제도',
     countryHintAlts: ['Cook Islands', '쿡제도'],
   },

@@ -955,12 +955,16 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const tripcomLinkTarget = getPartnerLinkTarget();
   const tripcomLinkRel = getTripcomLinkRel(tripcomLinkTarget);
 
-  /** 목록(최대 20)이 ≤5이면 하단 Trip CTA · 요금無 혼재는 moreWithDateChange 카피 */
+  /** 예약 가능(요금有) ≤5이면 하단 Trip CTA · 목록은 요금無 유지 · moreWithDateChange 카피 */
+  const bookableCountForCta =
+    Number(mrtListMeta?.bookableCount) >= 0
+      ? Number(mrtListMeta.bookableCount)
+      : (Array.isArray(items) ? items.filter((it) => Number(it?.salePrice) > 0).length : 0);
   const showLowInventoryCta =
     status === 'ready' &&
     Array.isArray(items) &&
     items.length > 0 &&
-    items.length <= MRT_STAY_LOW_COUNT;
+    bookableCountForCta <= MRT_STAY_LOW_COUNT;
 
   const tripcomLowUrl = showLowInventoryCta
     ? buildTripcomHotelSearchUrl(location, {

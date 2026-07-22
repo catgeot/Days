@@ -23,12 +23,16 @@ export {
   stripKoAdminSuffix,
 };
 
-/** countryHint·keyword override 변경 시 무효화 · v15: 요금無도 목록 유지(정렬만 요금 우선) */
-const CACHE_PREFIX = 'gateo:mrt-stays:v15:';
+/** countryHint·keyword override 변경 시 무효화 · v17: fetch size50 · UI 20 */
+const CACHE_PREFIX = 'gateo:mrt-stays:v17:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;
 const MAX_CHILDREN = 8;
+/** 파트너 accommodation/search size 상한 */
+const MRT_STAY_FETCH_SIZE = 50;
+/** 게이트오 목록 노출 상한(요금有 우선 정렬 후) */
+const MRT_STAY_DISPLAY_SIZE = 20;
 
 export function normalizeMrtGuestCounts(adultCount, childCount) {
   const adults = Math.max(1, Math.min(MAX_ADULTS, Number(adultCount) || 2));
@@ -196,6 +200,24 @@ function cacheKey(
   return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${keyword}`;
 }
 
+/** fetch 원본 → 요금有 우선 · UI는 DISPLAY_SIZE · bookableCount는 fetch 전체 기준(CTA) */
+function shapeMrtStayResult(payload) {
+  if (!payload || typeof payload !== 'object') return payload;
+  const listed = Array.isArray(payload.items) ? payload.items : [];
+  const sorted = sortMrtStaysPricedFirst(listed);
+  const bookableCount = filterBookableMrtStays(listed).length;
+  const items = sorted.slice(0, MRT_STAY_DISPLAY_SIZE);
+  const bookableDisplayed = filterBookableMrtStays(items).length;
+  return {
+    ...payload,
+    items,
+    listedCount: items.length,
+    bookableCount,
+    totalCount: Number(payload.apiTotalCount) || listed.length,
+    moreWithDateChange: bookableDisplayed < items.length,
+  };
+}
+
 function readCache(key) {
   if (typeof sessionStorage === 'undefined') return null;
   try {
@@ -208,17 +230,7 @@ function readCache(key) {
     }
     const payload = parsed.payload ?? null;
     if (!payload || typeof payload !== 'object') return payload;
-    const listed = Array.isArray(payload.items) ? payload.items : [];
-    const bookableCount = filterBookableMrtStays(listed).length;
-    const items = sortMrtStaysPricedFirst(listed);
-    return {
-      ...payload,
-      items,
-      listedCount: listed.length,
-      bookableCount,
-      totalCount: Number(payload.apiTotalCount) || listed.length,
-      moreWithDateChange: bookableCount < listed.length,
-    };
+    return shapeMrtStayResult(payload);
   } catch {
     return null;
   }
@@ -255,7 +267,10 @@ export async function fetchMrtStays(params) {
     params?.adultCount,
     params?.childCount,
   );
-  const size = Math.max(1, Math.min(20, Number(params?.size) || 20));
+  const size = Math.max(
+    1,
+    Math.min(MRT_STAY_FETCH_SIZE, Number(params?.size) || MRT_STAY_FETCH_SIZE),
+  );
   const ladderKey = [keyword, ...altKeywords].join('|');
   const key = cacheKey(
     ladderKey,
@@ -295,10 +310,8 @@ export async function fetchMrtStays(params) {
     }
 
     const listed = Array.isArray(data.items) ? data.items : [];
-    const bookableCount = filterBookableMrtStays(listed).length;
-    const items = sortMrtStaysPricedFirst(listed);
     const apiTotalCount = Number(data.totalCount);
-    /** 캐시: API 원본 목록 · 읽기 시 요금 우선 정렬만 */
+    /** 캐시: fetch 원본(최대 50) · 읽기/반환 시 요금 우선·UI 20 */
     const cachePayload = {
       ok: true,
       region: data.region ?? null,
@@ -310,20 +323,12 @@ export async function fetchMrtStays(params) {
       usedKeyword: data.usedKeyword ?? keyword,
       apiTotalCount: Number.isFinite(apiTotalCount) ? apiTotalCount : listed.length,
     };
-    const payload = {
-      ...cachePayload,
-      items,
-      listedCount: listed.length,
-      bookableCount,
-      totalCount: cachePayload.apiTotalCount,
-      moreWithDateChange: bookableCount < listed.length,
-    };
 
     if (listed.length > 0) {
       writeCache(key, cachePayload);
     }
 
-    return payload;
+    return shapeMrtStayResult(cachePayload);
   } catch {
     return null;
   }
@@ -350,6 +355,6 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
     isDomestic,
     ...normalized,
     ...guests,
-    size: 20,
+    size: MRT_STAY_FETCH_SIZE,
   });
 }

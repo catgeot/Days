@@ -168,3 +168,47 @@
 - **금지 3**: 미검증 여행사 URL · Trip 스크래핑 · `VITE_` MRT 키 · 홈 괴리 원인 추측만으로 region 대량 변경
 - **다음 작업**: (1) 저재고 Trip을 **bookableCount≤5**로 복구·사용자 선택권 (2) API↔MRT 홈 괴리 LIVE 대조(아이슬란드·라로통가)
 - **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「Trip CTA bookableCount 복구 + MRT 홈 괴리부터」
+
+### Trip CTA bookableCount 복구 + API↔MRT 홈 괴리 (이어하기)
+
+**상태**: ⏳ 코드 반영 · PROD/커밋 대기 · 아이슬란드 요금 파이프라인은 합의 필요
+
+#### 수정
+
+- `GlobeStayStrip` `showLowInventoryCta` ← **`bookableCount ≤ 5`** (목록 `items.length` 아님)
+- `rarotonga` 키워드 **`라로통가` CITY** 우선 (아바루아 NH 철회를 1차로) · 캐시 `v16`
+- 순수 스모크 16케이스 OK
+
+#### LIVE 대조 (2026-08-05~08 · 성인2 · regionId 명시)
+
+| 대상 | 게이트오(파트너 API) | MRT 홈(소비자) |
+|------|---------------------|----------------|
+| 아이슬란드/`레이캬비크` `44026` | total **287** · 1p listed 20 · **요금有 2** | 타이틀 **336** · 1화면 카드 전부 요금 표시 |
+| 라로통가(수정 전 `아바루아` NH `86858`) | total **8** · 요금有 0 | (좁은 권역) |
+| 라로통가 CITY `44325` | total **143** · 1p 요금有 0 | 타이틀 **143** · 상단 일부 요금·다수「일정 변경」 |
+
+#### 괴리 원인 (추측 아님 · 엔드포인트 확인)
+
+1. **API가 다름** — Edge=`partner-ext-api…/accommodation/search` · 홈=`api3…/unionstay/v3/front/search` (`priceInfo.displayPriceText`)
+2. **라로통가 region 과세분화** — NH 아바루아(8) ≠ CITY 라로통가(143≈홈) → 키워드 수정으로 해소 방향
+3. **아이슬란드 요금** — 동일 `regionId`여도 파트너 `salePrice` null이 많고 total도 287≠336 · 소비자 front 스크래핑 금지 유지
+
+#### 남은 선택 (사용자)
+
+- A) 파트너 한계 수용 + Trip CTA(bookable≤5) + 「MRT에서 더 보기」강화
+- B) Edge가 파트너 **다페이지**로 요금有만 모아 1p 구성(홈 느낌 근접·total/정렬은 여전히 파트너)
+- C) MRT 파트너 측에 salePrice/정렬 스펙 문의
+
+#### size 50 프로브 · 반영 (이어하기)
+
+- 파트너 `sort`/`filter`/`onlyAvailable` 등 **전부 무시**(baseline과 동일)
+- `size` 상한 **50**(100은 400) · size50 시 아이슬란드 요금有 2→**8**
+- 반영: Edge·클라 fetch **50** · UI **요금有 우선 후 20** · `bookableCount`는 fetch50 기준 · 캐시 `v17`
+- **배포 필요**: `npx supabase functions deploy fetch-mrt-stays --project-ref <ref> --no-verify-jwt`
+
+#### 다음 세션
+
+- **읽을 것**: size50/UI20 · bookable CTA · `rarotonga` CITY
+- **금지**: 소비자 `unionstay` 스크래핑 · region 전수 추측 변경
+- **남은 일**: Edge 재배포 · PROD QA(아이슬란드 요금有·Trip CTA) · 다페이지(B)는 보류
+- **제시어**: `숙소-이어하기` · 「Edge fetch-mrt-stays 재배포·PROD QA부터」
