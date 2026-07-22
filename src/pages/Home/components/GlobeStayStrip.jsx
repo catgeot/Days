@@ -52,7 +52,9 @@ import {
   GuestStepper,
   StayRangeCalendar,
   formatStayDateLabel,
+  DESKTOP_MONTHS,
 } from './stayDateControls';
+import Logo from './Logo';
 
 const LG_MQ = '(min-width: 1024px)';
 /** 목록 URL을 못 만들 때만 — 마이리얼트립 제휴 홈 */
@@ -129,6 +131,73 @@ function useIsLg() {
   return isLg;
 }
 
+/** 숙소 패널 고정 헤더 — 로고 + 여행지명 (+ 닫기) */
+function StayPanelHeader({
+  placeName = '',
+  onClose,
+  loading = false,
+  /** mobile fullscreen uses larger close + safe-area */
+  density = 'desktop',
+}) {
+  const title = String(placeName || '').trim();
+  const mobile = density === 'mobile';
+  return (
+    <header
+      className={`shrink-0 border-b border-white/10 bg-black/90 backdrop-blur-md ${
+        mobile
+          ? 'px-3 pb-2.5 pt-[max(0.75rem,env(safe-area-inset-top))]'
+          : 'px-4 py-3'
+      }`}
+    >
+      <div className="flex min-w-0 items-center gap-2.5">
+        <Logo size="stay" className="shrink-0" />
+        <span
+          className="hidden h-5 w-px shrink-0 bg-white/20 sm:block"
+          aria-hidden="true"
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 items-center gap-1.5">
+            {title ? (
+              <MapPin
+                size={mobile ? 15 : 14}
+                className="shrink-0 text-amber-200/85"
+                aria-hidden="true"
+              />
+            ) : null}
+            <p
+              className={`min-w-0 truncate font-bold text-amber-50 ${
+                mobile ? 'text-sm' : 'text-[15px]'
+              }`}
+            >
+              {title || (mobile ? '근처 숙소' : '숙소')}
+            </p>
+          </div>
+          {mobile && loading ? (
+            <p className="truncate text-xs font-semibold text-amber-100/75">
+              불러오는 중…
+            </p>
+          ) : null}
+        </div>
+        {onClose ? (
+          <button
+            type="button"
+            aria-label="숙소 목록 닫기"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            className={`flex shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all ${
+              mobile ? 'h-10 w-10' : 'h-9 w-9'
+            }`}
+          >
+            <X size={mobile ? 20 : 16} strokeWidth={2.5} aria-hidden="true" />
+          </button>
+        ) : null}
+      </div>
+    </header>
+  );
+}
+
 function formatPrice(n) {
   if (n == null || !Number.isFinite(Number(n)) || Number(n) <= 0) return null;
   return `${Number(n).toLocaleString('ko-KR')}원~`;
@@ -148,7 +217,10 @@ function StayDateBar({
   onApply,
   showClose = false,
   onClose,
+  /** 패널 고정 헤더에 여행지·닫기가 있을 때 DateBar 중복 숨김 */
+  embedInPanel = false,
 }) {
+  const isLg = useIsLg();
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [draftIn, setDraftIn] = useState(checkIn);
@@ -167,7 +239,8 @@ function StayDateBar({
   /** 헤더 버튼 — 인원만 (일정은 달력에서 즉시 적용) */
   const guestsDirty =
     draftAdult !== adultCount || draftChild !== childCount;
-  const title = String(placeName || '').trim();
+  const title = embedInPanel ? '' : String(placeName || '').trim();
+  const showTitleRow = Boolean(title || (showClose && !embedInPanel));
 
   const closeCalendar = useCallback(() => setOpen(false), []);
 
@@ -210,7 +283,7 @@ function StayDateBar({
       ref={rootRef}
       className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-2.5 py-2"
     >
-      {(title || showClose) ? (
+      {(showTitleRow) ? (
         <div className="mb-1.5 flex min-w-0 items-center gap-1.5">
           {title ? (
             <div className="flex min-w-0 flex-1 items-center gap-1.5 px-0.5">
@@ -226,7 +299,7 @@ function StayDateBar({
           ) : (
             <span className="min-w-0 flex-1" />
           )}
-          {showClose ? (
+          {showClose && !embedInPanel ? (
             <button
               type="button"
               aria-label="숙소 목록 닫기"
@@ -319,14 +392,15 @@ function StayDateBar({
         </button>
       </div>
       {open ? (
-        <div className="flex justify-start">
+        <div className="flex w-full justify-start">
           <StayRangeCalendar
-            key={`${checkIn}|${checkOut}|open`}
+            key={`${checkIn}|${checkOut}|open|${isLg ? 'desk' : 'mob'}`}
             checkIn={checkIn}
             checkOut={checkOut}
             todayYmd={todayYmd}
             onPick={handleCalendarPick}
             onCancel={closeCalendar}
+            monthsVisible={isLg ? DESKTOP_MONTHS : 1}
           />
         </div>
       ) : null}
@@ -627,11 +701,11 @@ function StayLowInventoryFooter({
         {moreWithDateChange ? (
           <>
             <span className="block lg:inline">
-              선택한 일정에 바로 예약 가능한 숙소만 보여요.
+              이 일정에 바로 예약할 수 있는 숙소가 적어요.
             </span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
               <span className="hidden lg:inline"> </span>
-              일정을 바꾸면 더 많아질 수 있어요
+              일정 조정이 필요한 숙소도 함께 보여 드려요
             </span>
           </>
         ) : hasAgency ? (
@@ -676,7 +750,7 @@ function StayLowInventoryFooter({
             onClick={(e) => e.stopPropagation()}
             className={ctaClassName}
           >
-            <span>트립닷컴에서 숙소 검색</span>
+            <span>트립닷컴에서 더 찾아보기</span>
             {hasAgency ? (
               <ExternalLink size={13} className="shrink-0 opacity-80" aria-hidden />
             ) : null}
@@ -728,7 +802,7 @@ function StayCardsGrid({
           <p className="col-span-full break-keep px-0.5 pt-1 text-[11px] font-semibold text-amber-100/65">
             {pricedSorted.length > 0
               ? '일정 조정 시 예약할 수 있는 숙소'
-              : '이 일정엔 요금이 없어요 · 일정을 바꾸면 예약할 수 있어요'}
+              : '이 일정엔 바로 예약 가능한 숙소가 없어요 · 일정을 바꾸면 예약할 수 있어요'}
           </p>
           {flexibleSorted.map((item) => renderCard(item, true))}
         </>
@@ -976,6 +1050,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       onApply={applyStayFilters}
       showClose={Boolean(opts.showClose)}
       onClose={() => setExpanded(false)}
+      embedInPanel={Boolean(opts.embedInPanel)}
     />
   );
 
@@ -1199,7 +1274,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const desktopPanelBody = (
     <div
       ref={desktopListScrollRef}
-      className="globe-stay-strip-scroll min-h-0 flex-1 overflow-y-auto"
+      className="globe-stay-strip-scroll min-h-0 flex-1 overflow-y-auto p-3"
     >
       <style>{`
         .globe-stay-strip-scroll {
@@ -1218,7 +1293,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           border-radius: 9999px;
         }
       `}</style>
-      <div className="mb-3">{renderDateBar({ showClose: true })}</div>
+      <div className="mb-3">{renderDateBar({ embedInPanel: true })}</div>
       {status === 'loading' ? (
         <div
           className="flex min-h-[min(360px,calc(100%-5rem))] flex-col items-center justify-center gap-3 px-4 py-10"
@@ -1281,8 +1356,13 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             aria-label="숙소 목록"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="fixed z-[61] left-4 top-[5.25rem] bottom-6 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-black/80 p-3 shadow-2xl backdrop-blur-xl"
+            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-r border-white/10 bg-black/85 shadow-2xl backdrop-blur-xl"
           >
+            <StayPanelHeader
+              placeName={name}
+              onClose={() => setExpanded(false)}
+              density="desktop"
+            />
             {desktopPanelBody}
             <button
               type="button"
@@ -1316,33 +1396,17 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="shrink-0 border-b border-white/10 px-3 pb-2.5 pt-[max(0.75rem,env(safe-area-inset-top))]">
-              <div className="flex items-center justify-between gap-2 px-1">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-amber-50">
-                    {name ? `${name} 근처 숙소` : '근처 숙소'}
-                  </p>
-                  {status === 'loading' ? (
-                    <p className="truncate text-xs font-semibold text-amber-100/75">
-                      불러오는 중…
-                    </p>
-                  ) : null}
-                </div>
-                <button
-                  type="button"
-                  aria-label="전체 목록 닫기"
-                  onClick={closeMobileFullscreen}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white hover:bg-white/20 active:scale-95 transition-all"
-                >
-                  <X size={20} strokeWidth={2.5} aria-hidden="true" />
-                </button>
-              </div>
-            </div>
+            <StayPanelHeader
+              placeName={name}
+              onClose={closeMobileFullscreen}
+              loading={status === 'loading'}
+              density="mobile"
+            />
             <div
               ref={mobileListScrollRef}
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
             >
-              <div className="mb-3">{renderDateBar()}</div>
+              <div className="mb-3">{renderDateBar({ embedInPanel: true })}</div>
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
                   <Loader2 size={22} className="animate-spin text-amber-200/80" />
