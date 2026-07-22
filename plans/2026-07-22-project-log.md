@@ -312,7 +312,7 @@
 
 ## cityAttractionHubs — 리스본·부다페스트·아테네 + 국내 5 (#14)
 
-**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+**상태**: ✅ squash 머지 → `main` (`5af8f5c`)
 
 - **브랜치**: `cursor/city-attraction-batch14-cc26` = `main`(#13 tip `e2c1ca9`) **위 append**
 - 한 배치 **10 hub × 7명소** (#13 핸드오프 「다음 후보」)
@@ -325,7 +325,7 @@
 
 ## cityAttractionHubs — 세비야·포르투·브뤼셀·코펜하겐·더블린 + 국내 5 (#15)
 
-**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+**상태**: ✅ squash 머지 → `main` (`1241a75`)
 
 - **브랜치**: `cursor/city-attraction-batch15-7299` = #14 tip **위 append**
 - 한 배치 **10 hub × 7명소** (#14 핸드오프 「다음 후보」+ 코펜하겐·더블린·구례)
