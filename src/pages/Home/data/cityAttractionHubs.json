@@ -6939,5 +6939,651 @@
         "lng": 126.68
       }
     ]
+  },
+  {
+    "hubId": "reykjavik",
+    "name": "레이캬비크",
+    "name_en": "Reykjavik",
+    "country": "아이슬란드",
+    "country_en": "Iceland",
+    "lat": 64.1466,
+    "lng": -21.9426,
+    "aliases": [
+      "레이캬빅",
+      "reykjavík",
+      "reykjavik"
+    ],
+    "attractions": [
+      {
+        "name": "할그림스키르캬",
+        "name_en": "Hallgrimskirkja",
+        "kind": "landmark",
+        "lat": 64.1417,
+        "lng": -21.9266
+      },
+      {
+        "name": "하르파 콘서트홀",
+        "name_en": "Harpa Concert Hall",
+        "kind": "landmark",
+        "lat": 64.1504,
+        "lng": -21.9326
+      },
+      {
+        "name": "선 보야저",
+        "name_en": "Sun Voyager",
+        "kind": "landmark",
+        "lat": 64.1475,
+        "lng": -21.9223
+      },
+      {
+        "name": "펄란",
+        "name_en": "Perlan",
+        "kind": "museum",
+        "lat": 64.1291,
+        "lng": -21.9187
+      },
+      {
+        "name": "블루라군",
+        "name_en": "Blue Lagoon",
+        "kind": "landmark",
+        "lat": 63.8804,
+        "lng": -22.4495
+      },
+      {
+        "name": "레이캬비크 구시가지",
+        "name_en": "Reykjavik Old Town",
+        "kind": "neighborhood",
+        "lat": 64.1472,
+        "lng": -21.9426
+      },
+      {
+        "name": "티요르닌 연못",
+        "name_en": "Tjornin",
+        "kind": "park",
+        "lat": 64.1448,
+        "lng": -21.942
+      }
+    ]
+  },
+  {
+    "hubId": "geneva",
+    "name": "제네바",
+    "name_en": "Geneva",
+    "country": "스위스",
+    "country_en": "Switzerland",
+    "lat": 46.2044,
+    "lng": 6.1432,
+    "aliases": [
+      "제네바시",
+      "genève",
+      "geneve",
+      "genf"
+    ],
+    "attractions": [
+      {
+        "name": "제트 도",
+        "name_en": "Jet d'Eau",
+        "kind": "landmark",
+        "lat": 46.2074,
+        "lng": 6.1559
+      },
+      {
+        "name": "레만 호수",
+        "name_en": "Lake Geneva",
+        "kind": "viewpoint",
+        "lat": 46.21,
+        "lng": 6.16
+      },
+      {
+        "name": "국제연합 유럽본부",
+        "name_en": "Palais des Nations",
+        "kind": "landmark",
+        "lat": 46.2266,
+        "lng": 6.1406
+      },
+      {
+        "name": "제네바 생피에르 대성당",
+        "name_en": "St Pierre Cathedral Geneva",
+        "kind": "landmark",
+        "lat": 46.2011,
+        "lng": 6.1484
+      },
+      {
+        "name": "제네바 꽃시계",
+        "name_en": "Geneva Flower Clock",
+        "kind": "landmark",
+        "lat": 46.2056,
+        "lng": 6.1512
+      },
+      {
+        "name": "제네바 구시가지",
+        "name_en": "Geneva Old Town",
+        "kind": "neighborhood",
+        "lat": 46.2015,
+        "lng": 6.148
+      },
+      {
+        "name": "종교개혁 벽",
+        "name_en": "Reformation Wall",
+        "kind": "landmark",
+        "lat": 46.2002,
+        "lng": 6.1457
+      }
+    ]
+  },
+  {
+    "hubId": "krakow",
+    "name": "크라쿠프",
+    "name_en": "Krakow",
+    "country": "폴란드",
+    "country_en": "Poland",
+    "lat": 50.0647,
+    "lng": 19.945,
+    "aliases": [
+      "크라코프",
+      "cracow",
+      "kraków",
+      "krakow"
+    ],
+    "attractions": [
+      {
+        "name": "바벨 성",
+        "name_en": "Wawel Castle",
+        "kind": "landmark",
+        "lat": 50.054,
+        "lng": 19.9354
+      },
+      {
+        "name": "크라쿠프 시장 광장",
+        "name_en": "Main Market Square Krakow",
+        "kind": "landmark",
+        "lat": 50.0619,
+        "lng": 19.9368
+      },
+      {
+        "name": "성모 마리아 성당",
+        "name_en": "St Mary's Basilica Krakow",
+        "kind": "landmark",
+        "lat": 50.0617,
+        "lng": 19.9394
+      },
+      {
+        "name": "수키엔니체",
+        "name_en": "Cloth Hall",
+        "kind": "market",
+        "lat": 50.0616,
+        "lng": 19.9373
+      },
+      {
+        "name": "카지미에시",
+        "name_en": "Kazimierz",
+        "kind": "neighborhood",
+        "lat": 50.0515,
+        "lng": 19.945
+      },
+      {
+        "name": "비엘리치카 소금광산",
+        "name_en": "Wieliczka Salt Mine",
+        "kind": "landmark",
+        "lat": 49.9833,
+        "lng": 20.0556
+      },
+      {
+        "name": "바벨 대성당",
+        "name_en": "Wawel Cathedral",
+        "kind": "landmark",
+        "lat": 50.0546,
+        "lng": 19.9353
+      }
+    ]
+  },
+  {
+    "hubId": "venice",
+    "name": "베네치아",
+    "name_en": "Venice",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 45.4408,
+    "lng": 12.3155,
+    "aliases": [
+      "베니스",
+      "venezia",
+      "venice"
+    ],
+    "attractions": [
+      {
+        "name": "산마르코 광장",
+        "name_en": "Piazza San Marco",
+        "kind": "landmark",
+        "lat": 45.4341,
+        "lng": 12.3388
+      },
+      {
+        "name": "산마르코 대성당",
+        "name_en": "St Mark's Basilica",
+        "kind": "landmark",
+        "lat": 45.4345,
+        "lng": 12.3397
+      },
+      {
+        "name": "두칼레 궁전",
+        "name_en": "Doge's Palace",
+        "kind": "landmark",
+        "lat": 45.4338,
+        "lng": 12.3401
+      },
+      {
+        "name": "리알토 다리",
+        "name_en": "Rialto Bridge",
+        "kind": "landmark",
+        "lat": 45.438,
+        "lng": 12.3358
+      },
+      {
+        "name": "대운하",
+        "name_en": "Grand Canal Venice",
+        "kind": "viewpoint",
+        "lat": 45.4408,
+        "lng": 12.329
+      },
+      {
+        "name": "부라노",
+        "name_en": "Burano",
+        "kind": "neighborhood",
+        "lat": 45.4853,
+        "lng": 12.4167
+      },
+      {
+        "name": "산조르조 마조레",
+        "name_en": "San Giorgio Maggiore",
+        "kind": "landmark",
+        "lat": 45.4294,
+        "lng": 12.3433
+      }
+    ]
+  },
+  {
+    "hubId": "nice",
+    "name": "니스",
+    "name_en": "Nice",
+    "country": "프랑스",
+    "country_en": "France",
+    "lat": 43.7102,
+    "lng": 7.262,
+    "aliases": [
+      "니스시",
+      "nice france"
+    ],
+    "attractions": [
+      {
+        "name": "영국인 산책로",
+        "name_en": "Promenade des Anglais",
+        "kind": "viewpoint",
+        "lat": 43.6951,
+        "lng": 7.2656
+      },
+      {
+        "name": "니스 구시가지",
+        "name_en": "Vieux Nice",
+        "kind": "neighborhood",
+        "lat": 43.696,
+        "lng": 7.2756
+      },
+      {
+        "name": "카스텔 언덕",
+        "name_en": "Colline du Chateau",
+        "kind": "viewpoint",
+        "lat": 43.6956,
+        "lng": 7.2811
+      },
+      {
+        "name": "마세나 광장",
+        "name_en": "Place Massena",
+        "kind": "landmark",
+        "lat": 43.6969,
+        "lng": 7.2707
+      },
+      {
+        "name": "쿠르살레야 시장",
+        "name_en": "Cours Saleya",
+        "kind": "market",
+        "lat": 43.6955,
+        "lng": 7.275
+      },
+      {
+        "name": "마르크 샤갈 미술관",
+        "name_en": "Marc Chagall Museum",
+        "kind": "museum",
+        "lat": 43.7092,
+        "lng": 7.2786
+      },
+      {
+        "name": "니스 해변",
+        "name_en": "Nice Beach",
+        "kind": "beach",
+        "lat": 43.6945,
+        "lng": 7.267
+      }
+    ]
+  },
+  {
+    "hubId": "muju",
+    "name": "무주",
+    "name_en": "Muju",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.9103,
+    "lng": 127.6608,
+    "aliases": [
+      "무주군",
+      "muju"
+    ],
+    "attractions": [
+      {
+        "name": "덕유산국립공원",
+        "name_en": "Deogyusan National Park",
+        "kind": "park",
+        "lat": 35.8606,
+        "lng": 127.746
+      },
+      {
+        "name": "무주 구천동",
+        "name_en": "Muju Gucheondong",
+        "kind": "viewpoint",
+        "lat": 35.89,
+        "lng": 127.77
+      },
+      {
+        "name": "무주덕유산리조트",
+        "name_en": "Muju Deogyusan Resort",
+        "kind": "landmark",
+        "lat": 35.865,
+        "lng": 127.74
+      },
+      {
+        "name": "태권도원",
+        "name_en": "Taekwondowon",
+        "kind": "landmark",
+        "lat": 35.888,
+        "lng": 127.68
+      },
+      {
+        "name": "무주반디랜드",
+        "name_en": "Muju Bandiland",
+        "kind": "landmark",
+        "lat": 35.895,
+        "lng": 127.72
+      },
+      {
+        "name": "적상산사고",
+        "name_en": "Jeoksangsan Historical Archives",
+        "kind": "landmark",
+        "lat": 35.95,
+        "lng": 127.69
+      },
+      {
+        "name": "구천동 수경대",
+        "name_en": "Gucheondong Sugyeongdae",
+        "kind": "viewpoint",
+        "lat": 35.892,
+        "lng": 127.775
+      }
+    ]
+  },
+  {
+    "hubId": "jinan",
+    "name": "진안",
+    "name_en": "Jinan",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.7917,
+    "lng": 127.4253,
+    "aliases": [
+      "진안군",
+      "jinan"
+    ],
+    "attractions": [
+      {
+        "name": "마이산",
+        "name_en": "Maisan",
+        "kind": "viewpoint",
+        "lat": 35.761,
+        "lng": 127.411
+      },
+      {
+        "name": "마이산 탑사",
+        "name_en": "Maisan Tapsa",
+        "kind": "temple",
+        "lat": 35.759,
+        "lng": 127.412
+      },
+      {
+        "name": "운일암반일암",
+        "name_en": "Unilam Banilam",
+        "kind": "viewpoint",
+        "lat": 35.83,
+        "lng": 127.48
+      },
+      {
+        "name": "용담호",
+        "name_en": "Yongdam Lake",
+        "kind": "viewpoint",
+        "lat": 35.92,
+        "lng": 127.5
+      },
+      {
+        "name": "진안 홍삼전시관",
+        "name_en": "Jinan Ginseng Exhibition Hall",
+        "kind": "museum",
+        "lat": 35.79,
+        "lng": 127.43
+      },
+      {
+        "name": "마이산 케이블카",
+        "name_en": "Maisan Cable Car",
+        "kind": "landmark",
+        "lat": 35.762,
+        "lng": 127.41
+      },
+      {
+        "name": "진안 은수사",
+        "name_en": "Jinan Eunsusa",
+        "kind": "temple",
+        "lat": 35.76,
+        "lng": 127.41
+      }
+    ]
+  },
+  {
+    "hubId": "imsil",
+    "name": "임실",
+    "name_en": "Imsil",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.6131,
+    "lng": 127.2794,
+    "aliases": [
+      "임실군",
+      "imsil"
+    ],
+    "attractions": [
+      {
+        "name": "임실치즈테마파크",
+        "name_en": "Imsil Cheese Theme Park",
+        "kind": "landmark",
+        "lat": 35.62,
+        "lng": 127.29
+      },
+      {
+        "name": "옥정호",
+        "name_en": "Okjeong Lake",
+        "kind": "viewpoint",
+        "lat": 35.55,
+        "lng": 127.2
+      },
+      {
+        "name": "사선대",
+        "name_en": "Saseondae",
+        "kind": "viewpoint",
+        "lat": 35.58,
+        "lng": 127.25
+      },
+      {
+        "name": "필봉문화촌",
+        "name_en": "Pilbong Cultural Village",
+        "kind": "landmark",
+        "lat": 35.64,
+        "lng": 127.3
+      },
+      {
+        "name": "임실 섬진강",
+        "name_en": "Seomjingang River Imsil",
+        "kind": "viewpoint",
+        "lat": 35.6,
+        "lng": 127.28
+      },
+      {
+        "name": "성수산",
+        "name_en": "Seongsusan",
+        "kind": "park",
+        "lat": 35.66,
+        "lng": 127.35
+      },
+      {
+        "name": "임실치즈마을",
+        "name_en": "Imsil Cheese Village",
+        "kind": "neighborhood",
+        "lat": 35.615,
+        "lng": 127.285
+      }
+    ]
+  },
+  {
+    "hubId": "sunchang",
+    "name": "순창",
+    "name_en": "Sunchang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.3744,
+    "lng": 127.1375,
+    "aliases": [
+      "순창군",
+      "sunchang"
+    ],
+    "attractions": [
+      {
+        "name": "순창고추장민속마을",
+        "name_en": "Sunchang Gochujang Folk Village",
+        "kind": "neighborhood",
+        "lat": 35.39,
+        "lng": 127.12
+      },
+      {
+        "name": "강천산",
+        "name_en": "Gangcheonsan",
+        "kind": "park",
+        "lat": 35.4,
+        "lng": 127.05
+      },
+      {
+        "name": "강천사",
+        "name_en": "Gangcheonsa",
+        "kind": "temple",
+        "lat": 35.402,
+        "lng": 127.048
+      },
+      {
+        "name": "강천산 현수교",
+        "name_en": "Gangcheonsan Suspension Bridge",
+        "kind": "landmark",
+        "lat": 35.401,
+        "lng": 127.05
+      },
+      {
+        "name": "장군목",
+        "name_en": "Janggunmok",
+        "kind": "viewpoint",
+        "lat": 35.35,
+        "lng": 127.1
+      },
+      {
+        "name": "회문산",
+        "name_en": "Hoemun Mountain",
+        "kind": "park",
+        "lat": 35.45,
+        "lng": 127.15
+      },
+      {
+        "name": "순창전통고추장체험관",
+        "name_en": "Sunchang Gochujang Experience Center",
+        "kind": "landmark",
+        "lat": 35.385,
+        "lng": 127.125
+      }
+    ]
+  },
+  {
+    "hubId": "jangsu",
+    "name": "장수",
+    "name_en": "Jangsu",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.6475,
+    "lng": 127.5211,
+    "aliases": [
+      "장수군",
+      "jangsu"
+    ],
+    "attractions": [
+      {
+        "name": "논개생가",
+        "name_en": "Nongae Birthplace",
+        "kind": "landmark",
+        "lat": 35.65,
+        "lng": 127.52
+      },
+      {
+        "name": "장수승마장",
+        "name_en": "Jangsu Horse Riding Ranch",
+        "kind": "landmark",
+        "lat": 35.66,
+        "lng": 127.55
+      },
+      {
+        "name": "장안산",
+        "name_en": "Jangansan",
+        "kind": "park",
+        "lat": 35.62,
+        "lng": 127.58
+      },
+      {
+        "name": "방화동가족휴가촌",
+        "name_en": "Banghwadong Family Resort",
+        "kind": "park",
+        "lat": 35.61,
+        "lng": 127.57
+      },
+      {
+        "name": "장수누리파크",
+        "name_en": "Jangsu Nuri Park",
+        "kind": "park",
+        "lat": 35.645,
+        "lng": 127.52
+      },
+      {
+        "name": "수분령",
+        "name_en": "Subunryeong Pass",
+        "kind": "viewpoint",
+        "lat": 35.7,
+        "lng": 127.55
+      },
+      {
+        "name": "뜬봉샘",
+        "name_en": "Tteunbong Spring",
+        "kind": "viewpoint",
+        "lat": 35.68,
+        "lng": 127.53
+      }
+    ]
   }
 ]

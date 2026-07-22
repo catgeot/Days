@@ -336,37 +336,49 @@
 - hub 스모크: `세비야`/`sevilla`/`포르투`/`포르토`/`브뤼셀`/`브루셀`/`코펜하겐`/`더블린`/`함양`/`산청`/`고흥`/`나로도`/`장흥`/`구례` + 회귀(리스본·남원·속초·파리)
 - exact: `세비야 대성당`/`히랄다 탑`/`리벨류 서점`/`아토미움`/`인어공주 동상`/`기네스 스토어하우스`/`상림공원`/`남사예담촌`/`나로우주센터`/`장흥 편백숲 우드랜드`/`구례 화엄사`
 
-## cityAttractionHubs — 스톡홀름·헬싱키·밀라노 + 부안·고창 등 (#16)
+## cityAttractionHubs — 스톡홀름·헬싱키·밀라노 + 부안·고창 등 (#16 / PR #17)
 
-**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+**상태**: ✅ squash 머지 (`38e83e0` · PR #17) · main tip
 
-- **브랜치**: `cursor/city-attraction-batch16-73d0` = #15 tip(`9792fe0` · `batch15-7299`) **위 append** · draft **PR #17**
-- 한 배치 **10 hub × 7명소** (#15 핸드오프 「다음 후보」+ 사용자 예 부안·고창 · 밀라노)
+- **브랜치**: `cursor/city-attraction-batch16-73d0` = #15 tip **위 append** · **PR #17**
+- 한 배치 **10 hub × 7명소** (#15 핸드오프 「다음 후보」+ 부안·고창 · 밀라노)
 - 해외: `stockholm` · `helsinki` · `oslo` · `warsaw`(alias **`warszawa`**/`바르샤와`) · `milan`(alias **`milano`**)
 - 국내: `hapcheon` · `gokseong` · `yeonggwang` · `buan` · `gochang`
 - 총 **110 hub** · 명소 **750** · shrine KIND_LABEL 유지 · 시드 intact
-- **참고**: 제시어 예(세비야·포르투·브뤼셀·고흥·장흥)는 **#15에 기등록** → 본 배치에서 중복 append 안 함. 경쟁 draft **PR #16**(`batch15-7bac` 북유럽 단독)은 #15 tip 미포함·함양/산청/코펜하겐 중복 → **닫기 권장**, 본 PR(#17)이 대체.
-- hub 스모크: `스톡홀름`/`헬싱키`/`오슬로`/`바르샤바`/`warszawa`/`밀라노`/`milano`/`합천`/`곡성`/`영광`/`부안`/`고창` + 회귀(세비야·고흥·속초·파리)
-- exact: `감라스탄`/`바사 박물관`/`수오멘린나`/`비겔란 조각공원`/`과학문화궁전`/`밀라노 대성당`/`해인사`/`섬진강기차마을`/`불갑사`/`채석강`/`선운사`
+- 경쟁 draft **PR #16**(`batch15-7bac`) → **닫힘**(본 PR #17로 대체)
+
+## cityAttractionHubs — 레이캬비크·제네바·베네치아 + 무주·진안 등 (#18)
+
+**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+
+- **브랜치**: `cursor/city-attraction-batch18-7595` = #17 tip(main `38e83e0`) **위 append**
+- 한 배치 **10 hub × 7명소** (#17 핸드오프 「다음 후보」+ 베네치아·니스·장수)
+- 해외: `reykjavik`(alias **`레이캬빅`**) · `geneva`(alias **`genève`**/`genf`) · `krakow`(alias **`크라코프`**/`cracow`) · `venice`(alias **`베니스`**/`venezia`) · `nice`
+- 국내: `muju` · `jinan` · `imsil` · `sunchang` · `jangsu`
+- 총 **120 hub** · 명소 **820** · shrine KIND_LABEL 유지 · 시드 intact
+- 주의: `베니스`→이탈리아 베네치아 hub · LA **`베니스 비치`** exact는 유지 · 임실은 **`임실 섬진강`**(구례·곡성 접두와 분리) · 제네바 성당은 **`제네바 생피에르 대성당`**
+- hub 스모크: `레이캬비크`/`레이캬빅`/`제네바`/`genève`/`크라쿠프`/`크라코프`/`베네치아`/`베니스`/`니스`/`무주`/`진안`/`임실`/`순창`/`장수` + 회귀(스톡홀름·밀라노·속초·파리)
+- exact: `할그림스키르캬`/`블루라군`/`제트 도`/`바벨 성`/`산마르코 광장`/`리알토 다리`/`영국인 산책로`/`덕유산국립공원`/`마이산`/`임실치즈테마파크`/`순창고추장민속마을`/`논개생가`
 
 ### PR 머지 순서
 
 | 순서 | PR | 비고 |
 |------|-----|------|
 | ✅ | **#13** | squash → main. #6~#12 포함 |
-| 다음 | **#14** | #13 tip 위 10 hub |
-| 다음 | **#15** (`batch15-7299`) | #14 tip 위 세비야·고흥 등 |
-| 다음 | **본 배치 PR #17** (batch16) | #15 tip 위 10 hub. 단독 머지 시 #14·#15 포함 |
-| 닫기 | draft **PR #16** (`batch15-7bac`) | #15와 병렬 충돌 · #17로 대체 |
+| ✅ | **#14** | 리스본·남원 등 |
+| ✅ | **#15** | 세비야·고흥 등 |
+| ✅ | **#17** | 스톡홀름·밀라노·부안 등 (#16 stack) |
+| ✅ 닫힘 | draft **#16** | #17로 대체 |
+| 다음 | **본 배치(#18)** | #17 tip 위 10 hub |
 | — | #4~#12 | #13에 흡수 · **데스크톱에서 draft 닫기** |
 
-### 현재 hub 맵 (110)
+### 현재 hub 맵 (120)
 
 | 구분 | hubId |
 |------|-------|
 | 시드 | `sokcho` · `paris` |
-| 국내 | …(기존 54) · **`hapcheon`** · **`gokseong`** · **`yeonggwang`** · **`buan`** · **`gochang`** |
-| 해외 | …(기존 45) · **`stockholm`** · **`helsinki`** · **`oslo`** · **`warsaw`** · **`milan`** |
+| 국내 | …(기존 59) · **`muju`** · **`jinan`** · **`imsil`** · **`sunchang`** · **`jangsu`** |
+| 해외 | …(기존 50) · **`reykjavik`** · **`geneva`** · **`krakow`** · **`venice`** · **`nice`** |
 
 - **제주**: `jeju`(제주시) / `seogwipo`(서귀포) **분리**. alias `제주`·`제주도` → 제주시. 성산·중문·천지연 등은 서귀포.
 - **고성**: `goseong` = **강원 고성**(화진포·DMZ). 경남 고성과 혼동 주의.
@@ -387,9 +399,9 @@
 ```bash
 node --input-type=module -e "
 import { resolveCityAttractionHub, resolveHubAttraction, getKindLabel, listCityAttractionHubs } from './src/pages/Home/lib/cityAttractionHubs.js';
-console.log(listCityAttractionHubs().length); // 110
-const hubs = ['스톡홀름','헬싱키','오슬로','바르샤바','warszawa','밀라노','milano','합천','곡성','영광','부안','고창','세비야','고흥','속초','파리'];
-const exact = ['감라스탄','바사 박물관','수오멘린나','비겔란 조각공원','과학문화궁전','밀라노 대성당','해인사','섬진강기차마을','불갑사','채석강','선운사','낙산사'];
+console.log(listCityAttractionHubs().length); // 120
+const hubs = ['레이캬비크','레이캬빅','제네바','genève','크라쿠프','베네치아','베니스','니스','무주','진안','임실','순창','장수','스톡홀름','속초','파리'];
+const exact = ['할그림스키르캬','블루라군','제트 도','바벨 성','산마르코 광장','리알토 다리','영국인 산책로','덕유산국립공원','마이산','임실치즈테마파크','순창고추장민속마을','논개생가','채석강','낙산사'];
 for (const q of hubs) console.log('hub', q, !!resolveCityAttractionHub(q));
 for (const q of exact) console.log('exact', q, !!resolveHubAttraction(q));
 console.log('shrine', getKindLabel('shrine')); // 신사
@@ -398,11 +410,11 @@ console.log('shrine', getKindLabel('shrine')); // 신사
 
 ### 에이전트 핸드오프 (명소-이어하기)
 
-- **읽을 것 3**: 본 절「#16」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
+- **읽을 것 3**: 본 절「#18」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
 - **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · UI/Mapbox 동기화 무단
 - **다음 작업 (사용자 선택)**:
-  1. **머지**: #14 → #15(`7299`) → **#17** · 경쟁 **#16**(`batch15-7bac`)·#4~#12 **닫기**(데스크톱)
-  2. **다음 배치**(8~12 hub): 예) 레이캬비크·제네바·크라쿠프 · 국내 무주·진안·임실·순창 등 미등록
-  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `milano`→밀라노 · `warszawa`→바르샤바 · `채석강` exact · 모바일 키보드
+  1. **머지**: 본 배치(#18) · #4~#12 draft **닫기**(데스크톱)
+  2. **다음 배치**(8~12 hub): 예) 쾰른·나폴리·발렌시아 · 국내 정읍·김제·고창 외 미등록(이미 고창 있음) · 익산·완주·남원 외
+  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `베니스`→베네치아 · `레이캬빅`→레이캬비크 · `바벨 성`/`마이산` exact · 모바일 키보드
   4. 릴리스 노트는 **합의 후**만
-- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#17 tip 위 append)」 / 「#14→#15→#17 머지부터」
+- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#18 tip 위 append)」 / 「#18 머지부터」
