@@ -425,6 +425,8 @@ function StayListToolbar({
   onSortChange,
   listUrl,
   tripcomMoreUrl,
+  tripcomLinkTarget = '_blank',
+  tripcomLinkRel = 'noopener noreferrer',
   densityVariant = 'mobile',
   densityValue,
   onDensityChange,
@@ -450,8 +452,8 @@ function StayListToolbar({
         {tripcomMoreUrl ? (
           <a
             href={tripcomMoreUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={tripcomLinkTarget}
+            rel={tripcomLinkRel}
             onClick={(e) => e.stopPropagation()}
             className="inline-flex shrink-0 items-center rounded-md border border-sky-300/40 bg-sky-500/20 px-2 py-1 text-[10px] font-bold text-sky-50 hover:bg-sky-500/30 hover:border-sky-300/55 active:scale-[0.98] transition-all"
           >
@@ -489,6 +491,27 @@ function StayListToolbar({
           </select>
         </label>
       </div>
+    </div>
+  );
+}
+
+/** MRT 저재고(≤5) — 목록 하단 Trip.com 안내 */
+function StayLowInventoryFooter({ href, linkTarget, linkRel, ctaClassName }) {
+  if (!href) return null;
+  return (
+    <div className="mt-4 flex flex-col items-center gap-2.5 rounded-xl border border-sky-300/25 bg-sky-500/10 px-3 py-4 text-center">
+      <p className="break-keep text-[12px] font-medium leading-relaxed text-white/75">
+        이 지역은 마이리얼트립 재고가 적어요. 트립닷컴도 함께 확인해 보세요
+      </p>
+      <a
+        href={href}
+        target={linkTarget}
+        rel={linkRel}
+        onClick={(e) => e.stopPropagation()}
+        className={ctaClassName}
+      >
+        트립닷컴에서 숙소 검색
+      </a>
     </div>
   );
 }
@@ -797,7 +820,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     status === 'ready' &&
     Array.isArray(items) &&
     items.length > 0 &&
-    items.length < MRT_STAY_LOW_COUNT;
+    items.length <= MRT_STAY_LOW_COUNT;
 
   const tripcomLowUrl = showLowInventoryCta
     ? buildTripcomHotelSearchUrl(location, {
@@ -883,6 +906,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           onSortChange={setSortMode}
           listUrl={mrtStayListUrl}
           tripcomMoreUrl={tripcomLowUrl}
+          tripcomLinkTarget={tripcomLinkTarget}
+          tripcomLinkRel={tripcomLinkRel}
           densityVariant="desktop"
           densityValue={desktopGridDensity}
           onDensityChange={setDesktopGridDensity}
@@ -899,6 +924,12 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             imageClassName={desktopDensity.imageClassName}
           />
         </div>
+        <StayLowInventoryFooter
+          href={tripcomLowUrl}
+          linkTarget={tripcomLinkTarget}
+          linkRel={tripcomLinkRel}
+          ctaClassName={tripcomCtaDesktopClassName}
+        />
       </>
     ) : null;
 
@@ -1064,6 +1095,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                     onSortChange={setSortMode}
                     listUrl={mrtStayListUrl}
                     tripcomMoreUrl={tripcomLowUrl}
+                    tripcomLinkTarget={tripcomLinkTarget}
+                    tripcomLinkRel={tripcomLinkRel}
                     densityVariant="mobile"
                     densityValue={mobileGridCols}
                     onDensityChange={setMobileGridCols}
@@ -1083,6 +1116,12 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                       }
                     />
                   </div>
+                  <StayLowInventoryFooter
+                    href={tripcomLowUrl}
+                    linkTarget={tripcomLinkTarget}
+                    linkRel={tripcomLinkRel}
+                    ctaClassName={tripcomCtaMobileClassName}
+                  />
                 </>
               ) : null}
             </div>

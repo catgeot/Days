@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",
     "audit:mrt-stays": "node scripts/audit-mrt-stay-coverage.mjs",
+    "audit:tripcom-hotel-city-gaps": "node scripts/list-tripcom-hotel-city-gaps.mjs",
     "audit:flight-arcs": "node scripts/audit-flight-arcs.mjs",
     "smoke:flight-route-baseline": "node scripts/smoke-flight-route-baseline.mjs",
     "smoke:flight-origin-gateway": "node scripts/smoke-flight-origin-gateway.mjs",

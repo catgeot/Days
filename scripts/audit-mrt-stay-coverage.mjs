@@ -235,6 +235,9 @@ async function main() {
     console.log(`FAIL ${r.kind.padEnd(10)} ${r.slug}  kw=${r.keyword}  region=${r.region || r.detail || '-'}`);
   }
   if (fails.length > 40) console.log(`… +${fails.length - 40} more (see MD)`);
+  console.log(
+    `HINT: Trip city gaps → MRT_STAY_AUDIT_JSON=${jsonPath} npm run audit:tripcom-hotel-city-gaps`,
+  );
 }
 
 main().catch((err) => {

@@ -437,12 +437,43 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   'faroe-islands': '38171',
   /** 포클랜드 — Stanley */
   'falkland-islands': '76974',
+  /** 사모아 — 아피아 (국가명 Samoa만으로는 city 미확정·세션 잔존) */
+  samoa: '4371',
+  /** 폰페이 — 콜로니아(Pohnpei) · Yap 콜로니아(75099)와 별개 */
+  pohnpei: '321825',
+  /** 코스라에 — 토폴 */
+  kosrae: '321824',
+  /**
+   * 야프 — 콜로니아(Yap). 목록 실재고 0(오늘·+14·+60) · city 유지(세션 잔존 방지) · sparse
+   */
+  yap: '75099',
+  /**
+   * 키리바시 — 타라와. 목록 실재고 0(오늘·+14·+60) · city 유지(세션 잔존 방지) · sparse
+   */
+  kiribati: '6121',
+  /**
+   * 나우루 — 로나베. 목록 실재고 0(오늘·+14·+60) · city 유지(세션 잔존 방지) · sparse
+   */
+  nauru: '681951',
+  /** 통가 — 누쿠알로파 */
+  tonga: '36478',
+  /** 바누아투 — 포트빌라 */
+  vanuatu: '4115',
+  /** 라로통가 — 아바루아 */
+  rarotonga: '36473',
+  /** 아이투타키 */
+  aitutaki: '6707',
+  /** 피지 — 난디(관문) */
+  fiji: '791',
+  /** 팔라우 — 코로르 */
+  palau: '5780',
 };
 
 /**
  * MRT·Trip 모두 일반 호텔 재고가 사실상 없거나 CTA 오매핑 위험 — empty UX 기대치 하향.
  * (군사·무인·크루즈/연구 · 오매핑 city · 예약 불가 단건 등)
  * QA 2026-07-22: christmas `93327` 오매핑 · chuuk/cocos · persepolis(시라즈 포함 Trip 0) · timbuktu
+ * · nauru/kiribati/yap — 허브 city 확정·목록 0 (상세 페이지 잔존 가능, 예약 목록 없음)
  */
 export const TRIPCOM_HOTEL_SPARSE_INVENTORY_SLUGS = new Set([
   'antarctica',
@@ -455,6 +486,9 @@ export const TRIPCOM_HOTEL_SPARSE_INVENTORY_SLUGS = new Set([
   'cocos-islands',
   'persepolis',
   'timbuktu',
+  'nauru',
+  'kiribati',
+  'yap',
 ]);
 
 /**
@@ -587,7 +621,7 @@ export const TRIPCOM_HOTEL_TRACKING = {
   plannerOverride: '플래너 숙소 오버라이드',
 };
 
-/** MRT 목록이 이 미만이면 Trip.com 「더 보기」CTA */
+/** MRT 목록이 이 개수 이하면 Trip.com 「더 보기」·하단 CTA (≤5) */
 export const MRT_STAY_LOW_COUNT = 5;
 
 /** 한국 출발 기본 공항 — Trip `dAirportCode` */

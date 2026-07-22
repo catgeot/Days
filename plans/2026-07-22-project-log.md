@@ -15,10 +15,44 @@
 **상태**: ✅ QA 확인 · 커밋
 
 - `TRIPCOM_HOTEL_AD`(`S18836274`/`S18836330`) · `buildTripcomHotelSearchUrl` `mode: ad|list` · `PLANNER_TRIPCOM_HOTEL_CITY_IDS`(홍콩·마카오·바티칸·이스탄불·베네수엘라)
-- Summary「숙소 찾기」빈 결과·에러: `/hotels/list` CTA · 결과 &lt;5: 「트립닷컴에서 더 보기」
+- Summary「숙소 찾기」빈 결과·에러: `/hotels/list` CTA · 결과 **≤5**: 툴바「더 보기」+ 목록 하단 안내 CTA
 - 상시 검색바 미적용 · 스크래핑 금지 유지
 - Trip 호텔 partners/ad iframe은 city/날짜/인원 프리필 **미지원** → CTA+`StayDateBar` SSOT
 - 기본 일정 **보름(+14)·3박**·성인2·아동0
+
+### UX — 저재고(≤5) 하단 Trip CTA
+
+- `MRT_STAY_LOW_COUNT=5` · `items.length <= 5` (사모아 4곳 포함)
+- 목록 하단: 「재고가 적어요…」+ 「트립닷컴에서 숙소 검색」 (`StayLowInventoryFooter`)
+- 툴바 칩「트립닷컴에서 더 보기」유지 · campaign `숙소찾기 저재고`
+
+### Trip.com city ID — 사모아·폰페이 (세션 잔존 방지)
+
+- 증상: 사모아 후 폰페이 CTA → Trip이 `city` 없어 이전 도시(사모아) 유지
+- `samoa`→**`4371`**(아피아) · `pohnpei`→**`321825`**(콜로니아·Pohnpei)
+- LIVE: 콜로니아 목록 확인 · cityName만 쓰지 말고 `city` 필수
+
+### Trip.com city ID — 태평양 배치 (전수 클릭 불필요)
+
+- 원인: Trip CTA에 `city=` 없으면 **직전 세션 도시 잔존** (코스라에·나우루·키리바시 등 연쇄)
+- 도구: `npm run audit:tripcom-hotel-city-gaps` · LIVE JSON 있으면 empty/no_region/ok&n≤5 중 city·sparse 미등록만
+- 공개 URL 검증 후 등록 (오매핑·허브 불일치면 sparse, 이번 배치 해당 없음)
+
+| slug | city | Trip 도시 | 비고 |
+|------|------|-----------|------|
+| `kosrae` | `321824` | 토폴 | 1건+ |
+| `yap` | `75099` | 콜로니아(Yap) | **목록 0** · sparse · city 유지(≠ pohnpei) |
+| `kiribati` | `6121` | 타라와 | **목록 0**(오늘·+14·+60) · sparse · city 유지 |
+| `nauru` | `681951` | 로나베 | **목록 0**(오늘·+14·+60) · sparse · city 유지 |
+| `tonga` | `36478` | 누쿠알로파 | ✅ |
+| `vanuatu` | `4115` | 포트빌라 | ✅ |
+| `rarotonga` | `36473` | 아바루아 | ✅ |
+| `aitutaki` | `6707` | 아이투타키 | ✅ |
+| `fiji` | `791` | 난디 | 관문 |
+| `palau` | `5780` | 코로르 | ✅ |
+
+- QA: 사모아 → 코스라에/나우루/키리바시/야프 CTA — 각각 해당 도시로 열리는지
+- **재확인 2026-07-22**: `nauru`/`kiribati`/`yap` Trip 목록 **0건**(오늘·게이트오 기본 +14·+60). 도시 오매핑 아님(로나베/타라와/콜로니아). 사모아 아피아는 동기간 ~38건. → sparse UX + city 유지(세션 잔존 방지). 상세 URL 잔존 가능·예약 목록 없음.
 
 ### UX — 빈 결과: 헤더 여행지 + 트립 CTA만
 
@@ -47,12 +81,12 @@
 
 - `venezuela`: `606`(난핑) → **`811`**(카라카스)
 - `svalbard`→`7398` · `faroe-islands`→`38171` · `falkland-islands`→`76974`
-- sparse UX: 극지 5 + `chuuk` · `christmas-island` · `cocos-islands` · `persepolis` · `timbuktu`
+- sparse UX: 극지 5 + `chuuk` · `christmas-island` · `cocos-islands` · `persepolis` · `timbuktu` + **`nauru`·`kiribati`·`yap`**(Trip 목록 0·city 유지)
 - `persepolis`: 시라즈 hub city 철회(Trip 실재고 0) · empty는 당일 투어 안내 + OTA 한계 문구
 
 ### 에이전트 핸드오프 (다음 세션 — 숙소 city ID)
 
-- **읽을 것**: 본 절 표 · `.ai-context` 5절 · `affiliate.js` city/sparse/`getTripcomHotelEmptyCopy`
-- **금지**: Trip.com 호텔 목록 스크래핑·가짜 API · 숙소 확장창 상시 iframe · `VITE_` MRT 키 · **검증 안 된·실재고 0 city ID 등록**
-- **다음 작업**: NO_REGION city 배치 ✅ (허브도 QA 실재고 필수)
+- **읽을 것**: 태평양 배치 표 · `.ai-context` 5절 · `affiliate.js` city/sparse · `npm run audit:tripcom-hotel-city-gaps`
+- **금지**: Trip.com 호텔 목록 스크래핑·가짜 API · 숙소 확장창 상시 iframe · `VITE_` MRT 키 · **검증 안 된·오매핑 city ID 등록** · 272곳 수동 클릭
+- **다음 작업**: gap MD의 비태평양 CTA 후보만 공개 URL로 배치 (전수 클릭 X)
 - **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md`
