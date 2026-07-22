@@ -418,16 +418,30 @@ export const generateMrtLink = (query) => getMrtSearchUrl(query);
 
 /**
  * 플래너 호텔 버튼 기본값은 마이리얼트립(`getMrtAccommodationSearchUrl` / `getMrtSearchUrl`).
- * 마이리얼트립에서 호텔 검색이 빈약한 여행지만 여기에 제휴에서 받은 트립닷컴 호텔 목록 URL 전체를 등록한다.
+ * MRT 미취급·빈약 지역만 Trip.com `city` ID를 등록한다 (목록 API 아님).
+ * 전체 URL이 필요하면 {@link PLANNER_TRIPCOM_HOTEL_OVERRIDES}에 http URL을 둔다.
  *
  * 키: `travelSpots`의 `slug`(소문자) 또는 한글 `name`과 정확히 일치.
+ */
+export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
+  'hong-kong': '58',
+  macau: '206',
+  /** 바티칸 — Trip 허브는 로마 */
+  vatican: '725',
+  istanbul: '301',
+  /** 베네수엘라 — 카라카스 */
+  venezuela: '606',
+};
+
+/**
+ * 제휴에서 받은 트립닷컴 호텔 목록 URL 전체 (선택).
+ * city ID만으로 충분하면 {@link PLANNER_TRIPCOM_HOTEL_CITY_IDS}를 쓴다.
  *
  * @example
  * PLANNER_TRIPCOM_HOTEL_OVERRIDES.fukuoka = 'https://kr.trip.com/hotels/list?city=248&…';
  */
 export const PLANNER_TRIPCOM_HOTEL_OVERRIDES = {
   // fukuoka: 'https://kr.trip.com/hotels/list?...',
-  // '가나자와': 'https://kr.trip.com/hotels/list?...',
 };
 
 /** Trip.com KR 제휴 — Alliance / SID */
@@ -479,6 +493,28 @@ export const TRIPCOM_FLIGHT_AD = {
   mobileWidth: 320,
   mobileHeight: 480,
 };
+
+/** 제휴 호텔 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
+export const TRIPCOM_HOTEL_AD = {
+  adId: 'S18836274',
+  mobileAdId: 'S18836330',
+  width: 900,
+  height: 200,
+  mobileWidth: 320,
+  mobileHeight: 480,
+};
+
+/** 숙소 찾기 Trip.com 추적 (trip_sub1) */
+export const TRIPCOM_HOTEL_TRACKING = {
+  emptyResult: '숙소찾기 빈결과',
+  emptyResultMobile: '숙소찾기 빈결과 모바일',
+  lowInventory: '숙소찾기 저재고',
+  fullScreen: '숙소찾기 전체화면',
+  plannerOverride: '플래너 숙소 오버라이드',
+};
+
+/** MRT 목록이 이 미만이면 Trip.com 「더 보기」CTA */
+export const MRT_STAY_LOW_COUNT = 5;
 
 /** 한국 출발 기본 공항 — Trip `dAirportCode` */
 export const TRIPCOM_DEFAULT_DEPARTURE_AIRPORT = 'ICN';
@@ -577,31 +613,128 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
 export const PLANNER_TRIPCOM_FLIGHTS_URL = buildTripcomPlannerFlightUrl(null);
 
 /**
- * MRT 숙소 빈 결과·미취급 시 Trip.com 호텔 검색 딥링크 (목록 API 아님 — 새 탭 이동용).
- * city ID 없이 `cityName` 파라미터로 검색 페이지를 연다. 등록 오버라이드가 있으면 우선.
+ * @param {{ slug?: string, name?: string } | null | undefined} location
+ * @returns {string | null} Trip.com city ID
+ */
+export function getTripcomHotelCityIdForLocation(location) {
+  if (!location) return null;
+  const slug = (location.slug || '').toLowerCase();
+  if (slug && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_CITY_IDS, slug)) {
+    const id = PLANNER_TRIPCOM_HOTEL_CITY_IDS[slug];
+    return id != null && String(id).trim() ? String(id).trim() : null;
+  }
+  const name = (location.name || '').trim();
+  if (name && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_CITY_IDS, name)) {
+    const id = PLANNER_TRIPCOM_HOTEL_CITY_IDS[name];
+    return id != null && String(id).trim() ? String(id).trim() : null;
+  }
+  return null;
+}
+
+/**
+ * @param {{ slug?: string, name?: string } | null | undefined} location
+ * @returns {string | null} 등록된 전체 http URL
+ */
+function getTripcomHotelFullOverrideUrl(location) {
+  if (!location) return null;
+  const slug = (location.slug || '').toLowerCase();
+  if (slug && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_OVERRIDES, slug)) {
+    const u = PLANNER_TRIPCOM_HOTEL_OVERRIDES[slug];
+    return typeof u === 'string' && u.startsWith('http') ? u : null;
+  }
+  const name = (location.name || '').trim();
+  if (name && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_OVERRIDES, name)) {
+    const u = PLANNER_TRIPCOM_HOTEL_OVERRIDES[name];
+    return typeof u === 'string' && u.startsWith('http') ? u : null;
+  }
+  return null;
+}
+
+/**
+ * 기존 호텔 URL에 날짜·인원·제휴 파라미터를 병합 (오버라이드 전체 URL용).
+ * @param {string} baseUrl
+ * @param {{ checkIn?: string, checkOut?: string, campaign?: string, adultCount?: number, childCount?: number }} options
+ */
+function mergeTripcomHotelStayParams(baseUrl, options = {}) {
+  try {
+    const url = new URL(baseUrl);
+    if (!url.searchParams.has('Allianceid')) {
+      url.searchParams.set('Allianceid', TRIPCOM_KR_PARTNER.allianceId);
+    }
+    if (!url.searchParams.has('SID')) {
+      url.searchParams.set('SID', TRIPCOM_KR_PARTNER.sid);
+    }
+    if (!url.searchParams.has('locale')) url.searchParams.set('locale', 'ko-KR');
+    if (!url.searchParams.has('curr')) url.searchParams.set('curr', 'KRW');
+    if (options.campaign) url.searchParams.set('trip_sub1', options.campaign);
+    if (options.checkIn) url.searchParams.set('checkIn', String(options.checkIn));
+    if (options.checkOut) url.searchParams.set('checkOut', String(options.checkOut));
+    const adults = Number(options.adultCount);
+    if (Number.isFinite(adults) && adults > 0) {
+      url.searchParams.set('adult', String(Math.min(8, adults)));
+    }
+    const children = Number(options.childCount);
+    if (Number.isFinite(children) && children >= 0) {
+      url.searchParams.set('children', String(Math.min(8, children)));
+    }
+    return url.toString();
+  } catch {
+    return baseUrl;
+  }
+}
+
+/**
+ * MRT 숙소 빈 결과·미취급·저재고 시 Trip.com 호텔 검색 (목록 API 아님).
+ * `mode: 'list'` → `/hotels/list` 딥링크 · `mode: 'ad'` → partners/ad iframe.
+ * city ID({@link PLANNER_TRIPCOM_HOTEL_CITY_IDS}) · `cityName` · 날짜·인원 주입.
  *
  * @param {{ slug?: string, name?: string, name_en?: string, name_ko?: string } | null | undefined} location
- * @param {{ checkIn?: string, checkOut?: string, campaign?: string, adultCount?: number, childCount?: number }} [options]
+ * @param {{
+ *   mode?: 'list' | 'ad',
+ *   adId?: string,
+ *   checkIn?: string,
+ *   checkOut?: string,
+ *   campaign?: string,
+ *   adultCount?: number,
+ *   childCount?: number,
+ * }} [options]
  * @returns {string}
  */
 export function buildTripcomHotelSearchUrl(location, options = {}) {
-  const override = getTripcomHotelOverrideUrlForLocation(location);
-  if (override) return override;
+  const {
+    mode = 'list',
+    adId = TRIPCOM_HOTEL_AD.adId,
+    campaign = TRIPCOM_HOTEL_TRACKING.emptyResult,
+  } = options;
 
-  const cityName = String(
+  if (mode !== 'ad') {
+    const fullOverride = getTripcomHotelFullOverrideUrl(location);
+    if (fullOverride) {
+      return mergeTripcomHotelStayParams(fullOverride, { ...options, campaign });
+    }
+  }
+
+  const displayName = String(
     location?.name || location?.name_ko || location?.name_en || '',
   ).trim();
+  /** Trip 검색은 영문명·짧은 지명이 더 잘 맞는 경우가 많음 */
+  const searchName = String(
+    location?.name_en || location?.name || location?.name_ko || '',
+  ).trim();
+  const cityId = getTripcomHotelCityIdForLocation(location);
   const params = new URLSearchParams({
     locale: 'ko-KR',
     curr: 'KRW',
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
-    trip_sub1: options.campaign || '숙소찾기 빈결과',
+    trip_sub1: campaign,
   });
-  if (cityName) {
-    params.set('cityName', cityName);
-    params.set('trip_sub2', cityName);
+  if (cityId) params.set('city', cityId);
+  if (searchName) {
+    params.set('cityName', searchName);
+    params.set('searchWord', searchName);
   }
+  if (displayName) params.set('trip_sub2', displayName);
   if (options.checkIn) params.set('checkIn', String(options.checkIn));
   if (options.checkOut) params.set('checkOut', String(options.checkOut));
   const adults = Number(options.adultCount);
@@ -610,30 +743,30 @@ export function buildTripcomHotelSearchUrl(location, options = {}) {
   if (Number.isFinite(children) && children >= 0) {
     params.set('children', String(Math.min(8, children)));
   }
+  // Trip 호텔 목록 관례 — 객실 1
+  if (mode === 'list') params.set('crn', '1');
+
+  if (mode === 'ad') {
+    return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
+  }
   return `https://kr.trip.com/hotels/list?${params.toString()}`;
 }
 
 /**
  * 등록된 여행지만 트립닷컴 호텔 목록으로 연결. 없으면 null → 마이리얼트립 사용.
+ * city ID 또는 전체 URL 오버라이드가 있을 때 list URL을 반환한다.
  *
  * @param {{ slug?: string, name?: string } | null | undefined} location
  * @returns {string | null}
  */
 export function getTripcomHotelOverrideUrlForLocation(location) {
   if (!location) return null;
-
-  const slug = (location.slug || '').toLowerCase();
-  if (slug && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_OVERRIDES, slug)) {
-    const u = PLANNER_TRIPCOM_HOTEL_OVERRIDES[slug];
-    return typeof u === 'string' && u.startsWith('http') ? u : null;
+  if (getTripcomHotelFullOverrideUrl(location) || getTripcomHotelCityIdForLocation(location)) {
+    return buildTripcomHotelSearchUrl(location, {
+      mode: 'list',
+      campaign: TRIPCOM_HOTEL_TRACKING.plannerOverride,
+    });
   }
-
-  const name = (location.name || '').trim();
-  if (name && Object.prototype.hasOwnProperty.call(PLANNER_TRIPCOM_HOTEL_OVERRIDES, name)) {
-    const u = PLANNER_TRIPCOM_HOTEL_OVERRIDES[name];
-    return typeof u === 'string' && u.startsWith('http') ? u : null;
-  }
-
   return null;
 }
 

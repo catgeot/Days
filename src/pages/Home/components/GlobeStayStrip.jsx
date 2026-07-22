@@ -7,11 +7,8 @@ import {
   CalendarDays,
   ChevronDown,
   ChevronLeft,
-  ChevronRight,
   LayoutGrid,
   Loader2,
-  Minus,
-  Plus,
   Users,
   X,
 } from 'lucide-react';
@@ -26,18 +23,26 @@ import {
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
-import { buildMrtMylinkUrl, buildTripcomHotelSearchUrl } from '../../../utils/affiliate';
+import {
+  MRT_STAY_LOW_COUNT,
+  TRIPCOM_HOTEL_TRACKING,
+  buildMrtMylinkUrl,
+  buildTripcomHotelSearchUrl,
+} from '../../../utils/affiliate';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
   MRT_HOME_MYLINK_ID,
   MRT_PACKAGE_SHORT_URLS,
 } from '../data/mrtPackageThemeLinks';
+import TripcomHotelBannerWidget from './TripcomHotelBannerWidget';
+import {
+  GuestStepper,
+  StayRangeCalendar,
+  formatStayDateLabel,
+} from './stayDateControls';
 
 const LG_MQ = '(min-width: 1024px)';
-/** fetchMrtStays.normalizeMrtStayDates와 동일 상한 */
-const MAX_STAY_NIGHTS = 30;
-const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
 /** 목록 URL을 못 만들 때만 — 마이리얼트립 제휴 홈 */
 const MRT_AFFILIATE_HOME_URL = MRT_PACKAGE_SHORT_URLS.home;
 
@@ -96,237 +101,6 @@ function useIsLg() {
 function formatPrice(n) {
   if (n == null || !Number.isFinite(Number(n)) || Number(n) <= 0) return null;
   return `${Number(n).toLocaleString('ko-KR')}원~`;
-}
-
-function parseYmd(s) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || '').trim());
-  if (!m) return null;
-  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0, 0);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
-function toYmd(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-function addDaysYmd(ymd, days) {
-  const d = parseYmd(ymd);
-  if (!d) return ymd;
-  d.setDate(d.getDate() + days);
-  return toYmd(d);
-}
-
-/** YYYY-MM-DD → 2026.7.20 */
-function formatStayDateLabel(ymd) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || '').trim());
-  if (!m) return ymd || '날짜 선택';
-  return `${Number(m[1])}.${Number(m[2])}.${Number(m[3])}`;
-}
-
-function monthTitle(viewMonth) {
-  return `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
-}
-
-function buildMonthCells(viewMonth) {
-  const year = viewMonth.getFullYear();
-  const month = viewMonth.getMonth();
-  const firstDow = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const cells = [];
-  for (let i = 0; i < firstDow; i += 1) cells.push(null);
-  for (let day = 1; day <= daysInMonth; day += 1) {
-    cells.push(toYmd(new Date(year, month, day, 12, 0, 0, 0)));
-  }
-  while (cells.length % 7 !== 0) cells.push(null);
-  return cells;
-}
-
-/**
- * 한 달력에서 체크인→체크아웃 기간 선택.
- * 1탭=체크인 · 2탭=체크아웃(초안만 확정·닫기) · 최대 30박.
- * 실제 조회는 부모「변경하기」에서만.
- */
-function StayRangeCalendar({
-  checkIn,
-  checkOut,
-  todayYmd,
-  onPick,
-  onCancel,
-}) {
-  const [viewMonth, setViewMonth] = useState(() => parseYmd(checkIn) || new Date());
-  const [draftIn, setDraftIn] = useState(checkIn);
-  const [draftOut, setDraftOut] = useState(checkOut);
-  const [pickingOut, setPickingOut] = useState(false);
-
-  const maxOutYmd = draftIn ? addDaysYmd(draftIn, MAX_STAY_NIGHTS) : null;
-  const cells = buildMonthCells(viewMonth);
-  const hint = pickingOut
-    ? '체크아웃 날짜를 선택하세요'
-    : '체크인 날짜를 선택하세요';
-
-  const shiftMonth = (delta) => {
-    setViewMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
-  };
-
-  const handleDayClick = (ymd) => {
-    if (!ymd || ymd < todayYmd) return;
-    if (!pickingOut || !draftIn) {
-      setDraftIn(ymd);
-      setDraftOut(null);
-      setPickingOut(true);
-      return;
-    }
-    if (ymd <= draftIn) {
-      setDraftIn(ymd);
-      setDraftOut(null);
-      setPickingOut(true);
-      return;
-    }
-    if (maxOutYmd && ymd > maxOutYmd) return;
-    const next = normalizeMrtStayDates(draftIn, ymd);
-    onPick?.(next.checkIn, next.checkOut);
-  };
-
-  const dayClass = (ymd) => {
-    if (!ymd) return 'invisible pointer-events-none';
-    const disabled =
-      ymd < todayYmd || (pickingOut && draftIn && maxOutYmd && ymd > maxOutYmd && ymd !== draftIn);
-    const isIn = ymd === draftIn;
-    const isOut = Boolean(draftOut) && ymd === draftOut;
-    const inRange =
-      Boolean(draftIn && draftOut) && ymd > draftIn && ymd < draftOut;
-    if (disabled && !isIn) {
-      return 'text-white/20 cursor-not-allowed';
-    }
-    if (isIn || isOut) {
-      return 'bg-amber-400 text-black font-bold shadow-sm';
-    }
-    if (inRange) {
-      return 'bg-amber-400/25 text-amber-50 font-semibold';
-    }
-    if (ymd === todayYmd) {
-      return 'text-amber-100 ring-1 ring-amber-300/50 font-semibold hover:bg-white/10';
-    }
-    return 'text-white/85 hover:bg-white/10';
-  };
-
-  return (
-    <div
-      role="dialog"
-      aria-label="숙소 일정 선택"
-      className="mt-2 rounded-xl border border-amber-400/30 bg-black/90 p-2.5 shadow-xl backdrop-blur-md"
-      onClick={(e) => e.stopPropagation()}
-      onMouseDown={(e) => e.stopPropagation()}
-    >
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <button
-          type="button"
-          aria-label="이전 달"
-          onClick={() => shiftMonth(-1)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
-        >
-          <ChevronLeft size={16} aria-hidden="true" />
-        </button>
-        <p className="text-[13px] font-bold tabular-nums text-amber-50">{monthTitle(viewMonth)}</p>
-        <button
-          type="button"
-          aria-label="다음 달"
-          onClick={() => shiftMonth(1)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
-        >
-          <ChevronRight size={16} aria-hidden="true" />
-        </button>
-      </div>
-      <p className="mb-2 text-center text-[11px] text-amber-100/65">{hint}</p>
-      <div className="mb-1 grid grid-cols-7 gap-0.5">
-        {WEEKDAYS_KO.map((d) => (
-          <div
-            key={d}
-            className={`py-1 text-center text-[10px] font-medium ${
-              d === '일' ? 'text-rose-300/70' : 'text-white/40'
-            }`}
-          >
-            {d}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-0.5">
-        {cells.map((ymd, idx) => {
-          const disabled =
-            !ymd ||
-            ymd < todayYmd ||
-            (pickingOut && draftIn && maxOutYmd && ymd > maxOutYmd);
-          return (
-            <button
-              key={ymd || `e-${idx}`}
-              type="button"
-              disabled={Boolean(disabled)}
-              onClick={() => handleDayClick(ymd)}
-              className={`flex h-9 items-center justify-center rounded-lg text-[12px] tabular-nums transition-colors ${dayClass(
-                ymd
-              )}`}
-            >
-              {ymd ? Number(ymd.slice(8, 10)) : ''}
-            </button>
-          );
-        })}
-      </div>
-      <div className="mt-2 flex items-center justify-between gap-2 border-t border-white/10 pt-2">
-        <p className="min-w-0 truncate text-[11px] tabular-nums text-white/55">
-          {formatStayDateLabel(draftIn || checkIn)}
-          <span className="mx-1 text-white/25">→</span>
-          {draftOut ? formatStayDateLabel(draftOut) : pickingOut ? '선택 중' : formatStayDateLabel(checkOut)}
-        </p>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="shrink-0 rounded-lg px-2 py-1 text-[11px] font-medium text-white/60 hover:bg-white/10 hover:text-white transition-colors"
-        >
-          닫기
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function GuestStepper({ label, value, min, max, onChange }) {
-  return (
-    <div className="flex min-w-0 items-center gap-1">
-      <span className="shrink-0 text-[10px] font-semibold text-amber-100/75">{label}</span>
-      <div className="flex items-center rounded-md border border-white/12 bg-black/40">
-        <button
-          type="button"
-          aria-label={`${label} 줄이기`}
-          disabled={value <= min}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (value > min) onChange?.(value - 1);
-          }}
-          className="flex h-6 w-6 items-center justify-center text-amber-100/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
-        >
-          <Minus size={12} aria-hidden="true" />
-        </button>
-        <span className="min-w-[0.95rem] text-center text-[11px] font-bold tabular-nums text-amber-50">
-          {value}
-        </span>
-        <button
-          type="button"
-          aria-label={`${label} 늘리기`}
-          disabled={value >= max}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (value < max) onChange?.(value + 1);
-          }}
-          className="flex h-6 w-6 items-center justify-center text-amber-100/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
-        >
-          <Plus size={12} aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  );
 }
 
 /**
@@ -627,6 +401,7 @@ function StayListToolbar({
   sortMode,
   onSortChange,
   listUrl,
+  tripcomMoreUrl,
   densityVariant = 'mobile',
   densityValue,
   onDensityChange,
@@ -649,6 +424,17 @@ function StayListToolbar({
         >
           마이리얼트립에서 보기
         </a>
+        {tripcomMoreUrl ? (
+          <a
+            href={tripcomMoreUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex shrink-0 items-center rounded-md border border-sky-300/40 bg-sky-500/20 px-2 py-1 text-[10px] font-bold text-sky-50 hover:bg-sky-500/30 hover:border-sky-300/55 active:scale-[0.98] transition-all"
+          >
+            트립닷컴에서 더 보기
+          </a>
+        ) : null}
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         <StayGridDensityToggle
@@ -969,41 +755,80 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   );
 
   const emptyMessage =
-    '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요. 날짜·인원을 바꿔 보거나, 트립닷컴에서 검색해 보세요.';
+    '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요. 아래에서 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요.';
 
-  const tripcomEmptyUrl = buildTripcomHotelSearchUrl(location, {
+  const tripcomStayOptions = {
     checkIn: stayDates.checkIn,
     checkOut: stayDates.checkOut,
     adultCount: guests.adultCount,
     childCount: guests.childCount,
-    campaign: '숙소찾기 빈결과',
+  };
+
+  const tripcomEmptyUrl = buildTripcomHotelSearchUrl(location, {
+    ...tripcomStayOptions,
+    mode: 'list',
+    campaign: TRIPCOM_HOTEL_TRACKING.emptyResult,
   });
 
+  const showLowInventoryCta =
+    status === 'ready' &&
+    Array.isArray(items) &&
+    items.length > 0 &&
+    items.length < MRT_STAY_LOW_COUNT;
+
+  const tripcomLowUrl = showLowInventoryCta
+    ? buildTripcomHotelSearchUrl(location, {
+        ...tripcomStayOptions,
+        mode: 'list',
+        campaign: TRIPCOM_HOTEL_TRACKING.lowInventory,
+      })
+    : null;
+
+  const renderTripcomBanner = () => (
+    <TripcomHotelBannerWidget
+      location={location}
+      checkIn={stayDates.checkIn}
+      checkOut={stayDates.checkOut}
+      adultCount={guests.adultCount}
+      childCount={guests.childCount}
+      todayYmd={todayYmd}
+      onStayChange={applyStayFilters}
+      campaign={TRIPCOM_HOTEL_TRACKING.emptyResult}
+      className="w-full"
+    />
+  );
+
   const emptyState = (
-    <div className="flex min-h-[min(360px,calc(100%-5rem))] flex-col items-center justify-center gap-3 px-4 py-10">
+    <div className="flex min-h-[min(420px,calc(100%-5rem))] w-full flex-col items-stretch justify-center gap-4 px-1 py-6">
       <p className="break-keep text-center text-sm text-white/50">{emptyMessage}</p>
-      <a
-        href={tripcomEmptyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-4 py-2.5 text-sm font-semibold text-sky-50 transition-colors hover:bg-sky-500/30"
-      >
-        트립닷컴에서 숙소 검색
-      </a>
+      {renderTripcomBanner()}
+      <p className="break-keep text-center text-[11px] text-white/35">
+        <a
+          href={tripcomEmptyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sky-300/80 underline-offset-2 hover:underline"
+        >
+          같은 조건으로 트립닷컴 열기
+        </a>
+      </p>
     </div>
   );
 
   const emptyStateMobile = (
-    <div className="flex flex-col items-center gap-3 px-1 py-12">
+    <div className="flex w-full flex-col items-stretch gap-3 px-0 py-4">
       <p className="break-keep text-center text-[12px] text-white/45">{emptyMessage}</p>
-      <a
-        href={tripcomEmptyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-3.5 py-2 text-[12px] font-semibold text-sky-50 transition-colors hover:bg-sky-500/30"
-      >
-        트립닷컴에서 숙소 검색
-      </a>
+      {renderTripcomBanner()}
+      <p className="break-keep text-center text-[10px] text-white/35">
+        <a
+          href={tripcomEmptyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sky-300/80 underline-offset-2 hover:underline"
+        >
+          같은 조건으로 트립닷컴 열기
+        </a>
+      </p>
     </div>
   );
 
@@ -1032,6 +857,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           sortMode={sortMode}
           onSortChange={setSortMode}
           listUrl={mrtStayListUrl}
+          tripcomMoreUrl={tripcomLowUrl}
           densityVariant="desktop"
           densityValue={desktopGridDensity}
           onDensityChange={setDesktopGridDensity}
@@ -1212,6 +1038,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                     sortMode={sortMode}
                     onSortChange={setSortMode}
                     listUrl={mrtStayListUrl}
+                    tripcomMoreUrl={tripcomLowUrl}
                     densityVariant="mobile"
                     densityValue={mobileGridCols}
                     onDensityChange={setMobileGridCols}

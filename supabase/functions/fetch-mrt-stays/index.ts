@@ -77,11 +77,12 @@ function ymd(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
+/** 클라 defaultMrtStayDates와 동일 — 체크인 +14일(보름) · 3박 */
 function defaultStayDates() {
   const checkIn = new Date();
   checkIn.setUTCDate(checkIn.getUTCDate() + 14);
   const checkOut = new Date(checkIn);
-  checkOut.setUTCDate(checkOut.getUTCDate() + 2);
+  checkOut.setUTCDate(checkOut.getUTCDate() + 3);
   return { checkIn: ymd(checkIn), checkOut: ymd(checkOut) };
 }
 

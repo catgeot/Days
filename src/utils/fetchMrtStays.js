@@ -118,13 +118,13 @@ function parseYmdLocal(s) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-/** Edge defaultStayDates와 동일 — 체크인 +14일 · 2박 */
+/** Edge defaultStayDates와 동일 — 체크인 +14일(보름) · 3박 · 성인2·아동0은 guests 기본값 */
 export function defaultMrtStayDates() {
   const checkIn = new Date();
   checkIn.setHours(12, 0, 0, 0);
   checkIn.setDate(checkIn.getDate() + 14);
   const checkOut = new Date(checkIn);
-  checkOut.setDate(checkOut.getDate() + 2);
+  checkOut.setDate(checkOut.getDate() + 3);
   return { checkIn: ymdLocal(checkIn), checkOut: ymdLocal(checkOut) };
 }
 
