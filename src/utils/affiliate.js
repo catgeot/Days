@@ -488,6 +488,8 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   tikal: '6760',
   /** 야쿠츠크 */
   yakutsk: '4224',
+  /** 아이슬란드 — 레이캬비크 (city 없으면 직전 세션 잔존) */
+  iceland: '831',
 };
 
 /**

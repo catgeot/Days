@@ -127,9 +127,44 @@
 - 푸터 카피: PC 한 줄 · 모바일 2줄 · disclaimer「관계가 아닙니다…공식 안내」
 - 릴리스 노트: 미갱신
 
+### 숙소 달력 UX · 쿡 제도 관광청 상시
+
+**상태**: ✅ 커밋 대기→본 커밋
+
+- 날짜 입력칸: 상시 `border-amber-300/40`
+- 달력: max `17.5rem` · **오늘** · **변경하기**(일정 dirty 시만·즉시 조회) · 체크아웃 툴팁
+- 헤더 **변경하기**: 인원 dirty일 때만
+- `rarotonga`/`aitutaki`: Cook Islands Tourism · `alwaysShow: true` · 시드 21
+
+### MRT 키워드 · 요금 필터 완화 (아이슬란드·라로통가)
+
+**상태**: ✅ 반영 · **다음 세션에서 Trip CTA·홈 괴리 심화**
+
+- `iceland`→**레이캬비크** · `rarotonga`→**아바루아**(alt 아로랑기)
+- 목록: 요금無 **숨기지 않음**(요금 우선 정렬) · 캐시 `v15`
+- Trip `iceland`→**`831`**
+
+#### QA 메모 (2026-07-22) — Trip CTA 조건 회귀
+
+| 의도(기존) | 현재 코드 | 증상 |
+|------------|-----------|------|
+| **예약 가능(요금有) ≤5** → 하단 Trip | **목록 건수(요금無 포함) ≤5** → Trip | 라로통가: 기본일정 예약가능 **0**인데 요금無 카드로 목록>5 → **Trip 미노출** |
+| | | 아이슬란드: 예약가능 **2** · 목록은 더 김 → **Trip 미노출** |
+
+- `showLowInventoryCta` = `items.length <= MRT_STAY_LOW_COUNT(5)` (`GlobeStayStrip`) — **bookableCount 기준이 아님**
+- `bookableCount` / `moreWithDateChange`는 meta·카피용으로만 존재
+- **다음**: 저재고 CTA를 `bookableCount <= 5`(또는 0)로 되돌리되, 목록은 요금無 유지할지 합의
+
+#### 다음 세션 핵심 (심화)
+
+- **왜 Edge/게이트오 목록 ≠ MRT 홈 동일 일정 결과인가** (아이슬란드·라로통가)
+  - regionId·키워드 사다리·page size 20·정렬·요금 필드·홈 검색 UI 차이
+  - LIVE: `usedKeyword`·`region`·`totalCount`·`bookableCount` vs 홈 화면 대조
+- Trip city 전수는 보류 · CTA 뜨는 slug만 city 필수(세션 잔존)
+
 ### 에이전트 핸드오프 (다음 세션)
 
-- **읽을 것 3**: 본 절 저재고 CTA · PROD QA 표 · `fetchMrtStays` bookable 필터
-- **금지 3**: 미검증 여행사 URL · Trip 스크래핑 · 검증 안 된 city · `VITE_` MRT 키
-- **다음 작업**: Vercel 배포 후 PROD 그린란드 — 예약 가능만 노출·하단 Trip `city=6838`
-- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「PROD 그린란드 저재고 Trip QA부터」
+- **읽을 것 3**: 본 절「Trip CTA 조건 회귀」·「다음 세션 핵심」· `fetchMrtStays` v15 + `GlobeStayStrip` `showLowInventoryCta`
+- **금지 3**: 미검증 여행사 URL · Trip 스크래핑 · `VITE_` MRT 키 · 홈 괴리 원인 추측만으로 region 대량 변경
+- **다음 작업**: (1) 저재고 Trip을 **bookableCount≤5**로 복구·사용자 선택권 (2) API↔MRT 홈 괴리 LIVE 대조(아이슬란드·라로통가)
+- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「Trip CTA bookableCount 복구 + MRT 홈 괴리부터」

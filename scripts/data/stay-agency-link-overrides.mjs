@@ -20,7 +20,10 @@
  *     evidence: string,
  *   }>,
  *   confidence?: 'high'|'medium',
+ *   alwaysShow?: boolean,
  * }>}
+ *
+ * alwaysShow: true면 MRT 재고가 있어도 공식 안내를 목록에 상시 노출
  */
 export const STAY_AGENCY_LINK_OVERRIDES = {
   antarctica: {
@@ -250,8 +253,9 @@ export const STAY_AGENCY_LINK_OVERRIDES = {
     ],
   },
   rarotonga: {
-    note: '라로통가(쿡 제도)는 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.',
+    note: '라로통가(쿡 제도)는 정보가 적어 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.',
     confidence: 'high',
+    alwaysShow: true,
     links: [
       {
         name: 'Cook Islands Tourism',
@@ -264,6 +268,23 @@ export const STAY_AGENCY_LINK_OVERRIDES = {
       },
     ],
   },
+  aitutaki: {
+    note: '아이투타키(쿡 제도)는 정보가 적어 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.',
+    confidence: 'high',
+    alwaysShow: true,
+    links: [
+      {
+        name: 'Cook Islands Tourism',
+        href: 'https://cookislands.travel/',
+        kind: 'tourism-board',
+        locale: 'en',
+        verifiedAt: '2026-07-22',
+        evidence:
+          'Cook Islands Tourism Corporation 공식 사이트 — 아이투타키·라로통가 포함 (브라우저 200, Node fetch WAF 403)',
+      },
+    ],
+  },
+
   svalbard: {
     note: '스발바르는 극지 특성상 공식 Visit Svalbard 안내로 숙소·일정을 확인하세요.',
     confidence: 'high',

@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-22T04:20:50.449Z",
-    "spotCount": 20,
+    "generatedAt": "2026-07-22T05:05:07.985Z",
+    "spotCount": 21,
     "source": "scripts/data/stay-agency-link-overrides.mjs"
   },
   "spots": {
@@ -227,8 +227,9 @@
       ]
     },
     "rarotonga": {
-      "note": "라로통가(쿡 제도)는 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.",
+      "note": "라로통가(쿡 제도)는 정보가 적어 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.",
       "confidence": "high",
+      "alwaysShow": true,
       "links": [
         {
           "name": "Cook Islands Tourism",
@@ -237,6 +238,21 @@
           "locale": "en",
           "verifiedAt": "2026-07-22",
           "evidence": "Cook Islands Tourism Corporation 공식 사이트 (cookislands.travel → /home) — 브라우저 200 (Node fetch WAF 403)"
+        }
+      ]
+    },
+    "aitutaki": {
+      "note": "아이투타키(쿡 제도)는 정보가 적어 공식 관광청 안내로 섬·숙소 루트를 넓혀 보세요.",
+      "confidence": "high",
+      "alwaysShow": true,
+      "links": [
+        {
+          "name": "Cook Islands Tourism",
+          "href": "https://cookislands.travel/",
+          "kind": "tourism-board",
+          "locale": "en",
+          "verifiedAt": "2026-07-22",
+          "evidence": "Cook Islands Tourism Corporation 공식 사이트 — 아이투타키·라로통가 포함 (브라우저 200, Node fetch WAF 403)"
         }
       ]
     },

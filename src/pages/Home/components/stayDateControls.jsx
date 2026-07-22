@@ -59,6 +59,9 @@ const ACCENT = {
     title: 'text-amber-50',
     hint: 'text-amber-100/65',
     border: 'border-amber-400/30',
+    tip: 'border-amber-300/70 bg-amber-400 text-black',
+    tipArrow: 'border-t-amber-400',
+    apply: 'border-amber-300/55 bg-amber-400 text-black hover:bg-amber-300',
   },
   sky: {
     selected: 'bg-sky-400 text-black font-bold shadow-sm',
@@ -67,12 +70,16 @@ const ACCENT = {
     title: 'text-sky-50',
     hint: 'text-sky-100/65',
     border: 'border-sky-400/30',
+    tip: 'border-sky-300/70 bg-sky-400 text-black',
+    tipArrow: 'border-t-sky-400',
+    apply: 'border-sky-300/55 bg-sky-400 text-black hover:bg-sky-300',
   },
 };
 
 /**
  * 한 달력에서 체크인→체크아웃 기간 선택.
- * 1탭=체크인 · 2탭=체크아웃 · 최대 {@link STAY_MAX_NIGHTS}박.
+ * 1탭=체크인 · 2탭=체크아웃 · 일정 변경 시에만 「변경하기」활성 · 최대 {@link STAY_MAX_NIGHTS}박.
+ * PC에서도 max-width로 과도하게 커지지 않게 유지.
  */
 export function StayRangeCalendar({
   checkIn,
@@ -90,30 +97,47 @@ export function StayRangeCalendar({
 
   const maxOutYmd = draftIn ? addDaysYmd(draftIn, STAY_MAX_NIGHTS) : null;
   const cells = buildMonthCells(viewMonth);
-  const hint = pickingOut
-    ? '체크아웃 날짜를 선택하세요'
-    : '체크인 날짜를 선택하세요';
+  const datesComplete = Boolean(draftIn && draftOut && draftOut > draftIn);
+  const datesDirty =
+    datesComplete && (draftIn !== checkIn || draftOut !== checkOut);
+  const canApply = datesDirty;
 
   const shiftMonth = (delta) => {
     setViewMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
   };
 
+  const startCheckIn = (ymd) => {
+    setDraftIn(ymd);
+    setDraftOut(null);
+    setPickingOut(true);
+    const d = parseYmd(ymd);
+    if (d) setViewMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+  };
+
   const handleDayClick = (ymd) => {
     if (!ymd || ymd < todayYmd) return;
     if (!pickingOut || !draftIn) {
-      setDraftIn(ymd);
-      setDraftOut(null);
-      setPickingOut(true);
+      startCheckIn(ymd);
       return;
     }
     if (ymd <= draftIn) {
-      setDraftIn(ymd);
-      setDraftOut(null);
-      setPickingOut(true);
+      startCheckIn(ymd);
       return;
     }
     if (maxOutYmd && ymd > maxOutYmd) return;
     const next = normalizeMrtStayDates(draftIn, ymd);
+    setDraftIn(next.checkIn);
+    setDraftOut(next.checkOut);
+    setPickingOut(false);
+  };
+
+  const handleToday = () => {
+    startCheckIn(todayYmd);
+  };
+
+  const handleApply = () => {
+    if (!canApply) return;
+    const next = normalizeMrtStayDates(draftIn, draftOut);
     onPick?.(next.checkIn, next.checkOut);
   };
 
@@ -136,37 +160,55 @@ export function StayRangeCalendar({
     <div
       role="dialog"
       aria-label="숙소 일정 선택"
-      className={`mt-2 rounded-xl border ${theme.border} bg-black/90 p-2.5 shadow-xl backdrop-blur-md`}
+      className={`mt-2 w-full max-w-[17.5rem] rounded-xl border ${theme.border} bg-black/90 p-2 shadow-xl backdrop-blur-md`}
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="mb-1.5 flex items-center justify-between gap-1.5">
         <button
           type="button"
           aria-label="이전 달"
           onClick={() => shiftMonth(-1)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
         >
-          <ChevronLeft size={16} aria-hidden="true" />
+          <ChevronLeft size={15} aria-hidden="true" />
         </button>
-        <p className={`text-[13px] font-bold tabular-nums ${theme.title}`}>
+        <p className={`text-[12px] font-bold tabular-nums ${theme.title}`}>
           {monthTitle(viewMonth)}
         </p>
         <button
           type="button"
           aria-label="다음 달"
           onClick={() => shiftMonth(1)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
         >
-          <ChevronRight size={16} aria-hidden="true" />
+          <ChevronRight size={15} aria-hidden="true" />
         </button>
       </div>
-      <p className={`mb-2 text-center text-[11px] ${theme.hint}`}>{hint}</p>
-      <div className="mb-1 grid grid-cols-7 gap-0.5">
+
+      {pickingOut && draftIn ? (
+        <div className="relative mb-1.5 flex justify-center px-1" role="status">
+          <div
+            className={`relative max-w-[15rem] rounded-lg border px-2.5 py-1.5 text-center text-[11px] font-bold leading-snug shadow-lg ${theme.tip}`}
+          >
+            체크아웃 날짜를 선택해 주세요
+            <span
+              className={`pointer-events-none absolute left-1/2 top-full -mt-px -translate-x-1/2 border-[5px] border-transparent ${theme.tipArrow}`}
+              aria-hidden="true"
+            />
+          </div>
+        </div>
+      ) : (
+        <p className={`mb-1.5 text-center text-[10px] ${theme.hint}`}>
+          체크인 날짜를 선택하세요
+        </p>
+      )}
+
+      <div className="mb-0.5 grid grid-cols-7 gap-0.5">
         {STAY_WEEKDAYS_KO.map((d) => (
           <div
             key={d}
-            className={`py-1 text-center text-[10px] font-medium ${
+            className={`py-0.5 text-center text-[9px] font-medium ${
               d === '일' ? 'text-rose-300/70' : 'text-white/40'
             }`}
           >
@@ -186,7 +228,7 @@ export function StayRangeCalendar({
               type="button"
               disabled={Boolean(disabled)}
               onClick={() => handleDayClick(ymd)}
-              className={`flex h-9 items-center justify-center rounded-lg text-[12px] tabular-nums transition-colors ${dayClass(
+              className={`flex h-7 items-center justify-center rounded-md text-[11px] tabular-nums transition-colors ${dayClass(
                 ymd,
               )}`}
             >
@@ -195,8 +237,8 @@ export function StayRangeCalendar({
           );
         })}
       </div>
-      <div className="mt-2 flex items-center justify-between gap-2 border-t border-white/10 pt-2">
-        <p className="min-w-0 truncate text-[11px] tabular-nums text-white/55">
+      <div className="mt-1.5 space-y-1.5 border-t border-white/10 pt-1.5">
+        <p className="truncate text-center text-[10px] tabular-nums text-white/55">
           {formatStayDateLabel(draftIn || checkIn)}
           <span className="mx-1 text-white/25">→</span>
           {draftOut
@@ -205,13 +247,36 @@ export function StayRangeCalendar({
               ? '선택 중'
               : formatStayDateLabel(checkOut)}
         </p>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="shrink-0 rounded-lg px-2 py-1 text-[11px] font-medium text-white/60 hover:bg-white/10 hover:text-white transition-colors"
-        >
-          닫기
-        </button>
+        <div className="flex items-center justify-between gap-1">
+          <button
+            type="button"
+            onClick={handleToday}
+            className="rounded-md border border-white/20 px-2 py-1 text-[10px] font-semibold text-white/85 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            오늘
+          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-md px-2 py-1 text-[10px] font-medium text-white/60 hover:bg-white/10 hover:text-white transition-colors"
+            >
+              닫기
+            </button>
+            <button
+              type="button"
+              disabled={!canApply}
+              onClick={handleApply}
+              className={`rounded-md border px-2 py-1 text-[10px] font-bold transition-all active:scale-95 ${
+                canApply
+                  ? theme.apply
+                  : 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
+              }`}
+            >
+              변경하기
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

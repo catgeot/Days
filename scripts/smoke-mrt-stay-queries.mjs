@@ -144,6 +144,28 @@ const CASES = [
     },
     expectCountryAlt: /튀르키예/,
   },
+  {
+    slug: 'iceland',
+    location: {
+      slug: 'iceland',
+      name: '아이슬란드',
+      name_en: 'Iceland',
+      country: '아이슬란드',
+      country_en: 'Iceland',
+    },
+    expectKeyword: /레이캬비크|Reykjavik/,
+  },
+  {
+    slug: 'rarotonga',
+    location: {
+      slug: 'rarotonga',
+      name: '라로통가',
+      name_en: 'Rarotonga',
+      country: '쿡 제도',
+      country_en: 'Cook Islands',
+    },
+    expectKeyword: /아바루아|Avarua|아로랑기|Arorangi/,
+  },
 ];
 
 function assert(cond, msg) {

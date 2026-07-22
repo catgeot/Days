@@ -18,6 +18,7 @@ import stayAgencyLinksData from '../pages/Home/data/travelSpotStayAgencyLinks.js
  *   note: string,
  *   links: StayAgencyLink[],
  *   confidence?: 'high'|'medium',
+ *   alwaysShow?: boolean,
  * }} StayAgencyProfile
  */
 
@@ -56,6 +57,7 @@ export function resolveStayAgencyProfile(locationOrSlug) {
   return {
     note: String(entry.note || '').trim(),
     confidence: entry.confidence,
+    alwaysShow: Boolean(entry.alwaysShow),
     links: entry.links
       .map((link) => ({
         name: String(link?.name || '').trim(),

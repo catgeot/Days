@@ -80,14 +80,33 @@ function reviewScoreNum(item) {
   return Number.isFinite(n) ? n : -1;
 }
 
-/** 이미 받은 목록만 재정렬 — API 재호출 없음 */
+function salePriceNum(item) {
+  const n = Number(item?.salePrice);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/** 이미 받은 목록만 재정렬 — API 재호출 없음 · 요금 없는 건은 가격 정렬 시 뒤로 */
 function sortStayGroup(list, sortMode) {
   const arr = Array.isArray(list) ? list.slice() : [];
   if (sortMode === 'price_asc') {
-    return arr.sort((a, b) => Number(a.salePrice) - Number(b.salePrice));
+    return arr.sort((a, b) => {
+      const ap = salePriceNum(a);
+      const bp = salePriceNum(b);
+      if (ap == null && bp == null) return 0;
+      if (ap == null) return 1;
+      if (bp == null) return -1;
+      return ap - bp;
+    });
   }
   if (sortMode === 'price_desc') {
-    return arr.sort((a, b) => Number(b.salePrice) - Number(a.salePrice));
+    return arr.sort((a, b) => {
+      const ap = salePriceNum(a);
+      const bp = salePriceNum(b);
+      if (ap == null && bp == null) return 0;
+      if (ap == null) return 1;
+      if (bp == null) return -1;
+      return bp - ap;
+    });
   }
   if (sortMode === 'rating_desc') {
     return arr.sort((a, b) => reviewScoreNum(b) - reviewScoreNum(a));
@@ -115,8 +134,8 @@ function formatPrice(n) {
 }
 
 /**
- * 일정·인원 초안 편집 → 「변경하기」한 번에 적용(조회).
- * 달력 기간 선택·인원 스테퍼는 API를 치지 않음.
+ * 일정: 달력 「변경하기」→ 즉시 조회.
+ * 인원: 헤더 「변경하기」→ 인원만 바뀌었을 때 활성·조회.
  */
 function StayDateBar({
   placeName = '',
@@ -144,20 +163,27 @@ function StayDateBar({
   }, [checkIn, checkOut, adultCount, childCount]);
 
   const draftNights = mrtStayNights(draftIn, draftOut);
-  const dirty =
-    draftIn !== checkIn ||
-    draftOut !== checkOut ||
-    draftAdult !== adultCount ||
-    draftChild !== childCount;
+  /** 헤더 버튼 — 인원만 (일정은 달력에서 즉시 적용) */
+  const guestsDirty =
+    draftAdult !== adultCount || draftChild !== childCount;
   const title = String(placeName || '').trim();
 
   const closeCalendar = useCallback(() => setOpen(false), []);
 
-  const handleCalendarPick = useCallback((nextIn, nextOut) => {
-    setDraftIn(nextIn);
-    setDraftOut(nextOut);
-    setOpen(false);
-  }, []);
+  const handleCalendarPick = useCallback(
+    (nextIn, nextOut) => {
+      setDraftIn(nextIn);
+      setDraftOut(nextOut);
+      setOpen(false);
+      onApply?.({
+        checkIn: nextIn,
+        checkOut: nextOut,
+        adultCount: draftAdult,
+        childCount: draftChild,
+      });
+    },
+    [onApply, draftAdult, draftChild],
+  );
 
   useEffect(() => {
     if (!open) return undefined;
@@ -225,8 +251,8 @@ function StayDateBar({
         }}
         className={`flex min-h-[40px] w-full min-w-0 items-center gap-1.5 rounded-lg border px-2 py-1.5 transition-colors ${
           open
-            ? 'border-amber-300/50 bg-black/55'
-            : 'border-white/10 bg-black/40 hover:border-amber-300/45 hover:bg-black/55'
+            ? 'border-amber-300/60 bg-black/55'
+            : 'border-amber-300/40 bg-black/40 hover:border-amber-300/55 hover:bg-black/55'
         }`}
       >
         <CalendarDays
@@ -271,10 +297,10 @@ function StayDateBar({
         />
         <button
           type="button"
-          disabled={!dirty}
+          disabled={!guestsDirty}
           onClick={(e) => {
             e.stopPropagation();
-            if (!dirty) return;
+            if (!guestsDirty) return;
             onApply?.({
               checkIn: draftIn,
               checkOut: draftOut,
@@ -283,7 +309,7 @@ function StayDateBar({
             });
           }}
           className={`ml-auto shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-all active:scale-95 ${
-            dirty
+            guestsDirty
               ? 'border-amber-300/55 bg-amber-400 text-black hover:bg-amber-300'
               : 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
           }`}
@@ -292,14 +318,16 @@ function StayDateBar({
         </button>
       </div>
       {open ? (
-        <StayRangeCalendar
-          key={`${draftIn}|${draftOut}|open`}
-          checkIn={draftIn}
-          checkOut={draftOut}
-          todayYmd={todayYmd}
-          onPick={handleCalendarPick}
-          onCancel={closeCalendar}
-        />
+        <div className="flex justify-start">
+          <StayRangeCalendar
+            key={`${checkIn}|${checkOut}|open`}
+            checkIn={checkIn}
+            checkOut={checkOut}
+            todayYmd={todayYmd}
+            onPick={handleCalendarPick}
+            onCancel={closeCalendar}
+          />
+        </div>
       ) : null}
     </div>
   );
@@ -536,6 +564,29 @@ function StayAgencyGuideLinks({
   );
 }
 
+/** 정보 희소 여행지 — MRT 목록이 있어도 공식 관광청을 하단에 상시 노출 */
+function StayAgencyAlwaysFooter({
+  profile,
+  linkTarget,
+  linkRel,
+  compact = false,
+}) {
+  if (!profile?.alwaysShow || !profile?.links?.length) return null;
+  return (
+    <div className="mt-4 flex flex-col items-center gap-2.5 rounded-xl border border-white/15 bg-white/5 px-3 py-3.5 text-center">
+      <p className="break-keep text-[11px] font-medium leading-relaxed text-white/70 lg:text-[12px]">
+        이 지역은 온라인 정보가 적어요. 공식 관광 안내도 함께 확인해 보세요
+      </p>
+      <StayAgencyGuideLinks
+        profile={profile}
+        linkTarget={linkTarget}
+        linkRel={linkRel}
+        compact={compact}
+      />
+    </div>
+  );
+}
+
 /** MRT 저재고(요금 있는 숙소 ≤5) — 목록 하단 공식 안내 + Trip.com */
 function StayLowInventoryFooter({
   href,
@@ -543,6 +594,8 @@ function StayLowInventoryFooter({
   linkRel,
   ctaClassName,
   agencyProfile = null,
+  /** API 목록 중 요금 없는 건이 더 있으면 일정 변경 안내 */
+  moreWithDateChange = false,
 }) {
   if (!href && !agencyProfile?.links?.length) return null;
   const hasAgency = Boolean(agencyProfile?.links?.length);
@@ -556,7 +609,17 @@ function StayLowInventoryFooter({
     >
       {/* 모바일: 문장 단위 2줄 · PC: 한 줄(폭 확대) */}
       <p className="w-full max-w-sm text-[12px] font-medium leading-relaxed text-white/75 lg:max-w-xl lg:whitespace-nowrap">
-        {hasAgency ? (
+        {moreWithDateChange ? (
+          <>
+            <span className="block lg:inline">
+              선택한 일정에 바로 예약 가능한 숙소만 보여요.
+            </span>
+            <span className="mt-0.5 block lg:mt-0 lg:inline">
+              <span className="hidden lg:inline"> </span>
+              일정을 바꾸면 더 많아질 수 있어요
+            </span>
+          </>
+        ) : hasAgency ? (
           <>
             <span className="block lg:inline">이 지역은 마이리얼트립 재고가 적어요.</span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
@@ -616,7 +679,7 @@ function StayCardsGrid({
   cardClassName = 'w-auto min-w-0',
   cardSize = 'md',
 }) {
-  /** fetch 단계에서 예약 가능(요금 있음)만 전달됨 */
+  /** fetch: 요금 우선 정렬 · 요금 없는 숙소도 포함 */
   const sorted = sortStayGroup(items || [], sortMode);
 
   return (
@@ -807,6 +870,12 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           regionId: result.region?.regionId ?? null,
           keyword: result.usedKeyword || name || '',
           isDomestic: isMrtDomesticLocation(locForFetch),
+          moreWithDateChange: Boolean(result.moreWithDateChange),
+          listedCount: Number(result.listedCount) || result.items.length,
+          bookableCount:
+            Number(result.bookableCount) >= 0
+              ? Number(result.bookableCount)
+              : result.items.length,
         });
         setStatus('ready');
       } else {
@@ -886,7 +955,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const tripcomLinkTarget = getPartnerLinkTarget();
   const tripcomLinkRel = getTripcomLinkRel(tripcomLinkTarget);
 
-  /** 목록은 예약 가능(요금 있음) 건만 — 그 수가 ≤5이면 하단 Trip CTA */
+  /** 목록(최대 20)이 ≤5이면 하단 Trip CTA · 요금無 혼재는 moreWithDateChange 카피 */
   const showLowInventoryCta =
     status === 'ready' &&
     Array.isArray(items) &&
@@ -916,6 +985,13 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     getTripcomHotelEmptyCopy(location);
   const stayAgencyProfile = resolveStayAgencyProfile(location);
   const hasStayAgencyLinks = Boolean(stayAgencyProfile?.links?.length);
+  /** 저재고 footer에 이미 포함되면 중복 방지 · 그 외 ready 목록에서만 상시 노출 */
+  const showAgencyAlwaysFooter =
+    Boolean(stayAgencyProfile?.alwaysShow) &&
+    status === 'ready' &&
+    Array.isArray(items) &&
+    items.length > 0 &&
+    !showLowInventoryCta;
   const emptyTitle = emptyTitleBase;
   const emptySubtitle = hasStayAgencyLinks
     ? stayAgencyProfile.note ||
@@ -1064,6 +1140,14 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             linkRel={tripcomLinkRel}
             ctaClassName={tripcomLowCtaDesktopClass}
             agencyProfile={stayAgencyProfile}
+            moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
+          />
+        ) : null}
+        {showAgencyAlwaysFooter ? (
+          <StayAgencyAlwaysFooter
+            profile={stayAgencyProfile}
+            linkTarget={agencyLinkTarget}
+            linkRel={agencyLinkRel}
           />
         ) : null}
       </>
@@ -1256,6 +1340,15 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                       linkRel={tripcomLinkRel}
                       ctaClassName={tripcomLowCtaMobileClass}
                       agencyProfile={stayAgencyProfile}
+                      moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
+                    />
+                  ) : null}
+                  {showAgencyAlwaysFooter ? (
+                    <StayAgencyAlwaysFooter
+                      profile={stayAgencyProfile}
+                      linkTarget={agencyLinkTarget}
+                      linkRel={agencyLinkRel}
+                      compact
                     />
                   ) : null}
                 </>

@@ -159,6 +159,22 @@ const MRT_STAY_KEYWORD_OVERRIDES = {
     countryHintAlts: ['Australia', 'Cocos', '코코스'],
     ignoreStayAdmin: true,
   },
+  /**
+   * 「아이슬란드」국가 검색보다 MRT CITY「레이캬비크」재고가 홈과 동일하게 풍부.
+   */
+  iceland: {
+    keyword: '레이캬비크',
+    altKeywords: ['Reykjavik', 'Reykjavík', '아이슬란드', 'Iceland'],
+  },
+  /**
+   * 라로통가 — 아바루아·아로랑기 호텔 밀집(MRT 홈과 동일 권역).
+   */
+  rarotonga: {
+    keyword: '아바루아',
+    altKeywords: ['Avarua', '아로랑기', 'Arorangi', '라로통가', 'Rarotonga'],
+    countryHint: '쿡 제도',
+    countryHintAlts: ['Cook Islands', '쿡제도'],
+  },
 };
 
 /**
