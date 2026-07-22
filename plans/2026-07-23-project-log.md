@@ -26,6 +26,124 @@
 
 상세 배치 이력: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md) #22~#47 절.
 
+## cityAttractionHubs — R48~R61 해외 큐 완료 · 커밋
+
+**상태**: ✅ tip **550 hub / 3830 명소** · audit issues 0 · R48–R61 전부 ✅ · **커밋·push** (`main`)
+
+- 410→550 (+140) · 오케스트레이터 v2.1(§4.2 지휘권 이양) · 후임 Task 부재 시 본인 런 예외로 머지한 세대 포함
+- 방법론: [`orchestrator-method.md`](./orchestrator-method.md) v2.1 · 큐 [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) 소진
+- 다음: 새 해외 큐가 필요하면 큐 문서 확장 후 `오케스트레이터` 재개 · UI/`releaseNotes`는 별도 합의
+
+## cityAttractionHubs — R60~R61 오케스트레이터 세대 (큐 소진)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **R48–R61 큐 소진**
+
+- tip **550 hub / 3830 명소** (+20) · R60 동유럽·지중해·노르웨이10 · R61 유럽·남아시아·브루나이10 · `_tmp-r60`/`_tmp-r61` 정리
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- R60 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS · 보정 `Alexander Nevsky Cathedral Sofia`(tallinn 충돌)
+- R61 VERIFY: hub/exact + 회귀·R60 샘플 PASS
+
+## cityAttractionHubs — R58~R59 오케스트레이터 세대 (이관)
+
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R60 후임 기동)
+
+- tip **530 hub / 3690 명소** (+20) · R58 호주·NZ·일본10 · R59 일본·세르비아10 · `_tmp-r58`/`_tmp-r59` 정리
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r58`/`_tmp-r59`)·직렬 A→B·VERIFY까지 완료
+- R58/R59 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS · shrine 유지(고베·센다이·나라·닛코·하코네·나가사키·마츠모토·다카야마)
+- **다음 배치표 2개**
+  - **R60** A=`bucharest`·`sofia`·`tirana`·`skopje`·`sarajevo` / B=`podgorica`·`valletta`·`nicosia`·`stavanger`·`trondheim`
+  - **R61** A=`montpellier`·`palermo`·`faro`·`cork`·`galway` / B=`belfast`·`madeira`·`lahore`·`karachi`·`bandar-seri-begawan`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지: 솔로 계주 · tip 병렬 머지 · shrine 제거 · 시드(`sokcho`/`paris`) 덮어쓰기 · 워커 띄운 뒤 초안 전 턴 종료
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R60부터 워커2 · §4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## cityAttractionHubs — R56~R57 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R58 후임 기동)
+
+- tip **510 hub / 3550 명소** (+20) · R56 중동·북아프리카10 · R57 아프리카·오세아니아10 · `_tmp-r56`/`_tmp-r57` 정리
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r56`/`_tmp-r57`)·직렬 A→B·VERIFY까지 완료
+- R56/R57 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS
+- **다음 배치표 2개**
+  - **R58** A=`perth`·`adelaide`·`gold-coast`·`cairns`·`hobart` / B=`wellington`·`queenstown`·`christchurch`·`rotorua`·`kobe`
+  - **R59** A=`yokohama`·`sendai`·`nara`·`nikko`·`hakone` / B=`nagasaki`·`matsumoto`·`takayama`·`beppu`·`belgrade`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지: 솔로 계주 · tip 병렬 머지 · shrine 제거 · 시드(`sokcho`/`paris`) 덮어쓰기 · 워커 띄운 뒤 초안 전 턴 종료
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R58부터 워커2 · §4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## cityAttractionHubs — R54~R55 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R56 후임 기동)
+
+- tip **490 hub / 3410 명소** (+20) · R54 동남아·인도10 · R55 인도·남아시아·중동10 · `_tmp-r54`/`_tmp-r55` 정리
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r54`/`_tmp-r55`)·직렬 A→B·VERIFY까지 완료
+- R54/R55 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS
+- **다음 배치표 2개**
+  - **R56** A=`doha`·`riyadh`·`jeddah`·`tel-aviv`·`jerusalem` / B=`amman`·`cairo`·`marrakech`·`casablanca`·`luxor`
+  - **R57** A=`alexandria`·`tunis`·`fes`·`muscat`·`cape-town` / B=`johannesburg`·`nairobi`·`addis-ababa`·`zanzibar`·`brisbane`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지: 솔로 계주 · tip 병렬 머지 · shrine 제거 · 시드(`sokcho`/`paris`) 덮어쓰기 · 워커 띄운 뒤 초안 전 턴 종료
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R56부터 워커2 · §4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## cityAttractionHubs — R52~R53 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R54 후임 기동)
+
+- tip **470 hub / 3270 명소** (+20) · R52 중국·대만·마카오10 · R53 동남아10 · `_tmp*` 정리됨
+- R52/R53: tip EXISTS 선행 머지 → VERIFY만 · R53 보정: penang `George Town`→`George Town Penang`(washington-dc 충돌)
+- **다음 배치표 2개**
+  - **R54** A=`phnom-penh`·`luang-prabang`·`vientiane`·`yangon`·`kota-kinabalu` / B=`johor-bahru`·`delhi`·`mumbai`·`bangalore`·`jaipur`
+  - **R55** A=`kolkata`·`chennai`·`hyderabad`·`agra`·`varanasi` / B=`goa`·`kathmandu`·`colombo`·`male`·`abu-dhabi`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지: 솔로 계주 · tip 병렬 머지 · shrine 제거 · 시드(`sokcho`/`paris`) 덮어쓰기 · 워커 띄운 뒤 초안 전 턴 종료
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R54부터 워커2 · §4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## cityAttractionHubs — R50~R51 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**
+
+- tip **450 hub / 3130 명소** (+20) · R50 캐나다·멕시코·남미10 · R51 남미·중국10 · `_tmp*` 정리됨
+- R50: 파이프 단절 복구 시 tip 이미 440(EXISTS) → VERIFY만 · R51: `Plaza de Armas`→도시접두 2 · alias `광주` 드롭(충돌)
+- **다음 배치표 2개**
+  - **R52** A=`xian`·`hangzhou`·`shenzhen`·`nanjing`·`suzhou` / B=`chongqing`·`macau`·`kaohsiung`·`taichung`·`tainan`
+  - **R53** A=`kuala-lumpur`·`jakarta`·`manila`·`cebu`·`bali` / B=`penang`·`yogyakarta`·`surabaya`·`krabi`·`siem-reap`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지: 솔로 계주 · tip 병렬 머지 · shrine 제거 · 시드(`sokcho`/`paris`) 덮어쓰기 · 워커 띄운 뒤 초안 전 턴 종료
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R52부터 워커2 · §4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## cityAttractionHubs — R48~R49 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**
+
+- tip **430 hub / 2990 명소** (+20) · R48 미국10 · R49 미+캐나다10 · `_tmp*` 정리됨
+- R49 보정: `가든 디스트릭트`→`뉴올리언스 가든 디스트릭트` 등 접두 4건 · `country_en` US=`USA`
+- **다음 배치표 2개**
+  - **R50** A=`ottawa`·`quebec-city`·`mexico-city`·`cancun`·`guadalajara` / B=`oaxaca`·`rio-de-janeiro`·`sao-paulo`·`buenos-aires`·`lima`
+  - **R51** A=`santiago`·`bogota`·`medellin`·`cusco`·`cartagena` / B=`montevideo`·`beijing`·`shanghai`·`guangzhou`·`chengdu`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지: 솔로 계주 · tip 병렬 머지 · shrine 제거 · 시드(`sokcho`/`paris`) 덮어쓰기
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R50부터 워커2 · §4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## 오케스트레이터 방법 v2.1 (지휘권 이양 명시)
+
+**상태**: ✅ method §1.1·§3.0·§4.2 · Rule `gateo-orchestrator.mdc` 갱신
+
+- 세대 후 **사람 제시어 대기 금지** · 현 메인이 Task로 후임 메인에 지휘권 이양
+- 제시어는 최초·§3.3 E·파이프 단절 복구용만
+
 ## 오케스트레이터 방법 v2 (2026-07-23)
 
 **상태**: ✅ [`orchestrator-method.md`](./orchestrator-method.md) · Rule `gateo-orchestrator.mdc` · project-context · `.ai-context` 4절

@@ -5,11 +5,12 @@ alwaysApply: false
 
 # 오케스트레이터 세션
 
-사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.
+사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
+방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.1**.
 
 ## 필수 읽기 (짧게)
 
-1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §3.0 · §3.3 문제 조치** · §4 (+ 주제면 §5)
+1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §3.0 · §3.3 · §4.2** (+ 주제면 §5)
 2. 명소: [`plans/city-attraction-hub-queue.md`](plans/city-attraction-hub-queue.md) **다음 ⬜ R** + 일지 핸드오프 1절만
 3. [`.ai-context.md`](.ai-context.md) — 관련 금지 1~2줄만
 
@@ -17,10 +18,19 @@ alwaysApply: false
 
 ## 역할 (고정)
 
-- **당신 = 오케스트레이터(메인)**: 배치표 **2개** · **워커 정확히 2** · 감사 · tip **직렬** append(A→B) · VERIFY · 이관
+- **당신 = 오케스트레이터(메인)**: 배치표 **2개** · **워커 정확히 2** · 감사 · tip **직렬** append(A→B) · VERIFY · **이관(§4.2)**
 - **워커**: 배정 1배치 **초안만**. tip append · `main` push · SSOT rewrite · 이관서 **금지**
-- **후임 메인**(인수인계로 역할 수신 직후): **반드시 워커 2 재기동 → 직렬 머지 → 그다음 이관**.  
+- **후임 메인**: 현 메인이 **Task로 기동**해 역할을 넘김 → **즉시** 워커 2 재기동 → 직렬 머지 → VERIFY → 재이관.  
   기본 **본인 런 금지**. 예외는 워커 1회 재시도 실패 시만 · 일지에 사유 1줄.
+
+## 이관 = 지휘권 이양 (사람 제시어 대기 금지)
+
+- 세대(워커2 머지+VERIFY) 1~2회 후 또는 컨텍스트 ~50%: 일지 §4.1 → **같은 턴에 Task로 후임 오케스트레이터 기동**(method §4.2).
+- **금지**: VERIFY 후 「다음 제시어 대기」만 하고 정지.
+- **금지**: 워커2를 백그라운드로 띄운 뒤 **초안 수신·머지·VERIFY 전에 턴 종료**/조기 `final_summary`.
+- 사람이 제시어를 넣는 경우: 최초 착수 · §3.3 E/사용자 중단 후 복구 · 후임 Task 기동 실패 시에만.
+- 같은 메인 세대 연장(§3.0 Yes)도 사람 제시어 불필요 — 워커2만 재기동.
+- 파이프 단절: tip 미반영·`_tmp*` 잔여면 **후임 resume** 또는 현 메인이 루프 재개.
 
 ## 금지 (재발 방지)
 
@@ -41,7 +51,7 @@ alwaysApply: false
 
 - 워커 2 초안: **병렬 필수**
 - 동일 tip append: **직렬만**
-- 이관: **세대**(워커2 머지+VERIFY) 후 · 이관서에 **다음 배치표 2개**
+- 이관: **세대** 후 · 일지 + **§4.2 후임 Task** (체인)
 
 ## 명소 hub
 
@@ -49,6 +59,6 @@ alwaysApply: false
 - 게이트: `npm run audit:city-attraction-hubs`  
 - 지명: **큐 순서만** (`city-attraction-hub-queue.md`) · 라운드=A5+B5 · 임의 선택 금지
 
-## 세션 종료
+## 세션 종료(체인 끝)
 
-일지에 VERIFY·건수·다음 배치표 2개·제시어 2~5줄. `.ai-context` 5절은 스냅샷 1줄만.
+큐 소진·§3.3 E·사용자 중단 시에만. 일지에 VERIFY·건수·다음 배치표 2개·복구용 제시어 2~5줄. `.ai-context` 5절은 스냅샷 1줄만.

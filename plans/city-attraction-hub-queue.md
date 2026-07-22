@@ -1,8 +1,8 @@
 # cityAttractionHubs — 사전 배치 큐 (해외 우선)
 
-**상태**: ✅ 2026-07-23 · tip 기준 **410 hub** (`31f73c8`)  
+**상태**: ✅ 2026-07-23 · tip 기준 **550 hub** (R48–R61 소진 · R61 VERIFY) · **다음 ⬜ 없음** 
 **규칙**: 라운드 = **10 hub** · 워커A **5** + 워커B **5** · 메인 직렬 머지(A→B) · VERIFY 후 다음 라운드  
-**방법**: [`orchestrator-method.md`](./orchestrator-method.md) v2 · 일지 [`2026-07-23-project-log.md`](./2026-07-23-project-log.md)
+**방법**: [`orchestrator-method.md`](./orchestrator-method.md) v2.1 · 일지 [`2026-07-23-project-log.md`](./2026-07-23-project-log.md)
 
 ### 사용법 (오케스트레이터)
 
@@ -23,20 +23,20 @@
 
 | R | 워커A (5) | 워커B (5) | 권역 | 상태 |
 |---|-----------|-----------|------|------|
-| **R48** | `chicago` · `miami` · `seattle` · `boston` · `las-vegas` | `honolulu` · `washington-dc` · `philadelphia` · `denver` · `atlanta` | 미국 | ⬜ 다음 |
-| **R49** | `dallas` · `houston` · `orlando` · `san-diego` · `portland` | `new-orleans` · `austin` · `toronto` · `montreal` · `calgary` | 미+캐나다 | ⬜ |
-| **R50** | `ottawa` · `quebec-city` · `mexico-city` · `cancun` · `guadalajara` | `oaxaca` · `rio-de-janeiro` · `sao-paulo` · `buenos-aires` · `lima` | 캐나다·멕시코·남미 | ⬜ |
-| **R51** | `santiago` · `bogota` · `medellin` · `cusco` · `cartagena` | `montevideo` · `beijing` · `shanghai` · `guangzhou` · `chengdu` | 남미·중국 | ⬜ |
-| **R52** | `xian` · `hangzhou` · `shenzhen` · `nanjing` · `suzhou` | `chongqing` · `macau` · `kaohsiung` · `taichung` · `tainan` | 중국·대만·마카오 | ⬜ |
-| **R53** | `kuala-lumpur` · `jakarta` · `manila` · `cebu` · `bali` | `penang` · `yogyakarta` · `surabaya` · `krabi` · `siem-reap` | 동남아 | ⬜ |
-| **R54** | `phnom-penh` · `luang-prabang` · `vientiane` · `yangon` · `kota-kinabalu` | `johor-bahru` · `delhi` · `mumbai` · `bangalore` · `jaipur` | 동남아·인도 | ⬜ |
-| **R55** | `kolkata` · `chennai` · `hyderabad` · `agra` · `varanasi` | `goa` · `kathmandu` · `colombo` · `male` · `abu-dhabi` | 인도·남아시아·중동 | ⬜ |
-| **R56** | `doha` · `riyadh` · `jeddah` · `tel-aviv` · `jerusalem` | `amman` · `cairo` · `marrakech` · `casablanca` · `luxor` | 중동·북아프리카 | ⬜ |
-| **R57** | `alexandria` · `tunis` · `fes` · `muscat` · `cape-town` | `johannesburg` · `nairobi` · `addis-ababa` · `zanzibar` · `brisbane` | 아프리카·오세아니아 | ⬜ |
-| **R58** | `perth` · `adelaide` · `gold-coast` · `cairns` · `hobart` | `wellington` · `queenstown` · `christchurch` · `rotorua` · `kobe` | 호주·NZ·일본 | ⬜ |
-| **R59** | `yokohama` · `sendai` · `nara` · `nikko` · `hakone` | `nagasaki` · `matsumoto` · `takayama` · `beppu` · `belgrade` | 일본·동유럽 | ⬜ |
-| **R60** | `bucharest` · `sofia` · `tirana` · `skopje` · `sarajevo` | `podgorica` · `valletta` · `nicosia` · `stavanger` · `trondheim` | 동유럽·지중해·노르웨이 | ⬜ |
-| **R61** | `montpellier` · `palermo` · `faro` · `cork` · `galway` | `belfast` · `madeira` · `lahore` · `karachi` · `bandar-seri-begawan` | 유럽·남아시아·브루나이 | ⬜ |
+| **R48** | `chicago` · `miami` · `seattle` · `boston` · `las-vegas` | `honolulu` · `washington-dc` · `philadelphia` · `denver` · `atlanta` | 미국 | ✅ |
+| **R49** | `dallas` · `houston` · `orlando` · `san-diego` · `portland` | `new-orleans` · `austin` · `toronto` · `montreal` · `calgary` | 미+캐나다 | ✅ |
+| **R50** | `ottawa` · `quebec-city` · `mexico-city` · `cancun` · `guadalajara` | `oaxaca` · `rio-de-janeiro` · `sao-paulo` · `buenos-aires` · `lima` | 캐나다·멕시코·남미 | ✅ |
+| **R51** | `santiago` · `bogota` · `medellin` · `cusco` · `cartagena` | `montevideo` · `beijing` · `shanghai` · `guangzhou` · `chengdu` | 남미·중국 | ✅ |
+| **R52** | `xian` · `hangzhou` · `shenzhen` · `nanjing` · `suzhou` | `chongqing` · `macau` · `kaohsiung` · `taichung` · `tainan` | 중국·대만·마카오 | ✅ |
+| **R53** | `kuala-lumpur` · `jakarta` · `manila` · `cebu` · `bali` | `penang` · `yogyakarta` · `surabaya` · `krabi` · `siem-reap` | 동남아 | ✅ |
+| **R54** | `phnom-penh` · `luang-prabang` · `vientiane` · `yangon` · `kota-kinabalu` | `johor-bahru` · `delhi` · `mumbai` · `bangalore` · `jaipur` | 동남아·인도 | ✅ |
+| **R55** | `kolkata` · `chennai` · `hyderabad` · `agra` · `varanasi` | `goa` · `kathmandu` · `colombo` · `male` · `abu-dhabi` | 인도·남아시아·중동 | ✅ |
+| **R56** | `doha` · `riyadh` · `jeddah` · `tel-aviv` · `jerusalem` | `amman` · `cairo` · `marrakech` · `casablanca` · `luxor` | 중동·북아프리카 | ✅ |
+| **R57** | `alexandria` · `tunis` · `fes` · `muscat` · `cape-town` | `johannesburg` · `nairobi` · `addis-ababa` · `zanzibar` · `brisbane` | 아프리카·오세아니아 | ✅ |
+| **R58** | `perth` · `adelaide` · `gold-coast` · `cairns` · `hobart` | `wellington` · `queenstown` · `christchurch` · `rotorua` · `kobe` | 호주·NZ·일본 | ✅ |
+| **R59** | `yokohama` · `sendai` · `nara` · `nikko` · `hakone` | `nagasaki` · `matsumoto` · `takayama` · `beppu` · `belgrade` | 일본·동유럽 | ✅ |
+| **R60** | `bucharest` · `sofia` · `tirana` · `skopje` · `sarajevo` | `podgorica` · `valletta` · `nicosia` · `stavanger` · `trondheim` | 동유럽·지중해·노르웨이 | ✅ |
+| **R61** | `montpellier` · `palermo` · `faro` · `cork` · `galway` | `belfast` · `madeira` · `lahore` · `karachi` · `bandar-seri-begawan` | 유럽·남아시아·브루나이 | ✅ |
 
 **합계**: 14 라운드 × 10 = **140 hub** 사전 계획 (해외만).
 
@@ -60,6 +60,6 @@
 ### 진행 체크 (에이전트용)
 
 ```text
-다음 시작: R48
-완료 시: 이 파일 해당 R 상태 ✅ + 일지 VERIFY 1줄
+다음 시작: **큐 소진** (R48–R61 전부 ✅)
+완료 시: 사람 보고 · 후임 Task 기동 금지 (§3.0)
 ```

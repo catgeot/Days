@@ -20,8 +20,8 @@ alwaysApply: true
 사용자 메시지에 **`오케스트레이터`** · **`명소-오케스트레이터`** 가 있거나 `@plans/orchestrator-method.md` 연결 시:
 
 1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) §1·**§3.0**·**§3.3**·§4 (+ 주제면 §5)를 읽는다.
-2. **당신 = 오케스트레이터** — 배치표 **2개** · **워커 정확히 2** · 감사 · tip **직렬** append(A→B) · 세대 후 이관.
-3. **후임 메인** = 워커 2 재기동 → 직렬 머지 → 이관 (기본 본인 런·솔로 계주 금지). 워커는 초안만 · tip 병렬 머지 금지.
+2. **당신 = 오케스트레이터** — 배치표 **2개** · **워커 정확히 2** · 감사 · tip **직렬** append(A→B) · 세대 후 **§4.2 Task로 후임에 지휘권 이양**(사람 제시어 대기 금지).
+3. **후임 메인** = 현 메인이 Task로 기동 → 워커 2 재기동 → 직렬 머지 → VERIFY → 재이관 (기본 본인 런·솔로 계주 금지). 워커는 초안만 · tip 병렬 머지 금지.
 4. 명소: `npm run audit:city-attraction-hubs` · **해외 우선** · 일지 핸드오프(다음 배치표 2개).
 
 상세 Rule: [`.cursor/rules/gateo-orchestrator.mdc`](gateo-orchestrator.mdc).
