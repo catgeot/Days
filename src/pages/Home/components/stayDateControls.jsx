@@ -79,7 +79,7 @@ const ACCENT = {
 /**
  * 한 달력에서 체크인→체크아웃 기간 선택.
  * 1탭=체크인 · 2탭=체크아웃 · 일정 변경 시에만 「변경하기」활성 · 최대 {@link STAY_MAX_NIGHTS}박.
- * PC에서도 max-width로 과도하게 커지지 않게 유지.
+ * PC에서도 max-width로 과도하게 커지지 않게 유지(19.5rem).
  */
 export function StayRangeCalendar({
   checkIn,
@@ -160,7 +160,7 @@ export function StayRangeCalendar({
     <div
       role="dialog"
       aria-label="숙소 일정 선택"
-      className={`mt-2 w-full max-w-[17.5rem] rounded-xl border ${theme.border} bg-black/90 p-2 shadow-xl backdrop-blur-md`}
+      className={`mt-2 w-full max-w-[19.5rem] rounded-xl border ${theme.border} bg-black/90 p-2.5 shadow-xl backdrop-blur-md`}
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
@@ -169,27 +169,27 @@ export function StayRangeCalendar({
           type="button"
           aria-label="이전 달"
           onClick={() => shiftMonth(-1)}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
         >
-          <ChevronLeft size={15} aria-hidden="true" />
+          <ChevronLeft size={16} aria-hidden="true" />
         </button>
-        <p className={`text-[12px] font-bold tabular-nums ${theme.title}`}>
+        <p className={`text-[13px] font-bold tabular-nums ${theme.title}`}>
           {monthTitle(viewMonth)}
         </p>
         <button
           type="button"
           aria-label="다음 달"
           onClick={() => shiftMonth(1)}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all"
         >
-          <ChevronRight size={15} aria-hidden="true" />
+          <ChevronRight size={16} aria-hidden="true" />
         </button>
       </div>
 
       {pickingOut && draftIn ? (
         <div className="relative mb-1.5 flex justify-center px-1" role="status">
           <div
-            className={`relative max-w-[15rem] rounded-lg border px-2.5 py-1.5 text-center text-[11px] font-bold leading-snug shadow-lg ${theme.tip}`}
+            className={`relative max-w-[17rem] rounded-lg border px-2.5 py-1.5 text-center text-[11px] font-bold leading-snug shadow-lg ${theme.tip}`}
           >
             체크아웃 날짜를 선택해 주세요
             <span
@@ -199,7 +199,7 @@ export function StayRangeCalendar({
           </div>
         </div>
       ) : (
-        <p className={`mb-1.5 text-center text-[10px] ${theme.hint}`}>
+        <p className={`mb-1.5 text-center text-[11px] ${theme.hint}`}>
           체크인 날짜를 선택하세요
         </p>
       )}
@@ -208,7 +208,7 @@ export function StayRangeCalendar({
         {STAY_WEEKDAYS_KO.map((d) => (
           <div
             key={d}
-            className={`py-0.5 text-center text-[9px] font-medium ${
+            className={`py-0.5 text-center text-[10px] font-medium ${
               d === '일' ? 'text-rose-300/70' : 'text-white/40'
             }`}
           >
@@ -228,7 +228,7 @@ export function StayRangeCalendar({
               type="button"
               disabled={Boolean(disabled)}
               onClick={() => handleDayClick(ymd)}
-              className={`flex h-7 items-center justify-center rounded-md text-[11px] tabular-nums transition-colors ${dayClass(
+              className={`flex h-8 items-center justify-center rounded-md text-[12px] tabular-nums transition-colors ${dayClass(
                 ymd,
               )}`}
             >

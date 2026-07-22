@@ -20,6 +20,7 @@ import {
   defaultMrtStayDates,
   fetchMrtStaysForLocation,
   isMrtDomesticLocation,
+  isMrtStayPriced,
   mrtStayNights,
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
@@ -336,6 +337,8 @@ function StayDateBar({
 function StayCard({
   item,
   price,
+  /** 선택 일정 요금無 — 일정 변경 후 예약 유도 */
+  dateFlexible = false,
   className = '',
   imageClassName = 'h-[72px] lg:h-[96px]',
   /** PC 확장 목록용 — 이미지·타이포 한 단계 확대 */
@@ -352,7 +355,11 @@ function StayCard({
       target="_blank"
       rel="noopener noreferrer sponsored"
       draggable={false}
-      className={`rounded-2xl border border-amber-400/30 bg-amber-500/10 overflow-hidden transition-colors hover:border-amber-300/45 hover:bg-amber-500/20 ${className}`}
+      className={`rounded-2xl border overflow-hidden transition-colors ${
+        dateFlexible
+          ? 'border-white/15 bg-white/5 opacity-95 hover:border-amber-300/35 hover:bg-amber-500/10'
+          : 'border-amber-400/30 bg-amber-500/10 hover:border-amber-300/45 hover:bg-amber-500/20'
+      } ${className}`}
     >
       <div className={`relative w-full bg-white/5 pointer-events-none ${imageClassName}`}>
         {item.imageUrl ? (
@@ -361,7 +368,7 @@ function StayCard({
             alt=""
             loading="lazy"
             draggable={false}
-            className="h-full w-full object-cover"
+            className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
           />
         ) : (
           <div
@@ -398,6 +405,14 @@ function StayCard({
               }`}
             >
               {price}
+            </span>
+          ) : dateFlexible ? (
+            <span
+              className={`truncate font-semibold text-amber-100/70 ${
+                large ? 'text-xs' : 'text-[10px]'
+              }`}
+            >
+              일정 조정 후 예약
             </span>
           ) : null}
         </div>
@@ -679,21 +694,45 @@ function StayCardsGrid({
   cardClassName = 'w-auto min-w-0',
   cardSize = 'md',
 }) {
-  /** fetch: 요금 우선 정렬 · 요금 없는 숙소도 포함 */
-  const sorted = sortStayGroup(items || [], sortMode);
+  /** 예약 가능(요금有) / 일정 변경 후 예약(요금無) 구분 */
+  const priced = [];
+  const flexible = [];
+  for (const item of items || []) {
+    if (isMrtStayPriced(item)) priced.push(item);
+    else flexible.push(item);
+  }
+
+  const pricedSorted = sortStayGroup(priced, sortMode);
+  const flexibleSorted = sortStayGroup(
+    flexible,
+    sortMode === 'price_asc' || sortMode === 'price_desc' ? 'recommended' : sortMode,
+  );
+
+  const renderCard = (item, dateFlexible) => (
+    <StayCard
+      key={item.itemId}
+      item={item}
+      price={formatPrice(item.salePrice)}
+      dateFlexible={dateFlexible}
+      className={cardClassName}
+      imageClassName={imageClassName}
+      size={cardSize}
+    />
+  );
 
   return (
     <>
-      {sorted.map((item) => (
-        <StayCard
-          key={item.itemId}
-          item={item}
-          price={formatPrice(item.salePrice)}
-          className={cardClassName}
-          imageClassName={imageClassName}
-          size={cardSize}
-        />
-      ))}
+      {pricedSorted.map((item) => renderCard(item, false))}
+      {flexibleSorted.length > 0 ? (
+        <>
+          <p className="col-span-full break-keep px-0.5 pt-1 text-[11px] font-semibold text-amber-100/65">
+            {pricedSorted.length > 0
+              ? '일정 조정 시 예약할 수 있는 숙소'
+              : '이 일정엔 요금이 없어요 · 일정을 바꾸면 예약할 수 있어요'}
+          </p>
+          {flexibleSorted.map((item) => renderCard(item, true))}
+        </>
+      ) : null}
     </>
   );
 }
