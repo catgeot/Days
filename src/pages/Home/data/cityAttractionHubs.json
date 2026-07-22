@@ -4287,7 +4287,7 @@
         "name": "내린천",
         "name_en": "Naerincheon",
         "kind": "landmark",
-        "lat": 38.0,
+        "lat": 38,
         "lng": 128.2
       },
       {
@@ -4308,7 +4308,7 @@
         "name": "인제스피디움",
         "name_en": "Inje Speedium",
         "kind": "landmark",
-        "lat": 38.0,
+        "lat": 38,
         "lng": 128.25
       },
       {
@@ -4381,6 +4381,648 @@
         "kind": "museum",
         "lat": 34.74,
         "lng": 127.12
+      }
+    ]
+  },
+  {
+    "hubId": "madrid",
+    "name": "마드리드",
+    "name_en": "Madrid",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 40.4168,
+    "lng": -3.7038,
+    "aliases": [
+      "madrid",
+      "마드리드"
+    ],
+    "attractions": [
+      {
+        "name": "프라도 미술관",
+        "name_en": "Prado Museum",
+        "kind": "museum",
+        "lat": 40.4138,
+        "lng": -3.6921
+      },
+      {
+        "name": "마드리드 왕궁",
+        "name_en": "Royal Palace of Madrid",
+        "kind": "landmark",
+        "lat": 40.418,
+        "lng": -3.7142
+      },
+      {
+        "name": "마요르 광장",
+        "name_en": "Plaza Mayor",
+        "kind": "landmark",
+        "lat": 40.4154,
+        "lng": -3.7074
+      },
+      {
+        "name": "레티로 공원",
+        "name_en": "Retiro Park",
+        "kind": "park",
+        "lat": 40.4153,
+        "lng": -3.6844
+      },
+      {
+        "name": "푸에르타 델 솔",
+        "name_en": "Puerta del Sol",
+        "kind": "landmark",
+        "lat": 40.4169,
+        "lng": -3.7033
+      },
+      {
+        "name": "데보드 신전",
+        "name_en": "Temple of Debod",
+        "kind": "landmark",
+        "lat": 40.424,
+        "lng": -3.7178
+      },
+      {
+        "name": "그란 비아",
+        "name_en": "Gran Vía",
+        "kind": "neighborhood",
+        "lat": 40.4203,
+        "lng": -3.7058
+      }
+    ]
+  },
+  {
+    "hubId": "berlin",
+    "name": "베를린",
+    "name_en": "Berlin",
+    "country": "독일",
+    "country_en": "Germany",
+    "lat": 52.52,
+    "lng": 13.405,
+    "aliases": [
+      "berlin"
+    ],
+    "attractions": [
+      {
+        "name": "브란덴부르크 문",
+        "name_en": "Brandenburg Gate",
+        "kind": "landmark",
+        "lat": 52.5163,
+        "lng": 13.3777
+      },
+      {
+        "name": "이스트 사이드 갤러리",
+        "name_en": "East Side Gallery",
+        "kind": "landmark",
+        "lat": 52.505,
+        "lng": 13.4397
+      },
+      {
+        "name": "독일 국회의사당",
+        "name_en": "Reichstag Building",
+        "kind": "landmark",
+        "lat": 52.5186,
+        "lng": 13.3761
+      },
+      {
+        "name": "박물관섬",
+        "name_en": "Museum Island",
+        "kind": "museum",
+        "lat": 52.5169,
+        "lng": 13.401
+      },
+      {
+        "name": "체크포인트 찰리",
+        "name_en": "Checkpoint Charlie",
+        "kind": "landmark",
+        "lat": 52.5075,
+        "lng": 13.3904
+      },
+      {
+        "name": "알렉산더광장",
+        "name_en": "Alexanderplatz",
+        "kind": "landmark",
+        "lat": 52.5219,
+        "lng": 13.4132
+      },
+      {
+        "name": "티어가르텐",
+        "name_en": "Tiergarten",
+        "kind": "park",
+        "lat": 52.5145,
+        "lng": 13.35
+      }
+    ]
+  },
+  {
+    "hubId": "florence",
+    "name": "피렌체",
+    "name_en": "Florence",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 43.7696,
+    "lng": 11.2558,
+    "aliases": [
+      "florence",
+      "firenze",
+      "피렌체"
+    ],
+    "attractions": [
+      {
+        "name": "피렌체 대성당",
+        "name_en": "Florence Cathedral",
+        "kind": "landmark",
+        "lat": 43.7731,
+        "lng": 11.256
+      },
+      {
+        "name": "우피치 미술관",
+        "name_en": "Uffizi Gallery",
+        "kind": "museum",
+        "lat": 43.7678,
+        "lng": 11.2553
+      },
+      {
+        "name": "베키오 다리",
+        "name_en": "Ponte Vecchio",
+        "kind": "landmark",
+        "lat": 43.768,
+        "lng": 11.2531
+      },
+      {
+        "name": "시뇨리아 광장",
+        "name_en": "Piazza della Signoria",
+        "kind": "landmark",
+        "lat": 43.7697,
+        "lng": 11.2558
+      },
+      {
+        "name": "아카데미아 미술관",
+        "name_en": "Galleria dell'Accademia",
+        "kind": "museum",
+        "lat": 43.7769,
+        "lng": 11.2588
+      },
+      {
+        "name": "미켈란젤로 광장",
+        "name_en": "Piazzale Michelangelo",
+        "kind": "viewpoint",
+        "lat": 43.7629,
+        "lng": 11.265
+      },
+      {
+        "name": "보볼리 정원",
+        "name_en": "Boboli Gardens",
+        "kind": "park",
+        "lat": 43.7624,
+        "lng": 11.2505
+      }
+    ]
+  },
+  {
+    "hubId": "vienna",
+    "name": "비엔나",
+    "name_en": "Vienna",
+    "country": "오스트리아",
+    "country_en": "Austria",
+    "lat": 48.2082,
+    "lng": 16.3738,
+    "aliases": [
+      "vienna",
+      "wien",
+      "빈"
+    ],
+    "attractions": [
+      {
+        "name": "쇤브룬 궁전",
+        "name_en": "Schönbrunn Palace",
+        "kind": "landmark",
+        "lat": 48.1845,
+        "lng": 16.3122
+      },
+      {
+        "name": "슈테판 대성당",
+        "name_en": "St. Stephen's Cathedral",
+        "kind": "landmark",
+        "lat": 48.2085,
+        "lng": 16.3732
+      },
+      {
+        "name": "호프부르크",
+        "name_en": "Hofburg",
+        "kind": "landmark",
+        "lat": 48.2055,
+        "lng": 16.3654
+      },
+      {
+        "name": "벨베데레 궁전",
+        "name_en": "Belvedere Palace",
+        "kind": "museum",
+        "lat": 48.1914,
+        "lng": 16.3806
+      },
+      {
+        "name": "프라터 공원",
+        "name_en": "Prater",
+        "kind": "park",
+        "lat": 48.2166,
+        "lng": 16.3958
+      },
+      {
+        "name": "나슈마르크트",
+        "name_en": "Naschmarkt",
+        "kind": "market",
+        "lat": 48.1985,
+        "lng": 16.3634
+      },
+      {
+        "name": "빈 국립 오페라",
+        "name_en": "Vienna State Opera",
+        "kind": "landmark",
+        "lat": 48.2032,
+        "lng": 16.3691
+      }
+    ]
+  },
+  {
+    "hubId": "munich",
+    "name": "뮌헨",
+    "name_en": "Munich",
+    "country": "독일",
+    "country_en": "Germany",
+    "lat": 48.1351,
+    "lng": 11.582,
+    "aliases": [
+      "munich",
+      "münchen",
+      "뮌헨"
+    ],
+    "attractions": [
+      {
+        "name": "마리엔광장",
+        "name_en": "Marienplatz",
+        "kind": "landmark",
+        "lat": 48.1374,
+        "lng": 11.5755
+      },
+      {
+        "name": "영국정원",
+        "name_en": "English Garden",
+        "kind": "park",
+        "lat": 48.1642,
+        "lng": 11.6056
+      },
+      {
+        "name": "님펜부르크 궁전",
+        "name_en": "Nymphenburg Palace",
+        "kind": "landmark",
+        "lat": 48.1583,
+        "lng": 11.5033
+      },
+      {
+        "name": "뮌헨 성모교회",
+        "name_en": "Frauenkirche Munich",
+        "kind": "landmark",
+        "lat": 48.1386,
+        "lng": 11.5736
+      },
+      {
+        "name": "호프브로이하우스",
+        "name_en": "Hofbräuhaus",
+        "kind": "landmark",
+        "lat": 48.1376,
+        "lng": 11.5799
+      },
+      {
+        "name": "올림픽 공원",
+        "name_en": "Olympiapark Munich",
+        "kind": "park",
+        "lat": 48.1755,
+        "lng": 11.5518
+      },
+      {
+        "name": "뮌헨 레지덴츠",
+        "name_en": "Munich Residenz",
+        "kind": "museum",
+        "lat": 48.1414,
+        "lng": 11.5802
+      }
+    ]
+  },
+  {
+    "hubId": "hadong",
+    "name": "하동",
+    "name_en": "Hadong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.0672,
+    "lng": 127.7514,
+    "aliases": [
+      "하동군",
+      "hadong"
+    ],
+    "attractions": [
+      {
+        "name": "화개장터",
+        "name_en": "Hwagae Market",
+        "kind": "market",
+        "lat": 35.188,
+        "lng": 127.628
+      },
+      {
+        "name": "쌍계사",
+        "name_en": "Ssanggyesa",
+        "kind": "temple",
+        "lat": 35.233,
+        "lng": 127.64
+      },
+      {
+        "name": "최참판댁",
+        "name_en": "Choi Champan House",
+        "kind": "landmark",
+        "lat": 35.1,
+        "lng": 127.72
+      },
+      {
+        "name": "하동송림",
+        "name_en": "Hadong Pine Forest",
+        "kind": "park",
+        "lat": 35.065,
+        "lng": 127.755
+      },
+      {
+        "name": "하동야생차박물관",
+        "name_en": "Hadong Wild Tea Museum",
+        "kind": "museum",
+        "lat": 35.12,
+        "lng": 127.7
+      },
+      {
+        "name": "악양 대봉감마을",
+        "name_en": "Akyang Persimmon Village",
+        "kind": "neighborhood",
+        "lat": 35.1,
+        "lng": 127.7
+      },
+      {
+        "name": "지리산 불일폭포",
+        "name_en": "Buril Falls",
+        "kind": "viewpoint",
+        "lat": 35.24,
+        "lng": 127.62
+      }
+    ]
+  },
+  {
+    "hubId": "jecheon",
+    "name": "제천",
+    "name_en": "Jecheon",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.1326,
+    "lng": 128.191,
+    "aliases": [
+      "제천시",
+      "jecheon"
+    ],
+    "attractions": [
+      {
+        "name": "의림지",
+        "name_en": "Uirimji Reservoir",
+        "kind": "park",
+        "lat": 37.174,
+        "lng": 128.208
+      },
+      {
+        "name": "청풍호",
+        "name_en": "Cheongpung Lake",
+        "kind": "viewpoint",
+        "lat": 37,
+        "lng": 128.17
+      },
+      {
+        "name": "청풍문화재단지",
+        "name_en": "Cheongpung Cultural Heritage Complex",
+        "kind": "landmark",
+        "lat": 37.003,
+        "lng": 128.175
+      },
+      {
+        "name": "월악산",
+        "name_en": "Woraksan",
+        "kind": "viewpoint",
+        "lat": 36.88,
+        "lng": 128.1
+      },
+      {
+        "name": "제천한방엑스포공원",
+        "name_en": "Jecheon Oriental Medicine Expo Park",
+        "kind": "park",
+        "lat": 37.15,
+        "lng": 128.21
+      },
+      {
+        "name": "박달재",
+        "name_en": "Bakdaljae Pass",
+        "kind": "viewpoint",
+        "lat": 37.05,
+        "lng": 128.05
+      },
+      {
+        "name": "송계계곡",
+        "name_en": "Songgye Valley",
+        "kind": "park",
+        "lat": 36.9,
+        "lng": 128.15
+      }
+    ]
+  },
+  {
+    "hubId": "mungyeong",
+    "name": "문경",
+    "name_en": "Mungyeong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.5865,
+    "lng": 128.187,
+    "aliases": [
+      "문경시",
+      "mungyeong"
+    ],
+    "attractions": [
+      {
+        "name": "문경새재",
+        "name_en": "Mungyeong Saejae",
+        "kind": "landmark",
+        "lat": 36.763,
+        "lng": 128.077
+      },
+      {
+        "name": "문경새재 오픈세트장",
+        "name_en": "Mungyeong Saejae Open Set",
+        "kind": "landmark",
+        "lat": 36.76,
+        "lng": 128.08
+      },
+      {
+        "name": "문경석탄박물관",
+        "name_en": "Mungyeong Coal Museum",
+        "kind": "museum",
+        "lat": 36.72,
+        "lng": 128.18
+      },
+      {
+        "name": "문경오미자테마공원",
+        "name_en": "Mungyeong Omija Theme Park",
+        "kind": "park",
+        "lat": 36.7,
+        "lng": 128.15
+      },
+      {
+        "name": "진남교반",
+        "name_en": "Jinnamgyoban",
+        "kind": "viewpoint",
+        "lat": 36.64,
+        "lng": 128.2
+      },
+      {
+        "name": "단산모노레일",
+        "name_en": "Dansan Monorail",
+        "kind": "viewpoint",
+        "lat": 36.7,
+        "lng": 128.1
+      },
+      {
+        "name": "문경활공장",
+        "name_en": "Mungyeong Paragliding Site",
+        "kind": "viewpoint",
+        "lat": 36.72,
+        "lng": 128.12
+      }
+    ]
+  },
+  {
+    "hubId": "danyang",
+    "name": "단양",
+    "name_en": "Danyang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.9846,
+    "lng": 128.3655,
+    "aliases": [
+      "단양군",
+      "danyang"
+    ],
+    "attractions": [
+      {
+        "name": "도담삼봉",
+        "name_en": "Dodamsambong Peaks",
+        "kind": "landmark",
+        "lat": 37,
+        "lng": 128.34
+      },
+      {
+        "name": "만천하스카이워크",
+        "name_en": "Mancheonha Skywalk",
+        "kind": "viewpoint",
+        "lat": 36.97,
+        "lng": 128.37
+      },
+      {
+        "name": "고수동굴",
+        "name_en": "Gosu Cave",
+        "kind": "landmark",
+        "lat": 36.987,
+        "lng": 128.382
+      },
+      {
+        "name": "구담봉",
+        "name_en": "Gudambong Peak",
+        "kind": "viewpoint",
+        "lat": 37.02,
+        "lng": 128.3
+      },
+      {
+        "name": "사인암",
+        "name_en": "Sainam Rock",
+        "kind": "landmark",
+        "lat": 36.92,
+        "lng": 128.38
+      },
+      {
+        "name": "단양강잔도",
+        "name_en": "Danyang River Trail",
+        "kind": "viewpoint",
+        "lat": 36.99,
+        "lng": 128.36
+      },
+      {
+        "name": "온달관광지",
+        "name_en": "Ondal Tourist Site",
+        "kind": "landmark",
+        "lat": 37.05,
+        "lng": 128.48
+      }
+    ]
+  },
+  {
+    "hubId": "yeongwol",
+    "name": "영월",
+    "name_en": "Yeongwol",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.1836,
+    "lng": 128.4617,
+    "aliases": [
+      "영월군",
+      "yeongwol"
+    ],
+    "attractions": [
+      {
+        "name": "고씨동굴",
+        "name_en": "Gossi Cave",
+        "kind": "landmark",
+        "lat": 37.13,
+        "lng": 128.52
+      },
+      {
+        "name": "선돌",
+        "name_en": "Seondol Rock",
+        "kind": "viewpoint",
+        "lat": 37.18,
+        "lng": 128.45
+      },
+      {
+        "name": "청령포",
+        "name_en": "Cheongnyeongpo",
+        "kind": "park",
+        "lat": 37.17,
+        "lng": 128.42
+      },
+      {
+        "name": "별마로천문대",
+        "name_en": "Byeolmaro Observatory",
+        "kind": "viewpoint",
+        "lat": 37.2,
+        "lng": 128.48
+      },
+      {
+        "name": "영월 장릉",
+        "name_en": "Yeongwol Jangneung",
+        "kind": "landmark",
+        "lat": 37.18,
+        "lng": 128.46
+      },
+      {
+        "name": "한반도지형",
+        "name_en": "Korean Peninsula Landform",
+        "kind": "viewpoint",
+        "lat": 37.23,
+        "lng": 128.35
+      },
+      {
+        "name": "동강",
+        "name_en": "Donggang River",
+        "kind": "park",
+        "lat": 37.2,
+        "lng": 128.5
       }
     ]
   }
