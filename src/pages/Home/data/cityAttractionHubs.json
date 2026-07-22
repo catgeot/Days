@@ -7585,5 +7585,649 @@
         "lng": 127.53
       }
     ]
+  },
+  {
+    "hubId": "cologne",
+    "name": "쾰른",
+    "name_en": "Cologne",
+    "country": "독일",
+    "country_en": "Germany",
+    "lat": 50.9375,
+    "lng": 6.9603,
+    "aliases": [
+      "콜론",
+      "köln",
+      "koln",
+      "cologne"
+    ],
+    "attractions": [
+      {
+        "name": "쾰른 대성당",
+        "name_en": "Cologne Cathedral",
+        "kind": "landmark",
+        "lat": 50.9413,
+        "lng": 6.9583
+      },
+      {
+        "name": "호엔촐레른 다리",
+        "name_en": "Hohenzollern Bridge",
+        "kind": "landmark",
+        "lat": 50.9414,
+        "lng": 6.973
+      },
+      {
+        "name": "쾰른 구시가지",
+        "name_en": "Cologne Old Town",
+        "kind": "neighborhood",
+        "lat": 50.937,
+        "lng": 6.96
+      },
+      {
+        "name": "루트비히 미술관",
+        "name_en": "Museum Ludwig",
+        "kind": "museum",
+        "lat": 50.9408,
+        "lng": 6.962
+      },
+      {
+        "name": "초콜릿 박물관",
+        "name_en": "Cologne Chocolate Museum",
+        "kind": "museum",
+        "lat": 50.9325,
+        "lng": 6.9642
+      },
+      {
+        "name": "라인강 산책로 쾰른",
+        "name_en": "Rhine Promenade Cologne",
+        "kind": "viewpoint",
+        "lat": 50.9365,
+        "lng": 6.965
+      },
+      {
+        "name": "벨기에 지구",
+        "name_en": "Belgian Quarter Cologne",
+        "kind": "neighborhood",
+        "lat": 50.94,
+        "lng": 6.94
+      }
+    ]
+  },
+  {
+    "hubId": "naples",
+    "name": "나폴리",
+    "name_en": "Naples",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 40.8518,
+    "lng": 14.2681,
+    "aliases": [
+      "나폴리시",
+      "napoli",
+      "naples"
+    ],
+    "attractions": [
+      {
+        "name": "나폴리 역사지구",
+        "name_en": "Historic Centre of Naples",
+        "kind": "neighborhood",
+        "lat": 40.8515,
+        "lng": 14.256
+      },
+      {
+        "name": "스판야 궁전",
+        "name_en": "Royal Palace of Naples",
+        "kind": "landmark",
+        "lat": 40.836,
+        "lng": 14.2495
+      },
+      {
+        "name": "나폴리 국립고고학박물관",
+        "name_en": "Naples National Archaeological Museum",
+        "kind": "museum",
+        "lat": 40.8535,
+        "lng": 14.2505
+      },
+      {
+        "name": "베수비오 화산",
+        "name_en": "Mount Vesuvius",
+        "kind": "viewpoint",
+        "lat": 40.822,
+        "lng": 14.4289
+      },
+      {
+        "name": "폼페이 유적",
+        "name_en": "Pompeii Archaeological Park",
+        "kind": "landmark",
+        "lat": 40.749,
+        "lng": 14.485
+      },
+      {
+        "name": "카프리 섬",
+        "name_en": "Capri Island",
+        "kind": "viewpoint",
+        "lat": 40.5532,
+        "lng": 14.2222
+      },
+      {
+        "name": "나폴리 항구",
+        "name_en": "Port of Naples",
+        "kind": "viewpoint",
+        "lat": 40.84,
+        "lng": 14.26
+      }
+    ]
+  },
+  {
+    "hubId": "valencia",
+    "name": "발렌시아",
+    "name_en": "Valencia",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 39.4699,
+    "lng": -0.3763,
+    "aliases": [
+      "발렌시아시",
+      "valència",
+      "valencia"
+    ],
+    "attractions": [
+      {
+        "name": "예술과학도시",
+        "name_en": "City of Arts and Sciences",
+        "kind": "landmark",
+        "lat": 39.4542,
+        "lng": -0.351
+      },
+      {
+        "name": "발렌시아 대성당",
+        "name_en": "Valencia Cathedral",
+        "kind": "landmark",
+        "lat": 39.4753,
+        "lng": -0.3753
+      },
+      {
+        "name": "중앙시장 발렌시아",
+        "name_en": "Mercado Central Valencia",
+        "kind": "market",
+        "lat": 39.4736,
+        "lng": -0.379
+      },
+      {
+        "name": "실크거래소",
+        "name_en": "Lonja de la Seda",
+        "kind": "landmark",
+        "lat": 39.4744,
+        "lng": -0.3785
+      },
+      {
+        "name": "투리아 정원",
+        "name_en": "Turia Gardens",
+        "kind": "park",
+        "lat": 39.475,
+        "lng": -0.36
+      },
+      {
+        "name": "해양마을 발렌시아",
+        "name_en": "El Cabanyal",
+        "kind": "neighborhood",
+        "lat": 39.467,
+        "lng": -0.328
+      },
+      {
+        "name": "말라바로사 해변",
+        "name_en": "Malvarrosa Beach",
+        "kind": "beach",
+        "lat": 39.478,
+        "lng": -0.324
+      }
+    ]
+  },
+  {
+    "hubId": "marseille",
+    "name": "마르세유",
+    "name_en": "Marseille",
+    "country": "프랑스",
+    "country_en": "France",
+    "lat": 43.2965,
+    "lng": 5.3698,
+    "aliases": [
+      "마르세이유",
+      "marseille"
+    ],
+    "attractions": [
+      {
+        "name": "구항 마르세유",
+        "name_en": "Vieux-Port Marseille",
+        "kind": "viewpoint",
+        "lat": 43.2951,
+        "lng": 5.373
+      },
+      {
+        "name": "노트르담 드 라 가르드",
+        "name_en": "Notre-Dame de la Garde",
+        "kind": "landmark",
+        "lat": 43.284,
+        "lng": 5.371
+      },
+      {
+        "name": "뮤셈",
+        "name_en": "MuCEM",
+        "kind": "museum",
+        "lat": 43.296,
+        "lng": 5.361
+      },
+      {
+        "name": "르 파니에",
+        "name_en": "Le Panier",
+        "kind": "neighborhood",
+        "lat": 43.2985,
+        "lng": 5.367
+      },
+      {
+        "name": "칼리크 제도",
+        "name_en": "Calanques National Park",
+        "kind": "viewpoint",
+        "lat": 43.21,
+        "lng": 5.45
+      },
+      {
+        "name": "이프 성",
+        "name_en": "Chateau dIf",
+        "kind": "landmark",
+        "lat": 43.28,
+        "lng": 5.325
+      },
+      {
+        "name": "롱샹 궁전",
+        "name_en": "Palais Longchamp",
+        "kind": "park",
+        "lat": 43.3045,
+        "lng": 5.3945
+      }
+    ]
+  },
+  {
+    "hubId": "lyon",
+    "name": "리옹",
+    "name_en": "Lyon",
+    "country": "프랑스",
+    "country_en": "France",
+    "lat": 45.764,
+    "lng": 4.8357,
+    "aliases": [
+      "리용",
+      "lyon"
+    ],
+    "attractions": [
+      {
+        "name": "푸르비에르 대성당",
+        "name_en": "Basilica of Notre-Dame de Fourviere",
+        "kind": "landmark",
+        "lat": 45.7623,
+        "lng": 4.8226
+      },
+      {
+        "name": "비외 리옹",
+        "name_en": "Vieux Lyon",
+        "kind": "neighborhood",
+        "lat": 45.762,
+        "lng": 4.8275
+      },
+      {
+        "name": "프레시 광장",
+        "name_en": "Place Bellecour",
+        "kind": "landmark",
+        "lat": 45.7578,
+        "lng": 4.832
+      },
+      {
+        "name": "콩플뤼앙스 박물관",
+        "name_en": "Musee des Confluences",
+        "kind": "museum",
+        "lat": 45.7326,
+        "lng": 4.818
+      },
+      {
+        "name": "파르크 드 라 테트 도르",
+        "name_en": "Parc de la Tete dOr",
+        "kind": "park",
+        "lat": 45.78,
+        "lng": 4.852
+      },
+      {
+        "name": "크로와 루세",
+        "name_en": "Croix-Rousse",
+        "kind": "neighborhood",
+        "lat": 45.775,
+        "lng": 4.831
+      },
+      {
+        "name": "리옹 오페라",
+        "name_en": "Opera de Lyon",
+        "kind": "landmark",
+        "lat": 45.7678,
+        "lng": 4.8365
+      }
+    ]
+  },
+  {
+    "hubId": "jeongeup",
+    "name": "정읍",
+    "name_en": "Jeongeup",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.5699,
+    "lng": 126.856,
+    "aliases": [
+      "정읍시",
+      "jeongeup"
+    ],
+    "attractions": [
+      {
+        "name": "내장산국립공원",
+        "name_en": "Naejangsan National Park",
+        "kind": "park",
+        "lat": 35.487,
+        "lng": 126.888
+      },
+      {
+        "name": "내장사",
+        "name_en": "Naejangsa",
+        "kind": "temple",
+        "lat": 35.489,
+        "lng": 126.892
+      },
+      {
+        "name": "정읍사공원",
+        "name_en": "Jeongeupsa Park",
+        "kind": "park",
+        "lat": 35.57,
+        "lng": 126.856
+      },
+      {
+        "name": "무성서원",
+        "name_en": "Museongseowon",
+        "kind": "landmark",
+        "lat": 35.58,
+        "lng": 126.92
+      },
+      {
+        "name": "황토현전적지",
+        "name_en": "Hwangtohyeon Battlefield",
+        "kind": "landmark",
+        "lat": 35.6,
+        "lng": 126.9
+      },
+      {
+        "name": "정읍천",
+        "name_en": "Jeongeupcheon",
+        "kind": "viewpoint",
+        "lat": 35.565,
+        "lng": 126.85
+      },
+      {
+        "name": "단풍생태공원",
+        "name_en": "Maple Ecology Park Jeongeup",
+        "kind": "park",
+        "lat": 35.495,
+        "lng": 126.895
+      }
+    ]
+  },
+  {
+    "hubId": "gimje",
+    "name": "김제",
+    "name_en": "Gimje",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.8036,
+    "lng": 126.8808,
+    "aliases": [
+      "김제시",
+      "gimje"
+    ],
+    "attractions": [
+      {
+        "name": "금산사",
+        "name_en": "Geumsansa",
+        "kind": "temple",
+        "lat": 35.803,
+        "lng": 127.055
+      },
+      {
+        "name": "벽골제",
+        "name_en": "Byeokgolje",
+        "kind": "landmark",
+        "lat": 35.81,
+        "lng": 126.88
+      },
+      {
+        "name": "김제지평선축제장",
+        "name_en": "Gimje Horizon Festival Ground",
+        "kind": "landmark",
+        "lat": 35.8,
+        "lng": 126.89
+      },
+      {
+        "name": "아리랑문학관",
+        "name_en": "Arirang Literature Museum",
+        "kind": "museum",
+        "lat": 35.8,
+        "lng": 126.885
+      },
+      {
+        "name": "모악산",
+        "name_en": "Moaksan",
+        "kind": "park",
+        "lat": 35.72,
+        "lng": 127.05
+      },
+      {
+        "name": "김제 구도심",
+        "name_en": "Gimje Old Downtown",
+        "kind": "neighborhood",
+        "lat": 35.803,
+        "lng": 126.881
+      },
+      {
+        "name": "심원사 모악산",
+        "name_en": "Simwonsa Moaksan",
+        "kind": "temple",
+        "lat": 35.73,
+        "lng": 127.04
+      }
+    ]
+  },
+  {
+    "hubId": "iksan",
+    "name": "익산",
+    "name_en": "Iksan",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.9483,
+    "lng": 126.9576,
+    "aliases": [
+      "익산시",
+      "iksan"
+    ],
+    "attractions": [
+      {
+        "name": "미륵사지",
+        "name_en": "Mireuksa Temple Site",
+        "kind": "landmark",
+        "lat": 36.012,
+        "lng": 127.03
+      },
+      {
+        "name": "왕궁리유적",
+        "name_en": "Wanggung-ri Historic Site",
+        "kind": "landmark",
+        "lat": 35.98,
+        "lng": 127.05
+      },
+      {
+        "name": "보석박물관 익산",
+        "name_en": "Iksan Jewelry Museum",
+        "kind": "museum",
+        "lat": 36.01,
+        "lng": 127.04
+      },
+      {
+        "name": "익산 중앙역 광장",
+        "name_en": "Iksan Station Plaza",
+        "kind": "landmark",
+        "lat": 35.941,
+        "lng": 126.954
+      },
+      {
+        "name": "웅포관광지",
+        "name_en": "Ungpo Tourist Site",
+        "kind": "park",
+        "lat": 36.05,
+        "lng": 126.92
+      },
+      {
+        "name": "쌍릉",
+        "name_en": "Ssangneung Tombs",
+        "kind": "landmark",
+        "lat": 36,
+        "lng": 127.02
+      },
+      {
+        "name": "함라산",
+        "name_en": "Hamrasan",
+        "kind": "viewpoint",
+        "lat": 36.04,
+        "lng": 126.95
+      }
+    ]
+  },
+  {
+    "hubId": "wanju",
+    "name": "완주",
+    "name_en": "Wanju",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.9046,
+    "lng": 127.1624,
+    "aliases": [
+      "완주군",
+      "wanju"
+    ],
+    "attractions": [
+      {
+        "name": "대둔산",
+        "name_en": "Daedunsan",
+        "kind": "park",
+        "lat": 36.12,
+        "lng": 127.3
+      },
+      {
+        "name": "위봉사",
+        "name_en": "Wibongsa",
+        "kind": "temple",
+        "lat": 36,
+        "lng": 127.25
+      },
+      {
+        "name": "송광사 완주",
+        "name_en": "Songgwangsa Wanju",
+        "kind": "temple",
+        "lat": 35.95,
+        "lng": 127.2
+      },
+      {
+        "name": "삼례문화예술촌",
+        "name_en": "Samnye Culture Village",
+        "kind": "neighborhood",
+        "lat": 35.9,
+        "lng": 127.11
+      },
+      {
+        "name": "고산자연휴양림",
+        "name_en": "Gosan Natural Recreation Forest",
+        "kind": "park",
+        "lat": 35.97,
+        "lng": 127.3
+      },
+      {
+        "name": "모악산 완주",
+        "name_en": "Moaksan Wanju",
+        "kind": "viewpoint",
+        "lat": 35.72,
+        "lng": 127.05
+      },
+      {
+        "name": "상관편백숲",
+        "name_en": "Sangguan Cypress Forest",
+        "kind": "park",
+        "lat": 35.85,
+        "lng": 127.2
+      }
+    ]
+  },
+  {
+    "hubId": "haenam",
+    "name": "해남",
+    "name_en": "Haenam",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.5735,
+    "lng": 126.599,
+    "aliases": [
+      "해남군",
+      "haenam"
+    ],
+    "attractions": [
+      {
+        "name": "땅끝마을",
+        "name_en": "Ttangkkeut Village",
+        "kind": "viewpoint",
+        "lat": 34.294,
+        "lng": 126.525
+      },
+      {
+        "name": "대흥사",
+        "name_en": "Daeheungsa",
+        "kind": "temple",
+        "lat": 34.476,
+        "lng": 126.616
+      },
+      {
+        "name": "두륜산",
+        "name_en": "Duryunsan",
+        "kind": "park",
+        "lat": 34.48,
+        "lng": 126.62
+      },
+      {
+        "name": "우수영관광지",
+        "name_en": "Usuyeong Tourist Site",
+        "kind": "landmark",
+        "lat": 34.58,
+        "lng": 126.35
+      },
+      {
+        "name": "명량대첩지",
+        "name_en": "Myeongnyang Battlefield",
+        "kind": "landmark",
+        "lat": 34.57,
+        "lng": 126.3
+      },
+      {
+        "name": "해남공룡박물관",
+        "name_en": "Haenam Dinosaur Museum",
+        "kind": "museum",
+        "lat": 34.55,
+        "lng": 126.5
+      },
+      {
+        "name": "고천암 철새도래지",
+        "name_en": "Gocheonam Bird Sanctuary",
+        "kind": "park",
+        "lat": 34.55,
+        "lng": 126.45
+      }
+    ]
   }
 ]

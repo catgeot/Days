@@ -349,7 +349,7 @@
 
 ## cityAttractionHubs — 레이캬비크·제네바·베네치아 + 무주·진안 등 (#18)
 
-**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+**상태**: 데이터 append · resolve 스모크 ✅ · draft **PR #18** 검수 대기
 
 - **브랜치**: `cursor/city-attraction-batch18-7595` = #17 tip(main `38e83e0`) **위 append**
 - 한 배치 **10 hub × 7명소** (#17 핸드오프 「다음 후보」+ 베네치아·니스·장수)
@@ -360,6 +360,19 @@
 - hub 스모크: `레이캬비크`/`레이캬빅`/`제네바`/`genève`/`크라쿠프`/`크라코프`/`베네치아`/`베니스`/`니스`/`무주`/`진안`/`임실`/`순창`/`장수` + 회귀(스톡홀름·밀라노·속초·파리)
 - exact: `할그림스키르캬`/`블루라군`/`제트 도`/`바벨 성`/`산마르코 광장`/`리알토 다리`/`영국인 산책로`/`덕유산국립공원`/`마이산`/`임실치즈테마파크`/`순창고추장민속마을`/`논개생가`
 
+## cityAttractionHubs — 쾰른·나폴리·발렌시아 + 정읍·익산 등 (#19)
+
+**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+
+- **브랜치**: `cursor/city-attraction-batch19-8cba` = #18 tip(`65db005` · `batch18-7595`) **위 append**
+- 한 배치 **10 hub × 7명소** (#18 핸드오프 「다음 후보」+ 마르세유·리옹·해남)
+- 해외: `cologne`(alias **`콜론`**/`köln`/`koln`) · `naples`(alias **`napoli`**) · `valencia`(alias **`valència`**) · `marseille`(alias **`마르세이유`**) · `lyon`(alias **`리용`**)
+- 국내: `jeongeup` · `gimje` · `iksan` · `wanju` · `haenam`
+- 총 **130 hub** · 명소 **890** · shrine KIND_LABEL 유지 · 시드 intact
+- 주의: 정읍은 임실 **`옥정호`**와 분리(황토현전적지) · 완주 **`송광사 완주`**/`모악산 완주`(순천 송광사·김제 모악산과 구분) · `초콜릿 박물관`은 쾰른 한정명
+- hub 스모크: `쾰른`/`콜론`/`köln`/`나폴리`/`napoli`/`발렌시아`/`마르세유`/`리옹`/`리용`/`정읍`/`김제`/`익산`/`완주`/`해남` + 회귀(레이캬비크·무주·속초·파리)
+- exact: `쾰른 대성당`/`폼페이 유적`/`예술과학도시`/`구항 마르세유`/`푸르비에르 대성당`/`내장산국립공원`/`금산사`/`미륵사지`/`대둔산`/`땅끝마을`
+
 ### PR 머지 순서
 
 | 순서 | PR | 비고 |
@@ -369,16 +382,17 @@
 | ✅ | **#15** | 세비야·고흥 등 |
 | ✅ | **#17** | 스톡홀름·밀라노·부안 등 (#16 stack) |
 | ✅ 닫힘 | draft **#16** | #17로 대체 |
-| 다음 | **본 배치(#18)** | #17 tip 위 10 hub |
+| 다음 | **#18** | #17 tip 위 10 hub |
+| 다음 | **본 배치(#19)** | #18 tip 위 10 hub. 단독 머지 시 #18 포함 |
 | — | #4~#12 | #13에 흡수 · **데스크톱에서 draft 닫기** |
 
-### 현재 hub 맵 (120)
+### 현재 hub 맵 (130)
 
 | 구분 | hubId |
 |------|-------|
 | 시드 | `sokcho` · `paris` |
-| 국내 | …(기존 59) · **`muju`** · **`jinan`** · **`imsil`** · **`sunchang`** · **`jangsu`** |
-| 해외 | …(기존 50) · **`reykjavik`** · **`geneva`** · **`krakow`** · **`venice`** · **`nice`** |
+| 국내 | …(기존 64) · **`jeongeup`** · **`gimje`** · **`iksan`** · **`wanju`** · **`haenam`** |
+| 해외 | …(기존 55) · **`cologne`** · **`naples`** · **`valencia`** · **`marseille`** · **`lyon`** |
 
 - **제주**: `jeju`(제주시) / `seogwipo`(서귀포) **분리**. alias `제주`·`제주도` → 제주시. 성산·중문·천지연 등은 서귀포.
 - **고성**: `goseong` = **강원 고성**(화진포·DMZ). 경남 고성과 혼동 주의.
@@ -399,9 +413,9 @@
 ```bash
 node --input-type=module -e "
 import { resolveCityAttractionHub, resolveHubAttraction, getKindLabel, listCityAttractionHubs } from './src/pages/Home/lib/cityAttractionHubs.js';
-console.log(listCityAttractionHubs().length); // 120
-const hubs = ['레이캬비크','레이캬빅','제네바','genève','크라쿠프','베네치아','베니스','니스','무주','진안','임실','순창','장수','스톡홀름','속초','파리'];
-const exact = ['할그림스키르캬','블루라군','제트 도','바벨 성','산마르코 광장','리알토 다리','영국인 산책로','덕유산국립공원','마이산','임실치즈테마파크','순창고추장민속마을','논개생가','채석강','낙산사'];
+console.log(listCityAttractionHubs().length); // 130
+const hubs = ['쾰른','콜론','köln','나폴리','napoli','발렌시아','마르세유','리옹','리용','정읍','김제','익산','완주','해남','레이캬비크','무주','속초','파리'];
+const exact = ['쾰른 대성당','폼페이 유적','예술과학도시','구항 마르세유','푸르비에르 대성당','내장산국립공원','금산사','미륵사지','대둔산','땅끝마을','할그림스키르캬','마이산','낙산사'];
 for (const q of hubs) console.log('hub', q, !!resolveCityAttractionHub(q));
 for (const q of exact) console.log('exact', q, !!resolveHubAttraction(q));
 console.log('shrine', getKindLabel('shrine')); // 신사
@@ -410,11 +424,11 @@ console.log('shrine', getKindLabel('shrine')); // 신사
 
 ### 에이전트 핸드오프 (명소-이어하기)
 
-- **읽을 것 3**: 본 절「#18」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
+- **읽을 것 3**: 본 절「#19」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
 - **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · UI/Mapbox 동기화 무단
 - **다음 작업 (사용자 선택)**:
-  1. **머지**: 본 배치(#18) · #4~#12 draft **닫기**(데스크톱)
-  2. **다음 배치**(8~12 hub): 예) 쾰른·나폴리·발렌시아 · 국내 정읍·김제·고창 외 미등록(이미 고창 있음) · 익산·완주·남원 외
-  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `베니스`→베네치아 · `레이캬빅`→레이캬비크 · `바벨 성`/`마이산` exact · 모바일 키보드
+  1. **머지**: **#18** → **본 배치(#19)** · #4~#12 draft **닫기**(데스크톱)
+  2. **다음 배치**(8~12 hub): 예) 함부르크·브라티슬라바·자그레브 · 국내 무안·영암·강진·장성·함평 등 미등록
+  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `napoli`→나폴리 · `köln`→쾰른 · `땅끝마을`/`미륵사지` exact · 모바일 키보드
   4. 릴리스 노트는 **합의 후**만
-- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#18 tip 위 append)」 / 「#18 머지부터」
+- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#19 tip 위 append)」 / 「#18→#19 머지부터」
