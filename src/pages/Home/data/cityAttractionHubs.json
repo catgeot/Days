@@ -5661,5 +5661,647 @@
         "lng": 128.48
       }
     ]
+  },
+  {
+    "hubId": "stockholm",
+    "name": "스톡홀름",
+    "name_en": "Stockholm",
+    "country": "스웨덴",
+    "country_en": "Sweden",
+    "lat": 59.3293,
+    "lng": 18.0686,
+    "aliases": [
+      "stockholm",
+      "스톡홀름시"
+    ],
+    "attractions": [
+      {
+        "name": "감라스탄",
+        "name_en": "Gamla Stan",
+        "kind": "neighborhood",
+        "lat": 59.3251,
+        "lng": 18.0711
+      },
+      {
+        "name": "바사 박물관",
+        "name_en": "Vasa Museum",
+        "kind": "museum",
+        "lat": 59.3279,
+        "lng": 18.0915
+      },
+      {
+        "name": "스칸센",
+        "name_en": "Skansen",
+        "kind": "park",
+        "lat": 59.326,
+        "lng": 18.103
+      },
+      {
+        "name": "스톡홀름 시청",
+        "name_en": "Stockholm City Hall",
+        "kind": "landmark",
+        "lat": 59.3274,
+        "lng": 18.0549
+      },
+      {
+        "name": "드로트닝홀름 궁전",
+        "name_en": "Drottningholm Palace",
+        "kind": "landmark",
+        "lat": 59.3217,
+        "lng": 17.8869
+      },
+      {
+        "name": "유르고르덴",
+        "name_en": "Djurgarden",
+        "kind": "park",
+        "lat": 59.3265,
+        "lng": 18.12
+      },
+      {
+        "name": "포토그라피스카",
+        "name_en": "Fotografiska",
+        "kind": "museum",
+        "lat": 59.3178,
+        "lng": 18.0847
+      }
+    ]
+  },
+  {
+    "hubId": "helsinki",
+    "name": "헬싱키",
+    "name_en": "Helsinki",
+    "country": "핀란드",
+    "country_en": "Finland",
+    "lat": 60.1699,
+    "lng": 24.9384,
+    "aliases": [
+      "helsinki",
+      "헬싱키시"
+    ],
+    "attractions": [
+      {
+        "name": "수오멘린나",
+        "name_en": "Suomenlinna",
+        "kind": "landmark",
+        "lat": 60.145,
+        "lng": 24.988
+      },
+      {
+        "name": "헬싱키 대성당",
+        "name_en": "Helsinki Cathedral",
+        "kind": "landmark",
+        "lat": 60.1698,
+        "lng": 24.9522
+      },
+      {
+        "name": "템펠리아우키오 교회",
+        "name_en": "Temppeliaukio Church",
+        "kind": "landmark",
+        "lat": 60.1729,
+        "lng": 24.9253
+      },
+      {
+        "name": "카우파토리",
+        "name_en": "Helsinki Market Square",
+        "kind": "market",
+        "lat": 60.1674,
+        "lng": 24.9528
+      },
+      {
+        "name": "시벨리우스 기념비",
+        "name_en": "Sibelius Monument",
+        "kind": "landmark",
+        "lat": 60.182,
+        "lng": 24.9134
+      },
+      {
+        "name": "세우라사리",
+        "name_en": "Seurasaari",
+        "kind": "park",
+        "lat": 60.1835,
+        "lng": 24.8845
+      },
+      {
+        "name": "디자인 디스트릭트",
+        "name_en": "Design District Helsinki",
+        "kind": "neighborhood",
+        "lat": 60.163,
+        "lng": 24.94
+      }
+    ]
+  },
+  {
+    "hubId": "oslo",
+    "name": "오슬로",
+    "name_en": "Oslo",
+    "country": "노르웨이",
+    "country_en": "Norway",
+    "lat": 59.9139,
+    "lng": 10.7522,
+    "aliases": [
+      "oslo",
+      "오슬로시"
+    ],
+    "attractions": [
+      {
+        "name": "비겔란 조각공원",
+        "name_en": "Vigeland Park",
+        "kind": "park",
+        "lat": 59.927,
+        "lng": 10.701
+      },
+      {
+        "name": "오슬로 오페라 하우스",
+        "name_en": "Oslo Opera House",
+        "kind": "landmark",
+        "lat": 59.907,
+        "lng": 10.753
+      },
+      {
+        "name": "아케르스후스 요새",
+        "name_en": "Akershus Fortress",
+        "kind": "landmark",
+        "lat": 59.9075,
+        "lng": 10.736
+      },
+      {
+        "name": "홀멘콜렌",
+        "name_en": "Holmenkollen",
+        "kind": "viewpoint",
+        "lat": 59.964,
+        "lng": 10.667
+      },
+      {
+        "name": "뭉크 미술관",
+        "name_en": "Munch Museum",
+        "kind": "museum",
+        "lat": 59.9058,
+        "lng": 10.7553
+      },
+      {
+        "name": "비그되이",
+        "name_en": "Bygdoy",
+        "kind": "neighborhood",
+        "lat": 59.904,
+        "lng": 10.684
+      },
+      {
+        "name": "카를 요한 거리",
+        "name_en": "Karl Johans gate",
+        "kind": "neighborhood",
+        "lat": 59.913,
+        "lng": 10.738
+      }
+    ]
+  },
+  {
+    "hubId": "copenhagen",
+    "name": "코펜하겐",
+    "name_en": "Copenhagen",
+    "country": "덴마크",
+    "country_en": "Denmark",
+    "lat": 55.6761,
+    "lng": 12.5683,
+    "aliases": [
+      "copenhagen",
+      "kobenhavn",
+      "쾨벤하븐"
+    ],
+    "attractions": [
+      {
+        "name": "뉘하운",
+        "name_en": "Nyhavn",
+        "kind": "neighborhood",
+        "lat": 55.6797,
+        "lng": 12.5908
+      },
+      {
+        "name": "티볼리",
+        "name_en": "Tivoli Gardens",
+        "kind": "park",
+        "lat": 55.6734,
+        "lng": 12.5681
+      },
+      {
+        "name": "인어공주 상",
+        "name_en": "The Little Mermaid",
+        "kind": "landmark",
+        "lat": 55.6929,
+        "lng": 12.5993
+      },
+      {
+        "name": "크리스찬스보르 궁전",
+        "name_en": "Christiansborg Palace",
+        "kind": "landmark",
+        "lat": 55.6759,
+        "lng": 12.5806
+      },
+      {
+        "name": "로젠보르 성",
+        "name_en": "Rosenborg Castle",
+        "kind": "landmark",
+        "lat": 55.6858,
+        "lng": 12.577
+      },
+      {
+        "name": "라운드 타워",
+        "name_en": "Round Tower",
+        "kind": "viewpoint",
+        "lat": 55.6814,
+        "lng": 12.5759
+      },
+      {
+        "name": "크리스티아니아",
+        "name_en": "Freetown Christiania",
+        "kind": "neighborhood",
+        "lat": 55.6734,
+        "lng": 12.6005
+      }
+    ]
+  },
+  {
+    "hubId": "warsaw",
+    "name": "바르샤바",
+    "name_en": "Warsaw",
+    "country": "폴란드",
+    "country_en": "Poland",
+    "lat": 52.2297,
+    "lng": 21.0122,
+    "aliases": [
+      "warsaw",
+      "warszawa",
+      "바르샤와"
+    ],
+    "attractions": [
+      {
+        "name": "바르샤바 구시가지",
+        "name_en": "Warsaw Old Town",
+        "kind": "neighborhood",
+        "lat": 52.2497,
+        "lng": 21.0122
+      },
+      {
+        "name": "와지엔키 공원",
+        "name_en": "Lazienki Park",
+        "kind": "park",
+        "lat": 52.2148,
+        "lng": 21.035
+      },
+      {
+        "name": "폴란드 왕궁",
+        "name_en": "Royal Castle Warsaw",
+        "kind": "landmark",
+        "lat": 52.2477,
+        "lng": 21.0143
+      },
+      {
+        "name": "과학문화궁전",
+        "name_en": "Palace of Culture and Science",
+        "kind": "landmark",
+        "lat": 52.2318,
+        "lng": 21.006
+      },
+      {
+        "name": "쇼팽 박물관",
+        "name_en": "Chopin Museum",
+        "kind": "museum",
+        "lat": 52.2363,
+        "lng": 21.023
+      },
+      {
+        "name": "윌라누프 궁전",
+        "name_en": "Wilanow Palace",
+        "kind": "landmark",
+        "lat": 52.1651,
+        "lng": 21.0904
+      },
+      {
+        "name": "바르샤바 봉기 박물관",
+        "name_en": "Warsaw Uprising Museum",
+        "kind": "museum",
+        "lat": 52.2323,
+        "lng": 20.981
+      }
+    ]
+  },
+  {
+    "hubId": "hapcheon",
+    "name": "합천",
+    "name_en": "Hapcheon",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.5666,
+    "lng": 128.1658,
+    "aliases": [
+      "합천군",
+      "hapcheon"
+    ],
+    "attractions": [
+      {
+        "name": "해인사",
+        "name_en": "Haeinsa",
+        "kind": "temple",
+        "lat": 35.801,
+        "lng": 128.098
+      },
+      {
+        "name": "합천영상테마파크",
+        "name_en": "Hapcheon Image Theme Park",
+        "kind": "landmark",
+        "lat": 35.55,
+        "lng": 128.16
+      },
+      {
+        "name": "황매산",
+        "name_en": "Hwangmaesan",
+        "kind": "viewpoint",
+        "lat": 35.49,
+        "lng": 127.97
+      },
+      {
+        "name": "합천호",
+        "name_en": "Hapcheon Lake",
+        "kind": "park",
+        "lat": 35.55,
+        "lng": 128.05
+      },
+      {
+        "name": "대장경테마파크",
+        "name_en": "Tripitaka Koreana Theme Park",
+        "kind": "landmark",
+        "lat": 35.8,
+        "lng": 128.1
+      },
+      {
+        "name": "가야산",
+        "name_en": "Gayasan",
+        "kind": "viewpoint",
+        "lat": 35.82,
+        "lng": 128.12
+      },
+      {
+        "name": "함벽루",
+        "name_en": "Hambyeongnu",
+        "kind": "landmark",
+        "lat": 35.566,
+        "lng": 128.166
+      }
+    ]
+  },
+  {
+    "hubId": "gokseong",
+    "name": "곡성",
+    "name_en": "Gokseong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.2819,
+    "lng": 127.2919,
+    "aliases": [
+      "곡성군",
+      "gokseong"
+    ],
+    "attractions": [
+      {
+        "name": "섬진강기차마을",
+        "name_en": "Seomjingang Train Village",
+        "kind": "landmark",
+        "lat": 35.282,
+        "lng": 127.3
+      },
+      {
+        "name": "도림사",
+        "name_en": "Dorimsa",
+        "kind": "temple",
+        "lat": 35.25,
+        "lng": 127.25
+      },
+      {
+        "name": "압록유원지",
+        "name_en": "Amnok Recreation Area",
+        "kind": "park",
+        "lat": 35.22,
+        "lng": 127.38
+      },
+      {
+        "name": "태안사",
+        "name_en": "Taeansa",
+        "kind": "temple",
+        "lat": 35.13,
+        "lng": 127.35
+      },
+      {
+        "name": "동악산",
+        "name_en": "Dongaksan",
+        "kind": "viewpoint",
+        "lat": 35.25,
+        "lng": 127.28
+      },
+      {
+        "name": "곡성 심청한옥마을",
+        "name_en": "Gokseong Simcheong Hanok Village",
+        "kind": "neighborhood",
+        "lat": 35.28,
+        "lng": 127.29
+      },
+      {
+        "name": "곡성레일바이크",
+        "name_en": "Gokseong Rail Bike",
+        "kind": "landmark",
+        "lat": 35.28,
+        "lng": 127.305
+      }
+    ]
+  },
+  {
+    "hubId": "yeonggwang",
+    "name": "영광",
+    "name_en": "Yeonggwang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.2772,
+    "lng": 126.5119,
+    "aliases": [
+      "영광군",
+      "yeonggwang"
+    ],
+    "attractions": [
+      {
+        "name": "불갑사",
+        "name_en": "Bulgapsa",
+        "kind": "temple",
+        "lat": 35.2,
+        "lng": 126.55
+      },
+      {
+        "name": "백수해안도로",
+        "name_en": "Baeksu Coastal Road",
+        "kind": "viewpoint",
+        "lat": 35.3,
+        "lng": 126.38
+      },
+      {
+        "name": "칠산타워",
+        "name_en": "Chilsan Tower",
+        "kind": "viewpoint",
+        "lat": 35.28,
+        "lng": 126.4
+      },
+      {
+        "name": "가마미해수욕장",
+        "name_en": "Gamami Beach",
+        "kind": "beach",
+        "lat": 35.38,
+        "lng": 126.4
+      },
+      {
+        "name": "법성포 굴비거리",
+        "name_en": "Beopseongpo Gulbi Street",
+        "kind": "market",
+        "lat": 35.35,
+        "lng": 126.45
+      },
+      {
+        "name": "백사장해수욕장",
+        "name_en": "Baeksajang Beach",
+        "kind": "beach",
+        "lat": 35.32,
+        "lng": 126.4
+      },
+      {
+        "name": "불갑저수지",
+        "name_en": "Bulgap Reservoir",
+        "kind": "park",
+        "lat": 35.21,
+        "lng": 126.54
+      }
+    ]
+  },
+  {
+    "hubId": "hamyang",
+    "name": "함양",
+    "name_en": "Hamyang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.5204,
+    "lng": 127.7252,
+    "aliases": [
+      "함양군",
+      "hamyang"
+    ],
+    "attractions": [
+      {
+        "name": "상림공원",
+        "name_en": "Sangnim Park",
+        "kind": "park",
+        "lat": 35.52,
+        "lng": 127.73
+      },
+      {
+        "name": "남계서원",
+        "name_en": "Namgye Seowon",
+        "kind": "landmark",
+        "lat": 35.52,
+        "lng": 127.75
+      },
+      {
+        "name": "개평한옥마을",
+        "name_en": "Gaepyeong Hanok Village",
+        "kind": "neighborhood",
+        "lat": 35.52,
+        "lng": 127.75
+      },
+      {
+        "name": "좌구산",
+        "name_en": "Jwagusan",
+        "kind": "viewpoint",
+        "lat": 35.62,
+        "lng": 127.85
+      },
+      {
+        "name": "화림동계곡",
+        "name_en": "Hwarimdongs Valley",
+        "kind": "park",
+        "lat": 35.58,
+        "lng": 127.68
+      },
+      {
+        "name": "함양 용추폭포",
+        "name_en": "Hamyang Yongchu Falls",
+        "kind": "viewpoint",
+        "lat": 35.55,
+        "lng": 127.7
+      },
+      {
+        "name": "지안재",
+        "name_en": "Jianjae Pass",
+        "kind": "viewpoint",
+        "lat": 35.48,
+        "lng": 127.72
+      }
+    ]
+  },
+  {
+    "hubId": "sancheong",
+    "name": "산청",
+    "name_en": "Sancheong",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.4154,
+    "lng": 127.8734,
+    "aliases": [
+      "산청군",
+      "sancheong"
+    ],
+    "attractions": [
+      {
+        "name": "동의보감촌",
+        "name_en": "Donguibogam Village",
+        "kind": "landmark",
+        "lat": 35.4,
+        "lng": 127.87
+      },
+      {
+        "name": "남사예담촌",
+        "name_en": "Namsa Yedamchon",
+        "kind": "neighborhood",
+        "lat": 35.35,
+        "lng": 127.88
+      },
+      {
+        "name": "산청 대원사",
+        "name_en": "Sancheong Daewonsa",
+        "kind": "temple",
+        "lat": 35.35,
+        "lng": 127.75
+      },
+      {
+        "name": "산청한의학박물관",
+        "name_en": "Sancheong Oriental Medicine Museum",
+        "kind": "museum",
+        "lat": 35.415,
+        "lng": 127.873
+      },
+      {
+        "name": "왕산",
+        "name_en": "Wangsan",
+        "kind": "viewpoint",
+        "lat": 35.42,
+        "lng": 127.86
+      },
+      {
+        "name": "내원사계곡",
+        "name_en": "Naewonsa Valley",
+        "kind": "park",
+        "lat": 35.36,
+        "lng": 127.76
+      },
+      {
+        "name": "산청 단계농요마을",
+        "name_en": "Sancheong Dangye Nongyo Village",
+        "kind": "neighborhood",
+        "lat": 35.38,
+        "lng": 127.9
+      }
+    ]
   }
 ]
