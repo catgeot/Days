@@ -466,16 +466,543 @@ console.log('shrine', getKindLabel('shrine')); // 신사
 - **읽을 것 3**: [`orchestrator-method.md`](./orchestrator-method.md) · 본 절「중간 정리·일시 중단」·「스키마·수정 규칙」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
 - **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · stale draft 재머지 · tip **병렬** 머지
 - **다음 작업 (사용자 선택)**:
-  1. **데스크톱 QA**: 드롭다운 · Enter 선택 카드 · `글라스고`→글래스고 · `antwerpen`→앤트워프 · `인스부르크`→인스브루크 · `천사대교`/`뮤지엄산` exact · 모바일 키보드
-  2. stale draft **닫기** (#4~#12·#6·#18~#21)
-  3. **재개**: **오케스트레이터**로 main tip 위 8~12 hub (워커 병렬 초안 → `npm run audit:city-attraction-hubs` → 직렬 append)
-  4. 릴리스 노트는 **합의 후**만
-- **제시어**: `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「데스크톱 QA 후 다음 10 hub」 / 「배치표부터」
+  1. stale draft **닫기** (#4~#12·#6·#18~#21)
+  2. **재개**: **오케스트레이터**로 tip 위 다음 8~12 hub
+  3. 릴리스 노트는 **합의 후**만 · **commit/push는 요청 시**
+- **제시어**: `오케스트레이터` + `명소` · 「main tip 위 다음 10 hub」
+
+## cityAttractionHubs — 프랑크푸르트·토리노·삿포로 + 충주·김해 등 (#22)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 OK · **미커밋**(요청 시)
+
+- **기반**: #21 tip · 오케스트레이터 + 워커 병렬 초안 → 직렬 append
+- 한 배치 **10 hub × 7명소**
+- 해외: `frankfurt` · `turin`(alias **`토리노`**/`torino`) · `ghent`(alias **`gent`**) · `dubrovnik`(alias **`두브로브닉`**) · `sapporo`(alias **`삿뽀로`** · `홋카이도 신궁`=`shrine`)
+- 국내: `chungju` · `cheonan` · `samcheok` · `yangpyeong` · `gimhae`
+- 총 **160 hub** · 명소 **1100** · shrine KIND_LABEL 유지 · 시드 intact
+- QA: #21 핸드오프 resolve+프로덕션 UI(`글라스고`/`antwerpen`/`인스부르크`/`천사대교`/`뮤지엄산`) 통과 후 재개
+- 주의: 토리노·겐트 접두 · `천안 독립기념관` · 삼척 접두 · `남한강 두물머리`/`세미원` · `김해 수로왕릉`
+- hub 스모크: `프랑크푸르트`/`토리노`/`torino`/`겐트`/`gent`/`두브로브니크`/`삿포로`/`삿뽀로`/`충주`/`천안`/`삼척`/`양평`/`김해` + 회귀(글래스고·속초·파리)
+- exact: `뢰머베르크`/`마인타워`/`토리노 몰레 안토넬리아나`/`겐트 그라스레이`/`스트라둔`/`반예 해변`/`삿포로 시계탑`/`홋카이도 신궁`/`충주호`/`천안 독립기념관`/`삼척 환선굴`/`남한강 두물머리`/`김해 수로왕릉`
+- **다음 후보(안)**: 해외 `manchester`·`toulouse`·`granada`·`hiroshima`·`tallinn` · 국내 `taebaek`·`donghae`·`asan`·`seosan`·`changwon`
+- **제시어**: `오케스트레이터` + `명소` · 「다음 10 hub」 / commit 요청 시 「#22 커밋」
+
+## cityAttractionHubs — 맨체스터·그라나다·히로시마 + 태백·동해 등 (#23)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 OK · **미커밋**
+
+- 한 배치 **10 hub × 7명소** (#22 tip 위)
+- 해외: `manchester` · `toulouse` · `granada` · `hiroshima`(`미야지마 이쓰쿠시마 신사`=`shrine`) · `tallinn`
+- 국내: `taebaek` · `donghae` · `asan` · `seosan` · `changwon`(alias **`마산`**/`진해`)
+- 총 **170 hub** · 명소 **1170** · shrine 유지 · 시드 intact
+- 오케스트레이터 보정: `아산 현충사` kind `shrine`→`landmark`(UI「신사」방지) · 일반명 접두(`맨체스터 과학산업박물관`·`미디 운하 툴루즈`·`탈린 시청 광장`)
+- hub 스모크: `맨체스터`/`툴루즈`/`그라나다`/`히로시마`/`탈린`/`태백`/`동해`/`아산`/`서산`/`창원`/`마산`/`진해` + 회귀
+- exact: `알함브라 궁전`/`원폭 돔`/`미야지마 이쓰쿠시마 신사`/`동해 망상해수욕장`/`아산 현충사`/`서산 부석사`/`창원 진해군항제`
+- **다음(#24)**: `liverpool`·`malaga`·`nuremberg`·`kanazawa`·`ljubljana` · `hongcheon`·`jeongseon`·`uljin`·`icheon`·`miryang`
+
+## cityAttractionHubs — 리버풀·말라가·가나자와 + 홍천·정선 등 (#24)
+
+**상태**: ✅ tip append · audit/issues 0 · **미커밋**
+
+- 한 배치 **10 hub × 7명소** (#23 tip 위)
+- 해외: `liverpool` · `malaga` · `nuremberg` · `kanazawa`(`오야마 신사`=`shrine`) · `ljubljana`
+- 국내: `hongcheon` · `jeongseon` · `uljin` · `icheon` · `miryang`
+- 총 **180 hub** · 명소 **1240**
+- 오케스트레이터 보정: 류블랴나 `Dragon Bridge`/`티볼리 공원` → `류블랴나 용의 다리`/`류블랴나 티볼리 공원`(다낭·코펜하겐 충돌)
+- **다음(#25)**: `birmingham`·`genoa`·`bologna`·`bergen`·`vilnius` · `hoengseong`·`yeoju`·`yangsan`·`sacheon`·`pocheon`
+
+## cityAttractionHubs — 버밍엄·제노바·베르겐 + 횡성·포천 등 (#25)
+
+**상태**: ✅ tip append · audit/issues 0 · **미커밋**
+
+- 한 배치 **10 hub × 7명소** (#24 tip 위)
+- 해외: `birmingham` · `genoa`(alias **`genova`**) · `bologna` · `bergen` · `vilnius`
+- 국내: `hoengseong` · `yeoju` · `yangsan` · `sacheon`(alias **`삼천포`**) · `pocheon`
+- 총 **190 hub** · 명소 **1310**
+- 보정: `항공우주박물관`→`사천 항공우주박물관`
+- **다음(#26)**: `cardiff`·`strasbourg`·`verona`·`nagoya`·`riga` · `boeun`·`okcheon`·`yeongdeok`·`cheongsong`·`yanggu`
+
+## cityAttractionHubs — 카디프·나고야·리가 + 보은·양구 등 (#26)
+
+**상태**: ✅ tip append · audit/issues 0 · **미커밋** · **200 hub 마일스톤**
+
+- 한 배치 **10 hub × 7명소** (#25 tip 위)
+- 해외: `cardiff` · `strasbourg`(alias **`스트라스부호`**) · `verona` · `nagoya`(`아츠타 신궁`=`shrine`) · `riga`
+- 국내: `boeun` · `okcheon` · `yeongdeok` · `cheongsong` · `yanggu`(alias **`펀치볼`**)
+- 총 **200 hub** · 명소 **1380**
+- **다음(#27)**: `leeds`·`padua`·`split`·`luxembourg`·`gothenburg` · `hwacheon`·`cheorwon`·`yeongyang`·`bonghwa`·`uiseong`
+
+## cityAttractionHubs — 리즈·스플리트·룩셈부르크 + 화천·철원 등 (#27)
+
+**상태**: ✅ tip append · audit/issues 0 · **미커밋**
+
+- 한 배치 **10 hub × 7명소** (#26 tip 위)
+- 해외: `leeds` · `padua`(alias **`padova`**) · `split` · `luxembourg` · `gothenburg`(alias **`고텐부르크`**/`göteborg`)
+- 국내: `hwacheon` · `cheorwon` · `yeongyang` · `bonghwa` · `uiseong`
+- 총 **210 hub** · 명소 **1450**
+- **다음(#28)**: `newcastle`·`bari`·`zadar`·`bruges`·`malmo` · `goesan`·`jincheon`·`eumseong`·`yecheon`·`sangju`
+
+## cityAttractionHubs — 뉴캐슬·브뤼헤·말뫼 + 괴산·상주 등 (#28)
+
+**상태**: ✅ tip append · audit/issues 0 · **미커밋**
+
+- 한 배치 **10 hub × 7명소** (#27 tip 위)
+- 해외: `newcastle`(alias **`newcastle upon tyne`**) · `bari` · `zadar` · `bruges`(alias **`brugge`**) · `malmo`(alias **`malmö`**)
+- 국내: `goesan` · `jincheon` · `eumseong` · `yecheon` · `sangju`
+- 총 **220 hub** · 명소 **1520**
+- **다음(#29)**: `sheffield`·`trier`·`pula`·`aarhus`·`linz` · `yeoncheon`·`anseong`·`pyeongtaek`·`osan`·`guri`
+
+## cityAttractionHubs — 셰필드·트리어·풀라 + 연천·구리 등 (#29)
+
+**상태**: ✅ tip append · audit/issues 0 · **미커밋**
+
+- 한 배치 **10 hub × 7명소** (#28 tip 위)
+- 해외: `sheffield` · `trier`(alias **`trèves`**) · `pula` · `aarhus`(alias **`아르후스`**) · `linz`
+- 국내: `yeoncheon` · `anseong` · `pyeongtaek` · `osan` · `guri`
+- 총 **230 hub** · 명소 **1590**
+- **다음(#30)**: `bristol`·`aachen`·`sibenik`·`odense`·`graz` · `namyangju`·`hanam`·`uijeongbu`·`anyang`·`gunpo`
+- **오케스트레이터 이관 권고**: 세션 컨텍스트 큼 · tip 미커밋(#22~#29) · 다음 채팅은 `오케스트레이터` + 「인수인계서대로 이어서」
+
+## cityAttractionHubs — 브리스틀·아헨·시베니크 + 남양주·안양 등 (#30)
+
+**상태**: ✅ tip append · audit/issues 0 · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#29 tip 위)
+- 해외: `bristol` · `aachen`(alias **`aix-la-chapelle`**) · `sibenik` · `odense` · `graz`
+- 국내: `namyangju` · `hanam` · `uijeongbu` · `anyang` · `gunpo`
+- 총 **240 hub** · 명소 **1660** (세션 시작 150→+90)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#30 일지·`.ai-context`·method |
+| 건수 | **240 hub / 1660 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` |
+| 다음(#31) | `nottingham`·`wroclaw`·`rovinj`·`tampere`·`klagenfurt` · `bucheon`·`gwacheon`·`siheung`·`gimpo`·`goyang` |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#31 배치」 / commit 시 「#22~#30 커밋」 |
+
+## cityAttractionHubs — 노팅엄·브로츠와프·로비니 + 부천·고양 등 (#31)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#30 tip 위)
+- 해외: `nottingham` · `wroclaw`(alias **`Breslau`**) · `rovinj` · `tampere` · `klagenfurt`
+- 국내: `bucheon` · `gwacheon` · `siheung` · `gimpo` · `goyang`(alias **`일산`**)
+- 총 **250 hub** · 명소 **1730** (240→250 / 1660→1730)
+- 충돌 보정: 없음 (audit issues 0 직통과)
+- hub 스모크: `노팅엄`/`nottingham`/`브로츠와프`/`wroclaw`/`로비니`/`탐페레`/`클라겐푸르트`/`부천`/`과천`/`시흥`/`김포`/`고양`/`일산` + exact·회귀(`속초`/`파리`/`낙산사`/`에펠탑`) · `shrine`=`신사`
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#31 일지·`.ai-context`·method |
+| 건수 | **250 hub / 1730 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` |
+| 다음(#32) | `brighton`·`gdansk`·`porec`·`turku`·`villach` · `yangju`·`dongducheon`·`gwangmyeong`·`uiwang`·`ansan` |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#32 배치」 / commit 시 「#22~#31 커밋」 |
+
+**서브 오케스트레이터 이관**: #31·#32·#33 후임 서브 성공(부모 VERIFY_PASS 270/1870) · #34 후임 인계.
+
+## cityAttractionHubs — 브라이턴·그단스크·포레치 + 양주·안산 등 (#32)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#31 tip 위)
+- 해외: `brighton` · `gdansk`(alias **`Gdańsk`**/`단치히`) · `porec`(alias **`Poreč`**) · `turku`(alias **`Åbo`**) · `villach`
+- 국내: `yangju` · `dongducheon` · `gwangmyeong` · `uiwang` · `ansan`
+- 총 **260 hub** · 명소 **1800** (250→260 / 1730→1800)
+- 충돌 보정: `양주 장흥관광지`(전남 `장흥` 분리) · 양주 **송암 미포함**(고양 exact) · `안산 시화호`(시흥 `시화나래` 분리) · `광명 안양천생태공원`/`청계산 의왕코스`/`의왕 청계사` 접두 · KR `temple` only(shrine 한국 사당 금지)
+- hub 스모크: `브라이턴`/`brighton`/`그단스크`/`gdansk`/`포레치`/`투르쿠`/`필라흐`/`양주`/`동두천`/`광명`/`의왕`/`안산` + exact·회귀(`속초`/`파리`/`낙산사`/`에펠탑`) · `shrine`=`신사`
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#32 일지·`.ai-context`·method |
+| 건수 | **260 hub / 1800 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` |
+| 다음(#33) | `swansea`·`poznan`·`oulu`·`bregenz`·`leipzig` · `seongnam`·`yongin`·`hwaseong`·`gimcheon`·`dangjin` |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#33 배치」 / commit 시 「#22~#32 커밋」 |
+
+**서브 오케스트레이터 이관**: #32 후임 서브 성공 · #33 후임 VERIFY_PASS 후 #34 인계.
+
+## cityAttractionHubs — 스완지·포즈난·오울루 + 성남·당진 등 (#33)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#32 tip 위)
+- 해외: `swansea`(alias **`Abertawe`**) · `poznan`(alias **`Poznań`**) · `oulu`(alias **`Uleåborg`**) · `bregenz` · `leipzig`
+- 국내: `seongnam` · `yongin` · `hwaseong` · `gimcheon` · `dangjin`
+- 총 **270 hub** · 명소 **1870** (260→270 / 1800→1870)
+- 충돌 보정: `성남 남한산성`/`성남 탄천` 접두 · 화성 **수원화성·융건릉·화성행궁 미포함**(수원 exact) · `당진 삽교호`/`화성 공룡알화석지`/`화성 우음도`/`화성 전곡항` 접두 · `솔뫼성지`=`landmark`(KR shrine 금지) · KR `temple` only
+- hub 스모크: `스완지`/`swansea`/`포즈난`/`poznan`/`Poznań`/`오울루`/`브레겐츠`/`라이프치히`/`성남`/`용인`/`화성`/`김천`/`당진` + exact·회귀(`속초`/`파리`/`낙산사`/`에펠탑`) · `shrine`=`신사`
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#33 일지·`.ai-context`·method |
+| 건수 | **270 hub / 1870 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` |
+| 다음(#34) | `exeter`·`lodz`·`kuopio`·`dresden`·`rijeka` · `nonsan`·`gyeryong`·`seocheon`·`hongseong`·`gumi` |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#34 배치」 / commit 시 「#22~#33 커밋」 |
+
+**서브 오케스트레이터 이관**: #33 후임 서브 성공 · #34도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 엑서터·우치·드레스덴 + 논산·구미 등 (#34)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#33 tip 위)
+- 해외: `exeter` · `lodz`(alias **`Łódź`**) · `kuopio` · `dresden` · `rijeka`(alias **`Fiume`**)
+- 국내: `nonsan` · `gyeryong` · `seocheon` · `hongseong` · `gumi`
+- 총 **280 hub** · 명소 **1940** (270→280 / 1870→1940)
+- 충돌 보정: `논산 탑정호`/`논산 대둔산`(완주 `대둔산` 분리) · `구미 금오산` · KR `temple` only · `직지사`/`대천해수욕장`/`간월암`/`수원화성` 미재등록 · `Frauenkirche Dresden`/`Dresden Zwinger` 접두 · `Korzo Rijeka`
+- hub 스모크: `엑서터`/`exeter`/`우치`/`lodz`/`Łódź`/`쿠오피오`/`드레스덴`/`리예카`/`Fiume`/`논산`/`계룡`/`서천`/`홍성`/`구미` + exact·회귀(`속초`/`파리`/`낙산사`/`에펠탑`/`수원화성`/`직지사`) · `shrine`=`신사`
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#34 일지·`.ai-context`·method |
+| 건수 | **280 hub / 1940 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` |
+| 다음(#35) | `plymouth`·`katowice`·`jyvaskyla`·`bremen`·`osijek` · `yesan`·`cheongyang`·`yeongdong`·`chilgok`·`gyeongsan` |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#35 배치」 / commit 시 「#22~#34 커밋」 |
+
+**서브 오케스트레이터 이관**: #34 후임 서브 성공 · #35도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 플리머스·카토비체·브레멘 + 예산·경산 등 (#35)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#34 tip 위)
+- 해외: `plymouth` · `katowice` · `jyvaskyla`(alias **`Jyväskylä`**) · `bremen` · `osijek`
+- 국내: `yesan` · `cheongyang` · `yeongdong` · `chilgok`(alias **`왜관`**) · `gyeongsan`
+- 총 **290 hub** · 명소 **2010** (280→290 / 1940→2010)
+- 충돌 보정: `영동포도원` lng `127.7855` · `플리머스 바비칸`/`플리머스 국립해양수족관` · `브레멘 베저 강변`/`브레멘 뷔르거파크` · `오시예크 유럽 거리` · `청양 알프스마을` · `영동 양산팔경`(경남 양산 분리) · `경산 갓바위`(팔공산·목포 분리) · KR `temple` only
+- hub 스모크: `플리머스`/`plymouth`/`카토비체`/`위배스퀼레`/`jyvaskyla`/`Jyväskylä`/`브레멘`/`오시예크`/`예산`/`청양`/`영동`/`칠곡`/`왜관`/`경산` + exact·회귀(`속초`/`파리`/`낙산사`/`에펠탑`/`수원화성`) · `shrine`=`신사`
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#35 일지·`.ai-context`·method |
+| 건수 | **290 hub / 2010 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` |
+| 다음(#36) | `southampton`·`bydgoszcz`·`lahti`·`hannover`·`varazdin` · `geumsan`·`goryeong`·`seongju`·`gunwi`·`uiryeong` |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#36 배치」 / commit 시 「#22~#35 커밋」 |
+
+**서브 오케스트레이터 이관**: #35 후임 서브 성공 · #36도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 사우스햄튼·하노버·바라주딘 + 금산·군위 등 (#36)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#35 tip 위) · 해외 워커 초안 + 국내 오케스트레이터 확정 → tip **직렬** append
+- 해외: `southampton`(alias **`사우샘프턴`**) · `bydgoszcz`(alias **`브롬베르크`**) · `lahti` · `hannover`(alias **`hanover`**) · `varazdin`(alias **`Varaždin`**)
+- 국내: `geumsan` · `goryeong`(alias **`대가야`**) · `seongju` · `gunwi` · `uiryeong` · KR `temple` only(`shrine` 없음)
+- 총 **300 hub** · 명소 **2080** (290→300 / 2010→2080)
+- 충돌 보정: `금산 대둔산`(wanju `대둔산` 분리) · `성주 가야산`(hapcheon `가야산` 분리) · `군위 팔공산` · 구시가지/시장/성당 EN·KO 도시 접두
+- hub 스모크: `사우스햄튼`/`southampton`/`사우샘프턴`/`비드고슈치`/`브롬베르크`/`라흐티`/`하노버`/`hanover`/`바라주딘`/`Varaždin`/`금산`/`고령`/`성주`/`군위`/`의령` + exact·회귀(`속초`/`파리`/`낙산사`/`에펠탑`/`수원화성`) · `shrine`=`신사`
+- exact: `헤렌하우젠 정원`/`마슈제`/`시벨리우스 홀`/`비드고슈치 제분섬`/`바라주딘 성`/`금산 인삼시장`/`고령 지산동 고분군`/`성주 한개마을`/`군위 화본역`/`의령 충익사`/`바게이트`
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#36 일지·`.ai-context`·method |
+| 건수 | **300 hub / 2080 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#37) | `portsmouth`·`lublin`·`joensuu`·`kiel`·`karlovac` · `yeongi`·`changnyeong`·`haman`·`yeongcheon`·`cheongdo` |
+| 제외 | `jangsu`·`cheongyang` **EXISTS** · `yeongi` free |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#37 배치」 / commit 시 「#22~#36 커밋」 |
+
+**서브 오케스트레이터 이관**: #36 후임 서브 성공(#35 tip 위 직렬 게이트) · #37도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 포츠머스·키일·카를로바츠 + 창녕·청도 등 (#37)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#36 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `portsmouth`(alias **`포트스머스`**) · `lublin` · `joensuu` · `kiel`(alias **`킬`**) · `karlovac`
+- 국내: `yeongi`(alias **`조치원`**) · `changnyeong`(alias **`우포`**) · `haman`(alias **`아라가야`**) · `yeongcheon` · `cheongdo` · KR `temple` only(`shrine` 없음)
+- 총 **310 hub** · 명소 **2150** (300→310 / 2080→2150)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `포츠머스`/`portsmouth`/`포트스머스`/`루블린`/`요엔수`/`키일`/`킬`/`카를로바츠`/`연기`/`조치원`/`창녕`/`우포`/`함안`/`아라가야`/`영천`/`청도` + exact·회귀(`속초`/`파리`/`낙산사`/`에펠탑`) · `shrine`=`신사`
+- exact: `스피나커 타워`/`루블린 성`/`마이다네크 기념관`/`카렐리쿰`/`라보에 해군기념비`/`두보바츠 성`/`카를로바츠 아쿠아티카`/`연기 고복자연공원`/`창녕 우포늪`/`함안 말이산 고분군`/`영천 임고서원`/`청도 운문사`
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#37 일지·`.ai-context`·method |
+| 건수 | **310 hub / 2150 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#38) | `bath`·`szczecin`·`pori`·`lubeck`·`opatija` · `sejong`·`jeungpyeong`·`goseongnam`·`ongjin`·`gwangju_gi` |
+| 제외 | 경북·경남 다수 gun **EXISTS** · `goseong`=강원 · `gwangju`=광주광역시 → 경남고성=`goseongnam` · 경기광주=`gwangju_gi` |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#38 배치」 / commit 시 「#22~#37 커밋」 |
+
+**서브 오케스트레이터 이관**: #37 후임 서브 성공(#36 tip 위 직렬·중첩 Task 없이 본인 완료) · #38도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 바스·뤼베크·오파티야 + 세종·경남고성·경기광주 등 (#38)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#37 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `bath`(alias **`배스`**) · `szczecin`(alias **`스체친`**) · `pori`(alias **`유야리`**) · `lubeck`(alias **`luebeck`**/`뤼벡`) · `opatija`
+- 국내: `sejong` · `jeungpyeong`(alias **`좌구산`**/`벨포레`) · `goseongnam`(name **`경남 고성`** · bare `고성`/`goseong` 미사용) · `ongjin`(alias **`백령도`**/`연평도`/`덕적도`) · `gwangju_gi`(name **`경기 광주`** · bare `광주`/`gwangju` 미사용) · KR `temple` only(`shrine` 없음)
+- 총 **320 hub** · 명소 **2220** (310→320 / 2150→2220)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `바스`/`bath`/`배스`/`슈체친`/`포리`/`뤼베크`/`luebeck`/`오파티야`/`세종`/`증평`/`경남 고성`/`경남고성`/`당항포`/`옹진`/`백령도`/`경기 광주`/`곤지암`/`화담숲` + 회귀(`고성`→goseong · `광주`→gwangju · `속초`/`파리`) · `shrine`=`신사`
+- exact: `로마 목욕장`/`바스 대성당`/`슈체친 성`/`홀스텐토어`/`유야리 해변`/`오파티야 해안산책로`/`세종호수공원`/`증평 좌구산휴양림`/`당항포관광지`/`고성 공룡박물관`/`옹진 백령도`/`화담숲`/`곤지암도자공원` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#38 일지·`.ai-context`·method |
+| 건수 | **320 hub / 2220 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#39) | `york`·`canterbury`·`chester`·`rostock`·`gdynia` · `gijang`·`ulju`·`dalseong`·`yuseong`·`yeonsu` |
+| 제외 | 대부분 시·군 **EXISTS** · `goseong`/`gwangju` bare 유지 · 국내 #39는 구·군 단위(기장·울주·달성·유성·연수) |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#39 배치」 / commit 시 「#22~#38 커밋」 |
+
+**서브 오케스트레이터 이관**: #38 후임 서브 성공(#37 tip 위 직렬·중첩 Task 없이 본인 완료) · #39도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 요크·캔터베리·그디니아 + 기장·울주·유성·연수 등 (#39)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#38 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `york` · `canterbury`(alias **`켄터베리`**) · `chester` · `rostock`(alias **`바르넴뮌데`**/`warnemuende`) · `gdynia`(alias **`오르워보`**)
+- 국내: `gijang`(alias **`기장군`**/`오시리아`) · `ulju`(alias **`울주군`**/`언양`) · `dalseong`(alias **`달성군`**/`비슬산`) · `yuseong`(alias **`유성구`**/`수통골`) · `yeonsu`(alias **`연수구`**/`송도`) · KR `temple` only(`shrine` 없음) · 시·구 중복 명소는 prefix(`울주 간절곶`·`연수 센트럴파크` 등)
+- 총 **330 hub** · 명소 **2290** (320→330 / 2220→2290)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `요크`/`york`/`캔터베리`/`켄터베리`/`canterbury`/`체스터`/`로스토크`/`바르넴뮌데`/`그디니아`/`오르워보`/`기장`/`기장군`/`울주`/`울주군`/`달성`/`달성군`/`유성`/`유성구`/`연수`/`연수구`/`송도` + 회귀(`속초`/`파리`/`고성`→goseong · `광주`→gwangju) · `shrine`=`신사`
+- exact: `요크 민스터`/`캔터베리 대성당`/`체스터 성벽`/`바르넴뮌데 해변`/`그디니아 부두`/`일광해수욕장`/`울주 간절곶`/`비슬산자연휴양림`/`유성 수통골`/`연수 센트럴파크`/`트라이볼` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#39 일지·`.ai-context`·method |
+| 건수 | **330 hub / 2290 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#40) | `cambridge`·`oxford`·`sopot`·`stralsund`·`wismar` · `suseong`·`dalseo`·`haeundae`·`gangnam`·`seocho` |
+| 제외 | 시·군 대부분 **EXISTS** · `goseong`/`gwangju` bare 유지 · 국내 #40는 구 단위(수성·달서·해운대·강남·서초) · EXISTS면 대체 |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#40 배치」 / commit 시 「#22~#39 커밋」 |
+
+**서브 오케스트레이터 이관**: #39 후임 서브 성공(#38 tip 위 직렬·중첩 Task 없이 본인 완료) · #40도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 케임브리지·옥스퍼드·소포트 + 수성·해운대·강남 등 (#40)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#39 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `cambridge`(alias **`캠브리지`**) · `oxford`(alias **`옥스포드`**) · `sopot` · `stralsund`(alias **`슈트랄준트`**) · `wismar`
+- 국내: `suseong`(alias **`수성구`**) · `dalseo`(alias **`달서구`**) · `haeundae`(alias **`해운대구`** · 해변 exact는 부산 hub 선점 → `해운대 동백섬` 등) · `gangnam`(alias **`강남구`**) · `seocho`(alias **`서초구`**) · KR `temple` only(`shrine` 없음) · 구/도시 prefix(`강남 코엑스`·`서초 예술의전당`)
+- 총 **340 hub** · 명소 **2360** (330→340 / 2290→2360)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `케임브리지`/`캠브리지`/`cambridge`/`옥스퍼드`/`옥스포드`/`oxford`/`소포트`/`스트랄준트`/`슈트랄준트`/`비스마르`/`수성`/`수성구`/`달서`/`달서구`/`해운대`/`해운대구`/`강남`/`강남구`/`서초`/`서초구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `킹스 칼리지 채플`/`보들리언 도서관`/`소포트 부두`/`외스트제 박물관`/`비스마르 시장광장`/`수성못`/`두류공원`/`해운대 동백섬`/`강남 코엑스`/`서초 예술의전당` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#40 일지·`.ai-context`·method |
+| 건수 | **340 hub / 2360 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#41) | `durham`·`winchester`·`salisbury`·`greifswald`·`schwerin` · `mapo`·`yongsan`·`songpa`·`suyeong`·`gwanak` |
+| 제외 | `bath`/`brighton`/`bristol`/`gdansk`/`lubeck` **EXISTS** · `goseong`/`gwangju` bare 유지 · 국내 #41는 구 단위(마포·용산·송파·수영·관악) · EXISTS면 대체 |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#41 배치」 / commit 시 「#22~#40 커밋」 |
+
+**서브 오케스트레이터 이관**: #40 후임 서브 성공(#39 tip 위 직렬·중첩 Task 없이 본인 완료) · #41도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 더럼·윈체스터·솔즈베리 + 마포·용산·송파 등 (#41)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#40 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `durham` · `winchester` · `salisbury`(alias **`솔즈버리`** · exact `스톤헨지`) · `greifswald`(alias **`그라이프스발드`**) · `schwerin`
+- 국내: `mapo`(alias **`마포구`**) · `yongsan`(alias **`용산구`**) · `songpa`(alias **`송파구`**) · `suyeong`(alias **`수영구`** · 부산 `광안리해수욕장` 선점 → `수영 광안리 수변`/`수영 광안대교`) · `gwanak`(alias **`관악구`**) · KR `temple` only(`shrine` 없음) · 구 prefix(`마포 홍대거리`·`용산 국립중앙박물관`·`송파 롯데월드` · seoul `홍대`/`남산서울타워` 충돌 회피)
+- 총 **350 hub** · 명소 **2430** (340→350 / 2360→2430)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `더럼`/`durham`/`윈체스터`/`winchester`/`솔즈베리`/`솔즈버리`/`salisbury`/`그라이프스발트`/`greifswald`/`슈베린`/`schwerin`/`마포`/`마포구`/`용산`/`용산구`/`송파`/`송파구`/`수영`/`수영구`/`관악`/`관악구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `더럼 대성당`/`윈체스터 대성당`/`솔즈베리 대성당`/`스톤헨지`/`그라이프스발트 대성당`/`슈베린 성`/`마포 홍대거리`/`용산 국립중앙박물관`/`송파 롯데월드`/`수영 광안대교`/`관악산` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#41 일지·`.ai-context`·method |
+| 건수 | **350 hub / 2430 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#42) | `norwich`·`potsdam`·`weimar`·`bamberg`·`regensburg` · `jongno`·`seodaemun`·`dongjak`·`yeongdeungpo`·`gangdong` |
+| 제외 | `canterbury`/`york`/`chester`/`exeter`/`rostock`/`kiel`/`trier`/`aachen`/`bath`/`brighton`/`bristol`/`gdansk`/`lubeck` **EXISTS** · `goseong`/`gwangju` bare 유지 · 국내 #42는 구 단위(종로·서대문·동작·영등포·강동) · EXISTS면 대체 · `jung`/`seo` bare 모호 → 사용 금지 |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#42 배치」 / commit 시 「#22~#41 커밋」 |
+
+**서브 오케스트레이터 이관**: #41 후임 서브 성공(#40 tip 위 직렬·중첩 Task 없이 본인 완료) · #42도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 노리치·포츠담·바이마르 + 종로·서대문 등 (#42)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#41 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `norwich`(alias **`노위치`**) · `potsdam` · `weimar`(alias **`바이말`**) · `bamberg`(alias **`밤버그`**) · `regensburg`(alias **`레겐스버그`**)
+- 국내: `jongno`(alias **`종로구`**) · `seodaemun`(alias **`서대문구`**) · `dongjak`(alias **`동작구`**) · `yeongdeungpo`(alias **`영등포구`**) · `gangdong`(alias **`강동구`**) · KR `temple`/`landmark` only(`shrine` 없음) · 서울 시드 충돌 회피 prefix(`종로 경복궁`·`종로 창덕궁` · EN `Jongno Changdeokgung` 등) · 송파 `올림픽공원`/마포 `선유도` 미중복(강동·영등포는 구 고유 명소)
+- 총 **360 hub** · 명소 **2500** (350→360 / 2430→2500)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `노리치`/`norwich`/`포츠담`/`potsdam`/`바이마르`/`weimar`/`밤베르크`/`bamberg`/`레겐스부르크`/`regensburg`/`종로`/`종로구`/`서대문`/`서대문구`/`동작`/`동작구`/`영등포`/`영등포구`/`강동`/`강동구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `노리치 대성당`/`포츠담 상수시 궁전`/`바이마르 괴테 하우스`/`밤베르크 대성당`/`레겐스부르크 돌다리`/`종로 경복궁`/`서대문형무소역사관`/`동작 노량진수산시장`/`영등포 63빌딩`/`강동 암사동유적` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#42 일지·`.ai-context`·method |
+| 건수 | **360 hub / 2500 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#43) | `ipswich`·`colchester`·`cheltenham`·`heidelberg`·`passau` · `gangseo`·`guro`·`geumcheon`·`nowon`·`dobong` |
+| 제외 | `seocho` **EXISTS** · `stralsund`/`wismar` **EXISTS** · `icheon`/`yeoju`/`yangpyeong` **EXISTS** · `jung`/`seo` bare 모호 → 사용 금지 · 국내 #43은 구 단위(강서·구로·금천·노원·도봉) · EXISTS면 대체 |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#43 배치」 / commit 시 「#22~#42 커밋」 |
+
+**서브 오케스트레이터 이관**: #42 후임 서브 성공(#41 tip 위 직렬·중첩 Task 없이 본인 완료) · #43도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 입스위치·하이델베르크·파사우 + 강서·구로 등 (#43)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#42 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `ipswich`(alias **`입스위치`**) · `colchester` · `cheltenham`(alias **`첼튼엄`**/`첼트넘`) · `heidelberg`(alias **`하이델베르크`**) · `passau`
+- 국내: `gangseo`(alias **`강서구`**/`서울 강서구` — 부산 강서 혼동 회피) · `guro`(alias **`구로구`**) · `geumcheon`(alias **`금천구`**) · `nowon`(alias **`노원구`**) · `dobong`(alias **`도봉구`**) · KR `temple`/`landmark`/`park`/`museum`/`neighborhood`/`viewpoint`/`market` only(`shrine` 없음) · 구명 prefix
+- 총 **370 hub** · 명소 **2570** (360→370 / 2500→2570)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `입스위치`/`ipswich`/`콜체스터`/`colchester`/`첼튼엄`/`cheltenham`/`하이델베르크`/`heidelberg`/`파사우`/`passau`/`강서`/`강서구`/`서울 강서구`/`구로`/`구로구`/`금천`/`금천구`/`노원`/`노원구`/`도봉`/`도봉구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `입스위치 워터프론트`/`콜체스터 성`/`첼튼엄 피트빌 펌프룸`/`하이델베르크 성`/`파사우 슈테판 대성당`/`강서 김포공항`/`구로 고척스카이돔`/`금천 가산디지털단지`/`노원 불암산`/`도봉 도봉산` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#43 일지·`.ai-context`·method |
+| 건수 | **370 hub / 2570 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#44) | `leicester`·`coventry`·`reading`·`freiburg`·`augsburg` · `yangcheon`·`eunpyeong`·`seongbuk`·`seongdong`·`gwangjin` |
+| 제외 | `seocho`/`gwanak`/`yongsan`/`mapo`/`songpa`/`gangnam` **EXISTS** · `jung`/`seo` bare 모호 → 사용 금지 · 국내 #44는 구 단위(양천·은평·성북·성동·광진) · EXISTS면 대체(`jungnang`/`dongdaemun` 등) |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#44 배치」 / commit 시 「#22~#43 커밋」 |
+
+**서브 오케스트레이터 이관**: #43 후임 서브 성공(#42 tip 위 직렬·중첩 Task 없이 본인 완료) · #44도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 레스터·프라이부르크·아우크스부르크 + 양천·은평 등 (#44)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#43 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `leicester`(alias **`레스터`**) · `coventry`(alias **`코번트리`**/`코벤트리`) · `reading`(alias **`레딩`**/`리딩`) · `freiburg`(alias **`프라이부르크`**) · `augsburg`(alias **`아우크스부르크`**)
+- 국내: `yangcheon`(alias **`양천구`**/`서울 양천구`) · `eunpyeong`(alias **`은평구`**) · `seongbuk`(alias **`성북구`**) · `seongdong`(alias **`성동구`**) · `gwangjin`(alias **`광진구`**) · KR `temple`/`landmark`/`park`/`museum`/`neighborhood`/`viewpoint`/`market` only(`shrine` 없음) · 구명 prefix
+- 총 **380 hub** · 명소 **2640** (370→380 / 2570→2640)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `레스터`/`leicester`/`코번트리`/`coventry`/`코벤트리`/`레딩`/`reading`/`리딩`/`프라이부르크`/`freiburg`/`아우크스부르크`/`augsburg`/`양천`/`양천구`/`서울 양천구`/`은평`/`은평구`/`성북`/`성북구`/`성동`/`성동구`/`광진`/`광진구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `레스터 성`/`코번트리 대성당`/`레딩 수도원`/`프라이부르크 대성당`/`아우크스부르크 시청`/`양천 목동`/`은평 불광천`/`성북 북악스카이웨이`/`성동 서울숲`/`광진 어린이대공원` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#44 일지·`.ai-context`·method |
+| 건수 | **380 hub / 2640 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#45) | `derby`·`mannheim`·`karlsruhe`·`ulm`·`erfurt` · `jungnang`·`dongdaemun`·`junggu`·`gangbuk`·`bupyeong` |
+| 제외 | `seocho`/`jongno`/`seodaemun`/`yeongdeungpo` **EXISTS** · `jung`/`seo` bare 모호 → 사용 금지 · `junggu`는 alias **`중구`/`서울 중구`** 필수 · 서울 잔여 구는 중랑·동대문·중구·강북뿐 → 5번째는 `bupyeong`(인천 부평) · EXISTS면 대체(`busanjin`/`namdong` 등) |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#45 배치」 / commit 시 「#22~#44 커밋」 |
+
+**서브 오케스트레이터 이관**: #44 후임 서브 성공(#43 tip 위 직렬·중첩 Task 없이 본인 완료) · #45도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 더비·만하임·카를스루에 + 중랑·동대문 등 (#45)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#44 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `derby`(alias **`더비`**) · `mannheim`(alias **`만하임`**) · `karlsruhe`(alias **`카를스루에`**/`칼스루에`) · `ulm`(alias **`울름`**) · `erfurt`(alias **`에르푸르트`**)
+- 국내: `jungnang`(alias **`중랑구`**/`서울 중랑구`) · `dongdaemun`(alias **`동대문구`**) · `junggu`(alias **`중구`/`서울 중구`** · bare `jung` 없음) · `gangbuk`(alias **`강북구`**) · `bupyeong`(alias **`부평구`**/`인천 부평구`) · KR `temple`/`landmark`/`park`/`museum`/`neighborhood`/`viewpoint`/`market` only(`shrine` 없음) · 구명 prefix · `동대문디자인플라자`(seoul EXISTS) 재사용 안 함
+- 총 **390 hub** · 명소 **2710** (380→390 / 2640→2710)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `더비`/`derby`/`만하임`/`mannheim`/`카를스루에`/`karlsruhe`/`칼스루에`/`울름`/`ulm`/`에르푸르트`/`erfurt`/`중랑`/`중랑구`/`서울 중랑구`/`동대문`/`동대문구`/`서울 동대문구`/`중구`/`서울 중구`/`강북`/`강북구`/`서울 강북구`/`부평`/`부평구`/`인천 부평구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `더비 대성당`/`만하임 워터타워`/`카를스루에 궁전`/`울름 대성당`/`에르푸르트 크래머다리`/`중랑 용마폭포공원`/`동대문 흥인지문`/`중구 명동`/`강북 북서울꿈의숲`/`부평 지하상가` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#45 일지·`.ai-context`·method |
+| 건수 | **390 hub / 2710 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#46) | `stuttgart`·`bonn`·`wiesbaden`·`mainz`·`magdeburg` · `busanjin`·`namdong`·`gyeyang`·`michuhol`·`dongnae` |
+| 제외 | `seo`/`bukgu`/`namgu`/`donggu` bare 모호 → 사용 금지 · `nuremberg` EXISTS → `nurnberg` 중복 도시 스킵 · 서울 구 배치 소진 → 부산·인천 구 단위 · EXISTS면 대체(`geumjeong`/`yeonje`/`saha`/`chemnitz`/`saarbrucken`) |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#46 배치」 / commit 시 「#22~#45 커밋」 |
+
+**서브 오케스트레이터 이관**: #45 후임 서브 성공(#44 tip 위 직렬·중첩 Task 없이 본인 완료) · #46도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 슈투트가르트·본·비스바덴 + 부산진·남동 등 (#46)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#45 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `stuttgart`(alias **`슈투트가르트`**) · `bonn`(alias **`본`**) · `wiesbaden`(alias **`비스바덴`**) · `mainz`(alias **`마인츠`**) · `magdeburg`(alias **`마그데부르크`**)
+- 국내: `busanjin`(alias **`부산진구`**/`부산 부산진구`) · `namdong`(alias **`남동구`**/`인천 남동구`) · `gyeyang`(alias **`계양구`**/`인천 계양구`) · `michuhol`(alias **`미추홀구`**/`인천 미추홀구`) · `dongnae`(alias **`동래구`**/`부산 동래구`) · KR `temple`/`landmark`/`park`/`museum`/`neighborhood`/`viewpoint`/`market` only(`shrine` 없음) · 구명 prefix · `용두산공원`/`월미도` bare 재사용 안 함
+- 총 **400 hub** · 명소 **2780** (390→400 / 2710→2780)
+- EXISTS 재확인: 배치 10 전부 free · 스킵 0
+- hub 스모크: `슈투트가르트`/`stuttgart`/`본`/`bonn`/`비스바덴`/`wiesbaden`/`마인츠`/`mainz`/`마그데부르크`/`magdeburg`/`부산진`/`부산진구`/`부산 부산진구`/`남동`/`남동구`/`인천 남동구`/`계양`/`계양구`/`인천 계양구`/`미추홀`/`미추홀구`/`인천 미추홀구`/`동래`/`동래구`/`부산 동래구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `슈투트가르트 TV타워`/`본 뮌스터`/`비스바덴 쿠어하우스`/`마인츠 대성당`/`마그데부르크 녹색성채`/`부산진 서면`/`남동 소래포구`/`계양 계양산성`/`미추홀 자유공원`/`동래 동래온천` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **미커밋** 작업트리 · main 대비 hub JSON+#22~#46 일지·`.ai-context`·method |
+| 건수 | **400 hub / 2780 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 다음(#47) | `chemnitz`·`saarbrucken`·`kassel`·`luebeck`·`wuerzburg` · `geumjeong`·`yeonje`·`saha`·`sasang`·`daedeok` |
+| 제외 | `seo`/`bukgu`/`namgu`/`donggu` bare 모호 → 사용 금지 · 부산 잔여 구=`geumjeong`/`yeonje`/`saha`/`sasang` · EXISTS면 대체(`muenster`/`paderborn`/`ulju`는 EXISTS·`bukgu_ulsan`/`namgu_ulsan`) |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「인수인계서대로 이어서」 / 「#47 배치」 / commit 시 「#22~#46 커밋」 |
+
+**서브 오케스트레이터 이관**: #46 후임 서브 성공(#45 tip 위 직렬·중첩 Task 없이 본인 완료) · #47도 후임 서브/세션에 인계.
+
+## cityAttractionHubs — 켐니츠·자를브뤼켄·카셀 + 금정·연제 등 (#47)
+
+**상태**: ✅ tip append · audit/issues 0 · resolve 스모크 PASS · **미커밋** · **이 세션 오케스트레이터 이관**
+
+- 한 배치 **10 hub × 7명소** (#46 tip 위) · 후임 오케스트레이터 **본인 런** 초안·직렬 append (중첩 Task 없음)
+- 해외: `chemnitz`(alias **`켐니츠`**) · `saarbrucken`(alias **`자를브뤼켄`**) · `kassel`(alias **`카셀`**) · **`dortmund`(alias **`도르트문트`**) — `luebeck` 스킵**: tip에 `#38` `lubeck`(뤼베크, alias에 `luebeck` 포함) 이미 있음 · 동일 도시 중복 방지 · EXISTS 확인 후 `dortmund` 대체** · `wuerzburg`(alias **`뷔르츠부르크`**)
+- 국내: `geumjeong`(alias **`금정구`**/`부산 금정구`) · `yeonje`(alias **`연제구`**/`부산 연제구`) · `saha`(alias **`사하구`**/`부산 사하구`) · `sasang`(alias **`사상구`**/`부산 사상구`) · `daedeok`(alias **`대덕구`**/`대전 대덕구`) · KR `temple`/`landmark`/`park`/`museum`/`neighborhood`/`viewpoint`/`beach`/`market` only(`shrine` 없음) · 구명 prefix · `감천문화마을`/`엑스포과학공원` bare 재사용 안 함(`사하`/`대덕` prefix)
+- 총 **410 hub** · 명소 **2850** (400→410 / 2780→2850)
+- EXISTS 재확인: 배치 10 전부 free · `luebeck`는 hubId free이나 도시 중복으로 미사용
+- hub 스모크: `켐니츠`/`chemnitz`/`자를브뤼켄`/`saarbrucken`/`카셀`/`kassel`/`도르트문트`/`dortmund`/`뷔르츠부르크`/`wuerzburg`/`금정`/`금정구`/`부산 금정구`/`연제`/`연제구`/`부산 연제구`/`사하`/`사하구`/`부산 사하구`/`사상`/`사상구`/`부산 사상구`/`대덕`/`대덕구`/`대전 대덕구` + 회귀(`속초`/`파리`) · `shrine`=`신사`
+- exact: `켐니츠 카를마르크스기념비`/`자를브뤼켄 성`/`카셀 헤르쿨레스`/`도르트문트 U타워`/`뷔르츠부르크 레지덴츠`/`금정 금정산성`/`연제 연산동`/`사하 다대포해수욕장`/`사상 삼락생태공원`/`대덕 엑스포과학공원` + 회귀(`낙산사`/`에펠탑`)
+
+### 오케스트레이터 인수인계서 (다음 세션)
+
+| 항목 | 값 |
+|------|-----|
+| tip 상태 | **커밋·push됨** (2026-07-23) · hub JSON+#22~#47 일지·`.ai-context`·method |
+| 건수 | **410 hub / 2850 명소** · audit issues **0** |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
+| 구성·방향 | 국내 210 / 해외 200 · **재개=해외 우선**(국내 구·시군 배치 보류) — [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) |
+| 다음(#48) 권고 | `new_york`·`chicago`·`miami`·`beijing`·`shanghai`·`hong-kong`(EXISTS→`macau`)·`kuala_lumpur`·`jakarta`·`manila`·`delhi` |
+| 보류(#48 구안) | `muenster`·`paderborn`·`bielefeld`·`bochum`·`essen` · `yeongdo`·`junggu_busan`·`seogu_busan`·`namgu_busan`·`bukgu_busan` |
+| 제외 | `luebeck`(=`lubeck` 중복도시) · `seo`/`bukgu`/`namgu`/`donggu` bare 모호 · DE/UK 중소도시·KR 구 세분 우선순위↓ |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-23-project-log.md` · 「해외 10 hub #48」 |
+
+**서브 오케스트레이터 이관**: #47 완료·커밋됨 · #48은 해외 우선 승인 후 재개.
 
 ## 오케스트레이터 방법 — 공식화 (2026-07-22)
 
 **상태**: ✅ 문서·Rule·audit 스크립트
 
 - SSOT: [`orchestrator-method.md`](./orchestrator-method.md) · Rule [`gateo-orchestrator.mdc`](../.cursor/rules/gateo-orchestrator.mdc) · always 트리거는 [`gateo-project-context.mdc`](../.cursor/rules/gateo-project-context.mdc)
-- 게이트: `npm run audit:city-attraction-hubs` (150 hub / 1030 명소 · issues 0)
-- 다음 세션: 제시어 **`오케스트레이터`** 로 메인=오케스트레이터 역할 시작
+- 게이트: `npm run audit:city-attraction-hubs` (**310** hub / **2150** 명소 · issues 0)
+- 다음 세션: 제시어 **`오케스트레이터`** · 「인수인계서대로 이어서」

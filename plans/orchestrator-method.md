@@ -93,9 +93,9 @@ main tip 위 직렬 append → 스모크 → (요청 시) commit/push
 | 배치 크기 | **8~12 hub** (관례 10) |
 | 규칙 | append only · `shrine` KIND 유지 · 시드 `sokcho`/`paris` 덮어쓰기 금지 · 명소명 전역 unique |
 | audit | `npm run audit:city-attraction-hubs` |
-| 상태(2026-07-22) | main **150 hub / 1030 명소** · **일시 중단**(데스크톱 QA) · 재개는 오케스트레이터 |
+| 상태(2026-07-23) | **410 hub / 2850 명소** (#47) · **main 커밋됨** · 재개=**해외 우선** |
 
-상세 배치·스모크 문구: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md) cityAttractionHubs 절.
+상세 배치·스모크 문구: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md) · 방향 [`2026-07-23-project-log.md`](./2026-07-23-project-log.md).
 
 **워커 프롬프트 최소 골격**
 
