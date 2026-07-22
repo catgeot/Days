@@ -106,5 +106,552 @@
         "lng": 2.3406
       }
     ]
+  },
+  {
+    "hubId": "tokyo",
+    "name": "도쿄",
+    "name_en": "Tokyo",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 35.67,
+    "lng": 139.76,
+    "aliases": ["tokyo", "동경", "とうきょう"],
+    "attractions": [
+      {
+        "name": "도쿄타워",
+        "name_en": "Tokyo Tower",
+        "kind": "landmark",
+        "lat": 35.6586,
+        "lng": 139.7454
+      },
+      {
+        "name": "센소지",
+        "name_en": "Sensō-ji",
+        "kind": "temple",
+        "lat": 35.7148,
+        "lng": 139.7967
+      },
+      {
+        "name": "시부야 스크램블 교차로",
+        "name_en": "Shibuya Crossing",
+        "kind": "landmark",
+        "lat": 35.6595,
+        "lng": 139.7005
+      },
+      {
+        "name": "메이지신궁",
+        "name_en": "Meiji Shrine",
+        "kind": "shrine",
+        "lat": 35.6764,
+        "lng": 139.6993
+      },
+      {
+        "name": "도쿄 스카이트리",
+        "name_en": "Tokyo Skytree",
+        "kind": "landmark",
+        "lat": 35.7101,
+        "lng": 139.8107
+      },
+      {
+        "name": "아사쿠사",
+        "name_en": "Asakusa",
+        "kind": "neighborhood",
+        "lat": 35.7148,
+        "lng": 139.7967
+      },
+      {
+        "name": "우에노 공원",
+        "name_en": "Ueno Park",
+        "kind": "park",
+        "lat": 35.7147,
+        "lng": 139.7714
+      }
+    ]
+  },
+  {
+    "hubId": "osaka",
+    "name": "오사카",
+    "name_en": "Osaka",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 34.6937,
+    "lng": 135.5023,
+    "aliases": ["osaka", "오오사카", "おおさか"],
+    "attractions": [
+      {
+        "name": "오사카성",
+        "name_en": "Osaka Castle",
+        "kind": "landmark",
+        "lat": 34.6873,
+        "lng": 135.5262
+      },
+      {
+        "name": "도톤보리",
+        "name_en": "Dotonbori",
+        "kind": "neighborhood",
+        "lat": 34.6687,
+        "lng": 135.5013
+      },
+      {
+        "name": "츠텐카쿠",
+        "name_en": "Tsutenkaku",
+        "kind": "landmark",
+        "lat": 34.6525,
+        "lng": 135.5063
+      },
+      {
+        "name": "신세카이",
+        "name_en": "Shinsekai",
+        "kind": "neighborhood",
+        "lat": 34.6524,
+        "lng": 135.5062
+      },
+      {
+        "name": "우메다 공중정원",
+        "name_en": "Umeda Sky Building",
+        "kind": "viewpoint",
+        "lat": 34.7055,
+        "lng": 135.4897
+      },
+      {
+        "name": "오사카 아쿠아리움 카이유칸",
+        "name_en": "Osaka Aquarium Kaiyukan",
+        "kind": "museum",
+        "lat": 34.6546,
+        "lng": 135.4289
+      }
+    ]
+  },
+  {
+    "hubId": "kyoto",
+    "name": "교토",
+    "name_en": "Kyoto",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 35.0116,
+    "lng": 135.7681,
+    "aliases": ["kyoto", "쿄토", "きょうと"],
+    "attractions": [
+      {
+        "name": "기요미즈데라",
+        "name_en": "Kiyomizu-dera",
+        "kind": "temple",
+        "lat": 34.9949,
+        "lng": 135.785
+      },
+      {
+        "name": "후시미 이나리 대사",
+        "name_en": "Fushimi Inari Taisha",
+        "kind": "shrine",
+        "lat": 34.9671,
+        "lng": 135.7727
+      },
+      {
+        "name": "금각사",
+        "name_en": "Kinkaku-ji",
+        "kind": "temple",
+        "lat": 35.0394,
+        "lng": 135.7292
+      },
+      {
+        "name": "아라시야마",
+        "name_en": "Arashiyama",
+        "kind": "neighborhood",
+        "lat": 35.0094,
+        "lng": 135.6678
+      },
+      {
+        "name": "기온",
+        "name_en": "Gion",
+        "kind": "neighborhood",
+        "lat": 35.0037,
+        "lng": 135.7751
+      },
+      {
+        "name": "니조성",
+        "name_en": "Nijo Castle",
+        "kind": "landmark",
+        "lat": 35.0142,
+        "lng": 135.7482
+      }
+    ]
+  },
+  {
+    "hubId": "bangkok",
+    "name": "방콕",
+    "name_en": "Bangkok",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 13.7563,
+    "lng": 100.5018,
+    "aliases": ["bangkok", "뱅콕"],
+    "attractions": [
+      {
+        "name": "방콕 왕궁",
+        "name_en": "Grand Palace",
+        "kind": "landmark",
+        "lat": 13.75,
+        "lng": 100.4914
+      },
+      {
+        "name": "왓아룬",
+        "name_en": "Wat Arun",
+        "kind": "temple",
+        "lat": 13.7437,
+        "lng": 100.4888
+      },
+      {
+        "name": "왓포",
+        "name_en": "Wat Pho",
+        "kind": "temple",
+        "lat": 13.7465,
+        "lng": 100.493
+      },
+      {
+        "name": "카오산로드",
+        "name_en": "Khao San Road",
+        "kind": "neighborhood",
+        "lat": 13.7588,
+        "lng": 100.4972
+      },
+      {
+        "name": "짜뚜짝 시장",
+        "name_en": "Chatuchak Market",
+        "kind": "market",
+        "lat": 13.7999,
+        "lng": 100.5503
+      },
+      {
+        "name": "아시아티크",
+        "name_en": "Asiatique",
+        "kind": "neighborhood",
+        "lat": 13.7045,
+        "lng": 100.503
+      }
+    ]
+  },
+  {
+    "hubId": "taipei",
+    "name": "타이베이",
+    "name_en": "Taipei",
+    "country": "대만",
+    "country_en": "Taiwan",
+    "lat": 25.033,
+    "lng": 121.5654,
+    "aliases": ["taipei", "타이페이", "台北"],
+    "attractions": [
+      {
+        "name": "타이베이 101",
+        "name_en": "Taipei 101",
+        "kind": "landmark",
+        "lat": 25.0339,
+        "lng": 121.5645
+      },
+      {
+        "name": "국립고궁박물원",
+        "name_en": "National Palace Museum",
+        "kind": "museum",
+        "lat": 25.1023,
+        "lng": 121.5485
+      },
+      {
+        "name": "스린야시장",
+        "name_en": "Shilin Night Market",
+        "kind": "market",
+        "lat": 25.0879,
+        "lng": 121.5245
+      },
+      {
+        "name": "룽산사",
+        "name_en": "Longshan Temple",
+        "kind": "temple",
+        "lat": 25.037,
+        "lng": 121.4999
+      },
+      {
+        "name": "시먼딩",
+        "name_en": "Ximending",
+        "kind": "neighborhood",
+        "lat": 25.0421,
+        "lng": 121.508
+      },
+      {
+        "name": "지우펀",
+        "name_en": "Jiufen",
+        "kind": "neighborhood",
+        "lat": 25.1095,
+        "lng": 121.8443
+      }
+    ]
+  },
+  {
+    "hubId": "singapore",
+    "name": "싱가포르",
+    "name_en": "Singapore",
+    "country": "싱가포르",
+    "country_en": "Singapore",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "aliases": ["singapore", "싱가폴"],
+    "attractions": [
+      {
+        "name": "마리나베이 샌즈",
+        "name_en": "Marina Bay Sands",
+        "kind": "landmark",
+        "lat": 1.2834,
+        "lng": 103.8607
+      },
+      {
+        "name": "가든스 바이 더 베이",
+        "name_en": "Gardens by the Bay",
+        "kind": "park",
+        "lat": 1.2816,
+        "lng": 103.8636
+      },
+      {
+        "name": "머라이언 파크",
+        "name_en": "Merlion Park",
+        "kind": "landmark",
+        "lat": 1.2868,
+        "lng": 103.8545
+      },
+      {
+        "name": "센토사",
+        "name_en": "Sentosa",
+        "kind": "neighborhood",
+        "lat": 1.2494,
+        "lng": 103.8303
+      },
+      {
+        "name": "차이나타운",
+        "name_en": "Chinatown",
+        "kind": "neighborhood",
+        "lat": 1.2838,
+        "lng": 103.8442
+      },
+      {
+        "name": "오차드로드",
+        "name_en": "Orchard Road",
+        "kind": "neighborhood",
+        "lat": 1.3048,
+        "lng": 103.8318
+      }
+    ]
+  },
+  {
+    "hubId": "hong-kong",
+    "name": "홍콩",
+    "name_en": "Hong Kong",
+    "country": "중국",
+    "country_en": "China",
+    "lat": 22.3193,
+    "lng": 114.1694,
+    "aliases": ["hong kong", "hongkong", "HK"],
+    "attractions": [
+      {
+        "name": "빅토리아 피크",
+        "name_en": "Victoria Peak",
+        "kind": "viewpoint",
+        "lat": 22.2759,
+        "lng": 114.1455
+      },
+      {
+        "name": "스타 페리",
+        "name_en": "Star Ferry",
+        "kind": "landmark",
+        "lat": 22.2934,
+        "lng": 114.1685
+      },
+      {
+        "name": "침사추이",
+        "name_en": "Tsim Sha Tsui",
+        "kind": "neighborhood",
+        "lat": 22.2976,
+        "lng": 114.1722
+      },
+      {
+        "name": "몽콕",
+        "name_en": "Mong Kok",
+        "kind": "neighborhood",
+        "lat": 22.3193,
+        "lng": 114.1694
+      },
+      {
+        "name": "란콰이퐁",
+        "name_en": "Lan Kwai Fong",
+        "kind": "neighborhood",
+        "lat": 22.281,
+        "lng": 114.1555
+      },
+      {
+        "name": "템플 스트리트 야시장",
+        "name_en": "Temple Street Night Market",
+        "kind": "market",
+        "lat": 22.3055,
+        "lng": 114.1703
+      }
+    ]
+  },
+  {
+    "hubId": "rome",
+    "name": "로마",
+    "name_en": "Rome",
+    "country": "이탈리아",
+    "country_en": "Italy",
+    "lat": 41.9,
+    "lng": 12.49,
+    "aliases": ["rome", "roma"],
+    "attractions": [
+      {
+        "name": "콜로세움",
+        "name_en": "Colosseum",
+        "kind": "landmark",
+        "lat": 41.8902,
+        "lng": 12.4922
+      },
+      {
+        "name": "트레비 분수",
+        "name_en": "Trevi Fountain",
+        "kind": "landmark",
+        "lat": 41.9009,
+        "lng": 12.4833
+      },
+      {
+        "name": "판테온",
+        "name_en": "Pantheon",
+        "kind": "landmark",
+        "lat": 41.8986,
+        "lng": 12.4769
+      },
+      {
+        "name": "바티칸 박물관",
+        "name_en": "Vatican Museums",
+        "kind": "museum",
+        "lat": 41.9029,
+        "lng": 12.4534
+      },
+      {
+        "name": "스페인 광장",
+        "name_en": "Spanish Steps",
+        "kind": "landmark",
+        "lat": 41.9059,
+        "lng": 12.4823
+      },
+      {
+        "name": "로마 포로",
+        "name_en": "Roman Forum",
+        "kind": "landmark",
+        "lat": 41.8925,
+        "lng": 12.4853
+      }
+    ]
+  },
+  {
+    "hubId": "london",
+    "name": "런던",
+    "name_en": "London",
+    "country": "영국",
+    "country_en": "UK",
+    "lat": 51.5,
+    "lng": -0.12,
+    "aliases": ["london"],
+    "attractions": [
+      {
+        "name": "빅벤",
+        "name_en": "Big Ben",
+        "kind": "landmark",
+        "lat": 51.5007,
+        "lng": -0.1246
+      },
+      {
+        "name": "대영박물관",
+        "name_en": "British Museum",
+        "kind": "museum",
+        "lat": 51.5194,
+        "lng": -0.127
+      },
+      {
+        "name": "타워브리지",
+        "name_en": "Tower Bridge",
+        "kind": "landmark",
+        "lat": 51.5055,
+        "lng": -0.0754
+      },
+      {
+        "name": "버킹엄 궁전",
+        "name_en": "Buckingham Palace",
+        "kind": "landmark",
+        "lat": 51.5014,
+        "lng": -0.1419
+      },
+      {
+        "name": "런던아이",
+        "name_en": "London Eye",
+        "kind": "landmark",
+        "lat": 51.5033,
+        "lng": -0.1195
+      },
+      {
+        "name": "하이드파크",
+        "name_en": "Hyde Park",
+        "kind": "park",
+        "lat": 51.5073,
+        "lng": -0.1657
+      }
+    ]
+  },
+  {
+    "hubId": "new-york",
+    "name": "뉴욕",
+    "name_en": "New York",
+    "country": "미국",
+    "country_en": "USA",
+    "lat": 40.71,
+    "lng": -74,
+    "aliases": ["new york", "nyc", "뉴욕시", "맨해튼"],
+    "attractions": [
+      {
+        "name": "타임스퀘어",
+        "name_en": "Times Square",
+        "kind": "landmark",
+        "lat": 40.758,
+        "lng": -73.9855
+      },
+      {
+        "name": "자유의 여신상",
+        "name_en": "Statue of Liberty",
+        "kind": "landmark",
+        "lat": 40.6892,
+        "lng": -74.0445
+      },
+      {
+        "name": "센트럴파크",
+        "name_en": "Central Park",
+        "kind": "park",
+        "lat": 40.7829,
+        "lng": -73.9654
+      },
+      {
+        "name": "엠파이어스테이트빌딩",
+        "name_en": "Empire State Building",
+        "kind": "landmark",
+        "lat": 40.7484,
+        "lng": -73.9857
+      },
+      {
+        "name": "브루클린 브리지",
+        "name_en": "Brooklyn Bridge",
+        "kind": "landmark",
+        "lat": 40.7061,
+        "lng": -73.9969
+      },
+      {
+        "name": "메트로폴리탄 미술관",
+        "name_en": "The Met",
+        "kind": "museum",
+        "lat": 40.7794,
+        "lng": -73.9632
+      }
+    ]
   }
 ]
