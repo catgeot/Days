@@ -204,7 +204,7 @@
 - 파트너 `sort`/`filter`/`onlyAvailable` 등 **전부 무시**(baseline과 동일)
 - `size` 상한 **50**(100은 400) · size50 시 아이슬란드 요금有 2→**8**
 - 반영: Edge·클라 fetch **50** · UI **요금有 우선 후 20** · `bookableCount`는 fetch50 기준 · 캐시 `v17`
-- **배포 필요**: `npx supabase functions deploy fetch-mrt-stays --project-ref <ref> --no-verify-jwt`
+- Edge 재배포 ✅ `phdjnbfitvmrguqzverm` · 커밋 `52c5fb2` · **origin push·Vercel PROD QA 대기**
 
 #### 다음 세션
 
