@@ -120,7 +120,7 @@
 
 ### 저재고 Trip CTA · 예약 가능 목록만 (커밋)
 
-**상태**: ✅ 코드 반영 · push · **Vercel 배포 후 PROD 그린란드 QA**
+**상태**: ✅ `254c1a9` push · **Vercel 배포 후 PROD 그린란드 QA**
 
 - `filterBookableMrtStays` — 선택 일정 요금 있는 건만 목록 · 0건이면 empty+Trip · 캐시 `v13`
 - 저재고: 예약 가능 건 ≤5 → 하단 Visit Greenland + Trip(`city=6838`) · 툴바 Trip「더 보기」제거
