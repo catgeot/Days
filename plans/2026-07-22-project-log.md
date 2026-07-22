@@ -204,3 +204,10 @@
 - **저재고 푸터**: 「바로 예약만」문구 제거 → 일정 조정 숙소 동시 노출에 맞춤 · CTA「트립닷컴에서 더 찾아보기」
 - **PC 패널**: `top-0`–`bottom-0` 풀높이 · 고정 헤더(GATEO 로고 `h-9` + 여행지명 + 닫기) · DateBar 중복 제거
 - 파일: `stayDateControls.jsx` · `GlobeStayStrip.jsx` · `Logo.jsx`
+
+### 지구본 — Style is not done loading 가드
+
+**상태**: ✅ `3bf2848` push(`origin/main`) · 로컬 QA 이상 없음
+
+- 2초 reveal 폴백에서 `gateoMarkerLayersReady` → `getLayer` Uncaught 수정
+- ready 계열 try/catch: 마커·reach·cluster·flight cinema
