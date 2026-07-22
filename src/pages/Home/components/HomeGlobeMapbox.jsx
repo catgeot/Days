@@ -1031,6 +1031,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (map.isStyleLoaded?.()) {
       syncGateoMarkerLayers();
     } else if (!gateoMarkerLayersReady(map)) {
+      // Style mid-load and layers not queryable yet (2s fallback / early idle).
       return;
     }
 

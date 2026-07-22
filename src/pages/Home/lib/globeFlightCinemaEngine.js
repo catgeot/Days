@@ -287,12 +287,17 @@ export function clearFlightCinemaLayers(map) {
 export function isFlightCinemaGlobeReady(map) {
   if (!map || map._removed) return false;
   if (!map.getStyle?.()) return false;
-  return Boolean(
-    map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)
-    && map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)
-    && map.getLayer(FLIGHT_CINEMA_ARC_LAYER_ID)
-    && map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)
-  );
+  try {
+    return Boolean(
+      map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)
+      && map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)
+      && map.getLayer(FLIGHT_CINEMA_ARC_LAYER_ID)
+      && map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)
+    );
+  } catch {
+    // getLayer/getSource throw while style is mid-load.
+    return false;
+  }
 }
 
 /** 레이어 선등록 후 준비 여부 (시작·대기 시에만 호출) */

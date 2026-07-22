@@ -96,7 +96,13 @@ function safeMapUpdate(map, fn) {
 
 export function gateoMarkerLayersReady(map) {
   if (!map?.getStyle?.()) return false;
-  return GATEO_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
+  try {
+    // getLayer throws "Style is not done loading" while the style is mid-load
+    // (e.g. 2s reveal fallback before idle/styledata).
+    return GATEO_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
+  } catch {
+    return false;
+  }
 }
 
 export function areGateoMarkerLayersVisible(map) {

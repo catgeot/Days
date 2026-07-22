@@ -155,7 +155,12 @@ function safeMapUpdate(map, fn) {
 
 export function clusterBoundaryLayersReady(map) {
   if (!map?.getStyle?.()) return false;
-  return CLUSTER_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
+  try {
+    return CLUSTER_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
+  } catch {
+    // getLayer throws while style is mid-load.
+    return false;
+  }
 }
 
 function raiseClusterBoundaryLayers(map) {
