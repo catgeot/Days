@@ -990,14 +990,13 @@ console.log('shrine', getKindLabel('shrine')); // 신사
 |------|-----|
 | tip 상태 | **커밋·push됨** (2026-07-23) · hub JSON+#22~#47 일지·`.ai-context`·method |
 | 건수 | **410 hub / 2850 명소** · audit issues **0** |
-| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · **중첩 Task만 띄우고 tip 미append 금지** |
-| 구성·방향 | 국내 210 / 해외 200 · **재개=해외 우선**(국내 구·시군 배치 보류) — [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) |
-| 다음(#48) 권고 | `new_york`·`chicago`·`miami`·`beijing`·`shanghai`·`hong-kong`(EXISTS→`macau`)·`kuala_lumpur`·`jakarta`·`manila`·`delhi` |
-| 보류(#48 구안) | `muenster`·`paderborn`·`bielefeld`·`bochum`·`essen` · `yeongdo`·`junggu_busan`·`seogu_busan`·`namgu_busan`·`bukgu_busan` |
-| 제외 | `luebeck`(=`lubeck` 중복도시) · `seo`/`bukgu`/`namgu`/`donggu` bare 모호 · DE/UK 중소도시·KR 구 세분 우선순위↓ |
-| 제시어 | `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-23-project-log.md` · 「해외 10 hub #48」 |
+| 금지 3 | append only · `shrine` 유지 · tip **병렬** 머지 금지 · 미합의 `releaseNotes` · Task만·tip 미append 금지 · **후임 본인 런/솔로 계주 금지** |
+| 구성·방향 | 국내 210 / 해외 200 · **재개=해외 우선** · 방법 **v2**(워커2 재기동) — [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) |
+| 다음 세대 배치표 | 큐 [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) **R48**: A=`chicago`·`miami`·`seattle`·`boston`·`las-vegas` / B=`honolulu`·`washington-dc`·`philadelphia`·`denver`·`atlanta` |
+| 보류 | `muenster`…`bukgu_busan` · DE/UK 중소·KR 구 세분 · 큐 밖 임의 지명 |
+| 제시어 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R48부터 워커2 · 큐 순서」 |
 
-**서브 오케스트레이터 이관**: #47 완료·커밋됨 · #48은 해외 우선 승인 후 재개.
+**이관**: #47 완료·커밋됨 · 후임 메인=**워커2 필수** · 해외 우선 승인 후 재개.
 
 ## 오케스트레이터 방법 — 공식화 (2026-07-22)
 

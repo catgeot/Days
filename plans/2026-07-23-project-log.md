@@ -17,10 +17,21 @@
 | **해외 허브 우선** | ✅ **권고** — 미국·중국·동남아·인도·중동·중남미 공백 큼 · DE/UK 중소도시 추가 속도↓ |
 | 혼합 5:5 유지 | 보류 — 국내 쪽 후보 품질이 떨어짐 |
 
-**다음(#48) 권고 배치(해외 10)** — 사용자 승인 후:  
-`new_york` · `chicago` · `miami` · `beijing` · `shanghai` · `hong-kong`(EXISTS면 `macau`) · `kuala_lumpur` · `jakarta` · `manila` · `delhi`  
-(구 배치안 `muenster`…`bukgu_busan`은 **보류**)
+**사전 배치 큐**: [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) — **R48~R61** (14×10=140 hub) · 라운드당 워커A5+워커B5  
+- **다음 시작 R48**: A=`chicago`·`miami`·`seattle`·`boston`·`las-vegas` / B=`honolulu`·`washington-dc`·`philadelphia`·`denver`·`atlanta`  
+- `new-york`·`hong-kong` 등은 **EXISTS** → 큐에서 제외됨  
+- 구 배치안 `muenster`…`bukgu_busan` **보류**
 
-**제시어**: `오케스트레이터` + `명소` · 「해외 10 hub #48」 / 「인수인계서대로(해외 우선)」
+**제시어**: `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R48부터 워커2 · 큐 순서」
 
 상세 배치 이력: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md) #22~#47 절.
+
+## 오케스트레이터 방법 v2 (2026-07-23)
+
+**상태**: ✅ [`orchestrator-method.md`](./orchestrator-method.md) · Rule `gateo-orchestrator.mdc` · project-context · `.ai-context` 4절
+
+- **고정**: 후임 메인 = **워커 2 재기동 → tip 직렬 머지 → 이관** (본인 런·배치마다 이관 금지)
+- **재발 방지**: Task만·tip 미append 금지 · 이관서에 **다음 배치표 2개** · 명소 커버리지 §5.1(해외 우선)
+- **§3.3 문제 조치**: audit FAIL→부분 제거/롤백 · A/B 비대칭 머지 · 중단 체크리스트 · 재작업/스킵 · 사람 escalate
+- #22~#47 퇴화(솔로 계주) 교훈 반영
+- **무결성**: 매 라운드 VERIFY PASS tip만 정상 — FAIL을 남긴 채 다음 턴 금지
