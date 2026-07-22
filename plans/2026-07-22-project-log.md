@@ -36,17 +36,23 @@
 | `svalbard` | ✅ 롱이어비엔 11곳 | `7398` |
 | `faroe-islands` | ✅ 토르스하운 ~43곳 | `38171` |
 | `falkland-islands` | ✅ Stanley | `76974` |
-| `chuuk` | ✅ Weno/Moen | 호텔 상세 확인 · city 보강 |
-| `christmas-island` / `cocos-islands` | 소수 목록 | city 보강 여지 |
-| `persepolis` / `timbuktu` | 빈약·허브 의존 | 시라즈/바마코 등 검토 |
-| `antarctica` · `diego-garcia` · `midway-atoll` · `pitcairn-islands` · `kerguelen-islands` | 사실상 없음 | CTA 기대치 낮음 |
+| `chuuk` | ❌ 재고 없음 | city 등록 철회 → sparse UX |
+| `christmas-island` | ❌ 오매핑 | `93327`=캐나다 Christmas Island · 철회 → sparse |
+| `cocos-islands` | △ 1건·예약 불가 | city 철회 → sparse UX |
+| `persepolis` | 시라즈 당일 투어가 일반적 | Trip 시라즈도 실재고 0 → sparse · 안내 문구만 |
+| `timbuktu` | 바마코=관문≠당일허브 | sparse UX |
+| `antarctica` · `diego-garcia` · `midway-atoll` · `pitcairn-islands` · `kerguelen-islands` | 사실상 없음 | sparse UX |
+
+### 숙소 city ID — NO_REGION 마무리
+
+- `venezuela`: `606`(난핑) → **`811`**(카라카스)
+- `svalbard`→`7398` · `faroe-islands`→`38171` · `falkland-islands`→`76974`
+- sparse UX: 극지 5 + `chuuk` · `christmas-island` · `cocos-islands` · `persepolis` · `timbuktu`
+- `persepolis`: 시라즈 hub city 철회(Trip 실재고 0) · empty는 당일 투어 안내 + OTA 한계 문구
 
 ### 에이전트 핸드오프 (다음 세션 — 숙소 city ID)
 
-- **읽을 것**: 본 절 표 · `.ai-context` 5절 · `affiliate.js` `PLANNER_TRIPCOM_HOTEL_CITY_IDS`
-- **금지**: Trip.com 호텔 목록 스크래핑·가짜 API · 숙소 확장창 상시 iframe · `VITE_` MRT 키
-- **다음 작업(우선)**:
-  1. `venezuela`: `606` → **`811`**
-  2. `svalbard`→`7398` · `faroe-islands`→`38171`(토르스하운) · `falkland-islands`→`76974` 등록
-  3. (선택) chuuk·크리스마스/코코스 city · 극지 5곳 UX 문구
+- **읽을 것**: 본 절 표 · `.ai-context` 5절 · `affiliate.js` city/sparse/`getTripcomHotelEmptyCopy`
+- **금지**: Trip.com 호텔 목록 스크래핑·가짜 API · 숙소 확장창 상시 iframe · `VITE_` MRT 키 · **검증 안 된·실재고 0 city ID 등록**
+- **다음 작업**: NO_REGION city 배치 ✅ (허브도 QA 실재고 필수)
 - **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md`

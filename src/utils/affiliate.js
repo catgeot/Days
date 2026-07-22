@@ -429,9 +429,83 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   /** 바티칸 — Trip 허브는 로마 */
   vatican: '725',
   istanbul: '301',
-  /** 베네수엘라 — 카라카스 */
-  venezuela: '606',
+  /** 베네수엘라 — 카라카스 (606=중국 난핑, 오류) */
+  venezuela: '811',
+  /** 스발바르 — 롱이어비엔 */
+  svalbard: '7398',
+  /** 페로 제도 — 토르스하운 */
+  'faroe-islands': '38171',
+  /** 포클랜드 — Stanley */
+  'falkland-islands': '76974',
 };
+
+/**
+ * MRT·Trip 모두 일반 호텔 재고가 사실상 없거나 CTA 오매핑 위험 — empty UX 기대치 하향.
+ * (군사·무인·크루즈/연구 · 오매핑 city · 예약 불가 단건 등)
+ * QA 2026-07-22: christmas `93327` 오매핑 · chuuk/cocos · persepolis(시라즈 포함 Trip 0) · timbuktu
+ */
+export const TRIPCOM_HOTEL_SPARSE_INVENTORY_SLUGS = new Set([
+  'antarctica',
+  'diego-garcia',
+  'midway-atoll',
+  'pitcairn-islands',
+  'kerguelen-islands',
+  'chuuk',
+  'christmas-island',
+  'cocos-islands',
+  'persepolis',
+  'timbuktu',
+]);
+
+/**
+ * @param {{ slug?: string } | null | undefined} location
+ * @returns {string}
+ */
+function getLocationSlugKey(location) {
+  return String(location?.slug || '')
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * @param {{ slug?: string } | null | undefined} location
+ * @returns {boolean}
+ */
+export function isTripcomHotelSparseInventoryLocation(location) {
+  const slug = getLocationSlugKey(location);
+  return Boolean(slug) && TRIPCOM_HOTEL_SPARSE_INVENTORY_SLUGS.has(slug);
+}
+
+/**
+ * Summary 숙소 empty/error 문구 · CTA 라벨.
+ *
+ * @param {{ slug?: string } | null | undefined} location
+ * @returns {{ title: string, subtitle: string, cta: string }}
+ */
+export function getTripcomHotelEmptyCopy(location) {
+  const slug = getLocationSlugKey(location);
+  if (slug === 'persepolis') {
+    return {
+      title: '보통 시라즈에 묵고 당일 투어로 다녀와요',
+      subtitle:
+        '다만 트립닷컴·마이리얼트립에서는 이란 숙소 예약이 거의 안 돼요. 이란 전문·현지 예약을 확인해 보세요',
+      cta: '트립닷컴에서 확인하기',
+    };
+  }
+  if (isTripcomHotelSparseInventoryLocation(location)) {
+    return {
+      title: '이 지역은 온라인 숙소 예약이 거의 없어요',
+      subtitle:
+        '트립닷컴에도 재고가 없거나 예약이 어려울 수 있어요. 현지·전문 여행사를 확인해 보세요',
+      cta: '트립닷컴에서 확인하기',
+    };
+  }
+  return {
+    title: '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요',
+    subtitle: '위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요',
+    cta: '트립닷컴에서 숙소 검색',
+  };
+}
 
 /**
  * 제휴에서 받은 트립닷컴 호텔 목록 URL 전체 (선택).
