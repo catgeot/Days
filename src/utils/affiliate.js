@@ -642,7 +642,7 @@ export const TRIPCOM_HOTEL_TRACKING = {
   plannerOverride: '플래너 숙소 오버라이드',
 };
 
-/** MRT 목록이 이 개수 이하면 Trip.com 「더 보기」·하단 CTA (≤5) */
+/** 선택 일정에 요금 있는 MRT 숙소가 이 개수 이하면 목록 하단 Trip.com CTA (≤5) */
 export const MRT_STAY_LOW_COUNT = 5;
 
 /** 한국 출발 기본 공항 — Trip `dAirportCode` */

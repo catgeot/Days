@@ -20,7 +20,6 @@ import {
   defaultMrtStayDates,
   fetchMrtStaysForLocation,
   isMrtDomesticLocation,
-  isMrtStayPriced,
   mrtStayNights,
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
@@ -309,7 +308,6 @@ function StayDateBar({
 function StayCard({
   item,
   price,
-  dateFlexible = false,
   className = '',
   imageClassName = 'h-[72px] lg:h-[96px]',
   /** PC 확장 목록용 — 이미지·타이포 한 단계 확대 */
@@ -326,11 +324,7 @@ function StayCard({
       target="_blank"
       rel="noopener noreferrer sponsored"
       draggable={false}
-      className={`rounded-2xl border overflow-hidden transition-colors ${
-        dateFlexible
-          ? 'border-white/15 bg-white/5 hover:border-amber-300/35 hover:bg-amber-500/10 opacity-95'
-          : 'border-amber-400/30 bg-amber-500/10 hover:border-amber-300/45 hover:bg-amber-500/20'
-      } ${className}`}
+      className={`rounded-2xl border border-amber-400/30 bg-amber-500/10 overflow-hidden transition-colors hover:border-amber-300/45 hover:bg-amber-500/20 ${className}`}
     >
       <div className={`relative w-full bg-white/5 pointer-events-none ${imageClassName}`}>
         {item.imageUrl ? (
@@ -339,7 +333,7 @@ function StayCard({
             alt=""
             loading="lazy"
             draggable={false}
-            className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
+            className="h-full w-full object-cover"
           />
         ) : (
           <div
@@ -376,14 +370,6 @@ function StayCard({
               }`}
             >
               {price}
-            </span>
-          ) : dateFlexible ? (
-            <span
-              className={`truncate font-semibold text-amber-100/70 ${
-                large ? 'text-xs' : 'text-[10px]'
-              }`}
-            >
-              일정 조정 후 예약
             </span>
           ) : null}
         </div>
@@ -431,9 +417,6 @@ function StayListToolbar({
   sortMode,
   onSortChange,
   listUrl,
-  tripcomMoreUrl,
-  tripcomLinkTarget = '_blank',
-  tripcomLinkRel = 'noopener noreferrer',
   densityVariant = 'mobile',
   densityValue,
   onDensityChange,
@@ -456,17 +439,6 @@ function StayListToolbar({
         >
           마이리얼트립에서 보기
         </a>
-        {tripcomMoreUrl ? (
-          <a
-            href={tripcomMoreUrl}
-            target={tripcomLinkTarget}
-            rel={tripcomLinkRel}
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex shrink-0 items-center rounded-md border border-sky-300/40 bg-sky-500/20 px-2 py-1 text-[10px] font-bold text-sky-50 hover:bg-sky-500/30 hover:border-sky-300/55 active:scale-[0.98] transition-all"
-          >
-            트립닷컴에서 더 보기
-          </a>
-        ) : null}
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         <StayGridDensityToggle
@@ -520,7 +492,7 @@ function StayAgencyGuideLinks({
 
   return (
     <div
-      className={`flex w-full max-w-sm flex-col items-stretch gap-2.5 ${className}`.trim()}
+      className={`flex w-full max-w-sm flex-col items-stretch gap-2.5 lg:max-w-md ${className}`.trim()}
     >
       <p className={`${titleClass} text-center`}>공식·인가 안내</p>
       <div className="flex w-full flex-col gap-2">
@@ -564,7 +536,7 @@ function StayAgencyGuideLinks({
   );
 }
 
-/** MRT 저재고(≤5) — 목록 하단 공식 안내 + Trip.com */
+/** MRT 저재고(요금 있는 숙소 ≤5) — 목록 하단 공식 안내 + Trip.com */
 function StayLowInventoryFooter({
   href,
   linkTarget,
@@ -582,10 +554,25 @@ function StayLowInventoryFooter({
           : 'border border-sky-300/25 bg-sky-500/10'
       }`}
     >
-      <p className="break-keep text-[12px] font-medium leading-relaxed text-white/75">
-        {hasAgency
-          ? '이 지역은 마이리얼트립 재고가 적어요. 공식·전문 안내와 트립닷컴을 함께 확인해 보세요'
-          : '이 지역은 마이리얼트립 재고가 적어요. 트립닷컴도 함께 확인해 보세요'}
+      {/* 모바일: 문장 단위 2줄 · PC: 한 줄(폭 확대) */}
+      <p className="w-full max-w-sm text-[12px] font-medium leading-relaxed text-white/75 lg:max-w-xl lg:whitespace-nowrap">
+        {hasAgency ? (
+          <>
+            <span className="block lg:inline">이 지역은 마이리얼트립 재고가 적어요.</span>
+            <span className="mt-0.5 block lg:mt-0 lg:inline">
+              <span className="hidden lg:inline"> </span>
+              공식·전문 안내와 트립닷컴을 함께 확인해 보세요
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="block lg:inline">이 지역은 마이리얼트립 재고가 적어요.</span>
+            <span className="mt-0.5 block lg:mt-0 lg:inline">
+              <span className="hidden lg:inline"> </span>
+              트립닷컴도 함께 확인해 보세요
+            </span>
+          </>
+        )}
       </p>
       {hasAgency ? (
         <StayAgencyGuideLinks
@@ -596,7 +583,11 @@ function StayLowInventoryFooter({
         />
       ) : null}
       {href ? (
-        <div className={`flex w-full flex-col items-center gap-1.5 ${hasAgency ? 'max-w-sm' : ''}`}>
+        <div
+          className={`flex w-full flex-col items-center gap-1.5 ${
+            hasAgency ? 'max-w-sm lg:max-w-md' : ''
+          }`}
+        >
           {hasAgency ? (
             <p className="break-keep text-[10px] font-medium text-white/55">또는 숙소 OTA</p>
           ) : null}
@@ -625,44 +616,21 @@ function StayCardsGrid({
   cardClassName = 'w-auto min-w-0',
   cardSize = 'md',
 }) {
-  const priced = [];
-  const flexible = [];
-  for (const item of items || []) {
-    if (isMrtStayPriced(item)) priced.push(item);
-    else flexible.push(item);
-  }
-
-  const pricedSorted = sortStayGroup(priced, sortMode);
-  const flexibleSorted = sortStayGroup(
-    flexible,
-    sortMode === 'price_asc' || sortMode === 'price_desc' ? 'recommended' : sortMode,
-  );
-
-  const renderCard = (item, dateFlexible) => (
-    <StayCard
-      key={item.itemId}
-      item={item}
-      price={formatPrice(item.salePrice)}
-      dateFlexible={dateFlexible}
-      className={cardClassName}
-      imageClassName={imageClassName}
-      size={cardSize}
-    />
-  );
+  /** fetch 단계에서 예약 가능(요금 있음)만 전달됨 */
+  const sorted = sortStayGroup(items || [], sortMode);
 
   return (
     <>
-      {pricedSorted.map((item) => renderCard(item, false))}
-      {flexibleSorted.length > 0 ? (
-        <>
-          <p className="col-span-full break-keep px-0.5 pt-1 text-[11px] font-semibold text-amber-100/65">
-            {pricedSorted.length > 0
-              ? '일정 조정 시 예약할 수 있는 숙소'
-              : '이 일정엔 요금이 없어요 · 일정을 바꾸면 예약할 수 있어요'}
-          </p>
-          {flexibleSorted.map((item) => renderCard(item, true))}
-        </>
-      ) : null}
+      {sorted.map((item) => (
+        <StayCard
+          key={item.itemId}
+          item={item}
+          price={formatPrice(item.salePrice)}
+          className={cardClassName}
+          imageClassName={imageClassName}
+          size={cardSize}
+        />
+      ))}
     </>
   );
 }
@@ -918,6 +886,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const tripcomLinkTarget = getPartnerLinkTarget();
   const tripcomLinkRel = getTripcomLinkRel(tripcomLinkTarget);
 
+  /** 목록은 예약 가능(요금 있음) 건만 — 그 수가 ≤5이면 하단 Trip CTA */
   const showLowInventoryCta =
     status === 'ready' &&
     Array.isArray(items) &&
@@ -1072,9 +1041,6 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           sortMode={sortMode}
           onSortChange={setSortMode}
           listUrl={mrtStayListUrl}
-          tripcomMoreUrl={tripcomLowUrl}
-          tripcomLinkTarget={tripcomLinkTarget}
-          tripcomLinkRel={tripcomLinkRel}
           densityVariant="desktop"
           densityValue={desktopGridDensity}
           onDensityChange={setDesktopGridDensity}
@@ -1091,13 +1057,15 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             imageClassName={desktopDensity.imageClassName}
           />
         </div>
-        <StayLowInventoryFooter
-          href={tripcomLowUrl}
-          linkTarget={tripcomLinkTarget}
-          linkRel={tripcomLinkRel}
-          ctaClassName={tripcomLowCtaDesktopClass}
-          agencyProfile={stayAgencyProfile}
-        />
+        {showLowInventoryCta ? (
+          <StayLowInventoryFooter
+            href={tripcomLowUrl}
+            linkTarget={tripcomLinkTarget}
+            linkRel={tripcomLinkRel}
+            ctaClassName={tripcomLowCtaDesktopClass}
+            agencyProfile={stayAgencyProfile}
+          />
+        ) : null}
       </>
     ) : null;
 
@@ -1262,9 +1230,6 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                     sortMode={sortMode}
                     onSortChange={setSortMode}
                     listUrl={mrtStayListUrl}
-                    tripcomMoreUrl={tripcomLowUrl}
-                    tripcomLinkTarget={tripcomLinkTarget}
-                    tripcomLinkRel={tripcomLinkRel}
                     densityVariant="mobile"
                     densityValue={mobileGridCols}
                     onDensityChange={setMobileGridCols}
@@ -1284,13 +1249,15 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                       }
                     />
                   </div>
-                  <StayLowInventoryFooter
-                    href={tripcomLowUrl}
-                    linkTarget={tripcomLinkTarget}
-                    linkRel={tripcomLinkRel}
-                    ctaClassName={tripcomLowCtaMobileClass}
-                    agencyProfile={stayAgencyProfile}
-                  />
+                  {showLowInventoryCta ? (
+                    <StayLowInventoryFooter
+                      href={tripcomLowUrl}
+                      linkTarget={tripcomLinkTarget}
+                      linkRel={tripcomLinkRel}
+                      ctaClassName={tripcomLowCtaMobileClass}
+                      agencyProfile={stayAgencyProfile}
+                    />
+                  ) : null}
                 </>
               ) : null}
             </div>

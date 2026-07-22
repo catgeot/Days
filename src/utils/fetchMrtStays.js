@@ -24,7 +24,7 @@ export {
 };
 
 /** countryHint·keyword override 변경 시 무효화 */
-const CACHE_PREFIX = 'gateo:mrt-stays:v12:';
+const CACHE_PREFIX = 'gateo:mrt-stays:v13:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;
@@ -94,14 +94,9 @@ export function buildMrtStayListUrl(opts = {}) {
   return `https://accommodation.myrealtrip.com/union/products?${params.toString()}`;
 }
 
-/** 가격 있는 숙소 먼저 · 일정 미가용(가격 없음)은 뒤에 */
-export function sortMrtStaysPricedFirst(items) {
-  const list = Array.isArray(items) ? items.slice() : [];
-  return list.sort((a, b) => {
-    const ap = isMrtStayPriced(a) ? 1 : 0;
-    const bp = isMrtStayPriced(b) ? 1 : 0;
-    return bp - ap;
-  });
+/** 선택 일정에 요금 있어 바로 예약 가능한 숙소만 (일정 조정 후 예약 제외) */
+export function filterBookableMrtStays(items) {
+  return (Array.isArray(items) ? items : []).filter(isMrtStayPriced);
 }
 
 function ymdLocal(d) {
@@ -200,7 +195,10 @@ function readCache(key) {
       sessionStorage.removeItem(key);
       return null;
     }
-    return parsed.payload ?? null;
+    const payload = parsed.payload ?? null;
+    if (!payload || typeof payload !== 'object') return payload;
+    const items = filterBookableMrtStays(payload.items);
+    return { ...payload, items, totalCount: items.length };
   } catch {
     return null;
   }
@@ -276,7 +274,7 @@ export async function fetchMrtStays(params) {
       return null;
     }
 
-    const items = sortMrtStaysPricedFirst(Array.isArray(data.items) ? data.items : []);
+    const items = filterBookableMrtStays(data.items);
     const payload = {
       ok: true,
       region: data.region ?? null,
@@ -285,7 +283,8 @@ export async function fetchMrtStays(params) {
       checkOut: data.checkOut,
       adultCount: data.adultCount ?? adultCount,
       childCount: data.childCount ?? childCount,
-      totalCount: data.totalCount ?? items.length,
+      /** 게이트오 목록은 예약 가능 건만 — API total과 다를 수 있음 */
+      totalCount: items.length,
       usedKeyword: data.usedKeyword ?? keyword,
     };
 

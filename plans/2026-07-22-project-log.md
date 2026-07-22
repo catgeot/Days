@@ -105,9 +105,31 @@
 - `chuuk` city 재등록 보류(재고 없음·sparse 유지)
 - **나우루**: 방문 안내 → 공식 **Accommodation** 페이지로 교체(호텔 2·유닛형·정부 연락) · note에 숙소 문의 경로 명시 · 개별 호텔 OTA/미검증 목록 링크는 넣지 않음
 
+### PROD QA (배포 후 · 2026-07-22 이어하기)
+
+**상태**: ✅ `a805d2b` Vercel 반영 · 나우루 empty · 그린란드 city 세션 잔존 없음
+
+| 항목 | 결과 |
+|------|------|
+| Vercel | PROD 번들 `index-DsgRN61P.js`에 `accommodation.aspx` · `nauru:"681951"` · `greenland:"6838"` |
+| 나우루 empty | 공식 3링크(숙소 안내·비자·Nauru Airlines) + note + Trip CTA `city=681951`(로나베) |
+| 나우루→그린란드 | Trip 세션 시드(로나베) 후 `city=6838` → **누크** 17곳 · 나우루 잔존 없음 |
+| 그린란드 in-app (당시) | MRT 17건(요금 없음 포함) → Trip CTA 미노출 · city는 번들·Trip URL로 검증 |
+| note | 현 문구 유지 |
+| 릴리스 노트 | **미갱신**(사용자) |
+
+### 저재고 Trip CTA · 예약 가능 목록만 (커밋)
+
+**상태**: ✅ 코드 반영 · push · **Vercel 배포 후 PROD 그린란드 QA**
+
+- `filterBookableMrtStays` — 선택 일정 요금 있는 건만 목록 · 0건이면 empty+Trip · 캐시 `v13`
+- 저재고: 예약 가능 건 ≤5 → 하단 Visit Greenland + Trip(`city=6838`) · 툴바 Trip「더 보기」제거
+- 푸터 카피: PC 한 줄 · 모바일 2줄 · disclaimer「관계가 아닙니다…공식 안내」
+- 릴리스 노트: 미갱신
+
 ### 에이전트 핸드오프 (다음 세션)
 
-- **읽을 것 3**: 본 절 QA 표 · `.ai-context` 5절 · `affiliate.js` city·sparse
+- **읽을 것 3**: 본 절 저재고 CTA · PROD QA 표 · `fetchMrtStays` bookable 필터
 - **금지 3**: 미검증 여행사 URL · Trip 스크래핑 · 검증 안 된 city · `VITE_` MRT 키
-- **다음 작업**: Vercel 배포 확인 후 PROD 나우루(공식 링크+Trip city)·나우루→그린란드 세션 잔존 QA · 릴리스 노트 합의
-- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「PROD 배포 후 나우루·그린란드 QA부터」
+- **다음 작업**: Vercel 배포 후 PROD 그린란드 — 예약 가능만 노출·하단 Trip `city=6838`
+- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「PROD 그린란드 저재고 Trip QA부터」

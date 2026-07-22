@@ -28,7 +28,7 @@ const KIND_LABEL = {
 };
 
 const DISCLAIMER =
-  '게이트오는 해당 여행사와 예약 대행 관계가 아닐 수 있어요. 공식·인가 안내를 참고해 주세요.';
+  '게이트오는 해당 여행사와 예약 대행 관계가 아닙니다. 공식 안내를 참고해 주세요.';
 
 /**
  * @param {{ slug?: string } | string | null | undefined} locationOrSlug
