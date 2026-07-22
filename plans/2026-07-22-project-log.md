@@ -220,3 +220,24 @@
 - Enter 시 허브·모호함 → 선택 카드 · mood 다후보 선택 UI · 최근 검색은 **입력 키워드** 우선 · 모바일 검색 시 키보드 자동 닫힘
 - 핵심: `cityAttractionHubs.js` · `searchSuggestions.js` · `mapboxSearchBox.js` · `SearchSuggestionList.jsx` · `SearchDiscoveryModal` · `useHomeHandlers`
 - **다음**: 인기 도시 명소 SSOT 확장(클라우드 에이전트 배치 후보) · 릴리스 노트 합의 후 반영
+
+## cityAttractionHubs — 국내+해외 합본 · 후쿠오카·하노이
+
+**상태**: 데이터 append · resolve 스모크 ✅ · PR #6 검수 대기
+
+- 국내 14 hub PR(`city-attraction-hubs-batch-4a6f`) + 해외 10 hub PR(`city-attraction-overseas-hubs-dc8c`) JSON **append 합치기**
+- 신규: `fukuoka`(7) · `hanoi`(7) · `KIND_LABELS.shrine` 유지
+- 총 **28 hub** · 명소 **176** · 시드 속초·파리 intact
+- 스모크: `부산`/`도쿄`/`후쿠오카`/`하노이` hub · `성산일출봉`/`도쿄타워`/`다자이후 텐만구`/`호안끼엠 호수` exact
+- **머지 후**: #4·#5 닫아도 됨(내용 포함)
+
+## cityAttractionHubs — 오키나와·호치민·포항·춘천
+
+**상태**: 데이터 append · resolve 스모크 ✅ · PR 검수 대기
+
+- PR #6 브랜치 위에 `okinawa`(7) · `ho-chi-minh`(7) · `pohang`(7) · `chuncheon`(7) append
+- 총 **32 hub** · 명소 **204** · `KIND_LABELS.shrine` 유지
+- hub: `오키나와`/`나하` · `호치민`/`사이공`/`saigon` · `포항` · `춘천`
+- exact: `슈리성`/`츄라우미 수족관` · `벤탄 시장`/`통일궁` · `호미곶 해맞이광장`/`스페이스워크` · `남이섬`/`소양강스카이워크`
+- **남은 후보**: 시드니·두바이 · 국내(평창·여수 외 잔여) · 릴리스 노트는 합의 후
+- **제시어**: `명소-이어하기` · 「시드니·두바이 또는 국내 평창」
