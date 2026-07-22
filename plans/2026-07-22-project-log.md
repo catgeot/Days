@@ -220,3 +220,13 @@
 - Enter 시 허브·모호함 → 선택 카드 · mood 다후보 선택 UI · 최근 검색은 **입력 키워드** 우선 · 모바일 검색 시 키보드 자동 닫힘
 - 핵심: `cityAttractionHubs.js` · `searchSuggestions.js` · `mapboxSearchBox.js` · `SearchSuggestionList.jsx` · `SearchDiscoveryModal` · `useHomeHandlers`
 - **다음**: 인기 도시 명소 SSOT 확장(클라우드 에이전트 배치 후보) · 릴리스 노트 합의 후 반영
+
+## cityAttractionHubs — 국내 배치 1
+
+**상태**: 데이터 append · resolve 스모크 ✅ · PR 검수 대기 (해외·추가 국내는 다음 배치)
+
+- 시드 `sokcho`·`paris` intact · **신규 14 hub** append (총 16)
+- **제주 분리**: `jeju`(제주시·북·서부) / `seogwipo`(서귀포·성산·중문) — `제주` alias는 제주시 hub
+- 신규: seoul · busan · jeju · seogwipo · incheon · daegu · gwangju · daejeon · ulsan · yeosu · gyeongju · gangneung · jeonju · tongyeong
+- 스모크: `부산`→도시+명소 카드 · `해운대해수욕장`/`성산일출봉`/`불국사` exact · `도쿄` 미등록(다음)
+- **남은 후보**: 포항·춘천·평창·양양·남해·안동·보령·목포·순천 + 해외 관문(도쿄·오사카·로마·런던·뉴욕·방콕·타이베이)
