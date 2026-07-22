@@ -219,4 +219,99 @@
 - 검색바 드롭다운에 도시+명소+여행지 혼합 제안 · 큐레이션 SSOT `cityAttractionHubs.json`(속초·파리 시드) 우선 · 허브 exact는 Mapbox 대기 없음
 - Enter 시 허브·모호함 → 선택 카드 · mood 다후보 선택 UI · 최근 검색은 **입력 키워드** 우선 · 모바일 검색 시 키보드 자동 닫힘
 - 핵심: `cityAttractionHubs.js` · `searchSuggestions.js` · `mapboxSearchBox.js` · `SearchSuggestionList.jsx` · `SearchDiscoveryModal` · `useHomeHandlers`
-- **다음**: 인기 도시 명소 SSOT 확장(클라우드 에이전트 배치 후보) · 릴리스 노트 합의 후 반영
+- **다음**: SSOT 배치는 아래 cityAttractionHubs 절 · 릴리스 노트 합의 후
+
+## cityAttractionHubs — 국내+해외 합본 · 후쿠오카·하노이 (#6)
+
+**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+
+- 국내 14 hub PR(#4 `city-attraction-hubs-batch-4a6f`) + 해외 10 hub PR(#5 `city-attraction-overseas-hubs-dc8c`) JSON **append 합치기**
+- 신규: `fukuoka`(7) · `hanoi`(7)
+- `cityAttractionHubs.js` `KIND_LABELS`에 **`shrine: '신사'`** 추가(도쿄·교토·후쿠오카 shrine 배지용) — **삭제·temple로 병합 금지**
+- 총 **28 hub** · 명소 **176** · 시드 속초·파리 intact
+- 스모크: `부산`/`도쿄`/`후쿠오카`/`하카타`/`하노이`/`nyc` hub · `성산일출봉`/`도쿄타워`/`다자이후 텐만구`/`호안끼엠 호수` exact
+- **머지 후**: #4·#5 닫아도 됨(내용 포함)
+
+## cityAttractionHubs — 오키나와·호치민·포항·춘천 (#7)
+
+**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+
+- **브랜치**: `cursor/city-attraction-okinawa-hcm-domestic-3b6f` = #6 tip(`f115c4e`) **위 1커밋**(`2021e4a`)
+- 신규(각 7): `okinawa` · `ho-chi-minh` · `pohang` · `chuncheon`
+- 총 **32 hub** · 명소 **204** · shrine KIND_LABEL 유지 · 시드 intact
+- alias: 오키나와→`나하`/`naha` · 호치민→`사이공`/`saigon`/`hcmc` · 포항→`포항시` · 춘천→`춘천시`
+- exact: `슈리성`/`츄라우미 수족관` · `벤탄 시장`/`통일궁` · `호미곶 해맞이광장`/`스페이스워크` · `남이섬`/`소양강스카이워크`
+
+## cityAttractionHubs — 핸드오프 docs (#8)
+
+**상태**: docs only · #7 tip 위 1커밋
+
+- 일지에 머지 순서·스키마·스모크·금지·제시어 보강 (채팅 2줄 핸드오프 보완)
+
+## cityAttractionHubs — 시드니·두바이 + 국내 6 (#9 예정 · 배치 8)
+
+**상태**: 데이터 append · resolve 스모크 ✅ · PR 검수 대기
+
+- **기반**: #8 tip · 한 배치 **8 hub × 7명소** (파이 확대: 4개 단위 지양)
+- 해외: `sydney` · `dubai`
+- 국내: `pyeongchang` · `yangyang` · `namhae` · `andong` · `boryeong`(alias **`대천`**) · `suncheon`
+- 총 **40 hub** · 명소 **260** · shrine KIND_LABEL 유지 · 시드 intact
+- 주의: 양양에 **낙산사 미포함**(속초 exact 선점 유지) · 남해 `이순신순국공원` name_en은 통영 `Yi Sun-sin Park`와 충돌 피함
+- hub 스모크: `시드니`/`두바이`/`평창`/`양양`/`남해`/`안동`/`보령`/`대천`/`순천` + 회귀(오키나와·하카타·부산·nyc·속초·파리)
+- exact: `시드니 오페라하우스`/`본디 비치` · `부르즈 할리파` · `월정사`/`서피비치` · `남해 독일마을`/`하회마을` · `대천해수욕장`/`순천만습지`/`낙안읍성`
+
+### PR 머지 순서
+
+| 순서 | PR | 비고 |
+|------|-----|------|
+| 1 | **#6** | 합본+후쿠오카·하노이. 머지 후 #4·#5 닫기 |
+| 2 | **#7** | #6 위 1커밋 |
+| 3 | **#8** | docs 핸드오프 (#7 위) |
+| 4 | **본 배치(#9)** | #8 위 8 hub. 단독 머지 시 #6~#8 내용 포함 |
+| — | #4·#5 | #6에 흡수 · 단독 머지 시 JSON 충돌 |
+
+### 현재 hub 맵 (40)
+
+| 구분 | hubId |
+|------|-------|
+| 시드 | `sokcho` · `paris` |
+| 국내 | `seoul` · `busan` · `jeju` · `seogwipo` · `incheon` · `daegu` · `gwangju` · `daejeon` · `ulsan` · `yeosu` · `gyeongju` · `gangneung` · `jeonju` · `tongyeong` · `pohang` · `chuncheon` · **`pyeongchang`** · **`yangyang`** · **`namhae`** · **`andong`** · **`boryeong`** · **`suncheon`** |
+| 해외 | `tokyo` · `osaka` · `kyoto` · `bangkok` · `taipei` · `singapore` · `hong-kong` · `rome` · `london` · `new-york` · `fukuoka` · `hanoi` · `okinawa` · `ho-chi-minh` · **`sydney`** · **`dubai`** |
+
+- **제주**: `jeju`(제주시) / `seogwipo`(서귀포) **분리**. alias `제주`·`제주도` → 제주시. 성산·중문·천지연 등은 서귀포.
+- **shrine 사용 중**: 메이지신궁(tokyo) · 후시미 이나리(kyoto) · 쿠시다 신사·다자이후 텐만구(fukuoka)
+
+### 스키마·수정 규칙
+
+- SSOT: [`cityAttractionHubs.json`](../src/pages/Home/data/cityAttractionHubs.json) (배열 append) · resolver [`cityAttractionHubs.js`](../src/pages/Home/lib/cityAttractionHubs.js)
+- hub 필드: `hubId` · `name` · `name_en` · `country` · `country_en` · `lat`/`lng` · `aliases[]` · `attractions[]`(보통 6~7)
+- attraction: `name` · `name_en` · `kind` · `lat`/`lng` — kind enum: `beach`·`market`·`temple`·**`shrine`**·`viewpoint`·`landmark`·`museum`·`neighborhood`·`park`
+- 매칭: **exact / prefix만** (부분 containment 스냅 금지 — `.ai-context` Smart Search 규칙과 동일)
+- 명소 `name`/`name_en` **전역 unique**(normalize) — 선등록 exact가 이김
+- **배치 권장**: hub **8~12**/PR · 국내+해외 병렬 PR 지양(한 tip 위에 append)
+- **금지**: 시드 `sokcho`/`paris` 덮어쓰기 · `shrine` KIND_LABEL 제거 · Mapbox 라벨·SearchDiscoveryModal UI·`releaseNotes` 무단 변경 · `travelSpots.js` 전체 스캔
+
+### resolve 스모크 (에이전트가 돌린 방식)
+
+```bash
+node --input-type=module -e "
+import { resolveCityAttractionHub, resolveHubAttraction, getKindLabel, listCityAttractionHubs } from './src/pages/Home/lib/cityAttractionHubs.js';
+console.log(listCityAttractionHubs().length); // 40
+const hubs = ['시드니','두바이','평창','양양','남해','안동','보령','대천','순천','오키나와','하카타','부산','nyc','속초'];
+const exact = ['시드니 오페라하우스','부르즈 할리파','월정사','서피비치','하회마을','대천해수욕장','순천만습지','다자이후 텐만구','낙산사'];
+for (const q of hubs) console.log('hub', q, !!resolveCityAttractionHub(q));
+for (const q of exact) console.log('exact', q, !!resolveHubAttraction(q));
+console.log('shrine', getKindLabel('shrine')); // 신사
+"
+```
+
+### 에이전트 핸드오프 (명소-이어하기)
+
+- **읽을 것 3**: 본 절「PR 머지 순서」·「스키마·수정 규칙」·「배치 8」표 (+ `.ai-context` 3절 Smart Search / 도시 허브)
+- **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · UI/Mapbox 동기화 무단
+- **다음 작업 (사용자 선택)**:
+  1. **머지**: #6 → #7 → #8 → 본 배치 · #4·#5 정리
+  2. **다음 배치**(8~12 hub): 예) 멜버른·오클랜드·이스탄불 · 국내 **목포**·진주·거제 등 미등록 소도시
+  3. 데스크톱 QA: 타이핑 드롭다운 · Enter 선택 카드 · `대천`→보령 · 모바일 키보드
+  4. 릴리스 노트는 **합의 후**만
+- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치」 / 「#6~본배치 머지부터」
