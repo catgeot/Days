@@ -1671,5 +1671,268 @@
         "lng": 105.86
       }
     ]
+  },
+  {
+    "hubId": "okinawa",
+    "name": "오키나와",
+    "name_en": "Okinawa",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 26.2122,
+    "lng": 127.6791,
+    "aliases": [
+      "okinawa",
+      "나하",
+      "naha",
+      "おきなわ",
+      "沖繩"
+    ],
+    "attractions": [
+      {
+        "name": "슈리성",
+        "name_en": "Shuri Castle",
+        "kind": "landmark",
+        "lat": 26.217,
+        "lng": 127.7194
+      },
+      {
+        "name": "국제거리",
+        "name_en": "Kokusai Street",
+        "kind": "neighborhood",
+        "lat": 26.2172,
+        "lng": 127.691
+      },
+      {
+        "name": "츄라우미 수족관",
+        "name_en": "Okinawa Churaumi Aquarium",
+        "kind": "landmark",
+        "lat": 26.6944,
+        "lng": 127.878
+      },
+      {
+        "name": "아메리칸 빌리지",
+        "name_en": "American Village",
+        "kind": "neighborhood",
+        "lat": 26.3146,
+        "lng": 127.758
+      },
+      {
+        "name": "만자모",
+        "name_en": "Manzamo",
+        "kind": "viewpoint",
+        "lat": 26.505,
+        "lng": 127.8503
+      },
+      {
+        "name": "마키시 공설시장",
+        "name_en": "Makishi Public Market",
+        "kind": "market",
+        "lat": 26.2145,
+        "lng": 127.6883
+      },
+      {
+        "name": "쓰보야 야치문 거리",
+        "name_en": "Tsuboya Yachimun Street",
+        "kind": "neighborhood",
+        "lat": 26.2129,
+        "lng": 127.6918
+      }
+    ]
+  },
+  {
+    "hubId": "ho-chi-minh",
+    "name": "호치민",
+    "name_en": "Ho Chi Minh City",
+    "country": "베트남",
+    "country_en": "Vietnam",
+    "lat": 10.7769,
+    "lng": 106.7009,
+    "aliases": [
+      "ho-chi-minh",
+      "ho-chi-minh-city",
+      "hcmc",
+      "사이공",
+      "saigon",
+      "호치민시"
+    ],
+    "attractions": [
+      {
+        "name": "벤탄 시장",
+        "name_en": "Ben Thanh Market",
+        "kind": "market",
+        "lat": 10.7725,
+        "lng": 106.698
+      },
+      {
+        "name": "통일궁",
+        "name_en": "Independence Palace",
+        "kind": "landmark",
+        "lat": 10.777,
+        "lng": 106.6955
+      },
+      {
+        "name": "전쟁증적박물관",
+        "name_en": "War Remnants Museum",
+        "kind": "museum",
+        "lat": 10.7794,
+        "lng": 106.6923
+      },
+      {
+        "name": "사이공 노트르담 대성당",
+        "name_en": "Notre-Dame Cathedral Basilica of Saigon",
+        "kind": "landmark",
+        "lat": 10.7798,
+        "lng": 106.699
+      },
+      {
+        "name": "비텍스코 금융타워",
+        "name_en": "Bitexco Financial Tower",
+        "kind": "viewpoint",
+        "lat": 10.7719,
+        "lng": 106.7045
+      },
+      {
+        "name": "옥황사",
+        "name_en": "Jade Emperor Pagoda",
+        "kind": "temple",
+        "lat": 10.7915,
+        "lng": 106.6977
+      },
+      {
+        "name": "응우옌후에 거리",
+        "name_en": "Nguyen Hue Walking Street",
+        "kind": "neighborhood",
+        "lat": 10.7737,
+        "lng": 106.704
+      }
+    ]
+  },
+  {
+    "hubId": "pohang",
+    "name": "포항",
+    "name_en": "Pohang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 36.019,
+    "lng": 129.343,
+    "aliases": [
+      "pohang",
+      "포항시"
+    ],
+    "attractions": [
+      {
+        "name": "호미곶 해맞이광장",
+        "name_en": "Homi Cape Sunrise Square",
+        "kind": "viewpoint",
+        "lat": 36.076,
+        "lng": 129.566
+      },
+      {
+        "name": "영일대해수욕장",
+        "name_en": "Yeongildae Beach",
+        "kind": "beach",
+        "lat": 36.056,
+        "lng": 129.3778
+      },
+      {
+        "name": "스페이스워크",
+        "name_en": "Space Walk",
+        "kind": "landmark",
+        "lat": 36.0651,
+        "lng": 129.3904
+      },
+      {
+        "name": "죽도시장",
+        "name_en": "Jukdo Market",
+        "kind": "market",
+        "lat": 36.035,
+        "lng": 129.3678
+      },
+      {
+        "name": "구룡포일본인가옥거리",
+        "name_en": "Guryongpo Japanese House Street",
+        "kind": "neighborhood",
+        "lat": 35.9903,
+        "lng": 129.5606
+      },
+      {
+        "name": "보경사",
+        "name_en": "Bogyeongsa",
+        "kind": "temple",
+        "lat": 36.2524,
+        "lng": 129.3185
+      },
+      {
+        "name": "포항운하관",
+        "name_en": "Pohang Canal View",
+        "kind": "landmark",
+        "lat": 36.0239,
+        "lng": 129.376
+      }
+    ]
+  },
+  {
+    "hubId": "chuncheon",
+    "name": "춘천",
+    "name_en": "Chuncheon",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.8811,
+    "lng": 127.7298,
+    "aliases": [
+      "chuncheon",
+      "춘천시"
+    ],
+    "attractions": [
+      {
+        "name": "남이섬",
+        "name_en": "Nami Island",
+        "kind": "landmark",
+        "lat": 37.7917,
+        "lng": 127.5251
+      },
+      {
+        "name": "소양강스카이워크",
+        "name_en": "Soyanggang Skywalk",
+        "kind": "viewpoint",
+        "lat": 37.894,
+        "lng": 127.7234
+      },
+      {
+        "name": "김유정문학촌",
+        "name_en": "Kim You-jeong Literature Village",
+        "kind": "landmark",
+        "lat": 37.8194,
+        "lng": 127.7168
+      },
+      {
+        "name": "애니메이션박물관",
+        "name_en": "Animation Museum",
+        "kind": "museum",
+        "lat": 37.8931,
+        "lng": 127.6918
+      },
+      {
+        "name": "춘천 명동거리",
+        "name_en": "Chuncheon Myeongdong Street",
+        "kind": "neighborhood",
+        "lat": 37.8793,
+        "lng": 127.7272
+      },
+      {
+        "name": "공지천",
+        "name_en": "Gongjicheon",
+        "kind": "park",
+        "lat": 37.8662,
+        "lng": 127.729
+      },
+      {
+        "name": "레고랜드 코리아",
+        "name_en": "LEGOLAND Korea",
+        "kind": "landmark",
+        "lat": 37.8857,
+        "lng": 127.6993
+      }
+    ]
   }
 ]
