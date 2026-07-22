@@ -806,9 +806,11 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       })
     : null;
 
-  /** 「트립닷컴에서 더 보기」와 동일 톤 · empty CTA는 한 단계만 키움 */
-  const tripcomCtaClassName =
-    'inline-flex shrink-0 items-center justify-center rounded-md border border-sky-300/40 bg-sky-500/20 px-3 py-1.5 text-xs font-bold text-sky-50 hover:bg-sky-500/30 hover:border-sky-300/55 active:scale-[0.98] transition-all';
+  /** gateo.kr 배포(origin/main) empty CTA와 동일 — outline sky, 「트립닷컴에서 숙소 검색」 */
+  const tripcomCtaDesktopClassName =
+    'inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-4 py-2.5 text-sm font-semibold text-sky-50 transition-colors hover:bg-sky-500/30';
+  const tripcomCtaMobileClassName =
+    'inline-flex items-center justify-center rounded-xl border border-sky-300/40 bg-sky-500/20 px-3.5 py-2 text-[12px] font-semibold text-sky-50 transition-colors hover:bg-sky-500/30';
 
   const emptyState = (
     <div className="flex min-h-[min(420px,calc(100%-5rem))] w-full flex-col items-center justify-center gap-5 px-4 py-8">
@@ -825,13 +827,14 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
         target={tripcomLinkTarget}
         rel={tripcomLinkRel}
         onClick={(e) => e.stopPropagation()}
-        className={tripcomCtaClassName}
+        className={tripcomCtaDesktopClassName}
       >
-        트립닷컴에서 검색
+        트립닷컴에서 숙소 검색
       </a>
     </div>
   );
 
+  /** 모바일도 배너/iframe 없이 문구 + CTA만 (PC emptyState와 동일 구조) */
   const emptyStateMobile = (
     <div className="flex min-h-[min(52vh,420px)] w-full flex-col items-center justify-center gap-4 px-3 py-10">
       <div className="max-w-sm space-y-1.5 text-center">
@@ -847,9 +850,9 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
         target={tripcomLinkTarget}
         rel={tripcomLinkRel}
         onClick={(e) => e.stopPropagation()}
-        className={tripcomCtaClassName}
+        className={tripcomCtaMobileClassName}
       >
-        트립닷컴에서 검색
+        트립닷컴에서 숙소 검색
       </a>
     </div>
   );
