@@ -88,8 +88,9 @@ function isTripCtaCandidate(row) {
   if (row.kind === 'empty' || row.kind === 'no_region') return true;
   if (row.kind === 'ok') {
     const n = Number(row.n ?? 0);
-    const total = Number(row.total ?? n);
-    const count = Math.min(n || total, total || n);
+    const total = Number(row.total ?? 0);
+    // audit 샘플 n(페이지 크기)과 혼동 금지 — total이 있으면 total 기준
+    const count = total > 0 ? total : n;
     return count > 0 && count <= LOW;
   }
   return false;

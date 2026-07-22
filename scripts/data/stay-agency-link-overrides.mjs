@@ -150,7 +150,8 @@ export const STAY_AGENCY_LINK_OVERRIDES = {
         kind: 'tourism-board',
         locale: 'en',
         verifiedAt: '2026-07-22',
-        evidence: 'Pohnpei Tourism Office (Pohnpei State Government) 공식 가이드',
+        evidence:
+          'Pohnpei Tourism Office (Pohnpei State Government) 공식 가이드 — 브라우저 200·공식 홈 (Node fetch는 WAF 403, 링크 유효)',
       },
     ],
   },
@@ -178,7 +179,8 @@ export const STAY_AGENCY_LINK_OVERRIDES = {
         kind: 'tourism-board',
         locale: 'en',
         verifiedAt: '2026-07-22',
-        evidence: 'Samoa Tourism Authority 공식 여행 가이드 (samoa.travel)',
+        evidence:
+          'Samoa Tourism Authority 공식 여행 가이드 (samoa.travel) — 브라우저 200 (bot UA는 403)',
       },
     ],
   },
@@ -256,7 +258,8 @@ export const STAY_AGENCY_LINK_OVERRIDES = {
         kind: 'tourism-board',
         locale: 'en',
         verifiedAt: '2026-07-22',
-        evidence: 'Cook Islands Tourism 공식 사이트 (cookislands.travel)',
+        evidence:
+          'Cook Islands Tourism Corporation 공식 사이트 (cookislands.travel → /home) — 브라우저 200 (Node fetch WAF 403)',
       },
     ],
   },

@@ -472,6 +472,22 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
    * city 없으면 직전 세션(통가 등) 잔존 · sparse 유지(재고 극소·예약 어려움)
    */
   'cocos-islands': '77705',
+  /** 그린란드 — 누크 (시드 stay-agency · city 없으면 세션 잔존) */
+  greenland: '6838',
+  /** 솔로몬 제도 — 호니아라 */
+  'solomon-islands': '6909',
+  /** 버뮤다 — 해밀턴(Bermuda) */
+  bermuda: '59607',
+  /**
+   * 밀포드 사운드 — 티아나우(관문). 당일 크루즈 거점 ≠ 사운드 자체 숙소
+   */
+  'milford-sound': '3716',
+  /**
+   * 티칼 — 플로레스(과테말라·관문). 유적지 당일 투어 거점
+   */
+  tikal: '6760',
+  /** 야쿠츠크 */
+  yakutsk: '4224',
 };
 
 /**

@@ -86,7 +86,7 @@
 
 ## 숙소 empty/저재고 — 인증 여행사·안내 링크
 
-**상태**: ✅ 커밋 · **다음 세션 QA**(관광청 링크 전수·숙소 이어하기)
+**상태**: ✅ 코드 커밋 · **관광청 QA·city gap 수정 대기(커밋/푸시)**
 
 - SSOT: `scripts/data/stay-agency-link-overrides.mjs` → `npm run generate:stay-agencies` → `travelSpotStayAgencyLinks.json`
 - 런타임: `src/utils/stayAgencyLinks.js` · UI: `GlobeStayStrip` empty/error + 저재고 footer (공식 화이트 카드 1순위 · Trip 보조 CTA)
@@ -94,9 +94,19 @@
 - 나우루: 죽은 `.nr` 관광사·`.gov` UTM 403 수정 · 코코스 Trip **`77705`** · 크리스마스/코코스 MRT `ignoreStayAdmin`(퍼스 오탐) · 캐시 `v12`
 - `npm run audit:stay-agencies` ✅ · 릴리스 노트는 합의 후 `releaseNotes.js`
 
-### 에이전트 핸드오프 (다음 세션 — 숙소·관광청 QA)
+### 관광청 링크 QA · city/sparse gap (2026-07-22 이어하기)
 
-- **읽을 것 3**: 본 절 · `.ai-context` 5절 · `stay-agency-link-overrides.mjs` / `affiliate.js` city·sparse
-- **금지 3**: 미검증 여행사 URL · Trip 호텔 스크래핑 · 검증 안 된 city ID · `VITE_` MRT 키
-- **다음 작업**: 시드 20곳 empty/저재고에서 공식 링크·Trip CTA QA · 잔여 sparse(`chuuk` city 등) · gap MD 비태평양 city 후보
-- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「관광청 링크 QA부터」
+- 시드 20 URL: 브라우저 전수 유효 · Node fetch 403은 WAF(폰페이·사모아·쿡) — 링크 유지 · evidence에 브라우저 검증 기록
+- 로컬 UI: 나우루 — 공식 3링크(`.gov` UTM 없음)·sparse 문구·Trip `city=681951` ✅ · 남극 — IAATO + sparse·city 없음 ✅
+- **PROD(gateo.kr)**: `origin/main`이 로컬보다 **6커밋 뒤** → 관광청 카드 미표시 · 나우루 Trip CTA에 `city` 누락(세션 잔존) — **푸시·배포 필요**
+- 세션 잔존 수정(시드): `greenland`→**`6838`**(누크) · `solomon-islands`→**`6909`**(호니아라)
+- true gap city: `bermuda`→**`59607`** · `yakutsk`→**`4224`** · `milford-sound`→**`3716`**(티아나우·관문) · `tikal`→**`6760`**(플로레스 GT·관문)
+- `audit:tripcom-hotel-city-gaps`: ok 샘플 `n`과 `total` 혼동 수정 → CTA 후보 **gap 0** (city 27 · sparse 13)
+- `chuuk` city 재등록 보류(재고 없음·sparse 유지)
+
+### 에이전트 핸드오프 (다음 세션)
+
+- **읽을 것 3**: 본 절 QA 표 · `.ai-context` 5절 · `affiliate.js` city·sparse
+- **금지 3**: 미검증 여행사 URL · Trip 스크래핑 · 검증 안 된 city · `VITE_` MRT 키
+- **다음 작업**: 미커밋 city/agency evidence **커밋·origin push·Vercel 배포** 후 PROD 나우루→그린란드 세션 잔존 QA · 릴리스 노트 합의
+- **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md` · 「푸시·배포 후 PROD QA」
