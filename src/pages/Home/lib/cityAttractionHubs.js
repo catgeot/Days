@@ -8,6 +8,7 @@ const KIND_LABELS = {
   beach: '해변',
   market: '시장',
   temple: '사찰',
+  shrine: '신사',
   viewpoint: '전망',
   landmark: '명소',
   museum: '박물관',
