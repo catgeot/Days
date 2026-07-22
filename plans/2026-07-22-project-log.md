@@ -220,3 +220,21 @@
 - Enter 시 허브·모호함 → 선택 카드 · mood 다후보 선택 UI · 최근 검색은 **입력 키워드** 우선 · 모바일 검색 시 키보드 자동 닫힘
 - 핵심: `cityAttractionHubs.js` · `searchSuggestions.js` · `mapboxSearchBox.js` · `SearchSuggestionList.jsx` · `SearchDiscoveryModal` · `useHomeHandlers`
 - **다음**: 인기 도시 명소 SSOT 확장(클라우드 에이전트 배치 후보) · 릴리스 노트 합의 후 반영
+
+## cityAttractionHubs — 해외 관문 배치
+
+**상태**: 데이터 append · resolve 스모크 ✅ · PR 검수 대기 (국내 배치는 별도 PR `city-attraction-hubs-batch`)
+
+- 시드 `sokcho`·`paris` intact · **신규 10 hub** append (총 12 · 명소 73)
+- 관문: tokyo · osaka · kyoto · bangkok · taipei · singapore · hong-kong · rome · london · new-york
+- `KIND_LABELS`에 `shrine`(신사) 추가 — 메이지신궁·후시미 이나리
+- 스모크: `도쿄`/`nyc`→허브 카드 · `도쿄타워`/`콜로세움`/`타임스퀘어`/`기요미즈데라` exact
+- **병합 주의**: 국내 14 hub PR과 JSON 동시 수정 — 머지 시 append 합치기
+- **남은 후보**: 후쿠오카·오키나와·하노이·호치민·시드니·두바이 · 국내(포항·춘천·평창 등)
+
+### 에이전트 핸드오프 (명소)
+
+- **읽을 것 3**: 본 절 · `cityAttractionHubs.json` · `cityAttractionHubs.js` KIND_LABELS
+- **금지 3**: Mapbox 스크래핑으로 좌표 대량 생성 · 허브 alias에 타 도시명 · `travelSpots.js` 전체 스캔
+- **다음 작업**: 국내 PR 머지 후 JSON 합치기 · 또는 추가 관문(후쿠오카·하노이) · 릴리스 노트 합의
+- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「국내 PR 머지 합치기 또는 후쿠오카·하노이」
