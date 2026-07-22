@@ -461,13 +461,21 @@ console.log('shrine', getKindLabel('shrine')); // 신사
 "
 ```
 
-### 에이전트 핸드오프 (명소-이어하기)
+### 에이전트 핸드오프 (명소-이어하기 · 오케스트레이터)
 
-- **읽을 것 3**: 본 절「중간 정리·일시 중단」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
-- **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · stale draft 재머지 · 사용자 재개 전 클라우드 연속 배치
+- **읽을 것 3**: [`orchestrator-method.md`](./orchestrator-method.md) · 본 절「중간 정리·일시 중단」·「스키마·수정 규칙」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
+- **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · stale draft 재머지 · tip **병렬** 머지
 - **다음 작업 (사용자 선택)**:
   1. **데스크톱 QA**: 드롭다운 · Enter 선택 카드 · `글라스고`→글래스고 · `antwerpen`→앤트워프 · `인스부르크`→인스브루크 · `천사대교`/`뮤지엄산` exact · 모바일 키보드
   2. stale draft **닫기** (#4~#12·#6·#18~#21)
-  3. **재개 시** 다음 배치(8~12 hub): **`main` tip 위 append** — 예) 벨파스트·룩셈부르크·두브로브니크 · 양평·충주·아산·서산
+  3. **재개**: **오케스트레이터**로 main tip 위 8~12 hub (워커 병렬 초안 → `npm run audit:city-attraction-hubs` → 직렬 append)
   4. 릴리스 노트는 **합의 후**만
-- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「데스크톱 QA부터」 / 「다음 8~12 hub (main tip 위 append)」
+- **제시어**: `오케스트레이터` + `명소` + `@plans/orchestrator-method.md` + `@plans/2026-07-22-project-log.md` · 「데스크톱 QA 후 다음 10 hub」 / 「배치표부터」
+
+## 오케스트레이터 방법 — 공식화 (2026-07-22)
+
+**상태**: ✅ 문서·Rule·audit 스크립트
+
+- SSOT: [`orchestrator-method.md`](./orchestrator-method.md) · Rule [`gateo-orchestrator.mdc`](../.cursor/rules/gateo-orchestrator.mdc) · always 트리거는 [`gateo-project-context.mdc`](../.cursor/rules/gateo-project-context.mdc)
+- 게이트: `npm run audit:city-attraction-hubs` (150 hub / 1030 명소 · issues 0)
+- 다음 세션: 제시어 **`오케스트레이터`** 로 메인=오케스트레이터 역할 시작

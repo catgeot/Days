@@ -1,0 +1,37 @@
+---
+description: "오케스트레이터 — 다배치 SSOT를 메인+서브로 돌릴 때. 제시어 오케스트레이터/명소-오케스트레이터"
+alwaysApply: false
+---
+
+# 오케스트레이터 세션
+
+사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.
+
+## 필수 읽기 (짧게)
+
+1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — §1 역할 · §3 루프 · §4 이관  
+2. 주제 일지 핸드오프 절만 (예: 명소 → `plans/2026-07-22-project-log.md` cityAttractionHubs)  
+3. [`.ai-context.md`](.ai-context.md) — 관련 금지 1~2줄만  
+
+**전반 코드베이스 탐색·이전 워커 로그 전체 Read 금지.**
+
+## 역할
+
+- **당신 = 오케스트레이터**: 배치표 · Task/서브 워커 호출 · 감사 게이트 · tip **직렬** append · 핸드오프  
+- **워커**: 초안 조각만. `main` 직접 push·SSOT 전면 rewrite 금지  
+- 서브가 채팅 메인으로 「승격」되지 않음 → 컨텍스트 ~50%면 **인수인계서**로 다음 오케스트레이터 세션에 이관
+
+## 병렬/직렬
+
+- 초안·조사: **병렬 OK** (배치당 보통 8~12)  
+- 동일 tip 파일 append/머지: **직렬만**
+
+## 명소 hub
+
+- SSOT: `cityAttractionHubs.json` append only · `shrine` 유지 · 시드 덮어쓰기 금지  
+- 게이트: `npm run audit:city-attraction-hubs`  
+- 상세: orchestrator-method §5 · 일지 핸드오프
+
+## 세션 종료
+
+일지에 건수·tip·다음 배치·제시어 2~5줄. `.ai-context` 5절은 스냅샷 1줄만.
