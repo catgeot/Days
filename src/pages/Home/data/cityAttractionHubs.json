@@ -8869,5 +8869,646 @@
         "lng": 126.4
       }
     ]
+  },
+  {
+    "hubId": "glasgow",
+    "name": "글래스고",
+    "name_en": "Glasgow",
+    "country": "영국",
+    "country_en": "United Kingdom",
+    "lat": 55.8642,
+    "lng": -4.2518,
+    "aliases": [
+      "glasgow",
+      "글라스고"
+    ],
+    "attractions": [
+      {
+        "name": "글래스고 대성당",
+        "name_en": "Glasgow Cathedral",
+        "kind": "landmark",
+        "lat": 55.8633,
+        "lng": -4.2347
+      },
+      {
+        "name": "켈빙그로브 미술관",
+        "name_en": "Kelvingrove Art Gallery and Museum",
+        "kind": "museum",
+        "lat": 55.8686,
+        "lng": -4.2906
+      },
+      {
+        "name": "글래스고 대학교",
+        "name_en": "University of Glasgow",
+        "kind": "landmark",
+        "lat": 55.8724,
+        "lng": -4.2899
+      },
+      {
+        "name": "조지 스퀘어",
+        "name_en": "George Square",
+        "kind": "landmark",
+        "lat": 55.861,
+        "lng": -4.2501
+      },
+      {
+        "name": "글래스고 네크로폴리스",
+        "name_en": "Glasgow Necropolis",
+        "kind": "park",
+        "lat": 55.8625,
+        "lng": -4.2314
+      },
+      {
+        "name": "리버사이드 박물관",
+        "name_en": "Riverside Museum",
+        "kind": "museum",
+        "lat": 55.8651,
+        "lng": -4.3064
+      },
+      {
+        "name": "뷰캐넌 스트리트",
+        "name_en": "Buchanan Street",
+        "kind": "neighborhood",
+        "lat": 55.8617,
+        "lng": -4.2536
+      }
+    ]
+  },
+  {
+    "hubId": "antwerp",
+    "name": "앤트워프",
+    "name_en": "Antwerp",
+    "country": "벨기에",
+    "country_en": "Belgium",
+    "lat": 51.2213,
+    "lng": 4.4051,
+    "aliases": [
+      "antwerp",
+      "antwerpen",
+      "anvers",
+      "안트베르펜"
+    ],
+    "attractions": [
+      {
+        "name": "안트베르펜 성모 대성당",
+        "name_en": "Cathedral of Our Lady Antwerp",
+        "kind": "landmark",
+        "lat": 51.2204,
+        "lng": 4.4011
+      },
+      {
+        "name": "안트베르펜 중앙역",
+        "name_en": "Antwerp Central Station",
+        "kind": "landmark",
+        "lat": 51.2172,
+        "lng": 4.4211
+      },
+      {
+        "name": "안트베르펜 흐로터마르크트",
+        "name_en": "Grote Markt Antwerp",
+        "kind": "landmark",
+        "lat": 51.2211,
+        "lng": 4.3997
+      },
+      {
+        "name": "MAS 박물관",
+        "name_en": "MAS Museum",
+        "kind": "museum",
+        "lat": 51.229,
+        "lng": 4.4047
+      },
+      {
+        "name": "루벤스 하우스",
+        "name_en": "Rubens House",
+        "kind": "museum",
+        "lat": 51.219,
+        "lng": 4.409
+      },
+      {
+        "name": "헷 스텐",
+        "name_en": "Het Steen",
+        "kind": "landmark",
+        "lat": 51.2227,
+        "lng": 4.3974
+      },
+      {
+        "name": "메이르 거리",
+        "name_en": "Meir",
+        "kind": "neighborhood",
+        "lat": 51.2183,
+        "lng": 4.4075
+      }
+    ]
+  },
+  {
+    "hubId": "rotterdam",
+    "name": "로테르담",
+    "name_en": "Rotterdam",
+    "country": "네덜란드",
+    "country_en": "Netherlands",
+    "lat": 51.9244,
+    "lng": 4.4777,
+    "aliases": [
+      "rotterdam"
+    ],
+    "attractions": [
+      {
+        "name": "에라스무스 다리",
+        "name_en": "Erasmus Bridge",
+        "kind": "landmark",
+        "lat": 51.909,
+        "lng": 4.4865
+      },
+      {
+        "name": "마르크탈",
+        "name_en": "Markthal",
+        "kind": "market",
+        "lat": 51.92,
+        "lng": 4.4867
+      },
+      {
+        "name": "큐브 하우스",
+        "name_en": "Cube Houses",
+        "kind": "landmark",
+        "lat": 51.9206,
+        "lng": 4.4908
+      },
+      {
+        "name": "유로마스트",
+        "name_en": "Euromast",
+        "kind": "viewpoint",
+        "lat": 51.9054,
+        "lng": 4.4666
+      },
+      {
+        "name": "쿤스트할",
+        "name_en": "Kunsthal",
+        "kind": "museum",
+        "lat": 51.9113,
+        "lng": 4.471
+      },
+      {
+        "name": "델프스하번",
+        "name_en": "Delfshaven",
+        "kind": "neighborhood",
+        "lat": 51.9097,
+        "lng": 4.4475
+      },
+      {
+        "name": "로테르담 중앙역",
+        "name_en": "Rotterdam Centraal",
+        "kind": "landmark",
+        "lat": 51.925,
+        "lng": 4.469
+      }
+    ]
+  },
+  {
+    "hubId": "bilbao",
+    "name": "빌바오",
+    "name_en": "Bilbao",
+    "country": "스페인",
+    "country_en": "Spain",
+    "lat": 43.263,
+    "lng": -2.935,
+    "aliases": [
+      "bilbao",
+      "bilbo"
+    ],
+    "attractions": [
+      {
+        "name": "빌바오 구겐하임 미술관",
+        "name_en": "Guggenheim Museum Bilbao",
+        "kind": "museum",
+        "lat": 43.2687,
+        "lng": -2.934
+      },
+      {
+        "name": "빌바오 구시가지",
+        "name_en": "Casco Viejo Bilbao",
+        "kind": "neighborhood",
+        "lat": 43.2575,
+        "lng": -2.9235
+      },
+      {
+        "name": "주비수리 다리",
+        "name_en": "Zubizuri",
+        "kind": "landmark",
+        "lat": 43.2665,
+        "lng": -2.9285
+      },
+      {
+        "name": "리베라 시장",
+        "name_en": "Ribera Market",
+        "kind": "market",
+        "lat": 43.2558,
+        "lng": -2.9238
+      },
+      {
+        "name": "아즈쿠나 센터",
+        "name_en": "Azkuna Zentroa",
+        "kind": "landmark",
+        "lat": 43.2597,
+        "lng": -2.9368
+      },
+      {
+        "name": "도냐 카실다 공원",
+        "name_en": "Dona Casilda Park",
+        "kind": "park",
+        "lat": 43.2645,
+        "lng": -2.945
+      },
+      {
+        "name": "아리아가 극장",
+        "name_en": "Arriaga Theatre",
+        "kind": "landmark",
+        "lat": 43.2592,
+        "lng": -2.9247
+      }
+    ]
+  },
+  {
+    "hubId": "innsbruck",
+    "name": "인스브루크",
+    "name_en": "Innsbruck",
+    "country": "오스트리아",
+    "country_en": "Austria",
+    "lat": 47.2692,
+    "lng": 11.4041,
+    "aliases": [
+      "innsbruck",
+      "인스부르크"
+    ],
+    "attractions": [
+      {
+        "name": "황금 지붕",
+        "name_en": "Golden Roof",
+        "kind": "landmark",
+        "lat": 47.2686,
+        "lng": 11.3933
+      },
+      {
+        "name": "인스브루크 호프부르크",
+        "name_en": "Hofburg Innsbruck",
+        "kind": "landmark",
+        "lat": 47.2689,
+        "lng": 11.3945
+      },
+      {
+        "name": "노르트케테",
+        "name_en": "Nordkette",
+        "kind": "viewpoint",
+        "lat": 47.286,
+        "lng": 11.393
+      },
+      {
+        "name": "암브라스 성",
+        "name_en": "Ambras Castle",
+        "kind": "landmark",
+        "lat": 47.2565,
+        "lng": 11.4345
+      },
+      {
+        "name": "인스브루크 궁정교회",
+        "name_en": "Hofkirche Innsbruck",
+        "kind": "landmark",
+        "lat": 47.2684,
+        "lng": 11.3955
+      },
+      {
+        "name": "마리아 테레지아 거리",
+        "name_en": "Maria-Theresien-Strasse",
+        "kind": "neighborhood",
+        "lat": 47.2655,
+        "lng": 11.394
+      },
+      {
+        "name": "베르기젤 스키점프대",
+        "name_en": "Bergisel Ski Jump",
+        "kind": "landmark",
+        "lat": 47.2489,
+        "lng": 11.3994
+      }
+    ]
+  },
+  {
+    "hubId": "sinan",
+    "name": "신안",
+    "name_en": "Sinan",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.833,
+    "lng": 126.108,
+    "aliases": [
+      "신안군",
+      "sinan"
+    ],
+    "attractions": [
+      {
+        "name": "천사대교",
+        "name_en": "Cheonsa Bridge",
+        "kind": "landmark",
+        "lat": 34.92,
+        "lng": 126.17
+      },
+      {
+        "name": "퍼플섬",
+        "name_en": "Purple Island",
+        "kind": "landmark",
+        "lat": 34.812,
+        "lng": 126.15
+      },
+      {
+        "name": "증도",
+        "name_en": "Jeungdo",
+        "kind": "beach",
+        "lat": 34.998,
+        "lng": 126.148
+      },
+      {
+        "name": "태평염전",
+        "name_en": "Taepyeong Salt Farm",
+        "kind": "landmark",
+        "lat": 34.997,
+        "lng": 126.163
+      },
+      {
+        "name": "임자도 대광해수욕장",
+        "name_en": "Imjado Daegwang Beach",
+        "kind": "beach",
+        "lat": 35.1,
+        "lng": 126.08
+      },
+      {
+        "name": "홍도",
+        "name_en": "Hongdo",
+        "kind": "viewpoint",
+        "lat": 34.685,
+        "lng": 125.195
+      },
+      {
+        "name": "흑산도",
+        "name_en": "Heuksando",
+        "kind": "viewpoint",
+        "lat": 34.684,
+        "lng": 125.425
+      }
+    ]
+  },
+  {
+    "hubId": "naju",
+    "name": "나주",
+    "name_en": "Naju",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.016,
+    "lng": 126.711,
+    "aliases": [
+      "나주시",
+      "naju"
+    ],
+    "attractions": [
+      {
+        "name": "나주읍성",
+        "name_en": "Naju Eupseong",
+        "kind": "landmark",
+        "lat": 35.029,
+        "lng": 126.718
+      },
+      {
+        "name": "나주향교",
+        "name_en": "Naju Hyanggyo",
+        "kind": "landmark",
+        "lat": 35.031,
+        "lng": 126.715
+      },
+      {
+        "name": "금성관",
+        "name_en": "Geumseonggwan",
+        "kind": "landmark",
+        "lat": 35.03,
+        "lng": 126.717
+      },
+      {
+        "name": "나주배박물관",
+        "name_en": "Naju Pear Museum",
+        "kind": "museum",
+        "lat": 35.024,
+        "lng": 126.78
+      },
+      {
+        "name": "영산포 홍어거리",
+        "name_en": "Yeongsanpo Hongeo Street",
+        "kind": "market",
+        "lat": 34.995,
+        "lng": 126.712
+      },
+      {
+        "name": "불회사",
+        "name_en": "Bulhoesa",
+        "kind": "temple",
+        "lat": 34.945,
+        "lng": 126.825
+      },
+      {
+        "name": "빛가람호수공원",
+        "name_en": "Bitgaram Lake Park",
+        "kind": "park",
+        "lat": 35.02,
+        "lng": 126.79
+      }
+    ]
+  },
+  {
+    "hubId": "hwasun",
+    "name": "화순",
+    "name_en": "Hwasun",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 35.0645,
+    "lng": 126.9867,
+    "aliases": [
+      "화순군",
+      "hwasun"
+    ],
+    "attractions": [
+      {
+        "name": "화순고인돌유적지",
+        "name_en": "Hwasun Dolmen Site",
+        "kind": "landmark",
+        "lat": 34.978,
+        "lng": 126.932
+      },
+      {
+        "name": "운주사",
+        "name_en": "Unjusa",
+        "kind": "temple",
+        "lat": 34.925,
+        "lng": 126.89
+      },
+      {
+        "name": "화순 적벽",
+        "name_en": "Hwasun Jeokbyeok",
+        "kind": "viewpoint",
+        "lat": 35.12,
+        "lng": 127
+      },
+      {
+        "name": "세량지",
+        "name_en": "Seryangji",
+        "kind": "park",
+        "lat": 35.05,
+        "lng": 127.02
+      },
+      {
+        "name": "화순온천",
+        "name_en": "Hwasun Hot Spring",
+        "kind": "landmark",
+        "lat": 35.055,
+        "lng": 126.98
+      },
+      {
+        "name": "만연산 치유숲",
+        "name_en": "Manyeonsan Healing Forest",
+        "kind": "park",
+        "lat": 35.1,
+        "lng": 127.05
+      },
+      {
+        "name": "화순 고인돌 박물관",
+        "name_en": "Hwasun Dolmen Museum",
+        "kind": "museum",
+        "lat": 34.98,
+        "lng": 126.935
+      }
+    ]
+  },
+  {
+    "hubId": "gwangyang",
+    "name": "광양",
+    "name_en": "Gwangyang",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 34.9404,
+    "lng": 127.6956,
+    "aliases": [
+      "광양시",
+      "gwangyang"
+    ],
+    "attractions": [
+      {
+        "name": "구봉산 케이블카",
+        "name_en": "Gubongsan Cable Car",
+        "kind": "viewpoint",
+        "lat": 34.935,
+        "lng": 127.695
+      },
+      {
+        "name": "광양 매화마을",
+        "name_en": "Gwangyang Maehwa Village",
+        "kind": "park",
+        "lat": 35.07,
+        "lng": 127.68
+      },
+      {
+        "name": "광양 백운산",
+        "name_en": "Baegunsan Gwangyang",
+        "kind": "viewpoint",
+        "lat": 35.1,
+        "lng": 127.62
+      },
+      {
+        "name": "배알도 섬",
+        "name_en": "Baealdo Island",
+        "kind": "landmark",
+        "lat": 34.925,
+        "lng": 127.74
+      },
+      {
+        "name": "망덕포구",
+        "name_en": "Mangdeok Port",
+        "kind": "neighborhood",
+        "lat": 34.955,
+        "lng": 127.76
+      },
+      {
+        "name": "광양읍성",
+        "name_en": "Gwangyang Eupseong",
+        "kind": "landmark",
+        "lat": 34.975,
+        "lng": 127.59
+      },
+      {
+        "name": "옥룡사 동백숲",
+        "name_en": "Okryonsa Camellia Forest",
+        "kind": "temple",
+        "lat": 35.03,
+        "lng": 127.61
+      }
+    ]
+  },
+  {
+    "hubId": "wonju",
+    "name": "원주",
+    "name_en": "Wonju",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.3422,
+    "lng": 127.9202,
+    "aliases": [
+      "원주시",
+      "wonju"
+    ],
+    "attractions": [
+      {
+        "name": "원주한지테마파크",
+        "name_en": "Wonju Hanji Theme Park",
+        "kind": "museum",
+        "lat": 37.34,
+        "lng": 127.95
+      },
+      {
+        "name": "치악산국립공원",
+        "name_en": "Chiaksan National Park",
+        "kind": "park",
+        "lat": 37.37,
+        "lng": 128.05
+      },
+      {
+        "name": "뮤지엄산",
+        "name_en": "Museum SAN",
+        "kind": "museum",
+        "lat": 37.43,
+        "lng": 127.99
+      },
+      {
+        "name": "원주중앙시장",
+        "name_en": "Wonju Jungang Market",
+        "kind": "market",
+        "lat": 37.348,
+        "lng": 127.95
+      },
+      {
+        "name": "간현관광지",
+        "name_en": "Ganhyeon Recreation Area",
+        "kind": "viewpoint",
+        "lat": 37.33,
+        "lng": 127.83
+      },
+      {
+        "name": "원주출렁다리",
+        "name_en": "Wonju Suspension Bridge",
+        "kind": "landmark",
+        "lat": 37.332,
+        "lng": 127.825
+      },
+      {
+        "name": "구룡사",
+        "name_en": "Guryongsa",
+        "kind": "temple",
+        "lat": 37.39,
+        "lng": 128.05
+      }
+    ]
   }
 ]

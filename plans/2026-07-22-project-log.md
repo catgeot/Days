@@ -386,6 +386,19 @@
 - hub 스모크: `함부르크`/`브라티슬라바`/`자그레브`/`자그렙`/`잘츠부르크`/`잘쯔부르크`/`보르도`/`무안`/`영암`/`강진`/`장성`/`함평` + 회귀(쾰른·napoli·속초·파리)
 - exact: `엘프필하모니`/`미니어처 분데스란트`/`브라티슬라바 성`/`자그레브 대성당`/`호엔잘츠부르크 성`/`물의 거울`/`시테 뒤 뱅`/`월출산국립공원`/`다산초당`/`백양사`/`돌머리해수욕장`
 
+## cityAttractionHubs — 글래스고·앤트워프·빌바오 + 신안·원주 등 (#21)
+
+**상태**: 데이터 append · resolve 스모크 ✅ · draft PR 검수 대기
+
+- **브랜치**: `cursor/city-attraction-batch21-2829` = #20 tip(`dcb63e1` · `batch20-3eac`) **위 append**
+- 한 배치 **10 hub × 7명소** (#20 핸드오프 「다음 후보」+ 빌바오·인스브루크·나주·화순·광양·원주)
+- 해외: `glasgow`(alias **`글라스고`**) · `antwerp`(alias **`antwerpen`**/`anvers`/`안트베르펜`) · `rotterdam` · `bilbao`(alias **`bilbo`**) · `innsbruck`(alias **`인스부르크`**)
+- 국내: `sinan` · `naju` · `hwasun` · `gwangyang` · `wonju`
+- 총 **150 hub** · 명소 **1030** · shrine KIND_LABEL 유지 · 시드 intact
+- 주의: `인스브루크 호프부르크`(비엔나 `호프부르크`와 분리) · `화순고인돌`(고창 고인돌과 분리) · `광양 매화마을`/`광양 백운산` 접두 · `옥룡사 동백숲`(광양)
+- hub 스모크: `글래스고`/`glasgow`/`글라스고`/`앤트워프`/`antwerpen`/`로테르담`/`빌바오`/`bilbo`/`인스브루크`/`인스부르크`/`신안`/`나주`/`화순`/`광양`/`원주` + 회귀(함부르크·무안·속초·파리)
+- exact: `글래스고 대성당`/`안트베르펜 중앙역`/`에라스무스 다리`/`빌바오 구겐하임 미술관`/`황금 지붕`/`천사대교`/`퍼플섬`/`나주읍성`/`화순고인돌유적지`/`운주사`/`구봉산 케이블카`/`옥룡사 동백숲`/`뮤지엄산`/`치악산국립공원`
+
 ### PR 머지 순서
 
 | 순서 | PR | 비고 |
@@ -397,16 +410,17 @@
 | ✅ 닫힘 | draft **#16** | #17로 대체 |
 | 다음 | **#18** | #17 tip 위 10 hub |
 | 다음 | **#19** | #18 tip 위 10 hub. 단독 머지 시 #18 포함 |
-| 다음 | **본 배치(#20)** | #19 tip 위 10 hub. 단독 머지 시 #18·#19 포함 |
+| 다음 | **#20** | #19 tip 위 10 hub. 단독 머지 시 #18·#19 포함 |
+| 다음 | **본 배치(#21)** | #20 tip 위 10 hub. 단독 머지 시 #18~#20 포함 |
 | — | #4~#12 | #13에 흡수 · **데스크톱에서 draft 닫기** |
 
-### 현재 hub 맵 (140)
+### 현재 hub 맵 (150)
 
 | 구분 | hubId |
 |------|-------|
 | 시드 | `sokcho` · `paris` |
-| 국내 | …(기존 69) · **`muan`** · **`yeongam`** · **`gangjin`** · **`jangseong`** · **`hampyeong`** |
-| 해외 | …(기존 60) · **`hamburg`** · **`bratislava`** · **`zagreb`** · **`salzburg`** · **`bordeaux`** |
+| 국내 | …(기존 74) · **`sinan`** · **`naju`** · **`hwasun`** · **`gwangyang`** · **`wonju`** |
+| 해외 | …(기존 65) · **`glasgow`** · **`antwerp`** · **`rotterdam`** · **`bilbao`** · **`innsbruck`** |
 
 - **제주**: `jeju`(제주시) / `seogwipo`(서귀포) **분리**. alias `제주`·`제주도` → 제주시. 성산·중문·천지연 등은 서귀포.
 - **고성**: `goseong` = **강원 고성**(화진포·DMZ). 경남 고성과 혼동 주의.
@@ -427,9 +441,9 @@
 ```bash
 node --input-type=module -e "
 import { resolveCityAttractionHub, resolveHubAttraction, getKindLabel, listCityAttractionHubs } from './src/pages/Home/lib/cityAttractionHubs.js';
-console.log(listCityAttractionHubs().length); // 140
-const hubs = ['함부르크','브라티슬라바','자그레브','자그렙','잘츠부르크','잘쯔부르크','보르도','무안','영암','강진','장성','함평','쾰른','napoli','속초','파리'];
-const exact = ['엘프필하모니','미니어처 분데스란트','브라티슬라바 성','자그레브 대성당','호엔잘츠부르크 성','물의 거울','시테 뒤 뱅','월출산국립공원','다산초당','백양사','돌머리해수욕장','땅끝마을','낙산사'];
+console.log(listCityAttractionHubs().length); // 150
+const hubs = ['글래스고','glasgow','앤트워프','antwerpen','로테르담','빌바오','bilbo','인스브루크','인스부르크','신안','나주','화순','광양','원주','함부르크','무안','속초','파리'];
+const exact = ['글래스고 대성당','안트베르펜 중앙역','에라스무스 다리','빌바오 구겐하임 미술관','황금 지붕','천사대교','나주읍성','화순고인돌유적지','구봉산 케이블카','뮤지엄산','엘프필하모니','낙산사'];
 for (const q of hubs) console.log('hub', q, !!resolveCityAttractionHub(q));
 for (const q of exact) console.log('exact', q, !!resolveHubAttraction(q));
 console.log('shrine', getKindLabel('shrine')); // 신사
@@ -438,11 +452,11 @@ console.log('shrine', getKindLabel('shrine')); // 신사
 
 ### 에이전트 핸드오프 (명소-이어하기)
 
-- **읽을 것 3**: 본 절「#20」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
+- **읽을 것 3**: 본 절「#21」·「스키마·수정 규칙」·「PR 머지 순서」 (+ `.ai-context` 3절 Smart Search / 도시 허브)
 - **금지 3**: `shrine` 라벨 삭제 · JSON 전면 rewrite(append만) · 미합의 `releaseNotes` · UI/Mapbox 동기화 무단
 - **다음 작업 (사용자 선택)**:
-  1. **머지**: **#18** → **#19** → **본 배치(#20)** · #4~#12 draft **닫기**(데스크톱)
-  2. **다음 배치**(8~12 hub): 예) 글래스고·앤트워프·로테르담 · 국내 영광 외 미등록 시·군(예: 신안·진도 기등록 주의)·유럽 2선 도시
-  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `자그렙`→자그레브 · `잘쯔부르크`→잘츠부르크 · `월출산국립공원`/`다산초당` exact · 모바일 키보드
+  1. **머지**: **#18** → **#19** → **#20** → **본 배치(#21)** · #4~#12 draft **닫기**(데스크톱)
+  2. **다음 배치**(8~12 hub): 예) 벨파스트·룩셈부르크·두브로브니크 · 국내 미등록 시·군(예: 양평·충주·아산·서산)·유럽 2선
+  3. 데스크톱 QA: 드롭다운 · Enter 선택 카드 · `글라스고`→글래스고 · `antwerpen`→앤트워프 · `인스부르크`→인스브루크 · `천사대교`/`뮤지엄산` exact · 모바일 키보드
   4. 릴리스 노트는 **합의 후**만
-- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#20 tip 위 append)」 / 「#18→#19→#20 머지부터」
+- **제시어**: `명소-이어하기` + `@plans/2026-07-22-project-log.md` · 「다음 8~12 hub 배치 (#21 tip 위 append)」 / 「#18→#19→#20→#21 머지부터」
