@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   LayoutGrid,
   Loader2,
+  MapPin,
   Users,
   X,
 } from 'lucide-react';
@@ -29,13 +30,16 @@ import {
   buildMrtMylinkUrl,
   buildTripcomHotelSearchUrl,
 } from '../../../utils/affiliate';
+import {
+  getPartnerLinkTarget,
+  getTripcomLinkRel,
+} from '../../../components/PlaceCard/common/partnerNavigation';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
   MRT_HOME_MYLINK_ID,
   MRT_PACKAGE_SHORT_URLS,
 } from '../data/mrtPackageThemeLinks';
-import TripcomHotelBannerWidget from './TripcomHotelBannerWidget';
 import {
   GuestStepper,
   StayRangeCalendar,
@@ -108,6 +112,7 @@ function formatPrice(n) {
  * 달력 기간 선택·인원 스테퍼는 API를 치지 않음.
  */
 function StayDateBar({
+  placeName = '',
   checkIn,
   checkOut,
   todayYmd,
@@ -137,6 +142,7 @@ function StayDateBar({
     draftOut !== checkOut ||
     draftAdult !== adultCount ||
     draftChild !== childCount;
+  const title = String(placeName || '').trim();
 
   const closeCalendar = useCallback(() => setOpen(false), []);
 
@@ -170,60 +176,76 @@ function StayDateBar({
       ref={rootRef}
       className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-2.5 py-2"
     >
-      <div className="flex min-w-0 items-center gap-1.5">
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          aria-label="체크인·체크아웃 날짜 선택"
-          onClick={(e) => {
-            e.stopPropagation();
-            setOpen((v) => !v);
-          }}
-          className={`flex min-h-[40px] min-w-0 flex-1 items-center gap-1.5 rounded-lg border px-2 py-1.5 transition-colors ${
-            open
-              ? 'border-amber-300/50 bg-black/55'
-              : 'border-white/10 bg-black/40 hover:border-amber-300/45 hover:bg-black/55'
-          }`}
+      {(title || showClose) ? (
+        <div className="mb-1.5 flex min-w-0 items-center gap-1.5">
+          {title ? (
+            <div className="flex min-w-0 flex-1 items-center gap-1.5 px-0.5">
+              <MapPin
+                size={14}
+                className="shrink-0 text-amber-200/85"
+                aria-hidden="true"
+              />
+              <p className="min-w-0 truncate text-left text-[13px] font-bold text-amber-50">
+                {title}
+              </p>
+            </div>
+          ) : (
+            <span className="min-w-0 flex-1" />
+          )}
+          {showClose ? (
+            <button
+              type="button"
+              aria-label="숙소 목록 닫기"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose?.();
+              }}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all"
+            >
+              <X size={16} strokeWidth={2.5} aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        aria-label="체크인·체크아웃 날짜 선택"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((v) => !v);
+        }}
+        className={`flex min-h-[40px] w-full min-w-0 items-center gap-1.5 rounded-lg border px-2 py-1.5 transition-colors ${
+          open
+            ? 'border-amber-300/50 bg-black/55'
+            : 'border-white/10 bg-black/40 hover:border-amber-300/45 hover:bg-black/55'
+        }`}
+      >
+        <CalendarDays
+          size={16}
+          className="shrink-0 text-amber-200/90"
+          aria-hidden="true"
+        />
+        <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
+          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크인</span>
+          <span className="truncate text-sm font-bold tabular-nums text-amber-50">
+            {formatStayDateLabel(draftIn)}
+          </span>
+        </span>
+        <span
+          className="shrink-0 rounded-md bg-amber-400/20 px-1.5 py-0.5 text-xs font-bold tabular-nums text-amber-100"
+          aria-label={draftNights > 0 ? `${draftNights}박` : '일정'}
         >
-          <CalendarDays
-            size={16}
-            className="shrink-0 text-amber-200/90"
-            aria-hidden="true"
-          />
-          <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
-            <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크인</span>
-            <span className="truncate text-sm font-bold tabular-nums text-amber-50">
-              {formatStayDateLabel(draftIn)}
-            </span>
+          {draftNights > 0 ? `${draftNights}박` : '·'}
+        </span>
+        <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
+          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크아웃</span>
+          <span className="truncate text-sm font-bold tabular-nums text-amber-50">
+            {formatStayDateLabel(draftOut)}
           </span>
-          <span
-            className="shrink-0 rounded-md bg-amber-400/20 px-1.5 py-0.5 text-xs font-bold tabular-nums text-amber-100"
-            aria-label={draftNights > 0 ? `${draftNights}박` : '일정'}
-          >
-            {draftNights > 0 ? `${draftNights}박` : '·'}
-          </span>
-          <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
-            <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크아웃</span>
-            <span className="truncate text-sm font-bold tabular-nums text-amber-50">
-              {formatStayDateLabel(draftOut)}
-            </span>
-          </span>
-        </button>
-        {showClose ? (
-          <button
-            type="button"
-            aria-label="숙소 목록 닫기"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose?.();
-            }}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all"
-          >
-            <X size={16} strokeWidth={2.5} aria-hidden="true" />
-          </button>
-        ) : null}
-      </div>
+        </span>
+      </button>
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-1.5">
         <Users size={12} className="shrink-0 text-amber-200/75" aria-hidden="true" />
         <GuestStepper
@@ -743,6 +765,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
 
   const renderDateBar = (opts = {}) => (
     <StayDateBar
+      placeName={name}
       checkIn={stayDates.checkIn}
       checkOut={stayDates.checkOut}
       todayYmd={todayYmd}
@@ -753,9 +776,6 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       onClose={() => setExpanded(false)}
     />
   );
-
-  const emptyMessage =
-    '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요. 아래에서 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요.';
 
   const tripcomStayOptions = {
     checkIn: stayDates.checkIn,
@@ -769,6 +789,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     mode: 'list',
     campaign: TRIPCOM_HOTEL_TRACKING.emptyResult,
   });
+  const tripcomLinkTarget = getPartnerLinkTarget();
+  const tripcomLinkRel = getTripcomLinkRel(tripcomLinkTarget);
 
   const showLowInventoryCta =
     status === 'ready' &&
@@ -784,51 +806,51 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       })
     : null;
 
-  const renderTripcomBanner = () => (
-    <TripcomHotelBannerWidget
-      location={location}
-      checkIn={stayDates.checkIn}
-      checkOut={stayDates.checkOut}
-      adultCount={guests.adultCount}
-      childCount={guests.childCount}
-      todayYmd={todayYmd}
-      onStayChange={applyStayFilters}
-      campaign={TRIPCOM_HOTEL_TRACKING.emptyResult}
-      className="w-full"
-    />
-  );
+  /** 「트립닷컴에서 더 보기」와 동일 톤 · empty CTA는 한 단계만 키움 */
+  const tripcomCtaClassName =
+    'inline-flex shrink-0 items-center justify-center rounded-md border border-sky-300/40 bg-sky-500/20 px-3 py-1.5 text-xs font-bold text-sky-50 hover:bg-sky-500/30 hover:border-sky-300/55 active:scale-[0.98] transition-all';
 
   const emptyState = (
-    <div className="flex min-h-[min(420px,calc(100%-5rem))] w-full flex-col items-stretch justify-center gap-4 px-1 py-6">
-      <p className="break-keep text-center text-sm text-white/50">{emptyMessage}</p>
-      {renderTripcomBanner()}
-      <p className="break-keep text-center text-[11px] text-white/35">
-        <a
-          href={tripcomEmptyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sky-300/80 underline-offset-2 hover:underline"
-        >
-          같은 조건으로 트립닷컴 열기
-        </a>
-      </p>
+    <div className="flex min-h-[min(420px,calc(100%-5rem))] w-full flex-col items-center justify-center gap-5 px-4 py-8">
+      <div className="max-w-md space-y-2 text-center">
+        <p className="break-keep text-[15px] font-bold leading-snug text-white/90">
+          이 여행지 숙소를 마이리얼트립에서 찾지 못했어요
+        </p>
+        <p className="break-keep text-[13px] font-medium leading-relaxed text-white/70">
+          위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요
+        </p>
+      </div>
+      <a
+        href={tripcomEmptyUrl}
+        target={tripcomLinkTarget}
+        rel={tripcomLinkRel}
+        onClick={(e) => e.stopPropagation()}
+        className={tripcomCtaClassName}
+      >
+        트립닷컴에서 검색
+      </a>
     </div>
   );
 
   const emptyStateMobile = (
-    <div className="flex w-full flex-col items-stretch gap-3 px-0 py-4">
-      <p className="break-keep text-center text-[12px] text-white/45">{emptyMessage}</p>
-      {renderTripcomBanner()}
-      <p className="break-keep text-center text-[10px] text-white/35">
-        <a
-          href={tripcomEmptyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sky-300/80 underline-offset-2 hover:underline"
-        >
-          같은 조건으로 트립닷컴 열기
-        </a>
-      </p>
+    <div className="flex min-h-[min(52vh,420px)] w-full flex-col items-center justify-center gap-4 px-3 py-10">
+      <div className="max-w-sm space-y-1.5 text-center">
+        <p className="break-keep text-[14px] font-bold leading-snug text-white/90">
+          이 여행지 숙소를 마이리얼트립에서 찾지 못했어요
+        </p>
+        <p className="break-keep text-[12px] font-medium leading-relaxed text-white/70">
+          위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요
+        </p>
+      </div>
+      <a
+        href={tripcomEmptyUrl}
+        target={tripcomLinkTarget}
+        rel={tripcomLinkRel}
+        onClick={(e) => e.stopPropagation()}
+        className={tripcomCtaClassName}
+      >
+        트립닷컴에서 검색
+      </a>
     </div>
   );
 

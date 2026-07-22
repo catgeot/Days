@@ -19,11 +19,16 @@
 - 상시 검색바 미적용 · 스크래핑 금지 유지
 - Trip 호텔 partners/ad iframe은 city/날짜/인원 프리필 **미지원**(항공 `aAirportCode`와 다름) → 네이티브 바가 SSOT
 - 기본 일정 **보름(+14)·3박**·성인2·아동0 (클라 `defaultMrtStayDates` · Edge `defaultStayDates`)
-- `stayDateControls.jsx` 공유 · StayDateBar와 동기화 · 위젯 iframe은 「직접 입력」접기
+- `stayDateControls.jsx` 공유 · StayDateBar가 일정·인원 SSOT
+
+### UX — 빈 결과: 헤더 여행지 + 트립 CTA만
+
+- `TripcomHotelBannerWidget` 제거 · `StayDateBar` 좌상단 여행지 표기
+- empty/error: 시인성 문구 + 중앙 컴팩트 「트립닷컴에서 검색」버튼만 (`/hotels/list` 프리필)
 
 ### 에이전트 핸드오프 (다음 세션 — 숙소 최적화)
 
-- **읽을 것**: 본 절 · `.ai-context` 5절 · `GlobeStayStrip` / `TripcomHotelBannerWidget` / `affiliate.js` 호텔 SSOT
+- **읽을 것**: 본 절 · `.ai-context` 5절 · `GlobeStayStrip` / `affiliate.js` 호텔 SSOT
 - **금지**: Trip.com 호텔 목록 스크래핑·가짜 API · 숙소 확장창 상시 iframe · `VITE_` MRT 키
-- **남은 일(선택)**: Fail 원격지 city ID 보강 · Edge `fetch-mrt-stays` 재배포(3박 기본) · 커스텀 바 UX 미세조정 · 릴리스 노트 합의 후 `releaseNotes.js`
+- **남은 일(선택)**: Fail 원격지 city ID 보강 · Edge `fetch-mrt-stays` 재배포(3박 기본) · 릴리스 노트 합의 후 `releaseNotes.js`
 - **제시어**: `숙소-이어하기` + `@plans/2026-07-22-project-log.md`
