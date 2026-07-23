@@ -131,6 +131,8 @@ function normalizeItem(
   return out;
 }
 
+const UPSTREAM_TIMEOUT_MS = 10_000;
+
 async function callTourApi(
   action: Action,
   query: Record<string, string>,
@@ -146,7 +148,9 @@ async function callTourApi(
   // serviceKey: raw as_is — do not URLSearchParams-encode (may double-encode)
   const url = `${base}/${path}?serviceKey=${serviceKey}&${params.toString()}`;
 
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+  });
   const text = await res.text();
   let parsed: Record<string, unknown> | null = null;
   try {
@@ -275,7 +279,24 @@ serve(async (req) => {
     }
 
     const query = buildUpstreamQuery(typedAction, body);
-    const result = await callTourApi(typedAction, query, serviceKey);
+    let result: Awaited<ReturnType<typeof callTourApi>>;
+    try {
+      result = await callTourApi(typedAction, query, serviceKey);
+    } catch (upstreamErr) {
+      const msg = (upstreamErr as Error)?.message || "upstream fetch failed";
+      const timedOut = /abort|timeout/i.test(msg);
+      return jsonResponse({
+        ok: false,
+        action: typedAction,
+        status: timedOut ? 504 : 502,
+        message: timedOut
+          ? `TourAPI upstream timeout (${UPSTREAM_TIMEOUT_MS}ms)`
+          : msg,
+        resultCode: null,
+        items: [],
+        rawCount: 0,
+      });
+    }
 
     if (!result.ok) {
       return jsonResponse({

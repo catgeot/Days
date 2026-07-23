@@ -77,7 +77,12 @@ function resolveGalleryStablePlaceKey(locationSource) {
 export const usePlaceGallery = (locationSource, options = {}) => {
   const { enabled = true, thumbnailOnly = false } = options;
   const [images, setImages] = useState([]);
-  const [isImgLoading, setIsImgLoading] = useState(false);
+  /** 장소가 있으면 fetch 전까지도 true — TourAPI 대기 중 빈 블랙 화면 방지 */
+  const [isImgLoading, setIsImgLoading] = useState(
+    () => Boolean(enabled && locationSource),
+  );
+  /** 더보기(append) 전용 — 기존 그리드를 스켈레톤으로 바꾸지 않음 */
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
 
   /** 같은 영문 쿼리를 쓰는 서로 다른 장소 구분 + in-flight 요청 무효화 */
@@ -256,14 +261,30 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     currentKoreanNameRef.current = dbStatsId || koreanName;
     currentQueryRef.current = primaryQuery;
 
-    // 같은 장소+쿼리로의 중복 요청만 스킵 (영문 쿼리만 보고 판단하면 다른 장소가 묶임)
-    if (!forceRefresh && lastFetchKeyRef.current === fetchKey) return;
-    lastFetchKeyRef.current = fetchKey;
+    // 이미 성공한 동일 키 + 이미지가 있을 때만 스킵 (시작 전 마킹하면 hang 후 재시도 불가)
+    if (
+      !forceRefresh &&
+      lastFetchKeyRef.current === fetchKey &&
+      allImagesRef.current.length > 0
+    ) {
+      processAndSetImages(allImagesRef.current);
+      setIsImgLoading(false);
+      setIsRefreshing(false);
+      return;
+    }
 
     const runId = ++galleryLoadSeqRef.current;
+    const hadImagesAtStart = allImagesRef.current.length > 0;
 
-    setIsImgLoading(true);
-    if (!forceRefresh) setImages([]);
+    if (forceRefresh) {
+      // 더보기: 기존 TourAPI/캐시 사진을 유지한 채 Unsplash만 append
+      setIsRefreshing(true);
+      if (!hadImagesAtStart) setIsImgLoading(true);
+    } else {
+      setIsImgLoading(true);
+      setIsRefreshing(false);
+      setImages([]);
+    }
 
     const CACHE_KEY = thumbnailOnly
       ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
@@ -280,13 +301,33 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       (typeof locationSource === 'object' ? resolveTourApiPlace(locationSource) : null) ||
       (koreanName ? resolveTourApiPlace(koreanName) : null);
 
+    const markFetchDone = () => {
+      if (runId === galleryLoadSeqRef.current) {
+        lastFetchKeyRef.current = fetchKey;
+      }
+    };
+
+    const finishLoading = () => {
+      if (runId !== galleryLoadSeqRef.current) return;
+      setIsImgLoading(false);
+      setIsRefreshing(false);
+    };
+
+    const restorePreservedImages = () => {
+      if (runId !== galleryLoadSeqRef.current) return;
+      if (allImagesRef.current.length > 0) {
+        processAndSetImages(allImagesRef.current);
+      }
+    };
+
     if (!forceRefresh) {
       pageRef.current = 1; // 🚨 [Fix] 일반 로드 시 페이지 초기화
       const validCache = loadFromSmartCache(CACHE_KEY);
       if (validCache && validCache.length > 0) {
         if (runId !== galleryLoadSeqRef.current) return;
         processAndSetImages(validCache);
-        if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+        markFetchDone();
+        finishLoading();
         return;
       }
 
@@ -300,11 +341,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             contentId: tourMapping.contentId,
             page: 1,
             thumbnailOnly,
+            skipProbe: true,
           });
           if (runId !== galleryLoadSeqRef.current) return;
           if (tourImages.length > 0) {
             processAndSetImages(tourImages);
             saveToSmartCache(CACHE_KEY, tourImages);
+            markFetchDone();
             if (dbStatsId || koreanName) {
               const thumbnailToSave =
                 tourImages[0]?.urls?.small || tourImages[0]?.urls?.regular || '';
@@ -337,7 +380,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                   });
               }
             }
-            if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+            finishLoading();
             return;
           }
         } catch (tourErr) {
@@ -366,14 +409,16 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               };
               processAndSetImages([thumb]);
               saveToSmartCache(CACHE_KEY, [thumb]);
-              if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+              markFetchDone();
+              finishLoading();
               return;
             }
             if (dbData.gallery_urls && dbData.gallery_urls.length > 0) {
               const gallerySlice = thumbnailOnly ? dbData.gallery_urls.slice(0, 1) : dbData.gallery_urls;
               processAndSetImages(gallerySlice);
               saveToSmartCache(CACHE_KEY, gallerySlice);
-              if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+              markFetchDone();
+              finishLoading();
               return;
             }
           }
@@ -382,46 +427,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
       }
     } else {
+      // 더보기: TourAPI page2는 중복·공허한 경우가 많아 건너뛰고 Unsplash/Pexels만 append
       pageRef.current += 1;
-      console.log(`🔄 강제 새로고침 실행: 기존 캐시 유지한 채 새로운 데이터 가져오기 (${primaryQuery}, 페이지: ${pageRef.current})`);
-
-      // 국내 TourAPI 페이지네이션(searchPhoto pageNo)
-      if (tourMapping?.photoKeyword) {
-        try {
-          const tourImages = await fetchTourApiGallery({
-            photoKeyword: tourMapping.photoKeyword,
-            photoKeywords: tourMapping.photoKeywords,
-            title: tourMapping.title,
-            contentId: tourMapping.contentId,
-            page: pageRef.current,
-            thumbnailOnly,
-          });
-          if (runId !== galleryLoadSeqRef.current) return;
-          if (tourImages.length > 0) {
-            const existingIds = new Set(allImagesRef.current.map((img) => img.id));
-            const fresh = tourImages.filter((img) => !existingIds.has(img.id));
-            const finalResults = thumbnailOnly
-              ? tourImages.slice(0, 1)
-              : [...allImagesRef.current, ...fresh];
-            processAndSetImages(finalResults);
-            saveToSmartCache(CACHE_KEY, finalResults);
-            if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
-            return;
-          }
-          // TourAPI 추가분 없음 → Unsplash 페이지로 폴백
-          console.warn('⚠️ TourAPI refresh empty — fallback Unsplash/Pexels');
-        } catch (tourErr) {
-          console.warn('⚠️ TourAPI refresh error — fallback Unsplash/Pexels', tourErr);
-        }
-      }
+      console.log(
+        `🔄 더 많은 사진: 기존 ${allImagesRef.current.length}장 유지 · Unsplash/Pexels append (${primaryQuery}, p${pageRef.current})`,
+      );
     }
 
     try {
       if (!ACCESS_KEY) {
         console.warn('⚠️ VITE_UNSPLASH_ACCESS_KEY missing — gallery Unsplash path skipped');
-        if (forceRefresh && allImagesRef.current.length > 0) {
-          pageRef.current -= 1;
-          processAndSetImages(allImagesRef.current);
+        if (forceRefresh) {
+          pageRef.current = Math.max(1, pageRef.current - 1);
+          restorePreservedImages();
         } else if (runId === galleryLoadSeqRef.current) {
           processAndSetImages([]);
         }
@@ -473,11 +491,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존
       if (forceRefresh && results.length === 0) {
         console.warn(`⚠️ 더 이상 가져올 이미지가 없습니다 (페이지 ${pageRef.current}). 이전 상태 유지.`);
-        pageRef.current -= 1; // 페이지 원복
-        if (runId === galleryLoadSeqRef.current) {
-          setIsImgLoading(false);
-          processAndSetImages(allImagesRef.current); // UI 원복
-        }
+        pageRef.current = Math.max(1, pageRef.current - 1);
+        restorePreservedImages();
         return;
       }
 
@@ -535,15 +550,30 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       }
     } catch (error) {
       console.error("Gallery API Error:", error);
-      if (runId === galleryLoadSeqRef.current) processAndSetImages([]);
+      if (forceRefresh) {
+        pageRef.current = Math.max(1, pageRef.current - 1);
+        restorePreservedImages();
+      } else if (runId === galleryLoadSeqRef.current) {
+        processAndSetImages([]);
+      }
     } finally {
-      if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+      markFetchDone();
+      finishLoading();
     }
 
   }, [ACCESS_KEY, PEXELS_KEY, sourceName, sourceId, locationSource, processAndSetImages, thumbnailOnly]);
 
   useEffect(() => {
-    if (!enabled) return undefined;
+    if (!enabled) {
+      setIsImgLoading(false);
+      setIsRefreshing(false);
+      return undefined;
+    }
+    // fetchImages 진입 전 페인트에서도 스켈레톤 유지 (TourAPI 지연 블랙스크린 방지)
+    if (stablePlaceKey) {
+      setIsImgLoading(true);
+      setIsRefreshing(false);
+    }
     fetchImages();
     // stablePlaceKey — 장소 전환 시에만 재조회 (location 객체 참조만 바뀌는 hydration은 무시)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -723,6 +753,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   return {
     images,
     isImgLoading,
+    isRefreshing,
     selectedImg,
     setSelectedImg,
     handleDownload,

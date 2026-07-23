@@ -301,6 +301,23 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 
 제시어: `오케스트레이터` + `명소좌표수리`
 
+### 5.5 국내 명소 TourAPI 좌표 (KR mapy/mapx)
+
+| 항목 | 값 |
+|------|-----|
+| SSOT | `cityAttractionHubs.json` **필드 패치** · **KR만** |
+| 계획 | [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) |
+| 소스 | TourAPI `mapy`/`mapx` · Edge `tourapi-proxy` 또는 `TOUR_API_SERVICE_KEY` |
+| 등급 | **HIT**만 snap · AMBIG/MISS/FAR 스킵·큐 |
+| 분리 | `tourapi-content-id-overrides` = 갤러리 slug — **좌표 혼용 금지** |
+| P0 | 김유정 `127933` 회귀 금지 · 양구·덕풍·진도타워 |
+| G0 | 메인만 — 스크립트+스모크 |
+| G1+ | 워커2 초안 → tip 직렬 · §4.2 |
+
+**권장 환경**: Cursor Cloud (Secrets + 장시간 LIVE).
+
+제시어: `오케스트레이터` + `TourAPI-명소좌표` · 계획 §6 복붙 블록.
+
 ---
 
 ## 6. 제시어 (복붙 · 최초·복구용)
@@ -312,7 +329,7 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「배치표부터 · 워커2」 |
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§4.2 준수」 |
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP 배치」 |
-| 국내 명소 TourAPI 좌표 | `TourAPI-명소좌표-이어하기` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 「KR HIT만 mapy/mapx · 갤러리 SSOT 분리」 |
+| 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud 권장 · 「G0 스크립트 → G1+ 워커2 · KR HIT만」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동」 |
 

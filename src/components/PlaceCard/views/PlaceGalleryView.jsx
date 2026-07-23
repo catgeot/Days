@@ -21,6 +21,96 @@ const MOBILE_LANDSCAPE_IMMERSIVE_QUERY = '(max-width: 767px) and (orientation: l
 const MOBILE_SWIPE_THRESHOLD_PX = 48;
 const MOBILE_SWIPE_DIRECTION_RATIO = 1.25;
 
+/** 그리드 셀 — URL decode 전 검은 빈칸 방지 */
+const GalleryGridTile = React.memo(function GalleryGridTile({
+  img,
+  index,
+  eager = false,
+  onOpen,
+  onRemove,
+  onBroken,
+  onPainted,
+}) {
+  const [loaded, setLoaded] = useState(false);
+  const paintedRef = useRef(false);
+  const src = img?.urls?.small || img?.urls?.regular;
+  const hasAspect = Boolean(img?.width && img?.height);
+
+  useEffect(() => {
+    setLoaded(false);
+    paintedRef.current = false;
+  }, [src]);
+
+  const markPainted = useCallback(() => {
+    if (paintedRef.current) return;
+    paintedRef.current = true;
+    onPainted?.(img);
+  }, [img, onPainted]);
+
+  return (
+    <div
+      onClick={(e) => {
+        if (e.ctrlKey || e.metaKey) return;
+        e.stopPropagation();
+        onOpen?.(e);
+      }}
+      onDoubleClick={(e) => {
+        if (e.ctrlKey || e.metaKey) {
+          e.stopPropagation();
+          if (onRemove) onRemove(img);
+        }
+      }}
+      className="break-inside-avoid bg-white/[0.06] rounded-2xl border border-white/10 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+      style={hasAspect ? { aspectRatio: `${img.width} / ${img.height}` } : undefined}
+    >
+      {!loaded && (
+        <div
+          className={`absolute inset-0 animate-pulse bg-gradient-to-br from-white/[0.12] via-white/[0.05] to-transparent ${hasAspect ? '' : 'min-h-[140px]'}`}
+          aria-hidden
+        />
+      )}
+      <img
+        src={src}
+        className={`w-full transition-[opacity,transform] duration-500 group-hover:scale-105 ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        } ${hasAspect ? 'h-full object-cover absolute inset-0' : 'h-auto object-cover relative'}`}
+        alt={`place-img-${index}`}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        referrerPolicy="no-referrer"
+        width={img.width || undefined}
+        height={img.height || undefined}
+        onLoad={() => {
+          setLoaded(true);
+          markPainted();
+        }}
+        onError={() => {
+          markPainted();
+          onBroken?.(img);
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20} />
+    </div>
+  );
+});
+
+const GalleryLoadingChrome = () => (
+  <div
+    className="sticky top-0 z-[40] mb-4 flex flex-col items-center justify-center gap-2.5 rounded-2xl border border-blue-400/20 bg-[#0b1018]/92 px-4 py-5 shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-md"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+    aria-label="사진을 불러오는 중"
+  >
+    <div className="h-10 w-10 rounded-full border-[3px] border-blue-300/35 border-t-blue-300 animate-spin" />
+    <p className="text-sm font-semibold text-white/85">사진을 불러오는 중...</p>
+    <p className="text-center text-[11px] leading-relaxed text-white/45">
+      국내 명소는 관광 사진 API를 준비하고 있어요
+    </p>
+  </div>
+);
+
 const mobileNavButtonClass = (enabled) =>
   `flex shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 ${
     enabled ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
@@ -30,6 +120,7 @@ const PlaceGalleryView = React.memo(({
   location,
   images,
   isImgLoading,
+  isRefreshing = false,
   selectedImg,
   setSelectedImg,
   isFullScreen,
@@ -80,10 +171,51 @@ const PlaceGalleryView = React.memo(({
     () => typeof window !== 'undefined' && window.matchMedia(TOUCH_DEVICE_QUERY).matches
   );
   const [refreshCooldownLeft, setRefreshCooldownLeft] = useState(0);
+  /** 최초 진입 decode 전용 — 더보기로 목록이 늘어도 다시 스켈레톤/크롬을 띄우지 않음 */
+  const [paintedCount, setPaintedCount] = useState(0);
+  const [galleryVisuallyReady, setGalleryVisuallyReady] = useState(false);
   const galleryPlaceKey = useMemo(
     () => location?.slug || location?.id || location?.name || '',
     [location?.slug, location?.id, location?.name],
   );
+  const paintTarget = Math.min(2, images?.length || 0);
+  const hasImages = images.length > 0;
+  /** 초기 로드만 전체 스켈레톤 — 더보기(isRefreshing) 중에는 기존 그리드 유지 */
+  const showInitialSkeleton = Boolean(isImgLoading && !hasImages && !isRefreshing);
+  const isPaintPending = Boolean(
+    !isImgLoading &&
+      !isRefreshing &&
+      !galleryVisuallyReady &&
+      paintTarget > 0 &&
+      paintedCount < paintTarget,
+  );
+  const showLoadingChrome = Boolean(showInitialSkeleton || isPaintPending);
+  const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton);
+
+  useEffect(() => {
+    setPaintedCount(0);
+    setGalleryVisuallyReady(false);
+  }, [galleryPlaceKey]);
+
+  useEffect(() => {
+    if (paintedCount >= paintTarget && paintTarget > 0) {
+      setGalleryVisuallyReady(true);
+    }
+  }, [paintedCount, paintTarget]);
+
+  /** decode/onLoad 누락 시 스피너·버튼 숨김이 고착되지 않게 */
+  useEffect(() => {
+    if (!isPaintPending || paintTarget <= 0) return undefined;
+    const t = window.setTimeout(() => {
+      setPaintedCount((n) => Math.max(n, paintTarget));
+      setGalleryVisuallyReady(true);
+    }, 8000);
+    return () => window.clearTimeout(t);
+  }, [isPaintPending, paintTarget, galleryPlaceKey]);
+
+  const onTilePainted = useCallback(() => {
+    setPaintedCount((n) => n + 1);
+  }, []);
 
   const {
     transformStyle,
@@ -134,12 +266,12 @@ const PlaceGalleryView = React.memo(({
   }, [getRefreshCooldownRemaining, isImgLoading, galleryPlaceKey]);
 
   const onRefreshClick = useCallback(() => {
-    if (isImgLoading || refreshCooldownLeft > 0 || !handleRefresh) return;
+    if (isImgLoading || isRefreshing || refreshCooldownLeft > 0 || !handleRefresh) return;
     const started = handleRefresh();
     if (started && getRefreshCooldownRemaining) {
       setRefreshCooldownLeft(getRefreshCooldownRemaining());
     }
-  }, [handleRefresh, getRefreshCooldownRemaining, isImgLoading, refreshCooldownLeft]);
+  }, [handleRefresh, getRefreshCooldownRemaining, isImgLoading, isRefreshing, refreshCooldownLeft]);
 
   useEffect(() => {
     queueMicrotask(() => setIsMobileUIHidden(false));
@@ -342,6 +474,7 @@ const PlaceGalleryView = React.memo(({
               className="max-h-full max-w-full select-none rounded-lg object-contain shadow-2xl animate-fade-in landscape:h-full landscape:w-full landscape:max-h-[100dvh] landscape:max-w-[100vw] landscape:rounded-none landscape:shadow-none"
               style={transformStyle}
               alt="full-view"
+              referrerPolicy="no-referrer"
               onError={() => handleDropBrokenImage?.(selectedImg)}
             />
           </div>
@@ -459,6 +592,7 @@ const PlaceGalleryView = React.memo(({
             src={selectedImg.urls.regular}
             className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`}
             alt="full-view"
+            referrerPolicy="no-referrer"
             onError={() => handleDropBrokenImage?.(selectedImg)}
           />
       </div>
@@ -650,82 +784,77 @@ const PlaceGalleryView = React.memo(({
             )}
 
             <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} max-md:landscape:mt-0 md:mt-0`}>
-              {isImgLoading ? (
-                <div className="grid grid-cols-2 gap-4">
-                   {[...Array(6)].map((_, i) => (
-                     <div key={i} className="aspect-[3/4] animate-pulse bg-white/5 rounded-2xl border border-white/5" />
-                   ))}
+              {showLoadingChrome && <GalleryLoadingChrome />}
+
+              {showInitialSkeleton ? (
+                <div className="grid grid-cols-2 gap-4" aria-hidden>
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-[3/4] animate-pulse rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.14] via-white/[0.06] to-white/[0.02]"
+                      style={{ animationDelay: `${i * 90}ms` }}
+                    />
+                  ))}
                 </div>
               ) : (
                 <div className="columns-2 gap-4 space-y-4">
                   {images.map((img, i) => (
-                    <div
+                    <GalleryGridTile
                       key={img.id || i}
-                      onClick={(e) => {
-                         if (e.ctrlKey || e.metaKey) return;
-                         e.stopPropagation();
-                         suppressOpenClickRef.current = true;
-                         setSelectedImg(img);
-                         window.requestAnimationFrame(() => {
-                           suppressOpenClickRef.current = false;
-                         });
+                      img={img}
+                      index={i}
+                      eager={i < 4}
+                      onPainted={onTilePainted}
+                      onOpen={() => {
+                        suppressOpenClickRef.current = true;
+                        setSelectedImg(img);
+                        window.requestAnimationFrame(() => {
+                          suppressOpenClickRef.current = false;
+                        });
                       }}
-                      onDoubleClick={(e) => {
-                         if (e.ctrlKey || e.metaKey) {
-                             e.stopPropagation();
-                             if (handleRemoveImage) handleRemoveImage(img);
-                         }
-                      }}
-                      className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
-                      style={
-                        img.width && img.height
-                          ? { aspectRatio: `${img.width} / ${img.height}` }
-                          : undefined
-                      }
-                    >
-
-                      <img
-                        src={img.urls.small || img.urls.regular}
-                        className={`w-full opacity-100 group-hover:scale-105 transition-transform duration-500 ${
-                          img.width && img.height
-                            ? 'h-full object-cover absolute inset-0'
-                            : 'h-auto object-cover relative'
-                        }`}
-                        alt={`place-img-${i}`}
-                        loading="lazy"
-                        width={img.width || undefined}
-                        height={img.height || undefined}
-                        onError={() => handleDropBrokenImage?.(img)}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20}/>
-                    </div>
+                      onRemove={handleRemoveImage}
+                      onBroken={handleDropBrokenImage}
+                    />
                   ))}
                 </div>
               )}
 
-              {!isImgLoading && images.length > 0 && handleRefresh && (
+              {showRefreshButton && (
                 <div className="mt-8 mb-2 flex flex-col items-center gap-1.5">
                   <button
                     type="button"
                     onClick={onRefreshClick}
-                    disabled={isImgLoading || refreshCooldownLeft > 0}
+                    disabled={isRefreshing || refreshCooldownLeft > 0}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/45 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium"
-                    title={refreshCooldownLeft > 0 ? `${refreshCooldownLeft}초 후 다시 시도 가능` : 'Unsplash·Pexels에서 추가 사진 불러오기'}
+                    title={
+                      isRefreshing
+                        ? '추가 사진을 불러오는 중'
+                        : refreshCooldownLeft > 0
+                          ? `${refreshCooldownLeft}초 후 다시 시도 가능`
+                          : 'Unsplash·Pexels에서 추가 사진 불러오기'
+                    }
                   >
                     <RefreshCw
                       size={14}
-                      className={isImgLoading ? 'animate-spin' : refreshCooldownLeft > 0 ? '' : 'group-hover:rotate-180 transition-transform duration-500'}
+                      className={
+                        isRefreshing
+                          ? 'animate-spin'
+                          : refreshCooldownLeft > 0
+                            ? ''
+                            : 'group-hover:rotate-180 transition-transform duration-500'
+                      }
                     />
-                    {refreshCooldownLeft > 0
-                      ? `${refreshCooldownLeft}초 후 다시 불러올 수 있어요`
-                      : '더 많은 사진 불러오기'}
+                    {isRefreshing
+                      ? '추가 사진을 불러오는 중...'
+                      : refreshCooldownLeft > 0
+                        ? `${refreshCooldownLeft}초 후 다시 불러올 수 있어요`
+                        : '더 많은 사진 불러오기'}
                   </button>
                   <p className="text-[10px] text-white/25">Unsplash · Pexels · {refreshCooldownSec}초에 한 번</p>
                 </div>
               )}
 
-              {!isImgLoading && images.length === 0 && (
+              {!showInitialSkeleton && !isPaintPending && images.length === 0 && (
                 <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
                   <ImageIcon size={48} />
                   <p className="text-sm">등록된 이미지가 없습니다.</p>

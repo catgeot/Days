@@ -2,35 +2,48 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
-## 국내 명소 좌표 — TourAPI 보정 (**다음 세션**)
+## 갤러리 로딩 — TourAPI 대기 블랙스크린 UX
 
-**상태**: 📋 준비 완료 · 착수 대기 · 계획 [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
+**상태**: ✅ 사람 QA 확인 · 커밋·push · Edge `tourapi-proxy` 재배포는 선택(upstream 10s)
+
+- 원인: invoke/프로브 hang · 더보기 시 `isImgLoading`이 그리드 전체를 스켈레톤으로 교체 · TourAPI page2 중복/공허 후 기존 사진 유실처럼 보임
+- 대응: invoke 12s·갤러리 18s · skipProbe · referrerPolicy · **더보기=`isRefreshing`(그리드 유지)+Unsplash만 append** · 실패 시 기존 복원 · Edge upstream 10s(재배포 권장)
+
+## 국내 명소 좌표 — TourAPI 보정 (**다음 세션 · Cloud 오케스트레이터**)
+
+**상태**: 📋 계획·제시어 준비 · **Cursor Cloud + 오케스트레이터** 권장 · [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
 
 - 범위: KR tip **~210 hub / 1137 명소** · `mapy`/`mapx` HIT만 스냅 · 해외 제외
-- 배경: Mapbox/Nominatim KR 한계(정류장·NO_HIT) → TourAPI가 국내 핀에 유리 (김유정 `127933` 실증)
-- **분리**: `tourapi-content-id-overrides` = slug **갤러리** · 명소 tip 좌표 매핑은 **신규 스크립트/캐시**
-- 금지: 추정 유지 · 갤러리 SSOT에 attraction 좌표 섞기 · `VITE_` · UI/releaseNotes
+- 배경: Mapbox/Nominatim KR 한계 → TourAPI (김유정 `127933` 실증)
+- **분리**: `tourapi-content-id-overrides` = 갤러리 · tip 좌표는 **신규 스크립트/캐시**
+- Secrets: Cloud `TOUR_API_SERVICE_KEY` 및/또는 `VITE_SUPABASE_URL`+`ANON` (Edge)
+- 금지: 추정 · 갤러리 SSOT 혼용 · `VITE_` 커밋 · UI/releaseNotes
 
 ### 에이전트 핸드오프
 
 | | |
 |--|--|
-| **읽을 것 3** | [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 본 절 · `.ai-context` 3·5·6절 TourAPI/명소 1줄 |
-| **할 일** | 세대0 매칭 스크립트+김유정/P0 스모크 → 세대1 KR HIT 배치 tip 패치 · audit 0 |
-| **금지 3** | 갤러리 overrides에 좌표 혼용 · hub 중심 추정 · 합의 전 UI/releaseNotes |
-| **제시어** | 아래 복붙 블록 |
+| **읽을 것 3** | 계획 **§5~§6** · method §1·§3.0·§4.2·**§5.5** · 본 절 |
+| **할 일** | G0 스크립트+김유정/P0 smoke → G1+ 워커2 HIT 배치 · audit 0 · §4.2 이관 |
+| **금지 3** | 갤러리 overrides 혼용 · hub 추정 · tip 병렬 / UI/releaseNotes |
+| **제시어** | 계획 **§6** 클라우드 블록 (아래 동일) |
 
-**다음 세션 제시어** (복붙):
+**Cloud 오케스트레이터 제시어** (복붙):
 
 ```
-TourAPI-명소좌표-이어하기
+오케스트레이터 · TourAPI-명소좌표
+@plans/orchestrator-method.md
 @plans/city-attraction-tourapi-coord-plan.md
-@plans/2026-07-23-project-log.md
+@plans/2026-07-23-project-log.md 「국내 명소 좌표 — TourAPI 보정」절만
 @.ai-context.md
 
-국내 cityAttractionHubs 좌표를 TourAPI mapy/mapx로 보정.
-갤러리 slug SSOT와 분리. 김유정 127933 회귀 금지.
-세대0=스크립트+스모크 → 세대1=KR HIT 배치. VITE_/UI/releaseNotes 금지.
+당신은 오케스트레이터(메인). method v2.1 §1·§3.0·§3.3·§4.2 + 계획 §5 준수.
+환경: Cursor Cloud · Secrets TOUR_API_SERVICE_KEY 및/또는 VITE_SUPABASE_URL+ANON.
+범위: cityAttractionHubs KR tip · mapy/mapx HIT만 · 해외 제외.
+
+즉시: G0(메인) 스크립트+김유정 127933=37.8183632,127.7176781·P0 smoke → G1부터 워커2·tip 직렬·audit 0·§4.2 이관(사람 제시어 대기 금지).
+금지: 갤러리 overrides 혼용 · hub 추정 · tip 병렬 · 시드 덮어쓰기 · 김유정 회귀 · VITE_/키 커밋 · UI/releaseNotes · main 직접 push · 솔로 계주(G1+) · VERIFY FAIL tip 방치.
+커밋은 사람 요청 시에만.
 ```
 
 ## 명소 좌표 — 김유정문학촌 TourAPI 교정

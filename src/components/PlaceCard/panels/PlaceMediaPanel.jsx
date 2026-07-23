@@ -52,6 +52,7 @@ const PlaceMediaPanel = React.memo(({
                 location={location}
                 images={galleryData.images}
                 isImgLoading={galleryData.isImgLoading}
+                isRefreshing={galleryData.isRefreshing}
                 selectedImg={galleryData.selectedImg}
                 setSelectedImg={galleryData.setSelectedImg}
                 isFullScreen={isFullScreen}

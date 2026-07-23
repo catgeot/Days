@@ -13,30 +13,62 @@ const DETAIL_IMAGE_ROWS = 20;
 const MAX_SEARCH_KEYWORDS = 3;
 /** 갤러리에 남길 목표 장수 */
 const TARGET_GALLERY = 24;
-/** 깨진 URL 프로브 후보 상한 */
-const PROBE_CANDIDATES = 32;
-const PROBE_TIMEOUT_MS = 3500;
+/** 깨진 URL 프로브 후보 상한 — 갤러리 기본은 skipProbe (UI onError) */
+const PROBE_CANDIDATES = 12;
+const PROBE_TIMEOUT_MS = 1500;
+/** Edge invoke 단일 호출 상한 — 없으면 data.go.kr 지연에 수 분 hang */
+const INVOKE_TIMEOUT_MS = 12_000;
+/** fetchTourApiGallery 전체 상한 */
+const GALLERY_FETCH_BUDGET_MS = 18_000;
+
+/**
+ * @template T
+ * @param {Promise<T>} promise
+ * @param {number} ms
+ * @param {string} label
+ * @returns {Promise<T>}
+ */
+function withTimeout(promise, ms, label) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
+    }),
+  ]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
+}
 
 /**
  * @param {string} action
  * @param {Record<string, unknown>} payload
  */
 async function invokeTourApi(action, payload) {
-  const { data, error } = await supabase.functions.invoke('tourapi-proxy', {
-    body: { action, ...payload },
-  });
-  if (error) {
-    console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
-    return null;
-  }
-  if (!data?.ok) {
-    console.warn(
-      `[tourapi] ${action} not ok:`,
-      data?.message || data?.error || 'unknown',
+  try {
+    const { data, error } = await withTimeout(
+      supabase.functions.invoke('tourapi-proxy', {
+        body: { action, ...payload },
+      }),
+      INVOKE_TIMEOUT_MS,
+      `tourapi:${action}`,
     );
+    if (error) {
+      console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
+      return null;
+    }
+    if (!data?.ok) {
+      console.warn(
+        `[tourapi] ${action} not ok:`,
+        data?.message || data?.error || 'unknown',
+      );
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn(`[tourapi] ${action} failed:`, err?.message || err);
     return null;
   }
-  return data;
 }
 
 /**
@@ -256,24 +288,10 @@ export async function filterLoadableTourApiImages(images, opts = {}) {
 }
 
 /**
- * 국내 갤러리:
- * 1) contentId detailImage (공식 POI) 선두
- * 2) searchPhoto — 전경 키워드 병렬 + 제목 랭킹
- * 3) 로드 가능한 URL만 남김 (깨진 CDN 제외)
- *
- * @param {{
- *   photoKeyword: string,
- *   photoKeywords?: string[],
- *   title?: string,
- *   contentId?: string | null,
- *   page?: number,
- *   numOfRows?: number,
- *   thumbnailOnly?: boolean,
- *   skipProbe?: boolean,
- * }} opts
- * @returns {Promise<Array>}
+ * 국내 갤러리 본체 (타임아웃은 fetchTourApiGallery 래퍼).
+ * @param {Parameters<typeof fetchTourApiGallery>[0]} opts
  */
-export async function fetchTourApiGallery(opts) {
+async function fetchTourApiGalleryInner(opts) {
   const keyword = String(opts?.photoKeyword || '').trim();
   if (!keyword) return [];
 
@@ -289,6 +307,8 @@ export async function fetchTourApiGallery(opts) {
     opts?.contentId != null && String(opts.contentId).trim() !== ''
       ? String(opts.contentId).trim()
       : null;
+  // 갤러리 기본: 프로브 생략 — 32장 CDN decode가 분 단위로 막히던 주원인
+  const skipProbe = opts?.skipProbe !== false;
 
   /** @type {Array<ReturnType<typeof toGalleryImage>>} */
   const detailImages = [];
@@ -395,9 +415,9 @@ export async function fetchTourApiGallery(opts) {
 
   let merged = dedupeByUrl([...detailImages, ...photoImages]);
   if (opts?.thumbnailOnly) merged = merged.slice(0, 3);
-  else merged = merged.slice(0, PROBE_CANDIDATES);
+  else merged = merged.slice(0, Math.max(PROBE_CANDIDATES, TARGET_GALLERY));
 
-  if (opts?.skipProbe) {
+  if (skipProbe) {
     return opts?.thumbnailOnly ? merged.slice(0, 1) : merged.slice(0, TARGET_GALLERY);
   }
 
@@ -410,4 +430,30 @@ export async function fetchTourApiGallery(opts) {
     return opts?.thumbnailOnly ? merged.slice(0, 1) : merged.slice(0, TARGET_GALLERY);
   }
   return loadable;
+}
+
+/**
+ * @param {{
+ *   photoKeyword: string,
+ *   photoKeywords?: string[],
+ *   title?: string,
+ *   contentId?: string | null,
+ *   page?: number,
+ *   numOfRows?: number,
+ *   thumbnailOnly?: boolean,
+ *   skipProbe?: boolean,
+ * }} opts
+ * @returns {Promise<Array>}
+ */
+export async function fetchTourApiGallery(opts) {
+  try {
+    return await withTimeout(
+      fetchTourApiGalleryInner(opts),
+      GALLERY_FETCH_BUDGET_MS,
+      'fetchTourApiGallery',
+    );
+  } catch (err) {
+    console.warn('[tourapi] gallery budget exceeded:', err?.message || err);
+    return [];
+  }
 }
