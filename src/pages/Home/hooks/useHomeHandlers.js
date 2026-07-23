@@ -33,6 +33,7 @@ import {
   attractionToPlacePin,
   makeDisambiguationResult,
 } from '../lib/cityAttractionHubs.js';
+import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
 import { buildHubCandidatesForEnter } from '../lib/searchSuggestions.js';
 import { searchBoxForward } from '../lib/mapboxSearchBox.js';
 
@@ -643,6 +644,14 @@ export function useHomeHandlers({
     const hubAttractionHit = resolveHubAttraction(query);
     if (hubAttractionHit) {
       const pin = attractionToPlacePin(hubAttractionHit.hub, hubAttractionHit.attraction);
+      handleLocationSelect(pin);
+      return pin;
+    }
+
+    // 정착지 exact (설악동·베르사유) → uiPlace 핀 (명소·hub보다 뒤, POI 아님)
+    const settlementHit = resolveSettlement(query);
+    if (settlementHit) {
+      const pin = settlementToPlacePin(settlementHit.row, settlementHit.settlement);
       handleLocationSelect(pin);
       return pin;
     }

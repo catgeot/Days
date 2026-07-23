@@ -241,6 +241,33 @@ kind: beach|market|temple|shrine|viewpoint|landmark|museum|neighborhood|park
 3. `audit:city-attraction-hubs` + 스모크 = VERIFY · 큐 R ✅  
 4. 여유 있으면 **큐 다음 R** 반복(상한 내) · 아니면 이관서에 **다음 R번호 2개**
 
+### 5.3 Mapbox 정착지 SSOT (2호 사례)
+
+| 항목 | 값 |
+|------|-----|
+| SSOT | `src/pages/Home/data/mapboxSettlementPlaces.json` |
+| resolver | `src/pages/Home/lib/mapboxSettlementPlaces.js` |
+| 큐 | [`mapbox-settlement-queue.md`](./mapbox-settlement-queue.md) · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md) |
+| 라운드 | **최대 10 hub** = 워커A **5** + 워커B **5** |
+| 개수 | **목표 3 · 최대 5 · 최소 2** · &lt;2면 hub **스킵** (억지 금지) |
+| 규칙 | hub당 **1행** · `place`\|`city`\|`locality` only · POI 금지 · 시드 `sokcho`/`paris` 덮어쓰기 금지 · 1차 `mapboxId` null OK |
+| audit | `npm run audit:mapbox-settlement-places` |
+| smoke | `npm run smoke:mapbox-settlement-places` (+ R exact) |
+| 상태(Phase 0) | 시드 2 hub · R01–R63 ⬜ |
+
+**워커 프롬프트 최소 골격**
+
+```
+역할: mapboxSettlementPlaces 워커. 배정 hubId만. hub당 1행.
+출력: JSON 조각(스킵 제외) + skip/partial + exact 스모크 쿼리.
+금지: tip append, hubId 분할, POI/명소, hub 밖 지명, mapboxId 필수화, UI/releaseNotes.
+개수: 목표3 · 최대5 · 최소2 · 미달 스킵
+스키마: hubId, settlements[2..5] of {placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases}
+featureType: place|city|locality
+```
+
+**오케스트레이터 체크 (라운드)** — §5.1과 동일 루프 · 게이트만 `audit:mapbox-settlement-places` + `smoke:mapbox-settlement-places`.
+
 ---
 
 ## 6. 제시어 (복붙 · 최초·복구용)
@@ -251,6 +278,7 @@ kind: beach|market|temple|shrine|viewpoint|landmark|museum|neighborhood|park
 |------|------|
 | 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「배치표부터 · 워커2」 |
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§4.2 준수」 |
+| 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동」 |
 
 ---

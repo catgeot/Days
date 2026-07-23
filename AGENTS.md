@@ -26,6 +26,8 @@ node scripts/smoke-mrt-stay-queries.mjs
 MRT_STAY_SMOKE_LIVE=1 node scripts/smoke-mrt-stay-queries.mjs
 npm run audit:airports   # 공항 SSOT 작업 시
 npm run audit:city-attraction-hubs   # 도시 명소 hub SSOT (오케스트레이터 게이트)
+npm run audit:mapbox-settlement-places  # 정착지 SSOT (맵박스정착지 오케스트레이터)
+npm run smoke:mapbox-settlement-places
 ```
 
 ## Cursor Cloud specific instructions

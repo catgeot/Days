@@ -1,5 +1,6 @@
 /**
- * 타이핑용 하이브리드 검색 제안: SSOT 여행지 + 도시 허브/명소 + Mapbox.
+ * 타이핑용 하이브리드 검색 제안: SSOT 여행지 + 도시 허브/명소 + 정착지 + Mapbox.
+ * 우선순위: 여행지 → hub 도시 → hub 명소 → settlements(지역).
  * 큐레이션·SSOT는 동기 즉시, Mapbox는 허브 exact가 아닐 때만 보강.
  */
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -10,6 +11,11 @@ import {
   attractionToSuggestion,
   buildHubDisambiguationCandidates,
 } from './cityAttractionHubs';
+import {
+  settlementsForHubSuggestions,
+  matchSettlementsPrefix,
+  settlementToSuggestion,
+} from './mapboxSettlementPlaces';
 import { searchBoxForward } from './mapboxSearchBox';
 
 const normalizeKey = (s) =>
@@ -87,10 +93,17 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     for (const attraction of exactHub.attractions || []) {
       pushUnique(out, seen, attractionToSuggestion(exactHub, attraction));
     }
+    const rowStub = { hubId: exactHub.hubId };
+    for (const settlement of settlementsForHubSuggestions(exactHub.hubId)) {
+      pushUnique(out, seen, settlementToSuggestion(rowStub, settlement));
+    }
   } else {
     for (const hub of hubs) pushUnique(out, seen, hubToSuggestion(hub));
     for (const { hub, attraction } of attractions) {
       pushUnique(out, seen, attractionToSuggestion(hub, attraction));
+    }
+    for (const { row, settlement } of matchSettlementsPrefix(q, { limit: 4 })) {
+      pushUnique(out, seen, settlementToSuggestion(row, settlement));
     }
   }
 

@@ -2,6 +2,15 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — Phase 0 스캐폴드
+
+**상태**: ✅ 시드 2 hub / 6 settlements · audit·smoke PASS · **커밋·push 예정**
+
+- SSOT [`mapboxSettlementPlaces.json`](../src/pages/Home/data/mapboxSettlementPlaces.json) · resolve · 검색 우선순위(여행지→hub→명소→settlements≤3)
+- 시드: `sokcho`(설악동·노학동·청호동) · `paris`(베르사유·생드니·불로뉴비양쿠르)
+- 큐 R01–R63 ([`mapbox-settlement-queue.md`](./mapbox-settlement-queue.md)) · method §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
+- **다음**: 클라우드 `오케스트레이터` + `맵박스정착지` · 큐 **R01**부터
+
 ## cityAttractionHubs — R68~R69 오케스트레이터 세대 (큐 소진 · 체인 종료)
 
 **상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **R48–R69 큐 소진** · 후임 Task 불필요(사람 보고)

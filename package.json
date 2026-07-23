@@ -11,6 +11,8 @@
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",
     "audit:city-attraction-hubs": "node scripts/audit-city-attraction-hubs.mjs",
+    "audit:mapbox-settlement-places": "node scripts/audit-mapbox-settlement-places.mjs",
+    "smoke:mapbox-settlement-places": "node scripts/smoke-mapbox-settlement-places.mjs",
     "audit:mrt-stays": "node scripts/audit-mrt-stay-coverage.mjs",
     "audit:tripcom-hotel-city-gaps": "node scripts/list-tripcom-hotel-city-gaps.mjs",
     "audit:flight-arcs": "node scripts/audit-flight-arcs.mjs",
