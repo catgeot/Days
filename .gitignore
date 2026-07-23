@@ -31,6 +31,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Attraction coord verify cache (Nominatim/Mapbox)
+scripts/.cache/
+
 # 🚨 [Fix/New] Python 데이터 수집 도구 및 원시 데이터 격리
 # 시스템 구동과 무관한 스크립트 및 환경 제외
 get_youtube_data.py

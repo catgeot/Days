@@ -230,8 +230,9 @@
 역할: cityAttractionHubs 워커. 배정 hubId 목록만 초안 (1배치).
 출력: JSON 배열 조각 + hub/exact 스모크 쿼리 목록 + 주의(동명 분리).
 금지: tip append, main push, JSON 전면 rewrite, shrine 제거, releaseNotes, UI 변경, 이관서 작성.
-스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng,mapboxId|null}]
 kind: beach|market|temple|shrine|viewpoint|landmark|museum|neighborhood|park
+좌표: Mapbox(또는 Nominatim) 지명 매칭 시 그 feature만 · hub 중심 추정 금지 · KR km 허용 금지 · §5.4
 ```
 
 **오케스트레이터 체크 (라운드)**
@@ -268,6 +269,38 @@ featureType: place|city|locality
 
 **오케스트레이터 체크 (라운드)** — §5.1과 동일 루프 · 게이트만 `audit:mapbox-settlement-places` + `smoke:mapbox-settlement-places`.
 
+### 5.4 명소 좌표 수리 (Mapbox/Nominatim 스냅)
+
+| 항목 | 값 |
+|------|-----|
+| SSOT | `cityAttractionHubs.json` **필드 패치**(append 아님) |
+| 게이트 | `npm run audit:city-attraction-hubs` · `npm run audit:city-attraction-coords` · `npm run verify:city-attraction-coords` |
+| 등급 | **NAMED** = 지명/POI 매칭 → feature 좌표 + `mapboxId`(있으면) · tip과 **>50m** = SNAP |
+| | **AREA** = beach/park/neighborhood · KR soft 300m / hard 800m |
+| | **NO_HIT** = drop · rename · 주소 수동 — **추정 유지 금지** |
+| KR | km급 허용 오차 **금지** · hub 중심 추정 **금지** |
+| 폴백 | Mapbox Search Box KR POI가 비면 **Nominatim** (캐시 `scripts/.cache/`) |
+| P0 | `yanggu` · `chuncheon` · `hanam` · `jindo` (사람 재현) |
+
+**워커 프롬프트 최소 골격 (좌표 수리)**
+
+```
+역할: cityAttractionHubs 좌표 수리 워커. 배정 hub의 SNAP/NO_HIT만.
+출력: [{hubId,name,lat,lng,mapboxId|null,action:snap|drop|rename}]
+금지: tip 직접 append, hub 중심 추정, 시드 덮어쓰기, UI/releaseNotes.
+NAMED: Mapbox(또는 verify 큐 suggested) 좌표 그대로 · mapboxId 가능하면 필수.
+KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
+```
+
+**오케스트레이터 체크**
+
+1. `verify:city-attraction-coords -- --hubs=…` 또는 전수 큐  
+2. 워커2 패치 조각 → tip **직렬** 필드 패치  
+3. audit hubs + audit coords(--soft-only OK mid-repair) + smoke 재현 exact  
+4. §4.2 이관
+
+제시어: `오케스트레이터` + `명소좌표수리`
+
 ---
 
 ## 6. 제시어 (복붙 · 최초·복구용)
@@ -278,6 +311,7 @@ featureType: place|city|locality
 |------|------|
 | 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「배치표부터 · 워커2」 |
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§4.2 준수」 |
+| 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP 배치」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동」 |
 

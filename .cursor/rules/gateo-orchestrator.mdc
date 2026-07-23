@@ -57,8 +57,9 @@ alwaysApply: false
 ## 명소 hub
 
 - SSOT: `cityAttractionHubs.json` append only · `shrine` 유지 · 시드 덮어쓰기 금지  
-- 게이트: `npm run audit:city-attraction-hubs`  
-- 지명: **큐 순서만** (`city-attraction-hub-queue.md`) · 라운드=A5+B5 · 임의 선택 금지
+- 게이트: `npm run audit:city-attraction-hubs` (+ 좌표: `audit:city-attraction-coords` · `verify:city-attraction-coords`)  
+- 지명: **큐 순서만** (`city-attraction-hub-queue.md`) · 라운드=A5+B5 · 임의 선택 금지  
+- **좌표 수리**: method **§5.4** · 제시어 `명소좌표수리` · NAMED는 feature 스냅(+`mapboxId`) · KR hub 추정 금지  
 
 ## Mapbox 정착지
 

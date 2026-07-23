@@ -2,6 +2,147 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 명소 좌표 수리 — KR R11–R12 (**소진/정지**)
+
+**상태**: ✅ R11+R12 tip 패치 · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4067** · PR #24 · **KR SNAP/NO_HIT 잔여 소진** · **main 리베이스·검증 후 push**
+
+- R11: `busanjin…daedeok` / `seogwipo…taean` · SNAP 15 / drop 24 · station 스킵 2(소래포구·부산시청) · 주상절리 R1 prior skip · min4 keep 1(숭의운동장) · P0 덕풍 OK
+- R12: `ulleung…yeongwol` / `namwon…yeonggwang`(jindo 제외) · drop 3(오두산·구드래·화진포김일성별장) · R2/R3 prior skip 유지(파주출판도시·무섬마을·문경새재) · B 패치 0(필터 후)
+- **잔여 요약**: 신규 actionable SNAP≈0(남은 후보=주상절리·알펜시아·융건릉·장군목·용문사·구문소·팔봉산·금성산·성호공원 등 **이전 R 의도 스킵**) · drop 후보≈김유정/문경새재(보호) · review_leave·min4_keep·station 오매칭만 잔존
+- 워커 Task 도구 부재 → 메인 버퍼 A/B 초안 후 tip 직렬 A→B (본인 런 예외) · **§4.2 재이관 없음**(큐 소진)
+- **후속 확인**(같은 날): `origin/main`(Trip city 포함) 위로 리베이스 · `audit:city-attraction-hubs` issues 0 · `verify --smoke` P0 PASS · force-with-lease push
+
+### 정지 (사람 보고)
+
+| | |
+|--|--|
+| **결과** | KR 전수 SNAP/NO_HIT **소진/정지** · tip **4067** · hubs 630 · issues 0 |
+| **재등급** | `verify --country=kr --write-queue` (캐시) · scanned 1137 · SNAP **37**(대부분 prior 의도 스킵) · NO_HIT drop_or_manual **24** · 큐 `plans/city-attraction-coord-verify-queue.md` |
+| **남은 NO_HIT/스킵** | 주상절리·알펜시아·융건릉·장군목·용문사·팔봉산·금성산·예당호휴게소·강남 station 등 · 김유정 NO_HIT 유지 |
+| **게이트** | `audit:city-attraction-hubs` + `verify --smoke` PASS |
+| **다음** | 해외 SNAP 또는 스킵 재검토(수동) 시에만 재개 |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 소진 확인 후 해외 SNAP 또는 스킵 재검토 · §5.4」 |
+
+## 명소 좌표 수리 — KR R9–R10 (이관)
+
+**상태**: ✅ R9+R10 tip 패치(40 hub) · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4094** · PR #24
+
+- R9: 세종~연수·수성~관악 · SNAP 57 / drop 21 · 오매칭 스킵(강남 봉은사·선릉·선정릉·올림픽공원 station) · P0 덕풍 OK · min4 유지
+- R10: 종로~도봉·양천~부평 · SNAP 28 / drop 30 · station 11·restaurant 1 스킵 · min4 keep 1 · min4 유지
+- 워커 Task 도구 부재 → 메인 버퍼로 A/B 초안 병렬 생성 후 tip 직렬 A→B (본인 런 예외 1줄) · 서브 Task 부재 → 일지 후임 프롬프트
+
+### 이관 (후임 메인 · §4.2)
+
+| | |
+|--|--|
+| **다음 배치표 A** | `busanjin,namdong,gyeyang,michuhol,dongnae,geumjeong,yeonje,saha,sasang,daedeok` |
+| **다음 배치표 B** | `seogwipo,pohang,boryeong,suncheon,mokpo,jinju,gunsan,damyang,cheongju,taean` |
+| **게이트** | `audit:city-attraction-hubs` + `verify --smoke` + 배치 hub 샘플 |
+| **전수 큐** | 캐시 `scripts/.cache/attraction-coord-verify.json` · 미캐시 hub는 `--hubs=… --country=kr` |
+| **금지** | 시드 덮어쓰기 · hub 중심 추정 · tip 병렬 · 정류장 오매칭 · rename without newName · P0 회귀 · 김유정문학촌 rename |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R11부터 워커2 · §5.4·§4.2」 |
+
+#### 후임 프롬프트 (상위 Task 기동용 · Task 도구 부재)
+
+```
+당신은 후임 메인(오케스트레이터) — 명소좌표수리 R11. 사람 제시어 대기 금지. method §3.0 즉시 수행.
+필수 읽기: plans/orchestrator-method.md §1·§3.0·§3.3·§4.2·§5.4 · plans/2026-07-23-project-log.md 「명소 좌표 수리 — KR R9–R10」이관 표만.
+브랜치: cursor/attraction-coord-fix-26c8 · PR #24 · Secrets VITE_MAPBOX_TOKEN
+완료됨(회귀 금지): P0+R1–R10 (200 hub) · tip ~4094 · 김유정문학촌 정류장 rename 금지 · 덕풍·한반도섬·박수근·진도타워 OK
+즉시: 캐시/verify로 SNAP/NO_HIT → 워커2 A(busanjin…daedeok) B(seogwipo…taean) → tip 직렬 A→B apply → VERIFY → 상한 내 연장(R12) 또는 §4.2 재이관
+R12 예비: A ulleung…yeongwol / B namwon…yeonggwang · 잔여 KR 군·시
+금지: 시드·hub추정·tip병렬·UI/releaseNotes·VITE_커밋·솔로계주·사람제시어대기·VERIFY FAIL tip 방치
+```
+
+## 명소 좌표 수리 — KR R7–R8 (이관)
+
+**상태**: ✅ R7+R8 tip 패치(40 hub) · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4145** · PR #24
+
+- R7: 남양주~당진 · SNAP 81 / drop 26 · 오매칭 스킵(김포 문수산성 restaurant·안산 성호공원 타시) · P0 덕풍 OK · min4 유지
+- R8: 논산~청도 · SNAP 57 / drop 49 · 오매칭 스킵(예산 예당호→휴게소) · min4 keep 8 · min4 유지
+- 워커 Task 도구 부재 → 메인 버퍼로 A/B 초안 병렬 생성 후 tip 직렬 A→B (본인 런 예외 1줄) · 서브 Task 부재 → 일지 후임 프롬프트
+
+### 이관 (후임 메인 · §4.2)
+
+| | |
+|--|--|
+| **다음 배치표 A** | `sejong,jeungpyeong,goseongnam,ongjin,gwangju_gi,gijang,ulju,dalseong,yuseong,yeonsu` |
+| **다음 배치표 B** | `suseong,dalseo,haeundae,gangnam,seocho,mapo,yongsan,songpa,suyeong,gwanak` |
+| **게이트** | `audit:city-attraction-hubs` + `verify --smoke` + 배치 hub 샘플 |
+| **전수 큐** | 캐시 `scripts/.cache/attraction-coord-verify.json` · 미캐시 hub는 `--hubs=… --country=kr` |
+| **금지** | 시드 덮어쓰기 · hub 중심 추정 · tip 병렬 · 정류장 오매칭 · rename without newName · P0 회귀 · 김유정문학촌 rename |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R9부터 워커2 · §5.4·§4.2」 |
+
+#### 후임 프롬프트 (상위 Task 기동용 · Task 도구 부재)
+
+```
+당신은 후임 메인(오케스트레이터) — 명소좌표수리 R9. 사람 제시어 대기 금지. method §3.0 즉시 수행.
+필수 읽기: plans/orchestrator-method.md §1·§3.0·§3.3·§4.2·§5.4 · plans/2026-07-23-project-log.md 「명소 좌표 수리 — KR R7–R8」이관 표만.
+브랜치: cursor/attraction-coord-fix-26c8 · PR #24 · Secrets VITE_MAPBOX_TOKEN
+완료됨(회귀 금지): P0+R1–R8 (160 hub) · tip ~4145 · 김유정문학촌 정류장 rename 금지 · 덕풍·한반도섬·박수근·진도타워 OK
+즉시: 캐시/verify로 SNAP/NO_HIT → 워커2 A(sejong…yeonsu) B(suseong…gwanak) → tip 직렬 A→B apply → VERIFY → 상한 내 연장(R10) 또는 §4.2 재이관
+R10 예비: A jongno…dobong / B yangcheon…bupyeong · 잔여 구·군(busanjin…daedeok)
+금지: 시드·hub추정·tip병렬·UI/releaseNotes·VITE_커밋·솔로계주·사람제시어대기·VERIFY FAIL tip 방치
+```
+
+## 명소 좌표 수리 — KR R5–R6 (이관)
+
+**상태**: ✅ R5+R6 tip 패치(40 hub) · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4220** · KR verify 전수 진행 중(캐시 ~1000+/1460) · PR #24
+
+- R5: 충주~포천 · SNAP 74 / drop 34 · 오매칭 스킵(양평 용문사·서산 팔봉산·태백 구문소동) · min4 유지
+- R6: 보은~구리 · SNAP 64 / drop 44 · 의성 금성산 원거리 스킵 · 양구 P0 snap(을지·두타연·천문대·전쟁기념관) · min4 유지
+- 워커 Task 도구 부재 → 메인 버퍼로 A/B 초안 병렬 생성 후 tip 직렬 A→B (본인 런 예외 1줄) · 서브 Task 부재 → 상위가 R7 후임 기동
+
+### 이관 (후임 메인 · §4.2)
+
+| | |
+|--|--|
+| **다음 배치표 A** | `namyangju,hanam,uijeongbu,anyang,gunpo,bucheon,gwacheon,siheung,gimpo,goyang` |
+| **다음 배치표 B** | `yangju,dongducheon,gwangmyeong,uiwang,ansan,seongnam,yongin,hwaseong,gimcheon,dangjin` |
+| **게이트** | `audit:city-attraction-hubs` + `verify --smoke` + 배치 hub 샘플 |
+| **전수 큐** | 백그라운드 `verify --country=kr --write-queue` 완료 시 `plans/city-attraction-coord-verify-queue.md` · 미완이면 캐시로 부분 큐 |
+| **금지** | 시드 덮어쓰기 · hub 중심 추정 · tip 병렬 · 정류장 오매칭 · rename without newName · P0 회귀 · 김유정문학촌 rename |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R7부터 워커2 · §5.4·§4.2」 |
+
+#### 후임 프롬프트 (상위 Task 기동용 · Task 도구 부재)
+
+```
+당신은 후임 메인(오케스트레이터) — 명소좌표수리 R7. 사람 제시어 대기 금지. method §3.0 즉시 수행.
+필수 읽기: plans/orchestrator-method.md §1·§3.0·§3.3·§4.2·§5.4 · plans/2026-07-23-project-log.md 「명소 좌표 수리 — KR R5–R6」이관 표만.
+브랜치: cursor/attraction-coord-fix-26c8 · PR #24 · Secrets VITE_MAPBOX_TOKEN
+완료됨(회귀 금지): P0+R1–R6 (120 hub) · tip ~4220 · 김유정문학촌 정류장 rename 금지
+즉시: 캐시/전수큐로 SNAP/NO_HIT → 워커2 A(namyangju…goyang) B(yangju…dangjin) → tip 직렬 A→B apply → VERIFY → 상한 내 연장 또는 §4.2 재이관
+금지: 시드·hub추정·tip병렬·UI/releaseNotes·VITE_커밋·솔로계주·사람제시어대기·VERIFY FAIL tip 방치
+```
+
+## 명소 좌표 수리 — KR R3–R4 (이관)
+
+**상태**: ✅ R3+R4 tip 패치(40 hub) · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4298** · KR verify 전수 진행 중(~875/1460 캐시) · PR #24
+
+- R3: 하동~고창 · SNAP/drop · `mungyeong`/`gurye` min4 복구(문경새재·진남교반 · 화엄사/사성암/천은사 rename+snap) · 무섬마을·고인돌코스 오매칭 스킵
+- R4: 무주~원주 · SNAP/drop · min4 유지(무주 구천동·구봉산 케이블카 NO_HIT 유지) · 장군목 인증센터 스킵
+- 워커 Task 도구 부재 → 메인 버퍼로 A/B 초안 병렬 생성 후 tip 직렬 A→B (본인 런 예외 1줄)
+
+### 이관 (후임 메인 · §4.2)
+
+| | |
+|--|--|
+| **다음 배치표 A** | `chungju,cheonan,samcheok,yangpyeong,gimhae,taebaek,donghae,asan,seosan,changwon` |
+| **다음 배치표 B** | `hongcheon,jeongseon,uljin,icheon,miryang,hoengseong,yeoju,yangsan,sacheon,pocheon` |
+| **게이트** | `audit:city-attraction-hubs` + `verify --smoke` + 배치 hub 샘플 |
+| **전수 큐** | 백그라운드 `verify --country=kr --write-queue` 완료 시 `plans/city-attraction-coord-verify-queue.md` · 미완이면 캐시로 부분 큐 |
+| **금지** | 시드 덮어쓰기 · hub 중심 추정 · tip 병렬 · 정류장 오매칭 · rename without newName · P0 회귀 |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R5부터 워커2 · §5.4·§4.2」 |
+
+## 명소 좌표 수리 — 툴링 + P0 + KR R1–R2
+
+**상태**: ✅ 툴링 · P0 · **R1+R2 tip 패치(40 hub)** · audit hubs 0 · smoke P0 PASS · (이어서 R3–R4 절)
+
+- 툴 보강: verify 캐시 주기저장 · null-match 재조회 금지 · `--country=kr` Nominatim 우선 · `apply-attraction-coord-patches.mjs`
+- R1(20hub): 속초~남해 · SNAP/rename/drop · 주상절리·알펜시아·김유정(정류장) 스킵
+- R2(20hub): 안동~보성 · 직렬 A→B · 융건릉·파주출판도시 등 오매칭 스킵
+- tip 명소 ~4375 (drop 반영) · PR #24 `cursor/attraction-coord-fix-26c8`
+
 ## Trip.com 숙소 city ID — 성수기 선제 (아조레스·타히티)
 
 **상태**: ✅ city **49** · 사람 수동 확인 후 등록 · **커밋·push**
@@ -27,6 +168,7 @@
 | **할 일** | PROD QA: 대마도→몰타 등 CTA 연속 클릭 시 세션 잔존 없는지 · Vercel 반영 후 |
 | **금지 3** | 미검증 city · LIVE 없이 priced 전수 추측 · `VITE_` |
 | **제시어** | `숙소-이어하기` · 「Trip CTA city 세션 잔존 QA(대마도·몰타)」 |
+
 
 ## TourAPI — 3단계 QA·시드 (진행)
 
