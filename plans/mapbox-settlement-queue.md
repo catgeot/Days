@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R22 ✅ · **다음 시작 R23**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R24 ✅ · **다음 시작 R25**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -53,8 +53,8 @@
 | **R20** | `verona` · `nagoya` · `riga` · `boeun` · `okcheon` | `yeongdeok` · `cheongsong` · `yanggu` · `leeds` · `padua` | ✅ |
 | **R21** | `split` · `luxembourg` · `gothenburg` · `hwacheon` · `cheorwon` | `yeongyang` · `bonghwa` · `uiseong` · `newcastle` · `bari` | ✅ |
 | **R22** | `zadar` · `bruges` · `malmo` · `goesan` · `jincheon` | `eumseong` · `yecheon` · `sangju` · `sheffield` · `trier` | ✅ |
-| **R23** | `pula` · `aarhus` · `linz` · `yeoncheon` · `anseong` | `pyeongtaek` · `osan` · `guri` · `bristol` · `aachen` | ⬜ |
-| **R24** | `sibenik` · `odense` · `graz` · `namyangju` · `hanam` | `uijeongbu` · `anyang` · `gunpo` · `nottingham` · `wroclaw` | ⬜ |
+| **R23** | `pula` · `aarhus` · `linz` · `yeoncheon` · `anseong` | `pyeongtaek` · `osan` · `guri` · `bristol` · `aachen` | ✅ |
+| **R24** | `sibenik` · `odense` · `graz` · `namyangju` · `hanam` | `uijeongbu` · `anyang` · `gunpo` · `nottingham` · `wroclaw` | ✅ |
 | **R25** | `rovinj` · `tampere` · `klagenfurt` · `bucheon` · `gwacheon` | `siheung` · `gimpo` · `goyang` · `brighton` · `gdansk` | ⬜ |
 | **R26** | `porec` · `turku` · `villach` · `yangju` · `dongducheon` | `gwangmyeong` · `uiwang` · `ansan` · `swansea` · `poznan` | ⬜ |
 | **R27** | `oulu` · `bregenz` · `leipzig` · `seongnam` · `yongin` | `hwaseong` · `gimcheon` · `dangjin` · `exeter` · `lodz` | ⬜ |
@@ -100,7 +100,7 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R23**
+다음 시작: **R25**
 tip: 222 hub / 666 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```
