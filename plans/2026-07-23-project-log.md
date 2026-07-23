@@ -2,6 +2,22 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R25~R26 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R27 후임 기동)
+
+- tip **262 hub / 786 settlements** (+20 hub / +60) · R25 로비니·탐페레·클라겐푸르트·부천·과천·시흥·김포·고양·브라이턴·그단스크 · R26 포레치·투르쿠·필라흐·양주·동두천·광명·의왕·안산·스완지·포즈난 · skip 0
+- R25/R26 VERIFY: audit issues 0 · smoke 시드+exact(`바르사르`/`노키아`/`펠덴`/`중동`/`별양동`/`정왕동`/`운양동`/`화정동`/`호브`/`프루슈치그단스키`/`노비그라드`/`난탈리`/`아르놀트슈타인`/`백석읍`/`생연동`/`철산동`/`내손동`/`고잔동`/`머블스`/`루보니`) PASS
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r25`/`_tmp-r26`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R27 A**: `oulu` · `bregenz` · `leipzig` · `seongnam` · `yongin` / **B**: `hwaseong` · `gimcheon` · `dangjin` · `exeter` · `lodz`
+  - **R28 A**: `kuopio` · `dresden` · `rijeka` · `nonsan` · `gyeryong` / **B**: `seocheon` · `hongseong` · `gumi` · `plymouth` · `katowice`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R27부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R23~R24 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R25 후임 기동)

@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R24 ✅ · **다음 시작 R25**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R26 ✅ · **다음 시작 R27**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -55,8 +55,8 @@
 | **R22** | `zadar` · `bruges` · `malmo` · `goesan` · `jincheon` | `eumseong` · `yecheon` · `sangju` · `sheffield` · `trier` | ✅ |
 | **R23** | `pula` · `aarhus` · `linz` · `yeoncheon` · `anseong` | `pyeongtaek` · `osan` · `guri` · `bristol` · `aachen` | ✅ |
 | **R24** | `sibenik` · `odense` · `graz` · `namyangju` · `hanam` | `uijeongbu` · `anyang` · `gunpo` · `nottingham` · `wroclaw` | ✅ |
-| **R25** | `rovinj` · `tampere` · `klagenfurt` · `bucheon` · `gwacheon` | `siheung` · `gimpo` · `goyang` · `brighton` · `gdansk` | ⬜ |
-| **R26** | `porec` · `turku` · `villach` · `yangju` · `dongducheon` | `gwangmyeong` · `uiwang` · `ansan` · `swansea` · `poznan` | ⬜ |
+| **R25** | `rovinj` · `tampere` · `klagenfurt` · `bucheon` · `gwacheon` | `siheung` · `gimpo` · `goyang` · `brighton` · `gdansk` | ✅ |
+| **R26** | `porec` · `turku` · `villach` · `yangju` · `dongducheon` | `gwangmyeong` · `uiwang` · `ansan` · `swansea` · `poznan` | ✅ |
 | **R27** | `oulu` · `bregenz` · `leipzig` · `seongnam` · `yongin` | `hwaseong` · `gimcheon` · `dangjin` · `exeter` · `lodz` | ⬜ |
 | **R28** | `kuopio` · `dresden` · `rijeka` · `nonsan` · `gyeryong` | `seocheon` · `hongseong` · `gumi` · `plymouth` · `katowice` | ⬜ |
 | **R29** | `jyvaskyla` · `bremen` · `osijek` · `yesan` · `cheongyang` | `yeongdong` · `chilgok` · `gyeongsan` · `southampton` · `bydgoszcz` | ⬜ |
@@ -100,8 +100,8 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R25**
-tip: 222 hub / 666 settlements · audit issues 0 · 미커밋
+다음 시작: **R27**
+tip: 262 hub / 786 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```
 
