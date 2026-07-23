@@ -14,6 +14,8 @@
  *   npm run verify:city-attraction-coords -- --hubs=yanggu,chuncheon,hanam,jindo
  *   npm run verify:city-attraction-coords -- --smoke
  *   npm run verify:city-attraction-coords -- --write-queue
+ *   npm run verify:city-attraction-coords -- --country=kr --write-queue
+ *     (--country=kr 는 Mapbox KR POI 빈 결과 다수로 Nominatim 우선 · --skip-mapbox 동일)
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -277,7 +279,10 @@ if (smokeOnly) {
   targets = hubs.filter((h) => ids.has(h.hubId));
 }
 
+const totalAttractions = targets.reduce((n, h) => n + (h.attractions || []).length, 0);
+const skipMapbox = args.includes('--skip-mapbox') || countryFilter === 'kr';
 let processed = 0;
+let cacheDirty = 0;
 for (const hub of targets) {
   for (const attraction of hub.attractions || []) {
     if (limit && processed >= limit) break;
@@ -285,26 +290,29 @@ for (const hub of targets) {
     const cacheKey = `${hub.hubId}::${normalizeKey(attraction.name)}`;
 
     let match = null;
-    if (cache[cacheKey]?.match) {
+    // null match(NO_HIT)도 캐시 히트 — falsy match 재조회 금지
+    if (Object.prototype.hasOwnProperty.call(cache, cacheKey)) {
       match = cache[cacheKey].match;
     } else {
       const queries = [attraction.name, attraction.name_en].filter(Boolean);
       let hits = [];
-      for (const q of queries) {
-        hits = hits.concat(await mapboxForward(q, hub, { types: 'poi' }));
-        if (!hits.length) {
-          hits = hits.concat(await mapboxForward(q, hub, { types: 'poi,place' }));
+      if (!skipMapbox) {
+        for (const q of queries) {
+          hits = hits.concat(await mapboxForward(q, hub, { types: 'poi' }));
+          if (!hits.length) {
+            hits = hits.concat(await mapboxForward(q, hub, { types: 'poi,place' }));
+          }
         }
+        match = pickBest(hits, attraction, hub);
       }
-      match = pickBest(hits, attraction, hub);
       if (!match) {
-        await sleep(1100);
         let nomHits = [];
         for (const q of queries) {
-          nomHits = nomHits.concat(await nominatimSearch(q, hub));
           await sleep(1100);
+          nomHits = nomHits.concat(await nominatimSearch(q, hub));
+          match = pickBest(nomHits, attraction, hub);
+          if (match) break; // 한글명 히트 시 영문 재조회 생략
         }
-        match = pickBest(nomHits, attraction, hub);
       }
       cache[cacheKey] = {
         at: new Date().toISOString(),
@@ -322,6 +330,14 @@ for (const hub of targets) {
             }
           : null,
       };
+      cacheDirty += 1;
+      if (cacheDirty >= 25) {
+        saveCache(cache);
+        cacheDirty = 0;
+        console.error(
+          `progress ${processed}/${limit || totalAttractions} hub=${hub.hubId} cached=${Object.keys(cache).length}`,
+        );
+      }
     }
 
     const graded = gradeRow(attraction, hub, match);
@@ -370,21 +386,24 @@ if (smokeOnly || hubsFilter.length) {
 if (writeQueue) {
   const snaps = rows.filter((r) => r.action === 'snap' || r.action === 'drop_or_manual' || r.action === 'manual');
   const outPath = join(root, 'plans/city-attraction-coord-verify-queue.md');
+  const jsonPath = join(root, 'plans/city-attraction-coord-verify-queue.json');
   const lines = [
     '# cityAttractionHubs — Mapbox/Nominatim 좌표 verify 큐',
     '',
     `스캔 ${summary.scanned} · SNAP ${summary.snap} · NAMED ${summary.NAMED} · NO_HIT ${summary.NO_HIT}`,
     '',
-    '| hubId | name | grade | action | Δm | source | suggested |',
-    '|-------|------|-------|--------|----|--------|-----------|',
+    '| hubId | name | grade | action | Δm | source | suggested | mapboxId |',
+    '|-------|------|-------|--------|----|--------|-----------|----------|',
     ...snaps.map(
       (r) =>
-        `| ${r.hubId} | ${r.name} | ${r.grade} | ${r.action} | ${r.deltaM ?? ''} | ${r.matchSource || ''} | ${r.suggestedLat ?? ''},${r.suggestedLng ?? ''} |`,
+        `| ${r.hubId} | ${r.name} | ${r.grade} | ${r.action} | ${r.deltaM ?? ''} | ${r.matchSource || ''} | ${r.suggestedLat ?? ''},${r.suggestedLng ?? ''} | ${r.mapboxId || ''} |`,
     ),
     '',
   ];
   writeFileSync(outPath, `${lines.join('\n')}\n`, 'utf8');
+  writeFileSync(jsonPath, `${JSON.stringify({ summary, items: snaps }, null, 2)}\n`, 'utf8');
   console.log(`wrote ${outPath}`);
+  console.log(`wrote ${jsonPath} (${snaps.length} items)`);
 }
 
 // Smoke expectations
