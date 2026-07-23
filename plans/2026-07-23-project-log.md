@@ -2,36 +2,49 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
-## 국내 명소 좌표 — TourAPI 보정 (**다음 세션**)
+## 국내 명소 좌표 — TourAPI 보정
 
-**상태**: 📋 준비 완료 · 착수 대기 · 계획 [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
+**상태**: ✅ G0 · G1 R01–R11 **큐 소진** · 계획 [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · **미커밋** · 후임 없음(정지)
 
-- 범위: KR tip **~210 hub / 1137 명소** · `mapy`/`mapx` HIT만 스냅 · 해외 제외
-- 배경: Mapbox/Nominatim KR 한계(정류장·NO_HIT) → TourAPI가 국내 핀에 유리 (김유정 `127933` 실증)
-- **분리**: `tourapi-content-id-overrides` = slug **갤러리** · 명소 tip 좌표 매핑은 **신규 스크립트/캐시**
-- 금지: 추정 유지 · 갤러리 SSOT에 attraction 좌표 섞기 · `VITE_` · UI/releaseNotes
+- 범위: KR tip **~210 hub / 1137 명소** · HIT만 `mapy`/`mapx` 스냅 · 해외 제외 · 시드 `sokcho` 스킵
+- **G0**: `scripts/verify-city-attraction-tourapi-coords.mjs` · `npm run verify:city-attraction-tourapi-coords` · 김유정 `127933` + P0 smoke **PASS**
+- **R01–R08**: 누적 snap **369** (직전 세대) · tip 4067 / hubs 630
+- **R09**: snap **2** (A1+B1: 울주 간절곶 · 종로 북촌한옥마을) · soft_far 0 · audit **0** · smoke PASS
+- **R10**: snap **0** (HIT 0 · 서울 구·부평·부산진 TourAPI MISS 다수) · audit **0** · smoke PASS
+- **R11**: snap **1** (B1: 대덕 엑스포과학공원) · A HIT0 · audit **0** · smoke PASS · tip **4067** / hubs **630** · **누적 snap 372**
+- 김유정 tip `37.8183632,127.7176781` · 덕풍 MISS tip keep · P0 smoke PASS
+- 메인 soft filter: `dHub>15km & dTip>3km` 또는 `dHub>5km & dTip>2km` → 스킵
+- 금지: 갤러리 overrides 좌표 혼용 · hub 추정 · tip 병렬 · 김유정 회귀 · **커밋은 사람 요청 시**
+- **본인 런 예외: Task 도구 부재** → 메인 버퍼 A/B verify 초안 후 tip 직렬 A→B (R09–R11)
 
-### 에이전트 핸드오프
+### 완료 배치
+
+| R | A hubs | B hubs | snap | 상태 |
+|---|--------|--------|------|------|
+| R01 | seoul…yeosu | gyeongju…andong | 55 | ✅ |
+| R02 | boryeong…taean | ulleung…hadong | 67 | ✅ |
+| R03 | jecheon…hamyang | sancheong…muju | 46 | ✅ |
+| R04 | jinan…muan | yeongam…chungju | 34 | ✅ |
+| R05 | cheonan…hongcheon | jeongseon…boeun | 50 | ✅ |
+| R06 | okcheon…goesan | jincheon…namyangju | 45 | ✅ |
+| R07 | hanam…yangju | dongducheon…nonsan | 61 | ✅ |
+| R08 | gyeryong…geumsan | goryeong…sejong | 11 | ✅ |
+| R09 | jeungpyeong…suseong | dalseo…jongno | 2 | ✅ |
+| R10 | seodaemun…yangcheon | eunpyeong…busanjin | 0 | ✅ |
+| R11 | namdong…geumjeong (5) | yeonje…daedeok (4) | 1 | ✅ |
+
+### 큐 소진 — 사람 보고 (후임 정지)
 
 | | |
 |--|--|
-| **읽을 것 3** | [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 본 절 · `.ai-context` 3·5·6절 TourAPI/명소 1줄 |
-| **할 일** | 세대0 매칭 스크립트+김유정/P0 스모크 → 세대1 KR HIT 배치 tip 패치 · audit 0 |
-| **금지 3** | 갤러리 overrides에 좌표 혼용 · hub 중심 추정 · 합의 전 UI/releaseNotes |
-| **제시어** | 아래 복붙 블록 |
-
-**다음 세션 제시어** (복붙):
-
-```
-TourAPI-명소좌표-이어하기
-@plans/city-attraction-tourapi-coord-plan.md
-@plans/2026-07-23-project-log.md
-@.ai-context.md
-
-국내 cityAttractionHubs 좌표를 TourAPI mapy/mapx로 보정.
-갤러리 slug SSOT와 분리. 김유정 127933 회귀 금지.
-세대0=스크립트+스모크 → 세대1=KR HIT 배치. VITE_/UI/releaseNotes 금지.
-```
+| **tip** | hubs 630 · attractions 4067 · audit issues 0 · 김유정 `37.8183632,127.7176781` |
+| **누적 snap** | **372** (R01–R11) · 본 세대 +3 (R09:2 · R10:0 · R11:1) |
+| **잔여 hub 배치** | **없음** (계획 KR hub 큐 R01–R11 완료) |
+| **잔여 등급** | 전수 재등급(캐시): HIT 336 · AMBIG 148 · MISS 622 · FAR 25 · SKIP 6(`sokcho`) · 큐 [`city-attraction-tourapi-coord-queue.md`](./city-attraction-tourapi-coord-queue.md) |
+| **VERIFY** | audit 0 · `--smoke` PASS (박수근·한반도섬 tipΔ0 · 김유정 fixed · 덕풍 MISS keep · 진도타워) |
+| **미커밋** | tip 패치·스크립트·일지·큐 — **사람 요청 시** 커밋 · `main` push 금지 |
+| **다음(사람)** | (1) 커밋 여부 (2) AMBIG/MISS 수동 (선택) (3) 지도 QA 샘플 |
+| **복구 제시어** | `오케스트레이터 · TourAPI-명소좌표` · 본 절 · method §3.0 (큐 재개 시에만) |
 
 ## 명소 좌표 — 김유정문학촌 TourAPI 교정
 

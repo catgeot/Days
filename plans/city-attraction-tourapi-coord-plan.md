@@ -1,6 +1,6 @@
 # 국내 명소 좌표 — TourAPI 보정
 
-**상태**: 다음 세션 착수 대기 (2026-07-23 준비)  
+**상태**: ✅ G0+R01–R11 큐 소진 · snap 372 · AMBIG/MISS 큐 md · **미커밋** (2026-07-23)  
 **범위**: `cityAttractionHubs.json` **KR만** (약 **210 hub / 1137 명소**)  
 **해외**: 대상 아님 (Mapbox/Nominatim §5.4 유지)
 
@@ -66,10 +66,10 @@
 
 ## 6. 완료 정의
 
-- [ ] 스크립트 + npm script + 캐시 gitignore
-- [ ] KR HIT 패치 1차(또는 전수 HIT) · audit 0
-- [ ] P0 4곳 tip이 TourAPI/사람 QA와 일치
-- [ ] AMBIG/MISS 큐 md 1장 · 일지 핸드오프
+- [x] 스크립트 + npm script + 캐시 gitignore
+- [x] KR HIT 패치 1차 · audit 0 — **R01–R11 ~210 hub** (누적 snap **372**) · 배치 큐 소진
+- [x] P0 4곳 tip이 TourAPI/사람 QA와 일치 (김유정 fixed · smoke PASS)
+- [x] AMBIG/MISS 큐 md 1장 · [`city-attraction-tourapi-coord-queue.md`](./city-attraction-tourapi-coord-queue.md) · 일지 핸드오프
 - [ ] 커밋·push (요청 시)
 
 ---
