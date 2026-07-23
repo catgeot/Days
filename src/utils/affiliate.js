@@ -532,6 +532,14 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   kamchatka: '56415',
   /** 캄차카 반도 — 동일 관문 */
   'kamchatka-peninsula': '56415',
+  /**
+   * 성수기 선제 배치 (2026-07-23) — MRT total>5이나 bookable 급감 워치
+   * — kr.trip.com/hotels/list?city= 제목·hreflang 검증
+   */
+  /** 아조레스 — 폰타 델가다(관문·상미겔) */
+  azores: '3737',
+  /** 타히티 — 섬 허브(파페에테 포함 · 보라보라 61019 아님) */
+  tahiti: '61672',
 };
 
 /**

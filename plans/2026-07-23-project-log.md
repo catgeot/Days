@@ -2,6 +2,14 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Trip.com 숙소 city ID — 성수기 선제 (아조레스·타히티)
+
+**상태**: ✅ city **49** · 사람 수동 확인 후 등록 · **커밋·push**
+
+- 배경: 라로통가형 — MRT `total`&gt;5여도 성수기 bookable 급감 → ≤5 CTA 시 city 없으면 세션 잔존
+- 등록 (제목·hreflang 검증): `azores`→**3737**(폰타 델가다) · `tahiti`→**61672**(타히티 섬 허브≠보라보라)
+- 다음 워치(미등록): 뉴칼레도니아·괌·모리셔스·몰디브·로포텐·사이판·이스터 등
+
 ## Trip.com 숙소 city ID — CTA 후보 gap 채움
 
 **상태**: ✅ city **47** · LIVE size50 CTA gap **0** · **커밋·push** (`f6c8848`)
