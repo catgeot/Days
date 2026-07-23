@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R49~R50 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R51 후임 기동)
+
+- tip **502 hub / 1504 settlements** (+20 hub / +60) · R49 하이데라바드·아그라·바라나시·고아·카트만두·콜롬보·말레·아부다비·도하·리야드 · R50 제다·텔아비브·예루살렘·암만·카이로·마라케시·카사블랑카·룩소르·알렉산드리아·튀니스 · hub skip 0
+- R49/R50 VERIFY: audit issues 0 · smoke 시드+exact(`세쿤데라바드`/`다얄바그`/`사르나트`/`마르가오`/`파탄`/`데히왈라`/`훌후말레`/`무사파`/`알와크라`/`디리야`/`오브후르`/`라마트간`/`베들레헴`/`자르카`/`기자`/`아이트우리르`/`모함메디아`/`아르만트`/`아부키르`/`라마르사`) PASS
+- 보정: IN/SA/ME/AF suburb·city·locality only(hub 도시명 미투입·POI 제외) · ≤50km · 제다 `투왈`·마라케시 `아미즈미즈`·알렉산드리아 `보르게알아랍` 거리초과→`브리에만`/`타메슬루트`/`암레야` · male 섬 정착지 3 · name 충돌 0
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- **다음 배치표 2개**
+  - **R51 A**: `fes` · `muscat` · `cape-town` · `johannesburg` · `nairobi` / **B**: `addis-ababa` · `zanzibar` · `brisbane` · `perth` · `adelaide`
+  - **R52 A**: `gold-coast` · `cairns` · `hobart` · `wellington` · `queenstown` / **B**: `christchurch` · `rotorua` · `kobe` · `yokohama` · `sendai`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · AF/AU/NZ/JP 인근 suburb·city only · placeId hubId prefix · 전역 name 충돌 회피 · sparse면 스킵 OK
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R51부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R47~R48 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R49 후임 기동)

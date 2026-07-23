@@ -18411,5 +18411,825 @@
         "mapboxId": null
       }
     ]
+  },
+  {
+    "hubId": "hyderabad",
+    "settlements": [
+      {
+        "placeId": "hyderabad-secunderabad",
+        "name": "세쿤데라바드",
+        "name_en": "Secunderabad",
+        "featureType": "city",
+        "lat": 17.4399,
+        "lng": 78.4983,
+        "aliases": [
+          "Secunderabad"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hyderabad-gachibowli",
+        "name": "가치볼리",
+        "name_en": "Gachibowli",
+        "featureType": "locality",
+        "lat": 17.4401,
+        "lng": 78.3489,
+        "aliases": [
+          "Gachibowli"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hyderabad-uppal",
+        "name": "우팔",
+        "name_en": "Uppal",
+        "featureType": "locality",
+        "lat": 17.3984,
+        "lng": 78.5583,
+        "aliases": [
+          "Uppal"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "agra",
+    "settlements": [
+      {
+        "placeId": "agra-dayalbagh",
+        "name": "다얄바그",
+        "name_en": "Dayalbagh",
+        "featureType": "locality",
+        "lat": 27.222,
+        "lng": 78.01,
+        "aliases": [
+          "Dayalbagh"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "agra-sikandra",
+        "name": "시칸드라",
+        "name_en": "Sikandra",
+        "featureType": "locality",
+        "lat": 27.2167,
+        "lng": 77.95,
+        "aliases": [
+          "Sikandra"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "agra-tundla",
+        "name": "툰들라",
+        "name_en": "Tundla",
+        "featureType": "city",
+        "lat": 27.2,
+        "lng": 78.2333,
+        "aliases": [
+          "Tundla"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "varanasi",
+    "settlements": [
+      {
+        "placeId": "varanasi-sarnath",
+        "name": "사르나트",
+        "name_en": "Sarnath",
+        "featureType": "locality",
+        "lat": 25.3811,
+        "lng": 83.0222,
+        "aliases": [
+          "Sarnath"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "varanasi-ramnagar",
+        "name": "람나가르",
+        "name_en": "Ramnagar",
+        "featureType": "locality",
+        "lat": 25.2694,
+        "lng": 83.0306,
+        "aliases": [
+          "Ramnagar"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "varanasi-mughalsarai",
+        "name": "무갈사라이",
+        "name_en": "Mughalsarai",
+        "featureType": "city",
+        "lat": 25.2833,
+        "lng": 83.1167,
+        "aliases": [
+          "Pandit Deen Dayal Upadhyaya Nagar"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "goa",
+    "settlements": [
+      {
+        "placeId": "goa-margao",
+        "name": "마르가오",
+        "name_en": "Margao",
+        "featureType": "city",
+        "lat": 15.2832,
+        "lng": 73.9862,
+        "aliases": [
+          "Madgaon"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "goa-panaji",
+        "name": "파나지",
+        "name_en": "Panaji",
+        "featureType": "city",
+        "lat": 15.4909,
+        "lng": 73.8278,
+        "aliases": [
+          "Panjim"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "goa-vasco-da-gama",
+        "name": "바스코다가마",
+        "name_en": "Vasco da Gama",
+        "featureType": "city",
+        "lat": 15.3982,
+        "lng": 73.8113,
+        "aliases": [
+          "Vasco"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "kathmandu",
+    "settlements": [
+      {
+        "placeId": "kathmandu-patan",
+        "name": "파탄",
+        "name_en": "Patan",
+        "featureType": "city",
+        "lat": 27.6667,
+        "lng": 85.3333,
+        "aliases": [
+          "Lalitpur"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kathmandu-bhaktapur",
+        "name": "바크타푸르",
+        "name_en": "Bhaktapur",
+        "featureType": "city",
+        "lat": 27.671,
+        "lng": 85.4298,
+        "aliases": [
+          "Bhaktapur"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kathmandu-kirtipur",
+        "name": "키르티푸르",
+        "name_en": "Kirtipur",
+        "featureType": "city",
+        "lat": 27.6786,
+        "lng": 85.2736,
+        "aliases": [
+          "Kirtipur"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "colombo",
+    "settlements": [
+      {
+        "placeId": "colombo-dehiwala",
+        "name": "데히왈라",
+        "name_en": "Dehiwala",
+        "featureType": "city",
+        "lat": 6.856,
+        "lng": 79.865,
+        "aliases": [
+          "Dehiwala-Mount Lavinia"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "colombo-kotte",
+        "name": "코테",
+        "name_en": "Kotte",
+        "featureType": "city",
+        "lat": 6.9108,
+        "lng": 79.8879,
+        "aliases": [
+          "Sri Jayawardenepura Kotte"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "colombo-moratuwa",
+        "name": "모라투와",
+        "name_en": "Moratuwa",
+        "featureType": "city",
+        "lat": 6.773,
+        "lng": 79.8816,
+        "aliases": [
+          "Moratuwa"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "male",
+    "settlements": [
+      {
+        "placeId": "male-hulhumale",
+        "name": "훌후말레",
+        "name_en": "Hulhumalé",
+        "featureType": "locality",
+        "lat": 4.211,
+        "lng": 73.54,
+        "aliases": [
+          "Hulhumale"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "male-villingili",
+        "name": "빌린길리",
+        "name_en": "Villingili",
+        "featureType": "locality",
+        "lat": 4.1742,
+        "lng": 73.4865,
+        "aliases": [
+          "Villimalé"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "male-maafushi",
+        "name": "마푸시",
+        "name_en": "Maafushi",
+        "featureType": "locality",
+        "lat": 3.9405,
+        "lng": 73.5007,
+        "aliases": [
+          "Maafushi"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "abu-dhabi",
+    "settlements": [
+      {
+        "placeId": "abu-dhabi-mussafah",
+        "name": "무사파",
+        "name_en": "Mussafah",
+        "featureType": "locality",
+        "lat": 24.3624,
+        "lng": 54.5,
+        "aliases": [
+          "Mussafah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "abu-dhabi-khalifa-city",
+        "name": "칼리파시티",
+        "name_en": "Khalifa City",
+        "featureType": "locality",
+        "lat": 24.4197,
+        "lng": 54.6075,
+        "aliases": [
+          "Khalifa City"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "abu-dhabi-mbz-city",
+        "name": "MBZ시티",
+        "name_en": "Mohammed Bin Zayed City",
+        "featureType": "locality",
+        "lat": 24.3476,
+        "lng": 54.525,
+        "aliases": [
+          "MBZ City"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "doha",
+    "settlements": [
+      {
+        "placeId": "doha-al-wakrah",
+        "name": "알와크라",
+        "name_en": "Al Wakrah",
+        "featureType": "city",
+        "lat": 25.1715,
+        "lng": 51.6034,
+        "aliases": [
+          "Al Wakrah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "doha-al-rayyan",
+        "name": "알라이얀",
+        "name_en": "Al Rayyan",
+        "featureType": "city",
+        "lat": 25.2919,
+        "lng": 51.4244,
+        "aliases": [
+          "Al Rayyan"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "doha-lusail",
+        "name": "루사일",
+        "name_en": "Lusail",
+        "featureType": "city",
+        "lat": 25.4181,
+        "lng": 51.4935,
+        "aliases": [
+          "Lusail"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "riyadh",
+    "settlements": [
+      {
+        "placeId": "riyadh-diriyah",
+        "name": "디리야",
+        "name_en": "Diriyah",
+        "featureType": "locality",
+        "lat": 24.737,
+        "lng": 46.575,
+        "aliases": [
+          "Ad Diriyah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "riyadh-al-muzahimiyah",
+        "name": "알무자히미야",
+        "name_en": "Al Muzahimiyah",
+        "featureType": "city",
+        "lat": 24.4667,
+        "lng": 46.2667,
+        "aliases": [
+          "Al Muzahimiyah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "riyadh-hair",
+        "name": "하이르",
+        "name_en": "Al Hair",
+        "featureType": "locality",
+        "lat": 24.5333,
+        "lng": 46.8667,
+        "aliases": [
+          "Hair"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "jeddah",
+    "settlements": [
+      {
+        "placeId": "jeddah-obhur",
+        "name": "오브후르",
+        "name_en": "Obhur",
+        "featureType": "locality",
+        "lat": 21.7167,
+        "lng": 39.1167,
+        "aliases": [
+          "Abhor"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "jeddah-bahrah",
+        "name": "바흐라",
+        "name_en": "Bahrah",
+        "featureType": "locality",
+        "lat": 21.4,
+        "lng": 39.45,
+        "aliases": [
+          "Bahrah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "jeddah-brieman",
+        "name": "브리에만",
+        "name_en": "Brieman",
+        "featureType": "locality",
+        "lat": 21.55,
+        "lng": 39.25,
+        "aliases": [
+          "Buraiman"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "tel-aviv",
+    "settlements": [
+      {
+        "placeId": "tel-aviv-ramat-gan",
+        "name": "라마트간",
+        "name_en": "Ramat Gan",
+        "featureType": "city",
+        "lat": 32.0822,
+        "lng": 34.813,
+        "aliases": [
+          "Ramat Gan"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tel-aviv-holon",
+        "name": "홀론",
+        "name_en": "Holon",
+        "featureType": "city",
+        "lat": 32.0103,
+        "lng": 34.7792,
+        "aliases": [
+          "Holon"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tel-aviv-bat-yam",
+        "name": "바트얌",
+        "name_en": "Bat Yam",
+        "featureType": "city",
+        "lat": 32.0171,
+        "lng": 34.7516,
+        "aliases": [
+          "Bat Yam"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "jerusalem",
+    "settlements": [
+      {
+        "placeId": "jerusalem-bethlehem",
+        "name": "베들레헴",
+        "name_en": "Bethlehem",
+        "featureType": "city",
+        "lat": 31.7054,
+        "lng": 35.2024,
+        "aliases": [
+          "Bethlehem"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "jerusalem-ramallah",
+        "name": "라말라",
+        "name_en": "Ramallah",
+        "featureType": "city",
+        "lat": 31.9038,
+        "lng": 35.2034,
+        "aliases": [
+          "Ramallah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "jerusalem-maale-adumim",
+        "name": "마알레아두밈",
+        "name_en": "Ma'ale Adumim",
+        "featureType": "city",
+        "lat": 31.7767,
+        "lng": 35.2981,
+        "aliases": [
+          "Ma'ale Adumim"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "amman",
+    "settlements": [
+      {
+        "placeId": "amman-zarqa",
+        "name": "자르카",
+        "name_en": "Zarqa",
+        "featureType": "city",
+        "lat": 32.0728,
+        "lng": 36.088,
+        "aliases": [
+          "Zarqa"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "amman-salt",
+        "name": "살트",
+        "name_en": "As-Salt",
+        "featureType": "city",
+        "lat": 32.0392,
+        "lng": 35.7272,
+        "aliases": [
+          "Salt"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "amman-madaba",
+        "name": "마다바",
+        "name_en": "Madaba",
+        "featureType": "city",
+        "lat": 31.716,
+        "lng": 35.7939,
+        "aliases": [
+          "Madaba"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "cairo",
+    "settlements": [
+      {
+        "placeId": "cairo-giza",
+        "name": "기자",
+        "name_en": "Giza",
+        "featureType": "city",
+        "lat": 30.0131,
+        "lng": 31.2089,
+        "aliases": [
+          "Al Jizah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cairo-helwan",
+        "name": "헬완",
+        "name_en": "Helwan",
+        "featureType": "city",
+        "lat": 29.85,
+        "lng": 31.3333,
+        "aliases": [
+          "Helwan"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cairo-6th-october",
+        "name": "6월10일도시",
+        "name_en": "6th of October City",
+        "featureType": "city",
+        "lat": 29.9285,
+        "lng": 30.9188,
+        "aliases": [
+          "October City"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "marrakech",
+    "settlements": [
+      {
+        "placeId": "marrakech-ait-ourir",
+        "name": "아이트우리르",
+        "name_en": "Ait Ourir",
+        "featureType": "city",
+        "lat": 31.5646,
+        "lng": -7.6652,
+        "aliases": [
+          "Ait Ourir"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "marrakech-tahannaout",
+        "name": "타한나우트",
+        "name_en": "Tahannaout",
+        "featureType": "locality",
+        "lat": 31.35,
+        "lng": -7.95,
+        "aliases": [
+          "Tahannaout"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "marrakech-tameslouht",
+        "name": "타메슬루트",
+        "name_en": "Tameslouht",
+        "featureType": "locality",
+        "lat": 31.5,
+        "lng": -8.1,
+        "aliases": [
+          "Tameslouht"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "casablanca",
+    "settlements": [
+      {
+        "placeId": "casablanca-mohammedia",
+        "name": "모함메디아",
+        "name_en": "Mohammedia",
+        "featureType": "city",
+        "lat": 33.6861,
+        "lng": -7.3828,
+        "aliases": [
+          "Mohammedia"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "casablanca-bouskoura",
+        "name": "부스쿠라",
+        "name_en": "Bouskoura",
+        "featureType": "locality",
+        "lat": 33.4489,
+        "lng": -7.65,
+        "aliases": [
+          "Bouskoura"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "casablanca-berrechid",
+        "name": "베레시드",
+        "name_en": "Berrechid",
+        "featureType": "city",
+        "lat": 33.2655,
+        "lng": -7.5875,
+        "aliases": [
+          "Berrechid"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "luxor",
+    "settlements": [
+      {
+        "placeId": "luxor-armant",
+        "name": "아르만트",
+        "name_en": "Armant",
+        "featureType": "city",
+        "lat": 25.6167,
+        "lng": 32.5333,
+        "aliases": [
+          "Armant"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "luxor-qus",
+        "name": "쿠스",
+        "name_en": "Qus",
+        "featureType": "city",
+        "lat": 25.9153,
+        "lng": 32.763,
+        "aliases": [
+          "Qus"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "luxor-esna",
+        "name": "에스나",
+        "name_en": "Esna",
+        "featureType": "city",
+        "lat": 25.2933,
+        "lng": 32.554,
+        "aliases": [
+          "Esna"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "alexandria",
+    "settlements": [
+      {
+        "placeId": "alexandria-abu-qir",
+        "name": "아부키르",
+        "name_en": "Abu Qir",
+        "featureType": "locality",
+        "lat": 31.3167,
+        "lng": 30.0667,
+        "aliases": [
+          "Abu Qir"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "alexandria-agami",
+        "name": "아가미",
+        "name_en": "Agami",
+        "featureType": "locality",
+        "lat": 31.1,
+        "lng": 29.7667,
+        "aliases": [
+          "Agamy"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "alexandria-amreya",
+        "name": "암레야",
+        "name_en": "Amreya",
+        "featureType": "locality",
+        "lat": 31.05,
+        "lng": 29.85,
+        "aliases": [
+          "Amreya"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "tunis",
+    "settlements": [
+      {
+        "placeId": "tunis-la-marsa",
+        "name": "라마르사",
+        "name_en": "La Marsa",
+        "featureType": "city",
+        "lat": 36.8782,
+        "lng": 10.3247,
+        "aliases": [
+          "La Marsa"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tunis-ariana",
+        "name": "아리아나",
+        "name_en": "Ariana",
+        "featureType": "city",
+        "lat": 36.8601,
+        "lng": 10.1934,
+        "aliases": [
+          "Ariana"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tunis-carthage",
+        "name": "카르타고",
+        "name_en": "Carthage",
+        "featureType": "locality",
+        "lat": 36.8528,
+        "lng": 10.3233,
+        "aliases": [
+          "Carthago"
+        ],
+        "mapboxId": null
+      }
+    ]
   }
 ]
