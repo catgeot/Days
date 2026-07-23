@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowUp,
@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import {
+  MRT_STAY_PAGE_SIZE,
   buildMrtStayListUrl,
   canShowMrtStayStrip,
   defaultMrtStayDates,
@@ -676,7 +677,30 @@ function StayAgencyAlwaysFooter({
   );
 }
 
-/** MRT 저재고(요금 있는 숙소 ≤5) — 목록 하단 공식 안내 + Trip.com */
+/** 목록 스크롤 끝 — 마이리얼트립 사이트(보조 CTA · 앱 내 더보기와 구분) */
+function StayMrtMoreFooter({ href, compact = false }) {
+  if (!href) return null;
+  return (
+    <div className="mt-6 flex w-full flex-col items-center pt-1">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+        onClick={(e) => e.stopPropagation()}
+        className={
+          compact
+            ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold text-amber-100/70 underline-offset-2 transition-colors hover:text-amber-50 hover:underline'
+            : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-amber-100/75 underline-offset-2 transition-colors hover:text-amber-50 hover:underline'
+        }
+      >
+        <span>마이리얼트립에서 더 보기</span>
+        <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
+      </a>
+    </div>
+  );
+}
+
+/** MRT 저재고(요금 있는 숙소 ≤5) — 목록 하단 공식 안내 + Trip.com (MRT 더 보기 제외) */
 function StayLowInventoryFooter({
   href,
   linkTarget,
@@ -761,53 +785,98 @@ function StayLowInventoryFooter({
   );
 }
 
-function StayCardsGrid({
-  items,
-  sortMode = 'recommended',
-  imageClassName,
-  cardClassName = 'w-auto min-w-0',
-  cardSize = 'md',
-}) {
-  /** 예약 가능(요금有) / 일정 변경 후 예약(요금無) 구분 */
+/**
+ * 전체 목록을 요금有→無로 나눈 뒤 정렬. 더보기·정렬은 이 순서 기준(페이지가 아님).
+ * @returns {{ item: object, dateFlexible: boolean }[]}
+ */
+function orderStayItemsForDisplay(items, sortMode = 'recommended') {
   const priced = [];
   const flexible = [];
   for (const item of items || []) {
     if (isMrtStayPriced(item)) priced.push(item);
     else flexible.push(item);
   }
-
   const pricedSorted = sortStayGroup(priced, sortMode);
   const flexibleSorted = sortStayGroup(
     flexible,
     sortMode === 'price_asc' || sortMode === 'price_desc' ? 'recommended' : sortMode,
   );
+  return [
+    ...pricedSorted.map((item) => ({ item, dateFlexible: false })),
+    ...flexibleSorted.map((item) => ({ item, dateFlexible: true })),
+  ];
+}
 
-  const renderCard = (item, dateFlexible) => (
-    <StayCard
-      key={item.itemId}
-      item={item}
-      price={formatPrice(item.salePrice)}
-      dateFlexible={dateFlexible}
-      className={cardClassName}
-      imageClassName={imageClassName}
-      size={cardSize}
-    />
-  );
+function StayCardsGrid({
+  items,
+  sortMode = 'recommended',
+  /** 정렬된 전체 중 앞에서부터 노출 개수 */
+  visibleCount = MRT_STAY_PAGE_SIZE,
+  imageClassName,
+  cardClassName = 'w-auto min-w-0',
+  cardSize = 'md',
+}) {
+  const ordered = orderStayItemsForDisplay(items, sortMode);
+  const visible = ordered.slice(0, Math.max(0, visibleCount));
+  const pricedInFull = ordered.some((row) => !row.dateFlexible);
+  const firstFlexibleIdx = visible.findIndex((row) => row.dateFlexible);
 
   return (
     <>
-      {pricedSorted.map((item) => renderCard(item, false))}
-      {flexibleSorted.length > 0 ? (
-        <>
-          <p className="col-span-full break-keep px-0.5 pt-1 text-[11px] font-semibold text-amber-100/65">
-            {pricedSorted.length > 0
-              ? '일정 조정 시 예약할 수 있는 숙소'
-              : '이 일정엔 바로 예약 가능한 숙소가 없어요 · 일정을 바꾸면 예약할 수 있어요'}
-          </p>
-          {flexibleSorted.map((item) => renderCard(item, true))}
-        </>
-      ) : null}
+      {visible.map(({ item, dateFlexible }, index) => (
+        <Fragment key={item.itemId}>
+          {dateFlexible && index === firstFlexibleIdx ? (
+            <div className="col-span-full mt-2 mb-0.5">
+              <div className="rounded-xl border border-amber-300/35 bg-amber-500/15 px-3 py-2.5">
+                <p className="break-keep text-[12px] font-extrabold leading-snug tracking-tight text-amber-50 lg:text-[13px]">
+                  {pricedInFull
+                    ? '일정 조정이 필요한 숙소'
+                    : '이 일정엔 바로 예약 가능한 숙소가 없어요'}
+                </p>
+                <p className="mt-0.5 break-keep text-[11px] font-medium leading-snug text-amber-100/85 lg:text-[12px]">
+                  {pricedInFull
+                    ? '아래 숙소는 체크인·체크아웃을 바꾸면 예약할 수 있어요'
+                    : '체크인·체크아웃을 바꾸면 아래 숙소를 예약할 수 있어요'}
+                </p>
+              </div>
+            </div>
+          ) : null}
+          <StayCard
+            item={item}
+            price={formatPrice(item.salePrice)}
+            dateFlexible={dateFlexible}
+            className={cardClassName}
+            imageClassName={imageClassName}
+            size={cardSize}
+          />
+        </Fragment>
+      ))}
     </>
+  );
+}
+
+/** 메모리 목록(최대 50)을 PAGE_SIZE씩 더 펼침 — 외부 MRT 링크와 별개 */
+function StayListLoadMore({ remaining, onLoadMore, compact = false }) {
+  if (!(remaining > 0) || typeof onLoadMore !== 'function') return null;
+  const next = Math.min(MRT_STAY_PAGE_SIZE, remaining);
+  return (
+    <div className="mt-6 flex w-full flex-col items-center pt-1">
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onLoadMore();
+        }}
+        className={
+          compact
+            ? 'inline-flex h-9 items-center justify-center gap-1 rounded-full border border-amber-300/70 bg-amber-500 px-3.5 text-[11px] font-extrabold text-black shadow-[0_2px_12px_rgba(245,158,11,0.35)] transition-colors hover:bg-amber-400 active:scale-[0.98]'
+            : 'inline-flex h-9 items-center justify-center gap-1 rounded-full border border-amber-300/70 bg-amber-500 px-4 text-[12px] font-extrabold text-black shadow-[0_2px_12px_rgba(245,158,11,0.35)] transition-colors hover:bg-amber-400 active:scale-[0.98]'
+        }
+      >
+        <span>{next}곳 더 보기</span>
+        <ChevronDown size={compact ? 13 : 14} strokeWidth={2.5} className="shrink-0" aria-hidden />
+      </button>
+    </div>
   );
 }
 
@@ -862,6 +931,8 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const [stayDates, setStayDates] = useState(() => defaultMrtStayDates());
   const [guests, setGuests] = useState(() => normalizeMrtGuestCounts(2, 0));
   const [sortMode, setSortMode] = useState('recommended');
+  /** 정렬된 전체 중 노출 개수 — 더보기로 PAGE_SIZE씩 증가 */
+  const [visibleCount, setVisibleCount] = useState(MRT_STAY_PAGE_SIZE);
   /** 모바일 목록 열 — 2(기본) | 1 */
   const [mobileGridCols, setMobileGridCols] = useState(2);
   /** PC 목록 밀도 — default(5열) | zoom(3열 확대) */
@@ -899,6 +970,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     setStayDates(defaultMrtStayDates());
     setGuests(normalizeMrtGuestCounts(2, 0));
     setSortMode('recommended');
+    setVisibleCount(MRT_STAY_PAGE_SIZE);
     fetchedKeyRef.current = '';
   }, [placeKey]);
 
@@ -979,6 +1051,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       }
       if (result?.items?.length) {
         setItems(result.items);
+        setVisibleCount(MRT_STAY_PAGE_SIZE);
         setMrtListMeta({
           regionId: result.region?.regionId ?? null,
           keyword: result.usedKeyword || name || '',
@@ -994,6 +1067,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       } else {
         setItems(null);
         setMrtListMeta(null);
+        setVisibleCount(MRT_STAY_PAGE_SIZE);
         setStatus(result == null ? 'error' : 'empty');
       }
     })();
@@ -1020,6 +1094,10 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
       return nextGuests;
     });
     fetchedKeyRef.current = '';
+  }, []);
+
+  const loadMoreStays = useCallback(() => {
+    setVisibleCount((prev) => prev + MRT_STAY_PAGE_SIZE);
   }, []);
 
   const openMobileFullscreen = useCallback(() => {
@@ -1224,6 +1302,9 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
         })
       : null;
 
+  const listTotalCount = Array.isArray(items) ? items.length : 0;
+  const listRemaining = Math.max(0, listTotalCount - visibleCount);
+
   /** PC 포털 전용 그리드 — 모바일은 전체화면만 사용 */
   const desktopDensity =
     DESKTOP_GRID_DENSITY[desktopGridDensity] || DESKTOP_GRID_DENSITY.default;
@@ -1231,7 +1312,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     isLg && status === 'ready' && items?.length ? (
       <>
         <StayListToolbar
-          count={items.length}
+          count={listTotalCount}
           sortMode={sortMode}
           onSortChange={setSortMode}
           listUrl={mrtStayListUrl}
@@ -1247,10 +1328,13 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
           <StayCardsGrid
             items={items}
             sortMode={sortMode}
+            visibleCount={visibleCount}
             cardSize="lg"
             imageClassName={desktopDensity.imageClassName}
           />
         </div>
+        <StayListLoadMore remaining={listRemaining} onLoadMore={loadMoreStays} />
+        {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
         {showLowInventoryCta ? (
           <StayLowInventoryFooter
             href={tripcomLowUrl}
@@ -1260,7 +1344,9 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             agencyProfile={stayAgencyProfile}
             moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
           />
-        ) : null}
+        ) : (
+          <StayMrtMoreFooter href={mrtStayListUrl} />
+        )}
         {showAgencyAlwaysFooter ? (
           <StayAgencyAlwaysFooter
             profile={stayAgencyProfile}
@@ -1274,7 +1360,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const desktopPanelBody = (
     <div
       ref={desktopListScrollRef}
-      className="globe-stay-strip-scroll min-h-0 flex-1 overflow-y-auto p-3"
+      className="globe-stay-strip-scroll min-h-0 flex-1 overflow-y-auto p-3 pb-16"
     >
       <style>{`
         .globe-stay-strip-scroll {
@@ -1370,7 +1456,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
               onClick={() => {
                 desktopListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={`absolute bottom-4 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500 px-3 text-black shadow-[0_4px_20px_rgba(245,158,11,0.45)] transition-all duration-300 hover:bg-amber-400 active:scale-95 ${
+              className={`absolute bottom-7 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500 px-3 text-black shadow-[0_4px_20px_rgba(245,158,11,0.45)] transition-all duration-300 hover:bg-amber-400 active:scale-95 ${
                 showDesktopScrollTop
                   ? 'pointer-events-auto translate-y-0 opacity-100'
                   : 'pointer-events-none translate-y-3 opacity-0'
@@ -1404,7 +1490,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
             />
             <div
               ref={mobileListScrollRef}
-              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
             >
               <div className="mb-3">{renderDateBar({ embedInPanel: true })}</div>
               {status === 'loading' ? (
@@ -1417,7 +1503,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
               {status === 'ready' && items?.length ? (
                 <>
                   <StayListToolbar
-                    count={items.length}
+                    count={listTotalCount}
                     sortMode={sortMode}
                     onSortChange={setSortMode}
                     listUrl={mrtStayListUrl}
@@ -1433,6 +1519,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                     <StayCardsGrid
                       items={items}
                       sortMode={sortMode}
+                      visibleCount={visibleCount}
                       cardClassName="w-full"
                       cardSize={mobileGridCols === 1 ? 'lg' : 'md'}
                       imageClassName={
@@ -1440,6 +1527,12 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                       }
                     />
                   </div>
+                  <StayListLoadMore
+                    remaining={listRemaining}
+                    onLoadMore={loadMoreStays}
+                    compact
+                  />
+                  {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
                   {showLowInventoryCta ? (
                     <StayLowInventoryFooter
                       href={tripcomLowUrl}
@@ -1449,7 +1542,9 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
                       agencyProfile={stayAgencyProfile}
                       moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
                     />
-                  ) : null}
+                  ) : (
+                    <StayMrtMoreFooter href={mrtStayListUrl} compact />
+                  )}
                   {showAgencyAlwaysFooter ? (
                     <StayAgencyAlwaysFooter
                       profile={stayAgencyProfile}
@@ -1467,7 +1562,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
               onClick={() => {
                 mobileListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={`absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-3 z-10 flex h-11 items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500 px-3.5 text-black shadow-[0_4px_20px_rgba(245,158,11,0.45)] transition-all duration-300 active:scale-95 ${
+              className={`absolute bottom-[max(2.25rem,calc(env(safe-area-inset-bottom)+1rem))] right-3 z-10 flex h-11 items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500 px-3.5 text-black shadow-[0_4px_20px_rgba(245,158,11,0.45)] transition-all duration-300 active:scale-95 ${
                 showMobileScrollTop
                   ? 'pointer-events-auto translate-y-0 opacity-100'
                   : 'pointer-events-none translate-y-3 opacity-0'

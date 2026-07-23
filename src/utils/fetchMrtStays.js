@@ -23,16 +23,16 @@ export {
   stripKoAdminSuffix,
 };
 
-/** countryHint·keyword override 변경 시 무효화 · v17: fetch size50 · UI 20 */
-const CACHE_PREFIX = 'gateo:mrt-stays:v17:';
+/** countryHint·keyword override 변경 시 무효화 · v18: fetch 50 · UI 더보기로 20씩 */
+const CACHE_PREFIX = 'gateo:mrt-stays:v18:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const MAX_STAY_NIGHTS = 30;
 const MAX_ADULTS = 8;
 const MAX_CHILDREN = 8;
 /** 파트너 accommodation/search size 상한 */
-const MRT_STAY_FETCH_SIZE = 50;
-/** 게이트오 목록 노출 상한(요금有 우선 정렬 후) */
-const MRT_STAY_DISPLAY_SIZE = 20;
+export const MRT_STAY_FETCH_SIZE = 50;
+/** 게이트오 목록 최초·추가 노출 단위(요금有 우선 정렬 후 · 더보기) */
+export const MRT_STAY_PAGE_SIZE = 20;
 
 export function normalizeMrtGuestCounts(adultCount, childCount) {
   const adults = Math.max(1, Math.min(MAX_ADULTS, Number(adultCount) || 2));
@@ -200,21 +200,22 @@ function cacheKey(
   return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${keyword}`;
 }
 
-/** fetch 원본 → 요금有 우선 · UI는 DISPLAY_SIZE · bookableCount는 fetch 전체 기준(CTA) */
+/**
+ * fetch 원본 → 요금有 우선 정렬 · 최대 FETCH_SIZE 전부 반환.
+ * UI는 PAGE_SIZE씩 더보기로 자른다 · bookableCount는 fetch 전체 기준(CTA).
+ */
 function shapeMrtStayResult(payload) {
   if (!payload || typeof payload !== 'object') return payload;
   const listed = Array.isArray(payload.items) ? payload.items : [];
-  const sorted = sortMrtStaysPricedFirst(listed);
-  const bookableCount = filterBookableMrtStays(listed).length;
-  const items = sorted.slice(0, MRT_STAY_DISPLAY_SIZE);
-  const bookableDisplayed = filterBookableMrtStays(items).length;
+  const sorted = sortMrtStaysPricedFirst(listed).slice(0, MRT_STAY_FETCH_SIZE);
+  const bookableCount = filterBookableMrtStays(sorted).length;
   return {
     ...payload,
-    items,
-    listedCount: items.length,
+    items: sorted,
+    listedCount: sorted.length,
     bookableCount,
     totalCount: Number(payload.apiTotalCount) || listed.length,
-    moreWithDateChange: bookableDisplayed < items.length,
+    moreWithDateChange: bookableCount < sorted.length,
   };
 }
 
@@ -311,7 +312,7 @@ export async function fetchMrtStays(params) {
 
     const listed = Array.isArray(data.items) ? data.items : [];
     const apiTotalCount = Number(data.totalCount);
-    /** 캐시: fetch 원본(최대 50) · 읽기/반환 시 요금 우선·UI 20 */
+    /** 캐시: fetch 원본(최대 50) · 읽기/반환 시 요금 우선 · UI는 더보기 */
     const cachePayload = {
       ok: true,
       region: data.region ?? null,

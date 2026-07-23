@@ -2,6 +2,15 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 숙소 모달 — 더보기·하단 CTA·구간 구분
+
+**상태**: ✅ 커밋·push
+
+- fetch 50 유지 · UI `MRT_STAY_PAGE_SIZE`(20)씩 「N곳 더 보기」·정렬은 전체 목록 기준
+- 하단 패딩·맨 위(우측) 여유 · 앱 내 더보기(amber 필) vs MRT 사이트 링크(텍스트) 구분
+- 저재고: MRT 사이트 「더 보기」제외 · 관광청·Trip만 · 예약가능/일정조정 구분 박스 강화
+- 캐시 prefix `gateo:mrt-stays:v18`
+
 ## 검색바 — Enter 선택 카드 강제 + 홈 써머리
 
 **상태**: ✅ 커밋·push · QA 대기

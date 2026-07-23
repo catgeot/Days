@@ -462,7 +462,7 @@ serve(async (req) => {
     const checkOut = String(body?.checkOut || defaults.checkOut);
     const adultCount = Math.max(1, Math.min(8, Number(body?.adultCount) || 2));
     const childCount = Math.max(0, Math.min(8, Number(body?.childCount) || 0));
-    /** 파트너 API size 상한 50 · 클라는 fetch 50 후 UI 20 노출 */
+    /** 파트너 API size 상한 50 · 클라는 fetch 50 후 UI에서 20씩 더보기 */
     const size = Math.max(1, Math.min(50, Number(body?.size) || 20));
     const page = Math.max(0, Number(body?.page) || 0);
 
