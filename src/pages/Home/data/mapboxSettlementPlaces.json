@@ -4492,5 +4492,1429 @@
         ]
       }
     ]
+  },
+  {
+    "hubId": "valencia",
+    "settlements": [
+      {
+        "placeId": "valencia-torrent",
+        "name": "토렌트",
+        "name_en": "Torrent",
+        "featureType": "city",
+        "lat": 39.4371,
+        "lng": -0.4654,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "valencia-sagunto",
+        "name": "사군토",
+        "name_en": "Sagunto",
+        "featureType": "city",
+        "lat": 39.6832,
+        "lng": -0.2765,
+        "mapboxId": null,
+        "aliases": [
+          "Sagunt"
+        ]
+      },
+      {
+        "placeId": "valencia-burjassot",
+        "name": "부르하소트",
+        "name_en": "Burjassot",
+        "featureType": "city",
+        "lat": 39.5096,
+        "lng": -0.4123,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "marseille",
+    "settlements": [
+      {
+        "placeId": "marseille-aix",
+        "name": "엑상프로방스",
+        "name_en": "Aix-en-Provence",
+        "featureType": "city",
+        "lat": 43.5297,
+        "lng": 5.4474,
+        "mapboxId": null,
+        "aliases": [
+          "아익스"
+        ]
+      },
+      {
+        "placeId": "marseille-aubagne",
+        "name": "오바뉴",
+        "name_en": "Aubagne",
+        "featureType": "city",
+        "lat": 43.2928,
+        "lng": 5.5706,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "marseille-la-ciotat",
+        "name": "라시오타",
+        "name_en": "La Ciotat",
+        "featureType": "city",
+        "lat": 43.1745,
+        "lng": 5.605,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "lyon",
+    "settlements": [
+      {
+        "placeId": "lyon-villeurbanne",
+        "name": "빌뢰르반",
+        "name_en": "Villeurbanne",
+        "featureType": "city",
+        "lat": 45.7719,
+        "lng": 4.8902,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "lyon-venissieux",
+        "name": "베니시에",
+        "name_en": "Vénissieux",
+        "featureType": "city",
+        "lat": 45.6978,
+        "lng": 4.885,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "lyon-caluire",
+        "name": "칼뤼르에퀴르",
+        "name_en": "Caluire-et-Cuire",
+        "featureType": "city",
+        "lat": 45.7965,
+        "lng": 4.8473,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "jeongeup",
+    "settlements": [
+      {
+        "placeId": "jeongeup-sintaein",
+        "name": "신태인읍",
+        "name_en": "Sintaein-eup",
+        "featureType": "locality",
+        "lat": 35.5198,
+        "lng": 126.8932,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "jeongeup-taein",
+        "name": "태인면",
+        "name_en": "Taein-myeon",
+        "featureType": "locality",
+        "lat": 35.5835,
+        "lng": 126.9201,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "jeongeup-ibam",
+        "name": "입암면",
+        "name_en": "Ipam-myeon",
+        "featureType": "locality",
+        "lat": 35.6302,
+        "lng": 126.9185,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "gimje",
+    "settlements": [
+      {
+        "placeId": "gimje-mangyeong",
+        "name": "만경읍",
+        "name_en": "Mangyeong-eup",
+        "featureType": "locality",
+        "lat": 35.8502,
+        "lng": 126.8205,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gimje-geumgu",
+        "name": "금구면",
+        "name_en": "Geumgu-myeon",
+        "featureType": "locality",
+        "lat": 35.8701,
+        "lng": 126.9503,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gimje-bongnam",
+        "name": "봉남면",
+        "name_en": "Bongnam-myeon",
+        "featureType": "locality",
+        "lat": 35.7805,
+        "lng": 126.9202,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "iksan",
+    "settlements": [
+      {
+        "placeId": "iksan-hamyeol",
+        "name": "함열읍",
+        "name_en": "Hamyeol-eup",
+        "featureType": "locality",
+        "lat": 36.0502,
+        "lng": 127.0001,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "iksan-hwangdeung",
+        "name": "황등면",
+        "name_en": "Hwangdeung-myeon",
+        "featureType": "locality",
+        "lat": 35.9801,
+        "lng": 126.9203,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "iksan-geumma",
+        "name": "금마면",
+        "name_en": "Geumma-myeon",
+        "featureType": "locality",
+        "lat": 36.0005,
+        "lng": 127.0502,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "wanju",
+    "settlements": [
+      {
+        "placeId": "wanju-bongdong",
+        "name": "봉동읍",
+        "name_en": "Bongdong-eup",
+        "featureType": "locality",
+        "lat": 35.9501,
+        "lng": 127.1302,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "wanju-samnye",
+        "name": "삼례읍",
+        "name_en": "Samnye-eup",
+        "featureType": "locality",
+        "lat": 35.9102,
+        "lng": 127.1205,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "wanju-gosan",
+        "name": "고산면",
+        "name_en": "Gosan-myeon",
+        "featureType": "locality",
+        "lat": 35.9803,
+        "lng": 127.2301,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "haenam",
+    "settlements": [
+      {
+        "placeId": "haenam-hwasan",
+        "name": "화산면",
+        "name_en": "Hwasan-myeon",
+        "featureType": "locality",
+        "lat": 34.5302,
+        "lng": 126.5201,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "haenam-munnae",
+        "name": "문내면",
+        "name_en": "Munnae-myeon",
+        "featureType": "locality",
+        "lat": 34.5503,
+        "lng": 126.4502,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "haenam-bukpyeong",
+        "name": "북평면",
+        "name_en": "Bukpyeong-myeon",
+        "featureType": "locality",
+        "lat": 34.4501,
+        "lng": 126.6005,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "hamburg",
+    "settlements": [
+      {
+        "placeId": "hamburg-altona",
+        "name": "알토나",
+        "name_en": "Altona",
+        "featureType": "locality",
+        "lat": 53.55,
+        "lng": 9.935,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "hamburg-wandsbek",
+        "name": "반츠베크",
+        "name_en": "Wandsbek",
+        "featureType": "locality",
+        "lat": 53.575,
+        "lng": 10.07,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "hamburg-harburg",
+        "name": "하르부르크",
+        "name_en": "Harburg",
+        "featureType": "locality",
+        "lat": 53.46,
+        "lng": 9.98,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bratislava",
+    "settlements": [
+      {
+        "placeId": "bratislava-petrzalka",
+        "name": "페트르잘카",
+        "name_en": "Petržalka",
+        "featureType": "locality",
+        "lat": 48.12,
+        "lng": 17.11,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bratislava-pezinok",
+        "name": "페지노크",
+        "name_en": "Pezinok",
+        "featureType": "city",
+        "lat": 48.288,
+        "lng": 17.267,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bratislava-senec",
+        "name": "세네츠",
+        "name_en": "Senec",
+        "featureType": "city",
+        "lat": 48.22,
+        "lng": 17.4,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "zagreb",
+    "settlements": [
+      {
+        "placeId": "zagreb-samobor",
+        "name": "사모보르",
+        "name_en": "Samobor",
+        "featureType": "city",
+        "lat": 45.8031,
+        "lng": 15.711,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "zagreb-velika-gorica",
+        "name": "벨리카고리차",
+        "name_en": "Velika Gorica",
+        "featureType": "city",
+        "lat": 45.7125,
+        "lng": 16.0756,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "zagreb-zapresic",
+        "name": "자프레시치",
+        "name_en": "Zaprešić",
+        "featureType": "city",
+        "lat": 45.857,
+        "lng": 15.807,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "salzburg",
+    "settlements": [
+      {
+        "placeId": "salzburg-hallein",
+        "name": "할라인",
+        "name_en": "Hallein",
+        "featureType": "city",
+        "lat": 47.6829,
+        "lng": 13.1002,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "salzburg-freilassing",
+        "name": "프라이라우징",
+        "name_en": "Freilassing",
+        "featureType": "city",
+        "lat": 47.8407,
+        "lng": 12.9811,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "salzburg-wals",
+        "name": "발스지첸하임",
+        "name_en": "Wals-Siezenheim",
+        "featureType": "locality",
+        "lat": 47.79,
+        "lng": 12.98,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bordeaux",
+    "settlements": [
+      {
+        "placeId": "bordeaux-pessac",
+        "name": "페삭",
+        "name_en": "Pessac",
+        "featureType": "city",
+        "lat": 44.806,
+        "lng": -0.631,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bordeaux-merignac",
+        "name": "메리냑",
+        "name_en": "Mérignac",
+        "featureType": "city",
+        "lat": 44.842,
+        "lng": -0.645,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bordeaux-talence",
+        "name": "탈랑스",
+        "name_en": "Talence",
+        "featureType": "city",
+        "lat": 44.808,
+        "lng": -0.596,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "muan",
+    "settlements": [
+      {
+        "placeId": "muan-haeje",
+        "name": "해제면",
+        "name_en": "Haeje-myeon",
+        "featureType": "locality",
+        "lat": 35.0502,
+        "lng": 126.4201,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "muan-illo",
+        "name": "일로읍",
+        "name_en": "Illo-eup",
+        "featureType": "locality",
+        "lat": 34.9501,
+        "lng": 126.5203,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "muan-mongtan",
+        "name": "몽탄면",
+        "name_en": "Mongtan-myeon",
+        "featureType": "locality",
+        "lat": 34.9402,
+        "lng": 126.4501,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "yeongam",
+    "settlements": [
+      {
+        "placeId": "yeongam-gunseo",
+        "name": "군서면",
+        "name_en": "Gunseo-myeon",
+        "featureType": "locality",
+        "lat": 34.7801,
+        "lng": 126.6502,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yeongam-haksan",
+        "name": "학산면",
+        "name_en": "Haksan-myeon",
+        "featureType": "locality",
+        "lat": 34.7503,
+        "lng": 126.7201,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yeongam-sinbuk",
+        "name": "신북면",
+        "name_en": "Sinbuk-myeon",
+        "featureType": "locality",
+        "lat": 34.8502,
+        "lng": 126.7205,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "gangjin",
+    "settlements": [
+      {
+        "placeId": "gangjin-doam",
+        "name": "도암면",
+        "name_en": "Doam-myeon",
+        "featureType": "locality",
+        "lat": 34.6002,
+        "lng": 126.7201,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gangjin-seongjeon",
+        "name": "성전면",
+        "name_en": "Seongjeon-myeon",
+        "featureType": "locality",
+        "lat": 34.7001,
+        "lng": 126.7802,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gangjin-jakcheon",
+        "name": "작천면",
+        "name_en": "Jakcheon-myeon",
+        "featureType": "locality",
+        "lat": 34.6803,
+        "lng": 126.7205,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "jangseong",
+    "settlements": [
+      {
+        "placeId": "jangseong-samgye",
+        "name": "삼계면",
+        "name_en": "Samgye-myeon",
+        "featureType": "locality",
+        "lat": 35.2801,
+        "lng": 126.7202,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "jangseong-bukil",
+        "name": "북이면",
+        "name_en": "Buk-i-myeon",
+        "featureType": "locality",
+        "lat": 35.3502,
+        "lng": 126.8201,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "jangseong-hwangryong",
+        "name": "황룡면",
+        "name_en": "Hwangryong-myeon",
+        "featureType": "locality",
+        "lat": 35.2805,
+        "lng": 126.8503,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "hampyeong",
+    "settlements": [
+      {
+        "placeId": "hampyeong-sonbul",
+        "name": "손불면",
+        "name_en": "Sonbul-myeon",
+        "featureType": "locality",
+        "lat": 35.1002,
+        "lng": 126.4801,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "hampyeong-hakgyo",
+        "name": "학교면",
+        "name_en": "Hakgyo-myeon",
+        "featureType": "locality",
+        "lat": 35.0301,
+        "lng": 126.5502,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "hampyeong-nasan",
+        "name": "나산면",
+        "name_en": "Nasan-myeon",
+        "featureType": "locality",
+        "lat": 35.1005,
+        "lng": 126.5803,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "glasgow",
+    "settlements": [
+      {
+        "placeId": "glasgow-paisley",
+        "name": "페이즐리",
+        "name_en": "Paisley",
+        "featureType": "city",
+        "lat": 55.8456,
+        "lng": -4.4237,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "glasgow-east-kilbride",
+        "name": "이스트킬브라이드",
+        "name_en": "East Kilbride",
+        "featureType": "city",
+        "lat": 55.7643,
+        "lng": -4.1769,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "glasgow-clydebank",
+        "name": "클라이드뱅크",
+        "name_en": "Clydebank",
+        "featureType": "city",
+        "lat": 55.9017,
+        "lng": -4.4057,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "antwerp",
+    "settlements": [
+      {
+        "placeId": "antwerp-mortsel",
+        "name": "모르트셀",
+        "name_en": "Mortsel",
+        "featureType": "city",
+        "lat": 51.17,
+        "lng": 4.455,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "antwerp-boom",
+        "name": "붐",
+        "name_en": "Boom",
+        "featureType": "city",
+        "lat": 51.087,
+        "lng": 4.367,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "antwerp-brasschaat",
+        "name": "브라스하트",
+        "name_en": "Brasschaat",
+        "featureType": "city",
+        "lat": 51.292,
+        "lng": 4.492,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "rotterdam",
+    "settlements": [
+      {
+        "placeId": "rotterdam-schiedam",
+        "name": "스키담",
+        "name_en": "Schiedam",
+        "featureType": "city",
+        "lat": 51.919,
+        "lng": 4.389,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "rotterdam-dordrecht",
+        "name": "돌드레흐트",
+        "name_en": "Dordrecht",
+        "featureType": "city",
+        "lat": 51.813,
+        "lng": 4.69,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "rotterdam-spijkenisse",
+        "name": "스파켄뷔르흐",
+        "name_en": "Spijkenisse",
+        "featureType": "city",
+        "lat": 51.845,
+        "lng": 4.329,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bilbao",
+    "settlements": [
+      {
+        "placeId": "bilbao-getxo",
+        "name": "게초",
+        "name_en": "Getxo",
+        "featureType": "city",
+        "lat": 43.357,
+        "lng": -3.011,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bilbao-barakaldo",
+        "name": "바라칼도",
+        "name_en": "Barakaldo",
+        "featureType": "city",
+        "lat": 43.297,
+        "lng": -2.989,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bilbao-portugalete",
+        "name": "포르투갈레테",
+        "name_en": "Portugalete",
+        "featureType": "city",
+        "lat": 43.321,
+        "lng": -3.02,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "innsbruck",
+    "settlements": [
+      {
+        "placeId": "innsbruck-hall",
+        "name": "할",
+        "name_en": "Hall in Tirol",
+        "featureType": "place",
+        "lat": 47.283,
+        "lng": 11.506,
+        "mapboxId": null,
+        "aliases": [
+          "Hall"
+        ]
+      },
+      {
+        "placeId": "innsbruck-igls",
+        "name": "이글스",
+        "name_en": "Igls",
+        "featureType": "locality",
+        "lat": 47.231,
+        "lng": 11.41,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "innsbruck-voels",
+        "name": "보트젠스",
+        "name_en": "Völs",
+        "featureType": "place",
+        "lat": 47.252,
+        "lng": 11.326,
+        "mapboxId": null,
+        "aliases": [
+          "Vols"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "sinan",
+    "settlements": [
+      {
+        "placeId": "sinan-jido-eup",
+        "name": "지도읍",
+        "name_en": "Jido-eup",
+        "featureType": "place",
+        "lat": 34.885,
+        "lng": 126.158,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sinan-aphae",
+        "name": "압해읍",
+        "name_en": "Aphae-eup",
+        "featureType": "place",
+        "lat": 34.84,
+        "lng": 126.3,
+        "mapboxId": null,
+        "aliases": [
+          "압해도"
+        ]
+      },
+      {
+        "placeId": "sinan-jeungdo",
+        "name": "증도면",
+        "name_en": "Jeungdo-myeon",
+        "featureType": "locality",
+        "lat": 34.999,
+        "lng": 126.148,
+        "mapboxId": null,
+        "aliases": [
+          "증도"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "naju",
+    "settlements": [
+      {
+        "placeId": "naju-nampyeong",
+        "name": "남평읍",
+        "name_en": "Nampyeong-eup",
+        "featureType": "place",
+        "lat": 35.044,
+        "lng": 126.845,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "naju-dasi",
+        "name": "다시면",
+        "name_en": "Dasi-myeon",
+        "featureType": "locality",
+        "lat": 34.988,
+        "lng": 126.632,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "naju-seji",
+        "name": "세지면",
+        "name_en": "Seji-myeon",
+        "featureType": "locality",
+        "lat": 35.078,
+        "lng": 126.678,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "hwasun",
+    "settlements": [
+      {
+        "placeId": "hwasun-neungju",
+        "name": "능주면",
+        "name_en": "Neungju-myeon",
+        "featureType": "locality",
+        "lat": 35.02,
+        "lng": 126.968,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "hwasun-dogok",
+        "name": "도곡면",
+        "name_en": "Dogok-myeon",
+        "featureType": "locality",
+        "lat": 35.012,
+        "lng": 126.928,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "hwasun-iyang",
+        "name": "이양면",
+        "name_en": "Iyang-myeon",
+        "featureType": "locality",
+        "lat": 34.967,
+        "lng": 127.02,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "gwangyang",
+    "settlements": [
+      {
+        "placeId": "gwangyang-gwangyang-eup",
+        "name": "광양읍",
+        "name_en": "Gwangyang-eup",
+        "featureType": "place",
+        "lat": 34.973,
+        "lng": 127.581,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gwangyang-okgok",
+        "name": "옥곡면",
+        "name_en": "Okgok-myeon",
+        "featureType": "locality",
+        "lat": 34.99,
+        "lng": 127.69,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gwangyang-jinwol",
+        "name": "진월면",
+        "name_en": "Jinwol-myeon",
+        "featureType": "locality",
+        "lat": 34.97,
+        "lng": 127.76,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "wonju",
+    "settlements": [
+      {
+        "placeId": "wonju-munmak",
+        "name": "문막읍",
+        "name_en": "Munmak-eup",
+        "featureType": "place",
+        "lat": 37.312,
+        "lng": 127.82,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "wonju-jijeong",
+        "name": "지정면",
+        "name_en": "Jijeong-myeon",
+        "featureType": "locality",
+        "lat": 37.375,
+        "lng": 127.845,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "wonju-heungeop",
+        "name": "흥업면",
+        "name_en": "Heungeop-myeon",
+        "featureType": "locality",
+        "lat": 37.3,
+        "lng": 127.92,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "frankfurt",
+    "settlements": [
+      {
+        "placeId": "frankfurt-offenbach",
+        "name": "오펜바흐",
+        "name_en": "Offenbach",
+        "featureType": "city",
+        "lat": 50.096,
+        "lng": 8.776,
+        "mapboxId": null,
+        "aliases": [
+          "Offenbach am Main"
+        ]
+      },
+      {
+        "placeId": "frankfurt-hoechst",
+        "name": "회흐스트",
+        "name_en": "Höchst",
+        "featureType": "locality",
+        "lat": 50.102,
+        "lng": 8.547,
+        "mapboxId": null,
+        "aliases": [
+          "Hoechst"
+        ]
+      },
+      {
+        "placeId": "frankfurt-bad-homburg",
+        "name": "바트홈부르크",
+        "name_en": "Bad Homburg",
+        "featureType": "city",
+        "lat": 50.227,
+        "lng": 8.618,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "turin",
+    "settlements": [
+      {
+        "placeId": "turin-rivoli",
+        "name": "리볼리",
+        "name_en": "Rivoli",
+        "featureType": "city",
+        "lat": 45.07,
+        "lng": 7.52,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "turin-moncalieri",
+        "name": "몬칼리에리",
+        "name_en": "Moncalieri",
+        "featureType": "city",
+        "lat": 45,
+        "lng": 7.685,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "turin-nichelino",
+        "name": "니켈리노",
+        "name_en": "Nichelino",
+        "featureType": "city",
+        "lat": 44.995,
+        "lng": 7.647,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "ghent",
+    "settlements": [
+      {
+        "placeId": "ghent-sint-niklaas",
+        "name": "신트니클라스",
+        "name_en": "Sint-Niklaas",
+        "featureType": "city",
+        "lat": 51.165,
+        "lng": 4.144,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "ghent-aalst",
+        "name": "알스트",
+        "name_en": "Aalst",
+        "featureType": "city",
+        "lat": 50.938,
+        "lng": 4.036,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "ghent-dendermonde",
+        "name": "덴더르몬더",
+        "name_en": "Dendermonde",
+        "featureType": "city",
+        "lat": 51.029,
+        "lng": 4.101,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "dubrovnik",
+    "settlements": [
+      {
+        "placeId": "dubrovnik-cavtat",
+        "name": "차브타트",
+        "name_en": "Cavtat",
+        "featureType": "place",
+        "lat": 42.581,
+        "lng": 18.218,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dubrovnik-trsteno",
+        "name": "트르스테노",
+        "name_en": "Trsteno",
+        "featureType": "locality",
+        "lat": 42.714,
+        "lng": 17.979,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dubrovnik-zupa",
+        "name": "주파두브로바츠카",
+        "name_en": "Župa Dubrovačka",
+        "featureType": "place",
+        "lat": 42.627,
+        "lng": 18.167,
+        "mapboxId": null,
+        "aliases": [
+          "Zupa Dubrovacka"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "sapporo",
+    "settlements": [
+      {
+        "placeId": "sapporo-otaru",
+        "name": "오타루",
+        "name_en": "Otaru",
+        "featureType": "city",
+        "lat": 43.191,
+        "lng": 140.994,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sapporo-ebetsu",
+        "name": "에베쓰",
+        "name_en": "Ebetsu",
+        "featureType": "city",
+        "lat": 43.104,
+        "lng": 141.536,
+        "mapboxId": null,
+        "aliases": [
+          "에베츠"
+        ]
+      },
+      {
+        "placeId": "sapporo-chitose",
+        "name": "지토세",
+        "name_en": "Chitose",
+        "featureType": "city",
+        "lat": 42.821,
+        "lng": 141.651,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "chungju",
+    "settlements": [
+      {
+        "placeId": "chungju-angseong",
+        "name": "앙성면",
+        "name_en": "Angseong-myeon",
+        "featureType": "locality",
+        "lat": 37.08,
+        "lng": 127.82,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "chungju-salmi",
+        "name": "살미면",
+        "name_en": "Salmi-myeon",
+        "featureType": "locality",
+        "lat": 36.93,
+        "lng": 128.02,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "chungju-suanbo",
+        "name": "수안보면",
+        "name_en": "Suanbo-myeon",
+        "featureType": "locality",
+        "lat": 36.85,
+        "lng": 128,
+        "mapboxId": null,
+        "aliases": [
+          "수안보"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "cheonan",
+    "settlements": [
+      {
+        "placeId": "cheonan-seonghwan",
+        "name": "성환읍",
+        "name_en": "Seonghwan-eup",
+        "featureType": "place",
+        "lat": 36.916,
+        "lng": 127.131,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "cheonan-jiksan",
+        "name": "직산읍",
+        "name_en": "Jiksan-eup",
+        "featureType": "place",
+        "lat": 36.893,
+        "lng": 127.143,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "cheonan-byeongcheon",
+        "name": "병천면",
+        "name_en": "Byeongcheon-myeon",
+        "featureType": "locality",
+        "lat": 36.763,
+        "lng": 127.285,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "samcheok",
+    "settlements": [
+      {
+        "placeId": "samcheok-dogye",
+        "name": "도계읍",
+        "name_en": "Dogye-eup",
+        "featureType": "place",
+        "lat": 37.23,
+        "lng": 129.045,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "samcheok-geundeok",
+        "name": "근덕면",
+        "name_en": "Geundeok-myeon",
+        "featureType": "locality",
+        "lat": 37.35,
+        "lng": 129.23,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "samcheok-wondeok",
+        "name": "원덕읍",
+        "name_en": "Wondeok-eup",
+        "featureType": "place",
+        "lat": 37.23,
+        "lng": 129.33,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "yangpyeong",
+    "settlements": [
+      {
+        "placeId": "yangpyeong-yongmun",
+        "name": "용문면",
+        "name_en": "Yongmun-myeon",
+        "featureType": "locality",
+        "lat": 37.482,
+        "lng": 127.596,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yangpyeong-seojong",
+        "name": "서종면",
+        "name_en": "Seojong-myeon",
+        "featureType": "locality",
+        "lat": 37.615,
+        "lng": 127.36,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yangpyeong-gangsang",
+        "name": "강상면",
+        "name_en": "Gangsang-myeon",
+        "featureType": "locality",
+        "lat": 37.46,
+        "lng": 127.48,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "gimhae",
+    "settlements": [
+      {
+        "placeId": "gimhae-jinyeong",
+        "name": "진영읍",
+        "name_en": "Jinyeong-eup",
+        "featureType": "place",
+        "lat": 35.305,
+        "lng": 128.733,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gimhae-jangyu",
+        "name": "장유",
+        "name_en": "Jangyu",
+        "featureType": "locality",
+        "lat": 35.19,
+        "lng": 128.81,
+        "mapboxId": null,
+        "aliases": [
+          "장유동"
+        ]
+      },
+      {
+        "placeId": "gimhae-daedong",
+        "name": "대동면",
+        "name_en": "Daedong-myeon",
+        "featureType": "locality",
+        "lat": 35.23,
+        "lng": 128.98,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "manchester",
+    "settlements": [
+      {
+        "placeId": "manchester-salford",
+        "name": "샐퍼드",
+        "name_en": "Salford",
+        "featureType": "city",
+        "lat": 53.488,
+        "lng": -2.29,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "manchester-stockport",
+        "name": "스톡포트",
+        "name_en": "Stockport",
+        "featureType": "city",
+        "lat": 53.41,
+        "lng": -2.158,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "manchester-oldham",
+        "name": "올덤",
+        "name_en": "Oldham",
+        "featureType": "city",
+        "lat": 53.541,
+        "lng": -2.111,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "toulouse",
+    "settlements": [
+      {
+        "placeId": "toulouse-blagnac",
+        "name": "블라냐크",
+        "name_en": "Blagnac",
+        "featureType": "city",
+        "lat": 43.636,
+        "lng": 1.399,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "toulouse-colomiers",
+        "name": "콜로미에",
+        "name_en": "Colomiers",
+        "featureType": "city",
+        "lat": 43.61,
+        "lng": 1.335,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "toulouse-tournefeuille",
+        "name": "투르뇌이",
+        "name_en": "Tournefeuille",
+        "featureType": "city",
+        "lat": 43.588,
+        "lng": 1.345,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
   }
 ]
