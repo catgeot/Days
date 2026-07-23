@@ -2,6 +2,37 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 명소 좌표 수리 — KR R7–R8 (이관)
+
+**상태**: ✅ R7+R8 tip 패치(40 hub) · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4145** · PR #24
+
+- R7: 남양주~당진 · SNAP 81 / drop 26 · 오매칭 스킵(김포 문수산성 restaurant·안산 성호공원 타시) · P0 덕풍 OK · min4 유지
+- R8: 논산~청도 · SNAP 57 / drop 49 · 오매칭 스킵(예산 예당호→휴게소) · min4 keep 8 · min4 유지
+- 워커 Task 도구 부재 → 메인 버퍼로 A/B 초안 병렬 생성 후 tip 직렬 A→B (본인 런 예외 1줄) · 서브 Task 부재 → 일지 후임 프롬프트
+
+### 이관 (후임 메인 · §4.2)
+
+| | |
+|--|--|
+| **다음 배치표 A** | `sejong,jeungpyeong,goseongnam,ongjin,gwangju_gi,gijang,ulju,dalseong,yuseong,yeonsu` |
+| **다음 배치표 B** | `suseong,dalseo,haeundae,gangnam,seocho,mapo,yongsan,songpa,suyeong,gwanak` |
+| **게이트** | `audit:city-attraction-hubs` + `verify --smoke` + 배치 hub 샘플 |
+| **전수 큐** | 캐시 `scripts/.cache/attraction-coord-verify.json` · 미캐시 hub는 `--hubs=… --country=kr` |
+| **금지** | 시드 덮어쓰기 · hub 중심 추정 · tip 병렬 · 정류장 오매칭 · rename without newName · P0 회귀 · 김유정문학촌 rename |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R9부터 워커2 · §5.4·§4.2」 |
+
+#### 후임 프롬프트 (상위 Task 기동용 · Task 도구 부재)
+
+```
+당신은 후임 메인(오케스트레이터) — 명소좌표수리 R9. 사람 제시어 대기 금지. method §3.0 즉시 수행.
+필수 읽기: plans/orchestrator-method.md §1·§3.0·§3.3·§4.2·§5.4 · plans/2026-07-23-project-log.md 「명소 좌표 수리 — KR R7–R8」이관 표만.
+브랜치: cursor/attraction-coord-fix-26c8 · PR #24 · Secrets VITE_MAPBOX_TOKEN
+완료됨(회귀 금지): P0+R1–R8 (160 hub) · tip ~4145 · 김유정문학촌 정류장 rename 금지 · 덕풍·한반도섬·박수근·진도타워 OK
+즉시: 캐시/verify로 SNAP/NO_HIT → 워커2 A(sejong…yeonsu) B(suseong…gwanak) → tip 직렬 A→B apply → VERIFY → 상한 내 연장(R10) 또는 §4.2 재이관
+R10 예비: A jongno…dobong / B yangcheon…bupyeong · 잔여 구·군(busanjin…daedeok)
+금지: 시드·hub추정·tip병렬·UI/releaseNotes·VITE_커밋·솔로계주·사람제시어대기·VERIFY FAIL tip 방치
+```
+
 ## 명소 좌표 수리 — KR R5–R6 (이관)
 
 **상태**: ✅ R5+R6 tip 패치(40 hub) · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4220** · KR verify 전수 진행 중(캐시 ~1000+/1460) · PR #24
