@@ -1,6 +1,6 @@
 # 국내 명소 좌표 — TourAPI 보정
 
-**상태**: 클라우드 오케스트레이터 착수용 (2026-07-23)  
+**상태**: ✅ G0+R01–R11 큐 소진 · snap 372 · AMBIG/MISS 큐 md · **커밋·main 머지** (`c1c12ab` · PR #27) (2026-07-23)  
 **범위**: `cityAttractionHubs.json` **KR만** (약 **210 hub / 1137 명소**)  
 **해외**: 대상 아님 (Mapbox/Nominatim §5.4 유지)  
 **실행 권장**: **Cursor Cloud** (장시간 TourAPI LIVE · Secrets · Ubuntu bash)
@@ -97,11 +97,11 @@
 
 ### 5.5 완료 정의
 
-- [ ] G0 스크립트 + npm + 캐시 gitignore + 김유정/P0 smoke
-- [ ] G1+ KR HIT 배치(또는 전수 HIT) · audit 0
-- [ ] P0 tip이 TourAPI와 일치
-- [ ] AMBIG/MISS 큐 md · 일지 핸드오프(다음 배치표 2개)
-- [ ] 커밋·push (요청 시)
+- [x] 스크립트 + npm script + 캐시 gitignore
+- [x] KR HIT 패치 1차 · audit 0 — **R01–R11 ~210 hub** (누적 snap **372**) · 배치 큐 소진
+- [x] P0 4곳 tip이 TourAPI/사람 QA와 일치 (김유정 fixed · smoke PASS)
+- [x] AMBIG/MISS 큐 md 1장 · [`city-attraction-tourapi-coord-queue.md`](./city-attraction-tourapi-coord-queue.md) · 일지 핸드오프
+- [x] 커밋·push · main 머지 (`c1c12ab` · PR #27)
 
 ---
 

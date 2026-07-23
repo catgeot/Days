@@ -16,42 +16,45 @@
 - 원인: invoke/프로브 hang · 더보기 시 `isImgLoading`이 그리드 전체를 스켈레톤으로 교체 · TourAPI page2 중복/공허 후 기존 사진 유실처럼 보임
 - 대응: invoke 12s·갤러리 18s · skipProbe · referrerPolicy · **더보기=`isRefreshing`(그리드 유지)+Unsplash만 append** · 실패 시 기존 복원 · Edge upstream 10s(재배포 권장)
 
-## 국내 명소 좌표 — TourAPI 보정 (**다음 세션 · Cloud 오케스트레이터**)
+## 국내 명소 좌표 — TourAPI 보정
 
-**상태**: 📋 계획·제시어 준비 · **Cursor Cloud + 오케스트레이터** 권장 · [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
+**상태**: ✅ G0 · G1 R01–R11 **큐 소진** · **커밋·main 머지** (`c1c12ab` · PR [#27](https://github.com/catgeot/Days/pull/27)) · 계획 [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
 
-- 범위: KR tip **~210 hub / 1137 명소** · `mapy`/`mapx` HIT만 스냅 · 해외 제외
-- 배경: Mapbox/Nominatim KR 한계 → TourAPI (김유정 `127933` 실증)
-- **분리**: `tourapi-content-id-overrides` = 갤러리 · tip 좌표는 **신규 스크립트/캐시**
-- Secrets: Cloud `TOUR_API_SERVICE_KEY` 및/또는 `VITE_SUPABASE_URL`+`ANON` (Edge)
-- 금지: 추정 · 갤러리 SSOT 혼용 · `VITE_` 커밋 · UI/releaseNotes
+- 범위: KR tip **~210 hub / 1137 명소** · HIT만 `mapy`/`mapx` 스냅 · 해외 제외 · 시드 `sokcho` 스킵
+- **G0**: `scripts/verify-city-attraction-tourapi-coords.mjs` · `npm run verify:city-attraction-tourapi-coords` · 김유정 `127933` + P0 smoke **PASS**
+- **R01–R11**: 누적 snap **372** · tip 4067 / hubs 630 · audit **0**
+- 김유정 tip `37.8183632,127.7176781` · 덕풍 MISS tip keep · P0 smoke PASS
+- 메인 soft filter: `dHub>15km & dTip>3km` 또는 `dHub>5km & dTip>2km` → 스킵
+- 금지: 갤러리 overrides 좌표 혼용 · hub 추정 · tip 병렬 · 김유정 회귀
 
-### 에이전트 핸드오프
+### 완료 배치
+
+| R | A hubs | B hubs | snap | 상태 |
+|---|--------|--------|------|------|
+| R01 | seoul…yeosu | gyeongju…andong | 55 | ✅ |
+| R02 | boryeong…taean | ulleung…hadong | 67 | ✅ |
+| R03 | jecheon…hamyang | sancheong…muju | 46 | ✅ |
+| R04 | jinan…muan | yeongam…chungju | 34 | ✅ |
+| R05 | cheonan…hongcheon | jeongseon…boeun | 50 | ✅ |
+| R06 | okcheon…goesan | jincheon…namyangju | 45 | ✅ |
+| R07 | hanam…yangju | dongducheon…nonsan | 61 | ✅ |
+| R08 | gyeryong…geumsan | goryeong…sejong | 11 | ✅ |
+| R09 | jeungpyeong…suseong | dalseo…jongno | 2 | ✅ |
+| R10 | seodaemun…yangcheon | eunpyeong…busanjin | 0 | ✅ |
+| R11 | namdong…geumjeong (5) | yeonje…daedeok (4) | 1 | ✅ |
+
+### 큐 소진 — 사람 보고 (후임 정지)
 
 | | |
 |--|--|
-| **읽을 것 3** | 계획 **§5~§6** · method §1·§3.0·§4.2·**§5.5** · 본 절 |
-| **할 일** | G0 스크립트+김유정/P0 smoke → G1+ 워커2 HIT 배치 · audit 0 · §4.2 이관 |
-| **금지 3** | 갤러리 overrides 혼용 · hub 추정 · tip 병렬 / UI/releaseNotes |
-| **제시어** | 계획 **§6** 클라우드 블록 (아래 동일) |
-
-**Cloud 오케스트레이터 제시어** (복붙):
-
-```
-오케스트레이터 · TourAPI-명소좌표
-@plans/orchestrator-method.md
-@plans/city-attraction-tourapi-coord-plan.md
-@plans/2026-07-23-project-log.md 「국내 명소 좌표 — TourAPI 보정」절만
-@.ai-context.md
-
-당신은 오케스트레이터(메인). method v2.1 §1·§3.0·§3.3·§4.2 + 계획 §5 준수.
-환경: Cursor Cloud · Secrets TOUR_API_SERVICE_KEY 및/또는 VITE_SUPABASE_URL+ANON.
-범위: cityAttractionHubs KR tip · mapy/mapx HIT만 · 해외 제외.
-
-즉시: G0(메인) 스크립트+김유정 127933=37.8183632,127.7176781·P0 smoke → G1부터 워커2·tip 직렬·audit 0·§4.2 이관(사람 제시어 대기 금지).
-금지: 갤러리 overrides 혼용 · hub 추정 · tip 병렬 · 시드 덮어쓰기 · 김유정 회귀 · VITE_/키 커밋 · UI/releaseNotes · main 직접 push · 솔로 계주(G1+) · VERIFY FAIL tip 방치.
-커밋은 사람 요청 시에만.
-```
+| **tip** | hubs 630 · attractions 4067 · audit issues 0 · 김유정 `37.8183632,127.7176781` |
+| **누적 snap** | **372** (R01–R11) · 본 세대 +3 (R09:2 · R10:0 · R11:1) |
+| **잔여 hub 배치** | **없음** (계획 KR hub 큐 R01–R11 완료) |
+| **잔여 등급** | 전수 재등급(캐시): HIT 336 · AMBIG 148 · MISS 622 · FAR 25 · SKIP 6(`sokcho`) · 큐 [`city-attraction-tourapi-coord-queue.md`](./city-attraction-tourapi-coord-queue.md) |
+| **VERIFY** | audit 0 · `--smoke` PASS (박수근·한반도섬 tipΔ0 · 김유정 fixed · 덕풍 MISS keep · 진도타워) |
+| **git** | 커밋 `c1c12ab` · PR [#27](https://github.com/catgeot/Days/pull/27) · **main 머지** |
+| **다음(사람)** | (1) AMBIG/MISS 수동 (선택) (2) 지도 QA 샘플(양구·김유정·덕풍·진도타워) |
+| **복구 제시어** | `오케스트레이터 · TourAPI-명소좌표` · 본 절 · method §3.0 (큐 재개 시에만) |
 
 ## 명소 좌표 — 김유정문학촌 TourAPI 교정
 
