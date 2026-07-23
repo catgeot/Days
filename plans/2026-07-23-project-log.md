@@ -4,7 +4,7 @@
 
 ## Trip.com 숙소 city ID — CTA 후보 gap 채움
 
-**상태**: ✅ city **47** · LIVE size50 CTA gap **0** · 커밋·PR 대기
+**상태**: ✅ city **47** · LIVE size50 CTA gap **0** · **커밋·push** (`f6c8848`)
 
 - 원인: MRT 저재고(bookable≤5)·empty 시 Trip CTA에 `city=` 없으면 **직전 세션 지역 잔존** (대마도 등)
 - 감사: `MRT_STAY_AUDIT_SIZE=50` LIVE · `audit:tripcom-hotel-city-gaps`가 `total≤5|priced≤5` 포함
