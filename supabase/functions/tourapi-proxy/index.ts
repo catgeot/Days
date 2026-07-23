@@ -92,6 +92,12 @@ function normalizeItem(
   const mapy = pickStr(item, "mapy", "mapY");
   const contentTypeId = pickStr(item, "contenttypeid", "contentTypeId");
   const galTitle = pickStr(item, "galTitle", "galtitle");
+  const photographer = pickStr(
+    item,
+    "galPhotographer",
+    "galphotographer",
+    "photographer",
+  );
 
   const out: Record<string, unknown> = {};
   if (contentId) out.contentId = contentId;
@@ -101,6 +107,10 @@ function normalizeItem(
   if (originimgurl) out.originimgurl = originimgurl;
   if (smallimageurl) out.smallimageurl = smallimageurl;
   if (galWebImageUrl) out.galWebImageUrl = galWebImageUrl;
+  if (photographer) {
+    out.photographer = photographer;
+    out.galPhotographer = photographer;
+  }
   if (overview) out.overview = overview;
   if (addr1) out.addr1 = addr1;
   if (mapx) out.mapx = mapx;

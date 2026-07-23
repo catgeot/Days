@@ -1,0 +1,504 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-07-23T05:12:49.495Z",
+    "spotCount": 34,
+    "contentIdCount": 14,
+    "source": "scripts/data/tourapi-content-id-overrides.mjs"
+  },
+  "spots": {
+    "seoul": {
+      "photoKeyword": "서울",
+      "title": "서울",
+      "contentId": null,
+      "aliases": [
+        "서울",
+        "Seoul"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "busan": {
+      "photoKeyword": "부산",
+      "title": "부산",
+      "contentId": null,
+      "aliases": [
+        "부산",
+        "Busan"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "jeju": {
+      "photoKeyword": "제주",
+      "title": "제주",
+      "contentId": null,
+      "aliases": [
+        "제주",
+        "제주시",
+        "Jeju"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "seogwipo": {
+      "photoKeyword": "서귀포",
+      "title": "서귀포",
+      "contentId": null,
+      "aliases": [
+        "서귀포",
+        "Seogwipo"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "gyeongju": {
+      "photoKeyword": "경주",
+      "title": "경주",
+      "contentId": null,
+      "aliases": [
+        "경주",
+        "Gyeongju"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "jeonju": {
+      "photoKeyword": "전주",
+      "title": "전주",
+      "contentId": null,
+      "aliases": [
+        "전주",
+        "Jeonju"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "gangneung": {
+      "photoKeyword": "강릉",
+      "title": "강릉",
+      "contentId": null,
+      "aliases": [
+        "강릉",
+        "Gangneung"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "sokcho": {
+      "photoKeyword": "속초",
+      "title": "속초",
+      "contentId": null,
+      "aliases": [
+        "속초",
+        "Sokcho"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "yeosu": {
+      "photoKeyword": "여수",
+      "title": "여수",
+      "contentId": null,
+      "aliases": [
+        "여수",
+        "Yeosu"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "incheon": {
+      "photoKeyword": "인천",
+      "title": "인천",
+      "contentId": null,
+      "aliases": [
+        "인천",
+        "Incheon"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "daegu": {
+      "photoKeyword": "대구",
+      "title": "대구",
+      "contentId": null,
+      "aliases": [
+        "대구",
+        "Daegu"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "gwangju": {
+      "photoKeyword": "광주",
+      "title": "광주",
+      "contentId": null,
+      "aliases": [
+        "광주",
+        "Gwangju"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "daejeon": {
+      "photoKeyword": "대전",
+      "title": "대전",
+      "contentId": null,
+      "aliases": [
+        "대전",
+        "Daejeon"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "ulsan": {
+      "photoKeyword": "울산",
+      "title": "울산",
+      "contentId": null,
+      "aliases": [
+        "울산",
+        "Ulsan"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "tongyeong": {
+      "photoKeyword": "통영",
+      "title": "통영",
+      "contentId": null,
+      "aliases": [
+        "통영",
+        "Tongyeong"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "pohang": {
+      "photoKeyword": "포항",
+      "title": "포항",
+      "contentId": null,
+      "aliases": [
+        "포항",
+        "Pohang"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "chuncheon": {
+      "photoKeyword": "춘천",
+      "title": "춘천",
+      "contentId": null,
+      "aliases": [
+        "춘천",
+        "Chuncheon"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "suwon": {
+      "photoKeyword": "수원",
+      "title": "수원",
+      "contentId": null,
+      "aliases": [
+        "수원",
+        "Suwon"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "ganghwa": {
+      "photoKeyword": "강화",
+      "title": "강화",
+      "contentId": null,
+      "aliases": [
+        "강화",
+        "강화도",
+        "Ganghwa"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "ulleung": {
+      "photoKeyword": "울릉도",
+      "title": "울릉",
+      "contentId": null,
+      "aliases": [
+        "울릉",
+        "울릉도",
+        "Ulleung"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "gyeongbokgung": {
+      "photoKeyword": "경복궁",
+      "photoKeywords": [
+        "경복궁 전경",
+        "경복궁 근정전",
+        "경복궁 야경"
+      ],
+      "title": "경복궁",
+      "contentId": "126508",
+      "aliases": [
+        "경복궁",
+        "Gyeongbokgung",
+        "Gyeongbokgung Palace"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "deoksugung": {
+      "photoKeyword": "덕수궁",
+      "photoKeywords": [
+        "덕수궁 전경",
+        "덕수궁 야경"
+      ],
+      "title": "덕수궁",
+      "contentId": "126509",
+      "aliases": [
+        "덕수궁",
+        "Deoksugung"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "jongmyo": {
+      "photoKeyword": "종묘",
+      "photoKeywords": [
+        "종묘 전경"
+      ],
+      "title": "종묘",
+      "contentId": "126510",
+      "aliases": [
+        "종묘",
+        "Jongmyo"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "n-seoul-tower": {
+      "photoKeyword": "남산서울타워",
+      "photoKeywords": [
+        "남산서울타워 야경",
+        "남산타워 전경"
+      ],
+      "title": "남산서울타워",
+      "contentId": "126535",
+      "aliases": [
+        "남산서울타워",
+        "남산타워",
+        "N Seoul Tower",
+        "Namsan Tower"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "bukchon-hanok": {
+      "photoKeyword": "북촌한옥마을",
+      "photoKeywords": [
+        "북촌한옥마을 전경",
+        "북촌 한옥"
+      ],
+      "title": "북촌한옥마을",
+      "contentId": "126537",
+      "aliases": [
+        "북촌한옥마을",
+        "북촌",
+        "Bukchon Hanok Village"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "ddp": {
+      "photoKeyword": "동대문디자인플라자",
+      "photoKeywords": [
+        "동대문디자인플라자 전경",
+        "DDP"
+      ],
+      "title": "동대문디자인플라자",
+      "contentId": "2470006",
+      "aliases": [
+        "동대문디자인플라자",
+        "DDP",
+        "Dongdaemun Design Plaza"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "haeundae-beach": {
+      "photoKeyword": "해운대해수욕장",
+      "photoKeywords": [
+        "해운대 전경",
+        "해운대 야경"
+      ],
+      "title": "해운대해수욕장",
+      "contentId": "126081",
+      "aliases": [
+        "해운대",
+        "해운대해수욕장",
+        "Haeundae Beach"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "gwangalli-beach": {
+      "photoKeyword": "광안리해수욕장",
+      "photoKeywords": [
+        "광안리 야경",
+        "광안리 전경"
+      ],
+      "title": "광안리해수욕장",
+      "contentId": "126078",
+      "aliases": [
+        "광안리",
+        "광안리해수욕장",
+        "Gwangalli Beach"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "seongsan-ilchulbong": {
+      "photoKeyword": "성산일출봉",
+      "photoKeywords": [
+        "성산일출봉 일출",
+        "성산일출봉 전경"
+      ],
+      "title": "성산일출봉",
+      "contentId": "126435",
+      "aliases": [
+        "성산일출봉",
+        "Seongsan Ilchulbong"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "hallasan": {
+      "photoKeyword": "한라산",
+      "photoKeywords": [
+        "한라산 백록담",
+        "한라산 전경"
+      ],
+      "title": "한라산",
+      "contentId": "127635",
+      "aliases": [
+        "한라산",
+        "Hallasan"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "bulguksa": {
+      "photoKeyword": "불국사",
+      "photoKeywords": [
+        "불국사 전경",
+        "경주 불국사"
+      ],
+      "title": "경주 불국사",
+      "contentId": "126166",
+      "aliases": [
+        "불국사",
+        "경주 불국사",
+        "Bulguksa"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "gyeongpodae": {
+      "photoKeyword": "경포대",
+      "photoKeywords": [
+        "강릉 경포대",
+        "경포대 전경"
+      ],
+      "title": "강릉 경포대",
+      "contentId": "125790",
+      "aliases": [
+        "경포대",
+        "강릉 경포대",
+        "Gyeongpodae"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "namiseom": {
+      "photoKeyword": "남이섬",
+      "photoKeywords": [
+        "남이섬 전경"
+      ],
+      "title": "남이섬",
+      "contentId": "128019",
+      "aliases": [
+        "남이섬",
+        "Namiseom",
+        "Nami Island"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
+    "seoraksan": {
+      "photoKeyword": "설악산",
+      "photoKeywords": [
+        "설악산 전경",
+        "설악산 권금성"
+      ],
+      "title": "설악산 국립공원",
+      "contentId": "127586",
+      "aliases": [
+        "설악산",
+        "설악산 국립공원",
+        "Seoraksan"
+      ],
+      "verifiedAt": "2026-07-23"
+    }
+  },
+  "byName": {
+    "서울": "seoul",
+    "Seoul": "seoul",
+    "부산": "busan",
+    "Busan": "busan",
+    "제주": "jeju",
+    "제주시": "jeju",
+    "Jeju": "jeju",
+    "서귀포": "seogwipo",
+    "Seogwipo": "seogwipo",
+    "경주": "gyeongju",
+    "Gyeongju": "gyeongju",
+    "전주": "jeonju",
+    "Jeonju": "jeonju",
+    "강릉": "gangneung",
+    "Gangneung": "gangneung",
+    "속초": "sokcho",
+    "Sokcho": "sokcho",
+    "여수": "yeosu",
+    "Yeosu": "yeosu",
+    "인천": "incheon",
+    "Incheon": "incheon",
+    "대구": "daegu",
+    "Daegu": "daegu",
+    "광주": "gwangju",
+    "Gwangju": "gwangju",
+    "대전": "daejeon",
+    "Daejeon": "daejeon",
+    "울산": "ulsan",
+    "Ulsan": "ulsan",
+    "통영": "tongyeong",
+    "Tongyeong": "tongyeong",
+    "포항": "pohang",
+    "Pohang": "pohang",
+    "춘천": "chuncheon",
+    "Chuncheon": "chuncheon",
+    "수원": "suwon",
+    "Suwon": "suwon",
+    "강화": "ganghwa",
+    "강화도": "ganghwa",
+    "Ganghwa": "ganghwa",
+    "울릉": "ulleung",
+    "울릉도": "ulleung",
+    "Ulleung": "ulleung",
+    "경복궁": "gyeongbokgung",
+    "Gyeongbokgung": "gyeongbokgung",
+    "Gyeongbokgung Palace": "gyeongbokgung",
+    "덕수궁": "deoksugung",
+    "Deoksugung": "deoksugung",
+    "종묘": "jongmyo",
+    "Jongmyo": "jongmyo",
+    "남산서울타워": "n-seoul-tower",
+    "남산타워": "n-seoul-tower",
+    "N Seoul Tower": "n-seoul-tower",
+    "Namsan Tower": "n-seoul-tower",
+    "북촌한옥마을": "bukchon-hanok",
+    "북촌": "bukchon-hanok",
+    "Bukchon Hanok Village": "bukchon-hanok",
+    "동대문디자인플라자": "ddp",
+    "DDP": "ddp",
+    "Dongdaemun Design Plaza": "ddp",
+    "해운대해수욕장": "haeundae-beach",
+    "해운대": "haeundae-beach",
+    "Haeundae Beach": "haeundae-beach",
+    "광안리해수욕장": "gwangalli-beach",
+    "광안리": "gwangalli-beach",
+    "Gwangalli Beach": "gwangalli-beach",
+    "성산일출봉": "seongsan-ilchulbong",
+    "Seongsan Ilchulbong": "seongsan-ilchulbong",
+    "한라산": "hallasan",
+    "Hallasan": "hallasan",
+    "경주 불국사": "bulguksa",
+    "불국사": "bulguksa",
+    "Bulguksa": "bulguksa",
+    "강릉 경포대": "gyeongpodae",
+    "경포대": "gyeongpodae",
+    "Gyeongpodae": "gyeongpodae",
+    "남이섬": "namiseom",
+    "Namiseom": "namiseom",
+    "Nami Island": "namiseom",
+    "설악산 국립공원": "seoraksan",
+    "설악산": "seoraksan",
+    "Seoraksan": "seoraksan"
+  }
+}

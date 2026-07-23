@@ -62,6 +62,53 @@ function schemaGuards() {
   );
 }
 
+async function mappingGuards() {
+  const { resolveTourApiPlace, isDomesticKoreaLocation } = await import(
+    '../src/utils/tourApiMatch.js'
+  );
+  const { scoreTourPhotoTitle } = await import(
+    '../src/utils/tourApiPhotoRank.js'
+  );
+
+  const gb = resolveTourApiPlace('gyeongbokgung');
+  assert(gb?.contentId === '126508', 'resolve gyeongbokgung → 126508');
+  assert(gb?.photoKeyword === '경복궁', 'resolve gyeongbokgung photoKeyword');
+  assert(
+    Array.isArray(gb?.photoKeywords) && gb.photoKeywords.includes('경복궁 전경'),
+    'resolve gyeongbokgung has scenic photoKeywords',
+  );
+  assert(
+    scoreTourPhotoTitle('경복궁 전경', '경복궁', '경복궁') >
+      scoreTourPhotoTitle('국립민속박물관', '경복궁', '경복궁'),
+    'scenic title ranks above folk museum',
+  );
+  assert(
+    scoreTourPhotoTitle('국립민속박물관', '경복궁', '경복궁') < 0,
+    'off-topic folk museum score < 0',
+  );
+
+  const byName = resolveTourApiPlace('경복궁');
+  assert(byName?.slug === 'gyeongbokgung', 'resolve byName 경복궁');
+
+  const seoul = resolveTourApiPlace({ slug: 'seoul', name: '서울', country: '한국' });
+  assert(seoul?.photoKeyword === '서울', 'resolve seoul photoKeyword');
+  assert(seoul?.curated === true, 'resolve seoul curated');
+
+  const soft = resolveTourApiPlace({ name: '미등록국내테스트', country: '한국' });
+  assert(soft?.photoKeyword === '미등록국내테스트', 'soft KR mapping');
+  assert(soft?.curated === false, 'soft KR curated=false');
+  assert(soft?.contentId == null, 'soft KR no contentId');
+
+  assert(
+    isDomesticKoreaLocation({ country: '한국' }),
+    'isDomesticKoreaLocation 한국',
+  );
+  assert(
+    !isDomesticKoreaLocation({ country: '일본' }),
+    'isDomesticKoreaLocation rejects 일본',
+  );
+}
+
 async function invokeEdge(action, payload) {
   const url = (process.env.VITE_SUPABASE_URL || 'https://phdjnbfitvmrguqzverm.supabase.co').replace(
     /\/$/,
@@ -153,6 +200,9 @@ async function liveChain() {
 async function main() {
   console.log('TourAPI smoke — schema/guards');
   schemaGuards();
+
+  console.log('\nTourAPI smoke — slug↔contentId mapping');
+  await mappingGuards();
 
   if (process.env.TOURAPI_SMOKE_LIVE === '1') {
     await liveChain();

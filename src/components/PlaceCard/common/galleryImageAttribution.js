@@ -1,6 +1,8 @@
-/** 갤러리 이미지 제공처 — Unsplash 원본 vs Pexels 매핑(id `pexels-*`) */
+/** 갤러리 이미지 제공처 — Unsplash / Pexels / TourAPI(한국관광) */
 export function getGalleryImageSource(image) {
   if (!image) return 'unknown';
+  if (image.source === 'tourapi') return 'tourapi';
+  if (String(image.id ?? '').startsWith('tourapi')) return 'tourapi';
   if (image.source === 'pexels') return 'pexels';
   if (String(image.id ?? '').startsWith('pexels')) return 'pexels';
   if (String(image.id ?? '').startsWith('fallback')) return 'default';
@@ -11,6 +13,20 @@ export function getGalleryImageSource(image) {
 export function getGalleryImageAttribution(image) {
   const source = getGalleryImageSource(image);
   const authorName = image?.user?.name || 'Unknown';
+
+  if (source === 'tourapi') {
+    const href = image?.links?.html || 'https://www.visitkorea.or.kr/';
+    return {
+      source,
+      authorName,
+      providerName: '한국관광공사',
+      href,
+      photographerHref: href,
+      providerHref: 'https://www.visitkorea.or.kr/',
+      title: `Photo by ${authorName} · 한국관광공사`,
+      providerLabel: '· 한국관광공사',
+    };
+  }
 
   if (source === 'pexels') {
     const href = image?.links?.html || 'https://www.pexels.com/photo/';

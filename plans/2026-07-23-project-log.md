@@ -2,24 +2,25 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
-## TourAPI — 국내 관광 사진·정보 (1단계 Edge)
+## TourAPI — 국내 관광 사진·정보 (2단계 매핑·갤러리)
 
-**상태**: ✅ Edge 배포 · LIVE 스모크 PASS · **커밋** · UI/매핑 2단계 대기  
+**상태**: ✅ SSOT 34 spots(14 contentId) · 품질 보정(전경 키워드·제목 랭킹·detailImage 선두) · audit/smoke PASS · **커밋** · Edge photographer 재배포됨 · UI QA·릴리스 합의 대기  
 **계획**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md)
 
-- Edge `tourapi-proxy` — action: `searchKeyword`/`detailCommon`/`detailImage`/`searchPhoto` · Secret `TOUR_API_SERVICE_KEY` only
-- 배포: `npx supabase functions deploy tourapi-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
-- `npm run smoke:tourapi` 스키마 OK · `TOURAPI_SMOKE_LIVE=1` 경복궁 keyword→detailCommon→detailImage · searchPhoto PASS
-- **사진 소스**: `detailImage` contentId당 소수(경복궁 ~6) · `searchPhoto` 키워드 대량(경복궁 ~532) → 2단계 갤러리는 **searchPhoto 우선**
-- 금지 유지: `VITE_` 키 · 키 값 로그 · UI/`usePlaceGallery`·slug↔contentId(합의 전)
+- SSOT: `tourapi-content-id-overrides.mjs` → `npm run generate:tourapi` → `travelSpotTourApi.json` · `tourApiMatch` · soft 국내
+- 갤러리: session → **TourAPI** → place_stats → Unsplash/Pexels · CACHE `v1.6`
+- **품질**: contentId `detailImage` 선두 · `photoKeywords`(전경/야경/근정전) · `tourApi.rankScore` 정렬(UI 미표시) · 오프트픽 드롭
+- 출처: `galleryImageAttribution` `tourapi` → 한국관광공사
+- 검증: `npm run audit:tourapi` · `npm run smoke:tourapi`
+- 금지 유지: `VITE_` 키 · UI 임의 대규모 변경 · 합의 전 releaseNotes
 
-### TourAPI 세션 — 에이전트 핸드오프 (2단계)
+### TourAPI 세션 — 에이전트 핸드오프 (3단계 QA·시드)
 
 | | |
 |--|--|
-| **읽을 것 3** | [`.ai-context.md`](../.ai-context.md) 3·6절 · [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) §사진 소스·2단계 · 본 절 |
-| **할 일** | slug↔`contentId` 배치 · `usePlaceGallery` 국내 **searchPhoto 우선**(detailImage 보조·Unsplash/Pexels fallback) |
-| **금지 3** | `VITE_` 노출 · detailImage만으로 갤러리 구성 · UI 임의 대규모 변경(합의 전) |
+| **읽을 것 3** | [`.ai-context.md`](../.ai-context.md) 3·6절 · [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) §2단계·다음 · 본 절 |
+| **할 일** | 국내 갤러리 **UI QA**(경복궁·서울·해운대·해외 회귀) · 시드/키워드 확장(선택) · 문제 장 랭킹 보정 · 릴리스 초안 **합의 후** |
+| **금지 3** | `VITE_` 노출 · detailImage만으로 갤러리 · UI/releaseNotes 합의 전 반영 |
 | **제시어** | 아래 「다음 세션 제시어」 블록 |
 
 **다음 세션 제시어** (복붙):
@@ -28,9 +29,17 @@
 TourAPI-이어하기
 @plans/2026-07-23-project-log.md
 @plans/tourapi-edge-proxy-plan.md
-2단계: slug↔contentId 매핑 + usePlaceGallery 국내 TourAPI 우선.
-갤러리는 searchPhoto 우선(detailImage는 보조). 1단계 Edge·LIVE 완료. UI는 합의 후.
+3단계: 국내 갤러리 UI QA + 시드/키워드 확장(선택).
+2단계(매핑·searchPhoto 우선·전경 랭킹·Edge) 완료. UI/릴리스는 합의 후.
 ```
+
+## TourAPI — 1단계 Edge (완료)
+
+**상태**: ✅ Edge 배포 · LIVE 스모크 PASS · **커밋**
+
+- Edge `tourapi-proxy` — action: `searchKeyword`/`detailCommon`/`detailImage`/`searchPhoto` · Secret `TOUR_API_SERVICE_KEY` only
+- 배포: `npx supabase functions deploy tourapi-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
+- `npm run smoke:tourapi` · LIVE 경복궁 chain PASS
 
 ## 검색 — 정착지 exact 허브형 역펼침
 

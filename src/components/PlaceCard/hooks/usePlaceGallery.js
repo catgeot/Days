@@ -12,6 +12,8 @@ import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots';
 import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
+import { resolveTourApiPlace } from '../../../utils/tourApiMatch';
+import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import {
   clearGalleryAttributionReturnState,
   consumeGalleryAttributionReturnState,
@@ -19,7 +21,7 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-const CACHE_VERSION = 'v1.4';
+const CACHE_VERSION = 'v1.6';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
@@ -163,7 +165,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   }, []);
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
-    if (!ACCESS_KEY || !locationSource) return;
+    if (!locationSource) return;
 
     let targetSpot = locationSource;
 
@@ -267,6 +269,17 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
       : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
 
+    const tourMapping =
+      resolveTourApiPlace(
+        typeof targetSpot === 'object' && targetSpot
+          ? targetSpot
+          : typeof locationSource === 'object' && locationSource
+            ? locationSource
+            : { name: koreanName, slug: stablePlaceKey },
+      ) ||
+      (typeof locationSource === 'object' ? resolveTourApiPlace(locationSource) : null) ||
+      (koreanName ? resolveTourApiPlace(koreanName) : null);
+
     if (!forceRefresh) {
       pageRef.current = 1; // 🚨 [Fix] 일반 로드 시 페이지 초기화
       const validCache = loadFromSmartCache(CACHE_KEY);
@@ -275,6 +288,61 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         processAndSetImages(validCache);
         if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
         return;
+      }
+
+      // 국내 TourAPI 우선 — place_stats(Unsplash 잔존)보다 먼저
+      if (tourMapping?.photoKeyword) {
+        try {
+          const tourImages = await fetchTourApiGallery({
+            photoKeyword: tourMapping.photoKeyword,
+            photoKeywords: tourMapping.photoKeywords,
+            title: tourMapping.title,
+            contentId: tourMapping.contentId,
+            page: 1,
+            thumbnailOnly,
+          });
+          if (runId !== galleryLoadSeqRef.current) return;
+          if (tourImages.length > 0) {
+            processAndSetImages(tourImages);
+            saveToSmartCache(CACHE_KEY, tourImages);
+            if (dbStatsId || koreanName) {
+              const thumbnailToSave =
+                tourImages[0]?.urls?.small || tourImages[0]?.urls?.regular || '';
+              const statsPlaceId = dbStatsId || koreanName;
+              if (thumbnailOnly) {
+                if (thumbnailToSave) {
+                  supabase
+                    .from('place_stats')
+                    .upsert(
+                      { place_id: statsPlaceId, image_url: thumbnailToSave },
+                      { onConflict: 'place_id' },
+                    )
+                    .then(({ error }) => {
+                      if (error) console.error('⚠️ Supabase Thumbnail Update Error:', error);
+                    });
+                }
+              } else {
+                supabase
+                  .from('place_stats')
+                  .upsert(
+                    {
+                      place_id: statsPlaceId,
+                      gallery_urls: tourImages,
+                      image_url: thumbnailToSave,
+                    },
+                    { onConflict: 'place_id' },
+                  )
+                  .then(({ error }) => {
+                    if (error) console.error('⚠️ Supabase Update Error:', error);
+                  });
+              }
+            }
+            if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+            return;
+          }
+        } catch (tourErr) {
+          console.warn('⚠️ TourAPI gallery miss — fallback Unsplash/Pexels', tourErr);
+        }
       }
 
       if (!slugOverride && dbCandidates.length) {
@@ -316,9 +384,50 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     } else {
       pageRef.current += 1;
       console.log(`🔄 강제 새로고침 실행: 기존 캐시 유지한 채 새로운 데이터 가져오기 (${primaryQuery}, 페이지: ${pageRef.current})`);
+
+      // 국내 TourAPI 페이지네이션(searchPhoto pageNo)
+      if (tourMapping?.photoKeyword) {
+        try {
+          const tourImages = await fetchTourApiGallery({
+            photoKeyword: tourMapping.photoKeyword,
+            photoKeywords: tourMapping.photoKeywords,
+            title: tourMapping.title,
+            contentId: tourMapping.contentId,
+            page: pageRef.current,
+            thumbnailOnly,
+          });
+          if (runId !== galleryLoadSeqRef.current) return;
+          if (tourImages.length > 0) {
+            const existingIds = new Set(allImagesRef.current.map((img) => img.id));
+            const fresh = tourImages.filter((img) => !existingIds.has(img.id));
+            const finalResults = thumbnailOnly
+              ? tourImages.slice(0, 1)
+              : [...allImagesRef.current, ...fresh];
+            processAndSetImages(finalResults);
+            saveToSmartCache(CACHE_KEY, finalResults);
+            if (runId === galleryLoadSeqRef.current) setIsImgLoading(false);
+            return;
+          }
+          // TourAPI 추가분 없음 → Unsplash 페이지로 폴백
+          console.warn('⚠️ TourAPI refresh empty — fallback Unsplash/Pexels');
+        } catch (tourErr) {
+          console.warn('⚠️ TourAPI refresh error — fallback Unsplash/Pexels', tourErr);
+        }
+      }
     }
 
     try {
+      if (!ACCESS_KEY) {
+        console.warn('⚠️ VITE_UNSPLASH_ACCESS_KEY missing — gallery Unsplash path skipped');
+        if (forceRefresh && allImagesRef.current.length > 0) {
+          pageRef.current -= 1;
+          processAndSetImages(allImagesRef.current);
+        } else if (runId === galleryLoadSeqRef.current) {
+          processAndSetImages([]);
+        }
+        return;
+      }
+
       let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, pageRef.current);
 
       if (runId !== galleryLoadSeqRef.current) return;
@@ -508,7 +617,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       a.href = blobUrl;
 
       const authorName = imageObj.user?.name ? imageObj.user.name.replace(/\s+/g, '_') : 'Project_Days';
-      const sourceSuffix = imageObj.id?.toString().startsWith('pexels') ? 'pexels' : 'unsplash';
+      const idStr = imageObj.id?.toString() || '';
+      const sourceSuffix = idStr.startsWith('pexels')
+        ? 'pexels'
+        : idStr.startsWith('tourapi') || imageObj.source === 'tourapi'
+          ? 'tourapi'
+          : 'unsplash';
       a.download = `${authorName}_${sourceSuffix}.jpg`;
 
       document.body.appendChild(a);
