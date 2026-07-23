@@ -15923,5 +15923,839 @@
         ]
       }
     ]
+  },
+  {
+    "hubId": "orlando",
+    "settlements": [
+      {
+        "placeId": "orlando-winter-park",
+        "name": "윈터파크",
+        "name_en": "Winter Park",
+        "featureType": "city",
+        "lat": 28.5999,
+        "lng": -81.3392,
+        "mapboxId": null,
+        "aliases": [
+          "Winter Park"
+        ]
+      },
+      {
+        "placeId": "orlando-kissimmee",
+        "name": "키시미",
+        "name_en": "Kissimmee",
+        "featureType": "city",
+        "lat": 28.2919,
+        "lng": -81.4076,
+        "mapboxId": null,
+        "aliases": [
+          "Kissimmee"
+        ]
+      },
+      {
+        "placeId": "orlando-altamonte-springs",
+        "name": "알타몬트스프링스",
+        "name_en": "Altamonte Springs",
+        "featureType": "city",
+        "lat": 28.6611,
+        "lng": -81.3656,
+        "mapboxId": null,
+        "aliases": [
+          "Altamonte Springs"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "san-diego",
+    "settlements": [
+      {
+        "placeId": "san-diego-chula-vista",
+        "name": "출라비스타",
+        "name_en": "Chula Vista",
+        "featureType": "city",
+        "lat": 32.6401,
+        "lng": -117.0842,
+        "mapboxId": null,
+        "aliases": [
+          "Chula Vista"
+        ]
+      },
+      {
+        "placeId": "san-diego-la-mesa",
+        "name": "라메사",
+        "name_en": "La Mesa",
+        "featureType": "city",
+        "lat": 32.7678,
+        "lng": -117.0231,
+        "mapboxId": null,
+        "aliases": [
+          "La Mesa"
+        ]
+      },
+      {
+        "placeId": "san-diego-coronado",
+        "name": "코로나도",
+        "name_en": "Coronado",
+        "featureType": "city",
+        "lat": 32.6859,
+        "lng": -117.1831,
+        "mapboxId": null,
+        "aliases": [
+          "Coronado"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "portland",
+    "settlements": [
+      {
+        "placeId": "portland-beaverton",
+        "name": "비버턴",
+        "name_en": "Beaverton",
+        "featureType": "city",
+        "lat": 45.4871,
+        "lng": -122.8037,
+        "mapboxId": null,
+        "aliases": [
+          "Beaverton"
+        ]
+      },
+      {
+        "placeId": "portland-gresham",
+        "name": "그레샴",
+        "name_en": "Gresham",
+        "featureType": "city",
+        "lat": 45.5001,
+        "lng": -122.4302,
+        "mapboxId": null,
+        "aliases": [
+          "Gresham"
+        ]
+      },
+      {
+        "placeId": "portland-lake-oswego",
+        "name": "레이크오스웨고",
+        "name_en": "Lake Oswego",
+        "featureType": "city",
+        "lat": 45.4207,
+        "lng": -122.6706,
+        "mapboxId": null,
+        "aliases": [
+          "Lake Oswego"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "new-orleans",
+    "settlements": [
+      {
+        "placeId": "new-orleans-metairie",
+        "name": "메타이리",
+        "name_en": "Metairie",
+        "featureType": "place",
+        "lat": 29.9841,
+        "lng": -90.1529,
+        "mapboxId": null,
+        "aliases": [
+          "Metairie"
+        ]
+      },
+      {
+        "placeId": "new-orleans-kenner",
+        "name": "케너",
+        "name_en": "Kenner",
+        "featureType": "city",
+        "lat": 29.9941,
+        "lng": -90.2417,
+        "mapboxId": null,
+        "aliases": [
+          "Kenner"
+        ]
+      },
+      {
+        "placeId": "new-orleans-chalmette",
+        "name": "샬메트",
+        "name_en": "Chalmette",
+        "featureType": "place",
+        "lat": 29.9427,
+        "lng": -89.9634,
+        "mapboxId": null,
+        "aliases": [
+          "Chalmette"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "austin",
+    "settlements": [
+      {
+        "placeId": "austin-round-rock",
+        "name": "라운드록",
+        "name_en": "Round Rock",
+        "featureType": "city",
+        "lat": 30.5083,
+        "lng": -97.6789,
+        "mapboxId": null,
+        "aliases": [
+          "Round Rock"
+        ]
+      },
+      {
+        "placeId": "austin-cedar-park",
+        "name": "시더파크",
+        "name_en": "Cedar Park",
+        "featureType": "city",
+        "lat": 30.5052,
+        "lng": -97.8203,
+        "mapboxId": null,
+        "aliases": [
+          "Cedar Park"
+        ]
+      },
+      {
+        "placeId": "austin-pflugerville",
+        "name": "플루거빌",
+        "name_en": "Pflugerville",
+        "featureType": "city",
+        "lat": 30.4394,
+        "lng": -97.62,
+        "mapboxId": null,
+        "aliases": [
+          "Pflugerville"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "toronto",
+    "settlements": [
+      {
+        "placeId": "toronto-mississauga",
+        "name": "미시소가",
+        "name_en": "Mississauga",
+        "featureType": "city",
+        "lat": 43.589,
+        "lng": -79.6441,
+        "mapboxId": null,
+        "aliases": [
+          "Mississauga"
+        ]
+      },
+      {
+        "placeId": "toronto-markham",
+        "name": "마컴",
+        "name_en": "Markham",
+        "featureType": "city",
+        "lat": 43.8561,
+        "lng": -79.337,
+        "mapboxId": null,
+        "aliases": [
+          "Markham"
+        ]
+      },
+      {
+        "placeId": "toronto-vaughan",
+        "name": "바우건",
+        "name_en": "Vaughan",
+        "featureType": "city",
+        "lat": 43.8361,
+        "lng": -79.4983,
+        "mapboxId": null,
+        "aliases": [
+          "Vaughan",
+          "Vaughan Ontario"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "montreal",
+    "settlements": [
+      {
+        "placeId": "montreal-laval",
+        "name": "라발",
+        "name_en": "Laval",
+        "featureType": "city",
+        "lat": 45.6066,
+        "lng": -73.7124,
+        "mapboxId": null,
+        "aliases": [
+          "Laval"
+        ]
+      },
+      {
+        "placeId": "montreal-longueuil",
+        "name": "롱괴유",
+        "name_en": "Longueuil",
+        "featureType": "city",
+        "lat": 45.5312,
+        "lng": -73.5185,
+        "mapboxId": null,
+        "aliases": [
+          "Longueuil"
+        ]
+      },
+      {
+        "placeId": "montreal-brossard",
+        "name": "브로사르",
+        "name_en": "Brossard",
+        "featureType": "city",
+        "lat": 45.4515,
+        "lng": -73.4608,
+        "mapboxId": null,
+        "aliases": [
+          "Brossard"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "calgary",
+    "settlements": [
+      {
+        "placeId": "calgary-airdrie",
+        "name": "에어드리",
+        "name_en": "Airdrie",
+        "featureType": "city",
+        "lat": 51.2917,
+        "lng": -114.0144,
+        "mapboxId": null,
+        "aliases": [
+          "Airdrie"
+        ]
+      },
+      {
+        "placeId": "calgary-cochrane",
+        "name": "코크레인",
+        "name_en": "Cochrane",
+        "featureType": "city",
+        "lat": 51.1918,
+        "lng": -114.4687,
+        "mapboxId": null,
+        "aliases": [
+          "Cochrane"
+        ]
+      },
+      {
+        "placeId": "calgary-okotoks",
+        "name": "오코톡스",
+        "name_en": "Okotoks",
+        "featureType": "city",
+        "lat": 50.725,
+        "lng": -113.975,
+        "mapboxId": null,
+        "aliases": [
+          "Okotoks"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "ottawa",
+    "settlements": [
+      {
+        "placeId": "ottawa-gatineau",
+        "name": "가티노",
+        "name_en": "Gatineau",
+        "featureType": "city",
+        "lat": 45.4765,
+        "lng": -75.7013,
+        "mapboxId": null,
+        "aliases": [
+          "Gatineau"
+        ]
+      },
+      {
+        "placeId": "ottawa-kanata",
+        "name": "카나타",
+        "name_en": "Kanata",
+        "featureType": "locality",
+        "lat": 45.3088,
+        "lng": -75.898,
+        "mapboxId": null,
+        "aliases": [
+          "Kanata"
+        ]
+      },
+      {
+        "placeId": "ottawa-orleans",
+        "name": "오를레앙",
+        "name_en": "Orléans",
+        "featureType": "locality",
+        "lat": 45.4667,
+        "lng": -75.5167,
+        "mapboxId": null,
+        "aliases": [
+          "Orleans",
+          "Orléans"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "quebec-city",
+    "settlements": [
+      {
+        "placeId": "quebec-city-levis",
+        "name": "레비",
+        "name_en": "Lévis",
+        "featureType": "city",
+        "lat": 46.8033,
+        "lng": -71.1779,
+        "mapboxId": null,
+        "aliases": [
+          "Levis",
+          "Lévis"
+        ]
+      },
+      {
+        "placeId": "quebec-city-saint-augustin",
+        "name": "생토귀스탱",
+        "name_en": "Saint-Augustin-de-Desmaures",
+        "featureType": "city",
+        "lat": 46.7431,
+        "lng": -71.4567,
+        "mapboxId": null,
+        "aliases": [
+          "Saint-Augustin-de-Desmaures"
+        ]
+      },
+      {
+        "placeId": "quebec-city-ancienne-lorette",
+        "name": "랑시엔로레트",
+        "name_en": "L'Ancienne-Lorette",
+        "featureType": "city",
+        "lat": 46.8003,
+        "lng": -71.3517,
+        "mapboxId": null,
+        "aliases": [
+          "L'Ancienne-Lorette",
+          "Ancienne-Lorette"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "mexico-city",
+    "settlements": [
+      {
+        "placeId": "mexico-city-naucalpan",
+        "name": "나우칼판",
+        "name_en": "Naucalpan",
+        "featureType": "city",
+        "lat": 19.4785,
+        "lng": -99.2327,
+        "mapboxId": null,
+        "aliases": [
+          "Naucalpan"
+        ]
+      },
+      {
+        "placeId": "mexico-city-ecatepec",
+        "name": "에카테펙",
+        "name_en": "Ecatepec",
+        "featureType": "city",
+        "lat": 19.6011,
+        "lng": -99.05,
+        "mapboxId": null,
+        "aliases": [
+          "Ecatepec"
+        ]
+      },
+      {
+        "placeId": "mexico-city-tlalnepantla",
+        "name": "틀랄네판틀라",
+        "name_en": "Tlalnepantla",
+        "featureType": "city",
+        "lat": 19.5401,
+        "lng": -99.195,
+        "mapboxId": null,
+        "aliases": [
+          "Tlalnepantla"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "cancun",
+    "settlements": [
+      {
+        "placeId": "cancun-puerto-morelos",
+        "name": "푸에르토모렐로스",
+        "name_en": "Puerto Morelos",
+        "featureType": "city",
+        "lat": 20.8531,
+        "lng": -86.8753,
+        "mapboxId": null,
+        "aliases": [
+          "Puerto Morelos"
+        ]
+      },
+      {
+        "placeId": "cancun-isla-mujeres",
+        "name": "이슬라무헤레스",
+        "name_en": "Isla Mujeres",
+        "featureType": "city",
+        "lat": 21.2322,
+        "lng": -86.7336,
+        "mapboxId": null,
+        "aliases": [
+          "Isla Mujeres"
+        ]
+      },
+      {
+        "placeId": "cancun-leona-vicario",
+        "name": "레오나비카리오",
+        "name_en": "Leona Vicario",
+        "featureType": "locality",
+        "lat": 20.988,
+        "lng": -87.202,
+        "mapboxId": null,
+        "aliases": [
+          "Leona Vicario"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "guadalajara",
+    "settlements": [
+      {
+        "placeId": "guadalajara-zapopan",
+        "name": "사포판",
+        "name_en": "Zapopan",
+        "featureType": "city",
+        "lat": 20.7211,
+        "lng": -103.3918,
+        "mapboxId": null,
+        "aliases": [
+          "Zapopan"
+        ]
+      },
+      {
+        "placeId": "guadalajara-tlaquepaque",
+        "name": "틀라케파케",
+        "name_en": "Tlaquepaque",
+        "featureType": "city",
+        "lat": 20.6409,
+        "lng": -103.3117,
+        "mapboxId": null,
+        "aliases": [
+          "Tlaquepaque"
+        ]
+      },
+      {
+        "placeId": "guadalajara-tonala",
+        "name": "토날라",
+        "name_en": "Tonalá",
+        "featureType": "city",
+        "lat": 20.6236,
+        "lng": -103.2343,
+        "mapboxId": null,
+        "aliases": [
+          "Tonala",
+          "Tonalá"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "oaxaca",
+    "settlements": [
+      {
+        "placeId": "oaxaca-santa-maria-del-tule",
+        "name": "산타마리아델툴레",
+        "name_en": "Santa María del Tule",
+        "featureType": "city",
+        "lat": 17.0464,
+        "lng": -96.6261,
+        "mapboxId": null,
+        "aliases": [
+          "Santa Maria del Tule",
+          "Santa María del Tule"
+        ]
+      },
+      {
+        "placeId": "oaxaca-xoxocotlan",
+        "name": "소소코틀란",
+        "name_en": "Santa Cruz Xoxocotlán",
+        "featureType": "city",
+        "lat": 17.0294,
+        "lng": -96.7356,
+        "mapboxId": null,
+        "aliases": [
+          "Xoxocotlan",
+          "Santa Cruz Xoxocotlán"
+        ]
+      },
+      {
+        "placeId": "oaxaca-san-agustin-etla",
+        "name": "산아구스틴에틀라",
+        "name_en": "San Agustín Etla",
+        "featureType": "locality",
+        "lat": 17.1806,
+        "lng": -96.7667,
+        "mapboxId": null,
+        "aliases": [
+          "San Agustin Etla",
+          "San Agustín Etla"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "rio-de-janeiro",
+    "settlements": [
+      {
+        "placeId": "rio-de-janeiro-niteroi",
+        "name": "니테로이",
+        "name_en": "Niterói",
+        "featureType": "city",
+        "lat": -22.8832,
+        "lng": -43.1034,
+        "mapboxId": null,
+        "aliases": [
+          "Niteroi",
+          "Niterói"
+        ]
+      },
+      {
+        "placeId": "rio-de-janeiro-duque-de-caxias",
+        "name": "두케데카시아스",
+        "name_en": "Duque de Caxias",
+        "featureType": "city",
+        "lat": -22.7858,
+        "lng": -43.3054,
+        "mapboxId": null,
+        "aliases": [
+          "Duque de Caxias"
+        ]
+      },
+      {
+        "placeId": "rio-de-janeiro-sao-goncalo",
+        "name": "상곤살루",
+        "name_en": "São Gonçalo",
+        "featureType": "city",
+        "lat": -22.8268,
+        "lng": -43.0634,
+        "mapboxId": null,
+        "aliases": [
+          "Sao Goncalo",
+          "São Gonçalo"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "sao-paulo",
+    "settlements": [
+      {
+        "placeId": "sao-paulo-guarulhos",
+        "name": "구아룰류스",
+        "name_en": "Guarulhos",
+        "featureType": "city",
+        "lat": -23.4538,
+        "lng": -46.5333,
+        "mapboxId": null,
+        "aliases": [
+          "Guarulhos"
+        ]
+      },
+      {
+        "placeId": "sao-paulo-osasco",
+        "name": "오자스쿠",
+        "name_en": "Osasco",
+        "featureType": "city",
+        "lat": -23.5325,
+        "lng": -46.7917,
+        "mapboxId": null,
+        "aliases": [
+          "Osasco"
+        ]
+      },
+      {
+        "placeId": "sao-paulo-santo-andre",
+        "name": "산투안드레",
+        "name_en": "Santo André",
+        "featureType": "city",
+        "lat": -23.6639,
+        "lng": -46.5307,
+        "mapboxId": null,
+        "aliases": [
+          "Santo Andre",
+          "Santo André"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "buenos-aires",
+    "settlements": [
+      {
+        "placeId": "buenos-aires-vicente-lopez",
+        "name": "비센테로페스",
+        "name_en": "Vicente López",
+        "featureType": "city",
+        "lat": -34.5263,
+        "lng": -58.4797,
+        "mapboxId": null,
+        "aliases": [
+          "Vicente Lopez",
+          "Vicente López"
+        ]
+      },
+      {
+        "placeId": "buenos-aires-san-isidro",
+        "name": "산이시드로",
+        "name_en": "San Isidro",
+        "featureType": "city",
+        "lat": -34.4741,
+        "lng": -58.5271,
+        "mapboxId": null,
+        "aliases": [
+          "San Isidro"
+        ]
+      },
+      {
+        "placeId": "buenos-aires-avellaneda",
+        "name": "아베야네다",
+        "name_en": "Avellaneda",
+        "featureType": "city",
+        "lat": -34.6611,
+        "lng": -58.3656,
+        "mapboxId": null,
+        "aliases": [
+          "Avellaneda"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "lima",
+    "settlements": [
+      {
+        "placeId": "lima-callao",
+        "name": "카야오",
+        "name_en": "Callao",
+        "featureType": "city",
+        "lat": -12.0508,
+        "lng": -77.1251,
+        "mapboxId": null,
+        "aliases": [
+          "Callao"
+        ]
+      },
+      {
+        "placeId": "lima-chorrillos",
+        "name": "초리요스",
+        "name_en": "Chorrillos",
+        "featureType": "locality",
+        "lat": -12.1694,
+        "lng": -77.0214,
+        "mapboxId": null,
+        "aliases": [
+          "Chorrillos"
+        ]
+      },
+      {
+        "placeId": "lima-ventanilla",
+        "name": "벤타니야",
+        "name_en": "Ventanilla",
+        "featureType": "city",
+        "lat": -11.8775,
+        "lng": -77.1278,
+        "mapboxId": null,
+        "aliases": [
+          "Ventanilla"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "santiago",
+    "settlements": [
+      {
+        "placeId": "santiago-maipu",
+        "name": "마이푸",
+        "name_en": "Maipú",
+        "featureType": "city",
+        "lat": -33.5115,
+        "lng": -70.7581,
+        "mapboxId": null,
+        "aliases": [
+          "Maipu",
+          "Maipú"
+        ]
+      },
+      {
+        "placeId": "santiago-puente-alto",
+        "name": "푸엔테알토",
+        "name_en": "Puente Alto",
+        "featureType": "city",
+        "lat": -33.6117,
+        "lng": -70.5758,
+        "mapboxId": null,
+        "aliases": [
+          "Puente Alto"
+        ]
+      },
+      {
+        "placeId": "santiago-san-bernardo",
+        "name": "산베르나르도",
+        "name_en": "San Bernardo",
+        "featureType": "city",
+        "lat": -33.5922,
+        "lng": -70.6996,
+        "mapboxId": null,
+        "aliases": [
+          "San Bernardo"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "bogota",
+    "settlements": [
+      {
+        "placeId": "bogota-soacha",
+        "name": "소아차",
+        "name_en": "Soacha",
+        "featureType": "city",
+        "lat": 4.5794,
+        "lng": -74.2168,
+        "mapboxId": null,
+        "aliases": [
+          "Soacha"
+        ]
+      },
+      {
+        "placeId": "bogota-chia",
+        "name": "치아",
+        "name_en": "Chía",
+        "featureType": "city",
+        "lat": 4.868,
+        "lng": -74.03,
+        "mapboxId": null,
+        "aliases": [
+          "Chia",
+          "Chía"
+        ]
+      },
+      {
+        "placeId": "bogota-mosquera",
+        "name": "모스케라",
+        "name_en": "Mosquera",
+        "featureType": "city",
+        "lat": 4.7059,
+        "lng": -74.2302,
+        "mapboxId": null,
+        "aliases": [
+          "Mosquera"
+        ]
+      }
+    ]
   }
 ]

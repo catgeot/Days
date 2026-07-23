@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R43~R44 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R45 후임 기동)
+
+- tip **442 hub / 1324 settlements** (+20 hub / +60) · R43 올랜도·샌디에고·포틀랜드·뉴올리언스·오스틴·토론토·몬트리올·캘거리·오타와·퀘벡시티 · R44 멕시코시티·칸쿤·과달라하라·오아하카·리우·상파울루·부에노스아이레스·리마·산티아고·보고타 · hub skip 0
+- R43/R44 VERIFY: audit issues 0 · smoke 시드+exact(`윈터파크`/`출라비스타`/`비버턴`/`메타이리`/`라운드록`/`미시소가`/`라발`/`에어드리`/`가티노`/`레비`/`나우칼판`/`푸에르토모렐로스`/`사포판`/`산타마리아델툴레`/`니테로이`/`구아룰류스`/`비센테로페스`/`카야오`/`마이푸`/`소아차`) PASS
+- 보정: US/CA/LATAM suburb·city only(hub 도시명 미투입) · name 충돌 회피(`바우건`←Vaughan vs cologne `본`)
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- **다음 배치표 2개**
+  - **R45 A**: `medellin` · `cusco` · `cartagena` · `montevideo` · `beijing` / **B**: `shanghai` · `guangzhou` · `chengdu` · `xian` · `hangzhou`
+  - **R46 A**: `shenzhen` · `nanjing` · `suzhou` · `chongqing` · `macau` / **B**: `kaohsiung` · `taichung` · `tainan` · `kuala-lumpur` · `jakarta`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · LATAM/CN/TW/SEA 인근 suburb·city only · placeId hubId prefix · 전역 name 충돌 회피
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R45부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R41~R42 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R43 후임 기동)
