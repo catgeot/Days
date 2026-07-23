@@ -128,15 +128,15 @@ flowchart TB
 | P0-1 | **Site HTML** | `GET ${SMOKE_SITE_URL}/` | status 200, `<title>` 또는 `#root` 존재 | 네트워크·5xx |
 | P0-2 | **Supabase REST** | `GET ${SUPABASE_URL}/rest/v1/` + anon headers | 200 또는 401 (서버 alive) | timeout·5xx |
 | P0-3 | **gemini-proxy** | `POST .../functions/v1/gemini-proxy` body `{ modelId, parts:[{text:"ping"}] }` | `success:true` **또는** body에 `429`/`RESOURCE_EXHAUSTED` → **경고(warn)** 로 분류 | 401 JWT·500 기타·timeout |
-| P0-4 | **fetch-mrt-stays** | `POST .../functions/v1/fetch-mrt-stays` 발리(`덴파사르`) `size:3` | `ok:true` + items≥1 · items=0은 **warn** | 401·5xx·timeout·`!ok` |
-| P0-5 | **tourapi-proxy** | `POST .../functions/v1/tourapi-proxy` `searchKeyword` 경복궁 | `ok:true` + items≥1 | 401·5xx·timeout·빈 결과 |
+| P0-4 | **fetch-mrt-stays** | 발리 `size:3` · **3회 재시도** | `ok` + items≥1 | JWT·키 없음 → fail · MRT 502/빈결과(재시도 후) → **warn**(CI exit 0) |
+| P0-5 | **tourapi-proxy** | 경복궁 `searchKeyword` · **3회 재시도** | `ok` + items≥1 | JWT·키 없음 → fail · upstream 열화(재시도 후) → **warn**(CI exit 0) |
 | P1-1 | **PlaceCard SSR shell** | `GET /place/bali` (또는 고정 slug) | 200 | 404·5xx |
 | P1-2 | **Sitemap** | `GET /sitemap.xml` | 200, `urlset` | missing |
 
 **Exit code**
 
-- `0` — 모든 P0 Pass (P0-3 warn 허용 — 크레딧 부족은 warn이지만 cron 알림 대상)
-- `1` — P0 Fail 1개 이상
+- `0` — P0 Fail 없음 (`SMOKE_FAIL_ON_WARN=1`일 때 **P0-3 Gemini warn만** exit 1; P0-4/P0-5 warn은 exit 0)
+- `1` — P0 Fail 1개 이상, 또는 CI에서 Gemini 크레딧 warn
 
 **출력 형식** (JSON 한 줄 + human summary):
 

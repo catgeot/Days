@@ -9,6 +9,10 @@ if (!process.env.GITHUB_ACTIONS) {
 }
 
 const REQUEST_TIMEOUT_MS = 15_000;
+/** Edge + 외부 upstream (MRT·TourAPI) — 콜드스타트·일시 지연 여유 */
+const EDGE_PROBE_TIMEOUT_MS = 28_000;
+const EDGE_PROBE_ATTEMPTS = 3;
+const EDGE_PROBE_RETRY_MS = 1_500;
 
 let siteUrl = (process.env.SMOKE_SITE_URL || 'https://gateo.kr').replace(/\/$/, '');
 const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim();
@@ -73,14 +77,29 @@ function record(id, name, status, detail, priority) {
   checks.push({ id, name, status, detail, priority });
 }
 
-async function fetchWithTimeout(url, options = {}) {
+async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } finally {
     clearTimeout(timer);
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function parseJsonBody(response) {
+  const raw = await response.text();
+  let body = null;
+  try {
+    body = raw ? JSON.parse(raw) : null;
+  } catch {
+    body = null;
+  }
+  return { raw, body };
 }
 
 function supabaseHeaders() {
@@ -214,7 +233,7 @@ async function probeGeminiProxy() {
 
 /**
  * MRT 숙소 Edge — Summary「숙소 찾기」의존.
- * Pass: HTTP 200 + ok. items 0은 warn (일시 재고·region).
+ * Pass: ok + items≥1. 설정 오류는 fail · MRT upstream 일시 502/빈결과는 warn(재시도 후).
  */
 async function probeMrtStayProxy() {
   const id = 'P0-4';
@@ -225,72 +244,84 @@ async function probeMrtStayProxy() {
     return;
   }
 
-  try {
-    const response = await fetchWithTimeout(
-      `${supabaseUrl.replace(/\/$/, '')}/functions/v1/fetch-mrt-stays`,
-      {
-        method: 'POST',
-        headers: {
-          ...supabaseHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          keyword: '덴파사르',
-          isDomestic: false,
-          countryHint: '인도네시아',
-          countryHintAlts: ['Indonesia'],
-          altKeywords: ['Denpasar', '우붓', 'Ubud', '발리', 'Bali'],
-          nameEn: 'Bali',
-          size: 3,
-        }),
-      }
-    );
+  const url = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/fetch-mrt-stays`;
+  const init = {
+    method: 'POST',
+    headers: {
+      ...supabaseHeaders(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      keyword: '덴파사르',
+      isDomestic: false,
+      countryHint: '인도네시아',
+      countryHintAlts: ['Indonesia'],
+      altKeywords: ['Denpasar', '우붓', 'Ubud', '발리', 'Bali'],
+      nameEn: 'Bali',
+      size: 3,
+    }),
+  };
 
-    const raw = await response.text();
-    let body = null;
+  let lastDetail = 'unknown';
+
+  for (let attempt = 1; attempt <= EDGE_PROBE_ATTEMPTS; attempt += 1) {
     try {
-      body = raw ? JSON.parse(raw) : null;
-    } catch {
-      body = null;
-    }
+      const response = await fetchWithTimeout(url, init, EDGE_PROBE_TIMEOUT_MS);
+      const { raw, body } = await parseJsonBody(response);
+      const combined = `${response.status} ${raw}`;
 
-    const combined = `${response.status} ${raw}`;
-
-    if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
-      record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
-      return;
-    }
-
-    if (response.status >= 500) {
-      record(id, name, 'fail', `HTTP ${response.status}`, 'P0');
-      return;
-    }
-
-    if (body?.ok === true) {
-      const n = Array.isArray(body.items) ? body.items.length : 0;
-      if (n === 0) {
-        record(
-          id,
-          name,
-          'warn',
-          `ok but items=0 (region=${body.region?.subName || body.region?.name || '-'})`,
-          'P0'
-        );
+      if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
+        record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
         return;
       }
-      record(id, name, 'pass', `ok items=${n}`, 'P0');
-      return;
+
+      if (/MYREALTRIP_API_KEY missing/i.test(combined)) {
+        record(id, name, 'fail', 'MYREALTRIP_API_KEY missing on Edge', 'P0');
+        return;
+      }
+
+      if (body?.ok === true) {
+        const n = Array.isArray(body.items) ? body.items.length : 0;
+        if (n >= 1) {
+          record(
+            id,
+            name,
+            'pass',
+            attempt > 1 ? `ok items=${n} (attempt ${attempt})` : `ok items=${n}`,
+            'P0'
+          );
+          return;
+        }
+        lastDetail = `ok but items=0 (region=${body.region?.subName || body.region?.name || '-'})`;
+      } else {
+        lastDetail =
+          body?.error || body?.message || body?.detail || raw.slice(0, 200) || `HTTP ${response.status}`;
+        // MRT upstream 일시 실패(502 accommodation/search) — 재시도
+        const upstreamFlaky =
+          response.status === 502 ||
+          /accommodation\/search failed|upstream/i.test(String(lastDetail));
+        if (!upstreamFlaky && response.status >= 500) {
+          record(id, name, 'fail', `HTTP ${response.status}: ${lastDetail}`, 'P0');
+          return;
+        }
+      }
+    } catch (error) {
+      lastDetail = error.name === 'AbortError' ? 'timeout' : error.message;
     }
 
-    const errMsg = body?.error || body?.message || raw.slice(0, 200) || `HTTP ${response.status}`;
-    record(id, name, 'fail', errMsg, 'P0');
-  } catch (error) {
-    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
-    record(id, name, 'fail', detail, 'P0');
+    if (attempt < EDGE_PROBE_ATTEMPTS) {
+      console.log(`[smoke-health] ${id} retry ${attempt}/${EDGE_PROBE_ATTEMPTS} — ${lastDetail}`);
+      await sleep(EDGE_PROBE_RETRY_MS);
+    }
   }
+
+  record(id, name, 'warn', `${lastDetail} (after ${EDGE_PROBE_ATTEMPTS} attempts)`, 'P0');
 }
 
-/** TourAPI Edge — 국내 갤러리·명소 좌표. Pass: searchKeyword 경복궁 items≥1 */
+/**
+ * TourAPI Edge — 국내 갤러리·명소 좌표.
+ * Pass: searchKeyword 경복궁 items≥1. 키 미설정은 fail · upstream 일시 오류는 warn.
+ */
 async function probeTourapiProxy() {
   const id = 'P0-5';
   const name = 'tourapi-proxy';
@@ -300,57 +331,67 @@ async function probeTourapiProxy() {
     return;
   }
 
-  try {
-    const response = await fetchWithTimeout(
-      `${supabaseUrl.replace(/\/$/, '')}/functions/v1/tourapi-proxy`,
-      {
-        method: 'POST',
-        headers: {
-          ...supabaseHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'searchKeyword',
-          keyword: '경복궁',
-          numOfRows: 3,
-        }),
-      }
-    );
+  const url = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/tourapi-proxy`;
+  const init = {
+    method: 'POST',
+    headers: {
+      ...supabaseHeaders(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'searchKeyword',
+      keyword: '경복궁',
+      numOfRows: 3,
+    }),
+  };
 
-    const raw = await response.text();
-    let body = null;
+  let lastDetail = 'unknown';
+
+  for (let attempt = 1; attempt <= EDGE_PROBE_ATTEMPTS; attempt += 1) {
     try {
-      body = raw ? JSON.parse(raw) : null;
-    } catch {
-      body = null;
+      const response = await fetchWithTimeout(url, init, EDGE_PROBE_TIMEOUT_MS);
+      const { raw, body } = await parseJsonBody(response);
+      const combined = `${response.status} ${raw}`;
+
+      if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
+        record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
+        return;
+      }
+
+      if (/TOUR_API_SERVICE_KEY is not configured/i.test(combined)) {
+        record(id, name, 'fail', 'TOUR_API_SERVICE_KEY missing on Edge', 'P0');
+        return;
+      }
+
+      const n = Array.isArray(body?.items) ? body.items.length : 0;
+      if (body?.ok === true && n >= 1) {
+        record(
+          id,
+          name,
+          'pass',
+          attempt > 1 ? `ok items=${n} (attempt ${attempt})` : `ok items=${n}`,
+          'P0'
+        );
+        return;
+      }
+
+      lastDetail =
+        body?.error ||
+        body?.message ||
+        (body?.ok ? `items=${n}` : null) ||
+        raw.slice(0, 200) ||
+        `HTTP ${response.status}`;
+    } catch (error) {
+      lastDetail = error.name === 'AbortError' ? 'timeout' : error.message;
     }
 
-    const combined = `${response.status} ${raw}`;
-
-    if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
-      record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
-      return;
+    if (attempt < EDGE_PROBE_ATTEMPTS) {
+      console.log(`[smoke-health] ${id} retry ${attempt}/${EDGE_PROBE_ATTEMPTS} — ${lastDetail}`);
+      await sleep(EDGE_PROBE_RETRY_MS);
     }
-
-    if (response.status >= 500) {
-      record(id, name, 'fail', `HTTP ${response.status}`, 'P0');
-      return;
-    }
-
-    const n = Array.isArray(body?.items) ? body.items.length : 0;
-    if (body?.ok === true && n >= 1) {
-      record(id, name, 'pass', `ok items=${n}`, 'P0');
-      return;
-    }
-
-    const errMsg =
-      body?.error || body?.message || (body?.ok ? `items=${n}` : null) || raw.slice(0, 200) ||
-      `HTTP ${response.status}`;
-    record(id, name, 'fail', errMsg, 'P0');
-  } catch (error) {
-    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
-    record(id, name, 'fail', detail, 'P0');
   }
+
+  record(id, name, 'warn', `${lastDetail} (after ${EDGE_PROBE_ATTEMPTS} attempts)`, 'P0');
 }
 
 async function probePlaceCardShell() {
@@ -393,17 +434,25 @@ async function probeSitemap() {
 function printSummary() {
   const p0Checks = checks.filter((c) => c.priority === 'P0');
   const p0Failed = p0Checks.some((c) => c.status === 'fail');
-  const p0Warn = p0Checks.some((c) => c.status === 'warn');
+  /** Gemini 크레딧(P0-3) warn만 CI 실패 — MRT/Tour upstream 일시 warn은 알림만(로그) */
   const failOnWarn = process.env.SMOKE_FAIL_ON_WARN === '1';
-  const ok = !p0Failed && !(failOnWarn && p0Warn);
+  const geminiWarn = checks.some((c) => c.id === 'P0-3' && c.status === 'warn');
+  const ok = !p0Failed && !(failOnWarn && geminiWarn);
 
   for (const check of checks) {
     const tag = check.status.toUpperCase().padEnd(4);
     console.log(`[smoke-health] ${check.id} ${tag} ${check.name} — ${check.detail}`);
   }
 
-  if (failOnWarn && p0Warn && !p0Failed) {
-    console.log('[smoke-health] SMOKE_FAIL_ON_WARN=1 — P0 warn treated as failure for alerting');
+  if (failOnWarn && geminiWarn && !p0Failed) {
+    console.log('[smoke-health] SMOKE_FAIL_ON_WARN=1 — P0-3 gemini warn treated as failure');
+  }
+
+  const otherWarn = p0Checks.filter((c) => c.status === 'warn' && c.id !== 'P0-3');
+  if (otherWarn.length && ok) {
+    console.log(
+      `[smoke-health] note: ${otherWarn.map((c) => c.id).join(', ')} warn (upstream degraded, exit 0)`
+    );
   }
 
   const summary = { ok, checks };

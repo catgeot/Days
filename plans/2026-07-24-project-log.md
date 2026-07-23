@@ -32,3 +32,18 @@
 - API 실패(`error`)와 결과 0건(`empty`) 문구 분리 · Trip.com CTA 공통 (`getTripcomHotelErrorCopy`)
 - error subtitle: 「잠시 후에 다시 시도해 주세요…」
 - Smoke Health: **P0-4** `fetch-mrt-stays` · **P0-5** `tourapi-proxy` · `smoke:mrt-stay` 별칭
+
+### Smoke #194 실패 후속 (P0-4/P0-5 완화)
+
+**상태**: 코드 반영 (커밋·push)
+
+- 원인 추정: MRT Edge 일시 **502** `accommodation/search failed` → 프로브 즉시 fail · CI `SMOKE_FAIL_ON_WARN=1`
+- 대응: Edge 프로브 **28s·3회 재시도** · upstream 열화는 **warn(exit 0)** · Gemini(P0-3) warn만 CI fail
+
+## 검색 선택 카드 — 다크모드 시인성
+
+**상태**: 🔧 코드 반영 · QA 대기
+
+- `SearchDisambiguationCards` / 제안 리스트: 영문명·설명·부제 `gray-500` → `gray-200`/`gray-300`
+- 카드 배경·테두리 대비 상향 · 「지역」뱃지 스타일 추가
+- 선택 카드 제목 구분: em dash(`—`) → 화살표(`→`) — 「으」 연상 방지
