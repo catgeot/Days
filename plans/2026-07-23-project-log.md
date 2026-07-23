@@ -54,6 +54,8 @@ TourAPI-이어하기
 ## 갤러리 — 남이섬 TourAPI 보강
 
 **상태**: ✅ 커밋·push
+
+- `namiseom` 키워드: `남이섬 전경`(0건) → `남이섬 메타세쿼이아`·`짚와이어_남이섬`
 - `detailImage` 8→20 · 갤러리 목표 18→24 · 캐시 `v1.10`
 - curated `photoKeywords` 있을 때 자동 전경/야경 생략 (슬롯 낭비 방지)
 
