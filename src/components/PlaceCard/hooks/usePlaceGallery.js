@@ -12,7 +12,7 @@ import { TRAVEL_SPOTS } from '../../../pages/Home/data/travelSpots';
 import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
-import { resolveTourApiPlace } from '../../../utils/tourApiMatch';
+import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import {
   clearGalleryAttributionReturnState,
@@ -21,8 +21,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.12 — soft: place_stats가 스톡이면 API 생략 · TourAPI 우세 DB만 스톡 재수집 */
-const CACHE_VERSION = 'v1.12';
+/** v1.13 — session → DB → TourAPI(국내 contentId) → 스톡 · soft Tour 우세 DB만 스톡 재수집 */
+const CACHE_VERSION = 'v1.13';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
@@ -334,16 +334,27 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
       : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
 
-    const tourMapping =
-      resolveTourApiPlace(
-        typeof targetSpot === 'object' && targetSpot
-          ? targetSpot
-          : typeof locationSource === 'object' && locationSource
-            ? locationSource
-            : { name: koreanName, slug: stablePlaceKey },
-      ) ||
+    const tourPlaceCandidate =
+      typeof targetSpot === 'object' && targetSpot
+        ? targetSpot
+        : typeof locationSource === 'object' && locationSource
+          ? locationSource
+          : { name: koreanName, slug: stablePlaceKey };
+    const resolvedTourMapping =
+      resolveTourApiPlace(tourPlaceCandidate) ||
       (typeof locationSource === 'object' ? resolveTourApiPlace(locationSource) : null) ||
       (koreanName ? resolveTourApiPlace(koreanName) : null);
+    /** 해외는 TourAPI 제외 · SSOT curated(국내 시드) 또는 country=한국만 허용 */
+    const isDomesticKorea =
+      isDomesticKoreaLocation(
+        typeof targetSpot === 'object' && targetSpot ? targetSpot : null,
+      ) ||
+      isDomesticKoreaLocation(
+        typeof locationSource === 'object' && locationSource ? locationSource : null,
+      ) ||
+      Boolean(resolvedTourMapping?.curated);
+    const tourMapping = isDomesticKorea ? resolvedTourMapping : null;
+    const hasOfficialTourContentId = Boolean(tourMapping?.contentId);
 
     const clearSafety = () => {
       if (safetyTimer != null) {
@@ -399,9 +410,70 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         return;
       }
 
-      // TourAPI 우선은 contentId(공식 POI)만 — soft/오매칭·404 CDN은 스톡이 더 나음(공지천)
-      const preferTourApiFirst = Boolean(tourMapping?.contentId);
-      if (preferTourApiFirst && tourMapping?.photoKeyword) {
+      // 2) DB 선조회 — 국내·해외 공통. 히트면 Tour/스톡 LIVE 생략.
+      // soft 국내만: TourAPI 우세 DB는 건너뛰고 스톡 재수집(공지천 404 고착 방지).
+      // 공식 contentId DB(Tour 포함)는 재사용 — LIVE TourAPI보다 우선.
+      if (!slugOverride && dbCandidates.length) {
+        try {
+          const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
+          const { data: dbRows, error: dbError } = await withTimeout(
+            supabase
+              .from('place_stats')
+              .select(dbSelect)
+              .in('place_id', dbCandidates)
+              .limit(1),
+            PLACE_STATS_QUERY_MS,
+            'place_stats gallery',
+          );
+
+          const dbData = dbRows?.[0];
+
+          if (isStale()) return;
+
+          if (!dbError && dbData) {
+            if (thumbnailOnly && dbData.image_url) {
+              const thumb = {
+                id: 'db-thumb',
+                urls: { small: dbData.image_url, regular: dbData.image_url },
+              };
+              processAndSetImages([thumb]);
+              saveToSmartCache(CACHE_KEY, [thumb]);
+              markFetchDone();
+              finishLoading();
+              return;
+            }
+            if (dbData.gallery_urls && dbData.gallery_urls.length > 0) {
+              const gallerySlice = thumbnailOnly
+                ? dbData.gallery_urls.slice(0, 1)
+                : dbData.gallery_urls;
+              if (
+                isDomesticKorea &&
+                !hasOfficialTourContentId &&
+                isTourApiDominantGallery(gallerySlice)
+              ) {
+                console.warn(
+                  '⚠️ place_stats TourAPI-heavy — soft stock refresh (skip DB short-circuit)',
+                );
+              } else {
+                processAndSetImages(gallerySlice);
+                saveToSmartCache(CACHE_KEY, gallerySlice);
+                markFetchDone();
+                finishLoading();
+                return;
+              }
+            }
+          }
+        } catch {
+          console.warn(`⚠️ Supabase Cache Miss or Error for ${dbStatsId || koreanName}. Proceeding to API.`);
+        }
+      }
+
+      // 3) TourAPI LIVE — 국내 공식 contentId + DB miss 만 (해외·soft 제외)
+      if (
+        isDomesticKorea &&
+        hasOfficialTourContentId &&
+        tourMapping?.photoKeyword
+      ) {
         try {
           const tourImages = await fetchTourApiGallery({
             photoKeyword: tourMapping.photoKeyword,
@@ -453,57 +525,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           }
         } catch (tourErr) {
           console.warn('⚠️ TourAPI gallery miss — fallback Unsplash/Pexels', tourErr);
-        }
-      }
-
-      // DB 선조회 — 히트면 Unsplash/Pexels/Tour LIVE 호출 없음.
-      // soft만: TourAPI 우세 캐시는 건너뛰고 스톡으로 재수집(공지천 404 고착 방지).
-      if (!slugOverride && dbCandidates.length) {
-        try {
-          const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
-          const { data: dbRows, error: dbError } = await withTimeout(
-            supabase
-              .from('place_stats')
-              .select(dbSelect)
-              .in('place_id', dbCandidates)
-              .limit(1),
-            PLACE_STATS_QUERY_MS,
-            'place_stats gallery',
-          );
-
-          const dbData = dbRows?.[0];
-
-          if (isStale()) return;
-
-          if (!dbError && dbData) {
-            if (thumbnailOnly && dbData.image_url) {
-              const thumb = {
-                id: 'db-thumb',
-                urls: { small: dbData.image_url, regular: dbData.image_url },
-              };
-              processAndSetImages([thumb]);
-              saveToSmartCache(CACHE_KEY, [thumb]);
-              markFetchDone();
-              finishLoading();
-              return;
-            }
-            if (dbData.gallery_urls && dbData.gallery_urls.length > 0) {
-              const gallerySlice = thumbnailOnly ? dbData.gallery_urls.slice(0, 1) : dbData.gallery_urls;
-              if (!preferTourApiFirst && isTourApiDominantGallery(gallerySlice)) {
-                console.warn(
-                  '⚠️ place_stats TourAPI-heavy — soft stock refresh (skip DB short-circuit)',
-                );
-              } else {
-                processAndSetImages(gallerySlice);
-                saveToSmartCache(CACHE_KEY, gallerySlice);
-                markFetchDone();
-                finishLoading();
-                return;
-              }
-            }
-          }
-        } catch {
-          console.warn(`⚠️ Supabase Cache Miss or Error for ${dbStatsId || koreanName}. Proceeding to API.`);
         }
       }
     } else {
@@ -563,11 +584,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
       if (isStale()) return;
 
-      // soft: 스톡 0일 때만 TourAPI (DB는 위에서 이미 시도·Tour 우세만 스킵)
+      // 5) soft 국내: 스톡 0일 때만 TourAPI (해외·공식 contentId 경로 제외)
       if (
         !forceRefresh &&
         results.length === 0 &&
-        !tourMapping?.contentId &&
+        isDomesticKorea &&
+        !hasOfficialTourContentId &&
         tourMapping?.photoKeyword
       ) {
         try {

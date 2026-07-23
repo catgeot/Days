@@ -43,7 +43,7 @@
 
 ## 2단계 (매핑 + 갤러리) ✅
 
-**포함**: slug↔contentId SSOT · `usePlaceGallery` 국내 TourAPI 우선 · attribution  
+**포함**: slug↔contentId SSOT · `usePlaceGallery` 국내 TourAPI( DB 이후 ) · attribution  
 **제외**: UI 대규모 변경 · 릴리스 노트(합의 전)
 
 ### SSOT
@@ -63,14 +63,18 @@ npm run audit:tourapi
 - 명소: 검증 `contentId` + `photoKeyword` + aliases
 - 미등록 국내(`country=한국`): soft — 이름=keyword · contentId 없음
 
-### 갤러리 순서 (국내)
+### 갤러리 순서 (`usePlaceGallery` · 캐시 v1.13)
 
-1. sessionStorage (`CACHE_VERSION` v1.8)
-2. **TourAPI** ([`fetchTourApiGallery.js`](../src/utils/fetchTourApiGallery.js))
-   - contentId 있으면 **`detailImage` 선두** (공식 POI)
-   - `photoKeywords` ≤3 **병렬** searchPhoto · rows 축소
-   - 제목 랭킹 · 공항·축제 등 강등 · **URL 로드 프로브**로 깨진 CDN 제외
-3. `place_stats` · Unsplash · Pexels · fallback
+**국내** (`isDomesticKoreaLocation` · curated SSOT)
+
+1. sessionStorage
+2. **`place_stats`** — 히트 시 LIVE 생략 · **기존 갤러리 덮어쓰기 없음**  
+   - soft만: TourAPI 우세 DB → 스킵 후 스톡 재수집(공지천)
+3. **TourAPI** ([`fetchTourApiGallery.js`](../src/utils/fetchTourApiGallery.js)) — **`contentId` 공식 POI만** (DB miss 시)  
+   - `detailImage` 선두 · `photoKeywords` ≤3 병렬 searchPhoto · 랭킹·프로브
+4. Unsplash · Pexels · soft Tour(스톡 0) · fallback
+
+**해외**: session → DB → Unsplash/Pexels (**TourAPI 미호출**)
 
 출처: [`galleryImageAttribution.js`](../src/components/PlaceCard/common/galleryImageAttribution.js) `source=tourapi` → 한국관광공사 / visitkorea
 

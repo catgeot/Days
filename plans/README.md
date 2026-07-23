@@ -11,7 +11,7 @@
 - **TourAPI 국내 관광 (3단계 ⏳ · 시드40·v1.7 · UI/릴리스 합의)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) · 직전 [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)  
+  - 최신: [`2026-07-24-project-log.md`](./2026-07-24-project-log.md) · 직전 [`2026-07-23-project-log.md`](./2026-07-23-project-log.md)  
   - **홈 지구본 풍부화 계획**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md)
   - **AI 채팅 예약 CTA Phase 2 handoff**: [`2026-05-22-ai-chat-booking-cta-handoff.md`](./2026-05-22-ai-chat-booking-cta-handoff.md)
   - 새로운 날 작업이면 `plans/` **루트**에 **새** 파일로 추가하면 됩니다.

@@ -2,6 +2,15 @@
 
 직전: [`2026-07-23-project-log.md`](./2026-07-23-project-log.md)
 
+## 갤러리 — 호출 순서 DB 우선 (국내/해외 구분)
+
+**상태**: ✅ 사람 QA 확인 · 커밋·push
+
+- 순서: session → **DB** → TourAPI(`contentId` 국내만) → Unsplash/Pexels → soft Tour(국내·스톡0)
+- 해외: TourAPI 미호출 (`isDomesticKoreaLocation` · curated SSOT만 국내)
+- soft Tour 우세 DB 스킵(공지천) 유지 · 공식 contentId DB는 재사용 · **DB 히트 시 기존 사진 미갱신**
+- 캐시 `v1.13` · 문서: `.ai-context` 갤러리 절 · [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) §2
+
 ## 갤러리 — 모바일 확장 카드 스켈레톤 고착
 
 **상태**: ✅ 사람 QA 통과 · 커밋·push
