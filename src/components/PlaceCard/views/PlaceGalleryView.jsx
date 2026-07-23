@@ -41,6 +41,7 @@ const PlaceGalleryView = React.memo(({
   getRefreshCooldownRemaining,
   refreshCooldownSec = 30,
   handleRemoveImage,
+  handleDropBrokenImage,
   mobileSecondaryNav = null
 }) => {
   const fullScreenContainerRef = useRef(null);
@@ -341,6 +342,7 @@ const PlaceGalleryView = React.memo(({
               className="max-h-full max-w-full select-none rounded-lg object-contain shadow-2xl animate-fade-in landscape:h-full landscape:w-full landscape:max-h-[100dvh] landscape:max-w-[100vw] landscape:rounded-none landscape:shadow-none"
               style={transformStyle}
               alt="full-view"
+              onError={() => handleDropBrokenImage?.(selectedImg)}
             />
           </div>
 
@@ -457,6 +459,7 @@ const PlaceGalleryView = React.memo(({
             src={selectedImg.urls.regular}
             className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`}
             alt="full-view"
+            onError={() => handleDropBrokenImage?.(selectedImg)}
           />
       </div>
 
@@ -674,13 +677,25 @@ const PlaceGalleryView = React.memo(({
                          }
                       }}
                       className="break-inside-avoid bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+                      style={
+                        img.width && img.height
+                          ? { aspectRatio: `${img.width} / ${img.height}` }
+                          : undefined
+                      }
                     >
 
                       <img
                         src={img.urls.small || img.urls.regular}
-                        className="w-full h-auto object-cover opacity-100 group-hover:scale-105 transition-transform duration-500"
+                        className={`w-full opacity-100 group-hover:scale-105 transition-transform duration-500 ${
+                          img.width && img.height
+                            ? 'h-full object-cover absolute inset-0'
+                            : 'h-auto object-cover relative'
+                        }`}
                         alt={`place-img-${i}`}
                         loading="lazy"
+                        width={img.width || undefined}
+                        height={img.height || undefined}
+                        onError={() => handleDropBrokenImage?.(img)}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20}/>

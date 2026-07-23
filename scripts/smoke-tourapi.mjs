@@ -69,6 +69,9 @@ async function mappingGuards() {
   const { scoreTourPhotoTitle } = await import(
     '../src/utils/tourApiPhotoRank.js'
   );
+  const { interleaveByOrientation } = await import(
+    '../src/utils/fetchTourApiGallery.js'
+  );
 
   const gb = resolveTourApiPlace('gyeongbokgung');
   assert(gb?.contentId === '126508', 'resolve gyeongbokgung → 126508');
@@ -85,6 +88,28 @@ async function mappingGuards() {
   assert(
     scoreTourPhotoTitle('국립민속박물관', '경복궁', '경복궁') < 0,
     'off-topic folk museum score < 0',
+  );
+  assert(
+    scoreTourPhotoTitle('서울전경', '서울', '서울') >
+      scoreTourPhotoTitle('서울세계불꽃축제', '서울', '서울'),
+    'scenic ranks above fireworks festival',
+  );
+  assert(
+    scoreTourPhotoTitle('제주국제공항', '제주', '제주') <
+      scoreTourPhotoTitle('성산일출봉 전경', '제주', '제주'),
+    'airport ranks below scenic ilchulbong',
+  );
+
+  const interleaved = interleaveByOrientation([
+    { id: 'L1', width: 1200, height: 800 },
+    { id: 'L2', width: 1600, height: 900 },
+    { id: 'P1', width: 800, height: 1200 },
+    { id: 'P2', width: 700, height: 1100 },
+    { id: 'L3', width: 1400, height: 900 },
+  ]);
+  assert(
+    interleaved[0]?.id === 'L1' && interleaved[1]?.id === 'P1',
+    'interleave landscape/portrait',
   );
 
   const byName = resolveTourApiPlace('경복궁');

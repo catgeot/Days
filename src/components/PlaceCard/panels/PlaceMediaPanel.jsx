@@ -63,6 +63,7 @@ const PlaceMediaPanel = React.memo(({
                 getRefreshCooldownRemaining={galleryData.getRefreshCooldownRemaining}
                 refreshCooldownSec={galleryData.refreshCooldownSec}
                 handleRemoveImage={galleryData.handleRemoveImage}
+                handleDropBrokenImage={galleryData.handleDropBrokenImage}
                 mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>

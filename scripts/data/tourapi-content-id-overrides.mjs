@@ -23,6 +23,7 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
   // —— 주요 hub (photoKeyword = 도시명) ——
   seoul: {
     photoKeyword: '서울',
+    photoKeywords: ['서울 전경', '서울 야경', '남산서울타워 야경'],
     title: '서울',
     contentId: null,
     aliases: ['서울', 'Seoul'],
@@ -30,6 +31,7 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
   },
   busan: {
     photoKeyword: '부산',
+    photoKeywords: ['부산 전경', '부산 야경', '광안대교'],
     title: '부산',
     contentId: null,
     aliases: ['부산', 'Busan'],
@@ -37,9 +39,10 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
   },
   jeju: {
     photoKeyword: '제주',
+    photoKeywords: ['성산일출봉 전경', '한라산 전경', '제주 해변'],
     title: '제주',
     contentId: null,
-    aliases: ['제주', '제주시', 'Jeju'],
+    aliases: ['제주', '제주시', '제주도', 'Jeju'],
     verifiedAt: '2026-07-23',
   },
   seogwipo: {
@@ -273,6 +276,54 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
     title: '설악산 국립공원',
     contentId: '127586',
     aliases: ['설악산', '설악산 국립공원', 'Seoraksan'],
+    verifiedAt: '2026-07-23',
+  },
+  changgyeonggung: {
+    photoKeyword: '창경궁',
+    photoKeywords: ['창경궁 전경', '창경궁 야경'],
+    title: '창경궁',
+    contentId: '126511',
+    aliases: ['창경궁', 'Changgyeonggung'],
+    verifiedAt: '2026-07-23',
+  },
+  gwanghwamun: {
+    photoKeyword: '광화문',
+    photoKeywords: ['광화문 광장', '광화문 전경'],
+    title: '광화문',
+    contentId: '126512',
+    aliases: ['광화문', '광화문광장', 'Gwanghwamun'],
+    verifiedAt: '2026-07-23',
+  },
+  heunginjimun: {
+    photoKeyword: '흥인지문',
+    photoKeywords: ['흥인지문 전경', '동대문'],
+    title: '흥인지문',
+    contentId: '126514',
+    aliases: ['흥인지문', '동대문', 'Heunginjimun'],
+    verifiedAt: '2026-07-23',
+  },
+  'lotte-world-tower': {
+    photoKeyword: '롯데월드타워',
+    photoKeywords: ['롯데월드타워 야경', '롯데월드타워 전경'],
+    title: '롯데월드타워',
+    contentId: '2492348',
+    aliases: ['롯데월드타워', '서울스카이', 'Lotte World Tower'],
+    verifiedAt: '2026-07-23',
+  },
+  ojukeon: {
+    photoKeyword: '오죽헌',
+    photoKeywords: ['오죽헌 전경', '강릉 오죽헌'],
+    title: '강릉 오죽헌',
+    contentId: '129784',
+    aliases: ['오죽헌', '강릉 오죽헌', 'Ojukheon'],
+    verifiedAt: '2026-07-23',
+  },
+  changdeokgung: {
+    photoKeyword: '창덕궁',
+    photoKeywords: ['창덕궁 전경', '창덕궁 후원'],
+    title: '창덕궁',
+    contentId: null,
+    aliases: ['창덕궁', 'Changdeokgung'],
     verifiedAt: '2026-07-23',
   },
 };

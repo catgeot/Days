@@ -21,7 +21,7 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-const CACHE_VERSION = 'v1.6';
+const CACHE_VERSION = 'v1.9';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
@@ -154,14 +154,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
   };
 
-  // 이미지 상태 업데이트 (단순화됨)
+  // 이미지 상태 업데이트 (Unsplash/Pexels 경로 그대로 · TourAPI 교차는 fetch 쪽에서만)
   const processAndSetImages = useCallback((rawImages) => {
     if (!rawImages || rawImages.length === 0) {
       setImages([]);
       return;
     }
     allImagesRef.current = rawImages;
-    setImages(rawImages); // 단순하게 그대로 표시
+    setImages(rawImages);
   }, []);
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
@@ -636,6 +636,23 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
   }, [ACCESS_KEY]);
 
+  /** 깨진 이미지 — 세션 캐시만 갱신 (DB 영구삭제 아님) */
+  const handleDropBrokenImage = useCallback((imageToDrop) => {
+    if (!imageToDrop?.id) return;
+    const newImages = allImagesRef.current.filter((img) => img.id !== imageToDrop.id);
+    if (newImages.length === allImagesRef.current.length) return;
+    allImagesRef.current = newImages;
+    setImages(newImages);
+    if (selectedImg?.id === imageToDrop.id) {
+      setSelectedImg(newImages[0] || null);
+    }
+    const koreanName = currentKoreanNameRef.current;
+    const primaryQuery = currentQueryRef.current;
+    const placeKeyPart = currentPlaceKeyRef.current || koreanName || primaryQuery;
+    const CACHE_KEY = `days_gallery_${encodeURIComponent(placeKeyPart)}_${primaryQuery}`;
+    saveToSmartCache(CACHE_KEY, newImages);
+  }, [selectedImg]);
+
   // 🚨 [New] 특정 이미지 영구 삭제 처리 (DB, 캐시, 상태 업데이트)
   const handleRemoveImage = useCallback(async (imageToRemove) => {
     if (!imageToRemove) return;
@@ -710,6 +727,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     setSelectedImg,
     handleDownload,
     handleRemoveImage,
+    handleDropBrokenImage,
     handleRefresh,
     getRefreshCooldownRemaining,
     refreshCooldownSec: GALLERY_REFRESH_COOLDOWN_MS / 1000,

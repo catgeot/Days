@@ -1,6 +1,6 @@
 # TourAPI Edge 프록시 — 진행 계획
 
-**상태**: 1단계 ✅ · **2단계 ✅** (매핑 SSOT · `usePlaceGallery` 국내 우선 · UI 합의 전)  
+**상태**: 1단계 ✅ · 2단계 ✅ · **3단계 ⏳** (시드·랭킹 보정 ✅ · 브라우저 UI QA·릴리스 합의 대기)  
 **일지**: [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) 「TourAPI」절
 
 ---
@@ -65,11 +65,11 @@ npm run audit:tourapi
 
 ### 갤러리 순서 (국내)
 
-1. sessionStorage (`CACHE_VERSION` v1.6)
+1. sessionStorage (`CACHE_VERSION` v1.8)
 2. **TourAPI** ([`fetchTourApiGallery.js`](../src/utils/fetchTourApiGallery.js))
    - contentId 있으면 **`detailImage` 선두** (공식 POI)
-   - `photoKeywords`(전경·야경·근정전 등) → 기본 `photoKeyword`
-   - 제목 랭킹 · 국립민속박물관·교대의식·상점 등 **오프트픽 드롭**
+   - `photoKeywords` ≤3 **병렬** searchPhoto · rows 축소
+   - 제목 랭킹 · 공항·축제 등 강등 · **URL 로드 프로브**로 깨진 CDN 제외
 3. `place_stats` · Unsplash · Pexels · fallback
 
 출처: [`galleryImageAttribution.js`](../src/components/PlaceCard/common/galleryImageAttribution.js) `source=tourapi` → 한국관광공사 / visitkorea
@@ -86,14 +86,15 @@ npx supabase functions deploy tourapi-proxy --project-ref phdjnbfitvmrguqzverm -
 
 ---
 
-## 다음 (3단계 · 합의 후)
+## 3단계 (QA · 시드) — 진행 중
 
-필수에 가깝음:
-- **UI QA**: 경복궁·서울·해운대 등 국내 TourAPI 노출 · 해외 Unsplash 회귀 · 캐시 v1.6 반영 확인
+**코드 ✅** (합의 전 UI/릴리스):
+- SSOT **40 spots / 19 contentId** — hub 전경 키워드(서울·부산·제주) · 창경궁·광화문·흥인지문·롯데월드타워·오죽헌·창덕궁
+- 랭킹: 공항·축제·상품관 등 강등 · 캐시 **v1.7**
+- 검증: `npm run audit:tourapi` · `npm run smoke:tourapi` (+ LIVE)
 
-선택:
-- 시드 확장(추가 hub/명소 `contentId`·`photoKeywords`)
-- 오프트픽/랭킹 규칙 보정 (`tourApiPhotoRank.js`)
-- 릴리스 노트 초안 **합의 후** `releaseNotes.js`
-
-코드 필수는 아님(Edge·매핑·갤러리 경로 완료).
+**남은 일** (사람·브라우저):
+- 로컬 `https://localhost:5173` UI QA — 경복궁·서울·해운대 · 해외(파리) Unsplash 회귀 · 출처「한국관광공사」
+- (Agent 브라우저 MCP는 로컬 self-signed HTTPS 인증서 우회 승인 필요)
+- 릴리스 노트 **합의 후** `releaseNotes.js`
+- main에 TourAPI 커밋 **push** 후 Vercel 배포 확인

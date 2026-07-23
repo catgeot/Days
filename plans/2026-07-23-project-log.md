@@ -2,25 +2,27 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
-## TourAPI — 국내 관광 사진·정보 (2단계 매핑·갤러리)
+## TourAPI — 3단계 QA·시드 (진행)
 
-**상태**: ✅ SSOT 34 spots(14 contentId) · 품질 보정(전경 키워드·제목 랭킹·detailImage 선두) · audit/smoke PASS · **커밋** · Edge photographer 재배포됨 · UI QA·릴리스 합의 대기  
+**상태**: ✅ Edge LIVE · audit/smoke PASS · SSOT **40 spots / 19 contentId** · 랭킹·hub 키워드 · **속도/깨진사진 보정** · 캐시 v1.8 · **미커밋** · UI QA·push·릴리스 합의 대기  
 **계획**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md)
 
-- SSOT: `tourapi-content-id-overrides.mjs` → `npm run generate:tourapi` → `travelSpotTourApi.json` · `tourApiMatch` · soft 국내
-- 갤러리: session → **TourAPI** → place_stats → Unsplash/Pexels · CACHE `v1.6`
-- **품질**: contentId `detailImage` 선두 · `photoKeywords`(전경/야경/근정전) · `tourApi.rankScore` 정렬(UI 미표시) · 오프트픽 드롭
-- 출처: `galleryImageAttribution` `tourapi` → 한국관광공사
-- 검증: `npm run audit:tourapi` · `npm run smoke:tourapi`
-- 금지 유지: `VITE_` 키 · UI 임의 대규모 변경 · 합의 전 releaseNotes
+- Edge 갤러리 QA: 경복궁(근정전) · 해운대 · 서울전경 · 제주오름 상단 · 파리 TourAPI 미적용 PASS
+- 시드+: 창경궁·광화문·흥인지문·롯데월드타워·오죽헌·창덕궁(keyword) · hub `photoKeywords`(서울/부산/제주)
+- 랭킹: 공항·축제·상품관·자물쇠 등 강등 · CACHE **v1.8**
+- **속도**: searchPhoto 키워드 **병렬** · 키워드≤3 · rows 축소 · thumbnail은 detail만
+- **깨진 URL**: 로드 프로브 후 제외 · UI `onError`→세션 드롭
+- 한계: data.go.kr 원본 RTT·CDN 품질은 상한 있음 · 재방문은 session/place_stats 캐시
+- Agent 브라우저: 로컬 HTTPS self-signed 인증서 우회 **미승인** → 사람 로컬 UI 스팟체크 필요
+- 금지 유지: `VITE_` · UI 대규모 · 합의 전 releaseNotes
 
-### TourAPI 세션 — 에이전트 핸드오프 (3단계 QA·시드)
+### TourAPI 세션 — 에이전트 핸드오프 (UI·릴리스)
 
 | | |
 |--|--|
-| **읽을 것 3** | [`.ai-context.md`](../.ai-context.md) 3·6절 · [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) §2단계·다음 · 본 절 |
-| **할 일** | 국내 갤러리 **UI QA**(경복궁·서울·해운대·해외 회귀) · 시드/키워드 확장(선택) · 문제 장 랭킹 보정 · 릴리스 초안 **합의 후** |
-| **금지 3** | `VITE_` 노출 · detailImage만으로 갤러리 · UI/releaseNotes 합의 전 반영 |
+| **읽을 것 3** | [`.ai-context.md`](../.ai-context.md) 3·6절 · [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) §3단계 · 본 절 |
+| **할 일** | 로컬 UI QA(경복궁·서울·해운대·파리) · 커밋/push 요청 시 실행 · 릴리스 **합의 후** 반영 |
+| **금지 3** | `VITE_` 노출 · UI 임의 변경 · 합의 전 releaseNotes |
 | **제시어** | 아래 「다음 세션 제시어」 블록 |
 
 **다음 세션 제시어** (복붙):
@@ -29,9 +31,17 @@
 TourAPI-이어하기
 @plans/2026-07-23-project-log.md
 @plans/tourapi-edge-proxy-plan.md
-3단계: 국내 갤러리 UI QA + 시드/키워드 확장(선택).
-2단계(매핑·searchPhoto 우선·전경 랭킹·Edge) 완료. UI/릴리스는 합의 후.
+3단계 마무리: 로컬 UI QA 결과 반영 + 커밋/push + 릴리스 합의.
+시드40·랭킹·캐시 v1.7 코드 준비됨. UI/릴리스는 합의 후.
 ```
+
+## TourAPI — 국내 관광 사진·정보 (2단계 매핑·갤러리)
+
+**상태**: ✅ SSOT(당시 34) · 전경 랭킹 · audit/smoke · **커밋** · Edge photographer 재배포 · 3단계에서 40으로 확장
+
+- SSOT: overrides → `generate:tourapi` → `travelSpotTourApi.json` · `tourApiMatch` · soft 국내
+- 갤러리: session → TourAPI → place_stats → Unsplash/Pexels
+- 출처: `galleryImageAttribution` `tourapi` → 한국관광공사
 
 ## TourAPI — 1단계 Edge (완료)
 
