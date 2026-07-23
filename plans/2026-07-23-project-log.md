@@ -2,6 +2,80 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## cityAttractionHubs — R68~R69 오케스트레이터 세대 (큐 소진 · 체인 종료)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **R48–R69 큐 소진** · 후임 Task 불필요(사람 보고)
+
+- tip **630 hub / 4390 명소** (+20) · R68 남미·미국10 · R69 미·아프리카·남아시아·중국10 · `_tmp-r68*`/`_tmp-r69*` 정리
+- 워커2 초안 → tip 선반영(EXISTS) → 메인 audit·스모크 VERIFY만 · EXISTS 예비 대체 없음
+- R68/R69 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS · audit issues 0
+- **다음 배치표**: 없음 (큐 소진) · 신규 R은 큐 문서에 R70+ 추가 후 재개
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- **방법 v2.1**: 큐 소진 시 사람 보고로 체인 종료 · 3단안 미적용
+
+## cityAttractionHubs — R66~R67 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R68 후임 기동)
+
+- tip **610 hub / 4250 명소** (+20) · R66 중국 관광10 · R67 코카서스·중앙亞·이란·네팔10 · `_tmp-r66*`/`_tmp-r67*` 정리
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r66`/`_tmp-r67`)·직렬 A→B·VERIFY까지 완료
+- R66 보정: `qingdao` alias `청도` 드롭(`cheongdo` 충돌)
+- R66/R67 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS · EXISTS 0
+- **다음 배치표 2개**
+  - **R68 A**: `arequipa` · `ushuaia` · `el-calafate` · `quito` · `la-paz` / **B**: `panama-city` · `minneapolis` · `tampa` · `maui` · `anchorage`
+  - **R69 A**: `charleston` · `savannah` · `kampala` · `dar-es-salaam` · `livingstone` / **B**: `dhaka` · `islamabad` · `thimphu` · `wuhan` · `dunhuang`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R68부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지 · 3단안 미적용
+
+## cityAttractionHubs — R64~R65 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**
+
+- tip **590 hub / 4110 명소** (+20) · R64 미령·지중해·기타10 · R65 러시아·태평양·알프스·튀르키예10 · `_tmp-r64*`/`_tmp-r65*` 정리
+- R64/R65 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS · EXISTS 0 · 충돌 보정 없음
+- **다음 배치표 2개**
+  - **R66 A**: `qingdao` · `sanya` · `xiamen` · `zhangjiajie` · `guilin` / **B**: `lijiang` · `lhasa` · `harbin` · `kunming` · `dalian`
+  - **R67 A**: `tbilisi` · `yerevan` · `baku` · `almaty` · `tashkent` / **B**: `samarkand` · `tehran` · `shiraz` · `isfahan` · `pokhara`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지 · P1 시작
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R66부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지 · 3단안 미적용
+
+## cityAttractionHubs — R62~R63 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · resolve 스모크 PASS · **미커밋** · **§4.2 후임 Task 이관**
+
+- tip **570 hub / 3970 명소** (+20) · R62 베트남·필리핀·롬복10 · R63 동남아·일본10 · `_tmp-r62*`/`_tmp-r63*` 정리
+- R62 보정: `호이안 구시가지` name_en → `Hoi An Historic Quarter` (danang `Hoi An Ancient Town` 충돌)
+- R62/R63 VERIFY: hub/exact + 회귀 `속초`/`파리`/`낙산사`/`에펠탑` PASS · shrine 유지(구마모토·하코다테·이시가키·미야코지마·쓰시마)
+- **다음 배치표 2개**
+  - **R64 A**: `guam` · `saipan` · `santorini` · `cappadocia` · `kotor` / **B**: `bled` · `ibiza` · `crete` · `havana` · `ulaanbaatar`
+  - **R65 A**: `moscow` · `st-petersburg` · `fiji` · `mauritius` · `tahiti` / **B**: `bora-bora` · `zermatt` · `cinque-terre` · `bodrum` · `antalya`
+- 우선: 해외 큐 순서만 · DE/UK 중소·KR 구 금지 · tip 직렬 A→B · VERIFY 전 이관 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng}]
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「R64부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지 · 3단안 미적용
+
+## 오케스트레이터 3단 검토안 문서화 (미적용)
+
+**상태**: ✅ [`orchestrator-3tier-draft.md`](./orchestrator-3tier-draft.md) · 공식은 v2.1 유지
+
+- 컨트롤러→지휘자→워커2 구조·요약 계약·적용 조건 기록
+- v2.1 이관 체인에서 **첫 메인이 큐 완료를 사람 채팅에 보고하지 않는 이유**(지휘권·보고권 이양) 정리
+- R62는 v2.1 · Task 안정 후 v3 후보
+
+## cityAttractionHubs — R62–R69 사전 큐 준비
+
+**상태**: ✅ 큐 문서 · R62–R63 VERIFY 완료 · 잔여 R64–R69 (상단 이관 절 기준)
+
+- [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) **R62–R69 (80 hub)** 사전 배치
+
 ## cityAttractionHubs — #22~#47 tip 점검·커밋
 
 **상태**: ✅ audit issues 0 · resolve 스모크 PASS · **커밋·push** (`main`)

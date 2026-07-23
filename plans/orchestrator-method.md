@@ -199,7 +199,7 @@
 | 워커당 배치 | **8~12 hub** (관례 10) · **라운드당 워커 2** → 보통 20 hub/라운드 |
 | 규칙 | append only · `shrine` KIND 유지 · 시드 `sokcho`/`paris` 덮어쓰기 금지 · 명소명 전역 unique |
 | audit | `npm run audit:city-attraction-hubs` |
-| 상태(2026-07-23) | **550 hub / 3830 명소** · 해외 큐 R48–R61 **소진** · tip 커밋 대상 |
+| 상태(2026-07-23) | **630 hub / 4390 명소** · R48–R69 ✅ · **큐 소진** |
 
 상세 배치 이력: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md) · 방향: [`2026-07-23-project-log.md`](./2026-07-23-project-log.md).
 
@@ -259,8 +259,9 @@ kind: beach|market|temple|shrine|viewpoint|landmark|museum|neighborhood|park
 
 | 문서 | 담는 것 |
 |------|---------|
-| **본 파일** | 방법론 SSOT |
+| **본 파일** | 방법론 SSOT (**공식 v2.1**) |
 | [`.cursor/rules/gateo-orchestrator.mdc`](../.cursor/rules/gateo-orchestrator.mdc) | 세션 트리거·짧은 강제 규칙 |
+| [`orchestrator-3tier-draft.md`](./orchestrator-3tier-draft.md) | 3단(컨트롤러→지휘자→워커2) **검토안·미적용** · 첫 메인 완료보고 구멍 설명 |
 | [`.ai-context.md`](../.ai-context.md) | 스냅샷 1줄 + 링크 |
 | [`AGENTS.md`](../AGENTS.md) | 클라우드·로컬 공통 한 줄 |
 | 일지 | 라운드 VERIFY·건수·다음 배치표 2개·제시어만 |
