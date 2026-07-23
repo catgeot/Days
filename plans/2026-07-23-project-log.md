@@ -2,6 +2,24 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 명소 좌표 수리 — 툴링 + P0 (양구·춘천·하남·진도)
+
+**상태**: ✅ 툴링 · P0 tip 패치 · audit hubs PASS · verify smoke PASS · **사람 지도 QA 대기** · 전수 SNAP은 다음 오케 세대
+
+- 원인: LLM 추정 좌표 · hub 거리 audit 미탐 · exact는 Mapbox 재지오코드 없음
+- 툴: `audit:city-attraction-coords` · `verify:city-attraction-coords` (Mapbox→Nominatim 폴백 · NAMED>50m=SNAP) · method **§5.4**
+- P0: `양구 한반도섬`·`박수근미술관` Nominatim 스냅 · `김유정문학촌` 주소 보정(도로 옆→시설) · `하남풍산시장`→`하남 덕풍시장` · `진도타워` 스냅
+- Mapbox Search Box는 KR POI 빈 결과 다수 → Nominatim 폴백(캐시 gitignore)
+- **다음**: `verify:city-attraction-coords -- --country=kr --write-queue` 전수 → 오케 `명소좌표수리` 배치 · 사람 QA(양구·김유정·덕풍·진도타워)
+
+**제시어**
+
+```
+명소좌표수리 · 오케스트레이터
+@plans/orchestrator-method.md
+§5.4 · verify KR 전수 큐 → 워커2 SNAP 배치 · P0 QA 반영
+```
+
 ## Trip.com 숙소 city ID — 성수기 선제 (아조레스·타히티)
 
 **상태**: ✅ city **49** · 사람 수동 확인 후 등록 · **커밋·push**
@@ -27,6 +45,7 @@
 | **할 일** | PROD QA: 대마도→몰타 등 CTA 연속 클릭 시 세션 잔존 없는지 · Vercel 반영 후 |
 | **금지 3** | 미검증 city · LIVE 없이 priced 전수 추측 · `VITE_` |
 | **제시어** | `숙소-이어하기` · 「Trip CTA city 세션 잔존 QA(대마도·몰타)」 |
+
 
 ## TourAPI — 3단계 QA·시드 (진행)
 

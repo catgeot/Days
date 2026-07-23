@@ -1902,8 +1902,9 @@
         "name": "김유정문학촌",
         "name_en": "Kim You-jeong Literature Village",
         "kind": "landmark",
-        "lat": 37.8194,
-        "lng": 127.7168
+        "lat": 37.82195,
+        "lng": 127.70279,
+        "mapboxId": null
       },
       {
         "name": "애니메이션박물관",
@@ -5552,8 +5553,9 @@
         "name": "진도타워",
         "name_en": "Jindo Tower",
         "kind": "viewpoint",
-        "lat": 34.57,
-        "lng": 126.3
+        "lat": 34.5660706,
+        "lng": 126.3024322,
+        "mapboxId": null
       },
       {
         "name": "운림산방",
@@ -12771,8 +12773,9 @@
         "name": "양구 박수근미술관",
         "name_en": "Park Soo Keun Museum",
         "kind": "museum",
-        "lat": 38.105,
-        "lng": 127.99
+        "lat": 38.0974539,
+        "lng": 127.9836522,
+        "mapboxId": null
       },
       {
         "name": "양구 국토정중앙천문대",
@@ -12792,8 +12795,9 @@
         "name": "양구 한반도섬",
         "name_en": "Yanggu Korean Peninsula Island",
         "kind": "landmark",
-        "lat": 38.095,
-        "lng": 127.975
+        "lat": 38.1308672,
+        "lng": 127.9828423,
+        "mapboxId": null
       }
     ]
   },
@@ -15194,11 +15198,12 @@
         "lng": 127.206
       },
       {
-        "name": "하남풍산시장",
-        "name_en": "Hanam Pungsan Market",
+        "name": "하남 덕풍시장",
+        "name_en": "Hanam Deokpung Market",
         "kind": "market",
-        "lat": 37.557,
-        "lng": 127.185
+        "lat": 37.5416211,
+        "lng": 127.2027489,
+        "mapboxId": null
       },
       {
         "name": "하남교산근린공원",

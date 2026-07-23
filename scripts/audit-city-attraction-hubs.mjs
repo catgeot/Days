@@ -82,6 +82,9 @@ for (const h of hubs) {
     if (a.kind && !KIND.has(a.kind)) {
       issues.push(`${h.hubId}: bad kind ${a.kind}`);
     }
+    if (a.mapboxId != null && typeof a.mapboxId !== 'string') {
+      issues.push(`${h.hubId}: attr "${a?.name}" mapboxId must be string|null`);
+    }
     for (const k of [a.name, a.name_en]) {
       const nk = normalizeKey(k);
       if (!nk) continue;
