@@ -101,7 +101,7 @@
 
 ```text
 큐 소진: R01–R63 ✅ · 후임 Task 불필요 · 사람 보고
-tip: 629 hub / 1884 settlements · audit issues 0 · 미커밋
+tip: 629 hub / 1884 settlements · audit issues 0 · Phase 1a 커밋·push · 정착지 exact 허브형 역펼침 ✅
 skip: el-calafate (R62 · <2 within 50km)
 복구/재개(필요 시): 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```

@@ -2,7 +2,8 @@
  * 타이핑용 하이브리드 검색 제안: SSOT 여행지 + 도시 허브/명소 + 정착지 + Mapbox.
  * 우선순위: 여행지 → hub 도시 → hub 명소 → settlements(지역).
  * 명소 exact/단일허브 prefix → 부모 hub+형제 명소 역펼침 (정착지 제외).
- * 큐레이션·SSOT는 동기 즉시, Mapbox는 허브/명소 exact가 아닐 때만 보강.
+ * 정착지 exact → 허브형 역펼침 (부모 hub + 히트 지역 + 명소 + 형제 지역).
+ * 큐레이션·SSOT는 동기 즉시, Mapbox는 허브/명소/정착지 exact가 아닐 때만 보강.
  */
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
@@ -16,6 +17,7 @@ import {
   makeDisambiguationResult,
 } from './cityAttractionHubs';
 import {
+  getSettlementsForHub,
   settlementsForHubSuggestions,
   matchSettlementsPrefix,
   settlementToSuggestion,
@@ -59,19 +61,28 @@ function pushUnique(out, seen, item) {
 }
 
 /**
- * hub + 명소 클러스터. 정착지는 includeSettlements일 때만 (hub exact용).
+ * hub + 명소 클러스터.
+ * - hub exact: includeSettlements → 명소 뒤 정착지 ≤3
+ * - 정착지 exact(허브형): preferSettlement → hub → 히트 지역 → 명소 → 형제 지역(전부, 히트 강제)
+ * - 명소 exact: preferAttraction, 정착지 비포함
  * @param {object} hub
  * @param {object[]} out
  * @param {Set<string>} seen
- * @param {{ preferAttraction?: object, includeSettlements?: boolean }} [opts]
+ * @param {{ preferAttraction?: object, preferSettlement?: object, includeSettlements?: boolean }} [opts]
  */
 function pushHubAttractionCluster(hub, out, seen, opts = {}) {
   if (!hub) return;
+  const rowStub = { hubId: hub.hubId };
   pushUnique(out, seen, hubToSuggestion(hub));
 
-  const prefer = opts.preferAttraction;
-  if (prefer) {
-    pushUnique(out, seen, attractionToSuggestion(hub, prefer));
+  const preferSettlement = opts.preferSettlement;
+  if (preferSettlement) {
+    pushUnique(out, seen, settlementToSuggestion(rowStub, preferSettlement));
+  }
+
+  const preferAttraction = opts.preferAttraction;
+  if (preferAttraction) {
+    pushUnique(out, seen, attractionToSuggestion(hub, preferAttraction));
   }
 
   for (const attraction of hub.attractions || []) {
@@ -79,11 +90,29 @@ function pushHubAttractionCluster(hub, out, seen, opts = {}) {
   }
 
   if (opts.includeSettlements) {
-    const rowStub = { hubId: hub.hubId };
-    for (const settlement of settlementsForHubSuggestions(hub.hubId)) {
+    // 정착지 reverse-expand: 히트 강제 + 형제 전부. hub exact: ≤3
+    const list = preferSettlement
+      ? getSettlementsForHub(hub.hubId)
+      : settlementsForHubSuggestions(hub.hubId);
+    for (const settlement of list) {
       pushUnique(out, seen, settlementToSuggestion(rowStub, settlement));
     }
   }
+}
+
+/**
+ * 정착지 허브형 클러스터 (드롭다운·Enter 공통).
+ * @param {object} hub
+ * @param {object} preferSettlement
+ */
+function buildSettlementHubCluster(hub, preferSettlement) {
+  const out = [];
+  const seen = new Set();
+  pushHubAttractionCluster(hub, out, seen, {
+    preferSettlement,
+    includeSettlements: true,
+  });
+  return out;
 }
 
 /**
@@ -136,6 +165,8 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
 
   const exactHub = resolveCityAttractionHub(q);
   const exactAttraction = exactHub ? null : resolveHubAttraction(q);
+  const exactSettlement =
+    exactHub || exactAttraction ? null : resolveSettlement(q);
   const { hubs, attractions } = matchCityAttractionHubsPrefix(q, { limit: 6 });
 
   if (exactHub) {
@@ -147,6 +178,21 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
       preferAttraction: exactAttraction.attraction,
       includeSettlements: false,
     });
+  } else if (exactSettlement) {
+    // 정착지 exact: 허브형 역펼침 (도시 + 히트 지역 + 명소 + 형제 지역)
+    const parentHub = resolveCityAttractionHub(exactSettlement.row.hubId);
+    if (parentHub) {
+      pushHubAttractionCluster(parentHub, out, seen, {
+        preferSettlement: exactSettlement.settlement,
+        includeSettlements: true,
+      });
+    } else {
+      pushUnique(
+        out,
+        seen,
+        settlementToSuggestion(exactSettlement.row, exactSettlement.settlement),
+      );
+    }
   } else {
     const singleHubHit = uniqueHubFromAttractionHits(attractions);
     // hub 이름 prefix 없이 명소만 한 도시로 모이면 동일 역펼침
@@ -182,9 +228,11 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const includeMapbox = opts.includeMapbox !== false;
   const exactHub = resolveCityAttractionHub(q);
   const exactAttraction = exactHub ? null : resolveHubAttraction(q);
+  const exactSettlement =
+    exactHub || exactAttraction ? null : resolveSettlement(q);
 
-  // 허브/명소 exact(속초·낙산사)는 큐레이션만 — Mapbox 대기로 지연시키지 않음
-  if (!includeMapbox || exactHub || exactAttraction) {
+  // 허브/명소/정착지 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
+  if (!includeMapbox || exactHub || exactAttraction || exactSettlement) {
     return local;
   }
 
@@ -310,11 +358,20 @@ export async function buildCuratedEnterDisambiguation(query) {
   const settlementHit = resolveSettlement(q);
   if (settlementHit) {
     const { row, settlement } = settlementHit;
-    const candidates = [];
     const parentHub = resolveCityAttractionHub(row.hubId);
-    if (parentHub) candidates.push(hubToSuggestion(parentHub));
-    candidates.push(settlementToSuggestion(row, settlement));
-    return ensureDisambiguation(q, candidates, `'${settlement.name}' — 원하는 장소를 선택하세요`);
+    if (parentHub) {
+      const candidates = buildSettlementHubCluster(parentHub, settlement);
+      return ensureDisambiguation(
+        q,
+        candidates,
+        `'${parentHub.name}' — 도시·명소·지역을 골라주세요`,
+      );
+    }
+    return ensureDisambiguation(
+      q,
+      [settlementToSuggestion(row, settlement)],
+      `'${settlement.name}' — 원하는 장소를 선택하세요`,
+    );
   }
 
   const querySpot = resolveTravelSpotFromSearchQuery(q);

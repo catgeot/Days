@@ -2,6 +2,14 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 검색 — 정착지 exact 허브형 역펼침
+
+**상태**: ✅ 커밋·push
+
+- `설악동`/`베르사유` exact: 부모 hub + 히트 지역 + 명소 + 형제 지역 (탐색 메뉴)
+- 명소 exact(`낙산사`)는 정착지 미포함 유지 · hub exact(`속초`) 기존 ≤3 유지
+- Enter `requireChoice` 동일 클러스터 · hybrid Mapbox skip
+
 ## 숙소 모달 — 더보기·하단 CTA·구간 구분
 
 **상태**: ✅ 커밋·push

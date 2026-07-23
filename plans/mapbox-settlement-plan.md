@@ -1,6 +1,6 @@
 # Mapbox 정착지 지명 리스트화 (A + hubId 큐)
 
-**상태**: Phase 0 ✅ (2026-07-23) · Phase 1a 클라우드 대기  
+**상태**: Phase 0 ✅ · Phase 1a tip **629 hub / 1884** 큐 소진·커밋 ✅ · 다음 Phase 1b `mapboxId`  
 **큐**: [`mapbox-settlement-queue.md`](./mapbox-settlement-queue.md) · **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3
 
 ## 가드
@@ -10,9 +10,9 @@
 - 큐 = tip `cityAttractionHubs` **hubId 순서** · hub 밖 임의 지명 금지.
 - 개수: **목표 3 · 최대 5 · 최소 2** · &lt;2면 hub 스킵.
 - 드롭다운: hub exact 시 settlements **≤3**.
+- **정착지 exact**: 허브형 역펼침 — 부모 hub + 히트 지역 + 명소 + 형제 지역 ([`searchSuggestions.js`](../src/pages/Home/lib/searchSuggestions.js)). 명소 exact는 정착지 미포함.
 - hub당 **1행만** · 분할 append 금지.
 - 1차: 좌표·이름 · `mapboxId` null OK · 1b에서 채움.
-- 기본 **미커밋** · commit은 사람 요청 시.
 
 ## 파일
 
