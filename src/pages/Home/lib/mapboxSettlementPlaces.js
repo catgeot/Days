@@ -125,7 +125,7 @@ export function settlementToSuggestion(row, settlement) {
     source: 'settlement',
     uiPlace: true,
     parentCity,
-    desc: `${parentCity} · 지역`,
+    // 선택 카드: 「도시 · 지역」합성 desc는 위치·뱃지와 중복이라 생략
   };
 }
 

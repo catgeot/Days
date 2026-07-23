@@ -39,12 +39,14 @@
 
 - 원인 추정: MRT Edge 일시 **502** `accommodation/search failed` → 프로브 즉시 fail · CI `SMOKE_FAIL_ON_WARN=1`
 - 대응: Edge 프로브 **28s·3회 재시도** · upstream 열화는 **warn(exit 0)** · Gemini(P0-3) warn만 CI fail
-- Actions: `checkout`/`setup-node` **v5**(Node 24) · Node 20 deprecation 경고 제거
+- Actions: `checkout`/`setup-node` **v5**(Node 24) · Node 20 deprecation 경고 제거 · 사람 확인 PASS
 
-## 검색 선택 카드 — 다크모드 시인성
+## 검색 선택 카드 — 다크모드·모바일 시인성
 
-**상태**: 🔧 코드 반영 · QA 대기
+**상태**: ✅ 사람 QA 확인 · 커밋·push
 
-- `SearchDisambiguationCards` / 제안 리스트: 영문명·설명·부제 `gray-500` → `gray-200`/`gray-300`
-- 카드 배경·테두리 대비 상향 · 「지역」뱃지 스타일 추가
-- 선택 카드 제목 구분: em dash(`—`) → 화살표(`→`) — 「으」 연상 방지
+- 모바일(갈색 모달): 카드 배경 `#32281f` · 보조문구 대비 상향
+- 위치 줄과 겹치는 합성 desc 숨김 · 명소/정착지 합성 desc 제거
+- 도시 카드에 SSOT 여행지 `desc` 이식 · 이름에 포함된 상위 도시는 위치 줄에서 생략
+- 선택 카드: `line-clamp` 제거·높이 `h-auto`/`items-start` · 설명 13~14px·`amber-50/90`
+- 제목 구분: em dash(`—`) → 화살표(`→`) — 「으」 연상 방지

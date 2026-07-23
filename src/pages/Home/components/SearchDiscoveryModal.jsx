@@ -685,7 +685,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         <div className="w-full pb-20 pt-2">
           {filteredSpots.length > 0 ? (
             <>
-              <div className="mb-4 text-sm font-medium text-gray-500 flex items-center gap-2">
+              <div className="mb-4 text-sm font-medium text-gray-300 flex items-center gap-2">
                 <Search size={16} />
                 <span>컬렉션 여행지 {filteredSpots.length}건</span>
               </div>

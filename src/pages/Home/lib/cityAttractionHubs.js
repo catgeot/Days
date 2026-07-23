@@ -189,7 +189,7 @@ export function attractionToSuggestion(hub, attraction) {
     source: 'hub',
     uiPlace: true,
     parentCity: hub.name,
-    desc: `${hub.name} · ${kindLabel}`,
+    // 선택 카드: 위치 줄·뱃지로 충분 — 합성「도시 · 종류」desc는 중복이라 생략
   };
 }
 
@@ -294,7 +294,7 @@ export function makeDisambiguationResult(query, candidates, { title } = {}) {
   return {
     __disambiguation: true,
     query: String(query || '').trim(),
-    title: title || `'${query}' 검색 결과 — 원하는 장소를 선택하세요`,
+    title: title || `'${query}' 검색 결과 → 원하는 장소를 선택하세요`,
     candidates: candidates.filter(Boolean),
   };
 }

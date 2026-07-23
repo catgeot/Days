@@ -93,7 +93,7 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
     attractionKind: firstCat || undefined,
     source,
     uiPlace: true,
-    desc: parentCity ? `${parentCity} · ${name}` : name,
+    // 선택 카드: 제목·위치 줄과 겹치는 합성 desc 생략 (full_address는 suggest 경로에서만)
   };
 }
 

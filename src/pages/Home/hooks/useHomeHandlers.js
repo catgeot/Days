@@ -658,7 +658,7 @@ export function useHomeHandlers({
 
       const localChoices = buildLocalSearchSuggestions(query);
       if (localChoices.length >= 1) {
-        return ensureDisambiguation(query, localChoices, `'${query}' — 원하는 장소를 선택하세요`);
+        return ensureDisambiguation(query, localChoices, `'${query}' → 원하는 장소를 선택하세요`);
       }
 
       const citySpotChoice = citiesData.find(c =>
@@ -710,9 +710,16 @@ export function useHomeHandlers({
       // 도시 허브 exact (속초·파리) → 선택 카드 (임의 1곳 점프 금지)
       const hubHit = resolveCityAttractionHub(query);
       if (hubHit) {
-        const candidates = await buildHubCandidatesForEnter(hubHit);
+        let candidates = await buildHubCandidatesForEnter(hubHit);
+        const spot =
+          resolveTravelSpotFromSearchQuery(query) ||
+          TRAVEL_SPOTS.find((s) => s.slug === hubHit.hubId);
+        const spotDesc = String(spot?.desc || '').trim();
+        if (spotDesc && candidates[0]) {
+          candidates = [{ ...candidates[0], desc: spotDesc, badge: '여행지', kind: 'spot', slug: spot.slug || candidates[0].slug }, ...candidates.slice(1)];
+        }
         return makeDisambiguationResult(query, candidates, {
-          title: `'${hubHit.name}' — 도시와 명소를 골라주세요`,
+          title: `'${hubHit.name}' → 도시와 명소를 골라주세요`,
         });
       }
 
@@ -1031,7 +1038,7 @@ export function useHomeHandlers({
                 });
               }
               return makeDisambiguationResult(query, distinct.slice(0, 8), {
-                title: `'${query}' — 원하는 장소를 선택하세요`,
+                title: `'${query}' → 원하는 장소를 선택하세요`,
               });
             }
           }
@@ -1122,14 +1129,14 @@ export function useHomeHandlers({
               }
               if (cards.length >= 2 || (requireChoice && cards.length >= 1)) {
                 return makeDisambiguationResult(query, cards, {
-                  title: `'${query}'에 어울리는 여행지 — 골라주세요`,
+                  title: `'${query}'에 어울리는 여행지 → 골라주세요`,
                 });
               }
               if (cards.length === 1) {
                 setDraftInput(cards[0].name);
                 processSearchKeywords(cards[0]);
                 isCorrected = true;
-                return commitLocation(cards[0], `'${query}'에 어울리는 여행지 — 골라주세요`);
+                return commitLocation(cards[0], `'${query}'에 어울리는 여행지 → 골라주세요`);
               }
             }
 
@@ -1176,7 +1183,7 @@ export function useHomeHandlers({
               isCorrected = true;
               return commitLocation(
                 verifiedCachedLoc,
-                `'${query}' — 원하는 장소를 선택하세요`,
+                `'${query}' → 원하는 장소를 선택하세요`,
               );
             }
           }
@@ -1315,7 +1322,7 @@ export function useHomeHandlers({
                 }
 
                 return makeDisambiguationResult(query, cards, {
-                  title: `'${query}'에 어울리는 여행지 — 골라주세요`,
+                  title: `'${query}'에 어울리는 여행지 → 골라주세요`,
                 });
               }
 
@@ -1335,7 +1342,7 @@ export function useHomeHandlers({
                   desc: variant.reason || '',
                 }));
                 return makeDisambiguationResult(query, choiceCards, {
-                  title: `'${query}'에 어울리는 여행지 — 골라주세요`,
+                  title: `'${query}'에 어울리는 여행지 → 골라주세요`,
                 });
               }
 
@@ -1377,7 +1384,7 @@ export function useHomeHandlers({
                     });
                   }
 
-                  return commitLocation(chosenLoc, `'${query}'에 어울리는 여행지 — 골라주세요`);
+                  return commitLocation(chosenLoc, `'${query}'에 어울리는 여행지 → 골라주세요`);
                 }
               }
             } else {

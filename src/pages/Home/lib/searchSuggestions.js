@@ -314,7 +314,7 @@ export function ensureDisambiguation(query, candidates, title) {
   }
   if (!deduped.length) return null;
   return makeDisambiguationResult(query, deduped, {
-    title: title || `'${query}' — 원하는 장소를 선택하세요`,
+    title: title || `'${query}' → 원하는 장소를 선택하세요`,
   });
 }
 
@@ -334,9 +334,15 @@ export async function buildCuratedEnterDisambiguation(query) {
       resolveTravelSpotFromSearchQuery(q) ||
       TRAVEL_SPOTS.find((s) => s.slug === hubHit.hubId);
     if (spot) {
-      candidates = [spotToSuggestion(spot), ...candidates];
+      // 동명 hub 카드에 SSOT 설명 이식 후, 여행지 카드를 앞에 두면 dedupe로 hub가 떨어져도 desc 유지
+      const spotDesc = String(spot.desc || '').trim();
+      if (spotDesc && candidates[0] && normalizeKey(candidates[0].name) === normalizeKey(hubHit.name)) {
+        candidates = [{ ...candidates[0], desc: spotDesc, badge: '여행지', kind: 'spot', slug: spot.slug || candidates[0].slug }, ...candidates.slice(1)];
+      } else {
+        candidates = [spotToSuggestion(spot), ...candidates];
+      }
     }
-    return ensureDisambiguation(q, candidates, `'${hubHit.name}' — 도시와 명소를 골라주세요`);
+    return ensureDisambiguation(q, candidates, `'${hubHit.name}' → 도시와 명소를 골라주세요`);
   }
 
   const attractionHit = resolveHubAttraction(q);
@@ -351,7 +357,7 @@ export async function buildCuratedEnterDisambiguation(query) {
     return ensureDisambiguation(
       q,
       [hubCard, prefer, ...others],
-      `'${hub.name}' — 도시와 명소를 골라주세요`,
+      `'${hub.name}' → 도시와 명소를 골라주세요`,
     );
   }
 
@@ -364,19 +370,19 @@ export async function buildCuratedEnterDisambiguation(query) {
       return ensureDisambiguation(
         q,
         candidates,
-        `'${parentHub.name}' — 도시·명소·지역을 골라주세요`,
+        `'${parentHub.name}' → 도시·명소·지역을 골라주세요`,
       );
     }
     return ensureDisambiguation(
       q,
       [settlementToSuggestion(row, settlement)],
-      `'${settlement.name}' — 원하는 장소를 선택하세요`,
+      `'${settlement.name}' → 원하는 장소를 선택하세요`,
     );
   }
 
   const querySpot = resolveTravelSpotFromSearchQuery(q);
   if (querySpot) {
-    return ensureDisambiguation(q, [spotToSuggestion(querySpot)], `'${querySpot.name}' — 이 여행지로 갈까요?`);
+    return ensureDisambiguation(q, [spotToSuggestion(querySpot)], `'${querySpot.name}' → 이 여행지로 갈까요?`);
   }
 
   return null;
