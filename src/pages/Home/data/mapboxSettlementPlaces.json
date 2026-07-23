@@ -7456,5 +7456,765 @@
         "aliases": []
       }
     ]
+  },
+  {
+    "hubId": "split",
+    "settlements": [
+      {
+        "placeId": "split-trogir",
+        "name": "트로기르",
+        "name_en": "Trogir",
+        "featureType": "city",
+        "lat": 43.5167,
+        "lng": 16.2503,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "split-solin",
+        "name": "솔린",
+        "name_en": "Solin",
+        "featureType": "city",
+        "lat": 43.5392,
+        "lng": 16.4931,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "split-omis",
+        "name": "오미시",
+        "name_en": "Omiš",
+        "featureType": "city",
+        "lat": 43.4447,
+        "lng": 16.6886,
+        "mapboxId": null,
+        "aliases": [
+          "Omis"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "luxembourg",
+    "settlements": [
+      {
+        "placeId": "luxembourg-esch",
+        "name": "에슈쉬르알제트",
+        "name_en": "Esch-sur-Alzette",
+        "featureType": "city",
+        "lat": 49.4958,
+        "lng": 5.9806,
+        "mapboxId": null,
+        "aliases": [
+          "Esch"
+        ]
+      },
+      {
+        "placeId": "luxembourg-differdange",
+        "name": "디페르당주",
+        "name_en": "Differdange",
+        "featureType": "city",
+        "lat": 49.5242,
+        "lng": 5.8914,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "luxembourg-mersch",
+        "name": "메르슈",
+        "name_en": "Mersch",
+        "featureType": "city",
+        "lat": 49.7489,
+        "lng": 6.1061,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "gothenburg",
+    "settlements": [
+      {
+        "placeId": "gothenburg-molndal",
+        "name": "묄른달",
+        "name_en": "Mölndal",
+        "featureType": "city",
+        "lat": 57.6554,
+        "lng": 12.0139,
+        "mapboxId": null,
+        "aliases": [
+          "Molndal"
+        ]
+      },
+      {
+        "placeId": "gothenburg-partille",
+        "name": "파르틸레",
+        "name_en": "Partille",
+        "featureType": "locality",
+        "lat": 57.7394,
+        "lng": 12.1064,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gothenburg-kungalv",
+        "name": "쿵엘브",
+        "name_en": "Kungälv",
+        "featureType": "city",
+        "lat": 57.8708,
+        "lng": 11.9806,
+        "mapboxId": null,
+        "aliases": [
+          "Kungalv"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "hwacheon",
+    "settlements": [
+      {
+        "placeId": "hwacheon-hwacheoneup",
+        "name": "화천읍",
+        "name_en": "Hwacheon-eup",
+        "featureType": "locality",
+        "lat": 38.105,
+        "lng": 127.706,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "hwacheon-sanae",
+        "name": "사내면",
+        "name_en": "Sanae-myeon",
+        "featureType": "locality",
+        "lat": 38.072,
+        "lng": 127.522,
+        "mapboxId": null,
+        "aliases": [
+          "사내"
+        ]
+      },
+      {
+        "placeId": "hwacheon-gandong",
+        "name": "간동면",
+        "name_en": "Gandong-myeon",
+        "featureType": "locality",
+        "lat": 38.078,
+        "lng": 127.79,
+        "mapboxId": null,
+        "aliases": [
+          "간동"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "cheorwon",
+    "settlements": [
+      {
+        "placeId": "cheorwon-galmal",
+        "name": "갈말읍",
+        "name_en": "Galmal-eup",
+        "featureType": "locality",
+        "lat": 38.146,
+        "lng": 127.313,
+        "mapboxId": null,
+        "aliases": [
+          "갈말"
+        ]
+      },
+      {
+        "placeId": "cheorwon-dongsong",
+        "name": "동송읍",
+        "name_en": "Dongsong-eup",
+        "featureType": "locality",
+        "lat": 38.207,
+        "lng": 127.22,
+        "mapboxId": null,
+        "aliases": [
+          "동송"
+        ]
+      },
+      {
+        "placeId": "cheorwon-gimhwa",
+        "name": "김화읍",
+        "name_en": "Gimhwa-eup",
+        "featureType": "locality",
+        "lat": 38.26,
+        "lng": 127.42,
+        "mapboxId": null,
+        "aliases": [
+          "김화"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "yeongyang",
+    "settlements": [
+      {
+        "placeId": "yeongyang-yeongyangeup",
+        "name": "영양읍",
+        "name_en": "Yeongyang-eup",
+        "featureType": "locality",
+        "lat": 36.667,
+        "lng": 129.112,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yeongyang-cheonggi",
+        "name": "청기면",
+        "name_en": "Cheonggi-myeon",
+        "featureType": "locality",
+        "lat": 36.62,
+        "lng": 129.18,
+        "mapboxId": null,
+        "aliases": [
+          "청기"
+        ]
+      },
+      {
+        "placeId": "yeongyang-ilwol",
+        "name": "일월면",
+        "name_en": "Ilwol-myeon",
+        "featureType": "locality",
+        "lat": 36.76,
+        "lng": 129.18,
+        "mapboxId": null,
+        "aliases": [
+          "일월"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "bonghwa",
+    "settlements": [
+      {
+        "placeId": "bonghwa-bonghwaeup",
+        "name": "봉화읍",
+        "name_en": "Bonghwa-eup",
+        "featureType": "locality",
+        "lat": 36.893,
+        "lng": 128.733,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bonghwa-chunyang",
+        "name": "춘양면",
+        "name_en": "Chunyang-myeon",
+        "featureType": "locality",
+        "lat": 36.94,
+        "lng": 128.92,
+        "mapboxId": null,
+        "aliases": [
+          "춘양"
+        ]
+      },
+      {
+        "placeId": "bonghwa-murya",
+        "name": "물야면",
+        "name_en": "Murya-myeon",
+        "featureType": "locality",
+        "lat": 36.96,
+        "lng": 128.68,
+        "mapboxId": null,
+        "aliases": [
+          "물야"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "uiseong",
+    "settlements": [
+      {
+        "placeId": "uiseong-uiseongeup",
+        "name": "의성읍",
+        "name_en": "Uiseong-eup",
+        "featureType": "locality",
+        "lat": 36.353,
+        "lng": 128.697,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "uiseong-angye",
+        "name": "안계면",
+        "name_en": "Angye-myeon",
+        "featureType": "locality",
+        "lat": 36.38,
+        "lng": 128.45,
+        "mapboxId": null,
+        "aliases": [
+          "안계"
+        ]
+      },
+      {
+        "placeId": "uiseong-geumseong",
+        "name": "금성면",
+        "name_en": "Geumseong-myeon",
+        "featureType": "locality",
+        "lat": 36.28,
+        "lng": 128.75,
+        "mapboxId": null,
+        "aliases": [
+          "금성"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "newcastle",
+    "settlements": [
+      {
+        "placeId": "newcastle-gateshead",
+        "name": "게이츠헤드",
+        "name_en": "Gateshead",
+        "featureType": "city",
+        "lat": 54.952,
+        "lng": -1.603,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "newcastle-whitleybay",
+        "name": "휘틀리베이",
+        "name_en": "Whitley Bay",
+        "featureType": "city",
+        "lat": 55.046,
+        "lng": -1.449,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "newcastle-durham",
+        "name": "더럼",
+        "name_en": "Durham",
+        "featureType": "city",
+        "lat": 54.776,
+        "lng": -1.575,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bari",
+    "settlements": [
+      {
+        "placeId": "bari-bitonto",
+        "name": "비톤토",
+        "name_en": "Bitonto",
+        "featureType": "city",
+        "lat": 41.108,
+        "lng": 16.691,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bari-moladibari",
+        "name": "몰라디바리",
+        "name_en": "Mola di Bari",
+        "featureType": "city",
+        "lat": 41.06,
+        "lng": 17.088,
+        "mapboxId": null,
+        "aliases": [
+          "Mola"
+        ]
+      },
+      {
+        "placeId": "bari-giovinazzo",
+        "name": "조비나초",
+        "name_en": "Giovinazzo",
+        "featureType": "city",
+        "lat": 41.185,
+        "lng": 16.674,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "zadar",
+    "settlements": [
+      {
+        "placeId": "zadar-nin",
+        "name": "닌",
+        "name_en": "Nin",
+        "featureType": "city",
+        "lat": 44.236,
+        "lng": 15.183,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "zadar-biograd",
+        "name": "비오그라드",
+        "name_en": "Biograd na Moru",
+        "featureType": "city",
+        "lat": 43.939,
+        "lng": 15.452,
+        "mapboxId": null,
+        "aliases": [
+          "Biograd"
+        ]
+      },
+      {
+        "placeId": "zadar-benkovac",
+        "name": "벤코바츠",
+        "name_en": "Benkovac",
+        "featureType": "city",
+        "lat": 44.034,
+        "lng": 15.613,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bruges",
+    "settlements": [
+      {
+        "placeId": "bruges-ostend",
+        "name": "오스텐더",
+        "name_en": "Ostend",
+        "featureType": "city",
+        "lat": 51.215,
+        "lng": 2.928,
+        "mapboxId": null,
+        "aliases": [
+          "Oostende"
+        ]
+      },
+      {
+        "placeId": "bruges-damme",
+        "name": "담",
+        "name_en": "Damme",
+        "featureType": "city",
+        "lat": 51.251,
+        "lng": 3.281,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bruges-knokke",
+        "name": "크노케헤이스트",
+        "name_en": "Knokke-Heist",
+        "featureType": "city",
+        "lat": 51.35,
+        "lng": 3.287,
+        "mapboxId": null,
+        "aliases": [
+          "Knokke"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "malmo",
+    "settlements": [
+      {
+        "placeId": "malmo-lund",
+        "name": "룬드",
+        "name_en": "Lund",
+        "featureType": "city",
+        "lat": 55.704,
+        "lng": 13.193,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "malmo-trelleborg",
+        "name": "트렐레보리",
+        "name_en": "Trelleborg",
+        "featureType": "city",
+        "lat": 55.376,
+        "lng": 13.157,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "malmo-landskrona",
+        "name": "란스크로나",
+        "name_en": "Landskrona",
+        "featureType": "city",
+        "lat": 55.87,
+        "lng": 12.83,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "goesan",
+    "settlements": [
+      {
+        "placeId": "goesan-goesaneup",
+        "name": "괴산읍",
+        "name_en": "Goesan-eup",
+        "featureType": "locality",
+        "lat": 36.815,
+        "lng": 127.787,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "goesan-yeonpung",
+        "name": "연풍면",
+        "name_en": "Yeonpung-myeon",
+        "featureType": "locality",
+        "lat": 36.78,
+        "lng": 127.98,
+        "mapboxId": null,
+        "aliases": [
+          "연풍"
+        ]
+      },
+      {
+        "placeId": "goesan-cheongcheon",
+        "name": "청천면",
+        "name_en": "Cheongcheon-myeon",
+        "featureType": "locality",
+        "lat": 36.72,
+        "lng": 127.82,
+        "mapboxId": null,
+        "aliases": [
+          "청천"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "jincheon",
+    "settlements": [
+      {
+        "placeId": "jincheon-jincheoneup",
+        "name": "진천읍",
+        "name_en": "Jincheon-eup",
+        "featureType": "locality",
+        "lat": 36.855,
+        "lng": 127.443,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "jincheon-deoksan",
+        "name": "덕산읍",
+        "name_en": "Deoksan-eup",
+        "featureType": "locality",
+        "lat": 36.9,
+        "lng": 127.52,
+        "mapboxId": null,
+        "aliases": [
+          "덕산"
+        ]
+      },
+      {
+        "placeId": "jincheon-iwol",
+        "name": "이월면",
+        "name_en": "Iwol-myeon",
+        "featureType": "locality",
+        "lat": 36.92,
+        "lng": 127.4,
+        "mapboxId": null,
+        "aliases": [
+          "이월"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "eumseong",
+    "settlements": [
+      {
+        "placeId": "eumseong-eumseongeup",
+        "name": "음성읍",
+        "name_en": "Eumseong-eup",
+        "featureType": "locality",
+        "lat": 36.94,
+        "lng": 127.691,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "eumseong-geumwang",
+        "name": "금왕읍",
+        "name_en": "Geumwang-eup",
+        "featureType": "locality",
+        "lat": 36.99,
+        "lng": 127.59,
+        "mapboxId": null,
+        "aliases": [
+          "금왕"
+        ]
+      },
+      {
+        "placeId": "eumseong-maengdong",
+        "name": "맹동면",
+        "name_en": "Maengdong-myeon",
+        "featureType": "locality",
+        "lat": 36.9,
+        "lng": 127.55,
+        "mapboxId": null,
+        "aliases": [
+          "맹동"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "yecheon",
+    "settlements": [
+      {
+        "placeId": "yecheon-yecheoneup",
+        "name": "예천읍",
+        "name_en": "Yecheon-eup",
+        "featureType": "locality",
+        "lat": 36.657,
+        "lng": 128.453,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yecheon-pungyang",
+        "name": "풍양면",
+        "name_en": "Pungyang-myeon",
+        "featureType": "locality",
+        "lat": 36.55,
+        "lng": 128.32,
+        "mapboxId": null,
+        "aliases": [
+          "풍양"
+        ]
+      },
+      {
+        "placeId": "yecheon-homyeong",
+        "name": "호명면",
+        "name_en": "Homyeong-myeon",
+        "featureType": "locality",
+        "lat": 36.58,
+        "lng": 128.52,
+        "mapboxId": null,
+        "aliases": [
+          "호명"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "sangju",
+    "settlements": [
+      {
+        "placeId": "sangju-hamchang",
+        "name": "함창읍",
+        "name_en": "Hamchang-eup",
+        "featureType": "locality",
+        "lat": 36.51,
+        "lng": 128.17,
+        "mapboxId": null,
+        "aliases": [
+          "함창"
+        ]
+      },
+      {
+        "placeId": "sangju-nakdong",
+        "name": "낙동면",
+        "name_en": "Nakdong-myeon",
+        "featureType": "locality",
+        "lat": 36.36,
+        "lng": 128.28,
+        "mapboxId": null,
+        "aliases": [
+          "낙동"
+        ]
+      },
+      {
+        "placeId": "sangju-hwaseo",
+        "name": "화서면",
+        "name_en": "Hwaseo-myeon",
+        "featureType": "locality",
+        "lat": 36.48,
+        "lng": 127.98,
+        "mapboxId": null,
+        "aliases": [
+          "화서"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "sheffield",
+    "settlements": [
+      {
+        "placeId": "sheffield-rotherham",
+        "name": "로더럼",
+        "name_en": "Rotherham",
+        "featureType": "city",
+        "lat": 53.43,
+        "lng": -1.357,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sheffield-chesterfield",
+        "name": "체스터필드",
+        "name_en": "Chesterfield",
+        "featureType": "city",
+        "lat": 53.235,
+        "lng": -1.421,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sheffield-barnsley",
+        "name": "반즐리",
+        "name_en": "Barnsley",
+        "featureType": "city",
+        "lat": 53.553,
+        "lng": -1.479,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "trier",
+    "settlements": [
+      {
+        "placeId": "trier-konz",
+        "name": "콘츠",
+        "name_en": "Konz",
+        "featureType": "city",
+        "lat": 49.695,
+        "lng": 6.579,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "trier-schweich",
+        "name": "슈바이히",
+        "name_en": "Schweich",
+        "featureType": "city",
+        "lat": 49.812,
+        "lng": 6.752,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "trier-bitburg",
+        "name": "비트부르크",
+        "name_en": "Bitburg",
+        "featureType": "city",
+        "lat": 49.967,
+        "lng": 6.525,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
   }
 ]
