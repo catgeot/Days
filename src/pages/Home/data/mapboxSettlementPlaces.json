@@ -14357,5 +14357,779 @@
         ]
       }
     ]
+  },
+  {
+    "hubId": "karlsruhe",
+    "settlements": [
+      {
+        "placeId": "karlsruhe-ettlingen",
+        "name": "에틀링겐",
+        "name_en": "Ettlingen",
+        "featureType": "place",
+        "lat": 48.94,
+        "lng": 8.408,
+        "mapboxId": null,
+        "aliases": [
+          "Ettlingen"
+        ]
+      },
+      {
+        "placeId": "karlsruhe-durlach",
+        "name": "두를라흐",
+        "name_en": "Durlach",
+        "featureType": "locality",
+        "lat": 48.997,
+        "lng": 8.474,
+        "mapboxId": null,
+        "aliases": [
+          "Durlach"
+        ]
+      },
+      {
+        "placeId": "karlsruhe-bruchsal",
+        "name": "브루흐잘",
+        "name_en": "Bruchsal",
+        "featureType": "place",
+        "lat": 49.124,
+        "lng": 8.598,
+        "mapboxId": null,
+        "aliases": [
+          "Bruchsal"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "ulm",
+    "settlements": [
+      {
+        "placeId": "ulm-neu-ulm",
+        "name": "노이울름",
+        "name_en": "Neu-Ulm",
+        "featureType": "place",
+        "lat": 48.393,
+        "lng": 10.011,
+        "mapboxId": null,
+        "aliases": [
+          "Neu-Ulm",
+          "Neu Ulm"
+        ]
+      },
+      {
+        "placeId": "ulm-blaubeuren",
+        "name": "블라우보이렌",
+        "name_en": "Blaubeuren",
+        "featureType": "place",
+        "lat": 48.412,
+        "lng": 9.785,
+        "mapboxId": null,
+        "aliases": [
+          "Blaubeuren"
+        ]
+      },
+      {
+        "placeId": "ulm-erbach",
+        "name": "에르바흐",
+        "name_en": "Erbach",
+        "featureType": "place",
+        "lat": 48.328,
+        "lng": 9.888,
+        "mapboxId": null,
+        "aliases": [
+          "Erbach",
+          "Erbach an der Donau"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "erfurt",
+    "settlements": [
+      {
+        "placeId": "erfurt-weimar",
+        "name": "바이마르",
+        "name_en": "Weimar",
+        "featureType": "place",
+        "lat": 50.98,
+        "lng": 11.329,
+        "mapboxId": null,
+        "aliases": [
+          "Weimar"
+        ]
+      },
+      {
+        "placeId": "erfurt-gotha",
+        "name": "고타",
+        "name_en": "Gotha",
+        "featureType": "place",
+        "lat": 50.948,
+        "lng": 10.702,
+        "mapboxId": null,
+        "aliases": [
+          "Gotha"
+        ]
+      },
+      {
+        "placeId": "erfurt-arnstadt",
+        "name": "아른슈타트",
+        "name_en": "Arnstadt",
+        "featureType": "place",
+        "lat": 50.834,
+        "lng": 10.946,
+        "mapboxId": null,
+        "aliases": [
+          "Arnstadt"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "jungnang",
+    "settlements": [
+      {
+        "placeId": "jungnang-myeonmok-dong",
+        "name": "면목동",
+        "name_en": "Myeonmok-dong",
+        "featureType": "locality",
+        "lat": 37.588,
+        "lng": 127.087,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "jungnang-sangbong-dong",
+        "name": "상봉동",
+        "name_en": "Sangbong-dong",
+        "featureType": "locality",
+        "lat": 37.596,
+        "lng": 127.085,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "jungnang-junghwa-dong",
+        "name": "중화동",
+        "name_en": "Junghwa-dong",
+        "featureType": "locality",
+        "lat": 37.601,
+        "lng": 127.079,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "dongdaemun",
+    "settlements": [
+      {
+        "placeId": "dongdaemun-cheongnyangni-dong",
+        "name": "청량리동",
+        "name_en": "Cheongnyangni-dong",
+        "featureType": "locality",
+        "lat": 37.58,
+        "lng": 127.047,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dongdaemun-hoegi-dong",
+        "name": "회기동",
+        "name_en": "Hoegi-dong",
+        "featureType": "locality",
+        "lat": 37.589,
+        "lng": 127.057,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dongdaemun-jeonnong-dong",
+        "name": "전농동",
+        "name_en": "Jeonnong-dong",
+        "featureType": "locality",
+        "lat": 37.577,
+        "lng": 127.057,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "junggu",
+    "settlements": [
+      {
+        "placeId": "junggu-pil-dong",
+        "name": "필동",
+        "name_en": "Pil-dong",
+        "featureType": "locality",
+        "lat": 37.56,
+        "lng": 126.995,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "junggu-jangchung-dong",
+        "name": "장충동",
+        "name_en": "Jangchung-dong",
+        "featureType": "locality",
+        "lat": 37.56,
+        "lng": 127.005,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "junggu-sindang-dong",
+        "name": "신당동",
+        "name_en": "Sindang-dong",
+        "featureType": "locality",
+        "lat": 37.565,
+        "lng": 127.016,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "gangbuk",
+    "settlements": [
+      {
+        "placeId": "gangbuk-suyu-dong",
+        "name": "수유동",
+        "name_en": "Suyu-dong",
+        "featureType": "locality",
+        "lat": 37.638,
+        "lng": 127.025,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gangbuk-mia-dong",
+        "name": "미아동",
+        "name_en": "Mia-dong",
+        "featureType": "locality",
+        "lat": 37.626,
+        "lng": 127.026,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gangbuk-beon-dong",
+        "name": "번동",
+        "name_en": "Beon-dong",
+        "featureType": "locality",
+        "lat": 37.637,
+        "lng": 127.034,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bupyeong",
+    "settlements": [
+      {
+        "placeId": "bupyeong-sangok-dong",
+        "name": "산곡동",
+        "name_en": "Sangok-dong",
+        "featureType": "locality",
+        "lat": 37.508,
+        "lng": 126.708,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bupyeong-bugae-dong",
+        "name": "부개동",
+        "name_en": "Bugae-dong",
+        "featureType": "locality",
+        "lat": 37.493,
+        "lng": 126.736,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bupyeong-cheongcheon-dong",
+        "name": "청천동",
+        "name_en": "Cheongcheon-dong",
+        "featureType": "locality",
+        "lat": 37.517,
+        "lng": 126.706,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "stuttgart",
+    "settlements": [
+      {
+        "placeId": "stuttgart-ludwigsburg",
+        "name": "루트비히스부르크",
+        "name_en": "Ludwigsburg",
+        "featureType": "place",
+        "lat": 48.897,
+        "lng": 9.192,
+        "mapboxId": null,
+        "aliases": [
+          "Ludwigsburg"
+        ]
+      },
+      {
+        "placeId": "stuttgart-esslingen",
+        "name": "에슬링겐",
+        "name_en": "Esslingen",
+        "featureType": "place",
+        "lat": 48.743,
+        "lng": 9.306,
+        "mapboxId": null,
+        "aliases": [
+          "Esslingen",
+          "Esslingen am Neckar"
+        ]
+      },
+      {
+        "placeId": "stuttgart-sindelfingen",
+        "name": "진델핑겐",
+        "name_en": "Sindelfingen",
+        "featureType": "place",
+        "lat": 48.713,
+        "lng": 9.003,
+        "mapboxId": null,
+        "aliases": [
+          "Sindelfingen"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "bonn",
+    "settlements": [
+      {
+        "placeId": "bonn-bad-godesberg",
+        "name": "바트고데스베르크",
+        "name_en": "Bad Godesberg",
+        "featureType": "locality",
+        "lat": 50.683,
+        "lng": 7.155,
+        "mapboxId": null,
+        "aliases": [
+          "Bad Godesberg"
+        ]
+      },
+      {
+        "placeId": "bonn-koenigswinter",
+        "name": "쾨니히스빈터",
+        "name_en": "Königswinter",
+        "featureType": "place",
+        "lat": 50.674,
+        "lng": 7.187,
+        "mapboxId": null,
+        "aliases": [
+          "Koenigswinter",
+          "Königswinter"
+        ]
+      },
+      {
+        "placeId": "bonn-sankt-augustin",
+        "name": "상크트아우구스틴",
+        "name_en": "Sankt Augustin",
+        "featureType": "place",
+        "lat": 50.775,
+        "lng": 7.189,
+        "mapboxId": null,
+        "aliases": [
+          "Sankt Augustin",
+          "St. Augustin"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "wiesbaden",
+    "settlements": [
+      {
+        "placeId": "wiesbaden-ruedesheim",
+        "name": "뤼데스하임",
+        "name_en": "Rüdesheim",
+        "featureType": "place",
+        "lat": 49.979,
+        "lng": 7.923,
+        "mapboxId": null,
+        "aliases": [
+          "Ruedesheim",
+          "Rüdesheim am Rhein"
+        ]
+      },
+      {
+        "placeId": "wiesbaden-eltville",
+        "name": "엘트빌레",
+        "name_en": "Eltville",
+        "featureType": "place",
+        "lat": 50.025,
+        "lng": 8.119,
+        "mapboxId": null,
+        "aliases": [
+          "Eltville",
+          "Eltville am Rhein"
+        ]
+      },
+      {
+        "placeId": "wiesbaden-taunusstein",
+        "name": "타우누스슈타인",
+        "name_en": "Taunusstein",
+        "featureType": "place",
+        "lat": 50.144,
+        "lng": 8.161,
+        "mapboxId": null,
+        "aliases": [
+          "Taunusstein"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "mainz",
+    "settlements": [
+      {
+        "placeId": "mainz-ingelheim",
+        "name": "잉겔하임",
+        "name_en": "Ingelheim",
+        "featureType": "place",
+        "lat": 49.974,
+        "lng": 8.057,
+        "mapboxId": null,
+        "aliases": [
+          "Ingelheim",
+          "Ingelheim am Rhein"
+        ]
+      },
+      {
+        "placeId": "mainz-bingen",
+        "name": "빙겐",
+        "name_en": "Bingen",
+        "featureType": "place",
+        "lat": 49.967,
+        "lng": 7.899,
+        "mapboxId": null,
+        "aliases": [
+          "Bingen",
+          "Bingen am Rhein"
+        ]
+      },
+      {
+        "placeId": "mainz-bodenheim",
+        "name": "보덴하임",
+        "name_en": "Bodenheim",
+        "featureType": "place",
+        "lat": 49.93,
+        "lng": 8.323,
+        "mapboxId": null,
+        "aliases": [
+          "Bodenheim"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "magdeburg",
+    "settlements": [
+      {
+        "placeId": "magdeburg-schoenebeck",
+        "name": "셰네베크",
+        "name_en": "Schönebeck",
+        "featureType": "place",
+        "lat": 52.017,
+        "lng": 11.739,
+        "mapboxId": null,
+        "aliases": [
+          "Schoenebeck",
+          "Schönebeck"
+        ]
+      },
+      {
+        "placeId": "magdeburg-burg",
+        "name": "부르크",
+        "name_en": "Burg",
+        "featureType": "place",
+        "lat": 52.272,
+        "lng": 11.855,
+        "mapboxId": null,
+        "aliases": [
+          "Burg",
+          "Burg bei Magdeburg"
+        ]
+      },
+      {
+        "placeId": "magdeburg-wolmirstedt",
+        "name": "볼미르슈테트",
+        "name_en": "Wolmirstedt",
+        "featureType": "place",
+        "lat": 52.249,
+        "lng": 11.629,
+        "mapboxId": null,
+        "aliases": [
+          "Wolmirstedt"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "busanjin",
+    "settlements": [
+      {
+        "placeId": "busanjin-jeonpo-dong",
+        "name": "전포동",
+        "name_en": "Jeonpo-dong",
+        "featureType": "locality",
+        "lat": 35.156,
+        "lng": 129.065,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "busanjin-yangjeong-dong",
+        "name": "양정동",
+        "name_en": "Yangjeong-dong",
+        "featureType": "locality",
+        "lat": 35.171,
+        "lng": 129.068,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "busanjin-gaegeum-dong",
+        "name": "개금동",
+        "name_en": "Gaegeum-dong",
+        "featureType": "locality",
+        "lat": 35.153,
+        "lng": 129.024,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "namdong",
+    "settlements": [
+      {
+        "placeId": "namdong-guwol-dong",
+        "name": "구월동",
+        "name_en": "Guwol-dong",
+        "featureType": "locality",
+        "lat": 37.449,
+        "lng": 126.709,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "namdong-ganseok-dong",
+        "name": "간석동",
+        "name_en": "Ganseok-dong",
+        "featureType": "locality",
+        "lat": 37.467,
+        "lng": 126.709,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "namdong-mansu-dong",
+        "name": "만수동",
+        "name_en": "Mansu-dong",
+        "featureType": "locality",
+        "lat": 37.448,
+        "lng": 126.734,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "gyeyang",
+    "settlements": [
+      {
+        "placeId": "gyeyang-gyesan-dong",
+        "name": "계산동",
+        "name_en": "Gyesan-dong",
+        "featureType": "locality",
+        "lat": 37.543,
+        "lng": 126.728,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gyeyang-jakjeon-dong",
+        "name": "작전동",
+        "name_en": "Jakjeon-dong",
+        "featureType": "locality",
+        "lat": 37.53,
+        "lng": 126.738,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "gyeyang-hyoseong-dong",
+        "name": "효성동",
+        "name_en": "Hyoseong-dong",
+        "featureType": "locality",
+        "lat": 37.529,
+        "lng": 126.708,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "michuhol",
+    "settlements": [
+      {
+        "placeId": "michuhol-yonghyeon-dong",
+        "name": "용현동",
+        "name_en": "Yonghyeon-dong",
+        "featureType": "locality",
+        "lat": 37.452,
+        "lng": 126.642,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "michuhol-hagik-dong",
+        "name": "학익동",
+        "name_en": "Hagik-dong",
+        "featureType": "locality",
+        "lat": 37.443,
+        "lng": 126.662,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "michuhol-dohwa-dong",
+        "name": "도화동",
+        "name_en": "Dohwa-dong",
+        "featureType": "locality",
+        "lat": 37.464,
+        "lng": 126.669,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "dongnae",
+    "settlements": [
+      {
+        "placeId": "dongnae-oncheon-dong",
+        "name": "온천동",
+        "name_en": "Oncheon-dong",
+        "featureType": "locality",
+        "lat": 35.213,
+        "lng": 129.078,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dongnae-myeongnyun-dong",
+        "name": "명륜동",
+        "name_en": "Myeongnyun-dong",
+        "featureType": "locality",
+        "lat": 35.211,
+        "lng": 129.082,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dongnae-allak-dong",
+        "name": "안락동",
+        "name_en": "Allak-dong",
+        "featureType": "locality",
+        "lat": 35.196,
+        "lng": 129.105,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "chemnitz",
+    "settlements": [
+      {
+        "placeId": "chemnitz-zwickau",
+        "name": "츠비카우",
+        "name_en": "Zwickau",
+        "featureType": "place",
+        "lat": 50.719,
+        "lng": 12.496,
+        "mapboxId": null,
+        "aliases": [
+          "Zwickau"
+        ]
+      },
+      {
+        "placeId": "chemnitz-freiberg",
+        "name": "프라이베르크",
+        "name_en": "Freiberg",
+        "featureType": "place",
+        "lat": 50.911,
+        "lng": 13.342,
+        "mapboxId": null,
+        "aliases": [
+          "Freiberg"
+        ]
+      },
+      {
+        "placeId": "chemnitz-limbach-oberfrohna",
+        "name": "림바흐오베르프로나",
+        "name_en": "Limbach-Oberfrohna",
+        "featureType": "place",
+        "lat": 50.859,
+        "lng": 12.761,
+        "mapboxId": null,
+        "aliases": [
+          "Limbach-Oberfrohna"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "saarbrucken",
+    "settlements": [
+      {
+        "placeId": "saarbrucken-voelklingen",
+        "name": "푈클링겐",
+        "name_en": "Völklingen",
+        "featureType": "place",
+        "lat": 49.251,
+        "lng": 6.858,
+        "mapboxId": null,
+        "aliases": [
+          "Voelklingen",
+          "Völklingen"
+        ]
+      },
+      {
+        "placeId": "saarbrucken-st-ingbert",
+        "name": "장잉베르트",
+        "name_en": "St. Ingbert",
+        "featureType": "place",
+        "lat": 49.277,
+        "lng": 7.117,
+        "mapboxId": null,
+        "aliases": [
+          "Sankt Ingbert",
+          "St. Ingbert"
+        ]
+      },
+      {
+        "placeId": "saarbrucken-homburg",
+        "name": "홈부르크",
+        "name_en": "Homburg",
+        "featureType": "place",
+        "lat": 49.327,
+        "lng": 7.339,
+        "mapboxId": null,
+        "aliases": [
+          "Homburg",
+          "Homburg Saar"
+        ]
+      }
+    ]
   }
 ]

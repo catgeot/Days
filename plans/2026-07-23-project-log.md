@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R39~R40 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R41 후임 기동)
+
+- tip **402 hub / 1205 settlements** (+20 hub / +60) · R39 카를스루에·울름·에르푸르트·중랑·동대문·중구·강북·부평·슈투트가르트·본 · R40 비스바덴·마인츠·마그데부르크·부산진·남동·계양·미추홀·동래·켐니츠·자를브뤼켄 · hub skip 0
+- R39/R40 VERIFY: audit issues 0 · smoke 시드+exact(`에틀링겐`/`노이울름`/`바이마르`/`면목동`/`청량리동`/`필동`/`수유동`/`산곡동`/`루트비히스부르크`/`바트고데스베르크`/`뤼데스하임`/`잉겔하임`/`셰네베크`/`전포동`/`구월동`/`계산동`/`용현동`/`온천동`/`츠비카우`/`푈클링겐`) PASS
+- 보정: KR 구 hub 하위 동만(구명 미투입) · `bupyeong` 부평동 스킵(`incheon`) · `busanjin` 부전동·`michuhol` 주안동·`dongnae` 사직동 기등록 회피
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r39`/`_tmp-r40`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R41 A**: `kassel` · `dortmund` · `wuerzburg` · `geumjeong` · `yeonje` / **B**: `saha` · `sasang` · `daedeok` · `chicago` · `miami`
+  - **R42 A**: `seattle` · `boston` · `las-vegas` · `honolulu` · `washington-dc` / **B**: `philadelphia` · `denver` · `atlanta` · `dallas` · `houston`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · KR 구 hub는 하위 동·위성만 · placeId hubId prefix · 전역 name 충돌 회피
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R41부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R37~R38 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R39 후임 기동)
