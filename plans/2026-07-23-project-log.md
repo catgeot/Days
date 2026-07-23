@@ -4,12 +4,13 @@
 
 ## 명소 좌표 수리 — KR R11–R12 (**소진/정지**)
 
-**상태**: ✅ R11+R12 tip 패치 · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4067** · PR #24 · **KR SNAP/NO_HIT 잔여 소진**
+**상태**: ✅ R11+R12 tip 패치 · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4067** · PR #24 · **KR SNAP/NO_HIT 잔여 소진** · **main 리베이스·검증 후 push**
 
 - R11: `busanjin…daedeok` / `seogwipo…taean` · SNAP 15 / drop 24 · station 스킵 2(소래포구·부산시청) · 주상절리 R1 prior skip · min4 keep 1(숭의운동장) · P0 덕풍 OK
 - R12: `ulleung…yeongwol` / `namwon…yeonggwang`(jindo 제외) · drop 3(오두산·구드래·화진포김일성별장) · R2/R3 prior skip 유지(파주출판도시·무섬마을·문경새재) · B 패치 0(필터 후)
 - **잔여 요약**: 신규 actionable SNAP≈0(남은 후보=주상절리·알펜시아·융건릉·장군목·용문사·구문소·팔봉산·금성산·성호공원 등 **이전 R 의도 스킵**) · drop 후보≈김유정/문경새재(보호) · review_leave·min4_keep·station 오매칭만 잔존
 - 워커 Task 도구 부재 → 메인 버퍼 A/B 초안 후 tip 직렬 A→B (본인 런 예외) · **§4.2 재이관 없음**(큐 소진)
+- **후속 확인**(같은 날): `origin/main`(Trip city 포함) 위로 리베이스 · `audit:city-attraction-hubs` issues 0 · `verify --smoke` P0 PASS · force-with-lease push
 
 ### 정지 (사람 보고)
 
