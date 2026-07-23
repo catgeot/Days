@@ -2,14 +2,109 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R11~R12 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R13 후임 기동)
+
+- tip **122 hub / 366 settlements** (+20 hub / +60) · R11 오슬로·바르샤바·합천·곡성·영광·밀라노·부안·고창·레이캬비크·제네바 · R12 크라쿠프·베네치아·니스·무주·진안(전북)·임실·순창·장수·쾰른·나폴리 · skip 0
+- R11/R12 VERIFY: audit issues 0 · smoke 시드+exact(`베르룸`/`몬차`/`비엘리치카`/`진안읍`/`레버쿠젠` 등) PASS
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r11`/`_tmp-r12`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R13 A**: `valencia` · `marseille` · `lyon` · `jeongeup` · `gimje` / **B**: `iksan` · `wanju` · `haenam` · `hamburg` · `bratislava`
+  - **R14 A**: `zagreb` · `salzburg` · `bordeaux` · `muan` · `yeongam` / **B**: `gangjin` · `jangseong` · `hampyeong` · `glasgow` · `antwerp`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R13부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## Mapbox 정착지 — R09~R10 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R11 후임 기동)
+
+- tip **102 hub / 306 settlements** (+20 hub / +60) · R09 아테네·취리히·에든버러·남원·거창·완도·진도·영주·세비야·포르투 · R10 브뤼셀·코펜하겐·더블린·함양·산청·고흥·장흥·구례·스톡홀름·헬싱키 · skip 0 (남원 `주천면`→`이백면` 이름충돌 보정)
+- R09/R10 VERIFY: audit issues 0 · smoke 시드+exact(`피레아스`/`마토지뉴스`/`뢰번`/`에스포` 등) PASS
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r09`/`_tmp-r10`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- R10 = 계획서 중간 점검 포인트이나 **체인 정지 없음** — R11 후임 프롬프트 준비
+- **다음 배치표 2개**
+  - **R11 A**: `oslo` · `warsaw` · `hapcheon` · `gokseong` · `yeonggwang` / **B**: `milan` · `buan` · `gochang` · `reykjavik` · `geneva`
+  - **R12 A**: `krakow` · `venice` · `nice` · `muju` · `jinan` / **B**: `imsil` · `sunchang` · `jangsu` · `cologne` · `naples`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R11부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## Mapbox 정착지 — R07~R08 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R09 후임 기동)
+
+- tip **82 hub / 246 settlements** (+20 hub / +60) · R07 LA·SF·치앙라이·파주·부여·고성(강원)·인제·보성·마드리드·베를린 · R08 피렌체·비엔나·뮌헨·하동·제천·문경·단양·영월·리스본·부다페스트 · skip 0
+- R07/R08 VERIFY: audit issues 0 · smoke 시드+exact(`산타모니카`/`간성읍`/`피에솔레`/`센텐드레` 등) PASS
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r07`/`_tmp-r08`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R09 A**: `athens` · `zurich` · `edinburgh` · `namwon` · `geochang` / **B**: `wando` · `jindo` · `yeongju` · `seville` · `porto`
+  - **R10 A**: `brussels` · `copenhagen` · `dublin` · `hamyang` · `sancheong` / **B**: `goheung` · `jangheung` · `gurye` · `stockholm` · `helsinki`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R09부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## Mapbox 정착지 — R05~R06 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R07 후임 기동)
+
+- tip **62 hub / 186 settlements** (+20 hub / +60) · R05 이스탄불·다낭·목포·진주·거제·군산·담양·수원·바르셀로나·밴쿠버 · R06 푸켓·치앙마이·청주·태안·울릉·강화·가평·공주·프라하·암스테르담 · skip 0
+- R05/R06 VERIFY: audit issues 0 · smoke 시드+exact(`카디쾨이`/`호이안`/`파통`/`비노흐라디` 등) PASS
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r05`/`_tmp-r06`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R07 A**: `los-angeles` · `san-francisco` · `chiang-rai` · `paju` · `buyeo` / **B**: `goseong` · `inje` · `boseong` · `madrid` · `berlin`
+  - **R08 A**: `florence` · `vienna` · `munich` · `hadong` · `jecheon` / **B**: `mungyeong` · `danyang` · `yeongwol` · `lisbon` · `budapest`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R07부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## Mapbox 정착지 — R03~R04 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R05 후임 기동)
+
+- tip **42 hub / 126 settlements** (+20 hub / +60) · R03 해외8+포항·춘천 · R04 시드니·두바이·평창·양양·남해·안동·보령·순천·멜버른·오클랜드 · skip 0
+- R03/R04 VERIFY: audit issues 0 · smoke 시드+exact(`첨사추이`/`본다이`/`대관령면`/`폰슨비` 등) PASS
+- **본인 런 예외/파이프 단절: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r03`/`_tmp-r04`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R05 A**: `istanbul` · `danang` · `mokpo` · `jinju` · `geoje` / **B**: `gunsan` · `damyang` · `suwon` · `barcelona` · `vancouver`
+  - **R06 A**: `phuket` · `chiang-mai` · `cheongju` · `taean` · `ulleung` / **B**: `ganghwa` · `gapyeong` · `gongju` · `prague` · `amsterdam`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R05부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
+## Mapbox 정착지 — R01~R02 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**
+
+- tip **22 hub / 66 settlements** (+20 hub / +60) · R01 국내10 · R02 국내4+도쿄·오사카·교토·방콕·타이베이·싱가포르 · skip 0
+- R01/R02 VERIFY: audit issues 0 · smoke 시드+exact(`성북동`/`송도동`/`시부야`/`사카이` 등) PASS
+- **다음 배치표 2개**
+  - **R03 A**: `hong-kong` · `rome` · `london` · `new-york` · `fukuoka` / **B**: `hanoi` · `okinawa` · `ho-chi-minh` · `pohang` · `chuncheon`
+  - **R04 A**: `sydney` · `dubai` · `pyeongchang` · `yangyang` · `namhae` / **B**: `andong` · `boryeong` · `suncheon` · `melbourne` · `auckland`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R03부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — Phase 0 스캐폴드
 
-**상태**: ✅ 시드 2 hub / 6 settlements · audit·smoke PASS · **커밋·push 예정**
+**상태**: ✅ 시드 2 hub / 6 settlements · audit·smoke PASS · Phase 0 커밋됨 · Phase 1a R01~ 진행 중(미커밋)
 
 - SSOT [`mapboxSettlementPlaces.json`](../src/pages/Home/data/mapboxSettlementPlaces.json) · resolve · 검색 우선순위(여행지→hub→명소→settlements≤3)
 - 시드: `sokcho`(설악동·노학동·청호동) · `paris`(베르사유·생드니·불로뉴비양쿠르)
 - 큐 R01–R63 ([`mapbox-settlement-queue.md`](./mapbox-settlement-queue.md)) · method §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
-- **다음**: 클라우드 `오케스트레이터` + `맵박스정착지` · 큐 **R01**부터
 
 ## cityAttractionHubs — R68~R69 오케스트레이터 세대 (큐 소진 · 체인 종료)
 

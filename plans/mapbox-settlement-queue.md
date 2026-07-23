@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · **다음 시작 R01**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R12 ✅ · **다음 시작 R13**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -31,18 +31,18 @@
 
 | R | 워커A | 워커B | 상태 |
 |---|-------|-------|------|
-| **R01** | `seoul` · `busan` · `jeju` · `seogwipo` · `incheon` | `daegu` · `gwangju` · `daejeon` · `ulsan` · `yeosu` | ⬜ |
-| **R02** | `gyeongju` · `gangneung` · `jeonju` · `tongyeong` · `tokyo` | `osaka` · `kyoto` · `bangkok` · `taipei` · `singapore` | ⬜ |
-| **R03** | `hong-kong` · `rome` · `london` · `new-york` · `fukuoka` | `hanoi` · `okinawa` · `ho-chi-minh` · `pohang` · `chuncheon` | ⬜ |
-| **R04** | `sydney` · `dubai` · `pyeongchang` · `yangyang` · `namhae` | `andong` · `boryeong` · `suncheon` · `melbourne` · `auckland` | ⬜ |
-| **R05** | `istanbul` · `danang` · `mokpo` · `jinju` · `geoje` | `gunsan` · `damyang` · `suwon` · `barcelona` · `vancouver` | ⬜ |
-| **R06** | `phuket` · `chiang-mai` · `cheongju` · `taean` · `ulleung` | `ganghwa` · `gapyeong` · `gongju` · `prague` · `amsterdam` | ⬜ |
-| **R07** | `los-angeles` · `san-francisco` · `chiang-rai` · `paju` · `buyeo` | `goseong` · `inje` · `boseong` · `madrid` · `berlin` | ⬜ |
-| **R08** | `florence` · `vienna` · `munich` · `hadong` · `jecheon` | `mungyeong` · `danyang` · `yeongwol` · `lisbon` · `budapest` | ⬜ |
-| **R09** | `athens` · `zurich` · `edinburgh` · `namwon` · `geochang` | `wando` · `jindo` · `yeongju` · `seville` · `porto` | ⬜ |
-| **R10** | `brussels` · `copenhagen` · `dublin` · `hamyang` · `sancheong` | `goheung` · `jangheung` · `gurye` · `stockholm` · `helsinki` | ⬜ |
-| **R11** | `oslo` · `warsaw` · `hapcheon` · `gokseong` · `yeonggwang` | `milan` · `buan` · `gochang` · `reykjavik` · `geneva` | ⬜ |
-| **R12** | `krakow` · `venice` · `nice` · `muju` · `jinan` | `imsil` · `sunchang` · `jangsu` · `cologne` · `naples` | ⬜ |
+| **R01** | `seoul` · `busan` · `jeju` · `seogwipo` · `incheon` | `daegu` · `gwangju` · `daejeon` · `ulsan` · `yeosu` | ✅ |
+| **R02** | `gyeongju` · `gangneung` · `jeonju` · `tongyeong` · `tokyo` | `osaka` · `kyoto` · `bangkok` · `taipei` · `singapore` | ✅ |
+| **R03** | `hong-kong` · `rome` · `london` · `new-york` · `fukuoka` | `hanoi` · `okinawa` · `ho-chi-minh` · `pohang` · `chuncheon` | ✅ |
+| **R04** | `sydney` · `dubai` · `pyeongchang` · `yangyang` · `namhae` | `andong` · `boryeong` · `suncheon` · `melbourne` · `auckland` | ✅ |
+| **R05** | `istanbul` · `danang` · `mokpo` · `jinju` · `geoje` | `gunsan` · `damyang` · `suwon` · `barcelona` · `vancouver` | ✅ |
+| **R06** | `phuket` · `chiang-mai` · `cheongju` · `taean` · `ulleung` | `ganghwa` · `gapyeong` · `gongju` · `prague` · `amsterdam` | ✅ |
+| **R07** | `los-angeles` · `san-francisco` · `chiang-rai` · `paju` · `buyeo` | `goseong` · `inje` · `boseong` · `madrid` · `berlin` | ✅ |
+| **R08** | `florence` · `vienna` · `munich` · `hadong` · `jecheon` | `mungyeong` · `danyang` · `yeongwol` · `lisbon` · `budapest` | ✅ |
+| **R09** | `athens` · `zurich` · `edinburgh` · `namwon` · `geochang` | `wando` · `jindo` · `yeongju` · `seville` · `porto` | ✅ |
+| **R10** | `brussels` · `copenhagen` · `dublin` · `hamyang` · `sancheong` | `goheung` · `jangheung` · `gurye` · `stockholm` · `helsinki` | ✅ |
+| **R11** | `oslo` · `warsaw` · `hapcheon` · `gokseong` · `yeonggwang` | `milan` · `buan` · `gochang` · `reykjavik` · `geneva` | ✅ |
+| **R12** | `krakow` · `venice` · `nice` · `muju` · `jinan` | `imsil` · `sunchang` · `jangsu` · `cologne` · `naples` | ✅ |
 | **R13** | `valencia` · `marseille` · `lyon` · `jeongeup` · `gimje` | `iksan` · `wanju` · `haenam` · `hamburg` · `bratislava` | ⬜ |
 | **R14** | `zagreb` · `salzburg` · `bordeaux` · `muan` · `yeongam` | `gangjin` · `jangseong` · `hampyeong` · `glasgow` · `antwerp` | ⬜ |
 | **R15** | `rotterdam` · `bilbao` · `innsbruck` · `sinan` · `naju` | `hwasun` · `gwangyang` · `wonju` · `frankfurt` · `turin` | ⬜ |
@@ -100,8 +100,8 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R01**
-tip: 시드 2 hub / 6 settlements · audit issues 0
+다음 시작: **R13**
+tip: 102 hub / 306 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```
 
