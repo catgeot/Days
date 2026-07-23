@@ -5,7 +5,8 @@
  *   MRT_STAY_AUDIT_JSON=tmp/mrt-stay-audit/mrt-stay-coverage-live-YYYY-MM-DD.json \
  *     node scripts/list-tripcom-hotel-city-gaps.mjs
  *
- * LIVE JSON이 있으면 empty · no_region · ok&n≤LOW 만 후보.
+ * LIVE JSON이 있으면 empty · no_region · ok&(total≤LOW | priced≤LOW) 만 후보.
+ * (priced = fetch 페이지 내 요금有 — 프로덕션 size50 감사와 맞출 것)
  * 없으면 travelSpots 전수 중 city·sparse 미등록을 나열(우선 태평양 배치 강조).
  */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 'node:fs';
@@ -89,9 +90,12 @@ function isTripCtaCandidate(row) {
   if (row.kind === 'ok') {
     const n = Number(row.n ?? 0);
     const total = Number(row.total ?? 0);
+    const priced = Number(row.priced);
     // audit 샘플 n(페이지 크기)과 혼동 금지 — total이 있으면 total 기준
     const count = total > 0 ? total : n;
-    return count > 0 && count <= LOW;
+    if (count > 0 && count <= LOW) return true;
+    // 프로덕션 GlobeStayStrip: bookableCount(priced) ≤ LOW → Trip CTA
+    if (Number.isFinite(priced) && priced >= 0 && priced <= LOW) return true;
   }
   return false;
 }
@@ -152,7 +156,7 @@ function main() {
     `# Trip.com 호텔 city ID gap (${stamp})`,
     '',
     livePath
-      ? `- LIVE: \`${livePath.replace(`${ROOT}/`, '').replace(`${ROOT}\\`, '')}\` · CTA 후보(empty/no_region/ok&n≤${LOW}) 중 city·sparse 미등록`
+      ? `- LIVE: \`${livePath.replace(`${ROOT}/`, '').replace(`${ROOT}\\`, '')}\` · CTA 후보(empty/no_region/ok&total≤${LOW}|priced≤${LOW}) 중 city·sparse 미등록`
       : `- LIVE JSON 없음 → city·sparse 미등록 전수 (우선 태평양 표시). \`MRT_STAY_AUDIT_LIVE=1 npm run audit:mrt-stays\` 후 재실행`,
     `- city 등록: **${cityIds.size}** · sparse: **${sparse.size}** · gap: **${gaps.length}** (태평양 우선 ${gaps.filter((g) => g.pacific).length})`,
     '',

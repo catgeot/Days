@@ -2,6 +2,24 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Trip.com 숙소 city ID — CTA 후보 gap 채움
+
+**상태**: ✅ city **47** · LIVE size50 CTA gap **0** · 커밋·PR 대기
+
+- 원인: MRT 저재고(bookable≤5)·empty 시 Trip CTA에 `city=` 없으면 **직전 세션 지역 잔존** (대마도 등)
+- 감사: `MRT_STAY_AUDIT_SIZE=50` LIVE · `audit:tripcom-hotel-city-gaps`가 `total≤5|priced≤5` 포함
+- 등록 19 (제목·hreflang 검증): `tsushima`→**95255** · `malta`→**1264** · `lombok`→**1392** · `bora-bora`→**61019** · `yosemite`→**346626**(밸리) · `havana`→**690** · `moscow`→**366** · `bled`→**4102** · `corsica`→**1712**(아작시오) · `torres-del-paine`→**10149**(나타레스) · `borneo`→**1393**(코타키나발루) · `chichen-itza`→**36428**(바야돌리드) · `everest-base-camp`→**7380**(루클라) · `uluru`→**61767**(율라라) · `peninsula-valdes`→**5624**(마드린) · `vladivostok`→**628** · `irkutsk`→**672** · `kamchatka`/`kamchatka-peninsula`→**56415**
+- 금지 유지: 미검증 city · 전수 카탈로그 · Trip 스크래핑
+
+### 에이전트 핸드오프
+
+| | |
+|--|--|
+| **읽을 것 3** | 본 절 · `PLANNER_TRIPCOM_HOTEL_CITY_IDS` · `npm run audit:tripcom-hotel-city-gaps` |
+| **할 일** | PROD QA: 대마도→몰타 등 CTA 연속 클릭 시 세션 잔존 없는지 · Vercel 반영 후 |
+| **금지 3** | 미검증 city · LIVE 없이 priced 전수 추측 · `VITE_` |
+| **제시어** | `숙소-이어하기` · 「Trip CTA city 세션 잔존 QA(대마도·몰타)」 |
+
 ## TourAPI — 3단계 QA·시드 (진행)
 
 **상태**: ✅ Edge LIVE · audit/smoke PASS · SSOT **40 spots / 19 contentId** · 랭킹·hub 키워드 · **속도/깨진사진 보정** · 캐시 v1.8 · **미커밋** · UI QA·push·릴리스 합의 대기  

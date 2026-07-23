@@ -490,6 +490,48 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   yakutsk: '4224',
   /** 아이슬란드 — 레이캬비크 (city 없으면 직전 세션 잔존) */
   iceland: '831',
+  /**
+   * CTA 후보 gap 배치 (2026-07-23 LIVE size50 · bookable≤5/total≤5)
+   * — kr.trip.com/hotels/list?city= 제목·hreflang 검증
+   */
+  /** 대마도 — 쓰시마 시 */
+  tsushima: '95255',
+  /** 몰타 — 섬 허브(발레타 1214 아님) */
+  malta: '1264',
+  /** 롬복 — 섬 허브(마타람 단독 아님) */
+  lombok: '1392',
+  /** 보라보라 */
+  'bora-bora': '61019',
+  /** 요세미티 — 요세미티 밸리(숙소 거점) */
+  yosemite: '346626',
+  /** 아바나 */
+  havana: '690',
+  /** 모스크바 (RU · moscow-2; 미국 Moscow 28751 아님) */
+  moscow: '366',
+  /** 블레드 */
+  bled: '4102',
+  /** 코르시카 — 아작시오(관문) */
+  corsica: '1712',
+  /** 토레스 델 파이네 — 푸에르토 나타레스(관문) */
+  'torres-del-paine': '10149',
+  /** 보르네오 — 코타키나발루(관문). MRT 골프장 POI 오탐과 분리 */
+  borneo: '1393',
+  /** 치첸이트사 — 바야돌리드(유카탄·관문) */
+  'chichen-itza': '36428',
+  /** 에베레스트 BC — 루클라(관문) */
+  'everest-base-camp': '7380',
+  /** 울루루 — 율라라(관문) */
+  uluru: '61767',
+  /** 발데스 반도 — 푸에르토 마드린(관문) */
+  'peninsula-valdes': '5624',
+  /** 블라디보스토크 */
+  vladivostok: '628',
+  /** 이르쿠츠크 */
+  irkutsk: '672',
+  /** 캄차카 — 페트로파블로프스크 캄차츠키(관문) */
+  kamchatka: '56415',
+  /** 캄차카 반도 — 동일 관문 */
+  'kamchatka-peninsula': '56415',
 };
 
 /**

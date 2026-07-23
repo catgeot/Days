@@ -21,6 +21,8 @@ const LIVE = process.env.MRT_STAY_AUDIT_LIVE === '1';
 const CONCURRENCY = Math.max(1, Math.min(6, Number(process.env.MRT_STAY_AUDIT_CONCURRENCY) || 3));
 const LIMIT = Number(process.env.MRT_STAY_AUDIT_LIMIT) || 0;
 const OFFSET = Math.max(0, Number(process.env.MRT_STAY_AUDIT_OFFSET) || 0);
+/** 프로덕션 fetch와 동일 기본 50 · bookable(priced) CTA 판정용. 빠른 전수는 MRT_STAY_AUDIT_SIZE=5 */
+const LIVE_SIZE = Math.max(1, Math.min(50, Number(process.env.MRT_STAY_AUDIT_SIZE) || 50));
 const OUT_DIR =
   process.env.MRT_STAY_AUDIT_OUT ||
   (process.platform === 'win32'
@@ -96,7 +98,9 @@ function classifyLive(data, httpStatus) {
 
 async function main() {
   const spots = loadSpots();
-  console.log(`spots=${spots.length} live=${LIVE} concurrency=${CONCURRENCY} offset=${OFFSET}`);
+  console.log(
+    `spots=${spots.length} live=${LIVE} concurrency=${CONCURRENCY} offset=${OFFSET} size=${LIVE ? LIVE_SIZE : '-'}`,
+  );
 
   const queryRows = spots.map((spot) => {
     const location = {
@@ -149,7 +153,7 @@ async function main() {
           countryHintAlts: row.countryHintAlts,
           altKeywords: row.altKeywords,
           nameEn: row.nameEn || '',
-          size: 5,
+          size: LIVE_SIZE,
         });
         const cls = classifyLive(data, status);
         done += 1;
