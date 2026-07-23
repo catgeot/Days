@@ -22637,5 +22637,711 @@
         "mapboxId": null
       }
     ]
+  },
+  {
+    "hubId": "fiji",
+    "settlements": [
+      {
+        "placeId": "fiji-vunidawa",
+        "name": "부니다와",
+        "name_en": "Vunidawa",
+        "featureType": "place",
+        "lat": -17.8,
+        "lng": 178.3,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "fiji-serea",
+        "name": "세레아",
+        "name_en": "Serea",
+        "featureType": "place",
+        "lat": -17.85,
+        "lng": 178.2,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "fiji-nadrau",
+        "name": "나드라우",
+        "name_en": "Nadrau",
+        "featureType": "place",
+        "lat": -17.78,
+        "lng": 178,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "mauritius",
+    "settlements": [
+      {
+        "placeId": "mauritius-port-louis",
+        "name": "포트루이스",
+        "name_en": "Port Louis",
+        "featureType": "city",
+        "lat": -20.1609,
+        "lng": 57.5012,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "mauritius-curepipe",
+        "name": "퀴어파이프",
+        "name_en": "Curepipe",
+        "featureType": "city",
+        "lat": -20.3147,
+        "lng": 57.5203,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "mauritius-mahebourg",
+        "name": "마에부르",
+        "name_en": "Mahebourg",
+        "featureType": "city",
+        "lat": -20.4081,
+        "lng": 57.7,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "tahiti",
+    "settlements": [
+      {
+        "placeId": "tahiti-papeete",
+        "name": "파페에테",
+        "name_en": "Papeete",
+        "featureType": "city",
+        "lat": -17.5516,
+        "lng": 149.5585,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tahiti-punaauia",
+        "name": "푸나우이아",
+        "name_en": "Punaauia",
+        "featureType": "locality",
+        "lat": -17.6333,
+        "lng": 149.6,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tahiti-faaa",
+        "name": "파아아",
+        "name_en": "Faaa",
+        "featureType": "locality",
+        "lat": -17.5514,
+        "lng": 149.602,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bora-bora",
+    "settlements": [
+      {
+        "placeId": "bora-bora-vaitape",
+        "name": "바이타페",
+        "name_en": "Vaitape",
+        "featureType": "place",
+        "lat": -16.5074,
+        "lng": -151.7513,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bora-bora-faanui",
+        "name": "파아누이",
+        "name_en": "Faanui",
+        "featureType": "place",
+        "lat": -16.48,
+        "lng": -151.737,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bora-bora-anau",
+        "name": "아나우",
+        "name_en": "Anau",
+        "featureType": "place",
+        "lat": -16.52,
+        "lng": -151.72,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "zermatt",
+    "settlements": [
+      {
+        "placeId": "zermatt-taesch",
+        "name": "태슈",
+        "name_en": "Tasch",
+        "featureType": "place",
+        "lat": 46.067,
+        "lng": 7.775,
+        "mapboxId": null,
+        "aliases": [
+          "Täsch"
+        ]
+      },
+      {
+        "placeId": "zermatt-randa",
+        "name": "란다",
+        "name_en": "Randa",
+        "featureType": "place",
+        "lat": 46.1,
+        "lng": 7.783,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "zermatt-findeln",
+        "name": "핀델른",
+        "name_en": "Findeln",
+        "featureType": "place",
+        "lat": 46.005,
+        "lng": 7.785,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "cinque-terre",
+    "settlements": [
+      {
+        "placeId": "cinque-terre-monterosso",
+        "name": "몬테로소",
+        "name_en": "Monterosso",
+        "featureType": "place",
+        "lat": 44.146,
+        "lng": 9.655,
+        "mapboxId": null,
+        "aliases": [
+          "Monterosso al Mare"
+        ]
+      },
+      {
+        "placeId": "cinque-terre-vernazza",
+        "name": "베르나차",
+        "name_en": "Vernazza",
+        "featureType": "place",
+        "lat": 44.135,
+        "lng": 9.683,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "cinque-terre-manarola",
+        "name": "마나롤라",
+        "name_en": "Manarola",
+        "featureType": "place",
+        "lat": 44.108,
+        "lng": 9.728,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "bodrum",
+    "settlements": [
+      {
+        "placeId": "bodrum-bitez",
+        "name": "비테즈",
+        "name_en": "Bitez",
+        "featureType": "locality",
+        "lat": 37.018,
+        "lng": 27.385,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bodrum-yalikavak",
+        "name": "얄르카바크",
+        "name_en": "Yalikavak",
+        "featureType": "locality",
+        "lat": 37.105,
+        "lng": 27.288,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "bodrum-turgutreis",
+        "name": "투르구트레이스",
+        "name_en": "Turgutreis",
+        "featureType": "locality",
+        "lat": 36.977,
+        "lng": 27.256,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "antalya",
+    "settlements": [
+      {
+        "placeId": "antalya-lara",
+        "name": "라라",
+        "name_en": "Lara",
+        "featureType": "locality",
+        "lat": 36.855,
+        "lng": 30.79,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "antalya-konyaalti",
+        "name": "코니얄트",
+        "name_en": "Konyaalti",
+        "featureType": "locality",
+        "lat": 36.87,
+        "lng": 30.64,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "antalya-kepez",
+        "name": "케페즈",
+        "name_en": "Kepez",
+        "featureType": "locality",
+        "lat": 36.95,
+        "lng": 30.72,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "qingdao",
+    "settlements": [
+      {
+        "placeId": "qingdao-chengyang",
+        "name": "청양",
+        "name_en": "Chengyang",
+        "featureType": "locality",
+        "lat": 36.307,
+        "lng": 120.396,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "qingdao-jimo",
+        "name": "지모",
+        "name_en": "Jimo",
+        "featureType": "city",
+        "lat": 36.389,
+        "lng": 120.447,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "qingdao-huangdao",
+        "name": "황다오",
+        "name_en": "Huangdao",
+        "featureType": "locality",
+        "lat": 35.96,
+        "lng": 120.2,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "sanya",
+    "settlements": [
+      {
+        "placeId": "sanya-tiandu",
+        "name": "톈두",
+        "name_en": "Tiandu",
+        "featureType": "locality",
+        "lat": 18.28,
+        "lng": 109.48,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sanya-haitang",
+        "name": "하이탕",
+        "name_en": "Haitang",
+        "featureType": "locality",
+        "lat": 18.32,
+        "lng": 109.65,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sanya-yazhou",
+        "name": "야저우",
+        "name_en": "Yazhou",
+        "featureType": "locality",
+        "lat": 18.357,
+        "lng": 109.172,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "xiamen",
+    "settlements": [
+      {
+        "placeId": "xiamen-jimei",
+        "name": "지메이",
+        "name_en": "Jimei",
+        "featureType": "locality",
+        "lat": 24.575,
+        "lng": 118.097,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "xiamen-haicang",
+        "name": "하이창",
+        "name_en": "Haicang",
+        "featureType": "locality",
+        "lat": 24.484,
+        "lng": 118.033,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "xiamen-tongan",
+        "name": "퉁안",
+        "name_en": "Tongan",
+        "featureType": "locality",
+        "lat": 24.723,
+        "lng": 118.152,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "zhangjiajie",
+    "settlements": [
+      {
+        "placeId": "zhangjiajie-wulingyuan",
+        "name": "우링위안",
+        "name_en": "Wulingyuan",
+        "featureType": "place",
+        "lat": 29.35,
+        "lng": 110.55,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "zhangjiajie-sangzhi",
+        "name": "상즈",
+        "name_en": "Sangzhi",
+        "featureType": "city",
+        "lat": 29.4,
+        "lng": 110.164,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "zhangjiajie-yongding",
+        "name": "융딩",
+        "name_en": "Yongding",
+        "featureType": "locality",
+        "lat": 29.127,
+        "lng": 110.479,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "guilin",
+    "settlements": [
+      {
+        "placeId": "guilin-lingchuan",
+        "name": "링촨",
+        "name_en": "Lingchuan",
+        "featureType": "city",
+        "lat": 25.392,
+        "lng": 110.329,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "guilin-lingui",
+        "name": "린구이",
+        "name_en": "Lingui",
+        "featureType": "locality",
+        "lat": 25.238,
+        "lng": 110.208,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "guilin-yanshan",
+        "name": "옌산",
+        "name_en": "Yanshan",
+        "featureType": "locality",
+        "lat": 25.15,
+        "lng": 110.3,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "lijiang",
+    "settlements": [
+      {
+        "placeId": "lijiang-shuhe",
+        "name": "슈허",
+        "name_en": "Shuhe",
+        "featureType": "place",
+        "lat": 26.893,
+        "lng": 100.21,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "lijiang-baisha",
+        "name": "바이사",
+        "name_en": "Baisha",
+        "featureType": "place",
+        "lat": 26.96,
+        "lng": 100.24,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "lijiang-yulong",
+        "name": "위룽",
+        "name_en": "Yulong",
+        "featureType": "locality",
+        "lat": 26.82,
+        "lng": 100.25,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "lhasa",
+    "settlements": [
+      {
+        "placeId": "lhasa-doilungdeqen",
+        "name": "두일룽더칭",
+        "name_en": "Doilungdeqen",
+        "featureType": "locality",
+        "lat": 29.65,
+        "lng": 90.98,
+        "mapboxId": null,
+        "aliases": [
+          "Tolung Dechen"
+        ]
+      },
+      {
+        "placeId": "lhasa-dagze",
+        "name": "다쯔",
+        "name_en": "Dagze",
+        "featureType": "locality",
+        "lat": 29.67,
+        "lng": 91.35,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "lhasa-lhunzhub",
+        "name": "린저우",
+        "name_en": "Lhunzhub",
+        "featureType": "city",
+        "lat": 29.895,
+        "lng": 91.261,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "harbin",
+    "settlements": [
+      {
+        "placeId": "harbin-acheng",
+        "name": "아청",
+        "name_en": "Acheng",
+        "featureType": "city",
+        "lat": 45.538,
+        "lng": 126.969,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "harbin-hulan",
+        "name": "후란",
+        "name_en": "Hulan",
+        "featureType": "locality",
+        "lat": 45.984,
+        "lng": 126.638,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "harbin-shuangcheng",
+        "name": "솽청",
+        "name_en": "Shuangcheng",
+        "featureType": "city",
+        "lat": 45.383,
+        "lng": 126.312,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "kunming",
+    "settlements": [
+      {
+        "placeId": "kunming-anning",
+        "name": "안닝",
+        "name_en": "Anning",
+        "featureType": "city",
+        "lat": 24.919,
+        "lng": 102.478,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "kunming-chenggong",
+        "name": "청궁",
+        "name_en": "Chenggong",
+        "featureType": "locality",
+        "lat": 24.885,
+        "lng": 102.827,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "kunming-jinning",
+        "name": "진닝",
+        "name_en": "Jinning",
+        "featureType": "locality",
+        "lat": 24.67,
+        "lng": 102.595,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "dalian",
+    "settlements": [
+      {
+        "placeId": "dalian-jinzhou",
+        "name": "진저우다롄",
+        "name_en": "Jinzhou Dalian",
+        "featureType": "locality",
+        "lat": 39.1,
+        "lng": 121.72,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dalian-lushunkou",
+        "name": "뤼순커우",
+        "name_en": "Lushunkou",
+        "featureType": "locality",
+        "lat": 38.8,
+        "lng": 121.23,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dalian-ganjingzi",
+        "name": "간징쯔",
+        "name_en": "Ganjingzi",
+        "featureType": "locality",
+        "lat": 38.95,
+        "lng": 121.52,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "tbilisi",
+    "settlements": [
+      {
+        "placeId": "tbilisi-rustavi",
+        "name": "루스타비",
+        "name_en": "Rustavi",
+        "featureType": "city",
+        "lat": 41.549,
+        "lng": 45,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tbilisi-mtskheta",
+        "name": "므츠헤타",
+        "name_en": "Mtskheta",
+        "featureType": "city",
+        "lat": 41.845,
+        "lng": 44.72,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tbilisi-digomi",
+        "name": "디고미",
+        "name_en": "Digomi",
+        "featureType": "locality",
+        "lat": 41.78,
+        "lng": 44.78,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "yerevan",
+    "settlements": [
+      {
+        "placeId": "yerevan-ashtarak",
+        "name": "아슈타라크",
+        "name_en": "Ashtarak",
+        "featureType": "city",
+        "lat": 40.299,
+        "lng": 44.362,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yerevan-abovyan",
+        "name": "아보비안",
+        "name_en": "Abovyan",
+        "featureType": "city",
+        "lat": 40.273,
+        "lng": 44.626,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "yerevan-vagharshapat",
+        "name": "바가르샤파트",
+        "name_en": "Vagharshapat",
+        "featureType": "city",
+        "lat": 40.172,
+        "lng": 44.292,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
   }
 ]

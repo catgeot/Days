@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R59~R60 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R61 후임 기동)
+
+- tip **602 hub / 1804 settlements** (+20 hub / +60) · R59 피지·모리셔스·타히티·보라보라·체르마트·친퀘테레·보드룸·안탈리아·칭다오·산야 · R60 샤먼·장가계·구이린·리장·라사·하얼빈·쿤밍·다롄·트빌리시·예레반 · hub skip 0
+- R59/R60 VERIFY: audit issues 0 · smoke 시드+exact(`부니다와`/`포트루이스`/`파페에테`/`바이타페`/`태슈`/`몬테로소`/`비테즈`/`라라`/`청양`/`톈두`/`지메이`/`우링위안`/`링촨`/`슈허`/`두일룽더칭`/`아청`/`안닝`/`진저우다롄`/`루스타비`/`아슈타라크`) PASS
+- 보정: 섬·산악·CN/TR/IT/CH/GE/AM suburb·city·locality·place only(hub 도시명 미투입·fiji 고원 마을·사찰/유적 POI 제외) · ≤50km · name 충돌 0
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- **다음 배치표 2개**
+  - **R61 A**: `baku` · `almaty` · `tashkent` · `samarkand` · `tehran` / **B**: `shiraz` · `isfahan` · `pokhara` · `arequipa` · `ushuaia`
+  - **R62 A**: `el-calafate` · `quito` · `la-paz` · `panama-city` · `minneapolis` / **B**: `tampa` · `maui` · `anchorage` · `charleston` · `savannah`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · CA/IR/NP/LATAM/US 인근 suburb·city only · placeId hubId prefix · 전역 name 충돌 회피 · sparse면 스킵 OK · R63(잔여 8 hub)은 다음다음 세대
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R61부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R57~R58 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R59 후임 기동)
