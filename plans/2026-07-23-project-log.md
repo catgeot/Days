@@ -2,6 +2,18 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R61~R63 오케스트레이터 세대 (큐 소진 · 체인 종료)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **R01–R63 큐 소진** · **후임 Task 불필요 · 사람 보고**
+
+- tip **629 hub / 1884 settlements** (+27 hub / +80) · R61 CA/IR/NP/PE/AR10 · R62 LATAM/US9(`el-calafate` skip) · R63 AF/SA/CN8 · hub skip 1(`el-calafate` sparse &lt;2 ≤50km)
+- R61 VERIFY: audit 0 · smoke 시드+exact(`숨가이트`/`탈가르`/`치르치크`/`우르구트`/`카라지`/`마르브다슈트`/`나자파바드`/`레크나트`/`세로콜로라도`/`알만사`) PASS
+- R62 VERIFY: audit 0 · smoke 시드+exact(`상골키`/`엘알토`/`아라이한`/`세인트폴`/`세인트피터즈버그`/`카훌루이`/`이글리버`/`마운트플레전트`/`풀러`) PASS
+- R63 VERIFY: audit 0 · smoke 시드+exact(`엔테베`/`키바하`/`빅토리아폴스`/`나라양간즈`/`라왈핀디`/`파로`/`차이뎬`/`칠리`) PASS · `dunhuang` 초안 파손 1회 §3.3 부분 교정 후 재VERIFY
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY( R61→R62→R63 같은 턴)
+- **체인 종료**: 큐 잔여 없음 · 후임 오케스트레이터 Task 기동 불필요 · 커밋/1b mapboxId는 사람 요청 시
+- 금지 유지: tip 병렬 · POI · 시드 `sokcho`/`paris` 덮어쓰기 · UI/releaseNotes
+
 ## Mapbox 정착지 — R59~R60 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R61 후임 기동)

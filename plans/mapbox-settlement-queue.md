@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R60 ✅ · **다음 시작 R61**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · **R01–R63 큐 소진** ✅
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -91,17 +91,18 @@
 | **R58** | `santorini` · `cappadocia` · `kotor` · `bled` · `ibiza` | `crete` · `havana` · `ulaanbaatar` · `moscow` · `st-petersburg` | ✅ |
 | **R59** | `fiji` · `mauritius` · `tahiti` · `bora-bora` · `zermatt` | `cinque-terre` · `bodrum` · `antalya` · `qingdao` · `sanya` | ✅ |
 | **R60** | `xiamen` · `zhangjiajie` · `guilin` · `lijiang` · `lhasa` | `harbin` · `kunming` · `dalian` · `tbilisi` · `yerevan` | ✅ |
-| **R61** | `baku` · `almaty` · `tashkent` · `samarkand` · `tehran` | `shiraz` · `isfahan` · `pokhara` · `arequipa` · `ushuaia` | ⬜ |
-| **R62** | `el-calafate` · `quito` · `la-paz` · `panama-city` · `minneapolis` | `tampa` · `maui` · `anchorage` · `charleston` · `savannah` | ⬜ |
-| **R63** | `kampala` · `dar-es-salaam` · `livingstone` · `dhaka` · `islamabad` | `thimphu` · `wuhan` · `dunhuang` | ⬜ |
+| **R61** | `baku` · `almaty` · `tashkent` · `samarkand` · `tehran` | `shiraz` · `isfahan` · `pokhara` · `arequipa` · `ushuaia` | ✅ |
+| **R62** | `el-calafate` · `quito` · `la-paz` · `panama-city` · `minneapolis` | `tampa` · `maui` · `anchorage` · `charleston` · `savannah` | ✅ |
+| **R63** | `kampala` · `dar-es-salaam` · `livingstone` · `dhaka` · `islamabad` | `thimphu` · `wuhan` · `dunhuang` | ✅ |
 
-**합계**: R01–R63 · **628 hub** (시드 2 제외 · tip 630 기준)
+**합계**: R01–R63 · 큐 hub 628(시드 제외) · tip **629 hub** (`el-calafate` sparse 스킵 1) / **1884 settlements**
 
 ### 진행 체크
 
 ```text
-다음 시작: **R61**
-tip: 522 hub / 1564 settlements · audit issues 0 · 미커밋
-제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
+큐 소진: R01–R63 ✅ · 후임 Task 불필요 · 사람 보고
+tip: 629 hub / 1884 settlements · audit issues 0 · 미커밋
+skip: el-calafate (R62 · <2 within 50km)
+복구/재개(필요 시): 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```
 

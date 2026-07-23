@@ -23343,5 +23343,940 @@
         "aliases": []
       }
     ]
+  },
+  {
+    "hubId": "baku",
+    "settlements": [
+      {
+        "placeId": "baku-sumgayit",
+        "name": "숨가이트",
+        "name_en": "Sumgayit",
+        "featureType": "city",
+        "lat": 40.5897,
+        "lng": 49.6686,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "baku-khirdalan",
+        "name": "히르달란",
+        "name_en": "Khirdalan",
+        "featureType": "city",
+        "lat": 40.4489,
+        "lng": 49.7556,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "baku-hovsan",
+        "name": "호브산",
+        "name_en": "Hovsan",
+        "featureType": "locality",
+        "lat": 40.3744,
+        "lng": 50.0875,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "almaty",
+    "settlements": [
+      {
+        "placeId": "almaty-talgar",
+        "name": "탈가르",
+        "name_en": "Talgar",
+        "featureType": "city",
+        "lat": 43.3044,
+        "lng": 77.2403,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "almaty-kaskelen",
+        "name": "카스케렌",
+        "name_en": "Kaskelen",
+        "featureType": "city",
+        "lat": 43.1983,
+        "lng": 76.6222,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "almaty-boraldai",
+        "name": "보랄다이",
+        "name_en": "Boraldai",
+        "featureType": "locality",
+        "lat": 43.35,
+        "lng": 76.8667,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "tashkent",
+    "settlements": [
+      {
+        "placeId": "tashkent-chirchiq",
+        "name": "치르치크",
+        "name_en": "Chirchiq",
+        "featureType": "city",
+        "lat": 41.4689,
+        "lng": 69.5822,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tashkent-yangiyul",
+        "name": "양기율",
+        "name_en": "Yangiyul",
+        "featureType": "city",
+        "lat": 41.112,
+        "lng": 69.047,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tashkent-qibray",
+        "name": "키브라이",
+        "name_en": "Qibray",
+        "featureType": "locality",
+        "lat": 41.3897,
+        "lng": 69.465,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "samarkand",
+    "settlements": [
+      {
+        "placeId": "samarkand-urgut",
+        "name": "우르구트",
+        "name_en": "Urgut",
+        "featureType": "city",
+        "lat": 39.4022,
+        "lng": 67.2431,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "samarkand-jomboy",
+        "name": "좀보이",
+        "name_en": "Jomboy",
+        "featureType": "city",
+        "lat": 39.6989,
+        "lng": 67.0933,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "samarkand-bulungur",
+        "name": "불룽구르",
+        "name_en": "Bulungur",
+        "featureType": "city",
+        "lat": 39.7647,
+        "lng": 67.2736,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "tehran",
+    "settlements": [
+      {
+        "placeId": "tehran-karaj",
+        "name": "카라지",
+        "name_en": "Karaj",
+        "featureType": "city",
+        "lat": 35.84,
+        "lng": 50.9391,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tehran-eslamshahr",
+        "name": "에슬람샤흐르",
+        "name_en": "Eslamshahr",
+        "featureType": "city",
+        "lat": 35.5605,
+        "lng": 51.2346,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tehran-shahriar",
+        "name": "샤흐리아르",
+        "name_en": "Shahriar",
+        "featureType": "city",
+        "lat": 35.6597,
+        "lng": 51.0592,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "shiraz",
+    "settlements": [
+      {
+        "placeId": "shiraz-marvdasht",
+        "name": "마르브다슈트",
+        "name_en": "Marvdasht",
+        "featureType": "city",
+        "lat": 29.8744,
+        "lng": 52.8025,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "shiraz-zarqan",
+        "name": "자르간",
+        "name_en": "Zarqan",
+        "featureType": "city",
+        "lat": 29.7742,
+        "lng": 52.7214,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "shiraz-sadra",
+        "name": "사드라",
+        "name_en": "Sadra",
+        "featureType": "locality",
+        "lat": 29.809,
+        "lng": 52.484,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "isfahan",
+    "settlements": [
+      {
+        "placeId": "isfahan-najafabad",
+        "name": "나자파바드",
+        "name_en": "Najafabad",
+        "featureType": "city",
+        "lat": 32.6342,
+        "lng": 51.3668,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "isfahan-khomeyni-shahr",
+        "name": "호메이니샤흐르",
+        "name_en": "Khomeyni Shahr",
+        "featureType": "city",
+        "lat": 32.6856,
+        "lng": 51.5211,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "isfahan-shahin-shahr",
+        "name": "샤힌샤흐르",
+        "name_en": "Shahin Shahr",
+        "featureType": "city",
+        "lat": 32.8578,
+        "lng": 51.5528,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "pokhara",
+    "settlements": [
+      {
+        "placeId": "pokhara-lekhnath",
+        "name": "레크나트",
+        "name_en": "Lekhnath",
+        "featureType": "city",
+        "lat": 28.1667,
+        "lng": 84.0333,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "pokhara-hemja",
+        "name": "헤므자",
+        "name_en": "Hemja",
+        "featureType": "locality",
+        "lat": 28.283,
+        "lng": 83.95,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "pokhara-begnas",
+        "name": "베그나스",
+        "name_en": "Begnas",
+        "featureType": "locality",
+        "lat": 28.1667,
+        "lng": 84.1,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "arequipa",
+    "settlements": [
+      {
+        "placeId": "arequipa-cerro-colorado",
+        "name": "세로콜로라도",
+        "name_en": "Cerro Colorado",
+        "featureType": "locality",
+        "lat": -16.3667,
+        "lng": -71.5833,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "arequipa-yura",
+        "name": "유라",
+        "name_en": "Yura",
+        "featureType": "locality",
+        "lat": -16.25,
+        "lng": -71.683,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "arequipa-paucarpata",
+        "name": "파우카르파타",
+        "name_en": "Paucarpata",
+        "featureType": "locality",
+        "lat": -16.43,
+        "lng": -71.5,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "ushuaia",
+    "settlements": [
+      {
+        "placeId": "ushuaia-almanza",
+        "name": "알만사",
+        "name_en": "Almanza",
+        "featureType": "locality",
+        "lat": -54.87,
+        "lng": -67.833,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "ushuaia-puerto-williams",
+        "name": "푸에르토윌리엄스",
+        "name_en": "Puerto Williams",
+        "featureType": "city",
+        "lat": -54.935,
+        "lng": -67.611,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "quito",
+    "settlements": [
+      {
+        "placeId": "quito-sangolqui",
+        "name": "상골키",
+        "name_en": "Sangolqui",
+        "featureType": "city",
+        "lat": -0.3342,
+        "lng": -78.4522,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "quito-cumbaya",
+        "name": "쿰바야",
+        "name_en": "Cumbaya",
+        "featureType": "locality",
+        "lat": -0.2,
+        "lng": -78.43,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "quito-tumbaco",
+        "name": "툼바코",
+        "name_en": "Tumbaco",
+        "featureType": "locality",
+        "lat": -0.2167,
+        "lng": -78.4,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "la-paz",
+    "settlements": [
+      {
+        "placeId": "la-paz-el-alto",
+        "name": "엘알토",
+        "name_en": "El Alto",
+        "featureType": "city",
+        "lat": -16.5047,
+        "lng": -68.1635,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "la-paz-viacha",
+        "name": "비아차",
+        "name_en": "Viacha",
+        "featureType": "city",
+        "lat": -16.65,
+        "lng": -68.3,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "la-paz-achocalla",
+        "name": "아초카야",
+        "name_en": "Achocalla",
+        "featureType": "locality",
+        "lat": -16.6167,
+        "lng": -68.1667,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "panama-city",
+    "settlements": [
+      {
+        "placeId": "panama-city-arraijan",
+        "name": "아라이한",
+        "name_en": "Arraijan",
+        "featureType": "city",
+        "lat": 8.95,
+        "lng": -79.65,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "panama-city-san-miguelito",
+        "name": "산미겔리토",
+        "name_en": "San Miguelito",
+        "featureType": "city",
+        "lat": 9.033,
+        "lng": -79.5,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "panama-city-tocumen",
+        "name": "토쿠멘",
+        "name_en": "Tocumen",
+        "featureType": "locality",
+        "lat": 9.083,
+        "lng": -79.383,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "minneapolis",
+    "settlements": [
+      {
+        "placeId": "minneapolis-saint-paul",
+        "name": "세인트폴",
+        "name_en": "Saint Paul",
+        "featureType": "city",
+        "lat": 44.9537,
+        "lng": -93.09,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "minneapolis-bloomington",
+        "name": "블루밍턴",
+        "name_en": "Bloomington",
+        "featureType": "city",
+        "lat": 44.8408,
+        "lng": -93.2983,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "minneapolis-edina",
+        "name": "이디나",
+        "name_en": "Edina",
+        "featureType": "city",
+        "lat": 44.8897,
+        "lng": -93.3499,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "tampa",
+    "settlements": [
+      {
+        "placeId": "tampa-st-petersburg",
+        "name": "세인트피터즈버그",
+        "name_en": "St. Petersburg",
+        "featureType": "city",
+        "lat": 27.7676,
+        "lng": -82.6403,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tampa-clearwater",
+        "name": "클리어워터",
+        "name_en": "Clearwater",
+        "featureType": "city",
+        "lat": 27.9659,
+        "lng": -82.8001,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "tampa-brandon",
+        "name": "브랜든",
+        "name_en": "Brandon",
+        "featureType": "city",
+        "lat": 27.9378,
+        "lng": -82.2859,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "maui",
+    "settlements": [
+      {
+        "placeId": "maui-kahului",
+        "name": "카훌루이",
+        "name_en": "Kahului",
+        "featureType": "city",
+        "lat": 20.8893,
+        "lng": -156.4729,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "maui-wailuku",
+        "name": "와일루쿠",
+        "name_en": "Wailuku",
+        "featureType": "city",
+        "lat": 20.8914,
+        "lng": -156.5047,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "maui-kihei",
+        "name": "키헤이",
+        "name_en": "Kihei",
+        "featureType": "locality",
+        "lat": 20.7647,
+        "lng": -156.445,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "anchorage",
+    "settlements": [
+      {
+        "placeId": "anchorage-eagle-river",
+        "name": "이글리버",
+        "name_en": "Eagle River",
+        "featureType": "locality",
+        "lat": 61.3214,
+        "lng": -149.5678,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "anchorage-chugiak",
+        "name": "추기악",
+        "name_en": "Chugiak",
+        "featureType": "locality",
+        "lat": 61.3889,
+        "lng": -149.481,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "anchorage-wasilla",
+        "name": "와실라",
+        "name_en": "Wasilla",
+        "featureType": "city",
+        "lat": 61.5816,
+        "lng": -149.439,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "charleston",
+    "settlements": [
+      {
+        "placeId": "charleston-mount-pleasant",
+        "name": "마운트플레전트",
+        "name_en": "Mount Pleasant",
+        "featureType": "city",
+        "lat": 32.8323,
+        "lng": -79.8284,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "charleston-summerville",
+        "name": "섬머빌",
+        "name_en": "Summerville",
+        "featureType": "city",
+        "lat": 33.0185,
+        "lng": -80.1757,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "charleston-north-charleston",
+        "name": "노스찰스턴",
+        "name_en": "North Charleston",
+        "featureType": "city",
+        "lat": 32.888,
+        "lng": -80.007,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "savannah",
+    "settlements": [
+      {
+        "placeId": "savannah-pooler",
+        "name": "풀러",
+        "name_en": "Pooler",
+        "featureType": "city",
+        "lat": 32.1155,
+        "lng": -81.2471,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "savannah-richmond-hill",
+        "name": "리치몬드힐",
+        "name_en": "Richmond Hill",
+        "featureType": "city",
+        "lat": 31.9383,
+        "lng": -81.3034,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "savannah-port-wentworth",
+        "name": "포트웬트워스",
+        "name_en": "Port Wentworth",
+        "featureType": "city",
+        "lat": 32.149,
+        "lng": -81.163,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "kampala",
+    "settlements": [
+      {
+        "placeId": "kampala-entebbe",
+        "name": "엔테베",
+        "name_en": "Entebbe",
+        "featureType": "city",
+        "lat": 0.0512,
+        "lng": 32.4637,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "kampala-mukono",
+        "name": "무코노",
+        "name_en": "Mukono",
+        "featureType": "city",
+        "lat": 0.3533,
+        "lng": 32.7553,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "kampala-kira",
+        "name": "키라",
+        "name_en": "Kira",
+        "featureType": "city",
+        "lat": 0.3975,
+        "lng": 32.6489,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "dar-es-salaam",
+    "settlements": [
+      {
+        "placeId": "dar-es-salaam-kibaha",
+        "name": "키바하",
+        "name_en": "Kibaha",
+        "featureType": "city",
+        "lat": -6.7667,
+        "lng": 38.9167,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dar-es-salaam-mbezi",
+        "name": "음베지",
+        "name_en": "Mbezi",
+        "featureType": "locality",
+        "lat": -6.72,
+        "lng": 39.1,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dar-es-salaam-tegeta",
+        "name": "테게타",
+        "name_en": "Tegeta",
+        "featureType": "locality",
+        "lat": -6.65,
+        "lng": 39.18,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "livingstone",
+    "settlements": [
+      {
+        "placeId": "livingstone-victoria-falls",
+        "name": "빅토리아폴스",
+        "name_en": "Victoria Falls",
+        "featureType": "city",
+        "lat": -17.9243,
+        "lng": 25.8572,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "livingstone-maramba",
+        "name": "마람바",
+        "name_en": "Maramba",
+        "featureType": "locality",
+        "lat": -17.85,
+        "lng": 25.87,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "livingstone-dambwa",
+        "name": "담브와",
+        "name_en": "Dambwa",
+        "featureType": "locality",
+        "lat": -17.83,
+        "lng": 25.83,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "dhaka",
+    "settlements": [
+      {
+        "placeId": "dhaka-narayanganj",
+        "name": "나라양간즈",
+        "name_en": "Narayanganj",
+        "featureType": "city",
+        "lat": 23.6238,
+        "lng": 90.5,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dhaka-gazipur",
+        "name": "가지푸르",
+        "name_en": "Gazipur",
+        "featureType": "city",
+        "lat": 23.9999,
+        "lng": 90.4203,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dhaka-savar",
+        "name": "사바르",
+        "name_en": "Savar",
+        "featureType": "city",
+        "lat": 23.8583,
+        "lng": 90.2667,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "islamabad",
+    "settlements": [
+      {
+        "placeId": "islamabad-rawalpindi",
+        "name": "라왈핀디",
+        "name_en": "Rawalpindi",
+        "featureType": "city",
+        "lat": 33.5651,
+        "lng": 73.0169,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "islamabad-taxila",
+        "name": "탁실라",
+        "name_en": "Taxila",
+        "featureType": "city",
+        "lat": 33.7463,
+        "lng": 72.8397,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "islamabad-murree",
+        "name": "무리",
+        "name_en": "Murree",
+        "featureType": "city",
+        "lat": 33.907,
+        "lng": 73.394,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "thimphu",
+    "settlements": [
+      {
+        "placeId": "thimphu-paro",
+        "name": "파로",
+        "name_en": "Paro",
+        "featureType": "city",
+        "lat": 27.4305,
+        "lng": 89.4134,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "thimphu-punakha",
+        "name": "푸나카",
+        "name_en": "Punakha",
+        "featureType": "city",
+        "lat": 27.5916,
+        "lng": 89.877,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "thimphu-hongtsho",
+        "name": "홍초",
+        "name_en": "Hongtsho",
+        "featureType": "locality",
+        "lat": 27.5,
+        "lng": 89.7,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "wuhan",
+    "settlements": [
+      {
+        "placeId": "wuhan-caidian",
+        "name": "차이뎬",
+        "name_en": "Caidian",
+        "featureType": "locality",
+        "lat": 30.583,
+        "lng": 114.03,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "wuhan-jiangxia",
+        "name": "장샤",
+        "name_en": "Jiangxia",
+        "featureType": "locality",
+        "lat": 30.349,
+        "lng": 114.319,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "wuhan-huangpi",
+        "name": "황피",
+        "name_en": "Huangpi",
+        "featureType": "locality",
+        "lat": 30.874,
+        "lng": 114.375,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "dunhuang",
+    "settlements": [
+      {
+        "placeId": "dunhuang-qili",
+        "name": "칠리",
+        "name_en": "Qili",
+        "featureType": "locality",
+        "lat": 40.1,
+        "lng": 94.7,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dunhuang-zhuanqukou",
+        "name": "좐취커우",
+        "name_en": "Zhuanqukou",
+        "featureType": "locality",
+        "lat": 40.25,
+        "lng": 94.95,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "dunhuang-huangqu",
+        "name": "황취",
+        "name_en": "Huangqu",
+        "featureType": "locality",
+        "lat": 40.2,
+        "lng": 94.8,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
   }
 ]
