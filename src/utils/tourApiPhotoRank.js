@@ -5,6 +5,13 @@ export const TOURAPI_OFFTOPIC_TITLE_RE =
 /** 전경·풍경 힌트 */
 export const TOURAPI_SCENIC_TITLE_RE =
   /전경|야경|풍경|근정전|경회루|일출|일몰|봄|가을|겨울|여름|해수욕장|백록담|성산|불국|한옥|타워|대교|오름|해변|광장/;
+
+/**
+ * searchPhoto 채택 하한 — 지명/키워드 미포함 기본점(10)만 있는 「춘천 벚꽃」식 오매칭 제외.
+ * (placeHit≥45 · kwHit≥30 · 완전일치 더 높음)
+ */
+export const TOURAPI_MIN_KEEP_SCORE = 20;
+
 /**
  * searchPhoto 제목 관련도 — 높을수록 앞.
  * @param {string} title

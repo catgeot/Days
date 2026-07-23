@@ -271,6 +271,15 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
     aliases: ['남이섬', 'Namiseom', 'Nami Island'],
     verifiedAt: '2026-07-23',
   },
+  // searchPhoto「공지천」→ 제목 춘천 벚꽃 + tong CDN 404 — 랭킹/프로브 후 Unsplash 폴백
+  gongjicheon: {
+    photoKeyword: '공지천',
+    photoKeywords: ['공지천 벚꽃'],
+    title: '공지천',
+    contentId: null,
+    aliases: ['공지천', 'Gongjicheon', 'Gongji Stream'],
+    verifiedAt: '2026-07-23',
+  },
   seoraksan: {
     photoKeyword: '설악산',
     photoKeywords: ['설악산 전경', '설악산 권금성'],

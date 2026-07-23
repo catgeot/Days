@@ -2,6 +2,13 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 갤러리 — 공지천 빈 사진
+
+**상태**: ✅ 커밋 · 세션 종료 (push 미요청)
+
+- 원인: TourAPI 404·오매칭 · soft place_stats Tour 선두 · DB 뒤로만 미루면 매번 스톡 API
+- 대응: 점수≥20·프로브 실패 시 `[]` · soft는 DB 스톡 재사용·Tour 우세 DB만 스킵 후 Unsplash+Pexels→Tour · `gongjicheon` overrides · 캐시 v1.12
+
 ## 갤러리 로딩 — TourAPI 대기 블랙스크린 UX
 
 **상태**: ✅ 사람 QA 확인 · 커밋·push · Edge `tourapi-proxy` 재배포는 선택(upstream 10s)

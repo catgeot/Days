@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-23T08:44:33.753Z",
-    "spotCount": 40,
+    "generatedAt": "2026-07-23T13:36:52.625Z",
+    "spotCount": 41,
     "contentIdCount": 19,
     "source": "scripts/data/tourapi-content-id-overrides.mjs"
   },
@@ -418,6 +418,20 @@
       ],
       "verifiedAt": "2026-07-23"
     },
+    "gongjicheon": {
+      "photoKeyword": "공지천",
+      "photoKeywords": [
+        "공지천 벚꽃"
+      ],
+      "title": "공지천",
+      "contentId": null,
+      "aliases": [
+        "공지천",
+        "Gongjicheon",
+        "Gongji Stream"
+      ],
+      "verifiedAt": "2026-07-23"
+    },
     "seoraksan": {
       "photoKeyword": "설악산",
       "photoKeywords": [
@@ -603,6 +617,9 @@
     "남이섬": "namiseom",
     "Namiseom": "namiseom",
     "Nami Island": "namiseom",
+    "공지천": "gongjicheon",
+    "Gongjicheon": "gongjicheon",
+    "Gongji Stream": "gongjicheon",
     "설악산 국립공원": "seoraksan",
     "설악산": "seoraksan",
     "Seoraksan": "seoraksan",

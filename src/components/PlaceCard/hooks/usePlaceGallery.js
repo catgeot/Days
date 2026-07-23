@@ -21,7 +21,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-const CACHE_VERSION = 'v1.10';
+/** v1.12 — soft: place_stats가 스톡이면 API 생략 · TourAPI 우세 DB만 스톡 재수집 */
+const CACHE_VERSION = 'v1.12';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
@@ -59,9 +60,28 @@ const GALLERY_QUERY_OVERRIDES = {
     primary: 'Federated States of Micronesia',
     backup: 'Micronesia island tropical ocean landscape',
   },
+  /** TourAPI searchPhoto가 404·오매칭(춘천 벚꽃)만 줌 → Unsplash 쿼리 보강 */
+  gongjicheon: {
+    primary: 'Gongjicheon Chuncheon',
+    backup: 'Chuncheon cherry blossom riverside park Korea',
+  },
 };
 
 const GALLERY_REFRESH_COOLDOWN_MS = 30_000;
+
+function isTourApiGalleryImage(img) {
+  if (!img || typeof img !== 'object') return false;
+  if (img.source === 'tourapi') return true;
+  return String(img.id ?? '').startsWith('tourapi');
+}
+
+/** place_stats가 TourAPI 위주면 soft는 스톡 API로 갱신(절약은 세션·스톡 DB 히트) */
+function isTourApiDominantGallery(images) {
+  const list = Array.isArray(images) ? images.filter(Boolean) : [];
+  if (list.length === 0) return false;
+  const tourCount = list.filter(isTourApiGalleryImage).length;
+  return tourCount / list.length >= 0.5;
+}
 
 function resolveGalleryStablePlaceKey(locationSource) {
   if (!locationSource) return '';
@@ -331,8 +351,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         return;
       }
 
-      // 국내 TourAPI 우선 — place_stats(Unsplash 잔존)보다 먼저
-      if (tourMapping?.photoKeyword) {
+      // TourAPI 우선은 contentId(공식 POI)만 — soft/오매칭·404 CDN은 스톡이 더 나음(공지천)
+      const preferTourApiFirst = Boolean(tourMapping?.contentId);
+      if (preferTourApiFirst && tourMapping?.photoKeyword) {
         try {
           const tourImages = await fetchTourApiGallery({
             photoKeyword: tourMapping.photoKeyword,
@@ -341,7 +362,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             contentId: tourMapping.contentId,
             page: 1,
             thumbnailOnly,
-            skipProbe: true,
           });
           if (runId !== galleryLoadSeqRef.current) return;
           if (tourImages.length > 0) {
@@ -388,6 +408,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
       }
 
+      // DB 선조회 — 히트면 Unsplash/Pexels/Tour LIVE 호출 없음.
+      // soft만: TourAPI 우세 캐시는 건너뛰고 스톡으로 재수집(공지천 404 고착 방지).
       if (!slugOverride && dbCandidates.length) {
         try {
           const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
@@ -415,11 +437,17 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             }
             if (dbData.gallery_urls && dbData.gallery_urls.length > 0) {
               const gallerySlice = thumbnailOnly ? dbData.gallery_urls.slice(0, 1) : dbData.gallery_urls;
-              processAndSetImages(gallerySlice);
-              saveToSmartCache(CACHE_KEY, gallerySlice);
-              markFetchDone();
-              finishLoading();
-              return;
+              if (!preferTourApiFirst && isTourApiDominantGallery(gallerySlice)) {
+                console.warn(
+                  '⚠️ place_stats TourAPI-heavy — soft stock refresh (skip DB short-circuit)',
+                );
+              } else {
+                processAndSetImages(gallerySlice);
+                saveToSmartCache(CACHE_KEY, gallerySlice);
+                markFetchDone();
+                finishLoading();
+                return;
+              }
             }
           }
         } catch {
@@ -435,33 +463,28 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
 
     try {
-      if (!ACCESS_KEY) {
-        console.warn('⚠️ VITE_UNSPLASH_ACCESS_KEY missing — gallery Unsplash path skipped');
-        if (forceRefresh) {
-          pageRef.current = Math.max(1, pageRef.current - 1);
-          restorePreservedImages();
-        } else if (runId === galleryLoadSeqRef.current) {
-          processAndSetImages([]);
+      let results = [];
+
+      if (ACCESS_KEY) {
+        results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, pageRef.current);
+        if (runId !== galleryLoadSeqRef.current) return;
+
+        if (results.length === 0 && backupQuery) {
+          console.warn(`⚠️ No results for "${primaryQuery}". Retry with: "${backupQuery}"`);
+          results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, pageRef.current);
         }
-        return;
+        if (runId !== galleryLoadSeqRef.current) return;
+      } else {
+        console.warn('⚠️ VITE_UNSPLASH_ACCESS_KEY missing — Unsplash skipped (Pexels may still run)');
       }
 
-      let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, pageRef.current);
-
-      if (runId !== galleryLoadSeqRef.current) return;
-
-      if (results.length === 0 && backupQuery) {
-        console.warn(`⚠️ No results for "${primaryQuery}". Retry with: "${backupQuery}"`);
-        results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, pageRef.current);
-      }
-
-      if (runId !== galleryLoadSeqRef.current) return;
-
-      // 썸네일 모드: Pexels 병합·대량 캐시 생략 (버킷리스트 등 1장만 필요)
+      // 썸네일 모드: Pexels 생략. Unsplash 0건이어도 Pexels 시도(공지천 등)
       if (!thumbnailOnly && (results.length <= 15 || forceRefresh) && PEXELS_KEY) {
         console.warn(`⚠️ Unsplash 이미지 부족 또는 강제 새로고침. Pexels 이미지 검색 병합을 시도합니다.`);
         try {
-          const pexelsQueries = [primaryQuery, backupQuery].filter(Boolean);
+          const pexelsQueries = [...new Set(
+            [primaryQuery, backupQuery, koreanName].filter(Boolean),
+          )];
           const seenPexelsIds = new Set();
           let mergedPexels = [];
 
@@ -488,11 +511,47 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
       if (runId !== galleryLoadSeqRef.current) return;
 
+      // soft: 스톡 0일 때만 TourAPI (DB는 위에서 이미 시도·Tour 우세만 스킵)
+      if (
+        !forceRefresh &&
+        results.length === 0 &&
+        !tourMapping?.contentId &&
+        tourMapping?.photoKeyword
+      ) {
+        try {
+          const tourImages = await fetchTourApiGallery({
+            photoKeyword: tourMapping.photoKeyword,
+            photoKeywords: tourMapping.photoKeywords,
+            title: tourMapping.title,
+            contentId: tourMapping.contentId,
+            page: 1,
+            thumbnailOnly,
+          });
+          if (runId !== galleryLoadSeqRef.current) return;
+          if (tourImages.length > 0) {
+            results = tourImages;
+            console.log(`✅ TourAPI soft fallback ${tourImages.length}장 (${tourMapping.photoKeyword})`);
+          }
+        } catch (tourErr) {
+          console.warn('⚠️ TourAPI soft fallback miss', tourErr);
+        }
+      }
+
       // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존
       if (forceRefresh && results.length === 0) {
         console.warn(`⚠️ 더 이상 가져올 이미지가 없습니다 (페이지 ${pageRef.current}). 이전 상태 유지.`);
         pageRef.current = Math.max(1, pageRef.current - 1);
         restorePreservedImages();
+        return;
+      }
+
+      if (!ACCESS_KEY && !PEXELS_KEY && results.length === 0) {
+        if (forceRefresh) {
+          pageRef.current = Math.max(1, pageRef.current - 1);
+          restorePreservedImages();
+        } else if (runId === galleryLoadSeqRef.current) {
+          processAndSetImages([]);
+        }
         return;
       }
 

@@ -1,7 +1,7 @@
 import { supabase } from '../shared/api/supabase';
-import { scoreTourPhotoTitle } from './tourApiPhotoRank';
+import { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
 
-export { scoreTourPhotoTitle } from './tourApiPhotoRank';
+export { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
 
 /** page1 기본 searchPhoto 행 수 — 직렬 다건 호출 대신 병렬+소수 */
 const DEFAULT_ROWS = 12;
@@ -307,8 +307,8 @@ async function fetchTourApiGalleryInner(opts) {
     opts?.contentId != null && String(opts.contentId).trim() !== ''
       ? String(opts.contentId).trim()
       : null;
-  // 갤러리 기본: 프로브 생략 — 32장 CDN decode가 분 단위로 막히던 주원인
-  const skipProbe = opts?.skipProbe !== false;
+  // 기본은 빠른 URL 프로브(404 제외). skipProbe:true 는 호출측 명시 시에만
+  const skipProbe = opts?.skipProbe === true;
 
   /** @type {Array<ReturnType<typeof toGalleryImage>>} */
   const detailImages = [];
@@ -390,7 +390,7 @@ async function fetchTourApiGalleryInner(opts) {
     for (const it of photo?.items || []) {
       const title = String(it?.title || it?.galTitle || '');
       const score = scoreTourPhotoTitle(title, placeTitle, keyword);
-      if (score < 0) continue;
+      if (score < TOURAPI_MIN_KEEP_SCORE) continue;
       const img = toGalleryImage(it, 'searchPhoto', photoIndex++, score);
       if (img) photoImages.push(img);
     }
@@ -403,7 +403,7 @@ async function fetchTourApiGalleryInner(opts) {
     for (const it of photo.items) {
       const title = String(it?.title || it?.galTitle || '');
       const score = scoreTourPhotoTitle(title, placeTitle, kw);
-      if (score < 0) continue;
+      if (score < TOURAPI_MIN_KEEP_SCORE) continue;
       const img = toGalleryImage(it, 'searchPhoto', photoIndex++, score);
       if (img) photoImages.push(img);
     }
@@ -425,9 +425,13 @@ async function fetchTourApiGalleryInner(opts) {
     thumbnailOnly: Boolean(opts?.thumbnailOnly),
   });
 
-  // 전부 깨지면 프로브 없이 상위라도 반환(빈 갤러리보다 낫음 — UI onError로 제거)
+  // 전부 404/깨짐이면 [] 반환 → usePlaceGallery가 Unsplash/Pexels로 폴백
+  // (깨진 URL을 그대로 넘기면 onError로 지워진 뒤 빈 갤러리로 고착)
   if (loadable.length === 0 && merged.length > 0) {
-    return opts?.thumbnailOnly ? merged.slice(0, 1) : merged.slice(0, TARGET_GALLERY);
+    console.warn(
+      `[tourapi] ${merged.length} URL probe miss — empty for stock fallback (${placeTitle || keyword})`,
+    );
+    return [];
   }
   return loadable;
 }
