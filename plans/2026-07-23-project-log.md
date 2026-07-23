@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R31~R32 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R33 후임 기동)
+
+- tip **322 hub / 965 settlements** (+20 hub / +59) · R31 요엔수·키일·카를로바츠·연기·창녕·함안·영천·청도·바스·슈체친 · R32 포리·뤼베크·오파티야·세종·증평·경남고성·옹진·경기광주·요크·캔터베리 · hub skip 0 (`jeungpyeong` 2건=군 단위 최소)
+- R31/R32 VERIFY: audit issues 0 · smoke 시드+exact(`리페리`/`엑커른푀르데`/`두가레사`/`조치원`/`남지읍`/`가야읍`/`금호읍`/`화양읍`/`치퍼넘`/`폴리스`/`울빌라`/`트라페뮌데`/`볼로스코`/`한솔동`/`증평읍`/`고성읍`/`영흥면`/`오포읍`/`핵스비`/`휘트스터블`) PASS
+- R31 보정: `yeongi` alias `연동` 제거(jeju) · `yeongcheon` 화산면→화북면(haenam) · `bath` Keynsham→치퍼넘(bristol name_en) · featureType town→place
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r31`/`_tmp-r32`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R33 A**: `chester` · `rostock` · `gdynia` · `gijang` · `ulju` / **B**: `dalseong` · `yuseong` · `yeonsu` · `cambridge` · `oxford`
+  - **R34 A**: `sopot` · `stralsund` · `wismar` · `suseong` · `dalseo` / **B**: `haeundae` · `gangnam` · `seocho` · `durham` · `winchester`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R33부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R29~R30 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R31 후임 기동)
