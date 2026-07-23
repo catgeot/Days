@@ -2,24 +2,33 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
-## 명소 좌표 수리 — 툴링 + P0 + KR R1–R2
+## 명소 좌표 수리 — KR R3–R4 (이관)
 
-**상태**: ✅ 툴링 · P0 · **R1+R2 tip 패치(40 hub)** · audit hubs 0 · smoke P0 PASS · KR verify 전수 진행 중(~725/1460 캐시) · 사람 QA(양구·김유정·덕풍·진도타워) 대기
+**상태**: ✅ R3+R4 tip 패치(40 hub) · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4298** · KR verify 전수 진행 중(~875/1460 캐시) · PR #24
 
-- 툴 보강: verify 캐시 주기저장 · null-match 재조회 금지 · `--country=kr` Nominatim 우선 · `apply-attraction-coord-patches.mjs`
-- R1(20hub): 속초~남해 · SNAP/rename/drop · 주상절리·알펜시아·김유정(정류장) 스킵
-- R2(20hub): 안동~보성 · 직렬 A→B · 융건릉·파주출판도시 등 오매칭 스킵
-- tip 명소 ~4375 (drop 반영) · PR #24 `cursor/attraction-coord-fix-26c8`
+- R3: 하동~고창 · SNAP/drop · `mungyeong`/`gurye` min4 복구(문경새재·진남교반 · 화엄사/사성암/천은사 rename+snap) · 무섬마을·고인돌코스 오매칭 스킵
+- R4: 무주~원주 · SNAP/drop · min4 유지(무주 구천동·구봉산 케이블카 NO_HIT 유지) · 장군목 인증센터 스킵
+- 워커 Task 도구 부재 → 메인 버퍼로 A/B 초안 병렬 생성 후 tip 직렬 A→B (본인 런 예외 1줄)
 
 ### 이관 (후임 메인 · §4.2)
 
 | | |
 |--|--|
-| **다음 배치표 A** | 캐시 완료 hub 중 미패치 10: `hadong,jecheon,mungyeong,danyang,yeongwol,namwon,geochang,wando,jindo,yeongju` (SNAP/NO_HIT만 · P0잔여 진도 포함) |
-| **다음 배치표 B** | `hamyang,sancheong,goheung,jangheung,gurye,hapcheon,gokseong,yeonggwang,buan,gochang` |
+| **다음 배치표 A** | `chungju,cheonan,samcheok,yangpyeong,gimhae,taebaek,donghae,asan,seosan,changwon` |
+| **다음 배치표 B** | `hongcheon,jeongseon,uljin,icheon,miryang,hoengseong,yeoju,yangsan,sacheon,pocheon` |
 | **게이트** | `audit:city-attraction-hubs` + `verify --smoke` + 배치 hub 샘플 |
 | **전수 큐** | 백그라운드 `verify --country=kr --write-queue` 완료 시 `plans/city-attraction-coord-verify-queue.md` · 미완이면 캐시로 부분 큐 |
-| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R3부터 워커2 · §5.4·§4.2」 |
+| **금지** | 시드 덮어쓰기 · hub 중심 추정 · tip 병렬 · 정류장 오매칭 · rename without newName · P0 회귀 |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R5부터 워커2 · §5.4·§4.2」 |
+
+## 명소 좌표 수리 — 툴링 + P0 + KR R1–R2
+
+**상태**: ✅ 툴링 · P0 · **R1+R2 tip 패치(40 hub)** · audit hubs 0 · smoke P0 PASS · (이어서 R3–R4 절)
+
+- 툴 보강: verify 캐시 주기저장 · null-match 재조회 금지 · `--country=kr` Nominatim 우선 · `apply-attraction-coord-patches.mjs`
+- R1(20hub): 속초~남해 · SNAP/rename/drop · 주상절리·알펜시아·김유정(정류장) 스킵
+- R2(20hub): 안동~보성 · 직렬 A→B · 융건릉·파주출판도시 등 오매칭 스킵
+- tip 명소 ~4375 (drop 반영) · PR #24 `cursor/attraction-coord-fix-26c8`
 
 ## Trip.com 숙소 city ID — 성수기 선제 (아조레스·타히티)
 
