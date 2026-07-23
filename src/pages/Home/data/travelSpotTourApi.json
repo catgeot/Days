@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-23T05:38:43.442Z",
+    "generatedAt": "2026-07-23T08:44:33.753Z",
     "spotCount": 40,
     "contentIdCount": 19,
     "source": "scripts/data/tourapi-content-id-overrides.mjs"
@@ -406,7 +406,8 @@
     "namiseom": {
       "photoKeyword": "남이섬",
       "photoKeywords": [
-        "남이섬 전경"
+        "남이섬 메타세쿼이아",
+        "짚와이어_남이섬"
       ],
       "title": "남이섬",
       "contentId": "128019",

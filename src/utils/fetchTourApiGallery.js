@@ -7,13 +7,14 @@ export { scoreTourPhotoTitle } from './tourApiPhotoRank';
 const DEFAULT_ROWS = 12;
 const MIN_ROWS = 1;
 const SCENIC_KEYWORD_ROWS = 8;
-const DETAIL_IMAGE_ROWS = 8;
+/** 공식 POI detailImage — 남이섬 등 풍부한 곳 활용 (TourAPI 상한 근처) */
+const DETAIL_IMAGE_ROWS = 20;
 /** page1에서 쓸 검색어 상한 (전경들 + 기본) */
 const MAX_SEARCH_KEYWORDS = 3;
 /** 갤러리에 남길 목표 장수 */
-const TARGET_GALLERY = 18;
+const TARGET_GALLERY = 24;
 /** 깨진 URL 프로브 후보 상한 */
-const PROBE_CANDIDATES = 24;
+const PROBE_CANDIDATES = 32;
 const PROBE_TIMEOUT_MS = 3500;
 
 /**
@@ -121,10 +122,8 @@ function buildSearchKeywords(primary, extras, placeTitle, maxKeywords) {
 
   for (const k of extras || []) push(k);
 
-  const hasScenicExtra = (extras || []).some((k) =>
-    /전경|야경|근정전|풍경/.test(String(k)),
-  );
-  if (!hasScenicExtra && placeTitle) {
+  // curated photoKeywords가 있으면 자동 전경/야경 생략 — 남이섬처럼 0건 키워드가 슬롯을 먹는 것 방지
+  if (!(extras || []).length && placeTitle) {
     push(`${placeTitle} 전경`);
     push(`${placeTitle} 야경`);
   }

@@ -21,7 +21,7 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-const CACHE_VERSION = 'v1.9';
+const CACHE_VERSION = 'v1.10';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구

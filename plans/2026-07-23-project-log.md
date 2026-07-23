@@ -51,6 +51,12 @@ TourAPI-이어하기
 - 배포: `npx supabase functions deploy tourapi-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
 - `npm run smoke:tourapi` · LIVE 경복궁 chain PASS
 
+## 갤러리 — 남이섬 TourAPI 보강
+
+**상태**: ✅ 커밋·push
+- `detailImage` 8→20 · 갤러리 목표 18→24 · 캐시 `v1.10`
+- curated `photoKeywords` 있을 때 자동 전경/야경 생략 (슬롯 낭비 방지)
+
 ## 검색 — 정착지 exact 허브형 역펼침
 
 **상태**: ✅ 커밋·push

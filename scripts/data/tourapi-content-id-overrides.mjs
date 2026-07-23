@@ -264,7 +264,8 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
   },
   namiseom: {
     photoKeyword: '남이섬',
-    photoKeywords: ['남이섬 전경'],
+    // '남이섬 전경'/'야경'은 TourAPI searchPhoto 0건 — 메타세쿼이아·짚와이어가 유효
+    photoKeywords: ['남이섬 메타세쿼이아', '짚와이어_남이섬'],
     title: '남이섬',
     contentId: '128019',
     aliases: ['남이섬', 'Namiseom', 'Nami Island'],
