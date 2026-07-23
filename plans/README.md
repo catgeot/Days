@@ -8,6 +8,7 @@
 - **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)
 - **항공 경로 DB (우선)**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) · **Heuristic SSOT (다음)**: [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · **비-ICN 라우팅**: [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) (OurAirports·Supabase · **Phase 0~4 v2.2 ✅** · **Heuristic+GATN seed ⏳**)
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
+- **TourAPI 국내 관광 (1단계 Edge)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 최신: [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) · 직전 [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)  
   - **홈 지구본 풍부화 계획**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md)
