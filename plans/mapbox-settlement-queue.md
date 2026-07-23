@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R50 ✅ · **다음 시작 R51**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R52 ✅ · **다음 시작 R53**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -81,8 +81,8 @@
 | **R48** | `vientiane` · `yangon` · `kota-kinabalu` · `johor-bahru` · `delhi` | `mumbai` · `bangalore` · `jaipur` · `kolkata` · `chennai` | ✅ |
 | **R49** | `hyderabad` · `agra` · `varanasi` · `goa` · `kathmandu` | `colombo` · `male` · `abu-dhabi` · `doha` · `riyadh` | ✅ |
 | **R50** | `jeddah` · `tel-aviv` · `jerusalem` · `amman` · `cairo` | `marrakech` · `casablanca` · `luxor` · `alexandria` · `tunis` | ✅ |
-| **R51** | `fes` · `muscat` · `cape-town` · `johannesburg` · `nairobi` | `addis-ababa` · `zanzibar` · `brisbane` · `perth` · `adelaide` | ⬜ |
-| **R52** | `gold-coast` · `cairns` · `hobart` · `wellington` · `queenstown` | `christchurch` · `rotorua` · `kobe` · `yokohama` · `sendai` | ⬜ |
+| **R51** | `fes` · `muscat` · `cape-town` · `johannesburg` · `nairobi` | `addis-ababa` · `zanzibar` · `brisbane` · `perth` · `adelaide` | ✅ |
+| **R52** | `gold-coast` · `cairns` · `hobart` · `wellington` · `queenstown` | `christchurch` · `rotorua` · `kobe` · `yokohama` · `sendai` | ✅ |
 | **R53** | `nara` · `nikko` · `hakone` · `nagasaki` · `matsumoto` | `takayama` · `beppu` · `belgrade` · `bucharest` · `sofia` | ⬜ |
 | **R54** | `tirana` · `skopje` · `sarajevo` · `podgorica` · `valletta` | `nicosia` · `stavanger` · `trondheim` · `montpellier` · `palermo` | ⬜ |
 | **R55** | `faro` · `cork` · `galway` · `belfast` · `madeira` | `lahore` · `karachi` · `bandar-seri-begawan` · `hoi-an` · `hue` | ⬜ |
@@ -100,8 +100,8 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R51**
-tip: 482 hub / 1444 settlements · audit issues 0 · 미커밋
+다음 시작: **R53**
+tip: 522 hub / 1564 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```
 

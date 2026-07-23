@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R51~R52 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R53 후임 기동)
+
+- tip **522 hub / 1564 settlements** (+20 hub / +60) · R51 페스·무스카트·케이프타운·요하네스버그·나이로비·아디스아바바·잔지바르·브리즈번·퍼스·애들레이드 · R52 골드코스트·케언즈·호바트·웰링턴·퀸스타운·크라이스트처치·로토루아·고베·요코하마·센다이 · hub skip 0
+- R51/R52 VERIFY: audit issues 0 · smoke 시드+exact(`세프루`/`시브`/`스텔렌보스`/`샌드턴`/`웨스트랜즈`/`비쇼프투`/`스톤타운`/`입스위치`/`프리맨틀`/`글레넬그`/`사우스포트`/`팜코브`/`샌디베이`/`로워헛`/`애로타운`/`리틀턴`/`응옹고타하`/`아시야`/`가마쿠라`/`나토리`) PASS
+- 보정: AF/AU/NZ/JP suburb·city·locality only(hub 도시명 미투입·POI 제외) · ≤50km · gold-coast hub alias `Surfers Paradise` 충돌→`사우스포트` · zanzibar 섬 정착지(스톤타운·부부부·파제) · name 충돌 0
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- **다음 배치표 2개**
+  - **R53 A**: `nara` · `nikko` · `hakone` · `nagasaki` · `matsumoto` / **B**: `takayama` · `beppu` · `belgrade` · `bucharest` · `sofia`
+  - **R54 A**: `tirana` · `skopje` · `sarajevo` · `podgorica` · `valletta` / **B**: `nicosia` · `stavanger` · `trondheim` · `montpellier` · `palermo`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · JP/EU/MED 인근 suburb·city only · placeId hubId prefix · 전역 name 충돌 회피 · sparse면 스킵 OK
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R53부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R49~R50 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R51 후임 기동)

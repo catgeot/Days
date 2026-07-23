@@ -19231,5 +19231,828 @@
         "mapboxId": null
       }
     ]
+  },
+  {
+    "hubId": "fes",
+    "settlements": [
+      {
+        "placeId": "fes-sefrou",
+        "name": "세프루",
+        "name_en": "Sefrou",
+        "featureType": "city",
+        "lat": 33.8306,
+        "lng": -4.8353,
+        "aliases": [
+          "Sefrou"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "fes-bhalil",
+        "name": "브할릴",
+        "name_en": "Bhalil",
+        "featureType": "locality",
+        "lat": 33.8511,
+        "lng": -4.8722,
+        "aliases": [
+          "Bhalil"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "fes-imouzzer-kandar",
+        "name": "이무제르칸다르",
+        "name_en": "Imouzzer Kandar",
+        "featureType": "locality",
+        "lat": 33.7306,
+        "lng": -5.0103,
+        "aliases": [
+          "Imouzzer Kandar"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "muscat",
+    "settlements": [
+      {
+        "placeId": "muscat-seeb",
+        "name": "시브",
+        "name_en": "Seeb",
+        "featureType": "city",
+        "lat": 23.6703,
+        "lng": 58.1891,
+        "aliases": [
+          "Al Seeb",
+          "As Seeb"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "muscat-mutrah",
+        "name": "무트라",
+        "name_en": "Mutrah",
+        "featureType": "locality",
+        "lat": 23.6165,
+        "lng": 58.5622,
+        "aliases": [
+          "Muttrah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "muscat-bawshar",
+        "name": "바우샤르",
+        "name_en": "Bawshar",
+        "featureType": "locality",
+        "lat": 23.5556,
+        "lng": 58.3989,
+        "aliases": [
+          "Baushar"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "cape-town",
+    "settlements": [
+      {
+        "placeId": "cape-town-stellenbosch",
+        "name": "스텔렌보스",
+        "name_en": "Stellenbosch",
+        "featureType": "city",
+        "lat": -33.9321,
+        "lng": 18.8602,
+        "aliases": [
+          "Stellenbosch"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cape-town-bellville",
+        "name": "벨빌",
+        "name_en": "Bellville",
+        "featureType": "city",
+        "lat": -33.9006,
+        "lng": 18.629,
+        "aliases": [
+          "Bellville"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cape-town-somerset-west",
+        "name": "서머셋웨스트",
+        "name_en": "Somerset West",
+        "featureType": "city",
+        "lat": -34.0833,
+        "lng": 18.85,
+        "aliases": [
+          "Somerset West"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "johannesburg",
+    "settlements": [
+      {
+        "placeId": "johannesburg-sandton",
+        "name": "샌드턴",
+        "name_en": "Sandton",
+        "featureType": "city",
+        "lat": -26.1076,
+        "lng": 28.0567,
+        "aliases": [
+          "Sandton"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "johannesburg-soweto",
+        "name": "소웨토",
+        "name_en": "Soweto",
+        "featureType": "city",
+        "lat": -26.2485,
+        "lng": 27.854,
+        "aliases": [
+          "Soweto"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "johannesburg-randburg",
+        "name": "랜드버그",
+        "name_en": "Randburg",
+        "featureType": "city",
+        "lat": -26.0939,
+        "lng": 28.0063,
+        "aliases": [
+          "Randburg"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "nairobi",
+    "settlements": [
+      {
+        "placeId": "nairobi-westlands",
+        "name": "웨스트랜즈",
+        "name_en": "Westlands",
+        "featureType": "locality",
+        "lat": -1.267,
+        "lng": 36.811,
+        "aliases": [
+          "Westlands"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nairobi-kiambu",
+        "name": "키암부",
+        "name_en": "Kiambu",
+        "featureType": "city",
+        "lat": -1.1714,
+        "lng": 36.8356,
+        "aliases": [
+          "Kiambu"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nairobi-karen",
+        "name": "카렌",
+        "name_en": "Karen",
+        "featureType": "locality",
+        "lat": -1.319,
+        "lng": 36.71,
+        "aliases": [
+          "Karen"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "addis-ababa",
+    "settlements": [
+      {
+        "placeId": "addis-ababa-bishoftu",
+        "name": "비쇼프투",
+        "name_en": "Bishoftu",
+        "featureType": "city",
+        "lat": 8.752,
+        "lng": 38.978,
+        "aliases": [
+          "Debre Zeyit",
+          "Debre Zeit"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "addis-ababa-burayu",
+        "name": "부라유",
+        "name_en": "Burayu",
+        "featureType": "city",
+        "lat": 9.0667,
+        "lng": 38.6167,
+        "aliases": [
+          "Burayu"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "addis-ababa-sululta",
+        "name": "술룰타",
+        "name_en": "Sululta",
+        "featureType": "locality",
+        "lat": 9.1833,
+        "lng": 38.75,
+        "aliases": [
+          "Sululta"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "zanzibar",
+    "settlements": [
+      {
+        "placeId": "zanzibar-stone-town",
+        "name": "스톤타운",
+        "name_en": "Stone Town",
+        "featureType": "locality",
+        "lat": -6.1639,
+        "lng": 39.1889,
+        "aliases": [
+          "Mji Mkongwe"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "zanzibar-bububu",
+        "name": "부부부",
+        "name_en": "Bububu",
+        "featureType": "locality",
+        "lat": -6.0833,
+        "lng": 39.2167,
+        "aliases": [
+          "Bububu"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "zanzibar-paje",
+        "name": "파제",
+        "name_en": "Paje",
+        "featureType": "locality",
+        "lat": -6.2667,
+        "lng": 39.5333,
+        "aliases": [
+          "Paje"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "brisbane",
+    "settlements": [
+      {
+        "placeId": "brisbane-southbank",
+        "name": "사우스뱅크",
+        "name_en": "South Bank",
+        "featureType": "locality",
+        "lat": -27.4767,
+        "lng": 153.022,
+        "aliases": [
+          "South Brisbane"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "brisbane-ipswich",
+        "name": "입스위치",
+        "name_en": "Ipswich",
+        "featureType": "city",
+        "lat": -27.6144,
+        "lng": 152.7608,
+        "aliases": [
+          "Ipswich"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "brisbane-redcliffe",
+        "name": "레드클리프",
+        "name_en": "Redcliffe",
+        "featureType": "city",
+        "lat": -27.2333,
+        "lng": 153.1167,
+        "aliases": [
+          "Redcliffe"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "perth",
+    "settlements": [
+      {
+        "placeId": "perth-fremantle",
+        "name": "프리맨틀",
+        "name_en": "Fremantle",
+        "featureType": "city",
+        "lat": -32.0569,
+        "lng": 115.7439,
+        "aliases": [
+          "Fremantle"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "perth-subiaco",
+        "name": "수비아코",
+        "name_en": "Subiaco",
+        "featureType": "locality",
+        "lat": -31.9489,
+        "lng": 115.824,
+        "aliases": [
+          "Subiaco"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "perth-cottesloe",
+        "name": "코테슬로",
+        "name_en": "Cottesloe",
+        "featureType": "locality",
+        "lat": -31.995,
+        "lng": 115.755,
+        "aliases": [
+          "Cottesloe"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "adelaide",
+    "settlements": [
+      {
+        "placeId": "adelaide-glenelg",
+        "name": "글레넬그",
+        "name_en": "Glenelg",
+        "featureType": "locality",
+        "lat": -34.98,
+        "lng": 138.512,
+        "aliases": [
+          "Glenelg"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "adelaide-port-adelaide",
+        "name": "포트애들레이드",
+        "name_en": "Port Adelaide",
+        "featureType": "city",
+        "lat": -34.848,
+        "lng": 138.503,
+        "aliases": [
+          "Port Adelaide"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "adelaide-norwood",
+        "name": "노우드",
+        "name_en": "Norwood",
+        "featureType": "locality",
+        "lat": -34.922,
+        "lng": 138.631,
+        "aliases": [
+          "Norwood"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "gold-coast",
+    "settlements": [
+      {
+        "placeId": "gold-coast-southport",
+        "name": "사우스포트",
+        "name_en": "Southport",
+        "featureType": "city",
+        "lat": -27.967,
+        "lng": 153.405,
+        "aliases": [
+          "Southport"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "gold-coast-broadbeach",
+        "name": "브로드비치",
+        "name_en": "Broadbeach",
+        "featureType": "locality",
+        "lat": -28.027,
+        "lng": 153.431,
+        "aliases": [
+          "Broadbeach"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "gold-coast-coolangatta",
+        "name": "쿨랑가타",
+        "name_en": "Coolangatta",
+        "featureType": "city",
+        "lat": -28.169,
+        "lng": 153.535,
+        "aliases": [
+          "Coolangatta"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "cairns",
+    "settlements": [
+      {
+        "placeId": "cairns-palm-cove",
+        "name": "팜코브",
+        "name_en": "Palm Cove",
+        "featureType": "locality",
+        "lat": -16.744,
+        "lng": 145.671,
+        "aliases": [
+          "Palm Cove"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cairns-kuranda",
+        "name": "쿠란다",
+        "name_en": "Kuranda",
+        "featureType": "locality",
+        "lat": -16.819,
+        "lng": 145.637,
+        "aliases": [
+          "Kuranda"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cairns-trinity-beach",
+        "name": "트리니티비치",
+        "name_en": "Trinity Beach",
+        "featureType": "locality",
+        "lat": -16.788,
+        "lng": 145.697,
+        "aliases": [
+          "Trinity Beach"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "hobart",
+    "settlements": [
+      {
+        "placeId": "hobart-sandy-bay",
+        "name": "샌디베이",
+        "name_en": "Sandy Bay",
+        "featureType": "locality",
+        "lat": -42.906,
+        "lng": 147.332,
+        "aliases": [
+          "Sandy Bay"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hobart-kingston",
+        "name": "킹스턴",
+        "name_en": "Kingston",
+        "featureType": "city",
+        "lat": -42.976,
+        "lng": 147.308,
+        "aliases": [
+          "Kingston Tasmania"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hobart-glenorchy",
+        "name": "글레노키",
+        "name_en": "Glenorchy",
+        "featureType": "city",
+        "lat": -42.833,
+        "lng": 147.275,
+        "aliases": [
+          "Glenorchy"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "wellington",
+    "settlements": [
+      {
+        "placeId": "wellington-lower-hutt",
+        "name": "로워헛",
+        "name_en": "Lower Hutt",
+        "featureType": "city",
+        "lat": -41.209,
+        "lng": 174.908,
+        "aliases": [
+          "Lower Hutt"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "wellington-porirua",
+        "name": "포리루아",
+        "name_en": "Porirua",
+        "featureType": "city",
+        "lat": -41.133,
+        "lng": 174.84,
+        "aliases": [
+          "Porirua"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "wellington-petone",
+        "name": "페톤",
+        "name_en": "Petone",
+        "featureType": "locality",
+        "lat": -41.226,
+        "lng": 174.875,
+        "aliases": [
+          "Petone"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "queenstown",
+    "settlements": [
+      {
+        "placeId": "queenstown-frankton",
+        "name": "프랭크턴",
+        "name_en": "Frankton",
+        "featureType": "locality",
+        "lat": -45.021,
+        "lng": 168.74,
+        "aliases": [
+          "Frankton"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "queenstown-arrowtown",
+        "name": "애로타운",
+        "name_en": "Arrowtown",
+        "featureType": "locality",
+        "lat": -44.943,
+        "lng": 168.835,
+        "aliases": [
+          "Arrowtown"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "queenstown-kelvin-heights",
+        "name": "켈빈하이츠",
+        "name_en": "Kelvin Heights",
+        "featureType": "locality",
+        "lat": -45.05,
+        "lng": 168.7,
+        "aliases": [
+          "Kelvin Heights"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "christchurch",
+    "settlements": [
+      {
+        "placeId": "christchurch-lyttelton",
+        "name": "리틀턴",
+        "name_en": "Lyttelton",
+        "featureType": "city",
+        "lat": -43.603,
+        "lng": 172.719,
+        "aliases": [
+          "Lyttelton"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "christchurch-sumner",
+        "name": "섬너",
+        "name_en": "Sumner",
+        "featureType": "locality",
+        "lat": -43.567,
+        "lng": 172.76,
+        "aliases": [
+          "Sumner"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "christchurch-rolleston",
+        "name": "롤스턴",
+        "name_en": "Rolleston",
+        "featureType": "city",
+        "lat": -43.59,
+        "lng": 172.383,
+        "aliases": [
+          "Rolleston"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "rotorua",
+    "settlements": [
+      {
+        "placeId": "rotorua-ngongotaha",
+        "name": "응옹고타하",
+        "name_en": "Ngongotaha",
+        "featureType": "locality",
+        "lat": -38.078,
+        "lng": 176.21,
+        "aliases": [
+          "Ngongotaha"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "rotorua-hamurana",
+        "name": "하무라나",
+        "name_en": "Hamurana",
+        "featureType": "locality",
+        "lat": -38.033,
+        "lng": 176.25,
+        "aliases": [
+          "Hamurana"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "rotorua-reporoa",
+        "name": "레포로아",
+        "name_en": "Reporoa",
+        "featureType": "locality",
+        "lat": -38.433,
+        "lng": 176.333,
+        "aliases": [
+          "Reporoa"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "kobe",
+    "settlements": [
+      {
+        "placeId": "kobe-ashiya",
+        "name": "아시야",
+        "name_en": "Ashiya",
+        "featureType": "city",
+        "lat": 34.726,
+        "lng": 135.303,
+        "aliases": [
+          "Ashiya"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kobe-nishinomiya",
+        "name": "니시노미야",
+        "name_en": "Nishinomiya",
+        "featureType": "city",
+        "lat": 34.737,
+        "lng": 135.342,
+        "aliases": [
+          "Nishinomiya"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kobe-akashi",
+        "name": "아카시",
+        "name_en": "Akashi",
+        "featureType": "city",
+        "lat": 34.643,
+        "lng": 134.997,
+        "aliases": [
+          "Akashi"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "yokohama",
+    "settlements": [
+      {
+        "placeId": "yokohama-kawasaki",
+        "name": "가와사키",
+        "name_en": "Kawasaki",
+        "featureType": "city",
+        "lat": 35.53,
+        "lng": 139.703,
+        "aliases": [
+          "Kawasaki"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "yokohama-kamakura",
+        "name": "가마쿠라",
+        "name_en": "Kamakura",
+        "featureType": "city",
+        "lat": 35.319,
+        "lng": 139.547,
+        "aliases": [
+          "Kamakura"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "yokohama-yokosuka",
+        "name": "요코스카",
+        "name_en": "Yokosuka",
+        "featureType": "city",
+        "lat": 35.281,
+        "lng": 139.672,
+        "aliases": [
+          "Yokosuka"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "sendai",
+    "settlements": [
+      {
+        "placeId": "sendai-natori",
+        "name": "나토리",
+        "name_en": "Natori",
+        "featureType": "city",
+        "lat": 38.171,
+        "lng": 140.892,
+        "aliases": [
+          "Natori"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sendai-tagajo",
+        "name": "다가조",
+        "name_en": "Tagajo",
+        "featureType": "city",
+        "lat": 38.294,
+        "lng": 141.004,
+        "aliases": [
+          "Tagajō",
+          "Tagajo"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sendai-shiogama",
+        "name": "시오가마",
+        "name_en": "Shiogama",
+        "featureType": "city",
+        "lat": 38.314,
+        "lng": 141.022,
+        "aliases": [
+          "Shiogama"
+        ],
+        "mapboxId": null
+      }
+    ]
   }
 ]
