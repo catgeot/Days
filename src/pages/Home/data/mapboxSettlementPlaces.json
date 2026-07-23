@@ -20932,5 +20932,846 @@
         "mapboxId": null
       }
     ]
+  },
+  {
+    "hubId": "faro",
+    "settlements": [
+      {
+        "placeId": "faro-olhao",
+        "name": "올량",
+        "name_en": "Olhao",
+        "featureType": "city",
+        "lat": 37.026,
+        "lng": -7.841,
+        "aliases": [
+          "Olhão",
+          "Olhao"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "faro-loule",
+        "name": "룰레",
+        "name_en": "Loule",
+        "featureType": "city",
+        "lat": 37.1378,
+        "lng": -8.0197,
+        "aliases": [
+          "Loulé",
+          "Loule"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "faro-albufeira",
+        "name": "알부페이라",
+        "name_en": "Albufeira",
+        "featureType": "city",
+        "lat": 37.0891,
+        "lng": -8.249,
+        "aliases": [
+          "Albufeira"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "cork",
+    "settlements": [
+      {
+        "placeId": "cork-cobh",
+        "name": "코브",
+        "name_en": "Cobh",
+        "featureType": "city",
+        "lat": 51.8503,
+        "lng": -8.2943,
+        "aliases": [
+          "Cobh"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cork-kinsale",
+        "name": "킨세일",
+        "name_en": "Kinsale",
+        "featureType": "city",
+        "lat": 51.705,
+        "lng": -8.522,
+        "aliases": [
+          "Kinsale"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cork-midleton",
+        "name": "미들턴",
+        "name_en": "Midleton",
+        "featureType": "city",
+        "lat": 51.915,
+        "lng": -8.175,
+        "aliases": [
+          "Midleton"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "galway",
+    "settlements": [
+      {
+        "placeId": "galway-oranmore",
+        "name": "오란모어",
+        "name_en": "Oranmore",
+        "featureType": "locality",
+        "lat": 53.268,
+        "lng": -8.92,
+        "aliases": [
+          "Oranmore"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "galway-athenry",
+        "name": "아텐리",
+        "name_en": "Athenry",
+        "featureType": "city",
+        "lat": 53.297,
+        "lng": -8.746,
+        "aliases": [
+          "Athenry"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "galway-barna",
+        "name": "바르나",
+        "name_en": "Barna",
+        "featureType": "locality",
+        "lat": 53.252,
+        "lng": -9.15,
+        "aliases": [
+          "Barna",
+          "Bearna"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "belfast",
+    "settlements": [
+      {
+        "placeId": "belfast-lisburn",
+        "name": "리스번",
+        "name_en": "Lisburn",
+        "featureType": "city",
+        "lat": 54.5162,
+        "lng": -6.0581,
+        "aliases": [
+          "Lisburn"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "belfast-bangor",
+        "name": "뱅거",
+        "name_en": "Bangor NI",
+        "featureType": "city",
+        "lat": 54.6598,
+        "lng": -5.6697,
+        "aliases": [
+          "Bangor NI",
+          "Bangor County Down"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "belfast-carrickfergus",
+        "name": "캐릭퍼거스",
+        "name_en": "Carrickfergus",
+        "featureType": "city",
+        "lat": 54.7158,
+        "lng": -5.8058,
+        "aliases": [
+          "Carrickfergus"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "madeira",
+    "settlements": [
+      {
+        "placeId": "madeira-funchal",
+        "name": "푼샬",
+        "name_en": "Funchal",
+        "featureType": "city",
+        "lat": 32.6669,
+        "lng": -16.9241,
+        "aliases": [
+          "Funchal"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "madeira-camara-de-lobos",
+        "name": "카마라드루부스",
+        "name_en": "Camara de Lobos",
+        "featureType": "city",
+        "lat": 32.6506,
+        "lng": -16.977,
+        "aliases": [
+          "Câmara de Lobos",
+          "Camara de Lobos"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "madeira-machico",
+        "name": "마시쿠",
+        "name_en": "Machico",
+        "featureType": "city",
+        "lat": 32.719,
+        "lng": -16.767,
+        "aliases": [
+          "Machico"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "lahore",
+    "settlements": [
+      {
+        "placeId": "lahore-sheikhupura",
+        "name": "셰이쿠푸라",
+        "name_en": "Sheikhupura",
+        "featureType": "city",
+        "lat": 31.7131,
+        "lng": 73.9783,
+        "aliases": [
+          "Sheikhupura"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "lahore-muridke",
+        "name": "무리드케",
+        "name_en": "Muridke",
+        "featureType": "city",
+        "lat": 31.802,
+        "lng": 74.255,
+        "aliases": [
+          "Muridke"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "lahore-kasur",
+        "name": "카수르",
+        "name_en": "Kasur",
+        "featureType": "city",
+        "lat": 31.1189,
+        "lng": 74.4503,
+        "aliases": [
+          "Kasur",
+          "Qasur"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "karachi",
+    "settlements": [
+      {
+        "placeId": "karachi-clifton",
+        "name": "클리프턴",
+        "name_en": "Clifton Karachi",
+        "featureType": "locality",
+        "lat": 24.8138,
+        "lng": 67.0299,
+        "aliases": [
+          "Clifton Karachi"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "karachi-malir",
+        "name": "말리르",
+        "name_en": "Malir",
+        "featureType": "locality",
+        "lat": 24.893,
+        "lng": 67.195,
+        "aliases": [
+          "Malir"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "karachi-korangi",
+        "name": "코랑기",
+        "name_en": "Korangi",
+        "featureType": "locality",
+        "lat": 24.842,
+        "lng": 67.137,
+        "aliases": [
+          "Korangi"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "bandar-seri-begawan",
+    "settlements": [
+      {
+        "placeId": "bandar-seri-begawan-gadong",
+        "name": "가동",
+        "name_en": "Gadong",
+        "featureType": "locality",
+        "lat": 4.906,
+        "lng": 114.916,
+        "aliases": [
+          "Gadong"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bandar-seri-begawan-jerudong",
+        "name": "제루동",
+        "name_en": "Jerudong",
+        "featureType": "locality",
+        "lat": 4.935,
+        "lng": 114.842,
+        "aliases": [
+          "Jerudong"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bandar-seri-begawan-muara",
+        "name": "무아라",
+        "name_en": "Muara Brunei",
+        "featureType": "locality",
+        "lat": 5.033,
+        "lng": 115.066,
+        "aliases": [
+          "Muara Brunei"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "hoi-an",
+    "settlements": [
+      {
+        "placeId": "hoi-an-dien-ban",
+        "name": "디엔반",
+        "name_en": "Dien Ban",
+        "featureType": "city",
+        "lat": 15.899,
+        "lng": 108.225,
+        "aliases": [
+          "Dien Ban",
+          "Điện Bàn"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hoi-an-duy-xuyen",
+        "name": "주이쑤옌",
+        "name_en": "Duy Xuyen",
+        "featureType": "locality",
+        "lat": 15.79,
+        "lng": 108.22,
+        "aliases": [
+          "Duy Xuyen",
+          "Duy Xuyên"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hoi-an-cam-thanh",
+        "name": "깜타인",
+        "name_en": "Cam Thanh",
+        "featureType": "locality",
+        "lat": 15.878,
+        "lng": 108.37,
+        "aliases": [
+          "Cam Thanh",
+          "Cẩm Thanh"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "hue",
+    "settlements": [
+      {
+        "placeId": "hue-huong-thuy",
+        "name": "흐엉투이",
+        "name_en": "Huong Thuy",
+        "featureType": "city",
+        "lat": 16.41,
+        "lng": 107.655,
+        "aliases": [
+          "Huong Thuy",
+          "Hương Thủy"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hue-phong-dien",
+        "name": "퐁디엔",
+        "name_en": "Phong Dien Hue",
+        "featureType": "locality",
+        "lat": 16.58,
+        "lng": 107.36,
+        "aliases": [
+          "Phong Dien Hue",
+          "Phong Điền"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hue-thuan-an",
+        "name": "투언안",
+        "name_en": "Thuan An Hue",
+        "featureType": "locality",
+        "lat": 16.56,
+        "lng": 107.64,
+        "aliases": [
+          "Thuan An Hue",
+          "Thuận An"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "nha-trang",
+    "settlements": [
+      {
+        "placeId": "nha-trang-cam-ranh",
+        "name": "깜란",
+        "name_en": "Cam Ranh",
+        "featureType": "city",
+        "lat": 11.9214,
+        "lng": 109.1591,
+        "aliases": [
+          "Cam Ranh"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nha-trang-ninh-hoa",
+        "name": "닌호아",
+        "name_en": "Ninh Hoa",
+        "featureType": "city",
+        "lat": 12.491,
+        "lng": 109.14,
+        "aliases": [
+          "Ninh Hoa",
+          "Ninh Hòa"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nha-trang-dien-khanh",
+        "name": "디엔칸",
+        "name_en": "Dien Khanh",
+        "featureType": "locality",
+        "lat": 12.21,
+        "lng": 109.1,
+        "aliases": [
+          "Dien Khanh",
+          "Diên Khánh"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "phu-quoc",
+    "settlements": [
+      {
+        "placeId": "phu-quoc-duong-dong",
+        "name": "즈엉동",
+        "name_en": "Duong Dong",
+        "featureType": "city",
+        "lat": 10.227,
+        "lng": 103.963,
+        "aliases": [
+          "Duong Dong",
+          "Dương Đông"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "phu-quoc-an-thoi",
+        "name": "안토이",
+        "name_en": "An Thoi",
+        "featureType": "locality",
+        "lat": 10.02,
+        "lng": 104.02,
+        "aliases": [
+          "An Thoi",
+          "An Thới"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "phu-quoc-ham-ninh",
+        "name": "함닌",
+        "name_en": "Ham Ninh",
+        "featureType": "locality",
+        "lat": 10.2,
+        "lng": 104.05,
+        "aliases": [
+          "Ham Ninh",
+          "Hàm Ninh"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "sapa",
+    "settlements": [
+      {
+        "placeId": "sapa-lao-cai",
+        "name": "라오까이",
+        "name_en": "Lao Cai",
+        "featureType": "city",
+        "lat": 22.4856,
+        "lng": 103.9707,
+        "aliases": [
+          "Lao Cai",
+          "Lào Cai"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sapa-ta-phin",
+        "name": "타핀",
+        "name_en": "Ta Phin",
+        "featureType": "locality",
+        "lat": 22.39,
+        "lng": 103.85,
+        "aliases": [
+          "Ta Phin",
+          "Tả Phìn"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sapa-ta-van",
+        "name": "타반",
+        "name_en": "Ta Van",
+        "featureType": "locality",
+        "lat": 22.3,
+        "lng": 103.88,
+        "aliases": [
+          "Ta Van",
+          "Tả Van"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "boracay",
+    "settlements": [
+      {
+        "placeId": "boracay-manoc-manoc",
+        "name": "마녹마녹",
+        "name_en": "Manoc-Manoc",
+        "featureType": "locality",
+        "lat": 11.95,
+        "lng": 121.93,
+        "aliases": [
+          "Manoc-Manoc"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "boracay-balabag",
+        "name": "발라바그",
+        "name_en": "Balabag Boracay",
+        "featureType": "locality",
+        "lat": 11.97,
+        "lng": 121.92,
+        "aliases": [
+          "Balabag Boracay"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "boracay-caticlan",
+        "name": "카티클란",
+        "name_en": "Caticlan",
+        "featureType": "locality",
+        "lat": 11.935,
+        "lng": 121.955,
+        "aliases": [
+          "Caticlan"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "palawan",
+    "settlements": [
+      {
+        "placeId": "palawan-puerto-princesa",
+        "name": "푸에르토프린세사",
+        "name_en": "Puerto Princesa",
+        "featureType": "city",
+        "lat": 9.7392,
+        "lng": 118.7353,
+        "aliases": [
+          "Puerto Princesa"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "palawan-san-jose",
+        "name": "산호세팔라완",
+        "name_en": "San Jose Palawan",
+        "featureType": "locality",
+        "lat": 9.78,
+        "lng": 118.75,
+        "aliases": [
+          "San Jose Palawan"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "palawan-bacungan",
+        "name": "바쿵안",
+        "name_en": "Bacungan",
+        "featureType": "locality",
+        "lat": 9.85,
+        "lng": 118.72,
+        "aliases": [
+          "Bacungan"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "el-nido",
+    "settlements": [
+      {
+        "placeId": "el-nido-corong-corong",
+        "name": "코롱코롱",
+        "name_en": "Corong-Corong",
+        "featureType": "locality",
+        "lat": 11.17,
+        "lng": 119.39,
+        "aliases": [
+          "Corong-Corong"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "el-nido-bucana",
+        "name": "부카나",
+        "name_en": "Bucana El Nido",
+        "featureType": "locality",
+        "lat": 11.19,
+        "lng": 119.41,
+        "aliases": [
+          "Bucana El Nido"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "el-nido-pasadena",
+        "name": "파사데나엘니도",
+        "name_en": "Pasadena El Nido",
+        "featureType": "locality",
+        "lat": 11.15,
+        "lng": 119.4,
+        "aliases": [
+          "Pasadena El Nido"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "bohol",
+    "settlements": [
+      {
+        "placeId": "bohol-tagbilaran",
+        "name": "타그빌라란",
+        "name_en": "Tagbilaran",
+        "featureType": "city",
+        "lat": 9.6729,
+        "lng": 123.873,
+        "aliases": [
+          "Tagbilaran"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bohol-panglao",
+        "name": "팡라오",
+        "name_en": "Panglao",
+        "featureType": "locality",
+        "lat": 9.578,
+        "lng": 123.78,
+        "aliases": [
+          "Panglao"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bohol-dauis",
+        "name": "다우이스",
+        "name_en": "Dauis",
+        "featureType": "locality",
+        "lat": 9.625,
+        "lng": 123.865,
+        "aliases": [
+          "Dauis"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "lombok",
+    "settlements": [
+      {
+        "placeId": "lombok-mataram",
+        "name": "마타람",
+        "name_en": "Mataram",
+        "featureType": "city",
+        "lat": -8.5833,
+        "lng": 116.1167,
+        "aliases": [
+          "Mataram"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "lombok-senggigi",
+        "name": "셍기기",
+        "name_en": "Senggigi",
+        "featureType": "locality",
+        "lat": -8.49,
+        "lng": 116.04,
+        "aliases": [
+          "Senggigi"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "lombok-praya",
+        "name": "프라야",
+        "name_en": "Praya Lombok",
+        "featureType": "city",
+        "lat": -8.705,
+        "lng": 116.27,
+        "aliases": [
+          "Praya Lombok"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "koh-samui",
+    "settlements": [
+      {
+        "placeId": "koh-samui-chaweng",
+        "name": "차웽",
+        "name_en": "Chaweng",
+        "featureType": "locality",
+        "lat": 9.53,
+        "lng": 100.06,
+        "aliases": [
+          "Chaweng"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "koh-samui-lamai",
+        "name": "라마이",
+        "name_en": "Lamai",
+        "featureType": "locality",
+        "lat": 9.46,
+        "lng": 100.04,
+        "aliases": [
+          "Lamai"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "koh-samui-nathon",
+        "name": "나톤",
+        "name_en": "Nathon",
+        "featureType": "locality",
+        "lat": 9.538,
+        "lng": 99.935,
+        "aliases": [
+          "Nathon"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "langkawi",
+    "settlements": [
+      {
+        "placeId": "langkawi-kuah",
+        "name": "쿠아",
+        "name_en": "Kuah",
+        "featureType": "city",
+        "lat": 6.326,
+        "lng": 99.846,
+        "aliases": [
+          "Kuah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "langkawi-pantai-cenang",
+        "name": "판타이체낭",
+        "name_en": "Pantai Cenang",
+        "featureType": "locality",
+        "lat": 6.29,
+        "lng": 99.73,
+        "aliases": [
+          "Pantai Cenang",
+          "Cenang"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "langkawi-padang-matsirat",
+        "name": "파당맛시랏",
+        "name_en": "Padang Matsirat",
+        "featureType": "locality",
+        "lat": 6.35,
+        "lng": 99.73,
+        "aliases": [
+          "Padang Matsirat"
+        ],
+        "mapboxId": null
+      }
+    ]
   }
 ]

@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R55~R56 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R57 후임 기동)
+
+- tip **562 hub / 1684 settlements** (+20 hub / +60) · R55 파로·코크·골웨이·벨파스트·마데이라·라호르·카라치·반다르스리브가완·호이안·후에 · R56 나트랑·푸꾸옥·사파·보라카이·팔라완·엘니도·보홀·롬복·코사무이·랑카위 · hub skip 0
+- R55/R56 VERIFY: audit issues 0 · smoke 시드+exact(`올량`/`코브`/`오란모어`/`리스번`/`푼샬`/`셰이쿠푸라`/`클리프턴`/`가동`/`디엔반`/`흐엉투이`/`깜란`/`즈엉동`/`라오까이`/`마녹마녹`/`푸에르토프린세사`/`코롱코롱`/`타그빌라란`/`마타람`/`차웽`/`쿠아`) PASS
+- 보정: EU/IE/PT/PK/BN/VN/SEA suburb·city·locality only(hub 도시명 미투입·섬 허브는 섬 내 locality·POI 제외) · ≤50km · name 충돌 0
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- **다음 배치표 2개**
+  - **R57 A**: `ayutthaya` · `vang-vieng` · `bagan` · `kumamoto` · `hakodate` / **B**: `ishigaki` · `miyakojima` · `tsushima` · `guam` · `saipan`
+  - **R58 A**: `santorini` · `cappadocia` · `kotor` · `bled` · `ibiza` / **B**: `crete` · `havana` · `ulaanbaatar` · `moscow` · `st-petersburg`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · TH/LA/MM/JP/섬·EU/CU/MN/RU 인근 suburb·city only · placeId hubId prefix · 전역 name 충돌 회피 · sparse면 스킵 OK
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R57부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R53~R54 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R55 후임 기동)
