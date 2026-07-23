@@ -2,21 +2,52 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 국내 명소 좌표 — TourAPI 보정 (**다음 세션**)
+
+**상태**: 📋 준비 완료 · 착수 대기 · 계획 [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
+
+- 범위: KR tip **~210 hub / 1137 명소** · `mapy`/`mapx` HIT만 스냅 · 해외 제외
+- 배경: Mapbox/Nominatim KR 한계(정류장·NO_HIT) → TourAPI가 국내 핀에 유리 (김유정 `127933` 실증)
+- **분리**: `tourapi-content-id-overrides` = slug **갤러리** · 명소 tip 좌표 매핑은 **신규 스크립트/캐시**
+- 금지: 추정 유지 · 갤러리 SSOT에 attraction 좌표 섞기 · `VITE_` · UI/releaseNotes
+
+### 에이전트 핸드오프
+
+| | |
+|--|--|
+| **읽을 것 3** | [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 본 절 · `.ai-context` 3·5·6절 TourAPI/명소 1줄 |
+| **할 일** | 세대0 매칭 스크립트+김유정/P0 스모크 → 세대1 KR HIT 배치 tip 패치 · audit 0 |
+| **금지 3** | 갤러리 overrides에 좌표 혼용 · hub 중심 추정 · 합의 전 UI/releaseNotes |
+| **제시어** | 아래 복붙 블록 |
+
+**다음 세션 제시어** (복붙):
+
+```
+TourAPI-명소좌표-이어하기
+@plans/city-attraction-tourapi-coord-plan.md
+@plans/2026-07-23-project-log.md
+@.ai-context.md
+
+국내 cityAttractionHubs 좌표를 TourAPI mapy/mapx로 보정.
+갤러리 slug SSOT와 분리. 김유정 127933 회귀 금지.
+세대0=스크립트+스모크 → 세대1=KR HIT 배치. VITE_/UI/releaseNotes 금지.
+```
+
 ## 명소 좌표 — 김유정문학촌 TourAPI 교정
 
-**상태**: ✅ tip 패치 · audit 0 · **커밋·push 대기/진행**
+**상태**: ✅ tip 패치 · audit 0 · **커밋·push** (`99b8e9b`)
 
 - 원인: R 패치가 OSM 버스정류장 회피하며 `37.82195,127.70279`로 이동 → TourAPI 대비 **~1.4km 서측** (사람 QA: 더 어긋남)
-- 교정: TourAPI `contentId=127933` `mapy/mapx` → **`37.8183632, 127.7176781`** (구 tip≈정류장과 139m, 현 tip과 1367m)
-- Nominatim `김유정문학촌`=버스정류장 → SNAP 금지 유지 · TourAPI 수동 고정
+- 교정: TourAPI `contentId=127933` `mapy/mapx` → **`37.8183632, 127.7176781`**
+- Nominatim `김유정문학촌`=버스정류장 → SNAP 금지 유지 · TourAPI 수동 고정 · **전수 보정은 위 「다음 세션」 절**
 
 ## 명소 좌표 수리 — PR #24 main 머지
 
 **상태**: ✅ **main 머지·push** (`5e83eba`) · PR [#24](https://github.com/catgeot/Days/pull/24) closed/merged · tip **4067** · hubs 630
 
-- 로컬 재검증: `audit:city-attraction-hubs` issues **0** · `verify --smoke` P0 **PASS** (김유정문학촌은 NO_HIT 보호 유지·좌표는 tip 갱신됨)
-- **남은 일(사람)**: 지도 QA — 양구(한반도섬·박수근) · 김유정문학촌 · 하남 덕풍시장 · 진도타워
-- 선택: 잔여 prior skip / 해외 SNAP 재개
+- 로컬 재검증: `audit:city-attraction-hubs` issues **0** · `verify --smoke` P0 **PASS**
+- **남은 일(사람)**: 지도 QA — 양구 · 김유정(TourAPI 교정 후) · 덕풍 · 진도타워
+- 선택: 잔여 prior skip / 해외 SNAP · **KR TourAPI 전수 보정(다음 세션)**
 
 ## 명소 좌표 수리 — KR R11–R12 (**소진/정지**)
 

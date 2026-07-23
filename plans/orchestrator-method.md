@@ -312,6 +312,7 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「배치표부터 · 워커2」 |
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§4.2 준수」 |
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP 배치」 |
+| 국내 명소 TourAPI 좌표 | `TourAPI-명소좌표-이어하기` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 「KR HIT만 mapy/mapx · 갤러리 SSOT 분리」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동」 |
 
