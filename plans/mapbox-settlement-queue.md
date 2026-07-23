@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R36 ✅ · **다음 시작 R37**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R38 ✅ · **다음 시작 R39**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -67,8 +67,8 @@
 | **R34** | `sopot` · `stralsund` · `wismar` · `suseong` · `dalseo` | `haeundae` · `gangnam` · `seocho` · `durham` · `winchester` | ✅ |
 | **R35** | `salisbury` · `greifswald` · `schwerin` · `mapo` · `yongsan` | `songpa` · `suyeong` · `gwanak` · `norwich` · `potsdam` | ✅ |
 | **R36** | `weimar` · `bamberg` · `regensburg` · `jongno` · `seodaemun` | `dongjak` · `yeongdeungpo` · `gangdong` · `ipswich` · `colchester` | ✅ |
-| **R37** | `cheltenham` · `heidelberg` · `passau` · `gangseo` · `guro` | `geumcheon` · `nowon` · `dobong` · `leicester` · `coventry` | ⬜ |
-| **R38** | `reading` · `freiburg` · `augsburg` · `yangcheon` · `eunpyeong` | `seongbuk` · `seongdong` · `gwangjin` · `derby` · `mannheim` | ⬜ |
+| **R37** | `cheltenham` · `heidelberg` · `passau` · `gangseo` · `guro` | `geumcheon` · `nowon` · `dobong` · `leicester` · `coventry` | ✅ |
+| **R38** | `reading` · `freiburg` · `augsburg` · `yangcheon` · `eunpyeong` | `seongbuk` · `seongdong` · `gwangjin` · `derby` · `mannheim` | ✅ |
 | **R39** | `karlsruhe` · `ulm` · `erfurt` · `jungnang` · `dongdaemun` | `junggu` · `gangbuk` · `bupyeong` · `stuttgart` · `bonn` | ⬜ |
 | **R40** | `wiesbaden` · `mainz` · `magdeburg` · `busanjin` · `namdong` | `gyeyang` · `michuhol` · `dongnae` · `chemnitz` · `saarbrucken` | ⬜ |
 | **R41** | `kassel` · `dortmund` · `wuerzburg` · `geumjeong` · `yeonje` | `saha` · `sasang` · `daedeok` · `chicago` · `miami` | ⬜ |
@@ -100,7 +100,7 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R37**
+다음 시작: **R39**
 tip: 342 hub / 1025 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```

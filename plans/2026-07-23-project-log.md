@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R37~R38 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R39 후임 기동)
+
+- tip **382 hub / 1145 settlements** (+20 hub / +60) · R37 첼튼엄·하이델베르크·파사우·강서·구로·금천·노원·도봉·레스터·코번트리 · R38 레딩·프라이부르크·아우크스부르크·양천·은평·성북·성동·광진·더비·만하임 · hub skip 0
+- R37/R38 VERIFY: audit issues 0 · smoke 시드+exact(`프레스트버리`/`네카르슈타이나흐`/`필스호펜`/`화곡동`/`신도림동`/`가산동`/`상계동`/`쌍문동`/`오드비`/`케닐워스`/`캐버샴`/`브라이자흐`/`프리드베르크`/`목동`/`응암동`/`돈암동`/`성수동`/`자양동`/`미클오버`/`슈베칭겐`) PASS
+- 보정: KR 구 hub는 하위 동만(구명 미투입) · `seongbuk` 성북동 스킵(seoul) · `eunpyeong` 갈현 스킵(기등록)
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r37`/`_tmp-r38`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R39 A**: `karlsruhe` · `ulm` · `erfurt` · `jungnang` · `dongdaemun` / **B**: `junggu` · `gangbuk` · `bupyeong` · `stuttgart` · `bonn`
+  - **R40 A**: `wiesbaden` · `mainz` · `magdeburg` · `busanjin` · `namdong` / **B**: `gyeyang` · `michuhol` · `dongnae` · `chemnitz` · `saarbrucken`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · KR 구 hub는 하위 동·위성만 · placeId hubId prefix · 전역 name 충돌 회피
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R39부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R35~R36 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R37 후임 기동)

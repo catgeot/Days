@@ -13532,5 +13532,830 @@
         ]
       }
     ]
+  },
+  {
+    "hubId": "cheltenham",
+    "settlements": [
+      {
+        "placeId": "cheltenham-prestbury",
+        "name": "프레스트버리",
+        "name_en": "Prestbury",
+        "featureType": "place",
+        "lat": 51.9145,
+        "lng": -2.0445,
+        "mapboxId": null,
+        "aliases": [
+          "Prestbury"
+        ]
+      },
+      {
+        "placeId": "cheltenham-charlton-kings",
+        "name": "찰턴킹스",
+        "name_en": "Charlton Kings",
+        "featureType": "locality",
+        "lat": 51.8805,
+        "lng": -2.0475,
+        "mapboxId": null,
+        "aliases": [
+          "Charlton Kings"
+        ]
+      },
+      {
+        "placeId": "cheltenham-leckhampton",
+        "name": "렉햄프턴",
+        "name_en": "Leckhampton",
+        "featureType": "locality",
+        "lat": 51.8755,
+        "lng": -2.0785,
+        "mapboxId": null,
+        "aliases": [
+          "Leckhampton"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "heidelberg",
+    "settlements": [
+      {
+        "placeId": "heidelberg-neckarsteinach",
+        "name": "네카르슈타이나흐",
+        "name_en": "Neckarsteinach",
+        "featureType": "place",
+        "lat": 49.408,
+        "lng": 8.836,
+        "mapboxId": null,
+        "aliases": [
+          "Neckarsteinach"
+        ]
+      },
+      {
+        "placeId": "heidelberg-ziegelhausen",
+        "name": "치겔하우젠",
+        "name_en": "Ziegelhausen",
+        "featureType": "locality",
+        "lat": 49.42,
+        "lng": 8.75,
+        "mapboxId": null,
+        "aliases": [
+          "Ziegelhausen"
+        ]
+      },
+      {
+        "placeId": "heidelberg-handschuhsheim",
+        "name": "한트슈스하임",
+        "name_en": "Handschuhsheim",
+        "featureType": "locality",
+        "lat": 49.427,
+        "lng": 8.682,
+        "mapboxId": null,
+        "aliases": [
+          "Handschuhsheim"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "passau",
+    "settlements": [
+      {
+        "placeId": "passau-vilshofen",
+        "name": "필스호펜",
+        "name_en": "Vilshofen",
+        "featureType": "place",
+        "lat": 48.633,
+        "lng": 13.19,
+        "mapboxId": null,
+        "aliases": [
+          "Vilshofen an der Donau",
+          "Vilshofen"
+        ]
+      },
+      {
+        "placeId": "passau-hauzenberg",
+        "name": "하우첸베르크",
+        "name_en": "Hauzenberg",
+        "featureType": "place",
+        "lat": 48.65,
+        "lng": 13.62,
+        "mapboxId": null,
+        "aliases": [
+          "Hauzenberg"
+        ]
+      },
+      {
+        "placeId": "passau-obernzell",
+        "name": "오베른첼",
+        "name_en": "Obernzell",
+        "featureType": "place",
+        "lat": 48.558,
+        "lng": 13.638,
+        "mapboxId": null,
+        "aliases": [
+          "Obernzell"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "gangseo",
+    "settlements": [
+      {
+        "placeId": "gangseo-hwagok",
+        "name": "화곡동",
+        "name_en": "Hwagok-dong",
+        "featureType": "locality",
+        "lat": 37.5415,
+        "lng": 126.84,
+        "mapboxId": null,
+        "aliases": [
+          "화곡"
+        ]
+      },
+      {
+        "placeId": "gangseo-deungchon",
+        "name": "등촌동",
+        "name_en": "Deungchon-dong",
+        "featureType": "locality",
+        "lat": 37.5515,
+        "lng": 126.862,
+        "mapboxId": null,
+        "aliases": [
+          "등촌"
+        ]
+      },
+      {
+        "placeId": "gangseo-balsan",
+        "name": "발산동",
+        "name_en": "Balsan-dong",
+        "featureType": "locality",
+        "lat": 37.5585,
+        "lng": 126.837,
+        "mapboxId": null,
+        "aliases": [
+          "발산"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "guro",
+    "settlements": [
+      {
+        "placeId": "guro-sindorim",
+        "name": "신도림동",
+        "name_en": "Sindorim-dong",
+        "featureType": "locality",
+        "lat": 37.5085,
+        "lng": 126.891,
+        "mapboxId": null,
+        "aliases": [
+          "신도림"
+        ]
+      },
+      {
+        "placeId": "guro-guro",
+        "name": "구로동",
+        "name_en": "Guro-dong",
+        "featureType": "locality",
+        "lat": 37.4895,
+        "lng": 126.887,
+        "mapboxId": null,
+        "aliases": [
+          "구로"
+        ]
+      },
+      {
+        "placeId": "guro-gaebong",
+        "name": "개봉동",
+        "name_en": "Gaebong-dong",
+        "featureType": "locality",
+        "lat": 37.4945,
+        "lng": 126.858,
+        "mapboxId": null,
+        "aliases": [
+          "개봉"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "geumcheon",
+    "settlements": [
+      {
+        "placeId": "geumcheon-gasan",
+        "name": "가산동",
+        "name_en": "Gasan-dong",
+        "featureType": "locality",
+        "lat": 37.4785,
+        "lng": 126.886,
+        "mapboxId": null,
+        "aliases": [
+          "가산"
+        ]
+      },
+      {
+        "placeId": "geumcheon-doksan",
+        "name": "독산동",
+        "name_en": "Doksan-dong",
+        "featureType": "locality",
+        "lat": 37.4675,
+        "lng": 126.901,
+        "mapboxId": null,
+        "aliases": [
+          "독산"
+        ]
+      },
+      {
+        "placeId": "geumcheon-siheung",
+        "name": "시흥동",
+        "name_en": "Siheung-dong",
+        "featureType": "locality",
+        "lat": 37.4515,
+        "lng": 126.901,
+        "mapboxId": null,
+        "aliases": [
+          "시흥"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "nowon",
+    "settlements": [
+      {
+        "placeId": "nowon-sanggye",
+        "name": "상계동",
+        "name_en": "Sanggye-dong",
+        "featureType": "locality",
+        "lat": 37.6575,
+        "lng": 127.073,
+        "mapboxId": null,
+        "aliases": [
+          "상계"
+        ]
+      },
+      {
+        "placeId": "nowon-junggye",
+        "name": "중계동",
+        "name_en": "Junggye-dong",
+        "featureType": "locality",
+        "lat": 37.6485,
+        "lng": 127.074,
+        "mapboxId": null,
+        "aliases": [
+          "중계"
+        ]
+      },
+      {
+        "placeId": "nowon-hagye",
+        "name": "하계동",
+        "name_en": "Hagye-dong",
+        "featureType": "locality",
+        "lat": 37.6365,
+        "lng": 127.068,
+        "mapboxId": null,
+        "aliases": [
+          "하계"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "dobong",
+    "settlements": [
+      {
+        "placeId": "dobong-ssangmun",
+        "name": "쌍문동",
+        "name_en": "Ssangmun-dong",
+        "featureType": "locality",
+        "lat": 37.6485,
+        "lng": 127.034,
+        "mapboxId": null,
+        "aliases": [
+          "쌍문"
+        ]
+      },
+      {
+        "placeId": "dobong-banghak",
+        "name": "방학동",
+        "name_en": "Banghak-dong",
+        "featureType": "locality",
+        "lat": 37.6655,
+        "lng": 127.034,
+        "mapboxId": null,
+        "aliases": [
+          "방학"
+        ]
+      },
+      {
+        "placeId": "dobong-chang",
+        "name": "창동",
+        "name_en": "Chang-dong",
+        "featureType": "locality",
+        "lat": 37.6535,
+        "lng": 127.047,
+        "mapboxId": null,
+        "aliases": [
+          "Chang-dong"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "leicester",
+    "settlements": [
+      {
+        "placeId": "leicester-oadby",
+        "name": "오드비",
+        "name_en": "Oadby",
+        "featureType": "place",
+        "lat": 52.598,
+        "lng": -1.083,
+        "mapboxId": null,
+        "aliases": [
+          "Oadby"
+        ]
+      },
+      {
+        "placeId": "leicester-wigston",
+        "name": "윅스턴",
+        "name_en": "Wigston",
+        "featureType": "place",
+        "lat": 52.582,
+        "lng": -1.103,
+        "mapboxId": null,
+        "aliases": [
+          "Wigston"
+        ]
+      },
+      {
+        "placeId": "leicester-beaumont-leys",
+        "name": "보몬트리스",
+        "name_en": "Beaumont Leys",
+        "featureType": "locality",
+        "lat": 52.668,
+        "lng": -1.15,
+        "mapboxId": null,
+        "aliases": [
+          "Beaumont Leys"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "coventry",
+    "settlements": [
+      {
+        "placeId": "coventry-kenilworth",
+        "name": "케닐워스",
+        "name_en": "Kenilworth",
+        "featureType": "place",
+        "lat": 52.341,
+        "lng": -1.58,
+        "mapboxId": null,
+        "aliases": [
+          "Kenilworth"
+        ]
+      },
+      {
+        "placeId": "coventry-nuneaton",
+        "name": "넌이턴",
+        "name_en": "Nuneaton",
+        "featureType": "place",
+        "lat": 52.523,
+        "lng": -1.468,
+        "mapboxId": null,
+        "aliases": [
+          "Nuneaton"
+        ]
+      },
+      {
+        "placeId": "coventry-bedworth",
+        "name": "베드워스",
+        "name_en": "Bedworth",
+        "featureType": "place",
+        "lat": 52.479,
+        "lng": -1.47,
+        "mapboxId": null,
+        "aliases": [
+          "Bedworth"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "reading",
+    "settlements": [
+      {
+        "placeId": "reading-caversham",
+        "name": "캐버샴",
+        "name_en": "Caversham",
+        "featureType": "locality",
+        "lat": 51.482,
+        "lng": -0.974,
+        "mapboxId": null,
+        "aliases": [
+          "Caversham"
+        ]
+      },
+      {
+        "placeId": "reading-tilehurst",
+        "name": "타일허스트",
+        "name_en": "Tilehurst",
+        "featureType": "locality",
+        "lat": 51.457,
+        "lng": -1.041,
+        "mapboxId": null,
+        "aliases": [
+          "Tilehurst"
+        ]
+      },
+      {
+        "placeId": "reading-earley",
+        "name": "얼리",
+        "name_en": "Earley",
+        "featureType": "place",
+        "lat": 51.438,
+        "lng": -0.919,
+        "mapboxId": null,
+        "aliases": [
+          "Earley"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "freiburg",
+    "settlements": [
+      {
+        "placeId": "freiburg-breisach",
+        "name": "브라이자흐",
+        "name_en": "Breisach",
+        "featureType": "place",
+        "lat": 48.029,
+        "lng": 7.58,
+        "mapboxId": null,
+        "aliases": [
+          "Breisach am Rhein",
+          "Breisach"
+        ]
+      },
+      {
+        "placeId": "freiburg-kirchzarten",
+        "name": "키르히차르텐",
+        "name_en": "Kirchzarten",
+        "featureType": "place",
+        "lat": 47.966,
+        "lng": 7.958,
+        "mapboxId": null,
+        "aliases": [
+          "Kirchzarten"
+        ]
+      },
+      {
+        "placeId": "freiburg-gundelfingen",
+        "name": "군델핑겐",
+        "name_en": "Gundelfingen",
+        "featureType": "place",
+        "lat": 48.044,
+        "lng": 7.865,
+        "mapboxId": null,
+        "aliases": [
+          "Gundelfingen"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "augsburg",
+    "settlements": [
+      {
+        "placeId": "augsburg-friedberg",
+        "name": "프리드베르크",
+        "name_en": "Friedberg",
+        "featureType": "place",
+        "lat": 48.357,
+        "lng": 10.985,
+        "mapboxId": null,
+        "aliases": [
+          "Friedberg"
+        ]
+      },
+      {
+        "placeId": "augsburg-koenigsbrunn",
+        "name": "쾨니히스브룬",
+        "name_en": "Königsbrunn",
+        "featureType": "place",
+        "lat": 48.27,
+        "lng": 10.888,
+        "mapboxId": null,
+        "aliases": [
+          "Koenigsbrunn",
+          "Königsbrunn"
+        ]
+      },
+      {
+        "placeId": "augsburg-neusaess",
+        "name": "노이제스",
+        "name_en": "Neusäß",
+        "featureType": "place",
+        "lat": 48.4,
+        "lng": 10.833,
+        "mapboxId": null,
+        "aliases": [
+          "Neusaess",
+          "Neusäß"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "yangcheon",
+    "settlements": [
+      {
+        "placeId": "yangcheon-mok",
+        "name": "목동",
+        "name_en": "Mok-dong",
+        "featureType": "locality",
+        "lat": 37.5265,
+        "lng": 126.875,
+        "mapboxId": null,
+        "aliases": [
+          "Mok-dong"
+        ]
+      },
+      {
+        "placeId": "yangcheon-sinjeong",
+        "name": "신정동",
+        "name_en": "Sinjeong-dong",
+        "featureType": "locality",
+        "lat": 37.5185,
+        "lng": 126.856,
+        "mapboxId": null,
+        "aliases": [
+          "신정"
+        ]
+      },
+      {
+        "placeId": "yangcheon-sinwol",
+        "name": "신월동",
+        "name_en": "Sinwol-dong",
+        "featureType": "locality",
+        "lat": 37.5185,
+        "lng": 126.842,
+        "mapboxId": null,
+        "aliases": [
+          "신월"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "eunpyeong",
+    "settlements": [
+      {
+        "placeId": "eunpyeong-eungam",
+        "name": "응암동",
+        "name_en": "Eungam-dong",
+        "featureType": "locality",
+        "lat": 37.5985,
+        "lng": 126.915,
+        "mapboxId": null,
+        "aliases": [
+          "응암"
+        ]
+      },
+      {
+        "placeId": "eunpyeong-bulgwang",
+        "name": "불광동",
+        "name_en": "Bulgwang-dong",
+        "featureType": "locality",
+        "lat": 37.6105,
+        "lng": 126.93,
+        "mapboxId": null,
+        "aliases": [
+          "불광"
+        ]
+      },
+      {
+        "placeId": "eunpyeong-nokbeon",
+        "name": "녹번동",
+        "name_en": "Nokbeon-dong",
+        "featureType": "locality",
+        "lat": 37.6015,
+        "lng": 126.935,
+        "mapboxId": null,
+        "aliases": [
+          "녹번"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "seongbuk",
+    "settlements": [
+      {
+        "placeId": "seongbuk-donam",
+        "name": "돈암동",
+        "name_en": "Donam-dong",
+        "featureType": "locality",
+        "lat": 37.5955,
+        "lng": 127.016,
+        "mapboxId": null,
+        "aliases": [
+          "돈암"
+        ]
+      },
+      {
+        "placeId": "seongbuk-jeongneung",
+        "name": "정릉동",
+        "name_en": "Jeongneung-dong",
+        "featureType": "locality",
+        "lat": 37.6105,
+        "lng": 127.001,
+        "mapboxId": null,
+        "aliases": [
+          "정릉"
+        ]
+      },
+      {
+        "placeId": "seongbuk-jangwi",
+        "name": "장위동",
+        "name_en": "Jangwi-dong",
+        "featureType": "locality",
+        "lat": 37.6145,
+        "lng": 127.048,
+        "mapboxId": null,
+        "aliases": [
+          "장위"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "seongdong",
+    "settlements": [
+      {
+        "placeId": "seongdong-seongsu",
+        "name": "성수동",
+        "name_en": "Seongsu-dong",
+        "featureType": "locality",
+        "lat": 37.5445,
+        "lng": 127.055,
+        "mapboxId": null,
+        "aliases": [
+          "성수"
+        ]
+      },
+      {
+        "placeId": "seongdong-wangsimni",
+        "name": "왕십리동",
+        "name_en": "Wangsimni-dong",
+        "featureType": "locality",
+        "lat": 37.5615,
+        "lng": 127.038,
+        "mapboxId": null,
+        "aliases": [
+          "왕십리"
+        ]
+      },
+      {
+        "placeId": "seongdong-haengdang",
+        "name": "행당동",
+        "name_en": "Haengdang-dong",
+        "featureType": "locality",
+        "lat": 37.5585,
+        "lng": 127.029,
+        "mapboxId": null,
+        "aliases": [
+          "행당"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "gwangjin",
+    "settlements": [
+      {
+        "placeId": "gwangjin-jayang",
+        "name": "자양동",
+        "name_en": "Jayang-dong",
+        "featureType": "locality",
+        "lat": 37.5345,
+        "lng": 127.083,
+        "mapboxId": null,
+        "aliases": [
+          "자양"
+        ]
+      },
+      {
+        "placeId": "gwangjin-guui",
+        "name": "구의동",
+        "name_en": "Guui-dong",
+        "featureType": "locality",
+        "lat": 37.5385,
+        "lng": 127.091,
+        "mapboxId": null,
+        "aliases": [
+          "구의"
+        ]
+      },
+      {
+        "placeId": "gwangjin-junggok",
+        "name": "중곡동",
+        "name_en": "Junggok-dong",
+        "featureType": "locality",
+        "lat": 37.5605,
+        "lng": 127.088,
+        "mapboxId": null,
+        "aliases": [
+          "중곡"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "derby",
+    "settlements": [
+      {
+        "placeId": "derby-mickleover",
+        "name": "미클오버",
+        "name_en": "Mickleover",
+        "featureType": "locality",
+        "lat": 52.906,
+        "lng": -1.547,
+        "mapboxId": null,
+        "aliases": [
+          "Mickleover"
+        ]
+      },
+      {
+        "placeId": "derby-allestree",
+        "name": "올스트리",
+        "name_en": "Allestree",
+        "featureType": "locality",
+        "lat": 52.95,
+        "lng": -1.492,
+        "mapboxId": null,
+        "aliases": [
+          "Allestree"
+        ]
+      },
+      {
+        "placeId": "derby-spondon",
+        "name": "스폰던",
+        "name_en": "Spondon",
+        "featureType": "locality",
+        "lat": 52.92,
+        "lng": -1.404,
+        "mapboxId": null,
+        "aliases": [
+          "Spondon"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "mannheim",
+    "settlements": [
+      {
+        "placeId": "mannheim-ludwigshafen",
+        "name": "루트비히스하펜",
+        "name_en": "Ludwigshafen",
+        "featureType": "place",
+        "lat": 49.481,
+        "lng": 8.446,
+        "mapboxId": null,
+        "aliases": [
+          "Ludwigshafen am Rhein",
+          "Ludwigshafen"
+        ]
+      },
+      {
+        "placeId": "mannheim-schwetzingen",
+        "name": "슈베칭겐",
+        "name_en": "Schwetzingen",
+        "featureType": "place",
+        "lat": 49.385,
+        "lng": 8.579,
+        "mapboxId": null,
+        "aliases": [
+          "Schwetzingen"
+        ]
+      },
+      {
+        "placeId": "mannheim-viernheim",
+        "name": "피른하임",
+        "name_en": "Viernheim",
+        "featureType": "place",
+        "lat": 49.541,
+        "lng": 8.579,
+        "mapboxId": null,
+        "aliases": [
+          "Viernheim"
+        ]
+      }
+    ]
   }
 ]
