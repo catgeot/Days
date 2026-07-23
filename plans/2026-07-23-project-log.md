@@ -2,23 +2,24 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
-## 명소 좌표 수리 — 툴링 + P0 (양구·춘천·하남·진도)
+## 명소 좌표 수리 — 툴링 + P0 + KR R1–R2
 
-**상태**: ✅ 툴링 · P0 tip 패치 · audit hubs PASS · verify smoke PASS · **사람 지도 QA 대기** · 전수 SNAP은 다음 오케 세대
+**상태**: ✅ 툴링 · P0 · **R1+R2 tip 패치(40 hub)** · audit hubs 0 · smoke P0 PASS · KR verify 전수 진행 중(~725/1460 캐시) · 사람 QA(양구·김유정·덕풍·진도타워) 대기
 
-- 원인: LLM 추정 좌표 · hub 거리 audit 미탐 · exact는 Mapbox 재지오코드 없음
-- 툴: `audit:city-attraction-coords` · `verify:city-attraction-coords` (Mapbox→Nominatim 폴백 · NAMED>50m=SNAP) · method **§5.4**
-- P0: `양구 한반도섬`·`박수근미술관` Nominatim 스냅 · `김유정문학촌` 주소 보정(도로 옆→시설) · `하남풍산시장`→`하남 덕풍시장` · `진도타워` 스냅
-- Mapbox Search Box는 KR POI 빈 결과 다수 → Nominatim 폴백(캐시 gitignore)
-- **다음**: `verify:city-attraction-coords -- --country=kr --write-queue` 전수 → 오케 `명소좌표수리` 배치 · 사람 QA(양구·김유정·덕풍·진도타워)
+- 툴 보강: verify 캐시 주기저장 · null-match 재조회 금지 · `--country=kr` Nominatim 우선 · `apply-attraction-coord-patches.mjs`
+- R1(20hub): 속초~남해 · SNAP/rename/drop · 주상절리·알펜시아·김유정(정류장) 스킵
+- R2(20hub): 안동~보성 · 직렬 A→B · 융건릉·파주출판도시 등 오매칭 스킵
+- tip 명소 ~4375 (drop 반영) · PR #24 `cursor/attraction-coord-fix-26c8`
 
-**제시어**
+### 이관 (후임 메인 · §4.2)
 
-```
-명소좌표수리 · 오케스트레이터
-@plans/orchestrator-method.md
-§5.4 · verify KR 전수 큐 → 워커2 SNAP 배치 · P0 QA 반영
-```
+| | |
+|--|--|
+| **다음 배치표 A** | 캐시 완료 hub 중 미패치 10: `hadong,jecheon,mungyeong,danyang,yeongwol,namwon,geochang,wando,jindo,yeongju` (SNAP/NO_HIT만 · P0잔여 진도 포함) |
+| **다음 배치표 B** | `hamyang,sancheong,goheung,jangheung,gurye,hapcheon,gokseong,yeonggwang,buan,gochang` |
+| **게이트** | `audit:city-attraction-hubs` + `verify --smoke` + 배치 hub 샘플 |
+| **전수 큐** | 백그라운드 `verify --country=kr --write-queue` 완료 시 `plans/city-attraction-coord-verify-queue.md` · 미완이면 캐시로 부분 큐 |
+| **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 전수 SNAP 이어하기 · R3부터 워커2 · §5.4·§4.2」 |
 
 ## Trip.com 숙소 city ID — 성수기 선제 (아조레스·타히티)
 
