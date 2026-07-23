@@ -2,24 +2,24 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
-## TourAPI — 국내 관광 사진·정보 (핸드오프)
+## TourAPI — 국내 관광 사진·정보 (1단계 Edge)
 
-**상태**: 키·직접호출 ✅ · Edge `tourapi-proxy`·스모크 ⏳ · UI/매핑 2단계  
+**상태**: ✅ Edge 배포 · LIVE 스모크 PASS · **커밋** · UI/매핑 2단계 대기  
 **계획**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md)
 
-- 국내 명소 대량 확보 후 Unsplash/Pexels만으로는 국내 사진 부족 → 한국관광공사 TourAPI 도입 결정
-- 키: 공공데이터포털 계정 공용 1개 → `.env.local` + Supabase Secret `TOUR_API_SERVICE_KEY` (이름 확인됨)
-- Encoding/Decoding 구분 UI 없음 · raw `as_is`로 `KorService2`·`PhotoGalleryService1` 모두 `0000` (경복궁)
-- **추가 일반키·사진 전용 키 불필요** — API별 활용신청만 (국문 관광정보 + 관광사진)
-- 금지: `VITE_` 키 · 키 값 로그/커밋 · UI 임의 연동(1단계)
+- Edge `tourapi-proxy` — action: `searchKeyword`/`detailCommon`/`detailImage`/`searchPhoto` · Secret `TOUR_API_SERVICE_KEY` only
+- 배포: `npx supabase functions deploy tourapi-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
+- `npm run smoke:tourapi` 스키마 OK · `TOURAPI_SMOKE_LIVE=1` 경복궁 keyword→detailCommon→detailImage · searchPhoto PASS
+- **사진 소스**: `detailImage` contentId당 소수(경복궁 ~6) · `searchPhoto` 키워드 대량(경복궁 ~532) → 2단계 갤러리는 **searchPhoto 우선**
+- 금지 유지: `VITE_` 키 · 키 값 로그 · UI/`usePlaceGallery`·slug↔contentId(합의 전)
 
-### TourAPI 세션 — 에이전트 핸드오프
+### TourAPI 세션 — 에이전트 핸드오프 (2단계)
 
 | | |
 |--|--|
-| **읽을 것 3** | [`.ai-context.md`](../.ai-context.md) 3·6절 · [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 본 절 |
-| **할 일** | Edge `tourapi-proxy` (searchKeyword/detailCommon/detailImage/searchPhoto) · `smoke:tourapi` · LIVE 배포 검증 |
-| **금지 3** | `VITE_` 노출 · UI/`usePlaceGallery` 선연결 · slug↔contentId 배치(2단계) |
+| **읽을 것 3** | [`.ai-context.md`](../.ai-context.md) 3·6절 · [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) §사진 소스·2단계 · 본 절 |
+| **할 일** | slug↔`contentId` 배치 · `usePlaceGallery` 국내 **searchPhoto 우선**(detailImage 보조·Unsplash/Pexels fallback) |
+| **금지 3** | `VITE_` 노출 · detailImage만으로 갤러리 구성 · UI 임의 대규모 변경(합의 전) |
 | **제시어** | 아래 「다음 세션 제시어」 블록 |
 
 **다음 세션 제시어** (복붙):
@@ -28,8 +28,8 @@
 TourAPI-이어하기
 @plans/2026-07-23-project-log.md
 @plans/tourapi-edge-proxy-plan.md
-1단계 구현: tourapi-proxy Edge + smoke:tourapi + LIVE 배포 검증.
-키는 이미 TOUR_API_SERVICE_KEY(로컬·Supabase). UI/매핑은 2단계.
+2단계: slug↔contentId 매핑 + usePlaceGallery 국내 TourAPI 우선.
+갤러리는 searchPhoto 우선(detailImage는 보조). 1단계 Edge·LIVE 완료. UI는 합의 후.
 ```
 
 ## 검색 — 정착지 exact 허브형 역펼침

@@ -1,6 +1,6 @@
 # TourAPI Edge 프록시 (1단계) — 진행 계획
 
-**상태**: 키 발급·유효성 ✅ · Edge/스모크 ⏳  
+**상태**: 1단계 ✅ (Edge 배포 · LIVE 스모크 PASS) · 2단계 대기  
 **일지**: [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) 「TourAPI」절  
 **다음**: 2단계 = slug↔`contentId` 배치 · 갤러리 연동 (이 문서 밖)
 
@@ -51,8 +51,21 @@
 
 Secret 있음 · Edge 배포 · LIVE 스모크 PASS · UI 변경 없음
 
+### 사진 소스 메모 (경복궁 기준 · 2026-07-23)
+
+| action | 역할 | 경복궁 규모 |
+|--------|------|-------------|
+| `detailImage` | contentId에 묶인 상세 이미지 | **총 ~6장** (적음) |
+| `searchPhoto` | 키워드 관광사진 갤러리 | **총 ~532장** (`경복궁`) |
+
+- 스모크 `numOfRows`는 연결 검증용으로 작게 둠 (3~5) — 실제 보유량과 무관
+- **2단계 갤러리**: `searchPhoto` 우선 + 페이지네이션/`numOfRows`↑ · `detailImage`·`firstimage`는 보조
+- Edge `MAX_ROWS` 현재 50 — 대량 필요 시 상한·페이지 루프 검토
+
 ---
 
 ## 2단계 예고
 
 국내 hub/명소 slug → TourAPI `contentId` 배치 매핑 → `usePlaceGallery`에서 국내만 TourAPI 우선 (Unsplash/Pexels fallback).
+
+**갤러리 권장 순서**: `searchPhoto`(키워드/공식명) → `detailImage`/`firstimage` 보강 → Unsplash/Pexels fallback.
