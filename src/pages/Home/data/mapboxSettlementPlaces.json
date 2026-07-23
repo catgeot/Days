@@ -12711,5 +12711,826 @@
         "aliases": []
       }
     ]
+  },
+  {
+    "hubId": "salisbury",
+    "settlements": [
+      {
+        "placeId": "salisbury-amesbury",
+        "name": "에이姆斯베리",
+        "name_en": "Amesbury",
+        "featureType": "place",
+        "lat": 51.1725,
+        "lng": -1.784,
+        "mapboxId": null,
+        "aliases": [
+          "Amesbury"
+        ]
+      },
+      {
+        "placeId": "salisbury-wilton",
+        "name": "윌턴",
+        "name_en": "Wilton",
+        "featureType": "place",
+        "lat": 51.08,
+        "lng": -1.863,
+        "mapboxId": null,
+        "aliases": [
+          "Wilton"
+        ]
+      },
+      {
+        "placeId": "salisbury-laverstock",
+        "name": "라버스톡",
+        "name_en": "Laverstock",
+        "featureType": "locality",
+        "lat": 51.078,
+        "lng": -1.772,
+        "mapboxId": null,
+        "aliases": [
+          "Laverstock"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "greifswald",
+    "settlements": [
+      {
+        "placeId": "greifswald-eldena",
+        "name": "엘데나",
+        "name_en": "Eldena",
+        "featureType": "locality",
+        "lat": 54.09,
+        "lng": 13.445,
+        "mapboxId": null,
+        "aliases": [
+          "Eldena"
+        ]
+      },
+      {
+        "placeId": "greifswald-wieck",
+        "name": "비크",
+        "name_en": "Wieck",
+        "featureType": "locality",
+        "lat": 54.096,
+        "lng": 13.452,
+        "mapboxId": null,
+        "aliases": [
+          "Wieck"
+        ]
+      },
+      {
+        "placeId": "greifswald-lubmin",
+        "name": "루빈",
+        "name_en": "Lubmin",
+        "featureType": "place",
+        "lat": 54.135,
+        "lng": 13.618,
+        "mapboxId": null,
+        "aliases": [
+          "Lubmin"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "schwerin",
+    "settlements": [
+      {
+        "placeId": "schwerin-crivitz",
+        "name": "크리비츠",
+        "name_en": "Crivitz",
+        "featureType": "place",
+        "lat": 53.573,
+        "lng": 11.652,
+        "mapboxId": null,
+        "aliases": [
+          "Crivitz"
+        ]
+      },
+      {
+        "placeId": "schwerin-plate",
+        "name": "플라테",
+        "name_en": "Plate",
+        "featureType": "place",
+        "lat": 53.552,
+        "lng": 11.52,
+        "mapboxId": null,
+        "aliases": [
+          "Plate"
+        ]
+      },
+      {
+        "placeId": "schwerin-gadebusch",
+        "name": "가데부슈",
+        "name_en": "Gadebusch",
+        "featureType": "place",
+        "lat": 53.702,
+        "lng": 11.117,
+        "mapboxId": null,
+        "aliases": [
+          "Gadebusch"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "mapo",
+    "settlements": [
+      {
+        "placeId": "mapo-hapjeong",
+        "name": "합정동",
+        "name_en": "Hapjeong-dong",
+        "featureType": "locality",
+        "lat": 37.5495,
+        "lng": 126.9139,
+        "mapboxId": null,
+        "aliases": [
+          "합정"
+        ]
+      },
+      {
+        "placeId": "mapo-mangwon",
+        "name": "망원동",
+        "name_en": "Mangwon-dong",
+        "featureType": "locality",
+        "lat": 37.556,
+        "lng": 126.91,
+        "mapboxId": null,
+        "aliases": [
+          "망원"
+        ]
+      },
+      {
+        "placeId": "mapo-gongdeok",
+        "name": "공덕동",
+        "name_en": "Gongdeok-dong",
+        "featureType": "locality",
+        "lat": 37.5445,
+        "lng": 126.951,
+        "mapboxId": null,
+        "aliases": [
+          "공덕"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "yongsan",
+    "settlements": [
+      {
+        "placeId": "yongsan-hannam",
+        "name": "한남동",
+        "name_en": "Hannam-dong",
+        "featureType": "locality",
+        "lat": 37.5345,
+        "lng": 127.0095,
+        "mapboxId": null,
+        "aliases": [
+          "한남"
+        ]
+      },
+      {
+        "placeId": "yongsan-huam",
+        "name": "후암동",
+        "name_en": "Huam-dong",
+        "featureType": "locality",
+        "lat": 37.549,
+        "lng": 126.978,
+        "mapboxId": null,
+        "aliases": [
+          "후암"
+        ]
+      },
+      {
+        "placeId": "yongsan-ichon",
+        "name": "이촌동",
+        "name_en": "Ichon-dong",
+        "featureType": "locality",
+        "lat": 37.5215,
+        "lng": 126.9735,
+        "mapboxId": null,
+        "aliases": [
+          "이촌"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "songpa",
+    "settlements": [
+      {
+        "placeId": "songpa-jamsil",
+        "name": "잠실동",
+        "name_en": "Jamsil-dong",
+        "featureType": "locality",
+        "lat": 37.5135,
+        "lng": 127.1,
+        "mapboxId": null,
+        "aliases": [
+          "잠실"
+        ]
+      },
+      {
+        "placeId": "songpa-munjeong",
+        "name": "문정동",
+        "name_en": "Munjeong-dong",
+        "featureType": "locality",
+        "lat": 37.4855,
+        "lng": 127.122,
+        "mapboxId": null,
+        "aliases": [
+          "문정"
+        ]
+      },
+      {
+        "placeId": "songpa-bangi",
+        "name": "방이동",
+        "name_en": "Bangi-dong",
+        "featureType": "locality",
+        "lat": 37.5085,
+        "lng": 127.126,
+        "mapboxId": null,
+        "aliases": [
+          "방이"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "suyeong",
+    "settlements": [
+      {
+        "placeId": "suyeong-millak",
+        "name": "민락동",
+        "name_en": "Millak-dong",
+        "featureType": "locality",
+        "lat": 35.162,
+        "lng": 129.128,
+        "mapboxId": null,
+        "aliases": [
+          "민락"
+        ]
+      },
+      {
+        "placeId": "suyeong-namcheon",
+        "name": "남천동",
+        "name_en": "Namcheon-dong",
+        "featureType": "locality",
+        "lat": 35.1465,
+        "lng": 129.11,
+        "mapboxId": null,
+        "aliases": [
+          "남천"
+        ]
+      },
+      {
+        "placeId": "suyeong-mangmi",
+        "name": "망미동",
+        "name_en": "Mangmi-dong",
+        "featureType": "locality",
+        "lat": 35.171,
+        "lng": 129.112,
+        "mapboxId": null,
+        "aliases": [
+          "망미"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "gwanak",
+    "settlements": [
+      {
+        "placeId": "gwanak-sillim",
+        "name": "신림동",
+        "name_en": "Sillim-dong",
+        "featureType": "locality",
+        "lat": 37.484,
+        "lng": 126.9295,
+        "mapboxId": null,
+        "aliases": [
+          "신림"
+        ]
+      },
+      {
+        "placeId": "gwanak-bongcheon",
+        "name": "봉천동",
+        "name_en": "Bongcheon-dong",
+        "featureType": "locality",
+        "lat": 37.482,
+        "lng": 126.9415,
+        "mapboxId": null,
+        "aliases": [
+          "봉천"
+        ]
+      },
+      {
+        "placeId": "gwanak-nakseongdae",
+        "name": "낙성대동",
+        "name_en": "Nakseongdae-dong",
+        "featureType": "locality",
+        "lat": 37.477,
+        "lng": 126.961,
+        "mapboxId": null,
+        "aliases": [
+          "낙성대"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "norwich",
+    "settlements": [
+      {
+        "placeId": "norwich-wymondham",
+        "name": "윔몬덤",
+        "name_en": "Wymondham",
+        "featureType": "place",
+        "lat": 52.5705,
+        "lng": 1.113,
+        "mapboxId": null,
+        "aliases": [
+          "Wymondham"
+        ]
+      },
+      {
+        "placeId": "norwich-hellesdon",
+        "name": "헬레스던",
+        "name_en": "Hellesdon",
+        "featureType": "locality",
+        "lat": 52.656,
+        "lng": 1.26,
+        "mapboxId": null,
+        "aliases": [
+          "Hellesdon"
+        ]
+      },
+      {
+        "placeId": "norwich-costessey",
+        "name": "코스테시",
+        "name_en": "Costessey",
+        "featureType": "place",
+        "lat": 52.659,
+        "lng": 1.21,
+        "mapboxId": null,
+        "aliases": [
+          "Costessey"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "potsdam",
+    "settlements": [
+      {
+        "placeId": "potsdam-babelsberg",
+        "name": "바벨스베르크",
+        "name_en": "Babelsberg",
+        "featureType": "locality",
+        "lat": 52.391,
+        "lng": 13.123,
+        "mapboxId": null,
+        "aliases": [
+          "Babelsberg"
+        ]
+      },
+      {
+        "placeId": "potsdam-teltow",
+        "name": "텔토",
+        "name_en": "Teltow",
+        "featureType": "place",
+        "lat": 52.402,
+        "lng": 13.268,
+        "mapboxId": null,
+        "aliases": [
+          "Teltow"
+        ]
+      },
+      {
+        "placeId": "potsdam-kleinmachnow",
+        "name": "클라인마흐노",
+        "name_en": "Kleinmachnow",
+        "featureType": "place",
+        "lat": 52.405,
+        "lng": 13.22,
+        "mapboxId": null,
+        "aliases": [
+          "Kleinmachnow"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "weimar",
+    "settlements": [
+      {
+        "placeId": "weimar-apolda",
+        "name": "아폴다",
+        "name_en": "Apolda",
+        "featureType": "place",
+        "lat": 51.026,
+        "lng": 11.516,
+        "mapboxId": null,
+        "aliases": [
+          "Apolda"
+        ]
+      },
+      {
+        "placeId": "weimar-bad-berka",
+        "name": "바트베르카",
+        "name_en": "Bad Berka",
+        "featureType": "place",
+        "lat": 50.9,
+        "lng": 11.282,
+        "mapboxId": null,
+        "aliases": [
+          "Bad Berka"
+        ]
+      },
+      {
+        "placeId": "weimar-blankenhain",
+        "name": "블랑켄하인",
+        "name_en": "Blankenhain",
+        "featureType": "place",
+        "lat": 50.86,
+        "lng": 11.344,
+        "mapboxId": null,
+        "aliases": [
+          "Blankenhain"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "bamberg",
+    "settlements": [
+      {
+        "placeId": "bamberg-hallstadt",
+        "name": "할슈타트",
+        "name_en": "Hallstadt",
+        "featureType": "place",
+        "lat": 49.928,
+        "lng": 10.876,
+        "mapboxId": null,
+        "aliases": [
+          "Hallstadt"
+        ]
+      },
+      {
+        "placeId": "bamberg-memmelsdorf",
+        "name": "멤멜스도르프",
+        "name_en": "Memmelsdorf",
+        "featureType": "place",
+        "lat": 49.93,
+        "lng": 10.953,
+        "mapboxId": null,
+        "aliases": [
+          "Memmelsdorf"
+        ]
+      },
+      {
+        "placeId": "bamberg-schesslitz",
+        "name": "셰슬리츠",
+        "name_en": "Scheßlitz",
+        "featureType": "place",
+        "lat": 49.977,
+        "lng": 11.034,
+        "mapboxId": null,
+        "aliases": [
+          "Schesslitz",
+          "Scheßlitz"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "regensburg",
+    "settlements": [
+      {
+        "placeId": "regensburg-stadtamhof",
+        "name": "슈타트암호프",
+        "name_en": "Stadtamhof",
+        "featureType": "locality",
+        "lat": 49.0255,
+        "lng": 12.098,
+        "mapboxId": null,
+        "aliases": [
+          "Stadtamhof"
+        ]
+      },
+      {
+        "placeId": "regensburg-sinzing",
+        "name": "신칭",
+        "name_en": "Sinzing",
+        "featureType": "place",
+        "lat": 49,
+        "lng": 12.035,
+        "mapboxId": null,
+        "aliases": [
+          "Sinzing"
+        ]
+      },
+      {
+        "placeId": "regensburg-neutraubling",
+        "name": "노이트라우블링",
+        "name_en": "Neutraubling",
+        "featureType": "place",
+        "lat": 48.988,
+        "lng": 12.196,
+        "mapboxId": null,
+        "aliases": [
+          "Neutraubling"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "jongno",
+    "settlements": [
+      {
+        "placeId": "jongno-hyehwa",
+        "name": "혜화동",
+        "name_en": "Hyehwa-dong",
+        "featureType": "locality",
+        "lat": 37.5825,
+        "lng": 127.0015,
+        "mapboxId": null,
+        "aliases": [
+          "혜화"
+        ]
+      },
+      {
+        "placeId": "jongno-samcheong",
+        "name": "삼청동",
+        "name_en": "Samcheong-dong",
+        "featureType": "locality",
+        "lat": 37.5845,
+        "lng": 126.9815,
+        "mapboxId": null,
+        "aliases": [
+          "삼청"
+        ]
+      },
+      {
+        "placeId": "jongno-sajik",
+        "name": "사직동",
+        "name_en": "Sajik-dong",
+        "featureType": "locality",
+        "lat": 37.5755,
+        "lng": 126.9685,
+        "mapboxId": null,
+        "aliases": [
+          "사직"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "seodaemun",
+    "settlements": [
+      {
+        "placeId": "seodaemun-yeonhui",
+        "name": "연희동",
+        "name_en": "Yeonhui-dong",
+        "featureType": "locality",
+        "lat": 37.5685,
+        "lng": 126.93,
+        "mapboxId": null,
+        "aliases": [
+          "연희"
+        ]
+      },
+      {
+        "placeId": "seodaemun-hongje",
+        "name": "홍제동",
+        "name_en": "Hongje-dong",
+        "featureType": "locality",
+        "lat": 37.5885,
+        "lng": 126.944,
+        "mapboxId": null,
+        "aliases": [
+          "홍제"
+        ]
+      },
+      {
+        "placeId": "seodaemun-bugahyeon",
+        "name": "북아현동",
+        "name_en": "Bugahyeon-dong",
+        "featureType": "locality",
+        "lat": 37.5645,
+        "lng": 126.956,
+        "mapboxId": null,
+        "aliases": [
+          "북아현"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "dongjak",
+    "settlements": [
+      {
+        "placeId": "dongjak-noryangjin",
+        "name": "노량진동",
+        "name_en": "Noryangjin-dong",
+        "featureType": "locality",
+        "lat": 37.5135,
+        "lng": 126.9425,
+        "mapboxId": null,
+        "aliases": [
+          "노량진"
+        ]
+      },
+      {
+        "placeId": "dongjak-sangdo",
+        "name": "상도동",
+        "name_en": "Sangdo-dong",
+        "featureType": "locality",
+        "lat": 37.5035,
+        "lng": 126.948,
+        "mapboxId": null,
+        "aliases": [
+          "상도"
+        ]
+      },
+      {
+        "placeId": "dongjak-heukseok",
+        "name": "흑석동",
+        "name_en": "Heukseok-dong",
+        "featureType": "locality",
+        "lat": 37.5085,
+        "lng": 126.9615,
+        "mapboxId": null,
+        "aliases": [
+          "흑석"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "yeongdeungpo",
+    "settlements": [
+      {
+        "placeId": "yeongdeungpo-yeouido",
+        "name": "여의도동",
+        "name_en": "Yeouido-dong",
+        "featureType": "locality",
+        "lat": 37.5215,
+        "lng": 126.9245,
+        "mapboxId": null,
+        "aliases": [
+          "여의도"
+        ]
+      },
+      {
+        "placeId": "yeongdeungpo-dangsan",
+        "name": "당산동",
+        "name_en": "Dangsan-dong",
+        "featureType": "locality",
+        "lat": 37.5345,
+        "lng": 126.9025,
+        "mapboxId": null,
+        "aliases": [
+          "당산"
+        ]
+      },
+      {
+        "placeId": "yeongdeungpo-mullae",
+        "name": "문래동",
+        "name_en": "Mullae-dong",
+        "featureType": "locality",
+        "lat": 37.5175,
+        "lng": 126.8965,
+        "mapboxId": null,
+        "aliases": [
+          "문래"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "gangdong",
+    "settlements": [
+      {
+        "placeId": "gangdong-cheonho",
+        "name": "천호동",
+        "name_en": "Cheonho-dong",
+        "featureType": "locality",
+        "lat": 37.5385,
+        "lng": 127.1235,
+        "mapboxId": null,
+        "aliases": [
+          "천호"
+        ]
+      },
+      {
+        "placeId": "gangdong-gil",
+        "name": "길동",
+        "name_en": "Gil-dong",
+        "featureType": "locality",
+        "lat": 37.5375,
+        "lng": 127.14,
+        "mapboxId": null,
+        "aliases": [
+          "Gil-dong"
+        ]
+      },
+      {
+        "placeId": "gangdong-amsa",
+        "name": "암사동",
+        "name_en": "Amsa-dong",
+        "featureType": "locality",
+        "lat": 37.55,
+        "lng": 127.13,
+        "mapboxId": null,
+        "aliases": [
+          "암사"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "ipswich",
+    "settlements": [
+      {
+        "placeId": "ipswich-felixstowe",
+        "name": "펠릭스토",
+        "name_en": "Felixstowe",
+        "featureType": "place",
+        "lat": 51.964,
+        "lng": 1.351,
+        "mapboxId": null,
+        "aliases": [
+          "Felixstowe"
+        ]
+      },
+      {
+        "placeId": "ipswich-woodbridge",
+        "name": "우드브리지",
+        "name_en": "Woodbridge",
+        "featureType": "place",
+        "lat": 52.094,
+        "lng": 1.318,
+        "mapboxId": null,
+        "aliases": [
+          "Woodbridge"
+        ]
+      },
+      {
+        "placeId": "ipswich-kesgrave",
+        "name": "케스그레이브",
+        "name_en": "Kesgrave",
+        "featureType": "place",
+        "lat": 52.063,
+        "lng": 1.238,
+        "mapboxId": null,
+        "aliases": [
+          "Kesgrave"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "colchester",
+    "settlements": [
+      {
+        "placeId": "colchester-wivenhoe",
+        "name": "위븐호",
+        "name_en": "Wivenhoe",
+        "featureType": "place",
+        "lat": 51.856,
+        "lng": 0.963,
+        "mapboxId": null,
+        "aliases": [
+          "Wivenhoe"
+        ]
+      },
+      {
+        "placeId": "colchester-west-mersea",
+        "name": "웨스트머지",
+        "name_en": "West Mersea",
+        "featureType": "place",
+        "lat": 51.778,
+        "lng": 0.916,
+        "mapboxId": null,
+        "aliases": [
+          "West Mersea"
+        ]
+      },
+      {
+        "placeId": "colchester-hythe",
+        "name": "하이드",
+        "name_en": "Hythe",
+        "featureType": "locality",
+        "lat": 51.883,
+        "lng": 0.925,
+        "mapboxId": null,
+        "aliases": [
+          "The Hythe"
+        ]
+      }
+    ]
   }
 ]
