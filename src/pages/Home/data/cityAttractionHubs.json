@@ -1854,13 +1854,6 @@
         "kind": "temple",
         "lat": 36.2524,
         "lng": 129.3185
-      },
-      {
-        "name": "포항운하관",
-        "name_en": "Pohang Canal View",
-        "kind": "landmark",
-        "lat": 36.0239,
-        "lng": 129.376
       }
     ]
   },
@@ -2314,13 +2307,6 @@
         "lng": 126.5360642
       },
       {
-        "name": "보령 성주사지",
-        "name_en": "Seongjusa Temple Site",
-        "kind": "temple",
-        "lat": 36.34444,
-        "lng": 126.65528
-      },
-      {
         "name": "보령석탄박물관",
         "name_en": "Boryeong Coal Museum",
         "kind": "museum",
@@ -2367,8 +2353,8 @@
         "name": "낙안읍성민속마을",
         "name_en": "Naganeupseong Folk Village",
         "kind": "landmark",
-        "lat": 34.90694,
-        "lng": 127.33889
+        "lat": 34.9064508,
+        "lng": 127.3400983
       },
       {
         "name": "선암사",
@@ -2934,13 +2920,6 @@
         "kind": "museum",
         "lat": 35.3094713,
         "lng": 126.9767016
-      },
-      {
-        "name": "담양 식영정",
-        "name_en": "Sigyeongjeong",
-        "kind": "landmark",
-        "lat": 35.1886889,
-        "lng": 127.0025
       }
     ]
   },
@@ -3278,13 +3257,6 @@
         "kind": "park",
         "lat": 36.46,
         "lng": 127.49
-      },
-      {
-        "name": "청주 상당산성",
-        "name_en": "Sangdangsanseong",
-        "kind": "landmark",
-        "lat": 36.6592417,
-        "lng": 127.5402972
       },
       {
         "name": "문암생태공원",
@@ -4007,13 +3979,6 @@
         "lng": 126.874013
       },
       {
-        "name": "오두산 통일전망대",
-        "name_en": "Odusan Unification Observatory",
-        "kind": "viewpoint",
-        "lat": 37.7730931,
-        "lng": 126.6770097
-      },
-      {
         "name": "파주출판도시",
         "name_en": "Paju Book City",
         "kind": "neighborhood",
@@ -4083,13 +4048,6 @@
         "kind": "museum",
         "lat": 36.2763114,
         "lng": 126.919051
-      },
-      {
-        "name": "구드래",
-        "name_en": "Gudurae Ferry Landing",
-        "kind": "landmark",
-        "lat": 36.2899173,
-        "lng": 126.9071571
       }
     ]
   },
@@ -4128,13 +4086,6 @@
         "kind": "beach",
         "lat": 38.34,
         "lng": 128.52
-      },
-      {
-        "name": "화진포의 성 김일성별장",
-        "name_en": "Hwajinpo Castle",
-        "kind": "museum",
-        "lat": 38.4740829,
-        "lng": 128.4435341
       },
       {
         "name": "거진항",
@@ -23814,8 +23765,8 @@
         "name": "부산진 부전시장",
         "name_en": "Busanjin Bujeon Market",
         "kind": "market",
-        "lat": 35.1565,
-        "lng": 129.0575
+        "lat": 35.1626135,
+        "lng": 129.0609059
       },
       {
         "name": "부산진 전포카페거리",
@@ -23835,22 +23786,15 @@
         "name": "부산진 송상현광장",
         "name_en": "Busanjin Song Sang-hyeon Square",
         "kind": "park",
-        "lat": 35.1645,
-        "lng": 129.0555
+        "lat": 35.1692151,
+        "lng": 129.0676928
       },
       {
         "name": "부산진 삼광사",
         "name_en": "Busanjin Samgwangsa",
         "kind": "temple",
-        "lat": 35.1725,
-        "lng": 129.0485
-      },
-      {
-        "name": "부산진 양정성당",
-        "name_en": "Busanjin Yangjeong Cathedral",
-        "kind": "landmark",
-        "lat": 35.1715,
-        "lng": 129.0685
+        "lat": 35.1747615,
+        "lng": 129.0436713
       }
     ]
   },
@@ -23883,15 +23827,15 @@
         "name": "남동 소래습지생태공원",
         "name_en": "Namdong Sorae Wetland Park",
         "kind": "park",
-        "lat": 37.4025,
-        "lng": 126.7425
+        "lat": 37.4127508,
+        "lng": 126.7477937
       },
       {
         "name": "남동 인천대공원",
         "name_en": "Namdong Incheon Grand Park",
         "kind": "park",
-        "lat": 37.4565,
-        "lng": 126.7525
+        "lat": 37.44843,
+        "lng": 126.7533155
       },
       {
         "name": "남동 구월동로데오",
@@ -23899,20 +23843,6 @@
         "kind": "neighborhood",
         "lat": 37.4485,
         "lng": 126.7085
-      },
-      {
-        "name": "남동 논현포구",
-        "name_en": "Namdong Nonhyeon Port",
-        "kind": "viewpoint",
-        "lat": 37.4055,
-        "lng": 126.7285
-      },
-      {
-        "name": "남동 호구포시장",
-        "name_en": "Namdong Hogupo Market",
-        "kind": "market",
-        "lat": 37.4125,
-        "lng": 126.7185
       },
       {
         "name": "남동 만수산공원",
@@ -23942,20 +23872,6 @@
     ],
     "attractions": [
       {
-        "name": "계양 계양산성",
-        "name_en": "Gyeyang Fortress",
-        "kind": "landmark",
-        "lat": 37.5485,
-        "lng": 126.7155
-      },
-      {
-        "name": "계양 계양산",
-        "name_en": "Gyeyang Mountain",
-        "kind": "viewpoint",
-        "lat": 37.5535,
-        "lng": 126.7125
-      },
-      {
         "name": "계양 경인아라뱃길",
         "name_en": "Gyeyang Gyeongin Ara Waterway",
         "kind": "park",
@@ -23975,13 +23891,6 @@
         "kind": "park",
         "lat": 37.5455,
         "lng": 126.7385
-      },
-      {
-        "name": "계양 박문수묘",
-        "name_en": "Gyeyang Park Mun-su Tomb",
-        "kind": "landmark",
-        "lat": 37.5525,
-        "lng": 126.7425
       },
       {
         "name": "계양 계양꽃마리",
@@ -24018,25 +23927,11 @@
         "lng": 126.6255
       },
       {
-        "name": "미추홀 신포국제시장",
-        "name_en": "Michuhol Sinpo International Market",
-        "kind": "market",
-        "lat": 37.4725,
-        "lng": 126.6235
-      },
-      {
-        "name": "미추홀 답동성당",
-        "name_en": "Michuhol Dapdong Cathedral",
-        "kind": "landmark",
-        "lat": 37.4715,
-        "lng": 126.6285
-      },
-      {
         "name": "미추홀 제물포역",
         "name_en": "Michuhol Jemulpo Station",
         "kind": "landmark",
-        "lat": 37.4665,
-        "lng": 126.6165
+        "lat": 37.4668069,
+        "lng": 126.6570441
       },
       {
         "name": "미추홀 송현근린공원",
@@ -24044,13 +23939,6 @@
         "kind": "park",
         "lat": 37.4685,
         "lng": 126.6325
-      },
-      {
-        "name": "미추홀 인천내항",
-        "name_en": "Michuhol Inner Harbor",
-        "kind": "viewpoint",
-        "lat": 37.4725,
-        "lng": 126.6155
       },
       {
         "name": "미추홀 숭의운동장",
@@ -24080,32 +23968,18 @@
     ],
     "attractions": [
       {
-        "name": "동래 동래온천",
-        "name_en": "Dongnae Hot Springs",
-        "kind": "landmark",
-        "lat": 35.2055,
-        "lng": 129.0785
-      },
-      {
         "name": "동래 허심청",
         "name_en": "Dongnae Heosimcheong",
         "kind": "landmark",
-        "lat": 35.2045,
-        "lng": 129.0775
+        "lat": 35.2211355,
+        "lng": 129.0826775
       },
       {
         "name": "동래 복천박물관",
         "name_en": "Dongnae Bokcheon Museum",
         "kind": "museum",
-        "lat": 35.2095,
-        "lng": 129.0915
-      },
-      {
-        "name": "동래 동래읍성",
-        "name_en": "Dongnae Eupseong Fortress",
-        "kind": "landmark",
-        "lat": 35.2085,
-        "lng": 129.0885
+        "lat": 35.2087587,
+        "lng": 129.0912475
       },
       {
         "name": "동래 온천천",
@@ -24113,13 +23987,6 @@
         "kind": "park",
         "lat": 35.2015,
         "lng": 129.0825
-      },
-      {
-        "name": "동래 충렬사",
-        "name_en": "Dongnae Chungnyeolsa",
-        "kind": "temple",
-        "lat": 35.2115,
-        "lng": 129.0955
       },
       {
         "name": "동래 금강공원",
@@ -24487,25 +24354,11 @@
     ],
     "attractions": [
       {
-        "name": "금정 금정산성",
-        "name_en": "Geumjeongsanseong Fortress",
-        "kind": "landmark",
-        "lat": 35.2835,
-        "lng": 129.0565
-      },
-      {
         "name": "금정 범어사",
         "name_en": "Beomeosa Temple Geumjeong",
         "kind": "temple",
         "lat": 35.2838,
         "lng": 129.0685
-      },
-      {
-        "name": "금정 금정산",
-        "name_en": "Geumjeongsan",
-        "kind": "viewpoint",
-        "lat": 35.2832,
-        "lng": 129.0525
       },
       {
         "name": "금정 회동수원지",
@@ -24525,15 +24378,8 @@
         "name": "금정 금샘",
         "name_en": "Geumjeong Geumsaem",
         "kind": "landmark",
-        "lat": 35.2755,
-        "lng": 129.0615
-      },
-      {
-        "name": "금정 서동고분군",
-        "name_en": "Geumjeong Seodong Tumuli",
-        "kind": "museum",
-        "lat": 35.2185,
-        "lng": 129.1055
+        "lat": 35.2806754,
+        "lng": 129.0543944
       }
     ]
   },
@@ -24559,8 +24405,8 @@
         "name": "연제 연산동",
         "name_en": "Yeonje Yeonsan-dong",
         "kind": "neighborhood",
-        "lat": 35.1865,
-        "lng": 129.0815
+        "lat": 35.1758928,
+        "lng": 129.0867411
       },
       {
         "name": "연제 부산시청",
@@ -24568,13 +24414,6 @@
         "kind": "landmark",
         "lat": 35.1796,
         "lng": 129.0756
-      },
-      {
-        "name": "연제 아시아드주경기장",
-        "name_en": "Yeonje Asiad Main Stadium",
-        "kind": "landmark",
-        "lat": 35.1895,
-        "lng": 129.0615
       },
       {
         "name": "연제 온천천시민공원",
@@ -24635,8 +24474,8 @@
         "name": "사하 감천문화마을",
         "name_en": "Saha Gamcheon Culture Village",
         "kind": "neighborhood",
-        "lat": 35.0975,
-        "lng": 129.0105
+        "lat": 35.0963371,
+        "lng": 129.0087897
       },
       {
         "name": "사하 암남공원",
@@ -24649,15 +24488,15 @@
         "name": "사하 을숙도",
         "name_en": "Saha Eulsukdo",
         "kind": "park",
-        "lat": 35.1055,
-        "lng": 128.9485
+        "lat": 35.1019406,
+        "lng": 128.9409327
       },
       {
         "name": "사하 몰운대",
         "name_en": "Saha Morundae",
         "kind": "viewpoint",
-        "lat": 35.0415,
-        "lng": 128.9725
+        "lat": 35.03747,
+        "lng": 128.97135
       },
       {
         "name": "사하 하단",
@@ -24665,13 +24504,6 @@
         "kind": "neighborhood",
         "lat": 35.1065,
         "lng": 128.9665
-      },
-      {
-        "name": "사하 낙동강하구에코센터",
-        "name_en": "Saha Nakdong Estuary Eco Center",
-        "kind": "museum",
-        "lat": 35.1045,
-        "lng": 128.9455
       }
     ]
   },
@@ -24725,15 +24557,8 @@
         "name": "사상 엄궁",
         "name_en": "Sasang Eomgung",
         "kind": "neighborhood",
-        "lat": 35.1385,
-        "lng": 128.9785
-      },
-      {
-        "name": "사상 감전시장",
-        "name_en": "Sasang Gamjeon Market",
-        "kind": "market",
-        "lat": 35.1485,
-        "lng": 128.9925
+        "lat": 35.1264886,
+        "lng": 128.9689061
       },
       {
         "name": "사상 주례",
@@ -24768,20 +24593,6 @@
         "kind": "park",
         "lat": 36.3745,
         "lng": 127.3865
-      },
-      {
-        "name": "대덕 대청호",
-        "name_en": "Daedeok Daecheong Lake",
-        "kind": "viewpoint",
-        "lat": 36.3715,
-        "lng": 127.4805
-      },
-      {
-        "name": "대덕 계족산",
-        "name_en": "Daedeok Gyejoksan",
-        "kind": "viewpoint",
-        "lat": 36.3515,
-        "lng": 127.4485
       },
       {
         "name": "대덕 신탄진",
