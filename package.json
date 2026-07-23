@@ -13,6 +13,7 @@
     "audit:city-attraction-hubs": "node scripts/audit-city-attraction-hubs.mjs",
     "audit:city-attraction-coords": "node scripts/audit-city-attraction-coords.mjs",
     "verify:city-attraction-coords": "node scripts/verify-city-attraction-coords.mjs",
+    "verify:city-attraction-tourapi-coords": "node scripts/verify-city-attraction-tourapi-coords.mjs",
     "audit:mapbox-settlement-places": "node scripts/audit-mapbox-settlement-places.mjs",
     "smoke:mapbox-settlement-places": "node scripts/smoke-mapbox-settlement-places.mjs",
     "smoke:tourapi": "node scripts/smoke-tourapi.mjs",

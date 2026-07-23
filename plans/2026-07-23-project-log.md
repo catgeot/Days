@@ -9,9 +9,19 @@
 - 원인: invoke/프로브 hang · 더보기 시 `isImgLoading`이 그리드 전체를 스켈레톤으로 교체 · TourAPI page2 중복/공허 후 기존 사진 유실처럼 보임
 - 대응: invoke 12s·갤러리 18s · skipProbe · referrerPolicy · **더보기=`isRefreshing`(그리드 유지)+Unsplash만 append** · 실패 시 기존 복원 · Edge upstream 10s(재배포 권장)
 
-## 국내 명소 좌표 — TourAPI 보정 (**다음 세션 · Cloud 오케스트레이터**)
+## 국내 명소 좌표 — TourAPI 보정 G0 (**쿼터 소진 · 재시도 필요**)
 
-**상태**: 📋 계획·제시어 준비 · **Cursor Cloud + 오케스트레이터** 권장 · [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
+**상태**: ⏳ G0 스크립트·npm·단위테스트 ✅ · **TourAPI 일일 쿼터 소진으로 LIVE smoke/적용 불가** · **커밋·push** · [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
+
+- 후속 확인 요청 시 참조된 이전 클라우드 오케스트레이터(bc-e75ddf3e, 브랜치 `cursor/tourapi-attraction-coords-a4ee`)는 이 환경(`cursor-cloud` MCP list/batch-fetch)·`origin`·로컬 워킹트리 어디에도 없음 — **회수 불가** (다른 environment/session 또는 삭제분으로 추정). 워킹트리는 클린(main HEAD) 상태에서 새로 착수.
+- G0 산출: [`verify-city-attraction-tourapi-coords.mjs`](../scripts/verify-city-attraction-tourapi-coords.mjs) — searchKeyword2(직접 `TOUR_API_SERVICE_KEY` 우선, 없으면 Edge `tourapi-proxy`) → 명칭매칭(버스정류장·휴게소·IC 거부) → hub 거리(60km/광역 150km) → `HIT`/`AMBIG`/`MISS`/`FAR` · 캐시 `scripts/.cache/attraction-tourapi-coord.json`(기존 gitignore 커버) · `npm run verify:city-attraction-tourapi-coords -- --unit`(네트워크 없이 등급 로직 6종 PASS) · `--smoke`(P0 양구/춘천/하남/진도 25건, quota exceeded 시 SKIP graceful) · `--write-queue`/`--apply-out` 지원
+- **쿼터 확인**: `TOUR_API_SERVICE_KEY` 직접 호출 → HTTP 429 `API token quota exceeded` (Edge 경유도 동일) — 오늘(2026-07-23) 갤러리·TourAPI 세션 다수가 같은 키를 소진한 것으로 추정. 김유정 `contentId=127933` LIVE 재확인·G1 HIT 배치는 **쿼터 회복 후 재실행**해야 함.
+- 변경 없음(회귀 없음 확인): `cityAttractionHubs.json` tip **패치 0건** — `audit:city-attraction-hubs` issues **0**(hubs 630/attractions 4067), 김유정문학촌 `37.8183632,127.7176781` 그대로.
+- **다음 세션**: `npm run verify:city-attraction-tourapi-coords -- --smoke` 재실행 → quotaBlocked:false 확인 후 `--country=kr --write-queue` 전수 스캔 → HIT만 `--apply-out`로 패치 JSON 생성 → `apply-attraction-coord-patches.mjs` 적용 → audit 0 → G1 워커2 배치 시작.
+
+## 국내 명소 좌표 — TourAPI 보정 (계획, 참고용)
+
+**상태**: 📋 계획·제시어 준비 (위 G0 절 참고) · [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md)
 
 - 범위: KR tip **~210 hub / 1137 명소** · `mapy`/`mapx` HIT만 스냅 · 해외 제외
 - 배경: Mapbox/Nominatim KR 한계 → TourAPI (김유정 `127933` 실증)
