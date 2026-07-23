@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R16 ✅ · **다음 시작 R17**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R18 ✅ · **다음 시작 R19**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -47,8 +47,8 @@
 | **R14** | `zagreb` · `salzburg` · `bordeaux` · `muan` · `yeongam` | `gangjin` · `jangseong` · `hampyeong` · `glasgow` · `antwerp` | ✅ |
 | **R15** | `rotterdam` · `bilbao` · `innsbruck` · `sinan` · `naju` | `hwasun` · `gwangyang` · `wonju` · `frankfurt` · `turin` | ✅ |
 | **R16** | `ghent` · `dubrovnik` · `sapporo` · `chungju` · `cheonan` | `samcheok` · `yangpyeong` · `gimhae` · `manchester` · `toulouse` | ✅ |
-| **R17** | `granada` · `hiroshima` · `tallinn` · `taebaek` · `donghae` | `asan` · `seosan` · `changwon` · `liverpool` · `malaga` | ⬜ |
-| **R18** | `nuremberg` · `kanazawa` · `ljubljana` · `hongcheon` · `jeongseon` | `uljin` · `icheon` · `miryang` · `birmingham` · `genoa` | ⬜ |
+| **R17** | `granada` · `hiroshima` · `tallinn` · `taebaek` · `donghae` | `asan` · `seosan` · `changwon` · `liverpool` · `malaga` | ✅ |
+| **R18** | `nuremberg` · `kanazawa` · `ljubljana` · `hongcheon` · `jeongseon` | `uljin` · `icheon` · `miryang` · `birmingham` · `genoa` | ✅ |
 | **R19** | `bologna` · `bergen` · `vilnius` · `hoengseong` · `yeoju` | `yangsan` · `sacheon` · `pocheon` · `cardiff` · `strasbourg` | ⬜ |
 | **R20** | `verona` · `nagoya` · `riga` · `boeun` · `okcheon` | `yeongdeok` · `cheongsong` · `yanggu` · `leeds` · `padua` | ⬜ |
 | **R21** | `split` · `luxembourg` · `gothenburg` · `hwacheon` · `cheorwon` | `yeongyang` · `bonghwa` · `uiseong` · `newcastle` · `bari` | ⬜ |
@@ -100,8 +100,8 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R17**
-tip: 162 hub / 486 settlements · audit issues 0 · 미커밋
+다음 시작: **R19**
+tip: 182 hub / 546 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```
 
