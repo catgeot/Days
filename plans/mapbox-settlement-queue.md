@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R56 ✅ · **다음 시작 R57**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R58 ✅ · **다음 시작 R59**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -87,8 +87,8 @@
 | **R54** | `tirana` · `skopje` · `sarajevo` · `podgorica` · `valletta` | `nicosia` · `stavanger` · `trondheim` · `montpellier` · `palermo` | ✅ |
 | **R55** | `faro` · `cork` · `galway` · `belfast` · `madeira` | `lahore` · `karachi` · `bandar-seri-begawan` · `hoi-an` · `hue` | ✅ |
 | **R56** | `nha-trang` · `phu-quoc` · `sapa` · `boracay` · `palawan` | `el-nido` · `bohol` · `lombok` · `koh-samui` · `langkawi` | ✅ |
-| **R57** | `ayutthaya` · `vang-vieng` · `bagan` · `kumamoto` · `hakodate` | `ishigaki` · `miyakojima` · `tsushima` · `guam` · `saipan` | ⬜ |
-| **R58** | `santorini` · `cappadocia` · `kotor` · `bled` · `ibiza` | `crete` · `havana` · `ulaanbaatar` · `moscow` · `st-petersburg` | ⬜ |
+| **R57** | `ayutthaya` · `vang-vieng` · `bagan` · `kumamoto` · `hakodate` | `ishigaki` · `miyakojima` · `tsushima` · `guam` · `saipan` | ✅ |
+| **R58** | `santorini` · `cappadocia` · `kotor` · `bled` · `ibiza` | `crete` · `havana` · `ulaanbaatar` · `moscow` · `st-petersburg` | ✅ |
 | **R59** | `fiji` · `mauritius` · `tahiti` · `bora-bora` · `zermatt` | `cinque-terre` · `bodrum` · `antalya` · `qingdao` · `sanya` | ⬜ |
 | **R60** | `xiamen` · `zhangjiajie` · `guilin` · `lijiang` · `lhasa` | `harbin` · `kunming` · `dalian` · `tbilisi` · `yerevan` | ⬜ |
 | **R61** | `baku` · `almaty` · `tashkent` · `samarkand` · `tehran` | `shiraz` · `isfahan` · `pokhara` · `arequipa` · `ushuaia` | ⬜ |
@@ -100,7 +100,7 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R57**
+다음 시작: **R59**
 tip: 522 hub / 1564 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```

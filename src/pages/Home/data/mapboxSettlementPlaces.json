@@ -21773,5 +21773,869 @@
         "mapboxId": null
       }
     ]
+  },
+  {
+    "hubId": "ayutthaya",
+    "settlements": [
+      {
+        "placeId": "ayutthaya-bang-pa-in",
+        "name": "방파인",
+        "name_en": "Bang Pa-in",
+        "featureType": "locality",
+        "lat": 14.227,
+        "lng": 100.578,
+        "aliases": [
+          "Bang Pa-in",
+          "Bang Pa In"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ayutthaya-nakhon-luang",
+        "name": "나콘루앙",
+        "name_en": "Nakhon Luang",
+        "featureType": "locality",
+        "lat": 14.456,
+        "lng": 100.621,
+        "aliases": [
+          "Nakhon Luang"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ayutthaya-bang-sai",
+        "name": "방사이",
+        "name_en": "Bang Sai",
+        "featureType": "locality",
+        "lat": 14.316,
+        "lng": 100.482,
+        "aliases": [
+          "Bang Sai"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "vang-vieng",
+    "settlements": [
+      {
+        "placeId": "vang-vieng-tha-heua",
+        "name": "타흐우아",
+        "name_en": "Ban Tha Heua",
+        "featureType": "locality",
+        "lat": 18.945,
+        "lng": 102.425,
+        "aliases": [
+          "Tha Heua",
+          "Ban Tha Heua"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "vang-vieng-phon-pheng",
+        "name": "폰펭",
+        "name_en": "Ban Phon Pheng",
+        "featureType": "locality",
+        "lat": 18.905,
+        "lng": 102.455,
+        "aliases": [
+          "Phon Pheng",
+          "Ban Phon Pheng"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "vang-vieng-houay-ngoua",
+        "name": "후아이응우아",
+        "name_en": "Ban Houay Ngoua",
+        "featureType": "locality",
+        "lat": 18.91,
+        "lng": 102.44,
+        "aliases": [
+          "Houay Ngoua",
+          "Ban Houay Ngoua"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "bagan",
+    "settlements": [
+      {
+        "placeId": "bagan-nyaung-u",
+        "name": "냥우",
+        "name_en": "Nyaung-U",
+        "featureType": "city",
+        "lat": 21.172,
+        "lng": 94.911,
+        "aliases": [
+          "Nyaung-U",
+          "Nyaung U",
+          "Nyang U"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bagan-new-bagan",
+        "name": "뉴바간",
+        "name_en": "New Bagan",
+        "featureType": "locality",
+        "lat": 21.148,
+        "lng": 94.859,
+        "aliases": [
+          "New Bagan",
+          "Bagan Myothit"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bagan-myinkaba",
+        "name": "미인카바",
+        "name_en": "Myinkaba",
+        "featureType": "locality",
+        "lat": 21.148,
+        "lng": 94.86,
+        "aliases": [
+          "Myinkaba",
+          "Myinkaba Village"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "kumamoto",
+    "settlements": [
+      {
+        "placeId": "kumamoto-mashiki",
+        "name": "마시키",
+        "name_en": "Mashiki",
+        "featureType": "city",
+        "lat": 32.791,
+        "lng": 130.817,
+        "aliases": [
+          "Mashiki",
+          "益城"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kumamoto-koshi",
+        "name": "고시",
+        "name_en": "Koshi",
+        "featureType": "city",
+        "lat": 32.886,
+        "lng": 130.811,
+        "aliases": [
+          "Koshi",
+          "合志"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kumamoto-uto",
+        "name": "우토",
+        "name_en": "Uto",
+        "featureType": "city",
+        "lat": 32.687,
+        "lng": 130.658,
+        "aliases": [
+          "Uto",
+          "宇土"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "hakodate",
+    "settlements": [
+      {
+        "placeId": "hakodate-nanae",
+        "name": "나나에",
+        "name_en": "Nanae",
+        "featureType": "city",
+        "lat": 41.974,
+        "lng": 140.694,
+        "aliases": [
+          "Nanae",
+          "七飯"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hakodate-hokuto",
+        "name": "호쿠토",
+        "name_en": "Hokuto",
+        "featureType": "city",
+        "lat": 41.824,
+        "lng": 140.653,
+        "aliases": [
+          "Hokuto",
+          "北斗"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hakodate-yunokawa",
+        "name": "유노카와",
+        "name_en": "Yunokawa",
+        "featureType": "locality",
+        "lat": 41.775,
+        "lng": 140.785,
+        "aliases": [
+          "Yunokawa",
+          "湯の川"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "ishigaki",
+    "settlements": [
+      {
+        "placeId": "ishigaki-kabira",
+        "name": "가비라",
+        "name_en": "Kabira",
+        "featureType": "locality",
+        "lat": 24.45,
+        "lng": 124.14,
+        "aliases": [
+          "Kabira",
+          "川平"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ishigaki-shiraho",
+        "name": "시라호",
+        "name_en": "Shiraho",
+        "featureType": "locality",
+        "lat": 24.35,
+        "lng": 124.24,
+        "aliases": [
+          "Shiraho",
+          "白保"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ishigaki-fusaki",
+        "name": "후사키",
+        "name_en": "Fusaki",
+        "featureType": "locality",
+        "lat": 24.34,
+        "lng": 124.12,
+        "aliases": [
+          "Fusaki",
+          "フサキ"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "miyakojima",
+    "settlements": [
+      {
+        "placeId": "miyakojima-hirara",
+        "name": "히라라",
+        "name_en": "Hirara",
+        "featureType": "city",
+        "lat": 24.805,
+        "lng": 125.281,
+        "aliases": [
+          "Hirara",
+          "平良"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "miyakojima-irabu",
+        "name": "이라부",
+        "name_en": "Irabu",
+        "featureType": "locality",
+        "lat": 24.84,
+        "lng": 125.18,
+        "aliases": [
+          "Irabu",
+          "伊良部"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "miyakojima-gusukube",
+        "name": "구스쿠베",
+        "name_en": "Gusukube",
+        "featureType": "locality",
+        "lat": 24.74,
+        "lng": 125.35,
+        "aliases": [
+          "Gusukube",
+          "城辺"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "tsushima",
+    "settlements": [
+      {
+        "placeId": "tsushima-izuhara",
+        "name": "이즈하라",
+        "name_en": "Izuhara",
+        "featureType": "locality",
+        "lat": 34.198,
+        "lng": 129.287,
+        "aliases": [
+          "Izuhara",
+          "厳原"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tsushima-mine",
+        "name": "미네",
+        "name_en": "Mine Tsushima",
+        "featureType": "locality",
+        "lat": 34.47,
+        "lng": 129.34,
+        "aliases": [
+          "Mine Tsushima",
+          "峰"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tsushima-kechi",
+        "name": "게치",
+        "name_en": "Kechi",
+        "featureType": "locality",
+        "lat": 34.28,
+        "lng": 129.32,
+        "aliases": [
+          "Kechi",
+          "鶏知"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "guam",
+    "settlements": [
+      {
+        "placeId": "guam-hagatna",
+        "name": "하갓냐",
+        "name_en": "Hagatna",
+        "featureType": "city",
+        "lat": 13.475,
+        "lng": 144.75,
+        "aliases": [
+          "Hagatna",
+          "Hagåtña",
+          "Agana"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "guam-tamuning",
+        "name": "타무닝",
+        "name_en": "Tamuning",
+        "featureType": "locality",
+        "lat": 13.494,
+        "lng": 144.782,
+        "aliases": [
+          "Tamuning"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "guam-dededo",
+        "name": "데데도",
+        "name_en": "Dededo",
+        "featureType": "locality",
+        "lat": 13.519,
+        "lng": 144.836,
+        "aliases": [
+          "Dededo"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "saipan",
+    "settlements": [
+      {
+        "placeId": "saipan-garapan",
+        "name": "가라판",
+        "name_en": "Garapan",
+        "featureType": "locality",
+        "lat": 15.207,
+        "lng": 145.72,
+        "aliases": [
+          "Garapan"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "saipan-susupe",
+        "name": "수수페",
+        "name_en": "Susupe",
+        "featureType": "locality",
+        "lat": 15.15,
+        "lng": 145.71,
+        "aliases": [
+          "Susupe"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "saipan-chalan-kanoa",
+        "name": "찰란카노아",
+        "name_en": "Chalan Kanoa",
+        "featureType": "locality",
+        "lat": 15.15,
+        "lng": 145.7,
+        "aliases": [
+          "Chalan Kanoa"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "santorini",
+    "settlements": [
+      {
+        "placeId": "santorini-fira",
+        "name": "피라",
+        "name_en": "Fira",
+        "featureType": "locality",
+        "lat": 36.416,
+        "lng": 25.432,
+        "aliases": [
+          "Fira",
+          "Thira"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "santorini-oia",
+        "name": "이아",
+        "name_en": "Oia",
+        "featureType": "locality",
+        "lat": 36.461,
+        "lng": 25.375,
+        "aliases": [
+          "Oia",
+          "Ia"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "santorini-perissa",
+        "name": "페리사",
+        "name_en": "Perissa",
+        "featureType": "locality",
+        "lat": 36.357,
+        "lng": 25.475,
+        "aliases": [
+          "Perissa"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "cappadocia",
+    "settlements": [
+      {
+        "placeId": "cappadocia-goreme",
+        "name": "괴레메",
+        "name_en": "Goreme",
+        "featureType": "place",
+        "lat": 38.643,
+        "lng": 34.835,
+        "aliases": [
+          "Goreme",
+          "Göreme"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cappadocia-urgup",
+        "name": "위르굽",
+        "name_en": "Urgup",
+        "featureType": "place",
+        "lat": 38.631,
+        "lng": 34.912,
+        "aliases": [
+          "Urgup",
+          "Ürgüp"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cappadocia-avanos",
+        "name": "아바노스",
+        "name_en": "Avanos",
+        "featureType": "place",
+        "lat": 38.715,
+        "lng": 34.847,
+        "aliases": [
+          "Avanos"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "kotor",
+    "settlements": [
+      {
+        "placeId": "kotor-dobrota",
+        "name": "도브로타",
+        "name_en": "Dobrota",
+        "featureType": "locality",
+        "lat": 42.454,
+        "lng": 18.768,
+        "aliases": [
+          "Dobrota"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kotor-prcanj",
+        "name": "프르차니",
+        "name_en": "Prcanj",
+        "featureType": "locality",
+        "lat": 42.458,
+        "lng": 18.738,
+        "aliases": [
+          "Prcanj",
+          "Prčanj"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kotor-perast",
+        "name": "페라스트",
+        "name_en": "Perast",
+        "featureType": "locality",
+        "lat": 42.487,
+        "lng": 18.699,
+        "aliases": [
+          "Perast"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "bled",
+    "settlements": [
+      {
+        "placeId": "bled-lesce",
+        "name": "레스체",
+        "name_en": "Lesce",
+        "featureType": "locality",
+        "lat": 46.36,
+        "lng": 14.157,
+        "aliases": [
+          "Lesce"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bled-radovljica",
+        "name": "라도블리차",
+        "name_en": "Radovljica",
+        "featureType": "city",
+        "lat": 46.344,
+        "lng": 14.174,
+        "aliases": [
+          "Radovljica"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bled-zasip",
+        "name": "자십",
+        "name_en": "Zasip",
+        "featureType": "locality",
+        "lat": 46.39,
+        "lng": 14.11,
+        "aliases": [
+          "Zasip"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "ibiza",
+    "settlements": [
+      {
+        "placeId": "ibiza-santa-eularia",
+        "name": "산타율라리아",
+        "name_en": "Santa Eularia",
+        "featureType": "city",
+        "lat": 38.984,
+        "lng": 1.534,
+        "aliases": [
+          "Santa Eularia",
+          "Santa Eulària",
+          "Santa Eulalia"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ibiza-sant-antoni",
+        "name": "산트안토니",
+        "name_en": "Sant Antoni",
+        "featureType": "city",
+        "lat": 38.981,
+        "lng": 1.303,
+        "aliases": [
+          "Sant Antoni",
+          "San Antonio"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ibiza-sant-josep",
+        "name": "산트조셉",
+        "name_en": "Sant Josep",
+        "featureType": "locality",
+        "lat": 38.922,
+        "lng": 1.294,
+        "aliases": [
+          "Sant Josep",
+          "San Jose Ibiza"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "crete",
+    "settlements": [
+      {
+        "placeId": "crete-rethymno",
+        "name": "레팀노",
+        "name_en": "Rethymno",
+        "featureType": "city",
+        "lat": 35.365,
+        "lng": 24.482,
+        "aliases": [
+          "Rethymno",
+          "Rethymnon"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "crete-heraklion",
+        "name": "이라클리온",
+        "name_en": "Heraklion",
+        "featureType": "city",
+        "lat": 35.339,
+        "lng": 25.133,
+        "aliases": [
+          "Heraklion",
+          "Iraklion",
+          "Heraklio"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "crete-anogeia",
+        "name": "아노이아",
+        "name_en": "Anogeia",
+        "featureType": "locality",
+        "lat": 35.29,
+        "lng": 24.88,
+        "aliases": [
+          "Anogeia",
+          "Anogia"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "havana",
+    "settlements": [
+      {
+        "placeId": "havana-vedado",
+        "name": "베다도",
+        "name_en": "Vedado",
+        "featureType": "locality",
+        "lat": 23.133,
+        "lng": -82.394,
+        "aliases": [
+          "Vedado",
+          "El Vedado"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "havana-miramar",
+        "name": "미라마르하바나",
+        "name_en": "Miramar Havana",
+        "featureType": "locality",
+        "lat": 23.12,
+        "lng": -82.43,
+        "aliases": [
+          "Miramar Havana"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "havana-guanabacoa",
+        "name": "과나바코아",
+        "name_en": "Guanabacoa",
+        "featureType": "locality",
+        "lat": 23.126,
+        "lng": -82.3,
+        "aliases": [
+          "Guanabacoa"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "ulaanbaatar",
+    "settlements": [
+      {
+        "placeId": "ulaanbaatar-zuunmod",
+        "name": "준모드",
+        "name_en": "Zuunmod",
+        "featureType": "city",
+        "lat": 47.707,
+        "lng": 106.953,
+        "aliases": [
+          "Zuunmod",
+          "Dzuunmod"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ulaanbaatar-nalaikh",
+        "name": "날라이흐",
+        "name_en": "Nalaikh",
+        "featureType": "locality",
+        "lat": 47.773,
+        "lng": 107.254,
+        "aliases": [
+          "Nalaikh"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "ulaanbaatar-bayanzurkh",
+        "name": "바얀주르흐",
+        "name_en": "Bayanzurkh",
+        "featureType": "locality",
+        "lat": 47.91,
+        "lng": 106.95,
+        "aliases": [
+          "Bayanzurkh",
+          "Bayanzürkh"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "moscow",
+    "settlements": [
+      {
+        "placeId": "moscow-khimki",
+        "name": "힘키",
+        "name_en": "Khimki",
+        "featureType": "city",
+        "lat": 55.897,
+        "lng": 37.43,
+        "aliases": [
+          "Khimki"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "moscow-mytishchi",
+        "name": "미티시치",
+        "name_en": "Mytishchi",
+        "featureType": "city",
+        "lat": 55.912,
+        "lng": 37.738,
+        "aliases": [
+          "Mytishchi"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "moscow-lyubertsy",
+        "name": "류베르치",
+        "name_en": "Lyubertsy",
+        "featureType": "city",
+        "lat": 55.677,
+        "lng": 37.894,
+        "aliases": [
+          "Lyubertsy"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "st-petersburg",
+    "settlements": [
+      {
+        "placeId": "st-petersburg-pushkin",
+        "name": "푸시킨",
+        "name_en": "Pushkin",
+        "featureType": "city",
+        "lat": 59.722,
+        "lng": 30.417,
+        "aliases": [
+          "Pushkin",
+          "Tsarskoye Selo"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "st-petersburg-peterhof",
+        "name": "페테르고프",
+        "name_en": "Peterhof",
+        "featureType": "city",
+        "lat": 59.885,
+        "lng": 29.901,
+        "aliases": [
+          "Peterhof",
+          "Petrodvorets"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "st-petersburg-kronstadt",
+        "name": "크론시타트",
+        "name_en": "Kronstadt",
+        "featureType": "city",
+        "lat": 59.995,
+        "lng": 29.767,
+        "aliases": [
+          "Kronstadt",
+          "Kronshtadt"
+        ],
+        "mapboxId": null
+      }
+    ]
   }
 ]
