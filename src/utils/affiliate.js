@@ -584,7 +584,8 @@ export function isTripcomHotelSparseInventoryLocation(location) {
 }
 
 /**
- * Summary 숙소 empty/error 문구 · CTA 라벨.
+ * Summary 숙소 empty 문구 · CTA 라벨 (MRT 결과 0건).
+ * API 장애는 {@link getTripcomHotelErrorCopy}.
  *
  * @param {{ slug?: string } | null | undefined} location
  * @returns {{ title: string, subtitle: string, cta: string }}
@@ -610,6 +611,20 @@ export function getTripcomHotelEmptyCopy(location) {
   return {
     title: '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요',
     subtitle: '위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요',
+    cta: '트립닷컴에서 숙소 검색',
+  };
+}
+
+/**
+ * Summary 숙소 error 문구 · CTA 라벨 (Edge/MRT 호출 실패).
+ * 지역 특수 empty override는 적용하지 않음 — 장애 ≠ 재고 없음.
+ *
+ * @returns {{ title: string, subtitle: string, cta: string }}
+ */
+export function getTripcomHotelErrorCopy() {
+  return {
+    title: '숙소 검색을 잠시 불러오지 못했어요',
+    subtitle: '잠시 후에 다시 시도해 주세요. 트립닷컴에서 바로 검색할 수도 있어요',
     cta: '트립닷컴에서 숙소 검색',
   };
 }

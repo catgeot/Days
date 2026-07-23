@@ -212,6 +212,147 @@ async function probeGeminiProxy() {
   }
 }
 
+/**
+ * MRT 숙소 Edge — Summary「숙소 찾기」의존.
+ * Pass: HTTP 200 + ok. items 0은 warn (일시 재고·region).
+ */
+async function probeMrtStayProxy() {
+  const id = 'P0-4';
+  const name = 'fetch-mrt-stays';
+
+  if (!supabaseUrl || !anonKey) {
+    record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
+    return;
+  }
+
+  try {
+    const response = await fetchWithTimeout(
+      `${supabaseUrl.replace(/\/$/, '')}/functions/v1/fetch-mrt-stays`,
+      {
+        method: 'POST',
+        headers: {
+          ...supabaseHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keyword: '덴파사르',
+          isDomestic: false,
+          countryHint: '인도네시아',
+          countryHintAlts: ['Indonesia'],
+          altKeywords: ['Denpasar', '우붓', 'Ubud', '발리', 'Bali'],
+          nameEn: 'Bali',
+          size: 3,
+        }),
+      }
+    );
+
+    const raw = await response.text();
+    let body = null;
+    try {
+      body = raw ? JSON.parse(raw) : null;
+    } catch {
+      body = null;
+    }
+
+    const combined = `${response.status} ${raw}`;
+
+    if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
+      record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
+      return;
+    }
+
+    if (response.status >= 500) {
+      record(id, name, 'fail', `HTTP ${response.status}`, 'P0');
+      return;
+    }
+
+    if (body?.ok === true) {
+      const n = Array.isArray(body.items) ? body.items.length : 0;
+      if (n === 0) {
+        record(
+          id,
+          name,
+          'warn',
+          `ok but items=0 (region=${body.region?.subName || body.region?.name || '-'})`,
+          'P0'
+        );
+        return;
+      }
+      record(id, name, 'pass', `ok items=${n}`, 'P0');
+      return;
+    }
+
+    const errMsg = body?.error || body?.message || raw.slice(0, 200) || `HTTP ${response.status}`;
+    record(id, name, 'fail', errMsg, 'P0');
+  } catch (error) {
+    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+    record(id, name, 'fail', detail, 'P0');
+  }
+}
+
+/** TourAPI Edge — 국내 갤러리·명소 좌표. Pass: searchKeyword 경복궁 items≥1 */
+async function probeTourapiProxy() {
+  const id = 'P0-5';
+  const name = 'tourapi-proxy';
+
+  if (!supabaseUrl || !anonKey) {
+    record(id, name, 'fail', 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing', 'P0');
+    return;
+  }
+
+  try {
+    const response = await fetchWithTimeout(
+      `${supabaseUrl.replace(/\/$/, '')}/functions/v1/tourapi-proxy`,
+      {
+        method: 'POST',
+        headers: {
+          ...supabaseHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'searchKeyword',
+          keyword: '경복궁',
+          numOfRows: 3,
+        }),
+      }
+    );
+
+    const raw = await response.text();
+    let body = null;
+    try {
+      body = raw ? JSON.parse(raw) : null;
+    } catch {
+      body = null;
+    }
+
+    const combined = `${response.status} ${raw}`;
+
+    if (response.status === 401 || /UNAUTHORIZED|Invalid JWT/i.test(combined)) {
+      record(id, name, 'fail', '401 Invalid JWT — check VITE_SUPABASE_ANON_KEY trim', 'P0');
+      return;
+    }
+
+    if (response.status >= 500) {
+      record(id, name, 'fail', `HTTP ${response.status}`, 'P0');
+      return;
+    }
+
+    const n = Array.isArray(body?.items) ? body.items.length : 0;
+    if (body?.ok === true && n >= 1) {
+      record(id, name, 'pass', `ok items=${n}`, 'P0');
+      return;
+    }
+
+    const errMsg =
+      body?.error || body?.message || (body?.ok ? `items=${n}` : null) || raw.slice(0, 200) ||
+      `HTTP ${response.status}`;
+    record(id, name, 'fail', errMsg, 'P0');
+  } catch (error) {
+    const detail = error.name === 'AbortError' ? 'timeout' : error.message;
+    record(id, name, 'fail', detail, 'P0');
+  }
+}
+
 async function probePlaceCardShell() {
   const id = 'P1-1';
   const name = 'PlaceCard shell';
@@ -276,6 +417,8 @@ siteUrl = await resolveSiteUrl(siteUrl);
 await probeSiteHtml();
 await probeSupabaseRest();
 await probeGeminiProxy();
+await probeMrtStayProxy();
+await probeTourapiProxy();
 await probePlaceCardShell();
 await probeSitemap();
 

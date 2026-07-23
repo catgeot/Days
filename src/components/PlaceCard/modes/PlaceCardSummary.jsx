@@ -243,11 +243,6 @@ const PlaceCardSummary = ({
                   ({secondaryName})
                 </span>
               )}
-              {!isScanning && location?.uiPlace && (
-                <span className="mt-1.5 block text-[10px] leading-snug text-gray-400">
-                  큐레이션 여행지가 아닙니다. AI로 이 지점을 알아볼 수 있어요.
-                </span>
-              )}
             </div>
 
             <div className="flex shrink-0 items-center gap-1 -mr-2 -mt-2 z-10">

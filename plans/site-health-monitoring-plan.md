@@ -15,7 +15,7 @@
 | [Smoke Health](../.github/workflows/smoke-health.yml) | `0 */6 * * *` | P0·P1 Pass |
 | [E2E Health](../.github/workflows/e2e-health.yml) | `0 9 * * *` UTC | home·place·mooni Pass (수동 ~1m) |
 
-**Smoke Probe**: P0 gateo.kr HTML · Supabase · gemini-proxy(429→fail) · P1 `/place/bali` · sitemap.
+**Smoke Probe**: P0 gateo.kr HTML · Supabase · gemini-proxy(429→fail) · **fetch-mrt-stays** · **tourapi-proxy** · P1 `/place/bali` · sitemap.
 
 **E2E**: 지구본/map · PlaceCard 발리 · MOONi 1턴(응답 또는 S3 에러 문구).
 
@@ -53,6 +53,8 @@
 | D5 | **Unsplash** (`VITE_UNSPLASH_ACCESS_KEY`) | PlaceCard 갤러리 1순위 | 갤러리 빈 화면·폴백 | Unsplash Developers |
 | D6 | **Pexels** (`VITE_PEXELS_API_KEY`) | 갤러리 Fallback | Unsplash 실패 시 2차 | Pexels API |
 | D7 | **Travelpayouts / Trip.com / Klook / 12Go / MRT** | 제휴 링크·배너 | 예약 CTA URL 깨짐 (앱은 살아 있음) | 각 파트너 콘솔 (월 1회 수동) |
+| D8 | **MRT 숙소 Edge** (`fetch-mrt-stays`) | Summary「숙소 찾기」목록 API | 숙소 패널 error → Trip.com CTA | Smoke **P0-4** · Supabase Edge Logs |
+| D9 | **TourAPI Edge** (`tourapi-proxy`) | 국내 갤러리·명소 좌표 | 국내 Tour 사진·좌표 실패 | Smoke **P0-5** · TourAPI/공공데이터 키 |
 
 **Secrets 위치**
 
@@ -126,6 +128,8 @@ flowchart TB
 | P0-1 | **Site HTML** | `GET ${SMOKE_SITE_URL}/` | status 200, `<title>` 또는 `#root` 존재 | 네트워크·5xx |
 | P0-2 | **Supabase REST** | `GET ${SUPABASE_URL}/rest/v1/` + anon headers | 200 또는 401 (서버 alive) | timeout·5xx |
 | P0-3 | **gemini-proxy** | `POST .../functions/v1/gemini-proxy` body `{ modelId, parts:[{text:"ping"}] }` | `success:true` **또는** body에 `429`/`RESOURCE_EXHAUSTED` → **경고(warn)** 로 분류 | 401 JWT·500 기타·timeout |
+| P0-4 | **fetch-mrt-stays** | `POST .../functions/v1/fetch-mrt-stays` 발리(`덴파사르`) `size:3` | `ok:true` + items≥1 · items=0은 **warn** | 401·5xx·timeout·`!ok` |
+| P0-5 | **tourapi-proxy** | `POST .../functions/v1/tourapi-proxy` `searchKeyword` 경복궁 | `ok:true` + items≥1 | 401·5xx·timeout·빈 결과 |
 | P1-1 | **PlaceCard SSR shell** | `GET /place/bali` (또는 고정 slug) | 200 | 404·5xx |
 | P1-2 | **Sitemap** | `GET /sitemap.xml` | 200, `urlset` | missing |
 

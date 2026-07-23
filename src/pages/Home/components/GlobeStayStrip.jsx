@@ -32,6 +32,7 @@ import {
   buildMrtMylinkUrl,
   buildTripcomHotelSearchUrl,
   getTripcomHotelEmptyCopy,
+  getTripcomHotelErrorCopy,
 } from '../../../utils/affiliate';
 import {
   STAY_AGENCY_DISCLAIMER,
@@ -1177,8 +1178,10 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   const tripcomCtaBesideAgencyMobileClassName =
     'inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-sky-200/70 bg-sky-500/40 px-3.5 py-2.5 text-[12px] font-semibold text-white shadow-sm transition-colors hover:bg-sky-500/55';
 
+  const stayPanelCopy =
+    status === 'error' ? getTripcomHotelErrorCopy() : getTripcomHotelEmptyCopy(location);
   const { title: emptyTitleBase, subtitle: emptySubtitleBase, cta: emptyCtaLabel } =
-    getTripcomHotelEmptyCopy(location);
+    stayPanelCopy;
   const stayAgencyProfile = resolveStayAgencyProfile(location);
   const hasStayAgencyLinks = Boolean(stayAgencyProfile?.links?.length);
   /** 저재고 footer에 이미 포함되면 중복 방지 · 그 외 ready 목록에서만 상시 노출 */
@@ -1189,10 +1192,14 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     items.length > 0 &&
     !showLowInventoryCta;
   const emptyTitle = emptyTitleBase;
-  const emptySubtitle = hasStayAgencyLinks
-    ? stayAgencyProfile.note ||
-      '아래 공신력 있는 안내·여행사로 루트를 확인해 보세요'
-    : emptySubtitleBase;
+  /** error는 장애 안내 유지 · empty만 관광청 note로 subtitle 교체 */
+  const emptySubtitle =
+    status === 'error'
+      ? emptySubtitleBase
+      : hasStayAgencyLinks
+        ? stayAgencyProfile.note ||
+          '아래 공신력 있는 안내·여행사로 루트를 확인해 보세요'
+        : emptySubtitleBase;
   const agencyLinkTarget = getPartnerLinkTarget();
   const agencyLinkRel = 'noopener noreferrer';
   const tripcomEmptyCtaDesktopClass = hasStayAgencyLinks

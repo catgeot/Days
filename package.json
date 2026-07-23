@@ -17,6 +17,7 @@
     "audit:mapbox-settlement-places": "node scripts/audit-mapbox-settlement-places.mjs",
     "smoke:mapbox-settlement-places": "node scripts/smoke-mapbox-settlement-places.mjs",
     "smoke:tourapi": "node scripts/smoke-tourapi.mjs",
+    "smoke:mrt-stay": "node scripts/smoke-mrt-stay-queries.mjs",
     "generate:tourapi": "node scripts/generate-travel-spot-tourapi.mjs",
     "audit:tourapi": "node scripts/audit-tourapi-content-ids.mjs",
     "audit:mrt-stays": "node scripts/audit-mrt-stay-coverage.mjs",

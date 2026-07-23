@@ -18,3 +18,17 @@
 - 원인: (1) 캐시·모바일에서 `img.onLoad` 누락으로 타일 pulse 스켈레톤 유지 (2) `place_stats`/전체 fetch hang·early return 시 `isImgLoading` 미해제
 - 대응: `GalleryGridTile` complete/rAF 동기화·6s hang→드롭 · paint chrome 3.5s · `usePlaceGallery` early-return 해제·DB 8s·전체 28s safety
 - QA: 재현지 **케이프타운** · 스켈레톤 정상 해제 확인
+
+## 써머리 장소카드 — uiPlace 안내 문구 제거
+
+**상태**: ✅ 커밋·push
+
+- `PlaceCardSummary`: 「큐레이션 여행지가 아닙니다…」 문구 삭제 (의미 약한 노이즈)
+
+## 숙소 empty/error 문구 + Smoke P0-4/P0-5
+
+**상태**: ✅ 커밋·push · `npm run smoke:health` PASS
+
+- API 실패(`error`)와 결과 0건(`empty`) 문구 분리 · Trip.com CTA 공통 (`getTripcomHotelErrorCopy`)
+- error subtitle: 「잠시 후에 다시 시도해 주세요…」
+- Smoke Health: **P0-4** `fetch-mrt-stays` · **P0-5** `tourapi-proxy` · `smoke:mrt-stay` 별칭

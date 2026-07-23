@@ -73,6 +73,8 @@ npm run smoke:health:local
 | P0-1 | Site HTML (`SMOKE_SITE_URL` 또는 gateo.kr) |
 | P0-2 | Supabase alive |
 | P0-3 | gemini-proxy + Gemini ping (429 → 크레딧 부족 warn) |
+| P0-4 | `fetch-mrt-stays` 발리 ping (items=0 → warn) |
+| P0-5 | `tourapi-proxy` 경복궁 `searchKeyword` |
 | P1-1 | `/place/bali` |
 | P1-2 | `/sitemap.xml` |
 
@@ -85,11 +87,13 @@ npm run smoke:health:local
 | 사용자/알림 증상 | 1차 확인 | 조치 |
 |------------------|----------|------|
 | MOONi 「AI 사용량 한도」·「통신 실패」 | Smoke **P0-3** | AI Studio 선불 크레딧 충전 · Supabase Secrets `GEMINI_API_KEY` |
+| 숙소 찾기「불러오지 못했어요」 | Smoke **P0-4** | Edge `fetch-mrt-stays` 로그 · MRT partner API · Trip CTA는 UI 폴백 |
+| 국내 갤러리 Tour 사진 실패 | Smoke **P0-5** | Edge `tourapi-proxy` · TourAPI 키/쿼터 · Unsplash/Pexels 폴백 |
 | Smoke·E2E 전체 **401** | anon key | Vercel·`.env.local` `VITE_SUPABASE_ANON_KEY` trim · 재배포 |
 | **E2E만** 실패 · Smoke 정상 | Annotation의 `getByRole` name vs 실 UI | `e2e/*.spec.js` 문구를 PlaceCard 등과 맞춤 · 푸시 후 E2E 수동 재실행 |
 | 홈만 **5xx** | Smoke **P0-1** · E2E-1 | Vercel 배포·도메인 · Vercel Notifications |
 | 지구본 blank | Mapbox Statistics | `VITE_MAPBOX_TOKEN` · quota |
-| 갤러리만 빈 화면 | — | Unsplash/Pexels 키·rate limit |
+| 갤러리만 빈 화면 | — | Unsplash/Pexels 키·rate limit · (국내) P0-5 |
 
 ---
 
