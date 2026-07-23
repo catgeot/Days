@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R47~R48 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R49 후임 기동)
+
+- tip **482 hub / 1444 settlements** (+20 hub / +60) · R47 마닐라·세부·발리·페낭·욕야카르타·수라바야·크라비·시엠립·프놈펜·루앙프라방 · R48 비엔티안·양곤·코타키나발루·조호르바루·델리·뭄바이·방갈로르·자이푸르·콜카타·첸나이 · hub skip 0
+- R47/R48 VERIFY: audit issues 0 · smoke 시드+exact(`마카티`/`만다우에`/`우붓`/`조지타운`/`슬레만`/`시도아르조`/`아오낭`/`푸옥`/`타크마우`/`시엥응은`/`핫사이퐁`/`탄린`/`페남팡`/`이스칸다르푸테리`/`구르가온`/`나비뭄바이`/`화이트필드`/`아메르`/`하우라`/`탐바람`) PASS
+- 보정: SEA/IN suburb·city·locality only(hub 도시명 미투입·발리 사찰 POI 제외) · ≤50km · `우동`→`오우동`(haeundae 충돌) · name 충돌 0
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- **다음 배치표 2개**
+  - **R49 A**: `hyderabad` · `agra` · `varanasi` · `goa` · `kathmandu` / **B**: `colombo` · `male` · `abu-dhabi` · `doha` · `riyadh`
+  - **R50 A**: `jeddah` · `tel-aviv` · `jerusalem` · `amman` · `cairo` / **B**: `marrakech` · `casablanca` · `luxor` · `alexandria` · `tunis`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · IN/SA/ME/AF 인근 suburb·city only · placeId hubId prefix · 전역 name 충돌 회피 · sparse(몰디브 등)면 스킵 OK
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R49부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R45~R46 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R47 후임 기동)

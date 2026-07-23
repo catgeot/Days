@@ -1,6 +1,6 @@
 # mapboxSettlementPlaces — 사전 배치 큐 (hubId 순서)
 
-**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R46 ✅ · **다음 시작 R47**
+**상태**: 2026-07-23 · Phase 0 시드(`sokcho`/`paris`) ✅ · R01–R48 ✅ · **다음 시작 R49**
 **규칙**: 라운드 = 최대 **10 hub** · 워커A **5** + 워커B **5** (마지막 R은 잔여) · tip 직렬 A→B · VERIFY 후 다음 R
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.3 · 계획 [`mapbox-settlement-plan.md`](./mapbox-settlement-plan.md)
 
@@ -77,8 +77,8 @@
 | **R44** | `mexico-city` · `cancun` · `guadalajara` · `oaxaca` · `rio-de-janeiro` | `sao-paulo` · `buenos-aires` · `lima` · `santiago` · `bogota` | ✅ |
 | **R45** | `medellin` · `cusco` · `cartagena` · `montevideo` · `beijing` | `shanghai` · `guangzhou` · `chengdu` · `xian` · `hangzhou` | ✅ |
 | **R46** | `shenzhen` · `nanjing` · `suzhou` · `chongqing` · `macau` | `kaohsiung` · `taichung` · `tainan` · `kuala-lumpur` · `jakarta` | ✅ |
-| **R47** | `manila` · `cebu` · `bali` · `penang` · `yogyakarta` | `surabaya` · `krabi` · `siem-reap` · `phnom-penh` · `luang-prabang` | ⬜ |
-| **R48** | `vientiane` · `yangon` · `kota-kinabalu` · `johor-bahru` · `delhi` | `mumbai` · `bangalore` · `jaipur` · `kolkata` · `chennai` | ⬜ |
+| **R47** | `manila` · `cebu` · `bali` · `penang` · `yogyakarta` | `surabaya` · `krabi` · `siem-reap` · `phnom-penh` · `luang-prabang` | ✅ |
+| **R48** | `vientiane` · `yangon` · `kota-kinabalu` · `johor-bahru` · `delhi` | `mumbai` · `bangalore` · `jaipur` · `kolkata` · `chennai` | ✅ |
 | **R49** | `hyderabad` · `agra` · `varanasi` · `goa` · `kathmandu` | `colombo` · `male` · `abu-dhabi` · `doha` · `riyadh` | ⬜ |
 | **R50** | `jeddah` · `tel-aviv` · `jerusalem` · `amman` · `cairo` | `marrakech` · `casablanca` · `luxor` · `alexandria` · `tunis` | ⬜ |
 | **R51** | `fes` · `muscat` · `cape-town` · `johannesburg` · `nairobi` | `addis-ababa` · `zanzibar` · `brisbane` · `perth` · `adelaide` | ⬜ |
@@ -100,8 +100,8 @@
 ### 진행 체크
 
 ```text
-다음 시작: **R47**
-tip: 462 hub / 1384 settlements · audit issues 0 · 미커밋
+다음 시작: **R49**
+tip: 482 hub / 1444 settlements · audit issues 0 · 미커밋
 제시어: 오케스트레이터 + 맵박스정착지 + @plans/mapbox-settlement-queue.md
 ```
 

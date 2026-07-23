@@ -17581,5 +17581,835 @@
         ]
       }
     ]
+  },
+  {
+    "hubId": "manila",
+    "settlements": [
+      {
+        "placeId": "manila-makati",
+        "name": "마카티",
+        "name_en": "Makati",
+        "featureType": "city",
+        "lat": 14.5547,
+        "lng": 121.0244,
+        "aliases": [
+          "Makati"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "manila-quezon-city",
+        "name": "퀘존시티",
+        "name_en": "Quezon City",
+        "featureType": "city",
+        "lat": 14.676,
+        "lng": 121.0437,
+        "aliases": [
+          "Quezon City"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "manila-pasay",
+        "name": "파사이",
+        "name_en": "Pasay",
+        "featureType": "city",
+        "lat": 14.5378,
+        "lng": 121.0014,
+        "aliases": [
+          "Pasay"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "cebu",
+    "settlements": [
+      {
+        "placeId": "cebu-mandaue",
+        "name": "만다우에",
+        "name_en": "Mandaue",
+        "featureType": "city",
+        "lat": 10.3231,
+        "lng": 123.9221,
+        "aliases": [
+          "Mandaue"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cebu-lapu-lapu",
+        "name": "라푸라푸",
+        "name_en": "Lapu-Lapu",
+        "featureType": "city",
+        "lat": 10.3103,
+        "lng": 123.9494,
+        "aliases": [
+          "Lapu-Lapu",
+          "Lapu Lapu"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "cebu-talisay",
+        "name": "탈리사이",
+        "name_en": "Talisay",
+        "featureType": "city",
+        "lat": 10.2447,
+        "lng": 123.8494,
+        "aliases": [
+          "Talisay"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "bali",
+    "settlements": [
+      {
+        "placeId": "bali-ubud",
+        "name": "우붓",
+        "name_en": "Ubud",
+        "featureType": "locality",
+        "lat": -8.5069,
+        "lng": 115.2625,
+        "aliases": [
+          "Ubud"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bali-kuta",
+        "name": "쿠타",
+        "name_en": "Kuta",
+        "featureType": "locality",
+        "lat": -8.7223,
+        "lng": 115.1766,
+        "aliases": [
+          "Kuta"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bali-seminyak",
+        "name": "세미냑",
+        "name_en": "Seminyak",
+        "featureType": "locality",
+        "lat": -8.691,
+        "lng": 115.168,
+        "aliases": [
+          "Seminyak"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "penang",
+    "settlements": [
+      {
+        "placeId": "penang-george-town",
+        "name": "조지타운",
+        "name_en": "George Town",
+        "featureType": "city",
+        "lat": 5.4141,
+        "lng": 100.3288,
+        "aliases": [
+          "George Town",
+          "Georgetown"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "penang-butterworth",
+        "name": "버터워스",
+        "name_en": "Butterworth",
+        "featureType": "city",
+        "lat": 5.3991,
+        "lng": 100.3638,
+        "aliases": [
+          "Butterworth"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "penang-bukit-mertajam",
+        "name": "부킷메르타잠",
+        "name_en": "Bukit Mertajam",
+        "featureType": "city",
+        "lat": 5.363,
+        "lng": 100.4667,
+        "aliases": [
+          "Bukit Mertajam"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "yogyakarta",
+    "settlements": [
+      {
+        "placeId": "yogyakarta-sleman",
+        "name": "슬레만",
+        "name_en": "Sleman",
+        "featureType": "city",
+        "lat": -7.7156,
+        "lng": 110.3556,
+        "aliases": [
+          "Sleman"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "yogyakarta-bantul",
+        "name": "반툴",
+        "name_en": "Bantul",
+        "featureType": "city",
+        "lat": -7.8881,
+        "lng": 110.3289,
+        "aliases": [
+          "Bantul"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "yogyakarta-klaten",
+        "name": "클라텐",
+        "name_en": "Klaten",
+        "featureType": "city",
+        "lat": -7.7058,
+        "lng": 110.6028,
+        "aliases": [
+          "Klaten"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "surabaya",
+    "settlements": [
+      {
+        "placeId": "surabaya-sidoarjo",
+        "name": "시도아르조",
+        "name_en": "Sidoarjo",
+        "featureType": "city",
+        "lat": -7.4478,
+        "lng": 112.7183,
+        "aliases": [
+          "Sidoarjo"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "surabaya-gresik",
+        "name": "그레식",
+        "name_en": "Gresik",
+        "featureType": "city",
+        "lat": -7.1539,
+        "lng": 112.6561,
+        "aliases": [
+          "Gresik"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "surabaya-bangkalan",
+        "name": "방칼란",
+        "name_en": "Bangkalan",
+        "featureType": "city",
+        "lat": -7.0455,
+        "lng": 112.74,
+        "aliases": [
+          "Bangkalan"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "krabi",
+    "settlements": [
+      {
+        "placeId": "krabi-ao-nang",
+        "name": "아오낭",
+        "name_en": "Ao Nang",
+        "featureType": "locality",
+        "lat": 8.0369,
+        "lng": 98.8225,
+        "aliases": [
+          "Ao Nang"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "krabi-nuea-khlong",
+        "name": "느아클롱",
+        "name_en": "Nuea Khlong",
+        "featureType": "locality",
+        "lat": 8.0689,
+        "lng": 99.0344,
+        "aliases": [
+          "Nuea Khlong",
+          "Nua Khlong"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "krabi-khao-thong",
+        "name": "카오통",
+        "name_en": "Khao Thong",
+        "featureType": "locality",
+        "lat": 8.15,
+        "lng": 98.8667,
+        "aliases": [
+          "Khao Thong"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "siem-reap",
+    "settlements": [
+      {
+        "placeId": "siem-reap-puok",
+        "name": "푸옥",
+        "name_en": "Puok",
+        "featureType": "locality",
+        "lat": 13.4333,
+        "lng": 103.7167,
+        "aliases": [
+          "Puok"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "siem-reap-chong-kneas",
+        "name": "총크네아스",
+        "name_en": "Chong Kneas",
+        "featureType": "locality",
+        "lat": 13.264,
+        "lng": 103.822,
+        "aliases": [
+          "Chong Kneas"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "siem-reap-prak-seab",
+        "name": "프락시압",
+        "name_en": "Prak Seab",
+        "featureType": "locality",
+        "lat": 13.3167,
+        "lng": 103.9333,
+        "aliases": [
+          "Prak Seab"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "phnom-penh",
+    "settlements": [
+      {
+        "placeId": "phnom-penh-takhmau",
+        "name": "타크마우",
+        "name_en": "Takhmau",
+        "featureType": "city",
+        "lat": 11.4833,
+        "lng": 104.95,
+        "aliases": [
+          "Takhmau",
+          "Ta Khmau"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "phnom-penh-udong",
+        "name": "오우동",
+        "name_en": "Oudong",
+        "featureType": "locality",
+        "lat": 11.804,
+        "lng": 104.746,
+        "aliases": [
+          "Oudong"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "phnom-penh-prek-pnov",
+        "name": "프레크프노우",
+        "name_en": "Prek Pnov",
+        "featureType": "locality",
+        "lat": 11.65,
+        "lng": 104.8667,
+        "aliases": [
+          "Prek Pnov"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "luang-prabang",
+    "settlements": [
+      {
+        "placeId": "luang-prabang-xieng-ngeun",
+        "name": "시엥응은",
+        "name_en": "Xieng Ngeun",
+        "featureType": "locality",
+        "lat": 19.733,
+        "lng": 102.167,
+        "aliases": [
+          "Xieng Ngeun"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "luang-prabang-chomphet",
+        "name": "촘펫",
+        "name_en": "Chomphet",
+        "featureType": "locality",
+        "lat": 19.883,
+        "lng": 102.117,
+        "aliases": [
+          "Chomphet"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "luang-prabang-phonxay",
+        "name": "폰사이",
+        "name_en": "Phonxay",
+        "featureType": "locality",
+        "lat": 19.9167,
+        "lng": 102.2,
+        "aliases": [
+          "Phonxay"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "vientiane",
+    "settlements": [
+      {
+        "placeId": "vientiane-hadxaifong",
+        "name": "핫사이퐁",
+        "name_en": "Hadxaifong",
+        "featureType": "locality",
+        "lat": 17.88,
+        "lng": 102.68,
+        "aliases": [
+          "Hadxaifong",
+          "Hadxayfong"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "vientiane-thoulakhom",
+        "name": "툴라콤",
+        "name_en": "Thoulakhom",
+        "featureType": "locality",
+        "lat": 18.15,
+        "lng": 102.55,
+        "aliases": [
+          "Thoulakhom"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "vientiane-pak-ngum",
+        "name": "팍늠",
+        "name_en": "Pak Ngum",
+        "featureType": "locality",
+        "lat": 18.1167,
+        "lng": 102.8667,
+        "aliases": [
+          "Pak Ngum"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "yangon",
+    "settlements": [
+      {
+        "placeId": "yangon-thanlyin",
+        "name": "탄린",
+        "name_en": "Thanlyin",
+        "featureType": "city",
+        "lat": 16.7619,
+        "lng": 96.2514,
+        "aliases": [
+          "Thanlyin"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "yangon-insein",
+        "name": "인세인",
+        "name_en": "Insein",
+        "featureType": "locality",
+        "lat": 16.8947,
+        "lng": 96.0944,
+        "aliases": [
+          "Insein"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "yangon-hlaingthaya",
+        "name": "흘라잉타야",
+        "name_en": "Hlaingthaya",
+        "featureType": "locality",
+        "lat": 16.8667,
+        "lng": 96.0667,
+        "aliases": [
+          "Hlaingthaya",
+          "Hlaing Thar Yar"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "kota-kinabalu",
+    "settlements": [
+      {
+        "placeId": "kota-kinabalu-penampang",
+        "name": "페남팡",
+        "name_en": "Penampang",
+        "featureType": "locality",
+        "lat": 5.9167,
+        "lng": 116.1,
+        "aliases": [
+          "Penampang"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kota-kinabalu-putatan",
+        "name": "푸타탄",
+        "name_en": "Putatan",
+        "featureType": "locality",
+        "lat": 5.8833,
+        "lng": 116.05,
+        "aliases": [
+          "Putatan"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kota-kinabalu-tuaran",
+        "name": "투아란",
+        "name_en": "Tuaran",
+        "featureType": "locality",
+        "lat": 6.1833,
+        "lng": 116.2333,
+        "aliases": [
+          "Tuaran"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "johor-bahru",
+    "settlements": [
+      {
+        "placeId": "johor-bahru-iskandar-puteri",
+        "name": "이스칸다르푸테리",
+        "name_en": "Iskandar Puteri",
+        "featureType": "city",
+        "lat": 1.4226,
+        "lng": 103.6531,
+        "aliases": [
+          "Iskandar Puteri",
+          "Nusajaya"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "johor-bahru-skudai",
+        "name": "스쿠다이",
+        "name_en": "Skudai",
+        "featureType": "locality",
+        "lat": 1.5333,
+        "lng": 103.6667,
+        "aliases": [
+          "Skudai"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "johor-bahru-pasir-gudang",
+        "name": "파시르구당",
+        "name_en": "Pasir Gudang",
+        "featureType": "city",
+        "lat": 1.4703,
+        "lng": 103.9021,
+        "aliases": [
+          "Pasir Gudang"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "delhi",
+    "settlements": [
+      {
+        "placeId": "delhi-gurugram",
+        "name": "구르가온",
+        "name_en": "Gurugram",
+        "featureType": "city",
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "aliases": [
+          "Gurugram",
+          "Gurgaon"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "delhi-noida",
+        "name": "노이다",
+        "name_en": "Noida",
+        "featureType": "city",
+        "lat": 28.5355,
+        "lng": 77.391,
+        "aliases": [
+          "Noida"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "delhi-ghaziabad",
+        "name": "가지아바드",
+        "name_en": "Ghaziabad",
+        "featureType": "city",
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "aliases": [
+          "Ghaziabad"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "mumbai",
+    "settlements": [
+      {
+        "placeId": "mumbai-navi-mumbai",
+        "name": "나비뭄바이",
+        "name_en": "Navi Mumbai",
+        "featureType": "city",
+        "lat": 19.033,
+        "lng": 73.0297,
+        "aliases": [
+          "Navi Mumbai"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "mumbai-thane",
+        "name": "타네",
+        "name_en": "Thane",
+        "featureType": "city",
+        "lat": 19.2183,
+        "lng": 72.9781,
+        "aliases": [
+          "Thane"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "mumbai-kalyan",
+        "name": "칼리안",
+        "name_en": "Kalyan",
+        "featureType": "city",
+        "lat": 19.2403,
+        "lng": 73.1305,
+        "aliases": [
+          "Kalyan"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "bangalore",
+    "settlements": [
+      {
+        "placeId": "bangalore-whitefield",
+        "name": "화이트필드",
+        "name_en": "Whitefield",
+        "featureType": "locality",
+        "lat": 12.9698,
+        "lng": 77.75,
+        "aliases": [
+          "Whitefield"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bangalore-electronic-city",
+        "name": "일렉트로닉시티",
+        "name_en": "Electronic City",
+        "featureType": "locality",
+        "lat": 12.8452,
+        "lng": 77.6602,
+        "aliases": [
+          "Electronic City"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bangalore-yelahanka",
+        "name": "옐라한카",
+        "name_en": "Yelahanka",
+        "featureType": "locality",
+        "lat": 13.1007,
+        "lng": 77.5963,
+        "aliases": [
+          "Yelahanka"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "jaipur",
+    "settlements": [
+      {
+        "placeId": "jaipur-amer",
+        "name": "아메르",
+        "name_en": "Amer",
+        "featureType": "locality",
+        "lat": 26.9855,
+        "lng": 75.8513,
+        "aliases": [
+          "Amer",
+          "Amber"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "jaipur-sanganer",
+        "name": "상가네르",
+        "name_en": "Sanganer",
+        "featureType": "locality",
+        "lat": 26.82,
+        "lng": 75.79,
+        "aliases": [
+          "Sanganer"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "jaipur-bagru",
+        "name": "바그루",
+        "name_en": "Bagru",
+        "featureType": "locality",
+        "lat": 26.808,
+        "lng": 75.542,
+        "aliases": [
+          "Bagru"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "kolkata",
+    "settlements": [
+      {
+        "placeId": "kolkata-howrah",
+        "name": "하우라",
+        "name_en": "Howrah",
+        "featureType": "city",
+        "lat": 22.5958,
+        "lng": 88.2636,
+        "aliases": [
+          "Howrah"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kolkata-salt-lake",
+        "name": "솔트레이크",
+        "name_en": "Salt Lake",
+        "featureType": "locality",
+        "lat": 22.5867,
+        "lng": 88.4172,
+        "aliases": [
+          "Salt Lake",
+          "Bidhannagar"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "kolkata-dum-dum",
+        "name": "둠둠",
+        "name_en": "Dum Dum",
+        "featureType": "locality",
+        "lat": 22.633,
+        "lng": 88.434,
+        "aliases": [
+          "Dum Dum"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "chennai",
+    "settlements": [
+      {
+        "placeId": "chennai-tambaram",
+        "name": "탐바람",
+        "name_en": "Tambaram",
+        "featureType": "locality",
+        "lat": 12.9249,
+        "lng": 80.1275,
+        "aliases": [
+          "Tambaram"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "chennai-avadi",
+        "name": "아바디",
+        "name_en": "Avadi",
+        "featureType": "locality",
+        "lat": 13.1143,
+        "lng": 80.1018,
+        "aliases": [
+          "Avadi"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "chennai-porur",
+        "name": "포루르",
+        "name_en": "Porur",
+        "featureType": "locality",
+        "lat": 13.037,
+        "lng": 80.157,
+        "aliases": [
+          "Porur"
+        ],
+        "mapboxId": null
+      }
+    ]
   }
 ]
