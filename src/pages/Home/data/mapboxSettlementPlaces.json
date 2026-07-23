@@ -20054,5 +20054,883 @@
         "mapboxId": null
       }
     ]
+  },
+  {
+    "hubId": "nara",
+    "settlements": [
+      {
+        "placeId": "nara-yamatokoriyama",
+        "name": "야마토코리야마",
+        "name_en": "Yamatokoriyama",
+        "featureType": "city",
+        "lat": 34.6494,
+        "lng": 135.7828,
+        "aliases": [
+          "Yamatokōriyama",
+          "Yamatokoriyama",
+          "大和郡山"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nara-tenri",
+        "name": "덴리",
+        "name_en": "Tenri",
+        "featureType": "city",
+        "lat": 34.5964,
+        "lng": 135.8372,
+        "aliases": [
+          "Tenri",
+          "天理"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nara-ikoma",
+        "name": "이코마",
+        "name_en": "Ikoma",
+        "featureType": "city",
+        "lat": 34.6919,
+        "lng": 135.7006,
+        "aliases": [
+          "Ikoma",
+          "生駒"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "nikko",
+    "settlements": [
+      {
+        "placeId": "nikko-utsunomiya",
+        "name": "우쓰노미야",
+        "name_en": "Utsunomiya",
+        "featureType": "city",
+        "lat": 36.5551,
+        "lng": 139.8828,
+        "aliases": [
+          "Utsunomiya",
+          "宇都宮"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nikko-kanuma",
+        "name": "가누마",
+        "name_en": "Kanuma",
+        "featureType": "city",
+        "lat": 36.5671,
+        "lng": 139.7444,
+        "aliases": [
+          "Kanuma",
+          "鹿沼"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nikko-otawara",
+        "name": "오타와라",
+        "name_en": "Otawara",
+        "featureType": "city",
+        "lat": 36.8708,
+        "lng": 140.0156,
+        "aliases": [
+          "Ōtawara",
+          "Otawara",
+          "大田原"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "hakone",
+    "settlements": [
+      {
+        "placeId": "hakone-odawara",
+        "name": "오다와라",
+        "name_en": "Odawara",
+        "featureType": "city",
+        "lat": 35.2644,
+        "lng": 139.1522,
+        "aliases": [
+          "Odawara",
+          "小田原"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hakone-gotemba",
+        "name": "고텐바",
+        "name_en": "Gotemba",
+        "featureType": "city",
+        "lat": 35.3086,
+        "lng": 138.9261,
+        "aliases": [
+          "Gotemba",
+          "御殿場"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "hakone-mishima",
+        "name": "미시마",
+        "name_en": "Mishima",
+        "featureType": "city",
+        "lat": 35.1186,
+        "lng": 138.9186,
+        "aliases": [
+          "Mishima",
+          "三島"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "nagasaki",
+    "settlements": [
+      {
+        "placeId": "nagasaki-isahaya",
+        "name": "이사하야",
+        "name_en": "Isahaya",
+        "featureType": "city",
+        "lat": 32.8442,
+        "lng": 130.0536,
+        "aliases": [
+          "Isahaya",
+          "諫早"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nagasaki-omura",
+        "name": "오무라",
+        "name_en": "Omura",
+        "featureType": "city",
+        "lat": 32.9,
+        "lng": 129.9581,
+        "aliases": [
+          "Ōmura",
+          "Omura",
+          "大村"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nagasaki-togitsu",
+        "name": "도기쓰",
+        "name_en": "Togitsu",
+        "featureType": "locality",
+        "lat": 32.8289,
+        "lng": 129.8489,
+        "aliases": [
+          "Togitsu",
+          "時津"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "matsumoto",
+    "settlements": [
+      {
+        "placeId": "matsumoto-shiojiri",
+        "name": "시오지리",
+        "name_en": "Shiojiri",
+        "featureType": "city",
+        "lat": 36.1147,
+        "lng": 137.9531,
+        "aliases": [
+          "Shiojiri",
+          "塩尻"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "matsumoto-azumino",
+        "name": "아즈미노",
+        "name_en": "Azumino",
+        "featureType": "city",
+        "lat": 36.3039,
+        "lng": 137.9058,
+        "aliases": [
+          "Azumino",
+          "安曇野"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "matsumoto-omachi",
+        "name": "오마치",
+        "name_en": "Omachi",
+        "featureType": "city",
+        "lat": 36.5058,
+        "lng": 137.8511,
+        "aliases": [
+          "Ōmachi",
+          "Omachi",
+          "大町"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "takayama",
+    "settlements": [
+      {
+        "placeId": "takayama-hida",
+        "name": "히다",
+        "name_en": "Hida",
+        "featureType": "city",
+        "lat": 36.2381,
+        "lng": 137.1861,
+        "aliases": [
+          "Hida",
+          "飛驒",
+          "Furukawa"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "takayama-gero",
+        "name": "게로",
+        "name_en": "Gero",
+        "featureType": "city",
+        "lat": 35.8058,
+        "lng": 137.2442,
+        "aliases": [
+          "Gero",
+          "下呂"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "takayama-shirakawago-village",
+        "name": "시라카와고",
+        "name_en": "Shirakawa",
+        "featureType": "locality",
+        "lat": 36.2569,
+        "lng": 136.9061,
+        "aliases": [
+          "Shirakawa-go",
+          "Shirakawa",
+          "白川郷"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "beppu",
+    "settlements": [
+      {
+        "placeId": "beppu-oita",
+        "name": "오이타",
+        "name_en": "Oita",
+        "featureType": "city",
+        "lat": 33.2381,
+        "lng": 131.6125,
+        "aliases": [
+          "Ōita",
+          "Oita",
+          "大分"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "beppu-yufu",
+        "name": "유후",
+        "name_en": "Yufu",
+        "featureType": "city",
+        "lat": 33.18,
+        "lng": 131.4281,
+        "aliases": [
+          "Yufu",
+          "Yufuin",
+          "由布"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "beppu-usa",
+        "name": "우사",
+        "name_en": "Usa",
+        "featureType": "city",
+        "lat": 33.5319,
+        "lng": 131.3494,
+        "aliases": [
+          "Usa",
+          "宇佐"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "belgrade",
+    "settlements": [
+      {
+        "placeId": "belgrade-pancevo",
+        "name": "판체보",
+        "name_en": "Pancevo",
+        "featureType": "city",
+        "lat": 44.8739,
+        "lng": 20.6403,
+        "aliases": [
+          "Pančevo",
+          "Pancevo",
+          "Панчево"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "belgrade-zemun",
+        "name": "제문",
+        "name_en": "Zemun",
+        "featureType": "locality",
+        "lat": 44.8431,
+        "lng": 20.4014,
+        "aliases": [
+          "Zemun",
+          "Земун"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "belgrade-obrenovac",
+        "name": "오브레노바츠",
+        "name_en": "Obrenovac",
+        "featureType": "city",
+        "lat": 44.6547,
+        "lng": 20.2,
+        "aliases": [
+          "Obrenovac",
+          "Обреновац"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "bucharest",
+    "settlements": [
+      {
+        "placeId": "bucharest-otopeni",
+        "name": "오테페니",
+        "name_en": "Otopeni",
+        "featureType": "city",
+        "lat": 44.55,
+        "lng": 26.0731,
+        "aliases": [
+          "Otopeni"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bucharest-voluntari",
+        "name": "볼룬타리",
+        "name_en": "Voluntari",
+        "featureType": "city",
+        "lat": 44.4922,
+        "lng": 26.1736,
+        "aliases": [
+          "Voluntari"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "bucharest-buftea",
+        "name": "부프테아",
+        "name_en": "Buftea",
+        "featureType": "city",
+        "lat": 44.5628,
+        "lng": 25.9489,
+        "aliases": [
+          "Buftea"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "sofia",
+    "settlements": [
+      {
+        "placeId": "sofia-pernik",
+        "name": "페르니크",
+        "name_en": "Pernik",
+        "featureType": "city",
+        "lat": 42.5997,
+        "lng": 23.0375,
+        "aliases": [
+          "Pernik",
+          "Перник"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sofia-kostinbrod",
+        "name": "코스틴브로드",
+        "name_en": "Kostinbrod",
+        "featureType": "city",
+        "lat": 42.8167,
+        "lng": 23.2167,
+        "aliases": [
+          "Kostinbrod",
+          "Костинброд"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sofia-bankya",
+        "name": "반키야",
+        "name_en": "Bankya",
+        "featureType": "locality",
+        "lat": 42.7069,
+        "lng": 23.1472,
+        "aliases": [
+          "Bankya",
+          "Банкя"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "tirana",
+    "settlements": [
+      {
+        "placeId": "tirana-durres",
+        "name": "두러스",
+        "name_en": "Durres",
+        "featureType": "city",
+        "lat": 41.3231,
+        "lng": 19.4414,
+        "aliases": [
+          "Durrës",
+          "Durres"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tirana-kamez",
+        "name": "카메즈",
+        "name_en": "Kamez",
+        "featureType": "city",
+        "lat": 41.3817,
+        "lng": 19.7603,
+        "aliases": [
+          "Kamëz",
+          "Kamez"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "tirana-kavaje",
+        "name": "카바야",
+        "name_en": "Kavaje",
+        "featureType": "city",
+        "lat": 41.1856,
+        "lng": 19.5569,
+        "aliases": [
+          "Kavajë",
+          "Kavaje"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "skopje",
+    "settlements": [
+      {
+        "placeId": "skopje-kumanovo",
+        "name": "쿠마노보",
+        "name_en": "Kumanovo",
+        "featureType": "city",
+        "lat": 42.1322,
+        "lng": 21.7144,
+        "aliases": [
+          "Kumanovo",
+          "Куманово"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "skopje-tetovo",
+        "name": "테토보",
+        "name_en": "Tetovo",
+        "featureType": "city",
+        "lat": 42.0097,
+        "lng": 20.9714,
+        "aliases": [
+          "Tetovo",
+          "Тетово"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "skopje-veles",
+        "name": "벨레스",
+        "name_en": "Veles",
+        "featureType": "city",
+        "lat": 41.7156,
+        "lng": 21.7756,
+        "aliases": [
+          "Veles",
+          "Велес"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "sarajevo",
+    "settlements": [
+      {
+        "placeId": "sarajevo-ilidza",
+        "name": "일리자",
+        "name_en": "Ilidza",
+        "featureType": "locality",
+        "lat": 43.8294,
+        "lng": 18.3047,
+        "aliases": [
+          "Ilidža",
+          "Ilidza"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sarajevo-visoko",
+        "name": "비스코",
+        "name_en": "Visoko",
+        "featureType": "city",
+        "lat": 43.9889,
+        "lng": 18.1781,
+        "aliases": [
+          "Visoko",
+          "Високо"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "sarajevo-pale",
+        "name": "팔레",
+        "name_en": "Pale",
+        "featureType": "locality",
+        "lat": 43.8164,
+        "lng": 18.5694,
+        "aliases": [
+          "Pale",
+          "Пале"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "podgorica",
+    "settlements": [
+      {
+        "placeId": "podgorica-danilovgrad",
+        "name": "단일로브그라드",
+        "name_en": "Danilovgrad",
+        "featureType": "city",
+        "lat": 42.5539,
+        "lng": 19.105,
+        "aliases": [
+          "Danilovgrad",
+          "Даниловград"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "podgorica-cetinje",
+        "name": "체티녜",
+        "name_en": "Cetinje",
+        "featureType": "city",
+        "lat": 42.3906,
+        "lng": 18.9142,
+        "aliases": [
+          "Cetinje",
+          "Цетиње"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "podgorica-niksic",
+        "name": "니크시치",
+        "name_en": "Niksic",
+        "featureType": "city",
+        "lat": 42.7731,
+        "lng": 18.9447,
+        "aliases": [
+          "Nikšić",
+          "Niksic",
+          "Никшић"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "valletta",
+    "settlements": [
+      {
+        "placeId": "valletta-sliema",
+        "name": "슬리에마",
+        "name_en": "Sliema",
+        "featureType": "locality",
+        "lat": 35.9122,
+        "lng": 14.5042,
+        "aliases": [
+          "Sliema",
+          "Tas-Sliema"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "valletta-st-julians",
+        "name": "세인트줄리안스",
+        "name_en": "St Julian's",
+        "featureType": "locality",
+        "lat": 35.9186,
+        "lng": 14.4897,
+        "aliases": [
+          "St. Julian's",
+          "Saint Julian's",
+          "San Giljan"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "valletta-birkirkara",
+        "name": "비르키르카라",
+        "name_en": "Birkirkara",
+        "featureType": "locality",
+        "lat": 35.8972,
+        "lng": 14.4614,
+        "aliases": [
+          "Birkirkara"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "nicosia",
+    "settlements": [
+      {
+        "placeId": "nicosia-strovolos",
+        "name": "스트로볼로스",
+        "name_en": "Strovolos",
+        "featureType": "locality",
+        "lat": 35.14,
+        "lng": 33.3436,
+        "aliases": [
+          "Strovolos",
+          "Στρόβολος"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nicosia-lakatamia",
+        "name": "라카타미아",
+        "name_en": "Lakatamia",
+        "featureType": "locality",
+        "lat": 35.1172,
+        "lng": 33.315,
+        "aliases": [
+          "Lakatamia",
+          "Λακατάμια"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "nicosia-larnaca",
+        "name": "라르나카",
+        "name_en": "Larnaca",
+        "featureType": "city",
+        "lat": 34.9221,
+        "lng": 33.6293,
+        "aliases": [
+          "Larnaca",
+          "Larnaka",
+          "Λάρνακα"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "stavanger",
+    "settlements": [
+      {
+        "placeId": "stavanger-sandnes",
+        "name": "산드네스",
+        "name_en": "Sandnes",
+        "featureType": "city",
+        "lat": 58.8516,
+        "lng": 5.7352,
+        "aliases": [
+          "Sandnes"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "stavanger-sola",
+        "name": "솔라",
+        "name_en": "Sola",
+        "featureType": "locality",
+        "lat": 58.8885,
+        "lng": 5.6478,
+        "aliases": [
+          "Sola"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "stavanger-bryne",
+        "name": "브뤼네",
+        "name_en": "Bryne",
+        "featureType": "locality",
+        "lat": 58.7353,
+        "lng": 5.6478,
+        "aliases": [
+          "Bryne"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "trondheim",
+    "settlements": [
+      {
+        "placeId": "trondheim-malvik",
+        "name": "말빅",
+        "name_en": "Malvik",
+        "featureType": "locality",
+        "lat": 63.4331,
+        "lng": 10.685,
+        "aliases": [
+          "Malvik"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "trondheim-melhus",
+        "name": "멜후스",
+        "name_en": "Melhus",
+        "featureType": "locality",
+        "lat": 63.285,
+        "lng": 10.2781,
+        "aliases": [
+          "Melhus"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "trondheim-orkanger",
+        "name": "오르캉에르",
+        "name_en": "Orkanger",
+        "featureType": "locality",
+        "lat": 63.3067,
+        "lng": 9.85,
+        "aliases": [
+          "Orkanger"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "montpellier",
+    "settlements": [
+      {
+        "placeId": "montpellier-lattes",
+        "name": "라테스",
+        "name_en": "Lattes",
+        "featureType": "locality",
+        "lat": 43.5675,
+        "lng": 3.905,
+        "aliases": [
+          "Lattes"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "montpellier-castelnau",
+        "name": "카스텔노르르레",
+        "name_en": "Castelnau-le-Lez",
+        "featureType": "locality",
+        "lat": 43.6342,
+        "lng": 3.8975,
+        "aliases": [
+          "Castelnau-le-Lez",
+          "Castelnau"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "montpellier-palavas",
+        "name": "팔라바레조",
+        "name_en": "Palavas-les-Flots",
+        "featureType": "locality",
+        "lat": 43.53,
+        "lng": 3.93,
+        "aliases": [
+          "Palavas-les-Flots",
+          "Palavas"
+        ],
+        "mapboxId": null
+      }
+    ]
+  },
+  {
+    "hubId": "palermo",
+    "settlements": [
+      {
+        "placeId": "palermo-monreale",
+        "name": "몬레알레",
+        "name_en": "Monreale",
+        "featureType": "city",
+        "lat": 38.0814,
+        "lng": 13.2894,
+        "aliases": [
+          "Monreale"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "palermo-bagheria",
+        "name": "바게리아",
+        "name_en": "Bagheria",
+        "featureType": "city",
+        "lat": 38.0789,
+        "lng": 13.5122,
+        "aliases": [
+          "Bagheria"
+        ],
+        "mapboxId": null
+      },
+      {
+        "placeId": "palermo-carini",
+        "name": "카리니",
+        "name_en": "Carini",
+        "featureType": "city",
+        "lat": 38.1561,
+        "lng": 13.1811,
+        "aliases": [
+          "Carini"
+        ],
+        "mapboxId": null
+      }
+    ]
   }
 ]

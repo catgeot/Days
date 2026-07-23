@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R53~R54 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R55 후임 기동)
+
+- tip **542 hub / 1624 settlements** (+20 hub / +60) · R53 나라·닛코·하코네·나가사키·마츠모토·다카야마·벳푸·베오그라드·부쿠레슈티·소피아 · R54 티라나·스코페·사라예보·포드고리차·발레타·니코시아·스타방에르·트론헤임·몽펠리에·팔레르모 · hub skip 0
+- R53/R54 VERIFY: audit issues 0 · smoke 시드+exact(`야마토코리야마`/`우쓰노미야`/`오다와라`/`이사하야`/`시오지리`/`히다`/`오이타`/`판체보`/`오테페니`/`페르니크`/`두러스`/`쿠마노보`/`일리자`/`단일로브그라드`/`슬리에마`/`스트로볼로스`/`산드네스`/`말빅`/`라테스`/`몬레알레`) PASS
+- 보정: JP/EU/MED suburb·city·locality only(hub 도시명 미투입·신사·사찰 POI 제외) · ≤50km · name 충돌 0
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼·직렬 A→B·VERIFY까지 완료
+- **다음 배치표 2개**
+  - **R55 A**: `faro` · `cork` · `galway` · `belfast` · `madeira` / **B**: `lahore` · `karachi` · `bandar-seri-begawan` · `hoi-an` · `hue`
+  - **R56 A**: `nha-trang` · `phu-quoc` · `sapa` · `boracay` · `palawan` / **B**: `el-nido` · `bohol` · `lombok` · `koh-samui` · `langkawi`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · EU/IE/PT/PK/BN/VN/SEA 인근 suburb·city only · placeId hubId prefix · 전역 name 충돌 회피 · sparse면 스킵 OK
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R55부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R51~R52 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R53 후임 기동)
