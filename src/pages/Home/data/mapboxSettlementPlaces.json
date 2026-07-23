@@ -15131,5 +15131,797 @@
         ]
       }
     ]
+  },
+  {
+    "hubId": "kassel",
+    "settlements": [
+      {
+        "placeId": "kassel-vellmar",
+        "name": "벨마르",
+        "name_en": "Vellmar",
+        "featureType": "place",
+        "lat": 51.358,
+        "lng": 9.478,
+        "mapboxId": null,
+        "aliases": [
+          "Vellmar"
+        ]
+      },
+      {
+        "placeId": "kassel-baunatal",
+        "name": "바우나탈",
+        "name_en": "Baunatal",
+        "featureType": "place",
+        "lat": 51.252,
+        "lng": 9.42,
+        "mapboxId": null,
+        "aliases": [
+          "Baunatal"
+        ]
+      },
+      {
+        "placeId": "kassel-kaufungen",
+        "name": "카우푼겐",
+        "name_en": "Kaufungen",
+        "featureType": "place",
+        "lat": 51.281,
+        "lng": 9.622,
+        "mapboxId": null,
+        "aliases": [
+          "Kaufungen"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "dortmund",
+    "settlements": [
+      {
+        "placeId": "dortmund-bochum",
+        "name": "보훔",
+        "name_en": "Bochum",
+        "featureType": "city",
+        "lat": 51.4817,
+        "lng": 7.2165,
+        "mapboxId": null,
+        "aliases": [
+          "Bochum"
+        ]
+      },
+      {
+        "placeId": "dortmund-hagen",
+        "name": "하겐",
+        "name_en": "Hagen",
+        "featureType": "city",
+        "lat": 51.3671,
+        "lng": 7.463,
+        "mapboxId": null,
+        "aliases": [
+          "Hagen"
+        ]
+      },
+      {
+        "placeId": "dortmund-unna",
+        "name": "운나",
+        "name_en": "Unna",
+        "featureType": "place",
+        "lat": 51.5349,
+        "lng": 7.689,
+        "mapboxId": null,
+        "aliases": [
+          "Unna"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "wuerzburg",
+    "settlements": [
+      {
+        "placeId": "wuerzburg-schweinfurt",
+        "name": "슈바인푸르트",
+        "name_en": "Schweinfurt",
+        "featureType": "city",
+        "lat": 50.0492,
+        "lng": 10.233,
+        "mapboxId": null,
+        "aliases": [
+          "Schweinfurt"
+        ]
+      },
+      {
+        "placeId": "wuerzburg-kitzingen",
+        "name": "키칭엔",
+        "name_en": "Kitzingen",
+        "featureType": "place",
+        "lat": 49.74,
+        "lng": 10.162,
+        "mapboxId": null,
+        "aliases": [
+          "Kitzingen"
+        ]
+      },
+      {
+        "placeId": "wuerzburg-ochsenfurt",
+        "name": "옥센푸르트",
+        "name_en": "Ochsenfurt",
+        "featureType": "place",
+        "lat": 49.663,
+        "lng": 10.066,
+        "mapboxId": null,
+        "aliases": [
+          "Ochsenfurt"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "geumjeong",
+    "settlements": [
+      {
+        "placeId": "geumjeong-jangjeon-dong",
+        "name": "장전동",
+        "name_en": "Jangjeon-dong",
+        "featureType": "locality",
+        "lat": 35.238,
+        "lng": 129.088,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "geumjeong-guseo-dong",
+        "name": "구서동",
+        "name_en": "Guseo-dong",
+        "featureType": "locality",
+        "lat": 35.247,
+        "lng": 129.091,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "geumjeong-bugok-dong",
+        "name": "부곡동",
+        "name_en": "Bugok-dong",
+        "featureType": "locality",
+        "lat": 35.23,
+        "lng": 129.09,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "yeonje",
+    "settlements": [
+      {
+        "placeId": "yeonje-yeonsan-dong",
+        "name": "연산동",
+        "name_en": "Yeonsan-dong",
+        "featureType": "locality",
+        "lat": 35.186,
+        "lng": 129.081,
+        "mapboxId": null,
+        "aliases": [
+          "연산"
+        ]
+      },
+      {
+        "placeId": "yeonje-geoje-dong",
+        "name": "거제동",
+        "name_en": "Geoje-dong",
+        "featureType": "locality",
+        "lat": 35.18,
+        "lng": 129.07,
+        "mapboxId": null,
+        "aliases": [
+          "거제"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "saha",
+    "settlements": [
+      {
+        "placeId": "saha-hadan-dong",
+        "name": "하단동",
+        "name_en": "Hadan-dong",
+        "featureType": "locality",
+        "lat": 35.106,
+        "lng": 128.967,
+        "mapboxId": null,
+        "aliases": [
+          "하단"
+        ]
+      },
+      {
+        "placeId": "saha-goejeong-dong",
+        "name": "괴정동",
+        "name_en": "Goejeong-dong",
+        "featureType": "locality",
+        "lat": 35.1,
+        "lng": 128.992,
+        "mapboxId": null,
+        "aliases": [
+          "괴정"
+        ]
+      },
+      {
+        "placeId": "saha-dangni-dong",
+        "name": "당리동",
+        "name_en": "Dangni-dong",
+        "featureType": "locality",
+        "lat": 35.104,
+        "lng": 128.975,
+        "mapboxId": null,
+        "aliases": [
+          "당리"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "sasang",
+    "settlements": [
+      {
+        "placeId": "sasang-gwaebeop-dong",
+        "name": "괘법동",
+        "name_en": "Gwaebeop-dong",
+        "featureType": "locality",
+        "lat": 35.163,
+        "lng": 128.984,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sasang-gamjeon-dong",
+        "name": "감전동",
+        "name_en": "Gamjeon-dong",
+        "featureType": "locality",
+        "lat": 35.153,
+        "lng": 128.983,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "sasang-jurye-dong",
+        "name": "주례동",
+        "name_en": "Jurye-dong",
+        "featureType": "locality",
+        "lat": 35.15,
+        "lng": 129.003,
+        "mapboxId": null,
+        "aliases": [
+          "주례"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "daedeok",
+    "settlements": [
+      {
+        "placeId": "daedeok-eumnae-dong",
+        "name": "읍내동",
+        "name_en": "Eumnae-dong",
+        "featureType": "locality",
+        "lat": 36.37,
+        "lng": 127.42,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "daedeok-beop-dong",
+        "name": "법동",
+        "name_en": "Beop-dong",
+        "featureType": "locality",
+        "lat": 36.36,
+        "lng": 127.42,
+        "mapboxId": null,
+        "aliases": []
+      },
+      {
+        "placeId": "daedeok-jungni-dong",
+        "name": "중리동",
+        "name_en": "Jungni-dong",
+        "featureType": "locality",
+        "lat": 36.355,
+        "lng": 127.425,
+        "mapboxId": null,
+        "aliases": []
+      }
+    ]
+  },
+  {
+    "hubId": "chicago",
+    "settlements": [
+      {
+        "placeId": "chicago-evanston",
+        "name": "에번스턴",
+        "name_en": "Evanston",
+        "featureType": "city",
+        "lat": 42.0451,
+        "lng": -87.6877,
+        "mapboxId": null,
+        "aliases": [
+          "Evanston"
+        ]
+      },
+      {
+        "placeId": "chicago-oak-park",
+        "name": "오크파크",
+        "name_en": "Oak Park",
+        "featureType": "place",
+        "lat": 41.885,
+        "lng": -87.7845,
+        "mapboxId": null,
+        "aliases": [
+          "Oak Park"
+        ]
+      },
+      {
+        "placeId": "chicago-cicero",
+        "name": "시세로",
+        "name_en": "Cicero",
+        "featureType": "place",
+        "lat": 41.8456,
+        "lng": -87.7539,
+        "mapboxId": null,
+        "aliases": [
+          "Cicero"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "miami",
+    "settlements": [
+      {
+        "placeId": "miami-miami-beach",
+        "name": "마이애미비치",
+        "name_en": "Miami Beach",
+        "featureType": "city",
+        "lat": 25.7907,
+        "lng": -80.13,
+        "mapboxId": null,
+        "aliases": [
+          "Miami Beach"
+        ]
+      },
+      {
+        "placeId": "miami-coral-gables",
+        "name": "코럴게이블스",
+        "name_en": "Coral Gables",
+        "featureType": "city",
+        "lat": 25.7215,
+        "lng": -80.2684,
+        "mapboxId": null,
+        "aliases": [
+          "Coral Gables"
+        ]
+      },
+      {
+        "placeId": "miami-hialeah",
+        "name": "하이얼리아",
+        "name_en": "Hialeah",
+        "featureType": "city",
+        "lat": 25.8576,
+        "lng": -80.2781,
+        "mapboxId": null,
+        "aliases": [
+          "Hialeah"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "seattle",
+    "settlements": [
+      {
+        "placeId": "seattle-bellevue",
+        "name": "벨뷰",
+        "name_en": "Bellevue",
+        "featureType": "city",
+        "lat": 47.6101,
+        "lng": -122.2015,
+        "mapboxId": null,
+        "aliases": [
+          "Bellevue"
+        ]
+      },
+      {
+        "placeId": "seattle-issaquah",
+        "name": "이사콰",
+        "name_en": "Issaquah",
+        "featureType": "city",
+        "lat": 47.5301,
+        "lng": -122.0326,
+        "mapboxId": null,
+        "aliases": [
+          "Issaquah"
+        ]
+      },
+      {
+        "placeId": "seattle-kirkland",
+        "name": "커클랜드",
+        "name_en": "Kirkland",
+        "featureType": "city",
+        "lat": 47.6769,
+        "lng": -122.206,
+        "mapboxId": null,
+        "aliases": [
+          "Kirkland"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "boston",
+    "settlements": [
+      {
+        "placeId": "boston-cambridge",
+        "name": "케임브리지",
+        "name_en": "Cambridge",
+        "featureType": "city",
+        "lat": 42.3736,
+        "lng": -71.1097,
+        "mapboxId": null,
+        "aliases": [
+          "Cambridge MA"
+        ]
+      },
+      {
+        "placeId": "boston-somerville",
+        "name": "소머빌",
+        "name_en": "Somerville",
+        "featureType": "city",
+        "lat": 42.3876,
+        "lng": -71.0995,
+        "mapboxId": null,
+        "aliases": [
+          "Somerville"
+        ]
+      },
+      {
+        "placeId": "boston-brookline",
+        "name": "브루클라인",
+        "name_en": "Brookline",
+        "featureType": "place",
+        "lat": 42.3318,
+        "lng": -71.1212,
+        "mapboxId": null,
+        "aliases": [
+          "Brookline"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "las-vegas",
+    "settlements": [
+      {
+        "placeId": "las-vegas-henderson",
+        "name": "헨더슨",
+        "name_en": "Henderson",
+        "featureType": "city",
+        "lat": 36.0395,
+        "lng": -114.9817,
+        "mapboxId": null,
+        "aliases": [
+          "Henderson"
+        ]
+      },
+      {
+        "placeId": "las-vegas-north-las-vegas",
+        "name": "노스라스베이거스",
+        "name_en": "North Las Vegas",
+        "featureType": "city",
+        "lat": 36.1989,
+        "lng": -115.1175,
+        "mapboxId": null,
+        "aliases": [
+          "North Las Vegas"
+        ]
+      },
+      {
+        "placeId": "las-vegas-spring-valley",
+        "name": "스프링밸리",
+        "name_en": "Spring Valley",
+        "featureType": "place",
+        "lat": 36.1147,
+        "lng": -115.279,
+        "mapboxId": null,
+        "aliases": [
+          "Spring Valley"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "honolulu",
+    "settlements": [
+      {
+        "placeId": "honolulu-kailua",
+        "name": "케일루아",
+        "name_en": "Kailua",
+        "featureType": "place",
+        "lat": 21.3972,
+        "lng": -157.7394,
+        "mapboxId": null,
+        "aliases": [
+          "Kailua"
+        ]
+      },
+      {
+        "placeId": "honolulu-pearl-city",
+        "name": "펄시티",
+        "name_en": "Pearl City",
+        "featureType": "place",
+        "lat": 21.3469,
+        "lng": -157.8721,
+        "mapboxId": null,
+        "aliases": [
+          "Pearl City"
+        ]
+      },
+      {
+        "placeId": "honolulu-aiea",
+        "name": "아이에아",
+        "name_en": "Aiea",
+        "featureType": "place",
+        "lat": 21.3867,
+        "lng": -157.932,
+        "mapboxId": null,
+        "aliases": [
+          "Aiea"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "washington-dc",
+    "settlements": [
+      {
+        "placeId": "washington-dc-arlington",
+        "name": "알링턴",
+        "name_en": "Arlington",
+        "featureType": "place",
+        "lat": 38.8816,
+        "lng": -77.091,
+        "mapboxId": null,
+        "aliases": [
+          "Arlington VA"
+        ]
+      },
+      {
+        "placeId": "washington-dc-alexandria",
+        "name": "알렉산드리아",
+        "name_en": "Alexandria",
+        "featureType": "city",
+        "lat": 38.8048,
+        "lng": -77.0469,
+        "mapboxId": null,
+        "aliases": [
+          "Alexandria VA"
+        ]
+      },
+      {
+        "placeId": "washington-dc-bethesda",
+        "name": "베세스다",
+        "name_en": "Bethesda",
+        "featureType": "place",
+        "lat": 38.9807,
+        "lng": -77.1003,
+        "mapboxId": null,
+        "aliases": [
+          "Bethesda"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "philadelphia",
+    "settlements": [
+      {
+        "placeId": "philadelphia-upper-darby",
+        "name": "어퍼다비",
+        "name_en": "Upper Darby",
+        "featureType": "place",
+        "lat": 39.9612,
+        "lng": -75.2591,
+        "mapboxId": null,
+        "aliases": [
+          "Upper Darby"
+        ]
+      },
+      {
+        "placeId": "philadelphia-bryn-mawr",
+        "name": "브린마워",
+        "name_en": "Bryn Mawr",
+        "featureType": "place",
+        "lat": 40.0077,
+        "lng": -75.291,
+        "mapboxId": null,
+        "aliases": [
+          "Bryn Mawr"
+        ]
+      },
+      {
+        "placeId": "philadelphia-lansdowne",
+        "name": "랜스다운",
+        "name_en": "Lansdowne",
+        "featureType": "place",
+        "lat": 39.9101,
+        "lng": -75.3227,
+        "mapboxId": null,
+        "aliases": [
+          "Lansdowne"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "denver",
+    "settlements": [
+      {
+        "placeId": "denver-golden",
+        "name": "골든",
+        "name_en": "Golden",
+        "featureType": "city",
+        "lat": 39.7555,
+        "lng": -105.2211,
+        "mapboxId": null,
+        "aliases": [
+          "Golden"
+        ]
+      },
+      {
+        "placeId": "denver-thornton",
+        "name": "손턴",
+        "name_en": "Thornton",
+        "featureType": "city",
+        "lat": 39.868,
+        "lng": -104.9719,
+        "mapboxId": null,
+        "aliases": [
+          "Thornton"
+        ]
+      },
+      {
+        "placeId": "denver-aurora",
+        "name": "오로라",
+        "name_en": "Aurora",
+        "featureType": "city",
+        "lat": 39.7294,
+        "lng": -104.8319,
+        "mapboxId": null,
+        "aliases": [
+          "Aurora CO"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "atlanta",
+    "settlements": [
+      {
+        "placeId": "atlanta-decatur",
+        "name": "디케이터",
+        "name_en": "Decatur",
+        "featureType": "city",
+        "lat": 33.7748,
+        "lng": -84.2963,
+        "mapboxId": null,
+        "aliases": [
+          "Decatur"
+        ]
+      },
+      {
+        "placeId": "atlanta-marietta",
+        "name": "매리에타",
+        "name_en": "Marietta",
+        "featureType": "city",
+        "lat": 33.9526,
+        "lng": -84.5499,
+        "mapboxId": null,
+        "aliases": [
+          "Marietta"
+        ]
+      },
+      {
+        "placeId": "atlanta-stone-mountain",
+        "name": "스톤마운틴",
+        "name_en": "Stone Mountain",
+        "featureType": "place",
+        "lat": 33.8082,
+        "lng": -84.1702,
+        "mapboxId": null,
+        "aliases": [
+          "Stone Mountain"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "dallas",
+    "settlements": [
+      {
+        "placeId": "dallas-irving",
+        "name": "어빙",
+        "name_en": "Irving",
+        "featureType": "city",
+        "lat": 32.814,
+        "lng": -96.9489,
+        "mapboxId": null,
+        "aliases": [
+          "Irving"
+        ]
+      },
+      {
+        "placeId": "dallas-garland",
+        "name": "가랜드",
+        "name_en": "Garland",
+        "featureType": "city",
+        "lat": 32.9137,
+        "lng": -96.6355,
+        "mapboxId": null,
+        "aliases": [
+          "Garland"
+        ]
+      },
+      {
+        "placeId": "dallas-richardson",
+        "name": "리처드슨",
+        "name_en": "Richardson",
+        "featureType": "city",
+        "lat": 32.9537,
+        "lng": -96.8217,
+        "mapboxId": null,
+        "aliases": [
+          "Richardson"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "houston",
+    "settlements": [
+      {
+        "placeId": "houston-bellaire",
+        "name": "벨레어",
+        "name_en": "Bellaire",
+        "featureType": "city",
+        "lat": 29.7058,
+        "lng": -95.4588,
+        "mapboxId": null,
+        "aliases": [
+          "Bellaire"
+        ]
+      },
+      {
+        "placeId": "houston-west-university",
+        "name": "웨스트유니버시티",
+        "name_en": "West University Place",
+        "featureType": "city",
+        "lat": 29.718,
+        "lng": -95.433,
+        "mapboxId": null,
+        "aliases": [
+          "West University Place"
+        ]
+      },
+      {
+        "placeId": "houston-pearland",
+        "name": "피어랜드",
+        "name_en": "Pearland",
+        "featureType": "city",
+        "lat": 29.5608,
+        "lng": -95.286,
+        "mapboxId": null,
+        "aliases": [
+          "Pearland"
+        ]
+      }
+    ]
   }
 ]
