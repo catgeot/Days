@@ -2,6 +2,23 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## Mapbox 정착지 — R33~R34 오케스트레이터 세대 (이관)
+
+**상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R35 후임 기동)
+
+- tip **342 hub / 1025 settlements** (+20 hub / +60) · R33 체스터·로스토크·그디니아·기장·울주·달성·유성·연수·케임브리지·옥스퍼드 · R34 소포트·스트랄준트·비스마르·수성·달서·해운대·강남·서초·더럼·윈체스터 · hub skip 0
+- R33/R34 VERIFY: audit issues 0 · smoke 시드+exact(`훌`/`바르네뮌데`/`오르워보`/`일광읍`/`온산읍`/`현풍읍`/`봉명동`/`옥련동`/`체스터턴`/`카울리`/`카를리코보`/`안더스호프`/`도르프메클렌부르크`/`만촌동`/`성서동`/`우동`/`역삼동`/`반포동`/`자일스게이트`/`위크`) PASS
+- 보정: KR 구·군은 hub명 미투입 · `ulju` 언양읍 스킵(ulsan 충돌) · `yeonsu` 송도 스킵(incheon) · `haeundae` placeId `haeundae-*`(busan-haeundae-dong 충돌 회피) · `durham` Durham/더럼 미사용(newcastle 충돌) · `yuseong` alias `도안` 미사용(jeungpyeong)
+- **본인 런 예외: Task 부재** — 워커2 Task 불가 → 메인 초안 버퍼(`_tmp-r33`/`_tmp-r34`)·직렬 A→B·VERIFY까지 완료 · tmp 삭제
+- **다음 배치표 2개**
+  - **R35 A**: `salisbury` · `greifswald` · `schwerin` · `mapo` · `yongsan` / **B**: `songpa` · `suyeong` · `gwanak` · `norwich` · `potsdam`
+  - **R36 A**: `weimar` · `bamberg` · `regensburg` · `jongno` · `seodaemun` / **B**: `dongjak` · `yeongdeungpo` · `gangdong` · `ipswich` · `colchester`
+- 우선: 큐 순서만 · 목표3/최대5/최소2·미달스킵 · hub당1행 · `mapboxId` null OK · POI 금지 · KR 구 hub는 하위 동·위성만
+- 금지 3: tip 병렬 머지 · 본인 런(기본) · 워커 로그 전체 Read / tip JSON 전문 스캔
+- 스키마: hubId, settlements[2..5]{placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases} · featureType place|city|locality
+- **복구용 제시어**(정상 이관 트리거 아님): `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「R35부터 워커2 · §3.3·§4.2」
+- **방법 v2.1**: 이관=현 메인이 Task로 후임 오케스트레이터 기동 · 사람 제시어 대기 금지
+
 ## Mapbox 정착지 — R31~R32 오케스트레이터 세대 (이관)
 
 **상태**: ✅ tip append · audit issues 0 · smoke PASS · **미커밋** · **§4.2 후임 Task 이관**(서브 Task 부재 → 상위가 R33 후임 기동)
