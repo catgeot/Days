@@ -35,10 +35,11 @@
 
 ### Smoke #194 실패 후속 (P0-4/P0-5 완화)
 
-**상태**: 코드 반영 (커밋·push)
+**상태**: ✅ 커밋·push · 이후 Smoke PASS
 
 - 원인 추정: MRT Edge 일시 **502** `accommodation/search failed` → 프로브 즉시 fail · CI `SMOKE_FAIL_ON_WARN=1`
 - 대응: Edge 프로브 **28s·3회 재시도** · upstream 열화는 **warn(exit 0)** · Gemini(P0-3) warn만 CI fail
+- Actions: `checkout`/`setup-node` **v5**(Node 24) · Node 20 deprecation 경고 제거
 
 ## 검색 선택 카드 — 다크모드 시인성
 
