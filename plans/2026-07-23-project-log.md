@@ -2,6 +2,15 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 검색바 — Enter 선택 카드 강제 + 홈 써머리
+
+**상태**: ✅ 커밋·push · QA 대기
+
+- Explore Enter: `handleSmartSearch(q, { requireChoice: true })` — 후보 1개여도 선택 카드 (빈/파리·명소·정착지·geocode/AI)
+- 선택·드롭다운 클릭: 카탈로그 포함 **홈 써머리** (`/place` 직행 제거)
+- 티커·`?search=`는 `requireChoice` 없음(현행 자동 점프)
+- 명소 역펼침(드롭다운) 유지 · 정착지 tip 미수정
+
 ## Mapbox 정착지 — Phase 0 스캐폴드
 
 **상태**: ✅ 시드 2 hub / 6 settlements · audit·smoke PASS · **커밋·push 예정**

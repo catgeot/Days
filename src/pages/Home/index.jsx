@@ -24,7 +24,6 @@ import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLo
 import {
   pushRecentVisited,
   pushKeywordVisit,
-  isCatalogTravelSpot,
 } from './lib/exploreRecentHistory';
 import {
   hydrateLocationFromSavedTrip,
@@ -992,11 +991,7 @@ function Home() {
           isFromPlaceCard={isExploreFromPlace}
           onClose={() => navigate('/')}
           onSelect={(spot) => {
-            // 카탈로그 → 장소 카드. 신규 검색 uiPlace 등은 검색과 동일하게 지구본 홈.
-            if (isCatalogTravelSpot(spot)) {
-              navigateToPlace(spot);
-              return;
-            }
+            // 검색 선택(카탈로그 포함) → 홈 써머리 장소카드 (/place 직행 금지)
             const lat = Number(spot?.lat);
             const lng = Number(spot?.lng);
             if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
@@ -1004,9 +999,9 @@ function Home() {
             navigate('/', { state: { fromSearch: true } });
           }}
           onSearch={async (query) => {
-            const selectedFromSearch = await handleSmartSearch(query);
+            const selectedFromSearch = await handleSmartSearch(query, { requireChoice: true });
 
-            // 모호함 → Explore에 선택 카드 유지 (홈으로 나가지 않음)
+            // 선택 카드 유지 (홈으로 나가지 않음)
             if (selectedFromSearch?.__disambiguation === true) {
               return selectedFromSearch;
             }
