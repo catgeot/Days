@@ -2,9 +2,25 @@
 
 직전: [`2026-07-22-project-log.md`](./2026-07-22-project-log.md)
 
+## 명소 좌표 — 김유정문학촌 TourAPI 교정
+
+**상태**: ✅ tip 패치 · audit 0 · **커밋·push 대기/진행**
+
+- 원인: R 패치가 OSM 버스정류장 회피하며 `37.82195,127.70279`로 이동 → TourAPI 대비 **~1.4km 서측** (사람 QA: 더 어긋남)
+- 교정: TourAPI `contentId=127933` `mapy/mapx` → **`37.8183632, 127.7176781`** (구 tip≈정류장과 139m, 현 tip과 1367m)
+- Nominatim `김유정문학촌`=버스정류장 → SNAP 금지 유지 · TourAPI 수동 고정
+
+## 명소 좌표 수리 — PR #24 main 머지
+
+**상태**: ✅ **main 머지·push** (`5e83eba`) · PR [#24](https://github.com/catgeot/Days/pull/24) closed/merged · tip **4067** · hubs 630
+
+- 로컬 재검증: `audit:city-attraction-hubs` issues **0** · `verify --smoke` P0 **PASS** (김유정문학촌은 NO_HIT 보호 유지·좌표는 tip 갱신됨)
+- **남은 일(사람)**: 지도 QA — 양구(한반도섬·박수근) · 김유정문학촌 · 하남 덕풍시장 · 진도타워
+- 선택: 잔여 prior skip / 해외 SNAP 재개
+
 ## 명소 좌표 수리 — KR R11–R12 (**소진/정지**)
 
-**상태**: ✅ R11+R12 tip 패치 · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4067** · PR #24 · **KR SNAP/NO_HIT 잔여 소진** · **main 리베이스·검증 후 push**
+**상태**: ✅ R11+R12 tip 패치 · audit hubs **issues 0** · smoke P0 PASS · tip 명소 **4067** · PR #24 · **KR SNAP/NO_HIT 잔여 소진** · **main 리베이스·검증 후 push** · **→ 위 절에서 main 머지 완료**
 
 - R11: `busanjin…daedeok` / `seogwipo…taean` · SNAP 15 / drop 24 · station 스킵 2(소래포구·부산시청) · 주상절리 R1 prior skip · min4 keep 1(숭의운동장) · P0 덕풍 OK
 - R12: `ulleung…yeongwol` / `namwon…yeonggwang`(jindo 제외) · drop 3(오두산·구드래·화진포김일성별장) · R2/R3 prior skip 유지(파주출판도시·무섬마을·문경새재) · B 패치 0(필터 후)
