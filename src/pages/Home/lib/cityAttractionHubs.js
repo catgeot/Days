@@ -22,12 +22,47 @@ const normalizeKey = (s) =>
     .toLowerCase()
     .replace(/\s+/g, '');
 
+/** getPlaceUrlParam / formatUrlName과 동일 kebab — travelSpots 의존 없이 로컬 유지 */
+const toUrlSlug = (nameEn) => {
+  if (!nameEn) return '';
+  return String(nameEn)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+};
+
+/** /place/:slug 용 — kebab(URL) + compact(레거시 normalizeKey) 모두 수용 */
+export function placeSlugVariants(...names) {
+  const out = new Set();
+  for (const name of names) {
+    if (!name) continue;
+    const kebab = toUrlSlug(name);
+    const compact = normalizeKey(name);
+    if (kebab) out.add(kebab);
+    if (compact) out.add(compact);
+  }
+  return out;
+}
+
+/** 명소·정착지 핀 slug — getPlaceUrlParam과 동일한 kebab 형식 */
+export function placeUrlSlug(nameEn, name) {
+  return toUrlSlug(nameEn || name) || normalizeKey(nameEn || name) || '';
+}
+
 const HUBS = Array.isArray(hubsJson) ? hubsJson : [];
 
 /** @type {Map<string, object>} */
 const hubByKey = new Map();
 /** @type {Map<string, { hub: object, attraction: object }>} */
 const attractionByKey = new Map();
+/** @type {Map<string, object>} /place/:slug → hub pin */
+const hubByPlaceSlug = new Map();
+/** @type {Map<string, { hub: object, attraction: object }>} /place/:slug → attraction */
+const attractionByPlaceSlug = new Map();
 
 for (const hub of HUBS) {
   const keys = [hub.name, hub.name_en, hub.hubId, ...(hub.aliases || [])];
@@ -35,11 +70,21 @@ for (const hub of HUBS) {
     const nk = normalizeKey(k);
     if (nk) hubByKey.set(nk, hub);
   }
+  const hubSlugKeys = placeSlugVariants(hub.name_en, hub.name, hub.hubId, ...(hub.aliases || []));
+  if (hub.hubId) hubSlugKeys.add(String(hub.hubId).toLowerCase());
+  for (const sk of hubSlugKeys) {
+    if (sk && !hubByPlaceSlug.has(sk)) hubByPlaceSlug.set(sk, hub);
+  }
   for (const attraction of hub.attractions || []) {
     for (const k of [attraction.name, attraction.name_en]) {
       const nk = normalizeKey(k);
       if (nk && !attractionByKey.has(nk)) {
         attractionByKey.set(nk, { hub, attraction });
+      }
+    }
+    for (const sk of placeSlugVariants(attraction.name_en, attraction.name)) {
+      if (sk && !attractionByPlaceSlug.has(sk)) {
+        attractionByPlaceSlug.set(sk, { hub, attraction });
       }
     }
   }
@@ -117,6 +162,7 @@ export function hubToSuggestion(hub) {
     country_en: hub.country_en || 'Explore',
     lat: hub.lat,
     lng: hub.lng,
+    slug: hub.hubId,
     hubId: hub.hubId,
     source: 'hub',
     uiPlace: true,
@@ -136,6 +182,7 @@ export function attractionToSuggestion(hub, attraction) {
     country_en: hub.country_en || 'Explore',
     lat: attraction.lat ?? hub.lat,
     lng: attraction.lng ?? hub.lng,
+    slug: placeUrlSlug(attraction.name_en, attraction.name),
     hubId: hub.hubId,
     attractionKind: attraction.kind,
     source: 'hub',
@@ -167,7 +214,7 @@ export function attractionToPlacePin(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
-    slug: normalizeKey(attraction.name_en || attraction.name),
+    slug: placeUrlSlug(attraction.name_en, attraction.name),
     name: attraction.name,
     name_en: attraction.name_en || attraction.name,
     name_ko: attraction.name,
@@ -181,6 +228,26 @@ export function attractionToPlacePin(hub, attraction) {
     parentCity: hub.name,
     desc: `${hub.name}의 ${kindLabel} · ${attraction.name}`,
   };
+}
+
+/**
+ * /place/:slug 새로고침 hydrate — TRAVEL_SPOTS/cities 미등록 hub·명소.
+ * @param {string} slug
+ * @returns {object|null} place pin
+ */
+export function resolveHubPlaceFromSlug(slug) {
+  const normalized = String(slug ?? '').trim().toLowerCase();
+  if (!normalized) return null;
+
+  const attractionHit = attractionByPlaceSlug.get(normalized);
+  if (attractionHit) {
+    return attractionToPlacePin(attractionHit.hub, attractionHit.attraction);
+  }
+
+  const hub = hubByPlaceSlug.get(normalized);
+  if (hub) return hubToPlacePin(hub);
+
+  return null;
 }
 
 /**

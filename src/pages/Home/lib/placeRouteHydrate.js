@@ -1,6 +1,8 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { citiesData } from '../data/citiesData.js';
 import { formatUrlName } from './formatUrlName.js';
+import { resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
+import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces.js';
 import {
   buildSpotLookup,
   resolveTravelSpotFromPlaceId,
@@ -147,7 +149,7 @@ export function hydrateLocationFromSavedTrip(trip, category = 'paradise') {
 }
 
 /**
- * /place/:slug 해석 — SSOT · cities · 세션 캐시 · 즐겨찾기(uiPlace) 순
+ * /place/:slug 해석 — SSOT · cities · hub명소 · 정착지 · 세션 캐시 · 즐겨찾기(uiPlace) 순
  * loc-/search-/city- 좌표 URL은 index.jsx에서 별도 처리
  */
 export function resolvePlaceTargetFromSlug(slug, options = {}) {
@@ -193,6 +195,13 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
       options,
     );
   }
+
+  // cityAttractionHubs / mapboxSettlementPlaces — travelSpots 미등록 대량 추가분
+  const hubPlace = resolveHubPlaceFromSlug(normalized);
+  if (hubPlace) return overlaySessionCuration(hubPlace, options);
+
+  const settlementPlace = resolveSettlementPlaceFromSlug(normalized);
+  if (settlementPlace) return overlaySessionCuration(settlementPlace, options);
 
   if (
     selectedLocation &&

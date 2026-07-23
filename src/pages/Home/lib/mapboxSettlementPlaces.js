@@ -3,7 +3,11 @@
  * POI·명소는 cityAttractionHubs — 이 파일에 넣지 않음.
  */
 import settlementsJson from '../data/mapboxSettlementPlaces.json' with { type: 'json' };
-import { listCityAttractionHubs } from './cityAttractionHubs.js';
+import {
+  listCityAttractionHubs,
+  placeSlugVariants,
+  placeUrlSlug,
+} from './cityAttractionHubs.js';
 
 const FEATURE_TYPES = new Set(['place', 'city', 'locality']);
 const HUB_EXACT_SETTLEMENT_LIMIT = 3;
@@ -20,6 +24,8 @@ const ROWS = Array.isArray(settlementsJson) ? settlementsJson : [];
 const rowByHubId = new Map();
 /** @type {Map<string, { row: object, settlement: object }>} */
 const settlementByKey = new Map();
+/** @type {Map<string, { row: object, settlement: object }>} /place/:slug */
+const settlementByPlaceSlug = new Map();
 
 for (const row of ROWS) {
   if (!row?.hubId) continue;
@@ -30,6 +36,15 @@ for (const row of ROWS) {
       const nk = normalizeKey(k);
       if (nk && !settlementByKey.has(nk)) {
         settlementByKey.set(nk, { row, settlement });
+      }
+    }
+    for (const sk of placeSlugVariants(
+      settlement.name_en,
+      settlement.name,
+      ...(settlement.aliases || []),
+    )) {
+      if (sk && !settlementByPlaceSlug.has(sk)) {
+        settlementByPlaceSlug.set(sk, { row, settlement });
       }
     }
   }
@@ -102,6 +117,7 @@ export function settlementToSuggestion(row, settlement) {
     country_en: hub?.country_en || 'Explore',
     lat: settlement.lat,
     lng: settlement.lng,
+    slug: placeUrlSlug(settlement.name_en, settlement.name),
     hubId: row.hubId,
     placeId: settlement.placeId,
     mapboxId: settlement.mapboxId || null,
@@ -117,7 +133,7 @@ export function settlementToPlacePin(row, settlement) {
   const hub = hubMetaById.get(row.hubId);
   return {
     id: `settlement-${settlement.placeId || normalizeKey(settlement.name)}`,
-    slug: normalizeKey(settlement.name_en || settlement.name),
+    slug: placeUrlSlug(settlement.name_en, settlement.name),
     name: settlement.name,
     name_en: settlement.name_en || settlement.name,
     name_ko: settlement.name,
@@ -132,6 +148,19 @@ export function settlementToPlacePin(row, settlement) {
     mapboxId: settlement.mapboxId || null,
     desc: `${hub?.name || row.hubId} 인근 · ${settlement.name}`,
   };
+}
+
+/**
+ * /place/:slug 새로고침 hydrate — 정착지 SSOT.
+ * @param {string} slug
+ * @returns {object|null}
+ */
+export function resolveSettlementPlaceFromSlug(slug) {
+  const normalized = String(slug ?? '').trim().toLowerCase();
+  if (!normalized) return null;
+  const hit = settlementByPlaceSlug.get(normalized);
+  if (!hit) return null;
+  return settlementToPlacePin(hit.row, hit.settlement);
 }
 
 export { FEATURE_TYPES, HUB_EXACT_SETTLEMENT_LIMIT };

@@ -828,3 +828,10 @@ TourAPI-이어하기
 - **§3.3 문제 조치**: audit FAIL→부분 제거/롤백 · A/B 비대칭 머지 · 중단 체크리스트 · 재작업/스킵 · 사람 escalate
 - #22~#47 퇴화(솔로 계주) 교훈 반영
 - **무결성**: 매 라운드 VERIFY PASS tip만 정상 — FAIL을 남긴 채 다음 턴 금지
+
+## /place/:slug 새로고침 Safe Path (hub명소·정착지)
+
+**상태**: ✅ hydrate 수정 · 커밋·푸시
+
+- 원인: `resolvePlaceTargetFromSlug`가 TRAVEL_SPOTS/cities만 봄 → hub명소·정착지 URL(`/place/nami-island` 등) 새로고침 시 `contextLocation` null → PlaceCard Safe Path 홈 이동
+- 수정: hub/attraction/settlement slug kebab 통일 + `placeRouteHydrate`에 SSOT lookup 추가 (레거시 compact slug도 수용)
