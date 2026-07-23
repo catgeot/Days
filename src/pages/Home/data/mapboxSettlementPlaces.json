@@ -16757,5 +16757,829 @@
         ]
       }
     ]
+  },
+  {
+    "hubId": "medellin",
+    "settlements": [
+      {
+        "placeId": "medellin-envigado",
+        "name": "엔비가도",
+        "name_en": "Envigado",
+        "featureType": "city",
+        "lat": 6.1698,
+        "lng": -75.5855,
+        "mapboxId": null,
+        "aliases": [
+          "Envigado"
+        ]
+      },
+      {
+        "placeId": "medellin-bello",
+        "name": "베요",
+        "name_en": "Bello",
+        "featureType": "city",
+        "lat": 6.3373,
+        "lng": -75.5579,
+        "mapboxId": null,
+        "aliases": [
+          "Bello"
+        ]
+      },
+      {
+        "placeId": "medellin-itagui",
+        "name": "이타귀",
+        "name_en": "Itagüí",
+        "featureType": "city",
+        "lat": 6.1726,
+        "lng": -75.6114,
+        "mapboxId": null,
+        "aliases": [
+          "Itagui",
+          "Itagüí"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "cusco",
+    "settlements": [
+      {
+        "placeId": "cusco-san-jeronimo",
+        "name": "산헤로니모",
+        "name_en": "San Jerónimo",
+        "featureType": "locality",
+        "lat": -13.5444,
+        "lng": -71.8833,
+        "mapboxId": null,
+        "aliases": [
+          "San Jeronimo",
+          "San Jerónimo"
+        ]
+      },
+      {
+        "placeId": "cusco-wanchaq",
+        "name": "완차크",
+        "name_en": "Wanchaq",
+        "featureType": "locality",
+        "lat": -13.526,
+        "lng": -71.958,
+        "mapboxId": null,
+        "aliases": [
+          "Wanchaq"
+        ]
+      },
+      {
+        "placeId": "cusco-san-sebastian",
+        "name": "산세바스티안",
+        "name_en": "San Sebastián",
+        "featureType": "locality",
+        "lat": -13.53,
+        "lng": -71.935,
+        "mapboxId": null,
+        "aliases": [
+          "San Sebastian",
+          "San Sebastián"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "cartagena",
+    "settlements": [
+      {
+        "placeId": "cartagena-turbaco",
+        "name": "투르바코",
+        "name_en": "Turbaco",
+        "featureType": "city",
+        "lat": 10.3307,
+        "lng": -75.4142,
+        "mapboxId": null,
+        "aliases": [
+          "Turbaco"
+        ]
+      },
+      {
+        "placeId": "cartagena-santa-rosa",
+        "name": "산타로사",
+        "name_en": "Santa Rosa",
+        "featureType": "city",
+        "lat": 10.572,
+        "lng": -75.368,
+        "mapboxId": null,
+        "aliases": [
+          "Santa Rosa"
+        ]
+      },
+      {
+        "placeId": "cartagena-bayunca",
+        "name": "바윤카",
+        "name_en": "Bayunca",
+        "featureType": "locality",
+        "lat": 10.48,
+        "lng": -75.4,
+        "mapboxId": null,
+        "aliases": [
+          "Bayunca"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "montevideo",
+    "settlements": [
+      {
+        "placeId": "montevideo-ciudad-de-la-costa",
+        "name": "시우다드델라코스타",
+        "name_en": "Ciudad de la Costa",
+        "featureType": "city",
+        "lat": -34.8167,
+        "lng": -55.95,
+        "mapboxId": null,
+        "aliases": [
+          "Ciudad de la Costa"
+        ]
+      },
+      {
+        "placeId": "montevideo-las-piedras",
+        "name": "라스피에드라스",
+        "name_en": "Las Piedras",
+        "featureType": "city",
+        "lat": -34.7302,
+        "lng": -56.2194,
+        "mapboxId": null,
+        "aliases": [
+          "Las Piedras"
+        ]
+      },
+      {
+        "placeId": "montevideo-pando",
+        "name": "판도",
+        "name_en": "Pando",
+        "featureType": "city",
+        "lat": -34.7167,
+        "lng": -55.9583,
+        "mapboxId": null,
+        "aliases": [
+          "Pando"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "beijing",
+    "settlements": [
+      {
+        "placeId": "beijing-tongzhou",
+        "name": "통저우",
+        "name_en": "Tongzhou",
+        "featureType": "place",
+        "lat": 39.909,
+        "lng": 116.657,
+        "mapboxId": null,
+        "aliases": [
+          "Tongzhou"
+        ]
+      },
+      {
+        "placeId": "beijing-changping",
+        "name": "창핑",
+        "name_en": "Changping",
+        "featureType": "place",
+        "lat": 40.2206,
+        "lng": 116.231,
+        "mapboxId": null,
+        "aliases": [
+          "Changping"
+        ]
+      },
+      {
+        "placeId": "beijing-daxing",
+        "name": "다싱",
+        "name_en": "Daxing",
+        "featureType": "place",
+        "lat": 39.7269,
+        "lng": 116.341,
+        "mapboxId": null,
+        "aliases": [
+          "Daxing"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "shanghai",
+    "settlements": [
+      {
+        "placeId": "shanghai-jiading",
+        "name": "자딩",
+        "name_en": "Jiading",
+        "featureType": "place",
+        "lat": 31.383,
+        "lng": 121.25,
+        "mapboxId": null,
+        "aliases": [
+          "Jiading"
+        ]
+      },
+      {
+        "placeId": "shanghai-songjiang",
+        "name": "쑹장",
+        "name_en": "Songjiang",
+        "featureType": "place",
+        "lat": 31.032,
+        "lng": 121.227,
+        "mapboxId": null,
+        "aliases": [
+          "Songjiang"
+        ]
+      },
+      {
+        "placeId": "shanghai-minhang",
+        "name": "민항",
+        "name_en": "Minhang",
+        "featureType": "place",
+        "lat": 31.113,
+        "lng": 121.382,
+        "mapboxId": null,
+        "aliases": [
+          "Minhang"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "guangzhou",
+    "settlements": [
+      {
+        "placeId": "guangzhou-foshan",
+        "name": "포산",
+        "name_en": "Foshan",
+        "featureType": "city",
+        "lat": 23.0215,
+        "lng": 113.1216,
+        "mapboxId": null,
+        "aliases": [
+          "Foshan"
+        ]
+      },
+      {
+        "placeId": "guangzhou-panyu",
+        "name": "판위",
+        "name_en": "Panyu",
+        "featureType": "place",
+        "lat": 22.938,
+        "lng": 113.384,
+        "mapboxId": null,
+        "aliases": [
+          "Panyu"
+        ]
+      },
+      {
+        "placeId": "guangzhou-huadu",
+        "name": "화두",
+        "name_en": "Huadu",
+        "featureType": "place",
+        "lat": 23.404,
+        "lng": 113.22,
+        "mapboxId": null,
+        "aliases": [
+          "Huadu"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "chengdu",
+    "settlements": [
+      {
+        "placeId": "chengdu-wenjiang",
+        "name": "원장",
+        "name_en": "Wenjiang",
+        "featureType": "place",
+        "lat": 30.691,
+        "lng": 103.856,
+        "mapboxId": null,
+        "aliases": [
+          "Wenjiang"
+        ]
+      },
+      {
+        "placeId": "chengdu-xindu",
+        "name": "신두",
+        "name_en": "Xindu",
+        "featureType": "place",
+        "lat": 30.824,
+        "lng": 104.16,
+        "mapboxId": null,
+        "aliases": [
+          "Xindu"
+        ]
+      },
+      {
+        "placeId": "chengdu-shuangliu",
+        "name": "솽류",
+        "name_en": "Shuangliu",
+        "featureType": "place",
+        "lat": 30.574,
+        "lng": 103.923,
+        "mapboxId": null,
+        "aliases": [
+          "Shuangliu"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "xian",
+    "settlements": [
+      {
+        "placeId": "xian-xianyang",
+        "name": "셴양",
+        "name_en": "Xianyang",
+        "featureType": "city",
+        "lat": 34.3299,
+        "lng": 108.7088,
+        "mapboxId": null,
+        "aliases": [
+          "Xianyang"
+        ]
+      },
+      {
+        "placeId": "xian-lintong",
+        "name": "린퉁",
+        "name_en": "Lintong",
+        "featureType": "place",
+        "lat": 34.367,
+        "lng": 109.214,
+        "mapboxId": null,
+        "aliases": [
+          "Lintong"
+        ]
+      },
+      {
+        "placeId": "xian-gaoling",
+        "name": "가오링",
+        "name_en": "Gaoling",
+        "featureType": "place",
+        "lat": 34.535,
+        "lng": 109.088,
+        "mapboxId": null,
+        "aliases": [
+          "Gaoling"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "hangzhou",
+    "settlements": [
+      {
+        "placeId": "hangzhou-xiaoshan",
+        "name": "샤오산",
+        "name_en": "Xiaoshan",
+        "featureType": "place",
+        "lat": 30.185,
+        "lng": 120.264,
+        "mapboxId": null,
+        "aliases": [
+          "Xiaoshan"
+        ]
+      },
+      {
+        "placeId": "hangzhou-yuhang",
+        "name": "위항",
+        "name_en": "Yuhang",
+        "featureType": "place",
+        "lat": 30.421,
+        "lng": 119.979,
+        "mapboxId": null,
+        "aliases": [
+          "Yuhang"
+        ]
+      },
+      {
+        "placeId": "hangzhou-deqing",
+        "name": "더칭",
+        "name_en": "Deqing",
+        "featureType": "city",
+        "lat": 30.543,
+        "lng": 119.978,
+        "mapboxId": null,
+        "aliases": [
+          "Deqing"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "shenzhen",
+    "settlements": [
+      {
+        "placeId": "shenzhen-baoan",
+        "name": "바오안",
+        "name_en": "Bao'an",
+        "featureType": "place",
+        "lat": 22.555,
+        "lng": 113.884,
+        "mapboxId": null,
+        "aliases": [
+          "Baoan",
+          "Bao'an"
+        ]
+      },
+      {
+        "placeId": "shenzhen-longgang",
+        "name": "룽강",
+        "name_en": "Longgang",
+        "featureType": "place",
+        "lat": 22.721,
+        "lng": 114.247,
+        "mapboxId": null,
+        "aliases": [
+          "Longgang"
+        ]
+      },
+      {
+        "placeId": "shenzhen-guangming",
+        "name": "광밍",
+        "name_en": "Guangming",
+        "featureType": "place",
+        "lat": 22.739,
+        "lng": 113.936,
+        "mapboxId": null,
+        "aliases": [
+          "Guangming"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "nanjing",
+    "settlements": [
+      {
+        "placeId": "nanjing-jiangning",
+        "name": "장닝",
+        "name_en": "Jiangning",
+        "featureType": "place",
+        "lat": 31.953,
+        "lng": 118.84,
+        "mapboxId": null,
+        "aliases": [
+          "Jiangning"
+        ]
+      },
+      {
+        "placeId": "nanjing-pukou",
+        "name": "푸커우",
+        "name_en": "Pukou",
+        "featureType": "place",
+        "lat": 32.058,
+        "lng": 118.628,
+        "mapboxId": null,
+        "aliases": [
+          "Pukou"
+        ]
+      },
+      {
+        "placeId": "nanjing-jurong",
+        "name": "쥐룽",
+        "name_en": "Jurong",
+        "featureType": "city",
+        "lat": 31.946,
+        "lng": 119.164,
+        "mapboxId": null,
+        "aliases": [
+          "Jurong"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "suzhou",
+    "settlements": [
+      {
+        "placeId": "suzhou-kunshan",
+        "name": "쿤산",
+        "name_en": "Kunshan",
+        "featureType": "city",
+        "lat": 31.385,
+        "lng": 120.981,
+        "mapboxId": null,
+        "aliases": [
+          "Kunshan"
+        ]
+      },
+      {
+        "placeId": "suzhou-changshu",
+        "name": "창수",
+        "name_en": "Changshu",
+        "featureType": "city",
+        "lat": 31.656,
+        "lng": 120.752,
+        "mapboxId": null,
+        "aliases": [
+          "Changshu"
+        ]
+      },
+      {
+        "placeId": "suzhou-wujiang",
+        "name": "우장",
+        "name_en": "Wujiang",
+        "featureType": "place",
+        "lat": 31.16,
+        "lng": 120.645,
+        "mapboxId": null,
+        "aliases": [
+          "Wujiang"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "chongqing",
+    "settlements": [
+      {
+        "placeId": "chongqing-beibei",
+        "name": "베이베이",
+        "name_en": "Beibei",
+        "featureType": "place",
+        "lat": 29.825,
+        "lng": 106.437,
+        "mapboxId": null,
+        "aliases": [
+          "Beibei"
+        ]
+      },
+      {
+        "placeId": "chongqing-yubei",
+        "name": "위베이",
+        "name_en": "Yubei",
+        "featureType": "place",
+        "lat": 29.718,
+        "lng": 106.631,
+        "mapboxId": null,
+        "aliases": [
+          "Yubei"
+        ]
+      },
+      {
+        "placeId": "chongqing-bishan",
+        "name": "비산",
+        "name_en": "Bishan",
+        "featureType": "place",
+        "lat": 29.592,
+        "lng": 106.227,
+        "mapboxId": null,
+        "aliases": [
+          "Bishan"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "macau",
+    "settlements": [
+      {
+        "placeId": "macau-taipa",
+        "name": "타이파",
+        "name_en": "Taipa",
+        "featureType": "locality",
+        "lat": 22.16,
+        "lng": 113.559,
+        "mapboxId": null,
+        "aliases": [
+          "Taipa"
+        ]
+      },
+      {
+        "placeId": "macau-coloane",
+        "name": "콜로안",
+        "name_en": "Coloane",
+        "featureType": "locality",
+        "lat": 22.125,
+        "lng": 113.552,
+        "mapboxId": null,
+        "aliases": [
+          "Coloane"
+        ]
+      },
+      {
+        "placeId": "macau-zhuhai",
+        "name": "주하이",
+        "name_en": "Zhuhai",
+        "featureType": "city",
+        "lat": 22.271,
+        "lng": 113.577,
+        "mapboxId": null,
+        "aliases": [
+          "Zhuhai"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "kaohsiung",
+    "settlements": [
+      {
+        "placeId": "kaohsiung-fengshan",
+        "name": "펑산",
+        "name_en": "Fengshan",
+        "featureType": "place",
+        "lat": 22.627,
+        "lng": 120.355,
+        "mapboxId": null,
+        "aliases": [
+          "Fengshan"
+        ]
+      },
+      {
+        "placeId": "kaohsiung-gangshan",
+        "name": "강산",
+        "name_en": "Gangshan",
+        "featureType": "place",
+        "lat": 22.792,
+        "lng": 120.294,
+        "mapboxId": null,
+        "aliases": [
+          "Gangshan"
+        ]
+      },
+      {
+        "placeId": "kaohsiung-pingtung",
+        "name": "핑둥",
+        "name_en": "Pingtung",
+        "featureType": "city",
+        "lat": 22.682,
+        "lng": 120.482,
+        "mapboxId": null,
+        "aliases": [
+          "Pingtung"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "taichung",
+    "settlements": [
+      {
+        "placeId": "taichung-fengyuan",
+        "name": "펑위안",
+        "name_en": "Fengyuan",
+        "featureType": "place",
+        "lat": 24.25,
+        "lng": 120.72,
+        "mapboxId": null,
+        "aliases": [
+          "Fengyuan"
+        ]
+      },
+      {
+        "placeId": "taichung-dali",
+        "name": "다리",
+        "name_en": "Dali",
+        "featureType": "place",
+        "lat": 24.099,
+        "lng": 120.688,
+        "mapboxId": null,
+        "aliases": [
+          "Dali"
+        ]
+      },
+      {
+        "placeId": "taichung-tanzi",
+        "name": "탄쯔",
+        "name_en": "Tanzi",
+        "featureType": "place",
+        "lat": 24.213,
+        "lng": 120.705,
+        "mapboxId": null,
+        "aliases": [
+          "Tanzi"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "tainan",
+    "settlements": [
+      {
+        "placeId": "tainan-yongkang",
+        "name": "융캉",
+        "name_en": "Yongkang",
+        "featureType": "place",
+        "lat": 23.027,
+        "lng": 120.257,
+        "mapboxId": null,
+        "aliases": [
+          "Yongkang"
+        ]
+      },
+      {
+        "placeId": "tainan-rende",
+        "name": "런더",
+        "name_en": "Rende",
+        "featureType": "place",
+        "lat": 22.942,
+        "lng": 120.252,
+        "mapboxId": null,
+        "aliases": [
+          "Rende"
+        ]
+      },
+      {
+        "placeId": "tainan-guiren",
+        "name": "구이런",
+        "name_en": "Guiren",
+        "featureType": "place",
+        "lat": 22.967,
+        "lng": 120.294,
+        "mapboxId": null,
+        "aliases": [
+          "Guiren"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "kuala-lumpur",
+    "settlements": [
+      {
+        "placeId": "kuala-lumpur-petaling-jaya",
+        "name": "페탈링자야",
+        "name_en": "Petaling Jaya",
+        "featureType": "city",
+        "lat": 3.107,
+        "lng": 101.607,
+        "mapboxId": null,
+        "aliases": [
+          "Petaling Jaya"
+        ]
+      },
+      {
+        "placeId": "kuala-lumpur-shah-alam",
+        "name": "샤알람",
+        "name_en": "Shah Alam",
+        "featureType": "city",
+        "lat": 3.073,
+        "lng": 101.518,
+        "mapboxId": null,
+        "aliases": [
+          "Shah Alam"
+        ]
+      },
+      {
+        "placeId": "kuala-lumpur-subang-jaya",
+        "name": "수방자야",
+        "name_en": "Subang Jaya",
+        "featureType": "city",
+        "lat": 3.056,
+        "lng": 101.586,
+        "mapboxId": null,
+        "aliases": [
+          "Subang Jaya"
+        ]
+      }
+    ]
+  },
+  {
+    "hubId": "jakarta",
+    "settlements": [
+      {
+        "placeId": "jakarta-depok",
+        "name": "데폭",
+        "name_en": "Depok",
+        "featureType": "city",
+        "lat": -6.4025,
+        "lng": 106.7945,
+        "mapboxId": null,
+        "aliases": [
+          "Depok"
+        ]
+      },
+      {
+        "placeId": "jakarta-bekasi",
+        "name": "베카시",
+        "name_en": "Bekasi",
+        "featureType": "city",
+        "lat": -6.2383,
+        "lng": 106.9756,
+        "mapboxId": null,
+        "aliases": [
+          "Bekasi"
+        ]
+      },
+      {
+        "placeId": "jakarta-tangerang",
+        "name": "탄게랑",
+        "name_en": "Tangerang",
+        "featureType": "city",
+        "lat": -6.1783,
+        "lng": 106.6319,
+        "mapboxId": null,
+        "aliases": [
+          "Tangerang"
+        ]
+      }
+    ]
   }
 ]
