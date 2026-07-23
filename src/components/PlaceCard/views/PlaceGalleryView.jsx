@@ -21,6 +21,9 @@ const MOBILE_LANDSCAPE_IMMERSIVE_QUERY = '(max-width: 767px) and (orientation: l
 const MOBILE_SWIPE_THRESHOLD_PX = 48;
 const MOBILE_SWIPE_DIRECTION_RATIO = 1.25;
 
+/** 타일 decode hang/캐시 onLoad 누락 시 스켈레톤 고착 방지 */
+const TILE_LOAD_HANG_MS = 6_000;
+
 /** 그리드 셀 — URL decode 전 검은 빈칸 방지 */
 const GalleryGridTile = React.memo(function GalleryGridTile({
   img,
@@ -33,19 +36,67 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
 }) {
   const [loaded, setLoaded] = useState(false);
   const paintedRef = useRef(false);
+  const imgElRef = useRef(null);
+  const imgPropRef = useRef(img);
+  const onBrokenRef = useRef(onBroken);
+  const onPaintedRef = useRef(onPainted);
+  imgPropRef.current = img;
+  onBrokenRef.current = onBroken;
+  onPaintedRef.current = onPainted;
+
   const src = img?.urls?.small || img?.urls?.regular;
   const hasAspect = Boolean(img?.width && img?.height);
-
-  useEffect(() => {
-    setLoaded(false);
-    paintedRef.current = false;
-  }, [src]);
 
   const markPainted = useCallback(() => {
     if (paintedRef.current) return;
     paintedRef.current = true;
-    onPainted?.(img);
-  }, [img, onPainted]);
+    onPaintedRef.current?.(imgPropRef.current);
+  }, []);
+
+  const settleLoaded = useCallback(() => {
+    setLoaded(true);
+    markPainted();
+  }, [markPainted]);
+
+  const settleBroken = useCallback(() => {
+    markPainted();
+    onBrokenRef.current?.(imgPropRef.current);
+  }, [markPainted]);
+
+  // 모바일·캐시: complete면 onLoad가 안 올 수 있음 → rAF로 동기화. hang은 타임아웃.
+  // src만 의존 — onBroken 등 콜백 신원 변경으로 스켈레톤이 다시 붙지 않게 함.
+  useEffect(() => {
+    setLoaded(false);
+    paintedRef.current = false;
+    if (!src) {
+      settleBroken();
+      return undefined;
+    }
+
+    const syncFromElement = () => {
+      const el = imgElRef.current;
+      if (!el || paintedRef.current) return;
+      if (!el.complete) return;
+      if (el.naturalWidth > 0) settleLoaded();
+      else settleBroken();
+    };
+
+    const raf = window.requestAnimationFrame(syncFromElement);
+    const hangTimer = window.setTimeout(() => {
+      if (paintedRef.current) return;
+      const el = imgElRef.current;
+      if (el?.complete && el.naturalWidth > 0) {
+        settleLoaded();
+        return;
+      }
+      settleBroken();
+    }, TILE_LOAD_HANG_MS);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(hangTimer);
+    };
+  }, [src, settleLoaded, settleBroken]);
 
   return (
     <div
@@ -70,6 +121,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         />
       )}
       <img
+        ref={imgElRef}
         src={src}
         className={`w-full transition-[opacity,transform] duration-500 group-hover:scale-105 ${
           loaded ? 'opacity-100' : 'opacity-0'
@@ -80,14 +132,8 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         referrerPolicy="no-referrer"
         width={img.width || undefined}
         height={img.height || undefined}
-        onLoad={() => {
-          setLoaded(true);
-          markPainted();
-        }}
-        onError={() => {
-          markPainted();
-          onBroken?.(img);
-        }}
+        onLoad={settleLoaded}
+        onError={settleBroken}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <Maximize2 className="absolute top-4 right-4 text-white/80 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" size={20} />
@@ -203,13 +249,13 @@ const PlaceGalleryView = React.memo(({
     }
   }, [paintedCount, paintTarget]);
 
-  /** decode/onLoad 누락 시 스피너·버튼 숨김이 고착되지 않게 */
+  /** decode/onLoad 누락 시 스피너·버튼 숨김이 고착되지 않게 (타일 hang 6s보다 짧게) */
   useEffect(() => {
     if (!isPaintPending || paintTarget <= 0) return undefined;
     const t = window.setTimeout(() => {
       setPaintedCount((n) => Math.max(n, paintTarget));
       setGalleryVisuallyReady(true);
-    }, 8000);
+    }, 3500);
     return () => window.clearTimeout(t);
   }, [isPaintPending, paintTarget, galleryPlaceKey]);
 

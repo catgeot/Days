@@ -68,6 +68,21 @@ const GALLERY_QUERY_OVERRIDES = {
 };
 
 const GALLERY_REFRESH_COOLDOWN_MS = 30_000;
+/** place_stats / Unsplash 등 TourAPI 이후 단계 hang 시 스켈레톤 고착 방지 */
+const GALLERY_LOAD_SAFETY_MS = 28_000;
+const PLACE_STATS_QUERY_MS = 8_000;
+
+function withTimeout(promise, ms, label) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
+    }),
+  ]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
+}
 
 function isTourApiGalleryImage(img) {
   if (!img || typeof img !== 'object') return false;
@@ -190,7 +205,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   }, []);
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
-    if (!locationSource) return;
+    if (!locationSource) {
+      setIsImgLoading(false);
+      setIsRefreshing(false);
+      return;
+    }
 
     let targetSpot = locationSource;
 
@@ -239,7 +258,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
 
     primaryQuery = primaryQuery.trim();
-    if (!primaryQuery) return;
+    if (!primaryQuery) {
+      setIsImgLoading(false);
+      setIsRefreshing(false);
+      return;
+    }
 
     const slugOverride =
       typeof targetSpot === 'object' && targetSpot?.slug
@@ -295,6 +318,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
     const runId = ++galleryLoadSeqRef.current;
     const hadImagesAtStart = allImagesRef.current.length > 0;
+    let safetyTimer = null;
 
     if (forceRefresh) {
       // 더보기: 기존 TourAPI/캐시 사진을 유지한 채 Unsplash만 append
@@ -321,6 +345,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       (typeof locationSource === 'object' ? resolveTourApiPlace(locationSource) : null) ||
       (koreanName ? resolveTourApiPlace(koreanName) : null);
 
+    const clearSafety = () => {
+      if (safetyTimer != null) {
+        clearTimeout(safetyTimer);
+        safetyTimer = null;
+      }
+    };
+
+    const isStale = () => {
+      if (runId === galleryLoadSeqRef.current) return false;
+      clearSafety();
+      return true;
+    };
+
     const markFetchDone = () => {
       if (runId === galleryLoadSeqRef.current) {
         lastFetchKeyRef.current = fetchKey;
@@ -328,13 +365,24 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     };
 
     const finishLoading = () => {
-      if (runId !== galleryLoadSeqRef.current) return;
+      if (isStale()) return;
+      clearSafety();
       setIsImgLoading(false);
       setIsRefreshing(false);
     };
 
-    const restorePreservedImages = () => {
+    safetyTimer = setTimeout(() => {
       if (runId !== galleryLoadSeqRef.current) return;
+      console.warn('⚠️ Gallery load safety timeout — releasing skeleton');
+      if (allImagesRef.current.length > 0) {
+        processAndSetImages(allImagesRef.current);
+      }
+      markFetchDone();
+      finishLoading();
+    }, GALLERY_LOAD_SAFETY_MS);
+
+    const restorePreservedImages = () => {
+      if (isStale()) return;
       if (allImagesRef.current.length > 0) {
         processAndSetImages(allImagesRef.current);
       }
@@ -344,7 +392,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       pageRef.current = 1; // 🚨 [Fix] 일반 로드 시 페이지 초기화
       const validCache = loadFromSmartCache(CACHE_KEY);
       if (validCache && validCache.length > 0) {
-        if (runId !== galleryLoadSeqRef.current) return;
+        if (isStale()) return;
         processAndSetImages(validCache);
         markFetchDone();
         finishLoading();
@@ -363,7 +411,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             page: 1,
             thumbnailOnly,
           });
-          if (runId !== galleryLoadSeqRef.current) return;
+          if (isStale()) return;
           if (tourImages.length > 0) {
             processAndSetImages(tourImages);
             saveToSmartCache(CACHE_KEY, tourImages);
@@ -413,15 +461,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (!slugOverride && dbCandidates.length) {
         try {
           const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
-          const { data: dbRows, error: dbError } = await supabase
-            .from('place_stats')
-            .select(dbSelect)
-            .in('place_id', dbCandidates)
-            .limit(1);
+          const { data: dbRows, error: dbError } = await withTimeout(
+            supabase
+              .from('place_stats')
+              .select(dbSelect)
+              .in('place_id', dbCandidates)
+              .limit(1),
+            PLACE_STATS_QUERY_MS,
+            'place_stats gallery',
+          );
 
           const dbData = dbRows?.[0];
 
-          if (runId !== galleryLoadSeqRef.current) return;
+          if (isStale()) return;
 
           if (!dbError && dbData) {
             if (thumbnailOnly && dbData.image_url) {
@@ -467,13 +519,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
       if (ACCESS_KEY) {
         results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, pageRef.current);
-        if (runId !== galleryLoadSeqRef.current) return;
+        if (isStale()) return;
 
         if (results.length === 0 && backupQuery) {
           console.warn(`⚠️ No results for "${primaryQuery}". Retry with: "${backupQuery}"`);
           results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, pageRef.current);
         }
-        if (runId !== galleryLoadSeqRef.current) return;
+        if (isStale()) return;
       } else {
         console.warn('⚠️ VITE_UNSPLASH_ACCESS_KEY missing — Unsplash skipped (Pexels may still run)');
       }
@@ -509,7 +561,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
       }
 
-      if (runId !== galleryLoadSeqRef.current) return;
+      if (isStale()) return;
 
       // soft: 스톡 0일 때만 TourAPI (DB는 위에서 이미 시도·Tour 우세만 스킵)
       if (
@@ -527,7 +579,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             page: 1,
             thumbnailOnly,
           });
-          if (runId !== galleryLoadSeqRef.current) return;
+          if (isStale()) return;
           if (tourImages.length > 0) {
             results = tourImages;
             console.log(`✅ TourAPI soft fallback ${tourImages.length}장 (${tourMapping.photoKeyword})`);
@@ -549,7 +601,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (forceRefresh) {
           pageRef.current = Math.max(1, pageRef.current - 1);
           restorePreservedImages();
-        } else if (runId === galleryLoadSeqRef.current) {
+        } else if (!isStale()) {
           processAndSetImages([]);
         }
         return;
@@ -568,7 +620,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           finalResults = [...allImagesRef.current, ...freshImages];
         }
 
-        if (runId !== galleryLoadSeqRef.current) return;
+        if (isStale()) return;
 
         processAndSetImages(finalResults);
         saveToSmartCache(CACHE_KEY, finalResults);
@@ -605,14 +657,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } },
           { id: 'fallback-2', urls: { regular: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } }
         ];
-        if (runId === galleryLoadSeqRef.current) processAndSetImages(fallbackImgs);
+        if (!isStale()) processAndSetImages(fallbackImgs);
       }
     } catch (error) {
       console.error("Gallery API Error:", error);
       if (forceRefresh) {
         pageRef.current = Math.max(1, pageRef.current - 1);
         restorePreservedImages();
-      } else if (runId === galleryLoadSeqRef.current) {
+      } else if (!isStale()) {
         processAndSetImages([]);
       }
     } finally {
