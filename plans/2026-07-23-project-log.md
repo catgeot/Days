@@ -16,9 +16,10 @@
 | | |
 |--|--|
 | **결과** | KR 전수 SNAP/NO_HIT **소진/정지** · tip **4067** · hubs 630 · issues 0 |
-| **남은 NO_HIT/스킵** | review_leave(다수) · station/휴게소/타시 오매칭 · min4_keep · P0 김유정 NO_HIT 유지 · R1–R7 prior skip 목록 |
+| **재등급** | `verify --country=kr --write-queue` (캐시) · scanned 1137 · SNAP **37**(대부분 prior 의도 스킵) · NO_HIT drop_or_manual **24** · 큐 `plans/city-attraction-coord-verify-queue.md` |
+| **남은 NO_HIT/스킵** | 주상절리·알펜시아·융건릉·장군목·용문사·팔봉산·금성산·예당호휴게소·강남 station 등 · 김유정 NO_HIT 유지 |
 | **게이트** | `audit:city-attraction-hubs` + `verify --smoke` PASS |
-| **다음** | 해외 SNAP 또는 수동 rename/주소 보강 시에만 재개 · 복구 제시어 아래 |
+| **다음** | 해외 SNAP 또는 스킵 재검토(수동) 시에만 재개 |
 | **복구 제시어** | `명소좌표수리 · 오케스트레이터` · 「KR 소진 확인 후 해외 SNAP 또는 스킵 재검토 · §5.4」 |
 
 ## 명소 좌표 수리 — KR R9–R10 (이관)
