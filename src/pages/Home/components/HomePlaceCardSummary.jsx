@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PlaceCardSummary from '../../../components/PlaceCard/modes/PlaceCardSummary';
 import { useChatEssentialGuide } from '../../../hooks/useChatEssentialGuide.js';
 import { useFlightCinema } from '../lib/FlightCinemaContext.jsx';
@@ -17,6 +17,7 @@ import {
   resolveImmerseCamera,
 } from '../lib/globeImmerseZoom.js';
 import GlobeStayStrip from './GlobeStayStrip.jsx';
+import GlobeTourStrip from './GlobeTourStrip.jsx';
 
 /** 연속 not-ready 폴링 횟수 — 250ms×4 ≈ 1s (일시적 레이어 공백·style idle 깜박임 흡수) */
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
@@ -41,6 +42,28 @@ export default function HomePlaceCardSummary({
 
   const [selectedOriginIata, setSelectedOriginIata] = useState(() => resolveDefaultFlightOriginIata());
   const [isImmersed, setIsImmersed] = useState(false);
+  const [stayOpen, setStayOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+  const stayOpenRef = useRef(false);
+  const tourOpenRef = useRef(false);
+
+  const handleStayExpandedChange = useCallback(
+    (open) => {
+      stayOpenRef.current = open;
+      setStayOpen(open);
+      onStayExpandedChange?.(Boolean(open || tourOpenRef.current));
+    },
+    [onStayExpandedChange]
+  );
+
+  const handleTourExpandedChange = useCallback(
+    (open) => {
+      tourOpenRef.current = open;
+      setTourOpen(open);
+      onStayExpandedChange?.(Boolean(stayOpenRef.current || open));
+    },
+    [onStayExpandedChange]
+  );
 
   useEffect(() => {
     queueMicrotask(() => setSelectedOriginIata(resolveDefaultFlightOriginIata()));
@@ -190,36 +213,49 @@ export default function HomePlaceCardSummary({
   };
 
   return (
-    <GlobeStayStrip location={location} onExpandedChange={onStayExpandedChange}>
+    <GlobeStayStrip
+      location={location}
+      peerOpen={tourOpen}
+      onExpandedChange={handleStayExpandedChange}
+    >
       {({ toggle, mobilePanel, expanded: stayExpanded }) => (
-        <PlaceCardSummary
-          {...props}
+        <GlobeTourStrip
           location={location}
-          canPreviewFlightRoute={hasFlightRoute}
-          isFlightRouteReady={isFlightRouteReady}
-          isFlightRoutePending={flightCinemaRequestPending}
-          flightRouteLabel={
-            flightPreview
-              ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
-              : null
-          }
-          flightRouteHours={flightPreview?.flightHours ?? null}
-          selectedFlightOriginIata={selectedOriginIata}
-          flightBrowserOriginHint={browserOriginHint}
-          onSelectFlightOrigin={handleSelectOrigin}
-          onApplyBrowserOriginSuggestion={
-            browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
-          }
-          initialOriginExpanded={false}
-          onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
-          canToggleImmerse={canToggleImmerse}
-          isImmersed={isImmersed}
-          onToggleImmerse={handleToggleImmerse}
-          onImmerseZoomStep={handleImmerseZoomStep}
-          stayToggle={toggle}
-          stayExpanded={stayExpanded}
-          belowCard={mobilePanel}
-        />
+          peerOpen={stayOpen}
+          onExpandedChange={handleTourExpandedChange}
+        >
+          {({ tourTab }) => (
+            <PlaceCardSummary
+              {...props}
+              location={location}
+              canPreviewFlightRoute={hasFlightRoute}
+              isFlightRouteReady={isFlightRouteReady}
+              isFlightRoutePending={flightCinemaRequestPending}
+              flightRouteLabel={
+                flightPreview
+                  ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
+                  : null
+              }
+              flightRouteHours={flightPreview?.flightHours ?? null}
+              selectedFlightOriginIata={selectedOriginIata}
+              flightBrowserOriginHint={browserOriginHint}
+              onSelectFlightOrigin={handleSelectOrigin}
+              onApplyBrowserOriginSuggestion={
+                browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
+              }
+              initialOriginExpanded={false}
+              onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
+              canToggleImmerse={canToggleImmerse}
+              isImmersed={isImmersed}
+              onToggleImmerse={handleToggleImmerse}
+              onImmerseZoomStep={handleImmerseZoomStep}
+              stayToggle={toggle}
+              stayExpanded={stayExpanded}
+              tourTab={tourTab}
+              belowCard={mobilePanel}
+            />
+          )}
+        </GlobeTourStrip>
       )}
     </GlobeStayStrip>
   );

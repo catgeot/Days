@@ -921,7 +921,13 @@ async function withStayAdmin(location) {
  * children({ toggle, mobilePanel, expanded }) 로 카드 안 그리드에 토글 배치.
  * PC: body 포털 전폭 · 모바일: 버튼 → 전체화면 모달(일정·목록).
  */
-export default function GlobeStayStrip({ location, hidden = false, children, onExpandedChange }) {
+export default function GlobeStayStrip({
+  location,
+  hidden = false,
+  children,
+  onExpandedChange,
+  peerOpen = false,
+}) {
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
@@ -978,6 +984,12 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
   useEffect(() => {
     if (!expanded) setListFullscreen(false);
   }, [expanded]);
+
+  useEffect(() => {
+    if (!peerOpen) return;
+    setExpanded(false);
+    setListFullscreen(false);
+  }, [peerOpen]);
 
   useEffect(() => {
     onExpandedChange?.(Boolean(eligible && expanded));
@@ -1587,7 +1599,7 @@ export default function GlobeStayStrip({ location, hidden = false, children, onE
     return (
       <>
         {/* 카드 안 확장 UI 없음 — stayExpanded는 PC 포털만 해당, 레이아웃 팽창 불필요 */}
-        {children({ toggle, mobilePanel, eligible: true, expanded: false })}
+        {children({ toggle, mobilePanel, eligible: true, expanded })}
         {desktopPortal}
         {fullscreenPortal}
       </>

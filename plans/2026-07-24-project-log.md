@@ -167,9 +167,20 @@
 - q=영문 도시명 · locale `ko-KR` · items `3` · cmp `gateo_planer_{slug}` · currency `KRW`
 - QA: 미야코지마·라로통가 현지 투어 OK
 
+## GYG 최적화 — 구현
+
+**상태**: ✅ 코드 · `vite build` PASS · **사람 QA 대기**
+
+- 더보기: PC 3/+3/max9 · 모바일 4/+4/max12 (`number-of-items` 리마운트) · 상수 `GYG_ACTIVITIES_*` in `affiliate.js`
+- 스케치 좌측: q→왓슨 상단+GYG · no-q→목차 폴백 · sections 없음→짧은 안내
+- 써머리: `GlobeTourStrip` 좌측「투어 찾기」탭(PC·모바일) · 숙소형 포털/fullscreen · 숙소↔투어 상호 배타
+- 불변 유지: q=`name_en` · ko-KR · KRW · cmp · analyzer 재삽입 없음
+- **QA**: 미야코지마·라로통가 · PC/모바일 탭 · q 없는 장소(목차·탭 숨김) · 매거진 빈 장소(짧은 안내)
+- 릴리스 노트: QA 후 feature 초안만
+
 ## GYG 최적화 — 스펙 합의 (구현 대기)
 
-**상태**: ✅ 검토·합의 완료 · **코드 미구현** · 다음 세션 구현
+**상태**: ✅ 검토·합의 완료 · **구현으로 이관** (위 「GYG 최적화 — 구현」)
 
 ### 확정 스펙
 

@@ -38,6 +38,7 @@ const PlaceCardSummary = ({
   belowCard = null,
   stayToggle = null,
   stayExpanded = false,
+  tourTab = null,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [glowPhase, setGlowPhase] = useState('enter');
@@ -196,11 +197,14 @@ const PlaceCardSummary = ({
       className={`z-[60] animate-fade-in-up transition-all duration-200 ${
         isOriginCompact
           ? 'fixed left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px]'
-          : 'absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]'
+          : `absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
+              tourTab ? ' ml-[1.1rem] lg:ml-0' : ''
+            }`
       }`}
       style={keyboardAnchorStyle}
     >
       <div className={`relative ${isEnterGlow ? 'place-summary-shell-enter' : ''}`}>
+        {tourTab}
         {isEnterGlow && (
           <>
             <div className="place-summary-halo" aria-hidden="true" />
@@ -215,7 +219,7 @@ const PlaceCardSummary = ({
 
         <div
           className={`place-summary-card relative z-[1] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl group ${
-            isOriginCompact || stayExpanded ? 'overflow-visible' : 'overflow-hidden'
+            isOriginCompact || stayExpanded || tourTab ? 'overflow-visible' : 'overflow-hidden'
           } ${isOriginCompact ? 'p-2.5' : 'p-4'} ${isEnterGlow ? 'place-summary-card-enter' : glowPhase === 'idle' ? 'place-summary-card-idle' : ''}`}
         >
           <div
