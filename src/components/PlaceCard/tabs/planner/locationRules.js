@@ -1,5 +1,7 @@
 // 플래너 지역별 제휴/노출 규칙 단일 관리 파일
 
+import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve';
+
 export const GYG_CITY_CONFIGS = [
     { locationId: '2008', keys: ['mount-everest', '에베레스트', 'everest'] },
     { locationId: '168995', keys: ['costa-rica', '코스타리카', 'costa rica'] },
@@ -59,6 +61,40 @@ const getLocationSearchFields = (location) => {
     const nameKo = (location?.name || '').toLowerCase();
     const nameEn = (location?.name_en || location?.curation_data?.locationEn || '').toLowerCase();
     return { slug, nameKo, nameEn };
+};
+
+/** GYG Search q용 — 한글/CJK만 있으면 false (영문 City, Country 기대) */
+const isGygSearchSafeLabel = (value) => {
+    const s = String(value || '').trim();
+    if (!s) return false;
+    if (/[\uAC00-\uD7A3\u3040-\u30ff\u3400-\u9fff]/.test(s)) return false;
+    return /[A-Za-z\u00C0-\u024F]/.test(s);
+};
+
+/**
+ * Manual Activities 위젯 data-gyg-q.
+ * 우선: name_en + country_en → "City, Country" · 도시만 · 한글명만이면 null(City/Klook 폴백).
+ * @returns {string|null}
+ */
+export const buildGygActivitiesSearchQuery = (location) => {
+    const cityEn = String(
+        location?.name_en || location?.curation_data?.locationEn || ''
+    ).trim();
+    const countryEnRaw = String(
+        location?.country_en || location?.curation_data?.country_en || location?.country || ''
+    ).trim();
+    const countryEn =
+        !isPlaceholderCountry(countryEnRaw) && isGygSearchSafeLabel(countryEnRaw)
+            ? countryEnRaw
+            : '';
+
+    if (isGygSearchSafeLabel(cityEn) && countryEn) {
+        return `${cityEn}, ${countryEn}`;
+    }
+    if (isGygSearchSafeLabel(cityEn)) {
+        return cityEn;
+    }
+    return null;
 };
 
 const matchesLocationKeys = (location, keys) => {

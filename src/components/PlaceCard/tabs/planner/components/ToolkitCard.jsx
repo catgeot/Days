@@ -10,10 +10,12 @@ import MrtDynamicLink from './MrtDynamicLink';
 import FerryBookingWidget from './FerryBookingWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
 import KlookTourBannerWidget from './KlookTourBannerWidget';
+import GetYourGuideActivitiesWidget from './GetYourGuideActivitiesWidget';
 import GetYourGuideCityWidget from './GetYourGuideCityWidget';
 import { THEME_COLORS } from '../constants';
 import { plannerLinkHint } from '../readableText';
 import { cleanAdviceText, getAdviceText, getMultiLinks, isMapPoiGygOnlyLocation } from '../utils';
+import { buildGygActivitiesSearchQuery } from '../locationRules';
 import { shouldShowFerryCard } from '../../../../../utils/ferryBookingMatch';
 
 const ToolkitCard = ({
@@ -36,10 +38,13 @@ const ToolkitCard = ({
     const ferryHasSsot = type === 'ferry_booking' && shouldShowFerryCard(location?.slug);
     const showFerryAdviceBlock = ferryAdviceText || !ferryHasSsot;
     const isGygFallbackLocation = type === 'map_poi' && isMapPoiGygOnlyLocation(location);
+    const gygActivitiesQuery =
+        type === 'map_poi' ? buildGygActivitiesSearchQuery(location) : null;
     const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
     const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
     const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
     const klookCarBannerSearchUrl = getKlookRentalUrlByLocation(location, { essentialGuide });
+    const mapPoiWidgetKey = location?.slug || gygActivitiesQuery || 'map-poi-tour';
 
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group ${className}`.trim()}>
@@ -150,9 +155,17 @@ const ToolkitCard = ({
                 <KlookCarBannerWidget targetUrl={klookCarBannerSearchUrl} />
             )}
             {type === 'map_poi' && (
-                isGygFallbackLocation
-                    ? <GetYourGuideCityWidget location={location} />
-                    : <KlookTourBannerWidget targetUrl={klookTourDeepLink} />
+                gygActivitiesQuery
+                    ? (
+                        <GetYourGuideActivitiesWidget
+                            key={mapPoiWidgetKey}
+                            location={location}
+                            query={gygActivitiesQuery}
+                        />
+                    )
+                    : isGygFallbackLocation
+                        ? <GetYourGuideCityWidget key={mapPoiWidgetKey} location={location} />
+                        : <KlookTourBannerWidget key={mapPoiWidgetKey} targetUrl={klookTourDeepLink} />
             )}
         </div>
     );

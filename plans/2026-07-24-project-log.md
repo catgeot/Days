@@ -135,3 +135,24 @@
 - User Rule: verification gate가 「요청 시에만 commit」**SUPERSEDES** · 신규「Stop loops / no scope creep」· comments sparse 동기화
 - SSOT: `.ai-context` **1.5.1**/**4** · `AGENTS.md` · `gateo-project-context.mdc`
 - **보류(낮음)**: `.ai-context` 3·5·6절 분량 trim(~381→목표250)
+
+## GYG 투어 위젯 — 다음 세션 핸드오프 (검토만 · 미구현)
+
+**상태**: ⏳ 제시어로 이어하기 · 코드 변경 없음
+
+- 클룩 Play 배너(`KlookTourBannerWidget`)는 검색 매칭이 자주 빗나감 → GYG **Manual Activities + Search**로 교체 방향 합의
+- 라로통가 확정 embed: `data-gyg-q="Rarotonga, Cook Islands"` · `ko-KR` · items `3` · `cmp=gateo_planer_rarotonga` · partner `LRKVVU4`
+- 시티 ID(참고): Rarotonga **`2689`** · Auto/`data-gyg-widget="auto"` · Specific URLs · City 전면 매핑은 **비추천**
+- analyzer 스크립트는 `index.html`에 이미 있음 — 재삽입 금지
+- 기존: `GetYourGuideCityWidget` + `GYG_CITY_CONFIGS`(소수 location-id 폴백) · `ToolkitCard` `map_poi`
+
+## GYG Activities 위젯 — 플래너 map_poi
+
+**상태**: ✅ 구현·커밋 · 사람 QA 대기(라로통가)
+
+- `GetYourGuideActivitiesWidget` 신설 — Manual Activities + Search (`data-gyg-q` · `ko-KR` · items 3 · `cmp=gateo_planer_{slug}`)
+- `ToolkitCard` map_poi: q 가능 → Activities 우선 · `GYG_CITY_CONFIGS` City 폴백 · 그외 Klook 최후
+- q: `name_en`+`country_en` → `"City, Country"` · 영문 도시만 · 한글명만이면 null
+- 시드: 라로통가(`rarotonga`) → `Rarotonga, Cook Islands` / `gateo_planer_rarotonga`
+- `index.html` analyzer 재삽입 없음 · 장소 변경 시 `key={slug}` remount
+- QA: `/place/rarotonga` 플래너 지도·명소 칸 — 현지 투어 3개 · partner/cmp · 모바일 폭

@@ -82,8 +82,10 @@ export const KLOOK_SITE_HOME_TARGET = 'https://www.klook.com/ko/';
 /** GetYourGuide 제휴 파트너 ID — 위젯·스마트 링크 홈 공통 */
 export const GYG_PARTNER_ID = 'LRKVVU4';
 export const GYG_LOCALE = 'ko-KR';
-/** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) */
+/** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) · 철자 planer는 기존 포털 캠페인과 동일 */
 export const GYG_DEFAULT_CMP = 'gateo_planer';
+/** Manual Activities 위젯 노출 개수 */
+export const GYG_ACTIVITIES_ITEM_COUNT = '3';
 
 /**
  * GetYourGuide 제휴 홈 (단축 URL 불필요 — partner_id 직접).
@@ -97,6 +99,20 @@ export function getGygHomeUrl(options = {}) {
     cmp: options.cmp || GYG_DEFAULT_CMP,
   });
   return `https://www.getyourguide.com/?${params.toString()}`;
+}
+
+/**
+ * 플래너 GYG cmp — gateo_planer_{slug} (포털 캠페인 규칙).
+ * @param {{ slug?: string }|null|undefined} location
+ * @returns {string}
+ */
+export function buildGygPlannerCmp(location) {
+  const raw = String(location?.slug || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return raw ? `${GYG_DEFAULT_CMP}_${raw}` : GYG_DEFAULT_CMP;
 }
 
 const DIRECT_FERRIES_AFFILIATE_BASE =
