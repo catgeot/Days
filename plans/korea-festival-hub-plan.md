@@ -9,7 +9,7 @@
 | S0 LIVE 스파이크 | ✅ Go (축제96 / 시도17 / 서울관광444 · `0000`) | 재실행 금지 |
 | **S1** 프록시·fetch | ✅ | S2 |
 | S2 `/korea` UI | ✅ S2b | addr 도/시·시군·달력 dayRole · 다음 S3a |
-| S3a 상세·SEO | ⏳ QA | detailIntro 시트 · /korea sitemap·helmet · 다음 S3b |
+| S3a 상세·SEO | ✅ `aed70b1` | 다음 S3b |
 | S3b area↔hub SSOT | ⬜ | S3a QA 후 |
 | S4 캐시 | 선택 | MVP 이후 |
 
@@ -136,14 +136,13 @@ MVP: LIVE + sessionStorage. 쿼터 이슈 시 S4.
 
 ---
 
-### S3a — 상세 + SEO ⏳ (QA)
+### S3a — 상세 + SEO ✅
 
 | | |
 |--|--|
-| **환경** | 로컬 · `cursor/korea-festival-proxy` |
-| **산출** | `FestivalDetailSheet` · `detailIntro` (장소·시간·요금·주최·문의·홈페이지) · `/korea` Helmet 보강 · `sitemap`(`/korea`) · `vite.config` koreaRoutes |
-| **금지** | areaHub 대량 · 국내 지도 · releaseNotes · proxy 전면 재작성 · Cloud |
-| **커밋** | 사람 QA OK 후 |
+| **환경** | 로컬 · `cursor/korea-festival-proxy` · **SHA** `aed70b1` |
+| **산출** | `FestivalDetailSheet` · `detailIntro` · `/korea` Helmet · sitemap · `koreaRoutes` |
+| **다음** | S3b |
 
 **제시어**
 
