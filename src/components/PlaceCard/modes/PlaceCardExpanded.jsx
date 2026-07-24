@@ -21,11 +21,14 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
   // 상위(PlaceCard)에서 전달받은 initialTab을 상태로 관리
   const [mediaMode, setMediaModeState] = useState(initialTab);
 
-  // 탭 변경 시 URL 업데이트 — SSOT slug 기준 (숫자 id·보조지명 slug 유지 방지)
+  // 탭 변경 시 URL 업데이트 — SSOT slug 기준 · push로 히스토리 쌓아 ← 복귀 가능
   const setMediaMode = useCallback((newMode) => {
       const slug = getPlaceUrlParam(location);
       const tabPath = newMode === 'GALLERY' ? '' : `/${newMode.toLowerCase()}`;
-      navigate(`/place/${slug}${tabPath}`, { replace: true });
+      const nextPath = `/place/${slug}${tabPath}`;
+      if (window.location.pathname !== nextPath) {
+          navigate(nextPath);
+      }
       setMediaModeState(newMode);
   }, [navigate, location]);
 

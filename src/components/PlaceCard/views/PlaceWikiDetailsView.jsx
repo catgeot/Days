@@ -877,7 +877,7 @@ const PlaceWikiDetailsView = ({
                             {parentHasMagazine && parentSketch?.place && onNavigateToPlace ? (
                                 <button
                                     type="button"
-                                    onClick={() => onNavigateToPlace(parentSketch.place)}
+                                    onClick={() => onNavigateToPlace(parentSketch.place, { tab: 'wiki' })}
                                     className="group relative flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-sky-300/45 bg-gradient-to-r from-sky-500/25 via-cyan-400/20 to-emerald-400/25 text-sky-50 shadow-[0_0_24px_rgba(56,189,248,0.18)] hover:from-sky-400/35 hover:via-cyan-300/30 hover:to-emerald-300/35 hover:border-sky-200/60 hover:shadow-[0_0_28px_rgba(56,189,248,0.28)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 min-h-[48px]"
                                 >
                                     <Sparkles size={16} className="text-cyan-200 shrink-0 group-hover:rotate-12 transition-transform duration-200" />

@@ -410,6 +410,9 @@ export function resolveMrtStayQuery(location) {
     cityHintExtras.push(m[1]);
   }
 
+  /** hub 명소·정착지 — Nominatim stayAdmin 없이도 상위 도시로 CITY 매칭 (문경새재→문경) */
+  const parentCity = String(location?.parentCity || '').trim();
+
   const fineGrain = /[동읍면]$/.test(name) || /[동읍면]$/.test(admin.neighbourhood || '');
 
   const pushCityLadder = () => {
@@ -418,6 +421,8 @@ export function resolveMrtStayQuery(location) {
     pushUnique(ladder, seen, admin.cityEn);
     pushUnique(ladder, seen, admin.county);
     pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
+    pushUnique(ladder, seen, parentCity);
+    pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
   };
 
   const pushFineLadder = () => {
@@ -428,6 +433,13 @@ export function resolveMrtStayQuery(location) {
     pushUnique(ladder, seen, admin.district);
     pushUnique(ladder, seen, stripKoAdminSuffix(admin.district));
   };
+
+  // 국내 hub 명소(동·읍·면 아님): 상위 도시를 랜드마크보다 앞 — 「문경새재」단독 MRT CITY 미매칭 방지
+  // (숙박 브랜드·originalQuery가 이미 선두면 그 다음 alt로만 들어감)
+  if (parentCity && isDomestic && !fineGrain) {
+    pushUnique(ladder, seen, parentCity);
+    pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+  }
 
   // 국내 동·읍·면: 시·군 우선 — 「퇴계동」이 안동에 먼저 매칭되던 오탐 방지
   // 해외·비세밀: 세밀 키워드 우선
@@ -457,6 +469,8 @@ export function resolveMrtStayQuery(location) {
   for (const extra of cityHintExtras) {
     pushUnique(cityHints, citySeen, extra);
   }
+  pushUnique(cityHints, citySeen, parentCity);
+  pushUnique(cityHints, citySeen, stripKoAdminSuffix(parentCity));
 
   /** MRT subName 한·영·공백·영토 별칭 — Edge countryMatches(compact·세그먼트) */
   const countryHintAlts = expandMrtCountryHintAlts(

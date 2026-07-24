@@ -327,7 +327,7 @@ function Home() {
   }, [selectedLocation, routeLocation.pathname, category]);
 
   /** 연관 키워드 등 — URL 변경 전 selectedLocation을 먼저 맞춰 route-sync race 방지 */
-  const navigateToPlace = useCallback((targetPlace) => {
+  const navigateToPlace = useCallback((targetPlace, { tab } = {}) => {
     if (!targetPlace) return;
 
     const prepared = enrichLocationWithRentalAirport(
@@ -345,10 +345,15 @@ function Home() {
       )
     );
 
+    const tabSuffix =
+      typeof tab === 'string' && tab.trim()
+        ? `/${tab.trim().toLowerCase()}`
+        : '';
+
     const param = getPlaceUrlParam(prepared);
     if (!param) {
       if (targetPlace.lat != null && targetPlace.lng != null) {
-        navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
+        navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}${tabSuffix}`);
       }
       return;
     }
@@ -359,7 +364,7 @@ function Home() {
     setSelectedLocation(prepared);
     addScoutPin(prepared);
     moveToLocation(prepared.lat, prepared.lng, prepared.name, prepared.category || category, { location: prepared });
-    navigate(`/place/${param}`);
+    navigate(`/place/${param}${tabSuffix}`);
   }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
 
   /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */

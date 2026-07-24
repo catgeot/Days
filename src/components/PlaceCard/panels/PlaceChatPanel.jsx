@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, X, Briefcase, Globe } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation as useRouteLocation } from 'react-router-dom';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import PlaceWikiNavView from '../views/PlaceWikiNavView';
@@ -49,12 +49,22 @@ const PlaceChatPanel = React.memo(({
   const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();
+  const routeLocation = useRouteLocation();
+  /** React Router history idx → pathname (카드 마운트 중만) — ← 시 이전이 /place|/explore 아니면 explore */
+  const pathByHistoryIdxRef = useRef(new Map());
   const anchorKeyRef = useRef(null);
   const skipRelatedRefreshRef = useRef(false);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
   const { primaryName, secondaryName } = getPlaceTitleLines(location);
 
   const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
+
+  useEffect(() => {
+    const idx = window.history.state?.idx;
+    if (typeof idx === 'number') {
+      pathByHistoryIdxRef.current.set(idx, routeLocation.pathname);
+    }
+  }, [routeLocation.pathname]);
 
   useEffect(() => {
     const key = getPlaceKey(location);
@@ -157,6 +167,18 @@ const PlaceChatPanel = React.memo(({
                 type="button"
                 onClick={(event) => {
                     event.stopPropagation();
+                    const idx = window.history.state?.idx;
+                    if (typeof idx === 'number' && idx > 0) {
+                        const prevPath = pathByHistoryIdxRef.current.get(idx - 1);
+                        // 탭·명소 간 복귀만 -1. 홈(/) 등으로 빠지면 탐색으로.
+                        if (
+                            typeof prevPath === 'string' &&
+                            (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))
+                        ) {
+                            navigate(-1);
+                            return;
+                        }
+                    }
                     onClose?.();
                 }}
                 className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/15 md:bg-white/10 text-white border border-white/25 hover:bg-white/25 transition-all shrink-0 shadow-lg touch-manipulation"

@@ -166,6 +166,33 @@ const CASES = [
     },
     expectKeyword: /아바루아|Avarua|아로랑기|Arorangi/,
   },
+  {
+    slug: 'mungyeong',
+    location: {
+      slug: 'mungyeong',
+      name: '문경',
+      name_en: 'Mungyeong',
+      country: '대한민국',
+      country_en: 'South Korea',
+      hubId: 'mungyeong',
+      uiPlace: true,
+    },
+    expectKeyword: /문경/,
+  },
+  {
+    slug: 'mungyeong-saejae',
+    location: {
+      slug: 'mungyeong-saejae',
+      name: '문경새재',
+      name_en: 'Mungyeong Saejae',
+      country: '대한민국',
+      country_en: 'South Korea',
+      hubId: 'mungyeong',
+      parentCity: '문경',
+      uiPlace: true,
+    },
+    expectKeyword: /문경/,
+  },
 ];
 
 function assert(cond, msg) {
