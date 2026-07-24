@@ -414,3 +414,20 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 - packages SSOT(`trip_sub3=D18887227`)는 보관·재전환은 QA 후 판단
 - **후속**: `rdate` 있을 때 `tripType=RT` — 항공권 홈 왕복 라디오 (편도 기본 문제 해소)
 
+## 세션 종료 (2026-07-24) — 숙소모달 항공 CTA · tripType
+
+**상태**: ✅ 사람 QA · 커밋(로컬 ahead, 미push) · 릴리스 노트 생략
+
+### 이번 세션 요약
+- packages 착지 시도 → 홈 폼 미프리필 → **/flights/ 유지** 확정
+- `tripType=RT`로 왕복 라디오·날짜 구간 OK (`f3bf329`)
+- PC only · 항공 경로 게이트 · 하단 Trip 숙소 CTA 유지
+
+### 커밋
+- `096c8f2` packages 시도 → `d2fe9bc` revert → `f3bf329` tripType=RT
+- `main` origin 대비 **ahead** · push는 사람 판단
+
+### 다음
+- push/PR 여부 · packages 재전환은 **안 함**(flights 우선) · 제휴가 packages 딥링크 추가 제공 시만 재검토
+- 릴리스: 숙소 모달 항공 CTA를 feature로 넣을지 합의 후
+
