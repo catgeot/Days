@@ -162,7 +162,7 @@ QA 후 커밋.
 | **환경** | 로컬 · `cursor/korea-festival-proxy` |
 | **산출** | `korea-area-code-overrides.mjs` → `koreaAreaCodes.json` · `generate`/`audit`/`smoke:korea-area-codes` · 시드 3(서울1·부산6·제주39) · `koreaHubSeeds` SSOT 우선+LEGACY 폴백 |
 | **VERIFY** | `audit:korea-area-codes` · `smoke:korea-area-codes` · `smoke:tourapi`(해상) PASS |
-| **다음** | 미채움 시도 LEGACY → SSOT 배치(같은 로컬 채팅 순차 또는 소규모 워커2). Cloud 오케 기본 아님 |
+| **다음** | LEGACY→SSOT 배치. **같은 채팅 순차 권장**(맥락 유지). 새 채팅이면 일지 핸드오프 표+제시어 블록 필수. Cloud 오케 기본 아님 |
 
 ---
 

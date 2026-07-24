@@ -594,17 +594,58 @@ QA 후 커밋.
 - VERIFY: `audit:korea-area-codes` · `smoke:korea-area-codes` · `smoke:tourapi`(해상) PASS
 - **금지 유지**: gallery tourapi overrides 혼용 · Cloud 오케 · releaseNotes · 국내 지도
 
-### 다음 — 시도 배치 (같은 로컬 채팅)
-
-**읽을 것**: 플랜 S3b · 본 절 · overrides  
-**작업**: LEGACY 시도(2·3·4·5·7·8·31–38)를 overrides에 append → generate → audit(+smoke) → 커밋  
-**제시어 예**: `국내축제-S3b-시도-경기강원` (배치 단위는 2~4개 시도)
-
 ## 국내축제 — S3b 시도 경기·강원
 
-**상태**: ✅ 커밋 `b9962f6` · push · **다음 = 광역시 배치(2·3·4·5·7·8) 또는 충청(33·34)**
+**상태**: ✅ 커밋 `b9962f6` · push · 브랜치 `cursor/korea-festival-proxy` · **다음 = 광역시(2·3·4·5·7·8)**
 
 - SSOT append: `31→suwon,gapyeong` · `32→gangneung,sokcho,chuncheon,pyeongchang,yangyang`
 - LEGACY에서 31·32 제거 · areas **5** / hub links **10**
-- 남은 LEGACY: 2·3·4·5·7·8·33–38
+- SSOT 이미: `1 seoul` · `6 busan` · `31` · `32` · `39 jeju`
+
+### 에이전트 핸드오프 — 다음 시도 배치 (콜드스타트용)
+
+**같은 채팅이면** 아래 제시어만으로 이어서 OK.  
+**새 채팅이면** 읽을 것 3 + 제시어 블록 필수(부실 제시어 → 맥락 탐색 폭주).
+
+| | |
+|--|--|
+| **읽을 것 3** | ① 본 절(핸드오프 표·남은 LEGACY) ② [`korea-area-code-overrides.mjs`](../scripts/data/korea-area-code-overrides.mjs) ③ [`koreaHubSeeds.js`](../src/pages/Korea/koreaHubSeeds.js) `LEGACY_HUBS_BY_AREA` |
+| **금지 3** | gallery `tourapi-content-id-overrides` 혼용 · Cloud 오케 · releaseNotes·국내 지도 · hubId 중복 area 배정(예: `busan`은 이미 `6`) |
+| **절차** | overrides `areas` append → LEGACY 해당 키 삭제 → `npm run generate:korea-area-codes` → `audit:korea-area-codes` + `smoke:korea-area-codes` (+ `smoke:tourapi` 해상) PASS → 커밋·push·일지 2~5줄 |
+| **배치 크기** | 시도 2~4개/커밋 |
+| **hub 존재** | `cityAttractionHubs` KR `hubId`만 · generate가 충돌·미존재 거부 |
+
+**남은 LEGACY** (`koreaHubSeeds.js`)
+
+| code | name | hubIds (이관 후보) |
+|------|------|-------------------|
+| 2 | 인천 | incheon |
+| 3 | 대전 | daejeon |
+| 4 | 대구 | daegu |
+| 5 | 광주 | gwangju |
+| 7 | 울산 | ulsan |
+| 8 | 세종 | *(빈 — hub 없으면 스킵 또는 hub 확보 후)* |
+| 33 | 충북 | cheongju |
+| 34 | 충남 | daejeon, boryeong, gongju, taean — **`daejeon`은 3과 충돌** → 충남에서 제외·3 우선 |
+| 35 | 경북 | gyeongju, daegu, andong, pohang — **`daegu`는 4와 충돌** → 경북에서 제외 |
+| 36 | 경남 | busan, tongyeong, jinju, geoje, namhae — **`busan`은 6과 충돌** → 경남에서 제외 |
+| 37 | 전북 | jeonju, gunsan |
+| 38 | 전남 | yeosu, gwangju, suncheon, mokpo, damyang — **`gwangju`는 5와 충돌** → 전남에서 제외 |
+
+**제시어 (복붙 · 새 채팅 권장 형식)**
+
+```
+국내축제-S3b-시도-광역시
+@plans/2026-07-24-project-log.md 「국내축제 — S3b 시도 경기·강원」절만(핸드오프 표)
+@scripts/data/korea-area-code-overrides.mjs
+@src/pages/Korea/koreaHubSeeds.js
+
+로컬 · 브랜치 cursor/korea-festival-proxy · G0+경기강원 PASS 전제.
+배치: LEGACY 2·3·4·5·7 (인천·대전·대구·광주·울산) → overrides append · LEGACY 삭제.
+8 세종은 hub 없으면 스킵.
+충돌 규칙: hubId는 한 area만(표 참고).
+VERIFY: generate → audit:korea-area-codes → smoke:korea-area-codes → smoke:tourapi(해상) PASS 후 커밋(+push)·일지.
+금지: tourapi-content-id overrides 혼용 · Cloud 오케 · releaseNotes · 국내 지도.
+전반 탐색 금지 — 위 파일·절만.
+```
 
