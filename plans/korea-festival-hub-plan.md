@@ -8,8 +8,8 @@
 | Pre-S0 플랜 저장소 반영 | ✅ `main` `3f81a55` | — |
 | S0 LIVE 스파이크 | ✅ Go (축제96 / 시도17 / 서울관광444 · `0000`) | 재실행 금지 |
 | **S1** 프록시·fetch | ✅ | S2 |
-| S2 `/korea` UI | ⏳ **S2b 지역필터** | 이관 커밋 후 addr 도/시 · 그다음 S3a |
-| S3a 상세·SEO | ⬜ | S2 후 |
+| S2 `/korea` UI | ✅ S2b | addr 도/시·시군·달력 dayRole · 다음 S3a |
+| S3a 상세·SEO | ⬜ | S2b 후 |
 | S3b area↔hub SSOT | ⬜ | 로컬 배치(또는 나중에 오케스트레이터) |
 | S4 캐시 | 선택 | MVP 이후 |
 
@@ -115,14 +115,14 @@ MVP: LIVE + sessionStorage. 쿼터 이슈 시 S4.
 
 ---
 
-### S2 — `/korea` MVP UI ⏳ (이관 · 다음 S2b)
+### S2 — `/korea` MVP UI ✅ (S2b 포함)
 
 | | |
 |--|--|
-| **환경** | 로컬 · `cursor/korea-festival-proxy` · S1 위 |
-| **산출** | `/korea` · 목록/달력 · 내 주변 · 칩 · hub · 홈「국내」 |
-| **알려진 결함** | `searchFestival` areaCode unused → 지역 칩/내 주변 목록 0건 → **S2b** addr 도/시 필터 |
-| **보류** | 국내 전용 지도/지구본 KR 포커스 (#5) |
+| **환경** | 로컬 · `cursor/korea-festival-proxy` |
+| **산출** | `/korea` · 목록/달력 · 내 주변 · 도/시군 칩 · dayRole · hub · 홈「국내」 |
+| **S2b** | 월간 무지역 fetch → `addr1` 필터 · 시/군 · 내 주변 시군 · 달력↑칩↓ |
+| **보류** | 국내 전용 지도/지구본 KR (#5) — **S3a 이후 별 트랙** (로딩 비교 후 A/B) |
 | **금지** | 새 디자인 시스템 · releaseNotes · proxy 전면 재작성 |
 
 **제시어**

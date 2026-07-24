@@ -526,3 +526,38 @@ proxy 재작성·releaseNotes·오케스트레이터·Cloud 금지.
 QA 후 커밋.
 ```
 
+## 국내축제 — S2b (지역필터 · QA OK)
+
+**상태**: ✅ 사람 QA · 커밋 · 브랜치 `cursor/korea-festival-proxy` · **다음 = S3a**
+
+- `searchFestival` 무지역 월간 fetch(page 1~2) → `addr1` 도/시 클라 필터 (`koreaAreaFilter.js`)
+- 도 → 시/군 칩 · 내 주변 = 도 + hub명 시군 자동
+- 달력: 달력↑ · 기간/지역 칩 · day 리스트 · dayRole(전체/시작/진행/종료) 칩 연동
+- 지역 칩 변경 시 **날짜 선택 유지** (월 변경 시에만 초기화)
+- **보류**: 국내 전용 지도/지구본 KR (#5) — S3a 이후 별 트랙
+
+### QA (사람 · 2026-07-24)
+
+1. ✅ 전체 → 이번 달 목록
+2. ✅ 도 칩 → 해당 지역
+3. ✅ 시/군 칩
+4. ✅ 내 주변 시군 자동
+5. ✅ 달력 day + 구분 칩 연동 · 지역 칩해도 날짜 유지
+
+### 다음 세션 — `국내축제-S3a-상세SEO`
+
+**읽을 것**: 플랜 S3a만 · 본 절 · `.ai-context` 1.5.1  
+**작업**: 축제 상세(`detailIntro`) 시트 + helmet/sitemap 최소 · areaHub 대량 채움 금지  
+**금지**: releaseNotes · 국내 지도(#5) · proxy 전면 재작성 · Cloud  
+**제시어**
+
+```
+국내축제-S3a-상세SEO
+@plans/korea-festival-hub-plan.md S3a만
+@plans/2026-07-24-project-log.md 「국내축제 — S2b」절만
+@src/pages/Korea/
+
+로컬. detailIntro 시트 + SEO 최소. areaHub 대량 금지. 지도 보류.
+QA 후 커밋.
+```
+

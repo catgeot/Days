@@ -59,6 +59,49 @@ export function buildDayFestivalMap(items, year, month0) {
 }
 
 /**
+ * 달력 day 리스트 구분: 시작 / 진행 중 / 종료 (선택일이 오늘이면 「오늘」표기).
+ * @param {object[]} items
+ * @param {string} dayYmd
+ * @returns {{ id: string, label: string, items: object[] }[]}
+ */
+export function groupFestivalsByDayRole(items, dayYmd) {
+  const ymd = String(dayYmd || '');
+  if (!/^\d{8}$/.test(ymd)) return [];
+
+  const isToday = ymd === toYmd(new Date());
+  const startLabel = isToday ? '오늘 시작' : '이날 시작';
+  const endLabel = isToday ? '오늘 종료' : '이날 종료';
+
+  /** @type {object[]} */
+  const starting = [];
+  /** @type {object[]} */
+  const ongoing = [];
+  /** @type {object[]} */
+  const ending = [];
+
+  for (const item of items || []) {
+    const start = String(item?.eventStartDate || '');
+    const endRaw = String(item?.eventEndDate || '');
+    const end = /^\d{8}$/.test(endRaw) ? endRaw : start;
+    if (!/^\d{8}$/.test(start)) continue;
+
+    if (start === ymd) {
+      starting.push(item);
+    } else if (end === ymd) {
+      ending.push(item);
+    } else {
+      ongoing.push(item);
+    }
+  }
+
+  return [
+    { id: 'start', label: startLabel, items: starting },
+    { id: 'ongoing', label: '진행 중', items: ongoing },
+    { id: 'end', label: endLabel, items: ending },
+  ].filter((g) => g.items.length > 0);
+}
+
+/**
  * @param {{
  *   year: number,
  *   month0: number,
