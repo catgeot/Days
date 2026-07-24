@@ -702,13 +702,6 @@ export const TRIPCOM_FLIGHT_TRACKING = {
   sub3ChatFlight: 'D17104488',
 };
 
-/** 홈 숙소 모달 · Trip 항공+호텔 packages (제휴 SSOT) */
-export const TRIPCOM_PACKAGES_TRACKING = {
-  sourceFrom: 'IBUBundle_home',
-  sub1StayModal: '홈 숙소 모달',
-  sub3StayModal: 'D18887227',
-};
-
 /** 제휴 항공 검색 배너 (iframe) — 데스크톱 900×200 / 모바일 320×480 */
 export const TRIPCOM_FLIGHT_AD = {
   adId: 'S17104971',
@@ -867,51 +860,6 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   }
 
   return `https://kr.trip.com/flights/?${params.toString()}`;
-}
-
-/**
- * 홈 숙소 모달 PC CTA → Trip `/packages/` (제휴 SSOT).
- * OD·일정·인원 쿼리는 best-effort — packages 홈 폼은 무시할 수 있음.
- */
-export function buildTripcomStayModalPackagesUrl(location, options = {}) {
-  const arrival = getPlannerFlightArrivalIata(location, options);
-  const params = new URLSearchParams({
-    sourceFrom: TRIPCOM_PACKAGES_TRACKING.sourceFrom,
-    locale: 'ko-KR',
-    curr: 'KRW',
-    Allianceid: TRIPCOM_KR_PARTNER.allianceId,
-    SID: TRIPCOM_KR_PARTNER.sid,
-    trip_sub1: TRIPCOM_PACKAGES_TRACKING.sub1StayModal,
-    trip_sub3: TRIPCOM_PACKAGES_TRACKING.sub3StayModal,
-  });
-
-  let depart = String(options.departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT)
-    .trim()
-    .toUpperCase();
-  const arriveCode = arrival ? String(arrival).trim().toUpperCase() : null;
-  if (arriveCode && depart === arriveCode) {
-    depart = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
-  }
-  if (depart) params.set('dAirportCode', depart);
-  if (arriveCode) params.set('aAirportCode', arriveCode);
-
-  const departDate = normalizeTripcomFlightYmd(options.departDate);
-  const returnDate = normalizeTripcomFlightYmd(options.returnDate);
-  if (departDate) params.set('ddate', departDate);
-  if (returnDate && (!departDate || returnDate > departDate)) {
-    params.set('rdate', returnDate);
-  }
-
-  const adults = Number(options.adultCount);
-  if (Number.isFinite(adults) && adults > 0) {
-    params.set('adult', String(Math.min(8, Math.max(1, Math.floor(adults)))));
-  }
-  const children = Number(options.childCount);
-  if (Number.isFinite(children) && children >= 0) {
-    params.set('child', String(Math.min(8, Math.floor(children))));
-  }
-
-  return `https://kr.trip.com/packages/?${params.toString()}`;
 }
 
 /** @param {unknown} value @returns {string | null} YYYY-MM-DD */
