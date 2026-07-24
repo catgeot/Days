@@ -408,3 +408,8 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 불변: MRT 홈 억지 금지 · 모바일 flights 직링크 금지 · 합의 전 releaseNotes.js 금지.
 ```
 
+### packages 시도 후 flights 복구 (2026-07-24)
+
+- packages 홈 OD 미프리필 → `d2fe9bc`로 **/flights/ 복구** · 사람 QA(OD·일정·인원) 진행
+- packages SSOT(`trip_sub3=D18887227`)는 보관·재전환은 QA 후 판단
+
