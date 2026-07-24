@@ -17,8 +17,6 @@ export const DEFAULT_HUB_SEEDS =
  */
 const LEGACY_HUBS_BY_AREA = {
   8: [],
-  33: ['cheongju'],
-  34: ['boryeong', 'gongju', 'taean'],
   35: ['gyeongju', 'andong', 'pohang'],
   36: ['tongyeong', 'jinju', 'geoje', 'namhae'],
   37: ['jeonju', 'gunsan'],

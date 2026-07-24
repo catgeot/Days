@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T12:35:51.805Z",
-    "areaCount": 10,
-    "hubLinkCount": 15,
+    "generatedAt": "2026-07-24T12:40:57.253Z",
+    "areaCount": 12,
+    "hubLinkCount": 19,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -76,6 +76,20 @@
         "yangyang"
       ]
     },
+    "33": {
+      "name": "충북",
+      "hubIds": [
+        "cheongju"
+      ]
+    },
+    "34": {
+      "name": "충남",
+      "hubIds": [
+        "boryeong",
+        "gongju",
+        "taean"
+      ]
+    },
     "39": {
       "name": "제주",
       "hubIds": [
@@ -98,6 +112,10 @@
     "chuncheon": "32",
     "pyeongchang": "32",
     "yangyang": "32",
+    "cheongju": "33",
+    "boryeong": "34",
+    "gongju": "34",
+    "taean": "34",
     "jeju": "39"
   }
 }
