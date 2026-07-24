@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { GYG_LOCALE, GYG_PARTNER_ID } from '../../../../../utils/affiliate';
+import { GYG_CURRENCY, GYG_LOCALE, GYG_PARTNER_ID } from '../../../../../utils/affiliate';
 import { getGygLocationIdByLocation } from '../locationRules';
 
 const GetYourGuideCityWidget = ({ location }) => {
@@ -19,6 +19,7 @@ const GetYourGuideCityWidget = ({ location }) => {
         data-gyg-href="https://widget.getyourguide.com/default/city.frame"
         data-gyg-location-id={locationId}
         data-gyg-locale-code={GYG_LOCALE}
+        data-gyg-currency={GYG_CURRENCY}
         data-gyg-widget="city"
         data-gyg-partner-id={GYG_PARTNER_ID}
       />

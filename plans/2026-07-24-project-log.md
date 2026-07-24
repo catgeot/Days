@@ -155,4 +155,5 @@
 - **q**: 영문 도시명만 (`Miyakojima` / `Rarotonga`) — `"…, Japan"` 형태는 인기 투어 혼입
 - QA: 미야코지마(거북이·니모 스노클링, SUP, 입문 스쿠버) · 라로통가(거북이 수영·서핑·거북이 투어)
 - 복사: iframe 본문 선택 불가 · 검색어 버튼으로 `q` 복사
+- 통화: `data-gyg-currency=KRW` (미지정 시 EUR) · USD 원하면 상수만 교체
 - 참고 시티 ID: Rarotonga `2689` · Miyakojima `160504`

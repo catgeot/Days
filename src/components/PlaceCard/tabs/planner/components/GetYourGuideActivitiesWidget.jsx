@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   GYG_ACTIVITIES_ITEM_COUNT,
+  GYG_CURRENCY,
   GYG_LOCALE,
   GYG_PARTNER_ID,
   buildGygPlannerCmp,
@@ -56,6 +57,7 @@ const GetYourGuideActivitiesWidget = ({ location, query: queryProp }) => {
         data-gyg-widget="activities"
         data-gyg-partner-id={GYG_PARTNER_ID}
         data-gyg-locale-code={GYG_LOCALE}
+        data-gyg-currency={GYG_CURRENCY}
         data-gyg-number-of-items={GYG_ACTIVITIES_ITEM_COUNT}
         data-gyg-q={query}
         data-gyg-cmp={cmp}

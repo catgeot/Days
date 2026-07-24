@@ -82,6 +82,8 @@ export const KLOOK_SITE_HOME_TARGET = 'https://www.klook.com/ko/';
 /** GetYourGuide 제휴 파트너 ID — 위젯·스마트 링크 홈 공통 */
 export const GYG_PARTNER_ID = 'LRKVVU4';
 export const GYG_LOCALE = 'ko-KR';
+/** 위젯·딥링크 표시 통화 — 미지정 시 GYG 기본(EUR). 한국 서비스는 KRW */
+export const GYG_CURRENCY = 'KRW';
 /** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) · 철자 planer는 기존 포털 캠페인과 동일 */
 export const GYG_DEFAULT_CMP = 'gateo_planer';
 /** Manual Activities 위젯 노출 개수 */
@@ -89,7 +91,7 @@ export const GYG_ACTIVITIES_ITEM_COUNT = '3';
 
 /**
  * GetYourGuide 제휴 홈 (단축 URL 불필요 — partner_id 직접).
- * @param {{ cmp?: string }} [options]
+ * @param {{ cmp?: string, currency?: string }} [options]
  * @returns {string}
  */
 export function getGygHomeUrl(options = {}) {
@@ -97,6 +99,7 @@ export function getGygHomeUrl(options = {}) {
     partner_id: GYG_PARTNER_ID,
     utm_medium: 'online_publisher',
     cmp: options.cmp || GYG_DEFAULT_CMP,
+    currency: options.currency || GYG_CURRENCY,
   });
   return `https://www.getyourguide.com/?${params.toString()}`;
 }
