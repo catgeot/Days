@@ -332,7 +332,7 @@ GYG-이어하기 — 최적화 구현
 
 ## 숙소 모달 · Trip 항공 CTA — 스펙 합의 (다음 세션 실행)
 
-**상태**: ✅ 1차 코드(`/flights/`+일정·인원) · ⏳ 사람 QA · **다음=packages 번들 URL 전환** · 릴리스는 QA 후 feature 초안만
+**상태**: ✅ packages 착지 전환 · ⏳ 사람 QA · 릴리스는 QA 후 feature 초안만
 
 ### 제품 배경 (같은 날 대화)
 
@@ -384,27 +384,17 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 4. 「변경하기」= MRT만 · 저재고 Trip **숙소** 회귀 없음
 5. packages: 왕복·호텔 전환 UX · `trip_sub1`/`trip_sub3` 유지
 
-### 세션 종료 (2026-07-24) — 숙소모달 항공 CTA
+### packages 전환 (2026-07-24)
 
-- 코드: PC CTA + 일정·인원 주입 · 사람 QA·packages 전환은 **다음 세션**
-- 커밋(로컬 ahead): `c307438` · `3f89f4a` · push/`releaseNotes` 보류
+**상태**: ✅ 코드 · ⏳ 사람 QA · push/`releaseNotes` 보류
 
-### 에이전트 핸드오프
+- `buildTripcomStayModalPackagesUrl` — `/packages/?sourceFrom=IBUBundle_home` · `trip_sub1=홈 숙소 모달` · `trip_sub3=D18887227`
+- `StayDateBar` CTA: WhiteLabelWidget(`/flights/`) → packages 직링크 · PC·항공 경로 게이트 유지 · 하단 Trip **숙소** CTA 미변경
+- **QA(에이전트)**: packages 홈은 `dAirportCode`/`dCity`/`ddate` 등 **폼 미프리필** · `/flights/`는 OD·일정·인원 OK → 착지만 packages · 쿼리 OD·일정·인원은 best-effort 유지
+- 사람 QA: PC 해외·출발 변경·모바일 미노출·변경하기=MRT · packages 왕복·호텔 UX
 
-- **읽을 것 3**: 본 절「다음 세션 — packages」표 ·「구현」· QA
-- **금지 3**: 스펙 전면 재검토 · MRT 홈 CTA · 위 SSOT 외 번들 URL 추측 · `main` 직접 push
-- **다음 작업**: packages URL 검증 → CTA 착지 전환 → QA → 커밋(한글) · feature면 릴리스 초안만
-- **제시어**: 아래 블록
+### 세션 종료 (2026-07-24) — 숙소모달 packages
 
-```
-숙소모달-항공CTA — packages 전환·QA
-
-@.ai-context.md @plans/2026-07-24-project-log.md
-
-목표: 일지「숙소 모달 · Trip 항공 CTA」따름.
-1) 제휴 packages URL SSOT로 CTA 착지 전환(/flights/→/packages/) · trip_sub1=홈 숙소 모달 · trip_sub3=D18887227
-2) OD·일정·인원 주입이 packages에서도 되는지 QA · 안 되면 OD만이라도 packages
-3) PC only · 항공 경로 게이트 유지 · 하단 저재고 숙소 CTA 회귀 금지
-불변: MRT 홈 억지 금지 · 모바일 flights 직링크 금지 · 합의 전 releaseNotes.js 금지.
-```
+- 코드: packages SSOT 착지 · 사람 QA 대기
+- 릴리스: QA 후 feature 초안만 · `releaseNotes.js` 미반영
 

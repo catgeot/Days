@@ -32,6 +32,7 @@ import {
   TRIPCOM_HOTEL_TRACKING,
   buildMrtMylinkUrl,
   buildTripcomHotelSearchUrl,
+  buildTripcomStayModalPackagesUrl,
   getPlannerFlightArrivalIata,
   getTripcomHotelEmptyCopy,
   getTripcomHotelErrorCopy,
@@ -45,8 +46,9 @@ import {
 import {
   getPartnerLinkTarget,
   getTripcomLinkRel,
+  openTripcomExternalUrl,
 } from '../../../components/PlaceCard/common/partnerNavigation';
-import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
+import { resolveFlightDepartureIataForTrip } from '../lib/flightOriginPreference.js';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
@@ -378,32 +380,28 @@ function StayDateBar({
           onChange={setDraftChild}
         />
         {showFlightCta ? (
-          <span
-            className="inline-flex min-w-0"
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
+          <button
+            type="button"
+            aria-label="Trip.com에서 항공권·호텔 함께 검색"
+            onClick={(e) => {
+              e.stopPropagation();
+              const url = buildTripcomStayModalPackagesUrl(flightCta.location, {
+                essentialGuide: flightCta.essentialGuide,
+                departureIata: resolveFlightDepartureIataForTrip(
+                  flightCta.departureIata,
+                ),
+                departDate: draftIn,
+                returnDate: draftOut,
+                adultCount: draftAdult,
+                childCount: draftChild,
+              });
+              openTripcomExternalUrl(url, { target: getPartnerLinkTarget() });
+            }}
+            className="inline-flex max-w-[11rem] shrink items-center justify-center gap-1 rounded-md border border-sky-300/45 bg-sky-500/25 px-2 py-1 text-[10px] font-bold leading-tight text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-95"
           >
-            <WhiteLabelWidget
-              location={flightCta.location}
-              essentialGuide={flightCta.essentialGuide}
-              departureIata={flightCta.departureIata}
-              tracking="stay-modal-flight"
-              departDate={draftIn}
-              returnDate={draftOut}
-              adultCount={draftAdult}
-              childCount={draftChild}
-              customTrigger={
-                <button
-                  type="button"
-                  aria-label="Trip.com에서 항공권·호텔 함께 검색"
-                  className="inline-flex max-w-[11rem] shrink items-center justify-center gap-1 rounded-md border border-sky-300/45 bg-sky-500/25 px-2 py-1 text-[10px] font-bold leading-tight text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-95"
-                >
-                  <Plane size={11} className="shrink-0 opacity-90" aria-hidden="true" />
-                  <span className="min-w-0 break-keep text-left">항공권 · 호텔 함께</span>
-                </button>
-              }
-            />
-          </span>
+            <Plane size={11} className="shrink-0 opacity-90" aria-hidden="true" />
+            <span className="min-w-0 break-keep text-left">항공권 · 호텔 함께</span>
+          </button>
         ) : null}
         <button
           type="button"
