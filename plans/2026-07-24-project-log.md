@@ -167,34 +167,58 @@
 - q=영문 도시명 · locale `ko-KR` · items `3` · cmp `gateo_planer_{slug}` · currency `KRW`
 - QA: 미야코지마·라로통가 현지 투어 OK
 
-### 다음 세션 — GYG 최적화 (검토→합의→구현)
-1. **액티비티 갯수** (`GYG_ACTIVITIES_ITEM_COUNT` / 위젯 높이·모바일)
-2. **여행 스케치** 좌측 매거진 목차 → GYG Activities 위젯 교체 **방안 검토**
-3. **홈 써머리** 투어 검색 버튼 + 숙소 모달형 **투어 모달** 방안 검토
-4. 최적화 완료 후 **릴리스 노트** feature 형식으로 갱신
+## GYG 최적화 — 스펙 합의 (구현 대기)
 
-### 읽을 것 (이어하기)
-1. `.ai-context.md` 5절 GYG 한 줄 · 본 일지 「에이전트 핸드오프」
+**상태**: ✅ 검토·합의 완료 · **코드 미구현** · 다음 세션 구현
+
+### 확정 스펙
+
+1. **더보기 (GYG iframe 네이티브 더보기 없음 → `number-of-items` 리마운트)**
+   - PC(`lg+`): 초기 **3** · 단위 **+3** · 상한 **9** · 버튼 `{N}개 더보기`
+   - 모바일: 초기 **4** · 단위 **+4** · 상한 **12**
+   - 플래너 `map_poi` · 스케치 좌측 · 써머리 모달 **동일 규칙**
+   - 상수: `affiliate.js`에 INITIAL/STEP/MAX (현 `GYG_ACTIVITIES_ITEM_COUNT='3'` 대체)
+
+2. **여행 스케치 좌측** (`PlaceWikiNavView` · 데스크톱만)
+   - `q` 있음: **상단** 로컬 왓슨(+패키지) → **아래** GYG(+더보기). 목차 숨김
+   - `q` 없음: **목차 폴백** 유지 · 왓슨/패키지 상단 통일
+   - 목차 폴백인데 sections 없음(매거진 빈칸): 짧은 안내 (빈 Sponsored 금지)
+
+3. **홈 써머리**
+   - 카드 **좌측 바깥 탭**(「투어 찾기」) — **PC·모바일 공통** · 그리드 버튼 추가 금지
+   - `q` 있을 때만 탭 노출
+   - 모달: `GlobeStayStrip`과 동일 셸(PC 좌측 포털 · 모바일 fullscreen) + GYG(+더보기)
+   - 숙소↔투어 **상호 배타** · cmp `gateo_planer_{slug}` 유지
+
+### 구현 순서
+1. 위젯 더보기·반응형 초기갯수
+2. `PlaceWikiNavView` 분기(GYG / 목차 폴백 / 빈칸 안내)
+3. 써머리 좌측 탭 + 투어 모달 · 상호 배타
+4. QA 후 커밋 · 릴리스 노트는 **완료 후** feature 초안
+
+### 읽을 것 (구현 이어하기)
+1. `.ai-context.md` 5·6절 GYG 한 줄 · 본 절 「확정 스펙」
 2. `GetYourGuideActivitiesWidget.jsx` · `affiliate.js` GYG_* · `ToolkitCard` map_poi
-3. 스케치 좌측 TOC · 써머리 숙소 모달 진입점만 grep (전면 스캔 금지)
+3. `PlaceWikiNavView.jsx` · `PlaceChatPanel.jsx`(WIKI) · `GlobeStayStrip.jsx` · `PlaceCardSummary.jsx` 셸만 (전면 스캔 금지)
 
 ### 금지
 - `index.html` GYG analyzer 재삽입
-- City 전면 location-id 매핑 · `"City, Country"` q 재도입(일본 등 오염)
+- City 전면 location-id 매핑 · `"City, Country"` q 재도입
 - 릴리스 노트 합의 전 `releaseNotes.js` 반영
-- UI 대규모 변경은 **검토→승인** 후
+- 써머리 카드 **내부** 그리드에 투어 버튼 추가
+- 스펙 밖 UI 대규모 변경
 
 ### 제시어 (복붙)
 
 ```
-GYG-이어하기 — 최적화 검토
+GYG-이어하기 — 최적화 구현
 
 @.ai-context.md @plans/2026-07-24-project-log.md
 
-목표: GYG Activities 후속 최적화 — 구현 전 방안 검토·합의 우선.
-1) 액티비티 노출 갯수(현재 3) 조정
-2) 여행 스케치 좌측 매거진 목차 → GYG 위젯 교체 방안 검토
-3) 홈 써머리 투어 검색 버튼 + 숙소 모달형 투어 모달 방안 검토
-확정 스펙 후에만 코드. 릴리스 노트는 최적화 완료 후 feature로.
+목표: GYG 최적화 확정 스펙 구현(스펙 재검토 금지 · 일지「GYG 최적화 — 스펙 합의」따름).
+1) Activities 더보기: PC 3/+3/max9 · 모바일 4/+4/max12 (number-of-items 리마운트)
+2) 스케치 좌측: q→왓슨 상단+GYG · no-q→목차 폴백 · sections 없음→짧은 안내
+3) 써머리: 카드 좌측 탭(PC·모바일) → 숙소형 투어 모달 · 숙소와 상호 배타
 기존: q=name_en · ko-KR · KRW · cmp=gateo_planer_{slug} · analyzer 재삽입 금지.
+릴리스 노트는 구현·QA 후 feature 초안만.
 ```
