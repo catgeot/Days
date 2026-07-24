@@ -222,7 +222,7 @@ GYG-이어하기 — QA·잔여 최적화
 - **플래너**: City 위젯 제거 · Activities **3개+더보기**만 (q 없으면 Klook)
 - **스케치**: `origin/main`과 동일로 **완전 원복** (`PlaceWikiNavView`·`PlaceWikiDetailsView`·`PlaceChatPanel`) — 좌측 목차+로컬왓슨·하단 갤러리·레이아웃 비율
 - **홈 투어 모달**: 맨 위 **sky-500** · Sponsored 한 단계 약하게 · 로딩 스피너·「더보기」로드 후
-- 릴리스: QA 후 feature 초안만 · `releaseNotes.js` 미반영
+- 릴리스: `2026-07-24` feature 합의·반영 (투어 찾기·플래너→GetYourGuide)
 
 ### QA 체크
 1. 플래너 map_poi — 투어 3개 + 겟유어가이드 더보기 (시티 위젯 없음)

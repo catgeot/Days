@@ -13,6 +13,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-07-24',
+    category: 'feature',
+    title: '여행지 투어를 홈과 플래너에서 보고 예약할 수 있어요',
+    items: [
+      '장소 카드의 「투어 찾기」로 그 지역의 현지 투어·액티비티를 둘러볼 수 있어요.',
+      '플래너에서도 추천 투어를 확인하고, GetYourGuide에서 바로 예약으로 이어갈 수 있어요.',
+    ],
+  },
+  {
     id: '2026-07-23',
     category: 'feature',
     title: '숙소 목록을 더 많이 보고, 구분도 더 잘 보여요',
