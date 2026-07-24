@@ -1,7 +1,5 @@
 // 플래너 지역별 제휴/노출 규칙 단일 관리 파일
 
-import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve';
-
 export const GYG_CITY_CONFIGS = [
     { locationId: '2008', keys: ['mount-everest', '에베레스트', 'everest'] },
     { locationId: '168995', keys: ['costa-rica', '코스타리카', 'costa rica'] },
@@ -73,24 +71,15 @@ const isGygSearchSafeLabel = (value) => {
 
 /**
  * Manual Activities 위젯 data-gyg-q.
- * 우선: name_en + country_en → "City, Country" · 도시만 · 한글명만이면 null(City/Klook 폴백).
+ * 기본은 영문 도시명만. "City, Country"는 Japan 등 대형 국가에서 인기 투어(히로시마 등)로 오염됨.
+ * 동명 도시 등 국가 접미가 필요할 때만 slug/이름 오버라이드로 확장.
+ * 한글명만이면 null(City/Klook 폴백).
  * @returns {string|null}
  */
 export const buildGygActivitiesSearchQuery = (location) => {
     const cityEn = String(
         location?.name_en || location?.curation_data?.locationEn || ''
     ).trim();
-    const countryEnRaw = String(
-        location?.country_en || location?.curation_data?.country_en || location?.country || ''
-    ).trim();
-    const countryEn =
-        !isPlaceholderCountry(countryEnRaw) && isGygSearchSafeLabel(countryEnRaw)
-            ? countryEnRaw
-            : '';
-
-    if (isGygSearchSafeLabel(cityEn) && countryEn) {
-        return `${cityEn}, ${countryEn}`;
-    }
     if (isGygSearchSafeLabel(cityEn)) {
         return cityEn;
     }
