@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T12:31:33.962Z",
-    "areaCount": 5,
-    "hubLinkCount": 10,
+    "generatedAt": "2026-07-24T12:35:51.805Z",
+    "areaCount": 10,
+    "hubLinkCount": 15,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -23,10 +23,40 @@
         "seoul"
       ]
     },
+    "2": {
+      "name": "인천",
+      "hubIds": [
+        "incheon"
+      ]
+    },
+    "3": {
+      "name": "대전",
+      "hubIds": [
+        "daejeon"
+      ]
+    },
+    "4": {
+      "name": "대구",
+      "hubIds": [
+        "daegu"
+      ]
+    },
+    "5": {
+      "name": "광주",
+      "hubIds": [
+        "gwangju"
+      ]
+    },
     "6": {
       "name": "부산",
       "hubIds": [
         "busan"
+      ]
+    },
+    "7": {
+      "name": "울산",
+      "hubIds": [
+        "ulsan"
       ]
     },
     "31": {
@@ -55,7 +85,12 @@
   },
   "byHubId": {
     "seoul": "1",
+    "incheon": "2",
+    "daejeon": "3",
+    "daegu": "4",
+    "gwangju": "5",
     "busan": "6",
+    "ulsan": "7",
     "suwon": "31",
     "gapyeong": "31",
     "gangneung": "32",

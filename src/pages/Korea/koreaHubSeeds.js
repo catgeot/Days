@@ -16,18 +16,13 @@ export const DEFAULT_HUB_SEEDS =
  * @type {Record<string, string[]>}
  */
 const LEGACY_HUBS_BY_AREA = {
-  2: ['incheon'],
-  3: ['daejeon'],
-  4: ['daegu'],
-  5: ['gwangju'],
-  7: ['ulsan'],
   8: [],
   33: ['cheongju'],
-  34: ['daejeon', 'boryeong', 'gongju', 'taean'],
-  35: ['gyeongju', 'daegu', 'andong', 'pohang'],
-  36: ['busan', 'tongyeong', 'jinju', 'geoje', 'namhae'],
+  34: ['boryeong', 'gongju', 'taean'],
+  35: ['gyeongju', 'andong', 'pohang'],
+  36: ['tongyeong', 'jinju', 'geoje', 'namhae'],
   37: ['jeonju', 'gunsan'],
-  38: ['yeosu', 'gwangju', 'suncheon', 'mokpo', 'damyang'],
+  38: ['yeosu', 'suncheon', 'mokpo', 'damyang'],
 };
 
 function ssotHubIds(areaCode) {

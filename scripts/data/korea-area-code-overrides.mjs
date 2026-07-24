@@ -24,7 +24,12 @@ export const KOREA_AREA_CODE_OVERRIDES = {
   ],
   areas: {
     1: { name: '서울', hubIds: ['seoul'] },
+    2: { name: '인천', hubIds: ['incheon'] },
+    3: { name: '대전', hubIds: ['daejeon'] },
+    4: { name: '대구', hubIds: ['daegu'] },
+    5: { name: '광주', hubIds: ['gwangju'] },
     6: { name: '부산', hubIds: ['busan'] },
+    7: { name: '울산', hubIds: ['ulsan'] },
     31: { name: '경기', hubIds: ['suwon', 'gapyeong'] },
     32: {
       name: '강원',
