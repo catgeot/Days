@@ -433,7 +433,7 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 ## 숙소 모달 항공 CTA — 시인성
 
-**상태**: ⏳ 사람 QA
+**상태**: ✅ 사람 QA · push
 
 - 인원·변경하기(좌) · 항공 CTA+안내(우·`ml-auto`·얇은 구분선) · 버튼 outline · 안내 sky-50
 - PC only · 게이트·파라미터 로직 변경 없음
