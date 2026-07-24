@@ -196,7 +196,7 @@ export default function GlobeTourStrip({
       <GetYourGuideActivitiesWidget
         location={location}
         query={gygQuery}
-        className="mt-0 border-orange-200/30 bg-orange-500/10"
+        variant="open"
       />
     </div>
   );

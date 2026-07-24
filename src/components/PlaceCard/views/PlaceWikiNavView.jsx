@@ -135,7 +135,11 @@ const PlaceWikiNavView = ({
         </h2>
         {watsonPackageBar}
         <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1">
-          <GetYourGuideActivitiesWidget location={location} query={gygQuery} className="mt-0" />
+          <GetYourGuideActivitiesWidget
+            location={location}
+            query={gygQuery}
+            variant="open"
+          />
         </div>
       </div>
     );
