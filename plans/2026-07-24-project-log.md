@@ -148,11 +148,11 @@
 
 ## GYG Activities 위젯 — 플래너 map_poi
 
-**상태**: ✅ 구현·커밋 · 사람 QA 대기(라로통가)
+**상태**: ✅ 구현 · 미야코지마 오염 수정(`4cc369d`) · 사람 QA 대기
 
-- `GetYourGuideActivitiesWidget` 신설 — Manual Activities + Search (`data-gyg-q` · `ko-KR` · items 3 · `cmp=gateo_planer_{slug}`)
-- `ToolkitCard` map_poi: q 가능 → Activities 우선 · `GYG_CITY_CONFIGS` City 폴백 · 그외 Klook 최후
-- q: `name_en`+`country_en` → `"City, Country"` · 영문 도시만 · 한글명만이면 null
-- 시드: 라로통가(`rarotonga`) → `Rarotonga, Cook Islands` / `gateo_planer_rarotonga`
-- `index.html` analyzer 재삽입 없음 · 장소 변경 시 `key={slug}` remount
-- QA: `/place/rarotonga` 플래너 지도·명소 칸 — 현지 투어 3개 · partner/cmp · 모바일 폭
+- `GetYourGuideActivitiesWidget` — Manual Activities + Search (`ko-KR` · items 3 · `cmp=gateo_planer_{slug}`)
+- `ToolkitCard` map_poi: q 가능 → Activities 우선 · City/`GYG_CITY_CONFIGS` · Klook 최후
+- **q**: 영문 도시명만 (`Miyakojima`) — `"Miyakojima, Japan"`은 히로시마·메이지 신궁 등 인기 투어 혼입
+- 시드: 라로통가 → `Rarotonga` · 참고 시티 ID Rarotonga `2689` / Miyakojima `160504`
+- 복사: 위젯 투어 본문은 cross-origin iframe → 선택 불가 · **검색어 버튼**으로 `q` 복사
+- QA: `/place/miyakojima` · `/place/rarotonga` 플래너 지도·명소
