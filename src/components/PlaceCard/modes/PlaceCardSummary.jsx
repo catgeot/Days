@@ -44,7 +44,7 @@ const PlaceCardSummary = ({
   const [glowPhase, setGlowPhase] = useState('enter');
   const [originExpanded, setOriginExpanded] = useState(initialOriginExpanded);
   const [originSearchActive, setOriginSearchActive] = useState(false);
-  /** 모바일 몰입 시 컴팩트 바 — X로 장소카드 복귀(줌 유지), 「넓게 보기」로 원상복구 */
+  /** 모바일 몰입 시 컴팩트 바 — X로 장소카드 복귀(줌 유지), 「멀리서 보기」로 원상복구 */
   const [immerseBarOpen, setImmerseBarOpen] = useState(false);
   const isMobileCoarse = useCoarsePointer();
   const isOriginCompact = isMobileCoarse && originExpanded;
@@ -430,10 +430,10 @@ const PlaceCardSummary = ({
                           onToggleImmerse?.();
                         }}
                         className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
-                        title="지구본을 넓게 보기"
+                        title="지구본을 멀리서 보기"
                       >
                         <ScanEye size={16} className="shrink-0 text-emerald-300" />
-                        <span className="min-w-0 truncate text-xs font-bold text-emerald-100">넓게 보기</span>
+                        <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
                       </button>
                     ) : (
                       <div className="col-span-2 relative z-10 flex min-h-[40px] min-w-0 items-center gap-1.5 lg:min-h-[36px]">
@@ -466,10 +466,10 @@ const PlaceCardSummary = ({
                             onToggleImmerse?.();
                           }}
                           className="relative z-10 flex min-h-[40px] min-w-0 flex-[1.35] items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
-                          title="지구본을 넓게 보기"
+                          title="지구본을 멀리서 보기"
                         >
                           <ScanEye size={16} className="shrink-0 text-emerald-300" />
-                          <span className="min-w-0 truncate text-xs font-bold text-emerald-100">넓게 보기</span>
+                          <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
                         </button>
                       </div>
                     )
@@ -481,10 +481,10 @@ const PlaceCardSummary = ({
                         onToggleImmerse?.();
                       }}
                       className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-teal-400/30 bg-teal-500/15 px-2 py-2 hover:bg-teal-500/25 hover:border-teal-300/40 transition-all duration-300 lg:min-h-[36px]"
-                      title="이 지역을 확대해 보기"
+                      title="이 지역을 가까이서 보기"
                     >
                       <ScanSearch size={16} className="shrink-0 text-teal-300" />
-                      <span className="min-w-0 truncate text-xs font-bold text-teal-100">이 지역 보기</span>
+                      <span className="min-w-0 truncate text-xs font-bold text-teal-100">가까이 보기</span>
                     </button>
                   )
                 )}
