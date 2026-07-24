@@ -201,9 +201,13 @@ for (const spot of TRAVEL_SPOTS) {
   }
 }
 
+/** placeIds JSON IATA vs linkedSlug curated 덮어쓰기 — 오키나와→미야코/SHI 유형 */
+const linkedSlugIataClash = [];
+
 try {
   const staticAirports = JSON.parse(readFileSync(STATIC_AIRPORTS_PATH, 'utf-8'));
   const placeIds = staticAirports.placeIds ?? {};
+  const spotsMap = staticAirports.spots ?? {};
   for (const [placeId, row] of Object.entries(placeIds)) {
     const preferred = String(row?.preferredLinkIata ?? row?.primaryIatas?.[0] ?? '')
       .trim()
@@ -241,12 +245,62 @@ try {
         issue: tripMissing ? 'trip_missing' : 'cinema_dest_not_in_hubs'
       });
     }
+
+    const linkedSlug = String(row?.linkedSlug ?? '')
+      .trim()
+      .toLowerCase();
+    if (!linkedSlug) continue;
+
+    const linkedRow = spotsMap[linkedSlug];
+    if (!linkedRow?.primaryIatas?.length) {
+      linkedSlugIataClash.push({
+        placeId,
+        linkedSlug,
+        placePreferred: cinemaDest,
+        linkedPreferred: null,
+        runtimeCinema: resolveCinemaDestIata(location, {}),
+        issue: 'linked_slug_missing_spot'
+      });
+      continue;
+    }
+
+    // 경유·관문(LIM in machu-picchu, CGK in borobudur flightRouteHub)은 허용.
+    // 오키나와 OKA not-in 미야코 SHI/MMY 처럼 목적지가 갈라지면 FAIL.
+    const linkedAllow = new Set(
+      [
+        ...(linkedRow.primaryIatas ?? []),
+        linkedRow.preferredLinkIata,
+        linkedRow.tripFlightArrivalIata,
+        ...(linkedRow.flightRouteHubIatas ?? []),
+        ...(linkedRow.searchHintIatas ?? []),
+        ...(linkedRow.graphFlightRouteHubIatas ?? [])
+      ]
+        .map((c) => String(c ?? '').trim().toUpperCase())
+        .filter((c) => c.length === 3)
+    );
+    const placeIatas = [...(row.primaryIatas ?? []), row.preferredLinkIata]
+      .map((c) => String(c ?? '').trim().toUpperCase())
+      .filter((c) => c.length === 3);
+    const allowed = placeIatas.some((c) => linkedAllow.has(c));
+    if (allowed) continue;
+
+    linkedSlugIataClash.push({
+      placeId,
+      linkedSlug,
+      placePreferred: cinemaDest,
+      linkedPreferred: String(linkedRow.preferredLinkIata ?? linkedRow.primaryIatas?.[0] ?? '')
+        .trim()
+        .toUpperCase(),
+      runtimeCinema: resolveCinemaDestIata(location, {}),
+      issue: 'placeId_linkedSlug_iata_disjoint'
+    });
   }
 } catch (err) {
   console.warn('[audit:airports] cinemaTripGap placeIds skipped:', err.message);
 }
 
 cinemaTripGap.sort((a, b) => String(a.key).localeCompare(String(b.key)));
+linkedSlugIataClash.sort((a, b) => String(a.placeId).localeCompare(String(b.placeId)));
 
 const report = {
   generatedAt: new Date().toISOString(),
@@ -261,14 +315,16 @@ const report = {
     farMatch: farMatch.length,
     staticMapCandidates: staticMapCandidates.length,
     inferNearestMismatch: inferNearestMismatch.length,
-    cinemaTripGap: cinemaTripGap.length
+    cinemaTripGap: cinemaTripGap.length,
+    linkedSlugIataClash: linkedSlugIataClash.length
   },
   noBanner,
   geoGaps,
   farMatch: farMatch.slice(0, 50),
   staticMapCandidates: staticMapCandidates.slice(0, 80),
   inferNearestMismatch: inferNearestMismatch.slice(0, 80),
-  cinemaTripGap: cinemaTripGap.slice(0, 80)
+  cinemaTripGap: cinemaTripGap.slice(0, 80),
+  linkedSlugIataClash: linkedSlugIataClash.slice(0, 80)
 };
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -281,6 +337,10 @@ console.log('Geo gaps (no hub in radius, nearest <600km):', geoGaps.length);
 console.log('Far match (resolved >> nearest):', farMatch.length);
 console.log('Infer vs nearest (runtime-infer 검수 후보):', inferNearestMismatch.length);
 console.log('Cinema/Trip gap (상태바 dest vs Trip aAirportCode):', cinemaTripGap.length);
+console.log(
+  'linkedSlug IATA clash (placeIds vs linkedSlug/runtime — P0):',
+  linkedSlugIataClash.length
+);
 console.log('\nWrote', OUTPUT_JSON);
 
 console.log('\n--- No banner (first 25) ---');
@@ -299,4 +359,46 @@ if (cinemaTripGap.length) {
     );
   }
   if (cinemaTripGap.length > 25) console.log(`... and ${cinemaTripGap.length - 25} more (see JSON)`);
+}
+
+if (linkedSlugIataClash.length) {
+  console.log('\n--- linkedSlug IATA clash (WARN · 오키나와→SHI 유형) ---');
+  for (const g of linkedSlugIataClash.slice(0, 40)) {
+    console.log(
+      `${g.placeId} → linked ${g.linkedSlug}: place ${g.placePreferred} / linked ${g.linkedPreferred ?? '-'} / runtime ${g.runtimeCinema ?? '-'} (${g.issue})`
+    );
+  }
+  if (linkedSlugIataClash.length > 40) {
+    console.log(`... and ${linkedSlugIataClash.length - 40} more (see JSON)`);
+  }
+  console.warn(
+    `\n[audit:airports] WARN linkedSlugIataClash: ${linkedSlugIataClash.length} — placeIds IATA가 linkedSlug 관문·최종 집합에 없음 (경유 허용·타목적지 오매핑 검수)`
+  );
+}
+
+/** 류큐 권 회귀 — 본섬/미야코/이시가키 혼선 재발 시 FAIL */
+const ryukyuIdentitySmoke = [
+  { label: 'okinawa slug', location: { slug: 'okinawa', name: '오키나와' }, expect: 'OKA' },
+  { label: '오키나와 place_id', location: { place_id: '오키나와', name: '오키나와' }, expect: 'OKA' },
+  { label: 'miyakojima', location: { slug: 'miyakojima', name: '미야코지마' }, expect: 'SHI' },
+  { label: 'ishigaki', location: { slug: 'ishigaki', name: '이시가키' }, expect: 'ISG' }
+];
+const ryukyuFails = [];
+for (const row of ryukyuIdentitySmoke) {
+  const cinema = resolveCinemaDestIata(row.location, {});
+  const planner = resolvePlannerFlightArrivalIata(row.location, {});
+  if (cinema !== row.expect || planner !== row.expect) {
+    ryukyuFails.push({ ...row, cinema, planner });
+  }
+}
+if (ryukyuFails.length) {
+  console.error('\n[audit:airports] FAIL ryukyu identity smoke:');
+  for (const f of ryukyuFails) {
+    console.error(
+      `  ${f.label}: expect ${f.expect}, cinema ${f.cinema ?? 'null'}, planner ${f.planner ?? 'null'}`
+    );
+  }
+  process.exitCode = 1;
+} else {
+  console.log('\nRyukyu identity smoke: OK (okinawa OKA · miyakojima SHI · ishigaki ISG)');
 }
