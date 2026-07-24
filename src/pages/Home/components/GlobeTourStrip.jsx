@@ -231,8 +231,9 @@ export default function GlobeTourStrip({
     />
   );
 
+  // 밝은 GYG 카드 위에서도 보이도록 숙소(amber)와 다른 고대비 다크 버튼
   const scrollTopBtnClass = (visible) =>
-    `absolute bottom-7 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-orange-300/50 bg-orange-500 px-3 text-black shadow-[0_4px_20px_rgba(249,115,22,0.45)] transition-all duration-300 hover:bg-orange-400 active:scale-95 ${
+    `absolute bottom-7 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-white/70 bg-zinc-950 px-3 text-white shadow-[0_4px_22px_rgba(0,0,0,0.55)] transition-all duration-300 hover:bg-zinc-800 hover:border-white active:scale-95 ${
       visible
         ? 'pointer-events-auto translate-y-0 opacity-100'
         : 'pointer-events-none translate-y-3 opacity-0'

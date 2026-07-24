@@ -1,30 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import { BookOpen, Briefcase, Ticket } from 'lucide-react';
-import GetYourGuideActivitiesWidget, {
-  GYG_ACTIVITIES_FRAME_WIDTH,
-} from '../tabs/planner/components/GetYourGuideActivitiesWidget';
-import { buildGygActivitiesSearchQuery } from '../tabs/planner/locationRules';
+import React, { useState } from 'react';
+import { BookOpen, Briefcase } from 'lucide-react';
 
 const PlaceWikiNavView = ({
   wikiData,
   isWikiLoading,
   onNavClick,
-  location,
   matchedPackage,
   onOpenPackage,
 }) => {
   const [activeSection, setActiveSection] = useState(null);
 
-  const gygQuery = useMemo(
-    () => buildGygActivitiesSearchQuery(location),
-    [
-      location?.slug,
-      location?.name,
-      location?.name_en,
-      location?.curation_data?.locationEn,
-    ]
-  );
-  const hasGyg = Boolean(gygQuery);
   const sections = wikiData?.sections;
   const hasSections = Array.isArray(sections) && sections.length > 0;
 
@@ -63,30 +48,6 @@ const PlaceWikiNavView = ({
               className="h-10 w-full rounded-xl border border-white/5 bg-white/5"
             />
           ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (hasGyg) {
-    return (
-      <div className="animate-fade-in flex h-full min-h-0 flex-col px-2 pt-4 pb-3">
-        <div className="mb-2.5 flex shrink-0 items-center gap-2 px-0.5">
-          <h2 className="flex min-w-0 flex-1 items-center gap-1.5 text-[15px] font-bold text-white">
-            <Ticket size={17} className="shrink-0 text-orange-400" />
-            <span className="truncate">현지 투어</span>
-          </h2>
-          {packageButton}
-        </div>
-        <div className="custom-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
-          <GetYourGuideActivitiesWidget
-            location={location}
-            query={gygQuery}
-            variant="open"
-            frameWidth={GYG_ACTIVITIES_FRAME_WIDTH}
-            showMoreLink
-            linkSponsoredLabel
-          />
         </div>
       </div>
     );

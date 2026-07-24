@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ExternalLink } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ExternalLink, Loader2 } from 'lucide-react';
 import {
   GYG_ACTIVITIES_ITEM_COUNT,
   GYG_CURRENCY,
@@ -12,6 +12,10 @@ import { buildGygActivitiesSearchQuery } from '../locationRules';
 
 /** 파트너 프리뷰 공식 폭 — 740에서 Activities 2열 (560은 패딩 후 1열로 남는 경우 많음) */
 export const GYG_ACTIVITIES_FRAME_WIDTH = 740;
+
+const FRAME_LOAD_FALLBACK_MS = 6000;
+/** cross-origin iframe은 이미 load된 뒤 listener를 못 붙일 수 있어, 등장 후 짧게 확정 */
+const FRAME_APPEAR_SETTLE_MS = 900;
 
 /**
  * 제휴 홈 CTA — cmp 유지 · 스케치/모달/플래너 하단 공통
@@ -52,10 +56,10 @@ export function GygHomeMoreLink({
 /**
  * @param {'boxed'|'open'} [variant]
  * boxed — 플래너 map_poi: Sponsored 박스 · 짧은 리스트+링크
- * open — 스케치 좌측·써머리 모달: 박스 없이 패널 스크롤
+ * open — 써머리 모달: 박스 없이 패널 스크롤
  * @param {number} [itemCount] — data-gyg-number-of-items (플래너 3 · 그 외 12)
  * @param {number|null} [frameWidth] — open일 때 공식 폭(px). null이면 부모 폭
- * @param {boolean} [showMoreLink] — 하단 제휴 홈 CTA
+ * @param {boolean} [showMoreLink] — 하단 제휴 홈 CTA (iframe 로드 후에만)
  * @param {boolean} [linkSponsoredLabel] — Sponsored·GetYourGuide 라벨을 제휴 홈 링크로
  */
 const GetYourGuideActivitiesWidget = ({
@@ -70,6 +74,8 @@ const GetYourGuideActivitiesWidget = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [frameReady, setFrameReady] = useState(() => frameWidth == null);
+  const [widgetLoaded, setWidgetLoaded] = useState(false);
+  const frameHostRef = useRef(null);
   const query = useMemo(
     () => (queryProp != null ? queryProp : buildGygActivitiesSearchQuery(location)),
     [
@@ -106,6 +112,59 @@ const GetYourGuideActivitiesWidget = ({
       window.cancelAnimationFrame(id);
     };
   }, [openFramePx, remountKey]);
+
+  useEffect(() => {
+    setWidgetLoaded(false);
+  }, [remountKey]);
+
+  // GYG analyzer가 iframe을 주입·로드할 때까지 로딩 UI · 더보기는 로드 후
+  useEffect(() => {
+    if (!frameReady || !query) return undefined;
+    const host = frameHostRef.current;
+    if (!host) return undefined;
+
+    let settled = false;
+    let fallbackTimer = null;
+    let appearTimer = null;
+    let iframeEl = null;
+
+    const settle = () => {
+      if (settled) return;
+      settled = true;
+      if (fallbackTimer != null) window.clearTimeout(fallbackTimer);
+      if (appearTimer != null) window.clearTimeout(appearTimer);
+      if (iframeEl) iframeEl.removeEventListener('load', settle);
+      setWidgetLoaded(true);
+    };
+
+    const watchIframe = (iframe) => {
+      if (!iframe || iframeEl === iframe) return;
+      if (iframeEl) iframeEl.removeEventListener('load', settle);
+      iframeEl = iframe;
+      iframe.addEventListener('load', settle);
+      if (appearTimer != null) window.clearTimeout(appearTimer);
+      appearTimer = window.setTimeout(settle, FRAME_APPEAR_SETTLE_MS);
+    };
+
+    const existing = host.querySelector('iframe');
+    if (existing) watchIframe(existing);
+
+    const observer = new MutationObserver(() => {
+      const iframe = host.querySelector('iframe');
+      if (iframe) watchIframe(iframe);
+    });
+    observer.observe(host, { childList: true, subtree: true });
+
+    fallbackTimer = window.setTimeout(settle, FRAME_LOAD_FALLBACK_MS);
+
+    return () => {
+      settled = true;
+      if (fallbackTimer != null) window.clearTimeout(fallbackTimer);
+      if (appearTimer != null) window.clearTimeout(appearTimer);
+      observer.disconnect();
+      if (iframeEl) iframeEl.removeEventListener('load', settle);
+    };
+  }, [frameReady, remountKey, query]);
 
   const copyQuery = useCallback(async () => {
     if (!query) return;
@@ -161,40 +220,96 @@ const GetYourGuideActivitiesWidget = ({
     </div>
   );
 
-  const frame = frameReady ? (
+  const loadingOverlay = !widgetLoaded ? (
     <div
-      key={remountKey}
-      data-gyg-href="https://widget.getyourguide.com/default/activities.frame"
-      data-gyg-widget="activities"
-      data-gyg-partner-id={GYG_PARTNER_ID}
-      data-gyg-locale-code={GYG_LOCALE}
-      data-gyg-currency={GYG_CURRENCY}
-      data-gyg-number-of-items={String(items)}
-      data-gyg-q={query}
-      data-gyg-cmp={cmp}
-    />
-  ) : (
-    <div className="min-h-[120px] w-full animate-pulse rounded-lg bg-white/5" aria-hidden />
-  );
-
-  const moreFooter = showMoreLink ? (
-    <div
-      className={
-        isBoxed
-          ? 'mt-3 flex w-full flex-col items-center pb-1 pt-1'
-          : 'mt-6 flex w-full flex-col items-center pb-10 pt-2'
-      }
+      className={`pointer-events-none absolute inset-0 z-[1] flex flex-col items-center justify-center gap-2.5 rounded-lg px-4 ${
+        isBoxed ? 'bg-orange-50/90' : 'bg-black/55'
+      }`}
+      role="status"
+      aria-live="polite"
     >
-      <GygHomeMoreLink location={location} cmp={cmp} tone={isBoxed ? 'light' : 'dark'} />
+      <Loader2
+        size={22}
+        className={`animate-spin ${isBoxed ? 'text-orange-500' : 'text-orange-200/90'}`}
+        aria-hidden
+      />
+      <p
+        className={`break-keep text-center text-[12px] font-medium leading-relaxed ${
+          isBoxed ? 'text-orange-800/85' : 'text-white/75'
+        }`}
+      >
+        현지 투어를 불러오는 중이에요
+      </p>
+      <p
+        className={`break-keep text-center text-[11px] leading-relaxed ${
+          isBoxed ? 'text-orange-700/60' : 'text-white/45'
+        }`}
+      >
+        GetYourGuide 목록이 곧 표시됩니다
+      </p>
     </div>
   ) : null;
+
+  const frame = frameReady ? (
+    <div className="relative w-full min-w-0">
+      <div
+        ref={frameHostRef}
+        key={remountKey}
+        data-gyg-href="https://widget.getyourguide.com/default/activities.frame"
+        data-gyg-widget="activities"
+        data-gyg-partner-id={GYG_PARTNER_ID}
+        data-gyg-locale-code={GYG_LOCALE}
+        data-gyg-currency={GYG_CURRENCY}
+        data-gyg-number-of-items={String(items)}
+        data-gyg-q={query}
+        data-gyg-cmp={cmp}
+        className={`min-h-[160px] w-full min-w-0 [&_iframe]:!w-full ${
+          widgetLoaded ? '' : 'opacity-0'
+        }`}
+        aria-busy={!widgetLoaded}
+      />
+      {loadingOverlay}
+    </div>
+  ) : (
+    <div
+      className={`flex min-h-[160px] w-full flex-col items-center justify-center gap-2 rounded-lg ${
+        isBoxed ? 'bg-orange-50/80' : 'bg-white/5'
+      }`}
+      role="status"
+      aria-live="polite"
+    >
+      <Loader2
+        size={22}
+        className={`animate-spin ${isBoxed ? 'text-orange-500' : 'text-orange-200/80'}`}
+        aria-hidden
+      />
+      <p
+        className={`text-[12px] ${isBoxed ? 'text-orange-800/80' : 'text-white/55'}`}
+      >
+        현지 투어를 불러오는 중이에요
+      </p>
+    </div>
+  );
+
+  const moreFooter =
+    showMoreLink && widgetLoaded ? (
+      <div
+        className={
+          isBoxed
+            ? 'mt-3 flex w-full flex-col items-center pb-1 pt-1'
+            : 'mt-6 flex w-full flex-col items-center pb-10 pt-2'
+        }
+      >
+        <GygHomeMoreLink location={location} cmp={cmp} tone={isBoxed ? 'light' : 'dark'} />
+      </div>
+    ) : null;
 
   if (!isBoxed) {
     return (
       <div className={`mt-0 w-full min-w-0 ${className}`.trim()}>
         {chrome}
         <div
-          className="min-w-0 [&_iframe]:!w-full"
+          className="min-w-0"
           style={
             openFramePx
               ? { width: openFramePx, maxWidth: '100%', minWidth: 0 }
