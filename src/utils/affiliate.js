@@ -86,8 +86,10 @@ export const GYG_LOCALE = 'ko-KR';
 export const GYG_CURRENCY = 'KRW';
 /** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) · 철자 planer는 기존 포털 캠페인과 동일 */
 export const GYG_DEFAULT_CMP = 'gateo_planer';
-/** Manual Activities 위젯 노출 개수 — PC·모바일 공통 (더보기 없음 · 표면별 스크롤) */
+/** Manual Activities — 스케치·홈 모달 등 넓은 표면 */
 export const GYG_ACTIVITIES_ITEM_COUNT = 12;
+/** 플래너 map_poi — 짧은 리스트 + 제휴 홈 링크로 이동 */
+export const GYG_PLANNER_ACTIVITIES_ITEM_COUNT = 3;
 
 /**
  * GetYourGuide 제휴 홈 (단축 URL 불필요 — partner_id 직접).

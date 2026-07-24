@@ -14,30 +14,34 @@ import { buildGygActivitiesSearchQuery } from '../locationRules';
 export const GYG_ACTIVITIES_FRAME_WIDTH = 740;
 
 /**
- * 제휴 홈 CTA — cmp 유지 · 스케치/모달 하단 공통
- * @param {{ location?: object, cmp?: string, label?: string, compact?: boolean, className?: string }} props
+ * 제휴 홈 CTA — cmp 유지 · 스케치/모달/플래너 하단 공통
+ * @param {{ location?: object, cmp?: string, label?: string, compact?: boolean, tone?: 'dark'|'light', className?: string }} props
  */
 export function GygHomeMoreLink({
   location,
   cmp: cmpProp,
   label = '겟유어가이드에서 더보기',
   compact = false,
+  tone = 'dark',
   className = '',
 }) {
   const cmp = cmpProp || buildGygPlannerCmp(location);
   const href = getGygHomeUrl({ cmp });
+  const toneClass =
+    tone === 'light'
+      ? compact
+        ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold text-orange-700 underline-offset-2 transition-colors hover:text-orange-800 hover:underline'
+        : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-orange-700 underline-offset-2 transition-colors hover:text-orange-800 hover:underline'
+      : compact
+        ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold text-orange-100/80 underline-offset-2 transition-colors hover:text-orange-50 hover:underline'
+        : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-orange-100/85 underline-offset-2 transition-colors hover:text-orange-50 hover:underline';
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer sponsored"
       onClick={(e) => e.stopPropagation()}
-      className={
-        className ||
-        (compact
-          ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold text-orange-100/80 underline-offset-2 transition-colors hover:text-orange-50 hover:underline'
-          : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-orange-100/85 underline-offset-2 transition-colors hover:text-orange-50 hover:underline')
-      }
+      className={className || toneClass}
     >
       <span>{label}</span>
       <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
@@ -47,8 +51,9 @@ export function GygHomeMoreLink({
 
 /**
  * @param {'boxed'|'open'} [variant]
- * boxed — 플래너 map_poi: Sponsored 박스 유지 · 고정 높이 내부 스크롤
+ * boxed — 플래너 map_poi: Sponsored 박스 · 짧은 리스트+링크
  * open — 스케치 좌측·써머리 모달: 박스 없이 패널 스크롤
+ * @param {number} [itemCount] — data-gyg-number-of-items (플래너 3 · 그 외 12)
  * @param {number|null} [frameWidth] — open일 때 공식 폭(px). null이면 부모 폭
  * @param {boolean} [showMoreLink] — 하단 제휴 홈 CTA
  * @param {boolean} [linkSponsoredLabel] — Sponsored·GetYourGuide 라벨을 제휴 홈 링크로
@@ -57,6 +62,7 @@ const GetYourGuideActivitiesWidget = ({
   location,
   query: queryProp,
   variant = 'boxed',
+  itemCount = GYG_ACTIVITIES_ITEM_COUNT,
   frameWidth = null,
   showMoreLink = false,
   linkSponsoredLabel = false,
@@ -76,9 +82,10 @@ const GetYourGuideActivitiesWidget = ({
   );
   const cmp = useMemo(() => buildGygPlannerCmp(location), [location?.slug]);
   const isBoxed = variant !== 'open';
+  const items = Math.max(1, Number(itemCount) || GYG_ACTIVITIES_ITEM_COUNT);
   const openFramePx =
     !isBoxed && frameWidth != null && Number(frameWidth) > 0 ? Number(frameWidth) : null;
-  const remountKey = `${location?.slug || query || 'gyg-activities'}|${openFramePx || 'fluid'}`;
+  const remountKey = `${location?.slug || query || 'gyg-activities'}|${items}|${openFramePx || 'fluid'}`;
   const homeHref = useMemo(() => getGygHomeUrl({ cmp }), [cmp]);
 
   // 패널 폭 전환 후 한 프레임 뒤 마운트 — 좁은 폭으로 iframe이 고정되는 것 방지
@@ -162,7 +169,7 @@ const GetYourGuideActivitiesWidget = ({
       data-gyg-partner-id={GYG_PARTNER_ID}
       data-gyg-locale-code={GYG_LOCALE}
       data-gyg-currency={GYG_CURRENCY}
-      data-gyg-number-of-items={String(GYG_ACTIVITIES_ITEM_COUNT)}
+      data-gyg-number-of-items={String(items)}
       data-gyg-q={query}
       data-gyg-cmp={cmp}
     />
@@ -171,8 +178,14 @@ const GetYourGuideActivitiesWidget = ({
   );
 
   const moreFooter = showMoreLink ? (
-    <div className="mt-6 flex w-full flex-col items-center pb-10 pt-2">
-      <GygHomeMoreLink location={location} cmp={cmp} />
+    <div
+      className={
+        isBoxed
+          ? 'mt-3 flex w-full flex-col items-center pb-1 pt-1'
+          : 'mt-6 flex w-full flex-col items-center pb-10 pt-2'
+      }
+    >
+      <GygHomeMoreLink location={location} cmp={cmp} tone={isBoxed ? 'light' : 'dark'} />
     </div>
   ) : null;
 
@@ -198,9 +211,7 @@ const GetYourGuideActivitiesWidget = ({
   return (
     <div className={`mt-3 rounded-xl border border-orange-100 bg-orange-50/50 p-3 ${className}`.trim()}>
       {chrome}
-      <div className="max-h-[min(52vh,520px)] overflow-y-auto overscroll-contain pr-0.5 custom-scrollbar">
-        {frame}
-      </div>
+      <div className="w-full min-w-0">{frame}</div>
       {moreFooter}
     </div>
   );

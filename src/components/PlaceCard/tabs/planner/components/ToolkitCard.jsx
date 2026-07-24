@@ -5,7 +5,11 @@ import { isMobileDevice } from '../../../common/device';
 import WhiteLabelWidget from '../../../common/WhiteLabelWidget';
 import FlightSearchCta from './FlightSearchCta';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';
-import { getKlookAffiliateUrl, getKlookRentalUrlByLocation } from '../../../../../utils/affiliate';
+import {
+    GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
+    getKlookAffiliateUrl,
+    getKlookRentalUrlByLocation,
+} from '../../../../../utils/affiliate';
 import MrtDynamicLink from './MrtDynamicLink';
 import FerryBookingWidget from './FerryBookingWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
@@ -156,16 +160,19 @@ const ToolkitCard = ({
                 <KlookCarBannerWidget targetUrl={klookCarBannerSearchUrl} />
             )}
             {type === 'map_poi' && (
-                gygLocationId
-                    ? <GetYourGuideCityWidget key={mapPoiWidgetKey} location={location} />
-                    : gygActivitiesQuery
-                        ? (
-                            <GetYourGuideActivitiesWidget
-                                key={mapPoiWidgetKey}
-                                location={location}
-                                query={gygActivitiesQuery}
-                            />
-                        )
+                gygActivitiesQuery
+                    ? (
+                        <GetYourGuideActivitiesWidget
+                            key={mapPoiWidgetKey}
+                            location={location}
+                            query={gygActivitiesQuery}
+                            itemCount={GYG_PLANNER_ACTIVITIES_ITEM_COUNT}
+                            showMoreLink
+                            linkSponsoredLabel
+                        />
+                    )
+                    : gygLocationId
+                        ? <GetYourGuideCityWidget key={mapPoiWidgetKey} location={location} />
                         : <KlookTourBannerWidget key={mapPoiWidgetKey} targetUrl={klookTourDeepLink} />
             )}
         </div>
