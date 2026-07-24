@@ -101,8 +101,15 @@
 
 ## MRT 숙소 — hub 명소 parentCity 키워드
 
-**상태**: ✅ 사람 QA(문경새재) · 순수 스모크 PASS · 커밋·push
+**상태**: ✅ 사람 QA · 샘플 LIVE 이상 없음 · 커밋·push (`92b8a97`)
 
 - 원인: `resolveMrtStayQuery`가 `parentCity` 미사용 → 랜드마크명만 검색·CITY 미매칭
 - 수정: 국내 hub 명소는 `parentCity` 선두·cityHints · 동·읍·면도 시·군 폴백 (전 hub 명소 공통)
-- 스모크: `mungyeong` / `mungyeong-saejae` (`node scripts/smoke-mrt-stay-queries.mjs`)
+- 스모크: `mungyeong` / `mungyeong-saejae` · 샘플 LIVE(문경·부산·안동·경주·강릉·파리 등) NO_REGION 0
+- 릴리스 노트: 사용자 생략
+
+## 세션 종료 (2026-07-24)
+
+- 스케치 wiki 직행·장소카드 ← · hub 명소 숙소 `parentCity` — QA 완료 · `main` `92b8a97`
+- 로그북 ← 변경 없음 · 릴리스 노트 생략
+- 다음: 여행 스케치 매거진 탭 QA·커밋 / 항공 Heuristic Phase 0 등 (`.ai-context` 5~6절)
