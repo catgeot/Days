@@ -330,3 +330,53 @@ GYG-이어하기 — 최적화 구현
 - 카피: 이 지역 보기→**가까이 보기** · 넓게 보기→**멀리서 보기** (`0dcc11f`)
 - 스케치 왓슨 버튼 잔상: 완전 종료 후 재확인 — 이상 없음(캐시)
 
+## 숙소 모달 · Trip 항공 CTA — 스펙 합의 (다음 세션 실행)
+
+**상태**: ⏳ 합의만 · **미구현** · 릴리스 노트는 구현·QA 후 feature 초안만
+
+### 제품 배경 (같은 날 대화)
+
+- 토레스 등: MRT 저재고 → **MRT 홈 억지 유도 ❌** · 하단 Trip **숙소** CTA 유지 (위「숙소 저재고 CTA」절)
+- 항공권 링크는 지금 **항공 경로·플래너**에만 있어, 숙소만 연 사용자는 못 봄
+- Trip `/flights/` 착지에서 사용자가 **호텔+항공** 전환·일정 조정 가능 → 숙소 맥락 보조 CTA로 시너지
+
+### 확정 스펙 (재검토 금지 · 이 절 따름)
+
+| 항목 | 내용 |
+|------|------|
+| 범위 | **PC(`lg+`)만** · 모바일 제외 |
+| 본체 | 숙소 모달 = **MRT 목록** (일정·인원 →「변경하기」) 유지 |
+| CTA | 보조 · 플래너·시네마와 **같은 Trip 항공 홈** (`buildTripcomPlannerFlightUrl` / `WhiteLabelWidget`·`openTripcomExternalUrl` 패턴) |
+| 도착 | `getPlannerFlightArrivalIata(location)` |
+| 출발 | 써머리 선택 출발지 → 없으면 기본(`resolveFlightDepartureIataForTrip` / ICN). 숙소 모달에 출발 UI **추가 금지** |
+| 일정·인원 | 모달 입력값. Trip이 받으면 주입 · **안 받으면** 플래너처럼 최근접 일정으로 떨어져도 OK (1차는 OD 필수, 날짜 주입은 QA 후) |
+| 노출 게이트 | 항공 불필요 = **링크 미생성**. 써머리와 동일: `canPreviewFlightRoute` **또는** 도착 IATA 없음 → 숨김 (국내 여부 단독 게이트 금지) |
+| 카피 | 「항공권 · 호텔 함께」수준 · 기대치=**Trip에서 이어서** (gateo 번들 API 없음) |
+| 배치 | `StayDateBar` 인원 행 — 인원 스테퍼와「변경하기」사이(또는 근처) · **변경하기**(MRT)와 시각 구분 · 긴 문구 줄바꿈 주의 |
+| 하단 CTA | 저재고 **트립닷컴 숙소**와 역할 분리 (위=항공 입구 / 아래=숙소만) |
+| 금지 | MRT 홈 억지 · 미검증 Flight+Hotel 번들 URL · 모바일 `/flights/` 직링크 · UI 임의 대규모 변경 |
+
+### 건드릴 파일 (예상)
+
+- [`GlobeStayStrip.jsx`](../src/pages/Home/components/GlobeStayStrip.jsx) — `StayDateBar` CTA · `location`·출발 IATA props
+- [`affiliate.js`](../src/utils/affiliate.js) — tracking `trip_sub1` 예: `숙소모달 항공권` · (선택) 항공 URL 날짜·인원 주입 실험
+- 부모: 써머리/숙소 패널에서 `selectedOriginIata`·`essentialGuide`·`canPreviewFlightRoute` 전달
+- 참고: [`WhiteLabelWidget.jsx`](../src/components/PlaceCard/common/WhiteLabelWidget.jsx) · [`partnerNavigation.js`](../src/components/PlaceCard/common/partnerNavigation.js) · [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) `canPreviewFlightRoute`
+
+### QA 체크
+
+1. PC · 항공 경로 있는 해외 slug: 숙소 모달 CTA 보임 → Trip `/flights/` · `dAirportCode`·`aAirportCode` 맞음
+2. 써머리에서 출발 변경 후 CTA: `dAirportCode` 반영
+3. 항공 경로 없는 여행지: CTA **없음**
+4. 모바일: CTA **없음**
+5. 「변경하기」= MRT 재조회만 · CTA와 혼동 없음
+6. 저재고 하단 Trip **숙소** CTA 회귀 없음
+7. (선택) 일정 파라미터 주입 시 Trip UI 반영 여부 — 실패해도 OD만으로 ship OK
+
+### 에이전트 핸드오프
+
+- **읽을 것 3**: 본 절「확정 스펙」·「숙소 저재고 CTA」· `WhiteLabelWidget`+`buildTripcomPlannerFlightUrl`
+- **금지 3**: 스펙 재검토·MRT 홈 CTA·모바일 flights 직링크·번들 URL 추측
+- **다음 작업**: PC 숙소 모달 Trip 항공 CTA 구현 → QA → 검증 후 커밋(한글) · feature면 릴리스 초안만 제안
+- **제시어**: `숙소모달-항공CTA` + `@plans/2026-07-24-project-log.md` · 「숙소 모달 Trip 항공 CTA 스펙대로 구현」
+
