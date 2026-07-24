@@ -148,11 +148,11 @@
 
 ## GYG Activities 위젯 — 플래너 map_poi
 
-**상태**: ✅ 구현 · 미야코지마 오염 수정(`4cc369d`) · 사람 QA 대기
+**상태**: ✅ 사람 QA 통과 (미야코지마·라로통가)
 
 - `GetYourGuideActivitiesWidget` — Manual Activities + Search (`ko-KR` · items 3 · `cmp=gateo_planer_{slug}`)
 - `ToolkitCard` map_poi: q 가능 → Activities 우선 · City/`GYG_CITY_CONFIGS` · Klook 최후
-- **q**: 영문 도시명만 (`Miyakojima`) — `"Miyakojima, Japan"`은 히로시마·메이지 신궁 등 인기 투어 혼입
-- 시드: 라로통가 → `Rarotonga` · 참고 시티 ID Rarotonga `2689` / Miyakojima `160504`
-- 복사: 위젯 투어 본문은 cross-origin iframe → 선택 불가 · **검색어 버튼**으로 `q` 복사
-- QA: `/place/miyakojima` · `/place/rarotonga` 플래너 지도·명소
+- **q**: 영문 도시명만 (`Miyakojima` / `Rarotonga`) — `"…, Japan"` 형태는 인기 투어 혼입
+- QA: 미야코지마(거북이·니모 스노클링, SUP, 입문 스쿠버) · 라로통가(거북이 수영·서핑·거북이 투어)
+- 복사: iframe 본문 선택 불가 · 검색어 버튼으로 `q` 복사
+- 참고 시티 ID: Rarotonga `2689` · Miyakojima `160504`
