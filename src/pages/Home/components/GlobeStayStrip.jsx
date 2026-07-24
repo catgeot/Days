@@ -379,7 +379,7 @@ function StayDateBar({
         />
         {showFlightCta ? (
           <span
-            className="inline-flex min-w-0 max-w-full items-center gap-1.5"
+            className="ml-4 inline-flex min-w-0 max-w-full items-center sm:ml-6"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
@@ -395,18 +395,14 @@ function StayDateBar({
               customTrigger={
                 <button
                   type="button"
-                  aria-label="Trip.com에서 항공권·호텔 함께 검색"
-                  title="일정·인원 그대로 Trip에서 이어서"
+                  aria-label="항공권과 호텔을 함께 예약하세요"
                   className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-200/70 bg-sky-400 px-2.5 py-1 text-[11px] font-bold text-slate-950 shadow-sm transition-colors hover:bg-sky-300 active:scale-[0.98]"
                 >
                   <Plane size={13} className="shrink-0" aria-hidden="true" />
-                  <span className="break-keep">항공권 · 호텔 함께</span>
+                  <span className="break-keep">항공권과 호텔을 함께 예약하세요</span>
                 </button>
               }
             />
-            <span className="min-w-0 text-[10px] font-medium leading-tight text-sky-100/85 break-keep">
-              Trip에서 이어서
-            </span>
           </span>
         ) : null}
         <button
