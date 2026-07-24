@@ -273,6 +273,30 @@ function Home() {
     });
   }, [handleStartChat, selectedLocation]);
 
+  /** 무니 인트로 → 장소카드/검색 desc 재사용 */
+  const handlePlaceIntroReady = useCallback(({ summary, placeName }) => {
+    if (!summary) return;
+    setSelectedLocation((prev) => {
+      if (!prev?.name) return prev;
+      const prevName = String(prev.name).trim();
+      const needle = String(placeName || '').trim();
+      const needleCore = needle.replace(/^[^\s]+\s+/, ''); // 「일본 …」국가 접두
+      if (
+        needle &&
+        prevName !== needle &&
+        prevName !== needleCore &&
+        !needle.includes(prevName) &&
+        !prevName.includes(needleCore || needle)
+      ) {
+        return prev;
+      }
+      return {
+        ...prev,
+        desc: summary,
+      };
+    });
+  }, [setSelectedLocation]);
+
   const selectedLocationRef = useRef(selectedLocation);
   const lastGlobeFocusRef = useRef(null);
   /** 홈(지구본) 복귀 시 moveToLocation SSOT — navigateToPlace·goHomeFromPlace가 명시 설정 */
@@ -934,6 +958,7 @@ function Home() {
           overlaySuppressed={flightCinemaActive}
           mooniEntry={mooniChatEntry}
           mooniPlaceContext={mooniPlaceContext}
+          onPlaceIntroReady={handlePlaceIntroReady}
           onClose={() => {
             if (activeChatId && mooniChatEntry) {
               persistMooniLastChatId(activeChatId, user?.id ?? null);

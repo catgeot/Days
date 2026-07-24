@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { MapPin, Landmark, Building2, Compass, Loader2 } from 'lucide-react';
+import {
+  fetchPlaceChatIntroSummaryForLocation,
+  needsPlaceChatIntroHydration,
+} from '../../lib/placeChatIntro';
 
 const BADGE_STYLES = {
   여행지: 'bg-emerald-500/25 text-emerald-200 border-emerald-400/40',
@@ -171,6 +175,7 @@ export function SearchSuggestionList({
 
 /**
  * Enter 후 모호함 해소용 선택 카드
+ * place_chat_intro 캐시가 있으면 빈/합성 desc를 채워 표시 (AI 호출 없음).
  */
 export function SearchDisambiguationCards({
   title,
@@ -178,6 +183,39 @@ export function SearchDisambiguationCards({
   onSelect,
   onCancel,
 }) {
+  const [introByKey, setIntroByKey] = useState({});
+
+  const candidateKey = useMemo(
+    () =>
+      candidates
+        .map((c) => `${c?.id || ''}|${c?.name || ''}|${c?.lat}|${c?.lng}`)
+        .join(';'),
+    [candidates]
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    setIntroByKey({});
+    if (!candidates.length) return undefined;
+
+    (async () => {
+      const next = {};
+      await Promise.all(
+        candidates.map(async (item, index) => {
+          if (!needsPlaceChatIntroHydration(item)) return;
+          const summary = await fetchPlaceChatIntroSummaryForLocation(item);
+          if (!summary) return;
+          next[index] = summary;
+        })
+      );
+      if (!cancelled) setIntroByKey(next);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [candidateKey, candidates]);
+
   if (!candidates.length) return null;
 
   return (
@@ -203,16 +241,19 @@ export function SearchDisambiguationCards({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 items-start">
-        {candidates.map((item) => {
+        {candidates.map((item, index) => {
           const badge = item.badge || '장소';
           const badgeClass = BADGE_STYLES[badge] || BADGE_STYLES['장소'];
           const locationLine = buildLocationLine(item);
-          const desc = resolveCardDesc(item, locationLine);
+          const hydrated = introByKey[index]
+            ? { ...item, desc: introByKey[index] }
+            : item;
+          const desc = resolveCardDesc(hydrated, locationLine);
           return (
             <button
               key={item.id || `${item.name}-${item.lat}`}
               type="button"
-              onClick={() => onSelect?.(item)}
+              onClick={() => onSelect?.(hydrated)}
               className="h-auto w-full rounded-2xl border border-white/25 bg-[#32281f]/95 p-4 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
               <div className="flex items-center gap-2 mb-2">

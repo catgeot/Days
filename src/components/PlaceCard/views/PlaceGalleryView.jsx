@@ -8,6 +8,7 @@ import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
+import PlaceOverviewProse from '../common/PlaceOverviewProse';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -802,28 +803,24 @@ const PlaceGalleryView = React.memo(({
           <div className="px-6 max-md:landscape:px-3">
             {hasPlaceOverview && (
               <div className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}>
-                <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3.5 backdrop-blur-md shadow-inner space-y-3">
+                <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-4 backdrop-blur-md shadow-inner space-y-3.5">
                   {(overviewQuery || curationOverview) && (
-                    <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3 py-2.5">
+                    <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3 py-3">
                       {overviewQuery && (
-                        <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-violet-200/95">
+                        <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold text-violet-200/95 tracking-wide">
                           <Sparkles size={12} className="shrink-0 text-violet-300" aria-hidden />
-                          <span className="min-w-0 line-clamp-2">
+                          <span className="min-w-0 line-clamp-2 break-keep">
                             「{overviewQuery}」에서 이 여행지로
                           </span>
                         </p>
                       )}
                       {curationOverview && (
-                        <p className="text-[13px] leading-relaxed text-violet-50/95 whitespace-pre-line">
-                          {curationOverview}
-                        </p>
+                        <PlaceOverviewProse text={curationOverview} variant="curation" />
                       )}
                     </div>
                   )}
                   {fixedOverview && (
-                    <p className="text-[13px] leading-relaxed text-gray-100/95 whitespace-pre-line">
-                      {fixedOverview}
-                    </p>
+                    <PlaceOverviewProse text={fixedOverview} variant="mobile" />
                   )}
                 </div>
               </div>

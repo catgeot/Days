@@ -127,6 +127,19 @@ function isSpuriousSuffixContainsMatch(core, normalizedName) {
   return prefix.length > 0 && prefix.length <= 2 && !/[-\s]/.test(prefix);
 }
 
+/**
+ * 「미야코지마요네하라비치」·「일본미야코지마요네하라비치」⊃「미야코지마」처럼
+ * 부모 SSOT명으로 명소 라벨이 붕괴되는 것 방지.
+ * 국가접두만 있는 「일본미야코지마」(뒤에 잔여 없음)는 허용.
+ */
+function isAttractionParentContainment(core, spotName) {
+  if (!core || !spotName || core === spotName) return false;
+  if (!core.includes(spotName)) return false;
+  const idx = core.indexOf(spotName);
+  const after = core.slice(idx + spotName.length);
+  return after.length >= 2;
+}
+
 /** SSOT 직접 이름·slug·키워드 일치 — 상위 slug 별칭보다 우선 */
 function findDirectSpotMatch(spots, placeId) {
   const core = normalizePlaceKey(
@@ -162,12 +175,12 @@ function resolveFuzzy(spots, placeId) {
       sn.length >= 2 &&
       (sn === core ||
         (sn.includes(core) && !isSpuriousSuffixContainsMatch(core, sn)) ||
-        core.includes(sn));
+        (core.includes(sn) && !isAttractionParentContainment(core, sn)));
     const fuzzyEn =
       sen.length >= 2 &&
       (sen === core ||
         (sen.includes(core) && !isSpuriousSuffixContainsMatch(core, sen)) ||
-        core.includes(sen));
+        (core.includes(sen) && !isAttractionParentContainment(core, sen)));
     if (fuzzyKo && isAmbiguousPrefixFuzzyMatch(core, sn)) return false;
     if (fuzzyEn && isAmbiguousPrefixFuzzyMatch(core, sen)) return false;
     return fuzzyKo || fuzzyEn;

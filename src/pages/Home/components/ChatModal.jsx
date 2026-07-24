@@ -10,6 +10,7 @@ import {
   generatePlaceChatIntroWithAi,
   persistPlaceChatIntroSummary,
   formatPlaceChatLabel,
+  stripPlaceChatIntroForSummary,
 } from '../lib/placeChatIntro';
 import { resolveCatalogPlaceSlug } from '../lib/formatUrlName';
 import {
@@ -75,7 +76,9 @@ const ChatModal = ({
   onUpdateChatDraft,
   activeChatId,
   onSwitchChat,
-  onDeleteChat
+  onDeleteChat,
+  /** 무니 인트로 본문 준비 시 장소카드 desc hydrate (DB 캐시·신규 생성 공통) */
+  onPlaceIntroReady = null,
 }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -144,9 +147,10 @@ const ChatModal = ({
     if (!isOpen) return null;
 
     const entryLabel = formatPlaceChatLabel(mooniPlaceContext);
+    const catalogSlug = resolveCatalogPlaceSlug(mooniPlaceContext?.slug) || null;
     const entrySeed = entryLabel
       ? {
-          slug: resolveCatalogPlaceSlug(mooniPlaceContext?.slug) || null,
+          slug: catalogSlug,
           name: entryLabel,
           country: mooniPlaceContext?.country ?? null,
           lat: mooniPlaceContext?.lat ?? null,
@@ -154,7 +158,35 @@ const ChatModal = ({
         }
       : null;
 
+    /**
+     * 명소·Mapbox uiPlace는 fuzzy SSOT(부모 도시/섬)로 승격하지 않음.
+     * 예: 「미야코지마 요네하라비치」→ 미야코지마 붕괴 방지.
+     */
+    const preferEntrySeed =
+      Boolean(mooniPlaceContext?.uiPlace) ||
+      Boolean(entrySeed && !catalogSlug);
+
+    const fromDraftLabel = (destination, coords = {}) => {
+      const draftLabel = String(destination || '').trim();
+      if (!draftLabel || draftLabel === 'MOONi') return null;
+      return {
+        slug: entrySeed?.slug ?? null,
+        name: draftLabel,
+        country: entrySeed?.country ?? null,
+        lat: entrySeed?.lat ?? coords.lat ?? null,
+        lng: entrySeed?.lng ?? coords.lng ?? null,
+      };
+    };
+
     if (chatDraft && !activeChatId) {
+      if (preferEntrySeed) {
+        return (
+          fromDraftLabel(chatDraft.destination, {
+            lat: chatDraft.lat,
+            lng: chatDraft.lng,
+          }) || entrySeed
+        );
+      }
       const fromDraft = resolveSessionBoundSpot(chatDraft.destination || '', []);
       if (fromDraft) {
         return {
@@ -166,22 +198,31 @@ const ChatModal = ({
         };
       }
       // Draft destination may already be 「국가 지명」 (uiPlace) — keep it over empty seed
-      const draftLabel = String(chatDraft.destination || '').trim();
-      if (draftLabel && draftLabel !== 'MOONi') {
-        return {
-          slug: entrySeed?.slug ?? null,
-          name: draftLabel,
-          country: entrySeed?.country ?? null,
-          lat: entrySeed?.lat ?? chatDraft.lat ?? null,
-          lng: entrySeed?.lng ?? chatDraft.lng ?? null,
-        };
-      }
-      return entrySeed;
+      return (
+        fromDraftLabel(chatDraft.destination, {
+          lat: chatDraft.lat,
+          lng: chatDraft.lng,
+        }) || entrySeed
+      );
     }
 
     if (activeChatId && Array.isArray(chatHistory)) {
       const trip = chatHistory.find((t) => String(t.id) === String(activeChatId));
       if (trip) {
+        if (preferEntrySeed) {
+          const kept = fromDraftLabel(trip.destination, {
+            lat: trip.lat,
+            lng: trip.lng,
+          });
+          if (kept) {
+            return {
+              ...kept,
+              country:
+                entrySeed?.country ?? trip.curation_data?.country ?? kept.country,
+            };
+          }
+          return entrySeed;
+        }
         // Prefer trip.messages (not local messages) to avoid one-frame stale
         // place after sidebar switch before the messages sync effect runs.
         const fromTrip = resolveSessionBoundSpot(
@@ -197,14 +238,15 @@ const ChatModal = ({
             lng: fromTrip.lng ?? null,
           };
         }
-        const tripDest = String(trip.destination || '').trim();
-        if (tripDest && tripDest !== 'MOONi') {
+        const kept = fromDraftLabel(trip.destination, {
+          lat: trip.lat,
+          lng: trip.lng,
+        });
+        if (kept) {
           return {
-            slug: entrySeed?.slug ?? null,
-            name: tripDest,
-            country: entrySeed?.country ?? trip.curation_data?.country ?? null,
-            lat: entrySeed?.lat ?? trip.lat ?? null,
-            lng: entrySeed?.lng ?? trip.lng ?? null,
+            ...kept,
+            country:
+              entrySeed?.country ?? trip.curation_data?.country ?? kept.country,
           };
         }
       }
@@ -363,18 +405,31 @@ const ChatModal = ({
     setPlaceIntroError(null);
     setPlaceIntroLoading(true);
 
+    const notifyPlaceCard = (rawText) => {
+      if (!onPlaceIntroReady || !rawText) return;
+      const summary = stripPlaceChatIntroForSummary(rawText, placeIntroTarget);
+      if (!summary) return;
+      onPlaceIntroReady({
+        summary,
+        destinationKey: placeIntroTarget,
+        placeName: mooniPlaceContext?.name || placeIntroTarget,
+      });
+    };
+
     (async () => {
       try {
         let text = await fetchPlaceChatIntroSummary(placeIntroTarget);
         if (cancelled) return;
         if (text) {
           setPlaceIntro(text);
+          notifyPlaceCard(text);
           return;
         }
         text = await generatePlaceChatIntroWithAi(placeIntroTarget);
         if (cancelled) return;
         setPlaceIntro(text);
         await persistPlaceChatIntroSummary(placeIntroTarget, text);
+        notifyPlaceCard(text);
       } catch (e) {
         if (!cancelled) {
           setPlaceIntroError(e?.message || '여행지 요약을 불러오지 못했습니다.');
@@ -387,7 +442,7 @@ const ChatModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, placeIntroTarget]);
+  }, [isOpen, placeIntroTarget, onPlaceIntroReady, mooniPlaceContext?.name]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -478,6 +533,16 @@ const ChatModal = ({
         await persistPlaceChatIntroSummary(candidate.name, introText);
       } catch {
         introText = '';
+      }
+    }
+    if (introText && onPlaceIntroReady) {
+      const summary = stripPlaceChatIntroForSummary(introText, candidate.name);
+      if (summary) {
+        onPlaceIntroReady({
+          summary,
+          destinationKey: candidate.name,
+          placeName: candidate.name,
+        });
       }
     }
 

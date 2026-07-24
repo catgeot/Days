@@ -42,6 +42,10 @@ import {
   locationToChoiceCandidate,
 } from '../lib/searchSuggestions.js';
 import { searchBoxForward } from '../lib/mapboxSearchBox.js';
+import {
+  fetchPlaceChatIntroSummaryForLocation,
+  needsPlaceChatIntroHydration,
+} from '../lib/placeChatIntro.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -440,6 +444,31 @@ export function useHomeHandlers({
       }).catch(() => {});
     };
 
+    /** place_chat_intro 캐시가 있으면 빈/합성 desc를 써머리로 채움 (AI 재생성 없음) */
+    const scheduleIntroHydrate = (pin) => {
+      if (!needsPlaceChatIntroHydration(pin)) return;
+      const pinId = pin?.id;
+      const pinName = pin?.name;
+      fetchPlaceChatIntroSummaryForLocation(pin)
+        .then((summary) => {
+          if (!summary) return;
+          setSelectedLocation((prev) => {
+            if (!prev) return prev;
+            const same =
+              (pinId && prev.id === pinId) ||
+              (pinName && prev.name === pinName) ||
+              isSameCanonicalPlace(prev, pin);
+            if (!same) return prev;
+            if (!needsPlaceChatIntroHydration(prev)) return prev;
+            return prepareResolvedLocation({
+              ...prev,
+              desc: summary,
+            });
+          });
+        })
+        .catch(() => {});
+    };
+
     if (
       selectedLocation &&
       (isSameCanonicalPlace(selectedLocation, finalLoc) ||
@@ -456,6 +485,7 @@ export function useHomeHandlers({
       setIsPlaceCardOpen(true);
       setIsCardExpanded(false);
       scheduleCountryHeal(unified);
+      scheduleIntroHydrate(unified);
       return;
     }
 
@@ -469,6 +499,7 @@ export function useHomeHandlers({
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false);
     scheduleCountryHeal(finalLoc);
+    scheduleIntroHydrate(finalLoc);
   }, [selectedLocation, category, moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded]);
 
   /** 좌측 꼬꼬무 — 연관 4곳은 목록 유지, 교두보(푸시아)만 새 목록 생성 */

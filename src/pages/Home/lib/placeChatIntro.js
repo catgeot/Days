@@ -3,6 +3,13 @@ import { apiClient } from './apiClient';
 import { getPlaceChatIntroSystemPrompt } from './prompts';
 import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
+import { MOONI_TOPIC_HINT } from './mooniQuickReplies';
+import {
+  isSyntheticOrEmptyPlaceDesc,
+  needsPlaceChatIntroHydration,
+} from './placeDescText.js';
+
+export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
 
 const LS_PREFIX = 'days_place_chat_intro:';
 
@@ -80,8 +87,71 @@ export function savePlaceChatIntroLocal(destinationKey, summary) {
   }
 }
 
-export async function fetchPlaceChatIntroSummary(destinationDisplayName) {
-  const destinationKey = normalizeDestinationKey(destinationDisplayName);
+/**
+ * place_chat_intro / 채팅 버블에서 장소 써머리에 쓸 본문만 추출.
+ * - MOONI_TOPIC_HINT 푸터 제거
+ * - 첫 줄이 지명(또는 국가+지명)만이면 제거
+ */
+export function stripPlaceChatIntroForSummary(text, placeName = '') {
+  let body = String(text ?? '').trim();
+  if (!body) return '';
+
+  const hint = String(MOONI_TOPIC_HINT || '').trim();
+  if (hint && body.endsWith(hint)) {
+    body = body.slice(0, -hint.length).trim();
+  } else if (hint) {
+    const idx = body.lastIndexOf(hint);
+    if (idx >= 0 && idx >= body.length - hint.length - 8) {
+      body = body.slice(0, idx).trim();
+    }
+  }
+
+  const nameKeys = [
+    normalizeDestinationKey(placeName),
+    normalizeDestinationKey(placeName).replace(/^[^\s]+\s+/, ''), // 국가 접두 제거
+  ].filter((k, i, arr) => k && arr.indexOf(k) === i);
+
+  const lines = body.split(/\n+/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length >= 2 && !/[.!?。]$/.test(lines[0]) && lines[0].length < 48) {
+    const first = normalizeDestinationKey(lines[0]);
+    // 지명 타이틀만 있는 첫 줄 제거 — 문장(마침표)이면 본문으로 유지
+    if (nameKeys.some((k) => first === k)) {
+      body = lines.slice(1).join('\n').trim();
+    }
+  }
+
+  return body;
+}
+
+/** 조회·저장에 쓸 destination_key 후보 (이름 / 국가+이름 / displayLabel) */
+export function buildPlaceChatIntroKeys(locOrName) {
+  if (locOrName == null) return [];
+  if (typeof locOrName === 'string') {
+    const key = normalizeDestinationKey(locOrName);
+    return isValidIntroDestination(key) ? [key] : [];
+  }
+
+  const name = normalizeDestinationKey(locOrName.name || locOrName.displayLabel || '');
+  const label = normalizeDestinationKey(
+    locOrName.displayLabel || formatPlaceChatLabel(locOrName)
+  );
+  const country = normalizeDestinationKey(locOrName.country || '');
+  const keys = [];
+  const push = (k) => {
+    const n = normalizeDestinationKey(k);
+    if (!isValidIntroDestination(n)) return;
+    if (!keys.includes(n)) keys.push(n);
+  };
+
+  push(label);
+  push(name);
+  if (country && name && !isPlaceholderCountry(country) && !name.includes(country)) {
+    push(`${country} ${name}`);
+  }
+  return keys;
+}
+
+async function fetchIntroByExactKey(destinationKey) {
   if (!isValidIntroDestination(destinationKey)) return null;
 
   const { data, error } = await supabase
@@ -98,9 +168,29 @@ export async function fetchPlaceChatIntroSummary(destinationDisplayName) {
     }
   }
 
-  const local = loadPlaceChatIntroLocal(destinationKey);
-  if (local) return local;
+  return loadPlaceChatIntroLocal(destinationKey);
+}
 
+export async function fetchPlaceChatIntroSummary(destinationDisplayName) {
+  const destinationKey = normalizeDestinationKey(destinationDisplayName);
+  if (!isValidIntroDestination(destinationKey)) return null;
+  return fetchIntroByExactKey(destinationKey);
+}
+
+/** 여러 키 후보로 조회 후 써머리용 본문 반환 */
+export async function fetchPlaceChatIntroSummaryForLocation(locOrName) {
+  const keys = buildPlaceChatIntroKeys(locOrName);
+  const placeName =
+    typeof locOrName === 'string'
+      ? locOrName
+      : locOrName?.name || locOrName?.displayLabel || keys[0] || '';
+
+  for (const key of keys) {
+    const raw = await fetchIntroByExactKey(key);
+    if (!raw) continue;
+    const stripped = stripPlaceChatIntroForSummary(raw, placeName);
+    if (stripped) return stripped;
+  }
   return null;
 }
 
@@ -145,7 +235,7 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName) {
     throw new Error('유효하지 않은 여행지 이름입니다.');
   }
   const system = getPlaceChatIntroSystemPrompt();
-  const userText = `여행지 이름: ${name}\n이 장소를 처음 듣는 사람에게 왜 가볼 만한지, 어떤 분위기·매력이 있는지 2~4문장으로 소개해줘.`;
+  const userText = `여행지 이름: ${name}\n이 장소를 처음 듣는 사람에게 왜 가볼 만한지, 어떤 분위기·매력이 있는지 2~4문장으로 소개해줘. 위 여행지 이름 자체(예: 상위 도시·섬만)로 범위를 바꾸지 말고, 지정된 장소만 소개해줘.`;
   const raw = await apiClient.fetchProxyGemini(null, [], system, userText, [], MOONI_GEMINI.INTRO);
   return String(raw ?? '').trim();
 }
