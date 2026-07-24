@@ -131,33 +131,33 @@ const PlaceCardSummary = ({
 
   if (isImmerseCompact) {
     return (
-      <div className="z-[60] absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[400px] animate-fade-in-up">
+      <div className="z-[60] absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-2.5rem)] max-w-[400px] animate-fade-in-up">
         <div className="tour-mobile-bar-shell relative">
           <div className="tour-mobile-bar-halo" aria-hidden="true" />
-          <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-2.5 rounded-2xl border border-white/15 bg-black/80 px-2.5 py-1.5 backdrop-blur-xl">
+          <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-3 rounded-2xl border border-white/15 bg-black/80 px-3 py-2 backdrop-blur-xl">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onExpand?.();
               }}
-              className="min-w-0 flex-1 leading-none pr-1 text-left"
+              className="min-w-0 flex-1 self-stretch py-1 leading-none text-left"
             >
               <p className="text-[9px] font-bold tracking-widest uppercase text-emerald-300/90 truncate leading-none">
                 {location?.country || 'Global'}
               </p>
-              <p className="mt-px text-sm font-bold text-white truncate leading-none">
+              <p className="mt-0.5 text-sm font-bold text-white truncate leading-none">
                 {primaryName || location?.name}
               </p>
             </button>
-            <div className="flex shrink-0 items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onImmerseZoomStep?.('x2');
                 }}
-                className={`flex h-8 min-w-[2.5rem] items-center justify-center rounded-lg border px-2.5 text-xs font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
+                className={`flex h-11 min-w-[2.75rem] items-center justify-center rounded-xl border px-3 text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
                 title="현재 배율에서 ×2 확대"
               >
                 ×2
@@ -168,23 +168,24 @@ const PlaceCardSummary = ({
                   e.stopPropagation();
                   onImmerseZoomStep?.('x4');
                 }}
-                className={`flex h-8 min-w-[2.5rem] items-center justify-center rounded-lg border px-2.5 text-xs font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
+                className={`flex h-11 min-w-[2.75rem] items-center justify-center rounded-xl border px-3 text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
                 title="현재 배율에서 ×4 확대"
               >
                 ×4
               </button>
             </div>
+            <span className="h-7 w-px shrink-0 bg-white/20" aria-hidden="true" />
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 setImmerseBarOpen(false);
               }}
-              className="tour-mobile-bar-close shrink-0 flex h-8 w-8 items-center justify-center rounded-lg border border-white/25 bg-white/10 text-white transition-all hover:bg-white/15 active:scale-[0.96]"
+              className="tour-mobile-bar-close shrink-0 flex h-11 w-11 items-center justify-center rounded-xl border border-white/25 bg-white/10 text-white transition-all hover:bg-white/15 active:scale-[0.96]"
               aria-label="장소 카드로 돌아가기"
               title="장소 카드로 돌아가기"
             >
-              <X size={16} strokeWidth={2.5} aria-hidden="true" />
+              <X size={18} strokeWidth={2.5} aria-hidden="true" />
             </button>
           </div>
         </div>
