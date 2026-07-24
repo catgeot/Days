@@ -306,3 +306,11 @@ GYG-이어하기 — 최적화 구현
 기존: q=name_en · ko-KR · KRW · cmp=gateo_planer_{slug} · analyzer 재삽입 금지.
 릴리스 노트는 구현·QA 후 feature 초안만.
 ```
+## 숙소 저재고 — MRT 주 CTA
+
+**상태**: ✅ 구현 · QA 대기
+
+- 예약가능 ≤5: footer 주 CTA를 **마이리얼트립에서 더 찾아보기**(동일 keyword·region·일정·mylink)
+- 하단 **트립닷컴에서 더 찾아보기**·관광청 로직 유지
+- 카피: 「MRT 재고가 적다」→「이 목록에서 바로 예약이 적다」+ MRT 전체 유도
+
