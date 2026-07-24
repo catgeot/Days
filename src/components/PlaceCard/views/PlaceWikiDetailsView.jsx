@@ -666,14 +666,6 @@ const PlaceWikiDetailsView = ({
             </div>
         )}
 
-        {/* 스크롤해도 우측 패널 상단에 고정 */}
-        <div className="sticky top-0 z-30 shrink-0 border-b border-amber-400/25 bg-[#05070a]/94 px-4 py-2.5 backdrop-blur-md md:px-6">
-            <div className="mx-auto flex max-w-3xl items-center gap-2.5 text-amber-400">
-                <BookOpen size={18} className="shrink-0 md:w-[22px] md:h-[22px]" />
-                <span className="text-sm font-bold tracking-wide md:text-base">GATEO 여행 스케치</span>
-            </div>
-        </div>
-
         {/* Hero Section */}
         {heroImage && (
             <div className="relative w-full overflow-hidden flex-shrink-0">
@@ -705,6 +697,45 @@ const PlaceWikiDetailsView = ({
                     {placeName || wikiData?.title}
                 </h1>
             )}
+
+            {/* 소제목 + 로컬 왓슨(제미나이) — 우측 본문 시인성 */}
+            <div className="mb-8 flex items-center justify-between gap-3 border-b border-white/10 pb-4">
+                <div className="flex min-w-0 items-center gap-3 text-lg font-bold text-amber-400 md:text-xl">
+                    <BookOpen size={24} className="shrink-0" />
+                    <span className="truncate">GATEO 여행 스케치</span>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (isAiExpanded) {
+                            if (aiSectionRef.current) {
+                                aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        } else {
+                            handleRequestAiInfo(placeName || wikiData?.title);
+                        }
+                    }}
+                    className={`group flex shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 py-2 shadow-sm transition-all duration-300 ${
+                        isAiExpanded
+                            ? 'border-blue-400/50 bg-gradient-to-r from-blue-600/40 to-purple-600/40 ring-2 ring-blue-500/30'
+                            : 'border-blue-500/30 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30'
+                    }`}
+                >
+                    <Sparkles
+                        size={15}
+                        className={`shrink-0 transition-transform group-hover:scale-110 ${
+                            isAiExpanded ? 'text-white' : 'text-blue-400'
+                        }`}
+                    />
+                    <span
+                        className={`text-xs font-medium tracking-wide whitespace-nowrap ${
+                            isAiExpanded ? 'text-white' : 'text-gray-200'
+                        }`}
+                    >
+                        {isAiExpanded ? '로컬 왓슨' : '제미나이'}
+                    </span>
+                </button>
+            </div>
 
             {/* 메인 레이아웃 (단일 컬럼) */}
             <div className="space-y-12">
