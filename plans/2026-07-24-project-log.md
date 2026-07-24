@@ -464,7 +464,7 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 ## 국내축제 — S1 (프록시·fetch)
 
 **상태**: ✅ VERIFY PASS · Edge 재배포 · **다음 = S2**  
-**브랜치**: `cursor/korea-festival-proxy` · **SHA**: _(커밋 후 기입)_
+**브랜치**: `cursor/korea-festival-proxy` · **SHA**: `70fa1db`
 
 - action: `searchFestival` · `areaBasedList` · `areaCode` · `detailIntro`
 - fetch: `fetchTourApiFestivals.js` · `fetchTourApiArea.js`
