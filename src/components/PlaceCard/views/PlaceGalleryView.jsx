@@ -65,7 +65,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   }, [markPainted]);
 
   // 모바일·캐시: complete면 onLoad가 안 올 수 있음 → rAF로 동기화. hang은 타임아웃.
-  // src만 의존 — onBroken 등 콜백 신원 변경으로 스켈레톤이 다시 붙지 않게 함.
+  // 목록 드롭은 onError·(hang 후)확정 깨짐만 — lazy 미시작 complete/0폭 오탐 금지.
   useEffect(() => {
     setLoaded(false);
     paintedRef.current = false;
@@ -77,19 +77,21 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
     const syncFromElement = () => {
       const el = imgElRef.current;
       if (!el || paintedRef.current) return;
-      if (!el.complete) return;
-      if (el.naturalWidth > 0) settleLoaded();
-      else settleBroken();
+      // 성공 decode만 즉시 반영. complete+0폭은 lazy/미시작일 수 있어 드롭하지 않음.
+      if (el.complete && el.naturalWidth > 0) settleLoaded();
     };
 
     const raf = window.requestAnimationFrame(syncFromElement);
-    // hang: paint chrome만 해제. lazy 미시작·느린 decode를 broken으로 드롭하면
-    // place_stats 큐레이션(30~60장)이 뷰포트 분량(~10장)으로 잘린다.
     const hangTimer = window.setTimeout(() => {
       if (paintedRef.current) return;
       const el = imgElRef.current;
       if (el?.complete && el.naturalWidth > 0) {
         settleLoaded();
+        return;
+      }
+      // 6s 후에도 decode 실패(complete·0폭)만 드롭. 아직 로딩 중이면 chrome만 해제.
+      if (el?.complete && el.naturalWidth === 0) {
+        settleBroken();
         return;
       }
       markPainted();
