@@ -168,7 +168,8 @@ export function hydrateLocationFromSavedTrip(trip, category = 'paradise') {
 }
 
 /**
- * /place/:slug 해석 — SSOT · cities · hub명소 · 정착지 · 세션 캐시 · 즐겨찾기(uiPlace) 순
+ * /place/:slug 해석 — exact SSOT → hub명소/정착지 → cities → fuzzy SSOT → 세션/즐겨찾기
+ * hub 명소를 fuzzy보다 먼저: `…-sydney` 등이 상위 도시(sydney)로 붕괴되던 회귀 방지.
  * loc-/search-/city- 좌표 URL은 index.jsx에서 별도 처리
  */
 export function resolvePlaceTargetFromSlug(slug, options = {}) {
@@ -176,23 +177,23 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
   const normalized = String(slug ?? '').trim().toLowerCase();
   if (!normalized) return null;
 
-  let target = TRAVEL_SPOTS.find(
+  // 1) exact catalog — slug/id/영문 kebab만 (fuzzy 금지)
+  const exactSpot = TRAVEL_SPOTS.find(
     (s) =>
       s.slug === normalized ||
       String(s.id) === slug ||
       formatUrlName(s.name_en || s.name) === normalized,
   );
+  if (exactSpot) return overlaySessionCuration(exactSpot, options);
 
-  if (!target) {
-    const aliasResolved = resolveTravelSpotFromPlaceId(
-      buildSpotLookup(TRAVEL_SPOTS),
-      TRAVEL_SPOTS,
-      normalized,
-    );
-    if (aliasResolved?.spot) target = aliasResolved.spot;
-  }
-  if (target) return overlaySessionCuration(target, options);
+  // 2) hub 명소·도시 / 정착지 — TRAVEL_SPOTS fuzzy 부모 붕괴보다 우선
+  const hubPlace = resolveHubPlaceFromSlug(normalized);
+  if (hubPlace) return overlaySessionCuration(hubPlace, options);
 
+  const settlementPlace = resolveSettlementPlaceFromSlug(normalized);
+  if (settlementPlace) return overlaySessionCuration(settlementPlace, options);
+
+  // 3) cities exact
   const matchedCity = (citiesData || []).find(
     (c) => c.slug === normalized || formatUrlName(c.name_en || c.name) === normalized,
   );
@@ -215,12 +216,15 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
     );
   }
 
-  // cityAttractionHubs / mapboxSettlementPlaces — travelSpots 미등록 대량 추가분
-  const hubPlace = resolveHubPlaceFromSlug(normalized);
-  if (hubPlace) return overlaySessionCuration(hubPlace, options);
-
-  const settlementPlace = resolveSettlementPlaceFromSlug(normalized);
-  if (settlementPlace) return overlaySessionCuration(settlementPlace, options);
+  // 4) alias · fuzzy catalog (hub에 없는 slug만)
+  const aliasResolved = resolveTravelSpotFromPlaceId(
+    buildSpotLookup(TRAVEL_SPOTS),
+    TRAVEL_SPOTS,
+    normalized,
+  );
+  if (aliasResolved?.spot) {
+    return overlaySessionCuration(aliasResolved.spot, options);
+  }
 
   if (
     selectedLocation &&

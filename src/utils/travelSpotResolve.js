@@ -130,14 +130,19 @@ function isSpuriousSuffixContainsMatch(core, normalizedName) {
 /**
  * 「미야코지마요네하라비치」·「일본미야코지마요네하라비치」⊃「미야코지마」처럼
  * 부모 SSOT명으로 명소 라벨이 붕괴되는 것 방지.
- * 국가접두만 있는 「일본미야코지마」(뒤에 잔여 없음)는 허용.
+ * - 뒤 잔여≥2: 부모명이 접두로 먹힌 경우 거부
+ * - 앞 잔여≥4·뒤 없음: `royalbotanicgardensydney`⊃`sydney` 영문 접미 붕괴 거부
+ * - 국가접두만 「일본미야코지마」(앞≤3·뒤 없음)는 허용
  */
 function isAttractionParentContainment(core, spotName) {
   if (!core || !spotName || core === spotName) return false;
   if (!core.includes(spotName)) return false;
   const idx = core.indexOf(spotName);
   const after = core.slice(idx + spotName.length);
-  return after.length >= 2;
+  const before = core.slice(0, idx);
+  if (after.length >= 2) return true;
+  if (after.length === 0 && before.length >= 4) return true;
+  return false;
 }
 
 /** SSOT 직접 이름·slug·키워드 일치 — 상위 slug 별칭보다 우선 */
@@ -577,4 +582,38 @@ export function buildPlaceDbIdCandidates(location) {
   }
   if (location.id != null && /^\d+$/.test(String(location.id))) out.add(String(location.id));
   return [...out].filter(Boolean);
+}
+
+/**
+ * hub 명소 핀 — 상위 도시 SSOT와 별개 장소 카드.
+ * (`attractionToPlacePin`: uiPlace + hubId + parentCity / id `hub-attr-…`)
+ */
+export function isHubAttractionLocation(location) {
+  if (!location || typeof location !== 'object') return false;
+  if (String(location.id ?? '').startsWith('hub-attr-')) return true;
+  return Boolean(location.uiPlace && location.hubId && location.parentCity);
+}
+
+/**
+ * place_wiki 전용 후보.
+ * hub 명소는 근처/상위 TRAVEL_SPOTS slug를 넣지 않음 — 도시 매거진을 명소 본문으로 오인 방지.
+ * (갤러리·stats 등 일반 후보는 `buildPlaceDbIdCandidates` 유지)
+ */
+export function buildPlaceWikiIdCandidates(location) {
+  if (!isHubAttractionLocation(location)) {
+    return buildPlaceDbIdCandidates(location);
+  }
+  const out = [];
+  const seen = new Set();
+  const push = (value) => {
+    const s = String(value ?? '').trim();
+    if (!s || seen.has(s)) return;
+    seen.add(s);
+    out.push(s);
+  };
+  push(getPlaceStableKey(location));
+  if (location.slug) push(String(location.slug).trim().toLowerCase());
+  push(location.name);
+  push(location.name_en);
+  return out;
 }

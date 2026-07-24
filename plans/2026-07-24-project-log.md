@@ -72,3 +72,47 @@
 - 홈 써머리: 고정 blurb 대신 실문장 `desc` · `/place` sync intro 유지(`overlaySessionCuration`)
 - 양구 갤러리: TourAPI SSOT `yanggu` · curated hub Tour 우선(캐시 v1.14) · ✅ 확인
 - **제외**: 미야코지마 intro DB 일괄 삭제
+
+## 명소 확장 카드 부모 붕괴 + 써머리 intro 더보기
+
+**상태**: ✅ 사람 QA · 커밋·push
+
+- 원인: `/place/:slug` sync가 hub 명소보다 TRAVEL_SPOTS fuzzy를 먼저 해석 → `…-sydney` 등이 상위 도시로 리다이렉트
+- 수정: `resolvePlaceTargetFromSlug` — exact SSOT → hub/정착지 → cities → fuzzy · fuzzy 접미 부모 붕괴(`before≥4`)도 거부
+- 써머리: intro 공통 · 항공 카드 `line-clamp-2`+인라인「더보기」 · 비항공 `line-clamp-3`
+- 검증: hub 명소 URL mismatch 102→9 (잔여 9는 slug가 카탈로그 명소와 exact 동일)
+
+## hub 명소 매거진 — 상위 도시 상속 제거
+
+**상태**: ✅ UI 합의 · 커밋·push · 스케치 탭 직행·뒤로가기는 다음 세션
+
+- 원인: `buildPlaceDbIdCandidates`가 coords/lookup으로 상위 SSOT를 wiki 후보에 넣음 → 해외 명소가 도시 매거진+명소 제목으로 표시
+- 수정: `buildPlaceWikiIdCandidates` — hub 명소는 자체 slug/이름만 · 생성 placeId도 명소 기준
+- 빈 탭 순서: 안내 → 「{도시} 여행 스케치 보기」(경쾌 pill) → AI 문구(시인성↑) → 「매거진 생성하기」
+- 갤러리/stats 후보는 기존 `buildPlaceDbIdCandidates` 유지
+- **미완(다음 세션)**: CTA가 갤러리로 떨어짐 · 헤더 ← 가 항상 `/explore`
+
+## 에이전트 핸드오프 — 스케치 탭 직행·뒤로가기
+
+**제시어**: `스케치-뒤로가기-이어하기`
+
+### 읽을 것 (3)
+1. 이 일지 「hub 명소 매거진」+ 본 핸드오프 (아래 할 일·검증)
+2. Cursor 로컬 플랜 `스케치_탭_직행_복귀_b46196a8.plan.md` (`.cursor/plans/`)
+3. [`PlaceChatPanel.jsx`](../src/components/PlaceCard/panels/PlaceChatPanel.jsx) ArrowLeft · [`PlaceCardExpanded.jsx`](../src/components/PlaceCard/modes/PlaceCardExpanded.jsx) `setMediaMode`(`replace: true`) · [`index.jsx`](../src/pages/Home/index.jsx) `navigateToPlace`
+
+### 할 일
+1. `navigateToPlace(place, { tab })` — `/place/${param}/wiki` push
+2. 「{도시} 여행 스케치 보기」→ `{ tab: 'wiki' }`
+3. ArrowLeft: `history.state.idx > 0` → `navigate(-1)`, 아니면 `onClose`(`/explore`)
+4. 탭 전환 `replace: true` → **push** (동일 path no-op)
+
+### 금지 (3)
+- 별도 복귀 칩/`returnTo` state 재도입 (히스토리로 충분)
+- 탭 전환 `replace` 유지 (갤러리↔스케치 뒤로가기 불가)
+- `Globe` 홈 버튼 동작 변경
+
+### 검증
+- 명소 갤러리→스케치→`←`→갤러리
+- 명소 스케치→시드니 스케치 CTA→시드니 wiki→`←`→명소 스케치
+- 딥링크 `/place/sydney`만→`←`→`/explore`

@@ -213,6 +213,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
             googleFormUrl={googleFormUrl}
             matchedPackage={matchedPackage}
             onOpenPackage={() => setTripLinkModalPkg(matchedPackage)}
+            onNavigateToPlace={onNavigateToPlace}
         />
       </div>
 

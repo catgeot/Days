@@ -4,7 +4,9 @@ import { BookOpen, Sparkles, Loader2, RefreshCw, Quote, Camera, ArrowUp, X, Chev
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
 import {
+  buildPlaceDbIdCandidates,
   getPlaceStableKey,
+  isHubAttractionLocation,
   mergeCanonicalTravelSpot,
   resolveTravelSpotFromLocation,
 } from '../../../utils/travelSpotResolve';
@@ -27,6 +29,8 @@ import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../../../pages/Home/lib/placeChatIntro';
+import { resolveHubAttractionParentSketch } from '../../../pages/Home/lib/placeWikiParentSketch';
+import { fetchPlaceWikiBestRow } from '../hooks/useWikiData';
 
 const LOADING_MESSAGES_NEW = [
     "여행 스케치 자료 분석 및 연동 중...",
@@ -72,12 +76,14 @@ const PlaceWikiDetailsView = ({
   isActive,
   matchedPackage,
   onOpenPackage,
+  onNavigateToPlace,
   mobileSecondaryNav = null
 }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isMagazineGenerating, setIsMagazineGenerating] = useState(false);
   const [magazineError, setMagazineError] = useState(null);
+  const [parentHasMagazine, setParentHasMagazine] = useState(false);
   const [magazineLoadingStep, setMagazineLoadingStep] = useState(0);
 
   const [isAiExpanded, setIsAiExpanded] = useState(false);
@@ -236,30 +242,80 @@ const PlaceWikiDetailsView = ({
       requestInfoRef.current = { placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName };
   }, [placeName, wikiData]);
 
+  const parentSketch = useMemo(
+    () => resolveHubAttractionParentSketch(location),
+    [location],
+  );
+
+  useEffect(() => {
+    if (!isActive || !parentSketch || hasMagazineContent(wikiData) || isMagazineLoading) {
+      setParentHasMagazine(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    const candidates = buildPlaceDbIdCandidates(parentSketch.place);
+    fetchPlaceWikiBestRow(candidates)
+      .then((row) => {
+        if (!cancelled) setParentHasMagazine(hasMagazineContent(row));
+      })
+      .catch(() => {
+        if (!cancelled) setParentHasMagazine(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    isActive,
+    parentSketch,
+    wikiData?.summary,
+    wikiData?.sections,
+    isMagazineLoading,
+  ]);
+
   const handleGenerateMagazine = useCallback(async () => {
       if (isMagazineLoading) return;
 
       const canonicalLoc = mergeCanonicalTravelSpot(location);
       const resolved = resolveTravelSpotFromLocation(location);
-      // uiPlace soft-merge 시 stable key가 한글명이 될 수 있음 → SSOT slug 우선
-      const slug =
-          resolved?.spot?.slug ||
-          canonicalLoc?.canonical_slug ||
-          canonicalLoc?.slug ||
-          location?.slug ||
-          (getPlaceStableKey(canonicalLoc) || '').toLowerCase();
+      const isHubAttr = isHubAttractionLocation(location);
+      // hub 명소: 상위 도시 slug로 생성·저장하지 않음 (명소 자체 place_id)
+      // 그 외 uiPlace soft-merge: SSOT slug 우선
+      const slug = isHubAttr
+          ? (
+              location?.slug ||
+              canonicalLoc?.slug ||
+              (getPlaceStableKey(location) || '').toLowerCase() ||
+              null
+            )
+          : (
+              resolved?.spot?.slug ||
+              canonicalLoc?.canonical_slug ||
+              canonicalLoc?.slug ||
+              location?.slug ||
+              (getPlaceStableKey(canonicalLoc) || '').toLowerCase()
+            );
       const placeId =
           slug ||
           wikiData?.place_id ||
           requestInfoRef.current.placeId ||
           placeName;
-      const locationName =
-          placeName ||
-          resolved?.spot?.name ||
-          canonicalLoc?.name ||
-          location?.name ||
-          wikiData?.title ||
-          requestInfoRef.current.placeName;
+      const locationName = isHubAttr
+          ? (
+              placeName ||
+              location?.name ||
+              wikiData?.title ||
+              requestInfoRef.current.placeName
+            )
+          : (
+              placeName ||
+              resolved?.spot?.name ||
+              canonicalLoc?.name ||
+              location?.name ||
+              wikiData?.title ||
+              requestInfoRef.current.placeName
+            );
 
       if (!placeId || !locationName) {
           setMagazineError('장소 정보를 확인할 수 없습니다.');
@@ -813,16 +869,27 @@ const PlaceWikiDetailsView = ({
                                 )}
                             </div>
                         )}
-                        <div className="flex flex-col items-center gap-6">
+                        <div className="flex flex-col items-center gap-5">
                             <BookOpen size={48} className="opacity-20 text-amber-400" />
-                            <div className="text-center space-y-2 px-4">
-                                <p className="text-base text-gray-300 font-medium break-keep">
-                                    아직 이 장소의 매거진이 준비되지 않았습니다.
-                                </p>
-                                <p className="text-sm text-gray-500 break-keep">
-                                    AI 에디터가 하이엔드 여행 스케치 피처 기사를 작성합니다.
-                                </p>
-                            </div>
+                            <p className="text-base text-gray-300 font-medium text-center px-4 break-keep">
+                                아직 이 장소의 매거진이 준비되지 않았습니다.
+                            </p>
+                            {parentHasMagazine && parentSketch?.place && onNavigateToPlace ? (
+                                <button
+                                    type="button"
+                                    onClick={() => onNavigateToPlace(parentSketch.place)}
+                                    className="group relative flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-sky-300/45 bg-gradient-to-r from-sky-500/25 via-cyan-400/20 to-emerald-400/25 text-sky-50 shadow-[0_0_24px_rgba(56,189,248,0.18)] hover:from-sky-400/35 hover:via-cyan-300/30 hover:to-emerald-300/35 hover:border-sky-200/60 hover:shadow-[0_0_28px_rgba(56,189,248,0.28)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 min-h-[48px]"
+                                >
+                                    <Sparkles size={16} className="text-cyan-200 shrink-0 group-hover:rotate-12 transition-transform duration-200" />
+                                    <span className="text-sm md:text-[15px] font-bold tracking-wide break-keep">
+                                        {parentSketch.label} 여행 스케치 보기
+                                    </span>
+                                    <ChevronRight size={16} className="text-sky-100/90 shrink-0 group-hover:translate-x-0.5 transition-transform duration-200" aria-hidden="true" />
+                                </button>
+                            ) : null}
+                            <p className="text-[13px] md:text-sm text-gray-300/90 text-center px-4 leading-relaxed break-keep">
+                                AI 에디터가 하이엔드 여행 스케치 피처 기사를 작성합니다.
+                            </p>
                             {magazineError && (
                                 <p className="text-sm text-red-400/90 text-center px-4 break-keep">{magazineError}</p>
                             )}

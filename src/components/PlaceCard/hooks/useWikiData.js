@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '../../../shared/api/supabase';
-import { buildPlaceDbIdCandidates, getPlaceStableKey } from '../../../utils/travelSpotResolve';
+import { buildPlaceWikiIdCandidates, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 
 const isDev = import.meta.env.DEV;
 
@@ -23,7 +23,8 @@ function magazineScore(row) {
   return score;
 }
 
-async function fetchWikiRow(candidates) {
+/** place_wiki 후보 중 완성도·순위 최선 행 (상위 도시 스케치 존재 확인에도 재사용) */
+export async function fetchPlaceWikiBestRow(candidates) {
   if (!candidates?.length) return null;
   const { data, error } = await supabase
     .from('place_wiki')
@@ -52,6 +53,10 @@ async function fetchWikiRow(candidates) {
   return best;
 }
 
+async function fetchWikiRow(candidates) {
+  return fetchPlaceWikiBestRow(candidates);
+}
+
 export const useWikiData = (location, mediaMode) => {
   const [wikiData, setWikiData] = useState(null);
   const [isWikiLoading, setIsWikiLoading] = useState(false);
@@ -61,7 +66,7 @@ export const useWikiData = (location, mediaMode) => {
   const placeKey = useMemo(() => getPlaceStableKey(location), [location]);
   // location 객체 참조 변경만으로 후보 배열이 바뀌지 않게 placeKey에 고정
   const dbCandidates = useMemo(
-    () => buildPlaceDbIdCandidates(location),
+    () => buildPlaceWikiIdCandidates(location),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- placeKey가 같으면 동일 장소
     [placeKey],
   );

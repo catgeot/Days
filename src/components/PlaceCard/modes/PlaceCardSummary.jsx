@@ -87,11 +87,14 @@ const PlaceCardSummary = ({
   const hasPlaceIntro =
     Boolean(placeIntro) && !isSyntheticOrEmptyPlaceDesc(location);
 
-  const blurbText = canPreviewFlightRoute
-    ? '탭하고 여행정보 확인하기'
-    : hasPlaceIntro
-      ? placeIntro
-      : `${location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.`;
+  const blurbText = hasPlaceIntro
+    ? placeIntro
+    : `${location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.`;
+  /** 항공 경로 카드는 공간 절약 — 2줄+더보기 / 그 외(국내·명소)는 3줄 */
+  const introClampClass = canPreviewFlightRoute ? 'line-clamp-2' : 'line-clamp-3';
+  const showIntroMore = hasPlaceIntro
+    ? placeIntro.length >= (canPreviewFlightRoute ? 48 : 72)
+    : true;
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -279,23 +282,29 @@ const PlaceCardSummary = ({
                 </div>
               </div>
             ) : (
-              <div className={`rounded-2xl border transition-colors ${
-                canPreviewFlightRoute
-                  ? 'flex items-center justify-between gap-2 border-sky-400/35 bg-sky-500/15 px-3 py-2 hover:border-sky-300/50 hover:bg-sky-500/20'
-                  : 'border-white/10 bg-white/[0.07] p-4 hover:bg-white/10'
-              }`}>
-                <p className={`break-keep ${
-                  canPreviewFlightRoute
-                    ? 'text-sm font-semibold text-white leading-snug'
-                    : hasPlaceIntro
-                      ? 'text-[13px] md:text-sm text-gray-100 leading-[1.65] line-clamp-4'
-                      : 'text-xs text-gray-200 leading-snug line-clamp-3'
-                }`}>
-                  {blurbText}
-                </p>
-                {canPreviewFlightRoute ? (
-                  <ChevronRight size={16} className="shrink-0 text-sky-300/90" aria-hidden="true" />
-                ) : null}
+              <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-3 hover:bg-white/10 transition-colors">
+                <div className="relative min-w-0">
+                  <p
+                    className={`break-keep text-[13px] md:text-sm text-gray-100 leading-[1.55] ${introClampClass} ${
+                      showIntroMore ? 'pr-[3.5rem]' : ''
+                    } ${hasPlaceIntro ? '' : 'text-xs text-gray-200 leading-snug'}`}
+                  >
+                    {blurbText}
+                  </p>
+                  {showIntroMore ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onExpand?.();
+                      }}
+                      className="absolute bottom-0 right-0 inline-flex items-center gap-0.5 bg-gradient-to-l from-black/85 via-black/70 to-transparent pl-3 text-[12px] font-semibold leading-[1.55] text-sky-300/95 hover:text-sky-200 transition-colors"
+                    >
+                      더보기
+                      <ChevronRight size={14} className="shrink-0 opacity-80" aria-hidden="true" />
+                    </button>
+                  ) : null}
+                </div>
               </div>
             ))}
           </div>

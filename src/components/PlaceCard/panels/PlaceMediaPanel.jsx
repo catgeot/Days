@@ -29,7 +29,8 @@ const PlaceMediaPanel = React.memo(({
     videoError: _videoError,
     googleFormUrl,
     matchedPackage,
-    onOpenPackage
+    onOpenPackage,
+    onNavigateToPlace,
 }) => {
   const mobileSecondaryNav = useMemo(
     () => (
@@ -95,6 +96,7 @@ const PlaceMediaPanel = React.memo(({
                 isActive={mediaMode === 'WIKI'}
                 matchedPackage={matchedPackage}
                 onOpenPackage={onOpenPackage}
+                onNavigateToPlace={onNavigateToPlace}
                 mobileSecondaryNav={mobileSecondaryNav}
             />
         </div>
