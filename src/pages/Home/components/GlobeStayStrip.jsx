@@ -377,9 +377,30 @@ function StayDateBar({
           max={8}
           onChange={setDraftChild}
         />
+        <button
+          type="button"
+          disabled={!guestsDirty}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!guestsDirty) return;
+            onApply?.({
+              checkIn: draftIn,
+              checkOut: draftOut,
+              adultCount: draftAdult,
+              childCount: draftChild,
+            });
+          }}
+          className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-all active:scale-95 ${
+            guestsDirty
+              ? 'border-amber-300/55 bg-amber-400 text-black hover:bg-amber-300'
+              : 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
+          }`}
+        >
+          변경하기
+        </button>
         {showFlightCta ? (
           <span
-            className="ml-4 inline-flex min-w-0 max-w-full items-center gap-2 sm:ml-6"
+            className="ml-auto inline-flex min-w-0 max-w-full items-center gap-2 border-l border-white/15 pl-3"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
@@ -408,27 +429,6 @@ function StayDateBar({
             </span>
           </span>
         ) : null}
-        <button
-          type="button"
-          disabled={!guestsDirty}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!guestsDirty) return;
-            onApply?.({
-              checkIn: draftIn,
-              checkOut: draftOut,
-              adultCount: draftAdult,
-              childCount: draftChild,
-            });
-          }}
-          className={`ml-auto shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold transition-all active:scale-95 ${
-            guestsDirty
-              ? 'border-amber-300/55 bg-amber-400 text-black hover:bg-amber-300'
-              : 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
-          }`}
-        >
-          변경하기
-        </button>
       </div>
       {open ? (
         <div className="flex w-full justify-start">
