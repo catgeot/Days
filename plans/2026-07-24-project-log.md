@@ -602,7 +602,7 @@ QA 후 커밋.
 
 ## 국내축제 — S3b 시도 경기·강원
 
-**상태**: ✅ VERIFY · **다음 = 광역시 배치(2·3·4·5·7·8) 또는 충청(33·34)**
+**상태**: ✅ 커밋 `b9962f6` · push · **다음 = 광역시 배치(2·3·4·5·7·8) 또는 충청(33·34)**
 
 - SSOT append: `31→suwon,gapyeong` · `32→gangneung,sokcho,chuncheon,pyeongchang,yangyang`
 - LEGACY에서 31·32 제거 · areas **5** / hub links **10**
