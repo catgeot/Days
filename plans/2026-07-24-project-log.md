@@ -600,3 +600,11 @@ QA 후 커밋.
 **작업**: LEGACY 시도(2·3·4·5·7·8·31–38)를 overrides에 append → generate → audit(+smoke) → 커밋  
 **제시어 예**: `국내축제-S3b-시도-경기강원` (배치 단위는 2~4개 시도)
 
+## 국내축제 — S3b 시도 경기·강원
+
+**상태**: ✅ VERIFY · **다음 = 광역시 배치(2·3·4·5·7·8) 또는 충청(33·34)**
+
+- SSOT append: `31→suwon,gapyeong` · `32→gangneung,sokcho,chuncheon,pyeongchang,yangyang`
+- LEGACY에서 31·32 제거 · areas **5** / hub links **10**
+- 남은 LEGACY: 2·3·4·5·7·8·33–38
+

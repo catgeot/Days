@@ -34,6 +34,8 @@ assert(Array.isArray(DEFAULT_HUB_SEEDS) && DEFAULT_HUB_SEEDS.length >= 3, 'DEFAU
 const cases = [
   ['1', 'seoul'],
   ['6', 'busan'],
+  ['31', 'suwon'],
+  ['32', 'gangneung'],
   ['39', 'jeju'],
 ];
 
@@ -53,6 +55,9 @@ assert(allIds.includes('seoul') && allIds.includes('busan') && allIds.includes('
 // SSOT 우선: 시드 area는 레거시보다 JSON
 assert(hubIdsForArea(1)[0] === 'seoul', 'SSOT priority area 1');
 assert(hubIdsForArea(6)[0] === 'busan', 'SSOT priority area 6');
+assert(hubIdsForArea(31).includes('gapyeong'), 'SSOT 경기 gapyeong');
+assert(hubIdsForArea(32).includes('chuncheon'), 'SSOT 강원 chuncheon');
+assert(areaCodeForHubId('sokcho') === '32', 'sokcho → 32');
 assert(hubIdsForArea(39)[0] === 'jeju', 'SSOT priority area 39');
 
 if (failed) {

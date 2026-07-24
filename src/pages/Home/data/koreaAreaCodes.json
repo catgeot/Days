@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T12:27:09.063Z",
-    "areaCount": 3,
-    "hubLinkCount": 3,
+    "generatedAt": "2026-07-24T12:31:33.962Z",
+    "areaCount": 5,
+    "hubLinkCount": 10,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -29,6 +29,23 @@
         "busan"
       ]
     },
+    "31": {
+      "name": "경기",
+      "hubIds": [
+        "suwon",
+        "gapyeong"
+      ]
+    },
+    "32": {
+      "name": "강원",
+      "hubIds": [
+        "gangneung",
+        "sokcho",
+        "chuncheon",
+        "pyeongchang",
+        "yangyang"
+      ]
+    },
     "39": {
       "name": "제주",
       "hubIds": [
@@ -39,6 +56,13 @@
   "byHubId": {
     "seoul": "1",
     "busan": "6",
+    "suwon": "31",
+    "gapyeong": "31",
+    "gangneung": "32",
+    "sokcho": "32",
+    "chuncheon": "32",
+    "pyeongchang": "32",
+    "yangyang": "32",
     "jeju": "39"
   }
 }

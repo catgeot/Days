@@ -22,8 +22,6 @@ const LEGACY_HUBS_BY_AREA = {
   5: ['gwangju'],
   7: ['ulsan'],
   8: [],
-  31: ['suwon', 'gapyeong'],
-  32: ['gangneung', 'sokcho', 'chuncheon', 'pyeongchang', 'yangyang'],
   33: ['cheongju'],
   34: ['daejeon', 'boryeong', 'gongju', 'taean'],
   35: ['gyeongju', 'daegu', 'andong', 'pohang'],
