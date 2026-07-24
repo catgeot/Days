@@ -696,6 +696,7 @@ export const TRIPCOM_FLIGHT_TRACKING = {
   sub1PlannerPreTravelFlight: '플래너 필수준비 항공권 검색 일반',
   sub1ChatFlight: '채팅 항공권',
   sub1GlobeFlightCinema: '홈 항공 시네마',
+  sub1StayModalFlight: '숙소모달 항공권',
   sub3PlannerFlight: 'D17104488',
   sub3PlannerPreTravelFlight: 'D17159522',
   sub3ChatFlight: 'D17104488',
@@ -778,6 +779,13 @@ function resolveTripcomFlightTracking(options = {}) {
     };
   }
 
+  if (tracking === 'stay-modal-flight') {
+    return {
+      sub1: TRIPCOM_FLIGHT_TRACKING.sub1StayModalFlight,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
+    };
+  }
+
   return {
     sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlight,
     sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
@@ -788,7 +796,7 @@ function resolveTripcomFlightTracking(options = {}) {
  * Trip.com 항공 제휴 URL (항공 홈 또는 제휴 ad iframe).
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ essentialGuide?: Record<string, unknown> | null, mode?: 'flights' | 'ad', adId?: string, departureIata?: string, tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' }} [options]
+ * @param {{ essentialGuide?: Record<string, unknown> | null, mode?: 'flights' | 'ad', adId?: string, departureIata?: string, tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' }} [options]
  * @returns {string}
  */
 export function buildTripcomPlannerFlightUrl(location, options = {}) {

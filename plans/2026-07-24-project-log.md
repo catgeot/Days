@@ -332,7 +332,7 @@ GYG-이어하기 — 최적화 구현
 
 ## 숙소 모달 · Trip 항공 CTA — 스펙 합의 (다음 세션 실행)
 
-**상태**: ⏳ 합의만 · **미구현** · 릴리스 노트는 구현·QA 후 feature 초안만
+**상태**: ✅ 1차 코드 · ⏳ 사람 QA · 릴리스는 QA 후 feature 초안만
 
 ### 제품 배경 (같은 날 대화)
 
@@ -356,12 +356,11 @@ GYG-이어하기 — 최적화 구현
 | 하단 CTA | 저재고 **트립닷컴 숙소**와 역할 분리 (위=항공 입구 / 아래=숙소만) |
 | 금지 | MRT 홈 억지 · 미검증 Flight+Hotel 번들 URL · 모바일 `/flights/` 직링크 · UI 임의 대규모 변경 |
 
-### 건드릴 파일 (예상)
+### 구현 (2026-07-24)
 
-- [`GlobeStayStrip.jsx`](../src/pages/Home/components/GlobeStayStrip.jsx) — `StayDateBar` CTA · `location`·출발 IATA props
-- [`affiliate.js`](../src/utils/affiliate.js) — tracking `trip_sub1` 예: `숙소모달 항공권` · (선택) 항공 URL 날짜·인원 주입 실험
-- 부모: 써머리/숙소 패널에서 `selectedOriginIata`·`essentialGuide`·`canPreviewFlightRoute` 전달
-- 참고: [`WhiteLabelWidget.jsx`](../src/components/PlaceCard/common/WhiteLabelWidget.jsx) · [`partnerNavigation.js`](../src/components/PlaceCard/common/partnerNavigation.js) · [`globeFlightCinema.js`](../src/pages/Home/lib/globeFlightCinema.js) `canPreviewFlightRoute`
+- `StayDateBar` PC: sky 「항공권 · 호텔 함께」→ `WhiteLabelWidget` (`tracking=stay-modal-flight` · `trip_sub1=숙소모달 항공권`)
+- 게이트: `lg` + `canPreviewFlightRoute` + 도착 IATA · 출발=`selectedOriginIata`
+- 날짜·인원 Trip URL 주입은 **미적용**(1차 OD만 · QA 후 선택)
 
 ### QA 체크
 
@@ -375,8 +374,9 @@ GYG-이어하기 — 최적화 구현
 
 ### 에이전트 핸드오프
 
-- **읽을 것 3**: 본 절「확정 스펙」·「숙소 저재고 CTA」· `WhiteLabelWidget`+`buildTripcomPlannerFlightUrl`
+- **읽을 것 3**: 본 절「확정 스펙」·「구현」· QA 체크
 - **금지 3**: 스펙 재검토·MRT 홈 CTA·모바일 flights 직링크·번들 URL 추측
-- **다음 작업**: PC 숙소 모달 Trip 항공 CTA 구현 → QA → 검증 후 커밋(한글) · feature면 릴리스 초안만 제안
-- **제시어**: `숙소모달-항공CTA` + `@plans/2026-07-24-project-log.md` · 「숙소 모달 Trip 항공 CTA 스펙대로 구현」
+- **다음 작업**: 사람 QA → 통과 시 feature면 릴리스 초안만 제안 · push는 사람/요청 시
+- **제시어**: `숙소모달-항공CTA` + QA 피드백 반영
+
 

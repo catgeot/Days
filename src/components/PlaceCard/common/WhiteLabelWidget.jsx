@@ -16,7 +16,7 @@ import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/fligh
  * @param {Record<string, unknown> | null | undefined} [location]
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]
  * @param {string | null | undefined} [departureIata] - 시네마 Bar 등 명시 시에만 전달. 미지정(플래너)은 ICN 고정.
- * @param {'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | null | undefined} [tracking]
+ * @param {'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' | null | undefined} [tracking]
  * @param {React.ReactElement} [customTrigger] - 커스텀 트리거 버튼
  */
 const WhiteLabelWidget = ({

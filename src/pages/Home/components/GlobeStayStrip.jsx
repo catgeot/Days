@@ -11,6 +11,7 @@ import {
   LayoutGrid,
   Loader2,
   MapPin,
+  Plane,
   Users,
   X,
 } from 'lucide-react';
@@ -31,6 +32,7 @@ import {
   TRIPCOM_HOTEL_TRACKING,
   buildMrtMylinkUrl,
   buildTripcomHotelSearchUrl,
+  getPlannerFlightArrivalIata,
   getTripcomHotelEmptyCopy,
   getTripcomHotelErrorCopy,
 } from '../../../utils/affiliate';
@@ -44,6 +46,7 @@ import {
   getPartnerLinkTarget,
   getTripcomLinkRel,
 } from '../../../components/PlaceCard/common/partnerNavigation';
+import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
@@ -221,6 +224,8 @@ function StayDateBar({
   onClose,
   /** 패널 고정 헤더에 여행지·닫기가 있을 때 DateBar 중복 숨김 */
   embedInPanel = false,
+  /** PC만 — Trip 항공 보조 CTA (모바일·항공 경로 없으면 null) */
+  flightCta = null,
 }) {
   const isLg = useIsLg();
   const rootRef = useRef(null);
@@ -229,6 +234,7 @@ function StayDateBar({
   const [draftOut, setDraftOut] = useState(checkOut);
   const [draftAdult, setDraftAdult] = useState(adultCount);
   const [draftChild, setDraftChild] = useState(childCount);
+  const showFlightCta = Boolean(isLg && flightCta?.location);
 
   useEffect(() => {
     setDraftIn(checkIn);
@@ -371,6 +377,30 @@ function StayDateBar({
           max={8}
           onChange={setDraftChild}
         />
+        {showFlightCta ? (
+          <span
+            className="inline-flex min-w-0"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <WhiteLabelWidget
+              location={flightCta.location}
+              essentialGuide={flightCta.essentialGuide}
+              departureIata={flightCta.departureIata}
+              tracking="stay-modal-flight"
+              customTrigger={
+                <button
+                  type="button"
+                  aria-label="Trip.com에서 항공권·호텔 함께 검색"
+                  className="inline-flex max-w-[11rem] shrink items-center justify-center gap-1 rounded-md border border-sky-300/45 bg-sky-500/25 px-2 py-1 text-[10px] font-bold leading-tight text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-95"
+                >
+                  <Plane size={11} className="shrink-0 opacity-90" aria-hidden="true" />
+                  <span className="min-w-0 break-keep text-left">항공권 · 호텔 함께</span>
+                </button>
+              }
+            />
+          </span>
+        ) : null}
         <button
           type="button"
           disabled={!guestsDirty}
@@ -927,6 +957,9 @@ export default function GlobeStayStrip({
   children,
   onExpandedChange,
   peerOpen = false,
+  essentialGuide = null,
+  flightOriginIata = null,
+  canPreviewFlightRoute: canPreviewFlightRouteProp = false,
 }) {
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
@@ -1136,6 +1169,17 @@ export default function GlobeStayStrip({
     return null;
   }
 
+  const stayFlightArrivalIata = getPlannerFlightArrivalIata(location, { essentialGuide });
+  /** PC 숙소 모달만 — 써머리 항공 경로 게이트와 동일 · 도착 IATA 없으면 숨김 */
+  const stayFlightCta =
+    isLg && canPreviewFlightRouteProp && stayFlightArrivalIata
+      ? {
+          location,
+          essentialGuide,
+          departureIata: flightOriginIata,
+        }
+      : null;
+
   const renderDateBar = (opts = {}) => (
     <StayDateBar
       placeName={name}
@@ -1148,6 +1192,7 @@ export default function GlobeStayStrip({
       showClose={Boolean(opts.showClose)}
       onClose={() => setExpanded(false)}
       embedInPanel={Boolean(opts.embedInPanel)}
+      flightCta={stayFlightCta}
     />
   );
 

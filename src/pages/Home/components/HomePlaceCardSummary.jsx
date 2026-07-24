@@ -217,6 +217,9 @@ export default function HomePlaceCardSummary({
       location={location}
       peerOpen={tourOpen}
       onExpandedChange={handleStayExpandedChange}
+      essentialGuide={essentialGuide}
+      flightOriginIata={selectedOriginIata}
+      canPreviewFlightRoute={hasFlightRoute}
     >
       {({ toggle, mobilePanel, expanded: stayExpanded, close: closeStay }) => (
         <GlobeTourStrip
