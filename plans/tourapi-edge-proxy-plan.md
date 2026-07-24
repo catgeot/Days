@@ -24,7 +24,7 @@
 
 - 경로: `supabase/functions/tourapi-proxy/index.ts`
 - Secret: `Deno.env.get('TOUR_API_SERVICE_KEY')` only
-- action: `searchKeyword` · `detailCommon` · `detailImage` · `searchPhoto`
+- action: `searchKeyword` · `detailCommon` · `detailImage` · `searchPhoto` · `searchFestival` · `areaBasedList` · `areaCode` · `detailIntro`
 - 공통 쿼리: `MobileOS=ETC` · `MobileApp=gateo` · `_type=json`
 - 응답: `{ ok, action, items[], rawCount }`
 - 배포: `npx supabase functions deploy tourapi-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`

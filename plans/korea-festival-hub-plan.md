@@ -7,8 +7,8 @@
 |------|------|------|
 | Pre-S0 플랜 저장소 반영 | ✅ `main` `3f81a55` | — |
 | S0 LIVE 스파이크 | ✅ Go (축제96 / 시도17 / 서울관광444 · `0000`) | 재실행 금지 |
-| **S1** 프록시·fetch | ⬜ **지금 여기** | 로컬 새 채팅 |
-| S2 `/korea` UI | ⬜ | S1 후 · 사람 QA |
+| **S1** 프록시·fetch | ✅ | S2 |
+| S2 `/korea` UI | ⬜ **지금 여기** | S1 후 · 사람 QA |
 | S3a 상세·SEO | ⬜ | S2 후 |
 | S3b area↔hub SSOT | ⬜ | 로컬 배치(또는 나중에 오케스트레이터) |
 | S4 캐시 | 선택 | MVP 이후 |
@@ -104,35 +104,14 @@ MVP: LIVE + sessionStorage. 쿼터 이슈 시 S4.
 
 ---
 
-### S1 — 프록시 + fetch ⬜ (지금 · 로컬)
+### S1 — 프록시 + fetch ✅
 
 | | |
 |--|--|
-| **환경** | 로컬 · feature 브랜치 `cursor/korea-festival-proxy` (또는 동일 목적명) |
-| **키** | `.env.local` `TOUR_API_SERVICE_KEY` |
-| **산출** | proxy 4 action · `fetchTourApiFestivals.js` / `fetchTourApiArea.js` · smoke LIVE · 가능 시 Edge 재배포 |
+| **환경** | 로컬 · `cursor/korea-festival-proxy` |
+| **산출** | proxy 4 action · `fetchTourApiFestivals.js` / `fetchTourApiArea.js` · smoke LIVE · Edge 재배포 |
 | **VERIFY** | `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` PASS |
-| **커밋** | PASS 후 **즉시** 한글 커밋 · 원하면 push/PR · **일지에 SHA** |
-| **금지** | UI · `/korea` · releaseNotes · 오케스트레이터 · Cloud |
-
-**로컬 새 채팅 제시어**
-
-```
-국내축제-S1-프록시
-@plans/korea-festival-hub-plan.md 「S1」만
-@plans/2026-07-24-project-log.md 「국내축제 — S0」절만
-@supabase/functions/tourapi-proxy/index.ts
-@plans/tourapi-edge-proxy-plan.md §1만
-@.ai-context.md
-
-로컬만. S0 Go 전제. feature 브랜치.
-action: searchFestival·areaBasedList·areaCode·detailIntro.
-normalize·smoke LIVE·fetch 유틸만.
-UI·/korea·releaseNotes·오케스트레이터·Cloud 금지.
-VERIFY PASS → 커밋(+push) · 일지 S1(다음=S2)에 SHA.
-```
-
-**완료**: smoke PASS · 키 미노출 · 일지 SHA · working tree clean(해당 파일).
+| **다음** | S2 `/korea` UI (사람 QA 후 커밋) |
 
 ---
 

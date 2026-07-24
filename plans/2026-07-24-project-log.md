@@ -455,34 +455,42 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 ## 국내축제 — 로컬 재시작 (Cloud 중단)
 
-**상태**: ✅ 플랜 재정비 · **다음 = 로컬 S1**
+**상태**: ✅ 플랜 재정비 · **다음 = 로컬 S1** (완료 → S1 절)
 
 - Cursor Cloud 트랙 **중단** (진행 가시성 부족). 이후 **로컬 채팅만**.
 - SSOT: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) (로컬 전용 세션 가이드)
-- S0 재실행 **금지**. S1부터 새 로컬 채팅.
+- S0 재실행 **금지**.
 
-### 다음 세션 — S1 (`국내축제-S1-프록시`) · 로컬
+## 국내축제 — S1 (프록시·fetch)
 
-**읽을 것**: 플랜 **S1만** · 본 절 S0 Go · `tourapi-proxy/index.ts` · `tourapi-edge-proxy-plan.md` §1 · `.ai-context` 1.5.1  
+**상태**: ✅ VERIFY PASS · Edge 재배포 · **다음 = S2**  
+**브랜치**: `cursor/korea-festival-proxy` · **SHA**: _(커밋 후 기입)_
 
-**금지**: UI · `/korea` · releaseNotes · 오케스트레이터 · Cloud · `VITE_` Tour 키 · gallery overrides 혼용  
+- action: `searchFestival` · `areaBasedList` · `areaCode` · `detailIntro`
+- fetch: `fetchTourApiFestivals.js` · `fetchTourApiArea.js`
+- `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` PASS (축제·시도17·서울 type12·detailIntro)
 
-**작업**: feature 브랜치 · action `searchFestival`·`areaBasedList`·`areaCode`·`detailIntro` · smoke LIVE · fetch 유틸 · VERIFY PASS → **커밋(+push)** · 일지 SHA  
+### 다음 세션 — S2 (`국내축제-S2-UI`) · 로컬
+
+**읽을 것**: 플랜 **S2만** · 본 절 S1 · fetch 유틸 · `.ai-context` 1.5.1  
+
+**금지**: proxy 재작성 · releaseNotes · 오케스트레이터 · Cloud · 새 디자인 시스템  
+
+**작업**: `/korea` MVP · 월/시즌·지역 칩 · 축제 피드 · hub 가로 · 진입 1곳 · **사람 QA OK 후** 커밋  
 
 **제시어**
 
 ```
-국내축제-S1-프록시
-@plans/korea-festival-hub-plan.md 「S1」만
-@plans/2026-07-24-project-log.md 「국내축제 — S0」절만
-@supabase/functions/tourapi-proxy/index.ts
-@plans/tourapi-edge-proxy-plan.md §1만
+국내축제-S2-UI
+@plans/korea-festival-hub-plan.md 「S2」만
+@plans/2026-07-24-project-log.md 「국내축제 — S1」절만
+@src/utils/fetchTourApiFestivals.js
+@src/utils/fetchTourApiArea.js
 @.ai-context.md
 
-로컬만. S0 Go 전제. feature 브랜치.
-action: searchFestival·areaBasedList·areaCode·detailIntro.
-normalize·smoke LIVE·fetch 유틸만.
-UI·/korea·releaseNotes·오케스트레이터·Cloud 금지.
-VERIFY PASS → 커밋(+push) · 일지 S1(다음=S2)에 SHA.
+로컬만. S1 PASS 전제. /korea MVP UI.
+월·시즌·지역 칩 · 축제 피드 · hub 가로(최소 시드 OK) · 진입 1곳.
+proxy 재작성·releaseNotes·오케스트레이터·Cloud 금지.
+사람 QA OK 후 커밋(+push) · 일지 S2(다음=S3a).
 ```
 

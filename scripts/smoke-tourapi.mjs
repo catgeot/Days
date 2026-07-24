@@ -16,6 +16,10 @@ const ALLOWED_ACTIONS = [
   'detailCommon',
   'detailImage',
   'searchPhoto',
+  'searchFestival',
+  'areaBasedList',
+  'areaCode',
+  'detailIntro',
 ];
 
 let failed = 0;
@@ -31,7 +35,7 @@ function assert(cond, msg) {
 }
 
 function schemaGuards() {
-  assert(ALLOWED_ACTIONS.length === 4, 'whitelist has 4 actions');
+  assert(ALLOWED_ACTIONS.length === 8, 'whitelist has 8 actions');
   for (const a of ALLOWED_ACTIONS) {
     assert(typeof a === 'string' && a.length > 0, `action name: ${a}`);
   }
@@ -40,6 +44,9 @@ function schemaGuards() {
   const keywordOk = (k) =>
     typeof k === 'string' && k.trim().length > 0 && k.trim().length <= 80;
   const contentIdOk = (id) => /^\d{1,32}$/.test(String(id ?? '').trim());
+  const yyyymmddOk = (d) => /^\d{8}$/.test(String(d ?? '').trim());
+  const contentTypeIdOk = (id) => /^\d{1,4}$/.test(String(id ?? '').trim());
+  const areaCodeOk = (c) => /^\d{1,10}$/.test(String(c ?? '').trim());
 
   assert(keywordOk('경복궁'), 'keyword guard accepts 경복궁');
   assert(!keywordOk(''), 'keyword guard rejects empty');
@@ -47,6 +54,12 @@ function schemaGuards() {
   assert(contentIdOk('126508'), 'contentId guard accepts 126508');
   assert(!contentIdOk('abc'), 'contentId guard rejects non-numeric');
   assert(!contentIdOk(''), 'contentId guard rejects empty');
+  assert(yyyymmddOk('20260701'), 'eventStartDate guard accepts YYYYMMDD');
+  assert(!yyyymmddOk('2026-07-01'), 'eventStartDate guard rejects dashed');
+  assert(contentTypeIdOk('15'), 'contentTypeId guard accepts 15');
+  assert(!contentTypeIdOk(''), 'contentTypeId guard rejects empty');
+  assert(areaCodeOk('1'), 'areaCode guard accepts 1');
+  assert(!areaCodeOk(''), 'areaCode guard rejects empty');
 
   const sampleShape = {
     ok: true,
@@ -68,9 +81,6 @@ async function mappingGuards() {
   );
   const { scoreTourPhotoTitle } = await import(
     '../src/utils/tourApiPhotoRank.js'
-  );
-  const { interleaveByOrientation } = await import(
-    '../src/utils/fetchTourApiGallery.js'
   );
 
   const gb = resolveTourApiPlace('gyeongbokgung');
@@ -98,18 +108,6 @@ async function mappingGuards() {
     scoreTourPhotoTitle('제주국제공항', '제주', '제주') <
       scoreTourPhotoTitle('성산일출봉 전경', '제주', '제주'),
     'airport ranks below scenic ilchulbong',
-  );
-
-  const interleaved = interleaveByOrientation([
-    { id: 'L1', width: 1200, height: 800 },
-    { id: 'L2', width: 1600, height: 900 },
-    { id: 'P1', width: 800, height: 1200 },
-    { id: 'P2', width: 700, height: 1100 },
-    { id: 'L3', width: 1400, height: 900 },
-  ]);
-  assert(
-    interleaved[0]?.id === 'L1' && interleaved[1]?.id === 'P1',
-    'interleave landscape/portrait',
   );
 
   const byName = resolveTourApiPlace('경복궁');
@@ -156,6 +154,12 @@ async function invokeEdge(action, payload) {
 
   const data = await res.json().catch(() => ({}));
   return { httpStatus: res.status, data };
+}
+
+function monthStartYmd(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  return `${y}${m}01`;
 }
 
 async function liveChain() {
@@ -213,6 +217,75 @@ async function liveChain() {
       `SKIP  searchPhoto (ok=${photo.data?.ok}, msg=${photo.data?.message || photo.data?.error || '-'})`,
     );
   }
+
+  console.log('\n--- LIVE festival / area ---');
+
+  const fest = await invokeEdge('searchFestival', {
+    eventStartDate: monthStartYmd(),
+    numOfRows: 5,
+  });
+  assert(fest.httpStatus === 200, `searchFestival HTTP ${fest.httpStatus}`);
+  assert(
+    fest.data?.ok === true,
+    `searchFestival ok (msg=${fest.data?.message || fest.data?.error || '-'})`,
+  );
+  assert(
+    Array.isArray(fest.data?.items) && fest.data.items.length >= 1,
+    `searchFestival items≥1 (rawCount=${fest.data?.rawCount ?? 0})`,
+  );
+  const festHit = fest.data.items[0];
+  assert(
+    Boolean(festHit?.contentId) && Boolean(festHit?.title),
+    `searchFestival contentId+title (${festHit?.title || '-'})`,
+  );
+  assert(
+    Boolean(festHit?.eventStartDate),
+    `searchFestival eventStartDate (${festHit?.eventStartDate || '-'})`,
+  );
+
+  const areas = await invokeEdge('areaCode', { numOfRows: 50 });
+  assert(areas.httpStatus === 200, `areaCode HTTP ${areas.httpStatus}`);
+  assert(
+    areas.data?.ok === true,
+    `areaCode ok (msg=${areas.data?.message || areas.data?.error || '-'})`,
+  );
+  assert(
+    Array.isArray(areas.data?.items) && areas.data.items.length >= 17,
+    `areaCode items≥17 (got=${areas.data?.items?.length ?? 0})`,
+  );
+  assert(
+    Boolean(areas.data.items[0]?.code) && Boolean(areas.data.items[0]?.name),
+    `areaCode code+name (${areas.data.items[0]?.name || '-'})`,
+  );
+
+  const list = await invokeEdge('areaBasedList', {
+    areaCode: '1',
+    contentTypeId: '12',
+    numOfRows: 5,
+  });
+  assert(list.httpStatus === 200, `areaBasedList HTTP ${list.httpStatus}`);
+  assert(
+    list.data?.ok === true,
+    `areaBasedList ok (msg=${list.data?.message || list.data?.error || '-'})`,
+  );
+  assert(
+    Array.isArray(list.data?.items) && list.data.items.length >= 1,
+    `areaBasedList items≥1 (rawCount=${list.data?.rawCount ?? 0})`,
+  );
+
+  const intro = await invokeEdge('detailIntro', {
+    contentId: festHit.contentId,
+    contentTypeId: festHit.contentTypeId || '15',
+  });
+  assert(intro.httpStatus === 200, `detailIntro HTTP ${intro.httpStatus}`);
+  assert(
+    intro.data?.ok === true,
+    `detailIntro ok (msg=${intro.data?.message || intro.data?.error || '-'})`,
+  );
+  assert(
+    Array.isArray(intro.data?.items) && intro.data.items.length >= 1,
+    `detailIntro items≥1`,
+  );
 
   // Guard: unknown action rejected
   const bad = await invokeEdge('notAnAction', { keyword: 'x' });

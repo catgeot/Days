@@ -14,6 +14,10 @@ const ACTIONS = {
   detailCommon: { base: KOR_BASE, path: "detailCommon2" },
   detailImage: { base: KOR_BASE, path: "detailImage2" },
   searchPhoto: { base: PHOTO_BASE, path: "gallerySearchList1" },
+  searchFestival: { base: KOR_BASE, path: "searchFestival2" },
+  areaBasedList: { base: KOR_BASE, path: "areaBasedList2" },
+  areaCode: { base: KOR_BASE, path: "areaCode2" },
+  detailIntro: { base: KOR_BASE, path: "detailIntro2" },
 } as const;
 
 type Action = keyof typeof ACTIONS;
@@ -76,6 +80,46 @@ function guardContentId(contentId: unknown): string {
   return id;
 }
 
+function guardYyyymmdd(value: unknown, field: string): string {
+  if (value == null || value === "") {
+    throw new Error(`${field} is required`);
+  }
+  const s = String(value).trim();
+  if (!/^\d{8}$/.test(s)) {
+    throw new Error(`${field} must be YYYYMMDD`);
+  }
+  return s;
+}
+
+function optionalYyyymmdd(value: unknown, field: string): string | null {
+  if (value == null || value === "") return null;
+  const s = String(value).trim();
+  if (!/^\d{8}$/.test(s)) {
+    throw new Error(`${field} must be YYYYMMDD`);
+  }
+  return s;
+}
+
+function optionalCode(value: unknown, field: string): string | null {
+  if (value == null || value === "") return null;
+  const s = String(value).trim();
+  if (!/^\d{1,10}$/.test(s)) {
+    throw new Error(`${field} must be numeric`);
+  }
+  return s;
+}
+
+function guardContentTypeId(contentTypeId: unknown): string {
+  if (contentTypeId == null || contentTypeId === "") {
+    throw new Error("contentTypeId is required");
+  }
+  const id = String(contentTypeId).trim();
+  if (!/^\d{1,4}$/.test(id)) {
+    throw new Error("contentTypeId must be numeric");
+  }
+  return id;
+}
+
 function normalizeItem(
   action: Action,
   item: Record<string, unknown>,
@@ -98,6 +142,19 @@ function normalizeItem(
     "galphotographer",
     "photographer",
   );
+  const eventStartDate = pickStr(item, "eventstartdate", "eventStartDate");
+  const eventEndDate = pickStr(item, "eventenddate", "eventEndDate");
+  const areaCode = pickStr(item, "areacode", "areaCode");
+  const sigunguCode = pickStr(item, "sigungucode", "sigunguCode");
+  const tel = pickStr(item, "tel");
+  const code = pickStr(item, "code");
+  const name = pickStr(item, "name");
+  const eventplace = pickStr(item, "eventplace", "eventPlace");
+  const playtime = pickStr(item, "playtime", "playTime");
+  const usetimefestival = pickStr(item, "usetimefestival", "useTimeFestival");
+  const sponsor1 = pickStr(item, "sponsor1");
+  const sponsor1tel = pickStr(item, "sponsor1tel", "sponsor1Tel");
+  const eventhomepage = pickStr(item, "eventhomepage", "eventHomepage");
 
   const out: Record<string, unknown> = {};
   if (contentId) out.contentId = contentId;
@@ -116,6 +173,19 @@ function normalizeItem(
   if (mapx) out.mapx = mapx;
   if (mapy) out.mapy = mapy;
   if (contentTypeId) out.contentTypeId = contentTypeId;
+  if (eventStartDate) out.eventStartDate = eventStartDate;
+  if (eventEndDate) out.eventEndDate = eventEndDate;
+  if (areaCode) out.areaCode = areaCode;
+  if (sigunguCode) out.sigunguCode = sigunguCode;
+  if (tel) out.tel = tel;
+  if (code) out.code = code;
+  if (name) out.name = name;
+  if (eventplace) out.eventplace = eventplace;
+  if (playtime) out.playtime = playtime;
+  if (usetimefestival) out.usetimefestival = usetimefestival;
+  if (sponsor1) out.sponsor1 = sponsor1;
+  if (sponsor1tel) out.sponsor1tel = sponsor1tel;
+  if (eventhomepage) out.eventhomepage = eventhomepage;
 
   if (action === "searchPhoto") {
     const imageUrl = galWebImageUrl || firstimage;
@@ -123,7 +193,7 @@ function normalizeItem(
   } else if (action === "detailImage") {
     const imageUrl = originimgurl || smallimageurl || firstimage;
     if (imageUrl) out.imageUrl = imageUrl;
-  } else {
+  } else if (action !== "areaCode" && action !== "detailIntro") {
     const imageUrl = firstimage || originimgurl || galWebImageUrl;
     if (imageUrl) out.imageUrl = imageUrl;
   }
@@ -234,6 +304,45 @@ function buildUpstreamQuery(
         keyword: guardKeyword(body.keyword),
         numOfRows,
         pageNo,
+      };
+    case "searchFestival": {
+      const q: Record<string, string> = {
+        eventStartDate: guardYyyymmdd(body.eventStartDate, "eventStartDate"),
+        numOfRows,
+        pageNo,
+      };
+      const eventEndDate = optionalYyyymmdd(body.eventEndDate, "eventEndDate");
+      if (eventEndDate) q.eventEndDate = eventEndDate;
+      const areaCode = optionalCode(body.areaCode, "areaCode");
+      if (areaCode) q.areaCode = areaCode;
+      const sigunguCode = optionalCode(body.sigunguCode, "sigunguCode");
+      if (sigunguCode) q.sigunguCode = sigunguCode;
+      return q;
+    }
+    case "areaBasedList": {
+      const areaCode = optionalCode(body.areaCode, "areaCode");
+      if (!areaCode) throw new Error("areaCode is required");
+      const q: Record<string, string> = {
+        areaCode,
+        numOfRows,
+        pageNo,
+      };
+      const contentTypeId = optionalCode(body.contentTypeId, "contentTypeId");
+      if (contentTypeId) q.contentTypeId = contentTypeId;
+      const sigunguCode = optionalCode(body.sigunguCode, "sigunguCode");
+      if (sigunguCode) q.sigunguCode = sigunguCode;
+      return q;
+    }
+    case "areaCode": {
+      const q: Record<string, string> = { numOfRows, pageNo };
+      const areaCode = optionalCode(body.areaCode, "areaCode");
+      if (areaCode) q.areaCode = areaCode;
+      return q;
+    }
+    case "detailIntro":
+      return {
+        contentId: guardContentId(body.contentId),
+        contentTypeId: guardContentTypeId(body.contentTypeId),
       };
     default:
       throw new Error("unsupported action");
