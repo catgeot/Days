@@ -10,7 +10,7 @@
 | **S1** 프록시·fetch | ✅ | S2 |
 | S2 `/korea` UI | ✅ S2b | addr 도/시·시군·달력 dayRole · 다음 S3a |
 | S3a 상세·SEO | ✅ `aed70b1` | 다음 S3b |
-| S3b area↔hub SSOT | ✅ G0 시드3 | 이후 시도 배치(로컬 순차) |
+| S3b area↔hub SSOT | ✅ G0 `7d63551` | 이후 시도 배치(로컬 순차) |
 | S4 캐시 | 선택 | MVP 이후 |
 
 ---

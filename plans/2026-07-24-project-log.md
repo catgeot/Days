@@ -586,7 +586,7 @@ QA 후 커밋.
 
 ## 국내축제 — S3b G0 (areaHub SSOT)
 
-**상태**: ✅ VERIFY PASS · 브랜치 `cursor/korea-festival-proxy` · **다음 = 시도 배치(LEGACY→SSOT)**
+**상태**: ✅ 커밋 `7d63551` · push · 브랜치 `cursor/korea-festival-proxy` · **다음 = 시도 배치(LEGACY→SSOT)**
 
 - overrides → `generate:korea-area-codes` → `koreaAreaCodes.json`
 - 시드 3: `1→seoul` · `6→busan` · `39→jeju`
