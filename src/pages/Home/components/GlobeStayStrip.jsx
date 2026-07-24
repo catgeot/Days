@@ -701,9 +701,8 @@ function StayMrtMoreFooter({ href, compact = false }) {
   );
 }
 
-/** 저재고(요금 있는 숙소 ≤5) — MRT 주 출구 + 하단 Trip.com(기존) · 공식 안내 병행 */
+/** MRT 저재고(요금 있는 숙소 ≤5) — 목록 하단 공식 안내 + Trip.com (MRT 더 보기 제외) */
 function StayLowInventoryFooter({
-  mrtHref = null,
   href,
   linkTarget,
   linkRel,
@@ -712,15 +711,14 @@ function StayLowInventoryFooter({
   /** API 목록 중 요금 없는 건이 더 있으면 일정 변경 안내 */
   moreWithDateChange = false,
 }) {
-  if (!mrtHref && !href && !agencyProfile?.links?.length) return null;
+  if (!href && !agencyProfile?.links?.length) return null;
   const hasAgency = Boolean(agencyProfile?.links?.length);
-  const otaWrapClass = hasAgency || mrtHref ? 'max-w-sm lg:max-w-md' : '';
   return (
     <div
       className={`mt-4 flex flex-col items-center gap-3 rounded-xl px-3 py-4 text-center ${
         hasAgency
           ? 'border border-white/15 bg-white/5'
-          : 'border border-amber-300/25 bg-amber-500/10'
+          : 'border border-sky-300/25 bg-sky-500/10'
       }`}
     >
       {/* 모바일: 문장 단위 2줄 · PC: 한 줄(폭 확대) */}
@@ -732,27 +730,23 @@ function StayLowInventoryFooter({
             </span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
               <span className="hidden lg:inline"> </span>
-              마이리얼트립에서 전체·다른 일정을 확인해 보세요
+              일정 조정이 필요한 숙소도 함께 보여 드려요
             </span>
           </>
         ) : hasAgency ? (
           <>
-            <span className="block lg:inline">
-              이 목록에서 바로 예약할 수 있는 숙소가 적어요.
-            </span>
+            <span className="block lg:inline">이 지역은 마이리얼트립 재고가 적어요.</span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
               <span className="hidden lg:inline"> </span>
-              공식·전문 안내와 마이리얼트립·트립닷컴을 함께 확인해 보세요
+              공식·전문 안내와 트립닷컴을 함께 확인해 보세요
             </span>
           </>
         ) : (
           <>
-            <span className="block lg:inline">
-              이 목록에서 바로 예약할 수 있는 숙소가 적어요.
-            </span>
+            <span className="block lg:inline">이 지역은 마이리얼트립 재고가 적어요.</span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
               <span className="hidden lg:inline"> </span>
-              마이리얼트립에서 더 찾아보거나 트립닷컴도 확인해 보세요
+              트립닷컴도 함께 확인해 보세요
             </span>
           </>
         )}
@@ -765,37 +759,27 @@ function StayLowInventoryFooter({
           compact
         />
       ) : null}
-      {mrtHref || href ? (
-        <div className={`flex w-full flex-col items-center gap-2 ${otaWrapClass}`}>
+      {href ? (
+        <div
+          className={`flex w-full flex-col items-center gap-1.5 ${
+            hasAgency ? 'max-w-sm lg:max-w-md' : ''
+          }`}
+        >
           {hasAgency ? (
             <p className="break-keep text-[10px] font-medium text-white/55">또는 숙소 OTA</p>
           ) : null}
-          {mrtHref ? (
-            <a
-              href={mrtHref}
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-amber-300/55 bg-amber-500/40 px-4 py-2.5 text-[13px] font-semibold text-amber-50 shadow-sm transition-colors hover:bg-amber-500/55"
-            >
-              <span>마이리얼트립에서 더 찾아보기</span>
+          <a
+            href={href}
+            target={linkTarget}
+            rel={linkRel}
+            onClick={(e) => e.stopPropagation()}
+            className={ctaClassName}
+          >
+            <span>트립닷컴에서 더 찾아보기</span>
+            {hasAgency ? (
               <ExternalLink size={13} className="shrink-0 opacity-80" aria-hidden />
-            </a>
-          ) : null}
-          {href ? (
-            <a
-              href={href}
-              target={linkTarget}
-              rel={linkRel}
-              onClick={(e) => e.stopPropagation()}
-              className={ctaClassName}
-            >
-              <span>트립닷컴에서 더 찾아보기</span>
-              {hasAgency || mrtHref ? (
-                <ExternalLink size={13} className="shrink-0 opacity-80" aria-hidden />
-              ) : null}
-            </a>
-          ) : null}
+            ) : null}
+          </a>
         </div>
       ) : null}
     </div>
@@ -1236,15 +1220,12 @@ export default function GlobeStayStrip({
   const tripcomEmptyCtaMobileClass = hasStayAgencyLinks
     ? tripcomCtaBesideAgencyMobileClassName
     : tripcomCtaMobileClassName;
-  /** 저재고 footer는 MRT·Trip 세로 스택 → 풀폭·gap 있는 버튼 스타일 */
-  const tripcomLowCtaDesktopClass =
-    hasStayAgencyLinks || showLowInventoryCta
-      ? tripcomCtaBesideAgencyDesktopClassName
-      : tripcomCtaDesktopClassName;
-  const tripcomLowCtaMobileClass =
-    hasStayAgencyLinks || showLowInventoryCta
-      ? tripcomCtaBesideAgencyMobileClassName
-      : tripcomCtaMobileClassName;
+  const tripcomLowCtaDesktopClass = hasStayAgencyLinks
+    ? tripcomCtaBesideAgencyDesktopClassName
+    : tripcomCtaDesktopClassName;
+  const tripcomLowCtaMobileClass = hasStayAgencyLinks
+    ? tripcomCtaBesideAgencyMobileClassName
+    : tripcomCtaMobileClassName;
 
   const emptyState = (
     <div className="flex min-h-[min(420px,calc(100%-5rem))] w-full flex-col items-center justify-center gap-5 px-4 py-8">
@@ -1372,10 +1353,9 @@ export default function GlobeStayStrip({
           />
         </div>
         <StayListLoadMore remaining={listRemaining} onLoadMore={loadMoreStays} />
-        {/* 저재고: MRT 주 CTA + 하단 Trip · 일반: MRT 더 보기(+ 필요 시 관광청) */}
+        {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
         {showLowInventoryCta ? (
           <StayLowInventoryFooter
-            mrtHref={mrtStayListUrl}
             href={tripcomLowUrl}
             linkTarget={tripcomLinkTarget}
             linkRel={tripcomLinkRel}
@@ -1571,10 +1551,9 @@ export default function GlobeStayStrip({
                     onLoadMore={loadMoreStays}
                     compact
                   />
-                  {/* 저재고: MRT 주 CTA + 하단 Trip · 일반: MRT 더 보기(+ 필요 시 관광청) */}
+                  {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
                   {showLowInventoryCta ? (
                     <StayLowInventoryFooter
-                      mrtHref={mrtStayListUrl}
                       href={tripcomLowUrl}
                       linkTarget={tripcomLinkTarget}
                       linkRel={tripcomLinkRel}
