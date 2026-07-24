@@ -561,3 +561,34 @@ QA 후 커밋.
 QA 후 커밋.
 ```
 
+## 국내축제 — S3a (상세·SEO · QA 대기)
+
+**상태**: ⏳ 코드 반영 · **사람 QA 후 커밋** · 브랜치 `cursor/korea-festival-proxy` · **다음 = S3b**
+
+- `FestivalDetailSheet`: 선택 시 `detailIntro` LIVE · 행사장소·시간·요금·주최·문의·홈페이지
+- SEO: `/korea` title/description · og image(목록 1호) · `public/sitemap.xml` + `vite.config` `koreaRoutes`
+- **미함**: areaHub 대량 · 국내 지도 · 축제별 독립 URL
+
+### QA 체크
+
+1. 목록/달력에서 축제 탭 → 시트 열림 · 「상세 불러오는 중」후 필드 표시
+2. 일부 필드 비어도 시트 유지(에러 문구만)
+3. 홈페이지·tel 링크 · 인근 hub → `/place/...`
+4. 문서 title/canonical `/korea` · (배포 후) sitemap에 `/korea`
+5. S2b 회귀: 지역·시군·달력 dayRole·날짜 유지
+
+### 다음 세션 — `국내축제-S3b-areaHub` (QA OK 후)
+
+**읽을 것**: 플랜 S3b · 본 절  
+**작업**: areaCode↔hub overrides·generate·audit · 시드 3(서울·부산·제주)  
+**금지**: gallery tourapi overrides 혼용 · Cloud 오케 기본  
+**제시어**
+
+```
+국내축제-S3b-areaHub
+@plans/korea-festival-hub-plan.md S3b만
+@plans/2026-07-24-project-log.md 「국내축제 — S3a」절만
+
+로컬. area↔hub SSOT G0 시드 3. audit PASS 후 커밋.
+```
+

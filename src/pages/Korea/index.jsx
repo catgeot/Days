@@ -25,6 +25,7 @@ import FestivalCalendar, {
   monthRangeYmd,
   toYmd,
 } from './FestivalCalendar';
+import FestivalDetailSheet from './FestivalDetailSheet';
 
 const PERIODS = [
   { id: 'thisMonth', label: '이번 달' },
@@ -471,9 +472,14 @@ export default function KoreaFestivalHub() {
   return (
     <div className="h-full w-full overflow-y-auto bg-[#1b1410] text-white custom-scrollbar">
       <SEO
-        title="국내 축제"
-        description="이번 달·시즌별 국내 축제와 인근 여행지를 한곳에서 살펴보세요."
+        title="국내 축제 · 이번 달·시즌 캘린더"
+        description="TourAPI 기반 국내 축제 일정. 이번 달·시즌·지역으로 찾고, 상세·인근 여행지로 이어가세요."
         url="/korea"
+        image={
+          listItems[0]
+            ? festivalImage(listItems[0]) || undefined
+            : undefined
+        }
       />
 
       <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1b1410]/90 backdrop-blur-xl">
@@ -770,83 +776,12 @@ export default function KoreaFestivalHub() {
       </main>
 
       {selected && (
-        <div
-          className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-6"
-          onClick={() => setSelected(null)}
-          role="presentation"
-        >
-          <div
-            className="w-full max-w-lg rounded-t-3xl md:rounded-3xl border border-white/10 bg-[#1b1410] shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="korea-festival-sheet-title"
-          >
-            {festivalImage(selected) && (
-              <div className="relative h-40 md:h-48 overflow-hidden">
-                <img
-                  src={festivalImage(selected)}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1b1410] via-transparent to-transparent" />
-              </div>
-            )}
-            <div className="p-5 space-y-4">
-              <div className="space-y-1.5">
-                <p className="text-[11px] font-bold text-amber-200/90 flex items-center gap-1">
-                  <CalendarDays size={12} aria-hidden="true" />
-                  {[
-                    formatYmdLabel(selected.eventStartDate),
-                    formatYmdLabel(selected.eventEndDate),
-                  ]
-                    .filter(Boolean)
-                    .join(' – ')}
-                </p>
-                <h3
-                  id="korea-festival-sheet-title"
-                  className="text-xl font-extrabold leading-snug"
-                >
-                  {selected.title}
-                </h3>
-                {selected.addr1 && (
-                  <p className="text-xs text-gray-400 flex items-start gap-1">
-                    <MapPin size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
-                    <span>{selected.addr1}</span>
-                  </p>
-                )}
-              </div>
-
-              {selectedHubs.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-[11px] font-bold tracking-widest text-gray-500 uppercase">
-                    인근 여행지
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedHubs.map((hub) => (
-                      <button
-                        key={hub.hubId}
-                        type="button"
-                        onClick={() => navigate(`/place/${hub.hubId}`)}
-                        className="px-3 py-1.5 rounded-full text-xs font-bold border border-white/15 bg-white/[0.06] hover:bg-amber-500/20 hover:border-amber-400/40 transition-colors"
-                      >
-                        {hub.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                className="w-full py-3 rounded-2xl text-sm font-bold border border-white/15 bg-white/5 hover:bg-white/10"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        </div>
+        <FestivalDetailSheet
+          item={selected}
+          hubs={selectedHubs}
+          onClose={() => setSelected(null)}
+          onOpenHub={(hubId) => navigate(`/place/${hubId}`)}
+        />
       )}
     </div>
   );
