@@ -435,6 +435,6 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 **상태**: ⏳ 사람 QA
 
-- 인원 행 유지 · 인원과 CTA 간격↑(`ml-4`/`sm:ml-6`) · 카피 단일 「항공권과 호텔을 함께 예약하세요」
+- 인원 행 · 간격 유지 · 버튼 sky **outline**(채움↓) · 안내 「숙소 일정은 도착일에 맞춰 조정하세요」
 - PC only · 게이트·파라미터 로직 변경 없음
 

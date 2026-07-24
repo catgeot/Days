@@ -379,7 +379,7 @@ function StayDateBar({
         />
         {showFlightCta ? (
           <span
-            className="ml-4 inline-flex min-w-0 max-w-full items-center sm:ml-6"
+            className="ml-4 inline-flex min-w-0 max-w-full items-center gap-2 sm:ml-6"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
@@ -396,13 +396,16 @@ function StayDateBar({
                 <button
                   type="button"
                   aria-label="항공권과 호텔을 함께 예약하세요"
-                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-200/70 bg-sky-400 px-2.5 py-1 text-[11px] font-bold text-slate-950 shadow-sm transition-colors hover:bg-sky-300 active:scale-[0.98]"
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
                 >
-                  <Plane size={13} className="shrink-0" aria-hidden="true" />
+                  <Plane size={13} className="shrink-0 opacity-90" aria-hidden="true" />
                   <span className="break-keep">항공권과 호텔을 함께 예약하세요</span>
                 </button>
               }
             />
+            <span className="min-w-0 text-[10px] font-medium leading-snug text-sky-100/70 break-keep">
+              숙소 일정은 도착일에 맞춰 조정하세요
+            </span>
           </span>
         ) : null}
         <button
