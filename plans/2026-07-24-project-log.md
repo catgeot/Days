@@ -125,3 +125,13 @@
 - **규칙**: 커밋=검증 게이트 · Cloud 오케 §3.4 커밋·PR · 릴리스=중대만 · §4.0 제미나이 Core Rules 폐기 · 주석 희소
 - Cursor User Rule: verification gate · release notes major only · comments sparse
 - 릴리스 노트 생략(문서/규칙만) · 다음: 여행 스케치 매거진 탭 QA / 항공 Heuristic Phase 0
+
+## 규칙 정합 검증·반영 (Cursor)
+
+**상태**: ✅ 문서·User Rule
+
+- 클로드/Roo 전용(`.ai-claude-context`·§7) **재도입 불필요** — 이미 삭제·흡수됨
+- §4.0 **압축**(표·Claude 역사 문구 제거) · §4.1에 **오류 루프 2회 중단·범위 고정** · 커밋은 **게이트 우선**
+- User Rule: verification gate가 「요청 시에만 commit」**SUPERSEDES** · 신규「Stop loops / no scope creep」· comments sparse 동기화
+- SSOT: `.ai-context` **1.5.1**/**4** · `AGENTS.md` · `gateo-project-context.mdc`
+- **보류(낮음)**: `.ai-context` 3·5·6절 분량 trim(~381→목표250)
