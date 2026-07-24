@@ -844,6 +844,8 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   }
   if (returnDate && (!departDate || returnDate > departDate)) {
     params.set('rdate', returnDate);
+    // rdate만으로는 편도 유지 — 왕복 라디오는 tripType=RT 필요
+    params.set('tripType', 'RT');
   }
 
   const adults = Number(options.adultCount);

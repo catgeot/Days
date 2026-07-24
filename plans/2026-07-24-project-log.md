@@ -412,4 +412,5 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 - packages 홈 OD 미프리필 → `d2fe9bc`로 **/flights/ 복구** · 사람 QA(OD·일정·인원) 진행
 - packages SSOT(`trip_sub3=D18887227`)는 보관·재전환은 QA 후 판단
+- **후속**: `rdate` 있을 때 `tripType=RT` — 항공권 홈 왕복 라디오 (편도 기본 문제 해소)
 
