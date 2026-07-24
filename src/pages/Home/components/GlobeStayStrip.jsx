@@ -377,6 +377,38 @@ function StayDateBar({
           max={8}
           onChange={setDraftChild}
         />
+        {showFlightCta ? (
+          <span
+            className="inline-flex min-w-0 max-w-full items-center gap-1.5"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <WhiteLabelWidget
+              location={flightCta.location}
+              essentialGuide={flightCta.essentialGuide}
+              departureIata={flightCta.departureIata}
+              tracking="stay-modal-flight"
+              departDate={draftIn}
+              returnDate={draftOut}
+              adultCount={draftAdult}
+              childCount={draftChild}
+              customTrigger={
+                <button
+                  type="button"
+                  aria-label="Trip.com에서 항공권·호텔 함께 검색"
+                  title="일정·인원 그대로 Trip에서 이어서"
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-200/70 bg-sky-400 px-2.5 py-1 text-[11px] font-bold text-slate-950 shadow-sm transition-colors hover:bg-sky-300 active:scale-[0.98]"
+                >
+                  <Plane size={13} className="shrink-0" aria-hidden="true" />
+                  <span className="break-keep">항공권 · 호텔 함께</span>
+                </button>
+              }
+            />
+            <span className="min-w-0 text-[10px] font-medium leading-tight text-sky-100/85 break-keep">
+              Trip에서 이어서
+            </span>
+          </span>
+        ) : null}
         <button
           type="button"
           disabled={!guestsDirty}
@@ -399,37 +431,6 @@ function StayDateBar({
           변경하기
         </button>
       </div>
-      {showFlightCta ? (
-        <div
-          className="mt-1.5 flex flex-wrap items-center gap-2 rounded-xl border border-sky-300/50 bg-sky-500/30 px-2.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <WhiteLabelWidget
-            location={flightCta.location}
-            essentialGuide={flightCta.essentialGuide}
-            departureIata={flightCta.departureIata}
-            tracking="stay-modal-flight"
-            departDate={draftIn}
-            returnDate={draftOut}
-            adultCount={draftAdult}
-            childCount={draftChild}
-            customTrigger={
-              <button
-                type="button"
-                aria-label="Trip.com에서 항공권·호텔 함께 검색"
-                className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-200/70 bg-sky-400 px-3 py-1.5 text-xs font-bold text-slate-950 shadow-sm transition-colors hover:bg-sky-300 active:scale-[0.98]"
-              >
-                <Plane size={14} className="shrink-0" aria-hidden="true" />
-                <span className="break-keep">항공권 · 호텔 함께</span>
-              </button>
-            }
-          />
-          <p className="min-w-0 flex-1 text-[11px] font-medium leading-snug text-sky-50/90 break-keep">
-            일정·인원 그대로 Trip에서 이어서
-          </p>
-        </div>
-      ) : null}
       {open ? (
         <div className="flex w-full justify-start">
           <StayRangeCalendar

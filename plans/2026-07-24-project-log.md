@@ -435,7 +435,6 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 **상태**: ⏳ 사람 QA
 
-- 인원 행 안 작은 버튼 → DateBar **독립 sky 행** (채워진 버튼 + 짧은 안내)
-- 카피: 「항공권 · 호텔 함께」·「일정·인원 그대로 Trip에서 이어서」
+- 인원 행 유지 · sky 채움 버튼 + 「Trip에서 이어서」(독립 행 철회)
 - PC only · 게이트·파라미터 로직 변경 없음
 
