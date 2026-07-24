@@ -210,15 +210,15 @@ export default function GlobeTourStrip({
         e.stopPropagation();
         toggleOpen();
       }}
-      className={`absolute -left-[2.15rem] top-1/2 z-[2] flex h-[7.25rem] w-[2.15rem] -translate-y-1/2 flex-col items-center justify-center gap-1.5 rounded-l-xl border border-r-0 shadow-lg backdrop-blur-md transition-all ${
+      className={`absolute -left-[2.15rem] top-1/2 z-[2] flex h-[7.25rem] w-[2.15rem] -translate-y-1/2 flex-col items-center justify-center gap-1.5 rounded-l-xl border border-r-0 backdrop-blur-md transition-all ${
         expanded
-          ? 'border-orange-300/50 bg-orange-500/35 text-orange-50'
-          : 'border-white/15 bg-black/80 text-orange-100/90 hover:border-orange-300/40 hover:bg-orange-500/20'
+          ? 'border-orange-200/70 bg-orange-500/55 text-white shadow-[0_0_18px_rgba(249,115,22,0.45)]'
+          : 'border-orange-300/55 bg-orange-500/40 text-orange-50 shadow-[0_4px_16px_rgba(249,115,22,0.35)] hover:border-orange-200/75 hover:bg-orange-500/55 hover:shadow-[0_0_20px_rgba(249,115,22,0.5)]'
       }`}
     >
-      <Ticket size={15} className="shrink-0" aria-hidden="true" />
+      <Ticket size={16} className="shrink-0 drop-shadow-sm" aria-hidden="true" />
       <span
-        className="text-[11px] font-bold tracking-wide"
+        className="text-[12px] font-extrabold tracking-wide drop-shadow-sm"
         style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
       >
         투어 찾기
