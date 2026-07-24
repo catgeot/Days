@@ -10,6 +10,8 @@ const VARIANT_CLASS = {
   /** 모바일 갤러리 상단 overview 카드 */
   mobile:
     'text-[14px] leading-[1.8] tracking-[0.01em] text-gray-100/95 font-normal break-keep',
+  /** 매거진 생성 전 intro placeholder — 대제목급 시인성 */
+  lede: 'text-[18px] md:text-[22px] leading-[1.7] tracking-[-0.01em] text-amber-50/95 font-semibold break-keep',
 };
 
 /**
@@ -31,8 +33,10 @@ export default function PlaceOverviewProse({
     );
   }
 
+  const gapClass = variant === 'lede' ? 'space-y-4' : 'space-y-3.5';
+
   return (
-    <div className={`space-y-3.5 ${className}`.trim()}>
+    <div className={`${gapClass} ${className}`.trim()}>
       {paragraphs.map((paragraph, index) => (
         <p key={`ov-p-${index}`} className={typeClass}>
           {paragraph}

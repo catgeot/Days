@@ -63,16 +63,17 @@ npm run audit:tourapi
 - 명소: 검증 `contentId` + `photoKeyword` + aliases
 - 미등록 국내(`country=한국`): soft — 이름=keyword · contentId 없음
 
-### 갤러리 순서 (`usePlaceGallery` · 캐시 v1.13)
+### 갤러리 순서 (`usePlaceGallery` · 캐시 v1.14)
 
 **국내** (`isDomesticKoreaLocation` · curated SSOT)
 
 1. sessionStorage
 2. **`place_stats`** — 히트 시 LIVE 생략 · **기존 갤러리 덮어쓰기 없음**  
-   - soft만: TourAPI 우세 DB → 스킵 후 스톡 재수집(공지천)
-3. **TourAPI** ([`fetchTourApiGallery.js`](../src/utils/fetchTourApiGallery.js)) — **`contentId` 공식 POI만** (DB miss 시)  
-   - `detailImage` 선두 · `photoKeywords` ≤3 병렬 searchPhoto · 랭킹·프로브
-4. Unsplash · Pexels · soft Tour(스톡 0) · fallback
+   - soft: TourAPI 우세 DB → 스킵 후 스톡 재수집(공지천)  
+   - curated hub: 스톡 고착 DB → 스킵 후 Tour 우선(양구 Unsplash 오매칭 방지)
+3. **TourAPI** ([`fetchTourApiGallery.js`](../src/utils/fetchTourApiGallery.js)) — **`contentId` 공식 POI** 또는 **curated hub `photoKeyword`** (DB miss 시)  
+   - `detailImage` 선두(있을 때) · `photoKeywords` ≤3 병렬 searchPhoto · 랭킹·프로브
+4. Unsplash · Pexels · soft Tour(스톡 0·비curated) · fallback
 
 **해외**: session → DB → Unsplash/Pexels (**TourAPI 미호출**)
 

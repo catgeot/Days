@@ -9,6 +9,7 @@ import {
   useMobileOverlayViewport,
   useVisualViewportBottomAnchor,
 } from '../../../shared/hooks/useMobileInputViewport.js';
+import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
 
 const PlaceCardSummary = ({
   location,
@@ -82,9 +83,15 @@ const PlaceCardSummary = ({
         ? '항공 경로'
         : '준비 중…';
 
+  const placeIntro = String(location?.desc || '').trim();
+  const hasPlaceIntro =
+    Boolean(placeIntro) && !isSyntheticOrEmptyPlaceDesc(location);
+
   const blurbText = canPreviewFlightRoute
     ? '탭하고 여행정보 확인하기'
-    : `${location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.`;
+    : hasPlaceIntro
+      ? placeIntro
+      : `${location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.`;
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -277,10 +284,12 @@ const PlaceCardSummary = ({
                   ? 'flex items-center justify-between gap-2 border-sky-400/35 bg-sky-500/15 px-3 py-2 hover:border-sky-300/50 hover:bg-sky-500/20'
                   : 'border-white/10 bg-white/[0.07] p-4 hover:bg-white/10'
               }`}>
-                <p className={`leading-snug ${
+                <p className={`break-keep ${
                   canPreviewFlightRoute
-                    ? 'text-sm font-semibold text-white break-keep'
-                    : 'text-xs text-gray-200 line-clamp-3'
+                    ? 'text-sm font-semibold text-white leading-snug'
+                    : hasPlaceIntro
+                      ? 'text-[13px] md:text-sm text-gray-100 leading-[1.65] line-clamp-4'
+                      : 'text-xs text-gray-200 leading-snug line-clamp-3'
                 }`}>
                   {blurbText}
                 </p>

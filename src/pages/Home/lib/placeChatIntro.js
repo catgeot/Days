@@ -239,3 +239,61 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName) {
   const raw = await apiClient.fetchProxyGemini(null, [], system, userText, [], MOONI_GEMINI.INTRO);
   return String(raw ?? '').trim();
 }
+
+/** 동시 방문·탭 전환 시 동일 키 AI 재호출 방지 */
+const introEnsureInflight = new Map();
+/** 생성 실패 키 — 세션 내 재시도 폭주 방지 (캐시 hit는 계속 조회) */
+const introEnsureFailed = new Set();
+
+/**
+ * place_chat_intro 조회 → 없으면 AI 생성·저장 → 써머리용 본문.
+ * @param {object|string} locOrName
+ * @param {{ generateIfMissing?: boolean }} [options]
+ * @returns {Promise<string|null>}
+ */
+export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
+  const { generateIfMissing = true } = options;
+  const keys = buildPlaceChatIntroKeys(locOrName);
+  if (!keys.length) return null;
+
+  const cached = await fetchPlaceChatIntroSummaryForLocation(locOrName);
+  if (cached) return cached;
+  if (!generateIfMissing) return null;
+
+  const primaryKey = keys[0];
+  if (introEnsureFailed.has(primaryKey)) return null;
+
+  const existing = introEnsureInflight.get(primaryKey);
+  if (existing) return existing;
+
+  const placeName =
+    typeof locOrName === 'string'
+      ? locOrName
+      : locOrName?.name || locOrName?.displayLabel || primaryKey;
+  const generateLabel =
+    typeof locOrName === 'string'
+      ? normalizeDestinationKey(locOrName)
+      : formatPlaceChatLabel(locOrName) || primaryKey;
+
+  const promise = (async () => {
+    try {
+      const raw = await generatePlaceChatIntroWithAi(generateLabel);
+      if (!raw) {
+        introEnsureFailed.add(primaryKey);
+        return null;
+      }
+      await persistPlaceChatIntroSummary(generateLabel, raw);
+      const stripped = stripPlaceChatIntroForSummary(raw, placeName);
+      return stripped || null;
+    } catch (err) {
+      introEnsureFailed.add(primaryKey);
+      console.warn('[place_chat_intro] ensure generate failed:', err);
+      return null;
+    } finally {
+      introEnsureInflight.delete(primaryKey);
+    }
+  })();
+
+  introEnsureInflight.set(primaryKey, promise);
+  return promise;
+}

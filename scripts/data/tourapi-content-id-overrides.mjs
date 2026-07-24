@@ -143,6 +143,14 @@ export const TOURAPI_CONTENT_ID_OVERRIDES = {
     aliases: ['춘천', 'Chuncheon'],
     verifiedAt: '2026-07-23',
   },
+  yanggu: {
+    photoKeyword: '양구',
+    photoKeywords: ['양구 전경', '박수근미술관', '두타연', '을지전망대'],
+    title: '양구',
+    contentId: null,
+    aliases: ['양구', '양구군', 'Yanggu'],
+    verifiedAt: '2026-07-24',
+  },
   suwon: {
     photoKeyword: '수원',
     title: '수원',

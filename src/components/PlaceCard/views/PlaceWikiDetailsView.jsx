@@ -22,6 +22,11 @@ import {
   readGalleryAttributionReturnState,
   resolveGalleryPlaceKey,
 } from '../common/galleryAttributionNavigation';
+import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import {
+  ensurePlaceChatIntroForLocation,
+  needsPlaceChatIntroHydration,
+} from '../../../pages/Home/lib/placeChatIntro';
 
 const LOADING_MESSAGES_NEW = [
     "여행 스케치 자료 분석 및 연동 중...",
@@ -173,6 +178,58 @@ const PlaceWikiDetailsView = ({
           setIsMagazineGenerating(true);
       }
   }, [wikiData?.summary, wikiData?.sections]);
+
+  /** 매거진 없을 때 상단 — place_chat_intro (써머리와 동일 본문) */
+  const [magazineIntro, setMagazineIntro] = useState(null);
+  const [magazineIntroLoading, setMagazineIntroLoading] = useState(false);
+  const magazineIntroPlaceKey = useMemo(
+    () => getPlaceStableKey(location) || String(placeName || '').trim(),
+    [location, placeName],
+  );
+  const locationDesc = String(location?.desc || '').trim();
+
+  useEffect(() => {
+    if (!isActive || isMagazineLoading || hasMagazineContent(wikiData)) {
+      return undefined;
+    }
+    if (!magazineIntroPlaceKey) return undefined;
+
+    const loc = location || { name: placeName, country: countryName };
+    // 써머리 hydrate된 실문장 desc면 그대로 사용 (AI 재호출 없음)
+    if (locationDesc && !needsPlaceChatIntroHydration(loc)) {
+      setMagazineIntro(locationDesc);
+      setMagazineIntroLoading(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setMagazineIntroLoading(true);
+
+    ensurePlaceChatIntroForLocation(loc, { generateIfMissing: true })
+      .then((summary) => {
+        if (!cancelled) setMagazineIntro(summary || null);
+      })
+      .catch(() => {
+        if (!cancelled) setMagazineIntro(null);
+      })
+      .finally(() => {
+        if (!cancelled) setMagazineIntroLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    isActive,
+    isMagazineLoading,
+    wikiData?.summary,
+    wikiData?.sections,
+    magazineIntroPlaceKey,
+    locationDesc,
+    location,
+    placeName,
+    countryName,
+  ]);
 
   const requestInfoRef = useRef({ placeName, wikiTitle: wikiData?.title, placeId: wikiData?.place_id || placeName });
   useEffect(() => {
@@ -743,6 +800,19 @@ const PlaceWikiDetailsView = ({
                     </div>
                 ) : (
                     <div className="flex flex-col items-stretch min-h-[40vh] text-gray-400 gap-8 animate-fade-in py-10">
+                        {(magazineIntro || magazineIntroLoading) && (
+                            <div className="px-1 md:px-2 pb-4 border-b border-white/10">
+                                {magazineIntroLoading && !magazineIntro ? (
+                                    <div className="space-y-3 animate-pulse py-1">
+                                        <div className="h-6 bg-white/5 rounded w-full" />
+                                        <div className="h-6 bg-white/5 rounded w-5/6" />
+                                        <div className="h-6 bg-white/5 rounded w-4/6" />
+                                    </div>
+                                ) : (
+                                    <PlaceOverviewProse text={magazineIntro} variant="lede" />
+                                )}
+                            </div>
+                        )}
                         <div className="flex flex-col items-center gap-6">
                             <BookOpen size={48} className="opacity-20 text-amber-400" />
                             <div className="text-center space-y-2 px-4">

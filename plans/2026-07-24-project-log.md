@@ -61,27 +61,14 @@
 - 가독성: `PlaceOverviewProse` — 문장 단위 문단 · `break-keep` · 행간 1.8~1.85 · 자간 0.01em · intro는 `desc`만(큐레이션 보라 박스 오인 방지)
 - **제외**: 잘못 캐시된 `미야코지마` intro 일괄 삭제(불필요)
 
-### 다음 세션 — 에이전트 핸드오프
+## 써머리-이어하기 — 방문 시 intro 자동생성 · 매거진 placeholder · hub fly-to
 
-| 읽을 것 | |
-|---------|--|
-| 1 | `.ai-context.md` 1절·3절(금지) · 본 일지 절 |
-| 2 | [`placeChatIntro.js`](../src/pages/Home/lib/placeChatIntro.js) · [`PlaceOverviewProse.jsx`](../src/components/PlaceCard/common/PlaceOverviewProse.jsx) |
-| 3 | 매거진: [`useWikiData.js`](../src/components/PlaceCard/hooks/useWikiData.js) · [`PlaceWikiDetailsView.jsx`](../src/components/PlaceCard/views/PlaceWikiDetailsView.jsx) |
+**상태**: ✅ 사람 QA 확인 · 커밋·push
 
-| 금지 3 | |
-|--------|--|
-| 1 | `place_wiki`/`place_chat_intro` 스키마 무단 변경 · 매거진 본문 전체 재생성과 혼동 |
-| 2 | 방문 시 AI를 매 재진입마다 호출(캐시 hit면 skip · rate 제한) |
-| 3 | 미야코지마 intro 일괄 삭제 재시도 |
-
-**제시어** (복사):
-
-```
-써머리-이어하기
-@plans/2026-07-24-project-log.md 「무니 인트로 → 장소 써머리 재사용」핸드오프
-1) 빈/합성 desc 방문 시 place_chat_intro 없으면 AI 생성·저장·hydrate (무니 클릭 없이 · 캐시 hit skip)
-2) 매거진 없을 때 place_wiki.summary 상단에 동일 intro 시너지 (매거진 생성 전 placeholder)
-3) 별건: 신규 지역(명소 hub) 홈 써머리 카드 fly-to/focus 미동작 조사·수정
-제외: 미야코지마 intro DB 일괄 삭제
-```
+- `ensurePlaceChatIntroForLocation`: 캐시 hit skip · miss면 AI 생성·`place_chat_intro` 저장 · inflight/실패 키로 재호출 폭주 방지
+- 장소 방문·`/place` sync: 빈/합성 desc면 ensure → 홈 써머리·갤러리 overview hydrate
+- 매거진 빈 탭: 상단 intro (`lede`) · `place_wiki` 본문 재생성과 분리
+- hub fly-to: Explore `fromSearch` + `wakeAfterOverlay` · ✅ 확인
+- 홈 써머리: 고정 blurb 대신 실문장 `desc` · `/place` sync intro 유지(`overlaySessionCuration`)
+- 양구 갤러리: TourAPI SSOT `yanggu` · curated hub Tour 우선(캐시 v1.14) · ✅ 확인
+- **제외**: 미야코지마 intro DB 일괄 삭제

@@ -9,11 +9,19 @@ import {
   isPlaceholderCountry,
   isSameCanonicalPlace,
 } from '../../../utils/travelSpotResolve.js';
+import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
 import { readCachedPlaceBySlug } from './placeLocationCache.js';
 
+function hasReusableSessionDesc(loc) {
+  if (!loc || typeof loc !== 'object') return false;
+  if (loc.curationSummary || loc.originalQuery) return true;
+  const desc = String(loc.desc || '').trim();
+  return Boolean(desc) && !isSyntheticOrEmptyPlaceDesc(loc);
+}
+
 /**
- * SSOT/cities hydrate 후에도 검색·테마 큐레이션(originalQuery·curationSummary)을 유지.
- * /place/:slug sync가 카탈로그 desc만 넣으면 큐레이션이 깜빡이다 사라지던 회귀 방지.
+ * SSOT/cities hydrate 후에도 검색·테마 큐레이션·intro desc를 유지.
+ * /place/:slug sync가 hub 합성 desc로 덮어 intro가 사라지던 회귀 방지.
  */
 export function overlaySessionCuration(target, options = {}) {
   if (!target || typeof target !== 'object') return target;
@@ -26,7 +34,7 @@ export function overlaySessionCuration(target, options = {}) {
   let source = null;
   if (
     selectedLocation &&
-    (selectedLocation.curationSummary || selectedLocation.originalQuery) &&
+    hasReusableSessionDesc(selectedLocation) &&
     isSameCanonicalPlace(selectedLocation, target)
   ) {
     source = selectedLocation;
@@ -34,7 +42,7 @@ export function overlaySessionCuration(target, options = {}) {
 
   if (!source && slug) {
     const cached = readCachedPlaceBySlug(slug);
-    if (cached?.curationSummary || cached?.originalQuery) {
+    if (hasReusableSessionDesc(cached)) {
       source = cached;
     }
   }
@@ -43,14 +51,25 @@ export function overlaySessionCuration(target, options = {}) {
 
   const curationSummary = String(source.curationSummary || '').trim();
   const originalQuery = source.originalQuery || undefined;
-  const fixed = String(target.desc || '').trim();
-  let desc = fixed;
+  const targetDesc = String(target.desc || '').trim();
+  const targetSynthetic =
+    !targetDesc || isSyntheticOrEmptyPlaceDesc({ ...target, desc: targetDesc });
+  const sourceDesc = String(source.desc || '').trim();
+  const sourceReal =
+    Boolean(sourceDesc) && !isSyntheticOrEmptyPlaceDesc({ ...source, desc: sourceDesc });
+
+  let desc = targetDesc;
   if (curationSummary) {
-    if (!fixed) desc = curationSummary;
-    else if (fixed === curationSummary || fixed.startsWith(curationSummary)) desc = fixed;
-    else desc = `${curationSummary}\n\n${fixed}`;
-  } else if (source.desc) {
-    desc = source.desc;
+    if (!targetDesc || targetSynthetic) desc = curationSummary;
+    else if (targetDesc === curationSummary || targetDesc.startsWith(curationSummary)) {
+      desc = targetDesc;
+    } else {
+      desc = `${curationSummary}\n\n${targetDesc}`;
+    }
+  } else if (sourceReal && targetSynthetic) {
+    desc = sourceDesc;
+  } else if (sourceReal && !targetDesc) {
+    desc = sourceDesc;
   }
 
   return {

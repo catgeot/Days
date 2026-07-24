@@ -23,6 +23,10 @@ export function isSyntheticOrEmptyPlaceDesc(location) {
   }
   if (parent && badge && d === `${parent} · ${badge}`) return true;
 
+  // hubToPlacePin / hubToSuggestion 고정 문구
+  if (name && /지역을 탐색합니다\.?\s*$/.test(d)) return true;
+  if (name && d === `${name}의 명소·명물을 둘러보세요.`) return true;
+
   return false;
 }
 

@@ -42,7 +42,11 @@ import {
 } from '../../utils/travelSpotResolve.js';
 import { getAddressFromCoordinates } from './lib/geocoding';
 import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat';
-import { buildMooniBoundSpotFromLocation } from './lib/placeChatIntro';
+import {
+  buildMooniBoundSpotFromLocation,
+  ensurePlaceChatIntroForLocation,
+  needsPlaceChatIntroHydration,
+} from './lib/placeChatIntro';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
@@ -541,6 +545,28 @@ function Home() {
             setSelectedLocation(focusTarget);
           }
 
+          // 빈/합성 desc → place_chat_intro (홈 써머리·갤러리 overview와 동일)
+          if (needsPlaceChatIntroHydration(focusTarget)) {
+            const pinId = focusTarget?.id;
+            const pinName = focusTarget?.name;
+            ensurePlaceChatIntroForLocation(focusTarget, { generateIfMissing: true })
+              .then((summary) => {
+                if (!summary || syncId !== placeRouteSyncRef.current) return;
+                setSelectedLocation((prev) => {
+                  if (!prev) return prev;
+                  const same =
+                    (pinId && prev.id === pinId) ||
+                    (pinName && prev.name === pinName) ||
+                    isSameCanonicalPlace(prev, focusTarget);
+                  if (!same || !needsPlaceChatIntroHydration(prev)) return prev;
+                  const next = { ...prev, desc: summary };
+                  selectedLocationRef.current = next;
+                  return next;
+                });
+              })
+              .catch(() => {});
+          }
+
           // SSOT 미등록 uiPlace — URL 복원 시 Explore/빈 국가·좌표-only 표시명을 역지오로 복구
           const needsCountryHeal = isPlaceholderCountry(focusTarget.country);
           const needsNameHeal =
@@ -629,17 +655,16 @@ function Home() {
     prevPathRef.current = currentPath;
 
     if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
-      if (routeLocation.state?.fromSearch) {
-        return;
-      }
-      const fromPrevPlacePath = prevPath.startsWith('/place/')
-        ? resolveFocusLocationFromPlacePath(prevPath, category, savedTrips)
-        : null;
+      const fromSearch = Boolean(routeLocation.state?.fromSearch);
+      const fromPrevPlacePath =
+        !fromSearch && prevPath.startsWith('/place/')
+          ? resolveFocusLocationFromPlacePath(prevPath, category, savedTrips)
+          : null;
       const focusForHome =
         pendingGlobeHomeFocusRef.current ||
         fromPrevPlacePath ||
-        (hasValidCoords(lastGlobeFocusRef.current) && lastGlobeFocusRef.current) ||
-        (hasValidCoords(selectedLocationRef.current) && selectedLocationRef.current);
+        (hasValidCoords(selectedLocationRef.current) && selectedLocationRef.current) ||
+        (hasValidCoords(lastGlobeFocusRef.current) && lastGlobeFocusRef.current);
       pendingGlobeHomeFocusRef.current = null;
 
       queueMicrotask(() => {
@@ -649,16 +674,22 @@ function Home() {
       if (focusForHome) {
         rememberGlobeFocus(focusForHome);
         selectedLocationRef.current = focusForHome;
-        setSelectedLocation(focusForHome);
+        if (!fromSearch) {
+          setSelectedLocation(focusForHome);
+        }
         const { lat, lng, name } = focusForHome;
         const focusCategory = focusForHome.category || category;
+        // Explore pause 직후: resize·입력 복구 없이 flyTo가 씹히는 경우(hub·신규 지역) 방지
         window.setTimeout(() => {
-          moveToLocation(lat, lng, name, focusCategory);
+          globeRef.current?.wakeAfterOverlay?.();
+          moveToLocation(lat, lng, name, focusCategory, { location: focusForHome });
         }, 150);
         return;
       }
 
-      revealRandomGlobeFace();
+      if (!fromSearch) {
+        revealRandomGlobeFace();
+      }
     }
   }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation]);
 
@@ -1020,7 +1051,12 @@ function Home() {
             const lat = Number(spot?.lat);
             const lng = Number(spot?.lng);
             if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-            handleLocationSelect({ ...spot, lat, lng });
+            const pin = { ...spot, lat, lng };
+            // Explore→홈 race: path effect가 selectedLocation 반영 전에 돌 수 있어 동기 SSOT
+            pendingGlobeHomeFocusRef.current = pin;
+            rememberGlobeFocus(pin);
+            selectedLocationRef.current = pin;
+            handleLocationSelect(pin);
             navigate('/', { state: { fromSearch: true } });
           }}
           onSearch={async (query) => {
@@ -1041,6 +1077,11 @@ function Home() {
               // Ignore localStorage errors in private mode, etc.
             }
 
+            if (hasValidCoords(selectedFromSearch)) {
+              pendingGlobeHomeFocusRef.current = selectedFromSearch;
+              rememberGlobeFocus(selectedFromSearch);
+              selectedLocationRef.current = selectedFromSearch;
+            }
             navigate('/', { state: { fromSearch: true } });
             return selectedFromSearch;
           }}

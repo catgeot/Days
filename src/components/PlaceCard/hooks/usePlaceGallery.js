@@ -21,8 +21,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.13 — session → DB → TourAPI(국내 contentId) → 스톡 · soft Tour 우세 DB만 스톡 재수집 */
-const CACHE_VERSION = 'v1.13';
+/** v1.14 — session → DB → TourAPI(국내 contentId·curated hub) → 스톡 · soft Tour 우세/스톡 고착 DB 스킵 */
+const CACHE_VERSION = 'v1.14';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
@@ -446,13 +446,24 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               const gallerySlice = thumbnailOnly
                 ? dbData.gallery_urls.slice(0, 1)
                 : dbData.gallery_urls;
+              const tourDominant = isTourApiDominantGallery(gallerySlice);
               if (
                 isDomesticKorea &&
                 !hasOfficialTourContentId &&
-                isTourApiDominantGallery(gallerySlice)
+                tourDominant
               ) {
                 console.warn(
                   '⚠️ place_stats TourAPI-heavy — soft stock refresh (skip DB short-circuit)',
+                );
+              } else if (
+                isDomesticKorea &&
+                tourMapping?.curated &&
+                !hasOfficialTourContentId &&
+                !tourDominant
+              ) {
+                // curated hub(양구 등): Unsplash 오매칭이 DB에 고착되면 TourAPI를 못 탐
+                console.warn(
+                  '⚠️ place_stats stock-heavy curated — prefer TourAPI (skip DB short-circuit)',
                 );
               } else {
                 processAndSetImages(gallerySlice);
@@ -468,11 +479,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
       }
 
-      // 3) TourAPI LIVE — 국내 공식 contentId + DB miss 만 (해외·soft 제외)
+      // 3) TourAPI LIVE — 국내 공식 contentId 또는 curated hub photoKeyword (DB miss)
+      // Unsplash 「Yanggu」오매칭이 soft(스톡0)보다 먼저 막히지 않게 curated는 여기 우선.
       if (
         isDomesticKorea &&
-        hasOfficialTourContentId &&
-        tourMapping?.photoKeyword
+        tourMapping?.photoKeyword &&
+        (hasOfficialTourContentId || tourMapping.curated)
       ) {
         try {
           const tourImages = await fetchTourApiGallery({

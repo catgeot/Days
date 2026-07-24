@@ -43,7 +43,7 @@ import {
 } from '../lib/searchSuggestions.js';
 import { searchBoxForward } from '../lib/mapboxSearchBox.js';
 import {
-  fetchPlaceChatIntroSummaryForLocation,
+  ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
 
@@ -444,12 +444,15 @@ export function useHomeHandlers({
       }).catch(() => {});
     };
 
-    /** place_chat_intro 캐시가 있으면 빈/합성 desc를 써머리로 채움 (AI 재생성 없음) */
+    /**
+     * 빈/합성 desc → place_chat_intro hydrate.
+     * 캐시 hit면 AI skip · miss면 생성·저장 후 반영 (무니 클릭 불필요).
+     */
     const scheduleIntroHydrate = (pin) => {
       if (!needsPlaceChatIntroHydration(pin)) return;
       const pinId = pin?.id;
       const pinName = pin?.name;
-      fetchPlaceChatIntroSummaryForLocation(pin)
+      ensurePlaceChatIntroForLocation(pin, { generateIfMissing: true })
         .then((summary) => {
           if (!summary) return;
           setSelectedLocation((prev) => {
