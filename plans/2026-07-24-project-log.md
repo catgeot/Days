@@ -584,3 +584,19 @@ QA 후 커밋.
 로컬. area↔hub SSOT G0 시드 3. audit PASS 후 커밋.
 ```
 
+## 국내축제 — S3b G0 (areaHub SSOT)
+
+**상태**: ✅ VERIFY PASS · 브랜치 `cursor/korea-festival-proxy` · **다음 = 시도 배치(LEGACY→SSOT)**
+
+- overrides → `generate:korea-area-codes` → `koreaAreaCodes.json`
+- 시드 3: `1→seoul` · `6→busan` · `39→jeju`
+- `koreaHubSeeds`: SSOT 우선 · 미채움 시도 LEGACY 폴백
+- VERIFY: `audit:korea-area-codes` · `smoke:korea-area-codes` · `smoke:tourapi`(해상) PASS
+- **금지 유지**: gallery tourapi overrides 혼용 · Cloud 오케 · releaseNotes · 국내 지도
+
+### 다음 — 시도 배치 (같은 로컬 채팅)
+
+**읽을 것**: 플랜 S3b · 본 절 · overrides  
+**작업**: LEGACY 시도(2·3·4·5·7·8·31–38)를 overrides에 append → generate → audit(+smoke) → 커밋  
+**제시어 예**: `국내축제-S3b-시도-경기강원` (배치 단위는 2~4개 시도)
+

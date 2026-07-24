@@ -1,23 +1,25 @@
-/** S2 최소 시드 — S3b area↔hub SSOT 전 임시. hubId = cityAttractionHubs.hubId */
-export const DEFAULT_HUB_SEEDS = [
-  'seoul',
-  'busan',
-  'jeju',
-  'gangneung',
-  'gyeongju',
-  'jeonju',
-  'sokcho',
-  'yeosu',
-];
+import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
 
-/** TourAPI areaCode → hubId[] (내 주변 역매핑·가로 레일) */
-export const HUB_SEEDS_BY_AREA = {
-  1: ['seoul'],
+/**
+ * TourAPI areaCode ↔ hub — SSOT: koreaAreaCodes.json (overrides → generate).
+ * 미채움 시도는 LEGACY 폴백 (이후 배치로 SSOT 이관).
+ */
+
+/** @type {string[]} */
+export const DEFAULT_HUB_SEEDS =
+  Array.isArray(koreaAreaCodes?.defaultHubIds) && koreaAreaCodes.defaultHubIds.length > 0
+    ? koreaAreaCodes.defaultHubIds.map((id) => String(id).toLowerCase())
+    : ['seoul', 'busan', 'jeju', 'gangneung', 'gyeongju', 'jeonju', 'sokcho', 'yeosu'];
+
+/**
+ * S3b 미이관 시도 — SSOT areas에 없는 코드만 사용.
+ * @type {Record<string, string[]>}
+ */
+const LEGACY_HUBS_BY_AREA = {
   2: ['incheon'],
   3: ['daejeon'],
   4: ['daegu'],
   5: ['gwangju'],
-  6: ['busan'],
   7: ['ulsan'],
   8: [],
   31: ['suwon', 'gapyeong'],
@@ -28,31 +30,28 @@ export const HUB_SEEDS_BY_AREA = {
   36: ['busan', 'tongyeong', 'jinju', 'geoje', 'namhae'],
   37: ['jeonju', 'gunsan'],
   38: ['yeosu', 'gwangju', 'suncheon', 'mokpo', 'damyang'],
-  39: ['jeju', 'seogwipo'],
 };
+
+function ssotHubIds(areaCode) {
+  const key = String(areaCode);
+  const entry = koreaAreaCodes?.areas?.[key];
+  if (Array.isArray(entry?.hubIds) && entry.hubIds.length > 0) {
+    return entry.hubIds.map((id) => String(id).toLowerCase());
+  }
+  return null;
+}
 
 export function hubIdsForArea(areaCode) {
   if (areaCode == null || areaCode === '' || areaCode === 'all') {
     return DEFAULT_HUB_SEEDS;
   }
-  const key = String(areaCode);
-  const ids = HUB_SEEDS_BY_AREA[key] || HUB_SEEDS_BY_AREA[Number(key)];
-  return Array.isArray(ids) && ids.length > 0 ? ids : DEFAULT_HUB_SEEDS;
-}
+  const fromSsot = ssotHubIds(areaCode);
+  if (fromSsot) return fromSsot;
 
-/** hubId → TourAPI areaCode (시드 역매핑 · S3b 전). 첫 매칭 우선. */
-const HUB_TO_AREA = (() => {
-  /** @type {Map<string, string>} */
-  const map = new Map();
-  for (const [area, hubs] of Object.entries(HUB_SEEDS_BY_AREA)) {
-    if (!Array.isArray(hubs)) continue;
-    for (const hubId of hubs) {
-      const key = String(hubId || '').toLowerCase();
-      if (key && !map.has(key)) map.set(key, String(area));
-    }
-  }
-  return map;
-})();
+  const key = String(areaCode);
+  const legacy = LEGACY_HUBS_BY_AREA[key] || LEGACY_HUBS_BY_AREA[Number(key)];
+  return Array.isArray(legacy) && legacy.length > 0 ? legacy : DEFAULT_HUB_SEEDS;
+}
 
 /**
  * @param {string} hubId
@@ -61,5 +60,17 @@ const HUB_TO_AREA = (() => {
 export function areaCodeForHubId(hubId) {
   const key = String(hubId || '').toLowerCase();
   if (!key) return null;
-  return HUB_TO_AREA.get(key) || null;
+
+  const fromSsot = koreaAreaCodes?.byHubId?.[key];
+  if (fromSsot != null && String(fromSsot).trim() !== '') {
+    return String(fromSsot);
+  }
+
+  for (const [area, hubs] of Object.entries(LEGACY_HUBS_BY_AREA)) {
+    if (!Array.isArray(hubs)) continue;
+    if (hubs.some((h) => String(h).toLowerCase() === key)) {
+      return String(area);
+    }
+  }
+  return null;
 }

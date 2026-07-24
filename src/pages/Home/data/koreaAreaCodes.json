@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-07-24T12:27:09.063Z",
+    "areaCount": 3,
+    "hubLinkCount": 3,
+    "source": "scripts/data/korea-area-code-overrides.mjs"
+  },
+  "defaultHubIds": [
+    "seoul",
+    "busan",
+    "jeju",
+    "gangneung",
+    "gyeongju",
+    "jeonju",
+    "sokcho",
+    "yeosu"
+  ],
+  "areas": {
+    "1": {
+      "name": "서울",
+      "hubIds": [
+        "seoul"
+      ]
+    },
+    "6": {
+      "name": "부산",
+      "hubIds": [
+        "busan"
+      ]
+    },
+    "39": {
+      "name": "제주",
+      "hubIds": [
+        "jeju"
+      ]
+    }
+  },
+  "byHubId": {
+    "seoul": "1",
+    "busan": "6",
+    "jeju": "39"
+  }
+}

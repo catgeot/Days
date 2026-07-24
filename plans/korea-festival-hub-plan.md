@@ -10,7 +10,7 @@
 | **S1** 프록시·fetch | ✅ | S2 |
 | S2 `/korea` UI | ✅ S2b | addr 도/시·시군·달력 dayRole · 다음 S3a |
 | S3a 상세·SEO | ✅ `aed70b1` | 다음 S3b |
-| S3b area↔hub SSOT | ⬜ | S3a QA 후 |
+| S3b area↔hub SSOT | ✅ G0 시드3 | 이후 시도 배치(로컬 순차) |
 | S4 캐시 | 선택 | MVP 이후 |
 
 ---
@@ -155,11 +155,14 @@ QA 후 커밋.
 
 ---
 
-### S3b — areaCode↔hub SSOT ⬜
+### S3b — areaCode↔hub SSOT ✅ G0
 
-로컬. G0: overrides·generate·audit·시드 3(서울·부산·제주) → 커밋.  
-이후 시도 배치를 **같은 로컬 채팅에서 순차** 또는 소규모 워커2. Cloud 오케스트레이터 기본 아님.  
-VERIFY: `audit:korea-area-codes` + 해상 스모크.
+| | |
+|--|--|
+| **환경** | 로컬 · `cursor/korea-festival-proxy` |
+| **산출** | `korea-area-code-overrides.mjs` → `koreaAreaCodes.json` · `generate`/`audit`/`smoke:korea-area-codes` · 시드 3(서울1·부산6·제주39) · `koreaHubSeeds` SSOT 우선+LEGACY 폴백 |
+| **VERIFY** | `audit:korea-area-codes` · `smoke:korea-area-codes` · `smoke:tourapi`(해상) PASS |
+| **다음** | 미채움 시도 LEGACY → SSOT 배치(같은 로컬 채팅 순차 또는 소규모 워커2). Cloud 오케 기본 아님 |
 
 ---
 
