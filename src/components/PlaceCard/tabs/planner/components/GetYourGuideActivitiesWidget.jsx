@@ -179,27 +179,52 @@ const GetYourGuideActivitiesWidget = ({
 
   if (!query) return null;
 
+  const sponsoredText = (
+    <span className="inline-flex items-baseline gap-1 uppercase tracking-wide">
+      <span
+        className={`text-[10px] font-medium ${
+          isBoxed ? 'text-orange-500/55' : 'text-orange-200/45'
+        }`}
+      >
+        Sponsored
+      </span>
+      <span
+        className={`text-[10px] font-medium ${
+          isBoxed ? 'text-orange-400/40' : 'text-orange-200/30'
+        }`}
+        aria-hidden
+      >
+        ·
+      </span>
+      <span
+        className={`text-[10px] font-bold ${
+          isBoxed ? 'text-orange-600' : 'text-orange-300/90'
+        }`}
+      >
+        GetYourGuide
+      </span>
+    </span>
+  );
+
   const sponsoredLabel = linkSponsoredLabel ? (
     <a
       href={homeHref}
       target="_blank"
       rel="noopener noreferrer sponsored"
       onClick={(e) => e.stopPropagation()}
-      className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide underline-offset-2 hover:underline ${
-        isBoxed ? 'text-orange-600 hover:text-orange-700' : 'text-orange-300/90 hover:text-orange-200'
+      className={`inline-flex items-center gap-1 underline-offset-2 hover:underline ${
+        isBoxed ? 'hover:opacity-90' : 'hover:opacity-95'
       }`}
     >
-      <span>Sponsored · GetYourGuide</span>
-      <ExternalLink size={10} className="shrink-0 opacity-70" aria-hidden />
+      {sponsoredText}
+      <ExternalLink
+        size={10}
+        className={`shrink-0 ${isBoxed ? 'text-orange-600/70' : 'text-orange-300/70'}`}
+        aria-hidden
+      />
     </a>
   ) : (
-    <div
-      className={`text-[10px] font-bold uppercase tracking-wide ${
-        isBoxed ? 'text-orange-600' : 'text-orange-300/90'
-      }`}
-    >
-      Sponsored · GetYourGuide
-    </div>
+    <div className="inline-flex items-center">{sponsoredText}</div>
   );
 
   const chrome = (

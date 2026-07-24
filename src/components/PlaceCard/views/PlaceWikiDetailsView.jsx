@@ -131,10 +131,6 @@ const PlaceWikiDetailsView = ({
 
   // 스크롤 이벤트 리스너 (맨 위로 가기 버튼용)
   useEffect(() => {
-      if (!isActive) {
-          setScrollY(0);
-          return undefined;
-      }
       const handleScroll = () => {
           if (containerRef.current) {
               setScrollY(containerRef.current.scrollTop);
@@ -143,15 +139,14 @@ const PlaceWikiDetailsView = ({
 
       const container = containerRef.current;
       if (container) {
-          handleScroll();
-          container.addEventListener('scroll', handleScroll, { passive: true });
+          container.addEventListener('scroll', handleScroll);
       }
       return () => {
           if (container) {
               container.removeEventListener('scroll', handleScroll);
           }
       };
-  }, [isActive, wikiData?.slug, location?.slug]);
+  }, []);
 
   useEffect(() => {
       let interval;
@@ -651,8 +646,6 @@ const PlaceWikiDetailsView = ({
       });
   };
 
-  const showWikiScrollTop = isActive && scrollY > 180;
-
   return (
     <div className="w-full h-full flex flex-col relative bg-[#05070a]">
     <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
@@ -705,43 +698,10 @@ const PlaceWikiDetailsView = ({
                 </h1>
             )}
 
-            {/* 소제목 + 로컬 왓슨(제미나이) — 우측 본문 시인성 */}
-            <div className="mb-8 flex items-center justify-between gap-3 border-b border-white/10 pb-4">
-                <div className="flex min-w-0 items-center gap-3 text-lg font-bold text-amber-400 md:text-xl">
-                    <BookOpen size={24} className="shrink-0" />
-                    <span className="truncate">GATEO 여행 스케치</span>
-                </div>
-                <button
-                    type="button"
-                    onClick={() => {
-                        if (isAiExpanded) {
-                            if (aiSectionRef.current) {
-                                aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                        } else {
-                            handleRequestAiInfo(placeName || wikiData?.title);
-                        }
-                    }}
-                    className={`group flex shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 py-2 shadow-sm transition-all duration-300 ${
-                        isAiExpanded
-                            ? 'border-blue-400/50 bg-gradient-to-r from-blue-600/40 to-purple-600/40 ring-2 ring-blue-500/30'
-                            : 'border-blue-500/30 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30'
-                    }`}
-                >
-                    <Sparkles
-                        size={15}
-                        className={`shrink-0 transition-transform group-hover:scale-110 ${
-                            isAiExpanded ? 'text-white' : 'text-blue-400'
-                        }`}
-                    />
-                    <span
-                        className={`text-xs font-medium tracking-wide whitespace-nowrap ${
-                            isAiExpanded ? 'text-white' : 'text-gray-200'
-                        }`}
-                    >
-                        {isAiExpanded ? '로컬 왓슨' : '제미나이'}
-                    </span>
-                </button>
+            {/* 소제목 */}
+            <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-8 pb-4 border-b border-white/10">
+                <BookOpen size={24} />
+                <span>GATEO 여행 스케치</span>
             </div>
 
             {/* 메인 레이아웃 (단일 컬럼) */}
@@ -1086,6 +1046,17 @@ const PlaceWikiDetailsView = ({
                 )}
             </div>
 
+        {/* 맨 위로 가기 버튼 */}
+        {scrollY > 500 && (
+            <button
+                onClick={scrollToTop}
+                className="fixed bottom-24 md:bottom-12 right-6 md:right-12 p-3.5 bg-blue-600/80 hover:bg-blue-500 text-white rounded-full shadow-2xl backdrop-blur-md transition-all duration-300 z-[170] group animate-fade-in"
+                aria-label="맨 위로 가기"
+            >
+                <ArrowUp size={24} className="group-hover:-translate-y-1 transition-transform" />
+            </button>
+        )}
+
         {/* 라이트박스 모달 — 갤러리 탭 개별 사진 UI와 동일 톤 (body 포털) */}
         {lightboxImg && createPortal(
             <div
@@ -1205,20 +1176,6 @@ const PlaceWikiDetailsView = ({
             </div>,
             document.body
         )}
-
-        <button
-            type="button"
-            onClick={scrollToTop}
-            aria-label="맨 위로"
-            className={`absolute bottom-24 md:bottom-10 right-4 md:right-8 z-[170] flex h-11 items-center gap-1 rounded-full border border-blue-300/40 bg-blue-600 px-3.5 text-white shadow-[0_4px_20px_rgba(37,99,235,0.45)] transition-all duration-300 hover:bg-blue-500 active:scale-95 ${
-                showWikiScrollTop
-                    ? 'pointer-events-auto translate-y-0 opacity-100'
-                    : 'pointer-events-none translate-y-3 opacity-0'
-            }`}
-        >
-            <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden />
-            <span className="text-xs font-bold">맨 위</span>
-        </button>
     </div>
   );
 };
