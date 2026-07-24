@@ -87,9 +87,9 @@ const GetYourGuideActivitiesWidget = ({
 
   if (!isBoxed) {
     return (
-      <div className={`mt-0 ${className}`.trim()}>
+      <div className={`mt-0 w-full min-w-0 ${className}`.trim()}>
         {chrome}
-        {frame}
+        <div className="w-full min-w-0 [&_iframe]:!max-w-full">{frame}</div>
       </div>
     );
   }
@@ -97,7 +97,7 @@ const GetYourGuideActivitiesWidget = ({
   return (
     <div className={`mt-3 rounded-xl border border-orange-100 bg-orange-50/50 p-3 ${className}`.trim()}>
       {chrome}
-      <div className="max-h-[240px] overflow-y-auto overscroll-contain pr-0.5 custom-scrollbar">
+      <div className="max-h-[min(52vh,520px)] overflow-y-auto overscroll-contain pr-0.5 custom-scrollbar">
         {frame}
       </div>
     </div>

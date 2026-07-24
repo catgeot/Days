@@ -666,6 +666,14 @@ const PlaceWikiDetailsView = ({
             </div>
         )}
 
+        {/* 스크롤해도 우측 패널 상단에 고정 */}
+        <div className="sticky top-0 z-30 shrink-0 border-b border-amber-400/25 bg-[#05070a]/94 px-4 py-2.5 backdrop-blur-md md:px-6">
+            <div className="mx-auto flex max-w-3xl items-center gap-2.5 text-amber-400">
+                <BookOpen size={18} className="shrink-0 md:w-[22px] md:h-[22px]" />
+                <span className="text-sm font-bold tracking-wide md:text-base">GATEO 여행 스케치</span>
+            </div>
+        </div>
+
         {/* Hero Section */}
         {heroImage && (
             <div className="relative w-full overflow-hidden flex-shrink-0">
@@ -697,12 +705,6 @@ const PlaceWikiDetailsView = ({
                     {placeName || wikiData?.title}
                 </h1>
             )}
-
-            {/* 소제목 */}
-            <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-8 pb-4 border-b border-white/10">
-                <BookOpen size={24} />
-                <span>GATEO 여행 스케치</span>
-            </div>
 
             {/* 메인 레이아웃 (단일 컬럼) */}
             <div className="space-y-12">
