@@ -70,8 +70,8 @@ const PlaceWikiNavView = ({
 
   if (hasGyg) {
     return (
-      <div className="animate-fade-in flex h-full min-h-0 flex-col px-3 pt-4 pb-3 md:px-4">
-        <div className="mb-2.5 flex shrink-0 items-center gap-2">
+      <div className="animate-fade-in flex h-full min-h-0 flex-col px-2 pt-4 pb-3">
+        <div className="mb-2.5 flex shrink-0 items-center gap-2 px-0.5">
           <h2 className="flex min-w-0 flex-1 items-center gap-1.5 text-[15px] font-bold text-white">
             <Ticket size={17} className="shrink-0 text-orange-400" />
             <span className="truncate">현지 투어</span>
@@ -85,6 +85,7 @@ const PlaceWikiNavView = ({
             variant="open"
             frameWidth={GYG_ACTIVITIES_FRAME_WIDTH}
             showMoreLink
+            linkSponsoredLabel
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import {
   GYG_ACTIVITIES_ITEM_COUNT,
@@ -10,11 +10,11 @@ import {
 } from '../../../../../utils/affiliate';
 import { buildGygActivitiesSearchQuery } from '../locationRules';
 
-/** 파트너 프리뷰 공식 폭 — 560에서 Activities 2열 유도 (740/375는 QA 시 교체) */
-export const GYG_ACTIVITIES_FRAME_WIDTH = 560;
+/** 파트너 프리뷰 공식 폭 — 740에서 Activities 2열 (560은 패딩 후 1열로 남는 경우 많음) */
+export const GYG_ACTIVITIES_FRAME_WIDTH = 740;
 
 /**
- * 제휴 홈 CTA — cmp 유지 · 스케치 하단·모달 상·하단 공통
+ * 제휴 홈 CTA — cmp 유지 · 스케치/모달 하단 공통
  * @param {{ location?: object, cmp?: string, label?: string, compact?: boolean, className?: string }} props
  */
 export function GygHomeMoreLink({
@@ -49,8 +49,9 @@ export function GygHomeMoreLink({
  * @param {'boxed'|'open'} [variant]
  * boxed — 플래너 map_poi: Sponsored 박스 유지 · 고정 높이 내부 스크롤
  * open — 스케치 좌측·써머리 모달: 박스 없이 패널 스크롤
- * @param {number|null} [frameWidth] — open일 때 공식 폭(px). 기본 560(2열). null이면 부모 폭
+ * @param {number|null} [frameWidth] — open일 때 공식 폭(px). null이면 부모 폭
  * @param {boolean} [showMoreLink] — 하단 제휴 홈 CTA
+ * @param {boolean} [linkSponsoredLabel] — Sponsored·GetYourGuide 라벨을 제휴 홈 링크로
  */
 const GetYourGuideActivitiesWidget = ({
   location,
@@ -58,9 +59,11 @@ const GetYourGuideActivitiesWidget = ({
   variant = 'boxed',
   frameWidth = null,
   showMoreLink = false,
+  linkSponsoredLabel = false,
   className = '',
 }) => {
   const [copied, setCopied] = useState(false);
+  const [frameReady, setFrameReady] = useState(() => frameWidth == null);
   const query = useMemo(
     () => (queryProp != null ? queryProp : buildGygActivitiesSearchQuery(location)),
     [
@@ -72,10 +75,30 @@ const GetYourGuideActivitiesWidget = ({
     ]
   );
   const cmp = useMemo(() => buildGygPlannerCmp(location), [location?.slug]);
-  const remountKey = location?.slug || query || 'gyg-activities';
   const isBoxed = variant !== 'open';
   const openFramePx =
     !isBoxed && frameWidth != null && Number(frameWidth) > 0 ? Number(frameWidth) : null;
+  const remountKey = `${location?.slug || query || 'gyg-activities'}|${openFramePx || 'fluid'}`;
+  const homeHref = useMemo(() => getGygHomeUrl({ cmp }), [cmp]);
+
+  // 패널 폭 전환 후 한 프레임 뒤 마운트 — 좁은 폭으로 iframe이 고정되는 것 방지
+  useEffect(() => {
+    if (openFramePx == null) {
+      setFrameReady(true);
+      return undefined;
+    }
+    setFrameReady(false);
+    let cancelled = false;
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (!cancelled) setFrameReady(true);
+      });
+    });
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(id);
+    };
+  }, [openFramePx, remountKey]);
 
   const copyQuery = useCallback(async () => {
     if (!query) return;
@@ -90,15 +113,32 @@ const GetYourGuideActivitiesWidget = ({
 
   if (!query) return null;
 
+  const sponsoredLabel = linkSponsoredLabel ? (
+    <a
+      href={homeHref}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      onClick={(e) => e.stopPropagation()}
+      className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide underline-offset-2 hover:underline ${
+        isBoxed ? 'text-orange-600 hover:text-orange-700' : 'text-orange-300/90 hover:text-orange-200'
+      }`}
+    >
+      <span>Sponsored · GetYourGuide</span>
+      <ExternalLink size={10} className="shrink-0 opacity-70" aria-hidden />
+    </a>
+  ) : (
+    <div
+      className={`text-[10px] font-bold uppercase tracking-wide ${
+        isBoxed ? 'text-orange-600' : 'text-orange-300/90'
+      }`}
+    >
+      Sponsored · GetYourGuide
+    </div>
+  );
+
   const chrome = (
     <div className={`mb-2 flex flex-wrap items-center justify-between gap-2 ${isBoxed ? '' : 'px-0.5'}`}>
-      <div
-        className={`text-[10px] font-bold uppercase tracking-wide ${
-          isBoxed ? 'text-orange-600' : 'text-orange-300/90'
-        }`}
-      >
-        Sponsored · GetYourGuide
-      </div>
+      {sponsoredLabel}
       <button
         type="button"
         onClick={copyQuery}
@@ -114,7 +154,7 @@ const GetYourGuideActivitiesWidget = ({
     </div>
   );
 
-  const frame = (
+  const frame = frameReady ? (
     <div
       key={remountKey}
       data-gyg-href="https://widget.getyourguide.com/default/activities.frame"
@@ -126,10 +166,12 @@ const GetYourGuideActivitiesWidget = ({
       data-gyg-q={query}
       data-gyg-cmp={cmp}
     />
+  ) : (
+    <div className="min-h-[120px] w-full animate-pulse rounded-lg bg-white/5" aria-hidden />
   );
 
   const moreFooter = showMoreLink ? (
-    <div className="mt-5 flex w-full flex-col items-center pt-1">
+    <div className="mt-6 flex w-full flex-col items-center pb-10 pt-2">
       <GygHomeMoreLink location={location} cmp={cmp} />
     </div>
   ) : null;
@@ -139,8 +181,12 @@ const GetYourGuideActivitiesWidget = ({
       <div className={`mt-0 w-full min-w-0 ${className}`.trim()}>
         {chrome}
         <div
-          className="w-full min-w-0 [&_iframe]:!max-w-full"
-          style={openFramePx ? { width: '100%', maxWidth: openFramePx } : undefined}
+          className="min-w-0 [&_iframe]:!w-full"
+          style={
+            openFramePx
+              ? { width: openFramePx, maxWidth: '100%', minWidth: 0 }
+              : undefined
+          }
         >
           {frame}
         </div>

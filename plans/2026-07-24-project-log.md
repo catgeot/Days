@@ -169,13 +169,14 @@
 
 ## GYG 최적화 — 후속 (2열·CTA·City 우선)
 
-**상태**: ✅ 코드 · ⏳ 사람 QA
+**상태**: ✅ 코드 · ⏳ 사람 QA (2차 수정 포함)
 
-- 스케치 좌측: WIKI+q 시 패널 `560px` · Activities `frameWidth=560`(2열) · 하단「겟유어가이드에서 더보기」=`getGygHomeUrl(cmp)` · 모바일 `hidden md` 유지
-- 플래너 map_poi: **location-id 있으면 City**(`GYG_CITY_CONFIGS`) · 없으면 Activities 유지(제휴 id 대기) · Klook 최후
-- 홈 투어 모달: 헤더 **GetYourGuide** 링크 + 하단 더보기 CTA
-- **대기**: 미야코지마·라로통가 등 q 기반지는 City 전환용 **제휴 embed/location-id** 필요(추측 매핑 금지). 참고만: Rarotonga `2689` · Miyakojima `160504`
-- QA: 스케치 2열·560 시인성 · 모달 상·하단 링크 · City slug(잔지바르 등) · Activities 폴백(미야코)
+- 스케치 좌측: 패널 **740px** · 패딩↓ · 폭 확정 후 Activities 리마운트(2열) · Sponsored 라벨=제휴 링크 · 하단 더보기+여유 · 모바일 `hidden md` 유지
+- 플래너 City: **아이슬란드 `169030`**(사용자 embed) · **미야코지마 `160504`**(공개 URL 확인) · 라로통가 id 미확정→Activities
+- City ID 조사: 공개 URL `getyourguide.com/{slug}-l{id}/` · 클라우드/검색으로 가능 · Partner API는 토큰 필요
+- 홈 투어 모달: 헤더 별도 링크 제거 · Sponsored·GetYourGuide를 링크로 · 하단 CTA 아래 여유↑ · **맨 위** 버튼
+- 매거진: 맨 위 버튼 absolute·임계 180 (기존 fixed 보완)
+- QA: 스케치 2열 · 아이슬란드 City · 모달 Sponsored 링크·하단 여유·맨위 · 매거진 맨위
 - 릴리스: QA 후 feature 초안만
 
 ## GYG 최적화 — 후속 핸드오프 (다음 세션)

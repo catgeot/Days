@@ -10,6 +10,9 @@ export const GYG_CITY_CONFIGS = [
     { locationId: '1534', keys: ['corsica', '코르시카'] },
     { locationId: '32367', keys: ['fiordland', 'fjordland', '피오르드랜드'] },
     { locationId: '871', keys: ['zanzibar', '잔지바르'] },
+    // 공개 URL `…/{slug}-l{id}/` · 제휴 embed 확인분 (전면 매핑 금지)
+    { locationId: '169030', keys: ['iceland', '아이슬란드'] },
+    { locationId: '160504', keys: ['miyakojima', '미야코지마', 'miyako'] },
 ];
 
 // 지도/명소 카드에서 Klook 커버리지가 약해 GYG를 우선 노출할 여행지.

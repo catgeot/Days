@@ -1,11 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { MapPin, Ticket, X } from 'lucide-react';
-import GetYourGuideActivitiesWidget, {
-  GygHomeMoreLink,
-} from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
+import { ArrowUp, MapPin, Ticket, X } from 'lucide-react';
+import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
-import { buildGygPlannerCmp } from '../../../utils/affiliate';
 import Logo from './Logo';
 
 const LG_MQ = '(min-width: 1024px)';
@@ -24,7 +21,7 @@ function useIsLg() {
   return isLg;
 }
 
-function TourPanelHeader({ placeName = '', onClose, density = 'desktop', gygCmp }) {
+function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
   const title = String(placeName || '').trim();
   const mobile = density === 'mobile';
   return (
@@ -58,16 +55,6 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop', gygCmp 
               {title ? `${title} 투어` : '투어 찾기'}
             </p>
           </div>
-          {gygCmp ? (
-            <div className="mt-1">
-              <GygHomeMoreLink
-                cmp={gygCmp}
-                label="GetYourGuide"
-                compact
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-orange-200/75 underline-offset-2 transition-colors hover:text-orange-100 hover:underline"
-              />
-            </div>
-          ) : null}
         </div>
         {onClose ? (
           <button
@@ -102,6 +89,10 @@ export default function GlobeTourStrip({
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
+  const [showDesktopScrollTop, setShowDesktopScrollTop] = useState(false);
+  const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
+  const desktopListScrollRef = useRef(null);
+  const mobileListScrollRef = useRef(null);
 
   const gygQuery = useMemo(
     () => buildGygActivitiesSearchQuery(location),
@@ -112,7 +103,6 @@ export default function GlobeTourStrip({
       location?.curation_data?.locationEn,
     ]
   );
-  const gygCmp = useMemo(() => buildGygPlannerCmp(location), [location?.slug]);
   const eligible = Boolean(gygQuery) && !location?.isScanning;
   const name = location?.name || '';
   const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}`;
@@ -152,6 +142,32 @@ export default function GlobeTourStrip({
       document.body.style.overflow = prev;
     };
   }, [listFullscreen]);
+
+  useEffect(() => {
+    if (!desktopOpen) {
+      setShowDesktopScrollTop(false);
+      return undefined;
+    }
+    const el = desktopListScrollRef.current;
+    if (!el) return undefined;
+    const onScroll = () => setShowDesktopScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [desktopOpen, placeKey]);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      setShowMobileScrollTop(false);
+      return undefined;
+    }
+    const el = mobileListScrollRef.current;
+    if (!el) return undefined;
+    const onScroll = () => setShowMobileScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [mobileOpen, placeKey]);
 
   if (!eligible) {
     if (typeof children === 'function') {
@@ -205,16 +221,22 @@ export default function GlobeTourStrip({
     </button>
   );
 
-  const panelBody = (
-    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-6">
-      <GetYourGuideActivitiesWidget
-        location={location}
-        query={gygQuery}
-        variant="open"
-        showMoreLink
-      />
-    </div>
+  const widget = (
+    <GetYourGuideActivitiesWidget
+      location={location}
+      query={gygQuery}
+      variant="open"
+      showMoreLink
+      linkSponsoredLabel
+    />
   );
+
+  const scrollTopBtnClass = (visible) =>
+    `absolute bottom-7 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-orange-300/50 bg-orange-500 px-3 text-black shadow-[0_4px_20px_rgba(249,115,22,0.45)] transition-all duration-300 hover:bg-orange-400 active:scale-95 ${
+      visible
+        ? 'pointer-events-auto translate-y-0 opacity-100'
+        : 'pointer-events-none translate-y-3 opacity-0'
+    }`;
 
   const desktopPortal =
     desktopOpen && typeof document !== 'undefined'
@@ -227,13 +249,24 @@ export default function GlobeTourStrip({
             onMouseDown={(e) => e.stopPropagation()}
             className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-r border-white/10 bg-black/85 shadow-2xl backdrop-blur-xl"
           >
-            <TourPanelHeader
-              placeName={name}
-              onClose={close}
-              density="desktop"
-              gygCmp={gygCmp}
-            />
-            {panelBody}
+            <TourPanelHeader placeName={name} onClose={close} density="desktop" />
+            <div
+              ref={desktopListScrollRef}
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-16"
+            >
+              {widget}
+            </div>
+            <button
+              type="button"
+              aria-label="맨 위로"
+              onClick={() => {
+                desktopListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={scrollTopBtnClass(showDesktopScrollTop)}
+            >
+              <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold">맨 위</span>
+            </button>
           </div>,
           document.body
         )
@@ -251,13 +284,24 @@ export default function GlobeTourStrip({
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <TourPanelHeader
-              placeName={name}
-              onClose={close}
-              density="mobile"
-              gygCmp={gygCmp}
-            />
-            {panelBody}
+            <TourPanelHeader placeName={name} onClose={close} density="mobile" />
+            <div
+              ref={mobileListScrollRef}
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-20"
+            >
+              {widget}
+            </div>
+            <button
+              type="button"
+              aria-label="맨 위로"
+              onClick={() => {
+                mobileListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={scrollTopBtnClass(showMobileScrollTop)}
+            >
+              <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold">맨 위</span>
+            </button>
           </div>,
           document.body
         )
