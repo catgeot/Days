@@ -438,3 +438,9 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 - 인원·변경하기(좌) · 항공 CTA+안내(우·`ml-auto`·얇은 구분선) · 버튼 outline · 안내 sky-50
 - PC only · 게이트·파라미터 로직 변경 없음
 
+## 커밋 규칙 — 디자인·소소한 UI
+
+**상태**: ✅ 문서 반영
+
+- `.ai-context` **1.5.1** · `AGENTS.md` · `gateo-project-context.mdc`: 미확정 디자인/소소한 UI는 **사람 QA 후** 커밋 · 로직·SSOT는 기존 검증 게이트 유지
+

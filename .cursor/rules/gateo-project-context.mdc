@@ -49,7 +49,7 @@ alwaysApply: true
 - `travelSpotAirports.json` / `travelSpotFerries.json` **spots 직접 수정 금지** → overrides → `generate:*`
 - API 키 브라우저 노출·UI 임의 변경·사용자 승인 없는 「완료」 단정 금지
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
-- Git commit/push: **검증 게이트** (`.ai-context` **1.5.1**) — audit/스모크 PASS·이상 없으면 요청 없이 커밋 OK · 미검증·FAIL 커밋 금지 · `main` 직접 push 금지 · 메시지 **한글**
+- Git commit/push: **검증 게이트** (`.ai-context` **1.5.1**) — 로직·SSOT는 audit/스모크 PASS 시 커밋 OK · **디자인·소소한 UI는 사람 QA 확정 후** · 미검증·FAIL·미확정 UI 수시 커밋 금지 · `main` 직접 push 금지 · 메시지 **한글**
 - **PowerShell `Set-Content`/`-replace`로 한글 `.jsx` 등 소스 일괄 수정 금지** — UTF-8·JSX 파손 (`.ai-context` 3절)
 - **Windows Agent `git commit`**: bash HEREDOC 대신 UTF-8 메시지 파일 + `git commit -F` (`.ai-context` 3절)
 
@@ -59,9 +59,9 @@ alwaysApply: true
 - 주석 **필수 아님**(§4.2). 에이전트 인수인계·가드만. 나레이션 금지.
 - 사람에게: **바꾼 동작 + QA** 짧게. 워크스페이스 직접 수정.
 - **오류 루프**: 동일 증상/FAIL **2회** 후 중단·보고 · 요청 밖 확장 금지 (§4.1).
-- 커밋: 「요청 시에만」보다 **검증 게이트 우선**(§1.5.1).
+- 커밋: 로직·SSOT는 **검증 게이트 우선** · 디자인·소소한 UI는 **사람 QA 후**(§1.5.1).
 
 ## 세션 종료
 
-- 검증 게이트 통과 시 커밋(해당하면 push) → 일지 2~5줄 → `.ai-context`는 **필요할 때만** 5~6절 최소 갱신
+- **1.5.1**에 따라 커밋(해당하면 push) → 일지 2~5줄 → `.ai-context`는 **필요할 때만** 5~6절 최소 갱신
 - 릴리스 노트: **새 기능·중대 업데이트만** 초안 제안 → 합의 후 `releaseNotes.js` (`.ai-context` **1.7**). 버그픽스·미세 UI·SSOT 채움은 **묻지 않음**
