@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { BookOpen, Briefcase, Ticket } from 'lucide-react';
-import GetYourGuideActivitiesWidget from '../tabs/planner/components/GetYourGuideActivitiesWidget';
+import GetYourGuideActivitiesWidget, {
+  GYG_ACTIVITIES_FRAME_WIDTH,
+} from '../tabs/planner/components/GetYourGuideActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../tabs/planner/locationRules';
 
 const PlaceWikiNavView = ({
@@ -81,6 +83,8 @@ const PlaceWikiNavView = ({
             location={location}
             query={gygQuery}
             variant="open"
+            frameWidth={GYG_ACTIVITIES_FRAME_WIDTH}
+            showMoreLink
           />
         </div>
       </div>

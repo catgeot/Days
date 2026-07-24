@@ -167,9 +167,20 @@
 - q=영문 도시명 · locale `ko-KR` · items `3` · cmp `gateo_planer_{slug}` · currency `KRW`
 - QA: 미야코지마·라로통가 현지 투어 OK
 
+## GYG 최적화 — 후속 (2열·CTA·City 우선)
+
+**상태**: ✅ 코드 · ⏳ 사람 QA
+
+- 스케치 좌측: WIKI+q 시 패널 `560px` · Activities `frameWidth=560`(2열) · 하단「겟유어가이드에서 더보기」=`getGygHomeUrl(cmp)` · 모바일 `hidden md` 유지
+- 플래너 map_poi: **location-id 있으면 City**(`GYG_CITY_CONFIGS`) · 없으면 Activities 유지(제휴 id 대기) · Klook 최후
+- 홈 투어 모달: 헤더 **GetYourGuide** 링크 + 하단 더보기 CTA
+- **대기**: 미야코지마·라로통가 등 q 기반지는 City 전환용 **제휴 embed/location-id** 필요(추측 매핑 금지). 참고만: Rarotonga `2689` · Miyakojima `160504`
+- QA: 스케치 2열·560 시인성 · 모달 상·하단 링크 · City slug(잔지바르 등) · Activities 폴백(미야코)
+- 릴리스: QA 후 feature 초안만
+
 ## GYG 최적화 — 후속 핸드오프 (다음 세션)
 
-**상태**: ⏳ 제시어로 이어하기 · 아래 사전 확인만 완료
+**상태**: ✅ 구현으로 이관(위 「GYG 최적화 — 후속」) · 사전 확인 기록 유지
 
 ### 사전 확인 (이번 턴)
 

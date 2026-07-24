@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { MapPin, Ticket, X } from 'lucide-react';
-import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
+import GetYourGuideActivitiesWidget, {
+  GygHomeMoreLink,
+} from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
+import { buildGygPlannerCmp } from '../../../utils/affiliate';
 import Logo from './Logo';
 
 const LG_MQ = '(min-width: 1024px)';
@@ -21,7 +24,7 @@ function useIsLg() {
   return isLg;
 }
 
-function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
+function TourPanelHeader({ placeName = '', onClose, density = 'desktop', gygCmp }) {
   const title = String(placeName || '').trim();
   const mobile = density === 'mobile';
   return (
@@ -55,6 +58,16 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
               {title ? `${title} 투어` : '투어 찾기'}
             </p>
           </div>
+          {gygCmp ? (
+            <div className="mt-1">
+              <GygHomeMoreLink
+                cmp={gygCmp}
+                label="GetYourGuide"
+                compact
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-orange-200/75 underline-offset-2 transition-colors hover:text-orange-100 hover:underline"
+              />
+            </div>
+          ) : null}
         </div>
         {onClose ? (
           <button
@@ -99,6 +112,7 @@ export default function GlobeTourStrip({
       location?.curation_data?.locationEn,
     ]
   );
+  const gygCmp = useMemo(() => buildGygPlannerCmp(location), [location?.slug]);
   const eligible = Boolean(gygQuery) && !location?.isScanning;
   const name = location?.name || '';
   const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}`;
@@ -197,6 +211,7 @@ export default function GlobeTourStrip({
         location={location}
         query={gygQuery}
         variant="open"
+        showMoreLink
       />
     </div>
   );
@@ -212,7 +227,12 @@ export default function GlobeTourStrip({
             onMouseDown={(e) => e.stopPropagation()}
             className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-r border-white/10 bg-black/85 shadow-2xl backdrop-blur-xl"
           >
-            <TourPanelHeader placeName={name} onClose={close} density="desktop" />
+            <TourPanelHeader
+              placeName={name}
+              onClose={close}
+              density="desktop"
+              gygCmp={gygCmp}
+            />
             {panelBody}
           </div>,
           document.body
@@ -231,7 +251,12 @@ export default function GlobeTourStrip({
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <TourPanelHeader placeName={name} onClose={close} density="mobile" />
+            <TourPanelHeader
+              placeName={name}
+              onClose={close}
+              density="mobile"
+              gygCmp={gygCmp}
+            />
             {panelBody}
           </div>,
           document.body

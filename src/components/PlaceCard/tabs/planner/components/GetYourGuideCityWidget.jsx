@@ -1,5 +1,10 @@
 import React, { useMemo } from 'react';
-import { GYG_CURRENCY, GYG_LOCALE, GYG_PARTNER_ID } from '../../../../../utils/affiliate';
+import {
+  GYG_CURRENCY,
+  GYG_LOCALE,
+  GYG_PARTNER_ID,
+  buildGygPlannerCmp,
+} from '../../../../../utils/affiliate';
 import { getGygLocationIdByLocation } from '../locationRules';
 
 const GetYourGuideCityWidget = ({ location }) => {
@@ -7,6 +12,7 @@ const GetYourGuideCityWidget = ({ location }) => {
     () => getGygLocationIdByLocation(location),
     [location?.slug, location?.name, location?.name_en, location?.curation_data?.locationEn]
   );
+  const cmp = useMemo(() => buildGygPlannerCmp(location), [location?.slug]);
 
   if (!locationId) return null;
 
@@ -22,6 +28,7 @@ const GetYourGuideCityWidget = ({ location }) => {
         data-gyg-currency={GYG_CURRENCY}
         data-gyg-widget="city"
         data-gyg-partner-id={GYG_PARTNER_ID}
+        data-gyg-cmp={cmp}
       />
     </div>
   );

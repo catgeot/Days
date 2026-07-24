@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, X, Briefcase, Globe } from 'lucide-react';
 import { useNavigate, useLocation as useRouteLocation } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
+import { buildGygActivitiesSearchQuery } from '../tabs/planner/locationRules';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
@@ -132,6 +133,18 @@ const PlaceChatPanel = React.memo(({
   /** 모바일: 고정 헤더 탭 → 미디어 패널 스크롤 맨 위 (iOS 상태바 탭은 중첩 스크롤에서 동작하지 않음) */
   const supportsHeaderScrollTop = HEADER_SCROLL_TOP_MODES.includes(mediaMode);
 
+  const gygSketchQuery = useMemo(
+    () => buildGygActivitiesSearchQuery(location),
+    [
+      location?.slug,
+      location?.name,
+      location?.name_en,
+      location?.curation_data?.locationEn,
+    ]
+  );
+  /** 스케치 GYG: 공식 폭 560으로 좌측 패널 고정 → Activities 2열 (모바일 hidden md 유지) */
+  const widenLeftForGyg = mediaMode === 'WIKI' && Boolean(gygSketchQuery);
+
   const handleHeaderScrollTap = (event) => {
       if (!supportsHeaderScrollTop) return;
       const nestedInteractive = event.target.closest('button, a, [role="button"]');
@@ -152,10 +165,13 @@ const PlaceChatPanel = React.memo(({
   };
 
   return (
-    <div className={`flex flex-col transition-all duration-500
+    <div
+      className={`flex flex-col transition-all duration-500
         ${isFullScreen ? 'opacity-0 pointer-events-none md:pointer-events-auto md:translate-x-[-100%]' : 'opacity-100 translate-x-0 pointer-events-auto'}
         absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 max-md:landscape:pb-0 max-md:landscape:border-b-0 max-md:landscape:bg-transparent max-md:landscape:backdrop-blur-none md:pb-0 md:border-none md:rounded-none
-        md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
+        md:relative md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto
+        ${widenLeftForGyg ? 'md:w-[560px] md:shrink-0' : 'md:w-[35%]'}`}
+    >
 
       {/* Header — 갤러리·위키·리뷰·플래너: 지명 영역 탭 시 스크롤 맨 위 (뒤로/홈 버튼과 분리) */}
       <div
