@@ -171,7 +171,12 @@ export default function GlobeTourStrip({
 
   if (!eligible) {
     if (typeof children === 'function') {
-      return children({ tourTab: null, eligible: false, expanded: false });
+      return children({
+        tourTab: null,
+        eligible: false,
+        expanded: false,
+        close: () => {},
+      });
     }
     return null;
   }
@@ -310,7 +315,7 @@ export default function GlobeTourStrip({
   if (typeof children === 'function') {
     return (
       <>
-        {children({ tourTab, eligible: true, expanded })}
+        {children({ tourTab, eligible: true, expanded, close })}
         {desktopPortal}
         {fullscreenPortal}
       </>

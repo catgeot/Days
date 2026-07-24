@@ -218,43 +218,75 @@ export default function HomePlaceCardSummary({
       peerOpen={tourOpen}
       onExpandedChange={handleStayExpandedChange}
     >
-      {({ toggle, mobilePanel, expanded: stayExpanded }) => (
+      {({ toggle, mobilePanel, expanded: stayExpanded, close: closeStay }) => (
         <GlobeTourStrip
           location={location}
           peerOpen={stayOpen}
           onExpandedChange={handleTourExpandedChange}
         >
-          {({ tourTab }) => (
-            <PlaceCardSummary
-              {...props}
-              location={location}
-              canPreviewFlightRoute={hasFlightRoute}
-              isFlightRouteReady={isFlightRouteReady}
-              isFlightRoutePending={flightCinemaRequestPending}
-              flightRouteLabel={
-                flightPreview
-                  ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
-                  : null
-              }
-              flightRouteHours={flightPreview?.flightHours ?? null}
-              selectedFlightOriginIata={selectedOriginIata}
-              flightBrowserOriginHint={browserOriginHint}
-              onSelectFlightOrigin={handleSelectOrigin}
-              onApplyBrowserOriginSuggestion={
-                browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
-              }
-              initialOriginExpanded={false}
-              onPreviewFlightRoute={isFlightRouteReady ? handlePreviewFlightRoute : undefined}
-              canToggleImmerse={canToggleImmerse}
-              isImmersed={isImmersed}
-              onToggleImmerse={handleToggleImmerse}
-              onImmerseZoomStep={handleImmerseZoomStep}
-              stayToggle={toggle}
-              stayExpanded={stayExpanded}
-              tourTab={tourTab}
-              belowCard={mobilePanel}
-            />
-          )}
+          {({ tourTab, close: closeTour }) => {
+            const dismissSidePanels = () => {
+              closeTour?.();
+              closeStay?.();
+            };
+
+            return (
+              <PlaceCardSummary
+                {...props}
+                location={location}
+                canPreviewFlightRoute={hasFlightRoute}
+                isFlightRouteReady={isFlightRouteReady}
+                isFlightRoutePending={flightCinemaRequestPending}
+                flightRouteLabel={
+                  flightPreview
+                    ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
+                    : null
+                }
+                flightRouteHours={flightPreview?.flightHours ?? null}
+                selectedFlightOriginIata={selectedOriginIata}
+                flightBrowserOriginHint={browserOriginHint}
+                onSelectFlightOrigin={handleSelectOrigin}
+                onApplyBrowserOriginSuggestion={
+                  browserOriginSuggestion?.iata ? handleApplyBrowserOriginSuggestion : undefined
+                }
+                initialOriginExpanded={false}
+                onPreviewFlightRoute={
+                  isFlightRouteReady
+                    ? () => {
+                        dismissSidePanels();
+                        handlePreviewFlightRoute();
+                      }
+                    : undefined
+                }
+                canToggleImmerse={canToggleImmerse}
+                isImmersed={isImmersed}
+                onToggleImmerse={() => {
+                  dismissSidePanels();
+                  handleToggleImmerse();
+                }}
+                onImmerseZoomStep={(step) => {
+                  dismissSidePanels();
+                  handleImmerseZoomStep(step);
+                }}
+                onStartTour={(loc) => {
+                  dismissSidePanels();
+                  props.onStartTour?.(loc);
+                }}
+                onExpand={() => {
+                  dismissSidePanels();
+                  props.onExpand?.();
+                }}
+                onChat={() => {
+                  dismissSidePanels();
+                  props.onChat?.();
+                }}
+                stayToggle={toggle}
+                stayExpanded={stayExpanded}
+                tourTab={tourTab}
+                belowCard={mobilePanel}
+              />
+            );
+          }}
         </GlobeTourStrip>
       )}
     </GlobeStayStrip>

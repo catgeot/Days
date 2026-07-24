@@ -1125,7 +1125,13 @@ export default function GlobeStayStrip({
 
   if (!eligible) {
     if (typeof children === 'function') {
-      return children({ toggle: null, mobilePanel: null, eligible: false, expanded: false });
+      return children({
+        toggle: null,
+        mobilePanel: null,
+        eligible: false,
+        expanded: false,
+        close: () => {},
+      });
     }
     return null;
   }
@@ -1599,7 +1605,16 @@ export default function GlobeStayStrip({
     return (
       <>
         {/* 카드 안 확장 UI 없음 — stayExpanded는 PC 포털만 해당, 레이아웃 팽창 불필요 */}
-        {children({ toggle, mobilePanel, eligible: true, expanded })}
+        {children({
+          toggle,
+          mobilePanel,
+          eligible: true,
+          expanded,
+          close: () => {
+            setExpanded(false);
+            setListFullscreen(false);
+          },
+        })}
         {desktopPortal}
         {fullscreenPortal}
       </>
