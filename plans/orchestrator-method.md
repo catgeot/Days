@@ -1,10 +1,10 @@
 # 오케스트레이터 (gateo 공식 작업 방식)
 
-**상태**: ✅ 공식 · 2026-07-23 (**v2.1** — 이관=현 메인이 후임 Task로 지휘권 이양, 사람 제시어 대기 금지)  
+**상태**: ✅ 공식 · 2026-07-24 (**v2.3** — 커밋 게이트=검증 PASS · Cloud는 push·PR까지)  
 **역할**: 다배치·동일 SSOT를 **메인(오케스트레이터) + 워커 2**로 돌리며 tip을 깨지 않고 확장.  
 **제시어**(최초·복구용): `오케스트레이터` · 주제 붙임 예) `오케스트레이터` + `명소` / `명소-오케스트레이터`
 
-사람이 세션을 매번 여닫지 않고, **한 세대(메인 1 + 워커 2)** 가 초안 병렬 → tip 직렬 머지 → (필요 시) **현 메인이 후임 메인에게 지휘권을 넘겨** 이어간다.
+사람이 세션을 매번 여닫지 않고, **한 세대(메인 1 + 워커 2)** 가 초안 병렬 → tip 직렬 머지 → VERIFY → (§3.4 커밋 · **Cloud면** push·PR) → (필요 시) **현 메인이 후임 메인에게 지휘권을 넘겨** 이어간다.
 
 ---
 
@@ -12,8 +12,8 @@
 
 | 역할 | 하는 일 | 금지 |
 |------|---------|------|
-| **오케스트레이터(메인)** | 배치표(워커당 1) · **워커 정확히 2** 호출 · 감사 · tip **직렬** append · VERIFY · 이관서 | 워커 없이 **본인 런**으로 배치 소화(기본) · tip 병렬 머지 · 워커 JSON 전문 장문 재읽기 |
-| **워커(서브)** | **배정된 1배치** 초안 JSON 조각 + 스모크 쿼리 요약만 반환 | tip/`main` 직접 push · SSOT 전면 rewrite · 다른 워커 tip 건드림 · 이관서 작성 |
+| **오케스트레이터(메인)** | 배치표(워커당 1) · **워커 정확히 2** 호출 · 감사 · tip **직렬** append · VERIFY · **§3.4 커밋**(Cloud는 push·PR) · 이관서 | 워커 없이 **본인 런**으로 배치 소화(기본) · tip 병렬 머지 · 워커 JSON 전문 장문 재읽기 · **`main` 직접 push** · **VERIFY FAIL 커밋** |
+| **워커(서브)** | **배정된 1배치** 초안 JSON 조각 + 스모크 쿼리 요약만 반환 | tip append · commit/PR · `main` push · SSOT 전면 rewrite · 다른 워커 tip 건드림 · 이관서 작성 |
 | **후임 메인** | 인수인계로 **오케스트레이터 역할**을 받음 → 아래 §3.0 **필수 루프** | 배치 1개 솔로 계주 · Task만 띄우고 tip 미append |
 
 ### 1.1 승격·이관 (고정)
@@ -67,9 +67,11 @@
     ↓
 감사 게이트 (audit + 필요 시 resolve 스모크) = VERIFY
     ↓
+VERIFY PASS → §3.4 커밋 (Cloud: + push · PR)
+    ↓
 컨텍스트 여유 있고 배치표 남음?
   · Yes → 워커 2 다시 기동 (같은 메인 세대 연장, 권장 상한 아래)
-  · No  또는 ~50% → 일지 이관 절 → **현 메인이 Task로 후임 메인 기동**(사람 제시어 대기 금지)
+  · No  또는 ~50% → 일지 이관 절(tip SHA · Cloud면 PR URL) → **현 메인이 Task로 후임 메인 기동**
 후임 메인 → 이 루프를 처음부터 (워커 2 재기동 필수) → 세대 후 다시 Task 이관…
 ```
 
@@ -77,6 +79,29 @@
 - 워커2 라운드 **1~2회**(보통 hub **20~40**) 후 **이관 실행**(후임 Task).  
 - **배치 1개 끝나자마자 이관 금지**(솔로 계주 방지).  
 - 큐가 비거나 §3.3 E일 때만 **사람 보고 후 정지**.
+
+### 3.4 Git · 커밋 · PR (검증 게이트 · v2.3)
+
+전역 게이트(`.ai-context` **1.5.1**)와 동일: **요청 여부가 아니라 VERIFY(검증) PASS**가 커밋 조건이다.  
+의도 — 스모크/테스트 없이 깨진 tip·로직을 커밋·푸시하던 사고를 막는 것. VERIFY PASS면 사용자 요청 없이 커밋해도 된다.
+
+| 환경 | VERIFY PASS 후 | 시점 | 금지 |
+|------|----------------|------|------|
+| **공통(로컬·Cloud)** | **필수 커밋** — feature 브랜치 · **한글** 메시지 | **매 라운드 VERIFY PASS 직후(권장)** · 최소한 **이관(§4.2)·턴 종료·체인 종료·사람 보고 전(필수)** | VERIFY FAIL/미검증 tip 커밋 · 워커가 commit/PR · `main` 직접 push · force-push to main |
+| **Cursor Cloud** | 위 + **push** → **PR 없으면 `gh pr create`**, 있으면 같은 PR에 push | 커밋 직후(턴/이관 전) | 동일 |
+| **로컬/데스크톱** | 커밋 필수 · push/PR은 핸드오프·사람 요청·원격 공유 필요할 때 | 동일 | 동일 |
+
+**절차 (메인만)**
+
+1. VERIFY PASS 확인 (issues 0 + 스모크 PASS). FAIL이면 §3.3 — **커밋·PR·이관 금지**.  
+2. 변경분: tip SSOT · 큐 ✅ · 일지 이관/라운드 줄(+ 필요 시 계획 md 1줄). Secrets·`.env`·키 **스테이징 금지**.  
+3. feature 브랜치 확인 (`cursor/…` 등). `main`이면 **새 브랜치 생성 후** 작업·커밋.  
+4. `git commit` (한글 제목).  
+5. **Cloud**(또는 원격 공유 시): `git push -u origin HEAD` → PR 없으면 `gh pr create` · 있으면 **기존 PR에 push만**(체인 동안 PR 1개).  
+6. 일지·이관 프롬프트에 **커밋 SHA · 브랜치 · (있으면) PR URL** 기록 후 §4.2 이관.
+
+**「턴」정의**: 메인 1명의 세대 구간 — 워커2 초안 → 직렬 머지 → VERIFY → §3.4 커밋(+ Cloud PR) → 연장 또는 이관/보고.  
+워커 초안 완료만으로 커밋하지 않는다.
 
 ### 3.1 감사 게이트 (공통) · 무결성
 
@@ -149,11 +174,11 @@
 - tip 롤백 후에도 audit ≠ 0  
 - 시드/대량 데이터 의심 손상  
 - 큐·스키마·KIND(`shrine` 등) 규칙을 바꿔야 해결 가능할 때  
-- commit/push·`releaseNotes`·UI 변경이 필요할 때  
+- `releaseNotes`·UI 변경이 필요할 때  
 - 사용자 중단 직후 상태가 §3.3 C로도 판단 안 될 때  
 - 동일 hub/유형 FAIL이 **2회 연속**
 
-**사람에게 묻지 않고 진행 가능**: EXISTS 스킵·예비 1:1·명소 접두 보정·워커 1회 재시도·VERIFY PASS한 A-only 머지(B 잔여 표기).
+**사람에게 묻지 않고 진행 가능**: EXISTS 스킵·예비 1:1·명소 접두 보정·워커 1회 재시도·VERIFY PASS한 A-only 머지(B 잔여 표기) · **§3.4 커밋**(VERIFY PASS 후 · Cloud는 push·PR).
 
 ---
 
@@ -163,7 +188,7 @@
 
 ### 4.1 일지 이관 절 (남길 것)
 
-1. **tip 건수** · (가능하면) tip SHA/커밋  
+1. **tip 건수** · tip SHA/**커밋**(§3.4 후 **필수**) · **브랜치·PR URL**(Cloud·원격 시)  
 2. **다음 세대 배치표 2개**(워커A·워커B hubId 목록) — 후임이 바로 워커2 띄울 수 있게  
 3. **우선순위/제외** 3줄  
 4. **금지 3** · 스키마 1줄  
@@ -171,15 +196,16 @@
 
 ### 4.2 지휘권 이양 (현 메인이 실행)
 
-1. §4.1을 일지에 쓴 직후, **같은 턴에** Task로 **후임 오케스트레이터**를 기동한다.  
+1. VERIFY PASS · §3.4 커밋 완료(+ Cloud면 PR) · §4.1을 일지에 쓴 직후, **같은 턴에** Task로 **후임 오케스트레이터**를 기동한다.  
 2. 후임 프롬프트 최소 골격:
 
 ```
 역할: 후임 메인(오케스트레이터). 명소 SSOT. §3.0 즉시 수행.
-읽기: plans/orchestrator-method.md §1·§3.0·§3.3·§4 · plans/city-attraction-hub-queue.md 다음 ⬜ · 일지 이관 절만.
+읽기: plans/orchestrator-method.md §1·§3.0·§3.3·§3.4·§4 · plans/city-attraction-hub-queue.md 다음 ⬜ · 일지 이관 절만.
 배치표: (Rxx A5 / B5) (Ryy A5 / B5)
-할 일: 워커 정확히 2 → tip 직렬 A→B → audit+스모크 VERIFY → 상한 내 다음 R 또는 §4.2로 재이관.
-금지: 사람 제시어 대기 · 솔로 계주 · tip 병렬 · 본인 런(기본) · 워커 로그 전체 Read · tip JSON 전문 스캔.
+브랜치/PR: (있으면 기존 feature + PR URL)
+할 일: 워커 정확히 2 → tip 직렬 A→B → audit+스모크 VERIFY → §3.4 커밋(+ Cloud push·PR) → 상한 내 다음 R 또는 §4.2로 재이관.
+금지: 사람 제시어 대기 · 솔로 계주 · tip 병렬 · 본인 런(기본) · 워커 로그 전체 Read · tip JSON 전문 스캔 · main 직접 push · VERIFY FAIL tip 커밋.
 ```
 
 3. 후임이 VERIFY까지 끝내면 **후임이 다시** §4.2로 다음 후임을 띄운다(체인). 큐 소진·§3.3 E만 사람 보고.  
@@ -312,9 +338,9 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 분리 | `tourapi-content-id-overrides` = 갤러리 slug — **좌표 혼용 금지** |
 | P0 | 김유정 `127933` 회귀 금지 · 양구·덕풍·진도타워 |
 | G0 | 메인만 — 스크립트+스모크 |
-| G1+ | 워커2 초안 → tip 직렬 · §4.2 |
+| G1+ | 워커2 초안 → tip 직렬 · VERIFY · **§3.4 커밋**(Cloud는 push·PR) · §4.2 |
 
-**권장 환경**: Cursor Cloud (Secrets + 장시간 LIVE).
+**권장 환경**: Cursor Cloud (Secrets + 장시간 LIVE). 매 세대 VERIFY PASS 후 §3.4.
 
 제시어: `오케스트레이터` + `TourAPI-명소좌표` · 계획 §6 복붙 블록.
 
@@ -326,12 +352,12 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 
 | 용도 | 문장 |
 |------|------|
-| 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「배치표부터 · 워커2」 |
-| 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§4.2 준수」 |
-| 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP 배치」 |
-| 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud 권장 · 「G0 스크립트 → G1+ 워커2 · KR HIT만」 |
-| 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§4.2」 |
-| 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동」 |
+| 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「배치표부터 · 워커2 · §3.4」 |
+| 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§3.4·§4.2」 |
+| 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
+| 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
+| 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
+| 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동 · §3.4」 |
 
 ---
 
@@ -339,7 +365,7 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 
 | 문서 | 담는 것 |
 |------|---------|
-| **본 파일** | 방법론 SSOT (**공식 v2.1**) |
+| **본 파일** | 방법론 SSOT (**공식 v2.3**) |
 | [`.cursor/rules/gateo-orchestrator.mdc`](../.cursor/rules/gateo-orchestrator.mdc) | 세션 트리거·짧은 강제 규칙 |
 | [`orchestrator-3tier-draft.md`](./orchestrator-3tier-draft.md) | 3단(컨트롤러→지휘자→워커2) **검토안·미적용** · 첫 메인 완료보고 구멍 설명 |
 | [`.ai-context.md`](../.ai-context.md) | 스냅샷 1줄 + 링크 |

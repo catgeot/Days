@@ -36,7 +36,8 @@
 
 ## 커밋
 
-라운드마다 자동 commit 없음. Phase 0 = 본 커밋. 데이터는 R10/R30/소진 등 사람 요청 시 묶음.
+VERIFY PASS면 **커밋**(요청 불필요). 게이트=검증(`.ai-context` 1.5.1 · method **§3.4**).  
+Cloud는 +push·PR. `main` 직접 push 금지. FAIL tip 커밋 금지.
 
 ## 문제
 
@@ -48,5 +49,5 @@
 오케스트레이터 + 맵박스정착지
 @plans/orchestrator-method.md @plans/mapbox-settlement-plan.md @plans/mapbox-settlement-queue.md
 
-큐 다음 ⬜ R · 워커2 · tip 직렬 A→B · 매 R audit+스모크 · 목표3/최대5/최소2·미달스킵 · hub당1행 · mapboxId null OK · POI 금지 · 미커밋 · §3.3·§4.2
+큐 다음 ⬜ R · 워커2 · tip 직렬 A→B · 매 R audit+스모크 · 목표3/최대5/최소2·미달스킵 · hub당1행 · mapboxId null OK · POI 금지 · §3.3·§3.4(커밋·PR)·§4.2
 ```

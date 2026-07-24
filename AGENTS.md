@@ -7,15 +7,26 @@
 1. [`.cursor/rules/gateo-project-context.mdc`](.cursor/rules/gateo-project-context.mdc) 규칙을 따른다.
 2. 루트 [`.ai-context.md`](.ai-context.md)를 **Read**한다 (사용자가 `@`로 안 붙여도).
 3. 작업 주제면 최신 일지(`plans/YYYY-MM-DD-project-log.md`)와 해당 운영 가이드만 추가로 읽는다.
-4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.1**(세대 후 현 메인이 Task로 후임에 지휘권 이양·사람 제시어 대기 금지) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
+4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.3**(VERIFY PASS 후 §3.4 커밋 · Cloud는 push·PR · 후임 Task 이양) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
 
 ## 금지 (요약)
 
 - `travelSpots.js` 전체 스캔 → `travelSpots-list.json`
 - `travelSpotAirports.json` / `travelSpotFerries.json` spots 직접 수정 → overrides → `generate:*`
 - 브라우저에 MRT/`VITE_` 비밀키 노출
-- 사용자 요청 없는 git commit · `main` 강제 push
+- **검증 없이** git commit/push · FAIL·미확인 상태로 커밋 · `main` 강제 push
 - 사용자 승인 없는 「완료」 단정 · UI 임의 대규모 변경
+- 릴리스 노트 잦은 제안 — **새 기능·중대 업데이트만** (`.ai-context` **1.7**)
+- 제미나이 Core Rules 부활 금지(구조 제안→승인→전체 코드) · 주석 **희소**(`.ai-context` **4.0**/**4.2**) · 사람에게는 동작·QA
+
+## 커밋·푸시 (검증 게이트)
+
+의도: 스모크/테스트 없이 깨진 로직을 커밋·푸시하던 것을 막기 위함.  
+**요청 여부가 아니라 검증·이상 없음**이 게이트다 (`.ai-context` **1.5.1**).
+
+- 관련 audit/스모크/테스트 **PASS** · 알려진 깨짐 없음 → **커밋 OK**(한글 메시지 · 사용자 요청 불필요)
+- 동일 게이트 통과 후 feature 브랜치 **push OK** · Cloud 오케스트레이터는 **§3.4**(PR까지)
+- **금지**: 검증 생략 · FAIL tip/코드 커밋·푸시 · `main` 직접 push
 
 ## 검증 커맨드 (자주 씀)
 
@@ -39,6 +50,17 @@ npm run smoke:mapbox-settlement-places
 - 기본: `main`에서 feature 브랜치로 작업 후 PR 또는 사용자 승인 후 병합.
 - **`main`에 직접 push하지 말 것** — 데스크톱에서 검토·병합이 기본.
 - Edge(`supabase functions deploy …`)는 코드 수정과 별개. Secrets·로그인 없으면 **배포는 보류**하고 일지/핸드오프에 명령만 남긴다.
+
+### 오케스트레이터 · 커밋·PR
+
+다배치 SSOT 오케스트레이터([`orchestrator-method.md`](plans/orchestrator-method.md) **§3.4**):
+
+1. 워커2 → tip 직렬 머지 → VERIFY PASS  
+2. **커밋**(한글) — 로컬·Cloud 공통 · 턴/이관 전  
+3. **Cloud**: push → PR 생성(없으면) 또는 기존 PR에 push · 일지에 SHA·PR URL  
+4. 후임 Task 이관  
+
+VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 
 ### Secrets (대시보드에 등록 권장)
 

@@ -10,7 +10,7 @@
 - **목표 3 · 최대 5 · 최소 2** · 미달(&lt;2)이면 그 hub **스킵** (억지 채우기 금지)
 - hub당 **1행만** · 같은 hubId 분할 append 금지 · `mapboxId` 1차 null OK
 - 큐 = tip `cityAttractionHubs` **hubId 순서**(시드 제외). hub 밖 임의 지명 금지
-- 기본 **미커밋** · commit은 사람 요청 시
+- VERIFY PASS → method **§3.4** 커밋(요청 불필요) · Cloud는 push·PR · FAIL tip 커밋 금지
 
 ### 사용법
 

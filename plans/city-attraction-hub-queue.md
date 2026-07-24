@@ -2,7 +2,7 @@
 
 **상태**: ✅ 2026-07-23 · tip 기준 **630 hub** (R48–R69 ✅) · **큐 소진**  
 **규칙**: 라운드 = **10 hub** · 워커A **5** + 워커B **5** · 메인 직렬 머지(A→B) · VERIFY 후 다음 라운드  
-**방법**: [`orchestrator-method.md`](./orchestrator-method.md) v2.1 · 일지 [`2026-07-23-project-log.md`](./2026-07-23-project-log.md)
+**방법**: [`orchestrator-method.md`](./orchestrator-method.md) v2.3 · 일지 [`2026-07-23-project-log.md`](./2026-07-23-project-log.md) · VERIFY PASS 커밋은 **§3.4**
 
 ### 사용법 (오케스트레이터)
 

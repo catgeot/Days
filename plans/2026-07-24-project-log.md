@@ -108,8 +108,20 @@
 - 스모크: `mungyeong` / `mungyeong-saejae` · 샘플 LIVE(문경·부산·안동·경주·강릉·파리 등) NO_REGION 0
 - 릴리스 노트: 사용자 생략
 
-## 세션 종료 (2026-07-24)
+## 오케스트레이터 — 커밋 게이트=검증 (v2.3)
+
+**상태**: ✅ 문서 · Cursor User Rule 추가
+
+- 원인: 「요청 시만 commit」이 Cloud에서 VERIFY PASS 후에도 미커밋 이관·PR 부재를 유발
+- **의도 재확인**: 스모크/테스트 없이 깨진 로직 커밋·푸시 방지. **이상 없으면 요청 없이 커밋 OK**
+- Cursor User Rules: 「verification gate」·「release notes major only」·「Code comments — sparse」 추가
+- 릴리스 노트 **1.7**: 새 기능·중대 업데이트만 초안 제안
+- **§4.0 폐기 명시**: git 이력상 초기 Core Rules = 「논리적 구조 제안→승인 대기→전체 코드 제공」(제미나이 복붙). 주석 남발은 그 잔재. 현재 §4.2 희소 주석 · 사람에게는 동작·QA
+- SSOT: `.ai-context` **1.5.1**/**1.7**/**4** · method **v2.3 §3.4** · Rules
+
+## 세션 종료 (2026-07-24) — 에이전트 규칙 정리
 
 - 스케치 wiki 직행·장소카드 ← · hub 명소 숙소 `parentCity` — QA 완료 · `main` `92b8a97`
-- 로그북 ← 변경 없음 · 릴리스 노트 생략
-- 다음: 여행 스케치 매거진 탭 QA·커밋 / 항공 Heuristic Phase 0 등 (`.ai-context` 5~6절)
+- **규칙**: 커밋=검증 게이트 · Cloud 오케 §3.4 커밋·PR · 릴리스=중대만 · §4.0 제미나이 Core Rules 폐기 · 주석 희소
+- Cursor User Rule: verification gate · release notes major only · comments sparse
+- 릴리스 노트 생략(문서/규칙만) · 다음: 여행 스케치 매거진 탭 QA / 항공 Heuristic Phase 0

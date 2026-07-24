@@ -58,7 +58,7 @@
 
 ## 5. 클라우드 오케스트레이터 (권장)
 
-방법론: [`orchestrator-method.md`](./orchestrator-method.md) **v2.1** · §1·§3.0·§3.3·§4.2 · 본 문서(**§5.5**에 해당).
+방법론: [`orchestrator-method.md`](./orchestrator-method.md) **v2.3** · §1·§3.0·§3.3·**§3.4**·§4.2 · 본 문서(**§5.5**에 해당).
 
 ### 5.1 Secrets (Cloud 탭 · 값 채팅/커밋 금지)
 
@@ -79,7 +79,7 @@
 - KR 1137 **한 턴 전수 금지**. 세대당 hub **≤20** (워커2×10) 권장 · 같은 메인 1~2 라운드 후 이관.
 - tip **필드 패치**만 (append 아님) · 시드 `sokcho`/`paris` 덮어쓰기 금지.
 - AMBIG/MISS/FAR는 tip 미적용 · 큐 md에만 누적.
-- 커밋·push는 **사람 요청 시**만 · `main` 직접 push 금지(feature 브랜치).
+- VERIFY PASS 후 method **§3.4** 커밋(요청 불필요 · 턴/이관 전). Cloud는 +push·PR. `main` 직접 push 금지.
 
 ### 5.3 워커 출력 계약 (초안만)
 
@@ -116,17 +116,17 @@ Cloud Agent **첫 메시지**에 그대로:
 @plans/2026-07-23-project-log.md 「국내 명소 좌표 — TourAPI 보정」절만
 @.ai-context.md
 
-당신은 오케스트레이터(메인). method v2.1 §1·§3.0·§3.3·§4.2 + 본 계획 §5 준수.
+당신은 오케스트레이터(메인). method v2.3 §1·§3.0·§3.3·§3.4·§4.2 + 본 계획 §5 준수.
 환경: Cursor Cloud · Secrets TOUR_API_SERVICE_KEY 및/또는 VITE_SUPABASE_URL+ANON (Edge tourapi-proxy).
 범위: cityAttractionHubs.json KR tip만 · mapy/mapx HIT만 스냅 · 해외 제외.
 
 즉시:
-1) G0(메인만): verify-city-attraction-tourapi-coords(+적용) 스크립트·캐시·npm · 김유정 contentId=127933 → 37.8183632,127.7176781 smoke PASS · P0 smoke
-2) G1부터: KR hub 배치표 2개(각≤10) · Task 워커 정확히 2(초안만) · tip 직렬 A→B · audit issues 0 · §4.2 후임 Task 이관(사람 제시어 대기 금지)
+1) G0(메인만): verify-city-attraction-tourapi-coords(+적용) 스크립트·캐시·npm · 김유정 contentId=127933 → 37.8183632,127.7176781 smoke PASS · P0 smoke · §3.4 커밋·PR
+2) G1부터: KR hub 배치표 2개(각≤10) · Task 워커 정확히 2(초안만) · tip 직렬 A→B · audit issues 0 · §3.4 feature 커밋·PR push · §4.2 후임 Task 이관(사람 제시어 대기 금지)
 3) 큐 소진 또는 escalate만 사람 보고
 
-금지: tourapi-content-id-overrides에 좌표 혼용 · hub 중심 추정 · tip 병렬 · 시드 sokcho/paris 덮어쓰기 · 김유정 127933 회귀 · VITE_/키 커밋 · UI/releaseNotes · main 직접 push · 솔로 계주(G1+) · VERIFY FAIL tip 방치
-커밋은 사람 요청 시에만(한글 메시지).
+금지: tourapi-content-id-overrides에 좌표 혼용 · hub 중심 추정 · tip 병렬 · 시드 sokcho/paris 덮어쓰기 · 김유정 127933 회귀 · VITE_/키 커밋 · UI/releaseNotes · main 직접 push · 솔로 계주(G1+) · VERIFY FAIL tip 방치·커밋
+VERIFY PASS 후 §3.4 커밋 필수(한글) · Cloud는 push·PR(체인 동안 PR 1개) · FAIL tip 커밋 금지.
 ```
 
 ### 로컬 솔로(비권장 · 복구용)
