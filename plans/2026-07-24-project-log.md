@@ -446,8 +446,43 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 ## 국내축제 허브 — Pre-S0 (플랜 push)
 
-**상태**: ✅ `plans/korea-festival-hub-plan.md` · README 링크 · **다음 = Cloud S0**
+**상태**: ✅ `plans/korea-festival-hub-plan.md` · `main` `3f81a55`
 
-- 세션 S0~S4 · Cloud Secrets `TOUR_API_SERVICE_KEY` · 제시어 `국내축제-S0-스파이크`
-- `@plans/korea-festival-hub-plan.md` 「세션별 실행 가이드」S0만 + `@.ai-context.md`
+## 국내축제 — S0 (LIVE 스파이크 · Go)
+
+**상태**: ✅ Go · LIVE `0000` · 축제 **96** / 시도 **17** / 서울·type12 **444**  
+필드: `eventstartdate` · `title` · `contentid`
+
+## 국내축제 — 로컬 재시작 (Cloud 중단)
+
+**상태**: ✅ 플랜 재정비 · **다음 = 로컬 S1**
+
+- Cursor Cloud 트랙 **중단** (진행 가시성 부족). 이후 **로컬 채팅만**.
+- SSOT: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) (로컬 전용 세션 가이드)
+- S0 재실행 **금지**. S1부터 새 로컬 채팅.
+
+### 다음 세션 — S1 (`국내축제-S1-프록시`) · 로컬
+
+**읽을 것**: 플랜 **S1만** · 본 절 S0 Go · `tourapi-proxy/index.ts` · `tourapi-edge-proxy-plan.md` §1 · `.ai-context` 1.5.1  
+
+**금지**: UI · `/korea` · releaseNotes · 오케스트레이터 · Cloud · `VITE_` Tour 키 · gallery overrides 혼용  
+
+**작업**: feature 브랜치 · action `searchFestival`·`areaBasedList`·`areaCode`·`detailIntro` · smoke LIVE · fetch 유틸 · VERIFY PASS → **커밋(+push)** · 일지 SHA  
+
+**제시어**
+
+```
+국내축제-S1-프록시
+@plans/korea-festival-hub-plan.md 「S1」만
+@plans/2026-07-24-project-log.md 「국내축제 — S0」절만
+@supabase/functions/tourapi-proxy/index.ts
+@plans/tourapi-edge-proxy-plan.md §1만
+@.ai-context.md
+
+로컬만. S0 Go 전제. feature 브랜치.
+action: searchFestival·areaBasedList·areaCode·detailIntro.
+normalize·smoke LIVE·fetch 유틸만.
+UI·/korea·releaseNotes·오케스트레이터·Cloud 금지.
+VERIFY PASS → 커밋(+push) · 일지 S1(다음=S2)에 SHA.
+```
 
