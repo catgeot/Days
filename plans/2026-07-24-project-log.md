@@ -444,3 +444,10 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 - `.ai-context` **1.5.1** · `AGENTS.md` · `gateo-project-context.mdc`: 미확정 디자인/소소한 UI는 **사람 QA 후** 커밋 · 로직·SSOT는 기존 검증 게이트 유지
 
+## 국내축제 허브 — Pre-S0 (플랜 push)
+
+**상태**: ✅ `plans/korea-festival-hub-plan.md` · README 링크 · **다음 = Cloud S0**
+
+- 세션 S0~S4 · Cloud Secrets `TOUR_API_SERVICE_KEY` · 제시어 `국내축제-S0-스파이크`
+- `@plans/korea-festival-hub-plan.md` 「세션별 실행 가이드」S0만 + `@.ai-context.md`
+
