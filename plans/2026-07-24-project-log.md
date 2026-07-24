@@ -435,6 +435,6 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 **상태**: ⏳ 사람 QA
 
-- 인원 행 · 간격 유지 · 버튼 sky **outline**(채움↓) · 안내 「숙소 일정은 도착일에 맞춰 조정하세요」
+- 인원 행 · 간격 유지 · 버튼 sky **outline**(채움↓) · 안내 「숙소 일정은 도착일에 맞춰 조정하세요」(`text-sky-50`·semibold)
 - PC only · 게이트·파라미터 로직 변경 없음
 

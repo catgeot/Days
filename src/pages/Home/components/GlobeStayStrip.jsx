@@ -403,7 +403,7 @@ function StayDateBar({
                 </button>
               }
             />
-            <span className="min-w-0 text-[10px] font-medium leading-snug text-sky-100/70 break-keep">
+            <span className="min-w-0 text-[11px] font-semibold leading-snug text-sky-50/95 break-keep">
               숙소 일정은 도착일에 맞춰 조정하세요
             </span>
           </span>
