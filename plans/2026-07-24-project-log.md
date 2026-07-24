@@ -494,3 +494,35 @@ proxy 재작성·releaseNotes·오케스트레이터·Cloud 금지.
 사람 QA OK 후 커밋(+push) · 일지 S2(다음=S3a).
 ```
 
+## 국내축제 — S2 (UI · 이관 커밋)
+
+**상태**: ✅ 이관 커밋 · 브랜치 `cursor/korea-festival-proxy` · **다음 세션 = 지역 필터 수정**
+
+- `/korea` MVP: 기간·지역 칩 · 목록/달력 · 내 주변 · hub 가로 · 홈「국내」(모바일 포함)
+- 파일: `src/pages/Korea/*` · `HomeUI` · `App.jsx`
+
+### QA (사람 · 2026-07-24)
+1. ✅ 홈「국내」PC·모바일 열림
+2. ❌ 지역 칩 → 목록 0건 (원인: `searchFestival2` areaCode **unused** → LIVE 0)
+3. ❌ 내 주변(춘천) 라벨 OK · 목록 0건 (2와 동일)
+4. 요청: **도→시/군** 칩 세분화 (여행 동선 네비)
+5. 요청·**보류**: 국내 전용 지도 또는 지구본 KR 포커스+칩 (로딩 고려 · 별 트랙)
+
+### 다음 세션 — `국내축제-S2b-지역필터`
+
+**읽을 것**: 본 절 · 플랜 [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S2 · Cursor plan `korea_area_filter_fix`  
+**작업**: 월간 searchFestival(무지역) → `addr1` 도/시 필터 · 도 선택 시 시/군 칩 · 내 주변 시군 자동  
+**금지**: proxy 전면 재작성 · releaseNotes · 국내 지도(#5) 구현 · Cloud  
+**제시어**
+
+```
+국내축제-S2b-지역필터
+@plans/2026-07-24-project-log.md 「국내축제 — S2」절
+@plans/korea-festival-hub-plan.md S2
+@src/pages/Korea/
+
+로컬. searchFestival areaCode unused → addr1 도/시 필터.
+도 칩 → 시/군 칩 · 내 주변 시군 자동. 국내 지도는 보류.
+QA 후 커밋.
+```
+
