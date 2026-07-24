@@ -167,9 +167,53 @@
 - q=영문 도시명 · locale `ko-KR` · items `3` · cmp `gateo_planer_{slug}` · currency `KRW`
 - QA: 미야코지마·라로통가 현지 투어 OK
 
+## GYG 최적화 — 후속 핸드오프 (다음 세션)
+
+**상태**: ⏳ 제시어로 이어하기 · 아래 사전 확인만 완료
+
+### 사전 확인 (이번 턴)
+
+| 항목 | 결과 |
+|------|------|
+| **「겟유어가이드에서 더보기」링크** | **필요함** · 이미 [`getGygHomeUrl`](../src/utils/affiliate.js)+[`buildGygPlannerCmp`](../src/utils/affiliate.js)로 제휴 홈(`partner_id`·`cmp`·`KRW`) 생성 가능. 도시 검색 딥링크가 필요하면 제휴 페이지 URL 패턴을 가져와 확장. |
+| **플래너 City 위젯** | 코드 있음: [`GetYourGuideCityWidget`](../src/components/PlaceCard/tabs/planner/components/GetYourGuideCityWidget.jsx) · **`data-gyg-location-id` 필수**. [`GYG_CITY_CONFIGS`](../src/components/PlaceCard/tabs/planner/locationRules.js)에 **소수만**(에베레스트·갈라파고스 등). 미야코지마·라로통가 등 **q 기반 여행지는 id 없어 null**. → 전면 City 전환은 **제휴 페이지에서 location-id(또는 City embed) 확보** 필요. id 없는 slug는 Activities 축소/폴백 정책 합의. |
+| **모바일 스케치 GYG** | 좌측 패널 `hidden md:flex` · **이미 미노출**. **추가하지 말 것**(복잡성). |
+| **공식 폭 740 / 560 / 375** | 파트너 프리뷰 폭으로 컨테이너 `max-width` 실험 → 2열 유도. 위젯 attrs에 열 수 API 없음. |
+
+### 다음 세션 작업
+
+1. 스케치 좌측 Activities: 컨테이너 폭 **560**(우선)·740·375 실험 → **2열** · 하단「겟유어가이드에서 더보기」→ `getGygHomeUrl({ cmp })`
+2. 플래너 map_poi: Activities 긴 목록 → **City 위젯** 수준으로 축소. 기존 City 코드로 가능한 slug만 전환 · 불가 시 사용자 제공 embed/location-id 대기(또는 합의된 폴백)
+3. 홈 투어 모달(`GlobeTourStrip`): **상단** GYG 링크 + **하단**「더보기」CTA
+4. 모바일 스케치: GYG **추가 금지**
+5. QA 후 커밋 · 릴리스 feature 초안은 QA 뒤
+
+### 읽을 것
+1. 본 절 · `.ai-context` 5·6절 GYG 한 줄
+2. `GetYourGuideActivitiesWidget` · `GetYourGuideCityWidget` · `GYG_CITY_CONFIGS` · `getGygHomeUrl` · `GlobeTourStrip` · `ToolkitCard` map_poi · `PlaceWikiNavView`
+
+### 금지
+- analyzer 재삽입 · City 전면 매핑 추측 · `"City, Country"` q · 모바일 스케치에 GYG 신설 · 릴리스 합의 전 `releaseNotes.js`
+
+### 제시어
+
+```
+GYG-이어하기 — 후속 최적화
+
+@.ai-context.md @plans/2026-07-24-project-log.md
+
+목표: 일지「GYG 최적화 — 후속 핸드오프」따름(스펙 재검토 금지).
+1) 스케치 좌측: 공식폭 740/560/375로 컨테이너 조정→2열 · 하단「겟유어가이드에서 더보기」= getGygHomeUrl(cmp)
+2) 플래너 map_poi: Activities 긴 목록→City 위젯 수준. 기존 GetYourGuideCityWidget+location-id로 가능하면 전환, 없으면 제휴 embed/id 대기·보고
+3) 홈 투어 모달: 상단 GYG 링크 + 하단 더보기 CTA
+4) 모바일 스케치 GYG 추가 금지(현재 hidden md 유지)
+불변: q=name_en · ko-KR · KRW · cmp · analyzer 재삽입 금지.
+릴리스는 QA 후 feature 초안만.
+```
+
 ## GYG 최적화 — 구현
 
-**상태**: ✅ 코드 · **사람 QA 대기** (더보기 제거 반영)
+**상태**: ✅ 1차 코드 · 후속은 위 핸드오프
 
 - 노출: PC·모바일 **12** 고정 · **더보기 제거** · 플래너 `boxed`(박스+내부 스크롤·높이↑) · 스케치/홈 모달 `open`
 - 스케치 좌측: 「현지 투어」(+패키지) · 패딩↓·폭 35% 유지 · no-q→목차
