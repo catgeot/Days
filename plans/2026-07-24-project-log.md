@@ -22,14 +22,13 @@
 
 ## 갤러리 — lazy hang 오드롭 · 더보기 DB 덮어쓰기 · 스케치 갤러리 22
 
-**상태**: 수정 완료 · QA 대기
+**상태**: ✅ 커밋·push (`8abeb25` · `ac013df`)
 
 - 증상: 밴프 등 카운트 104인데 화면 ~11장 · 스케치 매거진 하단 갤러리 미표시/무제한
-- 원인: (1) `11b72b2` hang 6s→`handleDropBrokenImage`가 lazy 오프스크린까지 세션에서 삭제 (2) 더보기 append가 `place_stats.gallery_urls` upsert로 큐레이션 덮음(밴프 현재 109 Unsplash) (3) 매거진 `slice(sectionCount)`로 섹션 많으면 하단 0장·리밋 없음
-- 수정: hang은 드롭 금지 · 캐시 `v1.15` · 더보기 DB upsert 금지 · 섹션 삽화 max4 · 하단 갤러리 max22
-- 후속 harden: rAF `complete+0폭` 즉시 드롭 제거(lazy 오탐) · hang 6s 후 확정 깨짐만 드롭
-- 참고: 교토/아이슬란드 등 다른 큐레이션(30~59)은 유지 · 밴프는 더보기로 DB가 Unsplash 병합본으로 바뀐 상태(원본 복구는 백업 필요)
-- 잔여 리스크(허용): 진짜 404는 세션 캐시에서만 제거(DB 미갱신) · hang 중 pulse 타일은 onLoad까지 유지
+- 원인: (1) `11b72b2` hang 6s→`handleDropBrokenImage`가 lazy 오프스크린까지 세션에서 삭제 (2) 더보기 append가 `place_stats.gallery_urls` upsert로 큐레이션 덮음(밴프 109 Unsplash) (3) 매거진 `slice(sectionCount)`로 섹션 많으면 하단 0장·리밋 없음
+- 수정: hang은 paint만 해제 · 캐시 `v1.15` · 더보기 DB upsert 금지 · 섹션 삽화 max4 · 하단 갤러리 max22 · rAF `complete+0폭` 즉시 드롭 제거
+- 드롭 규칙: `onError` · hang 6s 후 확정 깨짐(`complete&&width===0`) · `src` 없음만
+- 잔여: 밴프 DB는 Unsplash 병합본(원본 복구는 백업 필요) · 404는 세션만 축소
 
 ## 써머리 장소카드 — uiPlace 안내 문구 제거
 
