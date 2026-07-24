@@ -5885,10 +5885,10 @@ export const TRAVEL_SPOTS = [
     "desc": "'미야코 블루'라 불리는 숨막히게 아름다운 청록색 바다를 품은 산호섬입니다. 일본 최고의 해변으로 꼽히는 요나하 마에하마 비치와 스쿠버 다이빙 포인트가 넘쳐납니다.",
     "keywords": [
       "아시아",
-      "오키나와",
       "산호초",
       "스쿠버다이빙",
-      "미야코블루"
+      "미야코블루",
+      "요나하마에하마"
     ]
   },
   {
@@ -6585,9 +6585,10 @@ export const TRAVEL_SPOTS = [
     "keywords": [
       "아시아",
       "일본",
-      "오키나와",
+      "야에야마",
       "스노클링",
-      "산호초"
+      "산호초",
+      "가비라만"
     ]
   },
   {
@@ -7386,5 +7387,36 @@ export const TRAVEL_SPOTS = [
     "denseRegion": "southeast-asia",
     "desc": "발리 중부 고원의 예술·요가·전통 마을로, 테갈랄랑 라이스 테라스·우붓 왕궁·원숭이 숲이 어우러진 문화 허브입니다. 국제선은 응우라라이(DPS) 공항이 관문이며, 공항에서 차로 약 1~1.5시간 거리입니다.",
     "keywords": ["우붓", "Ubud", "DPS", "테갈랄랑", "요가"]
+  },
+  {
+    "id": 394,
+    "slug": "okinawa",
+    "name": "오키나와",
+    "name_en": "Okinawa",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 26.2122,
+    "lng": 127.6791,
+    "tier": 2,
+    "popularity": 80,
+    "continent": "asia",
+    "categories": [
+      "paradise",
+      "culture",
+      "nature"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": true,
+    "denseRegion": "east-asia",
+    "desc": "류큐 왕국의 중심지였던 오키나와 본섬입니다. 나하·츄라우미 수족관·아메리칸 빌리지·슈리성을 축으로 휴양과 독특한 섬 문화를 함께 즐길 수 있으며, 국제선은 나하공항(OKA)이 관문입니다. 미야코지마·이시가키 등 주변 섬과는 별도 여행지입니다.",
+    "keywords": [
+      "나하",
+      "naha",
+      "류큐",
+      "츄라우미",
+      "슈리성",
+      "OKA"
+    ]
   }
 ];
