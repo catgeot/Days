@@ -157,3 +157,44 @@
 - 복사: iframe 본문 선택 불가 · 검색어 버튼으로 `q` 복사
 - 통화: `data-gyg-currency=KRW` (미지정 시 EUR) · USD 원하면 상수만 교체
 - 참고 시티 ID: Rarotonga `2689` · Miyakojima `160504`
+
+## 세션 종료 (2026-07-24) — GYG map_poi · 다음 최적화
+
+**상태**: ✅ 커밋 로컬(`main` origin 대비 ahead) · push는 사람 판단 · 릴리스 노트 **보류**(최적화 후 feature로)
+
+### 이번 세션 요약
+- 플래너 `map_poi` Klook → GYG Manual Activities(Search)
+- q=영문 도시명 · locale `ko-KR` · items `3` · cmp `gateo_planer_{slug}` · currency `KRW`
+- QA: 미야코지마·라로통가 현지 투어 OK
+
+### 다음 세션 — GYG 최적화 (검토→합의→구현)
+1. **액티비티 갯수** (`GYG_ACTIVITIES_ITEM_COUNT` / 위젯 높이·모바일)
+2. **여행 스케치** 좌측 매거진 목차 → GYG Activities 위젯 교체 **방안 검토**
+3. **홈 써머리** 투어 검색 버튼 + 숙소 모달형 **투어 모달** 방안 검토
+4. 최적화 완료 후 **릴리스 노트** feature 형식으로 갱신
+
+### 읽을 것 (이어하기)
+1. `.ai-context.md` 5절 GYG 한 줄 · 본 일지 「에이전트 핸드오프」
+2. `GetYourGuideActivitiesWidget.jsx` · `affiliate.js` GYG_* · `ToolkitCard` map_poi
+3. 스케치 좌측 TOC · 써머리 숙소 모달 진입점만 grep (전면 스캔 금지)
+
+### 금지
+- `index.html` GYG analyzer 재삽입
+- City 전면 location-id 매핑 · `"City, Country"` q 재도입(일본 등 오염)
+- 릴리스 노트 합의 전 `releaseNotes.js` 반영
+- UI 대규모 변경은 **검토→승인** 후
+
+### 제시어 (복붙)
+
+```
+GYG-이어하기 — 최적화 검토
+
+@.ai-context.md @plans/2026-07-24-project-log.md
+
+목표: GYG Activities 후속 최적화 — 구현 전 방안 검토·합의 우선.
+1) 액티비티 노출 갯수(현재 3) 조정
+2) 여행 스케치 좌측 매거진 목차 → GYG 위젯 교체 방안 검토
+3) 홈 써머리 투어 검색 버튼 + 숙소 모달형 투어 모달 방안 검토
+확정 스펙 후에만 코드. 릴리스 노트는 최적화 완료 후 feature로.
+기존: q=name_en · ko-KR · KRW · cmp=gateo_planer_{slug} · analyzer 재삽입 금지.
+```
