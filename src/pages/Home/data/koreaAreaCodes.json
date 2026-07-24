@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T12:40:57.253Z",
-    "areaCount": 12,
-    "hubLinkCount": 19,
+    "generatedAt": "2026-07-24T12:41:40.198Z",
+    "areaCount": 14,
+    "hubLinkCount": 26,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -90,6 +90,23 @@
         "taean"
       ]
     },
+    "35": {
+      "name": "경북",
+      "hubIds": [
+        "gyeongju",
+        "andong",
+        "pohang"
+      ]
+    },
+    "36": {
+      "name": "경남",
+      "hubIds": [
+        "tongyeong",
+        "jinju",
+        "geoje",
+        "namhae"
+      ]
+    },
     "39": {
       "name": "제주",
       "hubIds": [
@@ -116,6 +133,13 @@
     "boryeong": "34",
     "gongju": "34",
     "taean": "34",
+    "gyeongju": "35",
+    "andong": "35",
+    "pohang": "35",
+    "tongyeong": "36",
+    "jinju": "36",
+    "geoje": "36",
+    "namhae": "36",
     "jeju": "39"
   }
 }
