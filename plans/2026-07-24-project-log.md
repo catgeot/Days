@@ -360,7 +360,7 @@ GYG-이어하기 — 최적화 구현
 
 - `StayDateBar` PC: sky 「항공권 · 호텔 함께」→ `WhiteLabelWidget` (`tracking=stay-modal-flight` · `trip_sub1=숙소모달 항공권`)
 - 게이트: `lg` + `canPreviewFlightRoute` + 도착 IATA · 출발=`selectedOriginIata`
-- 날짜·인원 Trip URL 주입은 **미적용**(1차 OD만 · QA 후 선택)
+- **일정·인원 주입**: 모달 draft → Trip `ddate`(체크인)·`rdate`(체크아웃)·`adult`/`child` (숙박=탑승). `/flights/` 홈은 OD·가는날·인원 확인됨 · 왕복 토글은 Trip UI가 `rdate`를 무시할 수 있음(QA)
 
 ### QA 체크
 
@@ -370,7 +370,7 @@ GYG-이어하기 — 최적화 구현
 4. 모바일: CTA **없음**
 5. 「변경하기」= MRT 재조회만 · CTA와 혼동 없음
 6. 저재고 하단 Trip **숙소** CTA 회귀 없음
-7. (선택) 일정 파라미터 주입 시 Trip UI 반영 여부 — 실패해도 OD만으로 ship OK
+7. 일정·인원: CTA URL에 `ddate`/`rdate`/`adult`/`child` 포함 · Trip 홈에서 가는날·탑승객 반영 · 왕복 라디오는 수동일 수 있음
 
 ### 에이전트 핸드오프
 

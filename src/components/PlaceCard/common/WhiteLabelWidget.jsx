@@ -17,6 +17,10 @@ import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/fligh
  * @param {Record<string, unknown> | null | undefined} [essentialGuide]
  * @param {string | null | undefined} [departureIata] - 시네마 Bar 등 명시 시에만 전달. 미지정(플래너)은 ICN 고정.
  * @param {'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' | null | undefined} [tracking]
+ * @param {string | null | undefined} [departDate] - YYYY-MM-DD → Trip `ddate`
+ * @param {string | null | undefined} [returnDate] - YYYY-MM-DD → Trip `rdate` (왕복 best-effort)
+ * @param {number | null | undefined} [adultCount]
+ * @param {number | null | undefined} [childCount]
  * @param {React.ReactElement} [customTrigger] - 커스텀 트리거 버튼
  */
 const WhiteLabelWidget = ({
@@ -24,6 +28,10 @@ const WhiteLabelWidget = ({
     essentialGuide,
     departureIata: departureOverride,
     tracking,
+    departDate,
+    returnDate,
+    adultCount,
+    childCount,
     customTrigger,
 }) => {
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
@@ -31,14 +39,26 @@ const WhiteLabelWidget = ({
         if (departureOverride) return resolveFlightDepartureIataForTrip(departureOverride);
         return TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
     }, [departureOverride]);
+    const flightSearchOpts = useMemo(
+        () => ({
+            essentialGuide,
+            departureIata,
+            tracking,
+            ...(departDate ? { departDate } : {}),
+            ...(returnDate ? { returnDate } : {}),
+            ...(adultCount != null ? { adultCount } : {}),
+            ...(childCount != null ? { childCount } : {}),
+        }),
+        [essentialGuide, departureIata, tracking, departDate, returnDate, adultCount, childCount],
+    );
     const flightUrl = useMemo(
-        () => buildTripcomPlannerNavigationUrl(location, { essentialGuide, departureIata, tracking }),
-        [location, essentialGuide, departureIata, tracking],
+        () => buildTripcomPlannerNavigationUrl(location, flightSearchOpts),
+        [location, flightSearchOpts],
     );
     const linkTarget = getPartnerLinkTarget();
 
     const handleOpen = () => {
-        if (tryOpenFlightSearch(location, { essentialGuide, departureIata, tracking })) return;
+        if (tryOpenFlightSearch(location, flightSearchOpts)) return;
         openTripcomExternalUrl(flightUrl, { target: linkTarget });
     };
 

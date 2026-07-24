@@ -796,7 +796,17 @@ function resolveTripcomFlightTracking(options = {}) {
  * Trip.com 항공 제휴 URL (항공 홈 또는 제휴 ad iframe).
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ essentialGuide?: Record<string, unknown> | null, mode?: 'flights' | 'ad', adId?: string, departureIata?: string, tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' }} [options]
+ * @param {{
+ *   essentialGuide?: Record<string, unknown> | null,
+ *   mode?: 'flights' | 'ad',
+ *   adId?: string,
+ *   departureIata?: string,
+ *   tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight',
+ *   departDate?: string,
+ *   returnDate?: string,
+ *   adultCount?: number,
+ *   childCount?: number,
+ * }} [options]
  * @returns {string}
  */
 export function buildTripcomPlannerFlightUrl(location, options = {}) {
@@ -827,11 +837,36 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     params.set('aAirportCode', arriveCode);
   }
 
+  const departDate = normalizeTripcomFlightYmd(options.departDate);
+  const returnDate = normalizeTripcomFlightYmd(options.returnDate);
+  if (departDate) {
+    params.set('ddate', departDate);
+  }
+  if (returnDate && (!departDate || returnDate > departDate)) {
+    params.set('rdate', returnDate);
+  }
+
+  const adults = Number(options.adultCount);
+  if (Number.isFinite(adults) && adults > 0) {
+    params.set('adult', String(Math.min(8, Math.max(1, Math.floor(adults)))));
+  }
+  const children = Number(options.childCount);
+  if (Number.isFinite(children) && children >= 0) {
+    params.set('child', String(Math.min(8, Math.floor(children))));
+  }
+
   if (mode === 'ad') {
     return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
   }
 
   return `https://kr.trip.com/flights/?${params.toString()}`;
+}
+
+/** @param {unknown} value @returns {string | null} YYYY-MM-DD */
+function normalizeTripcomFlightYmd(value) {
+  const s = String(value || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+  return s;
 }
 
 /** 도착 공항 미지정 시 기본 항공권 URL (하위 호환) */

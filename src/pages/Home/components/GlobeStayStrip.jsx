@@ -388,6 +388,10 @@ function StayDateBar({
               essentialGuide={flightCta.essentialGuide}
               departureIata={flightCta.departureIata}
               tracking="stay-modal-flight"
+              departDate={draftIn}
+              returnDate={draftOut}
+              adultCount={draftAdult}
+              childCount={draftChild}
               customTrigger={
                 <button
                   type="button"
