@@ -15,11 +15,11 @@ export const DEFAULT_HUB_SEEDS =
  * S3b 미이관 시도 — SSOT areas에 없는 코드만 사용.
  * @type {Record<string, string[]>}
  */
-const LEGACY_HUBS_BY_AREA = {
-  8: [],
-  37: ['jeonju', 'gunsan'],
-  38: ['yeosu', 'suncheon', 'mokpo', 'damyang'],
-};
+/**
+ * S3b 미이관 폴백 — 시도 이관 완료(세종 8 hub 없음·스킵).
+ * @type {Record<string, string[]>}
+ */
+const LEGACY_HUBS_BY_AREA = {};
 
 function ssotHubIds(areaCode) {
   const key = String(areaCode);

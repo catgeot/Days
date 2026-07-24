@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T12:41:40.198Z",
-    "areaCount": 14,
-    "hubLinkCount": 26,
+    "generatedAt": "2026-07-24T12:42:16.711Z",
+    "areaCount": 16,
+    "hubLinkCount": 32,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -107,6 +107,22 @@
         "namhae"
       ]
     },
+    "37": {
+      "name": "전북",
+      "hubIds": [
+        "jeonju",
+        "gunsan"
+      ]
+    },
+    "38": {
+      "name": "전남",
+      "hubIds": [
+        "yeosu",
+        "suncheon",
+        "mokpo",
+        "damyang"
+      ]
+    },
     "39": {
       "name": "제주",
       "hubIds": [
@@ -140,6 +156,12 @@
     "jinju": "36",
     "geoje": "36",
     "namhae": "36",
+    "jeonju": "37",
+    "gunsan": "37",
+    "yeosu": "38",
+    "suncheon": "38",
+    "mokpo": "38",
+    "damyang": "38",
     "jeju": "39"
   }
 }

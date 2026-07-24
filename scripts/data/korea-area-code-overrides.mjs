@@ -39,6 +39,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
     34: { name: '충남', hubIds: ['boryeong', 'gongju', 'taean'] },
     35: { name: '경북', hubIds: ['gyeongju', 'andong', 'pohang'] },
     36: { name: '경남', hubIds: ['tongyeong', 'jinju', 'geoje', 'namhae'] },
+    37: { name: '전북', hubIds: ['jeonju', 'gunsan'] },
+    38: { name: '전남', hubIds: ['yeosu', 'suncheon', 'mokpo', 'damyang'] },
     39: { name: '제주', hubIds: ['jeju'] },
   },
 };
