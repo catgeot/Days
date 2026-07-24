@@ -167,60 +167,52 @@
 - q=영문 도시명 · locale `ko-KR` · items `3` · cmp `gateo_planer_{slug}` · currency `KRW`
 - QA: 미야코지마·라로통가 현지 투어 OK
 
-## GYG 최적화 — 후속 (2열·CTA·City 우선)
+## GYG 최적화 — 후속 (2열·CTA·플래너 3+링크)
 
-**상태**: ✅ 코드 · ⏳ 사람 QA (플래너 정책 합의 반영)
+**상태**: ✅ 코드 커밋(`69971c4` 등) · ⏳ 사람 QA · push는 사람 판단(`main` ahead)
 
-- **플래너 map_poi 정책(합의)**: City 전면 매핑 **안 함** · Activities **리스트 3개** +「겟유어가이드에서 더보기」로 이탈 · q 없을 때만 City/`GYG_CITY_CONFIGS` · Klook 최후
-- 스케치 좌측: 패널 **740px** · Activities 리마운트(2열) · Sponsored 링크 · 하단 더보기 · 모바일 `hidden md` 유지
-- City ID: 소수 폴백만(아이슬란드 `169030`·미야코 `160504` 등) · 클라우드 전면 추출 **불필요**
-- 홈 투어 모달: Sponsored 링크 · 하단 CTA 여유 · **맨 위** 버튼
-- 매거진: 맨 위 버튼
-- QA: 플래너 3개+링크 · 스케치 2열 · 모달/매거진 맨위
-- 릴리스: QA 후 feature 초안만
+- **플래너 map_poi(합의)**: City 전면 매핑 **안 함** · Activities **3개** +「겟유어가이드에서 더보기」(`getGygHomeUrl(cmp)`) · q 없을 때만 City 소수 폴백 · Klook 최후
+- 스케치 좌측(PC): 패널 **740px** · Activities 리마운트(2열 시도) · Sponsored=링크 · 하단 더보기 · 모바일 `hidden md` **유지·추가 금지**
+- 홈 투어 모달: Sponsored 링크 · 하단 CTA 여유 · **맨 위** · 매거진 맨 위
+- City ID: 소수만(아이슬란드 `169030`·미야코 `160504` 등) · 클라우드 전면 추출 **불필요**
+- 릴리스: QA 후 feature 초안만 · `releaseNotes.js` 미반영
 
-## GYG 최적화 — 후속 핸드오프 (다음 세션)
+## 세션 종료 (2026-07-24) — GYG 후속 최적화 · 이어하기
 
-**상태**: ✅ 구현으로 이관(위 「GYG 최적화 — 후속」) · 사전 확인 기록 유지
+**상태**: ✅ 코드 · ⏳ QA · 다음 세션에서 최적화 이어가기
 
-### 사전 확인 (이번 턴)
+### 이번 세션 요약
+- 스케치 740·Sponsored/더보기 CTA · 모달 링크·맨위 · 매거진 맨위
+- 플래너 **Activities 3+링크**로 정책 확정(City 전면 매핑 철회)
+- 로컬 `main` origin 대비 **ahead** · push/릴리스는 QA 후
 
-| 항목 | 결과 |
-|------|------|
-| **「겟유어가이드에서 더보기」링크** | **필요함** · 이미 [`getGygHomeUrl`](../src/utils/affiliate.js)+[`buildGygPlannerCmp`](../src/utils/affiliate.js)로 제휴 홈(`partner_id`·`cmp`·`KRW`) 생성 가능. 도시 검색 딥링크가 필요하면 제휴 페이지 URL 패턴을 가져와 확장. |
-| **플래너 City 위젯** | 코드 있음: [`GetYourGuideCityWidget`](../src/components/PlaceCard/tabs/planner/components/GetYourGuideCityWidget.jsx) · **`data-gyg-location-id` 필수**. [`GYG_CITY_CONFIGS`](../src/components/PlaceCard/tabs/planner/locationRules.js)에 **소수만**(에베레스트·갈라파고스 등). 미야코지마·라로통가 등 **q 기반 여행지는 id 없어 null**. → 전면 City 전환은 **제휴 페이지에서 location-id(또는 City embed) 확보** 필요. id 없는 slug는 Activities 축소/폴백 정책 합의. |
-| **모바일 스케치 GYG** | 좌측 패널 `hidden md:flex` · **이미 미노출**. **추가하지 말 것**(복잡성). |
-| **공식 폭 740 / 560 / 375** | 파트너 프리뷰 폭으로 컨테이너 `max-width` 실험 → 2열 유도. 위젯 attrs에 열 수 API 없음. |
+### 다음 세션 — 읽을 것 (3)
+1. 본 절「GYG-이어하기 — QA·잔여 최적화」· `.ai-context` 5·6절 GYG 한 줄
+2. `GetYourGuideActivitiesWidget` · `ToolkitCard` map_poi · `PlaceWikiNavView` · `GlobeTourStrip`
+3. `affiliate.js` — `GYG_PLANNER_ACTIVITIES_ITEM_COUNT=3` · `GYG_ACTIVITIES_ITEM_COUNT=12` · `getGygHomeUrl`/`buildGygPlannerCmp`
 
-### 다음 세션 작업
+### 금지 (3)
+- analyzer 재삽입 · City 전면 location-id 매핑 · `"City, Country"` q
+- 모바일 스케치에 GYG 신설
+- QA·합의 전 `releaseNotes.js` · `main` 직접 push
 
-1. 스케치 좌측 Activities: 컨테이너 폭 **560**(우선)·740·375 실험 → **2열** · 하단「겟유어가이드에서 더보기」→ `getGygHomeUrl({ cmp })`
-2. 플래너 map_poi: Activities 긴 목록 → **City 위젯** 수준으로 축소. 기존 City 코드로 가능한 slug만 전환 · 불가 시 사용자 제공 embed/location-id 대기(또는 합의된 폴백)
-3. 홈 투어 모달(`GlobeTourStrip`): **상단** GYG 링크 + **하단**「더보기」CTA
-4. 모바일 스케치: GYG **추가 금지**
-5. QA 후 커밋 · 릴리스 feature 초안은 QA 뒤
-
-### 읽을 것
-1. 본 절 · `.ai-context` 5·6절 GYG 한 줄
-2. `GetYourGuideActivitiesWidget` · `GetYourGuideCityWidget` · `GYG_CITY_CONFIGS` · `getGygHomeUrl` · `GlobeTourStrip` · `ToolkitCard` map_poi · `PlaceWikiNavView`
-
-### 금지
-- analyzer 재삽입 · City 전면 매핑 추측 · `"City, Country"` q · 모바일 스케치에 GYG 신설 · 릴리스 합의 전 `releaseNotes.js`
+### 다음 작업 (우선)
+1. **사람 QA**: 플래너 3+링크 · 스케치 2열(안 되면 폭/리마운트 재조정) · 모달 Sponsored·하단 여유·맨위 · 매거진 맨위
+2. QA 피드백 반영(잔여 최적화)
+3. 통과 시 feature 브랜치 push·PR(또는 사람 push) · 릴리스 **feature 초안만** 제안
 
 ### 제시어
 
 ```
-GYG-이어하기 — 후속 최적화
+GYG-이어하기 — QA·잔여 최적화
 
 @.ai-context.md @plans/2026-07-24-project-log.md
 
-목표: 일지「GYG 최적화 — 후속 핸드오프」따름(스펙 재검토 금지).
-1) 스케치 좌측: 공식폭 740/560/375로 컨테이너 조정→2열 · 하단「겟유어가이드에서 더보기」= getGygHomeUrl(cmp)
-2) 플래너 map_poi: Activities 긴 목록→City 위젯 수준. 기존 GetYourGuideCityWidget+location-id로 가능하면 전환, 없으면 제휴 embed/id 대기·보고
-3) 홈 투어 모달: 상단 GYG 링크 + 하단 더보기 CTA
-4) 모바일 스케치 GYG 추가 금지(현재 hidden md 유지)
-불변: q=name_en · ko-KR · KRW · cmp · analyzer 재삽입 금지.
-릴리스는 QA 후 feature 초안만.
+목표: 일지「세션 종료 — GYG 후속 최적화 · 이어하기」따름.
+1) 사람 QA 결과 반영(플래너 3+링크 · 스케치 2열 · 모달/매거진 맨위)
+2) City 전면 매핑·클라우드 id 전면 추출 금지 · 플래너=Activities 3+제휴 홈 링크 유지
+3) QA 통과 후 릴리스 feature 초안만(합의 전 releaseNotes.js 금지)
+불변: q=name_en · ko-KR · KRW · cmp · analyzer 재삽입 금지 · 모바일 스케치 GYG 추가 금지.
 ```
 
 ## GYG 최적화 — 구현
