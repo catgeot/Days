@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-07-12T07:27:25.979Z",
-    "spotCount": 272,
-    "placeIdCount": 630,
+    "generatedAt": "2026-07-24T19:14:24.530Z",
+    "spotCount": 273,
+    "placeIdCount": 633,
     "stats": {
-      "override": 169,
+      "override": 170,
       "curatedPreserved": 0,
       "toolkitSync": 103,
       "runtime": 0,
@@ -4201,6 +4201,17 @@
       "rationale": "우붓(Ubud) — 발리 응우라라이(DPS) 관문, 공항에서 차로 약 1~1.5시간",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "graph-direct"
+    },
+    "okinawa": {
+      "primaryIatas": [
+        "OKA"
+      ],
+      "preferredLinkIata": "OKA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "bannerNote": "오키나와 본섬은 나하공항(OKA) 도착이 일반적입니다. 미야코지마(SHI/MMY)·이시가키(ISG)는 별도 섬·별도 여행지이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "오키나와 본섬(나하) 관문 — 미야코(SHI/MMY)·이시가키(ISG)와 분리"
     }
   },
   "placeIds": {
@@ -6919,11 +6930,12 @@
       ],
       "preferredLinkIata": "OKA",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "오키나와",
-      "linkedSlug": "miyakojima"
+      "bannerNote": "오키나와 본섬은 나하공항(OKA) 도착이 일반적입니다. 미야코지마(SHI/MMY)·이시가키(ISG)는 별도 섬·별도 여행지이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "오키나와 본섬(나하) OKA — slug okinawa와 동일 · 미야코/이시가키 linkedSlug 금지",
+      "linkedSlug": "okinawa",
+      "placeId": "오키나와"
     },
     "오사카": {
       "primaryIatas": [
@@ -12146,6 +12158,30 @@
         "COK"
       ],
       "placeId": "아가티"
+    },
+    "okinawa": {
+      "primaryIatas": [
+        "OKA"
+      ],
+      "preferredLinkIata": "OKA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "오키나와 본섬(나하) OKA — slug okinawa와 동일",
+      "linkedSlug": "okinawa",
+      "placeId": "Okinawa"
+    },
+    "나하": {
+      "primaryIatas": [
+        "OKA"
+      ],
+      "preferredLinkIata": "OKA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "나하 = 오키나와 본섬 관문 OKA",
+      "linkedSlug": "okinawa",
+      "placeId": "나하"
     }
   }
 }

@@ -30,11 +30,12 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '남극해': 'antarctica',
   '앵커리지': 'alaska',
 
-  // —— 아이슬란드·오키나와(야에야마 권) ——
+  // —— 아이슬란드·오키나와 본섬(나하) ——
   '레이니스퍄라': 'reykjavik',
   '레이클라비크': 'reykjavik',
-  '오키나와': 'ishigaki',
-  '오키나와현': 'ishigaki',
+  '오키나와': 'okinawa',
+  '오키나와현': 'okinawa',
+  '나하': 'okinawa',
 
   // —— 갈라파고스(찰스 다윈·다윈섬 검색 혼동) ——
   '다윈': 'galapagos',
@@ -69,7 +70,8 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Uyuni': 'uyuni-salt-flat',
   'Plitvice': 'plitvice-lakes',
   'Plitvice Lakes National Park': 'plitvice-lakes',
-  'Okinawa': 'ishigaki',
+  'Okinawa': 'okinawa',
+  'Naha': 'okinawa',
   'Darwin': 'galapagos',
   'Pattaya': 'phuket',
   'Siem Reap': 'angkor-wat',
@@ -199,7 +201,8 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'bali': ['발리', 'Bali'],
   'ubud': ['우붓', 'Ubud'],
   'reykjavik': ['레이니스퍄라', '레이클라비크', 'Reykjavik'],
-  'ishigaki': ['오키나와', '오키나와현', 'Okinawa'],
+  'okinawa': ['오키나와', '오키나와현', 'Okinawa', '나하', 'Naha'],
+  'ishigaki': ['이시가키', 'Ishigaki'],
   'galapagos': ['다윈', '다윈섬', 'Darwin'],
   'phuket': ['태국 파타야', '파타야', 'Pattaya'],
   'kuala-lumpur': ['쿠알라셀랑고르'],

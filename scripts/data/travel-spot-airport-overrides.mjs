@@ -140,6 +140,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
   },
+  okinawa: {
+    primaryIatas: ['OKA'],
+    preferredLinkIata: 'OKA',
+    confidence: 'high',
+    rationale: '오키나와 본섬(나하) 관문 — 미야코(SHI/MMY)·이시가키(ISG)와 분리',
+    bannerNote:
+      '오키나와 본섬은 나하공항(OKA) 도착이 일반적입니다. 미야코지마(SHI/MMY)·이시가키(ISG)는 별도 섬·별도 여행지이므로 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
   borobudur: {
     primaryIatas: ['YIA'],
     preferredLinkIata: 'YIA',
@@ -1316,6 +1324,29 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     searchHintIatas: ['SHI', 'MMY'],
     bannerNote:
       '인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.'
+  },
+  오키나와: {
+    primaryIatas: ['OKA'],
+    preferredLinkIata: 'OKA',
+    confidence: 'high',
+    linkedSlug: 'okinawa',
+    rationale: '오키나와 본섬(나하) OKA — slug okinawa와 동일 · 미야코/이시가키 linkedSlug 금지',
+    bannerNote:
+      '오키나와 본섬은 나하공항(OKA) 도착이 일반적입니다. 미야코지마(SHI/MMY)·이시가키(ISG)는 별도 섬·별도 여행지이므로 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
+  Okinawa: {
+    primaryIatas: ['OKA'],
+    preferredLinkIata: 'OKA',
+    confidence: 'high',
+    linkedSlug: 'okinawa',
+    rationale: '오키나와 본섬(나하) OKA — slug okinawa와 동일',
+  },
+  나하: {
+    primaryIatas: ['OKA'],
+    preferredLinkIata: 'OKA',
+    confidence: 'high',
+    linkedSlug: 'okinawa',
+    rationale: '나하 = 오키나와 본섬 관문 OKA',
   },
   아이투타키: {
     primaryIatas: ['AIT', 'RAR'],
