@@ -518,12 +518,17 @@ const PlaceWikiDetailsView = ({
 
   const images = galleryData?.images || [];
   const heroImage = images.length > 0 ? images[0] : null;
-  const sectionCount = wikiData?.sections?.length || 0;
-  const galleryImages = useMemo(
-    () => images.slice(1).slice(sectionCount),
-    [images, sectionCount],
+  const contentImages = useMemo(() => images.slice(1), [images]);
+  /** 섹션 삽화 과다 시 하단 갤러리가 비는 것 방지 · 하단은 최대 22장 */
+  const sectionImageCount = Math.min(
+    wikiData?.sections?.length || 0,
+    4,
+    contentImages.length,
   );
-  const contentImages = images.slice(1);
+  const galleryImages = useMemo(
+    () => contentImages.slice(sectionImageCount).slice(0, 22),
+    [contentImages, sectionImageCount],
+  );
   const wikiPlaceKey = useMemo(() => resolveGalleryPlaceKey(location), [location]);
 
   const canGoLightboxPrev = lightboxIndex > 0;
@@ -769,8 +774,7 @@ const PlaceWikiDetailsView = ({
                         {/* 위키 섹션들 */}
                         <div className="space-y-16 pt-8">
                             {wikiData.sections && wikiData.sections.map((sec, idx) => {
-                                // 각 섹션마다 이미지 1개씩 매칭
-                                const imageForSection = idx < contentImages.length ? contentImages[idx] : null;
+                                const imageForSection = idx < sectionImageCount ? contentImages[idx] : null;
 
                                 return (
                                     <section key={idx} id={`wiki-section-${idx}`} className="scroll-mt-8 group">

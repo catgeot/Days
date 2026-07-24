@@ -83,6 +83,8 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
     };
 
     const raf = window.requestAnimationFrame(syncFromElement);
+    // hang: paint chrome만 해제. lazy 미시작·느린 decode를 broken으로 드롭하면
+    // place_stats 큐레이션(30~60장)이 뷰포트 분량(~10장)으로 잘린다.
     const hangTimer = window.setTimeout(() => {
       if (paintedRef.current) return;
       const el = imgElRef.current;
@@ -90,14 +92,14 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         settleLoaded();
         return;
       }
-      settleBroken();
+      markPainted();
     }, TILE_LOAD_HANG_MS);
 
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(hangTimer);
     };
-  }, [src, settleLoaded, settleBroken]);
+  }, [src, settleLoaded, settleBroken, markPainted]);
 
   return (
     <div
@@ -153,7 +155,7 @@ const GalleryLoadingChrome = () => (
     <div className="h-10 w-10 rounded-full border-[3px] border-blue-300/35 border-t-blue-300 animate-spin" />
     <p className="text-sm font-semibold text-white/85">사진을 불러오는 중...</p>
     <p className="text-center text-[11px] leading-relaxed text-white/45">
-      국내 명소는 관광 사진 API를 준비하고 있어요
+      저장된 사진을 불러오는 중이에요
     </p>
   </div>
 );

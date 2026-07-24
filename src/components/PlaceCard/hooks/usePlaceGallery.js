@@ -21,8 +21,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.14 — session → DB → TourAPI(국내 contentId·curated hub) → 스톡 · soft Tour 우세/스톡 고착 DB 스킵 */
-const CACHE_VERSION = 'v1.14';
+/** v1.15 — session → DB → TourAPI(국내 contentId·curated hub) → 스톡 · hang 오드롭 캐시 무효화 */
+const CACHE_VERSION = 'v1.15';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
@@ -659,7 +659,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         processAndSetImages(finalResults);
         saveToSmartCache(CACHE_KEY, finalResults);
 
-        if (dbStatsId || koreanName) {
+        // 더보기(append)는 세션만 — place_stats 큐레이션을 Unsplash 병합본으로 덮지 않음
+        if (!forceRefresh && (dbStatsId || koreanName)) {
           const thumbnailToSave = finalResults[0]?.urls?.small || finalResults[0]?.urls?.regular || '';
           const statsPlaceId = dbStatsId || koreanName;
 

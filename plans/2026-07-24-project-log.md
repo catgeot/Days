@@ -18,6 +18,16 @@
 - 원인: (1) 캐시·모바일에서 `img.onLoad` 누락으로 타일 pulse 스켈레톤 유지 (2) `place_stats`/전체 fetch hang·early return 시 `isImgLoading` 미해제
 - 대응: `GalleryGridTile` complete/rAF 동기화·6s hang→드롭 · paint chrome 3.5s · `usePlaceGallery` early-return 해제·DB 8s·전체 28s safety
 - QA: 재현지 **케이프타운** · 스켈레톤 정상 해제 확인
+- **후속(같은 날)**: hang→드롭이 lazy 미시작 사진을 삭제해 큐레이션이 ~10장으로 잘림 → hang은 paint만 해제·실제 404만 드롭
+
+## 갤러리 — lazy hang 오드롭 · 더보기 DB 덮어쓰기 · 스케치 갤러리 22
+
+**상태**: 수정 완료 · QA 대기
+
+- 증상: 밴프 등 카운트 104인데 화면 ~11장 · 스케치 매거진 하단 갤러리 미표시/무제한
+- 원인: (1) `11b72b2` hang 6s→`handleDropBrokenImage`가 lazy 오프스크린까지 세션에서 삭제 (2) 더보기 append가 `place_stats.gallery_urls` upsert로 큐레이션 덮음(밴프 현재 109 Unsplash) (3) 매거진 `slice(sectionCount)`로 섹션 많으면 하단 0장·리밋 없음
+- 수정: hang은 드롭 금지 · 캐시 `v1.15` · 더보기 DB upsert 금지 · 섹션 삽화 max4 · 하단 갤러리 max22
+- 참고: 교토/아이슬란드 등 다른 큐레이션(30~59)은 유지 · 밴프는 더보기로 DB가 Unsplash 병합본으로 바뀐 상태(원본 복구는 백업 필요)
 
 ## 써머리 장소카드 — uiPlace 안내 문구 제거
 
