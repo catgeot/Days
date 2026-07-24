@@ -431,3 +431,11 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 - push/PR 여부 · packages 재전환은 **안 함**(flights 우선) · 제휴가 packages 딥링크 추가 제공 시만 재검토
 - 릴리스: 숙소 모달 항공 CTA를 feature로 넣을지 합의 후
 
+## 숙소 모달 항공 CTA — 시인성
+
+**상태**: ⏳ 사람 QA
+
+- 인원 행 안 작은 버튼 → DateBar **독립 sky 행** (채워진 버튼 + 짧은 안내)
+- 카피: 「항공권 · 호텔 함께」·「일정·인원 그대로 Trip에서 이어서」
+- PC only · 게이트·파라미터 로직 변경 없음
+
