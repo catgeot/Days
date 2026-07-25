@@ -122,7 +122,7 @@
 
 ## 장소카드 관문 편입 분리 — 세션 종료 핸드오프
 
-**상태**: ✅ 로컬 `main` · **미push** · **사람 QA 대기**(나하 회귀 픽스 포함)
+**상태**: ✅ `main` push (`f32fd06..facc1d4`) · 세션 종료
 
 | SHA | 내용 |
 |-----|------|
@@ -139,32 +139,10 @@
 
 ## 나하→오키나와 좌표스냅 회귀
 
-**상태**: ✅ audit PASS · resolve 검증 · 사람 QA 대기
+**상태**: ✅ audit PASS · `f316836` · **push 완료** (`facc1d4`)
 
 - **증상**: alias/keywords 제거 후에도 검색「나하」장소카드가 오키나와로 바뀜
-- **원인**: cities·`/place/naha` hydrate에 `uiPlace` 없음 → `mergeCanonicalTravelSpot`이 coords(~24m)로 `okinawa` 풀머지. okinawa hub alias는 이미 제거됨(별칭 아님)
-- **조치**: hub `naha`(시내 명소) · okinawa hub는 본섬 명소·좌표 중앙화 · cities hydrate/`saved_trips`에 `uiPlace:true` · city Enter에서 `uiPlace:false` 강제 제거
-- **검증**: `audit:city-attraction-hubs` issues:0 · `/place/naha`→나하 · `/place/okinawa`→오키나와 · rental OKA
-- **QA**: 검색「나하」=나하 카드 유지(카드 펼침·새로고침 포함) · 「오키나와」본명 · 배너 OKA
-
-### 다음 세션 — 읽을 것 (3)
-
-1. 본 절 + 「나하→오키나와 좌표스냅」·「관문 별칭 5곳」
-2. hub `naha` / [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) cities `uiPlace`
-3. `.ai-context` **1.5.1** (QA 후 push)
-
-### 금지 (3)
-
-1. 다시 `파타야→phuket` / `시엠립→angkor-wat` / `나하→okinawa` / `다윈섬→galapagos` / `리마→machu-picchu` 별칭 복구
-2. `travelSpotAirports.json` spots 직접 수정 (overrides → `generate:airports`)
-3. QA 없이 「PROD 완료」단정 · 사람 승인 없는 `main` push는 요청 시에만
-
-### 제시어
-
-```
-장소카드-관문분리-QA
-@plans/2026-07-25-project-log.md 「나하→오키나와 좌표스냅 회귀」
-로컬 main 미push. 사람 QA 후 push.
-체크: 나하=독립 카드(펼침·새로고침 유지) · 오키나와 본명 · OKA.
-나머지: 일룰리사트·다윈·다윈섬·리마·아디스·맥머도·파타야·시엠립·앵커리지.
-```
+- **원인**: cities·`/place/naha` hydrate에 `uiPlace` 없음 → `mergeCanonicalTravelSpot`이 coords(~24m)로 `okinawa` 풀머지
+- **조치**: hub `naha` · cities hydrate `uiPlace:true` · city Enter `uiPlace:false` 제거
+- **검증**: `audit:city-attraction-hubs` issues:0 · `/place/naha`→나하 · OKA
+- **세션 종료**: `main` push `f32fd06..facc1d4` (관문 분리 일괄 + 나하 회귀)
