@@ -25,7 +25,7 @@
 
 ## 지구본 나라/지역 탐색 (1차)
 
-**상태**: ✅ 로컬 커밋 · **push 대기** · 다음 세션에서 PC 배치·UX 이어가기
+**상태**: ✅ 로컬 커밋 · **push 완료** (`9b79793` 포함 · `main` `4502de2`) · 다음 세션에서 PC 배치·UX 이어가기
 
 ### 구현
 
@@ -51,3 +51,11 @@
 - Cursor User Rule「Git commit/push — verification gate」Design carve-out도 동일 취지로 갱신 (커밋 타이밍 only · 미승인 리디자인 불가)
 - 「커밋 보류」는 **합의된 디자인 조율의 커밋 타이밍**일 뿐, 기능 작업 중 기존 버튼·레이아웃 교체 허가가 아님
 - 계기: 탐색 범위 작업에서 버튼 디자인이 임의 교체되어 원복에 시간 소모
+
+## 세션 종료 (규칙·Cloud 시크릿)
+
+**상태**: ✅ push 완료 · 세션 종료
+
+- UI 임의 변경 vs 커밋 보류 분리 · User Rule carve-out 정합 · `main` push
+- Cloud Secrets: `VITE_SUPABASE_*` · `VITE_MAPBOX_TOKEN` · `TOUR_API_SERVICE_KEY` · **`SUPABASE_ACCESS_TOKEN` 검증 OK** (Edge 배포 가능)
+- 다음: 지구본 PC 나라 칩 배치 QA · 릴리스 노트 해당 시만
