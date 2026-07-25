@@ -120,6 +120,20 @@ const HomeGlobe = React.memo(forwardRef(({
         }, totalWaitTime);
       }
     },
+    flyToRegion: (lat, lng, _zoom) => {
+      if (!globeEl.current || !Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+      if (rotationTimer.current) {
+        clearTimeout(rotationTimer.current);
+        rotationTimer.current = null;
+      }
+      immerseActiveRef.current = false;
+      globeEl.current.controls().autoRotate = false;
+      globeEl.current.pointOfView(
+        { lat, lng, altitude: GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT * 0.55 },
+        GLOBE_CAMERA_CONFIG.FLY_DURATION
+      );
+      return true;
+    },
     immerseToPin: (lat, lng, options = {}) => {
       if (!globeEl.current || !Number.isFinite(lat) || !Number.isFinite(lng)) return false;
       if (rotationTimer.current) {

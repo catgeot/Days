@@ -14,6 +14,10 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
 import { normalizeLngNear } from '../lib/globeLngUtils';
+import {
+  GLOBE_FACE_REGION_DEFAULT_ZOOM,
+  GLOBE_FACE_REGION_FLY_MS,
+} from '../lib/globeFaceRegions';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
 import {
   HIGH_ZOOM_FULL_REVEAL,
@@ -354,6 +358,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   onFatalError,
   highlightCategory = null,
   categoryFaceEpoch = 0,
+  onReturnToSpace = null,
 }, ref) => {
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
@@ -1538,6 +1543,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const map = mapRef.current?.getMap();
     if (!map) return;
 
+    onReturnToSpace?.();
+
     if (isTourMode(globeMode) || tourActiveRef.current) {
       await endTour();
       finalizeSpaceReturn();
@@ -1577,7 +1584,44 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       map.jumpTo(returnCamera);
       finalizeSpaceReturn();
     }
-  }, [endTour, finalizeSpaceReturn, globeMode]);
+  }, [endTour, finalizeSpaceReturn, globeMode, onReturnToSpace]);
+
+  /** 나라/지역 칩 — 핀·카드 없이 국가 단위 평면 느낌 줌 */
+  const flyToRegion = useCallback((lat, lng, zoom = GLOBE_FACE_REGION_DEFAULT_ZOOM) => {
+    const map = mapRef.current?.getMap();
+    if (!map || pauseRender || isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
+      return false;
+    }
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+
+    autoRotateRef.current = false;
+    if (rotationTimer.current) {
+      clearTimeout(rotationTimer.current);
+      rotationTimer.current = null;
+    }
+    immerseActiveRef.current = false;
+
+    const targetZoom = Number.isFinite(zoom) ? zoom : GLOBE_FACE_REGION_DEFAULT_ZOOM;
+    const normalizedLng = normalizeLngNear(map.getCenter().lng, lng);
+    const camera = {
+      center: [normalizedLng, lat],
+      zoom: targetZoom,
+      pitch: 0,
+      bearing: 0,
+    };
+
+    try {
+      map.stop();
+      map.flyTo({
+        ...camera,
+        duration: GLOBE_FACE_REGION_FLY_MS,
+        essential: true,
+      });
+    } catch {
+      map.jumpTo(camera);
+    }
+    return true;
+  }, [globeMode, pauseRender]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
@@ -1598,6 +1642,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
     },
     flyToAndPin,
+    flyToRegion,
     immerseToPin,
     exitImmerse,
     clearImmerseState,
@@ -1654,7 +1699,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return waitForFlightCinemaGlobeReady(map, options);
     },
     getGlobeMode: () => globeMode
-  }), [addRipple, clearImmerseState, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, clearImmerseState, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

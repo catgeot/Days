@@ -152,10 +152,19 @@ function Home() {
 
   const [category, setCategory] = useState(() => pickRandomGlobeCategory());
   const [categoryFaceEpoch, setCategoryFaceEpoch] = useState(0);
+  const [faceRegionsOpen, setFaceRegionsOpen] = useState(false);
+  const [selectedFaceRegionId, setSelectedFaceRegionId] = useState(null);
 
   const revealRandomGlobeFace = useCallback(() => {
     setCategory(pickRandomGlobeCategory());
     setCategoryFaceEpoch((epoch) => epoch + 1);
+    setFaceRegionsOpen(false);
+    setSelectedFaceRegionId(null);
+  }, []);
+
+  const closeFaceRegions = useCallback(() => {
+    setFaceRegionsOpen(false);
+    setSelectedFaceRegionId(null);
   }, []);
 
   const [isPinVisible, setIsPinVisible] = useState(true);
@@ -257,9 +266,27 @@ function Home() {
       setTourLaunchPending(false);
       await globeRef.current?.endTour?.();
     }
+
+    if (nextCategory === category && faceRegionsOpen) {
+      setFaceRegionsOpen(false);
+      setSelectedFaceRegionId(null);
+      return;
+    }
+
     setCategory(nextCategory);
+    setFaceRegionsOpen(true);
+    setSelectedFaceRegionId(null);
     setCategoryFaceEpoch((epoch) => epoch + 1);
-  }, [flightCinemaActive, globeMode]);
+  }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
+
+  const handleFaceRegionSelect = useCallback((region) => {
+    if (!region || !Number.isFinite(region.lat) || !Number.isFinite(region.lng)) return;
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    setSelectedFaceRegionId(region.id);
+    globeRef.current?.flyToRegion?.(region.lat, region.lng, region.zoom);
+  }, [flightCinemaActive]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -883,6 +910,7 @@ function Home() {
           highlightCategory={category}
           categoryFaceEpoch={categoryFaceEpoch}
           focusSlug={globeFocusSlug}
+          onReturnToSpace={closeFaceRegions}
         />
       </div>
 
@@ -898,6 +926,9 @@ function Home() {
           onLogoClick={() => setIsLogoPanelOpen(true)}
           relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
+          faceRegionsOpen={faceRegionsOpen}
+          selectedFaceRegionId={selectedFaceRegionId}
+          onFaceRegionSelect={handleFaceRegionSelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}

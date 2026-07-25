@@ -12,10 +12,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
+import GlobeFaceRegionRail from './GlobeFaceRegionRail';
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 
-/** 모바일 활성 카테고리 — 테마색 글로우 */
+/** 모바일 활성 카테고리 — 테마색 글로우 (배포본과 동일) */
 const CATEGORY_ACTIVE_MOBILE = {
   paradise: 'bg-cyan-500/25 border-cyan-400/50 shadow-[0_0_14px_rgba(34,211,238,0.35)]',
   nature: 'bg-green-500/25 border-green-400/50 shadow-[0_0_14px_rgba(74,222,128,0.35)]',
@@ -28,6 +29,9 @@ const HomeUI = React.memo(({
   onSearch: _onSearch, onTickerClick, externalInput, savedTrips: _savedTrips, onTripClick: _onTripClick, onTripDelete: _onTripDelete, onOpenChat, onLogoClick,
   relatedPlaces = [], isTagLoading = false, onRelatedPlaceClick,
   selectedCategory, onCategorySelect,
+  faceRegionsOpen = false,
+  selectedFaceRegionId = null,
+  onFaceRegionSelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible,
@@ -77,6 +81,9 @@ const HomeUI = React.memo(({
     }
   };
   const ThemeIcon = getThemeConfig().icon;
+
+  const hideExploreChrome =
+    (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
 
   return (
     <>
@@ -162,6 +169,7 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
+      {/* 카테고리 바 — origin/main 배포본 마크업 그대로 (모바일 하단·PC 우측 상단) */}
       {!isTourCinema && (
       <div className={`fixed z-50 pointer-events-auto animate-fade-in-left
          bottom-8 left-4 w-auto max-w-[calc(100vw-7rem)] flex justify-start
@@ -184,7 +192,7 @@ const HomeUI = React.memo(({
                    type="button"
                    onClick={() => onCategorySelect(cat.id)}
                    aria-label={CATEGORY_LABELS[cat.id] || cat.label}
-                   aria-pressed={isActive}
+                   aria-pressed={isActive && faceRegionsOpen}
                    className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
                      w-[3.25rem] py-1.5 md:w-14 md:py-2 max-md:border
                      ${isActive
@@ -202,6 +210,17 @@ const HomeUI = React.memo(({
          </div>
          </div>
       </div>
+      )}
+
+      {/* 나라/지역 레일 — 카테고리 활성 시에만 (모바일·PC 좌측) */}
+      {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory && (
+        <div className="fixed left-2 top-[42%] -translate-y-1/2 z-[55] pointer-events-none animate-fade-in-right md:left-6 md:top-1/2">
+          <GlobeFaceRegionRail
+            category={selectedCategory}
+            selectedRegionId={selectedFaceRegionId}
+            onSelectRegion={onFaceRegionSelect}
+          />
+        </div>
       )}
 
       {/* PC 좌측 레일 — 연관 키워드 + 권역 범례 마운트(게이트 슬롯) */}

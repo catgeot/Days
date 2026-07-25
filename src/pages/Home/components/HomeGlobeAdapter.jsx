@@ -33,6 +33,7 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     resumeRotation: () => childRef.current?.resumeRotation?.(),
     wakeAfterOverlay: () => childRef.current?.wakeAfterOverlay?.(),
     flyToAndPin: (lat, lng, name, category, options) => childRef.current?.flyToAndPin?.(lat, lng, name, category, options),
+    flyToRegion: (lat, lng, zoom) => childRef.current?.flyToRegion?.(lat, lng, zoom) ?? false,
     immerseToPin: (lat, lng, options) => childRef.current?.immerseToPin?.(lat, lng, options) ?? false,
     exitImmerse: (lat, lng) => childRef.current?.exitImmerse?.(lat, lng) ?? false,
     clearImmerseState: () => childRef.current?.clearImmerseState?.(),
