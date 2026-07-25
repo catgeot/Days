@@ -47,6 +47,7 @@
 
 **상태**: ✅ 문서 반영
 
-- `.ai-context` **§4.1 5** · **1.5.1** · `AGENTS.md` · `gateo-project-context.mdc`
+- `.ai-context` **§4.1 5** · **1.5.1** · `AGENTS.md` · `gateo-project-context.mdc` · 커밋 `23d6545`
+- Cursor User Rule「Git commit/push — verification gate」Design carve-out도 동일 취지로 갱신 (커밋 타이밍 only · 미승인 리디자인 불가)
 - 「커밋 보류」는 **합의된 디자인 조율의 커밋 타이밍**일 뿐, 기능 작업 중 기존 버튼·레이아웃 교체 허가가 아님
 - 계기: 탐색 범위 작업에서 버튼 디자인이 임의 교체되어 원복에 시간 소모
