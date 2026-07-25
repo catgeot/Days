@@ -227,7 +227,7 @@ export default function GlobeTourStrip({
         e.stopPropagation();
         toggleOpen();
       }}
-      className={`absolute -left-[2.15rem] top-1/2 z-[2] flex h-[7.25rem] w-[2.15rem] -translate-y-1/2 flex-col items-center justify-center gap-1.5 rounded-l-xl border border-r-0 shadow-[0_4px_16px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all ${
+      className={`absolute -left-[2.15rem] top-1/2 z-[2] flex h-[7.25rem] w-[2.15rem] -translate-y-1/2 flex-col items-center justify-center gap-1.5 rounded-l-xl border border-r-0 shadow-[0_4px_16px_rgba(249,115,22,0.28)] backdrop-blur-md transition-all ${
         expanded
           ? 'border-orange-200/70 bg-orange-500/42 text-orange-50'
           : 'border-orange-300/55 bg-orange-500/30 text-orange-50 hover:border-orange-200/70 hover:bg-orange-500/40'

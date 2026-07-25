@@ -1488,16 +1488,16 @@ export default function GlobeStayStrip({
         }
         setExpanded((v) => !v);
       }}
-      className={`relative z-10 flex min-h-[40px] w-full min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2 py-2 transition-all duration-300 lg:min-h-[36px] ${
+      className={`relative z-10 flex min-h-[40px] w-full min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2 py-2 shadow-[0_2px_12px_rgba(245,158,11,0.22)] transition-all duration-300 lg:min-h-[36px] ${
         expanded
-          ? 'bg-amber-500/20 border-amber-300/45 hover:bg-amber-500/25'
-          : 'bg-amber-500/10 border-amber-400/30 hover:bg-amber-500/20 hover:border-amber-300/40'
+          ? 'border-amber-200/65 bg-amber-500/36 hover:bg-amber-500/40'
+          : 'border-amber-300/55 bg-amber-500/28 hover:border-amber-200/65 hover:bg-amber-500/38'
       }`}
     >
       {status === 'loading' && expanded ? (
-        <Loader2 size={16} className="shrink-0 animate-spin text-amber-200" />
+        <Loader2 size={16} className="shrink-0 animate-spin text-amber-200" strokeWidth={2.25} />
       ) : (
-        <BedDouble size={16} className="shrink-0 text-amber-200" />
+        <BedDouble size={16} className="shrink-0 text-amber-200" strokeWidth={2.25} />
       )}
       <span className="min-w-0 truncate text-xs font-bold text-amber-50">숙소 찾기</span>
       {expanded ? (

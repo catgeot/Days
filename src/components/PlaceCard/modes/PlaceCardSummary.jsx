@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Maximize2, Mountain, Plane, Loader2, ChevronRight, ScanSearch, ScanEye } from 'lucide-react';
+import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
@@ -387,10 +387,10 @@ const PlaceCardSummary = ({
                     }}
                     className={`relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border px-2 py-2 transition-all duration-300 lg:min-h-[36px] ${
                       flightRouteInteractive
-                        ? 'bg-sky-500/15 border-sky-400/35 hover:bg-sky-500/25 hover:border-sky-300/45 cursor-pointer'
+                        ? 'cursor-pointer border-sky-400/40 bg-sky-500/20 hover:border-sky-300/50 hover:bg-sky-500/28'
                         : isFlightRoutePending || flightRouteBusy
-                          ? 'bg-sky-500/10 border-sky-400/25 opacity-90 cursor-wait pointer-events-none'
-                          : 'bg-white/[0.04] border-white/10 opacity-50 cursor-not-allowed pointer-events-none'
+                          ? 'cursor-wait pointer-events-none border-sky-400/25 bg-sky-500/10 opacity-90'
+                          : 'cursor-not-allowed pointer-events-none border-white/10 bg-white/[0.04] opacity-50'
                     }`}
                     title={
                       isFlightRoutePending
@@ -412,7 +412,7 @@ const PlaceCardSummary = ({
                     )}
                     <span
                       className={`min-w-0 truncate text-xs font-bold ${
-                        flightRouteInteractive || isFlightRoutePending || flightRouteBusy ? 'text-sky-100' : 'text-gray-400'
+                        flightRouteInteractive || isFlightRoutePending || flightRouteBusy ? 'text-sky-50' : 'text-gray-400'
                       }`}
                     >
                       {flightRouteButtonLabel}
@@ -480,11 +480,11 @@ const PlaceCardSummary = ({
                         e.stopPropagation();
                         onToggleImmerse?.();
                       }}
-                      className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-teal-400/30 bg-teal-500/15 px-2 py-2 hover:bg-teal-500/25 hover:border-teal-300/40 transition-all duration-300 lg:min-h-[36px]"
+                      className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-teal-400/40 bg-teal-500/20 px-2 py-2 transition-all duration-300 hover:border-teal-300/50 hover:bg-teal-500/28 lg:min-h-[36px]"
                       title="이 지역을 가까이서 보기"
                     >
                       <ScanSearch size={16} className="shrink-0 text-teal-300" />
-                      <span className="min-w-0 truncate text-xs font-bold text-teal-100">가까이 보기</span>
+                      <span className="min-w-0 truncate text-xs font-bold text-teal-50">가까이 보기</span>
                     </button>
                   )
                 )}
@@ -496,10 +496,14 @@ const PlaceCardSummary = ({
                       e.stopPropagation();
                       if (onStartTour) onStartTour(location);
                     }}
-                    className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl bg-violet-500/15 border border-violet-400/30 px-2 py-2 hover:bg-violet-500/25 hover:border-violet-300/40 transition-all duration-300 lg:min-h-[36px]"
+                    className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-violet-300/55 bg-violet-500/22 px-2 py-2 transition-all duration-300 hover:border-violet-200/65 hover:bg-violet-500/30 lg:min-h-[36px]"
+                    title="이 지역 3D 투어"
                   >
-                    <Mountain size={16} className="shrink-0 text-violet-300" />
-                    <span className="min-w-0 truncate text-xs font-bold text-violet-100">3D 투어</span>
+                    <Cuboid size={16} className="shrink-0 text-violet-200" strokeWidth={2.25} aria-hidden="true" />
+                    <span className="min-w-0 truncate text-xs font-bold text-violet-50">
+                      <span className="tracking-tight text-violet-100">3D</span>
+                      <span className="text-violet-50/90"> 투어</span>
+                    </span>
                   </button>
                 )}
               </div>
