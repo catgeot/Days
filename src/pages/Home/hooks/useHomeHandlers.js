@@ -446,7 +446,7 @@ export function useHomeHandlers({
     };
 
     /**
-     * 빈/합성 desc → place_chat_intro hydrate.
+     * place_chat_intro hydrate (SSOT 하드코딩 desc 포함 — 무니 인트로 통일).
      * 캐시 hit면 AI skip · miss면 생성·저장 후 반영 (무니 클릭 불필요).
      */
     const scheduleIntroHydrate = (pin) => {
@@ -467,6 +467,7 @@ export function useHomeHandlers({
             return prepareResolvedLocation({
               ...prev,
               desc: summary,
+              placeChatIntroApplied: true,
             });
           });
         })

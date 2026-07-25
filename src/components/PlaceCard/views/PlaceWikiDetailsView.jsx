@@ -25,10 +25,7 @@ import {
   resolveGalleryPlaceKey,
 } from '../common/galleryAttributionNavigation';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
-import {
-  ensurePlaceChatIntroForLocation,
-  needsPlaceChatIntroHydration,
-} from '../../../pages/Home/lib/placeChatIntro';
+import { ensurePlaceChatIntroForLocation } from '../../../pages/Home/lib/placeChatIntro';
 import { resolveHubAttractionParentSketch } from '../../../pages/Home/lib/placeWikiParentSketch';
 import { fetchPlaceWikiBestRow } from '../hooks/useWikiData';
 
@@ -201,8 +198,8 @@ const PlaceWikiDetailsView = ({
     if (!magazineIntroPlaceKey) return undefined;
 
     const loc = location || { name: placeName, country: countryName };
-    // 써머리 hydrate된 실문장 desc면 그대로 사용 (AI 재호출 없음)
-    if (locationDesc && !needsPlaceChatIntroHydration(loc)) {
+    // 써머리에서 이미 place_chat_intro로 채운 desc면 그대로 사용 (AI 재호출 없음)
+    if (location?.placeChatIntroApplied && locationDesc) {
       setMagazineIntro(locationDesc);
       setMagazineIntroLoading(false);
       return undefined;

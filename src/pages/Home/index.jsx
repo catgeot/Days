@@ -550,7 +550,7 @@ function Home() {
             setSelectedLocation(focusTarget);
           }
 
-          // 빈/합성 desc → place_chat_intro (홈 써머리·갤러리 overview와 동일)
+          // place_chat_intro (홈 써머리·갤러리 overview — SSOT 하드코딩도 통일)
           if (needsPlaceChatIntroHydration(focusTarget)) {
             const pinId = focusTarget?.id;
             const pinName = focusTarget?.name;
@@ -564,7 +564,11 @@ function Home() {
                     (pinName && prev.name === pinName) ||
                     isSameCanonicalPlace(prev, focusTarget);
                   if (!same || !needsPlaceChatIntroHydration(prev)) return prev;
-                  const next = { ...prev, desc: summary };
+                  const next = {
+                    ...prev,
+                    desc: summary,
+                    placeChatIntroApplied: true,
+                  };
                   selectedLocationRef.current = next;
                   return next;
                 });

@@ -168,3 +168,11 @@
 - 투어 안내 띠·국내 API 툴바(MRT 보기·정렬·그리드) · 숙소/투어 PC 기본 4열
 - 닫기 흰 테두리·PC `mr-10` · 모달 전체 테두리 · 열림 시 써머리 z↑·닫기 탭(숙소·투어)
 - **세션 종료**: `main` push `2563dce..f70be98`
+
+## 써머리·검색 — 무니 인트로 통일
+
+**상태**: ✅ 사람 QA OK · push
+
+- **통일**: SSOT 하드코딩 desc도 `place_chat_intro` hydrate (`placeChatIntroApplied`) · URL sync overlay가 intro 유지
+- **검색 카드**: intro 3줄 클램프·고정 높이·시인성 더보기 (정렬)
+- **세션 종료**: `main` push

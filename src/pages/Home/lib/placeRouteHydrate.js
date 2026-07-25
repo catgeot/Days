@@ -14,6 +14,7 @@ import { readCachedPlaceBySlug } from './placeLocationCache.js';
 
 function hasReusableSessionDesc(loc) {
   if (!loc || typeof loc !== 'object') return false;
+  if (loc.placeChatIntroApplied) return true;
   if (loc.curationSummary || loc.originalQuery) return true;
   const desc = String(loc.desc || '').trim();
   return Boolean(desc) && !isSyntheticOrEmptyPlaceDesc(loc);
@@ -59,6 +60,7 @@ export function overlaySessionCuration(target, options = {}) {
     Boolean(sourceDesc) && !isSyntheticOrEmptyPlaceDesc({ ...source, desc: sourceDesc });
 
   let desc = targetDesc;
+  const sourceIntro = Boolean(source.placeChatIntroApplied) && sourceReal;
   if (curationSummary) {
     if (!targetDesc || targetSynthetic) desc = curationSummary;
     else if (targetDesc === curationSummary || targetDesc.startsWith(curationSummary)) {
@@ -66,6 +68,9 @@ export function overlaySessionCuration(target, options = {}) {
     } else {
       desc = `${curationSummary}\n\n${targetDesc}`;
     }
+  } else if (sourceIntro) {
+    // 무니 intro가 SSOT 하드코딩 desc를 이기도록 (URL sync 회귀 방지)
+    desc = sourceDesc;
   } else if (sourceReal && targetSynthetic) {
     desc = sourceDesc;
   } else if (sourceReal && !targetDesc) {
@@ -77,6 +82,7 @@ export function overlaySessionCuration(target, options = {}) {
     originalQuery,
     curationSummary: curationSummary || source.curationSummary,
     isCorrected: source.isCorrected ?? true,
+    placeChatIntroApplied: sourceIntro || Boolean(target.placeChatIntroApplied),
     desc,
   };
 }

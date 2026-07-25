@@ -1,6 +1,6 @@
 /**
  * hub 「부모의 종류 · 명소명」 등 실문장 없는 합성 desc 여부.
- * 비어 있으면 true (써머리 hydrate 대상).
+ * 비어 있으면 true.
  */
 export function isSyntheticOrEmptyPlaceDesc(location) {
   const desc = String(location?.desc || location?.description || '').trim();
@@ -30,7 +30,12 @@ export function isSyntheticOrEmptyPlaceDesc(location) {
   return false;
 }
 
+/**
+ * 써머리·갤러리 overview를 place_chat_intro(무니 인트로)로 통일할지.
+ * SSOT 하드코딩 desc도 대상 — 이미 intro로 채운 경우만 skip.
+ */
 export function needsPlaceChatIntroHydration(location) {
   if (!location?.name) return false;
-  return isSyntheticOrEmptyPlaceDesc(location);
+  if (location.placeChatIntroApplied) return false;
+  return true;
 }

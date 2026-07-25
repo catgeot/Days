@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { MapPin, Landmark, Building2, Compass, Loader2 } from 'lucide-react';
+import { MapPin, Landmark, Building2, Compass, Loader2, ChevronRight } from 'lucide-react';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
 } from '../../lib/placeChatIntro';
+
+/** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
+const SEARCH_INTRO_MORE_MIN_LEN = 72;
 
 const BADGE_STYLES = {
   여행지: 'bg-emerald-500/25 text-emerald-200 border-emerald-400/40',
@@ -175,7 +178,7 @@ export function SearchSuggestionList({
 
 /**
  * Enter 후 모호함 해소용 선택 카드
- * place_chat_intro 캐시가 있으면 빈/합성 desc를 채워 표시 (AI 호출 없음).
+ * place_chat_intro 캐시가 있으면 desc를 채워 표시 (AI 호출 없음 · SSOT 하드코딩 포함).
  */
 export function SearchDisambiguationCards({
   title,
@@ -240,21 +243,22 @@ export function SearchDisambiguationCards({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 items-start">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 items-stretch">
         {candidates.map((item, index) => {
           const badge = item.badge || '장소';
           const badgeClass = BADGE_STYLES[badge] || BADGE_STYLES['장소'];
           const locationLine = buildLocationLine(item);
           const hydrated = introByKey[index]
-            ? { ...item, desc: introByKey[index] }
+            ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
             : item;
           const desc = resolveCardDesc(hydrated, locationLine);
+          const showIntroMore = Boolean(desc) && desc.length >= SEARCH_INTRO_MORE_MIN_LEN;
           return (
             <button
               key={item.id || `${item.name}-${item.lat}`}
               type="button"
               onClick={() => onSelect?.(hydrated)}
-              className="h-auto w-full rounded-2xl border border-white/25 bg-[#32281f]/95 p-4 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
+              className="group flex h-full w-full flex-col rounded-2xl border border-white/25 bg-[#32281f]/95 p-4 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
               <div className="flex items-center gap-2 mb-2">
                 <SuggestionIcon kind={item.kind} />
@@ -270,9 +274,24 @@ export function SearchDisambiguationCards({
                 <div className="mt-2 text-[13px] text-amber-50/80 break-keep">{locationLine}</div>
               ) : null}
               {desc ? (
-                <p className="mt-2.5 text-[13px] md:text-sm leading-[1.55] text-amber-50/90 break-keep whitespace-normal">
-                  {desc}
-                </p>
+                <div className="relative mt-2.5 min-h-[calc(1.55em*3)]">
+                  <p
+                    className={`line-clamp-3 break-keep text-[13px] md:text-sm leading-[1.55] text-amber-50/90 ${
+                      showIntroMore ? 'pr-[3.5rem]' : ''
+                    }`}
+                  >
+                    {desc}
+                  </p>
+                  {showIntroMore ? (
+                    <span
+                      className="pointer-events-none absolute bottom-0 right-0 inline-flex items-center gap-0.5 bg-gradient-to-l from-[#32281f] via-[#32281f]/95 to-transparent pl-4 text-[12px] font-semibold leading-[1.55] text-sky-300 group-hover:from-[#3a2f25] group-hover:via-[#3a2f25]/95 group-hover:text-sky-200"
+                      aria-hidden="true"
+                    >
+                      더보기
+                      <ChevronRight size={14} className="shrink-0 opacity-80" />
+                    </span>
+                  ) : null}
+                </div>
               ) : null}
             </button>
           );

@@ -1,9 +1,9 @@
 import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
 
 /**
- * 갤러리 PLACE_OVERVIEW — 큐레이션 연결 문구와 고정 SSOT desc를 분리.
+ * 갤러리 PLACE_OVERVIEW — 큐레이션 연결 문구와 고정/intro desc를 분리.
  * /place/ URL sync가 desc만 SSOT로 바꿔도 curationSummary가 있으면 큐레이션이 남는다.
- * 합성 hub·종류 desc는 실문장으로 보지 않음 (무니 intro hydrate 대상).
+ * 합성 hub·종류 desc는 실문장으로 보지 않음 · 표시 desc는 무니 intro hydrate 우선.
  */
 export function splitPlaceOverview(location) {
   const curation = String(location?.curationSummary || '').trim();
