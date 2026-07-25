@@ -44,6 +44,9 @@ export default function HomePlaceCardSummary({
   const [isImmersed, setIsImmersed] = useState(false);
   const [stayOpen, setStayOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
+  /** 상대 모달 외부 열기 — 0은 무시, bump 시에만 반응 */
+  const [openStaySignal, setOpenStaySignal] = useState(0);
+  const [openTourSignal, setOpenTourSignal] = useState(0);
   const stayOpenRef = useRef(false);
   const tourOpenRef = useRef(false);
 
@@ -64,6 +67,14 @@ export default function HomePlaceCardSummary({
     },
     [onStayExpandedChange]
   );
+
+  const handleSwitchToTour = useCallback(() => {
+    setOpenTourSignal((n) => n + 1);
+  }, []);
+
+  const handleSwitchToStay = useCallback(() => {
+    setOpenStaySignal((n) => n + 1);
+  }, []);
 
   useEffect(() => {
     queueMicrotask(() => setSelectedOriginIata(resolveDefaultFlightOriginIata()));
@@ -216,6 +227,8 @@ export default function HomePlaceCardSummary({
     <GlobeStayStrip
       location={location}
       peerOpen={tourOpen}
+      openSignal={openStaySignal}
+      onSwitchToTour={handleSwitchToTour}
       onExpandedChange={handleStayExpandedChange}
       essentialGuide={essentialGuide}
       flightOriginIata={selectedOriginIata}
@@ -225,6 +238,8 @@ export default function HomePlaceCardSummary({
         <GlobeTourStrip
           location={location}
           peerOpen={stayOpen}
+          openSignal={openTourSignal}
+          onSwitchToStay={handleSwitchToStay}
           onExpandedChange={handleTourExpandedChange}
         >
           {({ tourTab, close: closeTour, expanded: tourExpanded }) => {

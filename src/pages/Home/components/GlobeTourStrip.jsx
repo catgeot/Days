@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowUp, ChevronRight, MapPin, Ticket, X } from 'lucide-react';
+import { ArrowUp, BedDouble, ChevronRight, MapPin, Ticket, X } from 'lucide-react';
 import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
+import { canShowMrtStayStrip } from '../../../utils/mrtStayQuery';
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
 import Logo from './Logo';
 
@@ -88,6 +89,26 @@ function TourPanelIntro() {
   );
 }
 
+/** 투어 → 숙소 모달 전환 (인라인 목록 없음) */
+function TourSwitchToStayFooter({ onSwitch }) {
+  if (typeof onSwitch !== 'function') return null;
+  return (
+    <div className="mt-6 flex w-full flex-col items-center border-t border-white/10 pt-5">
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onSwitch();
+        }}
+        className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-amber-300/40 bg-amber-500/15 px-4 py-3 text-[13px] font-semibold text-amber-50 shadow-[0_2px_12px_rgba(245,158,11,0.12)] backdrop-blur-sm transition-colors hover:border-amber-200/55 hover:bg-amber-500/25 active:scale-[0.98]"
+      >
+        <BedDouble size={16} className="shrink-0 text-amber-200/90" strokeWidth={2.25} aria-hidden />
+        <span className="break-keep">편하게 묵을 숙소를 알아보세요</span>
+      </button>
+    </div>
+  );
+}
+
 /**
  * Summary 카드 좌측 「투어 찾기」탭 — 국내=MRT TNA · 해외=GYG q.
  * PC: 숙소와 동일 좌측 포털 · 모바일: fullscreen · 숙소와 상호 배타(peerOpen).
@@ -97,6 +118,10 @@ export default function GlobeTourStrip({
   children,
   onExpandedChange,
   peerOpen = false,
+  /** 외부에서 투어 모달 열기 (숙소→투어 CTA). 0 무시, 증가 시에만 */
+  openSignal = 0,
+  /** 숙소 스트립 가능 시 하단 전환 */
+  onSwitchToStay = null,
 }) {
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
@@ -131,6 +156,19 @@ export default function GlobeTourStrip({
   );
   const eligible =
     !location?.isScanning && (useMrtTna || Boolean(gygQuery));
+  const peerStayEligible = useMemo(
+    () => canShowMrtStayStrip(location) && !location?.isScanning,
+    [
+      location?.slug,
+      location?.name,
+      location?.country,
+      location?.country_en,
+      location?.isScanning,
+      location?.lat,
+      location?.lng,
+    ]
+  );
+  const showPeerStayCta = Boolean(onSwitchToStay) && peerStayEligible;
   const name = location?.name || '';
   const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}|${useMrtTna ? 'mrt' : 'gyg'}`;
   const mobileOpen = !isLg && listFullscreen;
@@ -150,6 +188,16 @@ export default function GlobeTourStrip({
     setExpanded(false);
     setListFullscreen(false);
   }, [peerOpen]);
+
+  useEffect(() => {
+    if (!openSignal || !eligible) return;
+    if (!isLg) {
+      setExpanded(true);
+      setListFullscreen(true);
+      return;
+    }
+    setExpanded(true);
+  }, [openSignal, eligible, isLg]);
 
   useEffect(() => {
     onExpandedChange?.(Boolean(eligible && expanded));
@@ -319,6 +367,9 @@ export default function GlobeTourStrip({
               <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}
               {widget}
+              {showPeerStayCta ? (
+                <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
+              ) : null}
             </div>
             <button
               type="button"
@@ -360,6 +411,9 @@ export default function GlobeTourStrip({
               <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}
               {widget}
+              {showPeerStayCta ? (
+                <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
+              ) : null}
             </div>
             <button
               type="button"

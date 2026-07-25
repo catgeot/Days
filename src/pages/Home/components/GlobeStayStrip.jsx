@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowUp,
@@ -12,9 +12,11 @@ import {
   Loader2,
   MapPin,
   Plane,
+  Ticket,
   Users,
   X,
 } from 'lucide-react';
+import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
 import {
   MRT_STAY_PAGE_SIZE,
   buildMrtStayListUrl,
@@ -27,6 +29,7 @@ import {
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
+import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
 import {
   MRT_STAY_LOW_COUNT,
   TRIPCOM_HOTEL_TRACKING,
@@ -743,6 +746,34 @@ function StayMrtMoreFooter({ href, compact = false }) {
   );
 }
 
+/** 숙소 → 투어 모달 전환 (인라인 목록 없음) */
+function StaySwitchToTourFooter({ onSwitch, compact = false }) {
+  if (typeof onSwitch !== 'function') return null;
+  return (
+    <div
+      className={`flex w-full flex-col items-center border-t border-white/10 ${
+        compact ? 'mt-5 pt-4' : 'mt-6 pt-5'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onSwitch();
+        }}
+        className={`inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-orange-300/40 bg-orange-500/15 font-semibold text-orange-50 shadow-[0_2px_12px_rgba(249,115,22,0.12)] backdrop-blur-sm transition-colors hover:border-orange-200/55 hover:bg-orange-500/25 active:scale-[0.98] ${
+          compact
+            ? 'px-3.5 py-2.5 text-[12px]'
+            : 'px-4 py-3 text-[13px]'
+        }`}
+      >
+        <Ticket size={compact ? 15 : 16} className="shrink-0 text-orange-200/90" strokeWidth={2.25} aria-hidden />
+        <span className="break-keep">주변 즐길거리를 탐색해 보세요</span>
+      </button>
+    </div>
+  );
+}
+
 /** MRT 저재고(요금 있는 숙소 ≤5) — 목록 하단 공식 안내 + Trip.com (MRT 더 보기 제외) */
 function StayLowInventoryFooter({
   href,
@@ -969,6 +1000,10 @@ export default function GlobeStayStrip({
   children,
   onExpandedChange,
   peerOpen = false,
+  /** 외부에서 숙소 모달 열기 (투어→숙소 CTA). 0 무시, 증가 시에만 */
+  openSignal = 0,
+  /** 투어 스트립 가능 시 하단 전환 */
+  onSwitchToTour = null,
   essentialGuide = null,
   flightOriginIata = null,
   canPreviewFlightRoute: canPreviewFlightRouteProp = false,
@@ -1004,6 +1039,25 @@ export default function GlobeStayStrip({
   const guestsKey = `a${guests.adultCount}c${guests.childCount}`;
   const fetchKey = `${placeKey}|${datesKey}|${guestsKey}`;
   const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
+  const peerTourEligible = useMemo(() => {
+    if (isScanning) return false;
+    if (canShowMrtTnaStrip(location)) return true;
+    return Boolean(buildGygActivitiesSearchQuery(location));
+  }, [
+    isScanning,
+    location?.slug,
+    location?.name,
+    location?.name_en,
+    location?.name_ko,
+    location?.country,
+    location?.country_en,
+    location?.parentCity,
+    location?.curation_data?.locationEn,
+  ]);
+  const showPeerTourCta =
+    Boolean(onSwitchToTour) &&
+    peerTourEligible &&
+    (status === 'ready' || status === 'empty' || status === 'error');
   const todayYmd = (() => {
     const d = new Date();
     const y = d.getFullYear();
@@ -1035,6 +1089,16 @@ export default function GlobeStayStrip({
     setExpanded(false);
     setListFullscreen(false);
   }, [peerOpen]);
+
+  useEffect(() => {
+    if (!openSignal || !eligible) return;
+    if (!isLg) {
+      setExpanded(true);
+      setListFullscreen(true);
+      return;
+    }
+    setExpanded(true);
+  }, [openSignal, eligible, isLg]);
 
   useEffect(() => {
     onExpandedChange?.(Boolean(eligible && expanded));
@@ -1476,6 +1540,9 @@ export default function GlobeStayStrip({
       ) : null}
       {status === 'empty' || status === 'error' ? emptyState : null}
       {desktopList}
+      {showPeerTourCta ? (
+        <StaySwitchToTourFooter onSwitch={onSwitchToTour} />
+      ) : null}
     </div>
   );
 
@@ -1646,6 +1713,9 @@ export default function GlobeStayStrip({
                     />
                   ) : null}
                 </>
+              ) : null}
+              {showPeerTourCta ? (
+                <StaySwitchToTourFooter onSwitch={onSwitchToTour} compact />
               ) : null}
             </div>
             <button
