@@ -169,18 +169,19 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
-      {/* 모바일 하단 카테고리 — 배포본 마크업·클래스 그대로 (위치만 모바일) */}
+      {/* 모바일 하단 카테고리 — 배포본(9b79793) 클래스 문자열 그대로 · 래퍼만 md:hidden */}
       {!isTourCinema && (
       <div className={`fixed z-50 pointer-events-auto animate-fade-in-left
          bottom-8 left-4 w-auto max-w-[calc(100vw-7rem)] flex justify-start md:hidden
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
-         <div className="relative home-category-bar-shell">
-         <div className="home-category-bar-halo" aria-hidden="true" />
+         <div className="relative max-md:home-category-bar-shell">
+         <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
          <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
-            bg-black/80 border-white/20 backdrop-blur-xl p-2 rounded-2xl border
-            flex-row flex-nowrap overflow-x-auto">
+            max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border
+            md:items-center md:gap-4 md:bg-black/40 md:p-2.5 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl
+            flex-row flex-nowrap overflow-x-auto md:flex-col md:overflow-visible">
             {CATEGORIES.map((cat) => {
                const isActive = selectedCategory === cat.id;
                const Icon = cat.icon;
@@ -192,14 +193,14 @@ const HomeUI = React.memo(({
                    aria-label={CATEGORY_LABELS[cat.id] || cat.label}
                    aria-pressed={isActive && faceRegionsOpen}
                    className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
-                     w-[3.25rem] py-1.5 border
+                     w-[3.25rem] py-1.5 md:w-14 md:py-2 max-md:border
                      ${isActive
-                       ? CATEGORY_ACTIVE_MOBILE[cat.id]
-                       : 'bg-black/45 border-white/22 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+                       ? `${CATEGORY_ACTIVE_MOBILE[cat.id]} md:bg-white/10 md:border-white/20 md:shadow-[0_0_15px_rgba(255,255,255,0.1)]`
+                       : 'max-md:bg-black/45 max-md:border-white/22 max-md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] md:hover:bg-white/5 md:border-transparent border-transparent'
                      }`}
                  >
-                   <Icon size={18} className={`transition-colors duration-300 ${isActive ? cat.color : 'text-gray-100'}`} />
-                   <span className={`text-[9px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-200/90'}`}>
+                   <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'max-md:text-gray-100 text-gray-500 group-hover:text-gray-300'}`} />
+                   <span className={`text-[9px] md:text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-200/90 md:text-gray-400 md:group-hover:text-gray-300'}`}>
                      {CATEGORY_LABELS[cat.id]}
                    </span>
                  </button>
