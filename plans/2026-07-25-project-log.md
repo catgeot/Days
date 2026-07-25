@@ -171,8 +171,8 @@
 
 ## 써머리·검색 — 무니 인트로 통일
 
-**상태**: ✅ 사람 QA OK · push
+**상태**: ✅ 사람 QA OK · `3a3d082` · **push 완료**
 
 - **통일**: SSOT 하드코딩 desc도 `place_chat_intro` hydrate (`placeChatIntroApplied`) · URL sync overlay가 intro 유지
 - **검색 카드**: intro 3줄 클램프·고정 높이·시인성 더보기 (정렬)
-- **세션 종료**: `main` push
+- **세션 종료**: `main` push `d16c738..3a3d082`
