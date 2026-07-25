@@ -282,12 +282,23 @@ export default function GlobeTourStrip({
     />
   );
 
-  const scrollTopBtnClass = (visible) =>
-    `absolute bottom-7 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-sky-200/70 bg-sky-500 px-3 text-white shadow-[0_4px_20px_rgba(14,165,233,0.5)] transition-all duration-300 hover:bg-sky-400 hover:border-sky-100 active:scale-95 ${
-      visible
-        ? 'pointer-events-auto translate-y-0 opacity-100'
-        : 'pointer-events-none translate-y-3 opacity-0'
-    }`;
+  const tourScrollCss = `
+      .globe-tour-strip-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(249, 115, 22, 0.45) rgba(255, 255, 255, 0.08);
+      }
+      .globe-tour-strip-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .globe-tour-strip-scroll::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 9999px;
+      }
+      .globe-tour-strip-scroll::-webkit-scrollbar-thumb {
+        background: rgba(249, 115, 22, 0.45);
+        border-radius: 9999px;
+      }
+    `;
 
   const desktopPortal =
     desktopOpen && typeof document !== 'undefined'
@@ -303,8 +314,9 @@ export default function GlobeTourStrip({
             <TourPanelHeader placeName={name} onClose={close} density="desktop" />
             <div
               ref={desktopListScrollRef}
-              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-16"
+              className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-16"
             >
+              <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}
               {widget}
             </div>
@@ -314,7 +326,11 @@ export default function GlobeTourStrip({
               onClick={() => {
                 desktopListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={scrollTopBtnClass(showDesktopScrollTop)}
+              className={`absolute bottom-7 right-4 z-10 flex h-10 items-center gap-1 rounded-full border border-orange-300/50 bg-orange-500 px-3 text-black shadow-[0_4px_20px_rgba(249,115,22,0.45)] transition-all duration-300 hover:bg-orange-400 active:scale-95 ${
+                showDesktopScrollTop
+                  ? 'pointer-events-auto translate-y-0 opacity-100'
+                  : 'pointer-events-none translate-y-3 opacity-0'
+              }`}
             >
               <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
               <span className="text-xs font-bold">맨 위</span>
@@ -339,8 +355,9 @@ export default function GlobeTourStrip({
             <TourPanelHeader placeName={name} onClose={close} density="mobile" />
             <div
               ref={mobileListScrollRef}
-              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-20"
+              className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
             >
+              <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}
               {widget}
             </div>
@@ -350,9 +367,13 @@ export default function GlobeTourStrip({
               onClick={() => {
                 mobileListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={scrollTopBtnClass(showMobileScrollTop)}
+              className={`absolute bottom-[max(2.25rem,calc(env(safe-area-inset-bottom)+1rem))] right-3 z-10 flex h-11 items-center gap-1 rounded-full border border-orange-300/50 bg-orange-500 px-3.5 text-black shadow-[0_4px_20px_rgba(249,115,22,0.45)] transition-all duration-300 active:scale-95 ${
+                showMobileScrollTop
+                  ? 'pointer-events-auto translate-y-0 opacity-100'
+                  : 'pointer-events-none translate-y-3 opacity-0'
+              }`}
             >
-              <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+              <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
               <span className="text-xs font-bold">맨 위</span>
             </button>
           </div>,

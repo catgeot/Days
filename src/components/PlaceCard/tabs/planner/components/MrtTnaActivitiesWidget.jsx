@@ -3,13 +3,13 @@ import { ArrowUpDown, ExternalLink, LayoutGrid, Loader2 } from 'lucide-react';
 import {
   buildMrtTnaProductUrl,
   buildMrtTnaSearchMoreUrl,
+  canShowNearbyChips,
   fetchMrtTnasForLocation,
   fetchMrtTnasNearbyKeyword,
-  hasMoreNearbyExpand,
   isMrtTnaNearbyKeyword,
   MRT_TNA_FETCH_SIZE,
   MRT_TNA_PLANNER_SIZE,
-  nextNearbyExpandIndex,
+  nextUnloadedNearbyKeyword,
   resolveMrtTnaQuery,
 } from '../../../../../utils/fetchMrtTnas';
 
@@ -182,72 +182,68 @@ function OpenTourToolbar({
   densityZoomed,
   onDensityToggle,
 }) {
+  const ctrl =
+    'rounded-lg border border-orange-200/55 bg-orange-500/15 text-orange-50/95 transition-colors hover:border-orange-100/75 hover:bg-orange-500/28 hover:text-orange-50';
+  const ctrlOn =
+    'rounded-lg border border-orange-100/80 bg-orange-500/40 text-orange-50 transition-colors';
+
   return (
-    <div className="mb-5 space-y-2.5">
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-          {count ? (
-            <p className="shrink-0 text-xs font-semibold tabular-nums text-orange-100/75">
-              {count}개
-            </p>
-          ) : null}
-          <a
-            href={moreHref}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex shrink-0 items-center rounded-md border border-orange-300/45 bg-orange-500/20 px-2 py-1 text-[10px] font-bold text-orange-50 hover:bg-orange-500/30 hover:border-orange-300/60 active:scale-[0.98] transition-all"
-          >
-            마이리얼트립에서 보기
-          </a>
-        </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          <button
-            type="button"
-            aria-pressed={densityZoomed}
-            aria-label={densityZoomed ? '기본 그리드로' : '확대해서 보기'}
-            title={densityZoomed ? '기본 그리드로' : '확대해서 보기'}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDensityToggle?.();
-            }}
-            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border transition-colors ${
-              densityZoomed
-                ? 'border-orange-300/50 bg-orange-500/30 text-orange-50'
-                : 'border-white/12 bg-black/40 text-orange-100/70 hover:border-orange-300/35 hover:bg-white/5 hover:text-orange-50'
-            }`}
-          >
-            <LayoutGrid size={14} strokeWidth={2.25} aria-hidden="true" />
-          </button>
-          <label className="relative flex shrink-0 items-center">
-            <span className="sr-only">투어 정렬</span>
-            <ArrowUpDown
-              size={11}
-              className="pointer-events-none absolute left-1.5 text-orange-200/70"
-              aria-hidden="true"
-            />
-            <select
-              value={sortMode}
-              onClick={(e) => e.stopPropagation()}
-              onChange={(e) => {
-                e.stopPropagation();
-                onSortChange?.(e.target.value);
-              }}
-              className="appearance-none rounded-md border border-white/12 bg-black/40 py-1 pl-5 pr-5 text-[10px] font-semibold text-orange-50 outline-none hover:border-orange-300/35 focus:border-orange-300/50"
-            >
-              {TOUR_SORT_OPTIONS.map((opt) => (
-                <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+    <div className="mb-5 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+        {count ? (
+          <p className="shrink-0 text-xs font-semibold tabular-nums text-orange-100/80">
+            {count}개
+          </p>
+        ) : null}
+        <a
+          href={moreHref}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={(e) => e.stopPropagation()}
+          className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
+        >
+          마이리얼트립에서 보기
+        </a>
       </div>
-      <div className="rounded-2xl border border-orange-400/25 bg-orange-500/10 px-3 py-2.5">
-        <p className="text-center text-sm font-semibold leading-snug text-orange-100/80 break-keep">
-          현지에서 즐길 투어·액티비티를 골라보세요
-        </p>
+      <div className="flex shrink-0 items-center gap-1.5">
+        <button
+          type="button"
+          aria-pressed={densityZoomed}
+          aria-label={densityZoomed ? '기본 그리드로' : '확대해서 보기'}
+          title={densityZoomed ? '기본 그리드로' : '확대해서 보기'}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDensityToggle?.();
+          }}
+          className={`inline-flex h-7 w-7 shrink-0 items-center justify-center ${
+            densityZoomed ? ctrlOn : ctrl
+          }`}
+        >
+          <LayoutGrid size={14} strokeWidth={2.25} aria-hidden="true" />
+        </button>
+        <label className="relative flex shrink-0 items-center">
+          <span className="sr-only">투어 정렬</span>
+          <ArrowUpDown
+            size={11}
+            className="pointer-events-none absolute left-1.5 text-orange-100/75"
+            aria-hidden="true"
+          />
+          <select
+            value={sortMode}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              e.stopPropagation();
+              onSortChange?.(e.target.value);
+            }}
+            className={`appearance-none py-1 pl-5 pr-5 text-[11px] font-semibold outline-none focus:border-orange-100/80 ${ctrl}`}
+          >
+            {TOUR_SORT_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
     </div>
   );
@@ -275,6 +271,7 @@ export default function MrtTnaActivitiesWidget({
     () => resolveMrtTnaQuery(location),
     [
       location?.slug,
+      location?.hubId,
       location?.name,
       location?.name_en,
       location?.name_ko,
@@ -282,14 +279,13 @@ export default function MrtTnaActivitiesWidget({
       location?.originalQuery,
     ],
   );
-  const placeKey = `${location?.slug || ''}|${query.keyword}|${(query.altKeywords || []).join(',')}|${(query.nearbyKeywords || []).join(',')}`;
+  const placeKey = `${location?.slug || ''}|${location?.hubId || ''}|${query.keyword}|${(query.altKeywords || []).join(',')}|${(query.nearbyKeywords || []).join(',')}`;
 
   const [status, setStatus] = useState('idle');
   /** @type {[{ id: string, keyword: string, nearby: boolean, items: object[] }]} */
   const [sections, setSections] = useState([]);
   const [keywordUsed, setKeywordUsed] = useState(query.keyword);
   const [nearbyExpanded, setNearbyExpanded] = useState(false);
-  const [nearbyNextIndex, setNearbyNextIndex] = useState(0);
   const [nearbyMoreLoading, setNearbyMoreLoading] = useState(false);
   const [sortMode, setSortMode] = useState('recommended');
   const [densityZoomed, setDensityZoomed] = useState(false);
@@ -300,7 +296,6 @@ export default function MrtTnaActivitiesWidget({
     setSections([]);
     setKeywordUsed(query.keyword);
     setNearbyExpanded(false);
-    setNearbyNextIndex(0);
     setNearbyMoreLoading(false);
     setSortMode('recommended');
     setDensityZoomed(false);
@@ -317,21 +312,17 @@ export default function MrtTnaActivitiesWidget({
       const listed = Array.isArray(result.items)
         ? result.items.slice(0, limit)
         : [];
+      const isNearby = expanded || isMrtTnaNearbyKeyword(location, used);
       setSections([
         {
           id: `sec-0-${used}`,
           keyword: used,
-          nearby: expanded || isMrtTnaNearbyKeyword(location, used),
+          nearby: isNearby,
           items: listed,
         },
       ]);
       setKeywordUsed(used);
       setNearbyExpanded(expanded);
-      setNearbyNextIndex(
-        expanded
-          ? nextNearbyExpandIndex(query.nearbyKeywords, used)
-          : 0,
-      );
       setStatus('ok');
     })();
 
@@ -340,17 +331,42 @@ export default function MrtTnaActivitiesWidget({
     };
   }, [placeKey, limit]);
 
+  const loadedNearbyKws = useMemo(
+    () =>
+      sections
+        .filter((s) => s.nearby)
+        .map((s) => String(s.keyword || '').trim())
+        .filter(Boolean),
+    [sections],
+  );
+  const showChips = canShowNearbyChips(query.nearbyKeywords, nearbyExpanded);
+  /** 아직 안 붙인 SSOT 인근만 하단 칩 — 선택 시 append, 기존 섹션 유지 */
+  const pendingNearbyKws = useMemo(() => {
+    const list = Array.isArray(query.nearbyKeywords) ? query.nearbyKeywords : [];
+    const loaded = new Set(loadedNearbyKws);
+    return list.filter((kw) => {
+      const k = String(kw || '').trim();
+      return k && !loaded.has(k);
+    });
+  }, [query.nearbyKeywords, loadedNearbyKws]);
+  const nextUnloadKw = nextUnloadedNearbyKeyword(
+    query.nearbyKeywords,
+    loadedNearbyKws,
+  );
+  /** 칩 UI가 있으면 하단 칩으로 대체 · 칩 없을 때만 순차 더보기 */
+  const canShowNearbyMore =
+    nearbyExpanded && !showChips && Boolean(nextUnloadKw);
   const totalCount = useMemo(
     () => sections.reduce((n, s) => n + (s.items?.length || 0), 0),
     [sections],
   );
   const moreHref = buildMrtTnaSearchMoreUrl(keywordUsed || query.keyword);
   const empty = status === 'ok' && totalCount === 0;
-  const showNearbyIntro = nearbyExpanded || sections.some((s) => s.nearby);
-  const showSectionLabels = sections.filter((s) => s.nearby).length >= 1;
-  const canShowNearbyMore =
-    nearbyExpanded &&
-    hasMoreNearbyExpand(query.nearbyKeywords, nearbyNextIndex);
+  const showSectionLabels = sections.some((s) => s.nearby);
+  const firstNearbySecId = useMemo(() => {
+    const first = sections.find((s) => s.nearby);
+    return first?.id || '';
+  }, [sections]);
   const sortedSections = useMemo(
     () =>
       sections.map((sec) => ({
@@ -360,50 +376,61 @@ export default function MrtTnaActivitiesWidget({
     [sections, sortMode],
   );
 
-  const handleNearbyMore = async () => {
-    if (!canShowNearbyMore || nearbyMoreLoading) return;
-    const nextKw = String(query.nearbyKeywords?.[nearbyNextIndex] || '').trim();
-    if (!nextKw) return;
+  const appendNearbySection = async (nextKw) => {
+    const kw = String(nextKw || '').trim();
+    if (!kw || nearbyMoreLoading) return null;
     setNearbyMoreLoading(true);
     try {
-      const result = await fetchMrtTnasNearbyKeyword(nextKw, {
+      const result = await fetchMrtTnasNearbyKeyword(kw, {
         size: Math.max(limit, MRT_TNA_FETCH_SIZE),
       });
-      setNearbyNextIndex((i) => i + 1);
-      if (!result?.ok) return;
+      if (!result?.ok) return null;
       const incoming = Array.isArray(result.items) ? result.items : [];
-      if (incoming.length === 0) return;
-      const used = result.keywordUsed || nextKw;
-      setSections((prev) => {
-        const seen = new Set();
-        for (const sec of prev) {
-          for (const it of sec.items || []) {
-            const gid = String(it?.gid || '').trim();
-            if (gid) seen.add(gid);
-          }
-        }
-        const fresh = incoming.filter((it) => {
-          const gid = String(it?.gid || '').trim();
-          if (!gid) return true;
-          if (seen.has(gid)) return false;
+      if (incoming.length === 0) return null;
+      const used = result.keywordUsed || kw;
+      const seen = new Set();
+      const fresh = [];
+      for (const it of incoming) {
+        const gid = String(it?.gid || '').trim();
+        if (gid) {
+          if (seen.has(gid)) continue;
           seen.add(gid);
-          return true;
-        });
-        if (fresh.length === 0) return prev;
+        }
+        fresh.push(it);
+        if (fresh.length >= MRT_TNA_FETCH_SIZE) break;
+      }
+      if (fresh.length === 0) return null;
+      setSections((prev) => {
+        if (prev.some((s) => s.nearby && (s.keyword === used || s.keyword === kw))) {
+          return prev;
+        }
         return [
           ...prev,
           {
             id: `sec-${prev.length}-${used}`,
             keyword: used,
             nearby: true,
-            items: fresh.slice(0, MRT_TNA_FETCH_SIZE),
+            items: fresh,
           },
         ];
       });
       setKeywordUsed(used);
+      return used;
     } finally {
       setNearbyMoreLoading(false);
     }
+  };
+
+  const handleNearbyMore = async () => {
+    if (!canShowNearbyMore || nearbyMoreLoading || !nextUnloadKw) return;
+    await appendNearbySection(nextUnloadKw);
+  };
+
+  const handleNearbyChip = async (chipKw) => {
+    const kw = String(chipKw || '').trim();
+    if (!kw || nearbyMoreLoading) return;
+    if (sections.some((s) => s.nearby && s.keyword === kw)) return;
+    await appendNearbySection(kw);
   };
 
   const openToolbar =
@@ -484,85 +511,123 @@ export default function MrtTnaActivitiesWidget({
   const openImageClass = 'aspect-square';
 
   return (
-    <div className="space-y-4">
+    <div
+      className={
+        planner
+          ? 'space-y-4'
+          : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col'
+      }
+    >
       {openToolbar}
-      {showNearbyIntro ? (
+      <div className="space-y-8">
+        {sortedSections.map((sec) => {
+          const isFirstNearby = Boolean(sec.nearby && sec.id === firstNearbySecId);
+          return (
+            <section key={sec.id} className="space-y-5">
+              {showSectionLabels && sec.nearby ? (
+                <div
+                  className={`flex items-stretch gap-3 pl-5 pr-2 pt-2 pb-5 ${
+                    planner
+                      ? 'border-b-[3px] border-orange-400'
+                      : 'border-b-[3px] border-orange-200/80'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 shrink-0 rounded-full ${
+                      planner ? 'bg-orange-500' : 'bg-orange-300'
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0 py-0.5">
+                    <p
+                      className={`font-semibold tracking-wide break-keep ${
+                        isFirstNearby
+                          ? planner
+                            ? 'text-[13px] text-orange-800'
+                            : 'text-[13px] text-orange-100/90'
+                          : planner
+                            ? 'text-[11px] text-orange-700/80'
+                            : 'text-[11px] text-orange-100/70'
+                      }`}
+                    >
+                      {isFirstNearby
+                        ? '가까운 여행지 투어를 안내합니다'
+                        : '인근 여행지'}
+                    </p>
+                    <h3
+                      className={`mt-0.5 text-[18px] font-extrabold leading-snug break-keep ${
+                        planner ? 'text-orange-950' : 'text-white'
+                      }`}
+                    >
+                      {sec.keyword}의 즐길거리
+                    </h3>
+                  </div>
+                </div>
+              ) : null}
+              <div
+                className={
+                  planner ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : openGridClass
+                }
+              >
+                {sec.items.map((item) => (
+                  <TnaCard
+                    key={`${sec.id}-${item.gid || item.productUrl}`}
+                    item={item}
+                    size={planner ? 'md' : 'lg'}
+                    theme={theme}
+                    imageClassName={planner ? undefined : openImageClass}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+      {showChips && pendingNearbyKws.length > 0 ? (
         <div
-          className={`rounded-xl px-3 py-2.5 text-center break-keep ${
-            planner
-              ? 'border border-orange-200/80 bg-orange-50/90'
-              : 'border border-orange-300/25 bg-orange-500/15'
-          }`}
+          role="group"
+          aria-label="주변 지역 더보기"
+          className="mt-2 flex flex-col items-center gap-3 pt-3"
         >
           <p
-            className={`text-[13px] font-semibold leading-snug ${
+            className={`text-[17px] font-bold break-keep ${
               planner ? 'text-orange-900' : 'text-orange-50'
             }`}
           >
-            가까운 여행지 투어를 안내합니다
+            주변 지역 더보기
           </p>
-          <p
-            className={`mt-1 text-[12px] leading-relaxed ${
-              planner ? 'text-orange-800/75' : 'text-orange-100/80'
-            }`}
-          >
-            이 명소 전용 상품이 거의 없어 인근 지역 목록으로 나눠 보여드립니다
-          </p>
-        </div>
-      ) : null}
-      <div className="space-y-8">
-        {sortedSections.map((sec) => (
-          <section key={sec.id} className="space-y-5">
-            {showSectionLabels && sec.nearby ? (
-              <div
-                className={`flex items-stretch gap-3 pl-5 pr-2 pt-2 pb-5 ${
-                  planner
-                    ? 'border-b-[3px] border-orange-400'
-                    : 'border-b-[3px] border-orange-200/80'
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {nearbyMoreLoading ? (
+              <span
+                className={`inline-flex items-center gap-1.5 text-[13px] font-semibold ${
+                  planner ? 'text-orange-800' : 'text-orange-50'
                 }`}
               >
-                <span
-                  className={`w-1.5 shrink-0 rounded-full ${
-                    planner ? 'bg-orange-500' : 'bg-orange-300'
-                  }`}
-                  aria-hidden="true"
-                />
-                <div className="min-w-0 py-0.5">
-                  <p
-                    className={`text-[11px] font-semibold tracking-wide ${
-                      planner ? 'text-orange-700/80' : 'text-orange-100/70'
-                    }`}
-                  >
-                    인근 여행지
-                  </p>
-                  <h3
-                    className={`mt-0.5 text-[18px] font-extrabold leading-snug break-keep ${
-                      planner ? 'text-orange-950' : 'text-white'
-                    }`}
-                  >
-                    {sec.keyword}의 즐길거리
-                  </h3>
-                </div>
-              </div>
-            ) : null}
-            <div
-              className={
-                planner ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : openGridClass
-              }
-            >
-              {sec.items.map((item) => (
-                <TnaCard
-                  key={`${sec.id}-${item.gid || item.productUrl}`}
-                  item={item}
-                  size={planner ? 'md' : 'lg'}
-                  theme={theme}
-                  imageClassName={planner ? undefined : openImageClass}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+                <Loader2 size={15} className="animate-spin shrink-0" aria-hidden="true" />
+                불러오는 중…
+              </span>
+            ) : (
+              pendingNearbyKws.map((kw) => (
+                <button
+                  key={kw}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNearbyChip(kw);
+                  }}
+                  className={
+                    planner
+                      ? 'rounded-full border border-orange-400 bg-orange-400 px-7 py-1.5 text-[13px] font-bold text-white hover:bg-orange-500 hover:border-orange-500 active:scale-[0.98] transition-all'
+                      : 'rounded-full border border-orange-300/55 bg-orange-500/45 px-7 py-1.5 text-[13px] font-bold text-orange-50 hover:bg-orange-500/60 hover:border-orange-200/70 active:scale-[0.98] transition-all'
+                  }
+                >
+                  {kw}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      ) : null}
       {canShowNearbyMore ? (
         <div className="flex justify-center pt-1">
           <button
@@ -590,7 +655,13 @@ export default function MrtTnaActivitiesWidget({
         </div>
       ) : null}
       {showMoreLink ? (
-        <div className="flex flex-col items-center gap-1.5 pt-8 pb-4 mt-3">
+        <div
+          className={
+            planner
+              ? 'mt-3 flex flex-col items-start gap-1.5 px-0.5 pt-8 pb-4'
+              : 'mt-3 flex flex-col items-start gap-1.5 px-0.5 pt-8 pb-4 max-lg:mt-auto max-lg:pb-0 max-lg:pt-6 lg:mt-3 lg:pb-4'
+          }
+        >
           <a
             href={moreHref}
             target="_blank"

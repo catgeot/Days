@@ -8,9 +8,11 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
   canShowMrtTnaStrip,
+  canShowNearbyChips,
   hasMoreNearbyExpand,
   isMrtDomesticLocation,
   nextNearbyExpandIndex,
+  nextUnloadedNearbyKeyword,
   resolveMrtTnaQuery,
 } from '../src/utils/mrtTnaQuery.js';
 
@@ -58,8 +60,9 @@ const CASES = [
       country_en: 'Korea',
     },
     expectKeyword: /부산|Busan/,
-    /** n≥4 hub · SSOT 인근 없음 → 더보기 버튼 경로 없음 */
+    /** n≥4 hub · SSOT 인근 없음 → 더보기·칩 없음 */
     expectNearbyExact: [],
+    expectNearbyChips: false,
     expectDomestic: true,
     expectLiveMin: 1,
     expectLiveNearbyExpanded: false,
@@ -108,12 +111,34 @@ const CASES = [
     expectNearby: /안동|단양|상주/,
     /** Phase 2: 안동 보강 → 더보기 단양 → 상주 */
     expectNearbyExact: ['안동', '단양', '상주'],
+    /** Phase 3: SSOT≥2 · 보강 시 칩 안동|단양|상주 */
+    expectNearbyChips: true,
     expectDomestic: true,
     /** hub n≤3 → 인근 첫 키워드(안동) 보강 */
     expectLiveMin: 1,
     expectLiveUsed: /안동|단양|상주/,
     expectLiveNearbyExpanded: true,
     expectLiveMoreKeywords: ['단양', '상주'],
+  },
+  {
+    slug: 'mungyeong-coal-museum',
+    location: {
+      slug: 'mungyeong-coal-museum',
+      name: '문경석탄박물관',
+      name_en: 'Mungyeong Coal Museum',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '문경석탄박물관',
+    },
+    expectKeyword: /문경/,
+    expectKeywordExact: '문경',
+    expectNearbyExact: ['안동', '단양', '상주'],
+    expectNearbyChips: true,
+    expectDomestic: true,
+    expectLiveMin: 1,
+    expectLiveUsed: /안동|단양|상주/,
+    expectLiveNearbyExpanded: true,
   },
   {
     slug: 'yanggu-dutayeon',
@@ -130,6 +155,7 @@ const CASES = [
     expectKeyword: /양구/,
     expectNearby: /춘천|인제|설악산|속초/,
     expectNearbyExact: ['춘천', '인제', '설악산', '속초'],
+    expectNearbyChips: true,
     expectNoEn: /Valley|Dutayeon/i,
     expectDomestic: true,
     /** 본지 오탐 거절 후 인근 키워드로 LIVE 매칭 */
@@ -176,6 +202,12 @@ async function main() {
         const blob = [q.keyword, ...q.altKeywords].join('|');
         assert(c.expectKeyword.test(blob), `${c.slug}: keyword ladder ${blob}`);
       }
+      if (c.expectKeywordExact) {
+        assert(
+          q.keyword === c.expectKeywordExact,
+          `${c.slug}: keywordExact got=${q.keyword}`,
+        );
+      }
       if (c.expectNearby) {
         const near = (q.nearbyKeywords || []).join('|');
         assert(c.expectNearby.test(near), `${c.slug}: nearby ${near}`);
@@ -199,12 +231,40 @@ async function main() {
             !hasMoreNearbyExpand(near, afterLast),
             `${c.slug}: exhausted after last`,
           );
+          const nextAfter0 = nextUnloadedNearbyKeyword(near, [near[0]]);
+          assert(
+            nextAfter0 === near[1],
+            `${c.slug}: nextUnloaded after [0] = ${nextAfter0}`,
+          );
+          const jumpLast = nextUnloadedNearbyKeyword(near, [near[0], near[near.length - 1]]);
+          assert(
+            jumpLast === near[1],
+            `${c.slug}: chip-jump still next=${jumpLast}`,
+          );
+          assert(
+            nextUnloadedNearbyKeyword(near, near) == null,
+            `${c.slug}: all loaded → no next`,
+          );
         } else {
           assert(
             !hasMoreNearbyExpand(near, 0),
             `${c.slug}: empty nearby → no more`,
           );
+          assert(
+            nextUnloadedNearbyKeyword(near, []) == null,
+            `${c.slug}: empty nearby → no unload`,
+          );
         }
+      }
+      if (typeof c.expectNearbyChips === 'boolean') {
+        const near = q.nearbyKeywords || [];
+        const chipsIfExpanded = canShowNearbyChips(near, true);
+        const chipsIfNot = canShowNearbyChips(near, false);
+        assert(!chipsIfNot, `${c.slug}: chips require nearbyExpanded`);
+        assert(
+          chipsIfExpanded === Boolean(c.expectNearbyChips),
+          `${c.slug}: chipsIfExpanded=${chipsIfExpanded} expected ${c.expectNearbyChips}`,
+        );
       }
       if (c.expectNoEn) {
         const blob = [q.keyword, ...q.altKeywords].join('|');

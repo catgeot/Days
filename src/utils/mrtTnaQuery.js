@@ -80,16 +80,38 @@ function pushUnique(list, seen, raw) {
   list.push(k);
 }
 
+/** 한글 hub명 긴 것 우선 — 「문경석탄박물관」→ 문경 */
+const NEARBY_HUB_KO_NAMES = Object.keys(MRT_TNA_NEARBY_EXPAND)
+  .filter((k) => /[가-힣]/.test(k))
+  .sort((a, b) => b.length - a.length);
+
+function inferHubKoFromText(raw) {
+  const text = String(raw || '').trim();
+  if (!text) return '';
+  for (const hub of NEARBY_HUB_KO_NAMES) {
+    if (text === hub || text.startsWith(hub)) return hub;
+  }
+  return '';
+}
+
 function resolveNearbyExpand(location) {
   const hubId = String(location?.hubId || '').trim().toLowerCase();
   const parent = String(location?.parentCity || '').trim();
   const slug = String(location?.slug || '').trim().toLowerCase();
   const name = String(location?.name || '').trim();
+  const nameKo = String(location?.name_ko || '').trim();
+  const originalQuery = String(location?.originalQuery || '').trim();
+  const inferred =
+    inferHubKoFromText(parent) ||
+    inferHubKoFromText(name) ||
+    inferHubKoFromText(nameKo) ||
+    inferHubKoFromText(originalQuery);
   return (
     MRT_TNA_NEARBY_EXPAND[hubId] ||
     MRT_TNA_NEARBY_EXPAND[slug] ||
     MRT_TNA_NEARBY_EXPAND[parent] ||
     MRT_TNA_NEARBY_EXPAND[name] ||
+    (inferred ? MRT_TNA_NEARBY_EXPAND[inferred] : null) ||
     []
   );
 }
@@ -112,13 +134,15 @@ export function resolveMrtTnaQuery(location) {
 
   const ladder = [];
   const seen = new Set();
+  const originalQuery = String(location?.originalQuery || '').trim();
+  const inferredHubKo =
+    inferHubKoFromText(parentCity) ||
+    inferHubKoFromText(name) ||
+    inferHubKoFromText(nameKo) ||
+    inferHubKoFromText(originalQuery);
 
   if (override?.keyword) pushUnique(ladder, seen, override.keyword);
   for (const k of override?.altKeywords || []) pushUnique(ladder, seen, k);
-
-  if (location?.uiPlace) {
-    pushUnique(ladder, seen, String(location.originalQuery || '').trim());
-  }
 
   const fineGrain =
     /[동읍면]$/.test(name) || /[동읍면]$/.test(admin.neighbourhood || '');
@@ -131,16 +155,18 @@ export function resolveMrtTnaQuery(location) {
   const pushCity = () => {
     pushUnique(ladder, seen, parentCity);
     pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+    pushUnique(ladder, seen, inferredHubKo);
     pushUnique(ladder, seen, admin.city);
     pushUnique(ladder, seen, stripKoAdminSuffix(admin.city));
     pushUnique(ladder, seen, admin.county);
     pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
   };
 
-  // 국내 hub 명소·동읍면: 상위 시·군 우선 (문경새재→문경)
-  if (parentCity && !fineGrain) {
+  // 국내 hub 명소·동읍면: 상위 시·군 우선 (문경석탄박물관→문경). originalQuery는 뒤로.
+  if ((parentCity || inferredHubKo) && !fineGrain) {
     pushUnique(ladder, seen, parentCity);
     pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+    pushUnique(ladder, seen, inferredHubKo);
     pushPlace();
     pushCity();
   } else if (fineGrain) {
@@ -151,6 +177,10 @@ export function resolveMrtTnaQuery(location) {
   } else {
     pushPlace();
     pushCity();
+  }
+
+  if (location?.uiPlace) {
+    pushUnique(ladder, seen, originalQuery);
   }
 
   // 국내 TNA는 한글 키워드 우선 — 영문 name_en(Valley 등)은 해외 와인투어 오탐
@@ -203,6 +233,35 @@ export function hasMoreNearbyExpand(nearbyKeywords, nextIndex) {
   const list = Array.isArray(nearbyKeywords) ? nearbyKeywords : [];
   const i = Math.max(0, Number(nextIndex) || 0);
   return i < list.length;
+}
+
+/**
+ * Phase 3: 인근 칩 — Edge 보강 후 SSOT 길이 ≥2일 때만.
+ * @param {string[]} nearbyKeywords
+ * @param {boolean} nearbyExpanded
+ */
+export function canShowNearbyChips(nearbyKeywords, nearbyExpanded) {
+  if (!nearbyExpanded) return false;
+  const list = Array.isArray(nearbyKeywords) ? nearbyKeywords : [];
+  return list.length >= 2;
+}
+
+/**
+ * SSOT 순서상 아직 섹션에 없는 다음 인근 키워드 (더보기·칩 공통).
+ * @param {string[]} nearbyKeywords
+ * @param {Iterable<string>|string[]} loadedKeywords
+ * @returns {string|null}
+ */
+export function nextUnloadedNearbyKeyword(nearbyKeywords, loadedKeywords) {
+  const list = Array.isArray(nearbyKeywords) ? nearbyKeywords : [];
+  const loaded = new Set(
+    [...(loadedKeywords || [])].map((k) => String(k || '').trim()).filter(Boolean),
+  );
+  for (const kw of list) {
+    const k = String(kw || '').trim();
+    if (k && !loaded.has(k)) return k;
+  }
+  return null;
 }
 
 /**

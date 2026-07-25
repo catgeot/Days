@@ -534,7 +534,7 @@ function StayCard({
   );
 }
 
-function StayGridDensityToggle({ variant, value, onChange }) {
+function StayGridDensityToggle({ variant, value, onChange, className = '', activeClassName = '' }) {
   const isZoomed =
     variant === 'desktop' ? value === 'zoom' : value === 1;
   const nextValue =
@@ -557,10 +557,8 @@ function StayGridDensityToggle({ variant, value, onChange }) {
         e.stopPropagation();
         onChange?.(nextValue);
       }}
-      className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border transition-colors ${
-        isZoomed
-          ? 'border-amber-300/50 bg-amber-500/30 text-amber-50'
-          : 'border-white/12 bg-black/40 text-amber-100/70 hover:border-amber-300/35 hover:bg-white/5 hover:text-amber-50'
+      className={`inline-flex h-7 w-7 shrink-0 items-center justify-center ${
+        isZoomed ? activeClassName : className
       }`}
     >
       <LayoutGrid size={14} strokeWidth={2.25} aria-hidden="true" />
@@ -578,11 +576,16 @@ function StayListToolbar({
   onDensityChange,
 }) {
   const href = listUrl || MRT_AFFILIATE_HOME_URL;
+  const ctrl =
+    'rounded-lg border border-amber-200/55 bg-amber-500/15 text-amber-50/95 transition-colors hover:border-amber-100/75 hover:bg-amber-500/28 hover:text-amber-50';
+  const ctrlOn =
+    'rounded-lg border border-amber-100/80 bg-amber-500/40 text-amber-50 transition-colors';
+
   return (
     <div className="mt-1 mb-4 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
         {count ? (
-          <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/75">
+          <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
             {count}곳
           </p>
         ) : null}
@@ -591,7 +594,7 @@ function StayListToolbar({
           target="_blank"
           rel="noopener noreferrer sponsored"
           onClick={(e) => e.stopPropagation()}
-          className="inline-flex shrink-0 items-center rounded-md border border-amber-300/45 bg-amber-500/20 px-2 py-1 text-[10px] font-bold text-amber-50 hover:bg-amber-500/30 hover:border-amber-300/60 active:scale-[0.98] transition-all"
+          className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
         >
           마이리얼트립에서 보기
         </a>
@@ -601,12 +604,14 @@ function StayListToolbar({
           variant={densityVariant}
           value={densityValue}
           onChange={onDensityChange}
+          className={ctrl}
+          activeClassName={ctrlOn}
         />
         <label className="relative flex shrink-0 items-center">
           <span className="sr-only">숙소 정렬</span>
           <ArrowUpDown
             size={11}
-            className="pointer-events-none absolute left-1.5 text-amber-200/70"
+            className="pointer-events-none absolute left-1.5 text-amber-100/75"
             aria-hidden="true"
           />
           <select
@@ -616,7 +621,7 @@ function StayListToolbar({
               e.stopPropagation();
               onSortChange?.(e.target.value);
             }}
-            className="appearance-none rounded-md border border-white/12 bg-black/40 py-1 pl-5 pr-5 text-[10px] font-semibold text-amber-50 outline-none hover:border-amber-300/35 focus:border-amber-300/50"
+            className={`appearance-none py-1 pl-5 pr-5 text-[11px] font-semibold outline-none focus:border-amber-100/80 ${ctrl}`}
           >
             {STAY_SORT_OPTIONS.map((opt) => (
               <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">

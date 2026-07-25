@@ -1,8 +1,8 @@
 # 국내 MRT TNA — 인근 여행지 확장
 
-**상태**: ✅ Phase 0~2 (더보기·섹션·카드 1:1 QA·main push) · ⏳ Phase 3 칩  
+**상태**: ✅ Phase 0~3 (칩·QA·main push) · 후속 B표는 필요 시  
 **제시어**: `MRT-TNA-인근확장-이어하기`  
-**일지**: [`2026-07-25-project-log.md`](./2026-07-25-project-log.md) 「국내 TNA 인근 확장 — Phase 2」
+**일지**: [`2026-07-25-project-log.md`](./2026-07-25-project-log.md) 「국내 TNA 인근 확장 — Phase 3」
 
 ---
 
@@ -174,9 +174,10 @@ mungyeong / 문경: ['안동', '단양', '상주']  // LIVE: 안동3·단양5·�
 
 - ✅ 더보기·지역 섹션·카드 `aspect-square` cover · QA·main 커밋/push
 
-### Phase 3 — 칩 선택 (후속)
+### Phase 3 — 칩 선택
 
-- SSOT 길이 ≥2일 때 칩으로 인근 택1. Phase 1~2와 동일 SSOT.
+- ✅ 하단 「주변 지역 더보기」+ 미로드 칩 append · QA·main 커밋/push
+- 후속: B표는 필요 시
 
 ---
 

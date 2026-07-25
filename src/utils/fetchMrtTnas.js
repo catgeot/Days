@@ -6,19 +6,23 @@ import { supabase } from '../shared/api/supabase';
 import { buildMrtMylinkUrl, getMrtSearchUrl } from './affiliate';
 import {
   canShowMrtTnaStrip,
+  canShowNearbyChips,
   hasMoreNearbyExpand,
   isMrtDomesticLocation,
   isMrtTnaNearbyKeyword,
   nextNearbyExpandIndex,
+  nextUnloadedNearbyKeyword,
   resolveMrtTnaQuery,
 } from './mrtTnaQuery.js';
 
 export {
   canShowMrtTnaStrip,
+  canShowNearbyChips,
   hasMoreNearbyExpand,
   isMrtDomesticLocation,
   isMrtTnaNearbyKeyword,
   nextNearbyExpandIndex,
+  nextUnloadedNearbyKeyword,
   resolveMrtTnaQuery,
 };
 

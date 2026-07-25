@@ -244,32 +244,31 @@
 
 ### 다음
 
-- Phase 3 칩 · B표는 필요 시
+- Phase 3 칩 → 아래 절
 
-### 에이전트 핸드오프 — Phase 3
+---
 
-**읽을 것 3**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) §2 Phase 3 · `MrtTnaActivitiesWidget` 섹션 UI  
-**금지 3**: B표 일괄 · OTA 목록 API · Edge 불필요 재설계 · QA 확정 카드 비율(1:1 cover) 무단 변경  
-**다음 세션 제시어**:
+## 국내 TNA 인근 확장 — Phase 3 칩
 
-```text
-MRT-TNA-인근확장-이어하기
+**상태**: ✅ QA 확정 · 커밋·push (main)
 
-@plans/mrt-tna-nearby-expand-plan.md
-@plans/2026-07-25-project-log.md
+### 구현
 
-목표: Phase 2(더보기·지역 섹션·1:1 카드) 위에 Phase 3 인근 칩만.
+- 하단 「주변 지역 더보기」+ 미로드 SSOT 칩 append(기존 섹션 유지)
+- 안내 띠 제거 · 첫 인근 구분자「가까운 여행지 투어를 안내합니다」
+- 투어/숙소 상단 툴바 글래스 · 투어 스크롤바·맨 위 버튼 숙소와 동일 패턴(orange)
+- `문경석탄박물관`: 상위 `문경`·인근 추론(이름 prefix) — hubId 없어도 보강
 
-읽을 것:
-1) 계획 §1 UX D·§2 Phase 3
-2) 일지「국내 TNA 인근 확장 — Phase 2」
-3) MrtTnaActivitiesWidget 섹션·nearbyKeywords
+### 검증
 
-이번 턴:
-- SSOT 길이 ≥2일 때 칩으로 인근 택1 (안동|단양|상주)
-- 선택 = 해당 키워드 fetch·그 섹션 목록 (더보기와 동일 SSOT)
-- 스모크(+LIVE) · 양구 회귀 · n≥4 hub는 칩 없음
-- 디자인·카피는 사람 QA 후 커밋
+- `npm run smoke:mrt-tna` · LIVE 문경·석탄박물관·양구·부산 PASS · 사람 QA OK
 
-금지: B표 일괄 · OTA 목록 API · Edge 불필요 재설계 · Phase 2 카드 비율 되돌리기
-```
+### 다음 (후속 세션)
+
+- B표 SSOT 일괄은 필요 시만 · OTA/Edge 재설계 금지
+
+### 에이전트 핸드오프 — 후속
+
+**읽을 것**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) Phase 0 B표  
+**금지**: B표 무단 일괄 · OTA 목록 API · Edge 불필요 재설계 · 1:1 카드 되돌리기  
+**제시어**: `MRT-TNA-인근확장-이어하기` + B표 범위 명시 시
