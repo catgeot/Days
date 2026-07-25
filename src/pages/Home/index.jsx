@@ -926,7 +926,15 @@ function Home() {
           onTripSelect={(trip) => {
             setIsLogoPanelOpen(false);
             const hydrated = hydrateLocationFromSavedTrip(trip, category);
-            if (hydrated) navigateToPlace(hydrated);
+            if (!hydrated) return;
+            // 확장 /place 가 아니라 홈 써머리 장소카드(숙소·투어·항공 등)
+            if (routeLocation.pathname !== '/') {
+              pendingGlobeHomeFocusRef.current = hydrated;
+              selectedLocationRef.current = hydrated;
+              rememberGlobeFocus(hydrated);
+              navigate('/');
+            }
+            handleLocationSelect(hydrated);
           }}
         />
 
