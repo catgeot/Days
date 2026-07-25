@@ -11,6 +11,7 @@ import {
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
 import { resolveRegionalCorridorAnchors } from './flightRouteCorridors.js';
 import { coordsCrossAvoidZones } from './flightRouteAvoidZones.js';
+import { areMetroCoterminalAirports } from './flightOriginMetroGateways.js';
 
 const FLIGHT_SPEED_KMH = 850;
 /** Bar·graph hub 후보 — 단일 leg haversine 상한(일반 장거리 직항 ~14–15h + 여유). */
@@ -720,7 +721,8 @@ export function resolveFlightCinemaOd(location, options = {}) {
 
   const normalizedOrigin = String(originIata).trim().toUpperCase();
   const normalizedDest = String(destIata).trim().toUpperCase();
-  if (normalizedOrigin === normalizedDest) return null;
+  // ICN↔GMP · PVG↔SHA 등 동일 메트로 — 국내 명소가 김포/훙차오로 잡혀 항공 경로 오탐
+  if (areMetroCoterminalAirports(normalizedOrigin, normalizedDest)) return null;
 
   const origin = getAirportHubCoords(normalizedOrigin);
   const dest = getAirportHubCoords(normalizedDest);

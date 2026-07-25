@@ -8,6 +8,24 @@ export const FLIGHT_ORIGIN_METRO_GATEWAYS = [
 ];
 
 /**
+ * 동일 대도시권 coterminal (ICN↔GMP, PVG↔SHA) — 시네마 OD 오탐 억제용.
+ * @param {string} aIata
+ * @param {string} bIata
+ */
+export function areMetroCoterminalAirports(aIata, bIata) {
+  const a = String(aIata ?? '').trim().toUpperCase();
+  const b = String(bIata ?? '').trim().toUpperCase();
+  if (a.length !== 3 || b.length !== 3) return false;
+  if (a === b) return true;
+
+  for (const group of FLIGHT_ORIGIN_METRO_GATEWAYS) {
+    const metro = new Set([group.gatewayIata, ...group.feederIatas]);
+    if (metro.has(a) && metro.has(b)) return true;
+  }
+  return false;
+}
+
+/**
  * @param {string} iata
  * @param {import('../../../utils/rentalAirportHubs.js').RentalAirportHub[]} hubs
  */
