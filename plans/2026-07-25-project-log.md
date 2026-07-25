@@ -149,7 +149,14 @@
 
 ## 로고패널 버킷리스트 → 홈 써머리 카드
 
-**상태**: ✅ `4e08f22` · 로컬 ahead · 사람 QA 대기
+**상태**: ✅ `4e08f22` · 사람 QA OK · push 포함
 
 - **변경**: 버킷리스트 클릭이 `navigateToPlace`(/place 확장) 대신 `handleLocationSelect`(홈 써머리) — 숙소·투어·항공·3D투어 진입
-- **QA**: 로고 → My Bucket List 항목 → 홈에 써머리 카드 · 지구본 핀 이동 · 확장 카드로 바로 안 감
+
+## 써머리 CTA 2티어 시인성
+
+**상태**: ✅ 사람 QA 확정 · push
+
+- **Tier A**: 숙소 fill/border/shadow 상향 · 투어 글로우 소폭 완화(동급)
+- **Tier B**: 항공 = 가까이보기와 동일 패턴(sky) · 3D Cuboid·테두리 상향
+- **세션 종료**: `main` push (버킷리스트 + 써머리 CTA)
