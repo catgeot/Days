@@ -13,6 +13,15 @@ const MRT_TNA_KEYWORD_OVERRIDES = {
   // 예: 'seongsan-ilchulbong': { keyword: '성산일출봉', altKeywords: ['제주'] },
 };
 
+/**
+ * MRT TNA 재고가 거의 없는 국내 오지 hub → 인근 관광지 키워드.
+ * hubId 또는 한글 hub명. 본 지명·parentCity 실패 후 래더 말미에 붙음.
+ */
+const MRT_TNA_NEARBY_EXPAND = {
+  yanggu: ['춘천', '인제', '설악산', '속초'],
+  양구: ['춘천', '인제', '설악산', '속초'],
+};
+
 function pushUnique(list, seen, raw) {
   const k = String(raw || '').trim();
   if (!k || k.length > 100) return;
@@ -22,9 +31,23 @@ function pushUnique(list, seen, raw) {
   list.push(k);
 }
 
+function resolveNearbyExpand(location) {
+  const hubId = String(location?.hubId || '').trim().toLowerCase();
+  const parent = String(location?.parentCity || '').trim();
+  const slug = String(location?.slug || '').trim().toLowerCase();
+  const name = String(location?.name || '').trim();
+  return (
+    MRT_TNA_NEARBY_EXPAND[hubId] ||
+    MRT_TNA_NEARBY_EXPAND[slug] ||
+    MRT_TNA_NEARBY_EXPAND[parent] ||
+    MRT_TNA_NEARBY_EXPAND[name] ||
+    []
+  );
+}
+
 /**
  * @param {object} location
- * @returns {{ keyword: string, altKeywords: string[] }}
+ * @returns {{ keyword: string, altKeywords: string[], nearbyKeywords: string[] }}
  */
 export function resolveMrtTnaQuery(location) {
   const slug = String(location?.slug || '').trim().toLowerCase();
@@ -81,13 +104,32 @@ export function resolveMrtTnaQuery(location) {
     pushCity();
   }
 
-  pushUnique(ladder, seen, nameEn);
+  // 국내 TNA는 한글 키워드 우선 — 영문 name_en(Valley 등)은 해외 와인투어 오탐
+  const isDomestic = isMrtDomesticLocation(location);
+  if (!isDomestic) {
+    pushUnique(ladder, seen, nameEn);
+  }
   pushUnique(ladder, seen, admin.state);
   pushUnique(ladder, seen, stripKoAdminSuffix(admin.state));
 
+  const nearbyKeywords = isDomestic ? resolveNearbyExpand(location) : [];
+  for (const n of nearbyKeywords) pushUnique(ladder, seen, n);
+
   const keyword = String(ladder[0] || '').trim();
-  const altKeywords = ladder.slice(1, 10);
-  return { keyword, altKeywords };
+  const altKeywords = ladder.slice(1, 12);
+  return { keyword, altKeywords, nearbyKeywords };
+}
+
+/**
+ * keywordUsed가 인근 확장 키워드인지 (UI 안내 문구용).
+ * @param {object} location
+ * @param {string} keywordUsed
+ */
+export function isMrtTnaNearbyKeyword(location, keywordUsed) {
+  const used = String(keywordUsed || '').trim();
+  if (!used) return false;
+  const nearby = resolveNearbyExpand(location);
+  return nearby.some((k) => k === used);
 }
 
 /**

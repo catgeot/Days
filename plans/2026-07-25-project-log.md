@@ -39,3 +39,11 @@
 - **검증**: `npm run smoke:mrt-tna` · `MRT_TNA_SMOKE_LIVE=1` (제주·부산·성산·경복궁·문경 `n>0`)
 - **배포**: `npx supabase functions deploy fetch-mrt-tnas --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
 - **QA**: 국내 명소「투어 찾기」= MRT 한국 상품 · 오사카 등 해외=GYG · 숙소 탭과 상호배타
+
+## 국내 TNA — 양구·두타연 오탐 + 인근 확장
+
+**상태**: ✅ Edge 재배포 · LIVE `양구→춘천` · 더보기 상단 여백
+
+- **원인**: MRT에 양구/두타연 실재고 거의 없음 · `두타연`→「연」부분일치 · `양구`→중국 노산 동명 · 영문 `Valley`→해외 와인투어
+- **조치**: Edge 관련도 필터·해외 노이즈 거절 · 국내 영문 name_en 래더 제외 · hub `yanggu` 인근(춘천·인제·설악·속초) 확장 + UI 안내
+- **검증**: `MRT_TNA_SMOKE_LIVE=1 npm run smoke:mrt-tna` · yanggu-dutayeon `used=춘천`

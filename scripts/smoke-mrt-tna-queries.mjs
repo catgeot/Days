@@ -103,6 +103,26 @@ const CASES = [
     expectDomestic: true,
   },
   {
+    slug: 'yanggu-dutayeon',
+    location: {
+      slug: 'yanggu-dutayeon',
+      name: '양구 두타연',
+      name_en: 'Yanggu Dutayeon Valley',
+      country: '대한민국',
+      country_en: 'South Korea',
+      hubId: 'yanggu',
+      parentCity: '양구',
+      uiPlace: true,
+    },
+    expectKeyword: /양구|춘천|설악/,
+    expectNearby: /춘천|인제|설악산|속초/,
+    expectNoEn: /Valley|Dutayeon/i,
+    expectDomestic: true,
+    /** 본지 오탐 거절 후 인근 키워드로 LIVE 매칭 */
+    expectLiveMin: 1,
+    expectLiveUsed: /춘천|인제|설악산|속초/,
+  },
+  {
     slug: 'osaka',
     location: {
       slug: 'osaka',
@@ -140,6 +160,14 @@ async function main() {
       if (c.expectKeyword) {
         const blob = [q.keyword, ...q.altKeywords].join('|');
         assert(c.expectKeyword.test(blob), `${c.slug}: keyword ladder ${blob}`);
+      }
+      if (c.expectNearby) {
+        const near = (q.nearbyKeywords || []).join('|');
+        assert(c.expectNearby.test(near), `${c.slug}: nearby ${near}`);
+      }
+      if (c.expectNoEn) {
+        const blob = [q.keyword, ...q.altKeywords].join('|');
+        assert(!c.expectNoEn.test(blob), `${c.slug}: must not use EN ladder ${blob}`);
       }
       console.log(`OK  ${c.slug}  kw=${q.keyword}  alts=${q.altKeywords.join(',')}`);
     } catch (err) {
@@ -185,12 +213,17 @@ async function main() {
               : n === 0
                 ? 'LIVE_EMPTY'
                 : 'LIVE_OK';
+        const used = data.keywordUsed || q.keyword;
         console.log(
-          `${status} ${c.slug} http=${res.status} total=${data.totalCount ?? '-'} n=${n} used=${data.keywordUsed || q.keyword}`,
+          `${status} ${c.slug} http=${res.status} total=${data.totalCount ?? '-'} n=${n} used=${used}`,
         );
         if (!data.ok || (min > 0 && n < min)) {
           failed += 1;
           console.error(`FAIL LIVE ${c.slug}:`, data.error || data.detail || `n=${n}`);
+        }
+        if (c.expectLiveUsed && data.ok && !c.expectLiveUsed.test(String(used))) {
+          failed += 1;
+          console.error(`FAIL LIVE ${c.slug}: used=${used} expected ${c.expectLiveUsed}`);
         }
       }
     }

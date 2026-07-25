@@ -7,16 +7,19 @@ import { buildMrtMylinkUrl, getMrtSearchUrl } from './affiliate';
 import {
   canShowMrtTnaStrip,
   isMrtDomesticLocation,
+  isMrtTnaNearbyKeyword,
   resolveMrtTnaQuery,
 } from './mrtTnaQuery.js';
 
 export {
   canShowMrtTnaStrip,
   isMrtDomesticLocation,
+  isMrtTnaNearbyKeyword,
   resolveMrtTnaQuery,
 };
 
-const CACHE_PREFIX = 'gateo:mrt-tnas:v1:';
+/** v2: Edge 관련도 필터 + 인근 확장 */
+const CACHE_PREFIX = 'gateo:mrt-tnas:v2:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 /** 파트너 tna/search size 상한 100 · 모달은 20~50 */
 export const MRT_TNA_FETCH_SIZE = 20;

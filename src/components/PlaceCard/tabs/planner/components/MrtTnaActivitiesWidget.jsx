@@ -4,6 +4,7 @@ import {
   buildMrtTnaProductUrl,
   buildMrtTnaSearchMoreUrl,
   fetchMrtTnasForLocation,
+  isMrtTnaNearbyKeyword,
   MRT_TNA_FETCH_SIZE,
   MRT_TNA_PLANNER_SIZE,
   resolveMrtTnaQuery,
@@ -160,6 +161,7 @@ export default function MrtTnaActivitiesWidget({
 
   const moreHref = buildMrtTnaSearchMoreUrl(keywordUsed || query.keyword);
   const empty = status === 'ok' && items.length === 0;
+  const nearbyExpand = isMrtTnaNearbyKeyword(location, keywordUsed);
 
   if (status === 'loading' || status === 'idle') {
     return (
@@ -214,6 +216,15 @@ export default function MrtTnaActivitiesWidget({
 
   return (
     <div className="space-y-3">
+      {nearbyExpand ? (
+        <p
+          className={`break-keep text-center text-xs ${
+            planner ? 'text-orange-700/80' : 'text-orange-100/75'
+          }`}
+        >
+          이 명소 전용 투어가 적어 인근({keywordUsed}) 상품을 보여드려요
+        </p>
+      ) : null}
       <div
         className={
           planner
@@ -231,7 +242,7 @@ export default function MrtTnaActivitiesWidget({
         ))}
       </div>
       {showMoreLink ? (
-        <div className="flex flex-col items-center gap-1 pt-1">
+        <div className="flex flex-col items-center gap-1 pt-6 mt-2">
           <a
             href={moreHref}
             target="_blank"

@@ -80,6 +80,67 @@ function uniqueKeywords(list: string[]) {
   return out;
 }
 
+/** 키워드 부분일치 오탐(연·회·구) + 해외 동명 억제 */
+const OVERSEAS_NOISE_RE =
+  /중국|칭다오|상하이|오사카|도쿄|교토|간사이|유니버설|디즈니|만리장성|심천|대련|홍콩|타이베이|LA\b|노산\s*풍경|라오산|연세대학교|연남점|Douro|Yarra|Hidden\s*Valley|Valley\s*of\s*Fire|와인\s*투어/;
+
+/** 영문 일반명 — 단독 매칭 금지 (Dutayeon Valley → Valley 와인투어) */
+const GENERIC_EN_TOKEN_RE =
+  /^(valley|park|tour|island|beach|museum|tower|bridge|lake|mountain|city|hotel|pass|garden|temple|palace|castle|road|street|point|peak|falls|river|bay|coast|harbor|harbour|village|town|center|centre)$/i;
+
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function relevanceTokens(keyword: string): string[] {
+  return keyword
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 2)
+    .filter((t) => !GENERIC_EN_TOKEN_RE.test(t));
+}
+
+/**
+ * 상품명이 검색 키워드와 실질 매칭되는지.
+ * - 강: [양구] · 약: 토큰 포함(2글자+) · 해외 노이즈는 0
+ */
+function scoreTnaRelevance(itemName: string, keyword: string): number {
+  const name = String(itemName || "");
+  if (!name || !keyword) return 0;
+  const tokens = relevanceTokens(keyword);
+  if (!tokens.length) return 0;
+
+  let best = 0;
+  for (const token of tokens) {
+    const esc = escapeRegExp(token);
+    if (new RegExp(`\\[${esc}\\]`, "i").test(name)) {
+      best = Math.max(best, 10);
+      continue;
+    }
+    if (new RegExp(`(?:^|[\\s\\[\\(/,])${esc}(?:$|[\\s\\]\\)/,·])`, "i").test(name)) {
+      best = Math.max(best, 8);
+      continue;
+    }
+    if (name.toLowerCase().includes(token.toLowerCase())) {
+      best = Math.max(best, 3);
+    }
+  }
+
+  // 동명 해외(중국 노산「양구」노선 등)는 브래킷 강매칭이어도 거절
+  if (best > 0 && OVERSEAS_NOISE_RE.test(name)) {
+    return 0;
+  }
+  return best;
+}
+
+function filterRelevantTnas(items: TnaItem[], keyword: string): TnaItem[] {
+  const scored = items
+    .map((it) => ({ it, score: scoreTnaRelevance(it.itemName, keyword) }))
+    .filter((row) => row.score > 0)
+    .sort((a, b) => b.score - a.score);
+  return scored.map((row) => row.it);
+}
+
 async function mrtPost(path: string, apiKey: string, body: Record<string, unknown>) {
   const res = await fetch(`${MRT_BASE}${path}`, {
     method: "POST",
@@ -266,11 +327,14 @@ serve(async (req) => {
         continue;
       }
 
-      if (search.items.length > 0 || search.totalCount > 0) {
+      // totalCount>0 이어도 키워드 무관 오탐(두타연→연, 양구→중국)이면 다음 키워드
+      const relevant = filterRelevantTnas(search.items, kw);
+      if (relevant.length > 0) {
         return jsonResponse({
           ok: true,
-          items: search.items,
-          totalCount: search.totalCount,
+          items: relevant,
+          totalCount: relevant.length,
+          apiTotalCount: search.totalCount,
           page: search.page,
           perPage: search.perPage,
           hasNextPage: search.hasNextPage,
@@ -279,11 +343,11 @@ serve(async (req) => {
       }
 
       lastEmpty = {
-        items: search.items,
-        totalCount: search.totalCount,
+        items: [],
+        totalCount: 0,
         page: search.page,
         perPage: search.perPage,
-        hasNextPage: search.hasNextPage,
+        hasNextPage: false,
         keywordUsed: kw,
       };
     }
