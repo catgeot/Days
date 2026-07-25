@@ -16,7 +16,12 @@ export function normalizePlaceKey(s) {
     .replace(/\s+/g, '');
 }
 
-export function placeIdVariants(placeId) {
+/**
+ * @param {string} placeId
+ * @param {{ stripGeoSuffix?: boolean }} [opts]
+ * stripGeoSuffix=false: 별칭 등록용 — 「다윈섬」이 「다윈」(호주 cities)으로 확장되지 않게.
+ */
+export function placeIdVariants(placeId, { stripGeoSuffix = true } = {}) {
   const raw = String(placeId ?? '').trim();
   if (!raw) return [];
 
@@ -33,11 +38,13 @@ export function placeIdVariants(placeId) {
   add(raw.replace(/-/g, ' '));
   add(raw.replace(/-/g, ''));
 
-  const strippedSuffix = raw.replace(STRIP_SUFFIX_RE, '').trim();
-  if (strippedSuffix) add(strippedSuffix);
+  if (stripGeoSuffix) {
+    const strippedSuffix = raw.replace(STRIP_SUFFIX_RE, '').trim();
+    if (strippedSuffix) add(strippedSuffix);
 
-  const strippedInfix = raw.replace(STRIP_INFIX_RE, ' ').replace(/\s+/g, ' ').trim();
-  if (strippedInfix) add(strippedInfix);
+    const strippedInfix = raw.replace(STRIP_INFIX_RE, ' ').replace(/\s+/g, ' ').trim();
+    if (strippedInfix) add(strippedInfix);
+  }
 
   return [...out];
 }
@@ -58,9 +65,9 @@ export function buildSpotLookup(spots = TRAVEL_SPOTS, { includeKeywords = true }
   const bySlug = new Map(spots.map((s) => [s.slug, s]));
 
   // force=false: 이미 있으면 유지. force=true: 공식명·명시 별칭이 관문 keywords를 덮음
-  const add = (key, spot, { force = false } = {}) => {
+  const add = (key, spot, { force = false, stripGeoSuffix = true } = {}) => {
     if (key == null || key === '' || !spot) return;
-    for (const v of placeIdVariants(key)) {
+    for (const v of placeIdVariants(key, { stripGeoSuffix })) {
       const k = normalizePlaceKey(v) || String(v).trim();
       if (!k) continue;
       if (!force && lookup.has(k)) continue;
@@ -83,12 +90,11 @@ export function buildSpotLookup(spots = TRAVEL_SPOTS, { includeKeywords = true }
     add(spot.name_en, spot, { force: true });
   }
 
-  // 3) 명시 별칭 — 최우선
+  // 3) 명시 별칭 — 최우선 (접미사 strip 없이 등록: 다윈섬≠다윈)
   for (const [placeId, slug] of Object.entries(TRAVEL_SPOT_PLACE_ID_ALIASES)) {
     const spot = bySlug.get(slug);
     if (!spot) continue;
-    for (const v of placeIdVariants(placeId)) add(v, spot, { force: true });
-    add(placeId, spot, { force: true });
+    add(placeId, spot, { force: true, stripGeoSuffix: false });
   }
 
   return lookup;

@@ -39,6 +39,16 @@
 - **검증**: `generate:airports` · `audit:airports` none:0 · linkedSlugIataClash:0 · resolve 일룰리사트→cities/`ilulissat` · 그린란드→`greenland` · 아이슬란드→`iceland`
 - **QA**: 검색「일룰리사트」/Ilulissat → 아이스피오르드 설명 카드 · 「그린란드」는 기존 국가 카드 · 배너 공항 CPH/GOH(아이슬란드 KEF 아님)
 
+## 다윈 — 「다윈섬」별칭 strip으로 galapagos 잔존
+
+**상태**: ✅ resolve 검증 · 커밋
+
+- **f5bc1e7 대상 목록**: 구마모토(KMJ) · 다윈(DRW·galapagos 분리) · 맥머도(CHC·antarctica) · 일룰리사트(당시 greenland·이후 장소카드 분리)
+- **증상**: 별칭 `다윈` 제거 후에도 검색「다윈」→갈라파고스
+- **원인**: 별칭 `다윈섬`→galapagos 등록 시 `placeIdVariants`가 `섬` strip으로 **`다윈`까지 force 매핑**
+- **조치**: 별칭 등록만 `stripGeoSuffix: false` (`travelSpotResolve` · scripts lib)
+- **검증**: 다윈/Darwin→cities/`darwin` · 다윈섬·갈라파고스→`galapagos` · 일룰리사트 회귀 OK
+
 ## 국내 「투어 찾기」→ MyRealTrip TNA
 
 **상태**: ✅ Edge 배포 · LIVE 스모크 PASS · `main` `ca96f77` (push는 사람 요청 시)

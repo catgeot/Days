@@ -25,7 +25,7 @@ export function isBlocklistedPlaceId(placeId) {
 }
 
 /** place_id 후보 문자열(원문·띄어쓰기 제거·접미사 제거) */
-export function placeIdVariants(placeId) {
+export function placeIdVariants(placeId, { stripGeoSuffix = true } = {}) {
   const raw = String(placeId ?? '').trim();
   if (!raw) return [];
 
@@ -40,11 +40,13 @@ export function placeIdVariants(placeId) {
   add(raw);
   add(raw.replace(/\s+/g, ''));
 
-  const strippedSuffix = raw.replace(STRIP_SUFFIX_RE, '').trim();
-  if (strippedSuffix) add(strippedSuffix);
+  if (stripGeoSuffix) {
+    const strippedSuffix = raw.replace(STRIP_SUFFIX_RE, '').trim();
+    if (strippedSuffix) add(strippedSuffix);
 
-  const strippedInfix = raw.replace(STRIP_INFIX_RE, ' ').replace(/\s+/g, ' ').trim();
-  if (strippedInfix) add(strippedInfix);
+    const strippedInfix = raw.replace(STRIP_INFIX_RE, ' ').replace(/\s+/g, ' ').trim();
+    if (strippedInfix) add(strippedInfix);
+  }
 
   return [...out];
 }
@@ -69,9 +71,9 @@ export function buildSpotLookup(spots) {
   const lookup = new Map();
   const bySlug = new Map(spots.map((s) => [s.slug, s]));
 
-  const add = (key, spot) => {
+  const add = (key, spot, { stripGeoSuffix = true } = {}) => {
     if (key == null || key === '' || !spot) return;
-    const variants = placeIdVariants(key);
+    const variants = placeIdVariants(key, { stripGeoSuffix });
     for (const v of variants) {
       const k = normalizePlaceKey(v) || String(v).trim();
       if (k && !lookup.has(k)) lookup.set(k, spot);
@@ -94,8 +96,7 @@ export function buildSpotLookup(spots) {
   for (const [placeId, slug] of Object.entries(TRAVEL_SPOT_PLACE_ID_ALIASES)) {
     const spot = bySlug.get(slug);
     if (!spot) continue;
-    for (const v of placeIdVariants(placeId)) add(v, spot);
-    add(placeId, spot);
+    add(placeId, spot, { stripGeoSuffix: false });
   }
 
   return lookup;
