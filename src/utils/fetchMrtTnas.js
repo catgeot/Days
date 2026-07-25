@@ -18,15 +18,15 @@ export {
   resolveMrtTnaQuery,
 };
 
-/** v2: Edge 관련도 필터 + 인근 확장 */
-const CACHE_PREFIX = 'gateo:mrt-tnas:v2:';
+/** v3: ≤3 시 nearbyKeywords[0] 보강 머지 */
+const CACHE_PREFIX = 'gateo:mrt-tnas:v3:';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 /** 파트너 tna/search size 상한 100 · 모달은 20~50 */
 export const MRT_TNA_FETCH_SIZE = 20;
 export const MRT_TNA_PLANNER_SIZE = 3;
 
-function cacheKey(ladderKey, page, size, sort) {
-  return `${CACHE_PREFIX}${ladderKey}|p${page}|s${size}|${sort || ''}`;
+function cacheKey(ladderKey, nearbyKey, page, size, sort) {
+  return `${CACHE_PREFIX}${ladderKey}|n${nearbyKey}|p${page}|s${size}|${sort || ''}`;
 }
 
 function readCache(key) {
@@ -79,7 +79,14 @@ export function buildMrtTnaSearchMoreUrl(keyword) {
 }
 
 /**
- * @param {{ keyword: string, altKeywords?: string[], page?: number, size?: number, sort?: string }} params
+ * @param {{
+ *   keyword: string,
+ *   altKeywords?: string[],
+ *   nearbyKeywords?: string[],
+ *   page?: number,
+ *   size?: number,
+ *   sort?: string,
+ * }} params
  */
 export async function fetchMrtTnas(params) {
   const keyword = String(params?.keyword || '').trim();
@@ -88,11 +95,15 @@ export async function fetchMrtTnas(params) {
   const altKeywords = Array.isArray(params?.altKeywords)
     ? params.altKeywords.map((k) => String(k || '').trim()).filter(Boolean).slice(0, 10)
     : [];
+  const nearbyKeywords = Array.isArray(params?.nearbyKeywords)
+    ? params.nearbyKeywords.map((k) => String(k || '').trim()).filter(Boolean).slice(0, 8)
+    : [];
   const page = Math.max(1, Number(params?.page) || 1);
   const size = Math.max(1, Math.min(50, Number(params?.size) || MRT_TNA_FETCH_SIZE));
   const sort = String(params?.sort || '').trim() || undefined;
   const ladderKey = [keyword, ...altKeywords].join('|');
-  const key = cacheKey(ladderKey, page, size, sort);
+  const nearbyKey = nearbyKeywords.join('|');
+  const key = cacheKey(ladderKey, nearbyKey, page, size, sort);
 
   const hit = readCache(key);
   if (hit) return hit;
@@ -104,6 +115,7 @@ export async function fetchMrtTnas(params) {
         page,
         size,
         ...(altKeywords.length ? { altKeywords } : {}),
+        ...(nearbyKeywords.length ? { nearbyKeywords } : {}),
         ...(sort ? { sort } : {}),
       },
     });
@@ -121,6 +133,11 @@ export async function fetchMrtTnas(params) {
       perPage: Number(data.perPage) || size,
       hasNextPage: Boolean(data.hasNextPage),
       keywordUsed: data.keywordUsed ?? keyword,
+      nearbyExpanded: Boolean(data.nearbyExpanded),
+      primaryKeywordUsed: data.primaryKeywordUsed || null,
+      primaryCount: Number.isFinite(Number(data.primaryCount))
+        ? Number(data.primaryCount)
+        : null,
     };
 
     if (listed.length > 0) {

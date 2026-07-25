@@ -283,7 +283,14 @@ serve(async (req) => {
     const altKeywords = Array.isArray(body?.altKeywords)
       ? body.altKeywords.map((k: unknown) => String(k ?? "").trim())
       : [];
+    const nearbyKeywords = uniqueKeywords(
+      Array.isArray(body?.nearbyKeywords)
+        ? body.nearbyKeywords.map((k: unknown) => String(k ?? "").trim())
+        : [],
+    );
     const keywords = uniqueKeywords([keyword, ...altKeywords]);
+    /** 상위 관련도 ≤3이면 인근 첫 키워드로 보강 (숙소 CTA 5와 별개) */
+    const NEARBY_EXPAND_MAX = 3;
     /** TNA page is 1-based (unlike accommodation 0-based) */
     const page = Math.max(1, Number(body?.page) || 1);
     const size = Math.max(1, Math.min(50, Number(body?.size) || 20));
@@ -300,6 +307,15 @@ serve(async (req) => {
     let lastEmpty: {
       items: TnaItem[];
       totalCount: number;
+      page: number;
+      perPage: number;
+      hasNextPage: boolean;
+      keywordUsed: string;
+    } | null = null;
+    let primary: {
+      items: TnaItem[];
+      totalCount: number;
+      apiTotalCount: number;
       page: number;
       perPage: number;
       hasNextPage: boolean;
@@ -330,8 +346,7 @@ serve(async (req) => {
       // totalCount>0 이어도 키워드 무관 오탐(두타연→연, 양구→중국)이면 다음 키워드
       const relevant = filterRelevantTnas(search.items, kw);
       if (relevant.length > 0) {
-        return jsonResponse({
-          ok: true,
+        primary = {
           items: relevant,
           totalCount: relevant.length,
           apiTotalCount: search.totalCount,
@@ -339,7 +354,8 @@ serve(async (req) => {
           perPage: search.perPage,
           hasNextPage: search.hasNextPage,
           keywordUsed: kw,
-        });
+        };
+        break;
       }
 
       lastEmpty = {
@@ -352,6 +368,60 @@ serve(async (req) => {
       };
     }
 
+    const primaryCount = primary?.items.length ?? 0;
+    const needsNearby =
+      nearbyKeywords.length > 0 && primaryCount <= NEARBY_EXPAND_MAX;
+    if (needsNearby) {
+      const nearKw = nearbyKeywords[0];
+      const nearSearch = await searchTnas(apiKey, {
+        keyword: nearKw,
+        page,
+        size,
+        sort,
+      });
+      if (nearSearch.ok) {
+        const nearRelevant = filterRelevantTnas(nearSearch.items, nearKw);
+        if (nearRelevant.length > 0) {
+          const seen = new Set<string>();
+          const merged: TnaItem[] = [];
+          for (const it of [...(primary?.items || []), ...nearRelevant]) {
+            const gid = String(it.gid || "").trim();
+            if (!gid || seen.has(gid)) continue;
+            seen.add(gid);
+            merged.push(it);
+            if (merged.length >= size) break;
+          }
+          return jsonResponse({
+            ok: true,
+            items: merged,
+            totalCount: merged.length,
+            apiTotalCount: nearSearch.totalCount,
+            page: nearSearch.page,
+            perPage: nearSearch.perPage,
+            hasNextPage: nearSearch.hasNextPage,
+            keywordUsed: nearKw,
+            nearbyExpanded: true,
+            primaryKeywordUsed: primary?.keywordUsed || keyword,
+            primaryCount,
+          });
+        }
+      }
+    }
+
+    if (primary) {
+      return jsonResponse({
+        ok: true,
+        items: primary.items,
+        totalCount: primary.totalCount,
+        apiTotalCount: primary.apiTotalCount,
+        page: primary.page,
+        perPage: primary.perPage,
+        hasNextPage: primary.hasNextPage,
+        keywordUsed: primary.keywordUsed,
+        nearbyExpanded: false,
+      });
+    }
+
     return jsonResponse({
       ok: true,
       items: lastEmpty?.items || [],
@@ -360,6 +430,7 @@ serve(async (req) => {
       perPage: lastEmpty?.perPage || size,
       hasNextPage: lastEmpty?.hasNextPage || false,
       keywordUsed: lastEmpty?.keywordUsed || keyword,
+      nearbyExpanded: false,
     });
   } catch (err) {
     console.error("[fetch-mrt-tnas]", err);

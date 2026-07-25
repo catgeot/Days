@@ -204,3 +204,26 @@
 **읽을 것 3**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · `mrtTnaQuery.js`의 `MRT_TNA_NEARBY_EXPAND`  
 **금지 3**: 전국 자동 이웃 · 클룩/트립 목록 API 대체 · 숙소 CTA(`5`)와 임계 혼동  
 **제시어**: 아래 「MRT-TNA-인근확장-이어하기」 블록.
+
+---
+
+## 국내 TNA 인근 확장 — Phase 0 초안 → Phase 1
+
+**상태**: ✅ Phase 1 · Edge `fetch-mrt-tnas` 재배포 · B표·Phase 2 더보기 후속
+
+### Phase 0 LIVE 요약
+
+- 문경 → `['안동','단양','상주']` (예천 n=0 제외) · 양구 시드 유지 · n≈0 키워드 금지(계획 §D)
+- A표(~24 hub) 1차 반영 · B표 미반영 · 원주=인근만
+
+### Phase 1 구현
+
+- `MRT_TNA_NEARBY_EXPAND` A표 · 인근은 상위 래더와 **분리**
+- Edge: 상위 관련도 **≤3**이면 `nearbyKeywords[0]` 검색·gid 머지 · `nearbyExpanded`
+- 클라 `fetchMrtTnas` v3 캐시 · `nearbyKeywords` 전달
+- **검증**: `npm run smoke:mrt-tna` · LIVE 문경 `used=안동 nearbyExpanded primary=1` · 양구 `used=춘천 primary=0`
+- **배포**: `npx supabase functions deploy fetch-mrt-tnas --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
+
+### 다음 (Phase 2)
+
+- 「인근지역 더보기」앱내 다음 인근 키워드 · 칩 후속 · B표는 필요 시 추가

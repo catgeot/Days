@@ -13,13 +13,62 @@ const MRT_TNA_KEYWORD_OVERRIDES = {
   // 예: 'seongsan-ilchulbong': { keyword: '성산일출봉', altKeywords: ['제주'] },
 };
 
+/** 상위(hub) 관련도 통과 건수가 이 값 이하면 인근 첫 키워드로 보강 */
+export const MRT_TNA_NEARBY_EXPAND_MAX = 3;
+
 /**
- * MRT TNA 재고가 거의 없는 국내 오지 hub → 인근 관광지 키워드.
- * hubId 또는 한글 hub명. 본 지명·parentCity 실패 후 래더 말미에 붙음.
+ * 희소 TNA hub → 인근 한글 키워드(순서=자동보강→더보기).
+ * hubId + 한글명. Phase 0 A표 · n≈0 키워드 제외.
  */
 const MRT_TNA_NEARBY_EXPAND = {
+  mungyeong: ['안동', '단양', '상주'],
+  문경: ['안동', '단양', '상주'],
   yanggu: ['춘천', '인제', '설악산', '속초'],
   양구: ['춘천', '인제', '설악산', '속초'],
+  jecheon: ['단양', '영월', '충주'],
+  제천: ['단양', '영월', '충주'],
+  andong: ['영주', '의성', '문경'],
+  안동: ['영주', '의성', '문경'],
+  suncheon: ['여수', '광양', '구례', '보성'],
+  순천: ['여수', '광양', '구례', '보성'],
+  boseong: ['여수', '장흥', '순천'],
+  보성: ['여수', '장흥', '순천'],
+  gurye: ['하동', '남원', '지리산', '순천'],
+  구례: ['하동', '남원', '지리산', '순천'],
+  namwon: ['전주', '구례', '지리산'],
+  남원: ['전주', '구례', '지리산'],
+  muju: ['대전', '전주', '덕유산'],
+  무주: ['대전', '전주', '덕유산'],
+  jeongseon: ['평창', '영월', '강릉', '태백'],
+  정선: ['평창', '영월', '강릉', '태백'],
+  taebaek: ['영월', '삼척', '동해', '정선'],
+  태백: ['영월', '삼척', '동해', '정선'],
+  yangpyeong: ['가평', '남이섬', '이천', '여주'],
+  양평: ['가평', '남이섬', '이천', '여주'],
+  pocheon: ['가평', '남이섬', '연천', '동두천'],
+  포천: ['가평', '남이섬', '연천', '동두천'],
+  boryeong: ['부여', '태안', '대천', '서산'],
+  보령: ['부여', '태안', '대천', '서산'],
+  taean: ['보령', '당진', '서산'],
+  태안: ['보령', '당진', '서산'],
+  ulleung: ['울릉도', '독도', '포항', '경주'],
+  울릉: ['울릉도', '독도', '포항', '경주'],
+  wando: ['여수', '해남', '목포'],
+  완도: ['여수', '해남', '목포'],
+  hapcheon: ['대구', '산청', '해인사'],
+  합천: ['대구', '산청', '해인사'],
+  geochang: ['산청', '대구', '합천'],
+  거창: ['산청', '대구', '합천'],
+  hamyang: ['산청', '지리산', '남원'],
+  함양: ['산청', '지리산', '남원'],
+  wonju: ['제천', '횡성', '충주', '여주'],
+  원주: ['제천', '횡성', '충주', '여주'],
+  chungju: ['단양', '음성', '제천'],
+  충주: ['단양', '음성', '제천'],
+  hwacheon: ['춘천', '인제'],
+  화천: ['춘천', '인제'],
+  cheorwon: ['춘천', '포천', '연천', '화천'],
+  철원: ['춘천', '포천', '연천', '화천'],
 };
 
 function pushUnique(list, seen, raw) {
@@ -112,8 +161,8 @@ export function resolveMrtTnaQuery(location) {
   pushUnique(ladder, seen, admin.state);
   pushUnique(ladder, seen, stripKoAdminSuffix(admin.state));
 
+  // 인근은 상위 래더와 분리 — Edge가 ≤3일 때만 첫 인근으로 보강(Phase 2 더보기)
   const nearbyKeywords = isDomestic ? resolveNearbyExpand(location) : [];
-  for (const n of nearbyKeywords) pushUnique(ladder, seen, n);
 
   const keyword = String(ladder[0] || '').trim();
   const altKeywords = ladder.slice(1, 12);

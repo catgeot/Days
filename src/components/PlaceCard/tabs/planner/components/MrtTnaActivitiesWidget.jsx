@@ -275,7 +275,7 @@ export default function MrtTnaActivitiesWidget({
       location?.originalQuery,
     ],
   );
-  const placeKey = `${location?.slug || ''}|${query.keyword}|${(query.altKeywords || []).join(',')}`;
+  const placeKey = `${location?.slug || ''}|${query.keyword}|${(query.altKeywords || []).join(',')}|${(query.nearbyKeywords || []).join(',')}`;
 
   const [status, setStatus] = useState('idle');
   const [items, setItems] = useState([]);

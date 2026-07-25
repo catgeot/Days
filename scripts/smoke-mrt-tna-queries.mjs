@@ -100,7 +100,11 @@ const CASES = [
       uiPlace: true,
     },
     expectKeyword: /문경/,
+    expectNearby: /안동|단양|상주/,
     expectDomestic: true,
+    /** hub n≤3 → 인근 첫 키워드(안동) 보강 */
+    expectLiveMin: 1,
+    expectLiveUsed: /안동|단양|상주/,
   },
   {
     slug: 'yanggu-dutayeon',
@@ -114,7 +118,7 @@ const CASES = [
       parentCity: '양구',
       uiPlace: true,
     },
-    expectKeyword: /양구|춘천|설악/,
+    expectKeyword: /양구/,
     expectNearby: /춘천|인제|설악산|속초/,
     expectNoEn: /Valley|Dutayeon/i,
     expectDomestic: true,
@@ -169,7 +173,9 @@ async function main() {
         const blob = [q.keyword, ...q.altKeywords].join('|');
         assert(!c.expectNoEn.test(blob), `${c.slug}: must not use EN ladder ${blob}`);
       }
-      console.log(`OK  ${c.slug}  kw=${q.keyword}  alts=${q.altKeywords.join(',')}`);
+      console.log(
+        `OK  ${c.slug}  kw=${q.keyword}  alts=${q.altKeywords.join(',')}  nearby=${(q.nearbyKeywords || []).join(',')}`,
+      );
     } catch (err) {
       failed += 1;
       console.error(`FAIL ${c.slug}:`, err.message);
@@ -198,6 +204,7 @@ async function main() {
           body: JSON.stringify({
             keyword: q.keyword,
             altKeywords: q.altKeywords,
+            nearbyKeywords: q.nearbyKeywords,
             size: 5,
             page: 1,
           }),
@@ -215,7 +222,8 @@ async function main() {
                 : 'LIVE_OK';
         const used = data.keywordUsed || q.keyword;
         console.log(
-          `${status} ${c.slug} http=${res.status} total=${data.totalCount ?? '-'} n=${n} used=${used}`,
+          `${status} ${c.slug} http=${res.status} total=${data.totalCount ?? '-'} n=${n} used=${used}` +
+            (data.nearbyExpanded ? ` nearbyExpanded primary=${data.primaryCount}` : ''),
         );
         if (!data.ok || (min > 0 && n < min)) {
           failed += 1;
