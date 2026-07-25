@@ -255,7 +255,7 @@ const HomeUI = React.memo(({
                 );
               })}
             </div>
-            {!hideExploreChrome && faceRegionsOpen && selectedCategory ? (
+            {!isFlightCinema && faceRegionsOpen && selectedCategory ? (
               <GlobeFaceRegionRail
                 category={selectedCategory}
                 selectedRegionId={selectedFaceRegionId}
