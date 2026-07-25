@@ -1,8 +1,9 @@
-import { PLACE_LABEL_MIN_ZOOM, POI_LABEL_MIN_ZOOM } from './globeZoomPolicy';
+import { COUNTRY_LABEL_MIN_ZOOM, PLACE_LABEL_MIN_ZOOM, POI_LABEL_MIN_ZOOM } from './globeZoomPolicy';
 import { isGateoLayer } from './globeMarkerLayers';
 import { isReachBoundaryLayer } from './globeReachBoundaries';
 import { isClusterBoundaryLayer } from './globeClusterBoundaries';
 import { isFlightCinemaLayer } from './globeFlightCinemaEngine';
+import { isRegionHighlightLayer } from './globeRegionHighlight';
 import {
   applyStandardBasemapConfig,
   isStandardBasemapLayer,
@@ -20,10 +21,17 @@ const FORCE_HIDDEN_ZOOM_MAX = 24;
 
 const ADMIN_BOUNDARY_HINTS = ['admin', 'boundary', 'border', 'disputed'];
 const ROAD_OVERLAY_HINTS = ['road', 'street', 'highway', 'motorway', 'transit', 'rail', 'ferry'];
+
+/** 국가명 — 줌 2.5+ (큰 나라 전경용) */
+export const MAPBOX_COUNTRY_LABEL_HINTS = [
+  'country-label',
+  'country_label',
+];
+
+/** 도시·주·정착지 — 줌 4.0+ */
 const MAPBOX_PLACE_LABEL_HINTS = [
   'place-label',
   'settlement',
-  'country-label',
   'state-label',
 ];
 
@@ -48,6 +56,7 @@ export const MAPBOX_GLOBE_CONTEXT_LABEL_HINTS = [
 ];
 
 const MAPBOX_SYMBOL_LABEL_HINTS = [
+  ...MAPBOX_COUNTRY_LABEL_HINTS,
   ...MAPBOX_PLACE_LABEL_HINTS,
   ...MAPBOX_POI_LABEL_HINTS,
   'label',
@@ -61,6 +70,10 @@ const layerMatchesHints = (layerId, sourceLayer, hints) => {
 
 export function isGlobeContextBasemapLabel(layerId, sourceLayer) {
   return layerMatchesHints(layerId, sourceLayer, MAPBOX_GLOBE_CONTEXT_LABEL_HINTS);
+}
+
+export function isMapboxCountryLabelLayer(layerId, sourceLayer) {
+  return layerMatchesHints(layerId, sourceLayer, MAPBOX_COUNTRY_LABEL_HINTS);
 }
 
 export function isMapboxPoiLabelLayer(layerId, sourceLayer) {
@@ -77,7 +90,12 @@ export function resolveStandardHomeBasemapConfig({ isPinVisible, zoom }) {
   if (zoom >= PLACE_LABEL_MIN_ZOOM) {
     return STANDARD_HOME_CONFIG;
   }
+  // Standard는 country/settlement 분리가 어려워 기존처럼 globe context 유지
   return STANDARD_HOME_GLOBE_CONTEXT_CONFIG;
+}
+
+export function shouldShowMapboxCountryLabels({ isPinVisible, zoom }) {
+  return Boolean(isPinVisible && Number.isFinite(zoom) && zoom >= COUNTRY_LABEL_MIN_ZOOM);
 }
 
 export function shouldShowMapboxGlobeLabels({ isPinVisible, zoom }) {
@@ -93,6 +111,16 @@ export function forceHideMapboxLayer(map, layerId) {
   try {
     map.setLayoutProperty(layerId, 'visibility', 'none');
     map.setLayerZoomRange(layerId, FORCE_HIDDEN_ZOOM_MIN, FORCE_HIDDEN_ZOOM_MAX);
+  } catch {
+    // Style may be mid-transition.
+  }
+}
+
+export function showMapboxCountryLabelLayer(map, layerId) {
+  if (!map?.getLayer?.(layerId)) return;
+  try {
+    map.setLayerZoomRange(layerId, COUNTRY_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
+    map.setLayoutProperty(layerId, 'visibility', 'visible');
   } catch {
     // Style may be mid-transition.
   }
@@ -144,10 +172,20 @@ export function showGlobeContextBasemapLayer(map, layerId) {
   }
 }
 
+function isOwnedOverlayLayer(layerId) {
+  return (
+    isGateoLayer(layerId)
+    || isReachBoundaryLayer(layerId)
+    || isClusterBoundaryLayer(layerId)
+    || isFlightCinemaLayer(layerId)
+    || isRegionHighlightLayer(layerId)
+  );
+}
+
 function isMapboxLabelSymbolLayer(layer) {
   const id = layer.id || '';
   const sourceLayer = layer['source-layer'] || '';
-  if (isGateoLayer(id) || isReachBoundaryLayer(id) || isClusterBoundaryLayer(id) || isFlightCinemaLayer(id)) {
+  if (isOwnedOverlayLayer(id)) {
     return false;
   }
   if (isStandardBasemapLayer(id)) return true;
@@ -174,6 +212,7 @@ export function applyMapboxGlobeLabelPolicy(
   if (!map?.getStyle || !map.isStyleLoaded?.()) return null;
 
   const zoom = map.getZoom();
+  const showCountry = shouldShowMapboxCountryLabels({ isPinVisible, zoom });
   const showDetail = shouldShowMapboxGlobeLabels({ isPinVisible, zoom });
   const showPoi = shouldShowMapboxPoiLabels({ isPinVisible, zoom });
 
@@ -196,13 +235,7 @@ export function applyMapboxGlobeLabelPolicy(
 
   for (const layer of layers) {
     const layerId = layer.id;
-    if (
-      !layerId
-      || isGateoLayer(layerId)
-      || isReachBoundaryLayer(layerId)
-      || isClusterBoundaryLayer(layerId)
-      || isFlightCinemaLayer(layerId)
-    ) {
+    if (!layerId || isOwnedOverlayLayer(layerId)) {
       continue;
     }
 
@@ -210,11 +243,14 @@ export function applyMapboxGlobeLabelPolicy(
       const sourceLayer = layer['source-layer'] || '';
       const isLandmark = isStandardBasemapLayer(layerId);
       const isContextLabel = isGlobeContextBasemapLabel(layerId, sourceLayer);
+      const isCountryLabel = isMapboxCountryLabelLayer(layerId, sourceLayer);
       const isPoiLabel = poiLabelSet.has(layerId)
         || isLandmark
         || isMapboxPoiLabelLayer(layerId, sourceLayer);
-      const isPlaceLabel = placeLabelSet.has(layerId)
-        || layerMatchesHints(layerId, sourceLayer, MAPBOX_PLACE_LABEL_HINTS);
+      const isPlaceLabel = !isCountryLabel && (
+        placeLabelSet.has(layerId)
+        || layerMatchesHints(layerId, sourceLayer, MAPBOX_PLACE_LABEL_HINTS)
+      );
       const isMapboxLabel = isMapboxLabelSymbolLayer(layer);
 
       if (isContextLabel) {
@@ -225,11 +261,11 @@ export function applyMapboxGlobeLabelPolicy(
 
       if (globeTheme === 'bright') {
         // Standard: config drives most labels; force-hide non-label clutter + POI below threshold.
-        if (!showDetail) {
+        if (!showCountry && !showDetail) {
           forceHideMapboxLayer(map, layerId);
         } else if (isPoiLabel && !showPoi) {
           forceHideMapboxLayer(map, layerId);
-        } else if (!isMapboxLabel && !isPlaceLabel) {
+        } else if (!isMapboxLabel && !isPlaceLabel && !isCountryLabel) {
           forceHideMapboxLayer(map, layerId);
         }
         continue;
@@ -238,6 +274,9 @@ export function applyMapboxGlobeLabelPolicy(
       // satellite-streets (deep / neon)
       if (isPoiLabel) {
         if (showPoi) showMapboxPoiDetailLayer(map, layerId);
+        else forceHideMapboxLayer(map, layerId);
+      } else if (isCountryLabel) {
+        if (showCountry) showMapboxCountryLabelLayer(map, layerId);
         else forceHideMapboxLayer(map, layerId);
       } else if (!showDetail || !isPlaceLabel) {
         forceHideMapboxLayer(map, layerId);

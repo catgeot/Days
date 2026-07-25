@@ -1,6 +1,9 @@
 /** Home globe zoom-tier visibility SSOT */
 
-/** Mapbox place labels + admin boundaries visible at/above this zoom (gateo 마커·카테고리 노출 후). */
+/** Mapbox country-label — 큰 나라 전경에서도 국가명 유지. */
+export const COUNTRY_LABEL_MIN_ZOOM = 2.5;
+
+/** Mapbox settlement / place labels + admin boundaries (gateo 마커·카테고리 노출 후). */
 export const PLACE_LABEL_MIN_ZOOM = 4.0;
 
 /** Mapbox POI · natural · landmark labels — high zoom only (clean globe below). */
@@ -24,7 +27,9 @@ export const GLOBE_ZOOM_POLICY = {
   gateoTier1MaxZoom: 2.0,
   /** 2.0–3.9: gateo tier 1–2, Mapbox place labels off */
   gateoTier2MaxZoom: TIER_STAGE_ZOOM_LEVELS.tier2,
-  /** 4.0+: Mapbox Korean place labels + boundaries on */
+  /** 2.5+: Mapbox country-label on */
+  mapboxCountryLabelsMinZoom: COUNTRY_LABEL_MIN_ZOOM,
+  /** 4.0+: Mapbox settlement / place labels + boundaries on */
   mapboxLabelsMinZoom: PLACE_LABEL_MIN_ZOOM,
   /** 5.5+: Mapbox POI / natural / landmark labels on */
   mapboxPoiLabelsMinZoom: POI_LABEL_MIN_ZOOM

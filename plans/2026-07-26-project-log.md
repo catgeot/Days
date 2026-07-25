@@ -86,3 +86,18 @@
 - PC 카테고리 좌측·연관키워드 우측·나라 포커스 시 카드 닫기 · 모바일 세부메뉴 토글
 - 릴리스 노트: 해당 시만(후속 큐레이션 후 검토)
 - 다음: 면별 나라 목록·줌 큐레이션
+
+## 지구본 나라 포커스 — fitBounds · 지명 · 하이라이트
+
+**상태**: ✅ 사람 QA OK · **push 완료** · 세션 종료
+
+### 구현
+
+- 나라별 `bbox` / 대형·열도 `hubBbox` · `flyToRegion` → `cameraForBounds` + padding + maxZoom 6.4
+- 라벨: `country-label` ≥2.5 · settlement/place ≥4.0
+- 선택 나라: Mapbox Streets `admin` 국경 앰버 하이라이트 (bbox 사각형 폐기)
+- 파일: `globeFaceRegions.js` · `globeRegionHighlight.js` · `globeZoomPolicy.js` · `globeMapboxLabelPolicy.js` · `HomeGlobeMapbox.jsx` · `index.jsx`
+
+### 세션 종료
+
+- 릴리스 노트: 해당 없음(기존 나라 탐색 UX 보강) · Vercel은 push 후

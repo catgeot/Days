@@ -120,8 +120,13 @@ const HomeGlobe = React.memo(forwardRef(({
         }, totalWaitTime);
       }
     },
-    flyToRegion: (lat, lng, _zoom) => {
-      if (!globeEl.current || !Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+    flyToRegion: (latOrRegion, lng, _zoom) => {
+      const region = typeof latOrRegion === 'object' && latOrRegion
+        ? latOrRegion
+        : { lat: latOrRegion, lng };
+      const lat = Number(region.lat);
+      const lngVal = Number(region.lng);
+      if (!globeEl.current || !Number.isFinite(lat) || !Number.isFinite(lngVal)) return false;
       if (rotationTimer.current) {
         clearTimeout(rotationTimer.current);
         rotationTimer.current = null;
@@ -129,11 +134,12 @@ const HomeGlobe = React.memo(forwardRef(({
       immerseActiveRef.current = false;
       globeEl.current.controls().autoRotate = false;
       globeEl.current.pointOfView(
-        { lat, lng, altitude: GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT * 0.55 },
+        { lat, lng: lngVal, altitude: GLOBE_CAMERA_CONFIG.FLY_TARGET_ALT * 0.55 },
         GLOBE_CAMERA_CONFIG.FLY_DURATION
       );
       return true;
     },
+    clearRegionFocus: () => {},
     immerseToPin: (lat, lng, options = {}) => {
       if (!globeEl.current || !Number.isFinite(lat) || !Number.isFinite(lng)) return false;
       if (rotationTimer.current) {

@@ -160,11 +160,13 @@ function Home() {
     setCategoryFaceEpoch((epoch) => epoch + 1);
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
+    globeRef.current?.clearRegionFocus?.();
   }, []);
 
   const closeFaceRegions = useCallback(() => {
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
+    globeRef.current?.clearRegionFocus?.();
   }, []);
 
   const [isPinVisible, setIsPinVisible] = useState(true);
@@ -270,12 +272,14 @@ function Home() {
     if (nextCategory === category && faceRegionsOpen) {
       setFaceRegionsOpen(false);
       setSelectedFaceRegionId(null);
+      globeRef.current?.clearRegionFocus?.();
       return;
     }
 
     setCategory(nextCategory);
     setFaceRegionsOpen(true);
     setSelectedFaceRegionId(null);
+    globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
 
@@ -815,7 +819,7 @@ function Home() {
     }
   }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
 
-  /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 flyTo — PC는 카드와 메뉴 동시 표시 */
+  /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 fitBounds — PC는 카드와 메뉴 동시 표시 */
   const handleFaceRegionSelect = useCallback((region) => {
     if (!region || !Number.isFinite(region.lat) || !Number.isFinite(region.lng)) return;
     if (flightCinemaActive) {
@@ -825,7 +829,7 @@ function Home() {
       dismissPlaceSelectionKeepGlobePin();
     }
     setSelectedFaceRegionId(region.id);
-    globeRef.current?.flyToRegion?.(region.lat, region.lng, region.zoom);
+    globeRef.current?.flyToRegion?.(region);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,

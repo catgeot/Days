@@ -17,7 +17,13 @@ import { normalizeLngNear } from '../lib/globeLngUtils';
 import {
   GLOBE_FACE_REGION_DEFAULT_ZOOM,
   GLOBE_FACE_REGION_FLY_MS,
+  resolveFaceRegionCameraBounds,
 } from '../lib/globeFaceRegions';
+import {
+  clearRegionHighlight,
+  setRegionHighlight,
+  setupRegionHighlightLayers,
+} from '../lib/globeRegionHighlight';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
 import {
   HIGH_ZOOM_FULL_REVEAL,
@@ -367,6 +373,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
   const immerseActiveRef = useRef(false);
+  /** @type {React.MutableRefObject<{ iso?: string, bbox?: number[] } | null>} */
+  const focusedFaceRegionRef = useRef(null);
   /**
    * 항공 시네마 레이어가 한 번이라도 확인되면 latch.
    * 줌 중 setLayoutProperty 등으로 isStyleLoaded/getLayer가 순간 false여도
@@ -993,6 +1001,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!clusterBoundaryLayersReady(map)) {
       setupClusterBoundaryLayers(map);
     }
+    setupRegionHighlightLayers(map);
+    if (focusedFaceRegionRef.current) {
+      setRegionHighlight(map, focusedFaceRegionRef.current);
+    }
     setupFlightCinemaLayers(map, { visible: flightCinemaActiveRef.current });
     if (isFlightCinemaGlobeReady(map)) {
       flightCinemaLayersLatchedRef.current = true;
@@ -1586,13 +1598,30 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
   }, [endTour, finalizeSpaceReturn, globeMode, onReturnToSpace]);
 
-  /** 나라/지역 칩 — 핀·카드 없이 국가 단위 평면 느낌 줌 */
-  const flyToRegion = useCallback((lat, lng, zoom = GLOBE_FACE_REGION_DEFAULT_ZOOM) => {
+  const clearRegionFocus = useCallback(() => {
+    focusedFaceRegionRef.current = null;
+    const map = mapRef.current?.getMap();
+    if (map) clearRegionHighlight(map);
+  }, []);
+
+  /**
+   * 나라/지역 칩 — fitBounds(우선) · 선택 국가 경계 하이라이트.
+   * @param {number | { lat?: number, lng?: number, zoom?: number, bbox?: number[], hubBbox?: number[], iso?: string }} latOrRegion
+   * @param {number} [lng]
+   * @param {number} [zoom]
+   */
+  const flyToRegion = useCallback((latOrRegion, lng, zoom = GLOBE_FACE_REGION_DEFAULT_ZOOM) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender || isTourMode(globeMode) || tourActiveRef.current || flightCinemaActiveRef.current) {
       return false;
     }
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+
+    const region = typeof latOrRegion === 'object' && latOrRegion
+      ? latOrRegion
+      : { lat: latOrRegion, lng, zoom };
+    const lat = Number(region.lat);
+    const lngVal = Number(region.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lngVal)) return false;
 
     autoRotateRef.current = false;
     if (rotationTimer.current) {
@@ -1601,14 +1630,54 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
     immerseActiveRef.current = false;
 
-    const targetZoom = Number.isFinite(zoom) ? zoom : GLOBE_FACE_REGION_DEFAULT_ZOOM;
-    const normalizedLng = normalizeLngNear(map.getCenter().lng, lng);
-    const camera = {
-      center: [normalizedLng, lat],
-      zoom: targetZoom,
-      pitch: 0,
-      bearing: 0,
+    const viewport = {
+      width: dimensions?.width,
+      height: dimensions?.height,
     };
+    const { bounds, maxZoom } = resolveFaceRegionCameraBounds(region, viewport);
+    const pad = isMobileDevice
+      ? { top: 72, bottom: 140, left: 36, right: 36 }
+      : { top: 80, bottom: 80, left: 220, right: 64 };
+
+    focusedFaceRegionRef.current = {
+      iso: region.iso,
+      bbox: Array.isArray(region.bbox) ? region.bbox : bounds,
+    };
+    setupRegionHighlightLayers(map);
+    setRegionHighlight(map, focusedFaceRegionRef.current);
+
+    let camera = null;
+    if (bounds) {
+      try {
+        camera = map.cameraForBounds(
+          [
+            [bounds[0], bounds[1]],
+            [bounds[2], bounds[3]],
+          ],
+          { padding: pad, maxZoom, pitch: 0, bearing: 0 }
+        );
+      } catch {
+        camera = null;
+      }
+    }
+
+    if (!camera) {
+      const targetZoom = Number.isFinite(region.zoom) ? region.zoom : GLOBE_FACE_REGION_DEFAULT_ZOOM;
+      const normalizedLng = normalizeLngNear(map.getCenter().lng, lngVal);
+      camera = {
+        center: [normalizedLng, lat],
+        zoom: targetZoom,
+        pitch: 0,
+        bearing: 0,
+      };
+    } else if (Array.isArray(camera.center) && camera.center.length >= 2) {
+      camera = {
+        ...camera,
+        center: [normalizeLngNear(map.getCenter().lng, camera.center[0]), camera.center[1]],
+        pitch: 0,
+        bearing: 0,
+      };
+    }
 
     try {
       map.stop();
@@ -1621,7 +1690,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       map.jumpTo(camera);
     }
     return true;
-  }, [globeMode, pauseRender]);
+  }, [dimensions?.height, dimensions?.width, globeMode, isMobileDevice, pauseRender]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
@@ -1643,6 +1712,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     },
     flyToAndPin,
     flyToRegion,
+    clearRegionFocus,
     immerseToPin,
     exitImmerse,
     clearImmerseState,
@@ -1699,7 +1769,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return waitForFlightCinemaGlobeReady(map, options);
     },
     getGlobeMode: () => globeMode
-  }), [addRipple, clearImmerseState, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -2018,7 +2088,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle={mapStyle}
         onClick={handleGlobeClickInternal}
-        onError={(evt) => raiseFatal(evt?.error || new Error('Mapbox render error'))}
+        onError={(evt) => {
+          const err = evt?.error || new Error('Mapbox render error');
+          const msg = String(err?.message || err || '');
+          // 나라 하이라이트 레이어 일시 누락은 엔진 전체를 legacy로 내리지 않음
+          if (msg.includes('gateo-region-highlight')) return;
+          raiseFatal(err);
+        }}
         onLoad={(evt) => {
           markGlobeLoadPhase('onLoad');
           const map = evt?.target ?? mapRef.current?.getMap();
