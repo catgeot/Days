@@ -122,7 +122,7 @@
 
 ## 장소카드 관문 편입 분리 — 세션 종료 핸드오프
 
-**상태**: ✅ 로컬 `main` 커밋 5건 · **미push** · **사람 QA는 다음 세션**
+**상태**: ✅ 로컬 `main` · **미push** · **사람 QA 대기**(나하 회귀 픽스 포함)
 
 | SHA | 내용 |
 |-----|------|
@@ -131,15 +131,26 @@
 | `6e74a8d` | 리마·아디스·맥머도 상위지 해제 |
 | `a269b6e` | 맥머도 requireChoice·cities 제안 |
 | `a2571ba` | 파타야·시엠립·앵커리지·나하·다윈섬 분리 |
+| *(본 세션)* | 나하→오키나와 좌표스냅 회귀 — hub `naha` + cities `uiPlace` |
 
 **원칙**: 장소카드 정체성 ≠ 공항 관문. 공항은 placeIds-only 유지.
 
 **잔여(범위 외)**: 「남극해」→`antarctica` 별칭 유지.
 
+## 나하→오키나와 좌표스냅 회귀
+
+**상태**: ✅ audit PASS · resolve 검증 · 사람 QA 대기
+
+- **증상**: alias/keywords 제거 후에도 검색「나하」장소카드가 오키나와로 바뀜
+- **원인**: cities·`/place/naha` hydrate에 `uiPlace` 없음 → `mergeCanonicalTravelSpot`이 coords(~24m)로 `okinawa` 풀머지. okinawa hub alias는 이미 제거됨(별칭 아님)
+- **조치**: hub `naha`(시내 명소) · okinawa hub는 본섬 명소·좌표 중앙화 · cities hydrate/`saved_trips`에 `uiPlace:true` · city Enter에서 `uiPlace:false` 강제 제거
+- **검증**: `audit:city-attraction-hubs` issues:0 · `/place/naha`→나하 · `/place/okinawa`→오키나와 · rental OKA
+- **QA**: 검색「나하」=나하 카드 유지(카드 펼침·새로고침 포함) · 「오키나와」본명 · 배너 OKA
+
 ### 다음 세션 — 읽을 것 (3)
 
-1. 본 절 + 위「관문 별칭 5곳」「리마·아디스·맥머도」「일룰리사트」표
-2. [`citiesSearch.js`](../src/pages/Home/lib/citiesSearch.js) · [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) (별칭 등록 strip OFF)
+1. 본 절 + 「나하→오키나와 좌표스냅」·「관문 별칭 5곳」
+2. hub `naha` / [`placeRouteHydrate.js`](../src/pages/Home/lib/placeRouteHydrate.js) cities `uiPlace`
 3. `.ai-context` **1.5.1** (QA 후 push)
 
 ### 금지 (3)
@@ -152,10 +163,8 @@
 
 ```
 장소카드-관문분리-QA
-@plans/2026-07-25-project-log.md 「장소카드 관문 편입 분리 — 세션 종료 핸드오프」
-로컬 main 5커밋(a2571ba 등) 미push. 사람 QA 후 push.
-체크: 일룰리사트·다윈·다윈섬·리마·아디스아바바·맥머도·파타야·시엠립·앵커리지·나하
-= 각 독립 카드(상위지 아님). 푸켓·앙코르·알래스카·오키나와·갈라파고스·마추픽추·랄리벨라·남극 대륙 본명 회귀.
-공항 배너: 파타야 BKK · 시엠립 SAI · 앵커리지 ANC · 나하 OKA · 일룰리사트≠KEF.
-실패 시 alias/hub aliases/citiesSearch만 보고. 범위 밖 확장 금지.
+@plans/2026-07-25-project-log.md 「나하→오키나와 좌표스냅 회귀」
+로컬 main 미push. 사람 QA 후 push.
+체크: 나하=독립 카드(펼침·새로고침 유지) · 오키나와 본명 · OKA.
+나머지: 일룰리사트·다윈·다윈섬·리마·아디스·맥머도·파타야·시엠립·앵커리지.
 ```

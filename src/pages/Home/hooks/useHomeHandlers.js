@@ -772,7 +772,6 @@ export function useHomeHandlers({
         const normalizedCity = {
           ...cityToSuggestion(citySpot),
           category,
-          uiPlace: false,
         };
         handleLocationSelect(normalizedCity);
         return normalizedCity;

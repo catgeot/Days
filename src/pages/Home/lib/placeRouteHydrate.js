@@ -133,6 +133,8 @@ export function hydrateLocationFromSavedTrip(trip, category = 'paradise') {
       country_en: realCity.country_en || 'Explore',
       type: 'temp-base',
       category: trip.category || category,
+      uiPlace: true,
+      source: 'cities',
     };
   }
 
@@ -211,6 +213,9 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
         country_en: matchedCity.country_en || 'Explore',
         tags: matchedCity.tags || [],
         desc: matchedCity.desc || '',
+        // 관문 도시 coords≈상위 travelSpot — uiPlace 없으면 merge가 상위명으로 덮음(나하→오키나와)
+        uiPlace: true,
+        source: 'cities',
       },
       options,
     );

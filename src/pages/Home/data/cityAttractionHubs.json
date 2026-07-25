@@ -1666,17 +1666,18 @@
     ]
   },
   {
-    "hubId": "okinawa",
-    "name": "오키나와",
-    "name_en": "Okinawa",
+    "hubId": "naha",
+    "name": "나하",
+    "name_en": "Naha",
     "country": "일본",
     "country_en": "Japan",
-    "lat": 26.2122,
-    "lng": 127.6791,
+    "lat": 26.2124,
+    "lng": 127.6792,
     "aliases": [
-      "okinawa",
-      "おきなわ",
-      "沖繩"
+      "나하",
+      "naha",
+      "Naha",
+      "나하시"
     ],
     "attractions": [
       {
@@ -1693,6 +1694,36 @@
         "lat": 26.2172,
         "lng": 127.691
       },
+      {
+        "name": "마키시 공설시장",
+        "name_en": "Makishi Public Market",
+        "kind": "market",
+        "lat": 26.2145,
+        "lng": 127.6883
+      },
+      {
+        "name": "쓰보야 야치문 거리",
+        "name_en": "Tsuboya Yachimun Street",
+        "kind": "neighborhood",
+        "lat": 26.2129,
+        "lng": 127.6918
+      }
+    ]
+  },
+  {
+    "hubId": "okinawa",
+    "name": "오키나와",
+    "name_en": "Okinawa",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 26.3344,
+    "lng": 127.8056,
+    "aliases": [
+      "okinawa",
+      "おきなわ",
+      "沖繩"
+    ],
+    "attractions": [
       {
         "name": "츄라우미 수족관",
         "name_en": "Okinawa Churaumi Aquarium",
@@ -1715,18 +1746,18 @@
         "lng": 127.8503
       },
       {
-        "name": "마키시 공설시장",
-        "name_en": "Makishi Public Market",
-        "kind": "market",
-        "lat": 26.2145,
-        "lng": 127.6883
+        "name": "세화 우타키",
+        "name_en": "Sefa Utaki",
+        "kind": "landmark",
+        "lat": 26.1737,
+        "lng": 127.8277
       },
       {
-        "name": "쓰보야 야치문 거리",
-        "name_en": "Tsuboya Yachimun Street",
-        "kind": "neighborhood",
-        "lat": 26.2129,
-        "lng": 127.6918
+        "name": "잔파미사키",
+        "name_en": "Cape Zanpa",
+        "kind": "viewpoint",
+        "lat": 26.441,
+        "lng": 127.712
       }
     ]
   },
