@@ -131,7 +131,7 @@
 | `6e74a8d` | 리마·아디스·맥머도 상위지 해제 |
 | `a269b6e` | 맥머도 requireChoice·cities 제안 |
 | `a2571ba` | 파타야·시엠립·앵커리지·나하·다윈섬 분리 |
-| *(본 세션)* | 나하→오키나와 좌표스냅 회귀 — hub `naha` + cities `uiPlace` |
+| `f316836` | 나하→오키나와 좌표스냅 회귀 — hub `naha` + cities `uiPlace` |
 
 **원칙**: 장소카드 정체성 ≠ 공항 관문. 공항은 placeIds-only 유지.
 
