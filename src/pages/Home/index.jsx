@@ -279,15 +279,6 @@ function Home() {
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
 
-  const handleFaceRegionSelect = useCallback((region) => {
-    if (!region || !Number.isFinite(region.lat) || !Number.isFinite(region.lng)) return;
-    if (flightCinemaActive) {
-      globeRef.current?.closeFlightCinema?.();
-    }
-    setSelectedFaceRegionId(region.id);
-    globeRef.current?.flyToRegion?.(region.lat, region.lng, region.zoom);
-  }, [flightCinemaActive]);
-
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
       globeRef.current?.closeFlightCinema?.();
@@ -823,6 +814,24 @@ function Home() {
       syncHomeViewportAfterInput();
     }
   }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
+
+  /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 flyTo — PC는 카드와 메뉴 동시 표시 */
+  const handleFaceRegionSelect = useCallback((region) => {
+    if (!region || !Number.isFinite(region.lat) || !Number.isFinite(region.lng)) return;
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    if (selectedLocation && routeLocation.pathname === '/') {
+      dismissPlaceSelectionKeepGlobePin();
+    }
+    setSelectedFaceRegionId(region.id);
+    globeRef.current?.flyToRegion?.(region.lat, region.lng, region.zoom);
+  }, [
+    dismissPlaceSelectionKeepGlobePin,
+    flightCinemaActive,
+    routeLocation.pathname,
+    selectedLocation,
+  ]);
 
   const handleTourBarClose = dismissPlaceSelectionKeepGlobePin;
 
