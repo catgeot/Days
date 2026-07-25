@@ -39,6 +39,7 @@ const PlaceCardSummary = ({
   stayToggle = null,
   stayExpanded = false,
   tourTab = null,
+  tourExpanded = false,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [glowPhase, setGlowPhase] = useState('enter');
@@ -195,7 +196,9 @@ const PlaceCardSummary = ({
 
   return (
     <div
-      className={`z-[60] animate-fade-in-up transition-all duration-200 ${
+      className={`${
+        tourExpanded || stayExpanded ? 'z-[62]' : 'z-[60]'
+      } animate-fade-in-up transition-all duration-200 ${
         isOriginCompact
           ? 'fixed left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px]'
           : `absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${

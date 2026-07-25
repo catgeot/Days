@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowUp, MapPin, Ticket, X } from 'lucide-react';
+import { ArrowUp, ChevronRight, MapPin, Ticket, X } from 'lucide-react';
 import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
@@ -66,8 +66,8 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
               e.stopPropagation();
               onClose();
             }}
-            className={`flex shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all ${
-              mobile ? 'h-10 w-10' : 'h-9 w-9'
+            className={`flex shrink-0 items-center justify-center rounded-full border-2 border-white/70 bg-white/15 text-white hover:bg-white/25 hover:border-white active:scale-95 transition-all ${
+              mobile ? 'h-10 w-10' : 'mr-10 h-9 w-9'
             }`}
           >
             <X size={mobile ? 20 : 16} strokeWidth={2.5} aria-hidden="true" />
@@ -75,6 +75,16 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
         ) : null}
       </div>
     </header>
+  );
+}
+
+function TourPanelIntro() {
+  return (
+    <div className="mb-5 rounded-2xl border border-orange-400/25 bg-orange-500/10 px-3 py-2.5">
+      <p className="text-center text-sm font-semibold leading-snug text-orange-100/80 break-keep">
+        현지에서 즐길 투어·액티비티를 골라보세요
+      </p>
+    </div>
   );
 }
 
@@ -217,28 +227,39 @@ export default function GlobeTourStrip({
     else open();
   };
 
+  /** PC 모달 열림: 써머리 쪽으로 접혀 모달 위에 보이며, 클릭 시 닫기 */
+  const tourTabFolded = Boolean(expanded && isLg);
+
   const tourTab = (
     <button
       type="button"
       aria-expanded={expanded}
       aria-controls="globe-tour-strip-panel"
-      aria-label="투어 찾기"
+      aria-label={tourTabFolded ? '투어 목록 닫기' : '투어 찾기'}
       onClick={(e) => {
         e.stopPropagation();
         toggleOpen();
       }}
-      className={`absolute -left-[2.15rem] top-1/2 z-[2] flex h-[7.25rem] w-[2.15rem] -translate-y-1/2 flex-col items-center justify-center gap-1.5 rounded-l-xl border border-r-0 shadow-[0_4px_16px_rgba(249,115,22,0.28)] backdrop-blur-md transition-all ${
-        expanded
-          ? 'border-orange-200/70 bg-orange-500/42 text-orange-50'
-          : 'border-orange-300/55 bg-orange-500/30 text-orange-50 hover:border-orange-200/70 hover:bg-orange-500/40'
+      className={`absolute top-1/2 z-[2] flex h-[7.25rem] w-[2.15rem] -translate-y-1/2 flex-col items-center justify-center gap-1.5 border shadow-[0_4px_16px_rgba(249,115,22,0.28)] backdrop-blur-md transition-all duration-300 ${
+        tourTabFolded
+          ? '-left-[2.15rem] rounded-l-xl border-r-0 border-orange-100/80 bg-orange-500/55 text-orange-50 hover:bg-orange-500/65'
+          : `-left-[2.15rem] rounded-l-xl border-r-0 ${
+              expanded
+                ? 'border-orange-200/70 bg-orange-500/42 text-orange-50'
+                : 'border-orange-300/55 bg-orange-500/30 text-orange-50 hover:border-orange-200/70 hover:bg-orange-500/40'
+            }`
       }`}
     >
-      <Ticket size={16} className="shrink-0" strokeWidth={2.25} aria-hidden="true" />
+      {tourTabFolded ? (
+        <ChevronRight size={16} className="shrink-0" strokeWidth={2.5} aria-hidden="true" />
+      ) : (
+        <Ticket size={16} className="shrink-0" strokeWidth={2.25} aria-hidden="true" />
+      )}
       <span
         className="text-[12px] font-bold tracking-wide"
         style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
       >
-        투어 찾기
+        {tourTabFolded ? '닫기' : '투어 찾기'}
       </span>
     </button>
   );
@@ -277,13 +298,14 @@ export default function GlobeTourStrip({
             aria-label="투어 목록"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-r border-white/10 bg-black/85 shadow-2xl backdrop-blur-xl"
+            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-orange-200/35 bg-black/85 shadow-[0_0_28px_rgba(249,115,22,0.16)] backdrop-blur-xl"
           >
             <TourPanelHeader placeName={name} onClose={close} density="desktop" />
             <div
               ref={desktopListScrollRef}
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-16"
             >
+              {useMrtTna ? null : <TourPanelIntro />}
               {widget}
             </div>
             <button
@@ -319,6 +341,7 @@ export default function GlobeTourStrip({
               ref={mobileListScrollRef}
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-20"
             >
+              {useMrtTna ? null : <TourPanelIntro />}
               {widget}
             </div>
             <button

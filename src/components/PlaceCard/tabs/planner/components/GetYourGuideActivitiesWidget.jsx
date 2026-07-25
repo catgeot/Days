@@ -228,7 +228,11 @@ const GetYourGuideActivitiesWidget = ({
   );
 
   const chrome = (
-    <div className={`mb-2 flex flex-wrap items-center justify-between gap-2 ${isBoxed ? '' : 'px-0.5'}`}>
+    <div
+      className={`flex flex-wrap items-center justify-between gap-2 ${
+        isBoxed ? 'mb-2' : 'mb-4 px-0.5'
+      }`}
+    >
       {sponsoredLabel}
       <button
         type="button"

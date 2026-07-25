@@ -77,9 +77,9 @@ const MOBILE_GRID_IMAGE = {
   2: 'h-[100px]',
   1: 'h-[180px]',
 };
-/** PC 목록 — 기본 5열, 확대는 3열 */
+/** PC 목록 — 기본 4열, 확대는 3열 */
 const DESKTOP_GRID_DENSITY = {
-  default: { cols: 5, imageClassName: 'h-[120px]' },
+  default: { cols: 4, imageClassName: 'h-[132px]' },
   zoom: { cols: 3, imageClassName: 'h-[168px]' },
 };
 
@@ -191,8 +191,8 @@ function StayPanelHeader({
               e.stopPropagation();
               onClose();
             }}
-            className={`flex shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 transition-all ${
-              mobile ? 'h-10 w-10' : 'h-9 w-9'
+            className={`flex shrink-0 items-center justify-center rounded-full border-2 border-white/70 bg-white/15 text-white hover:bg-white/25 hover:border-white active:scale-95 transition-all ${
+              mobile ? 'h-10 w-10' : 'mr-10 h-9 w-9'
             }`}
           >
             <X size={mobile ? 20 : 16} strokeWidth={2.5} aria-hidden="true" />
@@ -579,7 +579,7 @@ function StayListToolbar({
 }) {
   const href = listUrl || MRT_AFFILIATE_HOME_URL;
   return (
-    <div className="mb-1.5 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
+    <div className="mt-1 mb-4 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
         {count ? (
           <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/75">
@@ -982,7 +982,7 @@ export default function GlobeStayStrip({
   const [visibleCount, setVisibleCount] = useState(MRT_STAY_PAGE_SIZE);
   /** 모바일 목록 열 — 2(기본) | 1 */
   const [mobileGridCols, setMobileGridCols] = useState(2);
-  /** PC 목록 밀도 — default(5열) | zoom(3열 확대) */
+  /** PC 목록 밀도 — default(4열) | zoom(3열 확대) */
   const [desktopGridDensity, setDesktopGridDensity] = useState('default');
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const [showDesktopScrollTop, setShowDesktopScrollTop] = useState(false);
@@ -1399,7 +1399,7 @@ export default function GlobeStayStrip({
         />
         <div
           className={`grid gap-3 ${
-            desktopDensity.cols === 3 ? 'grid-cols-3' : 'grid-cols-5'
+            desktopDensity.cols === 3 ? 'grid-cols-3' : 'grid-cols-4'
           }`}
         >
           <StayCardsGrid
@@ -1456,7 +1456,7 @@ export default function GlobeStayStrip({
           border-radius: 9999px;
         }
       `}</style>
-      <div className="mb-3">{renderDateBar({ embedInPanel: true })}</div>
+      <div className="mb-3.5">{renderDateBar({ embedInPanel: true })}</div>
       {status === 'loading' ? (
         <div
           className="flex min-h-[min(360px,calc(100%-5rem))] flex-col items-center justify-center gap-3 px-4 py-10"
@@ -1474,11 +1474,15 @@ export default function GlobeStayStrip({
     </div>
   );
 
+  /** PC 모달 열림: 써머리 위에 강조되고, 클릭 시 닫기 (투어 탭과 동일) */
+  const stayToggleFolded = Boolean(expanded && isLg);
+
   const toggle = (
     <button
       type="button"
       aria-expanded={expanded}
       aria-controls="globe-stay-strip-panel"
+      aria-label={stayToggleFolded ? '숙소 목록 닫기' : '숙소 찾기'}
       onClick={(e) => {
         e.stopPropagation();
         if (!isLg) {
@@ -1489,18 +1493,24 @@ export default function GlobeStayStrip({
         setExpanded((v) => !v);
       }}
       className={`relative z-10 flex min-h-[40px] w-full min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2 py-2 shadow-[0_2px_12px_rgba(245,158,11,0.22)] transition-all duration-300 lg:min-h-[36px] ${
-        expanded
-          ? 'border-amber-200/65 bg-amber-500/36 hover:bg-amber-500/40'
-          : 'border-amber-300/55 bg-amber-500/28 hover:border-amber-200/65 hover:bg-amber-500/38'
+        stayToggleFolded
+          ? 'border-amber-100/80 bg-amber-500/55 hover:bg-amber-500/65'
+          : expanded
+            ? 'border-amber-200/65 bg-amber-500/36 hover:bg-amber-500/40'
+            : 'border-amber-300/55 bg-amber-500/28 hover:border-amber-200/65 hover:bg-amber-500/38'
       }`}
     >
       {status === 'loading' && expanded ? (
         <Loader2 size={16} className="shrink-0 animate-spin text-amber-200" strokeWidth={2.25} />
+      ) : stayToggleFolded ? (
+        <ChevronLeft size={16} className="shrink-0 text-amber-50" strokeWidth={2.5} />
       ) : (
         <BedDouble size={16} className="shrink-0 text-amber-200" strokeWidth={2.25} />
       )}
-      <span className="min-w-0 truncate text-xs font-bold text-amber-50">숙소 찾기</span>
-      {expanded ? (
+      <span className="min-w-0 truncate text-xs font-bold text-amber-50">
+        {stayToggleFolded ? '닫기' : '숙소 찾기'}
+      </span>
+      {stayToggleFolded ? null : expanded ? (
         <ChevronLeft size={14} className="hidden shrink-0 text-amber-100/70 lg:block" />
       ) : (
         <ChevronDown size={14} className="shrink-0 text-amber-100/70" />
@@ -1519,7 +1529,7 @@ export default function GlobeStayStrip({
             aria-label="숙소 목록"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-r border-white/10 bg-black/85 shadow-2xl backdrop-blur-xl"
+            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-amber-200/35 bg-black/85 shadow-[0_0_28px_rgba(251,191,36,0.16)] backdrop-blur-xl"
           >
             <StayPanelHeader
               placeName={name}
@@ -1569,7 +1579,7 @@ export default function GlobeStayStrip({
               ref={mobileListScrollRef}
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
             >
-              <div className="mb-3">{renderDateBar({ embedInPanel: true })}</div>
+              <div className="mb-3.5">{renderDateBar({ embedInPanel: true })}</div>
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
                   <Loader2 size={22} className="animate-spin text-amber-200/80" />

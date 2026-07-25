@@ -227,7 +227,7 @@ export default function HomePlaceCardSummary({
           peerOpen={stayOpen}
           onExpandedChange={handleTourExpandedChange}
         >
-          {({ tourTab, close: closeTour }) => {
+          {({ tourTab, close: closeTour, expanded: tourExpanded }) => {
             const dismissSidePanels = () => {
               closeTour?.();
               closeStay?.();
@@ -286,6 +286,7 @@ export default function HomePlaceCardSummary({
                 stayToggle={toggle}
                 stayExpanded={stayExpanded}
                 tourTab={tourTab}
+                tourExpanded={tourExpanded}
                 belowCard={mobilePanel}
               />
             );
