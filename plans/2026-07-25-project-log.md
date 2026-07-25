@@ -48,3 +48,13 @@
 - **조치**: Edge 관련도 필터·해외 노이즈 거절 · 국내 영문 name_en 래더 제외 · hub `yanggu` 인근(춘천·인제·설악·속초) 확장 + UI 안내
 - **검증**: `MRT_TNA_SMOKE_LIVE=1 npm run smoke:mrt-tna` · yanggu-dutayeon `used=춘천`
 - **QA UI**: 인근 안내 문구·더보기 여백 · 써머리「투어 찾기」탭 시인성 한 단계 상향
+
+## 국내 명소 항공 경로 — ICN↔GMP·PVG↔SHA 오탐
+
+**상태**: ✅ smoke PASS · `main` `c0660a5`
+
+- **증상**: 가평·이천 등 수도권 명소에 `ICN→GMP`(및 PVG↔SHA) 항공 경로 노출
+- **원인**: rental hub 최근접이 GMP/SHA로 잡히고, 동일 메트로 OD를 시네마가 허용
+- **조치**: `areMetroCoterminalAirports` — coterminal OD는 `canPreviewFlightRoute` false · 부산·제주 국내선 유지
+- **검증**: `npm run smoke:flight-route-baseline` 18/18 · `smoke:flight-origin-gateway` 5/5
+- **QA**: 가평·이천·안성 = 항공 경로 버튼 없음 · 부산·제주 = ICN→PUS/CJU 유지
