@@ -25,26 +25,20 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '쿄토': 'kyoto',
 
   // —— 남극·알래스카 ——
-  // 맥머도/McMurdo → antarctica 금지(citiesData mcmurdo-station). 공항은 placeIds-only CHC.
+  // 맥머도/McMurdo → antarctica 금지. 앵커리지→alaska 금지(hub anchorage / cities).
   '남극해': 'antarctica',
-  '앵커리지': 'alaska',
 
-  // —— 아이슬란드·오키나와 본섬(나하) ——
+  // —— 아이슬란드·오키나와 ——
+  // 나하/Naha → okinawa 금지(citiesData naha). 공항 placeIds-only OKA.
   '레이니스퍄라': 'reykjavik',
   '레이클라비크': 'reykjavik',
   '오키나와': 'okinawa',
   '오키나와현': 'okinawa',
-  '나하': 'okinawa',
-
-  // —— 갈라파고스 다윈섬만 (호주 다윈·Darwin ≠ galapagos) ——
-  '다윈섬': 'galapagos',
 
   // —— 태국·말레이시아·필리핀·캄보디아 권역 ——
-  '태국 파타야': 'phuket',
-  '파타야': 'phuket',
+  // 파타야→phuket · 시엠립→angkor-wat 금지. 다윈섬→galapagos 금지.
   '쿠알라셀랑고르': 'kuala-lumpur',
   '앙코르 와트': 'angkor-wat',
-  '시엠립': 'angkor-wat',
 
   // —— 에티오피아·보홀 등 ——
   // 아디스아바바 → lalibela 금지(citiesData addis-ababa, ~335km). 공항 placeIds-only ADD.
@@ -58,15 +52,11 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   // 일룰리사트/Ilulissat → greenland 금지(citiesData slug ilulissat). 공항은 placeIds-only.
   'Reykjavik': 'reykjavik',
   'Ubud': 'ubud',
-  'Anchorage': 'alaska',
   'Everest': 'everest-base-camp',
   'Uyuni': 'uyuni-salt-flat',
   'Plitvice': 'plitvice-lakes',
   'Plitvice Lakes National Park': 'plitvice-lakes',
   'Okinawa': 'okinawa',
-  'Naha': 'okinawa',
-  'Pattaya': 'phuket',
-  'Siem Reap': 'angkor-wat',
   'Angkor Wat': 'angkor-wat',
   'Bohol': 'bohol',
 
@@ -177,7 +167,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
  */
 export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   kyoto: ['교토', 'Kyoto', '쿄토'],
-  'angkor-wat': ['Siem Reap', '시엠립', 'Angkor Wat', '앙코르 와트', '앙코르와트'],
+  'angkor-wat': ['Angkor Wat', '앙코르 와트', '앙코르와트'],
   'borneo': ['보르네오', 'Borneo'],
   'everest-base-camp': ['에베레스트', '에베레스트 캠프', '에베레스트베이스캠프', 'Everest'],
   'uyuni-salt-flat': ['우유니', '우유니 사막', '우유니소금사막', 'Uyuni'],
@@ -191,14 +181,11 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'bali': ['발리', 'Bali'],
   'ubud': ['우붓', 'Ubud'],
   'reykjavik': ['레이니스퍄라', '레이클라비크', 'Reykjavik'],
-  'okinawa': ['오키나와', '오키나와현', 'Okinawa', '나하', 'Naha'],
+  'okinawa': ['오키나와', '오키나와현', 'Okinawa'],
   'ishigaki': ['이시가키', 'Ishigaki'],
-  'galapagos': ['다윈섬'],
-  'phuket': ['태국 파타야', '파타야', 'Pattaya'],
   'kuala-lumpur': ['쿠알라셀랑고르'],
   'bohol': ['보홀', 'Bohol'],
   'seattle': ['Seattle', 'seattle'],
-  'alaska': ['앵커리지', 'Anchorage'],
   'antarctica': ['남극해'],
   patagonia: ['Bariloche', '바릴로체', 'Patagonia (Northern)'],
   ushuaia: ['Ushuaia', 'Tierra del Fuego', '티에라델푸에고'],

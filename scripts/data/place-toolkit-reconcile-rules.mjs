@@ -52,16 +52,7 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'angkor-wat',
     slugs: ['angkor-wat'],
     canonicalPlaceId: '앙코르 와트',
-    mergeFrom: [
-      'Siem Reap',
-      '시엠립',
-      'Angkor Wat',
-      'angkor wat',
-      '앙코르',
-      'Angkor',
-      '앙코르 와트',
-      '앙코르와트'
-    ]
+    mergeFrom: ['Angkor Wat', 'angkor wat', '앙코르', 'Angkor', '앙코르 와트', '앙코르와트']
   },
   {
     id: 'brunei-separate',
@@ -129,7 +120,7 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'alaska',
     slugs: ['alaska'],
     canonicalPlaceId: '알래스카',
-    mergeFrom: ['Alaska', 'alaska', '알래스카', '앵커리지', 'Anchorage']
+    mergeFrom: ['Alaska', 'alaska', '알래스카']
   },
   // —— Phase 2 P2: geoMismatch·근접 지명 혼입 ——
   {
@@ -142,13 +133,13 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'galapagos',
     slugs: ['galapagos'],
     canonicalPlaceId: '갈라파고스',
-    mergeFrom: ['Galapagos', 'galapagos', '갈라파고스', '다윈섬']
+    mergeFrom: ['Galapagos', 'galapagos', '갈라파고스']
   },
   {
     id: 'phuket',
     slugs: ['phuket'],
     canonicalPlaceId: '푸켓',
-    mergeFrom: ['Phuket', 'phuket', '푸켓', '태국 파타야', '파타야', 'Pattaya']
+    mergeFrom: ['Phuket', 'phuket', '푸켓']
   },
   {
     id: 'iceland',
@@ -179,7 +170,7 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'miyakojima',
     slugs: ['miyakojima'],
     canonicalPlaceId: '미야코지마',
-    mergeFrom: ['Miyakojima', 'miyakojima', '미야코지마', '오키나와', 'Okinawa']
+    mergeFrom: ['Miyakojima', 'miyakojima', '미야코지마']
   },
   {
     id: 'reykjavik',

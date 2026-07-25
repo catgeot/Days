@@ -66,6 +66,21 @@
 - **원인**: UI Enter는 `requireChoice`인데 cities 단축명 매칭·suggestions에 cities 미포함 → 「맥머도」미스
 - **조치**: `citiesSearch.js`(`findCityBySearchQuery`) · requireChoice/일반 경로 공용 · `buildLocalSearchSuggestions`에 cities 제안 추가
 
+## 관문 별칭 5곳 장소카드 분리
+
+**상태**: ✅ audit PASS · resolve 검증
+
+| 검색 | 이전 | 이후 |
+|------|------|------|
+| 파타야 | phuket | cities `pattaya` (BKK) |
+| 시엠립 | angkor-wat | hub `siem-reap` (SAI) |
+| 앵커리지 | alaska | hub `anchorage` (ANC) |
+| 나하 | okinawa | cities `naha` (OKA) · hub alias·spot keywords에서 나하 제거 |
+| 다윈섬 | galapagos | cities `darwin-island` (GPS/GYE) |
+
+- reconcile: miyakojima←오키나와 merge 제거 · 상위 mergeFrom 정리
+- **QA**: 각 검색어=독립 카드 · 푸켓/앙코르/알래스카/오키나와/갈라파고스 본명 유지
+
 ## 국내 「투어 찾기」→ MyRealTrip TNA
 
 **상태**: ✅ Edge 배포 · LIVE 스모크 PASS · `main` `ca96f77` (push는 사람 요청 시)

@@ -822,6 +822,53 @@ export const citiesData = [
     ]
   },
   {
+    "name": "다윈섬",
+    "name_en": "Darwin Island",
+    "slug": "darwin-island",
+    "country": "에콰도르",
+    "country_en": "Ecuador",
+    "lat": 1.678,
+    "lng": -92.003,
+    "priority": 2,
+    "desc": "갈라파고스 최북단의 무인에 가까운 섬입니다. 다이빙 포인트로 유명하며, 제도 전체 여행지와는 별개의 섬입니다.",
+    "tags": [
+      "자연/오지",
+      "액티비티"
+    ]
+  },
+  {
+    "name": "파타야",
+    "name_en": "Pattaya",
+    "slug": "pattaya",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 12.9236,
+    "lng": 100.8825,
+    "priority": 2,
+    "desc": "방콕에서 가까운 태국 동부 해안 휴양 도시입니다. 해변·섬 투어·나이트라이프가 중심이며, 푸켓과는 다른 지역입니다.",
+    "tags": [
+      "휴양",
+      "대도시",
+      "액티비티"
+    ]
+  },
+  {
+    "name": "나하",
+    "name_en": "Naha",
+    "slug": "naha",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 26.2124,
+    "lng": 127.6792,
+    "priority": 2,
+    "desc": "오키나와 본섬의 현청 소재지이자 관문 도시입니다. 국제거리·슈리성 일대를 축으로 하며, 오키나와 본섬 전체를 대표하는 여행지와는 별개로 둡니다.",
+    "tags": [
+      "대도시",
+      "역사/문화",
+      "휴양"
+    ]
+  },
+  {
     "name": "오클랜드",
     "name_en": "Auckland",
     "slug": "auckland",

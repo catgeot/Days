@@ -1,9 +1,9 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-07-25T08:06:24.419Z",
+    "generatedAt": "2026-07-25T08:21:04.723Z",
     "spotCount": 273,
-    "placeIdCount": 637,
+    "placeIdCount": 641,
     "stats": {
       "override": 171,
       "curatedPreserved": 0,
@@ -5557,9 +5557,8 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문",
-      "placeId": "Siem Reap",
-      "linkedSlug": "angkor-wat"
+      "rationale": "Siem Reap city — SAI placeIds-only (≠angkor-wat card)",
+      "placeId": "Siem Reap"
     },
     "시엠립": {
       "primaryIatas": [
@@ -5569,9 +5568,8 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "시엠립 앙코르국제공항(SAI) — 구 REP 폐쇄 후 관문",
-      "placeId": "시엠립",
-      "linkedSlug": "angkor-wat"
+      "rationale": "시엠립 도시 — angkor-wat 카드 편입 금지 · SAI placeIds-only",
+      "placeId": "시엠립"
     },
     "angkorwat": {
       "primaryIatas": [
@@ -6797,14 +6795,15 @@
     },
     "다윈": {
       "primaryIatas": [
-        "DRW"
+        "GPS",
+        "GYE"
       ],
-      "preferredLinkIata": "DRW",
-      "kind": "single",
+      "preferredLinkIata": "GPS",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "호주 다윈(DRW) — 갈라파고스 다윈섬·SIN 오매핑 금지 · placeIds-only",
-      "placeId": "다윈"
+      "rationale": "갈라파고스 다윈섬 — galapagos 카드 편입 금지 · GPS/GYE placeIds-only",
+      "placeId": "다윈섬"
     },
     "마닐라": {
       "primaryIatas": [
@@ -7541,11 +7540,10 @@
       ],
       "preferredLinkIata": "BKK",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "태국 파타야",
-      "linkedSlug": "phuket"
+      "rationale": "태국 파타야 — BKK placeIds-only (≠phuket)",
+      "placeId": "태국 파타야"
     },
     "퀸스타운": {
       "primaryIatas": [
@@ -7797,18 +7795,14 @@
     },
     "앵커리지": {
       "primaryIatas": [
-        "ANC",
-        "SEA",
-        "SFO",
-        "LAX"
+        "ANC"
       ],
       "preferredLinkIata": "ANC",
-      "kind": "multi",
-      "source": "toolkit-sync",
+      "kind": "single",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "앵커리지",
-      "linkedSlug": "alaska"
+      "rationale": "앵커리지 — alaska 카드 편입 금지 · ANC placeIds-only",
+      "placeId": "앵커리지"
     },
     "콜로니아": {
       "primaryIatas": [
@@ -12174,8 +12168,7 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "나하 = 오키나와 본섬 관문 OKA",
-      "linkedSlug": "okinawa",
+      "rationale": "나하공항(OKA) — placeIds-only(장소카드≠okinawa 편입)",
       "placeId": "나하"
     },
     "darwin": {
@@ -12232,7 +12225,7 @@
       "source": "curated-override",
       "confidence": "high",
       "rationale": "McMurdo Station gateway CHC · placeIds-only",
-      "placeId": "McMurdo"
+      "placeId": "McMurdo Station"
     },
     "mcmurdostation": {
       "primaryIatas": [
@@ -12244,6 +12237,74 @@
       "confidence": "high",
       "rationale": "McMurdo Station gateway CHC · placeIds-only",
       "placeId": "McMurdo Station"
+    },
+    "naha": {
+      "primaryIatas": [
+        "OKA"
+      ],
+      "preferredLinkIata": "OKA",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "Naha OKA — placeIds-only",
+      "placeId": "Naha"
+    },
+    "파타야": {
+      "primaryIatas": [
+        "BKK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "파타야 — phuket(HKT) 편입 금지 · 관문 BKK placeIds-only",
+      "placeId": "파타야"
+    },
+    "pattaya": {
+      "primaryIatas": [
+        "BKK"
+      ],
+      "preferredLinkIata": "BKK",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "Pattaya — BKK placeIds-only (≠phuket)",
+      "placeId": "Pattaya"
+    },
+    "anchorage": {
+      "primaryIatas": [
+        "ANC"
+      ],
+      "preferredLinkIata": "ANC",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "Anchorage — ANC placeIds-only (≠alaska)",
+      "placeId": "Anchorage"
+    },
+    "다윈섬": {
+      "primaryIatas": [
+        "GPS",
+        "GYE"
+      ],
+      "preferredLinkIata": "GPS",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "갈라파고스 다윈섬 — galapagos 카드 편입 금지 · GPS/GYE placeIds-only",
+      "placeId": "다윈섬"
+    },
+    "darwinisland": {
+      "primaryIatas": [
+        "GPS",
+        "GYE"
+      ],
+      "preferredLinkIata": "GPS",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "Darwin Island — GPS/GYE placeIds-only (≠galapagos card)",
+      "placeId": "Darwin Island"
     }
   }
 }
