@@ -176,3 +176,31 @@
 - **통일**: SSOT 하드코딩 desc도 `place_chat_intro` hydrate (`placeChatIntroApplied`) · URL sync overlay가 intro 유지
 - **검색 카드**: intro 3줄 클램프·고정 높이·시인성 더보기 (정렬)
 - **세션 종료**: `main` push `d16c738..3a3d082`
+
+## 국내 TNA 인근 확장 — 스펙 합의 · 다음 세션
+
+**상태**: ⏳ 문서만 · **미구현** · 계획 [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md)
+
+### 조사 요약 (문경석탄박물관)
+
+- 상위지 우선 래더는 이미 동작(`문경` 먼저). Edge는 **관련도 >0이면 중단** → 문경 **1건**에서 끝.
+- LIVE: `문경` 관련도 1 · 클룩「문경 투어」4건 중 유의미≈경북투어패스 1 · 트립「90」은 POI 안내 위주 → OTA 목록 대체 비권장.
+- 숙소 `MRT_STAY_LOW_COUNT=5`는 Trip **CTA** · 투어 인근과 별개.
+
+### 합의
+
+| 항목 | 결정 |
+|------|------|
+| 게이트 | 상위 결과 **≤3**일 때만 인근 |
+| 효율 | 명소명 연쇄보다 **인근 키워드** (상위 1회 → 첫 인근 → 더보기로 다음) |
+| 더보기 | **앱 안** 다음 인근 fetch (외부 링크 아님) |
+| 선택 UI | 후속 칩 — 같은 SSOT |
+| **다음 세션 첫 일** | **인근 도시 목록(Phase 0)부터** — 구현(1+2)은 목록 후 |
+
+시드 예: `mungyeong: ['안동','단양']` · 기존 `yanggu` 유지.
+
+### 에이전트 핸드오프 — 다음 세션
+
+**읽을 것 3**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · `mrtTnaQuery.js`의 `MRT_TNA_NEARBY_EXPAND`  
+**금지 3**: 전국 자동 이웃 · 클룩/트립 목록 API 대체 · 숙소 CTA(`5`)와 임계 혼동  
+**제시어**: 아래 「MRT-TNA-인근확장-이어하기」 블록.
