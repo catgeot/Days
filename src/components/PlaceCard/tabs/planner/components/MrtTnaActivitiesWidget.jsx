@@ -215,15 +215,30 @@ export default function MrtTnaActivitiesWidget({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {nearbyExpand ? (
-        <p
-          className={`break-keep text-center text-xs ${
-            planner ? 'text-orange-700/80' : 'text-orange-100/75'
+        <div
+          className={`rounded-xl px-3 py-2.5 text-center break-keep ${
+            planner
+              ? 'border border-orange-200/80 bg-orange-50/90'
+              : 'border border-orange-300/25 bg-orange-500/15'
           }`}
         >
-          이 명소 전용 투어가 적어 인근({keywordUsed}) 상품을 보여드려요
-        </p>
+          <p
+            className={`text-[13px] font-semibold leading-snug ${
+              planner ? 'text-orange-900' : 'text-orange-50'
+            }`}
+          >
+            인근 {keywordUsed} 투어를 보여드려요
+          </p>
+          <p
+            className={`mt-1 text-[12px] leading-relaxed ${
+              planner ? 'text-orange-800/75' : 'text-orange-100/80'
+            }`}
+          >
+            이 명소 전용 상품이 거의 없어 가까운 여행지 목록으로 안내합니다
+          </p>
+        </div>
       ) : null}
       <div
         className={
@@ -242,7 +257,7 @@ export default function MrtTnaActivitiesWidget({
         ))}
       </div>
       {showMoreLink ? (
-        <div className="flex flex-col items-center gap-1 pt-6 mt-2">
+        <div className="flex flex-col items-center gap-1.5 pt-8 pb-4 mt-3">
           <a
             href={moreHref}
             target="_blank"
