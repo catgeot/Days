@@ -146,3 +146,10 @@
 - **조치**: hub `naha` · cities hydrate `uiPlace:true` · city Enter `uiPlace:false` 제거
 - **검증**: `audit:city-attraction-hubs` issues:0 · `/place/naha`→나하 · OKA
 - **세션 종료**: `main` push `f32fd06..facc1d4` (관문 분리 일괄 + 나하 회귀)
+
+## 로고패널 버킷리스트 → 홈 써머리 카드
+
+**상태**: ✅ `4e08f22` · 로컬 ahead · 사람 QA 대기
+
+- **변경**: 버킷리스트 클릭이 `navigateToPlace`(/place 확장) 대신 `handleLocationSelect`(홈 써머리) — 숙소·투어·항공·3D투어 진입
+- **QA**: 로고 → My Bucket List 항목 → 홈에 써머리 카드 · 지구본 핀 이동 · 확장 카드로 바로 안 감
