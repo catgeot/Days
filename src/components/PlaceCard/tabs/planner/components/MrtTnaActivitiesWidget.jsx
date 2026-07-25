@@ -4,9 +4,12 @@ import {
   buildMrtTnaProductUrl,
   buildMrtTnaSearchMoreUrl,
   fetchMrtTnasForLocation,
+  fetchMrtTnasNearbyKeyword,
+  hasMoreNearbyExpand,
   isMrtTnaNearbyKeyword,
   MRT_TNA_FETCH_SIZE,
   MRT_TNA_PLANNER_SIZE,
+  nextNearbyExpandIndex,
   resolveMrtTnaQuery,
 } from '../../../../../utils/fetchMrtTnas';
 
@@ -86,7 +89,7 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
   const light = theme === 'light';
   const href = buildMrtTnaProductUrl(item);
   const price = formatPrice(item);
-  const imgH = imageClassName || (large ? 'h-[96px]' : 'h-[72px]');
+  const imgBox = imageClassName || 'aspect-square';
 
   return (
     <a
@@ -101,9 +104,9 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
       }
     >
       <div
-        className={`relative w-full pointer-events-none ${
+        className={`relative w-full pointer-events-none overflow-hidden ${
           light ? 'bg-gray-50' : 'bg-white/5'
-        } ${imgH}`}
+        } ${imgBox}`}
       >
         {item.imageUrl ? (
           <img
@@ -111,7 +114,7 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
             alt=""
             loading="lazy"
             draggable={false}
-            className="h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover object-center"
           />
         ) : (
           <div
@@ -123,10 +126,14 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
           </div>
         )}
       </div>
-      <div className={`pointer-events-none ${large ? 'space-y-1 p-2.5' : 'space-y-0.5 p-2'}`}>
+      <div
+        className={`pointer-events-none ${
+          large ? 'space-y-1.5 px-3 py-2.5' : 'space-y-1 px-2.5 py-2'
+        }`}
+      >
         {item.category ? (
           <p
-            className={`truncate ${
+            className={`break-keep ${
               light ? 'text-orange-600/80' : 'text-orange-100/70'
             } ${large ? 'text-[11px]' : 'text-[10px]'}`}
           >
@@ -134,16 +141,16 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
           </p>
         ) : null}
         <p
-          className={`line-clamp-2 break-keep font-semibold leading-snug ${
+          className={`line-clamp-3 break-keep font-semibold leading-snug ${
             light ? 'text-gray-800' : 'text-white'
           } ${large ? 'text-[13px]' : 'text-[11px]'}`}
         >
           {item.itemName}
         </p>
-        <div className="flex min-w-0 items-center justify-between gap-1">
+        <div className="flex min-w-0 items-end justify-between gap-2">
           {item.reviewScore != null ? (
             <span
-              className={`tabular-nums ${
+              className={`shrink-0 tabular-nums ${
                 light ? 'text-amber-600' : 'text-orange-100/80'
               } ${large ? 'text-xs' : 'text-[10px]'}`}
             >
@@ -154,7 +161,7 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
           )}
           {price ? (
             <span
-              className={`truncate font-bold tabular-nums ${
+              className={`min-w-0 text-right font-bold tabular-nums break-keep ${
                 light ? 'text-gray-700' : 'text-white/90'
               } ${large ? 'text-xs' : 'text-[10px]'}`}
             >
@@ -278,16 +285,23 @@ export default function MrtTnaActivitiesWidget({
   const placeKey = `${location?.slug || ''}|${query.keyword}|${(query.altKeywords || []).join(',')}|${(query.nearbyKeywords || []).join(',')}`;
 
   const [status, setStatus] = useState('idle');
-  const [items, setItems] = useState([]);
+  /** @type {[{ id: string, keyword: string, nearby: boolean, items: object[] }]} */
+  const [sections, setSections] = useState([]);
   const [keywordUsed, setKeywordUsed] = useState(query.keyword);
+  const [nearbyExpanded, setNearbyExpanded] = useState(false);
+  const [nearbyNextIndex, setNearbyNextIndex] = useState(0);
+  const [nearbyMoreLoading, setNearbyMoreLoading] = useState(false);
   const [sortMode, setSortMode] = useState('recommended');
   const [densityZoomed, setDensityZoomed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setStatus('loading');
-    setItems([]);
+    setSections([]);
     setKeywordUsed(query.keyword);
+    setNearbyExpanded(false);
+    setNearbyNextIndex(0);
+    setNearbyMoreLoading(false);
     setSortMode('recommended');
     setDensityZoomed(false);
 
@@ -298,8 +312,26 @@ export default function MrtTnaActivitiesWidget({
         setStatus('error');
         return;
       }
-      setItems(Array.isArray(result.items) ? result.items.slice(0, limit) : []);
-      setKeywordUsed(result.keywordUsed || query.keyword);
+      const used = result.keywordUsed || query.keyword;
+      const expanded = Boolean(result.nearbyExpanded);
+      const listed = Array.isArray(result.items)
+        ? result.items.slice(0, limit)
+        : [];
+      setSections([
+        {
+          id: `sec-0-${used}`,
+          keyword: used,
+          nearby: expanded || isMrtTnaNearbyKeyword(location, used),
+          items: listed,
+        },
+      ]);
+      setKeywordUsed(used);
+      setNearbyExpanded(expanded);
+      setNearbyNextIndex(
+        expanded
+          ? nextNearbyExpandIndex(query.nearbyKeywords, used)
+          : 0,
+      );
       setStatus('ok');
     })();
 
@@ -308,19 +340,77 @@ export default function MrtTnaActivitiesWidget({
     };
   }, [placeKey, limit]);
 
-  const moreHref = buildMrtTnaSearchMoreUrl(keywordUsed || query.keyword);
-  const empty = status === 'ok' && items.length === 0;
-  const nearbyExpand = isMrtTnaNearbyKeyword(location, keywordUsed);
-  const sortedItems = useMemo(
-    () => sortTourItems(items, sortMode),
-    [items, sortMode],
+  const totalCount = useMemo(
+    () => sections.reduce((n, s) => n + (s.items?.length || 0), 0),
+    [sections],
   );
+  const moreHref = buildMrtTnaSearchMoreUrl(keywordUsed || query.keyword);
+  const empty = status === 'ok' && totalCount === 0;
+  const showNearbyIntro = nearbyExpanded || sections.some((s) => s.nearby);
+  const showSectionLabels = sections.filter((s) => s.nearby).length >= 1;
+  const canShowNearbyMore =
+    nearbyExpanded &&
+    hasMoreNearbyExpand(query.nearbyKeywords, nearbyNextIndex);
+  const sortedSections = useMemo(
+    () =>
+      sections.map((sec) => ({
+        ...sec,
+        items: sortTourItems(sec.items, sortMode),
+      })),
+    [sections, sortMode],
+  );
+
+  const handleNearbyMore = async () => {
+    if (!canShowNearbyMore || nearbyMoreLoading) return;
+    const nextKw = String(query.nearbyKeywords?.[nearbyNextIndex] || '').trim();
+    if (!nextKw) return;
+    setNearbyMoreLoading(true);
+    try {
+      const result = await fetchMrtTnasNearbyKeyword(nextKw, {
+        size: Math.max(limit, MRT_TNA_FETCH_SIZE),
+      });
+      setNearbyNextIndex((i) => i + 1);
+      if (!result?.ok) return;
+      const incoming = Array.isArray(result.items) ? result.items : [];
+      if (incoming.length === 0) return;
+      const used = result.keywordUsed || nextKw;
+      setSections((prev) => {
+        const seen = new Set();
+        for (const sec of prev) {
+          for (const it of sec.items || []) {
+            const gid = String(it?.gid || '').trim();
+            if (gid) seen.add(gid);
+          }
+        }
+        const fresh = incoming.filter((it) => {
+          const gid = String(it?.gid || '').trim();
+          if (!gid) return true;
+          if (seen.has(gid)) return false;
+          seen.add(gid);
+          return true;
+        });
+        if (fresh.length === 0) return prev;
+        return [
+          ...prev,
+          {
+            id: `sec-${prev.length}-${used}`,
+            keyword: used,
+            nearby: true,
+            items: fresh.slice(0, MRT_TNA_FETCH_SIZE),
+          },
+        ];
+      });
+      setKeywordUsed(used);
+    } finally {
+      setNearbyMoreLoading(false);
+    }
+  };
 
   const openToolbar =
     !planner ? (
       <OpenTourToolbar
         moreHref={moreHref}
-        count={status === 'ok' ? sortedItems.length : 0}
+        count={status === 'ok' ? totalCount : 0}
         sortMode={sortMode}
         onSortChange={setSortMode}
         densityZoomed={densityZoomed}
@@ -390,16 +480,13 @@ export default function MrtTnaActivitiesWidget({
       ? 'grid grid-cols-3 gap-2.5'
       : 'grid grid-cols-1 gap-2.5'
     : 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4';
-  const openImageClass = densityZoomed
-    ? isLg
-      ? 'h-[140px]'
-      : 'h-[180px]'
-    : 'h-[110px]';
+  // cover 유지 · 4:3보다 세로를 키운 1:1 (상하 잘림 완화)
+  const openImageClass = 'aspect-square';
 
   return (
     <div className="space-y-4">
       {openToolbar}
-      {nearbyExpand ? (
+      {showNearbyIntro ? (
         <div
           className={`rounded-xl px-3 py-2.5 text-center break-keep ${
             planner
@@ -412,32 +499,96 @@ export default function MrtTnaActivitiesWidget({
               planner ? 'text-orange-900' : 'text-orange-50'
             }`}
           >
-            인근 {keywordUsed} 투어를 보여드려요
+            가까운 여행지 투어를 안내합니다
           </p>
           <p
             className={`mt-1 text-[12px] leading-relaxed ${
               planner ? 'text-orange-800/75' : 'text-orange-100/80'
             }`}
           >
-            이 명소 전용 상품이 거의 없어 가까운 여행지 목록으로 안내합니다
+            이 명소 전용 상품이 거의 없어 인근 지역 목록으로 나눠 보여드립니다
           </p>
         </div>
       ) : null}
-      <div
-        className={
-          planner ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : openGridClass
-        }
-      >
-        {sortedItems.map((item) => (
-          <TnaCard
-            key={item.gid || item.productUrl}
-            item={item}
-            size={planner ? 'md' : 'lg'}
-            theme={theme}
-            imageClassName={planner ? undefined : openImageClass}
-          />
+      <div className="space-y-8">
+        {sortedSections.map((sec) => (
+          <section key={sec.id} className="space-y-5">
+            {showSectionLabels && sec.nearby ? (
+              <div
+                className={`flex items-stretch gap-3 pl-5 pr-2 pt-2 pb-5 ${
+                  planner
+                    ? 'border-b-[3px] border-orange-400'
+                    : 'border-b-[3px] border-orange-200/80'
+                }`}
+              >
+                <span
+                  className={`w-1.5 shrink-0 rounded-full ${
+                    planner ? 'bg-orange-500' : 'bg-orange-300'
+                  }`}
+                  aria-hidden="true"
+                />
+                <div className="min-w-0 py-0.5">
+                  <p
+                    className={`text-[11px] font-semibold tracking-wide ${
+                      planner ? 'text-orange-700/80' : 'text-orange-100/70'
+                    }`}
+                  >
+                    인근 여행지
+                  </p>
+                  <h3
+                    className={`mt-0.5 text-[18px] font-extrabold leading-snug break-keep ${
+                      planner ? 'text-orange-950' : 'text-white'
+                    }`}
+                  >
+                    {sec.keyword}의 즐길거리
+                  </h3>
+                </div>
+              </div>
+            ) : null}
+            <div
+              className={
+                planner ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : openGridClass
+              }
+            >
+              {sec.items.map((item) => (
+                <TnaCard
+                  key={`${sec.id}-${item.gid || item.productUrl}`}
+                  item={item}
+                  size={planner ? 'md' : 'lg'}
+                  theme={theme}
+                  imageClassName={planner ? undefined : openImageClass}
+                />
+              ))}
+            </div>
+          </section>
         ))}
       </div>
+      {canShowNearbyMore ? (
+        <div className="flex justify-center pt-1">
+          <button
+            type="button"
+            disabled={nearbyMoreLoading}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNearbyMore();
+            }}
+            className={
+              planner
+                ? 'inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3.5 py-2 text-sm font-semibold text-orange-800 hover:bg-orange-100 disabled:opacity-60'
+                : 'inline-flex items-center gap-1.5 rounded-xl border border-orange-300/40 bg-orange-500/20 px-3.5 py-2 text-sm font-semibold text-orange-50 hover:bg-orange-500/30 disabled:opacity-60'
+            }
+          >
+            {nearbyMoreLoading ? (
+              <>
+                <Loader2 size={14} className="animate-spin shrink-0" aria-hidden="true" />
+                불러오는 중…
+              </>
+            ) : (
+              '인근지역 더보기'
+            )}
+          </button>
+        </div>
+      ) : null}
       {showMoreLink ? (
         <div className="flex flex-col items-center gap-1.5 pt-8 pb-4 mt-3">
           <a

@@ -182,6 +182,30 @@ export function isMrtTnaNearbyKeyword(location, keywordUsed) {
 }
 
 /**
+ * Phase 2: Edge가 nearbyKeywords[0] 자동보강한 뒤 다음 더보기 인덱스.
+ * @param {string[]} nearbyKeywords
+ * @param {string} keywordUsed
+ * @returns {number}
+ */
+export function nextNearbyExpandIndex(nearbyKeywords, keywordUsed) {
+  const list = Array.isArray(nearbyKeywords) ? nearbyKeywords : [];
+  const used = String(keywordUsed || '').trim();
+  if (!used || list.length === 0) return 0;
+  const idx = list.findIndex((k) => k === used);
+  return idx >= 0 ? idx + 1 : 0;
+}
+
+/**
+ * @param {string[]} nearbyKeywords
+ * @param {number} nextIndex
+ */
+export function hasMoreNearbyExpand(nearbyKeywords, nextIndex) {
+  const list = Array.isArray(nearbyKeywords) ? nearbyKeywords : [];
+  const i = Math.max(0, Number(nextIndex) || 0);
+  return i < list.length;
+}
+
+/**
  * 국내 「투어 찾기」탭 — 키워드 있을 때.
  * @param {object} location
  * @param {{ hidden?: boolean }} [opts]

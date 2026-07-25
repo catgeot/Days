@@ -8,7 +8,9 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
   canShowMrtTnaStrip,
+  hasMoreNearbyExpand,
   isMrtDomesticLocation,
+  nextNearbyExpandIndex,
   resolveMrtTnaQuery,
 } from '../src/utils/mrtTnaQuery.js';
 
@@ -56,8 +58,11 @@ const CASES = [
       country_en: 'Korea',
     },
     expectKeyword: /부산|Busan/,
+    /** n≥4 hub · SSOT 인근 없음 → 더보기 버튼 경로 없음 */
+    expectNearbyExact: [],
     expectDomestic: true,
     expectLiveMin: 1,
+    expectLiveNearbyExpanded: false,
   },
   {
     slug: 'seongsan-ilchulbong',
@@ -101,10 +106,14 @@ const CASES = [
     },
     expectKeyword: /문경/,
     expectNearby: /안동|단양|상주/,
+    /** Phase 2: 안동 보강 → 더보기 단양 → 상주 */
+    expectNearbyExact: ['안동', '단양', '상주'],
     expectDomestic: true,
     /** hub n≤3 → 인근 첫 키워드(안동) 보강 */
     expectLiveMin: 1,
     expectLiveUsed: /안동|단양|상주/,
+    expectLiveNearbyExpanded: true,
+    expectLiveMoreKeywords: ['단양', '상주'],
   },
   {
     slug: 'yanggu-dutayeon',
@@ -120,11 +129,13 @@ const CASES = [
     },
     expectKeyword: /양구/,
     expectNearby: /춘천|인제|설악산|속초/,
+    expectNearbyExact: ['춘천', '인제', '설악산', '속초'],
     expectNoEn: /Valley|Dutayeon/i,
     expectDomestic: true,
     /** 본지 오탐 거절 후 인근 키워드로 LIVE 매칭 */
     expectLiveMin: 1,
     expectLiveUsed: /춘천|인제|설악산|속초/,
+    expectLiveNearbyExpanded: true,
   },
   {
     slug: 'osaka',
@@ -168,6 +179,32 @@ async function main() {
       if (c.expectNearby) {
         const near = (q.nearbyKeywords || []).join('|');
         assert(c.expectNearby.test(near), `${c.slug}: nearby ${near}`);
+      }
+      if (c.expectNearbyExact) {
+        const near = q.nearbyKeywords || [];
+        assert(
+          JSON.stringify(near) === JSON.stringify(c.expectNearbyExact),
+          `${c.slug}: nearbyExact got=${JSON.stringify(near)}`,
+        );
+        if (near.length >= 2) {
+          const after0 = nextNearbyExpandIndex(near, near[0]);
+          assert(after0 === 1, `${c.slug}: next after [0] = ${after0}`);
+          assert(hasMoreNearbyExpand(near, after0), `${c.slug}: more after [0]`);
+          const afterLast = nextNearbyExpandIndex(near, near[near.length - 1]);
+          assert(
+            afterLast === near.length,
+            `${c.slug}: next after last = ${afterLast}`,
+          );
+          assert(
+            !hasMoreNearbyExpand(near, afterLast),
+            `${c.slug}: exhausted after last`,
+          );
+        } else {
+          assert(
+            !hasMoreNearbyExpand(near, 0),
+            `${c.slug}: empty nearby → no more`,
+          );
+        }
       }
       if (c.expectNoEn) {
         const blob = [q.keyword, ...q.altKeywords].join('|');
@@ -232,6 +269,53 @@ async function main() {
         if (c.expectLiveUsed && data.ok && !c.expectLiveUsed.test(String(used))) {
           failed += 1;
           console.error(`FAIL LIVE ${c.slug}: used=${used} expected ${c.expectLiveUsed}`);
+        }
+        if (
+          typeof c.expectLiveNearbyExpanded === 'boolean' &&
+          data.ok &&
+          Boolean(data.nearbyExpanded) !== c.expectLiveNearbyExpanded
+        ) {
+          failed += 1;
+          console.error(
+            `FAIL LIVE ${c.slug}: nearbyExpanded=${data.nearbyExpanded} expected ${c.expectLiveNearbyExpanded}`,
+          );
+        }
+        if (
+          Array.isArray(c.expectLiveMoreKeywords) &&
+          c.expectLiveMoreKeywords.length > 0 &&
+          data.ok &&
+          data.nearbyExpanded
+        ) {
+          for (const moreKw of c.expectLiveMoreKeywords) {
+            const moreRes = await fetch(`${url}/functions/v1/fetch-mrt-tnas`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${anon}`,
+                apikey: anon,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                keyword: moreKw,
+                size: 5,
+                page: 1,
+              }),
+            });
+            const moreData = await moreRes.json().catch(() => ({}));
+            const moreN = (moreData.items || []).length;
+            console.log(
+              `${moreData.ok && moreN > 0 ? 'LIVE_OK' : 'LIVE_EMPTY'} ${c.slug}+${moreKw} n=${moreN} used=${moreData.keywordUsed || moreKw}`,
+            );
+            if (!moreData.ok || moreN < 1) {
+              failed += 1;
+              console.error(`FAIL LIVE ${c.slug}+${moreKw}:`, moreData.error || `n=${moreN}`);
+            }
+            if (moreData.nearbyExpanded) {
+              failed += 1;
+              console.error(
+                `FAIL LIVE ${c.slug}+${moreKw}: more-fetch must not re-expand nearby`,
+              );
+            }
+          }
         }
       }
     }

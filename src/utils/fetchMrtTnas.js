@@ -6,15 +6,19 @@ import { supabase } from '../shared/api/supabase';
 import { buildMrtMylinkUrl, getMrtSearchUrl } from './affiliate';
 import {
   canShowMrtTnaStrip,
+  hasMoreNearbyExpand,
   isMrtDomesticLocation,
   isMrtTnaNearbyKeyword,
+  nextNearbyExpandIndex,
   resolveMrtTnaQuery,
 } from './mrtTnaQuery.js';
 
 export {
   canShowMrtTnaStrip,
+  hasMoreNearbyExpand,
   isMrtDomesticLocation,
   isMrtTnaNearbyKeyword,
+  nextNearbyExpandIndex,
   resolveMrtTnaQuery,
 };
 
@@ -168,4 +172,44 @@ export async function fetchMrtTnasForLocation(location, opts = {}) {
     size: opts.size ?? MRT_TNA_FETCH_SIZE,
     sort: opts.sort,
   });
+}
+
+/**
+ * Phase 2 「인근지역 더보기」— 단일 인근 키워드만 (nearbyKeywords 미전달 → Edge 재보강 없음).
+ * @param {string} keyword
+ * @param {{ page?: number, size?: number, sort?: string }} [opts]
+ */
+export async function fetchMrtTnasNearbyKeyword(keyword, opts = {}) {
+  const kw = String(keyword || '').trim();
+  if (!kw) return null;
+  return fetchMrtTnas({
+    keyword: kw,
+    page: opts.page,
+    size: opts.size ?? MRT_TNA_FETCH_SIZE,
+    sort: opts.sort,
+  });
+}
+
+/**
+ * @param {object[]} existing
+ * @param {object[]} incoming
+ * @param {number} [maxSize]
+ */
+export function mergeMrtTnaItemsByGid(existing, incoming, maxSize) {
+  const seen = new Set();
+  const out = [];
+  const cap =
+    Number.isFinite(Number(maxSize)) && Number(maxSize) > 0
+      ? Number(maxSize)
+      : Infinity;
+  for (const it of [...(existing || []), ...(incoming || [])]) {
+    const gid = String(it?.gid || '').trim();
+    if (gid) {
+      if (seen.has(gid)) continue;
+      seen.add(gid);
+    }
+    out.push(it);
+    if (out.length >= cap) break;
+  }
+  return out;
 }

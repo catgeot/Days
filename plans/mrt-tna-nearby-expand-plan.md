@@ -1,8 +1,8 @@
 # 국내 MRT TNA — 인근 여행지 확장
 
-**상태**: ✅ Phase 0 A표 + Phase 1(≤3 게이트·Edge 배포) · ⏳ Phase 2 앱내「인근지역 더보기」  
+**상태**: ✅ Phase 0~2 (더보기·섹션·카드 1:1 QA·main push) · ⏳ Phase 3 칩  
 **제시어**: `MRT-TNA-인근확장-이어하기`  
-**일지**: [`2026-07-25-project-log.md`](./2026-07-25-project-log.md) 「국내 TNA 인근 확장 — Phase 1」
+**일지**: [`2026-07-25-project-log.md`](./2026-07-25-project-log.md) 「국내 TNA 인근 확장 — Phase 2」
 
 ---
 
@@ -172,9 +172,7 @@ mungyeong / 문경: ['안동', '단양', '상주']  // LIVE: 안동3·단양5·�
 
 ### Phase 2 — 「인근지역 더보기」
 
-- `MrtTnaActivitiesWidget`(·필요 시 `GlobeTourStrip`): 저재고·인근 사용 시 버튼.
-- 클릭 = 다음 SSOT 인근 키워드로 **앱 내** 추가 로드.
-- 인근 소진 시 버튼 숨김 또는 비활성.
+- ✅ 더보기·지역 섹션·카드 `aspect-square` cover · QA·main 커밋/push
 
 ### Phase 3 — 칩 선택 (후속)
 

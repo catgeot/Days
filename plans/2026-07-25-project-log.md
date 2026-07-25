@@ -224,15 +224,33 @@
 - **검증**: `npm run smoke:mrt-tna` · LIVE 문경 `used=안동 nearbyExpanded primary=1` · 양구 `used=춘천 primary=0`
 - **배포**: `npx supabase functions deploy fetch-mrt-tnas --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
 
-### 다음 (Phase 2)
+### 다음 (Phase 2) → 완료 절 아래
 
-- 「인근지역 더보기」앱내 다음 인근 키워드 · 칩 후속 · B표는 필요 시 추가
+---
 
-### 에이전트 핸드오프 — Phase 2
+## 국내 TNA 인근 확장 — Phase 2 「인근지역 더보기」
 
-**읽을 것 3**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) §1 UX C · Phase 1 커밋 `814d5bb`  
-**금지 3**: 전국 자동 이웃 · 클룩/트립 목록 대체 · Phase 3 칩 선행 · 숙소 CTA(`5`)와 임계 혼동  
-**제시어**:
+**상태**: ✅ QA 확정 · 커밋·push (main)
+
+### 구현
+
+- `nearbyExpanded` → 「인근지역 더보기」· 지역별 섹션(`{keyword}의 즐길거리`) · gid append · 소진 시 숨김
+- 카드 이미지 `aspect-square` + `object-cover` (QA 최적)
+- Edge 변경 없음(더보기는 nearby 미전달)
+
+### 검증
+
+- `npm run smoke:mrt-tna` · LIVE 문경/양구/부산 PASS · 사람 QA OK
+
+### 다음
+
+- Phase 3 칩 · B표는 필요 시
+
+### 에이전트 핸드오프 — Phase 3
+
+**읽을 것 3**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) §2 Phase 3 · `MrtTnaActivitiesWidget` 섹션 UI  
+**금지 3**: B표 일괄 · OTA 목록 API · Edge 불필요 재설계 · QA 확정 카드 비율(1:1 cover) 무단 변경  
+**다음 세션 제시어**:
 
 ```text
 MRT-TNA-인근확장-이어하기
@@ -240,18 +258,18 @@ MRT-TNA-인근확장-이어하기
 @plans/mrt-tna-nearby-expand-plan.md
 @plans/2026-07-25-project-log.md
 
-목표: Phase 1(≤3·첫 인근 자동보강) 위에 Phase 2 「인근지역 더보기」만.
+목표: Phase 2(더보기·지역 섹션·1:1 카드) 위에 Phase 3 인근 칩만.
 
 읽을 것:
-1) 계획 §1 UX C·문경 시드 · §2 Phase 2
-2) 일지「국내 TNA 인근 확장 — Phase 0 초안 → Phase 1」
-3) MrtTnaActivitiesWidget · fetchMrtTnas · mrtTnaQuery MRT_TNA_NEARBY_EXPAND
+1) 계획 §1 UX D·§2 Phase 3
+2) 일지「국내 TNA 인근 확장 — Phase 2」
+3) MrtTnaActivitiesWidget 섹션·nearbyKeywords
 
 이번 턴:
-- nearbyExpanded일 때 「인근지역 더보기」버튼 (앱 내 다음 nearbyKeywords[i] fetch·목록 append/교체)
-- 소진 시 숨김/비활성 · 문경: 안동 보강 → 더보기→단양→상주
-- 스모크(+LIVE) · 양구 회귀 · n≥4 hub는 버튼 없음
-- 디자인·카피는 사람 QA 후 커밋(검증 게이트)
+- SSOT 길이 ≥2일 때 칩으로 인근 택1 (안동|단양|상주)
+- 선택 = 해당 키워드 fetch·그 섹션 목록 (더보기와 동일 SSOT)
+- 스모크(+LIVE) · 양구 회귀 · n≥4 hub는 칩 없음
+- 디자인·카피는 사람 QA 후 커밋
 
-금지: 칩(Phase 3) · B표 일괄 · OTA 목록 API · Edge 불필요 재설계(이미 nearbyKeywords[0] 보강됨)
+금지: B표 일괄 · OTA 목록 API · Edge 불필요 재설계 · Phase 2 카드 비율 되돌리기
 ```
