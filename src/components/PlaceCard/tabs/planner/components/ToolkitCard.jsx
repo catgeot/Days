@@ -15,11 +15,14 @@ import FerryBookingWidget from './FerryBookingWidget';
 import KlookCarBannerWidget from './KlookCarBannerWidget';
 import KlookTourBannerWidget from './KlookTourBannerWidget';
 import GetYourGuideActivitiesWidget from './GetYourGuideActivitiesWidget';
+import MrtTnaActivitiesWidget from './MrtTnaActivitiesWidget';
 import { THEME_COLORS } from '../constants';
 import { plannerLinkHint } from '../readableText';
 import { cleanAdviceText, getAdviceText, getMultiLinks } from '../utils';
 import { buildGygActivitiesSearchQuery } from '../locationRules';
 import { shouldShowFerryCard } from '../../../../../utils/ferryBookingMatch';
+import { canShowMrtTnaStrip } from '../../../../../utils/mrtTnaQuery';
+import { MRT_TNA_PLANNER_SIZE } from '../../../../../utils/fetchMrtTnas';
 
 const ToolkitCard = ({
     icon,
@@ -40,14 +43,15 @@ const ToolkitCard = ({
     const ferryAdviceText = cleanAdviceText(getAdviceText(data));
     const ferryHasSsot = type === 'ferry_booking' && shouldShowFerryCard(location?.slug);
     const showFerryAdviceBlock = ferryAdviceText || !ferryHasSsot;
+    const useMrtTna = type === 'map_poi' && canShowMrtTnaStrip(location);
     const gygActivitiesQuery =
-        type === 'map_poi' ? buildGygActivitiesSearchQuery(location) : null;
+        type === 'map_poi' && !useMrtTna ? buildGygActivitiesSearchQuery(location) : null;
     const klookTourQuery = encodeURIComponent(`${location?.name || location?.country || ''} 투어`);
     const klookTourTargetUrl = `https://www.klook.com/ko/search/result/?query=${klookTourQuery}`;
     const klookTourDeepLink = getKlookAffiliateUrl(klookTourTargetUrl);
     const klookCarBannerSearchUrl = getKlookRentalUrlByLocation(location, { essentialGuide });
     const mapPoiWidgetKey =
-        location?.slug || gygActivitiesQuery || 'map-poi-tour';
+        location?.slug || gygActivitiesQuery || (useMrtTna ? 'mrt-tna' : 'map-poi-tour');
 
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group ${className}`.trim()}>
@@ -158,18 +162,29 @@ const ToolkitCard = ({
                 <KlookCarBannerWidget targetUrl={klookCarBannerSearchUrl} />
             )}
             {type === 'map_poi' && (
-                gygActivitiesQuery
+                useMrtTna
                     ? (
-                        <GetYourGuideActivitiesWidget
+                        <MrtTnaActivitiesWidget
                             key={mapPoiWidgetKey}
                             location={location}
-                            query={gygActivitiesQuery}
-                            itemCount={GYG_PLANNER_ACTIVITIES_ITEM_COUNT}
+                            variant="planner"
+                            itemCount={MRT_TNA_PLANNER_SIZE}
                             showMoreLink
                             linkSponsoredLabel
                         />
                     )
-                    : <KlookTourBannerWidget key={mapPoiWidgetKey} targetUrl={klookTourDeepLink} />
+                    : gygActivitiesQuery
+                        ? (
+                            <GetYourGuideActivitiesWidget
+                                key={mapPoiWidgetKey}
+                                location={location}
+                                query={gygActivitiesQuery}
+                                itemCount={GYG_PLANNER_ACTIVITIES_ITEM_COUNT}
+                                showMoreLink
+                                linkSponsoredLabel
+                            />
+                        )
+                        : <KlookTourBannerWidget key={mapPoiWidgetKey} targetUrl={klookTourDeepLink} />
             )}
         </div>
     );

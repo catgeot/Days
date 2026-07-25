@@ -28,3 +28,14 @@
 | 일룰리사트 | alias/override → **greenland**(CPH/GOH) · iceland(KEF) 해제 |
 
 **검증**: `npm run generate:airports` → `npm run audit:airports`
+
+## 국내 「투어 찾기」→ MyRealTrip TNA
+
+**상태**: ✅ Edge 배포 · LIVE 스모크 PASS · 커밋 대기(사람 QA)
+
+- **증상**: 국내 명소 GYG 오탐(해외 투어)
+- **조치**: 국내=`fetch-mrt-tnas`(`tna/search`) 카드 목록 · 해외=GYG 유지 · 플래너 map_poi 동일 분기
+- **파일**: Edge `fetch-mrt-tnas` · `mrtTnaQuery.js` · `fetchMrtTnas.js` · `MrtTnaActivitiesWidget` · `GlobeTourStrip` · `ToolkitCard`
+- **검증**: `npm run smoke:mrt-tna` · `MRT_TNA_SMOKE_LIVE=1` (제주·부산·성산·경복궁·문경 `n>0`)
+- **배포**: `npx supabase functions deploy fetch-mrt-tnas --project-ref phdjnbfitvmrguqzverm --no-verify-jwt`
+- **QA**: 국내 명소「투어 찾기」= MRT 한국 상품 · 오사카 등 해외=GYG · 숙소 탭과 상호배타

@@ -418,3 +418,8 @@ entrypoint = "./functions/gemini-proxy/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/fetch-mrt-stays/index.ts"
+
+[functions.fetch-mrt-tnas]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/fetch-mrt-tnas/index.ts"

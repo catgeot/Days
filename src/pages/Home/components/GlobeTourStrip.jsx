@@ -2,7 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowUp, MapPin, Ticket, X } from 'lucide-react';
 import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
+import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
+import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
 import Logo from './Logo';
 
 const LG_MQ = '(min-width: 1024px)';
@@ -77,7 +79,7 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
 }
 
 /**
- * Summary 카드 좌측 「투어 찾기」탭 — q 있을 때만.
+ * Summary 카드 좌측 「투어 찾기」탭 — 국내=MRT TNA · 해외=GYG q.
  * PC: 숙소와 동일 좌측 포털 · 모바일: fullscreen · 숙소와 상호 배타(peerOpen).
  */
 export default function GlobeTourStrip({
@@ -94,18 +96,33 @@ export default function GlobeTourStrip({
   const desktopListScrollRef = useRef(null);
   const mobileListScrollRef = useRef(null);
 
-  const gygQuery = useMemo(
-    () => buildGygActivitiesSearchQuery(location),
+  const useMrtTna = useMemo(
+    () => canShowMrtTnaStrip(location),
     [
+      location?.slug,
+      location?.name,
+      location?.name_en,
+      location?.name_ko,
+      location?.country,
+      location?.country_en,
+      location?.parentCity,
+      location?.isScanning,
+    ]
+  );
+  const gygQuery = useMemo(
+    () => (useMrtTna ? null : buildGygActivitiesSearchQuery(location)),
+    [
+      useMrtTna,
       location?.slug,
       location?.name,
       location?.name_en,
       location?.curation_data?.locationEn,
     ]
   );
-  const eligible = Boolean(gygQuery) && !location?.isScanning;
+  const eligible =
+    !location?.isScanning && (useMrtTna || Boolean(gygQuery));
   const name = location?.name || '';
-  const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}`;
+  const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}|${useMrtTna ? 'mrt' : 'gyg'}`;
   const mobileOpen = !isLg && listFullscreen;
   const desktopOpen = Boolean(expanded && isLg);
 
@@ -226,7 +243,15 @@ export default function GlobeTourStrip({
     </button>
   );
 
-  const widget = (
+  const widget = useMrtTna ? (
+    <MrtTnaActivitiesWidget
+      key={placeKey}
+      location={location}
+      variant="open"
+      showMoreLink
+      linkSponsoredLabel
+    />
+  ) : (
     <GetYourGuideActivitiesWidget
       location={location}
       query={gygQuery}
