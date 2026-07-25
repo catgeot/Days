@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-07-25T06:52:20.562Z",
+    "generatedAt": "2026-07-25T07:53:46.705Z",
     "spotCount": 273,
     "placeIdCount": 637,
     "stats": {
@@ -7583,8 +7583,7 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "그린란드 일룰리사트 — iceland(KEF) 오매핑 금지 · greenland와 동일 관문",
-      "linkedSlug": "greenland",
+      "rationale": "그린란드 일룰리사트 — iceland(KEF) 오매핑 금지 · placeIds-only(장소카드≠greenland)",
       "placeId": "일룰리사트"
     },
     "리마": {
@@ -7658,8 +7657,7 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "그린란드 일룰리사트 표기 변형",
-      "linkedSlug": "greenland",
+      "rationale": "그린란드 일룰리사트 표기 변형 · placeIds-only",
       "placeId": "일루리삿"
     },
     "우베를란지아": {
@@ -12204,8 +12202,7 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "그린란드 일룰리사트 — iceland(KEF) 오매핑 금지",
-      "linkedSlug": "greenland",
+      "rationale": "그린란드 일룰리사트 — iceland(KEF) 오매핑 금지 · placeIds-only",
       "placeId": "Ilulissat"
     }
   }

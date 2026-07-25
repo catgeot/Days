@@ -156,13 +156,6 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     canonicalPlaceId: '아이슬란드',
     mergeFrom: ['Iceland', 'iceland', '아이슬란드']
   },
-  {
-    id: 'greenland-ilulissat',
-    slugs: ['greenland'],
-    canonicalPlaceId: '그린란드',
-    mergeFrom: ['Ilulissat', '일룰리사트', '일루리삿', 'Ilulissat Icefjord'],
-    note: '일룰리사트≠iceland(KEF) — greenland CPH/GOH'
-  },
   // —— Phase 2 P3: duplicateSlug 잔여 5건 ——
   {
     id: 'lalibela',

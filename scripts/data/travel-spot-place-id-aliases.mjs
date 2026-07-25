@@ -56,10 +56,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'seattle': 'seattle',
 
   // —— 영문·표기 변형 ——
-  'Ilulissat': 'greenland',
-  '일룰리사트': 'greenland',
-  '일루리삿': 'greenland',
-  'Ilulissat Icefjord': 'greenland',
+  // 일룰리사트/Ilulissat → greenland 금지(citiesData slug ilulissat). 공항은 placeIds-only.
   'Reykjavik': 'reykjavik',
   'Ubud': 'ubud',
   'Anchorage': 'alaska',
@@ -225,14 +222,7 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   tukao: ['Manihiki', 'manihiki', 'Tukao', '마니히키', '투카오'],
   'cocos-islands': ['코코스 제도', '코코스제도', 'Cocos Islands', 'CCK'],
   'pitcairn-islands': ['핏케언 제도', 'Pitcairn Islands', 'Pitcairn'],
-  greenland: [
-    '그린란드',
-    'Greenland',
-    'Ilulissat',
-    '일룰리사트',
-    '일루리삿',
-    'Ilulissat Icefjord',
-  ],
+  greenland: ['그린란드', 'Greenland'],
   'falkland-islands': ['포클랜드', '포클랜드 제도', 'Falkland Islands', 'Stanley'],
   'solomon-islands': ['솔로몬 제도', 'Solomon Islands', 'Honiara', 'HIR'],
   nauru: ['나우루', 'Nauru', 'INU'],

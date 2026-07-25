@@ -29,6 +29,16 @@
 
 **검증**: `npm run generate:airports` → `npm run audit:airports`
 
+## 일룰리사트 장소카드 — greenland 편입 해제
+
+**상태**: ✅ audit PASS · `citiesData` slug `ilulissat`로 검색 진입
+
+- **증상**: 검색「일룰리사트」가 그린란드(`greenland`) 장소카드로 열림
+- **원인**: `f5bc1e7` 공항 clash 정리 때 place-id alias·toolkit synonym·reconcile `mergeFrom`이 일룰리사트→greenland로 강제(장소카드 slug까지 붕괴). `linkedSlug`는 공항만 영향.
+- **조치**(다윈 분리와 동일): alias/synonym/merge 제거 · 공항은 placeIds-only CPH/GOH(KEF 금지, `linkedSlug` 없음) · `citiesData` `ilulissat`가 Enter 경로에서 선택
+- **검증**: `generate:airports` · `audit:airports` none:0 · linkedSlugIataClash:0 · resolve 일룰리사트→cities/`ilulissat` · 그린란드→`greenland` · 아이슬란드→`iceland`
+- **QA**: 검색「일룰리사트」/Ilulissat → 아이스피오르드 설명 카드 · 「그린란드」는 기존 국가 카드 · 배너 공항 CPH/GOH(아이슬란드 KEF 아님)
+
 ## 국내 「투어 찾기」→ MyRealTrip TNA
 
 **상태**: ✅ Edge 배포 · LIVE 스모크 PASS · `main` `ca96f77` (push는 사람 요청 시)
