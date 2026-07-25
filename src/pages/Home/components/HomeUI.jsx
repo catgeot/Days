@@ -55,6 +55,8 @@ const HomeUI = React.memo(({
 }) => {
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
+  /** 모바일 나라 메뉴 — 펼침일 때만 목록 노출 · 숨김 시 지도 탐색 */
+  const [mobileRegionsExpanded, setMobileRegionsExpanded] = useState(true);
 
   const trendingData = useTrendingData();
 
@@ -63,6 +65,12 @@ const HomeUI = React.memo(({
       queueMicrotask(() => setInputValue(externalInput));
     }
   }, [externalInput]);
+
+  useEffect(() => {
+    if (faceRegionsOpen) {
+      setMobileRegionsExpanded(true);
+    }
+  }, [faceRegionsOpen, selectedCategory]);
 
   const CATEGORIES = [
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
@@ -211,14 +219,46 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {/* 모바일 좌측 — 나라/지역 (카테고리 활성 시에만) */}
+      {/* 모바일 — 나라/지역 (카테고리 바 바로 위 · 안전 간격 ~12px · 펼침 시에만 목록) */}
       {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory && (
-        <div className="md:hidden fixed left-2 top-[42%] -translate-y-1/2 z-[55] pointer-events-none animate-fade-in-right">
-          <GlobeFaceRegionRail
-            category={selectedCategory}
-            selectedRegionId={selectedFaceRegionId}
-            onSelectRegion={onFaceRegionSelect}
-          />
+        <div className="md:hidden fixed left-4 bottom-[6.25rem] z-[55] pointer-events-none animate-fade-in-right flex flex-col items-start gap-1">
+          {mobileRegionsExpanded ? (
+            <GlobeFaceRegionRail
+              category={selectedCategory}
+              selectedRegionId={selectedFaceRegionId}
+              onSelectRegion={onFaceRegionSelect}
+              className="mb-0.5"
+            />
+          ) : null}
+          <div className="pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border border-white/20 bg-black/70 px-2 py-1.5 backdrop-blur-md shadow-lg">
+            <span className="text-[10px] font-bold leading-none tracking-tight text-gray-200/90 break-keep">
+              세부 메뉴
+            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={mobileRegionsExpanded}
+              aria-label={mobileRegionsExpanded ? '나라 메뉴 숨기기' : '나라 메뉴 펼치기'}
+              title={mobileRegionsExpanded ? '숨기고 지도 보기' : '나라 메뉴 보기'}
+              onClick={() => setMobileRegionsExpanded((open) => !open)}
+              className="flex w-full items-center justify-center active:scale-[0.97]"
+            >
+              <span
+                aria-hidden="true"
+                className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
+                  mobileRegionsExpanded
+                    ? 'border-cyan-400/50 bg-cyan-500/40'
+                    : 'border-white/20 bg-white/10'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-[left] duration-200 ${
+                    mobileRegionsExpanded ? 'left-5' : 'left-0.5'
+                  }`}
+                />
+              </span>
+            </button>
+          </div>
         </div>
       )}
 
