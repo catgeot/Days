@@ -27,8 +27,9 @@
 
 - 관련 audit/스모크/테스트 **PASS** · 알려진 깨짐 없음 → **커밋 OK**(한글 메시지 · 사용자 요청 불필요) — **로직·SSOT·버그픽스**
 - **디자인·소소한 UI**(카피·색·간격·배치·시인성 등): 조율 중 **커밋 보류** → **사람 QA 확정 후** 커밋
-- 동일 게이트 통과 후 feature 브랜치 **push OK** · Cloud 오케스트레이터는 **§3.4**(PR까지)
-- **금지**: 검증 생략 · FAIL tip/코드 커밋·푸시 · 미확정 디자인 수시 커밋 · `main` 직접 push
+- **브랜치**: 짧은 수정은 **`main` 직행** · 대형/장기/충돌 위험만 feature(+PR). 상세 `.ai-context` **1.5.2**
+- Cloud 오케스트레이터는 **§3.4**(커밋·push·PR)
+- **금지**: 검증 생략 · FAIL tip/코드 커밋·푸시 · 미확정 디자인 수시 커밋 · 사람 승인 없는 `main` 원격 push · force-push to main
 
 ## 검증 커맨드 (자주 씀)
 
@@ -49,8 +50,9 @@ npm run smoke:mapbox-settlement-places
 
 ### 브랜치·병합
 
-- 기본: `main`에서 feature 브랜치로 작업 후 PR 또는 사용자 승인 후 병합.
-- **`main`에 직접 push하지 말 것** — 데스크톱에서 검토·병합이 기본.
+- **기본**: 버그픽스·SSOT·소소한 UI는 **`main`에서 작업·커밋**. 사람 요청 시 `main` push OK (`.ai-context` **1.5.2**).
+- **브랜치·PR**: 새 페이지·대형 기능·장시간·충돌 위험·Cloud 오케·사람이 명시한 경우.
+- **금지**: force-push to main · 사람 승인 없이 에이전트가 임의로 `main` push.
 - Edge(`supabase functions deploy …`)는 코드 수정과 별개. Secrets·로그인 없으면 **배포는 보류**하고 일지/핸드오프에 명령만 남긴다.
 
 ### 오케스트레이터 · 커밋·PR

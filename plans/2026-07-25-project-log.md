@@ -16,7 +16,9 @@
 
 ## linkedSlug IATA clash WARN 정리
 
-**상태**: ✅ `linkedSlugIataClash: 0` · `none: 0` · 류큐 smoke OK · 커밋 대기/완료
+**상태**: ✅ `linkedSlugIataClash: 0` · `none: 0` · 류큐 smoke OK · `main` 머지·푸시
+
+- **브랜치 규약 명시**: `.ai-context` **1.5.2** — 짧은 수정은 `main` 직행 · 대형/장기만 feature+PR
 
 | placeId | 조치 |
 |---------|------|
