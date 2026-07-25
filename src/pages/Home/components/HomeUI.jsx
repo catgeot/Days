@@ -169,20 +169,18 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
-      {/* 카테고리 바 — origin/main 배포본 마크업 그대로 (모바일 하단·PC 우측 상단) */}
+      {/* 모바일 하단 카테고리 — 배포본 마크업·클래스 그대로 (위치만 모바일) */}
       {!isTourCinema && (
       <div className={`fixed z-50 pointer-events-auto animate-fade-in-left
-         bottom-8 left-4 w-auto max-w-[calc(100vw-7rem)] flex justify-start
-         md:absolute md:w-auto md:right-6 md:top-6 md:bottom-auto md:left-auto md:max-w-none md:flex-col
+         bottom-8 left-4 w-auto max-w-[calc(100vw-7rem)] flex justify-start md:hidden
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
-         <div className="relative max-md:home-category-bar-shell">
-         <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
+         <div className="relative home-category-bar-shell">
+         <div className="home-category-bar-halo" aria-hidden="true" />
          <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
-            max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border
-            md:items-center md:gap-4 md:bg-black/40 md:p-2.5 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl
-            flex-row flex-nowrap overflow-x-auto md:flex-col md:overflow-visible">
+            bg-black/80 border-white/20 backdrop-blur-xl p-2 rounded-2xl border
+            flex-row flex-nowrap overflow-x-auto">
             {CATEGORIES.map((cat) => {
                const isActive = selectedCategory === cat.id;
                const Icon = cat.icon;
@@ -194,14 +192,14 @@ const HomeUI = React.memo(({
                    aria-label={CATEGORY_LABELS[cat.id] || cat.label}
                    aria-pressed={isActive && faceRegionsOpen}
                    className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
-                     w-[3.25rem] py-1.5 md:w-14 md:py-2 max-md:border
+                     w-[3.25rem] py-1.5 border
                      ${isActive
-                       ? `${CATEGORY_ACTIVE_MOBILE[cat.id]} md:bg-white/10 md:border-white/20 md:shadow-[0_0_15px_rgba(255,255,255,0.1)]`
-                       : 'max-md:bg-black/45 max-md:border-white/22 max-md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] md:hover:bg-white/5 md:border-transparent border-transparent'
+                       ? CATEGORY_ACTIVE_MOBILE[cat.id]
+                       : 'bg-black/45 border-white/22 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
                      }`}
                  >
-                   <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'max-md:text-gray-100 text-gray-500 group-hover:text-gray-300'}`} />
-                   <span className={`text-[9px] md:text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-200/90 md:text-gray-400 md:group-hover:text-gray-300'}`}>
+                   <Icon size={18} className={`transition-colors duration-300 ${isActive ? cat.color : 'text-gray-100'}`} />
+                   <span className={`text-[9px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-200/90'}`}>
                      {CATEGORY_LABELS[cat.id]}
                    </span>
                  </button>
@@ -212,9 +210,9 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {/* 나라/지역 레일 — 카테고리 활성 시에만 (모바일·PC 좌측) */}
+      {/* 모바일 좌측 — 나라/지역 (카테고리 활성 시에만) */}
       {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory && (
-        <div className="fixed left-2 top-[42%] -translate-y-1/2 z-[55] pointer-events-none animate-fade-in-right md:left-6 md:top-1/2">
+        <div className="md:hidden fixed left-2 top-[42%] -translate-y-1/2 z-[55] pointer-events-none animate-fade-in-right">
           <GlobeFaceRegionRail
             category={selectedCategory}
             selectedRegionId={selectedFaceRegionId}
@@ -223,10 +221,57 @@ const HomeUI = React.memo(({
         </div>
       )}
 
-      {/* PC 좌측 레일 — 연관 키워드 + 권역 범례 마운트(게이트 슬롯) */}
-      <div className="hidden md:flex fixed left-2 md:left-6 top-1/2 -translate-y-1/2 z-[55] flex-col gap-2 md:gap-3 pointer-events-none animate-fade-in-right">
-        {(isTagLoading || relatedPlaces.length > 0) && (
-          <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
+      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 */}
+      <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-[55] flex-col gap-3 pointer-events-none animate-fade-in-right">
+        {!isTourCinema && (
+          <div
+            className={`pointer-events-auto flex flex-row items-start gap-2 ${
+              (isPlaceCardVisible && !isFlightCinema) || isFlightCinema ? 'max-lg:hidden' : ''
+            }`}
+          >
+            <div className="home-category-bar-card relative z-[1] flex items-center gap-4 bg-black/40 p-2.5 rounded-2xl border border-white/10 shadow-2xl flex-col overflow-visible">
+              {CATEGORIES.map((cat) => {
+                const isActive = selectedCategory === cat.id;
+                const Icon = cat.icon;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => onCategorySelect(cat.id)}
+                    aria-label={CATEGORY_LABELS[cat.id] || cat.label}
+                    aria-pressed={isActive && faceRegionsOpen}
+                    className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
+                      w-14 py-2 border
+                      ${isActive
+                        ? 'bg-white/10 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                        : 'hover:bg-white/5 border-transparent'
+                      }`}
+                  >
+                    <Icon size={20} className={`transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
+                    <span className={`text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-400 group-hover:text-gray-300'}`}>
+                      {CATEGORY_LABELS[cat.id]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {!hideExploreChrome && faceRegionsOpen && selectedCategory ? (
+              <GlobeFaceRegionRail
+                category={selectedCategory}
+                selectedRegionId={selectedFaceRegionId}
+                onSelectRegion={onFaceRegionSelect}
+                className="pt-0.5"
+              />
+            ) : null}
+          </div>
+        )}
+        <div id="gateo-cluster-legend-slot" className="pointer-events-auto" />
+      </div>
+
+      {/* PC 우측 — 연관 키워드 (티커 확장 시 숨김 · 랭킹 패널과 겹침 방지) */}
+      {(isTagLoading || relatedPlaces.length > 0) && !isTickerExpanded && (
+        <div className="hidden md:flex fixed right-6 top-1/2 -translate-y-[calc(50%+6.125rem)] z-[55] flex-col gap-2 md:gap-3 pointer-events-none animate-fade-in-left">
+          <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto items-end">
             {!isTagLoading && relatedPlaces.map((place, idx) => (
               <button
                 key={`${place.name}-${idx}`}
@@ -238,22 +283,21 @@ const HomeUI = React.memo(({
                     : 'bg-black/30 border-white/5 hover:bg-white/10 hover:border-blue-500/50'
                 }`}
               >
-                  <div className="flex items-center gap-1.5 md:gap-2 overflow-hidden">
-                    {place.isBridge ? (
-                      <Sparkles size={12} className="flex-shrink-0 text-fuchsia-400 group-hover:animate-pulse md:w-[14px] md:h-[14px]" />
-                    ) : (
-                      <Compass size={12} className="flex-shrink-0 text-blue-400 group-hover:animate-pulse md:w-[14px] md:h-[14px]" />
-                    )}
-                    <span className={`text-[10px] md:text-sm font-medium truncate ${
-                      place.isBridge ? 'text-fuchsia-200 group-hover:text-white' : 'text-gray-200 group-hover:text-white'
-                    }`}>{place.name}</span>
-                  </div>
+                <div className="flex items-center gap-1.5 md:gap-2 overflow-hidden">
+                  {place.isBridge ? (
+                    <Sparkles size={12} className="flex-shrink-0 text-fuchsia-400 group-hover:animate-pulse md:w-[14px] md:h-[14px]" />
+                  ) : (
+                    <Compass size={12} className="flex-shrink-0 text-blue-400 group-hover:animate-pulse md:w-[14px] md:h-[14px]" />
+                  )}
+                  <span className={`text-[10px] md:text-sm font-medium truncate ${
+                    place.isBridge ? 'text-fuchsia-200 group-hover:text-white' : 'text-gray-200 group-hover:text-white'
+                  }`}>{place.name}</span>
+                </div>
               </button>
             ))}
           </div>
-        )}
-        <div id="gateo-cluster-legend-slot" className="pointer-events-auto" />
-      </div>
+        </div>
+      )}
 
       <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <div className="absolute bottom-6 left-6 md:left-[8.75rem] flex items-end gap-4 pointer-events-auto">
