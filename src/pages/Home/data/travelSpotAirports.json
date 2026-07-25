@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T19:14:24.530Z",
+    "generatedAt": "2026-07-25T06:52:20.562Z",
     "spotCount": 273,
-    "placeIdCount": 633,
+    "placeIdCount": 637,
     "stats": {
-      "override": 170,
+      "override": 171,
       "curatedPreserved": 0,
-      "toolkitSync": 103,
+      "toolkitSync": 102,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -1103,14 +1103,15 @@
     },
     "antarctica": {
       "primaryIatas": [
-        "USH"
+        "USH",
+        "CHC"
       ],
       "preferredLinkIata": "USH",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.",
-      "rationale": "남극 크루즈·연구 기지는 우수아이아 등 남미 관문",
+      "bannerNote": "남극 본토는 상용 노선이 없습니다. 관광 크루즈는 우수아이아(USH) 등 남미 관문, 맥머도 기지 등은 크라이스트처치(CHC) 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "크루즈 관문 우수아이아(USH) · 맥머도 등 연구기지 관문 크라이스트처치(CHC)",
       "graphFlightRouteHubIatas": [
         "LHR",
         "EZE"
@@ -3638,13 +3639,13 @@
     },
     "kumamoto": {
       "primaryIatas": [
-        "OIT"
+        "KMJ"
       ],
-      "preferredLinkIata": "OIT",
+      "preferredLinkIata": "KMJ",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
+      "rationale": "구마모토공항(KMJ) — toolkit OIT(오이타) 오탐 보정",
       "graphFlightRouteHubIatas": [
         "FUK",
         "ITM"
@@ -6798,15 +6799,14 @@
     },
     "다윈": {
       "primaryIatas": [
-        "SIN"
+        "DRW"
       ],
-      "preferredLinkIata": "SIN",
+      "preferredLinkIata": "DRW",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "다윈",
-      "linkedSlug": "galapagos"
+      "rationale": "호주 다윈(DRW) — 갈라파고스 다윈섬·SIN 오매핑 금지 · placeIds-only",
+      "placeId": "다윈"
     },
     "마닐라": {
       "primaryIatas": [
@@ -7210,11 +7210,11 @@
       ],
       "preferredLinkIata": "KMJ",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "구마모토",
-      "linkedSlug": "kumamoto"
+      "rationale": "구마모토공항(KMJ) — toolkit OIT 오탐 보정 · slug kumamoto와 동일",
+      "linkedSlug": "kumamoto",
+      "placeId": "구마모토"
     },
     "라스페치아": {
       "primaryIatas": [
@@ -7576,15 +7576,16 @@
     },
     "일룰리사트": {
       "primaryIatas": [
-        "CPH"
+        "CPH",
+        "GOH"
       ],
       "preferredLinkIata": "CPH",
-      "kind": "single",
-      "source": "toolkit-sync",
+      "kind": "multi",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "일룰리사트",
-      "linkedSlug": "iceland"
+      "rationale": "그린란드 일룰리사트 — iceland(KEF) 오매핑 금지 · greenland와 동일 관문",
+      "linkedSlug": "greenland",
+      "placeId": "일룰리사트"
     },
     "리마": {
       "primaryIatas": [
@@ -7651,15 +7652,15 @@
     "일루리삿": {
       "primaryIatas": [
         "CPH",
-        "KEF"
+        "GOH"
       ],
       "preferredLinkIata": "CPH",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "일루리삿",
-      "linkedSlug": "iceland"
+      "rationale": "그린란드 일룰리사트 표기 변형",
+      "linkedSlug": "greenland",
+      "placeId": "일루리삿"
     },
     "우베를란지아": {
       "primaryIatas": [
@@ -10463,15 +10464,15 @@
     },
     "kumamoto": {
       "primaryIatas": [
-        "OIT"
+        "KMJ"
       ],
-      "preferredLinkIata": "OIT",
+      "preferredLinkIata": "KMJ",
       "kind": "single",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "placeId": "kumamoto",
-      "linkedSlug": "kumamoto"
+      "rationale": "구마모토공항(KMJ) — toolkit OIT 오탐 보정",
+      "linkedSlug": "kumamoto",
+      "placeId": "kumamoto"
     },
     "chiang-mai": {
       "primaryIatas": [
@@ -12182,6 +12183,30 @@
       "rationale": "나하 = 오키나와 본섬 관문 OKA",
       "linkedSlug": "okinawa",
       "placeId": "나하"
+    },
+    "darwin": {
+      "primaryIatas": [
+        "DRW"
+      ],
+      "preferredLinkIata": "DRW",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "호주 다윈(DRW) — 갈라파고스 Darwin Island 별칭과 분리",
+      "placeId": "Darwin"
+    },
+    "ilulissat": {
+      "primaryIatas": [
+        "CPH",
+        "GOH"
+      ],
+      "preferredLinkIata": "CPH",
+      "kind": "multi",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "그린란드 일룰리사트 — iceland(KEF) 오매핑 금지",
+      "linkedSlug": "greenland",
+      "placeId": "Ilulissat"
     }
   }
 }

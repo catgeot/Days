@@ -14,24 +14,15 @@
 - **머지**: `main` `d9b6491` (gh 미인증으로 PR 대신 merge-push) · Vercel 배포 트리거됨
 - **재발 가드**: `audit:airports` — `linkedSlugIataClash` WARN + 류큐 identity smoke FAIL(OKA/SHI/ISG)
 
-## 다음 세션 — linkedSlug IATA clash WARN 정리
+## linkedSlug IATA clash WARN 정리
 
-**제시어**: `공항-linkedSlug-clash-이어하기`
+**상태**: ✅ `linkedSlugIataClash: 0` · `none: 0` · 류큐 smoke OK · 커밋 대기/완료
 
-**읽을 것**
-1. `.ai-context.md` — 6절 공항 표·3절 금지
-2. 본 일지 위 「오키나와 ↔ 미야코」절 + 이 핸드오프
-3. `npm run audit:airports` → `linkedSlugIataClash` WARN 목록
+| placeId | 조치 |
+|---------|------|
+| 구마모토 / kumamoto | spots+placeId override **KMJ** (toolkit OIT 오탐) |
+| 다윈 / Darwin | 호주 **DRW** hub 추가 · placeIds-only · galapagos에서 분리(다윈섬만 유지) |
+| 맥머도·맥머도기지 | antarctica allow에 **CHC** (USH 크루즈 + CHC 기지) |
+| 일룰리사트 | alias/override → **greenland**(CPH/GOH) · iceland(KEF) 해제 |
 
-**대상 (현재 5)**
-
-| placeId | linkedSlug | place | linked/runtime | 추정 |
-|---------|------------|-------|----------------|------|
-| 구마모토 | kumamoto | KMJ | OIT | spots.kumamoto toolkit OIT 오탐 → override KMJ |
-| 다윈 | galapagos | SIN | GPS | 호주 Darwin vs 갈라파고스 다윈섬 별칭 오염 |
-| 맥머도 / 맥머도기지 | antarctica | CHC | USH | CHC 관문을 antarctica hub/allow에 넣을지 결정 |
-| 일룰리사트 | iceland | CPH | KEF | 그린란드 vs 아이슬란드 별칭 오매핑 |
-
-**절차**: 건별 override/별칭 수정 → `generate:airports` → `audit:airports` (WARN 0 목표 · 류큐 smoke 유지) → 검증 후 커밋
-
-**금지**: `travelSpotAirports.json` spots 직접 수정 · 류큐 smoke 약화 · 요청 밖 대규모 별칭 정리
+**검증**: `npm run generate:airports` → `npm run audit:airports`

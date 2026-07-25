@@ -142,7 +142,7 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'galapagos',
     slugs: ['galapagos'],
     canonicalPlaceId: '갈라파고스',
-    mergeFrom: ['Galapagos', 'galapagos', '갈라파고스', '다윈', '다윈섬', 'Darwin']
+    mergeFrom: ['Galapagos', 'galapagos', '갈라파고스', '다윈섬']
   },
   {
     id: 'phuket',
@@ -154,15 +154,14 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'iceland',
     slugs: ['iceland'],
     canonicalPlaceId: '아이슬란드',
-    mergeFrom: [
-      'Iceland',
-      'iceland',
-      '아이슬란드',
-      'Ilulissat',
-      '일룰리사트',
-      '일루리삿',
-      'Ilulissat Icefjord'
-    ]
+    mergeFrom: ['Iceland', 'iceland', '아이슬란드']
+  },
+  {
+    id: 'greenland-ilulissat',
+    slugs: ['greenland'],
+    canonicalPlaceId: '그린란드',
+    mergeFrom: ['Ilulissat', '일룰리사트', '일루리삿', 'Ilulissat Icefjord'],
+    note: '일룰리사트≠iceland(KEF) — greenland CPH/GOH'
   },
   // —— Phase 2 P3: duplicateSlug 잔여 5건 ——
   {

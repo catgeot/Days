@@ -37,8 +37,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '오키나와현': 'okinawa',
   '나하': 'okinawa',
 
-  // —— 갈라파고스(찰스 다윈·다윈섬 검색 혼동) ——
-  '다윈': 'galapagos',
+  // —— 갈라파고스 다윈섬만 (호주 다윈·Darwin ≠ galapagos) ——
   '다윈섬': 'galapagos',
 
   // —— 태국·말레이시아·필리핀·캄보디아 권역 ——
@@ -57,10 +56,10 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'seattle': 'seattle',
 
   // —— 영문·표기 변형 ——
-  'Ilulissat': 'iceland',
-  '일룰리사트': 'iceland',
-  '일루리삿': 'iceland',
-  'Ilulissat Icefjord': 'iceland',
+  'Ilulissat': 'greenland',
+  '일룰리사트': 'greenland',
+  '일루리삿': 'greenland',
+  'Ilulissat Icefjord': 'greenland',
   'Reykjavik': 'reykjavik',
   'Ubud': 'ubud',
   'Anchorage': 'alaska',
@@ -72,7 +71,6 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Plitvice Lakes National Park': 'plitvice-lakes',
   'Okinawa': 'okinawa',
   'Naha': 'okinawa',
-  'Darwin': 'galapagos',
   'Pattaya': 'phuket',
   'Siem Reap': 'angkor-wat',
   'Angkor Wat': 'angkor-wat',
@@ -203,13 +201,12 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'reykjavik': ['레이니스퍄라', '레이클라비크', 'Reykjavik'],
   'okinawa': ['오키나와', '오키나와현', 'Okinawa', '나하', 'Naha'],
   'ishigaki': ['이시가키', 'Ishigaki'],
-  'galapagos': ['다윈', '다윈섬', 'Darwin'],
+  'galapagos': ['다윈섬'],
   'phuket': ['태국 파타야', '파타야', 'Pattaya'],
   'kuala-lumpur': ['쿠알라셀랑고르'],
   'lalibela': ['아디스아바바', 'Addis Ababa'],
   'bohol': ['보홀', 'Bohol'],
   'seattle': ['Seattle', 'seattle'],
-  'iceland': ['Ilulissat', '일룰리사트', '일루리삿', 'Ilulissat Icefjord'],
   'alaska': ['앵커리지', 'Anchorage'],
   'antarctica': ['맥머도', '맥머도 기지', '남극해', 'McMurdo Station', 'McMurdo'],
   patagonia: ['Bariloche', '바릴로체', 'Patagonia (Northern)'],
@@ -228,7 +225,14 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   tukao: ['Manihiki', 'manihiki', 'Tukao', '마니히키', '투카오'],
   'cocos-islands': ['코코스 제도', '코코스제도', 'Cocos Islands', 'CCK'],
   'pitcairn-islands': ['핏케언 제도', 'Pitcairn Islands', 'Pitcairn'],
-  greenland: ['그린란드', 'Greenland', 'Ilulissat', '일룰리사트'],
+  greenland: [
+    '그린란드',
+    'Greenland',
+    'Ilulissat',
+    '일룰리사트',
+    '일루리삿',
+    'Ilulissat Icefjord',
+  ],
   'falkland-islands': ['포클랜드', '포클랜드 제도', 'Falkland Islands', 'Stanley'],
   'solomon-islands': ['솔로몬 제도', 'Solomon Islands', 'Honiara', 'HIR'],
   nauru: ['나우루', 'Nauru', 'INU'],

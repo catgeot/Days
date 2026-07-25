@@ -185,6 +185,14 @@ export const RENTAL_AIRPORT_HUBS = [
   },
   { iata: 'PER', officialKo: '퍼스공항', lat: -31.9403, lng: 115.9672, radiusKm: 200, aliases: ['perth', '퍼스'] },
   {
+    iata: 'DRW',
+    officialKo: '다윈국제공항',
+    lat: -12.415,
+    lng: 130.8819,
+    radiusKm: 160,
+    aliases: ['darwin', '다윈', 'drw']
+  },
+  {
     iata: 'XCH',
     officialKo: '크리스마스섬 공항',
     lat: -10.4506,

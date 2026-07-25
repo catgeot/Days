@@ -275,6 +275,12 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '팔라완·엘니도는 ENI 직항(MNL 경유·AirSWIFT), PPS 육로, MNL 국제선 관문이 나뉩니다. 엘니도 상세 경로는 엘니도 여행지 배너를 참고해 주세요.'
   },
   ishigaki: { primaryIatas: ['ISG'], preferredLinkIata: 'ISG', confidence: 'high', rationale: '이시가키 공항' },
+  kumamoto: {
+    primaryIatas: ['KMJ'],
+    preferredLinkIata: 'KMJ',
+    confidence: 'high',
+    rationale: '구마모토공항(KMJ) — toolkit OIT(오이타) 오탐 보정',
+  },
   arequipa: { primaryIatas: ['AQP'], preferredLinkIata: 'AQP', confidence: 'high', rationale: '아레키파 공항' },
   varanasi: { primaryIatas: ['VNS'], preferredLinkIata: 'VNS', confidence: 'high', rationale: '바라나시 공항' },
   'nazca-lines': {
@@ -981,11 +987,13 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '이스터섬은 인천 직항이 없습니다. 보통 인천→LA(LAX)·애틀랜트(ATL)·시드니(SYD) 등 경유 후 산티아고(SCL) 도착, 이어 LATAM 국내선으로 IPC까지 연결되는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   antarctica: {
-    primaryIatas: ['USH'],
+    primaryIatas: ['USH', 'CHC'],
     preferredLinkIata: 'USH',
+    kind: 'multi',
     confidence: 'high',
-    rationale: '남극 크루즈·연구 기지는 우수아이아 등 남미 관문',
-    bannerNote: '남극 본토는 상용 노선이 없습니다. 우수아이아(USH) 등 남미 관문에서 크루즈·전용기로 이어지는 일정이 일반적입니다.'
+    rationale: '크루즈 관문 우수아이아(USH) · 맥머도 등 연구기지 관문 크라이스트처치(CHC)',
+    bannerNote:
+      '남극 본토는 상용 노선이 없습니다. 관광 크루즈는 우수아이아(USH) 등 남미 관문, 맥머도 기지 등은 크라이스트처치(CHC) 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.',
   },
   // —— 세션 C placeIds_only 승격 (2026-05-21) ——
   hamburg: {
@@ -1501,5 +1509,55 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     rationale: '락샤드윕 아가티 공항 — COK 관문 후 AGX 최종',
     bannerNote:
       '아가티(락샤드윕)는 보통 인천→코치 국제공항(COK) 도착 후 국내선으로 아가티(AGX)에 내립니다. Trip.com 등 항공권 검색은 COK까지 — AGX 구간은 현지 일정에 맞춰 주세요. 렌터카·픽업은 AGX 기준입니다.',
+  },
+  구마모토: {
+    primaryIatas: ['KMJ'],
+    preferredLinkIata: 'KMJ',
+    confidence: 'high',
+    linkedSlug: 'kumamoto',
+    rationale: '구마모토공항(KMJ) — toolkit OIT 오탐 보정 · slug kumamoto와 동일',
+  },
+  kumamoto: {
+    primaryIatas: ['KMJ'],
+    preferredLinkIata: 'KMJ',
+    confidence: 'high',
+    linkedSlug: 'kumamoto',
+    rationale: '구마모토공항(KMJ) — toolkit OIT 오탐 보정',
+  },
+  다윈: {
+    primaryIatas: ['DRW'],
+    preferredLinkIata: 'DRW',
+    confidence: 'high',
+    rationale: '호주 다윈(DRW) — 갈라파고스 다윈섬·SIN 오매핑 금지 · placeIds-only',
+  },
+  Darwin: {
+    primaryIatas: ['DRW'],
+    preferredLinkIata: 'DRW',
+    confidence: 'high',
+    rationale: '호주 다윈(DRW) — 갈라파고스 Darwin Island 별칭과 분리',
+  },
+  일룰리사트: {
+    primaryIatas: ['CPH', 'GOH'],
+    preferredLinkIata: 'CPH',
+    kind: 'multi',
+    confidence: 'high',
+    linkedSlug: 'greenland',
+    rationale: '그린란드 일룰리사트 — iceland(KEF) 오매핑 금지 · greenland와 동일 관문',
+  },
+  Ilulissat: {
+    primaryIatas: ['CPH', 'GOH'],
+    preferredLinkIata: 'CPH',
+    kind: 'multi',
+    confidence: 'high',
+    linkedSlug: 'greenland',
+    rationale: '그린란드 일룰리사트 — iceland(KEF) 오매핑 금지',
+  },
+  일루리삿: {
+    primaryIatas: ['CPH', 'GOH'],
+    preferredLinkIata: 'CPH',
+    kind: 'multi',
+    confidence: 'high',
+    linkedSlug: 'greenland',
+    rationale: '그린란드 일룰리사트 표기 변형',
   },
 };
