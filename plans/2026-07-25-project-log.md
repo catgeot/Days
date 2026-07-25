@@ -51,10 +51,17 @@
 
 ## 국내 명소 항공 경로 — ICN↔GMP·PVG↔SHA 오탐
 
-**상태**: ✅ smoke PASS · `main` `c0660a5`
+**상태**: ✅ smoke PASS · `main` `c0660a5` · 후속 본토 국내선 억제
 
 - **증상**: 가평·이천 등 수도권 명소에 `ICN→GMP`(및 PVG↔SHA) 항공 경로 노출
 - **원인**: rental hub 최근접이 GMP/SHA로 잡히고, 동일 메트로 OD를 시네마가 허용
-- **조치**: `areMetroCoterminalAirports` — coterminal OD는 `canPreviewFlightRoute` false · 부산·제주 국내선 유지
-- **검증**: `npm run smoke:flight-route-baseline` 18/18 · `smoke:flight-origin-gateway` 5/5
-- **QA**: 가평·이천·안성 = 항공 경로 버튼 없음 · 부산·제주 = ICN→PUS/CJU 유지
+- **조치**: `areMetroCoterminalAirports` — coterminal OD는 `canPreviewFlightRoute` false
+
+## 국내 명소 항공 경로 — 본토 국내선(YNY/PUS/WJU) 오탐
+
+**상태**: ✅ smoke PASS · `main` `f4a27ca`
+
+- **증상**: 동해 무릉계곡·영금정·고성통일전망타워·화진포=`ICN→YNY` · 민둥산=`ICN→WJU` · 창원 주남=`ICN→PUS`
+- **조치**: `isKoreaMainlandDomesticFlightOd` — 본토↔본토 국내선 시네마 숨김 · **제주(CJU)만 유지** · 해외출발(PVG→PUS) 유지
+- **검증**: `npm run smoke:flight-route-baseline` 23/23
+- **QA**: 위 명소·부산 = ICN 출발 시 항공 경로 없음 · 성산일출봉 = ICN→CJU
