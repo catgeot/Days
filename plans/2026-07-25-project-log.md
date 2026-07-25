@@ -263,12 +263,31 @@
 
 - `npm run smoke:mrt-tna` · LIVE 문경·석탄박물관·양구·부산 PASS · 사람 QA OK
 
-### 다음 (후속 세션)
+### 다음 (후속 세션) → B표 절
 
-- B표 SSOT 일괄은 필요 시만 · OTA/Edge 재설계 금지
+---
 
-### 에이전트 핸드오프 — 후속
+## 국내 TNA 인근 확장 — B표 SSOT
 
-**읽을 것**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) Phase 0 B표  
-**금지**: B표 무단 일괄 · OTA 목록 API · Edge 불필요 재설계 · 1:1 카드 되돌리기  
-**제시어**: `MRT-TNA-인근확장-이어하기` + B표 범위 명시 시
+**상태**: ✅ 코드 반영 · smoke+LIVE PASS · `main` 커밋
+
+### 계획 (짧게)
+
+1. Phase 0 B표(~39 hub) → `MRT_TNA_NEARBY_EXPAND` (hubId+한글명, §D n≈0 제외)
+2. 스모크: resolve 횡성·예천 · LIVE 보강(횡성→홍천, 예천→영주)
+3. Edge 재배포 **불필요**(클라 `nearbyKeywords` 전달)
+
+### 검증
+
+- `npm run smoke:mrt-tna` · `MRT_TNA_SMOKE_LIVE=1` — 횡성 `used=홍천 nearbyExpanded primary=2` · 예천 `used=영주 primary=0`
+
+### QA (사람, 여유 시)
+
+- 검색「횡성」→ 투어 → 홍천 보강·칩(평창·제천)
+- 「예천」→ 영주 보강 (예천 자체 0)
+
+### 에이전트 핸드오프
+
+**읽을 것**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md)  
+**금지**: OTA 목록 API · Edge 불필요 재설계 · 전국 자동 이웃  
+**제시어**: `MRT-TNA-인근확장-이어하기` (개별 hub 큐레이션·LIVE 재측정)
