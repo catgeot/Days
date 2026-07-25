@@ -269,7 +269,7 @@
 
 ## 국내 TNA 인근 확장 — B표 SSOT
 
-**상태**: ✅ 코드 반영 · smoke+LIVE PASS · `main` 커밋
+**상태**: ✅ smoke+LIVE PASS · 사람 확인 · **push 완료** (`a764ef3`) · 세션 종료
 
 ### 계획 (짧게)
 
@@ -281,13 +281,7 @@
 
 - `npm run smoke:mrt-tna` · `MRT_TNA_SMOKE_LIVE=1` — 횡성 `used=홍천 nearbyExpanded primary=2` · 예천 `used=영주 primary=0`
 
-### QA (사람, 여유 시)
+### 세션 종료
 
-- 검색「횡성」→ 투어 → 홍천 보강·칩(평창·제천)
-- 「예천」→ 영주 보강 (예천 자체 0)
-
-### 에이전트 핸드오프
-
-**읽을 것**: 본 절 · [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md)  
-**금지**: OTA 목록 API · Edge 불필요 재설계 · 전국 자동 이웃  
-**제시어**: `MRT-TNA-인근확장-이어하기` (개별 hub 큐레이션·LIVE 재측정)
+- 인근 확장(A·B표·Phase 1~3) 한 사이클 종료 · 후속은 개별 hub LIVE 재측정만
+- 릴리스 노트: 해당 없음(SSOT 채움)
