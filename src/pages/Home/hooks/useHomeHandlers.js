@@ -23,8 +23,6 @@ import {
   resolveTravelSpotFromCoords,
   resolveTravelSpotForUiPlaceRegion,
   resolveTravelSpotFromSearchQuery,
-  normalizePlaceKey,
-  placeIdVariants,
 } from '../../../utils/travelSpotResolve.js';
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
@@ -36,6 +34,7 @@ import {
   makeDisambiguationResult,
 } from '../lib/cityAttractionHubs.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
+import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
 import {
   buildHubCandidatesForEnter,
   buildCuratedEnterDisambiguation,
@@ -697,27 +696,17 @@ export function useHomeHandlers({
         return ensureDisambiguation(query, localChoices, `'${query}' → 원하는 장소를 선택하세요`);
       }
 
-      const citySpotChoice = citiesData.find(c =>
-        c.name.toLowerCase() === query.toLowerCase() ||
-        (c.name_en && c.name_en.toLowerCase() === query.toLowerCase())
-      ) || citiesData.find(c =>
-        (c.country && c.country.toLowerCase() === query.toLowerCase()) ||
-        (c.country_en && c.country_en.toLowerCase() === query.toLowerCase())
-      );
+      const citySpotChoice =
+        findCityBySearchQuery(query) ||
+        citiesData.find(
+          (c) =>
+            (c.country && c.country.toLowerCase() === query.toLowerCase()) ||
+            (c.country_en && c.country_en.toLowerCase() === query.toLowerCase()),
+        );
       if (citySpotChoice) {
         return commitLocation({
-          id: `city-${citySpotChoice.lat}-${citySpotChoice.lng}`,
-          slug: citySpotChoice.slug,
-          name: citySpotChoice.name,
-          name_en: citySpotChoice.name_en || citySpotChoice.name,
-          country: citySpotChoice.country || 'Explore',
-          country_en: citySpotChoice.country_en || 'Explore',
-          lat: citySpotChoice.lat,
-          lng: citySpotChoice.lng,
+          ...cityToSuggestion(citySpotChoice),
           category,
-          desc: citySpotChoice.desc,
-          type: 'temp-base',
-          uiPlace: true,
         });
       }
     } else {
@@ -771,39 +760,19 @@ export function useHomeHandlers({
         return localSpot;
       }
 
-      const cityQueryKeys = new Set(
-        placeIdVariants(query).map((v) => normalizePlaceKey(v)).filter(Boolean)
-      );
-      const citySpot = citiesData.find(c =>
-        c.name.toLowerCase() === query.toLowerCase() ||
-        (c.name_en && c.name_en.toLowerCase() === query.toLowerCase())
-      ) || citiesData.find((c) => {
-        // 「맥머도」↔「맥머도 기지」·「McMurdo」↔「McMurdo Station」
-        for (const field of [c.name, c.name_en, c.slug]) {
-          if (!field) continue;
-          for (const v of placeIdVariants(field)) {
-            if (cityQueryKeys.has(normalizePlaceKey(v))) return true;
-          }
-        }
-        return false;
-      }) || citiesData.find(c =>
-        (c.country && c.country.toLowerCase() === query.toLowerCase()) ||
-        (c.country_en && c.country_en.toLowerCase() === query.toLowerCase())
-      );
+      const citySpot =
+        findCityBySearchQuery(query) ||
+        citiesData.find(
+          (c) =>
+            (c.country && c.country.toLowerCase() === query.toLowerCase()) ||
+            (c.country_en && c.country_en.toLowerCase() === query.toLowerCase()),
+        );
 
       if (citySpot) {
         const normalizedCity = {
-          id: `city-${citySpot.lat}-${citySpot.lng}`,
-          slug: citySpot.slug,
-          name: citySpot.name,
-          name_en: citySpot.name_en || citySpot.name,
-          country: citySpot.country || "Explore",
-          country_en: citySpot.country_en || "Explore",
-          lat: citySpot.lat,
-          lng: citySpot.lng,
-          category: category,
-          desc: citySpot.desc,
-          type: 'temp-base'
+          ...cityToSuggestion(citySpot),
+          category,
+          uiPlace: false,
         };
         handleLocationSelect(normalizedCity);
         return normalizedCity;

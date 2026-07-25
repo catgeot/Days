@@ -23,6 +23,11 @@ import {
   settlementToSuggestion,
   resolveSettlement,
 } from './mapboxSettlementPlaces';
+import {
+  findCityBySearchQuery,
+  cityToSuggestion,
+  matchCitiesPrefix,
+} from './citiesSearch';
 import { searchBoxForward } from './mapboxSearchBox';
 
 const normalizeKey = (s) =>
@@ -162,6 +167,12 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     .slice(0, spotLimit);
 
   for (const spot of spotHits) pushUnique(out, seen, spotToSuggestion(spot));
+
+  const exactCity = findCityBySearchQuery(q);
+  if (exactCity) pushUnique(out, seen, cityToSuggestion(exactCity));
+  for (const city of matchCitiesPrefix(q, { limit: 4 })) {
+    pushUnique(out, seen, cityToSuggestion(city));
+  }
 
   const exactHub = resolveCityAttractionHub(q);
   const exactAttraction = exactHub ? null : resolveHubAttraction(q);

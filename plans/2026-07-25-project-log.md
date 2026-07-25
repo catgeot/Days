@@ -59,6 +59,13 @@
 - **잔여**: 「남극해」→antarctica 별칭은 유지(이번 요청 범위 외)
 - **QA**: 검색 세 도시 = 각 cities 설명 카드 · 마추픽추/랄리벨라/남극 대륙 검색은 기존 SSOT
 
+### 후속 — 맥머도 검색 불가
+
+**상태**: ✅
+
+- **원인**: UI Enter는 `requireChoice`인데 cities 단축명 매칭·suggestions에 cities 미포함 → 「맥머도」미스
+- **조치**: `citiesSearch.js`(`findCityBySearchQuery`) · requireChoice/일반 경로 공용 · `buildLocalSearchSuggestions`에 cities 제안 추가
+
 ## 국내 「투어 찾기」→ MyRealTrip TNA
 
 **상태**: ✅ Edge 배포 · LIVE 스모크 PASS · `main` `ca96f77` (push는 사람 요청 시)
