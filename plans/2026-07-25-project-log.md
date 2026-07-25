@@ -49,6 +49,16 @@
 - **조치**: 별칭 등록만 `stripGeoSuffix: false` (`travelSpotResolve` · scripts lib)
 - **검증**: 다윈/Darwin→cities/`darwin` · 다윈섬·갈라파고스→`galapagos` · 일룰리사트 회귀 OK
 
+## 리마·아디스아바바·맥머도 — 상위 여행지 카드 편입 해제
+
+**상태**: ✅ audit PASS · resolve 검증 · 커밋
+
+- **증상**: 리마→마추픽추(~500km) · 아디스→랄리벨라(~335km) · 맥머도→남극 대륙 — 관문/권역 별칭으로 장소카드 붕괴
+- **조치**: place-id alias·toolkit synonym·reconcile merge 제거 · placeIds-only 공항 LIM/ADD/CHC · cities 단축명 매칭(`맥머도`↔기지, `McMurdo`↔Station strip)
+- **검증**: 리마/Lima→`lima` · 아디스→`addis-ababa` · 맥머도→`mcmurdo-station` · 마추픽추·랄리벨라·남극 대륙 본명 유지 · `audit:airports` none:0 · clash:0
+- **잔여**: 「남극해」→antarctica 별칭은 유지(이번 요청 범위 외)
+- **QA**: 검색 세 도시 = 각 cities 설명 카드 · 마추픽추/랄리벨라/남극 대륙 검색은 기존 SSOT
+
 ## 국내 「투어 찾기」→ MyRealTrip TNA
 
 **상태**: ✅ Edge 배포 · LIVE 스모크 PASS · `main` `ca96f77` (push는 사람 요청 시)

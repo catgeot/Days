@@ -1557,4 +1557,52 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     confidence: 'high',
     rationale: '그린란드 일룰리사트 표기 변형 · placeIds-only',
   },
+  리마: {
+    primaryIatas: ['LIM'],
+    preferredLinkIata: 'LIM',
+    confidence: 'high',
+    rationale: '페루 리마(LIM) — machu-picchu(CUZ) 편입 금지 · placeIds-only',
+  },
+  Lima: {
+    primaryIatas: ['LIM'],
+    preferredLinkIata: 'LIM',
+    confidence: 'high',
+    rationale: '페루 리마(LIM) — placeIds-only',
+  },
+  아디스아바바: {
+    primaryIatas: ['ADD'],
+    preferredLinkIata: 'ADD',
+    confidence: 'high',
+    rationale: '에티오피아 아디스아바바(ADD) — lalibela(LLI) 편입 금지 · placeIds-only',
+  },
+  'Addis Ababa': {
+    primaryIatas: ['ADD'],
+    preferredLinkIata: 'ADD',
+    confidence: 'high',
+    rationale: '에티오피아 아디스아바바(ADD) — placeIds-only',
+  },
+  맥머도: {
+    primaryIatas: ['CHC'],
+    preferredLinkIata: 'CHC',
+    confidence: 'high',
+    rationale: '맥머도 기지 관문 크라이스트처치(CHC) — antarctica 카드 편입 금지 · placeIds-only',
+  },
+  '맥머도 기지': {
+    primaryIatas: ['CHC'],
+    preferredLinkIata: 'CHC',
+    confidence: 'high',
+    rationale: '맥머도 기지 관문 CHC · placeIds-only',
+  },
+  McMurdo: {
+    primaryIatas: ['CHC'],
+    preferredLinkIata: 'CHC',
+    confidence: 'high',
+    rationale: 'McMurdo Station gateway CHC · placeIds-only',
+  },
+  'McMurdo Station': {
+    primaryIatas: ['CHC'],
+    preferredLinkIata: 'CHC',
+    confidence: 'high',
+    rationale: 'McMurdo Station gateway CHC · placeIds-only',
+  },
 };

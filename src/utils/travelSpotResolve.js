@@ -4,7 +4,7 @@ import {
   TRAVEL_SPOT_PLACE_ID_BLOCKLIST,
 } from '../../scripts/data/travel-spot-place-id-aliases.mjs';
 
-const STRIP_SUFFIX_RE = /\s*(제도|국립공원|국립\s*공원|호수|섬|기지|시|군|주)\s*$/gi;
+const STRIP_SUFFIX_RE = /\s*(제도|국립공원|국립\s*공원|호수|섬|기지|station|시|군|주)\s*$/gi;
 const STRIP_INFIX_RE = /\s*(제도|국립공원|국립\s*공원)\s*/gi;
 /** 제주도→제주 등 — 공식명 히트일 때만 적용 (오 strip 방지) */
 const STRIP_DO_SUFFIX_RE = /\s*도\s*$/u;

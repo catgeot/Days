@@ -23,6 +23,8 @@ import {
   resolveTravelSpotFromCoords,
   resolveTravelSpotForUiPlaceRegion,
   resolveTravelSpotFromSearchQuery,
+  normalizePlaceKey,
+  placeIdVariants,
 } from '../../../utils/travelSpotResolve.js';
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
@@ -769,10 +771,22 @@ export function useHomeHandlers({
         return localSpot;
       }
 
+      const cityQueryKeys = new Set(
+        placeIdVariants(query).map((v) => normalizePlaceKey(v)).filter(Boolean)
+      );
       const citySpot = citiesData.find(c =>
         c.name.toLowerCase() === query.toLowerCase() ||
         (c.name_en && c.name_en.toLowerCase() === query.toLowerCase())
-      ) || citiesData.find(c =>
+      ) || citiesData.find((c) => {
+        // 「맥머도」↔「맥머도 기지」·「McMurdo」↔「McMurdo Station」
+        for (const field of [c.name, c.name_en, c.slug]) {
+          if (!field) continue;
+          for (const v of placeIdVariants(field)) {
+            if (cityQueryKeys.has(normalizePlaceKey(v))) return true;
+          }
+        }
+        return false;
+      }) || citiesData.find(c =>
         (c.country && c.country.toLowerCase() === query.toLowerCase()) ||
         (c.country_en && c.country_en.toLowerCase() === query.toLowerCase())
       );

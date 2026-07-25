@@ -9,7 +9,7 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const LIST_PATH = join(__dirname, '../../src/pages/Home/data/travelSpots-list.json');
 
-const STRIP_SUFFIX_RE = /\s*(제도|국립공원|국립\s*공원|호수|섬|기지|시|군|주)\s*$/gi;
+const STRIP_SUFFIX_RE = /\s*(제도|국립공원|국립\s*공원|호수|섬|기지|station|시|군|주)\s*$/gi;
 const STRIP_INFIX_RE = /\s*(제도|국립공원|국립\s*공원)\s*/gi;
 
 export function normalizePlaceKey(s) {

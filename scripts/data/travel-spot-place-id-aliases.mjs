@@ -25,8 +25,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '쿄토': 'kyoto',
 
   // —— 남극·알래스카 ——
-  '맥머도': 'antarctica',
-  '맥머도 기지': 'antarctica',
+  // 맥머도/McMurdo → antarctica 금지(citiesData mcmurdo-station). 공항은 placeIds-only CHC.
   '남극해': 'antarctica',
   '앵커리지': 'alaska',
 
@@ -48,7 +47,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '시엠립': 'angkor-wat',
 
   // —— 에티오피아·보홀 등 ——
-  '아디스아바바': 'lalibela',
+  // 아디스아바바 → lalibela 금지(citiesData addis-ababa, ~335km). 공항 placeIds-only ADD.
   '보홀': 'bohol',
 
   // —— 미국 서부 (DB에 영문 place_id로 저장된 경우) ——
@@ -60,8 +59,6 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Reykjavik': 'reykjavik',
   'Ubud': 'ubud',
   'Anchorage': 'alaska',
-  'McMurdo Station': 'antarctica',
-  'McMurdo': 'antarctica',
   'Everest': 'everest-base-camp',
   'Uyuni': 'uyuni-salt-flat',
   'Plitvice': 'plitvice-lakes',
@@ -71,7 +68,6 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Pattaya': 'phuket',
   'Siem Reap': 'angkor-wat',
   'Angkor Wat': 'angkor-wat',
-  'Addis Ababa': 'lalibela',
   'Bohol': 'bohol',
 
   // —— 관문 keywords 오염 방지 (공식 spot.name → 본인 slug) ——
@@ -119,8 +115,7 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   'Nazare': 'lisbon',
   '빌라두코르부': 'porto',
   'Vila do Conde': 'porto',
-  '리마': 'machu-picchu',
-  'Lima': 'machu-picchu',
+  // 리마/Lima → machu-picchu 금지(citiesData lima, ~500km). 공항 placeIds-only LIM.
   '스코푸가포스': 'iceland',
 
   // —— citiesData 승격 (Phase D) ——
@@ -201,11 +196,10 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'galapagos': ['다윈섬'],
   'phuket': ['태국 파타야', '파타야', 'Pattaya'],
   'kuala-lumpur': ['쿠알라셀랑고르'],
-  'lalibela': ['아디스아바바', 'Addis Ababa'],
   'bohol': ['보홀', 'Bohol'],
   'seattle': ['Seattle', 'seattle'],
   'alaska': ['앵커리지', 'Anchorage'],
-  'antarctica': ['맥머도', '맥머도 기지', '남극해', 'McMurdo Station', 'McMurdo'],
+  'antarctica': ['남극해'],
   patagonia: ['Bariloche', '바릴로체', 'Patagonia (Northern)'],
   ushuaia: ['Ushuaia', 'Tierra del Fuego', '티에라델푸에고'],
   'el-calafate': ['엘칼라파테', 'El Calafate', 'Calafate', 'FTE', 'Perito Moreno', '페리토 모레노'],
@@ -235,7 +229,6 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   // —— unmapped alias 배치 (place_toolkit → SSOT slug) ——
   lisbon: ['나자레', 'Nazare'],
   porto: ['빌라두코르부', 'Vila do Conde'],
-  'machu-picchu': ['리마', 'Lima'],
   vatican: ['바티칸', 'Vatican', 'Vatican City'],
   bangkok: ['사뭇쁘라깐주', 'Samut Prakan'],
   kumamoto: ['아오시마', 'Aoshima'],

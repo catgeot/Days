@@ -161,22 +161,13 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     id: 'lalibela',
     slugs: ['lalibela'],
     canonicalPlaceId: '랄리벨라',
-    mergeFrom: ['Lalibela', 'lalibela', '랄리벨라', '아디스아바바', 'Addis Ababa']
+    mergeFrom: ['Lalibela', 'lalibela', '랄리벨라']
   },
   {
     id: 'antarctica',
     slugs: ['antarctica'],
     canonicalPlaceId: '남극 대륙',
-    mergeFrom: [
-      'Antarctica',
-      'antarctica',
-      '남극 대륙',
-      '맥머도',
-      '맥머도 기지',
-      'McMurdo',
-      'McMurdo Station',
-      '남극해'
-    ]
+    mergeFrom: ['Antarctica', 'antarctica', '남극 대륙', '남극해']
   },
   {
     id: 'raja-ampat',
@@ -234,12 +225,6 @@ export const PLACE_TOOLKIT_RECONCILE_RULES = [
     slugs: ['porto'],
     canonicalPlaceId: '포르투',
     mergeFrom: ['빌라두코르부', 'Vila do Conde']
-  },
-  {
-    id: 'machu-picchu',
-    slugs: ['machu-picchu'],
-    canonicalPlaceId: '마추픽추',
-    mergeFrom: ['리마', 'Lima']
   },
   {
     id: 'iceland-scuba',
