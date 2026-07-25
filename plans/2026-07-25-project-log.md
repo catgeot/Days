@@ -117,3 +117,45 @@
 - **조치**: `isKoreaMainlandDomesticFlightOd` — 본토↔본토 국내선 시네마 숨김 · **제주(CJU)만 유지** · 해외출발(PVG→PUS) 유지
 - **검증**: `npm run smoke:flight-route-baseline` 23/23
 - **QA**: 위 명소·부산 = ICN 출발 시 항공 경로 없음 · 성산일출봉 = ICN→CJU
+
+---
+
+## 장소카드 관문 편입 분리 — 세션 종료 핸드오프
+
+**상태**: ✅ 로컬 `main` 커밋 5건 · **미push** · **사람 QA는 다음 세션**
+
+| SHA | 내용 |
+|-----|------|
+| `4f54847` | 일룰리사트 ← greenland 해제 |
+| `2e59446` | 다윈섬 strip → 호주 다윈 오매핑 방지 |
+| `6e74a8d` | 리마·아디스·맥머도 상위지 해제 |
+| `a269b6e` | 맥머도 requireChoice·cities 제안 |
+| `a2571ba` | 파타야·시엠립·앵커리지·나하·다윈섬 분리 |
+
+**원칙**: 장소카드 정체성 ≠ 공항 관문. 공항은 placeIds-only 유지.
+
+**잔여(범위 외)**: 「남극해」→`antarctica` 별칭 유지.
+
+### 다음 세션 — 읽을 것 (3)
+
+1. 본 절 + 위「관문 별칭 5곳」「리마·아디스·맥머도」「일룰리사트」표
+2. [`citiesSearch.js`](../src/pages/Home/lib/citiesSearch.js) · [`travel-spot-place-id-aliases.mjs`](../scripts/data/travel-spot-place-id-aliases.mjs) (별칭 등록 strip OFF)
+3. `.ai-context` **1.5.1** (QA 후 push)
+
+### 금지 (3)
+
+1. 다시 `파타야→phuket` / `시엠립→angkor-wat` / `나하→okinawa` / `다윈섬→galapagos` / `리마→machu-picchu` 별칭 복구
+2. `travelSpotAirports.json` spots 직접 수정 (overrides → `generate:airports`)
+3. QA 없이 「PROD 완료」단정 · 사람 승인 없는 `main` push는 요청 시에만
+
+### 제시어
+
+```
+장소카드-관문분리-QA
+@plans/2026-07-25-project-log.md 「장소카드 관문 편입 분리 — 세션 종료 핸드오프」
+로컬 main 5커밋(a2571ba 등) 미push. 사람 QA 후 push.
+체크: 일룰리사트·다윈·다윈섬·리마·아디스아바바·맥머도·파타야·시엠립·앵커리지·나하
+= 각 독립 카드(상위지 아님). 푸켓·앙코르·알래스카·오키나와·갈라파고스·마추픽추·랄리벨라·남극 대륙 본명 회귀.
+공항 배너: 파타야 BKK · 시엠립 SAI · 앵커리지 ANC · 나하 OKA · 일룰리사트≠KEF.
+실패 시 alias/hub aliases/citiesSearch만 보고. 범위 밖 확장 금지.
+```
