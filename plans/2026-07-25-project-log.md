@@ -31,7 +31,7 @@
 
 ## 국내 「투어 찾기」→ MyRealTrip TNA
 
-**상태**: ✅ Edge 배포 · LIVE 스모크 PASS · 커밋 대기(사람 QA)
+**상태**: ✅ Edge 배포 · LIVE 스모크 PASS · `main` `ca96f77` (push는 사람 요청 시)
 
 - **증상**: 국내 명소 GYG 오탐(해외 투어)
 - **조치**: 국내=`fetch-mrt-tnas`(`tna/search`) 카드 목록 · 해외=GYG 유지 · 플래너 map_poi 동일 분기
