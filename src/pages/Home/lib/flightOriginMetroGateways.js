@@ -26,6 +26,44 @@ export function areMetroCoterminalAirports(aIata, bIata) {
 }
 
 /**
+ * 한국 공항 — 본토↔본토 국내선 시네마 오탐 억제 (제주 CJU만 예외 허용).
+ * rental hubs + airportsIndex 국내 도착에 쓰는 코드.
+ */
+export const KOREA_AIRPORT_IATAS = new Set([
+  'ICN',
+  'GMP',
+  'SEL',
+  'CJU',
+  'PUS',
+  'CJJ',
+  'TAE',
+  'KWJ',
+  'RSU',
+  'USN',
+  'HIN',
+  'KUV',
+  'WJU',
+  'YNY',
+  'MWX',
+  'KPO',
+  'SHO',
+]);
+
+/**
+ * ICN→YNY/WJU/PUS 등 본토 국내선 OD — 시네마·「항공 경로」숨김 대상.
+ * 제주(CJU) 구간·해외 출발(PVG→PUS 등)은 false.
+ * @param {string} originIata
+ * @param {string} destIata
+ */
+export function isKoreaMainlandDomesticFlightOd(originIata, destIata) {
+  const origin = String(originIata ?? '').trim().toUpperCase();
+  const dest = String(destIata ?? '').trim().toUpperCase();
+  if (!KOREA_AIRPORT_IATAS.has(origin) || !KOREA_AIRPORT_IATAS.has(dest)) return false;
+  if (origin === 'CJU' || dest === 'CJU') return false;
+  return true;
+}
+
+/**
  * @param {string} iata
  * @param {import('../../../utils/rentalAirportHubs.js').RentalAirportHub[]} hubs
  */
