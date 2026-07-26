@@ -87,6 +87,22 @@ export function resolveRegionalCorridorAnchors(originLngLat, destLngLat, options
 }
 
 /**
+ * OpenFlights 미연결·Edge 직항 오탐 시 시네마 관문 (레소토·에스와티니 등).
+ * ICN→DXB→JNB→dest — JNB가 남아프리카 관문.
+ */
+export const FLIGHT_DEST_HUB_FALLBACKS = {
+  MSU: ['DXB', 'JNB'],
+  SHO: ['DXB', 'JNB'],
+};
+
+/** @param {string} destIata @returns {string[] | null} */
+export function getFlightDestHubFallback(destIata) {
+  const dest = String(destIata ?? '').trim().toUpperCase();
+  const hubs = FLIGHT_DEST_HUB_FALLBACKS[dest];
+  return Array.isArray(hubs) && hubs.length ? [...hubs] : null;
+}
+
+/**
  * Graph tier arc-only avoid — hubIatas(Bar semantic)는 변경하지 않음.
  * ICN→남쪽 출발→DXB flyover→지중해 관문→(graph hub)→목적지 순.
  * @returns {{ waypoints: [number, number][], postHubWaypoints: [number, number][] }}

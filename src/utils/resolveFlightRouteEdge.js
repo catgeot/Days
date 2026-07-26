@@ -9,6 +9,33 @@ import {
   shouldResolveFlightRouteViaEdge,
 } from './rentalAirportMatch.js';
 import { normalizeFlightRouteAlternatives } from '../pages/Home/lib/flightCinemaRouteAlternatives.js';
+import { getFlightDestHubFallback } from '../pages/Home/lib/flightRouteCorridors.js';
+
+/**
+ * Edge alternatives에서 hub가 있는 첫 후보 선택 (장거리 직항 오탐 시 경유 우선).
+ * @param {{ hubIatas?: string[] | null, source?: string, alternatives?: Array<{ hubIatas?: string[], source?: string }> } | null} edge
+ * @returns {{ hubIatas: string[], source: string } | null}
+ */
+function pickEdgeHubsPreferConnecting(edge) {
+  if (!edge) return null;
+  const rows = [];
+  if (Array.isArray(edge.hubIatas) || edge.source === 'graph-direct') {
+    rows.push({
+      hubIatas: Array.isArray(edge.hubIatas) ? edge.hubIatas : [],
+      source: edge.source ?? 'graph',
+    });
+  }
+  for (const alt of edge.alternatives ?? []) {
+    rows.push({
+      hubIatas: Array.isArray(alt?.hubIatas) ? alt.hubIatas : [],
+      source: alt?.source ?? edge.source ?? 'graph',
+    });
+  }
+  const connecting = rows.find((row) => row.hubIatas.length > 0);
+  if (connecting) return connecting;
+  if (rows[0]) return rows[0];
+  return null;
+}
 
 /** @type {Map<string, { hubIatas: string[] | null, source: string, path: string[] | null, resolvedDestIata: string, fetchedAt: number }>} */
 const cache = new Map();
@@ -121,16 +148,20 @@ export async function resolveFlightRouteHubsForCinema(location, options = {}) {
     originIata,
     ...(destIata.length === 3 ? { destIata } : {}),
     ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {}),
+    topN: 3,
   });
 
   const resolvedDest = String(edge?.destIata ?? destIata).trim().toUpperCase();
 
-  if (edge?.hubIatas != null && resolvedDest.length === 3) {
-    return {
-      hubIatas: edge.hubIatas,
-      destIata: resolvedDest,
-      routeSource: edge.source ?? 'graph',
-    };
+  if (resolvedDest.length === 3) {
+    const picked = pickEdgeHubsPreferConnecting(edge);
+    if (picked && picked.hubIatas.length > 0) {
+      return {
+        hubIatas: picked.hubIatas,
+        destIata: resolvedDest,
+        routeSource: picked.source ?? 'graph',
+      };
+    }
   }
 
   if (resolvedDest.length === 3) {
@@ -145,6 +176,25 @@ export async function resolveFlightRouteHubsForCinema(location, options = {}) {
   }
 
   if (resolvedDest.length === 3) {
+    const fallback = getFlightDestHubFallback(resolvedDest);
+    if (fallback?.length) {
+      return {
+        hubIatas: fallback,
+        destIata: resolvedDest,
+        routeSource: 'dest-hub-fallback',
+      };
+    }
+  }
+
+  if (resolvedDest.length === 3) {
+    const picked = pickEdgeHubsPreferConnecting(edge);
+    if (picked) {
+      return {
+        hubIatas: picked.hubIatas,
+        destIata: resolvedDest,
+        routeSource: picked.source ?? 'graph',
+      };
+    }
     return { hubIatas: [], destIata: resolvedDest, routeSource: 'direct-fallback' };
   }
 

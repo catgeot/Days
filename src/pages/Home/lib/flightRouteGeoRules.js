@@ -294,6 +294,9 @@ export function filterCandidatesByDetourRatio(candidates, airportMeta, maxRatio 
  * @param {Map<string, Set<string>>} adjacency
  * @param {Map<string, { type?: string, scheduled_service?: string, latitude_deg?: number, longitude_deg?: number }>} airportMeta
  */
+/** 경유 후보가 있을 때 장거리 graph-direct(고스트 OF 엣지) 하한(h) */
+const LONG_HAUL_GRAPH_DIRECT_HOURS = 8;
+
 export function filterSuspiciousGraphDirect(candidates, adjacency, airportMeta) {
   const hasMultiHop = candidates.some((c) => c.hops > 1);
   if (!hasMultiHop) return candidates;
@@ -315,6 +318,9 @@ export function filterSuspiciousGraphDirect(candidates, adjacency, airportMeta) 
     const directKm = haversineKm(origin, dest);
     const gcKm = directKm;
     const legHours = estimateFlightHours(origin, dest);
+
+    // large_airport(MSU/SHO 등) 장거리 직항 + 경유 후보 → 직항 폐기
+    if (legHours >= LONG_HAUL_GRAPH_DIRECT_HOURS) return false;
 
     if (scheduled && isSmall && legHours > Math.max(1, Math.round((gcKm / 850) * 1.15))) {
       return false;

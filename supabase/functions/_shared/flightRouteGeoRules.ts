@@ -242,6 +242,9 @@ export function scoreFlightPathV2(
   return score;
 }
 
+/** 경유 후보가 있을 때 장거리 graph-direct(고스트 OF 엣지) 하한(h) */
+const LONG_HAUL_GRAPH_DIRECT_HOURS = 8;
+
 export function filterSuspiciousGraphDirect<
   T extends { hubIatas: string[]; hops: number; source: string; path: string[] },
 >(
@@ -267,6 +270,9 @@ export function filterSuspiciousGraphDirect<
     const scheduled = destMeta?.scheduled_service !== "no";
     const legHours = estimateFlightHours(origin, dest);
     const gcHours = Math.max(1, Math.round(haversineKm(origin.lat, origin.lng, dest.lat, dest.lng) / FLIGHT_SPEED_KMH));
+
+    // large_airport(MSU/SHO 등) 장거리 직항 + 경유 후보 → 직항 폐기
+    if (legHours >= LONG_HAUL_GRAPH_DIRECT_HOURS) return false;
 
     if (scheduled && isSmall && legHours > Math.max(1, Math.round(gcHours * 1.15))) return false;
     const altExists = (adjacency.get(path[0])?.size ?? 0) > 1;

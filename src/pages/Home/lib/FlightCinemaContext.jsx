@@ -176,16 +176,21 @@ export function FlightCinemaProvider({
           normalizedDest = edgeHubs.destIata;
           resolvedDest = getAirportHubCoords(normalizedDest) ?? resolvedDest;
         }
-        routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
-        isConnecting = hubIatas.length > 0;
-        const chainPoints = [
-          resolvedOrigin,
-          ...hubIatas.map((iata) => getAirportHubCoords(iata)).filter(Boolean),
-          resolvedDest,
-        ];
-        flightHours = estimateFlightHoursChain(chainPoints);
-        flightLegHours = estimateFlightLegHours(routeIatas);
-      } else if (hubIatasParam != null) {
+      }
+
+      // Edge가 빈 직항·실패여도 써머리/Bar 경유 후보가 있으면 그걸로 그림
+      if (!hubIatas.length && Array.isArray(routeAlternatives) && routeAlternatives.length) {
+        const connectingAlt = routeAlternatives.find((row) => row?.hubIatas?.length);
+        if (connectingAlt) {
+          hubIatas = [...connectingAlt.hubIatas];
+          if (connectingAlt.destIata && connectingAlt.destIata !== normalizedDest) {
+            normalizedDest = connectingAlt.destIata;
+            resolvedDest = getAirportHubCoords(normalizedDest) ?? resolvedDest;
+          }
+        }
+      }
+
+      if (edgeHubs || hubIatasParam != null || hubIatas.length) {
         routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
         isConnecting = hubIatas.length > 0;
         const chainPoints = [

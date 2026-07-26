@@ -221,7 +221,7 @@ async function main() {
     },
     {
       id: 'preview-eswatini-not-kr-domestic',
-      label: 'preview — 에스와티니(SHO≠국내선)',
+      label: 'preview — 에스와티니(SHO≠국내선·DXB·JNB)',
       location: {
         ...uiPlaceLocation('에스와티니', -26.5, 31.5),
         name_en: 'Eswatini',
@@ -232,10 +232,11 @@ async function main() {
       expectPreview: true,
       expectDestIata: 'SHO',
       expectEdge: true,
+      expectRouteIatas: ['ICN', 'DXB', 'JNB', 'SHO'],
     },
     {
       id: 'preview-lesotho-uiplace-edge',
-      label: 'preview — 레소토(MSU·Edge 경유)',
+      label: 'preview — 레소토(MSU·DXB·JNB 경유)',
       location: {
         ...uiPlaceLocation('레소토', -29.31, 27.48),
         name_en: 'Lesotho',
@@ -246,6 +247,7 @@ async function main() {
       expectPreview: true,
       expectDestIata: 'MSU',
       expectEdge: true,
+      expectRouteIatas: ['ICN', 'DXB', 'JNB', 'MSU'],
     },
     {
       id: 'preview-kr-jeju-domestic',

@@ -190,20 +190,21 @@
 
 ## 에스와티니·레소토 — 항공경로/투어 누락
 
-**상태**: ✅ smoke 25/25 · 로컬 커밋 `ac6dc43` · push는 사람 요청 시
+**상태**: ✅ smoke 25/25 · 로컬 커밋 `ac6dc43` + 직항 arc 후속 · push는 사람 요청 시
 
 ### 원인
 
 - **에스와티니**: 본토 국내선 억제의 `KOREA_AIRPORT_IATAS`에 `SHO` 포함 → ICN→SHO 국내선 오인·버튼 숨김 (`SHO`=에스와티니 · 구 속초는 YNY)
-- **레소토 직항 표시**: uiPlace는 Edge graph인데 써머리가 sync `direct-fallback` 라벨을 먼저 표시
 - **레소토 투어**: 나라 단위 핀에 `name_en` 없으면 GYG q null
+- **둘 다 직항 arc**: hub 조회 `topN:1`이 직항을 고르면 경유 후보가 있어도 직항으로 그림 · SHO는 OF 미연결 · MSU/SHO=`large_airport`라 장거리 graph-direct 필터 미적용
 
 ### 조치
 
 - `SHO` 제거 · 써머리 Edge hub 선행 조회 · GYG `country_en` 폴백(나라 단위 핀만)
-- smoke: `preview-eswatini-not-kr-domestic` · `preview-lesotho-uiplace-edge`
+- dest hub 폴백 `MSU/SHO → DXB·JNB` · hub 조회 topN:3 + 경유 우선 · 장거리 graph-direct(≥8h) 폐기
+- smoke: `ICN → DXB → JNB → MSU/SHO`
 
 ### QA
 
-- 에스와티니: 항공 경로 버튼 노출
-- 레소토: 투어 찾기 노출 · 항공 라벨이 조회 후 경유 반영(Edge 가용 시)
+- 에스와티니·레소토: 항공 경로 버튼 · **경유 arc(DXB→JNB)** · 레소토 투어 찾기
+- Edge `resolve-flight-route` geo 필터는 재배포 시 서버에도 동일 적용

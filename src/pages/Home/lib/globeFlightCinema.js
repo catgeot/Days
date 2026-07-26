@@ -9,7 +9,10 @@ import {
   resolveCinemaDestIata,
 } from '../../../utils/rentalAirportMatch.js';
 import { normalizeLngDeltaSigned } from './globeLngUtils.js';
-import { resolveRegionalCorridorAnchors } from './flightRouteCorridors.js';
+import {
+  getFlightDestHubFallback,
+  resolveRegionalCorridorAnchors,
+} from './flightRouteCorridors.js';
 import { coordsCrossAvoidZones } from './flightRouteAvoidZones.js';
 import {
   areMetroCoterminalAirports,
@@ -422,7 +425,13 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
         hubIatas = [...corridor.hubIatas];
         routeSource = 'corridor';
       } else {
-        routeSource = 'direct-fallback';
+        const fallbackHubs = getFlightDestHubFallback(destIata);
+        if (fallbackHubs?.length) {
+          hubIatas = [...fallbackHubs];
+          routeSource = 'dest-hub-fallback';
+        } else {
+          routeSource = 'direct-fallback';
+        }
       }
     }
   }
