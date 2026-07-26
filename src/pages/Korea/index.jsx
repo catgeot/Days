@@ -203,18 +203,17 @@ export default function KoreaFestivalHub() {
 
   const corridorCounts = useMemo(() => countByCorridor(timedItems), [timedItems]);
 
-  const corridorChips = useMemo(() => {
-    const chips = listCorridors()
-      .map((c) => ({ ...c, count: corridorCounts.get(c.id) || 0 }))
-      .filter((c) => c.count > 0);
-    return chips;
-  }, [corridorCounts]);
+  const corridorChips = useMemo(
+    () =>
+      listCorridors()
+        .map((c) => ({ ...c, count: corridorCounts.get(c.id) || 0 }))
+        .filter((c) => c.count > 0),
+    [corridorCounts],
+  );
 
   useEffect(() => {
     if (corridorId === 'all') return;
-    if (!corridorCounts.get(corridorId)) {
-      setCorridorId('all');
-    }
+    if (!corridorCounts.get(corridorId)) setCorridorId('all');
   }, [corridorId, corridorCounts]);
 
   const afterCorridor = useMemo(
@@ -316,8 +315,8 @@ export default function KoreaFestivalHub() {
           setNearLabel(label || corridor);
           setNearMsg(
             label
-              ? `${label} 근처 · 권역 축제를 보여 줍니다.`
-              : '내 주변 권역 축제를 보여 줍니다.',
+              ? `${label} 근처 · 지도 칩으로 축제를 확인해 보세요.`
+              : '내 주변 권역 · 지도 칩으로 축제를 확인해 보세요.',
           );
           return;
         }
@@ -354,7 +353,7 @@ export default function KoreaFestivalHub() {
       />
 
       <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1b1410]/90 backdrop-blur-xl">
-        <div className="mx-auto max-w-5xl px-4 md:px-6 py-4 flex items-center gap-3">
+        <div className="mx-auto max-w-6xl px-4 md:px-6 py-4 flex items-center gap-3">
           <Link
             to="/"
             className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-amber-400/40 transition-all shrink-0"
@@ -385,7 +384,7 @@ export default function KoreaFestivalHub() {
           </button>
         </div>
         {(nearLabel || nearMsg) && (
-          <div className="mx-auto max-w-5xl px-4 md:px-6 pb-3">
+          <div className="mx-auto max-w-6xl px-4 md:px-6 pb-3">
             <p className="text-[11px] text-amber-100/80">
               {nearLabel ? (
                 <span className="font-bold text-amber-200">{nearLabel} 기준</span>
@@ -397,7 +396,7 @@ export default function KoreaFestivalHub() {
         )}
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 md:px-6 py-6 space-y-8 pb-28">
+      <main className="mx-auto max-w-6xl px-4 md:px-6 py-6 space-y-6 pb-28">
         <section className="space-y-3">
           <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
             언제
@@ -437,57 +436,29 @@ export default function KoreaFestivalHub() {
         )}
 
         {!loading && !error && (
-          <>
-            <section className="space-y-3">
-              <div className="flex items-end justify-between gap-3">
-                <h2 className="text-sm font-bold text-white">
-                  {timeTab === 'now'
-                    ? '지금 열리는 축제'
-                    : timeTab === 'weekend'
-                      ? '이번 주말'
-                      : timeTab === 'season'
-                        ? '시즌 하이라이트'
-                        : '이번 달 하이라이트'}
-                </h2>
-                <p className="text-[11px] text-gray-500">{timedItems.length}건</p>
-              </div>
-              {highlightItems.length === 0 ? (
-                <p className="text-sm text-gray-400 py-4">
-                  이 기간에 맞는 축제가 없습니다. 다른 시간 탭을 골라 보세요.
-                </p>
-              ) : (
-                <div className="flex overflow-x-auto gap-3 pb-1 snap-x custom-scrollbar -mx-1 px-1">
-                  {highlightItems.map((item) => (
-                    <div
-                      key={festivalKey(item)}
-                      className="flex-none w-[160px] md:w-[180px] snap-start"
-                    >
-                      <FestivalCard item={item} onSelect={setSelected} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section className="space-y-3">
+          <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8">
+            <aside className="w-full md:w-[36%] lg:w-[34%] shrink-0 md:sticky md:top-[5.5rem] space-y-2">
               <div className="flex items-end justify-between gap-3">
                 <h2 className="text-sm font-bold text-white">지도</h2>
-                <p className="text-[11px] text-gray-500">
-                  숫자가 축제 밀도입니다
-                </p>
+                <p className="text-[11px] text-gray-500">개별 칩</p>
               </div>
-              <KoreaFestivalMap
-                items={afterTaste}
-                onSelectCluster={({ contentIds }) => {
-                  setMapFocusIds(contentIds);
-                  setTasteId('all');
-                }}
-                onSelectPoint={(contentId) => {
-                  const item = byContentId.get(String(contentId));
-                  if (item) setSelected(item);
-                  else setMapFocusIds([contentId]);
-                }}
-              />
+              <div className="h-[min(62vh,520px)] md:h-[min(72vh,640px)]">
+                <KoreaFestivalMap
+                  items={afterTaste}
+                  activeContentId={
+                    selected?.contentId != null ? String(selected.contentId) : ''
+                  }
+                  onSelectPoint={(contentId) => {
+                    const item = byContentId.get(String(contentId));
+                    if (item) {
+                      setSelected(item);
+                      setMapFocusIds([contentId]);
+                    } else {
+                      setMapFocusIds([contentId]);
+                    }
+                  }}
+                />
+              </div>
               {mapFocusIds && (
                 <button
                   type="button"
@@ -497,115 +468,166 @@ export default function KoreaFestivalHub() {
                   지도 선택 해제
                 </button>
               )}
-            </section>
+            </aside>
 
-            <section className="space-y-3">
-              <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                권역
-              </h2>
-              <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-                <button
-                  type="button"
-                  onClick={() => selectCorridor('all')}
-                  className={chipClass(corridorId === 'all')}
-                >
-                  전체
-                  <span className="opacity-70">{timedItems.length}</span>
-                </button>
-                {corridorChips.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => selectCorridor(c.id)}
-                    className={chipClass(corridorId === c.id)}
-                  >
-                    {c.label}
-                    <span className="opacity-70">{c.count}</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            {tasteChips.length > 0 && (
-              <section className="space-y-3">
-                <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                  취향
-                </h2>
-                <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTasteId('all');
-                      setMapFocusIds(null);
-                    }}
-                    className={chipClass(tasteId === 'all')}
-                  >
-                    전체
-                  </button>
-                  {tasteChips.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => {
-                        setTasteId(t.id);
-                        setMapFocusIds(null);
-                      }}
-                      className={chipClass(tasteId === t.id)}
-                    >
-                      {t.label}
-                      <span className="opacity-70">{t.count}</span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {showResultPanel && (
+            <div className="min-w-0 flex-1 space-y-8">
               <section className="space-y-3">
                 <div className="flex items-end justify-between gap-3">
-                  <h2 className="text-sm font-bold text-white">선택 결과</h2>
-                  <p className="text-[11px] text-gray-500">
-                    {resultItems.length}건
-                    {resultItems.length > PANEL_LIMIT
-                      ? ` · ${PANEL_LIMIT}건까지`
-                      : ''}
-                  </p>
+                  <h2 className="text-sm font-bold text-white">
+                    {timeTab === 'now'
+                      ? '지금 열리는 축제'
+                      : timeTab === 'weekend'
+                        ? '이번 주말'
+                        : timeTab === 'season'
+                          ? '시즌 하이라이트'
+                          : '이번 달 하이라이트'}
+                  </h2>
+                  <p className="text-[11px] text-gray-500">{timedItems.length}건</p>
                 </div>
-                {panelItems.length === 0 ? (
+                {highlightItems.length === 0 ? (
                   <p className="text-sm text-gray-400 py-4">
-                    이 조건에 맞는 축제가 없습니다.
+                    이 기간에 맞는 축제가 없습니다. 다른 시간 탭을 골라 보세요.
                   </p>
                 ) : (
-                  <div className="space-y-2">
-                    {panelItems.map((item) => (
-                      <FestivalRow
+                  <div className="flex overflow-x-auto gap-3 pb-1 snap-x custom-scrollbar -mx-1 px-1">
+                    {highlightItems.map((item) => (
+                      <div
                         key={festivalKey(item)}
-                        item={item}
-                        onSelect={setSelected}
-                      />
+                        className="flex-none w-[150px] md:w-[160px] snap-start"
+                      >
+                        <FestivalCard item={item} onSelect={setSelected} />
+                      </div>
                     ))}
                   </div>
                 )}
               </section>
-            )}
-          </>
+
+              <section className="space-y-3">
+                <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                  권역
+                </h2>
+                <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
+                  <button
+                    type="button"
+                    onClick={() => selectCorridor('all')}
+                    className={chipClass(corridorId === 'all')}
+                  >
+                    전체
+                    <span className="opacity-70">{timedItems.length}</span>
+                  </button>
+                  {corridorChips.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => selectCorridor(c.id)}
+                      className={chipClass(corridorId === c.id)}
+                    >
+                      {c.label}
+                      <span className="opacity-70">{c.count}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {tasteChips.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                    취향
+                  </h2>
+                  <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTasteId('all');
+                        setMapFocusIds(null);
+                      }}
+                      className={chipClass(tasteId === 'all')}
+                    >
+                      전체
+                    </button>
+                    {tasteChips.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => {
+                          setTasteId(t.id);
+                          setMapFocusIds(null);
+                        }}
+                        className={chipClass(tasteId === t.id)}
+                      >
+                        {t.label}
+                        <span className="opacity-70">{t.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {showResultPanel && (
+                <section className="space-y-3">
+                  <div className="flex items-end justify-between gap-3">
+                    <h2 className="text-sm font-bold text-white">선택 결과</h2>
+                    <p className="text-[11px] text-gray-500">
+                      {resultItems.length}건
+                      {resultItems.length > PANEL_LIMIT
+                        ? ` · ${PANEL_LIMIT}건까지`
+                        : ''}
+                    </p>
+                  </div>
+                  {panelItems.length === 0 ? (
+                    <p className="text-sm text-gray-400 py-4">
+                      이 조건에 맞는 축제가 없습니다.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {panelItems.map((item) => (
+                        <FestivalRow
+                          key={festivalKey(item)}
+                          item={item}
+                          onSelect={setSelected}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </section>
+              )}
+
+              <section className="space-y-3">
+                <div className="flex items-end justify-between gap-3">
+                  <h2 className="text-sm font-bold text-white">인근 여행지</h2>
+                  <p className="text-[11px] text-gray-500">hub</p>
+                </div>
+                <div className="flex overflow-x-auto gap-3 pb-2 snap-x custom-scrollbar -mx-1 px-1">
+                  {hubRail.map((hub) => (
+                    <HubRailCard
+                      key={hub.hubId}
+                      hub={hub}
+                      onClick={() => navigate(`/place/${hub.hubId}`)}
+                    />
+                  ))}
+                </div>
+              </section>
+            </div>
+          </div>
         )}
 
-        <section className="space-y-3">
-          <div className="flex items-end justify-between gap-3">
-            <h2 className="text-sm font-bold text-white">인근 여행지</h2>
-            <p className="text-[11px] text-gray-500">hub</p>
-          </div>
-          <div className="flex overflow-x-auto gap-3 pb-2 snap-x custom-scrollbar -mx-1 px-1">
-            {hubRail.map((hub) => (
-              <HubRailCard
-                key={hub.hubId}
-                hub={hub}
-                onClick={() => navigate(`/place/${hub.hubId}`)}
-              />
-            ))}
-          </div>
-        </section>
+        {(loading || error) && (
+          <section className="space-y-3">
+            <div className="flex items-end justify-between gap-3">
+              <h2 className="text-sm font-bold text-white">인근 여행지</h2>
+              <p className="text-[11px] text-gray-500">hub</p>
+            </div>
+            <div className="flex overflow-x-auto gap-3 pb-2 snap-x custom-scrollbar -mx-1 px-1">
+              {hubRail.map((hub) => (
+                <HubRailCard
+                  key={hub.hubId}
+                  hub={hub}
+                  onClick={() => navigate(`/place/${hub.hubId}`)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       {selected && (
