@@ -41,8 +41,13 @@ export function extractCityLabels(addr) {
   for (const m of a.matchAll(CITY_TOKEN_RE)) {
     const name = String(m[1] || '').trim();
     if (!name || seen.has(name)) continue;
-    // 광역시 본명과 동일 토큰 스킵 (부산시 등 비표준)
-    if (/^(서울|부산|대구|인천|광주|대전|울산|세종)시$/u.test(name)) continue;
+    // 광역 본명·공식 접미사 스킵 (서울시·서울특별시·부산광역시 등)
+    if (
+      /^(서울|부산|대구|인천|광주|대전|울산|세종)시$/u.test(name) ||
+      /^(서울특별시|세종특별자치시|(?:부산|대구|인천|광주|대전|울산)광역시)$/u.test(name)
+    ) {
+      continue;
+    }
     seen.add(name);
     out.push(name);
   }

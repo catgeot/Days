@@ -14,13 +14,15 @@
 
 **VERIFY**: `npm run audit:korea-area-codes` · `npm run smoke:korea-area-codes`
 
-**다음**: B QA → C 즐겨찾기. releaseNotes·hub 신설·corridor 부활 금지.
+**에이전트 B QA** (`http://127.0.0.1:5174/korea` · 지금 탭): 시도칩→색인 리스트 · 경기→수원시≥2 · 테마(문화) 축소 · X=전국+칩 해제 · corridor 없음. **픽스**: `서울특별시`/`○광역시` 시·군 칩 오탐 스킵.
 
-**제시어 (QA·수정)**
+**다음**: 사람 B QA 확정 → C 즐겨찾기. releaseNotes·hub 신설·corridor 부활 금지.
+
+**제시어 (사람 QA 후 C)**
 
 ```
-국내축제-S5-B-QA
+국내축제-S5-C
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-27-project-log.md 「국내축제 — S5 B」절만
-로컬. /korea B 색인 칩 QA. C~E 금지. releaseNotes 금지.
+브랜치 cursor/korea-festival-proxy. C 즐겨찾기·본 항목. A·B 회귀 금지. releaseNotes 금지.
 ```
