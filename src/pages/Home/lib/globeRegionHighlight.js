@@ -1,14 +1,18 @@
 /**
- * 나라 칩 포커스 — Countries v1 육지 fill + Streets `admin` 국경 라인.
- * (satellite-streets · deep/neon). bbox 사각형 미사용.
- * 해양 EEZ는 Mapbox에 없음 — 섬·분산 영토는 fill로 한눈에 보이게 함.
+ * 나라 칩 포커스 — Countries v1 육지 외곽선 + Streets `admin` 국경 라인.
+ * (satellite-streets · deep/neon). fill·bbox 미사용.
+ * 해양 EEZ는 Mapbox에 없음 — 섬 윤곽은 Countries 폴리곤을 line으로 스트로크.
  */
 
 export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
-export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
+export const REGION_HIGHLIGHT_OUTLINE_HALO_ID = 'gateo-region-highlight-outline-halo';
+export const REGION_HIGHLIGHT_OUTLINE_LINE_ID = 'gateo-region-highlight-outline-line';
 export const REGION_HIGHLIGHT_LINE_ID = 'gateo-region-highlight-line';
 export const REGION_HIGHLIGHT_HALO_ID = 'gateo-region-highlight-halo';
 export const REGION_HIGHLIGHT_DISPUTED_ID = 'gateo-region-highlight-disputed';
+
+/** @deprecated fill → outline 전환 · 구 세션 잔여 제거용 */
+export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
 
 /** @deprecated bbox 폴백 제거 — 구 세션 잔여 정리용 */
 export const REGION_HIGHLIGHT_FALLBACK_SOURCE_ID = 'gateo-region-highlight-fallback';
@@ -16,13 +20,15 @@ export const REGION_HIGHLIGHT_FALLBACK_LINE_ID = 'gateo-region-highlight-fallbac
 export const REGION_HIGHLIGHT_FALLBACK_HALO_ID = 'gateo-region-highlight-fallback-halo';
 
 export const REGION_HIGHLIGHT_LAYER_IDS = [
-  REGION_HIGHLIGHT_FILL_ID,
+  REGION_HIGHLIGHT_OUTLINE_HALO_ID,
+  REGION_HIGHLIGHT_OUTLINE_LINE_ID,
   REGION_HIGHLIGHT_HALO_ID,
   REGION_HIGHLIGHT_LINE_ID,
   REGION_HIGHLIGHT_DISPUTED_ID,
 ];
 
-const LEGACY_FALLBACK_LAYER_IDS = [
+const LEGACY_LAYER_IDS = [
+  REGION_HIGHLIGHT_FILL_ID,
   REGION_HIGHLIGHT_FALLBACK_HALO_ID,
   REGION_HIGHLIGHT_FALLBACK_LINE_ID,
 ];
@@ -30,7 +36,6 @@ const LEGACY_FALLBACK_LAYER_IDS = [
 /** 선택 나라 — 앰버 */
 const HIGHLIGHT_LINE = '#fbbf24';
 const HIGHLIGHT_HALO = 'rgba(251, 191, 36, 0.45)';
-const HIGHLIGHT_FILL = '#fbbf24';
 
 /** 나라 포커스 중에는 저줌에서도 국경이 보이도록 */
 const HIGHLIGHT_MIN_ZOOM = 1.8;
@@ -107,8 +112,8 @@ function admin0IsoFilter(iso, { disputed = null } = {}) {
   return ['all', ...parts];
 }
 
-/** Mapbox Countries v1 — 육지 폴리곤 (worldview + ISO) */
-function countryFillFilter(iso) {
+/** Mapbox Countries v1 — 육지 폴리곤 외곽 (worldview + ISO) */
+function countryOutlineFilter(iso) {
   const up = String(iso || '').toUpperCase();
   return [
     'all',
@@ -133,8 +138,8 @@ function raiseHighlightLayers(map) {
   }
 }
 
-function removeLegacyBboxLayers(map) {
-  for (const layerId of LEGACY_FALLBACK_LAYER_IDS) {
+function removeLegacyLayers(map) {
+  for (const layerId of LEGACY_LAYER_IDS) {
     if (!map.getLayer(layerId)) continue;
     try {
       map.removeLayer(layerId);
@@ -164,35 +169,26 @@ function ensureCountriesSource(map) {
   }
 }
 
-function addCountryFillLayer(map) {
-  if (map.getLayer(REGION_HIGHLIGHT_FILL_ID)) return true;
+function addCountryOutlineLayer(map, { id, paint }) {
+  if (map.getLayer(id)) return true;
   if (!ensureCountriesSource(map)) return false;
   try {
     map.addLayer({
-      id: REGION_HIGHLIGHT_FILL_ID,
-      type: 'fill',
+      id,
+      type: 'line',
       source: REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID,
       'source-layer': 'country_boundaries',
       minzoom: HIGHLIGHT_MIN_ZOOM,
       maxzoom: HIGHLIGHT_MAX_ZOOM,
       filter: ['==', ['get', 'disputed'], 'false'],
-      layout: { visibility: 'none' },
-      paint: {
-        'fill-color': HIGHLIGHT_FILL,
-        'fill-opacity': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          2,
-          0.22,
-          5,
-          0.18,
-          8,
-          0.12,
-        ],
+      layout: {
+        visibility: 'none',
+        'line-join': 'round',
+        'line-cap': 'round',
       },
+      paint,
     });
-    return Boolean(map.getLayer(REGION_HIGHLIGHT_FILL_ID));
+    return Boolean(map.getLayer(id));
   } catch {
     return false;
   }
@@ -227,7 +223,8 @@ export function regionHighlightLayersReady(map) {
   if (!map?.getStyle?.()) return false;
   try {
     return Boolean(
-      map.getLayer(REGION_HIGHLIGHT_FILL_ID) || map.getLayer(REGION_HIGHLIGHT_LINE_ID)
+      map.getLayer(REGION_HIGHLIGHT_OUTLINE_LINE_ID)
+      || map.getLayer(REGION_HIGHLIGHT_LINE_ID)
     );
   } catch {
     return false;
@@ -238,12 +235,29 @@ export function setupRegionHighlightLayers(map) {
   if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
 
   try {
-    removeLegacyBboxLayers(map);
+    removeLegacyLayers(map);
   } catch {
     // ignore
   }
 
-  const fillOk = addCountryFillLayer(map);
+  const outlineHaloOk = addCountryOutlineLayer(map, {
+    id: REGION_HIGHLIGHT_OUTLINE_HALO_ID,
+    paint: {
+      'line-color': HIGHLIGHT_HALO,
+      'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3.5, 5, 7, 8, 10],
+      'line-opacity': 0.85,
+      'line-blur': 1.1,
+    },
+  });
+
+  const outlineLineOk = addCountryOutlineLayer(map, {
+    id: REGION_HIGHLIGHT_OUTLINE_LINE_ID,
+    paint: {
+      'line-color': HIGHLIGHT_LINE,
+      'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.4, 5, 2.6, 8, 3.4],
+      'line-opacity': 0.95,
+    },
+  });
 
   const compositeId = findCompositeSourceId(map);
   let haloOk = false;
@@ -282,7 +296,7 @@ export function setupRegionHighlightLayers(map) {
     });
   }
 
-  if (!fillOk && !haloOk && !lineOk) return false;
+  if (!outlineHaloOk && !outlineLineOk && !haloOk && !lineOk) return false;
   raiseHighlightLayers(map);
   return true;
 }
@@ -310,18 +324,29 @@ export function setRegionHighlight(map, region) {
   }
 
   const ready = setupRegionHighlightLayers(map);
-  const hasFill = Boolean(map.getLayer(REGION_HIGHLIGHT_FILL_ID));
-  const hasLine = Boolean(
+  const hasOutline = Boolean(
+    map.getLayer(REGION_HIGHLIGHT_OUTLINE_LINE_ID)
+    || map.getLayer(REGION_HIGHLIGHT_OUTLINE_HALO_ID)
+  );
+  const hasAdmin = Boolean(
     map.getLayer(REGION_HIGHLIGHT_LINE_ID) || map.getLayer(REGION_HIGHLIGHT_HALO_ID)
   );
 
-  if (ready && (hasFill || hasLine)) {
-    if (hasFill) {
-      setLayerFilter(map, REGION_HIGHLIGHT_FILL_ID, countryFillFilter(iso));
-      setVisibility(map, REGION_HIGHLIGHT_FILL_ID, 'visible');
-    }
-
-    if (hasLine) {
+  if (ready && (hasOutline || hasAdmin)) {
+    if (hasOutline) {
+      const outline = countryOutlineFilter(iso);
+      setLayerFilter(map, REGION_HIGHLIGHT_OUTLINE_HALO_ID, outline);
+      setLayerFilter(map, REGION_HIGHLIGHT_OUTLINE_LINE_ID, outline);
+      setVisibility(map, REGION_HIGHLIGHT_OUTLINE_HALO_ID, 'visible');
+      setVisibility(map, REGION_HIGHLIGHT_OUTLINE_LINE_ID, 'visible');
+      // Countries 외곽선이 해안·육지 경계를 포함 — admin 실선은 이중 스트로크 방지로 숨김
+      setVisibility(map, REGION_HIGHLIGHT_HALO_ID, 'none');
+      setVisibility(map, REGION_HIGHLIGHT_LINE_ID, 'none');
+      if (map.getLayer(REGION_HIGHLIGHT_DISPUTED_ID)) {
+        setLayerFilter(map, REGION_HIGHLIGHT_DISPUTED_ID, admin0IsoFilter(iso, { disputed: true }));
+        setVisibility(map, REGION_HIGHLIGHT_DISPUTED_ID, 'visible');
+      }
+    } else if (hasAdmin) {
       const solid = admin0IsoFilter(iso, { disputed: false });
       const disputed = admin0IsoFilter(iso, { disputed: true });
       const any = admin0IsoFilter(iso);
@@ -345,7 +370,7 @@ export function setRegionHighlight(map, region) {
 
 export function clearRegionHighlight(map) {
   if (!map) return;
-  for (const layerId of [...REGION_HIGHLIGHT_LAYER_IDS, ...LEGACY_FALLBACK_LAYER_IDS]) {
+  for (const layerId of [...REGION_HIGHLIGHT_LAYER_IDS, ...LEGACY_LAYER_IDS]) {
     setVisibility(map, layerId, 'none');
   }
   setStandardAdminBoundaries(map, false);
