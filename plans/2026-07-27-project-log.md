@@ -33,7 +33,7 @@
 
 ## 국내축제 — S5 B UI 조율 (헤더 대분류·리스트·뒤로)
 
-**상태**: 🔄 tip 푸시 후 **Vercel Preview QA** · Draft PR #29 · `cursor/korea-festival-proxy`
+**상태**: 🔄 tip `d8f5a33` 푸시 · **Vercel Preview QA** · Draft PR #29 · `cursor/korea-festival-proxy`
 
 | 변경 | 내용 |
 |------|------|
