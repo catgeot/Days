@@ -18,7 +18,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
  */
 export const GLOBE_FACE_PRIORITY = {
   /** 한국 중심 아시아·남태평양 */
-  paradise: ['kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv', 'hi'],
+  paradise: ['kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv', 'hi', 'um'],
   /** 아프리카·서인도양 */
   nature: ['ke', 'tz', 'za', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 'ma'],
   /** 유럽·북극(그린란드·스발바르) */
