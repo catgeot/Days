@@ -225,7 +225,7 @@ const HomeUI = React.memo(({
       {/* 모바일 — 소권역 상단 선택바 (로고·검색 아래 여유 · 가로 스크롤) */}
       {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory
         && shouldShowFaceSubregionChips(selectedCategory) && (
-        <div className="md:hidden fixed left-3 right-3 top-[5.75rem] z-[55] pointer-events-none animate-fade-in-down">
+        <div className="md:hidden fixed left-3 right-3 top-[6.75rem] z-[55] pointer-events-none animate-fade-in-down">
           <GlobeFaceSubregionBar
             category={selectedCategory}
             selectedSubregionId={selectedFaceSubregionId}
