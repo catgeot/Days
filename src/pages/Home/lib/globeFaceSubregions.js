@@ -1,5 +1,5 @@
 /**
- * 면 안 소권역 — PC 소분류 칩 SSOT.
+ * 면 안 소권역 — 소분류 칩 SSOT (PC 세로 · 모바일 상단 가로 선택바).
  * 대면(권역≠테마)·면 배타는 [`globeFaceRegions.js`](./globeFaceRegions.js) 유지.
  * 소권역끼리도 배타. 짧은 면(≤ SUBREGION_CHIP_MIN_COUNTRIES)은 칩 생략.
  */
@@ -129,7 +129,7 @@ export function getFaceRegionsForSubregion(category, subregionId) {
 }
 
 /**
- * 소권역 칩을 보여줄지 (PC). 짧은 면·미정의 면은 false.
+ * 소권역 칩을 보여줄지. 짧은 면·미정의 면은 false.
  * @param {string | null | undefined} category
  */
 export function shouldShowFaceSubregionChips(category) {
@@ -137,7 +137,7 @@ export function shouldShowFaceSubregionChips(category) {
 }
 
 /**
- * PC 소권역 기본값 — 첫 소권역 id (칩 없으면 null). 「전체」칩 없음.
+ * 소권역 기본값 — 첫 소권역 id (칩 없으면 null). 「전체」칩 없음.
  * @param {string | null | undefined} category
  * @returns {string | null}
  */
