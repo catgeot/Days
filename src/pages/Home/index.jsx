@@ -50,6 +50,7 @@ import {
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
+import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
 import { syncHomeViewportAfterInput } from '../../shared/lib/mobileViewport';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -154,18 +155,22 @@ function Home() {
   const [categoryFaceEpoch, setCategoryFaceEpoch] = useState(0);
   const [faceRegionsOpen, setFaceRegionsOpen] = useState(false);
   const [selectedFaceRegionId, setSelectedFaceRegionId] = useState(null);
+  const [selectedFaceSubregionId, setSelectedFaceSubregionId] = useState(null);
 
   const revealRandomGlobeFace = useCallback(() => {
-    setCategory(pickRandomGlobeCategory());
+    const next = pickRandomGlobeCategory();
+    setCategory(next);
     setCategoryFaceEpoch((epoch) => epoch + 1);
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
+    setSelectedFaceSubregionId(getDefaultFaceSubregionId(next));
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
   const closeFaceRegions = useCallback(() => {
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
+    setSelectedFaceSubregionId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
@@ -272,6 +277,7 @@ function Home() {
     if (nextCategory === category && faceRegionsOpen) {
       setFaceRegionsOpen(false);
       setSelectedFaceRegionId(null);
+      setSelectedFaceSubregionId(null);
       globeRef.current?.clearRegionFocus?.();
       return;
     }
@@ -279,9 +285,16 @@ function Home() {
     setCategory(nextCategory);
     setFaceRegionsOpen(true);
     setSelectedFaceRegionId(null);
+    setSelectedFaceSubregionId(getDefaultFaceSubregionId(nextCategory));
     globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
+
+  const handleFaceSubregionSelect = useCallback((subregionId) => {
+    setSelectedFaceSubregionId(subregionId || null);
+    setSelectedFaceRegionId(null);
+    globeRef.current?.clearRegionFocus?.();
+  }, []);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -942,6 +955,8 @@ function Home() {
           faceRegionsOpen={faceRegionsOpen}
           selectedFaceRegionId={selectedFaceRegionId}
           onFaceRegionSelect={handleFaceRegionSelect}
+          selectedFaceSubregionId={selectedFaceSubregionId}
+          onFaceSubregionSelect={handleFaceSubregionSelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}

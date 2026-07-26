@@ -32,6 +32,8 @@ const HomeUI = React.memo(({
   faceRegionsOpen = false,
   selectedFaceRegionId = null,
   onFaceRegionSelect,
+  selectedFaceSubregionId = null,
+  onFaceSubregionSelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible,
@@ -263,7 +265,7 @@ const HomeUI = React.memo(({
       )}
 
       {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 */}
-      <div className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-[55] flex-col gap-3 pointer-events-none animate-fade-in-right">
+      <div className="hidden md:flex fixed left-6 top-[calc(50%+2rem)] -translate-y-1/2 z-[55] flex-col gap-3 pointer-events-none animate-fade-in-right">
         {!isTourCinema && (
           <div
             className={`pointer-events-auto flex flex-row items-start gap-2 ${
@@ -301,6 +303,9 @@ const HomeUI = React.memo(({
                 category={selectedCategory}
                 selectedRegionId={selectedFaceRegionId}
                 onSelectRegion={onFaceRegionSelect}
+                showSubregions
+                selectedSubregionId={selectedFaceSubregionId}
+                onSelectSubregion={onFaceSubregionSelect}
                 className="pt-0.5"
               />
             ) : null}

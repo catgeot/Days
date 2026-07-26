@@ -6,6 +6,7 @@
  * - `TRAVEL_SPOTS.primaryCategory` / 휴양지 테마로 면을 재배치하지 말 것.
  * - 각 나라는 정확히 한 면에만 (타 면 스캔 테일·중첩 금지).
  * - 모리셔스·세이셸 → nature(서인도양). adventure → 남아메리카(+주변).
+ * - PC 면 안 소분류 칩: [`globeFaceSubregions.js`](./globeFaceSubregions.js) (대면 재정의 금지).
  */
 
 import { GLOBE_CATEGORY_IDS, GLOBE_FACE_CENTER_BY_CATEGORY } from './globeCategoryFocus.js';
