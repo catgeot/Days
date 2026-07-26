@@ -135,18 +135,16 @@
 - 릴리스 노트: 해당 없음(소소한 UX) · Vercel은 push 후
 - 후속(선택): 모바일 그룹 헤더 또는 소분류 칩
 
-## 나라 포커스 — Countries v1 육지 외곽선 (선만)
+## 나라 포커스 — Countries v1 육지 fill (확정)
 
 **상태**: ✅ 로컬 커밋 · 사람 QA 대기
 
-### 구현
+### 결정
 
-- fill 폐기 → `mapbox.country-boundaries-v1` 폴리곤을 **line 스트로크**(해안·섬 윤곽)
-- Streets `admin` 실선은 이중 방지로 숨김 · 분쟁 점선만 유지
-- [`globeRegionHighlight.js`](../src/pages/Home/lib/globeRegionHighlight.js)
+- Countries 외곽선 = 모든 섬에 선 → 열도에서 과도 · **본토만 필터는 Mapbox에 없음**
+- 채움(fill)으로 회귀 · outline 레이어 제거 · admin 실선 숨김(분쟁 점선만)
 
 ### QA
 
-- 필리핀·일본·몰디브·바하마 → 섬 윤곽선(채움 없음)
-- 한국·프랑스 → 육지 외곽선
-- 우주 복귀·나라 전환 시 선 해제
+- 필리핀·일본·몰디브 → 반투명 앰버 면(섬 윤곽선 없음)
+- 우주 복귀·나라 전환 시 fill 해제
