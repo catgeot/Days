@@ -1,7 +1,11 @@
 /**
  * 카테고리 면별 나라 목록 — 권역(지리) 배타 분할.
- * 카테고리 라벨(휴양·자연 등)은 지구본 5면 UX일 뿐, 테마 여행지 필터가 아님.
- * 각 나라는 정확히 한 면에만 등장한다.
+ *
+ * SSOT 오매칭 방지:
+ * - 카테고리 라벨(휴양·자연·도시·문화·모험) = 지구본 5면 **지리 권역 UX** (테마 여행지 필터 아님).
+ * - `TRAVEL_SPOTS.primaryCategory` / 휴양지 테마로 면을 재배치하지 말 것.
+ * - 각 나라는 정확히 한 면에만 (타 면 스캔 테일·중첩 금지).
+ * - 모리셔스·세이셸 → nature(서인도양). adventure → 남아메리카(+주변).
  */
 
 import { GLOBE_CATEGORY_IDS, GLOBE_FACE_CENTER_BY_CATEGORY } from './globeCategoryFocus.js';
@@ -25,7 +29,7 @@ export const GLOBE_FACE_PRIORITY = {
   urban: ['no', 'fr', 'gb', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr', 'gl', 'sj'],
   /** 북미·중미·카리브·알래스카 */
   culture: ['us', 'ca', 'mx', 'cu', 'cr', 'gt', 'pa', 'jm', 'bs', 'ak'],
-  /** 남미 */
+  /** 남아메리카(+주변) — 테마「모험지」목록이 아님 */
   adventure: ['br', 'pe', 'ar', 'cl', 'co', 'ec', 'bo', 'py'],
 };
 

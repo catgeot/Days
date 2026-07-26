@@ -102,19 +102,18 @@
 
 - 릴리스 노트: 해당 없음(기존 나라 탐색 UX 보강) · Vercel은 push 후
 
-## 지구본 나라 칩 하이브리드 · 국가별 스캔
+## 지구본 나라 칩 — 권역 배타 (세션 종료)
 
-**상태**: ✅ 로컬 검증 PASS · 커밋 · 사람 QA 대기
+**상태**: ✅ 로컬 커밋 · **사람 QA·디자인·push는 다음 세션** · 릴리스 노트 해당 시만
 
-### 구현
+### SSOT (오매칭 금지)
 
-- `GLOBE_COUNTRY_CATALOG`(109) + `GLOBE_FACE_PRIORITY` 시드 → 테마 스팟 나라 → 스캔 테일
-- 레일 `max-h` 확대 · 스크롤 가능 시 하단 fade 힌트
-- 생성 스크립트: `scripts/generate-globe-country-catalog.mjs`
+- 카테고리 라벨 = **지리 권역 UX** ≠ `TRAVEL_SPOTS` 테마/휴양지 필터
+- 면당 **배타** (중첩 0) · [`globeCountryCatalog.js`](../src/pages/Home/lib/globeCountryCatalog.js) · [`globeFaceRegions.js`](../src/pages/Home/lib/globeFaceRegions.js)
+- paradise: 한국 중심 아시아·남태평양(호주 포함) · nature: 아프리카·서인도양(**모리셔스·세이셸**) · urban: 유럽·북극 · culture: 북미·중미·카리브·알래스카 · adventure: 남아메리카(+주변)
+- `.ai-context` §3「나라 칩 (권역≠테마)」·§6「나라 칩 권역」에도 동일
 
-### QA
+### 다음 세션
 
-- 5면 시드 순서·전체 카탈로그·중복 없음·표기 정규화(터키/남아공)·나미비아 bbox
-- 후속: 테마=`primary` home만 · 타 면 시드 제외 · 스캔은 권역 근접순(휴양↔자연 중첩 완화)
-- 재해석: 카테고리 면 = **지리 권역 UX**(휴양=아시아·남태평양) · 테마 여행지 필터 아님 → nearest-face + 휴양 다앵커
-- 배타 분할: 면 간 나라 중첩 0 · 알래스카·스발바르 칩 추가(북극) · 호주=휴양
+- 제시어: `지구본-나라칩-이어하기`
+- 사람 QA·스크롤/레일 디자인 점검 · `main` ahead 커밋 push 여부

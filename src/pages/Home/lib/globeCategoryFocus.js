@@ -1,4 +1,7 @@
-/** 카테고리 매칭·지구본 5면 카메라 SSOT (Mapbox·legacy 공통) */
+/**
+ * 카테고리 매칭·지구본 5면 카메라 SSOT (Mapbox·legacy 공통).
+ * 라벨(휴양·자연 등)은 면 pan UX — 나라 칩 권역은 [`globeFaceRegions.js`](./globeFaceRegions.js) 지리 배타(테마 필터 아님).
+ */
 
 export const GLOBE_CATEGORY_IDS = ['paradise', 'nature', 'urban', 'culture', 'adventure'];
 
