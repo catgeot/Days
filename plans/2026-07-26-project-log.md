@@ -149,21 +149,23 @@
 
 - 릴리스 노트: 해당 없음(기존 나라 탐색 UX 보강)
 
-## 지구본 모바일 소권역 칩 (상단 선택바)
+## 지구본 모바일 소권역 칩 (하단 선택바)
 
-**상태**: ⏳ Cloud 구현·PR · **사람 QA 대기**
+**상태**: ✅ 사람 QA OK · **커밋·push 완료**
 
-### 구현
+### 구현 (로컬 조율 후)
 
-- 모바일: 소권역을 **상단 가로 선택바** (`GlobeFaceSubregionBar`) · 로고·검색 아래 `top-[6.75rem]` 여유
-- 나라 리스트는 하단 레일 유지 · `subregionPlacement="none"` 필터만 · 높이 `min(50vh,22rem)` (소분류 없는 면은 `58vh`)
-- PC 세로 칩 레이아웃 유지
-- 브랜치 `cursor/mobile-globe-subregion-chips-9320`
+- 모바일: 소권역을 **하단 가로 선택바** (`GlobeFaceSubregionBar`) · 카테고리 바 바로 위
+- 하단 스택: 나라 리스트(토글 기준 하단 정렬) → 세부 메뉴 토글 → 세부칩 → 카테고리(세이프영역)
+- 세부 메뉴 토글이 나라 리스트·세부칩을 함께 여닫음
+- 스크롤 가능 시 커스텀 스크롤바 항시 표시(나라=좌측 · 세부칩=하단) · 「더보기」앰버 힌트
+- 툴 버튼과 안 겹치게 세부칩은 내용 폭 · PC 세로 칩 유지
+- PR #28 브랜치 로컬 merge 후 조율 · `main` push
 
 ### 파일
 
 - [`GlobeFaceRegionRail.jsx`](../src/pages/Home/components/GlobeFaceRegionRail.jsx) · [`HomeUI.jsx`](../src/pages/Home/components/HomeUI.jsx) · [`globeFaceSubregions.js`](../src/pages/Home/lib/globeFaceSubregions.js)
 
-### 다음
+### 세션 종료
 
-- 사람 QA(간격·리스트 높이·칩 필터) 후 merge/push main
+- 릴리스 노트: 해당 없음(소소한 UX) · Vercel은 push 후

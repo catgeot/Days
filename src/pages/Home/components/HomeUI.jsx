@@ -180,19 +180,74 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
-      {/* 모바일 하단 카테고리 — 배포본(9b79793) 클래스 문자열 그대로 · 래퍼만 md:hidden */}
+      {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (세이프영역까지 하향) */}
       {!isTourCinema && (
-      <div className={`fixed z-50 pointer-events-auto animate-fade-in-left
-         bottom-8 left-4 w-auto max-w-[calc(100vw-7rem)] flex justify-start md:hidden
+      <div className={`fixed z-50 left-[max(0.25rem,env(safe-area-inset-left,0px))] bottom-[max(0.5rem,env(safe-area-inset-bottom,0px))]
+         w-auto max-w-[calc(100vw-7rem)] flex flex-col items-start gap-1.5 pointer-events-none md:hidden
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
-         <div className="relative max-md:home-category-bar-shell">
-         <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
-         <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
-            max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border
-            md:items-center md:gap-4 md:bg-black/40 md:p-2.5 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl
-            flex-row flex-nowrap overflow-x-auto md:flex-col md:overflow-visible">
+        {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
+          <div className="flex flex-col items-start gap-1.5 animate-fade-in-right">
+            {mobileRegionsExpanded ? (
+              <GlobeFaceRegionRail
+                category={selectedCategory}
+                selectedRegionId={selectedFaceRegionId}
+                onSelectRegion={onFaceRegionSelect}
+                showSubregions
+                subregionPlacement="none"
+                selectedSubregionId={selectedFaceSubregionId}
+                onSelectSubregion={onFaceSubregionSelect}
+                className="mb-0.5"
+              />
+            ) : null}
+            <div className="pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border border-white/20 bg-black/70 px-2 py-1.5 backdrop-blur-md shadow-lg">
+              <span className="text-[10px] font-bold leading-none tracking-tight text-gray-200/90 break-keep">
+                세부 메뉴
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={mobileRegionsExpanded}
+                aria-label={mobileRegionsExpanded ? '세부 메뉴 숨기기' : '세부 메뉴 펼치기'}
+                title={mobileRegionsExpanded ? '숨기고 지도 보기' : '나라·세부 칩 보기'}
+                onClick={() => setMobileRegionsExpanded((open) => !open)}
+                className="flex w-full items-center justify-center active:scale-[0.97]"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
+                    mobileRegionsExpanded
+                      ? 'border-cyan-400/50 bg-cyan-500/40'
+                      : 'border-white/20 bg-white/10'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-[left] duration-200 ${
+                      mobileRegionsExpanded ? 'left-5' : 'left-0.5'
+                    }`}
+                  />
+                </span>
+              </button>
+            </div>
+            {mobileRegionsExpanded && shouldShowFaceSubregionChips(selectedCategory) ? (
+              <GlobeFaceSubregionBar
+                key={`subregion-bar-${selectedCategory}`}
+                category={selectedCategory}
+                selectedSubregionId={selectedFaceSubregionId}
+                onSelectSubregion={onFaceSubregionSelect}
+                className="animate-fade-in-up"
+              />
+            ) : null}
+          </div>
+        )}
+
+        <div className="pointer-events-auto relative max-md:home-category-bar-shell animate-fade-in-left">
+          <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
+          <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
+             max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border
+             md:items-center md:gap-4 md:bg-black/40 md:p-2.5 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl
+             flex-row flex-nowrap overflow-x-auto md:flex-col md:overflow-visible">
             {CATEGORIES.map((cat) => {
                const isActive = selectedCategory === cat.id;
                const Icon = cat.icon;
@@ -217,69 +272,9 @@ const HomeUI = React.memo(({
                  </button>
                )
             })}
-         </div>
-         </div>
-      </div>
-      )}
-
-      {/* 모바일 — 소권역 상단 선택바 (로고·검색 아래 여유 · 가로 스크롤) */}
-      {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory
-        && shouldShowFaceSubregionChips(selectedCategory) && (
-        <div className="md:hidden fixed left-3 right-3 top-[6.75rem] z-[55] pointer-events-none animate-fade-in-down">
-          <GlobeFaceSubregionBar
-            category={selectedCategory}
-            selectedSubregionId={selectedFaceSubregionId}
-            onSelectSubregion={onFaceSubregionSelect}
-            className="max-w-full"
-          />
-        </div>
-      )}
-
-      {/* 모바일 — 나라/지역 (카테고리 바 바로 위 · 안전 간격 ~12px · 펼침 시에만 목록) */}
-      {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory && (
-        <div className="md:hidden fixed left-4 bottom-[6.25rem] z-[55] pointer-events-none animate-fade-in-right flex flex-col items-start gap-1">
-          {mobileRegionsExpanded ? (
-            <GlobeFaceRegionRail
-              category={selectedCategory}
-              selectedRegionId={selectedFaceRegionId}
-              onSelectRegion={onFaceRegionSelect}
-              showSubregions
-              subregionPlacement="none"
-              selectedSubregionId={selectedFaceSubregionId}
-              onSelectSubregion={onFaceSubregionSelect}
-              className="mb-0.5"
-            />
-          ) : null}
-          <div className="pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border border-white/20 bg-black/70 px-2 py-1.5 backdrop-blur-md shadow-lg">
-            <span className="text-[10px] font-bold leading-none tracking-tight text-gray-200/90 break-keep">
-              세부 메뉴
-            </span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={mobileRegionsExpanded}
-              aria-label={mobileRegionsExpanded ? '나라 메뉴 숨기기' : '나라 메뉴 펼치기'}
-              title={mobileRegionsExpanded ? '숨기고 지도 보기' : '나라 메뉴 보기'}
-              onClick={() => setMobileRegionsExpanded((open) => !open)}
-              className="flex w-full items-center justify-center active:scale-[0.97]"
-            >
-              <span
-                aria-hidden="true"
-                className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
-                  mobileRegionsExpanded
-                    ? 'border-cyan-400/50 bg-cyan-500/40'
-                    : 'border-white/20 bg-white/10'
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-[left] duration-200 ${
-                    mobileRegionsExpanded ? 'left-5' : 'left-0.5'
-                  }`}
-                />
-              </span>
-            </button>
           </div>
         </div>
+      </div>
       )}
 
       {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 */}
