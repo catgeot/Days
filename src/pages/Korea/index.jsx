@@ -590,7 +590,7 @@ export default function KoreaFestivalHub() {
         url="/korea"
       />
 
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 isolate">
         <KoreaFestivalMap
           items={filteredItems}
           activeContentId={
