@@ -12,6 +12,7 @@
 | S3a 상세·SEO | ✅ `aed70b1` | 다음 S3b |
 | S3b area↔hub SSOT | ✅ G0+시도 일괄 · LEGACY 비움 | areaHub QA ✅ |
 | S4 캐시 | 선택 | 쿼터·지연 보일 때만 |
+| **S5** 지도·권역·지금/주말 | ✅ S5a+S5b 구현 | 사람 QA 후 main |
 
 ---
 
@@ -169,7 +170,31 @@ QA 후 커밋.
 ### S4 — 캐시 (선택)
 
 쿼터·지연 보일 때. `국내축제-S4-캐시`.  
-areaHub QA(2026-07-26) PASS 후 — **기본 보류**. MVP는 LIVE + sessionStorage.
+areaHub QA(2026-07-26) PASS 후 — **기본 보류**. MVP는 LIVE + sessionStorage.  
+S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
+
+---
+
+### S5 — 지도·권역·지금/주말 ✅ (QA 대기)
+
+| | |
+|--|--|
+| **환경** | 로컬 · `cursor/korea-festival-proxy` |
+| **골격** | 시간탭(지금/주말/달/시즌) → 하이라이트 카드 → KR 평면 지도(클러스터) → 권역 칩(건수>0) → 취향 칩(결과 title·≥2) → 선택 결과 패널 |
+| **권역** | [`koreaFestivalCorridors.json`](../src/pages/Korea/data/koreaFestivalCorridors.json) · 좌표 bbox · 도 칩 1차 제거 |
+| **데이터** | 롤링 12개월 LIVE · `fetchKoreaFestivalsRolling12` · sessionStorage `gateo:korea-festivals:v1:rolling12` |
+| **지도** | `KoreaFestivalMap` (`react-map-gl`, 지구본 비재사용) · 토큰 없으면 카드+권역 폴백 |
+| **금지** | releaseNotes · hub 신설 · Cloud 오케 · 본격 S4 |
+| **다음** | 사람 UI QA → 디자인 확정 커밋 유지·main PR |
+
+**제시어 (QA·수정)**
+
+```
+국내축제-S5-QA
+@plans/korea-festival-hub-plan.md S5만
+@plans/2026-07-26-project-log.md 「국내축제 — S5」절만
+로컬. /korea 지도·권역·지금/주말 QA. UI 톤만 조율. releaseNotes 금지.
+```
 
 ---
 

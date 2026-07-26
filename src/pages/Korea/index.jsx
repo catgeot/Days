@@ -1,40 +1,38 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   CalendarDays,
-  LayoutGrid,
   Loader2,
   LocateFixed,
   MapPin,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
-import { fetchTourApiFestivals } from '../../utils/fetchTourApiFestivals';
-import { fetchTourApiAreaCodes } from '../../utils/fetchTourApiArea';
 import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
 import { hubIdsForArea } from './koreaHubSeeds';
-import {
-  filterFestivalsByAddr,
-  pickSigunguForHub,
-} from './koreaAreaFilter';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
-import FestivalCalendar, {
-  buildDayFestivalMap,
-  groupFestivalsByDayRole,
-  monthRangeYmd,
-  toYmd,
-} from './FestivalCalendar';
+import {
+  assignCorridorFromLatLng,
+  countByCorridor,
+  filterByCorridor,
+  listCorridors,
+} from './koreaFestivalCorridors';
+import { filterByTimeTab } from './festivalTimeFilter';
+import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
+import { buildTasteTags, filterByTaste } from './festivalTasteTags';
+import KoreaFestivalMap from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
 
-const PERIODS = [
+const TIME_TABS = [
+  { id: 'now', label: '지금' },
+  { id: 'weekend', label: '이번 주말' },
   { id: 'thisMonth', label: '이번 달' },
-  { id: 'nextMonth', label: '다음 달' },
-  { id: 'spring', label: '봄' },
-  { id: 'summer', label: '여름' },
-  { id: 'autumn', label: '가을' },
-  { id: 'winter', label: '겨울' },
+  { id: 'season', label: '시즌' },
 ];
+
+const HIGHLIGHT_LIMIT = 8;
+const PANEL_LIMIT = 48;
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
@@ -46,37 +44,16 @@ function festivalImage(item) {
   return item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
 }
 
+function festivalKey(item) {
+  return String(item?.contentId || `${item?.title}-${item?.eventStartDate}`);
+}
+
 function chipClass(active) {
   return `flex items-center gap-1.5 px-4 py-2 rounded-2xl whitespace-nowrap text-xs transition-all border shrink-0 ${
     active
       ? 'bg-white/10 text-white border-white/20 font-bold'
       : 'bg-white/[0.02] text-gray-300 border-white/[0.15] hover:bg-white/[0.08]'
   }`;
-}
-
-function monthCursorForPeriod(periodId, now = new Date()) {
-  const y = now.getFullYear();
-  const m = now.getMonth();
-  if (periodId === 'nextMonth') {
-    const n = new Date(y, m + 1, 1);
-    return { year: n.getFullYear(), month0: n.getMonth() };
-  }
-  if (periodId === 'spring') return { year: y, month0: 2 };
-  if (periodId === 'summer') return { year: y, month0: 5 };
-  if (periodId === 'autumn') return { year: y, month0: 8 };
-  if (periodId === 'winter') return { year: y, month0: 11 };
-  return { year: y, month0: m };
-}
-
-function periodIdForMonth(year, month0, now = new Date()) {
-  const thisM = { year: now.getFullYear(), month0: now.getMonth() };
-  const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  if (year === thisM.year && month0 === thisM.month0) return 'thisMonth';
-  if (year === next.getFullYear() && month0 === next.getMonth()) return 'nextMonth';
-  if (month0 >= 2 && month0 <= 4) return 'spring';
-  if (month0 >= 5 && month0 <= 7) return 'summer';
-  if (month0 >= 8 && month0 <= 10) return 'autumn';
-  return 'winter';
 }
 
 function FestivalCard({ item, onSelect }) {
@@ -173,23 +150,15 @@ function HubRailCard({ hub, onClick }) {
 export default function KoreaFestivalHub() {
   const navigate = useNavigate();
   const now = useMemo(() => new Date(), []);
-  const initialMonth = monthCursorForPeriod('thisMonth', now);
 
-  const [period, setPeriod] = useState('thisMonth');
-  const [areaCode, setAreaCode] = useState('all');
-  const [sigunguCode, setSigunguCode] = useState('all');
-  const [areas, setAreas] = useState([]);
-  const [sigunguList, setSigunguList] = useState([]);
-  const pendingSigunguRef = useRef('');
-  const [calYear, setCalYear] = useState(initialMonth.year);
-  const [calMonth0, setCalMonth0] = useState(initialMonth.month0);
-  const [viewMode, setViewMode] = useState('list');
+  const [timeTab, setTimeTab] = useState('now');
+  const [corridorId, setCorridorId] = useState('all');
+  const [tasteId, setTasteId] = useState('all');
+  const [mapFocusIds, setMapFocusIds] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
-  const [selectedYmd, setSelectedYmd] = useState(null);
-  const [dayRole, setDayRole] = useState('all');
   const [nearLabel, setNearLabel] = useState('');
   const [nearBusy, setNearBusy] = useState(false);
   const [nearMsg, setNearMsg] = useState('');
@@ -204,178 +173,102 @@ export default function KoreaFestivalHub() {
   }, []);
 
   const hubRail = useMemo(() => {
-    const ids = hubIdsForArea(areaCode);
+    const ids = hubIdsForArea('all');
     return ids.map((id) => krHubById.get(String(id).toLowerCase())).filter(Boolean);
-  }, [areaCode, krHubById]);
+  }, [krHubById]);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const data = await fetchTourApiAreaCodes({ numOfRows: 50 });
-      if (cancelled) return;
-      const list = Array.isArray(data?.items) ? data.items : [];
-      setAreas(
-        list
-          .filter((a) => a?.code != null && a?.name)
-          .map((a) => ({ code: String(a.code), name: String(a.name) })),
-      );
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (areaCode === 'all') {
-      setSigunguList([]);
-      setSigunguCode('all');
-      pendingSigunguRef.current = '';
-      return undefined;
-    }
-    setSigunguList([]);
-    setSigunguCode('all');
-    (async () => {
-      const data = await fetchTourApiAreaCodes({ areaCode, numOfRows: 50 });
-      if (cancelled) return;
-      const list = (Array.isArray(data?.items) ? data.items : [])
-        .filter((a) => a?.code != null && a?.name)
-        .map((a) => ({ code: String(a.code), name: String(a.name) }));
-      setSigunguList(list);
-      const pending = pendingSigunguRef.current;
-      if (pending) {
-        const picked = pickSigunguForHub(pending, list);
-        setSigunguCode(picked?.code || 'all');
-        pendingSigunguRef.current = '';
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [areaCode]);
-
-  const loadFestivals = useCallback(async () => {
+  const loadFestivals = useCallback(async (force = false) => {
     setLoading(true);
     setError('');
     setSelected(null);
-    const range = monthRangeYmd(calYear, calMonth0);
-    // searchFestival areaCode unused → 월간 무지역 fetch 후 addr 필터
-    const base = {
-      eventStartDate: range.eventStartDate,
-      eventEndDate: range.eventEndDate,
-      numOfRows: 50,
-    };
-    const [page1, page2] = await Promise.all([
-      fetchTourApiFestivals({ ...base, pageNo: 1 }),
-      fetchTourApiFestivals({ ...base, pageNo: 2 }),
-    ]);
-    if (!page1?.ok && !page2?.ok) {
+    const result = await fetchKoreaFestivalsRolling12({ force, now });
+    if (!result.ok) {
       setItems([]);
-      setError('축제 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      setError(result.error || '축제 목록을 불러오지 못했습니다.');
       setLoading(false);
       return;
     }
-
-    const seen = new Set();
-    const merged = [];
-    for (const data of [page1, page2]) {
-      if (!data?.ok || !Array.isArray(data.items)) continue;
-      for (const item of data.items) {
-        const key = String(item?.contentId || `${item?.title}-${item?.eventStartDate}`);
-        if (!key || seen.has(key)) continue;
-        if (!item?.title || !/^\d{8}$/.test(String(item.eventStartDate || ''))) continue;
-        seen.add(key);
-        merged.push(item);
-      }
-    }
-    setItems(merged);
+    setItems(result.items);
     setLoading(false);
-  }, [calYear, calMonth0]);
+  }, [now]);
 
   useEffect(() => {
-    loadFestivals();
+    loadFestivals(false);
   }, [loadFestivals]);
 
-  // 월이 바뀔 때만 날짜 선택 초기화 — 지역/시군 칩은 선택일 유지
+  const timedItems = useMemo(
+    () => filterByTimeTab(timeTab, items, now),
+    [timeTab, items, now],
+  );
+
+  const corridorCounts = useMemo(() => countByCorridor(timedItems), [timedItems]);
+
+  const corridorChips = useMemo(() => {
+    const chips = listCorridors()
+      .map((c) => ({ ...c, count: corridorCounts.get(c.id) || 0 }))
+      .filter((c) => c.count > 0);
+    return chips;
+  }, [corridorCounts]);
+
   useEffect(() => {
-    setSelectedYmd(null);
-    setDayRole('all');
-  }, [calYear, calMonth0]);
+    if (corridorId === 'all') return;
+    if (!corridorCounts.get(corridorId)) {
+      setCorridorId('all');
+    }
+  }, [corridorId, corridorCounts]);
+
+  const afterCorridor = useMemo(
+    () => filterByCorridor(timedItems, corridorId),
+    [timedItems, corridorId],
+  );
+
+  const tasteChips = useMemo(() => buildTasteTags(afterCorridor), [afterCorridor]);
 
   useEffect(() => {
-    setDayRole('all');
-  }, [areaCode, sigunguCode]);
+    if (tasteId === 'all') return;
+    if (!tasteChips.some((t) => t.id === tasteId)) {
+      setTasteId('all');
+    }
+  }, [tasteId, tasteChips]);
 
-  const selectedSigunguName = useMemo(() => {
-    if (sigunguCode === 'all') return '';
-    return sigunguList.find((s) => s.code === sigunguCode)?.name || '';
-  }, [sigunguCode, sigunguList]);
-
-  const filteredItems = useMemo(
-    () =>
-      filterFestivalsByAddr(items, {
-        areaCode,
-        sigunguName: selectedSigunguName || undefined,
-      }),
-    [items, areaCode, selectedSigunguName],
+  const afterTaste = useMemo(
+    () => filterByTaste(afterCorridor, tasteId),
+    [afterCorridor, tasteId],
   );
 
-  const listItems = useMemo(
-    () => filteredItems.filter((item) => festivalImage(item)),
-    [filteredItems],
-  );
+  const resultItems = useMemo(() => {
+    if (!mapFocusIds || mapFocusIds.length === 0) return afterTaste;
+    const set = new Set(mapFocusIds.map(String));
+    return afterTaste.filter((item) => set.has(String(item.contentId || '')));
+  }, [afterTaste, mapFocusIds]);
 
-  const dayMap = useMemo(
-    () => buildDayFestivalMap(filteredItems, calYear, calMonth0),
-    [filteredItems, calYear, calMonth0],
-  );
+  const highlightItems = useMemo(() => {
+    const withImg = resultItems.filter((item) => festivalImage(item));
+    const source = withImg.length ? withImg : resultItems;
+    return source.slice(0, HIGHLIGHT_LIMIT);
+  }, [resultItems]);
 
-  const dayList = selectedYmd ? dayMap.get(selectedYmd) || [] : [];
+  const panelItems = useMemo(() => {
+    const showPanel =
+      corridorId !== 'all' ||
+      tasteId !== 'all' ||
+      (mapFocusIds && mapFocusIds.length > 0);
+    if (!showPanel) return [];
+    return resultItems.slice(0, PANEL_LIMIT);
+  }, [resultItems, corridorId, tasteId, mapFocusIds]);
 
-  const dayGroups = useMemo(() => {
-    if (!selectedYmd) return [];
-    return groupFestivalsByDayRole(dayMap.get(selectedYmd) || [], selectedYmd);
-  }, [dayMap, selectedYmd]);
+  const showResultPanel =
+    corridorId !== 'all' ||
+    tasteId !== 'all' ||
+    (mapFocusIds && mapFocusIds.length > 0);
 
-  const dayRoleChips = useMemo(() => {
-    if (!selectedYmd) return [];
-    const isToday = selectedYmd === toYmd(new Date());
-    const byId = new Map(dayGroups.map((g) => [g.id, g]));
-    return [
-      {
-        id: 'all',
-        label: '전체',
-        count: dayList.length,
-      },
-      {
-        id: 'start',
-        label: isToday ? '오늘 시작' : '이날 시작',
-        count: byId.get('start')?.items.length || 0,
-      },
-      {
-        id: 'ongoing',
-        label: '진행 중',
-        count: byId.get('ongoing')?.items.length || 0,
-      },
-      {
-        id: 'end',
-        label: isToday ? '오늘 종료' : '이날 종료',
-        count: byId.get('end')?.items.length || 0,
-      },
-    ].filter((c) => c.id === 'all' || c.count > 0);
-  }, [selectedYmd, dayGroups, dayList.length]);
-
-  const dayRoleList = useMemo(() => {
-    if (!selectedYmd) return [];
-    if (dayRole === 'all') return dayList;
-    const group = dayGroups.find((g) => g.id === dayRole);
-    return group?.items || [];
-  }, [selectedYmd, dayRole, dayList, dayGroups]);
-
-  const selectDay = (ymd) => {
-    setSelectedYmd(ymd);
-    setDayRole('all');
-  };
+  const byContentId = useMemo(() => {
+    const map = new Map();
+    for (const item of items) {
+      if (item?.contentId != null) map.set(String(item.contentId), item);
+    }
+    return map;
+  }, [items]);
 
   const selectedHubs = useMemo(() => {
     if (!selected?.areaCode) return hubRail.slice(0, 4);
@@ -385,25 +278,16 @@ export default function KoreaFestivalHub() {
       .slice(0, 4);
   }, [selected, hubRail, krHubById]);
 
-  const applyPeriod = (periodId) => {
-    setPeriod(periodId);
-    const cursor = monthCursorForPeriod(periodId);
-    setCalYear(cursor.year);
-    setCalMonth0(cursor.month0);
+  const selectTime = (id) => {
+    setTimeTab(id);
+    setMapFocusIds(null);
+    setTasteId('all');
   };
 
-  const shiftMonth = (delta) => {
-    const d = new Date(calYear, calMonth0 + delta, 1);
-    setCalYear(d.getFullYear());
-    setCalMonth0(d.getMonth());
-    setPeriod(periodIdForMonth(d.getFullYear(), d.getMonth()));
-  };
-
-  const selectSido = (code) => {
-    pendingSigunguRef.current = '';
-    setAreaCode(code);
-    setSigunguCode('all');
-    setNearLabel('');
+  const selectCorridor = (id) => {
+    setCorridorId(id);
+    setMapFocusIds(null);
+    setTasteId('all');
     setNearMsg('');
   };
 
@@ -420,38 +304,25 @@ export default function KoreaFestivalHub() {
       (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
-        const resolved = resolveKoreaAreaFromCoords(lat, lng);
         setNearBusy(false);
-        if (!resolved) {
-          setNearLabel('');
-          setNearMsg('국내 위치를 찾지 못했습니다. 지역 칩으로 선택해 주세요.');
+        const corridor = assignCorridorFromLatLng(lat, lng);
+        const hubResolved = resolveKoreaAreaFromCoords(lat, lng);
+        const label = hubResolved?.hubName || '';
+        if (corridor !== 'unmapped') {
+          setCorridorId(corridor);
+          setMapFocusIds(null);
+          setTasteId('all');
+          setTimeTab('now');
+          setNearLabel(label || corridor);
+          setNearMsg(
+            label
+              ? `${label} 근처 · 권역 축제를 보여 줍니다.`
+              : '내 주변 권역 축제를 보여 줍니다.',
+          );
           return;
         }
-        const nextArea = String(resolved.areaCode);
-        pendingSigunguRef.current = resolved.hubName;
-        if (nextArea === areaCode) {
-          const applyPending = (list) => {
-            const picked = pickSigunguForHub(resolved.hubName, list);
-            setSigunguCode(picked?.code || 'all');
-            pendingSigunguRef.current = '';
-          };
-          if (sigunguList.length > 0) {
-            applyPending(sigunguList);
-          } else {
-            fetchTourApiAreaCodes({ areaCode: nextArea, numOfRows: 50 }).then((data) => {
-              const list = (Array.isArray(data?.items) ? data.items : [])
-                .filter((a) => a?.code != null && a?.name)
-                .map((a) => ({ code: String(a.code), name: String(a.name) }));
-              setSigunguList(list);
-              applyPending(list);
-            });
-          }
-        } else {
-          setAreaCode(nextArea);
-        }
-        applyPeriod('thisMonth');
-        setNearLabel(resolved.hubName);
-        setNearMsg(`${resolved.hubName} 근처 축제를 보여 줍니다.`);
+        setNearLabel('');
+        setNearMsg('국내 위치를 찾지 못했습니다. 권역 칩으로 선택해 주세요.');
       },
       (err) => {
         setNearBusy(false);
@@ -469,17 +340,17 @@ export default function KoreaFestivalHub() {
     );
   };
 
+  const seoImage = highlightItems[0]
+    ? festivalImage(highlightItems[0]) || undefined
+    : undefined;
+
   return (
     <div className="h-full w-full overflow-y-auto bg-[#1b1410] text-white custom-scrollbar">
       <SEO
-        title="국내 축제 · 이번 달·시즌 캘린더"
-        description="TourAPI 기반 국내 축제 일정. 이번 달·시즌·지역으로 찾고, 상세·인근 여행지로 이어가세요."
+        title="국내 축제 · 지금·권역·지도"
+        description="TourAPI 기반 국내 축제. 지금·주말·권역 지도로 찾고, 상세·인근 여행지로 이어가세요."
         url="/korea"
-        image={
-          listItems[0]
-            ? festivalImage(listItems[0]) || undefined
-            : undefined
-        }
+        image={seoImage}
       />
 
       <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1b1410]/90 backdrop-blur-xl">
@@ -527,235 +398,197 @@ export default function KoreaFestivalHub() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 md:px-6 py-6 space-y-8 pb-28">
-        <section className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setViewMode('list')}
-            className={chipClass(viewMode === 'list')}
-          >
-            <LayoutGrid size={14} aria-hidden="true" />
-            목록
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('calendar')}
-            className={chipClass(viewMode === 'calendar')}
-          >
-            <CalendarDays size={14} aria-hidden="true" />
-            달력
-          </button>
+        <section className="space-y-3">
+          <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+            언제
+          </h2>
+          <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
+            {TIME_TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => selectTime(t.id)}
+                className={chipClass(timeTab === t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </section>
 
-        {viewMode === 'calendar' && (
-          <section className="space-y-4">
-            <div className="flex items-end justify-between gap-3">
-              <h2 className="text-sm font-bold text-white">축제 달력</h2>
-              {!loading && (
-                <p className="text-[11px] text-gray-500">{filteredItems.length}건</p>
-              )}
-            </div>
-
-            {loading && (
-              <div className="flex items-center justify-center gap-2 py-16 text-gray-400 text-sm">
-                <Loader2 size={18} className="animate-spin" aria-hidden="true" />
-                불러오는 중…
-              </div>
-            )}
-
-            {!loading && error && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center space-y-3">
-                <p className="text-sm text-gray-300">{error}</p>
-                <button
-                  type="button"
-                  onClick={loadFestivals}
-                  className="px-4 py-2 rounded-xl text-xs font-bold border border-white/15 bg-white/5 hover:bg-white/10"
-                >
-                  다시 시도
-                </button>
-              </div>
-            )}
-
-            {!loading && !error && (
-              <FestivalCalendar
-                year={calYear}
-                month0={calMonth0}
-                dayMap={dayMap}
-                selectedYmd={selectedYmd}
-                onSelectDay={selectDay}
-                onPrevMonth={() => shiftMonth(-1)}
-                onNextMonth={() => shiftMonth(1)}
-              />
-            )}
-          </section>
+        {loading && (
+          <div className="flex items-center justify-center gap-2 py-16 text-gray-400 text-sm">
+            <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+            축제 일정을 불러오는 중…
+          </div>
         )}
 
-        <section className="space-y-3">
-          <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">기간</h2>
-          <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-            {PERIODS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => applyPeriod(p.id)}
-                className={chipClass(period === p.id)}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">지역</h2>
-          <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
+        {!loading && error && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center space-y-3">
+            <p className="text-sm text-gray-300">{error}</p>
             <button
               type="button"
-              onClick={() => selectSido('all')}
-              className={chipClass(areaCode === 'all')}
+              onClick={() => loadFestivals(true)}
+              className="px-4 py-2 rounded-xl text-xs font-bold border border-white/15 bg-white/5 hover:bg-white/10"
             >
-              전체
+              다시 시도
             </button>
-            {areas.map((a) => (
-              <button
-                key={a.code}
-                type="button"
-                onClick={() => selectSido(a.code)}
-                className={chipClass(areaCode === a.code)}
-              >
-                {a.name}
-              </button>
-            ))}
           </div>
-          {areaCode !== 'all' && sigunguList.length > 0 && (
-            <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-              <button
-                type="button"
-                onClick={() => setSigunguCode('all')}
-                className={chipClass(sigunguCode === 'all')}
-              >
-                전체(도)
-              </button>
-              {sigunguList.map((s) => (
-                <button
-                  key={s.code}
-                  type="button"
-                  onClick={() => setSigunguCode(s.code)}
-                  className={chipClass(sigunguCode === s.code)}
-                >
-                  {s.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
+        )}
 
-        {viewMode === 'calendar' && !loading && !error && (
-          <section className="space-y-3">
-            <div className="flex items-end justify-between gap-3">
-              <h3 className="text-sm font-bold text-white">
-                {selectedYmd
-                  ? `${formatYmdLabel(selectedYmd)} 축제`
-                  : '날짜를 선택하세요'}
-              </h3>
-              {selectedYmd && (
-                <p className="text-[11px] text-gray-500">{dayRoleList.length}건</p>
+        {!loading && !error && (
+          <>
+            <section className="space-y-3">
+              <div className="flex items-end justify-between gap-3">
+                <h2 className="text-sm font-bold text-white">
+                  {timeTab === 'now'
+                    ? '지금 열리는 축제'
+                    : timeTab === 'weekend'
+                      ? '이번 주말'
+                      : timeTab === 'season'
+                        ? '시즌 하이라이트'
+                        : '이번 달 하이라이트'}
+                </h2>
+                <p className="text-[11px] text-gray-500">{timedItems.length}건</p>
+              </div>
+              {highlightItems.length === 0 ? (
+                <p className="text-sm text-gray-400 py-4">
+                  이 기간에 맞는 축제가 없습니다. 다른 시간 탭을 골라 보세요.
+                </p>
+              ) : (
+                <div className="flex overflow-x-auto gap-3 pb-1 snap-x custom-scrollbar -mx-1 px-1">
+                  {highlightItems.map((item) => (
+                    <div
+                      key={festivalKey(item)}
+                      className="flex-none w-[160px] md:w-[180px] snap-start"
+                    >
+                      <FestivalCard item={item} onSelect={setSelected} />
+                    </div>
+                  ))}
+                </div>
               )}
-            </div>
+            </section>
 
-            {selectedYmd && dayRoleChips.length > 1 && (
+            <section className="space-y-3">
+              <div className="flex items-end justify-between gap-3">
+                <h2 className="text-sm font-bold text-white">지도</h2>
+                <p className="text-[11px] text-gray-500">
+                  숫자가 축제 밀도입니다
+                </p>
+              </div>
+              <KoreaFestivalMap
+                items={afterTaste}
+                onSelectCluster={({ contentIds }) => {
+                  setMapFocusIds(contentIds);
+                  setTasteId('all');
+                }}
+                onSelectPoint={(contentId) => {
+                  const item = byContentId.get(String(contentId));
+                  if (item) setSelected(item);
+                  else setMapFocusIds([contentId]);
+                }}
+              />
+              {mapFocusIds && (
+                <button
+                  type="button"
+                  onClick={() => setMapFocusIds(null)}
+                  className="text-[11px] text-amber-200/90 underline-offset-2 hover:underline"
+                >
+                  지도 선택 해제
+                </button>
+              )}
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                권역
+              </h2>
               <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-                {dayRoleChips.map((chip) => (
+                <button
+                  type="button"
+                  onClick={() => selectCorridor('all')}
+                  className={chipClass(corridorId === 'all')}
+                >
+                  전체
+                  <span className="opacity-70">{timedItems.length}</span>
+                </button>
+                {corridorChips.map((c) => (
                   <button
-                    key={chip.id}
+                    key={c.id}
                     type="button"
-                    onClick={() => setDayRole(chip.id)}
-                    className={chipClass(dayRole === chip.id)}
+                    onClick={() => selectCorridor(c.id)}
+                    className={chipClass(corridorId === c.id)}
                   >
-                    {chip.label}
-                    <span className="opacity-70">{chip.count}</span>
+                    {c.label}
+                    <span className="opacity-70">{c.count}</span>
                   </button>
                 ))}
               </div>
+            </section>
+
+            {tasteChips.length > 0 && (
+              <section className="space-y-3">
+                <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                  취향
+                </h2>
+                <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTasteId('all');
+                      setMapFocusIds(null);
+                    }}
+                    className={chipClass(tasteId === 'all')}
+                  >
+                    전체
+                  </button>
+                  {tasteChips.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => {
+                        setTasteId(t.id);
+                        setMapFocusIds(null);
+                      }}
+                      className={chipClass(tasteId === t.id)}
+                    >
+                      {t.label}
+                      <span className="opacity-70">{t.count}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
             )}
 
-            {selectedYmd && dayList.length === 0 && (
-              <p className="text-sm text-gray-400 py-4">
-                이 지역·날짜에 등록된 축제가 없습니다.
-              </p>
+            {showResultPanel && (
+              <section className="space-y-3">
+                <div className="flex items-end justify-between gap-3">
+                  <h2 className="text-sm font-bold text-white">선택 결과</h2>
+                  <p className="text-[11px] text-gray-500">
+                    {resultItems.length}건
+                    {resultItems.length > PANEL_LIMIT
+                      ? ` · ${PANEL_LIMIT}건까지`
+                      : ''}
+                  </p>
+                </div>
+                {panelItems.length === 0 ? (
+                  <p className="text-sm text-gray-400 py-4">
+                    이 조건에 맞는 축제가 없습니다.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {panelItems.map((item) => (
+                      <FestivalRow
+                        key={festivalKey(item)}
+                        item={item}
+                        onSelect={setSelected}
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
             )}
-            {selectedYmd && dayList.length > 0 && dayRoleList.length === 0 && (
-              <p className="text-sm text-gray-400 py-4">
-                이 구분에 해당하는 축제가 없습니다.
-              </p>
-            )}
-            {selectedYmd && dayRoleList.length > 0 && (
-              <div className="space-y-2">
-                {dayRoleList.map((item) => (
-                  <FestivalRow
-                    key={item.contentId || `${item.title}-${item.eventStartDate}`}
-                    item={item}
-                    onSelect={setSelected}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-
-        {viewMode === 'list' && (
-          <section className="space-y-3">
-            <div className="flex items-end justify-between gap-3">
-              <h2 className="text-sm font-bold text-white">
-                축제 · {calYear}.{calMonth0 + 1}
-              </h2>
-              {!loading && (
-                <p className="text-[11px] text-gray-500">{listItems.length}건</p>
-              )}
-            </div>
-
-            {loading && (
-              <div className="flex items-center justify-center gap-2 py-20 text-gray-400 text-sm">
-                <Loader2 size={18} className="animate-spin" aria-hidden="true" />
-                불러오는 중…
-              </div>
-            )}
-
-            {!loading && error && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center space-y-3">
-                <p className="text-sm text-gray-300">{error}</p>
-                <button
-                  type="button"
-                  onClick={loadFestivals}
-                  className="px-4 py-2 rounded-xl text-xs font-bold border border-white/15 bg-white/5 hover:bg-white/10"
-                >
-                  다시 시도
-                </button>
-              </div>
-            )}
-
-            {!loading && !error && listItems.length === 0 && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-10 text-center">
-                <p className="text-sm text-gray-300">
-                  {areaCode === 'all'
-                    ? '이 기간에 등록된 축제가 없습니다.'
-                    : '이 지역·기간에 등록된 축제가 없습니다.'}
-                </p>
-                <p className="mt-1 text-[11px] text-gray-500">기간이나 지역을 바꿔 보세요.</p>
-              </div>
-            )}
-
-            {!loading && !error && listItems.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                {listItems.map((item) => (
-                  <FestivalCard
-                    key={item.contentId || `${item.title}-${item.eventStartDate}`}
-                    item={item}
-                    onSelect={setSelected}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
+          </>
         )}
 
         <section className="space-y-3">
