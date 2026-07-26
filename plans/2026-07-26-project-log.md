@@ -187,3 +187,23 @@
 ### 세션 종료
 
 - 릴리스 노트: 해당 없음(소소한 UX) · Vercel은 push 후
+
+## 에스와티니·레소토 — 항공경로/투어 누락
+
+**상태**: ✅ smoke 25/25 · 로컬 커밋 `ac6dc43` · push는 사람 요청 시
+
+### 원인
+
+- **에스와티니**: 본토 국내선 억제의 `KOREA_AIRPORT_IATAS`에 `SHO` 포함 → ICN→SHO 국내선 오인·버튼 숨김 (`SHO`=에스와티니 · 구 속초는 YNY)
+- **레소토 직항 표시**: uiPlace는 Edge graph인데 써머리가 sync `direct-fallback` 라벨을 먼저 표시
+- **레소토 투어**: 나라 단위 핀에 `name_en` 없으면 GYG q null
+
+### 조치
+
+- `SHO` 제거 · 써머리 Edge hub 선행 조회 · GYG `country_en` 폴백(나라 단위 핀만)
+- smoke: `preview-eswatini-not-kr-domestic` · `preview-lesotho-uiplace-edge`
+
+### QA
+
+- 에스와티니: 항공 경로 버튼 노출
+- 레소토: 투어 찾기 노출 · 항공 라벨이 조회 후 경유 반영(Edge 가용 시)
