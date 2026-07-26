@@ -116,7 +116,7 @@ function RelatedChipFlap({
 
   const shell =
     layout === 'side'
-      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-white/15 bg-[#1b1410]/92 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
+      ? 'hidden md:flex w-[104px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-white/15 bg-[#1b1410]/92 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
       : 'flex shrink-0 gap-2 overflow-x-auto border-b border-white/10 px-3 py-2 custom-scrollbar md:hidden';
 
   if (layout === 'row') {
@@ -618,9 +618,9 @@ export default function KoreaFestivalHub() {
         />
       </div>
 
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
-        <div className="pointer-events-auto mx-auto max-w-6xl px-3 md:px-5">
-          <div className="min-w-0 rounded-2xl border border-white/15 bg-black/70 px-3 py-2.5 shadow-lg backdrop-blur-md md:px-4">
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-30 pt-[max(0.35rem,env(safe-area-inset-top,0px))]">
+        <div className="pointer-events-auto w-full px-2 md:px-3">
+          <div className="min-w-0 rounded-2xl border border-white/15 bg-black/75 px-3 py-2 shadow-lg backdrop-blur-md md:px-4 md:py-2.5">
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-200/80">
@@ -648,7 +648,7 @@ export default function KoreaFestivalHub() {
               </button>
             </div>
 
-            <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+            <div className="mt-2 flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
               {chipPanel == null ? (
                 <>
                   <button
@@ -814,14 +814,12 @@ export default function KoreaFestivalHub() {
 
       {showList && (
         <div
-          className="absolute inset-0 z-20 flex items-start justify-center bg-black/55 px-3 pt-[max(6.25rem,calc(env(safe-area-inset-top,0px)+5.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[2px] md:px-4 md:pt-[6.75rem] md:pb-4"
+          className="absolute inset-0 z-20 flex items-stretch justify-center bg-black/55 px-2 pt-[max(5.75rem,calc(env(safe-area-inset-top,0px)+4.85rem))] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[2px] md:px-3 md:pt-[6.1rem] md:pb-2"
           onClick={clearFocus}
           role="presentation"
         >
           <aside
-            className={`pointer-events-auto flex max-h-[calc(100dvh-7.25rem)] w-full flex-col md:max-h-[calc(100dvh-8rem)] md:flex-row md:items-stretch ${
-              flapHasRelated ? 'md:max-w-[520px]' : 'md:max-w-[420px]'
-            }`}
+            className="pointer-events-auto flex h-full min-h-0 w-full max-w-none flex-col md:flex-row md:items-stretch"
             aria-label="선택한 축제 목록"
             role="dialog"
             aria-modal="true"
