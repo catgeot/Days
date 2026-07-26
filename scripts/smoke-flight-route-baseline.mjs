@@ -220,6 +220,34 @@ async function main() {
       expectPreview: false,
     },
     {
+      id: 'preview-eswatini-not-kr-domestic',
+      label: 'preview — 에스와티니(SHO≠국내선)',
+      location: {
+        ...uiPlaceLocation('에스와티니', -26.5, 31.5),
+        name_en: 'Eswatini',
+        country: '에스와티니',
+        country_en: 'Eswatini',
+      },
+      originIata: 'ICN',
+      expectPreview: true,
+      expectDestIata: 'SHO',
+      expectEdge: true,
+    },
+    {
+      id: 'preview-lesotho-uiplace-edge',
+      label: 'preview — 레소토(MSU·Edge 경유)',
+      location: {
+        ...uiPlaceLocation('레소토', -29.31, 27.48),
+        name_en: 'Lesotho',
+        country: '레소토',
+        country_en: 'Lesotho',
+      },
+      originIata: 'ICN',
+      expectPreview: true,
+      expectDestIata: 'MSU',
+      expectEdge: true,
+    },
+    {
       id: 'preview-kr-jeju-domestic',
       label: 'preview — 제주 국내선(ICN→CJU 유지)',
       location: {
@@ -437,6 +465,9 @@ async function main() {
     }
     if (testCase.expectPreview != null && preview !== testCase.expectPreview) {
       checks.push(`preview: expected ${testCase.expectPreview}, got ${preview}`);
+    }
+    if (testCase.expectDestIata != null && destIata !== testCase.expectDestIata) {
+      checks.push(`dest: expected ${testCase.expectDestIata}, got ${destIata || '—'}`);
     }
     if (testCase.expectManualOverride && !manualOverride) {
       checks.push('expected manual hub override');

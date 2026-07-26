@@ -28,6 +28,7 @@ export function areMetroCoterminalAirports(aIata, bIata) {
 /**
  * 한국 공항 — 본토↔본토 국내선 시네마 오탐 억제 (제주 CJU만 예외 허용).
  * rental hubs + airportsIndex 국내 도착에 쓰는 코드.
+ * SHO 금지: IATA SHO는 에스와티니(airportsIndex) · 구 속초는 YNY.
  */
 export const KOREA_AIRPORT_IATAS = new Set([
   'ICN',
@@ -46,7 +47,6 @@ export const KOREA_AIRPORT_IATAS = new Set([
   'YNY',
   'MWX',
   'KPO',
-  'SHO',
 ]);
 
 /**

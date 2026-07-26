@@ -4,12 +4,17 @@ import { useChatEssentialGuide } from '../../../hooks/useChatEssentialGuide.js';
 import { useFlightCinema } from '../lib/FlightCinemaContext.jsx';
 import {
   canPreviewFlightRoute,
+  estimateFlightHoursChain,
+  estimateFlightLegHours,
+  getAirportHubCoords,
   resolveSummaryFlightCinemaOd,
 } from '../lib/globeFlightCinema.js';
 import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIata,
 } from '../lib/flightOriginPreference.js';
+import { shouldResolveFlightRouteViaEdge } from '../../../utils/rentalAirportMatch.js';
+import { resolveFlightRouteHubsForCinema } from '../../../utils/resolveFlightRouteEdge.js';
 import {
   IMMERSE_ENTRY,
   nextImmerseAltitude,
@@ -96,10 +101,92 @@ export default function HomePlaceCardSummary({
     };
   }, [onImmersedChange]);
 
-  const flightPreview = useMemo(
+  const syncFlightPreview = useMemo(
     () => resolveSummaryFlightCinemaOd(location, { essentialGuide, originIata: selectedOriginIata }),
     [location, essentialGuide, selectedOriginIata]
   );
+
+  const needsEdgeFlightHubs = useMemo(
+    () =>
+      Boolean(
+        syncFlightPreview &&
+          shouldResolveFlightRouteViaEdge(location, {
+            originIata: selectedOriginIata,
+            destIata: syncFlightPreview.destIata,
+            essentialGuide,
+          })
+      ),
+    [location, essentialGuide, selectedOriginIata, syncFlightPreview]
+  );
+
+  const [edgeFlightHubs, setEdgeFlightHubs] = useState(null);
+  const [edgeFlightHubsLoading, setEdgeFlightHubsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!syncFlightPreview || !needsEdgeFlightHubs) {
+      setEdgeFlightHubs(null);
+      setEdgeFlightHubsLoading(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setEdgeFlightHubs(null);
+    setEdgeFlightHubsLoading(true);
+
+    void resolveFlightRouteHubsForCinema(location, {
+      originIata: selectedOriginIata,
+      destIata: syncFlightPreview.destIata,
+      essentialGuide,
+    })
+      .then((result) => {
+        if (cancelled) return;
+        setEdgeFlightHubs(result);
+        setEdgeFlightHubsLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setEdgeFlightHubs(null);
+        setEdgeFlightHubsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location, essentialGuide, selectedOriginIata, syncFlightPreview, needsEdgeFlightHubs]);
+
+  const flightPreview = useMemo(() => {
+    if (!syncFlightPreview) return null;
+    if (!needsEdgeFlightHubs) return syncFlightPreview;
+    if (!edgeFlightHubs) {
+      return edgeFlightHubsLoading
+        ? { ...syncFlightPreview, edgePending: true }
+        : syncFlightPreview;
+    }
+
+    const hubIatas = Array.isArray(edgeFlightHubs.hubIatas) ? edgeFlightHubs.hubIatas : [];
+    const destIata = String(edgeFlightHubs.destIata || syncFlightPreview.destIata)
+      .trim()
+      .toUpperCase();
+    const dest = getAirportHubCoords(destIata) || syncFlightPreview.dest;
+    const routeIatas = [syncFlightPreview.originIata, ...hubIatas, destIata];
+    const chainPoints = [
+      syncFlightPreview.origin,
+      ...hubIatas.map((iata) => getAirportHubCoords(iata)).filter(Boolean),
+      dest,
+    ].filter(Boolean);
+
+    return {
+      ...syncFlightPreview,
+      destIata,
+      dest,
+      hubIatas,
+      routeIatas,
+      isConnecting: hubIatas.length > 0,
+      flightHours: estimateFlightHoursChain(chainPoints),
+      flightLegHours: estimateFlightLegHours(routeIatas),
+      edgePending: false,
+    };
+  }, [syncFlightPreview, needsEdgeFlightHubs, edgeFlightHubs, edgeFlightHubsLoading]);
 
   const hasFlightRoute = useMemo(
     () => canPreviewFlightRoute(location, { essentialGuide, originIata: selectedOriginIata }),
@@ -254,13 +341,18 @@ export default function HomePlaceCardSummary({
                 location={location}
                 canPreviewFlightRoute={hasFlightRoute}
                 isFlightRouteReady={isFlightRouteReady}
-                isFlightRoutePending={flightCinemaRequestPending}
+                isFlightRoutePending={
+                  flightCinemaRequestPending ||
+                  (needsEdgeFlightHubs && (edgeFlightHubsLoading || Boolean(flightPreview?.edgePending)))
+                }
                 flightRouteLabel={
-                  flightPreview
+                  flightPreview && !flightPreview.edgePending
                     ? (flightPreview.routeIatas ?? [flightPreview.originIata, flightPreview.destIata]).join(' → ')
                     : null
                 }
-                flightRouteHours={flightPreview?.flightHours ?? null}
+                flightRouteHours={
+                  flightPreview && !flightPreview.edgePending ? (flightPreview.flightHours ?? null) : null
+                }
                 selectedFlightOriginIata={selectedOriginIata}
                 flightBrowserOriginHint={browserOriginHint}
                 onSelectFlightOrigin={handleSelectOrigin}

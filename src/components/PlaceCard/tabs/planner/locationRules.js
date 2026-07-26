@@ -75,8 +75,7 @@ const isGygSearchSafeLabel = (value) => {
 /**
  * Manual Activities 위젯 data-gyg-q.
  * 기본은 영문 도시명만. "City, Country"는 Japan 등 대형 국가에서 인기 투어(히로시마 등)로 오염됨.
- * 동명 도시 등 국가 접미가 필요할 때만 slug/이름 오버라이드로 확장.
- * 한글명만이면 null(City/Klook 폴백).
+ * 나라 단위 핀(이름=국가)이고 name_en이 비/한글이면 country_en 폴백 (레소토·에스와티니 등).
  * @returns {string|null}
  */
 export const buildGygActivitiesSearchQuery = (location) => {
@@ -86,7 +85,20 @@ export const buildGygActivitiesSearchQuery = (location) => {
     if (isGygSearchSafeLabel(cityEn)) {
         return cityEn;
     }
-    return null;
+
+    const countryEn = String(location?.country_en || '').trim();
+    if (!isGygSearchSafeLabel(countryEn)) return null;
+
+    const name = String(location?.name || location?.name_ko || '').trim();
+    const country = String(location?.country || '').trim();
+    const isCountryLevelPin =
+        Boolean(name) &&
+        Boolean(country) &&
+        (name === country ||
+            name.toLowerCase() === countryEn.toLowerCase() ||
+            country.toLowerCase() === countryEn.toLowerCase());
+
+    return isCountryLevelPin ? countryEn : null;
 };
 
 const matchesLocationKeys = (location, keys) => {
