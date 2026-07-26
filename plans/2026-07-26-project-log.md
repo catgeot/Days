@@ -101,3 +101,17 @@
 ### 세션 종료
 
 - 릴리스 노트: 해당 없음(기존 나라 탐색 UX 보강) · Vercel은 push 후
+
+## 지구본 나라 칩 하이브리드 · 국가별 스캔
+
+**상태**: ✅ 로컬 검증 PASS · 커밋 · 사람 QA 대기
+
+### 구현
+
+- `GLOBE_COUNTRY_CATALOG`(109) + `GLOBE_FACE_PRIORITY` 시드 → 테마 스팟 나라 → 스캔 테일
+- 레일 `max-h` 확대 · 스크롤 가능 시 하단 fade 힌트
+- 생성 스크립트: `scripts/generate-globe-country-catalog.mjs`
+
+### QA
+
+- 5면 시드 순서·전체 카탈로그·중복 없음·표기 정규화(터키/남아공)·나미비아 bbox
