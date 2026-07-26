@@ -4,7 +4,7 @@
 
 ## 국내축제 — S5 B 테마·지역 색인 (`국내축제-S5-Cloud`)
 
-**상태**: ✅ 코드 · `audit:korea-area-codes` / `smoke:korea-area-codes` PASS · 사람 QA 대기 · 브랜치 `cursor/korea-festival-proxy`
+**상태**: ✅ 코드·커밋·푸시 `bab6937` · audit/smoke PASS · 사람 QA 대기 · 브랜치 `cursor/korea-festival-proxy`
 
 | 산출 | |
 |------|--|
