@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import Map, {
   Layer,
   NavigationControl,
@@ -6,7 +6,6 @@ import Map, {
   useControl,
 } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { Undo2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -151,11 +150,9 @@ function viewsDiffer(a, b, eps = 0.02) {
  *   activeContentId?: string,
  *   onSelectPoint?: (contentId: string) => void,
  *   onSelectCluster?: (contentIds: string[]) => void,
- *   onViewBack?: () => void,
  *   focusView?: { lng: number, lat: number, zoom?: number } | null,
  *   historyKey?: string | number,
  *   backNonce?: number,
- *   listOpen?: boolean,
  *   className?: string,
  * }} props
  */
@@ -164,25 +161,18 @@ export default function KoreaFestivalMap({
   activeContentId = '',
   onSelectPoint,
   onSelectCluster,
-  onViewBack,
   focusView = null,
   historyKey = '',
   backNonce = 0,
-  listOpen = false,
   className = '',
 }) {
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
-  const [canGoBack, setCanGoBack] = useState(false);
   const geojson = useMemo(() => buildGeoJson(items), [items]);
   const pointCount = geojson.features.length;
   const focusKey = focusView
     ? `${focusView.lng},${focusView.lat},${focusView.zoom ?? 9}`
     : '';
-
-  const syncCanGoBack = () => {
-    setCanGoBack(viewStackRef.current.length > 0);
-  };
 
   const pushCurrentView = () => {
     const map = mapRef.current;
@@ -192,12 +182,10 @@ export default function KoreaFestivalMap({
     const top = stack[stack.length - 1];
     if (top && !viewsDiffer(top, view)) return;
     stack.push(view);
-    syncCanGoBack();
   };
 
   const clearViewHistory = () => {
     viewStackRef.current = [];
-    syncCanGoBack();
   };
 
   useEffect(() => {
@@ -217,7 +205,6 @@ export default function KoreaFestivalMap({
     const stack = viewStackRef.current;
     if (!map || stack.length === 0) return false;
     const prev = stack.pop();
-    syncCanGoBack();
     if (!prev) return false;
     map.flyTo({
       center: [prev.lng, prev.lat],
@@ -258,11 +245,6 @@ export default function KoreaFestivalMap({
         : ['==', ['get', 'contentId'], ''],
     [activeContentId],
   );
-
-  const handleViewBack = () => {
-    popCameraBack();
-    onViewBack?.();
-  };
 
   const handleClick = (e) => {
     const feature = e.features?.[0];
@@ -414,21 +396,6 @@ export default function KoreaFestivalMap({
           />
         </Source>
       </Map>
-      {canGoBack && (
-        <button
-          type="button"
-          onClick={handleViewBack}
-          aria-label="이전 지도 위치로"
-          className={`absolute z-[5] flex items-center gap-1.5 rounded-full border border-white/25 bg-[#1b1410]/85 px-3 py-1.5 text-[11px] font-bold text-white shadow-md backdrop-blur-md transition-colors hover:border-amber-300/50 hover:bg-[#2a1f18] ${
-            listOpen
-              ? 'left-3 top-[max(7.25rem,calc(env(safe-area-inset-top,0px)+6.5rem))] md:left-[calc(340px+1.25rem)] lg:left-[calc(360px+1.75rem)]'
-              : 'left-3 bottom-[max(2.75rem,calc(env(safe-area-inset-bottom,0px)+2.25rem))]'
-          }`}
-        >
-          <Undo2 size={13} aria-hidden="true" />
-          뒤로
-        </button>
-      )}
       <MapCaption pointCount={pointCount} />
     </div>
   );

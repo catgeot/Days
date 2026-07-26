@@ -30,3 +30,15 @@
 @plans/2026-07-27-project-log.md 「국내축제 — S5 B」절만
 브랜치 cursor/korea-festival-proxy. C 즐겨찾기·본 항목. A·B 회귀 금지. releaseNotes 금지.
 ```
+
+## 국내축제 — S5 B UI 조율 (헤더 대분류·리스트·뒤로)
+
+**상태**: ✅ 코드·푸시 · PR #29 · 사람 QA 대기 · `cursor/korea-festival-proxy`
+
+| 변경 | |
+|------|--|
+| 헤더 | 대분류 1행(`지금`/`전체`/`테마`) → 클릭 시 같은 행에 중·소 칩 · `대분류`로 복귀 |
+| 리스트 | 하단 여백 · max-h↑ · 모서리 rounded (바닥에 붙지 않게) |
+| 뒤로 | 홈 ArrowLeft·지도 떠 있는 뒤로 **제거** · 리스트 패널 뒤로만 |
+
+**다음**: PR 미리보기 QA → OK면 C 또는 추가 톤 조율.
