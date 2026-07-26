@@ -1,7 +1,8 @@
 /**
  * 나라 칩 포커스 — Countries v1 육지 fill + Streets `admin` 분쟁 점선.
  * (satellite-streets · deep/neon). bbox·폴리곤 외곽선 미사용.
- * 섬 윤곽선은 열도에서 과도해 fill로 면적 인식. 해양 EEZ는 Mapbox에 없음.
+ * fill 유지 · 톤 다운은 fit 도착 줌 대비 상대(소국 고줌 fit도 도착 시 peak).
+ * 해양 EEZ는 Mapbox에 없음.
  */
 
 export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
@@ -33,14 +34,46 @@ const LEGACY_LAYER_IDS = [
   REGION_HIGHLIGHT_FALLBACK_LINE_ID,
 ];
 
-/** 선택 나라 — 앰버 */
+/**
+ * fill = 딥 보라 · 국경선 = 최초 앰버(육지 admin 라인).
+ * 선은 섬 윤곽 전부가 아니라 Streets admin0(육지 접경)만.
+ */
+const HIGHLIGHT_FILL = '#7c3aed';
 const HIGHLIGHT_LINE = '#fbbf24';
-const HIGHLIGHT_HALO = 'rgba(251, 191, 36, 0.45)';
-const HIGHLIGHT_FILL = '#fbbf24';
+const HIGHLIGHT_HALO = 'rgba(251, 191, 36, 0.5)';
 
 /** 나라 포커스 중에는 저줌에서도 국경이 보이도록 */
 const HIGHLIGHT_MIN_ZOOM = 1.8;
 const HIGHLIGHT_MAX_ZOOM = 22;
+
+/** fit 도착 줌 기준 상대 페이드 — 소국(고줌 fit)도 도착 시점에는 peak 유지 */
+const FILL_PEAK_OPACITY = 0.48;
+const LINE_PEAK_OPACITY = 0.95;
+const HALO_PEAK_OPACITY = 0.85;
+const DISPUTED_PEAK_OPACITY = 0.85;
+const DEFAULT_SETTLE_ZOOM = 4.2;
+
+/**
+ * @param {number} settleZoom fit/도착 줌
+ * @param {number} peak 도착 줌 이하에서의 불투명도
+ */
+function opacityExprFromSettle(settleZoom, peak) {
+  const z = Number.isFinite(settleZoom) ? settleZoom : DEFAULT_SETTLE_ZOOM;
+  const zPeak = Math.max(HIGHLIGHT_MIN_ZOOM, z);
+  return [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    zPeak,
+    peak,
+    zPeak + 0.8,
+    peak * 0.45,
+    zPeak + 1.6,
+    peak * 0.12,
+    zPeak + 2.4,
+    0,
+  ];
+}
 
 export function isRegionHighlightLayer(layerId = '') {
   return String(layerId).startsWith('gateo-region-highlight');
@@ -185,17 +218,7 @@ function addCountryFillLayer(map) {
       layout: { visibility: 'none' },
       paint: {
         'fill-color': HIGHLIGHT_FILL,
-        'fill-opacity': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          2,
-          0.22,
-          5,
-          0.18,
-          8,
-          0.12,
-        ],
+        'fill-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, FILL_PEAK_OPACITY),
       },
     });
     return Boolean(map.getLayer(REGION_HIGHLIGHT_FILL_ID));
@@ -261,7 +284,7 @@ export function setupRegionHighlightLayers(map) {
       paint: {
         'line-color': HIGHLIGHT_HALO,
         'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3.5, 5, 7, 8, 10],
-        'line-opacity': 0.85,
+        'line-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, HALO_PEAK_OPACITY),
         'line-blur': 1.1,
       },
     });
@@ -272,7 +295,7 @@ export function setupRegionHighlightLayers(map) {
       paint: {
         'line-color': HIGHLIGHT_LINE,
         'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.4, 5, 2.6, 8, 3.4],
-        'line-opacity': 0.95,
+        'line-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, LINE_PEAK_OPACITY),
       },
     });
 
@@ -282,7 +305,7 @@ export function setupRegionHighlightLayers(map) {
       paint: {
         'line-color': HIGHLIGHT_LINE,
         'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.2, 5, 2.2, 8, 3],
-        'line-opacity': 0.85,
+        'line-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, DISPUTED_PEAK_OPACITY),
         'line-dasharray': [1.5, 1.5],
       },
     });
@@ -304,7 +327,7 @@ function setStandardAdminBoundaries(map, enabled) {
 
 /**
  * @param {import('mapbox-gl').Map} map
- * @param {{ iso?: string, bbox?: number[] } | null} region
+ * @param {{ iso?: string, bbox?: number[], settleZoom?: number } | null} region
  */
 export function setRegionHighlight(map, region) {
   if (!map) return;
@@ -315,6 +338,14 @@ export function setRegionHighlight(map, region) {
     return;
   }
 
+  const settleZoom = Number.isFinite(region?.settleZoom)
+    ? region.settleZoom
+    : DEFAULT_SETTLE_ZOOM;
+  const fillOpacity = opacityExprFromSettle(settleZoom, FILL_PEAK_OPACITY);
+  const lineOpacity = opacityExprFromSettle(settleZoom, LINE_PEAK_OPACITY);
+  const haloOpacity = opacityExprFromSettle(settleZoom, HALO_PEAK_OPACITY);
+  const disputedOpacity = opacityExprFromSettle(settleZoom, DISPUTED_PEAK_OPACITY);
+
   const ready = setupRegionHighlightLayers(map);
   const hasFill = Boolean(map.getLayer(REGION_HIGHLIGHT_FILL_ID));
   const hasAdmin = Boolean(
@@ -323,19 +354,28 @@ export function setRegionHighlight(map, region) {
 
   if (ready && (hasFill || hasAdmin)) {
     if (hasFill) {
+      try {
+        map.setPaintProperty(REGION_HIGHLIGHT_FILL_ID, 'fill-opacity', fillOpacity);
+      } catch {
+        // ignore
+      }
       setLayerFilter(map, REGION_HIGHLIGHT_FILL_ID, countryFillFilter(iso));
       setVisibility(map, REGION_HIGHLIGHT_FILL_ID, 'visible');
-      // fill이 범위를 보여 주므로 admin 실선은 숨김 · 분쟁 점선만
-      setVisibility(map, REGION_HIGHLIGHT_HALO_ID, 'none');
-      setVisibility(map, REGION_HIGHLIGHT_LINE_ID, 'none');
-      if (map.getLayer(REGION_HIGHLIGHT_DISPUTED_ID)) {
-        setLayerFilter(map, REGION_HIGHLIGHT_DISPUTED_ID, admin0IsoFilter(iso, { disputed: true }));
-        setVisibility(map, REGION_HIGHLIGHT_DISPUTED_ID, 'visible');
-      }
-    } else if (hasAdmin) {
+    }
+
+    // 앰버 국경선(Streets admin0) — 육지 접경 시인성 · 섬 전체 윤곽은 그리지 않음
+    if (hasAdmin) {
       const solid = admin0IsoFilter(iso, { disputed: false });
       const disputed = admin0IsoFilter(iso, { disputed: true });
       const any = admin0IsoFilter(iso);
+
+      try {
+        map.setPaintProperty(REGION_HIGHLIGHT_HALO_ID, 'line-opacity', haloOpacity);
+        map.setPaintProperty(REGION_HIGHLIGHT_LINE_ID, 'line-opacity', lineOpacity);
+        map.setPaintProperty(REGION_HIGHLIGHT_DISPUTED_ID, 'line-opacity', disputedOpacity);
+      } catch {
+        // ignore
+      }
 
       setLayerFilter(map, REGION_HIGHLIGHT_HALO_ID, any);
       setLayerFilter(map, REGION_HIGHLIGHT_LINE_ID, solid);

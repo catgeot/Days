@@ -1639,13 +1639,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       ? { top: 72, bottom: 140, left: 36, right: 36 }
       : { top: 80, bottom: 80, left: 220, right: 64 };
 
-    focusedFaceRegionRef.current = {
-      iso: region.iso,
-      bbox: Array.isArray(region.bbox) ? region.bbox : bounds,
-    };
-    setupRegionHighlightLayers(map);
-    setRegionHighlight(map, focusedFaceRegionRef.current);
-
     let camera = null;
     if (bounds) {
       try {
@@ -1678,6 +1671,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         bearing: 0,
       };
     }
+
+    const settleZoom = Number.isFinite(camera?.zoom) ? camera.zoom : GLOBE_FACE_REGION_DEFAULT_ZOOM;
+    focusedFaceRegionRef.current = {
+      iso: region.iso,
+      bbox: Array.isArray(region.bbox) ? region.bbox : bounds,
+      settleZoom,
+    };
+    setupRegionHighlightLayers(map);
+    setRegionHighlight(map, focusedFaceRegionRef.current);
 
     try {
       map.stop();
