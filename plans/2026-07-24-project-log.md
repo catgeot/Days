@@ -651,5 +651,5 @@ QA 후 커밋.
 
 **남은 LEGACY**: *(없음)*
 
-**다음**: 플랜 S4 캐시(선택) · 또는 `/korea` areaHub 사람 QA. Cloud 오케·releaseNotes·국내 지도·hub 신설 금지 유지.
+**다음**: ~~areaHub QA~~ → [`2026-07-26-project-log.md`](./2026-07-26-project-log.md) 「국내축제 — areaHub QA」✅ · S4는 쿼터·지연 시만.
 

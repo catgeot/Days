@@ -9,10 +9,10 @@
 - **항공 경로 DB (우선)**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) · **Heuristic SSOT (다음)**: [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · **비-ICN 라우팅**: [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) (OurAirports·Supabase · **Phase 0~4 v2.2 ✅** · **Heuristic+GATN seed ⏳**)
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
 - **TourAPI 국내 관광 (3단계 ⏳ · 시드40·v1.7 · UI/릴리스 합의)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
-- **국내 축제·지역 허브 `/korea` (S1 proxy ✅ · 다음 S2 UI)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 제시어 `국내축제-S2-UI` · 일지「국내축제 — S1」
+- **국내 축제·지역 허브 `/korea` (S3b ✅ · areaHub QA ✅ · S4 선택)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지「국내축제 — areaHub QA」
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-07-24-project-log.md`](./2026-07-24-project-log.md) · 직전 [`2026-07-23-project-log.md`](./2026-07-23-project-log.md)  
+  - 최신: [`2026-07-26-project-log.md`](./2026-07-26-project-log.md) · 직전 [`2026-07-24-project-log.md`](./2026-07-24-project-log.md)  
   - **홈 지구본 풍부화 계획**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md)
   - **AI 채팅 예약 CTA Phase 2 handoff**: [`2026-05-22-ai-chat-booking-cta-handoff.md`](./2026-05-22-ai-chat-booking-cta-handoff.md)
   - 새로운 날 작업이면 `plans/` **루트**에 **새** 파일로 추가하면 됩니다.

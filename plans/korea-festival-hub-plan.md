@@ -10,8 +10,8 @@
 | **S1** 프록시·fetch | ✅ | S2 |
 | S2 `/korea` UI | ✅ S2b | addr 도/시·시군·달력 dayRole · 다음 S3a |
 | S3a 상세·SEO | ✅ `aed70b1` | 다음 S3b |
-| S3b area↔hub SSOT | ✅ G0 `7d63551` | 이후 시도 배치(로컬 순차) |
-| S4 캐시 | 선택 | MVP 이후 |
+| S3b area↔hub SSOT | ✅ G0+시도 일괄 · LEGACY 비움 | areaHub QA ✅ |
+| S4 캐시 | 선택 | 쿼터·지연 보일 때만 |
 
 ---
 
@@ -168,7 +168,8 @@ QA 후 커밋.
 
 ### S4 — 캐시 (선택)
 
-쿼터·지연 보일 때. `국내축제-S4-캐시`.
+쿼터·지연 보일 때. `국내축제-S4-캐시`.  
+areaHub QA(2026-07-26) PASS 후 — **기본 보류**. MVP는 LIVE + sessionStorage.
 
 ---
 
