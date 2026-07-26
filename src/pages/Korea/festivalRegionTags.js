@@ -119,4 +119,48 @@ export function filterByRegion(items, filter = {}) {
   });
 }
 
-export { MIN_COUNT as REGION_MIN_COUNT, SIDO_ORDER };
+/**
+ * 육지 인접 시도 (TourAPI areaCode). 제주·고립은 빈 배열.
+ * 인근 칩은 이 표 ∩ 현재 결과 sidoChips 만 표시.
+ */
+const SIDO_NEIGHBORS = {
+  1: ['31', '2'],
+  2: ['1', '31'],
+  3: ['33', '34', '37'],
+  4: ['35', '36', '7'],
+  5: ['38', '37'],
+  6: ['36', '7'],
+  7: ['6', '35', '36'],
+  31: ['1', '2', '32', '33', '34'],
+  32: ['31', '1', '33', '35'],
+  33: ['31', '32', '34', '3', '35', '37'],
+  34: ['31', '33', '3', '37'],
+  35: ['32', '33', '4', '7', '36'],
+  36: ['35', '4', '7', '6', '38', '37'],
+  37: ['34', '33', '3', '5', '38', '36'],
+  38: ['37', '5', '36'],
+  39: [],
+};
+
+/**
+ * @param {string} areaCode
+ * @param {{ id: string, label: string, count: number }[]} sidoChips
+ */
+export function neighborSidoTags(areaCode, sidoChips) {
+  if (!areaCode || areaCode === 'all') return [];
+  const neigh = SIDO_NEIGHBORS[String(areaCode)] || [];
+  if (!neigh.length) return [];
+  const byId = new Map((sidoChips || []).map((s) => [String(s.id), s]));
+  return neigh.map((id) => byId.get(String(id))).filter(Boolean);
+}
+
+/**
+ * @param {string} areaCode
+ */
+export function sidoLabel(areaCode) {
+  if (!areaCode || areaCode === 'all') return '';
+  const hit = SIDO_ORDER.find((s) => s.id === String(areaCode));
+  return hit?.label || SIDO_ADDR_HINTS[areaCode]?.[0] || '';
+}
+
+export { MIN_COUNT as REGION_MIN_COUNT, SIDO_ORDER, SIDO_NEIGHBORS };

@@ -59,4 +59,9 @@ export function filterByTaste(items, tasteId) {
   });
 }
 
+export function tasteLabel(tasteId) {
+  if (!tasteId || tasteId === 'all') return '';
+  return TASTE_KEYWORDS.find((k) => k.id === tasteId)?.label || '';
+}
+
 export { MIN_COUNT as TASTE_MIN_COUNT };

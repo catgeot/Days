@@ -16,11 +16,13 @@ import { hubIdsForArea } from './koreaHubSeeds';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { filterByTimeTab } from './festivalTimeFilter';
-import { buildTasteTags, filterByTaste } from './festivalTasteTags';
+import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
   buildSidoTags,
   filterByRegion,
+  neighborSidoTags,
+  sidoLabel,
 } from './festivalRegionTags';
 import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
 import KoreaFestivalMap from './KoreaFestivalMap';
@@ -84,6 +86,135 @@ function chipClass(active) {
       ? 'bg-amber-500/25 text-amber-50 border-amber-300/45 font-bold'
       : 'bg-black/45 text-gray-200 border-white/20 hover:bg-black/60'
   }`;
+}
+
+function flapChipClass(active) {
+  return `flex w-full items-center justify-between gap-1 rounded-xl border px-2 py-1.5 text-left text-[11px] transition-all ${
+    active
+      ? 'border-amber-300/45 bg-amber-500/25 font-bold text-amber-50'
+      : 'border-white/15 bg-white/[0.04] text-gray-200 hover:bg-white/[0.08]'
+  }`;
+}
+
+function RelatedChipFlap({
+  childChips,
+  neighborChips,
+  tasteSiblingChips,
+  cityName,
+  tasteId,
+  onSelectCity,
+  onSelectSido,
+  onSelectTaste,
+  layout = 'side',
+}) {
+  const hasChild = childChips.length > 0;
+  const hasNeighbor = neighborChips.length > 0;
+  const hasTaste = tasteSiblingChips.length > 0;
+  if (!hasChild && !hasNeighbor && !hasTaste) return null;
+
+  const shell =
+    layout === 'side'
+      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-white/15 bg-black/65 px-1.5 py-2.5 custom-scrollbar'
+      : 'flex gap-2 overflow-x-auto border-b border-white/10 px-3 py-2 custom-scrollbar md:hidden';
+
+  if (layout === 'row') {
+    return (
+      <div className={shell} aria-label="연관 색인 칩">
+        {childChips.map((c) => (
+          <button
+            key={`m-child-${c.id}`}
+            type="button"
+            onClick={() => onSelectCity(c.id)}
+            className={chipClass(cityName === c.id)}
+          >
+            {c.label}
+            <span className="opacity-70">{c.count}</span>
+          </button>
+        ))}
+        {neighborChips.map((s) => (
+          <button
+            key={`m-near-${s.id}`}
+            type="button"
+            onClick={() => onSelectSido(s.id)}
+            className={chipClass(false)}
+          >
+            {s.label}
+            <span className="opacity-70">{s.count}</span>
+          </button>
+        ))}
+        {tasteSiblingChips.map((t) => (
+          <button
+            key={`m-taste-${t.id}`}
+            type="button"
+            onClick={() => onSelectTaste(t.id)}
+            className={chipClass(tasteId === t.id)}
+          >
+            {t.label}
+            <span className="opacity-70">{t.count}</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className={shell} aria-label="연관 색인 칩">
+      {hasChild && (
+        <div className="space-y-1">
+          <p className="px-0.5 text-[9px] font-bold tracking-wide text-white/45">
+            하위
+          </p>
+          {childChips.map((c) => (
+            <button
+              key={`child-${c.id}`}
+              type="button"
+              onClick={() => onSelectCity(c.id)}
+              className={flapChipClass(cityName === c.id)}
+            >
+              <span className="truncate">{c.label}</span>
+              <span className="shrink-0 opacity-70">{c.count}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {hasNeighbor && (
+        <div className="space-y-1">
+          <p className="px-0.5 text-[9px] font-bold tracking-wide text-white/45">
+            인근
+          </p>
+          {neighborChips.map((s) => (
+            <button
+              key={`near-${s.id}`}
+              type="button"
+              onClick={() => onSelectSido(s.id)}
+              className={flapChipClass(false)}
+            >
+              <span className="truncate">{s.label}</span>
+              <span className="shrink-0 opacity-70">{s.count}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {hasTaste && (
+        <div className="space-y-1">
+          <p className="px-0.5 text-[9px] font-bold tracking-wide text-white/45">
+            테마
+          </p>
+          {tasteSiblingChips.map((t) => (
+            <button
+              key={`taste-${t.id}`}
+              type="button"
+              onClick={() => onSelectTaste(t.id)}
+              className={flapChipClass(tasteId === t.id)}
+            >
+              <span className="truncate">{t.label}</span>
+              <span className="shrink-0 opacity-70">{t.count}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function FestivalRow({ item, active, onSelect }) {
@@ -231,6 +362,41 @@ export default function KoreaFestivalHub() {
 
   const indexActive =
     tasteId !== 'all' || areaCode !== 'all' || cityName !== 'all';
+
+  const indexTitle = useMemo(() => {
+    if (mapFocusIds?.length) {
+      return nearLabel ? `${nearLabel} 주변` : '선택';
+    }
+    const parts = [];
+    const sido = sidoLabel(areaCode);
+    if (sido) parts.push(sido);
+    if (cityName !== 'all') parts.push(cityName);
+    const taste = tasteLabel(tasteId);
+    if (taste) parts.push(taste);
+    return parts.length ? parts.join(' · ') : '색인';
+  }, [mapFocusIds, nearLabel, areaCode, cityName, tasteId]);
+
+  const neighborChips = useMemo(
+    () => neighborSidoTags(areaCode, sidoChips),
+    [areaCode, sidoChips],
+  );
+
+  const flapChildChips = useMemo(() => {
+    if (areaCode === 'all' || mapFocusIds?.length) return [];
+    return cityChips;
+  }, [areaCode, cityChips, mapFocusIds]);
+
+  const flapTasteChips = useMemo(() => {
+    if (mapFocusIds?.length) return [];
+    if (!indexActive) return [];
+    return tasteChips.filter((t) => t.id !== tasteId);
+  }, [mapFocusIds, indexActive, tasteChips, tasteId]);
+
+  const flapHasRelated =
+    !mapFocusIds?.length &&
+    (flapChildChips.length > 0 ||
+      neighborChips.length > 0 ||
+      flapTasteChips.length > 0);
 
   const byContentId = useMemo(() => {
     const map = new Map();
@@ -597,65 +763,101 @@ export default function KoreaFestivalHub() {
 
       {showList && (
         <aside
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 md:inset-x-auto md:bottom-auto md:left-3 md:top-[8.5rem] md:w-[340px] lg:left-5 lg:w-[360px]"
+          className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 md:inset-x-auto md:bottom-auto md:left-3 md:top-[8.5rem] lg:left-5 ${
+            flapHasRelated ? 'md:w-[432px] lg:w-[452px]' : 'md:w-[340px] lg:w-[360px]'
+          }`}
           aria-label="선택한 축제 목록"
         >
-          <div className="pointer-events-auto flex max-h-[42vh] flex-col rounded-t-3xl border border-white/15 bg-black/70 shadow-2xl backdrop-blur-xl md:max-h-[calc(100dvh-10rem)] md:rounded-3xl">
-            <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
-              <div className="min-w-0">
-                <h2 className="text-sm font-bold text-white">
-                  {mapFocusIds?.length ? '선택' : '색인'}
-                </h2>
-                <p className="text-[11px] text-gray-400">
-                  {panelItems.length}건
-                  {(mapFocusIds?.length || filteredItems.length) > PANEL_LIMIT
-                    ? ` · ${PANEL_LIMIT}건까지`
-                    : ''}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-1.5">
-                {(focusStack.length > 0 || mapFocusIds?.length) && (
+          <div className="pointer-events-auto flex max-h-[42vh] flex-col md:max-h-[calc(100dvh-10rem)] md:flex-row md:items-stretch">
+            {flapHasRelated && (
+              <RelatedChipFlap
+                layout="side"
+                childChips={flapChildChips}
+                neighborChips={neighborChips}
+                tasteSiblingChips={flapTasteChips}
+                cityName={cityName}
+                tasteId={tasteId}
+                onSelectCity={selectCity}
+                onSelectSido={selectSido}
+                onSelectTaste={selectTaste}
+              />
+            )}
+            <div
+              className={`flex min-w-0 flex-1 flex-col border border-white/15 bg-black/70 shadow-2xl backdrop-blur-xl ${
+                flapHasRelated
+                  ? 'rounded-t-3xl md:rounded-l-none md:rounded-r-3xl'
+                  : 'rounded-t-3xl md:rounded-3xl'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-bold text-white">
+                    {indexTitle}
+                  </h2>
+                  <p className="text-[11px] text-gray-400">
+                    {panelItems.length}건
+                    {(mapFocusIds?.length || filteredItems.length) > PANEL_LIMIT
+                      ? ` · ${PANEL_LIMIT}건까지`
+                      : ''}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {(focusStack.length > 0 || mapFocusIds?.length) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleViewBack();
+                        setMapBackNonce((n) => n + 1);
+                      }}
+                      aria-label="이전 지도 위치로"
+                      className="flex h-9 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 text-[11px] font-bold text-gray-100 hover:bg-white/10"
+                    >
+                      <Undo2 size={14} aria-hidden="true" />
+                      뒤로
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={() => {
-                      handleViewBack();
-                      setMapBackNonce((n) => n + 1);
-                    }}
-                    aria-label="이전 지도 위치로"
-                    className="flex h-9 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 text-[11px] font-bold text-gray-100 hover:bg-white/10"
+                    onClick={clearFocus}
+                    aria-label="선택·색인 해제 · 전국 보기"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-gray-200 hover:bg-white/10"
                   >
-                    <Undo2 size={14} aria-hidden="true" />
-                    뒤로
+                    <X size={16} />
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={clearFocus}
-                  aria-label="선택·색인 해제 · 전국 보기"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-gray-200 hover:bg-white/10"
-                >
-                  <X size={16} />
-                </button>
+                </div>
               </div>
-            </div>
-            <div className="custom-scrollbar space-y-2 overflow-y-auto px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
-              {panelItems.length === 0 ? (
-                <p className="px-1 py-4 text-sm text-gray-400">
-                  이 선택에 맞는 축제가 없습니다.
-                </p>
-              ) : (
-                panelItems.map((item) => (
-                  <FestivalRow
-                    key={festivalKey(item)}
-                    item={item}
-                    active={
-                      selected?.contentId != null &&
-                      String(selected.contentId) === String(item.contentId)
-                    }
-                    onSelect={openItem}
-                  />
-                ))
+              {flapHasRelated && (
+                <RelatedChipFlap
+                  layout="row"
+                  childChips={flapChildChips}
+                  neighborChips={neighborChips}
+                  tasteSiblingChips={flapTasteChips}
+                  cityName={cityName}
+                  tasteId={tasteId}
+                  onSelectCity={selectCity}
+                  onSelectSido={selectSido}
+                  onSelectTaste={selectTaste}
+                />
               )}
+              <div className="custom-scrollbar space-y-2 overflow-y-auto px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+                {panelItems.length === 0 ? (
+                  <p className="px-1 py-4 text-sm text-gray-400">
+                    이 선택에 맞는 축제가 없습니다.
+                  </p>
+                ) : (
+                  panelItems.map((item) => (
+                    <FestivalRow
+                      key={festivalKey(item)}
+                      item={item}
+                      active={
+                        selected?.contentId != null &&
+                        String(selected.contentId) === String(item.contentId)
+                      }
+                      onSelect={openItem}
+                    />
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </aside>
