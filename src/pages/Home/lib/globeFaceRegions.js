@@ -19,7 +19,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 export const GLOBE_FACE_PRIORITY = {
   /** 한국 중심 아시아·남태평양 */
   paradise: ['kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv', 'hi', 'um'],
-  /** 아프리카·서인도양 */
+  /** 아프리카·서인도양 — 모리셔스·세이셸은 지리상 여기(휴양 테마로 옮기지 말 것) */
   nature: ['ke', 'tz', 'za', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 'ma'],
   /** 유럽·북극(그린란드·스발바르) */
   urban: ['no', 'fr', 'gb', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr', 'gl', 'sj'],
