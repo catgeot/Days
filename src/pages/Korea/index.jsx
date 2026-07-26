@@ -618,9 +618,9 @@ export default function KoreaFestivalHub() {
         />
       </div>
 
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
         <div className="pointer-events-auto mx-auto max-w-6xl px-3 md:px-5">
-          <div className="min-w-0 rounded-2xl border border-white/15 bg-black/55 px-3 py-2.5 shadow-lg backdrop-blur-md md:px-4">
+          <div className="min-w-0 rounded-2xl border border-white/15 bg-black/70 px-3 py-2.5 shadow-lg backdrop-blur-md md:px-4">
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-200/80">
@@ -789,7 +789,7 @@ export default function KoreaFestivalHub() {
       </header>
 
       {loading && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-20 flex justify-center px-4">
+        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
           <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-4 py-2 text-sm text-gray-200 shadow-lg backdrop-blur-md">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             축제 일정을 불러오는 중…
@@ -798,7 +798,7 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && error && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-20 flex justify-center px-4">
+        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
           <div className="pointer-events-auto max-w-sm rounded-2xl border border-white/15 bg-black/70 px-4 py-4 text-center shadow-lg backdrop-blur-md">
             <p className="text-sm text-gray-200">{error}</p>
             <button
@@ -814,12 +814,12 @@ export default function KoreaFestivalHub() {
 
       {showList && (
         <aside
-          className={`pointer-events-none absolute inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom,0px))] z-20 px-3 md:inset-x-auto md:bottom-auto md:left-3 md:top-[7.25rem] md:px-0 lg:left-5 ${
+          className={`pointer-events-none absolute inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom,0px))] z-20 px-3 md:inset-x-auto md:bottom-auto md:left-3 md:top-[7.5rem] md:h-[calc(100dvh-9.5rem)] md:max-h-[calc(100dvh-9.5rem)] md:px-0 lg:left-5 ${
             flapHasRelated ? 'md:w-[432px] lg:w-[452px]' : 'md:w-[340px] lg:w-[360px]'
           }`}
           aria-label="선택한 축제 목록"
         >
-          <div className="pointer-events-auto flex max-h-[min(58vh,calc(100dvh-9.5rem))] flex-col md:max-h-[calc(100dvh-9.5rem)] md:flex-row md:items-stretch">
+          <div className="pointer-events-auto flex max-h-[50vh] flex-col md:h-full md:max-h-full md:flex-row md:items-stretch">
             {flapHasRelated && (
               <RelatedChipFlap
                 layout="side"
