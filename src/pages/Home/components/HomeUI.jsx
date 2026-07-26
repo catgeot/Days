@@ -12,7 +12,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
-import GlobeFaceRegionRail from './GlobeFaceRegionRail';
+import GlobeFaceRegionRail, { GlobeFaceSubregionBar } from './GlobeFaceRegionRail';
+import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 
@@ -221,6 +222,19 @@ const HomeUI = React.memo(({
       </div>
       )}
 
+      {/* 모바일 — 소권역 상단 선택바 (로고·검색 아래 여유 · 가로 스크롤) */}
+      {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory
+        && shouldShowFaceSubregionChips(selectedCategory) && (
+        <div className="md:hidden fixed left-3 right-3 top-[6.75rem] z-[55] pointer-events-none animate-fade-in-down">
+          <GlobeFaceSubregionBar
+            category={selectedCategory}
+            selectedSubregionId={selectedFaceSubregionId}
+            onSelectSubregion={onFaceSubregionSelect}
+            className="max-w-full"
+          />
+        </div>
+      )}
+
       {/* 모바일 — 나라/지역 (카테고리 바 바로 위 · 안전 간격 ~12px · 펼침 시에만 목록) */}
       {!isTourCinema && !hideExploreChrome && faceRegionsOpen && selectedCategory && (
         <div className="md:hidden fixed left-4 bottom-[6.25rem] z-[55] pointer-events-none animate-fade-in-right flex flex-col items-start gap-1">
@@ -229,6 +243,10 @@ const HomeUI = React.memo(({
               category={selectedCategory}
               selectedRegionId={selectedFaceRegionId}
               onSelectRegion={onFaceRegionSelect}
+              showSubregions
+              subregionPlacement="none"
+              selectedSubregionId={selectedFaceSubregionId}
+              onSelectSubregion={onFaceSubregionSelect}
               className="mb-0.5"
             />
           ) : null}

@@ -30,12 +30,118 @@ const CATEGORY_CHIP = {
 };
 
 const GLASS_SCROLL_CLASS = 'globe-face-region-scroll';
-/** 소권역 전환 시 패널 높이 고정 — max-h 대신 h (내용만 교체) */
-const RAIL_LIST_HEIGHT = 'h-[min(68vh,34rem)]';
+/** PC 소권역 전환 시 패널 높이 고정 — max-h 대신 h (내용만 교체) */
+const RAIL_LIST_HEIGHT_DESKTOP = 'h-[min(68vh,34rem)]';
+/** 모바일 — 상단 선택바·로고 여유를 남기고도 스크롤이 답답하지 않게 */
+const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
+const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
+
+function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, subregions) {
+  return useMemo(() => {
+    if (!showSubregionChips) return null;
+    if (selectedSubregionId && subregions.some((s) => s.id === selectedSubregionId)) {
+      return selectedSubregionId;
+    }
+    return getDefaultFaceSubregionId(category);
+  }, [showSubregionChips, selectedSubregionId, subregions, category]);
+}
+
+function GlassScrollStyles() {
+  return (
+    <style>{`
+      .${GLASS_SCROLL_CLASS} {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.28) rgba(255, 255, 255, 0.06);
+      }
+      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar {
+        width: 5px;
+        height: 4px;
+      }
+      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 999px;
+        backdrop-filter: blur(8px);
+      }
+      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar-thumb {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.35) 0%,
+          rgba(255, 255, 255, 0.14) 100%
+        );
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
+      }
+      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.45) 0%,
+          rgba(255, 255, 255, 0.22) 100%
+        );
+      }
+    `}</style>
+  );
+}
+
+/**
+ * 모바일 상단 — 소권역 가로 선택바 (로고 아래 여유는 호출부 top으로).
+ */
+export function GlobeFaceSubregionBar({
+  category,
+  selectedSubregionId = null,
+  onSelectSubregion,
+  className = '',
+}) {
+  const subregions = useMemo(() => getFaceSubregions(category), [category]);
+  const show = shouldShowFaceSubregionChips(category) && subregions.length > 0;
+  const activeSubregionId = useActiveSubregionId(category, show, selectedSubregionId, subregions);
+
+  useEffect(() => {
+    if (!show || !activeSubregionId) return;
+    if (selectedSubregionId === activeSubregionId) return;
+    onSelectSubregion?.(activeSubregionId);
+  }, [show, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+
+  if (!category || !show) return null;
+
+  const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
+
+  return (
+    <div className={`pointer-events-auto ${className}`}>
+      <GlassScrollStyles />
+      <div
+        className={`flex max-w-full gap-1.5 overflow-x-auto ${GLASS_SCROLL_CLASS} rounded-2xl border border-white/15 bg-black/55 px-2 py-1.5 backdrop-blur-xl shadow-lg`}
+        role="listbox"
+        aria-label="소권역"
+      >
+        {subregions.map((sub) => {
+          const isActive = activeSubregionId === sub.id;
+          return (
+            <button
+              key={sub.id}
+              type="button"
+              role="option"
+              aria-selected={isActive}
+              onClick={() => onSelectSubregion?.(sub.id)}
+              className={`shrink-0 rounded-lg border px-2.5 py-1.5 text-left transition-all active:scale-[0.97] ${
+                isActive ? tone.active : `${tone.idle} bg-black/30 opacity-85`
+              }`}
+            >
+              <span className="block whitespace-nowrap text-[11px] font-bold leading-tight tracking-tight break-keep">
+                {sub.labelKo}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 /**
  * 카테고리 면 → 권역 나라 칩 레일 (면당 배타 · 스크롤).
- * PC: showSubregions 시 소권역 칩 + 필터된 나라 목록 (「전체」칩 없음 · 기본 첫 소권역).
+ * PC: subregionPlacement=side 시 소권역 칩 + 필터된 나라 목록 (「전체」칩 없음 · 기본 첫 소권역).
+ * 모바일: subregionPlacement=none + 상단 GlobeFaceSubregionBar 조합.
  */
 export default function GlobeFaceRegionRail({
   category,
@@ -44,6 +150,9 @@ export default function GlobeFaceRegionRail({
   showSubregions = false,
   selectedSubregionId = null,
   onSelectSubregion,
+  /** 'side' = PC 세로 칩 · 'none' = 칩 UI 없음(필터만 · 상단 바 등과 조합) */
+  subregionPlacement = 'side',
+  listHeightClass,
   className = '',
 }) {
   const subregions = useMemo(
@@ -51,19 +160,25 @@ export default function GlobeFaceRegionRail({
     [category, showSubregions],
   );
   const showSubregionChips = showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
+  const renderSideChips = showSubregionChips && subregionPlacement === 'side';
 
-  const activeSubregionId = useMemo(() => {
-    if (!showSubregionChips) return null;
-    if (selectedSubregionId && subregions.some((s) => s.id === selectedSubregionId)) {
-      return selectedSubregionId;
-    }
-    return getDefaultFaceSubregionId(category);
-  }, [showSubregionChips, selectedSubregionId, subregions, category]);
+  const activeSubregionId = useActiveSubregionId(
+    category,
+    showSubregionChips,
+    selectedSubregionId,
+    subregions,
+  );
 
   const regions = useMemo(
     () => getFaceRegionsForSubregion(category, showSubregionChips ? activeSubregionId : null),
     [category, showSubregionChips, activeSubregionId],
   );
+
+  const resolvedListHeight =
+    listHeightClass
+    || (subregionPlacement === 'none'
+      ? (showSubregionChips ? RAIL_LIST_HEIGHT_MOBILE : RAIL_LIST_HEIGHT_MOBILE_FLAT)
+      : RAIL_LIST_HEIGHT_DESKTOP);
 
   const listRef = useRef(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
@@ -103,7 +218,7 @@ export default function GlobeFaceRegionRail({
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
   const countryList = (
-    <div className={`relative ${RAIL_LIST_HEIGHT}`}>
+    <div className={`relative ${resolvedListHeight}`}>
       <div
         ref={listRef}
         className={`flex h-full flex-col gap-1.5 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
@@ -140,44 +255,10 @@ export default function GlobeFaceRegionRail({
     </div>
   );
 
-  const scrollStyles = (
-    <style>{`
-      .${GLASS_SCROLL_CLASS} {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.28) rgba(255, 255, 255, 0.06);
-      }
-      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar {
-        width: 5px;
-      }
-      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 999px;
-        backdrop-filter: blur(8px);
-      }
-      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar-thumb {
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.35) 0%,
-          rgba(255, 255, 255, 0.14) 100%
-        );
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
-      }
-      .${GLASS_SCROLL_CLASS}::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.45) 0%,
-          rgba(255, 255, 255, 0.22) 100%
-        );
-      }
-    `}</style>
-  );
-
-  if (!showSubregionChips) {
+  if (!renderSideChips) {
     return (
       <div className={`pointer-events-auto relative ${className}`}>
-        {scrollStyles}
+        <GlassScrollStyles />
         {countryList}
       </div>
     );
@@ -185,9 +266,9 @@ export default function GlobeFaceRegionRail({
 
   return (
     <div className={`pointer-events-auto relative flex flex-row items-start gap-2 ${className}`}>
-      {scrollStyles}
+      <GlassScrollStyles />
       <div
-        className={`flex ${RAIL_LIST_HEIGHT} flex-col gap-1 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
+        className={`flex ${resolvedListHeight} flex-col gap-1 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
         role="listbox"
         aria-label="소권역"
       >
