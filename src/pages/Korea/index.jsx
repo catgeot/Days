@@ -789,7 +789,7 @@ export default function KoreaFestivalHub() {
       </header>
 
       {loading && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
+        <div className="pointer-events-none absolute inset-x-0 top-[5.75rem] z-30 flex justify-center px-2 md:px-3">
           <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-4 py-2 text-sm text-gray-200 shadow-lg backdrop-blur-md">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             축제 일정을 불러오는 중…
@@ -798,8 +798,8 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && error && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
-          <div className="pointer-events-auto max-w-sm rounded-2xl border border-white/15 bg-black/70 px-4 py-4 text-center shadow-lg backdrop-blur-md">
+        <div className="pointer-events-none absolute inset-x-0 top-[5.75rem] z-30 flex justify-center px-2 md:px-3">
+          <div className="pointer-events-auto w-full max-w-lg rounded-2xl border border-white/15 bg-black/70 px-4 py-4 text-center shadow-lg backdrop-blur-md">
             <p className="text-sm text-gray-200">{error}</p>
             <button
               type="button"
