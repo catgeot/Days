@@ -1,6 +1,6 @@
 /** 카테고리 면별 나라/지역 — 우선 시드 + 테마 스팟 + 스캔 테일 */
 
-import { GLOBE_CATEGORY_IDS, spotMatchesCategory } from './globeCategoryFocus.js';
+import { GLOBE_CATEGORY_IDS, GLOBE_FACE_CENTER_BY_CATEGORY } from './globeCategoryFocus.js';
 import {
   GLOBE_COUNTRY_CATALOG,
   getGlobeCountryById,
@@ -49,8 +49,41 @@ export const GLOBE_FACE_REGION_FLY_MS = 1800;
 /** fitBounds 시 도시 지명 노출을 위한 상한 — 작은 섬 과확대 방지 */
 export const GLOBE_FACE_REGION_MAX_ZOOM = 6.4;
 
-/** @type {Map<string, { globe: number, count: number, maxPop: number, categories: Set<string> }> | null} */
+/**
+ * @typedef {{
+ *   globe: number,
+ *   count: number,
+ *   maxPop: number,
+ *   primaryCounts: Record<string, number>,
+ *   homeCategory: string | null,
+ * }} SpotCountryStats
+ */
+
+/** @type {Map<string, SpotCountryStats> | null} */
 let spotCountryStatsCache = null;
+
+/** 다른 면 시드에 걸린 나라 — 이 면 테마 구간에는 올리지 않음(스캔 테일만) */
+function buildOtherFaceSeedIds(category) {
+  const ids = new Set();
+  for (const cat of GLOBE_CATEGORY_IDS) {
+    if (cat === category) continue;
+    for (const id of GLOBE_FACE_PRIORITY[cat] || []) ids.add(id);
+  }
+  return ids;
+}
+
+function resolveHomeCategory(primaryCounts) {
+  let best = null;
+  let bestCount = -1;
+  for (const cat of GLOBE_CATEGORY_IDS) {
+    const n = primaryCounts[cat] || 0;
+    if (n > bestCount) {
+      bestCount = n;
+      best = cat;
+    }
+  }
+  return bestCount > 0 ? best : null;
+}
 
 function buildSpotCountryStats() {
   if (spotCountryStatsCache) return spotCountryStatsCache;
@@ -59,29 +92,71 @@ function buildSpotCountryStats() {
     const id = resolveGlobeCountryIdFromLabel(spot.country);
     if (!id) continue;
     if (!map.has(id)) {
-      map.set(id, { globe: 0, count: 0, maxPop: 0, categories: new Set() });
+      map.set(id, {
+        globe: 0,
+        count: 0,
+        maxPop: 0,
+        primaryCounts: Object.fromEntries(GLOBE_CATEGORY_IDS.map((c) => [c, 0])),
+        homeCategory: null,
+      });
     }
     const e = map.get(id);
     e.count += 1;
     if (spot.showOnGlobe) e.globe += 1;
     e.maxPop = Math.max(e.maxPop, Number(spot.popularity) || 0);
-    for (const cat of GLOBE_CATEGORY_IDS) {
-      if (spotMatchesCategory(spot, cat)) e.categories.add(cat);
+    const primary = spot.primaryCategory || spot.category;
+    if (primary && e.primaryCounts[primary] != null) {
+      e.primaryCounts[primary] += 1;
     }
+  }
+  for (const e of map.values()) {
+    e.homeCategory = resolveHomeCategory(e.primaryCounts);
   }
   spotCountryStatsCache = map;
   return map;
 }
 
-function compareThemeTail(aId, bId, stats) {
-  const a = stats.get(aId) || { globe: 0, count: 0, maxPop: 0 };
-  const b = stats.get(bId) || { globe: 0, count: 0, maxPop: 0 };
+function compareThemeTail(aId, bId, stats, category = null) {
+  const a = stats.get(aId) || { globe: 0, count: 0, maxPop: 0, primaryCounts: {} };
+  const b = stats.get(bId) || { globe: 0, count: 0, maxPop: 0, primaryCounts: {} };
+  if (category) {
+    const ap = a.primaryCounts?.[category] || 0;
+    const bp = b.primaryCounts?.[category] || 0;
+    if (bp !== ap) return bp - ap;
+  }
   if (b.globe !== a.globe) return b.globe - a.globe;
   if (b.count !== a.count) return b.count - a.count;
   if (b.maxPop !== a.maxPop) return b.maxPop - a.maxPop;
   const aLabel = GLOBE_COUNTRY_CATALOG[aId]?.labelKo || aId;
   const bLabel = GLOBE_COUNTRY_CATALOG[bId]?.labelKo || bId;
   return aLabel.localeCompare(bLabel, 'ko');
+}
+
+/** 면 중심과의 대략 거리 — 스캔 테일을 권역별로 갈라 중첩감 완화 */
+function faceAffinityDistance(id, category) {
+  const center = GLOBE_FACE_CENTER_BY_CATEGORY[category];
+  const region = GLOBE_COUNTRY_CATALOG[id];
+  if (!center || !region) return 999;
+  const dLat = region.lat - center.lat;
+  const dLngAbs = Math.abs(region.lng - center.lng);
+  const dLng = Math.min(dLngAbs, 360 - dLngAbs);
+  return Math.hypot(dLat, dLng);
+}
+
+function compareScanTail(aId, bId, stats, category, otherSeeds) {
+  const aOther = otherSeeds.has(aId) ? 1 : 0;
+  const bOther = otherSeeds.has(bId) ? 1 : 0;
+  if (aOther !== bOther) return aOther - bOther;
+
+  const aHome = stats.get(aId)?.homeCategory === category ? 0 : 1;
+  const bHome = stats.get(bId)?.homeCategory === category ? 0 : 1;
+  if (aHome !== bHome) return aHome - bHome;
+
+  const aDist = faceAffinityDistance(aId, category);
+  const bDist = faceAffinityDistance(bId, category);
+  if (aDist !== bDist) return aDist - bDist;
+
+  return compareThemeTail(aId, bId, stats);
 }
 
 /**
@@ -151,16 +226,19 @@ export function getFaceRegionsForCategory(category) {
     pushId(id);
   }
 
+  // 테마 구간: 이 면이 home(primary 최다)인 나라만 · 다른 면 시드는 제외
+  const otherSeeds = buildOtherFaceSeedIds(category);
   const themeIds = [];
   for (const [id, e] of stats) {
-    if (seen.has(id)) continue;
-    if (e.categories.has(category)) themeIds.push(id);
+    if (seen.has(id) || otherSeeds.has(id)) continue;
+    if (e.homeCategory === category) themeIds.push(id);
   }
-  themeIds.sort((a, b) => compareThemeTail(a, b, stats));
+  themeIds.sort((a, b) => compareThemeTail(a, b, stats, category));
   for (const id of themeIds) pushId(id);
 
+  // 스캔 테일: 권역 근접 우선 · 다른 면 시드는 맨 뒤 (휴양↔자연 중첩감 완화)
   const scanIds = Object.keys(GLOBE_COUNTRY_CATALOG).filter((id) => !seen.has(id));
-  scanIds.sort((a, b) => compareThemeTail(a, b, stats));
+  scanIds.sort((a, b) => compareScanTail(a, b, stats, category, otherSeeds));
   for (const id of scanIds) pushId(id);
 
   return out;
