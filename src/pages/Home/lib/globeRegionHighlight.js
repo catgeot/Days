@@ -1,8 +1,11 @@
 /**
- * 나라 칩 포커스 — Mapbox Streets `composite`/`admin` 국경 하이라이트.
+ * 나라 칩 포커스 — Countries v1 육지 fill + Streets `admin` 국경 라인.
  * (satellite-streets · deep/neon). bbox 사각형 미사용.
+ * 해양 EEZ는 Mapbox에 없음 — 섬·분산 영토는 fill로 한눈에 보이게 함.
  */
 
+export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
+export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
 export const REGION_HIGHLIGHT_LINE_ID = 'gateo-region-highlight-line';
 export const REGION_HIGHLIGHT_HALO_ID = 'gateo-region-highlight-halo';
 export const REGION_HIGHLIGHT_DISPUTED_ID = 'gateo-region-highlight-disputed';
@@ -13,6 +16,7 @@ export const REGION_HIGHLIGHT_FALLBACK_LINE_ID = 'gateo-region-highlight-fallbac
 export const REGION_HIGHLIGHT_FALLBACK_HALO_ID = 'gateo-region-highlight-fallback-halo';
 
 export const REGION_HIGHLIGHT_LAYER_IDS = [
+  REGION_HIGHLIGHT_FILL_ID,
   REGION_HIGHLIGHT_HALO_ID,
   REGION_HIGHLIGHT_LINE_ID,
   REGION_HIGHLIGHT_DISPUTED_ID,
@@ -23,9 +27,10 @@ const LEGACY_FALLBACK_LAYER_IDS = [
   REGION_HIGHLIGHT_FALLBACK_LINE_ID,
 ];
 
-/** 선택 나라 국경 — 앰버 */
+/** 선택 나라 — 앰버 */
 const HIGHLIGHT_LINE = '#fbbf24';
 const HIGHLIGHT_HALO = 'rgba(251, 191, 36, 0.45)';
+const HIGHLIGHT_FILL = '#fbbf24';
 
 /** 나라 포커스 중에는 저줌에서도 국경이 보이도록 */
 const HIGHLIGHT_MIN_ZOOM = 1.8;
@@ -102,6 +107,21 @@ function admin0IsoFilter(iso, { disputed = null } = {}) {
   return ['all', ...parts];
 }
 
+/** Mapbox Countries v1 — 육지 폴리곤 (worldview + ISO) */
+function countryFillFilter(iso) {
+  const up = String(iso || '').toUpperCase();
+  return [
+    'all',
+    ['==', ['get', 'disputed'], 'false'],
+    worldviewFilter(),
+    [
+      'any',
+      ['==', ['get', 'iso_3166_1'], up],
+      ['==', ['get', 'iso_3166_1'], up.toLowerCase()],
+    ],
+  ];
+}
+
 function raiseHighlightLayers(map) {
   for (const layerId of REGION_HIGHLIGHT_LAYER_IDS) {
     if (!map.getLayer(layerId)) continue;
@@ -128,6 +148,53 @@ function removeLegacyBboxLayers(map) {
     } catch {
       // ignore
     }
+  }
+}
+
+function ensureCountriesSource(map) {
+  if (map.getSource(REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID)) return true;
+  try {
+    map.addSource(REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID, {
+      type: 'vector',
+      url: 'mapbox://mapbox.country-boundaries-v1',
+    });
+    return Boolean(map.getSource(REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID));
+  } catch {
+    return false;
+  }
+}
+
+function addCountryFillLayer(map) {
+  if (map.getLayer(REGION_HIGHLIGHT_FILL_ID)) return true;
+  if (!ensureCountriesSource(map)) return false;
+  try {
+    map.addLayer({
+      id: REGION_HIGHLIGHT_FILL_ID,
+      type: 'fill',
+      source: REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID,
+      'source-layer': 'country_boundaries',
+      minzoom: HIGHLIGHT_MIN_ZOOM,
+      maxzoom: HIGHLIGHT_MAX_ZOOM,
+      filter: ['==', ['get', 'disputed'], 'false'],
+      layout: { visibility: 'none' },
+      paint: {
+        'fill-color': HIGHLIGHT_FILL,
+        'fill-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          2,
+          0.22,
+          5,
+          0.18,
+          8,
+          0.12,
+        ],
+      },
+    });
+    return Boolean(map.getLayer(REGION_HIGHLIGHT_FILL_ID));
+  } catch {
+    return false;
   }
 }
 
@@ -159,7 +226,9 @@ function addAdminLineLayer(map, { id, compositeId, paint, layout = {} }) {
 export function regionHighlightLayersReady(map) {
   if (!map?.getStyle?.()) return false;
   try {
-    return Boolean(map.getLayer(REGION_HIGHLIGHT_LINE_ID));
+    return Boolean(
+      map.getLayer(REGION_HIGHLIGHT_FILL_ID) || map.getLayer(REGION_HIGHLIGHT_LINE_ID)
+    );
   } catch {
     return false;
   }
@@ -174,42 +243,46 @@ export function setupRegionHighlightLayers(map) {
     // ignore
   }
 
+  const fillOk = addCountryFillLayer(map);
+
   const compositeId = findCompositeSourceId(map);
-  if (!compositeId) return false;
+  let haloOk = false;
+  let lineOk = false;
+  if (compositeId) {
+    haloOk = addAdminLineLayer(map, {
+      id: REGION_HIGHLIGHT_HALO_ID,
+      compositeId,
+      paint: {
+        'line-color': HIGHLIGHT_HALO,
+        'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3.5, 5, 7, 8, 10],
+        'line-opacity': 0.85,
+        'line-blur': 1.1,
+      },
+    });
 
-  const haloOk = addAdminLineLayer(map, {
-    id: REGION_HIGHLIGHT_HALO_ID,
-    compositeId,
-    paint: {
-      'line-color': HIGHLIGHT_HALO,
-      'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3.5, 5, 7, 8, 10],
-      'line-opacity': 0.85,
-      'line-blur': 1.1,
-    },
-  });
+    lineOk = addAdminLineLayer(map, {
+      id: REGION_HIGHLIGHT_LINE_ID,
+      compositeId,
+      paint: {
+        'line-color': HIGHLIGHT_LINE,
+        'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.4, 5, 2.6, 8, 3.4],
+        'line-opacity': 0.95,
+      },
+    });
 
-  const lineOk = addAdminLineLayer(map, {
-    id: REGION_HIGHLIGHT_LINE_ID,
-    compositeId,
-    paint: {
-      'line-color': HIGHLIGHT_LINE,
-      'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.4, 5, 2.6, 8, 3.4],
-      'line-opacity': 0.95,
-    },
-  });
+    addAdminLineLayer(map, {
+      id: REGION_HIGHLIGHT_DISPUTED_ID,
+      compositeId,
+      paint: {
+        'line-color': HIGHLIGHT_LINE,
+        'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.2, 5, 2.2, 8, 3],
+        'line-opacity': 0.85,
+        'line-dasharray': [1.5, 1.5],
+      },
+    });
+  }
 
-  addAdminLineLayer(map, {
-    id: REGION_HIGHLIGHT_DISPUTED_ID,
-    compositeId,
-    paint: {
-      'line-color': HIGHLIGHT_LINE,
-      'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.2, 5, 2.2, 8, 3],
-      'line-opacity': 0.85,
-      'line-dasharray': [1.5, 1.5],
-    },
-  });
-
-  if (!haloOk && !lineOk) return false;
+  if (!fillOk && !haloOk && !lineOk) return false;
   raiseHighlightLayers(map);
   return true;
 }
@@ -237,18 +310,31 @@ export function setRegionHighlight(map, region) {
   }
 
   const ready = setupRegionHighlightLayers(map);
-  if (ready && (map.getLayer(REGION_HIGHLIGHT_LINE_ID) || map.getLayer(REGION_HIGHLIGHT_HALO_ID))) {
-    const solid = admin0IsoFilter(iso, { disputed: false });
-    const disputed = admin0IsoFilter(iso, { disputed: true });
-    const any = admin0IsoFilter(iso);
+  const hasFill = Boolean(map.getLayer(REGION_HIGHLIGHT_FILL_ID));
+  const hasLine = Boolean(
+    map.getLayer(REGION_HIGHLIGHT_LINE_ID) || map.getLayer(REGION_HIGHLIGHT_HALO_ID)
+  );
 
-    setLayerFilter(map, REGION_HIGHLIGHT_HALO_ID, any);
-    setLayerFilter(map, REGION_HIGHLIGHT_LINE_ID, solid);
-    setLayerFilter(map, REGION_HIGHLIGHT_DISPUTED_ID, disputed);
+  if (ready && (hasFill || hasLine)) {
+    if (hasFill) {
+      setLayerFilter(map, REGION_HIGHLIGHT_FILL_ID, countryFillFilter(iso));
+      setVisibility(map, REGION_HIGHLIGHT_FILL_ID, 'visible');
+    }
 
-    setVisibility(map, REGION_HIGHLIGHT_HALO_ID, 'visible');
-    setVisibility(map, REGION_HIGHLIGHT_LINE_ID, 'visible');
-    setVisibility(map, REGION_HIGHLIGHT_DISPUTED_ID, 'visible');
+    if (hasLine) {
+      const solid = admin0IsoFilter(iso, { disputed: false });
+      const disputed = admin0IsoFilter(iso, { disputed: true });
+      const any = admin0IsoFilter(iso);
+
+      setLayerFilter(map, REGION_HIGHLIGHT_HALO_ID, any);
+      setLayerFilter(map, REGION_HIGHLIGHT_LINE_ID, solid);
+      setLayerFilter(map, REGION_HIGHLIGHT_DISPUTED_ID, disputed);
+
+      setVisibility(map, REGION_HIGHLIGHT_HALO_ID, 'visible');
+      setVisibility(map, REGION_HIGHLIGHT_LINE_ID, 'visible');
+      setVisibility(map, REGION_HIGHLIGHT_DISPUTED_ID, 'visible');
+    }
+
     raiseHighlightLayers(map);
     return;
   }

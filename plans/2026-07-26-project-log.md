@@ -134,3 +134,19 @@
 
 - 릴리스 노트: 해당 없음(소소한 UX) · Vercel은 push 후
 - 후속(선택): 모바일 그룹 헤더 또는 소분류 칩
+
+## 나라 포커스 — Countries v1 육지 fill
+
+**상태**: ✅ 로컬 커밋 · 사람 QA 대기
+
+### 구현
+
+- 선택 ISO로 `mapbox.country-boundaries-v1` 반투명 앰버 fill (섬·분산 영토 한눈에)
+- 기존 Streets `admin` 국경 라인 유지 · 해양 EEZ는 Mapbox에 없음
+- [`globeRegionHighlight.js`](../src/pages/Home/lib/globeRegionHighlight.js)
+
+### QA
+
+- 필리핀·일본·인도네시아·몰디브·바하마 등 섬 국가 칩 → 육지 면이 앰버로 칠해지는지
+- 한국·프랑스 등 육지 인접국 → fill + 기존 국경선 모두 보이는지
+- 우주 복귀·다른 나라 전환 시 fill 해제되는지
