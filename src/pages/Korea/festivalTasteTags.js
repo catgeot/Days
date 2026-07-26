@@ -5,12 +5,16 @@ const TASTE_KEYWORDS = [
   { id: 'beach', label: '해변', patterns: ['해변', '비치', '바다', '해수욕'] },
   { id: 'night', label: '야간', patterns: ['야간', '나이트', '밤 '] },
   { id: 'beer', label: '맥주', patterns: ['맥주', '비어', 'beer'] },
+  { id: 'drink', label: '술', patterns: ['막걸리', '와인', '사케', '소주', '양조', '술축제'] },
   { id: 'music', label: '음악', patterns: ['음악', '뮤직', '재즈', '록페', '콘서트'] },
   { id: 'food', label: '먹거리', patterns: ['먹거리', '음식', '맛축제', '푸드', '별미'] },
   { id: 'culture', label: '문화', patterns: ['문화', '전통', '민속', '한옥'] },
+  { id: 'pottery', label: '도자기', patterns: ['도자기', '도예', '세라믹', '청자', '백자'] },
   { id: 'light', label: '빛축제', patterns: ['빛축제', '일루미', '미디어아트', '라이트'] },
   { id: 'flower', label: '꽃', patterns: ['꽃축제', '정원', '플라워', '수선화', '튤립', '국화'] },
-  { id: 'snow', label: '겨울', patterns: ['눈꽃', '빙어', '스키', '겨울'] },
+  { id: 'smelt', label: '빙어', patterns: ['빙어'] },
+  { id: 'summer', label: '썸머', patterns: ['썸머', '여름축제', '워터밤', 'summer'] },
+  { id: 'snow', label: '겨울', patterns: ['눈꽃', '스키', '겨울'] },
   { id: 'film', label: '영화', patterns: ['영화', '필름', '영화제'] },
 ];
 

@@ -12,7 +12,7 @@
 - **국내 축제·지역 허브 `/korea` (S5 지도·권역 ✅ · QA 대기 · S4 선택)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지「국내축제 — S5」
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-07-26-project-log.md`](./2026-07-26-project-log.md) · 직전 [`2026-07-24-project-log.md`](./2026-07-24-project-log.md)  
+  - 최신: [`2026-07-27-project-log.md`](./2026-07-27-project-log.md) · 직전 [`2026-07-26-project-log.md`](./2026-07-26-project-log.md)  
   - **홈 지구본 풍부화 계획**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md)
   - **AI 채팅 예약 CTA Phase 2 handoff**: [`2026-05-22-ai-chat-booking-cta-handoff.md`](./2026-05-22-ai-chat-booking-cta-handoff.md)
   - 새로운 날 작업이면 `plans/` **루트**에 **새** 파일로 추가하면 됩니다.

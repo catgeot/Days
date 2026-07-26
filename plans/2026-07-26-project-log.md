@@ -32,27 +32,28 @@
 
 ## 국내축제 — S5 (`국내축제-S5-지도권역`)
 
-**상태**: ✅ A 풀맵 셸 QA PASS · 커밋·푸시 · 브랜치 `cursor/korea-festival-proxy` · 다음=Cloud 가능
+**상태**: ✅ A QA PASS · ✅ B 색인 칩 코드 · 사람 QA 대기 · 브랜치 `cursor/korea-festival-proxy`
 
 | 산출 | |
 |------|--|
 | 셸 | `/korea` 뷰포트 풀맵 · 상단 홈/시간/내주변 오버레이 |
 | 지도 | cluster · leaves→리스트 · 뷰 스택 **뒤로** · X=전국 |
 | 리스트 | 선택 N건 좌측(모바일 하단) · 행/점 → `FestivalDetailSheet` |
-| 비전 | A ✅ → B 색인칩 → C 즐겨찾기 → D 도로루트(1선택) → E 시트 숙소/투어 |
+| B | 시도·시/군 색인(`festivalRegionTags`) · 테마 칩(`festivalTasteTags`) · 지도·리스트 교집합 필터 · corridor 금지 |
+| 비전 | A ✅ → B ✅코드 → C 즐겨찾기 → D 도로루트(1선택) → E 시트 숙소/투어 |
 
-**보류**: B~E · releaseNotes · hub 신설 · Edge S4 · main.
+**보류**: C~E · releaseNotes · hub 신설 · Edge S4 · main · **B 사람 QA**.
 
-### 이어하기 (Cloud OK)
+### 이어하기
 
-- 브랜치 `origin/cursor/korea-festival-proxy` checkout 후 B 또는 A 폴리시
-- B~E·releaseNotes 금지(명시 전까지)
+- B QA: 시간탭 → 시도 칩 → 시/군 → 테마 → 지도·색인 리스트 · X 전국 · A 회귀
+- OK 후 C 또는 톤 조율
 
-**제시어 (다음 · Cloud)**
+**제시어 (다음 · B QA 후)**
 
 ```
-국내축제-S5-Cloud
+국내축제-S5-C
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-26-project-log.md 「국내축제 — S5」절만
-브랜치 cursor/korea-festival-proxy. B 테마·지역 색인 칩. A 회귀 금지 범위 밖 확장 금지. releaseNotes 금지.
+브랜치 cursor/korea-festival-proxy. C 즐겨찾기·본 항목. A·B 회귀 금지 범위 밖 확장 금지. releaseNotes 금지.
 ```
