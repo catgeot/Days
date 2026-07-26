@@ -33,12 +33,25 @@
 
 ## 국내축제 — S5 B UI 조율 (헤더 대분류·리스트·뒤로)
 
-**상태**: ✅ 코드·푸시 · PR #29 · 사람 QA 대기 · `cursor/korea-festival-proxy`
+**상태**: ✅ 코드·푸시 tip `23b7714` · Draft PR #29 · **사람 QA·추가 수정은 다음 세션** · `cursor/korea-festival-proxy`
 
-| 변경 | |
-|------|--|
-| 헤더 | 대분류 1행(`지금`/`전체`/`테마`) → 클릭 시 같은 행에 중·소 칩 · `대분류`로 복귀 |
-| 리스트 | 하단 여백 · max-h↑ · 모서리 rounded (바닥에 붙지 않게) |
-| 뒤로 | 홈 ArrowLeft·지도 떠 있는 뒤로 **제거** · 리스트 패널 뒤로만 |
+| 변경 | SHA |
+|------|-----|
+| 헤더 대분류 1행·중소 칩·`대분류` 복귀 · 리스트 여백 · 홈/지도 뒤로 제거 | `c1cbb7b` |
+| 조작 중 헤더 가림 → z-30·max-h 단순화 | `8432164` |
+| 지도 `isolate` 스택 보강 | `23b7714` |
 
-**다음**: PR 미리보기 QA → OK면 C 또는 추가 톤 조율.
+**세션 종료**: Cloud 이 턴 종료. working tree clean · PR https://github.com/catgeot/Days/pull/29
+
+**다음 세션**: PR 미리보기에서 QA → 남는 UI 수정 → OK면 S5-C. releaseNotes·hub 신설·corridor 부활 금지.
+
+**제시어 (이어하기)**
+
+```
+국내축제-S5-B-QA
+@plans/korea-festival-hub-plan.md S5만
+@plans/2026-07-27-project-log.md 「국내축제 — S5 B UI 조율」절만
+브랜치 cursor/korea-festival-proxy · PR #29.
+미리보기 QA(대분류 헤더·리스트 여백·뒤로 중복·헤더 가림) 후 수정.
+C는 QA OK 후. releaseNotes 금지.
+```
