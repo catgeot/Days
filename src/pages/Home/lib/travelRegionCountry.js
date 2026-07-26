@@ -74,6 +74,29 @@ const ISO3166_1_TRAVEL_COUNTRY = {
   ls: { ko: '레소토', en: 'Lesotho' },
 };
 
+/**
+ * 구칭·표기 변형 → 정규화 키 (라벨↔역지오 국가 매칭용).
+ * 깨진 나라만 추가. 전수 입력 금지.
+ * @type {Record<string, string>}
+ */
+const TRAVEL_COUNTRY_CANON_ALIASES = {
+  에스와티니: 'eswatini',
+  스와질란드: 'eswatini',
+  eswatini: 'eswatini',
+  swaziland: 'eswatini',
+  레소토: 'lesotho',
+  lesotho: 'lesotho',
+};
+
+/** Mapbox/Nominatim 국가명 → 정규화 키 (공백 제거·소문자 후 별칭) */
+export function canonTravelCountryKey(value) {
+  const k = String(value || '')
+    .replace(/\s+/g, '')
+    .toLowerCase();
+  if (!k) return '';
+  return TRAVEL_COUNTRY_CANON_ALIASES[k] || k;
+}
+
 const GENERIC_SOVEREIGN_COUNTRIES = new Set([
   '',
   'explore',

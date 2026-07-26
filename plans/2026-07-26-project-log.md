@@ -222,3 +222,11 @@
 
 - 영문 라벨 가드 · 국가 라벨은 `country_en` 우선 · ISO `ls`/`sz` 정규화
 - name-bound 시 후보 칩 억제 · `역사` 등 범용 keyword 매칭 차단
+
+## 장소 라벨 slug 회귀 스모크
+
+**상태**: ✅ `npm run smoke:place-label-slug` PASS
+
+- `resolveGlobeLabelPinFields` 순수 추출 · `canonTravelCountryKey` 별칭 공용화
+- 케이스: 레소토·에스와티니·무니 역사 L2 (네트워크 없음)
+- 이후 깨짐 시 케이스(+별칭 1줄)만 추가
