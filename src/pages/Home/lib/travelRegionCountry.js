@@ -69,6 +69,9 @@ const ISO3166_1_TRAVEL_COUNTRY = {
   pn: { ko: '핏케언 제도', en: 'Pitcairn Islands' },
   pf: { ko: '프랑스령 폴리네시아', en: 'French Polynesia' },
   gu: { ko: '괌', en: 'Guam' },
+  /** Nominatim ko는 구칭「스와질란드」— Mapbox 라벨「에스와티니」와 통일 */
+  sz: { ko: '에스와티니', en: 'Eswatini' },
+  ls: { ko: '레소토', en: 'Lesotho' },
 };
 
 const GENERIC_SOVEREIGN_COUNTRIES = new Set([

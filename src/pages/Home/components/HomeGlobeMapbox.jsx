@@ -2000,10 +2000,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
     let labelEn = '';
     for (const key of PLACE_LABEL_ENGLISH_KEYS) {
-      if (typeof props[key] === 'string' && props[key].trim()) {
-        labelEn = props[key].trim();
-        break;
-      }
+      if (typeof props[key] !== 'string' || !props[key].trim()) continue;
+      const candidate = props[key].trim();
+      // name 폴백이 한글이면 labelEn으로 쓰지 않음 (slug·name_en 오염 방지)
+      if (/[\uAC00-\uD7A3\u3040-\u30ff\u3400-\u9fff]/.test(candidate)) continue;
+      if (!/[A-Za-z\u00C0-\u024F]/.test(candidate)) continue;
+      labelEn = candidate;
+      break;
     }
 
     if (label) {

@@ -53,6 +53,23 @@ const ALREADY_ACCESS_SHAPED =
 
 const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 
+/** spot.keywords 부분일치 금지 — 「역사나 문화적으로…」→ 로마·베를린·델리 오탐 */
+const GENERIC_KEYWORD_MATCH_BLOCKLIST = new Set(
+  [
+    '역사',
+    '문화',
+    '자연',
+    '휴양',
+    '액티비티',
+    '낭만',
+    '도시',
+    '모험',
+    '섬',
+    '여행',
+    '관광',
+  ].map((k) => k.replace(/\s+/g, '').toLowerCase())
+);
+
 function removeSpaces(str) {
   return String(str ?? '').replace(/\s+/g, '').toLowerCase();
 }
@@ -284,12 +301,21 @@ function collectDirectLookupHits(text) {
   }
 
   for (const spot of TRAVEL_SPOTS) {
-    const names = [spot.name, spot.name_en, ...(spot.keywords || [])].filter(
-      (n) => n && String(n).trim().length >= 2
-    );
+    const names = [spot.name, spot.name_en].filter((n) => n && String(n).trim().length >= 2);
     for (const name of names) {
       if (!textIncludesPlaceName(text, name)) continue;
       const score = String(name).length + 15;
+      const prev = bySlug.get(spot.slug);
+      if (!prev || score > prev.score) {
+        bySlug.set(spot.slug, { spot, score });
+      }
+    }
+    for (const kw of spot.keywords || []) {
+      const compact = String(kw ?? '').replace(/\s+/g, '').toLowerCase();
+      if (!compact || compact.length < 2) continue;
+      if (GENERIC_KEYWORD_MATCH_BLOCKLIST.has(compact)) continue;
+      if (!textIncludesPlaceName(text, kw)) continue;
+      const score = String(kw).length + 12;
       const prev = bySlug.get(spot.slug);
       if (!prev || score > prev.score) {
         bySlug.set(spot.slug, { spot, score });

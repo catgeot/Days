@@ -1,6 +1,14 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
 
+/** slug·name_en용 — 한글/CJK만 있으면 false (레소토·에스와티니 라벨 등) */
+export function isUrlSafeEnglishLabel(value) {
+  const s = String(value || '').trim();
+  if (!s) return false;
+  if (/[\uAC00-\uD7A3\u3040-\u30ff\u3400-\u9fff]/.test(s)) return false;
+  return /[A-Za-z\u00C0-\u024F]/.test(s);
+}
+
 export const formatUrlName = (nameEn) => {
   if (!nameEn) return '';
   return nameEn
@@ -12,6 +20,16 @@ export const formatUrlName = (nameEn) => {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
 };
+
+/** uiPlace URL용 영문 라벨 — name_en → country_en → (영문일 때만) name */
+export function pickUrlSafeEnglishName(loc) {
+  if (!loc || typeof loc !== 'object') return '';
+  for (const key of ['name_en', 'country_en', 'name']) {
+    const v = loc[key];
+    if (isUrlSafeEnglishLabel(v)) return String(v).trim();
+  }
+  return '';
+}
 
 export function isEphemeralSlug(slug) {
   if (!slug || typeof slug !== 'string') return true;
@@ -58,6 +76,6 @@ export function getPlaceUrlParam(loc) {
     return id;
   }
 
-  const nameSlug = formatUrlName(merged.name_en || merged.name);
+  const nameSlug = formatUrlName(pickUrlSafeEnglishName(merged) || merged.name_en || merged.name);
   return nameSlug || slug || id || merged.name || '';
 }

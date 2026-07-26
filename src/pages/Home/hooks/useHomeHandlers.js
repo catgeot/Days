@@ -8,7 +8,7 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
-import { formatUrlName } from '../lib/formatUrlName';
+import { formatUrlName, isUrlSafeEnglishLabel, pickUrlSafeEnglishName } from '../lib/formatUrlName';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
@@ -299,24 +299,54 @@ export function useHomeHandlers({
       // 🚨 여기서 미리 moveToLocation을 호출하지 않음으로써 모바일 GPU 과부하(리플 겹침/WebGL 마비) 방지
 
       const clickedLabel = typeof label === 'string' ? label.trim() : '';
-      const clickedLabelEn = typeof labelEn === 'string' ? labelEn.trim() : '';
+      const clickedLabelEnRaw = typeof labelEn === 'string' ? labelEn.trim() : '';
+      // Mapbox name 폴백이 한글이면 truthy라 역지오 name_en을 영원히 못 씀 → slug=label--lat-lng
+      const clickedLabelEn = isUrlSafeEnglishLabel(clickedLabelEnRaw) ? clickedLabelEnRaw : '';
       if (source === 'label' && clickedLabel) {
         const addressFromLabelPoint = await getAddressFromCoordinates(lat, lng);
-        const slugBase = clickedLabelEn || addressFromLabelPoint?.name_en || '';
+        const countryEn = String(addressFromLabelPoint?.country_en || '').trim();
+        const countryKo = String(addressFromLabelPoint?.country || '').trim();
+        const canonCountry = (value) => {
+          const k = String(value || '').replace(/\s+/g, '').toLowerCase();
+          if (!k) return '';
+          if (k === '에스와티니' || k === '스와질란드' || k === 'eswatini' || k === 'swaziland') {
+            return 'eswatini';
+          }
+          if (k === '레소토' || k === 'lesotho') return 'lesotho';
+          return k;
+        };
+        // 「레소토」국가 라벨 클릭인데 zoom=14 역지오는 마을명 → country_en 우선
+        const labelCountryKey = canonCountry(clickedLabel) || canonCountry(clickedLabelEn);
+        const geoCountryKey = canonCountry(countryKo) || canonCountry(countryEn);
+        const labelMatchesCountry =
+          Boolean(labelCountryKey) &&
+          Boolean(geoCountryKey) &&
+          (labelCountryKey === geoCountryKey ||
+            (countryKo && clickedLabel === countryKo) ||
+            (countryEn && clickedLabel.toLowerCase() === countryEn.toLowerCase()) ||
+            (clickedLabelEn && countryEn && clickedLabelEn.toLowerCase() === countryEn.toLowerCase()));
+        const geoEnglish = labelMatchesCountry && isUrlSafeEnglishLabel(countryEn)
+          ? countryEn
+          : pickUrlSafeEnglishName({
+              name_en: addressFromLabelPoint?.name_en,
+              country_en: addressFromLabelPoint?.country_en,
+            });
+        const slugBase = clickedLabelEn || geoEnglish || '';
+        const slug = formatUrlName(slugBase) || `label-${lat}-${lng}`;
 
         const labelPin = finalizeUiPlacePin({
           id: `label-${lat}-${lng}`,
-          slug: formatUrlName(slugBase || clickedLabel),
+          slug,
           lat,
           lng,
-          name: clickedLabel,
-          name_en: slugBase || clickedLabel,
-          name_ko: clickedLabel,
+          name: labelMatchesCountry ? (countryKo || clickedLabel) : clickedLabel,
+          name_en: slugBase,
+          name_ko: labelMatchesCountry ? (countryKo || clickedLabel) : clickedLabel,
           type: 'temp-base',
           category: category,
           country: addressFromLabelPoint?.country || 'Explore',
           country_en: addressFromLabelPoint?.country_en || 'Explore',
-          display_name: clickedLabel,
+          display_name: labelMatchesCountry ? (countryKo || clickedLabel) : clickedLabel,
           source: 'label',
           uiPlace: true,
           ...(addressFromLabelPoint?.stayAdmin
@@ -335,12 +365,16 @@ export function useHomeHandlers({
       const isOcean = !addressData || (!addressData.city && !addressData.country);
 
       if (!isOcean) {
-        const name_en = addressData?.name_en || '';
+        const name_en = pickUrlSafeEnglishName({
+          name_en: addressData?.name_en,
+          country_en: addressData?.country_en,
+        });
         const display_name = addressData.city || addressData.country;
+        const slug = formatUrlName(name_en) || fallbackId;
 
         const realPin = finalizeUiPlacePin({
           id: !name_en ? fallbackId : Date.now(),
-          slug: name_en ? formatUrlName(name_en) : fallbackId,
+          slug,
           lat,
           lng,
           name: display_name,

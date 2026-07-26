@@ -11,7 +11,8 @@ export default function DestinationResolutionChips({
   onSelectCandidate,
   showPlaceLink = true,
 }) {
-  if (confirmed?.slug && confirmed?.name) {
+  // slug 없는 uiPlace(레소토·에스와티니 등)도 name만으로 확정 — 후보 칩으로 떨어지지 않음
+  if (confirmed?.name) {
     return (
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {departure && (
@@ -24,7 +25,7 @@ export default function DestinationResolutionChips({
           <MapPin size={12} className="shrink-0" />
           목적지 · {confirmed.name}
         </span>
-        {showPlaceLink && (
+        {showPlaceLink && confirmed.slug && (
           <a
             href={`/place/${confirmed.slug}`}
             className="inline-flex items-center gap-1 rounded-full border border-gray-600 bg-gray-800/80 px-3 py-1.5 text-xs text-gray-300 hover:border-cyan-500/50 hover:text-cyan-200 transition-colors"

@@ -673,7 +673,10 @@ const ChatModal = ({
       text: cleanText,
       ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
-      ...(resolution?.confidence === 'low' && resolution.candidates?.length
+      // name-bound uiPlace(슬러그 없음)도 목적지로 확정 — 「역사」키워드 오탐 후보 칩 숨김
+      ...(resolution?.confidence === 'low' &&
+      resolution.candidates?.length &&
+      !placeBound
         ? { destinationCandidates: resolution.candidates, destinationPrompt: true }
         : {}),
     };
