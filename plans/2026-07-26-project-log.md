@@ -209,24 +209,21 @@
 - 에스와티니·레소토: 항공 경로 버튼 · **경유 arc(DXB→JNB)** · 레소토 투어 찾기
 - Edge `resolve-flight-route` geo 필터는 재배포 시 서버에도 동일 적용
 
-## 에스와티니·레소토 — 슬러그/name_en·무니 목적지 칩
+## 에스와티니·레소토 — 슬러그/name_en·무니 목적지 칩 + 회귀 스모크
 
-**상태**: ✅ 로컬 검증(node) · 커밋 대기/완료
+**상태**: ✅ 사람 QA OK · `smoke:place-label-slug` PASS · **push 완료** · **세션 종료**
 
 ### 원인
 
-- 지구본 라벨: Mapbox `name`(한글)이 `labelEn`으로 들어와 역지오 영문을 가로챔 → `formatUrlName` 빈값 → `/place/label--lat-lng`
-- 무니: L2「역사·문화」발화의 `역사`가 spot.keywords에 부분일치 → 로마·베를린·델리 후보 · slug 없는 uiPlace는 확정 칩이 후보로 떨어짐
+- 지구본 라벨: Mapbox 한글 `name`→`labelEn`이 역지오 영문을 가로챔 → `/place/label--lat-lng`
+- 무니 L2「역사·문화」의 `역사`가 keywords 부분일치 → 로마·베를린·델리 칩
 
 ### 조치
 
-- 영문 라벨 가드 · 국가 라벨은 `country_en` 우선 · ISO `ls`/`sz` 정규화
-- name-bound 시 후보 칩 억제 · `역사` 등 범용 keyword 매칭 차단
+- 영문 라벨 가드 · 국가 라벨 `country_en` · ISO `ls`/`sz` · `canonTravelCountryKey`
+- name-bound 후보 칩 억제 · `resolveGlobeLabelPinFields` + `npm run smoke:place-label-slug`
+- 이후 깨짐 시 케이스(+별칭 1줄)만 추가 · 전수 지명 조사 불필요
 
-## 장소 라벨 slug 회귀 스모크
+### QA
 
-**상태**: ✅ `npm run smoke:place-label-slug` PASS
-
-- `resolveGlobeLabelPinFields` 순수 추출 · `canonTravelCountryKey` 별칭 공용화
-- 케이스: 레소토·에스와티니·무니 역사 L2 (네트워크 없음)
-- 이후 깨짐 시 케이스(+별칭 1줄)만 추가
+- 레소토·에스와티니: URL slug · `name_en` · 무니 역사·문화 칩에 오탐 목적지 없음
