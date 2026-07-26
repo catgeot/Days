@@ -12,12 +12,7 @@ import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
 import { hubIdsForArea } from './koreaHubSeeds';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
-import {
-  assignCorridorFromLatLng,
-  countByCorridor,
-  filterByCorridor,
-  listCorridors,
-} from './koreaFestivalCorridors';
+import { festivalLngLat } from './koreaFestivalCorridors';
 import { filterByTimeTab } from './festivalTimeFilter';
 import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
 import { buildTasteTags, filterByTaste } from './festivalTasteTags';
@@ -33,6 +28,35 @@ const TIME_TABS = [
 
 const HIGHLIGHT_LIMIT = 8;
 const PANEL_LIMIT = 48;
+const NEAR_KM = 80;
+
+function toRad(d) {
+  return (d * Math.PI) / 180;
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * @param {object[]} items
+ * @param {number} lat
+ * @param {number} lng
+ * @param {number} maxKm
+ */
+function festivalsWithinKm(items, lat, lng, maxKm) {
+  return (items || []).filter((item) => {
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
+    if (!pt) return false;
+    return haversineKm(lat, lng, pt.lat, pt.lng) <= maxKm;
+  });
+}
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
@@ -152,9 +176,9 @@ export default function KoreaFestivalHub() {
   const now = useMemo(() => new Date(), []);
 
   const [timeTab, setTimeTab] = useState('now');
-  const [corridorId, setCorridorId] = useState('all');
   const [tasteId, setTasteId] = useState('all');
   const [mapFocusIds, setMapFocusIds] = useState(null);
+  const [mapFocusView, setMapFocusView] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -201,27 +225,7 @@ export default function KoreaFestivalHub() {
     [timeTab, items, now],
   );
 
-  const corridorCounts = useMemo(() => countByCorridor(timedItems), [timedItems]);
-
-  const corridorChips = useMemo(
-    () =>
-      listCorridors()
-        .map((c) => ({ ...c, count: corridorCounts.get(c.id) || 0 }))
-        .filter((c) => c.count > 0),
-    [corridorCounts],
-  );
-
-  useEffect(() => {
-    if (corridorId === 'all') return;
-    if (!corridorCounts.get(corridorId)) setCorridorId('all');
-  }, [corridorId, corridorCounts]);
-
-  const afterCorridor = useMemo(
-    () => filterByCorridor(timedItems, corridorId),
-    [timedItems, corridorId],
-  );
-
-  const tasteChips = useMemo(() => buildTasteTags(afterCorridor), [afterCorridor]);
+  const tasteChips = useMemo(() => buildTasteTags(timedItems), [timedItems]);
 
   useEffect(() => {
     if (tasteId === 'all') return;
@@ -231,8 +235,8 @@ export default function KoreaFestivalHub() {
   }, [tasteId, tasteChips]);
 
   const afterTaste = useMemo(
-    () => filterByTaste(afterCorridor, tasteId),
-    [afterCorridor, tasteId],
+    () => filterByTaste(timedItems, tasteId),
+    [timedItems, tasteId],
   );
 
   const resultItems = useMemo(() => {
@@ -248,18 +252,13 @@ export default function KoreaFestivalHub() {
   }, [resultItems]);
 
   const panelItems = useMemo(() => {
-    const showPanel =
-      corridorId !== 'all' ||
-      tasteId !== 'all' ||
-      (mapFocusIds && mapFocusIds.length > 0);
+    const showPanel = tasteId !== 'all' || (mapFocusIds && mapFocusIds.length > 0);
     if (!showPanel) return [];
     return resultItems.slice(0, PANEL_LIMIT);
-  }, [resultItems, corridorId, tasteId, mapFocusIds]);
+  }, [resultItems, tasteId, mapFocusIds]);
 
   const showResultPanel =
-    corridorId !== 'all' ||
-    tasteId !== 'all' ||
-    (mapFocusIds && mapFocusIds.length > 0);
+    tasteId !== 'all' || (mapFocusIds && mapFocusIds.length > 0);
 
   const byContentId = useMemo(() => {
     const map = new Map();
@@ -280,13 +279,9 @@ export default function KoreaFestivalHub() {
   const selectTime = (id) => {
     setTimeTab(id);
     setMapFocusIds(null);
+    setMapFocusView(null);
     setTasteId('all');
-  };
-
-  const selectCorridor = (id) => {
-    setCorridorId(id);
-    setMapFocusIds(null);
-    setTasteId('all');
+    setNearLabel('');
     setNearMsg('');
   };
 
@@ -304,24 +299,32 @@ export default function KoreaFestivalHub() {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         setNearBusy(false);
-        const corridor = assignCorridorFromLatLng(lat, lng);
         const hubResolved = resolveKoreaAreaFromCoords(lat, lng);
-        const label = hubResolved?.hubName || '';
-        if (corridor !== 'unmapped') {
-          setCorridorId(corridor);
-          setMapFocusIds(null);
-          setTasteId('all');
-          setTimeTab('now');
-          setNearLabel(label || corridor);
-          setNearMsg(
-            label
-              ? `${label} 근처 · 지도 칩으로 축제를 확인해 보세요.`
-              : '내 주변 권역 · 지도 칩으로 축제를 확인해 보세요.',
-          );
+        if (!hubResolved) {
+          setNearLabel('');
+          setNearMsg('국내 위치를 찾지 못했습니다. 지도를 직접 확대해 보세요.');
           return;
         }
-        setNearLabel('');
-        setNearMsg('국내 위치를 찾지 못했습니다. 권역 칩으로 선택해 주세요.');
+        const label = hubResolved.hubName || '';
+        setTimeTab('now');
+        setTasteId('all');
+        const nearby = festivalsWithinKm(
+          filterByTimeTab('now', items, now),
+          lat,
+          lng,
+          NEAR_KM,
+        );
+        const ids = nearby
+          .map((item) => String(item?.contentId || ''))
+          .filter(Boolean);
+        setMapFocusIds(ids.length ? ids : null);
+        setMapFocusView({ lng, lat, zoom: 9 });
+        setNearLabel(label);
+        setNearMsg(
+          ids.length
+            ? `${NEAR_KM}km 안 ${ids.length}건 · 지도에서 확인해 보세요.`
+            : `${NEAR_KM}km 안 지금 축제가 없습니다. 시간 탭을 바꿔 보세요.`,
+        );
       },
       (err) => {
         setNearBusy(false);
@@ -346,8 +349,8 @@ export default function KoreaFestivalHub() {
   return (
     <div className="h-full w-full overflow-y-auto bg-[#1b1410] text-white custom-scrollbar">
       <SEO
-        title="국내 축제 · 지금·권역·지도"
-        description="TourAPI 기반 국내 축제. 지금·주말·권역 지도로 찾고, 상세·인근 여행지로 이어가세요."
+        title="국내 축제 · 지금·지도"
+        description="TourAPI 기반 국내 축제. 지금·주말·지도 클러스터로 찾고, 상세·인근 여행지로 이어가세요."
         url="/korea"
         image={seoImage}
       />
@@ -440,7 +443,7 @@ export default function KoreaFestivalHub() {
             <aside className="w-full md:w-[36%] lg:w-[34%] shrink-0 md:sticky md:top-[5.5rem] space-y-2">
               <div className="flex items-end justify-between gap-3">
                 <h2 className="text-sm font-bold text-white">지도</h2>
-                <p className="text-[11px] text-gray-500">개별 칩</p>
+                <p className="text-[11px] text-gray-500">줌 클러스터</p>
               </div>
               <div className="h-[min(62vh,520px)] md:h-[min(72vh,640px)]">
                 <KoreaFestivalMap
@@ -448,6 +451,7 @@ export default function KoreaFestivalHub() {
                   activeContentId={
                     selected?.contentId != null ? String(selected.contentId) : ''
                   }
+                  focusView={mapFocusView}
                   onSelectPoint={(contentId) => {
                     const item = byContentId.get(String(contentId));
                     if (item) {
@@ -462,7 +466,12 @@ export default function KoreaFestivalHub() {
               {mapFocusIds && (
                 <button
                   type="button"
-                  onClick={() => setMapFocusIds(null)}
+                  onClick={() => {
+                    setMapFocusIds(null);
+                    setMapFocusView(null);
+                    setNearLabel('');
+                    setNearMsg('');
+                  }}
                   className="text-[11px] text-amber-200/90 underline-offset-2 hover:underline"
                 >
                   지도 선택 해제
@@ -502,33 +511,6 @@ export default function KoreaFestivalHub() {
                 )}
               </section>
 
-              <section className="space-y-3">
-                <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                  권역
-                </h2>
-                <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-                  <button
-                    type="button"
-                    onClick={() => selectCorridor('all')}
-                    className={chipClass(corridorId === 'all')}
-                  >
-                    전체
-                    <span className="opacity-70">{timedItems.length}</span>
-                  </button>
-                  {corridorChips.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => selectCorridor(c.id)}
-                      className={chipClass(corridorId === c.id)}
-                    >
-                      {c.label}
-                      <span className="opacity-70">{c.count}</span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-
               {tasteChips.length > 0 && (
                 <section className="space-y-3">
                   <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
@@ -540,6 +522,7 @@ export default function KoreaFestivalHub() {
                       onClick={() => {
                         setTasteId('all');
                         setMapFocusIds(null);
+                        setMapFocusView(null);
                       }}
                       className={chipClass(tasteId === 'all')}
                     >
@@ -552,6 +535,7 @@ export default function KoreaFestivalHub() {
                         onClick={() => {
                           setTasteId(t.id);
                           setMapFocusIds(null);
+                          setMapFocusView(null);
                         }}
                         className={chipClass(tasteId === t.id)}
                       >

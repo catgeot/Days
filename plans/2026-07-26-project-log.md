@@ -32,23 +32,21 @@
 
 ## 국내축제 — S5 (`국내축제-S5-지도권역`)
 
-**상태**: ✅ 구현 · UI 조율 중 · 브랜치 `cursor/korea-festival-proxy`
+**상태**: ✅ 클러스터·권역제거 커밋 · 비전 A~E 합의 · 다음=A 셸 · 브랜치 `cursor/korea-festival-proxy`
 
 | 산출 | |
 |------|--|
-| 권역 SSOT | `src/pages/Korea/data/koreaFestivalCorridors.json` · `koreaFestivalCorridors.js` |
-| 시간·연간 | `festivalTimeFilter.js` · `fetchKoreaFestivalsRolling12` (sessionStorage v1) |
-| 취향 | `festivalTasteTags.js` (결과 title · 건수≥2) |
-| UI | 좌측 세로 지도 · 개별 축제 칩(클러스터 아님) · 전체화면 · 호박색 칩 · 권역/취향 사이드 |
-| VERIFY | `audit:korea-area-codes` · `smoke:korea-area-codes` · `TOURAPI_SMOKE_LIVE=1 smoke:tourapi` PASS |
+| 지도 | `KoreaFestivalMap` GeoJSON cluster · expansion zoom · 전체화면 |
+| 필터 | 시간→취향 · 권역 칩 제거 · 내 주변 80km+flyTo |
+| 좌표 | `festivalLngLat` (corridor SSOT 잔존·UI 미노출) |
+| 비전 | A 풀맵셸 → B 색인칩 → C 즐겨찾기 → D 도로루트(1선택) → E 시트 숙소/투어 |
 
-**보류**: releaseNotes · hub 신설 · Cloud 오케 · Edge S4 · main 머지는 QA 후.
+**보류**: A~E 미구현분 · releaseNotes · hub 신설 · Cloud 오케 · Edge S4 · main.
 
-### UI 조율 메모 (이어하기)
+### 이어하기
 
-- 지도 **좌측 sticky** · 개별 Marker 칩(상한 180) · **전체화면** 버튼 · Esc/X 닫기
-- 칩 색: 호박 배경+어두운 글자(백색 대비 개선)
-- 다음: 사람 테스트로 로드 가독성·칩 겹침·전체화면 UX 이어서 조율
+- 다음 구현: **A만** — 전체화면 지도 · 상단 시간/내주변 · 선택 N→좌측 리스트 · 시트
+- B~E·축제로드·숙소 마커 금지(이번 세션)
 
 **제시어 (다음 세션)**
 
@@ -56,5 +54,5 @@
 국내축제-S5-QA
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-26-project-log.md 「국내축제 — S5」절만
-로컬. /korea 지도 칩·전체화면·좌측 배치 QA·UI 이어가기. releaseNotes 금지.
+로컬. /korea 전체화면 지도 셸(A) 구현. B~E 금지. releaseNotes 금지.
 ```
