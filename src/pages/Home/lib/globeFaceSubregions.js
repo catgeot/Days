@@ -71,8 +71,8 @@ export const GLOBE_FACE_SUBREGIONS = {
       id: 'west_south',
       labelKo: '서·남유럽',
       countryIds: [
-        'fr', 'gb', 'it', 'es', 'pt', 'gr', 'ch', 'hr', 'tr', 'be', 'nl',
-        'at', 'si', 'va', 'me', 'mt', 'ie', 'sct',
+        'fr', 'gb', 'eng', 'sct', 'wls', 'nir', 'it', 'es', 'pt', 'gr', 'ch', 'hr', 'tr', 'be', 'nl',
+        'at', 'si', 'va', 'me', 'mt', 'ie',
       ],
     },
     {

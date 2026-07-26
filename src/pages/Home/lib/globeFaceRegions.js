@@ -27,7 +27,7 @@ export const GLOBE_FACE_PRIORITY = {
   /** 아프리카·서인도양 — 모리셔스·세이셸은 지리상 여기(휴양 테마로 옮기지 말 것) */
   nature: ['ke', 'tz', 'za', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 'ma'],
   /** 유럽·북극(그린란드·스발바르) */
-  urban: ['no', 'fr', 'gb', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr', 'gl', 'sj'],
+  urban: ['no', 'fr', 'gb', 'eng', 'sct', 'wls', 'nir', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr', 'gl', 'sj'],
   /** 북미·중미·카리브·알래스카 */
   culture: ['us', 'ca', 'mx', 'cu', 'cr', 'gt', 'pa', 'jm', 'bs', 'ak'],
   /** 남아메리카(+주변) — 테마「모험지」목록이 아님 */

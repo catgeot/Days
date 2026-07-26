@@ -3,13 +3,24 @@
  * (satellite-streets · deep/neon). bbox·폴리곤 외곽선 미사용.
  * fill 유지 · 톤 다운은 fit 도착 줌 대비 상대(소국 고줌 fit도 도착 시 peak).
  * 해양 EEZ는 Mapbox에 없음.
+ * ISO 3166-2(예: GB-SCT)는 Countries에 없어 로컬 GeoJSON fill·선 사용.
  */
+
+// geoBoundaries GBR ADM1 · UK 구성국 (CC BY 4.0) · 글로브용 간소화
+import ukSubdivisionGeoJSONByIso3166_2 from '../data/globeSubdivisionUk.json';
 
 export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
 export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
 export const REGION_HIGHLIGHT_LINE_ID = 'gateo-region-highlight-line';
 export const REGION_HIGHLIGHT_HALO_ID = 'gateo-region-highlight-halo';
 export const REGION_HIGHLIGHT_DISPUTED_ID = 'gateo-region-highlight-disputed';
+export const REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID = 'gateo-region-highlight-subdivision';
+export const REGION_HIGHLIGHT_SUBDIVISION_FILL_ID = 'gateo-region-highlight-subdivision-fill';
+export const REGION_HIGHLIGHT_SUBDIVISION_LINE_ID = 'gateo-region-highlight-subdivision-line';
+export const REGION_HIGHLIGHT_SUBDIVISION_HALO_ID = 'gateo-region-highlight-subdivision-halo';
+
+/** @type {Record<string, { type: string, features: unknown[] }>} */
+const SUBDIVISION_GEOJSON_BY_ISO3166_2 = ukSubdivisionGeoJSONByIso3166_2;
 
 /** @deprecated outline → fill 전환 · 구 세션 잔여 제거용 */
 export const REGION_HIGHLIGHT_OUTLINE_HALO_ID = 'gateo-region-highlight-outline-halo';
@@ -25,6 +36,22 @@ export const REGION_HIGHLIGHT_LAYER_IDS = [
   REGION_HIGHLIGHT_HALO_ID,
   REGION_HIGHLIGHT_LINE_ID,
   REGION_HIGHLIGHT_DISPUTED_ID,
+  REGION_HIGHLIGHT_SUBDIVISION_FILL_ID,
+  REGION_HIGHLIGHT_SUBDIVISION_HALO_ID,
+  REGION_HIGHLIGHT_SUBDIVISION_LINE_ID,
+];
+
+const COUNTRY_HIGHLIGHT_LAYER_IDS = [
+  REGION_HIGHLIGHT_FILL_ID,
+  REGION_HIGHLIGHT_HALO_ID,
+  REGION_HIGHLIGHT_LINE_ID,
+  REGION_HIGHLIGHT_DISPUTED_ID,
+];
+
+const SUBDIVISION_HIGHLIGHT_LAYER_IDS = [
+  REGION_HIGHLIGHT_SUBDIVISION_FILL_ID,
+  REGION_HIGHLIGHT_SUBDIVISION_HALO_ID,
+  REGION_HIGHLIGHT_SUBDIVISION_LINE_ID,
 ];
 
 const LEGACY_LAYER_IDS = [
@@ -325,15 +352,121 @@ function setStandardAdminBoundaries(map, enabled) {
   }
 }
 
+function hideHighlightLayers(map, layerIds) {
+  for (const layerId of layerIds) {
+    setVisibility(map, layerId, 'none');
+  }
+}
+
+function ensureSubdivisionSource(map, featureCollection) {
+  const existing = map.getSource(REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID);
+  if (existing) {
+    try {
+      existing.setData(featureCollection);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  try {
+    map.addSource(REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID, {
+      type: 'geojson',
+      data: featureCollection,
+    });
+    return Boolean(map.getSource(REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID));
+  } catch {
+    return false;
+  }
+}
+
+function ensureSubdivisionLayers(map) {
+  if (!map.getSource(REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID)) return false;
+
+  if (!map.getLayer(REGION_HIGHLIGHT_SUBDIVISION_FILL_ID)) {
+    try {
+      map.addLayer({
+        id: REGION_HIGHLIGHT_SUBDIVISION_FILL_ID,
+        type: 'fill',
+        source: REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID,
+        minzoom: HIGHLIGHT_MIN_ZOOM,
+        maxzoom: HIGHLIGHT_MAX_ZOOM,
+        layout: { visibility: 'none' },
+        paint: {
+          'fill-color': HIGHLIGHT_FILL,
+          'fill-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, FILL_PEAK_OPACITY),
+        },
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  if (!map.getLayer(REGION_HIGHLIGHT_SUBDIVISION_HALO_ID)) {
+    try {
+      map.addLayer({
+        id: REGION_HIGHLIGHT_SUBDIVISION_HALO_ID,
+        type: 'line',
+        source: REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID,
+        minzoom: HIGHLIGHT_MIN_ZOOM,
+        maxzoom: HIGHLIGHT_MAX_ZOOM,
+        layout: {
+          visibility: 'none',
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': HIGHLIGHT_HALO,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3.5, 5, 7, 8, 10],
+          'line-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, HALO_PEAK_OPACITY),
+          'line-blur': 1.1,
+        },
+      });
+    } catch {
+      // continue — fill alone is usable
+    }
+  }
+
+  if (!map.getLayer(REGION_HIGHLIGHT_SUBDIVISION_LINE_ID)) {
+    try {
+      map.addLayer({
+        id: REGION_HIGHLIGHT_SUBDIVISION_LINE_ID,
+        type: 'line',
+        source: REGION_HIGHLIGHT_SUBDIVISION_SOURCE_ID,
+        minzoom: HIGHLIGHT_MIN_ZOOM,
+        maxzoom: HIGHLIGHT_MAX_ZOOM,
+        layout: {
+          visibility: 'none',
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': HIGHLIGHT_LINE,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.4, 5, 2.6, 8, 3.4],
+          'line-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, LINE_PEAK_OPACITY),
+        },
+      });
+    } catch {
+      // continue
+    }
+  }
+
+  return Boolean(map.getLayer(REGION_HIGHLIGHT_SUBDIVISION_FILL_ID));
+}
+
 /**
  * @param {import('mapbox-gl').Map} map
- * @param {{ iso?: string, bbox?: number[], settleZoom?: number } | null} region
+ * @param {{ iso?: string, iso3166_2?: string, bbox?: number[], settleZoom?: number } | null} region
  */
 export function setRegionHighlight(map, region) {
   if (!map) return;
 
   const iso = region?.iso ? String(region.iso).toUpperCase() : '';
-  if (!iso) {
+  const iso3166_2 = region?.iso3166_2 ? String(region.iso3166_2).toUpperCase() : '';
+  const subdivisionFc = iso3166_2
+    ? SUBDIVISION_GEOJSON_BY_ISO3166_2[iso3166_2]
+    : null;
+
+  if (!iso && !subdivisionFc) {
     clearRegionHighlight(map);
     return;
   }
@@ -347,12 +480,33 @@ export function setRegionHighlight(map, region) {
   const disputedOpacity = opacityExprFromSettle(settleZoom, DISPUTED_PEAK_OPACITY);
 
   const ready = setupRegionHighlightLayers(map);
+
+  if (subdivisionFc) {
+    hideHighlightLayers(map, COUNTRY_HIGHLIGHT_LAYER_IDS);
+    if (ensureSubdivisionSource(map, subdivisionFc) && ensureSubdivisionLayers(map)) {
+      try {
+        map.setPaintProperty(REGION_HIGHLIGHT_SUBDIVISION_FILL_ID, 'fill-opacity', fillOpacity);
+        map.setPaintProperty(REGION_HIGHLIGHT_SUBDIVISION_HALO_ID, 'line-opacity', haloOpacity);
+        map.setPaintProperty(REGION_HIGHLIGHT_SUBDIVISION_LINE_ID, 'line-opacity', lineOpacity);
+      } catch {
+        // ignore
+      }
+      for (const layerId of SUBDIVISION_HIGHLIGHT_LAYER_IDS) {
+        setVisibility(map, layerId, 'visible');
+      }
+      raiseHighlightLayers(map);
+      return;
+    }
+  }
+
+  hideHighlightLayers(map, SUBDIVISION_HIGHLIGHT_LAYER_IDS);
+
   const hasFill = Boolean(map.getLayer(REGION_HIGHLIGHT_FILL_ID));
   const hasAdmin = Boolean(
     map.getLayer(REGION_HIGHLIGHT_LINE_ID) || map.getLayer(REGION_HIGHLIGHT_HALO_ID)
   );
 
-  if (ready && (hasFill || hasAdmin)) {
+  if (ready && iso && (hasFill || hasAdmin)) {
     if (hasFill) {
       try {
         map.setPaintProperty(REGION_HIGHLIGHT_FILL_ID, 'fill-opacity', fillOpacity);

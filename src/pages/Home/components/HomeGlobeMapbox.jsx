@@ -373,7 +373,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
   const immerseActiveRef = useRef(false);
-  /** @type {React.MutableRefObject<{ iso?: string, bbox?: number[] } | null>} */
+  /** @type {React.MutableRefObject<{ iso?: string, iso3166_2?: string, bbox?: number[], settleZoom?: number } | null>} */
   const focusedFaceRegionRef = useRef(null);
   /**
    * 항공 시네마 레이어가 한 번이라도 확인되면 latch.
@@ -1606,7 +1606,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   /**
    * 나라/지역 칩 — fitBounds(우선) · 선택 국가 경계 하이라이트.
-   * @param {number | { lat?: number, lng?: number, zoom?: number, bbox?: number[], hubBbox?: number[], iso?: string }} latOrRegion
+   * @param {number | { lat?: number, lng?: number, zoom?: number, bbox?: number[], hubBbox?: number[], iso?: string, iso3166_2?: string }} latOrRegion
    * @param {number} [lng]
    * @param {number} [zoom]
    */
@@ -1675,6 +1675,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const settleZoom = Number.isFinite(camera?.zoom) ? camera.zoom : GLOBE_FACE_REGION_DEFAULT_ZOOM;
     focusedFaceRegionRef.current = {
       iso: region.iso,
+      iso3166_2: region.iso3166_2,
       bbox: Array.isArray(region.bbox) ? region.bbox : bounds,
       settleZoom,
     };
