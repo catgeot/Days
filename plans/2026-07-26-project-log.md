@@ -169,3 +169,21 @@
 ### 세션 종료
 
 - 릴리스 노트: 해당 없음(소소한 UX) · Vercel은 push 후
+
+## 모바일 세부메뉴 토글 · UK 구성국 칩
+
+**상태**: ✅ 사람 QA OK · **커밋·push 완료** (`4f5457f`) · 세션 종료
+
+### 변경
+
+- **모바일**: 세부 메뉴 토글 세션 전역 — OFF 시 카테고리로 나라 리스트 재오픈 안 함 · OFF 시인성(앰버 `메뉴 숨김`) · 진입 시 기본 ON · PC 무변경
+- **영국 구성국**: 영국(전체) + 잉글랜드·스코틀랜드·웨일스·북아일랜드 · `iso3166_2` GeoJSON fill
+- urban 서·남유럽 소권역·우선순위에 구성국 포함
+
+### 파일
+
+- [`HomeUI.jsx`](../src/pages/Home/components/HomeUI.jsx) · [`globeRegionHighlight.js`](../src/pages/Home/lib/globeRegionHighlight.js) · [`globeCountryCatalog.js`](../src/pages/Home/lib/globeCountryCatalog.js) · [`globeSubdivisionUk.json`](../src/pages/Home/data/globeSubdivisionUk.json) · [`globeFaceRegions.js`](../src/pages/Home/lib/globeFaceRegions.js) · [`globeFaceSubregions.js`](../src/pages/Home/lib/globeFaceSubregions.js) · [`HomeGlobeMapbox.jsx`](../src/pages/Home/components/HomeGlobeMapbox.jsx)
+
+### 세션 종료
+
+- 릴리스 노트: 해당 없음(소소한 UX) · Vercel은 push 후
