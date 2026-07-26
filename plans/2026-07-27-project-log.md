@@ -33,17 +33,18 @@
 
 ## 국내축제 — S5 B UI 조율 (헤더 대분류·리스트·뒤로)
 
-**상태**: ✅ 코드·푸시 tip `23b7714` · Draft PR #29 · **사람 QA·추가 수정은 다음 세션** · `cursor/korea-festival-proxy`
+**상태**: 🔄 tip 푸시 후 **Vercel Preview QA** · Draft PR #29 · `cursor/korea-festival-proxy`
 
-| 변경 | SHA |
-|------|-----|
-| 헤더 대분류 1행·중소 칩·`대분류` 복귀 · 리스트 여백 · 홈/지도 뒤로 제거 | `c1cbb7b` |
-| 조작 중 헤더 가림 → z-30·max-h 단순화 | `8432164` |
-| 지도 `isolate` 스택 보강 | `23b7714` |
+| 변경 | 내용 |
+|------|------|
+| 헤더·여백·뒤로·가림 | `c1cbb7b`~`23b7714` |
+| 리스트 주인공 모달 | 사이드 패널 → 스크림+중앙/하단 모달(지도 덮음). 지도=네비 · 리스트=주인공 |
+| Cloud 규칙 | `AGENTS.md` · `.ai-context` 1.5.1 — feature Cloud는 오류 없으면 커밋·push(Vercel Preview) |
 
-**세션 종료**: Cloud 이 턴 종료. working tree clean · PR https://github.com/catgeot/Days/pull/29
+**사람 QA 경로**: Vercel **축제 브랜치** Preview → `/korea`  
+체크: 대분류 헤더 · 리스트가 지도를 덮는지 · 뒤로/X · 헤더 칩.
 
-**다음 세션**: PR 미리보기에서 QA → 남는 UI 수정 → OK면 S5-C. releaseNotes·hub 신설·corridor 부활 금지.
+**다음**: Preview OK → S5-C. 수정 필요 → 같은 브랜치. releaseNotes·hub 신설·corridor 부활 금지.
 
 **제시어 (이어하기)**
 
@@ -52,6 +53,5 @@
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-27-project-log.md 「국내축제 — S5 B UI 조율」절만
 브랜치 cursor/korea-festival-proxy · PR #29.
-미리보기 QA(대분류 헤더·리스트 여백·뒤로 중복·헤더 가림) 후 수정.
-C는 QA OK 후. releaseNotes 금지.
+Vercel Preview QA 피드백 반영. C는 QA OK 후. releaseNotes 금지.
 ```

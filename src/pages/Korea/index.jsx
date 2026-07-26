@@ -116,7 +116,7 @@ function RelatedChipFlap({
 
   const shell =
     layout === 'side'
-      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-white/15 bg-black/65 px-1.5 py-2.5 custom-scrollbar'
+      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-white/15 bg-[#1b1410]/92 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
       : 'flex shrink-0 gap-2 overflow-x-auto border-b border-white/10 px-3 py-2 custom-scrollbar md:hidden';
 
   if (layout === 'row') {
@@ -813,13 +813,20 @@ export default function KoreaFestivalHub() {
       )}
 
       {showList && (
-        <aside
-          className={`pointer-events-none absolute inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom,0px))] z-20 px-3 md:inset-x-auto md:bottom-auto md:left-3 md:top-[7.5rem] md:h-[calc(100dvh-9.5rem)] md:max-h-[calc(100dvh-9.5rem)] md:px-0 lg:left-5 ${
-            flapHasRelated ? 'md:w-[432px] lg:w-[452px]' : 'md:w-[340px] lg:w-[360px]'
-          }`}
-          aria-label="선택한 축제 목록"
+        <div
+          className="absolute inset-0 z-20 flex items-end justify-center bg-black/55 px-0 pt-[max(5.5rem,env(safe-area-inset-top,0px))] backdrop-blur-[2px] md:items-center md:px-4 md:py-8"
+          onClick={clearFocus}
+          role="presentation"
         >
-          <div className="pointer-events-auto flex max-h-[50vh] flex-col md:h-full md:max-h-full md:flex-row md:items-stretch">
+          <aside
+            className={`pointer-events-auto flex max-h-[min(82dvh,720px)] w-full flex-col md:max-h-[min(78dvh,680px)] md:flex-row md:items-stretch ${
+              flapHasRelated ? 'md:max-w-[520px]' : 'md:max-w-[420px]'
+            }`}
+            aria-label="선택한 축제 목록"
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
             {flapHasRelated && (
               <RelatedChipFlap
                 layout="side"
@@ -834,10 +841,10 @@ export default function KoreaFestivalHub() {
               />
             )}
             <div
-              className={`flex min-h-0 min-w-0 flex-1 flex-col border border-white/15 bg-black/70 shadow-2xl backdrop-blur-xl ${
+              className={`flex min-h-0 min-w-0 flex-1 flex-col border border-white/15 bg-[#1b1410]/92 shadow-2xl backdrop-blur-xl ${
                 flapHasRelated
-                  ? 'rounded-3xl md:rounded-l-none md:rounded-r-3xl'
-                  : 'rounded-3xl'
+                  ? 'rounded-t-3xl md:rounded-l-none md:rounded-r-3xl'
+                  : 'rounded-t-3xl md:rounded-3xl'
               }`}
             >
               <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
@@ -890,7 +897,7 @@ export default function KoreaFestivalHub() {
                   onSelectTaste={selectTaste}
                 />
               )}
-              <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3">
+              <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
                 {panelItems.length === 0 ? (
                   <p className="px-1 py-4 text-sm text-gray-400">
                     이 선택에 맞는 축제가 없습니다.
@@ -910,8 +917,8 @@ export default function KoreaFestivalHub() {
                 )}
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        </div>
       )}
 
       {selected && (
