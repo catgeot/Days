@@ -175,33 +175,33 @@ S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
 
 ---
 
-### S5 — 지도·클러스터 · 비전 A~E ✅ (코드: 클러스터·권역제거 / 셸 A는 다음)
+### S5 — 지도·클러스터 · 비전 A~E ✅ (A QA PASS · 푸시됨)
 
 | | |
 |--|--|
-| **환경** | 로컬 · `cursor/korea-festival-proxy` |
-| **현재 코드** | 시간탭 → GeoJSON **줌 클러스터** · 권역 칩 제거 · 취향·내 주변(80km+flyTo) · 상세 시트 |
+| **환경** | `cursor/korea-festival-proxy` · **Cloud 이어가기 OK** |
+| **현재 코드** | **A** 풀맵 셸 · 시간/내주변 · leaves→리스트 · 뷰 **뒤로**/X전국 · 상세 시트 |
 | **권역** | UI 제거 · SSOT json은 `festivalLngLat`만 · corridor 칩 폐기 |
 | **데이터** | 롤링 12개월 LIVE · `fetchKoreaFestivalsRolling12` · sessionStorage `gateo:korea-festivals:v1:rolling12` |
-| **금지** | releaseNotes · hub 신설 · Cloud 오케 · 본격 S4 |
+| **금지** | B~E(다음 세션 전) · releaseNotes · hub 신설 · 본격 S4 |
 
 **비전 단계 (합의 · 순서 강제)**
 
 | 단계 | 범위 |
 |------|------|
-| **A** | 전체화면 지도 셸 · 시간·내 주변 · 선택 N→좌측 리스트 · 시트 (다음 구현) |
-| **B** | 테마·지역 색인 클릭 칩 |
+| **A** | 전체화면 지도 셸 · 시간·내 주변 · 선택 N→좌측 리스트 · 시트 · 뒤로 ✅ QA |
+| **B** | 테마·지역 색인 클릭 칩 (다음) |
 | **C** | 즐겨찾기·본 항목 · 지역 그룹 · 검색 |
 | **D** | 출발/도착 + 즐겨찾기 경유 **도로 루트** · 경로 리스트에서 **1개 선택** |
 | **E** | 시트 안 숙소·투어 (지도 마커 금지) |
 
-**제시어 (다음: A 셸)**
+**제시어 (다음 · Cloud)**
 
 ```
-국내축제-S5-QA
+국내축제-S5-Cloud
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-26-project-log.md 「국내축제 — S5」절만
-로컬. /korea 전체화면 지도 셸(A) 구현. B~E 금지. releaseNotes 금지.
+브랜치 cursor/korea-festival-proxy. B 테마·지역 색인 칩. releaseNotes 금지.
 ```
 
 ---

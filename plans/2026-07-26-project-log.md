@@ -32,27 +32,27 @@
 
 ## 국내축제 — S5 (`국내축제-S5-지도권역`)
 
-**상태**: ✅ 클러스터·권역제거 커밋 · 비전 A~E 합의 · 다음=A 셸 · 브랜치 `cursor/korea-festival-proxy`
+**상태**: ✅ A 풀맵 셸 QA PASS · 커밋·푸시 · 브랜치 `cursor/korea-festival-proxy` · 다음=Cloud 가능
 
 | 산출 | |
 |------|--|
-| 지도 | `KoreaFestivalMap` GeoJSON cluster · expansion zoom · 전체화면 |
-| 필터 | 시간→취향 · 권역 칩 제거 · 내 주변 80km+flyTo |
-| 좌표 | `festivalLngLat` (corridor SSOT 잔존·UI 미노출) |
-| 비전 | A 풀맵셸 → B 색인칩 → C 즐겨찾기 → D 도로루트(1선택) → E 시트 숙소/투어 |
+| 셸 | `/korea` 뷰포트 풀맵 · 상단 홈/시간/내주변 오버레이 |
+| 지도 | cluster · leaves→리스트 · 뷰 스택 **뒤로** · X=전국 |
+| 리스트 | 선택 N건 좌측(모바일 하단) · 행/점 → `FestivalDetailSheet` |
+| 비전 | A ✅ → B 색인칩 → C 즐겨찾기 → D 도로루트(1선택) → E 시트 숙소/투어 |
 
-**보류**: A~E 미구현분 · releaseNotes · hub 신설 · Cloud 오케 · Edge S4 · main.
+**보류**: B~E · releaseNotes · hub 신설 · Edge S4 · main.
 
-### 이어하기
+### 이어하기 (Cloud OK)
 
-- 다음 구현: **A만** — 전체화면 지도 · 상단 시간/내주변 · 선택 N→좌측 리스트 · 시트
-- B~E·축제로드·숙소 마커 금지(이번 세션)
+- 브랜치 `origin/cursor/korea-festival-proxy` checkout 후 B 또는 A 폴리시
+- B~E·releaseNotes 금지(명시 전까지)
 
-**제시어 (다음 세션)**
+**제시어 (다음 · Cloud)**
 
 ```
-국내축제-S5-QA
+국내축제-S5-Cloud
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-26-project-log.md 「국내축제 — S5」절만
-로컬. /korea 전체화면 지도 셸(A) 구현. B~E 금지. releaseNotes 금지.
+브랜치 cursor/korea-festival-proxy. B 테마·지역 색인 칩. A 회귀 금지 범위 밖 확장 금지. releaseNotes 금지.
 ```

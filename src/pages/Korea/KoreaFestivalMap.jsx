@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import Map, {
   Layer,
   NavigationControl,
@@ -7,7 +6,7 @@ import Map, {
   useControl,
 } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { Maximize2, X } from 'lucide-react';
+import { Undo2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -26,6 +25,7 @@ const INTERACTIVE_LAYERS = [
   POINT_LAYER,
   POINT_LABEL_LAYER,
 ];
+const CLUSTER_LEAF_LIMIT = 48;
 
 const KR_VIEW = {
   longitude: 127.8,
@@ -105,35 +105,148 @@ function buildGeoJson(items) {
   return { type: 'FeatureCollection', features };
 }
 
+function MapCaption({ pointCount }) {
+  return (
+    <div className="pointer-events-none absolute bottom-2 left-2 right-14 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-white/80">
+      <span className="text-white/70">좌표 {pointCount}</span>
+      <span className="text-white/40">·</span>
+      {CAPTION_LINKS.map((item, idx) => (
+        <React.Fragment key={item.label}>
+          {idx > 0 ? <span className="text-white/40">·</span> : null}
+          <a
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pointer-events-auto underline-offset-2 hover:underline hover:text-amber-200"
+          >
+            {item.label}
+          </a>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+function readMapView(map) {
+  if (!map || typeof map.getCenter !== 'function') return null;
+  const c = map.getCenter();
+  const zoom = map.getZoom();
+  if (!c || !Number.isFinite(c.lng) || !Number.isFinite(c.lat)) return null;
+  if (!Number.isFinite(zoom)) return null;
+  return { lng: c.lng, lat: c.lat, zoom };
+}
+
+function viewsDiffer(a, b, eps = 0.02) {
+  if (!a || !b) return true;
+  return (
+    Math.abs(a.lng - b.lng) > eps ||
+    Math.abs(a.lat - b.lat) > eps ||
+    Math.abs(a.zoom - b.zoom) > 0.15
+  );
+}
+
 /**
  * @param {{
- *   geojson: GeoJSON.FeatureCollection,
+ *   items: object[],
  *   activeContentId?: string,
  *   onSelectPoint?: (contentId: string) => void,
- *   navPosition?: 'top-right' | 'top-left',
- *   reuseMaps?: boolean,
+ *   onSelectCluster?: (contentIds: string[]) => void,
+ *   onViewBack?: () => void,
  *   focusView?: { lng: number, lat: number, zoom?: number } | null,
+ *   historyKey?: string | number,
+ *   backNonce?: number,
+ *   listOpen?: boolean,
+ *   className?: string,
  * }} props
  */
-function FestivalMapCanvas({
-  geojson,
+export default function KoreaFestivalMap({
+  items,
   activeContentId = '',
   onSelectPoint,
-  navPosition = 'top-right',
-  reuseMaps = true,
+  onSelectCluster,
+  onViewBack,
   focusView = null,
+  historyKey = '',
+  backNonce = 0,
+  listOpen = false,
+  className = '',
 }) {
   const mapRef = useRef(null);
+  const viewStackRef = useRef([]);
+  const [canGoBack, setCanGoBack] = useState(false);
+  const geojson = useMemo(() => buildGeoJson(items), [items]);
+  const pointCount = geojson.features.length;
   const focusKey = focusView
     ? `${focusView.lng},${focusView.lat},${focusView.zoom ?? 9}`
     : '';
 
+  const syncCanGoBack = () => {
+    setCanGoBack(viewStackRef.current.length > 0);
+  };
+
+  const pushCurrentView = () => {
+    const map = mapRef.current;
+    const view = readMapView(map);
+    if (!view) return;
+    const stack = viewStackRef.current;
+    const top = stack[stack.length - 1];
+    if (top && !viewsDiffer(top, view)) return;
+    stack.push(view);
+    syncCanGoBack();
+  };
+
+  const clearViewHistory = () => {
+    viewStackRef.current = [];
+    syncCanGoBack();
+  };
+
+  useEffect(() => {
+    clearViewHistory();
+    const map = mapRef.current;
+    if (!map) return;
+    map.flyTo({
+      center: [KR_VIEW.longitude, KR_VIEW.latitude],
+      zoom: KR_VIEW.zoom,
+      essential: true,
+      duration: 500,
+    });
+  }, [historyKey]);
+
+  const popCameraBack = () => {
+    const map = mapRef.current;
+    const stack = viewStackRef.current;
+    if (!map || stack.length === 0) return false;
+    const prev = stack.pop();
+    syncCanGoBack();
+    if (!prev) return false;
+    map.flyTo({
+      center: [prev.lng, prev.lat],
+      zoom: prev.zoom,
+      essential: true,
+      duration: 500,
+    });
+    return true;
+  };
+
+  useEffect(() => {
+    if (!backNonce) return;
+    popCameraBack();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backNonce]);
+
   useEffect(() => {
     if (!focusView || !mapRef.current) return;
     const map = mapRef.current;
-    map.flyTo({
-      center: [focusView.lng, focusView.lat],
+    const next = {
+      lng: focusView.lng,
+      lat: focusView.lat,
       zoom: focusView.zoom ?? 9,
+    };
+    const cur = readMapView(map);
+    if (cur && viewsDiffer(cur, next)) pushCurrentView();
+    map.flyTo({
+      center: [next.lng, next.lat],
+      zoom: next.zoom,
       essential: true,
     });
   }, [focusKey, focusView]);
@@ -145,6 +258,11 @@ function FestivalMapCanvas({
         : ['==', ['get', 'contentId'], ''],
     [activeContentId],
   );
+
+  const handleViewBack = () => {
+    popCameraBack();
+    onViewBack?.();
+  };
 
   const handleClick = (e) => {
     const feature = e.features?.[0];
@@ -160,8 +278,25 @@ function FestivalMapCanvas({
       const source = map.getSource(SOURCE_ID);
       if (!source || typeof source.getClusterExpansionZoom !== 'function') return;
       const coords = feature.geometry?.coordinates;
+
+      if (typeof source.getClusterLeaves === 'function' && onSelectCluster) {
+        source.getClusterLeaves(
+          clusterId,
+          CLUSTER_LEAF_LIMIT,
+          0,
+          (err, leaves) => {
+            if (err || !Array.isArray(leaves)) return;
+            const ids = leaves
+              .map((f) => String(f?.properties?.contentId || ''))
+              .filter(Boolean);
+            if (ids.length) onSelectCluster(ids);
+          },
+        );
+      }
+
       source.getClusterExpansionZoom(clusterId, (err, zoom) => {
         if (err || !Array.isArray(coords)) return;
+        pushCurrentView();
         map.easeTo({
           center: coords,
           zoom: Math.min(Number(zoom) || map.getZoom() + 2, 14),
@@ -185,211 +320,116 @@ function FestivalMapCanvas({
     if (map) map.getCanvas().style.cursor = '';
   };
 
-  return (
-    <Map
-      ref={mapRef}
-      mapboxAccessToken={MAPBOX_TOKEN}
-      initialViewState={KR_VIEW}
-      mapStyle={MAP_STYLE}
-      style={{ width: '100%', height: '100%' }}
-      attributionControl={{ compact: true }}
-      logoPosition="bottom-left"
-      reuseMaps={reuseMaps}
-      scrollZoom
-      dragPan
-      dragRotate={false}
-      touchZoomRotate
-      doubleClickZoom
-      keyboard
-      interactiveLayerIds={INTERACTIVE_LAYERS}
-      onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <LanguageControl />
-      <NavigationControl position={navPosition} showCompass={false} />
-      <Source
-        id={SOURCE_ID}
-        type="geojson"
-        data={geojson}
-        cluster
-        clusterMaxZoom={13}
-        clusterRadius={52}
-      >
-        <Layer
-          id={CLUSTER_LAYER}
-          type="circle"
-          filter={['has', 'point_count']}
-          paint={clusterPaint}
-        />
-        <Layer
-          id={CLUSTER_COUNT_LAYER}
-          type="symbol"
-          filter={['has', 'point_count']}
-          layout={{
-            'text-field': ['get', 'point_count_abbreviated'],
-            'text-size': 12,
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          }}
-          paint={{ 'text-color': '#1b1410' }}
-        />
-        <Layer
-          id={POINT_LAYER}
-          type="circle"
-          filter={['!', ['has', 'point_count']]}
-          paint={pointPaint}
-        />
-        <Layer
-          id={POINT_LABEL_LAYER}
-          type="symbol"
-          filter={['!', ['has', 'point_count']]}
-          layout={{
-            'text-field': ['get', 'titleShort'],
-            'text-size': 11,
-            'text-offset': [0, 1.35],
-            'text-anchor': 'top',
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-max-width': 8,
-          }}
-          paint={{
-            'text-color': '#1b1410',
-            'text-halo-color': '#f59e0b',
-            'text-halo-width': 1.4,
-          }}
-        />
-        <Layer
-          id={ACTIVE_LAYER}
-          type="circle"
-          filter={activeFilter}
-          paint={activePaint}
-        />
-      </Source>
-    </Map>
-  );
-}
-
-function MapCaption({ pointCount }) {
-  return (
-    <div className="pointer-events-none absolute bottom-2 left-2 right-14 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-white/80">
-      <span className="text-white/70">좌표 {pointCount}</span>
-      <span className="text-white/40">·</span>
-      {CAPTION_LINKS.map((item, idx) => (
-        <React.Fragment key={item.label}>
-          {idx > 0 ? <span className="text-white/40">·</span> : null}
-          <a
-            href={item.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pointer-events-auto underline-offset-2 hover:underline hover:text-amber-200"
-          >
-            {item.label}
-          </a>
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
-
-/**
- * @param {{
- *   items: object[],
- *   activeContentId?: string,
- *   onSelectPoint?: (contentId: string) => void,
- *   focusView?: { lng: number, lat: number, zoom?: number } | null,
- *   className?: string,
- * }} props
- */
-export default function KoreaFestivalMap({
-  items,
-  activeContentId = '',
-  onSelectPoint,
-  focusView = null,
-  className = '',
-}) {
-  const [expanded, setExpanded] = useState(false);
-
-  const geojson = useMemo(() => buildGeoJson(items), [items]);
-  const pointCount = geojson.features.length;
-
-  useEffect(() => {
-    if (!expanded) return undefined;
-    const onKey = (e) => {
-      if (e.key === 'Escape') setExpanded(false);
-    };
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [expanded]);
-
   if (!MAPBOX_TOKEN) {
     return (
       <div
-        className={`flex min-h-[240px] h-full flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-10 text-center ${className}`}
+        className={`flex h-full w-full flex-col items-center justify-center bg-[#1b1410] px-4 py-10 text-center ${className}`}
       >
         <p className="text-sm text-gray-300">지도를 표시할 수 없습니다.</p>
         <p className="mt-1 text-[11px] text-gray-500">
-          시간·취향 칩과 카드로 축제를 찾아 보세요. ({pointCount}곳 좌표)
+          Mapbox 토큰이 필요합니다. ({pointCount}곳 좌표)
         </p>
       </div>
     );
   }
 
-  const mapProps = {
-    geojson,
-    activeContentId,
-    onSelectPoint,
-    focusView,
-  };
-
   return (
-    <>
-      <div
-        className={`relative h-full min-h-[240px] overflow-hidden rounded-2xl border border-white/10 ${className}`}
+    <div className={`relative h-full w-full overflow-hidden ${className}`}>
+      <Map
+        ref={mapRef}
+        mapboxAccessToken={MAPBOX_TOKEN}
+        initialViewState={KR_VIEW}
+        mapStyle={MAP_STYLE}
+        style={{ width: '100%', height: '100%' }}
+        attributionControl={{ compact: true }}
+        logoPosition="bottom-left"
+        reuseMaps
+        scrollZoom
+        dragPan
+        dragRotate={false}
+        touchZoomRotate
+        doubleClickZoom
+        keyboard
+        interactiveLayerIds={INTERACTIVE_LAYERS}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
-        <FestivalMapCanvas {...mapProps} navPosition="top-right" reuseMaps />
+        <LanguageControl />
+        <NavigationControl position="bottom-right" showCompass={false} />
+        <Source
+          id={SOURCE_ID}
+          type="geojson"
+          data={geojson}
+          cluster
+          clusterMaxZoom={13}
+          clusterRadius={52}
+        >
+          <Layer
+            id={CLUSTER_LAYER}
+            type="circle"
+            filter={['has', 'point_count']}
+            paint={clusterPaint}
+          />
+          <Layer
+            id={CLUSTER_COUNT_LAYER}
+            type="symbol"
+            filter={['has', 'point_count']}
+            layout={{
+              'text-field': ['get', 'point_count_abbreviated'],
+              'text-size': 12,
+              'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            }}
+            paint={{ 'text-color': '#1b1410' }}
+          />
+          <Layer
+            id={POINT_LAYER}
+            type="circle"
+            filter={['!', ['has', 'point_count']]}
+            paint={pointPaint}
+          />
+          <Layer
+            id={POINT_LABEL_LAYER}
+            type="symbol"
+            filter={['!', ['has', 'point_count']]}
+            layout={{
+              'text-field': ['get', 'titleShort'],
+              'text-size': 11,
+              'text-offset': [0, 1.35],
+              'text-anchor': 'top',
+              'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+              'text-max-width': 8,
+            }}
+            paint={{
+              'text-color': '#1b1410',
+              'text-halo-color': '#f59e0b',
+              'text-halo-width': 1.4,
+            }}
+          />
+          <Layer
+            id={ACTIVE_LAYER}
+            type="circle"
+            filter={activeFilter}
+            paint={activePaint}
+          />
+        </Source>
+      </Map>
+      {canGoBack && (
         <button
           type="button"
-          onClick={() => setExpanded(true)}
-          aria-label="지도 전체화면"
-          className="absolute top-3 left-3 z-[5] flex items-center gap-1.5 rounded-full border border-white/25 bg-[#1b1410]/85 px-3 py-1.5 text-[11px] font-bold text-white shadow-md backdrop-blur-md transition-colors hover:border-amber-300/50 hover:bg-[#2a1f18]"
+          onClick={handleViewBack}
+          aria-label="이전 지도 위치로"
+          className={`absolute z-[5] flex items-center gap-1.5 rounded-full border border-white/25 bg-[#1b1410]/85 px-3 py-1.5 text-[11px] font-bold text-white shadow-md backdrop-blur-md transition-colors hover:border-amber-300/50 hover:bg-[#2a1f18] ${
+            listOpen
+              ? 'left-3 top-[max(7.25rem,calc(env(safe-area-inset-top,0px)+6.5rem))] md:left-[calc(340px+1.25rem)] lg:left-[calc(360px+1.75rem)]'
+              : 'left-3 bottom-[max(2.75rem,calc(env(safe-area-inset-bottom,0px)+2.25rem))]'
+          }`}
         >
-          <Maximize2 size={13} aria-hidden="true" />
-          전체화면
+          <Undo2 size={13} aria-hidden="true" />
+          뒤로
         </button>
-        <MapCaption pointCount={pointCount} />
-      </div>
-
-      {expanded &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-[#1b1410] animate-fade-in"
-            role="dialog"
-            aria-modal="true"
-            aria-label="국내 축제 지도 전체화면"
-          >
-            <div className="relative h-full w-full">
-              <FestivalMapCanvas
-                {...mapProps}
-                navPosition="top-left"
-                reuseMaps={false}
-              />
-              <button
-                type="button"
-                onClick={() => setExpanded(false)}
-                aria-label="전체화면 닫기"
-                className="absolute z-[220] top-4 right-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:right-3 flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40"
-              >
-                <X size={22} strokeWidth={2.5} />
-              </button>
-              <MapCaption pointCount={pointCount} />
-            </div>
-          </div>,
-          document.body,
-        )}
-    </>
+      )}
+      <MapCaption pointCount={pointCount} />
+    </div>
   );
 }

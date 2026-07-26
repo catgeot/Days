@@ -6,6 +6,8 @@ import {
   Loader2,
   LocateFixed,
   MapPin,
+  Undo2,
+  X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
@@ -15,7 +17,6 @@ import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { filterByTimeTab } from './festivalTimeFilter';
 import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
-import { buildTasteTags, filterByTaste } from './festivalTasteTags';
 import KoreaFestivalMap from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
 
@@ -26,7 +27,6 @@ const TIME_TABS = [
   { id: 'season', label: '시즌' },
 ];
 
-const HIGHLIGHT_LIMIT = 8;
 const PANEL_LIMIT = 48;
 const NEAR_KM = 80;
 
@@ -73,14 +73,14 @@ function festivalKey(item) {
 }
 
 function chipClass(active) {
-  return `flex items-center gap-1.5 px-4 py-2 rounded-2xl whitespace-nowrap text-xs transition-all border shrink-0 ${
+  return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 ${
     active
-      ? 'bg-white/10 text-white border-white/20 font-bold'
-      : 'bg-white/[0.02] text-gray-300 border-white/[0.15] hover:bg-white/[0.08]'
+      ? 'bg-amber-500/25 text-amber-50 border-amber-300/45 font-bold'
+      : 'bg-black/45 text-gray-200 border-white/20 hover:bg-black/60'
   }`;
 }
 
-function FestivalCard({ item, onSelect }) {
+function FestivalRow({ item, active, onSelect }) {
   const img = festivalImage(item);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
@@ -90,51 +90,11 @@ function FestivalCard({ item, onSelect }) {
     <button
       type="button"
       onClick={() => onSelect(item)}
-      className="group relative flex flex-col text-left bg-white/[0.02] border border-white/[0.05] rounded-[1.5rem] overflow-hidden w-full aspect-[3/4] md:aspect-[4/5] snap-start focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
-    >
-      {img ? (
-        <img
-          src={img}
-          alt=""
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/40 to-black/80" />
-      )}
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-      <div className="relative z-[1] mt-auto p-4 space-y-1.5">
-        {range && (
-          <p className="text-[11px] font-bold tracking-wide text-amber-200/90 flex items-center gap-1">
-            <CalendarDays size={12} aria-hidden="true" />
-            {range}
-          </p>
-        )}
-        <h3 className="text-base md:text-lg font-extrabold text-white leading-snug line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
-          {item.title}
-        </h3>
-        {item.addr1 && (
-          <p className="text-[11px] text-gray-300 line-clamp-1 flex items-center gap-1">
-            <MapPin size={11} className="shrink-0 opacity-70" aria-hidden="true" />
-            <span className="truncate">{item.addr1}</span>
-          </p>
-        )}
-      </div>
-    </button>
-  );
-}
-
-function FestivalRow({ item, onSelect }) {
-  const img = festivalImage(item);
-  const start = formatYmdLabel(item.eventStartDate);
-  const end = formatYmdLabel(item.eventEndDate);
-  const range = start && end ? `${start} – ${end}` : start || end;
-
-  return (
-    <button
-      type="button"
-      onClick={() => onSelect(item)}
-      className="w-full flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-left hover:bg-white/[0.07] transition-colors"
+      className={`w-full flex items-center gap-3 rounded-2xl border p-2.5 text-left transition-colors ${
+        active
+          ? 'border-amber-400/45 bg-amber-500/15'
+          : 'border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07]'
+      }`}
     >
       <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-white/5">
         {img ? (
@@ -146,27 +106,18 @@ function FestivalRow({ item, onSelect }) {
       <div className="min-w-0 flex-1 space-y-0.5">
         <p className="text-sm font-bold text-white truncate">{item.title}</p>
         {range && (
-          <p className="text-[11px] text-amber-200/80 font-bold">{range}</p>
+          <p className="text-[11px] text-amber-200/80 font-bold flex items-center gap-1">
+            <CalendarDays size={11} aria-hidden="true" />
+            {range}
+          </p>
         )}
         {item.addr1 && (
-          <p className="text-[11px] text-gray-400 truncate">{item.addr1}</p>
+          <p className="text-[11px] text-gray-400 truncate flex items-center gap-1">
+            <MapPin size={11} className="shrink-0 opacity-70" aria-hidden="true" />
+            <span className="truncate">{item.addr1}</span>
+          </p>
         )}
       </div>
-    </button>
-  );
-}
-
-function HubRailCard({ hub, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex-none snap-start w-[140px] md:w-[160px] rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4 text-left hover:bg-white/[0.08] hover:border-amber-400/30 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
-    >
-      <p className="text-sm md:text-base font-bold text-white truncate">{hub.name}</p>
-      <p className="mt-1 text-[10px] text-gray-400 tracking-wide truncate">
-        {hub.name_en || hub.country}
-      </p>
     </button>
   );
 }
@@ -176,9 +127,11 @@ export default function KoreaFestivalHub() {
   const now = useMemo(() => new Date(), []);
 
   const [timeTab, setTimeTab] = useState('now');
-  const [tasteId, setTasteId] = useState('all');
   const [mapFocusIds, setMapFocusIds] = useState(null);
   const [mapFocusView, setMapFocusView] = useState(null);
+  const [focusStack, setFocusStack] = useState([]);
+  const [viewResetKey, setViewResetKey] = useState(0);
+  const [mapBackNonce, setMapBackNonce] = useState(0);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -225,41 +178,6 @@ export default function KoreaFestivalHub() {
     [timeTab, items, now],
   );
 
-  const tasteChips = useMemo(() => buildTasteTags(timedItems), [timedItems]);
-
-  useEffect(() => {
-    if (tasteId === 'all') return;
-    if (!tasteChips.some((t) => t.id === tasteId)) {
-      setTasteId('all');
-    }
-  }, [tasteId, tasteChips]);
-
-  const afterTaste = useMemo(
-    () => filterByTaste(timedItems, tasteId),
-    [timedItems, tasteId],
-  );
-
-  const resultItems = useMemo(() => {
-    if (!mapFocusIds || mapFocusIds.length === 0) return afterTaste;
-    const set = new Set(mapFocusIds.map(String));
-    return afterTaste.filter((item) => set.has(String(item.contentId || '')));
-  }, [afterTaste, mapFocusIds]);
-
-  const highlightItems = useMemo(() => {
-    const withImg = resultItems.filter((item) => festivalImage(item));
-    const source = withImg.length ? withImg : resultItems;
-    return source.slice(0, HIGHLIGHT_LIMIT);
-  }, [resultItems]);
-
-  const panelItems = useMemo(() => {
-    const showPanel = tasteId !== 'all' || (mapFocusIds && mapFocusIds.length > 0);
-    if (!showPanel) return [];
-    return resultItems.slice(0, PANEL_LIMIT);
-  }, [resultItems, tasteId, mapFocusIds]);
-
-  const showResultPanel =
-    tasteId !== 'all' || (mapFocusIds && mapFocusIds.length > 0);
-
   const byContentId = useMemo(() => {
     const map = new Map();
     for (const item of items) {
@@ -267,6 +185,20 @@ export default function KoreaFestivalHub() {
     }
     return map;
   }, [items]);
+
+  const panelItems = useMemo(() => {
+    if (!mapFocusIds || mapFocusIds.length === 0) return [];
+    const set = new Set(mapFocusIds.map(String));
+    const ordered = [];
+    for (const id of mapFocusIds) {
+      const item = byContentId.get(String(id));
+      if (item) ordered.push(item);
+    }
+    if (ordered.length) return ordered.slice(0, PANEL_LIMIT);
+    return timedItems.filter((item) => set.has(String(item.contentId || ''))).slice(0, PANEL_LIMIT);
+  }, [mapFocusIds, byContentId, timedItems]);
+
+  const showList = mapFocusIds && mapFocusIds.length > 0;
 
   const selectedHubs = useMemo(() => {
     if (!selected?.areaCode) return hubRail.slice(0, 4);
@@ -276,13 +208,46 @@ export default function KoreaFestivalHub() {
       .slice(0, 4);
   }, [selected, hubRail, krHubById]);
 
-  const selectTime = (id) => {
-    setTimeTab(id);
+  const clearFocus = () => {
     setMapFocusIds(null);
     setMapFocusView(null);
-    setTasteId('all');
+    setFocusStack([]);
     setNearLabel('');
     setNearMsg('');
+    setSelected(null);
+    setViewResetKey((k) => k + 1);
+  };
+
+  const pushFocus = (nextIds) => {
+    setFocusStack((stack) => [...stack, mapFocusIds]);
+    setMapFocusIds(nextIds);
+  };
+
+  const handleViewBack = () => {
+    setSelected(null);
+    setMapFocusView(null);
+    setNearLabel('');
+    setNearMsg('');
+    setFocusStack((stack) => {
+      if (stack.length === 0) {
+        setMapFocusIds(null);
+        return stack;
+      }
+      const next = stack.slice(0, -1);
+      setMapFocusIds(stack[stack.length - 1] ?? null);
+      return next;
+    });
+  };
+
+  const selectTime = (id) => {
+    setTimeTab(id);
+    clearFocus();
+    setSelected(null);
+  };
+
+  const openItem = (item) => {
+    if (!item) return;
+    setSelected(item);
   };
 
   const handleNearMe = () => {
@@ -307,7 +272,7 @@ export default function KoreaFestivalHub() {
         }
         const label = hubResolved.hubName || '';
         setTimeTab('now');
-        setTasteId('all');
+        setSelected(null);
         const nearby = festivalsWithinKm(
           filterByTimeTab('now', items, now),
           lat,
@@ -317,12 +282,16 @@ export default function KoreaFestivalHub() {
         const ids = nearby
           .map((item) => String(item?.contentId || ''))
           .filter(Boolean);
-        setMapFocusIds(ids.length ? ids : null);
+        if (ids.length) pushFocus(ids);
+        else {
+          setFocusStack([]);
+          setMapFocusIds(null);
+        }
         setMapFocusView({ lng, lat, zoom: 9 });
         setNearLabel(label);
         setNearMsg(
           ids.length
-            ? `${NEAR_KM}km 안 ${ids.length}건 · 지도에서 확인해 보세요.`
+            ? `${NEAR_KM}km 안 ${ids.length}건`
             : `${NEAR_KM}km 안 지금 축제가 없습니다. 시간 탭을 바꿔 보세요.`,
         );
       },
@@ -342,277 +311,195 @@ export default function KoreaFestivalHub() {
     );
   };
 
-  const seoImage = highlightItems[0]
-    ? festivalImage(highlightItems[0]) || undefined
-    : undefined;
-
   return (
-    <div className="h-full w-full overflow-y-auto bg-[#1b1410] text-white custom-scrollbar">
+    <div className="relative h-full w-full overflow-hidden bg-[#1b1410] text-white">
       <SEO
         title="국내 축제 · 지금·지도"
         description="TourAPI 기반 국내 축제. 지금·주말·지도 클러스터로 찾고, 상세·인근 여행지로 이어가세요."
         url="/korea"
-        image={seoImage}
       />
 
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1b1410]/90 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-4 md:px-6 py-4 flex items-center gap-3">
+      <div className="absolute inset-0 z-0">
+        <KoreaFestivalMap
+          items={timedItems}
+          activeContentId={
+            selected?.contentId != null ? String(selected.contentId) : ''
+          }
+          focusView={mapFocusView}
+          historyKey={`${timeTab}:${viewResetKey}`}
+          backNonce={mapBackNonce}
+          listOpen={!!showList}
+          onViewBack={handleViewBack}
+          onSelectPoint={(contentId) => {
+            const id = String(contentId);
+            const item = byContentId.get(id);
+            const alreadyOne =
+              mapFocusIds?.length === 1 && String(mapFocusIds[0]) === id;
+            if (!alreadyOne) pushFocus([id]);
+            else setMapFocusIds([id]);
+            if (item) setSelected(item);
+          }}
+          onSelectCluster={(contentIds) => {
+            setSelected(null);
+            setNearLabel('');
+            setNearMsg('');
+            if (contentIds.length) pushFocus(contentIds);
+            else setMapFocusIds(null);
+          }}
+        />
+      </div>
+
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
+        <div className="pointer-events-auto mx-auto flex max-w-6xl items-start gap-2 px-3 md:px-5">
           <Link
             to="/"
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-amber-400/40 transition-all shrink-0"
+            className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/55 text-gray-100 shadow-lg backdrop-blur-md hover:border-amber-400/40 hover:bg-black/70"
             aria-label="홈으로"
           >
-            <ArrowLeft size={18} className="text-gray-200" />
+            <ArrowLeft size={18} />
           </Link>
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-200/80">
-              Korea
-            </p>
-            <h1 className="text-lg md:text-xl font-extrabold tracking-tight truncate">
-              국내 축제
-            </h1>
-          </div>
-          <button
-            type="button"
-            onClick={handleNearMe}
-            disabled={nearBusy}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-bold border border-amber-400/35 bg-amber-500/15 text-amber-50 hover:bg-amber-500/25 disabled:opacity-60 transition-colors"
-          >
-            {nearBusy ? (
-              <Loader2 size={14} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <LocateFixed size={14} aria-hidden="true" />
+
+          <div className="min-w-0 flex-1 rounded-2xl border border-white/15 bg-black/55 px-3 py-2.5 shadow-lg backdrop-blur-md md:px-4">
+            <div className="flex items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-200/80">
+                  Korea
+                </p>
+                <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg">
+                  국내 축제
+                </h1>
+              </div>
+              <button
+                type="button"
+                onClick={handleNearMe}
+                disabled={nearBusy}
+                className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-50 hover:bg-amber-500/30 disabled:opacity-60"
+              >
+                {nearBusy ? (
+                  <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+                ) : (
+                  <LocateFixed size={14} aria-hidden="true" />
+                )}
+                내 주변
+              </button>
+            </div>
+
+            <div className="mt-2.5 flex gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+              {TIME_TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => selectTime(t.id)}
+                  className={chipClass(timeTab === t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+              <span className="ml-auto shrink-0 self-center text-[10px] text-white/55">
+                {loading ? '…' : `${timedItems.length}건`}
+              </span>
+            </div>
+
+            {(nearLabel || nearMsg) && (
+              <p className="mt-2 text-[11px] text-amber-100/85">
+                {nearLabel ? (
+                  <span className="font-bold text-amber-200">{nearLabel} 기준</span>
+                ) : null}
+                {nearLabel && nearMsg ? ' · ' : null}
+                {nearMsg}
+              </p>
             )}
-            내 주변
-          </button>
-        </div>
-        {(nearLabel || nearMsg) && (
-          <div className="mx-auto max-w-6xl px-4 md:px-6 pb-3">
-            <p className="text-[11px] text-amber-100/80">
-              {nearLabel ? (
-                <span className="font-bold text-amber-200">{nearLabel} 기준</span>
-              ) : null}
-              {nearLabel && nearMsg ? ' · ' : null}
-              {nearMsg}
-            </p>
           </div>
-        )}
+        </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 md:px-6 py-6 space-y-6 pb-28">
-        <section className="space-y-3">
-          <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-            언제
-          </h2>
-          <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-            {TIME_TABS.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => selectTime(t.id)}
-                className={chipClass(timeTab === t.id)}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {loading && (
-          <div className="flex items-center justify-center gap-2 py-16 text-gray-400 text-sm">
-            <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+      {loading && (
+        <div className="pointer-events-none absolute inset-x-0 top-[7.5rem] z-20 flex justify-center px-4">
+          <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-4 py-2 text-sm text-gray-200 shadow-lg backdrop-blur-md">
+            <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             축제 일정을 불러오는 중…
           </div>
-        )}
+        </div>
+      )}
 
-        {!loading && error && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center space-y-3">
-            <p className="text-sm text-gray-300">{error}</p>
+      {!loading && error && (
+        <div className="pointer-events-none absolute inset-x-0 top-[7.5rem] z-20 flex justify-center px-4">
+          <div className="pointer-events-auto max-w-sm rounded-2xl border border-white/15 bg-black/70 px-4 py-4 text-center shadow-lg backdrop-blur-md">
+            <p className="text-sm text-gray-200">{error}</p>
             <button
               type="button"
               onClick={() => loadFestivals(true)}
-              className="px-4 py-2 rounded-xl text-xs font-bold border border-white/15 bg-white/5 hover:bg-white/10"
+              className="mt-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold hover:bg-white/10"
             >
               다시 시도
             </button>
           </div>
-        )}
+        </div>
+      )}
 
-        {!loading && !error && (
-          <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8">
-            <aside className="w-full md:w-[36%] lg:w-[34%] shrink-0 md:sticky md:top-[5.5rem] space-y-2">
-              <div className="flex items-end justify-between gap-3">
-                <h2 className="text-sm font-bold text-white">지도</h2>
-                <p className="text-[11px] text-gray-500">줌 클러스터</p>
+      {showList && (
+        <aside
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 md:inset-x-auto md:bottom-auto md:left-3 md:top-[8.5rem] md:w-[340px] lg:left-5 lg:w-[360px]"
+          aria-label="선택한 축제 목록"
+        >
+          <div className="pointer-events-auto flex max-h-[42vh] flex-col rounded-t-3xl border border-white/15 bg-black/70 shadow-2xl backdrop-blur-xl md:max-h-[calc(100dvh-10rem)] md:rounded-3xl">
+            <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
+              <div className="min-w-0">
+                <h2 className="text-sm font-bold text-white">선택</h2>
+                <p className="text-[11px] text-gray-400">
+                  {panelItems.length}건
+                  {mapFocusIds.length > PANEL_LIMIT
+                    ? ` · ${PANEL_LIMIT}건까지`
+                    : ''}
+                </p>
               </div>
-              <div className="h-[min(62vh,520px)] md:h-[min(72vh,640px)]">
-                <KoreaFestivalMap
-                  items={afterTaste}
-                  activeContentId={
-                    selected?.contentId != null ? String(selected.contentId) : ''
-                  }
-                  focusView={mapFocusView}
-                  onSelectPoint={(contentId) => {
-                    const item = byContentId.get(String(contentId));
-                    if (item) {
-                      setSelected(item);
-                      setMapFocusIds([contentId]);
-                    } else {
-                      setMapFocusIds([contentId]);
-                    }
-                  }}
-                />
-              </div>
-              {mapFocusIds && (
+              <div className="flex shrink-0 items-center gap-1.5">
+                {(focusStack.length > 0 || mapFocusIds?.length) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleViewBack();
+                      setMapBackNonce((n) => n + 1);
+                    }}
+                    aria-label="이전 지도 위치로"
+                    className="flex h-9 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 text-[11px] font-bold text-gray-100 hover:bg-white/10"
+                  >
+                    <Undo2 size={14} aria-hidden="true" />
+                    뒤로
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => {
-                    setMapFocusIds(null);
-                    setMapFocusView(null);
-                    setNearLabel('');
-                    setNearMsg('');
-                  }}
-                  className="text-[11px] text-amber-200/90 underline-offset-2 hover:underline"
+                  onClick={clearFocus}
+                  aria-label="선택 해제 · 전국 보기"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-gray-200 hover:bg-white/10"
                 >
-                  지도 선택 해제
+                  <X size={16} />
                 </button>
+              </div>
+            </div>
+            <div className="custom-scrollbar space-y-2 overflow-y-auto px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+              {panelItems.length === 0 ? (
+                <p className="px-1 py-4 text-sm text-gray-400">
+                  이 선택에 맞는 축제가 없습니다.
+                </p>
+              ) : (
+                panelItems.map((item) => (
+                  <FestivalRow
+                    key={festivalKey(item)}
+                    item={item}
+                    active={
+                      selected?.contentId != null &&
+                      String(selected.contentId) === String(item.contentId)
+                    }
+                    onSelect={openItem}
+                  />
+                ))
               )}
-            </aside>
-
-            <div className="min-w-0 flex-1 space-y-8">
-              <section className="space-y-3">
-                <div className="flex items-end justify-between gap-3">
-                  <h2 className="text-sm font-bold text-white">
-                    {timeTab === 'now'
-                      ? '지금 열리는 축제'
-                      : timeTab === 'weekend'
-                        ? '이번 주말'
-                        : timeTab === 'season'
-                          ? '시즌 하이라이트'
-                          : '이번 달 하이라이트'}
-                  </h2>
-                  <p className="text-[11px] text-gray-500">{timedItems.length}건</p>
-                </div>
-                {highlightItems.length === 0 ? (
-                  <p className="text-sm text-gray-400 py-4">
-                    이 기간에 맞는 축제가 없습니다. 다른 시간 탭을 골라 보세요.
-                  </p>
-                ) : (
-                  <div className="flex overflow-x-auto gap-3 pb-1 snap-x custom-scrollbar -mx-1 px-1">
-                    {highlightItems.map((item) => (
-                      <div
-                        key={festivalKey(item)}
-                        className="flex-none w-[150px] md:w-[160px] snap-start"
-                      >
-                        <FestivalCard item={item} onSelect={setSelected} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-
-              {tasteChips.length > 0 && (
-                <section className="space-y-3">
-                  <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                    취향
-                  </h2>
-                  <div className="flex overflow-x-auto gap-2 pb-1 custom-scrollbar">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTasteId('all');
-                        setMapFocusIds(null);
-                        setMapFocusView(null);
-                      }}
-                      className={chipClass(tasteId === 'all')}
-                    >
-                      전체
-                    </button>
-                    {tasteChips.map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => {
-                          setTasteId(t.id);
-                          setMapFocusIds(null);
-                          setMapFocusView(null);
-                        }}
-                        className={chipClass(tasteId === t.id)}
-                      >
-                        {t.label}
-                        <span className="opacity-70">{t.count}</span>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {showResultPanel && (
-                <section className="space-y-3">
-                  <div className="flex items-end justify-between gap-3">
-                    <h2 className="text-sm font-bold text-white">선택 결과</h2>
-                    <p className="text-[11px] text-gray-500">
-                      {resultItems.length}건
-                      {resultItems.length > PANEL_LIMIT
-                        ? ` · ${PANEL_LIMIT}건까지`
-                        : ''}
-                    </p>
-                  </div>
-                  {panelItems.length === 0 ? (
-                    <p className="text-sm text-gray-400 py-4">
-                      이 조건에 맞는 축제가 없습니다.
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {panelItems.map((item) => (
-                        <FestivalRow
-                          key={festivalKey(item)}
-                          item={item}
-                          onSelect={setSelected}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              <section className="space-y-3">
-                <div className="flex items-end justify-between gap-3">
-                  <h2 className="text-sm font-bold text-white">인근 여행지</h2>
-                  <p className="text-[11px] text-gray-500">hub</p>
-                </div>
-                <div className="flex overflow-x-auto gap-3 pb-2 snap-x custom-scrollbar -mx-1 px-1">
-                  {hubRail.map((hub) => (
-                    <HubRailCard
-                      key={hub.hubId}
-                      hub={hub}
-                      onClick={() => navigate(`/place/${hub.hubId}`)}
-                    />
-                  ))}
-                </div>
-              </section>
             </div>
           </div>
-        )}
-
-        {(loading || error) && (
-          <section className="space-y-3">
-            <div className="flex items-end justify-between gap-3">
-              <h2 className="text-sm font-bold text-white">인근 여행지</h2>
-              <p className="text-[11px] text-gray-500">hub</p>
-            </div>
-            <div className="flex overflow-x-auto gap-3 pb-2 snap-x custom-scrollbar -mx-1 px-1">
-              {hubRail.map((hub) => (
-                <HubRailCard
-                  key={hub.hubId}
-                  hub={hub}
-                  onClick={() => navigate(`/place/${hub.hubId}`)}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-      </main>
+        </aside>
+      )}
 
       {selected && (
         <FestivalDetailSheet
