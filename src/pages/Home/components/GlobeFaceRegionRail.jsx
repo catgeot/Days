@@ -25,7 +25,7 @@ const CATEGORY_CHIP = {
 };
 
 /**
- * 카테고리 면 → 나라/지역 칩 레일 (우선 시드 + 스크롤 스캔)
+ * 카테고리 면 → 권역 나라 칩 레일 (면당 배타 · 스크롤)
  */
 export default function GlobeFaceRegionRail({
   category,

@@ -72,6 +72,8 @@ const STATIC = {
   ml: { labelKo: '말리', iso: 'ML', lat: 17.6, lng: -2.0, zoom: 4.4, bbox: [-12.3, 10.1, 4.3, 25.0] },
   eh: { labelKo: '사하라', iso: 'EH', lat: 24.2, lng: -12.9, zoom: 4.5, bbox: [-17.1, 20.8, -8.7, 27.7] },
   sct: { labelKo: '스코틀랜드', iso: 'GB', lat: 56.5, lng: -4.2, zoom: 5.6, bbox: [-7.7, 54.6, -0.7, 60.9] },
+  ak: { labelKo: '알래스카', iso: 'US', lat: 64.2, lng: -149.5, zoom: 3.6, bbox: [-179.1, 51.2, -129.9, 71.4], hubBbox: [-170.0, 54.0, -130.0, 71.0] },
+  sj: { labelKo: '스발바르', iso: 'SJ', lat: 78.2, lng: 15.6, zoom: 4.8, bbox: [10.5, 74.3, 33.5, 80.8] },
 };
 
 const LABEL_TO_ID = {
@@ -186,6 +188,9 @@ const LABEL_TO_ID = {
   말리: 'ml',
   사하라: 'eh',
   스코틀랜드: 'sct',
+  알래스카: 'ak',
+  스발바르: 'sj',
+  '스발바르 제도': 'sj',
 };
 
 const catalog = new Map();

@@ -1,7 +1,7 @@
 /**
- * 카테고리 면별 나라 목록 — 권역(지리) 구분용.
+ * 카테고리 면별 나라 목록 — 권역(지리) 배타 분할.
  * 카테고리 라벨(휴양·자연 등)은 지구본 5면 UX일 뿐, 테마 여행지 필터가 아님.
- * 예: paradise 면 = 한국 중심 아시아·남태평양 권역 나라.
+ * 각 나라는 정확히 한 면에만 등장한다.
  */
 
 import { GLOBE_CATEGORY_IDS, GLOBE_FACE_CENTER_BY_CATEGORY } from './globeCategoryFocus.js';
@@ -14,22 +14,22 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 
 /**
  * 면별 상단 우선 시드 — 해당 권역에서 먼저 보여줄 나라.
- * 스팟·테마와 무관.
+ * 시드에 올린 나라는 그 면에 고정(배타).
  */
 export const GLOBE_FACE_PRIORITY = {
   /** 한국 중심 아시아·남태평양 */
-  paradise: ['kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv'],
-  /** 아프리카·인도양 */
-  nature: ['ke', 'tz', 'za', 'ma', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc'],
-  /** 유럽 */
-  urban: ['no', 'fr', 'gb', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr'],
-  /** 북미·중미·카리브 */
-  culture: ['us', 'ca', 'mx', 'cu', 'cr', 'gt', 'pa', 'jm', 'bs'],
+  paradise: ['kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv', 'hi'],
+  /** 아프리카·서인도양 */
+  nature: ['ke', 'tz', 'za', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 'ma'],
+  /** 유럽·북극(그린란드·스발바르) */
+  urban: ['no', 'fr', 'gb', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr', 'gl', 'sj'],
+  /** 북미·중미·카리브·알래스카 */
+  culture: ['us', 'ca', 'mx', 'cu', 'cr', 'gt', 'pa', 'jm', 'bs', 'ak'],
   /** 남미 */
   adventure: ['br', 'pe', 'ar', 'cl', 'co', 'ec', 'bo', 'py'],
 };
 
-/** @deprecated 하위 호환 — 면별 조립 결과 캐시 아님, getter 사용 */
+/** @deprecated 하위 호환 */
 export const GLOBE_FACE_REGIONS = new Proxy(
   {},
   {
@@ -50,19 +50,61 @@ export const GLOBE_FACE_REGIONS = new Proxy(
   },
 );
 
-/** 국가 단위 “평면 느낌” 기본 줌 — 지역별 zoom이 없을 때 */
 export const GLOBE_FACE_REGION_DEFAULT_ZOOM = 4.2;
-
 export const GLOBE_FACE_REGION_FLY_MS = 1800;
-
-/** fitBounds 시 도시 지명 노출을 위한 상한 — 작은 섬 과확대 방지 */
 export const GLOBE_FACE_REGION_MAX_ZOOM = 6.4;
 
 /** @type {Map<string, { globe: number, count: number, maxPop: number }> | null} */
 let spotCountryStatsCache = null;
 
-/** @type {Map<string, string> | null} countryId → nearest face category */
-let homeFaceByCountryCache = null;
+/** @type {Map<string, string> | null} countryId → exclusive face */
+let exclusiveFaceByCountryCache = null;
+
+/**
+ * 권역 앵커 — 휴양 면은 아시아·남태평양 추가 앵커.
+ */
+const FACE_REGION_ANCHORS = {
+  paradise: [
+    GLOBE_FACE_CENTER_BY_CATEGORY.paradise,
+    { lat: 15.0, lng: 105.0 },
+    { lat: 20.0, lng: 78.0 },
+    { lat: -18.0, lng: 178.0 },
+    { lat: -17.0, lng: -149.0 },
+  ],
+  nature: [
+    GLOBE_FACE_CENTER_BY_CATEGORY.nature,
+    { lat: -10.0, lng: 45.0 },
+    { lat: 16.0, lng: -24.0 }, // 대서양 아프리카 측(카보베르데)
+  ],
+  urban: [
+    GLOBE_FACE_CENTER_BY_CATEGORY.urban,
+    { lat: 70.0, lng: -40.0 }, // 북극·그린란드
+  ],
+  culture: [
+    GLOBE_FACE_CENTER_BY_CATEGORY.culture,
+    { lat: 64.0, lng: -150.0 }, // 알래스카
+  ],
+  adventure: [GLOBE_FACE_CENTER_BY_CATEGORY.adventure],
+};
+
+function distanceToAnchor(lat, lng, anchor) {
+  const dLat = lat - anchor.lat;
+  const dLngAbs = Math.abs(lng - anchor.lng);
+  const dLng = Math.min(dLngAbs, 360 - dLngAbs);
+  return Math.hypot(dLat, dLng);
+}
+
+export function faceAffinityDistance(id, category) {
+  const region = GLOBE_COUNTRY_CATALOG[id];
+  const anchors = FACE_REGION_ANCHORS[category];
+  if (!region || !anchors?.length) return 999;
+  let best = Infinity;
+  for (const anchor of anchors) {
+    const d = distanceToAnchor(region.lat, region.lng, anchor);
+    if (d < best) best = d;
+  }
+  return best;
+}
 
 function buildSpotCountryStats() {
   if (spotCountryStatsCache) return spotCountryStatsCache;
@@ -83,51 +125,22 @@ function buildSpotCountryStats() {
 }
 
 /**
- * 권역 앵커 — 카테고리 면 중심 + 휴양 면은 아시아·남태평양 추가 앵커.
- * (라벨이 휴양이어도 테마가 아니라 지리 권역)
+ * 배타 배정: 시드 고정 → 나머지 nearest-face.
+ * 시드 간 id 중복이 있으면 앞선 면이 우선.
  */
-const FACE_REGION_ANCHORS = {
-  paradise: [
-    GLOBE_FACE_CENTER_BY_CATEGORY.paradise, // 서울
-    { lat: 15.0, lng: 105.0 }, // 동남아
-    { lat: 20.0, lng: 78.0 }, // 남아시아
-    { lat: -18.0, lng: 178.0 }, // 남태평양(오세아니아)
-    { lat: -17.0, lng: -149.0 }, // 남태평양(폴리네시아)
-  ],
-  nature: [
-    GLOBE_FACE_CENTER_BY_CATEGORY.nature,
-    { lat: -10.0, lng: 45.0 }, // 서인도양(아프리카 측)
-  ],
-  urban: [GLOBE_FACE_CENTER_BY_CATEGORY.urban],
-  culture: [GLOBE_FACE_CENTER_BY_CATEGORY.culture],
-  adventure: [GLOBE_FACE_CENTER_BY_CATEGORY.adventure],
-};
-
-function distanceToAnchor(lat, lng, anchor) {
-  const dLat = lat - anchor.lat;
-  const dLngAbs = Math.abs(lng - anchor.lng);
-  const dLng = Math.min(dLngAbs, 360 - dLngAbs);
-  return Math.hypot(dLat, dLng);
-}
-
-/** 면 권역과의 대략 거리 (복수 앵커면 최소값) */
-export function faceAffinityDistance(id, category) {
-  const region = GLOBE_COUNTRY_CATALOG[id];
-  const anchors = FACE_REGION_ANCHORS[category];
-  if (!region || !anchors?.length) return 999;
-  let best = Infinity;
-  for (const anchor of anchors) {
-    const d = distanceToAnchor(region.lat, region.lng, anchor);
-    if (d < best) best = d;
-  }
-  return best;
-}
-
-/** 각 나라 → 가장 가까운 지구본 면(권역) */
-function buildHomeFaceByCountry() {
-  if (homeFaceByCountryCache) return homeFaceByCountryCache;
+function buildExclusiveFaceByCountry() {
+  if (exclusiveFaceByCountryCache) return exclusiveFaceByCountryCache;
   const map = new Map();
+
+  for (const cat of GLOBE_CATEGORY_IDS) {
+    for (const id of GLOBE_FACE_PRIORITY[cat] || []) {
+      if (!GLOBE_COUNTRY_CATALOG[id]) continue;
+      if (!map.has(id)) map.set(id, cat);
+    }
+  }
+
   for (const id of Object.keys(GLOBE_COUNTRY_CATALOG)) {
+    if (map.has(id)) continue;
     let best = GLOBE_CATEGORY_IDS[0];
     let bestDist = Infinity;
     for (const cat of GLOBE_CATEGORY_IDS) {
@@ -139,7 +152,8 @@ function buildHomeFaceByCountry() {
     }
     map.set(id, best);
   }
-  homeFaceByCountryCache = map;
+
+  exclusiveFaceByCountryCache = map;
   return map;
 }
 
@@ -159,11 +173,6 @@ function compareByAffinityThenPopularity(aId, bId, category, stats) {
   return aLabel.localeCompare(bLabel, 'ko');
 }
 
-/**
- * 대략적 화면 맞춤 줌 추정 (WebMercator · 정사각 가정).
- * @param {[number, number, number, number]} bbox
- * @param {{ width?: number, height?: number }} [viewport]
- */
 export function estimateZoomForBbox(bbox, viewport = {}) {
   if (!Array.isArray(bbox) || bbox.length !== 4) return GLOBE_FACE_REGION_DEFAULT_ZOOM;
   const [west, south, east, north] = bbox;
@@ -179,13 +188,6 @@ export function estimateZoomForBbox(bbox, viewport = {}) {
   return Math.min(zoomX, zoomY) - 0.35;
 }
 
-/**
- * 카메라용 bounds — hubBbox(큐레이션 권역) 우선, 없으면 국토 bbox.
- * 하이라이트는 항상 region.bbox(국토).
- * @param {import('./globeCountryCatalog.js').GlobeFaceRegion | { bbox?: number[], hubBbox?: number[] }} region
- * @param {{ width?: number, height?: number }} [viewport]
- * @returns {{ bounds: [number, number, number, number] | null, maxZoom: number, usedHub: boolean }}
- */
 export function resolveFaceRegionCameraBounds(region, viewport = {}) {
   const countryBbox = region?.bbox;
   const hubBbox = region?.hubBbox;
@@ -203,19 +205,20 @@ export function resolveFaceRegionCameraBounds(region, viewport = {}) {
 }
 
 /**
- * 시드(권역 우선) → 같은 권역 나라 → 타 권역 스캔 테일
+ * 해당 면 권역 나라만 (배타). 시드 → 나머지 권역 순.
  * @param {string | null | undefined} category
  */
 export function getFaceRegionsForCategory(category) {
   if (!category || !GLOBE_CATEGORY_IDS.includes(category)) return [];
 
   const stats = buildSpotCountryStats();
-  const homeFace = buildHomeFaceByCountry();
+  const exclusive = buildExclusiveFaceByCountry();
   const seen = new Set();
   const out = [];
 
   const pushId = (id) => {
     if (!id || seen.has(id)) return;
+    if (exclusive.get(id) !== category) return;
     const region = getGlobeCountryById(id);
     if (!region) return;
     seen.add(id);
@@ -226,17 +229,13 @@ export function getFaceRegionsForCategory(category) {
     pushId(id);
   }
 
-  const regionIds = [];
-  for (const id of Object.keys(GLOBE_COUNTRY_CATALOG)) {
-    if (seen.has(id)) continue;
-    if (homeFace.get(id) === category) regionIds.push(id);
+  const rest = [];
+  for (const [id, face] of exclusive) {
+    if (face !== category || seen.has(id)) continue;
+    rest.push(id);
   }
-  regionIds.sort((a, b) => compareByAffinityThenPopularity(a, b, category, stats));
-  for (const id of regionIds) pushId(id);
-
-  const scanIds = Object.keys(GLOBE_COUNTRY_CATALOG).filter((id) => !seen.has(id));
-  scanIds.sort((a, b) => compareByAffinityThenPopularity(a, b, category, stats));
-  for (const id of scanIds) pushId(id);
+  rest.sort((a, b) => compareByAffinityThenPopularity(a, b, category, stats));
+  for (const id of rest) pushId(id);
 
   return out;
 }
@@ -250,4 +249,10 @@ export function getFaceRegionById(category, regionId) {
   const fromList = getFaceRegionsForCategory(category).find((r) => r.id === regionId);
   if (fromList) return fromList;
   return getGlobeCountryById(regionId);
+}
+
+/** 배타 배정 조회 (감사·테스트용) */
+export function getExclusiveFaceForCountry(countryId) {
+  if (!countryId) return null;
+  return buildExclusiveFaceByCountry().get(countryId) || null;
 }

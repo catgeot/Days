@@ -124,6 +124,8 @@ export const GLOBE_COUNTRY_CATALOG = {
   "kr": { id: "kr", labelKo: "한국", iso: "KR", lat: 36.5, lng: 127.8, zoom: 5.4, bbox: [124.5, 33, 132, 43.1] },
   "hu": { id: "hu", labelKo: "헝가리", iso: "HU", lat: 47.2, lng: 19.5, zoom: 6.2, bbox: [16.1, 45.7, 22.9, 48.6] },
   "au": { id: "au", labelKo: "호주", iso: "AU", lat: -25, lng: 134, zoom: 3.4, bbox: [112.9, -43.7, 153.7, -10], hubBbox: [140, -39.2, 153.7, -10.5] },
+  "ak": { id: "ak", labelKo: "알래스카", iso: "US", lat: 64.2, lng: -149.5, zoom: 3.6, bbox: [-179.1, 51.2, -129.9, 71.4], hubBbox: [-170.0, 54.0, -130.0, 71.0] },
+  "sj": { id: "sj", labelKo: "스발바르", iso: "SJ", lat: 78.2, lng: 15.6, zoom: 4.8, bbox: [10.5, 74.3, 33.5, 80.8] },
 };
 
 /** travelSpots.country → catalog id */
@@ -187,6 +189,9 @@ export const GLOBE_COUNTRY_LABEL_TO_ID = {
   "아르헨티나": "ar",
   "아이슬란드": "is",
   "아일랜드": "ie",
+  "알래스카": "ak",
+  "스발바르": "sj",
+  "스발바르 제도": "sj",
   "에콰도르": "ec",
   "에티오피아": "et",
   "영국": "gb",
