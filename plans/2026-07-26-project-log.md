@@ -148,3 +148,22 @@
 ### 세션 종료
 
 - 릴리스 노트: 해당 없음(기존 나라 탐색 UX 보강)
+
+## 지구본 모바일 소권역 칩 (상단 선택바)
+
+**상태**: ⏳ Cloud 구현·PR · **사람 QA 대기**
+
+### 구현
+
+- 모바일: 소권역을 **상단 가로 선택바** (`GlobeFaceSubregionBar`) · 로고·검색 아래 `top-[6.75rem]` 여유
+- 나라 리스트는 하단 레일 유지 · `subregionPlacement="none"` 필터만 · 높이 `min(50vh,22rem)` (소분류 없는 면은 `58vh`)
+- PC 세로 칩 레이아웃 유지
+- 브랜치 `cursor/mobile-globe-subregion-chips-9320`
+
+### 파일
+
+- [`GlobeFaceRegionRail.jsx`](../src/pages/Home/components/GlobeFaceRegionRail.jsx) · [`HomeUI.jsx`](../src/pages/Home/components/HomeUI.jsx) · [`globeFaceSubregions.js`](../src/pages/Home/lib/globeFaceSubregions.js)
+
+### 다음
+
+- 사람 QA(간격·리스트 높이·칩 필터) 후 merge/push main
