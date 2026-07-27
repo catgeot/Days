@@ -33,18 +33,16 @@
 
 ## 국내축제 — S5 B UI 조율 (헤더 대분류·리스트·뒤로)
 
-**상태**: 🔄 tip `d8f5a33` 푸시 · **Vercel Preview QA** · Draft PR #29 · `cursor/korea-festival-proxy`
+**상태**: ✅ 사람 Preview 톤 OK · tip `549cf19` · Draft PR #29 · `cursor/korea-festival-proxy`
 
 | 변경 | 내용 |
 |------|------|
 | 헤더·여백·뒤로·가림 | `c1cbb7b`~`23b7714` |
-| 리스트 주인공 모달 | 사이드 패널 → 스크림+중앙/하단 모달(지도 덮음). 지도=네비 · 리스트=주인공 |
-| Cloud 규칙 | `AGENTS.md` · `.ai-context` 1.5.1 — feature Cloud는 오류 없으면 커밋·push(Vercel Preview) |
+| 리스트 레이아웃 | 개방형 스크림 + 헤더 아래 모달 (풀스크린 불투명은 갑갑 → 복구 `b2a43e4`) |
+| 라이트 톤 | 헤더·칩·리스트 패널 화이트 시험 → **사람 OK** (`549cf19`) |
+| Cloud 규칙 | feature Cloud = Vercel Preview용 커밋·push |
 
-**사람 QA 경로**: Vercel **축제 브랜치** Preview → `/korea`  
-체크: 대분류 헤더 · 리스트가 지도를 덮는지 · 뒤로/X · 헤더 칩.
-
-**다음**: Preview OK → S5-C. 수정 필요 → 같은 브랜치. releaseNotes·hub 신설·corridor 부활 금지.
+**다음**: 상세 시트 라이트 맞출지 · OK면 S5-C. releaseNotes·hub 신설·corridor 부활 금지.
 
 **제시어 (이어하기)**
 
