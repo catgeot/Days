@@ -74,6 +74,7 @@
 | 모달 리스트 | 색인·지도 선택도 `groupFestivalsBySido` **지역별 구분** 나열 |
 | 헬퍼 | `buildMapFocusRegionChips` · smoke 보강 |
 | 상세 시트 | `nearbyHubsForFestival` — 좌표·addr1 기준 인근 hub · **고정 defaultHub 추천 제거** |
+| 초기 안내 | 헤더+지도만일 때 「오늘 축제 지역입니다」·지역 선택·내 주변 CTA |
 
 **VERIFY**: `smoke:korea-festival-personal` · `audit:korea-area-codes` · `smoke:korea-area-codes`
 
