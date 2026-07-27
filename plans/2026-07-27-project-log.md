@@ -49,27 +49,29 @@
 
 ## 국내축제 — S5 C 즐겨찾기·본 항목·검색 (`국내축제-S5-C`)
 
-**상태**: ✅ 코드·VERIFY · tip `d42d171` · Draft PR #29 · 사람 Preview QA 대기
+**상태**: ✅ 코드·VERIFY · Preview 조율 일부 OK · tip `70973fa` · Draft PR #29 · **세션 종료**
 
 | 산출 | |
 |------|--|
 | 저장 | `festivalPersonalStore.js` — favorites/viewed localStorage |
 | 검색 | `festivalSearch.js` — title·addr1 · 헤더 돋보기 |
-| UI | ★ 토글(리스트·시트) · 내 목록 탭 · 시도 지역 그룹 |
+| UI | ★ 토글 · 내 목록·시도 그룹 · 검색/내주변 **닫기** |
+| 픽스 | 검색 닫기(`17a4022`) · 내주변 닫기+반경문구 리스트 부제(`70973fa`) |
 | smoke | `npm run smoke:korea-festival-personal` |
 
 **VERIFY**: `smoke:korea-festival-personal` · `audit:korea-area-codes` · `smoke:korea-area-codes`
 
-**금지 준수**: A·B 회귀 범위 밖 확장 없음 · releaseNotes·hub 신설·corridor 부활 없음.
+**사람 확인**: 검색·내주변 닫기·반경 안내 가림 수정 확인. **추가 테스트·수정은 다음 세션**.
 
-**다음**: 사람 Preview QA → OK면 S5-D(도로 루트). 톤 조율은 QA 피드백 후.
+**세션 종료**: working tree clean · PR https://github.com/catgeot/Days/pull/29  
+**다음**: S5-C Preview 잔여 QA·수정 → OK면 S5-D. releaseNotes·hub 신설·corridor 부활 금지.
 
-**제시어 (QA 후 D)**
+**제시어 (이어하기)**
 
 ```
-국내축제-S5-D
+국내축제-S5-C-이어하기
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-27-project-log.md 「국내축제 — S5 C」절만
-브랜치 cursor/korea-festival-proxy · PR #29.
-C QA OK 전제. D 출발/도착·즐겨찾기 경유 도로루트. A~C 회귀 금지. releaseNotes 금지.
+브랜치 cursor/korea-festival-proxy · PR #29 · tip 70973fa.
+C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. releaseNotes 금지.
 ```

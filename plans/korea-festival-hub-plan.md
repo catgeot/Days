@@ -222,7 +222,7 @@ S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
 |------|------|
 | **A** | 전체화면 지도 셸 · 시간·내 주변 · 선택 N→좌측 리스트 · 시트 · 뒤로 ✅ QA |
 | **B** | 테마·지역 색인 클릭 칩 ✅ · B+ 제목·연관 플랩 ✅ · 사람 QA |
-| **C** | 즐겨찾기·본 항목 · 지역 그룹 · 검색 ✅ 코드 (사람 Preview QA) |
+| **C** | 즐겨찾기·본 항목 · 지역 그룹 · 검색 ✅ 코드 · 닫기/가림 픽스 ✅ · Preview 잔여 QA |
 | **D** | 출발/도착 + 즐겨찾기 경유 **도로 루트** · 경로 리스트에서 **1개 선택** · (후보) 벨트·축제로드 |
 | **E** | 시트 안 숙소·투어 (지도 마커 금지) |
 
@@ -236,14 +236,14 @@ S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
 | 검색 | 헤더 돋보기 · title/addr1 · 지도·리스트 교집합 |
 | VERIFY | `npm run smoke:korea-festival-personal` |
 
-**제시어 (다음 · C QA 후 D)**
+**제시어 (이어하기 · C 잔여 QA / OK 후 D)**
 
 ```
-국내축제-S5-D
+국내축제-S5-C-이어하기
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-27-project-log.md 「국내축제 — S5 C」절만
-브랜치 cursor/korea-festival-proxy · PR #29.
-C QA OK 전제. D 출발/도착·즐겨찾기 경유 도로루트(경로 1선택). A~C 회귀 금지. releaseNotes 금지.
+브랜치 cursor/korea-festival-proxy · PR #29 · tip 70973fa.
+C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. releaseNotes 금지.
 ```
 
 ---
