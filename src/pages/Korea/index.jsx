@@ -322,6 +322,7 @@ export default function KoreaFestivalHub() {
   const [nearMsg, setNearMsg] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [guideOpen, setGuideOpen] = useState(true);
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState(() =>
@@ -532,7 +533,11 @@ export default function KoreaFestivalHub() {
     setNearMsg('');
   };
 
-  const clearFocus = () => {
+  const dismissGuide = useCallback(() => {
+    setGuideOpen(false);
+  }, []);
+
+  const clearFocus = ({ restoreGuide = false } = {}) => {
     clearMapFocus();
     setTasteId('all');
     setAreaCode('all');
@@ -541,10 +546,13 @@ export default function KoreaFestivalHub() {
     setSearchOpen(false);
     setPersonalTab(null);
     setSelected(null);
+    setChipPanel(null);
+    if (restoreGuide) setGuideOpen(true);
     setViewResetKey((k) => k + 1);
   };
 
   const closeSearch = () => {
+    dismissGuide();
     setSearchQuery('');
     setSearchOpen(false);
     clearMapFocus();
@@ -556,10 +564,12 @@ export default function KoreaFestivalHub() {
   const closeNearMe = () => {
     clearMapFocus();
     setSelected(null);
+    setGuideOpen(true);
     setViewResetKey((k) => k + 1);
   };
 
   const pushFocus = (nextIds) => {
+    dismissGuide();
     setFocusStack((stack) => [...stack, mapFocusIds]);
     setMapFocusIds(nextIds);
   };
@@ -581,17 +591,20 @@ export default function KoreaFestivalHub() {
   };
 
   const selectTime = (id) => {
+    dismissGuide();
     setTimeTab(id);
     clearFocus();
   };
 
   const selectTaste = (id) => {
+    dismissGuide();
     setTasteId(id);
     clearMapFocus();
     setSelected(null);
   };
 
   const selectSido = (id) => {
+    dismissGuide();
     setAreaCode(id);
     setCityName('all');
     clearMapFocus();
@@ -599,6 +612,7 @@ export default function KoreaFestivalHub() {
   };
 
   const selectCity = (id) => {
+    dismissGuide();
     setCityName(id);
     clearMapFocus();
     setSelected(null);
@@ -632,11 +646,13 @@ export default function KoreaFestivalHub() {
 
   const openItem = (item) => {
     if (!item) return;
+    dismissGuide();
     setSelected(item);
     setViewedList(pushViewed(item));
   };
 
   const openPersonal = (tab) => {
+    dismissGuide();
     setPersonalTab(tab);
     clearMapFocus();
     setSelected(null);
@@ -649,6 +665,7 @@ export default function KoreaFestivalHub() {
   };
 
   const handleNearMe = () => {
+    dismissGuide();
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setNearLabel('');
       setNearMsg('이 기기에서는 위치 정보를 사용할 수 없습니다.');
@@ -730,6 +747,7 @@ export default function KoreaFestivalHub() {
           historyKey={`${timeTab}:${areaCode}:${cityName}:${tasteId}:${viewResetKey}`}
           backNonce={mapBackNonce}
           onSelectPoint={(contentId) => {
+            dismissGuide();
             const id = String(contentId);
             const item = byContentId.get(id);
             const alreadyOne =
@@ -739,6 +757,7 @@ export default function KoreaFestivalHub() {
             if (item) setSelected(item);
           }}
           onSelectCluster={(contentIds) => {
+            dismissGuide();
             setSelected(null);
             setNearLabel('');
             setNearMsg('');
@@ -767,7 +786,10 @@ export default function KoreaFestivalHub() {
                 type="button"
                 onClick={() => {
                   if (searchOpen || searchActive) closeSearch();
-                  else setSearchOpen(true);
+                  else {
+                    dismissGuide();
+                    setSearchOpen(true);
+                  }
                 }}
                 aria-label={
                   searchOpen || searchActive ? '검색 닫기' : '축제 검색'
@@ -867,7 +889,10 @@ export default function KoreaFestivalHub() {
                 <>
                   <button
                     type="button"
-                    onClick={() => setChipPanel('time')}
+                    onClick={() => {
+                      dismissGuide();
+                      setChipPanel('time');
+                    }}
                     className={chipClass(true)}
                     aria-expanded="false"
                     aria-label="시간 대분류 펼치기"
@@ -876,7 +901,10 @@ export default function KoreaFestivalHub() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setChipPanel('region')}
+                    onClick={() => {
+                      dismissGuide();
+                      setChipPanel('region');
+                    }}
                     className={chipClass(regionMajorActive)}
                     aria-expanded="false"
                     aria-label="지역 대분류 펼치기"
@@ -885,7 +913,10 @@ export default function KoreaFestivalHub() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setChipPanel('taste')}
+                    onClick={() => {
+                      dismissGuide();
+                      setChipPanel('taste');
+                    }}
                     className={chipClass(tasteMajorActive)}
                     aria-expanded="false"
                     aria-label="테마 대분류 펼치기"
@@ -1016,37 +1047,18 @@ export default function KoreaFestivalHub() {
         </div>
       )}
 
-      {!loading && !error && !showList && !nearActive && (
+      {!loading && !error && !showList && !nearActive && guideOpen && (
         <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
           <div
-            className="pointer-events-auto w-full max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 text-stone-700 shadow-lg backdrop-blur-md"
+            className="w-full max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 text-stone-700 shadow-lg backdrop-blur-md"
             role="status"
           >
             <p className="text-sm font-bold text-stone-900 break-keep">
-              {timeTab === 'now'
-                ? '오늘 축제 지역입니다'
-                : `${timeMajorLabel} 축제 지역입니다`}
+              오늘 축제 지역입니다.
             </p>
             <p className="mt-1 text-[12px] leading-snug text-stone-500 break-keep">
-              지역을 선택하세요. 지도를 탭하거나 내 주변으로 찾을 수 있어요.
+              지도를 탭하거나 내 주변으로 찾을 수 있어요
             </p>
-            <div className="mt-2.5 flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => setChipPanel('region')}
-                className="rounded-full border border-amber-400 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-900 hover:bg-amber-100"
-              >
-                지역 선택
-              </button>
-              <button
-                type="button"
-                onClick={handleNearMe}
-                disabled={nearBusy}
-                className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-60"
-              >
-                내 주변
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -1076,7 +1088,11 @@ export default function KoreaFestivalHub() {
       {showList && (
         <div
           className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pt-[max(6.25rem,calc(env(safe-area-inset-top,0px)+5.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pt-[6.75rem] md:pb-4"
-          onClick={personalTab != null ? closePersonal : clearFocus}
+          onClick={
+            personalTab != null
+              ? closePersonal
+              : () => clearFocus({ restoreGuide: true })
+          }
           role="presentation"
         >
           <aside
