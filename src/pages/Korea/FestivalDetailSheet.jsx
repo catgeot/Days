@@ -21,10 +21,10 @@ function DetailRow({ label, children }) {
   if (!children) return null;
   return (
     <div className="space-y-0.5">
-      <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+      <p className="text-[10px] font-bold tracking-widest text-stone-400 uppercase">
         {label}
       </p>
-      <div className="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap break-keep">
+      <div className="text-sm text-stone-700 leading-relaxed whitespace-pre-wrap break-keep">
         {children}
       </div>
     </div>
@@ -87,12 +87,12 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-6"
+      className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-stone-900/30 backdrop-blur-sm p-0 md:p-6"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-3xl md:rounded-3xl border border-white/10 bg-[#1b1410] shadow-2xl custom-scrollbar"
+        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -105,25 +105,25 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
               alt=""
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1b1410] via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
           </div>
         )}
         <div className="p-5 space-y-4">
           <div className="space-y-1.5">
             {range && (
-              <p className="text-[11px] font-bold text-amber-200/90 flex items-center gap-1">
+              <p className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
                 <CalendarDays size={12} aria-hidden="true" />
                 {range}
               </p>
             )}
             <h3
               id="korea-festival-sheet-title"
-              className="text-xl font-extrabold leading-snug"
+              className="text-xl font-extrabold leading-snug text-stone-900"
             >
               {item.title}
             </h3>
             {item.addr1 && (
-              <p className="text-xs text-gray-400 flex items-start gap-1">
+              <p className="text-xs text-stone-500 flex items-start gap-1">
                 <MapPin size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
                 <span>{item.addr1}</span>
               </p>
@@ -131,18 +131,18 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
           </div>
 
           {introLoading && (
-            <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
+            <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
               <Loader2 size={16} className="animate-spin" aria-hidden="true" />
               상세 불러오는 중…
             </div>
           )}
 
           {!introLoading && introError && (
-            <p className="text-xs text-gray-500">{introError}</p>
+            <p className="text-xs text-stone-500">{introError}</p>
           )}
 
           {!introLoading && intro && (
-            <div className="space-y-3 border-t border-white/[0.06] pt-3">
+            <div className="space-y-3 border-t border-stone-200 pt-3">
               <DetailRow label="행사 장소">
                 {intro.eventplace &&
                 String(intro.eventplace) !== String(item.addr1 || '')
@@ -156,7 +156,7 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
                 <DetailRow label="문의">
                   <a
                     href={`tel:${tel.replace(/\s+/g, '')}`}
-                    className="inline-flex items-center gap-1.5 text-amber-100/90 hover:text-amber-50"
+                    className="inline-flex items-center gap-1.5 text-amber-800 hover:text-amber-950"
                   >
                     <Phone size={13} aria-hidden="true" />
                     {tel}
@@ -169,7 +169,7 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
                     href={homepage.startsWith('http') ? homepage : `https://${homepage}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-amber-100/90 hover:text-amber-50 break-all"
+                    className="inline-flex items-center gap-1.5 text-amber-800 hover:text-amber-950 break-all"
                   >
                     <ExternalLink size={13} className="shrink-0" aria-hidden="true" />
                     <span className="line-clamp-2">{homepage}</span>
@@ -181,7 +181,7 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
 
           {hubs.length > 0 && (
             <div className="space-y-2">
-              <p className="text-[11px] font-bold tracking-widest text-gray-500 uppercase">
+              <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                 인근 여행지
               </p>
               <div className="flex flex-wrap gap-2">
@@ -190,7 +190,7 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
                     key={hub.hubId}
                     type="button"
                     onClick={() => onOpenHub(hub.hubId)}
-                    className="px-3 py-1.5 rounded-full text-xs font-bold border border-white/15 bg-white/[0.06] hover:bg-amber-500/20 hover:border-amber-400/40 transition-colors"
+                    className="px-3 py-1.5 rounded-full text-xs font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
                   >
                     {hub.name}
                   </button>
@@ -202,7 +202,7 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-3 rounded-2xl text-sm font-bold border border-white/15 bg-white/5 hover:bg-white/10"
+            className="w-full py-3 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
           >
             닫기
           </button>
