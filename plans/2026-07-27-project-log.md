@@ -108,7 +108,7 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 
 ## 국내축제 — 대분류·리스트 문구 QA (머지 브랜치)
 
-**상태**: ✅ 사람 확인 · tip 커밋·push · `merge/korea-festival-into-main` · **main 미병합** · 다음 세션 회귀 이어하기
+**상태**: ✅ 사람 확인 · tip `2c7836d` · push · `merge/korea-festival-into-main` · **main 미병합** · 다음 세션 회귀 이어하기
 
 | 변경 | |
 |------|--|
