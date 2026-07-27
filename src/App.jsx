@@ -9,6 +9,7 @@ import MainLayout from './shared/layout/MainLayout';
 import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
 import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';
+import KoreaFestivalHub from './pages/Korea';
 
 import Dashboard from './pages/DailyReport/Dashboard';
 import Write from './pages/DailyReport/Write';
@@ -63,6 +64,7 @@ function App() {
                 <Route path="explore/:filter1" element={null} />
                 <Route path="explore/:filter1/:filter2" element={null} />
               </Route>
+              <Route path="/korea" element={<KoreaFestivalHub />} />
             </Route>
 
             <Route path="/blog" element={<DashboardLayout />}>

@@ -33,7 +33,10 @@ const exploreRoutes = [
   '/explore/middle-east',
 ];
 
-const dynamicRoutes = [...placeRoutes, ...exploreRoutes];
+// 국내 축제 허브
+const koreaRoutes = ['/korea'];
+
+const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];
 
 function gateoEmitVersionJson() {
   return {

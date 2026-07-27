@@ -7,6 +7,7 @@ import {
   Leaf,
   LogOut,
   Sparkles,
+  CalendarDays,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
@@ -364,21 +365,21 @@ const HomeUI = React.memo(({
         </div>
       )}
 
-      <footer className="hidden md:block fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
-        <div className="absolute bottom-6 left-6 md:left-[8.75rem] flex items-end gap-4 pointer-events-auto">
+      <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-50 pointer-events-none">
+        <div className="absolute bottom-4 left-4 md:bottom-6 md:left-[8.75rem] flex items-end gap-3 md:gap-4 pointer-events-auto">
           {user ? (
             <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-red-400/50 transition-all shadow-lg">
                     <LogOut size={18} className="text-gray-200 group-hover:text-red-400 transition-colors" />
                 </div>
-                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
+                <span className="hidden md:inline text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
             </button>
           ) : (
             <Link to="/auth/login" state={{ from: window.location.pathname + window.location.search }} className="group flex items-center gap-2 pb-2 cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
                     <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
                 </div>
-                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
+                <span className="hidden md:inline text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
             </Link>
           )}
 
@@ -386,11 +387,18 @@ const HomeUI = React.memo(({
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
                   <PenTool size={18} className="text-gray-200 group-hover:text-emerald-400 transition-colors" />
               </div>
-              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
+              <span className="hidden md:inline text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
+          </Link>
+
+          <Link to="/korea" className="group flex items-center gap-2 pb-2 cursor-pointer">
+              <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-amber-400/50 transition-all shadow-lg">
+                  <CalendarDays size={18} className="text-gray-200 group-hover:text-amber-400 transition-colors" />
+              </div>
+              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">국내</span>
           </Link>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center pointer-events-auto">
+        <div className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 items-center pointer-events-auto">
           <button
             onClick={() => onOpenChat()}
             className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10 hover:scale-105 transition-transform"

@@ -7,11 +7,12 @@
 |------|------|------|
 | Pre-S0 플랜 저장소 반영 | ✅ `main` `3f81a55` | — |
 | S0 LIVE 스파이크 | ✅ Go (축제96 / 시도17 / 서울관광444 · `0000`) | 재실행 금지 |
-| **S1** 프록시·fetch | ⬜ **지금 여기** | 로컬 새 채팅 |
-| S2 `/korea` UI | ⬜ | S1 후 · 사람 QA |
-| S3a 상세·SEO | ⬜ | S2 후 |
-| S3b area↔hub SSOT | ⬜ | 로컬 배치(또는 나중에 오케스트레이터) |
-| S4 캐시 | 선택 | MVP 이후 |
+| **S1** 프록시·fetch | ✅ | S2 |
+| S2 `/korea` UI | ✅ S2b | addr 도/시·시군·달력 dayRole · 다음 S3a |
+| S3a 상세·SEO | ✅ `aed70b1` | 다음 S3b |
+| S3b area↔hub SSOT | ✅ G0+시도 일괄 · LEGACY 비움 | areaHub QA ✅ |
+| S4 캐시 | 선택 | 쿼터·지연 보일 때만 |
+| **S5** 지도·권역·지금/주말 | ✅ S5a+S5b 구현 | 사람 QA 후 main |
 
 ---
 
@@ -104,46 +105,26 @@ MVP: LIVE + sessionStorage. 쿼터 이슈 시 S4.
 
 ---
 
-### S1 — 프록시 + fetch ⬜ (지금 · 로컬)
+### S1 — 프록시 + fetch ✅
 
 | | |
 |--|--|
-| **환경** | 로컬 · feature 브랜치 `cursor/korea-festival-proxy` (또는 동일 목적명) |
-| **키** | `.env.local` `TOUR_API_SERVICE_KEY` |
-| **산출** | proxy 4 action · `fetchTourApiFestivals.js` / `fetchTourApiArea.js` · smoke LIVE · 가능 시 Edge 재배포 |
+| **환경** | 로컬 · `cursor/korea-festival-proxy` |
+| **산출** | proxy 4 action · `fetchTourApiFestivals.js` / `fetchTourApiArea.js` · smoke LIVE · Edge 재배포 |
 | **VERIFY** | `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` PASS |
-| **커밋** | PASS 후 **즉시** 한글 커밋 · 원하면 push/PR · **일지에 SHA** |
-| **금지** | UI · `/korea` · releaseNotes · 오케스트레이터 · Cloud |
-
-**로컬 새 채팅 제시어**
-
-```
-국내축제-S1-프록시
-@plans/korea-festival-hub-plan.md 「S1」만
-@plans/2026-07-24-project-log.md 「국내축제 — S0」절만
-@supabase/functions/tourapi-proxy/index.ts
-@plans/tourapi-edge-proxy-plan.md §1만
-@.ai-context.md
-
-로컬만. S0 Go 전제. feature 브랜치.
-action: searchFestival·areaBasedList·areaCode·detailIntro.
-normalize·smoke LIVE·fetch 유틸만.
-UI·/korea·releaseNotes·오케스트레이터·Cloud 금지.
-VERIFY PASS → 커밋(+push) · 일지 S1(다음=S2)에 SHA.
-```
-
-**완료**: smoke PASS · 키 미노출 · 일지 SHA · working tree clean(해당 파일).
+| **다음** | S2 `/korea` UI (사람 QA 후 커밋) |
 
 ---
 
-### S2 — `/korea` MVP UI ⬜
+### S2 — `/korea` MVP UI ✅ (S2b 포함)
 
 | | |
 |--|--|
-| **환경** | 로컬 · S1 커밋 위 |
-| **산출** | `/korea` · 월/시즌·지역 칩 · 축제 피드 · hub 가로(최소 시드 OK) · 진입 1곳 |
-| **커밋** | **사람 QA OK 후** 1회 (디자인 게이트) |
-| **금지** | 새 디자인 시스템 · releaseNotes · proxy 재작성 |
+| **환경** | 로컬 · `cursor/korea-festival-proxy` |
+| **산출** | `/korea` · 목록/달력 · 내 주변 · 도/시군 칩 · dayRole · hub · 홈「국내」 |
+| **S2b** | 월간 무지역 fetch → `addr1` 필터 · 시/군 · 내 주변 시군 · 달력↑칩↓ |
+| **보류** | 국내 전용 지도/지구본 KR (#5) — **S3a 이후 별 트랙** (로딩 비교 후 A/B) |
+| **금지** | 새 디자인 시스템 · releaseNotes · proxy 전면 재작성 |
 
 **제시어**
 
@@ -156,24 +137,114 @@ VERIFY PASS → 커밋(+push) · 일지 S1(다음=S2)에 SHA.
 
 ---
 
-### S3a — 상세 + SEO ⬜
+### S3a — 상세 + SEO ✅
 
-로컬. `detailIntro` 시트 + helmet/sitemap 최소. areaHub 대량 채움 금지.  
-제시어: `국내축제-S3a-상세SEO` + 본 플랜 S3a.
+| | |
+|--|--|
+| **환경** | 로컬 · `cursor/korea-festival-proxy` · **SHA** `aed70b1` |
+| **산출** | `FestivalDetailSheet` · `detailIntro` · `/korea` Helmet · sitemap · `koreaRoutes` |
+| **다음** | S3b |
+
+**제시어**
+
+```
+국내축제-S3a-상세SEO
+@plans/korea-festival-hub-plan.md S3a만
+로컬. detailIntro 시트 + SEO 최소. areaHub 대량 금지. 지도 보류.
+QA 후 커밋.
+```
 
 ---
 
-### S3b — areaCode↔hub SSOT ⬜
+### S3b — areaCode↔hub SSOT ✅ G0
 
-로컬. G0: overrides·generate·audit·시드 3(서울·부산·제주) → 커밋.  
-이후 시도 배치를 **같은 로컬 채팅에서 순차** 또는 소규모 워커2. Cloud 오케스트레이터 기본 아님.  
-VERIFY: `audit:korea-area-codes` + 해상 스모크.
+| | |
+|--|--|
+| **환경** | 로컬 · `cursor/korea-festival-proxy` |
+| **산출** | `korea-area-code-overrides.mjs` → `koreaAreaCodes.json` · `generate`/`audit`/`smoke:korea-area-codes` · 시드 3(서울1·부산6·제주39) · `koreaHubSeeds` SSOT 우선+LEGACY 폴백 |
+| **VERIFY** | `audit:korea-area-codes` · `smoke:korea-area-codes` · `smoke:tourapi`(해상) PASS |
+| **다음** | LEGACY→SSOT 배치. **같은 채팅 순차 권장**(맥락 유지). 새 채팅이면 일지 핸드오프 표+제시어 블록 필수. Cloud 오케 기본 아님 |
 
 ---
 
 ### S4 — 캐시 (선택)
 
-쿼터·지연 보일 때. `국내축제-S4-캐시`.
+쿼터·지연 보일 때. `국내축제-S4-캐시`.  
+areaHub QA(2026-07-26) PASS 후 — **기본 보류**. MVP는 LIVE + sessionStorage.  
+S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
+
+---
+
+### S5 — 지도·클러스터 · 비전 A~E ✅ (A·B 코드 · B+ 보강)
+
+| | |
+|--|--|
+| **환경** | `cursor/korea-festival-proxy` |
+| **현재 코드** | **A** 풀맵 셸 · **B** 테마·지역 색인 · **C** 즐겨찾기·본 항목·검색·지역 그룹 · leaves→리스트 · 시트 |
+| **권역** | corridor 칩 폐기 · 지역 색인=`addr1` 시도→시/군 (`festivalRegionTags`) |
+| **테마** | title 키워드 ≥2 (`festivalTasteTags` · 빙어·썸머·도자기·술 등) |
+| **데이터** | 롤링 12개월 LIVE · `fetchKoreaFestivalsRolling12` · sessionStorage `gateo:korea-festivals:v1:rolling12` |
+| **개인** | localStorage `gateo:korea-festivals:v1:favorites` · `…:viewed` (`festivalPersonalStore`) |
+| **금지** | D~E(다음) · releaseNotes · hub 신설 · 본격 S4 · corridor 부활 |
+
+**B+ 리스트·연관 플랩 (구현됨)**
+
+| | |
+|--|--|
+| **제목** | 색인 활성 시 `시도 · 시군 · 테마` (지도 클러스터 선택은 `선택`/`{hub} 주변`) |
+| **플랩 하위** | 현재 시도의 `cityChips`(≥2만) |
+| **플랩 인근** | `SIDO_NEIGHBORS` ∩ 현재 `sidoChips` (정적 인접 · 제주 빈배열) |
+| **플랩 테마** | 현재 `tasteChips` 중 미선택 |
+| **모바일** | 시트 상단 가로 칩 행 · PC는 리스트 좌측 세로 플랩 |
+
+**후속 (문서만 · 이번 미구현)**
+
+- 시·군 단위 인근(좌표/centroid) · 축제 좌표 그래프 인근
+- 플랩 접기/애니메이션 · hub 연동 인근
+- **헤더 corridor 칩 부활 금지** (벨트는 아래 별도 트랙)
+
+#### 벨트 · 축제로드 (문서만 · C 이후 후보)
+
+사람 관찰(2026-07-27): 「지금」 지점이 **서울 중심 역C 벨트**, **동해안→내륙 C자 벨트**처럼 재미있는 형상을 이룸.
+
+| | |
+|--|--|
+| **제품** | 한쪽 **벨트 목록**(이름·짧은 설명) · 선택 시 해당 축제 **점·선 지도**(또는 실루엣 이미지) + 그 벨트 축제 리스트 |
+| **재미** | 단순 선 연결이 아니라 **패턴(형상)을 찾아 이름 붙임** — 비엔나식 축제 로드 / 여행 동선 후보 |
+| **데이터** | 시간탭 결과의 축제 좌표 그래프 → 군집·호(arc)·해안 정렬 등 **형상 후보 추출**(수동 시드 가능) |
+| **≠ corridor** | 헤더 고정 bbox 권역 칩 **아님**. 벨트는 **패턴 발견 UI**(목록+맵 오버레이). 행정 색인 칩과 병행 |
+| **D와 연결** | D의 출발/도착·즐겨찾기 **도로 루트**에 벨트 경유를 넣으면 「축제로드 1개 선택」으로 이어질 수 있음 |
+| **지금** | 구현 금지(C 우선). 알고리즘·카피·목록 UX 미합의 |
+
+**비전 단계 (합의 · 순서 강제)**
+
+| 단계 | 범위 |
+|------|------|
+| **A** | 전체화면 지도 셸 · 시간·내 주변 · 선택 N→좌측 리스트 · 시트 · 뒤로 ✅ QA |
+| **B** | 테마·지역 색인 클릭 칩 ✅ · B+ 제목·연관 플랩 ✅ · 사람 QA |
+| **C** | 즐겨찾기·본 항목 · 지역 그룹 · 검색 ✅ 코드 · 닫기/가림 픽스 ✅ · Preview 잔여 QA |
+| **D** | 출발/도착 + 즐겨찾기 경유 **도로 루트** · 경로 리스트에서 **1개 선택** · (후보) 벨트·축제로드 |
+| **E** | 시트 안 숙소·투어 (지도 마커 금지) |
+
+**C 구현**
+
+| | |
+|--|--|
+| 즐겨찾기 | 리스트·상세 ★ 토글 · localStorage · 상한 80 |
+| 본 항목 | 상세 오픈 시 적재 · 상한 40 · 최신 앞 |
+| 지역 그룹 | 내 목록을 시도별로 묶어 표시 |
+| 검색 | 헤더 돋보기 · title/addr1 · 지도·리스트 교집합 |
+| VERIFY | `npm run smoke:korea-festival-personal` |
+
+**제시어 (이어하기 · C 잔여 QA / OK 후 D)**
+
+```
+국내축제-S5-C-이어하기
+@plans/korea-festival-hub-plan.md S5만
+@plans/2026-07-27-project-log.md 「국내축제 — S5 C」절만
+브랜치 cursor/korea-festival-proxy · PR #29 · tip 70973fa.
+C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. releaseNotes 금지.
+```
 
 ---
 

@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-07-24T12:42:16.711Z",
+    "areaCount": 16,
+    "hubLinkCount": 32,
+    "source": "scripts/data/korea-area-code-overrides.mjs"
+  },
+  "defaultHubIds": [
+    "seoul",
+    "busan",
+    "jeju",
+    "gangneung",
+    "gyeongju",
+    "jeonju",
+    "sokcho",
+    "yeosu"
+  ],
+  "areas": {
+    "1": {
+      "name": "서울",
+      "hubIds": [
+        "seoul"
+      ]
+    },
+    "2": {
+      "name": "인천",
+      "hubIds": [
+        "incheon"
+      ]
+    },
+    "3": {
+      "name": "대전",
+      "hubIds": [
+        "daejeon"
+      ]
+    },
+    "4": {
+      "name": "대구",
+      "hubIds": [
+        "daegu"
+      ]
+    },
+    "5": {
+      "name": "광주",
+      "hubIds": [
+        "gwangju"
+      ]
+    },
+    "6": {
+      "name": "부산",
+      "hubIds": [
+        "busan"
+      ]
+    },
+    "7": {
+      "name": "울산",
+      "hubIds": [
+        "ulsan"
+      ]
+    },
+    "31": {
+      "name": "경기",
+      "hubIds": [
+        "suwon",
+        "gapyeong"
+      ]
+    },
+    "32": {
+      "name": "강원",
+      "hubIds": [
+        "gangneung",
+        "sokcho",
+        "chuncheon",
+        "pyeongchang",
+        "yangyang"
+      ]
+    },
+    "33": {
+      "name": "충북",
+      "hubIds": [
+        "cheongju"
+      ]
+    },
+    "34": {
+      "name": "충남",
+      "hubIds": [
+        "boryeong",
+        "gongju",
+        "taean"
+      ]
+    },
+    "35": {
+      "name": "경북",
+      "hubIds": [
+        "gyeongju",
+        "andong",
+        "pohang"
+      ]
+    },
+    "36": {
+      "name": "경남",
+      "hubIds": [
+        "tongyeong",
+        "jinju",
+        "geoje",
+        "namhae"
+      ]
+    },
+    "37": {
+      "name": "전북",
+      "hubIds": [
+        "jeonju",
+        "gunsan"
+      ]
+    },
+    "38": {
+      "name": "전남",
+      "hubIds": [
+        "yeosu",
+        "suncheon",
+        "mokpo",
+        "damyang"
+      ]
+    },
+    "39": {
+      "name": "제주",
+      "hubIds": [
+        "jeju"
+      ]
+    }
+  },
+  "byHubId": {
+    "seoul": "1",
+    "incheon": "2",
+    "daejeon": "3",
+    "daegu": "4",
+    "gwangju": "5",
+    "busan": "6",
+    "ulsan": "7",
+    "suwon": "31",
+    "gapyeong": "31",
+    "gangneung": "32",
+    "sokcho": "32",
+    "chuncheon": "32",
+    "pyeongchang": "32",
+    "yangyang": "32",
+    "cheongju": "33",
+    "boryeong": "34",
+    "gongju": "34",
+    "taean": "34",
+    "gyeongju": "35",
+    "andong": "35",
+    "pohang": "35",
+    "tongyeong": "36",
+    "jinju": "36",
+    "geoje": "36",
+    "namhae": "36",
+    "jeonju": "37",
+    "gunsan": "37",
+    "yeosu": "38",
+    "suncheon": "38",
+    "mokpo": "38",
+    "damyang": "38",
+    "jeju": "39"
+  }
+}

@@ -455,34 +455,201 @@ https://kr.trip.com/packages/?sourceFrom=IBUBundle_home&locale=ko-KR&curr=KRW&Al
 
 ## 국내축제 — 로컬 재시작 (Cloud 중단)
 
-**상태**: ✅ 플랜 재정비 · **다음 = 로컬 S1**
+**상태**: ✅ 플랜 재정비 · **다음 = 로컬 S1** (완료 → S1 절)
 
 - Cursor Cloud 트랙 **중단** (진행 가시성 부족). 이후 **로컬 채팅만**.
 - SSOT: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) (로컬 전용 세션 가이드)
-- S0 재실행 **금지**. S1부터 새 로컬 채팅.
+- S0 재실행 **금지**.
 
-### 다음 세션 — S1 (`국내축제-S1-프록시`) · 로컬
+## 국내축제 — S1 (프록시·fetch)
 
-**읽을 것**: 플랜 **S1만** · 본 절 S0 Go · `tourapi-proxy/index.ts` · `tourapi-edge-proxy-plan.md` §1 · `.ai-context` 1.5.1  
+**상태**: ✅ VERIFY PASS · Edge 재배포 · **다음 = S2**  
+**브랜치**: `cursor/korea-festival-proxy` · **SHA**: `70fa1db`
 
-**금지**: UI · `/korea` · releaseNotes · 오케스트레이터 · Cloud · `VITE_` Tour 키 · gallery overrides 혼용  
+- action: `searchFestival` · `areaBasedList` · `areaCode` · `detailIntro`
+- fetch: `fetchTourApiFestivals.js` · `fetchTourApiArea.js`
+- `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` PASS (축제·시도17·서울 type12·detailIntro)
 
-**작업**: feature 브랜치 · action `searchFestival`·`areaBasedList`·`areaCode`·`detailIntro` · smoke LIVE · fetch 유틸 · VERIFY PASS → **커밋(+push)** · 일지 SHA  
+### 다음 세션 — S2 (`국내축제-S2-UI`) · 로컬
+
+**읽을 것**: 플랜 **S2만** · 본 절 S1 · fetch 유틸 · `.ai-context` 1.5.1  
+
+**금지**: proxy 재작성 · releaseNotes · 오케스트레이터 · Cloud · 새 디자인 시스템  
+
+**작업**: `/korea` MVP · 월/시즌·지역 칩 · 축제 피드 · hub 가로 · 진입 1곳 · **사람 QA OK 후** 커밋  
 
 **제시어**
 
 ```
-국내축제-S1-프록시
-@plans/korea-festival-hub-plan.md 「S1」만
-@plans/2026-07-24-project-log.md 「국내축제 — S0」절만
-@supabase/functions/tourapi-proxy/index.ts
-@plans/tourapi-edge-proxy-plan.md §1만
+국내축제-S2-UI
+@plans/korea-festival-hub-plan.md 「S2」만
+@plans/2026-07-24-project-log.md 「국내축제 — S1」절만
+@src/utils/fetchTourApiFestivals.js
+@src/utils/fetchTourApiArea.js
 @.ai-context.md
 
-로컬만. S0 Go 전제. feature 브랜치.
-action: searchFestival·areaBasedList·areaCode·detailIntro.
-normalize·smoke LIVE·fetch 유틸만.
-UI·/korea·releaseNotes·오케스트레이터·Cloud 금지.
-VERIFY PASS → 커밋(+push) · 일지 S1(다음=S2)에 SHA.
+로컬만. S1 PASS 전제. /korea MVP UI.
+월·시즌·지역 칩 · 축제 피드 · hub 가로(최소 시드 OK) · 진입 1곳.
+proxy 재작성·releaseNotes·오케스트레이터·Cloud 금지.
+사람 QA OK 후 커밋(+push) · 일지 S2(다음=S3a).
 ```
+
+## 국내축제 — S2 (UI · 이관 커밋)
+
+**상태**: ✅ 이관 커밋 · 브랜치 `cursor/korea-festival-proxy` · **다음 세션 = 지역 필터 수정**
+
+- `/korea` MVP: 기간·지역 칩 · 목록/달력 · 내 주변 · hub 가로 · 홈「국내」(모바일 포함)
+- 파일: `src/pages/Korea/*` · `HomeUI` · `App.jsx`
+
+### QA (사람 · 2026-07-24)
+1. ✅ 홈「국내」PC·모바일 열림
+2. ❌ 지역 칩 → 목록 0건 (원인: `searchFestival2` areaCode **unused** → LIVE 0)
+3. ❌ 내 주변(춘천) 라벨 OK · 목록 0건 (2와 동일)
+4. 요청: **도→시/군** 칩 세분화 (여행 동선 네비)
+5. 요청·**보류**: 국내 전용 지도 또는 지구본 KR 포커스+칩 (로딩 고려 · 별 트랙)
+
+### 다음 세션 — `국내축제-S2b-지역필터`
+
+**읽을 것**: 본 절 · 플랜 [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S2 · Cursor plan `korea_area_filter_fix`  
+**작업**: 월간 searchFestival(무지역) → `addr1` 도/시 필터 · 도 선택 시 시/군 칩 · 내 주변 시군 자동  
+**금지**: proxy 전면 재작성 · releaseNotes · 국내 지도(#5) 구현 · Cloud  
+**제시어**
+
+```
+국내축제-S2b-지역필터
+@plans/2026-07-24-project-log.md 「국내축제 — S2」절
+@plans/korea-festival-hub-plan.md S2
+@src/pages/Korea/
+
+로컬. searchFestival areaCode unused → addr1 도/시 필터.
+도 칩 → 시/군 칩 · 내 주변 시군 자동. 국내 지도는 보류.
+QA 후 커밋.
+```
+
+## 국내축제 — S2b (지역필터 · QA OK)
+
+**상태**: ✅ 사람 QA · 커밋 · 브랜치 `cursor/korea-festival-proxy` · **다음 = S3a**
+
+- `searchFestival` 무지역 월간 fetch(page 1~2) → `addr1` 도/시 클라 필터 (`koreaAreaFilter.js`)
+- 도 → 시/군 칩 · 내 주변 = 도 + hub명 시군 자동
+- 달력: 달력↑ · 기간/지역 칩 · day 리스트 · dayRole(전체/시작/진행/종료) 칩 연동
+- 지역 칩 변경 시 **날짜 선택 유지** (월 변경 시에만 초기화)
+- **보류**: 국내 전용 지도/지구본 KR (#5) — S3a 이후 별 트랙
+
+### QA (사람 · 2026-07-24)
+
+1. ✅ 전체 → 이번 달 목록
+2. ✅ 도 칩 → 해당 지역
+3. ✅ 시/군 칩
+4. ✅ 내 주변 시군 자동
+5. ✅ 달력 day + 구분 칩 연동 · 지역 칩해도 날짜 유지
+
+### 다음 세션 — `국내축제-S3a-상세SEO`
+
+**읽을 것**: 플랜 S3a만 · 본 절 · `.ai-context` 1.5.1  
+**작업**: 축제 상세(`detailIntro`) 시트 + helmet/sitemap 최소 · areaHub 대량 채움 금지  
+**금지**: releaseNotes · 국내 지도(#5) · proxy 전면 재작성 · Cloud  
+**제시어**
+
+```
+국내축제-S3a-상세SEO
+@plans/korea-festival-hub-plan.md S3a만
+@plans/2026-07-24-project-log.md 「국내축제 — S2b」절만
+@src/pages/Korea/
+
+로컬. detailIntro 시트 + SEO 최소. areaHub 대량 금지. 지도 보류.
+QA 후 커밋.
+```
+
+## 국내축제 — S3a (상세·SEO)
+
+**상태**: ✅ 커밋 `aed70b1` · 브랜치 `cursor/korea-festival-proxy` (origin 대비 ahead 1) · **다음 = S3b**
+
+- `FestivalDetailSheet`: 선택 시 `detailIntro` LIVE · 행사장소·시간·요금·주최·문의·홈페이지
+- SEO: `/korea` title/description · og image(목록 1호) · `public/sitemap.xml` + `vite.config` `koreaRoutes`
+- **미함**: areaHub 대량 · 국내 지도 · 축제별 독립 URL
+
+### 다음 세션 — `국내축제-S3b-areaHub`
+
+**읽을 것**: 플랜 S3b · 본 절  
+**작업**: areaCode↔hub overrides·generate·audit · 시드 3(서울·부산·제주)  
+**금지**: gallery tourapi overrides 혼용 · Cloud 오케 기본  
+**제시어**
+
+```
+국내축제-S3b-areaHub
+@plans/korea-festival-hub-plan.md S3b만
+@plans/2026-07-24-project-log.md 「국내축제 — S3a」절만
+
+로컬. area↔hub SSOT G0 시드 3. audit PASS 후 커밋.
+```
+
+## 국내축제 — S3b G0 (areaHub SSOT)
+
+**상태**: ✅ 커밋 `7d63551` · push · 브랜치 `cursor/korea-festival-proxy` · **다음 = 시도 배치(LEGACY→SSOT)**
+
+- overrides → `generate:korea-area-codes` → `koreaAreaCodes.json`
+- 시드 3: `1→seoul` · `6→busan` · `39→jeju`
+- `koreaHubSeeds`: SSOT 우선 · 미채움 시도 LEGACY 폴백
+- VERIFY: `audit:korea-area-codes` · `smoke:korea-area-codes` · `smoke:tourapi`(해상) PASS
+- **금지 유지**: gallery tourapi overrides 혼용 · Cloud 오케 · releaseNotes · 국내 지도
+
+## 국내축제 — S3b 시도 경기·강원
+
+**상태**: ✅ 커밋 `b9962f6` · push · 브랜치 `cursor/korea-festival-proxy` · **다음 = 광역시(완료 `6385e9c`)**
+
+- SSOT append: `31→suwon,gapyeong` · `32→gangneung,sokcho,chuncheon,pyeongchang,yangyang`
+- LEGACY에서 31·32 제거 · areas **5** / hub links **10**
+- SSOT 이미: `1 seoul` · `6 busan` · `31` · `32` · `39 jeju`
+
+## 국내축제 — S3b 시도 광역시
+
+**상태**: ✅ 커밋 `6385e9c` · push · 브랜치 `cursor/korea-festival-proxy` · **다음 = 도(33~38)·세종(8)**
+
+- SSOT append: `2→incheon` · `3→daejeon` · `4→daegu` · `5→gwangju` · `7→ulsan`
+- LEGACY에서 2·3·4·5·7 제거 · 충돌 hub를 34/35/36/38 LEGACY에서도 제외
+- 세종(8) hub 없어 스킵 · areas **10** / hub links **15**
+- SSOT 이미: `1`·`2`·`3`·`4`·`5`·`6`·`7`·`31`·`32`·`39`
+
+### 에이전트 핸드오프 — 다음 시도 배치 (콜드스타트용)
+
+**같은 채팅이면** 아래 제시어만으로 이어서 OK.  
+**새 채팅이면** 읽을 것 3 + 제시어 블록 필수(부실 제시어 → 맥락 탐색 폭주).
+
+| | |
+|--|--|
+| **읽을 것 3** | ① 본 절(핸드오프 표·남은 LEGACY) ② [`korea-area-code-overrides.mjs`](../scripts/data/korea-area-code-overrides.mjs) ③ [`koreaHubSeeds.js`](../src/pages/Korea/koreaHubSeeds.js) `LEGACY_HUBS_BY_AREA` |
+| **금지 3** | gallery `tourapi-content-id-overrides` 혼용 · Cloud 오케 · releaseNotes·국내 지도 · hubId 중복 area 배정(광역시·부산 이미 SSOT) |
+| **절차** | overrides `areas` append → LEGACY 해당 키 삭제 → `npm run generate:korea-area-codes` → `audit:korea-area-codes` + `smoke:korea-area-codes` (+ `smoke:tourapi` 해상) PASS → 커밋·push·일지 2~5줄 |
+| **배치 크기** | 시도 2~4개/커밋 |
+| **hub 존재** | `cityAttractionHubs` KR `hubId`만 · generate가 충돌·미존재 거부 |
+
+**남은 LEGACY** (`koreaHubSeeds.js`)
+
+| code | name | hubIds (이관 후보) |
+|------|------|-------------------|
+| 8 | 세종 | *(빈 — hub 없으면 스킵 또는 hub 확보 후)* |
+| 33 | 충북 | cheongju |
+| 34 | 충남 | boryeong, gongju, taean *(daejeon→3 제외됨)* |
+| 35 | 경북 | gyeongju, andong, pohang *(daegu→4 제외됨)* |
+| 36 | 경남 | tongyeong, jinju, geoje, namhae *(busan→6 제외됨)* |
+| 37 | 전북 | jeonju, gunsan |
+| 38 | 전남 | yeosu, suncheon, mokpo, damyang *(gwangju→5 제외됨)* |
+
+**제시어 (복붙 · 새 채팅 권장 형식)** — ~~충청 배치~~ → 아래 「S3b 시도 도 일괄」로 완료.
+
+## 국내축제 — S3b 시도 도 일괄
+
+**상태**: ✅ 커밋 `0c93d00`·`4019fcf`·`d4608c2` · push · `cursor/korea-festival-proxy` · **S3b LEGACY 비움(세종 스킵)** · **다음 = S4 캐시(선택) 또는 사람 QA**
+
+- 충북·충남 `33→cheongju` · `34→boryeong,gongju,taean` (`0c93d00`)
+- 경북·경남 `35→gyeongju,andong,pohang` · `36→tongyeong,jinju,geoje,namhae` (`4019fcf`)
+- 전북·전남 `37→jeonju,gunsan` · `38→yeosu,suncheon,mokpo,damyang` (`d4608c2`)
+- 세종(8) hub 없음 · LEGACY 키 삭제(DEFAULT 폴백) · hub 신설 없음
+- 충돌 유지: daejeon=3 · daegu=4 · gwangju=5 · busan=6
+- VERIFY: audit+smoke korea-area-codes · smoke:tourapi(해상) PASS · areas **16** / hub links **32**
+
+**남은 LEGACY**: *(없음)*
+
+**다음**: ~~areaHub QA~~ → [`2026-07-26-project-log.md`](./2026-07-26-project-log.md) 「국내축제 — areaHub QA」✅ · S4는 쿼터·지연 시만.
 

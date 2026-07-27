@@ -1,0 +1,75 @@
+{
+  "priority": [
+    "jeju_islands",
+    "west_coast",
+    "east_coast",
+    "south_coast",
+    "capital",
+    "inland_central",
+    "inland_honam",
+    "inland_yeongnam"
+  ],
+  "corridors": [
+    {
+      "id": "jeju_islands",
+      "label": "제주·섬",
+      "boxes": [
+        { "minLng": 126.05, "maxLng": 127.05, "minLat": 33.05, "maxLat": 33.7 },
+        { "minLng": 130.7, "maxLng": 131.05, "minLat": 37.4, "maxLat": 37.6 },
+        { "minLng": 126.15, "maxLng": 126.45, "minLat": 34.55, "maxLat": 34.8 }
+      ]
+    },
+    {
+      "id": "west_coast",
+      "label": "서해",
+      "boxes": [
+        { "minLng": 124.4, "maxLng": 126.85, "minLat": 34.2, "maxLat": 38.15 },
+        { "minLng": 126.0, "maxLng": 127.15, "minLat": 36.2, "maxLat": 37.15 }
+      ]
+    },
+    {
+      "id": "east_coast",
+      "label": "동해",
+      "boxes": [
+        { "minLng": 128.4, "maxLng": 129.7, "minLat": 37.45, "maxLat": 38.65 },
+        { "minLng": 129.2, "maxLng": 129.65, "minLat": 35.2, "maxLat": 37.45 }
+      ]
+    },
+    {
+      "id": "south_coast",
+      "label": "남해",
+      "boxes": [
+        { "minLng": 126.4, "maxLng": 129.5, "minLat": 33.9, "maxLat": 35.25 },
+        { "minLng": 127.6, "maxLng": 129.35, "minLat": 34.7, "maxLat": 35.45 }
+      ]
+    },
+    {
+      "id": "capital",
+      "label": "수도권",
+      "boxes": [
+        { "minLng": 126.55, "maxLng": 127.55, "minLat": 37.15, "maxLat": 38.0 }
+      ]
+    },
+    {
+      "id": "inland_central",
+      "label": "내륙 중부",
+      "boxes": [
+        { "minLng": 126.9, "maxLng": 128.7, "minLat": 36.0, "maxLat": 38.35 }
+      ]
+    },
+    {
+      "id": "inland_honam",
+      "label": "내륙 호남",
+      "boxes": [
+        { "minLng": 126.5, "maxLng": 127.85, "minLat": 34.55, "maxLat": 36.15 }
+      ]
+    },
+    {
+      "id": "inland_yeongnam",
+      "label": "내륙 영남",
+      "boxes": [
+        { "minLng": 127.7, "maxLng": 129.45, "minLat": 35.15, "maxLat": 37.1 }
+      ]
+    }
+  ]
+}
