@@ -123,6 +123,6 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 ```
 국내축제-머지-QA
 @plans/2026-07-27-project-log.md 「국내축제 — 대분류·리스트 문구 QA」절만
-브랜치 merge/korea-festival-into-main (7c61898).
+브랜치 merge/korea-festival-into-main (e372cbb).
 홈 테마/나라칩 · /korea 회귀 이어하기. OK 시 main 반영·push만.
 ```
