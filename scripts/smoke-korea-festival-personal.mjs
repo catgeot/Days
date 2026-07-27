@@ -2,7 +2,12 @@
  * S5-C 즐겨찾기·본 항목·검색 순수 로직 스모크 (DOM 없음).
  */
 import assert from 'node:assert/strict';
-import { detectSidoCode, sidoLabel } from '../src/pages/Korea/festivalRegionTags.js';
+import {
+  buildMapFocusRegionChips,
+  buildSidoTags,
+  detectSidoCode,
+  sidoLabel,
+} from '../src/pages/Korea/festivalRegionTags.js';
 
 const FAVORITES_KEY = 'gateo:korea-festivals:v1:favorites';
 const VIEWED_KEY = 'gateo:korea-festivals:v1:viewed';
@@ -87,6 +92,19 @@ assert.ok(groups.length >= 2);
 assert.ok(groups.every((g) => g.label && g.items.length));
 assert.equal(detectSidoCode(hwacheon.addr1), ref.areaCode);
 assert.ok(sidoLabel(ref.areaCode));
+
+const gyeonggi = {
+  contentId: '300',
+  title: '수원화성문화제',
+  addr1: '경기도 수원시',
+};
+const focusChips = buildMapFocusRegionChips(
+  [seoul, gyeonggi],
+  buildSidoTags([seoul, gyeonggi, hwacheon], { minCount: 1 }),
+);
+assert.ok(focusChips.some((c) => c.label.includes('서울') || c.id === '1'));
+assert.ok(focusChips.some((c) => c.label.includes('경기') || c.id === '31'));
+assert.ok(focusChips.length >= 2);
 
 assert.equal(mem.get(FAVORITES_KEY) != null, true);
 assert.equal(mem.get(VIEWED_KEY) != null, true);

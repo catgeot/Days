@@ -63,15 +63,29 @@
 
 **사람 확인**: 검색·내주변 닫기·반경 안내 가림 수정 확인. **추가 테스트·수정은 다음 세션**.
 
-**세션 종료**: working tree clean · PR https://github.com/catgeot/Days/pull/29  
-**다음**: S5-C Preview 잔여 QA·수정 → OK면 S5-D. releaseNotes·hub 신설·corridor 부활 금지.
+## 국내축제 — S5 C Preview QA (지역 칩·그룹)
+
+**상태**: ✅ 코드·VERIFY · Draft PR #29 · **사람 Preview QA 대기**
+
+| 변경 | 내용 |
+|------|------|
+| 헤더 | 대분류(지금/전체/테마) 접기 제거 → 시간·**지역**·시군·테마 칩 상시 |
+| 지도 선택 | 「지금」+클러스터 리스트에 **지역** 칩(선택 시도+인근) · 교차 탐색 |
+| 리스트 | 색인·지도 선택도 `groupFestivalsBySido` 지역 구분 나열 |
+| 헬퍼 | `buildMapFocusRegionChips` · smoke 보강 |
+
+**VERIFY**: `smoke:korea-festival-personal` · `audit:korea-area-codes` · `smoke:korea-area-codes`
+
+**QA**: `/korea` → 지금 → 지도 클러스터 → 리스트에 지역 칩·시도 헤더 · 칩 클릭 교차 탐색 · 헤더 지역 칩 상시.
+
+**다음**: 사람 Preview QA OK → S5-D. releaseNotes·hub 신설·corridor 부활 금지.
 
 **제시어 (이어하기)**
 
 ```
 국내축제-S5-C-이어하기
 @plans/korea-festival-hub-plan.md S5만
-@plans/2026-07-27-project-log.md 「국내축제 — S5 C」절만
-브랜치 cursor/korea-festival-proxy · PR #29 · tip 70973fa.
+@plans/2026-07-27-project-log.md 「국내축제 — S5 C Preview QA」절만
+브랜치 cursor/korea-festival-proxy · PR #29.
 C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. releaseNotes 금지.
 ```

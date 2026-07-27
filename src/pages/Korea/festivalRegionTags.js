@@ -55,13 +55,17 @@ export function extractCityLabels(addr) {
 
 /**
  * @param {object[]} items
+ * @param {{ minCount?: number }} [opts]
  * @returns {{ id: string, label: string, count: number }[]}
  */
-export function buildSidoTags(items) {
+export function buildSidoTags(items, opts = {}) {
+  const minCount = opts.minCount ?? MIN_COUNT;
   /** @type {Map<string, { id: string, label: string, count: number }>} */
   const counts = new Map();
   for (const item of items || []) {
-    const code = detectSidoCode(item?.addr1);
+    const code =
+      (item?.areaCode != null && String(item.areaCode)) ||
+      detectSidoCode(item?.addr1);
     if (!code) continue;
     const meta = SIDO_ORDER.find((s) => s.id === code);
     const label = meta?.label || SIDO_ADDR_HINTS[code]?.[0] || code;
@@ -70,7 +74,7 @@ export function buildSidoTags(items) {
     else counts.set(code, { id: code, label, count: 1 });
   }
   return SIDO_ORDER.map((s) => counts.get(s.id))
-    .filter((t) => t && t.count >= MIN_COUNT);
+    .filter((t) => t && t.count >= minCount);
 }
 
 /**
@@ -151,6 +155,27 @@ export function neighborSidoTags(areaCode, sidoChips) {
   if (!neigh.length) return [];
   const byId = new Map((sidoChips || []).map((s) => [String(s.id), s]));
   return neigh.map((id) => byId.get(String(id))).filter(Boolean);
+}
+
+/**
+ * 지도 선택 리스트용 교차 탐색 칩: 선택 건 시도 + 최다 시도의 인근(결과 ∩).
+ * @param {object[]} focusItems
+ * @param {{ id: string, label: string, count: number }[]} sidoChips
+ * @returns {{ id: string, label: string, count: number }[]}
+ */
+export function buildMapFocusRegionChips(focusItems, sidoChips) {
+  const present = buildSidoTags(focusItems, { minCount: 1 });
+  if (!present.length) return [];
+  const top = [...present].sort((a, b) => b.count - a.count)[0];
+  const neighbors = neighborSidoTags(top?.id, sidoChips);
+  const seen = new Set(present.map((s) => String(s.id)));
+  const out = [...present];
+  for (const n of neighbors) {
+    if (seen.has(String(n.id))) continue;
+    seen.add(String(n.id));
+    out.push(n);
+  }
+  return out;
 }
 
 /**
