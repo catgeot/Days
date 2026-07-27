@@ -49,7 +49,7 @@
 
 ## 국내축제 — S5 C 즐겨찾기·본 항목·검색 (`국내축제-S5-C`)
 
-**상태**: ✅ 코드·VERIFY · tip 커밋 예정 · Draft PR #29 · 사람 Preview QA 대기
+**상태**: ✅ 코드·VERIFY · tip `d42d171` · Draft PR #29 · 사람 Preview QA 대기
 
 | 산출 | |
 |------|--|
