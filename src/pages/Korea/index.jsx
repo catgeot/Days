@@ -540,6 +540,14 @@ export default function KoreaFestivalHub() {
     setSelected(null);
   };
 
+  const nearActive = Boolean(nearLabel || nearMsg);
+
+  const closeNearMe = () => {
+    clearMapFocus();
+    setSelected(null);
+    setViewResetKey((k) => k + 1);
+  };
+
   const pushFocus = (nextIds) => {
     setFocusStack((stack) => [...stack, mapFocusIds]);
     setMapFocusIds(nextIds);
@@ -792,16 +800,25 @@ export default function KoreaFestivalHub() {
               </button>
               <button
                 type="button"
-                onClick={handleNearMe}
+                onClick={() => (nearActive ? closeNearMe() : handleNearMe())}
                 disabled={nearBusy}
-                className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-60"
+                aria-label={nearActive ? '내 주변 닫기' : '내 주변'}
+                aria-pressed={nearActive}
+                title={nearActive ? '내 주변 닫기' : '내 주변'}
+                className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
+                  nearActive
+                    ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                    : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
+                }`}
               >
                 {nearBusy ? (
                   <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+                ) : nearActive ? (
+                  <X size={14} aria-hidden="true" />
                 ) : (
                   <LocateFixed size={14} aria-hidden="true" />
                 )}
-                내 주변
+                {nearActive ? '닫기' : '내 주변'}
               </button>
             </div>
 
@@ -960,16 +977,6 @@ export default function KoreaFestivalHub() {
                 </>
               )}
             </div>
-
-            {(nearLabel || nearMsg) && (
-              <p className="mt-2 text-[11px] text-stone-600">
-                {nearLabel ? (
-                  <span className="font-bold text-amber-800">{nearLabel} 기준</span>
-                ) : null}
-                {nearLabel && nearMsg ? ' · ' : null}
-                {nearMsg}
-              </p>
-            )}
           </div>
         </div>
       </header>
@@ -993,6 +1000,28 @@ export default function KoreaFestivalHub() {
               className="mt-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
             >
               다시 시도
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!loading && !showList && nearActive && (
+        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
+          <div className="pointer-events-auto flex max-w-sm items-start gap-2 rounded-2xl border border-stone-200 bg-white/95 px-3 py-2.5 text-stone-700 shadow-lg backdrop-blur-md">
+            <p className="min-w-0 flex-1 text-[12px] leading-snug">
+              {nearLabel ? (
+                <span className="font-bold text-amber-800">{nearLabel} 기준</span>
+              ) : null}
+              {nearLabel && nearMsg ? ' · ' : null}
+              {nearMsg}
+            </p>
+            <button
+              type="button"
+              onClick={closeNearMe}
+              aria-label="내 주변 닫기"
+              className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
+            >
+              닫기
             </button>
           </div>
         </div>
@@ -1046,15 +1075,17 @@ export default function KoreaFestivalHub() {
                         : '본 항목'
                       : indexTitle}
                   </h2>
-                  <p className="text-[11px] text-stone-500">
+                  <p className="truncate text-[11px] text-stone-500">
                     {personalTab != null
                       ? `${personalItems.length}건 · 지역 그룹`
-                      : `${panelItems.length}건${
-                          (mapFocusIds?.length || filteredItems.length) >
-                          PANEL_LIMIT
-                            ? ` · ${PANEL_LIMIT}건까지`
-                            : ''
-                        }`}
+                      : nearActive && nearMsg
+                        ? nearMsg
+                        : `${panelItems.length}건${
+                            (mapFocusIds?.length || filteredItems.length) >
+                            PANEL_LIMIT
+                              ? ` · ${PANEL_LIMIT}건까지`
+                              : ''
+                          }`}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
@@ -1075,13 +1106,21 @@ export default function KoreaFestivalHub() {
                     )}
                   <button
                     type="button"
-                    onClick={personalTab != null ? closePersonal : clearFocus}
+                    onClick={
+                      personalTab != null
+                        ? closePersonal
+                        : nearActive
+                          ? closeNearMe
+                          : clearFocus
+                    }
                     aria-label={
                       personalTab != null
                         ? '내 목록 닫기'
-                        : searchActive
-                          ? '검색 닫기 · 전국 보기'
-                          : '선택·색인 해제 · 전국 보기'
+                        : nearActive
+                          ? '내 주변 닫기 · 전국 보기'
+                          : searchActive
+                            ? '검색 닫기 · 전국 보기'
+                            : '선택·색인 해제 · 전국 보기'
                     }
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
                   >
