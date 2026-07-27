@@ -527,9 +527,17 @@ export default function KoreaFestivalHub() {
     setAreaCode('all');
     setCityName('all');
     setSearchQuery('');
+    setSearchOpen(false);
     setPersonalTab(null);
     setSelected(null);
     setViewResetKey((k) => k + 1);
+  };
+
+  const closeSearch = () => {
+    setSearchQuery('');
+    setSearchOpen(false);
+    clearMapFocus();
+    setSelected(null);
   };
 
   const pushFocus = (nextIds) => {
@@ -739,18 +747,25 @@ export default function KoreaFestivalHub() {
               <button
                 type="button"
                 onClick={() => {
-                  setSearchOpen((v) => !v);
-                  if (searchOpen) setSearchQuery('');
+                  if (searchOpen || searchActive) closeSearch();
+                  else setSearchOpen(true);
                 }}
-                aria-label="축제 검색"
+                aria-label={
+                  searchOpen || searchActive ? '검색 닫기' : '축제 검색'
+                }
                 aria-pressed={searchOpen || searchActive}
+                title={searchOpen || searchActive ? '검색 닫기' : '축제 검색'}
                 className={`shrink-0 flex h-9 w-9 items-center justify-center rounded-full border ${
                   searchOpen || searchActive
                     ? 'border-amber-400 bg-amber-50 text-amber-800'
                     : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
                 }`}
               >
-                <Search size={15} aria-hidden="true" />
+                {searchOpen || searchActive ? (
+                  <X size={15} aria-hidden="true" />
+                ) : (
+                  <Search size={15} aria-hidden="true" />
+                )}
               </button>
               <button
                 type="button"
@@ -809,15 +824,13 @@ export default function KoreaFestivalHub() {
                   autoComplete="off"
                   className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
                 />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
-                  >
-                    지우기
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={closeSearch}
+                  className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
+                >
+                  닫기
+                </button>
               </div>
             )}
 
@@ -1066,7 +1079,9 @@ export default function KoreaFestivalHub() {
                     aria-label={
                       personalTab != null
                         ? '내 목록 닫기'
-                        : '선택·색인 해제 · 전국 보기'
+                        : searchActive
+                          ? '검색 닫기 · 전국 보기'
+                          : '선택·색인 해제 · 전국 보기'
                     }
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
                   >
