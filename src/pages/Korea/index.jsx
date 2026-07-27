@@ -48,6 +48,7 @@ const TIME_TABS = [
 ];
 
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
+/** @typedef {'idle' | 'region'} GuideKind */
 
 const PANEL_LIMIT = 48;
 const NEAR_KM = 80;
@@ -322,7 +323,8 @@ export default function KoreaFestivalHub() {
   const [nearMsg, setNearMsg] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [guideOpen, setGuideOpen] = useState(true);
+  /** @type {[GuideKind | null, function]} */
+  const [guideKind, setGuideKind] = useState(/** @type {GuideKind | null} */ ('idle'));
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState(() =>
@@ -534,7 +536,15 @@ export default function KoreaFestivalHub() {
   };
 
   const dismissGuide = useCallback(() => {
-    setGuideOpen(false);
+    setGuideKind(null);
+  }, []);
+
+  const showIdleGuide = useCallback(() => {
+    setGuideKind('idle');
+  }, []);
+
+  const showRegionGuide = useCallback(() => {
+    setGuideKind('region');
   }, []);
 
   const clearFocus = ({ restoreGuide = false } = {}) => {
@@ -547,7 +557,7 @@ export default function KoreaFestivalHub() {
     setPersonalTab(null);
     setSelected(null);
     setChipPanel(null);
-    if (restoreGuide) setGuideOpen(true);
+    if (restoreGuide) setGuideKind('idle');
     setViewResetKey((k) => k + 1);
   };
 
@@ -564,7 +574,7 @@ export default function KoreaFestivalHub() {
   const closeNearMe = () => {
     clearMapFocus();
     setSelected(null);
-    setGuideOpen(true);
+    setGuideKind('idle');
     setViewResetKey((k) => k + 1);
   };
 
@@ -902,8 +912,8 @@ export default function KoreaFestivalHub() {
                   <button
                     type="button"
                     onClick={() => {
-                      dismissGuide();
                       setChipPanel('region');
+                      showRegionGuide();
                     }}
                     className={chipClass(regionMajorActive)}
                     aria-expanded="false"
@@ -928,7 +938,11 @@ export default function KoreaFestivalHub() {
                 <>
                   <button
                     type="button"
-                    onClick={() => setChipPanel(null)}
+                    onClick={() => {
+                      setChipPanel(null);
+                      if (!showList && !nearActive) showIdleGuide();
+                      else dismissGuide();
+                    }}
                     className={chipClass(false)}
                     aria-label="대분류로 돌아가기"
                   >
@@ -1047,18 +1061,31 @@ export default function KoreaFestivalHub() {
         </div>
       )}
 
-      {!loading && !error && !showList && !nearActive && guideOpen && (
+      {!loading && !error && !showList && !nearActive && guideKind != null && (
         <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
           <div
             className="w-full max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 text-stone-700 shadow-lg backdrop-blur-md"
             role="status"
           >
-            <p className="text-sm font-bold text-stone-900 break-keep">
-              오늘 축제 지역입니다.
-            </p>
-            <p className="mt-1 text-[12px] leading-snug text-stone-500 break-keep">
-              지도를 탭하거나 내 주변으로 찾을 수 있어요
-            </p>
+            {guideKind === 'region' ? (
+              <>
+                <p className="text-sm font-bold text-stone-900 break-keep">
+                  지도의 지역을 선택해 주세요
+                </p>
+                <p className="mt-1 text-[12px] leading-snug text-stone-500 break-keep">
+                  지도에서 축제가 있는 곳을 탭하거나 위 지역 칩을 고를 수 있어요
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-bold text-stone-900 break-keep">
+                  오늘 축제 지역입니다.
+                </p>
+                <p className="mt-1 text-[12px] leading-snug text-stone-500 break-keep">
+                  지도를 탭하거나 내 주변으로 찾을 수 있어요
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -1174,7 +1201,7 @@ export default function KoreaFestivalHub() {
                         ? closePersonal
                         : nearActive
                           ? closeNearMe
-                          : clearFocus
+                          : () => clearFocus({ restoreGuide: true })
                     }
                     aria-label={
                       personalTab != null
