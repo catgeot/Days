@@ -33,23 +33,24 @@
 
 ## 국내축제 — S5 B UI 조율 (헤더 대분류·리스트·뒤로)
 
-**상태**: ✅ 사람 Preview 톤 OK · tip `549cf19` · Draft PR #29 · `cursor/korea-festival-proxy`
+**상태**: ✅ 사람 Preview QA OK · tip `714e948` · Draft PR #29 · `cursor/korea-festival-proxy` · **세션 종료**
 
 | 변경 | 내용 |
 |------|------|
 | 헤더·여백·뒤로·가림 | `c1cbb7b`~`23b7714` |
-| 리스트 레이아웃 | 개방형 스크림 + 헤더 아래 모달 (풀스크린 불투명은 갑갑 → 복구 `b2a43e4`) |
-| 라이트 톤 | 헤더·칩·리스트 **사람 OK** (`549cf19`) · 상세 시트도 화이트 |
-| Cloud 규칙 | feature Cloud = Vercel Preview용 커밋·push |
+| 리스트 레이아웃 | 개방형 스크림 + 헤더 아래 모달 (풀스크린 불투명 복구 `b2a43e4`) |
+| 라이트 톤 | 헤더·칩·리스트·**상세 시트** 화이트 · 사람 OK (`549cf19`→`714e948`) |
+| Cloud 규칙 | `AGENTS.md` — feature Cloud는 오류 없으면 Vercel Preview용 커밋·push |
 
-**다음**: Preview에서 상세 시트 확인 → OK면 S5-C. releaseNotes·hub 신설·corridor 부활 금지.
+**세션 종료**: working tree clean · PR https://github.com/catgeot/Days/pull/29  
+**다음**: S5-C 즐겨찾기·본 항목. A·B 회귀 금지. releaseNotes·hub 신설·corridor 부활 금지.
 
-**제시어 (이어하기)**
+**제시어 (다음 = S5-C)**
 
 ```
-국내축제-S5-B-QA
+국내축제-S5-C
 @plans/korea-festival-hub-plan.md S5만
 @plans/2026-07-27-project-log.md 「국내축제 — S5 B UI 조율」절만
 브랜치 cursor/korea-festival-proxy · PR #29.
-Vercel Preview QA 피드백 반영. C는 QA OK 후. releaseNotes 금지.
+B UI QA OK 전제. C 즐겨찾기·본 항목. A·B 회귀 금지. releaseNotes 금지.
 ```
