@@ -105,3 +105,12 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 | VERIFY | `audit/smoke:korea-area-codes` · `smoke:korea-festival-personal` · `smoke:place-label-slug` · `npm run build` PASS |
 
 **다음**: 로컬 `npm run dev` → 홈 테마/나라칩 · `/korea` 회귀 QA → OK 시 원격 반영.
+
+**제시어 (다음 세션 · QA)**
+
+```
+국내축제-머지-QA
+@plans/2026-07-27-project-log.md 「로컬 머지」절만
+브랜치 merge/korea-festival-into-main (f066c17).
+홈 테마/나라칩 · /korea 회귀 테스트. 미push. OK 시 main 반영·push만.
+```
