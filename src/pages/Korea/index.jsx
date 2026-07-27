@@ -1016,6 +1016,41 @@ export default function KoreaFestivalHub() {
         </div>
       )}
 
+      {!loading && !error && !showList && !nearActive && (
+        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
+          <div
+            className="pointer-events-auto w-full max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 text-stone-700 shadow-lg backdrop-blur-md"
+            role="status"
+          >
+            <p className="text-sm font-bold text-stone-900 break-keep">
+              {timeTab === 'now'
+                ? '오늘 축제 지역입니다'
+                : `${timeMajorLabel} 축제 지역입니다`}
+            </p>
+            <p className="mt-1 text-[12px] leading-snug text-stone-500 break-keep">
+              지역을 선택하세요. 지도를 탭하거나 내 주변으로 찾을 수 있어요.
+            </p>
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => setChipPanel('region')}
+                className="rounded-full border border-amber-400 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-900 hover:bg-amber-100"
+              >
+                지역 선택
+              </button>
+              <button
+                type="button"
+                onClick={handleNearMe}
+                disabled={nearBusy}
+                className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-60"
+              >
+                내 주변
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {!loading && !showList && nearActive && (
         <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
           <div className="pointer-events-auto flex max-w-sm items-start gap-2 rounded-2xl border border-stone-200 bg-white/95 px-3 py-2.5 text-stone-700 shadow-lg backdrop-blur-md">
