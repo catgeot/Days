@@ -106,11 +106,23 @@ C Preview 테스트·수정 이어가기. A·B 회귀 금지. D는 C QA OK 후. 
 
 **다음**: 로컬 `npm run dev` → 홈 테마/나라칩 · `/korea` 회귀 QA → OK 시 원격 반영.
 
-**제시어 (다음 세션 · QA)**
+## 국내축제 — 대분류·리스트 문구 QA (머지 브랜치)
+
+**상태**: ✅ 사람 확인 · tip 커밋·push · `merge/korea-festival-into-main` · **main 미병합** · 다음 세션 회귀 이어하기
+
+| 변경 | |
+|------|--|
+| 헤더 | 대분류(지금/지역/테마) **상시** · 활성 축 하위 칩 · 대분류 라벨=선택 결과 |
+| 리스트 | `"지금" "강원도" "춘천"지역에서 "문화" 관련 축제 리스트 입니다.` 형식 제목 |
+| VERIFY | `smoke:korea-festival-personal` · `smoke:korea-area-codes` PASS |
+
+**남은 QA**: 홈 테마/나라칩 · `/korea` 전반 회귀 · OK 시 **main 반영·push**.
+
+**제시어 (다음 세션)**
 
 ```
 국내축제-머지-QA
-@plans/2026-07-27-project-log.md 「로컬 머지」절만
-브랜치 merge/korea-festival-into-main (f066c17).
-홈 테마/나라칩 · /korea 회귀 테스트. 미push. OK 시 main 반영·push만.
+@plans/2026-07-27-project-log.md 「국내축제 — 대분류·리스트 문구 QA」절만
+브랜치 merge/korea-festival-into-main.
+홈 테마/나라칩 · /korea 회귀 이어하기. OK 시 main 반영·push만.
 ```

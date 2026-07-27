@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
-  ChevronLeft,
   Loader2,
   LocateFixed,
   MapPin,
@@ -22,9 +21,11 @@ import {
   buildCityTags,
   buildMapFocusRegionChips,
   buildSidoTags,
+  cityListPhrase,
   filterByRegion,
   neighborSidoTags,
   sidoLabel,
+  sidoListPhrase,
 } from './festivalRegionTags';
 import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
@@ -46,6 +47,27 @@ const TIME_TABS = [
   { id: 'thisMonth', label: '이번 달' },
   { id: 'season', label: '시즌' },
 ];
+
+/**
+ * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string }} p
+ */
+function buildIndexListHeadline({ timeTab, areaCode, cityName, tasteId }) {
+  const time =
+    TIME_TABS.find((t) => t.id === timeTab)?.label || '지금';
+  const sido = sidoListPhrase(areaCode);
+  const city = cityListPhrase(cityName);
+  const taste = tasteLabel(tasteId);
+
+  const head = [`"${time}"`];
+  if (sido) head.push(`"${sido}"`);
+  if (city) head.push(`"${city}"`);
+
+  let sentence = head.join(' ');
+  if (sido || city) sentence += '지역에서';
+  if (taste) sentence += ` "${taste}" 관련`;
+  sentence += ' 축제 리스트 입니다.';
+  return sentence;
+}
 
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
 /** @typedef {'idle' | 'region'} GuideKind */
@@ -307,8 +329,8 @@ export default function KoreaFestivalHub() {
   const [tasteId, setTasteId] = useState('all');
   const [areaCode, setAreaCode] = useState('all');
   const [cityName, setCityName] = useState('all');
-  /** @type {[ChipPanelId | null, function]} */
-  const [chipPanel, setChipPanel] = useState(null);
+  /** @type {[ChipPanelId, function]} */
+  const [chipPanel, setChipPanel] = useState(/** @type {ChipPanelId} */ ('time'));
   const [mapFocusIds, setMapFocusIds] = useState(null);
   const [mapFocusView, setMapFocusView] = useState(null);
   const [focusStack, setFocusStack] = useState([]);
@@ -430,14 +452,22 @@ export default function KoreaFestivalHub() {
     if (searchActive) {
       return `검색 · ${searchQuery.trim()}`;
     }
-    const parts = [];
-    const sido = sidoLabel(areaCode);
-    if (sido) parts.push(sido);
-    if (cityName !== 'all') parts.push(cityName);
-    const taste = tasteLabel(tasteId);
-    if (taste) parts.push(taste);
-    return parts.length ? parts.join(' · ') : '색인';
-  }, [mapFocusIds, nearLabel, areaCode, cityName, tasteId, searchActive, searchQuery]);
+    return buildIndexListHeadline({
+      timeTab,
+      areaCode,
+      cityName,
+      tasteId,
+    });
+  }, [
+    mapFocusIds,
+    nearLabel,
+    searchActive,
+    searchQuery,
+    timeTab,
+    areaCode,
+    cityName,
+    tasteId,
+  ]);
 
   const indexNeighborChips = useMemo(
     () => neighborSidoTags(areaCode, sidoChips),
@@ -539,10 +569,6 @@ export default function KoreaFestivalHub() {
     setGuideKind(null);
   }, []);
 
-  const showIdleGuide = useCallback(() => {
-    setGuideKind('idle');
-  }, []);
-
   const showRegionGuide = useCallback(() => {
     setGuideKind('region');
   }, []);
@@ -556,7 +582,7 @@ export default function KoreaFestivalHub() {
     setSearchOpen(false);
     setPersonalTab(null);
     setSelected(null);
-    setChipPanel(null);
+    setChipPanel('time');
     if (restoreGuide) setGuideKind('idle');
     setViewResetKey((k) => k + 1);
   };
@@ -609,6 +635,7 @@ export default function KoreaFestivalHub() {
   const selectTaste = (id) => {
     dismissGuide();
     setTasteId(id);
+    setChipPanel('taste');
     clearMapFocus();
     setSelected(null);
   };
@@ -617,6 +644,7 @@ export default function KoreaFestivalHub() {
     dismissGuide();
     setAreaCode(id);
     setCityName('all');
+    setChipPanel('region');
     clearMapFocus();
     setSelected(null);
   };
@@ -624,8 +652,24 @@ export default function KoreaFestivalHub() {
   const selectCity = (id) => {
     dismissGuide();
     setCityName(id);
+    setChipPanel('region');
     clearMapFocus();
     setSelected(null);
+  };
+
+  const openTimeMajor = () => {
+    dismissGuide();
+    setChipPanel('time');
+  };
+
+  const openRegionMajor = () => {
+    setChipPanel('region');
+    showRegionGuide();
+  };
+
+  const openTasteMajor = () => {
+    dismissGuide();
+    setChipPanel('taste');
   };
 
   const timeMajorLabel =
@@ -637,8 +681,6 @@ export default function KoreaFestivalHub() {
         ? sidoLabel(areaCode) || '지역'
         : '지역';
   const tasteMajorLabel = tasteLabel(tasteId) || '테마';
-  const regionMajorActive = areaCode !== 'all' || cityName !== 'all';
-  const tasteMajorActive = tasteId !== 'all';
 
   const refreshFavorites = useCallback(() => {
     const list = loadFavorites();
@@ -894,151 +936,133 @@ export default function KoreaFestivalHub() {
               </div>
             )}
 
-            <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
-              {chipPanel == null ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      dismissGuide();
-                      setChipPanel('time');
-                    }}
-                    className={chipClass(true)}
-                    aria-expanded="false"
-                    aria-label="시간 대분류 펼치기"
-                  >
-                    {timeMajorLabel}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setChipPanel('region');
-                      showRegionGuide();
-                    }}
-                    className={chipClass(regionMajorActive)}
-                    aria-expanded="false"
-                    aria-label="지역 대분류 펼치기"
-                  >
-                    {regionMajorLabel}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      dismissGuide();
-                      setChipPanel('taste');
-                    }}
-                    className={chipClass(tasteMajorActive)}
-                    aria-expanded="false"
-                    aria-label="테마 대분류 펼치기"
-                  >
-                    {tasteMajorLabel}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setChipPanel(null);
-                      if (!showList && !nearActive) showIdleGuide();
-                      else dismissGuide();
-                    }}
-                    className={chipClass(false)}
-                    aria-label="대분류로 돌아가기"
-                  >
-                    <ChevronLeft size={14} aria-hidden="true" />
-                    대분류
-                  </button>
-                  {chipPanel === 'time' &&
-                    TIME_TABS.map((t) => (
+            <div className="mt-2.5 flex flex-col gap-1.5">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+                <button
+                  type="button"
+                  onClick={openTimeMajor}
+                  className={chipClass(chipPanel === 'time')}
+                  aria-pressed={chipPanel === 'time'}
+                  aria-label={`시간 대분류 · ${timeMajorLabel}`}
+                >
+                  {timeMajorLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={openRegionMajor}
+                  className={chipClass(chipPanel === 'region')}
+                  aria-pressed={chipPanel === 'region'}
+                  aria-label={`지역 대분류 · ${regionMajorLabel}`}
+                >
+                  {regionMajorLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={openTasteMajor}
+                  className={chipClass(chipPanel === 'taste')}
+                  aria-pressed={chipPanel === 'taste'}
+                  aria-label={`테마 대분류 · ${tasteMajorLabel}`}
+                >
+                  {tasteMajorLabel}
+                </button>
+              </div>
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+                {chipPanel === 'time' &&
+                  TIME_TABS.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => selectTime(t.id)}
+                      className={chipClass(timeTab === t.id)}
+                      aria-pressed={timeTab === t.id}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                {chipPanel === 'region' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => selectSido('all')}
+                      className={chipClass(areaCode === 'all')}
+                      aria-pressed={areaCode === 'all'}
+                    >
+                      전국
+                    </button>
+                    {sidoChips.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => selectSido(s.id)}
+                        className={chipClass(areaCode === s.id)}
+                        aria-pressed={areaCode === s.id}
+                      >
+                        {s.label}
+                        <span className="opacity-70">{s.count}</span>
+                      </button>
+                    ))}
+                    {cityChips.length > 0 && (
+                      <>
+                        <span
+                          className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
+                          aria-hidden="true"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => selectCity('all')}
+                          className={chipClass(cityName === 'all')}
+                          aria-pressed={cityName === 'all'}
+                        >
+                          시·군 전체
+                        </button>
+                        {cityChips.map((c) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => selectCity(c.id)}
+                            className={chipClass(cityName === c.id)}
+                            aria-pressed={cityName === c.id}
+                          >
+                            {c.label}
+                            <span className="opacity-70">{c.count}</span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+                {chipPanel === 'taste' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => selectTaste('all')}
+                      className={chipClass(tasteId === 'all')}
+                      aria-pressed={tasteId === 'all'}
+                    >
+                      테마 전체
+                    </button>
+                    {tasteChips.map((t) => (
                       <button
                         key={t.id}
                         type="button"
-                        onClick={() => selectTime(t.id)}
-                        className={chipClass(timeTab === t.id)}
+                        onClick={() => selectTaste(t.id)}
+                        className={chipClass(tasteId === t.id)}
+                        aria-pressed={tasteId === t.id}
                       >
                         {t.label}
+                        <span className="opacity-70">{t.count}</span>
                       </button>
                     ))}
-                  {chipPanel === 'region' && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => selectSido('all')}
-                        className={chipClass(areaCode === 'all')}
-                      >
-                        전국
-                      </button>
-                      {sidoChips.map((s) => (
-                        <button
-                          key={s.id}
-                          type="button"
-                          onClick={() => selectSido(s.id)}
-                          className={chipClass(areaCode === s.id)}
-                        >
-                          {s.label}
-                          <span className="opacity-70">{s.count}</span>
-                        </button>
-                      ))}
-                      {cityChips.length > 0 && (
-                        <>
-                          <span
-                            className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
-                            aria-hidden="true"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => selectCity('all')}
-                            className={chipClass(cityName === 'all')}
-                          >
-                            시·군 전체
-                          </button>
-                          {cityChips.map((c) => (
-                            <button
-                              key={c.id}
-                              type="button"
-                              onClick={() => selectCity(c.id)}
-                              className={chipClass(cityName === c.id)}
-                            >
-                              {c.label}
-                              <span className="opacity-70">{c.count}</span>
-                            </button>
-                          ))}
-                        </>
-                      )}
-                    </>
-                  )}
-                  {chipPanel === 'taste' && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => selectTaste('all')}
-                        className={chipClass(tasteId === 'all')}
-                      >
-                        테마 전체
-                      </button>
-                      {tasteChips.map((t) => (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => selectTaste(t.id)}
-                          className={chipClass(tasteId === t.id)}
-                        >
-                          {t.label}
-                          <span className="opacity-70">{t.count}</span>
-                        </button>
-                      ))}
-                    </>
-                  )}
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {loading && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
+        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
           <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-stone-200 bg-white/95 px-4 py-2 text-sm text-stone-700 shadow-lg backdrop-blur-md">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             축제 일정을 불러오는 중…
@@ -1047,7 +1071,7 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && error && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
+        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
           <div className="pointer-events-auto max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-4 text-center shadow-lg backdrop-blur-md">
             <p className="text-sm text-stone-700">{error}</p>
             <button
@@ -1062,7 +1086,7 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && !error && !showList && !nearActive && guideKind != null && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
+        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
           <div
             className="w-full max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 text-stone-700 shadow-lg backdrop-blur-md"
             role="status"
@@ -1091,7 +1115,7 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && !showList && nearActive && (
-        <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
+        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
           <div className="pointer-events-auto flex max-w-sm items-start gap-2 rounded-2xl border border-stone-200 bg-white/95 px-3 py-2.5 text-stone-700 shadow-lg backdrop-blur-md">
             <p className="min-w-0 flex-1 text-[12px] leading-snug">
               {nearLabel ? (
@@ -1114,7 +1138,7 @@ export default function KoreaFestivalHub() {
 
       {showList && (
         <div
-          className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pt-[max(6.25rem,calc(env(safe-area-inset-top,0px)+5.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pt-[6.75rem] md:pb-4"
+          className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pt-[max(8.25rem,calc(env(safe-area-inset-top,0px)+7.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pt-[8.75rem] md:pb-4"
           onClick={
             personalTab != null
               ? closePersonal
@@ -1123,7 +1147,7 @@ export default function KoreaFestivalHub() {
           role="presentation"
         >
           <aside
-            className={`pointer-events-auto flex max-h-[calc(100dvh-7.25rem)] w-full flex-col md:max-h-[calc(100dvh-8rem)] md:flex-row md:items-stretch ${
+            className={`pointer-events-auto flex max-h-[calc(100dvh-9.25rem)] w-full flex-col md:max-h-[calc(100dvh-10rem)] md:flex-row md:items-stretch ${
               personalTab == null && flapHasRelated
                 ? 'md:max-w-[520px]'
                 : 'md:max-w-[420px]'
@@ -1158,7 +1182,7 @@ export default function KoreaFestivalHub() {
             >
               <div className="flex shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3">
                 <div className="min-w-0">
-                  <h2 className="truncate text-sm font-bold text-stone-900">
+                  <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug">
                     {personalTab != null
                       ? personalTab === 'favorites'
                         ? '즐겨찾기'

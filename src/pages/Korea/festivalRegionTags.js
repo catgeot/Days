@@ -187,4 +187,28 @@ export function sidoLabel(areaCode) {
   return hit?.label || SIDO_ADDR_HINTS[areaCode]?.[0] || '';
 }
 
+/**
+ * 리스트 안내 문구용 시도 (강원도·경기도 등).
+ * @param {string} areaCode
+ */
+export function sidoListPhrase(areaCode) {
+  if (!areaCode || areaCode === 'all') return '';
+  const hints = SIDO_ADDR_HINTS[String(areaCode)] || [];
+  const shortDo = hints.find(
+    (h) => /도$/u.test(h) && !/특별자치도$/u.test(h),
+  );
+  if (shortDo) return shortDo;
+  if (hints[0]) return hints[0];
+  return sidoLabel(areaCode);
+}
+
+/**
+ * 리스트 안내 문구용 시·군 (춘천시 → 춘천).
+ * @param {string} cityName
+ */
+export function cityListPhrase(cityName) {
+  if (!cityName || cityName === 'all') return '';
+  return String(cityName).replace(/(시|군)$/u, '');
+}
+
 export { MIN_COUNT as REGION_MIN_COUNT, SIDO_ORDER, SIDO_NEIGHBORS };
