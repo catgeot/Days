@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
+  ChevronLeft,
   Loader2,
   LocateFixed,
   MapPin,
@@ -45,6 +46,8 @@ const TIME_TABS = [
   { id: 'thisMonth', label: '이번 달' },
   { id: 'season', label: '시즌' },
 ];
+
+/** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
 
 const PANEL_LIMIT = 48;
 const NEAR_KM = 80;
@@ -303,6 +306,8 @@ export default function KoreaFestivalHub() {
   const [tasteId, setTasteId] = useState('all');
   const [areaCode, setAreaCode] = useState('all');
   const [cityName, setCityName] = useState('all');
+  /** @type {[ChipPanelId | null, function]} */
+  const [chipPanel, setChipPanel] = useState(null);
   const [mapFocusIds, setMapFocusIds] = useState(null);
   const [mapFocusView, setMapFocusView] = useState(null);
   const [focusStack, setFocusStack] = useState([]);
@@ -606,6 +611,18 @@ export default function KoreaFestivalHub() {
     setSelected(null);
   };
 
+  const timeMajorLabel =
+    TIME_TABS.find((t) => t.id === timeTab)?.label || '지금';
+  const regionMajorLabel =
+    cityName !== 'all'
+      ? cityName
+      : areaCode !== 'all'
+        ? sidoLabel(areaCode) || '전체'
+        : '전체';
+  const tasteMajorLabel = tasteLabel(tasteId) || '테마';
+  const regionMajorActive = areaCode !== 'all' || cityName !== 'all';
+  const tasteMajorActive = tasteId !== 'all';
+
   const refreshFavorites = useCallback(() => {
     const list = loadFavorites();
     setFavoriteList(list);
@@ -852,96 +869,129 @@ export default function KoreaFestivalHub() {
               </div>
             )}
 
-            <div
-              className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar"
-              aria-label="시간·지역"
-            >
-              {TIME_TABS.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => selectTime(t.id)}
-                  className={chipClass(timeTab === t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-              {sidoChips.length > 0 && (
+            <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+              {chipPanel == null ? (
                 <>
-                  <span
-                    className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
-                    aria-hidden="true"
-                  />
                   <button
                     type="button"
-                    onClick={() => selectSido('all')}
-                    className={chipClass(areaCode === 'all')}
+                    onClick={() => setChipPanel('time')}
+                    className={chipClass(true)}
+                    aria-expanded="false"
+                    aria-label="시간 대분류 펼치기"
                   >
-                    전국
+                    {timeMajorLabel}
                   </button>
-                  {sidoChips.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => selectSido(s.id)}
-                      className={chipClass(areaCode === s.id)}
-                    >
-                      {s.label}
-                      <span className="opacity-70">{s.count}</span>
-                    </button>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setChipPanel('region')}
+                    className={chipClass(regionMajorActive)}
+                    aria-expanded="false"
+                    aria-label="지역 대분류 펼치기"
+                  >
+                    {regionMajorLabel}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChipPanel('taste')}
+                    className={chipClass(tasteMajorActive)}
+                    aria-expanded="false"
+                    aria-label="테마 대분류 펼치기"
+                  >
+                    {tasteMajorLabel}
+                  </button>
                 </>
-              )}
-              {cityChips.length > 0 && (
+              ) : (
                 <>
-                  <span
-                    className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
-                    aria-hidden="true"
-                  />
                   <button
                     type="button"
-                    onClick={() => selectCity('all')}
-                    className={chipClass(cityName === 'all')}
+                    onClick={() => setChipPanel(null)}
+                    className={chipClass(false)}
+                    aria-label="대분류로 돌아가기"
                   >
-                    시·군 전체
+                    <ChevronLeft size={14} aria-hidden="true" />
+                    대분류
                   </button>
-                  {cityChips.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => selectCity(c.id)}
-                      className={chipClass(cityName === c.id)}
-                    >
-                      {c.label}
-                      <span className="opacity-70">{c.count}</span>
-                    </button>
-                  ))}
-                </>
-              )}
-              {tasteChips.length > 0 && (
-                <>
-                  <span
-                    className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
-                    aria-hidden="true"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => selectTaste('all')}
-                    className={chipClass(tasteId === 'all')}
-                  >
-                    테마 전체
-                  </button>
-                  {tasteChips.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => selectTaste(t.id)}
-                      className={chipClass(tasteId === t.id)}
-                    >
-                      {t.label}
-                      <span className="opacity-70">{t.count}</span>
-                    </button>
-                  ))}
+                  {chipPanel === 'time' &&
+                    TIME_TABS.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => selectTime(t.id)}
+                        className={chipClass(timeTab === t.id)}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  {chipPanel === 'region' && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => selectSido('all')}
+                        className={chipClass(areaCode === 'all')}
+                      >
+                        전국
+                      </button>
+                      {sidoChips.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => selectSido(s.id)}
+                          className={chipClass(areaCode === s.id)}
+                        >
+                          {s.label}
+                          <span className="opacity-70">{s.count}</span>
+                        </button>
+                      ))}
+                      {cityChips.length > 0 && (
+                        <>
+                          <span
+                            className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
+                            aria-hidden="true"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => selectCity('all')}
+                            className={chipClass(cityName === 'all')}
+                          >
+                            시·군 전체
+                          </button>
+                          {cityChips.map((c) => (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => selectCity(c.id)}
+                              className={chipClass(cityName === c.id)}
+                            >
+                              {c.label}
+                              <span className="opacity-70">{c.count}</span>
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )}
+                  {chipPanel === 'taste' && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => selectTaste('all')}
+                        className={chipClass(tasteId === 'all')}
+                      >
+                        테마 전체
+                      </button>
+                      {tasteChips.map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => selectTaste(t.id)}
+                          className={chipClass(tasteId === t.id)}
+                        >
+                          {t.label}
+                          <span className="opacity-70">{t.count}</span>
+                        </button>
+                      ))}
+                    </>
+                  )}
                 </>
               )}
             </div>

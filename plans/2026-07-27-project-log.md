@@ -69,9 +69,9 @@
 
 | 변경 | 내용 |
 |------|------|
-| 헤더 | 대분류 접기 제거 → 시간·**지역**·시군·테마를 **1행** 가로 스크롤 |
-| 지도 선택 | 「지금」+클러스터 리스트에 **지역** 칩(선택 시도+인근) · 교차 탐색 |
-| 리스트 | 색인·지도 선택도 `groupFestivalsBySido` 지역 구분 나열 |
+| 헤더 | **이전 대분류 체계 유지**(지금/전체/테마 접기) — 헤더 변경 철회 |
+| 지도 선택 | 「지금」+클러스터 모달 리스트에 **지역** 칩(선택 시도+인근) · 교차 탐색 |
+| 모달 리스트 | 색인·지도 선택도 `groupFestivalsBySido` **지역별 구분** 나열 |
 | 헬퍼 | `buildMapFocusRegionChips` · smoke 보강 |
 
 **VERIFY**: `smoke:korea-festival-personal` · `audit:korea-area-codes` · `smoke:korea-area-codes`
