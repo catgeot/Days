@@ -180,11 +180,12 @@ S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
 | | |
 |--|--|
 | **환경** | `cursor/korea-festival-proxy` |
-| **현재 코드** | **A** 풀맵 셸 · **B** 테마·지역 색인 칩 · leaves→리스트 · 뒤로/X · 시트 · **B+** 리스트 제목=칩명 · 좌측 연관 플랩 |
+| **현재 코드** | **A** 풀맵 셸 · **B** 테마·지역 색인 · **C** 즐겨찾기·본 항목·검색·지역 그룹 · leaves→리스트 · 시트 |
 | **권역** | corridor 칩 폐기 · 지역 색인=`addr1` 시도→시/군 (`festivalRegionTags`) |
 | **테마** | title 키워드 ≥2 (`festivalTasteTags` · 빙어·썸머·도자기·술 등) |
 | **데이터** | 롤링 12개월 LIVE · `fetchKoreaFestivalsRolling12` · sessionStorage `gateo:korea-festivals:v1:rolling12` |
-| **금지** | C~E(다음) · releaseNotes · hub 신설 · 본격 S4 · corridor 부활 |
+| **개인** | localStorage `gateo:korea-festivals:v1:favorites` · `…:viewed` (`festivalPersonalStore`) |
+| **금지** | D~E(다음) · releaseNotes · hub 신설 · 본격 S4 · corridor 부활 |
 
 **B+ 리스트·연관 플랩 (구현됨)**
 
@@ -221,17 +222,28 @@ S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
 |------|------|
 | **A** | 전체화면 지도 셸 · 시간·내 주변 · 선택 N→좌측 리스트 · 시트 · 뒤로 ✅ QA |
 | **B** | 테마·지역 색인 클릭 칩 ✅ · B+ 제목·연관 플랩 ✅ · 사람 QA |
-| **C** | 즐겨찾기·본 항목 · 지역 그룹 · 검색 (다음) |
+| **C** | 즐겨찾기·본 항목 · 지역 그룹 · 검색 ✅ 코드 (사람 Preview QA) |
 | **D** | 출발/도착 + 즐겨찾기 경유 **도로 루트** · 경로 리스트에서 **1개 선택** · (후보) 벨트·축제로드 |
 | **E** | 시트 안 숙소·투어 (지도 마커 금지) |
 
-**제시어 (다음 · B QA 후 C)**
+**C 구현**
+
+| | |
+|--|--|
+| 즐겨찾기 | 리스트·상세 ★ 토글 · localStorage · 상한 80 |
+| 본 항목 | 상세 오픈 시 적재 · 상한 40 · 최신 앞 |
+| 지역 그룹 | 내 목록을 시도별로 묶어 표시 |
+| 검색 | 헤더 돋보기 · title/addr1 · 지도·리스트 교집합 |
+| VERIFY | `npm run smoke:korea-festival-personal` |
+
+**제시어 (다음 · C QA 후 D)**
 
 ```
-국내축제-S5-C
+국내축제-S5-D
 @plans/korea-festival-hub-plan.md S5만
-@plans/2026-07-26-project-log.md 「국내축제 — S5」절만
-브랜치 cursor/korea-festival-proxy. C 즐겨찾기·본 항목. A·B 회귀 금지 범위 밖 확장 금지. releaseNotes 금지.
+@plans/2026-07-27-project-log.md 「국내축제 — S5 C」절만
+브랜치 cursor/korea-festival-proxy · PR #29.
+C QA OK 전제. D 출발/도착·즐겨찾기 경유 도로루트(경로 1선택). A~C 회귀 금지. releaseNotes 금지.
 ```
 
 ---

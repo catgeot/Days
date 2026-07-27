@@ -6,6 +6,8 @@ import {
   Loader2,
   LocateFixed,
   MapPin,
+  Search,
+  Star,
   Undo2,
   X,
 } from 'lucide-react';
@@ -24,6 +26,15 @@ import {
   neighborSidoTags,
   sidoLabel,
 } from './festivalRegionTags';
+import {
+  groupFestivalsBySido,
+  hydrateFestivalRefs,
+  loadFavorites,
+  loadViewed,
+  pushViewed,
+  toggleFavorite,
+} from './festivalPersonalStore';
+import { filterBySearchQuery } from './festivalSearch';
 import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
 import KoreaFestivalMap from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
@@ -219,45 +230,69 @@ function RelatedChipFlap({
   );
 }
 
-function FestivalRow({ item, active, onSelect }) {
+function FestivalRow({ item, active, onSelect, favorited, onToggleFavorite }) {
   const img = festivalImage(item);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
   const range = start && end ? `${start} – ${end}` : start || end;
 
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(item)}
-      className={`w-full flex items-center gap-3 rounded-2xl border p-2.5 text-left transition-colors ${
+    <div
+      className={`w-full flex items-center gap-2 rounded-2xl border p-2.5 transition-colors ${
         active
           ? 'border-amber-400 bg-amber-50'
           : 'border-stone-200 bg-white hover:bg-stone-50'
       }`}
     >
-      <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-stone-100">
-        {img ? (
-          <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-amber-100 to-stone-200" />
-        )}
-      </div>
-      <div className="min-w-0 flex-1 space-y-0.5">
-        <p className="text-sm font-bold text-stone-900 truncate">{item.title}</p>
-        {range && (
-          <p className="text-[11px] text-amber-700 font-bold flex items-center gap-1">
-            <CalendarDays size={11} aria-hidden="true" />
-            {range}
-          </p>
-        )}
-        {item.addr1 && (
-          <p className="text-[11px] text-stone-500 truncate flex items-center gap-1">
-            <MapPin size={11} className="shrink-0 opacity-70" aria-hidden="true" />
-            <span className="truncate">{item.addr1}</span>
-          </p>
-        )}
-      </div>
-    </button>
+      <button
+        type="button"
+        onClick={() => onSelect(item)}
+        className="min-w-0 flex-1 flex items-center gap-3 text-left"
+      >
+        <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-stone-100">
+          {img ? (
+            <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-amber-100 to-stone-200" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1 space-y-0.5">
+          <p className="text-sm font-bold text-stone-900 truncate">{item.title}</p>
+          {range && (
+            <p className="text-[11px] text-amber-700 font-bold flex items-center gap-1">
+              <CalendarDays size={11} aria-hidden="true" />
+              {range}
+            </p>
+          )}
+          {item.addr1 && (
+            <p className="text-[11px] text-stone-500 truncate flex items-center gap-1">
+              <MapPin size={11} className="shrink-0 opacity-70" aria-hidden="true" />
+              <span className="truncate">{item.addr1}</span>
+            </p>
+          )}
+        </div>
+      </button>
+      {onToggleFavorite && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(item);
+          }}
+          aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
+          aria-pressed={favorited}
+          className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-500 hover:bg-amber-50 hover:border-amber-300"
+        >
+          <Star
+            size={15}
+            className={
+              favorited ? 'fill-amber-400 text-amber-500' : 'text-stone-400'
+            }
+            aria-hidden="true"
+          />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -283,6 +318,15 @@ export default function KoreaFestivalHub() {
   const [nearLabel, setNearLabel] = useState('');
   const [nearBusy, setNearBusy] = useState(false);
   const [nearMsg, setNearMsg] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  /** @type {['favorites' | 'viewed' | null, function]} */
+  const [personalTab, setPersonalTab] = useState(null);
+  const [favoriteIds, setFavoriteIds] = useState(() =>
+    new Set(loadFavorites().map((r) => String(r.contentId))),
+  );
+  const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
+  const [viewedList, setViewedList] = useState(() => loadViewed());
 
   const krHubById = useMemo(() => {
     const map = new Map();
@@ -359,17 +403,30 @@ export default function KoreaFestivalHub() {
     if (!tasteChips.some((t) => t.id === tasteId)) setTasteId('all');
   }, [tasteId, tasteChips]);
 
-  const filteredItems = useMemo(
+  const tastedItems = useMemo(
     () => filterByTaste(afterRegion, tasteId),
     [afterRegion, tasteId],
   );
 
+  const searchActive = searchQuery.trim().length > 0;
+
+  const filteredItems = useMemo(
+    () => filterBySearchQuery(tastedItems, searchQuery),
+    [tastedItems, searchQuery],
+  );
+
   const indexActive =
-    tasteId !== 'all' || areaCode !== 'all' || cityName !== 'all';
+    tasteId !== 'all' ||
+    areaCode !== 'all' ||
+    cityName !== 'all' ||
+    searchActive;
 
   const indexTitle = useMemo(() => {
     if (mapFocusIds?.length) {
       return nearLabel ? `${nearLabel} 주변` : '선택';
+    }
+    if (searchActive) {
+      return `검색 · ${searchQuery.trim()}`;
     }
     const parts = [];
     const sido = sidoLabel(areaCode);
@@ -378,7 +435,7 @@ export default function KoreaFestivalHub() {
     const taste = tasteLabel(tasteId);
     if (taste) parts.push(taste);
     return parts.length ? parts.join(' · ') : '색인';
-  }, [mapFocusIds, nearLabel, areaCode, cityName, tasteId]);
+  }, [mapFocusIds, nearLabel, areaCode, cityName, tasteId, searchActive, searchQuery]);
 
   const neighborChips = useMemo(
     () => neighborSidoTags(areaCode, sidoChips),
@@ -427,8 +484,25 @@ export default function KoreaFestivalHub() {
     return filteredItems.slice(0, PANEL_LIMIT);
   }, [mapFocusIds, byContentId, filteredItems, indexActive]);
 
-  const showList =
+  const showIndexList =
     (mapFocusIds && mapFocusIds.length > 0) || indexActive;
+
+  const personalItems = useMemo(() => {
+    if (personalTab === 'favorites') {
+      return hydrateFestivalRefs(favoriteList, byContentId);
+    }
+    if (personalTab === 'viewed') {
+      return hydrateFestivalRefs(viewedList, byContentId);
+    }
+    return [];
+  }, [personalTab, favoriteList, viewedList, byContentId]);
+
+  const personalGroups = useMemo(
+    () => groupFestivalsBySido(personalItems),
+    [personalItems],
+  );
+
+  const showList = showIndexList || personalTab != null;
 
   const selectedHubs = useMemo(() => {
     const code = selected?.areaCode || (areaCode !== 'all' ? areaCode : null);
@@ -452,6 +526,8 @@ export default function KoreaFestivalHub() {
     setTasteId('all');
     setAreaCode('all');
     setCityName('all');
+    setSearchQuery('');
+    setPersonalTab(null);
     setSelected(null);
     setViewResetKey((k) => k + 1);
   };
@@ -513,9 +589,36 @@ export default function KoreaFestivalHub() {
   const regionMajorActive = areaCode !== 'all' || cityName !== 'all';
   const tasteMajorActive = tasteId !== 'all';
 
+  const refreshFavorites = useCallback(() => {
+    const list = loadFavorites();
+    setFavoriteList(list);
+    setFavoriteIds(new Set(list.map((r) => String(r.contentId))));
+  }, []);
+
+  const handleToggleFavorite = useCallback(
+    (item) => {
+      toggleFavorite(item);
+      refreshFavorites();
+    },
+    [refreshFavorites],
+  );
+
   const openItem = (item) => {
     if (!item) return;
     setSelected(item);
+    setViewedList(pushViewed(item));
+  };
+
+  const openPersonal = (tab) => {
+    setPersonalTab(tab);
+    clearMapFocus();
+    setSelected(null);
+    if (tab === 'favorites') refreshFavorites();
+    else setViewedList(loadViewed());
+  };
+
+  const closePersonal = () => {
+    setPersonalTab(null);
   };
 
   const handleNearMe = () => {
@@ -635,6 +738,45 @@ export default function KoreaFestivalHub() {
               </span>
               <button
                 type="button"
+                onClick={() => {
+                  setSearchOpen((v) => !v);
+                  if (searchOpen) setSearchQuery('');
+                }}
+                aria-label="축제 검색"
+                aria-pressed={searchOpen || searchActive}
+                className={`shrink-0 flex h-9 w-9 items-center justify-center rounded-full border ${
+                  searchOpen || searchActive
+                    ? 'border-amber-400 bg-amber-50 text-amber-800'
+                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <Search size={15} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  personalTab ? closePersonal() : openPersonal('favorites')
+                }
+                aria-label="즐겨찾기·본 항목"
+                aria-pressed={personalTab != null}
+                className={`shrink-0 flex h-9 w-9 items-center justify-center rounded-full border ${
+                  personalTab != null
+                    ? 'border-amber-400 bg-amber-50 text-amber-800'
+                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <Star
+                  size={15}
+                  className={
+                    personalTab != null || favoriteIds.size > 0
+                      ? 'fill-amber-400 text-amber-500'
+                      : ''
+                  }
+                  aria-hidden="true"
+                />
+              </button>
+              <button
+                type="button"
                 onClick={handleNearMe}
                 disabled={nearBusy}
                 className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-60"
@@ -647,6 +789,37 @@ export default function KoreaFestivalHub() {
                 내 주변
               </button>
             </div>
+
+            {searchOpen && (
+              <div className="mt-2 flex items-center gap-2">
+                <label className="sr-only" htmlFor="korea-festival-search">
+                  축제 검색
+                </label>
+                <input
+                  id="korea-festival-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPersonalTab(null);
+                    clearMapFocus();
+                    setSelected(null);
+                  }}
+                  placeholder="축제명·지역 검색"
+                  autoComplete="off"
+                  className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
+                  >
+                    지우기
+                  </button>
+                )}
+              </div>
+            )}
 
             <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
               {chipPanel == null ? (
@@ -815,19 +988,23 @@ export default function KoreaFestivalHub() {
       {showList && (
         <div
           className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pt-[max(6.25rem,calc(env(safe-area-inset-top,0px)+5.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pt-[6.75rem] md:pb-4"
-          onClick={clearFocus}
+          onClick={personalTab != null ? closePersonal : clearFocus}
           role="presentation"
         >
           <aside
             className={`pointer-events-auto flex max-h-[calc(100dvh-7.25rem)] w-full flex-col md:max-h-[calc(100dvh-8rem)] md:flex-row md:items-stretch ${
-              flapHasRelated ? 'md:max-w-[520px]' : 'md:max-w-[420px]'
+              personalTab == null && flapHasRelated
+                ? 'md:max-w-[520px]'
+                : 'md:max-w-[420px]'
             }`}
-            aria-label="선택한 축제 목록"
+            aria-label={
+              personalTab != null ? '내 축제 목록' : '선택한 축제 목록'
+            }
             role="dialog"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
-            {flapHasRelated && (
+            {personalTab == null && flapHasRelated && (
               <RelatedChipFlap
                 layout="side"
                 childChips={flapChildChips}
@@ -842,7 +1019,7 @@ export default function KoreaFestivalHub() {
             )}
             <div
               className={`flex min-h-0 min-w-0 flex-1 flex-col border border-stone-200 bg-white/95 text-stone-900 shadow-2xl backdrop-blur-xl ${
-                flapHasRelated
+                personalTab == null && flapHasRelated
                   ? 'rounded-3xl md:rounded-l-none md:rounded-r-3xl'
                   : 'rounded-3xl'
               }`}
@@ -850,41 +1027,74 @@ export default function KoreaFestivalHub() {
               <div className="flex shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3">
                 <div className="min-w-0">
                   <h2 className="truncate text-sm font-bold text-stone-900">
-                    {indexTitle}
+                    {personalTab != null
+                      ? personalTab === 'favorites'
+                        ? '즐겨찾기'
+                        : '본 항목'
+                      : indexTitle}
                   </h2>
                   <p className="text-[11px] text-stone-500">
-                    {panelItems.length}건
-                    {(mapFocusIds?.length || filteredItems.length) > PANEL_LIMIT
-                      ? ` · ${PANEL_LIMIT}건까지`
-                      : ''}
+                    {personalTab != null
+                      ? `${personalItems.length}건 · 지역 그룹`
+                      : `${panelItems.length}건${
+                          (mapFocusIds?.length || filteredItems.length) >
+                          PANEL_LIMIT
+                            ? ` · ${PANEL_LIMIT}건까지`
+                            : ''
+                        }`}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
-                  {(focusStack.length > 0 || mapFocusIds?.length) && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleViewBack();
-                        setMapBackNonce((n) => n + 1);
-                      }}
-                      aria-label="이전 지도 위치로"
-                      className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
-                    >
-                      <Undo2 size={14} aria-hidden="true" />
-                      뒤로
-                    </button>
-                  )}
+                  {personalTab == null &&
+                    (focusStack.length > 0 || mapFocusIds?.length) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleViewBack();
+                          setMapBackNonce((n) => n + 1);
+                        }}
+                        aria-label="이전 지도 위치로"
+                        className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+                      >
+                        <Undo2 size={14} aria-hidden="true" />
+                        뒤로
+                      </button>
+                    )}
                   <button
                     type="button"
-                    onClick={clearFocus}
-                    aria-label="선택·색인 해제 · 전국 보기"
+                    onClick={personalTab != null ? closePersonal : clearFocus}
+                    aria-label={
+                      personalTab != null
+                        ? '내 목록 닫기'
+                        : '선택·색인 해제 · 전국 보기'
+                    }
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
                   >
                     <X size={16} />
                   </button>
                 </div>
               </div>
-              {flapHasRelated && (
+              {personalTab != null && (
+                <div className="flex shrink-0 gap-1.5 border-b border-stone-200 px-3 py-2">
+                  <button
+                    type="button"
+                    onClick={() => openPersonal('favorites')}
+                    className={chipClass(personalTab === 'favorites')}
+                  >
+                    즐겨찾기
+                    <span className="opacity-70">{favoriteList.length}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openPersonal('viewed')}
+                    className={chipClass(personalTab === 'viewed')}
+                  >
+                    본 항목
+                    <span className="opacity-70">{viewedList.length}</span>
+                  </button>
+                </div>
+              )}
+              {personalTab == null && flapHasRelated && (
                 <RelatedChipFlap
                   layout="row"
                   childChips={flapChildChips}
@@ -898,9 +1108,44 @@ export default function KoreaFestivalHub() {
                 />
               )}
               <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
-                {panelItems.length === 0 ? (
+                {personalTab != null ? (
+                  personalItems.length === 0 ? (
+                    <p className="px-1 py-4 text-sm text-stone-500">
+                      {personalTab === 'favorites'
+                        ? '즐겨찾은 축제가 없습니다. 상세에서 ★로 추가해 보세요.'
+                        : '아직 본 축제가 없습니다. 카드를 열어 보면 여기에 쌓입니다.'}
+                    </p>
+                  ) : (
+                    personalGroups.map((group) => (
+                      <div key={group.id} className="space-y-2">
+                        <p className="sticky top-0 z-[1] bg-white/95 px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500 backdrop-blur-sm">
+                          {group.label}
+                          <span className="ml-1 font-normal opacity-70">
+                            {group.items.length}
+                          </span>
+                        </p>
+                        {group.items.map((item) => (
+                          <FestivalRow
+                            key={`p-${festivalKey(item)}`}
+                            item={item}
+                            active={
+                              selected?.contentId != null &&
+                              String(selected.contentId) ===
+                                String(item.contentId)
+                            }
+                            favorited={favoriteIds.has(String(item.contentId))}
+                            onToggleFavorite={handleToggleFavorite}
+                            onSelect={openItem}
+                          />
+                        ))}
+                      </div>
+                    ))
+                  )
+                ) : panelItems.length === 0 ? (
                   <p className="px-1 py-4 text-sm text-stone-500">
-                    이 선택에 맞는 축제가 없습니다.
+                    {searchActive
+                      ? '검색과 맞는 축제가 없습니다.'
+                      : '이 선택에 맞는 축제가 없습니다.'}
                   </p>
                 ) : (
                   panelItems.map((item) => (
@@ -911,6 +1156,8 @@ export default function KoreaFestivalHub() {
                         selected?.contentId != null &&
                         String(selected.contentId) === String(item.contentId)
                       }
+                      favorited={favoriteIds.has(String(item.contentId))}
+                      onToggleFavorite={handleToggleFavorite}
                       onSelect={openItem}
                     />
                   ))
@@ -925,6 +1172,8 @@ export default function KoreaFestivalHub() {
         <FestivalDetailSheet
           item={selected}
           hubs={selectedHubs}
+          favorited={favoriteIds.has(String(selected.contentId))}
+          onToggleFavorite={handleToggleFavorite}
           onClose={() => setSelected(null)}
           onOpenHub={(hubId) => navigate(`/place/${hubId}`)}
         />

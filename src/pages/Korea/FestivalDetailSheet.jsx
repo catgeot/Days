@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarDays, ExternalLink, Loader2, MapPin, Phone } from 'lucide-react';
+import {
+  CalendarDays,
+  ExternalLink,
+  Loader2,
+  MapPin,
+  Phone,
+  Star,
+} from 'lucide-react';
 import { fetchTourApiFestivalIntro } from '../../utils/fetchTourApiFestivals';
 
 function formatYmdLabel(ymd) {
@@ -35,11 +42,20 @@ function DetailRow({ label, children }) {
  * @param {{
  *   item: Record<string, unknown>,
  *   hubs: Array<{ hubId: string, name: string }>,
+ *   favorited?: boolean,
+ *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   onClose: () => void,
  *   onOpenHub: (hubId: string) => void,
  * }} props
  */
-export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHub }) {
+export default function FestivalDetailSheet({
+  item,
+  hubs = [],
+  favorited = false,
+  onToggleFavorite,
+  onClose,
+  onOpenHub,
+}) {
   const [intro, setIntro] = useState(null);
   const [introLoading, setIntroLoading] = useState(false);
   const [introError, setIntroError] = useState('');
@@ -110,12 +126,35 @@ export default function FestivalDetailSheet({ item, hubs = [], onClose, onOpenHu
         )}
         <div className="p-5 space-y-4">
           <div className="space-y-1.5">
-            {range && (
-              <p className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
-                <CalendarDays size={12} aria-hidden="true" />
-                {range}
-              </p>
-            )}
+            <div className="flex items-start justify-between gap-2">
+              {range ? (
+                <p className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
+                  <CalendarDays size={12} aria-hidden="true" />
+                  {range}
+                </p>
+              ) : (
+                <span />
+              )}
+              {onToggleFavorite && (
+                <button
+                  type="button"
+                  onClick={() => onToggleFavorite(item)}
+                  aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
+                  aria-pressed={favorited}
+                  className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-600 hover:bg-amber-50 hover:border-amber-300"
+                >
+                  <Star
+                    size={16}
+                    className={
+                      favorited
+                        ? 'fill-amber-400 text-amber-500'
+                        : 'text-stone-400'
+                    }
+                    aria-hidden="true"
+                  />
+                </button>
+              )}
+            </div>
             <h3
               id="korea-festival-sheet-title"
               className="text-xl font-extrabold leading-snug text-stone-900"

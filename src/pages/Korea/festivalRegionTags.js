@@ -4,8 +4,7 @@
  */
 
 import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
-import { matchSido, matchSigungu, SIDO_ADDR_HINTS } from './koreaAreaFilter';
-
+import { matchSido, matchSigungu, SIDO_ADDR_HINTS } from './koreaAreaFilter.js';
 const MIN_COUNT = 2;
 
 /** @type {{ id: string, label: string }[]} */
