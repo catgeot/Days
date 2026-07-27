@@ -85,16 +85,16 @@ function festivalKey(item) {
 function chipClass(active) {
   return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 ${
     active
-      ? 'bg-amber-500/25 text-amber-50 border-amber-300/45 font-bold'
-      : 'bg-black/45 text-gray-200 border-white/20 hover:bg-black/60'
+      ? 'bg-amber-500 text-white border-amber-500 font-bold shadow-sm'
+      : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 hover:border-stone-300'
   }`;
 }
 
 function flapChipClass(active) {
   return `flex w-full items-center justify-between gap-1 rounded-xl border px-2 py-1.5 text-left text-[11px] transition-all ${
     active
-      ? 'border-amber-300/45 bg-amber-500/25 font-bold text-amber-50'
-      : 'border-white/15 bg-white/[0.04] text-gray-200 hover:bg-white/[0.08]'
+      ? 'border-amber-400 bg-amber-50 font-bold text-amber-900'
+      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
   }`;
 }
 
@@ -116,8 +116,8 @@ function RelatedChipFlap({
 
   const shell =
     layout === 'side'
-      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-white/15 bg-[#1b1410]/92 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
-      : 'flex shrink-0 gap-2 overflow-x-auto border-b border-white/10 px-3 py-2 custom-scrollbar md:hidden';
+      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-stone-200 bg-white/95 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
+      : 'flex shrink-0 gap-2 overflow-x-auto border-b border-stone-200 px-3 py-2 custom-scrollbar md:hidden';
 
   if (layout === 'row') {
     return (
@@ -163,7 +163,7 @@ function RelatedChipFlap({
     <div className={shell} aria-label="연관 색인 칩">
       {hasChild && (
         <div className="space-y-1">
-          <p className="px-0.5 text-[9px] font-bold tracking-wide text-white/45">
+          <p className="px-0.5 text-[9px] font-bold tracking-wide text-stone-400">
             하위
           </p>
           {childChips.map((c) => (
@@ -181,7 +181,7 @@ function RelatedChipFlap({
       )}
       {hasNeighbor && (
         <div className="space-y-1">
-          <p className="px-0.5 text-[9px] font-bold tracking-wide text-white/45">
+          <p className="px-0.5 text-[9px] font-bold tracking-wide text-stone-400">
             인근
           </p>
           {neighborChips.map((s) => (
@@ -199,7 +199,7 @@ function RelatedChipFlap({
       )}
       {hasTaste && (
         <div className="space-y-1">
-          <p className="px-0.5 text-[9px] font-bold tracking-wide text-white/45">
+          <p className="px-0.5 text-[9px] font-bold tracking-wide text-stone-400">
             테마
           </p>
           {tasteSiblingChips.map((t) => (
@@ -231,27 +231,27 @@ function FestivalRow({ item, active, onSelect }) {
       onClick={() => onSelect(item)}
       className={`w-full flex items-center gap-3 rounded-2xl border p-2.5 text-left transition-colors ${
         active
-          ? 'border-amber-400/45 bg-amber-500/15'
-          : 'border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07]'
+          ? 'border-amber-400 bg-amber-50'
+          : 'border-stone-200 bg-white hover:bg-stone-50'
       }`}
     >
-      <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-white/5">
+      <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-stone-100">
         {img ? (
           <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-amber-900/40 to-black/60" />
+          <div className="w-full h-full bg-gradient-to-br from-amber-100 to-stone-200" />
         )}
       </div>
       <div className="min-w-0 flex-1 space-y-0.5">
-        <p className="text-sm font-bold text-white truncate">{item.title}</p>
+        <p className="text-sm font-bold text-stone-900 truncate">{item.title}</p>
         {range && (
-          <p className="text-[11px] text-amber-200/80 font-bold flex items-center gap-1">
+          <p className="text-[11px] text-amber-700 font-bold flex items-center gap-1">
             <CalendarDays size={11} aria-hidden="true" />
             {range}
           </p>
         )}
         {item.addr1 && (
-          <p className="text-[11px] text-gray-400 truncate flex items-center gap-1">
+          <p className="text-[11px] text-stone-500 truncate flex items-center gap-1">
             <MapPin size={11} className="shrink-0 opacity-70" aria-hidden="true" />
             <span className="truncate">{item.addr1}</span>
           </p>
@@ -620,24 +620,24 @@ export default function KoreaFestivalHub() {
 
       <header className="pointer-events-none absolute inset-x-0 top-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
         <div className="pointer-events-auto mx-auto max-w-6xl px-3 md:px-5">
-          <div className="min-w-0 rounded-2xl border border-white/15 bg-black/70 px-3 py-2.5 shadow-lg backdrop-blur-md md:px-4">
+          <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white/92 px-3 py-2.5 text-stone-900 shadow-lg backdrop-blur-md md:px-4">
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-200/80">
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
                   Korea
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg">
                   국내 축제
                 </h1>
               </div>
-              <span className="shrink-0 self-center text-[10px] text-white/55">
+              <span className="shrink-0 self-center text-[10px] text-stone-500">
                 {loading ? '…' : `${filteredItems.length}건`}
               </span>
               <button
                 type="button"
                 onClick={handleNearMe}
                 disabled={nearBusy}
-                className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-50 hover:bg-amber-500/30 disabled:opacity-60"
+                className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-60"
               >
                 {nearBusy ? (
                   <Loader2 size={14} className="animate-spin" aria-hidden="true" />
@@ -724,7 +724,7 @@ export default function KoreaFestivalHub() {
                       {cityChips.length > 0 && (
                         <>
                           <span
-                            className="mx-0.5 h-4 w-px shrink-0 self-center bg-white/20"
+                            className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
                             aria-hidden="true"
                           />
                           <button
@@ -776,9 +776,9 @@ export default function KoreaFestivalHub() {
             </div>
 
             {(nearLabel || nearMsg) && (
-              <p className="mt-2 text-[11px] text-amber-100/85">
+              <p className="mt-2 text-[11px] text-stone-600">
                 {nearLabel ? (
-                  <span className="font-bold text-amber-200">{nearLabel} 기준</span>
+                  <span className="font-bold text-amber-800">{nearLabel} 기준</span>
                 ) : null}
                 {nearLabel && nearMsg ? ' · ' : null}
                 {nearMsg}
@@ -790,7 +790,7 @@ export default function KoreaFestivalHub() {
 
       {loading && (
         <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
-          <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-4 py-2 text-sm text-gray-200 shadow-lg backdrop-blur-md">
+          <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-stone-200 bg-white/95 px-4 py-2 text-sm text-stone-700 shadow-lg backdrop-blur-md">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             축제 일정을 불러오는 중…
           </div>
@@ -799,12 +799,12 @@ export default function KoreaFestivalHub() {
 
       {!loading && error && (
         <div className="pointer-events-none absolute inset-x-0 top-[6.75rem] z-30 flex justify-center px-4">
-          <div className="pointer-events-auto max-w-sm rounded-2xl border border-white/15 bg-black/70 px-4 py-4 text-center shadow-lg backdrop-blur-md">
-            <p className="text-sm text-gray-200">{error}</p>
+          <div className="pointer-events-auto max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-4 text-center shadow-lg backdrop-blur-md">
+            <p className="text-sm text-stone-700">{error}</p>
             <button
               type="button"
               onClick={() => loadFestivals(true)}
-              className="mt-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold hover:bg-white/10"
+              className="mt-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
             >
               다시 시도
             </button>
@@ -814,7 +814,7 @@ export default function KoreaFestivalHub() {
 
       {showList && (
         <div
-          className="absolute inset-0 z-20 flex items-start justify-center bg-black/55 px-3 pt-[max(6.25rem,calc(env(safe-area-inset-top,0px)+5.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[2px] md:px-4 md:pt-[6.75rem] md:pb-4"
+          className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pt-[max(6.25rem,calc(env(safe-area-inset-top,0px)+5.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pt-[6.75rem] md:pb-4"
           onClick={clearFocus}
           role="presentation"
         >
@@ -841,18 +841,18 @@ export default function KoreaFestivalHub() {
               />
             )}
             <div
-              className={`flex min-h-0 min-w-0 flex-1 flex-col border border-white/15 bg-[#1b1410]/92 shadow-2xl backdrop-blur-xl ${
+              className={`flex min-h-0 min-w-0 flex-1 flex-col border border-stone-200 bg-white/95 text-stone-900 shadow-2xl backdrop-blur-xl ${
                 flapHasRelated
                   ? 'rounded-3xl md:rounded-l-none md:rounded-r-3xl'
                   : 'rounded-3xl'
               }`}
             >
-              <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
+              <div className="flex shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3">
                 <div className="min-w-0">
-                  <h2 className="truncate text-sm font-bold text-white">
+                  <h2 className="truncate text-sm font-bold text-stone-900">
                     {indexTitle}
                   </h2>
-                  <p className="text-[11px] text-gray-400">
+                  <p className="text-[11px] text-stone-500">
                     {panelItems.length}건
                     {(mapFocusIds?.length || filteredItems.length) > PANEL_LIMIT
                       ? ` · ${PANEL_LIMIT}건까지`
@@ -868,7 +868,7 @@ export default function KoreaFestivalHub() {
                         setMapBackNonce((n) => n + 1);
                       }}
                       aria-label="이전 지도 위치로"
-                      className="flex h-9 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 text-[11px] font-bold text-gray-100 hover:bg-white/10"
+                      className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
                     >
                       <Undo2 size={14} aria-hidden="true" />
                       뒤로
@@ -878,7 +878,7 @@ export default function KoreaFestivalHub() {
                     type="button"
                     onClick={clearFocus}
                     aria-label="선택·색인 해제 · 전국 보기"
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-gray-200 hover:bg-white/10"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
                   >
                     <X size={16} />
                   </button>
@@ -899,7 +899,7 @@ export default function KoreaFestivalHub() {
               )}
               <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
                 {panelItems.length === 0 ? (
-                  <p className="px-1 py-4 text-sm text-gray-400">
+                  <p className="px-1 py-4 text-sm text-stone-500">
                     이 선택에 맞는 축제가 없습니다.
                   </p>
                 ) : (
