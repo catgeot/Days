@@ -610,8 +610,8 @@ export default function KoreaFestivalHub() {
     cityName !== 'all'
       ? cityName
       : areaCode !== 'all'
-        ? sidoLabel(areaCode) || '전체'
-        : '전체';
+        ? sidoLabel(areaCode) || '지역'
+        : '지역';
   const tasteMajorLabel = tasteLabel(tasteId) || '테마';
   const regionMajorActive = areaCode !== 'all' || cityName !== 'all';
   const tasteMajorActive = tasteId !== 'all';
