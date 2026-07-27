@@ -65,7 +65,7 @@
 
 ## 국내축제 — S5 C Preview QA (지역 칩·그룹)
 
-**상태**: ✅ 코드·VERIFY · Draft PR #29 · **사람 Preview QA 대기**
+**상태**: ✅ 코드·VERIFY · tip `077f374` · Draft PR #29 · **사람 Preview QA 대기**
 
 | 변경 | 내용 |
 |------|------|
