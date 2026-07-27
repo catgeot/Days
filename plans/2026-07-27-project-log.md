@@ -73,10 +73,11 @@
 | 지도 선택 | 「지금」+클러스터 모달 리스트에 **지역** 칩(선택 시도+인근) · 교차 탐색 |
 | 모달 리스트 | 색인·지도 선택도 `groupFestivalsBySido` **지역별 구분** 나열 |
 | 헬퍼 | `buildMapFocusRegionChips` · smoke 보강 |
+| 상세 시트 | `nearbyHubsForFestival` — 좌표·addr1 기준 인근 hub · **고정 defaultHub 추천 제거** |
 
 **VERIFY**: `smoke:korea-festival-personal` · `audit:korea-area-codes` · `smoke:korea-area-codes`
 
-**QA**: `/korea` → 지금 → 지도 클러스터 → 리스트에 지역 칩·시도 헤더 · 칩 클릭 교차 탐색 · 헤더 지역 칩 상시.
+**QA**: `/korea` → 축제 상세 → 「인근 여행지」가 해당 축제 지역/좌표 기준인지 · 모달 리스트 시도 구분 · 지도 선택 지역칩.
 
 **다음**: 사람 Preview QA OK → S5-D. releaseNotes·hub 신설·corridor 부활 금지.
 

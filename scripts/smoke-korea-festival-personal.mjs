@@ -8,6 +8,7 @@ import {
   detectSidoCode,
   sidoLabel,
 } from '../src/pages/Korea/festivalRegionTags.js';
+import { nearbyHubsForFestival } from '../src/pages/Korea/nearbyFestivalHubs.js';
 
 const FAVORITES_KEY = 'gateo:korea-festivals:v1:favorites';
 const VIEWED_KEY = 'gateo:korea-festivals:v1:viewed';
@@ -105,6 +106,26 @@ const focusChips = buildMapFocusRegionChips(
 assert.ok(focusChips.some((c) => c.label.includes('서울') || c.id === '1'));
 assert.ok(focusChips.some((c) => c.label.includes('경기') || c.id === '31'));
 assert.ok(focusChips.length >= 2);
+
+const hubs = [
+  { hubId: 'seoul', name: '서울', lat: 37.57, lng: 126.98 },
+  { hubId: 'suwon', name: '수원', lat: 37.26, lng: 127.03 },
+  { hubId: 'busan', name: '부산', lat: 35.18, lng: 129.08 },
+  { hubId: 'jeju', name: '제주', lat: 33.5, lng: 126.53 },
+  { hubId: 'chuncheon', name: '춘천', lat: 37.88, lng: 127.73 },
+];
+const nearHwacheon = nearbyHubsForFestival(
+  { ...hwacheon, mapx: '127.7', mapy: '38.1' },
+  hubs,
+);
+assert.ok(nearHwacheon.length >= 1);
+assert.ok(nearHwacheon.every((h) => h.hubId !== 'jeju' && h.hubId !== 'busan'));
+assert.equal(nearbyHubsForFestival({ title: '좌표없음' }, hubs).length, 0);
+assert.ok(
+  nearbyHubsForFestival({ addr1: '제주특별자치도 제주시' }, hubs).some(
+    (h) => h.hubId === 'jeju',
+  ),
+);
 
 assert.equal(mem.get(FAVORITES_KEY) != null, true);
 assert.equal(mem.get(VIEWED_KEY) != null, true);

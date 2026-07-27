@@ -14,7 +14,6 @@ import {
 import SEO from '../../components/SEO';
 import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
-import { hubIdsForArea } from './koreaHubSeeds';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { filterByTimeTab } from './festivalTimeFilter';
@@ -27,6 +26,7 @@ import {
   neighborSidoTags,
   sidoLabel,
 } from './festivalRegionTags';
+import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
   groupFestivalsBySido,
   hydrateFestivalRefs,
@@ -339,10 +339,7 @@ export default function KoreaFestivalHub() {
     return map;
   }, []);
 
-  const hubRail = useMemo(() => {
-    const ids = hubIdsForArea('all');
-    return ids.map((id) => krHubById.get(String(id).toLowerCase())).filter(Boolean);
-  }, [krHubById]);
+  const krHubList = useMemo(() => [...krHubById.values()], [krHubById]);
 
   const loadFestivals = useCallback(async (force = false) => {
     setLoading(true);
@@ -523,13 +520,9 @@ export default function KoreaFestivalHub() {
   const showList = showIndexList || personalTab != null;
 
   const selectedHubs = useMemo(() => {
-    const code = selected?.areaCode || (areaCode !== 'all' ? areaCode : null);
-    if (!code) return hubRail.slice(0, 4);
-    return hubIdsForArea(code)
-      .map((id) => krHubById.get(String(id).toLowerCase()))
-      .filter(Boolean)
-      .slice(0, 4);
-  }, [selected, areaCode, hubRail, krHubById]);
+    if (!selected) return [];
+    return nearbyHubsForFestival(selected, krHubList);
+  }, [selected, krHubList]);
 
   const clearMapFocus = () => {
     setMapFocusIds(null);
