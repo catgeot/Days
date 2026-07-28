@@ -7,8 +7,9 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  ArrowUp,
   CalendarDays,
-  Globe,
+  Home,
   Loader2,
   LocateFixed,
   Map as MapIcon,
@@ -494,6 +495,8 @@ export default function KoreaFestivalHub() {
   );
   const userRegionOverrideRef = useRef(false);
   const mountLocTriedRef = useRef(false);
+  const mainScrollRef = useRef(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState(() =>
     new Set(loadFavorites().map((r) => String(r.contentId))),
   );
@@ -835,19 +838,6 @@ export default function KoreaFestivalHub() {
     [items, now, dismissLocHint],
   );
 
-  const resetToDefault = () => {
-    userRegionOverrideRef.current = true;
-    clearNear();
-    setTasteId('all');
-    setAreaCode(DEFAULT_AREA_CODE);
-    setCityName('all');
-    setSearchQuery('');
-    setSearchOpen(false);
-    setPersonalTab(null);
-    setSelected(null);
-    setChipPanel('region');
-  };
-
   const closeSearch = () => {
     setSearchQuery('');
     setSearchOpen(false);
@@ -1079,6 +1069,18 @@ export default function KoreaFestivalHub() {
     if (readLocHintDone()) retryIfGranted();
   }, [loading, items, applyUserLocation, dismissLocHint]);
 
+  useEffect(() => {
+    const el = mainScrollRef.current;
+    if (!el || mapOpen) {
+      setShowScrollTop(false);
+      return undefined;
+    }
+    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [mapOpen]);
+
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
@@ -1091,48 +1093,14 @@ export default function KoreaFestivalHub() {
         <div className="mx-auto w-full max-w-3xl px-3 pb-2.5 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
           <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white px-3 py-2.5 shadow-sm md:px-4">
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                aria-label="지구본 홈으로"
-                title="지구본 홈"
-                className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
-              >
-                <Globe size={15} aria-hidden="true" />
-              </button>
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
                   Korea
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
-                  국내 축제
+                  한국의 축제
                 </h1>
               </div>
-              <span className="shrink-0 self-center text-[10px] text-stone-500">
-                {loading ? '…' : `${panelItems.length}건`}
-              </span>
-              <button
-                type="button"
-                onClick={() => (mapOpen ? closeMap() : openMap())}
-                aria-label={
-                  mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
-                }
-                title={
-                  mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
-                }
-                aria-pressed={mapOpen}
-                className={`shrink-0 flex h-9 w-9 items-center justify-center rounded-full border ${
-                  mapOpen
-                    ? 'border-amber-400 bg-amber-50 text-amber-800'
-                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                }`}
-              >
-                {mapOpen ? (
-                  <X size={15} aria-hidden="true" />
-                ) : (
-                  <MapIcon size={15} aria-hidden="true" />
-                )}
-              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -1181,25 +1149,13 @@ export default function KoreaFestivalHub() {
               </button>
               <button
                 type="button"
-                onClick={() => (nearActive ? closeNearMe() : handleNearMe())}
-                disabled={nearBusy}
-                aria-label={nearActive ? '내 주변 닫기' : '내 주변'}
-                aria-pressed={nearActive}
-                title={nearActive ? '내 주변 닫기' : '내 주변'}
-                className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
-                  nearActive
-                    ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
-                    : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
-                }`}
+                onClick={() => navigate('/')}
+                aria-label="홈으로"
+                title="홈으로"
+                className="shrink-0 flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
               >
-                {nearBusy ? (
-                  <Loader2 size={14} className="animate-spin" aria-hidden="true" />
-                ) : nearActive ? (
-                  <X size={14} aria-hidden="true" />
-                ) : (
-                  <LocateFixed size={14} aria-hidden="true" />
-                )}
-                {nearActive ? '닫기' : '내 주변'}
+                <Home size={14} aria-hidden="true" />
+                홈으로
               </button>
             </div>
 
@@ -1233,33 +1189,55 @@ export default function KoreaFestivalHub() {
             )}
 
             <div className="mt-2.5 flex flex-col gap-1.5">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
+              <div className="flex items-center gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
+                  <button
+                    type="button"
+                    onClick={openTimeMajor}
+                    className={majorChipClass(chipPanel === 'time')}
+                    aria-pressed={chipPanel === 'time'}
+                    aria-label={`시간 대분류 · ${timeMajorLabel}`}
+                  >
+                    {timeMajorLabel}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openRegionMajor}
+                    className={majorChipClass(chipPanel === 'region')}
+                    aria-pressed={chipPanel === 'region'}
+                    aria-label={`지역 대분류 · ${regionMajorLabel}`}
+                  >
+                    {regionMajorLabel}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openTasteMajor}
+                    className={majorChipClass(chipPanel === 'taste')}
+                    aria-pressed={chipPanel === 'taste'}
+                    aria-label={`테마 대분류 · ${tasteMajorLabel}`}
+                  >
+                    {tasteMajorLabel}
+                  </button>
+                </div>
                 <button
                   type="button"
-                  onClick={openTimeMajor}
-                  className={majorChipClass(chipPanel === 'time')}
-                  aria-pressed={chipPanel === 'time'}
-                  aria-label={`시간 대분류 · ${timeMajorLabel}`}
+                  onClick={() => (nearActive ? closeNearMe() : handleNearMe())}
+                  disabled={nearBusy}
+                  aria-label={nearActive ? '내 주변 끄기' : '내 주변'}
+                  aria-pressed={nearActive}
+                  title={nearActive ? '내 주변 끄기' : '내 주변'}
+                  className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
+                    nearActive
+                      ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                      : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
+                  }`}
                 >
-                  {timeMajorLabel}
-                </button>
-                <button
-                  type="button"
-                  onClick={openRegionMajor}
-                  className={majorChipClass(chipPanel === 'region')}
-                  aria-pressed={chipPanel === 'region'}
-                  aria-label={`지역 대분류 · ${regionMajorLabel}`}
-                >
-                  {regionMajorLabel}
-                </button>
-                <button
-                  type="button"
-                  onClick={openTasteMajor}
-                  className={majorChipClass(chipPanel === 'taste')}
-                  aria-pressed={chipPanel === 'taste'}
-                  aria-label={`테마 대분류 · ${tasteMajorLabel}`}
-                >
-                  {tasteMajorLabel}
+                  {nearBusy ? (
+                    <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+                  ) : (
+                    <LocateFixed size={14} aria-hidden="true" />
+                  )}
+                  내 주변
                 </button>
               </div>
               <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
@@ -1329,7 +1307,14 @@ export default function KoreaFestivalHub() {
         </div>
       </header>
 
-      <main className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-3 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
+      <main
+        ref={mainScrollRef}
+        className={`mx-auto min-h-0 w-full max-w-3xl flex-1 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-3 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl ${
+          mapOpen
+            ? 'flex flex-col overflow-hidden'
+            : 'overflow-y-auto overscroll-contain md:flex md:flex-col md:overflow-hidden'
+        }`}
+      >
         {loading && (
           <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700 shadow-sm">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
@@ -1351,10 +1336,14 @@ export default function KoreaFestivalHub() {
         )}
 
         <div
-          className={`flex min-h-0 flex-1 flex-col overflow-hidden border border-stone-200 bg-white shadow-sm ${
+          className={`flex flex-col border border-stone-200 bg-white shadow-sm ${
             personalTab == null && flapHasRelated
               ? 'rounded-3xl md:flex-row'
               : 'rounded-3xl'
+          } ${
+            mapOpen
+              ? 'min-h-0 flex-1 overflow-hidden'
+              : 'md:min-h-0 md:flex-1 md:overflow-hidden'
           }`}
           aria-label={personalTab != null ? '내 축제 목록' : '축제 목록'}
         >
@@ -1373,7 +1362,11 @@ export default function KoreaFestivalHub() {
               parentRegionLabel={parentRegionLabel}
             />
           )}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div
+            className={`flex min-w-0 flex-col ${
+              mapOpen ? 'min-h-0 flex-1' : 'md:min-h-0 md:flex-1'
+            }`}
+          >
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5">
               <div className="min-w-0">
                 <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
@@ -1429,28 +1422,6 @@ export default function KoreaFestivalHub() {
                         '상위'}
                     </button>
                   )}
-                <button
-                  type="button"
-                  onClick={
-                    personalTab != null
-                      ? closePersonal
-                      : nearActive
-                        ? closeNearMe
-                        : resetToDefault
-                  }
-                  aria-label={
-                    personalTab != null
-                      ? '내 목록 닫기'
-                      : nearActive
-                        ? '내 주변 닫기'
-                        : searchActive
-                          ? '검색·필터 초기화'
-                          : '강원 기본으로'
-                  }
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
-                >
-                  <X size={16} />
-                </button>
               </div>
             </div>
             {showDefaultLocHint && (
@@ -1517,15 +1488,17 @@ export default function KoreaFestivalHub() {
               />
             )}
             <div
-              className={`flex min-h-0 flex-1 ${
-                mapOpen ? 'flex-col lg:flex-row' : 'flex-col'
+              className={`flex ${
+                mapOpen
+                  ? 'min-h-0 flex-1 flex-col lg:flex-row'
+                  : 'flex-col md:min-h-0 md:flex-1'
               }`}
             >
               <div
-                className={`custom-scrollbar min-h-0 space-y-2 overflow-y-auto px-3 py-3 ${
+                className={`space-y-2 px-3 py-3 ${
                   mapOpen
-                    ? 'hidden lg:block lg:w-[min(26rem,38%)] lg:shrink-0 lg:border-r lg:border-stone-200'
-                    : 'flex-1'
+                    ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
+                    : 'md:custom-scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto'
                 }`}
               >
               {personalTab != null ? (
@@ -1637,6 +1610,22 @@ export default function KoreaFestivalHub() {
           </div>
         </div>
       </main>
+
+      <button
+        type="button"
+        aria-label="맨 위로"
+        onClick={() => {
+          mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        className={`fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
+          showScrollTop && !mapOpen
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+      >
+        <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+        <span className="text-xs font-bold">위로</span>
+      </button>
 
       {selected && (
         <FestivalDetailSheet
