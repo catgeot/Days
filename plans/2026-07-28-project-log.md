@@ -16,11 +16,20 @@
 
 **다음**: 홈·`/korea` 회귀 OK 시 **main 반영·push**. releaseNotes·hub 신설·corridor 부활 금지.
 
+## 국내축제 — 모바일 헤더·모달 스크롤 고정
+
+**상태**: ✅ 코드 · tip 대기(커밋) · `merge/korea-festival-into-main` · **사람 모바일 QA**
+
+- 원인: 헤더·리스트가 `absolute`라 터치 스크롤 체인 시 뷰포트 밖으로 밀림
+- 조치: 페이지/헤더/리스트·배너 `fixed` · body/html overflow·overscroll lock · 리스트·칩 `overscroll-contain`
+
+**QA**: 모바일 `/korea`에서 헤더·축제 리스트를 위로 쓸어 올려도 화면 밖 이탈 없는지.
+
 **제시어 (다음 세션)**
 
 ```
 국내축제-머지-QA
-@plans/2026-07-28-project-log.md 「국내축제 — 머지 QA 이어하기」절만
-브랜치 merge/korea-festival-into-main (tip bb7ee5e).
-홈·/korea 회귀 이어하기. OK 시 main 반영·push만.
+@plans/2026-07-28-project-log.md 「국내축제 — 모바일 헤더·모달 스크롤 고정」절만
+브랜치 merge/korea-festival-into-main.
+모바일 헤더·모달 고정 QA. OK 시 main 반영·push만.
 ```

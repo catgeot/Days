@@ -108,7 +108,7 @@ export default function FestivalDetailSheet({
       role="presentation"
     >
       <div
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
+        className="w-full max-w-lg max-h-[90dvh] overflow-y-auto overscroll-y-contain touch-pan-y rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

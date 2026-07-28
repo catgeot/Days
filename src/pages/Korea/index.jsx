@@ -191,8 +191,8 @@ function RelatedChipFlap({
 
   const shell =
     layout === 'side'
-      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-stone-200 bg-white/95 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
-      : 'flex shrink-0 gap-2 overflow-x-auto border-b border-stone-200 px-3 py-2 custom-scrollbar md:hidden';
+      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto overscroll-y-contain rounded-l-3xl border border-r-0 border-stone-200 bg-white/95 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
+      : 'flex shrink-0 gap-2 overflow-x-auto overscroll-x-contain touch-pan-x border-b border-stone-200 px-3 py-2 custom-scrollbar md:hidden';
 
   if (layout === 'row') {
     return (
@@ -410,6 +410,25 @@ export default function KoreaFestivalHub() {
     return () => {
       ro?.disconnect();
       window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    const prevBodyOverscroll = body.style.overscrollBehavior;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'none';
+    body.style.overscrollBehavior = 'none';
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      html.style.overscrollBehavior = prevHtmlOverscroll;
+      body.style.overscrollBehavior = prevBodyOverscroll;
     };
   }, []);
 
@@ -923,7 +942,7 @@ export default function KoreaFestivalHub() {
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#1b1410] text-white">
+    <div className="fixed inset-0 z-0 overflow-hidden overscroll-none bg-[#1b1410] text-white touch-manipulation">
       <SEO
         title="국내 축제 · 지금·지도"
         description="TourAPI 기반 국내 축제. 지금·주말·지도 클러스터로 찾고, 상세·인근 여행지로 이어가세요."
@@ -962,7 +981,7 @@ export default function KoreaFestivalHub() {
 
       <header
         ref={headerRef}
-        className="pointer-events-none absolute inset-x-0 top-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))]"
+        className="pointer-events-none fixed inset-x-0 top-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))]"
       >
         <div className="pointer-events-auto mx-auto max-w-6xl px-3 md:px-5">
           <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white/92 px-3 py-2.5 text-stone-900 shadow-lg backdrop-blur-md md:px-4">
@@ -1090,7 +1109,7 @@ export default function KoreaFestivalHub() {
             )}
 
             <div className="mt-2.5 flex flex-col gap-1.5">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
+              <div className="flex items-center gap-1.5 overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
                 <button
                   type="button"
                   onClick={openTimeMajor}
@@ -1119,7 +1138,7 @@ export default function KoreaFestivalHub() {
                   {tasteMajorLabel}
                 </button>
               </div>
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
+              <div className="flex items-center gap-1.5 overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
                 {chipPanel === 'time' &&
                   TIME_TABS.map((t) => (
                     <button
@@ -1188,7 +1207,7 @@ export default function KoreaFestivalHub() {
 
       {loading && (
         <div
-          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          className="pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4"
           style={bodyTopStyle}
         >
           <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-stone-200 bg-white/95 px-4 py-2 text-sm text-stone-700 shadow-lg backdrop-blur-md">
@@ -1200,7 +1219,7 @@ export default function KoreaFestivalHub() {
 
       {!loading && error && (
         <div
-          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          className="pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4"
           style={bodyTopStyle}
         >
           <div className="pointer-events-auto max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-4 text-center shadow-lg backdrop-blur-md">
@@ -1218,7 +1237,7 @@ export default function KoreaFestivalHub() {
 
       {!loading && !error && !showList && !nearActive && guideKind != null && (
         <div
-          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          className="pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4"
           style={bodyTopStyle}
         >
           <div
@@ -1250,7 +1269,7 @@ export default function KoreaFestivalHub() {
 
       {!loading && !showList && nearActive && (
         <div
-          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          className="pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4"
           style={bodyTopStyle}
         >
           <div className="pointer-events-auto flex max-w-sm items-start gap-2 rounded-2xl border border-stone-200 bg-white/95 px-3 py-2.5 text-stone-700 shadow-lg backdrop-blur-md">
@@ -1275,7 +1294,7 @@ export default function KoreaFestivalHub() {
 
       {showList && (
         <div
-          className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pb-4"
+          className="fixed inset-0 z-20 flex items-start justify-center overflow-hidden overscroll-none bg-stone-900/25 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pb-4"
           style={listShellStyle}
           onClick={
             personalTab != null
@@ -1425,7 +1444,7 @@ export default function KoreaFestivalHub() {
                   parentRegionLabel={parentRegionLabel}
                 />
               )}
-              <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
+              <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-y-contain touch-pan-y px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
                 {personalTab != null ? (
                   personalItems.length === 0 ? (
                     <p className="px-1 py-4 text-sm text-stone-500">
