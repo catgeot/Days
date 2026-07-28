@@ -2,25 +2,25 @@
 
 직전: [`2026-07-27-project-log.md`](./2026-07-27-project-log.md)
 
-## 국내축제 — 모달 리스트 시·군 그룹
+## 국내축제 — 머지 QA 이어하기 (세션 종료)
 
-**상태**: ✅ VERIFY PASS · tip 아래 커밋 · `merge/korea-festival-into-main`
+**상태**: ✅ 사람 확인 · tip `bb7ee5e` · push · `merge/korea-festival-into-main` · **main 미병합**
 
-| 변경 | |
-|------|--|
-| 원인 | 시도(강원 등) 선택 후에도 `groupFestivalsBySido`만 적용 → 단일 「강원」헤더만 |
-| 픽스 | `groupFestivalsByCity` · `groupFestivalsForList` — 단일 시도면 addr1 시·군 그룹 |
-| VERIFY | `smoke:korea-festival-personal` · `audit/smoke:korea-area-codes` PASS |
+| 영역 | 내용 |
+|------|------|
+| 리스트 | 시도→시·군·구 그룹 · 지역명 제목/부제 · sticky 제거 · 헤더 offset · 시간/대분류 변경 시 리스트 유지 |
+| 칩 | 시·군 ≥1 · 광역시 구 구분 · 헤더 하위칩 제거(모달만) · 상위 복귀 · 해운대구≠대구 |
+| 홈↔축제 | `/korea` 지구본 홈 버튼 · 로고 아래 **「한국의 축제 현장」** 배너 |
 
-**QA**: `/korea` → 지역 칩 강원 → 모달에 화천군·강릉시·춘천시 등 시·군 헤더 구분.
+**VERIFY**: `smoke:korea-festival-personal` · `audit/smoke:korea-area-codes` PASS
 
-## 국내축제 — 리스트 지역명 명시
+**다음**: 홈·`/korea` 회귀 OK 시 **main 반영·push**. releaseNotes·hub 신설·corridor 부활 금지.
 
-**상태**: ✅ tip 아래 · `merge/korea-festival-into-main`
+**제시어 (다음 세션)**
 
-| 변경 | |
-|------|--|
-| 제목 | `강원도 · "지금" 축제 리스트` (선택 지역을 앞에) |
-| 부제 | `강원도 · N건 · 시·군별` (기존 `N건 · 지역 그룹` 대체) |
-
-**QA**: `/korea` → 강원 선택 → 모달 제목·부제에 「강원도」 표시.
+```
+국내축제-머지-QA
+@plans/2026-07-28-project-log.md 「국내축제 — 머지 QA 이어하기」절만
+브랜치 merge/korea-festival-into-main (tip bb7ee5e).
+홈·/korea 회귀 이어하기. OK 시 main 반영·push만.
+```
