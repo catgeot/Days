@@ -18,7 +18,7 @@
 
 ## 국내축제 — 모바일 헤더·모달 스크롤 고정
 
-**상태**: ✅ 코드 · tip 대기(커밋) · `merge/korea-festival-into-main` · **사람 모바일 QA**
+**상태**: ✅ 코드 · tip `6e59191` · push · `merge/korea-festival-into-main` · **사람 모바일 QA**
 
 - 원인: 헤더·리스트가 `absolute`라 터치 스크롤 체인 시 뷰포트 밖으로 밀림
 - 조치: 페이지/헤더/리스트·배너 `fixed` · body/html overflow·overscroll lock · 리스트·칩 `overscroll-contain`
