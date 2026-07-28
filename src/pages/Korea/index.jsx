@@ -374,6 +374,8 @@ export default function KoreaFestivalHub() {
   const [guideKind, setGuideKind] = useState(/** @type {GuideKind | null} */ ('idle'));
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
+  /** 리스트가 한 번 열리면 X로 닫기 전까지 유지 (시간·대분류 변경 시 홈으로 튕김 방지) */
+  const [indexListHeld, setIndexListHeld] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState(() =>
     new Set(loadFavorites().map((r) => String(r.contentId))),
   );
@@ -470,6 +472,12 @@ export default function KoreaFestivalHub() {
     cityName !== 'all' ||
     searchActive;
 
+  const mapFocusActive = Boolean(mapFocusIds && mapFocusIds.length > 0);
+
+  useEffect(() => {
+    if (indexActive || mapFocusActive) setIndexListHeld(true);
+  }, [indexActive, mapFocusActive]);
+
   const indexTitle = useMemo(() => {
     if (mapFocusIds?.length) {
       return nearLabel ? `${nearLabel} 주변` : '선택';
@@ -520,9 +528,9 @@ export default function KoreaFestivalHub() {
         : filteredItems.filter((item) => set.has(String(item.contentId || '')));
       return base.slice(0, PANEL_LIMIT);
     }
-    if (!indexActive) return [];
+    if (!indexActive && !indexListHeld) return [];
     return filteredItems.slice(0, PANEL_LIMIT);
-  }, [mapFocusIds, byContentId, filteredItems, indexActive]);
+  }, [mapFocusIds, byContentId, filteredItems, indexActive, indexListHeld]);
 
   const panelGroups = useMemo(
     () => groupFestivalsForList(panelItems, { areaCode }),
@@ -546,9 +554,9 @@ export default function KoreaFestivalHub() {
 
   const flapTasteChips = useMemo(() => {
     if (mapFocusIds?.length) return [];
-    if (!indexActive) return [];
+    if (!indexActive && !indexListHeld) return [];
     return tasteChips.filter((t) => t.id !== tasteId);
-  }, [mapFocusIds, indexActive, tasteChips, tasteId]);
+  }, [mapFocusIds, indexActive, indexListHeld, tasteChips, tasteId]);
 
   const flapNeighborLabel = mapFocusIds?.length ? '지역' : '인근';
 
@@ -558,7 +566,7 @@ export default function KoreaFestivalHub() {
     flapTasteChips.length > 0;
 
   const showIndexList =
-    (mapFocusIds && mapFocusIds.length > 0) || indexActive;
+    mapFocusActive || indexActive || indexListHeld;
 
   const personalItems = useMemo(() => {
     if (personalTab === 'favorites') {
@@ -607,6 +615,7 @@ export default function KoreaFestivalHub() {
     setSearchOpen(false);
     setPersonalTab(null);
     setSelected(null);
+    setIndexListHeld(false);
     setChipPanel('time');
     if (restoreGuide) setGuideKind('idle');
     setViewResetKey((k) => k + 1);
@@ -644,6 +653,7 @@ export default function KoreaFestivalHub() {
   const closeNearMe = () => {
     clearMapFocus();
     setSelected(null);
+    if (!indexActive) setIndexListHeld(false);
     setGuideKind('idle');
     setViewResetKey((k) => k + 1);
   };
@@ -673,7 +683,8 @@ export default function KoreaFestivalHub() {
   const selectTime = (id) => {
     dismissGuide();
     setTimeTab(id);
-    clearFocus();
+    clearMapFocus();
+    setSelected(null);
   };
 
   const selectTaste = (id) => {
@@ -708,7 +719,11 @@ export default function KoreaFestivalHub() {
 
   const openRegionMajor = () => {
     setChipPanel('region');
-    showRegionGuide();
+    if (!indexListHeld && !indexActive && !mapFocusActive) {
+      showRegionGuide();
+    } else {
+      dismissGuide();
+    }
   };
 
   const openTasteMajor = () => {
