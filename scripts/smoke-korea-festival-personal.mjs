@@ -11,6 +11,10 @@ import {
   sidoLabel,
 } from '../src/pages/Korea/festivalRegionTags.js';
 import { nearbyHubsForFestival } from '../src/pages/Korea/nearbyFestivalHubs.js';
+import { DEFAULT_AREA_CODE } from '../src/pages/Korea/koreaFestivalDefaults.js';
+
+assert.equal(DEFAULT_AREA_CODE, '32');
+assert.equal(sidoLabel(DEFAULT_AREA_CODE), '강원');
 
 const FAVORITES_KEY = 'gateo:korea-festivals:v1:favorites';
 const VIEWED_KEY = 'gateo:korea-festivals:v1:viewed';

@@ -48,6 +48,10 @@ import {
 } from './festivalPersonalStore';
 import { filterBySearchQuery } from './festivalSearch';
 import { fetchKoreaFestivalsRolling12 } from './fetchKoreaFestivalsWindow';
+import {
+  DEFAULT_AREA_CODE,
+  NEAR_FESTIVAL_KM,
+} from './koreaFestivalDefaults';
 import KoreaFestivalMap from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
 
@@ -107,10 +111,13 @@ function buildPanelListMeta({ areaCode, cityName, count, capped }) {
 /** @typedef {'idle' | 'region'} GuideKind */
 
 const PANEL_LIMIT = 48;
-const NEAR_KM = 80;
+const NEAR_KM = NEAR_FESTIVAL_KM;
 /** 헤더 하단과 본문(리스트·안내) 사이 고정 간격 */
 const HEADER_BODY_GAP_PX = 12;
 const HEADER_OFFSET_FALLBACK_PX = 140;
+
+/** Strict Mode 재마운트에도 진입 GPS는 세션당 1회 */
+let koreaFestivalLocationBooted = false;
 
 function toRad(d) {
   return (d * Math.PI) / 180;
@@ -415,10 +422,10 @@ export default function KoreaFestivalHub() {
 
   const [timeTab, setTimeTab] = useState('now');
   const [tasteId, setTasteId] = useState('all');
-  const [areaCode, setAreaCode] = useState('all');
+  const [areaCode, setAreaCode] = useState(DEFAULT_AREA_CODE);
   const [cityName, setCityName] = useState('all');
   /** @type {[ChipPanelId, function]} */
-  const [chipPanel, setChipPanel] = useState(/** @type {ChipPanelId} */ ('time'));
+  const [chipPanel, setChipPanel] = useState(/** @type {ChipPanelId} */ ('region'));
   const [mapFocusIds, setMapFocusIds] = useState(null);
   const [mapFocusView, setMapFocusView] = useState(null);
   const [focusStack, setFocusStack] = useState([]);
@@ -434,11 +441,12 @@ export default function KoreaFestivalHub() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   /** @type {[GuideKind | null, function]} */
-  const [guideKind, setGuideKind] = useState(/** @type {GuideKind | null} */ ('idle'));
+  const [guideKind, setGuideKind] = useState(/** @type {GuideKind | null} */ (null));
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
   /** 리스트가 한 번 열리면 X로 닫기 전까지 유지 (시간·대분류 변경 시 홈으로 튕김 방지) */
-  const [indexListHeld, setIndexListHeld] = useState(false);
+  const [indexListHeld, setIndexListHeld] = useState(true);
+  const userRegionOverrideRef = useRef(false);
   const [favoriteIds, setFavoriteIds] = useState(() =>
     new Set(loadFavorites().map((r) => String(r.contentId))),
   );
@@ -484,8 +492,11 @@ export default function KoreaFestivalHub() {
 
   useEffect(() => {
     if (areaCode === 'all') return;
+    // 목록 로딩 전 빈 chips로 기본 강원을 전국으로 되돌리지 않음
+    if (sidoChips.length === 0) return;
     if (!sidoChips.some((s) => s.id === areaCode)) {
-      setAreaCode('all');
+      if (areaCode === DEFAULT_AREA_CODE) return;
+      setAreaCode(DEFAULT_AREA_CODE);
       setCityName('all');
     }
   }, [areaCode, sidoChips]);
@@ -676,18 +687,73 @@ export default function KoreaFestivalHub() {
     setGuideKind('region');
   }, []);
 
+  /**
+   * GPS 성공 시: 시도 칩 우선 + 반경 축제 리스트.
+   * @param {number} lat
+   * @param {number} lng
+   * @param {{ silent?: boolean, festivalItems?: object[] }} [opts]
+   */
+  const applyUserLocation = useCallback(
+    (lat, lng, opts = {}) => {
+      const silent = Boolean(opts.silent);
+      const sourceItems = opts.festivalItems ?? items;
+      const hubResolved = resolveKoreaAreaFromCoords(lat, lng);
+      if (!hubResolved) {
+        if (!silent) {
+          setNearLabel('');
+          setNearMsg('국내 위치를 찾지 못했습니다. 지도를 직접 확대해 보세요.');
+        }
+        return false;
+      }
+      const label = hubResolved.hubName || '';
+      setTimeTab('now');
+      setTasteId('all');
+      setAreaCode(String(hubResolved.areaCode));
+      setCityName('all');
+      setChipPanel('region');
+      setSelected(null);
+      setPersonalTab(null);
+      setSearchQuery('');
+      setSearchOpen(false);
+      setGuideKind(null);
+      setIndexListHeld(true);
+      const nearby = festivalsWithinKm(
+        filterByTimeTab('now', sourceItems, now),
+        lat,
+        lng,
+        NEAR_KM,
+      );
+      const ids = nearby
+        .map((item) => String(item?.contentId || ''))
+        .filter(Boolean);
+      setFocusStack([]);
+      setMapFocusIds(ids.length ? ids : null);
+      setMapFocusView({ lng, lat, zoom: 9 });
+      setNearLabel(label);
+      setNearMsg(
+        ids.length
+          ? `${NEAR_KM}km 안 ${ids.length}건`
+          : `${NEAR_KM}km 안 지금 축제가 없습니다. 시간 탭을 바꿔 보세요.`,
+      );
+      return true;
+    },
+    [items, now],
+  );
+
   const clearFocus = ({ restoreGuide = false } = {}) => {
+    userRegionOverrideRef.current = true;
     clearMapFocus();
     setTasteId('all');
-    setAreaCode('all');
+    setAreaCode(DEFAULT_AREA_CODE);
     setCityName('all');
     setSearchQuery('');
     setSearchOpen(false);
     setPersonalTab(null);
     setSelected(null);
-    setIndexListHeld(false);
-    setChipPanel('time');
+    setIndexListHeld(true);
+    setChipPanel('region');
     if (restoreGuide) setGuideKind('idle');
+    else setGuideKind(null);
     setViewResetKey((k) => k + 1);
   };
 
@@ -724,7 +790,7 @@ export default function KoreaFestivalHub() {
     clearMapFocus();
     setSelected(null);
     if (!indexActive) setIndexListHeld(false);
-    setGuideKind('idle');
+    setGuideKind(null);
     setViewResetKey((k) => k + 1);
   };
 
@@ -758,6 +824,7 @@ export default function KoreaFestivalHub() {
   };
 
   const selectTaste = (id) => {
+    userRegionOverrideRef.current = true;
     dismissGuide();
     setTasteId(id);
     setChipPanel('taste');
@@ -766,6 +833,7 @@ export default function KoreaFestivalHub() {
   };
 
   const selectSido = (id) => {
+    userRegionOverrideRef.current = true;
     dismissGuide();
     setAreaCode(id);
     setCityName('all');
@@ -775,6 +843,7 @@ export default function KoreaFestivalHub() {
   };
 
   const selectCity = (id) => {
+    userRegionOverrideRef.current = true;
     dismissGuide();
     setCityName(id);
     setChipPanel('region');
@@ -846,6 +915,7 @@ export default function KoreaFestivalHub() {
   };
 
   const handleNearMe = () => {
+    userRegionOverrideRef.current = true;
     dismissGuide();
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setNearLabel('');
@@ -857,42 +927,11 @@ export default function KoreaFestivalHub() {
     setNearMsg('위치를 확인하는 중…');
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
         setNearBusy(false);
-        const hubResolved = resolveKoreaAreaFromCoords(lat, lng);
-        if (!hubResolved) {
-          setNearLabel('');
-          setNearMsg('국내 위치를 찾지 못했습니다. 지도를 직접 확대해 보세요.');
-          return;
-        }
-        const label = hubResolved.hubName || '';
-        setTimeTab('now');
-        setTasteId('all');
-        setAreaCode('all');
-        setCityName('all');
-        setSelected(null);
-        const nearby = festivalsWithinKm(
-          filterByTimeTab('now', items, now),
-          lat,
-          lng,
-          NEAR_KM,
-        );
-        const ids = nearby
-          .map((item) => String(item?.contentId || ''))
-          .filter(Boolean);
-        if (ids.length) pushFocus(ids);
-        else {
-          setFocusStack([]);
-          setMapFocusIds(null);
-        }
-        setMapFocusView({ lng, lat, zoom: 9 });
-        setNearLabel(label);
-        setNearMsg(
-          ids.length
-            ? `${NEAR_KM}km 안 ${ids.length}건`
-            : `${NEAR_KM}km 안 지금 축제가 없습니다. 시간 탭을 바꿔 보세요.`,
-        );
+        applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
+          silent: false,
+          festivalItems: items,
+        });
       },
       (err) => {
         setNearBusy(false);
@@ -909,6 +948,33 @@ export default function KoreaFestivalHub() {
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 120_000 },
     );
   };
+
+  useEffect(() => {
+    if (koreaFestivalLocationBooted) return;
+    if (loading) return;
+    if (userRegionOverrideRef.current) {
+      koreaFestivalLocationBooted = true;
+      return;
+    }
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      koreaFestivalLocationBooted = true;
+      return;
+    }
+    koreaFestivalLocationBooted = true;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        if (userRegionOverrideRef.current) return;
+        applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
+          silent: true,
+          festivalItems: items,
+        });
+      },
+      () => {
+        /* 거부·실패 → 기본 강원 유지 */
+      },
+      { enableHighAccuracy: false, timeout: 8_000, maximumAge: 300_000 },
+    );
+  }, [loading, items, applyUserLocation]);
 
   const bodyTopStyle = useMemo(
     () => ({ top: headerOffsetPx }),

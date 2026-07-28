@@ -2,6 +2,20 @@
 
 직전: [`2026-07-27-project-log.md`](./2026-07-27-project-log.md)
 
+## 국내축제 — 기본값 (위치/강원)
+
+**상태**: ✅ tip 대기 커밋 · 근거 없음→강원(`32`) · 위치 허용 시 진입 GPS→시도칩+80km 리스트
+
+| 사용자 | 동작 |
+|--------|------|
+| 근거 없음 | `DEFAULT_AREA_CODE=32` · 리스트 즉시 · [`koreaFestivalDefaults.js`](../src/pages/Korea/koreaFestivalDefaults.js) |
+| 위치 허용 | 목록 로드 후 silent `getCurrentPosition` → `applyUserLocation`(시도 우선+반경) · 칩/초기화 조작 시 부트 스킵 |
+| 내 주변 | 동일 apply · 실패 메시지만 노출 |
+
+**VERIFY**: `smoke:korea-festival-personal` · `audit/smoke:korea-area-codes` PASS
+
+**QA**: 위치 거부→강원 리스트 · 허용→내 시도칩+주변 건수 · 전국 칩·수동 지역 변경 유지
+
 ## 국내축제 — 로컬 main 반영 (배포 대기)
 
 **상태**: ✅ 로컬 `main` fast-forward → tip `c06866b` · smoke PASS · **origin/main 미푸시**(사람 로컬 검증 후 push·배포)
