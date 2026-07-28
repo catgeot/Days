@@ -178,12 +178,14 @@ function RelatedChipFlap({
   onSelectSido,
   onSelectTaste,
   neighborLabel = '인근',
+  parentRegionLabel = '',
   layout = 'side',
 }) {
   const hasChild = childChips.length > 0;
   const hasNeighbor = neighborChips.length > 0;
   const hasTaste = tasteSiblingChips.length > 0;
-  if (!hasChild && !hasNeighbor && !hasTaste) return null;
+  const showParentUp = Boolean(parentRegionLabel) && cityName !== 'all';
+  if (!hasChild && !hasNeighbor && !hasTaste && !showParentUp) return null;
 
   const shell =
     layout === 'side'
@@ -193,6 +195,17 @@ function RelatedChipFlap({
   if (layout === 'row') {
     return (
       <div className={shell} aria-label="연관 색인 칩">
+        {showParentUp && (
+          <button
+            type="button"
+            onClick={() => onSelectCity('all')}
+            className={chipClass(false)}
+            aria-label={`${parentRegionLabel} 전체로`}
+          >
+            <Undo2 size={12} aria-hidden="true" />
+            {parentRegionLabel}
+          </button>
+        )}
         {childChips.map((c) => (
           <button
             key={`m-child-${c.id}`}
@@ -232,6 +245,20 @@ function RelatedChipFlap({
 
   return (
     <div className={shell} aria-label="연관 색인 칩">
+      {showParentUp && (
+        <button
+          type="button"
+          onClick={() => onSelectCity('all')}
+          className={flapChipClass(false)}
+          aria-label={`${parentRegionLabel} 전체로`}
+          title="상위 지역 목록"
+        >
+          <span className="flex min-w-0 items-center gap-0.5 truncate">
+            <Undo2 size={11} className="shrink-0" aria-hidden="true" />
+            <span className="truncate">{parentRegionLabel}</span>
+          </span>
+        </button>
+      )}
       {hasChild && (
         <div className="space-y-1">
           <p className="px-0.5 text-[9px] font-bold tracking-wide text-stone-400">
@@ -594,10 +621,16 @@ export default function KoreaFestivalHub() {
 
   const flapNeighborLabel = mapFocusIds?.length ? '지역' : '인근';
 
+  const parentRegionLabel =
+    areaCode !== 'all'
+      ? sidoListPhrase(areaCode) || sidoLabel(areaCode) || ''
+      : '';
+
   const flapHasRelated =
     flapChildChips.length > 0 ||
     flapNeighborChips.length > 0 ||
-    flapTasteChips.length > 0;
+    flapTasteChips.length > 0 ||
+    (Boolean(parentRegionLabel) && cityName !== 'all');
 
   const showIndexList =
     mapFocusActive || indexActive || indexListHeld;
@@ -1292,6 +1325,7 @@ export default function KoreaFestivalHub() {
                 onSelectSido={selectSido}
                 onSelectTaste={selectTaste}
                 neighborLabel={flapNeighborLabel}
+                parentRegionLabel={parentRegionLabel}
               />
             )}
             <div
@@ -1317,6 +1351,22 @@ export default function KoreaFestivalHub() {
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
+                  {personalTab == null &&
+                    areaCode !== 'all' &&
+                    cityName !== 'all' && (
+                      <button
+                        type="button"
+                        onClick={() => selectCity('all')}
+                        aria-label={`${sidoListPhrase(areaCode) || sidoLabel(areaCode) || '상위 지역'} 전체로`}
+                        title="상위 지역 목록"
+                        className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+                      >
+                        <Undo2 size={14} aria-hidden="true" />
+                        {sidoListPhrase(areaCode) ||
+                          sidoLabel(areaCode) ||
+                          '상위'}
+                      </button>
+                    )}
                   {personalTab == null &&
                     (focusStack.length > 0 || mapFocusIds?.length) && (
                       <button
@@ -1388,6 +1438,7 @@ export default function KoreaFestivalHub() {
                   onSelectSido={selectSido}
                   onSelectTaste={selectTaste}
                   neighborLabel={flapNeighborLabel}
+                  parentRegionLabel={parentRegionLabel}
                 />
               )}
               <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
