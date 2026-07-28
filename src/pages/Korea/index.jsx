@@ -1401,7 +1401,7 @@ export default function KoreaFestivalHub() {
                   ) : (
                     personalGroups.map((group) => (
                       <div key={group.id} className="space-y-2">
-                        <p className="sticky top-0 z-[1] bg-white/95 px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500 backdrop-blur-sm">
+                        <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
                           {group.label}
                           <span className="ml-1 font-normal opacity-70">
                             {group.items.length}
@@ -1433,7 +1433,7 @@ export default function KoreaFestivalHub() {
                 ) : (
                   panelGroups.map((group) => (
                     <div key={group.id} className="space-y-2">
-                      <p className="sticky top-0 z-[1] bg-white/95 px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500 backdrop-blur-sm">
+                      <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
                         {group.label}
                         <span className="ml-1 font-normal opacity-70">
                           {group.items.length}
