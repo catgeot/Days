@@ -247,7 +247,6 @@ function RelatedChipFlap({
   const hasNeighbor = neighborChips.length > 0;
   const hasTaste = tasteSiblingChips.length > 0;
   const showParentUp = Boolean(parentRegionLabel) && cityName !== 'all';
-  if (!hasChild && !hasNeighbor && !hasTaste && !showParentUp) return null;
 
   const shell =
     layout === 'side'
@@ -255,8 +254,9 @@ function RelatedChipFlap({
       : 'flex shrink-0 gap-2 overflow-x-auto border-b border-stone-200 px-3 py-2 custom-scrollbar md:hidden';
 
   if (layout === 'row') {
+    if (!hasChild && !showParentUp) return null;
     return (
-      <div className={shell} aria-label="연관 색인 칩">
+      <div className={shell} aria-label="지역 구분 칩">
         {showParentUp && (
           <button
             type="button"
@@ -279,31 +279,11 @@ function RelatedChipFlap({
             <span className="opacity-70">{c.count}</span>
           </button>
         ))}
-        {neighborChips.map((s) => (
-          <button
-            key={`m-near-${s.id}`}
-            type="button"
-            onClick={() => onSelectSido(s.id)}
-            className={chipClass(false)}
-          >
-            {s.label}
-            <span className="opacity-70">{s.count}</span>
-          </button>
-        ))}
-        {tasteSiblingChips.map((t) => (
-          <button
-            key={`m-taste-${t.id}`}
-            type="button"
-            onClick={() => onSelectTaste(t.id)}
-            className={chipClass(tasteId === t.id)}
-          >
-            {t.label}
-            <span className="opacity-70">{t.count}</span>
-          </button>
-        ))}
       </div>
     );
   }
+
+  if (!hasChild && !hasNeighbor && !hasTaste && !showParentUp) return null;
 
   return (
     <div className={shell} aria-label="연관 색인 칩">
@@ -479,6 +459,12 @@ export default function KoreaFestivalHub() {
   const [nearOrigin, setNearOrigin] = useState(null);
   const [mapOpen, setMapOpen] = useState(false);
   const [mapSessionKey, setMapSessionKey] = useState(0);
+  /** PC 분할(lg+) — 리스트·지도 동기화 */
+  const [isMapSplit, setIsMapSplit] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(min-width: 1024px)').matches
+      : false,
+  );
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -497,6 +483,14 @@ export default function KoreaFestivalHub() {
   const mountLocTriedRef = useRef(false);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const sync = () => setIsMapSplit(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
   const [favoriteIds, setFavoriteIds] = useState(() =>
     new Set(loadFavorites().map((r) => String(r.contentId))),
   );
@@ -759,10 +753,12 @@ export default function KoreaFestivalHub() {
     [personalItems],
   );
 
+  /** 지도 마커 — 시간·지역·테마·검색·내 주변 등 리스트 필터와 동기화 */
   const mapItems = useMemo(() => {
     if (personalTab != null) return personalItems;
-    return panelItems;
-  }, [personalTab, personalItems, panelItems]);
+    if (nearBaseItems) return nearBaseItems;
+    return filteredItems;
+  }, [personalTab, personalItems, nearBaseItems, filteredItems]);
 
   const selectedHubs = useMemo(() => {
     if (!selected) return [];
@@ -783,7 +779,9 @@ export default function KoreaFestivalHub() {
   }, []);
 
   /**
-   * GPS 성공 시: 시도 칩 우선 + 반경 축제 리스트(지도는 자동 미오픈).
+   * GPS 성공 시: 시도 칩 맞춤.
+   * silent — 부트/재진입: 지역만 (내 주변 토글 OFF 유지)
+   * 명시적 내 주변 — 반경 리스트 + 토글 ON
    * @param {number} lat
    * @param {number} lng
    * @param {{ silent?: boolean, festivalItems?: object[] }} [opts]
@@ -801,7 +799,6 @@ export default function KoreaFestivalHub() {
         }
         return false;
       }
-      const label = hubResolved.hubName || '';
       setTimeTab('now');
       setTasteId('all');
       setAreaCode(String(hubResolved.areaCode));
@@ -811,6 +808,17 @@ export default function KoreaFestivalHub() {
       setPersonalTab(null);
       setSearchQuery('');
       setSearchOpen(false);
+      setMapFocusView({ lng, lat, zoom: 9 });
+
+      if (silent) {
+        setNearIds(null);
+        setNearOrigin(null);
+        setNearLabel('');
+        setNearMsg('');
+        return true;
+      }
+
+      const label = hubResolved.hubName || '';
       const nearby = rankFestivalsByDistance(
         festivalsWithinKm(
           filterByTimeTab('now', sourceItems, now),
@@ -826,7 +834,6 @@ export default function KoreaFestivalHub() {
         .filter(Boolean);
       setNearIds(ids.length ? ids : null);
       setNearOrigin(ids.length ? { lat, lng } : null);
-      setMapFocusView({ lng, lat, zoom: 9 });
       setNearLabel(label);
       setNearMsg(
         ids.length
@@ -969,6 +976,9 @@ export default function KoreaFestivalHub() {
   const openMap = () => {
     setMapSessionKey((k) => k + 1);
     setMapOpen(true);
+    requestAnimationFrame(() => {
+      mainScrollRef.current?.scrollTo({ top: 0 });
+    });
   };
 
   const closeMap = () => {
@@ -1082,16 +1092,34 @@ export default function KoreaFestivalHub() {
   }, [mapOpen]);
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
+    <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="국내 축제 · 시간·지역·테마"
         description="TourAPI 기반 국내 축제. 시간·지역·테마로 찾고, 필요 시 지도로 위치·동선을 확인하세요."
         url="/korea"
       />
 
-      <header className="sticky top-0 z-30 shrink-0 border-b border-stone-200/80 bg-stone-100/95 pt-[max(0.5rem,env(safe-area-inset-top,0px))] backdrop-blur-md">
-        <div className="mx-auto w-full max-w-3xl px-3 pb-2.5 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
-          <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white px-3 py-2.5 shadow-sm md:px-4">
+      <header
+        className={`z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))] ${
+          mapOpen && !isMapSplit
+            ? 'pointer-events-none absolute inset-x-0 top-0 border-0 bg-transparent'
+            : 'relative shrink-0 border-b border-stone-200/80 bg-stone-100/95 backdrop-blur-md'
+        }`}
+      >
+        <div
+          className={`pointer-events-auto mx-auto w-full px-3 pb-2.5 md:px-5 lg:px-8 xl:max-w-7xl ${
+            mapOpen
+              ? 'max-w-none lg:max-w-6xl'
+              : 'max-w-3xl lg:max-w-6xl'
+          }`}
+        >
+          <div
+            className={`min-w-0 rounded-2xl px-3 py-2.5 md:px-4 ${
+              mapOpen && !isMapSplit
+                ? 'border border-white/35 bg-white/45 shadow-[0_8px_32px_rgba(27,20,16,0.12)] backdrop-blur-xl'
+                : 'border border-stone-200/90 bg-white shadow-sm'
+            }`}
+          >
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
@@ -1147,16 +1175,29 @@ export default function KoreaFestivalHub() {
                   aria-hidden="true"
                 />
               </button>
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                aria-label="홈으로"
-                title="홈으로"
-                className="shrink-0 flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
-              >
-                <Home size={14} aria-hidden="true" />
-                홈으로
-              </button>
+              {mapOpen && !isMapSplit ? (
+                <button
+                  type="button"
+                  onClick={closeMap}
+                  aria-label="지도 닫기 · 목록으로"
+                  title="목록으로"
+                  className="shrink-0 flex items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
+                >
+                  <X size={14} aria-hidden="true" />
+                  닫기
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => navigate('/')}
+                  aria-label="홈으로"
+                  title="홈으로"
+                  className="shrink-0 flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+                >
+                  <Home size={14} aria-hidden="true" />
+                  홈으로
+                </button>
+              )}
             </div>
 
             {searchOpen && (
@@ -1309,20 +1350,20 @@ export default function KoreaFestivalHub() {
 
       <main
         ref={mainScrollRef}
-        className={`mx-auto min-h-0 w-full max-w-3xl flex-1 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-3 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl ${
+        className={`mx-auto min-h-0 w-full flex-1 ${
           mapOpen
-            ? 'flex flex-col overflow-hidden'
-            : 'overflow-y-auto overscroll-contain md:flex md:flex-col md:overflow-hidden'
+            ? 'flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0 lg:max-w-6xl lg:px-8 lg:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:pt-3 xl:max-w-7xl'
+            : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl'
         }`}
       >
-        {loading && (
+        {loading && !mapOpen && (
           <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700 shadow-sm">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             축제 일정을 불러오는 중…
           </div>
         )}
 
-        {!loading && error && (
+        {!loading && error && !mapOpen && (
           <div className="mb-3 rounded-2xl border border-stone-200 bg-white px-4 py-4 text-center shadow-sm">
             <p className="text-sm text-stone-700">{error}</p>
             <button
@@ -1336,14 +1377,18 @@ export default function KoreaFestivalHub() {
         )}
 
         <div
-          className={`flex flex-col border border-stone-200 bg-white shadow-sm ${
-            personalTab == null && flapHasRelated
-              ? 'rounded-3xl md:flex-row'
-              : 'rounded-3xl'
-          } ${
+          className={`flex flex-col bg-white ${
             mapOpen
-              ? 'min-h-0 flex-1 overflow-hidden'
-              : 'md:min-h-0 md:flex-1 md:overflow-hidden'
+              ? 'min-h-0 flex-1 overflow-hidden border-0 shadow-none max-lg:rounded-none lg:rounded-3xl lg:border lg:border-stone-200 lg:shadow-sm'
+              : `border border-stone-200 shadow-sm ${
+                  personalTab == null && flapHasRelated
+                    ? 'rounded-3xl md:flex-row'
+                    : 'rounded-3xl'
+                } md:min-h-0 md:flex-1 md:overflow-hidden`
+          } ${
+            mapOpen && personalTab == null && flapHasRelated
+              ? 'lg:flex-row'
+              : ''
           }`}
           aria-label={personalTab != null ? '내 축제 목록' : '축제 목록'}
         >
@@ -1367,7 +1412,11 @@ export default function KoreaFestivalHub() {
               mapOpen ? 'min-h-0 flex-1' : 'md:min-h-0 md:flex-1'
             }`}
           >
-            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5">
+            <div
+              className={`shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5 ${
+                mapOpen ? 'hidden lg:flex' : 'flex'
+              }`}
+            >
               <div className="min-w-0">
                 <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
                   {personalTab != null
@@ -1424,7 +1473,7 @@ export default function KoreaFestivalHub() {
                   )}
               </div>
             </div>
-            {showDefaultLocHint && (
+            {showDefaultLocHint && !mapOpen && (
               <div className="shrink-0 border-b border-amber-100 bg-amber-50/90 px-4 py-2.5">
                 <p className="text-[12px] font-bold leading-snug text-amber-950 break-keep">
                   위치 허용이 없어 강원권 축제 리스트를 보여 드려요.
@@ -1452,7 +1501,7 @@ export default function KoreaFestivalHub() {
                 </div>
               </div>
             )}
-            {personalTab != null && (
+            {personalTab != null && !mapOpen && (
               <div className="flex shrink-0 gap-1.5 border-b border-stone-200 px-3 py-2">
                 <button
                   type="button"
@@ -1472,7 +1521,7 @@ export default function KoreaFestivalHub() {
                 </button>
               </div>
             )}
-            {personalTab == null && flapHasRelated && (
+            {personalTab == null && flapHasRelated && !mapOpen && (
               <RelatedChipFlap
                 layout="row"
                 childChips={flapChildChips}
@@ -1495,7 +1544,7 @@ export default function KoreaFestivalHub() {
               }`}
             >
               <div
-                className={`space-y-2 px-3 py-3 ${
+                className={`space-y-2 px-3 pt-3 pb-[max(10.5rem,calc(env(safe-area-inset-bottom,0px)+9rem))] md:pb-24 ${
                   mapOpen
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
                     : 'md:custom-scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto'
@@ -1574,7 +1623,11 @@ export default function KoreaFestivalHub() {
               )}
               </div>
               {mapOpen && (
-                <div className="relative min-h-0 flex-1 overflow-hidden bg-[#1b1410]">
+                <div
+                  className={`relative min-h-0 flex-1 overflow-hidden bg-[#1b1410] ${
+                    !isMapSplit ? 'max-lg:fixed max-lg:inset-0 max-lg:z-20' : ''
+                  }`}
+                >
                   <KoreaFestivalMap
                     className="absolute inset-0 h-full w-full"
                     items={mapItems}
@@ -1584,7 +1637,7 @@ export default function KoreaFestivalHub() {
                         : ''
                     }
                     focusView={mapFocusView}
-                    historyKey={`${mapSessionKey}:${timeTab}:${areaCode}:${cityName}:${tasteId}:${nearIds?.length || 0}`}
+                    historyKey={`${mapSessionKey}:${timeTab}:${areaCode}:${cityName}:${tasteId}:${personalTab || ''}:${searchQuery.trim()}`}
                     onSelectPoint={(contentId) => {
                       const id = String(contentId);
                       const item =
@@ -1593,15 +1646,16 @@ export default function KoreaFestivalHub() {
                       if (item) openItem(item);
                     }}
                     onSelectCluster={(contentIds) => {
+                      if (!isMapSplit) return;
                       const ids = (contentIds || [])
                         .map(String)
                         .filter(Boolean);
-                      if (ids.length) {
-                        setNearIds(ids);
-                        setNearLabel('');
-                        setNearMsg(`지도에서 고른 ${ids.length}건`);
-                      }
-                      setMapOpen(false);
+                      if (!ids.length) return;
+                      setPersonalTab(null);
+                      setNearOrigin(null);
+                      setNearIds(ids);
+                      setNearLabel('');
+                      setNearMsg(`지도에서 고른 ${ids.length}건`);
                     }}
                   />
                 </div>
