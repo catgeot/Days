@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
@@ -99,6 +106,9 @@ function buildPanelListMeta({ areaCode, cityName, count, capped }) {
 
 const PANEL_LIMIT = 48;
 const NEAR_KM = 80;
+/** 헤더 하단과 본문(리스트·안내) 사이 고정 간격 */
+const HEADER_BODY_GAP_PX = 12;
+const HEADER_OFFSET_FALLBACK_PX = 140;
 
 function toRad(d) {
   return (d * Math.PI) / 180;
@@ -349,6 +359,30 @@ function FestivalRow({ item, active, onSelect, favorited, onToggleFavorite }) {
 export default function KoreaFestivalHub() {
   const navigate = useNavigate();
   const now = useMemo(() => new Date(), []);
+  const headerRef = useRef(null);
+  const [headerOffsetPx, setHeaderOffsetPx] = useState(
+    HEADER_OFFSET_FALLBACK_PX,
+  );
+
+  useLayoutEffect(() => {
+    const el = headerRef.current;
+    if (!el) return undefined;
+    const update = () => {
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      if (h > 0) setHeaderOffsetPx(h + HEADER_BODY_GAP_PX);
+    };
+    update();
+    const ro =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(update)
+        : null;
+    ro?.observe(el);
+    window.addEventListener('resize', update);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, []);
 
   const [timeTab, setTimeTab] = useState('now');
   const [tasteId, setTasteId] = useState('all');
@@ -840,6 +874,18 @@ export default function KoreaFestivalHub() {
     );
   };
 
+  const bodyTopStyle = useMemo(
+    () => ({ top: headerOffsetPx }),
+    [headerOffsetPx],
+  );
+  const listShellStyle = useMemo(
+    () => ({
+      paddingTop: headerOffsetPx,
+      ['--korea-list-max-h']: `calc(100dvh - ${headerOffsetPx}px - 0.75rem)`,
+    }),
+    [headerOffsetPx],
+  );
+
   return (
     <div className="relative h-full w-full overflow-hidden bg-[#1b1410] text-white">
       <SEO
@@ -878,7 +924,10 @@ export default function KoreaFestivalHub() {
         />
       </div>
 
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
+      <header
+        ref={headerRef}
+        className="pointer-events-none absolute inset-x-0 top-0 z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))]"
+      >
         <div className="pointer-events-auto mx-auto max-w-6xl px-3 md:px-5">
           <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white/92 px-3 py-2.5 text-stone-900 shadow-lg backdrop-blur-md md:px-4">
             <div className="flex items-center gap-2">
@@ -996,7 +1045,7 @@ export default function KoreaFestivalHub() {
             )}
 
             <div className="mt-2.5 flex flex-col gap-1.5">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
                 <button
                   type="button"
                   onClick={openTimeMajor}
@@ -1025,7 +1074,7 @@ export default function KoreaFestivalHub() {
                   {tasteMajorLabel}
                 </button>
               </div>
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
                 {chipPanel === 'time' &&
                   TIME_TABS.map((t) => (
                     <button
@@ -1121,7 +1170,10 @@ export default function KoreaFestivalHub() {
       </header>
 
       {loading && (
-        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
+        <div
+          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          style={bodyTopStyle}
+        >
           <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-stone-200 bg-white/95 px-4 py-2 text-sm text-stone-700 shadow-lg backdrop-blur-md">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             축제 일정을 불러오는 중…
@@ -1130,7 +1182,10 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && error && (
-        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
+        <div
+          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          style={bodyTopStyle}
+        >
           <div className="pointer-events-auto max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-4 text-center shadow-lg backdrop-blur-md">
             <p className="text-sm text-stone-700">{error}</p>
             <button
@@ -1145,7 +1200,10 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && !error && !showList && !nearActive && guideKind != null && (
-        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
+        <div
+          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          style={bodyTopStyle}
+        >
           <div
             className="w-full max-w-sm rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 text-stone-700 shadow-lg backdrop-blur-md"
             role="status"
@@ -1174,7 +1232,10 @@ export default function KoreaFestivalHub() {
       )}
 
       {!loading && !showList && nearActive && (
-        <div className="pointer-events-none absolute inset-x-0 top-[8.75rem] z-30 flex justify-center px-4">
+        <div
+          className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-4"
+          style={bodyTopStyle}
+        >
           <div className="pointer-events-auto flex max-w-sm items-start gap-2 rounded-2xl border border-stone-200 bg-white/95 px-3 py-2.5 text-stone-700 shadow-lg backdrop-blur-md">
             <p className="min-w-0 flex-1 text-[12px] leading-snug">
               {nearLabel ? (
@@ -1197,7 +1258,8 @@ export default function KoreaFestivalHub() {
 
       {showList && (
         <div
-          className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pt-[max(8.25rem,calc(env(safe-area-inset-top,0px)+7.25rem))] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pt-[8.75rem] md:pb-4"
+          className="absolute inset-0 z-20 flex items-start justify-center bg-stone-900/25 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[1px] md:px-4 md:pb-4"
+          style={listShellStyle}
           onClick={
             personalTab != null
               ? closePersonal
@@ -1206,7 +1268,7 @@ export default function KoreaFestivalHub() {
           role="presentation"
         >
           <aside
-            className={`pointer-events-auto flex max-h-[calc(100dvh-9.25rem)] w-full flex-col md:max-h-[calc(100dvh-10rem)] md:flex-row md:items-stretch ${
+            className={`pointer-events-auto flex max-h-[var(--korea-list-max-h)] w-full flex-col md:flex-row md:items-stretch ${
               personalTab == null && flapHasRelated
                 ? 'md:max-w-[520px]'
                 : 'md:max-w-[420px]'
