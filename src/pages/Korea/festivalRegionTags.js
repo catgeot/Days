@@ -1,11 +1,13 @@
 /**
- * 결과 addr1에서만 뽑는 지역 색인 (고정 corridor bbox 금지 · 건수≥N만).
- * 대지역(시도) → 시/군. 구 단독 칩은 오탐 많아 제외.
+ * 결과 addr1에서만 뽑는 지역 색인 (고정 corridor bbox 금지).
+ * 대지역(시도) ≥2 · 시/군은 시도 선택 후이므로 ≥1. 구 단독 칩은 오탐 많아 제외.
  */
 
 import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
 import { matchSido, matchSigungu, SIDO_ADDR_HINTS } from './koreaAreaFilter.js';
 const MIN_COUNT = 2;
+/** 시·군 칩 — 시도로 이미 좁힌 뒤라 1건도 노출 */
+const CITY_MIN_COUNT = 1;
 
 /** @type {{ id: string, label: string }[]} */
 const SIDO_ORDER = Object.entries(koreaAreaCodes?.areas || {}).map(([id, entry]) => ({
@@ -79,9 +81,11 @@ export function buildSidoTags(items, opts = {}) {
 
 /**
  * @param {object[]} items — 이미 시도로 줄어든 결과 권장
+ * @param {{ minCount?: number }} [opts]
  * @returns {{ id: string, label: string, count: number }[]}
  */
-export function buildCityTags(items) {
+export function buildCityTags(items, opts = {}) {
+  const minCount = opts.minCount ?? CITY_MIN_COUNT;
   /** @type {Map<string, { id: string, label: string, count: number }>} */
   const counts = new Map();
   for (const item of items || []) {
@@ -93,7 +97,7 @@ export function buildCityTags(items) {
     }
   }
   return [...counts.values()]
-    .filter((t) => t.count >= MIN_COUNT)
+    .filter((t) => t.count >= minCount)
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'ko'));
 }
 
@@ -211,4 +215,9 @@ export function cityListPhrase(cityName) {
   return String(cityName).replace(/(시|군)$/u, '');
 }
 
-export { MIN_COUNT as REGION_MIN_COUNT, SIDO_ORDER, SIDO_NEIGHBORS };
+export {
+  MIN_COUNT as REGION_MIN_COUNT,
+  CITY_MIN_COUNT,
+  SIDO_ORDER,
+  SIDO_NEIGHBORS,
+};

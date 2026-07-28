@@ -3,6 +3,7 @@
  */
 import assert from 'node:assert/strict';
 import {
+  buildCityTags,
   buildMapFocusRegionChips,
   buildSidoTags,
   detectSidoCode,
@@ -128,6 +129,22 @@ const gyeonggi = {
   title: '수원화성문화제',
   addr1: '경기도 수원시',
 };
+const goyang = {
+  contentId: '301',
+  title: '고양호수예술축제',
+  addr1: '경기도 고양시',
+};
+const siheung = {
+  contentId: '302',
+  title: '시흥갯골축제',
+  addr1: '경기도 시흥시',
+};
+const cityChips = buildCityTags([gyeonggi, goyang, siheung]);
+assert.ok(cityChips.some((c) => c.label === '수원시'));
+assert.ok(cityChips.some((c) => c.label === '고양시' && c.count === 1));
+assert.ok(cityChips.some((c) => c.label === '시흥시'));
+assert.equal(cityChips.length, 3);
+
 const focusChips = buildMapFocusRegionChips(
   [seoul, gyeonggi],
   buildSidoTags([seoul, gyeonggi, hwacheon], { minCount: 1 }),
