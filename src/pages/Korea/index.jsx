@@ -11,7 +11,7 @@ import {
   Globe,
   Loader2,
   LocateFixed,
-  Map,
+  Map as MapIcon,
   MapPin,
   Search,
   Star,
@@ -920,7 +920,7 @@ export default function KoreaFestivalHub() {
                     : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
                 }`}
               >
-                <Map size={15} aria-hidden="true" />
+                <MapIcon size={15} aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -1186,7 +1186,7 @@ export default function KoreaFestivalHub() {
                   title="지도로 위치·동선 보기"
                   className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
                 >
-                  <Map size={14} aria-hidden="true" />
+                  <MapIcon size={14} aria-hidden="true" />
                   지도
                 </button>
                 {personalTab == null &&
