@@ -11,6 +11,8 @@ import {
   hubIdsForArea,
   DEFAULT_HUB_SEEDS,
 } from '../src/pages/Korea/koreaHubSeeds.js';
+import { matchSido } from '../src/pages/Korea/koreaAreaFilter.js';
+import { detectSidoCode } from '../src/pages/Korea/festivalRegionTags.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const JSON_PATH = join(__dirname, '../src/pages/Home/data/koreaAreaCodes.json');
@@ -59,6 +61,13 @@ assert(hubIdsForArea(31).includes('gapyeong'), 'SSOT 경기 gapyeong');
 assert(hubIdsForArea(32).includes('chuncheon'), 'SSOT 강원 chuncheon');
 assert(areaCodeForHubId('sokcho') === '32', 'sokcho → 32');
 assert(hubIdsForArea(39)[0] === 'jeju', 'SSOT priority area 39');
+
+const haeundae = '부산광역시 해운대구';
+assert(!matchSido(haeundae, '4'), '해운대구 ̸⊂ 대구');
+assert(matchSido(haeundae, '6'), '해운대구 ⊂ 부산');
+assert(detectSidoCode(haeundae) === '6', 'detectSido 해운대 → 부산');
+assert(matchSido('대구광역시 중구', '4'), '대구광역시 ⊂ 대구');
+assert(matchSido('대구 수성구', '4'), '단독 대구 ⊂ 대구');
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

@@ -8,6 +8,7 @@ export const SIDO_ADDR_HINTS = {
   1: ['서울특별시', '서울'],
   2: ['인천광역시', '인천'],
   3: ['대전광역시', '대전'],
+  /** 해운대구 ⊃ 대구 — 짧은 '대구'는 matchSido에서 음절 경계로만 허용 */
   4: ['대구광역시', '대구'],
   /** 경기 광주시와 구분 — 긴 표기 우선 */
   5: ['광주광역시'],
@@ -27,6 +28,21 @@ export const SIDO_ADDR_HINTS = {
 
 /**
  * @param {string} addr
+ * @param {string} hint
+ */
+function addrHasSidoHint(addr, hint) {
+  const h = String(hint || '');
+  if (!h) return false;
+  if (h.length <= 2) {
+    // 해운대구⊃대구 처럼 다른 시군구명 안에 붙은 짧은 조각 오탐 방지
+    const escaped = h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(?:^|[^가-힣])${escaped}`, 'u').test(addr);
+  }
+  return addr.includes(h);
+}
+
+/**
+ * @param {string} addr
  * @param {string | number} areaCode
  */
 export function matchSido(addr, areaCode) {
@@ -34,7 +50,7 @@ export function matchSido(addr, areaCode) {
   if (!a) return false;
   const hints = SIDO_ADDR_HINTS[String(areaCode)];
   if (!hints?.length) return false;
-  return hints.some((h) => a.includes(h));
+  return hints.some((h) => addrHasSidoHint(a, h));
 }
 
 /**
