@@ -9,6 +9,7 @@ import React, {
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
+  Globe,
   Loader2,
   LocateFixed,
   MapPin,
@@ -966,6 +967,15 @@ export default function KoreaFestivalHub() {
         <div className="pointer-events-auto mx-auto max-w-6xl px-3 md:px-5">
           <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white/92 px-3 py-2.5 text-stone-900 shadow-lg backdrop-blur-md md:px-4">
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                aria-label="지구본 홈으로"
+                title="지구본 홈"
+                className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
+              >
+                <Globe size={15} aria-hidden="true" />
+              </button>
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
                   Korea
