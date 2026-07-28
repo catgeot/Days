@@ -1,13 +1,17 @@
 /**
  * 결과 addr1에서만 뽑는 지역 색인 (고정 corridor bbox 금지).
- * 대지역(시도) ≥2 · 시/군은 시도 선택 후이므로 ≥1. 구 단독 칩은 오탐 많아 제외.
+ * 대지역(시도) ≥2 · 하위는 시도 선택 후 ≥1.
+ * 광역시(서울 등)는 구(+군), 도는 시·군. 전국 칩에서 구 단독은 쓰지 않음.
  */
 
 import koreaAreaCodes from '../Home/data/koreaAreaCodes.json' with { type: 'json' };
 import { matchSido, matchSigungu, SIDO_ADDR_HINTS } from './koreaAreaFilter.js';
 const MIN_COUNT = 2;
-/** 시·군 칩 — 시도로 이미 좁힌 뒤라 1건도 노출 */
+/** 시·군·구 칩 — 시도로 이미 좁힌 뒤라 1건도 노출 */
 const CITY_MIN_COUNT = 1;
+
+/** 서울·6대 광역시 — 구 단위 하위 색인 */
+const METRO_AREA_CODES = new Set(['1', '2', '3', '4', '5', '6', '7']);
 
 /** @type {{ id: string, label: string }[]} */
 const SIDO_ORDER = Object.entries(koreaAreaCodes?.areas || {}).map(([id, entry]) => ({
@@ -16,6 +20,14 @@ const SIDO_ORDER = Object.entries(koreaAreaCodes?.areas || {}).map(([id, entry])
 }));
 
 const CITY_TOKEN_RE = /([가-힣]{2,12}(?:시|군))/gu;
+const DISTRICT_TOKEN_RE = /([가-힣]{1,10}구)/gu;
+
+/**
+ * @param {string | number | null | undefined} areaCode
+ */
+export function isMetroArea(areaCode) {
+  return METRO_AREA_CODES.has(String(areaCode || ''));
+}
 
 /**
  * @param {string} addr
@@ -56,6 +68,48 @@ export function extractCityLabels(addr) {
 }
 
 /**
+ * @param {string} addr
+ * @returns {string[]} 구 라벨 (광역시 하위용)
+ */
+export function extractDistrictLabels(addr) {
+  const a = String(addr || '');
+  if (!a) return [];
+  const out = [];
+  const seen = new Set();
+  for (const m of a.matchAll(DISTRICT_TOKEN_RE)) {
+    const name = String(m[1] || '').trim();
+    if (!name || seen.has(name)) continue;
+    // 공식 광역 표기 조각 오탐 방지
+    if (/^(특별|광역|자치)/u.test(name)) continue;
+    seen.add(name);
+    out.push(name);
+  }
+  return out;
+}
+
+/**
+ * 시도별 하위 라벨: 광역시→구(+군/시), 도→시·군.
+ * @param {string} addr
+ * @param {string | number | null | undefined} [areaCode]
+ * @returns {string[]}
+ */
+export function extractSubregionLabels(addr, areaCode) {
+  const cities = extractCityLabels(addr);
+  if (!isMetroArea(areaCode)) return cities;
+  const districts = extractDistrictLabels(addr);
+  if (!cities.length) return districts;
+  if (!districts.length) return cities;
+  const out = [];
+  const seen = new Set();
+  for (const name of [...cities, ...districts]) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    out.push(name);
+  }
+  return out;
+}
+
+/**
  * @param {object[]} items
  * @param {{ minCount?: number }} [opts]
  * @returns {{ id: string, label: string, count: number }[]}
@@ -81,15 +135,16 @@ export function buildSidoTags(items, opts = {}) {
 
 /**
  * @param {object[]} items — 이미 시도로 줄어든 결과 권장
- * @param {{ minCount?: number }} [opts]
+ * @param {{ minCount?: number, areaCode?: string }} [opts]
  * @returns {{ id: string, label: string, count: number }[]}
  */
 export function buildCityTags(items, opts = {}) {
   const minCount = opts.minCount ?? CITY_MIN_COUNT;
+  const areaCode = opts.areaCode;
   /** @type {Map<string, { id: string, label: string, count: number }>} */
   const counts = new Map();
   for (const item of items || []) {
-    const cities = extractCityLabels(item?.addr1);
+    const cities = extractSubregionLabels(item?.addr1, areaCode);
     for (const label of cities) {
       const prev = counts.get(label);
       if (prev) prev.count += 1;
@@ -207,17 +262,26 @@ export function sidoListPhrase(areaCode) {
 }
 
 /**
- * 리스트 안내 문구용 시·군 (춘천시 → 춘천).
+ * 리스트 안내 문구용 시·군·구 (춘천시 → 춘천, 종로구 → 종로).
  * @param {string} cityName
  */
 export function cityListPhrase(cityName) {
   if (!cityName || cityName === 'all') return '';
-  return String(cityName).replace(/(시|군)$/u, '');
+  return String(cityName).replace(/(시|군|구)$/u, '');
+}
+
+/**
+ * UI용 하위 단위 라벨 (시·군 / 구).
+ * @param {string | number | null | undefined} areaCode
+ */
+export function subregionUnitLabel(areaCode) {
+  return isMetroArea(areaCode) ? '구' : '시·군';
 }
 
 export {
   MIN_COUNT as REGION_MIN_COUNT,
   CITY_MIN_COUNT,
+  METRO_AREA_CODES,
   SIDO_ORDER,
   SIDO_NEIGHBORS,
 };

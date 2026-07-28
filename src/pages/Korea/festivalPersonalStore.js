@@ -5,7 +5,7 @@
 
 import {
   detectSidoCode,
-  extractCityLabels,
+  extractSubregionLabels,
   sidoLabel,
 } from './festivalRegionTags.js';
 
@@ -189,16 +189,24 @@ export function groupFestivalsBySido(items) {
 }
 
 /**
- * 시·군별 그룹 (표시용). addr1 첫 시/군. 미분류는 맨 아래.
+ * 시·군·구별 그룹 (표시용). addr1 첫 하위 지역. 미분류는 맨 아래.
  * @param {Record<string, unknown>[]} items
+ * @param {{ areaCode?: string }} [opts]
  * @returns {{ id: string, label: string, items: Record<string, unknown>[] }[]}
  */
-export function groupFestivalsByCity(items) {
+export function groupFestivalsByCity(items, opts = {}) {
+  const areaCode = opts.areaCode;
   /** @type {Map<string, { id: string, label: string, items: Record<string, unknown>[] }>} */
   const groups = new Map();
   const unknown = [];
   for (const item of items || []) {
-    const city = extractCityLabels(item?.addr1)[0] || '';
+    const code =
+      areaCode && areaCode !== 'all'
+        ? areaCode
+        : (item?.areaCode != null && String(item.areaCode)) ||
+          detectSidoCode(item?.addr1) ||
+          '';
+    const city = extractSubregionLabels(item?.addr1, code)[0] || '';
     if (!city) {
       unknown.push(item);
       continue;
@@ -220,19 +228,19 @@ export function groupFestivalsByCity(items) {
 }
 
 /**
- * 모달 리스트 그룹: 단일 시도(칩·지도 선택)면 시·군, 아니면 시도.
+ * 모달 리스트 그룹: 단일 시도(칩·지도 선택)면 시·군·구, 아니면 시도.
  * @param {Record<string, unknown>[]} items
  * @param {{ areaCode?: string }} [opts]
  */
 export function groupFestivalsForList(items, opts = {}) {
   const areaCode = opts.areaCode;
   if (areaCode && areaCode !== 'all') {
-    return groupFestivalsByCity(items);
+    return groupFestivalsByCity(items, { areaCode });
   }
   const bySido = groupFestivalsBySido(items);
   const known = bySido.filter((g) => g.id !== 'unknown');
   if (known.length === 1) {
-    return groupFestivalsByCity(items);
+    return groupFestivalsByCity(items, { areaCode: known[0].id });
   }
   return bySido;
 }

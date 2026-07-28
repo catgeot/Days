@@ -33,6 +33,7 @@ import {
   neighborSidoTags,
   sidoLabel,
   sidoListPhrase,
+  subregionUnitLabel,
 } from './festivalRegionTags';
 import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
@@ -95,7 +96,7 @@ function buildPanelListMeta({ areaCode, cityName, count, capped }) {
   const bits = [];
   if (place) bits.push(place);
   bits.push(`${count}건`);
-  if (place && !city) bits.push('시·군별');
+  if (place && !city) bits.push(`${subregionUnitLabel(areaCode)}별`);
   else if (!place) bits.push('지역 그룹');
   if (capped) bits.push(`${PANEL_LIMIT}건까지`);
   return bits.join(' · ');
@@ -494,7 +495,8 @@ export default function KoreaFestivalHub() {
   );
 
   const cityChips = useMemo(
-    () => (areaCode === 'all' ? [] : buildCityTags(afterSido)),
+    () =>
+      areaCode === 'all' ? [] : buildCityTags(afterSido, { areaCode }),
     [areaCode, afterSido],
   );
 
@@ -1154,7 +1156,7 @@ export default function KoreaFestivalHub() {
                           className={chipClass(cityName === 'all')}
                           aria-pressed={cityName === 'all'}
                         >
-                          시·군 전체
+                          {subregionUnitLabel(areaCode)} 전체
                         </button>
                         {cityChips.map((c) => (
                           <button

@@ -7,6 +7,7 @@ import {
   buildMapFocusRegionChips,
   buildSidoTags,
   detectSidoCode,
+  extractSubregionLabels,
   sidoLabel,
 } from '../src/pages/Korea/festivalRegionTags.js';
 import { nearbyHubsForFestival } from '../src/pages/Korea/nearbyFestivalHubs.js';
@@ -139,11 +140,36 @@ const siheung = {
   title: '시흥갯골축제',
   addr1: '경기도 시흥시',
 };
-const cityChips = buildCityTags([gyeonggi, goyang, siheung]);
+const cityChips = buildCityTags([gyeonggi, goyang, siheung], {
+  areaCode: '31',
+});
 assert.ok(cityChips.some((c) => c.label === '수원시'));
 assert.ok(cityChips.some((c) => c.label === '고양시' && c.count === 1));
 assert.ok(cityChips.some((c) => c.label === '시흥시'));
 assert.equal(cityChips.length, 3);
+
+const jongno = {
+  contentId: '201',
+  title: '종로축제',
+  addr1: '서울특별시 종로구',
+};
+const gangnam = {
+  contentId: '202',
+  title: '강남축제',
+  addr1: '서울특별시 강남구',
+};
+assert.deepEqual(extractSubregionLabels(jongno.addr1, '1'), ['종로구']);
+assert.equal(extractSubregionLabels(gyeonggi.addr1, '31')[0], '수원시');
+const seoulCityChips = buildCityTags([seoul, jongno, gangnam], {
+  areaCode: '1',
+});
+assert.ok(seoulCityChips.some((c) => c.label === '종로구'));
+assert.ok(seoulCityChips.some((c) => c.label === '강남구'));
+const seoulGroups = groupFestivalsByCity([jongno, gangnam, seoul], {
+  areaCode: '1',
+});
+assert.ok(seoulGroups.some((g) => g.label === '종로구'));
+assert.ok(seoulGroups.some((g) => g.label === '강남구'));
 
 const focusChips = buildMapFocusRegionChips(
   [seoul, gyeonggi],
