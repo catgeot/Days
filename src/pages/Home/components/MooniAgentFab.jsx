@@ -20,11 +20,37 @@ const DRAG_REACT_DISMISS_MS = 2_800;
 const PRESS_PEEK_MS = 180;
 const DRAG_THRESHOLD = 6;
 const FAB_ESTIMATE = { width: 96, height: 120 };
+/** 모바일 실측 근사 (72px 캐릭터 + 패딩) — 과대 추정 시 좌측 여백이 남음 */
+const FAB_ESTIMATE_MOBILE = { width: 80, height: 104 };
+/** 말풍선 max-w와 맞춤 — 좌측 여유 부족 시 우측으로 반전 */
+const HINT_MAX_WIDTH = 220;
+/** 좌·우·상단 여백 */
 const EDGE_PADDING = 8;
+/**
+ * 모바일 가장자리 오버플로 — 좌·하단만 적용.
+ * 우측은 캐릭터 실루엣이 바로 잘려 과하게 나가 보이므로 패딩만 유지.
+ */
+const EDGE_OVERFLOW_MOBILE = 28;
 const POSITION_KEY = 'gateo_mooni_fab_pos';
 /** 홈 FAB 기본 — 모바일 우측 하단 (카테고리 바는 좌하단) */
 const DEFAULT_POS = { right: 16, bottom: 32 };
 const DISMISS_REACT_CHANCE = 0.35;
+
+function isMobileViewport() {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(max-width: 767px)').matches;
+}
+
+function fabSize() {
+  return isMobileViewport() ? FAB_ESTIMATE_MOBILE : FAB_ESTIMATE;
+}
+
+/** FAB 왼쪽 공간이 말풍선보다 좁으면 말풍선을 FAB 오른쪽에 둠 */
+function shouldPlaceHintOnRight(right) {
+  if (typeof window === 'undefined') return false;
+  const fabLeft = window.innerWidth - right - fabSize().width;
+  return fabLeft < HINT_MAX_WIDTH + EDGE_PADDING;
+}
 
 function loadPosition() {
   try {
@@ -49,11 +75,16 @@ function savePosition(pos) {
 }
 
 function clampPosition(pos) {
-  const maxRight = Math.max(EDGE_PADDING, window.innerWidth - FAB_ESTIMATE.width - EDGE_PADDING);
-  const maxBottom = Math.max(EDGE_PADDING, window.innerHeight - FAB_ESTIMATE.height - EDGE_PADDING);
+  const mobile = isMobileViewport();
+  const { width, height } = fabSize();
+  const edgeOverflow = mobile ? EDGE_OVERFLOW_MOBILE : 0;
+  const minBottom = mobile ? -edgeOverflow : EDGE_PADDING;
+  const minRight = mobile ? 0 : EDGE_PADDING;
+  const maxRight = Math.max(minRight, window.innerWidth - width - EDGE_PADDING + edgeOverflow);
+  const maxBottom = Math.max(minBottom, window.innerHeight - height - EDGE_PADDING);
   return {
-    right: Math.min(Math.max(pos.right, EDGE_PADDING), maxRight),
-    bottom: Math.min(Math.max(pos.bottom, EDGE_PADDING), maxBottom),
+    right: Math.min(Math.max(pos.right, minRight), maxRight),
+    bottom: Math.min(Math.max(pos.bottom, minBottom), maxBottom),
   };
 }
 
@@ -356,76 +387,86 @@ export default function MooniAgentFab({
         ? reactText
         : peekText;
   const showCloseButton = isIntro || isNudge;
+  const hintOnRight = shouldPlaceHintOnRight(pos.right);
 
   return (
     <div
       ref={rootRef}
       style={{ right: pos.right, bottom: pos.bottom }}
-      className="fixed z-[58] pointer-events-auto flex flex-col items-end gap-2 touch-none select-none"
+      className="fixed z-[58] pointer-events-auto touch-none select-none"
       aria-label="MOONi AI 여행 도우미"
     >
-      {hintVisible && (
-        <div className="relative max-w-[220px] animate-fade-in-up pointer-events-auto">
-          <div className="rounded-2xl border border-cyan-400/30 bg-black/70 backdrop-blur-xl px-4 py-3 text-sm text-gray-100 shadow-[0_8px_32px_rgba(34,211,238,0.15)]">
-            <p className={`leading-snug ${showCloseButton ? 'pr-5' : ''}`}>{hintText}</p>
-            {showCloseButton && (
-              <button
-                type="button"
-                onClick={dismissHint}
-                className="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors"
-                aria-label="말풍선 닫기"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
+      <div className="relative flex flex-col items-center">
+        {hintVisible && (
           <div
-            className="absolute -bottom-2 right-8 h-3 w-3 rotate-45 border-r border-b border-cyan-400/30 bg-black/70"
-            aria-hidden="true"
-          />
-        </div>
-      )}
+            className={`absolute bottom-full mb-2 animate-fade-in-up pointer-events-auto ${
+              hintOnRight ? 'left-0' : 'right-0'
+            }`}
+            style={{ width: 'max-content', maxWidth: HINT_MAX_WIDTH }}
+          >
+            <div className="relative rounded-2xl border border-cyan-400/30 bg-black/70 backdrop-blur-xl px-4 py-3 text-sm text-gray-100 shadow-[0_8px_32px_rgba(34,211,238,0.15)]">
+              <p className={`leading-snug ${showCloseButton ? 'pr-5' : ''}`}>{hintText}</p>
+              {showCloseButton && (
+                <button
+                  type="button"
+                  onClick={dismissHint}
+                  className="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors"
+                  aria-label="말풍선 닫기"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+            <div
+              className={`absolute -bottom-2 h-3 w-3 rotate-45 border-r border-b border-cyan-400/30 bg-black/70 ${
+                hintOnRight ? 'left-8' : 'right-8'
+              }`}
+              aria-hidden="true"
+            />
+          </div>
+        )}
 
-      <div
-        role="button"
-        tabIndex={0}
-        onPointerDown={onFabPointerDown}
-        onPointerMove={onFabPointerMove}
-        onPointerUp={onFabPointerUp}
-        onPointerCancel={onFabPointerCancel}
-        onMouseEnter={() => {
-          if (!canUseHoverPeek() || isDragging || showHint || reactText) return;
-          showPeek();
-        }}
-        onMouseLeave={() => {
-          if (isPressPeek) return;
-          clearPeek();
-        }}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            openChat();
-          }
-        }}
-        className={`group relative flex flex-col items-center gap-1 rounded-2xl p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${
-          isDragging ? 'cursor-grabbing scale-[1.02]' : 'cursor-grab hover:scale-105'
-        } transition-transform duration-200`}
-        aria-label="MOONi와 대화하기. 드래그하면 위치를 옮길 수 있어요. 모바일에서는 누르고 있으면 말풍선이 나와요."
-      >
-        <span className={`pointer-events-none ${isDragging ? '' : 'mooni-float'}`}>
+        <div
+          role="button"
+          tabIndex={0}
+          onPointerDown={onFabPointerDown}
+          onPointerMove={onFabPointerMove}
+          onPointerUp={onFabPointerUp}
+          onPointerCancel={onFabPointerCancel}
+          onMouseEnter={() => {
+            if (!canUseHoverPeek() || isDragging || showHint || reactText) return;
+            showPeek();
+          }}
+          onMouseLeave={() => {
+            if (isPressPeek) return;
+            clearPeek();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openChat();
+            }
+          }}
+          className={`group relative flex flex-col items-center gap-1 rounded-2xl p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${
+            isDragging ? 'cursor-grabbing scale-[1.02]' : 'cursor-grab hover:scale-105'
+          } transition-transform duration-200`}
+          aria-label="MOONi와 대화하기. 드래그하면 위치를 옮길 수 있어요. 모바일에서는 누르고 있으면 말풍선이 나와요."
+        >
+          <span className={`pointer-events-none ${isDragging ? '' : 'mooni-float'}`}>
+            <img
+              src={mooniChar}
+              alt="MOONi 캐릭터"
+              className="h-[72px] w-[72px] sm:h-[88px] sm:w-[88px] object-contain drop-shadow-[0_8px_24px_rgba(34,211,238,0.35)]"
+              draggable={false}
+            />
+          </span>
           <img
-            src={mooniChar}
-            alt="MOONi 캐릭터"
-            className="h-[72px] w-[72px] sm:h-[88px] sm:w-[88px] object-contain drop-shadow-[0_8px_24px_rgba(34,211,238,0.35)]"
+            src={mooniText}
+            alt="MOONi"
+            className="h-5 sm:h-6 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none"
             draggable={false}
           />
-        </span>
-        <img
-          src={mooniText}
-          alt="MOONi"
-          className="h-5 sm:h-6 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none"
-          draggable={false}
-        />
+        </div>
       </div>
     </div>
   );
