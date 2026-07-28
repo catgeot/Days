@@ -58,16 +58,40 @@ function buildIndexListHeadline({ timeTab, areaCode, cityName, tasteId }) {
   const sido = sidoListPhrase(areaCode);
   const city = cityListPhrase(cityName);
   const taste = tasteLabel(tasteId);
+  const place = [sido, city].filter(Boolean).join(' ');
 
-  const head = [`"${time}"`];
-  if (sido) head.push(`"${sido}"`);
-  if (city) head.push(`"${city}"`);
+  if (place) {
+    let sentence = `${place} · "${time}"`;
+    if (taste) sentence += ` "${taste}" 관련`;
+    sentence += ' 축제 리스트';
+    return sentence;
+  }
 
-  let sentence = head.join(' ');
-  if (sido || city) sentence += '지역에서';
+  let sentence = `"${time}"`;
   if (taste) sentence += ` "${taste}" 관련`;
-  sentence += ' 축제 리스트 입니다.';
+  sentence += ' 축제 리스트';
   return sentence;
+}
+
+/**
+ * @param {{
+ *   areaCode: string,
+ *   cityName: string,
+ *   count: number,
+ *   capped: boolean,
+ * }} p
+ */
+function buildPanelListMeta({ areaCode, cityName, count, capped }) {
+  const sido = sidoListPhrase(areaCode);
+  const city = cityListPhrase(cityName);
+  const place = [sido, city].filter(Boolean).join(' · ');
+  const bits = [];
+  if (place) bits.push(place);
+  bits.push(`${count}건`);
+  if (place && !city) bits.push('시·군별');
+  else if (!place) bits.push('지역 그룹');
+  if (capped) bits.push(`${PANEL_LIMIT}건까지`);
+  return bits.join(' · ');
 }
 
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
@@ -504,6 +528,25 @@ export default function KoreaFestivalHub() {
     () => groupFestivalsForList(panelItems, { areaCode }),
     [panelItems, areaCode],
   );
+
+  const panelListMeta = useMemo(() => {
+    if (nearActive && nearMsg) return nearMsg;
+    return buildPanelListMeta({
+      areaCode,
+      cityName,
+      count: panelItems.length,
+      capped:
+        (mapFocusIds?.length || filteredItems.length) > PANEL_LIMIT,
+    });
+  }, [
+    nearActive,
+    nearMsg,
+    areaCode,
+    cityName,
+    panelItems.length,
+    mapFocusIds,
+    filteredItems.length,
+  ]);
 
   const mapFocusRegionChips = useMemo(() => {
     if (!mapFocusIds?.length) return [];
@@ -1193,14 +1236,7 @@ export default function KoreaFestivalHub() {
                   <p className="truncate text-[11px] text-stone-500">
                     {personalTab != null
                       ? `${personalItems.length}건 · 지역 그룹`
-                      : nearActive && nearMsg
-                        ? nearMsg
-                        : `${panelItems.length}건 · 지역 그룹${
-                            (mapFocusIds?.length || filteredItems.length) >
-                            PANEL_LIMIT
-                              ? ` · ${PANEL_LIMIT}건까지`
-                              : ''
-                          }`}
+                      : panelListMeta}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
