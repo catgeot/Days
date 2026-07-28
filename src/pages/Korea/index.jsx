@@ -164,6 +164,15 @@ function chipClass(active) {
   }`;
 }
 
+/** 대분류: 항상 현재 선택 라벨 · 열린 패널만 강조 */
+function majorChipClass(panelOpen) {
+  return `flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-xs transition-all border shrink-0 font-bold ${
+    panelOpen
+      ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+      : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
+  }`;
+}
+
 function flapChipClass(active) {
   return `flex w-full items-center justify-between gap-1 rounded-xl border px-2 py-1.5 text-left text-[11px] transition-all ${
     active
@@ -731,6 +740,7 @@ export default function KoreaFestivalHub() {
 
   const selectTime = (id) => {
     setTimeTab(id);
+    setChipPanel('time');
     clearNear();
     setSelected(null);
   };
@@ -910,9 +920,13 @@ export default function KoreaFestivalHub() {
               </span>
               <button
                 type="button"
-                onClick={openMap}
-                aria-label="지도로 위치·동선 보기"
-                title="지도로 위치·동선 보기"
+                onClick={() => (mapOpen ? closeMap() : openMap())}
+                aria-label={
+                  mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
+                }
+                title={
+                  mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
+                }
                 aria-pressed={mapOpen}
                 className={`shrink-0 flex h-9 w-9 items-center justify-center rounded-full border ${
                   mapOpen
@@ -920,7 +934,11 @@ export default function KoreaFestivalHub() {
                     : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
                 }`}
               >
-                <MapIcon size={15} aria-hidden="true" />
+                {mapOpen ? (
+                  <X size={15} aria-hidden="true" />
+                ) : (
+                  <MapIcon size={15} aria-hidden="true" />
+                )}
               </button>
               <button
                 type="button"
@@ -1026,7 +1044,7 @@ export default function KoreaFestivalHub() {
                 <button
                   type="button"
                   onClick={openTimeMajor}
-                  className={chipClass(chipPanel === 'time')}
+                  className={majorChipClass(chipPanel === 'time')}
                   aria-pressed={chipPanel === 'time'}
                   aria-label={`시간 대분류 · ${timeMajorLabel}`}
                 >
@@ -1035,7 +1053,7 @@ export default function KoreaFestivalHub() {
                 <button
                   type="button"
                   onClick={openRegionMajor}
-                  className={chipClass(chipPanel === 'region')}
+                  className={majorChipClass(chipPanel === 'region')}
                   aria-pressed={chipPanel === 'region'}
                   aria-label={`지역 대분류 · ${regionMajorLabel}`}
                 >
@@ -1044,7 +1062,7 @@ export default function KoreaFestivalHub() {
                 <button
                   type="button"
                   onClick={openTasteMajor}
-                  className={chipClass(chipPanel === 'taste')}
+                  className={majorChipClass(chipPanel === 'taste')}
                   aria-pressed={chipPanel === 'taste'}
                   aria-label={`테마 대분류 · ${tasteMajorLabel}`}
                 >
@@ -1181,13 +1199,26 @@ export default function KoreaFestivalHub() {
               <div className="flex shrink-0 items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={openMap}
-                  aria-label="지도로 위치·동선 보기"
-                  title="지도로 위치·동선 보기"
-                  className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+                  onClick={() => (mapOpen ? closeMap() : openMap())}
+                  aria-label={
+                    mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
+                  }
+                  title={
+                    mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
+                  }
+                  aria-pressed={mapOpen}
+                  className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
+                    mapOpen
+                      ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                  }`}
                 >
-                  <MapIcon size={14} aria-hidden="true" />
-                  지도
+                  {mapOpen ? (
+                    <X size={14} aria-hidden="true" />
+                  ) : (
+                    <MapIcon size={14} aria-hidden="true" />
+                  )}
+                  {mapOpen ? '목록' : '지도'}
                 </button>
                 {personalTab == null &&
                   areaCode !== 'all' &&
@@ -1292,6 +1323,37 @@ export default function KoreaFestivalHub() {
                 parentRegionLabel={parentRegionLabel}
               />
             )}
+            {mapOpen ? (
+              <div className="relative min-h-0 flex-1 overflow-hidden bg-[#1b1410]">
+                <KoreaFestivalMap
+                  className="absolute inset-0 h-full w-full"
+                  items={mapItems}
+                  activeContentId={
+                    selected?.contentId != null
+                      ? String(selected.contentId)
+                      : ''
+                  }
+                  focusView={mapFocusView}
+                  historyKey={`${mapSessionKey}:${timeTab}:${areaCode}:${cityName}:${tasteId}:${nearIds?.length || 0}`}
+                  onSelectPoint={(contentId) => {
+                    const id = String(contentId);
+                    const item =
+                      byContentId.get(id) ||
+                      mapItems.find((row) => String(row?.contentId) === id);
+                    if (item) openItem(item);
+                  }}
+                  onSelectCluster={(contentIds) => {
+                    const ids = (contentIds || []).map(String).filter(Boolean);
+                    if (ids.length) {
+                      setNearIds(ids);
+                      setNearLabel('');
+                      setNearMsg(`지도에서 고른 ${ids.length}건`);
+                    }
+                    setMapOpen(false);
+                  }}
+                />
+              </div>
+            ) : (
             <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3">
               {personalTab != null ? (
                 personalItems.length === 0 ? (
@@ -1361,55 +1423,10 @@ export default function KoreaFestivalHub() {
                 ))
               )}
             </div>
+            )}
           </div>
         </div>
       </main>
-
-      {mapOpen && (
-        <div className="absolute inset-0 z-40 flex flex-col bg-[#1b1410]">
-          <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#1b1410]/95 px-3 py-2.5 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
-            <button
-              type="button"
-              onClick={closeMap}
-              aria-label="지도 닫기 · 목록으로"
-              className="flex h-9 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 text-xs font-bold text-white hover:bg-white/15"
-            >
-              <X size={14} aria-hidden="true" />
-              목록
-            </button>
-            <p className="min-w-0 flex-1 truncate text-xs text-white/80 break-keep">
-              위치·동선 확인 · {mapItems.length}건
-            </p>
-          </div>
-          <div className="relative min-h-0 flex-1">
-            <KoreaFestivalMap
-              className="absolute inset-0 h-full w-full"
-              items={mapItems}
-              activeContentId={
-                selected?.contentId != null ? String(selected.contentId) : ''
-              }
-              focusView={mapFocusView}
-              historyKey={`${mapSessionKey}:${timeTab}:${areaCode}:${cityName}:${tasteId}:${nearIds?.length || 0}`}
-              onSelectPoint={(contentId) => {
-                const id = String(contentId);
-                const item =
-                  byContentId.get(id) ||
-                  mapItems.find((row) => String(row?.contentId) === id);
-                if (item) openItem(item);
-              }}
-              onSelectCluster={(contentIds) => {
-                const ids = (contentIds || []).map(String).filter(Boolean);
-                if (ids.length) {
-                  setNearIds(ids);
-                  setNearLabel('');
-                  setNearMsg(`지도에서 고른 ${ids.length}건`);
-                }
-                setMapOpen(false);
-              }}
-            />
-          </div>
-        </div>
-      )}
 
       {selected && (
         <FestivalDetailSheet
