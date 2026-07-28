@@ -1144,34 +1144,6 @@ export default function KoreaFestivalHub() {
                         <span className="opacity-70">{s.count}</span>
                       </button>
                     ))}
-                    {cityChips.length > 0 && (
-                      <>
-                        <span
-                          className="mx-0.5 h-4 w-px shrink-0 self-center bg-stone-300"
-                          aria-hidden="true"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => selectCity('all')}
-                          className={chipClass(cityName === 'all')}
-                          aria-pressed={cityName === 'all'}
-                        >
-                          {subregionUnitLabel(areaCode)} 전체
-                        </button>
-                        {cityChips.map((c) => (
-                          <button
-                            key={c.id}
-                            type="button"
-                            onClick={() => selectCity(c.id)}
-                            className={chipClass(cityName === c.id)}
-                            aria-pressed={cityName === c.id}
-                          >
-                            {c.label}
-                            <span className="opacity-70">{c.count}</span>
-                          </button>
-                        ))}
-                      </>
-                    )}
                   </>
                 )}
                 {chipPanel === 'taste' && (
