@@ -100,8 +100,34 @@ const HomeUI = React.memo(({
           aria-hidden="true"
         />
 
-        <div onClick={onLogoClick} className="md:col-span-2 flex-shrink-0 flex flex-col justify-center animate-fade-in-down pt-2 md:pl-2 pointer-events-auto cursor-pointer group relative z-50">
-          <h1 className="group-hover:scale-105 transition-transform origin-left"><Logo /></h1>
+        <div className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-50">
+          <div
+            onClick={onLogoClick}
+            className="cursor-pointer group"
+          >
+            <h1 className="group-hover:scale-105 transition-transform origin-left">
+              <Logo />
+            </h1>
+          </div>
+          {!isTourCinema && (
+            <Link
+              to="/korea"
+              className="group flex w-full max-w-[12.5rem] items-center gap-2.5 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
+              aria-label="국내 축제 페이지로 이동"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
+                <CalendarDays size={16} aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex flex-col leading-tight">
+                <span className="truncate text-[12px] font-bold tracking-wide text-white">
+                  국내 축제
+                </span>
+                <span className="truncate text-[10px] text-amber-100/85">
+                  지금 · 지도에서 찾기
+                </span>
+              </span>
+            </Link>
+          )}
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
@@ -388,13 +414,6 @@ const HomeUI = React.memo(({
                   <PenTool size={18} className="text-gray-200 group-hover:text-emerald-400 transition-colors" />
               </div>
               <span className="hidden md:inline text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
-          </Link>
-
-          <Link to="/korea" className="group flex items-center gap-2 pb-2 cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-amber-400/50 transition-all shadow-lg">
-                  <CalendarDays size={18} className="text-gray-200 group-hover:text-amber-400 transition-colors" />
-              </div>
-              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">국내</span>
           </Link>
         </div>
 
