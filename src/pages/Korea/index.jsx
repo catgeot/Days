@@ -529,25 +529,6 @@ export default function KoreaFestivalHub() {
     [panelItems, areaCode],
   );
 
-  const panelListMeta = useMemo(() => {
-    if (nearActive && nearMsg) return nearMsg;
-    return buildPanelListMeta({
-      areaCode,
-      cityName,
-      count: panelItems.length,
-      capped:
-        (mapFocusIds?.length || filteredItems.length) > PANEL_LIMIT,
-    });
-  }, [
-    nearActive,
-    nearMsg,
-    areaCode,
-    cityName,
-    panelItems.length,
-    mapFocusIds,
-    filteredItems.length,
-  ]);
-
   const mapFocusRegionChips = useMemo(() => {
     if (!mapFocusIds?.length) return [];
     return buildMapFocusRegionChips(panelItems, sidoChips);
@@ -640,6 +621,25 @@ export default function KoreaFestivalHub() {
   };
 
   const nearActive = Boolean(nearLabel || nearMsg);
+
+  const panelListMeta = useMemo(() => {
+    if (nearActive && nearMsg) return nearMsg;
+    return buildPanelListMeta({
+      areaCode,
+      cityName,
+      count: panelItems.length,
+      capped:
+        (mapFocusIds?.length || filteredItems.length) > PANEL_LIMIT,
+    });
+  }, [
+    nearActive,
+    nearMsg,
+    areaCode,
+    cityName,
+    panelItems.length,
+    mapFocusIds,
+    filteredItems.length,
+  ]);
 
   const closeNearMe = () => {
     clearMapFocus();
