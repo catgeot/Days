@@ -8,6 +8,8 @@ import React, {
   useImperativeHandle
 } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
+import { PenTool } from 'lucide-react';
 import Map, { Marker, useControl } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -2252,7 +2254,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
       {!isZenMode && !hideTourControls && !(isMobileDevice && isTourMode(globeMode)) && (
         <div
-          className="absolute z-[70] pointer-events-auto flex flex-col gap-1 right-3 top-14 md:top-8 md:right-[24.8%] md:gap-2 md:flex-row md:flex-wrap md:items-center"
+          className="absolute z-[70] pointer-events-auto flex flex-col gap-1 right-3 top-16 md:top-8 md:right-[24.8%] md:gap-2 md:flex-row md:flex-wrap md:items-center"
           role="toolbar"
           aria-label="지도 도구"
         >
@@ -2269,6 +2271,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
               <path d="M4.9 10.5v8.4A2.1 2.1 0 0 0 7 21h10a2.1 2.1 0 0 0 2.1-2.1v-8.4" />
             </svg>
           </button>
+          <Link
+            to="/blog"
+            className={`${GLOBE_MAP_BTN_BASE} border-white/20 text-emerald-300 md:hidden`}
+            aria-label="로그북"
+            title="로그북"
+          >
+            <PenTool size={18} aria-hidden="true" />
+          </Link>
           <button
             type="button"
             onClick={handleGoToCurrentLocation}

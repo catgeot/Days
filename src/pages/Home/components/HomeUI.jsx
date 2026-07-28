@@ -157,7 +157,7 @@ const HomeUI = React.memo(({
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto relative z-50 min-w-0">
+        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto z-50 min-w-0 md:relative">
           {isTourCinema && tourLocation ? (
             <TourMobileBar
               className="w-full md:hidden"
@@ -170,7 +170,7 @@ const HomeUI = React.memo(({
               onClose={onTourBarClose}
             />
           ) : (
-           <div data-site-notice-anchor className="relative group w-full max-w-[200px] sm:max-w-xs md:max-w-md self-end">
+           <div data-site-notice-anchor className="group w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div
               onClick={() => navigate('/explore')}
@@ -392,20 +392,20 @@ const HomeUI = React.memo(({
       )}
 
       <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-50 pointer-events-none">
-        <div className="absolute bottom-4 left-4 md:bottom-6 md:left-[8.75rem] flex items-end gap-3 md:gap-4 pointer-events-auto">
+        <div className="hidden md:flex absolute bottom-6 left-[8.75rem] items-end gap-4 pointer-events-auto">
           {user ? (
             <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-red-400/50 transition-all shadow-lg">
                     <LogOut size={18} className="text-gray-200 group-hover:text-red-400 transition-colors" />
                 </div>
-                <span className="hidden md:inline text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGOUT</span>
             </button>
           ) : (
             <Link to="/auth/login" state={{ from: window.location.pathname + window.location.search }} className="group flex items-center gap-2 pb-2 cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-purple-400/50 transition-all shadow-lg">
                     <User size={18} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
                 </div>
-                <span className="hidden md:inline text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
+                <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGIN</span>
             </Link>
           )}
 
@@ -413,7 +413,7 @@ const HomeUI = React.memo(({
               <div className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-emerald-400/50 transition-all shadow-lg">
                   <PenTool size={18} className="text-gray-200 group-hover:text-emerald-400 transition-colors" />
               </div>
-              <span className="hidden md:inline text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
+              <span className="text-[11px] text-gray-300 font-bold tracking-widest group-hover:text-white transition-colors">LOGBOOK</span>
           </Link>
         </div>
 
