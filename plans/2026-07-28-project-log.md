@@ -2,25 +2,18 @@
 
 직전: [`2026-07-27-project-log.md`](./2026-07-27-project-log.md)
 
-## 국내축제 — 머지 QA 이어하기 (세션 종료)
+## 국내축제 — 로컬 main 반영 (배포 대기)
 
-**상태**: ✅ 사람 확인 · tip `bb7ee5e` · push · `merge/korea-festival-into-main` · **main 미병합**
+**상태**: ✅ 로컬 `main` fast-forward → tip `c06866b` · smoke PASS · **origin/main 미푸시**(사람 로컬 검증 후 push·배포)
 
 | 영역 | 내용 |
 |------|------|
-| 리스트 | 시도→시·군·구 그룹 · 지역명 제목/부제 · sticky 제거 · 헤더 offset · 시간/대분류 변경 시 리스트 유지 |
-| 칩 | 시·군 ≥1 · 광역시 구 구분 · 헤더 하위칩 제거(모달만) · 상위 복귀 · 해운대구≠대구 |
-| 홈↔축제 | `/korea` 지구본 홈 버튼 · 로고 아래 **「한국의 축제 현장」** 배너 |
+| 머지 | `merge/korea-festival-into-main` → `main` (FF, 82 commits ahead of origin) |
+| VERIFY | `smoke:korea-festival-personal` · `audit/smoke:korea-area-codes` · `smoke:place-label-slug` PASS |
+| QA 포커스 | 홈 배너「한국의 축제 현장」→ `/korea` · 지구본 홈 · 시도/시군 리스트·칩 |
 
-**VERIFY**: `smoke:korea-festival-personal` · `audit/smoke:korea-area-codes` PASS
+**다음**: 사람 로컬 회귀 OK → `git push origin main` · (필요 시) `tourapi-proxy` Edge 재배포. releaseNotes·hub 신설·corridor 부활 금지.
 
-**다음**: 홈·`/korea` 회귀 OK 시 **main 반영·push**. releaseNotes·hub 신설·corridor 부활 금지.
+## 국내축제 — 머지 QA 이어하기 (세션 종료 · 보관)
 
-**제시어 (다음 세션)**
-
-```
-국내축제-머지-QA
-@plans/2026-07-28-project-log.md 「국내축제 — 머지 QA 이어하기」절만
-브랜치 merge/korea-festival-into-main (tip bb7ee5e).
-홈·/korea 회귀 이어하기. OK 시 main 반영·push만.
-```
+**상태(당시)**: ✅ 사람 확인 · tip `bb7ee5e` · `merge/korea-festival-into-main` · main 미병합 → 위 절로 이어짐
