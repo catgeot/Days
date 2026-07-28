@@ -9,7 +9,7 @@
 - **항공 경로 DB (우선)**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) · **Heuristic SSOT (다음)**: [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · **비-ICN 라우팅**: [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) (OurAirports·Supabase · **Phase 0~4 v2.2 ✅** · **Heuristic+GATN seed ⏳**)
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
 - **TourAPI 국내 관광 (3단계 ⏳ · 시드40·v1.7 · UI/릴리스 합의)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
-- **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `e983d04`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
+- **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **국내 MRT TNA 인근 확장 (다음 세션 · Phase 0 목록 먼저)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 제시어 `MRT-TNA-인근확장-이어하기`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
