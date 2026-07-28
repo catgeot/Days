@@ -37,6 +37,7 @@ import {
 } from './festivalRegionTags';
 import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
+  groupFestivalsByCity,
   groupFestivalsBySido,
   groupFestivalsForList,
   hydrateFestivalRefs,
@@ -111,8 +112,26 @@ function buildPanelListMeta({ areaCode, cityName, count, capped }) {
 const PANEL_LIMIT = 48;
 const NEAR_KM = NEAR_FESTIVAL_KM;
 
-/** Strict Mode 재마운트에도 진입 GPS는 세션당 1회 */
+/** Strict Mode 재마운트에도 진입 GPS는 JS 세션당 1회(첫 시도) */
 let koreaFestivalLocationBooted = false;
+
+const LOC_HINT_DONE_KEY = 'korea-festival-loc-hint-done';
+
+function readLocHintDone() {
+  try {
+    return sessionStorage.getItem(LOC_HINT_DONE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function writeLocHintDone() {
+  try {
+    sessionStorage.setItem(LOC_HINT_DONE_KEY, '1');
+  } catch {
+    /* ignore */
+  }
+}
 
 function toRad(d) {
   return (d * Math.PI) / 180;
@@ -140,6 +159,35 @@ function festivalsWithinKm(items, lat, lng, maxKm) {
     if (!pt) return false;
     return haversineKm(lat, lng, pt.lat, pt.lng) <= maxKm;
   });
+}
+
+/**
+ * @param {object[]} items
+ * @param {number} lat
+ * @param {number} lng
+ * @returns {{ item: object, km: number }[]}
+ */
+function rankFestivalsByDistance(items, lat, lng) {
+  return (items || [])
+    .map((item) => {
+      const pt = festivalLngLat(item?.mapx, item?.mapy);
+      const km = pt
+        ? haversineKm(lat, lng, pt.lat, pt.lng)
+        : Number.POSITIVE_INFINITY;
+      return { item, km };
+    })
+    .sort(
+      (a, b) =>
+        a.km - b.km ||
+        String(a.item?.title || '').localeCompare(String(b.item?.title || ''), 'ko'),
+    );
+}
+
+function formatDistanceKm(km) {
+  if (!Number.isFinite(km)) return '';
+  if (km < 1) return `${Math.max(0.1, Math.round(km * 10) / 10)}km`;
+  if (km < 10) return `${(Math.round(km * 10) / 10).toFixed(1)}km`;
+  return `${Math.round(km)}km`;
 }
 
 function formatYmdLabel(ymd) {
@@ -202,7 +250,7 @@ function RelatedChipFlap({
 
   const shell =
     layout === 'side'
-      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-stone-200 bg-white/95 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar'
+      ? 'hidden md:flex w-[92px] shrink-0 flex-col gap-2 overflow-y-auto rounded-l-3xl border border-r-0 border-stone-200 bg-white/95 px-1.5 py-2.5 backdrop-blur-xl custom-scrollbar lg:w-[128px] lg:px-2'
       : 'flex shrink-0 gap-2 overflow-x-auto border-b border-stone-200 px-3 py-2 custom-scrollbar md:hidden';
 
   if (layout === 'row') {
@@ -330,11 +378,19 @@ function RelatedChipFlap({
   );
 }
 
-function FestivalRow({ item, active, onSelect, favorited, onToggleFavorite }) {
+function FestivalRow({
+  item,
+  active,
+  onSelect,
+  favorited,
+  onToggleFavorite,
+  distanceKm,
+}) {
   const img = festivalImage(item);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
   const range = start && end ? `${start} – ${end}` : start || end;
+  const distanceLabel = formatDistanceKm(distanceKm);
 
   return (
     <div
@@ -357,7 +413,16 @@ function FestivalRow({ item, active, onSelect, favorited, onToggleFavorite }) {
           )}
         </div>
         <div className="min-w-0 flex-1 space-y-0.5">
-          <p className="text-sm font-bold text-stone-900 truncate">{item.title}</p>
+          <div className="flex min-w-0 items-start justify-between gap-2">
+            <p className="min-w-0 flex-1 text-sm font-bold text-stone-900 truncate">
+              {item.title}
+            </p>
+            {distanceLabel ? (
+              <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+                {distanceLabel}
+              </span>
+            ) : null}
+          </div>
           {range && (
             <p className="text-[11px] text-amber-700 font-bold flex items-center gap-1">
               <CalendarDays size={11} aria-hidden="true" />
@@ -409,6 +474,8 @@ export default function KoreaFestivalHub() {
   /** @type {[string[] | null, function]} */
   const [nearIds, setNearIds] = useState(null);
   const [mapFocusView, setMapFocusView] = useState(null);
+  /** @type {[{ lat: number, lng: number } | null, function]} */
+  const [nearOrigin, setNearOrigin] = useState(null);
   const [mapOpen, setMapOpen] = useState(false);
   const [mapSessionKey, setMapSessionKey] = useState(0);
   const [items, setItems] = useState([]);
@@ -422,8 +489,11 @@ export default function KoreaFestivalHub() {
   const [searchQuery, setSearchQuery] = useState('');
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
-  const [locHintDismissed, setLocHintDismissed] = useState(false);
+  const [locHintDismissed, setLocHintDismissed] = useState(() =>
+    readLocHintDone(),
+  );
   const userRegionOverrideRef = useRef(false);
+  const mountLocTriedRef = useRef(false);
   const [favoriteIds, setFavoriteIds] = useState(() =>
     new Set(loadFavorites().map((r) => String(r.contentId))),
   );
@@ -554,41 +624,111 @@ export default function KoreaFestivalHub() {
     return map;
   }, [items]);
 
-  const panelItems = useMemo(() => {
-    if (nearIds && nearIds.length > 0) {
-      const ordered = [];
-      const seen = new Set();
-      for (const id of nearIds) {
-        const key = String(id);
-        const hit = filteredItems.find(
-          (item) => String(item?.contentId || '') === key,
-        );
-        if (hit && !seen.has(key)) {
-          seen.add(key);
-          ordered.push(hit);
-        }
+  /** 내 주변: 반경 결과 · 내 위치 기준 가까운 순 */
+  const nearRanked = useMemo(() => {
+    if (!nearIds?.length) return null;
+    const ordered = [];
+    const seen = new Set();
+    for (const id of nearIds) {
+      const key = String(id);
+      const hit = byContentId.get(key);
+      if (hit && !seen.has(key)) {
+        seen.add(key);
+        ordered.push(hit);
       }
-      return ordered.slice(0, PANEL_LIMIT);
+    }
+    if (nearOrigin) {
+      return rankFestivalsByDistance(
+        ordered,
+        nearOrigin.lat,
+        nearOrigin.lng,
+      );
+    }
+    return ordered.map((item) => ({
+      item,
+      km: Number.POSITIVE_INFINITY,
+    }));
+  }, [nearIds, byContentId, nearOrigin]);
+
+  const nearBaseItems = useMemo(
+    () => (nearRanked ? nearRanked.map((row) => row.item) : null),
+    [nearRanked],
+  );
+
+  const nearKmByContentId = useMemo(() => {
+    const map = new Map();
+    if (!nearRanked) return map;
+    for (const { item, km } of nearRanked) {
+      if (item?.contentId == null || !Number.isFinite(km)) continue;
+      map.set(String(item.contentId), km);
+    }
+    return map;
+  }, [nearRanked]);
+
+  const panelItems = useMemo(() => {
+    if (nearBaseItems) {
+      return nearBaseItems.slice(0, PANEL_LIMIT);
     }
     return filteredItems.slice(0, PANEL_LIMIT);
-  }, [nearIds, filteredItems]);
+  }, [nearBaseItems, filteredItems]);
 
-  const panelGroups = useMemo(
-    () => groupFestivalsForList(panelItems, { areaCode }),
-    [panelItems, areaCode],
-  );
+  const panelGroups = useMemo(() => {
+    if (nearBaseItems) {
+      const groups = groupFestivalsByCity(panelItems, {});
+      return groups
+        .map((g) => {
+          const items = [...g.items].sort((a, b) => {
+            const ka =
+              nearKmByContentId.get(String(a.contentId)) ??
+              Number.POSITIVE_INFINITY;
+            const kb =
+              nearKmByContentId.get(String(b.contentId)) ??
+              Number.POSITIVE_INFINITY;
+            return (
+              ka - kb ||
+              String(a.title || '').localeCompare(String(b.title || ''), 'ko')
+            );
+          });
+          let minKm = Number.POSITIVE_INFINITY;
+          for (const item of items) {
+            const k =
+              nearKmByContentId.get(String(item.contentId)) ??
+              Number.POSITIVE_INFINITY;
+            if (k < minKm) minKm = k;
+          }
+          return { ...g, items, minKm };
+        })
+        .sort(
+          (a, b) =>
+            a.minKm - b.minKm || a.label.localeCompare(b.label, 'ko'),
+        );
+    }
+    return groupFestivalsForList(panelItems, { areaCode });
+  }, [nearBaseItems, panelItems, areaCode, nearKmByContentId]);
 
   const flapChildChips = useMemo(() => {
+    if (nearBaseItems) {
+      return panelGroups.map((g) => ({
+        id: g.id,
+        label: g.label,
+        count: g.items.length,
+      }));
+    }
     if (areaCode === 'all') return [];
     return cityChips;
-  }, [areaCode, cityChips]);
+  }, [nearBaseItems, panelGroups, areaCode, cityChips]);
 
-  const flapNeighborChips = indexNeighborChips;
+  const flapNeighborChips = useMemo(() => {
+    if (nearBaseItems) return [];
+    return indexNeighborChips;
+  }, [nearBaseItems, indexNeighborChips]);
 
-  const flapTasteChips = useMemo(
-    () => tasteChips.filter((t) => t.id !== tasteId),
-    [tasteChips, tasteId],
-  );
+  const flapTasteChips = useMemo(() => {
+    if (nearBaseItems) {
+      return buildTasteTags(nearBaseItems).filter((t) => t.id !== tasteId);
+    }
+    return tasteChips.filter((t) => t.id !== tasteId);
+  }, [nearBaseItems, tasteChips, tasteId]);
 
   const parentRegionLabel =
     areaCode !== 'all'
@@ -626,9 +766,15 @@ export default function KoreaFestivalHub() {
     return nearbyHubsForFestival(selected, krHubList);
   }, [selected, krHubList]);
 
+  const dismissLocHint = useCallback(() => {
+    setLocHintDismissed(true);
+    writeLocHintDone();
+  }, []);
+
   const clearNear = useCallback(() => {
     setNearIds(null);
     setMapFocusView(null);
+    setNearOrigin(null);
     setNearLabel('');
     setNearMsg('');
   }, []);
@@ -644,6 +790,7 @@ export default function KoreaFestivalHub() {
       const silent = Boolean(opts.silent);
       const sourceItems = opts.festivalItems ?? items;
       const hubResolved = resolveKoreaAreaFromCoords(lat, lng);
+      dismissLocHint();
       if (!hubResolved) {
         if (!silent) {
           setNearLabel('');
@@ -661,16 +808,21 @@ export default function KoreaFestivalHub() {
       setPersonalTab(null);
       setSearchQuery('');
       setSearchOpen(false);
-      const nearby = festivalsWithinKm(
-        filterByTimeTab('now', sourceItems, now),
+      const nearby = rankFestivalsByDistance(
+        festivalsWithinKm(
+          filterByTimeTab('now', sourceItems, now),
+          lat,
+          lng,
+          NEAR_KM,
+        ),
         lat,
         lng,
-        NEAR_KM,
-      );
+      ).map((row) => row.item);
       const ids = nearby
         .map((item) => String(item?.contentId || ''))
         .filter(Boolean);
       setNearIds(ids.length ? ids : null);
+      setNearOrigin(ids.length ? { lat, lng } : null);
       setMapFocusView({ lng, lat, zoom: 9 });
       setNearLabel(label);
       setNearMsg(
@@ -680,7 +832,7 @@ export default function KoreaFestivalHub() {
       );
       return true;
     },
-    [items, now],
+    [items, now, dismissLocHint],
   );
 
   const resetToDefault = () => {
@@ -694,7 +846,6 @@ export default function KoreaFestivalHub() {
     setPersonalTab(null);
     setSelected(null);
     setChipPanel('region');
-    setLocHintDismissed(false);
   };
 
   const closeSearch = () => {
@@ -717,6 +868,13 @@ export default function KoreaFestivalHub() {
     !searchActive;
 
   const panelListMeta = useMemo(() => {
+    if (nearBaseItems && nearLabel) {
+      const n = panelItems.length;
+      const total = nearBaseItems.length;
+      return total > PANEL_LIMIT
+        ? `${NEAR_KM}km 안 ${n}건 · ${PANEL_LIMIT}건까지`
+        : `${NEAR_KM}km 안 ${n}건`;
+    }
     if (nearActive && nearMsg) return nearMsg;
     return buildPanelListMeta({
       areaCode,
@@ -725,6 +883,8 @@ export default function KoreaFestivalHub() {
       capped: filteredItems.length > PANEL_LIMIT,
     });
   }, [
+    nearBaseItems,
+    nearLabel,
     nearActive,
     nearMsg,
     areaCode,
@@ -850,8 +1010,10 @@ export default function KoreaFestivalHub() {
         if (code === 1) {
           setNearMsg('위치 권한이 필요합니다. 브라우저에서 위치를 허용해 주세요.');
         } else if (code === 3) {
+          dismissLocHint();
           setNearMsg('위치 확인이 지연되었습니다. 잠시 후 다시 시도해 주세요.');
         } else {
+          dismissLocHint();
           setNearMsg('위치를 가져오지 못했습니다. 권한·네트워크를 확인해 주세요.');
         }
       },
@@ -860,31 +1022,62 @@ export default function KoreaFestivalHub() {
   };
 
   useEffect(() => {
-    if (koreaFestivalLocationBooted) return;
     if (loading) return;
+    if (mountLocTriedRef.current) return;
     if (userRegionOverrideRef.current) {
-      koreaFestivalLocationBooted = true;
+      mountLocTriedRef.current = true;
       return;
     }
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      koreaFestivalLocationBooted = true;
+      mountLocTriedRef.current = true;
       return;
     }
-    koreaFestivalLocationBooted = true;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        if (userRegionOverrideRef.current) return;
-        applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
-          silent: true,
-          festivalItems: items,
+
+    const opts = {
+      enableHighAccuracy: false,
+      timeout: 8_000,
+      maximumAge: 300_000,
+    };
+
+    const onOk = (pos) => {
+      dismissLocHint();
+      if (userRegionOverrideRef.current) return;
+      applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
+        silent: true,
+        festivalItems: items,
+      });
+    };
+
+    mountLocTriedRef.current = true;
+
+    if (!koreaFestivalLocationBooted) {
+      koreaFestivalLocationBooted = true;
+      navigator.geolocation.getCurrentPosition(onOk, () => {}, opts);
+      return;
+    }
+
+    const retryIfGranted = () => {
+      navigator.geolocation.getCurrentPosition(onOk, () => dismissLocHint(), opts);
+    };
+
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: 'geolocation' })
+        .then((status) => {
+          if (status.state === 'granted') retryIfGranted();
+          else if (status.state === 'prompt' && readLocHintDone()) {
+            /* 이전에 허용·닫기 한 세션 — 잘못된 힌트만 유지 방지 */
+            dismissLocHint();
+          }
+        })
+        .catch(() => {
+          if (readLocHintDone()) retryIfGranted();
         });
-      },
-      () => {
-        /* 거부·실패 → 기본 강원 유지 */
-      },
-      { enableHighAccuracy: false, timeout: 8_000, maximumAge: 300_000 },
-    );
-  }, [loading, items, applyUserLocation]);
+      return;
+    }
+
+    if (readLocHintDone()) retryIfGranted();
+  }, [loading, items, applyUserLocation, dismissLocHint]);
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -895,7 +1088,7 @@ export default function KoreaFestivalHub() {
       />
 
       <header className="sticky top-0 z-30 shrink-0 border-b border-stone-200/80 bg-stone-100/95 pt-[max(0.5rem,env(safe-area-inset-top,0px))] backdrop-blur-md">
-        <div className="mx-auto max-w-3xl px-3 pb-2.5 md:px-5">
+        <div className="mx-auto w-full max-w-3xl px-3 pb-2.5 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
           <div className="min-w-0 rounded-2xl border border-stone-200/90 bg-white px-3 py-2.5 shadow-sm md:px-4">
             <div className="flex items-center gap-2">
               <button
@@ -911,7 +1104,7 @@ export default function KoreaFestivalHub() {
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
                   Korea
                 </p>
-                <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg">
+                <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
                   국내 축제
                 </h1>
               </div>
@@ -1136,7 +1329,7 @@ export default function KoreaFestivalHub() {
         </div>
       </header>
 
-      <main className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-3 md:px-5">
+      <main className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-3 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
         {loading && (
           <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700 shadow-sm">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
@@ -1181,9 +1374,9 @@ export default function KoreaFestivalHub() {
             />
           )}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3">
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5">
               <div className="min-w-0">
-                <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug">
+                <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
                   {personalTab != null
                     ? personalTab === 'favorites'
                       ? '즐겨찾기'
@@ -1280,7 +1473,7 @@ export default function KoreaFestivalHub() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setLocHintDismissed(true)}
+                    onClick={dismissLocHint}
                     className="rounded-full px-2 py-1 text-[11px] font-semibold text-amber-800/70 hover:bg-amber-100/80"
                   >
                     닫기
@@ -1323,38 +1516,18 @@ export default function KoreaFestivalHub() {
                 parentRegionLabel={parentRegionLabel}
               />
             )}
-            {mapOpen ? (
-              <div className="relative min-h-0 flex-1 overflow-hidden bg-[#1b1410]">
-                <KoreaFestivalMap
-                  className="absolute inset-0 h-full w-full"
-                  items={mapItems}
-                  activeContentId={
-                    selected?.contentId != null
-                      ? String(selected.contentId)
-                      : ''
-                  }
-                  focusView={mapFocusView}
-                  historyKey={`${mapSessionKey}:${timeTab}:${areaCode}:${cityName}:${tasteId}:${nearIds?.length || 0}`}
-                  onSelectPoint={(contentId) => {
-                    const id = String(contentId);
-                    const item =
-                      byContentId.get(id) ||
-                      mapItems.find((row) => String(row?.contentId) === id);
-                    if (item) openItem(item);
-                  }}
-                  onSelectCluster={(contentIds) => {
-                    const ids = (contentIds || []).map(String).filter(Boolean);
-                    if (ids.length) {
-                      setNearIds(ids);
-                      setNearLabel('');
-                      setNearMsg(`지도에서 고른 ${ids.length}건`);
-                    }
-                    setMapOpen(false);
-                  }}
-                />
-              </div>
-            ) : (
-            <div className="custom-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-3">
+            <div
+              className={`flex min-h-0 flex-1 ${
+                mapOpen ? 'flex-col lg:flex-row' : 'flex-col'
+              }`}
+            >
+              <div
+                className={`custom-scrollbar min-h-0 space-y-2 overflow-y-auto px-3 py-3 ${
+                  mapOpen
+                    ? 'hidden lg:block lg:w-[min(26rem,38%)] lg:shrink-0 lg:border-r lg:border-stone-200'
+                    : 'flex-1'
+                }`}
+              >
               {personalTab != null ? (
                 personalItems.length === 0 ? (
                   <p className="px-1 py-4 text-sm text-stone-500">
@@ -1417,13 +1590,50 @@ export default function KoreaFestivalHub() {
                         favorited={favoriteIds.has(String(item.contentId))}
                         onToggleFavorite={handleToggleFavorite}
                         onSelect={openItem}
+                        distanceKm={
+                          nearKmByContentId.get(String(item.contentId)) ??
+                          undefined
+                        }
                       />
                     ))}
                   </div>
                 ))
               )}
+              </div>
+              {mapOpen && (
+                <div className="relative min-h-0 flex-1 overflow-hidden bg-[#1b1410]">
+                  <KoreaFestivalMap
+                    className="absolute inset-0 h-full w-full"
+                    items={mapItems}
+                    activeContentId={
+                      selected?.contentId != null
+                        ? String(selected.contentId)
+                        : ''
+                    }
+                    focusView={mapFocusView}
+                    historyKey={`${mapSessionKey}:${timeTab}:${areaCode}:${cityName}:${tasteId}:${nearIds?.length || 0}`}
+                    onSelectPoint={(contentId) => {
+                      const id = String(contentId);
+                      const item =
+                        byContentId.get(id) ||
+                        mapItems.find((row) => String(row?.contentId) === id);
+                      if (item) openItem(item);
+                    }}
+                    onSelectCluster={(contentIds) => {
+                      const ids = (contentIds || [])
+                        .map(String)
+                        .filter(Boolean);
+                      if (ids.length) {
+                        setNearIds(ids);
+                        setNearLabel('');
+                        setNearMsg(`지도에서 고른 ${ids.length}건`);
+                      }
+                      setMapOpen(false);
+                    }}
+                  />
+                </div>
+              )}
             </div>
-            )}
           </div>
         </div>
       </main>
