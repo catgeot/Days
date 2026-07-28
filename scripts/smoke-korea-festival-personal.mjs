@@ -34,6 +34,8 @@ const {
   loadViewed,
   hydrateFestivalRefs,
   groupFestivalsBySido,
+  groupFestivalsByCity,
+  groupFestivalsForList,
 } = await import('../src/pages/Korea/festivalPersonalStore.js');
 const { filterBySearchQuery, normalizeFestivalQuery } = await import(
   '../src/pages/Korea/festivalSearch.js'
@@ -93,6 +95,33 @@ assert.ok(groups.length >= 2);
 assert.ok(groups.every((g) => g.label && g.items.length));
 assert.equal(detectSidoCode(hwacheon.addr1), ref.areaCode);
 assert.ok(sidoLabel(ref.areaCode));
+
+const gangneung = {
+  contentId: '101',
+  title: '강릉단오제',
+  addr1: '강원특별자치도 강릉시',
+};
+const chuncheon = {
+  contentId: '102',
+  title: '춘천마임축제',
+  addr1: '강원특별자치도 춘천시',
+};
+const cityGroups = groupFestivalsByCity([hwacheon, gangneung, chuncheon]);
+assert.equal(cityGroups.length, 3);
+assert.ok(cityGroups.some((g) => g.label === '화천군' && g.items.length === 1));
+assert.ok(cityGroups.some((g) => g.label === '강릉시'));
+assert.ok(cityGroups.some((g) => g.label === '춘천시'));
+
+const gangwonList = groupFestivalsForList(
+  [hwacheon, gangneung, chuncheon],
+  { areaCode: '32' },
+);
+assert.ok(gangwonList.length >= 3);
+assert.ok(gangwonList.every((g) => g.id !== '32'));
+assert.equal(
+  groupFestivalsForList([hwacheon, gangneung], { areaCode: 'all' }).length,
+  2,
+);
 
 const gyeonggi = {
   contentId: '300',

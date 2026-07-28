@@ -3,7 +3,11 @@
  * D 도로루트 경유 후보 SSOT. Supabase saved_trips와 분리.
  */
 
-import { detectSidoCode, sidoLabel } from './festivalRegionTags.js';
+import {
+  detectSidoCode,
+  extractCityLabels,
+  sidoLabel,
+} from './festivalRegionTags.js';
 
 export const FAVORITES_KEY = 'gateo:korea-festivals:v1:favorites';
 export const VIEWED_KEY = 'gateo:korea-festivals:v1:viewed';
@@ -182,4 +186,53 @@ export function groupFestivalsBySido(items) {
     ordered.push({ id: 'unknown', label: '기타', items: unknown });
   }
   return ordered;
+}
+
+/**
+ * 시·군별 그룹 (표시용). addr1 첫 시/군. 미분류는 맨 아래.
+ * @param {Record<string, unknown>[]} items
+ * @returns {{ id: string, label: string, items: Record<string, unknown>[] }[]}
+ */
+export function groupFestivalsByCity(items) {
+  /** @type {Map<string, { id: string, label: string, items: Record<string, unknown>[] }>} */
+  const groups = new Map();
+  const unknown = [];
+  for (const item of items || []) {
+    const city = extractCityLabels(item?.addr1)[0] || '';
+    if (!city) {
+      unknown.push(item);
+      continue;
+    }
+    let g = groups.get(city);
+    if (!g) {
+      g = { id: city, label: city, items: [] };
+      groups.set(city, g);
+    }
+    g.items.push(item);
+  }
+  const ordered = [...groups.values()].sort((a, b) =>
+    a.label.localeCompare(b.label, 'ko'),
+  );
+  if (unknown.length) {
+    ordered.push({ id: 'unknown', label: '기타', items: unknown });
+  }
+  return ordered;
+}
+
+/**
+ * 모달 리스트 그룹: 단일 시도(칩·지도 선택)면 시·군, 아니면 시도.
+ * @param {Record<string, unknown>[]} items
+ * @param {{ areaCode?: string }} [opts]
+ */
+export function groupFestivalsForList(items, opts = {}) {
+  const areaCode = opts.areaCode;
+  if (areaCode && areaCode !== 'all') {
+    return groupFestivalsByCity(items);
+  }
+  const bySido = groupFestivalsBySido(items);
+  const known = bySido.filter((g) => g.id !== 'unknown');
+  if (known.length === 1) {
+    return groupFestivalsByCity(items);
+  }
+  return bySido;
 }

@@ -30,6 +30,7 @@ import {
 import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
   groupFestivalsBySido,
+  groupFestivalsForList,
   hydrateFestivalRefs,
   loadFavorites,
   loadViewed,
@@ -500,8 +501,8 @@ export default function KoreaFestivalHub() {
   }, [mapFocusIds, byContentId, filteredItems, indexActive]);
 
   const panelGroups = useMemo(
-    () => groupFestivalsBySido(panelItems),
-    [panelItems],
+    () => groupFestivalsForList(panelItems, { areaCode }),
+    [panelItems, areaCode],
   );
 
   const mapFocusRegionChips = useMemo(() => {
