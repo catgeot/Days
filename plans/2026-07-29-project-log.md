@@ -2,6 +2,18 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
+## 범지구적 퍼즐 — 모바일 탭 확정
+
+**상태**: Preview QA
+
+| | |
+|--|--|
+| 피드백 | 드래그 시 손가락에 가려 매칭 확인 어려움 → **선택 후 탭** |
+| 변경 | 모바일(`max-width:1023` · `pointer:coarse`): 피스 탭 선택 → 지구본 탭 배치 · PC는 드래그 유지 |
+| 검증 | `npm run audit:geo-puzzle` · `npm run build` |
+
+**다음**: Preview 모바일 QA(선택→탭 · 오답 시 선택 유지)
+
 ## 범지구적 퍼즐 — 실루엣 매칭 · 모바일 우선
 
 **상태**: Preview QA

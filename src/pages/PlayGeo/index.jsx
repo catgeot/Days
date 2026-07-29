@@ -17,6 +17,8 @@ import {
 import GeoPuzzleGlobe from './GeoPuzzleGlobe.jsx';
 import CountrySilhouettePiece from './CountrySilhouettePiece.jsx';
 
+const MOBILE_TAP_MQ = '(max-width: 1023px), (pointer: coarse)';
+
 function shuffle(list) {
   const arr = [...list];
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -26,10 +28,28 @@ function shuffle(list) {
   return arr;
 }
 
+function useMobileTapMode() {
+  const [isMobileTap, setIsMobileTap] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.matchMedia(MOBILE_TAP_MQ).matches;
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_TAP_MQ);
+    const sync = () => setIsMobileTap(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  return isMobileTap;
+}
+
 export default function GeoPuzzlePage() {
   const campaign = useMemo(() => getCampaignContinents(), []);
   const mapRef = useRef(null);
   const dragIdRef = useRef(null);
+  const isMobileTap = useMobileTapMode();
 
   const [continentId, setContinentId] = useState(() => {
     const saved = loadGeoPuzzleProgress();
@@ -47,6 +67,7 @@ export default function GeoPuzzlePage() {
   const [feedback, setFeedback] = useState('');
   const [draggingId, setDraggingId] = useState(null);
   const [dragPos, setDragPos] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
   const [flashMiss, setFlashMiss] = useState(false);
 
   const continent = useMemo(
@@ -85,6 +106,14 @@ export default function GeoPuzzlePage() {
       clearedContinentIds,
     });
   }, [score, filledIds, continent, clearedSubregionIds, clearedContinentIds]);
+
+  useEffect(() => {
+    setSelectedId(null);
+  }, [continentId]);
+
+  useEffect(() => {
+    if (!isMobileTap) setSelectedId(null);
+  }, [isMobileTap]);
 
   const onMapReady = useCallback((map) => {
     mapRef.current = map;
@@ -145,6 +174,7 @@ export default function GeoPuzzlePage() {
 
     setScore((s) => s + delta);
     setFeedback(notes.join(' · '));
+    setSelectedId(null);
   }, [
     clearedContinentIds,
     clearedSubregionIds,
@@ -160,7 +190,7 @@ export default function GeoPuzzlePage() {
     window.setTimeout(() => setFlashMiss(false), 420);
   }, []);
 
-  const tryDropAt = useCallback((clientX, clientY, pieceId) => {
+  const tryPlaceAt = useCallback((clientX, clientY, pieceId) => {
     const map = mapRef.current;
     if (!map || !pieceId) return;
     const container = map.getContainer?.() || map.getCanvas?.();
@@ -196,7 +226,25 @@ export default function GeoPuzzlePage() {
     }
   }, [applyCorrect, applyMiss, continentCountryIds]);
 
+  const onMapClickPlace = useCallback((args) => {
+    if (!isMobileTap || !selectedId) return;
+    tryPlaceAt(args.clientX, args.clientY, selectedId);
+  }, [isMobileTap, selectedId, tryPlaceAt]);
+
+  const onSelectPiece = (id) => {
+    setSelectedId((prev) => {
+      const next = prev === id ? null : id;
+      setFeedback(
+        next
+          ? `${getGlobeCountryById(next)?.labelKo || next} 선택 · 지구본 빈 칸을 탭하세요`
+          : '',
+      );
+      return next;
+    });
+  };
+
   const onPointerDownPiece = (e, id) => {
+    if (isMobileTap) return;
     e.preventDefault();
     dragIdRef.current = id;
     setDraggingId(id);
@@ -215,7 +263,7 @@ export default function GeoPuzzlePage() {
       dragIdRef.current = null;
       setDraggingId(null);
       setDragPos(null);
-      if (pid) tryDropAt(ev.clientX, ev.clientY, pid);
+      if (pid) tryPlaceAt(ev.clientX, ev.clientY, pid);
     };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -229,11 +277,13 @@ export default function GeoPuzzlePage() {
     setClearedSubregionIds([]);
     setClearedContinentIds([]);
     setContinentId(campaign[0]?.id || '');
+    setSelectedId(null);
     setFeedback('진행을 초기화했습니다');
   };
 
   const handleSelectContinent = (id) => {
     setContinentId(id);
+    setSelectedId(null);
     setFeedback('');
   };
 
@@ -241,6 +291,12 @@ export default function GeoPuzzlePage() {
   const progressPct = continentCountryIds.length
     ? Math.round((filledInContinent / continentCountryIds.length) * 100)
     : 0;
+
+  const hintText = isMobileTap
+    ? selectedId
+      ? '선택한 피스를 지구본 빈 칸에 탭하세요 · 맞으면 가점 · 틀리면 감점'
+      : '나라 모양 피스를 탭해 선택한 뒤, 지구본 빈 칸을 탭하세요'
+    : '나라 모양 피스를 빈 칸에 끌어다 놓으세요 · 맞으면 가점 · 틀리면 감점';
 
   return (
     <div className="flex h-dvh max-h-dvh w-full flex-col overflow-hidden bg-black text-white">
@@ -280,7 +336,9 @@ export default function GeoPuzzlePage() {
           filledIds={filledIds}
           slotIds={continentCountryIds}
           dragPan={!draggingId}
+          placeMode={isMobileTap && Boolean(selectedId)}
           onMapReady={onMapReady}
+          onMapClick={onMapClickPlace}
         />
 
         {feedback ? (
@@ -294,7 +352,7 @@ export default function GeoPuzzlePage() {
         </div>
       </div>
 
-      {dragPos && draggingId ? (
+      {!isMobileTap && dragPos && draggingId ? (
         <div
           className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2"
           style={{ left: dragPos.x, top: dragPos.y }}
@@ -337,19 +395,23 @@ export default function GeoPuzzlePage() {
         </div>
 
         <p className="text-[10px] leading-snug text-white/50 break-keep">
-          나라 모양 피스를 빈 칸에 끌어다 놓으세요 · 맞으면 가점 · 틀리면 감점
+          {hintText}
         </p>
 
         <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {trayOrder.map((id) => {
             const country = getGlobeCountryById(id);
-            const active = draggingId === id;
+            const active = isMobileTap ? selectedId === id : draggingId === id;
             return (
               <button
                 key={id}
                 type="button"
-                onPointerDown={(e) => onPointerDownPiece(e, id)}
-                className={`touch-none select-none shrink-0 ${active ? 'opacity-40' : ''}`}
+                onClick={isMobileTap ? () => onSelectPiece(id) : undefined}
+                onPointerDown={isMobileTap ? undefined : (e) => onPointerDownPiece(e, id)}
+                aria-pressed={isMobileTap ? selectedId === id : undefined}
+                className={`select-none shrink-0 ${isMobileTap ? '' : 'touch-none'} ${
+                  !isMobileTap && active ? 'opacity-40' : ''
+                } ${isMobileTap && selectedId && selectedId !== id ? 'opacity-45' : ''}`}
               >
                 <CountrySilhouettePiece
                   countryId={id}

@@ -161,17 +161,28 @@ function ensurePlacedLayers(map) {
  *   filledIds: string[],
  *   slotIds?: string[],
  *   dragPan?: boolean,
+ *   placeMode?: boolean,
  *   onMapReady?: (map: import('mapbox-gl').Map) => void,
+ *   onMapClick?: (args: {
+ *     clientX: number,
+ *     clientY: number,
+ *     point: { x: number, y: number },
+ *     lngLat: { lng: number, lat: number },
+ *   }) => void,
  * }} props
  */
 export default function GeoPuzzleGlobe({
   filledIds = [],
   slotIds = [],
   dragPan = true,
+  placeMode = false,
   onMapReady,
+  onMapClick,
 }) {
   const mapRef = useRef(null);
   const readyRef = useRef(false);
+  const onMapClickRef = useRef(onMapClick);
+  onMapClickRef.current = onMapClick;
 
   const syncFills = useCallback((map, filled, slots) => {
     if (!map) return;
@@ -216,6 +227,21 @@ export default function GeoPuzzleGlobe({
     });
   }, [filledIds, onMapReady, slotIds, syncFills]);
 
+  const handleClick = useCallback((evt) => {
+    const handler = onMapClickRef.current;
+    if (!handler) return;
+    const oe = evt?.originalEvent;
+    const point = evt?.point;
+    const lngLat = evt?.lngLat;
+    if (!point || !lngLat) return;
+    handler({
+      clientX: oe?.clientX ?? 0,
+      clientY: oe?.clientY ?? 0,
+      point: { x: point.x, y: point.y },
+      lngLat: { lng: lngLat.lng, lat: lngLat.lat },
+    });
+  }, []);
+
   if (!MAPBOX_TOKEN) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-black text-sm text-white/70">
@@ -225,7 +251,7 @@ export default function GeoPuzzleGlobe({
   }
 
   return (
-    <div className="relative h-full w-full gateo-mapbox-map">
+    <div className={`relative h-full w-full gateo-mapbox-map ${placeMode ? 'cursor-crosshair' : ''}`}>
       <Map
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
@@ -235,6 +261,7 @@ export default function GeoPuzzleGlobe({
         style={{ width: '100%', height: '100%' }}
         attributionControl={{ compact: true }}
         onLoad={handleLoad}
+        onClick={handleClick}
         dragRotate={false}
         pitchWithRotate={false}
         dragPan={dragPan}
