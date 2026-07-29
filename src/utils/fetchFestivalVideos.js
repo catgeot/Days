@@ -1,6 +1,8 @@
 import { supabase } from '../shared/api/supabase';
 
 const INVOKE_TIMEOUT_MS = 15_000;
+export const FESTIVAL_VIDEOS_PAGE = 5;
+export const FESTIVAL_VIDEOS_MAX = 10;
 
 /**
  * @template T
@@ -26,8 +28,15 @@ function withTimeout(promise, ms, label) {
  *   contentId: string | number,
  *   title: string,
  *   year?: string | number,
+ *   maxResults?: number,
+ *   skipCache?: boolean,
  * }} opts
- * @returns {Promise<{ ok: boolean, videos: Array<{ id: string, title: string }>, error?: string }>}
+ * @returns {Promise<{
+ *   ok: boolean,
+ *   videos: Array<{ id: string, title: string }>,
+ *   fromCache?: boolean,
+ *   error?: string,
+ * }>}
  */
 export async function fetchFestivalVideos(opts) {
   const contentId = String(opts?.contentId ?? '').trim();
@@ -41,17 +50,28 @@ export async function fetchFestivalVideos(opts) {
   const year = /^\d{4}$/.test(yearRaw) ? yearRaw : '';
   const query = year ? `${title} ${year} 축제` : `${title} 축제`;
   const fallbackQuery = `${title} festival`;
+  const maxResults = Math.min(
+    FESTIVAL_VIDEOS_MAX,
+    Math.max(1, Math.floor(Number(opts?.maxResults) || FESTIVAL_VIDEOS_PAGE)),
+  );
+  const skipCache = Boolean(opts?.skipCache);
 
   try {
-    const { data: cached } = await supabase
-      .from('place_videos')
-      .select('videos')
-      .eq('place_id', placeId)
-      .limit(1)
-      .maybeSingle();
+    if (!skipCache) {
+      const { data: cached } = await supabase
+        .from('place_videos')
+        .select('videos')
+        .eq('place_id', placeId)
+        .limit(1)
+        .maybeSingle();
 
-    if (cached && Array.isArray(cached.videos) && cached.videos.length > 0) {
-      return { ok: true, videos: cached.videos };
+      if (cached && Array.isArray(cached.videos) && cached.videos.length > 0) {
+        return {
+          ok: true,
+          videos: cached.videos.slice(0, FESTIVAL_VIDEOS_MAX),
+          fromCache: true,
+        };
+      }
     }
 
     const { data, error } = await withTimeout(
@@ -61,6 +81,7 @@ export async function fetchFestivalVideos(opts) {
           query,
           fallbackQuery,
           placeId,
+          maxResults,
         },
       }),
       INVOKE_TIMEOUT_MS,
@@ -78,7 +99,13 @@ export async function fetchFestivalVideos(opts) {
         error: data?.error || 'YouTube search failed',
       };
     }
-    return { ok: true, videos: Array.isArray(data.videos) ? data.videos : [] };
+    return {
+      ok: true,
+      videos: Array.isArray(data.videos)
+        ? data.videos.slice(0, FESTIVAL_VIDEOS_MAX)
+        : [],
+      fromCache: false,
+    };
   } catch (err) {
     console.warn('[festival-videos] failed:', err?.message || err);
     return { ok: false, videos: [], error: err?.message || 'failed' };

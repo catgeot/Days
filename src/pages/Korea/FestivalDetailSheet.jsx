@@ -17,7 +17,7 @@ import {
   fetchTourApiFestivalInfo,
   fetchTourApiFestivalIntro,
 } from '../../utils/fetchTourApiFestivals';
-import { fetchFestivalVideos } from '../../utils/fetchFestivalVideos';
+import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
@@ -205,6 +205,8 @@ export default function FestivalDetailSheet({
   const [videosLoading, setVideosLoading] = useState(false);
   const [videosError, setVideosError] = useState('');
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
+  const [videosMoreDone, setVideosMoreDone] = useState(false);
+  const [videosMoreLoading, setVideosMoreLoading] = useState(false);
 
   useEffect(() => {
     if (!item?.contentId) {
@@ -221,6 +223,8 @@ export default function FestivalDetailSheet({
       setVideosLoading(false);
       setVideosError('');
       setVideosLoadedFor('');
+      setVideosMoreDone(false);
+      setVideosMoreLoading(false);
       return undefined;
     }
 
@@ -239,6 +243,8 @@ export default function FestivalDetailSheet({
     setVideosLoading(false);
     setVideosError('');
     setVideosLoadedFor('');
+    setVideosMoreDone(false);
+    setVideosMoreLoading(false);
 
     (async () => {
       const contentId = item.contentId;
@@ -382,17 +388,23 @@ export default function FestivalDetailSheet({
         contentId: id,
         title: searchTitle || String(item.title),
         year,
+        maxResults: FESTIVAL_VIDEOS_PAGE,
       });
       if (cancelled) return;
       setVideosLoadedFor(id);
       setVideosLoading(false);
       if (!result.ok) {
         setVideos([]);
+        setVideosMoreDone(true);
         setVideosError('관련 영상을 찾지 못했습니다.');
         return;
       }
-      setVideos(Array.isArray(result.videos) ? result.videos.slice(0, 5) : []);
-      if (!result.videos?.length) {
+      const list = Array.isArray(result.videos)
+        ? result.videos.slice(0, FESTIVAL_VIDEOS_MAX)
+        : [];
+      setVideos(list);
+      setVideosMoreDone(list.length >= FESTIVAL_VIDEOS_MAX || list.length === 0);
+      if (!list.length) {
         setVideosError('관련 영상을 찾지 못했습니다.');
       }
     })();
@@ -433,6 +445,32 @@ export default function FestivalDetailSheet({
   const stepLightbox = (delta) => {
     if (imageUrls.length < 2) return;
     setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
+  };
+
+  const canLoadMoreVideos =
+    !videosLoading &&
+    !videosMoreLoading &&
+    !videosMoreDone &&
+    videos.length > 0 &&
+    videos.length < FESTIVAL_VIDEOS_MAX;
+
+  const loadMoreVideos = async () => {
+    if (!canLoadMoreVideos || !item?.contentId || !item?.title) return;
+    setVideosMoreLoading(true);
+    const ymd = String(item.eventStartDate || intro?.eventStartDate || '');
+    const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : '';
+    const searchTitle = festivalSearchQuery(item.title);
+    const result = await fetchFestivalVideos({
+      contentId: item.contentId,
+      title: searchTitle || String(item.title),
+      year,
+      maxResults: FESTIVAL_VIDEOS_MAX,
+      skipCache: true,
+    });
+    setVideosMoreLoading(false);
+    setVideosMoreDone(true);
+    if (!result.ok || !result.videos?.length) return;
+    setVideos(result.videos.slice(0, FESTIVAL_VIDEOS_MAX));
   };
 
   return (
@@ -810,37 +848,60 @@ export default function FestivalDetailSheet({
                   <p className="text-xs text-stone-500">{videosError}</p>
                 )}
                 {!videosLoading && videos.length > 0 && (
-                  <ul className="space-y-2">
-                    {videos.map((video) => {
-                      const id = String(video?.id || '').trim();
-                      if (!id) return null;
-                      const thumb = youtubeThumb(id);
-                      const href = `https://www.youtube.com/watch?v=${id}`;
-                      return (
-                        <li key={id}>
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                          >
-                            {thumb ? (
-                              <img
-                                src={thumb}
-                                alt=""
-                                className="h-16 w-28 shrink-0 rounded-xl object-cover bg-stone-200"
-                              />
-                            ) : (
-                              <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
-                            )}
-                            <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
-                              {video.title || 'YouTube 영상'}
-                            </span>
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <>
+                    <ul className="space-y-2">
+                      {videos.map((video) => {
+                        const id = String(video?.id || '').trim();
+                        if (!id) return null;
+                        const thumb = youtubeThumb(id);
+                        const href = `https://www.youtube.com/watch?v=${id}`;
+                        return (
+                          <li key={id}>
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              {thumb ? (
+                                <img
+                                  src={thumb}
+                                  alt=""
+                                  className="h-16 w-28 shrink-0 rounded-xl object-cover bg-stone-200"
+                                />
+                              ) : (
+                                <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
+                              )}
+                              <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
+                                {video.title || 'YouTube 영상'}
+                              </span>
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {canLoadMoreVideos && (
+                      <button
+                        type="button"
+                        onClick={loadMoreVideos}
+                        disabled={videosMoreLoading}
+                        className="w-full py-2.5 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100 disabled:opacity-60"
+                      >
+                        {videosMoreLoading ? (
+                          <span className="inline-flex items-center justify-center gap-2">
+                            <Loader2
+                              size={16}
+                              className="animate-spin"
+                              aria-hidden="true"
+                            />
+                            불러오는 중…
+                          </span>
+                        ) : (
+                          '동영상 더보기'
+                        )}
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

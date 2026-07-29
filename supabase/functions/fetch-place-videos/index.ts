@@ -8,6 +8,12 @@ const corsHeaders = {
 
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
+function clampMaxResults(n: unknown): number {
+  const v = Number(n);
+  if (!Number.isFinite(v) || v < 1) return 5;
+  return Math.min(10, Math.floor(v));
+}
+
 serve(async (req) => {
   // CORS 프리플라이트 요청 처리
   if (req.method === 'OPTIONS') {
@@ -18,6 +24,11 @@ serve(async (req) => {
     const body = await req.json();
     const { query, fallbackQuery, placeId } = body;
     const mode = body.mode === 'festival' ? 'festival' : 'place';
+    const maxResults = clampMaxResults(body.maxResults);
+    const pageToken =
+      typeof body.pageToken === 'string' && body.pageToken.trim()
+        ? body.pageToken.trim()
+        : '';
 
     if (!query || !placeId) {
       throw new Error('query and placeId are required');
@@ -37,12 +48,13 @@ serve(async (req) => {
     let params = new URLSearchParams({
       part: 'snippet',
       q: primaryQ,
-      maxResults: '5',
+      maxResults: String(maxResults),
       type: 'video',
       relevanceLanguage: 'ko',
       regionCode: 'KR',
       key: youtubeApiKey,
     });
+    if (pageToken) params.set('pageToken', pageToken);
 
     let youtubeResponse = await fetch(`${BASE_URL}/search?${params.toString()}`);
 
@@ -53,15 +65,15 @@ serve(async (req) => {
 
     let data = await youtubeResponse.json();
 
-    // 결과가 없거나 적을 경우 2차 일반 검색
-    if (!data.items || data.items.length === 0) {
+    // 결과가 없거나 적을 경우 2차 일반 검색 (pageToken 없을 때만)
+    if ((!data.items || data.items.length === 0) && !pageToken) {
       const secondQuery = fallbackQuery
         ? fallbackQuery
         : (mode === 'festival' ? String(query).trim() : `${query} travel vlog`);
       params = new URLSearchParams({
         part: 'snippet',
         q: secondQuery,
-        maxResults: '5',
+        maxResults: String(maxResults),
         type: 'video',
         key: youtubeApiKey,
       });
@@ -89,30 +101,38 @@ serve(async (req) => {
       },
     })) || [];
 
-    // 2. Supabase Admin Client 생성 (Service Role Key로 RLS 우회하여 DB 저장)
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const nextPageToken =
+      typeof data.nextPageToken === 'string' && data.nextPageToken
+        ? data.nextPageToken
+        : null;
 
-    // 3. DB 테이블 Upsert (Cache 업데이트)
-    const { error: dbError } = await supabaseAdmin
-      .from('place_videos')
-      .upsert({
-        place_id: String(placeId),
-        videos: videosToCache,
-        last_updated: new Date().toISOString()
-      });
+    // pageToken(추가 페이지)이면 캐시를 덮어쓰지 않음 — 클라가 병합 후 재저장
+    const skipUpsert = Boolean(pageToken) || body.skipUpsert === true;
 
-    if (dbError) {
-      console.error('DB Upsert Error:', dbError);
-      throw new Error('Failed to upsert place_videos in database');
+    if (!skipUpsert) {
+      const supabaseAdmin = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+
+      const { error: dbError } = await supabaseAdmin
+        .from('place_videos')
+        .upsert({
+          place_id: String(placeId),
+          videos: videosToCache,
+          last_updated: new Date().toISOString()
+        });
+
+      if (dbError) {
+        console.error('DB Upsert Error:', dbError);
+        throw new Error('Failed to upsert place_videos in database');
+      }
     }
 
-    // 4. 성공 결과 반환
     return new Response(JSON.stringify({
       success: true,
-      videos: videosToCache
+      videos: videosToCache,
+      nextPageToken,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
