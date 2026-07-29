@@ -2,6 +2,19 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
+## 지구본 지리 퍼즐 게임 — 기획·유사작 조사
+
+**상태**: 📄 계획 초안만 (구현 없음)
+
+| | |
+|--|--|
+| 평가 | 방법1(빈 지구본·공식 대륙/중분류/국가·1/2/3점·대양 시험) 방향 OK · MVP는 클릭 확정 |
+| 유사작 | Seterra · ReMap · Enjoy Learning Map Puzzle · Planeta42 · GeoPuzzle · Stack the Countries · Globle 등 |
+| 표절 | 장르·규칙은 저작권 비대상 · UI/아트/상표 복제만 회피 · gateo=3D+계층+대양+여행 연결 |
+| 문서 | [`geography-puzzle-game-plan.md`](./geography-puzzle-game-plan.md) |
+
+**다음**: 사람 Phase 0 합의 → `지리퍼즐-MVP`
+
 ## 지구본 나라 카탈로그 — UN 누락 채움 · 「전체」중분류 철회
 
 **상태**: ✅ `main` 머지·푸시 · Production 배포
