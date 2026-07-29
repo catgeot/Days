@@ -15,6 +15,8 @@
 
 **VERIFY**: UN missing 0 · 면 합=219 · 중분류 중복0·커버100% · 기본≠all · `smoke:place-label-slug` OK
 
+**tip**: `f929a8b` · PR [#30](https://github.com/catgeot/Days/pull/30)
+
 **QA**: 각 테마→중분류에 빠진 나라가「기타」등으로 보이는지 ·「전체」칩 없음
 
 ## 국내축제 — 테마 칩 1건 노출 · 홈 바탕 완료 · 다음=상세 리치
