@@ -10,7 +10,8 @@
 |--|--|
 | 피드백 | 이름만 드롭 → **나라 필(실루엣) 매칭** · **모바일 중심** 레이아웃 · 카테고리/칩 미표시 수정 |
 | 변경 | `geoPuzzleSilhouettes` · 하단 고정 트레이(flex+dvh) · 빈 칸 슬롯 윤곽 · 드래그 고스트=실루엣(정답 위치 스포일러 제거) |
-| 검증 | `npm run audit:geo-puzzle` PASS |
+| Vercel | `dec1279` FAIL — `Could not resolve "../data/geoPuzzleSilhouettes.js"` · `6e4cff1`로 `./data` 수정 · Preview 미기동 → empty commit 재배포 |
+| 검증 | `npm run audit:geo-puzzle` PASS · 로컬 `npm run build` PASS |
 
 **다음**: Preview 모바일 QA · PC 확장은 후속
 
