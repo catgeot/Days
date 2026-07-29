@@ -22,16 +22,31 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
  * 시드에 올린 나라는 그 면에 고정(배타).
  */
 export const GLOBE_FACE_PRIORITY = {
-  /** 한국 중심 아시아·남태평양 */
-  paradise: ['kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv', 'hi', 'um'],
+  /** 한국 중심 아시아·남태평양(+중앙·서아시아) */
+  paradise: [
+    'kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv', 'hi', 'um',
+    'ae', 'ir', 'sa', 'qa', 'kw', 'bh', 'om', 'ye', 'iq', 'sy', 'lb', 'ps',
+    'kz', 'uz', 'tm', 'tj', 'kg', 'az', 'am', 'ge',
+    'pk', 'af', 'bd', 'bt', 'tl', 'kp', 'pg', 'mh', 'tv',
+  ],
   /** 아프리카·서인도양 — 모리셔스·세이셸은 지리상 여기(휴양 테마로 옮기지 말 것) */
-  nature: ['ke', 'tz', 'za', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 'ma'],
+  nature: [
+    'ke', 'tz', 'za', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 'ma',
+    'ng', 'gh', 'cd', 'dz', 'tn', 'ly', 'sd', 'ao', 'cm',
+    'il', 'jo',
+  ],
   /** 유럽·북극(그린란드·스발바르) */
-  urban: ['no', 'fr', 'gb', 'eng', 'sct', 'wls', 'nir', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr', 'gl', 'sj'],
+  urban: [
+    'no', 'fr', 'gb', 'eng', 'sct', 'wls', 'nir', 'it', 'es', 'de', 'nl', 'cz', 'pt', 'gr', 'ch', 'hr', 'is', 'tr', 'gl', 'sj',
+    'ua', 'pl', 'ro', 'bg', 'rs', 'cy', 'ee', 'lv', 'lt', 'sk', 'md', 'by', 'al', 'mk', 'xk', 'ba', 'me',
+  ],
   /** 북미·중미·카리브·알래스카 */
-  culture: ['us', 'ca', 'mx', 'cu', 'cr', 'gt', 'pa', 'jm', 'bs', 'ak'],
+  culture: [
+    'us', 'ca', 'mx', 'cu', 'cr', 'gt', 'pa', 'jm', 'bs', 'ak',
+    'ht', 'do', 'tt', 'bb', 'gd', 'lc', 'vc', 'ag', 'kn', 'dm', 'bz', 'hn', 'sv', 'ni',
+  ],
   /** 남아메리카(+주변) — 테마「모험지」목록이 아님 */
-  adventure: ['br', 'pe', 'ar', 'cl', 'co', 'ec', 'bo', 'py'],
+  adventure: ['br', 'pe', 'ar', 'cl', 'co', 'ec', 'bo', 'py', 'uy', 've', 'gy', 'sr'],
 };
 
 /** @deprecated 하위 호환 */

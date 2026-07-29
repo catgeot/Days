@@ -2,21 +2,20 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
-## 지구본 테마 카테고리 — 나라 목록 기본=전체
+## 지구본 나라 카탈로그 — UN 누락 채움 · 「전체」중분류 철회
 
 **상태**: ✅ 로직 검증 · feature push · Preview QA 대기
 
 | | |
 |--|--|
-| 원인 | 소권역 기본=첫 칩(예: 휴양→동아시아 6국)이라 면 전체(41 등)가 안 보임 |
-| 변경 | 기본=`all` · 소권역 칩 맨 앞「전체」 · PC/모바일 동일 |
-| 파일 | `globeFaceSubregions.js` · `GlobeFaceRegionRail.jsx` |
+| 오해 정정 | 「전체」칩·면 전체 일괄 표시가 아님 · **누락 국가 채움** + 중분류 배타 |
+| 카탈로그 | 114 → **219** (UN 회원+VA/PS/XK · 기존 하와이·영국 구성국 등 유지) |
+| 중분류 | 「전체」제거 · 잔여는「기타」흡수 · 문화/모험 소권역 추가 · 중동→휴양 시드 |
+| 파일 | `globeCountryCatalog.js` · `globeFaceRegions.js` · `globeFaceSubregions.js` · `GlobeFaceRegionRail.jsx` · `scripts/generate-globe-country-catalog-fill.mjs` |
 
-**VERIFY**: 기본 면 국가 수 = face 전체 · 소권역 필터 유지 · `smoke:place-label-slug` OK
+**VERIFY**: UN missing 0 · 면 합=219 · 중분류 중복0·커버100% · 기본≠all · `smoke:place-label-slug` OK
 
-**tip**: `054659d` · PR [#30](https://github.com/catgeot/Days/pull/30) · Preview 홈 지구본
-
-**QA**: 카테고리 탭 → 나라 칩이 면 전체인지 ·「전체」↔소권역 전환 · 스크롤
+**QA**: 각 테마→중분류에 빠진 나라가「기타」등으로 보이는지 ·「전체」칩 없음
 
 ## 국내축제 — 테마 칩 1건 노출 · 홈 바탕 완료 · 다음=상세 리치
 
