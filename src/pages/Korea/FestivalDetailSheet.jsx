@@ -162,10 +162,10 @@ function festivalSearchQuery(title) {
   return s || String(title || '').trim();
 }
 
-function naverNewsSearchUrl(title) {
+function naverSearchUrl(title) {
   const q = festivalSearchQuery(title);
   if (!q) return '';
-  return `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(q)}`;
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
 }
 
 function googleSearchUrl(title) {
@@ -771,15 +771,15 @@ export default function FestivalDetailSheet({
                   더 찾아보기
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {naverNewsSearchUrl(item.title) && (
+                  {naverSearchUrl(item.title) && (
                     <a
-                      href={naverNewsSearchUrl(item.title)}
+                      href={naverSearchUrl(item.title)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
                     >
                       <ExternalLink size={12} aria-hidden="true" />
-                      네이버 뉴스 검색
+                      네이버 검색
                     </a>
                   )}
                   {googleSearchUrl(item.title) && (
