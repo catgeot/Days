@@ -158,10 +158,10 @@ function naverNewsSearchUrl(title) {
   return `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(q)}`;
 }
 
-function wikiSearchUrl(title) {
+function googleSearchUrl(title) {
   const q = String(title || '').trim();
   if (!q) return '';
-  return `https://ko.wikipedia.org/w/index.php?search=${encodeURIComponent(q)}`;
+  return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=ko`;
 }
 
 /**
@@ -771,15 +771,15 @@ export default function FestivalDetailSheet({
                       네이버 뉴스 검색
                     </a>
                   )}
-                  {wikiSearchUrl(item.title) && (
+                  {googleSearchUrl(item.title) && (
                     <a
-                      href={wikiSearchUrl(item.title)}
+                      href={googleSearchUrl(item.title)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
                     >
                       <ExternalLink size={12} aria-hidden="true" />
-                      위키백과 검색
+                      구글 검색
                     </a>
                   )}
                 </div>
