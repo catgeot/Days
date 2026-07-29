@@ -2,6 +2,33 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
+## 범지구적 퍼즐 — 실루엣 매칭 · 모바일 우선
+
+**상태**: Preview QA
+
+| | |
+|--|--|
+| 피드백 | 이름만 드롭 → **나라 필(실루엣) 매칭** · **모바일 중심** 레이아웃 · 카테고리/칩 미표시 수정 |
+| 변경 | `geoPuzzleSilhouettes` · 하단 고정 트레이(flex+dvh) · 빈 칸 슬롯 윤곽 · 드래그 고스트=실루엣(정답 위치 스포일러 제거) |
+| Vercel | `dec1279` FAIL — `Could not resolve "../data/geoPuzzleSilhouettes.js"` · `6e4cff1`로 `./data` 수정 · Preview 미기동 → empty commit 재배포 |
+| 검증 | `npm run audit:geo-puzzle` PASS · 로컬 `npm run build` PASS |
+
+**다음**: Preview 모바일 QA · PC 확장은 후속
+
+## 지구본 지리 퍼즐 게임 — 기획·유사작 조사
+
+**상태**: Phase 0 ✅ · Phase 1 MVP 구현 (Preview QA)
+
+| | |
+|--|--|
+| 평가 | 방법1 방향 OK · **드래그 스냅 MVP** (사람 결정) |
+| Phase 0 | 감점·종료없음 · 공식 대륙명 · `/play/geo` · 축제 아래 진입 · 이름「범지구적 퍼즐」· 대양/여행 CTA 후속 |
+| 권장 이유(탭) | 3D 드롭 오차·소국·제스처 충돌·모바일 — 기록만, MVP는 드래그 |
+| 문서 | [`geography-puzzle-game-plan.md`](./geography-puzzle-game-plan.md) |
+| MVP | `PlayGeo` · 아시아(동아 6)→남아메리카→오세아니아 · `audit:geo-puzzle` PASS |
+
+**다음**: Preview QA(드래그 히트·감점·진입) · 대양은 Phase 1.5
+
 ## 지구본 나라 카탈로그 — UN 누락 채움 · 「전체」중분류 철회
 
 **상태**: ✅ `main` 머지·푸시 · Production 배포
