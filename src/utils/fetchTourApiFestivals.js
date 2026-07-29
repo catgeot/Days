@@ -97,3 +97,28 @@ export async function fetchTourApiFestivalIntro(opts) {
   const contentTypeId = String(opts?.contentTypeId ?? '15').trim() || '15';
   return invokeTourApi('detailIntro', { contentId, contentTypeId });
 }
+
+/**
+ * @param {{ contentId: string | number }} opts
+ */
+export async function fetchTourApiFestivalCommon(opts) {
+  const contentId = String(opts?.contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return null;
+  return invokeTourApi('detailCommon', { contentId });
+}
+
+/**
+ * @param {{
+ *   contentId: string | number,
+ *   numOfRows?: number,
+ * }} opts
+ */
+export async function fetchTourApiFestivalImages(opts) {
+  const contentId = String(opts?.contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return null;
+  const numOfRows = Math.min(
+    30,
+    Math.max(1, Math.floor(Number(opts?.numOfRows) || 12)),
+  );
+  return invokeTourApi('detailImage', { contentId, numOfRows, pageNo: 1 });
+}

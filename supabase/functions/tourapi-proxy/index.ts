@@ -131,6 +131,7 @@ function normalizeItem(
   const smallimageurl = pickStr(item, "smallimageurl", "smallImageUrl");
   const galWebImageUrl = pickStr(item, "galWebImageUrl", "galwebimageurl");
   const overview = pickStr(item, "overview");
+  const homepage = pickStr(item, "homepage", "homePage");
   const addr1 = pickStr(item, "addr1", "galPhotographyLocation");
   const mapx = pickStr(item, "mapx", "mapX");
   const mapy = pickStr(item, "mapy", "mapY");
@@ -169,6 +170,7 @@ function normalizeItem(
     out.galPhotographer = photographer;
   }
   if (overview) out.overview = overview;
+  if (homepage) out.homepage = homepage;
   if (addr1) out.addr1 = addr1;
   if (mapx) out.mapx = mapx;
   if (mapy) out.mapy = mapy;

@@ -17,6 +17,19 @@
 
 **tip**: `9bb80b5` (merge) · PR [#30](https://github.com/catgeot/Days/pull/30) MERGED · Vercel Production OK
 
+## 국내축제 — 상세 1단계 (갤러리·개요·홈페이지 · PC 분할)
+
+**상태**: ✅ 사람 QA 후 `main` 커밋
+
+| | |
+|--|--|
+| 시트 | `detailCommon` 개요 · `detailImage` 갤러리 · 공식 홈페이지 CTA · X/닫기 · 확대보기 |
+| PC | 좌사진·우글 · 축제홈 폭(`xl:max-w-7xl`)·거의 전체 높이 |
+| 복귀 | 인근 hub → `/place` 후 ←/닫기 시 `/korea` (`placeReturnTo`) |
+| 다음 | 동영상·기사 등 읽을거리 2단계 · Edge `homepage` 필드 재배포(선택) |
+
+**VERIFY**: 사람 QA(갤러리·개요·홈페이지·크기·복귀·확대)
+
 ## 국내축제 — 테마 칩 1건 노출 · 홈 바탕 완료 · 다음=상세 리치
 
 **상태**: ✅ 사람 QA 후 `main` 커밋·푸시 (`9c58066` · docs `ad2b078`)

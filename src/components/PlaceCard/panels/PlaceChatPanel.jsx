@@ -16,6 +16,10 @@ import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.png';
+import {
+  clearPlaceReturnTo,
+  peekPlaceReturnTo,
+} from '../../../pages/Home/lib/placeReturnTo';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 
@@ -50,7 +54,7 @@ const PlaceChatPanel = React.memo(({
   const scrollRef = useRef(null);
   const navigate = useNavigate();
   const routeLocation = useRouteLocation();
-  /** React Router history idx → pathname (카드 마운트 중만) — ← 시 이전이 /place|/explore 아니면 explore */
+  /** React Router history idx → pathname (카드 마운트 중만) — ← 시 place/explore/korea·returnTo */
   const pathByHistoryIdxRef = useRef(new Map());
   const anchorKeyRef = useRef(null);
   const skipRelatedRefreshRef = useRef(false);
@@ -168,16 +172,33 @@ const PlaceChatPanel = React.memo(({
                 onClick={(event) => {
                     event.stopPropagation();
                     const idx = window.history.state?.idx;
+                    const returnTo = peekPlaceReturnTo(routeLocation.state);
                     if (typeof idx === 'number' && idx > 0) {
                         const prevPath = pathByHistoryIdxRef.current.get(idx - 1);
-                        // 탭·명소 간 복귀만 -1. 홈(/) 등으로 빠지면 탐색으로.
+                        // 탭·명소 간 / 축제홈(returnTo) 복귀는 -1.
                         if (
                             typeof prevPath === 'string' &&
-                            (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))
+                            (prevPath.startsWith('/place/') ||
+                              prevPath.startsWith('/explore') ||
+                              prevPath === '/korea' ||
+                              prevPath.startsWith('/korea?'))
                         ) {
+                            if (returnTo && (prevPath === '/korea' || prevPath.startsWith('/korea?'))) {
+                                clearPlaceReturnTo();
+                            }
                             navigate(-1);
                             return;
                         }
+                        if (returnTo) {
+                            clearPlaceReturnTo();
+                            navigate(-1);
+                            return;
+                        }
+                    }
+                    if (returnTo) {
+                        clearPlaceReturnTo();
+                        navigate(returnTo);
+                        return;
                     }
                     onClose?.();
                 }}

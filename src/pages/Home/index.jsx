@@ -52,6 +52,10 @@ import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
 import { syncHomeViewportAfterInput } from '../../shared/lib/mobileViewport';
+import {
+  clearPlaceReturnTo,
+  peekPlaceReturnTo,
+} from './lib/placeReturnTo';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -404,6 +408,7 @@ function Home() {
 
   /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */
   const goHomeFromPlace = useCallback(() => {
+    clearPlaceReturnTo();
     const focusLoc = routeLocation.pathname.startsWith('/place/')
       ? resolveFocusLocationFromPlacePath(routeLocation.pathname, category, savedTrips)
       : null;
@@ -420,6 +425,21 @@ function Home() {
       syncHomeViewportAfterInput();
     }
   }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport]);
+
+  const leavePlaceCard = useCallback(() => {
+    const returnTo = peekPlaceReturnTo(routeLocation.state);
+    if (returnTo) {
+      clearPlaceReturnTo();
+      const idx = window.history.state?.idx;
+      if (typeof idx === 'number' && idx > 0) {
+        navigate(-1);
+        return;
+      }
+      navigate(returnTo);
+      return;
+    }
+    navigate('/explore');
+  }, [navigate, routeLocation.state]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -1034,9 +1054,7 @@ function Home() {
         <Outlet context={{
           location: selectedLocation,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
-          onClose: () => {
-            navigate('/explore');
-          },
+          onClose: leavePlaceCard,
           onOpenMooni: openMooniFromPlace,
           onNavigateToPlace: navigateToPlace,
           onGoHome: goHomeFromPlace,

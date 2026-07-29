@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
+import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
@@ -2001,7 +2002,10 @@ export default function KoreaFestivalHub() {
           favorited={favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
           onClose={() => setSelected(null)}
-          onOpenHub={(hubId) => navigate(`/place/${hubId}`)}
+          onOpenHub={(hubId) => {
+            setPlaceReturnTo('/korea');
+            navigate(`/place/${hubId}`, { state: { returnTo: '/korea' } });
+          }}
         />
       )}
     </div>
