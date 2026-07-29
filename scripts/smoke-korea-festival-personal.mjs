@@ -13,8 +13,9 @@ import {
 import { nearbyHubsForFestival } from '../src/pages/Korea/nearbyFestivalHubs.js';
 import { DEFAULT_AREA_CODE } from '../src/pages/Korea/koreaFestivalDefaults.js';
 
-assert.equal(DEFAULT_AREA_CODE, '32');
-assert.equal(sidoLabel(DEFAULT_AREA_CODE), '강원');
+assert.equal(DEFAULT_AREA_CODE, 'all');
+assert.equal(sidoLabel(DEFAULT_AREA_CODE), '');
+assert.equal(sidoLabel('32'), '강원');
 
 const FAVORITES_KEY = 'gateo:korea-festivals:v1:favorites';
 const VIEWED_KEY = 'gateo:korea-festivals:v1:viewed';
@@ -205,5 +206,30 @@ assert.ok(
 
 assert.equal(mem.get(FAVORITES_KEY) != null, true);
 assert.equal(mem.get(VIEWED_KEY) != null, true);
+
+const {
+  buildFestivalTimeTabs,
+  currentSeasonIndex,
+  filterByTimeTab,
+  seasonRangeById,
+} = await import('../src/pages/Korea/festivalTimeFilter.js');
+const july = new Date(2026, 6, 29);
+assert.equal(currentSeasonIndex(july), 1);
+assert.deepEqual(
+  buildFestivalTimeTabs(july).map((t) => t.label),
+  ['지금', '이번 주말', '이번 달', '여름', '가을', '겨울', '봄'],
+);
+const summerRange = seasonRangeById('summer', july);
+assert.equal(summerRange.eventStartDate, '20260601');
+assert.equal(summerRange.eventEndDate, '20260831');
+const winterRange = seasonRangeById('winter', july);
+assert.equal(winterRange.eventStartDate, '20261201');
+assert.equal(winterRange.eventEndDate, '20270228');
+const seasonItems = [
+  { title: '여름', eventStartDate: '20260710', eventEndDate: '20260712' },
+  { title: '겨울', eventStartDate: '20270110', eventEndDate: '20270120' },
+];
+assert.equal(filterByTimeTab('summer', seasonItems, july).length, 1);
+assert.equal(filterByTimeTab('winter', seasonItems, july)[0].title, '겨울');
 
 console.log('smoke-korea-festival-personal: PASS');

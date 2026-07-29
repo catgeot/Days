@@ -1,4 +1,24 @@
-import { monthRangeYmd, toYmd } from './FestivalCalendar';
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
+/**
+ * @param {Date} d
+ * @returns {string} yyyymmdd
+ */
+export function toYmd(d) {
+  return `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
+}
+
+/**
+ * @param {number} year
+ * @param {number} month0
+ */
+export function monthRangeYmd(year, month0) {
+  const start = new Date(year, month0, 1);
+  const end = new Date(year, month0 + 1, 0);
+  return { eventStartDate: toYmd(start), eventEndDate: toYmd(end) };
+}
 
 /**
  * @param {Date} [now]
@@ -38,14 +58,92 @@ export function upcomingWeekendRange(now = new Date()) {
   return { startYmd: toYmd(start), endYmd: toYmd(end) };
 }
 
+/** 기상학적 계절 — 봄(3–5) · 여름(6–8) · 가을(9–11) · 겨울(12–2) */
+export const FESTIVAL_SEASONS = [
+  { id: 'spring', label: '봄', startMonth0: 2 },
+  { id: 'summer', label: '여름', startMonth0: 5 },
+  { id: 'autumn', label: '가을', startMonth0: 8 },
+  { id: 'winter', label: '겨울', startMonth0: 11 },
+];
+
+const SEASON_IDS = new Set(FESTIVAL_SEASONS.map((s) => s.id));
+
 /**
- * 시즌 = 이번 달 1일 ~ +2개월 말 (3개월 창).
+ * @param {Date} [now]
+ * @returns {number} FESTIVAL_SEASONS index
+ */
+export function currentSeasonIndex(now = new Date()) {
+  const m = now.getMonth();
+  if (m >= 2 && m <= 4) return 0;
+  if (m >= 5 && m <= 7) return 1;
+  if (m >= 8 && m <= 10) return 2;
+  return 3;
+}
+
+/**
+ * 오늘이 속한 계절의 시작일 (겨울은 전년 12/1일 수 있음).
+ * @param {Date} [now]
+ */
+export function startOfSeasonContaining(now = new Date()) {
+  const idx = currentSeasonIndex(now);
+  const startMonth0 = FESTIVAL_SEASONS[idx].startMonth0;
+  let year = now.getFullYear();
+  if (idx === 3 && now.getMonth() <= 1) year -= 1;
+  return new Date(year, startMonth0, 1);
+}
+
+/**
+ * 현재 계절부터 ahead(0–3)번째 계절 구간.
+ * @param {number} ahead
+ * @param {Date} [now]
+ */
+export function seasonRangeByAhead(ahead, now = new Date()) {
+  const start = startOfSeasonContaining(now);
+  const n = ((Number(ahead) % 4) + 4) % 4;
+  start.setMonth(start.getMonth() + n * 3);
+  const end = new Date(start.getFullYear(), start.getMonth() + 3, 0);
+  return { eventStartDate: toYmd(start), eventEndDate: toYmd(end) };
+}
+
+/**
+ * @param {string} seasonId spring|summer|autumn|winter
+ * @param {Date} [now]
+ */
+export function seasonRangeById(seasonId, now = new Date()) {
+  const cur = currentSeasonIndex(now);
+  const target = FESTIVAL_SEASONS.findIndex((s) => s.id === seasonId);
+  if (target < 0) return seasonRangeByAhead(0, now);
+  const ahead = (target - cur + 4) % 4;
+  return seasonRangeByAhead(ahead, now);
+}
+
+/**
+ * 시간 칩 — 고정 3 + 현재 계절부터 시간순 4.
+ * @param {Date} [now]
+ * @returns {{ id: string, label: string }[]}
+ */
+export function buildFestivalTimeTabs(now = new Date()) {
+  const cur = currentSeasonIndex(now);
+  /** @type {{ id: string, label: string }[]} */
+  const seasons = [];
+  for (let i = 0; i < 4; i += 1) {
+    const s = FESTIVAL_SEASONS[(cur + i) % 4];
+    seasons.push({ id: s.id, label: s.label });
+  }
+  return [
+    { id: 'now', label: '지금' },
+    { id: 'weekend', label: '이번 주말' },
+    { id: 'thisMonth', label: '이번 달' },
+    ...seasons,
+  ];
+}
+
+/**
+ * @deprecated 3개월 롤링 창 — 계절 칩으로 대체. 호출부 호환용.
  * @param {Date} [now]
  */
 export function seasonRangeYmd(now = new Date()) {
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 3, 0);
-  return { eventStartDate: toYmd(start), eventEndDate: toYmd(end) };
+  return seasonRangeByAhead(0, now);
 }
 
 /**
@@ -87,7 +185,7 @@ export function rangesOverlap(startYmd, endYmd, winStart, winEnd) {
 }
 
 /**
- * @param {'now' | 'weekend' | 'thisMonth' | 'season'} timeId
+ * @param {string} timeId now|weekend|thisMonth|spring|summer|autumn|winter
  * @param {object[]} items
  * @param {Date} [now]
  */
@@ -124,8 +222,21 @@ export function filterByTimeTab(timeId, items, now = new Date()) {
     );
   }
 
+  if (SEASON_IDS.has(timeId)) {
+    const range = seasonRangeById(timeId, now);
+    return list.filter((item) =>
+      rangesOverlap(
+        item?.eventStartDate,
+        item?.eventEndDate,
+        range.eventStartDate,
+        range.eventEndDate,
+      ),
+    );
+  }
+
+  // 구 'season' 칩 호환 → 현재 계절
   if (timeId === 'season') {
-    const range = seasonRangeYmd(now);
+    const range = seasonRangeByAhead(0, now);
     return list.filter((item) =>
       rangesOverlap(
         item?.eventStartDate,
@@ -138,5 +249,3 @@ export function filterByTimeTab(timeId, items, now = new Date()) {
 
   return list;
 }
-
-export { monthRangeYmd };
