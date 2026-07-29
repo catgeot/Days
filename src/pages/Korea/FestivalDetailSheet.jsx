@@ -380,7 +380,7 @@ export default function FestivalDetailSheet({
               href={homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900 hover:bg-amber-100"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-amber-300 bg-amber-100 px-4 py-3 text-sm font-bold text-amber-900 shadow-sm transition-colors hover:border-amber-500 hover:bg-amber-100 hover:shadow-md hover:ring-2 hover:ring-amber-200"
             >
               <ExternalLink size={15} aria-hidden="true" />
               공식 홈페이지
