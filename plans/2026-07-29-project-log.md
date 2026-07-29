@@ -2,6 +2,18 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
+## 국내축제 — `/korea` TourAPI 429 (롤링12 동시 호출)
+
+**상태**: ✅ 로직 수정·`main` 커밋
+
+| | |
+|--|--|
+| 원인 | 콜드 로드 시 12개월×2페이지 **24건 Promise.all** → TourAPI HTTP 429 |
+| 조치 | 월 동시 2 · page2는 50건 가득일 때만 · inflight 공유 · 429 최대 2회 재시도 |
+| 파일 | `fetchKoreaFestivalsWindow.js` · `fetchTourApiFestivals.js` |
+
+**QA**: 시크릿/새 탭으로 `/korea` · 콘솔에 `searchFestival not ok: …429` 폭주 없는지 · 목록 로드
+
 ## 국내축제 — 상세 모바일 UX (전체 스크롤·위로·탭 포커스)
 
 **상태**: ✅ 사람 QA 후 `main` 커밋·푸시

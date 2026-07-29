@@ -1,6 +1,7 @@
 import { supabase } from '../shared/api/supabase';
 
 const INVOKE_TIMEOUT_MS = 12_000;
+const RATE_LIMIT_RETRIES = 2;
 
 /**
  * @template T
@@ -22,34 +23,63 @@ function withTimeout(promise, ms, label) {
 }
 
 /**
+ * @param {number} ms
+ */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * @param {unknown} data
+ */
+function isRateLimited(data) {
+  if (!data || typeof data !== 'object') return false;
+  const status = Number(/** @type {{ status?: unknown }} */ (data).status);
+  if (status === 429) return true;
+  const msg = String(
+    /** @type {{ message?: unknown, error?: unknown }} */ (data).message ||
+      /** @type {{ error?: unknown }} */ (data).error ||
+      '',
+  );
+  return /HTTP\s*429|\b429\b/i.test(msg);
+}
+
+/**
  * @param {string} action
  * @param {Record<string, unknown>} payload
  */
 async function invokeTourApi(action, payload) {
-  try {
-    const { data, error } = await withTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
-        body: { action, ...payload },
-      }),
-      INVOKE_TIMEOUT_MS,
-      `tourapi:${action}`,
-    );
-    if (error) {
-      console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
-      return null;
-    }
-    if (!data?.ok) {
-      console.warn(
-        `[tourapi] ${action} not ok:`,
-        data?.message || data?.error || 'unknown',
+  for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
+    try {
+      const { data, error } = await withTimeout(
+        supabase.functions.invoke('tourapi-proxy', {
+          body: { action, ...payload },
+        }),
+        INVOKE_TIMEOUT_MS,
+        `tourapi:${action}`,
       );
+      if (error) {
+        console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
+        return null;
+      }
+      if (!data?.ok) {
+        if (isRateLimited(data) && attempt < RATE_LIMIT_RETRIES) {
+          await sleep(500 * (attempt + 1));
+          continue;
+        }
+        console.warn(
+          `[tourapi] ${action} not ok:`,
+          data?.message || data?.error || 'unknown',
+        );
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.warn(`[tourapi] ${action} failed:`, err?.message || err);
       return null;
     }
-    return data;
-  } catch (err) {
-    console.warn(`[tourapi] ${action} failed:`, err?.message || err);
-    return null;
   }
+  return null;
 }
 
 /**
