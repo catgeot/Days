@@ -15,6 +15,7 @@ import {
   saveGeoPuzzleProgress,
 } from './lib/geoPuzzleProgress.js';
 import GeoPuzzleGlobe from './GeoPuzzleGlobe.jsx';
+import CountrySilhouettePiece from './CountrySilhouettePiece.jsx';
 
 function shuffle(list) {
   const arr = [...list];
@@ -236,76 +237,82 @@ export default function GeoPuzzlePage() {
     setFeedback('');
   };
 
+  const filledInContinent = filledIds.filter((id) => continentCountryIds.includes(id)).length;
   const progressPct = continentCountryIds.length
-    ? Math.round((filledIds.filter((id) => continentCountryIds.includes(id)).length / continentCountryIds.length) * 100)
+    ? Math.round((filledInContinent / continentCountryIds.length) * 100)
     : 0;
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black text-white">
-      <div className={`absolute inset-0 transition-opacity ${flashMiss ? 'opacity-80' : 'opacity-100'}`}>
-        <GeoPuzzleGlobe
-          filledIds={filledIds}
-          previewIso={draggingId ? GLOBE_COUNTRY_CATALOG[draggingId]?.iso : null}
-          dragPan={!draggingId}
-          onMapReady={onMapReady}
-        />
-      </div>
-
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 md:p-5">
-        <div className="pointer-events-auto flex max-w-[min(100%,28rem)] flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/55 px-3 py-1.5 text-xs text-white/90 backdrop-blur-md hover:bg-black/70"
-            >
-              <ArrowLeft size={14} />
-              홈
-            </Link>
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/35 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-100 backdrop-blur-md">
-              <Puzzle size={14} />
-              범지구적 퍼즐
-            </div>
+    <div className="flex h-dvh max-h-dvh w-full flex-col overflow-hidden bg-black text-white">
+      <header className="relative z-30 flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-black/90 px-3 py-2.5 backdrop-blur-md">
+        <div className="flex min-w-0 items-center gap-2">
+          <Link
+            to="/"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs text-white/90"
+            aria-label="홈으로"
+          >
+            <ArrowLeft size={14} />
+            <span className="hidden xs:inline sm:inline">홈</span>
+          </Link>
+          <div className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-cyan-400/35 bg-cyan-500/10 px-2.5 py-1.5 text-xs font-bold text-cyan-100">
+            <Puzzle size={14} className="shrink-0" />
+            <span className="truncate">범지구적 퍼즐</span>
           </div>
-          <p className="break-keep rounded-xl border border-white/10 bg-black/55 px-3 py-2 text-[11px] leading-relaxed text-white/80 backdrop-blur-md md:text-xs">
-            지명·국경 없는 지구본에 나라 피스를 끌어다 놓으세요. 맞으면 가점, 틀리면 감점(종료 없음).
-            공식 대륙명 · 국가 수가 적은 대륙부터.
-          </p>
         </div>
-
-        <div className="pointer-events-auto flex flex-col items-end gap-2">
-          <div className="rounded-xl border border-white/15 bg-black/60 px-4 py-2 text-right backdrop-blur-md">
-            <div className="text-[10px] uppercase tracking-wider text-white/50">Score</div>
-            <div className="text-2xl font-bold tabular-nums text-white">{score}</div>
-            <div className="text-[10px] text-white/55">{progressPct}% · {continent?.labelKo}</div>
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-right leading-tight">
+            <div className="text-[9px] uppercase tracking-wider text-white/45">Score</div>
+            <div className="text-lg font-bold tabular-nums">{score}</div>
           </div>
           <button
             type="button"
             onClick={handleReset}
-            className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/55 px-3 py-1.5 text-[11px] text-white/80 hover:bg-black/70"
+            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 p-2 text-white/80"
+            aria-label="초기화"
           >
-            <RotateCcw size={12} />
-            초기화
+            <RotateCcw size={14} />
           </button>
         </div>
       </header>
 
+      <div className={`relative min-h-0 flex-1 transition-opacity ${flashMiss ? 'opacity-80' : 'opacity-100'}`}>
+        <GeoPuzzleGlobe
+          filledIds={filledIds}
+          slotIds={continentCountryIds}
+          dragPan={!draggingId}
+          onMapReady={onMapReady}
+        />
+
+        {feedback ? (
+          <div className="pointer-events-none absolute left-1/2 top-3 z-20 max-w-[90%] -translate-x-1/2 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-center text-[11px] text-white backdrop-blur-md break-keep">
+            {feedback}
+          </div>
+        ) : null}
+
+        <div className="pointer-events-none absolute bottom-2 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/10 bg-black/55 px-3 py-1 text-[10px] text-white/70 backdrop-blur-sm">
+          {continent?.labelKo} · {filledInContinent}/{continentCountryIds.length} · {progressPct}%
+        </div>
+      </div>
+
       {dragPos && draggingId ? (
         <div
-          className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-cyan-300 bg-cyan-500/40 px-3 py-1.5 text-xs font-bold text-white shadow-lg backdrop-blur-sm"
+          className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2"
           style={{ left: dragPos.x, top: dragPos.y }}
         >
-          {getGlobeCountryById(draggingId)?.labelKo || draggingId}
+          <CountrySilhouettePiece
+            countryId={draggingId}
+            labelKo={getGlobeCountryById(draggingId)?.labelKo}
+            active
+            size="drag"
+          />
         </div>
       ) : null}
 
-      {feedback ? (
-        <div className="pointer-events-none absolute left-1/2 top-28 z-20 -translate-x-1/2 rounded-full border border-white/20 bg-black/70 px-4 py-1.5 text-xs text-white backdrop-blur-md break-keep">
-          {feedback}
-        </div>
-      ) : null}
-
-      <aside className="absolute bottom-0 left-0 right-0 z-20 border-t border-white/10 bg-black/75 p-3 backdrop-blur-md md:bottom-4 md:left-4 md:right-auto md:max-w-sm md:rounded-2xl md:border">
-        <div className="mb-2 flex flex-wrap gap-1.5">
+      <aside
+        className="relative z-30 flex shrink-0 flex-col gap-2 border-t border-white/15 bg-zinc-950/95 px-3 pt-2.5 backdrop-blur-md"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {campaign.map((c) => {
             const count = listContinentCountryIds(c).length;
             const active = c.id === continent?.id;
@@ -315,10 +322,10 @@ export default function GeoPuzzlePage() {
                 key={c.id}
                 type="button"
                 onClick={() => handleSelectContinent(c.id)}
-                className={`rounded-full border px-2.5 py-1 text-[11px] break-keep ${
+                className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-medium break-keep ${
                   active
-                    ? 'border-cyan-400/60 bg-cyan-500/20 text-cyan-50'
-                    : 'border-white/15 bg-white/5 text-white/75 hover:bg-white/10'
+                    ? 'border-cyan-400/70 bg-cyan-500/25 text-cyan-50'
+                    : 'border-white/20 bg-white/5 text-white/80'
                 }`}
               >
                 {c.labelKo}
@@ -329,11 +336,11 @@ export default function GeoPuzzlePage() {
           })}
         </div>
 
-        <div className="mb-2 text-[11px] text-white/55 break-keep">
-          {continent?.labelKo} · 남은 피스 {remainingIds.length} · 드래그해서 지구본에 놓기
-        </div>
+        <p className="text-[10px] leading-snug text-white/50 break-keep">
+          나라 모양 피스를 빈 칸에 끌어다 놓으세요 · 맞으면 가점 · 틀리면 감점
+        </p>
 
-        <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto pr-1 md:max-h-56">
+        <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {trayOrder.map((id) => {
             const country = getGlobeCountryById(id);
             const active = draggingId === id;
@@ -342,18 +349,19 @@ export default function GeoPuzzlePage() {
                 key={id}
                 type="button"
                 onPointerDown={(e) => onPointerDownPiece(e, id)}
-                className={`touch-none select-none rounded-lg border px-2.5 py-1.5 text-left text-xs font-semibold break-keep ${
-                  active
-                    ? 'border-cyan-300 bg-cyan-400/30 text-white scale-105'
-                    : 'border-white/20 bg-white/10 text-white hover:border-cyan-400/50 hover:bg-white/15'
-                }`}
+                className={`touch-none select-none shrink-0 ${active ? 'opacity-40' : ''}`}
               >
-                {country?.labelKo || id}
+                <CountrySilhouettePiece
+                  countryId={id}
+                  labelKo={country?.labelKo}
+                  active={active}
+                  size="tray"
+                />
               </button>
             );
           })}
           {!trayOrder.length ? (
-            <p className="text-xs text-emerald-300 break-keep">
+            <p className="py-3 text-xs text-emerald-300 break-keep">
               {continent?.labelKo} 완료! 다음 대륙을 선택하세요.
             </p>
           ) : null}

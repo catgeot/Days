@@ -2,6 +2,18 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
+## 범지구적 퍼즐 — 실루엣 매칭 · 모바일 우선
+
+**상태**: Preview QA
+
+| | |
+|--|--|
+| 피드백 | 이름만 드롭 → **나라 필(실루엣) 매칭** · **모바일 중심** 레이아웃 · 카테고리/칩 미표시 수정 |
+| 변경 | `geoPuzzleSilhouettes` · 하단 고정 트레이(flex+dvh) · 빈 칸 슬롯 윤곽 · 드래그 고스트=실루엣(정답 위치 스포일러 제거) |
+| 검증 | `npm run audit:geo-puzzle` PASS |
+
+**다음**: Preview 모바일 QA · PC 확장은 후속
+
 ## 지구본 지리 퍼즐 게임 — 기획·유사작 조사
 
 **상태**: Phase 0 ✅ · Phase 1 MVP 구현 (Preview QA)

@@ -10,7 +10,8 @@ const COUNTRIES_SOURCE = 'gateo-geo-puzzle-countries';
 const HIT_FILL = 'gateo-geo-puzzle-hit-fill';
 const PLACED_FILL = 'gateo-geo-puzzle-placed-fill';
 const PLACED_LINE = 'gateo-geo-puzzle-placed-line';
-const GHOST_FILL = 'gateo-geo-puzzle-ghost-fill';
+const SLOT_LINE = 'gateo-geo-puzzle-slot-line';
+const SLOT_FILL = 'gateo-geo-puzzle-slot-fill';
 
 const DEFAULT_VIEW = {
   longitude: 140,
@@ -99,6 +100,33 @@ function ensurePlacedLayers(map) {
       ],
     });
   }
+  if (!map.getLayer(SLOT_FILL)) {
+    map.addLayer({
+      id: SLOT_FILL,
+      type: 'fill',
+      source: COUNTRIES_SOURCE,
+      'source-layer': 'country_boundaries',
+      paint: {
+        'fill-color': '#ffffff',
+        'fill-opacity': 0.06,
+      },
+      filter: multiIsoFilter([]),
+    });
+  }
+  if (!map.getLayer(SLOT_LINE)) {
+    map.addLayer({
+      id: SLOT_LINE,
+      type: 'line',
+      source: COUNTRIES_SOURCE,
+      'source-layer': 'country_boundaries',
+      paint: {
+        'line-color': '#ffffff',
+        'line-width': 1.1,
+        'line-opacity': 0.35,
+      },
+      filter: multiIsoFilter([]),
+    });
+  }
   if (!map.getLayer(PLACED_FILL)) {
     map.addLayer({
       id: PLACED_FILL,
@@ -107,7 +135,7 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'fill-color': '#22d3ee',
-        'fill-opacity': 0.42,
+        'fill-opacity': 0.48,
       },
       filter: multiIsoFilter([]),
     });
@@ -120,55 +148,47 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'line-color': '#fbbf24',
-        'line-width': 1.4,
-        'line-opacity': 0.9,
+        'line-width': 1.5,
+        'line-opacity': 0.95,
       },
       filter: multiIsoFilter([]),
-    });
-  }
-  if (!map.getLayer(GHOST_FILL)) {
-    map.addLayer({
-      id: GHOST_FILL,
-      type: 'fill',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'fill-color': '#a78bfa',
-        'fill-opacity': 0.18,
-      },
-      filter: multiIsoFilter([]),
-      layout: { visibility: 'none' },
     });
   }
 }
 
 /**
- * @param {{ filledIds: string[], previewIso?: string | null, dragPan?: boolean, onMapReady?: (map: import('mapbox-gl').Map) => void }} props
+ * @param {{
+ *   filledIds: string[],
+ *   slotIds?: string[],
+ *   dragPan?: boolean,
+ *   onMapReady?: (map: import('mapbox-gl').Map) => void,
+ * }} props
  */
 export default function GeoPuzzleGlobe({
   filledIds = [],
-  previewIso = null,
+  slotIds = [],
   dragPan = true,
   onMapReady,
 }) {
   const mapRef = useRef(null);
   const readyRef = useRef(false);
 
-  const syncFills = useCallback((map, ids, preview) => {
+  const syncFills = useCallback((map, filled, slots) => {
     if (!map) return;
     ensurePlacedLayers(map);
-    const isos = (ids || [])
+    const filledIsos = (filled || [])
+      .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
+      .filter(Boolean);
+    const filledSet = new Set(filled || []);
+    const slotIsos = (slots || [])
+      .filter((id) => !filledSet.has(id))
       .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
       .filter(Boolean);
     try {
-      map.setFilter(PLACED_FILL, multiIsoFilter(isos));
-      map.setFilter(PLACED_LINE, multiIsoFilter(isos));
-      if (preview) {
-        map.setFilter(GHOST_FILL, multiIsoFilter([preview]));
-        map.setLayoutProperty(GHOST_FILL, 'visibility', 'visible');
-      } else {
-        map.setLayoutProperty(GHOST_FILL, 'visibility', 'none');
-      }
+      map.setFilter(PLACED_FILL, multiIsoFilter(filledIsos));
+      map.setFilter(PLACED_LINE, multiIsoFilter(filledIsos));
+      map.setFilter(SLOT_FILL, multiIsoFilter(slotIsos));
+      map.setFilter(SLOT_LINE, multiIsoFilter(slotIsos));
     } catch {
       /* ignore */
     }
@@ -177,8 +197,8 @@ export default function GeoPuzzleGlobe({
   useEffect(() => {
     const map = mapRef.current?.getMap?.();
     if (!map || !readyRef.current) return;
-    syncFills(map, filledIds, previewIso);
-  }, [filledIds, previewIso, syncFills]);
+    syncFills(map, filledIds, slotIds);
+  }, [filledIds, slotIds, syncFills]);
 
   const handleLoad = useCallback(() => {
     const map = mapRef.current?.getMap?.();
@@ -186,15 +206,15 @@ export default function GeoPuzzleGlobe({
     readyRef.current = true;
     forceHideLabelsAndBorders(map);
     ensurePlacedLayers(map);
-    syncFills(map, filledIds, previewIso);
+    syncFills(map, filledIds, slotIds);
     onMapReady?.(map);
 
     map.on('style.load', () => {
       forceHideLabelsAndBorders(map);
       ensurePlacedLayers(map);
-      syncFills(map, filledIds, previewIso);
+      syncFills(map, filledIds, slotIds);
     });
-  }, [filledIds, onMapReady, previewIso, syncFills]);
+  }, [filledIds, onMapReady, slotIds, syncFills]);
 
   if (!MAPBOX_TOKEN) {
     return (
@@ -220,7 +240,7 @@ export default function GeoPuzzleGlobe({
         dragPan={dragPan}
         scrollZoom
       />
-      <div className="pointer-events-none absolute bottom-2 left-2 z-10 flex gap-2 text-[10px] text-white/70">
+      <div className="pointer-events-none absolute bottom-1 left-1 z-10 flex gap-2 text-[9px] text-white/60">
         {CAPTION_LINKS.map((item) => (
           <a
             key={item.href}

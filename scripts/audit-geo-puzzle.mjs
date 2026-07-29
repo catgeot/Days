@@ -7,6 +7,7 @@ import {
   getCampaignContinents,
   listContinentCountryIds,
 } from '../src/pages/PlayGeo/data/geoPuzzleTree.js';
+import { GEO_PUZZLE_SILHOUETTES } from '../src/pages/PlayGeo/data/geoPuzzleSilhouettes.js';
 import { GLOBE_COUNTRY_CATALOG } from '../src/pages/Home/lib/globeCountryCatalog.js';
 import { pointInBbox } from '../src/pages/PlayGeo/lib/geoPuzzleHitTest.js';
 
@@ -33,6 +34,8 @@ for (const continent of GEO_PUZZLE_CONTINENTS) {
     if (!c?.iso) fail(`no iso ${id}`);
     if (!Array.isArray(c?.bbox) || c.bbox.length < 4) fail(`no bbox ${id}`);
     else if (!pointInBbox(c.lng, c.lat, c.bbox)) fail(`centroid outside bbox ${id}`);
+    const sil = GEO_PUZZLE_SILHOUETTES[id];
+    if (!sil?.d || !sil?.viewBox) fail(`missing silhouette ${id}`);
   }
 }
 
@@ -42,6 +45,7 @@ for (let i = 1; i < counts.length; i += 1) {
   if (counts[i] < counts[i - 1]) fail(`campaign not ascending by count: ${counts.join(',')}`);
 }
 ok(`countries ${allIds.length} · continents ${GEO_PUZZLE_CONTINENTS.length}`);
+ok(`silhouettes ${Object.keys(GEO_PUZZLE_SILHOUETTES).length}`);
 ok(`campaign order ${campaign.map((c, i) => `${c.labelKo}(${counts[i]})`).join(' → ')}`);
 
 if (fails) {
