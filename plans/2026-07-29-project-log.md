@@ -2,6 +2,23 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
+## 지구본 나라 카탈로그 — UN 누락 채움 · 「전체」중분류 철회
+
+**상태**: ✅ 로직 검증 · feature push · Preview QA 대기
+
+| | |
+|--|--|
+| 오해 정정 | 「전체」칩·면 전체 일괄 표시가 아님 · **누락 국가 채움** + 중분류 배타 |
+| 카탈로그 | 114 → **219** (UN 회원+VA/PS/XK · 기존 하와이·영국 구성국 등 유지) |
+| 중분류 | 「전체」제거 · 잔여는「기타」흡수 · 문화/모험 소권역 추가 · 중동→휴양 시드 |
+| 파일 | `globeCountryCatalog.js` · `globeFaceRegions.js` · `globeFaceSubregions.js` · `GlobeFaceRegionRail.jsx` · `scripts/generate-globe-country-catalog-fill.mjs` |
+
+**VERIFY**: UN missing 0 · 면 합=219 · 중분류 중복0·커버100% · 기본≠all · `smoke:place-label-slug` OK
+
+**tip**: `f929a8b` · PR [#30](https://github.com/catgeot/Days/pull/30)
+
+**QA**: 각 테마→중분류에 빠진 나라가「기타」등으로 보이는지 ·「전체」칩 없음
+
 ## 국내축제 — 테마 칩 1건 노출 · 홈 바탕 완료 · 다음=상세 리치
 
 **상태**: ✅ 사람 QA 후 `main` 커밋·푸시 (`9c58066` · docs `ad2b078`)
