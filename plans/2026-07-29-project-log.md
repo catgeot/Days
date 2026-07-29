@@ -17,6 +17,21 @@
 
 **tip**: `9bb80b5` (merge) · PR [#30](https://github.com/catgeot/Days/pull/30) MERGED · Vercel Production OK
 
+## 국내축제 — TourAPI 필드 최대 활용 (detailInfo · intro 확장)
+
+**상태**: ✅ Edge 재배포 · LIVE 스모크 · `main` 커밋 (`c46709e`) · **push는 사람 승인 후**
+
+| | |
+|--|--|
+| Edge | `detailIntro` 확장(program·agelimit·sponsor2·spendtime·discount·booking·placeinfo·subevent) · `detailInfo` action |
+| 시트 | 탭 안내 / 프로그램·내용 / 사진(2장+) · 빈 값 숨김 · 행사소개↔개요·행사내용↔프로그램 중복 스킵 |
+| 샘플 | 세미원·나오라쇼·썸머워터·대관령 → program 노출 · 행사내용 중복 제외 · 대관령에 출연·소요시간·연령 |
+| 공백 | discount/booking/placeinfo/subevent는 샘플 4건 TourAPI 공백 · 썸머워터 homepage 공백 |
+
+**VERIFY**: `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` PASS · Edge `tourapi-proxy` 재배포
+
+**다음**: 사람 `/korea` 상세 QA → OK 시 `git push origin main`
+
 ## 국내축제 — 홈페이지 CTA 복구 (Edge 재배포 · 파서)
 
 **상태**: ✅ Edge 재배포 + 파서 수정 · LIVE 검증
