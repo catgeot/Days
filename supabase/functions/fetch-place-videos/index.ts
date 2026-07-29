@@ -15,7 +15,9 @@ serve(async (req) => {
   }
 
   try {
-    const { query, fallbackQuery, placeId } = await req.json();
+    const body = await req.json();
+    const { query, fallbackQuery, placeId } = body;
+    const mode = body.mode === 'festival' ? 'festival' : 'place';
 
     if (!query || !placeId) {
       throw new Error('query and placeId are required');
@@ -27,10 +29,14 @@ serve(async (req) => {
       throw new Error('YOUTUBE_API_KEY is not configured on server');
     }
 
-    // 1차 검색: 한국어 여행 브이로그 (CC 조건 제거)
+    const primaryQ = mode === 'festival'
+      ? String(query).trim()
+      : `${query} 여행 브이로그`;
+
+    // 1차 검색
     let params = new URLSearchParams({
       part: 'snippet',
-      q: `${query} 여행 브이로그`,
+      q: primaryQ,
       maxResults: '5',
       type: 'video',
       relevanceLanguage: 'ko',
@@ -47,9 +53,11 @@ serve(async (req) => {
 
     let data = await youtubeResponse.json();
 
-    // 결과가 없거나 적을 경우 2차 일반 검색 (영문 fallbackQuery가 있으면 우선 사용)
+    // 결과가 없거나 적을 경우 2차 일반 검색
     if (!data.items || data.items.length === 0) {
-      const secondQuery = fallbackQuery ? fallbackQuery : `${query} travel vlog`;
+      const secondQuery = fallbackQuery
+        ? fallbackQuery
+        : (mode === 'festival' ? String(query).trim() : `${query} travel vlog`);
       params = new URLSearchParams({
         part: 'snippet',
         q: secondQuery,
@@ -66,6 +74,8 @@ serve(async (req) => {
       data = await youtubeResponse.json();
     }
 
+    const tagBase = mode === 'festival' ? ['#축제', '#festival'] : ['#여행', '#vlog'];
+
     // API 응답 데이터를 프로젝트 표준 규격(TRAVEL_VIDEOS)으로 변환
     const videosToCache = data.items?.map((item: any) => ({
       id: item.id.videoId,
@@ -73,7 +83,7 @@ serve(async (req) => {
       location_keyword: query,
       ai_context: {
         summary: item.snippet.description || '영상 설명이 없습니다.',
-        tags: [`#${query}`, '#여행', '#vlog'],
+        tags: [`#${query}`, ...tagBase],
         best_moment: { time: '00:00', desc: '자동 생성된 영상' },
         timeline: []
       },

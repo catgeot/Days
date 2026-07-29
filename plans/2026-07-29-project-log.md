@@ -17,6 +17,18 @@
 
 **tip**: `9bb80b5` (merge) · PR [#30](https://github.com/catgeot/Days/pull/30) MERGED · Vercel Production OK
 
+## 국내축제 — 읽을거리 2단계 (YouTube · 검색 링크)
+
+**상태**: ✅ Edge 재배포 · `main` 커밋 예정 · **push·PROD「완료」는 사람 QA 후**
+
+| | |
+|--|--|
+| Edge | `fetch-place-videos` `mode=festival` · 쿼리 `{title} 축제` · 캐시 `festival:{contentId}` |
+| 시트 | 탭「읽을거리」· lazy YouTube(탭 진입 시) · 네이버 뉴스/위키 검색 링크 · 홈 CTA 중복 없음 |
+| 비범위 | Gemini 기사·뉴스 본문·수동 SSOT |
+
+**VERIFY**: Edge `fetch-place-videos` 재배포 · 사람 `/korea` 상세 QA(탭·영상·링크·회귀)
+
 ## 국내축제 — TourAPI 필드 최대 활용 (detailInfo · intro 확장)
 
 **상태**: ✅ Edge 재배포 · LIVE 스모크 · `main` 커밋 (`c46709e`) · **push는 사람 승인 후**

@@ -17,6 +17,7 @@ import {
   fetchTourApiFestivalInfo,
   fetchTourApiFestivalIntro,
 } from '../../utils/fetchTourApiFestivals';
+import { fetchFestivalVideos } from '../../utils/fetchFestivalVideos';
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
@@ -143,6 +144,25 @@ function DetailRow({ label, children }) {
 const TAB_INFO = 'info';
 const TAB_PROGRAM = 'program';
 const TAB_PHOTOS = 'photos';
+const TAB_READING = 'reading';
+
+function youtubeThumb(videoId) {
+  const id = String(videoId || '').trim();
+  if (!id) return '';
+  return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+}
+
+function naverNewsSearchUrl(title) {
+  const q = String(title || '').trim();
+  if (!q) return '';
+  return `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(q)}`;
+}
+
+function wikiSearchUrl(title) {
+  const q = String(title || '').trim();
+  if (!q) return '';
+  return `https://ko.wikipedia.org/w/index.php?search=${encodeURIComponent(q)}`;
+}
 
 /**
  * @param {{
@@ -171,6 +191,10 @@ export default function FestivalDetailSheet({
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(TAB_INFO);
+  const [videos, setVideos] = useState([]);
+  const [videosLoading, setVideosLoading] = useState(false);
+  const [videosError, setVideosError] = useState('');
+  const [videosLoadedFor, setVideosLoadedFor] = useState('');
 
   useEffect(() => {
     if (!item?.contentId) {
@@ -183,6 +207,10 @@ export default function FestivalDetailSheet({
       setActiveImage(0);
       setLightboxOpen(false);
       setActiveTab(TAB_INFO);
+      setVideos([]);
+      setVideosLoading(false);
+      setVideosError('');
+      setVideosLoadedFor('');
       return undefined;
     }
 
@@ -197,6 +225,10 @@ export default function FestivalDetailSheet({
     setActiveTab(TAB_INFO);
     setDetailError('');
     setDetailLoading(true);
+    setVideos([]);
+    setVideosLoading(false);
+    setVideosError('');
+    setVideosLoadedFor('');
 
     (async () => {
       const contentId = item.contentId;
@@ -312,7 +344,7 @@ export default function FestivalDetailSheet({
   const showProgram = Boolean(programText);
   const hasProgramTab = showProgram || detailSections.length > 0;
   const hasPhotoTab = imageUrls.length > 1;
-  const showTabs = hasProgramTab || hasPhotoTab;
+  const showTabs = true;
 
   useEffect(() => {
     if (activeTab === TAB_PROGRAM && !hasProgramTab) {
@@ -321,6 +353,50 @@ export default function FestivalDetailSheet({
       setActiveTab(TAB_INFO);
     }
   }, [activeTab, hasProgramTab, hasPhotoTab]);
+
+  useEffect(() => {
+    if (activeTab !== TAB_READING || !item?.contentId || !item?.title) return;
+    const id = String(item.contentId);
+    if (videosLoadedFor === id) return;
+
+    let cancelled = false;
+    setVideosLoading(true);
+    setVideosError('');
+
+    const ymd = String(item.eventStartDate || intro?.eventStartDate || '');
+    const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : '';
+
+    (async () => {
+      const result = await fetchFestivalVideos({
+        contentId: id,
+        title: String(item.title),
+        year,
+      });
+      if (cancelled) return;
+      setVideosLoadedFor(id);
+      setVideosLoading(false);
+      if (!result.ok) {
+        setVideos([]);
+        setVideosError('관련 영상을 찾지 못했습니다.');
+        return;
+      }
+      setVideos(Array.isArray(result.videos) ? result.videos.slice(0, 5) : []);
+      if (!result.videos?.length) {
+        setVideosError('관련 영상을 찾지 못했습니다.');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    activeTab,
+    item?.contentId,
+    item?.title,
+    item?.eventStartDate,
+    intro?.eventStartDate,
+    videosLoadedFor,
+  ]);
 
   if (!item) return null;
 
@@ -528,6 +604,12 @@ export default function FestivalDetailSheet({
                   사진
                 </TabChip>
               )}
+              <TabChip
+                selected={activeTab === TAB_READING}
+                onClick={() => setActiveTab(TAB_READING)}
+              >
+                읽을거리
+              </TabChip>
             </div>
           )}
 
@@ -667,6 +749,88 @@ export default function FestivalDetailSheet({
                     />
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {!detailLoading && activeTab === TAB_READING && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                  더 찾아보기
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {naverNewsSearchUrl(item.title) && (
+                    <a
+                      href={naverNewsSearchUrl(item.title)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                    >
+                      <ExternalLink size={12} aria-hidden="true" />
+                      네이버 뉴스 검색
+                    </a>
+                  )}
+                  {wikiSearchUrl(item.title) && (
+                    <a
+                      href={wikiSearchUrl(item.title)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                    >
+                      <ExternalLink size={12} aria-hidden="true" />
+                      위키백과 검색
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                  관련 영상
+                </p>
+                {videosLoading && (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
+                    <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    영상 불러오는 중…
+                  </div>
+                )}
+                {!videosLoading && videosError && videos.length === 0 && (
+                  <p className="text-xs text-stone-500">{videosError}</p>
+                )}
+                {!videosLoading && videos.length > 0 && (
+                  <ul className="space-y-2">
+                    {videos.map((video) => {
+                      const id = String(video?.id || '').trim();
+                      if (!id) return null;
+                      const thumb = youtubeThumb(id);
+                      const href = `https://www.youtube.com/watch?v=${id}`;
+                      return (
+                        <li key={id}>
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                          >
+                            {thumb ? (
+                              <img
+                                src={thumb}
+                                alt=""
+                                className="h-16 w-28 shrink-0 rounded-xl object-cover bg-stone-200"
+                              />
+                            ) : (
+                              <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
+                            )}
+                            <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
+                              {video.title || 'YouTube 영상'}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             </div>
           )}
