@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  GLOBE_FACE_SUBREGION_ALL,
   getDefaultFaceSubregionId,
   getFaceRegionsForSubregion,
-  getFaceSubregions,
+  getFaceSubregionChipOptions,
   shouldShowFaceSubregionChips,
 } from '../lib/globeFaceSubregions.js';
 
@@ -38,14 +39,20 @@ const RAIL_LIST_HEIGHT_DESKTOP = 'h-[min(68vh,34rem)]';
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
 
-function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, subregions) {
+function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, chipOptions) {
   return useMemo(() => {
     if (!showSubregionChips) return null;
-    if (selectedSubregionId && subregions.some((s) => s.id === selectedSubregionId)) {
+    if (
+      selectedSubregionId
+      && (
+        selectedSubregionId === GLOBE_FACE_SUBREGION_ALL
+        || chipOptions.some((s) => s.id === selectedSubregionId)
+      )
+    ) {
       return selectedSubregionId;
     }
     return getDefaultFaceSubregionId(category);
-  }, [showSubregionChips, selectedSubregionId, subregions, category]);
+  }, [showSubregionChips, selectedSubregionId, chipOptions, category]);
 }
 
 function GlassScrollStyles() {
@@ -103,9 +110,9 @@ export function GlobeFaceSubregionBar({
   onSelectSubregion,
   className = '',
 }) {
-  const subregions = useMemo(() => getFaceSubregions(category), [category]);
-  const show = shouldShowFaceSubregionChips(category) && subregions.length > 0;
-  const activeSubregionId = useActiveSubregionId(category, show, selectedSubregionId, subregions);
+  const chipOptions = useMemo(() => getFaceSubregionChipOptions(category), [category]);
+  const show = shouldShowFaceSubregionChips(category) && chipOptions.length > 0;
+  const activeSubregionId = useActiveSubregionId(category, show, selectedSubregionId, chipOptions);
   const barRef = useRef(null);
   const [scrollUi, setScrollUi] = useState({
     scrollable: false,
@@ -139,7 +146,7 @@ export function GlobeFaceSubregionBar({
 
   useEffect(() => {
     updateScrollUi();
-  }, [category, subregions.length, updateScrollUi]);
+  }, [category, chipOptions.length, updateScrollUi]);
 
   useEffect(() => {
     const el = barRef.current;
@@ -168,7 +175,7 @@ export function GlobeFaceSubregionBar({
           aria-label="소권역"
           onScroll={updateScrollUi}
         >
-          {subregions.map((sub) => {
+          {chipOptions.map((sub) => {
             const isActive = activeSubregionId === sub.id;
             return (
               <button
@@ -209,7 +216,7 @@ export function GlobeFaceSubregionBar({
 
 /**
  * 카테고리 면 → 권역 나라 칩 레일 (면당 배타 · 스크롤).
- * PC: subregionPlacement=side 시 소권역 칩 + 필터된 나라 목록 (「전체」칩 없음 · 기본 첫 소권역).
+ * PC: subregionPlacement=side 시 소권역 칩(맨 앞「전체」) + 나라 목록 · 기본=면 전체.
  * 모바일: subregionPlacement=none + 하단 GlobeFaceSubregionBar 조합.
  */
 export default function GlobeFaceRegionRail({
@@ -224,18 +231,18 @@ export default function GlobeFaceRegionRail({
   listHeightClass,
   className = '',
 }) {
-  const subregions = useMemo(
-    () => (showSubregions ? getFaceSubregions(category) : []),
+  const chipOptions = useMemo(
+    () => (showSubregions ? getFaceSubregionChipOptions(category) : []),
     [category, showSubregions],
   );
-  const showSubregionChips = showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
+  const showSubregionChips = showSubregions && shouldShowFaceSubregionChips(category) && chipOptions.length > 0;
   const renderSideChips = showSubregionChips && subregionPlacement === 'side';
 
   const activeSubregionId = useActiveSubregionId(
     category,
     showSubregionChips,
     selectedSubregionId,
-    subregions,
+    chipOptions,
   );
 
   const regions = useMemo(
@@ -416,7 +423,7 @@ export default function GlobeFaceRegionRail({
         role="listbox"
         aria-label="소권역"
       >
-        {subregions.map((sub) => {
+        {chipOptions.map((sub) => {
           const isActive = activeSubregionId === sub.id;
           return (
             <button

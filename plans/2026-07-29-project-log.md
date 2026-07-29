@@ -2,6 +2,20 @@
 
 직전: [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)
 
+## 지구본 테마 카테고리 — 나라 목록 기본=전체
+
+**상태**: ✅ 로직 검증 · feature push · Preview QA 대기
+
+| | |
+|--|--|
+| 원인 | 소권역 기본=첫 칩(예: 휴양→동아시아 6국)이라 면 전체(41 등)가 안 보임 |
+| 변경 | 기본=`all` · 소권역 칩 맨 앞「전체」 · PC/모바일 동일 |
+| 파일 | `globeFaceSubregions.js` · `GlobeFaceRegionRail.jsx` |
+
+**VERIFY**: 기본 면 국가 수 = face 전체 · 소권역 필터 유지 · `smoke:place-label-slug` OK
+
+**QA**: 카테고리 탭 → 나라 칩이 면 전체인지 ·「전체」↔소권역 전환 · 스크롤
+
 ## 국내축제 — 테마 칩 1건 노출 · 홈 바탕 완료 · 다음=상세 리치
 
 **상태**: ✅ 사람 QA 후 `main` 커밋·푸시 (`9c58066` · docs `ad2b078`)

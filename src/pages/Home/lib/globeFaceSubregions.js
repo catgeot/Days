@@ -137,11 +137,26 @@ export function shouldShowFaceSubregionChips(category) {
 }
 
 /**
- * 소권역 기본값 — 첫 소권역 id (칩 없으면 null). 「전체」칩 없음.
+ * UI용 소권역 칩 — 맨 앞「전체」+ 정의된 소권역.
+ * @param {string | null | undefined} category
+ * @returns {{ id: string, labelKo: string }[]}
+ */
+export function getFaceSubregionChipOptions(category) {
+  const subs = getFaceSubregions(category);
+  if (subs.length === 0) return [];
+  return [
+    { id: GLOBE_FACE_SUBREGION_ALL, labelKo: '전체' },
+    ...subs.map(({ id, labelKo }) => ({ id, labelKo })),
+  ];
+}
+
+/**
+ * 소권역 기본값 — 면 전체 나라 목록 (`all`). 칩 없으면 null.
  * @param {string | null | undefined} category
  * @returns {string | null}
  */
 export function getDefaultFaceSubregionId(category) {
   const subs = getFaceSubregions(category);
-  return subs[0]?.id ?? null;
+  if (subs.length === 0) return null;
+  return GLOBE_FACE_SUBREGION_ALL;
 }
