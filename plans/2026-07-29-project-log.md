@@ -17,6 +17,8 @@
 
 **VERIFY**: 사람 QA(지명·포커스·몰입·칩 트랙·내 주변→지도)
 
+**tip**: `1fc2454`
+
 **다음**: 필요 시 Edge `tourapi-proxy` · 추가 UX는 새 세션
 
 ## 홈 MOONi FAB — 모바일 드래그·말풍선 (QA · push)
