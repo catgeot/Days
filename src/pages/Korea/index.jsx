@@ -676,9 +676,16 @@ export default function KoreaFestivalHub() {
 
   const searchActive = searchQuery.trim().length > 0;
 
+  /** 검색 중에는 시간 탭을 넘어 롤링 12개월(지역·테마 유지)에서 매칭 */
+  const searchPoolItems = useMemo(() => {
+    if (!searchActive) return tastedItems;
+    const regional = filterByRegion(items, { areaCode, cityName });
+    return filterByTaste(regional, tasteId);
+  }, [searchActive, tastedItems, items, areaCode, cityName, tasteId]);
+
   const filteredItems = useMemo(
-    () => filterBySearchQuery(tastedItems, searchQuery),
-    [tastedItems, searchQuery],
+    () => filterBySearchQuery(searchPoolItems, searchQuery),
+    [searchPoolItems, searchQuery],
   );
 
   const indexTitle = useMemo(() => {
@@ -853,11 +860,13 @@ export default function KoreaFestivalHub() {
   /**
    * 지도 마커 — 시간·테마·검색·내 주변은 반영.
    * 지역 칩은 숨기지 않고 카메라 포커스만 (전국 맥락 유지).
+   * 검색 중에는 시간 탭을 넘어 롤링 12개월에서 매칭.
    */
   const mapScopeItems = useMemo(() => {
-    const tasted = filterByTaste(timedItems, tasteId);
+    const pool = searchActive ? items : timedItems;
+    const tasted = filterByTaste(pool, tasteId);
     return filterBySearchQuery(tasted, searchQuery);
-  }, [timedItems, tasteId, searchQuery]);
+  }, [searchActive, items, timedItems, tasteId, searchQuery]);
 
   const mapItems = useMemo(() => {
     if (personalTab != null) return personalItems;
@@ -995,6 +1004,15 @@ export default function KoreaFestivalHub() {
     setSearchOpen(false);
     clearNear();
     setSelected(null);
+  };
+
+  /** 입력창만 접기 — 쿼리는 유지(엔터·닫기로 검색 확정) */
+  const collapseSearchPanel = () => {
+    setSearchOpen(false);
+    if (typeof document !== 'undefined') {
+      const el = document.getElementById('korea-festival-search');
+      el?.blur?.();
+    }
   };
 
   const nearActive = Boolean(nearLabel || nearMsg);
@@ -1349,7 +1367,13 @@ export default function KoreaFestivalHub() {
             </div>
 
             {searchOpen && (
-              <div className="mt-2 flex items-center gap-2">
+              <form
+                className="mt-2 flex items-center gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  collapseSearchPanel();
+                }}
+              >
                 <label className="sr-only" htmlFor="korea-festival-search">
                   축제 검색
                 </label>
@@ -1363,18 +1387,25 @@ export default function KoreaFestivalHub() {
                     clearNear();
                     setSelected(null);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      e.preventDefault();
+                      if (searchQuery.trim()) collapseSearchPanel();
+                      else closeSearch();
+                    }
+                  }}
                   placeholder="축제명·지역 검색"
                   autoComplete="off"
-                  className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
+                  enterKeyHint="search"
+                  className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
                 />
                 <button
-                  type="button"
-                  onClick={closeSearch}
+                  type="submit"
                   className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
                 >
-                  닫기
+                  검색
                 </button>
-              </div>
+              </form>
             )}
 
             <div className="mt-2.5 flex flex-col gap-1.5">
