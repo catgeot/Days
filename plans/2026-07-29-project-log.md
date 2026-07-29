@@ -4,15 +4,17 @@
 
 ## 국내축제 — `/korea` TourAPI 429 (롤링12 동시 호출)
 
-**상태**: ✅ 로직 수정·`main` 커밋
+**상태**: ✅ 근본 수정 커밋 대기 · LIVE는 **일 쿼터 소진(429)** 으로 당장 검증 불가
 
 | | |
 |--|--|
-| 원인 | 콜드 로드 시 12개월×2페이지 **24건 Promise.all** → TourAPI HTTP 429 |
-| 조치 | 월 동시 2 · page2는 50건 가득일 때만 · inflight 공유 · 429 최대 2회 재시도 |
-| 파일 | `fetchKoreaFestivalsWindow.js` · `fetchTourApiFestivals.js` |
+| 회귀 | S5 `34dd161` — 월×2 **24건 Promise.all** (S2는 당월 **2건**) |
+| 잘못된 패치 | `880c606` 동시2·429재시도 — 호출량 근본 미해결 |
+| 조치 | `rolling12MonthRangeYmd` **한 구간** + page 순차(최대12) · 429재시도 제거 · inflight 유지 |
+| LIVE | 2026-07-29 저녁 wide-range page1도 `TourAPI HTTP 429` (키 일일한도 소진 추정) |
+| UX | 시간탭·검색은 클라 필터 유지 |
 
-**QA**: 시크릿/새 탭으로 `/korea` · 콘솔에 `searchFestival not ok: …429` 폭주 없는지 · 목록 로드
+**QA**: 쿼터 리셋 후(보통 익일) `/korea` 콜드 · Network에 searchFestival **소수 순차** · 목록·계절·검색
 
 ## 국내축제 — 상세 모바일 UX (전체 스크롤·위로·탭 포커스)
 
