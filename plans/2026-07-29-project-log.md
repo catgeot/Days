@@ -4,16 +4,17 @@
 
 ## 지구본 지리 퍼즐 게임 — 기획·유사작 조사
 
-**상태**: 📄 계획 초안만 (구현 없음)
+**상태**: Phase 0 ✅ · Phase 1 MVP 구현 (Preview QA)
 
 | | |
 |--|--|
-| 평가 | 방법1(빈 지구본·공식 대륙/중분류/국가·1/2/3점·대양 시험) 방향 OK · MVP는 클릭 확정 |
-| 유사작 | Seterra · ReMap · Enjoy Learning Map Puzzle · Planeta42 · GeoPuzzle · Stack the Countries · Globle 등 |
-| 표절 | 장르·규칙은 저작권 비대상 · UI/아트/상표 복제만 회피 · gateo=3D+계층+대양+여행 연결 |
+| 평가 | 방법1 방향 OK · **드래그 스냅 MVP** (사람 결정) |
+| Phase 0 | 감점·종료없음 · 공식 대륙명 · `/play/geo` · 축제 아래 진입 · 이름「범지구적 퍼즐」· 대양/여행 CTA 후속 |
+| 권장 이유(탭) | 3D 드롭 오차·소국·제스처 충돌·모바일 — 기록만, MVP는 드래그 |
 | 문서 | [`geography-puzzle-game-plan.md`](./geography-puzzle-game-plan.md) |
+| MVP | `PlayGeo` · 아시아(동아 6)→남아메리카→오세아니아 · `audit:geo-puzzle` PASS |
 
-**다음**: 사람 Phase 0 합의 → `지리퍼즐-MVP`
+**다음**: Preview QA(드래그 히트·감점·진입) · 대양은 Phase 1.5
 
 ## 지구본 나라 카탈로그 — UN 누락 채움 · 「전체」중분류 철회
 
