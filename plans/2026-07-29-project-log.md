@@ -40,9 +40,7 @@
 | 샘플 | 세미원·나오라쇼·썸머워터·대관령 → program 노출 · 행사내용 중복 제외 · 대관령에 출연·소요시간·연령 |
 | 공백 | discount/booking/placeinfo/subevent는 샘플 4건 TourAPI 공백 · 썸머워터 homepage 공백 |
 
-**VERIFY**: `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` PASS · Edge `tourapi-proxy` 재배포
-
-**다음**: 사람 `/korea` 상세 QA → OK 시 `git push origin main`
+**VERIFY**: `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` PASS · Edge `tourapi-proxy` 재배포 · tip `c46709e` (`main` 푸시됨)
 
 ## 국내축제 — 홈페이지 CTA 복구 (Edge 재배포 · 파서)
 
