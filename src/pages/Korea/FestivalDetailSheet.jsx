@@ -152,14 +152,24 @@ function youtubeThumb(videoId) {
   return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
 }
 
+function festivalSearchQuery(title) {
+  let s = String(title || '').trim();
+  if (!s) return '';
+  // 검색용: 「2026 …」「제22회 …」「00회 …」접두 제거
+  s = s.replace(/^(?:19|20)\d{2}\s*년?\s*/u, '');
+  s = s.replace(/^제?\s*\d{1,3}\s*회\s*/u, '');
+  s = s.trim();
+  return s || String(title || '').trim();
+}
+
 function naverNewsSearchUrl(title) {
-  const q = String(title || '').trim();
+  const q = festivalSearchQuery(title);
   if (!q) return '';
   return `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(q)}`;
 }
 
 function googleSearchUrl(title) {
-  const q = String(title || '').trim();
+  const q = festivalSearchQuery(title);
   if (!q) return '';
   return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=ko`;
 }
@@ -365,11 +375,12 @@ export default function FestivalDetailSheet({
 
     const ymd = String(item.eventStartDate || intro?.eventStartDate || '');
     const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : '';
+    const searchTitle = festivalSearchQuery(item.title);
 
     (async () => {
       const result = await fetchFestivalVideos({
         contentId: id,
-        title: String(item.title),
+        title: searchTitle || String(item.title),
         year,
       });
       if (cancelled) return;
