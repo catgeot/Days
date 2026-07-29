@@ -1,4 +1,4 @@
-/** 결과 집합 title에서만 뽑는 취향 키워드 (고정 백과사전 칩 금지 · 건수≥N만) */
+/** 결과 집합 title에서만 뽑는 취향 키워드 (고정 백과사전 칩 금지 · 매칭 1건 이상이면 노출) */
 const TASTE_KEYWORDS = [
   { id: 'cherry', label: '벚꽃', patterns: ['벚꽃', '왕벚', '벚 '] },
   { id: 'fireworks', label: '불꽃', patterns: ['불꽃', '불꽃놀이', '파이어웍'] },
@@ -19,7 +19,7 @@ const TASTE_KEYWORDS = [
   { id: 'film', label: '영화', patterns: ['영화', '필름', '영화제'] },
 ];
 
-const MIN_COUNT = 2;
+const MIN_COUNT = 1;
 
 /**
  * @param {object[]} items — 시간·권역 등으로 이미 줄어든 결과
