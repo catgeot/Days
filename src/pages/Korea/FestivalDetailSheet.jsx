@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ArrowUp,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -206,6 +207,9 @@ export default function FestivalDetailSheet({
   const [videosError, setVideosError] = useState('');
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const sheetScrollRef = useRef(null);
+  const tabListRef = useRef(null);
 
   useEffect(() => {
     if (!item?.contentId) {
@@ -416,6 +420,20 @@ export default function FestivalDetailSheet({
     videosLoadedFor,
   ]);
 
+  useEffect(() => {
+    const el = sheetScrollRef.current;
+    if (!el || !item?.contentId) {
+      setShowScrollTop(false);
+      return undefined;
+    }
+    el.scrollTo({ top: 0 });
+    setShowScrollTop(false);
+    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [item?.contentId]);
+
   if (!item) return null;
 
   const start = formatYmdLabel(item.eventStartDate || intro?.eventStartDate);
@@ -442,6 +460,26 @@ export default function FestivalDetailSheet({
     setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
   };
 
+  const scrollTabsIntoView = () => {
+    const sheet = sheetScrollRef.current;
+    const tabs = tabListRef.current;
+    if (!sheet || !tabs) return;
+    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
+      return;
+    }
+    const sheetRect = sheet.getBoundingClientRect();
+    const tabsRect = tabs.getBoundingClientRect();
+    const nextTop = sheet.scrollTop + (tabsRect.top - sheetRect.top) - 12;
+    sheet.scrollTo({ top: Math.max(0, nextTop), behavior: 'smooth' });
+  };
+
+  const selectTab = (tab) => {
+    setActiveTab(tab);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(scrollTabsIntoView);
+    });
+  };
+
   const visibleVideos = videosExpanded
     ? videos
     : videos.slice(0, FESTIVAL_VIDEOS_PAGE);
@@ -457,7 +495,8 @@ export default function FestivalDetailSheet({
       role="presentation"
     >
       <div
-        className="relative flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[92vh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl"
+        ref={sheetScrollRef}
+        className="relative flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -477,13 +516,13 @@ export default function FestivalDetailSheet({
             <button
               type="button"
               onClick={openLightbox}
-              className="group relative flex h-44 md:min-h-0 md:flex-1 items-center justify-center overflow-hidden bg-stone-200/70 text-left"
+              className="group relative flex w-full items-center justify-center bg-stone-200/70 text-left md:min-h-0 md:flex-1 md:overflow-hidden"
               aria-label="사진 확대보기"
             >
               <img
                 src={hero}
                 alt=""
-                className="max-h-full max-w-full object-contain"
+                className="h-auto w-full max-h-[min(52vh,28rem)] object-contain md:max-h-full md:h-full md:w-full"
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
@@ -534,7 +573,7 @@ export default function FestivalDetailSheet({
           </div>
         ) : null}
 
-        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-5 md:p-7 lg:p-8 space-y-4 md:space-y-5 custom-scrollbar">
+        <div className="min-w-0 shrink-0 overflow-visible p-5 md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 space-y-4 md:space-y-5 md:custom-scrollbar">
           <div className="space-y-1.5 pr-10">
             <div className="flex items-start justify-between gap-2">
               {range ? (
@@ -604,20 +643,21 @@ export default function FestivalDetailSheet({
 
           {!detailLoading && showTabs && (
             <div
+              ref={tabListRef}
               className="flex gap-1.5 overflow-x-auto border-b border-stone-200 pb-2 custom-scrollbar"
               role="tablist"
               aria-label="축제 상세 구분"
             >
               <TabChip
                 selected={activeTab === TAB_INFO}
-                onClick={() => setActiveTab(TAB_INFO)}
+                onClick={() => selectTab(TAB_INFO)}
               >
                 안내
               </TabChip>
               {hasProgramTab && (
                 <TabChip
                   selected={activeTab === TAB_PROGRAM}
-                  onClick={() => setActiveTab(TAB_PROGRAM)}
+                  onClick={() => selectTab(TAB_PROGRAM)}
                 >
                   프로그램·내용
                 </TabChip>
@@ -625,14 +665,14 @@ export default function FestivalDetailSheet({
               {hasPhotoTab && (
                 <TabChip
                   selected={activeTab === TAB_PHOTOS}
-                  onClick={() => setActiveTab(TAB_PHOTOS)}
+                  onClick={() => selectTab(TAB_PHOTOS)}
                 >
                   사진
                 </TabChip>
               )}
               <TabChip
                 selected={activeTab === TAB_READING}
-                onClick={() => setActiveTab(TAB_READING)}
+                onClick={() => selectTab(TAB_READING)}
               >
                 읽을거리
               </TabChip>
@@ -881,6 +921,23 @@ export default function FestivalDetailSheet({
           </button>
         </div>
       </div>
+
+      <button
+        type="button"
+        aria-label="맨 위로"
+        onClick={(e) => {
+          e.stopPropagation();
+          sheetScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        className={`fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-3 z-[45] flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
+          showScrollTop && !lightboxOpen
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+      >
+        <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+        <span className="text-xs font-bold">위로</span>
+      </button>
 
       {lightboxOpen && hero && (
         <div
