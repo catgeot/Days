@@ -24,12 +24,11 @@ function withTimeout(promise, ms, label) {
 }
 
 /**
+ * 축제당 YouTube API 1회(max 10) · DB 캐시.
  * @param {{
  *   contentId: string | number,
  *   title: string,
  *   year?: string | number,
- *   maxResults?: number,
- *   skipCache?: boolean,
  * }} opts
  * @returns {Promise<{
  *   ok: boolean,
@@ -50,28 +49,26 @@ export async function fetchFestivalVideos(opts) {
   const year = /^\d{4}$/.test(yearRaw) ? yearRaw : '';
   const query = year ? `${title} ${year} 축제` : `${title} 축제`;
   const fallbackQuery = `${title} festival`;
-  const maxResults = Math.min(
-    FESTIVAL_VIDEOS_MAX,
-    Math.max(1, Math.floor(Number(opts?.maxResults) || FESTIVAL_VIDEOS_PAGE)),
-  );
-  const skipCache = Boolean(opts?.skipCache);
 
   try {
-    if (!skipCache) {
-      const { data: cached } = await supabase
-        .from('place_videos')
-        .select('videos')
-        .eq('place_id', placeId)
-        .limit(1)
-        .maybeSingle();
+    const { data: cached } = await supabase
+      .from('place_videos')
+      .select('videos')
+      .eq('place_id', placeId)
+      .limit(1)
+      .maybeSingle();
 
-      if (cached && Array.isArray(cached.videos) && cached.videos.length > 0) {
-        return {
-          ok: true,
-          videos: cached.videos.slice(0, FESTIVAL_VIDEOS_MAX),
-          fromCache: true,
-        };
-      }
+    // 10개까지 채워진 캐시만 hit (예전 5개 캐시는 1회 재호출로 갱신)
+    if (
+      cached &&
+      Array.isArray(cached.videos) &&
+      cached.videos.length >= FESTIVAL_VIDEOS_MAX
+    ) {
+      return {
+        ok: true,
+        videos: cached.videos.slice(0, FESTIVAL_VIDEOS_MAX),
+        fromCache: true,
+      };
     }
 
     const { data, error } = await withTimeout(
@@ -81,7 +78,7 @@ export async function fetchFestivalVideos(opts) {
           query,
           fallbackQuery,
           placeId,
-          maxResults,
+          maxResults: FESTIVAL_VIDEOS_MAX,
         },
       }),
       INVOKE_TIMEOUT_MS,
