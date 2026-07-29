@@ -17,6 +17,16 @@
 
 **tip**: `9bb80b5` (merge) · PR [#30](https://github.com/catgeot/Days/pull/30) MERGED · Vercel Production OK
 
+## 국내축제 — 홈페이지 CTA 복구 (Edge 재배포 · 파서)
+
+**상태**: ✅ Edge 재배포 + 파서 수정 · LIVE 검증
+
+| | |
+|--|--|
+| 원인 | PROD Edge가 `detailCommon.homepage` 미전달 · 본문형 URL(`공식 홈페이지 https://…`) 파서 실패 |
+| 조치 | `tourapi-proxy` 재배포 · `normalizeHomepage`가 본문·HTML·plain URL 추출 |
+| VERIFY | 세미원·나오라쇼·동강·더위사냥·대관령 → CTA URL OK · 썸머워터는 TourAPI `homepage` 공백(데이터 한계) · `smoke:tourapi` LIVE PASS |
+
 ## 국내축제 — 상세 1단계 (갤러리·개요·홈페이지 · PC 분할)
 
 **상태**: ✅ 사람 QA 후 `main` 커밋
@@ -26,7 +36,7 @@
 | 시트 | `detailCommon` 개요 · `detailImage` 갤러리 · 공식 홈페이지 CTA · X/닫기 · 확대보기 |
 | PC | 좌사진·우글 · 축제홈 폭(`xl:max-w-7xl`)·거의 전체 높이 |
 | 복귀 | 인근 hub → `/place` 후 ←/닫기 시 `/korea` (`placeReturnTo`) |
-| 다음 | 동영상·기사 등 읽을거리 2단계 · Edge `homepage` 필드 재배포(선택) |
+| 다음 | 동영상·기사 등 읽을거리 2단계 |
 
 **VERIFY**: 사람 QA(갤러리·개요·홈페이지·크기·복귀·확대)
 

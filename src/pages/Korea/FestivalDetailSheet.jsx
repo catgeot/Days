@@ -54,14 +54,34 @@ function stripHtml(raw) {
     .trim();
 }
 
+function cleanUrlCandidate(raw) {
+  return String(raw || '')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .trim()
+    .replace(/[),\];.'"”’]+$/g, '');
+}
+
 function normalizeHomepage(raw) {
   const s = String(raw || '').trim();
   if (!s) return '';
+
   const href = s.match(/href=["']([^"']+)["']/i)?.[1];
-  const candidate = String(href || stripHtml(s) || s).trim();
+  if (href) {
+    const fromHref = cleanUrlCandidate(href);
+    if (/^https?:\/\//i.test(fromHref)) return fromHref;
+    if (/^[\w.-]+\.[\w.-]+/.test(fromHref)) return `https://${fromHref}`;
+  }
+
+  const urlInText = s.match(/https?:\/\/[^\s<>"']+/i)?.[0];
+  if (urlInText) return cleanUrlCandidate(urlInText);
+
+  const candidate = cleanUrlCandidate(stripHtml(s));
   if (!candidate) return '';
   if (/^https?:\/\//i.test(candidate)) return candidate;
-  if (/^[\w.-]+\.[\w.-]+/.test(candidate)) return `https://${candidate}`;
+  if (/^[\w.-]+\.[\w.-]+(?:\/\S*)?$/.test(candidate)) {
+    return `https://${candidate}`;
+  }
   return '';
 }
 
