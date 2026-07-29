@@ -14,6 +14,8 @@
 
 **VERIFY**: 기본 면 국가 수 = face 전체 · 소권역 필터 유지 · `smoke:place-label-slug` OK
 
+**tip**: `054659d` · PR [#30](https://github.com/catgeot/Days/pull/30) · Preview 홈 지구본
+
 **QA**: 카테고리 탭 → 나라 칩이 면 전체인지 ·「전체」↔소권역 전환 · 스크롤
 
 ## 국내축제 — 테마 칩 1건 노출 · 홈 바탕 완료 · 다음=상세 리치
