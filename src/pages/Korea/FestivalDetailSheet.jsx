@@ -14,6 +14,7 @@ import {
 import {
   fetchTourApiFestivalCommon,
   fetchTourApiFestivalImages,
+  fetchTourApiFestivalInfo,
   fetchTourApiFestivalIntro,
 } from '../../utils/fetchTourApiFestivals';
 
@@ -85,6 +86,29 @@ function normalizeHomepage(raw) {
   return '';
 }
 
+function normalizeCompareText(raw) {
+  return stripHtml(raw)
+    .replace(/\s+/g, '')
+    .toLowerCase();
+}
+
+function textsEqual(a, b) {
+  const left = normalizeCompareText(a);
+  const right = normalizeCompareText(b);
+  return Boolean(left) && left === right;
+}
+
+/** 개요 ↔ 행사소개: 동일하거나 한쪽이 다른 쪽을 포함하면 중복으로 본다. */
+function textsSimilarOrEqual(a, b) {
+  const left = normalizeCompareText(a);
+  const right = normalizeCompareText(b);
+  if (!left || !right) return false;
+  if (left === right) return true;
+  if (left.length >= 40 && right.includes(left)) return true;
+  if (right.length >= 40 && left.includes(right)) return true;
+  return false;
+}
+
 function collectImageUrls(imageData, fallbackUrl) {
   const urls = [];
   const seen = new Set();
@@ -116,6 +140,10 @@ function DetailRow({ label, children }) {
   );
 }
 
+const TAB_INFO = 'info';
+const TAB_PROGRAM = 'program';
+const TAB_PHOTOS = 'photos';
+
 /**
  * @param {{
  *   item: Record<string, unknown>,
@@ -136,21 +164,25 @@ export default function FestivalDetailSheet({
 }) {
   const [intro, setIntro] = useState(null);
   const [common, setCommon] = useState(null);
+  const [infoItems, setInfoItems] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(TAB_INFO);
 
   useEffect(() => {
     if (!item?.contentId) {
       setIntro(null);
       setCommon(null);
+      setInfoItems([]);
       setImageUrls([]);
       setDetailError('');
       setDetailLoading(false);
       setActiveImage(0);
       setLightboxOpen(false);
+      setActiveTab(TAB_INFO);
       return undefined;
     }
 
@@ -158,29 +190,39 @@ export default function FestivalDetailSheet({
     const seed = festivalImage(item);
     setIntro(null);
     setCommon(null);
+    setInfoItems([]);
     setImageUrls(seed ? [toHttps(seed)].filter(Boolean) : []);
     setActiveImage(0);
     setLightboxOpen(false);
+    setActiveTab(TAB_INFO);
     setDetailError('');
     setDetailLoading(true);
 
     (async () => {
       const contentId = item.contentId;
       const contentTypeId = item.contentTypeId || '15';
-      const [introData, commonData, imageData] = await Promise.all([
+      const [introData, commonData, infoData, imageData] = await Promise.all([
         fetchTourApiFestivalIntro({ contentId, contentTypeId }),
         fetchTourApiFestivalCommon({ contentId }),
+        fetchTourApiFestivalInfo({ contentId, contentTypeId, numOfRows: 30 }),
         fetchTourApiFestivalImages({ contentId, numOfRows: 12 }),
       ]);
       if (cancelled) return;
 
       const introHit = pickFirst(introData);
       const commonHit = pickFirst(commonData);
+      const infoRows = Array.isArray(infoData?.items) ? infoData.items : [];
       const urls = collectImageUrls(imageData, seed);
 
-      if (!introData?.ok && !commonData?.ok && !imageData?.ok) {
+      if (
+        !introData?.ok &&
+        !commonData?.ok &&
+        !infoData?.ok &&
+        !imageData?.ok
+      ) {
         setIntro(null);
         setCommon(null);
+        setInfoItems([]);
         setDetailError('상세 정보를 불러오지 못했습니다.');
         setDetailLoading(false);
         return;
@@ -188,6 +230,7 @@ export default function FestivalDetailSheet({
 
       setIntro(introHit);
       setCommon(commonHit);
+      setInfoItems(infoRows);
       setImageUrls(urls);
       setActiveImage(0);
       setDetailLoading(false);
@@ -230,13 +273,72 @@ export default function FestivalDetailSheet({
     return normalizeHomepage(common?.homepage);
   }, [intro?.eventhomepage, common?.homepage]);
 
+  const programText = useMemo(
+    () => stripHtml(intro?.program || ''),
+    [intro?.program],
+  );
+
+  const detailSections = useMemo(() => {
+    const rows = (infoItems || [])
+      .map((row) => ({
+        name: stripHtml(row?.infoname || ''),
+        text: stripHtml(row?.infotext || ''),
+        serial: String(row?.serialnum || ''),
+      }))
+      .filter((row) => row.name || row.text);
+
+    const out = [];
+    for (const row of rows) {
+      // Keep overview / program; drop detailInfo duplicates only
+      if (
+        row.name.includes('행사소개') &&
+        overview &&
+        textsSimilarOrEqual(row.text, overview)
+      ) {
+        continue;
+      }
+      if (
+        row.name.includes('행사내용') &&
+        programText &&
+        textsEqual(row.text, programText)
+      ) {
+        continue;
+      }
+      out.push(row);
+    }
+    return out;
+  }, [infoItems, overview, programText]);
+
+  const showProgram = Boolean(programText);
+  const hasProgramTab = showProgram || detailSections.length > 0;
+  const hasPhotoTab = imageUrls.length > 1;
+  const showTabs = hasProgramTab || hasPhotoTab;
+
+  useEffect(() => {
+    if (activeTab === TAB_PROGRAM && !hasProgramTab) {
+      setActiveTab(TAB_INFO);
+    } else if (activeTab === TAB_PHOTOS && !hasPhotoTab) {
+      setActiveTab(TAB_INFO);
+    }
+  }, [activeTab, hasProgramTab, hasPhotoTab]);
+
   if (!item) return null;
 
   const start = formatYmdLabel(item.eventStartDate || intro?.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate || intro?.eventEndDate);
   const range = [start, end].filter(Boolean).join(' – ');
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
+  const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
+  const eventplace = String(intro?.eventplace || '').trim();
+  const showEventPlace =
+    Boolean(eventplace) && eventplace !== String(item.addr1 || '').trim();
+  const sponsor1 = String(intro?.sponsor1 || '').trim();
+  const sponsor2 = String(intro?.sponsor2 || '').trim();
+  const showSponsor2 =
+    Boolean(sponsor2) &&
+    normalizeCompareText(sponsor2) !== normalizeCompareText(sponsor1);
+
   const openLightbox = () => {
     if (!hero) return;
     setLightboxOpen(true);
@@ -398,49 +500,171 @@ export default function FestivalDetailSheet({
             <p className="text-xs text-stone-500">{detailError}</p>
           )}
 
-          {!detailLoading && overview && (
-            <DetailRow label="개요">{overview}</DetailRow>
-          )}
-
-          {!detailLoading && intro && (
-            <div className="space-y-3 border-t border-stone-200 pt-3">
-              <DetailRow label="행사 장소">
-                {intro.eventplace &&
-                String(intro.eventplace) !== String(item.addr1 || '')
-                  ? intro.eventplace
-                  : null}
-              </DetailRow>
-              <DetailRow label="행사 시간">{intro.playtime}</DetailRow>
-              <DetailRow label="이용 요금">{intro.usetimefestival}</DetailRow>
-              <DetailRow label="주최">{intro.sponsor1}</DetailRow>
-              {tel && (
-                <DetailRow label="문의">
-                  <a
-                    href={`tel:${tel.replace(/\s+/g, '')}`}
-                    className="inline-flex items-center gap-1.5 text-amber-800 hover:text-amber-950"
-                  >
-                    <Phone size={13} aria-hidden="true" />
-                    {tel}
-                  </a>
-                </DetailRow>
+          {!detailLoading && showTabs && (
+            <div
+              className="flex gap-1.5 overflow-x-auto border-b border-stone-200 pb-2 custom-scrollbar"
+              role="tablist"
+              aria-label="축제 상세 구분"
+            >
+              <TabChip
+                selected={activeTab === TAB_INFO}
+                onClick={() => setActiveTab(TAB_INFO)}
+              >
+                안내
+              </TabChip>
+              {hasProgramTab && (
+                <TabChip
+                  selected={activeTab === TAB_PROGRAM}
+                  onClick={() => setActiveTab(TAB_PROGRAM)}
+                >
+                  프로그램·내용
+                </TabChip>
+              )}
+              {hasPhotoTab && (
+                <TabChip
+                  selected={activeTab === TAB_PHOTOS}
+                  onClick={() => setActiveTab(TAB_PHOTOS)}
+                >
+                  사진
+                </TabChip>
               )}
             </div>
           )}
 
-          {hubs.length > 0 && (
-            <div className="space-y-2">
+          {!detailLoading && activeTab === TAB_INFO && (
+            <div className="space-y-3">
+              {overview && <DetailRow label="개요">{overview}</DetailRow>}
+
+              {(intro || hubs.length > 0) && (
+                <div
+                  className={[
+                    'space-y-3',
+                    overview ? 'border-t border-stone-200 pt-3' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  <DetailRow label="행사 장소">
+                    {showEventPlace ? eventplace : null}
+                  </DetailRow>
+                  <DetailRow label="행사 시간">
+                    {stripHtml(intro?.playtime || '') || null}
+                  </DetailRow>
+                  <DetailRow label="이용 요금">
+                    {stripHtml(intro?.usetimefestival || '') || null}
+                  </DetailRow>
+                  <DetailRow label="관람 연령">
+                    {stripHtml(intro?.agelimit || '') || null}
+                  </DetailRow>
+                  <DetailRow label="소요 시간">
+                    {stripHtml(intro?.spendtimefestival || '') || null}
+                  </DetailRow>
+                  <DetailRow label="할인">
+                    {stripHtml(intro?.discountinfofestival || '') || null}
+                  </DetailRow>
+                  <DetailRow label="예매/입장">
+                    {stripHtml(intro?.bookingplace || '') || null}
+                  </DetailRow>
+                  <DetailRow label="주최">{sponsor1 || null}</DetailRow>
+                  <DetailRow label="주관/후원">
+                    {showSponsor2 ? (
+                      <>
+                        {sponsor2}
+                        {sponsor2tel ? (
+                          <>
+                            {'\n'}
+                            <a
+                              href={`tel:${sponsor2tel.replace(/\s+/g, '')}`}
+                              className="inline-flex items-center gap-1.5 text-amber-800 hover:text-amber-950"
+                            >
+                              <Phone size={13} aria-hidden="true" />
+                              {sponsor2tel}
+                            </a>
+                          </>
+                        ) : null}
+                      </>
+                    ) : null}
+                  </DetailRow>
+                  {tel && (
+                    <DetailRow label="문의">
+                      <a
+                        href={`tel:${tel.replace(/\s+/g, '')}`}
+                        className="inline-flex items-center gap-1.5 text-amber-800 hover:text-amber-950"
+                      >
+                        <Phone size={13} aria-hidden="true" />
+                        {tel}
+                      </a>
+                    </DetailRow>
+                  )}
+                  <DetailRow label="장소 안내">
+                    {stripHtml(intro?.placeinfo || '') || null}
+                  </DetailRow>
+                  <DetailRow label="부대행사">
+                    {stripHtml(intro?.subevent || '') || null}
+                  </DetailRow>
+                </div>
+              )}
+
+              {hubs.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                    인근 여행지
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {hubs.map((hub) => (
+                      <button
+                        key={hub.hubId}
+                        type="button"
+                        onClick={() => onOpenHub(hub.hubId)}
+                        className="px-3 py-1.5 rounded-full text-xs font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                      >
+                        {hub.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!detailLoading && activeTab === TAB_PROGRAM && hasProgramTab && (
+            <div className="space-y-3">
+              {showProgram && (
+                <DetailRow label="프로그램">{programText}</DetailRow>
+              )}
+              {detailSections.map((row, index) => (
+                <DetailRow
+                  key={`${row.serial || row.name}-${index}`}
+                  label={row.name || '상세'}
+                >
+                  {row.text || null}
+                </DetailRow>
+              ))}
+            </div>
+          )}
+
+          {!detailLoading && activeTab === TAB_PHOTOS && hasPhotoTab && (
+            <div className="space-y-3">
               <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                인근 여행지
+                사진 {imageUrls.length}장
               </p>
-              <div className="flex flex-wrap gap-2">
-                {hubs.map((hub) => (
+              <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
+                {imageUrls.map((url, index) => (
                   <button
-                    key={hub.hubId}
+                    key={`tab-photo-${url}-${index}`}
                     type="button"
-                    onClick={() => onOpenHub(hub.hubId)}
-                    className="px-3 py-1.5 rounded-full text-xs font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                    onClick={() => {
+                      setActiveImage(index);
+                      setLightboxOpen(true);
+                    }}
+                    className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
+                    aria-label={`사진 ${index + 1} 확대보기`}
                   >
-                    {hub.name}
+                    <img
+                      src={url}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
@@ -522,5 +746,24 @@ export default function FestivalDetailSheet({
         </div>
       )}
     </div>
+  );
+}
+
+function TabChip({ selected, onClick, children }) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={selected}
+      onClick={onClick}
+      className={[
+        'shrink-0 rounded-full px-3 py-1.5 text-xs font-bold border transition-colors',
+        selected
+          ? 'border-amber-400 bg-amber-50 text-amber-900'
+          : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100',
+      ].join(' ')}
+    >
+      {children}
+    </button>
   );
 }

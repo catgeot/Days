@@ -18,6 +18,7 @@ const ACTIONS = {
   areaBasedList: { base: KOR_BASE, path: "areaBasedList2" },
   areaCode: { base: KOR_BASE, path: "areaCode2" },
   detailIntro: { base: KOR_BASE, path: "detailIntro2" },
+  detailInfo: { base: KOR_BASE, path: "detailInfo2" },
 } as const;
 
 type Action = keyof typeof ACTIONS;
@@ -155,7 +156,28 @@ function normalizeItem(
   const usetimefestival = pickStr(item, "usetimefestival", "useTimeFestival");
   const sponsor1 = pickStr(item, "sponsor1");
   const sponsor1tel = pickStr(item, "sponsor1tel", "sponsor1Tel");
+  const sponsor2 = pickStr(item, "sponsor2");
+  const sponsor2tel = pickStr(item, "sponsor2tel", "sponsor2Tel");
   const eventhomepage = pickStr(item, "eventhomepage", "eventHomepage");
+  const program = pickStr(item, "program");
+  const agelimit = pickStr(item, "agelimit", "ageLimit");
+  const spendtimefestival = pickStr(
+    item,
+    "spendtimefestival",
+    "spendTimeFestival",
+  );
+  const discountinfofestival = pickStr(
+    item,
+    "discountinfofestival",
+    "discountInfoFestival",
+  );
+  const bookingplace = pickStr(item, "bookingplace", "bookingPlace");
+  const placeinfo = pickStr(item, "placeinfo", "placeInfo");
+  const subevent = pickStr(item, "subevent", "subEvent");
+  const infoname = pickStr(item, "infoname", "infoName");
+  const infotext = pickStr(item, "infotext", "infoText");
+  const serialnum = pickStr(item, "serialnum", "serialNum");
+  const fldgubun = pickStr(item, "fldgubun", "fldGubun");
 
   const out: Record<string, unknown> = {};
   if (contentId) out.contentId = contentId;
@@ -187,7 +209,20 @@ function normalizeItem(
   if (usetimefestival) out.usetimefestival = usetimefestival;
   if (sponsor1) out.sponsor1 = sponsor1;
   if (sponsor1tel) out.sponsor1tel = sponsor1tel;
+  if (sponsor2) out.sponsor2 = sponsor2;
+  if (sponsor2tel) out.sponsor2tel = sponsor2tel;
   if (eventhomepage) out.eventhomepage = eventhomepage;
+  if (program) out.program = program;
+  if (agelimit) out.agelimit = agelimit;
+  if (spendtimefestival) out.spendtimefestival = spendtimefestival;
+  if (discountinfofestival) out.discountinfofestival = discountinfofestival;
+  if (bookingplace) out.bookingplace = bookingplace;
+  if (placeinfo) out.placeinfo = placeinfo;
+  if (subevent) out.subevent = subevent;
+  if (infoname) out.infoname = infoname;
+  if (infotext) out.infotext = infotext;
+  if (serialnum) out.serialnum = serialnum;
+  if (fldgubun) out.fldgubun = fldgubun;
 
   if (action === "searchPhoto") {
     const imageUrl = galWebImageUrl || firstimage;
@@ -195,7 +230,11 @@ function normalizeItem(
   } else if (action === "detailImage") {
     const imageUrl = originimgurl || smallimageurl || firstimage;
     if (imageUrl) out.imageUrl = imageUrl;
-  } else if (action !== "areaCode" && action !== "detailIntro") {
+  } else if (
+    action !== "areaCode" &&
+    action !== "detailIntro" &&
+    action !== "detailInfo"
+  ) {
     const imageUrl = firstimage || originimgurl || galWebImageUrl;
     if (imageUrl) out.imageUrl = imageUrl;
   }
@@ -345,6 +384,13 @@ function buildUpstreamQuery(
       return {
         contentId: guardContentId(body.contentId),
         contentTypeId: guardContentTypeId(body.contentTypeId),
+      };
+    case "detailInfo":
+      return {
+        contentId: guardContentId(body.contentId),
+        contentTypeId: guardContentTypeId(body.contentTypeId),
+        numOfRows,
+        pageNo,
       };
     default:
       throw new Error("unsupported action");

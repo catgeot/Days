@@ -20,6 +20,7 @@ const ALLOWED_ACTIONS = [
   'areaBasedList',
   'areaCode',
   'detailIntro',
+  'detailInfo',
 ];
 
 let failed = 0;
@@ -35,7 +36,7 @@ function assert(cond, msg) {
 }
 
 function schemaGuards() {
-  assert(ALLOWED_ACTIONS.length === 8, 'whitelist has 8 actions');
+  assert(ALLOWED_ACTIONS.length === 9, 'whitelist has 9 actions');
   for (const a of ALLOWED_ACTIONS) {
     assert(typeof a === 'string' && a.length > 0, `action name: ${a}`);
   }
@@ -286,6 +287,84 @@ async function liveChain() {
     Array.isArray(intro.data?.items) && intro.data.items.length >= 1,
     `detailIntro items≥1`,
   );
+
+  // Expanded intro fields — soft presence check on a known festival sample
+  const sampleId = '2550263'; // 세미원 연꽃문화제 (program 등 확장 필드 기대)
+  const introSample = await invokeEdge('detailIntro', {
+    contentId: sampleId,
+    contentTypeId: '15',
+  });
+  assert(
+    introSample.httpStatus === 200 && introSample.data?.ok === true,
+    `detailIntro sample ${sampleId} ok`,
+  );
+  const introRow = introSample.data?.items?.[0] || {};
+  const introExtendedKeys = [
+    'program',
+    'agelimit',
+    'sponsor2',
+    'sponsor2tel',
+    'spendtimefestival',
+    'discountinfofestival',
+    'bookingplace',
+    'placeinfo',
+    'subevent',
+  ];
+  const introHasAnyExtended = introExtendedKeys.some((k) =>
+    Boolean(String(introRow[k] || '').trim()),
+  );
+  assert(
+    introHasAnyExtended || Boolean(introRow.sponsor1 || introRow.playtime),
+    `detailIntro sample has extended or core fields (keys=${Object.keys(introRow).join(',')})`,
+  );
+  // Normalize must forward keys when upstream has them (not strip unknown)
+  for (const k of introExtendedKeys) {
+    if (introRow[k] != null) {
+      assert(
+        typeof introRow[k] === 'string' || typeof introRow[k] === 'number',
+        `detailIntro extended field type ${k}`,
+      );
+    }
+  }
+
+  const info = await invokeEdge('detailInfo', {
+    contentId: festHit.contentId,
+    contentTypeId: festHit.contentTypeId || '15',
+    numOfRows: 20,
+  });
+  assert(info.httpStatus === 200, `detailInfo HTTP ${info.httpStatus}`);
+  assert(
+    info.data?.ok === true,
+    `detailInfo ok (msg=${info.data?.message || info.data?.error || '-'})`,
+  );
+  assert(Array.isArray(info.data?.items), `detailInfo items array`);
+  if ((info.data?.items || []).length > 0) {
+    const row = info.data.items[0];
+    assert(
+      Boolean(row.infoname || row.infotext),
+      `detailInfo normalize infoname/infotext (${row.infoname || '-'})`,
+    );
+  } else {
+    // Some festivals have empty detailInfo — verify sample with content
+    const infoSample = await invokeEdge('detailInfo', {
+      contentId: sampleId,
+      contentTypeId: '15',
+      numOfRows: 20,
+    });
+    assert(
+      infoSample.httpStatus === 200 && infoSample.data?.ok === true,
+      `detailInfo sample ${sampleId} ok`,
+    );
+    const sampleItems = infoSample.data?.items || [];
+    if (sampleItems.length > 0) {
+      assert(
+        Boolean(sampleItems[0].infoname || sampleItems[0].infotext),
+        `detailInfo sample normalize infoname/infotext`,
+      );
+    } else {
+      console.log(`SKIP  detailInfo sample empty (rawCount=${infoSample.data?.rawCount ?? 0})`);
+    }
+  }
 
   // Guard: unknown action rejected
   const bad = await invokeEdge('notAnAction', { keyword: 'x' });

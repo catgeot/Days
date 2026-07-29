@@ -110,6 +110,29 @@ export async function fetchTourApiFestivalCommon(opts) {
 /**
  * @param {{
  *   contentId: string | number,
+ *   contentTypeId?: string | number,
+ *   numOfRows?: number,
+ * }} opts
+ */
+export async function fetchTourApiFestivalInfo(opts) {
+  const contentId = String(opts?.contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return null;
+  const contentTypeId = String(opts?.contentTypeId ?? '15').trim() || '15';
+  const numOfRows = Math.min(
+    50,
+    Math.max(1, Math.floor(Number(opts?.numOfRows) || 30)),
+  );
+  return invokeTourApi('detailInfo', {
+    contentId,
+    contentTypeId,
+    numOfRows,
+    pageNo: 1,
+  });
+}
+
+/**
+ * @param {{
+ *   contentId: string | number,
  *   numOfRows?: number,
  * }} opts
  */
