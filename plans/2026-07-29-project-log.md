@@ -19,19 +19,19 @@
 
 ## 국내축제 — 읽을거리 2단계 (YouTube · 검색 링크)
 
-**상태**: ✅ Edge 재배포 · `main` 커밋 (`13b5a74`) · **push·PROD「완료」는 사람 QA 후**
+**상태**: ✅ `main` 푸시 (`4a7c5e8`) · Edge `fetch-place-videos`·`tourapi-proxy` 재배포
 
 | | |
 |--|--|
-| Edge | `fetch-place-videos` `mode=festival` · 쿼리 `{title} 축제` · 캐시 `festival:{contentId}` |
-| 시트 | 탭「읽을거리」· lazy YouTube(탭 진입 시) · 네이버 뉴스/구글 검색 링크 · 홈 CTA 중복 없음 |
-| 비범위 | Gemini 기사·뉴스 본문·수동 SSOT |
+| Edge | `mode=festival` · API **1회 max 10** · 캐시 `festival:{contentId}` |
+| 시트 | 탭「읽을거리」· 네이버/구글 전체검색(회차·연도 접두 제거) · 더보기는 UI만(5→10) |
+| TourAPI | detailIntro 확장·detailInfo · 빈 값 숨김·중복 가드 (tip `c46709e`) |
 
-**VERIFY**: Edge `fetch-place-videos` 재배포 · 사람 `/korea` 상세 QA(탭·영상·링크·회귀)
+**VERIFY**: 사람 QA OK · `git push origin main` `f3efa43..4a7c5e8`
 
 ## 국내축제 — TourAPI 필드 최대 활용 (detailInfo · intro 확장)
 
-**상태**: ✅ Edge 재배포 · LIVE 스모크 · `main` 커밋 (`c46709e`) · **push는 사람 승인 후**
+**상태**: ✅ `main` 푸시 포함 (`c46709e` → tip `4a7c5e8`)
 
 | | |
 |--|--|
