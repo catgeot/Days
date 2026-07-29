@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import Map from 'react-map-gl/mapbox';
-import { GLOBE_COUNTRY_CATALOG } from '../../Home/lib/globeCountryCatalog.js';
-import { MAPBOX_ATTRIBUTION_LINKS } from '../../../data/mapboxAttribution.js';
+import { GLOBE_COUNTRY_CATALOG } from '../Home/lib/globeCountryCatalog.js';
+import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution.js';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -143,9 +143,14 @@ function ensurePlacedLayers(map) {
 }
 
 /**
- * @param {{ filledIds: string[], previewIso?: string | null, onMapReady?: (map: import('mapbox-gl').Map) => void }} props
+ * @param {{ filledIds: string[], previewIso?: string | null, dragPan?: boolean, onMapReady?: (map: import('mapbox-gl').Map) => void }} props
  */
-export default function GeoPuzzleGlobe({ filledIds = [], previewIso = null, onMapReady }) {
+export default function GeoPuzzleGlobe({
+  filledIds = [],
+  previewIso = null,
+  dragPan = true,
+  onMapReady,
+}) {
   const mapRef = useRef(null);
   const readyRef = useRef(false);
 
@@ -212,6 +217,8 @@ export default function GeoPuzzleGlobe({ filledIds = [], previewIso = null, onMa
         onLoad={handleLoad}
         dragRotate={false}
         pitchWithRotate={false}
+        dragPan={dragPan}
+        scrollZoom
       />
       <div className="pointer-events-none absolute bottom-2 left-2 z-10 flex gap-2 text-[10px] text-white/70">
         {CAPTION_LINKS.map((item) => (

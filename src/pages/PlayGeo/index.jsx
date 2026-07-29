@@ -7,7 +7,7 @@ import {
   getCampaignContinents,
   listContinentCountryIds,
 } from './data/geoPuzzleTree.js';
-import { resolveDropCountryId } from './lib/geoPuzzleHitTest.js';
+import { isCorrectPieceDrop } from './lib/geoPuzzleHitTest.js';
 import {
   clearGeoPuzzleProgress,
   defaultProgress,
@@ -45,6 +45,7 @@ export default function GeoPuzzlePage() {
   const [trayOrder, setTrayOrder] = useState([]);
   const [feedback, setFeedback] = useState('');
   const [draggingId, setDraggingId] = useState(null);
+  const [dragPos, setDragPos] = useState(null);
   const [flashMiss, setFlashMiss] = useState(false);
 
   const continent = useMemo(
@@ -87,6 +88,30 @@ export default function GeoPuzzlePage() {
   const onMapReady = useCallback((map) => {
     mapRef.current = map;
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !continent) return;
+    const ids = continentCountryIds;
+    if (!ids.length) return;
+    let lng = 0;
+    let lat = 0;
+    let n = 0;
+    for (const id of ids) {
+      const c = GLOBE_COUNTRY_CATALOG[id];
+      if (!c) continue;
+      lng += c.lng;
+      lat += c.lat;
+      n += 1;
+    }
+    if (!n) return;
+    map.flyTo({
+      center: [lng / n, lat / n],
+      zoom: ids.length <= 8 ? 2.6 : 1.8,
+      duration: 900,
+      essential: true,
+    });
+  }, [continent, continentCountryIds]);
 
   const applyCorrect = useCallback((countryId) => {
     const country = getGlobeCountryById(countryId);
@@ -137,24 +162,33 @@ export default function GeoPuzzlePage() {
   const tryDropAt = useCallback((clientX, clientY, pieceId) => {
     const map = mapRef.current;
     if (!map || !pieceId) return;
-    const canvas = map.getCanvas?.();
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
+    const container = map.getContainer?.() || map.getCanvas?.();
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
     const x = clientX - rect.left;
     const y = clientY - rect.top;
     if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
       setFeedback('지구본 위에 놓아 주세요');
       return;
     }
-    const lngLat = map.unproject([x, y]);
-    const hitId = resolveDropCountryId({
+    let lng = NaN;
+    let lat = NaN;
+    try {
+      const lngLat = map.unproject([x, y]);
+      lng = lngLat.lng;
+      lat = lngLat.lat;
+    } catch {
+      /* ignore */
+    }
+    const ok = isCorrectPieceDrop({
       map,
       point: { x, y },
-      lngLat: { lng: lngLat.lng, lat: lngLat.lat },
+      lngLat: { lng, lat },
+      targetId: pieceId,
       candidateIds: continentCountryIds,
     });
 
-    if (hitId === pieceId) {
+    if (ok) {
       applyCorrect(pieceId);
     } else {
       applyMiss();
@@ -165,12 +199,12 @@ export default function GeoPuzzlePage() {
     e.preventDefault();
     dragIdRef.current = id;
     setDraggingId(id);
+    setDragPos({ x: e.clientX, y: e.clientY });
     const target = e.currentTarget;
     target.setPointerCapture?.(e.pointerId);
 
     const onMove = (ev) => {
-      /* visual only via draggingId */
-      void ev;
+      setDragPos({ x: ev.clientX, y: ev.clientY });
     };
     const onUp = (ev) => {
       target.releasePointerCapture?.(ev.pointerId);
@@ -179,6 +213,7 @@ export default function GeoPuzzlePage() {
       const pid = dragIdRef.current;
       dragIdRef.current = null;
       setDraggingId(null);
+      setDragPos(null);
       if (pid) tryDropAt(ev.clientX, ev.clientY, pid);
     };
     window.addEventListener('pointermove', onMove);
@@ -211,6 +246,7 @@ export default function GeoPuzzlePage() {
         <GeoPuzzleGlobe
           filledIds={filledIds}
           previewIso={draggingId ? GLOBE_COUNTRY_CATALOG[draggingId]?.iso : null}
+          dragPan={!draggingId}
           onMapReady={onMapReady}
         />
       </div>
@@ -252,6 +288,15 @@ export default function GeoPuzzlePage() {
           </button>
         </div>
       </header>
+
+      {dragPos && draggingId ? (
+        <div
+          className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-cyan-300 bg-cyan-500/40 px-3 py-1.5 text-xs font-bold text-white shadow-lg backdrop-blur-sm"
+          style={{ left: dragPos.x, top: dragPos.y }}
+        >
+          {getGlobeCountryById(draggingId)?.labelKo || draggingId}
+        </div>
+      ) : null}
 
       {feedback ? (
         <div className="pointer-events-none absolute left-1/2 top-28 z-20 -translate-x-1/2 rounded-full border border-white/20 bg-black/70 px-4 py-1.5 text-xs text-white backdrop-blur-md break-keep">
