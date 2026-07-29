@@ -53,7 +53,10 @@ import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
 } from './koreaFestivalDefaults';
-import KoreaFestivalMap from './KoreaFestivalMap';
+import KoreaFestivalMap, {
+  focusViewFromFestivalItems,
+  KOREA_MAP_OVERVIEW,
+} from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
 
 const TIME_TABS = [
@@ -230,6 +233,92 @@ function flapChipClass(active) {
   }`;
 }
 
+/**
+ * 모바일 가로 칩 스크롤 — 하단 스크롤 트랙만(인지용 · 화살표 없음).
+ * PC는 트랙 숨김.
+ */
+function ChipScrollRow({ children, className = '', ariaLabel = '칩 목록' }) {
+  const scrollerRef = useRef(null);
+  const [scrollable, setScrollable] = useState(false);
+  const [thumb, setThumb] = useState({ left: 0, width: 100 });
+
+  const updateScrollUi = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) {
+      setScrollable(false);
+      setThumb({ left: 0, width: 100 });
+      return;
+    }
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const maxScroll = Math.max(0, scrollWidth - clientWidth);
+    const overflow = maxScroll > 4;
+    const thumbWidth = overflow
+      ? Math.min(92, Math.max(16, (clientWidth / scrollWidth) * 100))
+      : 100;
+    const thumbLeft =
+      overflow && maxScroll > 0
+        ? (scrollLeft / maxScroll) * (100 - thumbWidth)
+        : 0;
+    setScrollable((v) => (v === overflow ? v : overflow));
+    setThumb((prev) =>
+      Math.abs(prev.left - thumbLeft) < 0.2 &&
+      Math.abs(prev.width - thumbWidth) < 0.2
+        ? prev
+        : { left: thumbLeft, width: thumbWidth },
+    );
+  }, []);
+
+  useEffect(() => {
+    updateScrollUi();
+    const el = scrollerRef.current;
+    if (!el) return undefined;
+    const onWin = () => updateScrollUi();
+    window.addEventListener('resize', onWin);
+    const ro =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(() => updateScrollUi())
+        : null;
+    ro?.observe(el);
+    const mo =
+      typeof MutationObserver !== 'undefined'
+        ? new MutationObserver(() => updateScrollUi())
+        : null;
+    mo?.observe(el, { childList: true, subtree: true, characterData: true });
+    return () => {
+      window.removeEventListener('resize', onWin);
+      ro?.disconnect();
+      mo?.disconnect();
+    };
+  }, [updateScrollUi]);
+
+  return (
+    <div className={`min-w-0 ${className}`}>
+      <div
+        ref={scrollerRef}
+        onScroll={updateScrollUi}
+        aria-label={ariaLabel}
+        className="flex min-w-0 items-center gap-1.5 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {children}
+      </div>
+      {scrollable ? (
+        <div
+          aria-hidden="true"
+          className="relative mt-1 h-1 w-full rounded-full bg-stone-200/90 md:hidden"
+        >
+          <div
+            className="absolute top-0 bottom-0 rounded-full bg-amber-500/70"
+            style={{
+              left: `${thumb.left}%`,
+              width: `${thumb.width}%`,
+            }}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function RelatedChipFlap({
   childChips,
   neighborChips,
@@ -256,7 +345,10 @@ function RelatedChipFlap({
   if (layout === 'row') {
     if (!hasChild && !showParentUp) return null;
     return (
-      <div className={shell} aria-label="지역 구분 칩">
+      <ChipScrollRow
+        className="shrink-0 border-b border-stone-200 px-3 py-2 md:hidden"
+        ariaLabel="지역 구분 칩"
+      >
         {showParentUp && (
           <button
             type="button"
@@ -279,7 +371,7 @@ function RelatedChipFlap({
             <span className="opacity-70">{c.count}</span>
           </button>
         ))}
-      </div>
+      </ChipScrollRow>
     );
   }
 
@@ -458,6 +550,7 @@ export default function KoreaFestivalHub() {
   /** @type {[{ lat: number, lng: number } | null, function]} */
   const [nearOrigin, setNearOrigin] = useState(null);
   const [mapOpen, setMapOpen] = useState(false);
+  const [mapFullscreen, setMapFullscreen] = useState(false);
   const [mapSessionKey, setMapSessionKey] = useState(0);
   /** PC 분할(lg+) — 리스트·지도 동기화 */
   const [isMapSplit, setIsMapSplit] = useState(() =>
@@ -465,6 +558,10 @@ export default function KoreaFestivalHub() {
       ? window.matchMedia('(min-width: 1024px)').matches
       : false,
   );
+  /** PC 분할 유지 중(전체화면 아님) */
+  const mapSplitActive = mapOpen && isMapSplit && !mapFullscreen;
+  /** 모바일 지도 · PC 전체화면 — 글라스 헤더·뷰포트 몰입(분할 카드 밖) */
+  const mapImmersive = mapOpen && !mapSplitActive;
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -753,12 +850,61 @@ export default function KoreaFestivalHub() {
     [personalItems],
   );
 
-  /** 지도 마커 — 시간·지역·테마·검색·내 주변 등 리스트 필터와 동기화 */
+  /**
+   * 지도 마커 — 시간·테마·검색·내 주변은 반영.
+   * 지역 칩은 숨기지 않고 카메라 포커스만 (전국 맥락 유지).
+   */
+  const mapScopeItems = useMemo(() => {
+    const tasted = filterByTaste(timedItems, tasteId);
+    return filterBySearchQuery(tasted, searchQuery);
+  }, [timedItems, tasteId, searchQuery]);
+
   const mapItems = useMemo(() => {
     if (personalTab != null) return personalItems;
     if (nearBaseItems) return nearBaseItems;
-    return filteredItems;
-  }, [personalTab, personalItems, nearBaseItems, filteredItems]);
+    return mapScopeItems;
+  }, [personalTab, personalItems, nearBaseItems, mapScopeItems]);
+
+  useEffect(() => {
+    if (!mapOpen) return;
+    if (personalTab != null) return;
+
+    if (nearBaseItems) {
+      const nearView = focusViewFromFestivalItems(nearBaseItems);
+      if (nearView) {
+        setMapFocusView(nearView);
+        return;
+      }
+      if (
+        nearOrigin &&
+        Number.isFinite(nearOrigin.lat) &&
+        Number.isFinite(nearOrigin.lng)
+      ) {
+        setMapFocusView({
+          lng: nearOrigin.lng,
+          lat: nearOrigin.lat,
+          zoom: 9,
+        });
+      }
+      return;
+    }
+
+    if (areaCode === 'all' && cityName === 'all') {
+      setMapFocusView(KOREA_MAP_OVERVIEW);
+      return;
+    }
+
+    const view = focusViewFromFestivalItems(afterRegion);
+    if (view) setMapFocusView(view);
+  }, [
+    mapOpen,
+    personalTab,
+    nearBaseItems,
+    nearOrigin,
+    areaCode,
+    cityName,
+    afterRegion,
+  ]);
 
   const selectedHubs = useMemo(() => {
     if (!selected) return [];
@@ -772,7 +918,6 @@ export default function KoreaFestivalHub() {
 
   const clearNear = useCallback(() => {
     setNearIds(null);
-    setMapFocusView(null);
     setNearOrigin(null);
     setNearLabel('');
     setNearMsg('');
@@ -780,8 +925,8 @@ export default function KoreaFestivalHub() {
 
   /**
    * GPS 성공 시: 시도 칩 맞춤.
-   * silent — 부트/재진입: 지역만 (내 주변 토글 OFF 유지)
-   * 명시적 내 주변 — 반경 리스트 + 토글 ON
+   * silent — 부트/재진입: 지역만 (반경 리스트 없음)
+   * 명시적 내 주변 — 반경 리스트 + 포커스
    * @param {number} lat
    * @param {number} lng
    * @param {{ silent?: boolean, festivalItems?: object[] }} [opts]
@@ -890,11 +1035,6 @@ export default function KoreaFestivalHub() {
     filteredItems.length,
   ]);
 
-  const closeNearMe = () => {
-    clearNear();
-    setSelected(null);
-  };
-
   const selectTime = (id) => {
     setTimeTab(id);
     setChipPanel('time');
@@ -975,6 +1115,7 @@ export default function KoreaFestivalHub() {
 
   const openMap = () => {
     setMapSessionKey((k) => k + 1);
+    setMapFullscreen(false);
     setMapOpen(true);
     requestAnimationFrame(() => {
       mainScrollRef.current?.scrollTo({ top: 0 });
@@ -982,7 +1123,12 @@ export default function KoreaFestivalHub() {
   };
 
   const closeMap = () => {
+    setMapFullscreen(false);
     setMapOpen(false);
+  };
+
+  const toggleMapFullscreen = () => {
+    setMapFullscreen((v) => !v);
   };
 
   const handleNearMe = () => {
@@ -1101,21 +1247,23 @@ export default function KoreaFestivalHub() {
 
       <header
         className={`z-30 pt-[max(0.5rem,env(safe-area-inset-top,0px))] ${
-          mapOpen && !isMapSplit
+          mapImmersive
             ? 'pointer-events-none absolute inset-x-0 top-0 border-0 bg-transparent'
             : 'relative shrink-0 border-b border-stone-200/80 bg-stone-100/95 backdrop-blur-md'
         }`}
       >
         <div
-          className={`pointer-events-auto mx-auto w-full px-3 pb-2.5 md:px-5 lg:px-8 xl:max-w-7xl ${
-            mapOpen
-              ? 'max-w-none lg:max-w-6xl'
-              : 'max-w-3xl lg:max-w-6xl'
+          className={`pointer-events-auto mx-auto w-full px-3 pb-2.5 ${
+            mapImmersive
+              ? 'max-w-none md:px-5'
+              : mapOpen
+                ? 'max-w-none md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl'
+                : 'max-w-3xl md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl'
           }`}
         >
           <div
             className={`min-w-0 rounded-2xl px-3 py-2.5 md:px-4 ${
-              mapOpen && !isMapSplit
+              mapImmersive
                 ? 'border border-white/35 bg-white/45 shadow-[0_8px_32px_rgba(27,20,16,0.12)] backdrop-blur-xl'
                 : 'border border-stone-200/90 bg-white shadow-sm'
             }`}
@@ -1175,7 +1323,7 @@ export default function KoreaFestivalHub() {
                   aria-hidden="true"
                 />
               </button>
-              {mapOpen && !isMapSplit ? (
+              {mapImmersive ? (
                 <button
                   type="button"
                   onClick={closeMap}
@@ -1262,16 +1410,11 @@ export default function KoreaFestivalHub() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => (nearActive ? closeNearMe() : handleNearMe())}
+                  onClick={handleNearMe}
                   disabled={nearBusy}
-                  aria-label={nearActive ? '내 주변 끄기' : '내 주변'}
-                  aria-pressed={nearActive}
-                  title={nearActive ? '내 주변 끄기' : '내 주변'}
-                  className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
-                    nearActive
-                      ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
-                      : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
-                  }`}
+                  aria-label="내 주변 축제 불러오기"
+                  title="내 주변"
+                  className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-60"
                 >
                   {nearBusy ? (
                     <Loader2 size={14} className="animate-spin" aria-hidden="true" />
@@ -1281,7 +1424,7 @@ export default function KoreaFestivalHub() {
                   내 주변
                 </button>
               </div>
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
+              <ChipScrollRow ariaLabel="세부 칩">
                 {chipPanel === 'time' &&
                   TIME_TABS.map((t) => (
                     <button
@@ -1342,7 +1485,7 @@ export default function KoreaFestivalHub() {
                     ))}
                   </>
                 )}
-              </div>
+              </ChipScrollRow>
             </div>
           </div>
         </div>
@@ -1351,9 +1494,11 @@ export default function KoreaFestivalHub() {
       <main
         ref={mainScrollRef}
         className={`mx-auto min-h-0 w-full flex-1 ${
-          mapOpen
-            ? 'flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0 lg:max-w-6xl lg:px-8 lg:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:pt-3 xl:max-w-7xl'
-            : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl'
+          mapImmersive
+            ? 'pointer-events-none flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0'
+            : mapOpen
+              ? 'flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0 lg:max-w-6xl lg:px-8 lg:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:pt-3 xl:max-w-7xl'
+              : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl'
         }`}
       >
         {loading && !mapOpen && (
@@ -1378,21 +1523,23 @@ export default function KoreaFestivalHub() {
 
         <div
           className={`flex flex-col bg-white ${
-            mapOpen
-              ? 'min-h-0 flex-1 overflow-hidden border-0 shadow-none max-lg:rounded-none lg:rounded-3xl lg:border lg:border-stone-200 lg:shadow-sm'
-              : `border border-stone-200 shadow-sm ${
-                  personalTab == null && flapHasRelated
-                    ? 'rounded-3xl md:flex-row'
-                    : 'rounded-3xl'
-                } md:min-h-0 md:flex-1 md:overflow-hidden`
+            mapImmersive
+              ? 'min-h-0 flex-1 overflow-hidden border-0 shadow-none'
+              : mapOpen
+                ? 'min-h-0 flex-1 overflow-hidden border-0 shadow-none max-lg:rounded-none lg:rounded-3xl lg:border lg:border-stone-200 lg:shadow-sm'
+                : `border border-stone-200 shadow-sm ${
+                    personalTab == null && flapHasRelated
+                      ? 'rounded-3xl md:flex-row'
+                      : 'rounded-3xl'
+                  } md:min-h-0 md:flex-1 md:overflow-hidden`
           } ${
-            mapOpen && personalTab == null && flapHasRelated
+            mapSplitActive && personalTab == null && flapHasRelated
               ? 'lg:flex-row'
               : ''
           }`}
           aria-label={personalTab != null ? '내 축제 목록' : '축제 목록'}
         >
-          {personalTab == null && flapHasRelated && (
+          {mapSplitActive && personalTab == null && flapHasRelated && (
             <RelatedChipFlap
               layout="side"
               childChips={flapChildChips}
@@ -1414,7 +1561,7 @@ export default function KoreaFestivalHub() {
           >
             <div
               className={`shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5 ${
-                mapOpen ? 'hidden lg:flex' : 'flex'
+                mapSplitActive ? 'hidden lg:flex' : mapOpen ? 'hidden' : 'flex'
               }`}
             >
               <div className="min-w-0">
@@ -1538,16 +1685,20 @@ export default function KoreaFestivalHub() {
             )}
             <div
               className={`flex ${
-                mapOpen
+                mapSplitActive
                   ? 'min-h-0 flex-1 flex-col lg:flex-row'
-                  : 'flex-col md:min-h-0 md:flex-1'
+                  : mapOpen
+                    ? 'min-h-0 flex-1 flex-col'
+                    : 'flex-col md:min-h-0 md:flex-1'
               }`}
             >
               <div
                 className={`space-y-2 px-3 pt-3 pb-[max(10.5rem,calc(env(safe-area-inset-bottom,0px)+9rem))] md:pb-24 ${
-                  mapOpen
+                  mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
-                    : 'md:custom-scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto'
+                    : mapOpen
+                      ? 'hidden'
+                      : 'md:custom-scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto'
                 }`}
               >
               {personalTab != null ? (
@@ -1622,12 +1773,8 @@ export default function KoreaFestivalHub() {
                 ))
               )}
               </div>
-              {mapOpen && (
-                <div
-                  className={`relative min-h-0 flex-1 overflow-hidden bg-[#1b1410] ${
-                    !isMapSplit ? 'max-lg:fixed max-lg:inset-0 max-lg:z-20' : ''
-                  }`}
-                >
+              {mapSplitActive && (
+                <div className="relative min-h-0 flex-1 overflow-hidden bg-[#1b1410]">
                   <KoreaFestivalMap
                     className="absolute inset-0 h-full w-full"
                     items={mapItems}
@@ -1637,7 +1784,10 @@ export default function KoreaFestivalHub() {
                         : ''
                     }
                     focusView={mapFocusView}
-                    historyKey={`${mapSessionKey}:${timeTab}:${areaCode}:${cityName}:${tasteId}:${personalTab || ''}:${searchQuery.trim()}`}
+                    historyKey={`${mapSessionKey}:${timeTab}:${tasteId}:${personalTab || ''}:${searchQuery.trim()}`}
+                    layoutKey={`split:${isMapSplit ? 'lg' : 'sm'}`}
+                    fullscreen={false}
+                    onToggleFullscreen={toggleMapFullscreen}
                     onSelectPoint={(contentId) => {
                       const id = String(contentId);
                       const item =
@@ -1646,7 +1796,6 @@ export default function KoreaFestivalHub() {
                       if (item) openItem(item);
                     }}
                     onSelectCluster={(contentIds) => {
-                      if (!isMapSplit) return;
                       const ids = (contentIds || [])
                         .map(String)
                         .filter(Boolean);
@@ -1664,6 +1813,32 @@ export default function KoreaFestivalHub() {
           </div>
         </div>
       </main>
+
+      {mapImmersive && (
+        <div className="fixed inset-0 z-20 overflow-hidden bg-[#1b1410]">
+          <KoreaFestivalMap
+            className="absolute inset-0 h-full w-full"
+            items={mapItems}
+            activeContentId={
+              selected?.contentId != null ? String(selected.contentId) : ''
+            }
+            focusView={mapFocusView}
+            historyKey={`${mapSessionKey}:${timeTab}:${tasteId}:${personalTab || ''}:${searchQuery.trim()}`}
+            layoutKey={`immersive:${mapFullscreen ? 'pc-full' : 'mobile'}`}
+            fullscreen={mapFullscreen}
+            onToggleFullscreen={
+              isMapSplit || mapFullscreen ? toggleMapFullscreen : undefined
+            }
+            onSelectPoint={(contentId) => {
+              const id = String(contentId);
+              const item =
+                byContentId.get(id) ||
+                mapItems.find((row) => String(row?.contentId) === id);
+              if (item) openItem(item);
+            }}
+          />
+        </div>
+      )}
 
       <button
         type="button"

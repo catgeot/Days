@@ -6,6 +6,7 @@ import Map, {
   useControl,
 } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -69,6 +70,59 @@ function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
   return null;
 }
+
+/** @param {import('mapbox-gl').Map | null | undefined} map */
+function applyKoreanPlaceLabels(map) {
+  if (!map || typeof map.setLanguage !== 'function') return;
+  try {
+    map.setLanguage('ko');
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * 축제 좌표 bbox → 지도 포커스 (전국 유지 · 카메라만 이동)
+ * @param {object[]} items
+ * @returns {{ west: number, south: number, east: number, north: number, maxZoom?: number } | { lng: number, lat: number, zoom: number } | null}
+ */
+export function focusViewFromFestivalItems(items) {
+  /** @type {{ lng: number, lat: number }[]} */
+  const pts = [];
+  for (const item of items || []) {
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
+    if (pt) pts.push(pt);
+  }
+  if (!pts.length) return null;
+  if (pts.length === 1) {
+    return { lng: pts[0].lng, lat: pts[0].lat, zoom: 10 };
+  }
+  let west = Infinity;
+  let east = -Infinity;
+  let south = Infinity;
+  let north = -Infinity;
+  for (const { lng, lat } of pts) {
+    west = Math.min(west, lng);
+    east = Math.max(east, lng);
+    south = Math.min(south, lat);
+    north = Math.max(north, lat);
+  }
+  const padLng = Math.max((east - west) * 0.18, 0.04);
+  const padLat = Math.max((north - south) * 0.18, 0.04);
+  return {
+    west: west - padLng,
+    south: south - padLat,
+    east: east + padLng,
+    north: north + padLat,
+    maxZoom: 11.5,
+  };
+}
+
+export const KOREA_MAP_OVERVIEW = {
+  lng: KR_VIEW.longitude,
+  lat: KR_VIEW.latitude,
+  zoom: KR_VIEW.zoom,
+};
 
 function shortTitle(title) {
   const s = String(title || '').trim();
@@ -144,15 +198,83 @@ function viewsDiffer(a, b, eps = 0.02) {
   );
 }
 
+function isBoundsFocus(view) {
+  return (
+    view &&
+    Number.isFinite(view.west) &&
+    Number.isFinite(view.south) &&
+    Number.isFinite(view.east) &&
+    Number.isFinite(view.north)
+  );
+}
+
+function isCenterFocus(view) {
+  return view && Number.isFinite(view.lng) && Number.isFinite(view.lat);
+}
+
+function isValidFocusView(view) {
+  return isBoundsFocus(view) || isCenterFocus(view);
+}
+
+/**
+ * @param {import('mapbox-gl').Map} map
+ * @param {object} focusView
+ * @param {{ pushHistory?: boolean, pushCurrentView?: () => void }} [opts]
+ */
+function applyFocusCamera(map, focusView, opts = {}) {
+  if (!map || !isValidFocusView(focusView)) return false;
+  const pushHistory = Boolean(opts.pushHistory);
+  const pushCurrentView = opts.pushCurrentView;
+  const cur = readMapView(map);
+
+  if (isBoundsFocus(focusView)) {
+    if (pushHistory && cur && pushCurrentView) pushCurrentView();
+    map.fitBounds(
+      [
+        [focusView.west, focusView.south],
+        [focusView.east, focusView.north],
+      ],
+      {
+        padding: 56,
+        maxZoom: focusView.maxZoom ?? 11.5,
+        duration: 700,
+        essential: true,
+      },
+    );
+    return true;
+  }
+
+  const next = {
+    lng: focusView.lng,
+    lat: focusView.lat,
+    zoom: focusView.zoom ?? 9,
+  };
+  if (pushHistory && cur && viewsDiffer(cur, next) && pushCurrentView) {
+    pushCurrentView();
+  }
+  map.flyTo({
+    center: [next.lng, next.lat],
+    zoom: next.zoom,
+    essential: true,
+  });
+  return true;
+}
+
 /**
  * @param {{
  *   items: object[],
  *   activeContentId?: string,
  *   onSelectPoint?: (contentId: string) => void,
  *   onSelectCluster?: (contentIds: string[]) => void,
- *   focusView?: { lng: number, lat: number, zoom?: number } | null,
+ *   focusView?: (
+ *     | { lng: number, lat: number, zoom?: number }
+ *     | { west: number, south: number, east: number, north: number, maxZoom?: number }
+ *   ) | null,
  *   historyKey?: string | number,
  *   backNonce?: number,
+ *   layoutKey?: string | number,
+ *   fullscreen?: boolean,
+ *   onToggleFullscreen?: () => void,
  *   className?: string,
  * }} props
  */
@@ -164,14 +286,21 @@ export default function KoreaFestivalMap({
   focusView = null,
   historyKey = '',
   backNonce = 0,
+  layoutKey = '',
+  fullscreen = false,
+  onToggleFullscreen,
   className = '',
 }) {
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
+  const focusViewRef = useRef(focusView);
+  focusViewRef.current = focusView;
   const geojson = useMemo(() => buildGeoJson(items), [items]);
   const pointCount = geojson.features.length;
   const focusKey = focusView
-    ? `${focusView.lng},${focusView.lat},${focusView.zoom ?? 9}`
+    ? isBoundsFocus(focusView)
+      ? `b:${focusView.west},${focusView.south},${focusView.east},${focusView.north},${focusView.maxZoom ?? ''}`
+      : `c:${focusView.lng},${focusView.lat},${focusView.zoom ?? 9}`
     : '';
 
   const pushCurrentView = () => {
@@ -188,10 +317,22 @@ export default function KoreaFestivalMap({
     viewStackRef.current = [];
   };
 
+  const resolveMapInstance = (mapLike) => {
+    if (!mapLike) return null;
+    if (typeof mapLike.getCenter === 'function') return mapLike;
+    if (typeof mapLike.getMap === 'function') return mapLike.getMap();
+    return null;
+  };
+
   useEffect(() => {
     clearViewHistory();
-    const map = mapRef.current;
+    const map = resolveMapInstance(mapRef.current);
     if (!map) return;
+    const focus = focusViewRef.current;
+    if (isValidFocusView(focus)) {
+      applyFocusCamera(map, focus, { pushHistory: false });
+      return;
+    }
     map.flyTo({
       center: [KR_VIEW.longitude, KR_VIEW.latitude],
       zoom: KR_VIEW.zoom,
@@ -200,8 +341,21 @@ export default function KoreaFestivalMap({
     });
   }, [historyKey]);
 
+  useEffect(() => {
+    const map = resolveMapInstance(mapRef.current);
+    if (!map || typeof map.resize !== 'function') return;
+    const id = window.requestAnimationFrame(() => {
+      try {
+        map.resize();
+      } catch {
+        /* ignore */
+      }
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [layoutKey, fullscreen]);
+
   const popCameraBack = () => {
-    const map = mapRef.current;
+    const map = resolveMapInstance(mapRef.current);
     const stack = viewStackRef.current;
     if (!map || stack.length === 0) return false;
     const prev = stack.pop();
@@ -222,21 +376,25 @@ export default function KoreaFestivalMap({
   }, [backNonce]);
 
   useEffect(() => {
-    if (!focusView || !mapRef.current) return;
-    const map = mapRef.current;
-    const next = {
-      lng: focusView.lng,
-      lat: focusView.lat,
-      zoom: focusView.zoom ?? 9,
-    };
-    const cur = readMapView(map);
-    if (cur && viewsDiffer(cur, next)) pushCurrentView();
-    map.flyTo({
-      center: [next.lng, next.lat],
-      zoom: next.zoom,
-      essential: true,
+    if (!focusKey || !focusView) return;
+    const map = resolveMapInstance(mapRef.current);
+    if (!map) return;
+    applyFocusCamera(map, focusView, {
+      pushHistory: true,
+      pushCurrentView,
     });
-  }, [focusKey, focusView]);
+    // focusKey가 바뀔 때만 카메라 이동 (동일 bbox 재비행 방지)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusKey]);
+
+  const handleMapLoad = (e) => {
+    const map = e?.target;
+    applyKoreanPlaceLabels(map);
+    const focus = focusViewRef.current;
+    if (isValidFocusView(focus)) {
+      applyFocusCamera(map, focus, { pushHistory: false });
+    }
+  };
 
   const activeFilter = useMemo(
     () =>
@@ -333,6 +491,7 @@ export default function KoreaFestivalMap({
         doubleClickZoom
         keyboard
         interactiveLayerIds={INTERACTIVE_LAYERS}
+        onLoad={handleMapLoad}
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -396,6 +555,27 @@ export default function KoreaFestivalMap({
           />
         </Source>
       </Map>
+      {typeof onToggleFullscreen === 'function' ? (
+        <button
+          type="button"
+          onClick={onToggleFullscreen}
+          aria-label={fullscreen ? '지도 분할 보기로' : '지도 전체 화면'}
+          aria-pressed={fullscreen}
+          title={fullscreen ? '분할 보기' : '전체 화면'}
+          className={`absolute right-3 z-10 flex h-10 items-center gap-1.5 rounded-full border border-white/40 bg-[#1b1410]/70 px-3 text-[11px] font-bold text-white shadow-lg backdrop-blur-md hover:bg-[#1b1410]/85 ${
+            fullscreen
+              ? 'top-[max(5.25rem,calc(env(safe-area-inset-top)+4.75rem))]'
+              : 'top-3'
+          }`}
+        >
+          {fullscreen ? (
+            <Minimize2 size={15} aria-hidden="true" />
+          ) : (
+            <Maximize2 size={15} aria-hidden="true" />
+          )}
+          {fullscreen ? '축소' : '전체'}
+        </button>
+      ) : null}
       <MapCaption pointCount={pointCount} />
     </div>
   );
