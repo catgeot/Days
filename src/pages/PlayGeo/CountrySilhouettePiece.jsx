@@ -1,5 +1,5 @@
 import React from 'react';
-import { getGeoPuzzleSilhouette } from '../data/geoPuzzleSilhouettes.js';
+import { getGeoPuzzleSilhouette } from './data/geoPuzzleSilhouettes.js';
 
 /**
  * @param {{
