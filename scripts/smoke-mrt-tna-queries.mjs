@@ -223,6 +223,29 @@ const CASES = [
     expectNearbyExact: ['강릉', '정선', '횡성', '영월'],
     expectNearbyChips: true,
   },
+  /**
+   * OSM village→city(이평리)+county — plan §5.1 · TNA도 군 선두.
+   */
+  {
+    slug: 'boeun-ipyeong-ri-city',
+    location: {
+      name: '보은읍',
+      name_ko: '보은읍',
+      country: '한국',
+      country_en: 'South Korea',
+      parentCity: '보은',
+      hubId: 'boeun',
+      uiPlace: true,
+      stayAdmin: {
+        city: '이평리',
+        county: '보은군',
+        state: '충청북도',
+      },
+    },
+    expectDomestic: true,
+    expectPrimaryKeyword: /보은/,
+    expectKeyword: /보은/,
+  },
   {
     slug: 'osaka',
     location: {

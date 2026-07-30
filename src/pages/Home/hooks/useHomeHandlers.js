@@ -8,6 +8,10 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
+import {
+  collectKoHomonymPlaceCandidates,
+  isKoHomonymPlaceSearchQuery,
+} from '../lib/koHomonymRiSearch';
 import { formatUrlName, pickUrlSafeEnglishName } from '../lib/formatUrlName';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
 import { supabase } from '../../../shared/api/supabase';
@@ -698,13 +702,32 @@ export function useHomeHandlers({
       return ensureDisambiguation(query, [locationToChoiceCandidate(loc)], title);
     };
 
+    let koHomonymPlaceTried = false;
+
     if (requireChoice) {
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
 
-      const localChoices = buildLocalSearchSuggestions(query);
-      if (localChoices.length >= 1) {
-        return ensureDisambiguation(query, localChoices, `'${query}' → 원하는 장소를 선택하세요`);
+      // 동명 리/읍/면/동·bare 화이트리스트 — prefix 스냅(남양→남양주)보다 우선
+      if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {
+        koHomonymPlaceTried = true;
+        const placeCandidates = await collectKoHomonymPlaceCandidates(query);
+        if (placeCandidates.length >= 2) {
+          return makeDisambiguationResult(query, placeCandidates, {
+            title: `'${query}' → 지역을 선택하세요`,
+          });
+        }
+        if (placeCandidates.length === 1) {
+          return commitLocation({
+            ...placeCandidates[0],
+            category,
+          });
+        }
+      } else {
+        const localChoices = buildLocalSearchSuggestions(query);
+        if (localChoices.length >= 1) {
+          return ensureDisambiguation(query, localChoices, `'${query}' → 원하는 장소를 선택하세요`);
+        }
       }
 
       const citySpotChoice =
@@ -999,6 +1022,23 @@ export function useHomeHandlers({
         uiPlace: true,
       }, resolvedLat, resolvedLng);
     };
+
+    // 국내 동명 리/읍/면/동·비허브 bare 화이트리스트 — 지역 명시 다후보 (단독 자동 진입 금지 · hub exact보다 뒤)
+    // requireChoice에서 이미 시도했으면 재조회 금지
+    if (!koHomonymPlaceTried && !isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {
+      const placeCandidates = await collectKoHomonymPlaceCandidates(query);
+      if (placeCandidates.length >= 2) {
+        return makeDisambiguationResult(query, placeCandidates, {
+          title: `'${query}' → 지역을 선택하세요`,
+        });
+      }
+      if (placeCandidates.length === 1) {
+        return commitLocation({
+          ...placeCandidates[0],
+          category,
+        });
+      }
+    }
 
     // 감정 키워드(번아웃·설렘 등)·문장부호는 지오코딩 스킵 → AI 무드 큐레이션 유지
     // (Mapbox가 "힐링" 등을 임의 POI로 잡는 회귀 방지). 시설·일반 지명은 기존처럼 geocode.

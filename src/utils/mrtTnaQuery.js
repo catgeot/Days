@@ -10,8 +10,8 @@ export { isMrtDomesticLocation };
 
 /** 국내 동·리·읍·면 — 세밀 행정(시·군보다 아래) */
 const KO_FINE_ADMIN_RE = /[동읍면리]$/;
-/** 국내 읍·면 — OSM town→city 시 MRT 키워드로 쓰면 동명 오탐(대화면→일산 대화) */
-const KO_TOWNSHIP_RE = /[읍면]$/;
+/** 국내 읍·면·리 — OSM town/village→city 시 키워드 선두 금지(대화면→일산 · 이평리→리 단독) */
+const KO_TOWNSHIP_RE = /[읍면리]$/;
 
 function isKoFineAdminName(name) {
   return KO_FINE_ADMIN_RE.test(String(name || '').trim());
@@ -267,7 +267,7 @@ export function resolveMrtTnaQuery(location) {
   const pushCity = () => {
     const cityIsTownship = isDomestic && isKoTownshipName(admin.city);
     if (cityIsTownship && admin.county) {
-      // 평창군 대화면 — 군 우선, 면 축약「대화」제외(일산 대화동 오탐)
+      // 평창군 대화면·보은군 이평리 — 군 우선, 면 축약「대화」제외(일산 대화동 오탐)
       pushUnique(ladder, seen, admin.county);
       pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
       pushUnique(ladder, seen, parentCity);

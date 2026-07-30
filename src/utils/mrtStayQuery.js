@@ -216,8 +216,8 @@ const KO_ADMIN_SUFFIX_RE =
 
 /** 국내 동·리·읍·면 — 세밀 행정(시·군보다 아래) */
 const KO_FINE_ADMIN_RE = /[동읍면리]$/;
-/** 국내 읍·면 — OSM town이 city로 올 때 MRT CITY로 쓰면 안 됨(대화면→일산 대화) */
-const KO_TOWNSHIP_RE = /[읍면]$/;
+/** 국내 읍·면·리 — OSM town/village→city 시 MRT CITY 선두 금지(대화면→일산 대화 · 이평리→리 단독) */
+const KO_TOWNSHIP_RE = /[읍면리]$/;
 
 function isKoFineAdminName(name) {
   return KO_FINE_ADMIN_RE.test(String(name || '').trim());
@@ -357,7 +357,7 @@ export function stripKoAdminSuffix(name) {
 
 /**
  * Edge cityHint용 — 동명 동(퇴계동→안동) 거부.
- * 국내 읍·면이 city로 오면 시·군을 앞에 두고, 면명 축약(대화)은 county 있을 때 제외 —
+ * 국내 읍·면·리가 city로 오면 시·군을 앞에 두고, 면명 축약(대화)은 county 있을 때 제외 —
  * cityMatches ANY 매칭이라 「대화」가 고양 대화동 blob에 걸려 평창을 통과시키는 오탐 방지.
  * 해외는 state(Western Division 등)를 넣지 않음 — MRT blob에 없어 탈락 유발.
  * @param {object} admin
@@ -425,8 +425,12 @@ export function resolveMrtStayQuery(location) {
   pushLodgingStayKeywords(ladder, seen, location);
 
   // uiPlace: 검색어(originalQuery)를 선두 — Mapbox name이 시·군만일 때 「홍천 대명 콘도」 숙소 오탐 방지
+  // 국내 동·리·읍·면 단독 검색어는 시·군 래더 뒤 — 「대화리」→천안/일산 동명 MRT 선두 방지
   if (location?.uiPlace) {
-    pushUnique(ladder, seen, String(location.originalQuery || '').trim());
+    const oq = String(location.originalQuery || '').trim();
+    if (!(isDomestic && isKoFineAdminName(oq))) {
+      pushUnique(ladder, seen, oq);
+    }
   }
 
   // originalQuery·이름에서 시·군 토큰을 cityHints에 보강 (AI 핀에 stayAdmin 없을 때)
@@ -449,7 +453,7 @@ export function resolveMrtStayQuery(location) {
   const pushCityLadder = () => {
     const cityIsTownship = isDomestic && isKoTownshipName(admin.city);
     if (cityIsTownship && admin.county) {
-      // 평창군 대화면 — 군·시 먼저, 면 축약「대화」는 일산 대화동 오탐이라 제외
+      // 평창군 대화면·보은군 이평리 — 군·시 먼저, 면 축약「대화」는 일산 대화동 오탐이라 제외
       pushUnique(ladder, seen, admin.county);
       pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
       pushUnique(ladder, seen, parentCity);
