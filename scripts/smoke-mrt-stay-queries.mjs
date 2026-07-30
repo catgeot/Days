@@ -281,6 +281,28 @@ const CASES = [
     expectPrimaryKeyword: /보성/,
     rejectPrimaryKeyword: /벌교리/,
   },
+  /**
+   * 검색「대화리」진입 — originalQuery가 군보다 선두면 MRT가 동명(천안 등)으로 샐 수 있음.
+   * stayAdmin이 평창이면 1차는 평창.
+   */
+  {
+    slug: 'search-daehwa-ri-original-query',
+    location: {
+      name: '대화리',
+      name_ko: '대화리',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      originalQuery: '대화리',
+      stayAdmin: {
+        city: '대화면',
+        county: '평창군',
+        state: '강원특별자치도',
+      },
+    },
+    expectPrimaryKeyword: /평창/,
+    rejectPrimaryKeyword: /대화리|^대화$/,
+  },
 ];
 
 function assert(cond, msg) {

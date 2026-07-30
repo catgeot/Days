@@ -425,8 +425,12 @@ export function resolveMrtStayQuery(location) {
   pushLodgingStayKeywords(ladder, seen, location);
 
   // uiPlace: 검색어(originalQuery)를 선두 — Mapbox name이 시·군만일 때 「홍천 대명 콘도」 숙소 오탐 방지
+  // 국내 동·리·읍·면 단독 검색어는 시·군 래더 뒤 — 「대화리」→천안/일산 동명 MRT 선두 방지
   if (location?.uiPlace) {
-    pushUnique(ladder, seen, String(location.originalQuery || '').trim());
+    const oq = String(location.originalQuery || '').trim();
+    if (!(isDomestic && isKoFineAdminName(oq))) {
+      pushUnique(ladder, seen, oq);
+    }
   }
 
   // originalQuery·이름에서 시·군 토큰을 cityHints에 보강 (AI 핀에 stayAdmin 없을 때)
