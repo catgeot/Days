@@ -389,7 +389,7 @@ const CASES = [
     expectDomestic: true,
     expectPrimaryKeyword: /평창/,
     expectKeyword: /평창/,
-    expectNearbyExact: ['강릉', '정선', '횡성', '영월'],
+    expectNearbyExact: ['강릉', '정선', '영월', '홍천'],
     expectNearbyChips: true,
   },
   /**
