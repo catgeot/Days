@@ -13,7 +13,7 @@
 - **국내 MRT 읍·면 감사·city=리 군선두 ✅**: [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 · `npm run audit:mrt-stay-admin-gaps` · RISK **0** · keyword 군 선두
 - **동명 리/읍/면/동·bare 화이트리스트 검색 다후보 ✅**: [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) · [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) · PR [#37](https://github.com/catgeot/Days/pull/37) MERGED · `smoke:ko-homonym-ri-search`
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
-- **국내 MRT TNA 인근 (Phase 4 2차 ✅ · 잔여 C표)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 제시어 `MRT-TNA-일정연결-이어하기` · 일지 `2026-07-30`
+- **국내 MRT TNA 인근 (Phase 4 ✅ · C표 32)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 일지 `2026-07-30`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 최신: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md) · 직전 [`2026-07-29-project-log.md`](./2026-07-29-project-log.md)  
 

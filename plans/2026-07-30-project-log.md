@@ -206,25 +206,21 @@
 
 ---
 
-## 국내 TNA 인근 — 다음 세션 핸드오프 (C표 잔여)
+## 국내 TNA Phase 4 — 일정 연결 SSOT 4차 (C표 잔여)
 
-### 읽을 것 3
+**상태**: ✅ `main` (커밋 직후 SHA)
 
-1. 본 절
-2. [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) **Phase 4** · C표 잔여
-3. `src/utils/mrtTnaQuery.js` → `MRT_TNA_NEARBY_EXPAND` C표 블록
+| | |
+|--|--|
+| 등재 | 상주·산청·공주·부여·이천·진주·사천·파주·강화·고성·영양·천안 (hubId+한글 · C표 합계 32) |
+| LIVE | 인근 키워드 전부 n≥1 · 풍부 hub `nearbyExpanded=false` · 김천·예천·청송·봉화 미사용 |
+| 스모크 | 상주·진주·파주·천안 칩 true · `MRT_TNA_SMOKE_LIVE=1` PASS |
+| 유지 | Edge ≤3 자동보강 · UI 비주얼 |
 
-### 금지 3
+**QA**: 상주/진주/파주/천안 등 — 본지 풍부해도 「주변 지역 더보기」칩
 
-1. 전국 자동 이웃 그래프 / 임의 도시 검색
-2. Edge ≤3 자동보강 로직을 「항상 머지」로 바꾸지 말 것
-3. LIVE `n≈0` 키워드를 인근 배열에 넣지 말 것(계획 §D)
+---
 
-### 다음 작업
+## 국내 TNA 인근 — 핸드오프 (C표 소진)
 
-1. C표 잔여 큐레이션 — 상주·산청·공주·부여·이천·진주·사천·파주·강화·고성·영양·천안 등 hub당 인근 2~4
-2. LIVE n 확인 → SSOT → 스모크 1~2 케이스 · `npm run smoke:mrt-tna`
-
-### 제시어
-
-`MRT-TNA-일정연결-이어하기`
+C표 잔여 12 hub 등재 완료. 추가 hub는 사람 요청 시.
