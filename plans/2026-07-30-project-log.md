@@ -221,6 +221,22 @@
 
 ---
 
+## 국내축제 S4 — TourAPI DB 캐시
+
+**상태**: ✅ migration · Edge 재배포 · LIVE smoke PASS
+
+| | |
+|--|--|
+| 테이블 | `tourapi_festival_cache` (anon SELECT · service_role write) |
+| Edge | `festivalWindow` · `festivalDetail` · fresh HIT / LIVE upsert / stale-while-error |
+| TTL | 목록 12h·stale 7d · 상세 7d·stale 30d |
+| 클라 | sessionStorage L1 · `/korea` 1 invoke · 상세 시트 1+images |
+| VERIFY | `TOURAPI_SMOKE_LIVE=1` — window 242 · 2nd `fromCache=true` · detail 2nd HIT |
+
+**QA**: `/korea` 첫 로드 후 새로고침·다른 탭 — Tour 다발 없이 목록 · API 장애 시 stale 폴백
+
+---
+
 ## 국내 TNA 인근 — 핸드오프 (C표 소진)
 
 C표 잔여 12 hub 등재 완료. 추가 hub는 사람 요청 시.

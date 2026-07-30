@@ -13,10 +13,8 @@ import {
   X,
 } from 'lucide-react';
 import {
-  fetchTourApiFestivalCommon,
+  fetchTourApiFestivalDetail,
   fetchTourApiFestivalImages,
-  fetchTourApiFestivalInfo,
-  fetchTourApiFestivalIntro,
 } from '../../utils/fetchTourApiFestivals';
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
 
@@ -250,25 +248,18 @@ export default function FestivalDetailSheet({
     (async () => {
       const contentId = item.contentId;
       const contentTypeId = item.contentTypeId || '15';
-      const [introData, commonData, infoData, imageData] = await Promise.all([
-        fetchTourApiFestivalIntro({ contentId, contentTypeId }),
-        fetchTourApiFestivalCommon({ contentId }),
-        fetchTourApiFestivalInfo({ contentId, contentTypeId, numOfRows: 30 }),
+      const [detailData, imageData] = await Promise.all([
+        fetchTourApiFestivalDetail({ contentId, contentTypeId }),
         fetchTourApiFestivalImages({ contentId, numOfRows: 12 }),
       ]);
       if (cancelled) return;
 
-      const introHit = pickFirst(introData);
-      const commonHit = pickFirst(commonData);
-      const infoRows = Array.isArray(infoData?.items) ? infoData.items : [];
+      const introHit = detailData?.intro || pickFirst(detailData) || null;
+      const commonHit = detailData?.common || null;
+      const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
       const urls = collectImageUrls(imageData, seed);
 
-      if (
-        !introData?.ok &&
-        !commonData?.ok &&
-        !infoData?.ok &&
-        !imageData?.ok
-      ) {
+      if (!detailData?.ok && !imageData?.ok) {
         setIntro(null);
         setCommon(null);
         setInfoItems([]);

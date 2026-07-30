@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,10 +24,21 @@ const ACTIONS = {
 
 type Action = keyof typeof ACTIONS;
 
+/** Composite cache actions — not direct TourAPI paths */
+const CACHE_ACTIONS = new Set(["festivalWindow", "festivalDetail"]);
+
 const MAX_KEYWORD_LEN = 80;
 const MAX_CONTENT_ID_LEN = 32;
 const DEFAULT_ROWS = 10;
 const MAX_ROWS = 50;
+
+const LIST_FRESH_MS = 12 * 60 * 60 * 1000;
+const LIST_STALE_MS = 7 * 24 * 60 * 60 * 1000;
+const DETAIL_FRESH_MS = 7 * 24 * 60 * 60 * 1000;
+const DETAIL_STALE_MS = 30 * 24 * 60 * 60 * 1000;
+const FESTIVAL_WINDOW_MAX_PAGES = 12;
+const FESTIVAL_WINDOW_PAGE_ROWS = 50;
+const FESTIVAL_CONTENT_TYPE_ID = "15";
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -397,6 +409,390 @@ function buildUpstreamQuery(
   }
 }
 
+function pad2(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
+function toYmd(d: Date): string {
+  return `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
+}
+
+/** Match client festivalTimeFilter.rolling12MonthRangeYmd */
+function rolling12MonthRangeYmd(now = new Date()): {
+  eventStartDate: string;
+  eventEndDate: string;
+} {
+  const start = new Date(now.getFullYear(), now.getMonth(), 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + 12, 0);
+  return { eventStartDate: toYmd(start), eventEndDate: toYmd(end) };
+}
+
+function ageMs(fetchedAt: string | null | undefined): number {
+  if (!fetchedAt) return Number.POSITIVE_INFINITY;
+  const t = Date.parse(fetchedAt);
+  if (!Number.isFinite(t)) return Number.POSITIVE_INFINITY;
+  return Date.now() - t;
+}
+
+function getServiceRoleClient() {
+  const url = Deno.env.get("SUPABASE_URL")?.trim();
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+type CacheRow = {
+  cache_key: string;
+  payload: unknown;
+  fetched_at: string;
+};
+
+async function readFestivalCache(
+  cacheKey: string,
+): Promise<CacheRow | null> {
+  const sb = getServiceRoleClient();
+  if (!sb) return null;
+  const { data, error } = await sb
+    .from("tourapi_festival_cache")
+    .select("cache_key, payload, fetched_at")
+    .eq("cache_key", cacheKey)
+    .maybeSingle();
+  if (error) {
+    console.error("[tourapi-proxy] cache read", error.message);
+    return null;
+  }
+  return (data as CacheRow | null) ?? null;
+}
+
+async function writeFestivalCache(
+  cacheKey: string,
+  payload: unknown,
+): Promise<boolean> {
+  const sb = getServiceRoleClient();
+  if (!sb) return false;
+  const now = new Date().toISOString();
+  const { error } = await sb.from("tourapi_festival_cache").upsert(
+    {
+      cache_key: cacheKey,
+      payload,
+      fetched_at: now,
+      source: "tourapi",
+      updated_at: now,
+    },
+    { onConflict: "cache_key" },
+  );
+  if (error) {
+    console.error("[tourapi-proxy] cache write", error.message);
+    return false;
+  }
+  return true;
+}
+
+function mergeFestivalPages(
+  pages: Awaited<ReturnType<typeof callTourApi>>[],
+): Record<string, unknown>[] {
+  const seen = new Set<string>();
+  const merged: Record<string, unknown>[] = [];
+  for (const data of pages) {
+    if (!data?.ok || !Array.isArray(data.items)) continue;
+    for (const item of data.items) {
+      const key = String(
+        item?.contentId || `${item?.title}-${item?.eventStartDate}`,
+      );
+      if (!key || seen.has(key)) continue;
+      if (
+        !item?.title ||
+        !/^\d{8}$/.test(String(item.eventStartDate || ""))
+      ) {
+        continue;
+      }
+      seen.add(key);
+      merged.push(item);
+    }
+  }
+  return merged;
+}
+
+async function fetchFestivalWindowLive(
+  serviceKey: string,
+  eventStartDate: string,
+  eventEndDate: string,
+): Promise<{
+  ok: boolean;
+  items: Record<string, unknown>[];
+  message?: string;
+}> {
+  const pages: Awaited<ReturnType<typeof callTourApi>>[] = [];
+  for (let pageNo = 1; pageNo <= FESTIVAL_WINDOW_MAX_PAGES; pageNo += 1) {
+    let page: Awaited<ReturnType<typeof callTourApi>>;
+    try {
+      page = await callTourApi(
+        "searchFestival",
+        {
+          eventStartDate,
+          eventEndDate,
+          numOfRows: String(FESTIVAL_WINDOW_PAGE_ROWS),
+          pageNo: String(pageNo),
+        },
+        serviceKey,
+      );
+    } catch (err) {
+      const msg = (err as Error)?.message || "upstream fetch failed";
+      if (pages.some((p) => p?.ok)) break;
+      return { ok: false, items: [], message: msg };
+    }
+    pages.push(page);
+    if (!page.ok) {
+      if (pages.some((p) => p?.ok)) break;
+      return {
+        ok: false,
+        items: [],
+        message: page.message || "searchFestival failed",
+      };
+    }
+    const count = Array.isArray(page.items) ? page.items.length : 0;
+    if (count < FESTIVAL_WINDOW_PAGE_ROWS) break;
+  }
+
+  const anyOk = pages.some((p) => p?.ok);
+  if (!anyOk) {
+    return {
+      ok: false,
+      items: [],
+      message: pages[0]?.message || "searchFestival failed",
+    };
+  }
+  return { ok: true, items: mergeFestivalPages(pages) };
+}
+
+async function handleFestivalWindow(
+  body: Record<string, unknown>,
+  serviceKey: string,
+): Promise<Response> {
+  const force = body.force === true;
+  let eventStartDate: string;
+  let eventEndDate: string;
+  if (body.eventStartDate != null || body.eventEndDate != null) {
+    eventStartDate = guardYyyymmdd(body.eventStartDate, "eventStartDate");
+    eventEndDate = guardYyyymmdd(body.eventEndDate, "eventEndDate");
+  } else {
+    const range = rolling12MonthRangeYmd();
+    eventStartDate = range.eventStartDate;
+    eventEndDate = range.eventEndDate;
+  }
+  const cacheKey = `list:rolling12:${eventStartDate}:${eventEndDate}`;
+  const cached = await readFestivalCache(cacheKey);
+  const cachedAge = ageMs(cached?.fetched_at);
+  const cachedItems = Array.isArray(
+    (cached?.payload as { items?: unknown } | null)?.items,
+  )
+    ? ((cached!.payload as { items: Record<string, unknown>[] }).items)
+    : null;
+
+  if (!force && cachedItems && cachedAge <= LIST_FRESH_MS) {
+    return jsonResponse({
+      ok: true,
+      action: "festivalWindow",
+      items: cachedItems,
+      rawCount: cachedItems.length,
+      fromCache: true,
+      stale: false,
+      fetchedAt: cached!.fetched_at,
+      eventStartDate,
+      eventEndDate,
+    });
+  }
+
+  const live = await fetchFestivalWindowLive(
+    serviceKey,
+    eventStartDate,
+    eventEndDate,
+  );
+  if (live.ok) {
+    await writeFestivalCache(cacheKey, { items: live.items });
+    return jsonResponse({
+      ok: true,
+      action: "festivalWindow",
+      items: live.items,
+      rawCount: live.items.length,
+      fromCache: false,
+      stale: false,
+      fetchedAt: new Date().toISOString(),
+      eventStartDate,
+      eventEndDate,
+    });
+  }
+
+  if (cachedItems && cachedAge <= LIST_STALE_MS) {
+    return jsonResponse({
+      ok: true,
+      action: "festivalWindow",
+      items: cachedItems,
+      rawCount: cachedItems.length,
+      fromCache: true,
+      stale: true,
+      fetchedAt: cached!.fetched_at,
+      eventStartDate,
+      eventEndDate,
+      message: live.message || "serving stale festival window",
+    });
+  }
+
+  return jsonResponse({
+    ok: false,
+    action: "festivalWindow",
+    items: [],
+    rawCount: 0,
+    fromCache: false,
+    stale: false,
+    message: live.message || "축제 목록을 불러오지 못했습니다.",
+    eventStartDate,
+    eventEndDate,
+  });
+}
+
+async function handleFestivalDetail(
+  body: Record<string, unknown>,
+  serviceKey: string,
+): Promise<Response> {
+  const force = body.force === true;
+  const contentId = guardContentId(body.contentId);
+  const contentTypeId =
+    body.contentTypeId != null && String(body.contentTypeId).trim()
+      ? guardContentTypeId(body.contentTypeId)
+      : FESTIVAL_CONTENT_TYPE_ID;
+  const cacheKey = `detail:${contentId}`;
+  const cached = await readFestivalCache(cacheKey);
+  const cachedAge = ageMs(cached?.fetched_at);
+  const cachedPayload = cached?.payload as {
+    intro?: Record<string, unknown> | null;
+    common?: Record<string, unknown> | null;
+    info?: Record<string, unknown>[];
+  } | null;
+
+  if (
+    !force &&
+    cachedPayload &&
+    cachedAge <= DETAIL_FRESH_MS &&
+    (cachedPayload.intro || cachedPayload.common ||
+      (Array.isArray(cachedPayload.info) && cachedPayload.info.length > 0))
+  ) {
+    return jsonResponse({
+      ok: true,
+      action: "festivalDetail",
+      contentId,
+      intro: cachedPayload.intro || null,
+      common: cachedPayload.common || null,
+      info: Array.isArray(cachedPayload.info) ? cachedPayload.info : [],
+      items: cachedPayload.intro ? [cachedPayload.intro] : [],
+      rawCount: 1,
+      fromCache: true,
+      stale: false,
+      fetchedAt: cached!.fetched_at,
+    });
+  }
+
+  let introResult: Awaited<ReturnType<typeof callTourApi>> | null = null;
+  let commonResult: Awaited<ReturnType<typeof callTourApi>> | null = null;
+  let infoResult: Awaited<ReturnType<typeof callTourApi>> | null = null;
+  let liveError = "";
+
+  try {
+    const [intro, common, info] = await Promise.all([
+      callTourApi(
+        "detailIntro",
+        { contentId, contentTypeId },
+        serviceKey,
+      ),
+      callTourApi("detailCommon", { contentId }, serviceKey),
+      callTourApi(
+        "detailInfo",
+        {
+          contentId,
+          contentTypeId,
+          numOfRows: "30",
+          pageNo: "1",
+        },
+        serviceKey,
+      ),
+    ]);
+    introResult = intro;
+    commonResult = common;
+    infoResult = info;
+  } catch (err) {
+    liveError = (err as Error)?.message || "upstream fetch failed";
+  }
+
+  const intro = introResult?.ok ? (introResult.items[0] || null) : null;
+  const common = commonResult?.ok ? (commonResult.items[0] || null) : null;
+  const info = infoResult?.ok && Array.isArray(infoResult.items)
+    ? infoResult.items
+    : [];
+  const anyOk = Boolean(intro || common || info.length > 0);
+
+  if (anyOk) {
+    const payload = { intro, common, info };
+    await writeFestivalCache(cacheKey, payload);
+    return jsonResponse({
+      ok: true,
+      action: "festivalDetail",
+      contentId,
+      intro,
+      common,
+      info,
+      items: intro ? [intro] : [],
+      rawCount: intro ? 1 : 0,
+      fromCache: false,
+      stale: false,
+      fetchedAt: new Date().toISOString(),
+    });
+  }
+
+  if (
+    cachedPayload &&
+    cachedAge <= DETAIL_STALE_MS &&
+    (cachedPayload.intro || cachedPayload.common ||
+      (Array.isArray(cachedPayload.info) && cachedPayload.info.length > 0))
+  ) {
+    return jsonResponse({
+      ok: true,
+      action: "festivalDetail",
+      contentId,
+      intro: cachedPayload.intro || null,
+      common: cachedPayload.common || null,
+      info: Array.isArray(cachedPayload.info) ? cachedPayload.info : [],
+      items: cachedPayload.intro ? [cachedPayload.intro] : [],
+      rawCount: 1,
+      fromCache: true,
+      stale: true,
+      fetchedAt: cached!.fetched_at,
+      message: liveError ||
+        introResult?.message ||
+        commonResult?.message ||
+        infoResult?.message ||
+        "serving stale festival detail",
+    });
+  }
+
+  return jsonResponse({
+    ok: false,
+    action: "festivalDetail",
+    contentId,
+    intro: null,
+    common: null,
+    info: [],
+    items: [],
+    rawCount: 0,
+    fromCache: false,
+    stale: false,
+    message: liveError ||
+      introResult?.message ||
+      commonResult?.message ||
+      infoResult?.message ||
+      "상세 정보를 불러오지 못했습니다.",
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -416,16 +812,23 @@ serve(async (req) => {
     }
 
     const action = body.action;
-    if (typeof action !== "string" || !(action in ACTIONS)) {
+    const isCacheAction =
+      typeof action === "string" && CACHE_ACTIONS.has(action);
+    const isUpstreamAction =
+      typeof action === "string" && action in ACTIONS;
+
+    if (!isCacheAction && !isUpstreamAction) {
       return jsonResponse(
         {
           ok: false,
-          error: `action must be one of: ${Object.keys(ACTIONS).join(", ")}`,
+          error: `action must be one of: ${[
+            ...Object.keys(ACTIONS),
+            ...CACHE_ACTIONS,
+          ].join(", ")}`,
         },
         400,
       );
     }
-    const typedAction = action as Action;
 
     const serviceKey = Deno.env.get("TOUR_API_SERVICE_KEY")?.trim();
     if (!serviceKey) {
@@ -434,6 +837,15 @@ serve(async (req) => {
         500,
       );
     }
+
+    if (action === "festivalWindow") {
+      return await handleFestivalWindow(body, serviceKey);
+    }
+    if (action === "festivalDetail") {
+      return await handleFestivalDetail(body, serviceKey);
+    }
+
+    const typedAction = action as Action;
 
     const query = buildUpstreamQuery(typedAction, body);
     let result: Awaited<ReturnType<typeof callTourApi>>;

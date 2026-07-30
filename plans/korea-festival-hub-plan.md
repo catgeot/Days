@@ -11,7 +11,7 @@
 | S2 `/korea` UI | ✅ S2b | addr 도/시·시군·달력 dayRole · 다음 S3a |
 | S3a 상세·SEO | ✅ `aed70b1` | 다음 S3b |
 | S3b area↔hub SSOT | ✅ G0+시도 일괄 · LEGACY 비움 | areaHub QA ✅ |
-| S4 캐시 | 선택 | 쿼터·지연 보일 때만 |
+| S4 캐시 | ✅ | DB `tourapi_festival_cache` · Edge `festivalWindow`/`festivalDetail` · stale-while-error |
 | **S5** 지도·권역·지금/주말 | ✅ S5a+S5b 구현 | 사람 QA 후 main |
 
 ---
@@ -167,11 +167,17 @@ QA 후 커밋.
 
 ---
 
-### S4 — 캐시 (선택)
+### S4 — 캐시 ✅
 
-쿼터·지연 보일 때. `국내축제-S4-캐시`.  
-areaHub QA(2026-07-26) PASS 후 — **기본 보류**. MVP는 LIVE + sessionStorage.  
-S5는 클라 `sessionStorage`(롤링12)만 — Edge S4와 별개.
+쿼터·지연 대응. `국내축제-S4-캐시`.
+
+| | |
+|--|--|
+| **테이블** | `tourapi_festival_cache` (anon SELECT · service_role write) |
+| **Edge** | `festivalWindow` (롤링12 merge) · `festivalDetail` (intro/common/info) |
+| **TTL** | 목록 fresh 12h / stale 7d · 상세 fresh 7d / stale 30d |
+| **클라** | sessionStorage L1 유지 · `fetchKoreaFestivalsRolling12` → 1 invoke |
+| **VERIFY** | migration · `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` · Edge 재배포 |
 
 ---
 

@@ -1,6 +1,8 @@
 import { supabase } from '../shared/api/supabase';
 
 const INVOKE_TIMEOUT_MS = 12_000;
+const FESTIVAL_WINDOW_TIMEOUT_MS = 90_000;
+const FESTIVAL_DETAIL_TIMEOUT_MS = 30_000;
 
 /**
  * @template T
@@ -24,14 +26,16 @@ function withTimeout(promise, ms, label) {
 /**
  * @param {string} action
  * @param {Record<string, unknown>} payload
+ * @param {{ timeoutMs?: number }} [opts]
  */
-async function invokeTourApi(action, payload) {
+async function invokeTourApi(action, payload, opts = {}) {
+  const timeoutMs = opts.timeoutMs ?? INVOKE_TIMEOUT_MS;
   try {
     const { data, error } = await withTimeout(
       supabase.functions.invoke('tourapi-proxy', {
         body: { action, ...payload },
       }),
-      INVOKE_TIMEOUT_MS,
+      timeoutMs,
       `tourapi:${action}`,
     );
     if (error) {
@@ -43,7 +47,7 @@ async function invokeTourApi(action, payload) {
         `[tourapi] ${action} not ok:`,
         data?.message || data?.error || 'unknown',
       );
-      return null;
+      return data ?? null;
     }
     return data;
   } catch (err) {
@@ -83,6 +87,51 @@ export async function fetchTourApiFestivals(opts) {
   }
 
   return invokeTourApi('searchFestival', payload);
+}
+
+/**
+ * 롤링 12개월 목록 — Edge merge + DB 캐시 (1 invoke).
+ * @param {{
+ *   eventStartDate?: string,
+ *   eventEndDate?: string,
+ *   force?: boolean,
+ * }} [opts]
+ */
+export async function fetchTourApiFestivalWindow(opts = {}) {
+  /** @type {Record<string, unknown>} */
+  const payload = {};
+  if (opts?.eventStartDate != null && String(opts.eventStartDate).trim()) {
+    payload.eventStartDate = String(opts.eventStartDate).trim();
+  }
+  if (opts?.eventEndDate != null && String(opts.eventEndDate).trim()) {
+    payload.eventEndDate = String(opts.eventEndDate).trim();
+  }
+  if (opts?.force === true) payload.force = true;
+  return invokeTourApi('festivalWindow', payload, {
+    timeoutMs: FESTIVAL_WINDOW_TIMEOUT_MS,
+  });
+}
+
+/**
+ * 축제 상세 intro/common/info — Edge 묶음 + DB 캐시 (1 invoke).
+ * @param {{
+ *   contentId: string | number,
+ *   contentTypeId?: string | number,
+ *   force?: boolean,
+ * }} opts
+ */
+export async function fetchTourApiFestivalDetail(opts) {
+  const contentId = String(opts?.contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return null;
+  /** @type {Record<string, unknown>} */
+  const payload = {
+    contentId,
+    contentTypeId: String(opts?.contentTypeId ?? '15').trim() || '15',
+  };
+  if (opts?.force === true) payload.force = true;
+  return invokeTourApi('festivalDetail', payload, {
+    timeoutMs: FESTIVAL_DETAIL_TIMEOUT_MS,
+  });
 }
 
 /**

@@ -21,6 +21,8 @@ const ALLOWED_ACTIONS = [
   'areaCode',
   'detailIntro',
   'detailInfo',
+  'festivalWindow',
+  'festivalDetail',
 ];
 
 let failed = 0;
@@ -36,7 +38,7 @@ function assert(cond, msg) {
 }
 
 function schemaGuards() {
-  assert(ALLOWED_ACTIONS.length === 9, 'whitelist has 9 actions');
+  assert(ALLOWED_ACTIONS.length === 11, 'whitelist has 11 actions');
   for (const a of ALLOWED_ACTIONS) {
     assert(typeof a === 'string' && a.length > 0, `action name: ${a}`);
   }
@@ -365,6 +367,66 @@ async function liveChain() {
       console.log(`SKIP  detailInfo sample empty (rawCount=${infoSample.data?.rawCount ?? 0})`);
     }
   }
+
+  console.log('\n--- LIVE festivalWindow / festivalDetail (S4 cache) ---');
+
+  const window1 = await invokeEdge('festivalWindow', {});
+  assert(window1.httpStatus === 200, `festivalWindow HTTP ${window1.httpStatus}`);
+  assert(
+    window1.data?.ok === true,
+    `festivalWindow ok (msg=${window1.data?.message || window1.data?.error || '-'})`,
+  );
+  assert(
+    Array.isArray(window1.data?.items) && window1.data.items.length >= 1,
+    `festivalWindow items≥1 (got=${window1.data?.items?.length ?? 0})`,
+  );
+  assert(
+    typeof window1.data?.fromCache === 'boolean',
+    `festivalWindow fromCache boolean (${window1.data?.fromCache})`,
+  );
+  const windowHit = window1.data.items[0];
+  assert(
+    Boolean(windowHit?.contentId) && Boolean(windowHit?.title),
+    `festivalWindow contentId+title (${windowHit?.title || '-'})`,
+  );
+
+  const window2 = await invokeEdge('festivalWindow', {});
+  assert(
+    window2.data?.ok === true && Array.isArray(window2.data?.items),
+    `festivalWindow 2nd ok (fromCache=${window2.data?.fromCache})`,
+  );
+  assert(
+    window2.data.fromCache === true || window2.data.stale === true ||
+      window2.data.items.length >= 1,
+    `festivalWindow 2nd reusable (fromCache=${window2.data?.fromCache}, stale=${window2.data?.stale})`,
+  );
+
+  const detailBundle = await invokeEdge('festivalDetail', {
+    contentId: windowHit.contentId,
+    contentTypeId: windowHit.contentTypeId || '15',
+  });
+  assert(
+    detailBundle.httpStatus === 200,
+    `festivalDetail HTTP ${detailBundle.httpStatus}`,
+  );
+  assert(
+    detailBundle.data?.ok === true,
+    `festivalDetail ok (msg=${detailBundle.data?.message || detailBundle.data?.error || '-'})`,
+  );
+  assert(
+    Boolean(detailBundle.data?.intro || detailBundle.data?.common) ||
+      (Array.isArray(detailBundle.data?.info) && detailBundle.data.info.length > 0),
+    `festivalDetail has intro|common|info (fromCache=${detailBundle.data?.fromCache})`,
+  );
+
+  const detail2 = await invokeEdge('festivalDetail', {
+    contentId: windowHit.contentId,
+    contentTypeId: windowHit.contentTypeId || '15',
+  });
+  assert(
+    detail2.data?.ok === true,
+    `festivalDetail 2nd ok (fromCache=${detail2.data?.fromCache})`,
+  );
 
   // Guard: unknown action rejected
   const bad = await invokeEdge('notAnAction', { keyword: 'x' });
