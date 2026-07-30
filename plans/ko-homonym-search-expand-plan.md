@@ -1,7 +1,6 @@
 # 국내 동명 검색 확장 — 필요성 확인 · 후보 추출 · 선택 라벨
 
-**상태**: ✅ Phase 0 표 · **확장 O=`동`** · **bare 화이트리스트(남양·신촌)**  
-**제시어(완료)**: `동명검색-bare-화이트리스트-이어하기`  
+**상태**: ✅ Phase 0·`동`·bare 화이트리스트 · PR [#37](https://github.com/catgeot/Days/pull/37) **main**  
 **일지**: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)  
 **선행**: 읍·면·리 다후보 ✅ ([#36](https://github.com/catgeot/Days/pull/36) · [`koHomonymRiSearch.js`](../src/pages/Home/lib/koHomonymRiSearch.js))
 
