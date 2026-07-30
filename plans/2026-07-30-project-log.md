@@ -130,7 +130,18 @@
 
 **VERIFY**: `KO_HOMONYM_RI_LIVE=1 npm run smoke:ko-homonym-ri-search` · `smoke:mrt-stay` · `smoke:mrt-tna`  
 **Preview**: https://days-git-cursor-ko-homonym-search-expand-d255-catgeots-projects.vercel.app (Vercel SSO · 에이전트 브라우저 불가)  
-**PR**: [#37](https://github.com/catgeot/Days/pull/37) draft · tip `48a15d2` · #36 tip 포함
+**PR**: [#37](https://github.com/catgeot/Days/pull/37) draft · tip `4391a41` · #36 tip 포함
+
+### Preview 콘솔 403 (2026-07-30)
+
+사람 보고: Mapbox satellite/streets **403** · Summarizer/tp/ads 노이즈.
+
+| | |
+|--|--|
+| 원인 | `VITE_MAPBOX_TOKEN` **URL 제한** — `www.gateo.kr`·**브랜치 alias**(`days-git-…-d255-….vercel.app`) = 200 · 배포 해시(`days-<hash>-catgeots-projects.vercel.app`) = **403** |
+| 비관련 | Summarizer 언어 · PerformanceObserver · doubleclick 400 · `[tp] emerald` `get` — 제3자/브라우저 |
+| 조치(사람) | Preview는 **git 브랜치 URL**로 진입 · 또는 Mapbox 토큰에 `https://*.vercel.app` / `https://days-*-catgeots-projects.vercel.app` 허용 추가 |
+| 코드 | 동명검색 tip과 무관 · PR 수정 불필요 |
 
 ## 다음 세션 — 에이전트 핸드오프
 
