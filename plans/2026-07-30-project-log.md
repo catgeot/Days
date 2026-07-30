@@ -80,7 +80,7 @@
 
 ## 동명 검색 확장 — Phase 0 표 · `동` 연결
 
-**상태**: ✅ Phase 0 LIVE · 확장 O=`동` · bare 보류 · tip 대기 push
+**상태**: ✅ tip `de88f69` · PR 대기 · Preview QA
 
 | | |
 |--|--|
@@ -94,7 +94,7 @@
 
 **QA**: Preview 「대화동」→ `대화동 · 대전광역시` / `대화동 · 고양시` · 「대화리」회귀 · 「제주」등 bare는 hub 경로 유지
 
-**브랜치**: `cursor/ko-homonym-search-expand-d255` (base: #36 tip)
+**브랜치**: `cursor/ko-homonym-search-expand-d255` · tip `de88f69`
 
 ## 다음 세션 — 에이전트 핸드오프
 
