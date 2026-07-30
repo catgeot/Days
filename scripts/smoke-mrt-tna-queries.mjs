@@ -347,12 +347,10 @@ async function main() {
       }
       if (typeof c.expectNearbyChips === 'boolean') {
         const near = q.nearbyKeywords || [];
-        const chipsIfExpanded = canShowNearbyChips(near, true);
-        const chipsIfNot = canShowNearbyChips(near, false);
-        assert(!chipsIfNot, `${c.slug}: chips require nearbyExpanded`);
+        const chipsAlways = canShowNearbyChips(near);
         assert(
-          chipsIfExpanded === Boolean(c.expectNearbyChips),
-          `${c.slug}: chipsIfExpanded=${chipsIfExpanded} expected ${c.expectNearbyChips}`,
+          chipsAlways === Boolean(c.expectNearbyChips),
+          `${c.slug}: chips=${chipsAlways} expected ${c.expectNearbyChips}`,
         );
       }
       if (c.expectNoEn) {

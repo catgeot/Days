@@ -285,7 +285,6 @@ export default function MrtTnaActivitiesWidget({
   /** @type {[{ id: string, keyword: string, nearby: boolean, items: object[] }]} */
   const [sections, setSections] = useState([]);
   const [keywordUsed, setKeywordUsed] = useState(query.keyword);
-  const [nearbyExpanded, setNearbyExpanded] = useState(false);
   const [nearbyMoreLoading, setNearbyMoreLoading] = useState(false);
   const [sortMode, setSortMode] = useState('recommended');
   const [densityZoomed, setDensityZoomed] = useState(false);
@@ -295,7 +294,6 @@ export default function MrtTnaActivitiesWidget({
     setStatus('loading');
     setSections([]);
     setKeywordUsed(query.keyword);
-    setNearbyExpanded(false);
     setNearbyMoreLoading(false);
     setSortMode('recommended');
     setDensityZoomed(false);
@@ -322,7 +320,6 @@ export default function MrtTnaActivitiesWidget({
         },
       ]);
       setKeywordUsed(used);
-      setNearbyExpanded(expanded);
       setStatus('ok');
     })();
 
@@ -339,7 +336,7 @@ export default function MrtTnaActivitiesWidget({
         .filter(Boolean),
     [sections],
   );
-  const showChips = canShowNearbyChips(query.nearbyKeywords, nearbyExpanded);
+  const showChips = canShowNearbyChips(query.nearbyKeywords);
   /** 아직 안 붙인 SSOT 인근만 하단 칩 — 선택 시 append, 기존 섹션 유지 */
   const pendingNearbyKws = useMemo(() => {
     const list = Array.isArray(query.nearbyKeywords) ? query.nearbyKeywords : [];
@@ -354,8 +351,7 @@ export default function MrtTnaActivitiesWidget({
     loadedNearbyKws,
   );
   /** 칩 UI가 있으면 하단 칩으로 대체 · 칩 없을 때만 순차 더보기 */
-  const canShowNearbyMore =
-    nearbyExpanded && !showChips && Boolean(nextUnloadKw);
+  const canShowNearbyMore = !showChips && Boolean(nextUnloadKw);
   const totalCount = useMemo(
     () => sections.reduce((n, s) => n + (s.items?.length || 0), 0),
     [sections],
@@ -445,144 +441,8 @@ export default function MrtTnaActivitiesWidget({
       />
     ) : null;
 
-  if (status === 'loading' || status === 'idle') {
-    return (
-      <div>
-        {openToolbar}
-        <div
-          className={`flex items-center justify-center gap-2 ${
-            planner ? 'min-h-[120px] text-sm text-gray-500' : 'min-h-[200px] text-sm text-orange-100/80'
-          }`}
-        >
-          <Loader2 size={18} className="animate-spin shrink-0" aria-hidden="true" />
-          <span className="break-keep">투어·티켓을 불러오는 중입니다…</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === 'error' || empty) {
-    return (
-      <div>
-        {openToolbar}
-        <div
-          className={`flex flex-col items-center justify-center gap-3 text-center ${
-            planner ? 'min-h-[120px] px-2 py-4' : 'min-h-[200px] px-4 py-8'
-          }`}
-        >
-          <p
-            className={`text-sm break-keep ${
-              planner ? 'text-gray-600' : 'text-white/75'
-            }`}
-          >
-            {status === 'error'
-              ? '투어 목록을 불러오지 못했습니다.'
-              : '이 지역에 맞는 투어·티켓을 찾지 못했습니다.'}
-          </p>
-          <a
-            href={moreHref}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className={
-              planner
-                ? 'inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100'
-                : 'inline-flex items-center gap-1.5 rounded-xl border border-orange-300/40 bg-orange-500/25 px-3 py-2 text-sm font-semibold text-orange-50 hover:bg-orange-500/35'
-            }
-          >
-            마이리얼트립에서 검색
-            <ExternalLink size={14} className="shrink-0" aria-hidden="true" />
-          </a>
-          {linkSponsoredLabel ? (
-            <p className={`text-[10px] ${planner ? 'text-gray-400' : 'text-white/40'}`}>
-              Sponsored
-            </p>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
-
-  const openGridClass = densityZoomed
-    ? isLg
-      ? 'grid grid-cols-3 gap-2.5'
-      : 'grid grid-cols-1 gap-2.5'
-    : 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4';
-  // cover 유지 · 4:3보다 세로를 키운 1:1 (상하 잘림 완화)
-  const openImageClass = 'aspect-square';
-
-  return (
-    <div
-      className={
-        planner
-          ? 'space-y-4'
-          : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col'
-      }
-    >
-      {openToolbar}
-      <div className="space-y-8">
-        {sortedSections.map((sec) => {
-          const isFirstNearby = Boolean(sec.nearby && sec.id === firstNearbySecId);
-          return (
-            <section key={sec.id} className="space-y-5">
-              {showSectionLabels && sec.nearby ? (
-                <div
-                  className={`flex items-stretch gap-3 pl-5 pr-2 pt-2 pb-5 ${
-                    planner
-                      ? 'border-b-[3px] border-orange-400'
-                      : 'border-b-[3px] border-orange-200/80'
-                  }`}
-                >
-                  <span
-                    className={`w-1.5 shrink-0 rounded-full ${
-                      planner ? 'bg-orange-500' : 'bg-orange-300'
-                    }`}
-                    aria-hidden="true"
-                  />
-                  <div className="min-w-0 py-0.5">
-                    <p
-                      className={`font-semibold tracking-wide break-keep ${
-                        isFirstNearby
-                          ? planner
-                            ? 'text-[13px] text-orange-800'
-                            : 'text-[13px] text-orange-100/90'
-                          : planner
-                            ? 'text-[11px] text-orange-700/80'
-                            : 'text-[11px] text-orange-100/70'
-                      }`}
-                    >
-                      {isFirstNearby
-                        ? '가까운 여행지 투어를 안내합니다'
-                        : '인근 여행지'}
-                    </p>
-                    <h3
-                      className={`mt-0.5 text-[18px] font-extrabold leading-snug break-keep ${
-                        planner ? 'text-orange-950' : 'text-white'
-                      }`}
-                    >
-                      {sec.keyword}의 즐길거리
-                    </h3>
-                  </div>
-                </div>
-              ) : null}
-              <div
-                className={
-                  planner ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : openGridClass
-                }
-              >
-                {sec.items.map((item) => (
-                  <TnaCard
-                    key={`${sec.id}-${item.gid || item.productUrl}`}
-                    item={item}
-                    size={planner ? 'md' : 'lg'}
-                    theme={theme}
-                    imageClassName={planner ? undefined : openImageClass}
-                  />
-                ))}
-              </div>
-            </section>
-          );
-        })}
-      </div>
+  const nearbyExploreFooter = (
+    <>
       {showChips && pendingNearbyKws.length > 0 ? (
         <div
           role="group"
@@ -654,6 +514,151 @@ export default function MrtTnaActivitiesWidget({
           </button>
         </div>
       ) : null}
+    </>
+  );
+
+  if (status === 'loading' || status === 'idle') {
+    return (
+      <div>
+        {openToolbar}
+        <div
+          className={`flex items-center justify-center gap-2 ${
+            planner ? 'min-h-[120px] text-sm text-gray-500' : 'min-h-[200px] text-sm text-orange-100/80'
+          }`}
+        >
+          <Loader2 size={18} className="animate-spin shrink-0" aria-hidden="true" />
+          <span className="break-keep">투어·티켓을 불러오는 중입니다…</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'error' || empty) {
+    return (
+      <div>
+        {openToolbar}
+        <div
+          className={`flex flex-col items-center justify-center gap-3 text-center ${
+            planner ? 'min-h-[120px] px-2 py-4' : 'min-h-[200px] px-4 py-8'
+          }`}
+        >
+          <p
+            className={`text-sm break-keep ${
+              planner ? 'text-gray-600' : 'text-white/75'
+            }`}
+          >
+            {status === 'error'
+              ? '투어 목록을 불러오지 못했습니다.'
+              : '이 지역에 맞는 투어·티켓을 찾지 못했습니다.'}
+          </p>
+          <a
+            href={moreHref}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className={
+              planner
+                ? 'inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100'
+                : 'inline-flex items-center gap-1.5 rounded-xl border border-orange-300/40 bg-orange-500/25 px-3 py-2 text-sm font-semibold text-orange-50 hover:bg-orange-500/35'
+            }
+          >
+            마이리얼트립에서 검색
+            <ExternalLink size={14} className="shrink-0" aria-hidden="true" />
+          </a>
+          {linkSponsoredLabel ? (
+            <p className={`text-[10px] ${planner ? 'text-gray-400' : 'text-white/40'}`}>
+              Sponsored
+            </p>
+          ) : null}
+        </div>
+        {status === 'ok' && empty ? nearbyExploreFooter : null}
+      </div>
+    );
+  }
+
+  const openGridClass = densityZoomed
+    ? isLg
+      ? 'grid grid-cols-3 gap-2.5'
+      : 'grid grid-cols-1 gap-2.5'
+    : 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4';
+  // cover 유지 · 4:3보다 세로를 키운 1:1 (상하 잘림 완화)
+  const openImageClass = 'aspect-square';
+
+  return (
+    <div
+      className={
+        planner
+          ? 'space-y-4'
+          : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col'
+      }
+    >
+      {openToolbar}
+      <div className="space-y-8">
+        {sortedSections
+          .filter((sec) => (sec.items?.length || 0) > 0)
+          .map((sec) => {
+          const isFirstNearby = Boolean(sec.nearby && sec.id === firstNearbySecId);
+          return (
+            <section key={sec.id} className="space-y-5">
+              {showSectionLabels && sec.nearby ? (
+                <div
+                  className={`flex items-stretch gap-3 pl-5 pr-2 pt-2 pb-5 ${
+                    planner
+                      ? 'border-b-[3px] border-orange-400'
+                      : 'border-b-[3px] border-orange-200/80'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 shrink-0 rounded-full ${
+                      planner ? 'bg-orange-500' : 'bg-orange-300'
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0 py-0.5">
+                    <p
+                      className={`font-semibold tracking-wide break-keep ${
+                        isFirstNearby
+                          ? planner
+                            ? 'text-[13px] text-orange-800'
+                            : 'text-[13px] text-orange-100/90'
+                          : planner
+                            ? 'text-[11px] text-orange-700/80'
+                            : 'text-[11px] text-orange-100/70'
+                      }`}
+                    >
+                      {isFirstNearby
+                        ? '가까운 여행지 투어를 안내합니다'
+                        : '인근 여행지'}
+                    </p>
+                    <h3
+                      className={`mt-0.5 text-[18px] font-extrabold leading-snug break-keep ${
+                        planner ? 'text-orange-950' : 'text-white'
+                      }`}
+                    >
+                      {sec.keyword}의 즐길거리
+                    </h3>
+                  </div>
+                </div>
+              ) : null}
+              <div
+                className={
+                  planner ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : openGridClass
+                }
+              >
+                {sec.items.map((item) => (
+                  <TnaCard
+                    key={`${sec.id}-${item.gid || item.productUrl}`}
+                    item={item}
+                    size={planner ? 'md' : 'lg'}
+                    theme={theme}
+                    imageClassName={planner ? undefined : openImageClass}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+      {nearbyExploreFooter}
       {showMoreLink ? (
         <div
           className={

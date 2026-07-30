@@ -146,3 +146,15 @@
 ## 다음 세션 — 에이전트 핸드오프
 
 동명 검색 #37 ✅ main. 다음 과제는 일지·`.ai-context` 6절·[`plans/README.md`](./README.md) 우선순위 중 선택.
+
+## 국내 TNA — 「주변 지역 더보기」상시 노출
+
+**상태**: ✅ `main` 커밋
+
+| | |
+|--|--|
+| 변경 | SSOT 인근 ≥2면 본지 투어 충분해도 칩 표시 · empty에서도 인근 탐색 |
+| 유지 | Edge ≤3 자동보강 머지 · 비주얼 동일 |
+| VERIFY | `node scripts/smoke-mrt-tna-queries.mjs` PASS |
+
+**QA**: 문경 등 SSOT 인근 hub에서 투어 많아도 하단 칩 → 클릭 시 인근 섹션 · 부산(인근 없음)은 칩 없음

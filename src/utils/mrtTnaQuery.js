@@ -361,12 +361,10 @@ export function hasMoreNearbyExpand(nearbyKeywords, nextIndex) {
 }
 
 /**
- * Phase 3: 인근 칩 — Edge 보강 후 SSOT 길이 ≥2일 때만.
+ * Phase 3: 인근 칩 — SSOT 길이 ≥2이면 본지 투어 충분 여부와 무관하게 표시.
  * @param {string[]} nearbyKeywords
- * @param {boolean} nearbyExpanded
  */
-export function canShowNearbyChips(nearbyKeywords, nearbyExpanded) {
-  if (!nearbyExpanded) return false;
+export function canShowNearbyChips(nearbyKeywords) {
   const list = Array.isArray(nearbyKeywords) ? nearbyKeywords : [];
   return list.length >= 2;
 }
