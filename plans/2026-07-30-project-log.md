@@ -98,7 +98,7 @@
 
 ## 동명 bare 화이트리스트 — 남양·신촌
 
-**상태**: ✅ tip · PR [#37](https://github.com/catgeot/Days/pull/37) · Preview QA 대기
+**상태**: ✅ tip `e9f5e7d` · PR [#37](https://github.com/catgeot/Days/pull/37) · Preview QA 대기
 
 | | |
 |--|--|
