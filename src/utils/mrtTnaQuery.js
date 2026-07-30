@@ -8,6 +8,19 @@ import {
 
 export { isMrtDomesticLocation };
 
+/** 국내 동·리·읍·면 — 세밀 행정(시·군보다 아래) */
+const KO_FINE_ADMIN_RE = /[동읍면리]$/;
+/** 국내 읍·면 — OSM town→city 시 MRT 키워드로 쓰면 동명 오탐(대화면→일산 대화) */
+const KO_TOWNSHIP_RE = /[읍면]$/;
+
+function isKoFineAdminName(name) {
+  return KO_FINE_ADMIN_RE.test(String(name || '').trim());
+}
+
+function isKoTownshipName(name) {
+  return KO_TOWNSHIP_RE.test(String(name || '').trim());
+}
+
 /** slug → keyword 하드 오버라이드 (QA 후 최소만) */
 const MRT_TNA_KEYWORD_OVERRIDES = {
   // 예: 'seongsan-ilchulbong': { keyword: '성산일출봉', altKeywords: ['제주'] },
@@ -73,6 +86,8 @@ const MRT_TNA_NEARBY_EXPAND = {
   // —— B표 (희소 확장 · 교차 보완) ——
   hoengseong: ['홍천', '평창', '제천'],
   횡성: ['홍천', '평창', '제천'],
+  pyeongchang: ['강릉', '정선', '횡성', '영월'],
+  평창: ['강릉', '정선', '횡성', '영월'],
   yecheon: ['영주', '상주', '안동', '문경'],
   예천: ['영주', '상주', '안동', '문경'],
   bonghwa: ['영주', '영월', '안동', '울진'],
@@ -181,8 +196,16 @@ function resolveNearbyExpand(location) {
   const name = String(location?.name || '').trim();
   const nameKo = String(location?.name_ko || '').trim();
   const originalQuery = String(location?.originalQuery || '').trim();
+  const admin =
+    location?.stayAdmin && typeof location.stayAdmin === 'object'
+      ? location.stayAdmin
+      : {};
+  const county = String(admin.county || '').trim();
+  const countyBare = stripKoAdminSuffix(county);
   const inferred =
     inferHubKoFromText(parent) ||
+    inferHubKoFromText(county) ||
+    inferHubKoFromText(countyBare) ||
     inferHubKoFromText(name) ||
     inferHubKoFromText(nameKo) ||
     inferHubKoFromText(originalQuery);
@@ -190,6 +213,8 @@ function resolveNearbyExpand(location) {
     MRT_TNA_NEARBY_EXPAND[hubId] ||
     MRT_TNA_NEARBY_EXPAND[slug] ||
     MRT_TNA_NEARBY_EXPAND[parent] ||
+    MRT_TNA_NEARBY_EXPAND[county] ||
+    MRT_TNA_NEARBY_EXPAND[countyBare] ||
     MRT_TNA_NEARBY_EXPAND[name] ||
     (inferred ? MRT_TNA_NEARBY_EXPAND[inferred] : null) ||
     []
@@ -215,8 +240,11 @@ export function resolveMrtTnaQuery(location) {
   const ladder = [];
   const seen = new Set();
   const originalQuery = String(location?.originalQuery || '').trim();
+  const countyBare = stripKoAdminSuffix(admin.county);
   const inferredHubKo =
     inferHubKoFromText(parentCity) ||
+    inferHubKoFromText(admin.county) ||
+    inferHubKoFromText(countyBare) ||
     inferHubKoFromText(name) ||
     inferHubKoFromText(nameKo) ||
     inferHubKoFromText(originalQuery);
@@ -224,8 +252,12 @@ export function resolveMrtTnaQuery(location) {
   if (override?.keyword) pushUnique(ladder, seen, override.keyword);
   for (const k of override?.altKeywords || []) pushUnique(ladder, seen, k);
 
+  const isDomestic = isMrtDomesticLocation(location);
   const fineGrain =
-    /[동읍면]$/.test(name) || /[동읍면]$/.test(admin.neighbourhood || '');
+    isKoFineAdminName(name) ||
+    isKoFineAdminName(nameKo) ||
+    isKoFineAdminName(admin.neighbourhood) ||
+    (isDomestic && isKoTownshipName(admin.city));
 
   const pushPlace = () => {
     pushUnique(ladder, seen, name);
@@ -233,6 +265,17 @@ export function resolveMrtTnaQuery(location) {
   };
 
   const pushCity = () => {
+    const cityIsTownship = isDomestic && isKoTownshipName(admin.city);
+    if (cityIsTownship && admin.county) {
+      // 평창군 대화면 — 군 우선, 면 축약「대화」제외(일산 대화동 오탐)
+      pushUnique(ladder, seen, admin.county);
+      pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
+      pushUnique(ladder, seen, parentCity);
+      pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
+      pushUnique(ladder, seen, inferredHubKo);
+      pushUnique(ladder, seen, admin.city);
+      return;
+    }
     pushUnique(ladder, seen, parentCity);
     pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
     pushUnique(ladder, seen, inferredHubKo);
@@ -242,7 +285,7 @@ export function resolveMrtTnaQuery(location) {
     pushUnique(ladder, seen, stripKoAdminSuffix(admin.county));
   };
 
-  // 국내 hub 명소·동읍면: 상위 시·군 우선 (문경석탄박물관→문경). originalQuery는 뒤로.
+  // 국내 hub 명소·동읍면리: 상위 시·군 우선 (문경석탄박물관→문경 · 대화리→평창). originalQuery는 뒤로.
   if ((parentCity || inferredHubKo) && !fineGrain) {
     pushUnique(ladder, seen, parentCity);
     pushUnique(ladder, seen, stripKoAdminSuffix(parentCity));
@@ -253,7 +296,10 @@ export function resolveMrtTnaQuery(location) {
     pushCity();
     pushPlace();
     pushUnique(ladder, seen, admin.neighbourhood);
-    pushUnique(ladder, seen, stripKoAdminSuffix(admin.neighbourhood || name));
+    const fineBase = admin.neighbourhood || name || nameKo;
+    if (!(isDomestic && admin.county && isKoTownshipName(fineBase))) {
+      pushUnique(ladder, seen, stripKoAdminSuffix(fineBase));
+    }
   } else {
     pushPlace();
     pushCity();
@@ -264,7 +310,6 @@ export function resolveMrtTnaQuery(location) {
   }
 
   // 국내 TNA는 한글 키워드 우선 — 영문 name_en(Valley 등)은 해외 와인투어 오탐
-  const isDomestic = isMrtDomesticLocation(location);
   if (!isDomestic) {
     pushUnique(ladder, seen, nameEn);
   }
