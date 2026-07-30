@@ -64,7 +64,7 @@
 
 ## 동명 리 검색 — 지역 명시 다후보
 
-**상태**: ✅ tip · 사람 Preview QA 대기
+**상태**: ✅ tip `5ff4762` · PR [#36](https://github.com/catgeot/Days/pull/36) · 사람 Preview QA 대기
 
 | | |
 |--|--|
@@ -76,4 +76,4 @@
 
 **QA**: Preview 검색「대화리」Enter → 지역 라벨 카드 ≥2 · 평창/천안 각각 선택 후 숙소 · GPS 대화리→평창 회귀
 
-**브랜치**: `cursor/ko-homonym-ri-disambiguation-1ed8`
+**브랜치**: `cursor/ko-homonym-ri-disambiguation-1ed8` · tip `5ff4762`
