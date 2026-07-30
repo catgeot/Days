@@ -1,4 +1,3 @@
-import { supabase } from '../shared/api/supabase';
 import { fetchTourApiFestivalWindow } from '../../utils/fetchTourApiFestivals';
 import { rolling12MonthRangeYmd } from './festivalTimeFilter';
 
