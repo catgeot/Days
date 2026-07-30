@@ -32,14 +32,14 @@
 
 ## MRT city=리 keyword 군 선두 — Phase 1 (§5.1 후속)
 
-**상태**: ✅ 로직·smoke · PR 대기
+**상태**: ✅ tip `72be1f5` · PR [#34](https://github.com/catgeot/Days/pull/34)
 
 | | |
 |--|--|
 | 배경 | §5.1 LIVE 123건 — OSM village→`city=○○리`+county인데 keyword가 리 선두 |
 | 조치 | `KO_TOWNSHIP_RE`=/[읍면리]$/ · county 있을 때 군 선두(stay+TNA) · audit `kw_ri_leading` |
 | VERIFY | smoke stay 22 · tna 12 · 샘플 이평리→`보은군` · 대화리 회귀 |
-| 브랜치 | `cursor/mrt-city-ri-keyword-8077` (base: audit Phase 0) |
+| 브랜치 | `cursor/mrt-city-ri-keyword-8077` (base: audit Phase 0 / #33) |
 | 금지 준수 | slug override 남발 없음 · UI 없음 |
 
 **파일**: `mrtStayQuery.js` · `mrtTnaQuery.js` · smoke 2종 · `audit-mrt-stay-admin-gaps.mjs` · plan §5.2
