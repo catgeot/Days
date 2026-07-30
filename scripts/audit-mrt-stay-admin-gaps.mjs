@@ -276,6 +276,15 @@ function isKwTownship(keyword, stayAdmin) {
   return false;
 }
 
+/** city=리+county인데 1차가 리(또는 city 본명) — Phase 1 보강 대상 */
+function isKwRiLeading(keyword, stayAdmin) {
+  const city = String(stayAdmin?.city || '').trim();
+  const county = String(stayAdmin?.county || '').trim();
+  const kw = String(keyword || '').trim();
+  if (!county || !/리$/.test(city) || !kw) return false;
+  return kw === city || /리$/.test(kw);
+}
+
 function analyzeTarget(target, stayAdmin, meta = {}) {
   const location = {
     slug: target.placeId || target.hubId || '',
@@ -290,6 +299,7 @@ function analyzeTarget(target, stayAdmin, meta = {}) {
   const q = resolveMrtStayQuery(location);
   const flags = stayAdmin ? classifyRisks(stayAdmin, target) : [];
   if (stayAdmin && isKwTownship(q.keyword, stayAdmin)) flags.push('kw_township');
+  if (stayAdmin && isKwRiLeading(q.keyword, stayAdmin)) flags.push('kw_ri_leading');
 
   return {
     id: target.id,
@@ -511,6 +521,7 @@ async function main() {
   const riskTownship = rows.filter((r) => r.flags.includes('RISK_TOWNSHIP_NO_COUNTY'));
   const riskFine = rows.filter((r) => r.flags.includes('RISK_FINE_NO_CITY'));
   const kwTownship = rows.filter((r) => r.flags.includes('kw_township'));
+  const kwRiLeading = rows.filter((r) => r.flags.includes('kw_ri_leading'));
   const pending = rows.filter((r) => r.flags.includes('PENDING_LIVE'));
   const hasCountyTownship = rows.filter(
     (r) =>
@@ -539,6 +550,7 @@ async function main() {
     RISK_TOWNSHIP_NO_COUNTY: riskTownship.length,
     RISK_FINE_NO_CITY: riskFine.length,
     kw_township: kwTownship.length,
+    kw_ri_leading: kwRiLeading.length,
     township_with_county_ok: hasCountyTownship.length,
     city_ri_with_county: cityRiWithCounty.length,
     city_si_no_county: citySiNoCounty.length,
@@ -584,8 +596,9 @@ async function main() {
   printTable(riskTownship, 'RISK_TOWNSHIP_NO_COUNTY');
   printTable(riskFine, 'RISK_FINE_NO_CITY');
   printTable(kwTownship, 'kw_township');
+  printTable(kwRiLeading, 'kw_ri_leading (city=리+county · keyword 리 선두)');
   printTable(hasCountyTownship, 'township city + county present (OK path)');
-  printTable(cityRiWithCounty, 'city=리 + county (군 우선 경로 · 참고)');
+  printTable(cityRiWithCounty, 'city=리 + county (참고 · keyword는 군 선두여야 함)');
   if (pending.length) {
     printTable(pending, 'PENDING_LIVE (ssot 읍·면 name · run with MRT_ADMIN_GAP_LIVE=1)');
   }
@@ -601,6 +614,7 @@ async function main() {
     `| RISK_TOWNSHIP_NO_COUNTY | ${riskTownship.length} | city=/[읍면]$/ · county 공백 |`,
     `| RISK_FINE_NO_CITY | ${riskFine.length} | fine 동읍면리 · city·county 약함 |`,
     `| kw_township | ${kwTownship.length} | resolveMrtStayQuery 1차=읍면/축약 |`,
+    `| kw_ri_leading | ${kwRiLeading.length} | city=리+county · 1차 keyword가 리 |`,
     `| township+county OK | ${hasCountyTownship.length} | #32 시·군 우선 경로 |`,
     `| city=리 + county | ${cityRiWithCounty.length} | OSM village→city · county 있음 |`,
     `| city=시 · county 공백 | ${citySiNoCounty.length} | 시 단위 · 면은 display만 |`,
@@ -624,6 +638,15 @@ async function main() {
   reportMd.push('| hub | name | city | county | keyword |');
   reportMd.push('|-----|------|------|--------|---------|');
   for (const r of hasCountyTownship.slice(0, 20)) {
+    reportMd.push(
+      `| ${r.hubId} | ${r.name} | ${r.city} | ${r.county} | ${r.keyword} |`,
+    );
+  }
+  reportMd.push('', '## city=리 + county 샘플 (keyword는 군 선두여야 함)', '');
+  reportMd.push(`kw_ri_leading=${kwRiLeading.length}`);
+  reportMd.push('| hub | name | city | county | keyword |');
+  reportMd.push('|-----|------|------|--------|---------|');
+  for (const r of cityRiWithCounty.slice(0, 20)) {
     reportMd.push(
       `| ${r.hubId} | ${r.name} | ${r.city} | ${r.county} | ${r.keyword} |`,
     );

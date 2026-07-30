@@ -238,6 +238,49 @@ const CASES = [
     expectPrimaryKeyword: /평창/,
     rejectCityHint: /^(대화)$/,
   },
+  /**
+   * OSM village→city(이평리)+county(보은군) — plan §5.1 잔여.
+   * 1차 키워드가 리면 MRT CITY 미매칭·동명 리스크 → 군 선두.
+   */
+  {
+    slug: 'boeun-ipyeong-ri-city',
+    location: {
+      name: '보은읍',
+      name_ko: '보은읍',
+      name_en: 'Boeun-eup',
+      country: '한국',
+      country_en: 'South Korea',
+      parentCity: '보은',
+      uiPlace: true,
+      stayAdmin: {
+        city: '이평리',
+        cityEn: 'Ipyeong-ri',
+        county: '보은군',
+        state: '충청북도',
+      },
+    },
+    expectPrimaryKeyword: /보은/,
+    expectKeyword: /보은/,
+    rejectPrimaryKeyword: /이평리|^이평$/,
+  },
+  {
+    slug: 'boseong-beolgyo-ri-city',
+    location: {
+      name: '벌교읍',
+      name_ko: '벌교읍',
+      country: '한국',
+      country_en: 'South Korea',
+      parentCity: '보성',
+      uiPlace: true,
+      stayAdmin: {
+        city: '벌교리',
+        county: '보성군',
+        state: '전라남도',
+      },
+    },
+    expectPrimaryKeyword: /보성/,
+    rejectPrimaryKeyword: /벌교리/,
+  },
 ];
 
 function assert(cond, msg) {
