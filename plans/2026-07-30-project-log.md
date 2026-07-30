@@ -4,7 +4,7 @@
 
 ## MRT 숙소·투어 — 평창 대화리 → 고양/일산 오탐
 
-**상태**: ✅ `main` 머지·푸시 · Production 배포 대기
+**상태**: ✅ `main` 머지·푸시 · 사람 QA OK
 
 | | |
 |--|--|
@@ -17,3 +17,29 @@
 
 **파일**: `mrtStayQuery.js` · `mrtTnaQuery.js` · smoke 2종  
 **tip**: `02bc8c6` (merge) · PR [#32](https://github.com/catgeot/Days/pull/32) MERGED
+
+## 다음 세션 — 에이전트 핸드오프
+
+**제시어**: `MRT-읍면-county감사-이어하기`
+
+| | |
+|--|--|
+| 계획 | [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) |
+| 목표 | 국내 SSOT에 대해 **읍·면 + county 공백** 감사 스크립트 (Phase 0 = 감사만) |
+| 선행 | #32 county 있을 때 시·군 우선 ✅ · 잔여 = county 빈 핀 |
+| 읽을 것 | `.ai-context` 1·3·4 · 본 일지 · plan §1~§5 · `mrtStayQuery.js` fineGrain/township |
+| 금지 | UI · 전국 override 추측 삽입 · Nominatim 폭주 · `travelSpots.js` 전체 스캔 |
+
+**Cloud 붙여넣기**
+
+```text
+MRT-읍면-county감사-이어하기
+
+@.ai-context.md
+@plans/mrt-stay-admin-gap-audit-plan.md
+@plans/2026-07-30-project-log.md
+
+Phase 0: 국내 SSOT «읍·면 + county 공백» 감사 스크립트.
+plan §1~§5 · 감사 결과 표만 · 보강은 보고 후.
+VERIFY 후 커밋·push.
+```
