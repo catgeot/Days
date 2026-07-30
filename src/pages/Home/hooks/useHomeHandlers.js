@@ -9,8 +9,8 @@
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
 import {
-  collectKoHomonymRiCandidates,
-  isKoHomonymRiSearchQuery,
+  collectKoHomonymPlaceCandidates,
+  isKoHomonymPlaceSearchQuery,
 } from '../lib/koHomonymRiSearch';
 import { formatUrlName, pickUrlSafeEnglishName } from '../lib/formatUrlName';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
@@ -1004,17 +1004,17 @@ export function useHomeHandlers({
       }, resolvedLat, resolvedLng);
     };
 
-    // 국내 동명 리/읍/면 — 지역 명시 다후보 (평창·천안 단독 자동 진입 금지)
-    if (!isFacilityQuery(query) && isKoHomonymRiSearchQuery(query)) {
-      const riCandidates = await collectKoHomonymRiCandidates(query);
-      if (riCandidates.length >= 2) {
-        return makeDisambiguationResult(query, riCandidates, {
+    // 국내 동명 리/읍/면/동 — 지역 명시 다후보 (단독 자동 진입 금지 · hub exact보다 뒤)
+    if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {
+      const placeCandidates = await collectKoHomonymPlaceCandidates(query);
+      if (placeCandidates.length >= 2) {
+        return makeDisambiguationResult(query, placeCandidates, {
           title: `'${query}' → 지역을 선택하세요`,
         });
       }
-      if (riCandidates.length === 1) {
+      if (placeCandidates.length === 1) {
         return commitLocation({
-          ...riCandidates[0],
+          ...placeCandidates[0],
           category,
         });
       }

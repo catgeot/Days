@@ -1,9 +1,9 @@
 # 국내 동명 리 검색 — 지역 명시 다후보 (대화리)
 
-**상태**: ✅ tip 구현 · 사람 Preview QA 대기  
+**상태**: ✅ tip 구현 · Preview QA(리+#동) 대기  
 **제시어**: `동명리-검색-다후보-이어하기`  
 **일지**: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)  
-**선행**: GPS 대화리→평창 ✅ (#32) · #35 임시 평창 기울임 → **본 세션에서 제거·다후보 교체**
+**후속**: `동` 확장 ✅ · bare 보류 — [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md)
 
 ---
 

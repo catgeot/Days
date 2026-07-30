@@ -78,32 +78,45 @@
 
 **브랜치**: `cursor/ko-homonym-ri-disambiguation-1ed8` · tip `9ee46a4`
 
-## 다음 세션 — 에이전트 핸드오프
+## 동명 검색 확장 — Phase 0 표 · `동` 연결
 
-**제시어**: `동명검색-확장-후보추출-이어하기`
+**상태**: ✅ Phase 0 LIVE · 확장 O=`동` · bare 보류 · tip 대기 push
 
 | | |
 |--|--|
+| audit | `audit:ko-homonym-expand` · LIVE LIMIT=40 · `search_dictionary` 53 (Secrets OK) |
+| 후보 풀 | ~899 (SSOT+시드+dict) · NEED_DISAMBIG 18/40 |
+| **결정** | **확장 O = `동`** · bare는 hub exact 우선·비허브 NEED만 후속 화이트리스트 |
+| 구현 | `isKoHomonymPlaceSearchQuery`(+동) · `collectKoHomonymPlaceCandidates` · hub exact 뒤 |
+| #36 회귀 | 대화리 LIVE 평창·천안 유지 · `isKoHomonymRiSearchQuery` 읍면리만 |
+| VERIFY | `smoke:ko-homonym-ri-search` (+ LIVE 대화리·대화동) · `smoke:mrt-stay` · `smoke:mrt-tna` |
 | 계획 | [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) |
-| 목표 | 동·시·군·무접미사 **확장 필요성** 확인 · 검색/SSOT/Nominatim으로 **구분 필요 후보 표** · 필요 시 라벨 다후보 연결 |
-| 선행 | #36 읍·면·리 다후보 ✅ · Preview QA는 병행 가능 |
-| 읽을 것 | `.ai-context` 1·3·4 · 본 일지 · expand plan §1~§3 · `koHomonymRiSearch.js` · `audit-ko-homonym-expand-candidates.mjs` |
-| 금지 | UI 리디자인 · 단독 우선 · Nominatim 폭주 · 표 없이 전패턴 확장 · `travelSpots.js` 전체 스캔 |
+
+**QA**: Preview 「대화동」→ `대화동 · 대전광역시` / `대화동 · 고양시` · 「대화리」회귀 · 「제주」등 bare는 hub 경로 유지
+
+**브랜치**: `cursor/ko-homonym-search-expand-d255` (base: #36 tip)
+
+## 다음 세션 — 에이전트 핸드오프
+
+**제시어**: `동명검색-bare-화이트리스트-이어하기`
+
+| | |
+|--|--|
+| 계획 | [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) §4 |
+| 목표 | 비허브 bare NEED(남양·신촌·강북·강서·강진 등) **화이트리스트만** · 전 bare 개방 금지 |
+| 선행 | #36 리/읍/면 · Phase 0 `동` 확장 ✅ |
+| 금지 | UI 리디자인 · 단독 우선 · Nominatim 폭주 · 전 bare 패턴 |
 
 **Cloud 붙여넣기**
 
 ```text
-동명검색-확장-후보추출-이어하기
+동명검색-bare-화이트리스트-이어하기
 
 @.ai-context.md
 @plans/ko-homonym-search-expand-plan.md
 @plans/2026-07-30-project-log.md
 
-Phase 0: 동·시·군·무접미사 동명 확장 필요성 + 후보 표.
-npm run audit:ko-homonym-expand
-KO_HOMONYM_EXPAND_LIVE=1 npm run audit:ko-homonym-expand
-search_dictionary는 Secrets 있을 때만.
-표 보고 확장 O면 라벨 다후보 · X면 보류 일지.
-#36 리/읍/면 회귀 유지. UI 리디자인·단독 우선 금지.
+비허브 bare NEED만 화이트리스트(남양·신촌·강북·강서·강진 등).
+전 bare 개방 금지. #36·동 회귀 유지. UI 리디자인·단독 우선 금지.
 VERIFY 후 커밋·push.
 ```

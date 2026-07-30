@@ -11,6 +11,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
   formatKoHomonymRiRegionLabel,
+  isKoHomonymPlaceSearchQuery,
   isKoHomonymRiSearchQuery,
 } from '../src/pages/Home/lib/koHomonymRiSearch.js';
 
@@ -57,7 +58,8 @@ function classifyPattern(q) {
 }
 
 function coveredByCurrentRiPath(q) {
-  return isKoHomonymRiSearchQuery(q);
+  // Phase 0 이후: 동 포함 place path · 읍·면·리는 #36 회귀
+  return isKoHomonymPlaceSearchQuery(q) || isKoHomonymRiSearchQuery(q);
 }
 
 function loadShortSsotNames() {

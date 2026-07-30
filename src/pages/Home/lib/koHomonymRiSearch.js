@@ -1,4 +1,6 @@
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
+/** #36: 읍·면·리 · Phase 0 확장: 동(NEED_DISAMBIG). bare는 hub exact 우선·보류 */
+const KO_HOMONYM_PLACE_RE = /[읍면리동]$/u;
 const KO_RI_TOWNSHIP_RE = /[읍면리]$/u;
 const NOMINATIM_UA = 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)';
 
@@ -46,21 +48,32 @@ function buildStayAdminFromOsmAddress(addressKo, addressEn = null) {
   };
 }
 
-/**
- * 국내 단독 「○○리/읍/면」검색 — 동명 다후보 대상.
- * 공백·시설·복합어는 제외.
- */
-export function isKoHomonymRiSearchQuery(query) {
+function isKoHomonymBaseQuery(query) {
   const q = String(query || '').trim();
   if (!q || q.length < 2 || q.length > 12) return false;
   if (/\s/.test(q)) return false;
   if (!HAS_HANGUL_RE.test(q)) return false;
-  return KO_RI_TOWNSHIP_RE.test(q);
+  return true;
 }
 
 /**
- * 상위 행정 라벨 — 군 우선, 없으면 시.
- * 예: 평창군 · 천안시 (천안은 군 아님)
+ * 국내 단독 「○○리/읍/면/동」검색 — 동명 다후보 대상.
+ * bare(무접미사)는 Phase 0에서 보류(hub exact·잡음).
+ */
+export function isKoHomonymPlaceSearchQuery(query) {
+  if (!isKoHomonymBaseQuery(query)) return false;
+  return KO_HOMONYM_PLACE_RE.test(String(query).trim());
+}
+
+/** #36 회귀 API — 읍·면·리만 (동 제외) */
+export function isKoHomonymRiSearchQuery(query) {
+  if (!isKoHomonymBaseQuery(query)) return false;
+  return KO_RI_TOWNSHIP_RE.test(String(query).trim());
+}
+
+/**
+ * 상위 행정 라벨 — 군 우선, 없으면 시·광역시.
+ * 예: 평창군 · 천안시 · 대전광역시
  */
 export function formatKoHomonymRiRegionLabel(address = {}, stayAdmin = null) {
   const county = String(stayAdmin?.county || address?.county || '').trim();
@@ -68,11 +81,13 @@ export function formatKoHomonymRiRegionLabel(address = {}, stayAdmin = null) {
     stayAdmin?.city || address?.city || address?.town || address?.municipality || '',
   ).trim();
   if (/군$/.test(county)) return county;
-  if (/시$/.test(city)) return city;
-  if (/시$/.test(county)) return county;
+  if (/(시|광역시|특별시|특별자치시)$/.test(city)) return city;
+  if (/(시|광역시|특별시|특별자치시)$/.test(county)) return county;
   if (/[읍면]$/.test(city) && county) return county;
   return city || county || '';
 }
+
+export const formatKoHomonymPlaceRegionLabel = formatKoHomonymRiRegionLabel;
 
 function normalizeRegionKey(label) {
   return String(label || '')
@@ -83,7 +98,7 @@ function normalizeRegionKey(label) {
 
 /**
  * Nominatim rows → 지역 명시 선택 카드 후보.
- * 동일 리명·서로 다른 시·군만 남김.
+ * 동일 지명·서로 다른 시·군만 남김.
  */
 export function buildKoHomonymRiCandidatesFromRows(query, rows) {
   const q = String(query || '').trim();
@@ -111,13 +126,20 @@ export function buildKoHomonymRiCandidatesFromRows(query, rows) {
 
     const baseName =
       String(row.name || '').trim() ||
-      String(address.village || address.hamlet || q).trim() ||
+      String(
+        address.village ||
+          address.hamlet ||
+          address.suburb ||
+          address.neighbourhood ||
+          address.quarter ||
+          q,
+      ).trim() ||
       q;
     const labeled = `${baseName} · ${region}`;
     const state = String(stayAdmin?.state || address.state || '').trim();
 
     out.push({
-      id: `ko-ri-${regionKey}-${lat.toFixed(4)}-${lng.toFixed(4)}`,
+      id: `ko-homonym-${regionKey}-${lat.toFixed(4)}-${lng.toFixed(4)}`,
       kind: 'city',
       badge: '동네',
       name: labeled,
@@ -139,6 +161,8 @@ export function buildKoHomonymRiCandidatesFromRows(query, rows) {
 
   return out;
 }
+
+export const buildKoHomonymPlaceCandidatesFromRows = buildKoHomonymRiCandidatesFromRows;
 
 async function fetchNominatimKoRiRows(searchQuery, attempt = 1) {
   const params = new URLSearchParams({
@@ -180,9 +204,17 @@ async function fetchNominatimKoRiRows(searchQuery, attempt = 1) {
 }
 
 /**
- * 동명 리/읍/면 → 지역 라벨 후보.
+ * 동명 리/읍/면/동 → 지역 라벨 후보.
  * ≥2이면 선택 카드, 1이면 단일, 0이면 빈 배열(일반 geocode 폴백).
  */
+export async function collectKoHomonymPlaceCandidates(query) {
+  if (!isKoHomonymPlaceSearchQuery(query)) return [];
+  const q = String(query).trim();
+  const rows = await fetchNominatimKoRiRows(q);
+  return buildKoHomonymRiCandidatesFromRows(q, rows);
+}
+
+/** #36 회귀 — 읍·면·리만 (동 쿼리는 place collector 사용) */
 export async function collectKoHomonymRiCandidates(query) {
   if (!isKoHomonymRiSearchQuery(query)) return [];
   const q = String(query).trim();
