@@ -20,7 +20,7 @@
 
 ## MRT 읍·면+county 공백 감사 — Phase 0
 
-**상태**: ✅ 스크립트·LIVE 샘플 · tip 대기(본 세션 push)
+**상태**: ✅ 스크립트·LIVE 샘플 · tip `d14649c` · PR 대기
 
 | | |
 |--|--|
@@ -29,6 +29,7 @@
 | **RISK_TOWNSHIP_NO_COUNTY** | **0** |
 | 참고 | township+county OK 87 · city=리+county 123(keyword 리 선두 잔여) · city=시·county∅ 129 |
 | 표 | plan §5.1 · artifacts `report.md` / `summary.json` |
+| 브랜치 | `cursor/mrt-stay-admin-gap-audit-fd9a` · PR [#33](https://github.com/catgeot/Days/pull/33) |
 | 보강 | **보류** — 사람 확인 후 (전국 override 금지) |
 
 ## 다음 세션 — 에이전트 핸드오프
