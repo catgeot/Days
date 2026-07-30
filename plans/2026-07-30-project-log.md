@@ -62,29 +62,18 @@
 **파일**: `geocoding.js` · `mrtStayQuery.js` · smoke stay  
 **브랜치**: `cursor/fix-daehwa-ri-search-cheonan-8077`
 
-## 다음 세션 — 에이전트 핸드오프
+## 동명 리 검색 — 지역 명시 다후보
 
-**제시어**: `동명리-검색-다후보-이어하기`
+**상태**: ✅ tip · 사람 Preview QA 대기
 
 | | |
 |--|--|
+| 제품 | 「대화리」→ `대화리 · 평창군` / `대화리 · 천안시`(+충주·김제) 선택 카드 · **단독 자동 진입 금지** |
+| 구현 | `koHomonymRiSearch.js` · `useHomeHandlers` early disambiguation |
+| #35 정리 | 평창 강제 별칭·군 스코어 가산 **제거** · stay `originalQuery` 세밀명→군 뒤 **유지** |
+| VERIFY | `smoke:ko-homonym-ri-search` (+ LIVE) · `smoke:mrt-stay` · `smoke:mrt-tna` |
 | 계획 | [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) |
-| 목표 | 「대화리」검색 → 평창군·천안시 등 **라벨 있는 후보 나열** · 자동 단독 진입 금지 |
-| 선행 | GPS→평창 ✅ · #35 임시 완화(다후보 시 평창 강제 별칭 교체) |
-| 읽을 것 | `.ai-context` 1·3·4 · 본 일지 · plan · `makeDisambiguationResult` · `getCoordinatesFromAddress` |
-| 금지 | UI 리디자인 · 평창/천안 단독 우선 재도입 · Nominatim 폭주 · `travelSpots.js` 전체 스캔 |
 
-**Cloud 붙여넣기**
+**QA**: Preview 검색「대화리」Enter → 지역 라벨 카드 ≥2 · 평창/천안 각각 선택 후 숙소 · GPS 대화리→평창 회귀
 
-```text
-동명리-검색-다후보-이어하기
-
-@.ai-context.md
-@plans/ko-homonym-ri-search-disambiguation-plan.md
-@plans/2026-07-30-project-log.md
-
-대화리 동명: 평창/천안 단독 우선 금지.
-검색 결과「대화리 · 평창군」「대화리 · 천안시」다후보.
-GPS 단일 OK. #35 평창 강제→다후보로 교체.
-VERIFY 후 커밋·push.
-```
+**브랜치**: `cursor/ko-homonym-ri-disambiguation-1ed8`

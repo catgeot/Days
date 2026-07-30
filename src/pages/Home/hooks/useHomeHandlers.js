@@ -8,6 +8,10 @@
 
 import { useCallback, useRef } from 'react';
 import { getAddressFromCoordinates, getCoordinatesFromAddress, isFacilityQuery } from '../lib/geocoding';
+import {
+  collectKoHomonymRiCandidates,
+  isKoHomonymRiSearchQuery,
+} from '../lib/koHomonymRiSearch';
 import { formatUrlName, pickUrlSafeEnglishName } from '../lib/formatUrlName';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
 import { supabase } from '../../../shared/api/supabase';
@@ -999,6 +1003,22 @@ export function useHomeHandlers({
         uiPlace: true,
       }, resolvedLat, resolvedLng);
     };
+
+    // 국내 동명 리/읍/면 — 지역 명시 다후보 (평창·천안 단독 자동 진입 금지)
+    if (!isFacilityQuery(query) && isKoHomonymRiSearchQuery(query)) {
+      const riCandidates = await collectKoHomonymRiCandidates(query);
+      if (riCandidates.length >= 2) {
+        return makeDisambiguationResult(query, riCandidates, {
+          title: `'${query}' → 지역을 선택하세요`,
+        });
+      }
+      if (riCandidates.length === 1) {
+        return commitLocation({
+          ...riCandidates[0],
+          category,
+        });
+      }
+    }
 
     // 감정 키워드(번아웃·설렘 등)·문장부호는 지오코딩 스킵 → AI 무드 큐레이션 유지
     // (Mapbox가 "힐링" 등을 임의 POI로 잡는 회귀 방지). 시설·일반 지명은 기존처럼 geocode.

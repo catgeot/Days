@@ -116,13 +116,6 @@ export function expandForwardQueryAliases(query) {
     if (/홍천/.test(q)) add('홍천 비발디파크');
   }
 
-  // 동명 리 — Nominatim/Mapbox가 시 산하 리를 먼저 줌(천안시 대화리 > 평창군 대화면)
-  if (/^대화리$/u.test(q)) {
-    add('대화리 평창');
-    add('대화면 평창군');
-    add('평창 대화리');
-  }
-
   // 유명 명소 — 도시로 축소하지 않고 POI 영문명으로 Mapbox/Nominatim 히트
   const landmarkPlan = resolveLandmarkGeocodePlan(q);
   if (landmarkPlan) {
@@ -188,9 +181,6 @@ const isAdminOnlyHitForFacility = (query, result) => {
   return false;
 };
 
-/** 국내 「○○리」검색 — 시 산하 동명 리보다 읍·면+군 행정 히트 선호 */
-const isKoRiOrTownshipQuery = (query) => /[읍면리]$/u.test(String(query || '').trim());
-
 // 🚨 [New] 여행지 목적에 맞는 우선순위 스코어링 함수
 const calculatePlaceScore = (place, query = '') => {
   let score = 0;
@@ -222,37 +212,7 @@ const calculatePlaceScore = (place, query = '') => {
     score -= 100;
   }
 
-  // 대화리 → 천안시 대화리(시만) vs 평창군 대화면(면+군) — 군·면 행정 가산
-  if (isKoRiOrTownshipQuery(query) || /[리]$/u.test(String(place.name || '').trim())) {
-    const town = String(address.town || address.city || '').trim();
-    const county = String(address.county || '').trim();
-    if (/군$/.test(county)) score += 80;
-    if (/[읍면]$/.test(town)) score += 50;
-    if (/시$/.test(town) && !county) score -= 45;
-  }
-
   return score;
-};
-
-/**
- * 국내 ○○리 forward 히트가 시만 있고 군·면이 없으면 동명 오탐 가능(천안시 대화리).
- * Mapbox가 먼저 맞아도 Nominatim 재순위·별칭으로 넘긴다.
- */
-const isAmbiguousKoVillageForwardHit = (query, hit) => {
-  if (!hit || !isKoRiOrTownshipQuery(query)) return false;
-  const admin = hit.stayAdmin && typeof hit.stayAdmin === 'object' ? hit.stayAdmin : null;
-  const city = String(admin?.city || hit.name || '').trim();
-  const county = String(admin?.county || '').trim();
-  const display = String(hit.display_name || '').trim();
-  if (/[읍면]$/.test(city) && /군$/.test(county)) return false;
-  if (/군$/.test(county)) return false;
-  if (/[읍면].*군|군.*[읍면]/.test(display)) return false;
-  if (/시$/.test(city) && !county) return true;
-  // Mapbox는 county를 잘 안 줌 — place_name에 군·면 없으면 리 쿼리는 모호 처리
-  if (!county && /리$/.test(String(query || '').trim()) && !/[읍면]|군/.test(display)) {
-    return true;
-  }
-  return false;
 };
 
 const mapboxPlaceTypeScore = (placeTypes = [], facilityQ = false) => {
@@ -516,41 +476,19 @@ export const getCoordinatesFromAddress = async (query) => {
     }
 
     const primaryMapbox = await tryMapboxBundle(cleanQuery);
-    if (primaryMapbox && !isAmbiguousKoVillageForwardHit(cleanQuery, primaryMapbox)) {
-      return primaryMapbox;
-    }
+    if (primaryMapbox) return primaryMapbox;
 
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
     let data = await tryNominatimBundle(cleanQuery);
 
-    const topNominatimHit = (rows) => {
-      if (!rows?.length) return null;
-      const top = [...rows].sort(
-        (a, b) => calculatePlaceScore(b, cleanQuery) - calculatePlaceScore(a, cleanQuery),
-      )[0];
-      if (!top) return null;
-      const addr = top.address || {};
-      return {
-        name: top.name,
-        display_name: top.display_name,
-        stayAdmin: buildStayAdminFromOsmAddress(addr, addr),
-      };
-    };
-
-    // 1.5) 숙박·명소 별칭 — 미히트 또는 동명 리(대화리→천안시)처럼 모호하면 별칭 시도
-    const needAliasPass =
-      !data || isAmbiguousKoVillageForwardHit(cleanQuery, topNominatimHit(data));
-
-    if (needAliasPass) {
+    // 1.5) 숙박·명소 별칭 (제주 신라호텔→호텔신라 제주, 에펠탑→Eiffel Tower)
+    if (!data) {
       for (const alt of expandForwardQueryAliases(cleanQuery)) {
         const altMapbox = await tryMapboxBundle(alt);
-        if (altMapbox && !isAmbiguousKoVillageForwardHit(alt, altMapbox)) {
-          return altMapbox;
-        }
-        const altRows = await tryNominatimBundle(alt);
-        if (altRows?.length) {
+        if (altMapbox) return altMapbox;
+        data = await tryNominatimBundle(alt);
+        if (data) {
           console.log(`🔄 Alias geocode: "${cleanQuery}" → "${alt}"`);
-          data = altRows;
           break;
         }
       }
