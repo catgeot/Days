@@ -117,20 +117,20 @@
 
 ## 동명 잔여 QA — 에이전트 VERIFY
 
-**상태**: ✅ 에이전트 VERIFY · ⏳ 사람 Preview 잔여 · **머지 보류**(사람 OK 전)
+**상태**: ✅ 사람 모바일 Preview OK · PR [#37](https://github.com/catgeot/Days/pull/37) **MERGED** `14ea30e` (#36 tip 포함)
 
-| 케이스 | 에이전트 | 기대 |
+| 케이스 | 에이전트 | 사람 |
 |--------|----------|------|
-| 신촌 | LIVE smoke ≥2 · `신촌 · 서울특별시`/`영광군` | Preview Enter 지역 카드 |
-| 대화리 | LIVE ≥4 · 평창·천안 포함 | Preview Enter 다후보 |
-| 대화동 | LIVE · 대전·고양 | Preview Enter 다후보 |
-| 제주/고성 | hub exact · place path **false** · curated Enter hub 카드 | Preview hub「도시와 명소」 |
-| GPS 대화리→평창 | `smoke:mrt-stay`/`tna` `pyeongchang-daehwa-ri` · kw=평창군 | Preview 숙소·투어 일산 아님 |
-| 남양·시설 | 사람 ✅ · 시설 유지 | — |
+| 신촌 | LIVE smoke ≥2 | 모바일 ✅ |
+| 대화리 | LIVE ≥4 · 평창·천안 | 모바일 ✅ |
+| 대화동 | LIVE · 대전·고양 | 모바일 ✅ |
+| 제주/고성 | hub exact · place path 아님 | 모바일 ✅ |
+| GPS 대화리→평창 | mrt stay/tna kw=평창군 | (선택·smoke) |
+| 남양·시설 | — | ✅ 유지 |
 
 **VERIFY**: `KO_HOMONYM_RI_LIVE=1 npm run smoke:ko-homonym-ri-search` · `smoke:mrt-stay` · `smoke:mrt-tna`  
-**Preview**: https://days-git-cursor-ko-homonym-search-expand-d255-catgeots-projects.vercel.app (Vercel SSO · 에이전트 브라우저 불가)  
-**PR**: [#37](https://github.com/catgeot/Days/pull/37) draft · tip `4391a41` · #36 tip 포함
+**머지**: draft 해제 → main · tip `940b4a2` · merge `14ea30e`  
+**비고**: PC「현재 위치」을지로 잔상은 VPN/브라우저 측위 · 동명 로직과 무관
 
 ### Preview 콘솔 403 (2026-07-30)
 
@@ -141,28 +141,8 @@
 | 원인 | `VITE_MAPBOX_TOKEN` **URL 제한** — `www.gateo.kr`·**브랜치 alias**(`days-git-…-d255-….vercel.app`) = 200 · 배포 해시(`days-<hash>-catgeots-projects.vercel.app`) = **403** |
 | 비관련 | Summarizer 언어 · PerformanceObserver · doubleclick 400 · `[tp] emerald` `get` — 제3자/브라우저 |
 | 조치(사람) | Preview는 **git 브랜치 URL**로 진입 · 또는 Mapbox 토큰에 `https://*.vercel.app` / `https://days-*-catgeots-projects.vercel.app` 허용 추가 |
-| 코드 | 동명검색 tip과 무관 · PR 수정 불필요 |
+| 코드 | 동명검색 tip과 무관 |
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**제시어**: `동명검색-잔여QA-머지-이어하기` (사람 Preview OK 후 = 머지)
-
-| | |
-|--|--|
-| 목표 | 사람 Preview 잔여 OK → PR [#37](https://github.com/catgeot/Days/pull/37) draft 해제·**main 병합** |
-| 사람 QA | Preview: 신촌 · 대화리 · 대화동 · 제주/고성 hub · (선택) GPS 대화리→평창 |
-| 완료분 | 남양 ✅ · 시설 유지 · **에이전트 LIVE/smoke VERIFY ✅** |
-| 금지 | UI 리디자인 · 단독 우선 · 전 bare 패턴 · 시설 후보 필터 · 사람 OK 전 머지 |
-
-**Cloud 붙여넣기** (사람「잔여 OK / 머지」후)
-
-```text
-동명검색-잔여QA-머지-이어하기
-
-@.ai-context.md
-@plans/ko-homonym-search-expand-plan.md
-@plans/2026-07-30-project-log.md
-
-PR #37 잔여 Preview 사람 OK. draft 해제·main 병합.
-전 bare 개방·시설 필터 금지. tip VERIFY 유지.
-```
+동명 검색 #37 ✅ main. 다음 과제는 일지·`.ai-context` 6절·[`plans/README.md`](./README.md) 우선순위 중 선택.

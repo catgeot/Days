@@ -91,7 +91,7 @@ VERIFY: `smoke:ko-homonym-ri-search` (+ LIVE 남양·신촌·고성 place empty)
 **사람 QA**: 남양 지역 카드 OK · 시설 후보(초등·하행 등) **유지**(필터 금지).
 
 **에이전트 VERIFY (2026-07-30)**: LIVE smoke 신촌·대화리·대화동·고성 place empty · hub 제주/고성 · mrt GPS 평창 ✅.  
-**후속**: 사람 Preview 잔여 OK → PR #37 draft 해제·main 병합.
+**완료**: 사람 모바일 Preview OK · PR [#37](https://github.com/catgeot/Days/pull/37) main 병합 `14ea30e`.
 
 ---
 
