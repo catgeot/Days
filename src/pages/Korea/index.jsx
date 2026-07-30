@@ -14,6 +14,8 @@ import {
   LocateFixed,
   Map as MapIcon,
   MapPin,
+  Maximize2,
+  Minimize2,
   Search,
   Star,
   Undo2,
@@ -461,6 +463,7 @@ function FestivalRow({
   favorited,
   onToggleFavorite,
   distanceKm,
+  large = false,
 }) {
   const img = festivalImage(item);
   const start = formatYmdLabel(item.eventStartDate);
@@ -470,7 +473,9 @@ function FestivalRow({
 
   return (
     <div
-      className={`w-full flex items-center gap-2 rounded-2xl border p-2.5 transition-colors ${
+      className={`w-full flex items-center gap-2 rounded-2xl border transition-colors ${
+        large ? 'gap-3 p-3.5' : 'p-2.5'
+      } ${
         active
           ? 'border-amber-400 bg-amber-50'
           : 'border-stone-200 bg-white hover:bg-stone-50'
@@ -479,36 +484,68 @@ function FestivalRow({
       <button
         type="button"
         onClick={() => onSelect(item)}
-        className="min-w-0 flex-1 flex items-center gap-3 text-left"
+        className={`min-w-0 flex-1 flex items-center text-left ${
+          large ? 'gap-3.5' : 'gap-3'
+        }`}
       >
-        <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-stone-100">
+        <div
+          className={`rounded-xl overflow-hidden shrink-0 bg-stone-100 ${
+            large ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-14 w-14'
+          }`}
+        >
           {img ? (
             <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-100 to-stone-200" />
           )}
         </div>
-        <div className="min-w-0 flex-1 space-y-0.5">
+        <div className={`min-w-0 flex-1 ${large ? 'space-y-1' : 'space-y-0.5'}`}>
           <div className="flex min-w-0 items-start justify-between gap-2">
-            <p className="min-w-0 flex-1 text-sm font-bold text-stone-900 truncate">
+            <p
+              className={`min-w-0 flex-1 font-bold text-stone-900 break-keep ${
+                large
+                  ? 'text-[15px] leading-snug line-clamp-2 sm:text-base'
+                  : 'text-sm truncate'
+              }`}
+            >
               {item.title}
             </p>
             {distanceLabel ? (
-              <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+              <span
+                className={`shrink-0 rounded-full bg-stone-100 font-bold tabular-nums text-stone-600 ${
+                  large
+                    ? 'px-2 py-0.5 text-[11px]'
+                    : 'px-1.5 py-0.5 text-[10px]'
+                }`}
+              >
                 {distanceLabel}
               </span>
             ) : null}
           </div>
           {range && (
-            <p className="text-[11px] text-amber-700 font-bold flex items-center gap-1">
-              <CalendarDays size={11} aria-hidden="true" />
+            <p
+              className={`text-amber-700 font-bold flex items-center gap-1 ${
+                large ? 'text-xs' : 'text-[11px]'
+              }`}
+            >
+              <CalendarDays size={large ? 13 : 11} aria-hidden="true" />
               {range}
             </p>
           )}
           {item.addr1 && (
-            <p className="text-[11px] text-stone-500 truncate flex items-center gap-1">
-              <MapPin size={11} className="shrink-0 opacity-70" aria-hidden="true" />
-              <span className="truncate">{item.addr1}</span>
+            <p
+              className={`text-stone-500 flex items-center gap-1 ${
+                large ? 'text-xs line-clamp-2' : 'text-[11px] truncate'
+              }`}
+            >
+              <MapPin
+                size={large ? 13 : 11}
+                className="shrink-0 opacity-70"
+                aria-hidden="true"
+              />
+              <span className={large ? 'line-clamp-2' : 'truncate'}>
+                {item.addr1}
+              </span>
             </p>
           )}
         </div>
@@ -522,10 +559,12 @@ function FestivalRow({
           }}
           aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
           aria-pressed={favorited}
-          className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-500 hover:bg-amber-50 hover:border-amber-300"
+          className={`shrink-0 flex items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-500 hover:bg-amber-50 hover:border-amber-300 ${
+            large ? 'h-10 w-10' : 'h-9 w-9'
+          }`}
         >
           <Star
-            size={15}
+            size={large ? 17 : 15}
             className={
               favorited ? 'fill-amber-400 text-amber-500' : 'text-stone-400'
             }
@@ -554,6 +593,8 @@ export default function KoreaFestivalHub() {
   const [nearOrigin, setNearOrigin] = useState(null);
   const [mapOpen, setMapOpen] = useState(false);
   const [mapFullscreen, setMapFullscreen] = useState(false);
+  /** 축제 리스트 행·썸네일 확대 */
+  const [listLarge, setListLarge] = useState(false);
   const [mapSessionKey, setMapSessionKey] = useState(0);
   /** PC 분할(lg+) — 리스트·지도 동기화 */
   const [isMapSplit, setIsMapSplit] = useState(() =>
@@ -1720,6 +1761,27 @@ export default function KoreaFestivalHub() {
               <div className="flex shrink-0 items-center gap-1.5">
                 <button
                   type="button"
+                  onClick={() => setListLarge((v) => !v)}
+                  aria-label={
+                    listLarge ? '리스트 기본 크기로' : '리스트 크게 보기'
+                  }
+                  title={listLarge ? '기본 크기' : '크게 보기'}
+                  aria-pressed={listLarge}
+                  className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
+                    listLarge
+                      ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                  }`}
+                >
+                  {listLarge ? (
+                    <Minimize2 size={14} aria-hidden="true" />
+                  ) : (
+                    <Maximize2 size={14} aria-hidden="true" />
+                  )}
+                  {listLarge ? '기본' : '크게'}
+                </button>
+                <button
+                  type="button"
                   onClick={() => (mapOpen ? closeMap() : openMap())}
                   aria-label={
                     mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
@@ -1832,7 +1894,7 @@ export default function KoreaFestivalHub() {
               }`}
             >
               <div
-                className={`space-y-2 px-3 pt-3 pb-[max(10.5rem,calc(env(safe-area-inset-bottom,0px)+9rem))] md:pb-24 ${
+                className={`${listLarge ? 'space-y-3' : 'space-y-2'} px-3 pt-3 pb-[max(10.5rem,calc(env(safe-area-inset-bottom,0px)+9rem))] md:pb-24 ${
                   mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
                     : mapOpen
@@ -1860,6 +1922,7 @@ export default function KoreaFestivalHub() {
                         <FestivalRow
                           key={`p-${festivalKey(item)}`}
                           item={item}
+                          large={listLarge}
                           active={
                             selected?.contentId != null &&
                             String(selected.contentId) ===
@@ -1894,6 +1957,7 @@ export default function KoreaFestivalHub() {
                       <FestivalRow
                         key={festivalKey(item)}
                         item={item}
+                        large={listLarge}
                         active={
                           selected?.contentId != null &&
                           String(selected.contentId) ===
