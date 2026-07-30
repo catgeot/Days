@@ -12,7 +12,7 @@
 - **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
 - **국내 MRT 읍·면 감사·city=리 군선두 ✅**: [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 · `npm run audit:mrt-stay-admin-gaps` · RISK **0** · keyword 군 선두
 - **동명 리/읍/면/동·bare 화이트리스트 검색 다후보 ✅**: [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) · [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) (`동` O · bare=남양·신촌) · `smoke:ko-homonym-ri-search`
-- **동명 검색 잔여 QA·머지 (다음)**: PR [#37](https://github.com/catgeot/Days/pull/37) · 제시어 `동명검색-잔여QA-머지-이어하기`
+- **동명 검색 잔여 Preview·머지 (다음)**: PR [#37](https://github.com/catgeot/Days/pull/37) · 에이전트 VERIFY ✅ · 제시어 `동명검색-잔여QA-머지-이어하기`
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **국내 MRT TNA 인근 확장 (다음 세션 · Phase 0 목록 먼저)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 제시어 `MRT-TNA-인근확장-이어하기`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  

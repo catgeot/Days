@@ -109,25 +109,41 @@
 | 수정 | Enter `requireChoice`가 prefix「남양→남양주」보다 **지역 다후보 우선** (`useHomeHandlers`) |
 | 계획 | [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) §4 |
 
-**QA**: Preview 「남양」✅ 지역 카드(사천·홍성·고흥·울릉+시설) · 「신촌」「대화리」「대화동」「고성」「제주」잔여 · GPS 대화리→평창
+**QA**: Preview 「남양」✅ 지역 카드(사천·홍성·고흥·울릉+시설) · 잔여 Preview는 아래 VERIFY 절
 
 **사람 결정**: Nominatim 시설 후보(초등학교·하행 등)도 **유지** — 사용자가 시설을 고를 수 있음 · 트리지 않으면 필터 불필요
 
 **브랜치**: `cursor/ko-homonym-search-expand-d255` · tip `3b345d8`
 
+## 동명 잔여 QA — 에이전트 VERIFY
+
+**상태**: ✅ 에이전트 VERIFY · ⏳ 사람 Preview 잔여 · **머지 보류**(사람 OK 전)
+
+| 케이스 | 에이전트 | 기대 |
+|--------|----------|------|
+| 신촌 | LIVE smoke ≥2 · `신촌 · 서울특별시`/`영광군` | Preview Enter 지역 카드 |
+| 대화리 | LIVE ≥4 · 평창·천안 포함 | Preview Enter 다후보 |
+| 대화동 | LIVE · 대전·고양 | Preview Enter 다후보 |
+| 제주/고성 | hub exact · place path **false** · curated Enter hub 카드 | Preview hub「도시와 명소」 |
+| GPS 대화리→평창 | `smoke:mrt-stay`/`tna` `pyeongchang-daehwa-ri` · kw=평창군 | Preview 숙소·투어 일산 아님 |
+| 남양·시설 | 사람 ✅ · 시설 유지 | — |
+
+**VERIFY**: `KO_HOMONYM_RI_LIVE=1 npm run smoke:ko-homonym-ri-search` · `smoke:mrt-stay` · `smoke:mrt-tna`  
+**Preview**: https://days-git-cursor-ko-homonym-search-expand-d255-catgeots-projects.vercel.app (Vercel SSO · 에이전트 브라우저 불가)  
+**PR**: [#37](https://github.com/catgeot/Days/pull/37) draft · tip `48a15d2` · #36 tip 포함
+
 ## 다음 세션 — 에이전트 핸드오프
 
-**제시어**: `동명검색-잔여QA-머지-이어하기`
+**제시어**: `동명검색-잔여QA-머지-이어하기` (사람 Preview OK 후 = 머지)
 
 | | |
 |--|--|
-| 목표 | Preview 잔여 QA → 사람 OK면 PR [#37](https://github.com/catgeot/Days/pull/37) draft 해제·**main 병합**(#36 포함 tip) |
-| 잔여 QA | 신촌 · 대화리 · 대화동 · 제주/고성 hub · GPS 대화리→평창 |
-| 완료분 | 남양 지역 카드 ✅ · 시설 카드 유지 |
-| 선택 | LIVE 추가 비허브 bare NEED만 시드 append (전 bare 개방 금지) |
-| 금지 | UI 리디자인 · 단독 우선 · 전 bare 패턴 · 시설 후보 필터 |
+| 목표 | 사람 Preview 잔여 OK → PR [#37](https://github.com/catgeot/Days/pull/37) draft 해제·**main 병합** |
+| 사람 QA | Preview: 신촌 · 대화리 · 대화동 · 제주/고성 hub · (선택) GPS 대화리→평창 |
+| 완료분 | 남양 ✅ · 시설 유지 · **에이전트 LIVE/smoke VERIFY ✅** |
+| 금지 | UI 리디자인 · 단독 우선 · 전 bare 패턴 · 시설 후보 필터 · 사람 OK 전 머지 |
 
-**Cloud 붙여넣기**
+**Cloud 붙여넣기** (사람「잔여 OK / 머지」후)
 
 ```text
 동명검색-잔여QA-머지-이어하기
@@ -136,7 +152,6 @@
 @plans/ko-homonym-search-expand-plan.md
 @plans/2026-07-30-project-log.md
 
-PR #37(#36 tip 포함). 남양 QA·시설유지 ✅.
-잔여 Preview: 신촌·대화리·대화동·제주/고성 hub·GPS 대화리→평창.
-사람 OK면 draft 해제·main 병합. 전 bare 개방·시설 필터 금지.
+PR #37 잔여 Preview 사람 OK. draft 해제·main 병합.
+전 bare 개방·시설 필터 금지. tip VERIFY 유지.
 ```
