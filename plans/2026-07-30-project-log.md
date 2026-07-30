@@ -44,6 +44,20 @@
 
 **파일**: `mrtStayQuery.js` · `mrtTnaQuery.js` · smoke 2종 · `audit-mrt-stay-admin-gaps.mjs` · plan §5.2
 
+## 검색「대화리」→ 천안 숙소 오탐
+
+**상태**: ✅ tip · PR [#35](https://github.com/catgeot/Days/pull/35)
+
+| | |
+|--|--|
+| 증상 | 검색「대화리」진입 → 숙소가 **천안** 목록 |
+| 원인 | Nominatim/Mapbox가 **천안시 대화리**를 1순위 · `originalQuery=대화리`가 keyword 선두 |
+| 조치 | 리/읍·면 쿼리 시 **군·면 행정 가산** · 시-only 리는 모호→별칭(`대화리 평창`) · stay `originalQuery` 세밀명은 군 래더 뒤 |
+| VERIFY | smoke stay 23 · tna 12 · Nominatim 재순위 평창군 1위 |
+
+**파일**: `geocoding.js` · `mrtStayQuery.js` · smoke stay  
+**브랜치**: `cursor/fix-daehwa-ri-search-cheonan-8077`
+
 ## 다음 세션 — 에이전트 핸드오프
 
 **제시어**: (선택) 미캐시 정착지 LIVE · hub/명소 샘플
@@ -51,5 +65,5 @@
 | | |
 |--|--|
 | 계획 | [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 |
-| 잔여 | 미캐시 정착지 288 · hub/명소 LIVE · GPS 비SSOT(대화리류는 #32+#Phase1) |
+| 잔여 | 미캐시 정착지 288 · hub/명소 LIVE · 동명 리 일반화(대화리 외) 선택 |
 | 금지 | UI · 전국 override 추측 · Nominatim 폭주 · `travelSpots.js` 전체 스캔 |

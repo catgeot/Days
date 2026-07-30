@@ -523,24 +523,23 @@ export const getCoordinatesFromAddress = async (query) => {
     // 한글 지명: KR 우선 (횡성 저수지 → 폴란드 Holy Cross 오탐 방지). 실패 시 AI 폴백.
     let data = await tryNominatimBundle(cleanQuery);
 
-    // 1.5) 숙박·명소 별칭 (제주 신라호텔→호텔신라 제주, 에펠탑→Eiffel Tower)
-    // 동명 리(대화리→천안)처럼 primary가 모호하면 별칭을 이어서 시도
-    const needAliasPass = !data || (data && isAmbiguousKoVillageForwardHit(
-      cleanQuery,
-      (() => {
-        const sorted = [...data].sort(
-          (a, b) => calculatePlaceScore(b, cleanQuery) - calculatePlaceScore(a, cleanQuery),
-        );
-        const top = sorted[0];
-        if (!top) return null;
-        const addr = top.address || {};
-        return {
-          name: top.name,
-          display_name: top.display_name,
-          stayAdmin: buildStayAdminFromOsmAddress(addr, addr),
-        };
-      })(),
-    ));
+    const topNominatimHit = (rows) => {
+      if (!rows?.length) return null;
+      const top = [...rows].sort(
+        (a, b) => calculatePlaceScore(b, cleanQuery) - calculatePlaceScore(a, cleanQuery),
+      )[0];
+      if (!top) return null;
+      const addr = top.address || {};
+      return {
+        name: top.name,
+        display_name: top.display_name,
+        stayAdmin: buildStayAdminFromOsmAddress(addr, addr),
+      };
+    };
+
+    // 1.5) 숙박·명소 별칭 — 미히트 또는 동명 리(대화리→천안시)처럼 모호하면 별칭 시도
+    const needAliasPass =
+      !data || isAmbiguousKoVillageForwardHit(cleanQuery, topNominatimHit(data));
 
     if (needAliasPass) {
       for (const alt of expandForwardQueryAliases(cleanQuery)) {
