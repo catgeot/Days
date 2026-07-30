@@ -106,6 +106,7 @@
 | 제외 | 고성·광주·강북·강서·강진 등 **hub exact** · 전 bare 개방 금지 |
 | 제품 | hub/정착지 exact **뒤** · `남양 · 사천시`/`홍성군`… · `신촌 · 서울특별시`/`영광군` |
 | VERIFY | smoke (+ LIVE 남양·신촌·고성 place empty) · mrt stay/tna |
+| 수정 | Enter `requireChoice`가 prefix「남양→남양주」보다 **지역 다후보 우선** (`useHomeHandlers`) |
 | 계획 | [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) §4 |
 
 **QA**: Preview 「남양」「신촌」→ 지역 카드 ≥2 · 「고성」「제주」hub 유지 · 「대화리」「대화동」회귀

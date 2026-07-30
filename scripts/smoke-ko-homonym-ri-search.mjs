@@ -140,6 +140,11 @@ assert(!isKoHomonymPlaceSearchQuery('강북'), 'hub bare 강북 excluded (hub ex
 assert(!getKoHomonymBareWhitelist().includes('고성'), 'whitelist must not include hub 고성');
 assert(getKoHomonymBareWhitelist().includes('남양'), 'whitelist includes 남양');
 assert(getKoHomonymBareWhitelist().includes('신촌'), 'whitelist includes 신촌');
+// Enter(requireChoice)는 prefix 남양주보다 place 다후보 우선 — handler에서 보장
+assert(
+  isKoHomonymPlaceSearchQuery('남양') && !isKoHomonymBareWhitelistQuery('남양주'),
+  '남양 whitelist ≠ 남양주 hub exact',
+);
 
 assert(
   formatKoHomonymRiRegionLabel({ county: '평창군', town: '대화면' }) === '평창군',
