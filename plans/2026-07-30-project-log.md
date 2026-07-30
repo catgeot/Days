@@ -4,7 +4,7 @@
 
 ## MRT 숙소·투어 — 평창 대화리 → 고양/일산 오탐
 
-**상태**: ✅ 로직 수정 · LIVE 스모크 PASS · feature 브랜치
+**상태**: ✅ `main` 머지·푸시 · Production 배포 대기
 
 | | |
 |--|--|
@@ -13,7 +13,7 @@
 | 조치 | 국내 읍·면·리 → **시·군 우선** · county 있을 때 면 축약「대화」를 keyword/cityHints 제외 · TNA 평창 인근 SSOT |
 | VERIFY | `smoke-mrt-stay` / `smoke-mrt-tna` (+ LIVE) · 숙소 `region=한국, 강원` · 투어 `used=평창` |
 
-**QA**: 지구본 현재위치(대화리) → 숙소찾기·투어찾기 · 고양/일산 목록이 아니어야 함
+**QA**: 지구본 현재위치(대화리) → 숙소찾기·투어찾기 · 고양/일산 목록이 아니어야 함 · 사람 확인 OK
 
 **파일**: `mrtStayQuery.js` · `mrtTnaQuery.js` · smoke 2종  
-**tip**: `41ca94f` · PR [#32](https://github.com/catgeot/Days/pull/32)
+**tip**: `02bc8c6` (merge) · PR [#32](https://github.com/catgeot/Days/pull/32) MERGED
