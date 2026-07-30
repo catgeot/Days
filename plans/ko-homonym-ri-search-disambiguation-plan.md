@@ -3,7 +3,7 @@
 **상태**: ✅ tip 구현 · Preview QA(리+#동) 대기  
 **제시어**: `동명리-검색-다후보-이어하기`  
 **일지**: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)  
-**후속**: `동` 확장 ✅ · bare 보류 — [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md)
+**후속**: `동` 확장 ✅ · bare 화이트리스트(남양·신촌) ✅ — [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) · Preview QA `동명검색-Preview-QA-이어하기`
 
 ---
 

@@ -96,27 +96,42 @@
 
 **브랜치**: `cursor/ko-homonym-search-expand-d255` · tip `de88f69`
 
-## 다음 세션 — 에이전트 핸드오프
+## 동명 bare 화이트리스트 — 남양·신촌
 
-**제시어**: `동명검색-bare-화이트리스트-이어하기`
+**상태**: ✅ tip · PR [#37](https://github.com/catgeot/Days/pull/37) · Preview QA 대기
 
 | | |
 |--|--|
+| 시드 | `KO_HOMONYM_BARE_WHITELIST` = **남양** · **신촌** (비허브 NEED만) |
+| 제외 | 고성·광주·강북·강서·강진 등 **hub exact** · 전 bare 개방 금지 |
+| 제품 | hub/정착지 exact **뒤** · `남양 · 사천시`/`홍성군`… · `신촌 · 서울특별시`/`영광군` |
+| VERIFY | smoke (+ LIVE 남양·신촌·고성 place empty) · mrt stay/tna |
 | 계획 | [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) §4 |
-| 목표 | 비허브 bare NEED(남양·신촌·강북·강서·강진 등) **화이트리스트만** · 전 bare 개방 금지 |
-| 선행 | #36 리/읍/면 · Phase 0 `동` 확장 ✅ |
-| 금지 | UI 리디자인 · 단독 우선 · Nominatim 폭주 · 전 bare 패턴 |
+
+**QA**: Preview 「남양」「신촌」→ 지역 카드 ≥2 · 「고성」「제주」hub 유지 · 「대화리」「대화동」회귀
+
+**브랜치**: `cursor/ko-homonym-search-expand-d255`
+
+## 다음 세션 — 에이전트 핸드오프
+
+**제시어**: `동명검색-Preview-QA-이어하기` (사람 Preview OK 후 main 병합)
+
+| | |
+|--|--|
+| 목표 | PR [#37](https://github.com/catgeot/Days/pull/37) Preview QA · 통과 시 병합 |
+| 회귀 | 대화리 · 대화동 · 남양 · 신촌 · 제주/고성 hub · GPS 대화리→평창 |
+| 선택 | LIVE 추가 비허브 bare NEED만 시드 append (전 bare 개방 금지) |
+| 금지 | UI 리디자인 · 단독 우선 · 전 bare 패턴 |
 
 **Cloud 붙여넣기**
 
 ```text
-동명검색-bare-화이트리스트-이어하기
+동명검색-Preview-QA-이어하기
 
 @.ai-context.md
 @plans/ko-homonym-search-expand-plan.md
 @plans/2026-07-30-project-log.md
 
-비허브 bare NEED만 화이트리스트(남양·신촌·강북·강서·강진 등).
-전 bare 개방 금지. #36·동 회귀 유지. UI 리디자인·단독 우선 금지.
-VERIFY 후 커밋·push.
+PR #37 Preview QA · 대화리/대화동/남양/신촌 · hub bare 유지.
+통과 시 병합만. 전 bare 개방 금지.
 ```

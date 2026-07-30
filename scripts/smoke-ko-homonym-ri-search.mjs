@@ -7,6 +7,8 @@ import {
   collectKoHomonymPlaceCandidates,
   collectKoHomonymRiCandidates,
   formatKoHomonymRiRegionLabel,
+  getKoHomonymBareWhitelist,
+  isKoHomonymBareWhitelistQuery,
   isKoHomonymPlaceSearchQuery,
   isKoHomonymRiSearchQuery,
 } from '../src/pages/Home/lib/koHomonymRiSearch.js';
@@ -76,16 +78,68 @@ const FIXTURE_DAEHWA_DONG = [
   },
 ];
 
+const FIXTURE_NAMYANG = [
+  {
+    name: '남양',
+    lat: '34.9',
+    lon: '128.1',
+    display_name: '남양, 사천시, 경상남도, 대한민국',
+    address: { suburb: '남양', city: '사천시', country_code: 'kr', state: '경상남도' },
+  },
+  {
+    name: '남양',
+    lat: '36.6',
+    lon: '126.7',
+    display_name: '남양, 홍성읍, 홍성군, 충청남도, 대한민국',
+    address: { town: '홍성읍', county: '홍성군', country_code: 'kr', state: '충청남도' },
+  },
+  {
+    name: '남양',
+    lat: '37.5',
+    lon: '130.9',
+    display_name: '남양, 서면, 울릉군, 경상북도, 대한민국',
+    address: { town: '서면', county: '울릉군', country_code: 'kr', state: '경상북도' },
+  },
+];
+
+const FIXTURE_SINCHON = [
+  {
+    name: '신촌',
+    lat: '37.56',
+    lon: '126.94',
+    display_name: '신촌, 서울특별시, 대한민국',
+    address: { suburb: '신촌동', city: '서울특별시', country_code: 'kr', state: '서울특별시' },
+  },
+  {
+    name: '신촌',
+    lat: '35.3',
+    lon: '126.4',
+    display_name: '신촌, 홍농읍, 영광군, 전라남도, 대한민국',
+    address: { town: '홍농읍', county: '영광군', country_code: 'kr', state: '전라남도' },
+  },
+];
+
 assert(isKoHomonymRiSearchQuery('대화리'), '대화리 is ri homonym query');
 assert(isKoHomonymRiSearchQuery('대화면'), '대화면 is ri homonym query');
 assert(!isKoHomonymRiSearchQuery('대화동'), '대화동 is not ri-only query');
 assert(!isKoHomonymRiSearchQuery('대화리 평창'), 'spaced query excluded');
 assert(!isKoHomonymRiSearchQuery('제주'), 'bare excluded from ri');
+assert(!isKoHomonymRiSearchQuery('남양'), 'bare whitelist excluded from ri-only');
 
 assert(isKoHomonymPlaceSearchQuery('대화리'), '대화리 is place homonym');
 assert(isKoHomonymPlaceSearchQuery('대화동'), '대화동 is place homonym (Phase 0 expand)');
-assert(!isKoHomonymPlaceSearchQuery('제주'), 'bare still excluded from place path');
-assert(!isKoHomonymPlaceSearchQuery('고성'), 'bare 고성 excluded (hub/whitelist 보류)');
+assert(isKoHomonymPlaceSearchQuery('남양'), '남양 bare whitelist is place path');
+assert(isKoHomonymPlaceSearchQuery('신촌'), '신촌 bare whitelist is place path');
+assert(isKoHomonymBareWhitelistQuery('남양'), '남양 is bare whitelist');
+assert(isKoHomonymBareWhitelistQuery('신촌'), '신촌 is bare whitelist');
+assert(!isKoHomonymBareWhitelistQuery('대화동'), '동 suffix not bare whitelist');
+assert(!isKoHomonymPlaceSearchQuery('제주'), 'hub bare 제주 excluded from place path');
+assert(!isKoHomonymPlaceSearchQuery('고성'), 'hub bare 고성 excluded (not whitelist)');
+assert(!isKoHomonymPlaceSearchQuery('광주'), 'hub bare 광주 excluded');
+assert(!isKoHomonymPlaceSearchQuery('강북'), 'hub bare 강북 excluded (hub exact)');
+assert(!getKoHomonymBareWhitelist().includes('고성'), 'whitelist must not include hub 고성');
+assert(getKoHomonymBareWhitelist().includes('남양'), 'whitelist includes 남양');
+assert(getKoHomonymBareWhitelist().includes('신촌'), 'whitelist includes 신촌');
 
 assert(
   formatKoHomonymRiRegionLabel({ county: '평창군', town: '대화면' }) === '평창군',
@@ -134,6 +188,30 @@ assert(
   'dong cards labeled with region',
 );
 
+const namyangCards = buildKoHomonymRiCandidatesFromRows('남양', FIXTURE_NAMYANG);
+assert(namyangCards.length >= 2, `남양 fixture ≥2 (got ${namyangCards.length})`);
+const namyangNames = namyangCards.map((c) => c.name);
+assert(
+  namyangNames.some((n) => n.includes('사천')),
+  `남양 has 사천: ${namyangNames.join(' | ')}`,
+);
+assert(
+  namyangNames.some((n) => n.includes('홍성') || n.includes('울릉')),
+  `남양 has 홍성|울릉: ${namyangNames.join(' | ')}`,
+);
+
+const sinchonCards = buildKoHomonymRiCandidatesFromRows('신촌', FIXTURE_SINCHON);
+assert(sinchonCards.length >= 2, `신촌 fixture ≥2 (got ${sinchonCards.length})`);
+const sinchonNames = sinchonCards.map((c) => c.name);
+assert(
+  sinchonNames.some((n) => n.includes('서울')),
+  `신촌 has 서울: ${sinchonNames.join(' | ')}`,
+);
+assert(
+  sinchonNames.some((n) => n.includes('영광')),
+  `신촌 has 영광: ${sinchonNames.join(' | ')}`,
+);
+
 if (process.env.KO_HOMONYM_RI_LIVE === '1') {
   console.log('LIVE: Nominatim collectKoHomonymRiCandidates(대화리)…');
   const live = await collectKoHomonymRiCandidates('대화리');
@@ -158,6 +236,20 @@ if (process.env.KO_HOMONYM_RI_LIVE === '1') {
     `LIVE 대화동 has 대전|고양: ${liveDongNames.join(' | ')}`,
   );
   console.log('LIVE 대화동:', liveDongNames.join(' · '));
+
+  console.log('LIVE: Nominatim collectKoHomonymPlaceCandidates(남양)…');
+  const liveNamyang = await collectKoHomonymPlaceCandidates('남양');
+  assert(liveNamyang.length >= 2, `LIVE 남양 ≥2 (got ${liveNamyang.length})`);
+  console.log('LIVE 남양:', liveNamyang.map((c) => c.name).join(' · '));
+
+  console.log('LIVE: Nominatim collectKoHomonymPlaceCandidates(신촌)…');
+  const liveSinchon = await collectKoHomonymPlaceCandidates('신촌');
+  assert(liveSinchon.length >= 2, `LIVE 신촌 ≥2 (got ${liveSinchon.length})`);
+  console.log('LIVE 신촌:', liveSinchon.map((c) => c.name).join(' · '));
+
+  console.log('LIVE: hub bare 고성 must not enter place collector…');
+  const liveGoseong = await collectKoHomonymPlaceCandidates('고성');
+  assert(liveGoseong.length === 0, `LIVE 고성 place path empty (got ${liveGoseong.length})`);
 } else {
   console.log('SKIP LIVE (set KO_HOMONYM_RI_LIVE=1 to enable)');
 }

@@ -1,7 +1,12 @@
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
-/** #36: 읍·면·리 · Phase 0 확장: 동(NEED_DISAMBIG). bare는 hub exact 우선·보류 */
+/** #36: 읍·면·리 · Phase 0 확장: 동(NEED_DISAMBIG) */
 const KO_HOMONYM_PLACE_RE = /[읍면리동]$/u;
 const KO_RI_TOWNSHIP_RE = /[읍면리]$/u;
+/**
+ * 비허브 bare NEED만 — 전 bare 개방 금지.
+ * hub exact(고성·광주·강북·강서·강진 등)는 여기 넣지 않음(중복 다후보 경로 금지).
+ */
+const KO_HOMONYM_BARE_WHITELIST = new Set(['남양', '신촌']);
 const NOMINATIM_UA = 'ProjectDays/1.0 (contact: project.days.dev@gmail.com)';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -56,19 +61,33 @@ function isKoHomonymBaseQuery(query) {
   return true;
 }
 
+/** 비허브 bare 화이트리스트 — hub miss일 때만 place 다후보 경로 */
+export function isKoHomonymBareWhitelistQuery(query) {
+  if (!isKoHomonymBaseQuery(query)) return false;
+  const q = String(query).trim();
+  if (KO_HOMONYM_PLACE_RE.test(q)) return false;
+  return KO_HOMONYM_BARE_WHITELIST.has(q);
+}
+
 /**
- * 국내 단독 「○○리/읍/면/동」검색 — 동명 다후보 대상.
- * bare(무접미사)는 Phase 0에서 보류(hub exact·잡음).
+ * 국내 단독 「○○리/읍/면/동」+ 비허브 bare 화이트리스트 — 동명 다후보 대상.
+ * 전 bare 개방 금지 · hub exact 있는 bare는 화이트리스트에 넣지 않음.
  */
 export function isKoHomonymPlaceSearchQuery(query) {
   if (!isKoHomonymBaseQuery(query)) return false;
-  return KO_HOMONYM_PLACE_RE.test(String(query).trim());
+  const q = String(query).trim();
+  if (KO_HOMONYM_PLACE_RE.test(q)) return true;
+  return KO_HOMONYM_BARE_WHITELIST.has(q);
 }
 
-/** #36 회귀 API — 읍·면·리만 (동 제외) */
+/** #36 회귀 API — 읍·면·리만 (동·bare 제외) */
 export function isKoHomonymRiSearchQuery(query) {
   if (!isKoHomonymBaseQuery(query)) return false;
   return KO_RI_TOWNSHIP_RE.test(String(query).trim());
+}
+
+export function getKoHomonymBareWhitelist() {
+  return [...KO_HOMONYM_BARE_WHITELIST];
 }
 
 /**
@@ -204,7 +223,7 @@ async function fetchNominatimKoRiRows(searchQuery, attempt = 1) {
 }
 
 /**
- * 동명 리/읍/면/동 → 지역 라벨 후보.
+ * 동명 리/읍/면/동·화이트리스트 bare → 지역 라벨 후보.
  * ≥2이면 선택 카드, 1이면 단일, 0이면 빈 배열(일반 geocode 폴백).
  */
 export async function collectKoHomonymPlaceCandidates(query) {

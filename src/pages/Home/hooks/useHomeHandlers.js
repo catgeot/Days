@@ -1004,7 +1004,7 @@ export function useHomeHandlers({
       }, resolvedLat, resolvedLng);
     };
 
-    // 국내 동명 리/읍/면/동 — 지역 명시 다후보 (단독 자동 진입 금지 · hub exact보다 뒤)
+    // 국내 동명 리/읍/면/동·비허브 bare 화이트리스트 — 지역 명시 다후보 (단독 자동 진입 금지 · hub exact보다 뒤)
     if (!isFacilityQuery(query) && isKoHomonymPlaceSearchQuery(query)) {
       const placeCandidates = await collectKoHomonymPlaceCandidates(query);
       if (placeCandidates.length >= 2) {
