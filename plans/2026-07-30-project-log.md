@@ -18,28 +18,25 @@
 **파일**: `mrtStayQuery.js` · `mrtTnaQuery.js` · smoke 2종  
 **tip**: `02bc8c6` (merge) · PR [#32](https://github.com/catgeot/Days/pull/32) MERGED
 
-## 다음 세션 — 에이전트 핸드오프
+## MRT 읍·면+county 공백 감사 — Phase 0
 
-**제시어**: `MRT-읍면-county감사-이어하기`
+**상태**: ✅ 스크립트·LIVE 샘플 · tip 대기(본 세션 push)
 
 | | |
 |--|--|
-| 계획 | [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) |
-| 목표 | 국내 SSOT에 대해 **읍·면 + county 공백** 감사 스크립트 (Phase 0 = 감사만) |
-| 선행 | #32 county 있을 때 시·군 우선 ✅ · 잔여 = county 빈 핀 |
-| 읽을 것 | `.ai-context` 1·3·4 · 본 일지 · plan §1~§5 · `mrtStayQuery.js` fineGrain/township |
-| 금지 | UI · 전국 override 추측 삽입 · Nominatim 폭주 · `travelSpots.js` 전체 스캔 |
+| 추가 | `scripts/audit-mrt-stay-admin-gaps.mjs` · `npm run audit:mrt-stay-admin-gaps` |
+| LIVE | `MRT_ADMIN_GAP_LIVE=1` · 정착지 읍·면 우선 340 · cache `/opt/cursor/artifacts/mrt-stay-admin-gaps/` |
+| **RISK_TOWNSHIP_NO_COUNTY** | **0** |
+| 참고 | township+county OK 87 · city=리+county 123(keyword 리 선두 잔여) · city=시·county∅ 129 |
+| 표 | plan §5.1 · artifacts `report.md` / `summary.json` |
+| 보강 | **보류** — 사람 확인 후 (전국 override 금지) |
 
-**Cloud 붙여넣기**
+## 다음 세션 — 에이전트 핸드오프
 
-```text
-MRT-읍면-county감사-이어하기
+**제시어**: (선택) `MRT-읍면-county감사-이어하기` — Phase 1 보강은 표 확인 후
 
-@.ai-context.md
-@plans/mrt-stay-admin-gap-audit-plan.md
-@plans/2026-07-30-project-log.md
-
-Phase 0: 국내 SSOT «읍·면 + county 공백» 감사 스크립트.
-plan §1~§5 · 감사 결과 표만 · 보강은 보고 후.
-VERIFY 후 커밋·push.
-```
+| | |
+|--|--|
+| 계획 | [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1 |
+| 잔여 | city=리 keyword 선두 · 미캐시 정착지 288 · hub/명소 LIVE 샘플 · GPS 비SSOT |
+| 금지 | UI · 전국 override 추측 · Nominatim 폭주 · `travelSpots.js` 전체 스캔 |

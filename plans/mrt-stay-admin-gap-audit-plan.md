@@ -1,9 +1,10 @@
 # 국내 MRT 숙소·투어 — 읍·면 + county 공백 감사
 
-**상태**: ⏳ Phase 0 대기 (다음 Cloud 세션)  
+**상태**: ✅ Phase 0 완료 (감사 스크립트 · LIVE 정착지 읍·면 샘플)  
 **제시어**: `MRT-읍면-county감사-이어하기`  
 **일지**: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)  
-**선행**: PR [#32](https://github.com/catgeot/Days/pull/32) — 평창 대화리→일산 대화 오탐 · **county 있을 때** 시·군 우선 ✅
+**선행**: PR [#32](https://github.com/catgeot/Days/pull/32) — 평창 대화리→일산 대화 오탐 · **county 있을 때** 시·군 우선 ✅  
+**VERIFY**: `npm run audit:mrt-stay-admin-gaps` · LIVE `MRT_ADMIN_GAP_LIVE=1 MRT_ADMIN_GAP_SOURCES=settlements MRT_ADMIN_GAP_LIMIT=340`
 
 ---
 
@@ -69,10 +70,26 @@ GPS·역지오 `stayAdmin`에서 OSM `town=○○면`이 `city`로 들어오고 
 
 ## 5. 완료 조건 (Phase 0)
 
-- [ ] `npm run audit:mrt-stay-admin-gaps` (또는 문서화된 node 명령) 실행 가능
-- [ ] `RISK_TOWNSHIP_NO_COUNTY` 건수·샘플이 일지/stdout에 남음
-- [ ] 후속 보강은 **별도** — 사람 확인 전 대규모 keyword override 남발 금지
-- [ ] 한글 커밋 · Cloud면 push·PR(또는 main 직행은 짧은 스크립트면 OK)
+- [x] `npm run audit:mrt-stay-admin-gaps` (또는 문서화된 node 명령) 실행 가능
+- [x] `RISK_TOWNSHIP_NO_COUNTY` 건수·샘플이 일지/stdout에 남음
+- [x] 후속 보강은 **별도** — 사람 확인 전 대규모 keyword override 남발 금지
+- [x] 한글 커밋 · Cloud면 push·PR(또는 main 직행은 짧은 스크립트면 OK)
+
+### 5.1 Phase 0 LIVE 결과 표 (정착지 · 읍·면 우선 340건 캐시)
+
+| 플래그/버킷 | 건수 | 비고 |
+|-------------|------|------|
+| **RISK_TOWNSHIP_NO_COUNTY** | **0** | city=`/[읍면]$/` · county 공백 — **해당 없음** |
+| RISK_FINE_NO_CITY | 0 | fine 동읍면리 · city·county 약함 |
+| kw_township | 0 | 1차 keyword가 읍·면/축약 — township+county 시 **군 선두** |
+| township+county OK | 87 | #32 경로 (예: 봉화읍→keyword `봉화군`) |
+| city=리 + county | 123 | OSM village→city · county 있음 · **keyword가 리 선두** 잔여(보강 후보) |
+| city=시 · county 공백 | 129 | 시 단위 · 면은 display만 |
+| city=광역시/특별시 | 22 | |
+| SSOT 읍·면 이름 후보 | 335 | 정착지 `^[가-힣]{2,}[읍면]$` |
+| 미캐시 정착지 | 288 | 비읍·면·동 등 · 필요 시 LIVE 이어가기 |
+
+**해석 (보강 전)**: SSOT 읍·면 정착지 좌표를 Nominatim reverse하면 **읍·면이 city일 때 county가 비는 케이스(본 RISK)는 0**. 잔여 관심은 (1) GPS/비SSOT 핀(대화리류) (2) **city=리 + county**인데 keyword가 리인 사다리.
 
 ---
 

@@ -26,6 +26,7 @@
     "generate:tourapi": "node scripts/generate-travel-spot-tourapi.mjs",
     "audit:tourapi": "node scripts/audit-tourapi-content-ids.mjs",
     "audit:mrt-stays": "node scripts/audit-mrt-stay-coverage.mjs",
+    "audit:mrt-stay-admin-gaps": "node scripts/audit-mrt-stay-admin-gaps.mjs",
     "audit:tripcom-hotel-city-gaps": "node scripts/list-tripcom-hotel-city-gaps.mjs",
     "audit:flight-arcs": "node scripts/audit-flight-arcs.mjs",
     "smoke:flight-route-baseline": "node scripts/smoke-flight-route-baseline.mjs",
