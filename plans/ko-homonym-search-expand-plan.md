@@ -88,7 +88,9 @@
 
 VERIFY: `smoke:ko-homonym-ri-search` (+ LIVE 남양·신촌·고성 place empty) · mrt stay/tna.
 
-**후속(선택)**: Preview QA · LIVE 추가 비허브 NEED만 시드 append (전 bare 개방 금지).
+**사람 QA**: 남양 지역 카드 OK · 시설 후보(초등·하행 등) **유지**(필터 금지).
+
+**후속(선택)**: Preview 잔여(대화리/동·신촌·hub) · main 병합.
 
 ---
 
