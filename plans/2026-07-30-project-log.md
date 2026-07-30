@@ -15,4 +15,5 @@
 
 **QA**: 지구본 현재위치(대화리) → 숙소찾기·투어찾기 · 고양/일산 목록이 아니어야 함
 
-**파일**: `mrtStayQuery.js` · `mrtTnaQuery.js` · smoke 2종
+**파일**: `mrtStayQuery.js` · `mrtTnaQuery.js` · smoke 2종  
+**tip**: `41ca94f` · PR [#32](https://github.com/catgeot/Days/pull/32)
