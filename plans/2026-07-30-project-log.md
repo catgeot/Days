@@ -46,24 +46,45 @@
 
 ## 검색「대화리」→ 천안 숙소 오탐
 
-**상태**: ✅ tip · PR [#35](https://github.com/catgeot/Days/pull/35)
+**상태**: ✅ tip · PR [#35](https://github.com/catgeot/Days/pull/35) · **제품상 임시**(다음=다후보)
 
 | | |
 |--|--|
 | 증상 | 검색「대화리」진입 → 숙소가 **천안** 목록 |
 | 원인 | Nominatim/Mapbox가 **천안시 대화리**를 1순위 · `originalQuery=대화리`가 keyword 선두 |
-| 조치 | 리/읍·면 쿼리 시 **군·면 행정 가산** · 시-only 리는 모호→별칭(`대화리 평창`) · stay `originalQuery` 세밀명은 군 래더 뒤 |
-| VERIFY | smoke stay 23 · tna 12 · Nominatim 재순위 평창군 1위 |
+| 조치(임시) | 군·면 스코어·별칭으로 평창 쪽 완화 · stay `originalQuery` 세밀명→군 래더 뒤 |
+| GPS | 현재위치 대화리 → **평창** 정상 (단일 좌표라 OK) |
+
+**사람 결정 (다음 세션)**: 평창·천안 **어느 쪽도 자동 우선 금지**. 검색 시 **지역 명시 다후보**  
+예: `대화리 · 평창군` / `대화리 · 천안시` (천안은 **시**).  
+계획: [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md)
 
 **파일**: `geocoding.js` · `mrtStayQuery.js` · smoke stay  
 **브랜치**: `cursor/fix-daehwa-ri-search-cheonan-8077`
 
 ## 다음 세션 — 에이전트 핸드오프
 
-**제시어**: (선택) 미캐시 정착지 LIVE · hub/명소 샘플
+**제시어**: `동명리-검색-다후보-이어하기`
 
 | | |
 |--|--|
-| 계획 | [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 |
-| 잔여 | 미캐시 정착지 288 · hub/명소 LIVE · 동명 리 일반화(대화리 외) 선택 |
-| 금지 | UI · 전국 override 추측 · Nominatim 폭주 · `travelSpots.js` 전체 스캔 |
+| 계획 | [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) |
+| 목표 | 「대화리」검색 → 평창군·천안시 등 **라벨 있는 후보 나열** · 자동 단독 진입 금지 |
+| 선행 | GPS→평창 ✅ · #35 임시 완화(다후보 시 평창 강제 별칭 교체) |
+| 읽을 것 | `.ai-context` 1·3·4 · 본 일지 · plan · `makeDisambiguationResult` · `getCoordinatesFromAddress` |
+| 금지 | UI 리디자인 · 평창/천안 단독 우선 재도입 · Nominatim 폭주 · `travelSpots.js` 전체 스캔 |
+
+**Cloud 붙여넣기**
+
+```text
+동명리-검색-다후보-이어하기
+
+@.ai-context.md
+@plans/ko-homonym-ri-search-disambiguation-plan.md
+@plans/2026-07-30-project-log.md
+
+대화리 동명: 평창/천안 단독 우선 금지.
+검색 결과「대화리 · 평창군」「대화리 · 천안시」다후보.
+GPS 단일 OK. #35 평창 강제→다후보로 교체.
+VERIFY 후 커밋·push.
+```
