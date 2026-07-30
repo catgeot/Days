@@ -193,6 +193,51 @@ const CASES = [
     },
     expectKeyword: /문경/,
   },
+  /**
+   * GPS 평창군 대화면 대화리 — 「대화」축약이 고양/일산 대화동으로 새면 안 됨.
+   * 1차 키워드·cityHints는 시·군(평창) 우선.
+   */
+  {
+    slug: 'pyeongchang-daehwa-ri',
+    location: {
+      name: '대화리',
+      name_ko: '대화리',
+      name_en: 'Daehwa-ri',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      stayAdmin: {
+        neighbourhood: '',
+        district: '',
+        city: '대화면',
+        cityEn: 'Daehwa-myeon',
+        county: '평창군',
+        state: '강원특별자치도',
+      },
+    },
+    expectPrimaryKeyword: /평창/,
+    expectKeyword: /평창/,
+    rejectCityHint: /^(대화)$/,
+    rejectPrimaryKeyword: /대화/,
+  },
+  {
+    slug: 'pyeongchang-daehwa-ri-en-name',
+    location: {
+      name: 'Daehwa-ri',
+      name_ko: '대화리',
+      name_en: 'Daehwa-ri',
+      country: '대한민국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      stayAdmin: {
+        city: '대화면',
+        county: '평창군',
+        state: '강원특별자치도',
+      },
+    },
+    expectPrimaryKeyword: /평창/,
+    rejectCityHint: /^(대화)$/,
+  },
 ];
 
 function assert(cond, msg) {
@@ -206,9 +251,25 @@ async function main() {
       assert(canShowMrtStayStrip(c.location), `${c.slug}: strip should show`);
       const q = resolveMrtStayQuery(c.location);
       assert(q.keyword, `${c.slug}: keyword`);
+      if (c.expectPrimaryKeyword) {
+        assert(
+          c.expectPrimaryKeyword.test(q.keyword),
+          `${c.slug}: primary keyword ${q.keyword}`,
+        );
+      }
+      if (c.rejectPrimaryKeyword) {
+        assert(
+          !c.rejectPrimaryKeyword.test(q.keyword),
+          `${c.slug}: primary must not be ${q.keyword}`,
+        );
+      }
       if (c.expectKeyword) {
         const blob = [q.keyword, ...q.altKeywords].join('|');
         assert(c.expectKeyword.test(blob), `${c.slug}: keyword ladder ${blob}`);
+      }
+      if (c.rejectCityHint) {
+        const bad = (q.cityHints || []).find((h) => c.rejectCityHint.test(String(h)));
+        assert(!bad, `${c.slug}: cityHints must not include ${bad} (${q.cityHints})`);
       }
       const countryBlob = [q.countryHint, ...q.countryHintAlts].join('|');
       if (c.expectCountryAlt) {

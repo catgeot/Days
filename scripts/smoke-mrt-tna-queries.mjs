@@ -199,6 +199,30 @@ const CASES = [
     expectLiveUsed: /영주|상주|안동|문경/,
     expectLiveNearbyExpanded: true,
   },
+  /**
+   * GPS 평창군 대화면 대화리 — 1차 키워드가 「대화*」면 일산 대화 투어로 새감.
+   */
+  {
+    slug: 'pyeongchang-daehwa-ri',
+    location: {
+      name: '대화리',
+      name_ko: '대화리',
+      name_en: 'Daehwa-ri',
+      country: '한국',
+      country_en: 'South Korea',
+      uiPlace: true,
+      stayAdmin: {
+        city: '대화면',
+        county: '평창군',
+        state: '강원특별자치도',
+      },
+    },
+    expectDomestic: true,
+    expectPrimaryKeyword: /평창/,
+    expectKeyword: /평창/,
+    expectNearbyExact: ['강릉', '정선', '횡성', '영월'],
+    expectNearbyChips: true,
+  },
   {
     slug: 'osaka',
     location: {
@@ -234,6 +258,12 @@ async function main() {
       assert(canShowMrtTnaStrip(c.location), `${c.slug}: strip should show`);
       const q = resolveMrtTnaQuery(c.location);
       assert(q.keyword, `${c.slug}: keyword`);
+      if (c.expectPrimaryKeyword) {
+        assert(
+          c.expectPrimaryKeyword.test(q.keyword),
+          `${c.slug}: primary keyword ${q.keyword}`,
+        );
+      }
       if (c.expectKeyword) {
         const blob = [q.keyword, ...q.altKeywords].join('|');
         assert(c.expectKeyword.test(blob), `${c.slug}: keyword ladder ${blob}`);
