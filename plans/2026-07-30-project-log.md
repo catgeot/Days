@@ -193,13 +193,13 @@
 
 ## 국내 TNA Phase 4 — 일정 연결 SSOT 3차 (부산 포함)
 
-**상태**: ✅ `main` (커밋 대기 · 검증 후)
+**상태**: ✅ `main` `d87a0bb` (push 대기 · 사람 요청 시)
 
 | | |
 |--|--|
 | 등재 | 영주·인제·하동·양양·삼척·동해·부산 (hubId+한글 · C표 합계 20) |
 | LIVE | 인근 키워드 전부 n≥1 · 풍부 hub `nearbyExpanded=false` |
-| 스모크 | 영주·하동·부산 칩 true · `MRT_TNA_SMOKE_LIVE=1` |
+| 스모크 | 영주·하동·부산 칩 true · `MRT_TNA_SMOKE_LIVE=1` PASS |
 | 유지 | Edge ≤3 자동보강 · UI 비주얼 |
 
 **QA**: 부산/영주/하동 명소 — 본지 풍부해도 「주변 지역 더보기」칩
