@@ -64,7 +64,7 @@
 
 ## 동명 리 검색 — 지역 명시 다후보
 
-**상태**: ✅ tip `5ff4762` · PR [#36](https://github.com/catgeot/Days/pull/36) · 사람 Preview QA 대기
+**상태**: ✅ tip `9ee46a4` · PR [#36](https://github.com/catgeot/Days/pull/36) · 사람 Preview QA 대기
 
 | | |
 |--|--|
@@ -76,4 +76,34 @@
 
 **QA**: Preview 검색「대화리」Enter → 지역 라벨 카드 ≥2 · 평창/천안 각각 선택 후 숙소 · GPS 대화리→평창 회귀
 
-**브랜치**: `cursor/ko-homonym-ri-disambiguation-1ed8` · tip `5ff4762`
+**브랜치**: `cursor/ko-homonym-ri-disambiguation-1ed8` · tip `9ee46a4`
+
+## 다음 세션 — 에이전트 핸드오프
+
+**제시어**: `동명검색-확장-후보추출-이어하기`
+
+| | |
+|--|--|
+| 계획 | [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) |
+| 목표 | 동·시·군·무접미사 **확장 필요성** 확인 · 검색/SSOT/Nominatim으로 **구분 필요 후보 표** · 필요 시 라벨 다후보 연결 |
+| 선행 | #36 읍·면·리 다후보 ✅ · Preview QA는 병행 가능 |
+| 읽을 것 | `.ai-context` 1·3·4 · 본 일지 · expand plan §1~§3 · `koHomonymRiSearch.js` · `audit-ko-homonym-expand-candidates.mjs` |
+| 금지 | UI 리디자인 · 단독 우선 · Nominatim 폭주 · 표 없이 전패턴 확장 · `travelSpots.js` 전체 스캔 |
+
+**Cloud 붙여넣기**
+
+```text
+동명검색-확장-후보추출-이어하기
+
+@.ai-context.md
+@plans/ko-homonym-search-expand-plan.md
+@plans/2026-07-30-project-log.md
+
+Phase 0: 동·시·군·무접미사 동명 확장 필요성 + 후보 표.
+npm run audit:ko-homonym-expand
+KO_HOMONYM_EXPAND_LIVE=1 npm run audit:ko-homonym-expand
+search_dictionary는 Secrets 있을 때만.
+표 보고 확장 O면 라벨 다후보 · X면 보류 일지.
+#36 리/읍/면 회귀 유지. UI 리디자인·단독 우선 금지.
+VERIFY 후 커밋·push.
+```
