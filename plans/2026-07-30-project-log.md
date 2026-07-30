@@ -149,7 +149,7 @@
 
 ## 국내 TNA — 「주변 지역 더보기」상시 노출
 
-**상태**: ✅ `main` 커밋
+**상태**: ✅ `main` `b58da65` (push 대기 · 사람 요청 시)
 
 | | |
 |--|--|
@@ -157,4 +157,34 @@
 | 유지 | Edge ≤3 자동보강 머지 · 비주얼 동일 |
 | VERIFY | `node scripts/smoke-mrt-tna-queries.mjs` PASS |
 
-**QA**: 문경 등 SSOT 인근 hub에서 투어 많아도 하단 칩 → 클릭 시 인근 섹션 · 부산(인근 없음)은 칩 없음
+**QA**: 문경 등 SSOT 인근 hub에서 투어 많아도 하단 칩 → 클릭 시 인근 섹션 · 부산(인근 없음)은 칩 없음(아직 C표 미등재)
+
+---
+
+## 국내 TNA 인근 — 다음 세션 핸드오프 (일정 연결 SSOT)
+
+**역할 전환**: 희소 hub 보강용 → **여행 일정 확장용 인근 연결**(투어·즐길거리가 동선 단서).  
+UI 칩 상시는 ✅ · **풍부 hub(C표) SSOT 등재가 다음 작업**.
+
+### 읽을 것 3
+
+1. 본 절
+2. [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) **Phase 4**
+3. `src/utils/mrtTnaQuery.js` → `MRT_TNA_NEARBY_EXPAND`
+
+### 금지 3
+
+1. 전국 자동 이웃 그래프 / 임의 도시 검색
+2. Edge ≤3 자동보강 로직을 「항상 머지」로 바꾸지 말 것(칩 상시 ≠ 자동보강 상시)
+3. LIVE `n≈0` 키워드를 인근 배열에 넣지 말 것(계획 §D)
+
+### 다음 작업
+
+1. C표(풍부 hub) 우선 큐레이션 — 예: 경주·단양·춘천·통영·거제·가평·제주(권역) 등 hub당 인근 2~4
+2. LIVE로 인근 키워드 `n` 확인 후 `MRT_TNA_NEARBY_EXPAND` 반영(hubId+한글명)
+3. 스모크에 풍부 hub 칩 케이스 1~2개 추가 · `npm run smoke:mrt-tna`
+4. 계획·주석 「희소 보강」→「일정 연결」문구 정리(Phase 4)
+
+### 제시어
+
+`MRT-TNA-인근확장-이어하기` 또는 `MRT-TNA-일정연결-이어하기`

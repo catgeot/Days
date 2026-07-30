@@ -30,8 +30,9 @@ const MRT_TNA_KEYWORD_OVERRIDES = {
 export const MRT_TNA_NEARBY_EXPAND_MAX = 3;
 
 /**
- * 희소 TNA hub → 인근 한글 키워드(순서=자동보강→더보기).
- * hubId + 한글명. Phase 0 A표+B표 · n≈0 키워드 제외(계획 §D).
+ * 국내 TNA 인근 연결 SSOT (hubId + 한글명).
+ * Phase 0~3 A·B=희소 보강 · Phase 4=일정 확장(풍부 hub도 등재).
+ * 순서=자동보강(≤3)→칩/더보기. LIVE n≈0 키워드 제외.
  */
 const MRT_TNA_NEARBY_EXPAND = {
   // —— A표 ——
