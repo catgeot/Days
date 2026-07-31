@@ -18,6 +18,20 @@
 
 VERIFY: `npm run audit:geo-puzzle` · `npm run smoke:global-puzzle` · `npm run build`
 
+### 0.−1.1 Preview · Mapbox URL (고정 브랜치)
+
+세션마다 `cursor/…-xxxx` 브랜치를 새로 만들면 Vercel Preview 호스트가 바뀌고, Mapbox URL 제한을 매번 다시 등록해야 한다. **퍼즐은 고정 브랜치만 사용.**
+
+| | 값 |
+|--|-----|
+| **고정 브랜치** | `cursor/geography-puzzle-plan-62e0` (PR [#31](https://github.com/catgeot/Days/pull/31)) |
+| **Mapbox에 등록할 Preview URL (1회)** | `https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app` |
+| **QA 경로** | 위 호스트 + `/play/geo` |
+| **등록하지 말 것** | `days-xxxxx-catgeots-projects.vercel.app` (배포마다 바뀌는 해시 URL) |
+| **에이전트** | 퍼즐 후속은 **이 브랜치 checkout 후 push** · 새 랜덤 브랜치/PR 금지(Mapbox 재등록 유발) |
+
+Mapbox는 URL wildcard 미지원. 같은 브랜치의 **git Preview 별칭**은 푸시해도 호스트가 유지된다.
+
 ---
 
 ## 0. Phase 0 확정 (2026-07-29 사람 답변)
