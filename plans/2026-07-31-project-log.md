@@ -14,20 +14,19 @@
 | 후속 | 세부 지명(도시/명소)은 나라 클리어 후 해금 슬롯 |
 | 핸드오프 | [`global-puzzle-mvp-plan.md`](./global-puzzle-mvp-plan.md) · 제시어 `범지구적퍼즐-이어하기` |
 
-## 범지구적 퍼즐 — MVP 구현
+## 범지구적 퍼즐 — MVP 구현 (홈 모드 → `/play/geo` 전용으로 피벗)
 
 **상태**: tip · Preview QA 대기 · 완료 단정 금지
 
 | | |
 |--|--|
-| 진입 | 홈 로고 아래 「범지구적 퍼즐」토글 (축제 버튼 아래 · 기존 톤 유지) |
-| 루프 | 권역→나라 칩 → **찾기(B)** (포커스 없이) → 수도 4지선다 → 별·재도전 |
-| 힌트 | flyToRegion + 국경 하이라이트 · 별 −1 |
-| 시드 | 36국 `globalPuzzle/capitalsSeed.js` |
-| 진행 | localStorage `gateo_global_puzzle_v1` · 칩 ★ 배지 |
-| VERIFY | `npm run smoke:global-puzzle` PASS · `npm run build` OK |
-| 금지 준수 | 홈 레일/카테고리 리디자인 없음 · 테마 필터로 스테이지 미사용 |
+| 피드백 | 홈 모드로는 전환 인지 어려움 · 지명/장소카드 간섭 · 홈 로직 얽힘 위험 |
+| 아키텍처 | 이전 `/play/geo` **전용 글로브**(라벨 숨김) 유지 · 합의 루프(찾기B+수도)로 플레이 |
+| 진입 | 홈 `Link` → `/play/geo` 만 (모드 토글·HomeGlobeMapbox 가드 **제거**) |
+| 루프 | 권역→나라(시드) → 찾기(B) → 수도 4지선다 → 별·재도전 |
+| VERIFY | `npm run smoke:global-puzzle` · `npm run build` |
+| 플랜 | [`global-puzzle-mvp-plan.md`](./global-puzzle-mvp-plan.md) §0 아키텍처 확정 |
 
-**QA (Preview)**: 플랜 §7 — 나라 미리 포커스 없음 · 오답 탭 재시도 · 힌트 별≤2 · 재도전 · 모드 종료 후 탐색 회귀
+**QA (Preview)**: `/play/geo` — 지명 없음 · 장소카드 없음 · 미리 포커스 없음 · 힌트 별≤2 · 홈 회귀
 
-**브랜치**: `cursor/global-puzzle-mvp-2177` · tip `4ba6268` · PR [#40](https://github.com/catgeot/Days/pull/40)
+**브랜치**: `cursor/global-puzzle-mvp-2177` · PR [#40](https://github.com/catgeot/Days/pull/40)

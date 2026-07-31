@@ -57,9 +57,6 @@ const HomeUI = React.memo(({
   onTourEnd,
   onTourBarClose,
   onTourBarStartTour,
-  puzzleMode = false,
-  onTogglePuzzleMode,
-  puzzleProgressById = null,
 }) => {
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
@@ -132,29 +129,23 @@ const HomeUI = React.memo(({
                   </span>
                 </span>
               </Link>
-              <button
-                type="button"
-                onClick={onTogglePuzzleMode}
-                aria-pressed={puzzleMode}
-                aria-label={puzzleMode ? '범지구적 퍼즐 종료' : '범지구적 퍼즐 시작'}
-                className={`group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border px-2.5 py-2 backdrop-blur-md transition-all ${
-                  puzzleMode
-                    ? 'border-cyan-300/70 bg-cyan-500/20 shadow-[0_0_18px_rgba(34,211,238,0.28)]'
-                    : 'border-cyan-400/40 bg-black/60 shadow-[0_0_18px_rgba(34,211,238,0.18)] hover:border-cyan-300/65 hover:bg-black/75'
-                }`}
+              <Link
+                to="/play/geo"
+                className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-cyan-400/40 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(34,211,238,0.18)] backdrop-blur-md transition-all hover:border-cyan-300/65 hover:bg-black/75"
+                aria-label="범지구적 퍼즐로 이동"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-cyan-400/35 bg-cyan-500/15 text-cyan-300 group-hover:bg-cyan-500/25">
                   <Puzzle size={16} aria-hidden="true" />
                 </span>
-                <span className="min-w-0 flex flex-col leading-tight text-left">
+                <span className="min-w-0 flex flex-col leading-tight">
                   <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
                     범지구적 퍼즐
                   </span>
                   <span className="truncate text-[10px] text-cyan-100/85">
-                    {puzzleMode ? '모드 켜짐 · 나라 선택' : '권역 · 찾기 · 수도'}
+                    권역 · 찾기 · 수도
                   </span>
                 </span>
-              </button>
+              </Link>
             </>
           )}
         </div>
@@ -248,7 +239,6 @@ const HomeUI = React.memo(({
                 subregionPlacement="none"
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
-                puzzleProgressById={puzzleMode ? puzzleProgressById : null}
                 className="mb-0.5"
               />
             ) : null}
@@ -382,7 +372,6 @@ const HomeUI = React.memo(({
                 showSubregions
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
-                puzzleProgressById={puzzleMode ? puzzleProgressById : null}
                 className="pt-0.5"
               />
             ) : null}
