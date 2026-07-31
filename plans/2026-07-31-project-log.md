@@ -60,3 +60,9 @@
 - **수정**: 캠페인 38국 폴리곤 SSOT(`geoPuzzleCountryPolygons.js`)로 채움 · bbox 폴백 제거 · 배포 패널 `21:10 UTC` · `poly n/n`.
 - VERIFY: `audit:geo-puzzle` · `smoke:global-puzzle` · `build` PASS.
 - QA: 고정 Preview `…geography-puzzle-plan-62e0…/play/geo` — 하드 리프레시 후 일본·한국 등 **해안선 따라 보라 면**(박스 아님).
+
+## 범지구적 퍼즐 — 외곽선 겹침
+
+- **사람 QA**: 필 OK · 주황 외곽이 겹쳐 지저분. 필·경계가 다른지 문의.
+- **답**: 필·선은 **동일 GeoJSON**. 원인 = 나라당 섬 조각 최대 24개 + 두꺼운 line + 접경 이중 스트로크.
+- **수정**: 본토·주요 섬만(상대면적 ≥0.5%) · 외곽 링만 · line 1.35/opacity 0.78 · 배포 `21:20 UTC`.

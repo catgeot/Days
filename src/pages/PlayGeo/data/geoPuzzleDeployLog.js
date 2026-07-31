@@ -5,6 +5,11 @@
  */
 export const GEO_PUZZLE_DEPLOY_LOG = [
   {
+    at: '2026-07-31 21:20 UTC',
+    summary: '외곽선 정리 — 본토·주요 섬만 · 선 얇게',
+    detail: '필·경계는 동일 GeoJSON. 작은 섬 조각·두꺼운 line이 겹쳐 지저분해 보임. 조각 축소·line 1.35.',
+  },
+  {
     at: '2026-07-31 21:10 UTC',
     summary: '정답 필 = 나라 폴리곤(박스 폴백 제거)',
     detail: '타일 query 실패 시 bbox 사각형이 보이던 버그. 캠페인 GeoJSON 폴리곤 SSOT로 채움.',

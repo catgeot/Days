@@ -50,33 +50,35 @@ function simplifyGeometry(geometry) {
   if (!geometry) return null;
   const { type, coordinates } = geometry;
   if (type === 'Polygon') {
-    const rings = (coordinates || [])
-      .map((ring) => {
-        const area = ringArea(ring);
-        const maxPts = area > 80 ? 72 : area > 8 ? 48 : area > 0.5 ? 32 : 20;
-        return roundRing(simplifyRing(ring, maxPts));
-      })
-      .filter((r) => r && r.length >= 4);
-    if (!rings.length) return null;
-    return { type: 'Polygon', coordinates: rings };
+    const outer = coordinates?.[0];
+    if (!outer) return null;
+    const area = ringArea(outer);
+    const maxPts = area > 80 ? 72 : area > 8 ? 48 : area > 0.5 ? 32 : 20;
+    const ring = roundRing(simplifyRing(outer, maxPts));
+    if (!ring || ring.length < 4) return null;
+    return { type: 'Polygon', coordinates: [ring] };
   }
   if (type === 'MultiPolygon') {
+    // 작은 섬·조각까지 외곽선을 그리면 필 안쪽에 선이 겹쳐 지저분해짐 → 본토·주요 섬만
     const scored = (coordinates || [])
       .map((poly) => {
         const outer = poly?.[0];
         return { poly, area: ringArea(outer) };
       })
       .filter((p) => p.area > 0)
-      .sort((a, b) => b.area - a.area)
-      .slice(0, 24);
+      .sort((a, b) => b.area - a.area);
+    const maxArea = scored[0]?.area || 0;
+    const kept = scored
+      .filter((p, idx) => idx === 0 || p.area / maxArea >= 0.005)
+      .slice(0, 8);
     const polys = [];
-    for (const { poly, area } of scored) {
+    for (const { poly, area } of kept) {
       const maxOuter = area > 80 ? 72 : area > 8 ? 48 : area > 0.5 ? 32 : 18;
-      const rings = (poly || [])
-        .slice(0, 4)
-        .map((ring, idx) => roundRing(simplifyRing(ring, idx === 0 ? maxOuter : Math.min(24, maxOuter))))
-        .filter((r) => r && r.length >= 4);
-      if (rings.length) polys.push(rings);
+      const outer = poly?.[0];
+      if (!outer) continue;
+      // 외곽 링만 (호수·구멍 링은 주황 내부선으로 보임)
+      const ring = roundRing(simplifyRing(outer, maxOuter));
+      if (ring && ring.length >= 4) polys.push([ring]);
     }
     if (!polys.length) return null;
     if (polys.length === 1) return { type: 'Polygon', coordinates: polys[0] };

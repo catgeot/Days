@@ -268,10 +268,14 @@ function ensurePlacedLayers(map) {
     id: PLACED_GEO_LINE,
     type: 'line',
     source: PLACED_GEOJSON_SOURCE,
+    layout: {
+      'line-join': 'round',
+      'line-cap': 'round',
+    },
     paint: {
       'line-color': '#fbbf24',
-      'line-width': 2.4,
-      'line-opacity': 0.98,
+      'line-width': 1.35,
+      'line-opacity': 0.78,
     },
   });
 
