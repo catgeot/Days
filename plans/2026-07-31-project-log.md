@@ -27,3 +27,19 @@
 | 파일 | `AICurationCard.jsx` · `useLogbookAI.js` · `prompts.js` |
 
 **QA**: 로그아웃 상태 `/blog` → 도구 → 낙원 탐색 시작 → 결과·CTA 동작 · 북마크는 로그인 안내
+
+## 큐레이션 페이지 핸드오프 (다음 세션)
+
+**사람 확인**: Phase A(연결·이미지·비로그인) Preview OK · 이전 실패 지점 해소.
+
+**다음 방향 (합의)**: 연결 CTA 중심이 아니라 **`/blog/curation` 인페이지 콘텐츠 허브**  
+— 나의 큐레이션 목록 · 페이지 안에서 실용/숨은 정보 · 지구본·장소카드 이탈 후 복귀 어려움 해소.
+
+| | |
+|--|--|
+| 계획 SSOT | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |
+| 제시어 | `큐레이션-이어하기` |
+| 다음 Phase | **B** 전용 페이지 셸 + history 객체 목록 · **C** tips/season 등 인페이지 리치 |
+| tip | `500ae06` · PR [#38](https://github.com/catgeot/Days/pull/38) |
+
+**에이전트**: 계획 §0·§2·§3 + 위 파일 4종만 · travelSpots/축제/MRT 가이드 전체 Read 금지.
