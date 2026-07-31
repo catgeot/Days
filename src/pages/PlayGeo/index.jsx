@@ -23,9 +23,13 @@ import {
   savePuzzleProgress,
   startFindSession,
 } from './lib/globalPuzzle/index.js';
-import { isCorrectFindTap, resolveGlobeFilledIds } from './lib/findCountryTap.js';
+import { isCorrectFindTap } from './lib/findCountryTap.js';
 import GeoPuzzleGlobe from './GeoPuzzleGlobe.jsx';
 import CountrySilhouettePiece from './CountrySilhouettePiece.jsx';
+
+function clearedIdsFromProgress(progress) {
+  return Object.keys(progress?.countries || {}).filter((id) => progress.countries[id]?.cleared);
+}
 
 function StarsRow({ count = 0, max = 3 }) {
   return (
@@ -73,6 +77,8 @@ export default function GeoPuzzlePage() {
 
   const [continentId, setContinentId] = useState(() => campaign[0]?.id || '');
   const [progress, setProgress] = useState(() => loadPuzzleProgress());
+  // 초기 MVP와 동일: 정답 탭 시 즉시 filledIds에 넣고 글로브에 전달
+  const [filledIds, setFilledIds] = useState(() => clearedIdsFromProgress(loadPuzzleProgress()));
   const [session, setSession] = useState(() => createIdleSession());
   const [hintCountryId, setHintCountryId] = useState(null);
   const [flashMiss, setFlashMiss] = useState(false);
@@ -92,25 +98,14 @@ export default function GeoPuzzlePage() {
     [continentCountryIds],
   );
 
-  const clearedIds = useMemo(
-    () => Object.keys(progress.countries || {}).filter((id) => progress.countries[id]?.cleared),
-    [progress],
-  );
-
-  /** 찾기 탭 정답 직후(수도 전)에도 지구본 필이 채워지도록 */
-  const globeFilledIds = useMemo(
-    () => resolveGlobeFilledIds(clearedIds, session),
-    [clearedIds, session],
-  );
-
   const trayIds = useMemo(
-    () => playableIds.filter((id) => !progress.countries?.[id]?.cleared),
-    [playableIds, progress],
+    () => playableIds.filter((id) => !filledIds.includes(id)),
+    [playableIds, filledIds],
   );
 
   const clearedInContinent = useMemo(
-    () => playableIds.filter((id) => progress.countries?.[id]?.cleared).length,
-    [playableIds, progress],
+    () => playableIds.filter((id) => filledIds.includes(id)).length,
+    [playableIds, filledIds],
   );
 
   const totalBestStars = useMemo(
@@ -166,9 +161,12 @@ export default function GeoPuzzlePage() {
       setSession((prev) => applyFindTap(prev, false));
       return;
     }
+    const countryId = session.countryId;
     setHintCountryId(null);
+    // 초기 applyCorrect와 동일 — 수도 전에 필 채움
+    setFilledIds((prev) => (prev.includes(countryId) ? prev : [...prev, countryId]));
     setSession((prev) => applyFindTap(prev, true));
-    apiRef.current?.flyToCountry?.(session.countryId);
+    apiRef.current?.flyToCountry?.(countryId);
   }, [continentCountryIds, session.countryId, session.phase]);
 
   const handleHint = useCallback(() => {
@@ -217,6 +215,7 @@ export default function GeoPuzzlePage() {
   const handleReset = () => {
     clearPuzzleProgress();
     setProgress(loadPuzzleProgress());
+    setFilledIds([]);
     setSession(createIdleSession());
     setHintCountryId(null);
     setContinentId(campaign[0]?.id || '');
@@ -278,7 +277,7 @@ export default function GeoPuzzlePage() {
 
       <div className={`relative min-h-0 flex-1 transition-opacity ${flashMiss ? 'opacity-80' : 'opacity-100'}`}>
         <GeoPuzzleGlobe
-          filledIds={globeFilledIds}
+          filledIds={filledIds}
           slotIds={continentCountryIds}
           hintCountryId={hintCountryId}
           findActive={session.phase === PUZZLE_PHASE.FIND}
@@ -305,7 +304,7 @@ export default function GeoPuzzlePage() {
           {campaign.map((c) => {
             const ids = listContinentCountryIds(c).filter((id) => isPuzzleCountryPlayable(id));
             const active = c.id === continent?.id;
-            const cleared = ids.length > 0 && ids.every((id) => progress.countries?.[id]?.cleared);
+            const cleared = ids.length > 0 && ids.every((id) => filledIds.includes(id));
             return (
               <button
                 key={c.id}

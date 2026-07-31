@@ -24,3 +24,9 @@
 - **원인**: Mapbox GL v3 글로브 조명에서 fill이 어두워져 **라인만** 보임. 힌트/클리어도 윤곽만.
 - **수정**: `fill-emissive-strength`/`line-emissive-strength`=1 · cyan opacity↑ · ISO 필터를 홈 하이라이트와 동일(`==`) · 정답 시 힌트 금색이 placed를 덮지 않음.
 - 로컬 QA: 한국 탭→cyan 필 · 힌트→금색 필 확인.
+
+## 범지구적 퍼즐 — 초기 MVP 필 경로 복원
+
+- **차이 파악**: `ef6be28`는 정답 시 `setFilledIds` 즉시 → `filledIds` prop → `setFilter(PLACED_FILL)`. 합의 룰(`6799d3b`) 이후 session/cleared 파생·paint try 묶음으로 경로가 달라짐.
+- **복원**: 정답 탭 → `filledIds` 즉시 append(초기 `applyCorrect`) · ISO 필터=`ef6be28` match · setFilter와 paint try 분리 · fill-extrusion 보조 · sourcedata 재동기화.
+- Preview QA 대기.
