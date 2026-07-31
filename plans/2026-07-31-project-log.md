@@ -50,4 +50,5 @@
 - **사람 보고**: 배포 로그는 보임 · 채움 없음.
 - **원인 추정**: PC `projection: globe`에서 fill이 위성에 가려지거나 안 그림. 로컬 QA는 좁은 창→mercator라 통과.
 - **수정**: 퍼즐 **항상 mercator** · vector fill + GeoJSON(타일 query / bbox 폴백) · 배포 패널에 `필 jp · layer ok` 진단.
+- tip `0be59ef` · PR [#31](https://github.com/catgeot/Days/pull/31)
 - QA: 패널 `12:45 UTC` · 정답 후 진단 `필 jp` + 보라 면(또는 bbox 면).
