@@ -223,6 +223,8 @@ export default function GlobeFaceRegionRail({
   subregionPlacement = 'side',
   listHeightClass,
   className = '',
+  /** 퍼즐 진행 — countryId → { cleared, bestStars } (칩 톤 유지 · 배지만) */
+  puzzleProgressById = null,
 }) {
   const subregions = useMemo(
     () => (showSubregions ? getFaceSubregions(category) : []),
@@ -343,6 +345,8 @@ export default function GlobeFaceRegionRail({
           >
             {regions.map((region) => {
               const isActive = selectedRegionId === region.id;
+              const progress = puzzleProgressById?.[region.id];
+              const bestStars = Number(progress?.bestStars) || 0;
               return (
                 <button
                   key={region.id}
@@ -357,6 +361,11 @@ export default function GlobeFaceRegionRail({
                   <span className="block text-[11px] md:text-xs font-bold leading-tight tracking-tight break-keep">
                     {region.labelKo}
                   </span>
+                  {progress?.cleared && bestStars > 0 ? (
+                    <span className="mt-0.5 block text-[9px] font-bold leading-none tracking-tight text-amber-200/90">
+                      {'★'.repeat(Math.min(3, bestStars))}
+                    </span>
+                  ) : null}
                 </button>
               );
             })}

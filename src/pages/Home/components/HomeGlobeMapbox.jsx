@@ -26,6 +26,10 @@ import {
   setRegionHighlight,
   setupRegionHighlightLayers,
 } from '../lib/globeRegionHighlight';
+import {
+  ensurePuzzleHitLayer,
+  isCorrectCountryTap,
+} from '../lib/globalPuzzle/hitTest.js';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
 import {
   HIGH_ZOOM_FULL_REVEAL,
@@ -367,6 +371,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   highlightCategory = null,
   categoryFaceEpoch = 0,
   onReturnToSpace = null,
+  /** 범지구적 퍼즐 — 탐색 클릭 가로채기 (find에서만 채점) */
+  puzzleFindActive = false,
+  puzzleGuardActive = false,
+  puzzleTargetId = null,
+  puzzleCandidateIds = null,
+  onPuzzleMapTap = null,
 }, ref) => {
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
@@ -422,6 +432,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const categoryFaceFlyGenRef = useRef(0);
   const highlightCategoryRef = useRef(highlightCategory);
   const onGlobeModeChangeRef = useRef(onGlobeModeChange);
+  const puzzleFindActiveRef = useRef(puzzleFindActive);
+  const puzzleGuardActiveRef = useRef(puzzleGuardActive);
+  const puzzleTargetIdRef = useRef(puzzleTargetId);
+  const puzzleCandidateIdsRef = useRef(puzzleCandidateIds);
+  const onPuzzleMapTapRef = useRef(onPuzzleMapTap);
+  puzzleFindActiveRef.current = puzzleFindActive;
+  puzzleGuardActiveRef.current = puzzleGuardActive;
+  puzzleTargetIdRef.current = puzzleTargetId;
+  puzzleCandidateIdsRef.current = puzzleCandidateIds;
+  onPuzzleMapTapRef.current = onPuzzleMapTap;
   const tourEngineCallbacksRef = useRef({});
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
   const [dimensions, setDimensions] = useState(() => readViewportSize());
@@ -1942,13 +1962,47 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     unbindSpaceDragGuardRef.current = null;
   }, []);
 
+  useEffect(() => {
+    if ((!puzzleFindActive && !puzzleGuardActive) || !mapReady) return undefined;
+    const map = mapRef.current?.getMap();
+    if (!map) return undefined;
+    ensurePuzzleHitLayer(map);
+    const onIdle = () => ensurePuzzleHitLayer(map);
+    map.on?.('idle', onIdle);
+    return () => {
+      map.off?.('idle', onIdle);
+    };
+  }, [puzzleFindActive, puzzleGuardActive, mapReady]);
+
   const handleGlobeClickInternal = useCallback((event) => {
     if (Date.now() < markerClickGuardUntilRef.current) return;
     if (Date.now() < suppressClickUntilRef.current) return;
     if (isZenMode || pauseRender) return;
-    if (!onGlobeClick || !event?.lngLat) return;
+    if (!event?.lngLat) return;
     const map = mapRef.current?.getMap();
     if (map && event.point && !isScreenPointOnGlobe(map, event.point)) return;
+
+    if (puzzleFindActiveRef.current && puzzleTargetIdRef.current && onPuzzleMapTapRef.current) {
+      const correct = isCorrectCountryTap({
+        map,
+        point: event.point,
+        lngLat: event.lngLat,
+        targetId: puzzleTargetIdRef.current,
+        candidateIds: puzzleCandidateIdsRef.current || undefined,
+      });
+      onPuzzleMapTapRef.current({
+        correct,
+        targetId: puzzleTargetIdRef.current,
+        lng: event.lngLat.lng,
+        lat: event.lngLat.lat,
+      });
+      return;
+    }
+
+    // capital/result 등 — 탐색 클릭·마커로 세트 방해 금지
+    if (puzzleGuardActiveRef.current) return;
+
+    if (!onGlobeClick) return;
 
     const inTour = isTourMode(globeMode) || tourActiveRef.current;
 

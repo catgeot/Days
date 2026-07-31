@@ -51,6 +51,25 @@ import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
+import { getFaceRegionsForCategory } from './lib/globeFaceRegions.js';
+import { getGlobeCountryById } from './lib/globeCountryCatalog.js';
+import GlobalPuzzlePanel from './components/GlobalPuzzlePanel.jsx';
+import {
+  PUZZLE_PHASE,
+  applyCapitalAnswer,
+  applyFindTap,
+  buildCapitalChoices,
+  computePuzzleStars,
+  createIdleSession,
+  getPuzzleCapitalSeed,
+  isPuzzleCountryPlayable,
+  loadPuzzleProgress,
+  markHintUsed,
+  recordPuzzleClear,
+  restartFindSession,
+  savePuzzleProgress,
+  startFindSession,
+} from './lib/globalPuzzle/index.js';
 import { syncHomeViewportAfterInput } from '../../shared/lib/mobileViewport';
 import {
   clearPlaceReturnTo,
@@ -160,6 +179,9 @@ function Home() {
   const [faceRegionsOpen, setFaceRegionsOpen] = useState(false);
   const [selectedFaceRegionId, setSelectedFaceRegionId] = useState(null);
   const [selectedFaceSubregionId, setSelectedFaceSubregionId] = useState(null);
+  const [puzzleMode, setPuzzleMode] = useState(false);
+  const [puzzleSession, setPuzzleSession] = useState(() => createIdleSession());
+  const [puzzleProgress, setPuzzleProgress] = useState(() => loadPuzzleProgress());
 
   const revealRandomGlobeFace = useCallback(() => {
     const next = pickRandomGlobeCategory();
@@ -283,6 +305,9 @@ function Home() {
       setSelectedFaceRegionId(null);
       setSelectedFaceSubregionId(null);
       globeRef.current?.clearRegionFocus?.();
+      if (puzzleMode) {
+        setPuzzleSession(createIdleSession());
+      }
       return;
     }
 
@@ -292,13 +317,19 @@ function Home() {
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(nextCategory));
     globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
-  }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
+    if (puzzleMode) {
+      setPuzzleSession(createIdleSession());
+    }
+  }, [category, faceRegionsOpen, flightCinemaActive, globeMode, puzzleMode]);
 
   const handleFaceSubregionSelect = useCallback((subregionId) => {
     setSelectedFaceSubregionId(subregionId || null);
     setSelectedFaceRegionId(null);
     globeRef.current?.clearRegionFocus?.();
-  }, []);
+    if (puzzleMode) {
+      setPuzzleSession(createIdleSession());
+    }
+  }, [puzzleMode]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -852,6 +883,86 @@ function Home() {
     }
   }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
 
+  const puzzleFaceCandidateIds = useMemo(() => {
+    if (!puzzleMode || !category) return [];
+    return getFaceRegionsForCategory(category).map((r) => r.id);
+  }, [puzzleMode, category]);
+
+  const beginPuzzleFindForCountry = useCallback((countryId) => {
+    const prefer = puzzleFaceCandidateIds.filter((id) => id !== countryId && isPuzzleCountryPlayable(id));
+    const choices = buildCapitalChoices(countryId, prefer, 4);
+    setPuzzleSession(startFindSession(countryId, choices));
+    globeRef.current?.clearRegionFocus?.();
+  }, [puzzleFaceCandidateIds]);
+
+  const handleTogglePuzzleMode = useCallback(() => {
+    setPuzzleMode((prev) => {
+      const next = !prev;
+      if (!next) {
+        setPuzzleSession(createIdleSession());
+        globeRef.current?.clearRegionFocus?.();
+        return false;
+      }
+      if (flightCinemaActive) {
+        globeRef.current?.closeFlightCinema?.();
+      }
+      setFaceRegionsOpen(true);
+      setSelectedFaceRegionId(null);
+      setSelectedFaceSubregionId(getDefaultFaceSubregionId(category));
+      globeRef.current?.clearRegionFocus?.();
+      setPuzzleSession(createIdleSession());
+      return true;
+    });
+  }, [category, flightCinemaActive]);
+
+  const handlePuzzleMapTap = useCallback(({ correct }) => {
+    setPuzzleSession((prev) => {
+      if (prev.phase !== PUZZLE_PHASE.FIND) return prev;
+      return applyFindTap(prev, Boolean(correct));
+    });
+  }, []);
+
+  const handlePuzzleHint = useCallback(() => {
+    setPuzzleSession((prev) => {
+      if (prev.phase !== PUZZLE_PHASE.FIND || !prev.countryId) return prev;
+      const region = getGlobeCountryById(prev.countryId);
+      if (region) {
+        globeRef.current?.flyToRegion?.(region);
+      }
+      return markHintUsed(prev);
+    });
+  }, []);
+
+  const handlePuzzleCapitalPick = useCallback((choice) => {
+    setPuzzleSession((prev) => {
+      if (prev.phase !== PUZZLE_PHASE.CAPITAL || !prev.countryId) return prev;
+      const seed = getPuzzleCapitalSeed(prev.countryId);
+      const correct = Boolean(seed && choice === seed.capitalKo);
+      const next = applyCapitalAnswer(prev, correct, computePuzzleStars);
+      if (next.phase === PUZZLE_PHASE.RESULT && Number.isFinite(next.stars)) {
+        setPuzzleProgress((prog) => {
+          const updated = recordPuzzleClear(prog, prev.countryId, {
+            stars: next.stars,
+            hintUsed: next.hintUsed,
+          });
+          savePuzzleProgress(updated);
+          return updated;
+        });
+      }
+      return next;
+    });
+  }, []);
+
+  const handlePuzzleRetry = useCallback(() => {
+    setPuzzleSession((prev) => {
+      if (!prev.countryId) return createIdleSession();
+      const prefer = puzzleFaceCandidateIds.filter((id) => id !== prev.countryId && isPuzzleCountryPlayable(id));
+      const choices = buildCapitalChoices(prev.countryId, prefer, 4);
+      globeRef.current?.clearRegionFocus?.();
+      return restartFindSession(prev, choices);
+    });
+  }, [puzzleFaceCandidateIds]);
+
   /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 fitBounds — PC는 카드와 메뉴 동시 표시 */
   const handleFaceRegionSelect = useCallback((region) => {
     if (!region || !Number.isFinite(region.lat) || !Number.isFinite(region.lng)) return;
@@ -862,10 +973,28 @@ function Home() {
       dismissPlaceSelectionKeepGlobePin();
     }
     setSelectedFaceRegionId(region.id);
+
+    if (puzzleMode) {
+      if (!isPuzzleCountryPlayable(region.id)) {
+        setPuzzleSession((prev) => ({
+          ...prev,
+          phase: PUZZLE_PHASE.IDLE,
+          countryId: null,
+          feedback: '이 나라는 시드 준비 중이에요. 다른 나라를 골라주세요',
+        }));
+        return;
+      }
+      // 찾기(B): 시작 시 나라 포커스·하이라이트 하지 않음
+      beginPuzzleFindForCountry(region.id);
+      return;
+    }
+
     globeRef.current?.flyToRegion?.(region);
   }, [
+    beginPuzzleFindForCountry,
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
+    puzzleMode,
     routeLocation.pathname,
     selectedLocation,
   ]);
@@ -957,11 +1086,30 @@ function Home() {
           categoryFaceEpoch={categoryFaceEpoch}
           focusSlug={globeFocusSlug}
           onReturnToSpace={closeFaceRegions}
+          puzzleFindActive={puzzleMode && puzzleSession.phase === PUZZLE_PHASE.FIND}
+          puzzleGuardActive={
+            puzzleMode
+            && (puzzleSession.phase === PUZZLE_PHASE.FIND
+              || puzzleSession.phase === PUZZLE_PHASE.CAPITAL
+              || puzzleSession.phase === PUZZLE_PHASE.RESULT)
+          }
+          puzzleTargetId={puzzleSession.countryId}
+          puzzleCandidateIds={puzzleFaceCandidateIds}
+          onPuzzleMapTap={handlePuzzleMapTap}
         />
       </div>
 
       <div className={`transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <SiteUpdateBanner />
+        <GlobalPuzzlePanel
+          active={puzzleMode && !isZenMode}
+          session={puzzleSession}
+          onHint={handlePuzzleHint}
+          onCapitalPick={handlePuzzleCapitalPick}
+          onRetry={handlePuzzleRetry}
+          onExit={handleTogglePuzzleMode}
+          onDismissFeedback={() => setPuzzleSession((prev) => ({ ...prev, feedback: '' }))}
+        />
         <HomeUI
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}
           onRelatedPlaceClick={handleRelatedPlaceClickWithCinemaExit}
@@ -991,6 +1139,9 @@ function Home() {
           onTourEnd={() => globeRef.current?.endTour?.()}
           onTourBarClose={handleTourBarClose}
           onTourBarStartTour={handleTourBarStartTour}
+          puzzleMode={puzzleMode}
+          onTogglePuzzleMode={handleTogglePuzzleMode}
+          puzzleProgressById={puzzleProgress.countries}
           user={user} onLogout={() => supabase.auth.signOut()}
           onClearScouts={() => {
               if(window.confirm("임시 핀을 모두 삭제하시겠습니까?")) {
