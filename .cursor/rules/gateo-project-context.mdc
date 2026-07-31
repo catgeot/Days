@@ -50,7 +50,7 @@ alwaysApply: true
 - API 키 브라우저 노출·사용자 승인 없는 「완료」 단정 금지
 - **UI 임의 변경 금지** (`.ai-context` **§4.1 5**): 승인 없이 기존 버튼·레이아웃·톤·카피 교체 금지. **기능 추가 시에도 기존 비주얼 유지**(연결·동작만). 「커밋 보류」≠ 리디자인 허가
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
-- Git commit/push: **검증 게이트** (`.ai-context` **1.5.1**/**1.5.2** · `AGENTS.md` Cloud) — 로직·SSOT는 audit/스모크 PASS 시 커밋 OK · **합의된** 디자인·소소한 UI는 사람 QA 확정 후 · **Cloud feature 브랜치**는 Preview용 커밋·push 우선 · 짧은 수정은 **`main` 직행** · 대형/장기만 브랜치·PR · 사람 승인 없는 `main` push·force-push 금지 · 메시지 **한글**
+- Git commit/push: **검증 게이트** (`.ai-context` **1.5.1**/**1.5.2** · `AGENTS.md` Cloud) — 로직·SSOT는 audit/스모크 PASS 시 커밋 OK · **합의된** 디자인·소소한 UI는 사람 QA 확정 후 · **Cloud feature 브랜치**는 Preview용 커밋·push 우선 · **이어하기는 열린 고정 브랜치 재사용**(세션마다 새 `cursor/…-xxxx` 금지 · Mapbox는 git Preview URL 1회) · 짧은 수정은 **`main` 직행** · 대형/장기만 브랜치·PR · 사람 승인 없는 `main` push·force-push 금지 · 메시지 **한글**
 
 - **PowerShell `Set-Content`/`-replace`로 한글 `.jsx` 등 소스 일괄 수정 금지** — UTF-8·JSX 파손 (`.ai-context` 3절)
 - **Windows Agent `git commit`**: bash HEREDOC 대신 UTF-8 메시지 파일 + `git commit -F` (`.ai-context` 3절)
