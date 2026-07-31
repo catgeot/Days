@@ -18,3 +18,9 @@
 - **히트**: ISO 벡터 + bbox + 픽셀 스냅 폴백.
 - **트레이**: 클리어된 피스는 목록에서 제외(남은 문제만).
 - Preview: 고정 브랜치 `/play/geo`.
+
+## 범지구적 퍼즐 — 글로브 fill 미표시 수정
+
+- **원인**: Mapbox GL v3 글로브 조명에서 fill이 어두워져 **라인만** 보임. 힌트/클리어도 윤곽만.
+- **수정**: `fill-emissive-strength`/`line-emissive-strength`=1 · cyan opacity↑ · ISO 필터를 홈 하이라이트와 동일(`==`) · 정답 시 힌트 금색이 placed를 덮지 않음.
+- 로컬 QA: 한국 탭→cyan 필 · 힌트→금색 필 확인.

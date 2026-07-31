@@ -129,9 +129,10 @@ export default function GeoPuzzlePage() {
   useEffect(() => {
     const map = apiRef.current?.map;
     if (!map || !continent) return;
-    if (session.phase === PUZZLE_PHASE.FIND && hintCountryId) return;
+    // 찾기·수도·결과 중에는 대륙 리플라이로 나라 포커스를 덮지 않음
+    if (session.phase !== PUZZLE_PHASE.IDLE) return;
     flyMapToContinent(map, continentCountryIds);
-  }, [continent, continentCountryIds, hintCountryId, session.phase]);
+  }, [continent, continentCountryIds, session.phase]);
 
   const onMapReady = useCallback((api) => {
     apiRef.current = api;
@@ -165,6 +166,7 @@ export default function GeoPuzzlePage() {
       setSession((prev) => applyFindTap(prev, false));
       return;
     }
+    setHintCountryId(null);
     setSession((prev) => applyFindTap(prev, true));
     apiRef.current?.flyToCountry?.(session.countryId);
   }, [continentCountryIds, session.countryId, session.phase]);
@@ -186,6 +188,7 @@ export default function GeoPuzzlePage() {
       const correct = Boolean(seed && choice === seed.capitalKo);
       const next = applyCapitalAnswer(prev, correct, computePuzzleStars);
       if (next.phase === PUZZLE_PHASE.RESULT && Number.isFinite(next.stars)) {
+        setHintCountryId(null);
         setProgress((prog) => {
           const updated = recordPuzzleClear(prog, prev.countryId, {
             stars: next.stars,
@@ -194,7 +197,7 @@ export default function GeoPuzzlePage() {
           savePuzzleProgress(updated);
           return updated;
         });
-        setHintCountryId(prev.countryId);
+        apiRef.current?.flyToCountry?.(prev.countryId);
       }
       return next;
     });

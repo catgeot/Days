@@ -61,27 +61,55 @@ function ensureCountriesSource(map) {
   });
 }
 
+function worldviewFilter() {
+  return [
+    'any',
+    ['!', ['has', 'worldview']],
+    ['==', ['get', 'worldview'], 'all'],
+    ['in', 'US', ['to-string', ['get', 'worldview']]],
+    ['in', 'us', ['to-string', ['get', 'worldview']]],
+  ];
+}
+
+/** 홈 나라 하이라이트와 동일 패턴 — match/upcase 대신 == (글로브에서 안정) */
 function multiIsoFilter(isos) {
   const list = [...new Set((isos || []).map((s) => String(s).toUpperCase()).filter(Boolean))];
   if (!list.length) {
     return ['==', ['get', 'iso_3166_1'], '__none__'];
   }
+  const isoAny = [
+    'any',
+    ...list.flatMap((up) => [
+      ['==', ['get', 'iso_3166_1'], up],
+      ['==', ['get', 'iso_3166_1'], up.toLowerCase()],
+    ]),
+  ];
   return [
     'all',
-    [
-      'any',
-      ['!', ['has', 'worldview']],
-      ['==', ['get', 'worldview'], 'all'],
-      ['in', 'US', ['to-string', ['get', 'worldview']]],
-    ],
-    [
-      'match',
-      ['upcase', ['to-string', ['get', 'iso_3166_1']]],
-      list,
-      true,
-      false,
-    ],
+    worldviewFilter(),
+    isoAny,
   ];
+}
+
+const PUZZLE_LAYER_IDS = [
+  HIT_FILL,
+  SLOT_FILL,
+  SLOT_LINE,
+  PLACED_FILL,
+  PLACED_LINE,
+  HINT_FILL,
+  HINT_LINE,
+];
+
+function raisePuzzleLayers(map) {
+  for (const id of PUZZLE_LAYER_IDS) {
+    if (!map.getLayer(id)) continue;
+    try {
+      map.moveLayer(id);
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 function ensurePlacedLayers(map) {
@@ -95,13 +123,9 @@ function ensurePlacedLayers(map) {
       paint: {
         'fill-color': '#000000',
         'fill-opacity': 0.01,
+        'fill-emissive-strength': 1,
       },
-      filter: [
-        'any',
-        ['!', ['has', 'worldview']],
-        ['==', ['get', 'worldview'], 'all'],
-        ['in', 'US', ['to-string', ['get', 'worldview']]],
-      ],
+      filter: worldviewFilter(),
     });
   }
   if (!map.getLayer(SLOT_FILL)) {
@@ -112,7 +136,8 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'fill-color': '#ffffff',
-        'fill-opacity': 0.06,
+        'fill-opacity': 0.14,
+        'fill-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
     });
@@ -126,7 +151,8 @@ function ensurePlacedLayers(map) {
       paint: {
         'line-color': '#ffffff',
         'line-width': 1.1,
-        'line-opacity': 0.35,
+        'line-opacity': 0.45,
+        'line-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
     });
@@ -139,7 +165,8 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'fill-color': '#22d3ee',
-        'fill-opacity': 0.48,
+        'fill-opacity': 0.62,
+        'fill-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
     });
@@ -152,8 +179,9 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'line-color': '#fbbf24',
-        'line-width': 1.5,
+        'line-width': 1.8,
         'line-opacity': 0.95,
+        'line-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
     });
@@ -166,7 +194,8 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'fill-color': '#fbbf24',
-        'fill-opacity': 0.35,
+        'fill-opacity': 0.45,
+        'fill-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
     });
@@ -179,12 +208,14 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'line-color': '#fde68a',
-        'line-width': 2,
+        'line-width': 2.2,
         'line-opacity': 0.95,
+        'line-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
     });
   }
+  raisePuzzleLayers(map);
 }
 
 /**
@@ -222,16 +253,28 @@ export default function GeoPuzzleGlobe({
       .filter((id) => !filledSet.has(id))
       .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
       .filter(Boolean);
-    const hintIso = hintRef.current
-      ? GLOBE_COUNTRY_CATALOG[hintRef.current]?.iso
+    // 이미 채운 나라는 PLACED(cyan)만 — 힌트 금색이 덮지 않음
+    const hintId = hintRef.current;
+    const hintIso = hintId && !filledSet.has(hintId)
+      ? GLOBE_COUNTRY_CATALOG[hintId]?.iso
       : null;
     try {
+      map.setPaintProperty(PLACED_FILL, 'fill-emissive-strength', 1);
+      map.setPaintProperty(PLACED_FILL, 'fill-opacity', 0.62);
+      map.setPaintProperty(PLACED_FILL, 'fill-color', '#22d3ee');
+      map.setPaintProperty(HINT_FILL, 'fill-emissive-strength', 1);
+      map.setPaintProperty(HINT_FILL, 'fill-opacity', 0.45);
+      map.setPaintProperty(SLOT_FILL, 'fill-emissive-strength', 1);
+      map.setPaintProperty(SLOT_LINE, 'line-emissive-strength', 1);
+      map.setPaintProperty(PLACED_LINE, 'line-emissive-strength', 1);
+      map.setPaintProperty(HINT_LINE, 'line-emissive-strength', 1);
       map.setFilter(PLACED_FILL, multiIsoFilter(filledIsos));
       map.setFilter(PLACED_LINE, multiIsoFilter(filledIsos));
       map.setFilter(SLOT_FILL, multiIsoFilter(slotIsos));
       map.setFilter(SLOT_LINE, multiIsoFilter(slotIsos));
       map.setFilter(HINT_FILL, multiIsoFilter(hintIso ? [hintIso] : []));
       map.setFilter(HINT_LINE, multiIsoFilter(hintIso ? [hintIso] : []));
+      raisePuzzleLayers(map);
     } catch {
       /* ignore */
     }
