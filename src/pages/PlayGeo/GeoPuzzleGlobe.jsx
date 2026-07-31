@@ -19,6 +19,10 @@ const HINT_LINE = 'gateo-geo-puzzle-hint-line';
 
 export const GEO_PUZZLE_HIT_LAYER = HIT_FILL;
 
+/** 정답 채움 — 위성 위에서 구분되는 진 보라 */
+const PLACED_FILL_COLOR = '#5b21b6';
+const PLACED_FILL_OPACITY = 0.78;
+
 const DEFAULT_VIEW = {
   longitude: 140,
   latitude: 20,
