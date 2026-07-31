@@ -89,12 +89,19 @@ export const useTravelData = (user) => {
       if (data) existingTrip = data;
     }
 
+    const nextLat = Number(curationData.lat);
+    const nextLng = Number(curationData.lng);
+    const hasCoords =
+      Number.isFinite(nextLat) &&
+      Number.isFinite(nextLng) &&
+      !(nextLat === 0 && nextLng === 0);
+
     if (existingTrip) {
       const { data, error } = await supabase
         .from('saved_trips')
         .update({ 
-          lat: curationData.lat || existingTrip.lat || 0,
-          lng: curationData.lng || existingTrip.lng || 0,
+          lat: hasCoords ? nextLat : (Number.isFinite(Number(existingTrip.lat)) ? Number(existingTrip.lat) : null),
+          lng: hasCoords ? nextLng : (Number.isFinite(Number(existingTrip.lng)) ? Number(existingTrip.lng) : null),
           curation_data: curationData,
           is_ai_curation: true,
           is_bookmarked: true,
@@ -117,8 +124,8 @@ export const useTravelData = (user) => {
       const newTrip = {
         user_id: targetUser.id,
         destination: targetDest,
-        lat: curationData.lat || 0,
-        lng: curationData.lng || 0,
+        lat: hasCoords ? nextLat : null,
+        lng: hasCoords ? nextLng : null,
         is_bookmarked: true,
         curation_data: curationData,
         is_ai_curation: true,

@@ -34,6 +34,7 @@
     "smoke:flight-route-baseline": "node scripts/smoke-flight-route-baseline.mjs",
     "smoke:flight-origin-gateway": "node scripts/smoke-flight-origin-gateway.mjs",
     "smoke:place-label-slug": "node scripts/smoke-place-label-slug.mjs",
+    "smoke:curation-place-bridge": "node scripts/smoke-curation-place-bridge.mjs",
     "audit:flight-route-gaps": "node scripts/audit-flight-route-gaps.mjs",
     "generate:graph-direct-review": "node scripts/generate-graph-direct-review-list.mjs",
     "import:airports": "node scripts/import-ourairports.mjs",
