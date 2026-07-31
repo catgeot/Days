@@ -2,7 +2,7 @@
 
 **상태**: Phase B+C tip · Preview QA 대기  
 **제시어**: `큐레이션-이어하기` · `@plans/blog-ai-curation-page-plan.md`  
-**브랜치**: `cursor/blog-ai-curation-links-5aff` (기반 [#38](https://github.com/catgeot/Days/pull/38) Phase A)
+**브랜치**: `cursor/blog-ai-curation-links-5aff` · tip `559ab4d` · PR [#42](https://github.com/catgeot/Days/pull/42) (기반 Phase A [#38](https://github.com/catgeot/Days/pull/38))
 
 ---
 

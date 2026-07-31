@@ -43,7 +43,7 @@
 | Phase B | `/blog/curation` · `CurationHub` · history **객체** upsert/복원 · 도구 카드→페이지 링크 |
 | Phase C | `whyHidden` · `bestSeason` · `tips[]` 프롬프트+인페이지 블록 |
 | VERIFY | `npm run smoke:curation-history` · `smoke:curation-place-bridge` |
-| 브랜치 | `cursor/blog-ai-curation-links-5aff` |
+| 브랜치 | `cursor/blog-ai-curation-links-5aff` · tip `559ab4d` · PR [#42](https://github.com/catgeot/Days/pull/42) |
 | 계획 | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |
 
 **QA**: Preview `/blog/curation` → 낙원 탐색 → 리치 블록 · 나의 목록 탭 복원 · `/blog` 도구→페이지 링크 · 비로그인 실행 · 「전체 지도에서 보기」는 보조
