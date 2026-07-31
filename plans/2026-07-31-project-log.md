@@ -52,3 +52,11 @@
 - **수정**: 퍼즐 **항상 mercator** · vector fill + GeoJSON(타일 query / bbox 폴백) · 배포 패널에 `필 jp · layer ok` 진단.
 - tip `0be59ef` · PR [#31](https://github.com/catgeot/Days/pull/31)
 - QA: 패널 `12:45 UTC` · 정답 후 진단 `필 jp` + 보라 면(또는 bbox 면).
+
+## 범지구적 퍼즐 — 필이 박스로 보임
+
+- **사람 보고**: 정답 채움이 나라 모양이 아니라 bbox 사각형.
+- **원인**: GeoJSON 폴백이 타일 query 실패 시 `bboxFeature` 사각형을 그림.
+- **수정**: 캠페인 38국 폴리곤 SSOT(`geoPuzzleCountryPolygons.js`)로 채움 · bbox 폴백 제거 · 배포 패널 `21:10 UTC` · `poly n/n`.
+- VERIFY: `audit:geo-puzzle` · `smoke:global-puzzle` · `build` PASS.
+- QA: 고정 Preview `…geography-puzzle-plan-62e0…/play/geo` — 하드 리프레시 후 일본·한국 등 **해안선 따라 보라 면**(박스 아님).

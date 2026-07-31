@@ -9,7 +9,7 @@ export default function PuzzleDeployLog({ filledCount = 0, projection = '', fill
   const latest = getLatestDeployEntry();
   const stamp = latest?.at || '—';
   const diagLine = fillDiag
-    ? `필 ${fillDiag.filled} · ISO ${fillDiag.isos} · layer ${fillDiag.placedLayer}/${fillDiag.geoLayer}`
+    ? `필 ${fillDiag.filled} · ISO ${fillDiag.isos} · poly ${fillDiag.poly || '—'} · layer ${fillDiag.placedLayer}/${fillDiag.geoLayer}`
     : `필 ${filledCount}${projection ? ` · ${projection}` : ''}`;
 
   return (

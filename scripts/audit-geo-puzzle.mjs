@@ -8,6 +8,7 @@ import {
   listContinentCountryIds,
 } from '../src/pages/PlayGeo/data/geoPuzzleTree.js';
 import { GEO_PUZZLE_SILHOUETTES } from '../src/pages/PlayGeo/data/geoPuzzleSilhouettes.js';
+import { GEO_PUZZLE_COUNTRY_POLYGONS } from '../src/pages/PlayGeo/data/geoPuzzleCountryPolygons.js';
 import { GLOBE_COUNTRY_CATALOG } from '../src/pages/Home/lib/globeCountryCatalog.js';
 import { pointInBbox } from '../src/pages/PlayGeo/lib/geoPuzzleHitTest.js';
 
@@ -36,6 +37,11 @@ for (const continent of GEO_PUZZLE_CONTINENTS) {
     else if (!pointInBbox(c.lng, c.lat, c.bbox)) fail(`centroid outside bbox ${id}`);
     const sil = GEO_PUZZLE_SILHOUETTES[id];
     if (!sil?.d || !sil?.viewBox) fail(`missing silhouette ${id}`);
+    const poly = GEO_PUZZLE_COUNTRY_POLYGONS[id];
+    if (!poly?.type || !poly?.coordinates) fail(`missing polygon ${id}`);
+    else if (poly.type !== 'Polygon' && poly.type !== 'MultiPolygon') {
+      fail(`bad polygon type ${id}:${poly.type}`);
+    }
   }
 }
 
@@ -46,6 +52,7 @@ for (let i = 1; i < counts.length; i += 1) {
 }
 ok(`countries ${allIds.length} · continents ${GEO_PUZZLE_CONTINENTS.length}`);
 ok(`silhouettes ${Object.keys(GEO_PUZZLE_SILHOUETTES).length}`);
+ok(`polygons ${Object.keys(GEO_PUZZLE_COUNTRY_POLYGONS).length}`);
 ok(`campaign order ${campaign.map((c, i) => `${c.labelKo}(${counts[i]})`).join(' → ')}`);
 
 if (fails) {

@@ -5,6 +5,11 @@
  */
 export const GEO_PUZZLE_DEPLOY_LOG = [
   {
+    at: '2026-07-31 21:10 UTC',
+    summary: '정답 필 = 나라 폴리곤(박스 폴백 제거)',
+    detail: '타일 query 실패 시 bbox 사각형이 보이던 버그. 캠페인 GeoJSON 폴리곤 SSOT로 채움.',
+  },
+  {
     at: '2026-07-31 12:45 UTC',
     summary: '퍼즐 지도 mercator 고정 + GeoJSON 필 폴백',
     detail: 'PC globe에서 위성에 fill이 가려짐. 평면 고정·vector+GeoJSON(bbox) 이중 채움·진단 줄.',

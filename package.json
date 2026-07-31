@@ -34,6 +34,7 @@
     "audit:geo-puzzle": "node scripts/audit-geo-puzzle.mjs",
     "smoke:global-puzzle": "node scripts/smoke-global-puzzle.mjs",
     "generate:geo-puzzle-silhouettes": "node scripts/generate-geo-puzzle-silhouettes.mjs",
+    "generate:geo-puzzle-polygons": "node scripts/generate-geo-puzzle-polygons.mjs",
     "audit:flight-route-gaps": "node scripts/audit-flight-route-gaps.mjs",
     "generate:graph-direct-review": "node scripts/generate-graph-direct-review-list.mjs",
     "import:airports": "node scripts/import-ourairports.mjs",

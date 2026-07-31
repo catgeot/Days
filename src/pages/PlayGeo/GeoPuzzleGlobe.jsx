@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import Map from 'react-map-gl/mapbox';
 import { GLOBE_COUNTRY_CATALOG } from '../Home/lib/globeCountryCatalog.js';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution.js';
+import { getGeoPuzzleCountryPolygon } from './data/geoPuzzleCountryPolygons.js';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -167,64 +168,17 @@ function addLineLayer(map, spec) {
   }
 }
 
-function bboxFeature(countryId, bbox) {
-  if (!Array.isArray(bbox) || bbox.length < 4) return null;
-  const [w, s, e, n] = bbox.map(Number);
-  if (![w, s, e, n].every(Number.isFinite)) return null;
-  return {
-    type: 'Feature',
-    properties: { id: countryId },
-    geometry: {
-      type: 'Polygon',
-      coordinates: [[
-        [w, s],
-        [e, s],
-        [e, n],
-        [w, n],
-        [w, s],
-      ]],
-    },
-  };
-}
-
-function collectPlacedGeoFeatures(map, filledIds) {
+/** 캠페인 SSOT 폴리곤 — bbox 사각형 폴백 금지(박스로 보임) */
+function collectPlacedGeoFeatures(filledIds) {
   const features = [];
-  const seen = new Set();
-  const filledIsos = new Set(
-    (filledIds || [])
-      .map((id) => String(GLOBE_COUNTRY_CATALOG[id]?.iso || '').toUpperCase())
-      .filter(Boolean),
-  );
-
-  if (filledIsos.size && map.getSource(COUNTRIES_SOURCE)) {
-    try {
-      const queried = map.querySourceFeatures(COUNTRIES_SOURCE, {
-        sourceLayer: 'country_boundaries',
-        filter: multiIsoFilter([...filledIsos]),
-      });
-      for (const f of queried || []) {
-        if (!f?.geometry) continue;
-        const key = `${f.properties?.iso_3166_1 || ''}:${f.id ?? JSON.stringify(f.geometry).slice(0, 48)}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        features.push({
-          type: 'Feature',
-          properties: { iso: f.properties?.iso_3166_1 || '' },
-          geometry: f.geometry,
-        });
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-
-  // 타일 미도착·query 빈 경우 bbox 사각형이라도 보이게 (채움 폴백)
-  if (!features.length) {
-    for (const id of filledIds || []) {
-      const c = GLOBE_COUNTRY_CATALOG[id];
-      const feat = bboxFeature(id, c?.bbox);
-      if (feat) features.push(feat);
-    }
+  for (const id of filledIds || []) {
+    const geometry = getGeoPuzzleCountryPolygon(id);
+    if (!geometry) continue;
+    features.push({
+      type: 'Feature',
+      properties: { id },
+      geometry,
+    });
   }
   return features;
 }
@@ -353,17 +307,19 @@ function buildFillDiag(map, filledIds) {
     .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
     .filter(Boolean)
     .join(',');
+  const polyN = filled.filter((id) => getGeoPuzzleCountryPolygon(id)).length;
   return {
     filled: filled.join(',') || '—',
     isos: isos || '—',
     placedLayer: map?.getLayer?.(PLACED_FILL) ? 'ok' : 'missing',
     geoLayer: map?.getLayer?.(PLACED_GEO_FILL) ? 'ok' : 'missing',
+    poly: `${polyN}/${filled.length || 0}`,
     projection: PUZZLE_PROJECTION,
   };
 }
 
 /**
- * #31 전용 게임 지도 — mercator 고정 · vector fill + GeoJSON 폴백.
+ * #31 전용 게임 지도 — mercator 고정 · 캠페인 GeoJSON 폴리곤 필(벡터는 폴백).
  */
 export default function GeoPuzzleGlobe({
   filledIds = [],
@@ -422,12 +378,16 @@ export default function GeoPuzzleGlobe({
     safeSetFilter(map, HINT_FILL, multiIsoFilter(hintIso ? [hintIso] : []));
     safeSetFilter(map, HINT_LINE, multiIsoFilter(hintIso ? [hintIso] : []));
 
-    safeSetPaint(map, PLACED_FILL, 'fill-opacity', PLACED_FILL_OPACITY);
+    const geoFeatures = collectPlacedGeoFeatures(filled);
+    // SSOT 폴리곤이 있으면 GeoJSON 필만 보이게(벡터와 이중 채움 방지)
+    const geoOpacity = geoFeatures.length ? PLACED_FILL_OPACITY : 0;
+    const vectorOpacity = geoFeatures.length ? 0 : PLACED_FILL_OPACITY;
+    safeSetPaint(map, PLACED_FILL, 'fill-opacity', vectorOpacity);
     safeSetPaint(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR);
-    safeSetPaint(map, PLACED_GEO_FILL, 'fill-opacity', PLACED_FILL_OPACITY);
+    safeSetPaint(map, PLACED_LINE, 'line-opacity', geoFeatures.length ? 0 : 0.95);
+    safeSetPaint(map, PLACED_GEO_FILL, 'fill-opacity', geoOpacity);
     safeSetPaint(map, PLACED_GEO_FILL, 'fill-color', PLACED_FILL_COLOR);
 
-    const geoFeatures = collectPlacedGeoFeatures(map, filled);
     const geoSource = map.getSource(PLACED_GEOJSON_SOURCE);
     if (geoSource?.setData) {
       try {
