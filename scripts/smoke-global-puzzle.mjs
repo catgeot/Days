@@ -1,0 +1,134 @@
+/**
+ * 범지구적 퍼즐 — 별 규칙·시드·세션 스모크
+ * npm run smoke:global-puzzle
+ */
+import assert from 'node:assert/strict';
+import {
+  GLOBAL_PUZZLE_CAPITALS,
+  buildCapitalChoices,
+  getPuzzleCapitalSeed,
+  isPuzzleCountryPlayable,
+} from '../src/pages/PlayGeo/lib/globalPuzzle/capitalsSeed.js';
+import { computePuzzleStars, mergeBestStars } from '../src/pages/PlayGeo/lib/globalPuzzle/rules.js';
+import {
+  PUZZLE_PHASE,
+  applyCapitalAnswer,
+  applyFindTap,
+  createIdleSession,
+  markHintUsed,
+  restartFindSession,
+  startFindSession,
+} from '../src/pages/PlayGeo/lib/globalPuzzle/session.js';
+import {
+  defaultPuzzleProgress,
+  recordPuzzleClear,
+} from '../src/pages/PlayGeo/lib/globalPuzzle/progressStorage.js';
+import {
+  getCampaignContinents,
+  listContinentCountryIds,
+} from '../src/pages/PlayGeo/data/geoPuzzleTree.js';
+import { GLOBE_COUNTRY_CATALOG } from '../src/pages/Home/lib/globeCountryCatalog.js';
+
+let failed = 0;
+function check(name, fn) {
+  try {
+    fn();
+    console.log(`PASS  ${name}`);
+  } catch (err) {
+    failed += 1;
+    console.error(`FAIL  ${name}`);
+    console.error(`  ${err.message}`);
+  }
+}
+
+check('seed size in MVP band', () => {
+  assert.ok(GLOBAL_PUZZLE_CAPITALS.length >= 20);
+  assert.ok(GLOBAL_PUZZLE_CAPITALS.length <= 50);
+});
+
+check('every seed id exists in catalog', () => {
+  for (const row of GLOBAL_PUZZLE_CAPITALS) {
+    assert.ok(GLOBE_COUNTRY_CATALOG[row.id], `missing catalog ${row.id}`);
+    assert.ok(row.capitalKo);
+  }
+});
+
+check('campaign continents have playable seeds', () => {
+  for (const continent of getCampaignContinents()) {
+    const ids = listContinentCountryIds(continent).filter((id) => isPuzzleCountryPlayable(id));
+    assert.ok(ids.length >= 3, `${continent.id} playable ${ids.length}`);
+  }
+});
+
+check('stars: perfect / hint / wrong / both floor at 1', () => {
+  assert.equal(computePuzzleStars({}), 3);
+  assert.equal(computePuzzleStars({ hintUsed: true }), 2);
+  assert.equal(computePuzzleStars({ hadWrong: true }), 2);
+  assert.equal(computePuzzleStars({ hintUsed: true, hadWrong: true }), 1);
+});
+
+check('mergeBestStars keeps higher', () => {
+  assert.equal(mergeBestStars(2, 3), 3);
+  assert.equal(mergeBestStars(3, 1), 3);
+});
+
+check('session find → capital → result', () => {
+  let s = startFindSession('kr', ['서울', '도쿄', '베이징', '방콕']);
+  assert.equal(s.phase, PUZZLE_PHASE.FIND);
+  s = applyFindTap(s, false);
+  assert.equal(s.hadWrong, true);
+  assert.equal(s.phase, PUZZLE_PHASE.FIND);
+  s = applyFindTap(s, true);
+  assert.equal(s.phase, PUZZLE_PHASE.CAPITAL);
+  s = applyCapitalAnswer(s, false, computePuzzleStars);
+  assert.equal(s.phase, PUZZLE_PHASE.CAPITAL);
+  s = applyCapitalAnswer(s, true, computePuzzleStars);
+  assert.equal(s.phase, PUZZLE_PHASE.RESULT);
+  assert.equal(s.stars, 2);
+});
+
+check('hint then clear → stars 2', () => {
+  let s = startFindSession('jp', buildCapitalChoices('jp', ['kr', 'cn'], 4, () => 0.1));
+  s = markHintUsed(s);
+  assert.equal(s.hintUsed, true);
+  s = applyFindTap(s, true);
+  s = applyCapitalAnswer(s, true, computePuzzleStars);
+  assert.equal(s.stars, 2);
+});
+
+check('restart resets find flags', () => {
+  let s = startFindSession('br', ['브라질리아', '리마', '산티아고', '보고타']);
+  s = applyFindTap(s, false);
+  s = markHintUsed(s);
+  s = restartFindSession(s, ['브라질리아', '리마', '산티아고', '보고타']);
+  assert.equal(s.phase, PUZZLE_PHASE.FIND);
+  assert.equal(s.hintUsed, false);
+  assert.equal(s.hadWrong, false);
+});
+
+check('recordPuzzleClear keeps best', () => {
+  let p = defaultPuzzleProgress();
+  p = recordPuzzleClear(p, 'kr', { stars: 2, hintUsed: true });
+  p = recordPuzzleClear(p, 'kr', { stars: 1, hintUsed: true });
+  assert.equal(p.countries.kr.bestStars, 2);
+  assert.equal(p.countries.kr.cleared, true);
+});
+
+check('buildCapitalChoices includes correct capital', () => {
+  const seed = getPuzzleCapitalSeed('kr');
+  const choices = buildCapitalChoices('kr', ['jp', 'cn', 'tw'], 4, () => 0.2);
+  assert.equal(choices.length, 4);
+  assert.ok(choices.includes(seed.capitalKo));
+});
+
+check('idle session factory', () => {
+  const s = createIdleSession();
+  assert.equal(s.phase, PUZZLE_PHASE.IDLE);
+  assert.equal(s.countryId, null);
+});
+
+if (failed) {
+  console.error(`\nsmoke:global-puzzle FAIL (${failed})`);
+  process.exit(1);
+}
+console.log('\nsmoke:global-puzzle PASS');

@@ -10,11 +10,11 @@
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
 - **TourAPI 국내 관광 (3단계 ⏳ · 시드40·v1.7 · UI/릴리스 합의)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
 - **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
-- **지구본 지리 퍼즐 게임 (기획 초안 · 구현 전)**: [`geography-puzzle-game-plan.md`](./geography-puzzle-game-plan.md) — 유사작·표절 리스크·Phase 0~3
+- **범지구적 퍼즐 (`/play/geo`)**: [`geography-puzzle-game-plan.md`](./geography-puzzle-game-plan.md) — UI=#31 · 룰=찾기→수도→별 · 홈 카테고리 재사용 금지
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **국내 MRT TNA 인근 확장 (다음 세션 · Phase 0 목록 먼저)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 제시어 `MRT-TNA-인근확장-이어하기`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-07-29-project-log.md`](./2026-07-29-project-log.md) · 직전 [`2026-07-28-project-log.md`](./2026-07-28-project-log.md)  
+  - 최신: [`2026-07-31-project-log.md`](./2026-07-31-project-log.md) · 직전 [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)  
 
   - **홈 지구본 풍부화 계획**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md)
   - **AI 채팅 예약 CTA Phase 2 handoff**: [`2026-05-22-ai-chat-booking-cta-handoff.md`](./2026-05-22-ai-chat-booking-cta-handoff.md)

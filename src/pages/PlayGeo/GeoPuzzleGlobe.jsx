@@ -12,6 +12,10 @@ const PLACED_FILL = 'gateo-geo-puzzle-placed-fill';
 const PLACED_LINE = 'gateo-geo-puzzle-placed-line';
 const SLOT_LINE = 'gateo-geo-puzzle-slot-line';
 const SLOT_FILL = 'gateo-geo-puzzle-slot-fill';
+const HINT_FILL = 'gateo-geo-puzzle-hint-fill';
+const HINT_LINE = 'gateo-geo-puzzle-hint-line';
+
+export const GEO_PUZZLE_HIT_LAYER = HIT_FILL;
 
 const DEFAULT_VIEW = {
   longitude: 140,
@@ -154,28 +158,43 @@ function ensurePlacedLayers(map) {
       filter: multiIsoFilter([]),
     });
   }
+  if (!map.getLayer(HINT_FILL)) {
+    map.addLayer({
+      id: HINT_FILL,
+      type: 'fill',
+      source: COUNTRIES_SOURCE,
+      'source-layer': 'country_boundaries',
+      paint: {
+        'fill-color': '#fbbf24',
+        'fill-opacity': 0.35,
+      },
+      filter: multiIsoFilter([]),
+    });
+  }
+  if (!map.getLayer(HINT_LINE)) {
+    map.addLayer({
+      id: HINT_LINE,
+      type: 'line',
+      source: COUNTRIES_SOURCE,
+      'source-layer': 'country_boundaries',
+      paint: {
+        'line-color': '#fde68a',
+        'line-width': 2,
+        'line-opacity': 0.95,
+      },
+      filter: multiIsoFilter([]),
+    });
+  }
 }
 
 /**
- * @param {{
- *   filledIds: string[],
- *   slotIds?: string[],
- *   dragPan?: boolean,
- *   placeMode?: boolean,
- *   onMapReady?: (map: import('mapbox-gl').Map) => void,
- *   onMapClick?: (args: {
- *     clientX: number,
- *     clientY: number,
- *     point: { x: number, y: number },
- *     lngLat: { lng: number, lat: number },
- *   }) => void,
- * }} props
+ * #31 전용 게임 글로브 — 지명·국경 라벨 숨김 · 슬롯 아웃라인 · 힌트 하이라이트.
  */
 export default function GeoPuzzleGlobe({
   filledIds = [],
   slotIds = [],
-  dragPan = true,
-  placeMode = false,
+  hintCountryId = null,
+  findActive = false,
   onMapReady,
   onMapClick,
 }) {
@@ -183,23 +202,63 @@ export default function GeoPuzzleGlobe({
   const readyRef = useRef(false);
   const onMapClickRef = useRef(onMapClick);
   onMapClickRef.current = onMapClick;
+  const filledRef = useRef(filledIds);
+  const slotRef = useRef(slotIds);
+  const hintRef = useRef(hintCountryId);
+  filledRef.current = filledIds;
+  slotRef.current = slotIds;
+  hintRef.current = hintCountryId;
 
-  const syncFills = useCallback((map, filled, slots) => {
+  const syncFills = useCallback((map) => {
     if (!map) return;
     ensurePlacedLayers(map);
-    const filledIsos = (filled || [])
+    const filled = filledRef.current || [];
+    const slots = slotRef.current || [];
+    const filledIsos = filled
       .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
       .filter(Boolean);
-    const filledSet = new Set(filled || []);
-    const slotIsos = (slots || [])
+    const filledSet = new Set(filled);
+    const slotIsos = slots
       .filter((id) => !filledSet.has(id))
       .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
       .filter(Boolean);
+    const hintIso = hintRef.current
+      ? GLOBE_COUNTRY_CATALOG[hintRef.current]?.iso
+      : null;
     try {
       map.setFilter(PLACED_FILL, multiIsoFilter(filledIsos));
       map.setFilter(PLACED_LINE, multiIsoFilter(filledIsos));
       map.setFilter(SLOT_FILL, multiIsoFilter(slotIsos));
       map.setFilter(SLOT_LINE, multiIsoFilter(slotIsos));
+      map.setFilter(HINT_FILL, multiIsoFilter(hintIso ? [hintIso] : []));
+      map.setFilter(HINT_LINE, multiIsoFilter(hintIso ? [hintIso] : []));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const flyToCountry = useCallback((countryId) => {
+    const map = mapRef.current?.getMap?.();
+    const c = GLOBE_COUNTRY_CATALOG[countryId];
+    if (!map || !c) return;
+    const bbox = c.bbox;
+    try {
+      if (Array.isArray(bbox) && bbox.length === 4) {
+        map.fitBounds(
+          [
+            [bbox[0], bbox[1]],
+            [bbox[2], bbox[3]],
+          ],
+          { padding: 64, maxZoom: 5.8, duration: 1200, pitch: 0, bearing: 0 },
+        );
+        return;
+      }
+      map.flyTo({
+        center: [c.lng, c.lat],
+        zoom: c.zoom || 4,
+        duration: 1200,
+        essential: true,
+      });
     } catch {
       /* ignore */
     }
@@ -208,8 +267,8 @@ export default function GeoPuzzleGlobe({
   useEffect(() => {
     const map = mapRef.current?.getMap?.();
     if (!map || !readyRef.current) return;
-    syncFills(map, filledIds, slotIds);
-  }, [filledIds, slotIds, syncFills]);
+    syncFills(map);
+  }, [filledIds, slotIds, hintCountryId, syncFills]);
 
   const handleLoad = useCallback(() => {
     const map = mapRef.current?.getMap?.();
@@ -217,15 +276,29 @@ export default function GeoPuzzleGlobe({
     readyRef.current = true;
     forceHideLabelsAndBorders(map);
     ensurePlacedLayers(map);
-    syncFills(map, filledIds, slotIds);
-    onMapReady?.(map);
+    syncFills(map);
+    onMapReady?.({
+      map,
+      flyToCountry,
+      queryIsoAtPoint: (point) => {
+        try {
+          const features = map.queryRenderedFeatures(point, { layers: [HIT_FILL] });
+          const props = features?.[0]?.properties || {};
+          const raw = props.iso_3166_1 || '';
+          const iso = String(raw).toUpperCase().slice(0, 2);
+          return /^[A-Z]{2}$/.test(iso) ? iso : '';
+        } catch {
+          return '';
+        }
+      },
+    });
 
     map.on('style.load', () => {
       forceHideLabelsAndBorders(map);
       ensurePlacedLayers(map);
-      syncFills(map, filledIds, slotIds);
+      syncFills(map);
     });
-  }, [filledIds, onMapReady, slotIds, syncFills]);
+  }, [flyToCountry, onMapReady, syncFills]);
 
   const handleClick = useCallback((evt) => {
     const handler = onMapClickRef.current;
@@ -251,7 +324,7 @@ export default function GeoPuzzleGlobe({
   }
 
   return (
-    <div className={`relative h-full w-full gateo-mapbox-map ${placeMode ? 'cursor-crosshair' : ''}`}>
+    <div className={`relative h-full w-full gateo-mapbox-map ${findActive ? 'cursor-crosshair' : ''}`}>
       <Map
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
@@ -264,7 +337,7 @@ export default function GeoPuzzleGlobe({
         onClick={handleClick}
         dragRotate={false}
         pitchWithRotate={false}
-        dragPan={dragPan}
+        dragPan
         scrollZoom
       />
       <div className="pointer-events-none absolute bottom-1 left-1 z-10 flex gap-2 text-[9px] text-white/60">

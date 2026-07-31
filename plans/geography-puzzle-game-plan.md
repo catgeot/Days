@@ -1,8 +1,22 @@
 # 지구본 지리 퍼즐 게임 — 기획·선행조사·실행 계획
 
-**상태**: Phase 0 ✅ 고정 · Phase 1 MVP 진행 중  
-**작성**: 2026-07-29  
-**관련 SSOT**: [`globeCountryCatalog.js`](../src/pages/Home/lib/globeCountryCatalog.js) · [`globeFaceRegions.js`](../src/pages/Home/lib/globeFaceRegions.js) · [`globeFaceSubregions.js`](../src/pages/Home/lib/globeFaceSubregions.js) · `.ai-context` §3 지구본 나라 칩
+**상태**: UI=#31 고정 · 합의 룰(찾기→수도→별) 적용 중  
+**작성**: 2026-07-29 · **갱신**: 2026-07-31  
+**관련 SSOT**: [`PlayGeo/`](../src/pages/PlayGeo/) · [`globeCountryCatalog.js`](../src/pages/Home/lib/globeCountryCatalog.js)
+
+---
+
+## 0.−1 제품 피벗 (2026-07-31)
+
+| | 결정 |
+|--|------|
+| **UI** | PR [#31](https://github.com/catgeot/Days/pull/31) `/play/geo` 셸 고정 — 헤더·전용 글로브(라벨 숨김)·대륙 칩·실루엣 트레이 |
+| **룰** | 대륙 → 나라(피스) 선택 → 지구본 **찾기 탭** → 수도 **4지선다** → 별/재도전 |
+| **별** | 만점 3 · 힌트 −1 · 오답 −1(세트당 최대 1) · 하한 1 |
+| **홈** | 축제 아래 **Link만** · 홈 지구본 **카테고리/면 메뉴 재사용 금지**(판단 철회) |
+| **비대상** | 실루엣 드래그 스냅 점수 루프 · 홈 모드 토글(#40 폐기 방향) |
+
+VERIFY: `npm run audit:geo-puzzle` · `npm run smoke:global-puzzle` · `npm run build`
 
 ---
 
