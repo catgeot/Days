@@ -11,3 +11,10 @@
 - **Cloud 규칙 일반화**: `AGENTS.md` Cloud「고정 브랜치 · Mapbox Preview URL」· `.ai-context` 1.5.2 · Rule — **전 주제** 이어하기 시 열린 feature 브랜치 재사용(세션마다 새 Preview 브랜치 금지).
 - **VERIFY**: `audit:geo-puzzle` · `smoke:global-puzzle` · `build` PASS.
 - **QA (Preview)**: 고정 브랜치 URL `/play/geo` — 실루엣 트레이·슬롯 · 찾기→수도→별 · 홈 카테고리 회귀 없음.
+
+## 범지구적 퍼즐 — 찾기 정답 즉시 필 채움
+
+- **동작**: 문제 리스트(트레이) 피스 선택 → 지구본 해당 위치 탭 → **맞으면 즉시 필(cyan) 채움** → 수도 4지선다로 별 확정.
+- **히트**: ISO 벡터 + bbox + 픽셀 스냅 폴백.
+- **트레이**: 클리어된 피스는 목록에서 제외(남은 문제만).
+- Preview: 고정 브랜치 `/play/geo`.

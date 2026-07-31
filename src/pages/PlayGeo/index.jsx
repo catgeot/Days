@@ -23,7 +23,7 @@ import {
   savePuzzleProgress,
   startFindSession,
 } from './lib/globalPuzzle/index.js';
-import { isCorrectFindTap } from './lib/findCountryTap.js';
+import { isCorrectFindTap, resolveGlobeFilledIds } from './lib/findCountryTap.js';
 import GeoPuzzleGlobe from './GeoPuzzleGlobe.jsx';
 import CountrySilhouettePiece from './CountrySilhouettePiece.jsx';
 
@@ -97,6 +97,17 @@ export default function GeoPuzzlePage() {
     [progress],
   );
 
+  /** 찾기 탭 정답 직후(수도 전)에도 지구본 필이 채워지도록 */
+  const globeFilledIds = useMemo(
+    () => resolveGlobeFilledIds(clearedIds, session),
+    [clearedIds, session],
+  );
+
+  const trayIds = useMemo(
+    () => playableIds.filter((id) => !progress.countries?.[id]?.cleared),
+    [playableIds, progress],
+  );
+
   const clearedInContinent = useMemo(
     () => playableIds.filter((id) => progress.countries?.[id]?.cleared).length,
     [playableIds, progress],
@@ -138,18 +149,24 @@ export default function GeoPuzzlePage() {
 
   const handleMapClick = useCallback(({ point, lngLat }) => {
     if (session.phase !== PUZZLE_PHASE.FIND || !session.countryId) return;
+    const map = apiRef.current?.map || null;
     const iso = apiRef.current?.queryIsoAtPoint?.(point) || '';
     const correct = isCorrectFindTap({
       iso,
       lngLat,
+      point,
+      map,
       targetId: session.countryId,
       candidateIds: continentCountryIds.length ? continentCountryIds : [session.countryId],
     });
     if (!correct) {
       setFlashMiss(true);
       window.setTimeout(() => setFlashMiss(false), 420);
+      setSession((prev) => applyFindTap(prev, false));
+      return;
     }
-    setSession((prev) => applyFindTap(prev, correct));
+    setSession((prev) => applyFindTap(prev, true));
+    apiRef.current?.flyToCountry?.(session.countryId);
   }, [continentCountryIds, session.countryId, session.phase]);
 
   const handleHint = useCallback(() => {
@@ -214,11 +231,11 @@ export default function GeoPuzzlePage() {
     ? Math.round((clearedInContinent / playableIds.length) * 100)
     : 0;
 
-  let hintText = '대륙을 고른 뒤 나라 피스를 탭하세요 · 지구본에서 찾기 → 수도 4지선다';
+  let hintText = '대륙을 고른 뒤 나라 피스를 선택하고 · 지구본의 해당 위치를 탭하세요';
   if (session.phase === PUZZLE_PHASE.FIND) {
-    hintText = `${targetLabel} — 지구본 빈 칸에서 위치를 탭하세요 · 힌트는 별 −1`;
+    hintText = `${targetLabel} — 지구본에서 위치를 탭하면 맞을 때 필이 채워집니다 · 힌트는 별 −1`;
   } else if (session.phase === PUZZLE_PHASE.CAPITAL) {
-    hintText = `${targetLabel} — 수도를 고르세요`;
+    hintText = `${targetLabel} 위치가 맞았습니다 · 수도를 고르면 별이 확정됩니다`;
   } else if (session.phase === PUZZLE_PHASE.RESULT) {
     hintText = `${targetLabel} 클리어 · 다시 도전하거나 다른 나라를 선택하세요`;
   }
@@ -258,7 +275,7 @@ export default function GeoPuzzlePage() {
 
       <div className={`relative min-h-0 flex-1 transition-opacity ${flashMiss ? 'opacity-80' : 'opacity-100'}`}>
         <GeoPuzzleGlobe
-          filledIds={clearedIds}
+          filledIds={globeFilledIds}
           slotIds={continentCountryIds}
           hintCountryId={hintCountryId}
           findActive={session.phase === PUZZLE_PHASE.FIND}
@@ -363,9 +380,8 @@ export default function GeoPuzzlePage() {
 
         {session.phase === PUZZLE_PHASE.IDLE || session.phase === PUZZLE_PHASE.FIND || session.phase === PUZZLE_PHASE.RESULT ? (
           <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {playableIds.map((id) => {
+            {trayIds.map((id) => {
               const country = getGlobeCountryById(id);
-              const best = progress.countries?.[id]?.bestStars || 0;
               const active = session.countryId === id;
               return (
                 <button
@@ -373,7 +389,7 @@ export default function GeoPuzzlePage() {
                   type="button"
                   onClick={() => beginFind(id)}
                   aria-pressed={active}
-                  className={`select-none shrink-0 ${active ? '' : ''} ${
+                  className={`select-none shrink-0 ${
                     session.countryId && session.countryId !== id ? 'opacity-45' : ''
                   }`}
                 >
@@ -383,17 +399,17 @@ export default function GeoPuzzlePage() {
                     active={active}
                     size="tray"
                   />
-                  {best > 0 ? (
-                    <span className="mt-0.5 block text-center text-[9px] text-amber-200/90">
-                      {'★'.repeat(Math.min(3, best))}
-                    </span>
-                  ) : null}
                 </button>
               );
             })}
             {!playableIds.length ? (
               <p className="py-3 text-xs text-white/50 break-keep">
                 이 대륙 시드가 아직 없습니다.
+              </p>
+            ) : null}
+            {playableIds.length && !trayIds.length ? (
+              <p className="py-3 text-xs text-amber-200/90 break-keep">
+                이 대륙 피스를 모두 채웠습니다.
               </p>
             ) : null}
           </div>

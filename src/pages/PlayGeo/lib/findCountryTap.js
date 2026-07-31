@@ -1,4 +1,5 @@
 import { GLOBE_COUNTRY_CATALOG, getGlobeCountryById } from '../../Home/lib/globeCountryCatalog.js';
+import { isCorrectPieceDrop } from './geoPuzzleHitTest.js';
 
 /**
  * @param {number} lng
@@ -48,23 +49,52 @@ export function resolveCountryIdByBbox(lngLat, candidateIds = []) {
 }
 
 /**
+ * 피스 선택 후 지구본 탭 정답 판정.
+ * ISO 벡터 → bbox(후보 중 최소면적) → 픽셀 스냅 순.
  * @param {{
  *   iso?: string,
  *   lngLat?: { lng: number, lat: number },
+ *   point?: { x: number, y: number },
+ *   map?: import('mapbox-gl').Map | null,
  *   targetId: string,
  *   candidateIds?: string[],
  * }} args
  */
-export function isCorrectFindTap({ iso, lngLat, targetId, candidateIds }) {
+export function isCorrectFindTap({ iso, lngLat, point, map, targetId, candidateIds }) {
   const target = getGlobeCountryById(targetId);
   if (!target) return false;
+  const pool = candidateIds?.length ? candidateIds : [targetId];
   const up = String(iso || '').toUpperCase();
   if (up && String(target.iso || '').toUpperCase() === up && !target.iso3166_2) {
     return true;
   }
-  if (lngLat) {
-    const pool = candidateIds?.length ? candidateIds : [targetId];
-    if (resolveCountryIdByBbox(lngLat, pool) === targetId) return true;
+  if (lngLat && resolveCountryIdByBbox(lngLat, pool) === targetId) {
+    return true;
+  }
+  if (map && point) {
+    return isCorrectPieceDrop({
+      map,
+      point,
+      lngLat,
+      targetId,
+      candidateIds: pool,
+    });
   }
   return false;
+}
+
+/**
+ * 클리어·찾기 성공 직후 지구본에 채울 id 목록.
+ * @param {string[]} clearedIds
+ * @param {{ phase?: string, countryId?: string | null } | null} session
+ * @param {string[]} foundPhases CAPITAL·RESULT 등 찾기 성공 이후 phase
+ */
+export function resolveGlobeFilledIds(clearedIds = [], session = null, foundPhases = ['capital', 'result']) {
+  const ids = new Set((clearedIds || []).map(String).filter(Boolean));
+  const phase = session?.phase;
+  const countryId = session?.countryId;
+  if (countryId && foundPhases.includes(phase)) {
+    ids.add(String(countryId));
+  }
+  return [...ids];
 }

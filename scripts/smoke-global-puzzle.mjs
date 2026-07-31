@@ -28,6 +28,11 @@ import {
   listContinentCountryIds,
 } from '../src/pages/PlayGeo/data/geoPuzzleTree.js';
 import { GLOBE_COUNTRY_CATALOG } from '../src/pages/Home/lib/globeCountryCatalog.js';
+import {
+  isCorrectFindTap,
+  pointInBbox,
+  resolveGlobeFilledIds,
+} from '../src/pages/PlayGeo/lib/findCountryTap.js';
 
 let failed = 0;
 function check(name, fn) {
@@ -125,6 +130,53 @@ check('idle session factory', () => {
   const s = createIdleSession();
   assert.equal(s.phase, PUZZLE_PHASE.IDLE);
   assert.equal(s.countryId, null);
+});
+
+check('find tap: ISO / bbox hit for Korea', () => {
+  const kr = GLOBE_COUNTRY_CATALOG.kr;
+  assert.ok(kr?.bbox);
+  assert.equal(
+    isCorrectFindTap({
+      iso: 'KR',
+      targetId: 'kr',
+      candidateIds: ['kr', 'jp', 'cn'],
+    }),
+    true,
+  );
+  assert.equal(
+    isCorrectFindTap({
+      lngLat: { lng: kr.lng, lat: kr.lat },
+      targetId: 'kr',
+      candidateIds: ['kr', 'jp', 'cn'],
+    }),
+    true,
+  );
+  assert.equal(
+    isCorrectFindTap({
+      iso: 'JP',
+      lngLat: { lng: 139.7, lat: 35.7 },
+      targetId: 'kr',
+      candidateIds: ['kr', 'jp', 'cn'],
+    }),
+    false,
+  );
+  assert.ok(pointInBbox(kr.lng, kr.lat, kr.bbox));
+});
+
+check('globe fill includes country right after find (before capital clear)', () => {
+  const cleared = ['jp'];
+  assert.deepEqual(
+    resolveGlobeFilledIds(cleared, { phase: PUZZLE_PHASE.FIND, countryId: 'kr' }).sort(),
+    ['jp'],
+  );
+  assert.deepEqual(
+    resolveGlobeFilledIds(cleared, { phase: PUZZLE_PHASE.CAPITAL, countryId: 'kr' }).sort(),
+    ['jp', 'kr'],
+  );
+  assert.deepEqual(
+    resolveGlobeFilledIds(['jp', 'kr'], { phase: PUZZLE_PHASE.RESULT, countryId: 'kr' }).sort(),
+    ['jp', 'kr'],
+  );
 });
 
 if (failed) {
