@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts.js';
 import { apiClient } from '../../Home/lib/apiClient.js';
 import { convertToBase64 } from './useLogbookMedia';
@@ -6,6 +6,15 @@ import { getCoordinatesFromAddress } from '../../Home/lib/geocoding.js';
 import { TRAVEL_SPOTS } from '../../Home/data/travelSpots.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 import { hasValidCurationCoords } from '../../Home/lib/curationPlaceBridge.js';
+import {
+  curationEntryToPanelData,
+  historyExcludeLocations,
+  readCurationData,
+  readCurationHistory,
+  upsertCurationHistoryEntry,
+  writeCurationData,
+  writeCurationHistory,
+} from '../lib/curationHistory.js';
 
 export const useLogbookAI = (title, setTitle, content, setContent, date, mapLocation) => {
   const [isAILoading, setIsAILoading] = useState(false);
@@ -124,33 +133,37 @@ async function resolveCurationImageUrl(parsedData) {
 }
 
 export const useCurationAI = () => {
-  const [status, setStatus] = useState(() => {
-    try {
-      const cached = sessionStorage.getItem('gateo_curation_data');
-      return cached && JSON.parse(cached) ? 'result' : 'idle';
-    } catch {
-      return 'idle';
-    }
-  });
+  const [status, setStatus] = useState(() => (readCurationData() ? 'result' : 'idle'));
+  const [curationData, setCurationData] = useState(() => readCurationData());
+  const [history, setHistory] = useState(() => readCurationHistory());
 
-  const [curationData, setCurationData] = useState(() => {
-    try {
-      const cached = sessionStorage.getItem('gateo_curation_data');
-      return cached ? JSON.parse(cached) : null;
-    } catch {
-      console.warn("세션 스토리지 큐레이션 데이터 손상. 초기화합니다.");
-      sessionStorage.removeItem('gateo_curation_data');
-      return null;
-    }
-  });
+  const persistResult = useCallback((finalData) => {
+    const panel = writeCurationData(finalData) || curationEntryToPanelData(finalData);
+    const nextHistory = writeCurationHistory(
+      upsertCurationHistoryEntry(readCurationHistory(), { ...panel, savedAt: Date.now() }),
+    );
+    setCurationData(panel);
+    setHistory(nextHistory);
+    setStatus('result');
+    return panel;
+  }, []);
+
+  const selectFromHistory = useCallback((entry) => {
+    const panel = curationEntryToPanelData(entry);
+    if (!panel) return false;
+    writeCurationData(panel);
+    setCurationData(panel);
+    setStatus('result');
+    return true;
+  }, []);
 
   const generateCuration = async (validReports = [], validSaved = []) => {
     setStatus('loading');
 
     try {
-      let curationHistory = JSON.parse(sessionStorage.getItem('gateo_curation_history') || '[]');
-
-      const systemPrompt = getCurationPrompt(validReports, validSaved, curationHistory);
+      const curationHistory = readCurationHistory();
+      const excludeNames = historyExcludeLocations(curationHistory);
+      const systemPrompt = getCurationPrompt(validReports, validSaved, excludeNames);
 
       const resultText = await apiClient.fetchProxyGemini(null, [], systemPrompt, "");
 
@@ -160,11 +173,6 @@ export const useCurationAI = () => {
       const safeJsonString = jsonMatch[0].replace(/[\n\r\t]+/g, ' ');
       const parsedData = JSON.parse(safeJsonString);
       if (!parsedData?.location) throw new Error("큐레이션 지명 누락");
-
-      if (parsedData.location && !curationHistory.includes(parsedData.location)) {
-        curationHistory.push(parsedData.location);
-        sessionStorage.setItem('gateo_curation_history', JSON.stringify(curationHistory));
-      }
 
       const catalogSpot = matchSpotForCuration(parsedData);
       const { imageUrl, imageSource } = await resolveCurationImageUrl(parsedData);
@@ -201,29 +209,27 @@ export const useCurationAI = () => {
         delete finalData.lng;
       }
 
-      setCurationData(finalData);
-      sessionStorage.setItem('gateo_curation_data', JSON.stringify(finalData));
-      setStatus('result');
+      persistResult(finalData);
 
     } catch (error) {
       console.warn("큐레이션 에러:", error);
       alert("큐레이션에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-      try {
-        const cached = sessionStorage.getItem('gateo_curation_data');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed?.location) {
-            setCurationData(parsed);
-            setStatus('result');
-            return;
-          }
-        }
-      } catch {
-        /* ignore */
+      const cached = readCurationData();
+      if (cached?.location) {
+        setCurationData(cached);
+        setStatus('result');
+        return;
       }
       setStatus('idle');
     }
   };
 
-  return { status, setStatus, curationData, generateCuration };
+  return {
+    status,
+    setStatus,
+    curationData,
+    history,
+    generateCuration,
+    selectFromHistory,
+  };
 };

@@ -1,8 +1,8 @@
 # 블로그 AI 큐레이션 페이지 — 인페이지 콘텐츠 허브
 
-**상태**: 다음 세션 착수 대기 · 사람 방향 합의(2026-07-31)  
+**상태**: Phase B+C tip · Preview QA 대기  
 **제시어**: `큐레이션-이어하기` · `@plans/blog-ai-curation-page-plan.md`  
-**브랜치(연결 Phase)**: `cursor/blog-ai-curation-links-54e3` · PR [#38](https://github.com/catgeot/Days/pull/38) (Preview QA OK · main 병합은 사람)
+**브랜치**: `cursor/blog-ai-curation-links-5aff` (기반 [#38](https://github.com/catgeot/Days/pull/38) Phase A)
 
 ---
 
@@ -28,9 +28,11 @@
 | Gemini + Unsplash/Pexels · 비로그인 실행 | ✅ | `useLogbookAI.js` `useCurationAI` · `prompts.js` |
 | SSOT/uiPlace 하이드레이트 · 홈 핸드오프 | ✅ | `curationPlaceBridge.js` · Home `consumeCurationHomeOpen` |
 | CTA: 지구본·장소카드·무니 | ✅ (다음 Phase에서 **보조**) | `AICurationCard.jsx` |
-| session 결과/히스토리 | ✅ 결과 1건 + history 지명 배열 | `gateo_curation_data` · `gateo_curation_history` |
-| 「나의 목록」구조화 | ❌ history는 **지명 문자열만** · 카드 재오픈용 payload 없음 | — |
-| 전용 라우트 `/blog/curation` 등 | ❌ | App `/blog` 하위만 Dashboard |
+| session 결과/히스토리 | ✅ 결과 1건 + history **객체** (문자열 하위호환) | `curationHistory.js` · local+session |
+| 「나의 목록」구조화 | ✅ upsert·복원 · 상한 24 | `CurationHub` 사이드 목록 |
+| 전용 라우트 `/blog/curation` | ✅ | `Curation.jsx` · App `curation` before `:id` |
+| 인페이지 리치 (tips 등) | ✅ MVP · 파싱 실패 시 description만 | `getCurationPrompt` · `CurationRichBlocks` |
+| 도구 패널 카드 | ✅ 전용 페이지 링크 티저 | `AICurationCard.jsx` |
 
 **사람 QA**: 이전 실패(깨진 사진·가짜 폴백·연결 없음·로그인 강제) **처리 확인됨**.
 
@@ -102,21 +104,21 @@
 
 ## 3. 구현 Phase (다음 세션부터)
 
-### Phase B — 전용 페이지 셸 + 목록 (우선)
+### Phase B — 전용 페이지 셸 + 목록 ✅
 
-1. 라우트 `App.jsx`: `/blog/curation` → 새 페이지 컴포넌트 (`DailyReport/Curation.jsx` 등)
-2. `AICurationCard` 로직을 훅/패널로 분리해 **페이지·도구 패널 공유** (또는 페이지로 이전, 도구는 링크만)
-3. history를 **객체 목록**으로 저장·「나의 큐레이션」리스트 UI
-4. 목록 클릭 → 현재 패널 복원 (navigate 없이)
-5. VERIFY: smoke에 history upsert/복원 케이스
+1. ✅ `/blog/curation` → `Curation.jsx` + `CurationHub`
+2. ✅ 도구 패널은 링크 티저 · 본문은 허브 페이지
+3. ✅ history 객체 · localStorage 우선(+session 마이그레이션)
+4. ✅ 목록 클릭 → `selectFromHistory` (페이지 이탈 없음)
+5. ✅ `npm run smoke:curation-history`
 
-### Phase C — 인페이지 리치 MVP
+### Phase C — 인페이지 리치 MVP ✅
 
-1. `getCurationPrompt` JSON 확장: `tips`, `bestSeason`, `whyHidden` (한 줄 규칙·제어문자 금지 유지)
-2. 결과 패널에 섹션 렌더 (기존 비주얼 톤 유지 · 리디자인 금지 범위 내 블록 추가만)
-3. 파싱 실패 시 기존 description만으로도 카드 성립
+1. ✅ `tips` · `bestSeason` · `whyHidden`
+2. ✅ `CurationRichBlocks` (글래스/블루 톤)
+3. ✅ 필드 없어도 description만으로 성립
 
-### Phase D — 임베드·복귀 (사람 합의 후)
+### Phase D — 임베드·복귀 (다음 · 사람 합의 후)
 
 - 미니맵 / gallery / 숙소·투어 스트립 임베드
 - `placeReturnTo`에 `/blog/curation` 허용
@@ -136,10 +138,10 @@
 
 ## 5. 읽을 것 (다음 세션 · 토큰 절약)
 
-1. 이 파일 §0·§2·§3  
-2. 일지 [`2026-07-31-project-log.md`](./2026-07-31-project-log.md) 「큐레이션 페이지 핸드오프」  
-3. 코드: `AICurationCard.jsx` · `useLogbookAI.js` `useCurationAI` · `curationPlaceBridge.js` · `prompts.js` `getCurationPrompt` · `App.jsx` `/blog`  
-4. (복귀 유틸 참고만) `placeReturnTo.js`
+1. 이 파일 §0·§3 Phase D · §4  
+2. 일지 [`2026-07-31-project-log.md`](./2026-07-31-project-log.md) 「Phase B+C」·핸드오프  
+3. 코드: `Curation.jsx` · `CurationHub.jsx` · `curationHistory.js` · `useCurationAI` · (복귀 시) `placeReturnTo.js`  
+4. VERIFY: `npm run smoke:curation-history` · `smoke:curation-place-bridge`
 
 **읽지 말 것**: travelSpots 전체 · travel-spots-management 전체 · 축제/MRT 가이드
 
@@ -152,9 +154,8 @@
 @plans/blog-ai-curation-page-plan.md
 @plans/2026-07-31-project-log.md
 
-Phase B부터: /blog/curation 전용 페이지 + 나의 큐레이션 목록(객체 history) + 인페이지에서 결과 복원.
-지구본/장소카드 이탈이 기본이 아니게 — 콘텐츠는 페이지 안에서.
-기존 카드 톤 유지 · 비로그인 실행 유지.
+Preview QA 후 Phase D(합의 시): placeReturnTo=/blog/curation · 미니맵/갤러리 임베드.
+기존 톤 유지 · 비로그인 유지.
 ```
 
 ---
@@ -162,4 +163,4 @@ Phase B부터: /blog/curation 전용 페이지 + 나의 큐레이션 목록(객�
 ## 7. 릴리스 노트
 
 - Phase A(연결·비로그인): Preview QA OK — 공지 여부는 사람 합의 후 (`releaseNotes.js` · `.ai-context` 1.7)
-- Phase B/C(전용 페이지·인페이지 리치): **새 기능**으로 합의 후 초안 제안
+- Phase B/C(전용 페이지·인페이지 리치): **새 기능** — Preview QA OK 후 초안 제안 (합의 전 `releaseNotes.js` 미수정)

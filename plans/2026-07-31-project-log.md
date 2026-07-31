@@ -28,18 +28,28 @@
 
 **QA**: 로그아웃 상태 `/blog` → 도구 → 낙원 탐색 시작 → 결과·CTA 동작 · 북마크는 로그인 안내
 
-## 큐레이션 페이지 핸드오프 (다음 세션)
+## 큐레이션 페이지 핸드오프 → Phase B+C
 
 **사람 확인**: Phase A(연결·이미지·비로그인) Preview OK · 이전 실패 지점 해소.
 
-**다음 방향 (합의)**: 연결 CTA 중심이 아니라 **`/blog/curation` 인페이지 콘텐츠 허브**  
-— 나의 큐레이션 목록 · 페이지 안에서 실용/숨은 정보 · 지구본·장소카드 이탈 후 복귀 어려움 해소.
+**방향 (합의)**: 연결 CTA가 아니라 **`/blog/curation` 인페이지 콘텐츠 허브**.
+
+## 블로그 AI 큐레이션 — Phase B+C (인페이지 허브)
+
+**상태**: tip · Preview QA 대기
 
 | | |
 |--|--|
-| 계획 SSOT | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |
-| 제시어 | `큐레이션-이어하기` |
-| 다음 Phase | **B** 전용 페이지 셸 + history 객체 목록 · **C** tips/season 등 인페이지 리치 |
-| tip | `500ae06` · PR [#38](https://github.com/catgeot/Days/pull/38) |
+| Phase B | `/blog/curation` · `CurationHub` · history **객체** upsert/복원 · 도구 카드→페이지 링크 |
+| Phase C | `whyHidden` · `bestSeason` · `tips[]` 프롬프트+인페이지 블록 |
+| VERIFY | `npm run smoke:curation-history` · `smoke:curation-place-bridge` |
+| 브랜치 | `cursor/blog-ai-curation-links-5aff` |
+| 계획 | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |
 
-**에이전트**: 계획 §0·§2·§3 + 위 파일 4종만 · travelSpots/축제/MRT 가이드 전체 Read 금지.
+**QA**: Preview `/blog/curation` → 낙원 탐색 → 리치 블록 · 나의 목록 탭 복원 · `/blog` 도구→페이지 링크 · 비로그인 실행 · 「전체 지도에서 보기」는 보조
+
+**다음**: Phase D(사람 합의) — `placeReturnTo` · 미니맵/갤러리 임베드 · 릴리스 노트 초안은 Preview OK 후
+
+**파일**: `Curation.jsx` · `CurationHub.jsx` · `curationHistory.js` · `AICurationCard.jsx` · `useLogbookAI.js` · `prompts.js` · `App.jsx` · smoke
+
+**에이전트**: 계획 §0·§3 Phase D · 일지 Phase B+C · travelSpots/축제/MRT 가이드 전체 Read 금지.
