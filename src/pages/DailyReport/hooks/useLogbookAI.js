@@ -144,12 +144,10 @@ export const useCurationAI = () => {
     }
   });
 
-  const generateCuration = async (user, validReports, validSaved) => {
+  const generateCuration = async (validReports = [], validSaved = []) => {
     setStatus('loading');
 
     try {
-      if (!user) throw new Error("로그인이 필요합니다.");
-
       let curationHistory = JSON.parse(sessionStorage.getItem('gateo_curation_history') || '[]');
 
       const systemPrompt = getCurationPrompt(validReports, validSaved, curationHistory);

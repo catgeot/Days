@@ -82,17 +82,18 @@ const AICurationCard = () => {
     setIsTextExpanded(false);
     setImageFailed(false);
 
-    if (!user) {
-      alert("로그인이 필요합니다.");
-      return;
+    let reports = [];
+    let saved = [];
+    if (user?.id) {
+      const [reportsRes, savedRes] = await Promise.all([
+        supabase.from('reports').select('location').eq('user_id', user.id).eq('is_deleted', false).limit(10),
+        supabase.from('saved_trips').select('destination').eq('user_id', user.id).eq('is_bookmarked', true).eq('is_hidden', false).limit(10)
+      ]);
+      reports = reportsRes.data || [];
+      saved = savedRes.data || [];
     }
 
-    const [reportsRes, savedRes] = await Promise.all([
-      supabase.from('reports').select('location').eq('user_id', user.id).eq('is_deleted', false).limit(10),
-      supabase.from('saved_trips').select('destination').eq('user_id', user.id).eq('is_bookmarked', true).eq('is_hidden', false).limit(10)
-    ]);
-
-    await generateCuration(user, reportsRes.data || [], savedRes.data || []);
+    await generateCuration(reports, saved);
   };
 
   const handleSaveCuration = async (e) => {

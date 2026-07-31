@@ -16,3 +16,14 @@
 **QA**: `/blog` → 도구 → 낙원 탐색 → 사진 또는 「사진 준비 중」 · 지구본 써머리 / 장소 카드 / 무니에게 묻기 · 북마크 후 로고패널 재진입
 
 **파일**: `AICurationCard.jsx` · `useLogbookAI.js` · `curationPlaceBridge.js` · `Home/index.jsx` · `useTravelData.js` · smoke
+
+## 블로그 AI 큐레이션 — 비로그인 실행
+
+**상태**: tip · Preview QA 대기
+
+| | |
+|--|--|
+| 조치 | 낙원 탐색 로그인 게이트 제거 · 비로그인은 취향 데이터 없이 자유 추천 · 북마크만 로그인 유지 |
+| 파일 | `AICurationCard.jsx` · `useLogbookAI.js` · `prompts.js` |
+
+**QA**: 로그아웃 상태 `/blog` → 도구 → 낙원 탐색 시작 → 결과·CTA 동작 · 북마크는 로그인 안내
