@@ -30,3 +30,9 @@
 - **차이 파악**: `ef6be28`는 정답 시 `setFilledIds` 즉시 → `filledIds` prop → `setFilter(PLACED_FILL)`. 합의 룰(`6799d3b`) 이후 session/cleared 파생·paint try 묶음으로 경로가 달라짐.
 - **복원**: 정답 탭 → `filledIds` 즉시 append(초기 `applyCorrect`) · ISO 필터=`ef6be28` match · setFilter와 paint try 분리 · fill-extrusion 보조 · sourcedata 재동기화.
 - Preview QA 대기.
+
+## 범지구적 퍼즐 — 모바일 필 (mercator)
+
+- **원인**: 모바일(특히 iOS) 글로브 투영에서 country-boundaries **fill이 안 그려지는** 경우가 많음(라인만 보임). PC 로컬은 OK.
+- **수정**: coarse/≤1023px → `projection: mercator` · fill opacity 0.72 · extrusion은 글로브만.
+- QA: 고정 Preview `/play/geo` 모바일 — 평면 지도 + cyan 면 채움.

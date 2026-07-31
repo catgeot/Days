@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Map from 'react-map-gl/mapbox';
 import { GLOBE_COUNTRY_CATALOG } from '../Home/lib/globeCountryCatalog.js';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution.js';
+import { useCoarsePointer } from '../../shared/hooks/useMobileInputViewport.js';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -25,6 +26,24 @@ const DEFAULT_VIEW = {
   pitch: 0,
   bearing: 0,
 };
+
+/** iOS Safari 등 모바일 글로브에서 country fill이 안 그려지는 경우가 많아 평면 투영 사용 */
+function usePreferFlatMap() {
+  const coarse = useCoarsePointer();
+  const [narrow, setNarrow] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.matchMedia('(max-width: 1023px)').matches;
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const mq = window.matchMedia('(max-width: 1023px)');
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+  return Boolean(coarse || narrow);
+}
 
 const CAPTION_LINKS = MAPBOX_ATTRIBUTION_LINKS.filter(
   (item) => item.label === '© Mapbox' || item.label === '© OpenStreetMap',
@@ -162,13 +181,13 @@ function ensurePlacedLayers(map) {
       'source-layer': 'country_boundaries',
       paint: {
         'fill-color': '#22d3ee',
-        'fill-opacity': 0.55,
+        'fill-opacity': 0.72,
         'fill-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
     });
   }
-  // 글로브에서 fill이 약할 때 대비 — extrusion은 조명에 더 잘 보임
+  // 데스크톱 글로브 보조 — 모바일(mercator)에서는 fill만으로 충분
   if (!map.getLayer(PLACED_EXTRUSION)) {
     try {
       map.addLayer({
@@ -253,7 +272,8 @@ function ensurePlacedLayers(map) {
 }
 
 /**
- * #31 전용 게임 글로브 — 초기 MVP와 동일한 filledIds→setFilter 경로 복원.
+ * #31 전용 게임 글로브 — 초기 MVP filledIds→setFilter.
+ * 모바일은 mercator(필 안정) · 데스크톱은 globe.
  */
 export default function GeoPuzzleGlobe({
   filledIds = [],
@@ -263,6 +283,12 @@ export default function GeoPuzzleGlobe({
   onMapReady,
   onMapClick,
 }) {
+  const preferFlat = usePreferFlatMap();
+  const projection = preferFlat ? 'mercator' : 'globe';
+  const initialView = useMemo(
+    () => (preferFlat ? { ...DEFAULT_VIEW, zoom: 1.55 } : DEFAULT_VIEW),
+    [preferFlat],
+  );
   const mapRef = useRef(null);
   const readyRef = useRef(false);
   const onMapClickRef = useRef(onMapClick);
@@ -303,8 +329,21 @@ export default function GeoPuzzleGlobe({
     safeSetFilter(map, HINT_LINE, multiIsoFilter(hintIso ? [hintIso] : []));
 
     safeSetPaint(map, PLACED_FILL, 'fill-emissive-strength', 1);
-    safeSetPaint(map, PLACED_FILL, 'fill-opacity', 0.55);
+    safeSetPaint(map, PLACED_FILL, 'fill-opacity', 0.72);
     safeSetPaint(map, PLACED_FILL, 'fill-color', '#22d3ee');
+    // 모바일 mercator에서는 extrusion 숨김(필만) · 데스크톱 글로브만 보조
+    if (map.getLayer(PLACED_EXTRUSION)) {
+      try {
+        const isGlobe = map.getProjection?.()?.name === 'globe';
+        map.setLayoutProperty(
+          PLACED_EXTRUSION,
+          'visibility',
+          isGlobe ? 'visible' : 'none',
+        );
+      } catch {
+        /* ignore */
+      }
+    }
     safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-emissive-strength', 1);
     safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-opacity', 0.7);
     safeSetPaint(map, HINT_FILL, 'fill-emissive-strength', 1);
@@ -365,10 +404,26 @@ export default function GeoPuzzleGlobe({
     syncFills(map);
   }, [filledIds, slotIds, hintCountryId, syncFills]);
 
+  useEffect(() => {
+    const map = mapRef.current?.getMap?.();
+    if (!map || !readyRef.current || !map.setProjection) return;
+    try {
+      map.setProjection(projection);
+      syncFills(map);
+    } catch {
+      /* ignore */
+    }
+  }, [projection, syncFills]);
+
   const handleLoad = useCallback(() => {
     const map = mapRef.current?.getMap?.();
     if (!map) return;
     readyRef.current = true;
+    try {
+      map.setProjection?.(projection);
+    } catch {
+      /* ignore */
+    }
     forceHideLabelsAndBorders(map);
     ensurePlacedLayers(map);
     syncFills(map);
@@ -399,7 +454,7 @@ export default function GeoPuzzleGlobe({
       if (evt?.sourceId !== COUNTRIES_SOURCE || !evt?.isSourceLoaded) return;
       syncFills(map);
     });
-  }, [flyToCountry, onMapReady, syncFills]);
+  }, [flyToCountry, onMapReady, projection, syncFills]);
 
   const handleClick = useCallback((evt) => {
     const handler = onMapClickRef.current;
@@ -430,8 +485,8 @@ export default function GeoPuzzleGlobe({
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle={MAP_STYLE}
-        projection="globe"
-        initialViewState={DEFAULT_VIEW}
+        projection={projection}
+        initialViewState={initialView}
         style={{ width: '100%', height: '100%' }}
         attributionControl={{ compact: true }}
         onLoad={handleLoad}
