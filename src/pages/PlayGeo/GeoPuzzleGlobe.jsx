@@ -184,8 +184,8 @@ function ensurePlacedLayers(map) {
       source: COUNTRIES_SOURCE,
       'source-layer': 'country_boundaries',
       paint: {
-        'fill-color': '#22d3ee',
-        'fill-opacity': 0.72,
+        'fill-color': PLACED_FILL_COLOR,
+        'fill-opacity': PLACED_FILL_OPACITY,
         'fill-emissive-strength': 1,
       },
       filter: multiIsoFilter([]),
@@ -200,8 +200,8 @@ function ensurePlacedLayers(map) {
         source: COUNTRIES_SOURCE,
         'source-layer': 'country_boundaries',
         paint: {
-          'fill-extrusion-color': '#22d3ee',
-          'fill-extrusion-opacity': 0.7,
+          'fill-extrusion-color': PLACED_FILL_COLOR,
+          'fill-extrusion-opacity': PLACED_FILL_OPACITY,
           'fill-extrusion-height': 80000,
           'fill-extrusion-base': 0,
           'fill-extrusion-emissive-strength': 1,
@@ -217,8 +217,8 @@ function ensurePlacedLayers(map) {
           source: COUNTRIES_SOURCE,
           'source-layer': 'country_boundaries',
           paint: {
-            'fill-extrusion-color': '#22d3ee',
-            'fill-extrusion-opacity': 0.7,
+            'fill-extrusion-color': PLACED_FILL_COLOR,
+            'fill-extrusion-opacity': PLACED_FILL_OPACITY,
             'fill-extrusion-height': 80000,
             'fill-extrusion-base': 0,
           },
@@ -286,6 +286,7 @@ export default function GeoPuzzleGlobe({
   findActive = false,
   onMapReady,
   onMapClick,
+  onProjectionChange,
 }) {
   const preferFlat = usePreferFlatMap();
   const projection = preferFlat ? 'mercator' : 'globe';
@@ -303,6 +304,10 @@ export default function GeoPuzzleGlobe({
   filledRef.current = filledIds;
   slotRef.current = slotIds;
   hintRef.current = hintCountryId;
+
+  useEffect(() => {
+    onProjectionChange?.(projection);
+  }, [onProjectionChange, projection]);
 
   const syncFills = useCallback((map) => {
     if (!map) return;
@@ -333,8 +338,8 @@ export default function GeoPuzzleGlobe({
     safeSetFilter(map, HINT_LINE, multiIsoFilter(hintIso ? [hintIso] : []));
 
     safeSetPaint(map, PLACED_FILL, 'fill-emissive-strength', 1);
-    safeSetPaint(map, PLACED_FILL, 'fill-opacity', 0.72);
-    safeSetPaint(map, PLACED_FILL, 'fill-color', '#22d3ee');
+    safeSetPaint(map, PLACED_FILL, 'fill-opacity', PLACED_FILL_OPACITY);
+    safeSetPaint(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR);
     // 모바일 mercator에서는 extrusion 숨김(필만) · 데스크톱 글로브만 보조
     if (map.getLayer(PLACED_EXTRUSION)) {
       try {
@@ -348,8 +353,9 @@ export default function GeoPuzzleGlobe({
         /* ignore */
       }
     }
+    safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-color', PLACED_FILL_COLOR);
     safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-emissive-strength', 1);
-    safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-opacity', 0.7);
+    safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-opacity', PLACED_FILL_OPACITY);
     safeSetPaint(map, HINT_FILL, 'fill-emissive-strength', 1);
     safeSetPaint(map, SLOT_FILL, 'fill-emissive-strength', 1);
     safeSetPaint(map, PLACED_LINE, 'line-emissive-strength', 1);

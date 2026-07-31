@@ -179,6 +179,25 @@ check('globe fill includes country right after find (before capital clear)', () 
   );
 });
 
+check('placed fill color constant is wired (not dead)', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const src = await readFile(new URL('../src/pages/PlayGeo/GeoPuzzleGlobe.jsx', import.meta.url), 'utf8');
+  assert.match(src, /const PLACED_FILL_COLOR = '#5b21b6'/);
+  assert.match(src, /'fill-color': PLACED_FILL_COLOR/);
+  assert.match(src, /safeSetPaint\(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR\)/);
+  assert.doesNotMatch(src, /fill-color': '#22d3ee'/);
+});
+
+check('deploy log has latest entry for on-screen QA', async () => {
+  const { GEO_PUZZLE_DEPLOY_LOG, getLatestDeployEntry } = await import(
+    '../src/pages/PlayGeo/data/geoPuzzleDeployLog.js'
+  );
+  assert.ok(GEO_PUZZLE_DEPLOY_LOG.length >= 1);
+  const latest = getLatestDeployEntry();
+  assert.ok(latest?.at);
+  assert.ok(latest?.summary);
+});
+
 if (failed) {
   console.error(`\nsmoke:global-puzzle FAIL (${failed})`);
   process.exit(1);

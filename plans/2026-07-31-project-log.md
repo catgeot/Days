@@ -36,3 +36,10 @@
 - **원인**: 모바일(특히 iOS) 글로브 투영에서 country-boundaries **fill이 안 그려지는** 경우가 많음(라인만 보임). PC 로컬은 OK.
 - **수정**: coarse/≤1023px → `projection: mercator` · fill opacity 0.72 · extrusion은 글로브만.
 - QA: 고정 Preview `/play/geo` 모바일 — 평면 지도 + cyan 면 채움.
+
+## 범지구적 퍼즐 — 필 미적용 원인 + 화면 배포 로그
+
+- **원인**: `540c5b3`가 `PLACED_FILL_COLOR=#5b21b6` 상수만 추가하고 `setPaint`/`addLayer`는 `#22d3ee` 고정 → 「보라로 바꿨다」고 해도 Preview 변화 없음.
+- **수정**: paint·extrusion·syncFills에 상수 실제 연결 · `/play/geo` 우상단 **배포** 패널(수정일·요약·필 개수·투영).
+- **에이전트**: tip 올릴 때 `geoPuzzleDeployLog.js` 맨 위 append 필수 — 패널 문구가 안 바뀌면 배포 미반영.
+- QA: 고정 Preview `…geography-puzzle-plan-62e0…/play/geo` — 패널에 `2026-07-31 12:30 UTC` · 정답 시 **진 보라** 면.
