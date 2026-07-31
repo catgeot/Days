@@ -29,4 +29,4 @@
 
 **QA (Preview)**: `/play/geo` — 지명 없음 · 장소카드 없음 · 미리 포커스 없음 · 힌트 별≤2 · 홈 회귀
 
-**브랜치**: `cursor/global-puzzle-mvp-2177` · PR [#40](https://github.com/catgeot/Days/pull/40)
+**브랜치**: `cursor/global-puzzle-mvp-2177` · tip `e79b082` · PR [#40](https://github.com/catgeot/Days/pull/40)
