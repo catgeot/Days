@@ -30,4 +30,4 @@
 
 **QA (Preview)**: 플랜 §7 — 나라 미리 포커스 없음 · 오답 탭 재시도 · 힌트 별≤2 · 재도전 · 모드 종료 후 탐색 회귀
 
-**브랜치**: `cursor/global-puzzle-mvp-2177`
+**브랜치**: `cursor/global-puzzle-mvp-2177` · tip `4ba6268` · PR [#40](https://github.com/catgeot/Days/pull/40)
